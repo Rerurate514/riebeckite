@@ -1,20 +1,12 @@
 {
-  "name": "riebeckite",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "riebeckite-monorepo",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "pnpm --filter @riebeckite/web dev",
+    "build": "pnpm --filter @riebeckite/web build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.5.2",
-      "onFail": "download"
-    }
-  },
-  "type": "module"
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
 }

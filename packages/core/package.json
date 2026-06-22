@@ -18,5 +18,8 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
   }
 }

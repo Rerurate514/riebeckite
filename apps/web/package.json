@@ -9,15 +9,16 @@
   },
   "private": true,
   "dependencies": {
+    "@riebeckite/core": "workspace:*",
     "hono": "^4.12.25",
-    "honox": "0.1.56",
-    "@riebeckite/core": "workspace:*"
+    "honox": "0.1.56"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260420.1",
     "@hono/vite-build": "^1.11.1",
     "@hono/vite-dev-server": "^0.25.2",
     "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "^26.0.0",
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.9",
     "wrangler": "^4.83.0"

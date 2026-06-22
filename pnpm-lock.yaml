@@ -36,6 +36,9 @@ importers:
       '@hono/vite-dev-server':
         specifier: ^0.25.2
         version: 0.25.3(hono@4.12.26)(miniflare@4.20260617.1)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1))
+      '@hono/vite-ssg':
+        specifier: ^0.3.3
+        version: 0.3.3(hono@4.12.26)
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.3.1(vite@8.0.16(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
@@ -452,6 +455,12 @@ packages:
         optional: true
       wrangler:
         optional: true
+
+  '@hono/vite-ssg@0.3.3':
+    resolution: {integrity: sha512-i8mIZhgW1S/xpNLcLHDFvAiwRkLQolJlQWTwNMWZcGnSkc8/Mq+TCWv4NDRWmDayNGWlOqbjIUwk8w5wp/eHTg==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      hono: '>=4.8.0'
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2019,6 +2028,10 @@ snapshots:
     optionalDependencies:
       miniflare: 4.20260617.1
       wrangler: 4.103.0(@cloudflare/workers-types@4.20260621.1)
+
+  '@hono/vite-ssg@0.3.3(hono@4.12.26)':
+    dependencies:
+      hono: 4.12.26
 
   '@img/colour@1.1.0': {}
 

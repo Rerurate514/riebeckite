@@ -13,4 +13,9 @@ export default defineConfig({
     tailwindcss(),
     build(),
   ],
+  ssr: {
+    external: [
+      'remark-extract-frontmatter'
+    ]
+  }
 });

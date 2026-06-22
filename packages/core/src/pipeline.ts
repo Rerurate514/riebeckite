@@ -12,9 +12,10 @@ import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+import { PostContent } from "./types/post_content";
 
 export class Pipeline {
-  async execute(markDownContent: string) {
+  async execute(markDownContent: string): Promise<PostContent> {
     const file = await unified()
       .use(remarkParse)
       .use(remarkDirective)
@@ -30,7 +31,9 @@ export class Pipeline {
       .use(rehypeStringify)
       .process(markDownContent.trim());
 
-    console.log(file.value);
-    console.log(file.data);
+    return {
+      frontmatter: (file.data.frontmatter || {}) as Record<string, any>,
+      html: String(file.value),
+    };
   }
 }

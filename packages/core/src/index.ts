@@ -2,8 +2,7 @@ import { Pipeline } from "./pipeline";
 
 const pipeline = new Pipeline();
 
-const text = `
----
+const text = `---
 title: CPUのアーキテクチャと命令実行時間など
 date: 2023-07-27
 created: 2023-08-26T17:55

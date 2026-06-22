@@ -1,4 +1,5 @@
-import { Pipeline } from './pipeline';
+import { Pipeline } from "./pipeline";
+
 const pipeline = new Pipeline();
 
 const text = `
@@ -98,6 +99,6 @@ $$
 $$
 CPUの平均使用率 = \\frac{使用時間}{全運転時間} = 1 - \\frac{遊休時間}{全運転時間}
 $$
-`
+`;
 
 pipeline.execute(text);

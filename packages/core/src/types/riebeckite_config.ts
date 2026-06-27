@@ -4,6 +4,7 @@ export interface RiebeckiteConfig {
     description?: string;
     author?: string;
     baseUrl?: string;
+    locale?: string;
   };
   content?: {
     directory?: string;
@@ -16,7 +17,11 @@ export interface RiebeckiteConfig {
       publishStrategy?: "explicit" | "selective";
     };
   };
-  markdown?: {};
+  markdown?: {
+    syntaxHighlight?: {
+      theme?: string;
+    };
+  };
 }
 
 export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {

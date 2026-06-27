@@ -22,7 +22,7 @@ export class Pipeline {
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
       .use(rehypeFormat)
-      .use(rehypeKatex)
+      .use(rehypeKatex, { output: "mathml" })
       .use(rehypeStringify)
       .process(markDownContent.trim());
 

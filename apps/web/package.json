@@ -18,6 +18,7 @@
     "@hono/vite-build": "^1.11.1",
     "@hono/vite-dev-server": "^0.25.2",
     "@hono/vite-ssg": "^0.3.3",
+    "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.2.2",
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.9",

@@ -3,10 +3,16 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 export async function getAllPosts() {
-  const files = await fs.readdir(contentDir);
+  const files = await fs.readdir(contentDir, { recursive: true });
+
   return files
     .filter((f) => f.endsWith(".md"))
-    .map((f) => ({ slug: f.replace(/\.md$/, "") }));
+    .map((f) => {
+      const normalizedPath = f.replace(/\\/g, "/").replace(/\\\\/g, "/");
+      const slug = normalizedPath.replace(/\.md$/, "");
+
+      return { slug };
+    });
 }
 
 export async function getPost(slug: string) {

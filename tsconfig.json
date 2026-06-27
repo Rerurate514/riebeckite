@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@riebeckite/core": ["packages/core/index.ts"],
+    },
+  },
+  "include": ["./riebeckite.config.ts"],
+}

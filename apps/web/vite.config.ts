@@ -14,7 +14,15 @@ export default defineConfig({
     tailwindcss(),
     build(),
     ssg({
-      entry: "./app/server.ts"
-    })
+      entry: "./app/server.ts",
+    }),
   ],
+  environments: {
+    ssr: {
+      resolve: {
+        external: ["extend", "node:fs/promises", "node:path"],
+        noExternal: ["@riebeckite/core"],
+      },
+    },
+  },
 });

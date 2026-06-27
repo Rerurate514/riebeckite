@@ -17,11 +17,13 @@ export default defineConfig({
       entry: "./app/server.ts",
     }),
   ],
+  optimizeDeps: {
+    include: ["debug"],
+  },
   environments: {
     ssr: {
       resolve: {
-        external: ["extend", "node:fs/promises", "node:path"],
-        noExternal: ["@riebeckite/core"],
+        external: ["extend", "debug", "node:fs/promises", "node:path"],
       },
     },
   },

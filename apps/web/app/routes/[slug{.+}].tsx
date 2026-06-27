@@ -1,23 +1,9 @@
 import { createRoute } from "honox/factory";
 import { Pipeline } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
-import { contentDir } from "../constants/paths";
-import fs from "node:fs/promises";
-import path from "node:path";
+import { getAllPosts, getPost } from "../logic/get_post";
 
 const pipeline = new Pipeline();
-
-async function getAllPosts() {
-  const files = await fs.readdir(contentDir);
-  return files
-    .filter((f) => f.endsWith(".md"))
-    .map((f) => ({ slug: f.replace(/\.md$/, "") }));
-}
-
-async function getPost(slug: string) {
-  const filePath = path.join(contentDir, `${slug}.md`);
-  return await fs.readFile(filePath, "utf-8");
-}
 
 export default createRoute(
   ssgParams(async () => {
@@ -31,7 +17,7 @@ export default createRoute(
     const content = await pipeline.execute(post);
 
     return c.render(
-      <article>
+      <article class="prose">
         <div dangerouslySetInnerHTML={{ __html: content.html }} />
       </article>,
     );

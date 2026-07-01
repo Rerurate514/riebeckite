@@ -8,7 +8,7 @@ export async function getAllPosts() {
   return files
     .filter((f) => f.endsWith(".md"))
     .map((f) => {
-      const normalizedPath = f.replace(/\\/g, "/").replace(/\\\\/g, "/");
+      const normalizedPath = f.replace(/\\/g, "/");
       const slug = normalizedPath.replace(/\.md$/, "");
 
       return { slug };

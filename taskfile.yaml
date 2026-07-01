@@ -1,0 +1,8 @@
+version: "3"
+
+tasks:
+  run:
+    desc: "build html and hono server starting"
+    dir: ./apps/web
+    cmds:
+      - pnpm run dev

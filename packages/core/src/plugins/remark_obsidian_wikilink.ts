@@ -35,7 +35,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           });
         }
 
-        const target = rawTarget.trim();
+        const target = rawTarget?.trim();
         const isEmbed = embedMark === "!";
         const resolved = resolveTarget(target, contentIndex);
 
@@ -84,7 +84,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
             children: [{ type: "text", value: label }],
           });
         } else {
-          const label = alias.trim() ?? target;
+          const label = alias?.trim() ?? target;
           newNodes.push({
             type: "link",
             url: "#",

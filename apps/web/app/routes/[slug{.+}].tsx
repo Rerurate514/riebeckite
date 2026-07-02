@@ -42,6 +42,8 @@ export default createRoute(
     const slug = c.req.param("slug");
     if (!slug) return c.notFound();
 
+    if (/\.[a-zA-Z0-9]+$/.test(slug)) return c.notFound();
+
     const content = await getProcessedContent(slug);
     if (!content) return c.notFound();
 

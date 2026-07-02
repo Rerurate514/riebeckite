@@ -8,7 +8,10 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [
     honox({
-      devServer: { adapter },
+      devServer: {
+        adapter,
+        exclude: [/\.(png|jpe?g|gif|svg|webp)$/],
+      },
       client: { input: ["/app/client.ts", "/app/style.css"] },
     }),
     tailwindcss(),

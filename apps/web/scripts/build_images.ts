@@ -9,32 +9,35 @@ async function copyImages() {
     recursive: true,
   });
 
+  let copied = 0;
+  let failed = 0;
+
   for (const entry of entries) {
     if (
       entry.isFile() &&
-      IMAGE_EXTENSIONS.includes(path.extname(entry.name).replace(".", ""))
+      IMAGE_EXTENSIONS.includes(
+        path.extname(entry.name).replace(".", "").toLowerCase(),
+      )
     ) {
       try {
         const currentDir = entry.parentPath;
         const relativePath = path.relative(CONTENT_DIR, currentDir);
-
         const basePath = path.join(currentDir, entry.name).normalize("NFC");
         const targetPath = path
           .join(ASSETS_ROOT, relativePath, entry.name)
           .normalize("NFC");
-
         await mkdir(path.dirname(targetPath), { recursive: true });
-
         await fs.copyFile(basePath, targetPath);
+        copied++;
       } catch (e) {
-        console.log(e);
+        failed++;
+        console.error(`Failed to copy ${entry.name}:`, e);
       }
     }
   }
-}
 
-async function main() {
-  await copyImages();
+  console.log(`Copied ${copied} image(s), ${failed} failed`);
+  if (failed > 0) {
+    process.exitCode = 1;
+  }
 }
-
-main();

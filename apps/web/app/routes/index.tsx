@@ -1,6 +1,7 @@
 import { createRoute } from "honox/factory";
 import { buildContentIndex, getPost } from "../logic/get_post";
 import { Pipeline, PostContent } from "@riebeckite/core";
+import Article from "../components/article";
 
 let cachedIndex: Map<string, string> | null = null;
 async function getContentIndex() {
@@ -22,9 +23,5 @@ export default createRoute(async (c) => {
     return c.notFound();
   }
 
-  return c.render(
-    <article class="prose">
-      <div dangerouslySetInnerHTML={{ __html: cachedContent.html ?? "" }} />
-    </article>,
-  );
+  return c.render(<Article content={cachedContent} />);
 });

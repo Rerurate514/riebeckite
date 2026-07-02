@@ -2,6 +2,7 @@ import { createRoute } from "honox/factory";
 import { Pipeline, PostContent } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
 import { buildContentIndex, getAllPosts, getPost } from "../logic/get_post";
+import Article from "../components/article";
 
 let cachedIndex: Map<string, string> | null = null;
 async function getContentIndex() {
@@ -52,13 +53,6 @@ export default createRoute(
       return c.redirect("/", 301);
     }
 
-    return c.render(
-      <article class="prose">
-        <div
-          class="mx-4 my-8"
-          dangerouslySetInnerHTML={{ __html: content.html ?? "" }}
-        />
-      </article>,
-    );
+    return c.render(<Article content={content} />);
   },
 );

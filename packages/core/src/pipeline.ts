@@ -11,6 +11,7 @@ import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { PostContent } from "./types/post_content";
 import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
+import { matter } from "vfile-matter";
 
 export class Pipeline {
   constructor(private contentIndex: Map<string, string>) {}
@@ -20,6 +21,11 @@ export class Pipeline {
       .use(remarkParse)
       .use(remarkDirective)
       .use(remarkFrontmatter, ["yaml", "toml"])
+      .use(() => {
+        return function (_, file) {
+          matter(file);
+        };
+      })
       .use(remarkMath)
       .use(remarkGfm)
       .use(remarkObsidianWikilink, { contentIndex: this.contentIndex })

@@ -1,9 +1,13 @@
 import { createRoute } from "honox/factory";
 import { Pipeline } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
-import { getAllPosts, getPost } from "../logic/get_post";
+import { buildContentIndex, getAllPosts, getPost } from "../logic/get_post";
 
-const pipeline = new Pipeline();
+let cachedIndex: Map<string, string> | null = null;
+async function getContentIndex() {
+  if (!cachedIndex) cachedIndex = await buildContentIndex();
+  return cachedIndex;
+}
 
 export default createRoute(
   ssgParams(async () => {
@@ -13,7 +17,13 @@ export default createRoute(
   async (c) => {
     const slug = c.req.param("slug");
 
+    if (!slug) {
+      return c.notFound();
+    }
+
     const post = await getPost(slug!);
+    const contentIndex = await getContentIndex();
+    const pipeline = new Pipeline(contentIndex);
     const content = await pipeline.execute(post);
 
     return c.render(

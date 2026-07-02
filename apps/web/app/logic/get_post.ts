@@ -1,8 +1,7 @@
 import { CONTENT_DIR } from "../constants/paths";
+import { IMAGE_EXTENSIONS } from "../constants/image_exts";
 import fs from "node:fs/promises";
 import path from "node:path";
-
-const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp"];
 
 export async function getAllPosts() {
   const files = await fs.readdir(CONTENT_DIR, { recursive: true });

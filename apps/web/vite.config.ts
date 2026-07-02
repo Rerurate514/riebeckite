@@ -23,7 +23,13 @@ export default defineConfig({
   environments: {
     ssr: {
       resolve: {
-        external: ["extend", "debug", "node:fs/promises", "node:path"],
+        external: [
+          "extend",
+          "debug",
+          "node:fs/promises",
+          "node:path",
+          "slugify",
+        ],
       },
     },
   },

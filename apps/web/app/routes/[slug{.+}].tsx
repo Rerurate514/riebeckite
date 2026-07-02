@@ -1,5 +1,5 @@
 import { createRoute } from "honox/factory";
-import { Pipeline } from "@riebeckite/core";
+import { Pipeline, PostContent } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
 import { buildContentIndex, getAllPosts, getPost } from "../logic/get_post";
 
@@ -9,10 +9,7 @@ async function getContentIndex() {
   return cachedIndex;
 }
 
-const contentCache = new Map<
-  string,
-  Awaited<ReturnType<Pipeline["execute"]>>
->();
+const contentCache = new Map<string, PostContent>();
 
 async function getProcessedContent(slug: string) {
   if (contentCache.has(slug)) return contentCache.get(slug)!;

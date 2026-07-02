@@ -54,7 +54,10 @@ export default createRoute(
 
     return c.render(
       <article class="prose">
-        <div dangerouslySetInnerHTML={{ __html: content.html ?? "" }} />
+        <div
+          class="mx-4 my-8"
+          dangerouslySetInnerHTML={{ __html: content.html ?? "" }}
+        />
       </article>,
     );
   },

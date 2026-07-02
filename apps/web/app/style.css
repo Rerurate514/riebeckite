@@ -1,6 +1,13 @@
 @import "tailwindcss" source("../app");
 @plugin "@tailwindcss/typography";
 
+@import "./styles/callouts.css";
+@import "./styles/tag.css";
+@import "./styles/tasklist.css";
+@import "./styles/theme.css";
+@import "./styles/typography.css";
+@import "./styles/wikilinks.css";
+
 @layer components {
     .prose code::before,
     .prose code::after {

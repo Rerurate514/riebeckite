@@ -29,6 +29,7 @@ export default defineConfig({
           "node:fs/promises",
           "node:path",
           "slugify",
+          "vfile-matter",
         ],
       },
     },

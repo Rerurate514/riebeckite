@@ -1,2 +1,9 @@
 @import "tailwindcss" source("../app");
 @plugin "@tailwindcss/typography";
+
+@layer components {
+    .prose code::before,
+    .prose code::after {
+        content: none !important;
+    }
+}

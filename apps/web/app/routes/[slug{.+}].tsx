@@ -9,26 +9,51 @@ async function getContentIndex() {
   return cachedIndex;
 }
 
+const contentCache = new Map<
+  string,
+  Awaited<ReturnType<Pipeline["execute"]>>
+>();
+
+async function getProcessedContent(slug: string) {
+  if (contentCache.has(slug)) return contentCache.get(slug)!;
+  const contentIndex = await getContentIndex();
+  const rawPost = await getPost(slug);
+  const pipeline = new Pipeline(contentIndex);
+  const content = await pipeline.execute(rawPost);
+  contentCache.set(slug, content);
+  return content;
+}
+
 export default createRoute(
   ssgParams(async () => {
     const posts = await getAllPosts();
-    return posts.map((post) => ({ slug: post.slug }));
+    const results = await Promise.all(
+      posts.map(async (post) => {
+        try {
+          const content = await getProcessedContent(post.slug);
+          return { slug: post.slug, isPublish: !!content?.frontmatter.publish };
+        } catch (e) {
+          console.error(`Failed to process ${post.slug}:`, e);
+          return { slug: post.slug, isPublish: false };
+        }
+      }),
+    );
+    return results.filter((r) => r.isPublish).map((r) => ({ slug: r.slug }));
   }),
   async (c) => {
     const slug = c.req.param("slug");
+    if (!slug) return c.notFound();
 
-    if (!slug) {
+    const content = await getProcessedContent(slug);
+    if (!content) return c.notFound();
+
+    if (!content || !content.frontmatter.publish) {
       return c.notFound();
     }
 
-    const post = await getPost(slug!);
-    const contentIndex = await getContentIndex();
-    const pipeline = new Pipeline(contentIndex);
-    const content = await pipeline.execute(post);
-
     return c.render(
       <article class="prose">
-        <div dangerouslySetInnerHTML={{ __html: content.html }} />
+        <div dangerouslySetInnerHTML={{ __html: content.html ?? "" }} />
       </article>,
     );
   },

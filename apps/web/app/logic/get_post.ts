@@ -1,11 +1,11 @@
-import { contentDir } from "../constants/paths";
+import { CONTENT_DIR } from "../constants/paths";
 import fs from "node:fs/promises";
 import path from "node:path";
 
 const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp"];
 
 export async function getAllPosts() {
-  const files = await fs.readdir(contentDir, { recursive: true });
+  const files = await fs.readdir(CONTENT_DIR, { recursive: true });
 
   return files
     .filter((f) => f.endsWith(".md"))
@@ -18,12 +18,12 @@ export async function getAllPosts() {
 }
 
 export async function getPost(slug: string) {
-  const filePath = path.join(contentDir, `${slug}.md`);
+  const filePath = path.join(CONTENT_DIR, `${slug}.md`);
   return await fs.readFile(filePath, "utf-8");
 }
 
 export async function buildContentIndex() {
-  const files = await fs.readdir(contentDir, { recursive: true });
+  const files = await fs.readdir(CONTENT_DIR, { recursive: true });
   const index = new Map<string, string>();
 
   for (const f of files) {

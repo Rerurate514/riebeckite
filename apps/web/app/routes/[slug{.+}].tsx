@@ -48,6 +48,10 @@ export default createRoute(
       return c.notFound();
     }
 
+    if (slug === "index") {
+      return c.redirect("/", 301);
+    }
+
     return c.render(
       <article class="prose">
         <div dangerouslySetInnerHTML={{ __html: content.html ?? "" }} />

@@ -1,13 +1,30 @@
 import { createRoute } from "honox/factory";
-import Counter from "../islands/counter";
+import { buildContentIndex, getPost } from "../logic/get_post";
+import { Pipeline, PostContent } from "@riebeckite/core";
 
-export default createRoute((c) => {
-  const name = c.req.query("name") ?? "Hono";
+let cachedIndex: Map<string, string> | null = null;
+async function getContentIndex() {
+  if (!cachedIndex) cachedIndex = await buildContentIndex();
+  return cachedIndex;
+}
+
+let cachedContent: PostContent | null = null;
+
+export default createRoute(async (c) => {
+  if (!cachedContent) {
+    const post = await getPost("index");
+    const contentIndex = await getContentIndex();
+    const pipeline = new Pipeline(contentIndex);
+    cachedContent = await pipeline.execute(post);
+  }
+
+  if (!cachedContent?.frontmatter.publish) {
+    return c.notFound();
+  }
+
   return c.render(
-    <div class="py-8 text-center">
-      <title>{name}</title>
-      <h1 class="text-3xl font-bold">Hello, {name}!</h1>
-      <Counter />
-    </div>,
+    <article class="prose">
+      <div dangerouslySetInnerHTML={{ __html: cachedContent.html ?? "" }} />
+    </article>,
   );
 });

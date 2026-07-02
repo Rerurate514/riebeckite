@@ -10,8 +10,11 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { PostContent } from "./types/post_content";
+import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
 
 export class Pipeline {
+  constructor(private contentIndex: Map<string, string>) {}
+
   async execute(markDownContent: string): Promise<PostContent> {
     const file = await unified()
       .use(remarkParse)
@@ -19,6 +22,7 @@ export class Pipeline {
       .use(remarkFrontmatter, ["yaml", "toml"])
       .use(remarkMath)
       .use(remarkGfm)
+      .use(remarkObsidianWikilink, { contentIndex: this.contentIndex })
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
       .use(rehypeFormat)

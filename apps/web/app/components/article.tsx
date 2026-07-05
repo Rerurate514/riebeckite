@@ -6,8 +6,11 @@ type Props = {
 
 export default function Article(props: Props) {
   return (
-    <article class="prose">
-      <div dangerouslySetInnerHTML={{ __html: props.content.html ?? "" }} />
+    <article class="prose w-full">
+      <div
+        class="max-w-4xl mx-auto px-4"
+        dangerouslySetInnerHTML={{ __html: props.content.html ?? "" }}
+      />
     </article>
   );
 }

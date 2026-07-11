@@ -12,6 +12,7 @@ import { unified } from "unified";
 import { PostContent } from "./types/post_content";
 import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
 import { remarkObsidianCallout } from "./plugins/remark_obsidian_callout";
+import { remarkObsidianTag } from "./plugins/remark_obsidian_tag";
 import { matter } from "vfile-matter";
 
 export class Pipeline {
@@ -31,6 +32,7 @@ export class Pipeline {
       .use(remarkGfm)
       .use(remarkObsidianWikilink, { contentIndex: this.contentIndex })
       .use(remarkObsidianCallout)
+      .use(remarkObsidianTag)
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
       .use(rehypeFormat)

@@ -5,6 +5,7 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "dependencies": {
+    "@types/unist": "^3.0.3",
     "extend": "^3.0.2",
     "rehype-format": "^5.0.1",
     "rehype-katex": "^7.0.1",

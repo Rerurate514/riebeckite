@@ -57,6 +57,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@types/unist':
+        specifier: ^3.0.3
+        version: 3.0.3
       extend:
         specifier: ^3.0.2
         version: 3.0.2
@@ -96,9 +99,6 @@ importers:
       unified:
         specifier: ^11.0.5
         version: 11.0.5
-      unist:
-        specifier: ^0.0.1
-        version: 0.0.1
       vfile:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1710,10 +1710,6 @@ packages:
 
   unist-util-visit@5.1.0:
     resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
-
-  unist@0.0.1:
-    resolution: {integrity: sha512-bnzuF8b6d47WubA4a5yLqFbuZz/v/NS6eRwUIdOaDmsqzwTlyv8yS1g3M7ISdtBQrigPD3qKK87Cu7zhEfCF3A==}
-    deprecated: Use @types/unist instead
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -3588,8 +3584,6 @@ snapshots:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
-
-  unist@0.0.1: {}
 
   util-deprecate@1.0.2: {}
 

@@ -26,6 +26,9 @@ importers:
       honox:
         specifier: 0.1.56
         version: 0.1.56(hono@4.12.26)(miniflare@4.20260617.1)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1))
+      slugify:
+        specifier: ^1.6.9
+        version: 1.6.9
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20260420.1

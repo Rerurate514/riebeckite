@@ -11,7 +11,7 @@ export default jsxRenderer(({ children }) => {
         <Link href="/app/style.css" rel="stylesheet" />
         <Script src="/app/client.ts" async />
       </head>
-      <body>{children}</body>
+      <body class="w-full flex justify-center items-center">{children}</body>
     </html>
   );
 });

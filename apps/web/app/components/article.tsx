@@ -6,7 +6,7 @@ type Props = {
 
 export default function Article(props: Props) {
   return (
-    <article class="prose w-full">
+    <article class="prose">
       <div
         class="max-w-4xl mx-auto px-4"
         dangerouslySetInnerHTML={{ __html: props.content.html ?? "" }}

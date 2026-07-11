@@ -62,7 +62,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
           type: "paragraph",
           data: {
             hName: "div",
-            hProperties: { className: ["callout-title"] },
+            hProperties: { className: ["callout-title", `callout-${type}-title`] },
           },
           children: [
             {
@@ -93,7 +93,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
           children: bodyChildren,
         };
 
-        const className = ["callout"];
+        const className = ["callout", `callout-${type}`];
         if (fold) className.push("is-collapsible");
         if (fold === "-") className.push("is-collapsed");
 

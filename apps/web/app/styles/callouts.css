@@ -1,0 +1,260 @@
+.callout {
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid transparent;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+.callout-title {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.callout-note {
+    background-color: #f8fafc;
+    border-color: #64748b;
+    color: #334155;
+}
+.callout-note-title {
+    color: #475569;
+}
+
+.callout-abstract {
+    background-color: #f8fafc;
+    border-color: #64748b;
+    color: #334155;
+}
+.callout-abstract-title {
+    color: #475569;
+}
+
+.callout-summary {
+    background-color: #f8fafc;
+    border-color: #64748b;
+    color: #334155;
+}
+.callout-summary-title {
+    color: #475569;
+}
+
+.callout-tldr {
+    background-color: #f8fafc;
+    border-color: #64748b;
+    color: #334155;
+}
+.callout-tldr-title {
+    color: #475569;
+}
+
+.callout-quote {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+    color: #475569;
+}
+.callout-quote-title {
+    color: #64748b;
+}
+
+.callout-cite {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+    color: #475569;
+}
+.callout-cite-title {
+    color: #64748b;
+}
+
+.callout-info {
+    background-color: #f0fdfa;
+    border-color: #0ea5e9;
+    color: #0369a1;
+}
+.callout-info-title {
+    color: #0284c7;
+}
+
+.callout-todo {
+    background-color: #f0f9ff;
+    border-color: #0284c7;
+    color: #0369a1;
+}
+.callout-todo-title {
+    color: #0284c7;
+}
+
+.callout-question {
+    background-color: #eef2ff;
+    border-color: #6366f1;
+    color: #4338ca;
+}
+.callout-question-title {
+    color: #4f46e5;
+}
+
+.callout-help {
+    background-color: #eef2ff;
+    border-color: #6366f1;
+    color: #4338ca;
+}
+.callout-help-title {
+    color: #4f46e5;
+}
+
+.callout-faq {
+    background-color: #eef2ff;
+    border-color: #6366f1;
+    color: #4338ca;
+}
+.callout-faq-title {
+    color: #4f46e5;
+}
+
+.callout-success {
+    background-color: #f0fdf4;
+    border-color: #10b981;
+    color: #047857;
+}
+.callout-success-title {
+    color: #059669;
+}
+
+.callout-check {
+    background-color: #f0fdf4;
+    border-color: #10b981;
+    color: #047857;
+}
+.callout-check-title {
+    color: #059669;
+}
+
+.callout-done {
+    background-color: #f0fdf4;
+    border-color: #10b981;
+    color: #047857;
+}
+.callout-done-title {
+    color: #059669;
+}
+
+.callout-tip {
+    background-color: #fdf8f6;
+    border-color: #f97316;
+    color: #c2410c;
+}
+.callout-tip-title {
+    color: #ea580c;
+}
+
+.callout-hint {
+    background-color: #fdf8f6;
+    border-color: #f97316;
+    color: #c2410c;
+}
+.callout-hint-title {
+    color: #ea580c;
+}
+
+.callout-example {
+    background-color: #faf5ff;
+    border-color: #a855f7;
+    color: #7e22ce;
+}
+.callout-example-title {
+    color: #9333ea;
+}
+
+.callout-important {
+    background-color: #fffbeb;
+    border-color: #f59e0b;
+    color: #b45309;
+}
+.callout-important-title {
+    color: #d97706;
+}
+
+.callout-warning {
+    background-color: #fffbeb;
+    border-color: #f59e0b;
+    color: #b45309;
+}
+.callout-warning-title {
+    color: #d97706;
+}
+
+.callout-caution {
+    background-color: #fffbeb;
+    border-color: #f59e0b;
+    color: #b45309;
+}
+.callout-caution-title {
+    color: #d97706;
+}
+
+.callout-attention {
+    background-color: #fffbeb;
+    border-color: #f59e0b;
+    color: #b45309;
+}
+.callout-attention-title {
+    color: #d97706;
+}
+
+.callout-failure {
+    background-color: #fff5f5;
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+.callout-failure-title {
+    color: #dc2626;
+}
+
+.callout-fail {
+    background-color: #fff5f5;
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+.callout-fail-title {
+    color: #dc2626;
+}
+
+.callout-missing {
+    background-color: #fff5f5;
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+.callout-missing-title {
+    color: #dc2626;
+}
+
+.callout-danger {
+    background-color: #fff1f2;
+    border-color: #f43f5e;
+    color: #be123c;
+}
+.callout-danger-title {
+    color: #e11d48;
+}
+
+.callout-error {
+    background-color: #fff1f2;
+    border-color: #f43f5e;
+    color: #be123c;
+}
+.callout-error-title {
+    color: #e11d48;
+}
+
+.callout-bug {
+    background-color: #fff1f2;
+    border-color: #f43f5e;
+    color: #be123c;
+}
+.callout-bug-title {
+    color: #e11d48;
+}

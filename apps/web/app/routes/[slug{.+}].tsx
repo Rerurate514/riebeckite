@@ -38,8 +38,12 @@ export default createRoute(
     );
     return results.filter((r) => r.isPublish).map((r) => ({ slug: r.slug }));
   }),
-  async (c) => {
+  async (c, next) => {
     const slug = c.req.param("slug");
+    if (c.req.path.startsWith('/tags/')) {
+      return next();
+    }
+
     if (!slug) return c.notFound();
 
     if (/\.[a-zA-Z0-9]+$/.test(slug)) return c.notFound();

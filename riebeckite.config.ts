@@ -28,7 +28,7 @@ export default defineConfig({
   markdown: {},
   theme: {
     name: "riebeckite",
-    colorMode: "system",
+    colorMode: "light",
     typography: "system",
     articleLayout: "article",
     userCss: [],

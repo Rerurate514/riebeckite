@@ -9,7 +9,8 @@ export interface WikilinkOptions {
 }
 
 const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp"];
-const WIKILINK_RE = /(!)?\[\[([^\]|#^]+)(?:[#^]([^\]|]+))?(?:\|([^\]]+))?\]\]/g;
+const WIKILINK_PATTERN =
+  "(!)?\\[\\[([^\\]|#^]+)(?:[#^]([^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
   const { contentIndex, assetBase = "/", renderNoteEmbed } = opt;
@@ -41,12 +42,12 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
     const newNodes: Content[] = [];
     let lastIndex = 0;
 
-    WIKILINK_RE.lastIndex = 0;
+    const wikilinkRe = new RegExp(WIKILINK_PATTERN, "g");
 
     for (
-      let match = WIKILINK_RE.exec(node.value);
+      let match = wikilinkRe.exec(node.value);
       match !== null;
-      match = WIKILINK_RE.exec(node.value)
+      match = wikilinkRe.exec(node.value)
     ) {
       const [full, embedMark, rawTarget, heading, alias] = match;
       const start = match.index;

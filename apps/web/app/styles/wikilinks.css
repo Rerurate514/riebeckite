@@ -1,0 +1,38 @@
+@layer components {
+  .prose .wikilink-embed {
+    margin-block: 1.75rem;
+    padding-inline-start: 1rem;
+    border-left: 2px solid color-mix(in oklab, currentColor 18%, transparent);
+  }
+
+  .prose .wikilink-embed::before {
+    display: block;
+    margin-block-end: 0.5rem;
+    color: color-mix(in oklab, currentColor 55%, transparent);
+    content: "Embeded: " attr(data-wikilink-embed);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .prose .wikilink-embed > :first-child {
+    margin-top: 0;
+  }
+
+  .prose .wikilink-embed > :last-child {
+    margin-bottom: 0;
+  }
+
+  .prose .wikilink-embed .wikilink-embed {
+    margin-block: 1.25rem;
+    border-left-color: color-mix(in oklab, currentColor 26%, transparent);
+  }
+
+  .prose .wikilink-embed-unresolved,
+  .prose .wikilink-broken {
+    color: #b42318;
+    text-decoration-style: wavy;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}

@@ -38,6 +38,14 @@ export function resolveConfig(
         theme: config.markdown?.syntaxHighlight?.theme ?? "",
       },
     },
+    theme: {
+      name: config.theme?.name ?? "riebeckite",
+      colorMode: config.theme?.colorMode ?? "system",
+      typography: config.theme?.typography ?? "system",
+      articleLayout: config.theme?.articleLayout ?? "article",
+      tokens: config.theme?.tokens ?? {},
+      userCss: config.theme?.userCss ?? [],
+    },
     plugins: resolvePlugins(config.plugins),
   };
 }

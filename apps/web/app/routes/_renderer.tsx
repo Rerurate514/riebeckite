@@ -3,6 +3,11 @@ import { Link, Script } from "honox/server";
 import SearchBar from "../components/search-bar/search-bar";
 import { config } from "../config";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
+import {
+  getThemeAttributes,
+  getThemeStyle,
+  getThemeStylesheets,
+} from "../lib/theme";
 
 export default jsxRenderer(({ children }, c) => {
   const { site } = config;
@@ -14,9 +19,10 @@ export default jsxRenderer(({ children }, c) => {
       path: c.req.path,
     });
   const twitterCard = seo.imageUrl ? "summary_large_image" : "summary";
+  const themeStyle = getThemeStyle();
 
   return (
-    <html lang={getHtmlLanguage()}>
+    <html lang={getHtmlLanguage()} {...getThemeAttributes()}>
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -57,9 +63,13 @@ export default jsxRenderer(({ children }, c) => {
           />
         )}
         <Link href="/app/style.css" rel="stylesheet" />
+        {getThemeStylesheets().map((href) => (
+          <Link href={href} rel="stylesheet" key={href} />
+        ))}
+        {themeStyle && <style dangerouslySetInnerHTML={{ __html: themeStyle }} />}
         <Script src="/app/client.ts" async />
       </head>
-      <body class="w-full flex flex-col items-center py-16">
+      <body class="riebeckite-page">
         <SearchBar />
         {children}
       </body>

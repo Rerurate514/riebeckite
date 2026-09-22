@@ -33,3 +33,10 @@ export type { PublishStrategy } from "./src/types/publish_strategy";
 export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config";
 export type { RiebeckiteConfig } from "./src/types/riebeckite_config";
 export type { SiteConfig } from "./src/types/site_config";
+export type {
+  ThemeArticleLayoutPreset,
+  ThemeColorMode,
+  ThemeConfig,
+  ThemeDesignTokens,
+  ThemeTypographyPreset,
+} from "./src/types/theme_config";

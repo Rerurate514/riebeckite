@@ -1,6 +1,7 @@
 import type { PluginInput } from "./plugin";
 import type { PublishStrategy } from "./publish_strategy";
 import type { SiteConfig } from "./site_config";
+import type { ThemeConfig } from "./theme_config";
 
 export interface RiebeckiteConfig {
   site: SiteConfig;
@@ -16,5 +17,6 @@ export interface RiebeckiteConfig {
       theme?: string;
     };
   };
+  theme?: ThemeConfig;
   plugins?: PluginInput[];
 }

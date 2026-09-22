@@ -22,5 +22,12 @@ export default defineConfig({
     },
   },
   markdown: {},
+  theme: {
+    name: "riebeckite",
+    colorMode: "system",
+    typography: "system",
+    articleLayout: "article",
+    userCss: [],
+  },
   plugins: [autoCardLinkPlugin(), lightboxPlugin()],
 });

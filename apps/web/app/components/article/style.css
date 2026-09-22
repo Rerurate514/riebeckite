@@ -1,19 +1,41 @@
 .article-shell {
   max-width: none;
+  width: min(100%, var(--rb-layout-page-max));
 }
 
 @layer components {
   .article-shell__layout {
     display: grid;
-    grid-template-columns: minmax(0, 48rem);
+    grid-template-columns: minmax(0, var(--rb-layout-article-max));
     justify-content: center;
+    gap: var(--rb-layout-gap);
   }
 
   .article-shell__body {
     min-width: 0;
+    padding-inline: var(--rb-space-2);
+  }
+
+  :root[data-article-layout="full-width"] .article-shell {
+    width: 100%;
+    max-width: none;
+  }
+
+  :root[data-article-layout="full-width"] .article-shell__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :root[data-article-layout="full-width"] .article-shell__body {
+    max-width: none;
   }
 
   @media (min-width: 88rem) {
+    :root[data-article-layout="sidebar"] .article-shell__layout {
+      grid-template-columns:
+        minmax(0, var(--rb-layout-article-max))
+        var(--rb-layout-sidebar);
+    }
+
     .article-shell__body {
       grid-column: 1;
       grid-row: 1;

@@ -19,13 +19,13 @@ export default function Article(props: Props) {
   const readingTimeMinutes = calculateReadingTime(html);
 
   return (
-    <article class="article-shell prose">
+    <article class="article-shell prose" data-slot="article">
       <div class="article-shell__layout">
         <TableOfContents
           className="table-of-contents--desktop"
           items={tableOfContents}
         />
-        <div class="article-shell__body max-w-5xl px-4">
+        <div class="article-shell__body" data-slot="article-body">
           <div
             class="article-shell__lead"
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}

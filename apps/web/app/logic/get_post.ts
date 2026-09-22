@@ -17,7 +17,11 @@ export async function getAllPosts() {
 }
 
 export async function getPost(slug: string) {
-  const filePath = path.join(CONTENT_DIR, `${slug}.md`);
+  const filePath = path.resolve(CONTENT_DIR, `${slug}.md`);
+  const relative = path.relative(CONTENT_DIR, filePath);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error(`Invalid slug: ${slug}`);
+  }
   return await fs.readFile(filePath, "utf-8");
 }
 

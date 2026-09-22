@@ -9,16 +9,23 @@ import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
-import type { PostContent, PostFrontmatter } from "./types/post_content";
-import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
+import { matter } from "vfile-matter";
 import { remarkObsidianCallout } from "./plugins/remark_obsidian_callout";
 import { remarkObsidianTag } from "./plugins/remark_obsidian_tag";
-import { matter } from "vfile-matter";
+import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
+import type { PostContent, PostFrontmatter } from "./types/post_content";
 
 export class Pipeline {
-  constructor(private contentIndex: Map<string, string>) {}
+  constructor(
+    private contentIndex: Map<string, string>,
+    private getMarkdownBySlug?: (slug: string) => Promise<string>,
+  ) {}
 
-  async execute(markDownContent: string): Promise<PostContent> {
+  async execute(
+    markDownContent: string,
+    embedDepth = 0,
+    embedTrail = new Set<string>(),
+  ): Promise<PostContent> {
     const file = await unified()
       .use(remarkParse)
       .use(remarkDirective)
@@ -30,7 +37,10 @@ export class Pipeline {
       })
       .use(remarkMath)
       .use(remarkGfm)
-      .use(remarkObsidianWikilink, { contentIndex: this.contentIndex })
+      .use(remarkObsidianWikilink, {
+        contentIndex: this.contentIndex,
+        renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
+      })
       .use(remarkObsidianCallout)
       .use(remarkObsidianTag)
       .use(remarkRehype, { allowDangerousHtml: true })
@@ -43,6 +53,30 @@ export class Pipeline {
     return {
       frontmatter: (file.data.matter || {}) as PostFrontmatter,
       html: String(file.value),
+    };
+  }
+
+  private createNoteEmbedRenderer(
+    embedDepth: number,
+    embedTrail: Set<string>,
+  ): ((slug: string) => Promise<string | null>) | undefined {
+    if (!this.getMarkdownBySlug || embedDepth >= 3) return undefined;
+
+    return async (slug: string) => {
+      if (embedTrail.has(slug)) return null;
+
+      const markdown = await this.getMarkdownBySlug?.(slug);
+      if (!markdown) return null;
+
+      const nextEmbedTrail = new Set(embedTrail);
+      nextEmbedTrail.add(slug);
+
+      const content = await this.execute(
+        markdown,
+        embedDepth + 1,
+        nextEmbedTrail,
+      );
+      return content.html;
     };
   }
 }

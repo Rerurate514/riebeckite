@@ -83,8 +83,8 @@ export class ContentManager {
       this.getContentIndex(),
       this.getPost(slug),
     ]);
-    this.pipeline ??= new Pipeline(contentIndex);
-    const content = await this.pipeline.execute(rawPost);
+    this.pipeline ??= new Pipeline(contentIndex, (slug) => this.getPost(slug));
+    const content = await this.pipeline.execute(rawPost, 0, new Set([slug]));
     this.contentCache.set(slug, content);
     return content;
   }

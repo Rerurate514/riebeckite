@@ -18,7 +18,7 @@ export async function initMermaidDiagrams(options: MermaidClientOptions = {}) {
     '.rr-mermaid[data-mermaid="pending"]',
   );
 
-  for (const [index, diagram] of diagrams.entries()) {
+  for (const [index, diagram] of Array.from(diagrams).entries()) {
     await renderDiagram(mermaid, diagram, index);
   }
 }
@@ -71,7 +71,7 @@ function loadScript(src: string): Promise<void> {
         once: true,
       },
     );
-    document.head.append(script);
+    document.head.appendChild(script);
   });
 }
 

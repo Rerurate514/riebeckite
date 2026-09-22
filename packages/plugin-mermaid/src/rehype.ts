@@ -10,10 +10,7 @@ import type { ElementNode, HastNode, MermaidOptions } from "./types.js";
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
 const CAPTION_PATTERN = /^%%\s*caption\s*:\s*(.+)$/im;
-type MermaidModule = typeof import("mermaid").default;
-
-let mermaidPromise: Promise<MermaidModule> | null = null;
-let renderQueue: Promise<unknown> = Promise.resolve();
+const STATIC_RENDERER_MODULE = "./render-static.js";
 
 export function rehypeMermaid(options: MermaidOptions = {}) {
   const renderMode = options.render ?? "build";
@@ -25,7 +22,7 @@ export function rehypeMermaid(options: MermaidOptions = {}) {
       if (!parent || index === undefined || !isMermaidCodeBlock(node)) return;
       replacements.push(
         replaceMermaidBlock(parent, index, node, file, {
-          renderMode,
+          render: renderMode,
           theme,
           caption: options.caption !== false,
           fallback: options.fallback !== false,
@@ -118,37 +115,15 @@ async function renderStaticSvg(
   theme: NonNullable<MermaidOptions["theme"]>,
   file: unknown,
 ): Promise<string | null> {
-  const render = async () => {
-    const mermaid = await loadMermaid();
-    mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: "strict",
-      theme: selectTheme(theme, "light"),
-    });
-    await mermaid.parse(source, { suppressErrors: false });
-    const rendered = await mermaid.render(id, source);
-    return sanitizeSvg(rendered.svg);
-  };
-
   try {
-    return await enqueueMermaidRender(render);
+    const { renderMermaidStaticSvg } = await import(STATIC_RENDERER_MODULE);
+    return await renderMermaidStaticSvg(id, source, selectTheme(theme, "light"));
   } catch (error) {
     const message = formatError(error);
     reportMermaidDiagnostic(file, message);
     console.warn(`[mermaid] build render failed: ${message}`);
     return null;
   }
-}
-
-function loadMermaid(): Promise<MermaidModule> {
-  mermaidPromise ??= import("mermaid").then((module) => module.default);
-  return mermaidPromise;
-}
-
-async function enqueueMermaidRender<T>(render: () => Promise<T>): Promise<T> {
-  const current = renderQueue.then(render, render);
-  renderQueue = current.catch(() => undefined);
-  return current;
 }
 
 function reportMermaidDiagnostic(file: unknown, message: string) {
@@ -201,17 +176,6 @@ function selectTheme(
   mode: "light" | "dark",
 ): string {
   return typeof theme === "string" ? theme : theme[mode];
-}
-
-function sanitizeSvg(svg: string): string {
-  return svg
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
-    .replace(/<foreignObject\b[^>]*>[\s\S]*?<\/foreignObject>/gi, "")
-    .replace(/\son[a-z]+=("[^"]*"|'[^']*'|[^\s>]*)/gi, "")
-    .replace(
-      /\s(?:href|xlink:href)=("javascript:[^"]*"|'javascript:[^']*')/gi,
-      "",
-    );
 }
 
 function hashSource(source: string): string {

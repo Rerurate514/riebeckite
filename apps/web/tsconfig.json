@@ -23,6 +23,10 @@
         "packages/plugin-diagnostics/index.ts"
       ],
       "@riebeckite/plugin-lightbox": ["packages/plugin-lightbox/index.ts"],
+      "@riebeckite/plugin-mermaid": ["packages/plugin-mermaid/index.ts"],
+      "@riebeckite/plugin-mermaid/client": [
+        "packages/plugin-mermaid/client.ts"
+      ],
       "@riebeckite/plugin-seo": ["packages/plugin-seo/index.ts"]
     },
     "jsx": "react-jsx",

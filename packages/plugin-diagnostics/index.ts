@@ -1,9 +1,9 @@
-import { definePlugin } from "@riebeckite/core";
 import type {
   Diagnostic,
   PluginContext,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { definePlugin } from "@riebeckite/core";
 import { analyzeContent } from "./src/analyze.js";
 import { buildReport, DiagnosticsFailure } from "./src/report.js";
 import type {
@@ -38,9 +38,7 @@ export async function runDiagnostics(
   try {
     return buildReport(await analyzeContent(config, options));
   } catch (error) {
-    return buildReport([
-      createInternalError(error),
-    ]);
+    return buildReport([createInternalError(error)]);
   }
 }
 

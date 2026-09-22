@@ -28,6 +28,7 @@ export default jsxRenderer(({ children }, c) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content={seo.description} />
         <meta name="author" content={site.author} />
+        {seo.noindex && <meta name="robots" content="noindex, nofollow" />}
         <title>{seo.title}</title>
         <link rel="icon" href="/favicon.ico" />
         {seo.canonicalUrl && <link rel="canonical" href={seo.canonicalUrl} />}
@@ -56,6 +57,7 @@ export default jsxRenderer(({ children }, c) => {
         {seo.imageUrl && <meta name="twitter:image" content={seo.imageUrl} />}
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
         <link rel="alternate" type="application/atom+xml" href="/atom.xml" />
+        <link rel="alternate" type="application/feed+json" href="/feed.json" />
         {seo.jsonLd && (
           <script
             type="application/ld+json"
@@ -66,7 +68,9 @@ export default jsxRenderer(({ children }, c) => {
         {getThemeStylesheets().map((href) => (
           <Link href={href} rel="stylesheet" key={href} />
         ))}
-        {themeStyle && <style dangerouslySetInnerHTML={{ __html: themeStyle }} />}
+        {themeStyle && (
+          <style dangerouslySetInnerHTML={{ __html: themeStyle }} />
+        )}
         <Script src="/app/client.ts" async />
       </head>
       <body class="riebeckite-page">

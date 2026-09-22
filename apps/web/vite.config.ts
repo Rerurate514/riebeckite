@@ -30,6 +30,7 @@ const diagnosticsEntry = path.resolve(
   webRoot,
   "../../packages/plugin-diagnostics/index.ts",
 );
+const seoEntry = path.resolve(webRoot, "../../packages/plugin-seo/index.ts");
 
 export default defineConfig({
   resolve: {
@@ -54,6 +55,10 @@ export default defineConfig({
       {
         find: /^@riebeckite\/plugin-diagnostics$/,
         replacement: diagnosticsEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-seo$/,
+        replacement: seoEntry,
       },
     ],
   },

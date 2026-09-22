@@ -1,4 +1,4 @@
-import { resolvePlugins, type PluginAsset } from "@riebeckite/core";
+import { type PluginAsset, resolvePlugins } from "@riebeckite/core";
 import { config } from "../config";
 
 type CssVariable = [name: string, value: string | undefined];
@@ -52,11 +52,13 @@ export function getThemeStylesheets(): string[] {
 
 function getPluginStylesheets(): PluginAsset[] {
   return resolvePlugins(config.plugins).flatMap((plugin) =>
-    (plugin.injectAssets?.({
-      config,
-      contentIndex: new Map(),
-      diagnostics: [],
-    }) ?? []).filter((asset) => asset.kind === "style"),
+    (
+      plugin.injectAssets?.({
+        config,
+        contentIndex: new Map(),
+        diagnostics: [],
+      }) ?? []
+    ).filter((asset) => asset.kind === "style"),
   );
 }
 

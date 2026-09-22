@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { resolveConfig } from "@riebeckite/core";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import { resolveConfig } from "@riebeckite/core";
 import { formatDiagnostics, runDiagnostics } from "./index.js";
 import type { DiagnosticsOptions, DiagnosticsReport } from "./src/types.js";
 
@@ -80,7 +80,7 @@ export async function main(argv: string[]): Promise<number> {
       ? { publishStrategy: args.publishStrategy ?? undefined }
       : {}),
     exclude: [
-      ...(config ? diagnosticsOptionsFromConfig(config).exclude ?? [] : []),
+      ...(config ? (diagnosticsOptionsFromConfig(config).exclude ?? []) : []),
       ...args.exclude,
     ],
   };
@@ -105,7 +105,9 @@ export async function main(argv: string[]): Promise<number> {
 function diagnosticsOptionsFromConfig(
   config: ResolvedRiebeckiteConfig,
 ): DiagnosticsOptions {
-  const plugin = config.plugins.find((candidate) => candidate.name === "diagnostics");
+  const plugin = config.plugins.find(
+    (candidate) => candidate.name === "diagnostics",
+  );
   const options = plugin?.options;
   return options && typeof options === "object"
     ? (options as DiagnosticsOptions)
@@ -138,7 +140,9 @@ function writeReport(report: DiagnosticsReport, args: CliArgs) {
     );
     return;
   }
-  process.stdout.write(`${formatDiagnostics(report, { color: !args.noColor })}\n`);
+  process.stdout.write(
+    `${formatDiagnostics(report, { color: !args.noColor })}\n`,
+  );
 }
 
 function countAtOrAbove(
@@ -155,7 +159,9 @@ function countAtOrAbove(
   }
 }
 
-async function loadConfigFile(configPath: string): Promise<ResolvedRiebeckiteConfig> {
+async function loadConfigFile(
+  configPath: string,
+): Promise<ResolvedRiebeckiteConfig> {
   const absolutePath = path.resolve(process.cwd(), configPath);
   let module: unknown;
   try {
@@ -168,10 +174,7 @@ async function loadConfigFile(configPath: string): Promise<ResolvedRiebeckiteCon
 
   const raw = (module as { default?: unknown }).default ?? module;
   const resolved = resolveConfig(raw as Parameters<typeof resolveConfig>[0]);
-  const directory = path.resolve(
-    process.cwd(),
-    resolved.content.directory,
-  );
+  const directory = path.resolve(process.cwd(), resolved.content.directory);
   return {
     ...resolved,
     content: {
@@ -252,7 +255,10 @@ function parseArgs(argv: string[]): CliArgs {
         args.explicit.add("requiredFrontmatter");
         if (argv[i + 1] && !argv[i + 1].startsWith("--")) {
           args.requiredFrontmatter.push(
-            ...(argv[++i] ?? "").split(",").map((value) => value.trim()).filter(Boolean),
+            ...(argv[++i] ?? "")
+              .split(",")
+              .map((value) => value.trim())
+              .filter(Boolean),
           );
         }
         break;

@@ -3,13 +3,14 @@ import path from "node:path";
 import { IMAGE_EXTENSIONS, isExcluded } from "@riebeckite/core";
 import {
   isNotePublic,
-  parseFrontmatter,
   type ParsedFrontmatter,
+  parseFrontmatter,
 } from "./frontmatter.js";
 import type { AnalyzerContentConfig } from "./types.js";
 
 const NOTE_EXTENSION = "md";
-const WIKILINK_TARGET_PATTERN = /(!)?\[\[([^\]|#^]+)(?:#(\^?[^\]|]+))?(?:\|[^\]]+)?\]\]/g;
+const WIKILINK_TARGET_PATTERN =
+  /(!)?\[\[([^\]|#^]+)(?:#(\^?[^\]|]+))?(?:\|[^\]]+)?\]\]/g;
 
 export type ScannedNote = {
   relativePath: string;
@@ -83,7 +84,10 @@ export async function scanVault(
     if (extension === NOTE_EXTENSION) {
       const slug = relative.slice(0, -NOTE_EXTENSION.length - 1);
       const markdown = normalizeMarkdown(
-        await fs.readFile(path.join(directory, ...relative.split("/")), "utf-8"),
+        await fs.readFile(
+          path.join(directory, ...relative.split("/")),
+          "utf-8",
+        ),
       );
       const fm = parseFrontmatter(markdown);
       const note: ScannedNote = {

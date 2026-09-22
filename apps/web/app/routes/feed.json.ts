@@ -1,4 +1,4 @@
-import { renderRssFeed } from "@riebeckite/plugin-seo";
+import { renderJsonFeed } from "@riebeckite/plugin-seo";
 import { createRoute } from "honox/factory";
 import { config } from "../config";
 import { getPublishedEntries } from "../lib/publication";
@@ -6,7 +6,5 @@ import { getPublishedEntries } from "../lib/publication";
 export default createRoute(async (c) => {
   const entries = await getPublishedEntries();
 
-  return c.body(renderRssFeed(config, entries), 200, {
-    "content-type": "application/rss+xml; charset=utf-8",
-  });
+  return c.json(JSON.parse(renderJsonFeed(config, entries)));
 });

@@ -15,6 +15,7 @@
     "@riebeckite/plugin-autocardlink": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
+    "@riebeckite/plugin-seo": "workspace:*",
     "hono": "^4.12.25",
     "honox": "0.1.56",
     "slugify": "^1.6.9"

@@ -32,6 +32,9 @@ importers:
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugin-lightbox
+      '@riebeckite/plugin-seo':
+        specifier: workspace:*
+        version: link:../../packages/plugin-seo
       hono:
         specifier: ^4.12.25
         version: 4.12.26
@@ -173,6 +176,12 @@ importers:
         version: 24.13.6
 
   packages/plugin-lightbox:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/plugin-seo:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

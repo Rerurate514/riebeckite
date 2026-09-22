@@ -16,4 +16,6 @@ export type PostFrontmatter = Record<string, unknown> & {
   tags?: string[];
   image?: string;
   ogImage?: string;
+  canonical?: string;
+  noindex?: boolean;
 };

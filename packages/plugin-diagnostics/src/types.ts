@@ -1,4 +1,8 @@
-import type { Diagnostic, DiagnosticCode, DiagnosticSeverity } from "@riebeckite/core";
+import type {
+  Diagnostic,
+  DiagnosticCode,
+  DiagnosticSeverity,
+} from "@riebeckite/core";
 
 export type DiagnosticsOptions = {
   failOnError?: boolean;

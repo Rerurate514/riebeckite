@@ -16,13 +16,18 @@ export type {
   ContentManifestEntry,
 } from "./src/types/content_manifest";
 export type {
+  Diagnostic,
+  DiagnosticCode,
+  DiagnosticSeverity,
+} from "./src/types/diagnostic";
+export type {
   HtmlPipeline,
   MarkdownPipeline,
   PipelinePlugin,
   PluginAsset,
   PluginAssetKind,
-  PluginContext,
   PluginContentContext,
+  PluginContext,
   PluginDiagnostic,
   PluginDiagnosticLevel,
   PluginGraphContext,
@@ -32,7 +37,6 @@ export type {
   RiebeckitePlugin,
 } from "./src/types/plugin";
 export { definePlugin, resolvePlugins } from "./src/types/plugin";
-export type { Diagnostic, DiagnosticCode, DiagnosticSeverity } from "./src/types/diagnostic";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content";
 
 export type { PublishStrategy } from "./src/types/publish_strategy";

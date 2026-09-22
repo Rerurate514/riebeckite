@@ -5,7 +5,11 @@ import { content } from "../content";
 export async function getPublishedEntries(): Promise<ContentManifestEntry[]> {
   const manifest = await content.getManifest();
   return manifest.entries
-    .filter((entry) => isPublished(config, entry.frontmatter))
+    .filter(
+      (entry) =>
+        isPublished(config, entry.frontmatter) &&
+        entry.frontmatter.noindex !== true,
+    )
     .sort((a, b) => getSortableTime(b) - getSortableTime(a));
 }
 

@@ -10,7 +10,9 @@ export type MarkdownReference = {
   column: number;
 };
 
-export function extractMarkdownReferences(markdown: string): MarkdownReference[] {
+export function extractMarkdownReferences(
+  markdown: string,
+): MarkdownReference[] {
   const tree = unified().use(remarkParse).parse(markdown) as Root;
   const references: MarkdownReference[] = [];
 

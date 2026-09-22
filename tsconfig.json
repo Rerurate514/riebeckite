@@ -13,7 +13,8 @@
       "@riebeckite/plugin-diagnostics": [
         "packages/plugin-diagnostics/index.ts"
       ],
-      "@riebeckite/plugin-lightbox": ["packages/plugin-lightbox/index.ts"]
+      "@riebeckite/plugin-lightbox": ["packages/plugin-lightbox/index.ts"],
+      "@riebeckite/plugin-seo": ["packages/plugin-seo/index.ts"]
     }
   },
   "include": ["./riebeckite.config.ts"]

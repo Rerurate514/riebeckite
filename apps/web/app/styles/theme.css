@@ -14,7 +14,11 @@
     --rb-color-ink: #171717;
     --rb-color-muted: #69645c;
     --rb-color-accent: #f66620;
-    --rb-color-border: color-mix(in oklab, var(--rb-color-ink) 18%, transparent);
+    --rb-color-border: color-mix(
+      in oklab,
+      var(--rb-color-ink) 18%,
+      transparent
+    );
     --rb-color-danger: #b42318;
     --rb-color-success: #047857;
     --rb-color-code-background: color-mix(
@@ -22,8 +26,9 @@
       var(--rb-color-ink) 8%,
       transparent
     );
-    --rb-font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-      "Segoe UI", sans-serif;
+    --rb-font-body:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
     --rb-font-heading: var(--rb-font-body);
     --rb-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     --rb-space-1: 0.5rem;
@@ -44,7 +49,11 @@
     --rb-color-paper: #171717;
     --rb-color-ink: #f6efe2;
     --rb-color-muted: #bbb1a1;
-    --rb-color-border: color-mix(in oklab, var(--rb-color-ink) 22%, transparent);
+    --rb-color-border: color-mix(
+      in oklab,
+      var(--rb-color-ink) 22%,
+      transparent
+    );
     --rb-color-code-background: color-mix(
       in oklab,
       var(--rb-color-ink) 12%,
@@ -73,13 +82,15 @@
 
   :root[data-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
-    --rb-font-heading: ui-sans-serif, system-ui, -apple-system,
-      BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --rb-font-heading:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
   }
 
   :root[data-typography="sans"] {
-    --rb-font-body: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-      "Segoe UI", sans-serif;
+    --rb-font-body:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 

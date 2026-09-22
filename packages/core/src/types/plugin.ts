@@ -7,7 +7,11 @@ import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
 
 export type PipelinePlugin = Plugin<[], Node, Node>;
 
-export type { Diagnostic, DiagnosticCode, DiagnosticSeverity } from "./diagnostic";
+export type {
+  Diagnostic,
+  DiagnosticCode,
+  DiagnosticSeverity,
+} from "./diagnostic";
 
 export type PluginDiagnosticLevel = Diagnostic["severity"];
 

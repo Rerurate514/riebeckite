@@ -15,9 +15,9 @@ import {
   resolveLocalReference,
   resolveVaultRelative,
   resolveWikilinkTarget,
-  scanVault,
-  type ScanResult,
   type ScannedNote,
+  type ScanResult,
+  scanVault,
 } from "./vault.js";
 
 const PLUGIN_NAME = "diagnostics";
@@ -99,7 +99,8 @@ function checkWikilinks(
 
     if (!resolved) {
       const targetIsImage = isImageTarget(rawTarget);
-      const code = targetIsImage || match.embed ? "broken-image" : "broken-wikilink";
+      const code =
+        targetIsImage || match.embed ? "broken-image" : "broken-wikilink";
       const verb = targetIsImage || match.embed ? "embed" : "link";
       push(
         diagnostics,

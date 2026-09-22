@@ -12,6 +12,8 @@ export function rehypeLightbox(options: LightboxOptions = {}) {
 
       const src = getStringProperty(node, "src");
       if (!src) return;
+      if (getStringProperty(node, "dataLightboxIgnore") === "true") return;
+      if (getStringProperty(node, "data-lightbox-ignore") === "true") return;
 
       const alt = getStringProperty(node, "alt") ?? "";
       const className = mergeClassName(

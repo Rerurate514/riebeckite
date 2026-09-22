@@ -10,6 +10,9 @@
     "baseUrl": "../..",
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
+      "@riebeckite/plugin-autocardlink": [
+        "packages/plugin-autocardlink/index.ts"
+      ],
       "@riebeckite/plugin-lightbox": ["packages/plugin-lightbox/index.ts"]
     },
     "jsx": "react-jsx",

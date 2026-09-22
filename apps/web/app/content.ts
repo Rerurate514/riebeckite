@@ -1,9 +1,14 @@
 import { ContentManager, type RiebeckitePlugin } from "@riebeckite/core";
+import { remarkAutoCardLink } from "@riebeckite/plugin-autocardlink";
 import { rehypeLightbox } from "@riebeckite/plugin-lightbox";
 import { config } from "./config";
 import { CONTENT_DIR } from "./constants/paths";
 
 const plugins: RiebeckitePlugin[] = [
+  {
+    name: "autocardlink",
+    remarkPlugins: [remarkAutoCardLink],
+  },
   {
     name: "lightbox",
     rehypePlugins: [rehypeLightbox],

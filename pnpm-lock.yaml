@@ -23,6 +23,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@riebeckite/plugin-autocardlink':
+        specifier: workspace:*
+        version: link:../../packages/plugin-autocardlink
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugin-lightbox
@@ -130,6 +133,16 @@ importers:
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
+
+  packages/plugin-autocardlink:
+    dependencies:
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
+    devDependencies:
+      '@types/mdast':
+        specifier: ^4.0.4
+        version: 4.0.4
 
   packages/plugin-lightbox: {}
 

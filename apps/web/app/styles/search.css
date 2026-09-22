@@ -68,6 +68,7 @@
     display: grid;
     place-items: start center;
     padding: 12vh 1rem 1rem;
+    overscroll-behavior: contain;
   }
 
   .search-modal__backdrop {
@@ -139,6 +140,7 @@
     max-height: min(28rem, 52vh);
     overflow-y: auto;
     padding: 0.35rem;
+    overscroll-behavior-y: contain;
   }
 
   .search-result {
@@ -174,11 +176,20 @@
   }
 
   @media (max-width: 42rem) {
+    body {
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+
     .search-bar {
-      right: 0.75rem;
+      position: static;
+      width: auto;
+      margin: 1rem 1rem 0;
     }
 
     .search-bar__trigger {
+      width: 100%;
       min-width: auto;
     }
 
@@ -187,7 +198,33 @@
     }
 
     .search-modal {
-      padding-top: 4rem;
+      place-items: stretch;
+      padding: 0;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      overscroll-behavior: contain;
+    }
+
+    .search-modal__panel {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .search-modal__close {
+      min-width: 2.5rem;
+      min-height: 2.5rem;
+    }
+
+    .search-modal__results {
+      flex: 1;
+      min-height: 0;
+      max-height: none;
+      overscroll-behavior-y: contain;
     }
   }
 }

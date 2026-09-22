@@ -34,42 +34,42 @@ export default defineConfig({
     userCss: [],
   },
   plugins: [
-    // seo({
-    //   siteName: "Riebeckite Blog",
-    //   defaultImage: "/ogp.png",
-    //   feed: {
-    //     rss: true,
-    //     atom: true,
-    //     json: true,
-    //   },
-    //   sitemap: true,
-    //   robots: true,
-    // }),
-    // mermaid({
-    //   render: "build",
-    //   theme: {
-    //     light: "default",
-    //     dark: "dark",
-    //   },
-    // }),
-    // autoCardLinkPlugin(),
-    // codeEnhance({
-    //   theme: {
-    //     light: "github-light",
-    //     dark: "github-dark",
-    //   },
-    //   lineNumbers: true,
-    //   copyButton: true,
-    //   filename: true,
-    //   lineHighlight: true,
-    //   diffHighlight: true,
-    //   wrapToggle: true,
-    // }),
-    // lightboxPlugin(),
-    // diagnostics({
-    //   reportUnusedAssets: true,
-    //   reportOrphans: true,
-    //   requiredFrontmatter: ["title"],
-    // }),
+    seo({
+      siteName: "Riebeckite Blog",
+      defaultImage: "/ogp.png",
+      feed: {
+        rss: true,
+        atom: true,
+        json: true,
+      },
+      sitemap: true,
+      robots: true,
+    }),
+    mermaid({
+      render: "build",
+      theme: {
+        light: "default",
+        dark: "dark",
+      },
+    }),
+    autoCardLinkPlugin(),
+    codeEnhance({
+      theme: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+      lineNumbers: true,
+      copyButton: true,
+      filename: true,
+      lineHighlight: true,
+      diffHighlight: true,
+      wrapToggle: true,
+    }),
+    lightboxPlugin(),
+    diagnostics({
+      reportUnusedAssets: true,
+      reportOrphans: true,
+      requiredFrontmatter: ["title"],
+    }),
   ],
 });

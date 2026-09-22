@@ -40,34 +40,26 @@ let cachedTagIndex: Map<string, TagEntry> | null = null;
 export async function buildTagIndex(): Promise<Map<string, TagEntry>> {
   if (cachedTagIndex) return cachedTagIndex;
 
-  const posts = await content.getAllPosts();
+  const manifest = await content.getManifest();
   const map = new Map<string, TagEntry>();
 
-  await Promise.all(
-    posts.map(async (post) => {
-      try {
-        const article = await content.getProcessedContent(post.slug);
-        if (!isPublished(config, article?.frontmatter)) return;
+  for (const entry of manifest.entries) {
+    if (!isPublished(config, entry.frontmatter)) continue;
 
-        const tags: string[] = article.frontmatter.tags ?? [];
-        for (const rawTag of tags) {
-          const key = slugifyTagPath(rawTag);
-          if (!map.has(key)) {
-            map.set(key, { tag: rawTag, posts: [] });
-          }
-          const entry = map.get(key);
-          if (!entry) return;
-
-          entry.posts.push({
-            slug: post.slug,
-            title: article.frontmatter.title ?? post.slug,
-          });
-        }
-      } catch (e) {
-        console.error(`Failed to index tags for ${post.slug}:`, e);
+    for (const rawTag of entry.tags) {
+      const key = slugifyTagPath(rawTag);
+      if (!map.has(key)) {
+        map.set(key, { tag: rawTag, posts: [] });
       }
-    }),
-  );
+      const tagEntry = map.get(key);
+      if (!tagEntry) continue;
+
+      tagEntry.posts.push({
+        slug: entry.slug,
+        title: entry.title,
+      });
+    }
+  }
 
   cachedTagIndex = map;
   return map;

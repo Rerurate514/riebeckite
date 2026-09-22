@@ -7,18 +7,17 @@ import type { ArticleBacklink } from "./backlinks";
 export async function getPublishedBacklinks(
   slug: string,
 ): Promise<ArticleBacklink[]> {
-  const backlinks = await content.getBacklinks(slug);
-  const results = await Promise.all(
-    backlinks.map(async (backlink) => {
-      const post = await content.getProcessedContent(backlink.slug);
-      if (!isPublished(config, post.frontmatter)) return null;
+  const manifest = await content.getManifest();
+  const backlinkSlugs = manifest.incomingLinks.get(slug) ?? [];
+  const results = backlinkSlugs.map((backlinkSlug) => {
+    const entry = manifest.bySlug.get(backlinkSlug);
+    if (!entry || !isPublished(config, entry.frontmatter)) return null;
 
-      return {
-        slug: backlink.slug,
-        title: getArticleTitle(backlink.slug, post.frontmatter.title),
-      };
-    }),
-  );
+    return {
+      slug: entry.slug,
+      title: getArticleTitle(entry.slug, entry.frontmatter.title),
+    };
+  });
 
   return results.filter(
     (backlink): backlink is ArticleBacklink => backlink !== null,

@@ -23,24 +23,16 @@ export default createRoute(async (c) => {
 async function getSearchItems(): Promise<SearchItem[]> {
   if (cachedSearchItems) return cachedSearchItems;
 
-  const posts = await content.getAllPosts();
-  const items = await Promise.all(
-    posts.map(async (post) => {
-      try {
-        const article = await content.getProcessedContent(post.slug);
-        if (!isPublished(config, article.frontmatter)) return null;
+  const manifest = await content.getManifest();
+  const items = manifest.entries.map((entry) => {
+    if (!isPublished(config, entry.frontmatter)) return null;
 
-        return {
-          slug: post.slug,
-          title: getArticleTitle(post.slug, article.frontmatter.title),
-          content: toPlainText(article.html),
-        };
-      } catch (e) {
-        console.error(`Failed to index search data for ${post.slug}:`, e);
-        return null;
-      }
-    }),
-  );
+    return {
+      slug: entry.slug,
+      title: getArticleTitle(entry.slug, entry.frontmatter.title),
+      content: toPlainText(entry.html),
+    };
+  });
 
   cachedSearchItems = items
     .filter((item): item is SearchItem => item !== null)

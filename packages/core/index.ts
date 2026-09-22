@@ -12,6 +12,13 @@ export type {
   RiebeckitePlugin,
 } from "./src/pipeline";
 export { Pipeline } from "./src/pipeline";
+export type {
+  ContentAsset,
+  ContentLink,
+  ContentLinkKind,
+  ContentManifest,
+  ContentManifestEntry,
+} from "./src/types/content_manifest";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content";
 
 export type { PublishStrategy } from "./src/types/publish_strategy";

@@ -8,22 +8,10 @@ import { content } from "../content";
 
 export default createRoute(
   ssgParams(async () => {
-    const posts = await content.getAllPosts();
-    const results = await Promise.all(
-      posts.map(async (post) => {
-        try {
-          const processed = await content.getProcessedContent(post.slug);
-          return {
-            slug: post.slug,
-            isPublish: isPublished(config, processed?.frontmatter),
-          };
-        } catch (e) {
-          console.error(`Failed to process ${post.slug}:`, e);
-          return { slug: post.slug, isPublish: false };
-        }
-      }),
-    );
-    return results.filter((r) => r.isPublish).map((r) => ({ slug: r.slug }));
+    const manifest = await content.getManifest();
+    return manifest.entries
+      .filter((entry) => isPublished(config, entry.frontmatter))
+      .map((entry) => ({ slug: entry.slug }));
   }),
   async (c, next) => {
     const slug = c.req.param("slug");

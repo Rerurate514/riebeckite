@@ -6,11 +6,7 @@ export {
 } from "./src/config";
 export { ContentManager } from "./src/content/content_manager";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
-export type {
-  PipelineOptions,
-  PipelinePlugin,
-  RiebeckitePlugin,
-} from "./src/pipeline";
+export type { PipelineOptions } from "./src/pipeline";
 export { Pipeline } from "./src/pipeline";
 export type {
   ContentAsset,
@@ -19,6 +15,18 @@ export type {
   ContentManifest,
   ContentManifestEntry,
 } from "./src/types/content_manifest";
+export type {
+  HtmlPipeline,
+  MarkdownPipeline,
+  PipelinePlugin,
+  PluginAsset,
+  PluginAssetKind,
+  PluginDiagnostic,
+  PluginDiagnosticLevel,
+  PluginInput,
+  RiebeckitePlugin,
+} from "./src/types/plugin";
+export { definePlugin, resolvePlugins } from "./src/types/plugin";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content";
 
 export type { PublishStrategy } from "./src/types/publish_strategy";

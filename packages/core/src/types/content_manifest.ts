@@ -1,3 +1,4 @@
+import type { PluginAsset, PluginDiagnostic } from "./plugin";
 import type { PostFrontmatter } from "./post_content";
 
 export type ContentLinkKind = "note" | "asset" | "unresolved";
@@ -32,4 +33,6 @@ export type ContentManifest = {
   outgoingLinks: Map<string, ContentLink[]>;
   incomingLinks: Map<string, string[]>;
   contentIndex: Map<string, string>;
+  assets: PluginAsset[];
+  diagnostics: PluginDiagnostic[];
 };

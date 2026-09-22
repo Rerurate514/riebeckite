@@ -1,3 +1,4 @@
+import type { RiebeckitePlugin } from "./plugin";
 import type { PublishStrategy } from "./publish_strategy";
 import type { SiteConfig } from "./site_config";
 
@@ -15,4 +16,5 @@ export type ResolvedRiebeckiteConfig = {
       theme: string;
     };
   };
+  plugins: RiebeckitePlugin[];
 };

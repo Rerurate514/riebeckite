@@ -1,6 +1,6 @@
 import type { Code, Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
-import type { AutoCardLink, AutoCardLinkOptions } from "./types";
+import type { AutoCardLink, AutoCardLinkOptions } from "./types.js";
 
 const DEFAULT_CLASS_NAME = "rr-cardlink";
 const CARDLINK_LANGUAGE = "cardlink";

@@ -9,7 +9,10 @@ import type {
   ContentManifest,
   ContentManifestEntry,
 } from "../types/content_manifest";
+import type { PluginContext } from "../types/plugin";
+import { resolvePlugins } from "../types/plugin";
 import type { PostContent } from "../types/post_content";
+import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
 import { IMAGE_EXTENSIONS } from "./image_extensions";
 
 const WIKILINK_PATTERN =
@@ -25,6 +28,8 @@ export class ContentManager {
   private contentCache = new Map<string, PostContent>();
   private manifest: ContentManifest | null = null;
   private pipeline: Pipeline | null = null;
+  private buildStarted = false;
+  private diagnostics: PluginContext["diagnostics"] = [];
 
   constructor(
     private contentDirectory: string,
@@ -100,12 +105,28 @@ export class ContentManager {
       this.getContentIndex(),
       this.getPost(slug),
     ]);
+    await this.startBuild(contentIndex);
+    await this.runContentLoaded(slug, rawPost, contentIndex);
     this.pipeline ??= new Pipeline(
       contentIndex,
       (slug) => this.getPost(slug),
       this.pipelineOptions,
     );
     const content = await this.pipeline.execute(rawPost, 0, new Set([slug]));
+    await this.runPostHook(
+      "onPostParsed",
+      slug,
+      rawPost,
+      content,
+      contentIndex,
+    );
+    await this.runPostHook(
+      "onPostProcessed",
+      slug,
+      rawPost,
+      content,
+      contentIndex,
+    );
     this.contentCache.set(slug, content);
     return content;
   }
@@ -129,7 +150,21 @@ export class ContentManager {
       }),
     );
 
+    await this.runGraphHook(entries, contentIndex);
     this.manifest = buildManifest(entries, contentIndex);
+    await this.runManifestCreated(this.manifest, contentIndex);
+    this.manifest.assets = collectPluginAssets(
+      this.pipelineOptions,
+      this.createPluginContext(contentIndex),
+    );
+    this.manifest.diagnostics = [
+      ...this.diagnostics,
+      ...collectPluginDiagnostics(
+        this.pipelineOptions,
+        this.createPluginContext(contentIndex),
+      ),
+    ];
+    await this.runBuildEnd(this.manifest, contentIndex);
     return this.manifest;
   }
 
@@ -138,6 +173,110 @@ export class ContentManager {
     return (manifest.incomingLinks.get(targetSlug) ?? []).map((slug) => ({
       slug,
     }));
+  }
+
+  private createPluginContext(
+    contentIndex: Map<string, string>,
+  ): PluginContext {
+    return {
+      config: this.pipelineOptions.config,
+      contentIndex,
+      diagnostics: this.diagnostics,
+    };
+  }
+
+  private async startBuild(contentIndex: Map<string, string>) {
+    if (this.buildStarted) return;
+
+    this.buildStarted = true;
+    const context = this.createPluginContext(contentIndex);
+    await runPluginHook(
+      this.pipelineOptions,
+      (plugin) => plugin.onBuildStart,
+      context,
+    );
+    await runPluginHook(
+      this.pipelineOptions,
+      (plugin) => plugin.onConfigResolved,
+      context,
+    );
+  }
+
+  private async runContentLoaded(
+    slug: string,
+    markdown: string,
+    contentIndex: Map<string, string>,
+  ) {
+    await runPluginHook(
+      this.pipelineOptions,
+      (plugin) => plugin.onContentLoaded,
+      { ...this.createPluginContext(contentIndex), slug, markdown },
+    );
+  }
+
+  private async runPostHook(
+    hookName: "onPostParsed" | "onPostProcessed",
+    slug: string,
+    markdown: string,
+    content: PostContent,
+    contentIndex: Map<string, string>,
+  ) {
+    await runPluginHook(this.pipelineOptions, (plugin) => plugin[hookName], {
+      ...this.createPluginContext(contentIndex),
+      slug,
+      markdown,
+      content,
+    });
+  }
+
+  private async runGraphHook(
+    entries: ContentManifestEntry[],
+    contentIndex: Map<string, string>,
+  ) {
+    await runPluginHook(
+      this.pipelineOptions,
+      (plugin) => plugin.extendContentGraph,
+      { ...this.createPluginContext(contentIndex), entries },
+    );
+  }
+
+  private async runManifestCreated(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ) {
+    await runPluginHook(
+      this.pipelineOptions,
+      (plugin) => plugin.onManifestCreated,
+      { ...this.createPluginContext(contentIndex), manifest },
+    );
+  }
+
+  private async runBuildEnd(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ) {
+    await runPluginHook(this.pipelineOptions, (plugin) => plugin.onBuildEnd, {
+      ...this.createPluginContext(contentIndex),
+      manifest,
+    });
+  }
+}
+
+declare module "../pipeline" {
+  interface PipelineOptions {
+    config?: ResolvedRiebeckiteConfig;
+  }
+}
+
+async function runPluginHook<TContext>(
+  pipelineOptions: PipelineOptions,
+  hook: (
+    plugin: NonNullable<PipelineOptions["plugins"]>[number],
+  ) => ((context: TContext) => void | Promise<void>) | undefined,
+  context: TContext,
+) {
+  for (const plugin of resolvePlugins(pipelineOptions.plugins)) {
+    await hook(plugin)?.(context);
   }
 }
 
@@ -205,7 +344,33 @@ function buildManifest(
     outgoingLinks,
     incomingLinks,
     contentIndex,
+    assets: [],
+    diagnostics: [],
   };
+}
+
+function collectPluginAssets(
+  pipelineOptions: PipelineOptions,
+  context: PluginContext,
+) {
+  return resolvePlugins(pipelineOptions.plugins).flatMap((plugin) =>
+    (plugin.injectAssets?.(context) ?? []).map((asset) => ({
+      ...asset,
+      pluginName: asset.pluginName || plugin.name,
+    })),
+  );
+}
+
+function collectPluginDiagnostics(
+  pipelineOptions: PipelineOptions,
+  context: PluginContext,
+) {
+  return resolvePlugins(pipelineOptions.plugins).flatMap((plugin) =>
+    (plugin.addDiagnostics?.(context) ?? []).map((diagnostic) => ({
+      ...diagnostic,
+      pluginName: diagnostic.pluginName || plugin.name,
+    })),
+  );
 }
 
 function extractContentLinks(

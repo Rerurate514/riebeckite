@@ -1,4 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
+import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 
 export default defineConfig({
   site: {
@@ -20,4 +22,5 @@ export default defineConfig({
     },
   },
   markdown: {},
+  plugins: [autoCardLinkPlugin(), lightboxPlugin()],
 });

@@ -9,7 +9,6 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import type { Plugin } from "unified";
 import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
@@ -17,19 +16,13 @@ import { matter } from "vfile-matter";
 import { remarkObsidianCallout } from "./plugins/remark_obsidian_callout";
 import { remarkObsidianTag } from "./plugins/remark_obsidian_tag";
 import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
+import type { RiebeckitePlugin } from "./types/plugin";
+import { resolvePlugins } from "./types/plugin";
 import type { PostContent, PostFrontmatter } from "./types/post_content";
 
-export type PipelinePlugin = Plugin<[], Node, Node>;
-
-export type RiebeckitePlugin = {
-  name: string;
-  remarkPlugins?: PipelinePlugin[];
-  rehypePlugins?: PipelinePlugin[];
-};
-
-export type PipelineOptions = {
+export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
-};
+}
 
 export class Pipeline {
   constructor(
@@ -44,6 +37,7 @@ export class Pipeline {
     embedTrail = new Set<string>(),
   ): Promise<PostContent> {
     const processor = unified();
+    const plugins = resolvePlugins(this.options.plugins);
     this.use(processor, remarkParse);
     this.use(processor, remarkDirective);
     this.use(processor, remarkFrontmatter, ["yaml", "toml"]);
@@ -61,10 +55,15 @@ export class Pipeline {
     this.use(processor, remarkObsidianCallout);
     this.use(processor, remarkObsidianTag);
 
-    for (const plugin of this.options.plugins ?? []) {
+    for (const plugin of plugins) {
       for (const remarkPlugin of plugin.remarkPlugins ?? []) {
         this.use(processor, remarkPlugin);
       }
+      plugin.extendMarkdownPipeline?.({
+        use: (pipelinePlugin, options) => {
+          this.use(processor, pipelinePlugin, options);
+        },
+      });
     }
 
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
@@ -73,10 +72,15 @@ export class Pipeline {
     this.use(processor, rehypeFormat);
     this.use(processor, rehypeKatex, { output: "mathml", strict: false });
 
-    for (const plugin of this.options.plugins ?? []) {
+    for (const plugin of plugins) {
       for (const rehypePlugin of plugin.rehypePlugins ?? []) {
         this.use(processor, rehypePlugin);
       }
+      plugin.extendHtmlPipeline?.({
+        use: (pipelinePlugin, options) => {
+          this.use(processor, pipelinePlugin, options);
+        },
+      });
     }
 
     this.use(processor, rehypeStringify);

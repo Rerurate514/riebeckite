@@ -1,6 +1,6 @@
-import { getStringProperty, mergeClassName, visitElements } from "./hast";
-import type { HastNode, LightboxOptions } from "./types";
-import { DEFAULT_TRIGGER_CLASS } from "./types";
+import { getStringProperty, mergeClassName, visitElements } from "./hast.js";
+import type { HastNode, LightboxOptions } from "./types.js";
+import { DEFAULT_TRIGGER_CLASS } from "./types.js";
 
 export function rehypeLightbox(options: LightboxOptions = {}) {
   const triggerClass = options.selectorClass ?? DEFAULT_TRIGGER_CLASS;

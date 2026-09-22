@@ -1,4 +1,4 @@
-import type { ElementNode, HastNode } from "./types";
+import type { ElementNode, HastNode } from "./types.js";
 
 export function visitElements(
   node: HastNode,

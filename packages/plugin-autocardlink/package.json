@@ -10,6 +10,7 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
+    "@riebeckite/core": "workspace:*",
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {

@@ -10,12 +10,44 @@ import { defineConfig } from "vite";
 
 const webRoot = path.dirname(fileURLToPath(import.meta.url));
 const coreEntry = path.resolve(webRoot, "../../packages/core/index.ts");
+const autoCardLinkEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-autocardlink/index.ts",
+);
+const autoCardLinkStyle = path.resolve(
+  webRoot,
+  "../../packages/plugin-autocardlink/style.css",
+);
+const lightboxEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-lightbox/index.ts",
+);
+const lightboxStyle = path.resolve(
+  webRoot,
+  "../../packages/plugin-lightbox/style.css",
+);
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "@riebeckite/core": coreEntry,
-    },
+    alias: [
+      { find: /^@riebeckite\/core$/, replacement: coreEntry },
+      {
+        find: /^@riebeckite\/plugin-autocardlink$/,
+        replacement: autoCardLinkEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-autocardlink\/style\.css$/,
+        replacement: autoCardLinkStyle,
+      },
+      {
+        find: /^@riebeckite\/plugin-lightbox$/,
+        replacement: lightboxEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-lightbox\/style\.css$/,
+        replacement: lightboxStyle,
+      },
+    ],
   },
   plugins: [
     honox({

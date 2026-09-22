@@ -1,5 +1,5 @@
-import { createDialog } from "./dialog";
-import { DEFAULT_TRIGGER_CLASS, type LightboxInitOptions } from "./types";
+import { createDialog } from "./dialog.js";
+import { DEFAULT_TRIGGER_CLASS, type LightboxInitOptions } from "./types.js";
 
 export function initLightbox(
   root: ParentNode = document,

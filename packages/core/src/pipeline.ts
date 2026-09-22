@@ -13,9 +13,13 @@ import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
+import { remarkObsidianBlockReference } from "./plugins/remark_obsidian_block_reference";
 import { remarkObsidianCallout } from "./plugins/remark_obsidian_callout";
 import { remarkObsidianTag } from "./plugins/remark_obsidian_tag";
-import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
+import {
+  remarkObsidianWikilink,
+  type WikilinkFragment,
+} from "./plugins/remark_obsidian_wikilink";
 import type { RiebeckitePlugin } from "./types/plugin";
 import { resolvePlugins } from "./types/plugin";
 import type { PostContent, PostFrontmatter } from "./types/post_content";
@@ -48,6 +52,7 @@ export class Pipeline {
     });
     this.use(processor, remarkMath);
     this.use(processor, remarkGfm);
+    this.use(processor, remarkObsidianBlockReference);
     this.use(processor, remarkObsidianWikilink, {
       contentIndex: this.contentIndex,
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
@@ -133,13 +138,21 @@ export class Pipeline {
   private createNoteEmbedRenderer(
     embedDepth: number,
     embedTrail: Set<string>,
-  ): ((slug: string) => Promise<string | null>) | undefined {
+  ):
+    | ((
+        slug: string,
+        fragment: WikilinkFragment | null,
+      ) => Promise<string | null>)
+    | undefined {
     if (!this.getMarkdownBySlug || embedDepth >= 3) return undefined;
 
-    return async (slug: string) => {
+    return async (slug: string, fragment: WikilinkFragment | null) => {
       if (embedTrail.has(slug)) return null;
 
-      const markdown = await this.getMarkdownBySlug?.(slug);
+      const sourceMarkdown = await this.getMarkdownBySlug?.(slug);
+      const markdown = sourceMarkdown
+        ? selectEmbedMarkdownFragment(sourceMarkdown, fragment)
+        : null;
       if (!markdown) return null;
 
       const nextEmbedTrail = new Set(embedTrail);
@@ -153,6 +166,53 @@ export class Pipeline {
       return content.html;
     };
   }
+}
+
+function selectEmbedMarkdownFragment(
+  markdown: string,
+  fragment: WikilinkFragment | null,
+): string | null {
+  if (!fragment) return markdown;
+  if (fragment.kind === "block")
+    return selectBlockFragment(markdown, fragment.value);
+  return selectHeadingFragment(markdown, fragment.value);
+}
+
+function selectBlockFragment(markdown: string, blockId: string): string | null {
+  const lines = markdown.split(/\r?\n/);
+  const blockIdRe = new RegExp(`(?:^|\\s)\\^${escapeRegExp(blockId)}\\s*$`);
+  const line = lines.find((currentLine) => blockIdRe.test(currentLine));
+  return line?.replace(blockIdRe, "").trimEnd() || null;
+}
+
+function selectHeadingFragment(
+  markdown: string,
+  heading: string,
+): string | null {
+  const lines = markdown.split(/\r?\n/);
+  const targetHeading = heading.trim().toLowerCase();
+  const startIndex = lines.findIndex((line) => {
+    const match = line.match(/^(#{1,6})\s+(.+?)\s*#*\s*$/);
+    return match?.[2]?.trim().toLowerCase() === targetHeading;
+  });
+  if (startIndex < 0) return null;
+
+  const level = lines[startIndex]?.match(/^(#{1,6})\s+/)?.[1]?.length ?? 6;
+  const endIndex = lines.findIndex((line, index) => {
+    if (index <= startIndex) return false;
+    const match = line.match(/^(#{1,6})\s+/);
+    return match !== null && match[1].length <= level;
+  });
+
+  const selectedLines = lines.slice(
+    startIndex,
+    endIndex === -1 ? undefined : endIndex,
+  );
+  return selectedLines.join("\n").trim() || null;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function pluginName(plugin: unknown): string {

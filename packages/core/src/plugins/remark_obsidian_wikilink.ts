@@ -5,12 +5,19 @@ import { visit } from "unist-util-visit";
 export interface WikilinkOptions {
   contentIndex: Map<string, string>;
   assetBase?: string;
-  renderNoteEmbed?: (slug: string) => Promise<string | null>;
+  renderNoteEmbed?: (
+    slug: string,
+    fragment: WikilinkFragment | null,
+  ) => Promise<string | null>;
 }
+
+export type WikilinkFragment =
+  | { kind: "heading"; value: string }
+  | { kind: "block"; value: string };
 
 const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp"];
 const WIKILINK_PATTERN =
-  "(!)?\\[\\[([^\\]|#^]+)(?:[#^]([^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
+  "(!)?\\[\\[([^\\]|#]+)(?:#(\\^[^\\]|]+|[^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
   const { contentIndex, assetBase = "/", renderNoteEmbed } = opt;
@@ -49,7 +56,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       match !== null;
       match = wikilinkRe.exec(node.value)
     ) {
-      const [full, embedMark, rawTarget, heading, alias] = match;
+      const [full, embedMark, rawTarget, rawFragment, alias] = match;
       const start = match.index;
 
       if (start > lastIndex) {
@@ -62,6 +69,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       const target = rawTarget?.trim();
       const isEmbed = embedMark === "!";
       const resolved = resolveTarget(target, contentIndex);
+      const fragment = parseFragment(rawFragment);
 
       if (isEmbed && resolved?.kind === "image") {
         newNodes.push({
@@ -70,10 +78,10 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           alt: alias?.trim() ?? target,
         });
       } else if (isEmbed && resolved?.kind === "note") {
-        const html = await renderNoteEmbed?.(resolved.value);
+        const html = await renderNoteEmbed?.(resolved.value, fragment);
 
         if (html) {
-          newNodes.push(createNoteEmbedNode(resolved.value, html));
+          newNodes.push(createNoteEmbedNode(resolved.value, fragment, html));
         } else {
           newNodes.push({
             type: "link",
@@ -98,14 +106,14 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         });
       } else if (resolved?.kind === "note") {
         const label = alias?.trim() ?? target;
-        const anchor = heading ? `#${slugifyHeading(heading)}` : "";
+        const anchor = fragment ? `#${slugifyFragment(fragment)}` : "";
         newNodes.push({
           type: "link",
           url: `/${resolved.value}${anchor}`,
           data: { hProperties: { class: "wikilink" } },
           children: [{ type: "text", value: label }],
         });
-      } else if (resolved?.kind === "image") {
+      } else if (resolved?.kind === "image" || resolved?.kind === "asset") {
         const label = alias?.trim() ?? target;
         newNodes.push({
           type: "link",
@@ -139,10 +147,17 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
   }
 }
 
-function createNoteEmbedNode(slug: string, html: string): Html {
+function createNoteEmbedNode(
+  slug: string,
+  fragment: WikilinkFragment | null,
+  html: string,
+): Html {
+  const fragmentAttribute = fragment
+    ? ` data-wikilink-fragment="${escapeHtmlAttribute(fragment.value)}"`
+    : "";
   return {
     type: "html",
-    value: `<div class="wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}">${html}</div>`,
+    value: `<div class="wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}"${fragmentAttribute}>${html}</div>`,
   };
 }
 
@@ -154,7 +169,7 @@ function escapeHtmlAttribute(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-type Resolved = { kind: "note" | "image"; value: string };
+type Resolved = { kind: "note" | "image" | "asset"; value: string };
 
 function resolveTarget(
   target: string,
@@ -165,8 +180,10 @@ function resolveTarget(
   if (!value) return null;
 
   const ext = value.split(".").pop()?.toLowerCase() ?? "";
-  const kind: "note" | "image" = IMAGE_EXTENSIONS.includes(ext)
-    ? "image"
+  const kind = value.endsWith(`.${ext}`)
+    ? IMAGE_EXTENSIONS.includes(ext)
+      ? "image"
+      : "asset"
     : "note";
 
   return { kind, value };
@@ -180,4 +197,21 @@ function buildAssetsUrl(assetPath: string, assetBase: string): string {
 
 function slugifyHeading(heading: string): string {
   return slug(heading.trim());
+}
+
+function parseFragment(
+  rawFragment: string | undefined,
+): WikilinkFragment | null {
+  const value = rawFragment?.trim();
+  if (!value) return null;
+  if (value.startsWith("^")) {
+    const blockId = value.slice(1).trim();
+    return blockId ? { kind: "block", value: blockId } : null;
+  }
+  return { kind: "heading", value };
+}
+
+function slugifyFragment(fragment: WikilinkFragment): string {
+  if (fragment.kind === "block") return fragment.value;
+  return slugifyHeading(fragment.value);
 }

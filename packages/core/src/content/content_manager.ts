@@ -76,11 +76,9 @@ export class ContentManager {
       if (ext === "md") {
         value = normalizedPath.replace(/\.md$/, "");
         parts = value.split("/");
-      } else if (IMAGE_EXTENSIONS.includes(ext)) {
+      } else {
         value = normalizedPath;
         parts = normalizedPath.split("/");
-      } else {
-        continue;
       }
 
       for (let i = parts.length - 1; i >= 0; i--) {
@@ -89,6 +87,23 @@ export class ContentManager {
 
         if (!index.has(key)) {
           index.set(key, value);
+        }
+
+        if (ext !== "md") {
+          const rawStemSuffix = rawSuffix.replace(/\.[^/.]+$/, "");
+          const stemKey = rawStemSuffix.toLowerCase();
+          if (!index.has(stemKey)) index.set(stemKey, value);
+        }
+      }
+
+      if (ext === "md") {
+        const markdown = await fs.readFile(
+          path.resolve(this.contentDirectory, normalizedPath),
+          "utf-8",
+        );
+        for (const alias of extractFrontmatterAliases(markdown)) {
+          const key = alias.toLowerCase();
+          if (!index.has(key)) index.set(key, value);
         }
       }
     }
@@ -300,7 +315,7 @@ function createManifestEntry(
     frontmatter: processed.frontmatter,
     html: processed.html,
     tags: uniqueStrings([
-      ...(processed.frontmatter.tags ?? []),
+      ...normalizeFrontmatterTags(processed.frontmatter.tags),
       ...extractContentTags(markdown),
     ]),
     links,
@@ -429,6 +444,54 @@ function normalizeTag(raw: string): string | null {
 function linkKind(value: string): "note" | "asset" {
   const ext = value.split(".").pop()?.toLowerCase() ?? "";
   return IMAGE_EXTENSIONS.includes(ext) ? "asset" : "note";
+}
+
+function normalizeFrontmatterTags(tags: unknown): string[] {
+  if (Array.isArray(tags)) {
+    return tags.flatMap((tag) => normalizeFrontmatterTags(tag));
+  }
+  if (typeof tags !== "string") return [];
+  return tags
+    .split(/[\s,]+/)
+    .map((tag) => normalizeTag(tag.replace(/^#/, "")))
+    .filter((tag): tag is string => tag !== null);
+}
+
+function extractFrontmatterAliases(markdown: string): string[] {
+  const frontmatter = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!frontmatter?.[1]) return [];
+
+  const aliases: string[] = [];
+  const lines = frontmatter[1].split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? "";
+    const inlineMatch = line.match(/^aliases?:\s*(.+)$/i);
+    if (inlineMatch?.[1]) {
+      aliases.push(...parseYamlScalarOrList(inlineMatch[1]));
+      continue;
+    }
+
+    if (/^aliases?:\s*$/i.test(line)) {
+      for (let j = i + 1; j < lines.length; j++) {
+        const itemMatch = lines[j]?.match(/^\s*-\s*(.+)$/);
+        if (!itemMatch?.[1]) break;
+        aliases.push(stripYamlQuotes(itemMatch[1]));
+      }
+    }
+  }
+  return uniqueStrings(aliases.map((alias) => alias.trim()).filter(Boolean));
+}
+
+function parseYamlScalarOrList(value: string): string[] {
+  const trimmed = value.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    return trimmed.slice(1, -1).split(",").map(stripYamlQuotes).filter(Boolean);
+  }
+  return [stripYamlQuotes(trimmed)];
+}
+
+function stripYamlQuotes(value: string): string {
+  return value.trim().replace(/^['"]|['"]$/g, "");
 }
 
 function getManifestTitle(slug: string, title: unknown): string {

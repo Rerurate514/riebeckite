@@ -10,8 +10,8 @@
 @layer base {
   :root {
     color-scheme: light;
-    --rb-color-paper: #f6efe2;
-    --rb-color-ink: #171717;
+    --rb-color-paper: #ffffff;
+    --rb-color-ink: #000000;
     --rb-color-muted: #69645c;
     --rb-color-accent: #f66620;
     --rb-color-border: color-mix(
@@ -46,8 +46,8 @@
 
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --rb-color-paper: #171717;
-    --rb-color-ink: #f6efe2;
+    --rb-color-paper: #000000;
+    --rb-color-ink: #ffffff;
     --rb-color-muted: #bbb1a1;
     --rb-color-border: color-mix(
       in oklab,
@@ -64,8 +64,8 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
       color-scheme: dark;
-      --rb-color-paper: #171717;
-      --rb-color-ink: #f6efe2;
+      --rb-color-paper: #000000;
+      --rb-color-ink: #ffffff;
       --rb-color-muted: #bbb1a1;
       --rb-color-border: color-mix(
         in oklab,

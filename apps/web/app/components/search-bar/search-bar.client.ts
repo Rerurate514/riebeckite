@@ -296,14 +296,12 @@ function createResultElement(
 
   const tags = document.createElement("p");
   tags.className = "search-result__tags";
-  tags.append(
-    ...result.tags.slice(0, 4).map((tag) => {
-      const badge = document.createElement("span");
-      badge.className = "search-result__tag";
-      appendHighlightedText(badge, `#${tag}`, normalizedQuery);
-      return badge;
-    }),
-  );
+  for (const tag of result.tags.slice(0, 4)) {
+    const badge = document.createElement("span");
+    badge.className = "search-result__tag";
+    appendHighlightedText(badge, `#${tag}`, normalizedQuery);
+    tags.appendChild(badge);
+  }
 
   link.appendChild(title);
   link.appendChild(meta);
@@ -338,9 +336,11 @@ function appendHighlightedText(
     return;
   }
 
-  element.append(
-    document.createTextNode(value.slice(0, index)),
+  element.appendChild(document.createTextNode(value.slice(0, index)));
+  element.appendChild(
     createMark(value.slice(index, index + normalizedQuery.length)),
+  );
+  element.appendChild(
     document.createTextNode(value.slice(index + normalizedQuery.length)),
   );
 }

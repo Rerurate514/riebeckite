@@ -1,0 +1,22 @@
+@layer components {
+  .article-shell {
+    max-width: none;
+  }
+
+  .article-shell__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 56rem);
+    justify-content: center;
+  }
+
+  .article-shell__body {
+    min-width: 0;
+  }
+
+  @media (min-width: 88rem) {
+    .article-shell__body {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+}

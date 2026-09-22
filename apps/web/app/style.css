@@ -1,17 +1,12 @@
 @import "tailwindcss" source("../app");
 @import "./styles/callouts.css";
 @import "./styles/backlinks.css";
+@import "./styles/layout.css";
 @import "./styles/tag.css";
+@import "./styles/table-of-contents.css";
 @import "./styles/tasklist.css";
 @import "./styles/theme.css";
 @import "./styles/typography.css";
 @import "./styles/wikilinks.css";
 
 @plugin "@tailwindcss/typography";
-
-@layer components {
-  .prose code::before,
-  .prose code::after {
-    content: none;
-  }
-}

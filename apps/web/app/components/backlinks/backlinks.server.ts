@@ -1,7 +1,8 @@
 import { isPublished } from "@riebeckite/core";
-import type { ArticleBacklink } from "./components/backlinks";
-import { config } from "./config";
-import { content } from "./content";
+import { config } from "../../config";
+import { content } from "../../content";
+import { getArticleTitle } from "../../lib/article-title";
+import type { ArticleBacklink } from "./backlinks";
 
 export async function getPublishedBacklinks(
   slug: string,
@@ -22,10 +23,4 @@ export async function getPublishedBacklinks(
   return results.filter(
     (backlink): backlink is ArticleBacklink => backlink !== null,
   );
-}
-
-function getArticleTitle(slug: string, title: unknown): string {
-  if (typeof title === "string" && title.trim().length > 0) return title;
-
-  return slug.split("/").at(-1) ?? slug;
 }

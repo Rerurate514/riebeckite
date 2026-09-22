@@ -1,6 +1,6 @@
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
-import SearchBar from "../components/search-bar";
+import SearchBar from "../components/search-bar/search-bar";
 import { config } from "../config";
 
 export default jsxRenderer(({ children }, c) => {

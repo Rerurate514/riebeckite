@@ -1,6 +1,8 @@
 import type { PostContent } from "@riebeckite/core";
-import Backlinks, { type ArticleBacklink } from "./backlinks";
-import TableOfContents, { extractTableOfContents } from "./table-of-contents";
+import Backlinks, { type ArticleBacklink } from "../backlinks/backlinks";
+import TableOfContents, {
+  extractTableOfContents,
+} from "../table-of-contents/table-of-contents";
 
 type Props = {
   content: PostContent;

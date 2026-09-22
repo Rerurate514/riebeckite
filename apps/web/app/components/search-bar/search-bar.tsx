@@ -46,7 +46,7 @@ export default function SearchBar() {
               type="search"
               placeholder="Search by title, path, or body..."
               autocomplete="off"
-              spellcheck="false"
+              spellcheck={false}
             />
           </label>
 

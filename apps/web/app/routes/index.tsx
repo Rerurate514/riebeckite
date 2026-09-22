@@ -1,7 +1,7 @@
 import { isPublished } from "@riebeckite/core";
 import { createRoute } from "honox/factory";
-import { getPublishedBacklinks } from "../backlinks";
-import Article from "../components/article";
+import Article from "../components/article/article";
+import { getPublishedBacklinks } from "../components/backlinks/backlinks.server";
 import { config } from "../config";
 import { content } from "../content";
 

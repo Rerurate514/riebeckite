@@ -21,8 +21,14 @@ import type { PostContent, PostFrontmatter } from "./types/post_content";
 
 export type PipelinePlugin = Plugin<[], Node, Node>;
 
-export type PipelineOptions = {
+export type RiebeckitePlugin = {
+  name: string;
+  remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];
+};
+
+export type PipelineOptions = {
+  plugins?: RiebeckitePlugin[];
 };
 
 export class Pipeline {
@@ -54,14 +60,23 @@ export class Pipeline {
     });
     this.use(processor, remarkObsidianCallout);
     this.use(processor, remarkObsidianTag);
+
+    for (const plugin of this.options.plugins ?? []) {
+      for (const remarkPlugin of plugin.remarkPlugins ?? []) {
+        this.use(processor, remarkPlugin);
+      }
+    }
+
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
     this.use(processor, rehypeRaw);
     this.use(processor, rehypeSlug);
     this.use(processor, rehypeFormat);
     this.use(processor, rehypeKatex, { output: "mathml", strict: false });
 
-    for (const plugin of this.options.rehypePlugins ?? []) {
-      this.use(processor, plugin);
+    for (const plugin of this.options.plugins ?? []) {
+      for (const rehypePlugin of plugin.rehypePlugins ?? []) {
+        this.use(processor, rehypePlugin);
+      }
     }
 
     this.use(processor, rehypeStringify);

@@ -2,6 +2,7 @@ import { isPublished } from "@riebeckite/core";
 import { createRoute } from "honox/factory";
 import { config } from "../config";
 import { content } from "../content";
+import { getArticleTitle } from "../lib/article-title";
 
 type SearchItem = {
   slug: string;
@@ -46,12 +47,6 @@ async function getSearchItems(): Promise<SearchItem[]> {
     .sort((a, b) => a.title.localeCompare(b.title, "ja"));
 
   return cachedSearchItems;
-}
-
-function getArticleTitle(slug: string, title: unknown): string {
-  if (typeof title === "string" && title.trim().length > 0) return title;
-
-  return slug.split("/").at(-1) ?? slug;
 }
 
 function toPlainText(html: string): string {

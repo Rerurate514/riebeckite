@@ -4,6 +4,15 @@ export {
   isPublished,
   resolveConfig,
 } from "./src/config";
+export {
+  ATTACHMENTS_BASE_PATH,
+  attachmentUrl,
+  getExtension,
+  isAttachmentPath,
+  isImagePath,
+  isMarkdownPath,
+  normalizeContentPath,
+} from "./src/content/attachment";
 export { ContentManager } from "./src/content/content_manager";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
 export type { PipelineOptions } from "./src/pipeline";
@@ -26,6 +35,7 @@ export type {
   PipelinePlugin,
   PluginAsset,
   PluginAssetKind,
+  PluginAttachmentRenderContext,
   PluginContentContext,
   PluginContext,
   PluginDiagnostic,

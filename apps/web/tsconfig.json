@@ -13,6 +13,7 @@
       "@riebeckite/plugin-autocardlink": [
         "packages/plugin-autocardlink/index.ts"
       ],
+      "@riebeckite/plugin-attachment": ["packages/plugin-attachment/index.ts"],
       "@riebeckite/plugin-code-enhance": [
         "packages/plugin-code-enhance/index.ts"
       ],

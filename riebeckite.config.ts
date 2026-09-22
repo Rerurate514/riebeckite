@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
@@ -52,6 +53,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    attachment(),
     autoCardLinkPlugin(),
     codeEnhance({
       theme: {

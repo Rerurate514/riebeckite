@@ -10,6 +10,14 @@ import { defineConfig } from "vite";
 
 const webRoot = path.dirname(fileURLToPath(import.meta.url));
 const coreEntry = path.resolve(webRoot, "../../packages/core/index.ts");
+const attachmentEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-attachment/index.ts",
+);
+const attachmentStyle = path.resolve(
+  webRoot,
+  "../../packages/plugin-attachment/style.css",
+);
 const autoCardLinkEntry = path.resolve(
   webRoot,
   "../../packages/plugin-autocardlink/index.ts",
@@ -60,6 +68,14 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: /^@riebeckite\/core$/, replacement: coreEntry },
+      {
+        find: /^@riebeckite\/plugin-attachment$/,
+        replacement: attachmentEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-attachment\/style\.css$/,
+        replacement: attachmentStyle,
+      },
       {
         find: /^@riebeckite\/plugin-autocardlink$/,
         replacement: autoCardLinkEntry,

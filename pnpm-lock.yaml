@@ -23,6 +23,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@riebeckite/plugin-attachment':
+        specifier: workspace:*
+        version: link:../../packages/plugin-attachment
       '@riebeckite/plugin-autocardlink':
         specifier: workspace:*
         version: link:../../packages/plugin-autocardlink
@@ -145,6 +148,12 @@ importers:
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
+
+  packages/plugin-attachment:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
 
   packages/plugin-autocardlink:
     dependencies:

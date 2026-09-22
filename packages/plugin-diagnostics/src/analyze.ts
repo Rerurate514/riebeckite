@@ -11,6 +11,7 @@ import {
   fragmentExists,
   getExtension,
   getWikilinkMatches,
+  isAssetTarget,
   isImageTarget,
   resolveLocalReference,
   resolveVaultRelative,
@@ -99,9 +100,10 @@ function checkWikilinks(
 
     if (!resolved) {
       const targetIsImage = isImageTarget(rawTarget);
+      const targetIsAsset = isAssetTarget(rawTarget);
       const code =
         targetIsImage || match.embed ? "broken-image" : "broken-wikilink";
-      const verb = targetIsImage || match.embed ? "embed" : "link";
+      const verb = targetIsAsset || match.embed ? "embed" : "link";
       push(
         diagnostics,
         opts,
@@ -109,8 +111,8 @@ function checkWikilinks(
         code,
         `wikilink ${verb} "[[${rawTarget}]]" does not resolve to any published note or asset`,
         rawTarget,
-        targetIsImage || match.embed
-          ? "fix the image path or add the image to the vault"
+        targetIsAsset || match.embed
+          ? "fix the asset path or add the asset to the vault"
           : "create the target note or fix the link",
         line,
         column,
@@ -141,7 +143,7 @@ function checkWikilinks(
       continue;
     }
 
-    if (resolved.kind === "image") {
+    if (resolved.kind === "image" || resolved.kind === "attachment") {
       state.referencedAssets.add(resolved.value);
     }
   }

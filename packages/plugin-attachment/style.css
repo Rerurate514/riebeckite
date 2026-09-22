@@ -1,0 +1,32 @@
+.attachment-card {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+  padding: 1rem;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+}
+
+.attachment-card__meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+}
+
+.attachment-card__format {
+  font-weight: 700;
+}
+
+.attachment-card__name {
+  font-weight: 700;
+}
+
+.attachment-card__download {
+  width: fit-content;
+}
+
+.wikilink-attachment::after {
+  content: " ↓";
+}

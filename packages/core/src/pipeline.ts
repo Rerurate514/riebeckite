@@ -56,6 +56,7 @@ export class Pipeline {
     this.use(processor, remarkObsidianWikilink, {
       contentIndex: this.contentIndex,
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
+      renderAttachment: this.createAttachmentRenderer(),
     });
     this.use(processor, remarkObsidianCallout);
     this.use(processor, remarkObsidianTag);
@@ -164,6 +165,32 @@ export class Pipeline {
         nextEmbedTrail,
       );
       return content.html;
+    };
+  }
+
+  private createAttachmentRenderer() {
+    const plugins = resolvePlugins(this.options.plugins).filter(
+      (plugin) => plugin.renderAttachment,
+    );
+    if (plugins.length === 0) return undefined;
+
+    return async (input: {
+      path: string;
+      raw: string;
+      label: string;
+      url: string;
+      embed: boolean;
+    }) => {
+      for (const plugin of plugins) {
+        const html = await plugin.renderAttachment?.({
+          config: this.options.config,
+          contentIndex: this.contentIndex,
+          diagnostics: [],
+          ...input,
+        });
+        if (html) return html;
+      }
+      return null;
     };
   }
 }

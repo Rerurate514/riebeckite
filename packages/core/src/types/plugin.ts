@@ -54,6 +54,14 @@ export type PluginGraphContext = PluginContext & {
   entries: ContentManifestEntry[];
 };
 
+export type PluginAttachmentRenderContext = PluginContext & {
+  path: string;
+  raw: string;
+  label: string;
+  url: string;
+  embed: boolean;
+};
+
 export type RiebeckitePlugin<TOptions = unknown> = {
   name: string;
   options?: TOptions;
@@ -73,6 +81,9 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   addDiagnostics?(context: PluginContext): Diagnostic[] | Promise<Diagnostic[]>;
   injectAssets?(context: PluginContext): PluginAsset[];
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
+  renderAttachment?(
+    context: PluginAttachmentRenderContext,
+  ): string | null | Promise<string | null>;
 };
 
 export type PluginInput = RiebeckitePlugin | false | null | undefined;

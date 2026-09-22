@@ -1,14 +1,18 @@
 import fs, { mkdir } from "node:fs/promises";
 import path from "node:path";
 import {
+  ATTACHMENTS_BASE_PATH,
   ContentManager,
   IMAGE_EXTENSIONS,
+  isAttachmentPath,
   isPublished,
+  normalizeContentPath,
 } from "@riebeckite/core";
 import { config } from "../app/config";
 import { ASSETS_ROOT, CONTENT_DIR } from "../app/constants/paths";
 
 const IMAGE_SOURCE_PATTERN = /\b(?:src|href)=["']([^"']+)["']/g;
+const ATTACHMENTS_PUBLIC_ROOT = ATTACHMENTS_BASE_PATH.replace(/^\/+/, "");
 
 type ContentImage = {
   sourcePath: string;
@@ -16,9 +20,13 @@ type ContentImage = {
   relativePath: string;
 };
 
+type ContentAttachment = ContentImage;
+
 async function buildImages() {
   const images = await collectContentImages();
   const referencedImages = await collectReferencedImagePaths(images);
+  const attachments = await collectContentAttachments();
+  const referencedAttachments = await collectReferencedAttachmentPaths();
 
   let copied = 0;
   let removed = 0;
@@ -40,12 +48,55 @@ async function buildImages() {
     }
   }
 
+  for (const attachment of attachments.values()) {
+    try {
+      if (referencedAttachments.has(attachment.relativePath)) {
+        await mkdir(path.dirname(attachment.targetPath), { recursive: true });
+        await fs.copyFile(attachment.sourcePath, attachment.targetPath);
+        copied++;
+      } else if (await fileExists(attachment.targetPath)) {
+        await fs.rm(attachment.targetPath);
+        removed++;
+      }
+    } catch (e) {
+      failed++;
+      console.error(`Failed to process ${attachment.relativePath}:`, e);
+    }
+  }
+
   console.log(
-    `Processed images: ${copied} copied, ${removed} removed, ${failed} failed`,
+    `Processed content assets: ${copied} copied, ${removed} removed, ${failed} failed`,
   );
   if (failed > 0) {
     process.exitCode = 1;
   }
+}
+
+async function collectContentAttachments(): Promise<
+  Map<string, ContentAttachment>
+> {
+  const entries = await fs.readdir(CONTENT_DIR, {
+    withFileTypes: true,
+    recursive: true,
+  });
+
+  const attachments = new Map<string, ContentAttachment>();
+
+  for (const entry of entries) {
+    const sourcePath = path.join(entry.parentPath, entry.name).normalize("NFC");
+    const relativePath = normalizeAssetPath(
+      path.relative(CONTENT_DIR, sourcePath),
+    );
+    if (!entry.isFile() || !isAttachmentPath(relativePath)) continue;
+
+    const targetPath = path
+      .join(ASSETS_ROOT, ATTACHMENTS_PUBLIC_ROOT, relativePath)
+      .normalize("NFC");
+
+    attachments.set(relativePath, { sourcePath, targetPath, relativePath });
+  }
+
+  return attachments;
 }
 
 async function collectContentImages(): Promise<Map<string, ContentImage>> {
@@ -71,6 +122,29 @@ async function collectContentImages(): Promise<Map<string, ContentImage>> {
   }
 
   return images;
+}
+
+async function collectReferencedAttachmentPaths(): Promise<Set<string>> {
+  const referencedAttachments = new Set<string>();
+  const content = new ContentManager(CONTENT_DIR, config.content.exclude, {
+    config,
+    plugins: config.plugins,
+  });
+  const manifest = await content.getManifest();
+
+  for (const entry of manifest.entries) {
+    if (!isPublished(config, entry.frontmatter)) continue;
+
+    for (const link of entry.links) {
+      if (link.kind !== "attachment" || !link.slug) continue;
+      const normalizedPath = normalizeAssetPath(link.slug);
+      if (isSafeContentPath(normalizedPath)) {
+        referencedAttachments.add(normalizedPath);
+      }
+    }
+  }
+
+  return referencedAttachments;
 }
 
 async function collectReferencedImagePaths(
@@ -127,7 +201,11 @@ function resolveContentAssetPath(slug: string, source: string): string | null {
 }
 
 function normalizeAssetPath(assetPath: string): string {
-  return assetPath.replace(/\\/g, "/").normalize("NFC");
+  return normalizeContentPath(assetPath);
+}
+
+function isSafeContentPath(assetPath: string): boolean {
+  return !assetPath.startsWith("../") && !path.posix.isAbsolute(assetPath);
 }
 
 function getExtension(filePath: string): string {

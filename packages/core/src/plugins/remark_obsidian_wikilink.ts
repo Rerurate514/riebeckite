@@ -1,6 +1,11 @@
 import { slug } from "github-slugger";
 import type { Content, Html, Parent, Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
+import {
+  attachmentUrl,
+  isAttachmentPath,
+  isImagePath,
+} from "../content/attachment";
 
 export interface WikilinkOptions {
   contentIndex: Map<string, string>;
@@ -9,18 +14,29 @@ export interface WikilinkOptions {
     slug: string,
     fragment: WikilinkFragment | null,
   ) => Promise<string | null>;
+  renderAttachment?: (input: {
+    path: string;
+    raw: string;
+    label: string;
+    url: string;
+    embed: boolean;
+  }) => Promise<string | null>;
 }
 
 export type WikilinkFragment =
   | { kind: "heading"; value: string }
   | { kind: "block"; value: string };
 
-const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp"];
 const WIKILINK_PATTERN =
   "(!)?\\[\\[([^\\]|#]+)(?:#(\\^[^\\]|]+|[^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
-  const { contentIndex, assetBase = "/", renderNoteEmbed } = opt;
+  const {
+    contentIndex,
+    assetBase = "/",
+    renderNoteEmbed,
+    renderAttachment,
+  } = opt;
 
   return async (tree: Root) => {
     const replacements: {
@@ -99,6 +115,22 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
             ],
           });
         }
+      } else if (isEmbed && resolved?.kind === "attachment") {
+        const label = alias?.trim() ?? target;
+        const url = attachmentUrl(resolved.value);
+        const html = await renderAttachment?.({
+          path: resolved.value,
+          raw: target,
+          label,
+          url,
+          embed: true,
+        });
+
+        newNodes.push(
+          html
+            ? { type: "html", value: html }
+            : createAttachmentFallbackLink(resolved.value, label, url),
+        );
       } else if (isEmbed) {
         newNodes.push({
           type: "text",
@@ -113,7 +145,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           data: { hProperties: { class: "wikilink" } },
           children: [{ type: "text", value: label }],
         });
-      } else if (resolved?.kind === "image" || resolved?.kind === "asset") {
+      } else if (resolved?.kind === "image") {
         const label = alias?.trim() ?? target;
         newNodes.push({
           type: "link",
@@ -121,6 +153,22 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           data: { hProperties: { class: "wikilink" } },
           children: [{ type: "text", value: label }],
         });
+      } else if (resolved?.kind === "attachment") {
+        const label = alias?.trim() ?? target;
+        const url = attachmentUrl(resolved.value);
+        const html = await renderAttachment?.({
+          path: resolved.value,
+          raw: target,
+          label,
+          url,
+          embed: false,
+        });
+
+        newNodes.push(
+          html
+            ? { type: "html", value: html }
+            : createAttachmentFallbackLink(resolved.value, label, url),
+        );
       } else {
         const label = alias?.trim() ?? target;
         newNodes.push({
@@ -169,7 +217,7 @@ function escapeHtmlAttribute(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-type Resolved = { kind: "note" | "image" | "asset"; value: string };
+type Resolved = { kind: "note" | "image" | "attachment"; value: string };
 
 function resolveTarget(
   target: string,
@@ -179,14 +227,24 @@ function resolveTarget(
   const value = contentIndex.get(key);
   if (!value) return null;
 
-  const ext = value.split(".").pop()?.toLowerCase() ?? "";
-  const kind = value.endsWith(`.${ext}`)
-    ? IMAGE_EXTENSIONS.includes(ext)
-      ? "image"
-      : "asset"
-    : "note";
+  const kind = isImagePath(value)
+    ? "image"
+    : isAttachmentPath(value)
+      ? "attachment"
+      : "note";
 
   return { kind, value };
+}
+
+function createAttachmentFallbackLink(
+  path: string,
+  label: string,
+  url: string,
+): Html {
+  return {
+    type: "html",
+    value: `<a class="wikilink wikilink-attachment" href="${escapeHtmlAttribute(url)}" download>${escapeHtmlAttribute(label || path)}</a>`,
+  };
 }
 
 function buildAssetsUrl(assetPath: string, assetBase: string): string {

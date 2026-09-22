@@ -1,6 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { IMAGE_EXTENSIONS, isExcluded } from "@riebeckite/core";
+import {
+  IMAGE_EXTENSIONS,
+  isAttachmentPath,
+  isExcluded,
+} from "@riebeckite/core";
 import {
   isNotePublic,
   type ParsedFrontmatter,
@@ -39,7 +43,7 @@ export type ScanResult = {
   targetIndex: Map<string, string>;
 };
 
-export type TargetKind = "note" | "image" | "asset";
+export type TargetKind = "note" | "image" | "attachment";
 
 export type ResolvedTarget = {
   kind: TargetKind;
@@ -169,12 +173,16 @@ export function resolveWikilinkTarget(
   const extension = getExtension(value);
   if (extension === NOTE_EXTENSION) return { kind: "note", value };
   if (IMAGE_EXTENSIONS.includes(extension)) return { kind: "image", value };
-  return { kind: "asset", value };
+  return { kind: "attachment", value };
 }
 
 export function isImageTarget(target: string): boolean {
   const extension = getExtension(target);
   return IMAGE_EXTENSIONS.includes(extension);
+}
+
+export function isAssetTarget(target: string): boolean {
+  return isImageTarget(target) || isAttachmentPath(target);
 }
 
 export function resolveLocalReference(

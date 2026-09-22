@@ -14,7 +14,7 @@ import type { PluginContext } from "../types/plugin";
 import { resolvePlugins } from "../types/plugin";
 import type { PostContent } from "../types/post_content";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
-import { IMAGE_EXTENSIONS } from "./image_extensions";
+import { isAttachmentPath, isImagePath } from "./attachment";
 
 const WIKILINK_PATTERN =
   /(!)?\[\[([^\]|#^]+)(?:[#^][^\]|]+)?(?:\|[^\]]+)?\]\]/g;
@@ -311,7 +311,8 @@ function createManifestEntry(
   const assets = links
     .filter(
       (link): link is ContentLink & { slug: string } =>
-        link.kind === "asset" && link.slug !== null,
+        (link.kind === "image" || link.kind === "attachment") &&
+        link.slug !== null,
     )
     .map((link) => ({ path: link.slug }));
 
@@ -452,9 +453,10 @@ function normalizeTag(raw: string): string | null {
   return cleaned;
 }
 
-function linkKind(value: string): "note" | "asset" {
-  const ext = value.split(".").pop()?.toLowerCase() ?? "";
-  return IMAGE_EXTENSIONS.includes(ext) ? "asset" : "note";
+function linkKind(value: string): "note" | "image" | "attachment" {
+  if (isImagePath(value)) return "image";
+  if (isAttachmentPath(value)) return "attachment";
+  return "note";
 }
 
 function normalizeFrontmatterTags(tags: unknown): string[] {

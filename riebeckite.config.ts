@@ -1,5 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 
 export default defineConfig({
@@ -29,5 +30,13 @@ export default defineConfig({
     articleLayout: "article",
     userCss: [],
   },
-  plugins: [autoCardLinkPlugin(), lightboxPlugin()],
+  plugins: [
+    autoCardLinkPlugin(),
+    lightboxPlugin(),
+    diagnostics({
+      reportUnusedAssets: true,
+      reportOrphans: true,
+      requiredFrontmatter: ["title"],
+    }),
+  ],
 });

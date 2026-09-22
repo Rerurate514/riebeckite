@@ -10,6 +10,9 @@
       "@riebeckite/plugin-autocardlink": [
         "packages/plugin-autocardlink/index.ts"
       ],
+      "@riebeckite/plugin-diagnostics": [
+        "packages/plugin-diagnostics/index.ts"
+      ],
       "@riebeckite/plugin-lightbox": ["packages/plugin-lightbox/index.ts"]
     }
   },

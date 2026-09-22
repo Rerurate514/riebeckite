@@ -1,0 +1,24 @@
+{
+  "name": "@riebeckite/plugin-diagnostics",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "bin": {
+    "riebeckite-diagnostics": "./bin.ts"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^24.5.2"
+  }
+}

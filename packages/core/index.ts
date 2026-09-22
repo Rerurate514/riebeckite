@@ -21,12 +21,18 @@ export type {
   PipelinePlugin,
   PluginAsset,
   PluginAssetKind,
+  PluginContext,
+  PluginContentContext,
   PluginDiagnostic,
   PluginDiagnosticLevel,
+  PluginGraphContext,
   PluginInput,
+  PluginManifestContext,
+  PluginPostContext,
   RiebeckitePlugin,
 } from "./src/types/plugin";
 export { definePlugin, resolvePlugins } from "./src/types/plugin";
+export type { Diagnostic, DiagnosticCode, DiagnosticSeverity } from "./src/types/diagnostic";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content";
 
 export type { PublishStrategy } from "./src/types/publish_strategy";

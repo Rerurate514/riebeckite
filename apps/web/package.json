@@ -13,6 +13,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/plugin-autocardlink": "workspace:*",
+    "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
     "hono": "^4.12.25",
     "honox": "0.1.56",

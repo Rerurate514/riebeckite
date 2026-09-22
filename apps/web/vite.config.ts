@@ -26,6 +26,10 @@ const lightboxStyle = path.resolve(
   webRoot,
   "../../packages/plugin-lightbox/style.css",
 );
+const diagnosticsEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-diagnostics/index.ts",
+);
 
 export default defineConfig({
   resolve: {
@@ -46,6 +50,10 @@ export default defineConfig({
       {
         find: /^@riebeckite\/plugin-lightbox\/style\.css$/,
         replacement: lightboxStyle,
+      },
+      {
+        find: /^@riebeckite\/plugin-diagnostics$/,
+        replacement: diagnosticsEntry,
       },
     ],
   },

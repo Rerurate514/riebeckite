@@ -80,7 +80,7 @@ export function examplePlugin(options: ExamplePluginOptions = {}) {
     addDiagnostics: () => [
       {
         pluginName: "example",
-        level: "info",
+        severity: "info",
         message: `Example plugin uses ${className}`,
       },
     ],

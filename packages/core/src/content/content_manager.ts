@@ -9,6 +9,7 @@ import type {
   ContentManifest,
   ContentManifestEntry,
 } from "../types/content_manifest";
+import type { Diagnostic } from "../types/diagnostic";
 import type { PluginContext } from "../types/plugin";
 import { resolvePlugins } from "../types/plugin";
 import type { PostContent } from "../types/post_content";
@@ -174,10 +175,10 @@ export class ContentManager {
     );
     this.manifest.diagnostics = [
       ...this.diagnostics,
-      ...collectPluginDiagnostics(
+      ...(await collectPluginDiagnostics(
         this.pipelineOptions,
         this.createPluginContext(contentIndex),
-      ),
+      )),
     ];
     await this.runBuildEnd(this.manifest, contentIndex);
     return this.manifest;
@@ -188,6 +189,11 @@ export class ContentManager {
     return (manifest.incomingLinks.get(targetSlug) ?? []).map((slug) => ({
       slug,
     }));
+  }
+
+  async getDiagnostics(): Promise<Diagnostic[]> {
+    const manifest = await this.getManifest();
+    return manifest.diagnostics;
   }
 
   private createPluginContext(
@@ -376,16 +382,21 @@ function collectPluginAssets(
   );
 }
 
-function collectPluginDiagnostics(
+async function collectPluginDiagnostics(
   pipelineOptions: PipelineOptions,
   context: PluginContext,
-) {
-  return resolvePlugins(pipelineOptions.plugins).flatMap((plugin) =>
-    (plugin.addDiagnostics?.(context) ?? []).map((diagnostic) => ({
-      ...diagnostic,
-      pluginName: diagnostic.pluginName || plugin.name,
-    })),
-  );
+): Promise<Diagnostic[]> {
+  const results: Diagnostic[] = [];
+  for (const plugin of resolvePlugins(pipelineOptions.plugins)) {
+    const diagnostics = await plugin.addDiagnostics?.(context);
+    for (const diagnostic of diagnostics ?? []) {
+      results.push({
+        ...diagnostic,
+        pluginName: diagnostic.pluginName || plugin.name,
+      });
+    }
+  }
+  return results;
 }
 
 function extractContentLinks(

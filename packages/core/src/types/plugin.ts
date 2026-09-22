@@ -1,19 +1,17 @@
 import type { Plugin } from "unified";
 import type { Node } from "unist";
 import type { ContentManifest, ContentManifestEntry } from "./content_manifest";
+import type { Diagnostic } from "./diagnostic";
 import type { PostContent } from "./post_content";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
 
 export type PipelinePlugin = Plugin<[], Node, Node>;
 
-export type PluginDiagnosticLevel = "info" | "warning" | "error";
+export type { Diagnostic, DiagnosticCode, DiagnosticSeverity } from "./diagnostic";
 
-export type PluginDiagnostic = {
-  pluginName: string;
-  level: PluginDiagnosticLevel;
-  message: string;
-  slug?: string;
-};
+export type PluginDiagnosticLevel = Diagnostic["severity"];
+
+export type PluginDiagnostic = Diagnostic & { pluginName: string };
 
 export type PluginAssetKind = "style" | "script";
 
@@ -32,7 +30,7 @@ export type HtmlPipeline = MarkdownPipeline;
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   contentIndex: Map<string, string>;
-  diagnostics: PluginDiagnostic[];
+  diagnostics: Diagnostic[];
 };
 
 export type PluginContentContext = PluginContext & {
@@ -68,7 +66,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   onBuildEnd?(context: PluginManifestContext): void | Promise<void>;
   extendMarkdownPipeline?(pipeline: MarkdownPipeline): void;
   extendHtmlPipeline?(pipeline: HtmlPipeline): void;
-  addDiagnostics?(context: PluginContext): PluginDiagnostic[];
+  addDiagnostics?(context: PluginContext): Diagnostic[] | Promise<Diagnostic[]>;
   injectAssets?(context: PluginContext): PluginAsset[];
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
 };

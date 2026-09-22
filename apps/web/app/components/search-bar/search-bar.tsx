@@ -44,14 +44,14 @@ export default function SearchBar() {
               class="search-modal__input"
               data-search-input
               type="search"
-              placeholder="Search by title, path, or body..."
+              placeholder="Search title, tag, heading, path, or body..."
               autocomplete="off"
               spellcheck={false}
             />
           </label>
 
           <div class="search-modal__status" data-search-status>
-            Type a keyword to search published notes.
+            Type a keyword, tag, or path to search published notes.
           </div>
           <div class="search-modal__results" data-search-results />
         </section>

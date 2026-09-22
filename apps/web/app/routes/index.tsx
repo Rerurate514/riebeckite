@@ -1,7 +1,8 @@
 import { createRoute } from "honox/factory";
 import { buildContentIndex, getPost } from "../logic/get_post";
-import { Pipeline, PostContent } from "@riebeckite/core";
+import { Pipeline, PostContent, isPublished } from "@riebeckite/core";
 import Article from "../components/article";
+import { config } from "../config";
 
 let cachedIndex: Map<string, string> | null = null;
 async function getContentIndex() {
@@ -19,7 +20,7 @@ export default createRoute(async (c) => {
     cachedContent = await pipeline.execute(post);
   }
 
-  if (!cachedContent?.frontmatter.publish) {
+  if (!isPublished(config, cachedContent?.frontmatter)) {
     return c.notFound();
   }
 

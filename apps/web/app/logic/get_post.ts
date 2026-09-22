@@ -1,5 +1,7 @@
 import { CONTENT_DIR } from "../constants/paths";
 import { IMAGE_EXTENSIONS } from "../constants/image_exts";
+import { isExcluded } from "@riebeckite/core";
+import { config } from "../config";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -13,7 +15,8 @@ export async function getAllPosts() {
       const slug = normalizedPath.replace(/\.md$/, "");
 
       return { slug };
-    });
+    })
+    .filter((post) => !isExcluded(config.content.exclude, post.slug));
 }
 
 export async function getPost(slug: string) {
@@ -31,6 +34,7 @@ export async function buildContentIndex() {
 
   for (const f of files) {
     const normalizedPath = f.replace(/\\/g, "/");
+    if (isExcluded(config.content.exclude, normalizedPath)) continue;
     const ext = normalizedPath.split(".").pop()?.toLowerCase() ?? "";
 
     let value: string;

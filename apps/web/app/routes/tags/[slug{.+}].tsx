@@ -2,7 +2,8 @@ import { createRoute } from "honox/factory";
 import { ssgParams } from "hono/ssg";
 import slugify from "slugify";
 import { getAllPosts, getPost, buildContentIndex } from "../../logic/get_post";
-import { Pipeline } from "@riebeckite/core";
+import { Pipeline, isPublished } from "@riebeckite/core";
+import { config } from "../../config";
 // import TagPostList from "../components/tag-post-list";
 
 let cachedIndex: Map<string, string> | null = null;
@@ -46,7 +47,7 @@ async function buildTagIndex(): Promise<Map<string, TagEntry>> {
     posts.map(async (post) => {
       try {
         const content = await getProcessedContent(post.slug);
-        if (!content?.frontmatter?.publish) return;
+        if (!isPublished(config, content?.frontmatter)) return;
 
         const tags: string[] = content.frontmatter.tags ?? [];
         for (const rawTag of tags) {

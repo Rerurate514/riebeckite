@@ -1,8 +1,9 @@
 import { createRoute } from "honox/factory";
-import { Pipeline, PostContent } from "@riebeckite/core";
+import { Pipeline, PostContent, isPublished } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
 import { buildContentIndex, getAllPosts, getPost } from "../logic/get_post";
 import Article from "../components/article";
+import { config } from "../config";
 
 let cachedIndex: Map<string, string> | null = null;
 async function getContentIndex() {
@@ -29,7 +30,10 @@ export default createRoute(
       posts.map(async (post) => {
         try {
           const content = await getProcessedContent(post.slug);
-          return { slug: post.slug, isPublish: !!content?.frontmatter.publish };
+          return {
+            slug: post.slug,
+            isPublish: isPublished(config, content?.frontmatter),
+          };
         } catch (e) {
           console.error(`Failed to process ${post.slug}:`, e);
           return { slug: post.slug, isPublish: false };
@@ -51,7 +55,7 @@ export default createRoute(
     const content = await getProcessedContent(slug);
     if (!content) return c.notFound();
 
-    if (!content || !content.frontmatter.publish) {
+    if (!isPublished(config, content.frontmatter)) {
       return c.notFound();
     }
 

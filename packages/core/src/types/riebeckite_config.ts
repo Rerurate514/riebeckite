@@ -1,20 +1,13 @@
+import type { PublishStrategy } from "./publish_strategy";
+import type { SiteConfig } from "./site_config";
+
 export interface RiebeckiteConfig {
-  site: {
-    title: string;
-    description?: string;
-    author?: string;
-    baseUrl?: string;
-    locale?: string;
-  };
+  site: SiteConfig;
   content?: {
     directory?: string;
     exclude?: string[];
     filters?: {
-      /**
-       * 'explicit'  : Publish “only” those items where `publish: true` is explicitly specified
-       * 'selective' : In principle, everything is public. However, entries with `private: true` (or `draft: true`) are excluded.
-       */
-      publishStrategy?: "explicit" | "selective";
+      publishStrategy?: PublishStrategy;
     };
   };
   markdown?: {
@@ -22,8 +15,4 @@ export interface RiebeckiteConfig {
       theme?: string;
     };
   };
-}
-
-export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {
-  return config;
 }

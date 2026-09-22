@@ -1,5 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { seo } from "@riebeckite/plugin-seo";
@@ -44,6 +45,18 @@ export default defineConfig({
       robots: true,
     }),
     autoCardLinkPlugin(),
+    codeEnhance({
+      theme: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+      lineNumbers: true,
+      copyButton: true,
+      filename: true,
+      lineHighlight: true,
+      diffHighlight: true,
+      wrapToggle: true,
+    }),
     lightboxPlugin(),
     diagnostics({
       reportUnusedAssets: true,

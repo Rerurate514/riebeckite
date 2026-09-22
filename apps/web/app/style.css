@@ -1,5 +1,6 @@
 @import "tailwindcss" source("../app");
 @import "@riebeckite/plugin-autocardlink/style.css";
+@import "@riebeckite/plugin-code-enhance/style.css";
 @import "@riebeckite/plugin-lightbox/style.css";
 @import "./components/style.css";
 @import "./styles/callouts.css";

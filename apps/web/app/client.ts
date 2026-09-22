@@ -1,3 +1,4 @@
+import { initCodeEnhance } from "@riebeckite/plugin-code-enhance/client";
 import { initLightbox } from "@riebeckite/plugin-lightbox";
 import { createClient } from "honox/client";
 import { initSearch } from "./components/search-bar/search-bar.client";
@@ -12,6 +13,7 @@ if (document.readyState === "loading") {
 }
 
 function initPage() {
+  initCodeEnhance();
   initLightbox();
   initSearch();
   initTableOfContents();

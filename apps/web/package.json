@@ -13,6 +13,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/plugin-autocardlink": "workspace:*",
+    "@riebeckite/plugin-code-enhance": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",

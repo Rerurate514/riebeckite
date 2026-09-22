@@ -10,6 +10,12 @@
       "@riebeckite/plugin-autocardlink": [
         "packages/plugin-autocardlink/index.ts"
       ],
+      "@riebeckite/plugin-code-enhance": [
+        "packages/plugin-code-enhance/index.ts"
+      ],
+      "@riebeckite/plugin-code-enhance/client": [
+        "packages/plugin-code-enhance/client.ts"
+      ],
       "@riebeckite/plugin-diagnostics": [
         "packages/plugin-diagnostics/index.ts"
       ],

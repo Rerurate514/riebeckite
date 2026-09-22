@@ -18,6 +18,18 @@ const autoCardLinkStyle = path.resolve(
   webRoot,
   "../../packages/plugin-autocardlink/style.css",
 );
+const codeEnhanceEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-code-enhance/index.ts",
+);
+const codeEnhanceClientEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-code-enhance/client.ts",
+);
+const codeEnhanceStyle = path.resolve(
+  webRoot,
+  "../../packages/plugin-code-enhance/style.css",
+);
 const lightboxEntry = path.resolve(
   webRoot,
   "../../packages/plugin-lightbox/index.ts",
@@ -43,6 +55,18 @@ export default defineConfig({
       {
         find: /^@riebeckite\/plugin-autocardlink\/style\.css$/,
         replacement: autoCardLinkStyle,
+      },
+      {
+        find: /^@riebeckite\/plugin-code-enhance$/,
+        replacement: codeEnhanceEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-code-enhance\/client$/,
+        replacement: codeEnhanceClientEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-code-enhance\/style\.css$/,
+        replacement: codeEnhanceStyle,
       },
       {
         find: /^@riebeckite\/plugin-lightbox$/,
@@ -87,6 +111,7 @@ export default defineConfig({
           "debug",
           "node:fs/promises",
           "node:path",
+          "parse-numeric-range",
           "slugify",
           "vfile-matter",
         ],

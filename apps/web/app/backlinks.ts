@@ -1,5 +1,5 @@
 import { isPublished } from "@riebeckite/core";
-import type { ArticleBacklink } from "./components/article";
+import type { ArticleBacklink } from "./components/backlinks";
 import { config } from "./config";
 import { content } from "./content";
 

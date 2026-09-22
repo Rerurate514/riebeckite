@@ -1,7 +1,8 @@
-import { isPublished } from "@riebeckite/core";
+import { isPublished, type PostContent } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
 import slugify from "slugify";
+import Article from "../../components/article";
 import { config } from "../../config";
 import { content } from "../../content";
 
@@ -15,6 +16,31 @@ function slugifyTagPath(tag: string): string {
 interface TagEntry {
   tag: string;
   posts: { slug: string; title: string }[];
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function buildTagPage(entry: TagEntry): PostContent {
+  const posts = entry.posts
+    .map(
+      (post) =>
+        `<li><a href="/${encodeURI(post.slug)}">${escapeHtml(post.title)}</a></li>`,
+    )
+    .join("");
+
+  return {
+    frontmatter: {
+      title: `#${entry.tag}`,
+    },
+    html: `<h1>${escapeHtml(`#${entry.tag}`)}</h1><ul>${posts}</ul>`,
+  };
 }
 
 let cachedTagIndex: Map<string, TagEntry> | null = null;
@@ -68,17 +94,6 @@ export default createRoute(
     const entry = tagIndex.get(slug);
     if (!entry) return c.notFound();
 
-    return c.render(
-      <div>
-        <h1>#{entry.tag}</h1>
-        <ul>
-          {entry.posts.map((post) => (
-            <li key={post.slug}>
-              <a href={`/${post.slug}`}>{post.title}</a>
-            </li>
-          ))}
-        </ul>
-      </div>,
-    );
+    return c.render(<Article content={buildTagPage(entry)} />);
   },
 );

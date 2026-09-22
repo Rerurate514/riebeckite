@@ -5,6 +5,8 @@ export type PostContent = {
 
 export type PostFrontmatter = Record<string, unknown> & {
   title?: string;
+  date?: string | Date;
+  created?: string | Date;
   publish?: boolean;
   private?: boolean;
   draft?: boolean;

@@ -1,4 +1,5 @@
 import type { PostContent } from "@riebeckite/core";
+import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
 import Backlinks, { type ArticleBacklink } from "../backlinks/backlinks";
 import TableOfContents, {
   extractTableOfContents,
@@ -26,6 +27,7 @@ export default function Article(props: Props) {
             class="article-shell__lead"
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
           />
+          <ArticleFrontmatter frontmatter={props.content.frontmatter} />
           <div dangerouslySetInnerHTML={{ __html: articleHtml.rest }} />
         </div>
       </div>

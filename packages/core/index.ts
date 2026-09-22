@@ -12,7 +12,7 @@ export type {
   RiebeckitePlugin,
 } from "./src/pipeline";
 export { Pipeline } from "./src/pipeline";
-export type { PostContent } from "./src/types/post_content";
+export type { PostContent, PostFrontmatter } from "./src/types/post_content";
 
 export type { PublishStrategy } from "./src/types/publish_strategy";
 export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config";

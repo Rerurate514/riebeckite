@@ -15,6 +15,10 @@ export function slugifyTagPath(tag: string): string {
     .join("/");
 }
 
+export function buildTagHref(tag: string): string {
+  return `/tags/${slugifyTagPath(tag)}`;
+}
+
 export function buildTagPage(entry: TagEntry): PostContent {
   const posts = entry.posts
     .map(

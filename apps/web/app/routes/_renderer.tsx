@@ -1,5 +1,6 @@
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
+import SearchBar from "../components/search-bar";
 import { config } from "../config";
 
 export default jsxRenderer(({ children }, c) => {
@@ -22,7 +23,10 @@ export default jsxRenderer(({ children }, c) => {
         <Link href="/app/style.css" rel="stylesheet" />
         <Script src="/app/client.ts" async />
       </head>
-      <body class="w-full flex justify-center items-center">{children}</body>
+      <body class="w-full flex justify-center items-center">
+        <SearchBar />
+        {children}
+      </body>
     </html>
   );
 });

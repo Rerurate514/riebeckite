@@ -32,11 +32,11 @@
   padding: 1rem;
 }
 
-.rr-mermaid__canvas svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
+.rr-mermaid__canvas > svg {
+    display: block;
+    justify-self: center;
+    max-width: 100%;
+    height: auto;
 }
 
 .rr-mermaid__fallback {

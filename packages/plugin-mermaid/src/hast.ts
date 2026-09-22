@@ -1,20 +1,15 @@
-import type { ElementNode, HastNode, TextNode } from "./types.js";
+import type { ElementNode, HastNode, ParentNode, TextNode } from "./types.js";
 
 export function visitElements(
   node: HastNode,
-  visitor: (node: ElementNode, parent?: ElementNode, index?: number) => void,
-  parent?: ElementNode,
+  visitor: (node: ElementNode, parent?: ParentNode, index?: number) => void,
+  parent?: ParentNode,
   index?: number,
 ) {
   if (isElementNode(node)) visitor(node, parent, index);
 
   for (const [childIndex, child] of [...getChildren(node)].entries()) {
-    visitElements(
-      child,
-      visitor,
-      isElementNode(node) ? node : parent,
-      childIndex,
-    );
+    visitElements(child, visitor, hasChildren(node) ? node : parent, childIndex);
   }
 }
 
@@ -72,6 +67,10 @@ export function mergeClassName(current: unknown, next: string): string {
 
 function isElementNode(node: HastNode): node is ElementNode {
   return node.type === "element";
+}
+
+function hasChildren(node: HastNode): node is ParentNode {
+  return Array.isArray((node as { children?: unknown }).children);
 }
 
 function getChildren(node: HastNode): HastNode[] {

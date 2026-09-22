@@ -35,6 +35,10 @@ export type ElementNode = {
   children?: HastNode[];
 };
 
+export type ParentNode = HastNode & {
+  children?: HastNode[];
+};
+
 export type TextNode = {
   type: "text";
   value: string;

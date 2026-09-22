@@ -6,7 +6,7 @@ import {
   text,
   visitElements,
 } from "./hast.js";
-import type { ElementNode, HastNode, MermaidOptions } from "./types.js";
+import type { ElementNode, HastNode, MermaidOptions, ParentNode } from "./types.js";
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
 const CAPTION_PATTERN = /^%%\s*caption\s*:\s*(.+)$/im;
@@ -34,7 +34,7 @@ export function rehypeMermaid(options: MermaidOptions = {}) {
 }
 
 async function replaceMermaidBlock(
-  parent: ElementNode,
+  parent: ParentNode,
   index: number,
   pre: ElementNode,
   file: unknown,

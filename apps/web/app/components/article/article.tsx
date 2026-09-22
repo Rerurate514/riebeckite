@@ -8,6 +8,7 @@ import TableOfContents, {
 type Props = {
   content: PostContent;
   backlinks?: ArticleBacklink[];
+  afterContent?: unknown;
 };
 
 export default function Article(props: Props) {
@@ -29,6 +30,7 @@ export default function Article(props: Props) {
           />
           <ArticleFrontmatter frontmatter={props.content.frontmatter} />
           <div dangerouslySetInnerHTML={{ __html: articleHtml.rest }} />
+          {props.afterContent}
         </div>
       </div>
       <Backlinks backlinks={props.backlinks ?? []} />

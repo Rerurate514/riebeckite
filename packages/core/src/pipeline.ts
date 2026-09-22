@@ -46,7 +46,7 @@ export class Pipeline {
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
       .use(rehypeFormat)
-      .use(rehypeKatex, { output: "mathml" })
+      .use(rehypeKatex, { output: "mathml", strict: false })
       .use(rehypeStringify)
       .process(markDownContent.trim());
 

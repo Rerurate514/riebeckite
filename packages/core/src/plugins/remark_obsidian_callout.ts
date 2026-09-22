@@ -1,6 +1,6 @@
-import { visit } from "unist-util-visit";
 import type { BlockContent, Blockquote, Paragraph, Root, Text } from "mdast";
 import type { Parent } from "unist";
+import { visit } from "unist-util-visit";
 
 export interface CalloutOptions {
   defaultTitles?: Record<string, string>;

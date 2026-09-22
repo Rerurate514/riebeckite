@@ -1,6 +1,6 @@
-import { visit } from "unist-util-visit";
 import type { Content, Parent, Root, Text } from "mdast";
 import slugify from "slugify";
+import { visit } from "unist-util-visit";
 
 export interface TagOptions {
   tagBase?: string;

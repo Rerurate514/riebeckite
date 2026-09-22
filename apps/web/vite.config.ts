@@ -1,11 +1,11 @@
-import build from "@hono/vite-build/cloudflare-workers";
-import adapter from "@hono/vite-dev-server/cloudflare";
-import { defaultOptions } from "@hono/vite-dev-server";
-import tailwindcss from "@tailwindcss/vite";
-import ssg from "@hono/vite-ssg";
-import honox from "honox/vite";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import build from "@hono/vite-build/cloudflare-workers";
+import { defaultOptions } from "@hono/vite-dev-server";
+import adapter from "@hono/vite-dev-server/cloudflare";
+import ssg from "@hono/vite-ssg";
+import tailwindcss from "@tailwindcss/vite";
+import honox from "honox/vite";
 import { defineConfig } from "vite";
 
 const webRoot = path.dirname(fileURLToPath(import.meta.url));

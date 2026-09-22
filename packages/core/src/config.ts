@@ -1,6 +1,6 @@
-import type { RiebeckiteConfig } from "./types/riebeckite_config";
-import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config";
 import type { PostFrontmatter } from "./types/post_content";
+import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config";
+import type { RiebeckiteConfig } from "./types/riebeckite_config";
 
 export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {
   return config;

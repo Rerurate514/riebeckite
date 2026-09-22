@@ -5,6 +5,12 @@ import { Pipeline } from "../pipeline";
 import type { PostContent } from "../types/post_content";
 import { IMAGE_EXTENSIONS } from "./image_extensions";
 
+const WIKILINK_PATTERN = /!?\[\[([^\]|#^]+)(?:[#^][^\]|]+)?(?:\|[^\]]+)?\]\]/g;
+
+export type Backlink = {
+  slug: string;
+};
+
 export class ContentManager {
   private contentIndex: Map<string, string> | null = null;
   private contentCache = new Map<string, PostContent>();
@@ -88,4 +94,46 @@ export class ContentManager {
     this.contentCache.set(slug, content);
     return content;
   }
+
+  async getBacklinks(targetSlug: string): Promise<Backlink[]> {
+    const [posts, contentIndex] = await Promise.all([
+      this.getAllPosts(),
+      this.getContentIndex(),
+    ]);
+
+    const backlinks = await Promise.all(
+      posts
+        .filter((post) => post.slug !== targetSlug)
+        .map(async (post) => {
+          const rawPost = await this.getPost(post.slug);
+          if (!linksToTarget(rawPost, targetSlug, contentIndex)) return null;
+          return { slug: post.slug };
+        }),
+    );
+
+    return backlinks.filter(
+      (backlink): backlink is Backlink => backlink !== null,
+    );
+  }
+}
+
+function linksToTarget(
+  markdown: string,
+  targetSlug: string,
+  contentIndex: Map<string, string>,
+): boolean {
+  WIKILINK_PATTERN.lastIndex = 0;
+
+  for (
+    let match = WIKILINK_PATTERN.exec(markdown);
+    match !== null;
+    match = WIKILINK_PATTERN.exec(markdown)
+  ) {
+    const rawTarget = match[1]?.trim().toLowerCase();
+    if (!rawTarget) continue;
+
+    if (contentIndex.get(rawTarget) === targetSlug) return true;
+  }
+
+  return false;
 }

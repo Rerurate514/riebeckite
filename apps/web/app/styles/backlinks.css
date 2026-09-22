@@ -1,0 +1,45 @@
+.article-backlinks {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.article-backlinks__eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+.article-backlinks__title {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+
+.article-backlinks__list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-backlinks__item {
+  margin: 0;
+}
+
+.article-backlinks__link {
+  display: block;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 0.75rem;
+  text-decoration: none;
+}
+
+.article-backlinks__link:hover {
+  border-color: color-mix(in srgb, currentColor 28%, transparent);
+  background: color-mix(in srgb, currentColor 4%, transparent);
+}

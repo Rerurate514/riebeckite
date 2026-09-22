@@ -1,6 +1,7 @@
 import { isPublished } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
+import { getPublishedBacklinks } from "../backlinks";
 import Article from "../components/article";
 import { config } from "../config";
 import { content } from "../content";
@@ -43,6 +44,8 @@ export default createRoute(
       return c.redirect("/", 301);
     }
 
-    return c.render(<Article content={post} />);
+    const backlinks = await getPublishedBacklinks(slug);
+
+    return c.render(<Article content={post} backlinks={backlinks} />);
   },
 );

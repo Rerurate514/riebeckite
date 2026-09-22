@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { isExcluded } from "../config";
+import type { PipelineOptions } from "../pipeline";
 import { Pipeline } from "../pipeline";
 import type { PostContent } from "../types/post_content";
 import { IMAGE_EXTENSIONS } from "./image_extensions";
@@ -19,6 +20,7 @@ export class ContentManager {
   constructor(
     private contentDirectory: string,
     private exclude: string[] = [],
+    private pipelineOptions: PipelineOptions = {},
   ) {}
 
   async getAllPosts(): Promise<{ slug: string }[]> {
@@ -89,7 +91,11 @@ export class ContentManager {
       this.getContentIndex(),
       this.getPost(slug),
     ]);
-    this.pipeline ??= new Pipeline(contentIndex, (slug) => this.getPost(slug));
+    this.pipeline ??= new Pipeline(
+      contentIndex,
+      (slug) => this.getPost(slug),
+      this.pipelineOptions,
+    );
     const content = await this.pipeline.execute(rawPost, 0, new Set([slug]));
     this.contentCache.set(slug, content);
     return content;

@@ -6,7 +6,8 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@riebeckite/core": ["packages/core/index.ts"]
+      "@riebeckite/core": ["packages/core/index.ts"],
+      "@riebeckite/plugin-lightbox": ["packages/plugin-lightbox/index.ts"]
     }
   },
   "include": ["./riebeckite.config.ts"]

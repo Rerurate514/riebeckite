@@ -1,12 +1,23 @@
+import { initLightbox } from "@riebeckite/plugin-lightbox";
 import { createClient } from "honox/client";
 
 createClient();
 
-const tocLinks = Array.from(
-  document.querySelectorAll<HTMLAnchorElement>("[data-toc-target]"),
-);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPage, { once: true });
+} else {
+  initPage();
+}
 
-if (tocLinks.length > 0) {
+function initPage() {
+  initLightbox();
+
+  const tocLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>("[data-toc-target]"),
+  );
+
+  if (tocLinks.length === 0) return;
+
   const linksByHeadingId = new Map<string, HTMLAnchorElement[]>();
 
   for (const link of tocLinks) {

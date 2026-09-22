@@ -12,6 +12,7 @@
   "private": true,
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/plugin-lightbox": "workspace:*",
     "hono": "^4.12.25",
     "honox": "0.1.56",
     "slugify": "^1.6.9"

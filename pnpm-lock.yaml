@@ -23,6 +23,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@riebeckite/plugin-lightbox':
+        specifier: workspace:*
+        version: link:../../packages/plugin-lightbox
       hono:
         specifier: ^4.12.25
         version: 4.12.26
@@ -127,6 +130,8 @@ importers:
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
+
+  packages/plugin-lightbox: {}
 
 packages:
 

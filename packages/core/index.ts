@@ -6,6 +6,7 @@ export {
 } from "./src/config";
 export { ContentManager } from "./src/content/content_manager";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
+export type { PipelineOptions, PipelinePlugin } from "./src/pipeline";
 export { Pipeline } from "./src/pipeline";
 export type { PostContent } from "./src/types/post_content";
 

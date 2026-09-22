@@ -1,4 +1,5 @@
 @import "tailwindcss" source("../app");
+@import "@riebeckite/plugin-lightbox/style.css";
 @import "./styles/callouts.css";
 @import "./styles/backlinks.css";
 @import "./styles/layout.css";

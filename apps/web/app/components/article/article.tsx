@@ -21,7 +21,7 @@ export default function Article(props: Props) {
           className="table-of-contents--desktop"
           items={tableOfContents}
         />
-        <div class="article-shell__body max-w-4xl px-4">
+        <div class="article-shell__body max-w-5xl px-4">
           <div
             class="article-shell__lead"
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}

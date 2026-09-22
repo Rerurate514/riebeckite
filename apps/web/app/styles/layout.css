@@ -1,11 +1,11 @@
-@layer components {
-  .article-shell {
-    max-width: none;
-  }
+.article-shell {
+  max-width: none;
+}
 
+@layer components {
   .article-shell__layout {
     display: grid;
-    grid-template-columns: minmax(0, 56rem);
+    grid-template-columns: minmax(0, 48rem);
     justify-content: center;
   }
 

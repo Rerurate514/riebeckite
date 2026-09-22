@@ -23,7 +23,7 @@ export default jsxRenderer(({ children }, c) => {
         <Link href="/app/style.css" rel="stylesheet" />
         <Script src="/app/client.ts" async />
       </head>
-      <body class="w-full flex justify-center items-center">
+      <body class="w-full flex flex-col items-center py-16">
         <SearchBar />
         {children}
       </body>

@@ -1,5 +1,5 @@
+import { slug } from "github-slugger";
 import type { Content, Html, Parent, Root, Text } from "mdast";
-import slugify from "slugify";
 import { visit } from "unist-util-visit";
 
 export interface WikilinkOptions {
@@ -179,8 +179,5 @@ function buildAssetsUrl(assetPath: string, assetBase: string): string {
 }
 
 function slugifyHeading(heading: string): string {
-  return slugify(heading, {
-    lower: true,
-    strict: true,
-  });
+  return slug(heading.trim());
 }

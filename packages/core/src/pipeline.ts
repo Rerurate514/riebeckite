@@ -1,6 +1,7 @@
 import rehypeFormat from "rehype-format";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import remarkDirective from "remark-directive";
 import remarkFrontmatter from "remark-frontmatter";
@@ -45,6 +46,7 @@ export class Pipeline {
       .use(remarkObsidianTag)
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
+      .use(rehypeSlug)
       .use(rehypeFormat)
       .use(rehypeKatex, { output: "mathml", strict: false })
       .use(rehypeStringify)

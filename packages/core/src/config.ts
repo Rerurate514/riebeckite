@@ -16,6 +16,14 @@ export function resolveConfig(
       author: config.site?.author ?? "",
       baseUrl: config.site?.baseUrl ?? "",
       locale: config.site?.locale ?? "en",
+      twitterSite: config.site?.twitterSite ?? "",
+      defaultOgImage: config.site?.defaultOgImage ?? "",
+      feed: {
+        title: config.site?.feed?.title ?? config.site?.title ?? "",
+        description:
+          config.site?.feed?.description ?? config.site?.description ?? "",
+        language: config.site?.feed?.language ?? config.site?.locale ?? "en",
+      },
     },
     content: {
       directory: config.content?.directory ?? "../../content",

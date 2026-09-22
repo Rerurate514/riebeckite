@@ -1,6 +1,7 @@
 import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
 import Article from "../../components/article/article";
+import { buildTagSeo } from "../../lib/seo";
 import { buildTagIndex, buildTagPage } from "../../lib/tags";
 
 export default createRoute(
@@ -15,6 +16,7 @@ export default createRoute(
     const tagIndex = await buildTagIndex();
     const entry = tagIndex.get(slug);
     if (!entry) return c.notFound();
+    c.set("seo", buildTagSeo(entry.tag, `/tags/${slug}`));
 
     return c.render(<Article content={buildTagPage(entry)} />);
   },

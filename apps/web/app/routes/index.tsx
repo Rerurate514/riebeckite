@@ -6,6 +6,7 @@ import RecentPosts from "../components/recent-posts/recent-posts";
 import { getRecentPosts } from "../components/recent-posts/recent-posts.server";
 import { config } from "../config";
 import { content } from "../content";
+import { buildIndexSeo } from "../lib/seo";
 
 export default createRoute(async (c) => {
   const post = await content.getProcessedContent("index");
@@ -16,6 +17,8 @@ export default createRoute(async (c) => {
     getPublishedBacklinks("index"),
     getRecentPosts(),
   ]);
+  c.set("seo", buildIndexSeo(post));
+
   return c.render(
     <Article
       content={post}

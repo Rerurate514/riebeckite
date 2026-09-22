@@ -3,15 +3,25 @@ import { buildTagHref } from "../../lib/tags";
 
 type Props = {
   frontmatter: PostFrontmatter;
+  readingTimeMinutes?: number;
 };
 
 export default function ArticleFrontmatter(props: Props) {
   const tags = normalizeTags(props.frontmatter.tags);
   const createdDate = formatFrontmatterDate(
-    props.frontmatter.created ?? props.frontmatter.date,
+    props.frontmatter.published ??
+      props.frontmatter.date ??
+      props.frontmatter.created,
   );
+  const updatedDate = formatFrontmatterDate(props.frontmatter.updated);
 
-  if (!createdDate && tags.length === 0) return null;
+  if (
+    !createdDate &&
+    !updatedDate &&
+    !props.readingTimeMinutes &&
+    tags.length === 0
+  )
+    return null;
 
   return (
     <aside class="article-frontmatter" aria-label="Article metadata">
@@ -21,9 +31,25 @@ export default function ArticleFrontmatter(props: Props) {
           dateTime={createdDate.isoDate}
           title={createdDate.fullDate}
         >
-          <span class="article-frontmatter__label">CREATED</span>
+          <span class="article-frontmatter__label">PUBLISHED</span>
           <span>{createdDate.displayDate}</span>
         </time>
+      )}
+      {updatedDate && (
+        <time
+          class="article-frontmatter__date"
+          dateTime={updatedDate.isoDate}
+          title={updatedDate.fullDate}
+        >
+          <span class="article-frontmatter__label">UPDATED</span>
+          <span>{updatedDate.displayDate}</span>
+        </time>
+      )}
+      {props.readingTimeMinutes && (
+        <span class="article-frontmatter__date">
+          <span class="article-frontmatter__label">READ</span>
+          <span>{props.readingTimeMinutes} min</span>
+        </span>
       )}
       {tags.length > 0 && (
         <ul class="article-frontmatter__tags" aria-label="Tags">

@@ -5,6 +5,7 @@ import Article from "../components/article/article";
 import { getPublishedBacklinks } from "../components/backlinks/backlinks.server";
 import { config } from "../config";
 import { content } from "../content";
+import { buildArticleSeo } from "../lib/seo";
 
 export default createRoute(
   ssgParams(async () => {
@@ -33,6 +34,7 @@ export default createRoute(
     }
 
     const backlinks = await getPublishedBacklinks(slug);
+    c.set("seo", buildArticleSeo(slug, post));
 
     return c.render(<Article content={post} backlinks={backlinks} />);
   },

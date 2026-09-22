@@ -1,8 +1,10 @@
-import type {} from "hono";
+import type { SeoMetadata } from "./lib/seo";
 
 declare module "hono" {
   interface Env {
-    Variables: Record<string, never>;
+    Variables: {
+      seo?: SeoMetadata;
+    };
     Bindings: Record<string, never>;
   }
 }

@@ -1,4 +1,5 @@
 import type { PostContent } from "@riebeckite/core";
+import { calculateReadingTime } from "../../lib/seo";
 import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
 import Backlinks, { type ArticleBacklink } from "../backlinks/backlinks";
 import TableOfContents, {
@@ -15,6 +16,7 @@ export default function Article(props: Props) {
   const html = props.content.html ?? "";
   const tableOfContents = extractTableOfContents(html);
   const articleHtml = splitAfterFirstHeading(html);
+  const readingTimeMinutes = calculateReadingTime(html);
 
   return (
     <article class="article-shell prose">
@@ -28,7 +30,10 @@ export default function Article(props: Props) {
             class="article-shell__lead"
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
           />
-          <ArticleFrontmatter frontmatter={props.content.frontmatter} />
+          <ArticleFrontmatter
+            frontmatter={props.content.frontmatter}
+            readingTimeMinutes={readingTimeMinutes}
+          />
           <div dangerouslySetInnerHTML={{ __html: articleHtml.rest }} />
           {props.afterContent}
         </div>

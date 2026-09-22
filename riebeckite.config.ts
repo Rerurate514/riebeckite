@@ -6,6 +6,11 @@ export default defineConfig({
     description: "An Obsidian-to-Hono Blog Framework",
     author: "Your Name",
     baseUrl: "https://my-blog.pages.dev",
+    locale: "ja_JP",
+    defaultOgImage: "/ogp.png",
+    feed: {
+      language: "ja",
+    },
   },
   content: {
     directory: "../../content",

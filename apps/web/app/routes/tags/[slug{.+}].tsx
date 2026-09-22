@@ -1,27 +1,9 @@
-import { createRoute } from "honox/factory";
+import { isPublished } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
+import { createRoute } from "honox/factory";
 import slugify from "slugify";
-import { getAllPosts, getPost, buildContentIndex } from "../../logic/get_post";
-import { Pipeline, isPublished } from "@riebeckite/core";
 import { config } from "../../config";
-// import TagPostList from "../components/tag-post-list";
-
-let cachedIndex: Map<string, string> | null = null;
-async function getContentIndex() {
-  if (!cachedIndex) cachedIndex = await buildContentIndex();
-  return cachedIndex;
-}
-
-const contentCache = new Map<string, any>();
-async function getProcessedContent(slug: string) {
-  if (contentCache.has(slug)) return contentCache.get(slug)!;
-  const contentIndex = await getContentIndex();
-  const rawPost = await getPost(slug);
-  const pipeline = new Pipeline(contentIndex);
-  const content = await pipeline.execute(rawPost);
-  contentCache.set(slug, content);
-  return content;
-}
+import { content } from "../../content";
 
 function slugifyTagPath(tag: string): string {
   return tag
@@ -40,16 +22,16 @@ let cachedTagIndex: Map<string, TagEntry> | null = null;
 async function buildTagIndex(): Promise<Map<string, TagEntry>> {
   if (cachedTagIndex) return cachedTagIndex;
 
-  const posts = await getAllPosts();
+  const posts = await content.getAllPosts();
   const map = new Map<string, TagEntry>();
 
   await Promise.all(
     posts.map(async (post) => {
       try {
-        const content = await getProcessedContent(post.slug);
-        if (!isPublished(config, content?.frontmatter)) return;
+        const article = await content.getProcessedContent(post.slug);
+        if (!isPublished(config, article?.frontmatter)) return;
 
-        const tags: string[] = content.frontmatter.tags ?? [];
+        const tags: string[] = article.frontmatter.tags ?? [];
         for (const rawTag of tags) {
           const key = slugifyTagPath(rawTag);
           if (!map.has(key)) {
@@ -57,7 +39,7 @@ async function buildTagIndex(): Promise<Map<string, TagEntry>> {
           }
           map.get(key)!.posts.push({
             slug: post.slug,
-            title: content.frontmatter.title ?? post.slug,
+            title: article.frontmatter.title ?? post.slug,
           });
         }
       } catch (e) {
@@ -83,10 +65,11 @@ export default createRoute(
     const entry = tagIndex.get(slug);
     if (!entry) return c.notFound();
 
-    return c.render(<div>
-      <p>post: </p><p>a : {entry}</p>
-    </div>);
-
-    //return c.render(<TagPostList tag={entry.tag} posts={entry.posts} />);
+    return c.render(
+      <div>
+        <p>post: </p>
+        <p>a : {entry}</p>
+      </div>,
+    );
   },
 );

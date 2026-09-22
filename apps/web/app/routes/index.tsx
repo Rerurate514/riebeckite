@@ -1,28 +1,13 @@
+import { isPublished } from "@riebeckite/core";
 import { createRoute } from "honox/factory";
-import { buildContentIndex, getPost } from "../logic/get_post";
-import { Pipeline, PostContent, isPublished } from "@riebeckite/core";
 import Article from "../components/article";
 import { config } from "../config";
-
-let cachedIndex: Map<string, string> | null = null;
-async function getContentIndex() {
-  if (!cachedIndex) cachedIndex = await buildContentIndex();
-  return cachedIndex;
-}
-
-let cachedContent: PostContent | null = null;
+import { content } from "../content";
 
 export default createRoute(async (c) => {
-  if (!cachedContent) {
-    const post = await getPost("index");
-    const contentIndex = await getContentIndex();
-    const pipeline = new Pipeline(contentIndex);
-    cachedContent = await pipeline.execute(post);
-  }
-
-  if (!isPublished(config, cachedContent?.frontmatter)) {
+  const post = await content.getProcessedContent("index");
+  if (!isPublished(config, post?.frontmatter)) {
     return c.notFound();
   }
-
-  return c.render(<Article content={cachedContent} />);
+  return c.render(<Article content={post} />);
 });

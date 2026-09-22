@@ -1,38 +1,20 @@
-import { createRoute } from "honox/factory";
-import { Pipeline, PostContent, isPublished } from "@riebeckite/core";
+import { isPublished } from "@riebeckite/core";
 import { ssgParams } from "hono/ssg";
-import { buildContentIndex, getAllPosts, getPost } from "../logic/get_post";
+import { createRoute } from "honox/factory";
 import Article from "../components/article";
 import { config } from "../config";
-
-let cachedIndex: Map<string, string> | null = null;
-async function getContentIndex() {
-  if (!cachedIndex) cachedIndex = await buildContentIndex();
-  return cachedIndex;
-}
-
-const contentCache = new Map<string, PostContent>();
-
-async function getProcessedContent(slug: string) {
-  if (contentCache.has(slug)) return contentCache.get(slug)!;
-  const contentIndex = await getContentIndex();
-  const rawPost = await getPost(slug);
-  const pipeline = new Pipeline(contentIndex);
-  const content = await pipeline.execute(rawPost);
-  contentCache.set(slug, content);
-  return content;
-}
+import { content } from "../content";
 
 export default createRoute(
   ssgParams(async () => {
-    const posts = await getAllPosts();
+    const posts = await content.getAllPosts();
     const results = await Promise.all(
       posts.map(async (post) => {
         try {
-          const content = await getProcessedContent(post.slug);
+          const processed = await content.getProcessedContent(post.slug);
           return {
             slug: post.slug,
-            isPublish: isPublished(config, content?.frontmatter),
+            isPublish: isPublished(config, processed?.frontmatter),
           };
         } catch (e) {
           console.error(`Failed to process ${post.slug}:`, e);
@@ -44,7 +26,7 @@ export default createRoute(
   }),
   async (c, next) => {
     const slug = c.req.param("slug");
-    if (c.req.path.startsWith('/tags/')) {
+    if (c.req.path.startsWith("/tags/")) {
       return next();
     }
 
@@ -52,10 +34,8 @@ export default createRoute(
 
     if (/\.[a-zA-Z0-9]+$/.test(slug)) return c.notFound();
 
-    const content = await getProcessedContent(slug);
-    if (!content) return c.notFound();
-
-    if (!isPublished(config, content.frontmatter)) {
+    const post = await content.getProcessedContent(slug);
+    if (!isPublished(config, post.frontmatter)) {
       return c.notFound();
     }
 
@@ -63,6 +43,6 @@ export default createRoute(
       return c.redirect("/", 301);
     }
 
-    return c.render(<Article content={content} />);
+    return c.render(<Article content={post} />);
   },
 );

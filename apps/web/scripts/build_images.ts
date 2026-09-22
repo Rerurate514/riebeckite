@@ -1,7 +1,7 @@
 import fs, { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { IMAGE_EXTENSIONS } from "@riebeckite/core";
 import { ASSETS_ROOT, CONTENT_DIR } from "../app/constants/paths";
-import { IMAGE_EXTENSIONS } from "../app/constants/image_exts";
 
 async function copyImages() {
   const entries = await fs.readdir(CONTENT_DIR, {

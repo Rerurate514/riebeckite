@@ -88,7 +88,7 @@ export class Pipeline {
       });
     }
 
-    this.use(processor, rehypeStringify);
+    this.use(processor, rehypeStringify, { allowDangerousHtml: true });
 
     const file = await processor.process(markDownContent.trim());
 

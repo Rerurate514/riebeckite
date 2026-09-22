@@ -16,6 +16,7 @@
     "@riebeckite/plugin-code-enhance": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
+    "@riebeckite/plugin-mermaid": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
     "hono": "^4.12.25",
     "honox": "0.1.56",

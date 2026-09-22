@@ -38,6 +38,18 @@ const lightboxStyle = path.resolve(
   webRoot,
   "../../packages/plugin-lightbox/style.css",
 );
+const mermaidEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-mermaid/index.ts",
+);
+const mermaidClientEntry = path.resolve(
+  webRoot,
+  "../../packages/plugin-mermaid/client.ts",
+);
+const mermaidStyle = path.resolve(
+  webRoot,
+  "../../packages/plugin-mermaid/style.css",
+);
 const diagnosticsEntry = path.resolve(
   webRoot,
   "../../packages/plugin-diagnostics/index.ts",
@@ -77,6 +89,18 @@ export default defineConfig({
         replacement: lightboxStyle,
       },
       {
+        find: /^@riebeckite\/plugin-mermaid$/,
+        replacement: mermaidEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-mermaid\/client$/,
+        replacement: mermaidClientEntry,
+      },
+      {
+        find: /^@riebeckite\/plugin-mermaid\/style\.css$/,
+        replacement: mermaidStyle,
+      },
+      {
         find: /^@riebeckite\/plugin-diagnostics$/,
         replacement: diagnosticsEntry,
       },
@@ -112,6 +136,7 @@ export default defineConfig({
           "node:fs/promises",
           "node:path",
           "parse-numeric-range",
+          "mermaid",
           "slugify",
           "vfile-matter",
         ],

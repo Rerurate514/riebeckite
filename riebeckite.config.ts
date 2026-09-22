@@ -3,6 +3,7 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+import { mermaid } from "@riebeckite/plugin-mermaid";
 import { seo } from "@riebeckite/plugin-seo";
 
 export default defineConfig({
@@ -33,35 +34,42 @@ export default defineConfig({
     userCss: [],
   },
   plugins: [
-    seo({
-      siteName: "Riebeckite Blog",
-      defaultImage: "/ogp.png",
-      feed: {
-        rss: true,
-        atom: true,
-        json: true,
-      },
-      sitemap: true,
-      robots: true,
-    }),
-    autoCardLinkPlugin(),
-    codeEnhance({
-      theme: {
-        light: "github-light",
-        dark: "github-dark",
-      },
-      lineNumbers: true,
-      copyButton: true,
-      filename: true,
-      lineHighlight: true,
-      diffHighlight: true,
-      wrapToggle: true,
-    }),
-    lightboxPlugin(),
-    diagnostics({
-      reportUnusedAssets: true,
-      reportOrphans: true,
-      requiredFrontmatter: ["title"],
-    }),
+    // seo({
+    //   siteName: "Riebeckite Blog",
+    //   defaultImage: "/ogp.png",
+    //   feed: {
+    //     rss: true,
+    //     atom: true,
+    //     json: true,
+    //   },
+    //   sitemap: true,
+    //   robots: true,
+    // }),
+    // mermaid({
+    //   render: "build",
+    //   theme: {
+    //     light: "default",
+    //     dark: "dark",
+    //   },
+    // }),
+    // autoCardLinkPlugin(),
+    // codeEnhance({
+    //   theme: {
+    //     light: "github-light",
+    //     dark: "github-dark",
+    //   },
+    //   lineNumbers: true,
+    //   copyButton: true,
+    //   filename: true,
+    //   lineHighlight: true,
+    //   diffHighlight: true,
+    //   wrapToggle: true,
+    // }),
+    // lightboxPlugin(),
+    // diagnostics({
+    //   reportUnusedAssets: true,
+    //   reportOrphans: true,
+    //   requiredFrontmatter: ["title"],
+    // }),
   ],
 });

@@ -1,5 +1,5 @@
 import { visit } from "unist-util-visit";
-import type { Parent, Root, Text } from "mdast";
+import type { Content, Parent, Root, Text } from "mdast";
 import slugify from "slugify";
 
 export interface TagOptions {
@@ -7,24 +7,26 @@ export interface TagOptions {
   onTag?: (tag: string) => void;
 }
 
-const TAG_RE =
-  /(^|[\s([{"'])#([\p{L}\p{N}_\-/]+)/gu;
+const TAG_RE = /(^|[\s([{"'])#([\p{L}\p{N}_\-/]+)/gu;
 
 export function remarkObsidianTag(opt: TagOptions = {}) {
   const { tagBase = "/tags/", onTag } = opt;
 
   return (tree: Root) => {
     visit(tree, "text", (node: Text, index, parent: Parent | undefined) => {
-      if (!parent || index == undefined) return;
+      if (!parent || index === undefined) return;
       if (!node.value.includes("#")) return;
 
-      const newNodes: any[] = [];
+      const newNodes: Content[] = [];
       let lastIndex = 0;
-      let match: RegExpExecArray | null;
 
       TAG_RE.lastIndex = 0;
 
-      while ((match = TAG_RE.exec(node.value)) !== null) {
+      for (
+        let match = TAG_RE.exec(node.value);
+        match !== null;
+        match = TAG_RE.exec(node.value)
+      ) {
         const [full, lead, rawTag] = match;
         const start = match.index;
         const tagStart = start + lead.length;
@@ -74,7 +76,7 @@ export function remarkObsidianTag(opt: TagOptions = {}) {
 }
 
 function normalizeTag(raw: string): string | null {
-  const cleaned = raw.replace(/[/\-]+$/, "");
+  const cleaned = raw.replace(/[/-]+$/, "");
   if (!cleaned) return null;
 
   const isPurelyNumeric = /^[\p{N}/\-_]+$/u.test(cleaned);
@@ -95,6 +97,8 @@ function buildTagUrl(tag: string, tagBase: string): string {
 function slugifySegments(path: string): string {
   return path
     .split("/")
-    .map((segment) => slugify(decodeURIComponent(segment), { lower: true, strict: true }))
+    .map((segment) =>
+      slugify(decodeURIComponent(segment), { lower: true, strict: true }),
+    )
     .join("/");
 }

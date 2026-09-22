@@ -1,5 +1,6 @@
 import type { RiebeckiteConfig } from "./types/riebeckite_config";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config";
+import type { PostFrontmatter } from "./types/post_content";
 
 export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {
   return config;
@@ -33,7 +34,7 @@ export function resolveConfig(
 
 export function isPublished(
   config: ResolvedRiebeckiteConfig,
-  frontmatter: Record<string, any> | undefined,
+  frontmatter: PostFrontmatter | undefined,
 ): boolean {
   if (config.content.filters.publishStrategy === "explicit") {
     return frontmatter?.publish === true;

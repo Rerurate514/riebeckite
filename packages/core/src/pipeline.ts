@@ -9,7 +9,7 @@ import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
-import { PostContent } from "./types/post_content";
+import type { PostContent, PostFrontmatter } from "./types/post_content";
 import { remarkObsidianWikilink } from "./plugins/remark_obsidian_wikilink";
 import { remarkObsidianCallout } from "./plugins/remark_obsidian_callout";
 import { remarkObsidianTag } from "./plugins/remark_obsidian_tag";
@@ -24,7 +24,7 @@ export class Pipeline {
       .use(remarkDirective)
       .use(remarkFrontmatter, ["yaml", "toml"])
       .use(() => {
-        return function (_, file) {
+        return (_, file) => {
           matter(file);
         };
       })
@@ -41,7 +41,7 @@ export class Pipeline {
       .process(markDownContent.trim());
 
     return {
-      frontmatter: (file.data.matter || {}) as Record<string, any>,
+      frontmatter: (file.data.matter || {}) as PostFrontmatter,
       html: String(file.value),
     };
   }

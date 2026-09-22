@@ -3,10 +3,11 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@riebeckite/core": ["packages/core/index.ts"],
-    },
+      "@riebeckite/core": ["packages/core/index.ts"]
+    }
   },
-  "include": ["./riebeckite.config.ts"],
+  "include": ["./riebeckite.config.ts"]
 }

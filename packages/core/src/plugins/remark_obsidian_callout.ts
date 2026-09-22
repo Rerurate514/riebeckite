@@ -1,5 +1,5 @@
 import { visit } from "unist-util-visit";
-import type { Blockquote, Paragraph, Root, Text } from "mdast";
+import type { BlockContent, Blockquote, Paragraph, Root, Text } from "mdast";
 import type { Parent } from "unist";
 
 export interface CalloutOptions {
@@ -46,7 +46,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
       tree,
       "blockquote",
       (node: Blockquote, index, parent: Parent | undefined) => {
-        if (!parent || index == undefined) return;
+        if (!parent || index === undefined) return;
 
         const marker = extractMarker(node);
         if (!marker) return;
@@ -54,15 +54,17 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
         const { type, fold, title, consumedParagraph } = marker;
         const resolvedTitle = title || defaultTitles[type] || capitalize(type);
 
-        const bodyChildren: any[] = consumedParagraph
+        const bodyChildren = consumedParagraph
           ? node.children.slice(1)
           : node.children;
 
-        const titleNode: any = {
+        const titleNode = {
           type: "paragraph",
           data: {
             hName: "div",
-            hProperties: { className: ["callout-title", `callout-${type}-title`] },
+            hProperties: {
+              className: ["callout-title", `callout-${type}-title`],
+            },
           },
           children: [
             {
@@ -82,16 +84,16 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
               children: [{ type: "text", value: resolvedTitle }],
             },
           ],
-        };
+        } as unknown as BlockContent;
 
-        const contentNode: any = {
+        const contentNode = {
           type: "paragraph",
           data: {
             hName: "div",
             hProperties: { className: ["callout-content"] },
           },
           children: bodyChildren,
-        };
+        } as unknown as BlockContent;
 
         const className = ["callout", `callout-${type}`];
         if (fold) className.push("is-collapsible");
@@ -107,9 +109,8 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
           },
         };
 
-        node.children = (
-          bodyChildren.length > 0 ? [titleNode, contentNode] : [titleNode]
-        ) as any;
+        node.children =
+          bodyChildren.length > 0 ? [titleNode, contentNode] : [titleNode];
       },
     );
   };
@@ -124,10 +125,10 @@ type Marker = {
 
 function extractMarker(node: Blockquote): Marker | null {
   const first = node.children[0];
-  if (!first || first.type !== "paragraph") return null;
+  if (first?.type !== "paragraph") return null;
 
   const firstChild = (first as Paragraph).children[0];
-  if (!firstChild || firstChild.type !== "text") return null;
+  if (firstChild?.type !== "text") return null;
 
   const text = firstChild as Text;
   const lines = text.value.split("\n");

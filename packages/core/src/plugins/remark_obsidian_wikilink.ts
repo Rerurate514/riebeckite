@@ -1,5 +1,5 @@
 import { visit } from "unist-util-visit";
-import type { Parent, Root, Text } from "mdast";
+import type { Content, Parent, Root, Text } from "mdast";
 import slugify from "slugify";
 
 export interface WikilinkOptions {
@@ -15,16 +15,19 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
 
   return (tree: Root) => {
     visit(tree, "text", (node: Text, index, parent: Parent | undefined) => {
-      if (!parent || index == undefined) return;
+      if (!parent || index === undefined) return;
       if (!node.value.includes("[[")) return;
 
-      const newNodes: any[] = [];
+      const newNodes: Content[] = [];
       let lastIndex = 0;
-      let match: RegExpExecArray | null;
 
       WIKILINK_RE.lastIndex = 0;
 
-      while ((match = WIKILINK_RE.exec(node.value)) !== null) {
+      for (
+        let match = WIKILINK_RE.exec(node.value);
+        match !== null;
+        match = WIKILINK_RE.exec(node.value)
+      ) {
         const [full, embedMark, rawTarget, heading, alias] = match;
         const start = match.index;
 

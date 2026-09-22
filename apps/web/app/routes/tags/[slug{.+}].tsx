@@ -37,7 +37,10 @@ async function buildTagIndex(): Promise<Map<string, TagEntry>> {
           if (!map.has(key)) {
             map.set(key, { tag: rawTag, posts: [] });
           }
-          map.get(key)!.posts.push({
+          const entry = map.get(key);
+          if (!entry) return;
+
+          entry.posts.push({
             slug: post.slug,
             title: article.frontmatter.title ?? post.slug,
           });
@@ -67,8 +70,14 @@ export default createRoute(
 
     return c.render(
       <div>
-        <p>post: </p>
-        <p>a : {entry}</p>
+        <h1>#{entry.tag}</h1>
+        <ul>
+          {entry.posts.map((post) => (
+            <li key={post.slug}>
+              <a href={`/${post.slug}`}>{post.title}</a>
+            </li>
+          ))}
+        </ul>
       </div>,
     );
   },

@@ -7,6 +7,10 @@
     "skipLibCheck": true,
     "lib": ["ESNext", "DOM"],
     "types": ["vite/client", "@cloudflare/workers-types/2023-07-01"],
+    "baseUrl": "../..",
+    "paths": {
+      "@riebeckite/core": ["packages/core/index.ts"]
+    },
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },

@@ -1,4 +1,4 @@
-import { PostContent } from "@riebeckite/core";
+import type { PostContent } from "@riebeckite/core";
 
 type Props = {
   content: PostContent;

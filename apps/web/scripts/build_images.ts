@@ -41,3 +41,8 @@ async function copyImages() {
     process.exitCode = 1;
   }
 }
+
+copyImages().catch((error) => {
+  console.error("Failed to copy images:", error);
+  process.exitCode = 1;
+});

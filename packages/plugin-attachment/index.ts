@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { PluginAttachmentRenderContext } from "@riebeckite/core";
+import type { PluginRenderContext } from "@riebeckite/core";
 import { definePlugin, getExtension } from "@riebeckite/core";
 
 export type AttachmentOptions = {
@@ -13,7 +13,12 @@ export function attachment(options: AttachmentOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     options,
-    renderAttachment: async (context) => renderAttachment(context, options),
+    renderers: [
+      {
+        name: "attachment-card",
+        render: async (context) => renderAttachment(context, options),
+      },
+    ],
     assets: [
       {
         pluginName: PLUGIN_NAME,
@@ -27,9 +32,11 @@ export function attachment(options: AttachmentOptions = {}) {
 export const attachmentPlugin = attachment;
 
 async function renderAttachment(
-  context: PluginAttachmentRenderContext,
+  context: PluginRenderContext,
   options: AttachmentOptions,
-): Promise<string> {
+): Promise<string | null> {
+  if (context.kind !== "attachment") return null;
+
   const fileName = path.posix.basename(context.path);
   const extension = getExtension(context.path).toUpperCase() || "FILE";
   const size =
@@ -54,7 +61,7 @@ async function renderAttachment(
 }
 
 async function getAttachmentSize(
-  context: PluginAttachmentRenderContext,
+  context: PluginRenderContext,
 ): Promise<string | null> {
   const contentDirectory = context.config?.content.directory;
   if (!contentDirectory) return null;

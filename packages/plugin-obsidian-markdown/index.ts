@@ -36,7 +36,7 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
         contentIndex: context.contentIndex,
         assetBase: options.assetBase,
         renderNoteEmbed: context.renderNoteEmbed,
-        renderAttachment: context.renderAttachment,
+        renderContent: context.renderContent,
       });
       pipeline.use(remarkObsidianCallout, options.callout);
       pipeline.use(remarkObsidianTag, options.tag);

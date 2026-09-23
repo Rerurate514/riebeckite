@@ -53,7 +53,7 @@ export class Pipeline {
     const markdownPipelineContext: MarkdownPipelineContext = {
       contentIndex: this.contentIndex,
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
-      renderAttachment: this.createAttachmentRenderer(),
+      renderContent: this.createContentRenderer(),
     };
 
     for (const plugin of plugins) {
@@ -141,21 +141,15 @@ export class Pipeline {
     };
   }
 
-  private createAttachmentRenderer() {
-    const plugins = resolvePlugins(this.options.plugins).filter(
-      (plugin) => plugin.renderAttachment,
+  private createContentRenderer(): MarkdownPipelineContext["renderContent"] {
+    const renderers = resolvePlugins(this.options.plugins).flatMap(
+      (plugin) => plugin.renderers ?? [],
     );
-    if (plugins.length === 0) return undefined;
+    if (renderers.length === 0) return undefined;
 
-    return async (input: {
-      path: string;
-      raw: string;
-      label: string;
-      url: string;
-      embed: boolean;
-    }) => {
-      for (const plugin of plugins) {
-        const html = await plugin.renderAttachment?.({
+    return async (input) => {
+      for (const renderer of renderers) {
+        const html = await renderer.render({
           config: this.options.config,
           contentIndex: this.contentIndex,
           diagnostics: [],

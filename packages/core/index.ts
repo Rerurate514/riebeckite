@@ -40,12 +40,15 @@ export type {
   PluginClientEntry,
 } from "./src/types/plugin_asset";
 export type {
-  PluginAttachmentRenderContext,
   PluginContentContext,
+  PluginContentRenderer,
   PluginContext,
   PluginGraphContext,
   PluginManifestContext,
   PluginPostContext,
+  PluginRenderContext,
+  PluginRenderInput,
+  PluginRenderTarget,
 } from "./src/types/plugin_context";
 export type {
   PluginDiagnostic,

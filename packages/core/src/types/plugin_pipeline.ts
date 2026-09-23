@@ -1,5 +1,6 @@
 import type { Plugin } from "unified";
 import type { Node } from "unist";
+import type { PluginRenderInput } from "./plugin_context";
 
 export type PipelinePlugin = Plugin<[unknown?], Node, Node>;
 
@@ -15,13 +16,7 @@ export type MarkdownPipelineContext = {
     slug: string,
     fragment: MarkdownEmbedFragment | null,
   ) => Promise<string | null>;
-  renderAttachment?: (input: {
-    path: string;
-    raw: string;
-    label: string;
-    url: string;
-    embed: boolean;
-  }) => Promise<string | null>;
+  renderContent?: (input: PluginRenderInput) => Promise<string | null>;
 };
 
 export type MarkdownEmbedFragment = {

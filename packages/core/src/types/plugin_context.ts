@@ -26,7 +26,24 @@ export type PluginGraphContext = PluginContext & {
   entries: ContentManifestEntry[];
 };
 
-export type PluginAttachmentRenderContext = PluginContext & {
+export type PluginRenderTarget = {
+  kind: string;
+  path: string;
+  raw: string;
+  label: string;
+  url: string;
+  embed: boolean;
+};
+
+export type PluginRenderContext = PluginContext & PluginRenderTarget;
+
+export type PluginContentRenderer = {
+  name?: string;
+  render(context: PluginRenderContext): string | null | Promise<string | null>;
+};
+
+export type PluginRenderInput = {
+  kind: string;
   path: string;
   raw: string;
   label: string;

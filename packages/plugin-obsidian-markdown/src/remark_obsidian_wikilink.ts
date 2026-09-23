@@ -10,7 +10,8 @@ export interface WikilinkOptions {
     slug: string,
     fragment: WikilinkFragment | null,
   ) => Promise<string | null>;
-  renderAttachment?: (input: {
+  renderContent?: (input: {
+    kind: string;
     path: string;
     raw: string;
     label: string;
@@ -27,12 +28,7 @@ const WIKILINK_PATTERN =
   "(!)?\\[\\[([^\\]|#]+)(?:#(\\^[^\\]|]+|[^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
-  const {
-    contentIndex,
-    assetBase = "/",
-    renderNoteEmbed,
-    renderAttachment,
-  } = opt;
+  const { contentIndex, assetBase = "/", renderNoteEmbed, renderContent } = opt;
 
   return async (tree: Root) => {
     const replacements: {
@@ -114,7 +110,8 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       } else if (isEmbed && resolved?.kind === "attachment") {
         const label = alias?.trim() ?? target;
         const url = attachmentUrl(resolved.value);
-        const html = await renderAttachment?.({
+        const html = await renderContent?.({
+          kind: "attachment",
           path: resolved.value,
           raw: target,
           label,
@@ -152,7 +149,8 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       } else if (resolved?.kind === "attachment") {
         const label = alias?.trim() ?? target;
         const url = attachmentUrl(resolved.value);
-        const html = await renderAttachment?.({
+        const html = await renderContent?.({
+          kind: "attachment",
           path: resolved.value,
           raw: target,
           label,

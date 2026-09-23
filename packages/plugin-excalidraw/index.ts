@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type {
-  PluginAttachmentRenderContext,
+  PluginRenderContext,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { definePlugin, IMAGE_EXTENSIONS } from "@riebeckite/core";
@@ -39,7 +39,12 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
         options,
       });
     },
-    renderAttachment: async (context) => renderAttachment(context, options),
+    renderers: [
+      {
+        name: "excalidraw-embed",
+        render: async (context) => renderAttachment(context, options),
+      },
+    ],
     assets: [
       {
         pluginName: PLUGIN_NAME,
@@ -60,9 +65,10 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
 export const excalidrawPlugin = excalidraw;
 
 async function renderAttachment(
-  context: PluginAttachmentRenderContext,
+  context: PluginRenderContext,
   options: ExcalidrawOptions,
 ): Promise<string | null> {
+  if (context.kind !== "attachment") return null;
   if (!isExcalidrawPath(context.path)) return null;
   if (!context.embed) return null;
 

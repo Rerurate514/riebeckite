@@ -1,8 +1,8 @@
 import type { Diagnostic } from "./diagnostic";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset";
 import type {
-  PluginAttachmentRenderContext,
   PluginContentContext,
+  PluginContentRenderer,
   PluginContext,
   PluginGraphContext,
   PluginManifestContext,
@@ -40,9 +40,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   clientEntries?: PluginClientEntry[];
   seo?: PluginSeoExtension;
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
-  renderAttachment?(
-    context: PluginAttachmentRenderContext,
-  ): string | null | Promise<string | null>;
+  renderers?: PluginContentRenderer[];
 };
 
 export type PluginInput = RiebeckitePlugin | false | null | undefined;

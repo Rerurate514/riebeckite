@@ -3,7 +3,7 @@
   --rr-code-ink: var(--rr-color-ink, #171717);
   --rr-code-muted: color-mix(in srgb, var(--rr-code-ink) 56%, transparent);
   --rr-code-rule: color-mix(in srgb, var(--rr-code-ink) 18%, transparent);
-  --rr-code-accent: var(--rr-color-orange, #f66620);
+  --rr-code-accent: var(--rr-color-orange, #686868);
   margin: 2rem 0;
   border: 1px solid var(--rr-code-rule);
   background: color-mix(in srgb, var(--rr-code-paper) 94%, var(--rr-code-ink));

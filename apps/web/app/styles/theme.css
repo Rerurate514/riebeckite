@@ -13,7 +13,7 @@
     --rb-color-paper: #ffffff;
     --rb-color-ink: #000000;
     --rb-color-muted: #69645c;
-    --rb-color-accent: #f66620;
+    --rb-color-accent: #686868;
     --rb-color-border: color-mix(
       in oklab,
       var(--rb-color-ink) 18%,

@@ -5,7 +5,7 @@
 }
 
 .rr-lightbox-trigger:focus-visible {
-  outline: 2px solid var(--rr-color-orange, #f66620);
+  outline: 2px solid var(--rr-color-orange, #686868);
 }
 
 .rr-lightbox-image {
@@ -67,8 +67,8 @@
 
 .rr-lightbox__close:hover,
 .rr-lightbox__close:focus-visible {
-  border-color: var(--rr-color-orange, #f66620);
-  color: var(--rr-color-orange, #f66620);
+  border-color: var(--rr-color-orange, #686868);
+  color: var(--rr-color-orange, #686868);
   outline: none;
 }
 

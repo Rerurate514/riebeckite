@@ -9,7 +9,7 @@
       color-mix(in srgb, var(--rr-mermaid-ink) 18%, transparent)
     )
   );
-  --rr-mermaid-accent: var(--rr-color-orange, var(--rb-color-accent, #f66620));
+  --rr-mermaid-accent: var(--rr-color-orange, var(--rb-color-accent, #686868));
   margin: 2rem 0;
   border: 1px solid var(--rr-mermaid-rule);
   background: color-mix(

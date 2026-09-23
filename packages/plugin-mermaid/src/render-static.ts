@@ -12,12 +12,10 @@ type RendererResponse =
     };
 
 const RENDER_TIMEOUT_MS = 30_000;
-const WORKER_PATH = pathToFileURL(
+const WORKER_URL = pathToFileURL(
   new URL("./render-worker.mjs", import.meta.url),
-).href;
-const PATCHER_PATH = pathToFileURL(
-  new URL("./dompurify-patcher.mjs", import.meta.url),
-).href;
+);
+const WORKER_PATH = fileURLToPath(WORKER_URL);
 
 let renderQueue: Promise<unknown> = Promise.resolve();
 
@@ -39,8 +37,8 @@ async function invokeRenderer(request: {
   theme: string;
 }): Promise<RendererResponse> {
   return new Promise((resolve, reject) => {
-    // Use --import with proper file:// URL strings
-    const child = spawn(process.execPath, [PATCHER_PATH, WORKER_PATH], {
+    // Spawn worker without --import (patcher is imported inside worker)
+    const child = spawn(process.execPath, [WORKER_PATH], {
       stdio: ["pipe", "pipe", "pipe"],
     });
 

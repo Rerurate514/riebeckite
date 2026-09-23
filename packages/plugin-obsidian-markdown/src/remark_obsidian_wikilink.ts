@@ -1,6 +1,6 @@
 import { attachmentUrl, isAttachmentPath, isImagePath } from "@riebeckite/core";
 import { slug } from "github-slugger";
-import type { Content, Html, Parent, Root, Text } from "mdast";
+import type { Content, Html, Paragraph, Parent, Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
 
 export interface WikilinkOptions {
@@ -51,6 +51,8 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         replacement.parent,
       );
     }
+
+    splitParagraphEmbeds(tree);
   };
 
   async function replaceWikilinks(node: Text, index: number, parent: Parent) {
@@ -80,11 +82,12 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       const fragment = parseFragment(rawFragment);
 
       if (isEmbed && resolved?.kind === "image") {
-        newNodes.push({
-          type: "image",
-          url: buildAssetsUrl(resolved.value, assetBase),
-          alt: alias?.trim() ?? target,
-        });
+        newNodes.push(
+          createImageEmbedNode(
+            buildAssetsUrl(resolved.value, assetBase),
+            alias?.trim() ?? target,
+          ),
+        );
       } else if (isEmbed && resolved?.kind === "note") {
         const html = await renderNoteEmbed?.(resolved.value, fragment);
 
@@ -187,6 +190,78 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       parent.children.splice(index, 1, ...newNodes);
     }
   }
+}
+
+function createImageEmbedNode(url: string, alt: string): Html {
+  return {
+    type: "html",
+    value: `<div class="wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}" /></div>`,
+  };
+}
+
+function splitParagraphEmbeds(tree: Root): void {
+  const splits = new Map<Parent, { index: number; blocks: Content[] }[]>();
+
+  visit(tree, "paragraph", (node, index, parent) => {
+    if (!parent || index === undefined) return;
+    const blocks = splitParagraphContent(node);
+    if (!blocks) return;
+
+    const entries = splits.get(parent) ?? [];
+    entries.push({ index, blocks });
+    splits.set(parent, entries);
+  });
+
+  for (const [owner, entries] of splits) {
+    for (const { index, blocks } of [...entries].sort(
+      (a, b) => b.index - a.index,
+    )) {
+      owner.children.splice(index, 1, ...blocks);
+    }
+  }
+}
+
+function splitParagraphContent(paragraph: Paragraph): Content[] | null {
+  if (!paragraph.children.some(isBlockEmbedHtml)) return null;
+
+  const segments: Content[][] = [];
+  let current: Content[] = [];
+
+  for (const child of paragraph.children) {
+    if (isBlockEmbedHtml(child)) {
+      segments.push(current);
+      current = [];
+      segments.push([child]);
+    } else {
+      current.push(child);
+    }
+  }
+  segments.push(current);
+
+  const blocks: Content[] = [];
+  for (const segment of segments) {
+    if (segment.length === 0) continue;
+    if (segment.length === 1 && isBlockEmbedHtml(segment[0])) {
+      blocks.push(segment[0]);
+    } else {
+      blocks.push({
+        type: "paragraph",
+        children: segment,
+      } as Paragraph);
+    }
+  }
+
+  return blocks.length > 0 ? blocks : null;
+}
+
+function isBlockEmbedHtml(child: Content): child is Html {
+  if (child.type !== "html") return false;
+  const value = child.value;
+  return (
+    value.startsWith('<div class="wikilink-image-embed') ||
+    value.startsWith('<div class="wikilink-embed') ||
+    value.startsWith("<aside")
+  );
 }
 
 function createNoteEmbedNode(

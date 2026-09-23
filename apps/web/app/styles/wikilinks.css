@@ -5,6 +5,18 @@
     border-left: 2px solid color-mix(in oklab, currentColor 18%, transparent);
   }
 
+  .prose .wikilink-image-embed {
+    margin-block: 1.75rem;
+    text-align: center;
+  }
+
+  .prose .wikilink-image-embed img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+  }
+
   .prose .wikilink-embed::before {
     display: block;
     margin-block-end: 0.5rem;

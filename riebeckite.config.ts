@@ -5,6 +5,7 @@ import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { mermaid } from "@riebeckite/plugin-mermaid";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { seo } from "@riebeckite/plugin-seo";
 
 export default defineConfig({
@@ -35,6 +36,7 @@ export default defineConfig({
     userCss: [],
   },
   plugins: [
+    obsidianMarkdown(),
     seo({
       siteName: "Riebeckite Blog",
       defaultImage: "/ogp.png",

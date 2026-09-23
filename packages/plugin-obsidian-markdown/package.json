@@ -1,0 +1,16 @@
+{
+  "name": "@riebeckite/plugin-obsidian-markdown",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "github-slugger": "^2.0.0",
+    "slugify": "^1.6.9",
+    "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4"
+  }
+}

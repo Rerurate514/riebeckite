@@ -104,6 +104,26 @@ export type MarkdownPipeline = {
 
 export type HtmlPipeline = MarkdownPipeline;
 
+export type MarkdownPipelineContext = {
+  contentIndex: Map<string, string>;
+  renderNoteEmbed?: (
+    slug: string,
+    fragment: MarkdownEmbedFragment | null,
+  ) => Promise<string | null>;
+  renderAttachment?: (input: {
+    path: string;
+    raw: string;
+    label: string;
+    url: string;
+    embed: boolean;
+  }) => Promise<string | null>;
+};
+
+export type MarkdownEmbedFragment = {
+  kind: "heading" | "block";
+  value: string;
+};
+
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   contentIndex: Map<string, string>;
@@ -149,7 +169,10 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   onManifestCreated?(context: PluginManifestContext): void | Promise<void>;
   onBuildStart?(context: PluginContext): void | Promise<void>;
   onBuildEnd?(context: PluginManifestContext): void | Promise<void>;
-  extendMarkdownPipeline?(pipeline: MarkdownPipeline): void;
+  extendMarkdownPipeline?(
+    pipeline: MarkdownPipeline,
+    context: MarkdownPipelineContext,
+  ): void;
   extendHtmlPipeline?(pipeline: HtmlPipeline): void;
   addDiagnostics?(context: PluginContext): Diagnostic[] | Promise<Diagnostic[]>;
   assets?: PluginAsset[];

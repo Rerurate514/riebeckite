@@ -13,14 +13,11 @@ import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
-import { remarkObsidianBlockReference } from "./plugins/remark_obsidian_block_reference";
-import { remarkObsidianCallout } from "./plugins/remark_obsidian_callout";
-import { remarkObsidianTag } from "./plugins/remark_obsidian_tag";
-import {
-  remarkObsidianWikilink,
-  type WikilinkFragment,
-} from "./plugins/remark_obsidian_wikilink";
-import type { RiebeckitePlugin } from "./types/plugin";
+import type {
+  MarkdownEmbedFragment,
+  MarkdownPipelineContext,
+  RiebeckitePlugin,
+} from "./types/plugin";
 import { resolvePlugins } from "./types/plugin";
 import type { PostContent, PostFrontmatter } from "./types/post_content";
 
@@ -52,24 +49,25 @@ export class Pipeline {
     });
     this.use(processor, remarkMath);
     this.use(processor, remarkGfm);
-    this.use(processor, remarkObsidianBlockReference);
-    this.use(processor, remarkObsidianWikilink, {
+
+    const markdownPipelineContext: MarkdownPipelineContext = {
       contentIndex: this.contentIndex,
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
       renderAttachment: this.createAttachmentRenderer(),
-    });
-    this.use(processor, remarkObsidianCallout);
-    this.use(processor, remarkObsidianTag);
+    };
 
     for (const plugin of plugins) {
       for (const remarkPlugin of plugin.remarkPlugins ?? []) {
         this.use(processor, remarkPlugin);
       }
-      plugin.extendMarkdownPipeline?.({
-        use: (pipelinePlugin, options) => {
-          this.use(processor, pipelinePlugin, options);
+      plugin.extendMarkdownPipeline?.(
+        {
+          use: (pipelinePlugin, options) => {
+            this.use(processor, pipelinePlugin, options);
+          },
         },
-      });
+        markdownPipelineContext,
+      );
     }
 
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
@@ -119,15 +117,10 @@ export class Pipeline {
   private createNoteEmbedRenderer(
     embedDepth: number,
     embedTrail: Set<string>,
-  ):
-    | ((
-        slug: string,
-        fragment: WikilinkFragment | null,
-      ) => Promise<string | null>)
-    | undefined {
+  ): MarkdownPipelineContext["renderNoteEmbed"] {
     if (!this.getMarkdownBySlug || embedDepth >= 3) return undefined;
 
-    return async (slug: string, fragment: WikilinkFragment | null) => {
+    return async (slug: string, fragment: MarkdownEmbedFragment | null) => {
       if (embedTrail.has(slug)) return null;
 
       const sourceMarkdown = await this.getMarkdownBySlug?.(slug);
@@ -177,7 +170,7 @@ export class Pipeline {
 
 function selectEmbedMarkdownFragment(
   markdown: string,
-  fragment: WikilinkFragment | null,
+  fragment: MarkdownEmbedFragment | null,
 ): string | null {
   if (!fragment) return markdown;
   if (fragment.kind === "block")

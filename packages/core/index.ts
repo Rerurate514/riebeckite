@@ -31,7 +31,9 @@ export type {
 } from "./src/types/diagnostic";
 export type {
   HtmlPipeline,
+  MarkdownEmbedFragment,
   MarkdownPipeline,
+  MarkdownPipelineContext,
   PipelinePlugin,
   PluginAsset,
   PluginAssetKind,

@@ -1,11 +1,7 @@
+import { attachmentUrl, isAttachmentPath, isImagePath } from "@riebeckite/core";
 import { slug } from "github-slugger";
 import type { Content, Html, Parent, Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
-import {
-  attachmentUrl,
-  isAttachmentPath,
-  isImagePath,
-} from "../content/attachment";
 
 export interface WikilinkOptions {
   contentIndex: Map<string, string>;

@@ -225,16 +225,15 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../core
-      mermaid:
-        specifier: ^11.12.2
-        version: 11.17.2
-    devDependencies:
       dompurify:
         specifier: ^3.4.15
         version: 3.4.15
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
+      mermaid:
+        specifier: ^11.12.2
+        version: 11.17.2
 
   packages/plugin-obsidian-markdown:
     dependencies:

@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 type RendererResponse =
   | {
@@ -12,10 +13,9 @@ type RendererResponse =
     };
 
 const RENDER_TIMEOUT_MS = 30_000;
-const WORKER_URL = pathToFileURL(
-  new URL("./render-worker.mjs", import.meta.url),
-);
-const WORKER_PATH = fileURLToPath(WORKER_URL);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const WORKER_PATH = join(__dirname, "render-worker.mjs");
 
 let renderQueue: Promise<unknown> = Promise.resolve();
 
@@ -37,7 +37,6 @@ async function invokeRenderer(request: {
   theme: string;
 }): Promise<RendererResponse> {
   return new Promise((resolve, reject) => {
-    // Spawn worker without --import (patcher is imported inside worker)
     const child = spawn(process.execPath, [WORKER_PATH], {
       stdio: ["pipe", "pipe", "pipe"],
     });
@@ -49,7 +48,9 @@ async function invokeRenderer(request: {
 
     const timeout = setTimeout(() => {
       child.kill("SIGTERM");
-      reject(new Error(`Mermaid renderer timed out after ${RENDER_TIMEOUT_MS}ms`));
+      reject(
+        new Error(`Mermaid renderer timed out after ${RENDER_TIMEOUT_MS}ms`),
+      );
     }, RENDER_TIMEOUT_MS);
 
     child.once("error", (error) => {
@@ -62,7 +63,9 @@ async function invokeRenderer(request: {
       const stderr = Buffer.concat(stderrChunks).toString("utf8").trim();
 
       if (!stdout) {
-        reject(new Error(stderr || `Mermaid renderer exited with code ${code}`));
+        reject(
+          new Error(stderr || `Mermaid renderer exited with code ${code}`),
+        );
         return;
       }
 
@@ -73,8 +76,12 @@ async function invokeRenderer(request: {
         } else {
           resolve(response);
         }
-      } catch (e) {
-        reject(new Error(`Failed to parse renderer output: ${stdout}\nStderr: ${stderr}`));
+      } catch {
+        reject(
+          new Error(
+            `Failed to parse renderer output: ${stdout}\nStderr: ${stderr}`,
+          ),
+        );
       }
     });
 

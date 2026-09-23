@@ -13,5 +13,9 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "mermaid": "^11.12.2"
+  },
+  "devDependencies": {
+    "dompurify": "^3.4.15",
+    "jsdom": "^26.1.0"
   }
 }

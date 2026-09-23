@@ -5,7 +5,7 @@ import type { Diagnostic } from "./diagnostic";
 import type { PostContent } from "./post_content";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
 
-export type PipelinePlugin = Plugin<[], Node, Node>;
+export type PipelinePlugin = Plugin<[unknown?], Node, Node>;
 
 export type {
   Diagnostic,

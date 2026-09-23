@@ -1,22 +1,24 @@
-type MermaidApi = {
-  initialize(options: Record<string, unknown>): void;
-  parse(
-    source: string,
-    options: { suppressErrors: false },
-  ): Promise<unknown> | unknown;
-  render(
-    id: string,
-    source: string,
-  ): Promise<{ svg: string }> | { svg: string };
-};
+import { spawn } from "node:child_process";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-type MermaidModule = {
-  default: MermaidApi;
-};
+type RendererResponse =
+  | {
+      svg: string;
+      error?: never;
+    }
+  | {
+      svg?: never;
+      error: string;
+    };
 
-const MERMAID_PACKAGE_NAME = "mermaid";
+const RENDER_TIMEOUT_MS = 30_000;
+const WORKER_PATH = pathToFileURL(
+  new URL("./render-worker.mjs", import.meta.url),
+).href;
+const PATCHER_PATH = pathToFileURL(
+  new URL("./dompurify-patcher.mjs", import.meta.url),
+).href;
 
-let mermaidPromise: Promise<MermaidApi> | null = null;
 let renderQueue: Promise<unknown> = Promise.resolve();
 
 export async function renderMermaidStaticSvg(
@@ -25,38 +27,65 @@ export async function renderMermaidStaticSvg(
   theme: string,
 ): Promise<string> {
   return await enqueueMermaidRender(async () => {
-    const mermaid = await loadMermaid();
-    mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: "strict",
-      theme,
-    });
-    await mermaid.parse(source, { suppressErrors: false });
-    const rendered = await mermaid.render(id, source);
-    return sanitizeSvg(rendered.svg);
+    const response = await invokeRenderer({ id, source, theme });
+    if (response.error) throw new Error(response.error);
+    return response.svg;
   });
 }
 
-async function loadMermaid(): Promise<MermaidApi> {
-  mermaidPromise ??= import(MERMAID_PACKAGE_NAME).then(
-    (module) => (module as MermaidModule).default,
-  );
-  return mermaidPromise;
+async function invokeRenderer(request: {
+  id: string;
+  source: string;
+  theme: string;
+}): Promise<RendererResponse> {
+  return new Promise((resolve, reject) => {
+    // Use --import with proper file:// URL strings
+    const child = spawn(process.execPath, [PATCHER_PATH, WORKER_PATH], {
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    const stdoutChunks: Buffer[] = [];
+    const stderrChunks: Buffer[] = [];
+    child.stdout.on("data", (chunk: Buffer) => stdoutChunks.push(chunk));
+    child.stderr.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
+
+    const timeout = setTimeout(() => {
+      child.kill("SIGTERM");
+      reject(new Error(`Mermaid renderer timed out after ${RENDER_TIMEOUT_MS}ms`));
+    }, RENDER_TIMEOUT_MS);
+
+    child.once("error", (error) => {
+      clearTimeout(timeout);
+      reject(error);
+    });
+    child.once("exit", (code) => {
+      clearTimeout(timeout);
+      const stdout = Buffer.concat(stdoutChunks).toString("utf8");
+      const stderr = Buffer.concat(stderrChunks).toString("utf8").trim();
+
+      if (!stdout) {
+        reject(new Error(stderr || `Mermaid renderer exited with code ${code}`));
+        return;
+      }
+
+      try {
+        const response = JSON.parse(stdout) as RendererResponse;
+        if (response.error && stderr) {
+          resolve({ error: `${response.error}\n${stderr}` });
+        } else {
+          resolve(response);
+        }
+      } catch (e) {
+        reject(new Error(`Failed to parse renderer output: ${stdout}\nStderr: ${stderr}`));
+      }
+    });
+
+    child.stdin.end(JSON.stringify(request));
+  });
 }
 
 async function enqueueMermaidRender<T>(render: () => Promise<T>): Promise<T> {
   const current = renderQueue.then(render, render);
   renderQueue = current.catch(() => undefined);
   return current;
-}
-
-function sanitizeSvg(svg: string): string {
-  return svg
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
-    .replace(/<foreignObject\b[^>]*>[\s\S]*?<\/foreignObject>/gi, "")
-    .replace(/\son[a-z]+=("[^"]*"|'[^']*'|[^\s>]*)/gi, "")
-    .replace(
-      /\s(?:href|xlink:href)=("javascript:[^"]*"|'javascript:[^']*')/gi,
-      "",
-    );
 }

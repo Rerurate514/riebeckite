@@ -1,20 +1,22 @@
-import * as lzString from "lz-string";
+import { createRequire } from "node:module";
 import type {
   ExcalidrawScene,
   ObsidianEmbeddedFile,
   ParsedExcalidrawDocument,
 } from "./types.js";
 
+const require = createRequire(import.meta.url);
+const lzString = loadLzString();
+
 const EXCALIDRAW_FRONTMATTER_RE =
   /^---\s*\r?\n[\s\S]*?^excalidraw-plugin:\s*parsed\s*$[\s\S]*?^---\s*$/im;
 
 export function parseExcalidrawScene(
   raw: string,
-  filePath: string,
+  _filePath: string,
 ): ParsedExcalidrawDocument {
-  const source = filePath.toLowerCase().endsWith(".md")
-    ? extractObsidianDrawing(raw)
-    : raw;
+  const isObsidianMarkdown = isObsidianExcalidrawMarkdown(raw);
+  const source = isObsidianMarkdown ? extractObsidianDrawing(raw) : raw;
   const scene = JSON.parse(source) as Partial<ExcalidrawScene>;
 
   if (!Array.isArray(scene.elements)) {
@@ -28,9 +30,7 @@ export function parseExcalidrawScene(
       appState: scene.appState ?? {},
       files: scene.files ?? {},
     },
-    embeddedFiles: filePath.toLowerCase().endsWith(".md")
-      ? extractEmbeddedFiles(raw)
-      : [],
+    embeddedFiles: isObsidianMarkdown ? extractEmbeddedFiles(raw) : [],
   };
 }
 
@@ -69,22 +69,49 @@ function decompressCompressedJson(value: string): string | null {
 }
 
 function decompressFromBase64(value: string): string | null {
-  return getLzString().decompressFromBase64(value);
+  return lzString.decompressFromBase64(value);
 }
 
 function decompressFromEncodedURIComponent(value: string): string | null {
-  return getLzString().decompressFromEncodedURIComponent(value);
+  return lzString.decompressFromEncodedURIComponent(value);
 }
 
-function getLzString(): {
+function loadLzString(): LzStringExports {
+  const loaded = require(getLzStringPackageName()) as unknown;
+  const candidate = selectLzStringExports(loaded);
+
+  if (!candidate) {
+    throw new Error("Invalid lz-string module shape.");
+  }
+
+  return candidate;
+}
+
+function selectLzStringExports(value: unknown): LzStringExports | null {
+  if (isLzStringExports(value)) return value;
+  if (!value || typeof value !== "object") return null;
+
+  const module = value as { default?: unknown };
+  return isLzStringExports(module.default) ? module.default : null;
+}
+
+function isLzStringExports(value: unknown): value is LzStringExports {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<LzStringExports>;
+  return (
+    typeof candidate.decompressFromBase64 === "function" &&
+    typeof candidate.decompressFromEncodedURIComponent === "function"
+  );
+}
+
+function getLzStringPackageName(): string {
+  return "lz-string";
+}
+
+type LzStringExports = {
   decompressFromBase64(value: string): string | null;
   decompressFromEncodedURIComponent(value: string): string | null;
-} {
-  const module = lzString as typeof lzString & {
-    default?: typeof lzString;
-  };
-  return module.default ?? module;
-}
+};
 
 function extractEmbeddedFiles(markdown: string): ObsidianEmbeddedFile[] {
   const section = markdown.match(

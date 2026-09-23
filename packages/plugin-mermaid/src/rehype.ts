@@ -15,7 +15,6 @@ import type {
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
 const CAPTION_PATTERN = /^%%\s*caption\s*:\s*(.+)$/im;
-const STATIC_RENDERER_MODULE = "./render-static.js";
 
 export function rehypeMermaid(options: MermaidOptions = {}) {
   const renderMode = options.render ?? "build";
@@ -121,7 +120,7 @@ async function renderStaticSvg(
   file: unknown,
 ): Promise<string | null> {
   try {
-    const { renderMermaidStaticSvg } = await import(STATIC_RENDERER_MODULE);
+    const { renderMermaidStaticSvg } = await import("./render-static.js");
     return await renderMermaidStaticSvg(
       id,
       source,

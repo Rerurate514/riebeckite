@@ -1,4 +1,3 @@
-import { exportToSvg } from "@excalidraw/excalidraw";
 import type { ExcalidrawPayload } from "./types.js";
 
 export function initExcalidraw() {
@@ -48,6 +47,7 @@ async function renderFigure(figure: HTMLElement): Promise<void> {
 
   try {
     const payload = JSON.parse(payloadScript.textContent) as ExcalidrawPayload;
+    const { exportToSvg } = await import("@excalidraw/excalidraw");
     const svg = await exportToSvg({
       elements: payload.elements as never,
       appState: {

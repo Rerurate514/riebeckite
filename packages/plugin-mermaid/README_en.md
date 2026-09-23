@@ -7,8 +7,8 @@ Mermaid diagram rendering for ` ```mermaid ` code blocks.
 ## Overview
 
 `mermaid()` replaces mermaid code blocks with a `<figure class="rr-mermaid">`
-that renders to SVG. Diagrams are rendered at build time by default, with an
-automatic client-side fallback. It runs with `order: -10`.
+that renders to SVG. Diagrams are rendered at build time with a headless browser by
+default, with an automatic client-side fallback. It runs with `order: -10`.
 
 ## Usage
 
@@ -38,11 +38,14 @@ export default defineConfig({
     caption when present)
   - `details.rr-mermaid__fallback` — collapsible diagram source
 - Static SVG is rendered at build time when `render` is `"build"` or
-  `"both"`. SVGs are sanitized (scripts, `foreignObject`, event handlers, and
-  `javascript:` URLs removed) and Mermaid runs with `securityLevel: "strict"`
-- Invalid diagrams log a warning, report a diagnostic
-  (`ruleId: "invalid-mermaid"`), and leave the figure as
-  `data-mermaid="pending"` for client fallback
+  `"both"` by running the Mermaid browser API in Puppeteer's headless Chromium.
+  Rendering uses Chromium's layout engine, not JSDOM polyfills or custom
+  `getBBox` / text-width estimation
+- Mermaid runs with `securityLevel: "strict"`, the selected theme, transparent
+  background, and a unique SVG id per diagram
+- Invalid diagrams report `ruleId: "invalid-diagram"`; Chromium renderer
+  failures report `ruleId: "renderer-error"`. When build SVG is unavailable,
+  the figure remains `data-mermaid="pending"` for client fallback
 
 ### Client (`initMermaidDiagrams`)
 
@@ -64,9 +67,11 @@ export default defineConfig({
 
 `render` modes:
 
-- `"build"` / `"both"` — render SVG at build time; diagrams that fail fall
-  back to client rendering
+- `"build"` — render SVG at build time; diagrams that fail fall back to client
+  rendering
 - `"client"` — skip build-time rendering, render in the browser only
+- `"both"` — compatibility alias. It currently behaves like `"build"`: build
+  first, then client fallback only when build rendering fails
 
 ## Exports
 

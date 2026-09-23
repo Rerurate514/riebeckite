@@ -14,6 +14,19 @@ export type MermaidOptions = {
   fallback?: boolean;
 };
 
+export type MermaidBuildRenderErrorKind = "invalid-diagram" | "renderer-error";
+
+export type MermaidBuildRenderResult =
+  | {
+      ok: true;
+      svg: string;
+    }
+  | {
+      ok: false;
+      kind: MermaidBuildRenderErrorKind;
+      message: string;
+    };
+
 export type MermaidClientOptions = {
   theme?: MermaidTheme;
   mermaid?: MermaidApi;

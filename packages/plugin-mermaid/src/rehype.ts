@@ -9,6 +9,8 @@ import {
 import type {
   ElementNode,
   HastNode,
+  MermaidBuildRenderErrorKind,
+  MermaidBuildRenderResult,
   MermaidOptions,
   ParentNode,
 } from "./types.js";
@@ -52,9 +54,10 @@ async function replaceMermaidBlock(
     : getTextContent(pre).trim();
   const caption = options.caption ? extractCaption(source, pre, code) : null;
   const id = `rr-mermaid-${hashSource(source)}`;
-  const staticSvg = shouldRenderAtBuild(options.render)
+  const renderResult = shouldRenderAtBuild(options.render)
     ? await renderStaticSvg(id, source, options.theme, file)
     : null;
+  const staticSvg = renderResult?.ok ? renderResult.svg : null;
 
   parent.children = parent.children ?? [];
   parent.children[index] = buildFigure({
@@ -63,6 +66,8 @@ async function replaceMermaidBlock(
     caption,
     staticSvg,
     fallback: options.fallback,
+    clientFallback:
+      shouldRenderAtClient(options.render) || renderResult?.ok === false,
   });
 }
 
@@ -72,6 +77,7 @@ function buildFigure(input: {
   caption: string | null;
   staticSvg: string | null;
   fallback: boolean;
+  clientFallback: boolean;
 }): ElementNode {
   const labelId = `${input.id}-caption`;
   const children: HastNode[] = [];
@@ -106,7 +112,8 @@ function buildFigure(input: {
     "figure",
     {
       className: "rr-mermaid",
-      dataMermaid: input.staticSvg ? undefined : "pending",
+      dataMermaid:
+        input.clientFallback && !input.staticSvg ? "pending" : undefined,
       dataMermaidSource: input.source,
     },
     children,
@@ -118,30 +125,48 @@ async function renderStaticSvg(
   source: string,
   theme: NonNullable<MermaidOptions["theme"]>,
   file: unknown,
-): Promise<string | null> {
+): Promise<MermaidBuildRenderResult> {
   try {
     const { renderMermaidStaticSvg } = await import("./render-static.js");
-    return await renderMermaidStaticSvg(
+    const result = await renderMermaidStaticSvg(
       id,
       source,
       selectTheme(theme, "light"),
     );
+    if (result.ok === false) {
+      reportMermaidDiagnostic(file, result.message, result.kind);
+      const label =
+        result.kind === "invalid-diagram"
+          ? "invalid diagram"
+          : "renderer failed";
+      console.warn(`[mermaid] ${label}: ${result.message}`);
+    }
+    return result;
   } catch (error) {
     const message = formatError(error);
-    reportMermaidDiagnostic(file, message);
-    console.warn(`[mermaid] build render failed: ${message}`);
-    return null;
+    reportMermaidDiagnostic(file, message, "renderer-error");
+    console.warn(`[mermaid] renderer failed: ${message}`);
+    return { ok: false, kind: "renderer-error", message };
   }
 }
 
-function reportMermaidDiagnostic(file: unknown, message: string) {
+function reportMermaidDiagnostic(
+  file: unknown,
+  message: string,
+  kind: MermaidBuildRenderErrorKind,
+) {
   const reporter = (file as { message?: (reason: string) => unknown })?.message;
   if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, `Invalid Mermaid diagram: ${message}`);
+  const diagnostic = reporter.call(
+    file,
+    kind === "invalid-diagram"
+      ? `Invalid Mermaid diagram: ${message}`
+      : `Mermaid renderer failed: ${message}`,
+  );
   if (diagnostic && typeof diagnostic === "object") {
     Object.assign(diagnostic, {
       source: "@riebeckite/plugin-mermaid",
-      ruleId: "invalid-mermaid",
+      ruleId: kind,
     });
   }
 }
@@ -177,6 +202,10 @@ function extractCaption(
 
 function shouldRenderAtBuild(render: MermaidOptions["render"]): boolean {
   return render === "build" || render === "both" || render === undefined;
+}
+
+function shouldRenderAtClient(render: MermaidOptions["render"]): boolean {
+  return render === "client";
 }
 
 function selectTheme(

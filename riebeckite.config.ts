@@ -3,6 +3,7 @@ import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
+import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
@@ -55,6 +56,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    excalidraw(),
     attachment(),
     autoCardLinkPlugin(),
     codeEnhance({

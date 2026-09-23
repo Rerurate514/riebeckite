@@ -1,0 +1,20 @@
+{
+  "name": "@riebeckite/plugin-excalidraw",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./client": "./client.ts",
+    "./style.css": "./style.css"
+  },
+  "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.0",
+    "@types/mdast": "^4.0.4",
+    "@riebeckite/core": "workspace:*",
+    "lz-string": "^1.5.0",
+    "unist-util-visit": "^5.0.0"
+  }
+}

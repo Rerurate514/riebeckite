@@ -16,6 +16,7 @@
     "@riebeckite/plugin-autocardlink": "workspace:*",
     "@riebeckite/plugin-code-enhance": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
+    "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
     "@riebeckite/plugin-mermaid": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",

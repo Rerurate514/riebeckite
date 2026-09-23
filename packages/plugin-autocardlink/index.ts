@@ -16,7 +16,6 @@ export function autoCardLinkPlugin(options: AutoCardLinkOptions = {}) {
       {
         pluginName: "autocardlink",
         kind: "style",
-        path: "@riebeckite/plugin-autocardlink/style.css",
         moduleSpecifier: "@riebeckite/plugin-autocardlink/style.css",
       },
     ],

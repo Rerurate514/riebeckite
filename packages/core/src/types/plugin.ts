@@ -26,9 +26,7 @@ export type PluginAsset = {
    * ESM/CSS module specifier resolved by the host bundler.
    * Example: "@riebeckite/plugin-lightbox/style.css".
    */
-  moduleSpecifier?: string;
-  /** @deprecated Use moduleSpecifier. Kept for existing plugins. */
-  path?: string;
+  moduleSpecifier: string;
 };
 
 export type PluginClientEntry = {
@@ -157,7 +155,6 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
   seo?: PluginSeoExtension;
-  injectAssets?(context: PluginContext): PluginAsset[];
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderAttachment?(
     context: PluginAttachmentRenderContext,

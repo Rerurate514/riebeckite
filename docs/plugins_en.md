@@ -70,11 +70,18 @@ export function examplePlugin(options: ExamplePluginOptions = {}) {
         };
       });
     },
-    injectAssets: () => [
+    assets: [
       {
         pluginName: "example",
         kind: "style",
-        path: "@riebeckite/plugin-example/style.css",
+        moduleSpecifier: "@riebeckite/plugin-example/style.css",
+      },
+    ],
+    clientEntries: [
+      {
+        pluginName: "example",
+        moduleSpecifier: "@riebeckite/plugin-example/client",
+        exportName: "initExample",
       },
     ],
     addDiagnostics: () => [
@@ -105,8 +112,8 @@ return definePlugin({
 });
 ```
 
-For simple plugins, `remarkPlugins` and `rehypePlugins` arrays are also
-supported for compatibility.
+For simple plugins, `remarkPlugins` and `rehypePlugins` arrays can be used as
+shorthand.
 
 ## Lifecycle hooks
 
@@ -120,7 +127,6 @@ Plugins can participate in the build lifecycle with these hooks:
 - `extendContentGraph(context)`
 - `onManifestCreated(context)`
 - `addDiagnostics(context)`
-- `injectAssets(context)`
 - `onBuildEnd(context)`
 
 Common context fields:
@@ -161,17 +167,33 @@ return definePlugin({
 });
 ```
 
-## Assets and diagnostics
+## Assets, client entries, and diagnostics
 
-`injectAssets` returns style or script assets. Riebeckite stores them in
-`manifest.assets`.
+`assets` declares CSS/JS module specifiers provided by a plugin. Riebeckite
+resolves `moduleSpecifier` through the host bundler, and CSS is bundled into the
+app stylesheet. It does not make the browser load `/node_modules` or
+`/riebeckite/plugin-assets` directly.
 
 ```ts
-injectAssets: () => [
+assets: [
   {
     pluginName: "example",
-    kind: "script",
-    path: "@riebeckite/plugin-example/client.js",
+    kind: "style",
+    moduleSpecifier: "@riebeckite/plugin-example/style.css",
+  },
+],
+```
+
+Plugins that need browser initialization declare `clientEntries`. The specified
+module is included in the client bundle and the `exportName` function is called
+during page initialization.
+
+```ts
+clientEntries: [
+  {
+    pluginName: "example",
+    moduleSpecifier: "@riebeckite/plugin-example/client",
+    exportName: "initExample",
   },
 ],
 ```
@@ -195,6 +217,7 @@ Recommended package shape:
 
 ```text
 packages/plugin-example/
+├── client.ts
 ├── index.ts
 ├── package.json
 ├── style.css
@@ -216,6 +239,7 @@ Minimal `package.json`:
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts",
+    "./client": "./client.ts",
     "./style.css": "./style.css"
   },
   "dependencies": {

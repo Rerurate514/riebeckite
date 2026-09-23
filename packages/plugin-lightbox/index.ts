@@ -17,7 +17,6 @@ export function lightboxPlugin(options: LightboxOptions = {}) {
       {
         pluginName: "lightbox",
         kind: "style",
-        path: "@riebeckite/plugin-lightbox/style.css",
         moduleSpecifier: "@riebeckite/plugin-lightbox/style.css",
       },
     ],

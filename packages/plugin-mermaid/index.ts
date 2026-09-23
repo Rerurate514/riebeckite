@@ -20,7 +20,6 @@ export function mermaid(options: MermaidOptions = {}) {
       {
         pluginName: "mermaid",
         kind: "style",
-        path: "@riebeckite/plugin-mermaid/style.css",
         moduleSpecifier: "@riebeckite/plugin-mermaid/style.css",
       },
     ],

@@ -1,4 +1,3 @@
-import { type PluginAsset, resolvePlugins } from "@riebeckite/core";
 import { config } from "../config";
 
 type CssVariable = [name: string, value: string | undefined];
@@ -44,40 +43,13 @@ export function getThemeStyle(): string {
 }
 
 export function getThemeStylesheets(): string[] {
-  return uniqueStrings([
-    ...config.theme.userCss,
-    ...getPluginAssets("style").flatMap((asset) =>
-      resolvePluginAssetUrl(asset.path),
-    ),
-  ]);
+  return uniqueStrings(config.theme.userCss);
 }
 
 export function getPluginScripts(): string[] {
-  return uniqueStrings(
-    getPluginAssets("script").flatMap((asset) =>
-      resolvePluginAssetUrl(asset.path),
-    ),
-  );
-}
-
-function getPluginAssets(kind: PluginAsset["kind"]): PluginAsset[] {
-  return resolvePlugins(config.plugins).flatMap((plugin) =>
-    (
-      plugin.injectAssets?.({
-        config,
-        contentIndex: new Map(),
-        diagnostics: [],
-      }) ?? []
-    ).filter((asset) => asset.kind === kind),
-  );
+  return [];
 }
 
 function uniqueStrings(values: string[]): string[] {
   return [...new Set(values)];
-}
-
-function resolvePluginAssetUrl(path: string): string[] {
-  if (!path.startsWith("@riebeckite/plugin-")) return [path];
-
-  return [`/riebeckite/plugin-assets/${path.replace("@riebeckite/", "")}`];
 }

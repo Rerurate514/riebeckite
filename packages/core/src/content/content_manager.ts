@@ -169,10 +169,7 @@ export class ContentManager {
     await this.runGraphHook(entries, contentIndex);
     this.manifest = buildManifest(entries, contentIndex);
     await this.runManifestCreated(this.manifest, contentIndex);
-    this.manifest.assets = collectPluginAssets(
-      this.pipelineOptions,
-      this.createPluginContext(contentIndex),
-    );
+    this.manifest.assets = collectPluginAssets(this.pipelineOptions);
     this.manifest.diagnostics = [
       ...this.diagnostics,
       ...(await collectPluginDiagnostics(
@@ -371,20 +368,13 @@ function buildManifest(
   };
 }
 
-function collectPluginAssets(
-  pipelineOptions: PipelineOptions,
-  context: PluginContext,
-) {
+function collectPluginAssets(pipelineOptions: PipelineOptions) {
   return resolvePlugins(pipelineOptions.plugins).flatMap((plugin) =>
-    [...(plugin.assets ?? []), ...(plugin.injectAssets?.(context) ?? [])]
-      .map((asset) => ({
-        ...asset,
-        path: asset.moduleSpecifier ?? asset.path,
-        pluginName: asset.pluginName || plugin.name,
-      }))
-      .filter((asset): asset is typeof asset & { path: string } =>
-        Boolean(asset.path),
-      ),
+    (plugin.assets ?? []).map((asset) => ({
+      ...asset,
+      path: asset.moduleSpecifier,
+      pluginName: asset.pluginName || plugin.name,
+    })),
   );
 }
 

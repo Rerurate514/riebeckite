@@ -21,7 +21,6 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
       {
         pluginName: "code-enhance",
         kind: "style",
-        path: "@riebeckite/plugin-code-enhance/style.css",
         moduleSpecifier: "@riebeckite/plugin-code-enhance/style.css",
       },
     ],

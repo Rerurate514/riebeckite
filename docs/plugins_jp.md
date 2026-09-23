@@ -71,11 +71,18 @@ export function examplePlugin(options: ExamplePluginOptions = {}) {
         };
       });
     },
-    injectAssets: () => [
+    assets: [
       {
         pluginName: "example",
         kind: "style",
-        path: "@riebeckite/plugin-example/style.css",
+        moduleSpecifier: "@riebeckite/plugin-example/style.css",
+      },
+    ],
+    clientEntries: [
+      {
+        pluginName: "example",
+        moduleSpecifier: "@riebeckite/plugin-example/client",
+        exportName: "initExample",
       },
     ],
     addDiagnostics: () => [
@@ -106,7 +113,7 @@ return definePlugin({
 });
 ```
 
-単純な plugin では、互換用の `remarkPlugins` / `rehypePlugins` 配列も使えます。
+単純な plugin では、`remarkPlugins` / `rehypePlugins` 配列を shorthand として使えます。
 
 ## lifecycle hooks
 
@@ -120,7 +127,6 @@ plugin は次の lifecycle に参加できます。
 - `extendContentGraph(context)`
 - `onManifestCreated(context)`
 - `addDiagnostics(context)`
-- `injectAssets(context)`
 - `onBuildEnd(context)`
 
 共通の context には次が含まれます。
@@ -161,17 +167,31 @@ return definePlugin({
 });
 ```
 
-## assets と diagnostics
+## assets / clientEntries / diagnostics
 
-`injectAssets` は style または script asset を返します。Riebeckite は返された
-asset を `manifest.assets` に格納します。
+`assets` は plugin が提供する CSS/JS module specifier を宣言します。Riebeckite
+は `moduleSpecifier` を host bundler で解決し、CSS は app の stylesheet に束ねます。
+ブラウザから `/node_modules` や `/riebeckite/plugin-assets` を直接読ませる形にはしません。
 
 ```ts
-injectAssets: () => [
+assets: [
   {
     pluginName: "example",
-    kind: "script",
-    path: "@riebeckite/plugin-example/client.js",
+    kind: "style",
+    moduleSpecifier: "@riebeckite/plugin-example/style.css",
+  },
+],
+```
+
+ブラウザで初期化処理が必要な plugin は `clientEntries` を宣言します。指定した
+module は client bundle に含まれ、page 初期化時に `exportName` の関数が呼ばれます。
+
+```ts
+clientEntries: [
+  {
+    pluginName: "example",
+    moduleSpecifier: "@riebeckite/plugin-example/client",
+    exportName: "initExample",
   },
 ],
 ```
@@ -195,6 +215,7 @@ addDiagnostics: () => [
 
 ```text
 packages/plugin-example/
+├── client.ts
 ├── index.ts
 ├── package.json
 ├── style.css
@@ -216,6 +237,7 @@ packages/plugin-example/
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts",
+    "./client": "./client.ts",
     "./style.css": "./style.css"
   },
   "dependencies": {

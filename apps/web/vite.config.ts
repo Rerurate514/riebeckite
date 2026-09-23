@@ -113,28 +113,17 @@ ${initializers.map((name) => `  ${name}();`).join("\n")}
 }
 
 function collectPluginStyleSpecifiers(config: ResolvedConfig): string[] {
-  return config.plugins.flatMap((plugin) => {
-    const injected = plugin.injectAssets?.({
-      config,
-      contentIndex: new Map(),
-      diagnostics: [],
-    });
-    return [...(plugin.assets ?? []), ...(injected ?? [])]
+  return config.plugins.flatMap((plugin) =>
+    (plugin.assets ?? [])
       .filter((asset) => asset.kind === "style")
-      .map((asset) => asset.moduleSpecifier ?? asset.path)
-      .filter((specifier): specifier is string => Boolean(specifier));
-  });
+      .map((asset) => asset.moduleSpecifier),
+  );
 }
 
 type ResolvedConfig = {
   plugins: Array<{
-    assets?: Array<{ kind: string; moduleSpecifier?: string; path?: string }>;
+    assets?: Array<{ kind: string; moduleSpecifier: string }>;
     clientEntries?: Array<{ moduleSpecifier: string; exportName?: string }>;
-    injectAssets?: (context: unknown) => Array<{
-      kind: string;
-      moduleSpecifier?: string;
-      path?: string;
-    }>;
   }>;
 };
 

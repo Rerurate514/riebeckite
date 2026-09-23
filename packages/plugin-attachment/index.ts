@@ -18,7 +18,6 @@ export function attachment(options: AttachmentOptions = {}) {
       {
         pluginName: PLUGIN_NAME,
         kind: "style",
-        path: "@riebeckite/plugin-attachment/style.css",
         moduleSpecifier: "@riebeckite/plugin-attachment/style.css",
       },
     ],

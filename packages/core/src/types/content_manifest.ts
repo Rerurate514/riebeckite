@@ -15,6 +15,10 @@ export type ContentAsset = {
   path: string;
 };
 
+export type ContentManifestPluginAsset = PluginAsset & {
+  path: string;
+};
+
 export type ContentManifestEntry = {
   slug: string;
   title: string;
@@ -34,6 +38,6 @@ export type ContentManifest = {
   outgoingLinks: Map<string, ContentLink[]>;
   incomingLinks: Map<string, string[]>;
   contentIndex: Map<string, string>;
-  assets: PluginAsset[];
+  assets: ContentManifestPluginAsset[];
   diagnostics: Diagnostic[];
 };

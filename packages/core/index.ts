@@ -30,30 +30,40 @@ export type {
   DiagnosticSeverity,
 } from "./src/types/diagnostic";
 export type {
+  PluginInput,
+  RiebeckitePlugin,
+} from "./src/types/plugin";
+export { definePlugin, resolvePlugins } from "./src/types/plugin";
+export type {
+  PluginAsset,
+  PluginAssetKind,
+  PluginClientEntry,
+} from "./src/types/plugin_asset";
+export type {
+  PluginAttachmentRenderContext,
+  PluginContentContext,
+  PluginContext,
+  PluginGraphContext,
+  PluginManifestContext,
+  PluginPostContext,
+} from "./src/types/plugin_context";
+export type {
+  PluginDiagnostic,
+  PluginDiagnosticLevel,
+} from "./src/types/plugin_diagnostic";
+export type {
   HtmlPipeline,
   MarkdownEmbedFragment,
   MarkdownPipeline,
   MarkdownPipelineContext,
   PipelinePlugin,
-  PluginAsset,
-  PluginAssetKind,
-  PluginAttachmentRenderContext,
-  PluginClientEntry,
-  PluginContentContext,
-  PluginContext,
-  PluginDiagnostic,
-  PluginDiagnosticLevel,
-  PluginGraphContext,
-  PluginInput,
-  PluginManifestContext,
-  PluginPostContext,
+} from "./src/types/plugin_pipeline";
+export type {
   PluginSeoExtension,
   RenderableFeedEntry,
-  RiebeckitePlugin,
   SeoMetadata,
   WebsiteSeoInput,
-} from "./src/types/plugin";
-export { definePlugin, resolvePlugins } from "./src/types/plugin";
+} from "./src/types/plugin_seo";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content";
 
 export type { PublishStrategy } from "./src/types/publish_strategy";

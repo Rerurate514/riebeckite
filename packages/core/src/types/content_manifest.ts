@@ -1,5 +1,5 @@
 import type { Diagnostic } from "./diagnostic";
-import type { PluginAsset } from "./plugin";
+import type { PluginAsset } from "./plugin_asset";
 import type { PostFrontmatter } from "./post_content";
 
 export type ContentLinkKind = "note" | "image" | "attachment" | "unresolved";

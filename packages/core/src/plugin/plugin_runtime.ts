@@ -4,8 +4,8 @@ import type {
   ContentManifestEntry,
 } from "../types/content_manifest";
 import type { Diagnostic } from "../types/diagnostic";
-import type { PluginContext } from "../types/plugin";
 import { resolvePlugins } from "../types/plugin";
+import type { PluginContext } from "../types/plugin_context";
 import type { PostContent } from "../types/post_content";
 
 export class PluginRuntime {

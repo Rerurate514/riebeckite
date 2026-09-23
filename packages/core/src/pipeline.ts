@@ -13,12 +13,12 @@ import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
+import type { RiebeckitePlugin } from "./types/plugin";
+import { resolvePlugins } from "./types/plugin";
 import type {
   MarkdownEmbedFragment,
   MarkdownPipelineContext,
-  RiebeckitePlugin,
-} from "./types/plugin";
-import { resolvePlugins } from "./types/plugin";
+} from "./types/plugin_pipeline";
 import type { PostContent, PostFrontmatter } from "./types/post_content";
 
 export interface PipelineOptions {

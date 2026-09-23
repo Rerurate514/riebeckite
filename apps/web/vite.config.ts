@@ -28,7 +28,11 @@ export default defineConfig(async () => {
       honox({
         devServer: {
           adapter,
-          exclude: [...defaultOptions.exclude, /\.(png|jpe?g|gif|svg|webp)$/],
+          exclude: [
+            ...defaultOptions.exclude,
+            /\.(png|jpe?g|gif|svg|webp)$/,
+            /^\/assets\/attachments\//,
+          ],
         },
         client: { input: ["/app/client.ts", "/app/style.css"] },
       }),

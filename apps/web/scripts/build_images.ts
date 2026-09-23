@@ -22,11 +22,15 @@ type ContentImage = {
 
 type ContentAttachment = ContentImage;
 
+type ReferencedAssets = {
+  images: Set<string>;
+  attachments: Set<string>;
+};
+
 async function buildImages() {
   const images = await collectContentImages();
-  const referencedImages = await collectReferencedImagePaths(images);
   const attachments = await collectContentAttachments();
-  const referencedAttachments = await collectReferencedAttachmentPaths();
+  const referencedAssets = await collectReferencedAssets();
 
   let copied = 0;
   let removed = 0;
@@ -34,7 +38,7 @@ async function buildImages() {
 
   for (const image of images.values()) {
     try {
-      if (referencedImages.has(image.relativePath)) {
+      if (referencedAssets.images.has(image.relativePath)) {
         await mkdir(path.dirname(image.targetPath), { recursive: true });
         await fs.copyFile(image.sourcePath, image.targetPath);
         copied++;
@@ -50,7 +54,7 @@ async function buildImages() {
 
   for (const attachment of attachments.values()) {
     try {
-      if (referencedAttachments.has(attachment.relativePath)) {
+      if (referencedAssets.attachments.has(attachment.relativePath)) {
         await mkdir(path.dirname(attachment.targetPath), { recursive: true });
         await fs.copyFile(attachment.sourcePath, attachment.targetPath);
         copied++;
@@ -124,48 +128,33 @@ async function collectContentImages(): Promise<Map<string, ContentImage>> {
   return images;
 }
 
-async function collectReferencedAttachmentPaths(): Promise<Set<string>> {
+async function collectReferencedAssets(): Promise<ReferencedAssets> {
+  const referencedImages = new Set<string>();
   const referencedAttachments = new Set<string>();
-  const content = new ContentManager(CONTENT_DIR, config.content.exclude, {
-    config,
-    plugins: config.plugins,
-  });
+  const content = new ContentManager(CONTENT_DIR, config.content.exclude);
   const manifest = await content.getManifest();
 
   for (const entry of manifest.entries) {
     if (!isPublished(config, entry.frontmatter)) continue;
 
     for (const link of entry.links) {
-      if (link.kind !== "attachment" || !link.slug) continue;
+      if (!link.slug) continue;
       const normalizedPath = normalizeAssetPath(link.slug);
-      if (isSafeContentPath(normalizedPath)) {
+      if (!isSafeContentPath(normalizedPath)) continue;
+
+      if (link.kind === "image") {
+        referencedImages.add(normalizedPath);
+      } else if (link.kind === "attachment") {
         referencedAttachments.add(normalizedPath);
       }
     }
-  }
 
-  return referencedAttachments;
-}
-
-async function collectReferencedImagePaths(
-  images: Map<string, ContentImage>,
-): Promise<Set<string>> {
-  const referencedImages = new Set<string>();
-  const content = new ContentManager(CONTENT_DIR, config.content.exclude);
-  const posts = await content.getAllPosts();
-
-  for (const post of posts) {
-    const processed = await content.getProcessedContent(post.slug);
-    if (!isPublished(config, processed.frontmatter)) continue;
-
-    for (const assetPath of extractAssetPaths(post.slug, processed.html)) {
-      if (images.has(assetPath)) {
-        referencedImages.add(assetPath);
-      }
+    for (const assetPath of extractAssetPaths(entry.slug, entry.html)) {
+      referencedImages.add(assetPath);
     }
   }
 
-  return referencedImages;
+  return { images: referencedImages, attachments: referencedAttachments };
 }
 
 function extractAssetPaths(slug: string, html: string): string[] {

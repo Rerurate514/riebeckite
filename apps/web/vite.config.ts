@@ -166,10 +166,16 @@ export default defineConfig({
 
 function riebeckitePluginAssets(): Plugin {
   const assetSpecifiers = new Set<string>();
+  let isBuild = false;
 
   return {
     name: "riebeckite-plugin-assets",
+    configResolved(config) {
+      isBuild = config.command === "build";
+    },
     async buildStart() {
+      if (!isBuild) return;
+
       for (const specifier of await collectPluginAssetSpecifiers()) {
         const resolved = await this.resolve(specifier);
         if (!resolved) continue;

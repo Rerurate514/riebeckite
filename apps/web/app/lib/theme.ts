@@ -46,11 +46,21 @@ export function getThemeStyle(): string {
 export function getThemeStylesheets(): string[] {
   return uniqueStrings([
     ...config.theme.userCss,
-    ...getPluginStylesheets().map((asset) => asset.path),
+    ...getPluginAssets("style").flatMap((asset) =>
+      resolvePluginAssetUrl(asset.path),
+    ),
   ]);
 }
 
-function getPluginStylesheets(): PluginAsset[] {
+export function getPluginScripts(): string[] {
+  return uniqueStrings(
+    getPluginAssets("script").flatMap((asset) =>
+      resolvePluginAssetUrl(asset.path),
+    ),
+  );
+}
+
+function getPluginAssets(kind: PluginAsset["kind"]): PluginAsset[] {
   return resolvePlugins(config.plugins).flatMap((plugin) =>
     (
       plugin.injectAssets?.({
@@ -58,10 +68,16 @@ function getPluginStylesheets(): PluginAsset[] {
         contentIndex: new Map(),
         diagnostics: [],
       }) ?? []
-    ).filter((asset) => asset.kind === "style"),
+    ).filter((asset) => asset.kind === kind),
   );
 }
 
 function uniqueStrings(values: string[]): string[] {
   return [...new Set(values)];
+}
+
+function resolvePluginAssetUrl(path: string): string[] {
+  if (!path.startsWith("@riebeckite/plugin-")) return [path];
+
+  return [`/riebeckite/plugin-assets/${path.replace("@riebeckite/", "")}`];
 }

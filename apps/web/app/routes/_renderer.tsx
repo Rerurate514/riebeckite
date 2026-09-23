@@ -4,6 +4,7 @@ import SearchBar from "../components/search-bar/search-bar";
 import { config } from "../config";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {
+  getPluginScripts,
   getThemeAttributes,
   getThemeStyle,
   getThemeStylesheets,
@@ -66,11 +67,14 @@ export default jsxRenderer(({ children }, c) => {
         )}
         <Link href="/app/style.css" rel="stylesheet" />
         {getThemeStylesheets().map((href) => (
-          <Link href={href} rel="stylesheet" key={href} />
+          <link href={href} rel="stylesheet" key={href} />
         ))}
         {themeStyle && (
           <style dangerouslySetInnerHTML={{ __html: themeStyle }} />
         )}
+        {getPluginScripts().map((src) => (
+          <script src={src} defer key={src} />
+        ))}
         <Script src="/app/client.ts" async />
       </head>
       <body class="riebeckite-page">

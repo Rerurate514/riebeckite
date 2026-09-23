@@ -1,6 +1,6 @@
 .rr-mermaid {
-  --rr-mermaid-paper: var(--rr-color-paper, var(--rb-color-paper, #f6efe2));
-  --rr-mermaid-ink: var(--rr-color-ink, var(--rb-color-ink, #171717));
+  --rr-mermaid-paper: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
+  --rr-mermaid-ink: var(--rr-color-ink, var(--rb-color-ink, #000000));
   --rr-mermaid-muted: var(--rr-color-muted, var(--rb-color-muted, #6f665b));
   --rr-mermaid-rule: var(
     --rr-color-border,
@@ -65,13 +65,6 @@
 
 html[data-theme="dark"] .rr-mermaid,
 html.dark .rr-mermaid {
-  --rr-mermaid-paper: var(--rr-color-ink, var(--rb-color-ink, #171717));
-  --rr-mermaid-ink: var(--rr-color-paper, var(--rb-color-paper, #f6efe2));
-}
-
-@media (prefers-color-scheme: dark) {
-  .rr-mermaid {
-    --rr-mermaid-paper: var(--rr-color-ink, var(--rb-color-ink, #171717));
-    --rr-mermaid-ink: var(--rr-color-paper, var(--rb-color-paper, #f6efe2));
-  }
+  --rr-mermaid-paper: var(--rr-color-ink, var(--rb-color-ink, #000000));
+  --rr-mermaid-ink: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
 }

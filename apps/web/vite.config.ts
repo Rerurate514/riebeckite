@@ -1,3 +1,4 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/cloudflare-workers";
@@ -6,7 +7,7 @@ import adapter from "@hono/vite-dev-server/cloudflare";
 import ssg from "@hono/vite-ssg";
 import tailwindcss from "@tailwindcss/vite";
 import honox from "honox/vite";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 
 const webRoot = path.dirname(fileURLToPath(import.meta.url));
 const coreEntry = path.resolve(webRoot, "../../packages/core/index.ts");
@@ -63,6 +64,7 @@ const diagnosticsEntry = path.resolve(
   "../../packages/plugin-diagnostics/index.ts",
 );
 const seoEntry = path.resolve(webRoot, "../../packages/plugin-seo/index.ts");
+const pluginAssetUrlPrefix = "/riebeckite/plugin-assets/";
 
 export default defineConfig({
   resolve: {
@@ -135,6 +137,7 @@ export default defineConfig({
       client: { input: ["/app/client.ts", "/app/style.css"] },
     }),
     tailwindcss(),
+    riebeckitePluginAssets(),
     build(),
     ssg({
       entry: "./app/server.ts",
@@ -160,3 +163,82 @@ export default defineConfig({
     },
   },
 });
+
+function riebeckitePluginAssets(): Plugin {
+  const assetSpecifiers = new Set<string>();
+
+  return {
+    name: "riebeckite-plugin-assets",
+    async buildStart() {
+      for (const specifier of await collectPluginAssetSpecifiers()) {
+        const resolved = await this.resolve(specifier);
+        if (!resolved) continue;
+
+        assetSpecifiers.add(specifier);
+        this.emitFile({
+          type: "asset",
+          fileName: toPluginAssetFileName(specifier),
+          source: await fs.readFile(resolved.id),
+        });
+      }
+    },
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const pathname = req.url?.split("?", 1)[0];
+        if (!pathname?.startsWith(pluginAssetUrlPrefix)) {
+          next();
+          return;
+        }
+
+        const specifier = toPluginAssetSpecifier(pathname);
+        const resolved = await server.pluginContainer.resolveId(specifier);
+        if (!resolved) {
+          next();
+          return;
+        }
+
+        res.setHeader("Content-Type", getPluginAssetContentType(specifier));
+        res.end(await fs.readFile(resolved.id));
+      });
+    },
+    generateBundle(_, bundle) {
+      for (const specifier of assetSpecifiers) {
+        const fileName = toPluginAssetFileName(specifier);
+        if (bundle[fileName]) continue;
+        this.warn(`Plugin asset was not emitted: ${specifier}`);
+      }
+    },
+  };
+}
+
+async function collectPluginAssetSpecifiers(): Promise<string[]> {
+  const packagesRoot = path.resolve(webRoot, "../../packages");
+  const entries = await fs.readdir(packagesRoot, { withFileTypes: true });
+  const specifiers: string[] = [];
+
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !entry.name.startsWith("plugin-")) continue;
+
+    const pluginDirectory = path.join(packagesRoot, entry.name);
+    for (const fileName of await fs.readdir(pluginDirectory)) {
+      if (!/\.(css|js)$/.test(fileName)) continue;
+      specifiers.push(`@riebeckite/${entry.name}/${fileName}`);
+    }
+  }
+
+  return specifiers;
+}
+
+function toPluginAssetSpecifier(pathname: string): string {
+  return `@riebeckite/${pathname.slice(pluginAssetUrlPrefix.length)}`;
+}
+
+function toPluginAssetFileName(specifier: string): string {
+  return `riebeckite/plugin-assets/${specifier.replace("@riebeckite/", "")}`;
+}
+
+function getPluginAssetContentType(specifier: string): string {
+  if (specifier.endsWith(".css")) return "text/css; charset=utf-8";
+  if (specifier.endsWith(".js")) return "text/javascript; charset=utf-8";
+  return "application/octet-stream";
+}

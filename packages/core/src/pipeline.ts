@@ -105,35 +105,14 @@ export class Pipeline {
     plugin: unknown,
     options?: unknown,
   ) {
-    const name = pluginName(plugin);
-    console.log(`[pipeline] load plugin: ${name}`);
-
-    const traced = function tracedAttacher(
-      this: unknown,
-      ...attacherArgs: unknown[]
-    ) {
-      const transformer = (
-        plugin as (this: unknown, ...args: unknown[]) => unknown
-      ).apply(this, attacherArgs);
-
-      return function tracedTransformer(
-        this: unknown,
-        ...transformArgs: unknown[]
-      ) {
-        console.log(`[pipeline] execute plugin: ${name}`);
-        if (typeof transformer !== "function") return undefined;
-        return transformer.apply(this, transformArgs);
-      };
-    };
-
     const register = processor.use.bind(processor) as (
       plugin: unknown,
       options?: unknown,
     ) => unknown;
     if (options === undefined) {
-      register(traced);
+      register(plugin);
     } else {
-      register(traced, options);
+      register(plugin, options);
     }
   }
 
@@ -241,9 +220,4 @@ function selectHeadingFragment(
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function pluginName(plugin: unknown): string {
-  if (typeof plugin !== "function") return String(plugin);
-  return (plugin as { name?: string }).name || "anonymous";
 }

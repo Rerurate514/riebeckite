@@ -1,40 +1,26 @@
-import type { PostContent } from "@riebeckite/core";
-import type { SeoMetadata } from "@riebeckite/plugin-seo";
-import {
-  buildAbsoluteUrl as buildPluginAbsoluteUrl,
-  buildArticleSeo as buildPluginArticleSeo,
-  buildPostUrl as buildPluginPostUrl,
-  buildWebsiteSeo as buildPluginWebsiteSeo,
-  calculateReadingTime,
-  getDescription,
-  getEntryPublishedTime,
-  getEntryUpdatedTime,
-  getHtmlLanguage as getPluginHtmlLanguage,
-} from "@riebeckite/plugin-seo";
+import type {
+  PluginSeoExtension,
+  PostContent,
+  SeoMetadata,
+} from "@riebeckite/core";
+import { resolvePlugins } from "@riebeckite/core";
 import { config } from "../config";
 
-const seoOptions = {
-  siteName: config.site.title,
-  defaultImage: config.site.defaultOgImage,
-  feed: {
-    rss: true,
-    atom: true,
-    json: true,
-  },
-  sitemap: true,
-  robots: true,
-};
+const seoProvider = findSeoProvider();
 
-export type { SeoMetadata } from "@riebeckite/plugin-seo";
-export {
-  calculateReadingTime,
-  getDescription,
-  getEntryPublishedTime,
-  getEntryUpdatedTime,
-};
+export type { SeoMetadata } from "@riebeckite/core";
+export const calculateReadingTime = seoProvider.calculateReadingTime;
+export const getDescription = seoProvider.getDescription;
+export const getEntryPublishedTime = seoProvider.getEntryPublishedTime;
+export const getEntryUpdatedTime = seoProvider.getEntryUpdatedTime;
+export const renderAtomFeed = seoProvider.renderAtomFeed;
+export const renderJsonFeed = seoProvider.renderJsonFeed;
+export const renderRobots = seoProvider.renderRobots;
+export const renderRssFeed = seoProvider.renderRssFeed;
+export const renderSitemap = seoProvider.renderSitemap;
 
 export function buildArticleSeo(slug: string, post: PostContent): SeoMetadata {
-  return buildPluginArticleSeo(config, seoOptions, slug, post);
+  return seoProvider.buildArticleSeo(config, slug, post);
 }
 
 export function buildIndexSeo(post?: PostContent): SeoMetadata {
@@ -61,17 +47,28 @@ export function buildWebsiteSeo(input: {
   path: string;
   kind?: "index" | "tag" | "website";
 }): SeoMetadata {
-  return buildPluginWebsiteSeo(config, seoOptions, input);
+  return seoProvider.buildWebsiteSeo(config, input);
 }
 
 export function buildAbsoluteUrl(pathOrUrl: string): string {
-  return buildPluginAbsoluteUrl(config, pathOrUrl);
+  return seoProvider.buildAbsoluteUrl(config, pathOrUrl);
 }
 
 export function buildPostUrl(slug: string): string {
-  return buildPluginPostUrl(config, slug);
+  return seoProvider.buildPostUrl(config, slug);
 }
 
 export function getHtmlLanguage(): string {
-  return getPluginHtmlLanguage(config);
+  return seoProvider.getHtmlLanguage(config);
+}
+
+function findSeoProvider(): PluginSeoExtension {
+  const provider = resolvePlugins(config.plugins).find(
+    (plugin) => plugin.seo,
+  )?.seo;
+  if (!provider) {
+    throw new Error("SEO plugin extension is not configured.");
+  }
+
+  return provider;
 }

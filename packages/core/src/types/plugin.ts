@@ -22,7 +22,82 @@ export type PluginAssetKind = "style" | "script";
 export type PluginAsset = {
   pluginName: string;
   kind: PluginAssetKind;
+  /**
+   * ESM/CSS module specifier resolved by the host bundler.
+   * Example: "@riebeckite/plugin-lightbox/style.css".
+   */
+  moduleSpecifier?: string;
+  /** @deprecated Use moduleSpecifier. Kept for existing plugins. */
+  path?: string;
+};
+
+export type PluginClientEntry = {
+  pluginName: string;
+  /** ESM module specifier resolved and bundled by the host bundler. */
+  moduleSpecifier: string;
+  /** Exported initializer name. Defaults to the module default export. */
+  exportName?: string;
+};
+
+export type SeoMetadata = {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  imageUrl: string;
+  type: "website" | "article";
+  noindex: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  tags: string[];
+  readingTimeMinutes?: number;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+};
+
+export type WebsiteSeoInput = {
+  title: string;
+  description?: string;
   path: string;
+  kind?: "index" | "tag" | "article" | "website";
+};
+
+export type RenderableFeedEntry = ContentManifestEntry & {
+  html?: string;
+};
+
+export type PluginSeoExtension = {
+  buildArticleSeo(
+    config: ResolvedRiebeckiteConfig,
+    slug: string,
+    post: PostContent,
+  ): SeoMetadata;
+  buildWebsiteSeo(
+    config: ResolvedRiebeckiteConfig,
+    input: WebsiteSeoInput,
+  ): SeoMetadata;
+  buildAbsoluteUrl(config: ResolvedRiebeckiteConfig, pathOrUrl: string): string;
+  buildPostUrl(config: ResolvedRiebeckiteConfig, slug: string): string;
+  getDescription(post: Pick<PostContent, "frontmatter" | "html">): string;
+  getEntryPublishedTime(entry: ContentManifestEntry): string | null;
+  getEntryUpdatedTime(entry: ContentManifestEntry): string | null;
+  getHtmlLanguage(config: ResolvedRiebeckiteConfig): string;
+  calculateReadingTime(html: string): number;
+  renderSitemap(
+    config: ResolvedRiebeckiteConfig,
+    entries: ContentManifestEntry[],
+  ): string;
+  renderRobots(config: ResolvedRiebeckiteConfig): string;
+  renderRssFeed(
+    config: ResolvedRiebeckiteConfig,
+    entries: RenderableFeedEntry[],
+  ): string;
+  renderAtomFeed(
+    config: ResolvedRiebeckiteConfig,
+    entries: RenderableFeedEntry[],
+  ): string;
+  renderJsonFeed(
+    config: ResolvedRiebeckiteConfig,
+    entries: RenderableFeedEntry[],
+  ): string;
 };
 
 export type MarkdownPipeline = {
@@ -79,6 +154,9 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   extendMarkdownPipeline?(pipeline: MarkdownPipeline): void;
   extendHtmlPipeline?(pipeline: HtmlPipeline): void;
   addDiagnostics?(context: PluginContext): Diagnostic[] | Promise<Diagnostic[]>;
+  assets?: PluginAsset[];
+  clientEntries?: PluginClientEntry[];
+  seo?: PluginSeoExtension;
   injectAssets?(context: PluginContext): PluginAsset[];
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderAttachment?(

@@ -16,11 +16,19 @@ export function mermaid(options: MermaidOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeMermaidLazy, options);
     },
-    injectAssets: () => [
+    assets: [
       {
         pluginName: "mermaid",
         kind: "style",
         path: "@riebeckite/plugin-mermaid/style.css",
+        moduleSpecifier: "@riebeckite/plugin-mermaid/style.css",
+      },
+    ],
+    clientEntries: [
+      {
+        pluginName: "mermaid",
+        moduleSpecifier: "@riebeckite/plugin-mermaid/client",
+        exportName: "initMermaidDiagrams",
       },
     ],
   });

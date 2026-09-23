@@ -12,11 +12,12 @@ export function autoCardLinkPlugin(options: AutoCardLinkOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkAutoCardLink, options);
     },
-    injectAssets: () => [
+    assets: [
       {
         pluginName: "autocardlink",
         kind: "style",
         path: "@riebeckite/plugin-autocardlink/style.css",
+        moduleSpecifier: "@riebeckite/plugin-autocardlink/style.css",
       },
     ],
   });

@@ -6,7 +6,12 @@ import {
   text,
   visitElements,
 } from "./hast.js";
-import type { ElementNode, HastNode, MermaidOptions, ParentNode } from "./types.js";
+import type {
+  ElementNode,
+  HastNode,
+  MermaidOptions,
+  ParentNode,
+} from "./types.js";
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
 const CAPTION_PATTERN = /^%%\s*caption\s*:\s*(.+)$/im;
@@ -117,7 +122,11 @@ async function renderStaticSvg(
 ): Promise<string | null> {
   try {
     const { renderMermaidStaticSvg } = await import(STATIC_RENDERER_MODULE);
-    return await renderMermaidStaticSvg(id, source, selectTheme(theme, "light"));
+    return await renderMermaidStaticSvg(
+      id,
+      source,
+      selectTheme(theme, "light"),
+    );
   } catch (error) {
     const message = formatError(error);
     reportMermaidDiagnostic(file, message);

@@ -36,6 +36,7 @@ export type {
   PluginAsset,
   PluginAssetKind,
   PluginAttachmentRenderContext,
+  PluginClientEntry,
   PluginContentContext,
   PluginContext,
   PluginDiagnostic,
@@ -44,7 +45,11 @@ export type {
   PluginInput,
   PluginManifestContext,
   PluginPostContext,
+  PluginSeoExtension,
+  RenderableFeedEntry,
   RiebeckitePlugin,
+  SeoMetadata,
+  WebsiteSeoInput,
 } from "./src/types/plugin";
 export { definePlugin, resolvePlugins } from "./src/types/plugin";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content";

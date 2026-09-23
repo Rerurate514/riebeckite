@@ -17,11 +17,19 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeCodeEnhance, options);
     },
-    injectAssets: () => [
+    assets: [
       {
         pluginName: "code-enhance",
         kind: "style",
         path: "@riebeckite/plugin-code-enhance/style.css",
+        moduleSpecifier: "@riebeckite/plugin-code-enhance/style.css",
+      },
+    ],
+    clientEntries: [
+      {
+        pluginName: "code-enhance",
+        moduleSpecifier: "@riebeckite/plugin-code-enhance/client",
+        exportName: "initCodeEnhance",
       },
     ],
   });

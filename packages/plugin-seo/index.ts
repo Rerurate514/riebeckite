@@ -2,6 +2,8 @@ import type {
   ContentManifestEntry,
   PostContent,
   ResolvedRiebeckiteConfig,
+  SeoMetadata,
+  WebsiteSeoInput,
 } from "@riebeckite/core";
 import { definePlugin, isPublished } from "@riebeckite/core";
 
@@ -19,28 +21,7 @@ export type SeoPluginOptions = {
   robots?: boolean;
 };
 
-export type SeoPageKind = "index" | "tag" | "article" | "website";
-
-export type SeoMetadata = {
-  title: string;
-  description: string;
-  canonicalUrl: string;
-  imageUrl: string;
-  type: "website" | "article";
-  noindex: boolean;
-  publishedTime?: string;
-  modifiedTime?: string;
-  tags: string[];
-  readingTimeMinutes?: number;
-  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
-};
-
-export type WebsiteSeoInput = {
-  title: string;
-  description?: string;
-  path: string;
-  kind?: SeoPageKind;
-};
+export type { SeoMetadata, WebsiteSeoInput } from "@riebeckite/core";
 
 export type RenderableFeedEntry = ContentManifestEntry & {
   html?: string;
@@ -50,6 +31,24 @@ export function seo(options: SeoPluginOptions = {}) {
   return definePlugin({
     name: "seo",
     options,
+    seo: {
+      buildArticleSeo: (config, slug, post) =>
+        buildArticleSeo(config, options, slug, post),
+      buildWebsiteSeo: (config, input) =>
+        buildWebsiteSeo(config, options, input),
+      buildAbsoluteUrl,
+      buildPostUrl,
+      getDescription,
+      getEntryPublishedTime,
+      getEntryUpdatedTime,
+      getHtmlLanguage,
+      calculateReadingTime,
+      renderSitemap,
+      renderRobots,
+      renderRssFeed,
+      renderAtomFeed,
+      renderJsonFeed,
+    },
   });
 }
 

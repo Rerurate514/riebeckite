@@ -7,6 +7,7 @@
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts",
+    "./client": "./client.ts",
     "./style.css": "./style.css"
   },
   "dependencies": {

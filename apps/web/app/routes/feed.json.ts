@@ -1,7 +1,7 @@
-import { renderJsonFeed } from "@riebeckite/plugin-seo";
 import { createRoute } from "honox/factory";
 import { config } from "../config";
 import { getPublishedEntries } from "../lib/publication";
+import { renderJsonFeed } from "../lib/seo";
 
 export default createRoute(async (c) => {
   const entries = await getPublishedEntries();

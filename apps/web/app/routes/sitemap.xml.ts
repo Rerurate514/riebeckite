@@ -1,7 +1,7 @@
-import { renderSitemap } from "@riebeckite/plugin-seo";
 import { createRoute } from "honox/factory";
 import { config } from "../config";
 import { content } from "../content";
+import { renderSitemap } from "../lib/seo";
 
 export default createRoute(async (c) => {
   const manifest = await content.getManifest();

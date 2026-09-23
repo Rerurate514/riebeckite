@@ -1,4 +1,4 @@
-import fs from "node:fs/promises";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/cloudflare-workers";
@@ -6,245 +6,238 @@ import { defaultOptions } from "@hono/vite-dev-server";
 import adapter from "@hono/vite-dev-server/cloudflare";
 import ssg from "@hono/vite-ssg";
 import tailwindcss from "@tailwindcss/vite";
+import { build as buildWithEsbuild } from "esbuild";
 import honox from "honox/vite";
 import { defineConfig, type Plugin } from "vite";
 
 const webRoot = path.dirname(fileURLToPath(import.meta.url));
-const coreEntry = path.resolve(webRoot, "../../packages/core/index.ts");
-const attachmentEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-attachment/index.ts",
-);
-const attachmentStyle = path.resolve(
-  webRoot,
-  "../../packages/plugin-attachment/style.css",
-);
-const autoCardLinkEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-autocardlink/index.ts",
-);
-const autoCardLinkStyle = path.resolve(
-  webRoot,
-  "../../packages/plugin-autocardlink/style.css",
-);
-const codeEnhanceEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-code-enhance/index.ts",
-);
-const codeEnhanceClientEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-code-enhance/client.ts",
-);
-const codeEnhanceStyle = path.resolve(
-  webRoot,
-  "../../packages/plugin-code-enhance/style.css",
-);
-const lightboxEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-lightbox/index.ts",
-);
-const lightboxStyle = path.resolve(
-  webRoot,
-  "../../packages/plugin-lightbox/style.css",
-);
-const mermaidEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-mermaid/index.ts",
-);
-const mermaidClientEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-mermaid/client.ts",
-);
-const mermaidStyle = path.resolve(
-  webRoot,
-  "../../packages/plugin-mermaid/style.css",
-);
-const diagnosticsEntry = path.resolve(
-  webRoot,
-  "../../packages/plugin-diagnostics/index.ts",
-);
-const seoEntry = path.resolve(webRoot, "../../packages/plugin-seo/index.ts");
-const pluginAssetUrlPrefix = "/riebeckite/plugin-assets/";
+const workspaceRoot = path.resolve(webRoot, "../..");
 
-export default defineConfig({
-  resolve: {
-    alias: [
-      { find: /^@riebeckite\/core$/, replacement: coreEntry },
-      {
-        find: /^@riebeckite\/plugin-attachment$/,
-        replacement: attachmentEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-attachment\/style\.css$/,
-        replacement: attachmentStyle,
-      },
-      {
-        find: /^@riebeckite\/plugin-autocardlink$/,
-        replacement: autoCardLinkEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-autocardlink\/style\.css$/,
-        replacement: autoCardLinkStyle,
-      },
-      {
-        find: /^@riebeckite\/plugin-code-enhance$/,
-        replacement: codeEnhanceEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-code-enhance\/client$/,
-        replacement: codeEnhanceClientEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-code-enhance\/style\.css$/,
-        replacement: codeEnhanceStyle,
-      },
-      {
-        find: /^@riebeckite\/plugin-lightbox$/,
-        replacement: lightboxEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-lightbox\/style\.css$/,
-        replacement: lightboxStyle,
-      },
-      {
-        find: /^@riebeckite\/plugin-mermaid$/,
-        replacement: mermaidEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-mermaid\/client$/,
-        replacement: mermaidClientEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-mermaid\/style\.css$/,
-        replacement: mermaidStyle,
-      },
-      {
-        find: /^@riebeckite\/plugin-diagnostics$/,
-        replacement: diagnosticsEntry,
-      },
-      {
-        find: /^@riebeckite\/plugin-seo$/,
-        replacement: seoEntry,
-      },
-    ],
-  },
-  plugins: [
-    honox({
-      devServer: {
-        adapter,
-        exclude: [...defaultOptions.exclude, /\.(png|jpe?g|gif|svg|webp)$/],
-      },
-      client: { input: ["/app/client.ts", "/app/style.css"] },
-    }),
-    tailwindcss(),
-    riebeckitePluginAssets(),
-    build(),
-    ssg({
-      entry: "./app/server.ts",
-    }),
-  ],
-  optimizeDeps: {
-    include: ["debug"],
-  },
-  environments: {
-    ssr: {
-      resolve: {
-        external: [
-          "extend",
-          "debug",
-          "node:fs/promises",
-          "node:path",
-          "parse-numeric-range",
-          "mermaid",
-          "slugify",
-          "vfile-matter",
-        ],
-      },
-    },
-  },
-});
+const pluginClientModuleId = "virtual:riebeckite-plugin-client";
+const resolvedPluginClientModuleId = `\0${pluginClientModuleId}`;
 
-function riebeckitePluginAssets(): Plugin {
-  const assetSpecifiers = new Set<string>();
-  let isBuild = false;
+export default defineConfig(async () => {
+  const config = await loadRiebeckiteConfig();
+  writePluginStylesModule(config);
 
   return {
-    name: "riebeckite-plugin-assets",
-    configResolved(config) {
-      isBuild = config.command === "build";
+    resolve: {
+      alias: createWorkspacePackageAliases(),
     },
-    async buildStart() {
-      if (!isBuild) return;
-
-      for (const specifier of await collectPluginAssetSpecifiers()) {
-        const resolved = await this.resolve(specifier);
-        if (!resolved) continue;
-
-        assetSpecifiers.add(specifier);
-        this.emitFile({
-          type: "asset",
-          fileName: toPluginAssetFileName(specifier),
-          source: await fs.readFile(resolved.id),
-        });
-      }
+    plugins: [
+      honox({
+        devServer: {
+          adapter,
+          exclude: [...defaultOptions.exclude, /\.(png|jpe?g|gif|svg|webp)$/],
+        },
+        client: { input: ["/app/client.ts", "/app/style.css"] },
+      }),
+      tailwindcss(),
+      riebeckitePluginModules(config),
+      build(),
+      ssg({
+        entry: "./app/server.ts",
+      }),
+    ],
+    optimizeDeps: {
+      include: ["debug"],
     },
-    configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        const pathname = req.url?.split("?", 1)[0];
-        if (!pathname?.startsWith(pluginAssetUrlPrefix)) {
-          next();
-          return;
-        }
-
-        const specifier = toPluginAssetSpecifier(pathname);
-        const resolved = await server.pluginContainer.resolveId(specifier);
-        if (!resolved) {
-          next();
-          return;
-        }
-
-        res.setHeader("Content-Type", getPluginAssetContentType(specifier));
-        res.end(await fs.readFile(resolved.id));
-      });
+    environments: {
+      ssr: {
+        resolve: {
+          external: [
+            "extend",
+            "debug",
+            "node:fs/promises",
+            "node:path",
+            "parse-numeric-range",
+            "slugify",
+            "vfile-matter",
+          ],
+        },
+      },
     },
-    generateBundle(_, bundle) {
-      for (const specifier of assetSpecifiers) {
-        const fileName = toPluginAssetFileName(specifier);
-        if (bundle[fileName]) continue;
-        this.warn(`Plugin asset was not emitted: ${specifier}`);
-      }
+  };
+});
+
+function riebeckitePluginModules(config: ResolvedConfig): Plugin {
+  return {
+    name: "riebeckite-plugin-modules",
+    resolveId(id) {
+      if (id === pluginClientModuleId) return resolvedPluginClientModuleId;
+      return null;
+    },
+    load(id) {
+      if (id === resolvedPluginClientModuleId)
+        return createPluginClientModule(config);
+      return null;
     },
   };
 }
 
-async function collectPluginAssetSpecifiers(): Promise<string[]> {
-  const packagesRoot = path.resolve(webRoot, "../../packages");
-  const entries = await fs.readdir(packagesRoot, { withFileTypes: true });
-  const specifiers: string[] = [];
+function writePluginStylesModule(config: ResolvedConfig): void {
+  const outputFile = path.join(webRoot, "app/.riebeckite/plugin-styles.css");
+  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+  fs.writeFileSync(outputFile, createPluginStylesModule(config));
+}
 
-  for (const entry of entries) {
-    if (!entry.isDirectory() || !entry.name.startsWith("plugin-")) continue;
+function createPluginStylesModule(config: ResolvedConfig): string {
+  return collectPluginStyleSpecifiers(config)
+    .map((specifier) => `@import ${JSON.stringify(specifier)};`)
+    .join("\n");
+}
 
-    const pluginDirectory = path.join(packagesRoot, entry.name);
-    for (const fileName of await fs.readdir(pluginDirectory)) {
-      if (!/\.(css|js)$/.test(fileName)) continue;
-      specifiers.push(`@riebeckite/${entry.name}/${fileName}`);
-    }
+function createPluginClientModule(config: ResolvedConfig): string {
+  const imports: string[] = [];
+  const initializers: string[] = [];
+
+  for (const [index, entry] of config.plugins
+    .flatMap((plugin) => plugin.clientEntries ?? [])
+    .entries()) {
+    const localName = `pluginClientInitializer${index}`;
+    const importTarget = entry.exportName
+      ? `{ ${entry.exportName} as ${localName} }`
+      : localName;
+    imports.push(
+      `import ${importTarget} from ${JSON.stringify(entry.moduleSpecifier)};`,
+    );
+    initializers.push(localName);
   }
 
-  return specifiers;
+  return `${imports.join("\n")}
+
+export function initRiebeckitePlugins() {
+${initializers.map((name) => `  ${name}();`).join("\n")}
+}
+`;
 }
 
-function toPluginAssetSpecifier(pathname: string): string {
-  return `@riebeckite/${pathname.slice(pluginAssetUrlPrefix.length)}`;
+function collectPluginStyleSpecifiers(config: ResolvedConfig): string[] {
+  return config.plugins.flatMap((plugin) => {
+    const injected = plugin.injectAssets?.({
+      config,
+      contentIndex: new Map(),
+      diagnostics: [],
+    });
+    return [...(plugin.assets ?? []), ...(injected ?? [])]
+      .filter((asset) => asset.kind === "style")
+      .map((asset) => asset.moduleSpecifier ?? asset.path)
+      .filter((specifier): specifier is string => Boolean(specifier));
+  });
 }
 
-function toPluginAssetFileName(specifier: string): string {
-  return `riebeckite/plugin-assets/${specifier.replace("@riebeckite/", "")}`;
+type ResolvedConfig = {
+  plugins: Array<{
+    assets?: Array<{ kind: string; moduleSpecifier?: string; path?: string }>;
+    clientEntries?: Array<{ moduleSpecifier: string; exportName?: string }>;
+    injectAssets?: (context: unknown) => Array<{
+      kind: string;
+      moduleSpecifier?: string;
+      path?: string;
+    }>;
+  }>;
+};
+
+async function loadRiebeckiteConfig(): Promise<ResolvedConfig> {
+  const outputFile = path.join(
+    workspaceRoot,
+    "node_modules/.vite/riebeckite.config.generated.mjs",
+  );
+  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+
+  await buildWithEsbuild({
+    stdin: {
+      contents: `
+        import rawConfig from ${JSON.stringify(path.join(workspaceRoot, "riebeckite.config.ts"))};
+        import { resolveConfig } from ${JSON.stringify(path.join(workspaceRoot, "packages/core/index.ts"))};
+        export default resolveConfig(rawConfig);
+      `,
+      resolveDir: workspaceRoot,
+      loader: "ts",
+    },
+    outfile: outputFile,
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    plugins: [workspacePackageResolver()],
+  });
+
+  const module = await import(`${pathToFileUrl(outputFile)}?t=${Date.now()}`);
+  return module.default;
 }
 
-function getPluginAssetContentType(specifier: string): string {
-  if (specifier.endsWith(".css")) return "text/css; charset=utf-8";
-  if (specifier.endsWith(".js")) return "text/javascript; charset=utf-8";
-  return "application/octet-stream";
+function createWorkspacePackageAliases() {
+  const packagesRoot = path.join(workspaceRoot, "packages");
+  if (!fs.existsSync(packagesRoot)) return [];
+
+  return fs
+    .readdirSync(packagesRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) => {
+      const packageDirectory = path.join(packagesRoot, entry.name);
+      const packageJsonPath = path.join(packageDirectory, "package.json");
+      if (!fs.existsSync(packageJsonPath)) return [];
+
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+      if (typeof packageJson.name !== "string") return [];
+
+      return createPackageAliases(
+        packageJson.name,
+        packageDirectory,
+        packageJson,
+      );
+    });
+}
+
+function workspacePackageResolver() {
+  const aliases = createWorkspacePackageAliases();
+  return {
+    name: "workspace-package-resolver",
+    setup(buildApi: {
+      onResolve: (
+        options: { filter: RegExp },
+        callback: (args: { path: string }) => { path: string } | null,
+      ) => void;
+    }) {
+      buildApi.onResolve({ filter: /.*/ }, (args) => {
+        const alias = aliases.find((currentAlias) =>
+          currentAlias.find.test(args.path),
+        );
+        return alias ? { path: alias.replacement } : null;
+      });
+    },
+  };
+}
+
+function createPackageAliases(
+  packageName: string,
+  packageDirectory: string,
+  packageJson: { exports?: Record<string, string>; main?: string },
+) {
+  const aliases: { find: RegExp; replacement: string }[] = [];
+  const mainEntry = packageJson.exports?.["."] ?? packageJson.main;
+  if (mainEntry) {
+    aliases.push({
+      find: new RegExp(`^${escapeRegExp(packageName)}$`),
+      replacement: path.join(packageDirectory, mainEntry),
+    });
+  }
+
+  for (const [subpath, target] of Object.entries(packageJson.exports ?? {})) {
+    if (subpath === ".") continue;
+    aliases.push({
+      find: new RegExp(`^${escapeRegExp(packageName + subpath.slice(1))}$`),
+      replacement: path.join(packageDirectory, target),
+    });
+  }
+
+  return aliases;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function pathToFileUrl(filePath: string): string {
+  return `file:///${filePath.replace(/\\/g, "/").replace(/^([A-Za-z]):/, "$1:")}`;
 }

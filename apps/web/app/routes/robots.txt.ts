@@ -1,6 +1,6 @@
-import { renderRobots } from "@riebeckite/plugin-seo";
 import { createRoute } from "honox/factory";
 import { config } from "../config";
+import { renderRobots } from "../lib/seo";
 
 export default createRoute((c) => {
   return c.text(renderRobots(config), 200, {

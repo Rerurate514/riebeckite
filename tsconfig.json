@@ -6,26 +6,8 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@riebeckite/core": ["packages/core/index.ts"],
-      "@riebeckite/plugin-autocardlink": [
-        "packages/plugin-autocardlink/index.ts"
-      ],
-      "@riebeckite/plugin-attachment": ["packages/plugin-attachment/index.ts"],
-      "@riebeckite/plugin-code-enhance": [
-        "packages/plugin-code-enhance/index.ts"
-      ],
-      "@riebeckite/plugin-code-enhance/client": [
-        "packages/plugin-code-enhance/client.ts"
-      ],
-      "@riebeckite/plugin-diagnostics": [
-        "packages/plugin-diagnostics/index.ts"
-      ],
-      "@riebeckite/plugin-lightbox": ["packages/plugin-lightbox/index.ts"],
-      "@riebeckite/plugin-mermaid": ["packages/plugin-mermaid/index.ts"],
-      "@riebeckite/plugin-mermaid/client": [
-        "packages/plugin-mermaid/client.ts"
-      ],
-      "@riebeckite/plugin-seo": ["packages/plugin-seo/index.ts"]
+      "@riebeckite/*": ["packages/*/index.ts"],
+      "@riebeckite/*/client": ["packages/*/client.ts"]
     }
   },
   "include": ["./riebeckite.config.ts"]

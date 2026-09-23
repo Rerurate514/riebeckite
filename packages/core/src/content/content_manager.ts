@@ -376,10 +376,15 @@ function collectPluginAssets(
   context: PluginContext,
 ) {
   return resolvePlugins(pipelineOptions.plugins).flatMap((plugin) =>
-    (plugin.injectAssets?.(context) ?? []).map((asset) => ({
-      ...asset,
-      pluginName: asset.pluginName || plugin.name,
-    })),
+    [...(plugin.assets ?? []), ...(plugin.injectAssets?.(context) ?? [])]
+      .map((asset) => ({
+        ...asset,
+        path: asset.moduleSpecifier ?? asset.path,
+        pluginName: asset.pluginName || plugin.name,
+      }))
+      .filter((asset): asset is typeof asset & { path: string } =>
+        Boolean(asset.path),
+      ),
   );
 }
 

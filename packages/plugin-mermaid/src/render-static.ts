@@ -4,7 +4,10 @@ type MermaidApi = {
     source: string,
     options: { suppressErrors: false },
   ): Promise<unknown> | unknown;
-  render(id: string, source: string): Promise<{ svg: string }> | { svg: string };
+  render(
+    id: string,
+    source: string,
+  ): Promise<{ svg: string }> | { svg: string };
 };
 
 type MermaidModule = {

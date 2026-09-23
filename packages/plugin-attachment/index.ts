@@ -14,11 +14,12 @@ export function attachment(options: AttachmentOptions = {}) {
     name: PLUGIN_NAME,
     options,
     renderAttachment: async (context) => renderAttachment(context, options),
-    injectAssets: () => [
+    assets: [
       {
         pluginName: PLUGIN_NAME,
         kind: "style",
         path: "@riebeckite/plugin-attachment/style.css",
+        moduleSpecifier: "@riebeckite/plugin-attachment/style.css",
       },
     ],
   });

@@ -13,11 +13,19 @@ export function lightboxPlugin(options: LightboxOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeLightbox, options);
     },
-    injectAssets: () => [
+    assets: [
       {
         pluginName: "lightbox",
         kind: "style",
         path: "@riebeckite/plugin-lightbox/style.css",
+        moduleSpecifier: "@riebeckite/plugin-lightbox/style.css",
+      },
+    ],
+    clientEntries: [
+      {
+        pluginName: "lightbox",
+        moduleSpecifier: "@riebeckite/plugin-lightbox/client",
+        exportName: "initLightbox",
       },
     ],
   });

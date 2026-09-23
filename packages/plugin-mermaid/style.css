@@ -33,10 +33,10 @@
 }
 
 .rr-mermaid__canvas > svg {
-    display: block;
-    justify-self: center;
-    max-width: 100%;
-    height: auto;
+  display: block;
+  justify-self: center;
+  max-width: 100%;
+  height: auto;
 }
 
 .rr-mermaid__fallback {

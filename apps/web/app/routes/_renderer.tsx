@@ -1,7 +1,7 @@
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
-import SearchBar from "../components/search-bar/search-bar";
 import { config } from "../config";
+import SearchBar from "../features/search-bar/search-bar";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {
   getPluginScripts,

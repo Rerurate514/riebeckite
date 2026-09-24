@@ -4,6 +4,9 @@ Riebeckite plugin は、Markdown / HTML pipeline、build lifecycle、manifest、
 plugin 由来の asset を拡張するための仕組みです。plugin は `definePlugin` で
 型付きオブジェクトとして定義します。
 
+Core / Plugin / Feature / Component / Infrastructure の責務境界は
+[`architecture_jp.md`](./architecture_jp.md) を参照してください。
+
 ## plugin を適用する
 
 `riebeckite.config.ts` の `plugins` に追加します。

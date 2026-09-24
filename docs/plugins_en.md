@@ -3,6 +3,9 @@
 Riebeckite plugins extend the content pipeline, build lifecycle, manifest, and
 plugin-provided assets. A plugin is a typed object created with `definePlugin`.
 
+See [`architecture_en.md`](./architecture_en.md) for the Core / Plugin / Feature /
+Component / Infrastructure boundaries.
+
 ## Apply plugins
 
 Add plugins to `riebeckite.config.ts`.

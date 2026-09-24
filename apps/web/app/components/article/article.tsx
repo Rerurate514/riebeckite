@@ -1,30 +1,23 @@
 import type { PostContent } from "@riebeckite/core";
 import { calculateReadingTime } from "../../lib/seo";
 import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
-import Backlinks, { type ArticleBacklink } from "../backlinks/backlinks";
-import TableOfContents, {
-  extractTableOfContents,
-} from "../table-of-contents/table-of-contents";
 
 type Props = {
   content: PostContent;
-  backlinks?: ArticleBacklink[];
+  asideContent?: unknown;
   afterContent?: unknown;
+  footerContent?: unknown;
 };
 
 export default function Article(props: Props) {
   const html = props.content.html ?? "";
-  const tableOfContents = extractTableOfContents(html);
   const articleHtml = splitAfterFirstHeading(html);
   const readingTimeMinutes = calculateReadingTime(html);
 
   return (
     <article class="article-shell prose" data-slot="article">
       <div class="article-shell__layout">
-        <TableOfContents
-          className="table-of-contents--desktop"
-          items={tableOfContents}
-        />
+        {props.asideContent}
         <div class="article-shell__body" data-slot="article-body">
           <div
             class="article-shell__lead"
@@ -38,7 +31,7 @@ export default function Article(props: Props) {
           {props.afterContent}
         </div>
       </div>
-      <Backlinks backlinks={props.backlinks ?? []} />
+      {props.footerContent}
     </article>
   );
 }

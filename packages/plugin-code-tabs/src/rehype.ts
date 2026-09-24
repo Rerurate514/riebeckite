@@ -30,9 +30,6 @@ function transformChildren(
 ) {
   if (!hasChildren(node)) return;
 
-  for (const child of node.children)
-    transformChildren(child, options, nextGroupId);
-
   const nextChildren: HastNode[] = [];
   let group: TabBlock[] = [];
 
@@ -43,11 +40,16 @@ function transformChildren(
   };
 
   for (const child of node.children) {
-    const tabBlock = isElementNode(child) ? getTabBlock(child) : null;
-    if (tabBlock) {
-      group.push(tabBlock);
-      continue;
+    if (isElementNode(child)) {
+      const tabBlock = getTabBlock(child);
+      if (tabBlock) {
+        group.push(tabBlock);
+        continue;
+      }
+      transformChildren(child, options, nextGroupId);
     }
+
+    if (isWhitespaceOnlyText(child) && group.length > 0) continue;
 
     flushGroup();
     nextChildren.push(child);
@@ -55,6 +57,14 @@ function transformChildren(
 
   flushGroup();
   node.children = nextChildren;
+}
+
+function isWhitespaceOnlyText(node: HastNode): boolean {
+  return (
+    node.type === "text" &&
+    typeof (node as { value?: unknown }).value === "string" &&
+    (node as { value: string }).value.trim().length === 0
+  );
 }
 
 function buildTabGroup(
@@ -138,14 +148,21 @@ function isCodeBlockRoot(node: ElementNode): boolean {
 }
 
 function findMetaOwner(node: ElementNode): ElementNode | null {
+  if (hasCodeMeta(node)) return node;
   if (node.tagName === "pre") return findDirectChild(node, "code") ?? node;
-  const pre = findDirectChild(node, "pre");
-  if (!pre) return node;
-  return findDirectChild(pre, "code") ?? pre;
+  const pre = findDescendant(node, (element) => element.tagName === "pre");
+  if (pre) return findDirectChild(pre, "code") ?? pre;
+  return node;
+}
+
+function hasCodeMeta(node: ElementNode): boolean {
+  return getCodeMeta(node) !== null;
 }
 
 function getCodeMeta(node: ElementNode): string | null {
+  const dataMeta = typeof node.data?.meta === "string" ? node.data.meta : null;
   return (
+    dataMeta ??
     getStringProperty(node, "meta") ??
     getStringProperty(node, "dataMeta") ??
     getStringProperty(node, "data-meta") ??
@@ -171,6 +188,23 @@ function removeTabMeta(node: ElementNode, meta: string) {
       else delete node.properties[key];
     }
   }
+  if (node.data && node.data.meta === meta) {
+    if (nextMeta) node.data.meta = nextMeta;
+    else delete node.data.meta;
+  }
+}
+
+function findDescendant(
+  node: ElementNode,
+  predicate: (element: ElementNode) => boolean,
+): ElementNode | null {
+  for (const child of node.children ?? []) {
+    if (!isElementNode(child)) continue;
+    if (predicate(child)) return child;
+    const match = findDescendant(child, predicate);
+    if (match) return match;
+  }
+  return null;
 }
 
 function findDirectChild(

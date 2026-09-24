@@ -49,6 +49,7 @@ export function rehypeCodeEnhance(options: CodeEnhanceOptions = {}) {
   });
 
   return async (tree: HastNode, file: unknown) => {
+    restoreCodeMeta(tree);
     if (typeof prettyCode === "function") {
       await (
         prettyCode as (tree: HastNode, file: unknown) => Promise<void> | void
@@ -56,6 +57,43 @@ export function rehypeCodeEnhance(options: CodeEnhanceOptions = {}) {
     }
     enhancePrettyCodeFigures(tree, options);
   };
+}
+
+function restoreCodeMeta(tree: HastNode) {
+  visitElements(tree, (node) => {
+    if (node.tagName !== "pre") return;
+    const code = findDirectChild(node, "code");
+    if (!code) return;
+    const meta = getCodeMeta(code);
+    if (!meta) return;
+    node.data = { ...getRecord(node.data), meta };
+  });
+}
+
+function getCodeMeta(node: ElementNode): string | null {
+  const dataMeta = getDataMeta(node);
+  return (
+    dataMeta ??
+    getStringProperty(node, "meta") ??
+    getStringProperty(node, "dataMeta") ??
+    getStringProperty(node, "data-meta") ??
+    getStringProperty(node, "metastring")
+  );
+}
+
+function getDataMeta(node: ElementNode): string | null {
+  const data = node.data;
+  if (data === null || typeof data !== "object" || Array.isArray(data)) {
+    return null;
+  }
+  const meta = (data as { meta?: unknown }).meta;
+  return typeof meta === "string" ? meta : null;
+}
+
+function getRecord(data: unknown): Record<string, unknown> {
+  return data !== null && typeof data === "object" && !Array.isArray(data)
+    ? (data as Record<string, unknown>)
+    : {};
 }
 
 function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {

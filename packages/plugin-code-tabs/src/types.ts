@@ -8,6 +8,7 @@ export type ElementNode = {
   type: string;
   tagName?: string;
   properties?: Record<string, unknown>;
+  data?: Record<string, unknown>;
   children?: HastNode[];
 };
 

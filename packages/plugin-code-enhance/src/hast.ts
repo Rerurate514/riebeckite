@@ -40,15 +40,26 @@ export function getStringProperty(
   node: ElementNode,
   key: string,
 ): string | null {
-  const value = node.properties?.[key];
+  const value = getProperty(node, key);
   if (typeof value === "string") return value;
   if (Array.isArray(value)) return value.join(" ");
   return null;
 }
 
 export function getBooleanProperty(node: ElementNode, key: string): boolean {
+  const value = getProperty(node, key);
+  return value === true || value === "true" || value === "";
+}
+
+function getProperty(node: ElementNode, key: string): unknown {
   const value = node.properties?.[key];
-  return value === true || value === "true";
+  if (value !== undefined) return value;
+  const hyphenated = key.replace(
+    /[A-Z]/g,
+    (match) => `-${match.toLowerCase()}`,
+  );
+  if (hyphenated !== key) return node.properties?.[hyphenated];
+  return undefined;
 }
 
 export function mergeClassName(current: unknown, next: string): string {

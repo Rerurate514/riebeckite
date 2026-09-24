@@ -1,0 +1,292 @@
+@layer components {
+  .garden-explorer-page {
+    width: min(100%, 96rem);
+    padding-inline: var(--rb-space-2);
+  }
+
+  .garden-explorer-page__header {
+    display: grid;
+    gap: var(--rb-space-1);
+    border-block: var(--rb-rule-width) solid var(--rb-color-border);
+    padding-block: var(--rb-space-3);
+  }
+
+  .garden-explorer-page__eyebrow,
+  .garden-explorer__eyebrow {
+    margin: 0;
+    color: var(--rb-color-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .garden-explorer-page__title {
+    margin: 0;
+    font-family: var(--rb-font-heading);
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+  }
+
+  .garden-explorer-page__description {
+    max-width: 42rem;
+    margin: 0;
+    color: var(--rb-color-muted);
+  }
+
+  .garden-explorer {
+    display: grid;
+    grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr) minmax(
+        16rem,
+        22rem
+      );
+    min-height: 42rem;
+    margin-top: var(--rb-space-4);
+    border: var(--rb-rule-width) solid var(--rb-color-border);
+  }
+
+  .garden-explorer__panel {
+    min-width: 0;
+    border-color: var(--rb-color-border);
+  }
+
+  .garden-explorer__panel--explorer,
+  .garden-explorer__panel--details {
+    overflow: auto;
+    max-height: 46rem;
+    padding: var(--rb-space-2);
+  }
+
+  .garden-explorer__panel--explorer {
+    border-right: var(--rb-rule-width) solid var(--rb-color-border);
+  }
+
+  .garden-explorer__panel--details {
+    border-left: var(--rb-rule-width) solid var(--rb-color-border);
+  }
+
+  .garden-explorer__section {
+    display: grid;
+    gap: var(--rb-space-1);
+    padding-block: var(--rb-space-2);
+    border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
+  }
+
+  .garden-explorer__section--flush {
+    padding-bottom: 0;
+  }
+
+  .garden-explorer__search input {
+    width: 100%;
+    border: var(--rb-rule-width) solid var(--rb-color-border);
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    padding: 0.7rem 0.75rem;
+  }
+
+  .garden-explorer__search input:focus,
+  .garden-explorer button:focus-visible,
+  .garden-graph a:focus-visible {
+    outline: 2px solid var(--rb-color-accent);
+    outline-offset: 2px;
+  }
+
+  .garden-explorer__text-button,
+  .garden-explorer__chip,
+  .garden-explorer__note-list button,
+  .garden-explorer__graph-toolbar button,
+  .garden-explorer__mobile-tab {
+    cursor: pointer;
+    border: var(--rb-rule-width) solid var(--rb-color-border);
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font: inherit;
+  }
+
+  .garden-explorer__text-button {
+    justify-self: start;
+    border: 0;
+    border-bottom: var(--rb-rule-width) solid currentColor;
+    padding: 0;
+    color: var(--rb-color-muted);
+  }
+
+  .garden-explorer__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .garden-explorer__chip {
+    display: inline-flex;
+    gap: 0.45rem;
+    align-items: center;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .garden-explorer__chip[aria-pressed="true"],
+  .garden-explorer__note-list button[aria-pressed="true"],
+  .garden-explorer__mobile-tab[aria-pressed="true"] {
+    background: var(--rb-color-accent);
+    color: var(--rb-color-paper);
+  }
+
+  .garden-explorer__note-list {
+    display: grid;
+    gap: 0.35rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .garden-explorer__note-list button {
+    display: grid;
+    width: 100%;
+    gap: 0.2rem;
+    padding: 0.55rem 0.6rem;
+    text-align: left;
+  }
+
+  .garden-explorer__note-list small,
+  .garden-explorer__path,
+  .garden-explorer__empty {
+    color: var(--rb-color-muted);
+  }
+
+  .garden-explorer__graph-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--rb-space-1);
+    min-height: 3rem;
+    padding-inline: var(--rb-space-2);
+    border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
+    color: var(--rb-color-muted);
+  }
+
+  .garden-explorer__graph-toolbar div {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .garden-explorer__graph-toolbar button {
+    min-width: 2rem;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .garden-graph {
+    display: block;
+    width: 100%;
+    min-height: 38rem;
+    touch-action: none;
+    background-image:
+      linear-gradient(var(--rb-color-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rb-color-border) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .garden-graph__edge {
+    stroke: var(--rb-color-border);
+    stroke-width: 1.2;
+  }
+
+  .garden-graph__node circle {
+    fill: var(--rb-color-paper);
+    stroke: var(--rb-color-ink);
+    stroke-width: 1.5;
+    transition:
+      fill 120ms ease,
+      stroke 120ms ease;
+  }
+
+  .garden-graph__node circle[data-selected="true"] {
+    fill: var(--rb-color-accent);
+    stroke: var(--rb-color-accent);
+  }
+
+  .garden-graph__node text {
+    fill: var(--rb-color-ink);
+    font-size: 0.8rem;
+    pointer-events: none;
+  }
+
+  .garden-graph__node a {
+    cursor: pointer;
+  }
+
+  .garden-explorer__details h2 {
+    margin-block: var(--rb-space-1);
+    font-size: 1.6rem;
+    line-height: 1.1;
+  }
+
+  .garden-explorer__details a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .garden-explorer__details a:hover {
+    color: var(--rb-color-accent);
+  }
+
+  .garden-explorer__tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .garden-explorer__tag-row span {
+    border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
+    color: var(--rb-color-muted);
+  }
+
+  .garden-explorer__mobile-tabs {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .garden-graph__node circle {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 58rem) {
+    .garden-explorer {
+      display: block;
+      border: 0;
+    }
+
+    .garden-explorer__mobile-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.35rem;
+      margin-bottom: var(--rb-space-1);
+    }
+
+    .garden-explorer__mobile-tab {
+      padding: 0.6rem 0.4rem;
+      text-transform: capitalize;
+    }
+
+    .garden-explorer__panel {
+      display: none;
+      border: var(--rb-rule-width) solid var(--rb-color-border);
+    }
+
+    .garden-explorer__panel--active {
+      display: block;
+    }
+
+    .garden-explorer__panel--explorer,
+    .garden-explorer__panel--details {
+      max-height: none;
+      border: var(--rb-rule-width) solid var(--rb-color-border);
+    }
+
+    .garden-graph {
+      min-height: 28rem;
+    }
+  }
+}

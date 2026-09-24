@@ -49,6 +49,7 @@
   font: inherit;
   line-height: 1.4;
   cursor: pointer;
+  padding: 0.3rem 0.5rem;
 }
 
 .rr-code__action:hover,

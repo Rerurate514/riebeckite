@@ -1,9 +1,9 @@
 .rr-code {
-  --rr-code-paper: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
-  --rr-code-ink: var(--rr-color-ink, var(--rb-color-ink, #171717));
+  --rr-code-paper: var(--rb-color-paper, #ffffff);
+  --rr-code-ink: var(--rb-color-ink, #000000);
   --rr-code-muted: color-mix(in srgb, var(--rr-code-ink) 56%, transparent);
   --rr-code-rule: color-mix(in srgb, var(--rr-code-ink) 18%, transparent);
-  --rr-code-accent: var(--rr-color-orange, #686868);
+  --rr-code-accent: var(--rb-color-accent, #686868);
   margin: 2rem 0;
   border: 1px solid var(--rr-code-rule);
   background: var(--rr-code-paper);
@@ -11,8 +11,8 @@
 }
 
 .rr-code[data-terminal="true"] {
-  --rr-code-paper: var(--rr-color-ink, var(--rb-color-ink, #171717));
-  --rr-code-ink: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
+  --rr-code-paper: var(--rb-color-ink, #000000);
+  --rr-code-ink: var(--rb-color-paper, #ffffff);
 }
 
 .rr-code__header {
@@ -152,14 +152,14 @@
 
 :root[data-theme="dark"] .rr-code,
 html.dark .rr-code {
-  --rr-code-paper: var(--rr-color-paper, var(--rb-color-paper, #000000));
-  --rr-code-ink: var(--rr-color-ink, var(--rb-color-ink, #ffffff));
+  --rr-code-paper: var(--rb-color-paper, #000000);
+  --rr-code-ink: var(--rb-color-ink, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) .rr-code {
-    --rr-code-paper: var(--rr-color-paper, var(--rb-color-paper, #000000));
-    --rr-code-ink: var(--rr-color-ink, var(--rb-color-ink, #ffffff));
+    --rr-code-paper: var(--rb-color-paper, #000000);
+    --rr-code-ink: var(--rb-color-ink, #ffffff);
   }
 }
 

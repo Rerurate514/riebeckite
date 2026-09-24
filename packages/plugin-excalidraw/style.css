@@ -1,13 +1,10 @@
 .rr-excalidraw {
-  --rr-excalidraw-paper: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
-  --rr-excalidraw-ink: var(--rr-color-ink, var(--rb-color-ink, #000000));
-  --rr-excalidraw-muted: var(--rr-color-muted, var(--rb-color-muted, #6f665b));
+  --rr-excalidraw-paper: var(--rb-color-paper, #ffffff);
+  --rr-excalidraw-ink: var(--rb-color-ink, #000000);
+  --rr-excalidraw-muted: var(--rb-color-muted, #69645c);
   --rr-excalidraw-rule: var(
-    --rr-color-border,
-    var(
-      --rb-color-border,
-      color-mix(in srgb, var(--rr-excalidraw-ink) 18%, transparent)
-    )
+    --rb-color-border,
+    color-mix(in srgb, var(--rr-excalidraw-ink) 18%, transparent)
   );
   box-sizing: border-box;
   width: min(100%, var(--rr-excalidraw-width, 100%));
@@ -48,6 +45,6 @@
 
 html[data-theme="dark"] .rr-excalidraw,
 html.dark .rr-excalidraw {
-  --rr-excalidraw-paper: var(--rr-color-ink, var(--rb-color-ink, #000000));
-  --rr-excalidraw-ink: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
+  --rr-excalidraw-paper: var(--rb-color-ink, #000000);
+  --rr-excalidraw-ink: var(--rb-color-paper, #ffffff);
 }

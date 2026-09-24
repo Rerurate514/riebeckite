@@ -1,8 +1,8 @@
 .rr-cardlink {
   display: block;
   margin-block: 24px;
-  border: 1px solid var(--rr-color-ink, #171717);
-  color: var(--rr-color-ink, #171717);
+  border: 1px solid var(--rb-color-ink, #000000);
+  color: var(--rb-color-ink, #000000);
   text-decoration: none;
   outline-offset: 4px;
   overflow: hidden;
@@ -10,11 +10,11 @@
 
 .rr-cardlink:hover,
 .rr-cardlink:focus-visible {
-  border-color: var(--rr-color-orange, #686868);
+  border-color: var(--rb-color-accent, #686868);
 }
 
 .rr-cardlink:focus-visible {
-  outline: 2px solid var(--rr-color-orange, #686868);
+  outline: 2px solid var(--rb-color-accent, #686868);
 }
 
 .rr-cardlink__body {
@@ -29,8 +29,8 @@
 
 .rr-cardlink__image-frame {
   display: block;
-  border-right: 1px solid var(--rr-color-ink, #171717);
-  background: color-mix(in srgb, var(--rr-color-ink, #171717) 6%, transparent);
+  border-right: 1px solid var(--rb-color-ink, #000000);
+  background: color-mix(in srgb, var(--rb-color-ink, #000000) 6%, transparent);
 }
 
 .rr-cardlink__image {
@@ -57,7 +57,7 @@
 .rr-cardlink__description {
   display: -webkit-box;
   overflow: hidden;
-  color: color-mix(in srgb, var(--rr-color-ink, #171717) 72%, transparent);
+  color: color-mix(in srgb, var(--rb-color-ink, #000000) 72%, transparent);
   font-size: 0.875em;
   line-height: 1.7;
   -webkit-box-orient: vertical;
@@ -72,8 +72,8 @@
   margin-top: auto;
   padding-top: 8px;
   border-top: 1px solid
-    color-mix(in srgb, var(--rr-color-ink, #171717) 24%, transparent);
-  color: var(--rr-color-orange, #686868);
+    color-mix(in srgb, var(--rb-color-ink, #000000) 24%, transparent);
+  color: var(--rb-color-accent, #686868);
   font-size: 0.8125em;
 }
 

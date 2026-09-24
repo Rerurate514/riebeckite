@@ -53,11 +53,11 @@
 
   .recent-posts__link:hover,
   .recent-posts__link:focus-visible {
-    color: #686868;
+    color: var(--rb-color-accent);
   }
 
   .recent-posts__link:focus-visible {
-    outline: 2px solid #686868;
+    outline: 2px solid var(--rb-color-accent);
     outline-offset: 4px;
   }
 

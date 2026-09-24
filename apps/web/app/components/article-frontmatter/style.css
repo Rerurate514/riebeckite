@@ -47,6 +47,6 @@
 
   .article-frontmatter__tag:hover,
   .article-frontmatter__tag:focus-visible {
-    color: #686868;
+    color: var(--rb-color-accent);
   }
 }

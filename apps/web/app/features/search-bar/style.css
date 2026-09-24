@@ -24,15 +24,15 @@
     gap: 0.5rem;
     min-width: 10rem;
     padding: 0.55rem 0.75rem;
-    color: rgb(39 39 42);
-    background: rgb(250 250 250);
-    border: 1px solid rgb(212 212 216);
+    color: var(--rb-color-ink);
+    background: var(--rb-color-surface);
+    border: 1px solid var(--rb-color-border);
     border-radius: 0.75rem;
   }
 
   .search-bar__trigger:hover {
-    background: white;
-    border-color: rgb(161 161 170);
+    background: var(--rb-color-paper);
+    border-color: var(--rb-color-border-strong);
   }
 
   .search-bar__icon {
@@ -48,11 +48,11 @@
 
   .search-bar__key {
     padding: 0.1rem 0.35rem;
-    color: rgb(82 82 91);
+    color: var(--rb-color-muted);
     font-size: 0.7rem;
     line-height: 1.2;
-    background: rgb(244 244 245);
-    border: 1px solid rgb(228 228 231);
+    background: var(--rb-color-surface-hover);
+    border: 1px solid var(--rb-color-border);
     border-radius: 0.35rem;
   }
 
@@ -73,17 +73,17 @@
   .search-modal__backdrop {
     position: fixed;
     inset: 0;
-    background: rgb(24 24 27 / 0.35);
+    background: var(--rb-color-overlay);
   }
 
   .search-modal__panel {
     position: relative;
     width: min(42rem, 100%);
     overflow: hidden;
-    background: white;
-    border: 1px solid rgb(228 228 231);
+    background: var(--rb-color-paper);
+    border: 1px solid var(--rb-color-border);
     border-radius: 1rem;
-    box-shadow: 0 24px 60px rgb(24 24 27 / 0.18);
+    box-shadow: 0 24px 60px color-mix(in oklab, var(--rb-color-ink) 15%, transparent);
   }
 
   .search-modal__header {
@@ -91,49 +91,49 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.9rem 1rem;
-    border-bottom: 1px solid rgb(244 244 245);
+    border-bottom: 1px solid var(--rb-color-surface-hover);
   }
 
   .search-modal__title {
     margin: 0;
-    color: rgb(24 24 27);
+    color: var(--rb-color-ink);
     font-size: 0.95rem;
     font-weight: 650;
   }
 
   .search-modal__close {
     padding: 0.2rem 0.45rem;
-    color: rgb(82 82 91);
+    color: var(--rb-color-muted);
     font-size: 0.75rem;
-    background: rgb(250 250 250);
-    border: 1px solid rgb(228 228 231);
+    background: var(--rb-color-surface);
+    border: 1px solid var(--rb-color-border);
     border-radius: 0.45rem;
   }
 
   .search-modal__input-wrap {
     display: block;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgb(244 244 245);
+    border-bottom: 1px solid var(--rb-color-surface-hover);
   }
 
   .search-modal__input {
     width: 100%;
-    color: rgb(24 24 27);
+    color: var(--rb-color-ink);
     font-size: 1.05rem;
     line-height: 1.5;
     background: transparent;
     outline: none;
   }
 
-  .search-modal__input::placeholder {
-    color: rgb(113 113 122);
-  }
+.search-modal__input::placeholder {
+  color: var(--rb-color-muted);
+}
 
   .search-modal__status {
     padding: 0.65rem 1rem;
-    color: rgb(82 82 91);
+    color: var(--rb-color-muted);
     font-size: 0.8rem;
-    border-bottom: 1px solid rgb(244 244 245);
+    border-bottom: 1px solid var(--rb-color-surface-hover);
   }
 
   .search-modal__results {
@@ -153,12 +153,12 @@
 
   .search-result[aria-selected="true"],
   .search-result:hover {
-    background: rgb(244 244 245);
+    background: var(--rb-color-surface-hover);
   }
 
   .search-result__title {
     margin: 0 0 0.15rem;
-    color: rgb(24 24 27);
+    color: var(--rb-color-ink);
     font-size: 0.95rem;
     font-weight: 650;
   }
@@ -166,7 +166,7 @@
   .search-result__meta,
   .search-result__excerpt {
     margin: 0;
-    color: rgb(82 82 91);
+    color: var(--rb-color-muted);
     font-size: 0.8rem;
     line-height: 1.45;
   }
@@ -187,16 +187,16 @@
     align-items: center;
     min-height: 1.35rem;
     padding: 0 0.4rem;
-    color: rgb(39 39 42);
+    color: var(--rb-color-ink);
     font-size: 0.72rem;
     line-height: 1;
-    border: 1px solid rgb(228 228 231);
+    border: 1px solid var(--rb-color-border);
     border-radius: 999px;
   }
 
   .search-result__mark {
-    color: rgb(24 24 27);
-    background: rgb(254 215 170);
+    color: var(--rb-color-ink);
+    background: color-mix(in srgb, var(--rb-color-accent) 30%, transparent);
     border-radius: 0.15rem;
   }
 

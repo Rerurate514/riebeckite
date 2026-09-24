@@ -11,6 +11,10 @@ export type ThemeDesignTokens = {
     muted?: string;
     accent?: string;
     border?: string;
+    borderStrong?: string;
+    surface?: string;
+    surfaceHover?: string;
+    overlay?: string;
     danger?: string;
     success?: string;
     codeBackground?: string;

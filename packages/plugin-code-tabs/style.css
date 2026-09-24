@@ -1,8 +1,8 @@
 .rr-code-tabs {
   margin-block: 1.5rem;
   border: 1px solid
-    var(--rr-color-border, color-mix(in srgb, currentColor 16%, transparent));
-  background: var(--rr-color-surface, transparent);
+    var(--rb-color-border, color-mix(in srgb, currentColor 16%, transparent));
+  background: var(--rb-color-surface, transparent);
 }
 
 .rr-code-tabs__tablist {
@@ -11,7 +11,7 @@
   overflow-x: auto;
   padding: 0.5rem 0.5rem 0;
   border-bottom: 1px solid
-    var(--rr-color-border, color-mix(in srgb, currentColor 16%, transparent));
+    var(--rb-color-border, color-mix(in srgb, currentColor 16%, transparent));
   scrollbar-width: thin;
 }
 
@@ -23,7 +23,7 @@
   border-radius: 0.5rem 0.5rem 0 0;
   padding: 0.5rem 0.75rem;
   background: transparent;
-  color: var(--rr-color-muted-foreground, currentColor);
+  color: var(--rb-color-muted, currentColor);
   font: inherit;
   font-size: 0.875em;
   line-height: 1.3;
@@ -31,25 +31,25 @@
 }
 
 .rr-code-tabs__tab:hover {
-  color: var(--rr-color-foreground, currentColor);
+  color: var(--rb-color-ink, currentColor);
   background: var(
-    --rr-color-muted,
+    --rb-color-muted,
     color-mix(in srgb, currentColor 6%, transparent)
   );
 }
 
 .rr-code-tabs__tab:focus-visible {
-  outline: 2px solid var(--rr-color-accent, currentColor);
+  outline: 2px solid var(--rb-color-accent, currentColor);
   outline-offset: -2px;
 }
 
 .rr-code-tabs__tab[aria-selected="true"] {
   border-color: var(
-    --rr-color-border,
+    --rb-color-border,
     color-mix(in srgb, currentColor 16%, transparent)
   );
-  background: var(--rr-color-background, Canvas);
-  color: var(--rr-color-foreground, currentColor);
+  background: var(--rb-color-paper, Canvas);
+  color: var(--rb-color-ink, currentColor);
 }
 
 .rr-code-tabs__panel {

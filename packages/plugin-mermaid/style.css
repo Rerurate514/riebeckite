@@ -1,15 +1,12 @@
 .rr-mermaid {
-  --rr-mermaid-paper: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
-  --rr-mermaid-ink: var(--rr-color-ink, var(--rb-color-ink, #000000));
-  --rr-mermaid-muted: var(--rr-color-muted, var(--rb-color-muted, #6f665b));
+  --rr-mermaid-paper: var(--rb-color-paper, #ffffff);
+  --rr-mermaid-ink: var(--rb-color-ink, #000000);
+  --rr-mermaid-muted: var(--rb-color-muted, #69645c);
   --rr-mermaid-rule: var(
-    --rr-color-border,
-    var(
-      --rb-color-border,
-      color-mix(in srgb, var(--rr-mermaid-ink) 18%, transparent)
-    )
+    --rb-color-border,
+    color-mix(in srgb, var(--rr-mermaid-ink) 18%, transparent)
   );
-  --rr-mermaid-accent: var(--rr-color-orange, var(--rb-color-accent, #686868));
+  --rr-mermaid-accent: var(--rb-color-accent, #686868);
   margin: 2rem 0;
   border: 1px solid var(--rr-mermaid-rule);
   background: color-mix(
@@ -67,6 +64,6 @@
 
 html[data-theme="dark"] .rr-mermaid,
 html.dark .rr-mermaid {
-  --rr-mermaid-paper: var(--rr-color-ink, var(--rb-color-ink, #000000));
-  --rr-mermaid-ink: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
+  --rr-mermaid-paper: var(--rb-color-ink, #000000);
+  --rr-mermaid-ink: var(--rb-color-paper, #ffffff);
 }

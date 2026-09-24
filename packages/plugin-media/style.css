@@ -14,7 +14,7 @@
 }
 
 .media-embed--video .media-embed__player {
-  background: #000;
+  background: var(--rb-color-ink, #000000);
 }
 
 .media-embed__caption {

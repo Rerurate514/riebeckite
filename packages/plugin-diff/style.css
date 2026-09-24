@@ -1,9 +1,9 @@
 .rr-diff-history {
   margin-block: 4rem 2rem;
   border-block-start: 1px solid
-    var(--rr-color-border, color-mix(in srgb, currentColor 18%, transparent));
+    var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
   padding-block-start: 1.5rem;
-  color: var(--rr-color-foreground, currentColor);
+  color: var(--rb-color-ink, currentColor);
 }
 
 .rr-diff-history__header {
@@ -25,7 +25,7 @@
 .rr-diff-history__date,
 .rr-diff-history__meta {
   color: var(
-    --rr-color-muted-foreground,
+    --rb-color-muted,
     color-mix(in srgb, currentColor 62%, transparent)
   );
   font-size: 0.8125rem;
@@ -56,9 +56,9 @@
   inset-inline-start: 0;
   width: 0.5rem;
   height: 0.5rem;
-  border: 1px solid var(--rr-color-foreground, currentColor);
+  border: 1px solid var(--rb-color-ink, currentColor);
   border-radius: 999px;
-  background: var(--rr-color-background, Canvas);
+  background: var(--rb-color-paper, Canvas);
   content: "";
 }
 
@@ -68,7 +68,7 @@
   inset-inline-start: 0.25rem;
   width: 1px;
   background: var(
-    --rr-color-border,
+    --rb-color-border,
     color-mix(in srgb, currentColor 18%, transparent)
   );
   content: "";
@@ -94,12 +94,12 @@
 
 .rr-diff-history__commit:hover .rr-diff-history__message,
 .rr-diff-history__commit[aria-pressed="true"] .rr-diff-history__message {
-  color: var(--rr-color-accent, #f66620);
+  color: var(--rb-color-accent, #f66620);
 }
 
 .rr-diff-history__commit:focus-visible,
 .rr-diff-history__controls select:focus-visible {
-  outline: 2px solid var(--rr-color-accent, #f66620);
+  outline: 2px solid var(--rb-color-accent, #f66620);
   outline-offset: 2px;
 }
 
@@ -123,25 +123,25 @@
 
 .rr-diff-history__controls select {
   border: 1px solid
-    var(--rr-color-border, color-mix(in srgb, currentColor 18%, transparent));
+    var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
   border-radius: 0;
   padding: 0.25rem 0.5rem;
-  background: var(--rr-color-background, Canvas);
+  background: var(--rb-color-paper, Canvas);
   color: inherit;
   font: inherit;
 }
 
 .rr-diff-history__diff {
   border: 1px solid
-    var(--rr-color-border, color-mix(in srgb, currentColor 18%, transparent));
+    var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
 }
 
 .rr-diff-history__diff-head {
   border-block-end: 1px solid
-    var(--rr-color-border, color-mix(in srgb, currentColor 18%, transparent));
+    var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
   padding: 0.625rem 0.75rem;
   font-family: var(
-    --rr-font-mono,
+    --rb-font-mono,
     ui-monospace,
     SFMono-Regular,
     Consolas,
@@ -159,7 +159,7 @@
   min-width: 42rem;
   border-collapse: collapse;
   font-family: var(
-    --rr-font-mono,
+    --rb-font-mono,
     ui-monospace,
     SFMono-Regular,
     Consolas,
@@ -172,9 +172,9 @@
 .rr-diff-history__num {
   width: 3.25rem;
   border-inline-end: 1px solid
-    var(--rr-color-border, color-mix(in srgb, currentColor 14%, transparent));
+    var(--rb-color-border, color-mix(in srgb, currentColor 14%, transparent));
   color: var(
-    --rr-color-muted-foreground,
+    --rb-color-muted,
     color-mix(in srgb, currentColor 58%, transparent)
   );
   text-align: end;
@@ -206,7 +206,7 @@
 .rr-diff-history__empty {
   margin: 0;
   color: var(
-    --rr-color-muted-foreground,
+    --rb-color-muted,
     color-mix(in srgb, currentColor 62%, transparent)
   );
   font-size: 0.9375rem;

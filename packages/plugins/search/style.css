@@ -1,4 +1,16 @@
 @layer components {
+  .rr-search {
+    --rr-search-paper: var(--rb-color-paper);
+    --rr-search-ink: var(--rb-color-ink);
+    --rr-search-muted: var(--rb-color-muted);
+    --rr-search-accent: var(--rb-color-accent);
+    --rr-search-surface: var(--rb-color-surface);
+    --rr-search-surface-hover: var(--rb-color-surface-hover);
+    --rr-search-border: var(--rb-color-border);
+    --rr-search-border-strong: var(--rb-color-border-strong);
+    --rr-search-overlay: var(--rb-color-overlay);
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;
@@ -24,15 +36,15 @@
     gap: 0.5rem;
     min-width: 10rem;
     padding: 0.55rem 0.75rem;
-    color: var(--rb-color-ink);
-    background: var(--rb-color-surface);
-    border: 1px solid var(--rb-color-border);
+    color: var(--rr-search-ink);
+    background: var(--rr-search-surface);
+    border: 1px solid var(--rr-search-border);
     border-radius: 0.75rem;
   }
 
   .search-bar__trigger:hover {
-    background: var(--rb-color-paper);
-    border-color: var(--rb-color-border-strong);
+    background: var(--rr-search-paper);
+    border-color: var(--rr-search-border-strong);
   }
 
   .search-bar__icon {
@@ -48,11 +60,11 @@
 
   .search-bar__key {
     padding: 0.1rem 0.35rem;
-    color: var(--rb-color-muted);
+    color: var(--rr-search-muted);
     font-size: 0.7rem;
     line-height: 1.2;
-    background: var(--rb-color-surface-hover);
-    border: 1px solid var(--rb-color-border);
+    background: var(--rr-search-surface-hover);
+    border: 1px solid var(--rr-search-border);
     border-radius: 0.35rem;
   }
 
@@ -73,18 +85,18 @@
   .search-modal__backdrop {
     position: fixed;
     inset: 0;
-    background: var(--rb-color-overlay);
+    background: var(--rr-search-overlay);
   }
 
   .search-modal__panel {
     position: relative;
     width: min(42rem, 100%);
     overflow: hidden;
-    background: var(--rb-color-paper);
-    border: 1px solid var(--rb-color-border);
+    background: var(--rr-search-paper);
+    border: 1px solid var(--rr-search-border);
     border-radius: 1rem;
     box-shadow: 0 24px 60px
-      color-mix(in oklab, var(--rb-color-ink) 15%, transparent);
+      color-mix(in oklab, var(--rr-search-ink) 15%, transparent);
   }
 
   .search-modal__header {
@@ -92,34 +104,34 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.9rem 1rem;
-    border-bottom: 1px solid var(--rb-color-surface-hover);
+    border-bottom: 1px solid var(--rr-search-surface-hover);
   }
 
   .search-modal__title {
     margin: 0;
-    color: var(--rb-color-ink);
+    color: var(--rr-search-ink);
     font-size: 0.95rem;
     font-weight: 650;
   }
 
   .search-modal__close {
     padding: 0.2rem 0.45rem;
-    color: var(--rb-color-muted);
+    color: var(--rr-search-muted);
     font-size: 0.75rem;
-    background: var(--rb-color-surface);
-    border: 1px solid var(--rb-color-border);
+    background: var(--rr-search-surface);
+    border: 1px solid var(--rr-search-border);
     border-radius: 0.45rem;
   }
 
   .search-modal__input-wrap {
     display: block;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--rb-color-surface-hover);
+    border-bottom: 1px solid var(--rr-search-surface-hover);
   }
 
   .search-modal__input {
     width: 100%;
-    color: var(--rb-color-ink);
+    color: var(--rr-search-ink);
     font-size: 1.05rem;
     line-height: 1.5;
     background: transparent;
@@ -127,14 +139,14 @@
   }
 
   .search-modal__input::placeholder {
-    color: var(--rb-color-muted);
+    color: var(--rr-search-muted);
   }
 
   .search-modal__status {
     padding: 0.65rem 1rem;
-    color: var(--rb-color-muted);
+    color: var(--rr-search-muted);
     font-size: 0.8rem;
-    border-bottom: 1px solid var(--rb-color-surface-hover);
+    border-bottom: 1px solid var(--rr-search-surface-hover);
   }
 
   .search-modal__results {
@@ -154,12 +166,12 @@
 
   .search-result[aria-selected="true"],
   .search-result:hover {
-    background: var(--rb-color-surface-hover);
+    background: var(--rr-search-surface-hover);
   }
 
   .search-result__title {
     margin: 0 0 0.15rem;
-    color: var(--rb-color-ink);
+    color: var(--rr-search-ink);
     font-size: 0.95rem;
     font-weight: 650;
   }
@@ -167,7 +179,7 @@
   .search-result__meta,
   .search-result__excerpt {
     margin: 0;
-    color: var(--rb-color-muted);
+    color: var(--rr-search-muted);
     font-size: 0.8rem;
     line-height: 1.45;
   }
@@ -188,16 +200,16 @@
     align-items: center;
     min-height: 1.35rem;
     padding: 0 0.4rem;
-    color: var(--rb-color-ink);
+    color: var(--rr-search-ink);
     font-size: 0.72rem;
     line-height: 1;
-    border: 1px solid var(--rb-color-border);
+    border: 1px solid var(--rr-search-border);
     border-radius: 999px;
   }
 
   .search-result__mark {
-    color: var(--rb-color-ink);
-    background: color-mix(in srgb, var(--rb-color-accent) 30%, transparent);
+    color: var(--rr-search-ink);
+    background: color-mix(in srgb, var(--rr-search-accent) 30%, transparent);
     border-radius: 0.15rem;
   }
 

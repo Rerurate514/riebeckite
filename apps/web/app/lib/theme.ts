@@ -6,6 +6,7 @@ export function getThemeAttributes() {
   const { theme } = config;
 
   return {
+    ...theme.attributes,
     "data-theme": theme.colorMode === "system" ? undefined : theme.colorMode,
     "data-theme-name": theme.name,
     "data-typography": theme.typography,

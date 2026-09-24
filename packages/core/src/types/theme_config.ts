@@ -40,12 +40,15 @@ export type ThemeStyle = {
   moduleSpecifier: string;
 };
 
+export type ThemeAttributes = Record<`data-${string}`, string | undefined>;
+
 export type ThemeConfig = {
   name?: string;
   colorMode?: ThemeColorMode;
   typography?: ThemeTypographyPreset;
   articleLayout?: ThemeArticleLayoutPreset;
   tokens?: ThemeDesignTokens;
+  attributes?: ThemeAttributes;
   userCss?: string[];
 };
 
@@ -56,6 +59,7 @@ export type RiebeckiteTheme<TOptions = unknown> = {
   config?: Omit<ThemeConfig, "name" | "userCss"> & {
     userCss?: string[];
   };
+  attributes?: ThemeAttributes;
 };
 
 export type ThemeInput = ThemeConfig | RiebeckiteTheme;

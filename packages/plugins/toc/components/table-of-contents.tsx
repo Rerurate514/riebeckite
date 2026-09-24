@@ -14,7 +14,10 @@ export default function TableOfContents(props: Props) {
   if (props.items.length < 2) return null;
 
   return (
-    <aside class={`table-of-contents ${props.className}`} aria-label="Contents">
+    <aside
+      class={`table-of-contents rr-table-of-contents ${props.className}`}
+      aria-label="Contents"
+    >
       <p class="table-of-contents__eyebrow">CONTENTS</p>
       <ol class="table-of-contents__list">
         {props.items.map((item) => (

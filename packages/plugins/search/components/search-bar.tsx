@@ -1,7 +1,7 @@
 /** @jsxImportSource hono/jsx */
 export default function SearchBar() {
   return (
-    <div class="search-bar" data-search-root>
+    <div class="search-bar rr-search" data-search-root>
       <button
         type="button"
         class="search-bar__trigger"

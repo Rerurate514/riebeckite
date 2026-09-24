@@ -24,7 +24,10 @@ export default function ArticleFrontmatter(props: Props) {
     return null;
 
   return (
-    <aside class="article-frontmatter" aria-label="Article metadata">
+    <aside
+      class="article-frontmatter rb-article-meta"
+      aria-label="Article metadata"
+    >
       {createdDate && (
         <time
           class="article-frontmatter__date"

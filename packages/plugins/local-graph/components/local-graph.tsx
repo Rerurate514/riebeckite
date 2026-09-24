@@ -36,7 +36,7 @@ export default function LocalGraph(props: Props) {
 
   return (
     <section
-      class="local-graph max-w-4xl mx-auto px-4"
+      class="local-graph rr-local-graph max-w-4xl mx-auto px-4"
       aria-labelledby="local-graph-title"
     >
       <div class="local-graph__header">

@@ -15,12 +15,15 @@ export default function Article(props: Props) {
   const readingTimeMinutes = calculateReadingTime(html);
 
   return (
-    <article class="article-shell prose" data-slot="article">
-      <div class="article-shell__layout">
+    <article class="article-shell rb-article prose" data-slot="article">
+      <div class="article-shell__layout rb-article-layout">
         {props.asideContent}
-        <div class="article-shell__body" data-slot="article-body">
+        <div
+          class="article-shell__body rb-article-body"
+          data-slot="article-body"
+        >
           <div
-            class="article-shell__lead"
+            class="article-shell__lead rb-article-header"
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
           />
           <ArticleFrontmatter

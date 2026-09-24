@@ -66,18 +66,18 @@ export default jsxRenderer(({ children }, c) => {
           />
         )}
         <Link href="/app/style.css" rel="stylesheet" />
-        {getThemeStylesheets().map((href) => (
-          <link href={href} rel="stylesheet" key={href} />
-        ))}
         {themeStyle && (
           <style dangerouslySetInnerHTML={{ __html: themeStyle }} />
         )}
+        {getThemeStylesheets().map((href) => (
+          <link href={href} rel="stylesheet" key={href} />
+        ))}
         {getPluginScripts().map((src) => (
           <script src={src} defer key={src} />
         ))}
         <Script src="/app/client.ts" async />
       </head>
-      <body class="riebeckite-page">
+      <body class="riebeckite-page rb-site">
         <SearchBar />
         {children}
       </body>

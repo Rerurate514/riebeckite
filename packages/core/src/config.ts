@@ -2,7 +2,7 @@ import { resolvePlugins } from "./types/plugin";
 import type { PostFrontmatter } from "./types/post_content";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config";
 import type { RiebeckiteConfig } from "./types/riebeckite_config";
-import type { ThemeStyle } from "./types/theme_config";
+import type { ThemeAttributes, ThemeStyle } from "./types/theme_config";
 import { isRiebeckiteTheme } from "./types/theme_config";
 
 const defaultThemeStyle: ThemeStyle = {
@@ -64,6 +64,11 @@ function resolveThemeConfig(
       ? (themeInput.styles ?? [])
       : [defaultThemeStyle]
     : [defaultThemeStyle];
+  const attributes = themeInput
+    ? isRiebeckiteTheme(themeInput)
+      ? { ...themeInput.config?.attributes, ...themeInput.attributes }
+      : themeInput.attributes
+    : undefined;
 
   return {
     name: theme?.name ?? "riebeckite",
@@ -71,9 +76,30 @@ function resolveThemeConfig(
     typography: theme?.typography ?? "system",
     articleLayout: theme?.articleLayout ?? "article",
     tokens: theme?.tokens ?? {},
+    attributes: sanitizeThemeAttributes(attributes),
     userCss: theme?.userCss ?? [],
     styles,
   };
+}
+
+function sanitizeThemeAttributes(
+  attributes: ThemeAttributes | undefined,
+): ThemeAttributes {
+  if (!attributes) return {};
+  const reservedAttributes = new Set([
+    "data-theme",
+    "data-theme-name",
+    "data-typography",
+    "data-article-layout",
+  ]);
+
+  return Object.fromEntries(
+    Object.entries(attributes)
+      .filter(
+        ([name, value]) => name.startsWith("data-") && value !== undefined,
+      )
+      .filter(([name]) => !reservedAttributes.has(name)),
+  ) as ThemeAttributes;
 }
 
 export function isPublished(

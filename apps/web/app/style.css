@@ -1,6 +1,4 @@
 @import "tailwindcss" source("../app");
-@import "./.riebeckite/theme-styles.css";
-@import "./.riebeckite/plugin-styles.css";
 @import "./components/style.css";
 @import "./styles/shell.css";
 @import "./styles/callout.css";
@@ -8,5 +6,7 @@
 @import "./styles/tasklist.css";
 @import "./styles/typography.css";
 @import "./styles/wikilinks.css";
+@import "./.riebeckite/plugin-styles.css";
+@import "./.riebeckite/theme-styles.css";
 
 @plugin "@tailwindcss/typography";

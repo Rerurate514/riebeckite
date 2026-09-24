@@ -76,6 +76,7 @@ export type { SiteConfig } from "./src/types/site_config";
 export type {
   RiebeckiteTheme,
   ThemeArticleLayoutPreset,
+  ThemeAttributes,
   ThemeColorMode,
   ThemeConfig,
   ThemeDesignTokens,

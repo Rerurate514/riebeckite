@@ -95,7 +95,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
           children: bodyChildren,
         } as unknown as BlockContent;
 
-        const className = ["callout", `callout-${type}`];
+        const className = ["callout", "rr-callout", `callout-${type}`];
         if (fold) className.push("is-collapsible");
         if (fold === "-") className.push("is-collapsed");
 

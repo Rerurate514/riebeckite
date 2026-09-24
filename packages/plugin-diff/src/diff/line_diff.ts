@@ -10,32 +10,65 @@ export function createLineDiff(
   const lines: DiffLine[] = [];
   let fromIndex = 0;
   let toIndex = 0;
+  let oldLineNumber = 1;
+  let newLineNumber = 1;
 
   while (fromIndex < fromLines.length && toIndex < toLines.length) {
     if (fromLines[fromIndex] === toLines[toIndex]) {
-      lines.push({ type: "context", content: fromLines[fromIndex] });
+      lines.push({
+        type: "context",
+        content: fromLines[fromIndex],
+        oldLineNumber,
+        newLineNumber,
+      });
       fromIndex += 1;
       toIndex += 1;
+      oldLineNumber += 1;
+      newLineNumber += 1;
       continue;
     }
 
     if (table[fromIndex + 1][toIndex] >= table[fromIndex][toIndex + 1]) {
-      lines.push({ type: "removed", content: fromLines[fromIndex] });
+      lines.push({
+        type: "removed",
+        content: fromLines[fromIndex],
+        oldLineNumber,
+        newLineNumber: null,
+      });
       fromIndex += 1;
+      oldLineNumber += 1;
     } else {
-      lines.push({ type: "added", content: toLines[toIndex] });
+      lines.push({
+        type: "added",
+        content: toLines[toIndex],
+        oldLineNumber: null,
+        newLineNumber,
+      });
       toIndex += 1;
+      newLineNumber += 1;
     }
   }
 
   while (fromIndex < fromLines.length) {
-    lines.push({ type: "removed", content: fromLines[fromIndex] });
+    lines.push({
+      type: "removed",
+      content: fromLines[fromIndex],
+      oldLineNumber,
+      newLineNumber: null,
+    });
     fromIndex += 1;
+    oldLineNumber += 1;
   }
 
   while (toIndex < toLines.length) {
-    lines.push({ type: "added", content: toLines[toIndex] });
+    lines.push({
+      type: "added",
+      content: toLines[toIndex],
+      oldLineNumber: null,
+      newLineNumber,
+    });
     toIndex += 1;
+    newLineNumber += 1;
   }
 
   return lines;

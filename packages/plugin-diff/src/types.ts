@@ -3,6 +3,8 @@ export type DiffLineType = "context" | "added" | "removed";
 export type DiffLine = {
   type: DiffLineType;
   content: string;
+  oldLineNumber: number | null;
+  newLineNumber: number | null;
 };
 
 export type DiffRevision = {
@@ -31,4 +33,9 @@ export type RevisionComparisonInput = {
 
 export type GitHistoryReaderOptions = {
   cwd?: string;
+};
+
+export type DiffPluginUiOptions = {
+  enabled?: boolean;
+  maxRevisions?: number;
 };

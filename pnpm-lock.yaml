@@ -205,6 +205,16 @@ importers:
         specifier: ^24.5.2
         version: 24.13.6
 
+  packages/plugin-diff:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@types/node':
+        specifier: ^24.5.2
+        version: 24.13.6
+
   packages/plugin-excalidraw:
     dependencies:
       '@excalidraw/excalidraw':

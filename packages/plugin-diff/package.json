@@ -1,0 +1,17 @@
+{
+  "name": "@riebeckite/plugin-diff",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2"
+  }
+}

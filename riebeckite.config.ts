@@ -16,6 +16,7 @@ import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { tocPlugin } from "@riebeckite/plugin-toc";
+import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
   site: {
@@ -37,13 +38,12 @@ export default defineConfig({
     },
   },
   markdown: {},
-  theme: {
-    name: "riebeckite",
+  theme: defaultTheme({
     colorMode: "light",
     typography: "system",
     articleLayout: "article",
     userCss: [],
-  },
+  }),
   plugins: [
     obsidianMarkdown(),
     seo({

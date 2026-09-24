@@ -74,9 +74,13 @@ export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_c
 export type { RiebeckiteConfig } from "./src/types/riebeckite_config";
 export type { SiteConfig } from "./src/types/site_config";
 export type {
+  RiebeckiteTheme,
   ThemeArticleLayoutPreset,
   ThemeColorMode,
   ThemeConfig,
   ThemeDesignTokens,
+  ThemeInput,
+  ThemeStyle,
   ThemeTypographyPreset,
 } from "./src/types/theme_config";
+export { defineTheme } from "./src/types/theme_config";

@@ -2,6 +2,12 @@ import { resolvePlugins } from "./types/plugin";
 import type { PostFrontmatter } from "./types/post_content";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config";
 import type { RiebeckiteConfig } from "./types/riebeckite_config";
+import type { ThemeStyle } from "./types/theme_config";
+import { isRiebeckiteTheme } from "./types/theme_config";
+
+const defaultThemeStyle: ThemeStyle = {
+  moduleSpecifier: "@riebeckite/theme-default/style.css",
+};
 
 export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {
   return config;
@@ -10,6 +16,8 @@ export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {
 export function resolveConfig(
   config: RiebeckiteConfig,
 ): ResolvedRiebeckiteConfig {
+  const theme = resolveThemeConfig(config.theme);
+
   return {
     site: {
       title: config.site?.title ?? "",
@@ -38,15 +46,33 @@ export function resolveConfig(
         theme: config.markdown?.syntaxHighlight?.theme ?? "",
       },
     },
-    theme: {
-      name: config.theme?.name ?? "riebeckite",
-      colorMode: config.theme?.colorMode ?? "system",
-      typography: config.theme?.typography ?? "system",
-      articleLayout: config.theme?.articleLayout ?? "article",
-      tokens: config.theme?.tokens ?? {},
-      userCss: config.theme?.userCss ?? [],
-    },
+    theme,
     plugins: resolvePlugins(config.plugins),
+  };
+}
+
+function resolveThemeConfig(
+  themeInput: RiebeckiteConfig["theme"],
+): ResolvedRiebeckiteConfig["theme"] {
+  const theme = themeInput
+    ? isRiebeckiteTheme(themeInput)
+      ? { name: themeInput.name, ...themeInput.config }
+      : themeInput
+    : undefined;
+  const styles = themeInput
+    ? isRiebeckiteTheme(themeInput)
+      ? (themeInput.styles ?? [])
+      : [defaultThemeStyle]
+    : [defaultThemeStyle];
+
+  return {
+    name: theme?.name ?? "riebeckite",
+    colorMode: theme?.colorMode ?? "system",
+    typography: theme?.typography ?? "system",
+    articleLayout: theme?.articleLayout ?? "article",
+    tokens: theme?.tokens ?? {},
+    userCss: theme?.userCss ?? [],
+    styles,
   };
 }
 

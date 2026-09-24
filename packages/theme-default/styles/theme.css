@@ -1,0 +1,177 @@
+@theme {
+  --font-sans: var(--rb-font-body);
+  --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: var(--rb-font-mono);
+  --color-rb-paper: var(--rb-color-paper);
+  --color-rb-ink: var(--rb-color-ink);
+  --color-rb-muted: var(--rb-color-muted);
+  --color-rb-accent: var(--rb-color-accent);
+  --color-rb-surface: var(--rb-color-surface);
+  --color-rb-danger: var(--rb-color-danger);
+  --color-rb-success: var(--rb-color-success);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --rb-color-paper: #ffffff;
+    --rb-color-ink: #000000;
+    --rb-color-muted: #69645c;
+    --rb-color-accent: #686868;
+    --rb-color-border: color-mix(
+      in oklab,
+      var(--rb-color-ink) 18%,
+      transparent
+    );
+    --rb-color-danger: #b42318;
+    --rb-color-success: #047857;
+    --rb-color-code-background: color-mix(
+      in oklab,
+      var(--rb-color-ink) 8%,
+      transparent
+    );
+    --rb-color-surface: color-mix(
+      in oklab,
+      var(--rb-color-ink) 4%,
+      var(--rb-color-paper)
+    );
+    --rb-color-surface-hover: color-mix(
+      in oklab,
+      var(--rb-color-ink) 7%,
+      var(--rb-color-paper)
+    );
+    --rb-color-border-strong: color-mix(
+      in oklab,
+      var(--rb-color-ink) 24%,
+      transparent
+    );
+    --rb-color-overlay: color-mix(
+      in oklab,
+      var(--rb-color-ink) 40%,
+      transparent
+    );
+    --rb-font-body:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+    --rb-font-heading: var(--rb-font-body);
+    --rb-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --rb-space-1: 0.5rem;
+    --rb-space-2: 1rem;
+    --rb-space-3: 1.5rem;
+    --rb-space-4: 2rem;
+    --rb-space-6: 3rem;
+    --rb-space-8: 4rem;
+    --rb-rule-width: 1px;
+    --rb-layout-page-max: 80rem;
+    --rb-layout-article-max: 48rem;
+    --rb-layout-sidebar: 14rem;
+    --rb-layout-gap: 2rem;
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --rb-color-paper: #000000;
+    --rb-color-ink: #ffffff;
+    --rb-color-muted: #bbb1a1;
+    --rb-color-border: color-mix(
+      in oklab,
+      var(--rb-color-ink) 22%,
+      transparent
+    );
+    --rb-color-code-background: color-mix(
+      in oklab,
+      var(--rb-color-ink) 12%,
+      transparent
+    );
+    --rb-color-surface: color-mix(
+      in oklab,
+      var(--rb-color-ink) 6%,
+      transparent
+    );
+    --rb-color-surface-hover: color-mix(
+      in oklab,
+      var(--rb-color-ink) 11%,
+      transparent
+    );
+    --rb-color-border-strong: color-mix(
+      in oklab,
+      var(--rb-color-ink) 28%,
+      transparent
+    );
+    --rb-color-overlay: color-mix(
+      in oklab,
+      var(--rb-color-ink) 40%,
+      transparent
+    );
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      color-scheme: dark;
+      --rb-color-paper: #000000;
+      --rb-color-ink: #ffffff;
+      --rb-color-muted: #bbb1a1;
+      --rb-color-border: color-mix(
+        in oklab,
+        var(--rb-color-ink) 22%,
+        transparent
+      );
+      --rb-color-code-background: color-mix(
+        in oklab,
+        var(--rb-color-ink) 12%,
+        transparent
+      );
+      --rb-color-surface: color-mix(
+        in oklab,
+        var(--rb-color-ink) 6%,
+        transparent
+      );
+      --rb-color-surface-hover: color-mix(
+        in oklab,
+        var(--rb-color-ink) 11%,
+        transparent
+      );
+      --rb-color-border-strong: color-mix(
+        in oklab,
+        var(--rb-color-ink) 28%,
+        transparent
+      );
+      --rb-color-overlay: color-mix(
+        in oklab,
+        var(--rb-color-ink) 40%,
+        transparent
+      );
+    }
+  }
+
+  :root[data-typography="serif"] {
+    --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
+    --rb-font-heading:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+
+  :root[data-typography="sans"] {
+    --rb-font-body:
+      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+    --rb-font-heading: var(--rb-font-body);
+  }
+
+  html {
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-body);
+  }
+
+  body {
+    margin: 0;
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+  }
+
+  ::selection {
+    background: var(--rb-color-accent);
+    color: var(--rb-color-paper);
+  }
+}

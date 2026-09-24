@@ -68,6 +68,9 @@ importers:
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../../packages/plugin-toc
+      '@riebeckite/theme-default':
+        specifier: workspace:*
+        version: link:../../packages/theme-default
       hono:
         specifier: ^4.12.25
         version: 4.12.26
@@ -356,6 +359,12 @@ importers:
       hono:
         specifier: ^4.12.25
         version: 4.12.26
+
+  packages/theme-default:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
 
 packages:
 

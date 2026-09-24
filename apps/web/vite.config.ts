@@ -18,6 +18,7 @@ const resolvedPluginClientModuleId = `\0${pluginClientModuleId}`;
 
 export default defineConfig(async () => {
   const config = await loadRiebeckiteConfig();
+  writeThemeStylesModule(config);
   writePluginStylesModule(config);
 
   return {
@@ -85,10 +86,20 @@ function writePluginStylesModule(config: ResolvedConfig): void {
   fs.writeFileSync(outputFile, createPluginStylesModule(config));
 }
 
+function writeThemeStylesModule(config: ResolvedConfig): void {
+  const outputFile = path.join(webRoot, "app/.riebeckite/theme-styles.css");
+  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+  fs.writeFileSync(outputFile, createThemeStylesModule(config));
+}
+
+function createThemeStylesModule(config: ResolvedConfig): string {
+  return createStylesheetEntry(
+    config.theme.styles.map((style) => style.moduleSpecifier),
+  );
+}
+
 function createPluginStylesModule(config: ResolvedConfig): string {
-  return collectPluginStyleSpecifiers(config)
-    .map((specifier) => `@import ${JSON.stringify(specifier)};`)
-    .join("\n");
+  return createStylesheetEntry(collectPluginStyleSpecifiers(config));
 }
 
 function createPluginClientModule(config: ResolvedConfig): string {
@@ -124,12 +135,25 @@ function collectPluginStyleSpecifiers(config: ResolvedConfig): string[] {
   );
 }
 
+function createStylesheetEntry(moduleSpecifiers: string[]): string {
+  return uniqueStrings(moduleSpecifiers)
+    .map((specifier) => `@import ${JSON.stringify(specifier)};`)
+    .join("\n");
+}
+
 type ResolvedConfig = {
+  theme: {
+    styles: Array<{ moduleSpecifier: string }>;
+  };
   plugins: Array<{
     assets?: Array<{ kind: string; moduleSpecifier: string }>;
     clientEntries?: Array<{ moduleSpecifier: string; exportName?: string }>;
   }>;
 };
+
+function uniqueStrings(values: string[]): string[] {
+  return [...new Set(values)];
+}
 
 async function loadRiebeckiteConfig(): Promise<ResolvedConfig> {
   const outputFile = path.join(

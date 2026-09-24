@@ -28,6 +28,7 @@
     "@riebeckite/plugin-search": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
+    "@riebeckite/theme-default": "workspace:*",
     "hono": "^4.12.25",
     "honox": "0.1.56",
     "slugify": "^1.6.9"

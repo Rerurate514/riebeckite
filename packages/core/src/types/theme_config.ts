@@ -32,6 +32,14 @@ export type ThemeDesignTokens = {
   };
 };
 
+export type ThemeStyle = {
+  /**
+   * CSS module specifier resolved by the host bundler.
+   * Example: "@riebeckite/theme-default/style.css".
+   */
+  moduleSpecifier: string;
+};
+
 export type ThemeConfig = {
   name?: string;
   colorMode?: ThemeColorMode;
@@ -40,3 +48,24 @@ export type ThemeConfig = {
   tokens?: ThemeDesignTokens;
   userCss?: string[];
 };
+
+export type RiebeckiteTheme<TOptions = unknown> = {
+  name: string;
+  options?: TOptions;
+  styles?: ThemeStyle[];
+  config?: Omit<ThemeConfig, "name" | "userCss"> & {
+    userCss?: string[];
+  };
+};
+
+export type ThemeInput = ThemeConfig | RiebeckiteTheme;
+
+export function defineTheme<TOptions>(
+  theme: RiebeckiteTheme<TOptions>,
+): RiebeckiteTheme<TOptions> {
+  return theme;
+}
+
+export function isRiebeckiteTheme(theme: ThemeInput): theme is RiebeckiteTheme {
+  return "styles" in theme || "config" in theme;
+}

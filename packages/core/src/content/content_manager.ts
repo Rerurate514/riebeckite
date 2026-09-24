@@ -5,6 +5,7 @@ import type { ContentManifest } from "../types/content_manifest";
 import type { Diagnostic } from "../types/diagnostic";
 import type { PostContent } from "../types/post_content";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
+import type { ContentGraph } from "./content_graph";
 import { ContentIndexBuilder } from "./content_index_builder";
 import {
   type ContentPostReference,
@@ -125,10 +126,15 @@ export class ContentManager {
   }
 
   async getBacklinks(targetSlug: string): Promise<Backlink[]> {
-    const manifest = await this.getManifest();
-    return (manifest.incomingLinks.get(targetSlug) ?? []).map((slug) => ({
+    const graph = await this.getContentGraph();
+    return graph.incomingSlugs(targetSlug).map((slug) => ({
       slug,
     }));
+  }
+
+  async getContentGraph(): Promise<ContentGraph> {
+    const manifest = await this.getManifest();
+    return manifest.graph;
   }
 
   async getDiagnostics(): Promise<Diagnostic[]> {

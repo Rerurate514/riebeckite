@@ -15,22 +15,12 @@ export function getLocalGraph(args: {
   slug: string;
   resolveTitle: TitleResolver;
 }): LocalGraphData | null {
-  const current = args.manifest.bySlug.get(args.slug);
+  const graph = args.manifest.graph;
+  const current = graph.get(args.slug);
   if (!current || !isPublished(args.config, current.frontmatter)) return null;
 
-  const outgoing = current.links
-    .filter(
-      (link): link is typeof link & { slug: string } =>
-        link.kind === "note" &&
-        link.slug !== null &&
-        link.slug !== args.slug &&
-        isPublishedSlug(link.slug),
-    )
-    .map((link) => link.slug);
-  const backlinks = current.backlinks.filter(
-    (backlinkSlug) =>
-      backlinkSlug !== args.slug && isPublishedSlug(backlinkSlug),
-  );
+  const outgoing = graph.outgoingSlugs(args.slug).filter(isPublishedSlug);
+  const backlinks = graph.incomingSlugs(args.slug).filter(isPublishedSlug);
   const visibleOutgoing = uniqueStrings(outgoing).slice(
     0,
     MAX_NEIGHBORS_PER_DIRECTION,
@@ -53,8 +43,8 @@ export function getLocalGraph(args: {
   return { currentSlug: args.slug, nodes };
 
   function isPublishedSlug(nodeSlug: string): boolean {
-    const entry = args.manifest.bySlug.get(nodeSlug);
-    return entry !== undefined && isPublished(args.config, entry.frontmatter);
+    const entry = graph.get(nodeSlug);
+    return entry !== null && isPublished(args.config, entry.frontmatter);
   }
 
   function toLocalGraphNode(
@@ -63,7 +53,7 @@ export function getLocalGraph(args: {
     outgoingSlugs: string[],
     backlinkSlugs: string[],
   ): LocalGraphNode | null {
-    const entry = args.manifest.bySlug.get(nodeSlug);
+    const entry = graph.get(nodeSlug);
     if (!entry) return null;
 
     return {

@@ -1,3 +1,4 @@
+import type { ContentGraph } from "../content/content_graph";
 import type { Diagnostic } from "./diagnostic";
 import type { PluginAsset } from "./plugin_asset";
 import type { PostFrontmatter } from "./post_content";
@@ -38,6 +39,7 @@ export type ContentManifest = {
   outgoingLinks: Map<string, ContentLink[]>;
   incomingLinks: Map<string, string[]>;
   contentIndex: Map<string, string>;
+  graph: ContentGraph;
   assets: ContentManifestPluginAsset[];
   diagnostics: Diagnostic[];
 };

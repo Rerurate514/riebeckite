@@ -13,6 +13,8 @@ export {
   isMarkdownPath,
   normalizeContentPath,
 } from "./src/content/attachment";
+export type { ContentGraph } from "./src/content/content_graph";
+export { createContentGraph } from "./src/content/content_graph";
 export { ContentManager } from "./src/content/content_manager";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
 export type { PipelineOptions } from "./src/pipeline";

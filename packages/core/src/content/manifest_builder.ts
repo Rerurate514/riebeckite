@@ -5,6 +5,7 @@ import type {
   ContentManifestEntry,
 } from "../types/content_manifest";
 import type { PostContent } from "../types/post_content";
+import { createContentGraph } from "./content_graph";
 import { extractContentLinks } from "./content_links";
 import {
   extractContentTags,
@@ -70,7 +71,7 @@ export class ManifestBuilder {
       entry.backlinks = incomingLinks.get(entry.slug) ?? [];
     }
 
-    return {
+    const manifest = {
       entries,
       bySlug,
       byTag,
@@ -81,6 +82,7 @@ export class ManifestBuilder {
       assets: [],
       diagnostics: [],
     };
+    return { ...manifest, graph: createContentGraph(manifest) };
   }
 }
 

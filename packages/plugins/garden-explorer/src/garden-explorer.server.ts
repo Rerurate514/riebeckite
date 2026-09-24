@@ -21,13 +21,16 @@ export function getGardenExplorerData(args: {
   config: ResolvedRiebeckiteConfig;
   resolveTitle: TitleResolver;
 }): GardenExplorerData {
-  const publishedEntries = args.manifest.entries.filter((entry) =>
-    isPublished(args.config, entry.frontmatter),
-  );
+  const graph = args.manifest.graph;
+  const publishedEntries = graph
+    .nodes()
+    .filter((entry) => isPublished(args.config, entry.frontmatter));
   const publishedSlugs = new Set(publishedEntries.map((entry) => entry.slug));
 
   const notes = publishedEntries
-    .map((entry) => toGardenNote(entry, publishedSlugs, args.resolveTitle))
+    .map((entry) =>
+      toGardenNote(entry, graph, publishedSlugs, args.resolveTitle),
+    )
     .sort((a, b) => a.title.localeCompare(b.title, "ja"));
 
   return {
@@ -40,18 +43,13 @@ export function getGardenExplorerData(args: {
 
 function toGardenNote(
   entry: ContentManifestEntry,
+  graph: ContentManifest["graph"],
   publishedSlugs: Set<string>,
   resolveTitle: TitleResolver,
 ): GardenExplorerNote {
-  const outgoing = entry.links
-    .filter(
-      (link): link is typeof link & { slug: string } =>
-        link.kind === "note" &&
-        link.slug !== null &&
-        link.slug !== entry.slug &&
-        publishedSlugs.has(link.slug),
-    )
-    .map((link) => link.slug);
+  const outgoing = graph
+    .outgoingSlugs(entry.slug)
+    .filter((slug) => publishedSlugs.has(slug));
 
   return {
     slug: entry.slug,
@@ -63,7 +61,9 @@ function toGardenNote(
     date: getEntryDate(entry.frontmatter),
     folder: getFolder(entry.slug),
     outgoing: uniqueStrings(outgoing),
-    backlinks: entry.backlinks.filter((slug) => publishedSlugs.has(slug)),
+    backlinks: graph
+      .incomingSlugs(entry.slug)
+      .filter((slug) => publishedSlugs.has(slug)),
   };
 }
 

@@ -13,10 +13,8 @@ export function getPublishedBacklinks(args: {
   slug: string;
   resolveTitle: TitleResolver;
 }): ArticleBacklink[] {
-  const backlinkSlugs = args.manifest.incomingLinks.get(args.slug) ?? [];
-  const results = backlinkSlugs.map((backlinkSlug) => {
-    const entry = args.manifest.bySlug.get(backlinkSlug);
-    if (!entry || !isPublished(args.config, entry.frontmatter)) return null;
+  const results = args.manifest.graph.incoming(args.slug).map((entry) => {
+    if (!isPublished(args.config, entry.frontmatter)) return null;
 
     return {
       slug: entry.slug,

@@ -187,14 +187,9 @@ function createWorkspacePackageAliases() {
   const packagesRoot = path.join(workspaceRoot, "packages");
   if (!fs.existsSync(packagesRoot)) return [];
 
-  return fs
-    .readdirSync(packagesRoot, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .flatMap((entry) => {
-      const packageDirectory = path.join(packagesRoot, entry.name);
+  return findWorkspacePackageDirectories(packagesRoot).flatMap(
+    (packageDirectory) => {
       const packageJsonPath = path.join(packageDirectory, "package.json");
-      if (!fs.existsSync(packageJsonPath)) return [];
-
       const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
       if (typeof packageJson.name !== "string") return [];
 
@@ -203,7 +198,20 @@ function createWorkspacePackageAliases() {
         packageDirectory,
         packageJson,
       );
-    });
+    },
+  );
+}
+
+function findWorkspacePackageDirectories(rootDirectory: string): string[] {
+  const packageJsonPath = path.join(rootDirectory, "package.json");
+  if (fs.existsSync(packageJsonPath)) return [rootDirectory];
+
+  return fs
+    .readdirSync(rootDirectory, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) =>
+      findWorkspacePackageDirectories(path.join(rootDirectory, entry.name)),
+    );
 }
 
 function workspacePackageResolver() {

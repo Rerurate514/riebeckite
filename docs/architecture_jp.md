@@ -14,7 +14,7 @@ API は Core に追加しません。
 
 ## Plugin
 
-`packages/plugin-*` は Markdown / AST / HTML / metadata / assets / client behavior など、
+`packages/plugins/*` は Markdown / AST / HTML / metadata / assets / client behavior など、
 コンテンツをどう解釈・変換するかを拡張します。Mermaid、Media、Excalidraw、Lightbox、
 Obsidian Markdown などが該当します。
 

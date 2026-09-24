@@ -217,7 +217,7 @@ addDiagnostics: () => [
 推奨する package 構成です。
 
 ```text
-packages/plugin-example/
+packages/plugins/example/
 ├── client.ts
 ├── index.ts
 ├── package.json

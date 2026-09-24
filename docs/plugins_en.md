@@ -219,7 +219,7 @@ addDiagnostics: () => [
 Recommended package shape:
 
 ```text
-packages/plugin-example/
+packages/plugins/example/
 ├── client.ts
 ├── index.ts
 ├── package.json

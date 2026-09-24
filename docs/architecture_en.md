@@ -15,7 +15,7 @@ not add plugin-specific APIs to Core.
 
 ## Plugin
 
-`packages/plugin-*` extends how content is interpreted or transformed: Markdown,
+`packages/plugins/*` extends how content is interpreted or transformed: Markdown,
 AST, HTML, metadata, assets, and client behavior. Mermaid, Media, Excalidraw,
 Lightbox, and Obsidian Markdown are plugins.
 

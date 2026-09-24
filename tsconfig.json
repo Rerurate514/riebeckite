@@ -6,8 +6,10 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@riebeckite/*": ["packages/*/index.ts"],
-      "@riebeckite/*/client": ["packages/*/client.ts"]
+      "@riebeckite/core": ["packages/core/index.ts"],
+      "@riebeckite/plugin-*": ["packages/plugins/*/index.ts"],
+      "@riebeckite/plugin-*/client": ["packages/plugins/*/client.ts"],
+      "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]
     }
   },
   "include": ["./riebeckite.config.ts"]

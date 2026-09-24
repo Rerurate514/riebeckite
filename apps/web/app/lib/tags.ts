@@ -26,12 +26,13 @@ export function buildTagPage(entry: TagEntry): PostContent {
         `<li><a href="/${encodeURI(post.slug)}">${escapeHtml(post.title)}</a></li>`,
     )
     .join("");
+  const exploreHref = `/explore?tag=${encodeURIComponent(entry.tag)}`;
 
   return {
     frontmatter: {
       title: `#${entry.tag}`,
     },
-    html: `<h1>${escapeHtml(`#${entry.tag}`)}</h1><ul>${posts}</ul>`,
+    html: `<h1>${escapeHtml(`#${entry.tag}`)}</h1><p><a href="${escapeHtml(exploreHref)}">Explore this tag in Garden Explorer</a></p><ul>${posts}</ul>`,
   };
 }
 

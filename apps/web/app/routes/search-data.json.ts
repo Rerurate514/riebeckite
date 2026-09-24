@@ -2,17 +2,8 @@ import { isPublished } from "@riebeckite/core";
 import { createRoute } from "honox/factory";
 import { config } from "../config";
 import { content } from "../content";
+import type { SearchItem } from "../features/search/search";
 import { getArticleTitle } from "../lib/article-title";
-
-type SearchItem = {
-  slug: string;
-  title: string;
-  headings: string[];
-  body: string;
-  excerpt: string;
-  tags: string[];
-  date: string | null;
-};
 
 const MAX_BODY_LENGTH = 4_000;
 

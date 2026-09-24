@@ -2,13 +2,15 @@ import { type ContentManifestEntry, isPublished } from "@riebeckite/core";
 import { config } from "../../config";
 import { content } from "../../content";
 import { getArticleTitle } from "../../lib/article-title";
+import { buildGraphEdges } from "../graph/graph";
 import type {
   GardenExplorerData,
-  GardenExplorerEdge,
   GardenExplorerFolder,
   GardenExplorerNote,
   GardenExplorerTag,
 } from "./garden-explorer";
+
+const MAX_BODY_LENGTH = 4_000;
 
 export async function getGardenExplorerData(): Promise<GardenExplorerData> {
   const manifest = await content.getManifest();
@@ -23,7 +25,7 @@ export async function getGardenExplorerData(): Promise<GardenExplorerData> {
 
   return {
     notes,
-    edges: buildEdges(notes, publishedSlugs),
+    edges: buildGraphEdges(notes, publishedSlugs),
     tags: buildTags(notes),
     folders: buildFolders(notes),
   };
@@ -46,29 +48,15 @@ function toGardenNote(
   return {
     slug: entry.slug,
     title: getArticleTitle(entry.slug, entry.frontmatter.title),
+    headings: extractHeadings(entry.html),
+    body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
     excerpt: createExcerpt(entry),
     tags: entry.tags,
+    date: getEntryDate(entry.frontmatter),
     folder: getFolder(entry.slug),
     outgoing: uniqueStrings(outgoing),
     backlinks: entry.backlinks.filter((slug) => publishedSlugs.has(slug)),
   };
-}
-
-function buildEdges(
-  notes: GardenExplorerNote[],
-  publishedSlugs: Set<string>,
-): GardenExplorerEdge[] {
-  const edges = new Map<string, GardenExplorerEdge>();
-
-  for (const note of notes) {
-    for (const target of note.outgoing) {
-      if (!publishedSlugs.has(target)) continue;
-      const key = `${note.slug}\u0000${target}`;
-      edges.set(key, { source: note.slug, target });
-    }
-  }
-
-  return Array.from(edges.values());
 }
 
 function buildTags(notes: GardenExplorerNote[]): GardenExplorerTag[] {
@@ -107,6 +95,34 @@ function createExcerpt(entry: ContentManifestEntry): string {
       : toPlainText(entry.html);
 
   return text.slice(0, 180);
+}
+
+function extractHeadings(html: string): string[] {
+  const headings: string[] = [];
+  const headingPattern = /<h([1-4])\b[^>]*>([\s\S]*?)<\/h\1>/g;
+
+  for (const match of html.matchAll(headingPattern)) {
+    const heading = toPlainText(match[2] ?? "");
+    if (heading) headings.push(heading);
+  }
+
+  return headings;
+}
+
+function getEntryDate(frontmatter: {
+  published?: unknown;
+  date?: unknown;
+  created?: unknown;
+}): string | null {
+  const value =
+    frontmatter.published ?? frontmatter.date ?? frontmatter.created;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString();
+  }
+  if (typeof value !== "string" || !value.trim()) return null;
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 function toPlainText(html: string): string {

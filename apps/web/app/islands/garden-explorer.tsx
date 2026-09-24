@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "hono/jsx";
-import {
-  type GardenExplorerData,
-  type GardenExplorerNote,
-  searchGardenNotes,
+import type {
+  GardenExplorerData,
+  GardenExplorerNote,
 } from "../features/garden-explorer/garden-explorer";
+import { layoutRadialGraph } from "../features/graph/graph";
+import { searchItems } from "../features/search/search";
 
 type Props = {
   data: GardenExplorerData;
@@ -55,7 +56,7 @@ export default function GardenExplorer(props: Props) {
       if (selectedFolder && note.folder !== selectedFolder) return false;
       return true;
     });
-    const searched = query ? searchGardenNotes(base, query) : base;
+    const searched = query ? searchItems(base, query) : base;
     return searched.slice(0, 80);
   }, [props.data.notes, query, selectedTag, selectedFolder]);
 
@@ -394,33 +395,11 @@ function LinkedNoteSection(props: {
 }
 
 function layoutNodes(notes: GardenExplorerNote[], selectedSlug: string) {
-  const nodes = new Map<string, { x: number; y: number; radius: number }>();
-  const centerX = GRAPH_WIDTH / 2;
-  const centerY = GRAPH_HEIGHT / 2;
-  const radius = Math.min(GRAPH_WIDTH, GRAPH_HEIGHT) * 0.36;
-  const selectedIndex = Math.max(
-    notes.findIndex((note) => note.slug === selectedSlug),
-    0,
-  );
-
-  notes.forEach((note, index) => {
-    const shiftedIndex = (index - selectedIndex + notes.length) % notes.length;
-    const angle = (shiftedIndex / Math.max(notes.length, 1)) * Math.PI * 2;
-    const linkCount = note.outgoing.length + note.backlinks.length;
-    nodes.set(note.slug, {
-      x:
-        note.slug === selectedSlug
-          ? centerX
-          : centerX + Math.cos(angle) * radius,
-      y:
-        note.slug === selectedSlug
-          ? centerY
-          : centerY + Math.sin(angle) * radius,
-      radius: clamp(7 + linkCount, 8, 14),
-    });
+  return layoutRadialGraph(notes, {
+    width: GRAPH_WIDTH,
+    height: GRAPH_HEIGHT,
+    centerSlug: selectedSlug,
   });
-
-  return nodes;
 }
 
 function getRelatedNotes(

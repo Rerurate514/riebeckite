@@ -3,6 +3,7 @@
 @import "./components/style.css";
 @import "./features/backlinks/style.css";
 @import "./features/garden-explorer/style.css";
+@import "./features/local-graph/style.css";
 @import "./features/recent-posts/style.css";
 @import "./features/search-bar/style.css";
 @import "./features/table-of-contents/style.css";

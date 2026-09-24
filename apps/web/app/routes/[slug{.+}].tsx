@@ -6,6 +6,8 @@ import { config } from "../config";
 import { content } from "../content";
 import Backlinks from "../features/backlinks/backlinks";
 import { getPublishedBacklinks } from "../features/backlinks/backlinks.server";
+import LocalGraph from "../features/local-graph/local-graph";
+import { getLocalGraph } from "../features/local-graph/local-graph.server";
 import TableOfContents, {
   extractTableOfContents,
 } from "../features/table-of-contents/table-of-contents";
@@ -38,6 +40,7 @@ export default createRoute(
     }
 
     const backlinks = await getPublishedBacklinks(slug);
+    const localGraph = await getLocalGraph(slug);
     const tableOfContents = extractTableOfContents(post.html ?? "");
     c.set("seo", buildArticleSeo(slug, post));
 
@@ -50,7 +53,12 @@ export default createRoute(
             items={tableOfContents}
           />
         }
-        footerContent={<Backlinks backlinks={backlinks} />}
+        footerContent={
+          <>
+            {localGraph && <LocalGraph graph={localGraph} />}
+            <Backlinks backlinks={backlinks} />
+          </>
+        }
       />,
     );
   },

@@ -1,7 +1,7 @@
 import type { SeoMetadata } from "./lib/seo";
 
-declare module "virtual:riebeckite-plugin-client" {
-  export function initRiebeckitePlugins(): void;
+declare module "virtual:riebeckite/client" {
+  export function initRiebeckiteClient(): void;
 }
 
 declare module "hono" {

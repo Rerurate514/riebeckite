@@ -1,4 +1,4 @@
-import { initRiebeckitePlugins } from "virtual:riebeckite-plugin-client";
+import { initRiebeckiteClient } from "virtual:riebeckite/client";
 import { createClient } from "honox/client";
 
 createClient();
@@ -10,5 +10,5 @@ if (document.readyState === "loading") {
 }
 
 function initPage() {
-  initRiebeckitePlugins();
+  initRiebeckiteClient();
 }

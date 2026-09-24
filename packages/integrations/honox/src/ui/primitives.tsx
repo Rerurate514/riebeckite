@@ -6,7 +6,11 @@ type PrimitiveProps = {
   children?: Children;
   class?: string;
   className?: string;
-  dangerouslySetInnerHTML?: { __html: string };
+};
+
+type PrimitiveClassProps = {
+  class?: string;
+  className?: string;
 };
 
 type ArticleProps = PrimitiveProps & {
@@ -17,10 +21,27 @@ type ArticleLayoutProps = PrimitiveProps & {
   aside?: Children;
 };
 
-type ArticleContentProps = PrimitiveProps & {
-  html?: string;
-  "data-slot"?: string;
-};
+type ArticleHeaderProps =
+  | (PrimitiveClassProps & {
+      dangerouslySetInnerHTML: { __html: string };
+      children?: never;
+    })
+  | (PrimitiveClassProps & {
+      dangerouslySetInnerHTML?: never;
+      children?: Children;
+    });
+
+type ArticleContentProps =
+  | (PrimitiveClassProps & {
+      html: string;
+      children?: never;
+      "data-slot"?: string;
+    })
+  | (PrimitiveClassProps & {
+      html?: never;
+      children?: Children;
+      "data-slot"?: string;
+    });
 
 type ArticleMetaProps = PrimitiveProps & {
   label?: string;
@@ -60,19 +81,23 @@ export function ArticleLayout(props: ArticleLayoutProps) {
   );
 }
 
-export function ArticleHeader(props: PrimitiveProps) {
-  return (
-    <header
-      class={joinClassNames(
-        "article-shell__lead rb-article-header",
-        props.class,
-        props.className,
-      )}
-      dangerouslySetInnerHTML={props.dangerouslySetInnerHTML}
-    >
-      {props.dangerouslySetInnerHTML ? undefined : props.children}
-    </header>
+export function ArticleHeader(props: ArticleHeaderProps) {
+  const className = joinClassNames(
+    "article-shell__lead rb-article-header",
+    props.class,
+    props.className,
   );
+
+  if (props.dangerouslySetInnerHTML !== undefined) {
+    return (
+      <header
+        class={className}
+        dangerouslySetInnerHTML={props.dangerouslySetInnerHTML}
+      />
+    );
+  }
+
+  return <header class={className}>{props.children}</header>;
 }
 
 export function ArticleMeta(props: ArticleMetaProps) {
@@ -91,17 +116,26 @@ export function ArticleMeta(props: ArticleMetaProps) {
 }
 
 export function ArticleContent(props: ArticleContentProps) {
+  const className = joinClassNames(
+    "article-shell__body rb-article-body",
+    props.class,
+    props.className,
+  );
+  const dataSlot = props["data-slot"] ?? "article-body";
+
+  if (props.html !== undefined) {
+    return (
+      <div
+        class={className}
+        data-slot={dataSlot}
+        dangerouslySetInnerHTML={{ __html: props.html }}
+      />
+    );
+  }
+
   return (
-    <div
-      class={joinClassNames(
-        "article-shell__body rb-article-body",
-        props.class,
-        props.className,
-      )}
-      data-slot={props["data-slot"] ?? "article-body"}
-      dangerouslySetInnerHTML={props.html ? { __html: props.html } : undefined}
-    >
-      {props.html ? undefined : props.children}
+    <div class={className} data-slot={dataSlot}>
+      {props.children}
     </div>
   );
 }

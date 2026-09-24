@@ -3,7 +3,6 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "types": ["node"],

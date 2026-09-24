@@ -1,16 +1,16 @@
 import { isPublished } from "@riebeckite/core";
+import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
+import { getLocalGraph, LocalGraph } from "@riebeckite/plugin-local-graph";
+import {
+  extractTableOfContents,
+  TableOfContents,
+} from "@riebeckite/plugin-toc";
 import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
 import { config } from "../config";
 import { content } from "../content";
-import Backlinks from "../features/backlinks/backlinks";
-import { getPublishedBacklinks } from "../features/backlinks/backlinks.server";
-import LocalGraph from "../features/local-graph/local-graph";
-import { getLocalGraph } from "../features/local-graph/local-graph.server";
-import TableOfContents, {
-  extractTableOfContents,
-} from "../features/table-of-contents/table-of-contents";
+import { getArticleTitle } from "../lib/article-title";
 import { buildArticleSeo } from "../lib/seo";
 
 export default createRoute(
@@ -39,8 +39,19 @@ export default createRoute(
       return c.redirect("/", 301);
     }
 
-    const backlinks = await getPublishedBacklinks(slug);
-    const localGraph = await getLocalGraph(slug);
+    const manifest = await content.getManifest();
+    const backlinks = getPublishedBacklinks({
+      manifest,
+      config,
+      slug,
+      resolveTitle: getArticleTitle,
+    });
+    const localGraph = getLocalGraph({
+      manifest,
+      config,
+      slug,
+      resolveTitle: getArticleTitle,
+    });
     const tableOfContents = extractTableOfContents(post.html ?? "");
     c.set("seo", buildArticleSeo(slug, post));
 

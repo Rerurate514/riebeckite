@@ -1,7 +1,7 @@
+import { SearchBar } from "@riebeckite/plugin-search";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import { config } from "../config";
-import SearchBar from "../features/search-bar/search-bar";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {
   getPluginScripts,

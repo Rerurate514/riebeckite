@@ -1,15 +1,21 @@
 import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
+import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
+import { tocPlugin } from "@riebeckite/plugin-toc";
 
 export default defineConfig({
   site: {
@@ -76,6 +82,12 @@ export default defineConfig({
     }),
     codeTabs(),
     lightboxPlugin(),
+    searchPlugin(),
+    tocPlugin(),
+    backlinksPlugin(),
+    recentPostsPlugin(),
+    localGraphPlugin(),
+    gardenExplorerPlugin(),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

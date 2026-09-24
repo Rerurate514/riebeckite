@@ -29,6 +29,9 @@ importers:
       '@riebeckite/plugin-autocardlink':
         specifier: workspace:*
         version: link:../../packages/plugin-autocardlink
+      '@riebeckite/plugin-backlinks':
+        specifier: workspace:*
+        version: link:../../packages/plugin-backlinks
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugin-code-enhance
@@ -38,18 +41,33 @@ importers:
       '@riebeckite/plugin-excalidraw':
         specifier: workspace:*
         version: link:../../packages/plugin-excalidraw
+      '@riebeckite/plugin-garden-explorer':
+        specifier: workspace:*
+        version: link:../../packages/plugin-garden-explorer
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugin-lightbox
+      '@riebeckite/plugin-local-graph':
+        specifier: workspace:*
+        version: link:../../packages/plugin-local-graph
       '@riebeckite/plugin-media':
         specifier: workspace:*
         version: link:../../packages/plugin-media
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugin-mermaid
+      '@riebeckite/plugin-recent-posts':
+        specifier: workspace:*
+        version: link:../../packages/plugin-recent-posts
+      '@riebeckite/plugin-search':
+        specifier: workspace:*
+        version: link:../../packages/plugin-search
       '@riebeckite/plugin-seo':
         specifier: workspace:*
         version: link:../../packages/plugin-seo
+      '@riebeckite/plugin-toc':
+        specifier: workspace:*
+        version: link:../../packages/plugin-toc
       hono:
         specifier: ^4.12.25
         version: 4.12.26
@@ -165,6 +183,15 @@ importers:
         specifier: ^4.0.4
         version: 4.0.4
 
+  packages/plugin-backlinks:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.26
+
   packages/plugin-code-enhance:
     dependencies:
       '@riebeckite/core':
@@ -233,11 +260,32 @@ importers:
         specifier: ^5.0.0
         version: 5.1.0
 
+  packages/plugin-garden-explorer:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+      '@riebeckite/plugin-search':
+        specifier: workspace:*
+        version: link:../plugin-search
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.26
+
   packages/plugin-lightbox:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/plugin-local-graph:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.26
 
   packages/plugin-media:
     dependencies:
@@ -276,11 +324,38 @@ importers:
         specifier: ^4.0.4
         version: 4.0.4
 
+  packages/plugin-recent-posts:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.26
+
+  packages/plugin-search:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.26
+
   packages/plugin-seo:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/plugin-toc:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.26
 
 packages:
 

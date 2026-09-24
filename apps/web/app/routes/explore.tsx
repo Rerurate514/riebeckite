@@ -1,11 +1,17 @@
+import { getGardenExplorerData } from "@riebeckite/plugin-garden-explorer";
 import { createRoute } from "honox/factory";
 import { config } from "../config";
-import { getGardenExplorerData } from "../features/garden-explorer/garden-explorer.server";
+import { content } from "../content";
 import GardenExplorer from "../islands/garden-explorer";
+import { getArticleTitle } from "../lib/article-title";
 import { buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(async (c) => {
-  const data = await getGardenExplorerData();
+  const data = getGardenExplorerData({
+    manifest: await content.getManifest(),
+    config,
+    resolveTitle: getArticleTitle,
+  });
   c.set(
     "seo",
     buildWebsiteSeo({

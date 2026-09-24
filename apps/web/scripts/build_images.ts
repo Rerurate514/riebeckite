@@ -68,6 +68,10 @@ async function buildImages() {
     }
   }
 
+  const orphaned = await removeOrphanedAttachments(attachments);
+  removed += orphaned.removed;
+  failed += orphaned.failed;
+
   console.log(
     `Processed content assets: ${copied} copied, ${removed} removed, ${failed} failed`,
   );
@@ -101,6 +105,42 @@ async function collectContentAttachments(): Promise<
   }
 
   return attachments;
+}
+
+async function removeOrphanedAttachments(
+  attachments: Map<string, ContentAttachment>,
+): Promise<{ removed: number; failed: number }> {
+  const publicRoot = path.join(ASSETS_ROOT, ATTACHMENTS_PUBLIC_ROOT);
+  let removed = 0;
+  let failed = 0;
+
+  if (!(await fileExists(publicRoot))) {
+    return { removed, failed };
+  }
+
+  const entries = await fs.readdir(publicRoot, {
+    withFileTypes: true,
+    recursive: true,
+  });
+
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    const sourcePath = path.join(entry.parentPath, entry.name).normalize("NFC");
+    const relativePath = normalizeAssetPath(
+      path.relative(publicRoot, sourcePath),
+    );
+    if (attachments.has(relativePath)) continue;
+
+    try {
+      await fs.rm(sourcePath);
+      removed++;
+    } catch (e) {
+      failed++;
+      console.error(`Failed to remove orphaned attachment ${relativePath}:`, e);
+    }
+  }
+
+  return { removed, failed };
 }
 
 async function collectContentImages(): Promise<Map<string, ContentImage>> {

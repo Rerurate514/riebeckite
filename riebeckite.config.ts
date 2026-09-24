@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
+import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
@@ -73,6 +74,7 @@ export default defineConfig({
       diffHighlight: true,
       wrapToggle: true,
     }),
+    codeTabs(),
     lightboxPlugin(),
     diagnostics({
       reportUnusedAssets: true,

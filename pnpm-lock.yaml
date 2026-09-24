@@ -177,6 +177,12 @@ importers:
         specifier: ^3.13.0
         version: 3.23.0
 
+  packages/plugin-code-tabs:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/plugin-diagnostics:
     dependencies:
       '@riebeckite/core':

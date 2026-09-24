@@ -1,0 +1,16 @@
+{
+  "name": "@riebeckite/plugin-code-tabs",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./client": "./client.ts",
+    "./style.css": "./style.css"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*"
+  }
+}

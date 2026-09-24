@@ -7,11 +7,13 @@
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts",
-    "./server": "./server.ts"
+    "./server": "./server.ts",
+    "./ui": "./src/ui/primitives.tsx"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "esbuild": "^0.28.2",
+    "hono": "^4.12.25",
     "vite": "^8.0.9"
   }
 }

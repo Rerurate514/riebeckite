@@ -1,4 +1,10 @@
 import type { PostContent } from "@riebeckite/core";
+import {
+  ArticleContent,
+  ArticleHeader,
+  ArticleLayout,
+  Article as ArticlePrimitive,
+} from "@riebeckite/honox/ui";
 import { calculateReadingTime } from "../../lib/seo";
 import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
 
@@ -15,15 +21,11 @@ export default function Article(props: Props) {
   const readingTimeMinutes = calculateReadingTime(html);
 
   return (
-    <article class="article-shell rb-article prose" data-slot="article">
-      <div class="article-shell__layout rb-article-layout">
+    <ArticlePrimitive>
+      <ArticleLayout>
         {props.asideContent}
-        <div
-          class="article-shell__body rb-article-body"
-          data-slot="article-body"
-        >
-          <div
-            class="article-shell__lead rb-article-header"
+        <ArticleContent>
+          <ArticleHeader
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
           />
           <ArticleFrontmatter
@@ -32,10 +34,10 @@ export default function Article(props: Props) {
           />
           <div dangerouslySetInnerHTML={{ __html: articleHtml.rest }} />
           {props.afterContent}
-        </div>
-      </div>
+        </ArticleContent>
+      </ArticleLayout>
       {props.footerContent}
-    </article>
+    </ArticlePrimitive>
   );
 }
 

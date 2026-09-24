@@ -1,4 +1,5 @@
 import type { PostFrontmatter } from "@riebeckite/core";
+import { ArticleMeta } from "@riebeckite/honox/ui";
 import { buildTagHref } from "../../lib/tags";
 
 type Props = {
@@ -24,10 +25,7 @@ export default function ArticleFrontmatter(props: Props) {
     return null;
 
   return (
-    <aside
-      class="article-frontmatter rb-article-meta"
-      aria-label="Article metadata"
-    >
+    <ArticleMeta>
       {createdDate && (
         <time
           class="article-frontmatter__date"
@@ -65,7 +63,7 @@ export default function ArticleFrontmatter(props: Props) {
           ))}
         </ul>
       )}
-    </aside>
+    </ArticleMeta>
   );
 }
 

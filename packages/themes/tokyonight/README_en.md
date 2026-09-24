@@ -37,6 +37,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    neon: true,
     userCss: [],
   }),
 });
@@ -48,15 +49,21 @@ either theme without other configuration changes. The root-level
 
 ## Options
 
-`tokyonightTheme(options?)` accepts any `ThemeConfig` field except `name`:
+`tokyonightTheme(options?)` accepts any `ThemeConfig` field except `name`, plus
+the theme-specific `neon` option:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
+| `neon` | `boolean` | `false` | Neon flourish (applied via the `data-tokyonight-neon="on"` attribute): glowing accent `:focus-visible` outline, `::selection`, and accent-tinted scrollbar |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | Color mode. `system` follows `prefers-color-scheme` unless `data-theme` is set |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | Typography preset, applied via the `data-typography` attribute |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | Article layout preset for consumers that read `data-article-layout` |
 | `tokens` | `ThemeDesignTokens` | `{}` | Override design tokens (colors, fonts, spacing, layout widths) |
 | `userCss` | `string[]` | `[]` | Extra user stylesheets |
+
+Theme-specific options are applied to the root element as safe `data-*`
+attributes (`data-tokyonight-neon`). `neon` can also be overridden directly
+from `config` via `attributes: { "data-tokyonight-neon": "on" }`.
 
 See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
 full token list — the token contract is identical.

@@ -14,47 +14,21 @@
 @layer base {
   :root {
     color-scheme: light;
-    --rb-color-paper: #ffffff;
-    --rb-color-ink: #000000;
-    --rb-color-muted: #69645c;
-    --rb-color-accent: #686868;
-    --rb-color-border: color-mix(
-      in oklab,
-      var(--rb-color-ink) 18%,
-      transparent
-    );
+    --rb-color-paper: #fafafa;
+    --rb-color-surface: #ffffff;
+    --rb-color-surface-hover: #f0f0f0;
+    --rb-color-ink: #202020;
+    --rb-color-muted: #6b6b6b;
+    --rb-color-accent: #555555;
+    --rb-color-border: color-mix(in srgb, currentColor 18%, transparent);
+    --rb-color-border-strong: color-mix(in srgb, currentColor 28%, transparent);
     --rb-color-danger: #b42318;
     --rb-color-success: #047857;
-    --rb-color-code-background: color-mix(
-      in oklab,
-      var(--rb-color-ink) 8%,
-      transparent
-    );
-    --rb-color-surface: color-mix(
-      in oklab,
-      var(--rb-color-ink) 4%,
-      var(--rb-color-paper)
-    );
-    --rb-color-surface-hover: color-mix(
-      in oklab,
-      var(--rb-color-ink) 7%,
-      var(--rb-color-paper)
-    );
-    --rb-color-border-strong: color-mix(
-      in oklab,
-      var(--rb-color-ink) 24%,
-      transparent
-    );
-    --rb-color-overlay: color-mix(
-      in oklab,
-      var(--rb-color-ink) 40%,
-      transparent
-    );
-    --rb-font-body:
-      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      sans-serif;
+    --rb-color-code-background: #eeeeee;
+    --rb-color-overlay: rgb(0 0 0 / 0.4);
+    --rb-font-body: ui-sans-serif, system-ui, sans-serif;
     --rb-font-heading: var(--rb-font-body);
-    --rb-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --rb-font-mono: "SFMono-Regular", Consolas, monospace;
     --rb-space-1: 0.5rem;
     --rb-space-2: 1rem;
     --rb-space-3: 1.5rem;
@@ -70,91 +44,41 @@
 
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --rb-color-paper: #000000;
-    --rb-color-ink: #ffffff;
-    --rb-color-muted: #bbb1a1;
-    --rb-color-border: color-mix(
-      in oklab,
-      var(--rb-color-ink) 22%,
-      transparent
-    );
-    --rb-color-code-background: color-mix(
-      in oklab,
-      var(--rb-color-ink) 12%,
-      transparent
-    );
-    --rb-color-surface: color-mix(
-      in oklab,
-      var(--rb-color-ink) 6%,
-      transparent
-    );
-    --rb-color-surface-hover: color-mix(
-      in oklab,
-      var(--rb-color-ink) 11%,
-      transparent
-    );
-    --rb-color-border-strong: color-mix(
-      in oklab,
-      var(--rb-color-ink) 28%,
-      transparent
-    );
-    --rb-color-overlay: color-mix(
-      in oklab,
-      var(--rb-color-ink) 40%,
-      transparent
-    );
+    --rb-color-paper: #17171a;
+    --rb-color-surface: #212124;
+    --rb-color-surface-hover: #2a2a2e;
+    --rb-color-ink: #ebebee;
+    --rb-color-muted: #9c9ca3;
+    --rb-color-accent: #a3a3a3;
+    --rb-color-danger: #e5484d;
+    --rb-color-success: #30a46c;
+    --rb-color-code-background: #242428;
+    --rb-color-overlay: rgb(0 0 0 / 0.6);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
       color-scheme: dark;
-      --rb-color-paper: #000000;
-      --rb-color-ink: #ffffff;
-      --rb-color-muted: #bbb1a1;
-      --rb-color-border: color-mix(
-        in oklab,
-        var(--rb-color-ink) 22%,
-        transparent
-      );
-      --rb-color-code-background: color-mix(
-        in oklab,
-        var(--rb-color-ink) 12%,
-        transparent
-      );
-      --rb-color-surface: color-mix(
-        in oklab,
-        var(--rb-color-ink) 6%,
-        transparent
-      );
-      --rb-color-surface-hover: color-mix(
-        in oklab,
-        var(--rb-color-ink) 11%,
-        transparent
-      );
-      --rb-color-border-strong: color-mix(
-        in oklab,
-        var(--rb-color-ink) 28%,
-        transparent
-      );
-      --rb-color-overlay: color-mix(
-        in oklab,
-        var(--rb-color-ink) 40%,
-        transparent
-      );
+      --rb-color-paper: #17171a;
+      --rb-color-surface: #212124;
+      --rb-color-surface-hover: #2a2a2e;
+      --rb-color-ink: #ebebee;
+      --rb-color-muted: #9c9ca3;
+      --rb-color-accent: #a3a3a3;
+      --rb-color-danger: #e5484d;
+      --rb-color-success: #30a46c;
+      --rb-color-code-background: #242428;
+      --rb-color-overlay: rgb(0 0 0 / 0.6);
     }
   }
 
   :root[data-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
-    --rb-font-heading:
-      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      sans-serif;
+    --rb-font-heading: ui-sans-serif, system-ui, sans-serif;
   }
 
   :root[data-typography="sans"] {
-    --rb-font-body:
-      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      sans-serif;
+    --rb-font-body: ui-sans-serif, system-ui, sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
@@ -173,5 +97,10 @@
   ::selection {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--rb-color-accent);
+    outline-offset: 2px;
   }
 }

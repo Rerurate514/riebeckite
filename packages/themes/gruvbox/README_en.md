@@ -37,6 +37,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    contrast: "hard",
     userCss: [],
   }),
 });
@@ -48,15 +49,22 @@ attribute reports `gruvbox`.
 
 ## Options
 
-`gruvboxTheme(options?)` accepts any `ThemeConfig` field except `name`:
+`gruvboxTheme(options?)` accepts any `ThemeConfig` field except `name`, plus
+the theme-specific `contrast` option:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
+| `contrast` | `"soft" \| "medium" \| "hard"` | `"medium"` | The classic Gruvbox contrast level (applied via the `data-gruvbox-contrast` attribute), adjusting paper/surface lightness in both light and dark modes |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | Color mode. `system` follows `prefers-color-scheme` unless `data-theme` is set |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | Typography preset, applied via the `data-typography` attribute |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | Article layout preset for consumers that read `data-article-layout` |
 | `tokens` | `ThemeDesignTokens` | `{}` | Override design tokens (colors, fonts, spacing, layout widths) |
 | `userCss` | `string[]` | `[]` | Extra user stylesheets |
+
+Theme-specific options are applied to the root element as safe `data-*`
+attributes (`data-gruvbox-contrast`). `contrast` can also be overridden
+directly from `config` via
+`attributes: { "data-gruvbox-contrast": "hard" }`.
 
 See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
 full token list — the token contract is identical.

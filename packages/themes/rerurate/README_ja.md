@@ -33,6 +33,8 @@ stylesheet に反映した Rerurate grammar の判断:
 - design layer 向けに、semantic な `--rr-*` tokens（`--rr-color-paper`、
   `--rr-color-ink`、`--rr-color-orange`、`--rr-space-1..4`、
   `--rr-rule-width`）も公開
+- **Orange initial** — 強力な Rerurate の signature だが全ページへ機械的に
+  適用しない（opt-in の `initial` オプションで有効化）
 
 ## 使い方
 
@@ -46,6 +48,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    initial: true,
     userCss: [],
   }),
 });
@@ -57,15 +60,21 @@ export default defineConfig({
 
 ## オプション
 
-`rerurateTheme(options?)` は `name` 以外の `ThemeConfig` を受け取ります:
+`rerurateTheme(options?)` は `name` 以外の `ThemeConfig` を受け取り、加えて
+テーマ固有オプション `initial` を提供します:
 
 | オプション | 型 | デフォルト | 説明 |
 | ---------- | -- | ---------- | ---- |
+| `initial` | `boolean` | `false` | 記事本文の先頭段落の最初の文字を大きめの Orange の initial にする（`data-rerurate-initial="on"` 属性で適用） |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
 | `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
 | `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+
+テーマ固有オプションは safe な `data-*` 属性（`data-rerurate-initial`）として
+root 要素に適用されます。`initial` は `config` からも直接
+`attributes: { "data-rerurate-initial": "on" }` で上書きできます。
 
 token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
 README を参照してください。token の契約は同一です。Red / Green は機能的な

@@ -32,6 +32,8 @@ Rerurate grammar decisions baked into the stylesheet:
 - Semantic `--rr-*` tokens (`--rr-color-paper`, `--rr-color-ink`,
   `--rr-color-orange`, `--rr-space-1..4`, `--rr-rule-width`) are also exposed
   for the design layer
+- **Orange initial** — a strong Rerurate signature, but never applied
+  mechanically to every page (opt in via the `initial` option)
 
 ## Usage
 
@@ -45,6 +47,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    initial: true,
     userCss: [],
   }),
 });
@@ -56,15 +59,21 @@ attribute reports `rerurate`.
 
 ## Options
 
-`rerurateTheme(options?)` accepts any `ThemeConfig` field except `name`:
+`rerurateTheme(options?)` accepts any `ThemeConfig` field except `name`, plus
+the theme-specific `initial` option:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
+| `initial` | `boolean` | `false` | Render the first letter of the article body's first paragraph as a large Orange initial (applied via the `data-rerurate-initial="on"` attribute) |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | Color mode. `system` follows `prefers-color-scheme` unless `data-theme` is set |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | Typography preset, applied via the `data-typography` attribute |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | Article layout preset for consumers that read `data-article-layout` |
 | `tokens` | `ThemeDesignTokens` | `{}` | Override design tokens (colors, fonts, spacing, layout widths) |
 | `userCss` | `string[]` | `[]` | Extra user stylesheets |
+
+Theme-specific options are applied to the root element as safe `data-*`
+attributes (`data-rerurate-initial`). `initial` can also be overridden directly
+from `config` via `attributes: { "data-rerurate-initial": "on" }`.
 
 See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
 full token list — the token contract is identical. Red and green are used only

@@ -24,41 +24,21 @@
 
     color-scheme: light;
     --rb-color-paper: #f6efe2;
+    --rb-color-surface: #fdf8ee;
+    --rb-color-surface-hover: #eae0cd;
     --rb-color-ink: #171717;
     --rb-color-muted: #6e6659;
     --rb-color-accent: #f66620;
-    --rb-color-border: color-mix(
-      in oklab,
-      var(--rb-color-ink) 18%,
-      transparent
-    );
+    --rb-color-border: color-mix(in srgb, currentColor 18%, transparent);
+    --rb-color-border-strong: color-mix(in srgb, currentColor 28%, transparent);
     --rb-color-danger: #b3261e;
     --rb-color-success: #3e7c4f;
     --rb-color-code-background: color-mix(
-      in oklab,
+      in srgb,
       var(--rb-color-ink) 8%,
       transparent
     );
-    --rb-color-surface: color-mix(
-      in oklab,
-      var(--rb-color-ink) 4%,
-      var(--rb-color-paper)
-    );
-    --rb-color-surface-hover: color-mix(
-      in oklab,
-      var(--rb-color-ink) 8%,
-      var(--rb-color-paper)
-    );
-    --rb-color-border-strong: color-mix(
-      in oklab,
-      var(--rb-color-ink) 26%,
-      transparent
-    );
-    --rb-color-overlay: color-mix(
-      in oklab,
-      var(--rb-color-ink) 40%,
-      transparent
-    );
+    --rb-color-overlay: rgb(0 0 0 / 0.4);
     --rb-font-body:
       Futura, "Futura PT", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans",
       "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
@@ -82,77 +62,38 @@
   :root[data-theme="dark"] {
     color-scheme: dark;
     --rb-color-paper: #1c1a17;
+    --rb-color-surface: #26231f;
+    --rb-color-surface-hover: #312d28;
     --rb-color-ink: #f6efe2;
     --rb-color-muted: #a79e8c;
     --rb-color-accent: #f66620;
-    --rb-color-border: color-mix(
-      in oklab,
-      var(--rb-color-ink) 20%,
-      transparent
-    );
+    --rb-color-danger: #ff6b61;
+    --rb-color-success: #74b386;
     --rb-color-code-background: color-mix(
-      in oklab,
+      in srgb,
       var(--rb-color-ink) 12%,
       transparent
     );
-    --rb-color-surface: color-mix(
-      in oklab,
-      var(--rb-color-ink) 6%,
-      transparent
-    );
-    --rb-color-surface-hover: color-mix(
-      in oklab,
-      var(--rb-color-ink) 11%,
-      transparent
-    );
-    --rb-color-border-strong: color-mix(
-      in oklab,
-      var(--rb-color-ink) 28%,
-      transparent
-    );
-    --rb-color-overlay: color-mix(
-      in oklab,
-      var(--rb-color-ink) 40%,
-      transparent
-    );
+    --rb-color-overlay: rgb(0 0 0 / 0.6);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
       color-scheme: dark;
       --rb-color-paper: #1c1a17;
+      --rb-color-surface: #26231f;
+      --rb-color-surface-hover: #312d28;
       --rb-color-ink: #f6efe2;
       --rb-color-muted: #a79e8c;
-      --rb-color-border: color-mix(
-        in oklab,
-        var(--rb-color-ink) 20%,
-        transparent
-      );
+      --rb-color-accent: #f66620;
+      --rb-color-danger: #ff6b61;
+      --rb-color-success: #74b386;
       --rb-color-code-background: color-mix(
-        in oklab,
+        in srgb,
         var(--rb-color-ink) 12%,
         transparent
       );
-      --rb-color-surface: color-mix(
-        in oklab,
-        var(--rb-color-ink) 6%,
-        transparent
-      );
-      --rb-color-surface-hover: color-mix(
-        in oklab,
-        var(--rb-color-ink) 11%,
-        transparent
-      );
-      --rb-color-border-strong: color-mix(
-        in oklab,
-        var(--rb-color-ink) 28%,
-        transparent
-      );
-      --rb-color-overlay: color-mix(
-        in oklab,
-        var(--rb-color-ink) 40%,
-        transparent
-      );
+      --rb-color-overlay: rgb(0 0 0 / 0.6);
     }
   }
 
@@ -186,12 +127,23 @@
 
   ::selection {
     background: var(--rb-color-accent);
-    color: #f6efe2;
+    color: var(--rr-color-paper, #f6efe2);
   }
 
   :focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
+  }
+
+  :root[data-rerurate-initial="on"]
+    .rb-article-body
+    p:first-of-type::first-letter {
+    float: left;
+    margin: 0.02em 0.12em 0 0;
+    color: var(--rb-color-accent);
+    font-size: 3.2em;
+    font-weight: 700;
+    line-height: 0.85;
   }
 
   * {

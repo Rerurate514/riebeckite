@@ -32,6 +32,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    bloom: "vivid",
     userCss: [],
   }),
 });
@@ -43,15 +44,21 @@ export default defineConfig({
 
 ## オプション
 
-`sakuraTheme(options?)` は `name` 以外の `ThemeConfig` を受け取ります:
+`sakuraTheme(options?)` は `name` 以外の `ThemeConfig` を受け取り、加えて
+テーマ固有オプション `bloom` を提供します:
 
 | オプション | 型 | デフォルト | 説明 |
 | ---------- | -- | ---------- | ---- |
+| `bloom` | `"soft" \| "vivid"` | `"soft"` | accent の強さ。`vivid` はより深い sakura pink（`data-sakura-bloom="vivid"` 属性で適用） |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
 | `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
 | `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+
+テーマ固有オプションは safe な `data-*` 属性（`data-sakura-bloom`）として
+root 要素に適用されます。`bloom` は `config` からも直接
+`attributes: { "data-sakura-bloom": "vivid" }` で上書きできます。
 
 token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
 README を参照してください。token の契約は同一です。

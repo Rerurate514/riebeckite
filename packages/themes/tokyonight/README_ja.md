@@ -37,6 +37,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    neon: true,
     userCss: [],
   }),
 });
@@ -48,15 +49,21 @@ export default defineConfig({
 
 ## オプション
 
-`tokyonightTheme(options?)` は `name` 以外の `ThemeConfig` を受け取ります:
+`tokyonightTheme(options?)` は `name` 以外の `ThemeConfig` を受け取り、加えて
+テーマ固有オプション `neon` を提供します:
 
 | オプション | 型 | デフォルト | 説明 |
 | ---------- | -- | ---------- | ---- |
+| `neon` | `boolean` | `false` | neon 強調 (`data-tokyonight-neon="on"` 属性で適用)。accent の光る focus outline・`::selection`・accent 色の scrollbar |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
 | `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
 | `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+
+テーマ固有オプションは safe な `data-*` 属性（`data-tokyonight-neon`）として
+root 要素に適用されます。`neon` は `config` からも直接
+`attributes: { "data-tokyonight-neon": "on" }` で上書きできます。
 
 token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
 README を参照してください。token の契約は同一です。

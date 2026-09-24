@@ -32,6 +32,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    bloom: "vivid",
     userCss: [],
   }),
 });
@@ -43,15 +44,21 @@ be swapped without other configuration changes. The root-level
 
 ## Options
 
-`sakuraTheme(options?)` accepts any `ThemeConfig` field except `name`:
+`sakuraTheme(options?)` accepts any `ThemeConfig` field except `name`, plus the
+theme-specific `bloom` option:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
+| `bloom` | `"soft" \| "vivid"` | `"soft"` | Accent intensity. `vivid` uses a deeper sakura pink (applied via the `data-sakura-bloom="vivid"` attribute) |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | Color mode. `system` follows `prefers-color-scheme` unless `data-theme` is set |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | Typography preset, applied via the `data-typography` attribute |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | Article layout preset for consumers that read `data-article-layout` |
 | `tokens` | `ThemeDesignTokens` | `{}` | Override design tokens (colors, fonts, spacing, layout widths) |
 | `userCss` | `string[]` | `[]` | Extra user stylesheets |
+
+Theme-specific options are applied to the root element as safe `data-*`
+attributes (`data-sakura-bloom`). `bloom` can also be overridden directly from
+`config` via `attributes: { "data-sakura-bloom": "vivid" }`.
 
 See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
 full token list — the token contract is identical.

@@ -37,6 +37,7 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    contrast: "hard",
     userCss: [],
   }),
 });
@@ -48,15 +49,21 @@ export default defineConfig({
 
 ## オプション
 
-`gruvboxTheme(options?)` は `name` 以外の `ThemeConfig` を受け取ります:
+`gruvboxTheme(options?)` は `name` 以外の `ThemeConfig` を受け取り、加えて
+テーマ固有オプション `contrast` を提供します:
 
 | オプション | 型 | デフォルト | 説明 |
 | ---------- | -- | ---------- | ---- |
+| `contrast` | `"soft" \| "medium" \| "hard"` | `"medium"` | Gruvbox の定番 contrast 段階（`data-gruvbox-contrast` 属性で適用）。paper / surface の明度を light・dark 両モードで調整 |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
 | `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
 | `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+
+テーマ固有オプションは safe な `data-*` 属性（`data-gruvbox-contrast`）として
+root 要素に適用されます。`contrast` は `config` からも直接
+`attributes: { "data-gruvbox-contrast": "hard" }` で上書きできます。
 
 token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
 README を参照してください。token の契約は同一です。

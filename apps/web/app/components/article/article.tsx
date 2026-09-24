@@ -21,7 +21,7 @@ export default function Article(props: Props) {
   const readingTimeMinutes = calculateReadingTime(html);
 
   return (
-    <ArticlePrimitive>
+    <ArticlePrimitive class="prose">
       <ArticleLayout>
         {props.asideContent}
         <ArticleContent>

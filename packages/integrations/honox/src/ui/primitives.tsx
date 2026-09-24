@@ -55,7 +55,7 @@ export function Article(props: ArticleProps) {
   return (
     <article
       class={joinClassNames(
-        "article-shell rb-article prose",
+        "article-shell rb-article",
         props.class,
         props.className,
       )}

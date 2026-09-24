@@ -390,6 +390,12 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/themes/minimal:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/themes/rerurate:
     dependencies:
       '@riebeckite/core':

@@ -5,6 +5,7 @@ import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { seo } from "@riebeckite/plugin-seo";
@@ -57,6 +58,7 @@ export default defineConfig({
       },
     }),
     excalidraw(),
+    media(),
     attachment(),
     autoCardLinkPlugin(),
     codeEnhance({

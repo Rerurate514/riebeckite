@@ -260,6 +260,7 @@ function isBlockEmbedHtml(child: Content): child is Html {
   return (
     value.startsWith('<div class="wikilink-image-embed') ||
     value.startsWith('<div class="wikilink-embed') ||
+    value.startsWith("<figure") ||
     value.startsWith("<aside")
   );
 }

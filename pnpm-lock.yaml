@@ -41,6 +41,9 @@ importers:
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugin-lightbox
+      '@riebeckite/plugin-media':
+        specifier: workspace:*
+        version: link:../../packages/plugin-media
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugin-mermaid
@@ -215,6 +218,12 @@ importers:
         version: 5.1.0
 
   packages/plugin-lightbox:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/plugin-media:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

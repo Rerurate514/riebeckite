@@ -19,6 +19,7 @@
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
+    "@riebeckite/plugin-media": "workspace:*",
     "@riebeckite/plugin-mermaid": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
     "hono": "^4.12.25",

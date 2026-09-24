@@ -1,9 +1,5 @@
 /** @jsxImportSource hono/jsx */
-export type RecentPost = {
-  slug: string;
-  title: string;
-  postedAt: Date;
-};
+import type { RecentPost } from "../src/recent-posts";
 
 type Props = {
   posts: RecentPost[];

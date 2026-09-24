@@ -1,10 +1,8 @@
 import { definePlugin } from "@riebeckite/core";
 
-export type { TableOfContentsItem } from "./components/table-of-contents";
-export {
-  default as TableOfContents,
-  extractTableOfContents,
-} from "./components/table-of-contents";
+export { default as TableOfContents } from "./components/table-of-contents";
+export type { TableOfContentsItem } from "./src/table-of-contents";
+export { extractTableOfContents } from "./src/table-of-contents";
 export { initTableOfContents } from "./src/table-of-contents.client";
 
 export function tocPlugin() {

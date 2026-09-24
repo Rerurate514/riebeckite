@@ -1,8 +1,5 @@
 /** @jsxImportSource hono/jsx */
-export type ArticleBacklink = {
-  slug: string;
-  title: string;
-};
+import type { ArticleBacklink } from "../src/backlinks";
 
 type Props = {
   backlinks: ArticleBacklink[];

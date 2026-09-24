@@ -1,7 +1,7 @@
 import { definePlugin } from "@riebeckite/core";
 
-export type { ArticleBacklink } from "./components/backlinks";
 export { default as Backlinks } from "./components/backlinks";
+export type { ArticleBacklink } from "./src/backlinks";
 export { getPublishedBacklinks } from "./src/backlinks.server";
 
 export function backlinksPlugin() {

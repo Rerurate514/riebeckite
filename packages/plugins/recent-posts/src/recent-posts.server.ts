@@ -1,5 +1,5 @@
 import { isPublished, type ResolvedRiebeckiteConfig } from "@riebeckite/core";
-import type { RecentPost } from "../components/recent-posts";
+import type { RecentPost } from "./recent-posts";
 
 type PostRef = { slug: string };
 type ProcessedPost = { frontmatter: Record<string, unknown> };

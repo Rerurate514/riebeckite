@@ -3,7 +3,7 @@ import {
   isPublished,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import type { ArticleBacklink } from "../components/backlinks";
+import type { ArticleBacklink } from "./backlinks";
 
 type TitleResolver = (slug: string, title: unknown) => string;
 

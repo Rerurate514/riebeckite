@@ -1,18 +1,7 @@
 /** @jsxImportSource hono/jsx */
+
 import { buildGraphEdges, layoutRadialGraph } from "../src/graph";
-
-export type LocalGraphNode = {
-  slug: string;
-  title: string;
-  relation: "current" | "outgoing" | "backlink" | "both";
-  outgoing: string[];
-  backlinks: string[];
-};
-
-export type LocalGraphData = {
-  currentSlug: string;
-  nodes: LocalGraphNode[];
-};
+import type { LocalGraphData } from "../src/local-graph";
 
 type Props = {
   graph: LocalGraphData;

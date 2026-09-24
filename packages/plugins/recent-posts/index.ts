@@ -1,7 +1,7 @@
 import { definePlugin } from "@riebeckite/core";
 
-export type { RecentPost } from "./components/recent-posts";
 export { default as RecentPosts } from "./components/recent-posts";
+export type { RecentPost } from "./src/recent-posts";
 export { getRecentPosts } from "./src/recent-posts.server";
 
 export function recentPostsPlugin() {

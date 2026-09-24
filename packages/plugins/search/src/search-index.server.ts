@@ -12,14 +12,15 @@ type TitleResolver = (slug: string, title: unknown) => string;
 export function buildSearchItems(args: {
   manifest: ContentManifest;
   config: ResolvedRiebeckiteConfig;
-  resolveTitle: TitleResolver;
+  resolveTitle?: TitleResolver;
 }): SearchItem[] {
+  const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
   const items = args.manifest.entries.map((entry) => {
     if (!isPublished(args.config, entry.frontmatter)) return null;
 
     return {
       slug: entry.slug,
-      title: args.resolveTitle(entry.slug, entry.frontmatter.title),
+      title: resolveTitle(entry.slug, entry.frontmatter.title),
       headings: extractHeadings(entry.html),
       body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
       excerpt: createExcerpt(entry),
@@ -31,6 +32,14 @@ export function buildSearchItems(args: {
   return items
     .filter((item): item is SearchItem => item !== null)
     .sort((a, b) => a.title.localeCompare(b.title, "ja"));
+}
+
+function getDefaultArticleTitle(slug: string, title: unknown): string {
+  if (typeof title === "string" && title.trim().length > 0) {
+    return title.trim();
+  }
+
+  return slug.split("/").filter(Boolean).at(-1) ?? slug;
 }
 
 function extractHeadings(html: string): string[] {

@@ -2,7 +2,7 @@ import build from "@hono/vite-build/cloudflare-workers";
 import { defaultOptions } from "@hono/vite-dev-server";
 import adapter from "@hono/vite-dev-server/cloudflare";
 import ssg from "@hono/vite-ssg";
-import { riebeckite } from "@riebeckite/honox";
+import { riebeckite, riebeckiteSsgExtensionMap } from "@riebeckite/honox";
 import tailwindcss from "@tailwindcss/vite";
 import honox from "honox/vite";
 import { defineConfig } from "vite";
@@ -25,6 +25,7 @@ export default defineConfig({
     build(),
     ssg({
       entry: "./app/server.ts",
+      extensionMap: riebeckiteSsgExtensionMap(),
     }),
   ],
   optimizeDeps: {

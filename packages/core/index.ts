@@ -55,6 +55,12 @@ export type {
   PluginDiagnosticLevel,
 } from "./src/types/plugin_diagnostic";
 export type {
+  PluginEndpoint,
+  PluginEndpointContext,
+  PluginEndpointMethod,
+  PluginEndpointResponse,
+} from "./src/types/plugin_endpoint";
+export type {
   HtmlPipeline,
   MarkdownEmbedFragment,
   MarkdownPipeline,

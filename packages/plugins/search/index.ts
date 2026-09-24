@@ -1,4 +1,5 @@
 import { definePlugin } from "@riebeckite/core";
+import { buildSearchItems } from "./src/search-index.server";
 
 export { default as SearchBar } from "./components/search-bar";
 export * from "./src/search";
@@ -20,6 +21,15 @@ export function searchPlugin() {
         pluginName: "search",
         moduleSpecifier: "@riebeckite/plugin-search/client",
         exportName: "initSearch",
+      },
+    ],
+    endpoints: [
+      {
+        path: "/search-data.json",
+        handler: ({ config, manifest }) => ({
+          headers: { "Cache-Control": "public, max-age=300" },
+          json: buildSearchItems({ manifest, config }),
+        }),
       },
     ],
   });

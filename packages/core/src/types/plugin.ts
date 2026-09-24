@@ -8,6 +8,7 @@ import type {
   PluginManifestContext,
   PluginPostContext,
 } from "./plugin_context";
+import type { PluginEndpoint } from "./plugin_endpoint";
 import type {
   HtmlPipeline,
   MarkdownPipeline,
@@ -38,6 +39,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   addDiagnostics?(context: PluginContext): Diagnostic[] | Promise<Diagnostic[]>;
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
+  endpoints?: PluginEndpoint[];
   seo?: PluginSeoExtension;
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];

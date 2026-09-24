@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter @riebeckite/web dev",
+    "dev": "pnpm --filter @riebeckite/web predev && pnpm --filter @riebeckite/web dev",
     "build": "pnpm --filter @riebeckite/web build",
     "lint": "biome lint .",
     "format": "biome format --write .",

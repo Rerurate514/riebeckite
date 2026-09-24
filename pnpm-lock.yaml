@@ -369,6 +369,12 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/themes/sakura:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
 packages:
 
   '@antfu/install-pkg@2.1.0':

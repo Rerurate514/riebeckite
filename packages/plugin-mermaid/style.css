@@ -55,6 +55,8 @@
   margin: 0 1rem;
   padding: 0.75rem;
   border-top: 1px solid var(--rr-mermaid-rule);
+  color: var(--rr-mermaid-ink);
+  background: color-mix(in srgb, var(--rr-mermaid-ink) 6%, transparent);
 }
 
 .rr-mermaid[data-mermaid="error"] .rr-mermaid__canvas::before,

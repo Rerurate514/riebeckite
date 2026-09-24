@@ -1,18 +1,18 @@
 .rr-code {
-  --rr-code-paper: var(--rr-color-paper, #f6efe2);
-  --rr-code-ink: var(--rr-color-ink, #171717);
+  --rr-code-paper: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
+  --rr-code-ink: var(--rr-color-ink, var(--rb-color-ink, #171717));
   --rr-code-muted: color-mix(in srgb, var(--rr-code-ink) 56%, transparent);
   --rr-code-rule: color-mix(in srgb, var(--rr-code-ink) 18%, transparent);
   --rr-code-accent: var(--rr-color-orange, #686868);
   margin: 2rem 0;
   border: 1px solid var(--rr-code-rule);
-  background: color-mix(in srgb, var(--rr-code-paper) 94%, var(--rr-code-ink));
+  background: var(--rr-code-paper);
   color: var(--rr-code-ink);
 }
 
 .rr-code[data-terminal="true"] {
-  --rr-code-paper: var(--rr-color-ink, #171717);
-  --rr-code-ink: var(--rr-color-paper, #f6efe2);
+  --rr-code-paper: var(--rr-color-ink, var(--rb-color-ink, #171717));
+  --rr-code-ink: var(--rr-color-paper, var(--rb-color-paper, #ffffff));
 }
 
 .rr-code__header {
@@ -63,14 +63,19 @@
   overflow: auto;
 }
 
-.rr-code__pre {
+.rr-code .rr-code__pre {
   overflow: auto;
   margin: 0;
   padding: 1rem 0;
   background: transparent;
+  color: inherit;
   font-size: 0.875rem;
   line-height: 1.7;
   tab-size: 2;
+}
+
+.rr-code .rr-code__line {
+  color: inherit;
 }
 
 .rr-code__pre:focus-visible {
@@ -83,19 +88,19 @@
   min-width: 100%;
 }
 
-.rr-code__code,
-.rr-code__code span {
+.rr-code .rr-code__code,
+.rr-code .rr-code__code span {
   color: var(--shiki-light, inherit);
 }
 
-:root[data-theme="dark"] .rr-code__code,
-:root[data-theme="dark"] .rr-code__code span {
+:root[data-theme="dark"] .rr-code .rr-code__code,
+:root[data-theme="dark"] .rr-code .rr-code__code span {
   color: var(--shiki-dark, inherit);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rr-code__code,
-  :root:not([data-theme]) .rr-code__code span {
+  :root:not([data-theme]) .rr-code .rr-code__code,
+  :root:not([data-theme]) .rr-code .rr-code__code span {
     color: var(--shiki-dark, inherit);
   }
 }
@@ -147,14 +152,14 @@
 
 :root[data-theme="dark"] .rr-code,
 html.dark .rr-code {
-  --rr-code-paper: var(--rr-color-ink, #000000);
-  --rr-code-ink: var(--rr-color-paper, #ffffff);
+  --rr-code-paper: var(--rr-color-paper, var(--rb-color-paper, #000000));
+  --rr-code-ink: var(--rr-color-ink, var(--rb-color-ink, #ffffff));
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) .rr-code {
-    --rr-code-paper: var(--rr-color-ink, #000000);
-    --rr-code-ink: var(--rr-color-paper, #ffffff);
+    --rr-code-paper: var(--rr-color-paper, var(--rb-color-paper, #000000));
+    --rr-code-ink: var(--rr-color-ink, var(--rb-color-ink, #ffffff));
   }
 }
 

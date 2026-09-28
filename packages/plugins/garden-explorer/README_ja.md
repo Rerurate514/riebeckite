@@ -54,7 +54,7 @@ return <GardenExplorer data={data} />;
 - `tags`: 件数の多い順のタグ
 - `folders`: 名前順のフォルダー。ルート直下のノートは `Root`
 
-検索には `@riebeckite/plugin-search` の `searchItems()` を利用します。検索モーダルを置かない場合でも、探索画面の検索にはこの依存関係が必要です。
+探索画面の検索はプラグイン内で完結しており、`@riebeckite/plugin-search` は不要です。
 
 ## 主なエクスポート
 
@@ -66,5 +66,4 @@ return <GardenExplorer data={data} />;
 ## 関連資料
 
 - [プラグインシステム](../../../docs/ja/plugin-system.md)
-- [`@riebeckite/plugin-search`](../search/README_ja.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README_ja.md)

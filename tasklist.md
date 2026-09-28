@@ -18,7 +18,7 @@
 | 16 | R2 | ContentManager責務分割 | ✅ 完了 | Medium | build調整・public location解決・entry読込を抽出し公開APIは不変（Phase 3 / A5.5後） |
 | 17 | R10 | seoプラグイン分割 | ✅ 完了 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
 | 18 | R11 | diagnostics analyze分割 | ✅ 完了 | Small–Medium | `plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
-| **19** | **A2** | **Plugin間の直接依存を排除** | 未着手 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
+| **19** | **A2** | **Plugin間の直接依存を排除** | ✅ 完了 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
 | **20** | **A6** | **HonoX UI primitiveの境界固定** | 未着手 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
 | **21** | **A7** | **Site Application拡張contract** | 未着手 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
 | **22** | **A8** | **Local Plugin / Local Theme対応保証** | 未着手 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
@@ -241,12 +241,13 @@
 - **検証**: `riebeckite check` の出力 diff → `test:e2e:external`。
 - **成果**: `checks/` に Wikilink・Markdown参照・frontmatter・note metadata・orphan・asset・excluded public の各診断を分割し、共有する状態・option正規化・diagnostic生成を `checks/shared.ts` に集約。`analyzeContent` は既存の実行順序を保つオーケストレーターにした。
 
-### #19 A2: Plugin間の直接依存を排除（A系 / Medium / 依存: P1 と関連）
+### #19 A2: Plugin間の直接依存を排除（✅ 完了 / A系 / Medium / 依存: P1 と関連）
 - **概要**: `garden-explorer → plugin-search` の直接依存を切る。
 - **現状**: `packages/plugins/garden-explorer/src/garden-explorer.ts:1` が `import type { SearchItem } from "@riebeckite/plugin-search"`。
 - **実装方針**: `SearchItem` 相当の型を Core の contract へ移すか garden-explorer 側でローカル定義。連携は `provides`/`requires` capability 経由の任意依存にする。
 - **完了条件**: `garden-explorer/package.json` の依存から `@riebeckite/plugin-search` が消え、型の重複/循環がない。
 - **検証**: build、`test:e2e:external`。
+- **成果**: `GardenExplorerNote` が検索プラグインの `SearchItem` を参照しないローカルの表示データ型を定義し、`@riebeckite/plugin-search` を package dependency と lockfile から削除した。検索機能との実行時連携は存在しないため、capability 依存は導入していない。
 
 ### #20 A6: HonoX UI primitiveの境界固定（A系 / Small）
 - **概要**: Integration が Component Framework 化するのを防ぎ、公開 primitive の境界を固定。

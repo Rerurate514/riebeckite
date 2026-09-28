@@ -21,9 +21,8 @@ so the view is shareable and the filter list adapts to the current selection.
 
 `getGardenExplorerData()` builds the note set from published entries, including
 headings, a plain-text body (truncated to 4,000 chars), tags, folders, outgoing
-links, and backlinks. It reuses the search engine from
-`@riebeckite/plugin-search` (via `searchItems`) and the radial layout from
-`../src/graph.ts`.
+links, and backlinks. Its client-side note search and radial graph layout are
+self-contained, so this plugin does not require the search plugin.
 
 ## Usage
 
@@ -68,8 +67,8 @@ in the browser.
 
 `getGardenExplorerData()` returns `GardenExplorerData`:
 
-- `notes` — published notes sorted by title, each a `SearchItem` with `folder`,
-  `outgoing`, and `backlinks`
+- `notes` — published notes sorted by title, with searchable fields plus
+  `folder`, `outgoing`, and `backlinks`
 - `edges` — note-to-note graph edges between published notes
 - `tags` — tag counts, most frequent first
 - `folders` — folder counts, alphabetical; root-level notes are `"Root"`
@@ -87,5 +86,4 @@ in the browser.
 ## See also
 
 - [Plugin guide](../../docs/plugins_en.md)
-- [`@riebeckite/plugin-search`](../plugin-search/README_en.md)
 - [`@riebeckite/plugin-local-graph`](../plugin-local-graph/README_en.md)

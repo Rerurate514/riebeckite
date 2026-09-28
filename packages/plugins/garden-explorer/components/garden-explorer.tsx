@@ -1,11 +1,11 @@
 /** @jsxImportSource hono/jsx */
 import { layoutRadialGraph } from "@riebeckite/core";
-import { searchItems } from "@riebeckite/plugin-search";
 import { useEffect, useMemo, useState } from "hono/jsx";
 import type {
   GardenExplorerData,
   GardenExplorerNote,
 } from "../src/garden-explorer.js";
+import { searchGardenExplorerNotes } from "../src/search-notes.js";
 
 type Props = {
   data: GardenExplorerData;
@@ -57,7 +57,7 @@ export default function GardenExplorer(props: Props) {
       if (selectedFolder && note.folder !== selectedFolder) return false;
       return true;
     });
-    const searched = query ? searchItems(base, query) : base;
+    const searched = query ? searchGardenExplorerNotes(base, query) : base;
     return searched.slice(0, 80);
   }, [props.data.notes, query, selectedTag, selectedFolder]);
 

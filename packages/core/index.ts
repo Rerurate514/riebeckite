@@ -20,6 +20,7 @@ export {
 } from "./src/content/attachment";
 export type { ContentGraph } from "./src/content/content_graph";
 export { createContentGraph } from "./src/content/content_graph";
+export { readOnlyContentGraph } from "./src/content/read_only_content_graph";
 export { ContentManager } from "./src/content/content_manager";
 export type {
   ContentBuildOptions,
@@ -75,7 +76,12 @@ export type {
   PluginInput,
   RiebeckitePlugin,
 } from "./src/types/plugin";
-export { definePlugin, resolvePlugins } from "./src/types/plugin";
+export {
+  definePlugin,
+  getResolvedPluginMetadata,
+  resolvePlugins,
+} from "./src/types/plugin";
+export type { ResolvedPluginMetadata } from "./src/types/plugin";
 export type { JsonValue, PluginCache } from "./src/plugin/plugin_cache";
 export {
   PluginDependencyError,

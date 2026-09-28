@@ -20,7 +20,7 @@ export async function loadContentBuildState(
 
 export type ContentBuildStateStatus =
   | { kind: "missing"; path: string }
-  | { kind: "valid"; path: string }
+  | { kind: "valid"; path: string; version: number; entryCount: number }
   | { kind: "invalid"; path: string };
 
 /** Reads incremental build state without creating or modifying it. */
@@ -30,11 +30,17 @@ export async function readContentBuildStateStatus(
   try {
     const parsed: unknown = JSON.parse(await fs.readFile(statePath, "utf8"));
     return isContentBuildState(parsed)
-      ? { kind: "valid", path: statePath }
+      ? {
+          kind: "valid",
+          path: statePath,
+          version: parsed.version,
+          entryCount: Object.keys(parsed.entries).length,
+        }
       : { kind: "invalid", path: statePath };
   } catch (error) {
     if (isNotFoundError(error)) return { kind: "missing", path: statePath };
-    if (error instanceof SyntaxError) return { kind: "invalid", path: statePath };
+    if (error instanceof SyntaxError)
+      return { kind: "invalid", path: statePath };
     throw error;
   }
 }
@@ -60,8 +66,17 @@ export function resolveContentBuildStatePath(
   config: ResolvedRiebeckiteConfig | undefined,
   contentDirectory: string | undefined,
 ): string {
-  const directory = config?.content.directory ?? contentDirectory ?? process.cwd();
-  return path.resolve(directory, "..", "apps", "web", "app", ".riebeckite", "content-state.json");
+  const directory =
+    config?.content.directory ?? contentDirectory ?? process.cwd();
+  return path.resolve(
+    directory,
+    "..",
+    "apps",
+    "web",
+    "app",
+    ".riebeckite",
+    "content-state.json",
+  );
 }
 
 function isContentBuildState(value: unknown): value is ContentBuildState {
@@ -81,7 +96,9 @@ function isContentBuildState(value: unknown): value is ContentBuildState {
           (dependency) => typeof dependency === "string",
         ),
     ) &&
-    Object.values(value.contentIndex).every((entry) => typeof entry === "string")
+    Object.values(value.contentIndex).every(
+      (entry) => typeof entry === "string",
+    )
   );
 }
 

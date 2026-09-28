@@ -1,9 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { build, createServer } from "vite";
+import type { Tracer } from "@riebeckite/core";
 
 export type HonoxApplicationOptions = {
   root: string;
+  tracer?: Tracer;
 };
 
 const viteConfigFileNames = [
@@ -46,11 +48,25 @@ export async function startHonoxDevServer(
 export async function buildHonoxApplication(
   options: HonoxApplicationOptions,
 ): Promise<void> {
-  await build({ root: options.root, mode: "client" });
-  await build({ root: options.root });
+  await runTraced(options.tracer, "integration.honox.client_build", () =>
+    build({ root: options.root, mode: "client" }),
+  );
+  await runTraced(options.tracer, "integration.honox.server_build", () =>
+    build({ root: options.root }),
+  );
 }
 
-async function waitForShutdown(server: Awaited<ReturnType<typeof createServer>>) {
+async function runTraced<T>(
+  tracer: Tracer | undefined,
+  name: string,
+  buildTask: () => Promise<T>,
+): Promise<T> {
+  return tracer ? await tracer.span(name, {}, buildTask) : await buildTask();
+}
+
+async function waitForShutdown(
+  server: Awaited<ReturnType<typeof createServer>>,
+) {
   await new Promise<void>((resolve) => {
     const close = () => {
       void server.close().finally(resolve);
@@ -71,7 +87,11 @@ async function findViteApplicationRoots(root: string): Promise<string[]> {
 
     const entries = await fs.readdir(directory, { withFileTypes: true });
     for (const entry of entries) {
-      if (!entry.isDirectory() || entry.name === "node_modules" || entry.name === ".git") {
+      if (
+        !entry.isDirectory() ||
+        entry.name === "node_modules" ||
+        entry.name === ".git"
+      ) {
         continue;
       }
       directories.push(path.join(directory, entry.name));

@@ -59,6 +59,15 @@ export type RiebeckitePlugin<TOptions = unknown> = {
 
 export type PluginInput = RiebeckitePlugin | false | null | undefined;
 
+/** Resolved plugin metadata that is safe to expose to tooling. */
+export type ResolvedPluginMetadata = {
+  readonly name: string;
+  readonly enabled: boolean;
+  readonly provides: readonly string[];
+  readonly requires: readonly string[];
+  readonly optional: readonly string[];
+};
+
 export function definePlugin<TOptions>(
   plugin: RiebeckitePlugin<TOptions>,
 ): RiebeckitePlugin<TOptions> {
@@ -74,4 +83,20 @@ export function resolvePlugins(
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return resolvePluginDependencies(orderedPlugins);
+}
+
+/**
+ * Returns metadata for plugins in their resolved execution order.
+ * Plugin options and lifecycle implementations are deliberately excluded.
+ */
+export function getResolvedPluginMetadata(
+  plugins: readonly RiebeckitePlugin[],
+): readonly ResolvedPluginMetadata[] {
+  return plugins.map((plugin) => ({
+    name: plugin.name,
+    enabled: plugin.enabled !== false,
+    provides: plugin.provides ?? [],
+    requires: plugin.requires ?? [],
+    optional: plugin.optional ?? [],
+  }));
 }

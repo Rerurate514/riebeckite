@@ -74,7 +74,22 @@ declaration）を workspace の依存順に build します。各 package は `b
 に対象 package を再 build します。CSS は source 位置（`./style.css`、
 `./styles/theme.css`）のまま同梱し、既存の subpath export から参照します。
 
-### npm publish に向けた状態
+### version 管理と npm publish に向けた状態
+
+最初の public release では、すべての public package が version `0.0.1` です。次の
+release を準備するときは、repository root で全 public package の version をまとめて
+更新します。
+
+```bash
+pnpm bump:version 0.0.2
+```
+
+`bump:version` は正確な semantic version を一つだけ受け付けます（有効な prerelease と
+build metadata を含められます）。変更前に version を検証し、
+`scripts/package_metadata.mjs` に列挙された package manifest だけを同期的に更新します。
+package の publish、tag の作成、依存 version range の変更は行いません。
+
+publish 前には manifest の diff を確認し、必要な package check と build を実行してください。
 
 -   public package は plain な ESM のみを配布します。CommonJS build はなく、
     `require()` は entry point としてサポートしません（意図的な制約です）。
@@ -87,9 +102,7 @@ declaration）を workspace の依存順に build します。各 package は `b
 -   repository root に canonical な Apache-2.0 `LICENSE` があります。build は
     tarball 生成前に各 package へそれをコピーし（`scripts/copy_license.mjs`）、
     公開 package は `"license": "Apache-2.0"` を宣言します。
--   公式 package の version は `0.0.1` のままです。例の `^1.0.0` は説明用で、
-    versioning と release automation は今回の package boundary 作業には含まれ
-    ません。
+-   例の `^1.0.0` は説明用です。最初の public release の version は `0.0.1` です。
 
 ## 拡張点
 

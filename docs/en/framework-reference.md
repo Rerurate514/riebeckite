@@ -78,7 +78,23 @@ before creating the tarball. CSS is shipped from its source location
 (`./style.css`, `./styles/theme.css`) and referenced through the existing subpath
 exports.
 
-### Publication status
+### Versioning and publication status
+
+The initial public release is version `0.0.1` for every public package. To
+prepare a later release, update every public package together from the
+repository root:
+
+```bash
+pnpm bump:version 0.0.2
+```
+
+`bump:version` accepts one exact semantic version (including valid prerelease
+and build metadata), validates it before changing files, and synchronously
+updates only the package manifests listed in `scripts/package_metadata.mjs`.
+It does not publish packages, create a tag, or change dependency ranges.
+
+Before publishing, review the resulting manifest diff and run the relevant
+package checks and builds.
 
 - Public packages ship plain ESM. There is no CommonJS build and `require()` is
   not a supported entry point, which is intentional. `import` it, or let a
@@ -92,9 +108,8 @@ exports.
   it into each package before the tarball is created
   (`scripts/copy_license.mjs`), and every published package declares
   `"license": "Apache-2.0"`.
-- Official package versions are still `0.0.1`; ranges such as `^1.0.0` in the
-  examples are illustrative. Versioning and release automation are not part of
-  the current package boundary work.
+- Ranges such as `^1.0.0` in the examples are illustrative; the initial public
+  release is `0.0.1`.
 
 ## Extension surfaces
 

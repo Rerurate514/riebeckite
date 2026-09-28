@@ -30,6 +30,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/responsive-image",
   "packages/plugins/search",
   "packages/plugins/seo",
+  "packages/plugins/shortcodes",
   "packages/plugins/toc",
   "packages/themes/default",
   "packages/themes/gruvbox",

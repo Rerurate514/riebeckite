@@ -37,6 +37,7 @@
     "@riebeckite/plugin-responsive-image": "workspace:*",
     "@riebeckite/plugin-search": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
+    "@riebeckite/plugin-shortcodes": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
     "@riebeckite/theme-default": "workspace:*",
     "hono": "^4.12.25",

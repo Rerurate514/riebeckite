@@ -24,6 +24,7 @@ import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
+import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { defaultTheme } from "@riebeckite/theme-default";
 
@@ -106,6 +107,7 @@ export default defineConfig({
     localGraphPlugin(),
     gardenExplorerPlugin(),
     hoverPreviewPlugin(),
+    shortcodes(),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

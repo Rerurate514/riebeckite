@@ -72,6 +72,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-flashcards",
   },
   {
+    directory: "packages/plugins/shortcodes",
+    name: "@riebeckite/plugin-shortcodes",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -92,6 +96,7 @@ const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
 const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
 const FLASHCARDS_CLIENT_IDENTIFIER = "rb-flashcards";
 const CODE_ANNOTATIONS_MARKER = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
+const SHORTCODE_MARKER = "RIEBECKITE_EXTERNAL_SHORTCODE_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -611,6 +616,23 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (combined.includes("[!code ")) {
     fail("code-annotations did not strip the inline marker comments");
+  }
+  if (!combined.includes("rb-shortcode--youtube")) {
+    fail("shortcodes plugin did not render the youtube built-in");
+  }
+  if (!combined.includes("rb-shortcode--kbd")) {
+    fail("shortcodes plugin did not render the kbd built-in");
+  }
+  if (!combined.includes("rb-shortcode--note")) {
+    fail("shortcodes plugin did not render the note built-in");
+  }
+  if (!combined.includes("rb-shortcode--badge")) {
+    fail("shortcodes plugin did not render the badge built-in");
+  }
+  if (!combined.includes(SHORTCODE_MARKER)) {
+    fail(
+      `generated HTML is missing the shortcode fixture marker (${SHORTCODE_MARKER})`,
+    );
   }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(

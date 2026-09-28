@@ -1,0 +1,252 @@
+.rb-shortcode {
+  --rb-shortcode-accent: var(--rb-color-accent, #686868);
+  --rb-shortcode-ink: var(--rb-color-ink, #1a1a1a);
+  --rb-shortcode-rule: color-mix(
+    in srgb,
+    var(--rb-shortcode-ink) 20%,
+    transparent
+  );
+  --rb-shortcode-surface: color-mix(
+    in srgb,
+    var(--rb-shortcode-ink) 5%,
+    transparent
+  );
+}
+
+div.rb-shortcode {
+  display: block;
+  margin-block: 1.25rem;
+}
+
+/* figure ------------------------------------------------------------------ */
+
+.rb-shortcode__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.rb-shortcode__image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--rb-shortcode-rule);
+}
+
+.rb-shortcode__caption {
+  color: var(--rb-shortcode-accent);
+  font-size: 0.875em;
+  line-height: 1.7;
+}
+
+.rb-shortcode__figure-fallback,
+.rb-shortcode__video-fallback,
+.rb-shortcode__gist-fallback,
+.rb-shortcode__link-card-fallback,
+.rb-shortcode__file-fallback {
+  color: var(--rb-shortcode-accent);
+  font-style: italic;
+}
+
+/* video ------------------------------------------------------------------- */
+
+.rb-shortcode__video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--rb-shortcode-rule);
+  background: var(--rb-shortcode-surface);
+}
+
+.rb-shortcode__iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* gist -------------------------------------------------------------------- */
+
+.rb-shortcode__gist {
+  overflow: hidden;
+  border: 1px solid var(--rb-shortcode-rule);
+}
+
+/* keyboard ---------------------------------------------------------------- */
+
+.rb-shortcode__kbd {
+  display: inline-block;
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--rb-shortcode-rule);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--rb-shortcode-surface);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+.rb-shortcode__kbd-separator {
+  margin-inline: 0.15em;
+  color: var(--rb-shortcode-accent);
+}
+
+/* badge ------------------------------------------------------------------- */
+
+.rb-shortcode__badge {
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+  color: var(--rb-shortcode-accent);
+  font-size: 0.75em;
+  line-height: 1.6;
+  vertical-align: middle;
+}
+
+.rb-shortcode__badge--info {
+  color: #0b6bcb;
+}
+
+.rb-shortcode__badge--success {
+  color: #1a7f37;
+}
+
+.rb-shortcode__badge--warning {
+  color: #9a6700;
+}
+
+.rb-shortcode__badge--danger {
+  color: #cf222e;
+}
+
+/* details / spoiler ------------------------------------------------------- */
+
+.rb-shortcode__details {
+  border: 1px solid var(--rb-shortcode-rule);
+}
+
+.rb-shortcode__summary {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.rb-shortcode__details-body {
+  padding: 0.25rem 0.75rem 0.75rem;
+}
+
+/* note / callout ---------------------------------------------------------- */
+
+.rb-shortcode__note {
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--rb-shortcode-accent);
+  background: var(--rb-shortcode-surface);
+}
+
+.rb-shortcode__note-title {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+}
+
+.rb-shortcode__note-body > :first-child,
+.rb-shortcode__details-body > :first-child {
+  margin-top: 0;
+}
+
+.rb-shortcode__note-body > :last-child,
+.rb-shortcode__details-body > :last-child {
+  margin-bottom: 0;
+}
+
+.rb-shortcode__note--tip {
+  border-left-color: #1a7f37;
+}
+
+.rb-shortcode__note--warning {
+  border-left-color: #9a6700;
+}
+
+.rb-shortcode__note--danger {
+  border-left-color: #cf222e;
+}
+
+/* link card --------------------------------------------------------------- */
+
+.rb-shortcode__link-card {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--rb-shortcode-rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.rb-shortcode__link-card:hover,
+.rb-shortcode__link-card:focus-visible {
+  border-color: var(--rb-shortcode-accent);
+}
+
+.rb-shortcode__link-card-image {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  object-fit: cover;
+}
+
+.rb-shortcode__link-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.rb-shortcode__link-card-title {
+  font-weight: 700;
+}
+
+.rb-shortcode__link-card-description,
+.rb-shortcode__link-card-url {
+  color: var(--rb-shortcode-accent);
+  font-size: 0.875em;
+  line-height: 1.6;
+}
+
+.rb-shortcode__link-card-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* file -------------------------------------------------------------------- */
+
+.rb-shortcode__file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--rb-shortcode-rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.rb-shortcode__file:hover,
+.rb-shortcode__file:focus-visible {
+  border-color: var(--rb-shortcode-accent);
+}
+
+.rb-shortcode__file-size {
+  color: var(--rb-shortcode-accent);
+  font-size: 0.8125em;
+}
+
+/* fallback ---------------------------------------------------------------- */
+
+.rb-shortcode--unknown {
+  color: var(--rb-shortcode-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+}

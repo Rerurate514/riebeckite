@@ -91,7 +91,7 @@ function renderMedia(
           context.label || fileName,
         );
 
-  return `<figure class="media-embed media-embed--${format.kind}" data-media-path="${escapeHtmlAttribute(context.path)}">
+  return `<figure class="media-embed rr-media media-embed--${format.kind}" data-media-path="${escapeHtmlAttribute(context.path)}">
   ${mediaElement}
   ${caption}
   ${actions}

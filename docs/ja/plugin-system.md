@@ -284,6 +284,17 @@ return definePlugin({
 Build E2E（`tests/external-site`）は site 内 Plugin / Theme を published
 package と並べて検証します。
 
+## CSS hooks
+
+Plugin 固有 CSS は Plugin package 内に置き、`assets` 経由でブラウザへ届けます。Plugin が独立した再利用可能な feature を描画するときは、最外要素に stable な root hook を付けます。
+
+-   Plugin / feature hook は `rr-<feature>` と命名します（`rr-search`、`rr-callout`、`rr-query`、`rr-code` など）。root の下は `rr-<feature>`、`rr-<feature>__element`、`rr-<feature>--modifier` の BEM 構成にします。
+-   既存の class がある場合は同じ要素に残します。`rr-` hook は追加なので既存 selector と site の override は壊れません。新しい Plugin CSS は `rr-` hook を対象にします。
+-   Plugin の出力を `rb-` namespace に置かないでください。`rb-*` class と `--rb-*` token は framework の構造 hook と semantic design token のものです。Plugin 固有 token は `--rr-*` とし、fallback に `--rb-*` を使えます。
+-   `rr-<feature>__*` と `rr-<feature>--*` は internal な実装詳細です。Theme に style させたい子孫だけを文書化してください。
+
+Theme はこの root hook を対象にします。Plugin default CSS は Theme CSS より先に読み込まれるため、Theme は Plugin を編集せずに見た目を変更できます。[Theme System](./theme-system.md#stable-css-hooks) を参照してください。
+
 ## Client Entries
 
 ブラウザ初期化が必要な場合だけ `clientEntries` を使います。

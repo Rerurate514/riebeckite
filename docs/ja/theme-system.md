@@ -226,30 +226,14 @@ Theme 固有概念を Core の `ThemeConfig` に増やさないことが重要�
 
 ## Stable CSS hooks
 
-Theme から利用してよい hook と、内部実装 class を区別します。
+Theme は内部 markup ではなく、文書化された stable hook を対象にします。Riebeckite では class を 2 つの namespace に分けます。
 
-代表的な stable hook:
+-   `rb-*` — framework が提供する構造 hook と semantic design token。構造 hook は `.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar` です。
+-   `rr-<feature>` — Plugin / feature が描画する最外要素に付く root hook。例として `.rr-search`、`.rr-callout`、`.rr-table-of-contents`、`.rr-backlinks`、`.rr-local-graph`、`.rr-code`、`.rr-code-tabs`、`.rr-lightbox`、`.rr-excalidraw`、`.rr-mermaid`、`.rr-query`、`.rr-cardlink`、`.rr-diff-history`、`.rr-attachment`、`.rr-media`、`.rr-recent-posts`、`.rr-garden-explorer` があります。
 
--   `.rb-site`
--   `.rb-article`
--   `.rb-article-layout`
--   `.rb-article-header`
--   `.rb-article-body`
--   `.rb-article-meta`
+Theme が style してよいのはこの root hook と、Plugin が文書化した子孫 class です。BEM の element (`__...`) と modifier (`--...`) は原則 internal、`.sr-only` のような汎用 helper class は Plugin hook ではありません。Plugin は後方互換のため従来 class も残すので、同じ要素に `.rr-<feature>` と旧 class が並ぶことがあります。Theme は `rr-*` を対象にしてください。
 
-Plugin/Feature root hook の例:
-
--   `.rr-search`
--   `.rr-callout`
--   `.rr-table-of-contents`
--   `.rr-backlinks`
--   `.rr-local-graph`
--   `.rr-code`
--   `.rr-code-tabs`
--   `.rr-lightbox`
--   `.rr-excalidraw`
-
-BEM element (`__...`) や helper class は原則 internal と考えます。
+Plugin 固有の意味を持つ token は `--rr-*` として Plugin が所有し、fallback として `--rb-*` を利用できます。Plugin 側の規約は [Plugin System](./plugin-system.md#css-hooks) を参照してください。
 
 ## CSS cascade
 
@@ -263,9 +247,7 @@ base / app structural CSS
 → userCss
 ```
 
-これにより Theme は Plugin default appearance を上書きでき、利用者の
-`userCss` が最終 override になります。通常は `!important`
-に依存しません。
+この順序は偶発的なものではなく保証された contract です。`@riebeckite/honox` が `.riebeckite/plugin-styles.css`（resolved plugin order の Plugin style）と `.riebeckite/theme-styles.css`（Theme style）を生成します。Site は plugin stylesheet を theme stylesheet より先に import するため、Theme CSS は常に Plugin default を上書きし、利用者の `userCss` が最終 override になります。この import 順を入れ替えたり、生成ファイルを直接編集したりしないでください。各生成ファイルの先頭コメントにも cascade 上の位置を記載しています。通常は `!important` に依存しません。
 
 ## Theme と Plugin
 

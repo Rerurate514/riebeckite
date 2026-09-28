@@ -5,7 +5,7 @@
 | 3 | A1.6 | External Site Build E2E | ✅ 完了 | Medium | tarballのみで`check/doctor/inspect/build`、Bundler/NodeNext typecheckを保証 |
 | **4** | **R1** | **Graph layout重複解消** | ✅ 完了 | Medium | `local-graph` / `garden-explorer`の共通実装を抽出（Phase 1） |
 | 5 | R5 | Backlink走査共通化 | ✅ 完了 | Small | Core ContentGraphへ寄せる（Phase 1） |
-| 6 | R6 | clientEntries/endpoints規約 | 未着手 | Small | 外部Plugin author向けの正解パターンを固定（Phase 1） |
+| 6 | R6 | clientEntries/endpoints規約 | ✅ 完了 | Small | Core helperとドキュメントで外部Plugin author向けの正解パターンを固定（Phase 1） |
 | 7 | R7 | 共通ユーティリティをCoreへ集約 | 未着手 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
 | 8 | R12 | 読了時間をCoreユーティリティ化 | 未着手 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
 | 9 | R8 | 空CSS削除とlint warning解消 | 未着手 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
@@ -37,11 +37,12 @@
 | 35 | D5 | `profile` diagnostics対応 | 未着手 | Small | profile観測範囲を拡張 |
 | 36 | D6 | CLI error renderer強化 | 未着手 | Small | error code/file/hint等を表示 |
 | **37** | **D7** | **Dependency hygiene E2E** | 未着手 | Small–Medium | `apps/web`等のundeclared/hoisted dependency依存を検出 |
-| 38 | F2 | Pagination | 未着手 | Small | Query APIへoffset/limit等を追加 |
-| 39 | — | Related Posts Plugin | 未着手 | Small–Medium | ContentGraphを利用 |
-| 40 | — | OG Image Plugin | 未着手 | Medium | build時OG image生成 |
-| 41 | — | Citation Plugin | 未着手 | Medium | 引用・参考文献管理 |
-| 42 | — | Scheduled Publish表示Plugin | 未着手 | Small | PublishStrategyをUI/diagnosticsへ表示 |
+| 38 | D8 | 公開パッケージのREADME整備 | 未着手 | Small | `core`/`cli`/`integrations/honox`に`README_en.md`/`README_ja.md`が無い（他25パッケージは保有） |
+| 39 | F2 | Pagination | 未着手 | Small | Query APIへoffset/limit等を追加 |
+| 40 | — | Related Posts Plugin | 未着手 | Small–Medium | ContentGraphを利用 |
+| 41 | — | OG Image Plugin | 未着手 | Medium | build時OG image生成 |
+| 42 | — | Citation Plugin | 未着手 | Medium | 引用・参考文献管理 |
+| 43 | — | Scheduled Publish表示Plugin | 未着手 | Small | PublishStrategyをUI/diagnosticsへ表示 |
 
 ## 優先度の考え方
 
@@ -50,7 +51,7 @@
 3. **A 系インフラ（#11–#14）**: 外部 consumer 成立の要（root 解決・SSG 境界・外部 Vault・filesystem 境界）。
 4. **Phase 3（#15–#17）**: `R2` は A5.5 の境界確定後。`R10`/`R11` は独立した大型分割。
 5. **A 系 contract（#18–#21）**: Plugin 独立性・UI/Site 拡張 contract。
-6. **以降（#22–#42）**: Query/Taxonomy/Publish 保証 → CLI/開発体験 → 追加 Plugin。
+6. **以降（#22–#43）**: Query/Taxonomy/Publish 保証 → CLI/開発体験 → 追加 Plugin。
 
 ## リファクタリング一掃の実施順（2026-09-28 計画）
 
@@ -356,21 +357,36 @@
 - **概要**: `apps/web` 等の undeclared/hoisted 依存を検出。
 - **実装方針**: 宣言外 import を検出するチェックを E2E に追加。
 
-### #38 F2: Pagination（Small / 依存: C1/C2）
+### #38 D8: 公開パッケージのREADME整備（Small / 依存なし）
+- **概要**: 公開パッケージ `packages/core`, `packages/cli`, `packages/integrations/honox` に `README_en.md`/`README_ja.md` が無い（他25パッケージは両方保有）。npm のパッケージページに説明が表示されず、外部 consumer の入口が無い状態。
+- **対象**:
+  - `packages/core/README_en.md`（新規）, `packages/core/README_ja.md`（新規）
+  - `packages/cli/README_en.md`（新規）, `packages/cli/README_ja.md`（新規）
+  - `packages/integrations/honox/README_en.md`（新規）, `packages/integrations/honox/README_ja.md`（新規）
+  - 必要に応じて各 `package.json` の `files` に README を追加（現状3パッケージの `files` は `LICENSE`/`dist`（`cli` は `+bin`）のみで README 未記載）
+- **実装方針**:
+  1. 既存パッケージ README（例: `packages/plugins/backlinks/README_en.md`）の構成・トーンに合わせる。
+  2. 内容は「役割 / インストール / 最小使用例 / 公開API概要 / 関連docsへのリンク」。`core` は framework contract、`cli` はコマンド、`honox` は統合の説明。
+  3. `README_ja.md` を対応させる（見出し構成を揃える）。
+  4. `files` に README を追加する場合は `pnpm --filter <pkg> pack --dry-run` で同梱を確認。
+- **完了条件**: 3パッケージに `README_en.md`/`README_ja.md` が存在し、内容が公開APIと一致。`pnpm pack` の同梱可否が意図どおり。
+- **検証**: 対象3パッケージで `pnpm pack`（または `pack --dry-run`）確認 → `pnpm run build:packages` に影響がないこと。
+
+### #39 F2: Pagination（Small / 依存: C1/C2）
 - **概要**: Query API へ offset/limit 等を追加。
 
-### #39 Related Posts Plugin（Small–Medium）
+### #40 Related Posts Plugin（Small–Medium）
 - **概要**: `ContentGraph` を利用して関連記事を算出。
 - **対象**: 新規 `packages/plugins/related-posts`、`core/src/content/content_graph.ts`
 
-### #40 OG Image Plugin（Medium）
+### #41 OG Image Plugin（Medium）
 - **概要**: build 時に OG image を生成。
 - **実装方針**: build-time API（Node）で画像生成し、asset として公開。
 
-### #41 Citation Plugin（Medium）
+### #42 Citation Plugin（Medium）
 - **概要**: 引用・参考文献管理。
 - **実装方針**: remark 段階で citation を収集し、HTML パイプラインで参考文献を描画。
 
-### #42 Scheduled Publish表示Plugin（Small）
+### #43 Scheduled Publish表示Plugin（Small）
 - **概要**: `PublishStrategy` を UI/diagnostics へ表示。
 - **対象**: `core/src/types/publish_strategy.ts`、`plugins/diagnostics`

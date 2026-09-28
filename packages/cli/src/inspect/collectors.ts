@@ -9,8 +9,8 @@ import {
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
 import { resolveHonoxApplicationRoot } from "@riebeckite/honox";
-import type { RiebeckiteProject } from "../application_root";
-import { loadProjectConfig } from "../load_config";
+import type { RiebeckiteProject } from "../application_root.js";
+import { loadProjectConfig } from "../load_config.js";
 import type {
   ApplicationInspection,
   BuildInspection,
@@ -18,7 +18,7 @@ import type {
   ContentInspection,
   GraphInspection,
   PluginInspection,
-} from "./types";
+} from "./types.js";
 
 export async function collectApplicationInspection(
   project: RiebeckiteProject,

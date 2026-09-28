@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { isExcluded } from "../config";
-import { normalizeContentPath } from "./attachment";
+import { isExcluded } from "../config.js";
+import { normalizeContentPath } from "./attachment.js";
 import type {
   ContentSource,
   ContentSourceContent,
   ContentSourceEntry,
-} from "./content_source";
+} from "./content_source.js";
 
 export class FileSystemContentSource implements ContentSource {
   constructor(

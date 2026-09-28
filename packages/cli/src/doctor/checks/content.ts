@@ -5,8 +5,8 @@ import {
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { resolveHonoxApplicationRoot } from "@riebeckite/honox";
-import type { RiebeckiteProject } from "../../application_root";
-import type { DoctorCheckResult } from "../types";
+import type { RiebeckiteProject } from "../../application_root.js";
+import type { DoctorCheckResult } from "../types.js";
 
 const diagnosticSampleLimit = 3;
 

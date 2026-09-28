@@ -1,14 +1,14 @@
 import { definePlugin } from "@riebeckite/core";
 
-export { default as GardenExplorer } from "./components/garden-explorer";
+export { default as GardenExplorer } from "./components/garden-explorer.js";
 export type {
   GardenExplorerData,
   GardenExplorerEdge,
   GardenExplorerFolder,
   GardenExplorerNote,
   GardenExplorerTag,
-} from "./src/garden-explorer";
-export { getGardenExplorerData } from "./src/garden-explorer.server";
+} from "./src/garden-explorer.js";
+export { getGardenExplorerData } from "./src/garden-explorer.server.js";
 
 export function gardenExplorerPlugin() {
   return definePlugin({

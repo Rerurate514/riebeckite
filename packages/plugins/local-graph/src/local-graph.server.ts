@@ -3,7 +3,7 @@ import {
   isPublished,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import type { LocalGraphData, LocalGraphNode } from "./local-graph";
+import type { LocalGraphData, LocalGraphNode } from "./local-graph.js";
 
 const MAX_NEIGHBORS_PER_DIRECTION = 10;
 

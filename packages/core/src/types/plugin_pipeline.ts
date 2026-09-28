@@ -1,6 +1,6 @@
 import type { Plugin } from "unified";
 import type { Node } from "unist";
-import type { PluginRenderInput } from "./plugin_context";
+import type { PluginRenderInput } from "./plugin_context.js";
 
 export type PipelinePlugin = Plugin<[unknown?], Node, Node>;
 

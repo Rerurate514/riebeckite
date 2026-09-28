@@ -1,5 +1,5 @@
-import { extractFrontmatterAliases } from "./content_metadata";
-import type { ContentSource, ContentSourceEntry } from "./content_source";
+import { extractFrontmatterAliases } from "./content_metadata.js";
+import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 
 export class ContentIndexBuilder {
   constructor(private source: ContentSource) {}

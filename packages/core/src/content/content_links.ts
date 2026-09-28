@@ -1,5 +1,5 @@
-import type { ContentLink } from "../types/content_manifest";
-import { isAttachmentPath, isImagePath } from "./attachment";
+import type { ContentLink } from "../types/content_manifest.js";
+import { isAttachmentPath, isImagePath } from "./attachment.js";
 
 const WIKILINK_PATTERN =
   /(!)?\[\[([^\]|#^]+)(?:[#^][^\]|]+)?(?:\|[^\]]+)?\]\]/g;

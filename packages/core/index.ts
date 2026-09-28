@@ -4,8 +4,8 @@ export {
   isPublished,
   resolveConfig,
   resolveConfigModule,
-} from "./src/config";
-export { ConfigValidationError } from "./src/config_validation";
+} from "./src/config.js";
+export { ConfigValidationError } from "./src/config_validation.js";
 export {
   ATTACHMENTS_BASE_PATH,
   attachmentUrl,
@@ -14,29 +14,29 @@ export {
   isImagePath,
   isMarkdownPath,
   normalizeContentPath,
-} from "./src/content/attachment";
-export type { ContentBuildStateStatus } from "./src/content/content_build_state_store";
+} from "./src/content/attachment.js";
+export type { ContentBuildStateStatus } from "./src/content/content_build_state_store.js";
 export {
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
-} from "./src/content/content_build_state_store";
-export type { ContentGraph } from "./src/content/content_graph";
-export { createContentGraph } from "./src/content/content_graph";
-export { resolveDefaultContentLocation } from "./src/content/content_location";
+} from "./src/content/content_build_state_store.js";
+export type { ContentGraph } from "./src/content/content_graph.js";
+export { createContentGraph } from "./src/content/content_graph.js";
+export { resolveDefaultContentLocation } from "./src/content/content_location.js";
 export type {
   ContentBuildOptions,
   ContentInspection,
-} from "./src/content/content_manager";
-export { ContentManager } from "./src/content/content_manager";
+} from "./src/content/content_manager.js";
+export { ContentManager } from "./src/content/content_manager.js";
 export type {
   ContentSource,
   ContentSourceContent,
   ContentSourceEntry,
   ContentSourceMetadata,
-} from "./src/content/content_source";
-export { FileSystemContentSource } from "./src/content/file_system_content_source";
-export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
-export { readOnlyContentGraph } from "./src/content/read_only_content_graph";
+} from "./src/content/content_source.js";
+export { FileSystemContentSource } from "./src/content/file_system_content_source.js";
+export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
+export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
 export type {
   LogContext,
   Logger,
@@ -48,25 +48,25 @@ export type {
   Tracer,
   TraceSink,
   TraceSpan,
-} from "./src/observability";
+} from "./src/observability.js";
 export {
   CompositeTraceSink,
   ConsoleLogger,
   NoopLogger,
   NoopTracer,
   SinkTracer,
-} from "./src/observability";
-export type { PipelineOptions } from "./src/pipeline";
-export { Pipeline } from "./src/pipeline";
-export type { JsonValue, PluginCache } from "./src/plugin/plugin_cache";
+} from "./src/observability.js";
+export type { PipelineOptions } from "./src/pipeline.js";
+export { Pipeline } from "./src/pipeline.js";
+export type { JsonValue, PluginCache } from "./src/plugin/plugin_cache.js";
 export {
   PluginDependencyError,
   type PluginDependencyErrorKind,
-} from "./src/plugin/plugin_dependency_error";
+} from "./src/plugin/plugin_dependency_error.js";
 export type {
   ConfigValidationIssue,
   PluginOptionsValidator,
-} from "./src/types/config_validation";
+} from "./src/types/config_validation.js";
 export type {
   ContentAsset,
   ContentLink,
@@ -76,27 +76,27 @@ export type {
   ContentManifestEntry,
   ContentPublicLocation,
   ContentRedirect,
-} from "./src/types/content_manifest";
+} from "./src/types/content_manifest.js";
 export type {
   Diagnostic,
   DiagnosticCode,
   DiagnosticSeverity,
-} from "./src/types/diagnostic";
+} from "./src/types/diagnostic.js";
 export type {
   PluginInput,
   ResolvedPluginMetadata,
   RiebeckitePlugin,
-} from "./src/types/plugin";
+} from "./src/types/plugin.js";
 export {
   definePlugin,
   getResolvedPluginMetadata,
   resolvePlugins,
-} from "./src/types/plugin";
+} from "./src/types/plugin.js";
 export type {
   PluginAsset,
   PluginAssetKind,
   PluginClientEntry,
-} from "./src/types/plugin_asset";
+} from "./src/types/plugin_asset.js";
 export type {
   PluginContentContext,
   PluginContentLocationContext,
@@ -110,36 +110,36 @@ export type {
   PluginRenderContext,
   PluginRenderInput,
   PluginRenderTarget,
-} from "./src/types/plugin_context";
+} from "./src/types/plugin_context.js";
 export type {
   PluginDiagnostic,
   PluginDiagnosticLevel,
-} from "./src/types/plugin_diagnostic";
+} from "./src/types/plugin_diagnostic.js";
 export type {
   PluginEndpoint,
   PluginEndpointContext,
   PluginEndpointMethod,
   PluginEndpointResponse,
-} from "./src/types/plugin_endpoint";
+} from "./src/types/plugin_endpoint.js";
 export type {
   HtmlPipeline,
   MarkdownEmbedFragment,
   MarkdownPipeline,
   MarkdownPipelineContext,
   PipelinePlugin,
-} from "./src/types/plugin_pipeline";
+} from "./src/types/plugin_pipeline.js";
 export type {
   PluginSeoExtension,
   RenderableFeedEntry,
   SeoMetadata,
   WebsiteSeoInput,
-} from "./src/types/plugin_seo";
-export type { PostContent, PostFrontmatter } from "./src/types/post_content";
+} from "./src/types/plugin_seo.js";
+export type { PostContent, PostFrontmatter } from "./src/types/post_content.js";
 
-export type { PublishStrategy } from "./src/types/publish_strategy";
-export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config";
-export type { RiebeckiteConfig } from "./src/types/riebeckite_config";
-export type { SiteConfig } from "./src/types/site_config";
+export type { PublishStrategy } from "./src/types/publish_strategy.js";
+export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config.js";
+export type { RiebeckiteConfig } from "./src/types/riebeckite_config.js";
+export type { SiteConfig } from "./src/types/site_config.js";
 export type {
   RiebeckiteTheme,
   ThemeArticleLayoutPreset,
@@ -150,5 +150,5 @@ export type {
   ThemeInput,
   ThemeStyle,
   ThemeTypographyPreset,
-} from "./src/types/theme_config";
-export { defineTheme } from "./src/types/theme_config";
+} from "./src/types/theme_config.js";
+export { defineTheme } from "./src/types/theme_config.js";

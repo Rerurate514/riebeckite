@@ -1,5 +1,5 @@
-import type { ContentManifest } from "./content_manifest";
-import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
+import type { ContentManifest } from "./content_manifest.js";
+import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
 export type PluginEndpointMethod = "GET";
 

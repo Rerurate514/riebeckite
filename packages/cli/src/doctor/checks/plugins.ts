@@ -2,7 +2,7 @@ import type {
   PluginDependencyError,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import type { DoctorCheckResult } from "../types";
+import type { DoctorCheckResult } from "../types.js";
 
 export function checkPlugins(
   config: ResolvedRiebeckiteConfig | undefined,

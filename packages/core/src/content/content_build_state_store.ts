@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
+import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
   CONTENT_BUILD_STATE_VERSION,
   type ContentBuildState,
-} from "./content_build_state";
+} from "./content_build_state.js";
 
 export async function loadContentBuildState(
   statePath: string,

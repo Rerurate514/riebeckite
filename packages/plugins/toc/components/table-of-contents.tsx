@@ -1,5 +1,5 @@
 /** @jsxImportSource hono/jsx */
-import type { TableOfContentsItem } from "../src/table-of-contents";
+import type { TableOfContentsItem } from "../src/table-of-contents.js";
 
 type Props = {
   className: string;

@@ -1,7 +1,7 @@
 /** @jsxImportSource hono/jsx */
 
-import { buildGraphEdges, layoutRadialGraph } from "../src/graph";
-import type { LocalGraphData } from "../src/local-graph";
+import { buildGraphEdges, layoutRadialGraph } from "../src/graph.js";
+import type { LocalGraphData } from "../src/local-graph.js";
 
 type Props = {
   graph: LocalGraphData;

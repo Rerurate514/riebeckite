@@ -1,10 +1,10 @@
-import { validateConfig } from "./config_validation";
-import { resolvePlugins } from "./types/plugin";
-import type { PostFrontmatter } from "./types/post_content";
-import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config";
-import type { RiebeckiteConfig } from "./types/riebeckite_config";
-import type { ThemeAttributes, ThemeStyle } from "./types/theme_config";
-import { isRiebeckiteTheme } from "./types/theme_config";
+import { validateConfig } from "./config_validation.js";
+import { resolvePlugins } from "./types/plugin.js";
+import type { PostFrontmatter } from "./types/post_content.js";
+import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config.js";
+import type { RiebeckiteConfig } from "./types/riebeckite_config.js";
+import type { ThemeAttributes, ThemeStyle } from "./types/theme_config.js";
+import { isRiebeckiteTheme } from "./types/theme_config.js";
 
 const defaultThemeStyle: ThemeStyle = {
   moduleSpecifier: "@riebeckite/theme-default/style.css",

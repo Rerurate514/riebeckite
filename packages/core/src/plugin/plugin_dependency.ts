@@ -1,5 +1,5 @@
-import type { RiebeckitePlugin } from "../types/plugin";
-import { PluginDependencyError } from "./plugin_dependency_error";
+import type { RiebeckitePlugin } from "../types/plugin.js";
+import { PluginDependencyError } from "./plugin_dependency_error.js";
 
 type PluginDependency = {
   providerIndex: number;

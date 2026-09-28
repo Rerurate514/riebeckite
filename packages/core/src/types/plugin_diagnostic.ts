@@ -1,4 +1,4 @@
-import type { Diagnostic } from "./diagnostic";
+import type { Diagnostic } from "./diagnostic.js";
 
 export type PluginDiagnosticLevel = Diagnostic["severity"];
 

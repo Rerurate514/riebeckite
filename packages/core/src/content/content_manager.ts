@@ -1,42 +1,42 @@
-import type { Observability } from "../observability";
-import { noopObservability } from "../observability";
-import type { PipelineOptions } from "../pipeline";
-import { Pipeline } from "../pipeline";
-import { PluginRuntime } from "../plugin/plugin_runtime";
+import type { Observability } from "../observability.js";
+import { noopObservability } from "../observability.js";
+import type { PipelineOptions } from "../pipeline.js";
+import { Pipeline } from "../pipeline.js";
+import { PluginRuntime } from "../plugin/plugin_runtime.js";
 import type {
   ContentManifest,
   ContentPublicLocation,
-} from "../types/content_manifest";
-import type { Diagnostic } from "../types/diagnostic";
-import type { PostContent } from "../types/post_content";
-import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
+} from "../types/content_manifest.js";
+import type { Diagnostic } from "../types/diagnostic.js";
+import type { PostContent } from "../types/post_content.js";
+import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
   type AffectedContent,
   determineAffectedContent,
-} from "./affected_content";
+} from "./affected_content.js";
 import {
   CONTENT_BUILD_STATE_VERSION,
   type ContentBuildState,
   type FingerprintedContentEntry,
-} from "./content_build_state";
+} from "./content_build_state.js";
 import {
   loadContentBuildState,
   resolveContentBuildStatePath,
   saveContentBuildState,
-} from "./content_build_state_store";
+} from "./content_build_state_store.js";
 import {
   allContentChanged,
   type ContentChangeSet,
   diffContentEntries,
   hasContentChanges,
-} from "./content_change_set";
-import { fingerprintContentEntries } from "./content_fingerprint";
-import type { ContentGraph } from "./content_graph";
-import { ContentIndexBuilder } from "./content_index_builder";
-import { resolveDefaultContentLocation } from "./content_location";
-import type { ContentSource, ContentSourceEntry } from "./content_source";
-import { FileSystemContentSource } from "./file_system_content_source";
-import { ManifestBuilder } from "./manifest_builder";
+} from "./content_change_set.js";
+import { fingerprintContentEntries } from "./content_fingerprint.js";
+import type { ContentGraph } from "./content_graph.js";
+import { ContentIndexBuilder } from "./content_index_builder.js";
+import { resolveDefaultContentLocation } from "./content_location.js";
+import type { ContentSource, ContentSourceEntry } from "./content_source.js";
+import { FileSystemContentSource } from "./file_system_content_source.js";
+import { ManifestBuilder } from "./manifest_builder.js";
 
 export type Backlink = {
   slug: string;

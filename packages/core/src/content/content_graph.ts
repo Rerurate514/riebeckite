@@ -1,7 +1,7 @@
 import type {
   ContentLink,
   ContentManifestEntry,
-} from "../types/content_manifest";
+} from "../types/content_manifest.js";
 
 export type ContentGraphSource = {
   entries: ContentManifestEntry[];

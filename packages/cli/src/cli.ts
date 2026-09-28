@@ -1,11 +1,11 @@
-import { resolveRiebeckiteProject } from "./application_root";
-import { runBuild } from "./commands/build";
-import { runCheck } from "./commands/check";
-import { runDev } from "./commands/dev";
-import { runDoctorCommand } from "./commands/doctor";
-import { type InspectTarget, runInspect } from "./commands/inspect";
-import { runProfile } from "./commands/profile";
-import { renderCliError } from "./error_renderer";
+import { resolveRiebeckiteProject } from "./application_root.js";
+import { runBuild } from "./commands/build.js";
+import { runCheck } from "./commands/check.js";
+import { runDev } from "./commands/dev.js";
+import { runDoctorCommand } from "./commands/doctor.js";
+import { type InspectTarget, runInspect } from "./commands/inspect.js";
+import { runProfile } from "./commands/profile.js";
+import { renderCliError } from "./error_renderer.js";
 
 export async function main(arguments_: readonly string[]): Promise<void> {
   try {

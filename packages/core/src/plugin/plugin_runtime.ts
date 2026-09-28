@@ -1,32 +1,32 @@
-import type { Observability } from "../observability";
-import { noopObservability } from "../observability";
-import type { PipelineOptions } from "../pipeline";
+import type { Observability } from "../observability.js";
+import { noopObservability } from "../observability.js";
+import type { PipelineOptions } from "../pipeline.js";
 import type {
   ContentLocationInput,
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
-} from "../types/content_manifest";
-import type { Diagnostic } from "../types/diagnostic";
-import type { RiebeckitePlugin } from "../types/plugin";
-import { resolvePlugins } from "../types/plugin";
+} from "../types/content_manifest.js";
+import type { Diagnostic } from "../types/diagnostic.js";
+import type { RiebeckitePlugin } from "../types/plugin.js";
+import { resolvePlugins } from "../types/plugin.js";
 import type {
   PluginContentLocationResolver,
   PluginContext,
-} from "../types/plugin_context";
-import type { PostContent } from "../types/post_content";
-import type { PluginCache } from "./plugin_cache";
+} from "../types/plugin_context.js";
+import type { PostContent } from "../types/post_content.js";
+import type { PluginCache } from "./plugin_cache.js";
 import {
   createPluginCache,
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
-} from "./plugin_cache";
+} from "./plugin_cache.js";
 import {
   runBuildEnd,
   runBuildStart,
   runDispose,
   runSetup,
-} from "./plugin_lifecycle";
+} from "./plugin_lifecycle.js";
 
 type PluginContextBase = Omit<PluginContext, "cache" | "logger" | "tracer">;
 type PluginContextWithCache<TContext extends PluginContextBase> = TContext &

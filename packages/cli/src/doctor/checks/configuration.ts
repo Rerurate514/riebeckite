@@ -1,7 +1,7 @@
 import { ConfigValidationError, PluginDependencyError } from "@riebeckite/core";
-import type { RiebeckiteProject } from "../../application_root";
-import { loadProjectConfig } from "../../load_config";
-import type { DoctorCheckResult } from "../types";
+import type { RiebeckiteProject } from "../../application_root.js";
+import { loadProjectConfig } from "../../load_config.js";
+import type { DoctorCheckResult } from "../types.js";
 
 export type ConfigurationCheck = {
   result: DoctorCheckResult;

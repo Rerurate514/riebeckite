@@ -1,6 +1,6 @@
-import type { ConfigValidationIssue } from "./types/config_validation";
-import type { RiebeckitePlugin } from "./types/plugin";
-import type { RiebeckiteConfig } from "./types/riebeckite_config";
+import type { ConfigValidationIssue } from "./types/config_validation.js";
+import type { RiebeckitePlugin } from "./types/plugin.js";
+import type { RiebeckiteConfig } from "./types/riebeckite_config.js";
 
 export class ConfigValidationError extends Error {
   readonly issues: readonly ConfigValidationIssue[];

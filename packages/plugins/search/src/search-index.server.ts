@@ -3,7 +3,7 @@ import {
   isPublished,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import type { SearchItem } from "./search";
+import type { SearchItem } from "./search.js";
 
 const MAX_BODY_LENGTH = 4_000;
 

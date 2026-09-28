@@ -1,1 +1,1 @@
-export { initSearch } from "./src/search-bar.client";
+export { initSearch } from "./src/search-bar.client.js";

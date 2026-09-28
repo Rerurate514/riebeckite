@@ -1,12 +1,12 @@
 import type {
   ContentManifestEntry,
   ContentPublicLocation,
-} from "../types/content_manifest";
-import type { ContentGraph } from "./content_graph";
-import { ContentIndexBuilder } from "./content_index_builder";
-import { extractContentLinks } from "./content_links";
-import type { ContentSource, ContentSourceEntry } from "./content_source";
-import { ManifestBuilder } from "./manifest_builder";
+} from "../types/content_manifest.js";
+import type { ContentGraph } from "./content_graph.js";
+import { ContentIndexBuilder } from "./content_index_builder.js";
+import { extractContentLinks } from "./content_links.js";
+import type { ContentSource, ContentSourceEntry } from "./content_source.js";
+import { ManifestBuilder } from "./manifest_builder.js";
 
 /**
  * Builds the framework's content graph without rendering content, invoking

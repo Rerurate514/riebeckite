@@ -1,4 +1,4 @@
-import type { RiebeckiteProject } from "../application_root";
+import type { RiebeckiteProject } from "../application_root.js";
 import {
   collectApplicationInspection,
   collectBuildInspection,
@@ -6,7 +6,7 @@ import {
   collectContentInspection,
   collectGraphInspection,
   collectPluginInspections,
-} from "../inspect/collectors";
+} from "../inspect/collectors.js";
 import {
   renderApplicationInspection,
   renderBuildInspection,
@@ -14,8 +14,8 @@ import {
   renderContentInspection,
   renderGraphInspection,
   renderPluginInspections,
-} from "../inspect/renderer";
-import { loadProjectConfig } from "../load_config";
+} from "../inspect/renderer.js";
+import { loadProjectConfig } from "../load_config.js";
 
 export type InspectTarget =
   | "config"

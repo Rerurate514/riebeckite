@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "hono/jsx";
 import type {
   GardenExplorerData,
   GardenExplorerNote,
-} from "../src/garden-explorer";
-import { layoutRadialGraph } from "../src/graph";
+} from "../src/garden-explorer.js";
+import { layoutRadialGraph } from "../src/graph.js";
 
 type Props = {
   data: GardenExplorerData;

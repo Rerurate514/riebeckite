@@ -1,10 +1,10 @@
 import { definePlugin } from "@riebeckite/core";
-import { buildSearchItems } from "./src/search-index.server";
+import { buildSearchItems } from "./src/search-index.server.js";
 
-export { default as SearchBar } from "./components/search-bar";
-export * from "./src/search";
-export { initSearch } from "./src/search-bar.client";
-export { buildSearchItems } from "./src/search-index.server";
+export { default as SearchBar } from "./components/search-bar.js";
+export * from "./src/search.js";
+export { initSearch } from "./src/search-bar.client.js";
+export { buildSearchItems } from "./src/search-index.server.js";
 
 export function searchPlugin() {
   return definePlugin({

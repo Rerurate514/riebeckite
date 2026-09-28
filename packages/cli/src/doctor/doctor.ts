@@ -1,10 +1,10 @@
-import type { RiebeckiteProject } from "../application_root";
-import { checkBuildState } from "./checks/build_state";
-import { checkConfiguration } from "./checks/configuration";
-import { checkContent } from "./checks/content";
-import { checkEnvironment, checkStateDirectory } from "./checks/environment";
-import { checkPlugins } from "./checks/plugins";
-import type { DoctorCheckResult } from "./types";
+import type { RiebeckiteProject } from "../application_root.js";
+import { checkBuildState } from "./checks/build_state.js";
+import { checkConfiguration } from "./checks/configuration.js";
+import { checkContent } from "./checks/content.js";
+import { checkEnvironment, checkStateDirectory } from "./checks/environment.js";
+import { checkPlugins } from "./checks/plugins.js";
+import type { DoctorCheckResult } from "./types.js";
 
 export async function runDoctor(
   project: RiebeckiteProject,

@@ -13,21 +13,21 @@ import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
-import type { Observability } from "./observability";
-import { noopObservability } from "./observability";
-import type { PluginCache } from "./plugin/plugin_cache";
+import type { Observability } from "./observability.js";
+import { noopObservability } from "./observability.js";
+import type { PluginCache } from "./plugin/plugin_cache.js";
 import {
   createPluginCache,
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
-} from "./plugin/plugin_cache";
-import type { RiebeckitePlugin } from "./types/plugin";
-import { resolvePlugins } from "./types/plugin";
+} from "./plugin/plugin_cache.js";
+import type { RiebeckitePlugin } from "./types/plugin.js";
+import { resolvePlugins } from "./types/plugin.js";
 import type {
   MarkdownEmbedFragment,
   MarkdownPipelineContext,
-} from "./types/plugin_pipeline";
-import type { PostContent, PostFrontmatter } from "./types/post_content";
+} from "./types/plugin_pipeline.js";
+import type { PostContent, PostFrontmatter } from "./types/post_content.js";
 
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];

@@ -74,17 +74,19 @@ declaration）を workspace の依存順に build します。各 package は `b
 に対象 package を再 build します。CSS は source 位置（`./style.css`、
 `./styles/theme.css`）のまま同梱し、既存の subpath export から参照します。
 
-### npm publish 前に残っている制約
+### npm publish に向けた状態
 
--   runtime の JavaScript は plain な ESM で、TypeScript loader なしで Node や
-    各種 bundler から実行できます。declaration は source module ごとに出力し、
-    relative import は extensionless のままなので、TypeScript consumer は
-    `moduleResolution: "bundler"`（または `node10`）が必要です。
-    `node16`/`nodenext` はまだ対応していません。
--   配布するのは ESM のみです。CommonJS build はなく、`require()` は
-    サポートしません。
--   repository に `LICENSE` ファイルが無いため、package は `license` field を
-    宣言していません。publish 前に解消が必要です。
+-   public package は plain な ESM のみを配布します。CommonJS build はなく、
+    `require()` は entry point としてサポートしません（意図的な制約です）。
+    `import` するか、ESM を扱える bundler から利用してください。
+-   declaration は extension を解決できる `.js` relative specifier 付きで出力
+    されるため、`moduleResolution: "bundler"` と
+    `moduleResolution: "NodeNext"`/`"Node16"`（`nodenext` 対応）の両方で
+    type-check できます。external fixture が全 public entry point を
+    `skipLibCheck` なしで両設定の tarball に対して検証します。
+-   repository root に canonical な Apache-2.0 `LICENSE` があります。build は
+    tarball 生成前に各 package へそれをコピーし（`scripts/copy_license.mjs`）、
+    公開 package は `"license": "Apache-2.0"` を宣言します。
 -   公式 package の version は `0.0.1` のままです。例の `^1.0.0` は説明用で、
     versioning と release automation は今回の package boundary 作業には含まれ
     ません。

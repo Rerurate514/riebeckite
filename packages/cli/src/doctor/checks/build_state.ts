@@ -4,7 +4,7 @@ import {
   resolveContentBuildStatePath,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import type { DoctorCheckResult } from "../types";
+import type { DoctorCheckResult } from "../types.js";
 
 export async function checkBuildState(
   config: ResolvedRiebeckiteConfig | undefined,

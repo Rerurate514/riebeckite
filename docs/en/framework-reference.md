@@ -78,17 +78,20 @@ before creating the tarball. CSS is shipped from its source location
 (`./style.css`, `./styles/theme.css`) and referenced through the existing subpath
 exports.
 
-### Remaining constraints before npm publication
+### Publication status
 
-- Runtime JavaScript is plain ESM and runs on Node or any bundler without a
-  TypeScript loader. Declarations are emitted per source module and keep
-  extensionless relative imports, so TypeScript consumers must use
-  `moduleResolution: "bundler"` (or `node10`); `node16`/`nodenext` is not
-  supported yet.
-- Only ESM is published. There is no CommonJS build and `require()` is not
-  supported.
-- The repository has no `LICENSE` file, so packages declare no `license` field.
-  This must be resolved before publishing.
+- Public packages ship plain ESM. There is no CommonJS build and `require()` is
+  not a supported entry point, which is intentional. `import` it, or let a
+  bundler consume the ESM output.
+- Declarations are emitted with extension-resolving `.js` relative specifiers,
+  so they type-check under both `moduleResolution: "bundler"` and
+  `moduleResolution: "NodeNext"`/`"Node16"` (`nodenext` is supported). The
+  external fixture type-checks every published entry point under both settings
+  without `skipLibCheck`.
+- The repository root holds the canonical Apache-2.0 `LICENSE`. The build copies
+  it into each package before the tarball is created
+  (`scripts/copy_license.mjs`), and every published package declares
+  `"license": "Apache-2.0"`.
 - Official package versions are still `0.0.1`; ranges such as `^1.0.0` in the
   examples are illustrative. Versioning and release automation are not part of
   the current package boundary work.

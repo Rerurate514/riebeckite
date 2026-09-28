@@ -1,4 +1,4 @@
-import type { ContentSourceEntry } from "./content_source";
+import type { ContentSourceEntry } from "./content_source.js";
 
 export const CONTENT_BUILD_STATE_VERSION = 1;
 

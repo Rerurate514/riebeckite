@@ -1,6 +1,6 @@
-import type { ContentManifestEntry } from "./content_manifest";
-import type { PostContent } from "./post_content";
-import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
+import type { ContentManifestEntry } from "./content_manifest.js";
+import type { PostContent } from "./post_content.js";
+import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
 export type SeoMetadata = {
   title: string;

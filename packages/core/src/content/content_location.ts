@@ -1,7 +1,7 @@
 import type {
   ContentLocationInput,
   ContentPublicLocation,
-} from "../types/content_manifest";
+} from "../types/content_manifest.js";
 
 /**
  * Core's official default public location resolver.

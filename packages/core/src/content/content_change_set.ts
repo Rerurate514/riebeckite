@@ -1,7 +1,7 @@
 import type {
   ContentBuildState,
   FingerprintedContentEntry,
-} from "./content_build_state";
+} from "./content_build_state.js";
 
 export type ContentChangeSet = {
   readonly added: readonly string[];

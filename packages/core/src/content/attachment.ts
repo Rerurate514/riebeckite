@@ -1,4 +1,4 @@
-import { IMAGE_EXTENSIONS } from "./image_extensions";
+import { IMAGE_EXTENSIONS } from "./image_extensions.js";
 
 export const ATTACHMENTS_BASE_PATH = "/assets/attachments";
 

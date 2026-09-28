@@ -1,7 +1,7 @@
-import { resolvePluginDependencies } from "../plugin/plugin_dependency";
-import type { PluginOptionsValidator } from "./config_validation";
-import type { Diagnostic } from "./diagnostic";
-import type { PluginAsset, PluginClientEntry } from "./plugin_asset";
+import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
+import type { PluginOptionsValidator } from "./config_validation.js";
+import type { Diagnostic } from "./diagnostic.js";
+import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
   PluginContentContext,
   PluginContentLocationResolver,
@@ -11,15 +11,15 @@ import type {
   PluginLifecycleContext,
   PluginManifestContext,
   PluginPostContext,
-} from "./plugin_context";
-import type { PluginEndpoint } from "./plugin_endpoint";
+} from "./plugin_context.js";
+import type { PluginEndpoint } from "./plugin_endpoint.js";
 import type {
   HtmlPipeline,
   MarkdownPipeline,
   MarkdownPipelineContext,
   PipelinePlugin,
-} from "./plugin_pipeline";
-import type { PluginSeoExtension } from "./plugin_seo";
+} from "./plugin_pipeline.js";
+import type { PluginSeoExtension } from "./plugin_seo.js";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
   name: string;

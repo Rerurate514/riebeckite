@@ -1,5 +1,5 @@
-import { renderCliError } from "../error_renderer";
-import type { DoctorCheckResult } from "./types";
+import { renderCliError } from "../error_renderer.js";
+import type { DoctorCheckResult } from "./types.js";
 
 const statusMarker = {
   ok: "✓",

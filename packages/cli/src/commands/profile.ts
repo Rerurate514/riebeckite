@@ -1,8 +1,8 @@
 import { ConsoleLogger, SinkTracer } from "@riebeckite/core";
-import type { RiebeckiteProject } from "../application_root";
-import { ProfileTraceSink } from "../profile/profile_trace_sink";
-import { renderProfile } from "../profile/renderer";
-import { runBuild } from "./build";
+import type { RiebeckiteProject } from "../application_root.js";
+import { ProfileTraceSink } from "../profile/profile_trace_sink.js";
+import { renderProfile } from "../profile/renderer.js";
+import { runBuild } from "./build.js";
 
 export async function runProfile(
   project: RiebeckiteProject,

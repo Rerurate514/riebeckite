@@ -4,14 +4,14 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
-} from "../types/content_manifest";
-import type { PostContent } from "../types/post_content";
-import { createContentGraph } from "./content_graph";
-import { extractContentLinks } from "./content_links";
+} from "../types/content_manifest.js";
+import type { PostContent } from "../types/post_content.js";
+import { createContentGraph } from "./content_graph.js";
+import { extractContentLinks } from "./content_links.js";
 import {
   extractContentTags,
   normalizeFrontmatterTags,
-} from "./content_metadata";
+} from "./content_metadata.js";
 
 export class ManifestBuilder {
   createEntry(

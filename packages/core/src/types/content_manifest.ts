@@ -1,7 +1,7 @@
-import type { ContentGraph } from "../content/content_graph";
-import type { Diagnostic } from "./diagnostic";
-import type { PluginAsset } from "./plugin_asset";
-import type { PostFrontmatter } from "./post_content";
+import type { ContentGraph } from "../content/content_graph.js";
+import type { Diagnostic } from "./diagnostic.js";
+import type { PluginAsset } from "./plugin_asset.js";
+import type { PostFrontmatter } from "./post_content.js";
 
 export type ContentLinkKind = "note" | "image" | "attachment" | "unresolved";
 

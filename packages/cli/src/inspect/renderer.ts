@@ -5,7 +5,7 @@ import type {
   ContentInspection,
   GraphInspection,
   PluginInspection,
-} from "./types";
+} from "./types.js";
 
 export function renderApplicationInspection(
   inspection: ApplicationInspection,

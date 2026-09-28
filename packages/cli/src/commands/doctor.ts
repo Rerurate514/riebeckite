@@ -1,6 +1,6 @@
-import type { RiebeckiteProject } from "../application_root";
-import { runDoctor } from "../doctor/doctor";
-import { renderDoctorResults } from "../doctor/renderer";
+import type { RiebeckiteProject } from "../application_root.js";
+import { runDoctor } from "../doctor/doctor.js";
+import { renderDoctorResults } from "../doctor/renderer.js";
 
 export async function runDoctorCommand(
   project: RiebeckiteProject,

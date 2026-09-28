@@ -4,7 +4,7 @@ import {
   type SearchItem,
   type SearchResult,
   searchItems as searchContentItems,
-} from "./search";
+} from "./search.js";
 
 const MAX_RESULTS = 8;
 

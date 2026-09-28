@@ -1,5 +1,5 @@
-import type { ContentBuildState } from "./content_build_state";
-import type { ContentChangeSet } from "./content_change_set";
+import type { ContentBuildState } from "./content_build_state.js";
+import type { ContentChangeSet } from "./content_change_set.js";
 
 export type AffectedContent = {
   readonly direct: ReadonlySet<string>;

@@ -4,7 +4,7 @@ import {
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
 } from "@riebeckite/honox";
-import type { RiebeckiteProject } from "./application_root";
+import type { RiebeckiteProject } from "./application_root.js";
 
 export async function loadProjectConfig(project: RiebeckiteProject) {
   const [config, appRoot] = await Promise.all([

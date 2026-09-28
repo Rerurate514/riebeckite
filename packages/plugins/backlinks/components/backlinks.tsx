@@ -1,5 +1,5 @@
 /** @jsxImportSource hono/jsx */
-import type { ArticleBacklink } from "../src/backlinks";
+import type { ArticleBacklink } from "../src/backlinks.js";
 
 type Props = {
   backlinks: ArticleBacklink[];

@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-import "../dist/cli.cjs";
+import "../dist/cli.js";

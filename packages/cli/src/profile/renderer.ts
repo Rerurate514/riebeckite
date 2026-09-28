@@ -1,4 +1,4 @@
-import type { ProfileReport, ProfileSpanAggregate } from "./profile_trace_sink";
+import type { ProfileReport, ProfileSpanAggregate } from "./profile_trace_sink.js";
 
 const contentLabels: Readonly<Record<string, string>> = {
   "content.scan": "Scan",

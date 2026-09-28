@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { RiebeckiteProject } from "../../application_root";
-import type { DoctorCheckResult } from "../types";
+import type { RiebeckiteProject } from "../../application_root.js";
+import type { DoctorCheckResult } from "../types.js";
 
 export async function checkEnvironment(
   project: RiebeckiteProject,

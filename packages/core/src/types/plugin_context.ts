@@ -1,14 +1,14 @@
-import type { Logger, Tracer } from "../observability";
-import type { PluginCache } from "../plugin/plugin_cache";
+import type { Logger, Tracer } from "../observability.js";
+import type { PluginCache } from "../plugin/plugin_cache.js";
 import type {
   ContentLocationInput,
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
-} from "./content_manifest";
-import type { Diagnostic } from "./diagnostic";
-import type { PostContent } from "./post_content";
-import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
+} from "./content_manifest.js";
+import type { Diagnostic } from "./diagnostic.js";
+import type { PostContent } from "./post_content.js";
+import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;

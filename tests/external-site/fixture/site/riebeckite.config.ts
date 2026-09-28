@@ -28,6 +28,7 @@ import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
+import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { localFixturePlugin } from "./extensions/local-plugin";
 import { localFixtureTheme } from "./extensions/local-theme";
 
@@ -58,6 +59,7 @@ export default defineConfig({
     d2(),
     tocPlugin(),
     vegaLite(),
+    wavedrom(),
     backlinksPlugin(),
     queryPlugin(),
     dataviewPlugin(),

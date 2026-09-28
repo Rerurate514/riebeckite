@@ -114,6 +114,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-vega-lite",
   },
   {
+    directory: "packages/plugins/wavedrom",
+    name: "@riebeckite/plugin-wavedrom",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -149,6 +153,7 @@ const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
 const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
 const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
 const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
+const WAVEDROM_MARKER = "RIEBECKITE_EXTERNAL_WAVEDROM_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -692,6 +697,17 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("data-vega-lite")) {
     fail("Vega-Lite figure is missing the output data attributes");
+  }
+  if (!combined.includes(WAVEDROM_MARKER)) {
+    fail(
+      `generated HTML is missing the wavedrom marker (${WAVEDROM_MARKER})`,
+    );
+  }
+  if (!combined.includes("data-wavedrom-spec")) {
+    fail("generated HTML is missing the wavedrom figure configuration");
+  }
+  if (!combined.includes("rb-wavedrom")) {
+    fail("generated HTML is missing the wavedrom figure markup");
   }
   if (!combined.includes('class="rb-responsive-image"')) {
     fail("responsive-image plugin did not wrap a marked image in <picture>");

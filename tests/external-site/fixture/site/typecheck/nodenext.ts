@@ -90,6 +90,8 @@ import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { initVegaLite } from "@riebeckite/plugin-vega-lite/client";
+import { wavedrom } from "@riebeckite/plugin-wavedrom";
+import { initWaveDrom } from "@riebeckite/plugin-wavedrom/client";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export const resolvedEntries = {
@@ -158,6 +160,8 @@ export const resolvedEntries = {
   TableOfContents,
   vegaLite,
   initVegaLite,
+  wavedrom,
+  initWaveDrom,
   defaultTheme,
 } as const;
 
@@ -197,6 +201,7 @@ export const config: RiebeckiteConfig = defineConfig({
     hoverPreviewPlugin({ delay: 0 }),
     canvas(),
     graphviz(),
+    wavedrom(),
   ],
 });
 

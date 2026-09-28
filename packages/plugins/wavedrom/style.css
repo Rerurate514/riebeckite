@@ -1,0 +1,67 @@
+.rb-wavedrom {
+  --rb-wavedrom-paper: var(--rb-color-paper, #ffffff);
+  --rb-wavedrom-ink: var(--rb-color-ink, #000000);
+  --rb-wavedrom-muted: var(--rb-color-muted, #69645c);
+  --rb-wavedrom-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-wavedrom-ink) 18%, transparent)
+  );
+  margin: 2rem 0;
+  border: 1px solid var(--rb-wavedrom-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-wavedrom-paper) 96%,
+    var(--rb-wavedrom-ink)
+  );
+  color: var(--rb-wavedrom-ink);
+}
+
+.rb-wavedrom__caption {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--rb-wavedrom-rule);
+  color: var(--rb-wavedrom-muted);
+  font-size: 0.875rem;
+}
+
+.rb-wavedrom__canvas {
+  overflow: auto;
+  padding: 1rem;
+}
+
+.rb-wavedrom__canvas > svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.rb-wavedrom__fallback {
+  border-top: 1px solid var(--rb-wavedrom-rule);
+  color: var(--rb-wavedrom-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-wavedrom__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rb-wavedrom__fallback pre {
+  overflow: auto;
+  margin: 0 1rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rb-wavedrom-rule);
+  color: var(--rb-wavedrom-ink);
+  background: color-mix(in srgb, var(--rb-wavedrom-ink) 6%, transparent);
+}
+
+.rb-wavedrom[data-wavedrom="pending"] .rb-wavedrom__canvas:empty::before,
+.rb-wavedrom[data-wavedrom="error"] .rb-wavedrom__canvas:empty::before {
+  content: "Timing diagram could not be rendered.";
+  color: var(--rb-wavedrom-muted);
+}
+
+html[data-theme="dark"] .rb-wavedrom,
+html.dark .rb-wavedrom {
+  --rb-wavedrom-paper: var(--rb-color-ink, #000000);
+  --rb-wavedrom-ink: var(--rb-color-paper, #ffffff);
+}

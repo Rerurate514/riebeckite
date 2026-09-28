@@ -37,6 +37,7 @@ import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
+import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -90,6 +91,7 @@ export default defineConfig({
     }),
     chartjs(),
     vegaLite(),
+    wavedrom(),
     plantuml(),
     d2({
       render: "build",

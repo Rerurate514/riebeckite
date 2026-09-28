@@ -43,6 +43,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/shortcodes",
   "packages/plugins/toc",
   "packages/plugins/vega-lite",
+  "packages/plugins/wavedrom",
   "packages/themes/default",
   "packages/themes/gruvbox",
   "packages/themes/minimal",

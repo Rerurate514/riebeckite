@@ -17,7 +17,7 @@ export async function runDoctor(
   );
   const [content, buildState] = await Promise.all([
     checkContent(project, configuration.config),
-    checkBuildState(configuration.config),
+    checkBuildState(project, configuration.config),
   ]);
   const stateDirectory = buildState.statePath
     ? await checkStateDirectory(buildState.statePath)

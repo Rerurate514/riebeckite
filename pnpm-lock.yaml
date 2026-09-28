@@ -107,6 +107,9 @@ importers:
       '@riebeckite/plugin-recent-posts':
         specifier: workspace:*
         version: link:../../packages/plugins/recent-posts
+      '@riebeckite/plugin-rich-embed':
+        specifier: workspace:*
+        version: link:../../packages/plugins/rich-embed
       '@riebeckite/plugin-search':
         specifier: workspace:*
         version: link:../../packages/plugins/search
@@ -442,6 +445,12 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/rich-embed:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/search:
     dependencies:

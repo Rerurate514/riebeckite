@@ -1,0 +1,78 @@
+/*
+ * @riebeckite/plugin-rich-embed
+ * Stable class namespace: rb-rich-embed*
+ */
+.rb-rich-embed {
+  --rb-rich-embed-paper: var(--rb-color-paper, #ffffff);
+  --rb-rich-embed-ink: var(--rb-color-ink, #000000);
+  --rb-rich-embed-muted: var(--rb-color-muted, #69645c);
+  --rb-rich-embed-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-rich-embed-ink) 18%, transparent)
+  );
+  margin: 2rem 0;
+  border: 1px solid var(--rb-rich-embed-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-rich-embed-paper) 96%,
+    var(--rb-rich-embed-ink)
+  );
+  color: var(--rb-rich-embed-ink);
+}
+
+.rb-rich-embed__frame {
+  position: relative;
+  aspect-ratio: var(--rb-rich-embed-aspect, 16 / 9);
+  width: 100%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--rb-rich-embed-ink) 6%, transparent);
+}
+
+.rb-rich-embed__frame > iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.rb-rich-embed__caption {
+  padding: 0.625rem 0.75rem;
+  border-top: 1px solid var(--rb-rich-embed-rule);
+  color: var(--rb-rich-embed-muted);
+  font-size: 0.875rem;
+}
+
+.rb-rich-embed__card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+}
+
+.rb-rich-embed__link {
+  color: var(--rb-color-accent, var(--rb-rich-embed-ink));
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.rb-rich-embed__link::after {
+  content: "↗";
+  margin-inline-start: 0.35em;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+html[data-theme="dark"] .rb-rich-embed,
+html.dark .rb-rich-embed {
+  --rb-rich-embed-paper: var(--rb-color-ink, #000000);
+  --rb-rich-embed-ink: var(--rb-color-paper, #ffffff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-rich-embed__link {
+    transition: none;
+  }
+}

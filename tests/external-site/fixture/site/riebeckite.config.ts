@@ -4,6 +4,7 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { defaultTheme } from "@riebeckite/theme-default";
@@ -26,6 +27,7 @@ export default defineConfig({
     backlinksPlugin(),
     queryPlugin(),
     recentPostsPlugin(),
+    richEmbed(),
     searchPlugin()
   ]
 });

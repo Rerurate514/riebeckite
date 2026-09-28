@@ -63,12 +63,17 @@ const PACKAGES = [
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
   },
+  {
+    directory: "packages/plugins/rich-embed",
+    name: "@riebeckite/plugin-rich-embed",
+  },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const RICHEMBED_MARKER = "RIEBECKITE_EXTERNAL_RICHEMBED_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -369,6 +374,12 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes(RICHEMBED_MARKER)) {
+    fail(`generated HTML is missing the rich embed marker (${RICHEMBED_MARKER})`);
+  }
+  if (!combined.includes("www.youtube-nocookie.com/embed/")) {
+    fail("generated HTML is missing the rich embed YouTube iframe");
   }
 
   for (const file of htmlFiles) {

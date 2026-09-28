@@ -27,6 +27,7 @@
     "@riebeckite/plugin-mermaid": "workspace:*",
     "@riebeckite/plugin-query": "workspace:*",
     "@riebeckite/plugin-recent-posts": "workspace:*",
+    "@riebeckite/plugin-rich-embed": "workspace:*",
     "@riebeckite/plugin-search": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",

@@ -14,6 +14,7 @@ import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { tocPlugin } from "@riebeckite/plugin-toc";
@@ -67,6 +68,7 @@ export default defineConfig({
     }),
     excalidraw(),
     media(),
+    richEmbed(),
     attachment(),
     autoCardLinkPlugin(),
     codeEnhance({

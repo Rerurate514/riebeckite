@@ -19,6 +19,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/permalink",
   "packages/plugins/query",
   "packages/plugins/recent-posts",
+  "packages/plugins/rich-embed",
   "packages/plugins/search",
   "packages/plugins/seo",
   "packages/plugins/toc",

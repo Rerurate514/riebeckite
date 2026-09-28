@@ -113,6 +113,9 @@ importers:
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../../packages/plugins/toc
+      '@riebeckite/plugin-ux':
+        specifier: workspace:*
+        version: link:../../packages/plugins/ux
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default
@@ -463,6 +466,12 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/ux:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/themes/default:
     dependencies:

@@ -69,6 +69,7 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  { directory: "packages/plugins/ux", name: "@riebeckite/plugin-ux" },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
@@ -403,6 +404,34 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+
+  // The ux plugin has no article HTML of its own, so its build-time
+  // configuration element and its emitted client bundle are the observable
+  // artifacts. `rb-ux` is a real identifier that only exists in plugin source.
+  if (!combined.includes('id="rb-ux-config"')) {
+    fail("the ux plugin did not inject its configuration element into HTML");
+  }
+
+  const jsFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
+  if (jsFiles.length === 0) {
+    fail("build did not emit any JavaScript under dist/");
+  }
+  const clientBundle = jsFiles
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
+  if (!clientBundle.includes("rb-ux")) {
+    fail("the ux plugin client bundle is missing its `rb-ux` identifier");
+  }
+
+  const cssFiles = walkFiles(distDir, (full) => full.endsWith(".css"));
+  if (cssFiles.length > 0) {
+    const styles = cssFiles
+      .map((file) => fs.readFileSync(file, "utf8"))
+      .join("\n");
+    if (!styles.includes("rb-ux")) {
+      fail("the ux plugin stylesheet is missing its `rb-ux` classes");
+    }
   }
 
   for (const file of htmlFiles) {

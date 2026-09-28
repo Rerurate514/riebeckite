@@ -17,12 +17,16 @@ import type {
   PipelinePlugin,
 } from "./plugin_pipeline";
 import type { PluginSeoExtension } from "./plugin_seo";
+import { resolvePluginDependencies } from "../plugin/plugin_dependency";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
   name: string;
   options?: TOptions;
   order?: number;
   enabled?: boolean;
+  provides?: string[];
+  requires?: string[];
+  optional?: string[];
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];
   setup?(context: PluginLifecycleContext): void | Promise<void>;
@@ -61,8 +65,10 @@ export function definePlugin<TOptions>(
 export function resolvePlugins(
   plugins: PluginInput[] = [],
 ): RiebeckitePlugin[] {
-  return plugins
+  const orderedPlugins = plugins
     .filter((plugin): plugin is RiebeckitePlugin => Boolean(plugin))
     .filter((plugin) => plugin.enabled !== false)
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  return resolvePluginDependencies(orderedPlugins);
 }

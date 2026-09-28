@@ -36,6 +36,10 @@ export type {
   RiebeckitePlugin,
 } from "./src/types/plugin";
 export { definePlugin, resolvePlugins } from "./src/types/plugin";
+export {
+  PluginDependencyError,
+  type PluginDependencyErrorKind,
+} from "./src/plugin/plugin_dependency_error";
 export type {
   PluginAsset,
   PluginAssetKind,

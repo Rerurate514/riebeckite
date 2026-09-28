@@ -49,7 +49,7 @@ export async function runDispose(
   context: PluginLifecycleContext,
 ): Promise<void> {
   await runLifecycleHook(
-    plugins,
+    [...plugins].reverse(),
     "dispose",
     (plugin) => plugin.dispose,
     context,

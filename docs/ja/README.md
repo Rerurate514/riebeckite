@@ -10,6 +10,7 @@ Riebeckite は、Markdown と Obsidian のノートを Web サイトとして公
 
 |目的|最初に読むドキュメント|
 |---|---|
+|はじめてで、環境準備から公開まで通して知りたい|[セットアップガイド](./setup.md)|
 |フレームワークを順を追って使いたい|[利用ガイド](./guide.md)|
 |プロジェクトを起動・ビルドしたい|[Getting Started](./getting-started.md)|
 |設定項目を確認したい|[Configuration](./configuration.md)|
@@ -64,6 +65,7 @@ Build tooling
 
 |ドキュメント|内容|
 |---|---|
+|[セットアップガイド](./setup.md)|はじめての人向けに、リポジトリの環境構築、新しいサイトの作成、Cloudflare Workers への公開を順番に説明|
 |[利用ガイド](./guide.md)|インストールと設定から、コンテンツ、検証、ビルド、デプロイまでの手順|
 |[Getting Started](./getting-started.md)|必要な環境、インストール、開発サーバー、通常・フルビルド、最小設定例|
 |[Configuration](./configuration.md)|`riebeckite.config.ts`、Application Root、site、content、theme、plugins、検証と secret の扱い|

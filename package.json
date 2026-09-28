@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --filter @riebeckite/web predev && pnpm --filter @riebeckite/web dev",
-    "build": "pnpm --filter @riebeckite/web build",
+    "build": "pnpm --filter @riebeckite/cli build && pnpm --filter @riebeckite/web build",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write ."
   },
   "devDependencies": {
+    "@riebeckite/cli": "workspace:*",
     "@biomejs/biome": "^2.4.16",
     "@types/node": "^24.5.2",
     "typescript": "^5.0.0"

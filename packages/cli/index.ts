@@ -1,3 +1,3 @@
 import { main } from "./src/cli";
 
-await main(process.argv.slice(2));
+void main(process.argv.slice(2));

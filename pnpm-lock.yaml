@@ -11,6 +11,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.4.16
         version: 2.4.16
+      '@riebeckite/cli':
+        specifier: workspace:*
+        version: link:packages/cli
       '@types/node':
         specifier: ^24.5.2
         version: 24.13.6
@@ -123,15 +126,12 @@ importers:
 
   packages/cli:
     dependencies:
-      '@riebeckite/core':
-        specifier: workspace:*
-        version: link:../core
-      '@riebeckite/honox':
-        specifier: workspace:*
-        version: link:../integrations/honox
-      tsx:
-        specifier: ^4.22.4
-        version: 4.22.4
+      esbuild:
+        specifier: ^0.28.2
+        version: 0.28.2
+      vite:
+        specifier: ^8.0.9
+        version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
 
   packages/core:
     dependencies:

@@ -53,6 +53,10 @@ const PACKAGES = [
     directory: "packages/plugins/autocardlink",
     name: "@riebeckite/plugin-autocardlink",
   },
+  {
+    directory: "packages/plugins/attachment",
+    name: "@riebeckite/plugin-attachment",
+  },
   { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
   {
     directory: "packages/plugins/backlinks",
@@ -68,6 +72,7 @@ const PACKAGES = [
     directory: "packages/plugins/analytics",
     name: "@riebeckite/plugin-analytics",
   },
+  { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
@@ -196,7 +201,18 @@ function writeExternalConsumerTsconfig(siteDir) {
   types.add("node");
   types.add("vite/client");
   config.compilerOptions = { ...config.compilerOptions, types: [...types] };
+  config.exclude = ["typecheck/development-riebeckite-modules.d.ts"];
   fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+
+  const nodeNextConfigPath = path.join(siteDir, "tsconfig.nodenext.json");
+  const nodeNextConfig = JSON.parse(
+    fs.readFileSync(nodeNextConfigPath, "utf8"),
+  );
+  nodeNextConfig.include = ["typecheck/nodenext.ts"];
+  fs.writeFileSync(
+    nodeNextConfigPath,
+    `${JSON.stringify(nodeNextConfig, null, 2)}\n`,
+  );
 
   const written = JSON.parse(fs.readFileSync(configPath, "utf8"));
   const effective = new Set(written.compilerOptions?.types ?? []);
@@ -228,7 +244,9 @@ function assertNoMonorepoEscapeHatches(siteDir) {
       fail(`${path.relative(siteDir, file)} contains \`workspace:\``);
     }
     if (/\.\.\/\.\.\/(\.\.\/)*packages\//.test(contents)) {
-      fail(`${path.relative(siteDir, file)} reaches into the monorepo \`packages/\``);
+      fail(
+        `${path.relative(siteDir, file)} reaches into the monorepo \`packages/\``,
+      );
     }
   }
 
@@ -310,13 +328,15 @@ function assertPublishedArtifacts(siteDir) {
       );
     }
     if (fs.lstatSync(full).isSymbolicLink()) {
-      fail(`@riebeckite/${entry} is a symlink; expected a real installed directory`);
+      fail(
+        `@riebeckite/${entry} is a symlink; expected a real installed directory`,
+      );
     }
     console.log(`  @riebeckite/${entry} -> ${real}`);
   }
 }
 
-function runCli(siteDir, command) {
+function runCli(siteDir, command, cwd = siteDir) {
   step(`riebeckite ${command}`);
   const cli = path.join(
     siteDir,
@@ -327,7 +347,7 @@ function runCli(siteDir, command) {
     "riebeckite.mjs",
   );
   const result = run(process.execPath, [cli, ...command.split(" ")], {
-    cwd: siteDir,
+    cwd,
   });
   const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
   if (output) console.log(output);
@@ -384,6 +404,20 @@ function assertBuildOutput(siteDir) {
       `generated HTML is missing the analytics script path (${ANALYTICS_SCRIPT_PATH})`,
     );
   }
+  if (
+    !combined.includes('data-attachment-path="attachments/external-guide.pdf"')
+  ) {
+    fail("attachment plugin did not resolve a file from the external vault");
+  }
+  if (!combined.includes('attachment-card__size">21 B</span>')) {
+    fail("attachment plugin did not read the external vault file size");
+  }
+  if (!combined.includes('class="media-embed media-embed--audio"')) {
+    fail("media plugin did not render an external vault media embed");
+  }
+  if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
+    fail("external vault media URL was not generated from its logical path");
+  }
 
   for (const file of htmlFiles) {
     console.log(`  ${path.relative(siteDir, file)}`);
@@ -401,7 +435,9 @@ function main() {
   try {
     const packed = packPackages(tarballDir);
 
-    step("copying fixture site and vault (content stays outside the site root)");
+    step(
+      "copying fixture site and vault (content stays outside the site root)",
+    );
     fs.cpSync(path.join(fixtureRoot, "site"), siteDir, { recursive: true });
     fs.cpSync(path.join(fixtureRoot, "vault"), vaultDir, { recursive: true });
 
@@ -417,17 +453,20 @@ function main() {
     assertNoMonorepoEscapeHatches(siteDir);
     assertPublishedArtifacts(siteDir);
 
-    runCli(siteDir, "check");
-    runCli(siteDir, "doctor");
-    runCli(siteDir, "inspect");
-    runCli(siteDir, "build");
+    const nestedWorkingDirectory = path.join(siteDir, "app");
+    runCli(siteDir, "check", nestedWorkingDirectory);
+    runCli(siteDir, "doctor", nestedWorkingDirectory);
+    runCli(siteDir, "inspect", nestedWorkingDirectory);
+    runCli(siteDir, "build", nestedWorkingDirectory);
 
     assertBuildOutput(siteDir);
 
     runTypecheck(siteDir, "tsconfig.json");
     runTypecheck(siteDir, "tsconfig.nodenext.json");
 
-    console.log("\n[external-site] PASS: external site built from published artifacts");
+    console.log(
+      "\n[external-site] PASS: external site built from published artifacts",
+    );
   } finally {
     if (process.env.RIEBECKITE_E2E_KEEP) {
       console.log(`\n[external-site] kept workspace: ${tempRoot}`);

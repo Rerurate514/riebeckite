@@ -17,6 +17,7 @@ import {
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
   riebeckite,
+  riebeckiteSsg,
   riebeckiteSsgExtensionMap,
 } from "@riebeckite/honox";
 import { mountRiebeckiteEndpoints, resolveContentRoute } from "@riebeckite/honox/server";
@@ -51,6 +52,7 @@ export const resolvedEntries = {
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
   riebeckite,
+  riebeckiteSsg,
   riebeckiteSsgExtensionMap,
   mountRiebeckiteEndpoints,
   resolveContentRoute,

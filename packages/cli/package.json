@@ -1,0 +1,14 @@
+{
+  "name": "@riebeckite/cli",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "riebeckite": "./bin/riebeckite.mjs"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "@riebeckite/honox": "workspace:*",
+    "tsx": "^4.22.4"
+  }
+}

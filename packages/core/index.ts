@@ -59,6 +59,10 @@ export type {
   ContentSourceEntry,
   ContentSourceMetadata,
 } from "./src/content/content_source.js";
+export {
+  getContentSourceEntry,
+  readContentSourceEntry,
+} from "./src/content/content_source.js";
 export { FileSystemContentSource } from "./src/content/file_system_content_source.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";

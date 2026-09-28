@@ -13,5 +13,8 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": false
   },
-  "include": ["typecheck/nodenext.ts"]
+  "include": [
+    "typecheck/nodenext.ts",
+    "typecheck/development-riebeckite-modules.d.ts"
+  ]
 }

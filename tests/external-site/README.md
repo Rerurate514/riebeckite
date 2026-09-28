@@ -45,7 +45,7 @@ the app/site root fails immediately.
    monorepo-path escape hatches, and that `node_modules/@riebeckite/*` resolves
    outside the repository.
 6. Run `riebeckite check`, `riebeckite doctor`, `riebeckite inspect`, and
-   `riebeckite build`.
+   `riebeckite build` from `site/app`, rather than the application root.
 7. Assert the generated `dist/` HTML contains the fixture markers.
 8. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`.
    Both configs use `skipLibCheck: false`; the NodeNext config imports every
@@ -60,13 +60,12 @@ intentionally has no `node_modules`, and an editor's TypeScript server discovers
 definition file for 'vite/client'` for a library that only exists after the
 copy + install.
 
-`fixture/site/tsconfig.json` is therefore the editable base that both Vite and
-the editor discover, and it lists only `types: ["node"]` (resolvable from the
-dev environment and from the site itself). `run.mjs` layers the
-external-consumer requirement — `node` + `vite/client` — onto the copied
-`site/tsconfig.json` immediately before installing, so the isolated copy still
-proves that `vite/client` resolves exactly as it would for any other external
-consumer.
+`fixture/site/typecheck/development-riebeckite-modules.d.ts` therefore provides
+editor-only declarations for the uninstalled fixture. `run.mjs` excludes that
+file from the copied configs, then layers the external-consumer requirement —
+`node` + `vite/client` — onto `site/tsconfig.json` immediately before installing.
+The isolated copy therefore still proves that published packages resolve exactly
+as they would for any other consumer.
 
 Nothing here weakens isolation: no monorepo alias, root `tsconfig` path,
 symlink, or `workspace:` protocol is involved, and `tsconfig.nodenext.json` is
@@ -103,12 +102,10 @@ so they are documented here instead of being hidden with `skipLibCheck`.
   `environments.ssr.resolve.external` (mirroring `apps/web`); without it Vite
   inlines `extend` and the SSG pass fails with `ReferenceError: module is not
   defined`.
-- **The `@hono/vite-ssg` patch is not applied to external installs.**
-  `pnpm-lock`/`patches/@hono__vite-ssg@0.3.3.patch` fixes the plugin to use
-  `config.root`; a plain `npm install` gets the unpatched package. The fixture
-  still builds because the CLI is run with `cwd` set to the site, which is what
-  the unpatched plugin falls back to. Running the CLI from a different working
-  directory would break. This is a latent external-consumer risk worth tracking.
+- **SSG belongs to `@riebeckite/honox`.** `riebeckiteSsg` creates its internal
+  Vite server with the resolved Vite `root` and `define` options. It replaces
+  the local patch previously needed for `@hono/vite-ssg` and works from a
+  descendant working directory in an npm-installed site.
 
 ## Root model
 

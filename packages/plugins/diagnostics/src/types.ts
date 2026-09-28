@@ -1,4 +1,5 @@
 import type {
+  ContentSource,
   Diagnostic,
   DiagnosticCode,
   DiagnosticSeverity,
@@ -34,6 +35,7 @@ export type DiagnosticsReport = {
 
 export type AnalyzerContentConfig = {
   directory: string;
+  source?: ContentSource;
   exclude: string[];
   publishStrategy: "explicit" | "selective";
 };

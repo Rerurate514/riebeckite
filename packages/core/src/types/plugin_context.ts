@@ -1,3 +1,4 @@
+import type { ContentSource } from "../content/content_source.js";
 import type { Logger, Tracer } from "../observability.js";
 import type { PluginCache } from "../plugin/plugin_cache.js";
 import type {
@@ -17,6 +18,8 @@ export type PluginContext = {
   cache: PluginCache;
   logger: Logger;
   tracer: Tracer;
+  /** Source of logical vault entries; plugins must not access the vault directly. */
+  contentSource?: ContentSource;
 };
 
 /**

@@ -1,0 +1,83 @@
+/**
+ * NodeNext declaration-surface check.
+ *
+ * This file is type-checked with `module: "NodeNext"` and
+ * `moduleResolution: "NodeNext"` against the *packed tarballs* installed into
+ * `node_modules`. It intentionally imports every published entry point of the
+ * Riebeckite packages used by the fixture so that any undeclared dependency or
+ * extensionless relative specifier in an emitted `.d.ts` fails the build.
+ *
+ * `skipLibCheck` must stay `false` in `tsconfig.nodenext.json`: the point is to
+ * validate the published declarations, not to silence them.
+ */
+import { defineConfig, type PostContent, type RiebeckiteConfig } from "@riebeckite/core";
+import {
+  buildHonoxApplication,
+  loadRiebeckiteConfig,
+  resolveHonoxApplicationRoot,
+  resolveHonoxConfig,
+  riebeckite,
+  riebeckiteSsgExtensionMap,
+} from "@riebeckite/honox";
+import { mountRiebeckiteEndpoints, resolveContentRoute } from "@riebeckite/honox/server";
+import {
+  Article as ArticlePrimitive,
+  ArticleContent,
+  ArticleHeader,
+  ArticleLayout,
+} from "@riebeckite/honox/ui";
+import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
+import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import RecentPosts from "@riebeckite/plugin-recent-posts/components";
+import { searchPlugin } from "@riebeckite/plugin-search";
+import { initSearch } from "@riebeckite/plugin-search/client";
+import SearchBar from "@riebeckite/plugin-search/components";
+import { tocPlugin } from "@riebeckite/plugin-toc";
+import { initTableOfContents } from "@riebeckite/plugin-toc/client";
+import TableOfContents from "@riebeckite/plugin-toc/components";
+import { defaultTheme } from "@riebeckite/theme-default";
+
+// Touch the resolved values so that unused-import elimination cannot hide a
+// broken declaration.
+export const resolvedEntries = {
+  buildHonoxApplication,
+  loadRiebeckiteConfig,
+  resolveHonoxApplicationRoot,
+  resolveHonoxConfig,
+  riebeckite,
+  riebeckiteSsgExtensionMap,
+  mountRiebeckiteEndpoints,
+  resolveContentRoute,
+  ArticlePrimitive,
+  ArticleContent,
+  ArticleHeader,
+  ArticleLayout,
+  autoCardLinkPlugin,
+  initAutoCardLink,
+  backlinksPlugin,
+  Backlinks,
+  obsidianMarkdown,
+  recentPostsPlugin,
+  RecentPosts,
+  searchPlugin,
+  initSearch,
+  SearchBar,
+  tocPlugin,
+  initTableOfContents,
+  TableOfContents,
+  defaultTheme,
+} as const;
+
+export const config: RiebeckiteConfig = defineConfig({
+  site: { title: "fixture" },
+  theme: defaultTheme(),
+  plugins: [obsidianMarkdown(), autoCardLinkPlugin(), tocPlugin(), searchPlugin()],
+});
+
+export function html(post: PostContent): string {
+  return post.html ?? "";
+}

@@ -1,0 +1,7 @@
+@import "./.riebeckite/plugin-styles.css";
+@import "./.riebeckite/theme-styles.css";
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}

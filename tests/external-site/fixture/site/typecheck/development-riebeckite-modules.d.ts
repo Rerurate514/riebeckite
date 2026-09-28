@@ -95,6 +95,14 @@ declare module "@riebeckite/plugin-kanban" {
   export const resolveKanbanOptions: any;
 }
 
+declare module "@riebeckite/plugin-code-annotations" {
+  export const codeAnnotations: any;
+  export const codeAnnotationsPlugin: any;
+  export const parseCodeAnnotations: any;
+  export const parseLineRanges: any;
+  export const resolveCodeAnnotationsOptions: any;
+}
+
 declare module "@riebeckite/plugin-media" {
   export const media: any;
 }

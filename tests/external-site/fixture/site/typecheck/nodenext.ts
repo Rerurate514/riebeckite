@@ -55,6 +55,7 @@ import {
 import { initHoverPreview } from "@riebeckite/plugin-hover-preview/client";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { initFlashcards } from "@riebeckite/plugin-flashcards/client";
+import { codeAnnotations, parseCodeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
 import {
@@ -113,6 +114,8 @@ export const resolvedEntries = {
   initHoverPreview,
   flashcardsPlugin,
   initFlashcards,
+  codeAnnotations,
+  parseCodeAnnotations,
   obsidianMarkdown,
   properties,
   kanban,

@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
@@ -90,6 +91,7 @@ export default defineConfig({
       wrapToggle: true,
     }),
     codeTabs(),
+    codeAnnotations(),
     lightboxPlugin(),
     searchPlugin(),
     tocPlugin(),

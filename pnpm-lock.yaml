@@ -74,6 +74,9 @@ importers:
       '@riebeckite/plugin-backlinks':
         specifier: workspace:*
         version: link:../../packages/plugins/backlinks
+      '@riebeckite/plugin-code-annotations':
+        specifier: workspace:*
+        version: link:../../packages/plugins/code-annotations
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
@@ -292,6 +295,12 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/code-annotations:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/code-enhance:
     dependencies:

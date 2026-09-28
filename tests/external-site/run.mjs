@@ -26,6 +26,10 @@ const PACKAGES = [
     directory: "packages/plugins/attachment",
     name: "@riebeckite/plugin-attachment",
   },
+  {
+    directory: "packages/plugins/code-annotations",
+    name: "@riebeckite/plugin-code-annotations",
+  },
   { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
   {
     directory: "packages/plugins/backlinks",
@@ -87,6 +91,7 @@ const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
 const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
 const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
 const FLASHCARDS_CLIENT_IDENTIFIER = "rb-flashcards";
+const CODE_ANNOTATIONS_MARKER = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -586,6 +591,26 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail(
       `generated HTML is missing the kanban block marker (${KANBAN_BLOCK_MARKER})`,
     );
+  }
+  if (!combined.includes("rb-code__line--highlighted")) {
+    fail("code-annotations did not highlight a line from fence meta");
+  }
+  if (!combined.includes("rb-code__line--added")) {
+    fail("code-annotations did not mark a [!code ++] line as added");
+  }
+  if (!combined.includes("rb-code__line--removed")) {
+    fail("code-annotations did not mark a [!code --] line as removed");
+  }
+  if (!combined.includes('data-line="2"')) {
+    fail("code-annotations did not materialize per-line wrappers with data-line");
+  }
+  if (!combined.includes(CODE_ANNOTATIONS_MARKER)) {
+    fail(
+      `generated HTML is missing the fixture code marker (${CODE_ANNOTATIONS_MARKER})`,
+    );
+  }
+  if (combined.includes("[!code ")) {
+    fail("code-annotations did not strip the inline marker comments");
   }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(

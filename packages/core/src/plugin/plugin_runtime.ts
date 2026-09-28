@@ -20,10 +20,12 @@ import {
   resolvePluginCacheDirectory,
 } from "./plugin_cache";
 import type { PluginCache } from "./plugin_cache";
+import { noopObservability } from "../observability";
+import type { Observability } from "../observability";
 
-type PluginContextBase = Omit<PluginContext, "cache">;
+type PluginContextBase = Omit<PluginContext, "cache" | "logger" | "tracer">;
 type PluginContextWithCache<TContext extends PluginContextBase> = TContext &
-  Pick<PluginContext, "cache">;
+  Pick<PluginContext, "cache" | "logger" | "tracer">;
 
 export class PluginRuntime {
   private buildStarted = false;
@@ -142,25 +144,29 @@ export class PluginRuntime {
   async collectDiagnostics(
     contentIndex: Map<string, string>,
   ): Promise<Diagnostic[]> {
-    const results: Diagnostic[] = [];
-    const context = this.createContext(contentIndex);
-    for (const plugin of this.plugins()) {
-      const diagnostics = await plugin.addDiagnostics?.(
-        this.createPluginContext(plugin, context),
-      );
-      for (const diagnostic of diagnostics ?? []) {
-        results.push({
-          ...diagnostic,
-          pluginName: diagnostic.pluginName || plugin.name,
-        });
-      }
-    }
-    return results;
+    return await this.observability().tracer.span(
+      "diagnostics.run",
+      {},
+      async () => {
+        const results: Diagnostic[] = [];
+        const context = this.createContext(contentIndex);
+        for (const plugin of this.plugins()) {
+          const diagnostics = await plugin.addDiagnostics?.(
+            this.createPluginContext(plugin, context),
+          );
+          for (const diagnostic of diagnostics ?? []) {
+            results.push({
+              ...diagnostic,
+              pluginName: diagnostic.pluginName || plugin.name,
+            });
+          }
+        }
+        return results;
+      },
+    );
   }
 
-  private createContext(
-    contentIndex: Map<string, string>,
-  ): PluginContextBase {
+  private createContext(contentIndex: Map<string, string>): PluginContextBase {
     return {
       config: this.pipelineOptions.config,
       contentIndex,
@@ -172,7 +178,13 @@ export class PluginRuntime {
     plugin: RiebeckitePlugin,
     context: TContext,
   ): PluginContextWithCache<TContext> {
-    return { ...context, cache: this.cacheFor(plugin) };
+    const observability = this.observability();
+    return {
+      ...context,
+      cache: this.cacheFor(plugin),
+      logger: observability.logger.child({ plugin: plugin.name }),
+      tracer: observability.tracer,
+    };
   }
 
   private cacheFor(plugin: RiebeckitePlugin): PluginCache {
@@ -183,7 +195,11 @@ export class PluginRuntime {
       ? createPluginCache({
           pluginName: plugin.name,
           cacheVersion: plugin.cacheVersion,
-          cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
+          cacheDirectory: resolvePluginCacheDirectory(
+            this.pipelineOptions.config,
+          ),
+          logger: this.observability().logger.child({ plugin: plugin.name }),
+          tracer: this.observability().tracer,
         })
       : createUnavailablePluginCache();
     this.pluginCaches.set(plugin.name, cache);
@@ -199,8 +215,21 @@ export class PluginRuntime {
     context: TContext,
   ) {
     for (const plugin of this.plugins()) {
-      await hook(plugin)?.(this.createPluginContext(plugin, context));
+      const pluginHook = hook(plugin);
+      if (!pluginHook) continue;
+      const pluginContext = this.createPluginContext(plugin, context);
+      await pluginContext.tracer.span(
+        "plugin.hook",
+        {
+          plugin: plugin.name,
+        },
+        () => pluginHook(pluginContext),
+      );
     }
+  }
+
+  private observability(): Observability {
+    return this.pipelineOptions.observability ?? noopObservability;
   }
 
   private plugins() {

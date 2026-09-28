@@ -1,5 +1,5 @@
 import path from "node:path";
-import { ContentManager } from "@riebeckite/core";
+import { ConsoleLogger, ContentManager, NoopTracer } from "@riebeckite/core";
 import {
   buildHonoxApplication,
   resolveHonoxApplicationRoot,
@@ -12,13 +12,16 @@ export async function runBuild(
   options: { full: boolean },
 ): Promise<void> {
   const config = await loadApplicationConfig(application);
-  const hostRoot = await resolveHonoxApplicationRoot(application.applicationRoot);
-  const contentDirectory = path.resolve(
-    hostRoot,
-    config.content.directory,
+  const hostRoot = await resolveHonoxApplicationRoot(
+    application.applicationRoot,
   );
+  const contentDirectory = path.resolve(hostRoot, config.content.directory);
   const content = new ContentManager(contentDirectory, config.content.exclude, {
     config,
+    observability: {
+      logger: new ConsoleLogger(),
+      tracer: new NoopTracer(),
+    },
   });
 
   try {

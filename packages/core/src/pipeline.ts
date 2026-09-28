@@ -26,9 +26,12 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline";
 import type { PostContent, PostFrontmatter } from "./types/post_content";
+import { noopObservability } from "./observability";
+import type { Observability } from "./observability";
 
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
+  observability?: Observability;
 }
 
 export class Pipeline {
@@ -158,20 +161,35 @@ export class Pipeline {
 
     return async (input) => {
       for (const { plugin, renderer } of renderers) {
-        const html = await renderer.render({
-          config: this.options.config,
-          contentIndex: this.contentIndex,
-          diagnostics: [],
-          cache: this.cacheFor(plugin),
-          ...input,
-        });
+        const observability = this.options.observability ?? noopObservability;
+        const html = await observability.tracer.span(
+          "plugin.render",
+          {
+            plugin: plugin.name,
+            contentPath: input.path,
+            target: input.kind,
+          },
+          () =>
+            renderer.render({
+              config: this.options.config,
+              contentIndex: this.contentIndex,
+              diagnostics: [],
+              cache: this.cacheFor(plugin, observability),
+              logger: observability.logger.child({ plugin: plugin.name }),
+              tracer: observability.tracer,
+              ...input,
+            }),
+        );
         if (html) return html;
       }
       return null;
     };
   }
 
-  private cacheFor(plugin: RiebeckitePlugin): PluginCache {
+  private cacheFor(
+    plugin: RiebeckitePlugin,
+    observability: Observability,
+  ): PluginCache {
     const cached = this.pluginCaches.get(plugin.name);
     if (cached) return cached;
 
@@ -180,6 +198,8 @@ export class Pipeline {
           pluginName: plugin.name,
           cacheVersion: plugin.cacheVersion,
           cacheDirectory: resolvePluginCacheDirectory(this.options.config),
+          tracer: observability.tracer,
+          logger: observability.logger.child({ plugin: plugin.name }),
         })
       : createUnavailablePluginCache();
     this.pluginCaches.set(plugin.name, cache);

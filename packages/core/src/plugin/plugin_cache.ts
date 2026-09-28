@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
+import type { Logger, Tracer } from "../observability";
 
 export type JsonValue =
   | null
@@ -27,17 +28,12 @@ export function createUnavailablePluginCache(): PluginCache {
   };
 }
 
-type PluginCacheWarning = {
-  pluginName: string;
-  key: string;
-  error: unknown;
-};
-
 type CreatePluginCacheOptions = {
   pluginName: string;
   cacheVersion?: string;
   cacheDirectory: string;
-  warn?(warning: PluginCacheWarning): void;
+  logger?: Logger;
+  tracer?: Tracer;
 };
 
 export function createPluginCache(
@@ -52,7 +48,6 @@ export function createPluginCache(
     hash(options.cacheVersion ?? "1"),
   );
   const writes = new Map<string, Promise<void>>();
-  const warn = options.warn ?? defaultCacheWarning;
 
   return {
     async get<T extends JsonValue>(key: string): Promise<T | undefined> {
@@ -60,14 +55,24 @@ export function createPluginCache(
       try {
         raw = await fs.readFile(cachePath(versionDirectory, key), "utf8");
       } catch (error) {
-        if (isNotFoundError(error)) return undefined;
+        if (isNotFoundError(error)) {
+          options.tracer?.event("cache.miss", { plugin: options.pluginName });
+          return undefined;
+        }
         throw error;
       }
 
       try {
-        return JSON.parse(raw) as T;
-      } catch (error) {
-        warn({ pluginName: options.pluginName, key, error });
+        const value = JSON.parse(raw) as T;
+        options.tracer?.event("cache.hit", { plugin: options.pluginName });
+        return value;
+      } catch {
+        options.logger?.warn(
+          "Plugin cache entry is corrupted and will be ignored.",
+          {
+            plugin: options.pluginName,
+          },
+        );
         return undefined;
       }
     },
@@ -148,13 +153,6 @@ function isNotFoundError(error: unknown): boolean {
     error !== null &&
     "code" in error &&
     error.code === "ENOENT"
-  );
-}
-
-function defaultCacheWarning(warning: PluginCacheWarning): void {
-  console.warn(
-    `Plugin "${warning.pluginName}" cache entry "${warning.key}" is corrupted and will be ignored.`,
-    warning.error,
   );
 }
 

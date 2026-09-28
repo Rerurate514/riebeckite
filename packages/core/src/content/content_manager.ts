@@ -31,6 +31,8 @@ import { ContentIndexBuilder } from "./content_index_builder";
 import type { ContentSource, ContentSourceEntry } from "./content_source";
 import { FileSystemContentSource } from "./file_system_content_source";
 import { ManifestBuilder } from "./manifest_builder";
+import { noopObservability } from "../observability";
+import type { Observability } from "../observability";
 
 export type Backlink = {
   slug: string;
@@ -110,7 +112,10 @@ export class ContentManager {
   ): Promise<Map<string, string>> {
     if (this.contentIndex) return this.contentIndex;
 
-    if (preparation?.previousState && !hasContentChanges(preparation.changeSet)) {
+    if (
+      preparation?.previousState &&
+      !hasContentChanges(preparation.changeSet)
+    ) {
       this.contentIndex = new Map(
         Object.entries(preparation.previousState.contentIndex),
       );
@@ -128,39 +133,51 @@ export class ContentManager {
     const cached = this.contentCache.get(slug);
     if (cached) return cached;
 
-    const [contentIndex, rawPost] = await Promise.all([
-      this.getContentIndex(),
-      this.getPost(slug),
-    ]);
+    return await this.observability().tracer.span(
+      "content.process",
+      {
+        contentPath: `${slug}.md`,
+      },
+      async () => {
+        const [contentIndex, rawPost] = await Promise.all([
+          this.getContentIndex(),
+          this.getPost(slug),
+        ]);
 
-    await this.pluginRuntime.startBuild(contentIndex);
-    await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
+        await this.pluginRuntime.startBuild(contentIndex);
+        await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
 
-    this.pipeline ??= new Pipeline(
-      contentIndex,
-      (postSlug) => this.getPost(postSlug),
-      this.pipelineOptions,
-      this.isBuildTime,
+        this.pipeline ??= new Pipeline(
+          contentIndex,
+          (postSlug) => this.getPost(postSlug),
+          this.pipelineOptions,
+          this.isBuildTime,
+        );
+        const content = await this.pipeline.execute(
+          rawPost,
+          0,
+          new Set([slug]),
+        );
+
+        await this.pluginRuntime.runPostHook(
+          "onPostParsed",
+          slug,
+          rawPost,
+          content,
+          contentIndex,
+        );
+        await this.pluginRuntime.runPostHook(
+          "onPostProcessed",
+          slug,
+          rawPost,
+          content,
+          contentIndex,
+        );
+
+        this.contentCache.set(slug, content);
+        return content;
+      },
     );
-    const content = await this.pipeline.execute(rawPost, 0, new Set([slug]));
-
-    await this.pluginRuntime.runPostHook(
-      "onPostParsed",
-      slug,
-      rawPost,
-      content,
-      contentIndex,
-    );
-    await this.pluginRuntime.runPostHook(
-      "onPostProcessed",
-      slug,
-      rawPost,
-      content,
-      contentIndex,
-    );
-
-    this.contentCache.set(slug, content);
-    return content;
   }
 
   async getManifest(options?: ContentBuildOptions): Promise<ContentManifest> {
@@ -170,45 +187,53 @@ export class ContentManager {
     const preparation = options
       ? await this.getBuildPreparation(options)
       : undefined;
-    const [posts, contentIndex] = await Promise.all([
-      this.getAllPosts(),
-      this.getContentIndex(preparation),
-    ]);
-    const entries = await Promise.all(
-      posts.map(async (post) => {
-        const [rawPost, processed] = await Promise.all([
-          this.getPost(post.slug),
-          this.getProcessedContent(post.slug),
+    return await this.observability().tracer.span(
+      "content.manifest",
+      {},
+      async () => {
+        const [posts, contentIndex] = await Promise.all([
+          this.getAllPosts(),
+          this.getContentIndex(preparation),
         ]);
+        const entries = await Promise.all(
+          posts.map(async (post) => {
+            const [rawPost, processed] = await Promise.all([
+              this.getPost(post.slug),
+              this.getProcessedContent(post.slug),
+            ]);
 
-        return this.manifestBuilder.createEntry(
-          post.slug,
-          rawPost,
-          processed,
-          contentIndex,
+            return this.manifestBuilder.createEntry(
+              post.slug,
+              rawPost,
+              processed,
+              contentIndex,
+            );
+          }),
         );
-      }),
+
+        await this.pluginRuntime.runGraphHook(entries, contentIndex);
+        const manifest = await this.observability().tracer.span(
+          "content.graph",
+          {},
+          () => this.manifestBuilder.build(entries, contentIndex),
+        );
+        await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
+
+        manifest.assets = this.pluginRuntime.collectAssets();
+        manifest.diagnostics = [
+          ...this.pluginRuntime.getDiagnostics(),
+          ...(await this.pluginRuntime.collectDiagnostics(contentIndex)),
+        ];
+
+        await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
+        if (preparation) await this.commitBuildState(preparation, manifest);
+        this.manifest = manifest;
+        return manifest;
+      },
     );
-
-    await this.pluginRuntime.runGraphHook(entries, contentIndex);
-    const manifest = this.manifestBuilder.build(entries, contentIndex);
-    await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
-
-    manifest.assets = this.pluginRuntime.collectAssets();
-    manifest.diagnostics = [
-      ...this.pluginRuntime.getDiagnostics(),
-      ...(await this.pluginRuntime.collectDiagnostics(contentIndex)),
-    ];
-
-    await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
-    if (preparation) await this.commitBuildState(preparation, manifest);
-    this.manifest = manifest;
-    return manifest;
   }
 
-  async build(
-    options: ContentBuildOptions = {},
-  ): Promise<ContentManifest> {
+  async build(options: ContentBuildOptions = {}): Promise<ContentManifest> {
     return await this.getManifest(options);
   }
 
@@ -238,7 +263,8 @@ export class ContentManager {
       this.getContentEntries(),
       this.getContentIndex(),
     ]);
-    const diagnostics = await this.pluginRuntime.collectDiagnostics(contentIndex);
+    const diagnostics =
+      await this.pluginRuntime.collectDiagnostics(contentIndex);
 
     return { entries, contentIndex, diagnostics };
   }
@@ -249,7 +275,11 @@ export class ContentManager {
   }
 
   private async getContentEntries(): Promise<readonly ContentSourceEntry[]> {
-    this.contentEntries ??= await this.source.scan();
+    this.contentEntries ??= await this.observability().tracer.span(
+      "content.scan",
+      {},
+      () => this.source.scan(),
+    );
     return this.contentEntries;
   }
 
@@ -293,14 +323,15 @@ export class ContentManager {
       await this.getContentEntries(),
       (entry) => this.readContentEntry(entry),
     );
-    const previousState = options.incremental === false
-      ? undefined
-      : await loadContentBuildState(this.buildStatePath);
+    const previousState =
+      options.incremental === false
+        ? undefined
+        : await loadContentBuildState(this.buildStatePath);
     const changeSet = previousState
       ? diffContentEntries(previousState, currentEntries)
       : allContentChanged(currentEntries);
 
-    return {
+    const preparation = {
       previousState,
       currentEntries,
       changeSet,
@@ -310,6 +341,16 @@ export class ContentManager {
         currentEntries.map(({ entry }) => entry.path),
       ),
     };
+    this.observability().tracer.event("build.incremental", {
+      incremental: options.incremental !== false,
+      added: changeSet.added.length,
+      changed: changeSet.changed.length,
+      removed: changeSet.removed.length,
+      unchanged: changeSet.unchanged.length,
+      affected:
+        preparation.affected.direct.size + preparation.affected.dependent.size,
+    });
+    return preparation;
   }
 
   private async commitBuildState(
@@ -353,6 +394,10 @@ export class ContentManager {
     } catch {
       // Build state is an optimization; the completed build remains valid.
     }
+  }
+
+  private observability(): Observability {
+    return this.pipelineOptions.observability ?? noopObservability;
   }
 }
 

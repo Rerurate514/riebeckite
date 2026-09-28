@@ -3,12 +3,15 @@ import type { Diagnostic } from "./diagnostic";
 import type { PostContent } from "./post_content";
 import type { PluginCache } from "../plugin/plugin_cache";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
+import type { Logger, Tracer } from "../observability";
 
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  logger: Logger;
+  tracer: Tracer;
 };
 
 /**

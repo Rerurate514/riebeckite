@@ -40,6 +40,25 @@ export type {
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
 export type { PipelineOptions } from "./src/pipeline";
 export { Pipeline } from "./src/pipeline";
+export {
+  CompositeTraceSink,
+  ConsoleLogger,
+  NoopLogger,
+  NoopTracer,
+  SinkTracer,
+} from "./src/observability";
+export type {
+  LogContext,
+  Logger,
+  LogLevel,
+  Observability,
+  ObservabilityValue,
+  TraceAttributes,
+  TraceEvent,
+  TraceSink,
+  TraceSpan,
+  Tracer,
+} from "./src/observability";
 export type {
   ContentAsset,
   ContentLink,

@@ -32,8 +32,22 @@ type PluginContextBase = Omit<PluginContext, "cache" | "logger" | "tracer">;
 type PluginContextWithCache<TContext extends PluginContextBase> = TContext &
   Pick<PluginContext, "cache" | "logger" | "tracer">;
 
+/**
+ * Explicit build lifecycle stages. `idle` means no build lifecycle has been
+ * requested yet; the remaining values name the stage currently executing.
+ * Once `started` is reached the lifecycle never runs again.
+ */
+export type PluginBuildStage =
+  | "idle"
+  | "setup"
+  | "buildStart"
+  | "onBuildStart"
+  | "onConfigResolved"
+  | "started";
+
 export class PluginRuntime {
-  private buildStarted = false;
+  private buildLifecycle: Promise<void> | null = null;
+  private buildStage: PluginBuildStage = "idle";
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
   private pluginCaches = new Map<string, PluginCache>();
@@ -45,17 +59,20 @@ export class PluginRuntime {
     return this.diagnostics;
   }
 
-  async startBuild(contentIndex: Map<string, string>) {
-    if (this.buildStarted) return;
+  getBuildStage(): PluginBuildStage {
+    return this.buildStage;
+  }
 
-    this.buildStarted = true;
-    const context = this.createContext(contentIndex);
-    const createPluginContext = (plugin: RiebeckitePlugin) =>
-      this.createPluginContext(plugin, context);
-    await runSetup(this.plugins(), createPluginContext);
-    await runBuildStart(this.plugins(), createPluginContext);
-    await this.runHook((plugin) => plugin.onBuildStart, context);
-    await this.runHook((plugin) => plugin.onConfigResolved, context);
+  /**
+   * Starts the plugin build lifecycle exactly once, regardless of which public
+   * entry point (content processing or location resolution) reaches it first.
+   * Concurrent callers await the same run, so the ordered hooks
+   * (`setup` → `buildStart` → `onBuildStart` → `onConfigResolved`) are never
+   * duplicated and no caller proceeds before the lifecycle completes.
+   */
+  startBuild(contentIndex: Map<string, string>): Promise<void> {
+    this.buildLifecycle ??= this.runBuildLifecycle(contentIndex);
+    return this.buildLifecycle;
   }
 
   async runContentLoaded(
@@ -145,7 +162,7 @@ export class PluginRuntime {
   }
 
   async dispose(contentIndex: Map<string, string>) {
-    if (this.disposed || !this.buildStarted) return;
+    if (this.disposed || this.buildLifecycle === null) return;
 
     this.disposed = true;
     const context = this.createContext(contentIndex);
@@ -187,6 +204,41 @@ export class PluginRuntime {
         return results;
       },
     );
+  }
+
+  private async runBuildLifecycle(
+    contentIndex: Map<string, string>,
+  ): Promise<void> {
+    const context = this.createContext(contentIndex);
+    const createPluginContext = (plugin: RiebeckitePlugin) =>
+      this.createPluginContext(plugin, context);
+    const stages: readonly {
+      readonly stage: PluginBuildStage;
+      readonly run: () => Promise<void>;
+    }[] = [
+      {
+        stage: "setup",
+        run: () => runSetup(this.plugins(), createPluginContext),
+      },
+      {
+        stage: "buildStart",
+        run: () => runBuildStart(this.plugins(), createPluginContext),
+      },
+      {
+        stage: "onBuildStart",
+        run: () => this.runHook((plugin) => plugin.onBuildStart, context),
+      },
+      {
+        stage: "onConfigResolved",
+        run: () => this.runHook((plugin) => plugin.onConfigResolved, context),
+      },
+    ];
+
+    for (const { stage, run } of stages) {
+      this.buildStage = stage;
+      await run();
+    }
+    this.buildStage = "started";
   }
 
   private createContext(contentIndex: Map<string, string>): PluginContextBase {

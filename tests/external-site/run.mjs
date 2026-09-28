@@ -37,6 +37,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-recent-posts",
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
+  {
+    directory: "packages/plugins/diagnostics",
+    name: "@riebeckite/plugin-diagnostics",
+  },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
 ];
 
@@ -46,6 +50,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -394,6 +399,26 @@ function assertBuildOutput(siteDir) {
     fail("site-local theme attribute was not applied to the document");
   }
 
+  if (combined.includes(PRIVATE_MARKER)) {
+    fail("non-published note content leaked into the generated HTML");
+  }
+  const distFiles = walkFiles(distDir);
+  const leakedAsset = distFiles.find((file) =>
+    path.basename(file).includes("private-only"),
+  );
+  if (leakedAsset) {
+    fail(
+      `non-published attachment leaked into dist: ${path.relative(siteDir, leakedAsset)}`,
+    );
+  }
+  for (const file of distFiles.filter((full) => full.endsWith(".json"))) {
+    if (fs.readFileSync(file, "utf8").includes(PRIVATE_MARKER)) {
+      fail(
+        `non-published note leaked into a generated index: ${path.relative(siteDir, file)}`,
+      );
+    }
+  }
+
   const cssFiles = walkFiles(distDir, (full) => full.endsWith(".css"));
   const css = cssFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
   if (!css.includes("fixture-local-plugin")) {
@@ -439,6 +464,16 @@ function main() {
     assertIsolatedInstall(siteDir, tempRoot);
     assertNoMonorepoEscapeHatches(siteDir);
     assertPublishedArtifacts(siteDir);
+
+    step("verifying capability dependency resolution");
+    run(process.execPath, [path.join(siteDir, "capability-check.mjs")], {
+      cwd: siteDir,
+    });
+
+    step("verifying the publish boundary");
+    run(process.execPath, [path.join(siteDir, "publish-boundary-check.mjs")], {
+      cwd: siteDir,
+    });
 
     const nestedWorkingDirectory = path.join(siteDir, "app");
     runCli(siteDir, "check", nestedWorkingDirectory);

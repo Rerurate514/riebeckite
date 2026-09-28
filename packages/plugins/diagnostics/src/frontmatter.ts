@@ -29,16 +29,6 @@ export function getNoteTitle(
   return typeof title === "string" && title.trim() ? title : slug;
 }
 
-export function isNotePublic(
-  publishStrategy: "explicit" | "selective",
-  values: Record<string, unknown>,
-): boolean {
-  if (publishStrategy === "explicit") {
-    return values.publish === true;
-  }
-  return !(values.private === true || values.draft === true);
-}
-
 function parseFrontmatterBlock(body: string): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   const lines = body.split(/\r?\n/);

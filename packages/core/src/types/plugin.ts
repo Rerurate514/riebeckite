@@ -26,8 +26,20 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   options?: TOptions;
   order?: number;
   enabled?: boolean;
+  /**
+   * Capabilities this plugin exposes to other plugins. A capability must have
+   * exactly one enabled provider; duplicate providers fail resolution.
+   */
   provides?: string[];
+  /**
+   * Capabilities this plugin depends on. Resolution orders each provider
+   * before this plugin and fails with a diagnostic when none is available.
+   */
   requires?: string[];
+  /**
+   * Capabilities this plugin uses when available. A missing capability is
+   * ignored, while a present provider is still ordered before this plugin.
+   */
   optional?: string[];
   cacheVersion?: string;
   validateOptions?: PluginOptionsValidator<TOptions>;

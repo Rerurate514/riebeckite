@@ -22,6 +22,7 @@ import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { kanban } from "@riebeckite/plugin-kanban";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+import { marp } from "@riebeckite/plugin-marp";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
@@ -91,6 +92,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    marp(),
     chartjs(),
     vegaLite(),
     wavedrom(),

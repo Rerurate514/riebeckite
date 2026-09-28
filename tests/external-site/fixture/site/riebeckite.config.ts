@@ -7,6 +7,7 @@ import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { marp } from "@riebeckite/plugin-marp";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { highlight } from "@riebeckite/plugin-highlight";
@@ -52,6 +53,7 @@ export default defineConfig({
     plantuml(),
     media(),
     attachment(),
+    marp(),
     codeAnnotations(),
     canvas(),
     aliasPlugin(),

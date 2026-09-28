@@ -1,0 +1,65 @@
+.rb-marp {
+  --rr-marp-paper: var(--rb-color-paper, #ffffff);
+  --rr-marp-ink: var(--rb-color-ink, #000000);
+  --rr-marp-muted: var(--rb-color-muted, #69645c);
+  --rr-marp-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rr-marp-ink) 18%, transparent)
+  );
+  margin: 2rem 0;
+  border: 1px solid var(--rr-marp-rule);
+  background: color-mix(in srgb, var(--rr-marp-paper) 97%, var(--rr-marp-ink));
+  color: var(--rr-marp-ink);
+}
+
+.rb-marp__caption {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--rr-marp-rule);
+  color: var(--rr-marp-muted);
+  font-size: 0.875rem;
+}
+
+.rb-marp__deck {
+  overflow: auto;
+  padding: 1rem;
+}
+
+/* Marp emits SVG slides without the runtime polyfill script, so the deck is
+   sized here instead. The generated slide CSS controls the content inside. */
+.rb-marp__deck > svg[data-marpit-svg] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 1rem;
+}
+
+.rb-marp__deck > svg[data-marpit-svg]:last-child {
+  margin-bottom: 0;
+}
+
+.rb-marp__fallback {
+  border-top: 1px solid var(--rr-marp-rule);
+  color: var(--rr-marp-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-marp__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rb-marp__fallback pre {
+  overflow: auto;
+  margin: 0 1rem 0.75rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rr-marp-rule);
+  color: var(--rr-marp-ink);
+  background: color-mix(in srgb, var(--rr-marp-ink) 6%, transparent);
+}
+
+html[data-theme="dark"] .rb-marp,
+html.dark .rb-marp {
+  --rr-marp-paper: var(--rb-color-ink, #000000);
+  --rr-marp-ink: var(--rb-color-paper, #ffffff);
+}

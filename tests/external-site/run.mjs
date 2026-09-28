@@ -122,6 +122,7 @@ const PACKAGES = [
     directory: "packages/plugins/ux",
     name: "@riebeckite/plugin-ux",
   },
+  { directory: "packages/plugins/marp", name: "@riebeckite/plugin-marp" },
   {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
@@ -160,6 +161,7 @@ const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
 const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
 const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
 const WAVEDROM_MARKER = "RIEBECKITE_EXTERNAL_WAVEDROM_MARKER";
+const MARP_MARKER = "RIEBECKITE_EXTERNAL_MARP_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -729,6 +731,21 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("rb-wavedrom")) {
     fail("generated HTML is missing the wavedrom figure markup");
+  }
+  if (!combined.includes(MARP_MARKER)) {
+    fail(`generated HTML is missing the marp marker (${MARP_MARKER})`);
+  }
+  if (!combined.includes('class="rb-marp"')) {
+    fail("marp plugin did not emit the deck figure wrapper");
+  }
+  if (!combined.includes("data-marp")) {
+    fail("marp plugin did not mark the figure as a deck");
+  }
+  if (!combined.includes("data-marpit-svg")) {
+    fail("marp plugin did not render the slide SVG structure");
+  }
+  if (!combined.includes('class="rb-marp__deck"')) {
+    fail("marp plugin did not emit the deck container");
   }
   if (!combined.includes('class="rb-responsive-image"')) {
     fail("responsive-image plugin did not wrap a marked image in <picture>");

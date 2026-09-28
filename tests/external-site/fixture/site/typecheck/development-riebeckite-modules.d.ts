@@ -124,6 +124,11 @@ declare module "@riebeckite/plugin-obsidian-markdown" {
   export const obsidianMarkdown: any;
 }
 
+declare module "@riebeckite/plugin-marp" {
+  export const marp: any;
+  export const marpPlugin: any;
+}
+
 declare module "@riebeckite/plugin-properties" {
   export const properties: any;
 }

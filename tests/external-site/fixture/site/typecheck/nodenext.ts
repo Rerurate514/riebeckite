@@ -66,6 +66,7 @@ import { d2 } from "@riebeckite/plugin-d2";
 import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { marp, marpPlugin } from "@riebeckite/plugin-marp";
 import { properties } from "@riebeckite/plugin-properties";
 import {
   kanban,
@@ -144,6 +145,8 @@ export const resolvedEntries = {
   initD2Diagrams,
   graphviz,
   obsidianMarkdown,
+  marp,
+  marpPlugin,
   properties,
   kanban,
   kanbanPlugin,
@@ -209,6 +212,7 @@ export const config: RiebeckiteConfig = defineConfig({
     graphviz(),
     uxPlugin(),
     wavedrom(),
+    marp(),
   ],
 });
 

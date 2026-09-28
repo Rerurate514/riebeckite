@@ -21,7 +21,6 @@ export type ResolvedHonoxApplication = {
 };
 
 export type ResolveHonoxApplicationOptions = RiebeckiteConfigLoaderOptions & {
-  /** Overrides automatic Vite application discovery when supplied. */
   appRoot?: string;
 };
 
@@ -53,10 +52,6 @@ export class HonoxApplicationRootError extends Error {
   }
 }
 
-/**
- * Resolves all filesystem roots used by a Riebeckite application in one place.
- * Config imports are based on configRoot; content paths are based on appRoot.
- */
 export async function resolveHonoxApplication(
   options: ResolveHonoxApplicationOptions,
 ): Promise<ResolvedHonoxApplication> {
@@ -163,7 +158,6 @@ async function hasViteConfig(directory: string): Promise<boolean> {
     try {
       if ((await fs.stat(path.join(directory, fileName))).isFile()) return true;
     } catch {
-      // Continue checking the supported Vite config filenames.
     }
   }
   return false;

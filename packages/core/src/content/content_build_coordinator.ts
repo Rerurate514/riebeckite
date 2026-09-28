@@ -31,7 +31,6 @@ type ContentBuildCoordinatorDependencies = {
   readonly observability: Observability;
 };
 
-/** Coordinates incremental build-state preparation and persistence. */
 export class ContentBuildCoordinator {
   private preparation: Promise<ContentBuildPreparation> | null = null;
 
@@ -85,7 +84,6 @@ export class ContentBuildCoordinator {
     try {
       await saveContentBuildState(this.dependencies.buildStatePath, state);
     } catch {
-      // Build state is an optimization; the completed build remains valid.
     }
   }
 

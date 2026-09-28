@@ -61,7 +61,6 @@ export type RiebeckitePlugin<TOptions = unknown> = {
 
 export type PluginInput = RiebeckitePlugin | false | null | undefined;
 
-/** Resolved plugin metadata that is safe to expose to tooling. */
 export type ResolvedPluginMetadata = {
   readonly name: string;
   readonly enabled: boolean;
@@ -87,10 +86,6 @@ export function resolvePlugins(
   return resolvePluginDependencies(orderedPlugins);
 }
 
-/**
- * Returns metadata for plugins in their resolved execution order.
- * Plugin options and lifecycle implementations are deliberately excluded.
- */
 export function getResolvedPluginMetadata(
   plugins: readonly RiebeckitePlugin[],
 ): readonly ResolvedPluginMetadata[] {

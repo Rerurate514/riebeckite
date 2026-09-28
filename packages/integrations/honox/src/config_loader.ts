@@ -6,13 +6,8 @@ import { build as buildWithEsbuild } from "esbuild";
 import { workspacePackageResolver } from "./workspace_packages.js";
 
 export type RiebeckiteConfigLoaderOptions = {
-  /** Directory that contains the Riebeckite configuration file. */
   configRoot: string;
   configFile?: string;
-  /**
-   * Optional monorepo development root. npm consumers resolve packages through
-   * their own node_modules and must not need this option.
-   */
   workspaceRoot?: string;
 };
 
@@ -40,11 +35,6 @@ export async function loadRiebeckiteConfig(
       bundle: true,
       platform: "node",
       format: "esm",
-      // Bundled dependencies may contain CommonJS `require()` calls (for
-      // example `yaml`'s `require("process")`). esbuild rewrites those to its
-      // `__require` shim, which throws "Dynamic require of ... is not
-      // supported" in ESM output unless a real `require` exists. The banner
-      // provides one for the bundled module.
       banner: {
         js: 'import { createRequire as __riebeckiteCreateRequire } from "node:module"; const require = __riebeckiteCreateRequire(import.meta.url);',
       },
@@ -60,7 +50,6 @@ export async function loadRiebeckiteConfig(
   }
 }
 
-/** Resolves config paths whose documented base is the HonoX application root. */
 export function resolveHonoxConfig(
   config: ResolvedRiebeckiteConfig,
   appRoot: string,

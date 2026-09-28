@@ -1,15 +1,3 @@
-/**
- * NodeNext declaration-surface check.
- *
- * This file is type-checked with `module: "NodeNext"` and
- * `moduleResolution: "NodeNext"` against the *packed tarballs* installed into
- * `node_modules`. It intentionally imports every published entry point of the
- * Riebeckite packages used by the fixture so that any undeclared dependency or
- * extensionless relative specifier in an emitted `.d.ts` fails the build.
- *
- * `skipLibCheck` must stay `false` in `tsconfig.nodenext.json`: the point is to
- * validate the published declarations, not to silence them.
- */
 import { defineConfig, type PostContent, type RiebeckiteConfig } from "@riebeckite/core";
 import {
   buildHonoxApplication,
@@ -52,8 +40,6 @@ import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
 import { defaultTheme } from "@riebeckite/theme-default";
 
-// Touch the resolved values so that unused-import elimination cannot hide a
-// broken declaration.
 export const resolvedEntries = {
   buildHonoxApplication,
   loadRiebeckiteConfig,
@@ -87,8 +73,6 @@ export const resolvedEntries = {
   defaultTheme,
 } as const;
 
-// Keep the public UI primitive prop contracts covered by the packed-tarball
-// NodeNext declaration check as well as the component exports above.
 export type UiPrimitiveProps =
   | ArticleProps
   | ArticleContentProps

@@ -22,7 +22,6 @@ export type ContentManifestPluginAsset = PluginAsset & {
 
 export type ContentManifestEntry = {
   slug: string;
-  /** Resolved canonical site-local URL. */
   permalink: string;
   publicLocation: ContentPublicLocation;
   title: string;
@@ -39,10 +38,6 @@ export type ContentRedirect = {
   status: 301 | 302 | 307 | 308;
 };
 
-/**
- * A resolved public location for a content entry. `metadata` is intentionally
- * opaque to Core; it lets a resolver expose its own inspect-only details.
- */
 export type ContentPublicLocation = {
   slug: string;
   permalink: string;
@@ -50,7 +45,6 @@ export type ContentPublicLocation = {
   metadata?: Readonly<Record<string, string>>;
 };
 
-/** Input for public location resolution (default resolver and plugin hook). */
 export type ContentLocationInput = {
   slug: string;
   path: string;

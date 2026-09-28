@@ -13,7 +13,6 @@ type ContentLocationResolverDependencies = {
   readonly pluginRuntime: PluginRuntime;
 };
 
-/** Resolves canonical public locations and derives redirect entries from them. */
 export class ContentLocationResolver {
   private locations: Map<string, ContentPublicLocation> | null = null;
 

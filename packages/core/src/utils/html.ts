@@ -1,4 +1,3 @@
-/** Escapes text for safe inclusion in HTML. */
 export function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -8,7 +7,6 @@ export function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-/** Escapes a value for safe inclusion in a quoted HTML attribute. */
 export function escapeHtmlAttribute(value: string): string {
   return escapeHtml(value);
 }

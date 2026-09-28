@@ -1,16 +1,7 @@
 import { definePlugin } from "@riebeckite/core";
 
-/**
- * Marker rendered by the site-local plugin so the E2E build can assert that a
- * plugin defined inside the site itself is resolved and applied through the same
- * contract as an installed `@riebeckite/plugin-*` package.
- */
 export const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
 
-/**
- * Minimal local hast shape so this fixture does not depend on transitive
- * `unified`/`hast` types that are not part of the public contract.
- */
 type LocalHastNode =
   | {
       type: string;

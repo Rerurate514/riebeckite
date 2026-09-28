@@ -1,4 +1,3 @@
-/** Removes HTML tags and non-visible script/style content from a string. */
 export function stripHtml(html: string): string {
   return html
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
@@ -6,7 +5,6 @@ export function stripHtml(html: string): string {
     .replace(/<[^>]+>/g, " ");
 }
 
-/** Estimates reading time using CJK characters and Latin words. */
 export function calculateReadingTime(html: string): number {
   const text = stripHtml(html).trim();
   if (!text) return 1;

@@ -7,9 +7,7 @@ import { resolveHonoxApplication } from "./vite_runner.js";
 import { createWorkspacePackageAliases } from "./workspace_packages.js";
 
 export type RiebeckiteIntegrationOptions = {
-  /** Directory containing riebeckite.config.*. Defaults to the Vite root. */
   configRoot?: string;
-  /** Optional monorepo development root used only for source-package aliases. */
   workspaceRoot?: string;
   appRoot?: string;
   configFile?: string;

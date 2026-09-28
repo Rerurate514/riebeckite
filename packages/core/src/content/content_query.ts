@@ -1,42 +1,26 @@
 import type { ContentManifestEntry } from "../types/content_manifest.js";
 
-/**
- * A scalar leaf value accepted in a content query filter. Mirrors the shapes
- * `yaml` produces for frontmatter so queries can be written by hand.
- */
 export type ContentQueryScalar = string | number | boolean;
 
 export type ContentQueryTagFilter = {
-  /** Entry must carry at least one of these tags. */
   any?: readonly string[];
-  /** Entry must carry every one of these tags. */
   all?: readonly string[];
-  /** Entry must carry none of these tags. */
   none?: readonly string[];
 };
 
-/**
- * Frontmatter equality filter. A scalar expects the entry value to equal it (or
- * to be an array containing it); an array expects any member to match. String
- * comparisons are case-insensitive.
- */
 export type ContentQueryFrontmatterFilter = Record<
   string,
   ContentQueryScalar | readonly ContentQueryScalar[]
 >;
 
 export type ContentQueryDateFilter = {
-  /** Frontmatter field holding the date. Defaults to `date`. */
   field?: string;
-  /** Inclusive lower bound. Date-only strings expand to the start of the day. */
   from?: string;
-  /** Inclusive upper bound. Date-only strings expand to the end of the day. */
   to?: string;
 };
 
 export type ContentQueryFilter = {
   tags?: ContentQueryTagFilter;
-  /** Slug prefix, or any of several prefixes. */
   folder?: string | readonly string[];
   frontmatter?: ContentQueryFrontmatterFilter;
   date?: ContentQueryDateFilter;
@@ -45,28 +29,17 @@ export type ContentQueryFilter = {
 export type ContentQuerySortOrder = "asc" | "desc";
 
 export type ContentQuerySort = {
-  /** Frontmatter key, or `title`, `slug`, or `permalink`. Defaults to `date`. */
   field?: string;
-  /** Defaults to `asc`. Entries without the field always sort last. */
   order?: ContentQuerySortOrder;
 };
 
 export type ContentQuerySpec = {
   filter?: ContentQueryFilter;
   sort?: ContentQuerySort | readonly ContentQuerySort[];
-  /** Maximum number of entries to return. */
   limit?: number;
-  /** Number of entries to skip after sorting. */
   offset?: number;
 };
 
-/**
- * Filters, sorts, and paginates manifest entries for a content query.
- *
- * This is the framework-independent core of the Query plugin (and the seed of
- * the planned Content Query API). It performs no I/O and never mutates its
- * input.
- */
 export function queryContentEntries(
   entries: readonly ContentManifestEntry[],
   spec: ContentQuerySpec = {},

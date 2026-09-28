@@ -1,32 +1,25 @@
-/** @jsxImportSource hono/jsx */
 
-/** Content rendered inside a UI primitive. */
 export type PrimitiveChildren = unknown;
 
-/** Shared props accepted by every UI primitive. */
 export type PrimitiveProps = {
   children?: PrimitiveChildren;
   class?: string;
   className?: string;
 };
 
-/** Shared class props for primitives that do not render arbitrary children. */
 export type PrimitiveClassProps = {
   class?: string;
   className?: string;
 };
 
-/** Props for the semantic article wrapper. */
 export type ArticleProps = PrimitiveProps & {
   "data-slot"?: string;
 };
 
-/** Props for the article body and optional adjacent content layout. */
 export type ArticleLayoutProps = PrimitiveProps & {
   aside?: PrimitiveChildren;
 };
 
-/** Props for the article header. HTML and children are mutually exclusive. */
 export type ArticleHeaderProps =
   | (PrimitiveClassProps & {
       dangerouslySetInnerHTML: { __html: string };
@@ -37,7 +30,6 @@ export type ArticleHeaderProps =
       children?: PrimitiveChildren;
     });
 
-/** Props for the article content container. HTML and children are mutually exclusive. */
 export type ArticleContentProps =
   | (PrimitiveClassProps & {
       html: string;
@@ -50,17 +42,14 @@ export type ArticleContentProps =
       "data-slot"?: string;
     });
 
-/** Props for article metadata. */
 export type ArticleMetaProps = PrimitiveProps & {
   label?: string;
 };
 
-/** Props for a complementary sidebar. */
 export type SidebarProps = PrimitiveProps & {
   label?: string;
 };
 
-/** Props for the semantic article footer. */
 export type ArticleFooterProps = PrimitiveProps;
 
 export function Article(props: ArticleProps) {

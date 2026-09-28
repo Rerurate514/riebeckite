@@ -1,4 +1,3 @@
-/** A site island is defined by the application, not by the integration. */
 export default function BuildMarker() {
   return (
     <p

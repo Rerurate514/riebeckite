@@ -8,15 +8,6 @@ import { extractContentLinks } from "./content_links.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
 
-/**
- * Builds the framework's content graph without rendering content, invoking
- * plugins, or writing incremental build state.
- *
- * Public locations are resolved before this call (for example via
- * `ContentManager`) and passed in, so this helper stays unaware of permalink
- * plugins, ID strategies, and path modes, and never fabricates a canonical URL
- * itself.
- */
 export async function readOnlyContentGraph(
   source: ContentSource,
   locations: ReadonlyMap<string, ContentPublicLocation>,

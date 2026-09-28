@@ -1,4 +1,3 @@
-/** @jsxImportSource hono/jsx */
 export default function SearchBar() {
   return (
     <div class="search-bar rr-search" data-search-root>

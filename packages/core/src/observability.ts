@@ -1,4 +1,3 @@
-/** JSON-compatible values accepted by framework observability metadata. */
 export type ObservabilityValue = string | number | boolean | null;
 
 export type LogContext = Readonly<Record<string, ObservabilityValue>>;
@@ -142,7 +141,6 @@ export class SinkTracer implements Tracer {
     try {
       this.sink.onEvent({ name, time: wallClockNow(), attributes });
     } catch {
-      // Observability must not alter framework execution.
     }
   }
 
@@ -150,7 +148,6 @@ export class SinkTracer implements Tracer {
     try {
       this.sink.onSpan(span);
     } catch {
-      // Observability must not alter framework execution.
     }
   }
 }
@@ -163,7 +160,6 @@ export class CompositeTraceSink implements TraceSink {
       try {
         sink.onSpan(span);
       } catch {
-        // A subscriber must not prevent the remaining subscribers from observing.
       }
     }
   }
@@ -173,7 +169,6 @@ export class CompositeTraceSink implements TraceSink {
       try {
         sink.onEvent(event);
       } catch {
-        // A subscriber must not prevent the remaining subscribers from observing.
       }
     }
   }

@@ -1,9 +1,3 @@
-// Copies the canonical repository-root LICENSE into the current package.
-//
-// The repository keeps a single authoritative Apache-2.0 `LICENSE` at its
-// root; packages do not maintain their own copies. Running this before packing
-// (via `prepack` / `build_package.mjs`) makes every published tarball ship the
-// same license text without duplicating it in the repository.
 import fs from "node:fs";
 import path from "node:path";
 

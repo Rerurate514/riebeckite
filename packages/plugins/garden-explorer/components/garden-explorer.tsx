@@ -1,4 +1,3 @@
-/** @jsxImportSource hono/jsx */
 import { layoutRadialGraph } from "@riebeckite/core";
 import { useEffect, useMemo, useState } from "hono/jsx";
 import type {

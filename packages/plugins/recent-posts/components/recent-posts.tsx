@@ -1,4 +1,3 @@
-/** @jsxImportSource hono/jsx */
 import type { RecentPost } from "../src/recent-posts.js";
 
 type Props = {

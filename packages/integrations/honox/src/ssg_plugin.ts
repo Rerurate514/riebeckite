@@ -12,13 +12,6 @@ export type RiebeckiteSsgOptions = {
 
 const defaultEntry = "./src/index.tsx";
 
-/**
- * Generates static files using the resolved Vite application configuration.
- *
- * This is equivalent to @hono/vite-ssg for Riebeckite applications, but keeps
- * the Vite root and define values supplied by the application instead of
- * falling back to the process working directory.
- */
 export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
   const virtualId = "virtual:riebeckite-ssg-void-entry";
   const resolvedVirtualId = `\0${virtualId}`;

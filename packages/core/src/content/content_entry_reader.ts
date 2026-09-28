@@ -1,7 +1,6 @@
 import type { Observability } from "../observability.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 
-/** Caches the source scan and decoded entry contents for one content operation. */
 export class ContentEntryReader {
   private entries: readonly ContentSourceEntry[] | null = null;
   private texts = new Map<string, Promise<string>>();

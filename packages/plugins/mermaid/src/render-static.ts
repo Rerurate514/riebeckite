@@ -14,11 +14,6 @@ const MERMAID_SCRIPT_SUBPATH = "mermaid/dist/mermaid.min.js";
 
 let renderQueue: Promise<unknown> = Promise.resolve();
 
-/**
- * Node/Puppeteer implementation of the explicit Mermaid build-time renderer
- * boundary. Filesystem access is isolated here because rendering needs a
- * temporary script for Puppeteer.
- */
 export const renderMermaidStaticSvg: MermaidBuildRenderer = async (
   id: string,
   source: string,

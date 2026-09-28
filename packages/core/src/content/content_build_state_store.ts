@@ -23,7 +23,6 @@ export type ContentBuildStateStatus =
   | { kind: "valid"; path: string; version: number; entryCount: number }
   | { kind: "invalid"; path: string };
 
-/** Reads incremental build state without creating or modifying it. */
 export async function readContentBuildStateStatus(
   statePath: string,
 ): Promise<ContentBuildStateStatus> {

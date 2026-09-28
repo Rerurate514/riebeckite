@@ -1,6 +1,4 @@
 // @ts-nocheck
-// This fixture is installed only in the isolated external-consumer E2E
-// workspace. Its dependencies intentionally do not exist in this repository.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/node";
@@ -14,8 +12,6 @@ import { defineConfig } from "vite";
 
 const appRoot = fileURLToPath(new URL(".", import.meta.url));
 
-// This fixture deliberately lives outside the Riebeckite monorepo. It must
-// resolve every Riebeckite package through node_modules only.
 export default defineConfig({
   plugins: [
     honox({
@@ -28,9 +24,6 @@ export default defineConfig({
       extensionMap: riebeckiteSsgExtensionMap(),
     }),
   ],
-  // Riebeckite Core pulls in a few CommonJS packages. Vite's SSR environment
-  // must treat them as external, otherwise the SSG pass inlines and breaks on
-  // `module is not defined`. This mirrors the reference app (apps/web).
   environments: {
     ssr: {
       resolve: {

@@ -1,8 +1,3 @@
-/*
- * Site-local plugin stylesheet. It is declared through the plugin `assets`
- * contract with a module specifier the host bundler resolves, exactly like a
- * packaged `@riebeckite/plugin-*` stylesheet.
- */
 .fixture-local-plugin {
   color: #b45309;
 }

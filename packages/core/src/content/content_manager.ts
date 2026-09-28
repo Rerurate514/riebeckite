@@ -102,7 +102,6 @@ export class ContentManager {
       .map((entry) => ({ slug: entry.path.replace(/\.md$/, "") }));
   }
 
-  /** Scans the configured content source without processing content. */
   async scan(): Promise<readonly ContentSourceEntry[]> {
     return await this.entryReader.getEntries();
   }
@@ -269,10 +268,6 @@ export class ContentManager {
     return manifest.diagnostics;
   }
 
-  /**
-   * Inspects source entries and registered diagnostics without running build
-   * lifecycle hooks, rendering content, or writing build state.
-   */
   async inspect(): Promise<ContentInspection> {
     const [entries, contentIndex] = await Promise.all([
       this.entryReader.getEntries(),
@@ -289,11 +284,6 @@ export class ContentManager {
     await this.pluginRuntime.dispose(this.contentIndex);
   }
 
-  /**
-   * Resolves the canonical public location for every Markdown entry, applying
-   * plugin location resolvers. Reads frontmatter but does not render content or
-   * write build state.
-   */
   async getContentLocations(): Promise<
     ReadonlyMap<string, ContentPublicLocation>
   > {

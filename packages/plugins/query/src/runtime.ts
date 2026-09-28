@@ -16,13 +16,7 @@ import { renderQueryError, renderQueryResult, resolveQuery } from "./render.js";
 import type { QueryOptions, QuerySpec } from "./types.js";
 
 export type QueryRuntime = {
-  /**
-   * Remembers the processed content object for a slug. `ContentManager` caches
-   * and reuses this exact object, so replacing its `html` here is what makes
-   * the rewrite visible to consumers that render `getProcessedContent()`.
-   */
   track(slug: string, content: PostContent): void;
-  /** Replaces every placeholder in the manifest with rendered query output. */
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };
 
@@ -150,15 +144,6 @@ function reportInvalid(
   return renderQueryError(message, options);
 }
 
-/**
- * Parses the YAML body of a query block.
- *
- * The block is wrapped in front-matter delimiters and handed to
- * `vfile-matter`, which is already part of the framework's SSR external
- * contract (Core parses front matter through it). This deliberately avoids a
- * direct dependency on a CommonJS-only YAML package: importing such a package
- * from plugin code breaks Vite's SSR module runner (`require is not defined`).
- */
 function parseYamlMapping(source: string): unknown {
   const document = `---\n${source}\n---\n`;
   const file = {

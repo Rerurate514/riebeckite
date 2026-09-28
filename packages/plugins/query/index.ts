@@ -15,10 +15,6 @@ export type {
   QuerySpec,
 } from "./src/types.js";
 
-/**
- * Turns fenced `query` blocks into lists or tables built from the content
- * manifest. Results are computed at build time; no client runtime is required.
- */
 export function queryPlugin(options: QueryOptions = {}) {
   const language = options.language ?? "query";
   const runtime = createQueryRuntime(options);

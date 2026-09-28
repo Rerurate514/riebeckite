@@ -5,7 +5,6 @@ export type ResolvedContentRoute =
   | { kind: "redirect"; location: string; status: 301 | 302 | 307 | 308 }
   | null;
 
-/** Resolves a request pathname from the build-time content public-location index. */
 export function resolveContentRoute(
   manifest: ContentManifest,
   pathname: string,

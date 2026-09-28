@@ -33,10 +33,6 @@ export type ThemeDesignTokens = {
 };
 
 export type ThemeStyle = {
-  /**
-   * CSS module specifier resolved by the host bundler.
-   * Example: "@riebeckite/theme-default/style.css".
-   */
   moduleSpecifier: string;
 };
 

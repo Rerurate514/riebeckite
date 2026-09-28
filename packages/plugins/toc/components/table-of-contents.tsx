@@ -1,4 +1,3 @@
-/** @jsxImportSource hono/jsx */
 import type { TableOfContentsItem } from "../src/table-of-contents.js";
 
 type Props = {

@@ -86,16 +86,6 @@ function createPackageAliases(
   return aliases;
 }
 
-/**
- * Resolves the package root target from an `exports` field, supporting both the
- * plain string form and Node's conditional/subpath object forms. Only public,
- * string-valued targets are turned into workspace aliases; unresolvable or
- * condition-only fields fall back to `main`.
- *
- * Workspace aliases prefer the `source` condition so in-repo development keeps
- * resolving TypeScript sources without a build step. npm consumers never
- * request `source`, so they resolve the built `import`/`types` targets.
- */
 function resolveExportsEntry(
   exportsField: PackageJsonExports,
 ): string | undefined {

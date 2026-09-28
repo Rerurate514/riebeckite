@@ -1,11 +1,3 @@
-// Builds a single public package (run with the package directory as cwd).
-//
-// JavaScript is bundled with esbuild so relative imports work under plain Node
-// ESM resolution, while bare dependencies stay external. TypeScript
-// declarations are emitted with tsc into the same `dist/` tree. CSS and other
-// assets stay at their source location and are shipped through `files`.
-//
-// Both tools are workspace devDependencies, so no new build system is needed.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -18,7 +10,6 @@ const packageJson = JSON.parse(
   fs.readFileSync(path.join(packageDirectory, "package.json"), "utf8"),
 );
 
-/** Resolves an `exports` target, preferring the source entry point. */
 function resolveTarget(target) {
   if (typeof target === "string") return target;
   if (!target || typeof target !== "object") return undefined;
@@ -61,8 +52,6 @@ for (const target of Object.values(packageJson.bin ?? {})) {
     addEntry(target);
     continue;
   }
-  // Bins point at `./dist/<x>.js` in the published manifest; build from the
-  // matching TypeScript source when it exists.
   const match = target.match(/^\.\/dist\/(.+)\.js$/);
   if (!match) continue;
   for (const extension of [".ts", ".tsx"]) {

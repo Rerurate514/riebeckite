@@ -1,4 +1,3 @@
-/** @jsxImportSource hono/jsx */
 import type { ArticleBacklink } from "../src/backlinks.js";
 
 type Props = {

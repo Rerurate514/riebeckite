@@ -14,16 +14,6 @@ export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {
   return config;
 }
 
-/**
- * Resolves a config module that was loaded through `import()`.
- *
- * Depending on the loader, a config module arrives as the config object, a
- * single ESM namespace (`{ default: config }`), or — under tsx, which compiles
- * the config to CommonJS before Node's ESM interop wraps it — a double
- * namespace (`{ default: { default: config } }`). This is the single
- * normalization boundary for every shape so that consumers never need to unwrap
- * `.default` themselves.
- */
 export function resolveConfigModule(
   configModule: unknown,
 ): ResolvedRiebeckiteConfig {

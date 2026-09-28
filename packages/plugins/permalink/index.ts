@@ -19,16 +19,13 @@ type ResolverContent = Pick<ContentLocationInput, "slug" | "path"> & {
 };
 
 export type PermalinkOptions = {
-  /** Top-level frontmatter field used as the stable public ID. */
   frontmatter?: string;
   id?: { strategy?: PermalinkIdStrategy; length?: number };
   path?: { mode?: PermalinkPathMode; prefix?: string; trailingSlash?: boolean };
   index?: { collapse?: boolean };
   override?: { frontmatter?: string };
   redirects?: { frontmatter?: string; status?: RedirectStatus };
-  /** Advanced escape hatch. Its result is validated like every built-in ID. */
   resolveId?: (content: ResolverContent) => string;
-  /** Advanced escape hatch. It returns a site-local pathname. */
   resolvePath?: (input: { content: ResolverContent; id: string }) => string;
 };
 
@@ -74,9 +71,6 @@ function resolveLocation(
     content.frontmatter,
     resolved.overrideField,
   );
-  // Identity (ID) and location (permalink) are independent. A manual
-  // `permalink` override never derives a URL from the ID, and it never
-  // fabricates an ID either: an explicit frontmatter ID is still recorded.
   const explicitId = readOptionalString(
     content.frontmatter,
     resolved.frontmatter,

@@ -1,4 +1,3 @@
-/** @jsxImportSource hono/jsx */
 
 import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
 import type { LocalGraphData } from "../src/local-graph.js";

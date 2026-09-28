@@ -17,7 +17,6 @@ export interface ContentSource {
   read(entry: ContentSourceEntry): Promise<ContentSourceContent>;
 }
 
-/** Reads a logical entry without exposing source implementation details. */
 export async function readContentSourceEntry(
   source: ContentSource,
   logicalPath: string,
@@ -26,7 +25,6 @@ export async function readContentSourceEntry(
   return entry ? await source.read(entry) : null;
 }
 
-/** Finds a logical entry without exposing source implementation details. */
 export async function getContentSourceEntry(
   source: ContentSource,
   logicalPath: string,

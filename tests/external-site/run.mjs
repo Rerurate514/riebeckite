@@ -1,35 +1,4 @@
 #!/usr/bin/env node
-/**
- * A1.6 — External Site Build E2E.
- *
- * Proves that Riebeckite can build a site that lives completely outside the
- * monorepo, using only packed tarballs published under `node_modules`.
- *
- * The generated workspace looks like:
- *
- *   <temp>/
- *   ├─ site/            (fixture/site copied here; owns node_modules)
- *   │  ├─ package.json  (rewritten with file: tarball dependencies)
- *   │  ├─ tsconfig.json (checked-in base + the `vite/client` type library,
- *   │  │                 which only exists after the isolated install)
- *   │  ├─ riebeckite.config.ts
- *   │  ├─ vite.config.ts
- *   │  └─ app/...
- *   ├─ vault/           (fixture/vault copied here; OUTSIDE the site root)
- *   └─ tarballs/        (pnpm pack output)
- *
- * It then runs `riebeckite check | doctor | inspect | build`, type-checks the
- * site with both `moduleResolution: bundler` and `NodeNext`, and confirms the
- * generated HTML contains the fixture's marker content.
- *
- * The checked-in `fixture/site/tsconfig.json` intentionally does not list
- * `vite/client`: an editor/TypeScript server would otherwise report TS2688 for
- * a type library that the fixture only gets once this script installs it. The
- * external-consumer type reference is layered on inside the isolated copy by
- * `writeExternalConsumerTsconfig`.
- *
- * Set RIEBECKITE_E2E_KEEP=1 to keep the temporary workspace for inspection.
- */
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -83,7 +52,6 @@ const fail = (message) => {
   throw new Error(message);
 };
 
-/** Quote a single argv token for a shell command line. */
 function quote(value) {
   const text = String(value);
   return /[\s"]/.test(text) ? `"${text.replace(/"/g, '\\"')}"` : text;
@@ -173,23 +141,12 @@ function writeSitePackageJson(siteDir, packed) {
       .split(path.sep)
       .join("/")}`;
     manifest.dependencies[name] = fileSpec;
-    // Pin transitive `@riebeckite/*` requirements (the tarballs declare the
-    // published version, e.g. "0.0.1") to the local tarball so `npm install`
-    // never reaches the public registry for workspace packages.
     manifest.overrides[name] = fileSpec;
   }
 
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
-/**
- * Layer the external-consumer type requirements onto the checked-in base
- * tsconfig. `vite/client` is a real type library of an installed Vite site, but
- * the fixture's `node_modules` only exists after the isolated `npm install`
- * below. Keeping it out of the checked-in config keeps the repository free of
- * a spurious TS2688 while this copy still validates that `vite/client` resolves
- * like it would in any other external consumer.
- */
 function writeExternalConsumerTsconfig(siteDir) {
   step("layering the external-consumer type libraries (vite/client)");
   const configPath = path.join(siteDir, "tsconfig.json");

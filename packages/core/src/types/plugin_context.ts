@@ -18,16 +18,9 @@ export type PluginContext = {
   cache: PluginCache;
   logger: Logger;
   tracer: Tracer;
-  /** Source of logical vault entries; plugins must not access the vault directly. */
   contentSource?: ContentSource;
 };
 
-/**
- * Context shared by plugin lifecycle hooks.
- *
- * This alias intentionally shares the base plugin context so lifecycle-wide
- * services can be added without duplicating the context shape.
- */
 export type PluginLifecycleContext = PluginContext;
 
 export type PluginContentContext = PluginContext & {

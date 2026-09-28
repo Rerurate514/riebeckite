@@ -1,11 +1,5 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: These editor-only declarations deliberately avoid duplicating public package contracts.
 
-/**
- * Editor-only module declarations for this uninstalled fixture.
- *
- * tests/external-site/run.mjs excludes this file before type-checking packed
- * tarballs, so it cannot mask published declaration regressions.
- */
 declare module "@riebeckite/core" {
   export const ContentManager: any;
   export const defineConfig: any;

@@ -4,10 +4,6 @@ import { Link, Script } from "honox/server";
 import { SiteHeader } from "../components/site-header";
 import { config } from "../config";
 
-/**
- * Mirrors `apps/web`'s theme attribute contract so a site-local theme's
- * `data-*` attributes reach the document the same way a packaged theme's do.
- */
 function themeAttributes() {
   const { theme } = config;
 

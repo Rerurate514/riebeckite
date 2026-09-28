@@ -27,10 +27,6 @@ export type PluginEndpointOptions = {
   cacheControl?: string;
 };
 
-/**
- * Defines an endpoint and applies its optional cache policy without requiring
- * each plugin to duplicate response-header plumbing.
- */
 export function defineEndpoint(
   path: string,
   handler: PluginEndpoint["handler"],

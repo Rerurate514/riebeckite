@@ -77,9 +77,15 @@ importers:
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
+      '@riebeckite/plugin-daily-notes':
+        specifier: workspace:*
+        version: link:../../packages/plugins/daily-notes
       '@riebeckite/plugin-dataview':
         specifier: workspace:*
         version: link:../../packages/plugins/dataview
+      '@riebeckite/plugin-deploy':
+        specifier: workspace:*
+        version: link:../../packages/plugins/deploy
       '@riebeckite/plugin-diagnostics':
         specifier: workspace:*
         version: link:../../packages/plugins/diagnostics
@@ -107,6 +113,9 @@ importers:
       '@riebeckite/plugin-properties':
         specifier: workspace:*
         version: link:../../packages/plugins/properties
+      '@riebeckite/plugin-quality':
+        specifier: workspace:*
+        version: link:../../packages/plugins/quality
       '@riebeckite/plugin-query':
         specifier: workspace:*
         version: link:../../packages/plugins/query
@@ -116,12 +125,21 @@ importers:
       '@riebeckite/plugin-related-posts':
         specifier: workspace:*
         version: link:../../packages/plugins/related-posts
+      '@riebeckite/plugin-rename':
+        specifier: workspace:*
+        version: link:../../packages/plugins/rename
+      '@riebeckite/plugin-responsive-image':
+        specifier: workspace:*
+        version: link:../../packages/plugins/responsive-image
       '@riebeckite/plugin-search':
         specifier: workspace:*
         version: link:../../packages/plugins/search
       '@riebeckite/plugin-seo':
         specifier: workspace:*
         version: link:../../packages/plugins/seo
+      '@riebeckite/plugin-text-fragment':
+        specifier: workspace:*
+        version: link:../../packages/plugins/text-fragment
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../../packages/plugins/toc
@@ -308,6 +326,19 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/daily-notes:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.12.26
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/dataview:
     dependencies:
       '@riebeckite/core':
@@ -319,6 +350,16 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+
+  packages/plugins/deploy:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/diagnostics:
     dependencies:
@@ -455,6 +496,16 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/quality:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/query:
     dependencies:
       '@riebeckite/core':
@@ -485,6 +536,22 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/rename:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/plugins/responsive-image:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/plugins/search:
     dependencies:
       '@riebeckite/core':
@@ -499,6 +566,16 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/text-fragment:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/toc:
     dependencies:

@@ -14,3 +14,4 @@ showRoutes(app);
 
 export default app;
 export { content };
+export { config };

@@ -8,7 +8,9 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/backlinks",
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",
+  "packages/plugins/daily-notes",
   "packages/plugins/dataview",
+  "packages/plugins/deploy",
   "packages/plugins/diagnostics",
   "packages/plugins/diff",
   "packages/plugins/excalidraw",
@@ -21,12 +23,15 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/obsidian-markdown",
   "packages/plugins/permalink",
   "packages/plugins/properties",
+  "packages/plugins/quality",
   "packages/plugins/query",
   "packages/plugins/recent-posts",
   "packages/plugins/related-posts",
+  "packages/plugins/rename",
   "packages/plugins/responsive-image",
   "packages/plugins/search",
   "packages/plugins/seo",
+  "packages/plugins/text-fragment",
   "packages/plugins/toc",
   "packages/themes/default",
   "packages/themes/gruvbox",
@@ -75,6 +80,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README_en.md", "README_ja.md", "dist"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
+        test: "node --import tsx --test \"test/*.test.ts\"",
         prepack: "pnpm run build",
       },
     };
@@ -101,9 +107,23 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory.startsWith("packages/plugins/")) {
-    const hasStyle = !["diagnostics", "obsidian-markdown", "permalink", "seo"].some(
-      (plugin) => directory.endsWith(`/${plugin}`),
-    );
+    const pluginName = directory.slice("packages/plugins/".length);
+    const hasStyle = ![
+      "deploy",
+      "diagnostics",
+      "obsidian-markdown",
+      "permalink",
+      "quality",
+      "rename",
+      "seo",
+    ].includes(pluginName);
+    const hasTests = [
+      "daily-notes",
+      "deploy",
+      "quality",
+      "rename",
+      "text-fragment",
+    ].includes(pluginName);
     return {
       files: [
         "LICENSE",
@@ -114,6 +134,9 @@ export function expectedPackageMetadata(directory) {
       ],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
+        ...(hasTests
+          ? { test: "node --import tsx --test \"test/*.test.ts\"" }
+          : {}),
         prepack: "pnpm run build",
       },
     };

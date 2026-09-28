@@ -4,7 +4,9 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
+import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
+import { deployPlugin } from "@riebeckite/plugin-deploy";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
@@ -15,12 +17,15 @@ import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
+import { qualityPlugin } from "@riebeckite/plugin-quality";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
+import { renamePlugin } from "@riebeckite/plugin-rename";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
+import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { defaultTheme } from "@riebeckite/theme-default";
 
@@ -100,6 +105,11 @@ export default defineConfig({
     localGraphPlugin(),
     gardenExplorerPlugin(),
     hoverPreviewPlugin(),
+    dailyNotesPlugin(),
+    renamePlugin(),
+    textFragmentPlugin(),
+    qualityPlugin(),
+    deployPlugin({ provider: "cloudflare-pages" }),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

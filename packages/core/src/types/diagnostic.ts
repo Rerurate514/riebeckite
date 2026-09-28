@@ -11,6 +11,7 @@ export type DiagnosticCode =
   | "duplicate-title"
   | "slug-collision"
   | "excluded-public"
+  | "publish-boundary"
   | "internal-error"
   | (string & {});
 

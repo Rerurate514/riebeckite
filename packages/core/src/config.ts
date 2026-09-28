@@ -1,6 +1,7 @@
 import { validateConfig } from "./config_validation.js";
 import { resolvePlugins } from "./types/plugin.js";
 import type { PostFrontmatter } from "./types/post_content.js";
+import { isPublishable } from "./types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config.js";
 import type { RiebeckiteConfig } from "./types/riebeckite_config.js";
 import type { ThemeAttributes, ThemeStyle } from "./types/theme_config.js";
@@ -140,11 +141,7 @@ export function isPublished(
   config: ResolvedRiebeckiteConfig,
   frontmatter: PostFrontmatter | undefined,
 ): boolean {
-  if (config.content.filters.publishStrategy === "explicit") {
-    return frontmatter?.publish === true;
-  }
-
-  return !(frontmatter?.private === true || frontmatter?.draft === true);
+  return isPublishable(config.content.filters.publishStrategy, frontmatter);
 }
 
 export function isExcluded(

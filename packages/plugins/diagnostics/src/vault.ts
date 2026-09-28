@@ -3,12 +3,9 @@ import {
   IMAGE_EXTENSIONS,
   isAttachmentPath,
   isExcluded,
+  isPublishable,
 } from "@riebeckite/core";
-import {
-  isNotePublic,
-  type ParsedFrontmatter,
-  parseFrontmatter,
-} from "./frontmatter.js";
+import { type ParsedFrontmatter, parseFrontmatter } from "./frontmatter.js";
 import type { AnalyzerContentConfig } from "./types.js";
 
 const NOTE_EXTENSION = "md";
@@ -91,7 +88,7 @@ export async function scanVault(
         headings: extractHeadings(markdown),
         blockIds: extractBlockIds(markdown),
         excluded,
-        published: isNotePublic(config.publishStrategy, fm.values),
+        published: isPublishable(config.publishStrategy, fm.values),
       };
 
       if (excluded) {

@@ -175,6 +175,8 @@ export type {
 export type { PostContent, PostFrontmatter } from "./src/types/post_content.js";
 
 export type { PublishStrategy } from "./src/types/publish_strategy.js";
+export type { PublishFrontmatter } from "./src/types/publish_strategy.js";
+export { isPublishable } from "./src/types/publish_strategy.js";
 export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config.js";
 export type { RiebeckiteConfig } from "./src/types/riebeckite_config.js";
 export type { SiteConfig } from "./src/types/site_config.js";

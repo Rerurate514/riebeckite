@@ -22,6 +22,16 @@ export {
 } from "./src/content/content_build_state_store.js";
 export type { ContentGraph } from "./src/content/content_graph.js";
 export { createContentGraph } from "./src/content/content_graph.js";
+export {
+  buildGraphEdges,
+  layoutRadialGraph,
+} from "./src/content/graph_layout.js";
+export type {
+  GraphEdge,
+  GraphLayoutNode,
+  LinkableGraphNode,
+  RadialGraphLayoutOptions,
+} from "./src/content/graph_layout.js";
 export { resolveDefaultContentLocation } from "./src/content/content_location.js";
 export type {
   ContentBuildOptions,

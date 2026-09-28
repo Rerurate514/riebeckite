@@ -1,7 +1,11 @@
-import { definePlugin } from "@riebeckite/core";
+import {
+  buildGraphEdges,
+  definePlugin,
+  layoutRadialGraph,
+} from "@riebeckite/core";
 
 export { default as LocalGraph } from "./components/local-graph.js";
-export { buildGraphEdges, layoutRadialGraph } from "./src/graph.js";
+export { buildGraphEdges, layoutRadialGraph };
 export type {
   LocalGraphData,
   LocalGraphNode,

@@ -1,5 +1,5 @@
+import type { GraphEdge } from "@riebeckite/core";
 import type { SearchItem } from "@riebeckite/plugin-search";
-import type { GraphEdge } from "./graph.js";
 
 export type GardenExplorerNote = SearchItem & {
   folder: string;

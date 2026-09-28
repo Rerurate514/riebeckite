@@ -1,11 +1,11 @@
 /** @jsxImportSource hono/jsx */
+import { layoutRadialGraph } from "@riebeckite/core";
 import { searchItems } from "@riebeckite/plugin-search";
 import { useEffect, useMemo, useState } from "hono/jsx";
 import type {
   GardenExplorerData,
   GardenExplorerNote,
 } from "../src/garden-explorer.js";
-import { layoutRadialGraph } from "../src/graph.js";
 
 type Props = {
   data: GardenExplorerData;

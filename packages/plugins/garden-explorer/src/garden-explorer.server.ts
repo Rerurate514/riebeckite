@@ -1,4 +1,5 @@
 import {
+  buildGraphEdges,
   type ContentManifest,
   type ContentManifestEntry,
   isPublished,
@@ -10,7 +11,6 @@ import type {
   GardenExplorerNote,
   GardenExplorerTag,
 } from "./garden-explorer.js";
-import { buildGraphEdges } from "./graph.js";
 
 const MAX_BODY_LENGTH = 4_000;
 

@@ -1,4 +1,3 @@
-import path from "node:path";
 import {
   definePlugin,
   escapeHtml,
@@ -78,7 +77,7 @@ function renderMedia(
   if (!context.embed) return null;
 
   const sourceUrl = buildMediaSourceUrl(context);
-  const fileName = path.posix.basename(stripUrlHash(context.path));
+  const fileName = getFileName(stripUrlHash(context.path));
   const caption =
     options.showCaption === false ? "" : renderCaption(context, fileName);
   const actions = renderActions(context, options);
@@ -196,4 +195,8 @@ function getUrlFragment(value: string): string | null {
 function stripUrlHash(value: string): string {
   const fragmentStart = value.indexOf("#");
   return fragmentStart < 0 ? value : value.slice(0, fragmentStart);
+}
+
+function getFileName(contentPath: string): string {
+  return contentPath.split("/").at(-1) ?? contentPath;
 }

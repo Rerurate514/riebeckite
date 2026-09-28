@@ -12,6 +12,10 @@ This note links back to [[index]].
 
 RIEBECKITE_EXTERNAL_NOTE_MARKER
 
+![[attachments/external-guide.pdf]]
+
+![[media/external-audio.mp3]]
+
 ## A heading
 
 Some body text to give the table of contents something to find.

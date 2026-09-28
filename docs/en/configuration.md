@@ -22,9 +22,151 @@ export default defineConfig({
 
 `content.directory` selects the default filesystem location. Use `content.source` to provide a different `ContentSource`; do not configure two competing readers. `exclude` removes matching material before it becomes content. `filters.publishStrategy` controls publication filtering. `isExcluded` and `isPublished` expose the corresponding policy helpers.
 
-## Filesystem roots
+## Filesystem roots and external vaults
 
-`configRoot` is the directory containing `riebeckite.config.*`; `appRoot` is the HonoX/Vite application directory. Config modules are imported from `configRoot`, while relative `content.directory` values are resolved from `appRoot`. The integration resolves these roots and the resulting absolute `contentRoot` together. In a typical standalone site both roots are the Vite root; set `configRoot` only when the configuration intentionally lives elsewhere.
+Riebeckite keeps the site application and its source material separate. The
+following names describe different directories and must not be used
+interchangeably:
+
+| Name | Responsibility | Default / resolution base |
+| --- | --- | --- |
+| `appRoot` | The HonoX/Vite application: `app/`, `public/`, routes, generated styles, and build output configuration | Vite's `root` |
+| `configRoot` | Directory containing `riebeckite.config.ts`, `.js`, or `.mjs` | `appRoot` |
+| `contentRoot` | Absolute filesystem root for the configured content directory or Obsidian vault | `path.resolve(appRoot, content.directory)` |
+
+`configRoot` determines where the config module is imported from. It does
+**not** change the base for a relative `content.directory`: that base is always
+`appRoot`. The integration resolves all three roots before running content or
+plugins, and CLI commands reuse that result. Consequently, execution from a
+nested directory, CI working directory, or editor task does not change which
+vault is read.
+
+### Recommended layout
+
+Keep an Obsidian vault outside the site when it is used independently by
+Obsidian, shared by multiple site applications, or stored in another Git
+repository:
+
+```text
+workspace/
+├─ site/
+│  ├─ package.json
+│  ├─ vite.config.ts
+│  ├─ riebeckite.config.ts
+│  ├─ app/
+│  └─ public/
+└─ vault/
+   ├─ index.md
+   ├─ notes/
+   ├─ attachments/
+   └─ media/
+```
+
+With this layout, the site configuration is explicit and portable:
+
+```ts
+// site/riebeckite.config.ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { media } from "@riebeckite/plugin-media";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  site: { title: "My notes" },
+  content: {
+    directory: "../vault",
+    exclude: [".obsidian/**", "Templates/**"],
+  },
+  plugins: [obsidianMarkdown(), media(), attachment()],
+});
+```
+
+An absolute `directory` is valid, but a relative path is normally easier to
+move between developer machines and CI. Do not derive the value with
+`process.cwd()`, and do not make `appRoot` point to the vault. The vault is
+source data; Vite's application root must remain the site.
+
+### Application-side content access
+
+The HonoX integration resolves the content root automatically. An application
+that constructs `ContentManager` for routes or islands must use the same
+resolved absolute directory instead of the raw relative config value:
+
+```ts
+// site/app/config.ts
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { resolveConfigModule } from "@riebeckite/core";
+import * as rawConfigModule from "../riebeckite.config";
+
+const appRoot = fileURLToPath(new URL("../", import.meta.url));
+const rawConfig = resolveConfigModule(rawConfigModule);
+
+export const config = {
+  ...rawConfig,
+  content: {
+    ...rawConfig.content,
+    directory: path.resolve(appRoot, rawConfig.content.directory),
+  },
+};
+```
+
+Construct `ContentManager` with `config.content.directory` after this step. It
+is already absolute, so resolving it against a second base is an error-prone
+duplicate transformation. If `content.source` is configured, it replaces the
+filesystem reader; do not use it as a second reader for the same vault.
+
+### Attachments and media
+
+`obsidianMarkdown()` gives vault files logical paths relative to
+`contentRoot`. For example, `![[attachments/report.pdf]]` is rendered by
+`attachment()` and `![[media/interview.mp3]]` by `media()`. Their generated
+URLs use this stable public shape:
+
+```text
+/assets/attachments/<logical-path-relative-to-the-vault>
+```
+
+`attachment()` reads the embedded file size from the resolved vault root and
+rejects paths outside it. `media()` renders supported audio and video formats
+using the same logical path. Rendering a URL does **not** copy a binary file
+into the Vite public directory. The site application must copy only assets that
+it intends to publish to `public/assets/attachments/`, preserving their logical
+vault-relative paths. The reference application's
+[`build_images.ts`](../../apps/web/scripts/build_images.ts) shows an
+incremental, referenced-asset-only implementation.
+
+Do not copy the whole vault as a shortcut. It can expose private notes,
+unreferenced attachments, and `.obsidian` metadata. Publish filtering and
+asset-copy policy belong to the site application until the publish-boundary
+check is introduced.
+
+### Verification and troubleshooting
+
+Run the CLI from a nested application directory to prove that configuration is
+not tied to the current working directory:
+
+```sh
+cd site/app
+pnpm exec riebeckite check
+pnpm exec riebeckite doctor
+pnpm exec riebeckite inspect config
+pnpm exec riebeckite inspect content --list
+pnpm exec riebeckite build
+```
+
+Use the results in this order:
+
+1. `check` validates the config and plugin contracts.
+2. `doctor` reports an unreadable or invalid filesystem content source.
+3. `inspect config` confirms the resolved directory.
+4. `inspect content --list` confirms the expected logical paths before you
+   diagnose a WikiLink or embed.
+5. `build` verifies the integration and route rendering.
+
+If `riebeckite.config.ts` intentionally lives outside the Vite application,
+pass `configRoot` to the `riebeckite()` Vite plugin. Keep `appRoot` set to the
+site root and keep relative `content.directory` values relative to that root.
 
 ## Plugins and themes
 

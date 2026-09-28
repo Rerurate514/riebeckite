@@ -69,11 +69,16 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  {
+    directory: "packages/plugins/vega-lite",
+    name: "@riebeckite/plugin-vega-lite",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -403,6 +408,15 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes(VEGALITE_MARKER)) {
+    fail(`generated HTML is missing the Vega-Lite marker (${VEGALITE_MARKER})`);
+  }
+  if (!combined.includes("rb-vega-lite")) {
+    fail("generated HTML is missing the Vega-Lite plugin output (rb-vega-lite)");
+  }
+  if (!combined.includes("data-vega-lite")) {
+    fail("Vega-Lite figure is missing the output data attributes");
   }
 
   for (const file of htmlFiles) {

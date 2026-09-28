@@ -17,6 +17,7 @@ import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { tocPlugin } from "@riebeckite/plugin-toc";
+import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -65,6 +66,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    vegaLite(),
     excalidraw(),
     media(),
     attachment(),

@@ -99,6 +99,15 @@ declare module "@riebeckite/plugin-toc/components" {
   export default TableOfContents;
 }
 
+declare module "@riebeckite/plugin-vega-lite" {
+  export const vegaLite: any;
+  export const vegaLitePlugin: any;
+}
+
+declare module "@riebeckite/plugin-vega-lite/client" {
+  export const initVegaLite: any;
+}
+
 declare module "@riebeckite/theme-default" {
   export const defaultTheme: any;
 }

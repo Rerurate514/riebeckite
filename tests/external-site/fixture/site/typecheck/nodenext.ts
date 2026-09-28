@@ -40,6 +40,8 @@ import SearchBar from "@riebeckite/plugin-search/components";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
+import { vegaLite } from "@riebeckite/plugin-vega-lite";
+import { initVegaLite } from "@riebeckite/plugin-vega-lite/client";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 // Touch the resolved values so that unused-import elimination cannot hide a
@@ -71,6 +73,8 @@ export const resolvedEntries = {
   tocPlugin,
   initTableOfContents,
   TableOfContents,
+  vegaLite,
+  initVegaLite,
   defaultTheme,
 } as const;
 

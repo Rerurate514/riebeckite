@@ -36,7 +36,7 @@ export type ScanResult = {
   assetPaths: Set<string>;
   assets: ScannedAsset[];
   filePaths: Set<string>;
-  targetIndex: Map<string, string>;
+  targetIndex: Map<string, ResolvedTarget>;
 };
 
 export type TargetKind = "note" | "image" | "attachment";
@@ -59,7 +59,7 @@ export async function scanVault(
   const source =
     config.source ??
     new FileSystemContentSource(config.directory, config.exclude);
-  const targetIndex = new Map<string, string>();
+  const targetIndex = new Map<string, ResolvedTarget>();
   const filePaths = new Set<string>();
   const noteSlugs = new Set<string>();
   const noteBySlug = new Map<string, ScannedNote>();
@@ -99,13 +99,17 @@ export async function scanVault(
       includedNotes.push(note);
       noteSlugs.add(slug);
       noteBySlug.set(slug, note);
-      addToIndex(targetIndex, slug, fm);
+      addToIndex(targetIndex, slug, "note", fm);
       continue;
     }
 
     if (excluded) continue;
 
-    addToIndex(targetIndex, relative);
+    addToIndex(
+      targetIndex,
+      relative,
+      IMAGE_EXTENSIONS.includes(extension) ? "image" : "attachment",
+    );
     if (IMAGE_EXTENSIONS.includes(extension)) {
       assetPaths.add(relative);
       assets.push({ relativePath: relative, extension });
@@ -147,19 +151,13 @@ export function getWikilinkMatches(markdown: string): WikilinkMatch[] {
 
 export function resolveWikilinkTarget(
   target: string,
-  targetIndex: Map<string, string>,
+  targetIndex: Map<string, ResolvedTarget>,
 ): ResolvedTarget | null {
   let key = target.trim().toLowerCase();
   if (key.endsWith(`.${NOTE_EXTENSION}`)) {
     key = key.slice(0, -NOTE_EXTENSION.length - 1);
   }
-  const value = targetIndex.get(key);
-  if (!value) return null;
-
-  const extension = getExtension(value);
-  if (extension === NOTE_EXTENSION) return { kind: "note", value };
-  if (IMAGE_EXTENSIONS.includes(extension)) return { kind: "image", value };
-  return { kind: "attachment", value };
+  return targetIndex.get(key) ?? null;
 }
 
 export function isImageTarget(target: string): boolean {
@@ -215,14 +213,23 @@ export function resolveVaultRelative(value: string): string | null {
 }
 
 function addToIndex(
-  targetIndex: Map<string, string>,
+  targetIndex: Map<string, ResolvedTarget>,
   value: string,
+  kind: TargetKind,
   fm?: ParsedFrontmatter,
 ) {
+  // Notes take precedence over assets sharing the same key; within one kind the
+  // first registration wins. This keeps the pre-existing ambiguity resolution
+  // while ensuring a note target is never mistaken for an asset.
+  const setKey = (key: string) => {
+    const existing = targetIndex.get(key);
+    if (existing && !(existing.kind !== "note" && kind === "note")) return;
+    targetIndex.set(key, { kind, value });
+  };
+
   const parts = value.split("/");
   for (let i = parts.length - 1; i >= 0; i--) {
-    const key = parts.slice(i).join("/").toLowerCase();
-    if (!targetIndex.has(key)) targetIndex.set(key, value);
+    setKey(parts.slice(i).join("/").toLowerCase());
   }
 
   if (fm) {
@@ -232,7 +239,7 @@ function addToIndex(
       : [];
     for (const alias of aliasList) {
       const key = alias.trim().toLowerCase();
-      if (key && !targetIndex.has(key)) targetIndex.set(key, value);
+      if (key) setKey(key);
     }
     return;
   }
@@ -241,8 +248,7 @@ function addToIndex(
   if (stemValue !== value) {
     const stemParts = stemValue.split("/");
     for (let i = stemParts.length - 1; i >= 0; i--) {
-      const key = stemParts.slice(i).join("/").toLowerCase();
-      if (!targetIndex.has(key)) targetIndex.set(key, value);
+      setKey(stemParts.slice(i).join("/").toLowerCase());
     }
   }
 }

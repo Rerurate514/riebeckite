@@ -2,11 +2,18 @@
 
 ## 1. Prepare the workspace
 
+For a new site, generate one first, then install and validate:
+
 ```sh
+pnpm exec riebeckite init my-site
+# or, using the scaffolder package: npm create riebeckite my-site
+cd my-site
 pnpm install
 pnpm exec riebeckite check
 pnpm exec riebeckite doctor
 ```
+
+`init` writes a self-contained site (configuration, HonoX application shell, routes, stylesheet, and starter content) and refuses a non-empty target unless `--force` is passed.
 
 Run these from the application directory when using the CLI. `check` confirms configuration and plugin capability validity; `doctor` reports broader health. Neither generates a deployment build.
 

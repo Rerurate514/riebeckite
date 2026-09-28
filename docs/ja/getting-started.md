@@ -2,11 +2,18 @@
 
 ## 1. workspace を準備する
 
+新しい Site は先に生成してから install・検証します。
+
 ```sh
+pnpm exec riebeckite init my-site
+# または scaffolder パッケージを使う場合: npm create riebeckite my-site
+cd my-site
 pnpm install
 pnpm exec riebeckite check
 pnpm exec riebeckite doctor
 ```
+
+`init` は config、HonoX の application shell、route、stylesheet、初期 content を含む自己完結の Site を生成します。生成対象のファイルが既にあるディレクトリには `--force` なしでは書き込みません。
 
 CLI は application directory から実行します。`check` は config/plugin capability の有効性、`doctor` は広い health を確認します。どちらも deployment build を生成しません。
 

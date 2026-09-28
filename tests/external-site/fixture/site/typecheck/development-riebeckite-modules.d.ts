@@ -13,12 +13,16 @@ declare module "@riebeckite/core" {
 
 declare module "@riebeckite/honox" {
   export const buildHonoxApplication: any;
+  export const createRiebeckiteSsg: any;
+  export const defaultSsgEntry: any;
+  export const defaultSsrExternals: any;
   export const loadRiebeckiteConfig: any;
   export const resolveHonoxApplicationRoot: any;
   export const resolveHonoxConfig: any;
   export const riebeckite: any;
   export const riebeckiteSsg: any;
   export const riebeckiteSsgExtensionMap: any;
+  export const riebeckiteVite: any;
 }
 
 declare module "@riebeckite/honox/server" {

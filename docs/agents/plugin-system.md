@@ -40,6 +40,10 @@ and SEO extensions.
     storage; never a runtime database.
 -   Keep plugin-specific CSS/client code in the plugin package and
     expose it through asset/client-entry contracts.
+-   Give a plugin's rendered feature a stable `rr-<feature>` root hook on its
+    outermost element; keep the historical class on the same element for
+    backward compatibility. Do not emit plugin classes or `--*` tokens in the
+    framework `rb-` namespace, and treat `rr-<feature>__*` / `--*` as internal.
 -   Do not copy plugin CSS into the app as the normal integration
     mechanism.
 -   Do not rescan the content filesystem when Manifest/ContentGraph

@@ -3,7 +3,7 @@
 Use the CLI from the application directory:
 
 ```text
-dev | check | doctor | build [--full] | profile [--full]
+init [directory] [--force] | dev | check | doctor | build [--full] | profile [--full]
 inspect [config | plugins | content [--list] | graph | build]
 ```
 

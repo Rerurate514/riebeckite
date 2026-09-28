@@ -152,6 +152,28 @@ export function examplePlugin() {
 Omit `assets` or `clientEntries` when the plugin does not need them. The client
 entry's export name is optional and defaults to the module default export.
 
+## CSS hooks
+
+Plugin CSS stays in the plugin package and reaches the browser through
+`assets`. When a plugin renders a distinct, reusable feature, put a stable
+root hook on its outermost element:
+
+- Name plugin/feature hooks `rr-<feature>` (`rr-search`, `rr-callout`,
+  `rr-query`, `rr-code`, ...). Use BEM structure under the root:
+  `rr-<feature>`, `rr-<feature>__element`, `rr-<feature>--modifier`.
+- Keep the historical class on the same element when one already exists. The
+  `rr-` hook is additive, so existing selectors and site overrides keep
+  working; new plugin CSS should target the `rr-` hook.
+- Do not put plugin output in the `rb-` namespace. `rb-*` classes and
+  `--rb-*` tokens belong to framework structural hooks and semantic design
+  tokens. Plugin-local tokens use `--rr-*` and may fall back to `--rb-*`.
+- `rr-<feature>__*` and `rr-<feature>--*` are internal implementation
+  details. Document any descendant a theme is expected to target.
+
+Themes target these root hooks. Plugin default CSS loads before theme CSS, so
+a theme restyles a feature without editing the plugin. See
+[Theme System](./theme-system.md#stable-css-hooks).
+
 ## Endpoints and SEO
 
 `endpoints` lets an Integration connect reusable plugin HTTP behavior to

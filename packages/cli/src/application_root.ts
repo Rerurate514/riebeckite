@@ -50,9 +50,13 @@ export async function resolveRiebeckiteProject(
 }
 
 export class ProjectRootError extends Error {
+  readonly hint: string;
+
   constructor(message: string) {
     super(message);
     this.name = "ProjectRootError";
+    this.hint =
+      "Run the CLI from the application directory that contains riebeckite.config.ts.";
   }
 }
 

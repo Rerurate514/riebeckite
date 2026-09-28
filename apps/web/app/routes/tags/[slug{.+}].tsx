@@ -1,23 +1,34 @@
 import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
 import Article from "../../components/article/article";
+import {
+  buildCollections,
+  findCollection,
+  TAG_BASE_PATH,
+} from "../../lib/collections";
 import { buildTagSeo } from "../../lib/seo";
-import { buildTagIndex, buildTagPage } from "../../lib/tags";
+import { buildTagPage } from "../../lib/tags";
+
+const TAG_PREFIX = `${TAG_BASE_PATH}/`;
 
 export default createRoute(
   ssgParams(async () => {
-    const tagIndex = await buildTagIndex();
-    return Array.from(tagIndex.keys()).map((slug) => ({ slug }));
+    const collections = await buildCollections();
+    return collections
+      .filter((collection) => collection.kind === "tag")
+      .map((collection) => ({
+        slug: collection.path.slice(TAG_PREFIX.length),
+      }));
   }),
   async (c) => {
     const slug = c.req.param("slug");
     if (!slug) return c.notFound();
 
-    const tagIndex = await buildTagIndex();
-    const entry = tagIndex.get(slug);
-    if (!entry) return c.notFound();
-    c.set("seo", buildTagSeo(entry.tag, `/tags/${slug}`));
+    const collection = await findCollection("tag", `${TAG_PREFIX}${slug}`);
+    if (!collection) return c.notFound();
 
-    return c.render(<Article content={buildTagPage(entry)} />);
+    c.set("seo", buildTagSeo(collection.value, collection.path));
+
+    return c.render(<Article content={buildTagPage(collection)} />);
   },
 );

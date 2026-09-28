@@ -38,6 +38,7 @@ export default defineConfig({
 | `duplicate-title` | warning | 公開ノート同士でタイトルが重複している |
 | `slug-collision` | error | 大文字・小文字を区別しない slug が衝突している |
 | `excluded-public` | warning | 除外されたノートに `publish: true` が指定されている |
+| `publish-boundary` | warning | 公開コンテンツから非公開コンテンツへリンク・埋め込みしている |
 | `internal-error` | error | コンテンツ解析中に処理できないエラーが発生した |
 
 未使用アセットと孤立ノートは、明示的に有効化した場合だけ確認します。意図的に孤立させるトップページなどがあるなら、`reportOrphans` の結果を公開方針と照らして判断してください。

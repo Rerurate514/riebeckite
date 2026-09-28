@@ -3,16 +3,13 @@ import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/cloudflare-workers";
 import { defaultOptions } from "@hono/vite-dev-server";
 import adapter from "@hono/vite-dev-server/cloudflare";
-import {
-  riebeckite,
-  riebeckiteSsg,
-  riebeckiteSsgExtensionMap,
-} from "@riebeckite/honox";
+import { riebeckiteVite } from "@riebeckite/honox";
 import tailwindcss from "@tailwindcss/vite";
 import honox from "honox/vite";
 import { defineConfig } from "vite";
 
 const appRoot = fileURLToPath(new URL(".", import.meta.url));
+const workspaceRoot = path.resolve(appRoot, "../..");
 
 export default defineConfig({
   plugins: [
@@ -28,33 +25,14 @@ export default defineConfig({
       client: { input: ["/app/client.ts", "/app/style.css"] },
     }),
     tailwindcss(),
-    riebeckite({
+    ...riebeckiteVite({
       appRoot,
-      configRoot: path.resolve(appRoot, "../.."),
-      workspaceRoot: path.resolve(appRoot, "../.."),
+      configRoot: workspaceRoot,
+      workspaceRoot,
     }),
     build(),
-    riebeckiteSsg({
-      entry: path.join(appRoot, "app/server.ts"),
-      extensionMap: riebeckiteSsgExtensionMap(),
-    }),
   ],
   optimizeDeps: {
     include: ["debug"],
-  },
-  environments: {
-    ssr: {
-      resolve: {
-        external: [
-          "extend",
-          "debug",
-          "node:fs/promises",
-          "node:path",
-          "parse-numeric-range",
-          "slugify",
-          "vfile-matter",
-        ],
-      },
-    },
   },
 });

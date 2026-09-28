@@ -3,6 +3,7 @@
 CLI は current working directory から application root を解決します。application directory で実行してください。
 
 ```text
+riebeckite init [directory] [--force]
 riebeckite dev
 riebeckite check
 riebeckite doctor
@@ -13,6 +14,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 
 | command | 意味 | build state を書くか |
 | --- | --- | --- |
+| `init` | integration のテンプレートから最小 Site を生成 | 書かない |
 | `dev` | integration の development workflow を起動 | integration に依存 |
 | `check` | config/plugin/capability の妥当性を検証 | 書かない |
 | `doctor` | environment/config/plugin/content/state の health を診断 | 書かない |
@@ -21,6 +23,10 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `inspect` | resolve 済みの事実を表示 | 書かない |
 
 `check` が示すのは有効性であり、output が build/deploy 済みであることではありません。Doctor は可能な独立診断を継続し、失敗時は non-zero で終了します。Inspector は build、state/cache/assets の書込み、Vite/HonoX build、artifact render、auto-fix を絶対に起動しない read-only command です。
+
+`init` は config、Vite/HonoX の application shell、route、stylesheet、初期 content を含む自己完結の Site を対象ディレクトリ（既定は current directory）に生成します。生成対象のファイルが既にあるディレクトリには `--force` なしでは書き込みません。生成後は依存関係を install し、`check` と `build` を実行してください。`create-riebeckite` パッケージは `npm create riebeckite` から同じ generator を実行します。
+
+command の失敗は error 名、message、存在する場合は error の `code`・file path・remediation の `hint` とともに表示されます。ネストした cause は `Caused by:` 行として表示されます。
 
 ```sh
 pnpm exec riebeckite check

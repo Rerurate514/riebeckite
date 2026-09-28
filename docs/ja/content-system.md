@@ -34,4 +34,22 @@ Manifest は解決結果を保持します（`ContentManifestEntry.permalink` / 
 
 Manifest は application が使う生成済み content 表現、content graph は関係表現です。runtime manifest の参照は明示的 build ではありません。incremental state は explicit build 専用で、Worker runtime の可変依存にはできません。
 
+## Content query
+
+Core は解決済み manifest entry に対する portable な query 層を公開します。
+
+- `queryContentEntries(entries, spec)` は tag、folder、frontmatter、date 期間で絞り込み、複数の sort key を適用し、`limit`/`offset` で切り出します。
+- `queryContentPage(entries, spec)` は同じ selection を行い、page の slice と `page` metadata（`page`、`pageCount`、`hasPrevious`、`hasNext`）を返します。`resolveContentQueryPagination(total, spec)` は metadata だけを計算します。
+- `groupContentEntries(entries, groupBy, options)` は同じ selection を行ったうえで、tag、folder、date の粒度（`year`/`month`/`day`）、frontmatter field ごとに grouping します。
+
+どちらも `ContentManifestEntry` を対象とするため、link には解決済みの `permalink` を使います。slug から content の公開 URL を組み立てることはありません。Application と Plugin はこれらを組み合わせて一覧 page や taxonomy 表示を作り、routing は Core の責務にしません。
+
+## Content collection
+
+`buildContentCollections(entries, definitions)` は同じ query selection を一覧 page の集合に変換します。definition は `kind`、`groupBy`（tags、folder、date、frontmatter field）、site-local な `basePath`、任意の `filter`/`sort`/`order`、任意の `resolveTitle`/`resolvePath` builder を宣言します。生成される `ContentCollection` は group の `value`、解決済みの `path`、`title`、query 順の `entries` を持ちます。
+
+これが taxonomy、folder、archive の一覧を支える共通機構です。`tag` definition は `tags` を `/tags` 配下に grouping し、`archive` definition は date を `/archive` 配下に grouping します。どちらも同じ呼び出しで生成されます。routing は application に残し、collection contract と query engine は Core に置きます。一覧の entry は `ContentManifestEntry.permalink` を経由して link し、slug から URL を組み立てることはありません。
+
+definition に `pageSize` を指定すると collection を複数 page に分割できます。各 page は独立した `ContentCollection` として生成され、`path` は 2 page 目以降 `collection path + /page/<n>` になります。`page` metadata は `current`、`count`、`size`、`total`、`previousPath`、`nextPath` を持ち、navigation の構築に使えます。
+
 canonical content identity を source/manifest/graph で保ち、slug と permalink を別概念として public URL は解決済み `ContentPublicLocation` からのみ取得し、metadata を過信せず、publication/exclusion policy を config に表し、recoverable error を黙って content から落とさず diagnostics にします。

@@ -6,6 +6,8 @@ Plugin は `addDiagnostics` で finding を提供できます。Core/integration
 
 `check` は config/plugin validity、`doctor` はより広い health を扱います。Doctor は一部の失敗で他の独立 finding を隠しません。失敗した health check は non-zero exit になります。
 
+Doctor の build-state 検査は、incremental state が読めること、および保存された fingerprint が現在の content source と一致することを確認します。前回の build 以降に entry が追加・変更・削除されている場合は、件数と sample を含む warning として報告します。次の build で state は更新されます。
+
 - option validation は pure にし、file read・mutation・background work を始めない
 - 不確実なら unsafe output を黙って選ばず報告する
 - stack trace、token、不要な絶対 path を user-facing message に漏らさない

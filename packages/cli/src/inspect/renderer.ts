@@ -7,6 +7,12 @@ import type {
   PluginInspection,
 } from "./types.js";
 
+const buildStateInvalidReasonLabels = {
+  "malformed-json": "state file is not valid JSON",
+  "unsupported-version": "state file version is not supported",
+  "invalid-shape": "state file structure is not recognized",
+} as const;
+
 export function renderApplicationInspection(
   inspection: ApplicationInspection,
 ): string {
@@ -29,6 +35,14 @@ export function renderApplicationInspection(
     field("State", inspection.build.status),
     ...(inspection.build.status === "valid"
       ? [field("Entries", inspection.build.entryCount)]
+      : []),
+    ...(inspection.build.status === "invalid"
+      ? [
+          field(
+            "Reason",
+            buildStateInvalidReasonLabels[inspection.build.reason],
+          ),
+        ]
       : []),
     "",
     "Use:",
@@ -140,6 +154,9 @@ export function renderBuildInspection(inspection: BuildInspection): string {
           field("Version", inspection.version),
           field("Entries", inspection.entryCount),
         ]
+      : []),
+    ...(inspection.status === "invalid"
+      ? [field("Reason", buildStateInvalidReasonLabels[inspection.reason])]
       : []),
   ].join("\n");
 }

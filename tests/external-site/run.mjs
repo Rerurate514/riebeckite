@@ -37,7 +37,15 @@ const PACKAGES = [
     name: "@riebeckite/plugin-recent-posts",
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
+  {
+    directory: "packages/plugins/diagnostics",
+    name: "@riebeckite/plugin-diagnostics",
+  },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  {
+    directory: "packages/create-riebeckite",
+    name: "create-riebeckite",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
@@ -46,6 +54,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -133,6 +142,7 @@ function writeSitePackageJson(siteDir, packed) {
   const manifestPath = path.join(siteDir, "package.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   manifest.dependencies = { ...manifest.dependencies };
+  manifest.devDependencies = { ...manifest.devDependencies };
   manifest.overrides = { ...manifest.overrides };
 
   for (const [name, info] of packed) {
@@ -140,7 +150,11 @@ function writeSitePackageJson(siteDir, packed) {
       .relative(siteDir, info.tarball)
       .split(path.sep)
       .join("/")}`;
-    manifest.dependencies[name] = fileSpec;
+    if (name in manifest.devDependencies) {
+      manifest.devDependencies[name] = fileSpec;
+    } else {
+      manifest.dependencies[name] = fileSpec;
+    }
     manifest.overrides[name] = fileSpec;
   }
 
@@ -174,6 +188,14 @@ function writeExternalConsumerTsconfig(siteDir) {
     fail("external-consumer tsconfig is missing the vite/client type library");
   }
   console.log(`  site/tsconfig.json types: ${[...effective].join(", ")}`);
+}
+
+function assertDeclaredDependencies(siteDir) {
+  step("checking the site for undeclared (hoisted) dependencies");
+  run(process.execPath, [
+    path.join(repoRoot, "scripts", "check_dependencies.mjs"),
+    siteDir,
+  ]);
 }
 
 function assertNoMonorepoEscapeHatches(siteDir) {
@@ -323,7 +345,19 @@ function runTypecheck(siteDir, project) {
   return result;
 }
 
-function assertBuildOutput(siteDir) {
+function formatBytes(bytes) {
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+  const digits = value >= 10 || unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(digits)} ${units[unitIndex]}`;
+}
+
+function assertBuildOutput(siteDir, vaultDir) {
   step("checking generated site output");
   const distDir = path.join(siteDir, "dist");
   if (!fs.existsSync(distDir)) {
@@ -370,11 +404,22 @@ function assertBuildOutput(siteDir) {
   ) {
     fail("attachment plugin did not resolve a file from the external vault");
   }
-  if (!combined.includes('attachment-card__size">21 B</span>')) {
-    fail("attachment plugin did not read the external vault file size");
+  if (!combined.includes('class="attachment-card rr-attachment"')) {
+    fail("attachment plugin did not expose its stable rr-attachment hook");
   }
-  if (!combined.includes('class="media-embed media-embed--audio"')) {
+  const attachmentSize = formatBytes(
+    fs.statSync(path.join(vaultDir, "attachments", "external-guide.pdf")).size,
+  );
+  if (!combined.includes(`attachment-card__size">${attachmentSize}</span>`)) {
+    fail(
+      `attachment plugin did not read the external vault file size (expected ${attachmentSize})`,
+    );
+  }
+  if (!combined.includes('class="media-embed rr-media media-embed--audio"')) {
     fail("media plugin did not render an external vault media embed");
+  }
+  if (!combined.includes('class="search-bar rr-search"')) {
+    fail("search plugin did not expose its stable rr-search hook");
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
@@ -394,6 +439,26 @@ function assertBuildOutput(siteDir) {
     fail("site-local theme attribute was not applied to the document");
   }
 
+  if (combined.includes(PRIVATE_MARKER)) {
+    fail("non-published note content leaked into the generated HTML");
+  }
+  const distFiles = walkFiles(distDir);
+  const leakedAsset = distFiles.find((file) =>
+    path.basename(file).includes("private-only"),
+  );
+  if (leakedAsset) {
+    fail(
+      `non-published attachment leaked into dist: ${path.relative(siteDir, leakedAsset)}`,
+    );
+  }
+  for (const file of distFiles.filter((full) => full.endsWith(".json"))) {
+    if (fs.readFileSync(file, "utf8").includes(PRIVATE_MARKER)) {
+      fail(
+        `non-published note leaked into a generated index: ${path.relative(siteDir, file)}`,
+      );
+    }
+  }
+
   const cssFiles = walkFiles(distDir, (full) => full.endsWith(".css"));
   const css = cssFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
   if (!css.includes("fixture-local-plugin")) {
@@ -407,6 +472,64 @@ function assertBuildOutput(siteDir) {
     console.log(`  ${path.relative(siteDir, file)}`);
   }
   for (const file of cssFiles) {
+    console.log(`  ${path.relative(siteDir, file)}`);
+  }
+}
+
+function generateStarterSite(tempRoot) {
+  step("generating a starter site with riebeckite init");
+  const starterDir = path.join(tempRoot, "starter");
+  const cli = path.join(repoRoot, "packages", "cli", "bin", "riebeckite.mjs");
+  run(process.execPath, [cli, "init", starterDir]);
+
+  const rerun = run(process.execPath, [cli, "init", starterDir], {
+    allowFailure: true,
+  });
+  if (rerun.status === 0) {
+    fail("riebeckite init must refuse a non-empty target without --force");
+  }
+
+  return starterDir;
+}
+
+function generateCreateStarterSite(tempRoot) {
+  step("generating a starter site with create-riebeckite");
+  const starterDir = path.join(tempRoot, "starter-create");
+  run(process.execPath, [
+    path.join(
+      repoRoot,
+      "packages",
+      "create-riebeckite",
+      "bin",
+      "create-riebeckite.mjs",
+    ),
+    starterDir,
+  ]);
+  if (!fs.existsSync(path.join(starterDir, "riebeckite.config.ts"))) {
+    fail("create-riebeckite did not generate riebeckite.config.ts");
+  }
+}
+
+function assertStarterOutput(siteDir) {
+  step("checking generated starter output");
+  const distDir = path.join(siteDir, "dist");
+  if (!fs.existsSync(distDir)) {
+    fail("starter build did not create a dist/ directory");
+  }
+
+  const htmlFiles = walkFiles(distDir, (full) => full.endsWith(".html"));
+  if (htmlFiles.length === 0) {
+    fail("starter build did not emit any HTML files under dist/");
+  }
+
+  const combined = htmlFiles
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
+  if (!combined.includes("starter")) {
+    fail("starter HTML is missing the generated site title");
+  }
+
+  for (const file of htmlFiles) {
     console.log(`  ${path.relative(siteDir, file)}`);
   }
 }
@@ -438,7 +561,18 @@ function main() {
 
     assertIsolatedInstall(siteDir, tempRoot);
     assertNoMonorepoEscapeHatches(siteDir);
+    assertDeclaredDependencies(siteDir);
     assertPublishedArtifacts(siteDir);
+
+    step("verifying capability dependency resolution");
+    run(process.execPath, [path.join(siteDir, "capability-check.mjs")], {
+      cwd: siteDir,
+    });
+
+    step("verifying the publish boundary");
+    run(process.execPath, [path.join(siteDir, "publish-boundary-check.mjs")], {
+      cwd: siteDir,
+    });
 
     const nestedWorkingDirectory = path.join(siteDir, "app");
     runCli(siteDir, "check", nestedWorkingDirectory);
@@ -450,7 +584,9 @@ function main() {
       nestedWorkingDirectory,
     );
     if (!cliText(configInspection).includes("fixture-local")) {
-      fail("inspect config did not report the site-local theme (fixture-local)");
+      fail(
+        "inspect config did not report the site-local theme (fixture-local)",
+      );
     }
     const pluginInspection = runCli(
       siteDir,
@@ -464,10 +600,26 @@ function main() {
     }
     runCli(siteDir, "build", nestedWorkingDirectory);
 
-    assertBuildOutput(siteDir);
+    assertBuildOutput(siteDir, vaultDir);
 
     runTypecheck(siteDir, "tsconfig.json");
     runTypecheck(siteDir, "tsconfig.nodenext.json");
+
+    generateCreateStarterSite(tempRoot);
+    const starterDir = generateStarterSite(tempRoot);
+    writeSitePackageJson(starterDir, packed);
+    assertNoMonorepoEscapeHatches(starterDir);
+    assertDeclaredDependencies(starterDir);
+
+    step("npm install the generated starter");
+    run("npm", ["install", "--no-audit", "--no-fund", "--loglevel=error"], {
+      cwd: starterDir,
+    });
+
+    runCli(starterDir, "check");
+    runCli(starterDir, "doctor");
+    runCli(starterDir, "build");
+    assertStarterOutput(starterDir);
 
     console.log(
       "\n[external-site] PASS: external site built from published artifacts",

@@ -1,0 +1,468 @@
+export type SiteTemplateVariables = {
+  readonly name: string;
+  readonly title: string;
+  readonly description: string;
+  readonly baseUrl: string;
+  readonly locale: string;
+};
+
+export type SiteTemplateFile = {
+  readonly path: string;
+  readonly content: string;
+};
+
+export function siteTemplateFiles(
+  variables: SiteTemplateVariables,
+): readonly SiteTemplateFile[] {
+  return [
+    { path: "package.json", content: packageJson(variables) },
+    { path: "riebeckite.config.ts", content: riebeckiteConfig(variables) },
+    { path: "vite.config.ts", content: viteConfig() },
+    { path: "tsconfig.json", content: tsconfig() },
+    { path: ".gitignore", content: gitignore() },
+    { path: "README.md", content: readme(variables) },
+    { path: "content/index.md", content: indexContent(variables) },
+    { path: "app/server.ts", content: server() },
+    { path: "app/client.ts", content: client() },
+    { path: "app/config.ts", content: appConfig() },
+    { path: "app/content.ts", content: appContent() },
+    { path: "app/constants/paths.ts", content: paths() },
+    { path: "app/global.d.ts", content: globalDeclarations() },
+    { path: "app/style.css", content: style() },
+    { path: "app/components/site-header.tsx", content: siteHeader() },
+    { path: "app/components/article.tsx", content: article() },
+    { path: "app/routes/_renderer.tsx", content: renderer() },
+    { path: "app/routes/index.tsx", content: indexRoute() },
+    { path: "app/routes/[slug{.+}].tsx", content: slugRoute() },
+  ];
+}
+
+function packageJson(variables: SiteTemplateVariables): string {
+  return `${JSON.stringify(
+    {
+      name: variables.name,
+      private: true,
+      version: "0.0.0",
+      type: "module",
+      scripts: {
+        dev: "riebeckite dev",
+        build: "riebeckite build",
+        check: "riebeckite check",
+        doctor: "riebeckite doctor",
+        inspect: "riebeckite inspect",
+      },
+      dependencies: {
+        "@riebeckite/core": "^0.0.1",
+        "@riebeckite/honox": "^0.0.1",
+        "@riebeckite/plugin-obsidian-markdown": "^0.0.1",
+        "@riebeckite/theme-default": "^0.0.1",
+        hono: "^4.12.25",
+        honox: "0.1.56",
+      },
+      devDependencies: {
+        "@hono/vite-build": "^1.11.1",
+        "@riebeckite/cli": "^0.0.1",
+        "@types/node": "^24.5.2",
+        typescript: "^5.0.0",
+        vite: "^8.0.9",
+      },
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+function riebeckiteConfig(variables: SiteTemplateVariables): string {
+  return `import { defineConfig } from "@riebeckite/core";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { defaultTheme } from "@riebeckite/theme-default";
+
+export default defineConfig({
+  site: {
+    title: ${JSON.stringify(variables.title)},
+    description: ${JSON.stringify(variables.description)},
+    baseUrl: ${JSON.stringify(variables.baseUrl)},
+    locale: ${JSON.stringify(variables.locale)},
+  },
+  content: {
+    directory: "content",
+  },
+  theme: defaultTheme(),
+  plugins: [obsidianMarkdown()],
+});
+`;
+}
+
+function viteConfig(): string {
+  return `import path from "node:path";
+import { fileURLToPath } from "node:url";
+import build from "@hono/vite-build/node";
+import {
+  riebeckite,
+  riebeckiteSsg,
+  riebeckiteSsgExtensionMap,
+} from "@riebeckite/honox";
+import honox from "honox/vite";
+import { defineConfig } from "vite";
+
+const appRoot = fileURLToPath(new URL(".", import.meta.url));
+
+export default defineConfig({
+  plugins: [
+    honox({
+      client: { input: ["/app/client.ts", "/app/style.css"] },
+    }),
+    riebeckite({ appRoot }),
+    build(),
+    riebeckiteSsg({
+      entry: path.join(appRoot, "app/server.ts"),
+      extensionMap: riebeckiteSsgExtensionMap(),
+    }),
+  ],
+  environments: {
+    ssr: {
+      resolve: {
+        external: [
+          "extend",
+          "debug",
+          "node:fs/promises",
+          "node:path",
+          "parse-numeric-range",
+          "slugify",
+          "vfile-matter",
+        ],
+      },
+    },
+  },
+});
+`;
+}
+
+function tsconfig(): string {
+  return `${JSON.stringify(
+    {
+      compilerOptions: {
+        target: "ES2022",
+        module: "ESNext",
+        moduleResolution: "Bundler",
+        lib: ["ES2022", "DOM", "DOM.Iterable"],
+        jsx: "react-jsx",
+        jsxImportSource: "hono/jsx",
+        types: ["node", "vite/client"],
+        strict: true,
+        noEmit: true,
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+        resolveJsonModule: true,
+        skipLibCheck: true,
+      },
+      include: [
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "riebeckite.config.ts",
+        "vite.config.ts",
+      ],
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+function gitignore(): string {
+  return ["node_modules/", "dist/", ".riebeckite/", ""].join("\n");
+}
+
+function readme(variables: SiteTemplateVariables): string {
+  return [
+    `# ${variables.title}`,
+    "",
+    "A minimal Riebeckite site generated by `riebeckite init`.",
+    "",
+    "## Commands",
+    "",
+    "```sh",
+    "pnpm install",
+    "pnpm exec riebeckite check",
+    "pnpm exec riebeckite dev",
+    "pnpm exec riebeckite build",
+    "```",
+    "",
+    "Content lives in `content/`. The site owns `app/routes`, `app/components`,",
+    "`app/islands`, and `app/style.css`; see the Riebeckite HonoX integration",
+    "documentation for the site application contract.",
+    "",
+  ].join("\n");
+}
+
+function indexContent(variables: SiteTemplateVariables): string {
+  return [
+    "---",
+    "publish: true",
+    "---",
+    "",
+    `# ${variables.title}`,
+    "",
+    "Welcome to your Riebeckite site.",
+    "",
+    "Edit `content/index.md` to change this page, and add more Markdown files",
+    "next to it. Files need `publish: true` frontmatter before they appear.",
+    "",
+  ].join("\n");
+}
+
+function server(): string {
+  return `import { mountRiebeckiteEndpoints } from "@riebeckite/honox/server";
+import { createApp } from "honox/server";
+import { config } from "./config";
+import { content } from "./content";
+
+const app = createApp({
+  init: (app) => {
+    mountRiebeckiteEndpoints(app, { config, content });
+  },
+});
+
+export default app;
+`;
+}
+
+function client(): string {
+  return `import { initRiebeckiteClient } from "virtual:riebeckite/client";
+import { createClient } from "honox/client";
+
+createClient();
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPage, { once: true });
+} else {
+  initPage();
+}
+
+function initPage() {
+  initRiebeckiteClient();
+}
+`;
+}
+
+function appConfig(): string {
+  return `import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { resolveConfigModule } from "@riebeckite/core";
+import * as rawConfigModule from "../riebeckite.config";
+
+const appRoot =
+  process.env.RIEBECKITE_APP_ROOT ??
+  fileURLToPath(new URL("../", import.meta.url));
+const resolvedConfig = resolveConfigModule(rawConfigModule);
+
+export const config = {
+  ...resolvedConfig,
+  content: {
+    ...resolvedConfig.content,
+    directory: path.resolve(appRoot, resolvedConfig.content.directory),
+  },
+};
+`;
+}
+
+function appContent(): string {
+  return `import { ContentManager } from "@riebeckite/core";
+import { config } from "./config";
+import { CONTENT_DIR } from "./constants/paths";
+
+export const content = new ContentManager(
+  CONTENT_DIR,
+  config.content.exclude,
+  {
+    config,
+    plugins: config.plugins,
+  },
+);
+`;
+}
+
+function paths(): string {
+  return `import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { config } from "../config";
+
+const appRoot =
+  process.env.RIEBECKITE_APP_ROOT ??
+  fileURLToPath(new URL("../../", import.meta.url));
+
+export const CONTENT_DIR = path.resolve(appRoot, config.content.directory);
+export const ASSETS_ROOT = "public/";
+`;
+}
+
+function globalDeclarations(): string {
+  return `declare module "virtual:riebeckite/client" {
+  export function initRiebeckiteClient(): void;
+}
+`;
+}
+
+function style(): string {
+  return `@import "./.riebeckite/plugin-styles.css";
+@import "./.riebeckite/theme-styles.css";
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.site-header {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.site-header__home {
+  color: #111827;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.site-article {
+  display: block;
+  max-width: 48rem;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+}
+`;
+}
+
+function siteHeader(): string {
+  return `import { config } from "../config";
+
+export function SiteHeader() {
+  return (
+    <header class="site-header">
+      <a href="/" class="site-header__home">
+        {config.site.title}
+      </a>
+    </header>
+  );
+}
+`;
+}
+
+function article(): string {
+  return `import type { PostContent } from "@riebeckite/core";
+import { Article, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
+
+export function SiteArticle({ post }: { post: PostContent }) {
+  return (
+    <Article class="site-article">
+      <ArticleLayout>
+        <ArticleContent>
+          <div dangerouslySetInnerHTML={{ __html: post.html ?? "" }} />
+        </ArticleContent>
+      </ArticleLayout>
+    </Article>
+  );
+}
+`;
+}
+
+function renderer(): string {
+  return `import { jsxRenderer } from "hono/jsx-renderer";
+import { Link, Script } from "honox/server";
+import { SiteHeader } from "../components/site-header";
+import { config } from "../config";
+
+function themeAttributes() {
+  const { theme } = config;
+
+  return {
+    ...theme.attributes,
+    "data-theme": theme.colorMode === "system" ? undefined : theme.colorMode,
+    "data-theme-name": theme.name,
+    "data-typography": theme.typography,
+    "data-article-layout": theme.articleLayout,
+  };
+}
+
+export default jsxRenderer(({ children }) => {
+  return (
+    <html lang={config.site.locale} {...themeAttributes()}>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{config.site.title}</title>
+        <Link href="/app/style.css" rel="stylesheet" />
+        <Script src="/app/client.ts" async />
+      </head>
+      <body class="riebeckite-page">
+        <SiteHeader />
+        {children}
+      </body>
+    </html>
+  );
+});
+`;
+}
+
+function indexRoute(): string {
+  return `import { isPublished } from "@riebeckite/core";
+import { createRoute } from "honox/factory";
+import { SiteArticle } from "../components/article";
+import { config } from "../config";
+import { content } from "../content";
+
+export default createRoute(async (c) => {
+  const manifest = await content.getManifest();
+  const indexEntry = manifest.bySlug.get("index");
+  if (indexEntry && indexEntry.permalink !== "/") {
+    return c.redirect(indexEntry.permalink, 308);
+  }
+
+  const post = await content.getProcessedContent("index");
+  if (!isPublished(config, post.frontmatter)) {
+    return c.notFound();
+  }
+
+  return c.render(<SiteArticle post={post} />);
+});
+`;
+}
+
+function slugRoute(): string {
+  return `import { isPublished } from "@riebeckite/core";
+import { resolveContentRoute } from "@riebeckite/honox/server";
+import { ssgParams } from "hono/ssg";
+import { createRoute } from "honox/factory";
+import { SiteArticle } from "../components/article";
+import { config } from "../config";
+import { content } from "../content";
+
+export default createRoute(
+  ssgParams(async () => {
+    const manifest = await content.getManifest();
+    return manifest.entries
+      .filter((entry) => isPublished(config, entry.frontmatter))
+      .filter((entry) => entry.permalink !== "/")
+      .map((entry) => ({ slug: entry.permalink.replace(/^\\/+/, "") }));
+  }),
+  async (c) => {
+    const requestedSlug = c.req.param("slug");
+    if (!requestedSlug) return c.notFound();
+    if (/\\.[a-zA-Z0-9]+$/.test(requestedSlug)) return c.notFound();
+
+    const manifest = await content.getManifest();
+    const route = resolveContentRoute(manifest, c.req.path);
+    if (!route) return c.notFound();
+    if (route.kind === "redirect")
+      return c.redirect(route.location, route.status);
+
+    const post = await content.getProcessedContent(route.entry.slug);
+    if (!isPublished(config, post.frontmatter)) {
+      return c.notFound();
+    }
+
+    return c.render(<SiteArticle post={post} />);
+  },
+);
+`;
+}

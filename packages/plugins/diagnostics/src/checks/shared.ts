@@ -18,6 +18,7 @@ const DEFAULT_SEVERITY: Record<string, DiagnosticSeverity> = {
   "duplicate-title": "warning",
   "slug-collision": "error",
   "excluded-public": "warning",
+  "publish-boundary": "warning",
   "internal-error": "error",
 };
 

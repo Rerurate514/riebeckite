@@ -1,6 +1,15 @@
 import type { ContentSourceEntry } from "./content_source.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 1;
+export const CONTENT_BUILD_STATE_VERSION = 2;
+
+/**
+ * Build state lives under `<content directory>/.riebeckite`. That directory is
+ * build-time state, not content, so content sources must exclude it from scans
+ * to avoid treating the state file itself as a changed content entry.
+ */
+export const CONTENT_BUILD_STATE_DIRECTORY = ".riebeckite";
+
+export const CONTENT_BUILD_STATE_EXCLUDE = `${CONTENT_BUILD_STATE_DIRECTORY}/**`;
 
 export type ContentBuildEntry = {
   readonly fingerprint: string;

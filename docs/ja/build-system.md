@@ -10,6 +10,8 @@ incremental state は application 単位の `.riebeckite/build/content-state.jso
 
 ContentSource metadata の mtime、size、ETag、hash は変更の根拠ですが、mtime だけを正しさの根拠にしてはいけません。Plugin Cache は state と別の plugin-scoped・JSON serializable・再生成可能な build-time cache です。どちらも Workers runtime の可変依存にしません。
 
+state は各 entry の fingerprint と依存関係（リンク先 note の permalink、参照する asset の metadata など）を記録します。依存先が変われば依存元 entry を無効化し、さらにその依存元にも伝播します。entry の追加・削除は link 解決を広く変えうるため、全 note の再生成にフォールバックします。`.riebeckite` は build-time state であり content ではないため、scan 対象にしません。
+
 ```sh
 pnpm exec riebeckite build
 pnpm exec riebeckite build --full

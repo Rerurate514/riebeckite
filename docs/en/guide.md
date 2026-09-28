@@ -18,7 +18,7 @@ This guide walks through publishing a site with Riebeckite, from installation to
 
 - Node.js (LTS) and pnpm are installed.
 - You run commands from the repository root. Content and the application are separate: Markdown lives under `content/`, and the HonoX application lives in `apps/web`.
-- Riebeckite does not ship an `init` command yet, so the reference application is the starting point. To build a separate site, use it and the E2E fixture described in [Use your own project](#use-your-own-project).
+- Riebeckite ships an `init` command: `pnpm exec riebeckite init my-site` (or `npm create riebeckite my-site`) generates a standalone site you can install and build. The reference application and the E2E fixture remain useful examples for a fully customized site.
 
 ## 1. Install dependencies
 
@@ -137,6 +137,8 @@ pnpm --filter @riebeckite/web deploy    # build and deploy to Cloudflare Workers
 
 Deployment settings live in `apps/web/wrangler.jsonc`; `assets.directory` points at `./dist`. Adjust the worker name, compatibility flags, and bindings there before your first deploy.
 
+For a site outside this repository, start from the [Cloudflare deployment template](../../templates/cloudflare/README_en.md). It provides a generic `wrangler.jsonc` and a GitHub Actions workflow that checks, builds, and deploys the generated `dist/` as Workers Static Assets. Because Riebeckite pre-renders content routes and plugin endpoints, the asset-only Worker mirrors the reference configuration; no runtime `main` entry is required. Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then adjust the Worker name in the template. Validate locally with `pnpm exec wrangler deploy --dry-run` before the first deploy.
+
 ## 8. Extend the site
 
 - **Add a plugin.** Install or reference the package, then register it in the `plugins` array. Read the package README under `packages/plugins/*/README_en.md` for its options. Plugins can add Markdown transforms, HTML transforms, assets, browser behavior, endpoints, SEO, and diagnostics.
@@ -145,7 +147,20 @@ Deployment settings live in `apps/web/wrangler.jsonc`; `assets.directory` points
 
 ## Use your own project
 
-To build a site outside this repository, start from the E2E fixture at [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site). It is a standalone project that installs Riebeckite packages into its own `node_modules` and builds with no workspace dependency. The essential files are:
+Generate a standalone site with the CLI or the scaffolder package, then install and build it:
+
+```bash
+pnpm exec riebeckite init my-site
+# or: npm create riebeckite my-site
+cd my-site
+pnpm install
+pnpm exec riebeckite check
+pnpm exec riebeckite build
+```
+
+`init` writes a self-contained site that passes `check` and `build` as generated. It refuses to overwrite an existing non-empty target unless `--force` is passed.
+
+The generated site follows the same site-application contract as the E2E fixture at [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site). The fixture adds site-local extensions and an external vault, so it remains the reference when you need those. The essential files are:
 
 | File | Role |
 | --- | --- |
@@ -154,7 +169,7 @@ To build a site outside this repository, start from the E2E fixture at [`tests/e
 | `app/config.ts` | Resolves `content.directory` once against the application root |
 | `app/content.ts` | Constructs `ContentManager` from the resolved config |
 | `app/server.ts` | Mounts Riebeckite endpoints on the HonoX application via `mountRiebeckiteEndpoints` |
-| `vite.config.ts` | Registers `riebeckite()`, `riebeckiteSsg()`, and the HonoX Vite plugin |
+| `vite.config.ts` | Registers `riebeckiteVite()` and the HonoX Vite plugin |
 
 The fixture keeps its Obsidian vault in a sibling `vault/` directory and points `content.directory` at it, which is the recommended layout when the vault is also used by the Obsidian desktop application. See the external-vault section of [Configuration](./configuration.md) and [HonoX Integration](./honox-integration.md) for the resolution rules and boundary responsibilities.
 

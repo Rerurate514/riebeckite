@@ -1,0 +1,14 @@
+{
+  // Replace this with a unique Worker name; it becomes
+  // <name>.<account>.workers.dev.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "my-riebeckite-site",
+  "compatibility_date": "2026-06-09",
+  "compatibility_flags": ["nodejs_compat"],
+  // Riebeckite pre-renders content routes and plugin endpoints, so the Worker
+  // deploys as static assets from the Vite build output. `riebeckite build`
+  // writes this directory.
+  "assets": {
+    "directory": "./dist"
+  }
+}

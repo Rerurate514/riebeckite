@@ -10,10 +10,8 @@ import type {
 import type { Diagnostic } from "../types/diagnostic.js";
 import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
-import {
-  ContentBuildCoordinator,
-  type ContentBuildPreparation,
-} from "./content_build_coordinator.js";
+import { ContentBuildCoordinator, type ContentBuildPreparation } from "./content_build_coordinator.js";
+import { CONTENT_BUILD_STATE_EXCLUDE } from "./content_build_state.js";
 import { resolveContentBuildStatePath } from "./content_build_state_store.js";
 import { hasContentChanges } from "./content_change_set.js";
 import { ContentEntryReader } from "./content_entry_reader.js";
@@ -68,7 +66,10 @@ export class ContentManager {
     this.source =
       typeof content === "string"
         ? (pipelineOptions.config?.content.source ??
-          new FileSystemContentSource(content, exclude))
+          new FileSystemContentSource(content, [
+            ...exclude,
+            CONTENT_BUILD_STATE_EXCLUDE,
+          ]))
         : content;
     this.pipelineOptions = {
       ...this.pipelineOptions,

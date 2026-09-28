@@ -8,6 +8,7 @@ import {
   checkSlugCollisions,
 } from "./checks/note_metadata.js";
 import { checkOrphans } from "./checks/orphans.js";
+import { checkPublishBoundary } from "./checks/publish_boundary.js";
 import { createAnalysisState, normalizeOptions } from "./checks/shared.js";
 import { checkWikilinks } from "./checks/wikilinks.js";
 import type { AnalyzerContentConfig, DiagnosticsOptions } from "./types.js";
@@ -39,6 +40,7 @@ export async function analyzeContent(
   checkOrphans(source, state, normalizedOptions, diagnostics);
   checkUnusedAssets(source, state, normalizedOptions, diagnostics);
   checkExcludedPublic(source, normalizedOptions, diagnostics);
+  checkPublishBoundary(source, normalizedOptions, diagnostics);
 
   return diagnostics;
 }

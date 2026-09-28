@@ -1,6 +1,7 @@
 export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
+  "packages/create-riebeckite",
   "packages/integrations/honox",
   "packages/plugins/attachment",
   "packages/plugins/autocardlink",
@@ -55,7 +56,7 @@ export const catalogDependencies = {
 export function expectedPackageMetadata(directory) {
   if (directory === "packages/cli") {
     return {
-      files: ["LICENSE", "bin", "dist"],
+      files: ["LICENSE", "README_en.md", "README_ja.md", "bin", "dist"],
       scripts: {
         build:
           "esbuild index.ts --bundle --platform=node --format=esm --minify --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --outfile=dist/cli.js",
@@ -66,7 +67,17 @@ export function expectedPackageMetadata(directory) {
 
   if (directory === "packages/core") {
     return {
-      files: ["LICENSE", "dist"],
+      files: ["LICENSE", "README_en.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/create-riebeckite") {
+    return {
+      files: ["LICENSE", "bin", "dist"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
         prepack: "pnpm run build",
@@ -76,7 +87,7 @@ export function expectedPackageMetadata(directory) {
 
   if (directory === "packages/integrations/honox") {
     return {
-      files: ["LICENSE", "dist"],
+      files: ["LICENSE", "README_en.md", "README_ja.md", "dist"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
         prepack: "pnpm run build",

@@ -1,4 +1,7 @@
-import type { ProfileReport, ProfileSpanAggregate } from "./profile_trace_sink.js";
+import type {
+  ProfileReport,
+  ProfileSpanAggregate,
+} from "./profile_trace_sink.js";
 
 const contentLabels: Readonly<Record<string, string>> = {
   "content.scan": "Scan",
@@ -19,6 +22,7 @@ export function renderProfile(report: ProfileReport, failed = false): string {
   appendPlugins(lines, report);
   appendIncremental(lines, report);
   appendCache(lines, report);
+  appendDiagnostics(lines, report);
   appendSlowOperations(lines, report);
   return lines.join("\n");
 }
@@ -92,6 +96,19 @@ function appendCache(lines: string[], report: ProfileReport): void {
       row("Hit rate", `${(report.cache.hitRate * 100).toFixed(1)}%`, 2),
     );
   }
+}
+
+function appendDiagnostics(lines: string[], report: ProfileReport): void {
+  if (!report.diagnostics) return;
+  lines.push("", "Diagnostics");
+  lines.push(row("Run", formatDuration(report.diagnostics.durationMs), 2));
+  if (report.diagnostics.calls > 1) {
+    lines.push(row("Calls", String(report.diagnostics.calls), 2));
+  }
+  lines.push(row("Total", String(report.diagnostics.total), 2));
+  lines.push(row("Errors", String(report.diagnostics.errors), 2));
+  lines.push(row("Warnings", String(report.diagnostics.warnings), 2));
+  lines.push(row("Info", String(report.diagnostics.info), 2));
 }
 
 function appendSlowOperations(lines: string[], report: ProfileReport): void {

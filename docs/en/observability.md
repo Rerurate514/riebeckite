@@ -19,3 +19,5 @@ For parallel work, the sum of child span durations is cumulative work, not elaps
 Do not log secrets, raw credentials, or unnecessarily sensitive source content. Keep tracing optional and proportional: instrumentation must not alter build results. Runtime Workers must not depend on mutable build traces or local profiling files.
 
 Run `riebeckite profile [--full]` for CLI-driven reporting. Pair it with [Build system](build-system.md) and [Diagnostics](diagnostics.md) when investigating a problem.
+
+The profile report includes the diagnostics phase: the duration of the `diagnostics.run` span and the total, error, warning, and info counts emitted when diagnostics are collected. This keeps diagnostic cost and volume visible next to the build phases that produced them.

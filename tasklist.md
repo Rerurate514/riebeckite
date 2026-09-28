@@ -15,7 +15,7 @@
 | **13** | **A4.5** | **External HonoX/SSG境界を安定化** | ✅ 完了 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
 | **14** | **A5** | **External Content Source / Vault対応を保証** | ✅ 完了 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
 | **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | ✅ 完了 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
-| 16 | R2 | ContentManager責務分割 | 未着手 | Medium | 約443行の責務整理。build調整とpermalink/redirect解決を抽出し公開APIは不変（Phase 3 / A5.5後） |
+| 16 | R2 | ContentManager責務分割 | ✅ 完了 | Medium | build調整・public location解決・entry読込を抽出し公開APIは不変（Phase 3 / A5.5後） |
 | 17 | R10 | seoプラグイン分割 | 未着手 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
 | 18 | R11 | diagnostics analyze分割 | 未着手 | Small–Medium | 472行の`plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
 | **19** | **A2** | **Plugin間の直接依存を排除** | 未着手 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
@@ -222,6 +222,7 @@
   4. facade として `ContentManager` の公開シグネチャを維持。
 - **完了条件**: 公開メソッド・戻り値・状態ファイル（`.riebeckite/build/content-state.json`）の形式が不変。
 - **検証**: build → `check`/`doctor`/`inspect` → `test:e2e:external`。
+- **成果**: `ContentEntryReader` に source scan とテキスト読込キャッシュ、`ContentLocationResolver` に canonical location/permalink/redirect 解決、`ContentBuildCoordinator` に増分 build-state の準備・保存を移設。`ContentManager` は既存の公開 API を維持する facade としてこれらを協調させる。
 
 ### #17 R10: seoプラグイン分割（Phase 3 / Small–Medium / 依存なし）
 - **概要**: `packages/plugins/seo/index.ts`（454行）を `src/` 配下へ分割し、`index.ts` は re-export のみに。

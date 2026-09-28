@@ -1,4 +1,9 @@
-import type { ContentManifest, PostContent } from "@riebeckite/core";
+import type {
+  ContentManifest,
+  PostContent,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
+import { isPublished } from "@riebeckite/core";
 import { buildPreviewIndex } from "./preview-index.js";
 import {
   HOVER_PREVIEW_ATTRIBUTE,
@@ -9,7 +14,7 @@ import type { ResolvedHoverPreviewOptions } from "./types.js";
 
 export type HoverPreviewRuntime = {
   track(slug: string, content: PostContent): void;
-  inject(manifest: ContentManifest): void;
+  inject(manifest: ContentManifest, config?: ResolvedRiebeckiteConfig): void;
 };
 
 export function createHoverPreviewRuntime(
@@ -21,8 +26,11 @@ export function createHoverPreviewRuntime(
     track(slug, content) {
       tracked.set(slug, content);
     },
-    inject(manifest) {
-      const index = buildPreviewIndex(manifest.entries, {
+    inject(manifest, config) {
+      const published = manifest.entries.filter(
+        (entry) => config === undefined || isPublished(config, entry.frontmatter),
+      );
+      const index = buildPreviewIndex(published, {
         excerptLength: options.excerptLength,
         ...(options.maxEntries === undefined
           ? {}
@@ -31,7 +39,7 @@ export function createHoverPreviewRuntime(
       if (Object.keys(index).length === 0) return;
 
       const payload = renderHoverPreviewPayload(index, options);
-      for (const entry of manifest.entries) {
+      for (const entry of published) {
         if (!hasInternalLink(entry.html)) continue;
         if (entry.html.includes(HOVER_PREVIEW_ATTRIBUTE)) continue;
 

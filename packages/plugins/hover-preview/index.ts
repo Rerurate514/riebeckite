@@ -46,7 +46,7 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
       runtime.track(context.slug, context.content);
     },
     onManifestCreated: (context) => {
-      runtime.inject(context.manifest);
+      runtime.inject(context.manifest, context.config);
     },
     assets: [createStyleAsset("hover-preview")],
     clientEntries: [createClientEntry("hover-preview", "initHoverPreview")],

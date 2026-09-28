@@ -71,7 +71,8 @@ export function mergeClassName(current: unknown, next: string): string {
   return currentClass ? `${currentClass} ${next}` : next;
 }
 
-export function getDataMeta(node: ElementNode): string | null {
+export function getDataMeta(node: ElementNode | null | undefined): string | null {
+  if (node === null || node === undefined) return null;
   const data = node.data;
   if (data === null || typeof data !== "object") return null;
   const meta = (data as { meta?: unknown }).meta;

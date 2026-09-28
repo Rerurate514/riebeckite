@@ -25,6 +25,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/mermaid",
   "packages/plugins/obsidian-markdown",
   "packages/plugins/permalink",
+  "packages/plugins/plantuml",
   "packages/plugins/properties",
   "packages/plugins/query",
   "packages/plugins/recent-posts",

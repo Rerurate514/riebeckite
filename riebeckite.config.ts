@@ -19,6 +19,7 @@ import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
@@ -79,6 +80,7 @@ export default defineConfig({
       },
     }),
     chartjs(),
+    plantuml(),
     excalidraw(),
     canvas(),
     media(),

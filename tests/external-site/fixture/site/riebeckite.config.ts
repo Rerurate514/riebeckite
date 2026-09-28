@@ -11,6 +11,7 @@ import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
@@ -37,6 +38,7 @@ export default defineConfig({
   plugins: [
     obsidianMarkdown(),
     properties(),
+    plantuml(),
     media(),
     attachment(),
     codeAnnotations(),

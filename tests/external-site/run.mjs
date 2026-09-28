@@ -70,6 +70,10 @@ const PACKAGES = [
     directory: "packages/plugins/diagnostics",
     name: "@riebeckite/plugin-diagnostics",
   },
+  {
+    directory: "packages/plugins/plantuml",
+    name: "@riebeckite/plugin-plantuml",
+  },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
   {
     directory: "packages/plugins/chartjs",
@@ -96,9 +100,8 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
-const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
-const RICHEMBED_MARKER = "RIEBECKITE_EXTERNAL_RICHEMBED_MARKER";
 const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
+const PLANTUML_MARKER = "RIEBECKITE_EXTERNAL_PLANTUML_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -538,6 +541,15 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("rb-chartjs")) {
     fail("generated HTML is missing the chartjs figure markup");
+  }
+  if (!combined.includes(PLANTUML_MARKER)) {
+    fail(`generated HTML is missing the PlantUML marker (${PLANTUML_MARKER})`);
+  }
+  if (!combined.includes("data-plantuml")) {
+    fail("generated HTML is missing the PlantUML figure output");
+  }
+  if (!combined.includes("/svg/")) {
+    fail("generated HTML is missing the PlantUML image URL");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

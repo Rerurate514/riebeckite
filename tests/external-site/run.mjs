@@ -50,6 +50,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-obsidian-markdown",
   },
   {
+    directory: "packages/plugins/d2",
+    name: "@riebeckite/plugin-d2",
+  },
+  {
     directory: "packages/plugins/autocardlink",
     name: "@riebeckite/plugin-autocardlink",
   },
@@ -69,6 +73,7 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -369,6 +374,19 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+
+  if (!combined.includes(D2_MARKER)) {
+    fail(`generated HTML is missing the D2 marker (${D2_MARKER})`);
+  }
+  if (!combined.includes("rb-d2")) {
+    fail("generated HTML is missing the D2 plugin output (rb-d2)");
+  }
+  if (!combined.includes(`data-d2-marker="${D2_MARKER}"`)) {
+    fail("D2 figure is missing the plugin output marker attribute");
+  }
+  if (!combined.includes('data-d2="rendered"')) {
+    fail("D2 diagram was not rendered to SVG at build time");
   }
 
   for (const file of htmlFiles) {

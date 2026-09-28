@@ -30,6 +30,8 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { d2 } from "@riebeckite/plugin-d2";
+import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
@@ -60,6 +62,8 @@ export const resolvedEntries = {
   initAutoCardLink,
   backlinksPlugin,
   Backlinks,
+  d2,
+  initD2Diagrams,
   obsidianMarkdown,
   recentPostsPlugin,
   RecentPosts,

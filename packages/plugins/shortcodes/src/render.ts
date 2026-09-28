@@ -1,19 +1,20 @@
-import {
-  NoopLogger,
-  NoopTracer,
-  escapeHtmlAttribute,
-} from "@riebeckite/core";
 import type {
   ContentSource,
   PluginCache,
   PluginRenderContext,
 } from "@riebeckite/core";
+import {
+  createUnavailableGeneratedOutputSink,
+  escapeHtmlAttribute,
+  NoopLogger,
+  NoopTracer,
+} from "@riebeckite/core";
 import { builtinShortcodes } from "./builtins.js";
 import type {
   ResolvedShortcodeOptions,
   ShortcodeOptions,
-  ShortcodeRenderInput,
   ShortcodeRenderer,
+  ShortcodeRenderInput,
   ShortcodeRenderRequest,
 } from "./types.js";
 
@@ -65,6 +66,7 @@ export function createShortcodeRenderContext(input: {
     contentIndex: input.contentIndex ?? new Map(),
     diagnostics: [],
     cache: UNAVAILABLE_CACHE,
+    output: createUnavailableGeneratedOutputSink(),
     logger: new NoopLogger(),
     tracer: new NoopTracer(),
     contentSource: input.contentSource,

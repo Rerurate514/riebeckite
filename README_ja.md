@@ -60,10 +60,11 @@ pnpm exec riebeckite inspect    # フレームワークが解釈した状態を�
 
 [日本語ドキュメント一覧](./docs/ja/README.md) から始めてください。よく使う入口は次のとおりです。
 
-1. [Getting Started](./docs/ja/getting-started.md): 最小構成のプロジェクトと開発の流れ
-2. [Configuration](./docs/ja/configuration.md): `riebeckite.config.ts`、コンテンツディレクトリ、テーマ
-3. [Content System](./docs/ja/content-system.md): ソース、manifest、グラフ
-4. [Plugin System](./docs/ja/plugin-system.md) と [Theme System](./docs/ja/theme-system.md): サイトを拡張する前に読む章
+1. [利用ガイド](./docs/ja/guide.md): インストールからデプロイまでの手順
+2. [Getting Started](./docs/ja/getting-started.md): 最小構成のプロジェクトと開発の流れ
+3. [Configuration](./docs/ja/configuration.md): `riebeckite.config.ts`、コンテンツディレクトリ、テーマ
+4. [Content System](./docs/ja/content-system.md): ソース、manifest、グラフ
+5. [Plugin System](./docs/ja/plugin-system.md) と [Theme System](./docs/ja/theme-system.md): サイトを拡張する前に読む章
 
 個々の Plugin と Theme は各パッケージの README（`packages/plugins/*/README_ja.md`、`packages/themes/*/README_ja.md`）で説明しています。英語版は [README.md](./README.md) と [英語ドキュメント一覧](./docs/en/README.md) から読めます。
 

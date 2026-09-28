@@ -27,6 +27,16 @@ export type MermaidBuildRenderResult =
       message: string;
     };
 
+/**
+ * Explicit build-time boundary for renderers requiring Node or a browser.
+ * Markdown/HTML pipeline code only depends on this contract.
+ */
+export type MermaidBuildRenderer = (
+  id: string,
+  source: string,
+  theme: string,
+) => Promise<MermaidBuildRenderResult>;
+
 export type MermaidClientOptions = {
   theme?: MermaidTheme;
   mermaid?: MermaidApi;

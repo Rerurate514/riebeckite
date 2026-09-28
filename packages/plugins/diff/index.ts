@@ -1,4 +1,3 @@
-import path from "node:path";
 import {
   createClientEntry,
   createStyleAsset,
@@ -177,15 +176,11 @@ async function buildRevisionDiffs(
 
 function resolvePostFilePath(context: {
   slug: string;
-  config?: { content?: { directory?: string } };
   contentIndex: Map<string, string>;
 }): string {
   const indexedPath = context.contentIndex.get(context.slug.toLowerCase());
   const contentPath = `${indexedPath ?? context.slug}.md`;
-  const contentDirectory = context.config?.content?.directory;
-  return contentDirectory
-    ? path.join(contentDirectory, contentPath)
-    : contentPath;
+  return contentPath;
 }
 
 function buildPostDiff(input: {

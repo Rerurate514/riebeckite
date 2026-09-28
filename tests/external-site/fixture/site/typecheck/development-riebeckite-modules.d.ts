@@ -33,8 +33,18 @@ declare module "@riebeckite/honox/server" {
 declare module "@riebeckite/honox/ui" {
   export const Article: any;
   export const ArticleContent: any;
+  export const ArticleFooter: any;
   export const ArticleHeader: any;
   export const ArticleLayout: any;
+  export const ArticleMeta: any;
+  export const Sidebar: any;
+  export type ArticleContentProps = any;
+  export type ArticleFooterProps = any;
+  export type ArticleHeaderProps = any;
+  export type ArticleLayoutProps = any;
+  export type ArticleMetaProps = any;
+  export type ArticleProps = any;
+  export type SidebarProps = any;
 }
 
 declare module "@riebeckite/plugin-autocardlink" {

@@ -16,3 +16,23 @@ export interface ContentSource {
   scan(): Promise<readonly ContentSourceEntry[]>;
   read(entry: ContentSourceEntry): Promise<ContentSourceContent>;
 }
+
+/** Reads a logical entry without exposing source implementation details. */
+export async function readContentSourceEntry(
+  source: ContentSource,
+  logicalPath: string,
+): Promise<ContentSourceContent | null> {
+  const entry = await getContentSourceEntry(source, logicalPath);
+  return entry ? await source.read(entry) : null;
+}
+
+/** Finds a logical entry without exposing source implementation details. */
+export async function getContentSourceEntry(
+  source: ContentSource,
+  logicalPath: string,
+): Promise<ContentSourceEntry | null> {
+  return (
+    (await source.scan()).find((candidate) => candidate.path === logicalPath) ??
+    null
+  );
+}

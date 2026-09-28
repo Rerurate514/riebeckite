@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import type { Browser } from "puppeteer";
 import type {
   MermaidBuildRenderErrorKind,
+  MermaidBuildRenderer,
   MermaidBuildRenderResult,
 } from "./types.js";
 
@@ -13,11 +14,16 @@ const MERMAID_SCRIPT_SUBPATH = "mermaid/dist/mermaid.min.js";
 
 let renderQueue: Promise<unknown> = Promise.resolve();
 
-export async function renderMermaidStaticSvg(
+/**
+ * Node/Puppeteer implementation of the explicit Mermaid build-time renderer
+ * boundary. Filesystem access is isolated here because rendering needs a
+ * temporary script for Puppeteer.
+ */
+export const renderMermaidStaticSvg: MermaidBuildRenderer = async (
   id: string,
   source: string,
   theme: string,
-): Promise<MermaidBuildRenderResult> {
+): Promise<MermaidBuildRenderResult> => {
   return enqueueMermaidRender(async () => {
     const workDir = await mkdtemp(join(tmpdir(), "riebeckite-mermaid-"));
     const scriptPath = join(workDir, "render-mermaid.js");
@@ -29,7 +35,7 @@ export async function renderMermaidStaticSvg(
       await rm(workDir, { force: true, recursive: true });
     }
   });
-}
+};
 
 async function renderWithBrowser(
   scriptPath: string,

@@ -1,4 +1,3 @@
-import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { resolveConfigModule } from "@riebeckite/core";
@@ -162,10 +161,10 @@ function countAtOrAbove(
 async function loadConfigFile(
   configPath: string,
 ): Promise<ResolvedRiebeckiteConfig> {
-  const absolutePath = path.resolve(process.cwd(), configPath);
+  const absoluteUrl = pathToFileURL(configPath);
   let module: unknown;
   try {
-    module = await import(pathToFileURL(absolutePath).href);
+    module = await import(absoluteUrl.href);
   } catch (error) {
     throw new Error(
       `failed to load config "${configPath}": ${error instanceof Error ? error.message : String(error)}`,
@@ -173,7 +172,11 @@ async function loadConfigFile(
   }
 
   const resolved = resolveConfigModule(module);
-  const directory = path.resolve(process.cwd(), resolved.content.directory);
+  const directory = fileURLToPath(
+    isAbsoluteFilePath(resolved.content.directory)
+      ? pathToFileURL(resolved.content.directory)
+      : new URL(resolved.content.directory, new URL("./", absoluteUrl)),
+  );
   return {
     ...resolved,
     content: {
@@ -271,8 +274,11 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 const isMain =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+  process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url;
+
+function isAbsoluteFilePath(value: string): boolean {
+  return value.startsWith("/") || /^[A-Za-z]:[\\/]/.test(value);
+}
 
 if (isMain) {
   main(process.argv.slice(2)).then(

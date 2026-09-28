@@ -8,6 +8,12 @@ import type {
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
+import type {
+  GeneratedOutput,
+  GeneratedOutputInput,
+  GeneratedOutputSink,
+} from "../types/generated_output.js";
+import { normalizeGeneratedOutputPath } from "../types/generated_output.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
 import type {
@@ -28,9 +34,12 @@ import {
   runSetup,
 } from "./plugin_lifecycle.js";
 
-type PluginContextBase = Omit<PluginContext, "cache" | "logger" | "tracer">;
+type PluginContextBase = Omit<
+  PluginContext,
+  "cache" | "logger" | "tracer" | "output"
+>;
 type PluginContextWithCache<TContext extends PluginContextBase> = TContext &
-  Pick<PluginContext, "cache" | "logger" | "tracer">;
+  Pick<PluginContext, "cache" | "logger" | "tracer" | "output">;
 
 /**
  * Explicit build lifecycle stages. `idle` means no build lifecycle has been
@@ -51,6 +60,8 @@ export class PluginRuntime {
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
   private pluginCaches = new Map<string, PluginCache>();
+  private generatedOutputs: GeneratedOutput[] = [];
+  private generatedOutputOwners = new Map<string, string>();
   private isBuildTime = false;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
@@ -181,6 +192,13 @@ export class PluginRuntime {
     );
   }
 
+  /** Returns registered outputs sorted by path for a deterministic build. */
+  collectGeneratedOutputs(): GeneratedOutput[] {
+    return [...this.generatedOutputs].sort((a, b) =>
+      a.path < b.path ? -1 : a.path > b.path ? 1 : 0,
+    );
+  }
+
   async collectDiagnostics(
     contentIndex: Map<string, string>,
   ): Promise<Diagnostic[]> {
@@ -260,8 +278,31 @@ export class PluginRuntime {
     return {
       ...context,
       cache: this.cacheFor(plugin),
+      output: this.generatedOutputSinkFor(plugin),
       logger: observability.logger.child({ plugin: plugin.name }),
       tracer: observability.tracer,
+    };
+  }
+
+  private generatedOutputSinkFor(
+    plugin: RiebeckitePlugin,
+  ): GeneratedOutputSink {
+    return {
+      emit: (output: GeneratedOutputInput) => {
+        const path = normalizeGeneratedOutputPath(output.path);
+        const owner = this.generatedOutputOwners.get(path);
+        if (owner) {
+          throw new Error(
+            `Duplicate generated output path "${path}" declared by "${owner}" and "${plugin.name}".`,
+          );
+        }
+        this.generatedOutputOwners.set(path, plugin.name);
+        this.generatedOutputs.push({
+          path,
+          content: output.content,
+          owner: plugin.name,
+        });
+      },
     };
   }
 

@@ -118,6 +118,14 @@ export {
 export type { PipelineOptions } from "./src/pipeline.js";
 export { Pipeline } from "./src/pipeline.js";
 export type { JsonValue, PluginCache } from "./src/plugin/plugin_cache.js";
+export type {
+  CreatePluginMemoOptions,
+  PluginMemo,
+} from "./src/plugin/plugin_memo.js";
+export {
+  createPluginMemo,
+  stableStringify,
+} from "./src/plugin/plugin_memo.js";
 export {
   PluginDependencyError,
   type PluginDependencyErrorKind,
@@ -141,6 +149,16 @@ export type {
   DiagnosticCode,
   DiagnosticSeverity,
 } from "./src/types/diagnostic.js";
+export type {
+  GeneratedOutput,
+  GeneratedOutputContent,
+  GeneratedOutputInput,
+  GeneratedOutputSink,
+} from "./src/types/generated_output.js";
+export {
+  createUnavailableGeneratedOutputSink,
+  normalizeGeneratedOutputPath,
+} from "./src/types/generated_output.js";
 export type {
   PluginInput,
   ResolvedPluginMetadata,

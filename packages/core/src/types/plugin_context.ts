@@ -8,6 +8,7 @@ import type {
   ContentPublicLocation,
 } from "./content_manifest.js";
 import type { Diagnostic } from "./diagnostic.js";
+import type { GeneratedOutputSink } from "./generated_output.js";
 import type { PostContent } from "./post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
@@ -16,6 +17,12 @@ export type PluginContext = {
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  /**
+   * Registers a file to be written to the build output directory. Available
+   * during build lifecycle hooks; the integration layer forwards each entry to
+   * the build tool.
+   */
+  output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;
   contentSource?: ContentSource;

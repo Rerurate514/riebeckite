@@ -1,5 +1,8 @@
 import type { RiebeckitePlugin } from "../types/plugin.js";
-import { PluginDependencyError } from "./plugin_dependency_error.js";
+import {
+  type CapabilityDeclaration,
+  PluginDependencyError,
+} from "./plugin_dependency_error.js";
 
 type PluginDependency = {
   providerIndex: number;
@@ -9,9 +12,34 @@ type PluginDependency = {
 export function resolvePluginDependencies(
   plugins: readonly RiebeckitePlugin[],
 ): RiebeckitePlugin[] {
+  validateCapabilityNames(plugins);
   const providers = collectProviders(plugins);
   const dependencies = collectDependencies(plugins, providers);
   return stableTopologicalSort(plugins, dependencies);
+}
+
+const CAPABILITY_DECLARATIONS: readonly CapabilityDeclaration[] = [
+  "provides",
+  "requires",
+  "optional",
+];
+
+function validateCapabilityNames(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  for (const plugin of plugins) {
+    for (const declaration of CAPABILITY_DECLARATIONS) {
+      for (const capability of plugin[declaration] ?? []) {
+        if (capability.trim() === "") {
+          throw new PluginDependencyError({
+            kind: "invalid-capability",
+            pluginName: plugin.name,
+            declaration,
+          });
+        }
+      }
+    }
+  }
 }
 
 function collectProviders(
@@ -20,7 +48,7 @@ function collectProviders(
   const providerIndices = new Map<string, number[]>();
 
   for (const [index, plugin] of plugins.entries()) {
-    for (const capability of new Set(plugin.provides ?? [])) {
+    for (const capability of new Set((plugin.provides ?? []).map(normalize))) {
       const indices = providerIndices.get(capability) ?? [];
       indices.push(index);
       providerIndices.set(capability, indices);
@@ -46,29 +74,79 @@ function collectDependencies(
   plugins: readonly RiebeckitePlugin[],
   providers: ReadonlyMap<string, number>,
 ): PluginDependency[][] {
-  return plugins.map((plugin) => {
-    const requiredDependencies = (plugin.requires ?? []).map((capability) => {
-      const providerIndex = providers.get(capability);
-      if (providerIndex === undefined) {
-        throw new PluginDependencyError({
-          kind: "missing-capability",
-          pluginName: plugin.name,
-          capability,
-        });
-      }
-      return { providerIndex, capability };
+  const availableCapabilities = [...providers.keys()];
+
+  return plugins.map((plugin, pluginIndex) => {
+    const requiredDependencies = (plugin.requires ?? []).map((rawCapability) => {
+      const capability = normalize(rawCapability);
+      return resolveDependency({
+        pluginIndex,
+        pluginName: plugin.name,
+        capability,
+        availableCapabilities,
+        providers,
+      });
     });
     const optionalDependencies = (plugin.optional ?? []).flatMap(
-      (capability) => {
+      (rawCapability) => {
+        const capability = normalize(rawCapability);
         const providerIndex = providers.get(capability);
-        return providerIndex === undefined
-          ? []
-          : [{ providerIndex, capability }];
+        if (providerIndex === undefined) return [];
+        assertNotSelfDependency({
+          pluginIndex,
+          pluginName: plugin.name,
+          capability,
+          providerIndex,
+        });
+        return [{ providerIndex, capability }];
       },
     );
 
     return [...requiredDependencies, ...optionalDependencies];
   });
+}
+
+function resolveDependency(input: {
+  pluginIndex: number;
+  pluginName: string;
+  capability: string;
+  availableCapabilities: readonly string[];
+  providers: ReadonlyMap<string, number>;
+}): PluginDependency {
+  const providerIndex = input.providers.get(input.capability);
+  if (providerIndex === undefined) {
+    throw new PluginDependencyError({
+      kind: "missing-capability",
+      pluginName: input.pluginName,
+      capability: input.capability,
+      availableCapabilities: input.availableCapabilities,
+    });
+  }
+  assertNotSelfDependency({
+    pluginIndex: input.pluginIndex,
+    pluginName: input.pluginName,
+    capability: input.capability,
+    providerIndex,
+  });
+  return { providerIndex, capability: input.capability };
+}
+
+function assertNotSelfDependency(input: {
+  pluginIndex: number;
+  pluginName: string;
+  capability: string;
+  providerIndex: number;
+}): void {
+  if (input.providerIndex !== input.pluginIndex) return;
+  throw new PluginDependencyError({
+    kind: "self-dependency",
+    pluginName: input.pluginName,
+    capability: input.capability,
+  });
+}
+
+function normalize(capability: string): string {
+  return capability.trim();
 }
 
 function stableTopologicalSort(

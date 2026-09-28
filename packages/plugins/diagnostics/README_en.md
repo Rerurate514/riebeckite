@@ -49,6 +49,7 @@ export default defineConfig({
 | `duplicate-title` | `warning` | Multiple published notes share a title |
 | `slug-collision` | `error` | Slugs collide case-insensitively |
 | `excluded-public` | `warning` | Excluded note is marked `publish: true` |
+| `publish-boundary` | `warning` | Published content links to or embeds non-published content |
 | `internal-error` | `error` | Content analysis failed |
 
 ## Options

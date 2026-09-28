@@ -16,6 +16,8 @@ Inspection is factual and non-mutating. It must not run a build, write increment
 
 `inspect content --list` reports each entry's resolved canonical permalink. When a public-location plugin records identity metadata, it also shows the ID and the ID source.
 
+`inspect build` reports the incremental state status. When the state is invalid, it also reports the reason: malformed JSON, an unsupported state version, or an unrecognized structure.
+
 ## When to use each tool
 
 - Use **Inspector** to understand resolved configuration, enabled plugins, content, relationships, or existing build state.

@@ -21,29 +21,32 @@
 | **19** | **A2** | **Plugin間の直接依存を排除** | ✅ 完了 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
 | **20** | **A6** | **HonoX UI primitiveの境界固定** | ✅ 完了 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
 | **21** | **A7** | **Site Application拡張contract** | ✅ 完了 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
-| **22** | **A8** | **Local Plugin / Local Theme対応保証** | 未着手 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
-| 23 | C1/C2 | Content Query API | 未着手 | Medium | tag/folder/date/frontmatter等の共通問い合わせ基盤 |
-| 24 | F1 | Taxonomy / Collection / Archive | 未着手 | Medium | Query APIを利用してtag/archive等を汎用化 |
-| 25 | P1 | provides/requires規約整備 | 未着手 | Medium | capability systemを実Pluginで利用可能に |
-| **26** | **S1** | **Publish Boundary / Leak Check** | 未着手 | Medium | Private Vaultから非公開note/attachmentが公開artifactへ漏れないことを保証 |
-| 27 | C3 | Incremental build依存改善 | 未着手 | Medium | asset依存・build state APIを整理。外部Vault CIにも重要 |
-| 28 | P2 | Plugin CSS contract | 未着手 | Medium | `rb-<plugin>-*`等のstable styling hookを定義 |
-| 29 | R4 | `startBuild` lifecycle整理 | 未着手 | Small | 複数経路から呼ばれる問題を整理 |
-| **30** | **C4** | **HonoX高レベルhelper** | 未着手 | Medium | Vite/HonoX/SSR externals等の内部知識をconsumerから隠す |
-| **31** | **D1** | **`create-riebeckite` / `riebeckite init`** | 未着手 | Large | 完成したSite Application contractからstarterを生成 |
-| **32** | **D1.5** | **Cloudflare deployment template** | 未着手 | Medium | GitHub Actions + Workers Static Assetsの標準構成 |
-| 33 | D2 | CLI config/scan重複削減 | 未着手 | Medium | command間のconfig/source解決重複を整理 |
-| 34 | D3 | `inspect build`強化 | 未着手 | Small | invalid reason等を表示 |
-| 35 | D4 | `doctor` build-state検証強化 | 未着手 | Medium | fingerprint不一致等を検出 |
-| 36 | D5 | `profile` diagnostics対応 | 未着手 | Small | profile観測範囲を拡張 |
-| 37 | D6 | CLI error renderer強化 | 未着手 | Small | error code/file/hint等を表示 |
-| **38** | **D7** | **Dependency hygiene E2E** | 未着手 | Small–Medium | `apps/web`等のundeclared/hoisted dependency依存を検出 |
-| 39 | D8 | 公開パッケージのREADME整備 | 未着手 | Small | `core`/`cli`/`integrations/honox`に`README_en.md`/`README_ja.md`が無い（他25パッケージは保有） |
-| 40 | F2 | Pagination | 未着手 | Small | Query APIへoffset/limit等を追加 |
+| **22** | **A8** | **Local Plugin / Local Theme対応保証** | ✅ 完了 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
+| 23 | C1/C2 | Content Query API | ✅ 完了 | Medium | tag/folder/date/frontmatter等の共通問い合わせ基盤 |
+| 24 | F1 | Taxonomy / Collection / Archive | ✅ 完了 | Medium | Query APIを利用してtag/archive等を汎用化 |
+| 25 | P1 | provides/requires規約整備 | ✅ 完了 | Medium | capability systemを実Pluginで利用可能に |
+| **26** | **S1** | **Publish Boundary / Leak Check** | ✅ 完了 | Medium | Private Vaultから非公開note/attachmentが公開artifactへ漏れないことを保証 |
+| 27 | C3 | Incremental build依存改善 | ✅ 完了 | Medium | asset依存・build state APIを整理。外部Vault CIにも重要 |
+| 28 | P2 | Plugin CSS contract | ✅ 完了 | Medium | `rb-<plugin>-*`等のstable styling hookを定義 |
+| 29 | R4 | `startBuild` lifecycle整理 | ✅ 完了 | Small | 複数経路から呼ばれる問題を整理 |
+| **30** | **C4** | **HonoX高レベルhelper** | ✅ 完了 | Medium | Vite/HonoX/SSR externals等の内部知識をconsumerから隠す |
+| **31** | **D1** | **`create-riebeckite` / `riebeckite init`** | ✅ 完了 | Large | 完成したSite Application contractからstarterを生成 |
+| **32** | **D1.5** | **Cloudflare deployment template** | ✅ 完了 | Medium | GitHub Actions + Workers Static Assetsの標準構成 |
+| 33 | D2 | CLI config/scan重複削減 | ✅ 完了 | Medium | command間のconfig/source解決重複を整理 |
+| 34 | D3 | `inspect build`強化 | ✅ 完了 | Small | invalid reason等を表示 |
+| 35 | D4 | `doctor` build-state検証強化 | ✅ 完了 | Medium | fingerprint不一致等を検出 |
+| 36 | D5 | `profile` diagnostics対応 | ✅ 完了 | Small | profile観測範囲を拡張 |
+| 37 | D6 | CLI error renderer強化 | ✅ 完了 | Small | error code/file/hint等を表示 |
+| **38** | **D7** | **Dependency hygiene E2E** | ✅ 完了 | Small–Medium | `apps/web`等のundeclared/hoisted dependency依存を検出 |
+| 39 | D8 | 公開パッケージのREADME整備 | ✅ 完了 | Small | `core`/`cli`/`integrations/honox`に`README_en.md`/`README_ja.md`が無い（他25パッケージは保有） |
+| 40 | F2 | Pagination | ✅ 完了 | Small | Query APIへoffset/limit等を追加 |
 | 41 | — | Related Posts Plugin | 未着手 | Small–Medium | ContentGraphを利用 |
 | 42 | — | OG Image Plugin | 未着手 | Medium | build時OG image生成 |
 | 43 | — | Citation Plugin | 未着手 | Medium | 引用・参考文献管理 |
 | 44 | — | Scheduled Publish表示Plugin | 未着手 | Small | PublishStrategyをUI/diagnosticsへ表示 |
+| 45 | — | diagnosticsのnote/attachment誤判定修正 | 未着手 | Small | `resolveWikilinkTarget`がnote slugを拡張子なしでindexするためnote targetを`attachment`と誤判定し`checkWikilinks`のnote分岐がデッド（#26 S1で回避済み） |
+| 46 | — | SSG動的routeの出力ファイル名修正 | 未着手 | Small–Medium | tag/archive等の動的routeが`<content-slug>`名のファイルで出力される既存挙動 |
+| 47 | — | 非ASCIIタグのslug空化対応 | 未着手 | Small | `slugify(...,{strict:true})`が空になり（例 `仕訳`）`/tags`に集約され得る既存挙動 |
 
 ## 優先度の考え方
 
@@ -268,95 +271,130 @@
 - **完了条件**: local/npm 双方が同一 API で動作。
 - **成果**: external-site fixture に site 内 `definePlugin`/`defineTheme` の plugin/theme を追加。`definePlugin` の `extendHtmlPipeline` marker、`assets` の local stylesheet、`defineTheme` の `data-*` 属性・local stylesheet が build 出力と dist CSS に反映され、`inspect plugins`/`inspect config` が local extension 名を報告することを tarball E2E で検証。合否は build 出力・CSS・inspect 出力・Bundler/NodeNext typecheck。英日 plugin/theme docs に site 内 extension の書き方（未 publish 時の `assets` module specifier 明示）を追記。
 - **検証**: `pnpm test:e2e:external`、`pnpm build`、`pnpm exec biome lint .`。
+- **備考**: Windows の `core.autocrlf=true` で fixture の binary 添付が CRLF 化し E2E の固定サイズ検査が落ちる環境問題に、`.gitattributes`（`tests/external-site/fixture/vault/** -text`）と `run.mjs` の実ファイルサイズからの期待値算出で対応。
 
-### #23 C1/C2: Content Query API（Medium）
+### #23 C1/C2: Content Query API（✅ 完了 / Medium）
 - **概要**: tag/folder/date/frontmatter 等の共通問い合わせ基盤。
 - **対象**: `packages/core/src/content/content_manager.ts`、`types/content_manifest.ts`
 - **実装方針**: manifest/graph 上でフィルタ・ソート・グルーピングする Query API を Core に追加。プラグインはこれを使ってページ生成。
 - **完了条件**: 代表クエリ（tag 一覧、期間、フォルダ）が API で表現可能。
 - **検証**: build、利用プラグインの出力。
+- **成果**: `content_query.ts` の既存 `ContentQueryEntries`（filter: tags/folder/frontmatter/date、sort、limit/offset。`plugins/query` が利用）を拡張し、`groupContentEntries`（tags / folder / date（year・month・day、`fields` fallback）/ frontmatter）を追加。`packages/core/index.ts` から公開。英日 `content-system.md`・`framework-reference.md` を更新。
+- **検証結果**: `build:packages`、`test:e2e:external`、`biome lint`、`pnpm build` いずれも成功。
 
-### #24 F1: Taxonomy / Collection / Archive（Medium / 依存: C1/C2）
+### #24 F1: Taxonomy / Collection / Archive（✅ 完了 / Medium / 依存: C1/C2）
 - **概要**: Query API を利用して tag/archive 等を汎用化。
 - **実装方針**: collection 抽象（taxonomy→URL→一覧ページ）を Core/Plugin 契約として定義し、既存 tag ページを移行。
 - **完了条件**: tag/archive が同一メカニズムで生成される。
+- **成果**: `packages/core/src/content/content_collection.ts` を新設（`ContentCollectionDefinition` / `ContentCollection` / `ContentCollectionPage` / `buildContentCollections`、`pageSize` で分割し `/page/<n>`）。apps/web は `app/lib/collections.ts` で tag と archive を同一 collection mechanism として定義し、`app/lib/tags.ts` の `buildTagIndex` を廃止。`app/routes/archive/[slug{.+}].tsx` と `app/lib/seo.ts` の `buildArchiveSeo` を追加。tag 出力は main と byte-identical。
+- **検証結果**: `test:e2e:external` PASS、`pnpm build` 成功、main 比較で tag 出力不変。
 
-### #25 P1: provides/requires規約整備（Medium）
+### #25 P1: provides/requires規約整備（✅ 完了 / Medium）
 - **概要**: capability system を実 Plugin で利用可能にする。
 - **対象**: `packages/core/src/plugin/plugin_dependency.ts`、`types/plugin.ts`
 - **実装方針**: provides/requires/optional の解決・診断・エラー（`plugin_dependency_error.ts`）を実利用に耐える形へ。A2 の連携基盤にする。
 - **完了条件**: 依存解決とエラー表示が E2E で確認できる。
+- **成果**: `plugin_dependency.ts` に capability 名の正規化・検証、self-dependency 検出、available 候補の提示を追加。`plugin_dependency_error.ts` に `self-dependency`/`invalid-capability` 種別と `availableCapabilities` を追加。`types/plugin.ts` の JSDoc を整備。E2E に `fixture/site/capability-check.mjs` を追加。
+- **検証結果**: `test:e2e:external` の `capability dependency resolution` ステップ PASS。
 
-### #26 S1: Publish Boundary / Leak Check（Medium）
+### #26 S1: Publish Boundary / Leak Check（✅ 完了 / Medium）
 - **概要**: 非公開 note/attachment が公開 artifact に漏れないことを保証。
 - **対象**: `packages/core/src/types/publish_strategy.ts`、build 出力、`plugins/diagnostics`
 - **実装方針**: publish 判定を一貫適用し、出力/マニフェスト/検索インデックス/添付へ非公開物が混入しないことを検査する diagnostics を追加。
 - **完了条件**: 混入を検出するチェックが存在し、E2E で漏れなしを保証。
+- **成果**: `types/publish_strategy.ts` の `isPublishable` に publish 判定を一本化（`config.ts` の `isPublished` は委譲）。diagnostics に `checks/publish_boundary.ts` を新設し、出力/マニフェスト/検索インデックス/添付への非公開物混入を検査。fixture に private note・添付を追加し `run.mjs` で非混入をアサート。
+- **検証結果**: `test:e2e:external` の `publish boundary` ステップ PASS（private note の HTML/添付/`.json` 非混入を確認）。
 
-### #27 C3: Incremental build依存改善（Medium）
+### #27 C3: Incremental build依存改善（✅ 完了 / Medium）
 - **概要**: asset 依存・build state API を整理。
 - **対象**: `content_build_state.ts`, `content_build_state_store.ts`, `content_fingerprint.ts`, `affected_content.ts`, `content_change_set.ts`
 - **実装方針**: asset/URL の依存を fingerprint に取り込み、変化時の再生成範囲を正しく算出。
 - **完了条件**: 増分ビルドの結果がフルビルドと一致。
+- **成果**: `affected_content.ts` で依存グラフを note slug + asset path で伝播（added/removed は解決変化のため全 note へフォールバック）。`content_build_coordinator.ts` が asset link を依存として記録。build state version を 1→2 に更新し `.riebeckite/**` を除外（state ファイルが content scan に混入していた既存バグも修正）。`docs/en|ja/build-system.md` 更新。
+- **検証結果**: 実測で増分 build の manifest が `--full` manifest と一致。未変更時 `affected=0`、asset 変更時は依存 note のみ `affected=1`。`test:e2e:external` PASS。
 
-### #28 P2: Plugin CSS contract（Medium）
+### #28 P2: Plugin CSS contract（✅ 完了 / Medium）
 - **概要**: `rb-<plugin>-*` 等の stable styling hook を定義。
 - **対象**: `apps/web/app/.riebeckite/plugin-styles.css` 生成、各 plugin `style.css`、themes
 - **実装方針**: 命名規約を確定し docs 化。生成 CSS とテーマの適用順を安定化。
 - **完了条件**: hook 名が安定し、テーマ側からスタイル可能。
+- **成果**: namespace を現物に合わせて確定（`rb-*` = framework 構造 hook / `--rb-*` token、`rr-<feature>` = plugin root hook / `--rr-*`・`data-rr-*`。tasklist の `rb-<plugin>-*` は仮表記）。plugin root hook を後方互換で補完（`.rr-attachment` / `.rr-media` / `.rr-recent-posts` / `.rr-garden-explorer`）。`asset_entries.ts` で `plugin-styles.css` / `theme-styles.css` に cascade 位置を示すヘッダを付与。英日 plugin/theme docs と `docs/agents` を更新。E2E に hook 検証を追加。
+- **検証結果**: `build:packages` / `biome lint` / `check:packages` 成功、E2E で `rr-attachment` / `rr-media` / `rr-search` の実出力を確認。
 
-### #29 R4: `startBuild` lifecycle整理（Small / 依存なし）
+### #29 R4: `startBuild` lifecycle整理（✅ 完了 / Small / 依存なし）
 - **概要**: `PluginRuntime.startBuild` が複数経路から呼ばれる問題を整理。
 - **現状**: `packages/core/src/plugin/plugin_runtime.ts:48` の `startBuild`（`buildStarted` ガード、`runSetup → runBuildStart → onBuildStart → onConfigResolved`）。呼び出し元は `content_manager.ts:156`（`getProcessedContent`）と `:318`（`getContentLocations`）の2経路。
 - **実装方針**: ライフサイクル段階（setup/configResolved/buildStart/…）を明示し、どの公開メソッドから呼ばれても同一順序で一度だけ実行されることを保証。必要なら状態機械またはテスト可能なフックに。
 - **完了条件**: 両経路でフック順序が同一、重複実行なし。
 - **検証**: `check`/`doctor`、`test:e2e:external`。
+- **成果**: `buildStarted` の bool ガードを in-flight Promise + 明示 stage の状態機械（`idle→setup→buildStart→onBuildStart→onConfigResolved→started`）に置換。`getBuildStage()` を追加し、`dispose` 条件を `buildLifecycle` 基準に変更。
+- **検証結果**: 一時スクリプトで両経路のフック順序同一・重複実行なしを確認。`test:e2e:external` PASS。
 
-### #30 C4: HonoX高レベルhelper（Medium）
+### #30 C4: HonoX高レベルhelper（✅ 完了 / Medium）
 - **概要**: Vite/HonoX/SSR externals 等の内部知識を consumer から隠す。
 - **対象**: `packages/integrations/honox/src/vite_plugin.ts`, `vite_runner.ts`, `ssg.ts`
 - **実装方針**: 設定一体型の higher-level helper を提供し、内部オプションを不要に。
 - **完了条件**: consumer が詳細オプション無しで build/dev 可能。
+- **成果**: `riebeckiteVite(options)`（`riebeckite` plugin + SSR externals plugin + SSG を一括返却、`defaultSsrExternals` を内部化）と `createRiebeckiteSsg()`（既定 entry/extensionMap を自動適用）を追加。fixture の `vite.config.ts` を `...riebeckiteVite()` に簡素化し、`apps/web/vite.config.ts` を `riebeckiteVite({ appRoot, configRoot, workspaceRoot })` へ移行。既存 `riebeckite`/`riebeckiteSsg` は後方互換。英日 docs と `tests/external-site/README.md` を更新。
+- **検証結果**: `build:packages` / `test:e2e:external`（Bundler・NodeNext typecheck 含む）PASS、`@riebeckite/web build` 成功、`biome lint` 0件。
+- **備考**: `vite_runner.ts` は漏れていた内部知識が Vite config 側のみだったため未変更（無関係変更の回避）。`honox()` は devServer adapter と `client.input` が site 固有の決定のため consumer 側に残置。
 
-### #31 D1: `create-riebeckite` / `riebeckite init`（Large / 依存: A7 等）
+### #31 D1: `create-riebeckite` / `riebeckite init`（✅ 完了 / Large / 依存: A7 等）
 - **概要**: 完成した Site Application contract から starter を生成。
 - **実装方針**: CLI に `init` を追加し、テンプレートから最小 Site を生成。`create-riebeckite` パッケージも提供。
 - **完了条件**: 生成物がそのまま `check/build` を通る。
+- **成果**: `packages/integrations/honox/src/scaffold/`（`scaffoldRiebeckiteSite`）を新設し、CLI に `riebeckite init`（`packages/cli/src/commands/init.ts`、非空ディレクトリ拒否）、`packages/create-riebeckite` パッケージを追加。`scripts/package_metadata.mjs` と `pnpm-lock.yaml` を更新。英日 docs（cli / getting-started / guide / honox-integration）と `docs/agents/build-and-cli.md` を更新。
+- **検証結果**: `test:e2e:external` が `riebeckite init` 生成 Site と `create-riebeckite` を実測し、生成物の `check`/`doctor`/`build` が通り dist HTML を出力。`check:packages` 30 public packages OK。
 
-### #32 D1.5: Cloudflare deployment template（Medium）
+### #32 D1.5: Cloudflare deployment template（✅ 完了 / Medium）
 - **概要**: GitHub Actions + Workers Static Assets の標準構成。
 - **実装方針**: テンプレートと wrangler 設定、CI を提供。
 - **完了条件**: テンプレートでデプロイが再現。
+- **成果**: `templates/cloudflare/` を新設（`wrangler.jsonc`（汎用・placeholders）、`.github/workflows/deploy.yml`（check→build→`cloudflare/wrangler-action`）、README 英日）。`scripts/check_deploy_template.mjs` と root `check:templates` を追加し、`apps/web/wrangler.jsonc` との構造一致・CI 手順を機械検証。英日 `guide.md` のデプロイ節を更新。
+- **検証結果**: `check:templates` OK、`wrangler deploy --dry-run` で設定受理と assets 読み込みを確認（実デプロイは未実施）。
+- **備考**: `create-riebeckite`（D1）の出力に依存しない自己完結テンプレート。D1 統合時は生成サイトに `build`/`check` スクリプトと `packageManager` を含め、wrangler 設定と workflow をコピーする。
 
-### #33 D2: CLI config/scan重複削減（Medium）
+### #33 D2: CLI config/scan重複削減（✅ 完了 / Medium）
 - **概要**: command 間の config/source 解決重複を整理。
 - **対象**: `packages/cli/src/application_root.ts`, `load_config.ts`, `commands/*`
 - **実装方針**: 解決処理を共通化。A3/A4 の resolver と統合。
 - **完了条件**: commands から重複コードが消える。
+- **成果**: `packages/cli/src/content_source.ts`（`resolveProjectContentSource` / `contentSourceName`）を新設し、command 間の content source 解決重複を共通化。`commands/build.ts` と `doctor/checks/content.ts` を更新。
+- **検証結果**: `test:e2e:external`（fixture の check/doctor/build）PASS。
 
-### #34 D3: `inspect build`強化（Small）
+### #34 D3: `inspect build`強化（✅ 完了 / Small）
 - **概要**: invalid reason 等を表示。
 - **対象**: `packages/cli/src/inspect/collectors.ts`, `renderer.ts`, `types.ts`
 - **完了条件**: 無効化理由が出力される。
+- **成果**: `inspect/{collectors,types,renderer}.ts` が build state の invalid reason（`malformed-json` / `unsupported-version` / `invalid-shape`）を収集・表示。`content_build_state_store.ts` が reason を返し、`packages/core/index.ts` から公開。
+- **検証結果**: `test:e2e:external` PASS。
 
-### #35 D4: `doctor` build-state検証強化（Medium）
+### #35 D4: `doctor` build-state検証強化（✅ 完了 / Medium）
 - **概要**: fingerprint 不一致等を検出。
 - **対象**: `packages/cli/src/doctor/checks/build_state.ts`
 - **完了条件**: 不一致を検出して報告。
+- **成果**: `doctor/checks/build_state.ts` が現 content の fingerprint と保存 state を比較し、new/changed/removed を warning として報告。`doctor/doctor.ts` を更新。
+- **検証結果**: `test:e2e:external` PASS（state なし経路のみ。invalid/mismatch ケースは E2E 未追加）。
 
-### #36 D5: `profile` diagnostics対応（Small）
+### #36 D5: `profile` diagnostics対応（✅ 完了 / Small）
 - **概要**: profile 観測範囲を拡張。
 - **対象**: `packages/cli/src/profile/*`, `core/src/observability.ts`
+- **成果**: `plugin_runtime.ts` が `diagnostics.summary` event を発行し、`profile/profile_trace_sink.ts` と `profile/renderer.ts` が diagnostics の観測範囲を拡張。
+- **検証結果**: `test:e2e:external` PASS。
 
-### #37 D6: CLI error renderer強化（Small）
+### #37 D6: CLI error renderer強化（✅ 完了 / Small）
 - **概要**: error code/file/hint 等を表示。
 - **対象**: `packages/cli/src/error_renderer.ts`
+- **成果**: `error_renderer.ts` が name/code/file/hint と cause chain を表示。`application_root.ts` の `ProjectRootError` に `hint` を追加。
+- **検証結果**: `biome lint` 0件、`test:e2e:external` PASS。
 
-### #38 D7: Dependency hygiene E2E（Small–Medium）
+### #38 D7: Dependency hygiene E2E（✅ 完了 / Small–Medium）
 - **概要**: `apps/web` 等の undeclared/hoisted 依存を検出。
 - **実装方針**: 宣言外 import を検出するチェックを E2E に追加。
+- **成果**: `scripts/check_dependencies.mjs` を新設し root `check:dependencies` に追加。E2E で `apps/web` の undeclared/hoisted 依存を検出。
+- **検証結果**: `pnpm run check:dependencies` → `apps\web: all imports are declared.`
 
-### #39 D8: 公開パッケージのREADME整備（Small / 依存なし）
+### #39 D8: 公開パッケージのREADME整備（✅ 完了 / Small / 依存なし）
 - **概要**: 公開パッケージ `packages/core`, `packages/cli`, `packages/integrations/honox` に `README_en.md`/`README_ja.md` が無い（他25パッケージは両方保有）。npm のパッケージページに説明が表示されず、外部 consumer の入口が無い状態。
 - **対象**:
   - `packages/core/README_en.md`（新規）, `packages/core/README_ja.md`（新規）
@@ -370,9 +408,13 @@
   4. `files` に README を追加する場合は `pnpm --filter <pkg> pack --dry-run` で同梱を確認。
 - **完了条件**: 3パッケージに `README_en.md`/`README_ja.md` が存在し、内容が公開APIと一致。`pnpm pack` の同梱可否が意図どおり。
 - **検証**: 対象3パッケージで `pnpm pack`（または `pack --dry-run`）確認 → `pnpm run build:packages` に影響がないこと。
+- **成果**: `packages/core`, `packages/cli`, `packages/integrations/honox` に `README_en.md` / `README_ja.md` を新規追加（既存25パッケージと同じ「役割 / インストール / 使い方 / 公開API / 関連資料」構成、日英で見出し対応）。3パッケージの `package.json` と `scripts/package_metadata.mjs` の `files` に README を追加。
+- **検証結果**: `pnpm --filter @riebeckite/{core,cli,honox} pack --dry-run` で README_en/ja の同梱を確認。`check:packages` 29 packages OK。
 
-### #40 F2: Pagination（Small / 依存: C1/C2）
+### #40 F2: Pagination（✅ 完了 / Small / 依存: C1/C2）
 - **概要**: Query API へ offset/limit 等を追加。
+- **成果**: `content_query.ts` に `queryContentPage` / `resolveContentQueryPagination` を追加し、page メタデータと `/page/<n>` を提供（既存 `limit`/`offset` を補完）。`packages/core/index.ts` から公開。
+- **検証結果**: `test:e2e:external` PASS、`biome lint` 0件。
 
 ### #41 Related Posts Plugin（Small–Medium）
 - **概要**: `ContentGraph` を利用して関連記事を算出。
@@ -389,3 +431,26 @@
 ### #44 Scheduled Publish表示Plugin（Small）
 - **概要**: `PublishStrategy` を UI/diagnostics へ表示。
 - **対象**: `core/src/types/publish_strategy.ts`、`plugins/diagnostics`
+
+---
+
+### #45 diagnosticsのnote/attachment誤判定修正（Small）
+- **概要**: diagnostics の `resolveWikilinkTarget` が note slug を拡張子なしで index するため、note target を `attachment` と誤判定し `checkWikilinks` の note 分岐（fragment 検証・incoming 収集）が実質デッド。
+- **対象**: `packages/plugins/diagnostics/src/`（Wikilink 解決・`checks/`）
+- **実装方針**: note と attachment の target 解決を区別し、note slug index を正しいキーで引く。既存の `#26 S1` の publish boundary チェックは `source.noteSlugs.has(value)` で回避しているため、その workaround の解消も検討。
+- **完了条件**: note target の fragment 検証・incoming 収集が機能し、診断結果が変化する場合は既存 E2E と整合。
+- **検証**: `pnpm --filter @riebeckite/plugin-diagnostics run build`、`pnpm run test:e2e:external`、`riebeckite check` 出力 diff。
+
+### #46 SSG動的routeの出力ファイル名修正（Small–Medium）
+- **概要**: tag/archive 等の動的 route が `<content-slug>` 名のファイルで出力される既存挙動（`dist/tags`, `dist/archive`）。
+- **対象**: HonoX SSG 統合（`packages/integrations/honox/src/ssg.ts` 等）と apps/web の動的 route。
+- **実装方針**: route の params 解決と出力パス決定を見直し、意図した URL 構造（`/tags/<slug>`, `/archive/<year>` 等）でファイルを出力する。
+- **完了条件**: 動的 route が正しいパスで出力され、リンクと一致。
+- **検証**: `pnpm build`、`dist` の構造確認、`test:e2e:external`。
+
+### #47 非ASCIIタグのslug空化対応（Small）
+- **概要**: `slugify(...,{strict:true})` が非ASCIIタグ（例 `仕訳`）で空文字になり、`/tags` に集約され得る既存挙動。
+- **対象**: tag URL 解決（Core/permalink/apps/web）。
+- **実装方針**: 非ASCIIタグの slug 生成規則（transliteration または percent-encoding / 一意な hash 等）を定め、衝突を回避。
+- **完了条件**: 非ASCIIタグが一意な URL を持ち、衝突しない。
+- **検証**: `pnpm build`、tag ページ出力、`test:e2e:external`。

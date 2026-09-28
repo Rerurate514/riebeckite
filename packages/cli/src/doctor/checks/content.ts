@@ -5,6 +5,7 @@ import {
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../../application_root.js";
+import { resolveProjectContentSource } from "../../content_source.js";
 import type { DoctorCheckResult } from "../types.js";
 
 const diagnosticSampleLimit = 3;
@@ -17,7 +18,7 @@ export async function checkContent(
 
   try {
     const content = new ContentManager(
-      project.contentRoot,
+      resolveProjectContentSource(config, project),
       config.content.exclude,
       {
         config,

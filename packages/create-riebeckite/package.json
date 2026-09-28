@@ -1,0 +1,43 @@
+{
+  "name": "create-riebeckite",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "bin": {
+    "create-riebeckite": "./bin/create-riebeckite.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js",
+      "source": "./src/index.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "files": [
+    "LICENSE",
+    "bin",
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@riebeckite/honox": "workspace:*"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build_package.mjs",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/create-riebeckite"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  }
+}

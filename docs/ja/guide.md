@@ -18,7 +18,7 @@
 
 - Node.js（LTS）と pnpm が必要です。
 - コマンドはリポジトリのルートで実行します。コンテンツとアプリケーションは分かれています。Markdown は `content/`、HonoX アプリケーションは `apps/web` にあります。
-- Riebeckite にはまだ `init` コマンドがないため、参照用アプリケーションが出発点になります。別のサイトを作る場合は、後半の「独自プロジェクトで使う」を参照してください。
+- Riebeckite には `init` コマンドがあります。`pnpm exec riebeckite init my-site`（または `npm create riebeckite my-site`）で、そのまま install・build できる単体サイトを生成できます。参照用アプリケーションと E2E フィクスチャは、さらに作り込んだサイトの例として引き続き有用です。
 
 ## 1. 依存関係をインストールする
 
@@ -137,6 +137,8 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 
 デプロイ設定は `apps/web/wrangler.jsonc` にあり、`assets.directory` が `./dist` を指します。最初のデプロイの前に、worker 名、compatibility flags、バインディングを確認してください。
 
+リポジトリの外のサイトでは、[Cloudflare デプロイテンプレート](../../templates/cloudflare/README_ja.md) を出発点にします。汎用の `wrangler.jsonc` と、check・build を行い生成された `dist/` を Workers Static Assets としてデプロイする GitHub Actions ワークフローを提供します。Riebeckite はコンテンツのルートと Plugin のエンドポイントを事前生成するため、runtime の `main` を持たない静的アセットのみの構成が参照用アプリケーションと同じ形になります。`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリのシークレットに設定し、テンプレートの Worker 名を変更してください。最初のデプロイの前に `pnpm exec wrangler deploy --dry-run` でローカル検証できます。
+
 ## 8. サイトを拡張する
 
 - **Plugin を追加する**: パッケージを参照し、`plugins` 配列に登録します。設定できる項目は `packages/plugins/*/README_ja.md` を参照してください。Plugin は Markdown・HTML の変換、アセット、ブラウザ側の動作、エンドポイント、SEO、診断を追加できます。
@@ -145,7 +147,20 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 
 ## 独自プロジェクトで使う
 
-リポジトリの外でサイトを構築する場合は、E2E フィクスチャの [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site) を出発点にします。これは、Riebeckite の各パッケージを自身の `node_modules` にインストールし、workspace に依存せずビルドする単体プロジェクトです。主要なファイルは次のとおりです。
+CLI または scaffolder パッケージで単体サイトを生成し、install・build します。
+
+```bash
+pnpm exec riebeckite init my-site
+# または: npm create riebeckite my-site
+cd my-site
+pnpm install
+pnpm exec riebeckite check
+pnpm exec riebeckite build
+```
+
+`init` は生成直後の状態で `check` と `build` を通る自己完結のサイトを書き出します。生成対象のファイルが既にあるディレクトリには `--force` なしでは上書きしません。
+
+生成されるサイトは、E2E フィクスチャ [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site) と同じ site application contract に従います。フィクスチャはサイト内 extension と外部 Vault を追加しているため、それらが必要な場合の参照実装になります。主要なファイルは次のとおりです。
 
 | ファイル | 役割 |
 | --- | --- |
@@ -154,7 +169,7 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 | `app/config.ts` | `content.directory` をアプリケーションルート基準で一度だけ解決する |
 | `app/content.ts` | 解決済みの設定から `ContentManager` を構築する |
 | `app/server.ts` | `mountRiebeckiteEndpoints` で HonoX アプリケーションに Riebeckite のエンドポイントを載せる |
-| `vite.config.ts` | `riebeckite()`、`riebeckiteSsg()`、HonoX の Vite Plugin を登録する |
+| `vite.config.ts` | `riebeckiteVite()` と HonoX の Vite Plugin を登録する |
 
 このフィクスチャは Obsidian Vault を兄弟ディレクトリの `vault/` に置き、`content.directory` をそこへ向けています。Vault を Obsidian デスクトップアプリでも使う場合は、この構成を推奨します。解決の規則と責務の境界は、[Configuration](./configuration.md) の外部 Vault の節と [HonoX Integration](./honox-integration.md) を参照してください。
 

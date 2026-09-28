@@ -1,12 +1,9 @@
-import { escapeHtml, isPublished, type PostContent } from "@riebeckite/core";
+import {
+  type ContentCollection,
+  escapeHtml,
+  type PostContent,
+} from "@riebeckite/core";
 import slugify from "slugify";
-import { config } from "../config";
-import { content } from "../content";
-
-export interface TagEntry {
-  tag: string;
-  posts: { permalink: string; title: string }[];
-}
 
 export function slugifyTagPath(tag: string): string {
   return tag
@@ -19,49 +16,19 @@ export function buildTagHref(tag: string): string {
   return `/tags/${slugifyTagPath(tag)}`;
 }
 
-export function buildTagPage(entry: TagEntry): PostContent {
-  const posts = entry.posts
+export function buildTagPage(collection: ContentCollection): PostContent {
+  const posts = collection.entries
     .map(
-      (post) =>
-        `<li><a href="${escapeHtml(post.permalink)}">${escapeHtml(post.title)}</a></li>`,
+      (entry) =>
+        `<li><a href="${escapeHtml(entry.permalink)}">${escapeHtml(entry.title)}</a></li>`,
     )
     .join("");
-  const exploreHref = `/explore?tag=${encodeURIComponent(entry.tag)}`;
+  const exploreHref = `/explore?tag=${encodeURIComponent(collection.value)}`;
 
   return {
     frontmatter: {
-      title: `#${entry.tag}`,
+      title: `#${collection.value}`,
     },
-    html: `<h1>${escapeHtml(`#${entry.tag}`)}</h1><p><a href="${escapeHtml(exploreHref)}">Explore this tag in Garden Explorer</a></p><ul>${posts}</ul>`,
+    html: `<h1>${escapeHtml(`#${collection.value}`)}</h1><p><a href="${escapeHtml(exploreHref)}">Explore this tag in Garden Explorer</a></p><ul>${posts}</ul>`,
   };
-}
-
-let cachedTagIndex: Map<string, TagEntry> | null = null;
-
-export async function buildTagIndex(): Promise<Map<string, TagEntry>> {
-  if (cachedTagIndex) return cachedTagIndex;
-
-  const manifest = await content.getManifest();
-  const map = new Map<string, TagEntry>();
-
-  for (const entry of manifest.entries) {
-    if (!isPublished(config, entry.frontmatter)) continue;
-
-    for (const rawTag of entry.tags) {
-      const key = slugifyTagPath(rawTag);
-      if (!map.has(key)) {
-        map.set(key, { tag: rawTag, posts: [] });
-      }
-      const tagEntry = map.get(key);
-      if (!tagEntry) continue;
-
-      tagEntry.posts.push({
-        permalink: entry.permalink,
-        title: entry.title,
-      });
-    }
-  }
-
-  cachedTagIndex = map;
-  return map;
 }

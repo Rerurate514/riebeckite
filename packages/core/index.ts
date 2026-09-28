@@ -15,22 +15,49 @@ export {
   isMarkdownPath,
   normalizeContentPath,
 } from "./src/content/attachment.js";
-export type { ContentBuildStateStatus } from "./src/content/content_build_state_store.js";
+export type {
+  ContentBuildState,
+  FingerprintedContentEntry,
+} from "./src/content/content_build_state.js";
+export type {
+  ContentBuildStateInvalidReason,
+  ContentBuildStateStatus,
+} from "./src/content/content_build_state_store.js";
 export {
+  loadContentBuildState,
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
 } from "./src/content/content_build_state_store.js";
+export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
+export type {
+  ContentCollection,
+  ContentCollectionContext,
+  ContentCollectionDefinition,
+  ContentCollectionPage,
+} from "./src/content/content_collection.js";
+export { buildContentCollections } from "./src/content/content_collection.js";
 export type {
   ContentQueryDateFilter,
+  ContentQueryDateGranularity,
   ContentQueryFilter,
   ContentQueryFrontmatterFilter,
+  ContentQueryGroup,
+  ContentQueryGroupBy,
+  ContentQueryGroupOptions,
+  ContentQueryPage,
+  ContentQueryPagination,
   ContentQueryScalar,
   ContentQuerySort,
   ContentQuerySortOrder,
   ContentQuerySpec,
   ContentQueryTagFilter,
 } from "./src/content/content_query.js";
-export { queryContentEntries } from "./src/content/content_query.js";
+export {
+  groupContentEntries,
+  queryContentEntries,
+  queryContentPage,
+  resolveContentQueryPagination,
+} from "./src/content/content_query.js";
 export type {
   ContentGraph,
   ContentGraphNeighbors,
@@ -175,6 +202,8 @@ export type {
 export type { PostContent, PostFrontmatter } from "./src/types/post_content.js";
 
 export type { PublishStrategy } from "./src/types/publish_strategy.js";
+export type { PublishFrontmatter } from "./src/types/publish_strategy.js";
+export { isPublishable } from "./src/types/publish_strategy.js";
 export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config.js";
 export type { RiebeckiteConfig } from "./src/types/riebeckite_config.js";
 export type { SiteConfig } from "./src/types/site_config.js";

@@ -68,13 +68,31 @@ than expanding Core `ThemeConfig`.
 
 ## Stable CSS hooks
 
-Themes may target documented stable presentation hooks such as
-`.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`,
-`.rb-article-body`, and `.rb-article-meta`, plus stable plugin/feature
-root hooks.
+Themes target documented stable hooks instead of internal markup. Riebeckite
+uses two class namespaces:
 
-BEM element classes and helper classes should generally be treated as
-internal implementation details.
+- `rb-*` — framework structural hooks and semantic design tokens. Structural
+  hooks include `.rb-site`, `.rb-article`, `.rb-article-layout`,
+  `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`,
+  `.rb-article-footer`, and `.rb-sidebar`.
+- `rr-<feature>` — the root hook a plugin or feature emits on the outermost
+  element it renders, for example `.rr-search`, `.rr-callout`,
+  `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`,
+  `.rr-code-tabs`, `.rr-lightbox`, `.rr-excalidraw`, `.rr-mermaid`,
+  `.rr-query`, `.rr-cardlink`, `.rr-diff-history`, `.rr-attachment`,
+  `.rr-media`, `.rr-recent-posts`, and `.rr-garden-explorer`.
+
+The root hook is the supported styling surface: a theme restyles a feature by
+targeting `.rr-<feature>` and its documented descendants. BEM element
+(`__...`) and modifier (`--...`) classes remain internal implementation
+details unless a plugin documents them, and generic helper classes such as
+`.sr-only` are not plugin hooks. Plugins keep their historical classes for
+backward compatibility, so `.rr-<feature>` may appear alongside a legacy class
+on the same element; a theme should target the `rr-*` hook.
+
+Plugins may also expose plugin-owned custom properties under `--rr-*` and
+fall back to the semantic `--rb-*` tokens. See [Plugin System](./plugin-system.md#css-hooks)
+for the plugin-side rule.
 
 ## Cascade
 
@@ -86,8 +104,13 @@ base / app structural CSS
 → userCss
 ```
 
-This allows themes to override plugin defaults through normal CSS
-cascade while preserving `userCss` as the final user override.
+The order is stable, not incidental. `@riebeckite/honox` generates
+`.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order) and
+`.riebeckite/theme-styles.css` (theme styles). A site imports the plugin
+stylesheet before the theme stylesheet, so the theme CSS always wins the
+plugin/theme cascade while preserving `userCss` as the final user override.
+Do not reorder those imports, and do not edit the generated files by hand;
+each carries a header comment stating its position in the cascade.
 
 ## Theme vs Plugin
 

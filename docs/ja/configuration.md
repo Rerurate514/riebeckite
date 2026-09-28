@@ -126,7 +126,7 @@ pnpm exec riebeckite build
 4. WikiLink や embed を調べる前に、`inspect content --list` で期待する logical path を確認します。
 5. `build` で integration と route rendering を検証します。
 
-`riebeckite.config.ts` を意図的に Vite application の外へ置く場合は、Vite plugin の `riebeckite()` に `configRoot` を渡します。`appRoot` は site root のままにし、相対 `content.directory` はその root 基準で指定してください。
+`riebeckite.config.ts` を意図的に Vite application の外へ置く場合は、`riebeckiteVite()` に `configRoot` を渡します。`appRoot` は site root のままにし、相対 `content.directory` はその root 基準で指定してください。
 
 PluginInput は conditional config の `false`、`null`、`undefined` を許容します。resolve は無効 input を除外し、enabled plugin を stable order で並べ、capability を検証します。Theme は raw config または宣言済み theme を指定できます。HonoX/Vite 固有設定を Core config に持ち込まないでください。
 

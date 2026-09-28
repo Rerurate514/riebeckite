@@ -54,7 +54,7 @@ async function renderAttachment(
     ? `<span class="attachment-card__size">${escapeHtml(size)}</span>`
     : "";
 
-  return `<aside class="attachment-card" data-attachment-path="${escapeHtmlAttribute(context.path)}">
+  return `<aside class="attachment-card rr-attachment" data-attachment-path="${escapeHtmlAttribute(context.path)}">
   <div class="attachment-card__meta">
     <span class="attachment-card__format">${escapeHtml(extension)}</span>
     ${sizeHtml}

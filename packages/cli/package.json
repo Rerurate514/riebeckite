@@ -8,6 +8,8 @@
   },
   "files": [
     "LICENSE",
+    "README_en.md",
+    "README_ja.md",
     "bin",
     "dist"
   ],

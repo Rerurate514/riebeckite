@@ -24,7 +24,7 @@ export default createRoute(
   }),
   async (c, next) => {
     const requestedSlug = c.req.param("slug");
-    if (c.req.path.startsWith("/tags/")) {
+    if (c.req.path.startsWith("/tags/") || c.req.path.startsWith("/archive/")) {
       return next();
     }
 

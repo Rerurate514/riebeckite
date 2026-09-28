@@ -43,6 +43,15 @@ export function buildTagSeo(tag: string, path: string): SeoMetadata {
   });
 }
 
+export function buildArchiveSeo(period: string, path: string): SeoMetadata {
+  return buildWebsiteSeo({
+    title: period,
+    description: `${config.site.title} の ${period} の記事一覧です。`,
+    path,
+    kind: "website",
+  });
+}
+
 export function buildWebsiteSeo(input: {
   title: string;
   description?: string;

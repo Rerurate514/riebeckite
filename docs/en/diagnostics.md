@@ -8,6 +8,8 @@ Plugins can provide diagnostics through `addDiagnostics`; Core and integrations 
 
 Use `check` for configuration/plugin validity and `doctor` for broader health. Doctor checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully.
 
+The doctor build-state check verifies that the incremental state is readable and that its stored fingerprints still match the current content source. When entries were added, changed, or removed since the last build, it reports a warning with counts and samples; the next build refreshes the state.
+
 ## Authoring rules
 
 - Validate options with a pure validator; do not read files, mutate state, or start work while validating.

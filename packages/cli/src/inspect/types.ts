@@ -1,3 +1,5 @@
+import type { ContentBuildStateInvalidReason } from "@riebeckite/core";
+
 export type ApplicationInspection = {
   readonly root: string;
   readonly configPath: string;
@@ -71,4 +73,7 @@ export type BuildInspection =
       readonly version: number;
       readonly entryCount: number;
     }
-  | { readonly status: "invalid" };
+  | {
+      readonly status: "invalid";
+      readonly reason: ContentBuildStateInvalidReason;
+    };

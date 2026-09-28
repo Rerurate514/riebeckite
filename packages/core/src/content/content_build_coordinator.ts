@@ -1,5 +1,8 @@
 import type { Observability } from "../observability.js";
-import type { ContentManifest } from "../types/content_manifest.js";
+import type {
+  ContentManifest,
+  ContentManifestEntry,
+} from "../types/content_manifest.js";
 import { determineAffectedContent } from "./affected_content.js";
 import {
   CONTENT_BUILD_STATE_VERSION,
@@ -61,15 +64,7 @@ export class ContentBuildCoordinator {
             entry.path,
             {
               fingerprint,
-              dependencies: manifestEntry
-                ? manifestEntry.links
-                    .filter(
-                      (link): link is typeof link & { slug: string } =>
-                        link.kind === "note" && link.slug !== null,
-                    )
-                    .map((link) => link.slug)
-                    .sort()
-                : [],
+              dependencies: collectDependencies(manifestEntry),
             },
           ];
         }),
@@ -120,4 +115,25 @@ export class ContentBuildCoordinator {
 
 function toSlug(path: string): string {
   return path.replace(/\.md$/, "");
+}
+
+/**
+ * Records the notes and assets a manifest entry depends on. Note dependencies
+ * use slugs so a change to the target note (including its resolved permalink)
+ * invalidates dependents; asset dependencies use their paths so a changed
+ * image/attachment (for example attachment size metadata) does too.
+ */
+function collectDependencies(
+  manifestEntry: ContentManifestEntry | undefined,
+): string[] {
+  if (!manifestEntry) return [];
+  return [
+    ...new Set(
+      manifestEntry.links
+        .filter(
+          (link): link is typeof link & { slug: string } => link.slug !== null,
+        )
+        .map((link) => link.slug),
+    ),
+  ].sort();
 }

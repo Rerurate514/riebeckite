@@ -101,7 +101,7 @@ export default function GardenExplorer(props: Props) {
   };
 
   return (
-    <div class="garden-explorer" data-garden-explorer>
+    <div class="garden-explorer rr-garden-explorer" data-garden-explorer>
       <fieldset class="garden-explorer__mobile-tabs">
         <legend class="sr-only">Explorer panels</legend>
         {(["graph", "explorer", "details"] as const).map((panel) => (

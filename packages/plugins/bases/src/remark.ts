@@ -26,13 +26,13 @@ export function remarkBases(options: RemarkBasesOptions = {}) {
       if (!parent || index === undefined) return;
 
       const parsed = parseYaml(node.value);
-      if (!parsed.ok) {
+      if (parsed.ok === false) {
         reportDiagnostic(file, parsed.message, node);
         return;
       }
 
       const spec = parseBases(parsed.value);
-      if (!spec.ok) {
+      if (spec.ok === false) {
         reportDiagnostic(file, spec.message, node);
         return;
       }

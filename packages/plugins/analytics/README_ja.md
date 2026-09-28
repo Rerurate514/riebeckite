@@ -83,15 +83,14 @@ analytics({ provider: "custom", snippet: "window.__analytics = true;" });
 
 ## 検証しやすさ
 
-静的ビルドではクライアント JavaScript を実行しません。そのため、`onManifestCreated` が全エントリの HTML に安定したマーカーを付与します。
+静的ビルドではクライアント JavaScript を実行しません。そのため、`onManifestCreated` が全エントリの HTML に実際に機能するタグを付与します。
 
 ```html
-<!-- RIEBECKITE_EXTERNAL_ANALYTICS_MARKER -->
 <link rel="preload" as="script" href="/_analytics.js" />
-<script defer src="/_analytics.js"></script>
+<script defer src="/_analytics.js" data-riebeckite-analytics></script>
 ```
 
-このマーカーは冪等で、周囲の HTML 構造を変えません。
+これはブラウザが実際に読み込むタグそのもので、検証用のダミーマーカーは挿入しません。付与は冪等（`data-riebeckite-analytics` で判定）で、周囲の HTML 構造を変えません。
 
 ## 制限事項
 
@@ -106,7 +105,7 @@ analytics({ provider: "custom", snippet: "window.__analytics = true;" });
 - `initAnalytics`: クライアント側の初期化（`@riebeckite/plugin-analytics/client` からも利用可）
 - `buildAnalyticsScript(options)`: ブートストラップを生成する純粋関数
 - `validateAnalyticsOptions(options)`: オプションの検証
-- 定数: `ANALYTICS_SCRIPT_PATH`、`ANALYTICS_MARKER`
+- 定数: `ANALYTICS_SCRIPT_PATH`、`ANALYTICS_SCRIPT_ATTRIBUTE`
 - 型: `AnalyticsOptions`、`AnalyticsProvider`
 
 ## 関連資料

@@ -6,14 +6,20 @@ import {
   escapeHtmlAttribute,
   type PostContent,
 } from "@riebeckite/core";
-import { ANALYTICS_MARKER, ANALYTICS_SCRIPT_PATH } from "./src/constants.js";
+import {
+  ANALYTICS_SCRIPT_ATTRIBUTE,
+  ANALYTICS_SCRIPT_PATH,
+} from "./src/constants.js";
 import {
   type AnalyticsOptions,
   validateAnalyticsOptions,
 } from "./src/options.js";
 import { buildAnalyticsScript } from "./src/script.js";
 
-export { ANALYTICS_MARKER, ANALYTICS_SCRIPT_PATH } from "./src/constants.js";
+export {
+  ANALYTICS_SCRIPT_ATTRIBUTE,
+  ANALYTICS_SCRIPT_PATH,
+} from "./src/constants.js";
 export { initAnalytics } from "./src/init.js";
 export type { AnalyticsOptions, AnalyticsProvider } from "./src/options.js";
 export { ANALYTICS_PROVIDERS, validateAnalyticsOptions } from "./src/options.js";
@@ -53,9 +59,9 @@ export function analytics(options: AnalyticsOptions) {
       tracked.set(context.slug, context.content);
     },
     onManifestCreated: (context) => {
-      const marker = buildAnalyticsMarker(scriptPath);
+      const tags = buildAnalyticsTags(scriptPath);
       for (const entry of context.manifest.entries) {
-        appendAnalyticsMarker(entry, tracked.get(entry.slug), marker);
+        appendAnalyticsTags(entry, tracked.get(entry.slug), tags);
       }
     },
   });
@@ -64,26 +70,30 @@ export function analytics(options: AnalyticsOptions) {
 /** Alias kept for symmetry with the other `*Plugin` factories. */
 export const analyticsPlugin = analytics;
 
-function buildAnalyticsMarker(scriptPath: string): string {
+/**
+ * Builds the tags appended to every entry: a preload hint and the bootstrap
+ * `<script>`. They are real, functional output — the same `data-*` attribute
+ * the client initializer queries — so the built HTML is verifiable as-is.
+ */
+function buildAnalyticsTags(scriptPath: string): string {
   const href = escapeHtmlAttribute(scriptPath);
   return [
-    `<!-- ${ANALYTICS_MARKER} -->`,
     `<link rel="preload" as="script" href="${href}" />`,
-    `<script defer src="${href}"></script>`,
+    `<script defer src="${href}" ${ANALYTICS_SCRIPT_ATTRIBUTE}></script>`,
   ].join("\n");
 }
 
-function appendAnalyticsMarker(
+function appendAnalyticsTags(
   entry: ContentManifestEntry,
   content: PostContent | undefined,
-  marker: string,
+  tags: string,
 ): void {
-  if (!entry.html.includes(ANALYTICS_MARKER)) {
-    entry.html = `${entry.html}\n${marker}`;
+  if (!entry.html.includes(ANALYTICS_SCRIPT_ATTRIBUTE)) {
+    entry.html = `${entry.html}\n${tags}`;
   }
   // Routes render the cached `PostContent`, not the manifest entry, so both
-  // views must carry the marker for it to reach the built HTML.
-  if (content && !content.html.includes(ANALYTICS_MARKER)) {
-    content.html = `${content.html}\n${marker}`;
+  // views must carry the tags for them to reach the built HTML.
+  if (content && !content.html.includes(ANALYTICS_SCRIPT_ATTRIBUTE)) {
+    content.html = `${content.html}\n${tags}`;
   }
 }

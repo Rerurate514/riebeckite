@@ -1,6 +1,7 @@
-import { ANALYTICS_SCRIPT_PATH } from "./constants.js";
-
-const SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
+import {
+  ANALYTICS_SCRIPT_ATTRIBUTE,
+  ANALYTICS_SCRIPT_PATH,
+} from "./constants.js";
 
 /**
  * Injects the analytics bootstrap `<script>` into `document.head` exactly once.
@@ -11,11 +12,11 @@ const SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
  */
 export function initAnalytics(): void {
   if (typeof document === "undefined") return;
-  if (document.querySelector(`script[${SCRIPT_ATTRIBUTE}]`)) return;
+  if (document.querySelector(`script[${ANALYTICS_SCRIPT_ATTRIBUTE}]`)) return;
 
   const script = document.createElement("script");
   script.defer = true;
   script.src = ANALYTICS_SCRIPT_PATH;
-  script.setAttribute(SCRIPT_ATTRIBUTE, "");
+  script.setAttribute(ANALYTICS_SCRIPT_ATTRIBUTE, "");
   document.head.appendChild(script);
 }

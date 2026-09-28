@@ -10,8 +10,10 @@
 export const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
 
 /**
- * Stable substring appended to every built entry's HTML. Static builds render
- * content server-side only, so this marker makes the plugin verifiable in the
- * generated HTML without executing client JavaScript.
+ * `data-*` attribute that marks the analytics `<script>` tag.
+ *
+ * The server-side injection (`onManifestCreated`) and the browser initializer
+ * (`initAnalytics`) both carry this attribute, so a built page can be verified
+ * from its real output and the initializer stays idempotent.
  */
-export const ANALYTICS_MARKER = "RIEBECKITE_EXTERNAL_ANALYTICS_MARKER";
+export const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";

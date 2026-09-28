@@ -78,8 +78,8 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
-const ANALYTICS_MARKER = "RIEBECKITE_EXTERNAL_ANALYTICS_MARKER";
 const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
+const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -396,12 +396,14 @@ function assertBuildOutput(siteDir) {
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
   }
-  if (!combined.includes(ANALYTICS_MARKER)) {
-    fail(`generated HTML is missing the analytics marker (${ANALYTICS_MARKER})`);
-  }
   if (!combined.includes(ANALYTICS_SCRIPT_PATH)) {
     fail(
       `generated HTML is missing the analytics script path (${ANALYTICS_SCRIPT_PATH})`,
+    );
+  }
+  if (!combined.includes(ANALYTICS_SCRIPT_ATTRIBUTE)) {
+    fail(
+      `generated HTML is missing the analytics script attribute (${ANALYTICS_SCRIPT_ATTRIBUTE})`,
     );
   }
   if (

@@ -97,16 +97,17 @@ generic loader for `scriptUrl`.
 
 ## Verifiability
 
-Static builds do not execute client JavaScript. To keep analytics visible in
-built HTML, `onManifestCreated` appends a stable marker to every entry:
+Static builds do not execute client JavaScript. To keep analytics verifiable in
+built HTML, `onManifestCreated` appends functional tags to every entry:
 
 ```html
-<!-- RIEBECKITE_EXTERNAL_ANALYTICS_MARKER -->
 <link rel="preload" as="script" href="/_analytics.js" />
-<script defer src="/_analytics.js"></script>
+<script defer src="/_analytics.js" data-riebeckite-analytics></script>
 ```
 
-The marker is idempotent and does not alter the surrounding document structure.
+These are the real tags the browser would load, so no fabricated marker is
+inserted. The injection is idempotent (guarded by `data-riebeckite-analytics`)
+and does not alter the surrounding document structure.
 
 ## Limitations
 
@@ -127,7 +128,7 @@ The marker is idempotent and does not alter the surrounding document structure.
   `@riebeckite/plugin-analytics/client`)
 - `buildAnalyticsScript(options)` — pure bootstrap builder
 - `validateAnalyticsOptions(options)` — options validator
-- Constants: `ANALYTICS_SCRIPT_PATH`, `ANALYTICS_MARKER`
+- Constants: `ANALYTICS_SCRIPT_PATH`, `ANALYTICS_SCRIPT_ATTRIBUTE`
 - Types: `AnalyticsOptions`, `AnalyticsProvider`
 
 ## See also

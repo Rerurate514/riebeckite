@@ -22,6 +22,7 @@ import {
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache.js";
+import { createUnavailableGeneratedOutputSink } from "./types/generated_output.js";
 import type { RiebeckitePlugin } from "./types/plugin.js";
 import { resolvePlugins } from "./types/plugin.js";
 import type {
@@ -189,6 +190,7 @@ export class Pipeline {
               contentIndex: this.contentIndex,
               diagnostics: [],
               cache: this.cacheFor(plugin, observability),
+              output: createUnavailableGeneratedOutputSink(),
               logger: observability.logger.child({ plugin: plugin.name }),
               tracer: observability.tracer,
               contentSource: this.options.contentSource,

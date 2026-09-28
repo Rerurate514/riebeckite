@@ -1,5 +1,6 @@
 import { isPublished } from "@riebeckite/core";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
+import { DailyNotes, getDailyNotes } from "@riebeckite/plugin-daily-notes";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import {
   extractTableOfContents,
@@ -37,6 +38,7 @@ export default createRoute(async (c) => {
       resolveTitle: getArticleTitle,
     }),
   ]);
+  const dailyNotes = getDailyNotes({ manifest, config });
   const tableOfContents = extractTableOfContents(post.html ?? "");
   c.set("seo", buildIndexSeo(post));
   c.set("headTags", indexEntry?.headTags ?? []);
@@ -50,7 +52,12 @@ export default createRoute(async (c) => {
           items={tableOfContents}
         />
       }
-      afterContent={<RecentPosts posts={recentPosts} />}
+      afterContent={
+        <>
+          <RecentPosts posts={recentPosts} />
+          <DailyNotes notes={dailyNotes} />
+        </>
+      }
       footerContent={<Backlinks backlinks={backlinks} />}
     />,
   );

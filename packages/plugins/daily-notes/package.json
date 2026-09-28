@@ -1,0 +1,54 @@
+{
+  "name": "@riebeckite/plugin-daily-notes",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/daily-notes.d.ts",
+      "import": "./dist/components/daily-notes.js",
+      "source": "./components/daily-notes.tsx",
+      "default": "./dist/components/daily-notes.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README_en.md",
+    "README_ja.md",
+    "dist",
+    "style.css"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/daily-notes"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  }
+}

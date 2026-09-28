@@ -15,7 +15,9 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",
   "packages/plugins/d2",
+  "packages/plugins/daily-notes",
   "packages/plugins/dataview",
+  "packages/plugins/deploy",
   "packages/plugins/diagnostics",
   "packages/plugins/diff",
   "packages/plugins/discord-embed",
@@ -38,15 +40,18 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/plantuml",
   "packages/plugins/properties",
   "packages/plugins/qr-code",
+  "packages/plugins/quality",
   "packages/plugins/query",
   "packages/plugins/recent-posts",
   "packages/plugins/related-posts",
+  "packages/plugins/rename",
   "packages/plugins/responsive-image",
   "packages/plugins/rich-embed",
   "packages/plugins/search",
   "packages/plugins/seo",
   "packages/plugins/series",
   "packages/plugins/shortcodes",
+  "packages/plugins/text-fragment",
   "packages/plugins/toc",
   "packages/plugins/ux",
   "packages/plugins/vega-lite",
@@ -98,6 +103,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README_en.md", "README_ja.md", "dist"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
+        test: "node --import tsx --test \"test/*.test.ts\"",
         prepack: "pnpm run build",
       },
     };
@@ -124,15 +130,26 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory.startsWith("packages/plugins/")) {
+    const pluginName = directory.slice("packages/plugins/".length);
     const hasStyle = ![
       "alias",
       "analytics",
+      "deploy",
       "diagnostics",
       "discord-embed",
       "obsidian-markdown",
       "permalink",
+      "quality",
+      "rename",
       "seo",
-    ].some((plugin) => directory.endsWith(`/${plugin}`));
+    ].includes(pluginName);
+    const hasTests = [
+      "daily-notes",
+      "deploy",
+      "quality",
+      "rename",
+      "text-fragment",
+    ].includes(pluginName);
     return {
       files: [
         "LICENSE",
@@ -143,6 +160,9 @@ export function expectedPackageMetadata(directory) {
       ],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
+        ...(hasTests
+          ? { test: "node --import tsx --test \"test/*.test.ts\"" }
+          : {}),
         prepack: "pnpm run build",
       },
     };

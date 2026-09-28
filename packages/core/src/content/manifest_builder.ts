@@ -81,9 +81,11 @@ export class ManifestBuilder {
 
     const manifest = {
       entries,
+      publicEntries: [...entries],
       bySlug,
       byPermalink,
       redirects: new Map(),
+      publicRedirects: new Map(),
       byTag,
       byAsset,
       outgoingLinks,
@@ -91,6 +93,7 @@ export class ManifestBuilder {
       contentIndex,
       assets: [],
       diagnostics: [],
+      generatedOutputs: [],
     };
     return { ...manifest, graph: createContentGraph(manifest) };
   }

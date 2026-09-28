@@ -1,5 +1,6 @@
 import type { ContentGraph } from "../content/content_graph.js";
 import type { Diagnostic } from "./diagnostic.js";
+import type { GeneratedOutput } from "./generated_output.js";
 import type { PluginAsset } from "./plugin_asset.js";
 import type { PluginHeadTag } from "./plugin_head.js";
 import type { PostFrontmatter } from "./post_content.js";
@@ -59,9 +60,20 @@ export type ContentLocationInput = {
 
 export type ContentManifest = {
   entries: ContentManifestEntry[];
+  /**
+   * Entries that pass the configured publish strategy. `entries` keeps every
+   * scanned note for backward compatibility; publishing plugins should read
+   * this view so unpublished notes never reach generated output.
+   */
+  publicEntries: ContentManifestEntry[];
   bySlug: Map<string, ContentManifestEntry>;
   byPermalink: Map<string, ContentManifestEntry>;
   redirects: Map<string, ContentRedirect & { slug: string }>;
+  /**
+   * Redirects whose owning entry is public. Prevents unpublished notes from
+   * leaking their previous paths into deploy files.
+   */
+  publicRedirects: Map<string, ContentRedirect & { slug: string }>;
   byTag: Map<string, ContentManifestEntry[]>;
   byAsset: Map<string, ContentManifestEntry[]>;
   outgoingLinks: Map<string, ContentLink[]>;
@@ -70,4 +82,5 @@ export type ContentManifest = {
   graph: ContentGraph;
   assets: ContentManifestPluginAsset[];
   diagnostics: Diagnostic[];
+  generatedOutputs: GeneratedOutput[];
 };

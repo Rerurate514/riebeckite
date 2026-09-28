@@ -17,7 +17,7 @@
 | **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | ✅ 完了 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
 | 16 | R2 | ContentManager責務分割 | ✅ 完了 | Medium | build調整・public location解決・entry読込を抽出し公開APIは不変（Phase 3 / A5.5後） |
 | 17 | R10 | seoプラグイン分割 | ✅ 完了 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
-| 18 | R11 | diagnostics analyze分割 | 未着手 | Small–Medium | 472行の`plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
+| 18 | R11 | diagnostics analyze分割 | ✅ 完了 | Small–Medium | `plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
 | **19** | **A2** | **Plugin間の直接依存を排除** | 未着手 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
 | **20** | **A6** | **HonoX UI primitiveの境界固定** | 未着手 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
 | **21** | **A7** | **Site Application拡張contract** | 未着手 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
@@ -239,6 +239,7 @@
 - **実装方針**: 各 `check*` を個別ファイルへ移動し、`analyzeContent` はチェックを集約するオーケストレータとして残す。`AnalysisState` 型は共有モジュールへ。
 - **完了条件**: 診断結果（件数・severity・message）が不変。
 - **検証**: `riebeckite check` の出力 diff → `test:e2e:external`。
+- **成果**: `checks/` に Wikilink・Markdown参照・frontmatter・note metadata・orphan・asset・excluded public の各診断を分割し、共有する状態・option正規化・diagnostic生成を `checks/shared.ts` に集約。`analyzeContent` は既存の実行順序を保つオーケストレーターにした。
 
 ### #19 A2: Plugin間の直接依存を排除（A系 / Medium / 依存: P1 と関連）
 - **概要**: `garden-explorer → plugin-search` の直接依存を切る。

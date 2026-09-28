@@ -34,6 +34,15 @@ export type ProfileSlowOperation = Readonly<{
   contentPath: string;
 }>;
 
+export type ProfileDiagnostics = Readonly<{
+  calls: number;
+  durationMs: number;
+  total: number;
+  errors: number;
+  warnings: number;
+  info: number;
+}>;
+
 export type ProfileReport = Readonly<{
   totalDurationMs: number | undefined;
   content: ReadonlyMap<string, ProfileSpanAggregate>;
@@ -41,8 +50,16 @@ export type ProfileReport = Readonly<{
   plugins: readonly ProfilePlugin[];
   incremental: ProfileIncremental | undefined;
   cache: ProfileCache | undefined;
+  diagnostics: ProfileDiagnostics | undefined;
   slowestOperations: readonly ProfileSlowOperation[];
 }>;
+
+type DiagnosticCounts = {
+  total: number;
+  errors: number;
+  warnings: number;
+  info: number;
+};
 
 type MutableDuration = {
   cumulativeDurationMs: number;
@@ -54,9 +71,11 @@ export class ProfileTraceSink implements TraceSink {
   private readonly content = new Map<string, MutableDuration>();
   private readonly integrations = new Map<string, MutableDuration>();
   private readonly plugins = new Map<string, MutableDuration>();
+  private readonly diagnosticsDuration = new Map<string, MutableDuration>();
   private readonly slowOperations: ProfileSlowOperation[] = [];
   private totalDurationMs: number | undefined;
   private incremental: ProfileIncremental | undefined;
+  private diagnosticCounts: DiagnosticCounts | undefined;
   private cacheHits = 0;
   private cacheMisses = 0;
   private hasCacheEvents = false;
@@ -67,6 +86,9 @@ export class ProfileTraceSink implements TraceSink {
       addDuration(this.content, span.name, span.durationMs);
     if (span.name.startsWith("integration.")) {
       addDuration(this.integrations, span.name, span.durationMs);
+    }
+    if (span.name === "diagnostics.run") {
+      addDuration(this.diagnosticsDuration, span.name, span.durationMs);
     }
 
     const plugin = stringAttribute(span.attributes, "plugin");
@@ -104,10 +126,30 @@ export class ProfileTraceSink implements TraceSink {
       this.cacheMisses++;
       this.hasCacheEvents = true;
     }
+    if (event.name === "diagnostics.summary") {
+      this.diagnosticCounts = {
+        total: numberAttribute(event, "total"),
+        errors: numberAttribute(event, "errors"),
+        warnings: numberAttribute(event, "warnings"),
+        info: numberAttribute(event, "info"),
+      };
+    }
   }
 
   createReport(): ProfileReport {
     const cacheRequests = this.cacheHits + this.cacheMisses;
+    const diagnosticsDuration = this.diagnosticsDuration.get("diagnostics.run");
+    const diagnostics =
+      diagnosticsDuration || this.diagnosticCounts
+        ? {
+            calls: diagnosticsDuration?.calls ?? 0,
+            durationMs: diagnosticsDuration?.cumulativeDurationMs ?? 0,
+            total: this.diagnosticCounts?.total ?? 0,
+            errors: this.diagnosticCounts?.errors ?? 0,
+            warnings: this.diagnosticCounts?.warnings ?? 0,
+            info: this.diagnosticCounts?.info ?? 0,
+          }
+        : undefined;
     return {
       totalDurationMs: this.totalDurationMs,
       content: new Map(
@@ -132,6 +174,7 @@ export class ProfileTraceSink implements TraceSink {
               cacheRequests === 0 ? undefined : this.cacheHits / cacheRequests,
           }
         : undefined,
+      diagnostics,
       slowestOperations: [...this.slowOperations],
     };
   }

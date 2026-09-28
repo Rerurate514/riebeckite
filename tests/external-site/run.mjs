@@ -42,6 +42,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-diagnostics",
   },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  {
+    directory: "packages/create-riebeckite",
+    name: "create-riebeckite",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
@@ -138,6 +142,7 @@ function writeSitePackageJson(siteDir, packed) {
   const manifestPath = path.join(siteDir, "package.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   manifest.dependencies = { ...manifest.dependencies };
+  manifest.devDependencies = { ...manifest.devDependencies };
   manifest.overrides = { ...manifest.overrides };
 
   for (const [name, info] of packed) {
@@ -145,7 +150,11 @@ function writeSitePackageJson(siteDir, packed) {
       .relative(siteDir, info.tarball)
       .split(path.sep)
       .join("/")}`;
-    manifest.dependencies[name] = fileSpec;
+    if (name in manifest.devDependencies) {
+      manifest.devDependencies[name] = fileSpec;
+    } else {
+      manifest.dependencies[name] = fileSpec;
+    }
     manifest.overrides[name] = fileSpec;
   }
 
@@ -179,6 +188,14 @@ function writeExternalConsumerTsconfig(siteDir) {
     fail("external-consumer tsconfig is missing the vite/client type library");
   }
   console.log(`  site/tsconfig.json types: ${[...effective].join(", ")}`);
+}
+
+function assertDeclaredDependencies(siteDir) {
+  step("checking the site for undeclared (hoisted) dependencies");
+  run(process.execPath, [
+    path.join(repoRoot, "scripts", "check_dependencies.mjs"),
+    siteDir,
+  ]);
 }
 
 function assertNoMonorepoEscapeHatches(siteDir) {
@@ -442,6 +459,64 @@ function assertBuildOutput(siteDir) {
   }
 }
 
+function generateStarterSite(tempRoot) {
+  step("generating a starter site with riebeckite init");
+  const starterDir = path.join(tempRoot, "starter");
+  const cli = path.join(repoRoot, "packages", "cli", "bin", "riebeckite.mjs");
+  run(process.execPath, [cli, "init", starterDir]);
+
+  const rerun = run(process.execPath, [cli, "init", starterDir], {
+    allowFailure: true,
+  });
+  if (rerun.status === 0) {
+    fail("riebeckite init must refuse a non-empty target without --force");
+  }
+
+  return starterDir;
+}
+
+function generateCreateStarterSite(tempRoot) {
+  step("generating a starter site with create-riebeckite");
+  const starterDir = path.join(tempRoot, "starter-create");
+  run(process.execPath, [
+    path.join(
+      repoRoot,
+      "packages",
+      "create-riebeckite",
+      "bin",
+      "create-riebeckite.mjs",
+    ),
+    starterDir,
+  ]);
+  if (!fs.existsSync(path.join(starterDir, "riebeckite.config.ts"))) {
+    fail("create-riebeckite did not generate riebeckite.config.ts");
+  }
+}
+
+function assertStarterOutput(siteDir) {
+  step("checking generated starter output");
+  const distDir = path.join(siteDir, "dist");
+  if (!fs.existsSync(distDir)) {
+    fail("starter build did not create a dist/ directory");
+  }
+
+  const htmlFiles = walkFiles(distDir, (full) => full.endsWith(".html"));
+  if (htmlFiles.length === 0) {
+    fail("starter build did not emit any HTML files under dist/");
+  }
+
+  const combined = htmlFiles
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
+  if (!combined.includes("starter")) {
+    fail("starter HTML is missing the generated site title");
+  }
+
+  for (const file of htmlFiles) {
+    console.log(`  ${path.relative(siteDir, file)}`);
+  }
+}
+
 function main() {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "riebeckite-e2e-"));
   const siteDir = path.join(tempRoot, "site");
@@ -469,6 +544,7 @@ function main() {
 
     assertIsolatedInstall(siteDir, tempRoot);
     assertNoMonorepoEscapeHatches(siteDir);
+    assertDeclaredDependencies(siteDir);
     assertPublishedArtifacts(siteDir);
 
     step("verifying capability dependency resolution");
@@ -491,7 +567,9 @@ function main() {
       nestedWorkingDirectory,
     );
     if (!cliText(configInspection).includes("fixture-local")) {
-      fail("inspect config did not report the site-local theme (fixture-local)");
+      fail(
+        "inspect config did not report the site-local theme (fixture-local)",
+      );
     }
     const pluginInspection = runCli(
       siteDir,
@@ -509,6 +587,22 @@ function main() {
 
     runTypecheck(siteDir, "tsconfig.json");
     runTypecheck(siteDir, "tsconfig.nodenext.json");
+
+    generateCreateStarterSite(tempRoot);
+    const starterDir = generateStarterSite(tempRoot);
+    writeSitePackageJson(starterDir, packed);
+    assertNoMonorepoEscapeHatches(starterDir);
+    assertDeclaredDependencies(starterDir);
+
+    step("npm install the generated starter");
+    run("npm", ["install", "--no-audit", "--no-fund", "--loglevel=error"], {
+      cwd: starterDir,
+    });
+
+    runCli(starterDir, "check");
+    runCli(starterDir, "doctor");
+    runCli(starterDir, "build");
+    assertStarterOutput(starterDir);
 
     console.log(
       "\n[external-site] PASS: external site built from published artifacts",

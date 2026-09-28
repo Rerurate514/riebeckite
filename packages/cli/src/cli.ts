@@ -3,6 +3,7 @@ import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
 import { runDev } from "./commands/dev.js";
 import { runDoctorCommand } from "./commands/doctor.js";
+import { runInit } from "./commands/init.js";
 import { type InspectTarget, runInspect } from "./commands/inspect.js";
 import { runProfile } from "./commands/profile.js";
 import { renderCliError } from "./error_renderer.js";
@@ -10,6 +11,12 @@ import { renderCliError } from "./error_renderer.js";
 export async function main(arguments_: readonly string[]): Promise<void> {
   try {
     const command = parseCommand(arguments_);
+
+    if (command.name === "init") {
+      await runInit({ directory: command.directory, force: command.force });
+      return;
+    }
+
     const project = await resolveRiebeckiteProject(process.cwd());
 
     if (command.name === "dev") {
@@ -49,6 +56,7 @@ type Command =
   | { name: "build"; full: boolean }
   | { name: "check" }
   | { name: "doctor" }
+  | { name: "init"; directory: string; force: boolean }
   | { name: "profile"; full: boolean }
   | { name: "inspect"; target?: InspectTarget; list: boolean };
 
@@ -56,6 +64,7 @@ function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
   if (name === "dev" && options.length === 0) return { name };
   if (name === "check" && options.length === 0) return { name };
+  if (name === "init") return parseInitCommand(options);
   if (
     name === "build" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -72,8 +81,29 @@ function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <dev | build [--full] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <init [directory] [--force] | dev | build [--full] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+function parseInitCommand(options: readonly string[]): Command {
+  let directory: string | undefined;
+  let force = false;
+
+  for (const option of options) {
+    if (option === "--force") {
+      force = true;
+      continue;
+    }
+    if (option.startsWith("-")) {
+      throw new CliUsageError(`Unknown init option: ${option}`);
+    }
+    if (directory !== undefined) {
+      throw new CliUsageError("Usage: riebeckite init [directory] [--force]");
+    }
+    directory = option;
+  }
+
+  return { name: "init", directory: directory ?? ".", force };
 }
 
 function parseInspectCommand(options: readonly string[]): Command {

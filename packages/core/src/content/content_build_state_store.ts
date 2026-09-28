@@ -19,30 +19,49 @@ export async function loadContentBuildState(
   }
 }
 
+export type ContentBuildStateInvalidReason =
+  | "malformed-json"
+  | "unsupported-version"
+  | "invalid-shape";
+
 export type ContentBuildStateStatus =
   | { kind: "missing"; path: string }
   | { kind: "valid"; path: string; version: number; entryCount: number }
-  | { kind: "invalid"; path: string };
+  | {
+      kind: "invalid";
+      path: string;
+      reason: ContentBuildStateInvalidReason;
+    };
 
 export async function readContentBuildStateStatus(
   statePath: string,
 ): Promise<ContentBuildStateStatus> {
+  let parsed: unknown;
   try {
-    const parsed: unknown = JSON.parse(await fs.readFile(statePath, "utf8"));
-    return isContentBuildState(parsed)
-      ? {
-          kind: "valid",
-          path: statePath,
-          version: parsed.version,
-          entryCount: Object.keys(parsed.entries).length,
-        }
-      : { kind: "invalid", path: statePath };
+    parsed = JSON.parse(await fs.readFile(statePath, "utf8"));
   } catch (error) {
     if (isNotFoundError(error)) return { kind: "missing", path: statePath };
-    if (error instanceof SyntaxError)
-      return { kind: "invalid", path: statePath };
+    if (error instanceof SyntaxError) {
+      return { kind: "invalid", path: statePath, reason: "malformed-json" };
+    }
     throw error;
   }
+
+  if (!isRecord(parsed)) {
+    return { kind: "invalid", path: statePath, reason: "invalid-shape" };
+  }
+  if (parsed.version !== CONTENT_BUILD_STATE_VERSION) {
+    return { kind: "invalid", path: statePath, reason: "unsupported-version" };
+  }
+  if (!isContentBuildStateShape(parsed)) {
+    return { kind: "invalid", path: statePath, reason: "invalid-shape" };
+  }
+  return {
+    kind: "valid",
+    path: statePath,
+    version: parsed.version,
+    entryCount: Object.keys(parsed.entries).length,
+  };
 }
 
 export async function saveContentBuildState(
@@ -76,9 +95,14 @@ export function resolveContentBuildStatePath(
 }
 
 function isContentBuildState(value: unknown): value is ContentBuildState {
-  if (!isRecord(value) || value.version !== CONTENT_BUILD_STATE_VERSION) {
-    return false;
-  }
+  return (
+    isRecord(value) &&
+    value.version === CONTENT_BUILD_STATE_VERSION &&
+    isContentBuildStateShape(value)
+  );
+}
+
+function isContentBuildStateShape(value: Record<string, unknown>): boolean {
   if (!isRecord(value.entries) || !isRecord(value.contentIndex)) return false;
 
   return (

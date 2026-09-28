@@ -18,7 +18,7 @@ This guide walks through publishing a site with Riebeckite, from installation to
 
 - Node.js (LTS) and pnpm are installed.
 - You run commands from the repository root. Content and the application are separate: Markdown lives under `content/`, and the HonoX application lives in `apps/web`.
-- Riebeckite does not ship an `init` command yet, so the reference application is the starting point. To build a separate site, use it and the E2E fixture described in [Use your own project](#use-your-own-project).
+- Riebeckite ships an `init` command: `pnpm exec riebeckite init my-site` (or `npm create riebeckite my-site`) generates a standalone site you can install and build. The reference application and the E2E fixture remain useful examples for a fully customized site.
 
 ## 1. Install dependencies
 
@@ -145,7 +145,20 @@ Deployment settings live in `apps/web/wrangler.jsonc`; `assets.directory` points
 
 ## Use your own project
 
-To build a site outside this repository, start from the E2E fixture at [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site). It is a standalone project that installs Riebeckite packages into its own `node_modules` and builds with no workspace dependency. The essential files are:
+Generate a standalone site with the CLI or the scaffolder package, then install and build it:
+
+```bash
+pnpm exec riebeckite init my-site
+# or: npm create riebeckite my-site
+cd my-site
+pnpm install
+pnpm exec riebeckite check
+pnpm exec riebeckite build
+```
+
+`init` writes a self-contained site that passes `check` and `build` as generated. It refuses to overwrite an existing non-empty target unless `--force` is passed.
+
+The generated site follows the same site-application contract as the E2E fixture at [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site). The fixture adds site-local extensions and an external vault, so it remains the reference when you need those. The essential files are:
 
 | File | Role |
 | --- | --- |

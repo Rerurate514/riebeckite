@@ -45,15 +45,22 @@ the app/site root fails immediately.
 5. Assert the site contains no `packages/` directory and no `workspace:` /
    monorepo-path escape hatches, and that `node_modules/@riebeckite/*` resolves
    outside the repository.
-6. Run `riebeckite check`, `riebeckite doctor`, `riebeckite inspect`, and
+6. Check that every bare import in the site is a declared dependency of the
+   site (`scripts/check_dependencies.mjs`), so the fixture cannot silently rely
+   on hoisted packages.
+7. Run `riebeckite check`, `riebeckite doctor`, `riebeckite inspect`, and
    `riebeckite build` from `site/app`, rather than the application root.
-7. Assert the generated `dist/` HTML contains the fixture markers, including one
+8. Assert the generated `dist/` HTML contains the fixture markers, including one
    produced by a **site-local plugin** (`extensions/local-plugin.ts`) and theme
    attributes produced by a **site-local theme** (`extensions/local-theme.ts`),
    and that both site-local stylesheets are bundled into the emitted CSS.
-8. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`.
+9. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`.
    Both configs use `skipLibCheck: false`; the NodeNext config imports every
    published entry point so a broken declaration cannot hide behind unused code.
+10. Generate a second site with `riebeckite init` (and check the `create-riebeckite`
+    launcher), inject the same tarballs, then run `check`, `doctor`, and `build`
+    on it. This proves the starter generated from the template is buildable and
+    that `init` refuses a non-empty target without `--force`.
 
 ## Why `vite/client` lives only in the isolated copy
 

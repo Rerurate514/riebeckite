@@ -184,26 +184,29 @@ export class PluginRuntime {
   async collectDiagnostics(
     contentIndex: Map<string, string>,
   ): Promise<Diagnostic[]> {
-    return await this.observability().tracer.span(
-      "diagnostics.run",
-      {},
-      async () => {
-        const results: Diagnostic[] = [];
-        const context = this.createContext(contentIndex);
-        for (const plugin of this.plugins()) {
-          const diagnostics = await plugin.addDiagnostics?.(
-            this.createPluginContext(plugin, context),
-          );
-          for (const diagnostic of diagnostics ?? []) {
-            results.push({
-              ...diagnostic,
-              pluginName: diagnostic.pluginName || plugin.name,
-            });
-          }
+    const tracer = this.observability().tracer;
+    return await tracer.span("diagnostics.run", {}, async () => {
+      const results: Diagnostic[] = [];
+      const context = this.createContext(contentIndex);
+      for (const plugin of this.plugins()) {
+        const diagnostics = await plugin.addDiagnostics?.(
+          this.createPluginContext(plugin, context),
+        );
+        for (const diagnostic of diagnostics ?? []) {
+          results.push({
+            ...diagnostic,
+            pluginName: diagnostic.pluginName || plugin.name,
+          });
         }
-        return results;
-      },
-    );
+      }
+      tracer.event("diagnostics.summary", {
+        total: results.length,
+        errors: countSeverity(results, "error"),
+        warnings: countSeverity(results, "warning"),
+        info: countSeverity(results, "info"),
+      });
+      return results;
+    });
   }
 
   private async runBuildLifecycle(
@@ -310,4 +313,12 @@ export class PluginRuntime {
   private plugins() {
     return resolvePlugins(this.pipelineOptions.plugins);
   }
+}
+
+function countSeverity(
+  diagnostics: readonly Diagnostic[],
+  severity: Diagnostic["severity"],
+): number {
+  return diagnostics.filter((diagnostic) => diagnostic.severity === severity)
+    .length;
 }

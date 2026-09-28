@@ -15,11 +15,20 @@ export {
   isMarkdownPath,
   normalizeContentPath,
 } from "./src/content/attachment.js";
-export type { ContentBuildStateStatus } from "./src/content/content_build_state_store.js";
+export type {
+  ContentBuildState,
+  FingerprintedContentEntry,
+} from "./src/content/content_build_state.js";
+export type {
+  ContentBuildStateInvalidReason,
+  ContentBuildStateStatus,
+} from "./src/content/content_build_state_store.js";
 export {
+  loadContentBuildState,
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
 } from "./src/content/content_build_state_store.js";
+export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
 export type {
   ContentCollection,
   ContentCollectionContext,

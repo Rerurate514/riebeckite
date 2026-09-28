@@ -19,6 +19,14 @@ export {
   riebeckiteVite,
 } from "./src/vite_plugin.js";
 export type {
+  ScaffoldSiteOptions,
+  ScaffoldSiteResult,
+} from "./src/scaffold/index.js";
+export {
+  ScaffoldSiteError,
+  scaffoldRiebeckiteSite,
+} from "./src/scaffold/index.js";
+export type {
   ResolvedHonoxApplication,
   ResolveHonoxApplicationOptions,
 } from "./src/vite_runner.js";

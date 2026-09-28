@@ -13,3 +13,5 @@ meaningful な build phase、plugin work、I/O boundary に span を作り、成
 parallel work では child span duration の合計は cumulative work であり wall-clock time ではありません。Profiler はこの違いを保持して、並行処理を遅い直列処理のように表示しないでください。
 
 secret、credential、不要に機微な source content を log しません。instrumentation は任意かつ結果を変えないものにし、Worker runtime が mutable trace/profile file に依存しないようにします。CLI では `riebeckite profile [--full]` を利用します。
+
+profile レポートには diagnostics の phase も含まれます。`diagnostics.run` span の duration と、diagnostics 収集時に発行される total/error/warning/info の件数を表示します。diagnostic のコストと量を、それを生んだ build phase の隣で確認できます。

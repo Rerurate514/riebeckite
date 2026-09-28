@@ -41,7 +41,7 @@ from the application root. `defaultSsgEntry` is the root-relative
 `./app/server.ts` entry, and `defaultSsrExternals` is the SSR externals list
 both helpers use. Other exports are `loadRiebeckiteConfig`,
 `resolveHonoxApplication`, `resolveHonoxApplicationRoot`, `buildHonoxApplication`,
-and `startHonoxDevServer`.
+and `startHonoxDevServer`. `scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, overwrite? })` writes a minimal, self-contained site (configuration, Vite/HonoX application shell, routes, stylesheet, and starter content) and returns the generated file list. It throws `ScaffoldSiteError` when the target already contains generated files and `overwrite` is not set. `riebeckite init` and `create-riebeckite` are thin command wrappers around it.
 
 ## UI primitives
 

@@ -18,7 +18,7 @@
 
 - Node.js（LTS）と pnpm が必要です。
 - コマンドはリポジトリのルートで実行します。コンテンツとアプリケーションは分かれています。Markdown は `content/`、HonoX アプリケーションは `apps/web` にあります。
-- Riebeckite にはまだ `init` コマンドがないため、参照用アプリケーションが出発点になります。別のサイトを作る場合は、後半の「独自プロジェクトで使う」を参照してください。
+- Riebeckite には `init` コマンドがあります。`pnpm exec riebeckite init my-site`（または `npm create riebeckite my-site`）で、そのまま install・build できる単体サイトを生成できます。参照用アプリケーションと E2E フィクスチャは、さらに作り込んだサイトの例として引き続き有用です。
 
 ## 1. 依存関係をインストールする
 
@@ -145,7 +145,20 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 
 ## 独自プロジェクトで使う
 
-リポジトリの外でサイトを構築する場合は、E2E フィクスチャの [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site) を出発点にします。これは、Riebeckite の各パッケージを自身の `node_modules` にインストールし、workspace に依存せずビルドする単体プロジェクトです。主要なファイルは次のとおりです。
+CLI または scaffolder パッケージで単体サイトを生成し、install・build します。
+
+```bash
+pnpm exec riebeckite init my-site
+# または: npm create riebeckite my-site
+cd my-site
+pnpm install
+pnpm exec riebeckite check
+pnpm exec riebeckite build
+```
+
+`init` は生成直後の状態で `check` と `build` を通る自己完結のサイトを書き出します。生成対象のファイルが既にあるディレクトリには `--force` なしでは上書きしません。
+
+生成されるサイトは、E2E フィクスチャ [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site) と同じ site application contract に従います。フィクスチャはサイト内 extension と外部 Vault を追加しているため、それらが必要な場合の参照実装になります。主要なファイルは次のとおりです。
 
 | ファイル | 役割 |
 | --- | --- |

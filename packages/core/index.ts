@@ -21,6 +21,7 @@ export {
 } from "./src/content/content_build_state_store";
 export type { ContentGraph } from "./src/content/content_graph";
 export { createContentGraph } from "./src/content/content_graph";
+export { resolveDefaultContentLocation } from "./src/content/content_location";
 export type {
   ContentBuildOptions,
   ContentInspection,
@@ -69,6 +70,7 @@ export type {
   ContentAsset,
   ContentLink,
   ContentLinkKind,
+  ContentLocationInput,
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
@@ -97,7 +99,6 @@ export type {
 export type {
   PluginContentContext,
   PluginContentLocationContext,
-  PluginContentLocationInput,
   PluginContentLocationResolver,
   PluginContentRenderer,
   PluginContext,

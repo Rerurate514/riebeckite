@@ -39,7 +39,7 @@ export class Pipeline {
 
   constructor(
     private contentIndex: Map<string, string>,
-    private permalinks: ReadonlyMap<string, string> = new Map(),
+    private permalinks: ReadonlyMap<string, string>,
     private getMarkdownBySlug?: (slug: string) => Promise<string>,
     private options: PipelineOptions = {},
     private isBuildTime = false,
@@ -65,8 +65,7 @@ export class Pipeline {
 
     const markdownPipelineContext: MarkdownPipelineContext = {
       contentIndex: this.contentIndex,
-      resolvePermalink: (slug) =>
-        this.permalinks.get(slug) ?? legacyPermalink(slug),
+      resolvePermalink: (slug) => this.getPermalink(slug),
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
       renderContent: this.createContentRenderer(),
     };
@@ -111,6 +110,14 @@ export class Pipeline {
       frontmatter: (file.data.matter || {}) as PostFrontmatter,
       html: String(file.value),
     };
+  }
+
+  private getPermalink(slug: string): string {
+    const permalink = this.permalinks.get(slug);
+    if (!permalink) {
+      throw new Error(`Content public location was not resolved: ${slug}`);
+    }
+    return permalink;
   }
 
   private use(
@@ -208,10 +215,6 @@ export class Pipeline {
     this.pluginCaches.set(plugin.name, cache);
     return cache;
   }
-}
-
-function legacyPermalink(slug: string): string {
-  return slug === "index" ? "/" : `/${slug}`;
 }
 
 function selectEmbedMarkdownFragment(

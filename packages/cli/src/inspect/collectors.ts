@@ -108,21 +108,17 @@ async function inspectPaths(
   source: ContentSource,
   paths: readonly string[],
 ): Promise<ContentInspection["paths"]> {
-  if (!config.plugins.some((plugin) => plugin.name === "permalink")) {
-    return paths.map((path) => ({ path }));
-  }
-  const manifest = await new ContentManager(source, [], {
+  const locations = await new ContentManager(source, [], {
     config,
-  }).getManifest();
-  const bySlug = manifest.bySlug;
+  }).getContentLocations();
   return paths.map((path) => {
     if (!path.endsWith(".md")) return { path };
-    const entry = bySlug.get(path.replace(/\.md$/, ""));
+    const location = locations.get(path.replace(/\.md$/, ""));
     return {
       path,
-      id: entry?.publicLocation.metadata?.id,
-      idSource: entry?.publicLocation.metadata?.idSource,
-      permalink: entry?.permalink,
+      id: location?.metadata?.id,
+      idSource: location?.metadata?.idSource,
+      permalink: location?.permalink,
     };
   });
 }

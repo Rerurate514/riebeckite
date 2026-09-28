@@ -33,6 +33,7 @@ import {
 import { fingerprintContentEntries } from "./content_fingerprint";
 import type { ContentGraph } from "./content_graph";
 import { ContentIndexBuilder } from "./content_index_builder";
+import { resolveDefaultContentLocation } from "./content_location";
 import type { ContentSource, ContentSourceEntry } from "./content_source";
 import { FileSystemContentSource } from "./file_system_content_source";
 import { ManifestBuilder } from "./manifest_builder";
@@ -211,13 +212,19 @@ export class ContentManager {
               this.getPost(post.slug),
               this.getProcessedContent(post.slug),
             ]);
+            const location = locations.get(post.slug);
+            if (!location) {
+              throw new Error(
+                `Content public location was not resolved: ${post.slug}`,
+              );
+            }
 
             return this.manifestBuilder.createEntry(
               post.slug,
               rawPost,
               processed,
               contentIndex,
-              locations.get(post.slug) ?? legacyContentLocation(post.slug),
+              location,
             );
           }),
         );
@@ -319,7 +326,7 @@ export class ContentManager {
         })),
     );
     const locations = new Map(
-      inputs.map(({ slug }) => [slug, legacyContentLocation(slug)]),
+      inputs.map((input) => [input.slug, resolveDefaultContentLocation(input)]),
     );
     for (const location of await this.pluginRuntime.resolveContentLocations(
       inputs,
@@ -476,10 +483,6 @@ export class ContentManager {
 
 function toSlug(path: string): string {
   return path.replace(/\.md$/, "");
-}
-
-function legacyContentLocation(slug: string): ContentPublicLocation {
-  return { slug, permalink: slug === "index" ? "/" : `/${slug}` };
 }
 
 declare module "../pipeline" {

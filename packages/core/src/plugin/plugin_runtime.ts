@@ -2,6 +2,7 @@ import type { Observability } from "../observability";
 import { noopObservability } from "../observability";
 import type { PipelineOptions } from "../pipeline";
 import type {
+  ContentLocationInput,
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
@@ -10,7 +11,6 @@ import type { Diagnostic } from "../types/diagnostic";
 import type { RiebeckitePlugin } from "../types/plugin";
 import { resolvePlugins } from "../types/plugin";
 import type {
-  PluginContentLocationInput,
   PluginContentLocationResolver,
   PluginContext,
 } from "../types/plugin_context";
@@ -71,7 +71,7 @@ export class PluginRuntime {
   }
 
   async resolveContentLocations(
-    entries: readonly PluginContentLocationInput[],
+    entries: readonly ContentLocationInput[],
     contentIndex: Map<string, string>,
   ): Promise<readonly ContentPublicLocation[]> {
     const context = { ...this.createContext(contentIndex), entries };

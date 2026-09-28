@@ -1,6 +1,7 @@
 import type { Logger, Tracer } from "../observability";
 import type { PluginCache } from "../plugin/plugin_cache";
 import type {
+  ContentLocationInput,
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
@@ -43,15 +44,8 @@ export type PluginGraphContext = PluginContext & {
   entries: ContentManifestEntry[];
 };
 
-export type PluginContentLocationInput = {
-  slug: string;
-  path: string;
-  markdown: string;
-};
-
-/** Generic build-time extension point for canonical content locations. */
 export type PluginContentLocationContext = PluginContext & {
-  entries: readonly PluginContentLocationInput[];
+  entries: readonly ContentLocationInput[];
 };
 
 export type PluginContentLocationResolver = (

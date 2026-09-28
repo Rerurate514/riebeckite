@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import {
+  type ContentLocationInput,
   type ContentPublicLocation,
   definePlugin,
-  type PluginContentLocationInput,
   type PostFrontmatter,
 } from "@riebeckite/core";
 import { parse } from "yaml";
@@ -14,7 +14,7 @@ export type PermalinkIdStrategy =
 export type PermalinkPathMode = "flat" | "preserve" | "append";
 export type RedirectStatus = 301 | 302 | 307 | 308;
 
-type ResolverContent = Pick<PluginContentLocationInput, "slug" | "path"> & {
+type ResolverContent = Pick<ContentLocationInput, "slug" | "path"> & {
   frontmatter: PostFrontmatter;
 };
 
@@ -182,7 +182,7 @@ function createPathId(path: string, length: number): string {
     .slice(0, length);
 }
 
-function parseFrontmatter(entry: PluginContentLocationInput): PostFrontmatter {
+function parseFrontmatter(entry: ContentLocationInput): PostFrontmatter {
   const match = entry.markdown.match(
     /^(?:\uFEFF)?---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/,
   );

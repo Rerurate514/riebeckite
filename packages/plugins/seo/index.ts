@@ -239,14 +239,7 @@ export function buildPostUrl(
   config: ResolvedRiebeckiteConfig,
   permalink: string,
 ): string {
-  return buildAbsoluteUrl(
-    config,
-    permalink.startsWith("/")
-      ? permalink
-      : permalink === "index"
-        ? "/"
-        : `/${permalink}`,
-  );
+  return buildAbsoluteUrl(config, permalink);
 }
 
 export function getDescription(

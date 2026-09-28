@@ -22,7 +22,7 @@ export type ContentManifestPluginAsset = PluginAsset & {
 
 export type ContentManifestEntry = {
   slug: string;
-  /** Canonical site-local URL. Plugins may replace the legacy slug-derived URL. */
+  /** Resolved canonical site-local URL. */
   permalink: string;
   publicLocation: ContentPublicLocation;
   title: string;
@@ -40,14 +40,21 @@ export type ContentRedirect = {
 };
 
 /**
- * A generic public location declared by a plugin. `metadata` is intentionally
- * opaque to Core; it lets a plugin expose its own inspect-only details.
+ * A resolved public location for a content entry. `metadata` is intentionally
+ * opaque to Core; it lets a resolver expose its own inspect-only details.
  */
 export type ContentPublicLocation = {
   slug: string;
   permalink: string;
   redirects?: readonly ContentRedirect[];
   metadata?: Readonly<Record<string, string>>;
+};
+
+/** Input for public location resolution (default resolver and plugin hook). */
+export type ContentLocationInput = {
+  slug: string;
+  path: string;
+  markdown: string;
 };
 
 export type ContentManifest = {

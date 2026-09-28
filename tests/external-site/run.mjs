@@ -370,11 +370,17 @@ function assertBuildOutput(siteDir) {
   ) {
     fail("attachment plugin did not resolve a file from the external vault");
   }
+  if (!combined.includes('class="attachment-card rr-attachment"')) {
+    fail("attachment plugin did not expose its stable rr-attachment hook");
+  }
   if (!combined.includes('attachment-card__size">21 B</span>')) {
     fail("attachment plugin did not read the external vault file size");
   }
-  if (!combined.includes('class="media-embed media-embed--audio"')) {
+  if (!combined.includes('class="media-embed rr-media media-embed--audio"')) {
     fail("media plugin did not render an external vault media embed");
+  }
+  if (!combined.includes('class="search-bar rr-search"')) {
+    fail("search plugin did not expose its stable rr-search hook");
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");

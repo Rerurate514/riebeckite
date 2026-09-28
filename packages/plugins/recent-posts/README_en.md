@@ -55,9 +55,11 @@ return <Article afterContent={<RecentPosts posts={recentPosts} />} />;
 
 ## Component
 
-`RecentPosts({ posts })` renders a `<section class="recent-posts">` with an
-eyebrow label and an ordered list. Each item links to the post and shows its
-date formatted for the `ja-JP` locale.
+`RecentPosts({ posts })` renders a
+`<section class="recent-posts rr-recent-posts">` with an eyebrow label and an
+ordered list. Each item links to the post and shows its date formatted for the
+`ja-JP` locale. The `rr-recent-posts` root hook is the stable class themes may
+target.
 
 ## Options
 

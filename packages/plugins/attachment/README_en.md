@@ -36,7 +36,7 @@ export default defineConfig({
 ### Embed (`![[file]]`)
 
 ```html
-<aside class="attachment-card" data-attachment-path="...">
+<aside class="attachment-card rr-attachment" data-attachment-path="...">
   <div class="attachment-card__meta">
     <span class="attachment-card__format">PDF</span>
     <span class="attachment-card__size">1.2 MB</span>
@@ -49,6 +49,8 @@ export default defineConfig({
 - Format is the uppercased file extension
 - Size is read from disk under `config.content.directory` (path-traversal
   safe) and omitted when the file cannot be read
+- The embed card carries the stable `rr-attachment` root hook that themes
+  may target
 
 Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 

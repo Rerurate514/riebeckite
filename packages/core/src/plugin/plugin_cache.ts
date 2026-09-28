@@ -18,6 +18,15 @@ export type PluginCache = {
   clear(): Promise<void>;
 };
 
+export function createUnavailablePluginCache(): PluginCache {
+  return {
+    get: unavailableAtRuntime,
+    set: unavailableAtRuntime,
+    delete: unavailableAtRuntime,
+    clear: unavailableAtRuntime,
+  };
+}
+
 type PluginCacheWarning = {
   pluginName: string;
   key: string;
@@ -146,5 +155,11 @@ function defaultCacheWarning(warning: PluginCacheWarning): void {
   console.warn(
     `Plugin "${warning.pluginName}" cache entry "${warning.key}" is corrupted and will be ignored.`,
     warning.error,
+  );
+}
+
+async function unavailableAtRuntime(): Promise<never> {
+  throw new Error(
+    "Plugin cache is available only through an explicit build context.",
   );
 }

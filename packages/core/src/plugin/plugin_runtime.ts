@@ -16,6 +16,7 @@ import {
 } from "./plugin_lifecycle";
 import {
   createPluginCache,
+  createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin_cache";
 import type { PluginCache } from "./plugin_cache";
@@ -29,6 +30,7 @@ export class PluginRuntime {
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
   private pluginCaches = new Map<string, PluginCache>();
+  private isBuildTime = false;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
 
@@ -113,6 +115,10 @@ export class PluginRuntime {
     });
   }
 
+  enableBuildTime(): void {
+    this.isBuildTime = true;
+  }
+
   async dispose(contentIndex: Map<string, string>) {
     if (this.disposed || !this.buildStarted) return;
 
@@ -173,11 +179,13 @@ export class PluginRuntime {
     const cached = this.pluginCaches.get(plugin.name);
     if (cached) return cached;
 
-    const cache = createPluginCache({
-      pluginName: plugin.name,
-      cacheVersion: plugin.cacheVersion,
-      cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
-    });
+    const cache = this.isBuildTime
+      ? createPluginCache({
+          pluginName: plugin.name,
+          cacheVersion: plugin.cacheVersion,
+          cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
+        })
+      : createUnavailablePluginCache();
     this.pluginCaches.set(plugin.name, cache);
     return cache;
   }

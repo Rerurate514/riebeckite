@@ -6,11 +6,12 @@ export class ContentIndexBuilder {
 
   async build(
     contentEntries: readonly ContentSourceEntry[],
+    read = (entry: ContentSourceEntry) => this.source.read(entry),
   ): Promise<Map<string, string>> {
     const index = new Map<string, string>();
 
     for (const contentEntry of contentEntries) {
-      await this.indexContentEntry(index, contentEntry);
+      await this.indexContentEntry(index, contentEntry, read);
     }
 
     return index;
@@ -19,6 +20,7 @@ export class ContentIndexBuilder {
   private async indexContentEntry(
     index: Map<string, string>,
     contentEntry: ContentSourceEntry,
+    read: (entry: ContentSourceEntry) => Promise<string | Uint8Array>,
   ) {
     const contentPath = contentEntry.path;
     const ext = contentPath.split(".").pop()?.toLowerCase() ?? "";
@@ -35,7 +37,7 @@ export class ContentIndexBuilder {
     }
 
     if (ext === "md") {
-      const markdown = readText(await this.source.read(contentEntry));
+      const markdown = readText(await read(contentEntry));
       for (const alias of extractFrontmatterAliases(markdown)) {
         addIndexEntry(index, alias, value);
       }

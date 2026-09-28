@@ -1,0 +1,69 @@
+import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
+import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
+import {
+  CONTENT_BUILD_STATE_VERSION,
+  type ContentBuildState,
+} from "./content_build_state";
+
+export async function loadContentBuildState(
+  statePath: string,
+): Promise<ContentBuildState | undefined> {
+  try {
+    const parsed: unknown = JSON.parse(await fs.readFile(statePath, "utf8"));
+    return isContentBuildState(parsed) ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function saveContentBuildState(
+  statePath: string,
+  state: ContentBuildState,
+): Promise<void> {
+  const directory = path.dirname(statePath);
+  const temporaryPath = `${statePath}.${randomUUID()}.tmp`;
+  await fs.mkdir(directory, { recursive: true });
+
+  try {
+    await fs.writeFile(temporaryPath, JSON.stringify(state), "utf8");
+    await fs.rename(temporaryPath, statePath);
+  } catch (error) {
+    await fs.rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
+export function resolveContentBuildStatePath(
+  config: ResolvedRiebeckiteConfig | undefined,
+  contentDirectory: string | undefined,
+): string {
+  const directory = config?.content.directory ?? contentDirectory ?? process.cwd();
+  return path.resolve(directory, "..", "apps", "web", "app", ".riebeckite", "content-state.json");
+}
+
+function isContentBuildState(value: unknown): value is ContentBuildState {
+  if (!isRecord(value) || value.version !== CONTENT_BUILD_STATE_VERSION) {
+    return false;
+  }
+  if (!isRecord(value.entries) || !isRecord(value.contentIndex)) return false;
+
+  return (
+    Object.values(value.entries).every(
+      (entry) =>
+        isRecord(entry) &&
+        typeof entry.fingerprint === "string" &&
+        entry.fingerprint.length > 0 &&
+        Array.isArray(entry.dependencies) &&
+        entry.dependencies.every(
+          (dependency) => typeof dependency === "string",
+        ),
+    ) &&
+    Object.values(value.contentIndex).every((entry) => typeof entry === "string")
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}

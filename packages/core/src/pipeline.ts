@@ -17,6 +17,7 @@ import type { RiebeckitePlugin } from "./types/plugin";
 import { resolvePlugins } from "./types/plugin";
 import {
   createPluginCache,
+  createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache";
 import type { PluginCache } from "./plugin/plugin_cache";
@@ -37,6 +38,7 @@ export class Pipeline {
     private contentIndex: Map<string, string>,
     private getMarkdownBySlug?: (slug: string) => Promise<string>,
     private options: PipelineOptions = {},
+    private isBuildTime = false,
   ) {}
 
   async execute(
@@ -173,11 +175,13 @@ export class Pipeline {
     const cached = this.pluginCaches.get(plugin.name);
     if (cached) return cached;
 
-    const cache = createPluginCache({
-      pluginName: plugin.name,
-      cacheVersion: plugin.cacheVersion,
-      cacheDirectory: resolvePluginCacheDirectory(this.options.config),
-    });
+    const cache = this.isBuildTime
+      ? createPluginCache({
+          pluginName: plugin.name,
+          cacheVersion: plugin.cacheVersion,
+          cacheDirectory: resolvePluginCacheDirectory(this.options.config),
+        })
+      : createUnavailablePluginCache();
     this.pluginCaches.set(plugin.name, cache);
     return cache;
   }

@@ -172,7 +172,7 @@ async function collectReferencedAssets(): Promise<ReferencedAssets> {
   const referencedImages = new Set<string>();
   const referencedAttachments = new Set<string>();
   const content = new ContentManager(CONTENT_DIR, config.content.exclude);
-  const manifest = await content.getManifest();
+  const manifest = await content.build();
 
   for (const entry of manifest.entries) {
     if (!isPublished(config, entry.frontmatter)) continue;

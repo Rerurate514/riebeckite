@@ -16,6 +16,7 @@ export {
 export type { ContentGraph } from "./src/content/content_graph";
 export { createContentGraph } from "./src/content/content_graph";
 export { ContentManager } from "./src/content/content_manager";
+export type { ContentBuildOptions } from "./src/content/content_manager";
 export { FileSystemContentSource } from "./src/content/file_system_content_source";
 export type {
   ContentSource,

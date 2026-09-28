@@ -19,6 +19,15 @@ export type ContentGraph = {
   outgoingSlugs(slug: string): string[];
   incomingSlugs(slug: string): string[];
   neighborSlugs(slug: string): string[];
+  filterNeighbors(
+    slug: string,
+    include: (neighborSlug: string) => boolean,
+  ): ContentGraphNeighbors;
+};
+
+export type ContentGraphNeighbors = {
+  outgoingSlugs: string[];
+  incomingSlugs: string[];
 };
 
 export function createContentGraph(manifest: ContentGraphSource): ContentGraph {
@@ -31,6 +40,14 @@ export function createContentGraph(manifest: ContentGraphSource): ContentGraph {
     outgoingSlugs: (slug) => getOutgoingSlugs(manifest, slug),
     incomingSlugs: (slug) => getIncomingSlugs(manifest, slug),
     neighborSlugs: (slug) => getNeighborSlugs(manifest, slug),
+    filterNeighbors: (slug, include) => ({
+      outgoingSlugs: uniqueStrings(
+        getOutgoingSlugs(manifest, slug).filter(include),
+      ),
+      incomingSlugs: uniqueStrings(
+        getIncomingSlugs(manifest, slug).filter(include),
+      ),
+    }),
   };
 }
 

@@ -4,7 +4,7 @@
 | 2 | A1.5 | npm配布形式を完成させる | ✅ 完了 | Medium–Large | ESM + `.d.ts` + NodeNext + LICENSE + `pnpm pack` + external consumer検証済み |
 | 3 | A1.6 | External Site Build E2E | ✅ 完了 | Medium | tarballのみで`check/doctor/inspect/build`、Bundler/NodeNext typecheckを保証 |
 | **4** | **R1** | **Graph layout重複解消** | ✅ 完了 | Medium | `local-graph` / `garden-explorer`の共通実装を抽出（Phase 1） |
-| 5 | R5 | Backlink走査共通化 | 未着手 | Small | Core ContentGraphへ寄せる（Phase 1） |
+| 5 | R5 | Backlink走査共通化 | ✅ 完了 | Small | Core ContentGraphへ寄せる（Phase 1） |
 | 6 | R6 | clientEntries/endpoints規約 | 未着手 | Small | 外部Plugin author向けの正解パターンを固定（Phase 1） |
 | 7 | R7 | 共通ユーティリティをCoreへ集約 | 未着手 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
 | 8 | R12 | 読了時間をCoreユーティリティ化 | 未着手 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |

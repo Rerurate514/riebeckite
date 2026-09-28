@@ -47,9 +47,10 @@ function toGardenNote(
   publishedSlugs: Set<string>,
   resolveTitle: TitleResolver,
 ): GardenExplorerNote {
-  const outgoing = graph
-    .outgoingSlugs(entry.slug)
-    .filter((slug) => publishedSlugs.has(slug));
+  const { outgoingSlugs, incomingSlugs } = graph.filterNeighbors(
+    entry.slug,
+    (slug) => publishedSlugs.has(slug),
+  );
 
   return {
     slug: entry.slug,
@@ -61,10 +62,8 @@ function toGardenNote(
     tags: entry.tags,
     date: getEntryDate(entry.frontmatter),
     folder: getFolder(entry.slug),
-    outgoing: uniqueStrings(outgoing),
-    backlinks: graph
-      .incomingSlugs(entry.slug)
-      .filter((slug) => publishedSlugs.has(slug)),
+    outgoing: outgoingSlugs,
+    backlinks: incomingSlugs,
   };
 }
 
@@ -145,8 +144,4 @@ function toPlainText(html: string): string {
     .replace(/&#39;/g, "'")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values));
 }

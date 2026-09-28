@@ -20,7 +20,10 @@ export {
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
 } from "./src/content/content_build_state_store.js";
-export type { ContentGraph } from "./src/content/content_graph.js";
+export type {
+  ContentGraph,
+  ContentGraphNeighbors,
+} from "./src/content/content_graph.js";
 export { createContentGraph } from "./src/content/content_graph.js";
 export {
   buildGraphEdges,

@@ -19,16 +19,12 @@ export function getLocalGraph(args: {
   const current = graph.get(args.slug);
   if (!current || !isPublished(args.config, current.frontmatter)) return null;
 
-  const outgoing = graph.outgoingSlugs(args.slug).filter(isPublishedSlug);
-  const backlinks = graph.incomingSlugs(args.slug).filter(isPublishedSlug);
-  const visibleOutgoing = uniqueStrings(outgoing).slice(
-    0,
-    MAX_NEIGHBORS_PER_DIRECTION,
+  const { outgoingSlugs, incomingSlugs } = graph.filterNeighbors(
+    args.slug,
+    isPublishedSlug,
   );
-  const visibleBacklinks = uniqueStrings(backlinks).slice(
-    0,
-    MAX_NEIGHBORS_PER_DIRECTION,
-  );
+  const visibleOutgoing = outgoingSlugs.slice(0, MAX_NEIGHBORS_PER_DIRECTION);
+  const visibleBacklinks = incomingSlugs.slice(0, MAX_NEIGHBORS_PER_DIRECTION);
   const visibleSlugs = new Set([
     args.slug,
     ...visibleOutgoing,
@@ -93,8 +89,4 @@ function getRelation(
   const isBacklink = backlinks.includes(slug);
   if (isOutgoing && isBacklink) return "both";
   return isOutgoing ? "outgoing" : "backlink";
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values));
 }

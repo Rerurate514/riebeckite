@@ -73,6 +73,152 @@ pnpm exec riebeckite profile        # produce a trace-based performance report
 
 `check`, `doctor`, and `inspect` do not replace one another: validation, health diagnostics, and state inspection are separate operations. Read the [CLI reference](./docs/en/cli.md) before automating them.
 
+## Use an external Obsidian vault
+
+The site application and the Obsidian vault do not need to live in the same
+directory. This is the recommended layout when the vault is also used by the
+Obsidian desktop application or is versioned independently:
+
+```text
+workspace/
+├─ site/                         # package.json, vite.config.ts, app/
+│  └─ riebeckite.config.ts
+└─ vault/                        # the Obsidian vault; not part of site/
+   ├─ index.md
+   ├─ notes/
+   │  └─ project.md
+   ├─ attachments/
+   │  └─ proposal.pdf
+   └─ media/
+      └─ recording.mp3
+```
+
+### 1. Point the configuration at the vault
+
+`content.directory` is resolved relative to the HonoX/Vite `appRoot`, **not**
+the shell's current directory. With `riebeckite.config.ts` and
+`vite.config.ts` in `site/`, configure the sibling vault as follows:
+
+```ts
+// site/riebeckite.config.ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { media } from "@riebeckite/plugin-media";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  site: { title: "My notes" },
+  content: {
+    directory: "../vault",
+    exclude: [".obsidian/**", "Templates/**"],
+  },
+  plugins: [obsidianMarkdown(), media(), attachment()],
+});
+```
+
+An absolute path also works. Relative paths are usually preferable because the
+site and vault can be moved together without editing configuration. Do not use
+`process.cwd()` to construct this path: commands can be invoked from a nested
+directory, CI directory, or editor task. `riebeckite check`, `doctor`,
+`inspect`, and `build` all use the same resolved absolute vault root.
+
+### 2. Keep application-side content loading on the resolved path
+
+The integration resolves `content.directory` for its own build. If the
+application creates `ContentManager` itself for routes or islands, resolve the
+same path once before constructing it:
+
+```ts
+// site/app/config.ts
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { resolveConfigModule } from "@riebeckite/core";
+import * as rawConfigModule from "../riebeckite.config";
+
+const appRoot = fileURLToPath(new URL("../", import.meta.url));
+const rawConfig = resolveConfigModule(rawConfigModule);
+
+export const config = {
+  ...rawConfig,
+  content: {
+    ...rawConfig.content,
+    directory: path.resolve(appRoot, rawConfig.content.directory),
+  },
+};
+```
+
+```ts
+// site/app/content.ts
+import { ContentManager } from "@riebeckite/core";
+import { config } from "./config";
+
+export const content = new ContentManager(
+  config.content.directory,
+  config.content.exclude,
+  { config, plugins: config.plugins },
+);
+```
+
+Do not resolve the directory a second time against another base. After this
+step it is already absolute. A custom `content.source` replaces filesystem
+scanning; do not configure it as a second, competing reader for the same vault.
+
+### 3. Configure Vite with the site as its application root
+
+Keep `appRoot` pointed at the site, not at the vault. The vault is content data;
+the Vite application owns routes, client entries, generated plugin styles, and
+the output directory.
+
+```ts
+// site/vite.config.ts
+import { fileURLToPath } from "node:url";
+import { riebeckite } from "@riebeckite/honox";
+import { defineConfig } from "vite";
+
+const appRoot = fileURLToPath(new URL(".", import.meta.url));
+
+export default defineConfig({
+  plugins: [riebeckite({ appRoot })],
+});
+```
+
+Set `configRoot` only when `riebeckite.config.ts` intentionally lives outside
+the Vite application. It identifies the directory that contains the config;
+it does not change the base used by relative `content.directory` values.
+
+### 4. Publish binary attachments deliberately
+
+`obsidianMarkdown()` converts `[[attachments/proposal.pdf]]` and
+`![[media/recording.mp3]]` into URLs below
+`/assets/attachments/<logical-vault-path>`. `attachment()` reads an embedded
+file's size from the resolved vault root; `media()` renders audio/video embeds.
+Neither plugin copies arbitrary vault binaries into the Vite public output.
+
+Add a site-owned prebuild step that copies only the attachments you intend to
+publish into `site/public/assets/attachments/`, preserving their paths relative
+to the vault. The reference implementation is
+[`apps/web/scripts/build_images.ts`](./apps/web/scripts/build_images.ts): it
+collects referenced assets, copies incrementally, and removes no-longer-used
+public files. Do not expose the entire vault blindly—private files and
+Obsidian metadata must remain outside the deployment artifact.
+
+### 5. Verify from a nested directory
+
+This confirms that the result does not depend on the current working directory:
+
+```bash
+cd site/app
+pnpm exec riebeckite check
+pnpm exec riebeckite doctor
+pnpm exec riebeckite inspect content --list
+pnpm exec riebeckite build
+```
+
+If a filesystem path is wrong, `doctor` reports the content inspection failure.
+Use `riebeckite inspect config` to see the resolved content directory and
+`riebeckite inspect content --list` to verify that expected logical paths are
+present before investigating Markdown links.
+
 ## Repository layout
 
 | Path | Responsibility |

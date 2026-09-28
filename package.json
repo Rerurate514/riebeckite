@@ -8,6 +8,7 @@
     "build": "pnpm --filter @riebeckite/cli build && pnpm --filter @riebeckite/web build",
     "build:packages": "pnpm -r --filter \"./packages/**\" run build",
     "check:packages": "node scripts/check_packages.mjs",
+    "check:dependencies": "node scripts/check_dependencies.mjs",
     "test:e2e:external": "node tests/external-site/run.mjs",
     "lint": "biome lint .",
     "format": "biome format --write .",

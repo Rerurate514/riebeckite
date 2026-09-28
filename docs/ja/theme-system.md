@@ -162,6 +162,25 @@ styles: [
 
 filesystem path を application へコピーする contract ではありません。
 
+### Site 内 Theme
+
+Theme も Site 内に置けます。既存 Theme を合成するか `defineTheme`
+で直接定義し、`theme` へ指定します。
+
+``` ts
+// site/extensions/local-theme.ts
+return defineTheme({
+  name: "site-local",
+  styles: [
+    { moduleSpecifier: "/extensions/theme.css" },
+  ],
+  attributes: { "data-site-local": "on" },
+});
+```
+
+site 内 Theme の `name`、`styles`、`attributes`、`tokens` は published Theme と
+同じ `resolveThemeConfig` 経路で解決・sanitize・適用されます。
+
 ## Attributes
 
 Theme 固有 option を CSS に渡す場合は safe な `data-*` attribute

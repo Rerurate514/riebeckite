@@ -14,5 +14,10 @@
     "resolveJsonModule": true,
     "skipLibCheck": false
   },
-  "include": ["app/**/*.ts", "app/**/*.tsx", "typecheck/**/*.ts"]
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "extensions/**/*.ts",
+    "typecheck/**/*.ts"
+  ]
 }

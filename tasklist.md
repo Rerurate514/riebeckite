@@ -262,11 +262,12 @@
 - **成果**: `@riebeckite/honox` の英日 integration docs に、`routes`/`components`/`islands`/style の Site 所有を明文化した。`_renderer`、manifest location route、公開 UI primitive、生成 style、client entry の境界と最小例を記載。external-site fixture は Site shell、primitive を合成する article component、local island、Site CSS を持ち、tarball E2E が各 marker と primitive composition を検証する。
 - **検証**: `pnpm test:e2e:external`、`pnpm build`。
 
-### #22 A8: Local Plugin / Local Theme対応保証（A系 / Medium）
+### #22 A8: Local Plugin / Local Theme対応保証（✅ 完了 / A系 / Medium）
 - **概要**: Site 内 extension と npm 版を同一 contract で扱えることを E2E 保証。
 - **実装方針**: fixture に local plugin/theme を追加し、npm 版と同様に解決・適用されることを検証。
 - **完了条件**: local/npm 双方が同一 API で動作。
-- **検証**: `test:e2e:external` 拡張。
+- **成果**: external-site fixture に site 内 `definePlugin`/`defineTheme` の plugin/theme を追加。`definePlugin` の `extendHtmlPipeline` marker、`assets` の local stylesheet、`defineTheme` の `data-*` 属性・local stylesheet が build 出力と dist CSS に反映され、`inspect plugins`/`inspect config` が local extension 名を報告することを tarball E2E で検証。合否は build 出力・CSS・inspect 出力・Bundler/NodeNext typecheck。英日 plugin/theme docs に site 内 extension の書き方（未 publish 時の `assets` module specifier 明示）を追記。
+- **検証**: `pnpm test:e2e:external`、`pnpm build`、`pnpm exec biome lint .`。
 
 ### #23 C1/C2: Content Query API（Medium）
 - **概要**: tag/folder/date/frontmatter 等の共通問い合わせ基盤。

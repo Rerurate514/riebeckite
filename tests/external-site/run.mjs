@@ -76,6 +76,7 @@ const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
+const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -350,6 +351,10 @@ function runCli(siteDir, command, cwd = siteDir) {
   return result;
 }
 
+function cliText(result) {
+  return `${result.stdout ?? ""}${result.stderr ?? ""}`;
+}
+
 function runTypecheck(siteDir, project) {
   step(`tsc --noEmit -p ${project}`);
   const tsc = path.join(siteDir, "node_modules", "typescript", "bin", "tsc");
@@ -417,8 +422,34 @@ function assertBuildOutput(siteDir) {
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
   }
+  if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
+    fail(
+      `generated HTML is missing the site-local plugin marker (${LOCAL_PLUGIN_MARKER})`,
+    );
+  }
+  if (!combined.includes(`data-local-plugin-marker="${LOCAL_PLUGIN_MARKER}"`)) {
+    fail("site-local plugin marker attribute was not rendered");
+  }
+  if (!combined.includes('data-theme-name="fixture-local"')) {
+    fail("site-local theme name was not applied to the document");
+  }
+  if (!combined.includes('data-fixture-theme="local"')) {
+    fail("site-local theme attribute was not applied to the document");
+  }
+
+  const cssFiles = walkFiles(distDir, (full) => full.endsWith(".css"));
+  const css = cssFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  if (!css.includes("fixture-local-plugin")) {
+    fail("site-local plugin stylesheet was not bundled into the dist CSS");
+  }
+  if (!css.includes("data-fixture-theme")) {
+    fail("site-local theme stylesheet was not bundled into the dist CSS");
+  }
 
   for (const file of htmlFiles) {
+    console.log(`  ${path.relative(siteDir, file)}`);
+  }
+  for (const file of cssFiles) {
     console.log(`  ${path.relative(siteDir, file)}`);
   }
 }
@@ -456,6 +487,24 @@ function main() {
     runCli(siteDir, "check", nestedWorkingDirectory);
     runCli(siteDir, "doctor", nestedWorkingDirectory);
     runCli(siteDir, "inspect", nestedWorkingDirectory);
+    const configInspection = runCli(
+      siteDir,
+      "inspect config",
+      nestedWorkingDirectory,
+    );
+    if (!cliText(configInspection).includes("fixture-local")) {
+      fail("inspect config did not report the site-local theme (fixture-local)");
+    }
+    const pluginInspection = runCli(
+      siteDir,
+      "inspect plugins",
+      nestedWorkingDirectory,
+    );
+    if (!cliText(pluginInspection).includes("fixture-local")) {
+      fail(
+        "inspect plugins did not report the site-local plugin (fixture-local)",
+      );
+    }
     runCli(siteDir, "build", nestedWorkingDirectory);
 
     assertBuildOutput(siteDir);

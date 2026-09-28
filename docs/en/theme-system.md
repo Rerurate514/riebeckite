@@ -120,3 +120,31 @@ for the supported package surface and current constraints.
 
 Following the shared contract keeps themes replaceable without changing
 application logic.
+
+### Site-local themes
+
+A theme can also live in the site. Compose an existing theme or define one
+directly with `defineTheme`, then set it as `theme`:
+
+``` ts
+// site/extensions/local-theme.ts
+import { defineTheme } from "@riebeckite/core";
+import { defaultTheme } from "@riebeckite/theme-default";
+
+export function localTheme() {
+  const base = defaultTheme({ colorMode: "dark" });
+  return defineTheme({
+    name: "site-local",
+    styles: [
+      ...(base.styles ?? []),
+      { moduleSpecifier: "/extensions/theme.css" },
+    ],
+    config: { ...base.config, tokens: { color: { accent: "#c2410c" } } },
+    attributes: { "data-site-local": "on" },
+  });
+}
+```
+
+A site-local theme is resolved, sanitized, and applied through the same
+`resolveThemeConfig` path as a packaged theme, including its own stylesheet and
+`data-*` attributes.

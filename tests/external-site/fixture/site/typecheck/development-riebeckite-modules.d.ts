@@ -9,6 +9,8 @@
 declare module "@riebeckite/core" {
   export const ContentManager: any;
   export const defineConfig: any;
+  export const definePlugin: any;
+  export const defineTheme: any;
   export const isPublished: any;
   export const resolveConfigModule: any;
   export type PostContent = any;
@@ -47,6 +49,10 @@ declare module "@riebeckite/honox/ui" {
   export type SidebarProps = any;
 }
 
+declare module "@riebeckite/plugin-attachment" {
+  export const attachment: any;
+}
+
 declare module "@riebeckite/plugin-autocardlink" {
   export const autoCardLinkPlugin: any;
 }
@@ -62,6 +68,10 @@ declare module "@riebeckite/plugin-backlinks" {
 declare module "@riebeckite/plugin-backlinks/components" {
   const Backlinks: any;
   export default Backlinks;
+}
+
+declare module "@riebeckite/plugin-media" {
+  export const media: any;
 }
 
 declare module "@riebeckite/plugin-obsidian-markdown" {
@@ -83,6 +93,7 @@ declare module "@riebeckite/plugin-recent-posts/components" {
 
 declare module "@riebeckite/plugin-search" {
   export const initSearch: any;
+  export const SearchBar: any;
   export const searchPlugin: any;
 }
 

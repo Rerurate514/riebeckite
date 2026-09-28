@@ -20,6 +20,7 @@ tests/external-site/
    │  ├─ riebeckite.config.ts
    │  ├─ vite.config.ts
    │  ├─ typecheck/nodenext.ts   # imports every published entry point
+   │  ├─ extensions/             # site-local plugin + theme (definePlugin/defineTheme)
    │  └─ app/...                 # minimal HonoX site (server, client, routes)
    └─ vault/                     # copied to <temp>/vault
       ├─ index.md
@@ -46,7 +47,10 @@ the app/site root fails immediately.
    outside the repository.
 6. Run `riebeckite check`, `riebeckite doctor`, `riebeckite inspect`, and
    `riebeckite build` from `site/app`, rather than the application root.
-7. Assert the generated `dist/` HTML contains the fixture markers.
+7. Assert the generated `dist/` HTML contains the fixture markers, including one
+   produced by a **site-local plugin** (`extensions/local-plugin.ts`) and theme
+   attributes produced by a **site-local theme** (`extensions/local-theme.ts`),
+   and that both site-local stylesheets are bundled into the emitted CSS.
 8. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`.
    Both configs use `skipLibCheck: false`; the NodeNext config imports every
    published entry point so a broken declaration cannot hide behind unused code.
@@ -70,6 +74,28 @@ as they would for any other consumer.
 Nothing here weakens isolation: no monorepo alias, root `tsconfig` path,
 symlink, or `workspace:` protocol is involved, and `tsconfig.nodenext.json` is
 unchanged.
+
+## Site-local extensions
+
+`fixture/site/extensions/` contains a plugin and a theme defined **inside the
+site** with `definePlugin` / `defineTheme`, exactly as a site author would write
+them. They are passed to `riebeckite.config.ts` alongside the installed
+`@riebeckite/plugin-*` / `@riebeckite/theme-*` packages.
+
+This proves the extensibility contract does not depend on npm packaging:
+
+- the local plugin's `extendHtmlPipeline` hook renders its marker into every
+  post, and its `assets` stylesheet is bundled into `dist/`;
+- the local theme composes `@riebeckite/theme-default` and adds its own
+  stylesheet plus a `data-*` attribute, which reaches `<html>` through the same
+  attribute contract as a packaged theme;
+- `riebeckite inspect plugins` and `riebeckite inspect config` report the
+  site-local plugin and theme by name.
+
+Local plugins cannot use `createStyleAsset()` (it hardcodes
+`@riebeckite/plugin-<name>/style.css`). They declare `assets` with an explicit
+module specifier the host bundler resolves; the fixture uses `/extensions/*.css`
+(Vite root = app root).
 
 ## Running
 

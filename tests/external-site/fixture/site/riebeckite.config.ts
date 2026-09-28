@@ -8,7 +8,8 @@ import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { tocPlugin } from "@riebeckite/plugin-toc";
-import { defaultTheme } from "@riebeckite/theme-default";
+import { localFixturePlugin } from "./extensions/local-plugin";
+import { localFixtureTheme } from "./extensions/local-theme";
 
 export default defineConfig({
   site: {
@@ -20,7 +21,7 @@ export default defineConfig({
   content: {
     directory: "../vault",
   },
-  theme: defaultTheme(),
+  theme: localFixtureTheme(),
   plugins: [
     obsidianMarkdown(),
     media(),
@@ -31,5 +32,6 @@ export default defineConfig({
     queryPlugin(),
     recentPostsPlugin(),
     searchPlugin(),
+    localFixturePlugin(),
   ],
 });

@@ -214,6 +214,40 @@ map. Do not import `@riebeckite/core/src/**` or reference monorepo paths. See
 [Public packages and import paths](./framework-reference.md#public-packages-and-import-paths)
 for the supported package surface and current constraints.
 
+### Site-local plugins
+
+A plugin does not have to be published. Define it inside the site with
+`definePlugin` and pass it to `plugins` in `riebeckite.config.ts`; resolution,
+dependency handling, pipeline hooks, and diagnostics are the same contract as a
+packaged plugin.
+
+``` ts
+// site/extensions/local-plugin.ts
+import { definePlugin } from "@riebeckite/core";
+
+export function localPlugin() {
+  return definePlugin({
+    name: "site-local",
+    // Hooks (remarkPlugins, extendHtmlPipeline, endpoints, ...) are the same
+    // contract as a packaged plugin.
+    assets: [
+      {
+        pluginName: "site-local",
+        kind: "style",
+        moduleSpecifier: "/extensions/plugin.css",
+      },
+    ],
+  });
+}
+```
+
+Because the plugin is not published, `createStyleAsset()` (which builds
+`@riebeckite/plugin-<name>/style.css`) cannot apply. Declare `assets` with a
+module specifier the host bundler can resolve instead — a package subpath or a
+path relative to the Vite root. The External Site Build E2E
+(`tests/external-site`) exercises a site-local plugin and theme alongside the
+published packages.
+
 ## Responsibility boundary
 
 Use a Plugin for reusable content/browser extensions. Put framework-wide

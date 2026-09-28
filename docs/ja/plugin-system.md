@@ -258,6 +258,32 @@ assets: [{
 `apps/web` に Plugin 固有 CSS をコピーしたり、ブラウザから
 `/node_modules` を直接参照させないでください。
 
+### Site 内 Plugin
+
+Plugin は publish されている必要はありません。Site 内で `definePlugin`
+を使って定義し、`riebeckite.config.ts` の `plugins` へ渡します。解決順序、
+依存解決、pipeline hook、diagnostics は package 版と同じ contract です。
+
+``` ts
+// site/extensions/local-plugin.ts
+return definePlugin({
+  name: "site-local",
+  // hook（remarkPlugins, extendHtmlPipeline, endpoints など）は package 版と
+  // 同じ contract です。
+  assets: [{
+    pluginName: "site-local",
+    kind: "style",
+    moduleSpecifier: "/extensions/plugin.css",
+  }],
+});
+```
+
+未 publish の Plugin では `createStyleAsset()`
+（`@riebeckite/plugin-<name>/style.css` を生成）を利用できません。host bundler
+が解決できる module specifier を `assets` へ明示してください。External Site
+Build E2E（`tests/external-site`）は site 内 Plugin / Theme を published
+package と並べて検証します。
+
 ## Client Entries
 
 ブラウザ初期化が必要な場合だけ `clientEntries` を使います。

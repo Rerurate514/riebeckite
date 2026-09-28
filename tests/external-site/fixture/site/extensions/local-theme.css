@@ -1,0 +1,8 @@
+/*
+ * Site-local theme stylesheet. The theme is named `fixture-local` and sets the
+ * `data-fixture-theme` attribute, so this rule only applies through the same
+ * theme contract a packaged theme uses.
+ */
+[data-fixture-theme="local"] .fixture-article {
+  border-top: 2px solid #c2410c;
+}

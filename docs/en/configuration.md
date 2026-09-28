@@ -165,8 +165,8 @@ Use the results in this order:
 5. `build` verifies the integration and route rendering.
 
 If `riebeckite.config.ts` intentionally lives outside the Vite application,
-pass `configRoot` to the `riebeckite()` Vite plugin. Keep `appRoot` set to the
-site root and keep relative `content.directory` values relative to that root.
+pass `configRoot` to `riebeckiteVite()`. Keep `appRoot` set to the site root and
+keep relative `content.directory` values relative to that root.
 
 ## Plugins and themes
 

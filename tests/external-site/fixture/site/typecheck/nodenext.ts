@@ -1,12 +1,17 @@
 import { defineConfig, type PostContent, type RiebeckiteConfig } from "@riebeckite/core";
 import {
   buildHonoxApplication,
+  createRiebeckiteSsg,
+  defaultSsgEntry,
+  defaultSsrExternals,
   loadRiebeckiteConfig,
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
   riebeckite,
   riebeckiteSsg,
   riebeckiteSsgExtensionMap,
+  riebeckiteVite,
+  type RiebeckiteViteOptions,
 } from "@riebeckite/honox";
 import { mountRiebeckiteEndpoints, resolveContentRoute } from "@riebeckite/honox/server";
 import {
@@ -42,12 +47,16 @@ import { defaultTheme } from "@riebeckite/theme-default";
 
 export const resolvedEntries = {
   buildHonoxApplication,
+  createRiebeckiteSsg,
+  defaultSsgEntry,
+  defaultSsrExternals,
   loadRiebeckiteConfig,
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
   riebeckite,
   riebeckiteSsg,
   riebeckiteSsgExtensionMap,
+  riebeckiteVite,
   mountRiebeckiteEndpoints,
   resolveContentRoute,
   ArticlePrimitive,
@@ -81,6 +90,8 @@ export type UiPrimitiveProps =
   | ArticleLayoutProps
   | ArticleMetaProps
   | SidebarProps;
+
+export type ViteHelperOptions = RiebeckiteViteOptions;
 
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },

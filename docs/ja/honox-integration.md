@@ -2,11 +2,22 @@
 
 `@riebeckite/honox` は portable な Core と HonoX/Vite を接続します。application root/config の解決、Vite dev/build、SSG extension mapping、plugin/theme style entry の生成、HonoX application build workflow を所有します。
 
-public API は `riebeckite`、`loadRiebeckiteConfig`、`resolveHonoxApplication`、`buildHonoxApplication`、`resolveHonoxApplicationRoot`、`startHonoxDevServer`、`riebeckiteSsg`、`riebeckiteSsgExtensionMap` です。
+## Public API
 
-Vite plugin は任意の `configRoot`、`appRoot`、`configFile`、monorepo 開発専用の `workspaceRoot` を受け取ります。`appRoot` の既定値は Vite root、`configRoot` の既定値は `appRoot` です。config は `configRoot` 基準で import し、`content.directory` は `appRoot` 基準で解決します。`resolveHonoxApplication` はこれらの root と resolve 済み config をまとめて返すため、CLI と Vite は同じ model を使います。`workspaceRoot` は monorepo で source package alias を使うためだけの指定です。npm で install した consumer は指定不要で、自身の `node_modules` から解決します。plugin は `app/.riebeckite/` に plugin/theme import entry を生成し、client module を設定します。このディレクトリは integration output であり、application source として直接編集しません。
+`vite.config.ts` では `riebeckiteVite()` で integration を登録します。通常の Site 向けの higher-level helper で、Riebeckite の plugin を追加し、SSG の entry と extension map の既定値を適用し、runtime が必要とする SSR externals を設定します。Site が Vite/HonoX の内部知識を書き直す必要はありません。Site 自身の plugin（HonoX plugin、deployment 用 build plugin、Tailwind など）と組み合わせて使います。
 
-静的生成には `riebeckiteSsg({ entry, extensionMap })` を使います。内部の Vite server には解決済みの application root と define 値を渡すため、`riebeckite build` を application root の子ディレクトリから実行しても同じ出力になります。
+```ts
+import { riebeckiteVite } from "@riebeckite/honox";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [honox({ ... }), ...riebeckiteVite(), build()],
+});
+```
+
+`riebeckiteVite` は lower-level plugin と同じ任意の `configRoot`、`appRoot`、`configFile`、monorepo 開発専用の `workspaceRoot` を受け取ります。`appRoot` の既定値は Vite root、`configRoot` の既定値は `appRoot` です。config は `configRoot` 基準で import し、`content.directory` は `appRoot` 基準で解決します。`resolveHonoxApplication` はこれらの root と resolve 済み config をまとめて返すため、CLI と Vite は同じ model を使います。`workspaceRoot` は monorepo で source package alias を使うためだけの指定です。npm で install した consumer は指定不要で、自身の `node_modules` から解決します。integration は `app/.riebeckite/` に plugin/theme import entry を生成し、client module を設定します。このディレクトリは integration output であり、application source として直接編集しません。
+
+full control が必要な場合は lower-level の API も公開しています。`riebeckite`（Vite plugin）、`riebeckiteSsg`（静的生成）、`riebeckiteSsgExtensionMap`、`createRiebeckiteSsg`（Riebeckite の既定値を埋める SSG wrapper）です。`riebeckiteSsg` は内部の Vite server に解決済みの application root と define 値を渡すため、`riebeckite build` を application root の子ディレクトリから実行しても同じ出力になります。`defaultSsgEntry` は root 基準の `./app/server.ts`、`defaultSsrExternals` は両 helper が使う SSR externals list です。その他に `loadRiebeckiteConfig`、`resolveHonoxApplication`、`resolveHonoxApplicationRoot`、`buildHonoxApplication`、`startHonoxDevServer` を公開しています。
 
 ## UI primitive
 

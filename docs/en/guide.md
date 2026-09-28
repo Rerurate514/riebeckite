@@ -154,7 +154,7 @@ To build a site outside this repository, start from the E2E fixture at [`tests/e
 | `app/config.ts` | Resolves `content.directory` once against the application root |
 | `app/content.ts` | Constructs `ContentManager` from the resolved config |
 | `app/server.ts` | Mounts Riebeckite endpoints on the HonoX application via `mountRiebeckiteEndpoints` |
-| `vite.config.ts` | Registers `riebeckite()`, `riebeckiteSsg()`, and the HonoX Vite plugin |
+| `vite.config.ts` | Registers `riebeckiteVite()` and the HonoX Vite plugin |
 
 The fixture keeps its Obsidian vault in a sibling `vault/` directory and points `content.directory` at it, which is the recommended layout when the vault is also used by the Obsidian desktop application. See the external-vault section of [Configuration](./configuration.md) and [HonoX Integration](./honox-integration.md) for the resolution rules and boundary responsibilities.
 

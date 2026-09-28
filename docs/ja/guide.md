@@ -154,7 +154,7 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 | `app/config.ts` | `content.directory` をアプリケーションルート基準で一度だけ解決する |
 | `app/content.ts` | 解決済みの設定から `ContentManager` を構築する |
 | `app/server.ts` | `mountRiebeckiteEndpoints` で HonoX アプリケーションに Riebeckite のエンドポイントを載せる |
-| `vite.config.ts` | `riebeckite()`、`riebeckiteSsg()`、HonoX の Vite Plugin を登録する |
+| `vite.config.ts` | `riebeckiteVite()` と HonoX の Vite Plugin を登録する |
 
 このフィクスチャは Obsidian Vault を兄弟ディレクトリの `vault/` に置き、`content.directory` をそこへ向けています。Vault を Obsidian デスクトップアプリでも使う場合は、この構成を推奨します。解決の規則と責務の境界は、[Configuration](./configuration.md) の外部 Vault の節と [HonoX Integration](./honox-integration.md) を参照してください。
 

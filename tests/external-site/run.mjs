@@ -30,6 +30,10 @@ const PACKAGES = [
     directory: "packages/plugins/code-annotations",
     name: "@riebeckite/plugin-code-annotations",
   },
+  {
+    directory: "packages/plugins/highlight",
+    name: "@riebeckite/plugin-highlight",
+  },
   { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
   {
     directory: "packages/plugins/backlinks",
@@ -101,9 +105,8 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
-const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
-const PLANTUML_MARKER = "RIEBECKITE_EXTERNAL_PLANTUML_MARKER";
 const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
+const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -558,6 +561,15 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("kind=redirect target=/notes/alias-demo")) {
     fail("an Obsidian alias did not resolve to a redirect route");
+  }
+  if (!combined.includes(HIGHLIGHT_MARKER)) {
+    fail(`generated HTML is missing the highlight marker (${HIGHLIGHT_MARKER})`);
+  }
+  if (!combined.includes("<mark")) {
+    fail("generated HTML is missing the highlight <mark> element");
+  }
+  if (!combined.includes("rb-highlight")) {
+    fail("generated HTML is missing the rb-highlight class");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

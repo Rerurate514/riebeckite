@@ -58,6 +58,7 @@ import { initFlashcards } from "@riebeckite/plugin-flashcards/client";
 import { codeAnnotations, parseCodeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { initCanvas } from "@riebeckite/plugin-canvas/client";
+import { highlight, highlightPlugin } from "@riebeckite/plugin-highlight";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
 import {
@@ -121,6 +122,8 @@ export const resolvedEntries = {
   parseCodeAnnotations,
   canvas,
   initCanvas,
+  highlight,
+  highlightPlugin,
   obsidianMarkdown,
   properties,
   kanban,
@@ -171,6 +174,7 @@ export const config: RiebeckiteConfig = defineConfig({
   plugins: [
     obsidianMarkdown(),
     autoCardLinkPlugin(),
+    highlight(),
     tocPlugin(),
     searchPlugin(),
     hoverPreviewPlugin({ delay: 0 }),

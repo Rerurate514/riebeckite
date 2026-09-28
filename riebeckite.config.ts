@@ -13,6 +13,7 @@ import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
+import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { kanban } from "@riebeckite/plugin-kanban";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
@@ -89,6 +90,7 @@ export default defineConfig({
     richEmbed(),
     attachment(),
     autoCardLinkPlugin(),
+    highlight(),
     codeEnhance({
       theme: {
         light: "github-light",

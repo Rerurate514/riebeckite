@@ -1,0 +1,13 @@
+.rb-highlight {
+  --rb-highlight-accent: var(--rb-color-accent, #f6d365);
+  padding: 0.05em 0.25em;
+  border-radius: 0.2em;
+  background: color-mix(in srgb, var(--rb-highlight-accent) 45%, transparent);
+  color: inherit;
+}
+
+html[data-theme="dark"] .rb-highlight,
+html.dark .rb-highlight {
+  --rb-highlight-accent: var(--rb-color-accent, #ffd166);
+  background: color-mix(in srgb, var(--rb-highlight-accent) 32%, transparent);
+}

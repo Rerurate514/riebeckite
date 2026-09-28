@@ -5,11 +5,9 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
-import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
-import { kanban } from "@riebeckite/plugin-kanban";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { chartjs } from "@riebeckite/plugin-chartjs";
+import { highlight } from "@riebeckite/plugin-highlight";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
@@ -46,6 +44,7 @@ export default defineConfig({
     canvas(),
     aliasPlugin(),
     autoCardLinkPlugin(),
+    highlight(),
     tocPlugin(),
     backlinksPlugin(),
     queryPlugin(),

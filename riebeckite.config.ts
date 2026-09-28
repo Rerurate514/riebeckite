@@ -13,6 +13,7 @@ import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { d2 } from "@riebeckite/plugin-d2";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
@@ -88,6 +89,7 @@ export default defineConfig({
       sitemap: true,
       robots: true,
     }),
+    discordEmbed(),
     mermaid({
       render: "build",
       theme: {

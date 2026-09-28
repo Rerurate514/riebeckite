@@ -7,6 +7,7 @@ import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { marp } from "@riebeckite/plugin-marp";
 import { markmap } from "@riebeckite/plugin-markmap";
@@ -52,6 +53,7 @@ export default defineConfig({
   plugins: [
     analytics({ provider: "plausible", domain: "example.com" }),
     obsidianMarkdown(),
+    discordEmbed(),
     markmap(),
     properties(),
     plantuml(),

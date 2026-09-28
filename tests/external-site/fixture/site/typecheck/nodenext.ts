@@ -50,6 +50,7 @@ import { analytics } from "@riebeckite/plugin-analytics";
 import { initAnalytics } from "@riebeckite/plugin-analytics/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { initExcaliBrain } from "@riebeckite/plugin-excalibrain/client";
 import { markmap } from "@riebeckite/plugin-markmap";
@@ -134,6 +135,7 @@ export const resolvedEntries = {
   initAnalytics,
   backlinksPlugin,
   Backlinks,
+  discordEmbed,
   excaliBrain,
   initExcaliBrain,
   markmap,

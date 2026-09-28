@@ -39,6 +39,7 @@ export default createRoute(async (c) => {
   ]);
   const tableOfContents = extractTableOfContents(post.html ?? "");
   c.set("seo", buildIndexSeo(post));
+  c.set("headTags", indexEntry?.headTags ?? []);
 
   return c.render(
     <Article

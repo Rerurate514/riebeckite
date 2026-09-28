@@ -28,6 +28,7 @@ export default createRoute(
     if (!collection) return c.notFound();
 
     c.set("seo", buildTagSeo(collection.value, collection.path));
+    c.set("headTags", []);
 
     return c.render(<Article content={buildTagPage(collection)} />);
   },

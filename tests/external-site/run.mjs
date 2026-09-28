@@ -133,6 +133,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-excalibrain",
   },
   {
+    directory: "packages/plugins/discord-embed",
+    name: "@riebeckite/plugin-discord-embed",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -723,6 +727,9 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes('name="theme-color" content="#1ABC9C"')) {
+    fail("discord-embed plugin did not emit the frontmatter theme color");
   }
   if (!combined.includes("rb-qr")) {
     fail("qr-code plugin did not render the fixture QR block");

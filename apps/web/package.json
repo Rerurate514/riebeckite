@@ -27,6 +27,7 @@
     "@riebeckite/plugin-d2": "workspace:*",
     "@riebeckite/plugin-dataview": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
+    "@riebeckite/plugin-discord-embed": "workspace:*",
     "@riebeckite/plugin-excalibrain": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-flashcards": "workspace:*",

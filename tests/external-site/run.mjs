@@ -10,7 +10,8 @@
  *   <temp>/
  *   ├─ site/            (fixture/site copied here; owns node_modules)
  *   │  ├─ package.json  (rewritten with file: tarball dependencies)
- *   │  ├─ tsconfig.json
+ *   │  ├─ tsconfig.json (checked-in base + the `vite/client` type library,
+ *   │  │                 which only exists after the isolated install)
  *   │  ├─ riebeckite.config.ts
  *   │  ├─ vite.config.ts
  *   │  └─ app/...
@@ -20,6 +21,12 @@
  * It then runs `riebeckite check | doctor | inspect | build`, type-checks the
  * site with both `moduleResolution: bundler` and `NodeNext`, and confirms the
  * generated HTML contains the fixture's marker content.
+ *
+ * The checked-in `fixture/site/tsconfig.json` intentionally does not list
+ * `vite/client`: an editor/TypeScript server would otherwise report TS2688 for
+ * a type library that the fixture only gets once this script installs it. The
+ * external-consumer type reference is layered on inside the isolated copy by
+ * `writeExternalConsumerTsconfig`.
  *
  * Set RIEBECKITE_E2E_KEEP=1 to keep the temporary workspace for inspection.
  */
@@ -163,6 +170,32 @@ function writeSitePackageJson(siteDir, packed) {
   }
 
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+}
+
+/**
+ * Layer the external-consumer type requirements onto the checked-in base
+ * tsconfig. `vite/client` is a real type library of an installed Vite site, but
+ * the fixture's `node_modules` only exists after the isolated `npm install`
+ * below. Keeping it out of the checked-in config keeps the repository free of
+ * a spurious TS2688 while this copy still validates that `vite/client` resolves
+ * like it would in any other external consumer.
+ */
+function writeExternalConsumerTsconfig(siteDir) {
+  step("layering the external-consumer type libraries (vite/client)");
+  const configPath = path.join(siteDir, "tsconfig.json");
+  const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  const types = new Set(config.compilerOptions?.types ?? []);
+  types.add("node");
+  types.add("vite/client");
+  config.compilerOptions = { ...config.compilerOptions, types: [...types] };
+  fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+
+  const written = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  const effective = new Set(written.compilerOptions?.types ?? []);
+  if (!effective.has("vite/client")) {
+    fail("external-consumer tsconfig is missing the vite/client type library");
+  }
+  console.log(`  site/tsconfig.json types: ${[...effective].join(", ")}`);
 }
 
 function assertNoMonorepoEscapeHatches(siteDir) {
@@ -347,6 +380,7 @@ function main() {
     fs.cpSync(path.join(fixtureRoot, "site"), siteDir, { recursive: true });
     fs.cpSync(path.join(fixtureRoot, "vault"), vaultDir, { recursive: true });
 
+    writeExternalConsumerTsconfig(siteDir);
     writeSitePackageJson(siteDir, packed);
 
     step("npm install (tarballs + normal registry dependencies)");

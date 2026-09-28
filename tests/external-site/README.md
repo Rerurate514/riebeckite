@@ -15,7 +15,7 @@ tests/external-site/
 └─ fixture/
    ├─ site/                      # copied to <temp>/site (owns node_modules)
    │  ├─ package.json            # normal deps; tarballs injected by run.mjs
-   │  ├─ tsconfig.json           # moduleResolution: bundler
+   │  ├─ tsconfig.json           # moduleResolution: bundler (base; see below)
    │  ├─ tsconfig.nodenext.json  # moduleResolution: NodeNext (skipLibCheck: false)
    │  ├─ riebeckite.config.ts
    │  ├─ vite.config.ts
@@ -34,7 +34,9 @@ the app/site root fails immediately.
 ## What it does
 
 1. `pnpm pack` the published packages into `<temp>/tarballs`.
-2. Copy the fixture site and vault into `<temp>/site` and `<temp>/vault`.
+2. Copy the fixture site and vault into `<temp>/site` and `<temp>/vault`, then
+   layer the external-consumer type library `vite/client` onto the copied
+   `site/tsconfig.json`.
 3. Rewrite `site/package.json` with `file:` dependencies (and `overrides`) that
    point at the tarballs, so transitive `@riebeckite/*` requirements also
    resolve to the local tarballs and never hit the public registry.
@@ -48,6 +50,27 @@ the app/site root fails immediately.
 8. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`.
    Both configs use `skipLibCheck: false`; the NodeNext config imports every
    published entry point so a broken declaration cannot hide behind unused code.
+
+## Why `vite/client` lives only in the isolated copy
+
+`vite` is a real dependency of the standalone site, so `vite/client` is a real
+type library there — it is not being faked. But the checked-in fixture
+intentionally has no `node_modules`, and an editor's TypeScript server discovers
+`fixture/site/tsconfig.json` directly and reports `TS2688 Cannot find type
+definition file for 'vite/client'` for a library that only exists after the
+copy + install.
+
+`fixture/site/tsconfig.json` is therefore the editable base that both Vite and
+the editor discover, and it lists only `types: ["node"]` (resolvable from the
+dev environment and from the site itself). `run.mjs` layers the
+external-consumer requirement — `node` + `vite/client` — onto the copied
+`site/tsconfig.json` immediately before installing, so the isolated copy still
+proves that `vite/client` resolves exactly as it would for any other external
+consumer.
+
+Nothing here weakens isolation: no monorepo alias, root `tsconfig` path,
+symlink, or `workspace:` protocol is involved, and `tsconfig.nodenext.json` is
+unchanged.
 
 ## Running
 

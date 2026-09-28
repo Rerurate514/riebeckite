@@ -6,7 +6,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "types": ["node", "vite/client"],
+    "types": ["node"],
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,

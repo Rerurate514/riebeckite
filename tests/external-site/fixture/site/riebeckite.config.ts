@@ -1,6 +1,7 @@
 import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { canvas } from "@riebeckite/plugin-canvas";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
@@ -26,6 +27,7 @@ export default defineConfig({
     obsidianMarkdown(),
     media(),
     attachment(),
+    canvas(),
     autoCardLinkPlugin(),
     tocPlugin(),
     backlinksPlugin(),

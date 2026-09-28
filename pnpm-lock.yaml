@@ -74,6 +74,9 @@ importers:
       '@riebeckite/plugin-backlinks':
         specifier: workspace:*
         version: link:../../packages/plugins/backlinks
+      '@riebeckite/plugin-canvas':
+        specifier: workspace:*
+        version: link:../../packages/plugins/canvas
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
@@ -271,6 +274,12 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/canvas:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/code-enhance:
     dependencies:

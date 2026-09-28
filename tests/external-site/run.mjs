@@ -31,6 +31,10 @@ const PACKAGES = [
     directory: "packages/plugins/backlinks",
     name: "@riebeckite/plugin-backlinks",
   },
+  {
+    directory: "packages/plugins/canvas",
+    name: "@riebeckite/plugin-canvas",
+  },
   { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
   {
     directory: "packages/plugins/recent-posts",
@@ -46,6 +50,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -379,6 +384,15 @@ function assertBuildOutput(siteDir) {
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
   }
+  if (!combined.includes("rb-canvas")) {
+    fail("generated HTML is missing the canvas plugin output");
+  }
+  if (!combined.includes("data-canvas")) {
+    fail("canvas plugin output is missing its data-canvas attributes");
+  }
+  if (!combined.includes(CANVAS_MARKER)) {
+    fail(`generated HTML is missing the canvas marker (${CANVAS_MARKER})`);
+  }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(
       `generated HTML is missing the site-local plugin marker (${LOCAL_PLUGIN_MARKER})`,
@@ -401,6 +415,15 @@ function assertBuildOutput(siteDir) {
   }
   if (!css.includes("data-fixture-theme")) {
     fail("site-local theme stylesheet was not bundled into the dist CSS");
+  }
+
+  const jsFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
+  const js = jsFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  if (!js.includes("rb-canvas")) {
+    fail("canvas styles/logic were not bundled into the dist JavaScript");
+  }
+  if (!js.includes("initCanvas")) {
+    fail("the canvas client initializer was not bundled into the dist JavaScript");
   }
 
   for (const file of htmlFiles) {

@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { canvas } from "@riebeckite/plugin-canvas";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
@@ -66,6 +67,7 @@ export default defineConfig({
       },
     }),
     excalidraw(),
+    canvas(),
     media(),
     attachment(),
     autoCardLinkPlugin(),

@@ -1,0 +1,135 @@
+.rb-canvas {
+  --rb-canvas-paper: var(--rb-color-paper, #ffffff);
+  --rb-canvas-ink: var(--rb-color-ink, #000000);
+  --rb-canvas-muted: var(--rb-color-muted, #69645c);
+  --rb-canvas-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-canvas-ink) 18%, transparent)
+  );
+  --rb-canvas-accent: var(--rb-color-accent, #686868);
+  --rb-canvas-surface: color-mix(
+    in srgb,
+    var(--rb-canvas-paper) 96%,
+    var(--rb-canvas-ink)
+  );
+  margin: 2rem 0;
+  border: 1px solid var(--rb-canvas-rule);
+  background: var(--rb-canvas-paper);
+  color: var(--rb-canvas-ink);
+}
+
+.rb-canvas__static,
+.rb-canvas__stage {
+  position: relative;
+  overflow: hidden;
+  min-height: var(--rb-canvas-height, 18rem);
+}
+
+.rb-canvas__static[role="img"] {
+  overflow: auto;
+}
+
+.rb-canvas__stage {
+  cursor: grab;
+  touch-action: none;
+}
+
+.rb-canvas__stage:active {
+  cursor: grabbing;
+}
+
+.rb-canvas__viewport {
+  position: relative;
+  transform-origin: 0 0;
+}
+
+.rb-canvas__edges {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.rb-canvas__edge {
+  stroke: var(--rb-canvas-rule);
+  stroke-width: 1.5;
+}
+
+.rb-canvas__node {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--rb-canvas-rule);
+  border-radius: 0.375rem;
+  background: var(--rb-canvas-surface);
+  color: var(--rb-canvas-ink);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.rb-canvas__node--group {
+  padding: 0.5rem 0.75rem;
+  border-style: dashed;
+  background: color-mix(in srgb, var(--rb-canvas-ink) 3%, transparent);
+  color: var(--rb-canvas-muted);
+}
+
+.rb-canvas__node--link {
+  border-color: color-mix(in srgb, var(--rb-canvas-accent) 45%, transparent);
+}
+
+.rb-canvas__node-label {
+  color: var(--rb-canvas-muted);
+  font-weight: 600;
+}
+
+.rb-canvas__node-text {
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.rb-canvas__link,
+.rb-canvas__node-link {
+  color: var(--rb-canvas-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.rb-canvas__fallback {
+  border-top: 1px solid var(--rb-canvas-rule);
+  color: var(--rb-canvas-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-canvas__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rb-canvas__fallback-list {
+  margin: 0;
+  padding: 0 0.75rem 0.75rem 1.75rem;
+}
+
+.rb-canvas__fallback-item {
+  margin: 0.125rem 0;
+  overflow-wrap: anywhere;
+}
+
+.rb-canvas__fallback-kind {
+  display: inline-block;
+  min-width: 3.5rem;
+  color: var(--rb-canvas-ink);
+  font-weight: 600;
+}
+
+.rb-canvas[data-canvas-render="ready"] .rb-canvas__static {
+  display: none;
+}
+
+html[data-theme="dark"] .rb-canvas,
+html.dark .rb-canvas {
+  --rb-canvas-paper: var(--rb-color-ink, #000000);
+  --rb-canvas-ink: var(--rb-color-paper, #ffffff);
+}

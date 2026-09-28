@@ -7,6 +7,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/autocardlink",
   "packages/plugins/backlinks",
   "packages/plugins/canvas",
+  "packages/plugins/chartjs",
   "packages/plugins/code-annotations",
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",

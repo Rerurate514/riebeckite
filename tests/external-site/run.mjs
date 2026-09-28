@@ -72,6 +72,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
   {
+    directory: "packages/plugins/chartjs",
+    name: "@riebeckite/plugin-chartjs",
+  },
+  {
     directory: "packages/plugins/hover-preview",
     name: "@riebeckite/plugin-hover-preview",
   },
@@ -94,6 +98,7 @@ const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
 const RICHEMBED_MARKER = "RIEBECKITE_EXTERNAL_RICHEMBED_MARKER";
+const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -524,6 +529,15 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("www.youtube-nocookie.com/embed/")) {
     fail("generated HTML is missing the rich embed YouTube iframe");
+  }
+  if (!combined.includes(CHARTJS_MARKER)) {
+    fail(`generated HTML is missing the chartjs marker (${CHARTJS_MARKER})`);
+  }
+  if (!combined.includes("data-chartjs-config")) {
+    fail("generated HTML is missing the chartjs canvas configuration");
+  }
+  if (!combined.includes("rb-chartjs")) {
+    fail("generated HTML is missing the chartjs figure markup");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

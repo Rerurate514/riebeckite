@@ -4,6 +4,11 @@ packages:
   - 'packages/plugins/*'
   - 'packages/themes/*'
   - 'apps/*'
+  # The external-site fixture is intentionally NOT a workspace package. It is
+  # copied to a temporary directory and installed there as a standalone npm
+  # project, so pnpm must never treat it as part of this workspace.
+  - '!tests/**'
+  - '!tests/external-site/**'
 allowBuilds:
   esbuild: true
   puppeteer: true

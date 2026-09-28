@@ -1,8 +1,8 @@
 | 順番 | ID | 作業 | 状態 | 規模 | 理由 |
 |---:|---|---|---|---|---|
 | 1 | A1 | Package公開境界を作る | ✅ 完了 | Large | 外部Plugin/Theme ecosystemの前提 |
-| **2** | **A1.5** | **npm配布形式を完成させる** | 🔧 次 | Medium–Large | `dist/*.js` + `.d.ts` + `pnpm pack`。**monorepo外のconsumer fixtureから実際にinstall/buildするところまで含める** |
-| **3** | **A1.6** | **External Site E2Eを作る** | 未着手 | Medium | `node_modules/@riebeckite/*`だけで`dev/check/doctor/inspect/build`できることを保証 |
+| 2 | A1.5 | npm配布形式を完成させる | ✅ 完了 | Medium–Large | `dist/*.js` + `.d.ts` + `pnpm pack`。monorepo外のconsumer fixtureから実際にinstall/buildするところまで検証済み |
+| 3 | A1.6 | External Site E2Eを作る | ✅ 完了 | Medium | `node_modules/@riebeckite/*`だけで`check/doctor/inspect/build`できることを`pnpm test:e2e:external`で保証 |
 | **4** | **A3/A4** | **config/root解決を一本化** | 未着手 | Medium | `workspaceRoot/appRoot/configRoot/projectRoot/contentRoot`を整理。外部Site/Vault対応の前提 |
 | **5** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | `rerurate-site`の外にあるObsidian Vaultを正式サポート。`../articles`等をE2E検証 |
 | **6** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等を`content.directory`直接参照からContentSource/Asset境界へ寄せる |

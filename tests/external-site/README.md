@@ -45,9 +45,9 @@ the app/site root fails immediately.
 6. Run `riebeckite check`, `riebeckite doctor`, `riebeckite inspect`, and
    `riebeckite build`.
 7. Assert the generated `dist/` HTML contains the fixture markers.
-8. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`
-   (the NodeNext config type-checks every published entry point with
-   `skipLibCheck: false`).
+8. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`.
+   Both configs use `skipLibCheck: false`; the NodeNext config imports every
+   published entry point so a broken declaration cannot hide behind unused code.
 
 ## Running
 
@@ -56,6 +56,36 @@ pnpm test:e2e:external
 ```
 
 Set `RIEBECKITE_E2E_KEEP=1` to keep the temporary workspace for inspection.
+
+## Third-party findings captured by the fixture
+
+These are external-consumer issues the fixture surfaced. They are not
+Riebeckite defects, but they affect anyone installing the published packages,
+so they are documented here instead of being hidden with `skipLibCheck`.
+
+- **`hono` is pinned to `4.12.26`.** `hono@4.13.x` ships
+  `dist/types/jsx/base.d.ts` with a self-referential `IntrinsicElements` that
+  TypeScript reports as `TS2310` when `skipLibCheck: false`, which then cascades
+  into spurious `Module '"hono"' has no exported member 'Hono'/'ErrorHandler'`
+  errors inside `honox`'s declarations. `4.12.26` (the version the monorepo
+  develops against) is clean.
+- **`hono`'s `Env` is a type alias, not an interface.** It therefore cannot be
+  augmented with `declare module "hono" { interface Env { ... } }`: written in a
+  global script the declaration *overrides* the real module, and written in a
+  module it reports `Duplicate identifier 'Env'`. The fixture does not need
+  custom bindings, so it only declares the virtual `virtual:riebeckite/client`
+  module. (`apps/web/app/global.d.ts` still contains the invalid augmentation,
+  masked there by `skipLibCheck: true`.)
+- **CommonJS deps must stay external in the SSR build.** The fixture sets
+  `environments.ssr.resolve.external` (mirroring `apps/web`); without it Vite
+  inlines `extend` and the SSG pass fails with `ReferenceError: module is not
+  defined`.
+- **The `@hono/vite-ssg` patch is not applied to external installs.**
+  `pnpm-lock`/`patches/@hono__vite-ssg@0.3.3.patch` fixes the plugin to use
+  `config.root`; a plain `npm install` gets the unpatched package. The fixture
+  still builds because the CLI is run with `cwd` set to the site, which is what
+  the unpatched plugin falls back to. Running the CLI from a different working
+  directory would break. This is a latent external-consumer risk worth tracking.
 
 ## Root model note (A3/A4)
 

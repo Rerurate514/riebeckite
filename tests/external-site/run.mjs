@@ -196,6 +196,58 @@ function assertNoMonorepoEscapeHatches(siteDir) {
   }
 }
 
+function assertIsolatedInstall(siteDir, tempRoot) {
+  step("verifying standalone install (no pnpm/monorepo inheritance)");
+
+  const relativeToRepo = path.relative(repoRoot, tempRoot);
+  const insideRepo =
+    relativeToRepo === "" ||
+    (!relativeToRepo.startsWith("..") && !path.isAbsolute(relativeToRepo));
+  if (insideRepo) {
+    fail("the external workspace must live outside the Riebeckite repository");
+  }
+
+  const forbiddenState = [
+    path.join(tempRoot, "pnpm-workspace.yaml"),
+    path.join(tempRoot, "pnpm-lock.yaml"),
+    path.join(siteDir, "pnpm-workspace.yaml"),
+    path.join(siteDir, "pnpm-lock.yaml"),
+    path.join(siteDir, "node_modules", ".pnpm"),
+  ];
+  for (const file of forbiddenState) {
+    if (fs.existsSync(file)) {
+      fail(
+        `external site must not inherit pnpm workspace state: ${path.relative(
+          tempRoot,
+          file,
+        )}`,
+      );
+    }
+  }
+
+  const nodeModules = path.join(siteDir, "node_modules");
+  if (!fs.existsSync(nodeModules)) {
+    fail("the isolated install did not create site/node_modules");
+  }
+
+  const viteClientTypes = path.join(nodeModules, "vite", "client.d.ts");
+  if (!fs.existsSync(viteClientTypes)) {
+    fail("vite/client types are missing from the isolated install");
+  }
+
+  const tsc = path.join(nodeModules, "typescript", "bin", "tsc");
+  if (!fs.existsSync(tsc)) {
+    fail("the isolated install has no local TypeScript compiler");
+  }
+
+  console.log(
+    `  site/node_modules is local; vite/client -> ${path.relative(
+      siteDir,
+      viteClientTypes,
+    )}`,
+  );
+}
+
 function assertPublishedArtifacts(siteDir) {
   step("verifying @riebeckite/* resolves to installed tarballs only");
   const scopeDir = path.join(siteDir, "node_modules", "@riebeckite");
@@ -302,6 +354,7 @@ function main() {
       cwd: siteDir,
     });
 
+    assertIsolatedInstall(siteDir, tempRoot);
     assertNoMonorepoEscapeHatches(siteDir);
     assertPublishedArtifacts(siteDir);
 

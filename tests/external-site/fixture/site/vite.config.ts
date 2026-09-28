@@ -24,5 +24,23 @@ export default defineConfig({
       entry: path.join(appRoot, "app/server.ts"),
       extensionMap: riebeckiteSsgExtensionMap()
     })
-  ]
+  ],
+  // Riebeckite Core pulls in a few CommonJS packages. Vite's SSR environment
+  // must treat them as external, otherwise the SSG pass inlines and breaks on
+  // `module is not defined`. This mirrors the reference app (apps/web).
+  environments: {
+    ssr: {
+      resolve: {
+        external: [
+          "extend",
+          "debug",
+          "node:fs/promises",
+          "node:path",
+          "parse-numeric-range",
+          "slugify",
+          "vfile-matter"
+        ]
+      }
+    }
+  }
 });

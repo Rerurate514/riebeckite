@@ -10,6 +10,8 @@ Build state is application-scoped at `.riebeckite/build/content-state.json`. It 
 
 `ContentSource` metadata may contain mtime, size, ETag, or a hash. Treat mtime as a hint only: timestamp-only comparisons are not sufficient for correctness when metadata can be unreliable. Plugin cache is separate from build state, plugin-scoped, JSON-serializable, regenerable build-time data. Neither may be required at Workers request time.
 
+State tracks each entry's fingerprint together with its dependencies: the notes it links to (whose resolved permalink it may embed) and the assets it references (whose metadata, such as attachment size, it may render). A changed dependency invalidates the dependent entry and, transitively, its dependents. Added or removed entries invalidate link resolution globally, so they fall back to regenerating every note. The `.riebeckite` state directory is build-time state, not content, and is never scanned.
+
 ## Commands and lifecycle
 
 ```sh

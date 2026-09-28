@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
+  CONTENT_BUILD_STATE_DIRECTORY,
   CONTENT_BUILD_STATE_VERSION,
   type ContentBuildState,
 } from "./content_build_state.js";
@@ -67,7 +68,11 @@ export function resolveContentBuildStatePath(
 ): string {
   const directory =
     config?.content.directory ?? contentDirectory ?? process.cwd();
-  return path.resolve(directory, ".riebeckite", "content-state.json");
+  return path.resolve(
+    directory,
+    CONTENT_BUILD_STATE_DIRECTORY,
+    "content-state.json",
+  );
 }
 
 function isContentBuildState(value: unknown): value is ContentBuildState {

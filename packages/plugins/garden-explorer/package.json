@@ -23,7 +23,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/plugin-search": "workspace:*",
-    "hono": "^4.12.25"
+    "hono": "catalog:"
   },
   "publishConfig": {
     "access": "public"

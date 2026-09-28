@@ -22,7 +22,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@types/unist": "^3.0.3",
+    "@types/unist": "catalog:",
     "extend": "^3.0.2",
     "rehype-format": "^5.0.1",
     "rehype-katex": "^7.0.1",
@@ -33,11 +33,11 @@
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
-    "remark-parse": "^11.0.0",
+    "remark-parse": "catalog:",
     "remark-rehype": "^11.1.2",
-    "unified": "^11.0.5",
+    "unified": "catalog:",
     "vfile": "^6.0.3",
-    "vfile-matter": "^5.0.1"
+    "vfile-matter": "catalog:"
   },
   "devDependencies": {
     "tsx": "^4.22.4"

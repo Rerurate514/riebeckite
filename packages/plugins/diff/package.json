@@ -24,7 +24,7 @@
     "@riebeckite/core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^24.5.2"
+    "@types/node": "catalog:"
   },
   "publishConfig": {
     "access": "public"

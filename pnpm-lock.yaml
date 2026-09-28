@@ -4,6 +4,39 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@types/mdast':
+      specifier: ^4.0.4
+      version: 4.0.4
+    '@types/node':
+      specifier: ^24.5.2
+      version: 24.13.6
+    '@types/unist':
+      specifier: ^3.0.3
+      version: 3.0.3
+    esbuild:
+      specifier: ^0.28.2
+      version: 0.28.2
+    hono:
+      specifier: ^4.12.25
+      version: 4.12.26
+    remark-parse:
+      specifier: ^11.0.0
+      version: 11.0.0
+    unified:
+      specifier: ^11.0.5
+      version: 11.0.5
+    unist-util-visit:
+      specifier: ^5.1.0
+      version: 5.1.0
+    vfile-matter:
+      specifier: ^5.0.1
+      version: 5.0.1
+    vite:
+      specifier: ^8.0.9
+      version: 8.0.16
+
 patchedDependencies:
   '@hono/vite-ssg@0.3.3': 956adda67183c381f6fdfe2a9baadedf3154d23fa3a79ef632023f3ea46d982f
 
@@ -139,16 +172,16 @@ importers:
         specifier: workspace:*
         version: link:../integrations/honox
       esbuild:
-        specifier: ^0.28.2
+        specifier: 'catalog:'
         version: 0.28.2
       vite:
-        specifier: ^8.0.9
+        specifier: 'catalog:'
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
 
   packages/core:
     dependencies:
       '@types/unist':
-        specifier: ^3.0.3
+        specifier: 'catalog:'
         version: 3.0.3
       extend:
         specifier: ^3.0.2
@@ -181,19 +214,19 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       remark-parse:
-        specifier: ^11.0.0
+        specifier: 'catalog:'
         version: 11.0.0
       remark-rehype:
         specifier: ^11.1.2
         version: 11.1.2
       unified:
-        specifier: ^11.0.5
+        specifier: 'catalog:'
         version: 11.0.5
       vfile:
         specifier: ^6.0.3
         version: 6.0.3
       vfile-matter:
-        specifier: ^5.0.1
+        specifier: 'catalog:'
         version: 5.0.1
     devDependencies:
       tsx:
@@ -206,13 +239,13 @@ importers:
         specifier: workspace:*
         version: link:../../core
       esbuild:
-        specifier: ^0.28.2
+        specifier: 'catalog:'
         version: 0.28.2
       hono:
-        specifier: ^4.12.25
+        specifier: 'catalog:'
         version: 4.12.26
       vite:
-        specifier: ^8.0.9
+        specifier: 'catalog:'
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
 
   packages/plugins/attachment:
@@ -227,10 +260,10 @@ importers:
         specifier: workspace:*
         version: link:../../core
       '@types/mdast':
-        specifier: ^4.0.4
+        specifier: 'catalog:'
         version: 4.0.4
       unist-util-visit:
-        specifier: ^5.1.0
+        specifier: 'catalog:'
         version: 5.1.0
 
   packages/plugins/backlinks:
@@ -239,7 +272,7 @@ importers:
         specifier: workspace:*
         version: link:../../core
       hono:
-        specifier: ^4.12.25
+        specifier: 'catalog:'
         version: 4.12.26
 
   packages/plugins/code-enhance:
@@ -266,20 +299,20 @@ importers:
         specifier: workspace:*
         version: link:../../core
       remark-parse:
-        specifier: ^11.0.0
+        specifier: 'catalog:'
         version: 11.0.0
       unified:
-        specifier: ^11.0.5
+        specifier: 'catalog:'
         version: 11.0.5
       unist-util-visit:
-        specifier: ^5.1.0
+        specifier: 'catalog:'
         version: 5.1.0
     devDependencies:
       '@types/mdast':
-        specifier: ^4.0.4
+        specifier: 'catalog:'
         version: 4.0.4
       '@types/node':
-        specifier: ^24.5.2
+        specifier: 'catalog:'
         version: 24.13.6
 
   packages/plugins/diff:
@@ -289,7 +322,7 @@ importers:
         version: link:../../core
     devDependencies:
       '@types/node':
-        specifier: ^24.5.2
+        specifier: 'catalog:'
         version: 24.13.6
 
   packages/plugins/excalidraw:
@@ -308,7 +341,7 @@ importers:
         version: 5.1.0
     devDependencies:
       '@types/mdast':
-        specifier: ^4.0.4
+        specifier: 'catalog:'
         version: 4.0.4
 
   packages/plugins/garden-explorer:
@@ -320,7 +353,7 @@ importers:
         specifier: workspace:*
         version: link:../search
       hono:
-        specifier: ^4.12.25
+        specifier: 'catalog:'
         version: 4.12.26
 
   packages/plugins/lightbox:
@@ -335,7 +368,7 @@ importers:
         specifier: workspace:*
         version: link:../../core
       hono:
-        specifier: ^4.12.25
+        specifier: 'catalog:'
         version: 4.12.26
 
   packages/plugins/media:
@@ -362,10 +395,10 @@ importers:
         specifier: workspace:*
         version: link:../../core
       '@types/mdast':
-        specifier: ^4.0.4
+        specifier: 'catalog:'
         version: 4.0.4
       '@types/unist':
-        specifier: ^3.0.3
+        specifier: 'catalog:'
         version: 3.0.3
       github-slugger:
         specifier: ^2.0.0
@@ -374,7 +407,7 @@ importers:
         specifier: ^1.6.9
         version: 1.6.9
       unist-util-visit:
-        specifier: ^5.1.0
+        specifier: 'catalog:'
         version: 5.1.0
 
   packages/plugins/permalink:
@@ -392,13 +425,13 @@ importers:
         specifier: workspace:*
         version: link:../../core
       '@types/mdast':
-        specifier: ^4.0.4
+        specifier: 'catalog:'
         version: 4.0.4
       unist-util-visit:
-        specifier: ^5.1.0
+        specifier: 'catalog:'
         version: 5.1.0
       vfile-matter:
-        specifier: ^5.0.1
+        specifier: 'catalog:'
         version: 5.0.1
 
   packages/plugins/recent-posts:
@@ -407,7 +440,7 @@ importers:
         specifier: workspace:*
         version: link:../../core
       hono:
-        specifier: ^4.12.25
+        specifier: 'catalog:'
         version: 4.12.26
 
   packages/plugins/search:
@@ -416,7 +449,7 @@ importers:
         specifier: workspace:*
         version: link:../../core
       hono:
-        specifier: ^4.12.25
+        specifier: 'catalog:'
         version: 4.12.26
 
   packages/plugins/seo:
@@ -431,7 +464,7 @@ importers:
         specifier: workspace:*
         version: link:../../core
       hono:
-        specifier: ^4.12.25
+        specifier: 'catalog:'
         version: 4.12.26
 
   packages/themes/default:

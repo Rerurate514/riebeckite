@@ -5,7 +5,7 @@
 | 3 | A1.6 | External Site Build E2E | ✅ 完了 | Medium | tarballのみで`check/doctor/inspect/build`、Bundler/NodeNext typecheckを保証 |
 | **4** | **R1** | **Graph layout重複解消** | ✅ 完了 | Medium | `local-graph` / `garden-explorer`の共通実装を抽出（Phase 1） |
 | 5 | R5 | Backlink走査共通化 | ✅ 完了 | Small | Core ContentGraphへ寄せる（Phase 1） |
-| 6 | C5 | 画像コピーの増分化でbuild高速化 | 未着手 | Small | `build_images.ts`が参照画像約100MBを毎回無条件コピー。検証buildを高速化（Phase 1） |
+| 6 | C5 | 画像コピーの増分化でbuild高速化 | ✅ 完了 | Small | `build_images.ts`が参照画像約100MBを毎回無条件コピー。検証buildを高速化（Phase 1） |
 | 7 | R6 | clientEntries/endpoints規約 | ✅ 完了 | Small | Core helperとドキュメントで外部Plugin author向けの正解パターンを固定（Phase 1） |
 | 8 | R7 | 共通ユーティリティをCoreへ集約 | ✅ 完了 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
 | 9 | R12 | 読了時間をCoreユーティリティ化 | 未着手 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
@@ -99,7 +99,7 @@
 - **成果**: `ContentGraph.filterNeighbors(slug, include)` を追加（`packages/core/src/content/content_graph.ts`）。`local-graph.server.ts`（上限 `MAX_NEIGHBORS_PER_DIRECTION=10` 維持）と `garden-explorer.server.ts` のフィルタ/dedupe を置換。
 - **備考**: 内部 `uniqueStrings` は `#8 R7` で Core ユーティリティへ集約予定。
 
-### #6 C5: 画像コピーの増分化でbuildを高速化（Phase 1 / Small / 依存なし）
+### #6 C5: 画像コピーの増分化でbuildを高速化（✅ 完了 / Phase 1 / Small / 依存なし）
 - **概要**: `apps/web` の `prebuild`（`apps/web/scripts/build_images.ts`）が、参照画像を**毎回無条件で `content/` → `public/` へ `fs.copyFile`** している（`build_images.ts:39-69`）。ルート `content/` は 465MB（PNG 427MB / 1193枚、md 578件）で、参照画像だけで約100MB / 498ファイルを毎 build コピーするため、`pnpm build` の検証コストが大きい。
 - **対象**:
   - `apps/web/scripts/build_images.ts`（コピー判定・orphan削除）
@@ -113,6 +113,7 @@
 - **完了条件**: 内容が変わっていない画像は再コピーされない。画像を更新・削除した場合は `public/` に正しく反映される（増分結果 = 全再コピー結果）。
 - **検証**: `pnpm --filter @riebeckite/web run prebuild` を2回実行し、2回目がほぼ即時（skipped が全件）になること。`pnpm --filter @riebeckite/web run build` が通ること。画像を1枚更新して再実行し `public/` に反映されること。
 - **関連**: `#27 C3`（Incremental build依存改善）と同系統だが、本項は apps/web のアセットコピーに限定した先行改善。
+- **成果**: `copyIfChanged` が source/target のサイズとmtimeを比較し、一致時のコピーを省略する。コピー後はsourceのmtimeをtargetへ反映し、次回比較を安定化。ログは `copied/skipped/removed/failed` を出力する。
 
 ### #7 R6: clientEntries/endpoints規約（✅ 完了 / Phase 1 / Small）
 - **成果**: Core に `assets`/`clientEntries`/`endpoints` の定型 helper を追加し、各プラグイン `index.ts` をヘルパー経由へ置換。`docs/en/plugin-system.md`（および ja）に canonical pattern を追記。

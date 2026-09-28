@@ -27,21 +27,24 @@ type ReferencedAssets = {
   attachments: Set<string>;
 };
 
+type CopyResult = "copied" | "skipped";
+
 async function buildImages() {
   const images = await collectContentImages();
   const attachments = await collectContentAttachments();
   const referencedAssets = await collectReferencedAssets();
 
   let copied = 0;
+  let skipped = 0;
   let removed = 0;
   let failed = 0;
 
   for (const image of images.values()) {
     try {
       if (referencedAssets.images.has(image.relativePath)) {
-        await mkdir(path.dirname(image.targetPath), { recursive: true });
-        await fs.copyFile(image.sourcePath, image.targetPath);
-        copied++;
+        const result = await copyIfChanged(image.sourcePath, image.targetPath);
+        if (result === "copied") copied++;
+        else skipped++;
       } else if (await fileExists(image.targetPath)) {
         await fs.rm(image.targetPath);
         removed++;
@@ -55,9 +58,12 @@ async function buildImages() {
   for (const attachment of attachments.values()) {
     try {
       if (referencedAssets.attachments.has(attachment.relativePath)) {
-        await mkdir(path.dirname(attachment.targetPath), { recursive: true });
-        await fs.copyFile(attachment.sourcePath, attachment.targetPath);
-        copied++;
+        const result = await copyIfChanged(
+          attachment.sourcePath,
+          attachment.targetPath,
+        );
+        if (result === "copied") copied++;
+        else skipped++;
       } else if (await fileExists(attachment.targetPath)) {
         await fs.rm(attachment.targetPath);
         removed++;
@@ -73,11 +79,32 @@ async function buildImages() {
   failed += orphaned.failed;
 
   console.log(
-    `Processed content assets: ${copied} copied, ${removed} removed, ${failed} failed`,
+    `Processed content assets: ${copied} copied, ${skipped} skipped, ${removed} removed, ${failed} failed`,
   );
   if (failed > 0) {
     process.exitCode = 1;
   }
+}
+
+async function copyIfChanged(
+  sourcePath: string,
+  targetPath: string,
+): Promise<CopyResult> {
+  const sourceStats = await fs.stat(sourcePath);
+  const targetStats = await getFileStats(targetPath);
+
+  if (
+    targetStats !== null &&
+    sourceStats.size === targetStats.size &&
+    sourceStats.mtimeMs === targetStats.mtimeMs
+  ) {
+    return "skipped";
+  }
+
+  await mkdir(path.dirname(targetPath), { recursive: true });
+  await fs.copyFile(sourcePath, targetPath);
+  await fs.utimes(targetPath, sourceStats.atime, sourceStats.mtime);
+  return "copied";
 }
 
 async function collectContentAttachments(): Promise<
@@ -256,6 +283,24 @@ async function fileExists(filePath: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+async function getFileStats(filePath: string) {
+  try {
+    return await fs.stat(filePath);
+  } catch (error) {
+    if (isFileNotFoundError(error)) return null;
+    throw error;
+  }
+}
+
+function isFileNotFoundError(error: unknown): error is NodeJS.ErrnoException {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "ENOENT"
+  );
 }
 
 buildImages().catch((error) => {

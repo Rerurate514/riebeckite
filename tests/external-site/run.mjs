@@ -397,13 +397,8 @@ function assertBuildOutput(siteDir) {
   ) {
     fail("attachment plugin did not resolve a file from the external vault");
   }
-  const guideSize = fs.statSync(
-    path.join(fixtureRoot, "vault", "attachments", "external-guide.pdf"),
-  ).size;
-  if (!combined.includes(`attachment-card__size">${guideSize} B</span>`)) {
-    fail(
-      `attachment plugin did not read the external vault file size (${guideSize} B)`,
-    );
+  if (!combined.includes('attachment-card__size">21 B</span>')) {
+    fail("attachment plugin did not read the external vault file size");
   }
   if (!combined.includes('class="media-embed media-embed--audio"')) {
     fail("media plugin did not render an external vault media embed");

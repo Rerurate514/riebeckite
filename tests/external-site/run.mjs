@@ -440,6 +440,11 @@ function main() {
     assertNoMonorepoEscapeHatches(siteDir);
     assertPublishedArtifacts(siteDir);
 
+    step("verifying capability dependency resolution");
+    run(process.execPath, [path.join(siteDir, "capability-check.mjs")], {
+      cwd: siteDir,
+    });
+
     const nestedWorkingDirectory = path.join(siteDir, "app");
     runCli(siteDir, "check", nestedWorkingDirectory);
     runCli(siteDir, "doctor", nestedWorkingDirectory);

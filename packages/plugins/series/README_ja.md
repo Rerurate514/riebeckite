@@ -57,7 +57,6 @@ series_order: 2
 
 ```html
 <nav class="rb-series" data-series="何かを作る"
-     data-series-marker="RIEBECKITE_EXTERNAL_SERIES_MARKER"
      aria-label="Series navigation">
   <p class="rb-series__title">
     <a class="rb-series__link" href="/part-1">何かを作る</a>
@@ -88,7 +87,6 @@ series_order: 2
 - `renderSeriesNavigation(index, currentSlug, options?)` — ナビゲーション1つ分
 - `collectSeriesIndexes(manifest, options?)` — 全シリーズを出現順で取得
 - `resolveSeriesOptions(options?)` — 既定値を適用したオプション
-- `SERIES_MARKER` — `data-series-marker` の値
 - 型: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
 
 ### シリーズのランディングページ

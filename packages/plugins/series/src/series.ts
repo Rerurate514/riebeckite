@@ -12,13 +12,6 @@ import type {
   SeriesOptions,
 } from "./types.js";
 
-/**
- * Stable attribute value present on every element this plugin injects. It lets
- * tests and stylesheets detect generated series output without depending on
- * user-configurable class names.
- */
-export const SERIES_MARKER = "RIEBECKITE_EXTERNAL_SERIES_MARKER";
-
 /** Base class applied when `options.className` is not set. */
 export const DEFAULT_SERIES_CLASS_NAME = "rb-series";
 
@@ -110,8 +103,6 @@ export function renderSeriesNavigation(
   const parts: string[] = [
     `<nav class="${escapeHtmlAttribute(cls)}" data-series="${escapeHtmlAttribute(
       index.name,
-    )}" data-series-marker="${escapeHtmlAttribute(
-      SERIES_MARKER,
     )}" aria-label="Series navigation">`,
   ];
 
@@ -194,7 +185,7 @@ export function renderSeriesIndex(
       cls,
     )} ${escapeHtmlAttribute(cls)}--index" data-series="${escapeHtmlAttribute(
       index.name,
-    )}" data-series-marker="${escapeHtmlAttribute(SERIES_MARKER)}">`,
+    )}">`,
     `<h2 class="${escapeHtmlAttribute(cls)}__title">${escapeHtml(
       index.title,
     )}</h2>`,

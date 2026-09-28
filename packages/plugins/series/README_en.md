@@ -67,7 +67,6 @@ its HTML:
 
 ```html
 <nav class="rb-series" data-series="Build a thing"
-     data-series-marker="RIEBECKITE_EXTERNAL_SERIES_MARKER"
      aria-label="Series navigation">
   <p class="rb-series__title">
     <a class="rb-series__link" href="/build-a-thing">Build a thing</a>
@@ -103,7 +102,6 @@ and search see the same markup.
   block
 - `collectSeriesIndexes(manifest, options?)` — every series in first-seen order
 - `resolveSeriesOptions(options?)` — options with defaults applied
-- `SERIES_MARKER` — the `data-series-marker` value
 - Types: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
 
 ### Series landing page

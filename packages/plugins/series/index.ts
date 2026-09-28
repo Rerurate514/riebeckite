@@ -9,7 +9,6 @@ import {
   collectSeriesIndexes,
   renderSeriesNavigation,
   resolveSeriesOptions,
-  SERIES_MARKER,
 } from "./src/series.js";
 import type { SeriesOptions } from "./src/types.js";
 
@@ -24,7 +23,6 @@ export {
   collectSeriesIndexes,
   renderSeriesIndex,
   renderSeriesNavigation,
-  SERIES_MARKER,
 } from "./src/series.js";
 
 /**
@@ -49,11 +47,14 @@ export function series(options: SeriesOptions = {}) {
     onManifestCreated: ({ manifest, diagnostics }) => {
       diagnostics.push(...collectSeriesDiagnostics(manifest, options));
 
+      const injected = new Set<string>();
       for (const index of collectSeriesIndexes(manifest, options)) {
         if (index.members.length < 2) continue;
         for (const member of index.members) {
+          if (injected.has(member.slug)) continue;
           const entry = manifest.bySlug.get(member.slug);
-          if (!entry || entry.html.includes(SERIES_MARKER)) continue;
+          if (!entry) continue;
+          injected.add(member.slug);
           const navigation = renderSeriesNavigation(index, member.slug, options);
           entry.html = `${entry.html}\n${navigation}`;
           const content = tracked.get(member.slug);

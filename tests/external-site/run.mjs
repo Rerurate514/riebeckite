@@ -394,11 +394,21 @@ function assertBuildOutput(siteDir) {
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
   }
-  if (!combined.includes(SERIES_MARKER)) {
-    fail(`generated HTML is missing the series marker (${SERIES_MARKER})`);
-  }
+  // The series marker is fixture-origin now: it is the series name declared in
+  // the vault notes, so it flows into the generated `data-series` attribute and
+  // the rendered heading instead of a plugin-hardcoded attribute.
   if (!combined.includes("rb-series")) {
     fail("generated HTML is missing the series plugin output");
+  }
+  if (!combined.includes(`data-series="${SERIES_MARKER}"`)) {
+    fail(
+      `series navigation is missing the fixture series name (${SERIES_MARKER})`,
+    );
+  }
+  if (!combined.includes(`>${SERIES_MARKER}</a>`)) {
+    fail(
+      `series heading does not render the fixture-origin marker (${SERIES_MARKER})`,
+    );
   }
   if (!combined.includes(`href="${SERIES_PART_1_PERMALINK}"`)) {
     fail(`series navigation is missing part 1 (${SERIES_PART_1_PERMALINK})`);
@@ -407,6 +417,9 @@ function assertBuildOutput(siteDir) {
     fail(
       `series navigation is missing the part 1 -> part 2 link (${SERIES_PART_2_PERMALINK})`,
     );
+  }
+  if (!combined.includes('rel="prev"') || !combined.includes('rel="next"')) {
+    fail("series navigation is missing the previous/next links");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

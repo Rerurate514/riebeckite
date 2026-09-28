@@ -37,6 +37,7 @@ import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
 import SearchBar from "@riebeckite/plugin-search/components";
+import { series } from "@riebeckite/plugin-series";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
@@ -68,6 +69,7 @@ export const resolvedEntries = {
   searchPlugin,
   initSearch,
   SearchBar,
+  series,
   tocPlugin,
   initTableOfContents,
   TableOfContents,

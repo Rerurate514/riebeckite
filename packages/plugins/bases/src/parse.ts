@@ -19,7 +19,7 @@ type Result<T> = { readonly ok: true; readonly value: T } | {
 };
 
 const ok = <T>(value: T): Result<T> => ({ ok: true, value });
-const fail = <T>(message: string): Result<T> => ({ ok: false, message });
+const fail = (message: string): Result<never> => ({ ok: false, message });
 
 const BUILTIN_ALIASES: Record<string, BasesBuiltinValue | "date"> = {
   "file.name": "file.name",
@@ -51,13 +51,13 @@ export function parseBases(document: unknown): Result<BasesSpec> {
   const root = document as Record<string, unknown>;
 
   const filter = parseFilters(root.filters, "filters");
-  if (!filter.ok) return filter;
+  if (filter.ok === false) return filter;
 
   const properties = parseProperties(root.properties);
-  if (!properties.ok) return properties;
+  if (properties.ok === false) return properties;
 
   const views = parseViews(root.views, properties.value);
-  if (!views.ok) return views;
+  if (views.ok === false) return views;
 
   return ok({
     ...(filter.value === undefined ? {} : { filter: filter.value }),
@@ -102,17 +102,17 @@ function parseFilterObject(
         toList(object.and),
         `${path}.and`,
       );
-      if (!parsed.ok) return parsed;
+      if (parsed.ok === false) return parsed;
       if (parsed.value) children.push(parsed.value);
     }
     if ("or" in object) {
       const parsed = combineOr(toList(object.or), `${path}.or`);
-      if (!parsed.ok) return parsed;
+      if (parsed.ok === false) return parsed;
       if (parsed.value) children.push(parsed.value);
     }
     if ("not" in object) {
       const parsed = combineAnd(toList(object.not), `${path}.not`);
-      if (!parsed.ok) return parsed;
+      if (parsed.ok === false) return parsed;
       if (parsed.value) {
         children.push({ kind: "not", condition: parsed.value });
       }
@@ -123,7 +123,7 @@ function parseFilterObject(
   // A plain mapping is treated as `property == value` equality.
   for (const [key, raw] of Object.entries(object)) {
     const parsed = propertyEquality(key, raw, `${path}.${key}`);
-    if (!parsed.ok) return parsed;
+    if (parsed.ok === false) return parsed;
     children.push(parsed.value);
   }
   return combineAndNodes(children);
@@ -161,7 +161,7 @@ function combineAnd(
   const children: BasesCondition[] = [];
   for (let index = 0; index < values.length; index += 1) {
     const parsed = parseFilters(values[index], `${path}[${index}]`);
-    if (!parsed.ok) return parsed;
+    if (parsed.ok === false) return parsed;
     if (parsed.value) children.push(parsed.value);
   }
   return combineAndNodes(children);
@@ -174,7 +174,7 @@ function combineOr(
   const children: BasesCondition[] = [];
   for (let index = 0; index < values.length; index += 1) {
     const parsed = parseFilters(values[index], `${path}[${index}]`);
-    if (!parsed.ok) return parsed;
+    if (parsed.ok === false) return parsed;
     if (parsed.value) children.push(parsed.value);
   }
   if (children.length === 0) return ok(undefined);
@@ -362,7 +362,7 @@ function parseViews(
   const views: BasesView[] = [];
   for (let index = 0; index < value.length; index += 1) {
     const parsed = parseView(value[index], properties, `views[${index}]`);
-    if (!parsed.ok) return parsed;
+    if (parsed.ok === false) return parsed;
     views.push(parsed.value);
   }
   return ok(views);
@@ -379,17 +379,17 @@ function parseView(
   const object = value as Record<string, unknown>;
 
   const type = parseViewType(object.type, path);
-  if (!type.ok) return type;
+  if (type.ok === false) return type;
 
   const filter = parseFilters(object.filters, `${path}.filters`);
-  if (!filter.ok) return filter;
+  if (filter.ok === false) return filter;
 
   const columns = parseColumns(object, properties);
   const sort = parseSort(object.sort, `${path}.sort`);
-  if (!sort.ok) return sort;
+  if (sort.ok === false) return sort;
 
   const limit = parseLimit(object.limit, `${path}.limit`);
-  if (!limit.ok) return limit;
+  if (limit.ok === false) return limit;
 
   const name =
     typeof object.name === "string" && object.name.trim() !== ""

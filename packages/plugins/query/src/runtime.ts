@@ -6,7 +6,7 @@ import type {
   PostContent,
 } from "@riebeckite/core";
 import { queryContentEntries } from "@riebeckite/core";
-import { parse as parseYaml } from "yaml";
+import { matter } from "vfile-matter";
 import {
   QUERY_ATTRIBUTE,
   createQueryPlaceholderPattern,
@@ -103,7 +103,7 @@ function parseBlock(
 
   let parsed: unknown;
   try {
-    parsed = parseYaml(source);
+    parsed = parseYamlMapping(source);
   } catch (error) {
     return reportInvalid(
       entry,
@@ -148,6 +148,26 @@ function reportInvalid(
     message,
   });
   return renderQueryError(message, options);
+}
+
+/**
+ * Parses the YAML body of a query block.
+ *
+ * The block is wrapped in front-matter delimiters and handed to
+ * `vfile-matter`, which is already part of the framework's SSR external
+ * contract (Core parses front matter through it). This deliberately avoids a
+ * direct dependency on a CommonJS-only YAML package: importing such a package
+ * from plugin code breaks Vite's SSR module runner (`require is not defined`).
+ */
+function parseYamlMapping(source: string): unknown {
+  const document = `---\n${source}\n---\n`;
+  const file = {
+    value: document,
+    data: {} as Record<string, unknown>,
+    toString: () => document,
+  };
+  matter(file as unknown as Parameters<typeof matter>[0]);
+  return file.data.matter;
 }
 
 function formatError(error: unknown): string {

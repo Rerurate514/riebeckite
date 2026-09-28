@@ -69,11 +69,13 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  { directory: "packages/plugins/marp", name: "@riebeckite/plugin-marp" },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const MARP_MARKER = "RIEBECKITE_EXTERNAL_MARP_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -395,14 +397,34 @@ function assertBuildOutput(siteDir) {
   ) {
     fail("attachment plugin did not resolve a file from the external vault");
   }
-  if (!combined.includes('attachment-card__size">21 B</span>')) {
-    fail("attachment plugin did not read the external vault file size");
+  const guideSize = fs.statSync(
+    path.join(fixtureRoot, "vault", "attachments", "external-guide.pdf"),
+  ).size;
+  if (!combined.includes(`attachment-card__size">${guideSize} B</span>`)) {
+    fail(
+      `attachment plugin did not read the external vault file size (${guideSize} B)`,
+    );
   }
   if (!combined.includes('class="media-embed media-embed--audio"')) {
     fail("media plugin did not render an external vault media embed");
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes(MARP_MARKER)) {
+    fail(`generated HTML is missing the marp marker (${MARP_MARKER})`);
+  }
+  if (!combined.includes('class="rb-marp"')) {
+    fail("marp plugin did not emit the deck figure wrapper");
+  }
+  if (!combined.includes("data-marp")) {
+    fail("marp plugin did not mark the figure as a deck");
+  }
+  if (!combined.includes("data-marpit-svg")) {
+    fail("marp plugin did not render the slide SVG structure");
+  }
+  if (!combined.includes('class="rb-marp__deck"')) {
+    fail("marp plugin did not emit the deck container");
   }
 
   for (const file of htmlFiles) {

@@ -9,6 +9,7 @@ import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+import { marp } from "@riebeckite/plugin-marp";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
@@ -65,6 +66,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    marp(),
     excalidraw(),
     media(),
     attachment(),

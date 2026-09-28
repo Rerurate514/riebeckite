@@ -323,7 +323,19 @@ function runTypecheck(siteDir, project) {
   return result;
 }
 
-function assertBuildOutput(siteDir) {
+function formatBytes(bytes) {
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+  const digits = value >= 10 || unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(digits)} ${units[unitIndex]}`;
+}
+
+function assertBuildOutput(siteDir, vaultDir) {
   step("checking generated site output");
   const distDir = path.join(siteDir, "dist");
   if (!fs.existsSync(distDir)) {
@@ -370,8 +382,13 @@ function assertBuildOutput(siteDir) {
   ) {
     fail("attachment plugin did not resolve a file from the external vault");
   }
-  if (!combined.includes('attachment-card__size">21 B</span>')) {
-    fail("attachment plugin did not read the external vault file size");
+  const attachmentSize = formatBytes(
+    fs.statSync(path.join(vaultDir, "attachments", "external-guide.pdf")).size,
+  );
+  if (!combined.includes(`attachment-card__size">${attachmentSize}</span>`)) {
+    fail(
+      `attachment plugin did not read the external vault file size (expected ${attachmentSize})`,
+    );
   }
   if (!combined.includes('class="media-embed media-embed--audio"')) {
     fail("media plugin did not render an external vault media embed");
@@ -464,7 +481,7 @@ function main() {
     }
     runCli(siteDir, "build", nestedWorkingDirectory);
 
-    assertBuildOutput(siteDir);
+    assertBuildOutput(siteDir, vaultDir);
 
     runTypecheck(siteDir, "tsconfig.json");
     runTypecheck(siteDir, "tsconfig.nodenext.json");

@@ -7,46 +7,57 @@ import type { PostContent } from "../types/post_content";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
 import type { ContentGraph } from "./content_graph";
 import { ContentIndexBuilder } from "./content_index_builder";
-import {
-  type ContentPostReference,
-  ContentRepository,
-} from "./content_repository";
+import type { ContentSource, ContentSourceEntry } from "./content_source";
+import { FileSystemContentSource } from "./file_system_content_source";
 import { ManifestBuilder } from "./manifest_builder";
 
 export type Backlink = {
   slug: string;
 };
 
+export type ContentPostReference = {
+  slug: string;
+};
+
 export class ContentManager {
-  private repository: ContentRepository;
+  private source: ContentSource;
   private contentIndexBuilder: ContentIndexBuilder;
   private manifestBuilder = new ManifestBuilder();
   private pluginRuntime: PluginRuntime;
   private contentIndex: Map<string, string> | null = null;
   private contentCache = new Map<string, PostContent>();
+  private contentEntries: readonly ContentSourceEntry[] | null = null;
   private manifest: ContentManifest | null = null;
   private pipeline: Pipeline | null = null;
 
   constructor(
-    contentDirectory: string,
+    content: string | ContentSource,
     exclude: string[] = [],
     private pipelineOptions: PipelineOptions = {},
   ) {
-    this.repository = new ContentRepository(contentDirectory, exclude);
-    this.contentIndexBuilder = new ContentIndexBuilder(this.repository);
+    this.source =
+      typeof content === "string"
+        ? (pipelineOptions.config?.content.source ??
+          new FileSystemContentSource(content, exclude))
+        : content;
+    this.contentIndexBuilder = new ContentIndexBuilder(this.source);
     this.pluginRuntime = new PluginRuntime(pipelineOptions);
   }
 
   async getAllPosts(): Promise<ContentPostReference[]> {
-    return await this.repository.getAllPosts();
+    return (await this.getContentEntries())
+      .filter((entry) => entry.path.endsWith(".md"))
+      .map((entry) => ({ slug: entry.path.replace(/\.md$/, "") }));
   }
 
   async getPost(slug: string): Promise<string> {
-    return await this.repository.getPost(slug);
+    return await this.readTextEntry(`${slug}.md`);
   }
 
   async getContentIndex(): Promise<Map<string, string>> {
-    this.contentIndex ??= await this.contentIndexBuilder.build();
+    this.contentIndex ??= await this.contentIndexBuilder.build(
+      await this.getContentEntries(),
+    );
     return this.contentIndex;
   }
 
@@ -145,6 +156,22 @@ export class ContentManager {
   async dispose(): Promise<void> {
     if (!this.contentIndex) return;
     await this.pluginRuntime.dispose(this.contentIndex);
+  }
+
+  private async getContentEntries(): Promise<readonly ContentSourceEntry[]> {
+    this.contentEntries ??= await this.source.scan();
+    return this.contentEntries;
+  }
+
+  private async readTextEntry(logicalPath: string): Promise<string> {
+    const entries = await this.getContentEntries();
+    const entry = entries.find((current) => current.path === logicalPath);
+    if (!entry) throw new Error(`Content entry was not found: ${logicalPath}`);
+
+    const content = await this.source.read(entry);
+    return typeof content === "string"
+      ? content
+      : new TextDecoder().decode(content);
   }
 }
 

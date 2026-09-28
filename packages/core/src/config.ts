@@ -36,6 +36,7 @@ export function resolveConfig(
     },
     content: {
       directory: config.content?.directory ?? "../../content",
+      source: config.content?.source,
       exclude: config.content?.exclude ?? [],
       filters: {
         publishStrategy: config.content?.filters?.publishStrategy ?? "explicit",
@@ -113,7 +114,10 @@ export function isPublished(
   return !(frontmatter?.private === true || frontmatter?.draft === true);
 }
 
-export function isExcluded(patterns: string[], relativePath: string): boolean {
+export function isExcluded(
+  patterns: readonly string[],
+  relativePath: string,
+): boolean {
   const normalized = relativePath.replace(/\\/g, "/");
   return patterns.some((pattern) => matchGlob(pattern, normalized));
 }

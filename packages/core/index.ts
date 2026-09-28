@@ -16,6 +16,13 @@ export {
 export type { ContentGraph } from "./src/content/content_graph";
 export { createContentGraph } from "./src/content/content_graph";
 export { ContentManager } from "./src/content/content_manager";
+export { FileSystemContentSource } from "./src/content/file_system_content_source";
+export type {
+  ContentSource,
+  ContentSourceContent,
+  ContentSourceEntry,
+  ContentSourceMetadata,
+} from "./src/content/content_source";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
 export type { PipelineOptions } from "./src/pipeline";
 export { Pipeline } from "./src/pipeline";

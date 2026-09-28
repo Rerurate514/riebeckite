@@ -1,24 +1,26 @@
 import { extractFrontmatterAliases } from "./content_metadata";
-import type { ContentRepository } from "./content_repository";
+import type { ContentSource, ContentSourceEntry } from "./content_source";
 
 export class ContentIndexBuilder {
-  constructor(private repository: ContentRepository) {}
+  constructor(private source: ContentSource) {}
 
-  async build(): Promise<Map<string, string>> {
+  async build(
+    contentEntries: readonly ContentSourceEntry[],
+  ): Promise<Map<string, string>> {
     const index = new Map<string, string>();
-    const contentPaths = await this.repository.getContentPaths();
 
-    for (const contentPath of contentPaths) {
-      await this.indexContentPath(index, contentPath);
+    for (const contentEntry of contentEntries) {
+      await this.indexContentEntry(index, contentEntry);
     }
 
     return index;
   }
 
-  private async indexContentPath(
+  private async indexContentEntry(
     index: Map<string, string>,
-    contentPath: string,
+    contentEntry: ContentSourceEntry,
   ) {
+    const contentPath = contentEntry.path;
     const ext = contentPath.split(".").pop()?.toLowerCase() ?? "";
     const value = ext === "md" ? contentPath.replace(/\.md$/, "") : contentPath;
     const parts = value.split("/");
@@ -33,12 +35,16 @@ export class ContentIndexBuilder {
     }
 
     if (ext === "md") {
-      const markdown = await this.repository.getContentFile(contentPath);
+      const markdown = readText(await this.source.read(contentEntry));
       for (const alias of extractFrontmatterAliases(markdown)) {
         addIndexEntry(index, alias, value);
       }
     }
   }
+}
+
+function readText(content: string | Uint8Array): string {
+  return typeof content === "string" ? content : new TextDecoder().decode(content);
 }
 
 function addIndexEntry(index: Map<string, string>, key: string, value: string) {

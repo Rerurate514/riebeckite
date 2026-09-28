@@ -1,0 +1,72 @@
+.rb-hover-preview {
+  --rb-hover-preview-paper: var(--rb-color-paper, #ffffff);
+  --rb-hover-preview-ink: var(--rb-color-ink, #16130f);
+  --rb-hover-preview-muted: var(--rb-color-muted, #69645c);
+  --rb-hover-preview-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-hover-preview-ink) 16%, transparent)
+  );
+  --rb-hover-preview-accent: var(--rb-color-accent, #b4531f);
+
+  position: fixed;
+  z-index: 70;
+  top: 0;
+  left: 0;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--rb-hover-preview-rule);
+  border-left: 3px solid var(--rb-hover-preview-accent);
+  background: var(--rb-hover-preview-paper);
+  color: var(--rb-hover-preview-ink);
+  box-shadow: 0 14px 34px -18px
+    color-mix(in srgb, var(--rb-hover-preview-ink) 45%, transparent);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  pointer-events: none;
+}
+
+.rb-hover-preview[hidden] {
+  display: none;
+}
+
+.rb-hover-preview__title {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.rb-hover-preview__excerpt {
+  margin: 0;
+  color: var(--rb-hover-preview-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+html[data-theme="dark"] .rb-hover-preview,
+html.dark .rb-hover-preview {
+  --rb-hover-preview-paper: var(--rb-color-ink, #14110d);
+  --rb-hover-preview-ink: var(--rb-color-paper, #f8f5ef);
+  --rb-hover-preview-muted: color-mix(
+    in srgb,
+    var(--rb-hover-preview-ink) 72%,
+    transparent
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rb-hover-preview {
+    animation: rb-hover-preview-in 120ms ease-out;
+  }
+
+  @keyframes rb-hover-preview-in {
+    from {
+      opacity: 0;
+      transform: translateY(-2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

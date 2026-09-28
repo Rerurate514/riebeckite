@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { queryPlugin } from "@riebeckite/plugin-query";
@@ -32,6 +33,7 @@ export default defineConfig({
     queryPlugin(),
     recentPostsPlugin(),
     searchPlugin(),
+    hoverPreviewPlugin(),
     localFixturePlugin(),
   ],
 });

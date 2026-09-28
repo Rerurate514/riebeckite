@@ -1,6 +1,6 @@
 # HonoX Integration
 
-`@riebeckite/integrations-honox` connects portable Core behavior to HonoX and Vite. It owns application-root/config resolution, Vite development and build integration, SSG extension mapping, generated plugin/theme style entries, and the HonoX application build workflow.
+`@riebeckite/honox` connects portable Core behavior to HonoX and Vite. It owns application-root/config resolution, Vite development and build integration, SSG extension mapping, generated plugin/theme style entries, and the HonoX application build workflow.
 
 ## Public API
 
@@ -12,6 +12,48 @@ Use `riebeckiteSsg({ entry, extensionMap })` for static generation. It starts
 its internal Vite server with the resolved application root and define values,
 so invoking `riebeckite build` from a subdirectory yields the same output as
 invoking it from the application root.
+
+## UI primitives
+
+`@riebeckite/honox/ui` is deliberately a small structural contract, not a
+component framework. Its complete public component surface is:
+
+- `Article`, `ArticleLayout`, `ArticleHeader`, `ArticleContent`,
+  `ArticleMeta`, and `ArticleFooter` for an article page;
+- `Sidebar` for complementary content.
+
+The corresponding `*Props` types are public. These stable styling hooks are
+the only classes supplied by the contract: `rb-article`, `rb-article-layout`,
+`rb-article-header`, `rb-article-body`, `rb-article-meta`,
+`rb-article-footer`, and `rb-sidebar`, in the component order above.
+Primitives provide semantic HTML, those hooks, and `class`/`className`
+composition only. They do not own article copy, metadata formatting,
+navigation, cards, page layouts, islands, or CSS. Those belong to the site
+application. `ArticleHeader` and `ArticleContent` accept either children or
+their HTML input prop, never both.
+
+```tsx
+import {
+  Article,
+  ArticleContent,
+  ArticleHeader,
+  ArticleLayout,
+  ArticleMeta,
+} from "@riebeckite/honox/ui";
+
+<Article class="prose">
+  <ArticleLayout aside={<nav>…</nav>}>
+    <ArticleContent>
+      <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
+      <ArticleMeta>…</ArticleMeta>
+      <div dangerouslySetInnerHTML={{ __html: body }} />
+    </ArticleContent>
+  </ArticleLayout>
+</Article>;
+```
+
+Use the primitives as composition points, then style them from the site. Do not
+import files below `@riebeckite/honox/src/` or rely on any unlisted component.
 
 ## Boundary rules
 

@@ -189,7 +189,13 @@ export class ContentManager {
   async getManifest(options?: ContentBuildOptions): Promise<ContentManifest> {
     if (this.manifest) return this.manifest;
 
-    if (options) this.enableBuildTime();
+    // Plugin caches (and pipeline caches) must be usable whenever a manifest is
+    // built, not only for explicit incremental builds: the SSG pass builds its
+    // own ContentManager and relies on persisted plugin state (e.g. rename
+    // detection) without requesting an incremental build. The incremental
+    // coordinator still runs only when build options are supplied.
+    this.enableBuildTime();
+
     const preparation = options
       ? await this.buildCoordinator.getPreparation(options.incremental)
       : undefined;

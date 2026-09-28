@@ -5,3 +5,4 @@ apps/web/content/
 apps/web/app/.riebeckite/
 packages/**/dist/
 packages/**/LICENSE
+.riebeckite/

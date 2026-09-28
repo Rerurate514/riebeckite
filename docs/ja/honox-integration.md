@@ -39,6 +39,51 @@ import {
 
 primitive は composition point として使い、style は Site 側で定義します。`@riebeckite/honox/src/` 以下を import したり、ここに挙げていない component に依存したりしないでください。
 
+## Site Application の拡張 contract
+
+Riebeckite の Site は通常の HonoX application です。integration が担当するのは content と build の接続であり、利用者に見える設計はすべて Site が決めます。次のディレクトリは integration、theme、plugin ではなく、Site 内で管理します。
+
+| ディレクトリ | Site が持つ責務 |
+| --- | --- |
+| `app/routes/` | URL の処理、ページの組み立て、redirect、response metadata |
+| `app/components/` | Site 固有の表示部品と、公開 UI primitive の組み合わせ |
+| `app/islands/` | 任意の対話 UI と client-side state |
+| `app/style.css` とローカル CSS | visual token、layout、typography、生成済み extension style の import |
+
+`app/routes/_renderer.tsx` は Site の shell です。document head、navigation、page chrome、application client entry はここで管理します。route は `ContentManager` から post を取得し、`resolveContentRoute(manifest, c.req.path)` で request URL を解決したうえで、どの component tree を描画するかを Site 側で決めます。`apps/web` はその一例であり、同じ layout を使う必要はありません。
+
+たとえば外部 Site では、stable な primitive contract を使いつつ、表示は Site 側で自由に組み立てられます。
+
+```tsx
+// app/components/article.tsx
+import type { PostContent } from "@riebeckite/core";
+import { Article, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
+
+export function SiteArticle({ post }: { post: PostContent }) {
+  return (
+    <Article class="site-article">
+      <ArticleLayout>
+        <ArticleContent html={post.html ?? ""} />
+      </ArticleLayout>
+    </Article>
+  );
+}
+```
+
+生成された extension style は Site の stylesheet から import します。生成ファイル自体は編集しません。
+
+```css
+/* app/style.css */
+@import "./.riebeckite/plugin-styles.css";
+@import "./.riebeckite/theme-styles.css";
+
+.site-article { max-width: 48rem; margin: 0 auto; }
+```
+
+island も通常の Site module です。`app/islands/` に HonoX island を置き、それを所有する route または component から import します。hydration と client state は Site 内に閉じます。`app/client.ts` では `createClient()` と `initRiebeckiteClient()` の両方を初期化し続けてください。後者は install 済み plugin と theme が提供する browser entry を開始します。plugin は client entry を追加できますが、Site の route、shell、component、island、CSS の設計を所有してはいけません。
+
+external-site E2E fixture には、最小の Site shell、`@riebeckite/honox/ui` で組んだローカル article component、ローカル island、Site CSS を置いています。この fixture は npm tarball だけで build するため、これらの境界を copy・override する際のサポート対象の例です。
+
 記事 routing は、manifest に既に解決済みの public location（`byPermalink`、次に `redirects`）に対して request を解決します。filesystem path、directory layout、slug から URL を逆算しません。slug は content の内部 lookup key であり、public URL は解決済みの `permalink` です。
 
 HonoX/Vite/Cloudflare/route API はこの integration か `apps/web` に閉じます。Plugin は asset、client entry、endpoint、renderer を公開できますが、Core は HonoX routing を所有しません。実際の route composition と island は application の責務です。

@@ -1,6 +1,7 @@
 import { SearchBar } from "@riebeckite/plugin-search";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
+import { SiteHeader } from "../components/site-header";
 import { config } from "../config";
 
 export default jsxRenderer(({ children }) => {
@@ -14,6 +15,7 @@ export default jsxRenderer(({ children }) => {
         <Script src="/app/client.ts" async />
       </head>
       <body class="riebeckite-page rb-site">
+        <SiteHeader />
         <SearchBar />
         {children}
       </body>

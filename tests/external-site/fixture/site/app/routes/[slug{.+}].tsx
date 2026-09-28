@@ -2,6 +2,7 @@ import { isPublished } from "@riebeckite/core";
 import { resolveContentRoute } from "@riebeckite/honox/server";
 import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
+import { FixtureArticle } from "../components/article";
 import { config } from "../config";
 import { content } from "../content";
 
@@ -22,17 +23,14 @@ export default createRoute(
     const manifest = await content.getManifest();
     const route = resolveContentRoute(manifest, c.req.path);
     if (!route) return c.notFound();
-    if (route.kind === "redirect") return c.redirect(route.location, route.status);
+    if (route.kind === "redirect")
+      return c.redirect(route.location, route.status);
 
     const post = await content.getProcessedContent(route.entry.slug);
     if (!isPublished(config, post.frontmatter)) {
       return c.notFound();
     }
 
-    return c.render(
-      <main>
-        <div dangerouslySetInnerHTML={{ __html: post.html ?? "" }} />
-      </main>
-    );
-  }
+    return c.render(<FixtureArticle post={post} />);
+  },
 );

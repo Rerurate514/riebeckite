@@ -55,6 +55,70 @@ import {
 Use the primitives as composition points, then style them from the site. Do not
 import files below `@riebeckite/honox/src/` or rely on any unlisted component.
 
+## Site application contract
+
+A Riebeckite site is a normal HonoX application. The integration supplies
+content and build wiring; the application owns every user-facing decision.
+Keep the following source directories in the site, rather than in an
+integration, theme, or plugin:
+
+| Directory | Site-owned responsibility |
+| --- | --- |
+| `app/routes/` | URL handling, page composition, redirects, and response metadata |
+| `app/components/` | Reusable site presentation and composition of the public UI primitives |
+| `app/islands/` | Optional interactive UI and its client-side state |
+| `app/style.css` and local CSS | Visual tokens, layout, typography, and imports of generated extension styles |
+
+`app/routes/_renderer.tsx` is the site shell. It owns the document head,
+navigation, page chrome, and the application client entry. A route obtains a
+post from `ContentManager`, resolves request URLs with
+`resolveContentRoute(manifest, c.req.path)`, then chooses its own component
+tree. The reference application in `apps/web` is one implementation, not a
+required layout.
+
+For example, an external site can compose an article with the stable primitive
+contract while retaining all presentation ownership:
+
+```tsx
+// app/components/article.tsx
+import type { PostContent } from "@riebeckite/core";
+import { Article, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
+
+export function SiteArticle({ post }: { post: PostContent }) {
+  return (
+    <Article class="site-article">
+      <ArticleLayout>
+        <ArticleContent html={post.html ?? ""} />
+      </ArticleLayout>
+    </Article>
+  );
+}
+```
+
+Import generated extension styles from the site's stylesheet, but never edit
+the generated files themselves:
+
+```css
+/* app/style.css */
+@import "./.riebeckite/plugin-styles.css";
+@import "./.riebeckite/theme-styles.css";
+
+.site-article { max-width: 48rem; margin: 0 auto; }
+```
+
+Islands are also ordinary application modules. Place a HonoX island under
+`app/islands/`, import it from the route or component that owns it, and keep
+its hydration and client state local to the site. `app/client.ts` must continue
+to initialize both `createClient()` and `initRiebeckiteClient()`; the latter
+starts browser entries contributed by installed plugins and themes. A plugin
+may contribute its own client entry, but it must not take ownership of a
+site's routes, shell, components, islands, or CSS decisions.
+
+The external-site E2E fixture contains this minimal arrangement: a site shell,
+a local article component built from `@riebeckite/honox/ui`, a local island,
+and site CSS. It is built from packed npm artifacts, so it is the supported
+example for copying and overriding these boundaries.
+
 ## Boundary rules
 
 Article routing resolves a request against the manifest's already-resolved public locations (`byPermalink`, then `redirects`), never by inferring a URL from a filesystem path, directory layout, or slug. A slug remains an internal content lookup key; the public URL is the resolved `permalink`.

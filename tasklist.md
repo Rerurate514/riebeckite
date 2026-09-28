@@ -20,7 +20,7 @@
 | 18 | R11 | diagnostics analyze分割 | ✅ 完了 | Small–Medium | `plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
 | **19** | **A2** | **Plugin間の直接依存を排除** | ✅ 完了 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
 | **20** | **A6** | **HonoX UI primitiveの境界固定** | ✅ 完了 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
-| **21** | **A7** | **Site Application拡張contract** | 未着手 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
+| **21** | **A7** | **Site Application拡張contract** | ✅ 完了 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
 | **22** | **A8** | **Local Plugin / Local Theme対応保証** | 未着手 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
 | 23 | C1/C2 | Content Query API | 未着手 | Medium | tag/folder/date/frontmatter等の共通問い合わせ基盤 |
 | 24 | F1 | Taxonomy / Collection / Archive | 未着手 | Medium | Query APIを利用してtag/archive等を汎用化 |
@@ -257,11 +257,10 @@
 - **検証**: `pnpm build`、docs 更新。
 - **成果**: `@riebeckite/honox/ui` の公開 component を `Article`、`ArticleLayout`、`ArticleHeader`、`ArticleContent`、`ArticleMeta`、`ArticleFooter`、`Sidebar` に固定し、対応する props 型を公開。Integration は semantic な構造と class 合成だけを提供し、表示内容・ページ構成・style・island は Site Application が所有することを英日 docs に明記した。external tarball の NodeNext typecheck で全 component と props 型を検証する。
 
-### #21 A7: Site Application拡張contract（A系 / Medium）
+### #21 A7: Site Application拡張contract（✅ 完了 / A系 / Medium）
 - **概要**: 外部 Site の `routes`/`components`/`islands`/`style` の所有・override 方法を正式化。
-- **実装方針**: apps/web を contract に沿わせ、override 点（レイアウト・ルート・スタイル）を明文化。外部 Site の最小例を docs に追加。
-- **完了条件**: docs と実例で override が再現可能。
-- **検証**: `test:e2e:external`、apps/web build。
+- **成果**: `@riebeckite/honox` の英日 integration docs に、`routes`/`components`/`islands`/style の Site 所有を明文化した。`_renderer`、manifest location route、公開 UI primitive、生成 style、client entry の境界と最小例を記載。external-site fixture は Site shell、primitive を合成する article component、local island、Site CSS を持ち、tarball E2E が各 marker と primitive composition を検証する。
+- **検証**: `pnpm test:e2e:external`、`pnpm build`。
 
 ### #22 A8: Local Plugin / Local Theme対応保証（A系 / Medium）
 - **概要**: Site 内 extension と npm 版を同一 contract で扱えることを E2E 保証。

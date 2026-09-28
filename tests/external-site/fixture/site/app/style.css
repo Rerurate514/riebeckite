@@ -5,3 +5,27 @@ body {
   margin: 0;
   font-family: system-ui, sans-serif;
 }
+
+.fixture-site-header {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.fixture-site-header__home {
+  color: #111827;
+  font-weight: 700;
+}
+
+.fixture-article {
+  display: block;
+  max-width: 48rem;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+}
+
+.fixture-build-marker {
+  margin: 1rem;
+  color: #065f46;
+}

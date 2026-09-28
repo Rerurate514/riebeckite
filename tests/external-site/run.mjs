@@ -74,6 +74,8 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
+const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -383,6 +385,17 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes(QUERY_MARKER)) {
     fail(`generated HTML is missing the query marker (${QUERY_MARKER})`);
+  }
+  if (!combined.includes(SITE_COMPONENT_MARKER)) {
+    fail(
+      `generated HTML is missing the site component (${SITE_COMPONENT_MARKER})`,
+    );
+  }
+  if (!combined.includes(SITE_ISLAND_MARKER)) {
+    fail(`generated HTML is missing the site island (${SITE_ISLAND_MARKER})`);
+  }
+  if (!combined.includes('class="article-shell rb-article fixture-article"')) {
+    fail("site component did not compose the public Article primitive");
   }
   if (!combined.includes("rr-query__table")) {
     fail("generated HTML is missing the query plugin table output");

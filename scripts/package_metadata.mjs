@@ -27,6 +27,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/kanban",
   "packages/plugins/lightbox",
   "packages/plugins/local-graph",
+  "packages/plugins/markmap",
   "packages/plugins/marp",
   "packages/plugins/media",
   "packages/plugins/mermaid",

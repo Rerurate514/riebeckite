@@ -125,6 +125,10 @@ const PACKAGES = [
   { directory: "packages/plugins/marp", name: "@riebeckite/plugin-marp" },
   { directory: "packages/plugins/qr-code", name: "@riebeckite/plugin-qr-code" },
   {
+    directory: "packages/plugins/markmap",
+    name: "@riebeckite/plugin-markmap",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -142,6 +146,7 @@ const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
 const QR_MARKER = "RIEBECKITE_EXTERNAL_QR_MARKER";
+const MARKMAP_MARKER = "RIEBECKITE_EXTERNAL_MARKMAP_MARKER";
 const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
 const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
 const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
@@ -726,6 +731,25 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!combined.includes(QR_MARKER)) {
     fail(`generated HTML is missing the qr fixture marker (${QR_MARKER})`);
   }
+  // The markmap plugin renders on the client, so its build-time artifact is the
+  // placeholder figure holding the raw Markdown. The marker must travel inside
+  // the `data-markmap-source` attribute.
+  if (!combined.includes("rb-markmap")) {
+    fail("generated HTML is missing the markmap plugin output (rb-markmap)");
+  }
+  if (!combined.includes('data-markmap="pending"')) {
+    fail("markmap figure is missing its pending state attribute");
+  }
+  if (
+    !new RegExp(`data-markmap-source="[^"]*${MARKMAP_MARKER}`).test(combined)
+  ) {
+    fail(
+      `markmap source attribute is missing the marker (${MARKMAP_MARKER})`,
+    );
+  }
+  if (!combined.includes(MARKMAP_MARKER)) {
+    fail(`generated HTML is missing the markmap marker (${MARKMAP_MARKER})`);
+  }
   if (!combined.includes(VEGALITE_MARKER)) {
     fail(`generated HTML is missing the Vega-Lite marker (${VEGALITE_MARKER})`);
   }
@@ -955,6 +979,12 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!css.includes("rb-ux")) {
     fail("the ux plugin stylesheet is missing its `rb-ux` classes");
+  }
+  if (!js.includes("rb-markmap")) {
+    fail("the markmap plugin client bundle is missing its `rb-markmap` identifier");
+  }
+  if (!js.includes("initMarkmap")) {
+    fail("the markmap plugin client bundle is missing its `initMarkmap` initializer");
   }
   if (!combined.includes("rb-d2")) {
     fail("generated HTML is missing the D2 plugin output (rb-d2)");

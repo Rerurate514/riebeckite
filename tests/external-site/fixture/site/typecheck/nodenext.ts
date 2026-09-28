@@ -50,6 +50,8 @@ import { analytics } from "@riebeckite/plugin-analytics";
 import { initAnalytics } from "@riebeckite/plugin-analytics/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { markmap } from "@riebeckite/plugin-markmap";
+import { initMarkmap } from "@riebeckite/plugin-markmap/client";
 import { bases } from "@riebeckite/plugin-bases";
 import {
   hoverPreviewPlugin,
@@ -130,6 +132,8 @@ export const resolvedEntries = {
   initAnalytics,
   backlinksPlugin,
   Backlinks,
+  markmap,
+  initMarkmap,
   bases,
   hoverPreviewPlugin,
   resolveHoverPreviewOptions,
@@ -205,6 +209,7 @@ export const config: RiebeckiteConfig = defineConfig({
   plugins: [
     analytics({ provider: "plausible", domain: "example.com" }),
     obsidianMarkdown(),
+    markmap(),
     autoCardLinkPlugin(),
     highlight(),
     tocPlugin(),

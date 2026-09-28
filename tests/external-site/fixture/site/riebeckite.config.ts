@@ -8,6 +8,7 @@ import { canvas } from "@riebeckite/plugin-canvas";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { marp } from "@riebeckite/plugin-marp";
+import { markmap } from "@riebeckite/plugin-markmap";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { highlight } from "@riebeckite/plugin-highlight";
@@ -50,6 +51,7 @@ export default defineConfig({
   plugins: [
     analytics({ provider: "plausible", domain: "example.com" }),
     obsidianMarkdown(),
+    markmap(),
     properties(),
     plantuml(),
     qrCode(),

@@ -36,6 +36,7 @@ import { seo } from "@riebeckite/plugin-seo";
 import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
+import { uxPlugin } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { defaultTheme } from "@riebeckite/theme-default";
@@ -135,6 +136,7 @@ export default defineConfig({
     flashcardsPlugin(),
     kanban(),
     recentPostsPlugin(),
+    uxPlugin(),
     relatedPosts(),
     responsiveImage(),
     localGraphPlugin(),

@@ -49,6 +49,7 @@
     "@riebeckite/plugin-series": "workspace:*",
     "@riebeckite/plugin-shortcodes": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
+    "@riebeckite/plugin-ux": "workspace:*",
     "@riebeckite/plugin-vega-lite": "workspace:*",
     "@riebeckite/plugin-wavedrom": "workspace:*",
     "@riebeckite/theme-default": "workspace:*",

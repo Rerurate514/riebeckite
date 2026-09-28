@@ -118,6 +118,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-wavedrom",
   },
   {
+    directory: "packages/plugins/ux",
+    name: "@riebeckite/plugin-ux",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -891,6 +895,18 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!js.includes("initCanvas")) {
     fail("the canvas client initializer was not bundled into the dist JavaScript");
+  }
+  // The ux plugin has no article HTML of its own, so its build-time
+  // configuration element and its emitted client bundle are the observable
+  // artifacts. `rb-ux` is a real identifier that only exists in plugin source.
+  if (!combined.includes('id="rb-ux-config"')) {
+    fail("the ux plugin did not inject its configuration element into HTML");
+  }
+  if (!js.includes("rb-ux")) {
+    fail("the ux plugin client bundle is missing its `rb-ux` identifier");
+  }
+  if (!css.includes("rb-ux")) {
+    fail("the ux plugin stylesheet is missing its `rb-ux` classes");
   }
   if (!combined.includes("rb-d2")) {
     fail("generated HTML is missing the D2 plugin output (rb-d2)");

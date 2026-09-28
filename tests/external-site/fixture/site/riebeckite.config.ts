@@ -27,6 +27,7 @@ import { searchPlugin } from "@riebeckite/plugin-search";
 import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
+import { uxPlugin } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { localFixturePlugin } from "./extensions/local-plugin";
@@ -74,6 +75,7 @@ export default defineConfig({
     hoverPreviewPlugin(),
     shortcodes(),
     series(),
+    uxPlugin(),
     localFixturePlugin(),
   ],
 });

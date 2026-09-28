@@ -88,6 +88,8 @@ import { shortcodes, type ShortcodeRenderer } from "@riebeckite/plugin-shortcode
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
+import { uxPlugin } from "@riebeckite/plugin-ux";
+import { initUx } from "@riebeckite/plugin-ux/client";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { initVegaLite } from "@riebeckite/plugin-vega-lite/client";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
@@ -158,6 +160,8 @@ export const resolvedEntries = {
   tocPlugin,
   initTableOfContents,
   TableOfContents,
+  uxPlugin,
+  initUx,
   vegaLite,
   initVegaLite,
   wavedrom,
@@ -201,6 +205,7 @@ export const config: RiebeckiteConfig = defineConfig({
     hoverPreviewPlugin({ delay: 0 }),
     canvas(),
     graphviz(),
+    uxPlugin(),
     wavedrom(),
   ],
 });

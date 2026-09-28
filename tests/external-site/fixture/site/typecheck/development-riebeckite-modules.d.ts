@@ -200,6 +200,15 @@ declare module "@riebeckite/plugin-toc/components" {
   export default TableOfContents;
 }
 
+declare module "@riebeckite/plugin-ux" {
+  export const ux: any;
+  export const uxPlugin: any;
+}
+
+declare module "@riebeckite/plugin-ux/client" {
+  export const initUx: any;
+}
+
 declare module "@riebeckite/plugin-vega-lite" {
   export const vegaLite: any;
   export const vegaLitePlugin: any;

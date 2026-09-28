@@ -18,11 +18,11 @@ export function resolvePluginDependencies(
   return stableTopologicalSort(plugins, dependencies);
 }
 
-const CAPABILITY_DECLARATIONS = [
+const CAPABILITY_DECLARATIONS: readonly CapabilityDeclaration[] = [
   "provides",
   "requires",
   "optional",
-] as const;
+];
 
 function validateCapabilityNames(
   plugins: readonly RiebeckitePlugin[],
@@ -80,13 +80,11 @@ function collectDependencies(
     const requiredDependencies = (plugin.requires ?? []).map((rawCapability) => {
       const capability = normalize(rawCapability);
       return resolveDependency({
-        plugins,
         pluginIndex,
         pluginName: plugin.name,
         capability,
         availableCapabilities,
         providers,
-        declaration: "requires",
       });
     });
     const optionalDependencies = (plugin.optional ?? []).flatMap(
@@ -95,7 +93,6 @@ function collectDependencies(
         const providerIndex = providers.get(capability);
         if (providerIndex === undefined) return [];
         assertNotSelfDependency({
-          plugins,
           pluginIndex,
           pluginName: plugin.name,
           capability,
@@ -110,13 +107,11 @@ function collectDependencies(
 }
 
 function resolveDependency(input: {
-  plugins: readonly RiebeckitePlugin[];
   pluginIndex: number;
   pluginName: string;
   capability: string;
   availableCapabilities: readonly string[];
   providers: ReadonlyMap<string, number>;
-  declaration: CapabilityDeclaration;
 }): PluginDependency {
   const providerIndex = input.providers.get(input.capability);
   if (providerIndex === undefined) {
@@ -128,7 +123,6 @@ function resolveDependency(input: {
     });
   }
   assertNotSelfDependency({
-    plugins: input.plugins,
     pluginIndex: input.pluginIndex,
     pluginName: input.pluginName,
     capability: input.capability,
@@ -138,7 +132,6 @@ function resolveDependency(input: {
 }
 
 function assertNotSelfDependency(input: {
-  plugins: readonly RiebeckitePlugin[];
   pluginIndex: number;
   pluginName: string;
   capability: string;

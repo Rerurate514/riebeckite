@@ -61,9 +61,9 @@ client -> server: request
 - Static SVG is rendered at build time when `render` is `"build"` or `"both"`
   by running the D2.js WebAssembly engine (`@d2lang/d2`) directly in Node. No
   browser, network access, or system D2 binary is required.
-- The generated figure always carries `data-d2`, `data-d2-marker`,
-  `data-d2-source`, and `data-d2-layout` attributes. `data-d2` is `rendered`
-  when static SVG is present and `pending` when the client must take over.
+- The generated figure always carries `data-d2`, `data-d2-source`, and
+  `data-d2-layout` attributes. `data-d2` is `rendered` when static SVG is
+  present and `pending` when the client must take over.
 - Invalid diagrams report `ruleId: "invalid-diagram"`; renderer failures report
   `ruleId: "renderer-error"`. When build SVG is unavailable, the figure remains
   `data-d2="pending"` for client fallback.

@@ -410,17 +410,18 @@ function assertBuildOutput(siteDir) {
     fail("external vault media URL was not generated from its logical path");
   }
 
-  if (!combined.includes(D2_MARKER)) {
-    fail(`generated HTML is missing the D2 marker (${D2_MARKER})`);
-  }
   if (!combined.includes("rb-d2")) {
     fail("generated HTML is missing the D2 plugin output (rb-d2)");
   }
-  if (!combined.includes(`data-d2-marker="${D2_MARKER}"`)) {
-    fail("D2 figure is missing the plugin output marker attribute");
-  }
   if (!combined.includes('data-d2="rendered"')) {
     fail("D2 diagram was not rendered to SVG at build time");
+  }
+  const d2Source = combined.match(/data-d2-source="([^"]*)"/);
+  if (!d2Source?.[1].includes(D2_MARKER)) {
+    fail(`D2 figure source does not contain the fixture marker (${D2_MARKER})`);
+  }
+  if (!/<figure[^>]*\bclass="rb-d2"[^>]*>[\s\S]*?<svg/.test(combined)) {
+    fail("D2 figure does not contain a rendered inline SVG");
   }
 
   for (const file of htmlFiles) {

@@ -23,12 +23,6 @@ const DEFAULT_CLASS_NAME = "rb-d2";
 const DEFAULT_LAYOUT: D2Layout = "dagre";
 const CAPTION_PATTERN = /^#\s*caption\s*:\s*(.+)$/im;
 
-/**
- * Stable marker emitted on every generated figure. External integration tests
- * use it to confirm that the D2 plugin produced the element.
- */
-const OUTPUT_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
-
 type ResolvedOptions = {
   render: D2RenderMode;
   theme: NonNullable<D2Theme>;
@@ -136,7 +130,6 @@ function buildFigure(input: {
     {
       className: base,
       dataD2: input.staticSvg ? "rendered" : "pending",
-      dataD2Marker: OUTPUT_MARKER,
       dataD2Source: input.source,
       dataD2Layout: input.layout,
     },

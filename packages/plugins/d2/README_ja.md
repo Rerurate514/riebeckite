@@ -54,7 +54,7 @@ client -> server: request
 
 `render: "build"` または `"both"` では、D2.js の WebAssembly 版（`@d2lang/d2`）を Node 上で直接実行して静的な SVG を生成します。ブラウザ、ネットワーク接続、D2 本体のインストールはいずれも不要です。
 
-生成される figure には常に `data-d2`、`data-d2-marker`、`data-d2-source`、`data-d2-layout` が付きます。`data-d2` は静的 SVG があれば `rendered`、クライアント側の描画に委ねる場合は `pending` になります。
+生成される figure には常に `data-d2`、`data-d2-source`、`data-d2-layout` が付きます。`data-d2` は静的 SVG があれば `rendered`、クライアント側の描画に委ねる場合は `pending` になります。
 
 構文エラーは `invalid-diagram`、描画環境の問題は `renderer-error` として区別して診断します。
 

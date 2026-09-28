@@ -18,6 +18,7 @@ import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
+import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { localFixturePlugin } from "./extensions/local-plugin";
@@ -59,6 +60,7 @@ export default defineConfig({
     searchPlugin(),
     hoverPreviewPlugin(),
     shortcodes(),
+    series(),
     localFixturePlugin(),
   ],
 });

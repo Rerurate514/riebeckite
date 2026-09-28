@@ -78,6 +78,7 @@ import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
 import SearchBar from "@riebeckite/plugin-search/components";
+import { series } from "@riebeckite/plugin-series";
 import { shortcodes, type ShortcodeRenderer } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
@@ -138,6 +139,7 @@ export const resolvedEntries = {
   searchPlugin,
   initSearch,
   SearchBar,
+  series,
   shortcodes,
   tocPlugin,
   initTableOfContents,

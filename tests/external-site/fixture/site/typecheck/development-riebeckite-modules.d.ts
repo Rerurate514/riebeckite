@@ -176,6 +176,11 @@ declare module "@riebeckite/plugin-shortcodes" {
   export type ShortcodeRenderer = any;
 }
 
+declare module "@riebeckite/plugin-series" {
+  export const series: any;
+  export const seriesPlugin: any;
+}
+
 declare module "@riebeckite/plugin-toc" {
   export const initTableOfContents: any;
   export const tocPlugin: any;

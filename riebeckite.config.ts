@@ -30,6 +30,7 @@ import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
+import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { defaultTheme } from "@riebeckite/theme-default";
@@ -120,6 +121,7 @@ export default defineConfig({
     gardenExplorerPlugin(),
     hoverPreviewPlugin(),
     shortcodes(),
+    series(),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

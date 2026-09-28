@@ -43,6 +43,7 @@
     "@riebeckite/plugin-rich-embed": "workspace:*",
     "@riebeckite/plugin-search": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
+    "@riebeckite/plugin-series": "workspace:*",
     "@riebeckite/plugin-shortcodes": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
     "@riebeckite/theme-default": "workspace:*",

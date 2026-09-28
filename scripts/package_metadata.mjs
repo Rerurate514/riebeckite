@@ -36,6 +36,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/rich-embed",
   "packages/plugins/search",
   "packages/plugins/seo",
+  "packages/plugins/series",
   "packages/plugins/shortcodes",
   "packages/plugins/toc",
   "packages/themes/default",

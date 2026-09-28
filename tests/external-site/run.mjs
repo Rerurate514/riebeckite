@@ -79,6 +79,7 @@ const PACKAGES = [
     directory: "packages/plugins/plantuml",
     name: "@riebeckite/plugin-plantuml",
   },
+  { directory: "packages/plugins/series", name: "@riebeckite/plugin-series" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
   {
     directory: "packages/plugins/chartjs",
@@ -107,6 +108,9 @@ const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
 const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";
+const SERIES_MARKER = "RIEBECKITE_EXTERNAL_SERIES_MARKER";
+const SERIES_PART_1_PERMALINK = "/notes/series-demo-1";
+const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -570,6 +574,33 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("rb-highlight")) {
     fail("generated HTML is missing the rb-highlight class");
+  }
+  // The series marker is fixture-origin now: it is the series name declared in
+  // the vault notes, so it flows into the generated `data-series` attribute and
+  // the rendered heading instead of a plugin-hardcoded attribute.
+  if (!combined.includes("rb-series")) {
+    fail("generated HTML is missing the series plugin output");
+  }
+  if (!combined.includes(`data-series="${SERIES_MARKER}"`)) {
+    fail(
+      `series navigation is missing the fixture series name (${SERIES_MARKER})`,
+    );
+  }
+  if (!combined.includes(`>${SERIES_MARKER}</a>`)) {
+    fail(
+      `series heading does not render the fixture-origin marker (${SERIES_MARKER})`,
+    );
+  }
+  if (!combined.includes(`href="${SERIES_PART_1_PERMALINK}"`)) {
+    fail(`series navigation is missing part 1 (${SERIES_PART_1_PERMALINK})`);
+  }
+  if (!combined.includes(`href="${SERIES_PART_2_PERMALINK}"`)) {
+    fail(
+      `series navigation is missing the part 1 -> part 2 link (${SERIES_PART_2_PERMALINK})`,
+    );
+  }
+  if (!combined.includes('rel="prev"') || !combined.includes('rel="next"')) {
+    fail("series navigation is missing the previous/next links");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

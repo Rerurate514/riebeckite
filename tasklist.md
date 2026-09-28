@@ -16,7 +16,7 @@
 | **14** | **A5** | **External Content Source / Vault対応を保証** | ✅ 完了 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
 | **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | ✅ 完了 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
 | 16 | R2 | ContentManager責務分割 | ✅ 完了 | Medium | build調整・public location解決・entry読込を抽出し公開APIは不変（Phase 3 / A5.5後） |
-| 17 | R10 | seoプラグイン分割 | 未着手 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
+| 17 | R10 | seoプラグイン分割 | ✅ 完了 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
 | 18 | R11 | diagnostics analyze分割 | 未着手 | Small–Medium | 472行の`plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
 | **19** | **A2** | **Plugin間の直接依存を排除** | 未着手 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
 | **20** | **A6** | **HonoX UI primitiveの境界固定** | 未着手 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
@@ -231,6 +231,7 @@
 - **完了条件**: 公開 API が不変、`index.ts` が薄い re-export。
 - **検証**: build → apps/web（sitemap/robots/feed 出力）→ `test:e2e:external`。
 - **注意**: `#9 R12` で `calculateReadingTime` を Core へ移した場合は re-export 対象から除外する。
+- **成果**: `src/` に plugin composition、endpoint、metadata、feed、sitemap/robots、URL、content、schema/XML、型を責務別に分割。`index.ts` は公開 API の re-export のみとし、`calculateReadingTime` は既存どおり Core の公開 API とした。
 
 ### #18 R11: diagnostics analyze分割（Phase 3 / Small–Medium / 依存なし）
 - **概要**: `packages/plugins/diagnostics/src/analyze.ts`（472行）を `checks/` 配下へ分割。

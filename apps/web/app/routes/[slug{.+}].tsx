@@ -66,6 +66,7 @@ export default createRoute(
     return c.render(
       <Article
         content={post}
+        propertiesHtml={route.entry.bodySlots?.properties}
         asideContent={
           <TableOfContents
             className="table-of-contents--desktop"

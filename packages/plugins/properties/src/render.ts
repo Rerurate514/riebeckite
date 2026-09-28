@@ -95,7 +95,32 @@ function selectProperties(
     if (options.hideEmpty && isEmptyValue(value)) continue;
     entries.push([key, value]);
   }
-  return entries;
+  return applyOrder(entries, options.order);
+}
+
+/**
+ * Reorders selected entries: keys listed in `order` come first in that exact
+ * order, then the remaining entries keep their frontmatter order. Keys in
+ * `order` that were not selected are ignored, and no selected key is dropped.
+ */
+function applyOrder(
+  entries: ReadonlyArray<[string, unknown]>,
+  order: readonly string[] | undefined,
+): Array<[string, unknown]> {
+  if (!order || order.length === 0) return [...entries];
+
+  const remaining = new Map(entries);
+  const ordered: Array<[string, unknown]> = [];
+  for (const key of order) {
+    if (remaining.has(key)) {
+      ordered.push([key, remaining.get(key)]);
+      remaining.delete(key);
+    }
+  }
+  for (const entry of entries) {
+    if (remaining.has(entry[0])) ordered.push(entry);
+  }
+  return ordered;
 }
 
 function isEmptyValue(value: unknown): boolean {

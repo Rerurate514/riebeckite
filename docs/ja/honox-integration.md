@@ -82,6 +82,20 @@ const headTags = c.get("headTags") ?? [];
 
 たとえば Discord の埋め込み色を揃える `@riebeckite/plugin-discord-embed` は、この contract で `theme-color` を提供します。
 
+### body slot の受け渡し
+
+本文の途中に plugin の HTML を差し込みたい場合も、描画位置の所有権は Site にあります。Plugin は `ContentManifestEntry.bodySlots` に、slot 名をキーとした HTML fragment を書き込むだけです。route や shell、slot の描画順は変更しません。Site の route が `entry.bodySlots?.properties` のような値を読み取り、component tree の任意の位置で描画するかどうかを決めます。
+
+```tsx
+// app/routes/[slug{.+}].tsx
+<Article
+  content={post}
+  propertiesHtml={route.entry.bodySlots?.properties}
+/>;
+```
+
+たとえば `@riebeckite/plugin-properties` は `render: "slot"` を指定すると、`properties` slot にプロパティパネルを提供します。`render: "html"`（既定）は従来どおり本文 HTML の先頭・末尾に挿入します。Plugin が route や shell を所有することはありません。
+
 たとえば外部 Site では、stable な primitive contract を使いつつ、表示は Site 側で自由に組み立てられます。
 
 ```tsx

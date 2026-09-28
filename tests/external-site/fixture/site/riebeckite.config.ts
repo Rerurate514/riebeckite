@@ -55,7 +55,7 @@ export default defineConfig({
     obsidianMarkdown(),
     discordEmbed(),
     markmap(),
-    properties(),
+    properties({ render: "slot" }),
     plantuml(),
     qrCode(),
     media(),

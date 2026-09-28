@@ -9,6 +9,7 @@ import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
 
 type Props = {
   content: PostContent;
+  propertiesHtml?: string;
   asideContent?: unknown;
   afterContent?: unknown;
   footerContent?: unknown;
@@ -18,6 +19,7 @@ export default function Article(props: Props) {
   const html = props.content.html ?? "";
   const articleHtml = splitAfterFirstHeading(html);
   const readingTimeMinutes = calculateReadingTime(html);
+  const propertiesHtml = props.propertiesHtml ?? "";
 
   return (
     <ArticlePrimitive class="prose">
@@ -27,6 +29,12 @@ export default function Article(props: Props) {
           <ArticleHeader
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
           />
+          {propertiesHtml ? (
+            <div
+              class="article-properties"
+              dangerouslySetInnerHTML={{ __html: propertiesHtml }}
+            />
+          ) : null}
           <ArticleFrontmatter
             frontmatter={props.content.frontmatter}
             readingTimeMinutes={readingTimeMinutes}

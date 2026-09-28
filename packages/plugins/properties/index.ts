@@ -27,6 +27,7 @@ export type {
   PropertiesOptions,
   PropertiesPosition,
   PropertiesRenderContext,
+  PropertiesRenderMode,
   ResolvedPropertiesOptions,
 } from "./src/types.js";
 export {
@@ -45,9 +46,11 @@ const PACKAGE_NAME = "@riebeckite/plugin-properties";
 
 /**
  * Renders each note's frontmatter as an Obsidian-style property panel at build
- * time. The panel is prepended (or appended) to the manifest entry HTML and to
- * the cached `PostContent` so both the manifest-driven and the
- * content-driven routes show it (the query-plugin dual-mutation pattern).
+ * time. By default the panel is prepended (or appended) to the manifest entry
+ * HTML and to the cached `PostContent` so both the manifest-driven and the
+ * content-driven routes show it (the query-plugin dual-mutation pattern). With
+ * `render: "slot"` the panel is instead published on
+ * `ContentManifestEntry.bodySlots` for the Site to place.
  */
 export function properties(options: PropertiesOptions = {}) {
   const tracked = new Map<string, PostContent>();
@@ -86,6 +89,14 @@ function applyPropertiesPanels(
       onMessage: (message) => emitFileMessage(diagnostics, entry.slug, message),
     });
     if (!panel) continue;
+
+    if (resolved.render === "slot") {
+      // The Site owns the body layout: publish the panel as a named slot
+      // fragment instead of mutating the note HTML. Merge so other plugins'
+      // slots are preserved.
+      entry.bodySlots = { ...(entry.bodySlots ?? {}), properties: panel };
+      continue;
+    }
 
     const html =
       resolved.position === "end"

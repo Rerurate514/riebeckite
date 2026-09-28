@@ -138,6 +138,28 @@ const headTags = c.get("headTags") ?? [];
 For example, `@riebeckite/plugin-discord-embed`, which aligns the Discord embed
 color, supplies `theme-color` through this contract.
 
+### Body slot handoff
+
+When a plugin contributes HTML that belongs inside the note body, the site still
+owns where it is rendered. A plugin only writes an HTML fragment into
+`ContentManifestEntry.bodySlots` under a slot name; it never changes a route,
+the shell, or the render order. A site route reads a value such as
+`entry.bodySlots?.properties` and decides whether and where in its component
+tree to render it.
+
+```tsx
+// app/routes/[slug{.+}].tsx
+<Article
+  content={post}
+  propertiesHtml={route.entry.bodySlots?.properties}
+/>;
+```
+
+For example, `@riebeckite/plugin-properties` publishes its property panel on
+the `properties` slot when configured with `render: "slot"`. The default
+`render: "html"` keeps inserting the panel at the start or end of the note HTML.
+A plugin never owns routes or the shell.
+
 For example, an external site can compose an article with the stable primitive
 contract while retaining all presentation ownership:
 

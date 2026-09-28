@@ -81,7 +81,11 @@ export default defineConfig({
   plugins: [
     analytics({ provider: "plausible", domain: "my-blog.pages.dev" }),
     obsidianMarkdown(),
-    properties(),
+    properties({
+      render: "slot",
+      // include: ["title", "created", "updated", "tags"],
+      // order: ["title", "created", "updated", "tags"],
+    }),
     aliasPlugin(),
     seo({
       siteName: "Riebeckite Blog",

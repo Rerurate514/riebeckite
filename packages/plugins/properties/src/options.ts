@@ -27,6 +27,8 @@ export function resolvePropertiesOptions(
     position: options.position ?? "start",
     include: options.include,
     exclude: options.exclude ?? DEFAULT_PROPERTIES_EXCLUDE,
+    order: options.order,
+    render: options.render ?? "html",
     hideEmpty: options.hideEmpty ?? true,
     className: options.className ?? DEFAULT_PROPERTIES_CLASS,
     collapsed: options.collapsed ?? false,
@@ -60,6 +62,19 @@ export function validatePropertiesOptions(
       issues.push({ path: key, message: "Expected an array of strings." });
     }
   }
+  if (options.order !== undefined && !isNonEmptyStringArray(options.order)) {
+    issues.push({
+      path: "order",
+      message: "Expected an array of non-empty strings.",
+    });
+  }
+  if (
+    options.render !== undefined &&
+    options.render !== "html" &&
+    options.render !== "slot"
+  ) {
+    issues.push({ path: "render", message: 'Expected "html" or "slot".' });
+  }
   if (
     options.hideEmpty !== undefined &&
     typeof options.hideEmpty !== "boolean"
@@ -88,5 +103,12 @@ export function validatePropertiesOptions(
 function isStringArray(value: unknown): value is readonly string[] {
   return (
     Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
+}
+
+function isNonEmptyStringArray(value: unknown): value is readonly string[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => typeof item === "string" && item.trim() !== "")
   );
 }

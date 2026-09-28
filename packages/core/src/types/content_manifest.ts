@@ -34,6 +34,12 @@ export type ContentManifestEntry = {
    * The Site owns the shell, so it decides whether to render them.
    */
   headTags?: readonly PluginHeadTag[];
+  /**
+   * Plugin-provided HTML fragments the Site renders in named body slots.
+   * The Site owns its layout, so it decides where (and whether) each slot is
+   * rendered; a plugin only supplies the fragment, keyed by slot name.
+   */
+  bodySlots?: Readonly<Record<string, string>>;
   tags: string[];
   links: ContentLink[];
   backlinks: string[];

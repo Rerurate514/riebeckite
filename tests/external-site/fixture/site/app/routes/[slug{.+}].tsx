@@ -32,6 +32,11 @@ export default createRoute(
     }
     c.set("headTags", route.entry.headTags ?? []);
 
-    return c.render(<FixtureArticle post={post} />);
+    return c.render(
+      <FixtureArticle
+        post={post}
+        propertiesHtml={route.entry.bodySlots?.properties}
+      />,
+    );
   },
 );

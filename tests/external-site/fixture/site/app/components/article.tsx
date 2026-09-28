@@ -1,14 +1,51 @@
 import type { PostContent } from "@riebeckite/core";
-import { Article, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
+import {
+  Article,
+  ArticleContent,
+  ArticleHeader,
+  ArticleLayout,
+  ArticleMeta,
+} from "@riebeckite/honox/ui";
 
-export function FixtureArticle({ post }: { post: PostContent }) {
+type Props = {
+  post: PostContent;
+  propertiesHtml?: string;
+};
+
+export function FixtureArticle({ post, propertiesHtml }: Props) {
+  const { lead, rest } = splitAfterFirstHeading(post.html ?? "");
+  const panel = propertiesHtml ?? "";
+
   return (
     <Article class="fixture-article">
       <ArticleLayout>
         <ArticleContent>
-          <div dangerouslySetInnerHTML={{ __html: post.html ?? "" }} />
+          <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
+          {panel ? (
+            <div
+              class="article-properties"
+              dangerouslySetInnerHTML={{ __html: panel }}
+            />
+          ) : null}
+          <ArticleMeta />
+          <div dangerouslySetInnerHTML={{ __html: rest }} />
         </ArticleContent>
       </ArticleLayout>
     </Article>
   );
+}
+
+function splitAfterFirstHeading(html: string): { lead: string; rest: string } {
+  const firstHeading = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/);
+
+  if (!firstHeading || firstHeading.index === undefined) {
+    return { lead: "", rest: html };
+  }
+
+  const splitIndex = firstHeading.index + firstHeading[0].length;
+
+  return {
+    lead: html.slice(0, splitIndex),
+    rest: html.slice(splitIndex),
+  };
 }

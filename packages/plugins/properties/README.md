@@ -8,9 +8,12 @@ time. No client-side JavaScript is required.
 ## Overview
 
 When the content manifest is created, `properties()` renders a
-`section.rb-properties[data-properties]` from every entry's frontmatter. The
-panel is prepended (or appended) to the rendered note. The frontmatter stays
-the single source of truth — there is nothing to write in the Markdown body.
+`section.rb-properties[data-properties]` from every entry's frontmatter. By
+default the panel is prepended (or appended) to the rendered note. With
+`render: "slot"` the note HTML is left untouched and the panel is published on
+`ContentManifestEntry.bodySlots.properties`, so the Site decides where to render
+it. The frontmatter stays the single source of truth — there is nothing to write
+in the Markdown body.
 
 Values are rendered by type:
 
@@ -47,6 +50,8 @@ export default defineConfig({
 | `position` | `"start" \| "end"` | `"start"` | Insert before or after the note body |
 | `include` | `string[]` | unset | Render only these keys |
 | `exclude` | `string[]` | `["publish", "permalink", "aliases", "redirect_from"]` | Keys to hide |
+| `order` | `string[]` | unset | Display order for selected keys: listed keys first, then the rest in frontmatter order |
+| `render` | `"html" \| "slot"` | `"html"` | `"html"` inserts at the start/end of the note; `"slot"` publishes on `bodySlots.properties` |
 | `hideEmpty` | `boolean` | `true` | Skip `null`, `""`, `[]`, and `{}` values |
 | `className` | `string` | `"rb-properties"` | Root CSS class |
 | `collapsed` | `boolean` | `false` | Render inside a `<details>` element |
@@ -60,13 +65,40 @@ properties({
 });
 ```
 
+### Rendering into a body slot
+
+With `render: "slot"`, the plugin writes the panel to
+`ContentManifestEntry.bodySlots.properties` and the Site route chooses where to
+render it. Combine `include` and `order` to decide which keys are shown and in
+what order:
+
+```tsx
+// app/components/article.tsx (site side)
+<div
+  class="article-properties"
+  dangerouslySetInnerHTML={{ __html: propertiesHtml }}
+/>;
+```
+
+```ts
+properties({
+  render: "slot",
+  include: ["title", "created", "updated", "tags"],
+  order: ["title", "created", "updated", "tags"],
+});
+```
+
+The handoff follows the
+[`ContentManifestEntry.bodySlots`](../../../docs/en/honox-integration.md)
+contract. A plugin never owns routes or the shell.
+
 ## Exports
 
 - `properties(options?)` / `propertiesPlugin(options?)` — plugin factory
 - `resolvePropertiesOptions(options?)` — default resolution
 - `renderPropertiesPanel(frontmatter, options?, context?)` — pure renderer
 - `buildTagHref(tag)` — tag route builder
-- Types: `PropertiesOptions`, `PropertiesPosition`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`, `PropertiesLinkResolver`, `PropertiesMessage`
+- Types: `PropertiesOptions`, `PropertiesPosition`, `PropertiesRenderMode`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`, `PropertiesLinkResolver`, `PropertiesMessage`
 
 ## See also
 

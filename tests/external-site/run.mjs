@@ -589,6 +589,33 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!combined.includes(PROPERTY_MARKER)) {
     fail("properties panel did not render the fixture frontmatter value");
   }
+  // The panel must sit between the article title and the meta row. Find the
+  // fixture page that owns the property marker, then compare raw string
+  // indexes in its emitted article HTML.
+  const propertiesPage = htmlFiles
+    .map((file) => ({ file, html: fs.readFileSync(file, "utf8") }))
+    .find(({ html }) => html.includes(PROPERTY_MARKER));
+  if (!propertiesPage) {
+    fail("no emitted page contains the fixture property marker");
+  }
+  const propertiesArticle = propertiesPage.html;
+  const headingIndex = propertiesArticle.indexOf("<h1");
+  const panelIndex = propertiesArticle.indexOf("rb-properties");
+  const frontmatterIndex = propertiesArticle.indexOf("article-frontmatter");
+  if (headingIndex === -1) {
+    fail("the properties demo page has no <h1> heading");
+  }
+  if (panelIndex === -1) {
+    fail("the properties demo page has no rendered properties panel");
+  }
+  if (frontmatterIndex === -1) {
+    fail("the properties demo page has no article-frontmatter element");
+  }
+  if (!(headingIndex < panelIndex && panelIndex < frontmatterIndex)) {
+    fail(
+      "the properties panel must render after the first <h1> and before article-frontmatter",
+    );
+  }
   if (!combined.includes("data-related-posts")) {
     fail("related-posts plugin did not annotate any entry");
   }

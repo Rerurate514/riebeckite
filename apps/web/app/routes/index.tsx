@@ -46,6 +46,7 @@ export default createRoute(async (c) => {
   return c.render(
     <Article
       content={post}
+      propertiesHtml={indexEntry?.bodySlots?.properties}
       asideContent={
         <TableOfContents
           className="table-of-contents--desktop"

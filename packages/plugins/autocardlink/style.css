@@ -17,10 +17,6 @@
     transparent
   );
   --rr-autocardlink-card-height: 152px;
-  --rr-autocardlink-media-width: 243px;
-  --rr-autocardlink-media-min: 112px;
-  --rr-autocardlink-media-max: 38%;
-  --rr-autocardlink-image-ratio: 16 / 10;
   --rr-autocardlink-image-max-height: 15rem;
 
   display: block;
@@ -42,28 +38,14 @@
 }
 
 .rr-cardlink__body {
-  display: grid;
-  grid-template-columns:
-    minmax(
-      var(--rr-autocardlink-media-min, 112px),
-      min(
-        var(--rr-autocardlink-media-width, 243px),
-        var(--rr-autocardlink-media-max, 38%)
-      )
-    )
-    minmax(0, 1fr);
+  display: flex;
   height: var(--rr-autocardlink-card-height, 152px);
-}
-
-.rr-cardlink--no-image .rr-cardlink__body {
-  grid-template-columns: 1fr;
 }
 
 .rr-cardlink__image-frame {
   box-sizing: border-box;
-  display: grid;
-  place-items: center;
-  min-width: 0;
+  flex: none;
+  height: 100%;
   overflow: clip;
   border-right: 1px solid var(--rr-autocardlink-border);
   background: var(--rr-autocardlink-surface);
@@ -72,16 +54,14 @@
 .rr-cardlink__image {
   box-sizing: border-box;
   display: block;
-  width: 100%;
+  width: auto;
   height: 100%;
-  aspect-ratio: var(--rr-autocardlink-image-ratio, 16 / 10);
   margin: 0;
-  object-fit: contain;
-  object-position: center;
 }
 
 .rr-cardlink__content {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 8px;
   padding: 16px;
@@ -129,7 +109,7 @@
 
 @media (max-width: 700px) {
   .rr-cardlink__body {
-    grid-template-columns: 1fr;
+    display: block;
     height: auto;
   }
 

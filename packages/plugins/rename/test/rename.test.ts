@@ -282,6 +282,9 @@ const noopLogger: Logger = {
   info() {},
   warn() {},
   error() {},
+  child() {
+    return noopLogger;
+  },
 };
 
 function fakeConfig(): ResolvedRiebeckiteConfig {

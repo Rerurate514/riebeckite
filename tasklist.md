@@ -12,7 +12,7 @@
 | 10 | R8 | 空CSS削除とlint warning解消 | ✅ 完了 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
 | 11 | R9 | Package metadata規約の機械検証 | ✅ 完了 | Medium | `check:packages`で29公開packageのメタデータを検証。重複依存はpnpm catalogへ集約（Phase 2） |
 | **12** | **A3/A4** | **Root / Config resolutionを一本化** | ✅ 完了 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
-| **13** | **A4.5** | **External HonoX/SSG境界を安定化** | 未着手 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
+| **13** | **A4.5** | **External HonoX/SSG境界を安定化** | ✅ 完了 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
 | **14** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
 | **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
 | 16 | R2 | ContentManager責務分割 | 未着手 | Medium | 約443行の責務整理。build調整とpermalink/redirect解決を抽出し公開APIは不変（Phase 3 / A5.5後） |
@@ -189,12 +189,12 @@
 - **注意**: Core に HonoX/Vite を持ち込まない（resolver は Core か Integration の適切な層に置く）。
 - **成果**: `@riebeckite/honox` の `resolveHonoxApplication` が `configRoot`、`appRoot`、絶対 `contentRoot`、resolve 済み config を一度に決定する。CLI の `RiebeckiteProject` はこの結果を保持し、全 command が同じ root を使う。Vite plugin の既定値は `configRoot = appRoot` で、通常の npm consumer は `workspaceRoot` 不要。monorepo の source package alias は明示指定または `pnpm-workspace.yaml` を持つ config root のみで利用する。
 
-### #13 A4.5: External HonoX/SSG境界を安定化（A系 / Medium / 依存: A3/A4）
+### #13 A4.5: External HonoX/SSG境界を安定化（✅ 完了 / A系 / Medium / 依存: A3/A4）
 - **概要**: `@hono/vite-ssg` patch が npm consumer に伝播しない問題と cwd 依存を解消。
-- **対象**: `patches/@hono__vite-ssg@0.3.3.patch`、`packages/integrations/honox/src/vite_runner.ts`（`findViteApplicationRoots(configRoot)`）、`vite_plugin.ts`（`process.env.RIEBECKITE_APP_ROOT` 伝播）
-- **実装方針**: patch 依存を解消または integration 内に同梱する方針を決める。app root 探索を明示 `appRoot` 引数へ寄せ、cwd 相対の暗黙解決を排除。SSG 呼び出しを integration 内で完結。
+- **対象**: `packages/integrations/honox/src/ssg_plugin.ts`、apps/web と external-site fixture の Vite 設定。
+- **実装**: `riebeckiteSsg` が解決済み Vite の `root` と `define` を内部 SSG server へ明示的に渡す。`@hono/vite-ssg` と pnpm patch を削除し、SSG 呼び出しを integration 内で完結。
 - **完了条件**: patch 無し（または同梱）で外部 consumer が build 可能、別 cwd から実行しても同一結果。
-- **検証**: `test:e2e:external` を複数 cwd から実行。
+- **検証**: `test:e2e:external` は `site/app` から実行して cwd 非依存を確認。
 
 ### #14 A5: External Content Source / Vault対応を保証（A系 / Medium / 依存: A3/A4）
 - **概要**: Site 外の Obsidian Vault を正式サポート。`contentRoot` が project 外でも成立させる。

@@ -19,6 +19,8 @@ export default defineConfig({
 
 full control が必要な場合は lower-level の API も公開しています。`riebeckite`（Vite plugin）、`riebeckiteSsg`（静的生成）、`riebeckiteSsgExtensionMap`、`createRiebeckiteSsg`（Riebeckite の既定値を埋める SSG wrapper）です。`riebeckiteSsg` は内部の Vite server に解決済みの application root と define 値を渡すため、`riebeckite build` を application root の子ディレクトリから実行しても同じ出力になります。`defaultSsgEntry` は root 基準の `./app/server.ts`、`defaultSsrExternals` は両 helper が使う SSR externals list です。その他に `loadRiebeckiteConfig`、`resolveHonoxApplication`、`resolveHonoxApplicationRoot`、`buildHonoxApplication`、`startHonoxDevServer` を公開しています。加えて `scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, overwrite? })` は、最小で自己完結の Site（config、Vite/HonoX の application shell、route、stylesheet、初期 content）を書き出し、生成したファイル一覧を返します。生成対象のファイルが既にあり `overwrite` が未指定の場合は `ScaffoldSiteError` を投げます。`riebeckite init` と `create-riebeckite` はこの関数の薄い command wrapper です。
 
+catch-all route では、runtime のルーティングと静的生成を一致させるために2つの小さな helper を使います。`contentRouteSsgParams(routePath, params)` は `hono/ssg` の `ssgParams` の置き換えで、その route 自身の列挙リクエストにだけ params を返します。これにより浅い catch-all（例 `/:slug{.+}`）が深い sibling（例 `/tags/:slug{.+}`）の列挙を横取りしません。`ssgEnumerableHandler(handler)` は、sibling に譲るために `next()` を呼ぶ handler を SSG の列挙対象に残します。Hono は middleware 形状の handler を既定で列挙から除外するためです。
+
 ## UI primitive
 
 `@riebeckite/honox/ui` は component framework ではなく、意図的に小さく保った構造用 contract です。公開する component は次だけです。

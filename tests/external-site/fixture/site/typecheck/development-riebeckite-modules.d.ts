@@ -80,6 +80,11 @@ declare module "@riebeckite/plugin-query" {
   export const queryPlugin: any;
 }
 
+declare module "@riebeckite/plugin-dataview" {
+  export const dataviewPlugin: any;
+  export const dataview: any;
+}
+
 declare module "@riebeckite/plugin-recent-posts" {
   export const recentPostsPlugin: any;
 }

@@ -77,6 +77,9 @@ importers:
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
+      '@riebeckite/plugin-dataview':
+        specifier: workspace:*
+        version: link:../../packages/plugins/dataview
       '@riebeckite/plugin-diagnostics':
         specifier: workspace:*
         version: link:../../packages/plugins/diagnostics
@@ -295,6 +298,18 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/dataview:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
 
   packages/plugins/diagnostics:
     dependencies:

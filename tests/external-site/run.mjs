@@ -33,6 +33,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
   {
+    directory: "packages/plugins/dataview",
+    name: "@riebeckite/plugin-dataview",
+  },
+  {
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
   },
@@ -51,6 +55,7 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const DATAVIEW_NOTE_TITLE = "Dataview Alpha";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
@@ -399,6 +404,36 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
   }
+  if (!combined.includes('data-dataview-type="list"')) {
+    fail("dataview plugin did not render a LIST result");
+  }
+  if (!combined.includes('data-dataview-type="table"')) {
+    fail("dataview plugin did not render a TABLE result");
+  }
+  if (!combined.includes('data-dataview-type="task"')) {
+    fail("dataview plugin did not render a TASK result");
+  }
+  if (!combined.includes('data-dataview-type="calendar"')) {
+    fail("dataview plugin did not render a CALENDAR result");
+  }
+  if (!combined.includes("rb-dataview__table")) {
+    fail("generated HTML is missing the dataview table output");
+  }
+  if (!combined.includes("rb-dataview__tasks")) {
+    fail("generated HTML is missing the dataview task list output");
+  }
+  if (!combined.includes('data-task="x"')) {
+    fail("dataview task output is missing the completed data-task state");
+  }
+  if (!combined.includes("rb-dataview__fallback")) {
+    fail("dataview output is missing the raw-query fallback");
+  }
+  if (!combined.includes(DATAVIEW_NOTE_TITLE)) {
+    fail("dataview did not render a title from the external vault");
+  }
+  if (!combined.includes("language-dataviewjs")) {
+    fail("dataviewjs code blocks must stay code blocks");
+  }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')
   ) {
@@ -466,6 +501,9 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!css.includes("data-fixture-theme")) {
     fail("site-local theme stylesheet was not bundled into the dist CSS");
+  }
+  if (!css.includes("rb-dataview")) {
+    fail("dataview plugin stylesheet was not bundled into the dist CSS");
   }
 
   for (const file of htmlFiles) {

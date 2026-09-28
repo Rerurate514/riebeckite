@@ -1,0 +1,192 @@
+.rb-dataview {
+  --rb-dataview-ink: var(--rb-color-ink, #000000);
+  --rb-dataview-paper: var(--rb-color-paper, #ffffff);
+  --rb-dataview-muted: var(--rb-color-muted, #69645c);
+  --rb-dataview-accent: var(--rb-color-accent, #686868);
+  --rb-dataview-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-dataview-ink) 18%, transparent)
+  );
+  --rb-dataview-surface: color-mix(
+    in srgb,
+    var(--rb-dataview-paper) 94%,
+    var(--rb-dataview-ink)
+  );
+
+  margin: 1.5rem 0;
+  color: var(--rb-dataview-ink);
+}
+
+.rb-dataview__table,
+.rb-dataview__calendar {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.rb-dataview__heading,
+.rb-dataview__calendar-weekday {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rb-dataview-ink);
+  text-align: left;
+  font-weight: 700;
+}
+
+.rb-dataview__cell,
+.rb-dataview__calendar-cell {
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+}
+
+.rb-dataview__row:not(:last-child) .rb-dataview__cell {
+  border-bottom: 1px solid var(--rb-dataview-rule);
+}
+
+.rb-dataview__group {
+  margin: 1rem 0 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rb-dataview-muted);
+}
+
+.rb-dataview__group-cell {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rb-dataview-ink);
+  text-align: left;
+  font-weight: 700;
+}
+
+.rb-dataview__link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rb-dataview-rule);
+  text-underline-offset: 0.2em;
+}
+
+.rb-dataview__link:hover,
+.rb-dataview__link:focus-visible {
+  text-decoration-color: var(--rb-dataview-accent);
+}
+
+.rb-dataview__tag {
+  display: inline-block;
+  margin-right: 0.25rem;
+  color: var(--rb-dataview-muted);
+  font-size: 0.8125em;
+  white-space: nowrap;
+}
+
+.rb-dataview__list,
+.rb-dataview__tasks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-dataview__item,
+.rb-dataview__task {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rb-dataview-rule);
+}
+
+.rb-dataview__item:last-child,
+.rb-dataview__task:last-child {
+  border-bottom: 0;
+}
+
+.rb-dataview__meta {
+  color: var(--rb-dataview-muted);
+  font-size: 0.8125em;
+}
+
+.rb-dataview__task[data-task="x"] .rb-dataview__task-text {
+  color: var(--rb-dataview-muted);
+  text-decoration: line-through;
+}
+
+.rb-dataview__task::before {
+  content: "☐";
+  color: var(--rb-dataview-muted);
+}
+
+.rb-dataview__task[data-task="x"]::before {
+  content: "☑";
+}
+
+.rb-dataview__task-link {
+  color: var(--rb-dataview-muted);
+  font-size: 0.8125em;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.rb-dataview__calendar-caption {
+  padding-bottom: 0.5rem;
+  text-align: left;
+  font-weight: 700;
+}
+
+.rb-dataview__calendar-cell {
+  border: 1px solid var(--rb-dataview-rule);
+  min-width: 4rem;
+  height: 4rem;
+}
+
+.rb-dataview__calendar-cell--empty {
+  background: var(--rb-dataview-surface);
+}
+
+.rb-dataview__calendar-day {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--rb-dataview-muted);
+}
+
+.rb-dataview__calendar-links {
+  display: block;
+  font-size: 0.8125rem;
+}
+
+.rb-dataview__empty {
+  margin: 1.5rem 0;
+  color: var(--rb-dataview-muted);
+  font-style: italic;
+}
+
+.rb-dataview__fallback {
+  margin-top: 0.75rem;
+  color: var(--rb-dataview-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-dataview__fallback-summary {
+  cursor: pointer;
+}
+
+.rb-dataview__fallback-code {
+  overflow-x: auto;
+  margin: 0.5rem 0 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rb-dataview-rule);
+  background: var(--rb-dataview-surface);
+}
+
+.rb-dataview--error {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rb-dataview-ink);
+  background: var(--rb-dataview-surface);
+  font-size: 0.875rem;
+}
+
+html[data-theme="dark"] .rb-dataview,
+html.dark .rb-dataview {
+  --rb-dataview-ink: var(--rb-color-paper, #ffffff);
+  --rb-dataview-paper: var(--rb-color-ink, #000000);
+}

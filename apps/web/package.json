@@ -18,6 +18,7 @@
     "@riebeckite/plugin-autocardlink": "workspace:*",
     "@riebeckite/plugin-backlinks": "workspace:*",
     "@riebeckite/plugin-code-enhance": "workspace:*",
+    "@riebeckite/plugin-dataview": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-garden-explorer": "workspace:*",

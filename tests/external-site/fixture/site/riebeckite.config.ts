@@ -1,6 +1,7 @@
 import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
@@ -30,6 +31,7 @@ export default defineConfig({
     tocPlugin(),
     backlinksPlugin(),
     queryPlugin(),
+    dataviewPlugin(),
     recentPostsPlugin(),
     searchPlugin(),
     localFixturePlugin(),

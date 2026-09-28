@@ -3,6 +3,8 @@ import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
+import { createRiebeckiteSsg } from "./ssg.js";
+import type { RiebeckiteSsgOptions } from "./ssg_plugin.js";
 import { resolveHonoxApplication } from "./vite_runner.js";
 import { createWorkspacePackageAliases } from "./workspace_packages.js";
 
@@ -11,6 +13,28 @@ export type RiebeckiteIntegrationOptions = {
   workspaceRoot?: string;
   appRoot?: string;
   configFile?: string;
+};
+
+/**
+ * SSR externals Riebeckite's own runtime requires the application to leave
+ * external. These are internal to the integration: sites should not have to
+ * restate the Vite `environments.ssr.resolve.external` list.
+ */
+export const defaultSsrExternals = [
+  "extend",
+  "debug",
+  "node:fs/promises",
+  "node:path",
+  "parse-numeric-range",
+  "slugify",
+  "vfile-matter",
+] as const;
+
+export type RiebeckiteViteOptions = RiebeckiteIntegrationOptions & {
+  /** Extra SSR externals appended after Riebeckite's defaults. */
+  ssrExternals?: readonly string[];
+  /** SSG overrides. A normal site does not need them. */
+  ssg?: RiebeckiteSsgOptions;
 };
 
 export function riebeckite(
@@ -58,4 +82,39 @@ export function riebeckite(
     },
     riebeckiteClientModule(getConfig),
   ];
+}
+
+/**
+ * Higher-level helper that registers the complete Riebeckite Vite integration
+ * without exposing internal Vite/HonoX/SSR details. A site only needs to add
+ * its own plugins (for example the HonoX plugin and its deployment build
+ * plugin) around this call.
+ *
+ * `riebeckite`, `riebeckiteSsg`, and `riebeckiteSsgExtensionMap` remain
+ * available for callers that need the lower-level pieces.
+ */
+export function riebeckiteVite(options: RiebeckiteViteOptions = {}): Plugin[] {
+  const { ssg, ssrExternals, ...integration } = options;
+  return [
+    ...riebeckite(integration),
+    riebeckiteSsrExternals([...defaultSsrExternals, ...(ssrExternals ?? [])]),
+    createRiebeckiteSsg(ssg),
+  ];
+}
+
+function riebeckiteSsrExternals(externals: readonly string[]): Plugin {
+  return {
+    name: "riebeckite-ssr-externals",
+    config() {
+      return {
+        environments: {
+          ssr: {
+            resolve: {
+              external: [...externals],
+            },
+          },
+        },
+      };
+    },
+  };
 }

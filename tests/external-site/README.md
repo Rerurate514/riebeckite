@@ -124,19 +124,22 @@ so they are documented here instead of being hidden with `skipLibCheck`.
   custom bindings, so it only declares the virtual `virtual:riebeckite/client`
   module. (`apps/web/app/global.d.ts` still contains the invalid augmentation,
   masked there by `skipLibCheck: true`.)
-- **CommonJS deps must stay external in the SSR build.** The fixture sets
-  `environments.ssr.resolve.external` (mirroring `apps/web`); without it Vite
-  inlines `extend` and the SSG pass fails with `ReferenceError: module is not
-  defined`.
-- **SSG belongs to `@riebeckite/honox`.** `riebeckiteSsg` creates its internal
-  Vite server with the resolved Vite `root` and `define` options. It replaces
-  the local patch previously needed for `@hono/vite-ssg` and works from a
-  descendant working directory in an npm-installed site.
+- **CommonJS deps must stay external in the SSR build.** `riebeckiteVite()`
+  supplies `environments.ssr.resolve.external` (`defaultSsrExternals`); without
+  it Vite inlines `extend` and the SSG pass fails with `ReferenceError: module
+  is not defined`. The fixture relies on those defaults instead of restating
+  them.
+- **SSG belongs to `@riebeckite/honox`.** `riebeckiteVite()` adds
+  `createRiebeckiteSsg`, which fills in the root-relative `./app/server.ts`
+  entry and the Riebeckite extension map. The underlying `riebeckiteSsg`
+  creates its internal Vite server with the resolved Vite `root` and `define`
+  options. It replaces the local patch previously needed for `@hono/vite-ssg`
+  and works from a descendant working directory in an npm-installed site.
 
 ## Root model
 
-The fixture calls `riebeckite({ appRoot })` without a workspace option.
-`appRoot` defaults to the Vite root and determines the base for
+The fixture calls `riebeckiteVite()` without options and without a workspace
+option. `appRoot` defaults to the Vite root and determines the base for
 `content.directory`; `configRoot` defaults to that same directory and determines
 where `riebeckite.config.*` is imported from. The fixture intentionally points
 content outside `appRoot` to exercise the resolved absolute `contentRoot`.

@@ -12,12 +12,17 @@ import {
 } from "@riebeckite/core";
 import {
   buildHonoxApplication,
+  createRiebeckiteSsg,
+  defaultSsgEntry,
+  defaultSsrExternals,
   loadRiebeckiteConfig,
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
   riebeckite,
   riebeckiteSsg,
   riebeckiteSsgExtensionMap,
+  riebeckiteVite,
+  type RiebeckiteViteOptions,
 } from "@riebeckite/honox";
 import {
   mountRiebeckiteEndpoints,
@@ -60,12 +65,16 @@ export const resolvedEntries = {
   queryContentEntries,
   queryContentPage,
   buildHonoxApplication,
+  createRiebeckiteSsg,
+  defaultSsgEntry,
+  defaultSsrExternals,
   loadRiebeckiteConfig,
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
   riebeckite,
   riebeckiteSsg,
   riebeckiteSsgExtensionMap,
+  riebeckiteVite,
   mountRiebeckiteEndpoints,
   resolveContentRoute,
   ArticlePrimitive,
@@ -105,6 +114,8 @@ export type CollectionInputs = {
   collection: ContentCollection;
   group: ContentQueryGroup;
 };
+
+export type ViteHelperOptions = RiebeckiteViteOptions;
 
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },

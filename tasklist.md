@@ -9,7 +9,7 @@
 | 7 | R6 | clientEntries/endpoints規約 | ✅ 完了 | Small | Core helperとドキュメントで外部Plugin author向けの正解パターンを固定（Phase 1） |
 | 8 | R7 | 共通ユーティリティをCoreへ集約 | ✅ 完了 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
 | 9 | R12 | 読了時間をCoreユーティリティ化 | ✅ 完了 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
-| 10 | R8 | 空CSS削除とlint warning解消 | 未着手 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
+| 10 | R8 | 空CSS削除とlint warning解消 | ✅ 完了 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
 | 11 | R9 | Package metadata規約の機械検証 | 未着手 | Medium | ~30 package.jsonの定型を`scripts/check_packages.mjs`で検証。依存はpnpm catalog集約（Phase 2） |
 | **12** | **A3/A4** | **Root / Config resolutionを一本化** | 未着手 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
 | **13** | **A4.5** | **External HonoX/SSG境界を安定化** | 未着手 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
@@ -149,7 +149,7 @@
 - **検証**: `pnpm build` → apps/web の記事表示 → `test:e2e:external`。
 - **成果**: `calculateReadingTime` と `stripHtml` を Core の text utility に集約し、Core から公開。SEO plugin は Core 実装を使用し、`PluginSeoExtension` と apps/web の SEO re-export から読了時間を削除。記事コンポーネントは Core を直接参照する。
 
-### #10 R8: 空CSS削除とlint warning解消（Phase 1 / Small / 依存なし）
+### #10 R8: 空CSS削除とlint warning解消（✅ 完了 / Phase 1 / Small / 依存なし）
 - **概要**: 死にファイルと唯一の lint warning を解消。
 - **対象**: `apps/web/app/styles/tag.css`（0バイト）, `apps/web/app/styles/tasklist.css`（0バイト）, `apps/web/app/style.css:5-6`（`@import`）, `packages/plugins/code-enhance/style.css:108`（`noDescendingSpecificity`）
 - **実装方針**:
@@ -157,6 +157,7 @@
   2. `code-enhance/style.css:108` の `.rr-code .rr-code__line` と `.rr-code__line` の詳細度逆転を解消（セレクタ統合または順序整理）。
 - **完了条件**: 0 バイト CSS が消え、`biome lint .` が warning 0。
 - **検証**: `pnpm exec biome lint .`、`pnpm build`（apps/web）。
+- **成果**: 未参照の空CSS 2件と対応する`@import`を削除。現行のBiome設定では`code-enhance/style.css`の`noDescendingSpecificity`警告は再現せず、lint warning 0を確認。
 
 ### #11 R9: Package metadata規約の機械検証（Phase 2 / Medium / 依存: Phase 1）
 - **概要**: ~30 パッケージの `package.json` 定型（`exports`/`files`/`scripts.build`/`prepack`/`publishConfig`/`repository`/`homepage`/`bugs`/`license`）の重複を、生成ではなく**検証**で統制。

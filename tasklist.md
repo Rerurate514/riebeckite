@@ -12,13 +12,13 @@
 | 10 | R8 | 空CSS削除とlint warning解消 | ✅ 完了 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
 | 11 | R9 | Package metadata規約の機械検証 | ✅ 完了 | Medium | `check:packages`で29公開packageのメタデータを検証。重複依存はpnpm catalogへ集約（Phase 2） |
 | **12** | **A3/A4** | **Root / Config resolutionを一本化** | ✅ 完了 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
-| **13** | **A4.5** | **External HonoX/SSG境界を安定化** | 未着手 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
-| **14** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
-| **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
-| 16 | R2 | ContentManager責務分割 | 未着手 | Medium | 約443行の責務整理。build調整とpermalink/redirect解決を抽出し公開APIは不変（Phase 3 / A5.5後） |
-| 17 | R10 | seoプラグイン分割 | 未着手 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
-| 18 | R11 | diagnostics analyze分割 | 未着手 | Small–Medium | 472行の`plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
-| **19** | **A2** | **Plugin間の直接依存を排除** | 未着手 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
+| **13** | **A4.5** | **External HonoX/SSG境界を安定化** | ✅ 完了 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
+| **14** | **A5** | **External Content Source / Vault対応を保証** | ✅ 完了 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
+| **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | ✅ 完了 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
+| 16 | R2 | ContentManager責務分割 | ✅ 完了 | Medium | build調整・public location解決・entry読込を抽出し公開APIは不変（Phase 3 / A5.5後） |
+| 17 | R10 | seoプラグイン分割 | ✅ 完了 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
+| 18 | R11 | diagnostics analyze分割 | ✅ 完了 | Small–Medium | `plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
+| **19** | **A2** | **Plugin間の直接依存を排除** | ✅ 完了 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
 | **20** | **A6** | **HonoX UI primitiveの境界固定** | 未着手 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
 | **21** | **A7** | **Site Application拡張contract** | 未着手 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
 | **22** | **A8** | **Local Plugin / Local Theme対応保証** | 未着手 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
@@ -189,26 +189,28 @@
 - **注意**: Core に HonoX/Vite を持ち込まない（resolver は Core か Integration の適切な層に置く）。
 - **成果**: `@riebeckite/honox` の `resolveHonoxApplication` が `configRoot`、`appRoot`、絶対 `contentRoot`、resolve 済み config を一度に決定する。CLI の `RiebeckiteProject` はこの結果を保持し、全 command が同じ root を使う。Vite plugin の既定値は `configRoot = appRoot` で、通常の npm consumer は `workspaceRoot` 不要。monorepo の source package alias は明示指定または `pnpm-workspace.yaml` を持つ config root のみで利用する。
 
-### #13 A4.5: External HonoX/SSG境界を安定化（A系 / Medium / 依存: A3/A4）
+### #13 A4.5: External HonoX/SSG境界を安定化（✅ 完了 / A系 / Medium / 依存: A3/A4）
 - **概要**: `@hono/vite-ssg` patch が npm consumer に伝播しない問題と cwd 依存を解消。
-- **対象**: `patches/@hono__vite-ssg@0.3.3.patch`、`packages/integrations/honox/src/vite_runner.ts`（`findViteApplicationRoots(configRoot)`）、`vite_plugin.ts`（`process.env.RIEBECKITE_APP_ROOT` 伝播）
-- **実装方針**: patch 依存を解消または integration 内に同梱する方針を決める。app root 探索を明示 `appRoot` 引数へ寄せ、cwd 相対の暗黙解決を排除。SSG 呼び出しを integration 内で完結。
+- **対象**: `packages/integrations/honox/src/ssg_plugin.ts`、apps/web と external-site fixture の Vite 設定。
+- **実装**: `riebeckiteSsg` が解決済み Vite の `root` と `define` を内部 SSG server へ明示的に渡す。`@hono/vite-ssg` と pnpm patch を削除し、SSG 呼び出しを integration 内で完結。
 - **完了条件**: patch 無し（または同梱）で外部 consumer が build 可能、別 cwd から実行しても同一結果。
-- **検証**: `test:e2e:external` を複数 cwd から実行。
+- **検証**: `test:e2e:external` は `site/app` から実行して cwd 非依存を確認。
 
-### #14 A5: External Content Source / Vault対応を保証（A系 / Medium / 依存: A3/A4）
+### #14 A5: External Content Source / Vault対応を保証（✅ 完了 / A系 / Medium / 依存: A3/A4）
 - **概要**: Site 外の Obsidian Vault を正式サポート。`contentRoot` が project 外でも成立させる。
 - **対象**: `packages/core/src/content/file_system_content_source.ts`、`content_source.ts`、`attachment.ts`、`plugins/attachment`, `plugins/media`
 - **実装方針**: content source が `contentRoot`（vault）と `projectRoot` を分離して扱う。attachment/media のパス解決を content source 基準へ統一。doctor/check の root 表示を調整。
 - **完了条件**: 絶対/相対の外部 `contentRoot` で build が通る。
-- **検証**: `test:e2e:external` に外部 Vault ケースを追加。
+- **検証**: `test:e2e:external` に site root 外の Vault、attachment のサイズ読み込み、media embed のケースを追加。
+- **成果**: A3/A4 の解決済み絶対 `contentRoot` を filesystem content source と attachment plugin が共有する既存境界を、公開 tarball の E2E で保証。fixture は site 外の相対 Vault を指定し、attachment と media の logical path・attachment size を検証する。英日 configuration docs に外部 Vault の基準と例を明記。
 
-### #15 A5.5: Pluginのfilesystem直接依存を除去（A系 / Medium–Large / 依存: A3/A4）
+### #15 A5.5: Pluginのfilesystem直接依存を除去（✅ 完了 / A系 / Medium–Large / 依存: A3/A4）
 - **概要**: プラグインからの `node:fs`/`node:path` 直接依存を ContentSource/Asset 境界へ移行。
 - **現状の直接依存**: `plugins/diagnostics/src/vault.ts:1-2`, `diagnostics/bin.ts:1`, `excalidraw/index.ts:1-2`, `attachment/index.ts:1-2`, `media/index.ts:1`, `diff/index.ts:1`, `mermaid/src/render-static.ts:1,3`, `diff/src/git/history_reader.ts:2`
 - **実装方針**: Core の content source / asset / build-time API 経由に置換し、Node 専用処理は build-time contract として明示。`diagnostics/bin.ts` は CLI 側へ移す等の層整理も検討。
 - **完了条件**: プラグイン本体から `node:fs` 直接 import が消える（または境界 API 経由に限定）。
 - **検証**: build、`test:e2e:external`、diagnostics/excalidraw/attachment の実動作。
+- **成果**: Core の `ContentSource` を plugin/render/Markdown pipeline context へ渡し、論理パスから安全に entry を検索・読み込みできる API を公開。attachment は source metadata からサイズを取得し、excalidraw と diagnostics は source 経由の read/scan に移行。media/diff/diagnostics CLI は path 直接依存を除去。Mermaid の一時ファイル処理は、Puppeteer を必要とする明示的な build-time renderer contract の実装に隔離した。
 
 ### #16 R2: ContentManager責務分割（Phase 3 / Medium / 依存: A5.5）
 - **概要**: `packages/core/src/content/content_manager.ts`（443行）を責務分割。**公開 API は不変**。
@@ -220,6 +222,7 @@
   4. facade として `ContentManager` の公開シグネチャを維持。
 - **完了条件**: 公開メソッド・戻り値・状態ファイル（`.riebeckite/build/content-state.json`）の形式が不変。
 - **検証**: build → `check`/`doctor`/`inspect` → `test:e2e:external`。
+- **成果**: `ContentEntryReader` に source scan とテキスト読込キャッシュ、`ContentLocationResolver` に canonical location/permalink/redirect 解決、`ContentBuildCoordinator` に増分 build-state の準備・保存を移設。`ContentManager` は既存の公開 API を維持する facade としてこれらを協調させる。
 
 ### #17 R10: seoプラグイン分割（Phase 3 / Small–Medium / 依存なし）
 - **概要**: `packages/plugins/seo/index.ts`（454行）を `src/` 配下へ分割し、`index.ts` は re-export のみに。
@@ -228,6 +231,7 @@
 - **完了条件**: 公開 API が不変、`index.ts` が薄い re-export。
 - **検証**: build → apps/web（sitemap/robots/feed 出力）→ `test:e2e:external`。
 - **注意**: `#9 R12` で `calculateReadingTime` を Core へ移した場合は re-export 対象から除外する。
+- **成果**: `src/` に plugin composition、endpoint、metadata、feed、sitemap/robots、URL、content、schema/XML、型を責務別に分割。`index.ts` は公開 API の re-export のみとし、`calculateReadingTime` は既存どおり Core の公開 API とした。
 
 ### #18 R11: diagnostics analyze分割（Phase 3 / Small–Medium / 依存なし）
 - **概要**: `packages/plugins/diagnostics/src/analyze.ts`（472行）を `checks/` 配下へ分割。
@@ -235,13 +239,15 @@
 - **実装方針**: 各 `check*` を個別ファイルへ移動し、`analyzeContent` はチェックを集約するオーケストレータとして残す。`AnalysisState` 型は共有モジュールへ。
 - **完了条件**: 診断結果（件数・severity・message）が不変。
 - **検証**: `riebeckite check` の出力 diff → `test:e2e:external`。
+- **成果**: `checks/` に Wikilink・Markdown参照・frontmatter・note metadata・orphan・asset・excluded public の各診断を分割し、共有する状態・option正規化・diagnostic生成を `checks/shared.ts` に集約。`analyzeContent` は既存の実行順序を保つオーケストレーターにした。
 
-### #19 A2: Plugin間の直接依存を排除（A系 / Medium / 依存: P1 と関連）
+### #19 A2: Plugin間の直接依存を排除（✅ 完了 / A系 / Medium / 依存: P1 と関連）
 - **概要**: `garden-explorer → plugin-search` の直接依存を切る。
 - **現状**: `packages/plugins/garden-explorer/src/garden-explorer.ts:1` が `import type { SearchItem } from "@riebeckite/plugin-search"`。
 - **実装方針**: `SearchItem` 相当の型を Core の contract へ移すか garden-explorer 側でローカル定義。連携は `provides`/`requires` capability 経由の任意依存にする。
 - **完了条件**: `garden-explorer/package.json` の依存から `@riebeckite/plugin-search` が消え、型の重複/循環がない。
 - **検証**: build、`test:e2e:external`。
+- **成果**: `GardenExplorerNote` が検索プラグインの `SearchItem` を参照しないローカルの表示データ型を定義し、`@riebeckite/plugin-search` を package dependency と lockfile から削除した。検索機能との実行時連携は存在しないため、capability 依存は導入していない。
 
 ### #20 A6: HonoX UI primitiveの境界固定（A系 / Small）
 - **概要**: Integration が Component Framework 化するのを防ぎ、公開 primitive の境界を固定。

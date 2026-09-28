@@ -13,6 +13,7 @@ import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
+import type { ContentSource } from "./content/content_source.js";
 import type { Observability } from "./observability.js";
 import { noopObservability } from "./observability.js";
 import type { PluginCache } from "./plugin/plugin_cache.js";
@@ -32,6 +33,8 @@ import type { PostContent, PostFrontmatter } from "./types/post_content.js";
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
   observability?: Observability;
+  config?: import("./types/resolved_riebeckite_config.js").ResolvedRiebeckiteConfig;
+  contentSource?: ContentSource;
 }
 
 export class Pipeline {
@@ -68,6 +71,7 @@ export class Pipeline {
       resolvePermalink: (slug) => this.getPermalink(slug),
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
       renderContent: this.createContentRenderer(),
+      contentSource: this.options.contentSource,
     };
 
     for (const plugin of plugins) {
@@ -187,6 +191,7 @@ export class Pipeline {
               cache: this.cacheFor(plugin, observability),
               logger: observability.logger.child({ plugin: plugin.name }),
               tracer: observability.tracer,
+              contentSource: this.options.contentSource,
               ...input,
             }),
         );

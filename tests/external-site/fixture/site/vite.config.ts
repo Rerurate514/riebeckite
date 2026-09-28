@@ -4,8 +4,11 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/node";
-import ssg from "@hono/vite-ssg";
-import { riebeckite, riebeckiteSsgExtensionMap } from "@riebeckite/honox";
+import {
+  riebeckite,
+  riebeckiteSsg,
+  riebeckiteSsgExtensionMap,
+} from "@riebeckite/honox";
 import honox from "honox/vite";
 import { defineConfig } from "vite";
 
@@ -20,7 +23,7 @@ export default defineConfig({
     }),
     riebeckite({ appRoot }),
     build(),
-    ssg({
+    riebeckiteSsg({
       entry: path.join(appRoot, "app/server.ts"),
       extensionMap: riebeckiteSsgExtensionMap(),
     }),

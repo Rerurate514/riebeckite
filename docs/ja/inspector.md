@@ -10,6 +10,8 @@ riebeckite inspect graph
 riebeckite inspect build
 ```
 
+`inspect content --list` は各 entry の解決済み canonical permalink を表示します。public location plugin が identity metadata を記録している場合は、ID と ID source も表示します。
+
 ## read-only の保証
 
 Inspect は事実を表示するだけで mutation しません。build の起動、incremental state/plugin cache の書込み、asset emission、表示だけの artifact render、Vite/HonoX build、configuration auto-fix を行ってはいけません。まだ build がなく情報が存在しない場合は、その状態を明確に報告します。

@@ -22,7 +22,9 @@ Never add a Core dependency on HonoX, a named plugin, a theme, the CLI, or the a
 
 ## Content and runtime invariants
 
-`ContentSource` owns scan/read/source metadata. `ContentManager` owns interpretation, pipeline execution, manifest, graph, and plugin orchestration. Do not add direct filesystem scans to ContentManager behavior that can use a source contract.
+`ContentSource` owns scan/read/source metadata. `ContentManager` owns interpretation, pipeline execution, manifest, graph, plugin orchestration, and public-location resolution. Do not add direct filesystem scans to ContentManager behavior that can use a source contract.
+
+Public content URLs come from the resolved `ContentPublicLocation` (`resolveDefaultContentLocation`, then `resolveContentLocations` plugin hooks). Consumers and routing MUST read the resolved `permalink` and MUST NOT construct a public content URL from a slug or filesystem path. `slug` is an internal lookup key; `permalink` is the public URL. Treat them as separate concepts.
 
 `.riebeckite/build` and filesystem plugin caches are build-time state. Cloudflare Workers request code must not read or write them. A missing or unsafe incremental state chooses a full path; a failed build must retain the prior valid state.
 

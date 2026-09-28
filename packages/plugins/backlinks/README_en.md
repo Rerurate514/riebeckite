@@ -57,7 +57,7 @@ return (
 ## Component
 
 `Backlinks({ backlinks })` renders a `<footer class="article-backlinks">` with
-an eyebrow label and a list of links to each backlink's slug.
+an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
 ## Exports
 
@@ -65,7 +65,7 @@ an eyebrow label and a list of links to each backlink's slug.
 - `Backlinks` — list component (default export of `components/backlinks.tsx`)
 - `getPublishedBacklinks({ manifest, config, slug, resolveTitle })` — resolves
   published backlinks for a slug
-- Type: `ArticleBacklink` (`{ slug, title }`)
+- Type: `ArticleBacklink` (`{ slug, permalink, title }`)
 
 ## See also
 

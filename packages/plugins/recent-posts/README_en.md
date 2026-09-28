@@ -71,7 +71,7 @@ date formatted for the `ja-JP` locale.
 - `RecentPosts` — list component (default export of `components/recent-posts.tsx`)
 - `getRecentPosts({ posts, config, getProcessedContent, resolveTitle, limit? })`
   — collects the latest published posts
-- Type: `RecentPost` (`{ slug, title, postedAt }`)
+- Type: `RecentPost` (`{ slug, permalink, title, postedAt }`)
 
 ## See also
 

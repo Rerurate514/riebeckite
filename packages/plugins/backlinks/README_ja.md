@@ -36,7 +36,7 @@ return <Article footerContent={<Backlinks backlinks={items} />} />;
 - `backlinksPlugin()` — プラグインファクトリ
 - `Backlinks` — 被リンク一覧コンポーネント
 - `getPublishedBacklinks({ manifest, config, slug, resolveTitle })` — 公開済みの被リンクを解決する関数
-- `ArticleBacklink` — `{ slug, title }` の型
+- `ArticleBacklink` — `{ slug, permalink, title }` の型。`permalink` は解決済みの canonical URL
 
 ## 関連資料
 

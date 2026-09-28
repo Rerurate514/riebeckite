@@ -92,7 +92,7 @@ Core は返された `permalink` を正準 URL として扱います。
 
 その URL は、Wikilink、Backlinks、Search、Content Graph、SEO canonical、Sitemap、RSS / Atom / JSON Feed などから共通して参照されます。
 
-Permalink Pluginを使用しない場合は、従来どおりslugを基準にした `/{slug}` へフォールバックします。
+Permalink Pluginを使用しない場合も、Coreの正式なdefault resolver `resolveDefaultContentLocation` が `index` を `/`、それ以外を `/{slug}` に解決します。これはfallbackではなく、Coreの標準policyです。
 
 ---
 
@@ -341,7 +341,7 @@ path-derived hash
 | `derived` | path hashから導出 |
 | `custom` | `resolveId`から取得 |
 
-手動`permalink` overrideによってURLを直接指定した場合は、現在metadataは付与されません。
+手動`permalink` overrideはURLを変更しますがidentityは消しません。frontmatterのIDがあれば引き続き記録され（`metadata.idSource` は `frontmatter`）、明示的なIDがない場合のみmetadataは付与されません。overrideから暗黙の `/{id}` URLを生成することはありません。
 
 ---
 

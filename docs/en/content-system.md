@@ -9,12 +9,31 @@
 ## Processing model
 
 ```text
-scan/read source -> parse post -> process post -> create manifest -> graph
-                       |              |
-                       `--- plugin lifecycle/content hooks ---'
+scan/read source
+  -> resolve public locations        (default resolver + plugin hooks)
+  -> parse post -> process post -> create manifest -> graph
+                        |
+                        `--- plugin lifecycle/content hooks ---'
 ```
 
-Plugin hooks observe or extend defined phases such as configuration resolution, content loaded, parsed/processed posts, manifest creation, and build start/end. Keep source I/O, semantic interpretation, and rendering distinct so a remote source can replace the filesystem source without changing Core policy.
+Public locations are resolved before any content that needs a URL is processed, so a consumer never has to invent one. Plugin hooks observe or extend defined phases such as configuration resolution, content loaded, parsed/processed posts, manifest creation, and build start/end. Keep source I/O, semantic interpretation, and rendering distinct so a remote source can replace the filesystem source without changing Core policy.
+
+## Public location and URLs
+
+A content entry separates two notions of identity:
+
+- **slug** — the internal lookup key used by `contentIndex`, the manifest `bySlug` map, the content graph, and application-level selection keys such as `/explore?note=<slug>`.
+- **permalink** — the resolved canonical public URL used in article links, feeds, sitemaps, and metadata.
+
+They are distinct. A consumer that needs a public URL reads `ContentManifestEntry.permalink` (also available as `entry.publicLocation`); it must not build a URL from a slug or filesystem path. Turning a slug into a URL is the Core default resolver's job alone.
+
+Resolution is a single, stateless pipeline:
+
+1. Core seeds every entry with the official default resolver, `resolveDefaultContentLocation(content)`, where `content` is a `ContentLocationInput` (`slug`, `path`, `markdown`). The default policy is `index` -> `/` and every other entry -> `/{slug}`. This is the Core default public-location policy, not a compatibility fallback.
+2. Each enabled plugin may replace locations through the optional `resolveContentLocations` hook, which receives the `ContentLocationInput` list and returns `ContentPublicLocation` values. Plugin-specific URL strategies stay inside the plugin.
+3. `ContentManager.getContentLocations()` returns the resolved `ReadonlyMap<string, ContentPublicLocation>`. A `ContentPublicLocation` carries the canonical `permalink`, optional `redirects`, and optional opaque `metadata` that Core does not interpret.
+
+The manifest stores the resolved result: `ContentManifestEntry.permalink` and `.publicLocation`, plus the `byPermalink` index and the `redirects` map. The content graph and `readOnlyContentGraph(source, locations)` consume those resolved entries rather than deriving URLs. If a public location is not resolved for an entry, Core raises an explicit error instead of falling back to a slug-derived URL.
 
 ## Manifest, graph, and runtime
 
@@ -23,6 +42,7 @@ The manifest is the generated content representation used by the application. Th
 ## Correctness rules
 
 - Preserve canonical content identity across source, manifest, and graph.
+- Treat slug and permalink as separate concepts: obtain public URLs only from the resolved `ContentPublicLocation`.
 - Treat source metadata as change evidence, not universally reliable truth.
 - Make publication/exclusion policy visible in configuration.
 - Return diagnostics for recoverable user-facing problems; do not silently omit content.

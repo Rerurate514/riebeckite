@@ -47,7 +47,7 @@ export default defineConfig({
 - `title`: `"{title} | {siteName}"`
 - `description`: `frontmatter.description`, otherwise the first 160 characters
   of the post text
-- `canonicalUrl`: `frontmatter.canonical`, otherwise the post URL
+- `canonicalUrl`: `frontmatter.canonical`, otherwise the entry's resolved canonical permalink
 - `imageUrl`: `frontmatter.ogImage` / `frontmatter.image`, otherwise
   `defaultImage` / `site.defaultOgImage`
 - `noindex`: `frontmatter.noindex === true`
@@ -72,7 +72,9 @@ Title, description, canonical URL, default image, and JSON-LD `WebSite` +
 | `renderJsonFeed` | JSON Feed 1.1 with `content_html` |
 
 Feed and sitemap entries are filtered with `isPublished`, exclude
-`noindex: true`, and are sorted by the most recent update first.
+`noindex: true`, and are sorted by the most recent update first. Their URLs use
+each entry's resolved canonical `permalink` (`ContentManifestEntry.permalink`);
+they are never rebuilt from slugs.
 
 ## Reading time
 

@@ -71,7 +71,7 @@ Build tooling
 
 |Document|What it covers|
 |---|---|
-|[Content System](./content-system.md)|`ContentSource`, logical paths, `ContentManager`, Manifest, Content Graph, attachments, publication, and incremental metadata|
+|[Content System](./content-system.md)|`ContentSource`, logical paths, `ContentManager`, public locations (`ContentPublicLocation`), Manifest, Content Graph, attachments, publication, and incremental metadata|
 |[Plugin System](./plugin-system.md)|Plugin contracts, lifecycle, capabilities and dependencies, option validation, pipelines, renderers, assets, cache, and observability|
 |[Theme System](./theme-system.md)|Theme contracts, color modes, typography, design tokens, CSS cascade, plugin boundaries, and package layout|
 |[HonoX Integration](./honox-integration.md)|The HonoX/Vite connection, Application Root responsibilities, and Cloudflare Workers/SSG boundaries|

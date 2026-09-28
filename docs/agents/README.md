@@ -45,7 +45,8 @@ Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugi
 ## Global invariants
 
 - Preserve the Core / Plugin / Integration / Theme / App / CLI responsibility boundaries.
-- `ContentSource` owns scan, read, and source metadata. `ContentManager` owns interpretation, pipelines, manifest, graph, and Plugin orchestration. Do not add direct filesystem scanning where the `ContentSource` contract applies.
+- `ContentSource` owns scan, read, and source metadata. `ContentManager` owns interpretation, pipelines, manifest, graph, public-location resolution, and Plugin orchestration. Do not add direct filesystem scanning where the `ContentSource` contract applies.
+- Public content URLs come from the resolved `ContentPublicLocation`: `resolveDefaultContentLocation` provides Core's default, Plugins may extend it through `resolveContentLocations`, and consumers/routing read the resolved `permalink`. Never build a public content URL from a slug or filesystem path; `slug` is an internal lookup key and `permalink` is the public URL.
 - Keep build-time state (`.riebeckite/build`) and filesystem Plugin Cache out of Cloudflare Workers request runtime.
 - Reuse an existing framework contract when it represents the needed boundary; do not create an abstraction solely for a hypothetical future use.
 - Keep Inspector and Doctor read-only. `check` validates configuration and Plugin resolution; `doctor` reports health diagnostics; `inspect` reports factual state; `profile` reports trace-based performance; `build` is the mutating build path. Do not merge these semantics.

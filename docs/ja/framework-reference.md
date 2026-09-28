@@ -4,14 +4,14 @@
 
 portable API は `@riebeckite/core` から import します。root export は互換性の boundary です。private module の deep import は実装調査など明確な理由がある場合だけにしてください。
 
-主な export は `defineConfig`、`resolveConfig`、`isExcluded`、`isPublished`、ContentSource/`ContentManager`、manifest/graph、`Pipeline`、plugin/dependency error、build-state/cache、diagnostics、observability、post/publish type、`defineTheme` を含む theme contract です。
+主な export は `defineConfig`、`resolveConfig`、`isExcluded`、`isPublished`、ContentSource/`ContentManager`、public location contract（`ContentLocationInput`、`ContentPublicLocation`、`resolveDefaultContentLocation`）、manifest/graph、`Pipeline`、plugin/dependency error、build-state/cache、diagnostics、observability、post/publish type、`defineTheme` を含む theme contract です。
 
 ## 拡張点
 
 | 拡張 | 目的 |
 | --- | --- |
 | ContentSource | scan/read/metadata semantics を保った source I/O の差し替え |
-| Plugin | pipeline、hooks、diagnostics、assets、client entries、endpoints、SEO、graph、renderers の追加 |
+| Plugin | pipeline、hooks、public location 解決（`resolveContentLocations`）、diagnostics、assets、client entries、endpoints、SEO、graph、renderers の追加 |
 | Theme | config、style、CSS token、`data-*` attributes の提供 |
 | Integration | Core と framework/bundler の接続。現在は HonoX/Vite |
 

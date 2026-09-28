@@ -24,10 +24,11 @@ Core must never gain a reverse dependency on HonoX, a theme, a plugin, or the ap
 
 ## Content and rendering flow
 
-`ContentSource` discovers and reads source material and supplies source metadata. `ContentManager` interprets that material, runs the pipeline and plugin hooks, creates the manifest and graph, and coordinates content-related work. A feature that needs files should use the source contract rather than adding a second filesystem scanner.
+`ContentSource` discovers and reads source material and supplies source metadata. `ContentManager` interprets that material, resolves each entry's public location, runs the pipeline and plugin hooks, creates the manifest and graph, and coordinates content-related work. Public URLs come from the resolved location (`ContentManager.getContentLocations()`: the Core default resolver, then `resolveContentLocations` plugin hooks); consumers read the resolved `permalink` and never derive a URL from a slug or filesystem path. A feature that needs files should use the source contract rather than adding a second filesystem scanner.
 
 ```text
-ContentSource -> ContentManager -> parse/process pipeline
+ContentSource -> ContentManager -> resolve public locations
+                                      |-> parse/process pipeline
                                       |-> plugin hooks
                                       |-> manifest and content graph
                                       `-> integration/application rendering

@@ -61,6 +61,8 @@ export function examplePlugin(options: ExampleOptions = {}) {
                                       `onPostProcessed`,
                                       `onManifestCreated`
 
+  Public Location                     `resolveContentLocations`
+
   Legacy/compat build hooks           `onBuildStart`, `onBuildEnd`
 
   Pipeline                            `remarkPlugins`, `rehypePlugins`,
@@ -141,8 +143,8 @@ type PluginContext = {
 };
 ```
 
-Hook に応じて `slug`, `markdown`, `content`, `manifest`, `entries`
-などが追加されます。
+Hook に応じて `slug`, `markdown`, `content`, `manifest`, `entries`,
+location input などが追加されます。
 
 Plugin は global singleton を作るより、context から framework service
 を受け取ることを優先します。
@@ -195,6 +197,7 @@ Markdown/HTML の意味変換は Plugin に置き、application component に AS
 ``` text
 config resolved
 → content loaded
+→ public location resolved
 → post parsed
 → post processed
 → content graph
@@ -212,6 +215,23 @@ framework contract に沿った拡張を行うための hook です。
 Backlinks や graph 系機能のために Plugin 独自で filesystem
 を再走査するのではなく、既存 Content Graph / Manifest contract
 を利用してください。
+
+## Public Location の解決
+
+`resolveContentLocations` は Plugin が content entry の public location を
+置き換えるための hook です。Core が先に default resolver
+（`resolveDefaultContentLocation`: `index` → `/`、それ以外 → `/{slug}`）を
+適用し、resolved plugin order に従って各 Plugin の hook を実行し、結果を
+`ContentPublicLocation` として manifest / graph / Markdown pipeline に保持
+します。
+
+URL strategy（identity field、hash/frontmatter ID、path 形状、redirect 規則
+とその検証）は Plugin の責務です。Core はそれらを知らず、
+`ContentLocationInput`、`ContentPublicLocation`、
+`resolveDefaultContentLocation`、`resolveContentLocations` だけを知っていま
+す。Consumer は解決済みの `entry.permalink` を読み、特定 Plugin で分岐したり
+slug から URL を再構成したりしません。location 未解決は slug fallback ではなく
+明示的な error です。
 
 ## Renderers
 

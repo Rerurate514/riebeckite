@@ -24,6 +24,10 @@ Exact matches score 3×, prefix matches 2×, and substrings 1×. When a query ha
 text is normalized (lowercase, NFKC, and katakana full-width → half-width)
 before searching.
 
+Each `SearchItem` also carries the resolved canonical `permalink`. It is not a
+scored field: `slug` remains the searchable identity key, while the modal
+navigates to `permalink`.
+
 `searchItems()` is pure and exported, so it can be used server-side too — for
 example to generate a `search-data.json` index the modal fetches at runtime.
 

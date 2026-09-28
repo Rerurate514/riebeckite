@@ -13,13 +13,22 @@ content loader.
 
 A plugin may use identity/options/order/enabled, capabilities
 (`provides`, `requires`, `optional`), `cacheVersion`, option validation,
-lifecycle hooks, content hooks, remark/rehype pipeline extension, graph
+lifecycle hooks, content hooks, public-location resolution
+(`resolveContentLocations`), remark/rehype pipeline extension, graph
 extension, diagnostics, renderers, assets, client entries, endpoints,
 and SEO extensions.
 
 ## Rules
 
 -   Use the smallest extension point that satisfies the feature.
+-   Customize public URLs only through the generic
+    `resolveContentLocations` capability. Core knows only
+    `ContentLocationInput`, `ContentPublicLocation`, and
+    `resolveDefaultContentLocation`; keep ID strategies and path modes in
+    your plugin.
+-   Consumers MUST read the resolved `entry.permalink` and MUST NOT branch
+    on a specific public-location plugin (for example
+    `@riebeckite/plugin-permalink`).
 -   Express real plugin dependencies with capabilities rather than
     fragile numeric ordering.
 -   Preserve stable dependency resolution and actionable

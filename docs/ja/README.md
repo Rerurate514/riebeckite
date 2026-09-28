@@ -71,7 +71,7 @@ Build tooling
 
 |ドキュメント|内容|
 |---|---|
-|[Content System](./content-system.md)|`ContentSource`、logical path、`ContentManager`、Manifest、Content Graph、添付ファイル、公開判定、差分メタデータ|
+|[Content System](./content-system.md)|`ContentSource`、logical path、`ContentManager`、public location（`ContentPublicLocation`）、Manifest、Content Graph、添付ファイル、公開判定、差分メタデータ|
 |[Plugin System](./plugin-system.md)|Plugin、lifecycle、capability と依存関係、options validation、pipeline、renderer、assets、cache、observability|
 |[Theme System](./theme-system.md)|Theme contract、color mode、タイポグラフィ、design token、CSS cascade、Plugin との境界、テーマパッケージ構成|
 |[HonoX Integration](./honox-integration.md)|HonoX/Vite への接続、Application Root との役割分担、Cloudflare Workers と SSG の境界|

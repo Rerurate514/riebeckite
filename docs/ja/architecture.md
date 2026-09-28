@@ -23,10 +23,11 @@ Core から outer layer への逆依存は作りません。もっとも内側�
 
 ## content の流れ
 
-`ContentSource` は scan/read、content identity、mtime・size・ETag・hash などの source metadata を所有します。`ContentManager` は parse、pipeline、plugin hooks、manifest、content graph を所有します。ContentManager に filesystem scan を再実装せず、source contract を利用してください。
+`ContentSource` は scan/read、content identity、mtime・size・ETag・hash などの source metadata を所有します。`ContentManager` は public location の解決、parse、pipeline、plugin hooks、manifest、content graph を所有します。public URL は解決済み location（Core の default resolver `resolveDefaultContentLocation` → `resolveContentLocations` plugin hooks、`ContentManager.getContentLocations()`）から取得し、consumer は解決済み `permalink` を読みます。slug や filesystem path から URL を逆算しません。ContentManager に filesystem scan を再実装せず、source contract を利用してください。
 
 ```text
-ContentSource -> ContentManager -> parse/process -> manifest / graph -> application
+ContentSource -> ContentManager -> public location 解決
+                                      |-> parse/process -> manifest / graph -> application
                                       `-> plugin hooks
 ```
 

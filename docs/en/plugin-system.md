@@ -37,6 +37,7 @@ options on the plugin object.
   Cache                 `cacheVersion`, `context.cache`
   Lifecycle             `setup`, `buildStart`, `buildEnd`, `dispose`
   Content hooks         config/content/post/manifest hooks
+  Public location       `resolveContentLocations`
   Pipeline              remark/rehype declarations and extension hooks
   Graph                 `extendContentGraph`
   Diagnostics           `addDiagnostics`
@@ -75,7 +76,7 @@ mutate cache/state.
 
 The base context contains resolved config when available,
 `contentIndex`, diagnostics, plugin-scoped cache, Logger, and Tracer.
-Specialized hooks add post, manifest, graph, or render data.
+Specialized hooks add post, manifest, graph, location, or render data.
 
 Prefer injected context services over plugin-owned global singletons.
 
@@ -98,6 +99,22 @@ rather than in application components.
 
 Use the existing Manifest/Content Graph contracts instead of rescanning
 the filesystem inside graph-oriented plugins.
+
+## Public location
+
+`resolveContentLocations` lets a plugin replace the public location of content
+entries. Core first applies its default resolver
+(`resolveDefaultContentLocation`: `index` -> `/`, otherwise `/{slug}`), then runs
+each plugin's hook in resolved plugin order and stores the results as
+`ContentPublicLocation` values on the manifest, graph, and Markdown pipeline.
+
+Plugins own their URL strategy: identity fields, hash or frontmatter IDs, path
+shapes, redirect rules, and their own validation. Core does not know any of
+that; it knows only `ContentLocationInput`, `ContentPublicLocation`,
+`resolveDefaultContentLocation`, and the `resolveContentLocations` hook.
+Consumers read the resolved `entry.permalink`, never branch on a specific plugin,
+and never rebuild a URL from a slug. An entry without a resolved location is an
+explicit error, not a slug fallback.
 
 ## Renderers
 

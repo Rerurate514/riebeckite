@@ -27,8 +27,10 @@ export default defineConfig({
 
 ### Wikilinks
 
-- `[[Note]]` → link to `/Note` (class `wikilink`), alias with
-  `[[Note|Alias]]`
+- `[[Note]]` → link to the target's resolved canonical permalink
+  (`ContentManifestEntry.permalink`) with class `wikilink`, alias with
+  `[[Note|Alias]]`. The target is looked up by slug; the `href` is the resolved
+  permalink
 - Fragments: `[[Note#Heading]]` → `#heading-slug`,
   `[[Note#^block-id]]` → `#block-id`
 - `![[Note]]` → note embed. The core pipeline renders the target note

@@ -90,7 +90,7 @@ Core treats the resolved `permalink` as the canonical public URL.
 
 The same canonical URL is then used by Wikilinks, backlinks, search, the content graph, SEO canonical URLs, sitemaps, RSS / Atom / JSON Feed, and other consumers.
 
-Without this plugin, Riebeckite falls back to its existing slug-derived `/{slug}` behavior.
+Without this plugin, Riebeckite still resolves every URL through the Core default public location resolver, `resolveDefaultContentLocation`, which maps `index` to `/` and every other entry to `/{slug}`. That default is a first-class Core policy, not a fallback.
 
 ---
 
@@ -331,7 +331,7 @@ The source of a resolved ID is exposed through metadata.
 | `derived` | Derived from the source path hash |
 | `custom` | Returned by `resolveId` |
 
-When a manual `permalink` override supplies the URL directly, metadata is currently omitted.
+A manual `permalink` override changes the URL without removing identity. When the frontmatter ID is present it is still recorded (`metadata.idSource` is `frontmatter`); metadata is omitted only when no explicit ID exists. Overrides never produce an implicit `/{id}` URL.
 
 ---
 

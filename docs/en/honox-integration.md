@@ -10,6 +10,8 @@ The Vite plugin accepts optional `workspaceRoot`, `appRoot`, and `configFile`. I
 
 ## Boundary rules
 
+Article routing resolves a request against the manifest's already-resolved public locations (`byPermalink`, then `redirects`), never by inferring a URL from a filesystem path, directory layout, or slug. A slug remains an internal content lookup key; the public URL is the resolved `permalink`.
+
 Keep HonoX, Vite, Cloudflare, and route APIs in this package or `apps/web`; Core remains portable. A plugin can expose assets, client entries, endpoints, and renderers, but Core does not become a HonoX router. The application decides concrete route composition and islands.
 
 Use [Build system](build-system.md) for state behavior and [Architecture](architecture.md) for package ownership.

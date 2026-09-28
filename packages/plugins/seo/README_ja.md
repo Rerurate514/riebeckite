@@ -40,7 +40,7 @@ export default defineConfig({
 | --- | --- |
 | `title` | 記事タイトル。なければ slug の末尾 |
 | `description` | meta description。なければ本文の先頭 160 文字 |
-| `canonical` | 正規 URL。なければ記事 URL |
+| `canonical` | 正規 URL。なければ解決済みの canonical permalink |
 | `image` / `ogImage` | OGP 画像。なければ設定上の既定画像 |
 | `published` / `date` / `created` | 公開日時 |
 | `updated` | 更新日時。なければ公開日時 |
@@ -51,7 +51,7 @@ export default defineConfig({
 
 ## 公開物に含まれる記事
 
-サイトマップとフィードは、公開済みで `noindex: true` ではないエントリーだけを対象にし、更新日時の新しい順に並べます。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
+サイトマップとフィードは、公開済みで `noindex: true` ではないエントリーだけを対象にし、更新日時の新しい順に並べます。URL には各エントリーの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
 
 読了時間は CJK 文字を毎分 500 文字、ラテン文字の単語を毎分 220 語として数え、最低 1 分に切り上げます。
 

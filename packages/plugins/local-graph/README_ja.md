@@ -26,7 +26,7 @@ const graph = getLocalGraph({ manifest: await content.getManifest(), config, slu
 return <Article footerContent={graph && <LocalGraph graph={graph} />} />;
 ```
 
-グラフのノード位置は `layoutRadialGraph()`、辺は `buildGraphEdges()` が計算します。見出しのリンクは `/explore?note=<slug>` を開きます。
+グラフのノード位置は `layoutRadialGraph()`、辺は `buildGraphEdges()` が計算します。各ノードのリンクは解決済みの `permalink` を使い、見出しは internal selection key `/explore?note=<slug>` で Explorer を開きます。
 
 ## 公開 API
 

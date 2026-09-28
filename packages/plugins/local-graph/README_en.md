@@ -65,8 +65,9 @@ return (
 
 Node positions come from `layoutRadialGraph()`: the center node sits at the
 middle, neighbors are arranged around it by link count; node radius grows with
-the number of links. Edges are computed by `buildGraphEdges()`. The header
-links to `/explore?note=<slug>` to open the full explorer.
+the number of links. Edges are computed by `buildGraphEdges()`. Node links use
+each node's resolved `permalink`; the header opens the full explorer through the
+internal selection key `/explore?note=<slug>`.
 
 ## Exports
 

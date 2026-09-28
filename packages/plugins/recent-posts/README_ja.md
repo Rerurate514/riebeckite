@@ -35,7 +35,7 @@ return <Article afterContent={<RecentPosts posts={posts} />} />;
 - `recentPostsPlugin()` — プラグインファクトリ
 - `RecentPosts` — 最新記事一覧コンポーネント
 - `getRecentPosts({ posts, config, getProcessedContent, resolveTitle, limit? })`
-- `RecentPost` — `{ slug, title, postedAt }` の型
+- `RecentPost` — `{ slug, permalink, title, postedAt }` の型
 
 ## 関連資料
 

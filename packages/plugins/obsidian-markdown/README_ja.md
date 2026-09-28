@@ -20,7 +20,7 @@ export default defineConfig({
 
 ## 主な記法
 
-- `[[Note]]`、`[[Note|別名]]` — ノートへのリンク。見出し・ブロック ID のフラグメントも扱う
+- `[[Note]]`、`[[Note|別名]]` — 対象の解決済み canonical permalink へのリンク（class `wikilink`）。見出し・ブロック ID のフラグメントも扱う。lookup は slug で行い、`href` は解決済み permalink
 - `![[Note]]` — 最大 3 階層まで安全に再帰描画するノート埋め込み
 - `![[image.png]]` — `assetBase` 配下の画像、`[[file.pdf]]` — 添付ファイル用レンダラーまたはダウンロードリンク
 - `> [!note]` — コールアウト。`+` と `-` で折りたたみ状態を指定できる

@@ -1,4 +1,9 @@
-import { definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  defineEndpoint,
+  definePlugin,
+} from "@riebeckite/core";
 import { buildSearchItems } from "./src/search-index.server.js";
 
 export { default as SearchBar } from "./components/search-bar.js";
@@ -9,28 +14,16 @@ export { buildSearchItems } from "./src/search-index.server.js";
 export function searchPlugin() {
   return definePlugin({
     name: "search",
-    assets: [
-      {
-        pluginName: "search",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/plugin-search/style.css",
-      },
-    ],
-    clientEntries: [
-      {
-        pluginName: "search",
-        moduleSpecifier: "@riebeckite/plugin-search/client",
-        exportName: "initSearch",
-      },
-    ],
+    assets: [createStyleAsset("search")],
+    clientEntries: [createClientEntry("search", "initSearch")],
     endpoints: [
-      {
-        path: "/search-data.json",
-        handler: ({ config, manifest }) => ({
-          headers: { "Cache-Control": "public, max-age=300" },
+      defineEndpoint(
+        "/search-data.json",
+        ({ config, manifest }) => ({
           json: buildSearchItems({ manifest, config }),
         }),
-      },
+        { cacheControl: "public, max-age=300" },
+      ),
     ],
   });
 }

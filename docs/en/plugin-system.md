@@ -129,12 +129,49 @@ Plugin CSS remains in the plugin package and is declared through
 only when browser JavaScript is genuinely required. Do not copy plugin
 CSS into `apps/web` or expose `/node_modules` directly.
 
+For a package named `@riebeckite/plugin-example`, use the Core helpers. They
+declare the package's conventional `./style.css` and `./client` exports while
+keeping the integration-facing values consistent:
+
+```ts
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
+
+export function examplePlugin() {
+  return definePlugin({
+    name: "example",
+    assets: [createStyleAsset("example")],
+    clientEntries: [createClientEntry("example", "initExample")],
+  });
+}
+```
+
+Omit `assets` or `clientEntries` when the plugin does not need them. The client
+entry's export name is optional and defaults to the module default export.
+
 ## Endpoints and SEO
 
 `endpoints` lets an Integration connect reusable plugin HTTP behavior to
 the host router without embedding HonoX-specific routing in Core. `seo`
 lets plugins participate in metadata/feed-related behavior through the
 framework contract.
+
+Use `defineEndpoint` to declare an endpoint. Pass `cacheControl` only when the
+response is safe to cache; the helper applies the header without duplicating
+response plumbing.
+
+```ts
+import { defineEndpoint } from "@riebeckite/core";
+
+const searchEndpoint = defineEndpoint(
+  "/search-data.json",
+  ({ config, manifest }) => ({ json: buildSearchItems({ config, manifest }) }),
+  { cacheControl: "public, max-age=300" },
+);
+```
 
 ## Diagnostics
 

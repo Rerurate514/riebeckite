@@ -1,4 +1,8 @@
-import { definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 import { rehypeCodeEnhance } from "./src/rehype.js";
 import type { CodeEnhanceOptions } from "./src/types.js";
 
@@ -17,19 +21,7 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeCodeEnhance, options);
     },
-    assets: [
-      {
-        pluginName: "code-enhance",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/plugin-code-enhance/style.css",
-      },
-    ],
-    clientEntries: [
-      {
-        pluginName: "code-enhance",
-        moduleSpecifier: "@riebeckite/plugin-code-enhance/client",
-        exportName: "initCodeEnhance",
-      },
-    ],
+    assets: [createStyleAsset("code-enhance")],
+    clientEntries: [createClientEntry("code-enhance", "initCodeEnhance")],
   });
 }

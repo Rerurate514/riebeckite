@@ -1,4 +1,8 @@
-import { definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 import { rehypeCodeTabs } from "./src/rehype.js";
 import { remarkCodeMeta } from "./src/remark.js";
 import type { CodeTabsOptions } from "./src/types.js";
@@ -16,19 +20,7 @@ export function codeTabs(options: CodeTabsOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeCodeTabs, options);
     },
-    assets: [
-      {
-        pluginName: "code-tabs",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/plugin-code-tabs/style.css",
-      },
-    ],
-    clientEntries: [
-      {
-        pluginName: "code-tabs",
-        moduleSpecifier: "@riebeckite/plugin-code-tabs/client",
-        exportName: "initCodeTabs",
-      },
-    ],
+    assets: [createStyleAsset("code-tabs")],
+    clientEntries: [createClientEntry("code-tabs", "initCodeTabs")],
   });
 }

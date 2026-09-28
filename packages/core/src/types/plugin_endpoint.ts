@@ -22,3 +22,35 @@ export type PluginEndpoint = {
     context: PluginEndpointContext,
   ): PluginEndpointResponse | Promise<PluginEndpointResponse>;
 };
+
+export type PluginEndpointOptions = {
+  cacheControl?: string;
+};
+
+/**
+ * Defines an endpoint and applies its optional cache policy without requiring
+ * each plugin to duplicate response-header plumbing.
+ */
+export function defineEndpoint(
+  path: string,
+  handler: PluginEndpoint["handler"],
+  options: PluginEndpointOptions = {},
+): PluginEndpoint {
+  if (options.cacheControl === undefined) {
+    return { path, handler };
+  }
+
+  return {
+    path,
+    handler: async (context) => {
+      const response = await handler(context);
+      return {
+        ...response,
+        headers: {
+          ...response.headers,
+          "Cache-Control": options.cacheControl,
+        },
+      };
+    },
+  };
+}

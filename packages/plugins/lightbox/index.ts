@@ -1,4 +1,8 @@
-import { definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 import { rehypeLightbox } from "./src/rehype.js";
 import type { LightboxOptions } from "./src/types.js";
 
@@ -13,19 +17,7 @@ export function lightboxPlugin(options: LightboxOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeLightbox, options);
     },
-    assets: [
-      {
-        pluginName: "lightbox",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/plugin-lightbox/style.css",
-      },
-    ],
-    clientEntries: [
-      {
-        pluginName: "lightbox",
-        moduleSpecifier: "@riebeckite/plugin-lightbox/client",
-        exportName: "initLightbox",
-      },
-    ],
+    assets: [createStyleAsset("lightbox")],
+    clientEntries: [createClientEntry("lightbox", "initLightbox")],
   });
 }

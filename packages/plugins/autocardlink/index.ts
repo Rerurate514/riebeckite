@@ -1,4 +1,8 @@
-import { definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 import { remarkAutoCardLink } from "./src/remark.js";
 import type { AutoCardLinkOptions } from "./src/types.js";
 
@@ -14,19 +18,7 @@ export function autoCardLinkPlugin(options: AutoCardLinkOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkAutoCardLink, options);
     },
-    assets: [
-      {
-        pluginName: "autocardlink",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/plugin-autocardlink/style.css",
-      },
-    ],
-    clientEntries: [
-      {
-        pluginName: "autocardlink",
-        moduleSpecifier: "@riebeckite/plugin-autocardlink/client",
-        exportName: "initAutoCardLink",
-      },
-    ],
+    assets: [createStyleAsset("autocardlink")],
+    clientEntries: [createClientEntry("autocardlink", "initAutoCardLink")],
   });
 }

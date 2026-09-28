@@ -4,7 +4,12 @@ import type {
   PluginRenderContext,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { definePlugin, IMAGE_EXTENSIONS } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+  IMAGE_EXTENSIONS,
+} from "@riebeckite/core";
 import type { Content, Html, Parent, Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
 import {
@@ -45,20 +50,8 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
         render: async (context) => renderAttachment(context, options),
       },
     ],
-    assets: [
-      {
-        pluginName: PLUGIN_NAME,
-        kind: "style",
-        moduleSpecifier: "@riebeckite/plugin-excalidraw/style.css",
-      },
-    ],
-    clientEntries: [
-      {
-        pluginName: PLUGIN_NAME,
-        moduleSpecifier: "@riebeckite/plugin-excalidraw/client",
-        exportName: "initExcalidraw",
-      },
-    ],
+    assets: [createStyleAsset(PLUGIN_NAME)],
+    clientEntries: [createClientEntry(PLUGIN_NAME, "initExcalidraw")],
   });
 }
 

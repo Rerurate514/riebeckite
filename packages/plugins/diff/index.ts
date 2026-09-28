@@ -1,5 +1,9 @@
 import path from "node:path";
-import { definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 
 export { renderDiffHistory } from "./src/components/diff-history.js";
 export { renderDiffLine } from "./src/components/diff-line.js";
@@ -50,26 +54,11 @@ export function diff(options: DiffPluginOptions = {}) {
   return definePlugin({
     name: "diff",
     options,
-    assets:
-      ui.enabled === false
-        ? []
-        : [
-            {
-              pluginName: "diff",
-              kind: "style",
-              moduleSpecifier: "@riebeckite/plugin-diff/style.css",
-            },
-          ],
+    assets: ui.enabled === false ? [] : [createStyleAsset("diff")],
     clientEntries:
       ui.enabled === false
         ? []
-        : [
-            {
-              pluginName: "diff",
-              moduleSpecifier: "@riebeckite/plugin-diff/client",
-              exportName: "initDiffHistory",
-            },
-          ],
+        : [createClientEntry("diff", "initDiffHistory")],
     onPostProcessed: async (context) => {
       if (ui.enabled === false) return;
 

@@ -110,6 +110,10 @@ export type {
   PluginAssetKind,
   PluginClientEntry,
 } from "./src/types/plugin_asset.js";
+export {
+  createClientEntry,
+  createStyleAsset,
+} from "./src/types/plugin_asset.js";
 export type {
   PluginContentContext,
   PluginContentLocationContext,
@@ -133,7 +137,9 @@ export type {
   PluginEndpointContext,
   PluginEndpointMethod,
   PluginEndpointResponse,
+  PluginEndpointOptions,
 } from "./src/types/plugin_endpoint.js";
+export { defineEndpoint } from "./src/types/plugin_endpoint.js";
 export type {
   HtmlPipeline,
   MarkdownEmbedFragment,

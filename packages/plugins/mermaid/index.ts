@@ -1,4 +1,9 @@
-import { definePlugin, type ConfigValidationIssue } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+  type ConfigValidationIssue,
+} from "@riebeckite/core";
 import type { HastNode, MermaidOptions } from "./src/types.js";
 
 export type {
@@ -17,20 +22,8 @@ export function mermaid(options: MermaidOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeMermaidLazy, options);
     },
-    assets: [
-      {
-        pluginName: "mermaid",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/plugin-mermaid/style.css",
-      },
-    ],
-    clientEntries: [
-      {
-        pluginName: "mermaid",
-        moduleSpecifier: "@riebeckite/plugin-mermaid/client",
-        exportName: "initMermaidDiagrams",
-      },
-    ],
+    assets: [createStyleAsset("mermaid")],
+    clientEntries: [createClientEntry("mermaid", "initMermaidDiagrams")],
   });
 }
 
@@ -46,12 +39,16 @@ function validateMermaidOptions(
     options.render !== "client" &&
     options.render !== "both"
   ) {
-    issues.push({ path: "render", message: 'Expected "build", "client", or "both".' });
+    issues.push({
+      path: "render",
+      message: 'Expected "build", "client", or "both".',
+    });
   }
   if (!isMermaidTheme(options.theme)) {
     issues.push({
       path: "theme",
-      message: "Expected a theme string or an object with light and dark strings.",
+      message:
+        "Expected a theme string or an object with light and dark strings.",
     });
   }
   for (const key of ["caption", "fallback"] as const) {

@@ -1,9 +1,8 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import {
   definePlugin,
   escapeHtml,
   escapeHtmlAttribute,
+  getContentSourceEntry,
   getExtension,
   type PluginRenderContext,
 } from "@riebeckite/core";
@@ -42,7 +41,7 @@ async function renderAttachment(
 ): Promise<string | null> {
   if (context.kind !== "attachment") return null;
 
-  const fileName = path.posix.basename(context.path);
+  const fileName = getFileName(context.path);
   const extension = getExtension(context.path).toUpperCase() || "FILE";
   const size =
     options.showSize === false ? null : await getAttachmentSize(context);
@@ -68,19 +67,18 @@ async function renderAttachment(
 async function getAttachmentSize(
   context: PluginRenderContext,
 ): Promise<string | null> {
-  const contentDirectory = context.config?.content.directory;
-  if (!contentDirectory) return null;
+  if (!context.contentSource) return null;
+  const entry = await getContentSourceEntry(
+    context.contentSource,
+    context.path,
+  );
+  return entry?.metadata?.size === undefined
+    ? null
+    : formatBytes(entry.metadata.size);
+}
 
-  const sourcePath = path.resolve(contentDirectory, context.path);
-  const relative = path.relative(contentDirectory, sourcePath);
-  if (relative.startsWith("..") || path.isAbsolute(relative)) return null;
-
-  try {
-    const stats = await fs.stat(sourcePath);
-    return formatBytes(stats.size);
-  } catch {
-    return null;
-  }
+function getFileName(contentPath: string): string {
+  return contentPath.split("/").at(-1) ?? contentPath;
 }
 
 function formatBytes(bytes: number): string {

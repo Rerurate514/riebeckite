@@ -68,6 +68,9 @@ importers:
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../../packages/integrations/honox
+      '@riebeckite/plugin-alias':
+        specifier: workspace:*
+        version: link:../../packages/plugins/alias
       '@riebeckite/plugin-attachment':
         specifier: workspace:*
         version: link:../../packages/plugins/attachment
@@ -247,6 +250,12 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
+
+  packages/plugins/alias:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/attachment:
     dependencies:

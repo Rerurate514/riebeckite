@@ -53,6 +53,7 @@ import { properties } from "@riebeckite/plugin-properties";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
+import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
 import SearchBar from "@riebeckite/plugin-search/components";
@@ -95,6 +96,7 @@ export const resolvedEntries = {
   recentPostsPlugin,
   RecentPosts,
   relatedPosts,
+  responsiveImage,
   searchPlugin,
   initSearch,
   SearchBar,

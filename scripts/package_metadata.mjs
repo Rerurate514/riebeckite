@@ -23,6 +23,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/query",
   "packages/plugins/recent-posts",
   "packages/plugins/related-posts",
+  "packages/plugins/responsive-image",
   "packages/plugins/search",
   "packages/plugins/seo",
   "packages/plugins/toc",

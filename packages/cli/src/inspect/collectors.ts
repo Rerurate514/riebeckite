@@ -2,13 +2,16 @@ import path from "node:path";
 import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   ContentManager,
-  FileSystemContentSource,
   getResolvedPluginMetadata,
   readContentBuildStateStatus,
   readOnlyContentGraph,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../application_root.js";
+import {
+  contentSourceName,
+  resolveProjectContentSource,
+} from "../content_source.js";
 import { loadProjectConfig } from "../load_config.js";
 import type {
   ApplicationInspection,
@@ -80,7 +83,7 @@ export async function collectContentInspection(
   config: ResolvedRiebeckiteConfig,
   project: RiebeckiteProject,
 ): Promise<ContentInspection> {
-  const source = resolveContentSource(config, project);
+  const source = resolveProjectContentSource(config, project);
   const paths = (await source.scan())
     .map((entry) => entry.path)
     .toSorted((left, right) => left.localeCompare(right));
@@ -126,7 +129,7 @@ export async function collectGraphInspection(
   project: RiebeckiteProject,
 ): Promise<GraphInspection> {
   const config = await loadProjectConfig(project);
-  const source = resolveContentSource(config, project);
+  const source = resolveProjectContentSource(config, project);
   const locations = await new ContentManager(source, [], {
     config,
   }).getContentLocations();
@@ -161,27 +164,13 @@ export async function collectBuildInspection(
     resolveContentBuildStatePath(config, undefined),
   );
   if (status.kind === "missing") return { status: "not created" };
-  if (status.kind === "invalid") return { status: "invalid" };
+  if (status.kind === "invalid")
+    return { status: "invalid", reason: status.reason };
   return {
     status: "valid",
     version: status.version,
     entryCount: status.entryCount,
   };
-}
-
-function resolveContentSource(
-  config: ResolvedRiebeckiteConfig,
-  project: RiebeckiteProject,
-): ContentSource {
-  if (config.content.source) return config.content.source;
-  return new FileSystemContentSource(
-    project.contentRoot,
-    config.content.exclude,
-  );
-}
-
-function contentSourceName(config: ResolvedRiebeckiteConfig): string {
-  return config.content.source ? "custom" : "filesystem";
 }
 
 function displayPath(value: string, invocationCwd: string): string {

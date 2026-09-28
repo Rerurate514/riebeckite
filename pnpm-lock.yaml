@@ -74,6 +74,9 @@ importers:
       '@riebeckite/plugin-backlinks':
         specifier: workspace:*
         version: link:../../packages/plugins/backlinks
+      '@riebeckite/plugin-bases':
+        specifier: workspace:*
+        version: link:../../packages/plugins/bases
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
@@ -271,6 +274,21 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/bases:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+      vfile-matter:
+        specifier: 'catalog:'
+        version: 5.0.1
 
   packages/plugins/code-enhance:
     dependencies:

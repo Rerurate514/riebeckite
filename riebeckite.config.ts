@@ -4,6 +4,7 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
+import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
@@ -87,6 +88,7 @@ export default defineConfig({
     tocPlugin(),
     backlinksPlugin(),
     queryPlugin(),
+    dataviewPlugin(),
     recentPostsPlugin(),
     localGraphPlugin(),
     gardenExplorerPlugin(),

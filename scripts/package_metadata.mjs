@@ -7,6 +7,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/backlinks",
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",
+  "packages/plugins/dataview",
   "packages/plugins/diagnostics",
   "packages/plugins/diff",
   "packages/plugins/excalidraw",

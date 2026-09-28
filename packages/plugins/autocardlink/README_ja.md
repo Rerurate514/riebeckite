@@ -2,7 +2,7 @@
 
 `cardlink` コードブロックを、外部ページへのプレビューカードに変換するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## できること
 

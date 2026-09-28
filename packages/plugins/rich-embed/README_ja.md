@@ -2,7 +2,7 @@
 
 ` ```embed ` コードブロックを、ビルド時に外部メディアの埋め込みへ変換するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

@@ -47,7 +47,7 @@ attribute reports `minimal`.
 | `tokens` | `ThemeDesignTokens` | `{}` | Override design tokens (colors, fonts, spacing, layout widths) |
 | `userCss` | `string[]` | `[]` | Extra user stylesheets |
 
-See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
+See the [`@riebeckite/theme-default`](../default/README.md) README for the
 full token list — the token contract is identical.
 
 ## Exports
@@ -59,8 +59,8 @@ full token list — the token contract is identical.
 ## See also
 
 - [Theme authoring contract](../../../docs/theme_authoring_en.md)
-- [`@riebeckite/theme-default`](../default/README_en.md)
-- [`@riebeckite/theme-sakura`](../sakura/README_en.md)
-- [`@riebeckite/theme-tokyonight`](../tokyonight/README_en.md)
-- [`@riebeckite/theme-gruvbox`](../gruvbox/README_en.md)
-- [`@riebeckite/theme-rerurate`](../rerurate/README_en.md)
+- [`@riebeckite/theme-default`](../default/README.md)
+- [`@riebeckite/theme-sakura`](../sakura/README.md)
+- [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)
+- [`@riebeckite/theme-gruvbox`](../gruvbox/README.md)
+- [`@riebeckite/theme-rerurate`](../rerurate/README.md)

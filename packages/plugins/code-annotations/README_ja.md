@@ -5,7 +5,7 @@ VitePress / Docusaurus 風のコードブロック装飾を加えるプラグイ
 差分表示に対応します。素の `<pre><code>` と
 `@riebeckite/plugin-code-enhance` の行ラッパーの両方で動作します。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定
 

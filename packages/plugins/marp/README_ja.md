@@ -2,7 +2,7 @@
 
 `marp` コードブロックを Marp のスライドデッキとしてビルド時に描画するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

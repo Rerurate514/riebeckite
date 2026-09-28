@@ -2,7 +2,7 @@
 
 Obsidian の音声・動画埋め込みを、ブラウザ標準の HTML5 プレーヤーで表示するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## できること
 

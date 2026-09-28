@@ -2,7 +2,7 @@
 
 記事内の画像をクリックすると、拡大表示用のダイアログを開くプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 仕組み
 

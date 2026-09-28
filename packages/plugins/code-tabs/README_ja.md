@@ -2,7 +2,7 @@
 
 連続するコードブロックを、`tab="..."` の名前ごとにタブへまとめるプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定
 

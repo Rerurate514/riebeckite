@@ -2,7 +2,7 @@
 
 公開済みノートを日付順に並べ、最新の記事一覧として表示するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## できること
 

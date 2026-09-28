@@ -66,7 +66,7 @@ attributes (`data-gruvbox-contrast`). `contrast` can also be overridden
 directly from `config` via
 `attributes: { "data-gruvbox-contrast": "hard" }`.
 
-See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
+See the [`@riebeckite/theme-default`](../default/README.md) README for the
 full token list — the token contract is identical.
 
 ## Exports
@@ -78,6 +78,6 @@ full token list — the token contract is identical.
 ## See also
 
 - [Plugin guide](../../../docs/plugins_en.md)
-- [`@riebeckite/theme-default`](../default/README_en.md)
-- [`@riebeckite/theme-sakura`](../sakura/README_en.md)
-- [`@riebeckite/theme-tokyonight`](../tokyonight/README_en.md)
+- [`@riebeckite/theme-default`](../default/README.md)
+- [`@riebeckite/theme-sakura`](../sakura/README.md)
+- [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)

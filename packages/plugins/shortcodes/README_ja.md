@@ -2,7 +2,7 @@
 
 `remark-directive` を土台にした汎用ショートコード機能です。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

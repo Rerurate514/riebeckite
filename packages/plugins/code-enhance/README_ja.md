@@ -2,7 +2,7 @@
 
 Shiki によるシンタックスハイライトへ、コピー、折り返し、折りたたみなどの操作を加えるプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定
 

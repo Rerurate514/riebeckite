@@ -2,7 +2,7 @@
 
 Obsidian の `.canvas`（JSON Canvas 1.0）を図として表示するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

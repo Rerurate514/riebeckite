@@ -2,7 +2,7 @@
 
 Paper、Ink、Orange を軸にした Rerurate のテーマです。フラットな面、1px の罫線、8px を基準にした余白で、情報の境界をはっきり見せます。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

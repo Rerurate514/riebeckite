@@ -6,7 +6,7 @@ Riebeckite の記事に対して、公開 URL（permalink）を決定するプ�
 
 旧 URL から正準 URL へのリダイレクトも同じ設定から登録できます。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 基本的な使い方
 

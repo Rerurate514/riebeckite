@@ -282,7 +282,7 @@ packages/themes/example/
 ├─ package.json
 ├─ style.css
 ├─ README_ja.md
-└─ README_en.md
+└─ README.md
 ```
 
 ## この repository 外で Theme を配布する

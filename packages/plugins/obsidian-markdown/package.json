@@ -17,7 +17,7 @@
   },
   "files": [
     "LICENSE",
-    "README_en.md",
+    "README.md",
     "README_ja.md",
     "dist"
   ],
@@ -41,5 +41,16 @@
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
-  }
+  },
+  "description": "Obsidian-flavored Markdown support for Riebeckite.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "obsidian",
+    "markdown"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
 }

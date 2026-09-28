@@ -8,7 +8,7 @@
   },
   "files": [
     "LICENSE",
-    "README_en.md",
+    "README.md",
     "README_ja.md",
     "bin",
     "dist"
@@ -34,5 +34,16 @@
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
-  }
+  },
+  "description": "Command-line tooling for building and validating Riebeckite sites.",
+  "keywords": [
+    "riebeckite",
+    "cli",
+    "markdown",
+    "static-site-generator"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
 }

@@ -2,7 +2,7 @@
 
 ` ```vega-lite ` コードブロックを Vega-Lite のチャートとして表示するプラグインです。チャートはブラウザ側で描画し、Vega ランタイムは必要になったときだけ動的に読み込みます。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

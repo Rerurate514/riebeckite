@@ -2,7 +2,7 @@
 
 `dot` / `graphviz` コードブロックを Graphviz の SVG 図として表示するプラグインです。既定ではビルド時に描画します。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

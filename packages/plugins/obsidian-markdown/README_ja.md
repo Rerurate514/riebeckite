@@ -2,7 +2,7 @@
 
 ウィキリンク、コールアウト、インラインタグ、ブロック参照など、Obsidian の Markdown 記法を変換するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定
 

@@ -2,7 +2,7 @@
 
 ` ```wavedrom ` コードブロックを [WaveDrom](https://wavedrom.com/) のタイミング図として表示するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

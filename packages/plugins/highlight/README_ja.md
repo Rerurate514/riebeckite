@@ -3,7 +3,7 @@
 `==ハイライト==` を `<mark>` 要素として表示するプラグインです。Markdown の
 テキストノードをビルド時に書き換えます。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

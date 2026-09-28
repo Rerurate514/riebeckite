@@ -13,7 +13,7 @@ that extensions build against. It is intentionally free of HonoX, Vite, and any
 specific plugin, theme, or application: those depend on Core, never the reverse.
 
 A site configures Core through `defineConfig`, and a framework integration such
-as [`@riebeckite/honox`](../integrations/honox/README_en.md) drives the build.
+as [`@riebeckite/honox`](../integrations/honox/README.md) drives the build.
 Plugins and themes are plain objects created by `definePlugin` and `defineTheme`.
 
 ## Installation

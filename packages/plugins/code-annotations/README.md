@@ -134,4 +134,4 @@ highlighting regardless.
 ## See also
 
 - [Plugin guide](../../docs/plugins_en.md)
-- [`@riebeckite/plugin-code-enhance`](../code-enhance/README_en.md)
+- [`@riebeckite/plugin-code-enhance`](../code-enhance/README.md)

@@ -16,7 +16,7 @@
   },
   "files": [
     "LICENSE",
-    "README_en.md",
+    "README.md",
     "README_ja.md",
     "dist"
   ],
@@ -56,5 +56,16 @@
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
-  }
+  },
+  "description": "Core content pipeline, configuration, and extension APIs for Riebeckite.",
+  "keywords": [
+    "riebeckite",
+    "markdown",
+    "obsidian",
+    "static-site-generator"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
 }

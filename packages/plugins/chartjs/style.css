@@ -1,0 +1,38 @@
+.rb-chartjs {
+  --rb-chartjs-paper: var(--rb-color-paper, #ffffff);
+  --rb-chartjs-ink: var(--rb-color-ink, #000000);
+  --rb-chartjs-muted: var(--rb-color-muted, #69645c);
+  --rb-chartjs-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-chartjs-ink) 18%, transparent)
+  );
+  margin: 2rem 0;
+  border: 1px solid var(--rb-chartjs-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-chartjs-paper) 96%,
+    var(--rb-chartjs-ink)
+  );
+  color: var(--rb-chartjs-ink);
+}
+
+.rb-chartjs__caption {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--rb-chartjs-rule);
+  color: var(--rb-chartjs-muted);
+  font-size: 0.875rem;
+}
+
+.rb-chartjs__canvas {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 1rem;
+}
+
+html[data-theme="dark"] .rb-chartjs,
+html.dark .rb-chartjs {
+  --rb-chartjs-paper: var(--rb-color-ink, #000000);
+  --rb-chartjs-ink: var(--rb-color-paper, #ffffff);
+}

@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { chartjs } from "@riebeckite/plugin-chartjs";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
@@ -65,6 +66,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    chartjs(),
     excalidraw(),
     media(),
     attachment(),

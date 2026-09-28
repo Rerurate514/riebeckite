@@ -64,11 +64,16 @@ const PACKAGES = [
     name: "@riebeckite/plugin-recent-posts",
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
+  {
+    directory: "packages/plugins/chartjs",
+    name: "@riebeckite/plugin-chartjs",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -369,6 +374,15 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes(CHARTJS_MARKER)) {
+    fail(`generated HTML is missing the chartjs marker (${CHARTJS_MARKER})`);
+  }
+  if (!combined.includes("data-chartjs-config")) {
+    fail("generated HTML is missing the chartjs canvas configuration");
+  }
+  if (!combined.includes("rb-chartjs")) {
+    fail("generated HTML is missing the chartjs figure markup");
   }
 
   for (const file of htmlFiles) {

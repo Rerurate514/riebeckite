@@ -24,8 +24,18 @@ import { mountRiebeckiteEndpoints, resolveContentRoute } from "@riebeckite/honox
 import {
   Article as ArticlePrimitive,
   ArticleContent,
+  ArticleFooter,
   ArticleHeader,
   ArticleLayout,
+  ArticleMeta,
+  Sidebar,
+  type ArticleContentProps,
+  type ArticleFooterProps,
+  type ArticleHeaderProps,
+  type ArticleLayoutProps,
+  type ArticleMetaProps,
+  type ArticleProps,
+  type SidebarProps,
 } from "@riebeckite/honox/ui";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
@@ -58,8 +68,11 @@ export const resolvedEntries = {
   resolveContentRoute,
   ArticlePrimitive,
   ArticleContent,
+  ArticleFooter,
   ArticleHeader,
   ArticleLayout,
+  ArticleMeta,
+  Sidebar,
   autoCardLinkPlugin,
   initAutoCardLink,
   backlinksPlugin,
@@ -77,6 +90,17 @@ export const resolvedEntries = {
   initVegaLite,
   defaultTheme,
 } as const;
+
+// Keep the public UI primitive prop contracts covered by the packed-tarball
+// NodeNext declaration check as well as the component exports above.
+export type UiPrimitiveProps =
+  | ArticleProps
+  | ArticleContentProps
+  | ArticleFooterProps
+  | ArticleHeaderProps
+  | ArticleLayoutProps
+  | ArticleMetaProps
+  | SidebarProps;
 
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },

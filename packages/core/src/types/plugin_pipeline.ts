@@ -1,5 +1,6 @@
 import type { Plugin } from "unified";
 import type { Node } from "unist";
+import type { ContentSource } from "../content/content_source.js";
 import type { PluginRenderInput } from "./plugin_context.js";
 
 export type PipelinePlugin = Plugin<[unknown?], Node, Node>;
@@ -18,6 +19,7 @@ export type MarkdownPipelineContext = {
     fragment: MarkdownEmbedFragment | null,
   ) => Promise<string | null>;
   renderContent?: (input: PluginRenderInput) => Promise<string | null>;
+  contentSource?: ContentSource;
 };
 
 export type MarkdownEmbedFragment = {

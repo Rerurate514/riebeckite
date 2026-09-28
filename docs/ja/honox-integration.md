@@ -1,12 +1,43 @@
 # HonoX Integration
 
-`@riebeckite/integrations-honox` は portable な Core と HonoX/Vite を接続します。application root/config の解決、Vite dev/build、SSG extension mapping、plugin/theme style entry の生成、HonoX application build workflow を所有します。
+`@riebeckite/honox` は portable な Core と HonoX/Vite を接続します。application root/config の解決、Vite dev/build、SSG extension mapping、plugin/theme style entry の生成、HonoX application build workflow を所有します。
 
 public API は `riebeckite`、`loadRiebeckiteConfig`、`resolveHonoxApplication`、`buildHonoxApplication`、`resolveHonoxApplicationRoot`、`startHonoxDevServer`、`riebeckiteSsg`、`riebeckiteSsgExtensionMap` です。
 
 Vite plugin は任意の `configRoot`、`appRoot`、`configFile`、monorepo 開発専用の `workspaceRoot` を受け取ります。`appRoot` の既定値は Vite root、`configRoot` の既定値は `appRoot` です。config は `configRoot` 基準で import し、`content.directory` は `appRoot` 基準で解決します。`resolveHonoxApplication` はこれらの root と resolve 済み config をまとめて返すため、CLI と Vite は同じ model を使います。`workspaceRoot` は monorepo で source package alias を使うためだけの指定です。npm で install した consumer は指定不要で、自身の `node_modules` から解決します。plugin は `app/.riebeckite/` に plugin/theme import entry を生成し、client module を設定します。このディレクトリは integration output であり、application source として直接編集しません。
 
 静的生成には `riebeckiteSsg({ entry, extensionMap })` を使います。内部の Vite server には解決済みの application root と define 値を渡すため、`riebeckite build` を application root の子ディレクトリから実行しても同じ出力になります。
+
+## UI primitive
+
+`@riebeckite/honox/ui` は component framework ではなく、意図的に小さく保った構造用 contract です。公開する component は次だけです。
+
+- 記事ページ用の `Article`、`ArticleLayout`、`ArticleHeader`、`ArticleContent`、`ArticleMeta`、`ArticleFooter`
+- 補助コンテンツ用の `Sidebar`
+
+各 component に対応する `*Props` 型も公開します。contract として提供する stable styling hook は、上記の順に `rb-article`、`rb-article-layout`、`rb-article-header`、`rb-article-body`、`rb-article-meta`、`rb-article-footer`、`rb-sidebar` だけです。primitive が提供するのは semantic HTML、これらの hook、`class` / `className` の合成だけです。記事本文、metadata の表示形式、navigation、card、ページ layout、island、CSS は Site Application が所有します。`ArticleHeader` と `ArticleContent` は children または HTML input prop のいずれか一方だけを受け取ります。
+
+```tsx
+import {
+  Article,
+  ArticleContent,
+  ArticleHeader,
+  ArticleLayout,
+  ArticleMeta,
+} from "@riebeckite/honox/ui";
+
+<Article class="prose">
+  <ArticleLayout aside={<nav>…</nav>}>
+    <ArticleContent>
+      <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
+      <ArticleMeta>…</ArticleMeta>
+      <div dangerouslySetInnerHTML={{ __html: body }} />
+    </ArticleContent>
+  </ArticleLayout>
+</Article>;
+```
+
+primitive は composition point として使い、style は Site 側で定義します。`@riebeckite/honox/src/` 以下を import したり、ここに挙げていない component に依存したりしないでください。
 
 記事 routing は、manifest に既に解決済みの public location（`byPermalink`、次に `redirects`）に対して request を解決します。filesystem path、directory layout、slug から URL を逆算しません。slug は content の内部 lookup key であり、public URL は解決済みの `permalink` です。
 

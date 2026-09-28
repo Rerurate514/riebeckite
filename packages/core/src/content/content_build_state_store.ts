@@ -18,6 +18,27 @@ export async function loadContentBuildState(
   }
 }
 
+export type ContentBuildStateStatus =
+  | { kind: "missing"; path: string }
+  | { kind: "valid"; path: string }
+  | { kind: "invalid"; path: string };
+
+/** Reads incremental build state without creating or modifying it. */
+export async function readContentBuildStateStatus(
+  statePath: string,
+): Promise<ContentBuildStateStatus> {
+  try {
+    const parsed: unknown = JSON.parse(await fs.readFile(statePath, "utf8"));
+    return isContentBuildState(parsed)
+      ? { kind: "valid", path: statePath }
+      : { kind: "invalid", path: statePath };
+  } catch (error) {
+    if (isNotFoundError(error)) return { kind: "missing", path: statePath };
+    if (error instanceof SyntaxError) return { kind: "invalid", path: statePath };
+    throw error;
+  }
+}
+
 export async function saveContentBuildState(
   statePath: string,
   state: ContentBuildState,
@@ -66,4 +87,13 @@ function isContentBuildState(value: unknown): value is ContentBuildState {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "ENOENT"
+  );
 }

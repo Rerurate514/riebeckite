@@ -44,6 +44,12 @@ export type ContentBuildOptions = {
   incremental?: boolean;
 };
 
+export type ContentInspection = {
+  readonly entries: readonly ContentSourceEntry[];
+  readonly contentIndex: ReadonlyMap<string, string>;
+  readonly diagnostics: readonly Diagnostic[];
+};
+
 type ContentBuildPreparation = {
   previousState: ContentBuildState | undefined;
   currentEntries: readonly FingerprintedContentEntry[];
@@ -85,9 +91,14 @@ export class ContentManager {
   }
 
   async getAllPosts(): Promise<ContentPostReference[]> {
-    return (await this.getContentEntries())
+    return (await this.scan())
       .filter((entry) => entry.path.endsWith(".md"))
       .map((entry) => ({ slug: entry.path.replace(/\.md$/, "") }));
+  }
+
+  /** Scans the configured content source without processing content. */
+  async scan(): Promise<readonly ContentSourceEntry[]> {
+    return await this.getContentEntries();
   }
 
   async getPost(slug: string): Promise<string> {
@@ -216,6 +227,20 @@ export class ContentManager {
   async getDiagnostics(): Promise<Diagnostic[]> {
     const manifest = await this.getManifest();
     return manifest.diagnostics;
+  }
+
+  /**
+   * Inspects source entries and registered diagnostics without running build
+   * lifecycle hooks, rendering content, or writing build state.
+   */
+  async inspect(): Promise<ContentInspection> {
+    const [entries, contentIndex] = await Promise.all([
+      this.getContentEntries(),
+      this.getContentIndex(),
+    ]);
+    const diagnostics = await this.pluginRuntime.collectDiagnostics(contentIndex);
+
+    return { entries, contentIndex, diagnostics };
   }
 
   async dispose(): Promise<void> {

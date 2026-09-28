@@ -1,4 +1,5 @@
-import fs from "node:fs";
+import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { build as buildWithEsbuild } from "esbuild";
@@ -13,31 +14,34 @@ export async function loadRiebeckiteConfig(
   options: RiebeckiteConfigLoaderOptions,
 ): Promise<ResolvedRiebeckiteConfig> {
   const configFile = options.configFile ?? "riebeckite.config.ts";
-  const outputFile = path.join(
-    options.workspaceRoot,
-    "node_modules/.vite/riebeckite.config.generated.mjs",
+  const temporaryDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-config-"),
   );
-  fs.mkdirSync(path.dirname(outputFile), { recursive: true });
+  const outputFile = path.join(temporaryDirectory, "config.mjs");
 
-  await buildWithEsbuild({
-    stdin: {
-      contents: `
-        import rawConfig from ${JSON.stringify(path.join(options.workspaceRoot, configFile))};
-        import { resolveConfig } from "@riebeckite/core";
-        export default resolveConfig(rawConfig);
-      `,
-      resolveDir: options.workspaceRoot,
-      loader: "ts",
-    },
-    outfile: outputFile,
-    bundle: true,
-    platform: "node",
-    format: "esm",
-    plugins: [workspacePackageResolver(options.workspaceRoot)],
-  });
+  try {
+    await buildWithEsbuild({
+      stdin: {
+        contents: `
+          import rawConfig from ${JSON.stringify(path.join(options.workspaceRoot, configFile))};
+          import { resolveConfig } from "@riebeckite/core";
+          export default resolveConfig(rawConfig);
+        `,
+        resolveDir: options.workspaceRoot,
+        loader: "ts",
+      },
+      outfile: outputFile,
+      bundle: true,
+      platform: "node",
+      format: "esm",
+      plugins: [workspacePackageResolver(options.workspaceRoot)],
+    });
 
-  const module = await import(`${pathToFileUrl(outputFile)}?t=${Date.now()}`);
-  return module.default;
+    const module = await import(`${pathToFileUrl(outputFile)}?t=${Date.now()}`);
+    return module.default;
+  } finally {
+    await fs.rm(temporaryDirectory, { recursive: true, force: true });
+  }
 }
 
 function pathToFileUrl(filePath: string): string {

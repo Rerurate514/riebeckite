@@ -2,6 +2,7 @@ import { resolveRiebeckiteApplication } from "./application_root";
 import { runBuild } from "./commands/build";
 import { runCheck } from "./commands/check";
 import { runDev } from "./commands/dev";
+import { runDoctorCommand } from "./commands/doctor";
 import { renderCliError } from "./error_renderer";
 
 export async function main(arguments_: readonly string[]): Promise<void> {
@@ -17,6 +18,10 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       await runBuild(application, { full: command.full });
       return;
     }
+    if (command.name === "doctor") {
+      if (!(await runDoctorCommand(application))) process.exitCode = 1;
+      return;
+    }
 
     await runCheck(application);
     console.log("Riebeckite configuration is valid.");
@@ -29,7 +34,8 @@ export async function main(arguments_: readonly string[]): Promise<void> {
 type Command =
   | { name: "dev" }
   | { name: "build"; full: boolean }
-  | { name: "check" };
+  | { name: "check" }
+  | { name: "doctor" };
 
 function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
@@ -41,9 +47,10 @@ function parseCommand(arguments_: readonly string[]): Command {
   ) {
     return { name, full: options[0] === "--full" };
   }
+  if (name === "doctor" && options.length === 0) return { name };
 
   throw new CliUsageError(
-    "Usage: riebeckite <dev | build [--full] | check>",
+    "Usage: riebeckite <dev | build [--full] | check | doctor>",
   );
 }
 

@@ -21,7 +21,15 @@ export {
 export type { ContentGraph } from "./src/content/content_graph";
 export { createContentGraph } from "./src/content/content_graph";
 export { ContentManager } from "./src/content/content_manager";
-export type { ContentBuildOptions } from "./src/content/content_manager";
+export type {
+  ContentBuildOptions,
+  ContentInspection,
+} from "./src/content/content_manager";
+export {
+  readContentBuildStateStatus,
+  resolveContentBuildStatePath,
+} from "./src/content/content_build_state_store";
+export type { ContentBuildStateStatus } from "./src/content/content_build_state_store";
 export { FileSystemContentSource } from "./src/content/file_system_content_source";
 export type {
   ContentSource,

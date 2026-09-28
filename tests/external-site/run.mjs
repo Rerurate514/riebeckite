@@ -32,6 +32,7 @@ const PACKAGES = [
     name: "@riebeckite/plugin-backlinks",
   },
   { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
+  { directory: "packages/plugins/kanban", name: "@riebeckite/plugin-kanban" },
   {
     directory: "packages/plugins/dataview",
     name: "@riebeckite/plugin-dataview",
@@ -77,6 +78,8 @@ const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const DATAVIEW_NOTE_TITLE = "Dataview Alpha";
 const PROPERTY_MARKER = "RIEBECKITE_EXTERNAL_PROPERTY_MARKER";
+const KANBAN_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_MARKER";
+const KANBAN_BLOCK_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_BLOCK_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
@@ -552,6 +555,38 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!combined.includes('srcset="/attachments/rb-photo-640.webp 640w')) {
     fail("responsive-image plugin did not emit a width-described srcset");
   }
+  if (!combined.includes("data-kanban-plugin")) {
+    fail("generated HTML is missing the kanban plugin board output");
+  }
+  if (!combined.includes('data-kanban-source="note"')) {
+    fail("kanban did not render the auto-detected note board");
+  }
+  if (!combined.includes('data-kanban-source="block"')) {
+    fail("kanban did not render the fenced block board");
+  }
+  if (!combined.includes('data-column="In Progress"')) {
+    fail("kanban did not parse columns from the fixture");
+  }
+  if (!combined.includes('data-checked="true"')) {
+    fail("kanban did not render a checked card");
+  }
+  if (!combined.includes('data-checked="false"')) {
+    fail("kanban did not render an unchecked card");
+  }
+  if (!combined.includes('data-kanban-link="index"')) {
+    fail("kanban did not resolve a wikilink into an href");
+  }
+  if (!combined.includes("rb-kanban__fallback")) {
+    fail("kanban did not preserve unsupported lines in the fallback");
+  }
+  if (!combined.includes(KANBAN_MARKER)) {
+    fail(`generated HTML is missing the kanban note marker (${KANBAN_MARKER})`);
+  }
+  if (!combined.includes(KANBAN_BLOCK_MARKER)) {
+    fail(
+      `generated HTML is missing the kanban block marker (${KANBAN_BLOCK_MARKER})`,
+    );
+  }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(
       `generated HTML is missing the site-local plugin marker (${LOCAL_PLUGIN_MARKER})`,
@@ -628,6 +663,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail(
       `emitted client bundle is missing the flashcards identifier (${FLASHCARDS_CLIENT_IDENTIFIER})`,
     );
+  }
+  if (!css.includes("rb-kanban")) {
+    fail("kanban plugin stylesheet was not bundled into the dist CSS");
   }
 
   for (const file of htmlFiles) {

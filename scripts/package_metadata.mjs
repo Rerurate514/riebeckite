@@ -15,6 +15,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/flashcards",
   "packages/plugins/garden-explorer",
   "packages/plugins/hover-preview",
+  "packages/plugins/kanban",
   "packages/plugins/lightbox",
   "packages/plugins/local-graph",
   "packages/plugins/media",

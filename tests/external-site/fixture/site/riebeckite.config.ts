@@ -5,6 +5,7 @@ import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { kanban } from "@riebeckite/plugin-kanban";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
@@ -39,6 +40,7 @@ export default defineConfig({
     queryPlugin(),
     dataviewPlugin(),
     flashcardsPlugin(),
+    kanban(),
     recentPostsPlugin(),
     relatedPosts(),
     responsiveImage(),

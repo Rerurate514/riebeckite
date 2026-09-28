@@ -57,6 +57,16 @@ import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { initFlashcards } from "@riebeckite/plugin-flashcards/client";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
+import {
+  kanban,
+  kanbanPlugin,
+  parseKanban,
+  renderKanban,
+  resolveKanbanOptions,
+  type KanbanOptions,
+  type KanbanParseResult,
+  type ResolvedKanbanOptions,
+} from "@riebeckite/plugin-kanban";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
@@ -105,6 +115,11 @@ export const resolvedEntries = {
   initFlashcards,
   obsidianMarkdown,
   properties,
+  kanban,
+  kanbanPlugin,
+  parseKanban,
+  renderKanban,
+  resolveKanbanOptions,
   recentPostsPlugin,
   RecentPosts,
   relatedPosts,
@@ -134,6 +149,12 @@ export type CollectionInputs = {
 };
 
 export type ViteHelperOptions = RiebeckiteViteOptions;
+
+export type KanbanFixtureTypes = {
+  options: KanbanOptions;
+  resolved: ResolvedKanbanOptions;
+  parsed: KanbanParseResult;
+};
 
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },

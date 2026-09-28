@@ -10,6 +10,7 @@ import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+import { kanban } from "@riebeckite/plugin-kanban";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
@@ -96,6 +97,7 @@ export default defineConfig({
     queryPlugin(),
     dataviewPlugin(),
     flashcardsPlugin(),
+    kanban(),
     recentPostsPlugin(),
     relatedPosts(),
     responsiveImage(),

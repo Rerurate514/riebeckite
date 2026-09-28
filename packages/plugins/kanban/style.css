@@ -1,0 +1,144 @@
+.rb-kanban {
+  --rb-kanban-ink: var(--rb-color-ink, #000000);
+  --rb-kanban-paper: var(--rb-color-paper, #ffffff);
+  --rb-kanban-muted: var(--rb-color-muted, #69645c);
+  --rb-kanban-accent: var(--rb-color-accent, #686868);
+  --rb-kanban-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-kanban-ink) 18%, transparent)
+  );
+  --rb-kanban-surface: color-mix(
+    in srgb,
+    var(--rb-kanban-paper) 94%,
+    var(--rb-kanban-ink)
+  );
+
+  margin: 1.5rem 0;
+  color: var(--rb-kanban-ink);
+}
+
+.rb-kanban__board {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x proximity;
+}
+
+.rb-kanban__column {
+  flex: 0 0 16rem;
+  min-width: 16rem;
+  max-width: 20rem;
+  scroll-snap-align: start;
+  border: 1px solid var(--rb-kanban-rule);
+  background: var(--rb-kanban-surface);
+}
+
+.rb-kanban__column-title {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rb-kanban-rule);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.rb-kanban__cards {
+  margin: 0;
+  padding: 0.5rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rb-kanban__card {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--rb-kanban-rule);
+  background: var(--rb-kanban-paper);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.rb-kanban__card-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.rb-kanban__checkbox {
+  flex: 0 0 auto;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: 0.2em;
+  border: 1px solid var(--rb-kanban-ink);
+  transform: translateY(0.05em);
+}
+
+.rb-kanban__card[data-checked="true"] .rb-kanban__checkbox {
+  background: var(--rb-kanban-accent);
+  border-color: var(--rb-kanban-accent);
+}
+
+.rb-kanban__card[data-checked="true"] .rb-kanban__card-text {
+  color: var(--rb-kanban-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--rb-kanban-rule);
+}
+
+.rb-kanban__strong {
+  font-weight: 700;
+}
+
+.rb-kanban__tag {
+  color: var(--rb-kanban-muted);
+  font-size: 0.8125em;
+  white-space: nowrap;
+}
+
+.rb-kanban__wikilink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rb-kanban-rule);
+  text-underline-offset: 0.2em;
+}
+
+.rb-kanban__wikilink:hover,
+.rb-kanban__wikilink:focus-visible {
+  text-decoration-color: var(--rb-kanban-accent);
+}
+
+.rb-kanban__wikilink--broken {
+  color: var(--rb-kanban-muted);
+  text-decoration: line-through;
+}
+
+.rb-kanban__fallback {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--rb-kanban-muted);
+}
+
+.rb-kanban__fallback-title {
+  cursor: pointer;
+}
+
+.rb-kanban__fallback-body {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+  border: 1px solid var(--rb-kanban-rule);
+  background: var(--rb-kanban-surface);
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+}
+
+html[data-theme="dark"] .rb-kanban,
+html.dark .rb-kanban {
+  --rb-kanban-ink: var(--rb-color-paper, #ffffff);
+  --rb-kanban-paper: var(--rb-color-ink, #000000);
+}

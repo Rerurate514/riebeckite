@@ -14,7 +14,7 @@
 | **12** | **A3/A4** | **Root / Config resolutionを一本化** | ✅ 完了 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
 | **13** | **A4.5** | **External HonoX/SSG境界を安定化** | ✅ 完了 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
 | **14** | **A5** | **External Content Source / Vault対応を保証** | ✅ 完了 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
-| **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
+| **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | ✅ 完了 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
 | 16 | R2 | ContentManager責務分割 | 未着手 | Medium | 約443行の責務整理。build調整とpermalink/redirect解決を抽出し公開APIは不変（Phase 3 / A5.5後） |
 | 17 | R10 | seoプラグイン分割 | 未着手 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
 | 18 | R11 | diagnostics analyze分割 | 未着手 | Small–Medium | 472行の`plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
@@ -204,12 +204,13 @@
 - **検証**: `test:e2e:external` に site root 外の Vault、attachment のサイズ読み込み、media embed のケースを追加。
 - **成果**: A3/A4 の解決済み絶対 `contentRoot` を filesystem content source と attachment plugin が共有する既存境界を、公開 tarball の E2E で保証。fixture は site 外の相対 Vault を指定し、attachment と media の logical path・attachment size を検証する。英日 configuration docs に外部 Vault の基準と例を明記。
 
-### #15 A5.5: Pluginのfilesystem直接依存を除去（A系 / Medium–Large / 依存: A3/A4）
+### #15 A5.5: Pluginのfilesystem直接依存を除去（✅ 完了 / A系 / Medium–Large / 依存: A3/A4）
 - **概要**: プラグインからの `node:fs`/`node:path` 直接依存を ContentSource/Asset 境界へ移行。
 - **現状の直接依存**: `plugins/diagnostics/src/vault.ts:1-2`, `diagnostics/bin.ts:1`, `excalidraw/index.ts:1-2`, `attachment/index.ts:1-2`, `media/index.ts:1`, `diff/index.ts:1`, `mermaid/src/render-static.ts:1,3`, `diff/src/git/history_reader.ts:2`
 - **実装方針**: Core の content source / asset / build-time API 経由に置換し、Node 専用処理は build-time contract として明示。`diagnostics/bin.ts` は CLI 側へ移す等の層整理も検討。
 - **完了条件**: プラグイン本体から `node:fs` 直接 import が消える（または境界 API 経由に限定）。
 - **検証**: build、`test:e2e:external`、diagnostics/excalidraw/attachment の実動作。
+- **成果**: Core の `ContentSource` を plugin/render/Markdown pipeline context へ渡し、論理パスから安全に entry を検索・読み込みできる API を公開。attachment は source metadata からサイズを取得し、excalidraw と diagnostics は source 経由の read/scan に移行。media/diff/diagnostics CLI は path 直接依存を除去。Mermaid の一時ファイル処理は、Puppeteer を必要とする明示的な build-time renderer contract の実装に隔離した。
 
 ### #16 R2: ContentManager責務分割（Phase 3 / Medium / 依存: A5.5）
 - **概要**: `packages/core/src/content/content_manager.ts`（443行）を責務分割。**公開 API は不変**。

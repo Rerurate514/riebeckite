@@ -93,6 +93,10 @@ export class ContentManager {
         ? (pipelineOptions.config?.content.source ??
           new FileSystemContentSource(content, exclude))
         : content;
+    this.pipelineOptions = {
+      ...this.pipelineOptions,
+      contentSource: this.source,
+    };
     this.contentIndexBuilder = new ContentIndexBuilder(this.source);
     this.pluginRuntime = new PluginRuntime(this.pipelineOptions);
     this.buildStatePath = resolveContentBuildStatePath(

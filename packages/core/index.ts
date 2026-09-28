@@ -24,6 +24,7 @@ export type {
   ContentCollection,
   ContentCollectionContext,
   ContentCollectionDefinition,
+  ContentCollectionPage,
 } from "./src/content/content_collection.js";
 export { buildContentCollections } from "./src/content/content_collection.js";
 export type {
@@ -34,6 +35,8 @@ export type {
   ContentQueryGroup,
   ContentQueryGroupBy,
   ContentQueryGroupOptions,
+  ContentQueryPage,
+  ContentQueryPagination,
   ContentQueryScalar,
   ContentQuerySort,
   ContentQuerySortOrder,
@@ -43,6 +46,8 @@ export type {
 export {
   groupContentEntries,
   queryContentEntries,
+  queryContentPage,
+  resolveContentQueryPagination,
 } from "./src/content/content_query.js";
 export type {
   ContentGraph,

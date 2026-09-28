@@ -40,6 +40,26 @@ export type ContentQuerySpec = {
   offset?: number;
 };
 
+export type ContentQueryPagination = {
+  /** Number of entries skipped from the start. */
+  offset: number;
+  /** Entries per page; `0` means pagination is disabled. */
+  limit: number;
+  /** Total number of entries before pagination. */
+  total: number;
+  /** 1-based page number for the resolved offset. */
+  page: number;
+  /** Total number of pages (`0` when there are no entries). */
+  pageCount: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+};
+
+export type ContentQueryPage = {
+  entries: ContentManifestEntry[];
+  page: ContentQueryPagination;
+};
+
 export type ContentQueryDateGranularity = "year" | "month" | "day";
 
 export type ContentQueryGroupBy =
@@ -72,6 +92,49 @@ export function queryContentEntries(
   const matched = entries.filter((entry) => matchesFilter(entry, filter));
   const sorted = applySort(matched, spec.sort);
   return applyPagination(sorted, spec.offset, spec.limit);
+}
+
+export function queryContentPage(
+  entries: readonly ContentManifestEntry[],
+  spec: ContentQuerySpec = {},
+): ContentQueryPage {
+  const ordered = queryContentEntries(entries, {
+    filter: spec.filter,
+    sort: spec.sort,
+  });
+  const page = resolveContentQueryPagination(ordered.length, spec);
+  const end = page.limit > 0 ? page.offset + page.limit : undefined;
+  return { entries: ordered.slice(page.offset, end), page };
+}
+
+export function resolveContentQueryPagination(
+  total: number,
+  spec: Pick<ContentQuerySpec, "offset" | "limit"> = {},
+): ContentQueryPagination {
+  const limit =
+    typeof spec.limit === "number" &&
+    Number.isFinite(spec.limit) &&
+    spec.limit > 0
+      ? Math.floor(spec.limit)
+      : 0;
+  const offset =
+    typeof spec.offset === "number" &&
+    Number.isFinite(spec.offset) &&
+    spec.offset > 0
+      ? Math.floor(spec.offset)
+      : 0;
+  const pageCount = limit > 0 ? Math.ceil(total / limit) : total > 0 ? 1 : 0;
+  const page = limit > 0 ? Math.floor(offset / limit) + 1 : 1;
+
+  return {
+    offset,
+    limit,
+    total,
+    page,
+    pageCount,
+    hasPrevious: offset > 0,
+    hasNext: limit > 0 ? offset + limit < total : false,
+  };
 }
 
 function matchesFilter(

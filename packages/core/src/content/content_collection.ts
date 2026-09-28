@@ -36,6 +36,8 @@ export type ContentCollectionDefinition = {
   sort?: ContentQuerySort | readonly ContentQuerySort[];
   /** Optional ordering of the generated group keys. Defaults to ascending. */
   order?: ContentQuerySortOrder;
+  /** Entries per listing page. Omitted or `0` keeps a single page. */
+  pageSize?: number;
   /**
    * Optional display title. Defaults to the raw group value.
    */
@@ -48,6 +50,25 @@ export type ContentCollectionDefinition = {
 };
 
 /**
+ * Pagination state of a generated listing page. When `size` is `0`,
+ * pagination is disabled and the single page contains every entry.
+ */
+export type ContentCollectionPage = {
+  /** 1-based page number. */
+  current: number;
+  /** Total number of pages in the collection. */
+  count: number;
+  /** Entries per page; `0` when pagination is disabled. */
+  size: number;
+  /** Total number of entries in the collection. */
+  total: number;
+  /** Site-local path of the previous page, or `null`. */
+  previousPath: string | null;
+  /** Site-local path of the next page, or `null`. */
+  nextPath: string | null;
+};
+
+/**
  * A single generated listing page: one taxonomy value, archive period, or
  * folder, together with the entries it lists in resolved query order.
  */
@@ -56,6 +77,7 @@ export type ContentCollection = {
   value: string;
   title: string;
   path: string;
+  page: ContentCollectionPage;
   entries: ContentManifestEntry[];
 };
 
@@ -72,6 +94,7 @@ export function buildContentCollections(
 
   for (const definition of definitions) {
     const basePath = normalizeBasePath(definition.basePath);
+    const pageSize = normalizePageSize(definition.pageSize);
     const groups = groupContentEntries(entries, definition.groupBy, {
       filter: definition.filter,
       sort: definition.sort,
@@ -84,19 +107,53 @@ export function buildContentCollections(
         value: group.key,
         basePath,
       };
-      collections.push({
-        kind: definition.kind,
-        value: group.key,
-        title: definition.resolveTitle?.(context) ?? group.key,
-        path: normalizePath(
-          definition.resolvePath?.(context) ?? defaultPath(context),
-        ),
-        entries: group.entries,
-      });
+      const title = definition.resolveTitle?.(context) ?? group.key;
+      const collectionPath = normalizePath(
+        definition.resolvePath?.(context) ?? defaultPath(context),
+      );
+      const total = group.entries.length;
+      const pageCount = pageSize > 0 ? Math.ceil(total / pageSize) : 1;
+
+      for (let index = 0; index < pageCount; index++) {
+        const start = pageSize > 0 ? index * pageSize : 0;
+        const end = pageSize > 0 ? start + pageSize : undefined;
+
+        collections.push({
+          kind: definition.kind,
+          value: group.key,
+          title,
+          path: withPage(collectionPath, index),
+          page: {
+            current: index + 1,
+            count: pageCount,
+            size: pageSize,
+            total,
+            previousPath:
+              index > 0 ? withPage(collectionPath, index - 1) : null,
+            nextPath:
+              index < pageCount - 1
+                ? withPage(collectionPath, index + 1)
+                : null,
+          },
+          entries: group.entries.slice(start, end),
+        });
+      }
     }
   }
 
   return collections;
+}
+
+function normalizePageSize(value: number | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? Math.floor(value)
+    : 0;
+}
+
+function withPage(path: string, index: number): string {
+  if (index === 0) return path;
+  const base = path === "/" ? "" : path;
+  return normalizePath(`${base}/page/${index + 1}`);
 }
 
 function defaultPath(context: ContentCollectionContext): string {

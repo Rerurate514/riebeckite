@@ -36,6 +36,7 @@ const definitions: readonly ContentCollectionDefinition[] = [
       granularity: "month",
     },
     order: "desc",
+    pageSize: 10,
     resolveTitle: ({ value }) => formatArchivePeriod(value),
     resolvePath: ({ value }) =>
       `${ARCHIVE_BASE_PATH}/${value.replace(/-/g, "/")}`,
@@ -75,11 +76,28 @@ export function buildArchivePage(collection: ContentCollection): PostContent {
     )
     .join("");
 
+  const page = collection.page;
+  const navigation: string[] = [];
+  if (page.previousPath) {
+    navigation.push(
+      `<a rel="prev" href="${escapeHtml(page.previousPath)}">前のページ</a>`,
+    );
+  }
+  if (page.nextPath) {
+    navigation.push(
+      `<a rel="next" href="${escapeHtml(page.nextPath)}">次のページ</a>`,
+    );
+  }
+  const pagination =
+    navigation.length > 0
+      ? `<nav class="archive-pagination">${navigation.join(" ")}</nav>`
+      : "";
+
   return {
     frontmatter: {
       title: collection.title,
     },
-    html: `<h1>${escapeHtml(collection.title)}</h1><ul>${posts}</ul>`,
+    html: `<h1>${escapeHtml(collection.title)}</h1><ul>${posts}</ul>${pagination}`,
   };
 }
 

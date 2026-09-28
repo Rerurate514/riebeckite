@@ -2,7 +2,7 @@
 
 ## Core public surface
 
-Import portable framework APIs from `@riebeckite/core`. The package exports configuration helpers (`defineConfig`, `resolveConfig`, `isExcluded`, `isPublished`), content contracts and `ContentManager`, the public-location contracts (`ContentLocationInput`, `ContentPublicLocation`, `resolveDefaultContentLocation`), manifest and graph APIs, content query and collection APIs (`queryContentEntries`, `groupContentEntries`, `buildContentCollections`), `Pipeline`, plugin contracts and dependency errors, build-state/cache utilities, diagnostics, observability types, publishing/post types, and theme contracts including `defineTheme`.
+Import portable framework APIs from `@riebeckite/core`. The package exports configuration helpers (`defineConfig`, `resolveConfig`, `isExcluded`, `isPublished`), content contracts and `ContentManager`, the public-location contracts (`ContentLocationInput`, `ContentPublicLocation`, `resolveDefaultContentLocation`), manifest and graph APIs, content query and collection APIs (`queryContentEntries`, `queryContentPage`, `groupContentEntries`, `buildContentCollections`), `Pipeline`, plugin contracts and dependency errors, build-state/cache utilities, diagnostics, observability types, publishing/post types, and theme contracts including `defineTheme`.
 
 The package root export is the compatibility boundary. Prefer it over deep imports unless an implementation-specific task explicitly requires a private module.
 

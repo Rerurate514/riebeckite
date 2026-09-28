@@ -68,15 +68,7 @@ export function resolveContentBuildStatePath(
 ): string {
   const directory =
     config?.content.directory ?? contentDirectory ?? process.cwd();
-  return path.resolve(
-    directory,
-    "..",
-    "apps",
-    "web",
-    "app",
-    ".riebeckite",
-    "content-state.json",
-  );
+  return path.resolve(directory, ".riebeckite", "content-state.json");
 }
 
 function isContentBuildState(value: unknown): value is ContentBuildState {

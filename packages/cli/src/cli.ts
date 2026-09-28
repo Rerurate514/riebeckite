@@ -1,42 +1,42 @@
-import { resolveRiebeckiteApplication } from "./application_root";
+import { resolveRiebeckiteProject } from "./application_root";
 import { runBuild } from "./commands/build";
 import { runCheck } from "./commands/check";
 import { runDev } from "./commands/dev";
 import { runDoctorCommand } from "./commands/doctor";
-import { runInspect, type InspectTarget } from "./commands/inspect";
+import { type InspectTarget, runInspect } from "./commands/inspect";
 import { runProfile } from "./commands/profile";
 import { renderCliError } from "./error_renderer";
 
 export async function main(arguments_: readonly string[]): Promise<void> {
   try {
     const command = parseCommand(arguments_);
-    const application = await resolveRiebeckiteApplication(process.cwd());
+    const project = await resolveRiebeckiteProject(process.cwd());
 
     if (command.name === "dev") {
-      await runDev(application);
+      await runDev(project);
       return;
     }
     if (command.name === "build") {
-      await runBuild(application, { full: command.full });
+      await runBuild(project, { full: command.full });
       return;
     }
     if (command.name === "doctor") {
-      if (!(await runDoctorCommand(application))) process.exitCode = 1;
+      if (!(await runDoctorCommand(project))) process.exitCode = 1;
       return;
     }
     if (command.name === "profile") {
-      await runProfile(application, { full: command.full });
+      await runProfile(project, { full: command.full });
       return;
     }
     if (command.name === "inspect") {
-      await runInspect(application, {
+      await runInspect(project, {
         target: command.target,
         list: command.list,
       });
       return;
     }
 
-    await runCheck(application);
+    await runCheck(project);
     console.log("Riebeckite configuration is valid.");
   } catch (error) {
     console.error(renderCliError(error));

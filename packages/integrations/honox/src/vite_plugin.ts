@@ -3,7 +3,7 @@ import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.ts";
 import { riebeckiteClientModule } from "./client_module.ts";
-import { loadRiebeckiteConfig } from "./config_loader.ts";
+import { loadRiebeckiteConfig, resolveHonoxConfig } from "./config_loader.ts";
 import { createWorkspacePackageAliases } from "./workspace_packages.ts";
 
 export type RiebeckiteIntegrationOptions = {
@@ -34,16 +34,20 @@ export function riebeckite(
           options.workspaceRoot ?? path.resolve(root, "../..");
         const appRoot = options.appRoot ?? root;
 
-        resolvedConfig = await loadRiebeckiteConfig({
+        const config = await loadRiebeckiteConfig({
           workspaceRoot,
           configFile: options.configFile,
         });
+        resolvedConfig = resolveHonoxConfig(config, appRoot);
         writeRiebeckiteAssetEntries(resolvedConfig, {
           pluginStyles: path.join(appRoot, "app/.riebeckite/plugin-styles.css"),
           themeStyles: path.join(appRoot, "app/.riebeckite/theme-styles.css"),
         });
 
         return {
+          define: {
+            "process.env.RIEBECKITE_APP_ROOT": JSON.stringify(appRoot),
+          },
           resolve: {
             alias: createWorkspacePackageAliases(workspaceRoot),
           },

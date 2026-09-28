@@ -1,4 +1,4 @@
-import type { RiebeckiteApplication } from "../application_root";
+import type { RiebeckiteProject } from "../application_root";
 import {
   collectApplicationInspection,
   collectBuildInspection,
@@ -15,7 +15,7 @@ import {
   renderGraphInspection,
   renderPluginInspections,
 } from "../inspect/renderer";
-import { loadApplicationConfig } from "../load_config";
+import { loadProjectConfig } from "../load_config";
 
 export type InspectTarget =
   | "config"
@@ -25,49 +25,40 @@ export type InspectTarget =
   | "build";
 
 export async function runInspect(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
   options: { target?: InspectTarget; list: boolean },
 ): Promise<void> {
   if (!options.target) {
     console.log(
-      renderApplicationInspection(
-        await collectApplicationInspection(application),
-      ),
+      renderApplicationInspection(await collectApplicationInspection(project)),
     );
     return;
   }
 
   if (options.target === "config") {
-    console.log(
-      renderConfigInspection(await collectConfigInspection(application)),
-    );
+    console.log(renderConfigInspection(await collectConfigInspection(project)));
     return;
   }
   if (options.target === "plugins") {
     console.log(
-      renderPluginInspections(await collectPluginInspections(application)),
+      renderPluginInspections(await collectPluginInspections(project)),
     );
     return;
   }
   if (options.target === "content") {
-    const config = await loadApplicationConfig(application);
+    const config = await loadProjectConfig(project);
     console.log(
-      renderContentInspection(
-        await collectContentInspection(config, application),
-        {
-          list: options.list,
-        },
-      ),
+      renderContentInspection(await collectContentInspection(config, project), {
+        list: options.list,
+      }),
     );
     return;
   }
   if (options.target === "graph") {
-    console.log(
-      renderGraphInspection(await collectGraphInspection(application)),
-    );
+    console.log(renderGraphInspection(await collectGraphInspection(project)));
     return;
   }
 
-  const config = await loadApplicationConfig(application);
+  const config = await loadProjectConfig(project);
   console.log(renderBuildInspection(await collectBuildInspection(config)));
 }

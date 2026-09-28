@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@hono/vite-ssg@0.3.3': 956adda67183c381f6fdfe2a9baadedf3154d23fa3a79ef632023f3ea46d982f
+
 importers:
 
   .:
@@ -98,7 +101,7 @@ importers:
         version: 0.25.3(hono@4.12.26)(miniflare@4.20260617.1)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1))
       '@hono/vite-ssg':
         specifier: ^0.3.3
-        version: 0.3.3(hono@4.12.26)
+        version: 0.3.3(patch_hash=956adda67183c381f6fdfe2a9baadedf3154d23fa3a79ef632023f3ea46d982f)(hono@4.12.26)
       '@riebeckite/cli':
         specifier: workspace:*
         version: link:../../packages/cli
@@ -126,6 +129,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@riebeckite/honox':
+        specifier: workspace:*
+        version: link:../integrations/honox
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
@@ -3960,7 +3966,7 @@ snapshots:
       miniflare: 4.20260617.1
       wrangler: 4.103.0(@cloudflare/workers-types@4.20260621.1)
 
-  '@hono/vite-ssg@0.3.3(hono@4.12.26)':
+  '@hono/vite-ssg@0.3.3(patch_hash=956adda67183c381f6fdfe2a9baadedf3154d23fa3a79ef632023f3ea46d982f)(hono@4.12.26)':
     dependencies:
       hono: 4.12.26
 

@@ -1,19 +1,19 @@
 import { ConfigValidationError, PluginDependencyError } from "@riebeckite/core";
-import type { RiebeckiteApplication } from "../../application_root";
-import { loadApplicationConfig } from "../../load_config";
+import type { RiebeckiteProject } from "../../application_root";
+import { loadProjectConfig } from "../../load_config";
 import type { DoctorCheckResult } from "../types";
 
 export type ConfigurationCheck = {
   result: DoctorCheckResult;
-  config?: Awaited<ReturnType<typeof loadApplicationConfig>>;
+  config?: Awaited<ReturnType<typeof loadProjectConfig>>;
   pluginResolutionError?: PluginDependencyError;
 };
 
 export async function checkConfiguration(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<ConfigurationCheck> {
   try {
-    const config = await loadApplicationConfig(application);
+    const config = await loadProjectConfig(project);
     return {
       config,
       result: {
@@ -31,7 +31,9 @@ export async function checkConfiguration(
           label: "Configuration",
           status: "error",
           message: "Invalid.",
-          details: error.issues.map((issue) => `${issue.path}: ${issue.message}`),
+          details: error.issues.map(
+            (issue) => `${issue.path}: ${issue.message}`,
+          ),
         },
       };
     }

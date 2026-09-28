@@ -1,23 +1,31 @@
 import path from "node:path";
-import { ContentManager, type Diagnostic, type ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import {
+  ContentManager,
+  type Diagnostic,
+  type ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
 import { resolveHonoxApplicationRoot } from "@riebeckite/honox";
-import type { RiebeckiteApplication } from "../../application_root";
+import type { RiebeckiteProject } from "../../application_root";
 import type { DoctorCheckResult } from "../types";
 
 const diagnosticSampleLimit = 3;
 
 export async function checkContent(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
   config: ResolvedRiebeckiteConfig | undefined,
 ): Promise<DoctorCheckResult> {
   if (!config) return skippedContentCheck();
 
   try {
-    const hostRoot = await resolveHonoxApplicationRoot(application.applicationRoot);
+    const hostRoot = await resolveHonoxApplicationRoot(project.configRoot);
     const contentDirectory = path.resolve(hostRoot, config.content.directory);
-    const content = new ContentManager(contentDirectory, config.content.exclude, {
-      config,
-    });
+    const content = new ContentManager(
+      contentDirectory,
+      config.content.exclude,
+      {
+        config,
+      },
+    );
     const entries = await content.scan();
     const invalidPaths = findInvalidPaths(entries);
     const duplicatePaths = findDuplicatePaths(entries);
@@ -86,7 +94,11 @@ function findInvalidPaths(entries: readonly { path: string }[]): string[] {
         path.posix.isAbsolute(entry) ||
         path.win32.isAbsolute(entry) ||
         entry.includes("\\") ||
-        entry.split("/").some((segment) => segment === "" || segment === "." || segment === ".."),
+        entry
+          .split("/")
+          .some(
+            (segment) => segment === "" || segment === "." || segment === "..",
+          ),
     )
     .map(String)
     .sort();
@@ -96,7 +108,10 @@ function combineStatus(
   hasDuplicatePaths: boolean,
   diagnostics: readonly Diagnostic[],
 ): DoctorCheckResult["status"] {
-  if (hasDuplicatePaths || diagnostics.some((item) => item.severity === "error")) {
+  if (
+    hasDuplicatePaths ||
+    diagnostics.some((item) => item.severity === "error")
+  ) {
     return "error";
   }
   if (diagnostics.some((item) => item.severity === "warning")) return "warning";
@@ -108,9 +123,13 @@ function summarizeDiagnostics(diagnostics: readonly Diagnostic[]): string[] {
   const counts = [...grouped.entries()]
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([code, items]) => `${items.length} ${code}`);
-  const samples = diagnostics.slice(0, diagnosticSampleLimit).map((diagnostic) => {
-    const location = diagnostic.filePath ?? diagnostic.slug;
-    return location ? `${location}: ${diagnostic.message}` : diagnostic.message;
-  });
+  const samples = diagnostics
+    .slice(0, diagnosticSampleLimit)
+    .map((diagnostic) => {
+      const location = diagnostic.filePath ?? diagnostic.slug;
+      return location
+        ? `${location}: ${diagnostic.message}`
+        : diagnostic.message;
+    });
   return [...counts, ...samples];
 }

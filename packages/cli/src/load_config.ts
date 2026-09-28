@@ -1,10 +1,18 @@
 import path from "node:path";
-import { loadRiebeckiteConfig } from "@riebeckite/honox";
-import type { RiebeckiteApplication } from "./application_root";
+import {
+  loadRiebeckiteConfig,
+  resolveHonoxApplicationRoot,
+  resolveHonoxConfig,
+} from "@riebeckite/honox";
+import type { RiebeckiteProject } from "./application_root";
 
-export async function loadApplicationConfig(application: RiebeckiteApplication) {
-  return await loadRiebeckiteConfig({
-    workspaceRoot: application.applicationRoot,
-    configFile: path.relative(application.applicationRoot, application.configPath),
-  });
+export async function loadProjectConfig(project: RiebeckiteProject) {
+  const [config, appRoot] = await Promise.all([
+    loadRiebeckiteConfig({
+      workspaceRoot: project.configRoot,
+      configFile: path.relative(project.configRoot, project.configPath),
+    }),
+    resolveHonoxApplicationRoot(project.configRoot),
+  ]);
+  return resolveHonoxConfig(config, appRoot);
 }

@@ -9,3 +9,5 @@ allowBuilds:
   puppeteer: true
   sharp: true
   workerd: true
+patchedDependencies:
+  '@hono/vite-ssg@0.3.3': patches/@hono__vite-ssg@0.3.3.patch

@@ -7,33 +7,44 @@ const configFileNames = [
   "riebeckite.config.mjs",
 ] as const;
 
-export type RiebeckiteApplication = {
-  applicationRoot: string;
+export type RiebeckiteProject = {
+  invocationCwd: string;
+  projectRoot: string;
+  configRoot: string;
   configPath: string;
 };
 
-export async function resolveRiebeckiteApplication(
+export async function resolveRiebeckiteProject(
   currentDirectory: string,
-): Promise<RiebeckiteApplication> {
-  const startDirectory = path.resolve(currentDirectory);
+): Promise<RiebeckiteProject> {
+  const invocationCwd = path.resolve(currentDirectory);
+  const startDirectory = invocationCwd;
   const configPath = await findConfigPath(startDirectory);
   if (!configPath) {
-    throw new ApplicationRootError(
+    throw new ProjectRootError(
       `Could not find ${configFileNames.join(", ")} from ${startDirectory}.`,
     );
   }
 
-  return { applicationRoot: path.dirname(configPath), configPath };
+  const configRoot = path.dirname(configPath);
+  return {
+    invocationCwd,
+    projectRoot: configRoot,
+    configRoot,
+    configPath,
+  };
 }
 
-export class ApplicationRootError extends Error {
+export class ProjectRootError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "ApplicationRootError";
+    this.name = "ProjectRootError";
   }
 }
 
-async function findConfigPath(startDirectory: string): Promise<string | undefined> {
+async function findConfigPath(
+  startDirectory: string,
+): Promise<string | undefined> {
   for (const directory of parentDirectories(startDirectory)) {
     for (const fileName of configFileNames) {
       const filePath = path.join(directory, fileName);

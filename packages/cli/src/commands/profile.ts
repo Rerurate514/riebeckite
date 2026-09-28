@@ -1,16 +1,16 @@
 import { ConsoleLogger, SinkTracer } from "@riebeckite/core";
-import type { RiebeckiteApplication } from "../application_root";
-import { renderProfile } from "../profile/renderer";
+import type { RiebeckiteProject } from "../application_root";
 import { ProfileTraceSink } from "../profile/profile_trace_sink";
+import { renderProfile } from "../profile/renderer";
 import { runBuild } from "./build";
 
 export async function runProfile(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
   options: { full: boolean },
 ): Promise<void> {
   const sink = new ProfileTraceSink();
   try {
-    await runBuild(application, {
+    await runBuild(project, {
       full: options.full,
       observability: {
         logger: new ConsoleLogger(),

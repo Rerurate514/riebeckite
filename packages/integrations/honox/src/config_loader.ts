@@ -44,6 +44,20 @@ export async function loadRiebeckiteConfig(
   }
 }
 
+/** Resolves config paths whose documented base is the HonoX application root. */
+export function resolveHonoxConfig(
+  config: ResolvedRiebeckiteConfig,
+  appRoot: string,
+): ResolvedRiebeckiteConfig {
+  return {
+    ...config,
+    content: {
+      ...config.content,
+      directory: path.resolve(appRoot, config.content.directory),
+    },
+  };
+}
+
 function pathToFileUrl(filePath: string): string {
   return `file:///${filePath.replace(/\\/g, "/").replace(/^([A-Za-z]):/, "$1:")}`;
 }

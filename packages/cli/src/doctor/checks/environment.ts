@@ -1,14 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { RiebeckiteApplication } from "../../application_root";
+import type { RiebeckiteProject } from "../../application_root";
 import type { DoctorCheckResult } from "../types";
 
 export async function checkEnvironment(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<readonly DoctorCheckResult[]> {
   return await Promise.all([
-    checkApplicationRoot(application),
-    checkConfigurationFile(application),
+    checkProjectRoot(project),
+    checkConfigurationFile(project),
   ]);
 }
 
@@ -46,34 +46,34 @@ export async function checkStateDirectory(
   }
 }
 
-async function checkApplicationRoot(
-  application: RiebeckiteApplication,
+async function checkProjectRoot(
+  project: RiebeckiteProject,
 ): Promise<DoctorCheckResult> {
   try {
-    if (!(await fs.stat(application.applicationRoot)).isDirectory()) {
+    if (!(await fs.stat(project.projectRoot)).isDirectory()) {
       return {
-        id: "application-root",
-        label: "Application root",
+        id: "project-root",
+        label: "Project root",
         status: "error",
         message: "Resolved path is not a directory.",
       };
     }
     return {
-      id: "application-root",
-      label: "Application root",
+      id: "project-root",
+      label: "Project root",
       status: "ok",
       message: "Detected.",
     };
   } catch (error) {
-    return unexpectedCheckFailure("application-root", "Application root", error);
+    return unexpectedCheckFailure("project-root", "Project root", error);
   }
 }
 
 async function checkConfigurationFile(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<DoctorCheckResult> {
   try {
-    if (!(await fs.stat(application.configPath)).isFile()) {
+    if (!(await fs.stat(project.configPath)).isFile()) {
       return {
         id: "configuration-file",
         label: "Configuration file",
@@ -85,10 +85,14 @@ async function checkConfigurationFile(
       id: "configuration-file",
       label: "Configuration file",
       status: "ok",
-      message: path.basename(application.configPath),
+      message: path.basename(project.configPath),
     };
   } catch (error) {
-    return unexpectedCheckFailure("configuration-file", "Configuration file", error);
+    return unexpectedCheckFailure(
+      "configuration-file",
+      "Configuration file",
+      error,
+    );
   }
 }
 

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { build, createServer } from "vite";
 import type { Tracer } from "@riebeckite/core";
+import { build, createServer } from "vite";
 
 export type HonoxApplicationOptions = {
   root: string;
@@ -15,17 +15,17 @@ const viteConfigFileNames = [
 ] as const;
 
 export async function resolveHonoxApplicationRoot(
-  riebeckiteRoot: string,
+  configRoot: string,
 ): Promise<string> {
-  const roots = await findViteApplicationRoots(riebeckiteRoot);
+  const roots = await findViteApplicationRoots(configRoot);
   if (roots.length === 1) return roots[0] as string;
   if (roots.length === 0) {
     throw new HonoxApplicationRootError(
-      `Could not find a Vite application under ${riebeckiteRoot}.`,
+      `Could not find a Vite application under ${configRoot}.`,
     );
   }
   throw new HonoxApplicationRootError(
-    `Found multiple Vite applications under ${riebeckiteRoot}: ${roots.join(", ")}.`,
+    `Found multiple Vite applications under ${configRoot}: ${roots.join(", ")}.`,
   );
 }
 

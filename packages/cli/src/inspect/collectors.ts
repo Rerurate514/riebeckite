@@ -1,4 +1,5 @@
 import path from "node:path";
+import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   FileSystemContentSource,
   getResolvedPluginMetadata,
@@ -6,10 +7,9 @@ import {
   readOnlyContentGraph,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
-import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { resolveHonoxApplicationRoot } from "@riebeckite/honox";
-import type { RiebeckiteApplication } from "../application_root";
-import { loadApplicationConfig } from "../load_config";
+import type { RiebeckiteProject } from "../application_root";
+import { loadProjectConfig } from "../load_config";
 import type {
   ApplicationInspection,
   BuildInspection,
@@ -20,18 +20,18 @@ import type {
 } from "./types";
 
 export async function collectApplicationInspection(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<ApplicationInspection> {
-  const config = await loadApplicationConfig(application);
+  const config = await loadProjectConfig(project);
   const [content, build] = await Promise.all([
-    collectContentInspection(config, application),
+    collectContentInspection(config, project),
     collectBuildInspection(config),
   ]);
   const plugins = getResolvedPluginMetadata(config.plugins);
 
   return {
-    root: displayPath(application.applicationRoot),
-    configPath: displayPath(application.configPath),
+    root: displayPath(project.projectRoot, project.invocationCwd),
+    configPath: displayPath(project.configPath, project.invocationCwd),
     content: { source: content.source, entryCount: content.entryCount },
     plugins: {
       enabledCount: plugins.filter((plugin) => plugin.enabled).length,
@@ -43,9 +43,9 @@ export async function collectApplicationInspection(
 }
 
 export async function collectConfigInspection(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<ConfigInspection> {
-  const config = await loadApplicationConfig(application);
+  const config = await loadProjectConfig(project);
   return {
     site: {
       title: config.site.title,
@@ -64,9 +64,9 @@ export async function collectConfigInspection(
 }
 
 export async function collectPluginInspections(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<readonly PluginInspection[]> {
-  const config = await loadApplicationConfig(application);
+  const config = await loadProjectConfig(project);
   return getResolvedPluginMetadata(config.plugins).map((plugin, index) => ({
     ...plugin,
     order: index + 1,
@@ -78,9 +78,9 @@ export async function collectPluginInspections(
 
 export async function collectContentInspection(
   config: ResolvedRiebeckiteConfig,
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<ContentInspection> {
-  const source = await resolveContentSource(config, application);
+  const source = await resolveContentSource(config, project);
   const paths = (await source.scan())
     .map((entry) => entry.path)
     .toSorted((left, right) => left.localeCompare(right));
@@ -103,11 +103,11 @@ export async function collectContentInspection(
 }
 
 export async function collectGraphInspection(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<GraphInspection> {
-  const config = await loadApplicationConfig(application);
+  const config = await loadProjectConfig(project);
   const graph = await readOnlyContentGraph(
-    await resolveContentSource(config, application),
+    await resolveContentSource(config, project),
   );
   const nodes = graph.nodes();
   const mostLinked = nodes
@@ -149,12 +149,10 @@ export async function collectBuildInspection(
 
 async function resolveContentSource(
   config: ResolvedRiebeckiteConfig,
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<ContentSource> {
   if (config.content.source) return config.content.source;
-  const hostRoot = await resolveHonoxApplicationRoot(
-    application.applicationRoot,
-  );
+  const hostRoot = await resolveHonoxApplicationRoot(project.configRoot);
   return new FileSystemContentSource(
     path.resolve(hostRoot, config.content.directory),
     config.content.exclude,
@@ -165,8 +163,8 @@ function contentSourceName(config: ResolvedRiebeckiteConfig): string {
   return config.content.source ? "custom" : "filesystem";
 }
 
-function displayPath(value: string): string {
-  return path.relative(process.cwd(), value) || ".";
+function displayPath(value: string, invocationCwd: string): string {
+  return path.relative(invocationCwd, value) || ".";
 }
 
 function sorted(values: readonly string[]): string[] {

@@ -1,4 +1,4 @@
-import type { RiebeckiteApplication } from "../application_root";
+import type { RiebeckiteProject } from "../application_root";
 import { checkBuildState } from "./checks/build_state";
 import { checkConfiguration } from "./checks/configuration";
 import { checkContent } from "./checks/content";
@@ -7,16 +7,16 @@ import { checkPlugins } from "./checks/plugins";
 import type { DoctorCheckResult } from "./types";
 
 export async function runDoctor(
-  application: RiebeckiteApplication,
+  project: RiebeckiteProject,
 ): Promise<readonly DoctorCheckResult[]> {
-  const environment = await checkEnvironment(application);
-  const configuration = await checkConfiguration(application);
+  const environment = await checkEnvironment(project);
+  const configuration = await checkConfiguration(project);
   const plugins = checkPlugins(
     configuration.config,
     configuration.pluginResolutionError,
   );
   const [content, buildState] = await Promise.all([
-    checkContent(application, configuration.config),
+    checkContent(project, configuration.config),
     checkBuildState(configuration.config),
   ]);
   const stateDirectory = buildState.statePath

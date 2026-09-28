@@ -1,6 +1,6 @@
-import type { RiebeckiteApplication } from "../application_root";
-import { loadApplicationConfig } from "../load_config";
+import type { RiebeckiteProject } from "../application_root";
+import { loadProjectConfig } from "../load_config";
 
-export async function runCheck(application: RiebeckiteApplication): Promise<void> {
-  await loadApplicationConfig(application);
+export async function runCheck(project: RiebeckiteProject): Promise<void> {
+  await loadProjectConfig(project);
 }

@@ -51,6 +51,16 @@ declare module "@riebeckite/plugin-attachment" {
   export const attachment: any;
 }
 
+declare module "@riebeckite/plugin-flashcards" {
+  export const flashcards: any;
+  export const flashcardsPlugin: any;
+  export const initFlashcards: any;
+}
+
+declare module "@riebeckite/plugin-flashcards/client" {
+  export const initFlashcards: any;
+}
+
 declare module "@riebeckite/plugin-autocardlink" {
   export const autoCardLinkPlugin: any;
 }

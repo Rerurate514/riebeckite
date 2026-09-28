@@ -63,6 +63,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-hover-preview",
   },
   {
+    directory: "packages/plugins/flashcards",
+    name: "@riebeckite/plugin-flashcards",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -78,6 +82,8 @@ const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
 const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
 const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
+const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
+const FLASHCARDS_CLIENT_IDENTIFIER = "rb-flashcards";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -483,6 +489,26 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!combined.includes('href="/notes/related-b"')) {
     fail("related-posts plugin did not link a known related fixture note");
   }
+  if (!combined.includes('data-flashcards-count="')) {
+    fail("generated HTML is missing the flashcards deck output");
+  }
+  if (!combined.includes("rb-flashcards__list")) {
+    fail("flashcards fallback list was not rendered");
+  }
+  if (
+    !combined.includes('class="rb-flashcards__front"') ||
+    !combined.includes('class="rb-flashcards__back"')
+  ) {
+    fail("flashcards fallback did not expose front and back content");
+  }
+  if (!combined.includes("data-flashcards-payload")) {
+    fail("flashcards payload script was not emitted");
+  }
+  if (!combined.includes(FLASHCARDS_MARKER)) {
+    fail(
+      `generated HTML is missing the flashcards fixture card text (${FLASHCARDS_MARKER})`,
+    );
+  }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')
   ) {
@@ -591,6 +617,17 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!css.includes("rb-dataview")) {
     fail("dataview plugin stylesheet was not bundled into the dist CSS");
+  }
+  if (!css.includes("rb-flashcards__deck")) {
+    fail("flashcards stylesheet was not bundled into the dist CSS");
+  }
+
+  const jsFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
+  const js = jsFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  if (!js.includes(FLASHCARDS_CLIENT_IDENTIFIER)) {
+    fail(
+      `emitted client bundle is missing the flashcards identifier (${FLASHCARDS_CLIENT_IDENTIFIER})`,
+    );
   }
 
   for (const file of htmlFiles) {

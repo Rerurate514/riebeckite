@@ -21,6 +21,7 @@
     "@riebeckite/plugin-dataview": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
+    "@riebeckite/plugin-flashcards": "workspace:*",
     "@riebeckite/plugin-garden-explorer": "workspace:*",
     "@riebeckite/plugin-hover-preview": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",

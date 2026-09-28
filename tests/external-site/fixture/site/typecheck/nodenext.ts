@@ -53,6 +53,8 @@ import {
   resolveHoverPreviewOptions,
 } from "@riebeckite/plugin-hover-preview";
 import { initHoverPreview } from "@riebeckite/plugin-hover-preview/client";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { initFlashcards } from "@riebeckite/plugin-flashcards/client";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
@@ -99,6 +101,8 @@ export const resolvedEntries = {
   hoverPreviewPlugin,
   resolveHoverPreviewOptions,
   initHoverPreview,
+  flashcardsPlugin,
+  initFlashcards,
   obsidianMarkdown,
   properties,
   recentPostsPlugin,

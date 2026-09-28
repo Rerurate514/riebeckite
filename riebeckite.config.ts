@@ -7,6 +7,7 @@ import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
@@ -94,6 +95,7 @@ export default defineConfig({
     backlinksPlugin(),
     queryPlugin(),
     dataviewPlugin(),
+    flashcardsPlugin(),
     recentPostsPlugin(),
     relatedPosts(),
     responsiveImage(),

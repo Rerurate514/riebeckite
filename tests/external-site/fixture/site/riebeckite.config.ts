@@ -4,6 +4,7 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
@@ -37,6 +38,7 @@ export default defineConfig({
     backlinksPlugin(),
     queryPlugin(),
     dataviewPlugin(),
+    flashcardsPlugin(),
     recentPostsPlugin(),
     relatedPosts(),
     responsiveImage(),

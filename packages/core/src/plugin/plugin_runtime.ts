@@ -105,6 +105,18 @@ export class PluginRuntime {
     return locations;
   }
 
+  async extendContentLocations(
+    entries: readonly ContentLocationInput[],
+    locations: Map<string, ContentPublicLocation>,
+    contentIndex: Map<string, string>,
+  ) {
+    await this.runHook((plugin) => plugin.extendContentLocations, {
+      ...this.createContext(contentIndex),
+      entries,
+      locations,
+    });
+  }
+
   async runPostHook(
     hookName: "onPostParsed" | "onPostProcessed",
     slug: string,

@@ -40,6 +40,7 @@ const PACKAGES = [
     name: "@riebeckite/plugin-canvas",
   },
   { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
+  { directory: "packages/plugins/alias", name: "@riebeckite/plugin-alias" },
   { directory: "packages/plugins/kanban", name: "@riebeckite/plugin-kanban" },
   {
     directory: "packages/plugins/dataview",
@@ -102,6 +103,7 @@ const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
 const PLANTUML_MARKER = "RIEBECKITE_EXTERNAL_PLANTUML_MARKER";
+const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -550,6 +552,12 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("/svg/")) {
     fail("generated HTML is missing the PlantUML image URL");
+  }
+  if (!combined.includes(ALIAS_MARKER)) {
+    fail(`generated HTML is missing the alias marker (${ALIAS_MARKER})`);
+  }
+  if (!combined.includes("kind=redirect target=/notes/alias-demo")) {
+    fail("an Obsidian alias did not resolve to a redirect route");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

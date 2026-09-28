@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { canvas } from "@riebeckite/plugin-canvas";
@@ -43,6 +44,7 @@ export default defineConfig({
     attachment(),
     codeAnnotations(),
     canvas(),
+    aliasPlugin(),
     autoCardLinkPlugin(),
     tocPlugin(),
     backlinksPlugin(),

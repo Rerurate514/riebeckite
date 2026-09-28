@@ -3,6 +3,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/core",
   "packages/create-riebeckite",
   "packages/integrations/honox",
+  "packages/plugins/alias",
   "packages/plugins/attachment",
   "packages/plugins/autocardlink",
   "packages/plugins/backlinks",
@@ -109,9 +110,13 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory.startsWith("packages/plugins/")) {
-    const hasStyle = !["diagnostics", "obsidian-markdown", "permalink", "seo"].some(
-      (plugin) => directory.endsWith(`/${plugin}`),
-    );
+    const hasStyle = ![
+      "alias",
+      "diagnostics",
+      "obsidian-markdown",
+      "permalink",
+      "seo",
+    ].some((plugin) => directory.endsWith(`/${plugin}`));
     return {
       files: [
         "LICENSE",

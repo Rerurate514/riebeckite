@@ -51,6 +51,11 @@ export class ContentLocationResolver {
       }
       locations.set(location.slug, location);
     }
+    await this.dependencies.pluginRuntime.extendContentLocations(
+      inputs,
+      locations,
+      contentIndex,
+    );
     this.locations = locations;
     return locations;
   }

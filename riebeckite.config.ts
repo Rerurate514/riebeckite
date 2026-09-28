@@ -1,5 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { canvas } from "@riebeckite/plugin-canvas";
@@ -61,6 +62,7 @@ export default defineConfig({
   plugins: [
     obsidianMarkdown(),
     properties(),
+    aliasPlugin(),
     seo({
       siteName: "Riebeckite Blog",
       defaultImage: "/ogp.png",

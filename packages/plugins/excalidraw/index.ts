@@ -1,14 +1,10 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import type {
-  PluginRenderContext,
-  ResolvedRiebeckiteConfig,
-} from "@riebeckite/core";
+import type { ContentSource, PluginRenderContext } from "@riebeckite/core";
 import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
   IMAGE_EXTENSIONS,
+  readContentSourceEntry,
 } from "@riebeckite/core";
 import type { Content, Html, Parent, Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
@@ -28,19 +24,14 @@ const PLUGIN_NAME = "excalidraw";
 export type { ExcalidrawOptions } from "./src/types.js";
 
 export function excalidraw(options: ExcalidrawOptions = {}) {
-  let config: ResolvedRiebeckiteConfig | undefined;
-
   return definePlugin({
     name: PLUGIN_NAME,
     order: -21,
     options,
-    onConfigResolved: (context) => {
-      config = context.config;
-    },
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkExcalidrawMarkdownEmbed, {
-        config,
         contentIndex: context.contentIndex,
+        contentSource: context.contentSource,
         options,
       });
     },
@@ -65,35 +56,27 @@ async function renderAttachment(
   if (!isExcalidrawPath(context.path)) return null;
   if (!context.embed) return null;
 
-  const contentDirectory = context.config?.content.directory;
-  if (!contentDirectory) {
+  if (!context.contentSource) {
     return renderExcalidrawPlaceholder({
-      title: path.posix.basename(context.path),
-      error: "Content directory is not available.",
-    });
-  }
-
-  const sourcePath = path.resolve(contentDirectory, context.path);
-  if (!isInsideDirectory(contentDirectory, sourcePath)) {
-    return renderExcalidrawPlaceholder({
-      title: path.posix.basename(context.path),
-      error: "Invalid Excalidraw path.",
+      title: getFileName(context.path),
+      error: "Content source is not available.",
     });
   }
 
   try {
-    const raw = await fs.readFile(sourcePath, "utf8");
+    const raw = await readText(context.contentSource, context.path);
+    if (raw === null) return null;
     if (!isExcalidrawDocument(context.path, raw)) return null;
 
     const parsed = parseExcalidrawScene(raw, context.path);
     const scene = await mergeEmbeddedFiles({
       scene: parsed.scene,
       embeddedFiles: parsed.embeddedFiles,
-      contentDirectory,
+      contentSource: context.contentSource,
       contentIndex: context.contentIndex,
     });
     return renderExcalidrawPlaceholder({
-      title: path.posix.basename(context.path),
+      title: getFileName(context.path),
       scene,
       size: parseSize(context.label),
       lazy: options.lazy !== false,
@@ -104,7 +87,7 @@ async function renderAttachment(
       error,
     });
     return renderExcalidrawPlaceholder({
-      title: path.posix.basename(context.path),
+      title: getFileName(context.path),
       error: "Excalidraw could not be rendered.",
     });
   }
@@ -124,14 +107,6 @@ function isExcalidrawDocument(filePath: string, raw: string): boolean {
   if (lowerPath.endsWith(".excalidraw")) return true;
   if (lowerPath.endsWith(".excalidraw.md")) return true;
   return lowerPath.endsWith(".md") && isObsidianExcalidrawMarkdown(raw);
-}
-
-function isInsideDirectory(directory: string, filePath: string): boolean {
-  const relative = path.relative(directory, filePath);
-  return (
-    relative === "" ||
-    (!relative.startsWith("..") && !path.isAbsolute(relative))
-  );
 }
 
 function parseSize(
@@ -163,8 +138,8 @@ function resolveMarkdownTarget(
 }
 
 function remarkExcalidrawMarkdownEmbed(input: {
-  config: ResolvedRiebeckiteConfig | undefined;
   contentIndex: Map<string, string>;
+  contentSource?: ContentSource;
   options: ExcalidrawOptions;
 }) {
   return async (tree: Root) => {
@@ -185,8 +160,8 @@ function remarkExcalidrawMarkdownEmbed(input: {
 async function replaceExcalidrawMarkdownEmbeds(
   replacement: { node: Text; index: number; parent: Parent },
   input: {
-    config: ResolvedRiebeckiteConfig | undefined;
     contentIndex: Map<string, string>;
+    contentSource?: ContentSource;
     options: ExcalidrawOptions;
   },
 ) {
@@ -209,7 +184,7 @@ async function replaceExcalidrawMarkdownEmbeds(
           path: resolved,
           label,
           contentIndex: input.contentIndex,
-          config: input.config,
+          contentSource: input.contentSource,
           options: input.options,
         })
       : null;
@@ -240,27 +215,24 @@ async function renderExcalidrawMarkdownEmbed(input: {
   path: string;
   label: string;
   contentIndex: Map<string, string>;
-  config: ResolvedRiebeckiteConfig | undefined;
+  contentSource?: ContentSource;
   options: ExcalidrawOptions;
 }): Promise<string | null> {
-  const contentDirectory = input.config?.content.directory;
-  if (!contentDirectory) return null;
-  const sourcePath = path.resolve(contentDirectory, input.path);
-  if (!isInsideDirectory(contentDirectory, sourcePath)) return null;
-
-  const raw = await fs.readFile(sourcePath, "utf8");
+  if (!input.contentSource) return null;
+  const raw = await readText(input.contentSource, input.path);
+  if (raw === null) return null;
   if (!isObsidianExcalidrawMarkdown(raw)) return null;
 
   const parsed = parseExcalidrawScene(raw, input.path);
   const scene = await mergeEmbeddedFiles({
     scene: parsed.scene,
     embeddedFiles: parsed.embeddedFiles,
-    contentDirectory,
+    contentSource: input.contentSource,
     contentIndex: input.contentIndex,
   });
 
   return renderExcalidrawPlaceholder({
-    title: path.posix.basename(input.path),
+    title: getFileName(input.path),
     scene,
     size: parseSize(input.label),
     lazy: input.options.lazy !== false,
@@ -270,7 +242,7 @@ async function renderExcalidrawMarkdownEmbed(input: {
 async function mergeEmbeddedFiles(input: {
   scene: ExcalidrawScene;
   embeddedFiles: readonly ObsidianEmbeddedFile[];
-  contentDirectory: string;
+  contentSource: ContentSource;
   contentIndex: Map<string, string>;
 }): Promise<ExcalidrawScene> {
   const resolvedFiles = await resolveEmbeddedFiles(input);
@@ -285,7 +257,7 @@ async function mergeEmbeddedFiles(input: {
 
 async function resolveEmbeddedFiles(input: {
   embeddedFiles: readonly ObsidianEmbeddedFile[];
-  contentDirectory: string;
+  contentSource: ContentSource;
   contentIndex: Map<string, string>;
 }): Promise<Record<string, Record<string, unknown>>> {
   const files: Record<string, Record<string, unknown>> = {};
@@ -294,15 +266,13 @@ async function resolveEmbeddedFiles(input: {
     const assetPath = input.contentIndex.get(embeddedFile.target.toLowerCase());
     if (!assetPath || !isSupportedImagePath(assetPath)) continue;
 
-    const sourcePath = path.resolve(input.contentDirectory, assetPath);
-    if (!isInsideDirectory(input.contentDirectory, sourcePath)) continue;
-
     try {
-      const data = await fs.readFile(sourcePath);
+      const data = await readContentSourceEntry(input.contentSource, assetPath);
+      if (data === null) continue;
       const mimeType = getImageMimeType(assetPath);
       files[embeddedFile.fileId] = {
         id: embeddedFile.fileId,
-        dataURL: `data:${mimeType};base64,${data.toString("base64")}`,
+        dataURL: `data:${mimeType};base64,${toBase64(data)}`,
         mimeType,
         created: Date.now(),
         lastRetrieved: Date.now(),
@@ -331,7 +301,28 @@ function getImageMimeType(filePath: string): string {
 }
 
 function getPathExtension(filePath: string): string {
-  const fileName = path.posix.basename(filePath.toLowerCase());
+  const fileName = getFileName(filePath.toLowerCase());
   const extensionStart = fileName.lastIndexOf(".");
   return extensionStart > 0 ? fileName.slice(extensionStart + 1) : "";
+}
+
+async function readText(
+  source: ContentSource,
+  logicalPath: string,
+): Promise<string | null> {
+  const content = await readContentSourceEntry(source, logicalPath);
+  if (content === null) return null;
+  return typeof content === "string"
+    ? content
+    : new TextDecoder().decode(content);
+}
+
+function toBase64(content: string | Uint8Array): string {
+  const bytes =
+    typeof content === "string" ? new TextEncoder().encode(content) : content;
+  return Buffer.from(bytes).toString("base64");
+}
+
+function getFileName(contentPath: string): string {
+  return contentPath.split("/").at(-1) ?? contentPath;
 }

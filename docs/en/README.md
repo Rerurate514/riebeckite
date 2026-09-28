@@ -10,6 +10,7 @@ In a typical project, you point Riebeckite at a content directory, configure Mar
 
 |Goal|Read first|
 |---|---|
+|Use the framework step by step|[Usage Guide](./guide.md)|
 |Run or build a project|[Getting Started](./getting-started.md)|
 |Find configuration fields|[Configuration](./configuration.md)|
 |Understand ownership and dependency direction|[Architecture](./architecture.md)|
@@ -63,6 +64,7 @@ Build tooling
 
 |Document|What it covers|
 |---|---|
+|[Usage Guide](./guide.md)|The step-by-step path from installation and configuration to content, validation, build, and deployment|
 |[Getting Started](./getting-started.md)|Prerequisites, installation, development server, normal and full builds, and a minimal configuration|
 |[Configuration](./configuration.md)|`riebeckite.config.ts`, Application Root, site, content, themes, plugins, validation, and secret handling|
 |[CLI](./cli.md)|The `check`, `doctor`, `inspect`, `profile`, `build`, and `dev` commands, exit behavior, and packaging|

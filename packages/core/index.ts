@@ -53,6 +53,7 @@ export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
 export { uniqueStrings } from "./src/utils/collections.js";
 export { escapeHtml, escapeHtmlAttribute } from "./src/utils/html.js";
 export { normalizeTag } from "./src/utils/tags.js";
+export { calculateReadingTime, stripHtml } from "./src/utils/text.js";
 export type {
   LogContext,
   Logger,

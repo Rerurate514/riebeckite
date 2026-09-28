@@ -8,7 +8,7 @@
 | 6 | C5 | 画像コピーの増分化でbuild高速化 | ✅ 完了 | Small | `build_images.ts`が参照画像約100MBを毎回無条件コピー。検証buildを高速化（Phase 1） |
 | 7 | R6 | clientEntries/endpoints規約 | ✅ 完了 | Small | Core helperとドキュメントで外部Plugin author向けの正解パターンを固定（Phase 1） |
 | 8 | R7 | 共通ユーティリティをCoreへ集約 | ✅ 完了 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
-| 9 | R12 | 読了時間をCoreユーティリティ化 | 未着手 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
+| 9 | R12 | 読了時間をCoreユーティリティ化 | ✅ 完了 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
 | 10 | R8 | 空CSS削除とlint warning解消 | 未着手 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
 | 11 | R9 | Package metadata規約の機械検証 | 未着手 | Medium | ~30 package.jsonの定型を`scripts/check_packages.mjs`で検証。依存はpnpm catalog集約（Phase 2） |
 | **12** | **A3/A4** | **Root / Config resolutionを一本化** | 未着手 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
@@ -133,7 +133,7 @@
 - **完了条件**: 各関数の定義が 1 つ。タグ正規化・エスケープ結果の出力 HTML が不変。
 - **検証**: `test:e2e:external`、該当プラグインの HTML 出力 diff（attachment/media/excalidraw/autocardlink/obsidian-markdown）。
 
-### #9 R12: 読了時間をCoreユーティリティ化（Phase 1 / Small / 依存なし）
+### #9 R12: 読了時間をCoreユーティリティ化（✅ 完了 / Phase 1 / Small / 依存なし）
 - **概要**: 読了時間の算出は**すでに実装済み**。ただし `packages/plugins/seo/index.ts:377` の `calculateReadingTime` は SEO の `PluginSeoExtension` 経由でしか使えず、`apps/web` は `lib/seo.ts:68-77` の `findSeoProvider()` を経由するため **SEO プラグイン未設定だと例外**になる。純粋関数を Core へ移して結合を解消する（新規プラグインは作らない）。
 - **対象**:
   - `packages/plugins/seo/index.ts:377`（`calculateReadingTime`、および依存する private `stripHtml:477`）
@@ -147,6 +147,7 @@
   4. `apps/web` は `@riebeckite/core` から直接 import し、`lib/seo.ts` の re-export を削除。
 - **完了条件**: SEO プラグイン未設定でも読了時間が算出・表示できる。既存表示（「X min」）と SEO 構造化データが不変。
 - **検証**: `pnpm build` → apps/web の記事表示 → `test:e2e:external`。
+- **成果**: `calculateReadingTime` と `stripHtml` を Core の text utility に集約し、Core から公開。SEO plugin は Core 実装を使用し、`PluginSeoExtension` と apps/web の SEO re-export から読了時間を削除。記事コンポーネントは Core を直接参照する。
 
 ### #10 R8: 空CSS削除とlint warning解消（Phase 1 / Small / 依存なし）
 - **概要**: 死にファイルと唯一の lint warning を解消。

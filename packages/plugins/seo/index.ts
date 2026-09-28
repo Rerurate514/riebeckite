@@ -6,7 +6,12 @@ import type {
   SeoMetadata,
   WebsiteSeoInput,
 } from "@riebeckite/core";
-import { definePlugin, isPublished } from "@riebeckite/core";
+import {
+  calculateReadingTime,
+  definePlugin,
+  isPublished,
+  stripHtml,
+} from "@riebeckite/core";
 
 export type FeedOptions = {
   rss?: boolean;
@@ -43,7 +48,6 @@ export function seo(options: SeoPluginOptions = {}) {
       getEntryPublishedTime,
       getEntryUpdatedTime,
       getHtmlLanguage,
-      calculateReadingTime,
       renderSitemap,
       renderRobots,
       renderRssFeed,
@@ -374,20 +378,6 @@ export function getHtmlLanguage(config: ResolvedRiebeckiteConfig): string {
   return config.site.locale.replace("_", "-");
 }
 
-export function calculateReadingTime(html: string): number {
-  const text = stripHtml(html).trim();
-  if (!text) return 1;
-  const cjkChars =
-    text.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/gu)
-      ?.length ?? 0;
-  const latinWords =
-    text
-      .replace(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/gu, " ")
-      .match(/[\p{L}\p{N}]+/gu)?.length ?? 0;
-
-  return Math.max(1, Math.ceil(cjkChars / 500 + latinWords / 220));
-}
-
 function buildCanonicalUrl(
   config: ResolvedRiebeckiteConfig,
   canonical: unknown,
@@ -472,13 +462,6 @@ function normalizeTags(tags: unknown): string[] {
   return tags.filter(
     (tag): tag is string => typeof tag === "string" && tag.trim().length > 0,
   );
-}
-
-function stripHtml(html: string): string {
-  return html
-    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ");
 }
 
 function escapeXml(value: string): string {

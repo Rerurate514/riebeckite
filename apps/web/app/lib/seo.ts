@@ -9,7 +9,6 @@ import { config } from "../config";
 const seoProvider = findSeoProvider();
 
 export type { SeoMetadata } from "@riebeckite/core";
-export const calculateReadingTime = seoProvider.calculateReadingTime;
 export const getDescription = seoProvider.getDescription;
 export const getEntryPublishedTime = seoProvider.getEntryPublishedTime;
 export const getEntryUpdatedTime = seoProvider.getEntryUpdatedTime;

@@ -1,11 +1,10 @@
-import type { PostContent } from "@riebeckite/core";
+import { calculateReadingTime, type PostContent } from "@riebeckite/core";
 import {
   ArticleContent,
   ArticleHeader,
   ArticleLayout,
   Article as ArticlePrimitive,
 } from "@riebeckite/honox/ui";
-import { calculateReadingTime } from "../../lib/seo";
 import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
 
 type Props = {

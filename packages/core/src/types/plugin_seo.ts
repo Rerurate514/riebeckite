@@ -43,7 +43,6 @@ export type PluginSeoExtension = {
   getEntryPublishedTime(entry: ContentManifestEntry): string | null;
   getEntryUpdatedTime(entry: ContentManifestEntry): string | null;
   getHtmlLanguage(config: ResolvedRiebeckiteConfig): string;
-  calculateReadingTime(html: string): number;
   renderSitemap(
     config: ResolvedRiebeckiteConfig,
     entries: ContentManifestEntry[],

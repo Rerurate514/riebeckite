@@ -19,7 +19,7 @@
 | 17 | R10 | seoプラグイン分割 | ✅ 完了 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
 | 18 | R11 | diagnostics analyze分割 | ✅ 完了 | Small–Medium | `plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
 | **19** | **A2** | **Plugin間の直接依存を排除** | ✅ 完了 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
-| **20** | **A6** | **HonoX UI primitiveの境界固定** | 未着手 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
+| **20** | **A6** | **HonoX UI primitiveの境界固定** | ✅ 完了 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
 | **21** | **A7** | **Site Application拡張contract** | 未着手 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
 | **22** | **A8** | **Local Plugin / Local Theme対応保証** | 未着手 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
 | 23 | C1/C2 | Content Query API | 未着手 | Medium | tag/folder/date/frontmatter等の共通問い合わせ基盤 |
@@ -249,12 +249,13 @@
 - **検証**: build、`test:e2e:external`。
 - **成果**: `GardenExplorerNote` が検索プラグインの `SearchItem` を参照しないローカルの表示データ型を定義し、`@riebeckite/plugin-search` を package dependency と lockfile から削除した。検索機能との実行時連携は存在しないため、capability 依存は導入していない。
 
-### #20 A6: HonoX UI primitiveの境界固定（A系 / Small）
+### #20 A6: HonoX UI primitiveの境界固定（✅ 完了 / A系 / Small）
 - **概要**: Integration が Component Framework 化するのを防ぎ、公開 primitive の境界を固定。
 - **対象**: `packages/integrations/honox/src/ui/primitives.tsx`
 - **実装方針**: 公開 primitive 一覧を確定し docs 化。apps/web がそれのみを使うよう整理。
 - **完了条件**: 公開 primitive が文書化され、apps/web・外部 Site が同一 contract を使用。
 - **検証**: `pnpm build`、docs 更新。
+- **成果**: `@riebeckite/honox/ui` の公開 component を `Article`、`ArticleLayout`、`ArticleHeader`、`ArticleContent`、`ArticleMeta`、`ArticleFooter`、`Sidebar` に固定し、対応する props 型を公開。Integration は semantic な構造と class 合成だけを提供し、表示内容・ページ構成・style・island は Site Application が所有することを英日 docs に明記した。external tarball の NodeNext typecheck で全 component と props 型を検証する。
 
 ### #21 A7: Site Application拡張contract（A系 / Medium）
 - **概要**: 外部 Site の `routes`/`components`/`islands`/`style` の所有・override 方法を正式化。

@@ -5,6 +5,7 @@ import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { properties } from "@riebeckite/plugin-properties";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -25,6 +26,7 @@ export default defineConfig({
   theme: localFixtureTheme(),
   plugins: [
     obsidianMarkdown(),
+    properties(),
     media(),
     attachment(),
     autoCardLinkPlugin(),

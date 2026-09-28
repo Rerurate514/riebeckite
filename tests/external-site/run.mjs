@@ -37,6 +37,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-dataview",
   },
   {
+    directory: "packages/plugins/properties",
+    name: "@riebeckite/plugin-properties",
+  },
+  {
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
   },
@@ -56,6 +60,7 @@ const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const DATAVIEW_NOTE_TITLE = "Dataview Alpha";
+const PROPERTY_MARKER = "RIEBECKITE_EXTERNAL_PROPERTY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
@@ -433,6 +438,15 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("language-dataviewjs")) {
     fail("dataviewjs code blocks must stay code blocks");
+  }
+  if (!combined.includes("rb-properties")) {
+    fail("generated HTML is missing the properties plugin panel");
+  }
+  if (!combined.includes('data-property-key="marker"')) {
+    fail("properties panel did not render the fixture frontmatter key");
+  }
+  if (!combined.includes(PROPERTY_MARKER)) {
+    fail("properties panel did not render the fixture frontmatter value");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

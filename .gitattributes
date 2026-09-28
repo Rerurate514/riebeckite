@@ -1,0 +1,3 @@
+# Keep the external content fixtures byte-stable across platforms. The E2E
+# asserts exact attachment sizes, so line-ending conversion must not apply.
+tests/external-site/fixture/vault/** -text

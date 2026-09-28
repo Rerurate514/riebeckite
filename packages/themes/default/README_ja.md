@@ -1,22 +1,12 @@
 # @riebeckite/theme-default
 
-Riebeckite のデフォルト theme: design tokens・light/dark color mode・
-typography preset・article layout を CSS で提供します。
+Riebeckite の標準テーマです。色、文字組み、余白、記事レイアウトを CSS のデザイントークンとして定義します。テーマを指定しなければ、このテーマが使われます。
 
 [English](./README_en.md)
 
-## 概要
+## 標準テーマを明示する
 
-`defaultTheme()` は `riebeckite` という名前の built-in theme を作成します。
-design system を CSS custom properties（`--rb-color-*`、`--rb-font-*`、
-`--rb-space-*`、`--rb-layout-*`）として公開し、`@theme` block で Tailwind
-theme の値にマップします。そのため tokens は素の CSS からも Tailwind 系の
-utility からも使えます。
-
-`riebeckite.config.ts` で `config.theme` を省略した場合、自動的にこの theme
-が使われます。
-
-## 使い方
+通常は `config.theme` を省略して構いません。設定を明示したい場合は `defaultTheme()` を使います。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -28,47 +18,40 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
-    userCss: [],
   }),
 });
 ```
 
-## オプション
+このテーマの名前は `riebeckite` です。`config.theme` を省略した場合も、同じテーマが選ばれます。
 
-`defaultTheme(options?)` は `name` 以外の `ThemeConfig` を受け取ります:
+## 変更できる項目
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
-| `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
-| `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
-| `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
-| `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `colorMode` | `"system"` | `"light"`、`"dark"`、`"system"`。`system` は `data-theme` がなければ OS の配色設定に従う |
+| `typography` | `"system"` | `"system"`、`"serif"`、`"sans"`。`data-typography` で選択できる |
+| `articleLayout` | `"article"` | `"article"`、`"sidebar"`、`"full-width"` のレイアウト値 |
+| `tokens` | `{}` | 色、フォント、余白、レイアウト幅のトークンを上書きする |
+| `userCss` | `[]` | 追加で読み込むスタイルシート |
 
-## Design tokens
+`data-theme="dark"` または `data-theme="light"` をルート要素に付けると、配色モードを固定できます。
 
-stylesheet は custom properties を定義し、Riebeckite 全体で利用されます。
+## CSS で使えるトークン
 
-- **色** — `--rb-color-paper`、`-ink`、`-muted`、`-accent`、`-border`、
-  `-border-strong`、`-surface`、`-surface-hover`、`-overlay`、`-danger`、
-  `-success`、`-code-background` を light / dark /
-  `prefers-color-scheme` の各 variant で定義
-- **タイポグラフィ** — `--rb-font-body`、`--rb-font-heading`、
-  `--rb-font-mono`。`serif`/`sans` preset は
-  `:root[data-typography=...]` で body/heading のフォントを切替
-- **Spacing とレイアウト** — `--rb-space-1..8`、`--rb-rule-width`、
-  `--rb-layout-page-max`、`--rb-layout-article-max`、`--rb-layout-sidebar`、
-  `--rb-layout-gap`
+テーマは `--rb-*` 形式の CSS カスタムプロパティを定義し、`@theme` ブロックにも対応する値を渡します。そのため、通常の CSS と Tailwind 系ユーティリティのどちらからも同じトークンを利用できます。
 
-root 要素に `data-theme="dark"`（または `"light"`）を設定すると色モードを
-固定でき、`colorMode: "system"` の場合は unset のまま OS に追従します。
+- 色: `--rb-color-paper`、`--rb-color-ink`、`--rb-color-accent`、`--rb-color-border` など
+- フォント: `--rb-font-body`、`--rb-font-heading`、`--rb-font-mono`
+- 余白と幅: `--rb-space-1` から `--rb-space-8`、`--rb-layout-page-max`、`--rb-layout-article-max`、`--rb-layout-sidebar`
 
-## エクスポート
+独自テーマでもこれらの意味的なトークン名を保つと、アプリケーションとプラグインのスタイルを差し替えやすくなります。
 
-- `defaultTheme(options?)` — theme factory
-- 型: `DefaultThemeOptions`
-- スタイル: `@riebeckite/theme-default/style.css`
+## 主なエクスポート
 
-## 関連
+- `defaultTheme(options?)`: テーマを作成する
+- `DefaultThemeOptions`: 設定用の型
+- `@riebeckite/theme-default/style.css`: テーマのスタイルシート
 
-- [Plugin ガイド](../../../docs/plugins_jp.md)
+## 関連資料
+
+- [テーマシステム](../../../docs/ja/theme-system.md)

@@ -1,30 +1,20 @@
 # @riebeckite/plugin-garden-explorer
 
-インタラクティブな note garden explorer: 1 ページで graph・検索・tag/folder
-filter・note details をまとめて提供します。
+ノートの一覧、検索、タグ・フォルダーによる絞り込み、リンクグラフを一画面にまとめる探索画面です。公開済みのノートだけを対象にするため、そのまま公開サイトの `/explore` などに置けます。
 
 [English](./README_en.md)
 
-## 概要
+## 用意される画面
 
-`gardenExplorer()` は 3 つの panel を持つインタラクティブな
-`GardenExplorer` component を提供します。
+`gardenExplorerPlugin()` は、次の三つの領域を持つ `GardenExplorer` コンポーネントとスタイルを提供します。
 
-- **Explorer** — 検索 box と tag / folder の filter chip（count 付き）、
-  絞り込み後の note list
-- **Graph** — note と内部 link のインタラクティブな radial SVG graph。
-  zoom（`+`/`−`/wheel）・pan（drag）・reset 対応
-- **Details** — 選択中の note の link・tag・excerpt・related notes
+- **一覧**: キーワード検索、タグとフォルダーのフィルター、該当ノートの一覧
+- **グラフ**: ノートと内部リンクを表示する放射状 SVG グラフ。ズーム、ドラッグ、リセットに対応
+- **詳細**: 選択したノートのリンク、タグ、抜粋、関連ノート
 
-選択状態は URL query に反映されるため（`?note=`、`?tag=`、`?folder=`）、
-表示を共有でき、現在の選択に応じて filter list が変わります。
+選択状態は `?note=`、`?tag=`、`?folder=` として URL に反映されます。表示中の状態をそのまま共有できます。
 
-`getGardenExplorerData()` は published entries から headings・plain text body
-（4,000 文字に truncated）・tags・folders・outgoing links・backlinks を含む
-note 集合を構築します。検索には `@riebeckite/plugin-search` の engine
-（`searchItems`）を、radial layout には `../src/graph.ts` を再利用します。
-
-## 使い方
+## 設定してページに配置する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -36,18 +26,12 @@ export default defineConfig({
 });
 ```
 
-`gardenExplorerPlugin()` は plugin list に plugin を登録し、`style.css` を
-app の stylesheet に bundle します。
-
-### Component の描画
+ルート側では manifest から表示用データを作り、コンポーネントに渡します。
 
 ```tsx
 import GardenExplorer, {
   getGardenExplorerData,
 } from "@riebeckite/plugin-garden-explorer";
-import { config } from "../config";
-import { content } from "../content";
-import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();
 const data = getGardenExplorerData({
@@ -56,36 +40,31 @@ const data = getGardenExplorerData({
   resolveTitle: getArticleTitle,
 });
 
-// /explore route 内で
 return <GardenExplorer data={data} />;
 ```
 
-この component は client 側でインタラクティブに動作し、browser で
-`window` が利用可能であることを前提とします。
+`GardenExplorer` はブラウザで操作するクライアントコンポーネントです。サーバーで描画するだけの場所には置かず、クライアント側で動作するルートに配置してください。
 
-## データ
+## データに含まれる範囲
 
-`getGardenExplorerData()` は `GardenExplorerData` を返します。
+`getGardenExplorerData()` は公開済みエントリーから、見出し、本文テキストの先頭 4,000 文字、タグ、フォルダー、送信リンク、被リンクを集めます。本文全体をクライアントへ渡さないため、検索用のデータ量を抑えられます。
 
-- `notes` — title 順に sort された published notes。各 note は `folder`・
-  `outgoing`・`backlinks` を持つ `SearchItem`
-- `edges` — published notes 間の graph edge
-- `tags` — tag の count（多い順）
-- `folders` — folder の count（アルファベット順）。root 直下の note は
-  `"Root"` になります
+- `notes`: タイトル順の公開ノート。フォルダー、送信リンク、被リンクを含む
+- `edges`: 公開ノート間のグラフの辺
+- `tags`: 件数の多い順のタグ
+- `folders`: 名前順のフォルダー。ルート直下のノートは `Root`
 
-## エクスポート
+検索には `@riebeckite/plugin-search` の `searchItems()` を利用します。検索モーダルを置かない場合でも、探索画面の検索にはこの依存関係が必要です。
 
-- `gardenExplorerPlugin()` — plugin factory
-- `GardenExplorer` — インタラクティブな explorer component
-  （`components/garden-explorer.tsx` の default export）
-- `getGardenExplorerData({ manifest, config, resolveTitle })` — explorer の
-  dataset を構築
-- 型: `GardenExplorerData`, `GardenExplorerEdge`, `GardenExplorerFolder`,
-  `GardenExplorerNote`, `GardenExplorerTag`
+## 主なエクスポート
 
-## 関連
+- `gardenExplorerPlugin()`: プラグインを作成する
+- `GardenExplorer`: 探索画面のコンポーネント
+- `getGardenExplorerData({ manifest, config, resolveTitle })`: 表示データを構築する
+- 型: `GardenExplorerData`、`GardenExplorerEdge`、`GardenExplorerFolder`、`GardenExplorerNote`、`GardenExplorerTag`
 
-- [Plugin ガイド](../../docs/plugins_jp.md)
-- [`@riebeckite/plugin-search`](../plugin-search/README_ja.md)
-- [`@riebeckite/plugin-local-graph`](../plugin-local-graph/README_ja.md)
+## 関連資料
+
+- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [`@riebeckite/plugin-search`](../search/README_ja.md)
+- [`@riebeckite/plugin-local-graph`](../local-graph/README_ja.md)

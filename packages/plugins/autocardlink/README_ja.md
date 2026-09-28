@@ -1,16 +1,14 @@
 # @riebeckite/plugin-autocardlink
 
-`cardlink` code block を link preview card として描画します。
+`cardlink` コードブロックを、外部ページへのプレビューカードに変換するプラグインです。
 
 [English](./README_en.md)
 
-## 概要
+## できること
 
-`autoCardLinkPlugin()` は `cardlink` fenced code block を anchor 形式の
-link card（title・description・favicon・host・任意の image）に変換します。
-スタイルは `style.css` に同梱されています。
+`autoCardLinkPlugin()` は、タイトル、説明、ホスト名、favicon、任意の画像を含むリンクカードを生成します。スタイルはパッケージ内の `style.css` に含まれます。
 
-## 使い方
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -22,45 +20,40 @@ export default defineConfig({
 });
 ```
 
-## 記法
+## `cardlink` ブロックの書き方
 
-````
+````md
 ```cardlink
 url: https://example.com/post
 title: "Example post"
-description: "A short summary of the linked page."
+description: "リンク先の短い説明"
 host: example.com
 favicon: https://example.com/favicon.ico
 image: https://example.com/og.png
 ```
 ````
 
-| フィールド | 説明 |
-| ---------- | ---- |
-| `url` | link 先。必須（`url` が無い block はそのまま） |
-| `title` | card の title（quote 付きの値も可）。省略時は `url` |
-| `description` | card の description（quote 付きの値も可） |
-| `host` | host 表示。省略時は `url` |
-| `favicon` | favicon の image URL |
-| `image` | preview image。無い場合は no-image レイアウト |
+| フィールド | 内容 |
+| --- | --- |
+| `url` | リンク先。必須で、省略したブロックは変換しない |
+| `title` | カードの見出し。省略時は `url` |
+| `description` | 補足説明 |
+| `host` | 表示するホスト名。省略時は `url` |
+| `favicon` | favicon の URL |
+| `image` | プレビュー画像の URL |
 
-描画された card は新規タブ（`target="_blank" rel="noopener
-noreferrer"`）で開きます。preview image と favicon は lazy load され、
-`data-lightbox-ignore="true"` が付くため
-`@riebeckite/plugin-lightbox` の対象外になります。
+カードは別タブで開きます。画像と favicon は遅延読み込みされ、`data-lightbox-ignore="true"` が付くため、Lightbox の対象にはなりません。
 
-## オプション
+## オプションと API
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `className` | `string` | `"rr-cardlink"` | card の root CSS class |
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `className` | `string` | `"rr-cardlink"` | カードのルート要素に付ける CSS クラス |
 
-## エクスポート
+- `autoCardLinkPlugin(options?)` — プラグインファクトリ
+- `remarkAutoCardLink(options?)` — Remark 変換だけを利用する場合の API
+- `AutoCardLink`、`AutoCardLinkOptions` — 型
 
-- `autoCardLinkPlugin(options?)` — plugin factory
-- `remarkAutoCardLink(options?)` — 単体で使える remark transform
-- 型: `AutoCardLink`、`AutoCardLinkOptions`
+## 関連資料
 
-## 関連
-
-- [Plugin ガイド](../../docs/plugins_jp.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)

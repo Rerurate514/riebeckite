@@ -1,18 +1,12 @@
 # @riebeckite/plugin-diagnostics
 
-Obsidian vault / Riebeckite content 向けの content 診断: 壊れた link・
-frontmatter 問題・孤児 note・未使用 asset など。build plugin・programmatic
-API・CLI の 3 形式で使えます。
+コンテンツのリンク切れ、公開設定の矛盾、frontmatter の不足などを検出するプラグインです。ビルド時の診断だけでなく、CLI とプログラムからの実行にも対応します。
 
 [English](./README_en.md)
 
-## 概要
+## まずはビルドに診断を加える
 
-`diagnostics()` は content directory を解析し、build 時に diagnostic として
-問題を報告します。同じチェックは `runDiagnostics()` と
-`riebeckite-diagnostics` CLI でも実行できます。
-
-## 使い方（plugin）
+通常は `diagnostics()` を設定に登録します。診断結果は manifest に入り、`failOnError` を有効にするとエラーがあったビルドを失敗させられます。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -30,68 +24,50 @@ export default defineConfig({
 });
 ```
 
-- `addDiagnostics` — build 時に解析を実行し、結果を
-  `manifest.diagnostics` に格納
-- `onBuildEnd` — `failOnError: true` かつ error 級 diagnostic があれば
-  `DiagnosticsFailure` を throw
+## 検出する問題
 
-## チェック
+| コード | 既定の重要度 | 内容 |
+| --- | --- | --- |
+| `broken-wikilink` | error | Wikiリンクの参照先またはフラグメントを解決できない |
+| `broken-image` | error | 埋め込み画像または画像リンクの参照先がない |
+| `broken-link` | error | Markdown リンクが存在しない、または除外されたノートを指す |
+| `unused-asset` | warning | どのノートからも参照されない画像 |
+| `orphan-note` | info | 公開ノートのうち、他のノートからリンクされていないもの |
+| `missing-frontmatter` | warning | frontmatter がない、または必須フィールドが欠けている |
+| `publish-conflict` | warning | `publish: true` と `draft: true` または `private: true` が同居している |
+| `duplicate-title` | warning | 公開ノート同士でタイトルが重複している |
+| `slug-collision` | error | 大文字・小文字を区別しない slug が衝突している |
+| `excluded-public` | warning | 除外されたノートに `publish: true` が指定されている |
+| `internal-error` | error | コンテンツ解析中に処理できないエラーが発生した |
 
-| Code | デフォルト severity | 検出内容 |
-| ---- | ------------------- | -------- |
-| `broken-wikilink` | `error` | wikilink の対象や fragment が解決しない |
-| `broken-image` | `error` | embed した image や image link が存在しない |
-| `broken-link` | `error` | markdown link が欠落・除外済みの note / file を指す |
-| `unused-asset` | `warning` | どの note からも参照されていない image（`reportUnusedAssets`） |
-| `orphan-note` | `info` | 公開済み note への incoming link が無い（`reportOrphans`） |
-| `missing-frontmatter` | `warning` | frontmatter が無い、または必須 field が欠落 |
-| `publish-conflict` | `warning` | `publish: true` と `draft: true` / `private: true` の併用 |
-| `duplicate-title` | `warning` | 公開済み note 同士で title が重複 |
-| `slug-collision` | `error` | slug が大文字小文字を無視して衝突 |
-| `excluded-public` | `warning` | 除外済み note に `publish: true` |
-| `internal-error` | `error` | content 解析の失敗 |
+未使用アセットと孤立ノートは、明示的に有効化した場合だけ確認します。意図的に孤立させるトップページなどがあるなら、`reportOrphans` の結果を公開方針と照らして判断してください。
 
-## オプション
+## 設定項目
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `failOnError` | `boolean` | `false` | error 級 diagnostic で build を失敗させる |
-| `reportUnusedAssets` | `boolean` | `false` | 参照されていない image を報告 |
-| `reportOrphans` | `boolean` | `false` | incoming link が無い公開 note を報告 |
-| `requiredFrontmatter` | `string[]` | `[]` | 必須の frontmatter field |
-| `severity` | `Partial<Record<DiagnosticCode, DiagnosticSeverity>>` | 上表 | code ごとの severity 上書き |
-| `exclude` | `string[]` | `[]` | 追加の exclude glob |
-| `publishStrategy` | `"explicit" \| "selective"` | config の値 | 公開 filter の方針 |
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `failOnError` | `false` | error レベルの診断があればビルドを失敗させる |
+| `reportUnusedAssets` | `false` | 未参照画像を報告する |
+| `reportOrphans` | `false` | 孤立した公開ノートを報告する |
+| `requiredFrontmatter` | `[]` | 必須にする frontmatter フィールド |
+| `severity` | コードごとの既定値 | 診断コード別の重要度を上書きする |
+| `exclude` | `[]` | 解析対象から追加で除外する glob |
+| `publishStrategy` | 設定ファイルの値 | 公開ノートの判定方法 |
 
-## CLI
+## CI や編集時には CLI を使う
+
+設定を読み込んで実行する場合は、次のようにします。
 
 ```bash
 riebeckite-diagnostics --config riebeckite.config.ts
 riebeckite-diagnostics --content ./content --report-orphans
 ```
 
-| オプション | 説明 |
-| ---------- | ---- |
-| `--config <path>` | `riebeckite.config.ts` の path（tsx で load） |
-| `--content <dir>` | 解析する content directory（デフォルト: `.`） |
-| `--exclude <glob>` | 追加の exclude glob（複数指定可） |
-| `--publish-strategy <mode>` | `explicit` \| `selective`（デフォルト: `selective`） |
-| `--report-unused-assets` | どの note からも参照されていない image を報告 |
-| `--report-orphans` | incoming link が無い公開 note を報告 |
-| `--required-frontmatter <f>` | 必須 frontmatter field（カンマ区切り） |
-| `--fail-on-error` | error があれば exit code 1（デフォルト） |
-| `--exit-on <severity>` | 指定 severity 以上で exit code 1（`info` \| `warning` \| `error`） |
-| `--format <text\|json>` | 出力形式（デフォルト: `text`） |
-| `--no-color` | ANSI color を無効化 |
-| `-h`, `--help` | help を表示 |
+`--format json` は機械処理用、`--exit-on warning` は警告以上を CI の失敗条件にしたい場合に使います。終了コードは、問題なしが `0`、指定したしきい値以上の診断があれば `1`、引数の誤りは `2` です。`--config` 使用時は設定内のオプションを既定値にし、CLI で明示した値を優先します。
 
-Exit code: `0` error なし、`1` error を報告（または `--exit-on` の
-threshold 到達）、`2` 引数不正。
+## アプリケーションから実行する
 
-`--config` 指定時は config 内の `diagnostics` plugin の option を既定値と
-し、明示的に指定した CLI flag が優先されます。`exclude` はマージされます。
-
-## Programmatic API
+エディタ連携や独自のレポートには `runDiagnostics()` を使えます。
 
 ```ts
 import {
@@ -105,21 +81,17 @@ console.log(formatDiagnostics(report));
 assertNoErrors(report);
 ```
 
-`runDiagnostics(config | path, options?)` は `DiagnosticsReport`
-（`diagnostics`・`errors`・`warnings`・`infos`・`hasErrors`・`hasWarnings`・
-`summary`・`byCode`）を返します。
+`DiagnosticsReport` には診断の一覧に加え、エラー・警告・情報の件数、コード別の集計、`hasErrors` と `hasWarnings` が入ります。
 
-## エクスポート
+## 主なエクスポート
 
-- `diagnostics(options?)` / `diagnosticsPlugin` — plugin factory
-- `runDiagnostics(target, options?)` — 解析を直接実行
-- `analyzeContent(config, options?)` — `Diagnostic[]` を返す生の解析
-- report helper: `buildReport`・`formatDiagnostics`・`groupByCode`・
-  `summarize`・`assertNoErrors`・`DiagnosticsFailure`
-- 型: `DiagnosticsOptions`・`DiagnosticsReport`・`DiagnosticsSummary`・
-  `AnalyzerContentConfig`
-- CLI: `riebeckite-diagnostics`
+- `diagnostics(options?)` / `diagnosticsPlugin`: プラグインを作成する
+- `runDiagnostics(target, options?)`: 診断と集計を実行する
+- `analyzeContent(config, options?)`: 生の `Diagnostic[]` を取得する
+- `formatDiagnostics`、`summarize`、`groupByCode`、`assertNoErrors`: レポート処理用の補助関数
+- `DiagnosticsFailure`: `failOnError` または `assertNoErrors` が送出するエラー
+- `riebeckite-diagnostics`: CLI
 
-## 関連
+## 関連資料
 
-- [Plugin ガイド](../../docs/plugins_jp.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)

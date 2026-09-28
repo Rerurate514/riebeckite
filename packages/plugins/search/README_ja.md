@@ -1,34 +1,10 @@
 # @riebeckite/plugin-search
 
-Client 側の full-text search: 重み付き・fuzzy な検索 engine と、keyboard
-対応の検索 modal を提供します。外部の search service は不要です。
+外部サービスなしで全文検索を提供するプラグインです。検索モーダルと検索バーを追加し、タイトルや本文を重み付きであいまいに検索します。
 
 [English](./README_en.md)
 
-## 概要
-
-`search()` は `SearchBar` component と、modal search dialog を開く
-browser entry point を追加します（`Ctrl+K`/`Cmd+K` または `/`）。
-engine の `searchItems()` は title・slug・tags・headings・body を
-重み付き scoring で検索します。
-
-| フィールド | 重み |
-| ---------- | ---- |
-| `slug` | 64 |
-| `title` | 56 |
-| `tags` | 44 |
-| `headings` | 32 |
-| `body` | 10 |
-
-完全一致は 3×、前方一致は 2×、部分一致は 1× で scoring されます。query が
-2 文字以上で部分一致が無い場合は fuzzy な subsequence match を使います。
-検索前に query は正規化されます（lowercase・NFKC・全角カタカナ → 半角）。
-
-`searchItems()` は純粋関数で export されているため、server 側でも利用できます。
-例えば runtime で modal が fetch する `search-data.json` index の生成にも
-使えます。
-
-## 使い方
+## 設定する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -40,29 +16,41 @@ export default defineConfig({
 });
 ```
 
-`searchPlugin()` は plugin を登録し、`style.css` を bundle し、page load 時に
-modal を初期化する client entry として `initSearch` を宣言します。
+`searchPlugin()` はスタイルとクライアント初期化処理を登録します。検索ダイアログは `Ctrl+K`、`Cmd+K`、または `/` で開けます。
 
-### Component の描画
+## 検索バーを置く
+
+レイアウトなど、検索を開く導線を出したい場所で `SearchBar` を描画します。
 
 ```tsx
 import { SearchBar } from "@riebeckite/plugin-search";
 
-// layout / renderer で
 return (
-  <>
-    <header>
-      <SearchBar />
-    </header>
-    {/* ... */}
-  </>
+  <header>
+    <SearchBar />
+  </header>
 );
 ```
 
-modal は初回 open 時に `/search-data.json`（`SearchItem` の配列）を fetch し、
-最大 8 件を表示します。
+モーダルは初めて開かれたときに `/search-data.json` を取得し、結果を最大 8 件表示します。検索用データを事前に配信できる構成で使ってください。
 
-## Search API
+## 検索の対象と順位
+
+`searchItems()` は次の項目を検索し、重みの高い項目を優先します。
+
+| 項目 | 重み |
+| --- | ---: |
+| `slug` | 64 |
+| `title` | 56 |
+| `tags` | 44 |
+| `headings` | 32 |
+| `body` | 10 |
+
+完全一致は 3 倍、前方一致は 2 倍、部分一致は 1 倍として採点します。2 文字以上の問い合わせで部分一致が見つからない場合は、文字が順に現れる候補も探します。入力は小文字化、NFKC 正規化、カタカナの表記ゆれ吸収を経て比較されます。
+
+## 検索エンジンだけを使う
+
+検索関数は副作用のない関数として公開されています。独自の検索ページやサーバー側のインデックス生成にも利用できます。
 
 ```ts
 import { searchItems, normalizeSearchQuery } from "@riebeckite/plugin-search";
@@ -70,21 +58,17 @@ import { searchItems, normalizeSearchQuery } from "@riebeckite/plugin-search";
 const results = searchItems(items, "#obsidian");
 ```
 
-- `searchItems(items, query)` — score 順、次いで title 順に sort して返す
-- `normalizeSearchQuery(value)` — 正規化し、先頭の `#` を取り除く。
-  これにより tag 検索は bare な tag name に一致する
-- `normalizeSearchText(value)` — lowercase + NFKC + カタカナ fold
+`normalizeSearchQuery()` は先頭の `#` を外すため、タグ名だけを指定する検索に使えます。
 
-## エクスポート
+## 主なエクスポート
 
-- `searchPlugin()` — plugin factory
-- `SearchBar` — modal component（`components/search-bar.tsx` の
-  default export）
-- `initSearch` — browser 初期化（`@riebeckite/plugin-search/client` 経由でも）
-- `searchItems`, `normalizeSearchQuery`, `normalizeSearchText` — search engine
-- 型: `SearchItem`, `SearchField`, `SearchMatch`, `SearchResult`
+- `searchPlugin()`: プラグインを作成する
+- `SearchBar`: 検索モーダルの導線となるコンポーネント
+- `initSearch`: ブラウザ側の初期化。`@riebeckite/plugin-search/client` からも読み込める
+- `searchItems`、`normalizeSearchQuery`、`normalizeSearchText`: 検索エンジン
+- 型: `SearchItem`、`SearchField`、`SearchMatch`、`SearchResult`
 
-## 関連
+## 関連資料
 
-- [Plugin ガイド](../../docs/plugins_jp.md)
-- [`@riebeckite/plugin-garden-explorer`](../plugin-garden-explorer/README_ja.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)

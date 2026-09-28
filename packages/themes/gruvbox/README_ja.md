@@ -1,31 +1,10 @@
 # @riebeckite/theme-gruvbox
 
-温かみのある retro-groove な Gruvbox テーマ: light mode ではバタークリーム
-の paper に ink の tint、dark mode ではリッチな charcoal に
-`#ebdbb2` 系の ink、全体に signature のバーントオレンジ accent。
+Gruvbox の温かい配色を使うテーマです。明るい配色ではクリーム色の背景と焦げ茶の文字、暗い配色ではチャコールの背景と淡い文字を使い、オレンジをアクセントにします。
 
 [English](./README_en.md)
 
-## 概要
-
-`gruvboxTheme()` は `gruvbox` という名前の theme を作成します。他の
-Riebeckite テーマと同じ `ThemeConfig` API と token 契約に従い、design
-system を CSS custom properties（`--rb-color-*`、`--rb-font-*`、
-`--rb-space-*`、`--rb-layout-*`）として公開し、`@theme` block で Tailwind
-theme の値にマップします。
-
-パレットは定番の Gruvbox retro-groove カラーから構成します:
-
-- **Light** — バタークリームの paper（`#fbf1c7`）、温かい charcoal の ink
-  （`#282828`）、バーントオレンジの accent（`#d65d0e`）
-- **Dark** — リッチな charcoal の paper（`#282828`）、淡い `#ebdbb2` の
-  fg ink、明るいオレンジの accent（`#fe8019`）
-
-Tokyo Night テーマと同様に、主張のある base スタイルも適用します: accent の
-`caret-color`/`accent-color`、バーントオレンジの `:focus-visible` outline、
-揃いの `::selection`、細く accent に染めた scrollbar。
-
-## 使い方
+## 設定する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -35,48 +14,41 @@ export default defineConfig({
   // ...
   theme: gruvboxTheme({
     colorMode: "system",
-    typography: "system",
-    articleLayout: "article",
     contrast: "hard",
-    userCss: [],
   }),
 });
 ```
 
-`defaultTheme()` と同じ `ThemeConfig` API を使うため、設定変更なしでどの
-テーマとも差し替えられます。root の `data-theme-name` 属性には
-`gruvbox` が設定されます。
+テーマ名は `gruvbox` です。他の Riebeckite テーマと同じ `ThemeConfig` を受け取るため、基本設定を保ったまま差し替えられます。
 
-## オプション
+## 配色と見た目
 
-`gruvboxTheme(options?)` は `name` 以外の `ThemeConfig` を受け取り、加えて
-テーマ固有オプション `contrast` を提供します:
+明るい配色は `#fbf1c7` を背景、`#282828` を文字、`#d65d0e` をアクセントに使います。暗い配色は `#282828` を背景、`#ebdbb2` を文字、`#fe8019` をアクセントに使います。
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `contrast` | `"soft" \| "medium" \| "hard"` | `"medium"` | Gruvbox の定番 contrast 段階（`data-gruvbox-contrast` 属性で適用）。paper / surface の明度を light・dark 両モードで調整 |
-| `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
-| `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
-| `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
-| `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
-| `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+フォームのアクセント色、キーボード操作時のフォーカス枠、テキスト選択、スクロールバーにもオレンジ系の色を適用します。デザインをより控えめにしたい場合は、`tokens` または `userCss` で上書きしてください。
 
-テーマ固有オプションは safe な `data-*` 属性（`data-gruvbox-contrast`）として
-root 要素に適用されます。`contrast` は `config` からも直接
-`attributes: { "data-gruvbox-contrast": "hard" }` で上書きできます。
+## 変更できる項目
 
-token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
-README を参照してください。token の契約は同一です。
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `contrast` | `"medium"` | `"soft"`、`"medium"`、`"hard"`。背景と面の明度を調整し、`data-gruvbox-contrast` に反映する |
+| `colorMode` | `"system"` | `"light"`、`"dark"`、`"system"` |
+| `typography` | `"system"` | `"system"`、`"serif"`、`"sans"` |
+| `articleLayout` | `"article"` | 記事レイアウトの値 |
+| `tokens` | `{}` | 共通デザイントークンの上書き |
+| `userCss` | `[]` | 追加のスタイルシート |
 
-## エクスポート
+`contrast` は `attributes: { "data-gruvbox-contrast": "hard" }` として直接指定することもできます。
 
-- `gruvboxTheme(options?)` — theme factory
-- 型: `GruvboxThemeOptions`
-- スタイル: `@riebeckite/theme-gruvbox/style.css`
+## 主なエクスポート
 
-## 関連
+- `gruvboxTheme(options?)`: テーマを作成する
+- `GruvboxThemeOptions`: 設定用の型
+- `@riebeckite/theme-gruvbox/style.css`: テーマのスタイルシート
 
-- [Plugin ガイド](../../../docs/plugins_jp.md)
+## 関連資料
+
+- [テーマシステム](../../../docs/ja/theme-system.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
 - [`@riebeckite/theme-sakura`](../sakura/README_ja.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README_ja.md)

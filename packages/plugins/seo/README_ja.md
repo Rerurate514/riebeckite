@@ -1,16 +1,10 @@
 # @riebeckite/plugin-seo
 
-Riebeckite 向け SEO metadata・sitemap・robots.txt・feed 生成 plugin です。
+記事のメタデータ、サイトマップ、robots.txt、RSS・Atom・JSON Feed をまとめて生成するプラグインです。アプリケーションはプラグインが提供する SEO 拡張を受け取り、各ページの出力に利用します。
 
 [English](./README_en.md)
 
-## 概要
-
-`seo()` は `PluginSeoExtension` を提供します。Riebeckite アプリはこれを使って
-ページごとの SEO metadata を組み立て、`/sitemap.xml`・`/robots.txt`・
-RSS / Atom / JSON feed を出力します。
-
-## 使い方
+## 設定する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -30,78 +24,45 @@ export default defineConfig({
 });
 ```
 
-## オプション
+| 項目 | 説明 |
+| --- | --- |
+| `siteName` | ページタイトルに使うサイト名。省略時は `site.title` |
+| `defaultImage` | 既定の OGP 画像。省略時は `site.defaultOgImage` |
+| `feed` | RSS、Atom、JSON Feed の出力を個別に有効化する |
+| `sitemap` | サイトマップを出力する |
+| `robots` | robots.txt を出力する |
 
-| オプション | 型 | 説明 |
-| ---------- | -- | ---- |
-| `siteName` | `string` | ページ title に使う site 名。省略時は `site.title`。 |
-| `defaultImage` | `string` | デフォルト OG image。省略時は `site.defaultOgImage`。 |
-| `feed` | `{ rss?: boolean; atom?: boolean; json?: boolean }` | feed 出力の設定。 |
-| `sitemap` | `boolean` | sitemap 出力の設定。 |
-| `robots` | `boolean` | robots.txt 出力の設定。 |
+## 記事の frontmatter が出力を決める
 
-## 生成される metadata
-
-### 記事 (`buildArticleSeo`)
-
-- `title`: `"{title} | {siteName}"`
-- `description`: `frontmatter.description`。なければ本文テキストの先頭 160 文字
-- `canonicalUrl`: `frontmatter.canonical`。なければ記事 URL
-- `imageUrl`: `frontmatter.ogImage` / `frontmatter.image`。なければ
-  `defaultImage` / `site.defaultOgImage`
-- `noindex`: `frontmatter.noindex === true`
-- `publishedTime`: `published` / `date` / `created`
-- `modifiedTime`: `updated`。なければ公開日時
-- `tags`、`readingTimeMinutes`
-- JSON-LD: `BlogPosting` と `BreadcrumbList`
-
-### website ページ (`buildWebsiteSeo`)
-
-index・tag などの記事以外のページ向けに、title・description・canonical URL・
-デフォルト image と JSON-LD `WebSite` + `BreadcrumbList` を生成します。
-
-## feed / sitemap / robots
-
-| 関数 | 出力 |
-| ---- | ---- |
-| `renderSitemap` | `/sitemap.xml` — トップ + 公開済みかつ `noindex` でない entry |
-| `renderRobots` | `/robots.txt` — 全許可 + sitemap URL |
-| `renderRssFeed` | `config.site.feed` ベースの RSS 2.0 |
-| `renderAtomFeed` | Atom feed |
-| `renderJsonFeed` | `content_html` 付き JSON Feed 1.1 |
-
-feed / sitemap の entry は `isPublished` で絞り込み、`noindex: true` を除外し、
-更新が新しい順に並び替えます。
-
-## 読了時間
-
-`calculateReadingTime` は CJK 文字（500 字/分）と Latin 単語（220 語/分）を
-カウントし、切り上げて最低 1 分を返します。
-
-## frontmatter フィールド
+`buildArticleSeo()` は記事タイトル、説明、canonical URL、OGP 画像、公開・更新日時、タグ、読了時間を組み立て、`BlogPosting` と `BreadcrumbList` の JSON-LD を作ります。値は次の順で補完されます。
 
 | フィールド | 用途 |
-| ---------- | ---- |
-| `title` | 記事 title（省略時は slug の最後のセグメント） |
-| `description` | meta description |
-| `canonical` | canonical URL |
-| `image` / `ogImage` | OG image |
+| --- | --- |
+| `title` | 記事タイトル。なければ slug の末尾 |
+| `description` | meta description。なければ本文の先頭 160 文字 |
+| `canonical` | 正規 URL。なければ記事 URL |
+| `image` / `ogImage` | OGP 画像。なければ設定上の既定画像 |
 | `published` / `date` / `created` | 公開日時 |
-| `updated` | 更新日時 |
-| `tags` | keyword / feed の tag |
-| `noindex` | `noindex` meta、feed・sitemap からの除外 |
+| `updated` | 更新日時。なければ公開日時 |
+| `tags` | キーワードとフィードのタグ |
+| `noindex` | 検索エンジン向けの noindex と、サイトマップ・フィードからの除外 |
 
-## エクスポート
+記事以外には `buildWebsiteSeo()` を使えます。トップやタグ一覧向けに `WebSite` と `BreadcrumbList` の構造化データを作ります。
 
-- `seo(options?)` — plugin factory
-- 型: `SeoPluginOptions`、`FeedOptions`、`SeoMetadata`、`WebsiteSeoInput`、
-  `RenderableFeedEntry`
-- helper: `buildArticleSeo`、`buildWebsiteSeo`、`buildAbsoluteUrl`、
-  `buildPostUrl`、`getDescription`、`filterFeedEntries`、
-  `getEntryPublishedTime`、`getEntryUpdatedTime`、`getHtmlLanguage`、
-  `calculateReadingTime`、`renderSitemap`、`renderRobots`、`renderRssFeed`、
-  `renderAtomFeed`、`renderJsonFeed`
+## 公開物に含まれる記事
 
-## 関連
+サイトマップとフィードは、公開済みで `noindex: true` ではないエントリーだけを対象にし、更新日時の新しい順に並べます。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
 
-- [Plugin ガイド](../../docs/plugins_jp.md)
+読了時間は CJK 文字を毎分 500 文字、ラテン文字の単語を毎分 220 語として数え、最低 1 分に切り上げます。
+
+## 主なエクスポート
+
+- `seo(options?)`: プラグインを作成する
+- `buildArticleSeo`、`buildWebsiteSeo`: ページの SEO 情報を構築する
+- `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed`: 公開用ファイルを描画する
+- `calculateReadingTime`: 読了時間を計算する
+- 型: `SeoPluginOptions`、`FeedOptions`、`SeoMetadata`、`WebsiteSeoInput`、`RenderableFeedEntry`
+
+## 関連資料
+
+- [プラグインシステム](../../../docs/ja/plugin-system.md)

@@ -1,16 +1,10 @@
 # @riebeckite/plugin-mermaid
 
-` ```mermaid ` code block 向けの Mermaid diagram 描画。
+`mermaid` コードブロックを SVG の図として表示するプラグインです。既定ではビルド時に描画し、描画できなかった図だけをブラウザ側で再試行します。
 
 [English](./README_en.md)
 
-## 概要
-
-`mermaid()` は mermaid code block を `<figure class="rr-mermaid">` に変換し、
-SVG として描画します。デフォルトは headless browser による build 時レンダリングで、
-失敗時は client 側へ自動フォールバックします。`order: -10` で実行されます。
-
-## 使い方
+## 設定する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -27,57 +21,39 @@ export default defineConfig({
 });
 ```
 
-## 動作
+このプラグインは `order: -10` で実行されます。Mermaid のコードブロックを先に処理したい場合に適した順序です。
 
-### Build
+## どのように描画されるか
 
-- ` ```mermaid ` の `<pre>` を `figure.rr-mermaid` に置き換えます。
-  - `figcaption.rr-mermaid__caption` — code block の title か source 内の
-    `%% caption: ...` 行
-  - `div.rr-mermaid__canvas` — diagram（`role="img"`。caption があれば
-    それを label にする）
-  - `details.rr-mermaid__fallback` — 折りたたみ可能な diagram source
-- `render` が `"build"` / `"both"` のとき、Puppeteer の headless Chromium 上で
-  Mermaid browser API を実行し、Chromium の layout engine で static SVG を描画します。
-  JSDOM polyfill や自前 `getBBox` 推定は使いません
-- Mermaid は `securityLevel: "strict"`、指定 theme、transparent background、
-  diagram ごとの一意な SVG id で実行されます
-- 不正な diagram は `ruleId: "invalid-diagram"`、Chromium 等の renderer
-  障害は `ruleId: "renderer-error"` として区別して diagnostic を報告します。
-  build SVG が得られない場合は `data-mermaid="pending"` として client fallback
-  に任せます
+` ```mermaid ` のコードブロックは `figure.rr-mermaid` に置き換わります。図のタイトルはコードブロックの title、またはソース内の `%% caption: ...` 行から取得します。図には代替テキスト相当の `role="img"` を付け、必要に応じて元の記法を折りたたみ表示します。
 
-### Client (`initMermaidDiagrams`)
+`render: "build"` または `"both"` では、Puppeteer が起動するヘッドレス Chromium 上で Mermaid を実行し、静的な SVG を生成します。簡易な DOM 実装や寸法の推測には頼らないため、ブラウザと同じレイアウトエンジンで図を作れます。Mermaid は `securityLevel: "strict"` で実行されます。
 
-- `globalThis.mermaid` や注入された instance が無ければ CDN（jsDelivr、
-  Mermaid 11）から Mermaid を読み込みます
-- `[data-mermaid="pending"]` の figure を描画します。失敗時は
-  `data-mermaid="error"`（CSS による placeholder 表示）になります
-- `theme` が `{ light, dark }` の場合は `html[data-theme]` か
-  `prefers-color-scheme` で選びます
+構文エラーは `invalid-diagram`、描画環境の問題は `renderer-error` として区別して診断します。ビルドで SVG を作れなかった図には `data-mermaid="pending"` が付き、クライアント側が描画を引き継ぎます。
+
+## クライアント側の再試行
+
+`initMermaidDiagrams` は保留中の図だけを描画します。Mermaid のインスタンスがなければ jsDelivr から Mermaid 11 を読み込みます。描画に失敗した場合は `data-mermaid="error"` となり、CSS のプレースホルダー表示に切り替わります。
+
+明暗別のテーマを指定した場合は、`html[data-theme]` を優先し、なければ OS の配色設定に従います。
 
 ## オプション
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `render` | `"build" \| "client" \| "both"` | `"build"` | diagram をいつ描画するか |
-| `theme` | `string \| { light: string; dark: string }` | `{ light: "default", dark: "dark" }` | Mermaid theme |
-| `caption` | `boolean` | `true` | title / `%% caption:` を `figcaption` に表示 |
-| `fallback` | `boolean` | `true` | `<details>` で diagram source を表示 |
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `render` | `"build"` | `"build"`、`"client"`、`"both"` のいずれで描画するか |
+| `theme` | `{ light: "default", dark: "dark" }` | Mermaid のテーマ名、または明暗別のテーマ |
+| `caption` | `true` | タイトルまたは `%% caption:` をキャプションとして表示する |
+| `fallback` | `true` | 元の Mermaid 記法を `<details>` に残す |
 
-`render` mode:
+`"client"` はビルド時の描画を行いません。`"both"` は後方互換の値で、現在は `"build"` と同じくビルドを優先し、失敗時だけクライアント側へ切り替えます。
 
-- `"build"` — build 時に SVG を描画。失敗した diagram は client 描画へフォールバック
-- `"client"` — build 時描画をスキップし、ブラウザでのみ描画
-- `"both"` — 後方互換の alias。現状は `"build"` と同じく build 優先 +
-  失敗時 client fallback
+## 主なエクスポート
 
-## エクスポート
+- `mermaid(options?)`: プラグインを作成する
+- `initMermaidDiagrams`: クライアント側の描画を初期化する
+- 型: `MermaidOptions`、`MermaidClientOptions`、`MermaidRenderMode`、`MermaidTheme`
 
-- `mermaid(options?)` — plugin factory
-- 型: `MermaidOptions`、`MermaidClientOptions`、`MermaidRenderMode`、
-  `MermaidTheme`
+## 関連資料
 
-## 関連
-
-- [Plugin ガイド](../../docs/plugins_jp.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)

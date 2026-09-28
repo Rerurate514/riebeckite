@@ -1,0 +1,129 @@
+> English documentation · [日本語](../ja/README.md) · [Agent documentation](../agents/README.md)
+
+# Riebeckite Documentation
+
+Riebeckite is an extensible, HonoX-based content framework for publishing Markdown and Obsidian-oriented notes on the web. It keeps content loading, interpretation, extension, presentation, and builds as separate, replaceable responsibilities instead of combining them into one Markdown-to-HTML process.
+
+In a typical project, you point Riebeckite at a content directory, configure Markdown plugins and a theme, then develop and build through the HonoX/Vite integration. Plugins can compose the capabilities needed to publish a note collection: WikiLinks, embeds, attachments, content relationships, search, SEO, and more.
+
+## Start here
+
+|Goal|Read first|
+|---|---|
+|Run or build a project|[Getting Started](./getting-started.md)|
+|Find configuration fields|[Configuration](./configuration.md)|
+|Understand ownership and dependency direction|[Architecture](./architecture.md)|
+|Create or change a plugin or theme|[Plugin System](./plugin-system.md) / [Theme System](./theme-system.md)|
+|Investigate a problem|[Diagnostics](./diagnostics.md) / [Framework Inspector](./inspector.md)|
+|Contribute to this repository|[Repository Development](./development.md)|
+
+## How it fits together
+
+```text
+Markdown / assets
+       │
+       ▼
+ContentSource ── scanning, reading, and source metadata
+       │
+       ▼
+ContentManager ── content interpretation and orchestration
+       ├── Manifest       page and metadata index
+       ├── Content Graph  relationships such as WikiLinks
+       └── Pipeline       Markdown / HTML / metadata transforms
+                    │
+                    ▼
+                 Plugins ── capability extensions
+                    │
+                    ▼
+       HonoX / Vite integration ── framework connection
+                    │
+                    ▼
+            Application / Cloudflare Workers
+
+Build tooling
+  ├── Incremental Build and Build State
+  ├── Plugin-scoped Cache
+  ├── Diagnostics and Doctor
+  ├── Logger / Tracer / Profiler
+  └── CLI: check / doctor / inspect / profile / build / dev
+```
+
+### Responsibility boundaries
+
+- **Core** owns content-processing contracts and orchestration. It does not depend on implementation details of HonoX, Vite, a specific plugin, or a theme.
+- **Plugins** extend Markdown, HTML, metadata, assets, client behavior, endpoints, and SEO. They can declare ordering and dependencies through capabilities.
+- **Integrations** connect Core to external frameworks and bundlers. HonoX/Vite-specific behavior belongs here.
+- **Themes** are presentation contracts. They provide appearance through tokens, CSS, and stable hooks; they do not own content interpretation or build state.
+- **Application** holds site-specific routes, islands, and components.
+- **CLI** is Node.js build-time tooling. Cloudflare Workers request handling must not access build state or filesystem caches.
+
+## Documentation map
+
+### Setup and configuration
+
+|Document|What it covers|
+|---|---|
+|[Getting Started](./getting-started.md)|Prerequisites, installation, development server, normal and full builds, and a minimal configuration|
+|[Configuration](./configuration.md)|`riebeckite.config.ts`, Application Root, site, content, themes, plugins, validation, and secret handling|
+|[CLI](./cli.md)|The `check`, `doctor`, `inspect`, `profile`, `build`, and `dev` commands, exit behavior, and packaging|
+
+### Content and extensions
+
+|Document|What it covers|
+|---|---|
+|[Content System](./content-system.md)|`ContentSource`, logical paths, `ContentManager`, Manifest, Content Graph, attachments, publication, and incremental metadata|
+|[Plugin System](./plugin-system.md)|Plugin contracts, lifecycle, capabilities and dependencies, option validation, pipelines, renderers, assets, cache, and observability|
+|[Theme System](./theme-system.md)|Theme contracts, color modes, typography, design tokens, CSS cascade, plugin boundaries, and package layout|
+|[HonoX Integration](./honox-integration.md)|The HonoX/Vite connection, Application Root responsibilities, and Cloudflare Workers/SSG boundaries|
+
+### Builds, operations, and inspection
+
+|Document|What it covers|
+|---|---|
+|[Build System](./build-system.md)|Incremental Build, Build State, full builds, Plugin Cache distinctions, and the runtime boundary|
+|[Observability](./observability.md)|Logger, Tracer, TraceSink, Profiler, and measurement conventions|
+|[Diagnostics](./diagnostics.md)|`check`, `doctor`, structured diagnostics, and how they differ from Inspector|
+|[Framework Inspector](./inspector.md)|Read-only inspection of configuration, plugins, content, graph, and build state|
+
+### Design and contributor reference
+
+|Document|What it covers|
+|---|---|
+|[Architecture](./architecture.md)|Core / Plugin / Integration / Theme / App ownership, dependency direction, and build-time/runtime separation|
+|[Framework Reference](./framework-reference.md)|Major public Core APIs for config, content, pipeline, plugins, themes, diagnostics, and observability|
+|[Repository Development](./development.md)|Monorepo layout, code placement, quality checks, CLI smoke checks, ESM, and generated state|
+
+## Representative capabilities
+
+Compose the plugins your site needs. The repository includes capabilities in these areas:
+
+- **Markdown and notes**: Obsidian Markdown, WikiLinks, embeds, attachments, Mermaid, Excalidraw, and media.
+- **Reading experience**: syntax highlighting, enhanced code blocks, code tabs, diffs, TOC, backlinks, recent posts, lightbox, and automatic card links.
+- **Navigation**: search, local graph, garden explorer, and a graph of content relationships.
+- **Publishing and discovery**: SEO, RSS / Atom / JSON Feed, sitemap, `robots.txt`, and plugin-provided endpoints.
+- **Developer experience**: config and plugin-option validation, incremental builds, Plugin Cache, diagnostics, doctor, structured logging, tracing, profiling, and inspector.
+- **Presentation**: replaceable themes and a CSS contract shared by themes and plugins.
+
+Check the relevant package and the system documentation above for exact availability, options, and implementation constraints.
+
+## Everyday commands
+
+Run these at the project root:
+
+```bash
+pnpm exec riebeckite check    # validate configuration and plugin resolution
+pnpm exec riebeckite doctor   # read-only health diagnostics
+pnpm exec riebeckite inspect  # show the framework's interpreted state
+pnpm exec riebeckite dev      # start development
+pnpm exec riebeckite build    # incremental build
+pnpm exec riebeckite build --full
+pnpm exec riebeckite profile  # trace-based performance report
+```
+
+`check`, `doctor`, `inspect`, and `profile` have intentionally different purposes. Do not substitute a mutating build for diagnosis; see [CLI](./cli.md) and [Diagnostics](./diagnostics.md) for details.
+
+## Suggested reading path
+
+For a new site, start with [Getting Started](./getting-started.md), [Configuration](./configuration.md), and [Content System](./content-system.md). Read [Plugin System](./plugin-system.md) before adding a plugin, and [Theme System](./theme-system.md) before changing appearance. To investigate an issue, use `check`, `doctor`, and `inspect` in that order.
+
+For coding agents and automation, use the concise, rule-oriented [Agent documentation](../agents/README.md).

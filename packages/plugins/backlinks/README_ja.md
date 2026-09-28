@@ -1,20 +1,14 @@
 # @riebeckite/plugin-backlinks
 
-記事の backlink list 描画: 現在の note にリンクしている published note を表示します。
+現在の記事を参照している公開済みノートを、記事末尾に表示するためのプラグインです。
 
 [English](./README_en.md)
 
-## 概要
+## できること
 
-`backlinks()` は incoming links の footer list を描画する `Backlinks`
-component を提供します。`getPublishedBacklinks()` は content manifest から
-note の incoming links を解決し、`frontmatter` が `isPublished` を通過する
-note だけを保持して manifest 順で返します。
+`getPublishedBacklinks()` はコンテンツマニフェストから被リンクを集め、`isPublished` を通るノートだけをマニフェスト順で返します。`Backlinks` コンポーネントはその結果をフッターのリンク一覧として描画します。表示対象がなければ何も出力しません。
 
-incoming links が無い場合（または published なものが無い場合）は、component
-は何も描画しません。
-
-## 使い方
+## 設定と配置
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -26,48 +20,26 @@ export default defineConfig({
 });
 ```
 
-`backlinksPlugin()` は plugin list に plugin を登録し、`style.css` を app の
-stylesheet に bundle します。
-
-### Component の描画
+プラグイン登録後も、表示位置はアプリ側で決めます。記事ルートなどでマニフェストを取得し、現在の `slug` に対する被リンクを渡してください。
 
 ```tsx
 import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
-import { config } from "../config";
-import { content } from "../content";
-import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();
-const backlinks = getPublishedBacklinks({
-  manifest,
-  config,
-  slug,
-  resolveTitle: getArticleTitle,
-});
+const items = getPublishedBacklinks({ manifest, config, slug, resolveTitle });
 
-// route 内で
-return (
-  <Article
-    footerContent={<Backlinks backlinks={backlinks} />}
-  />
-);
+return <Article footerContent={<Backlinks backlinks={items} />} />;
 ```
 
-## Component
+## 公開 API
 
-`Backlinks({ backlinks })` は eyebrow label と各 backlink の slug への link list
-を持つ `<footer class="article-backlinks">` を描画します。
+- `backlinksPlugin()` — プラグインファクトリ
+- `Backlinks` — 被リンク一覧コンポーネント
+- `getPublishedBacklinks({ manifest, config, slug, resolveTitle })` — 公開済みの被リンクを解決する関数
+- `ArticleBacklink` — `{ slug, title }` の型
 
-## エクスポート
+## 関連資料
 
-- `backlinksPlugin()` — plugin factory
-- `Backlinks` — list component（`components/backlinks.tsx` の default export）
-- `getPublishedBacklinks({ manifest, config, slug, resolveTitle })` — slug の
-  published backlinks を解決
-- 型: `ArticleBacklink`（`{ slug, title }`）
-
-## 関連
-
-- [Plugin ガイド](../../docs/plugins_jp.md)
-- [`@riebeckite/plugin-local-graph`](../plugin-local-graph/README_ja.md)
-- [`@riebeckite/plugin-garden-explorer`](../plugin-garden-explorer/README_ja.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [`@riebeckite/plugin-local-graph`](../local-graph/README_ja.md)
+- [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)

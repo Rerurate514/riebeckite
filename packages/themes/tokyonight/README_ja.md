@@ -1,31 +1,10 @@
 # @riebeckite/theme-tokyonight
 
-主張が強い Tokyo Night テーマ: ハイコントラストな twilight の day mode と、
-定番の深い indigo の night mode。エレクトリックブルーの accent と
-magenta / neon のニュアンスを備えています。
+Tokyo Night の濃い藍色と鮮やかな青を使うテーマです。昼向けの明るい配色と、定番の深い夜向け配色を切り替えられます。
 
 [English](./README_en.md)
 
-## 概要
-
-`tokyonightTheme()` は `tokyonight` という名前の theme を作成します。他の
-Riebeckite テーマと同じ `ThemeConfig` API と token 契約に従い、design
-system を CSS custom properties（`--rb-color-*`、`--rb-font-*`、
-`--rb-space-*`、`--rb-layout-*`）として公開し、`@theme` block で Tailwind
-theme の値にマップします。
-
-控えめな default theme と比べて、Tokyo Night はコントラストを強調します:
-
-- **Light（"day"）** — たそがれ色の白 paper（`#e1e2e7`）に深い indigo ink
-  （`#343b58`）、エレクトリックブルーの accent（`#2e7de9`）
-- **Dark（"night"）** — 定番の Tokyo Night 背景 `#1a1b26` に淡い fuji-blue
-  ink（`#c0caf5`）、光る `#7aa2f7` accent
-
-tokens に加えて、主張のある base スタイルも適用します: accent 色の
-`caret-color`/`accent-color`、エレクトリックな `:focus-visible` outline、
-neon 調の `::selection`、細く accent に染めた scrollbar。
-
-## 使い方
+## 設定する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -35,47 +14,34 @@ export default defineConfig({
   // ...
   theme: tokyonightTheme({
     colorMode: "system",
-    typography: "system",
-    articleLayout: "article",
     neon: true,
-    userCss: [],
   }),
 });
 ```
 
-`defaultTheme()` と同じ `ThemeConfig` API を使うため、他の設定変更なしに
-テーマを差し替えられます。root の `data-theme-name` 属性には
-`tokyonight` が設定されます。
+テーマ名は `tokyonight` です。明るい配色では `#e1e2e7` の背景、`#343b58` の文字、`#2e7de9` のアクセントを使います。暗い配色では `#1a1b26` の背景、`#c0caf5` の文字、`#7aa2f7` のアクセントに切り替わります。
 
-## オプション
+## 変更できる項目
 
-`tokyonightTheme(options?)` は `name` 以外の `ThemeConfig` を受け取り、加えて
-テーマ固有オプション `neon` を提供します:
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `neon` | `false` | 青いフォーカス枠、選択色、スクロールバーを強調する。`data-tokyonight-neon="on"` に反映する |
+| `colorMode` | `"system"` | `"light"`、`"dark"`、`"system"` |
+| `typography` | `"system"` | `"system"`、`"serif"`、`"sans"` |
+| `articleLayout` | `"article"` | 記事レイアウトの値 |
+| `tokens` | `{}` | 共通デザイントークンの上書き |
+| `userCss` | `[]` | 追加のスタイルシート |
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `neon` | `boolean` | `false` | neon 強調 (`data-tokyonight-neon="on"` 属性で適用)。accent の光る focus outline・`::selection`・accent 色の scrollbar |
-| `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
-| `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
-| `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
-| `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
-| `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+このテーマは入力要素のアクセント色、キーボード操作時のフォーカス枠、テキスト選択、スクロールバーにも青系の色を適用します。`neon` は `attributes: { "data-tokyonight-neon": "on" }` として直接指定することもできます。
 
-テーマ固有オプションは safe な `data-*` 属性（`data-tokyonight-neon`）として
-root 要素に適用されます。`neon` は `config` からも直接
-`attributes: { "data-tokyonight-neon": "on" }` で上書きできます。
+## 主なエクスポート
 
-token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
-README を参照してください。token の契約は同一です。
+- `tokyonightTheme(options?)`: テーマを作成する
+- `TokyonightThemeOptions`: 設定用の型
+- `@riebeckite/theme-tokyonight/style.css`: テーマのスタイルシート
 
-## エクスポート
+## 関連資料
 
-- `tokyonightTheme(options?)` — theme factory
-- 型: `TokyonightThemeOptions`
-- スタイル: `@riebeckite/theme-tokyonight/style.css`
-
-## 関連
-
-- [Plugin ガイド](../../../docs/plugins_jp.md)
+- [テーマシステム](../../../docs/ja/theme-system.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
 - [`@riebeckite/theme-sakura`](../sakura/README_ja.md)

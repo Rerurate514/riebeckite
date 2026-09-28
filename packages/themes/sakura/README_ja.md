@@ -1,26 +1,10 @@
 # @riebeckite/theme-sakura
 
-Riebeckite の桜（sakura）テーマ: 淡いピンクの paper・深いプラムの ink・
-sakura pink の accent を、light / dark 両方の color mode で提供します。
+桜を思わせる淡い背景と深いプラム色の文字を使うテーマです。明暗どちらの配色でも、ピンクをアクセントとして使います。
 
 [English](./README_en.md)
 
-## 概要
-
-`sakuraTheme()` は `sakura` という名前の theme を作成します。default theme
-と同じく、design system を CSS custom properties（`--rb-color-*`、
-`--rb-font-*`、`--rb-space-*`、`--rb-layout-*`）として公開し、`@theme`
-block で Tailwind theme の値にマップします。そのため tokens は素の CSS
-からも Tailwind 系の utility からも使えます。
-
-パレットは桜をイメージしています:
-
-- **Light** — 桜色の白い paper（`#fff8fa`）、深いプラムの ink
-  （`#4a2a3a`）、sakura pink の accent（`#e8789f`）
-- **Dark** — 深いプラム黒の paper（`#241520`）、淡い桜色の ink
-  （`#f9e4ec`）、より明るい sakura pink の accent（`#f4a3c2`）
-
-## 使い方
+## 設定する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -30,46 +14,33 @@ export default defineConfig({
   // ...
   theme: sakuraTheme({
     colorMode: "system",
-    typography: "system",
-    articleLayout: "article",
     bloom: "vivid",
-    userCss: [],
   }),
 });
 ```
 
-`defaultTheme()` と同じ `ThemeConfig` API を使うため、他の設定変更なしに
-2 つのテーマを入れ替えられます。root の `data-theme-name` 属性には
-`sakura` が設定されます。
+テーマ名は `sakura` です。明るい配色では `#fff8fa` の背景、`#4a2a3a` の文字、`#e8789f` のアクセントを使います。暗い配色では背景を `#241520`、文字を `#f9e4ec`、アクセントを `#f4a3c2` に切り替えます。
 
-## オプション
+## 変更できる項目
 
-`sakuraTheme(options?)` は `name` 以外の `ThemeConfig` を受け取り、加えて
-テーマ固有オプション `bloom` を提供します:
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `bloom` | `"soft"` | `"soft"` または `"vivid"`。`vivid` はより強いピンクを使い、`data-sakura-bloom` に反映する |
+| `colorMode` | `"system"` | `"light"`、`"dark"`、`"system"` |
+| `typography` | `"system"` | `"system"`、`"serif"`、`"sans"` |
+| `articleLayout` | `"article"` | 記事レイアウトの値 |
+| `tokens` | `{}` | 共通デザイントークンの上書き |
+| `userCss` | `[]` | 追加のスタイルシート |
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `bloom` | `"soft" \| "vivid"` | `"soft"` | accent の強さ。`vivid` はより深い sakura pink（`data-sakura-bloom="vivid"` 属性で適用） |
-| `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
-| `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
-| `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
-| `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
-| `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+`bloom` は `attributes: { "data-sakura-bloom": "vivid" }` として直接指定することもできます。ほかのテーマと同じトークンなので、アプリケーション側の CSS を大きく変えずに切り替えられます。
 
-テーマ固有オプションは safe な `data-*` 属性（`data-sakura-bloom`）として
-root 要素に適用されます。`bloom` は `config` からも直接
-`attributes: { "data-sakura-bloom": "vivid" }` で上書きできます。
+## 主なエクスポート
 
-token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
-README を参照してください。token の契約は同一です。
+- `sakuraTheme(options?)`: テーマを作成する
+- `SakuraThemeOptions`: 設定用の型
+- `@riebeckite/theme-sakura/style.css`: テーマのスタイルシート
 
-## エクスポート
+## 関連資料
 
-- `sakuraTheme(options?)` — theme factory
-- 型: `SakuraThemeOptions`
-- スタイル: `@riebeckite/theme-sakura/style.css`
-
-## 関連
-
-- [Plugin ガイド](../../../docs/plugins_jp.md)
+- [テーマシステム](../../../docs/ja/theme-system.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)

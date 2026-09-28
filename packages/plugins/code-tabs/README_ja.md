@@ -1,10 +1,10 @@
 # @riebeckite/plugin-code-tabs
 
-`tab="..."` metadata が付いた連続 code block を、アクセシブルなタブUIにまとめます。
+連続するコードブロックを、`tab="..."` の名前ごとにタブへまとめるプラグインです。
 
 [English](./README_en.md)
 
-## Installation
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -16,21 +16,9 @@ export default defineConfig({
 });
 ```
 
-`style.css` と client entry（`initCodeTabs`）はPlugin自身から登録されます。
+スタイルと `initCodeTabs` はプラグイン自身が登録します。
 
-## Config
-
-```ts
-codeTabs({
-  syncTabs: false,
-});
-```
-
-| Option | Type | Default | Description |
-| ------ | ---- | ------- | ----------- |
-| `syncTabs` | `boolean` | `false` | 有効にすると、あるgroupで `TypeScript` などのlabelを選択したとき、同じページ内の他groupでも同じlabelを選択します。 |
-
-## Syntax
+## コードブロックにタブ名を付ける
 
 ````md
 ```dart tab="Flutter"
@@ -42,51 +30,26 @@ console.log("Hello");
 ```
 ````
 
-`tab="..."` がない通常のcode blockは変更しません。
+`tab` を持つコードブロックが連続している間だけ、一つのタブグループになります。段落、見出し、画像などが間に入ると別のグループです。`tab` のないコードブロックは変更しません。
 
-## Grouping rules
+## オプションとアクセシビリティ
 
-`tab="..."` 付きcode blockが隣接している場合、1つのgroupとして扱います。
-paragraph、heading、image など別contentが間に入ると、その時点でgroupを終了します。
+| オプション | 既定値 | 内容 |
+| --- | --- | --- |
+| `syncTabs` | `false` | あるタブを選ぶと、同じページの同名タブも切り替えるか |
 
-````md
-```dart tab="Dart"
-```
-```ts tab="TypeScript"
-```
-````
+生成する要素には `tablist`、`tab`、`tabpanel` のロールを設定します。矢印キー、`Home`、`End`、`Enter`、`Space` で操作でき、JavaScript が動かない場合は全パネルをそのまま読めます。
 
-上の2つは同じgroupです。
+`@riebeckite/plugin-code-enhance` と併用する場合は、強調表示後の出力をまとめられるよう `codeEnhance()` の後に `codeTabs()` を置いてください。
 
-````md
-```dart tab="Dart"
-```
+## 公開 API
 
-途中の本文。
+- `codeTabs(options?)` — プラグインファクトリ
+- `rehypeCodeTabs(options?)` — Rehype 変換
+- `initCodeTabs(options?)` — ブラウザ初期化関数
+- `CodeTabsOptions`、`CodeTabsClientOptions` — 型
 
-```ts tab="TypeScript"
-```
-````
+## 関連資料
 
-本文が入るため、別groupになります。
-
-## code-enhanceとの併用
-
-`@riebeckite/plugin-code-tabs` は `@riebeckite/plugin-code-enhance` をimportせず、直接依存しません。
-通常の `<pre><code>` と、enhance後の `rehype-pretty-code` figure の両方を検出し、render済みcode block全体をpanelとして包みます。
-syntax highlight、filename、copy、wrap、collapse、line number、diff/highlight のDOMは可能な限りそのまま保持します。
-
-併用する場合は、enhance後の出力をtabsで包めるように `codeEnhance()` の後へ `codeTabs()` を配置してください。
-
-## Accessibility
-
-生成HTMLは `role="tablist"`、`role="tab"`、`role="tabpanel"` を使います。
-clientは click、`ArrowLeft`、`ArrowRight`、`Home`、`End`、`Enter`、`Space` に対応し、`aria-selected` と `tabindex` を同期します。
-JavaScriptが実行されない場合はすべてのpanelが表示されたままなので、すべてのcode blockを読めます。
-
-## Exports
-
-- `codeTabs(options?)` — plugin factory
-- `rehypeCodeTabs(options?)` — rehype transform
-- `initCodeTabs(options?)` — client initializer
-- Types: `CodeTabsOptions`, `CodeTabsClientOptions`
+- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [`@riebeckite/plugin-code-enhance`](../code-enhance/README_ja.md)

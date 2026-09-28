@@ -1,20 +1,16 @@
 # @riebeckite/theme-minimal
 
-意図的に装飾を削った Riebeckite の baseline テーマ: モノクロの paper/ink で、
-装飾的な base スタイルを持ちません。Theme authoring の全ルールの reference
-実装として、または自作テーマの blank canvas として使えます。
+色と基本トークンだけを提供する、もっとも小さな Riebeckite テーマです。装飾的なベーススタイルを持たないため、自作テーマの出発点やテーマ実装の参照に向いています。
 
 [English](./README_en.md)
 
-## 概要
+## 何をするテーマか
 
-`minimalTheme()` は `minimal` という名前の theme を作成します。これは
-[Theme authoring 契約](../../../docs/theme_authoring_jp.md) に従った最小の
-有効な Theme です: `--rb-*` semantic tokens 一式を公開し、`@theme` block に
-マップして、token 値以外には一切手を加えません — `data-*` attributes も、
-`html`/`body`/`::selection`/`:focus-visible` 以外の base rule もありません。
+`minimalTheme()` は名前が `minimal` のテーマを作ります。完全な `--rb-*` トークンと `@theme` の対応は持ちますが、トークン値以外の見た目には手を加えません。テーマ固有の `data-*` 属性や、`html`、`body`、`::selection`、`:focus-visible` への追加ルールもありません。
 
-## 使い方
+独自 CSS の影響を見極めたいときや、独自テーマを小さく始めたいときに選んでください。
+
+## 設定する
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -26,39 +22,31 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
-    userCss: [],
   }),
 });
 ```
 
-`defaultTheme()` と同じ `ThemeConfig` API を使うため、設定変更なしでどの
-テーマとも差し替えられます。root の `data-theme-name` 属性には
-`minimal` が設定されます。
+## 変更できる項目
 
-## オプション
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `colorMode` | `"system"` | `"light"`、`"dark"`、`"system"` |
+| `typography` | `"system"` | `"system"`、`"serif"`、`"sans"` |
+| `articleLayout` | `"article"` | 記事レイアウトの値 |
+| `tokens` | `{}` | 色、フォント、余白、レイアウト幅のトークンを上書きする |
+| `userCss` | `[]` | 追加のスタイルシート |
 
-`minimalTheme(options?)` は `name` 以外の `ThemeConfig` を受け取ります:
+トークンの意味と一覧は [`@riebeckite/theme-default`](../default/README_ja.md) を参照してください。
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | 色モード。`system` は `data-theme` が無い限り `prefers-color-scheme` に従う |
-| `typography` | `"system" \| "serif" \| "sans"` | `"system"` | タイポグラフィ preset。`data-typography` 属性経由で適用 |
-| `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | 記事レイアウト preset。`data-article-layout` を読む側のための値 |
-| `tokens` | `ThemeDesignTokens` | `{}` | design tokens の上書き（色・フォント・spacing・レイアウト幅） |
-| `userCss` | `string[]` | `[]` | 追加のユーザー stylesheet |
+## 主なエクスポート
 
-token 一覧の詳細は [`@riebeckite/theme-default`](../default/README_ja.md) の
-README を参照してください。token の契約は同一です。
+- `minimalTheme(options?)`: テーマを作成する
+- `MinimalThemeOptions`: 設定用の型
+- `@riebeckite/theme-minimal/style.css`: テーマのスタイルシート
 
-## エクスポート
+## 関連資料
 
-- `minimalTheme(options?)` — theme factory
-- 型: `MinimalThemeOptions`
-- スタイル: `@riebeckite/theme-minimal/style.css`
-
-## 関連
-
-- [Theme authoring 契約](../../../docs/theme_authoring_jp.md)
+- [テーマシステム](../../../docs/ja/theme-system.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
 - [`@riebeckite/theme-sakura`](../sakura/README_ja.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README_ja.md)

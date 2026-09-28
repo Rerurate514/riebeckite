@@ -1,17 +1,10 @@
 # @riebeckite/plugin-code-enhance
 
-強化された code block: Shiki highlighting に copy / wrap / collapse 操作を
-備えた header を追加します。
+Shiki によるシンタックスハイライトへ、コピー、折り返し、折りたたみなどの操作を加えるプラグインです。
 
 [English](./README_en.md)
 
-## 概要
-
-`codeEnhance()` は [rehype-pretty-code](https://github.com/rehype-pretty-code/rehype-pretty-code)
-（Shiki）を包み、各 figure を header と action button 付きの `.rr-code` に
-後処理します。client entry が button を配線します。
-
-## 使い方
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -19,68 +12,42 @@ import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 
 export default defineConfig({
   // ...
-  plugins: [
-    codeEnhance({
-      theme: { light: "github-light", dark: "github-dark" },
-      lineNumbers: true,
-      copyButton: true,
-      filename: true,
-      lineHighlight: true,
-      diffHighlight: true,
-      wrapToggle: true,
-    }),
-  ],
+  plugins: [codeEnhance({ lineNumbers: true, wrapToggle: true })],
 });
 ```
 
-## 機能
+`codeEnhance()` は `rehype-pretty-code` を使ってコードブロックを処理し、ファイル名と操作ボタンを持つ `.rr-code` 要素に整えます。ボタンの操作はクライアントエントリーが担当します。
 
-- Shiki（rehype-pretty-code）による syntax highlighting
-- ファイル名（code block の title、無ければ language）と action button の
-  header
-- Copy button（`Copied` フィードバック付き、client）
-- Wrap 切り替え（client）
-- Collapse / expand button（任意、client）
-- 行番号（`data-line-number` gutter）
-- pretty-code の meta（`{1,3}`、`[/re/]`）による行・文字の highlight
-- 先頭が `+` / `-` の行の diff 着色
-- `bash`・`console`・`sh`・`shell`・`terminal`・`zsh` 向け terminal 表示
-  （反転 palette）と、空でない行への `$` prompt prefix
-- キーボード操作用にフォーカス可能な `<pre>`（`tabindex="0"`）
+## 表示と操作
 
-## オプション
+- Shiki のテーマによる色付け、行番号、メタデータによる行・文字の強調
+- `+` と `-` で始まる行の差分表示
+- コピー、折り返し、任意の折りたたみ
+- `bash`、`console`、`sh` などを端末風に表示し、必要に応じて `$` を付ける
+- キーボードで内容を確認できるよう、`<pre>` をフォーカス可能にする
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `theme` | `string \| { light: string; dark: string }` | `{ light: "github-light", dark: "github-dark" }` | Shiki theme |
-| `lineNumbers` | `boolean` | `false` | 行番号を表示 |
-| `copyButton` | `boolean` | `true` | copy button を表示 |
-| `filename` | `boolean` | `true` | header にファイル名を表示 |
-| `lineHighlight` | `boolean` | `true` | meta による行・文字 highlight を適用 |
-| `diffHighlight` | `boolean` | `true` | `+` / `-` 行を着色 |
-| `collapsible` | `boolean` | `false` | collapse button を追加 |
-| `terminal` | `boolean` | `true` | shell 言語の terminal 表示 |
-| `commandPrompt` | `boolean` | `true` | terminal 行に `$` prompt prefix |
-| `wrapToggle` | `boolean` | `true` | wrap toggle button を表示 |
-| `defaultCollapsed` | `boolean` | `false` | 初期状態を折りたたみ（`collapsible` が必要） |
+## 主なオプション
 
-## Client
+| オプション | 既定値 | 内容 |
+| --- | --- | --- |
+| `theme` | GitHub の明暗テーマ | Shiki テーマ。文字列または `{ light, dark }` |
+| `lineNumbers` | `false` | 行番号を表示するか |
+| `copyButton` | `true` | コピーボタンを表示するか |
+| `filename` | `true` | 見出しにファイル名を表示するか |
+| `lineHighlight` / `diffHighlight` | `true` | 強調表示・差分表示を有効にするか |
+| `collapsible` / `defaultCollapsed` | `false` | 折りたたみと初期状態 |
+| `terminal` / `commandPrompt` | `true` | 端末風表示と `$` の付与 |
+| `wrapToggle` | `true` | 折り返し切替を表示するか |
 
-`initCodeEnhance(options?)` が document 全体の click handler を導入し、
-copy / wrap / collapse button を処理します。
+`initCodeEnhance({ copyLabel, copiedLabel })` では、コピー前後のボタン文言を変更できます。
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `copyLabel` | `string` | `"Copy"` | copy button の label |
-| `copiedLabel` | `string` | `"Copied"` | コピー後の label |
+## 公開 API
 
-## エクスポート
+- `codeEnhance(options?)` — プラグインファクトリ
+- `rehypeCodeEnhance(options?)` — Rehype 変換
+- `initCodeEnhance(options?)` — ブラウザ初期化関数
+- `CodeEnhanceOptions`、`CodeEnhanceClientOptions`、`CodeEnhanceTheme` — 型
 
-- `codeEnhance(options?)` — plugin factory
-- `rehypeCodeEnhance(options?)` — rehype transform
-- `initCodeEnhance(options?)` — client initializer
-- 型: `CodeEnhanceOptions`、`CodeEnhanceClientOptions`、`CodeEnhanceTheme`
+## 関連資料
 
-## 関連
-
-- [Plugin ガイド](../../docs/plugins_jp.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)

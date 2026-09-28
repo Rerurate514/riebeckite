@@ -1,17 +1,12 @@
 # @riebeckite/plugin-lightbox
 
-画像をクリックで拡大表示する lightbox。
+記事内の画像をクリックすると、拡大表示用のダイアログを開くプラグインです。
 
 [English](./README_en.md)
 
-## 概要
+## 仕組み
 
-2 つの部分で構成されます。
-
-- **Build（rehype）:** 描画された各 `<img>` を trigger anchor で囲みます
-- **Client:** クリックで操作可能な dialog を開きます
-
-## 使い方
+ビルド時の Rehype 変換と、ブラウザ側の初期化処理で動きます。変換では画像をトリガーリンクで囲み、初期化処理ではアクセシブルなダイアログを用意します。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -23,50 +18,29 @@ export default defineConfig({
 });
 ```
 
-`style.css` と client entry（`initLightbox`）が登録され、アプリが page
-初期化時に呼び出します。
+## 利用時の挙動
 
-## 動作
-
-### Build (`rehypeLightbox`)
-
-- `<img src>` をそれぞれ
-  `<a class="rr-lightbox-trigger">`（`data-lightbox-src`、
-  `data-lightbox-alt`、`aria-label` 付き）で囲みます
-- image に `rr-lightbox-image` を追加します
-- `data-lightbox-ignore="true"` の image、および `<a>`・`<button>`・
-  既存 trigger・dialog 内の image はスキップします
-
-### Client (`initLightbox`)
-
-- build 時に変換されなかった `img[src` ] を任意で囲みます
-  （`autoWrapImages`、デフォルト on。link / button 内はスキップ）
-- image・`alt` caption・close button を備えた `role="dialog"` の overlay を
-  作成します
-- `Escape`・backdrop クリック・close button で閉じます
-- 開く前にフォーカスしていた要素へ focus を戻します
-- 開いている間は `html[data-lightbox-open="true"]` を設定します
-  （CSS による scroll lock）
-- listener・dialog・囲んだ image を解除する cleanup function を返します
+- `rehypeLightbox` は各 `<img>` を `.rr-lightbox-trigger` で囲みます。
+- `data-lightbox-ignore="true"` の画像、リンク・ボタン・既存トリガー・ダイアログ内の画像は変換しません。
+- `initLightbox` は `Escape`、背景クリック、閉じるボタンでダイアログを閉じ、開く前のフォーカスを戻します。
+- 開いている間は `html[data-lightbox-open="true"]` を設定するため、CSS でスクロールを止められます。
 
 ## オプション
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `selectorClass` | `string` | `"rr-lightbox-trigger"` | trigger class（build / client 共通） |
-| `autoWrapImages` | `boolean` | `true` | client 専用: 初期化時に未処理の image を囲む |
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `selectorClass` | `string` | `"rr-lightbox-trigger"` | トリガーに使う CSS クラス |
+| `autoWrapImages` | `boolean` | `true` | 初期化時に未処理の画像も囲むか。クライアント側だけの設定 |
 
-`LightboxOptions` = `{ selectorClass? }`（build）、
-`LightboxInitOptions` = `LightboxOptions & { autoWrapImages? }`（client）。
+`initLightbox()` はイベントリスナー、ダイアログ、追加したトリガーを解除する cleanup 関数を返します。
 
-## エクスポート
+## 公開 API
 
-- `lightboxPlugin(options?)` — plugin factory
-- `rehypeLightbox(options?)` — rehype transform
-- `initLightbox(root?, options?)` — client initializer。cleanup function を
-  返します
-- 型: `LightboxOptions`、`LightboxInitOptions`
+- `lightboxPlugin(options?)` — プラグインファクトリ
+- `rehypeLightbox(options?)` — Rehype 変換
+- `initLightbox(root?, options?)` — ブラウザ初期化関数
+- `LightboxOptions`、`LightboxInitOptions` — 型
 
-## 関連
+## 関連資料
 
-- [Plugin ガイド](../../docs/plugins_jp.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)

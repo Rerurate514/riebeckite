@@ -1,18 +1,14 @@
 # @riebeckite/plugin-excalidraw
 
-Obsidian wikilink 向けの Excalidraw drawing 描画。
+Obsidian の Excalidraw 埋め込みを SVG として表示するプラグインです。
 
 [English](./README_en.md)
 
-## 概要
+## できること
 
-`excalidraw()` は `renderAttachment` hook を提供します。
-`@riebeckite/plugin-obsidian-markdown` が embed wikilink
-（`![[drawing.excalidraw]]`）を Excalidraw ファイルに解決したときに使われ、
-drawing の payload を持つ placeholder figure を出力します。client entry が
-SVG に描画します。
+`![[drawing.excalidraw]]` のような埋め込みウィキリンクを検出し、図のデータを含むプレースホルダーを出力します。ブラウザ側の `initExcalidraw` が、そのプレースホルダーを SVG に置き換えます。通常のリンクや対象外のファイルは処理せず、添付ファイル用のレンダラーに任せます。
 
-## 使い方
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -25,66 +21,28 @@ export default defineConfig({
 });
 ```
 
-`style.css` と client entry（`initExcalidraw`）が登録され、アプリが page
-初期化時に呼び出します。
+## 読み込めるファイル
 
-## 対応形式
+- `*.excalidraw` — `elements`、任意の `appState` と `files` を持つ JSON シーン
+- `*.excalidraw.md` — Obsidian Excalidraw が保存する Markdown。`## Drawing` 内の `json` と `compressed-json` を読み取ります。
 
-### `*.excalidraw` — 素の JSON scene
+`![[drawing.excalidraw|800]]` なら幅を、`![[drawing.excalidraw|800x600]]` なら幅と高さを指定できます。ファイルがない、内容が不正、またはコンテンツディレクトリ外を指す場合は、エラー用プレースホルダーを表示します。
 
-`elements`・任意の `appState`・`files` を持つ compact な Excalidraw export。
+## 描画のタイミング
 
-### `*.excalidraw.md` — Obsidian Excalidraw の drawing
+既定では、図が表示領域の近くに入ってから描画します。`IntersectionObserver` が使えない環境を含め、描画に失敗した要素は `data-excalidraw="error"` になり、エラー表示へ切り替わります。
 
-Obsidian の "Excalidraw" plugin は drawing を Markdown に保存します。
-`## Drawing` fenced code block を取り出し、`json` と lz-string の
-`compressed-json` の両方に対応しています。
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `lazy` | `boolean` | `true` | 表示領域に近づいてから SVG を描画するか |
 
-## 動作
+## 公開 API
 
-### Build（`renderAttachment`）
+- `excalidraw(options?)` / `excalidrawPlugin` — プラグインファクトリ
+- `ExcalidrawOptions` — オプションの型
 
-- `.excalidraw` / `.excalidraw.md` で終わる embed wikilink（`![[...]]`）のみ
-  処理します。それ以外は `null` を返し、attachment plugin に
-  フォールバックします
-- `config.content.directory` 配下のファイルを読み取ります
-  （path traversal 対策済み）
-- scene を parse して次を出力します
+## 関連資料
 
-  ```html
-  <figure class="rr-excalidraw" data-excalidraw="pending" data-excalidraw-lazy="true">
-    <div class="rr-excalidraw__canvas" role="img" aria-label="drawing.excalidraw"></div>
-    <script type="application/json" class="rr-excalidraw__payload">{"elements":[...],"appState":{...},"files":{...}}</script>
-  </figure>
-  ```
-
-- wikilink の alias でサイズを指定できます:
-  `![[drawing.excalidraw|800]]`（width）または
-  `![[drawing.excalidraw|800x600]]`（width x height）
-- ファイル欠落・不正な scene・directory 外の path は error placeholder を
-  描画し、console に出力します
-
-### Client（`initExcalidraw`）
-
-- `@excalidraw/excalidraw` の `exportToSvg` で pending figure を SVG に描画
-- `data-excalidraw-lazy="false"` の figure は即時描画。その他は viewport に
-  入ったときに描画（`IntersectionObserver`、margin 200px）
-- 成功 → `data-excalidraw="ready"`（SVG が空の canvas を置き換え）
-- 失敗 → `data-excalidraw="error"` と placeholder メッセージ
-
-## オプション
-
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `lazy` | `boolean` | `true` | ブラウザで描画する際、即時ではなく figure が viewport に入った時に lazy 描画する |
-
-## エクスポート
-
-- `excalidraw(options?)` / `excalidrawPlugin` — plugin factory
-- 型: `ExcalidrawOptions`
-
-## 関連
-
-- [Plugin ガイド](../../docs/plugins_jp.md)
-- [`@riebeckite/plugin-obsidian-markdown`](../plugin-obsidian-markdown/README_ja.md)
-- [`@riebeckite/plugin-attachment`](../plugin-attachment/README_ja.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README_ja.md)
+- [`@riebeckite/plugin-attachment`](../attachment/README_ja.md)

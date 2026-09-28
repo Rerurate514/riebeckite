@@ -1,16 +1,16 @@
 # @riebeckite/plugin-media
 
-Obsidian の audio / video attachment embed を HTML5 media player として描画します。
+Obsidian の音声・動画埋め込みを、ブラウザ標準の HTML5 プレーヤーで表示するプラグインです。
 
 [English](./README_en.md)
 
-## 概要
+## できること
 
-`media()` は attachment renderer を提供します。`![[music.mp3]]` や
-`![[movie.mp4]]` など、Web 標準 player で再生できる代表的な media attachment だけを
-処理し、未対応ファイルでは `null` を返して後続 renderer / fallback に委ねます。
+`![[music.mp3]]` や `![[movie.mp4]]` をメディア要素へ変換します。対応しない形式では `null` を返すため、後続の添付レンダラーまたは既定の表示に処理を任せられます。
 
-## 使い方
+## 設定
+
+`media()` は既定の添付カードより先に動くため、Obsidian Markdown と添付ファイルのプラグインとあわせて登録します。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -24,30 +24,26 @@ export default defineConfig({
 });
 ```
 
-`media()` は `order: -10` で、既定の attachment card より先に実行されます。
+## 対応する拡張子
 
-## 対応形式
-
-- audio: `mp3`, `m4a`, `aac`, `ogg`, `oga`, `opus`, `wav`, `flac`
-- video: `mp4`, `m4v`, `webm`, `ogv`, `mov`
+- 音声: `mp3`、`m4a`、`aac`、`ogg`、`oga`、`opus`、`wav`、`flac`
+- 動画: `mp4`、`m4v`、`webm`、`ogv`、`mov`
 
 ## オプション
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `preload` | `"none" \| "metadata" \| "auto"` | `lazy: true` なら `"none"`、それ以外は `"metadata"` | `<audio>` / `<video>` の `preload` |
-| `lazy` | `boolean` | `true` | `preload` 未指定時に `"none"` を使い、初期ロードを抑える |
-| `showCaption` | `boolean` | `true` | caption を表示 |
-| `showDownload` | `boolean` | `true` | download link を表示 |
-| `showOpenOriginal` | `boolean` | `true` | original file への link を表示 |
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `preload` | `"none" \| "metadata" \| "auto"` | `lazy: true` なら `"none"`、それ以外は `"metadata"` | メディア要素の `preload` 属性 |
+| `lazy` | `boolean` | `true` | 未指定時に初期読み込みを抑える |
+| `showCaption` | `boolean` | `true` | キャプションを表示するか |
+| `showDownload` | `boolean` | `true` | ダウンロードリンクを表示するか |
+| `showOpenOriginal` | `boolean` | `true` | 元ファイルへのリンクを表示するか |
 
-## timestamp fragment
+## 時刻指定について
 
-renderer に `#t=10` や `#10,20` のような fragment が届いた場合は media fragment として
-source URL に保持します。現在の Obsidian wikilink pipeline は attachment fragment を
-renderer へ渡さないため、完全な `![[movie.mp4#t=10]]` 対応には pipeline 側の拡張が必要です。
+レンダラーへ渡された `#t=10` や `#10,20` はメディアフラグメントとして URL に残します。ただし、現在の Obsidian ウィキリンク処理は添付ファイルのフラグメントをレンダラーへ渡しません。`![[movie.mp4#t=10]]` を完全に扱うには、処理パイプライン側の拡張が必要です。
 
-## エクスポート
+## 公開 API
 
-- `media(options?)` / `mediaPlugin` — plugin factory
-- 型: `MediaOptions`, `MediaPreload`
+- `media(options?)` / `mediaPlugin` — プラグインファクトリ
+- `MediaOptions`、`MediaPreload` — 型

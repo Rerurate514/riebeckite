@@ -1,19 +1,16 @@
 # @riebeckite/plugin-attachment
 
-Obsidian wikilink 向けの attachment link / embed card 描画。
+Obsidian 形式の添付ファイルリンクを、ダウンロードリンクや添付カードとして表示するプラグインです。
 
 [English](./README_en.md)
 
-## 概要
+## まず何を解決するか
 
-`attachment()` は `renderAttachment` hook を提供します。
-`@riebeckite/plugin-obsidian-markdown` が wikilink を image 以外のファイル
-（`[[report.pdf]]`、`![[report.pdf]]` など）に解決したときに使われます。
+`[[report.pdf]]` や `![[report.pdf]]` のような画像以外のウィキリンクを扱います。`@riebeckite/plugin-obsidian-markdown` がリンク先を添付ファイルとして解決したとき、このプラグインが表示を引き受けます。未登録でも通常のダウンロードリンクにはなりますが、埋め込み用のカードは作られません。
 
-この plugin が無い場合、これらの wikilink は単純な download link に
-フォールバックします。
+## 設定
 
-## 使い方
+Obsidian Markdown プラグインとともに登録します。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -26,46 +23,25 @@ export default defineConfig({
 });
 ```
 
-## 描画
+## リンクと埋め込みで表示を分ける
 
-### link（非 embed）
+- `[[report.pdf]]` は、`download` 属性を持つ通常のリンクになります。
+- `![[report.pdf]]` は、拡張子、ファイル名、ダウンロードリンクを含む添付カードになります。
 
-```html
-<a class="wikilink wikilink-attachment" href="..." download>label</a>
-```
-
-### embed（`![[file]]`）
-
-```html
-<aside class="attachment-card" data-attachment-path="...">
-  <div class="attachment-card__meta">
-    <span class="attachment-card__format">PDF</span>
-    <span class="attachment-card__size">1.2 MB</span>
-  </div>
-  <div class="attachment-card__name">report.pdf</div>
-  <a class="attachment-card__download" href="..." download>label</a>
-</aside>
-```
-
-- format は大文字にしたファイル拡張子
-- size は `config.content.directory` 配下のファイルから読み取ります
-  （path traversal 対策済み）。読めない場合は表示しません
-
-スタイルは `style.css` に同梱されています（inline link には `↓` が
-付きます）。
+カードのファイルサイズは `config.content.directory` 配下から読み取ります。パスはコンテンツディレクトリの外へ出られないよう検査され、読めないファイルのサイズは表示しません。
 
 ## オプション
 
-| オプション | 型 | デフォルト | 説明 |
-| ---------- | -- | ---------- | ---- |
-| `showSize` | `boolean` | `true` | ファイルサイズを読み取り、embed card に表示 |
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `showSize` | `boolean` | `true` | 埋め込みカードにファイルサイズを表示するか |
 
-## エクスポート
+## 公開 API
 
-- `attachment(options?)` / `attachmentPlugin` — plugin factory
-- 型: `AttachmentOptions`
+- `attachment(options?)` / `attachmentPlugin` — プラグインファクトリ
+- `AttachmentOptions` — オプションの型
 
-## 関連
+## 関連資料
 
-- [Plugin ガイド](../../docs/plugins_jp.md)
-- [`@riebeckite/plugin-obsidian-markdown`](../plugin-obsidian-markdown/README_ja.md)
+- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README_ja.md)

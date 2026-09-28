@@ -68,6 +68,9 @@ importers:
       '@riebeckite/plugin-alias':
         specifier: workspace:*
         version: link:../../packages/plugins/alias
+      '@riebeckite/plugin-analytics':
+        specifier: workspace:*
+        version: link:../../packages/plugins/analytics
       '@riebeckite/plugin-attachment':
         specifier: workspace:*
         version: link:../../packages/plugins/attachment
@@ -77,12 +80,21 @@ importers:
       '@riebeckite/plugin-backlinks':
         specifier: workspace:*
         version: link:../../packages/plugins/backlinks
+      '@riebeckite/plugin-canvas':
+        specifier: workspace:*
+        version: link:../../packages/plugins/canvas
+      '@riebeckite/plugin-chartjs':
+        specifier: workspace:*
+        version: link:../../packages/plugins/chartjs
       '@riebeckite/plugin-code-annotations':
         specifier: workspace:*
         version: link:../../packages/plugins/code-annotations
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
+      '@riebeckite/plugin-d2':
+        specifier: workspace:*
+        version: link:../../packages/plugins/d2
       '@riebeckite/plugin-dataview':
         specifier: workspace:*
         version: link:../../packages/plugins/dataview
@@ -98,6 +110,12 @@ importers:
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
+      '@riebeckite/plugin-graphviz':
+        specifier: workspace:*
+        version: link:../../packages/plugins/graphviz
+      '@riebeckite/plugin-highlight':
+        specifier: workspace:*
+        version: link:../../packages/plugins/highlight
       '@riebeckite/plugin-hover-preview':
         specifier: workspace:*
         version: link:../../packages/plugins/hover-preview
@@ -116,6 +134,9 @@ importers:
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugins/mermaid
+      '@riebeckite/plugin-plantuml':
+        specifier: workspace:*
+        version: link:../../packages/plugins/plantuml
       '@riebeckite/plugin-properties':
         specifier: workspace:*
         version: link:../../packages/plugins/properties
@@ -131,12 +152,18 @@ importers:
       '@riebeckite/plugin-responsive-image':
         specifier: workspace:*
         version: link:../../packages/plugins/responsive-image
+      '@riebeckite/plugin-rich-embed':
+        specifier: workspace:*
+        version: link:../../packages/plugins/rich-embed
       '@riebeckite/plugin-search':
         specifier: workspace:*
         version: link:../../packages/plugins/search
       '@riebeckite/plugin-seo':
         specifier: workspace:*
         version: link:../../packages/plugins/seo
+      '@riebeckite/plugin-series':
+        specifier: workspace:*
+        version: link:../../packages/plugins/series
       '@riebeckite/plugin-shortcodes':
         specifier: workspace:*
         version: link:../../packages/plugins/shortcodes
@@ -287,6 +314,12 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/analytics:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/plugins/attachment:
     dependencies:
       '@riebeckite/core':
@@ -314,6 +347,21 @@ importers:
         specifier: 'catalog:'
         version: 4.12.26
 
+  packages/plugins/canvas:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/chartjs:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      chart.js:
+        specifier: ^4.5.1
+        version: 4.5.1
+
   packages/plugins/code-annotations:
     dependencies:
       '@riebeckite/core':
@@ -334,6 +382,15 @@ importers:
 
   packages/plugins/code-tabs:
     dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/d2:
+    dependencies:
+      '@d2lang/d2':
+        specifier: ^0.1.34
+        version: 0.1.34
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
@@ -422,6 +479,27 @@ importers:
         specifier: 'catalog:'
         version: 4.12.26
 
+  packages/plugins/graphviz:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@viz-js/viz':
+        specifier: ^3.31.0
+        version: 3.31.0
+
+  packages/plugins/highlight:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+
   packages/plugins/hover-preview:
     dependencies:
       '@riebeckite/core':
@@ -503,6 +581,12 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
 
+  packages/plugins/plantuml:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/plugins/properties:
     dependencies:
       '@riebeckite/core':
@@ -545,6 +629,12 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/rich-embed:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/plugins/search:
     dependencies:
       '@riebeckite/core':
@@ -555,6 +645,12 @@ importers:
         version: 4.12.26
 
   packages/plugins/seo:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/series:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
@@ -802,6 +898,9 @@ packages:
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
+
+  '@d2lang/d2@0.1.34':
+    resolution: {integrity: sha512-35m2DaRUgeBy1cFbF9XEGIuaN/pMWrqkJtGj/tsq7OrU4N8degbY80Js7Mw7UeuE+fwGpxdZaGckEUVOPAj7CA==}
 
   '@dependents/detective-less@5.0.3':
     resolution: {integrity: sha512-v6oD9Ukp+N7V4n6p5I/+mM5fIohSfkrDSGlFm5w/pYmchvbk+sMIHsLxrFJ5Lnujewj1BzWL0K84d88lwZAMQA==}
@@ -1367,6 +1466,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@kurkle/color@0.3.4':
+    resolution: {integrity: sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==}
 
   '@mermaid-js/parser@0.6.3':
     resolution: {integrity: sha512-lnjOhe7zyHjc+If7yT4zoedx2vo4sHaTmtkl1+or8BRTnCtDmcTpAjpzDSfCZrshM5bCoz0GyidzadJAH1xobA==}
@@ -2079,6 +2181,9 @@ packages:
   '@upsetjs/venn.js@2.0.0':
     resolution: {integrity: sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw==}
 
+  '@viz-js/viz@3.31.0':
+    resolution: {integrity: sha512-r7zlQdRvcwvIpjHGgs+KNWHeE/P5/Dq7k8ZAKaMCbZqomxCBJV78gVuQYaHzFVca+kB0mX0fMW9UFevCOBG50A==}
+
   '@vue/compiler-core@3.5.38':
     resolution: {integrity: sha512-s99aGxWYig9ErHbct27KXEGhrBYlRI6c4MwAgXErOAbX9xiW37/uMa+XUDO69zLz83dng8UUZ70CTOJrLrYrEQ==}
 
@@ -2162,6 +2267,10 @@ packages:
 
   character-reference-invalid@2.0.1:
     resolution: {integrity: sha512-iBZ4F4wRbyORVsu0jPV7gXkOsGYjGHPmAyv+HiHG8gi5PtC9KI2j1+v8/tlibRvjoWX027ypmG/n0HtO5t7unw==}
+
+  chart.js@4.5.1:
+    resolution: {integrity: sha512-GIjfiT9dbmHRiYi6Nl2yFCq7kkwdkp1W/lp2J99rX0yo9tgJGn3lKQATztIjb5tVtevcBtIdICNWqlq5+E8/Pw==}
+    engines: {pnpm: '>=8'}
 
   chevrotain-allstar@0.3.1:
     resolution: {integrity: sha512-b7g+y9A0v4mxCW1qUhf3BSVPg+/NvGErk/dOkrDaHA0nQIQGAtrOjlX//9OQtRlSCy+x9rfB5N8yC71lH1nvMw==}
@@ -3870,6 +3979,8 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
+  '@d2lang/d2@0.1.34': {}
+
   '@dependents/detective-less@5.0.3':
     dependencies:
       gonzales-pe: 4.3.0
@@ -4266,6 +4377,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@kurkle/color@0.3.4': {}
 
   '@mermaid-js/parser@0.6.3':
     dependencies:
@@ -4897,6 +5010,8 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
+  '@viz-js/viz@3.31.0': {}
+
   '@vue/compiler-core@3.5.38':
     dependencies:
       '@babel/parser': 7.29.7
@@ -4979,6 +5094,10 @@ snapshots:
   character-entities@2.0.2: {}
 
   character-reference-invalid@2.0.1: {}
+
+  chart.js@4.5.1:
+    dependencies:
+      '@kurkle/color': 0.3.4
 
   chevrotain-allstar@0.3.1(chevrotain@11.0.3):
     dependencies:

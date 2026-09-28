@@ -83,6 +83,9 @@ importers:
       '@riebeckite/plugin-excalidraw':
         specifier: workspace:*
         version: link:../../packages/plugins/excalidraw
+      '@riebeckite/plugin-flashcards':
+        specifier: workspace:*
+        version: link:../../packages/plugins/flashcards
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
@@ -340,6 +343,18 @@ importers:
       '@types/mdast':
         specifier: 'catalog:'
         version: 4.0.4
+
+  packages/plugins/flashcards:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
 
   packages/plugins/garden-explorer:
     dependencies:

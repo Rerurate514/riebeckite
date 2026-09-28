@@ -10,6 +10,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/diagnostics",
   "packages/plugins/diff",
   "packages/plugins/excalidraw",
+  "packages/plugins/flashcards",
   "packages/plugins/garden-explorer",
   "packages/plugins/lightbox",
   "packages/plugins/local-graph",

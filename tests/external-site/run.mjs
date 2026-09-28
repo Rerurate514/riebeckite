@@ -38,6 +38,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  {
+    directory: "packages/plugins/flashcards",
+    name: "@riebeckite/plugin-flashcards",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
@@ -46,6 +50,8 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
+const FLASHCARDS_CLIENT_IDENTIFIER = "rb-flashcards";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -365,6 +371,26 @@ function assertBuildOutput(siteDir) {
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
   }
+  if (!combined.includes('data-flashcards-count="')) {
+    fail("generated HTML is missing the flashcards deck output");
+  }
+  if (!combined.includes("rb-flashcards__list")) {
+    fail("flashcards fallback list was not rendered");
+  }
+  if (
+    !combined.includes('class="rb-flashcards__front"') ||
+    !combined.includes('class="rb-flashcards__back"')
+  ) {
+    fail("flashcards fallback did not expose front and back content");
+  }
+  if (!combined.includes("data-flashcards-payload")) {
+    fail("flashcards payload script was not emitted");
+  }
+  if (!combined.includes(FLASHCARDS_MARKER)) {
+    fail(
+      `generated HTML is missing the flashcards fixture card text (${FLASHCARDS_MARKER})`,
+    );
+  }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')
   ) {
@@ -401,6 +427,17 @@ function assertBuildOutput(siteDir) {
   }
   if (!css.includes("data-fixture-theme")) {
     fail("site-local theme stylesheet was not bundled into the dist CSS");
+  }
+  if (!css.includes("rb-flashcards__deck")) {
+    fail("flashcards stylesheet was not bundled into the dist CSS");
+  }
+
+  const jsFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
+  const js = jsFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  if (!js.includes(FLASHCARDS_CLIENT_IDENTIFIER)) {
+    fail(
+      `emitted client bundle is missing the flashcards identifier (${FLASHCARDS_CLIENT_IDENTIFIER})`,
+    );
   }
 
   for (const file of htmlFiles) {

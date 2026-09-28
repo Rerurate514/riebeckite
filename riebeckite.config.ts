@@ -6,6 +6,7 @@ import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
@@ -87,6 +88,7 @@ export default defineConfig({
     tocPlugin(),
     backlinksPlugin(),
     queryPlugin(),
+    flashcardsPlugin(),
     recentPostsPlugin(),
     localGraphPlugin(),
     gardenExplorerPlugin(),

@@ -20,6 +20,7 @@
     "@riebeckite/plugin-code-enhance": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
+    "@riebeckite/plugin-flashcards": "workspace:*",
     "@riebeckite/plugin-garden-explorer": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
     "@riebeckite/plugin-local-graph": "workspace:*",

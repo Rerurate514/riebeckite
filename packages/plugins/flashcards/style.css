@@ -1,0 +1,116 @@
+.rb-flashcards {
+  --rb-flashcards-ink: var(--rb-color-ink, #000000);
+  --rb-flashcards-paper: var(--rb-color-paper, #ffffff);
+  --rb-flashcards-muted: var(--rb-color-muted, #69645c);
+  --rb-flashcards-accent: var(--rb-color-accent, #686868);
+  --rb-flashcards-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-flashcards-ink) 18%, transparent)
+  );
+
+  margin: 1.5rem 0;
+  color: var(--rb-flashcards-ink);
+}
+
+.rb-flashcards__list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-flashcards__item {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rb-flashcards-rule);
+}
+
+.rb-flashcards__front {
+  font-weight: 600;
+  white-space: pre-line;
+}
+
+.rb-flashcards__back {
+  color: var(--rb-flashcards-muted);
+  white-space: pre-line;
+}
+
+.rb-flashcards__deck {
+  display: grid;
+  gap: 1rem;
+  outline-offset: 4px;
+}
+
+.rb-flashcards__deck:focus-visible {
+  outline: 2px solid var(--rb-flashcards-accent);
+}
+
+.rb-flashcards__counter {
+  margin: 0;
+  color: var(--rb-flashcards-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rb-flashcards__card {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--rb-flashcards-rule);
+}
+
+.rb-flashcards__question {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.rb-flashcards__answer {
+  margin: 0.75rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rb-flashcards-rule);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.rb-flashcards__answer[hidden] {
+  display: none;
+}
+
+.rb-flashcards__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rb-flashcards__button {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--rb-flashcards-ink);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.rb-flashcards__button:hover,
+.rb-flashcards__button:focus-visible {
+  border-color: var(--rb-flashcards-accent);
+  color: var(--rb-flashcards-accent);
+  outline: none;
+}
+
+.rb-flashcards--invalid {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rb-flashcards-ink);
+  font-size: 0.875rem;
+}
+
+html[data-theme="dark"] .rb-flashcards,
+html.dark .rb-flashcards {
+  --rb-flashcards-ink: var(--rb-color-paper, #ffffff);
+  --rb-flashcards-paper: var(--rb-color-ink, #000000);
+}

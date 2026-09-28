@@ -12,6 +12,7 @@ import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { properties } from "@riebeckite/plugin-properties";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -47,6 +48,7 @@ export default defineConfig({
   }),
   plugins: [
     obsidianMarkdown(),
+    properties(),
     seo({
       siteName: "Riebeckite Blog",
       defaultImage: "/ogp.png",

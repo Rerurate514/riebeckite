@@ -72,6 +72,10 @@ declare module "@riebeckite/plugin-obsidian-markdown" {
   export const obsidianMarkdown: any;
 }
 
+declare module "@riebeckite/plugin-properties" {
+  export const properties: any;
+}
+
 declare module "@riebeckite/plugin-query" {
   export const queryPlugin: any;
 }

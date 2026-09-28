@@ -22,15 +22,22 @@ export {
 } from "./src/content/content_build_state_store.js";
 export type {
   ContentQueryDateFilter,
+  ContentQueryDateGranularity,
   ContentQueryFilter,
   ContentQueryFrontmatterFilter,
+  ContentQueryGroup,
+  ContentQueryGroupBy,
+  ContentQueryGroupOptions,
   ContentQueryScalar,
   ContentQuerySort,
   ContentQuerySortOrder,
   ContentQuerySpec,
   ContentQueryTagFilter,
 } from "./src/content/content_query.js";
-export { queryContentEntries } from "./src/content/content_query.js";
+export {
+  groupContentEntries,
+  queryContentEntries,
+} from "./src/content/content_query.js";
 export type {
   ContentGraph,
   ContentGraphNeighbors,

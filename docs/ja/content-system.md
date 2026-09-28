@@ -34,4 +34,13 @@ Manifest は解決結果を保持します（`ContentManifestEntry.permalink` / 
 
 Manifest は application が使う生成済み content 表現、content graph は関係表現です。runtime manifest の参照は明示的 build ではありません。incremental state は explicit build 専用で、Worker runtime の可変依存にはできません。
 
+## Content query
+
+Core は解決済み manifest entry に対する portable な query 層を公開します。
+
+- `queryContentEntries(entries, spec)` は tag、folder、frontmatter、date 期間で絞り込み、複数の sort key を適用し、`limit`/`offset` で切り出します。
+- `groupContentEntries(entries, groupBy, options)` は同じ selection を行ったうえで、tag、folder、date の粒度（`year`/`month`/`day`）、frontmatter field ごとに grouping します。
+
+どちらも `ContentManifestEntry` を対象とするため、link には解決済みの `permalink` を使います。slug から content の公開 URL を組み立てることはありません。Application と Plugin はこれらを組み合わせて一覧 page や taxonomy 表示を作り、routing は Core の責務にしません。
+
 canonical content identity を source/manifest/graph で保ち、slug と permalink を別概念として public URL は解決済み `ContentPublicLocation` からのみ取得し、metadata を過信せず、publication/exclusion policy を config に表し、recoverable error を黙って content から落とさず diagnostics にします。

@@ -40,6 +40,25 @@ export type ContentQuerySpec = {
   offset?: number;
 };
 
+export type ContentQueryDateGranularity = "year" | "month" | "day";
+
+export type ContentQueryGroupBy =
+  | { by: "tags" }
+  | { by: "folder"; depth?: number }
+  | { by: "date"; field?: string; granularity?: ContentQueryDateGranularity }
+  | { by: "frontmatter"; field: string };
+
+export type ContentQueryGroup = {
+  key: string;
+  entries: ContentManifestEntry[];
+};
+
+export type ContentQueryGroupOptions = {
+  filter?: ContentQueryFilter;
+  sort?: ContentQuerySort | readonly ContentQuerySort[];
+  order?: ContentQuerySortOrder;
+};
+
 export function queryContentEntries(
   entries: readonly ContentManifestEntry[],
   spec: ContentQuerySpec = {},
@@ -113,7 +132,9 @@ function matchesFrontmatter(
     const actual = frontmatter[key];
     const expectedValues = Array.isArray(expected) ? expected : [expected];
     if (expectedValues.length === 0) continue;
-    if (!expectedValues.some((value) => matchesFrontmatterValue(actual, value))) {
+    if (
+      !expectedValues.some((value) => matchesFrontmatterValue(actual, value))
+    ) {
       return false;
     }
   }
@@ -166,7 +187,9 @@ function parseLowerBound(value: string): number | null {
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
 
 function parseUpperBound(value: string): number | null {
-  const time = toTime(DATE_ONLY.test(value.trim()) ? `${value.trim()}T23:59:59.999Z` : value);
+  const time = toTime(
+    DATE_ONLY.test(value.trim()) ? `${value.trim()}T23:59:59.999Z` : value,
+  );
   return time;
 }
 
@@ -236,10 +259,7 @@ function compareEntries(
   return direction * compareValues(leftValue, rightValue);
 }
 
-function resolveSortValue(
-  entry: ContentManifestEntry,
-  field: string,
-): unknown {
+function resolveSortValue(entry: ContentManifestEntry, field: string): unknown {
   if (!TITLE_FIELDS.has(field)) return entry.frontmatter[field];
   if (field === "title") return entry.title;
   if (field === "slug") return entry.slug;
@@ -282,4 +302,104 @@ function applyPagination(
     result = result.slice(0, Math.floor(limit));
   }
   return result;
+}
+
+export function groupContentEntries(
+  entries: readonly ContentManifestEntry[],
+  groupBy: ContentQueryGroupBy,
+  options: ContentQueryGroupOptions = {},
+): ContentQueryGroup[] {
+  const matched = queryContentEntries(entries, {
+    filter: options.filter,
+    sort: options.sort,
+  });
+  const groups = new Map<string, ContentManifestEntry[]>();
+
+  for (const entry of matched) {
+    for (const key of resolveGroupKeys(entry, groupBy)) {
+      appendGroup(groups, key, entry);
+    }
+  }
+
+  return [...groups.entries()]
+    .sort(([left], [right]) =>
+      options.order === "desc"
+        ? right.localeCompare(left, "en")
+        : left.localeCompare(right, "en"),
+    )
+    .map(([key, groupEntries]) => ({ key, entries: groupEntries }));
+}
+
+function appendGroup(
+  groups: Map<string, ContentManifestEntry[]>,
+  key: string,
+  entry: ContentManifestEntry,
+): void {
+  const values = groups.get(key);
+  if (values) {
+    values.push(entry);
+  } else {
+    groups.set(key, [entry]);
+  }
+}
+
+function resolveGroupKeys(
+  entry: ContentManifestEntry,
+  groupBy: ContentQueryGroupBy,
+): string[] {
+  switch (groupBy.by) {
+    case "tags":
+      return [...entry.tags];
+    case "folder":
+      return resolveFolderKeys(entry.slug, groupBy.depth);
+    case "date":
+      return resolveDateKeys(
+        entry.frontmatter[groupBy.field ?? "date"],
+        groupBy.granularity ?? "month",
+      );
+    case "frontmatter":
+      return resolveFrontmatterKeys(entry.frontmatter[groupBy.field]);
+    default:
+      return [];
+  }
+}
+
+function resolveFolderKeys(slug: string, depth: number | undefined): string[] {
+  const segments = slug.split("/");
+  segments.pop();
+  const directories =
+    typeof depth === "number" && Number.isFinite(depth) && depth > 0
+      ? segments.slice(0, Math.floor(depth))
+      : segments;
+  return [directories.join("/")];
+}
+
+const DATE_GRANULARITY_LENGTH: Record<ContentQueryDateGranularity, number> = {
+  year: 4,
+  month: 7,
+  day: 10,
+};
+
+function resolveDateKeys(
+  value: unknown,
+  granularity: ContentQueryDateGranularity,
+): string[] {
+  const time = toTime(value);
+  if (time === null) return [];
+  return [
+    new Date(time).toISOString().slice(0, DATE_GRANULARITY_LENGTH[granularity]),
+  ];
+}
+
+function resolveFrontmatterKeys(value: unknown): string[] {
+  if (value === undefined || value === null) return [];
+  if (value instanceof Date) {
+    const time = value.getTime();
+    return Number.isFinite(time) ? [value.toISOString().slice(0, 10)] : [];
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => resolveFrontmatterKeys(item));
+  }
+  const text = String(value).trim();
+  return text.length > 0 ? [text] : [];
 }

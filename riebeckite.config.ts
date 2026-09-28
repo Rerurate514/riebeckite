@@ -7,6 +7,7 @@ import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
+import { kanban } from "@riebeckite/plugin-kanban";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
@@ -87,6 +88,7 @@ export default defineConfig({
     tocPlugin(),
     backlinksPlugin(),
     queryPlugin(),
+    kanban(),
     recentPostsPlugin(),
     localGraphPlugin(),
     gardenExplorerPlugin(),

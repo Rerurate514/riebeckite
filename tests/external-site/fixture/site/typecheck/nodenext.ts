@@ -30,6 +30,16 @@ import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import {
+  kanban,
+  kanbanPlugin,
+  parseKanban,
+  renderKanban,
+  resolveKanbanOptions,
+  type KanbanOptions,
+  type KanbanParseResult,
+  type ResolvedKanbanOptions,
+} from "@riebeckite/plugin-kanban";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -62,6 +72,11 @@ export const resolvedEntries = {
   backlinksPlugin,
   Backlinks,
   obsidianMarkdown,
+  kanban,
+  kanbanPlugin,
+  parseKanban,
+  renderKanban,
+  resolveKanbanOptions,
   recentPostsPlugin,
   RecentPosts,
   searchPlugin,
@@ -81,6 +96,12 @@ export type UiPrimitiveProps =
   | ArticleLayoutProps
   | ArticleMetaProps
   | SidebarProps;
+
+export type KanbanFixtureTypes = {
+  options: KanbanOptions;
+  resolved: ResolvedKanbanOptions;
+  parsed: KanbanParseResult;
+};
 
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },

@@ -64,6 +64,14 @@ declare module "@riebeckite/plugin-backlinks/components" {
   export default Backlinks;
 }
 
+declare module "@riebeckite/plugin-kanban" {
+  export const kanban: any;
+  export const kanbanPlugin: any;
+  export const parseKanban: any;
+  export const renderKanban: any;
+  export const resolveKanbanOptions: any;
+}
+
 declare module "@riebeckite/plugin-media" {
   export const media: any;
 }

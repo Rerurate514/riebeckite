@@ -80,6 +80,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-plantuml",
   },
   { directory: "packages/plugins/series", name: "@riebeckite/plugin-series" },
+  {
+    directory: "packages/plugins/analytics",
+    name: "@riebeckite/plugin-analytics",
+  },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
   {
     directory: "packages/plugins/chartjs",
@@ -106,11 +110,9 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
-const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
-const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";
-const SERIES_MARKER = "RIEBECKITE_EXTERNAL_SERIES_MARKER";
-const SERIES_PART_1_PERMALINK = "/notes/series-demo-1";
 const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
+const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
+const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -601,6 +603,16 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes('rel="prev"') || !combined.includes('rel="next"')) {
     fail("series navigation is missing the previous/next links");
+  }
+  if (!combined.includes(ANALYTICS_SCRIPT_PATH)) {
+    fail(
+      `generated HTML is missing the analytics script path (${ANALYTICS_SCRIPT_PATH})`,
+    );
+  }
+  if (!combined.includes(ANALYTICS_SCRIPT_ATTRIBUTE)) {
+    fail(
+      `generated HTML is missing the analytics script attribute (${ANALYTICS_SCRIPT_ATTRIBUTE})`,
+    );
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

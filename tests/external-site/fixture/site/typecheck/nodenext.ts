@@ -46,6 +46,8 @@ import {
 } from "@riebeckite/honox/ui";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
+import { analytics } from "@riebeckite/plugin-analytics";
+import { initAnalytics } from "@riebeckite/plugin-analytics/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
 import {
@@ -112,6 +114,8 @@ export const resolvedEntries = {
   Sidebar,
   autoCardLinkPlugin,
   initAutoCardLink,
+  analytics,
+  initAnalytics,
   backlinksPlugin,
   Backlinks,
   hoverPreviewPlugin,
@@ -174,6 +178,7 @@ export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },
   theme: defaultTheme(),
   plugins: [
+    analytics({ provider: "plausible", domain: "example.com" }),
     obsidianMarkdown(),
     autoCardLinkPlugin(),
     highlight(),

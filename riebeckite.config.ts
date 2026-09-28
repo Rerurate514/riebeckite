@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { analytics } from "@riebeckite/plugin-analytics";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
@@ -62,6 +63,7 @@ export default defineConfig({
     userCss: [],
   }),
   plugins: [
+    analytics({ provider: "plausible", domain: "my-blog.pages.dev" }),
     obsidianMarkdown(),
     properties(),
     aliasPlugin(),

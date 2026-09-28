@@ -1,5 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
 import { aliasPlugin } from "@riebeckite/plugin-alias";
+import { analytics } from "@riebeckite/plugin-analytics";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { canvas } from "@riebeckite/plugin-canvas";
@@ -36,6 +37,7 @@ export default defineConfig({
   },
   theme: localFixtureTheme(),
   plugins: [
+    analytics({ provider: "plausible", domain: "example.com" }),
     obsidianMarkdown(),
     properties(),
     plantuml(),

@@ -4,6 +4,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/create-riebeckite",
   "packages/integrations/honox",
   "packages/plugins/alias",
+  "packages/plugins/analytics",
   "packages/plugins/attachment",
   "packages/plugins/autocardlink",
   "packages/plugins/backlinks",
@@ -114,6 +115,7 @@ export function expectedPackageMetadata(directory) {
   if (directory.startsWith("packages/plugins/")) {
     const hasStyle = ![
       "alias",
+      "analytics",
       "diagnostics",
       "obsidian-markdown",
       "permalink",

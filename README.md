@@ -60,10 +60,11 @@ pnpm exec riebeckite inspect    # inspect the framework's resolved state
 
 Start with the [English documentation index](./docs/en/README.md). The most common entry points are:
 
-1. [Getting Started](./docs/en/getting-started.md) for a minimal project and the development loop.
-2. [Configuration](./docs/en/configuration.md) for `riebeckite.config.ts`, content directories, and themes.
-3. [Content System](./docs/en/content-system.md) for sources, manifests, and graphs.
-4. [Plugin System](./docs/en/plugin-system.md) and [Theme System](./docs/en/theme-system.md) before extending a site.
+1. [Usage Guide](./docs/en/guide.md) for the step-by-step flow from install to deployment.
+2. [Getting Started](./docs/en/getting-started.md) for a minimal project and the development loop.
+3. [Configuration](./docs/en/configuration.md) for `riebeckite.config.ts`, content directories, and themes.
+4. [Content System](./docs/en/content-system.md) for sources, manifests, and graphs.
+5. [Plugin System](./docs/en/plugin-system.md) and [Theme System](./docs/en/theme-system.md) before extending a site.
 
 Individual plugins and themes are documented beside their packages (`packages/plugins/*/README_en.md`, `packages/themes/*/README_en.md`). Japanese readers can start from [README_ja.md](./README_ja.md) or the [Japanese documentation index](./docs/ja/README.md).
 

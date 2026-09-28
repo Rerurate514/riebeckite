@@ -10,6 +10,7 @@ Riebeckite は、Markdown と Obsidian のノートを Web サイトとして公
 
 |目的|最初に読むドキュメント|
 |---|---|
+|フレームワークを順を追って使いたい|[利用ガイド](./guide.md)|
 |プロジェクトを起動・ビルドしたい|[Getting Started](./getting-started.md)|
 |設定項目を確認したい|[Configuration](./configuration.md)|
 |既存コードの責務や依存方向を理解したい|[Architecture](./architecture.md)|
@@ -63,6 +64,7 @@ Build tooling
 
 |ドキュメント|内容|
 |---|---|
+|[利用ガイド](./guide.md)|インストールと設定から、コンテンツ、検証、ビルド、デプロイまでの手順|
 |[Getting Started](./getting-started.md)|必要な環境、インストール、開発サーバー、通常・フルビルド、最小設定例|
 |[Configuration](./configuration.md)|`riebeckite.config.ts`、Application Root、site、content、theme、plugins、検証と secret の扱い|
 |[CLI](./cli.md)|`check`、`doctor`、`inspect`、`profile`、`build`、`dev` の用途、終了動作、パッケージング|

@@ -110,6 +110,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-shortcodes",
   },
   {
+    directory: "packages/plugins/vega-lite",
+    name: "@riebeckite/plugin-vega-lite",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -144,6 +148,7 @@ const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
 const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
 const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
 const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
+const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -678,6 +683,15 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes(VEGALITE_MARKER)) {
+    fail(`generated HTML is missing the Vega-Lite marker (${VEGALITE_MARKER})`);
+  }
+  if (!combined.includes("rb-vega-lite")) {
+    fail("generated HTML is missing the Vega-Lite plugin output (rb-vega-lite)");
+  }
+  if (!combined.includes("data-vega-lite")) {
+    fail("Vega-Lite figure is missing the output data attributes");
   }
   if (!combined.includes('class="rb-responsive-image"')) {
     fail("responsive-image plugin did not wrap a marked image in <picture>");

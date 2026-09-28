@@ -1,0 +1,73 @@
+.rb-vega-lite {
+  --rb-vega-lite-paper: var(--rb-color-paper, #ffffff);
+  --rb-vega-lite-ink: var(--rb-color-ink, #000000);
+  --rb-vega-lite-muted: var(--rb-color-muted, #69645c);
+  --rb-vega-lite-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-vega-lite-ink) 18%, transparent)
+  );
+  --rb-vega-lite-accent: var(--rb-color-accent, #686868);
+  margin: 2rem 0;
+  border: 1px solid var(--rb-vega-lite-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-vega-lite-paper) 96%,
+    var(--rb-vega-lite-ink)
+  );
+  color: var(--rb-vega-lite-ink);
+}
+
+.rb-vega-lite__caption {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--rb-vega-lite-rule);
+  color: var(--rb-vega-lite-muted);
+  font-size: 0.875rem;
+}
+
+.rb-vega-lite__canvas {
+  overflow: auto;
+  padding: 1rem;
+}
+
+.rb-vega-lite__canvas .vega-embed {
+  display: block;
+}
+
+.rb-vega-lite__canvas .vega-embed canvas,
+.rb-vega-lite__canvas .vega-embed svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.rb-vega-lite__fallback {
+  border-top: 1px solid var(--rb-vega-lite-rule);
+  color: var(--rb-vega-lite-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-vega-lite__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rb-vega-lite__fallback pre {
+  overflow: auto;
+  margin: 0 1rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rb-vega-lite-rule);
+  color: var(--rb-vega-lite-ink);
+  background: color-mix(in srgb, var(--rb-vega-lite-ink) 6%, transparent);
+}
+
+.rb-vega-lite[data-vega-lite="error"] .rb-vega-lite__canvas::before,
+.rb-vega-lite[data-vega-lite="pending"] .rb-vega-lite__canvas:empty::before {
+  content: "Chart could not be rendered.";
+  color: var(--rb-vega-lite-muted);
+}
+
+html[data-theme="dark"] .rb-vega-lite,
+html.dark .rb-vega-lite {
+  --rb-vega-lite-paper: var(--rb-color-ink, #000000);
+  --rb-vega-lite-ink: var(--rb-color-paper, #ffffff);
+}

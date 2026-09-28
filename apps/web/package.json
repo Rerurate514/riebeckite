@@ -49,6 +49,7 @@
     "@riebeckite/plugin-series": "workspace:*",
     "@riebeckite/plugin-shortcodes": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
+    "@riebeckite/plugin-vega-lite": "workspace:*",
     "@riebeckite/theme-default": "workspace:*",
     "hono": "^4.12.25",
     "honox": "0.1.56",

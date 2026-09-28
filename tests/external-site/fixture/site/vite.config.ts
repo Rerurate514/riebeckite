@@ -1,3 +1,6 @@
+// @ts-nocheck
+// This fixture is installed only in the isolated external-consumer E2E
+// workspace. Its dependencies intentionally do not exist in this repository.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/node";
@@ -13,17 +16,14 @@ const appRoot = fileURLToPath(new URL(".", import.meta.url));
 export default defineConfig({
   plugins: [
     honox({
-      client: { input: ["/app/client.ts", "/app/style.css"] }
+      client: { input: ["/app/client.ts", "/app/style.css"] },
     }),
-    // `workspaceRoot` is passed explicitly: the default (`root/../..`) assumes
-    // a monorepo `packages/*` layout. See the A3/A4 root-model note in
-    // tests/external-site/README.md.
-    riebeckite({ appRoot, workspaceRoot: appRoot }),
+    riebeckite({ appRoot }),
     build(),
     ssg({
       entry: path.join(appRoot, "app/server.ts"),
-      extensionMap: riebeckiteSsgExtensionMap()
-    })
+      extensionMap: riebeckiteSsgExtensionMap(),
+    }),
   ],
   // Riebeckite Core pulls in a few CommonJS packages. Vite's SSR environment
   // must treat them as external, otherwise the SSG pass inlines and breaks on
@@ -38,9 +38,9 @@ export default defineConfig({
           "node:path",
           "parse-numeric-range",
           "slugify",
-          "vfile-matter"
-        ]
-      }
-    }
-  }
+          "vfile-matter",
+        ],
+      },
+    },
+  },
 });

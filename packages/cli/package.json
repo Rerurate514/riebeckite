@@ -16,6 +16,7 @@
     "prepack": "node ../../scripts/copy_license.mjs && pnpm run build"
   },
   "dependencies": {
+    "@riebeckite/core": "workspace:*",
     "@riebeckite/honox": "workspace:*",
     "esbuild": "catalog:",
     "vite": "catalog:"

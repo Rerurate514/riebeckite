@@ -3,10 +3,13 @@ import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
-import { loadRiebeckiteConfig, resolveHonoxConfig } from "./config_loader.js";
+import { resolveHonoxApplication } from "./vite_runner.js";
 import { createWorkspacePackageAliases } from "./workspace_packages.js";
 
 export type RiebeckiteIntegrationOptions = {
+  /** Directory containing riebeckite.config.*. Defaults to the Vite root. */
+  configRoot?: string;
+  /** Optional monorepo development root used only for source-package aliases. */
   workspaceRoot?: string;
   appRoot?: string;
   configFile?: string;
@@ -30,15 +33,14 @@ export function riebeckite(
         const root = userConfig.root
           ? path.resolve(userConfig.root)
           : process.cwd();
-        const workspaceRoot =
-          options.workspaceRoot ?? path.resolve(root, "../..");
         const appRoot = options.appRoot ?? root;
-
-        const config = await loadRiebeckiteConfig({
-          workspaceRoot,
+        const application = await resolveHonoxApplication({
+          configRoot: options.configRoot ?? appRoot,
           configFile: options.configFile,
+          appRoot,
+          workspaceRoot: options.workspaceRoot,
         });
-        resolvedConfig = resolveHonoxConfig(config, appRoot);
+        resolvedConfig = application.config;
         writeRiebeckiteAssetEntries(resolvedConfig, {
           pluginStyles: path.join(appRoot, "app/.riebeckite/plugin-styles.css"),
           themeStyles: path.join(appRoot, "app/.riebeckite/theme-styles.css"),
@@ -49,7 +51,9 @@ export function riebeckite(
             "process.env.RIEBECKITE_APP_ROOT": JSON.stringify(appRoot),
           },
           resolve: {
-            alias: createWorkspacePackageAliases(workspaceRoot),
+            alias: options.workspaceRoot
+              ? createWorkspacePackageAliases(options.workspaceRoot)
+              : [],
           },
         };
       },

@@ -4,7 +4,6 @@ import {
   type Diagnostic,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { resolveHonoxApplicationRoot } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../../application_root.js";
 import type { DoctorCheckResult } from "../types.js";
 
@@ -17,10 +16,8 @@ export async function checkContent(
   if (!config) return skippedContentCheck();
 
   try {
-    const hostRoot = await resolveHonoxApplicationRoot(project.configRoot);
-    const contentDirectory = path.resolve(hostRoot, config.content.directory);
     const content = new ContentManager(
-      contentDirectory,
+      project.contentRoot,
       config.content.exclude,
       {
         config,

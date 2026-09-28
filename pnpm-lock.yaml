@@ -397,9 +397,9 @@ importers:
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
-      yaml:
-        specifier: ^2.9.0
-        version: 2.9.0
+      vfile-matter:
+        specifier: ^5.0.1
+        version: 5.0.1
 
   packages/plugins/recent-posts:
     dependencies:

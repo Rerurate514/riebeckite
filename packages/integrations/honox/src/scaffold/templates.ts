@@ -430,15 +430,17 @@ export default createRoute(async (c) => {
 
 function slugRoute(): string {
   return `import { isPublished } from "@riebeckite/core";
-import { resolveContentRoute } from "@riebeckite/honox/server";
-import { ssgParams } from "hono/ssg";
+import {
+  contentRouteSsgParams,
+  resolveContentRoute,
+} from "@riebeckite/honox/server";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
 import { config } from "../config";
 import { content } from "../content";
 
 export default createRoute(
-  ssgParams(async () => {
+  contentRouteSsgParams("/:slug{.+}", async () => {
     const manifest = await content.getManifest();
     return manifest.entries
       .filter((entry) => isPublished(config, entry.frontmatter))

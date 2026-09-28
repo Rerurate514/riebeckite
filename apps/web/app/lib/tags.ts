@@ -6,10 +6,18 @@ import {
 import slugify from "slugify";
 
 export function slugifyTagPath(tag: string): string {
-  return tag
-    .split("/")
-    .map((seg) => slugify(seg, { lower: true, strict: true }))
-    .join("/");
+  return tag.split("/").map(slugifyTagSegment).join("/");
+}
+
+function slugifyTagSegment(segment: string): string {
+  const slug = slugify(segment, { lower: true, strict: true });
+  if (slug) return slug;
+  // `strict` strips every non-ASCII character, so tags written in scripts such
+  // as Japanese would all collapse into an empty segment and share a single
+  // `/tags/` URL. Fall back to the original text (or its percent-encoding) so
+  // each tag keeps its own stable URL.
+  const raw = segment.trim();
+  return raw || encodeURIComponent(segment);
 }
 
 export function buildTagHref(tag: string): string {

@@ -36,9 +36,7 @@ export function checkPublishBoundary(
 
     for (const match of getWikilinkMatches(note.markdown)) {
       const resolved = resolveWikilinkTarget(match.target, source.targetIndex);
-      // `resolveWikilinkTarget` classifies by stored extension; note slugs are
-      // stored without one, so confirm the target against noteSlugs instead.
-      if (!resolved || !source.noteSlugs.has(resolved.value)) continue;
+      if (!resolved || resolved.kind !== "note") continue;
 
       const { line, column } = position.positionAt(match.index);
       reportBoundaryReference(

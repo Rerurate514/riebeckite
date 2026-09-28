@@ -1,12 +1,15 @@
 import { isPublished } from "@riebeckite/core";
-import { resolveContentRoute } from "@riebeckite/honox/server";
+import {
+  contentRouteSsgParams,
+  resolveContentRoute,
+  ssgEnumerableHandler,
+} from "@riebeckite/honox/server";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
 import { getLocalGraph, LocalGraph } from "@riebeckite/plugin-local-graph";
 import {
   extractTableOfContents,
   TableOfContents,
 } from "@riebeckite/plugin-toc";
-import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
 import { config } from "../config";
@@ -15,19 +18,19 @@ import { getArticleTitle } from "../lib/article-title";
 import { buildArticleSeo } from "../lib/seo";
 
 export default createRoute(
-  ssgParams(async () => {
+  contentRouteSsgParams("/:slug{.+}", async () => {
     const manifest = await content.getManifest();
     return manifest.entries
       .filter((entry) => isPublished(config, entry.frontmatter))
       .filter((entry) => entry.permalink !== "/")
       .map((entry) => ({ slug: entry.permalink.replace(/^\/+/, "") }));
   }),
-  async (c, next) => {
+  ssgEnumerableHandler(async (c, next) => {
     const requestedSlug = c.req.param("slug");
+    // Tags and archive have dedicated routes; defer to them.
     if (c.req.path.startsWith("/tags/") || c.req.path.startsWith("/archive/")) {
       return next();
     }
-
     if (!requestedSlug) return c.notFound();
 
     if (/\.[a-zA-Z0-9]+$/.test(requestedSlug)) return c.notFound();
@@ -76,5 +79,5 @@ export default createRoute(
         }
       />,
     );
-  },
+  }),
 );

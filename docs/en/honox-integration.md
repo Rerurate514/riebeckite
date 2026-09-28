@@ -43,6 +43,15 @@ both helpers use. Other exports are `loadRiebeckiteConfig`,
 `resolveHonoxApplication`, `resolveHonoxApplicationRoot`, `buildHonoxApplication`,
 and `startHonoxDevServer`. `scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, overwrite? })` writes a minimal, self-contained site (configuration, Vite/HonoX application shell, routes, stylesheet, and starter content) and returns the generated file list. It throws `ScaffoldSiteError` when the target already contains generated files and `overwrite` is not set. `riebeckite init` and `create-riebeckite` are thin command wrappers around it.
 
+Catch-all routes need two small helpers so runtime routing and static
+generation agree. `contentRouteSsgParams(routePath, params)` is a drop-in
+replacement for `ssgParams` from `hono/ssg`: it emits params only for the
+route's own enumeration request, so a shallow catch-all such as `/:slug{.+}`
+does not capture the enumeration of a deeper sibling like `/tags/:slug{.+}`.
+`ssgEnumerableHandler(handler)` keeps a route handler visible to SSG
+enumeration while it still calls `next()` to defer to those siblings; Hono
+otherwise skips middleware-shaped handlers.
+
 ## UI primitives
 
 `@riebeckite/honox/ui` is deliberately a small structural contract, not a

@@ -1,0 +1,36 @@
+.rb-code {
+  --rb-code-annotation-accent: var(--rb-color-accent, #686868);
+  position: relative;
+}
+
+.rb-code__line {
+  display: block;
+  min-width: 100%;
+}
+
+.rb-code__line--highlighted {
+  background: color-mix(
+    in srgb,
+    var(--rb-code-annotation-accent) 14%,
+    transparent
+  );
+}
+
+.rb-code__line--added {
+  background: color-mix(in srgb, #1f883d 14%, transparent);
+}
+
+.rb-code__line--removed {
+  background: color-mix(in srgb, #cf222e 14%, transparent);
+}
+
+.rb-code__line--focused {
+  background: color-mix(
+    in srgb,
+    var(--rb-code-annotation-accent) 10%,
+    transparent
+  );
+  outline: 1px solid
+    color-mix(in srgb, var(--rb-code-annotation-accent) 45%, transparent);
+  outline-offset: -1px;
+}

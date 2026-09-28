@@ -26,6 +26,10 @@ const PACKAGES = [
     directory: "packages/plugins/attachment",
     name: "@riebeckite/plugin-attachment",
   },
+  {
+    directory: "packages/plugins/code-annotations",
+    name: "@riebeckite/plugin-code-annotations",
+  },
   { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
   {
     directory: "packages/plugins/backlinks",
@@ -46,6 +50,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const CODE_ANNOTATIONS_MARKER = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -378,6 +383,26 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes("rb-code__line--highlighted")) {
+    fail("code-annotations did not highlight a line from fence meta");
+  }
+  if (!combined.includes("rb-code__line--added")) {
+    fail("code-annotations did not mark a [!code ++] line as added");
+  }
+  if (!combined.includes("rb-code__line--removed")) {
+    fail("code-annotations did not mark a [!code --] line as removed");
+  }
+  if (!combined.includes('data-line="2"')) {
+    fail("code-annotations did not materialize per-line wrappers with data-line");
+  }
+  if (!combined.includes(CODE_ANNOTATIONS_MARKER)) {
+    fail(
+      `generated HTML is missing the fixture code marker (${CODE_ANNOTATIONS_MARKER})`,
+    );
+  }
+  if (combined.includes("[!code ")) {
+    fail("code-annotations did not strip the inline marker comments");
   }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(

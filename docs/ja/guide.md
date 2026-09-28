@@ -137,6 +137,8 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 
 デプロイ設定は `apps/web/wrangler.jsonc` にあり、`assets.directory` が `./dist` を指します。最初のデプロイの前に、worker 名、compatibility flags、バインディングを確認してください。
 
+リポジトリの外のサイトでは、[Cloudflare デプロイテンプレート](../../templates/cloudflare/README_ja.md) を出発点にします。汎用の `wrangler.jsonc` と、check・build を行い生成された `dist/` を Workers Static Assets としてデプロイする GitHub Actions ワークフローを提供します。Riebeckite はコンテンツのルートと Plugin のエンドポイントを事前生成するため、runtime の `main` を持たない静的アセットのみの構成が参照用アプリケーションと同じ形になります。`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリのシークレットに設定し、テンプレートの Worker 名を変更してください。最初のデプロイの前に `pnpm exec wrangler deploy --dry-run` でローカル検証できます。
+
 ## 8. サイトを拡張する
 
 - **Plugin を追加する**: パッケージを参照し、`plugins` 配列に登録します。設定できる項目は `packages/plugins/*/README_ja.md` を参照してください。Plugin は Markdown・HTML の変換、アセット、ブラウザ側の動作、エンドポイント、SEO、診断を追加できます。

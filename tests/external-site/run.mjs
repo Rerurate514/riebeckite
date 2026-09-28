@@ -64,11 +64,16 @@ const PACKAGES = [
     name: "@riebeckite/plugin-recent-posts",
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
+  {
+    directory: "packages/plugins/plantuml",
+    name: "@riebeckite/plugin-plantuml",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const PLANTUML_MARKER = "RIEBECKITE_EXTERNAL_PLANTUML_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -369,6 +374,15 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes(PLANTUML_MARKER)) {
+    fail(`generated HTML is missing the PlantUML marker (${PLANTUML_MARKER})`);
+  }
+  if (!combined.includes("data-plantuml")) {
+    fail("generated HTML is missing the PlantUML figure output");
+  }
+  if (!combined.includes("/svg/")) {
+    fail("generated HTML is missing the PlantUML image URL");
   }
 
   for (const file of htmlFiles) {

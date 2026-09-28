@@ -12,6 +12,7 @@ import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { plantuml } from "@riebeckite/plugin-plantuml";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -65,6 +66,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    plantuml(),
     excalidraw(),
     media(),
     attachment(),

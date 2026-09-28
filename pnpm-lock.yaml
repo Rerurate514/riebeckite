@@ -101,6 +101,9 @@ importers:
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugins/mermaid
+      '@riebeckite/plugin-plantuml':
+        specifier: workspace:*
+        version: link:../../packages/plugins/plantuml
       '@riebeckite/plugin-query':
         specifier: workspace:*
         version: link:../../packages/plugins/query
@@ -418,6 +421,12 @@ importers:
       yaml:
         specifier: ^2.9.0
         version: 2.9.0
+
+  packages/plugins/plantuml:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/query:
     dependencies:

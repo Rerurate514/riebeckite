@@ -1,0 +1,77 @@
+.rb-plantuml {
+  --rb-plantuml-ink: var(--rb-color-ink, #000000);
+  --rb-plantuml-paper: var(--rb-color-paper, #ffffff);
+  --rb-plantuml-muted: var(--rb-color-muted, #69645c);
+  --rb-plantuml-accent: var(--rb-color-accent, #686868);
+  --rb-plantuml-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-plantuml-ink) 18%, transparent)
+  );
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 2rem 0;
+  padding: 1rem;
+  border: 1px solid var(--rb-plantuml-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-plantuml-paper) 96%,
+    var(--rb-plantuml-ink)
+  );
+  color: var(--rb-plantuml-ink);
+  text-align: center;
+}
+
+.rb-plantuml__frame {
+  overflow: auto;
+  max-width: 100%;
+}
+
+.rb-plantuml__image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.rb-plantuml__caption {
+  color: var(--rb-plantuml-muted);
+  font-size: 0.875rem;
+}
+
+.rb-plantuml__fallback {
+  align-self: stretch;
+  border-top: 1px solid var(--rb-plantuml-rule);
+  color: var(--rb-plantuml-muted);
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.rb-plantuml__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+.rb-plantuml__fallback pre {
+  overflow: auto;
+  margin: 0;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rb-plantuml-rule);
+  color: var(--rb-plantuml-ink);
+  background: color-mix(in srgb, var(--rb-plantuml-ink) 6%, transparent);
+  text-align: left;
+}
+
+.rb-plantuml__frame:empty::before {
+  content: "Diagram could not be rendered.";
+  color: var(--rb-plantuml-muted);
+  font-size: 0.875rem;
+}
+
+html[data-theme="dark"] .rb-plantuml,
+html.dark .rb-plantuml {
+  --rb-plantuml-ink: var(--rb-color-paper, #ffffff);
+  --rb-plantuml-paper: var(--rb-color-ink, #000000);
+}

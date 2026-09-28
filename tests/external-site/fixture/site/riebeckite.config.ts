@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { plantuml } from "@riebeckite/plugin-plantuml";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -21,6 +22,7 @@ export default defineConfig({
   theme: defaultTheme(),
   plugins: [
     obsidianMarkdown(),
+    plantuml(),
     autoCardLinkPlugin(),
     tocPlugin(),
     backlinksPlugin(),

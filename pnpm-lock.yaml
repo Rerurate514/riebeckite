@@ -168,6 +168,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../integrations/honox

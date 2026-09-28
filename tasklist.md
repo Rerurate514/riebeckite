@@ -11,7 +11,7 @@
 | 9 | R12 | 読了時間をCoreユーティリティ化 | ✅ 完了 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
 | 10 | R8 | 空CSS削除とlint warning解消 | ✅ 完了 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
 | 11 | R9 | Package metadata規約の機械検証 | ✅ 完了 | Medium | `check:packages`で29公開packageのメタデータを検証。重複依存はpnpm catalogへ集約（Phase 2） |
-| **12** | **A3/A4** | **Root / Config resolutionを一本化** | 未着手 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
+| **12** | **A3/A4** | **Root / Config resolutionを一本化** | ✅ 完了 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
 | **13** | **A4.5** | **External HonoX/SSG境界を安定化** | 未着手 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
 | **14** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
 | **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
@@ -171,7 +171,7 @@
 - **検証**: `pnpm run check:packages` → `pnpm run build:packages` → `pnpm test:e2e:external`。
 - **成果**: `scripts/package_metadata.mjs`に29公開packageの共通メタデータ・package種別ごとの`files`/build script規約・catalog対象依存を集約。`scripts/check_packages.mjs`がrepository/license/publishConfig/homepage/bugs、`files`、build/prepack、exports entryの出力規約、catalog参照を検証する。`pnpm run check:packages`で実行できる。
 
-### #12 A3/A4: Root / Config resolutionを一本化（A系 / Medium–Large / 依存なし）
+### #12 A3/A4: Root / Config resolutionを一本化（✅ 完了 / A系 / Medium–Large / 依存なし）
 - **概要**: `projectRoot/appRoot/configRoot/contentRoot` の意味を確定し、CLI と HonoX で同一 resolver を共有。通常 consumer から `workspaceRoot` 前提を除去。
 - **現状**:
   - `packages/cli/src/application_root.ts`: `RiebeckiteProject = {invocationCwd, projectRoot, configRoot, configPath}`（`projectRoot === configRoot`）。`resolveRiebeckiteProject` が親ディレクトリ探索で config を発見。
@@ -187,6 +187,7 @@
 - **完了条件**: `workspaceRoot` を指定しない外部 consumer で `check/doctor/inspect/build` が通り、cwd 依存が消える。
 - **検証**: `test:e2e:external`（fixture は standalone npm）、`pnpm build`、docs/en configuration・architecture の更新。
 - **注意**: Core に HonoX/Vite を持ち込まない（resolver は Core か Integration の適切な層に置く）。
+- **成果**: `@riebeckite/honox` の `resolveHonoxApplication` が `configRoot`、`appRoot`、絶対 `contentRoot`、resolve 済み config を一度に決定する。CLI の `RiebeckiteProject` はこの結果を保持し、全 command が同じ root を使う。Vite plugin の既定値は `configRoot = appRoot` で、通常の npm consumer は `workspaceRoot` 不要。monorepo の source package alias は明示指定または `pnpm-workspace.yaml` を持つ config root のみで利用する。
 
 ### #13 A4.5: External HonoX/SSG境界を安定化（A系 / Medium / 依存: A3/A4）
 - **概要**: `@hono/vite-ssg` patch が npm consumer に伝播しない問題と cwd 依存を解消。

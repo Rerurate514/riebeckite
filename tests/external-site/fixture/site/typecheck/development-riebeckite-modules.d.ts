@@ -58,6 +58,11 @@ declare module "@riebeckite/plugin-obsidian-markdown" {
   export const obsidianMarkdown: any;
 }
 
+declare module "@riebeckite/plugin-graphviz" {
+  export const graphviz: any;
+  export const graphvizPlugin: any;
+}
+
 declare module "@riebeckite/plugin-query" {
   export const queryPlugin: any;
 }

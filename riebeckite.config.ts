@@ -7,6 +7,7 @@ import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
+import { graphviz } from "@riebeckite/plugin-graphviz";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
@@ -64,6 +65,10 @@ export default defineConfig({
         light: "default",
         dark: "dark",
       },
+    }),
+    graphviz({
+      render: "build",
+      engine: "dot",
     }),
     excalidraw(),
     media(),

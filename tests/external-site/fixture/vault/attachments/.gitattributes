@@ -1,0 +1,4 @@
+# Fixture attachments are binary test data. Marking them binary keeps Git from
+# applying end-of-line conversion, so the reported file sizes stay stable
+# across platforms (the E2E asserts a byte-exact size).
+*.pdf binary

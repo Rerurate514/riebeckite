@@ -21,6 +21,7 @@
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-garden-explorer": "workspace:*",
+    "@riebeckite/plugin-graphviz": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
     "@riebeckite/plugin-local-graph": "workspace:*",
     "@riebeckite/plugin-media": "workspace:*",

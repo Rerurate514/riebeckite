@@ -86,6 +86,9 @@ importers:
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
+      '@riebeckite/plugin-graphviz':
+        specifier: workspace:*
+        version: link:../../packages/plugins/graphviz
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugins/lightbox
@@ -352,6 +355,15 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/graphviz:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@viz-js/viz':
+        specifier: ^3.31.0
+        version: 3.31.0
 
   packages/plugins/lightbox:
     dependencies:
@@ -1961,6 +1973,9 @@ packages:
 
   '@upsetjs/venn.js@2.0.0':
     resolution: {integrity: sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw==}
+
+  '@viz-js/viz@3.31.0':
+    resolution: {integrity: sha512-r7zlQdRvcwvIpjHGgs+KNWHeE/P5/Dq7k8ZAKaMCbZqomxCBJV78gVuQYaHzFVca+kB0mX0fMW9UFevCOBG50A==}
 
   '@vue/compiler-core@3.5.38':
     resolution: {integrity: sha512-s99aGxWYig9ErHbct27KXEGhrBYlRI6c4MwAgXErOAbX9xiW37/uMa+XUDO69zLz83dng8UUZ70CTOJrLrYrEQ==}
@@ -4779,6 +4794,8 @@ snapshots:
     optionalDependencies:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
+
+  '@viz-js/viz@3.31.0': {}
 
   '@vue/compiler-core@3.5.38':
     dependencies:

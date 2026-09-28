@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { graphviz } from "@riebeckite/plugin-graphviz";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { queryPlugin } from "@riebeckite/plugin-query";
@@ -25,6 +26,7 @@ export default defineConfig({
     obsidianMarkdown(),
     media(),
     attachment(),
+    graphviz({ render: "build", engine: "dot" }),
     autoCardLinkPlugin(),
     tocPlugin(),
     backlinksPlugin(),

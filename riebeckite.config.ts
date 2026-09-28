@@ -11,7 +11,9 @@ import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { d2 } from "@riebeckite/plugin-d2";
+import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
+import { deployPlugin } from "@riebeckite/plugin-deploy";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
@@ -32,15 +34,18 @@ import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
 import { qrCode } from "@riebeckite/plugin-qr-code";
+import { qualityPlugin } from "@riebeckite/plugin-quality";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
+import { renamePlugin } from "@riebeckite/plugin-rename";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
+import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { uxPlugin } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
@@ -156,6 +161,11 @@ export default defineConfig({
     hoverPreviewPlugin(),
     shortcodes(),
     series(),
+    dailyNotesPlugin(),
+    renamePlugin(),
+    textFragmentPlugin(),
+    qualityPlugin(),
+    deployPlugin({ provider: "cloudflare-pages" }),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

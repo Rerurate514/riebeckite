@@ -9,6 +9,7 @@ import type {
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
 import type { PostContent } from "../types/post_content.js";
+import { isPublishable } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import { ContentBuildCoordinator, type ContentBuildPreparation } from "./content_build_coordinator.js";
 import { CONTENT_BUILD_STATE_EXCLUDE } from "./content_build_state.js";
@@ -188,7 +189,13 @@ export class ContentManager {
   async getManifest(options?: ContentBuildOptions): Promise<ContentManifest> {
     if (this.manifest) return this.manifest;
 
-    if (options) this.enableBuildTime();
+    // Plugin caches (and pipeline caches) must be usable whenever a manifest is
+    // built, not only for explicit incremental builds: the SSG pass builds its
+    // own ContentManager and relies on persisted plugin state (e.g. rename
+    // detection) without requesting an incremental build. The incremental
+    // coordinator still runs only when build options are supplied.
+    this.enableBuildTime();
+
     const preparation = options
       ? await this.buildCoordinator.getPreparation(options.incremental)
       : undefined;
@@ -233,6 +240,7 @@ export class ContentManager {
         this.locationResolver.populateRedirects(manifest, locations);
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
 
+        this.applyPublicView(manifest);
         manifest.assets = this.pluginRuntime.collectAssets();
         manifest.diagnostics = [
           ...this.pluginRuntime.getDiagnostics(),
@@ -240,6 +248,7 @@ export class ContentManager {
         ];
 
         await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
+        manifest.generatedOutputs = this.pluginRuntime.collectGeneratedOutputs();
         if (preparation)
           await this.buildCoordinator.commit(preparation, manifest);
         this.manifest = manifest;
@@ -289,6 +298,24 @@ export class ContentManager {
     ReadonlyMap<string, ContentPublicLocation>
   > {
     return await this.locationResolver.getLocations();
+  }
+
+  private applyPublicView(manifest: ContentManifest): void {
+    const strategy =
+      this.pipelineOptions.config?.content.filters.publishStrategy ??
+      "explicit";
+    manifest.publicEntries = manifest.entries.filter((entry) =>
+      isPublishable(strategy, entry.frontmatter),
+    );
+
+    const publicSlugs = new Set(
+      manifest.publicEntries.map((entry) => entry.slug),
+    );
+    manifest.publicRedirects = new Map(
+      [...manifest.redirects].filter(([, redirect]) =>
+        publicSlugs.has(redirect.slug),
+      ),
+    );
   }
 
   private enableBuildTime(): void {

@@ -3,6 +3,7 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
+  isPublishable,
 } from "@riebeckite/core";
 import { resolveHoverPreviewOptions } from "./src/options.js";
 import { createHoverPreviewRuntime } from "./src/runtime.js";
@@ -46,7 +47,14 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
       runtime.track(context.slug, context.content);
     },
     onManifestCreated: (context) => {
-      runtime.inject(context.manifest, context.config);
+      // Only published entries may appear in the hover preview payload: the
+      // payload is embedded into page HTML, so indexing drafts or private notes
+      // would leak their titles and excerpts into the public build output.
+      const strategy =
+        context.config?.content.filters.publishStrategy ?? "explicit";
+      runtime.inject(context.manifest, (entry) =>
+        isPublishable(strategy, entry.frontmatter),
+      );
     },
     assets: [createStyleAsset("hover-preview")],
     clientEntries: [createClientEntry("hover-preview", "initHoverPreview")],

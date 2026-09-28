@@ -8,6 +8,7 @@ import type {
   PluginContentLocationResolver,
   PluginContentRenderer,
   PluginContext,
+  PluginGeneratedHtmlInspector,
   PluginGraphContext,
   PluginLifecycleContext,
   PluginManifestContext,
@@ -67,6 +68,12 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   ): void;
   extendHtmlPipeline?(pipeline: HtmlPipeline): void;
   addDiagnostics?(context: PluginContext): Diagnostic[] | Promise<Diagnostic[]>;
+  /**
+   * Inspects final HTML pages after the SSG stage. Integrations that finish HTML
+   * generation call this for every emitted `.html` file. Prefer `addDiagnostics`
+   * for article-body rules; use this when the rule needs the whole document.
+   */
+  inspectGeneratedHtml?: PluginGeneratedHtmlInspector;
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
   endpoints?: PluginEndpoint[];

@@ -1,0 +1,53 @@
+.rr-text-fragment {
+  position: fixed;
+  z-index: 900;
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--rb-color-border-strong, #9a9a9a);
+  background: var(--rb-color-surface, #ffffff);
+  color: var(--rb-color-ink, #1a1a1a);
+}
+
+.rr-text-fragment[hidden] {
+  display: none;
+}
+
+.rr-text-fragment__actions {
+  display: flex;
+  gap: 4px;
+}
+
+.rr-text-fragment__button {
+  border: 1px solid var(--rb-color-border, #d0d0d0);
+  background: transparent;
+  color: inherit;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rr-text-fragment__button:hover {
+  border-color: var(--rb-color-accent, #686868);
+  color: var(--rb-color-accent, #686868);
+}
+
+.rr-text-fragment__button:focus-visible {
+  outline: 2px solid var(--rb-color-accent, #686868);
+  outline-offset: 1px;
+}
+
+.rr-text-fragment__status {
+  margin: 0;
+  max-width: 16rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--rb-color-muted, #5a5a5a);
+}
+
+.rr-text-fragment__status:empty {
+  display: none;
+}

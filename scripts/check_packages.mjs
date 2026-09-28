@@ -14,8 +14,21 @@ function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8"));
 }
 
+function canonicalJson(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalJson).join(",")}]`;
+  }
+  if (value && typeof value === "object") {
+    const entries = Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`);
+    return `{${entries.join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
 function sameJson(left, right) {
-  return JSON.stringify(left) === JSON.stringify(right);
+  return canonicalJson(left) === canonicalJson(right);
 }
 
 function reportDifference(errors, packageName, property, expected, actual) {

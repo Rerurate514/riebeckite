@@ -14,6 +14,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/honox": "workspace:*",
+    "@riebeckite/plugin-analytics": "workspace:*",
     "@riebeckite/plugin-attachment": "workspace:*",
     "@riebeckite/plugin-autocardlink": "workspace:*",
     "@riebeckite/plugin-backlinks": "workspace:*",

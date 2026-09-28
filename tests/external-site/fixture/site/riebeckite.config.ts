@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { analytics } from "@riebeckite/plugin-analytics";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
@@ -20,6 +21,7 @@ export default defineConfig({
   },
   theme: defaultTheme(),
   plugins: [
+    analytics({ provider: "plausible", domain: "example.com" }),
     obsidianMarkdown(),
     autoCardLinkPlugin(),
     tocPlugin(),

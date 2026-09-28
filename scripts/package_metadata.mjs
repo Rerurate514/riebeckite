@@ -2,6 +2,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
   "packages/integrations/honox",
+  "packages/plugins/analytics",
   "packages/plugins/attachment",
   "packages/plugins/autocardlink",
   "packages/plugins/backlinks",
@@ -85,9 +86,13 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory.startsWith("packages/plugins/")) {
-    const hasStyle = !["diagnostics", "obsidian-markdown", "permalink", "seo"].some(
-      (plugin) => directory.endsWith(`/${plugin}`),
-    );
+    const hasStyle = ![
+      "analytics",
+      "diagnostics",
+      "obsidian-markdown",
+      "permalink",
+      "seo",
+    ].some((plugin) => directory.endsWith(`/${plugin}`));
     return {
       files: [
         "LICENSE",

@@ -1,6 +1,7 @@
 {
   "name": "@riebeckite/core",
   "version": "0.0.1",
+  "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,6 +15,7 @@
     "./package.json": "./package.json"
   },
   "files": [
+    "LICENSE",
     "dist"
   ],
   "publishConfig": {

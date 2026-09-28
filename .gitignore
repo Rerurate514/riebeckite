@@ -4,3 +4,4 @@ node_modules/
 apps/web/content/
 apps/web/app/.riebeckite/
 packages/**/dist/
+packages/**/LICENSE

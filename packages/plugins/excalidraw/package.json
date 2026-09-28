@@ -1,6 +1,7 @@
 {
   "name": "@riebeckite/plugin-excalidraw",
   "version": "0.0.1",
+  "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,15 +22,18 @@
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.0",
-    "@types/mdast": "^4.0.4",
     "@riebeckite/core": "workspace:*",
     "lz-string": "^1.5.0",
     "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4"
   },
   "publishConfig": {
     "access": "public"
   },
   "files": [
+    "LICENSE",
     "README_en.md",
     "README_ja.md",
     "dist",

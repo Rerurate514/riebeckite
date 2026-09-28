@@ -1,17 +1,19 @@
 {
   "name": "@riebeckite/cli",
   "version": "0.0.1",
+  "license": "Apache-2.0",
   "type": "module",
   "bin": {
     "riebeckite": "./bin/riebeckite.mjs"
   },
   "files": [
+    "LICENSE",
     "bin",
     "dist"
   ],
   "scripts": {
-    "build": "esbuild index.ts --bundle --platform=node --format=cjs --minify --external:esbuild --external:vite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --outfile=dist/cli.cjs",
-    "prepack": "pnpm run build"
+    "build": "esbuild index.ts --bundle --platform=node --format=esm --minify --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --outfile=dist/cli.js",
+    "prepack": "node ../../scripts/copy_license.mjs && pnpm run build"
   },
   "dependencies": {
     "@riebeckite/honox": "workspace:*",

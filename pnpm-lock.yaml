@@ -223,13 +223,12 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
-      unist-util-visit:
-        specifier: ^5.1.0
-        version: 5.1.0
-    devDependencies:
       '@types/mdast':
         specifier: ^4.0.4
         version: 4.0.4
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
 
   packages/plugins/backlinks:
     dependencies:
@@ -298,15 +297,16 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
-      '@types/mdast':
-        specifier: ^4.0.4
-        version: 4.0.4
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.1.0
+    devDependencies:
+      '@types/mdast':
+        specifier: ^4.0.4
+        version: 4.0.4
 
   packages/plugins/garden-explorer:
     dependencies:
@@ -358,6 +358,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@types/mdast':
+        specifier: ^4.0.4
+        version: 4.0.4
       github-slugger:
         specifier: ^2.0.0
         version: 2.0.0
@@ -367,10 +370,6 @@ importers:
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
-    devDependencies:
-      '@types/mdast':
-        specifier: ^4.0.4
-        version: 4.0.4
 
   packages/plugins/permalink:
     dependencies:

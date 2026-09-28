@@ -1,6 +1,7 @@
 {
   "name": "@riebeckite/theme-sakura",
   "version": "0.0.1",
+  "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -21,6 +22,7 @@
     "access": "public"
   },
   "files": [
+    "LICENSE",
     "README_en.md",
     "README_ja.md",
     "dist",

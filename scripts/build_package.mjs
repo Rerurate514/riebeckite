@@ -11,6 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 import * as esbuild from "esbuild";
 import ts from "typescript";
+import "./copy_license.mjs";
 
 const packageDirectory = process.cwd();
 const packageJson = JSON.parse(

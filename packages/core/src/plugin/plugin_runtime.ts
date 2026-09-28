@@ -7,9 +7,16 @@ import type { Diagnostic } from "../types/diagnostic";
 import { resolvePlugins } from "../types/plugin";
 import type { PluginContext } from "../types/plugin_context";
 import type { PostContent } from "../types/post_content";
+import {
+  runBuildEnd,
+  runBuildStart,
+  runDispose,
+  runSetup,
+} from "./plugin_lifecycle";
 
 export class PluginRuntime {
   private buildStarted = false;
+  private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
@@ -23,6 +30,8 @@ export class PluginRuntime {
 
     this.buildStarted = true;
     const context = this.createContext(contentIndex);
+    await runSetup(this.plugins(), context);
+    await runBuildStart(this.plugins(), context);
     await this.runHook((plugin) => plugin.onBuildStart, context);
     await this.runHook((plugin) => plugin.onConfigResolved, context);
   }
@@ -78,10 +87,21 @@ export class PluginRuntime {
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ) {
+    await runBuildEnd(this.plugins(), {
+      ...this.createContext(contentIndex),
+      manifest,
+    });
     await this.runHook((plugin) => plugin.onBuildEnd, {
       ...this.createContext(contentIndex),
       manifest,
     });
+  }
+
+  async dispose(contentIndex: Map<string, string>) {
+    if (this.disposed || !this.buildStarted) return;
+
+    this.disposed = true;
+    await runDispose(this.plugins(), this.createContext(contentIndex));
   }
 
   collectAssets() {

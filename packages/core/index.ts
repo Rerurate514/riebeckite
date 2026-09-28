@@ -46,6 +46,7 @@ export type {
   PluginContentRenderer,
   PluginContext,
   PluginGraphContext,
+  PluginLifecycleContext,
   PluginManifestContext,
   PluginPostContext,
   PluginRenderContext,

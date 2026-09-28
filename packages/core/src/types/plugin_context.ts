@@ -9,6 +9,14 @@ export type PluginContext = {
   diagnostics: Diagnostic[];
 };
 
+/**
+ * Context shared by plugin lifecycle hooks.
+ *
+ * This alias intentionally shares the base plugin context so lifecycle-wide
+ * services can be added without duplicating the context shape.
+ */
+export type PluginLifecycleContext = PluginContext;
+
 export type PluginContentContext = PluginContext & {
   slug: string;
   markdown: string;

@@ -5,6 +5,7 @@ import type {
   PluginContentRenderer,
   PluginContext,
   PluginGraphContext,
+  PluginLifecycleContext,
   PluginManifestContext,
   PluginPostContext,
 } from "./plugin_context";
@@ -24,6 +25,10 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   enabled?: boolean;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];
+  setup?(context: PluginLifecycleContext): void | Promise<void>;
+  buildStart?(context: PluginLifecycleContext): void | Promise<void>;
+  buildEnd?(context: PluginManifestContext): void | Promise<void>;
+  dispose?(context: PluginLifecycleContext): void | Promise<void>;
   onConfigResolved?(context: PluginContext): void | Promise<void>;
   onContentLoaded?(context: PluginContentContext): void | Promise<void>;
   onPostParsed?(context: PluginPostContext): void | Promise<void>;

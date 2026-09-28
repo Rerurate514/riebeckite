@@ -141,6 +141,11 @@ export class ContentManager {
     const manifest = await this.getManifest();
     return manifest.diagnostics;
   }
+
+  async dispose(): Promise<void> {
+    if (!this.contentIndex) return;
+    await this.pluginRuntime.dispose(this.contentIndex);
+  }
 }
 
 declare module "../pipeline" {

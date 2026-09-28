@@ -24,14 +24,14 @@
   },
   "files": [
     "LICENSE",
-    "README_en.md",
+    "README.md",
     "README_ja.md",
     "dist"
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
-    "prepack": "pnpm run build",
-    "test": "node --import tsx --test \"test/*.test.ts\""
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
   },
   "repository": {
     "type": "git",
@@ -41,5 +41,16 @@
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
-  }
+  },
+  "description": "Rename and move redirects for published Riebeckite notes.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "redirects",
+    "rename"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
 }

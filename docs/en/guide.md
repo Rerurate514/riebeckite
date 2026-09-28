@@ -137,6 +137,8 @@ pnpm --filter @riebeckite/web deploy    # build and deploy to Cloudflare Workers
 
 Deployment settings live in `apps/web/wrangler.jsonc`; `assets.directory` points at `./dist`. Adjust the worker name, compatibility flags, and bindings there before your first deploy.
 
+For a site outside this repository, start from the [Cloudflare deployment template](../../templates/cloudflare/README_en.md). It provides a generic `wrangler.jsonc` and a GitHub Actions workflow that checks, builds, and deploys the generated `dist/` as Workers Static Assets. Because Riebeckite pre-renders content routes and plugin endpoints, the asset-only Worker mirrors the reference configuration; no runtime `main` entry is required. Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then adjust the Worker name in the template. Validate locally with `pnpm exec wrangler deploy --dry-run` before the first deploy.
+
 ## 8. Extend the site
 
 - **Add a plugin.** Install or reference the package, then register it in the `plugins` array. Read the package README under `packages/plugins/*/README_en.md` for its options. Plugins can add Markdown transforms, HTML transforms, assets, browser behavior, endpoints, SEO, and diagnostics.

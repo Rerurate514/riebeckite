@@ -230,6 +230,12 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/create-riebeckite:
+    dependencies:
+      '@riebeckite/honox':
+        specifier: workspace:*
+        version: link:../integrations/honox
+
   packages/integrations/honox:
     dependencies:
       '@riebeckite/core':

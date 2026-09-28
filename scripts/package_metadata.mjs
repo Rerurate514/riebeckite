@@ -1,6 +1,7 @@
 export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
+  "packages/create-riebeckite",
   "packages/integrations/honox",
   "packages/plugins/attachment",
   "packages/plugins/autocardlink",
@@ -67,6 +68,16 @@ export function expectedPackageMetadata(directory) {
   if (directory === "packages/core") {
     return {
       files: ["LICENSE", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/create-riebeckite") {
+    return {
+      files: ["LICENSE", "bin", "dist"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
         prepack: "pnpm run build",

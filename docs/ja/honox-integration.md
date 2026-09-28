@@ -2,7 +2,9 @@
 
 `@riebeckite/honox` は portable な Core と HonoX/Vite を接続します。application root/config の解決、Vite dev/build、SSG extension mapping、plugin/theme style entry の生成、HonoX application build workflow を所有します。
 
-public API は `riebeckite`、`loadRiebeckiteConfig`、`resolveHonoxApplication`、`buildHonoxApplication`、`resolveHonoxApplicationRoot`、`startHonoxDevServer`、`riebeckiteSsg`、`riebeckiteSsgExtensionMap` です。
+public API は `riebeckite`、`loadRiebeckiteConfig`、`resolveHonoxApplication`、`buildHonoxApplication`、`resolveHonoxApplicationRoot`、`startHonoxDevServer`、`riebeckiteSsg`、`riebeckiteSsgExtensionMap`、`scaffoldRiebeckiteSite` です。
+
+`scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, overwrite? })` は、最小で自己完結の Site（config、Vite/HonoX の application shell、route、stylesheet、初期 content）を書き出し、生成したファイル一覧を返します。生成対象のファイルが既にあり `overwrite` が未指定の場合は `ScaffoldSiteError` を投げます。`riebeckite init` と `create-riebeckite` はこの関数の薄い command wrapper です。
 
 Vite plugin は任意の `configRoot`、`appRoot`、`configFile`、monorepo 開発専用の `workspaceRoot` を受け取ります。`appRoot` の既定値は Vite root、`configRoot` の既定値は `appRoot` です。config は `configRoot` 基準で import し、`content.directory` は `appRoot` 基準で解決します。`resolveHonoxApplication` はこれらの root と resolve 済み config をまとめて返すため、CLI と Vite は同じ model を使います。`workspaceRoot` は monorepo で source package alias を使うためだけの指定です。npm で install した consumer は指定不要で、自身の `node_modules` から解決します。plugin は `app/.riebeckite/` に plugin/theme import entry を生成し、client module を設定します。このディレクトリは integration output であり、application source として直接編集しません。
 

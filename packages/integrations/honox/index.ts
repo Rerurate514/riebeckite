@@ -5,6 +5,14 @@ export {
 export { riebeckiteSsgExtensionMap } from "./src/ssg.js";
 export { riebeckiteSsg } from "./src/ssg_plugin.js";
 export type { RiebeckiteSsgOptions } from "./src/ssg_plugin.js";
+export type {
+  ScaffoldSiteOptions,
+  ScaffoldSiteResult,
+} from "./src/scaffold/index.js";
+export {
+  ScaffoldSiteError,
+  scaffoldRiebeckiteSite,
+} from "./src/scaffold/index.js";
 export { riebeckite } from "./src/vite_plugin.js";
 export {
   buildHonoxApplication,

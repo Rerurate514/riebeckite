@@ -3,6 +3,7 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
@@ -40,6 +41,7 @@ export default defineConfig({
     relatedPosts(),
     responsiveImage(),
     searchPlugin(),
+    hoverPreviewPlugin(),
     localFixturePlugin(),
   ],
 });

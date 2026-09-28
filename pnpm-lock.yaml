@@ -89,6 +89,9 @@ importers:
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
+      '@riebeckite/plugin-hover-preview':
+        specifier: workspace:*
+        version: link:../../packages/plugins/hover-preview
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugins/lightbox
@@ -376,6 +379,12 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/hover-preview:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/lightbox:
     dependencies:

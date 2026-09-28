@@ -59,6 +59,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
   {
+    directory: "packages/plugins/hover-preview",
+    name: "@riebeckite/plugin-hover-preview",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -73,6 +77,7 @@ const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
 const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
+const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -123,6 +128,13 @@ function walkFiles(root, predicate = () => true) {
     }
   }
   return found;
+}
+
+function extractHoverPreviewPayload(html) {
+  const matches = html.matchAll(
+    /<script[^>]*data-rb-hover-preview[^>]*>([\s\S]*?)<\/script>/g,
+  );
+  return [...matches].map((match) => match[1] ?? "").join("\n");
 }
 
 function packPackages(tarballDir) {
@@ -527,6 +539,26 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes('data-fixture-theme="local"')) {
     fail("site-local theme attribute was not applied to the document");
+  }
+  if (!combined.includes("data-rb-hover-preview")) {
+    fail("generated HTML is missing the hover preview payload script");
+  }
+  const hoverPreviewPayload = extractHoverPreviewPayload(combined);
+  if (!hoverPreviewPayload.includes(HOVER_PREVIEW_TITLE_MARKER)) {
+    fail("hover preview payload is missing the fixture note title");
+  }
+
+  const scriptFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
+  const scripts = scriptFiles
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
+  if (!scripts.includes("rb-hover-preview")) {
+    fail("client bundle is missing the hover preview runtime (rb-hover-preview)");
+  }
+  if (!scripts.includes("initHoverPreview")) {
+    fail(
+      "client bundle is missing the hover preview initializer (initHoverPreview)",
+    );
   }
 
   if (combined.includes(PRIVATE_MARKER)) {

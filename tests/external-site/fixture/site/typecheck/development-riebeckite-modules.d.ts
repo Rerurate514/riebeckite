@@ -68,6 +68,15 @@ declare module "@riebeckite/plugin-backlinks/components" {
   export default Backlinks;
 }
 
+declare module "@riebeckite/plugin-hover-preview" {
+  export const hoverPreview: any;
+  export const hoverPreviewPlugin: any;
+}
+
+declare module "@riebeckite/plugin-hover-preview/client" {
+  export const initHoverPreview: any;
+}
+
 declare module "@riebeckite/plugin-media" {
   export const media: any;
 }

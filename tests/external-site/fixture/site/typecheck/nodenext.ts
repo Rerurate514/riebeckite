@@ -48,6 +48,11 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import {
+  hoverPreviewPlugin,
+  resolveHoverPreviewOptions,
+} from "@riebeckite/plugin-hover-preview";
+import { initHoverPreview } from "@riebeckite/plugin-hover-preview/client";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
@@ -91,6 +96,9 @@ export const resolvedEntries = {
   initAutoCardLink,
   backlinksPlugin,
   Backlinks,
+  hoverPreviewPlugin,
+  resolveHoverPreviewOptions,
+  initHoverPreview,
   obsidianMarkdown,
   properties,
   recentPostsPlugin,
@@ -131,6 +139,7 @@ export const config: RiebeckiteConfig = defineConfig({
     autoCardLinkPlugin(),
     tocPlugin(),
     searchPlugin(),
+    hoverPreviewPlugin({ delay: 0 }),
   ],
 });
 

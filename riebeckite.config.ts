@@ -8,6 +8,7 @@ import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
+import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
@@ -98,6 +99,7 @@ export default defineConfig({
     responsiveImage(),
     localGraphPlugin(),
     gardenExplorerPlugin(),
+    hoverPreviewPlugin(),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

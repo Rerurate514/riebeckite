@@ -1,4 +1,14 @@
-import { defineConfig, type PostContent, type RiebeckiteConfig } from "@riebeckite/core";
+import {
+  buildContentCollections,
+  defineConfig,
+  groupContentEntries,
+  queryContentEntries,
+  type ContentCollection,
+  type ContentCollectionDefinition,
+  type ContentQueryGroup,
+  type PostContent,
+  type RiebeckiteConfig,
+} from "@riebeckite/core";
 import {
   buildHonoxApplication,
   loadRiebeckiteConfig,
@@ -8,7 +18,10 @@ import {
   riebeckiteSsg,
   riebeckiteSsgExtensionMap,
 } from "@riebeckite/honox";
-import { mountRiebeckiteEndpoints, resolveContentRoute } from "@riebeckite/honox/server";
+import {
+  mountRiebeckiteEndpoints,
+  resolveContentRoute,
+} from "@riebeckite/honox/server";
 import {
   Article as ArticlePrimitive,
   ArticleContent,
@@ -41,6 +54,9 @@ import TableOfContents from "@riebeckite/plugin-toc/components";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export const resolvedEntries = {
+  buildContentCollections,
+  groupContentEntries,
+  queryContentEntries,
   buildHonoxApplication,
   loadRiebeckiteConfig,
   resolveHonoxApplicationRoot,
@@ -82,10 +98,21 @@ export type UiPrimitiveProps =
   | ArticleMetaProps
   | SidebarProps;
 
+export type CollectionInputs = {
+  definition: ContentCollectionDefinition;
+  collection: ContentCollection;
+  group: ContentQueryGroup;
+};
+
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },
   theme: defaultTheme(),
-  plugins: [obsidianMarkdown(), autoCardLinkPlugin(), tocPlugin(), searchPlugin()],
+  plugins: [
+    obsidianMarkdown(),
+    autoCardLinkPlugin(),
+    tocPlugin(),
+    searchPlugin(),
+  ],
 });
 
 export function html(post: PostContent): string {

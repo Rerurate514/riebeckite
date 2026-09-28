@@ -45,7 +45,12 @@ export type ContentQueryDateGranularity = "year" | "month" | "day";
 export type ContentQueryGroupBy =
   | { by: "tags" }
   | { by: "folder"; depth?: number }
-  | { by: "date"; field?: string; granularity?: ContentQueryDateGranularity }
+  | {
+      by: "date";
+      field?: string;
+      fields?: readonly string[];
+      granularity?: ContentQueryDateGranularity;
+    }
   | { by: "frontmatter"; field: string };
 
 export type ContentQueryGroup = {
@@ -354,7 +359,8 @@ function resolveGroupKeys(
       return resolveFolderKeys(entry.slug, groupBy.depth);
     case "date":
       return resolveDateKeys(
-        entry.frontmatter[groupBy.field ?? "date"],
+        entry.frontmatter,
+        groupBy.fields ?? [groupBy.field ?? "date"],
         groupBy.granularity ?? "month",
       );
     case "frontmatter":
@@ -381,14 +387,20 @@ const DATE_GRANULARITY_LENGTH: Record<ContentQueryDateGranularity, number> = {
 };
 
 function resolveDateKeys(
-  value: unknown,
+  frontmatter: Readonly<Record<string, unknown>>,
+  fields: readonly string[],
   granularity: ContentQueryDateGranularity,
 ): string[] {
-  const time = toTime(value);
-  if (time === null) return [];
-  return [
-    new Date(time).toISOString().slice(0, DATE_GRANULARITY_LENGTH[granularity]),
-  ];
+  for (const field of fields) {
+    const time = toTime(frontmatter[field]);
+    if (time === null) continue;
+    return [
+      new Date(time)
+        .toISOString()
+        .slice(0, DATE_GRANULARITY_LENGTH[granularity]),
+    ];
+  }
+  return [];
 }
 
 function resolveFrontmatterKeys(value: unknown): string[] {

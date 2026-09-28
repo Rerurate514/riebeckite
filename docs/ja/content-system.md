@@ -43,4 +43,10 @@ Core は解決済み manifest entry に対する portable な query 層を公開
 
 どちらも `ContentManifestEntry` を対象とするため、link には解決済みの `permalink` を使います。slug から content の公開 URL を組み立てることはありません。Application と Plugin はこれらを組み合わせて一覧 page や taxonomy 表示を作り、routing は Core の責務にしません。
 
+## Content collection
+
+`buildContentCollections(entries, definitions)` は同じ query selection を一覧 page の集合に変換します。definition は `kind`、`groupBy`（tags、folder、date、frontmatter field）、site-local な `basePath`、任意の `filter`/`sort`/`order`、任意の `resolveTitle`/`resolvePath` builder を宣言します。生成される `ContentCollection` は group の `value`、解決済みの `path`、`title`、query 順の `entries` を持ちます。
+
+これが taxonomy、folder、archive の一覧を支える共通機構です。`tag` definition は `tags` を `/tags` 配下に grouping し、`archive` definition は date を `/archive` 配下に grouping します。どちらも同じ呼び出しで生成されます。routing は application に残し、collection contract と query engine は Core に置きます。一覧の entry は `ContentManifestEntry.permalink` を経由して link し、slug から URL を組み立てることはありません。
+
 canonical content identity を source/manifest/graph で保ち、slug と permalink を別概念として public URL は解決済み `ContentPublicLocation` からのみ取得し、metadata を過信せず、publication/exclusion policy を config に表し、recoverable error を黙って content から落とさず diagnostics にします。

@@ -21,6 +21,12 @@ export {
   resolveContentBuildStatePath,
 } from "./src/content/content_build_state_store.js";
 export type {
+  ContentCollection,
+  ContentCollectionContext,
+  ContentCollectionDefinition,
+} from "./src/content/content_collection.js";
+export { buildContentCollections } from "./src/content/content_collection.js";
+export type {
   ContentQueryDateFilter,
   ContentQueryDateGranularity,
   ContentQueryFilter,

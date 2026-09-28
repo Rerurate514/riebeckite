@@ -58,6 +58,7 @@ const PACKAGES = [
     directory: "packages/plugins/backlinks",
     name: "@riebeckite/plugin-backlinks",
   },
+  { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
   {
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
@@ -67,6 +68,7 @@ const PACKAGES = [
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
+const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -358,6 +360,15 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes(NOTE_MARKER)) {
     fail(`generated HTML is missing the note marker (${NOTE_MARKER})`);
+  }
+  if (!combined.includes(QUERY_MARKER)) {
+    fail(`generated HTML is missing the query marker (${QUERY_MARKER})`);
+  }
+  if (!combined.includes("rr-query__table")) {
+    fail("generated HTML is missing the query plugin table output");
+  }
+  if (!combined.includes("data-rr-query-result")) {
+    fail("query placeholder was not replaced with rendered output");
   }
 
   for (const file of htmlFiles) {

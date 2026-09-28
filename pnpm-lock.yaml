@@ -68,6 +68,9 @@ importers:
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugins/mermaid
+      '@riebeckite/plugin-query':
+        specifier: workspace:*
+        version: link:../../packages/plugins/query
       '@riebeckite/plugin-recent-posts':
         specifier: workspace:*
         version: link:../../packages/plugins/recent-posts
@@ -379,6 +382,21 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      yaml:
+        specifier: ^2.9.0
+        version: 2.9.0
+
+  packages/plugins/query:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: ^4.0.4
+        version: 4.0.4
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
       yaml:
         specifier: ^2.9.0
         version: 2.9.0

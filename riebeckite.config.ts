@@ -12,6 +12,7 @@ import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
@@ -85,6 +86,7 @@ export default defineConfig({
     searchPlugin(),
     tocPlugin(),
     backlinksPlugin(),
+    queryPlugin(),
     recentPostsPlugin(),
     localGraphPlugin(),
     gardenExplorerPlugin(),

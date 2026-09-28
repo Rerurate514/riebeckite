@@ -2,6 +2,8 @@
 title: Example Note
 description: A secondary note used by the external build fixture.
 publish: true
+tags:
+  - featured
 ---
 
 # Example Note

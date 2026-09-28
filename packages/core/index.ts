@@ -21,6 +21,17 @@ export {
   resolveContentBuildStatePath,
 } from "./src/content/content_build_state_store.js";
 export type {
+  ContentQueryDateFilter,
+  ContentQueryFilter,
+  ContentQueryFrontmatterFilter,
+  ContentQueryScalar,
+  ContentQuerySort,
+  ContentQuerySortOrder,
+  ContentQuerySpec,
+  ContentQueryTagFilter,
+} from "./src/content/content_query.js";
+export { queryContentEntries } from "./src/content/content_query.js";
+export type {
   ContentGraph,
   ContentGraphNeighbors,
 } from "./src/content/content_graph.js";

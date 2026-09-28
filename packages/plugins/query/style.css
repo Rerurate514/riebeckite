@@ -1,0 +1,111 @@
+.rr-query {
+  --rr-query-ink: var(--rb-color-ink, #000000);
+  --rr-query-paper: var(--rb-color-paper, #ffffff);
+  --rr-query-muted: var(--rb-color-muted, #69645c);
+  --rr-query-accent: var(--rb-color-accent, #686868);
+  --rr-query-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rr-query-ink) 18%, transparent)
+  );
+  --rr-query-surface: color-mix(
+    in srgb,
+    var(--rr-query-paper) 94%,
+    var(--rr-query-ink)
+  );
+
+  margin: 1.5rem 0;
+  color: var(--rr-query-ink);
+}
+
+.rr-query__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.rr-query__heading {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rr-query-ink);
+  text-align: left;
+  font-weight: 700;
+}
+
+.rr-query__cell {
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+}
+
+.rr-query__row:not(:last-child) .rr-query__cell {
+  border-bottom: 1px solid var(--rr-query-rule);
+}
+
+.rr-query__cell--date,
+.rr-query__meta--date,
+.rr-query__meta--created,
+.rr-query__meta--updated,
+.rr-query__meta--published {
+  color: var(--rr-query-muted);
+  white-space: nowrap;
+}
+
+.rr-query__link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rr-query-rule);
+  text-underline-offset: 0.2em;
+}
+
+.rr-query__link:hover,
+.rr-query__link:focus-visible {
+  text-decoration-color: var(--rr-query-accent);
+}
+
+.rr-query__tag {
+  color: var(--rr-query-muted);
+  font-size: 0.8125em;
+  white-space: nowrap;
+}
+
+.rr-query__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rr-query__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rr-query-rule);
+}
+
+.rr-query__item:last-child {
+  border-bottom: 0;
+}
+
+.rr-query__meta {
+  color: var(--rr-query-muted);
+  font-size: 0.8125em;
+}
+
+.rr-query--empty {
+  margin: 1.5rem 0;
+  color: var(--rr-query-muted);
+  font-style: italic;
+}
+
+.rr-query--error {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rr-query-ink);
+  background: var(--rr-query-surface);
+  font-size: 0.875rem;
+}
+
+html[data-theme="dark"] .rr-query,
+html.dark .rr-query {
+  --rr-query-ink: var(--rb-color-paper, #ffffff);
+  --rr-query-paper: var(--rb-color-ink, #000000);
+}

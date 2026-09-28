@@ -2,6 +2,7 @@ import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { tocPlugin } from "@riebeckite/plugin-toc";
@@ -23,6 +24,7 @@ export default defineConfig({
     autoCardLinkPlugin(),
     tocPlugin(),
     backlinksPlugin(),
+    queryPlugin(),
     recentPostsPlugin(),
     searchPlugin()
   ]

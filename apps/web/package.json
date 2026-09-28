@@ -25,6 +25,7 @@
     "@riebeckite/plugin-local-graph": "workspace:*",
     "@riebeckite/plugin-media": "workspace:*",
     "@riebeckite/plugin-mermaid": "workspace:*",
+    "@riebeckite/plugin-query": "workspace:*",
     "@riebeckite/plugin-recent-posts": "workspace:*",
     "@riebeckite/plugin-search": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",

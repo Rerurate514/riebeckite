@@ -1,6 +1,7 @@
 import { defineConfig } from "@riebeckite/core";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { canvas } from "@riebeckite/plugin-canvas";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
@@ -37,6 +38,7 @@ export default defineConfig({
     media(),
     attachment(),
     codeAnnotations(),
+    canvas(),
     autoCardLinkPlugin(),
     tocPlugin(),
     backlinksPlugin(),

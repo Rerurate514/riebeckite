@@ -35,6 +35,10 @@ const PACKAGES = [
     directory: "packages/plugins/backlinks",
     name: "@riebeckite/plugin-backlinks",
   },
+  {
+    directory: "packages/plugins/canvas",
+    name: "@riebeckite/plugin-canvas",
+  },
   { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
   { directory: "packages/plugins/kanban", name: "@riebeckite/plugin-kanban" },
   {
@@ -91,12 +95,9 @@ const KANBAN_BLOCK_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_BLOCK_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
-const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
-const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
-const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
-const FLASHCARDS_CLIENT_IDENTIFIER = "rb-flashcards";
 const CODE_ANNOTATIONS_MARKER = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
 const SHORTCODE_MARKER = "RIEBECKITE_EXTERNAL_SHORTCODE_MARKER";
+const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -634,6 +635,15 @@ function assertBuildOutput(siteDir, vaultDir) {
       `generated HTML is missing the shortcode fixture marker (${SHORTCODE_MARKER})`,
     );
   }
+  if (!combined.includes("rb-canvas")) {
+    fail("generated HTML is missing the canvas plugin output");
+  }
+  if (!combined.includes("data-canvas")) {
+    fail("canvas plugin output is missing its data-canvas attributes");
+  }
+  if (!combined.includes(CANVAS_MARKER)) {
+    fail(`generated HTML is missing the canvas marker (${CANVAS_MARKER})`);
+  }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(
       `generated HTML is missing the site-local plugin marker (${LOCAL_PLUGIN_MARKER})`,
@@ -713,6 +723,13 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!css.includes("rb-kanban")) {
     fail("kanban plugin stylesheet was not bundled into the dist CSS");
+  }
+
+  if (!js.includes("rb-canvas")) {
+    fail("canvas styles/logic were not bundled into the dist JavaScript");
+  }
+  if (!js.includes("initCanvas")) {
+    fail("the canvas client initializer was not bundled into the dist JavaScript");
   }
 
   for (const file of htmlFiles) {

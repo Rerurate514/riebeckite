@@ -17,6 +17,7 @@
     "@riebeckite/plugin-attachment": "workspace:*",
     "@riebeckite/plugin-autocardlink": "workspace:*",
     "@riebeckite/plugin-backlinks": "workspace:*",
+    "@riebeckite/plugin-canvas": "workspace:*",
     "@riebeckite/plugin-code-annotations": "workspace:*",
     "@riebeckite/plugin-code-enhance": "workspace:*",
     "@riebeckite/plugin-dataview": "workspace:*",

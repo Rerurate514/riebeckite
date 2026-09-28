@@ -103,6 +103,14 @@ declare module "@riebeckite/plugin-code-annotations" {
   export const resolveCodeAnnotationsOptions: any;
 }
 
+declare module "@riebeckite/plugin-canvas" {
+  export const canvas: any;
+}
+
+declare module "@riebeckite/plugin-canvas/client" {
+  export const initCanvas: any;
+}
+
 declare module "@riebeckite/plugin-media" {
   export const media: any;
 }

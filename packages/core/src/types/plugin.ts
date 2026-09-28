@@ -27,6 +27,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   provides?: string[];
   requires?: string[];
   optional?: string[];
+  cacheVersion?: string;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];
   setup?(context: PluginLifecycleContext): void | Promise<void>;

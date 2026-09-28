@@ -15,44 +15,44 @@ export class PluginLifecycleError extends Error {
 
 export async function runSetup(
   plugins: readonly RiebeckitePlugin[],
-  context: PluginLifecycleContext,
+  createContext: (plugin: RiebeckitePlugin) => PluginLifecycleContext,
 ): Promise<void> {
-  await runLifecycleHook(plugins, "setup", (plugin) => plugin.setup, context);
+  await runLifecycleHook(plugins, "setup", (plugin) => plugin.setup, createContext);
 }
 
 export async function runBuildStart(
   plugins: readonly RiebeckitePlugin[],
-  context: PluginLifecycleContext,
+  createContext: (plugin: RiebeckitePlugin) => PluginLifecycleContext,
 ): Promise<void> {
   await runLifecycleHook(
     plugins,
     "buildStart",
     (plugin) => plugin.buildStart,
-    context,
+    createContext,
   );
 }
 
 export async function runBuildEnd(
   plugins: readonly RiebeckitePlugin[],
-  context: PluginManifestContext,
+  createContext: (plugin: RiebeckitePlugin) => PluginManifestContext,
 ): Promise<void> {
   await runLifecycleHook(
     plugins,
     "buildEnd",
     (plugin) => plugin.buildEnd,
-    context,
+    createContext,
   );
 }
 
 export async function runDispose(
   plugins: readonly RiebeckitePlugin[],
-  context: PluginLifecycleContext,
+  createContext: (plugin: RiebeckitePlugin) => PluginLifecycleContext,
 ): Promise<void> {
   await runLifecycleHook(
     [...plugins].reverse(),
     "dispose",
     (plugin) => plugin.dispose,
-    context,
+    createContext,
   );
 }
 
@@ -62,14 +62,14 @@ async function runLifecycleHook<TContext>(
   getHook: (
     plugin: RiebeckitePlugin,
   ) => ((context: TContext) => void | Promise<void>) | undefined,
-  context: TContext,
+  createContext: (plugin: RiebeckitePlugin) => TContext,
 ): Promise<void> {
   for (const plugin of plugins) {
     const hook = getHook(plugin);
     if (!hook) continue;
 
     try {
-      await hook(context);
+      await hook(createContext(plugin));
     } catch (error) {
       throw new PluginLifecycleError(plugin.name, hookName, error);
     }

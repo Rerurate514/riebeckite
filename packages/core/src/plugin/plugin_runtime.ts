@@ -5,6 +5,7 @@ import type {
 } from "../types/content_manifest";
 import type { Diagnostic } from "../types/diagnostic";
 import { resolvePlugins } from "../types/plugin";
+import type { RiebeckitePlugin } from "../types/plugin";
 import type { PluginContext } from "../types/plugin_context";
 import type { PostContent } from "../types/post_content";
 import {
@@ -13,11 +14,21 @@ import {
   runDispose,
   runSetup,
 } from "./plugin_lifecycle";
+import {
+  createPluginCache,
+  resolvePluginCacheDirectory,
+} from "./plugin_cache";
+import type { PluginCache } from "./plugin_cache";
+
+type PluginContextBase = Omit<PluginContext, "cache">;
+type PluginContextWithCache<TContext extends PluginContextBase> = TContext &
+  Pick<PluginContext, "cache">;
 
 export class PluginRuntime {
   private buildStarted = false;
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
+  private pluginCaches = new Map<string, PluginCache>();
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
 
@@ -30,8 +41,10 @@ export class PluginRuntime {
 
     this.buildStarted = true;
     const context = this.createContext(contentIndex);
-    await runSetup(this.plugins(), context);
-    await runBuildStart(this.plugins(), context);
+    const createPluginContext = (plugin: RiebeckitePlugin) =>
+      this.createPluginContext(plugin, context);
+    await runSetup(this.plugins(), createPluginContext);
+    await runBuildStart(this.plugins(), createPluginContext);
     await this.runHook((plugin) => plugin.onBuildStart, context);
     await this.runHook((plugin) => plugin.onConfigResolved, context);
   }
@@ -87,10 +100,13 @@ export class PluginRuntime {
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ) {
-    await runBuildEnd(this.plugins(), {
+    const context = {
       ...this.createContext(contentIndex),
       manifest,
-    });
+    };
+    await runBuildEnd(this.plugins(), (plugin) =>
+      this.createPluginContext(plugin, context),
+    );
     await this.runHook((plugin) => plugin.onBuildEnd, {
       ...this.createContext(contentIndex),
       manifest,
@@ -101,7 +117,10 @@ export class PluginRuntime {
     if (this.disposed || !this.buildStarted) return;
 
     this.disposed = true;
-    await runDispose(this.plugins(), this.createContext(contentIndex));
+    const context = this.createContext(contentIndex);
+    await runDispose(this.plugins(), (plugin) =>
+      this.createPluginContext(plugin, context),
+    );
   }
 
   collectAssets() {
@@ -120,7 +139,9 @@ export class PluginRuntime {
     const results: Diagnostic[] = [];
     const context = this.createContext(contentIndex);
     for (const plugin of this.plugins()) {
-      const diagnostics = await plugin.addDiagnostics?.(context);
+      const diagnostics = await plugin.addDiagnostics?.(
+        this.createPluginContext(plugin, context),
+      );
       for (const diagnostic of diagnostics ?? []) {
         results.push({
           ...diagnostic,
@@ -131,7 +152,9 @@ export class PluginRuntime {
     return results;
   }
 
-  private createContext(contentIndex: Map<string, string>): PluginContext {
+  private createContext(
+    contentIndex: Map<string, string>,
+  ): PluginContextBase {
     return {
       config: this.pipelineOptions.config,
       contentIndex,
@@ -139,14 +162,36 @@ export class PluginRuntime {
     };
   }
 
-  private async runHook<TContext>(
+  private createPluginContext<TContext extends PluginContextBase>(
+    plugin: RiebeckitePlugin,
+    context: TContext,
+  ): PluginContextWithCache<TContext> {
+    return { ...context, cache: this.cacheFor(plugin) };
+  }
+
+  private cacheFor(plugin: RiebeckitePlugin): PluginCache {
+    const cached = this.pluginCaches.get(plugin.name);
+    if (cached) return cached;
+
+    const cache = createPluginCache({
+      pluginName: plugin.name,
+      cacheVersion: plugin.cacheVersion,
+      cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
+    });
+    this.pluginCaches.set(plugin.name, cache);
+    return cache;
+  }
+
+  private async runHook<TContext extends PluginContextBase>(
     hook: (
       plugin: NonNullable<PipelineOptions["plugins"]>[number],
-    ) => ((context: TContext) => void | Promise<void>) | undefined,
+    ) =>
+      | ((context: PluginContextWithCache<TContext>) => void | Promise<void>)
+      | undefined,
     context: TContext,
   ) {
     for (const plugin of this.plugins()) {
-      await hook(plugin)?.(context);
+      await hook(plugin)?.(this.createPluginContext(plugin, context));
     }
   }
 

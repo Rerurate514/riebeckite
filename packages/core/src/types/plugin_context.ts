@@ -1,12 +1,14 @@
 import type { ContentManifest, ContentManifestEntry } from "./content_manifest";
 import type { Diagnostic } from "./diagnostic";
 import type { PostContent } from "./post_content";
+import type { PluginCache } from "../plugin/plugin_cache";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
 
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
+  cache: PluginCache;
 };
 
 /**

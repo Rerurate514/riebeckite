@@ -15,6 +15,11 @@ import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
 import type { RiebeckitePlugin } from "./types/plugin";
 import { resolvePlugins } from "./types/plugin";
+import {
+  createPluginCache,
+  resolvePluginCacheDirectory,
+} from "./plugin/plugin_cache";
+import type { PluginCache } from "./plugin/plugin_cache";
 import type {
   MarkdownEmbedFragment,
   MarkdownPipelineContext,
@@ -26,6 +31,8 @@ export interface PipelineOptions {
 }
 
 export class Pipeline {
+  private pluginCaches = new Map<string, PluginCache>();
+
   constructor(
     private contentIndex: Map<string, string>,
     private getMarkdownBySlug?: (slug: string) => Promise<string>,
@@ -142,23 +149,37 @@ export class Pipeline {
   }
 
   private createContentRenderer(): MarkdownPipelineContext["renderContent"] {
-    const renderers = resolvePlugins(this.options.plugins).flatMap(
-      (plugin) => plugin.renderers ?? [],
+    const renderers = resolvePlugins(this.options.plugins).flatMap((plugin) =>
+      (plugin.renderers ?? []).map((renderer) => ({ plugin, renderer })),
     );
     if (renderers.length === 0) return undefined;
 
     return async (input) => {
-      for (const renderer of renderers) {
+      for (const { plugin, renderer } of renderers) {
         const html = await renderer.render({
           config: this.options.config,
           contentIndex: this.contentIndex,
           diagnostics: [],
+          cache: this.cacheFor(plugin),
           ...input,
         });
         if (html) return html;
       }
       return null;
     };
+  }
+
+  private cacheFor(plugin: RiebeckitePlugin): PluginCache {
+    const cached = this.pluginCaches.get(plugin.name);
+    if (cached) return cached;
+
+    const cache = createPluginCache({
+      pluginName: plugin.name,
+      cacheVersion: plugin.cacheVersion,
+      cacheDirectory: resolvePluginCacheDirectory(this.options.config),
+    });
+    this.pluginCaches.set(plugin.name, cache);
+    return cache;
   }
 }
 

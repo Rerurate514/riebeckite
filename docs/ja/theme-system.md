@@ -284,6 +284,14 @@ packages/themes/example/
 └─ README_en.md
 ```
 
+## この repository 外で Theme を配布する
+
+外部 Theme package は `@riebeckite/core` だけに依存し、`defineTheme` を使って
+stylesheet を `./style.css` export として公開します。monorepo 内の path を参照
+しないでください。対応する package surface と現時点の制約は
+[Public package と import path](./framework-reference.md#public-package-と-import-path)
+を参照してください。
+
 ## Theme の差し替え可能性
 
 Theme が共通 contract に従うことで、application logic を変えずに Theme

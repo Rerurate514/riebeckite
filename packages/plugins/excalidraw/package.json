@@ -1,13 +1,22 @@
 {
   "name": "@riebeckite/plugin-excalidraw",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./index.ts",
-    "./client": "./client.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.ts",
+      "default": "./dist/client.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
@@ -16,5 +25,27 @@
     "@riebeckite/core": "workspace:*",
     "lz-string": "^1.5.0",
     "unist-util-visit": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "README_en.md",
+    "README_ja.md",
+    "dist",
+    "style.css"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/excalidraw"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
   }
 }

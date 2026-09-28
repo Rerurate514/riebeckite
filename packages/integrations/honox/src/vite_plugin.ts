@@ -1,10 +1,10 @@
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
-import { writeRiebeckiteAssetEntries } from "./asset_entries.ts";
-import { riebeckiteClientModule } from "./client_module.ts";
-import { loadRiebeckiteConfig, resolveHonoxConfig } from "./config_loader.ts";
-import { createWorkspacePackageAliases } from "./workspace_packages.ts";
+import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
+import { riebeckiteClientModule } from "./client_module.js";
+import { loadRiebeckiteConfig, resolveHonoxConfig } from "./config_loader.js";
+import { createWorkspacePackageAliases } from "./workspace_packages.js";
 
 export type RiebeckiteIntegrationOptions = {
   workspaceRoot?: string;

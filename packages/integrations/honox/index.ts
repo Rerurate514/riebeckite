@@ -1,11 +1,11 @@
 export {
   loadRiebeckiteConfig,
   resolveHonoxConfig,
-} from "./src/config_loader.ts";
-export { riebeckiteSsgExtensionMap } from "./src/ssg.ts";
-export { riebeckite } from "./src/vite_plugin.ts";
+} from "./src/config_loader.js";
+export { riebeckiteSsgExtensionMap } from "./src/ssg.js";
+export { riebeckite } from "./src/vite_plugin.js";
 export {
   buildHonoxApplication,
   resolveHonoxApplicationRoot,
   startHonoxDevServer,
-} from "./src/vite_runner.ts";
+} from "./src/vite_runner.js";

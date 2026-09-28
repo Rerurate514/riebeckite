@@ -1,16 +1,42 @@
 {
   "name": "@riebeckite/theme-default",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js",
+      "source": "./src/index.ts",
+      "default": "./dist/src/index.js"
+    },
     "./style.css": "./styles/theme.css",
     "./styles/theme.css": "./styles/theme.css"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "README_en.md",
+    "README_ja.md",
+    "dist",
+    "styles"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/themes/default"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
   }
 }

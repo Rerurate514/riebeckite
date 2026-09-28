@@ -1,15 +1,19 @@
 {
   "name": "@riebeckite/plugin-diagnostics",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    }
   },
   "bin": {
-    "riebeckite-diagnostics": "./bin.ts"
+    "riebeckite-diagnostics": "./dist/bin.js"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
@@ -20,5 +24,26 @@
   "devDependencies": {
     "@types/mdast": "^4.0.4",
     "@types/node": "^24.5.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "README_en.md",
+    "README_ja.md",
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/diagnostics"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
   }
 }

@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { build as buildWithEsbuild } from "esbuild";
-import { workspacePackageResolver } from "./workspace_packages.ts";
+import { workspacePackageResolver } from "./workspace_packages.js";
 
 export type RiebeckiteConfigLoaderOptions = {
   workspaceRoot: string;

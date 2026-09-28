@@ -340,6 +340,15 @@ packages/plugins/example/
    └─ types.ts
 ```
 
+## この repository 外で Plugin を配布する
+
+外部 Plugin package は `@riebeckite/core` だけに依存し、自身が持つ subpath
+（`./client`、`./components`、`./style.css`）を自 package の `exports` で宣言し
+ます。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照した
+りしないでください。対応する package surface と現時点の制約は
+[Public package と import path](./framework-reference.md#public-package-と-import-path)
+を参照してください。
+
 ## 設計判断
 
 Plugin に置くもの:

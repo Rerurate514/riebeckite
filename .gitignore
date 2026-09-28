@@ -3,4 +3,4 @@ node_modules/
 /content/
 apps/web/content/
 apps/web/app/.riebeckite/
-packages/cli/dist/
+packages/**/dist/

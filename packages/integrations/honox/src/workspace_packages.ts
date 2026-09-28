@@ -52,13 +52,16 @@ function findWorkspacePackageDirectories(rootDirectory: string): string[] {
     );
 }
 
+type PackageJsonExports = string | Record<string, unknown> | null | undefined;
+
 function createPackageAliases(
   packageName: string,
   packageDirectory: string,
-  packageJson: { exports?: Record<string, string>; main?: string },
+  packageJson: { exports?: PackageJsonExports; main?: string },
 ) {
   const aliases: { find: RegExp; replacement: string }[] = [];
-  const mainEntry = packageJson.exports?.["."] ?? packageJson.main;
+  const mainEntry =
+    resolveExportsEntry(packageJson.exports) ?? packageJson.main;
   if (mainEntry) {
     aliases.push({
       find: new RegExp(`^${escapeRegExp(packageName)}$`),
@@ -66,15 +69,79 @@ function createPackageAliases(
     });
   }
 
-  for (const [subpath, target] of Object.entries(packageJson.exports ?? {})) {
-    if (subpath === ".") continue;
+  if (!packageJson.exports || typeof packageJson.exports !== "object") {
+    return aliases;
+  }
+
+  for (const [subpath, target] of Object.entries(packageJson.exports)) {
+    if (subpath === "." || !subpath.startsWith(".")) continue;
+    const resolvedTarget = resolveExportTarget(target);
+    if (!resolvedTarget) continue;
     aliases.push({
       find: new RegExp(`^${escapeRegExp(packageName + subpath.slice(1))}$`),
-      replacement: path.join(packageDirectory, target),
+      replacement: path.join(packageDirectory, resolvedTarget),
     });
   }
 
   return aliases;
+}
+
+/**
+ * Resolves the package root target from an `exports` field, supporting both the
+ * plain string form and Node's conditional/subpath object forms. Only public,
+ * string-valued targets are turned into workspace aliases; unresolvable or
+ * condition-only fields fall back to `main`.
+ *
+ * Workspace aliases prefer the `source` condition so in-repo development keeps
+ * resolving TypeScript sources without a build step. npm consumers never
+ * request `source`, so they resolve the built `import`/`types` targets.
+ */
+function resolveExportsEntry(
+  exportsField: PackageJsonExports,
+): string | undefined {
+  if (typeof exportsField === "string") return exportsField;
+  if (!exportsField || typeof exportsField !== "object") return undefined;
+
+  const rootTarget = exportsField["."];
+  if (rootTarget !== undefined) return resolveExportTarget(rootTarget);
+
+  const hasSubpaths = Object.keys(exportsField).some((key) =>
+    key.startsWith("."),
+  );
+  if (hasSubpaths) return undefined;
+
+  return resolveExportTarget(exportsField);
+}
+
+const exportConditionOrder = [
+  "source",
+  "import",
+  "module",
+  "browser",
+  "default",
+  "node",
+  "require",
+  "types",
+] as const;
+
+function resolveExportTarget(target: unknown): string | undefined {
+  if (typeof target === "string") return target;
+  if (!target || typeof target !== "object") return undefined;
+
+  const record = target as Record<string, unknown>;
+  for (const condition of exportConditionOrder) {
+    if (condition in record) {
+      const resolved = resolveExportTarget(record[condition]);
+      if (resolved) return resolved;
+    }
+  }
+
+  for (const value of Object.values(record)) {
+    const resolved = resolveExportTarget(value);
+    if (resolved) return resolved;
+  }
+
+  return undefined;
 }
 
 function escapeRegExp(value: string): string {

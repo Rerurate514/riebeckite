@@ -1,9 +1,8 @@
 {
   "name": "@riebeckite/plugin-obsidian-markdown",
   "version": "0.0.1",
-  "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "github-slugger": "^2.0.0",
@@ -12,5 +11,34 @@
   },
   "devDependencies": {
     "@types/mdast": "^4.0.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "README_en.md",
+    "README_ja.md",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/obsidian-markdown"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
   }
 }

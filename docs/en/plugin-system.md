@@ -169,6 +169,14 @@ packages/plugins/example/
    └─ types.ts
 ```
 
+## Distributing a Plugin outside this repository
+
+An external Plugin package depends only on `@riebeckite/core` and declares the
+subpaths it owns (`./client`, `./components`, `./style.css`) in its own `exports`
+map. Do not import `@riebeckite/core/src/**` or reference monorepo paths. See
+[Public packages and import paths](./framework-reference.md#public-packages-and-import-paths)
+for the supported package surface and current constraints.
+
 ## Responsibility boundary
 
 Use a Plugin for reusable content/browser extensions. Put framework-wide

@@ -110,5 +110,13 @@ packages/themes/example/
 └─ README_en.md
 ```
 
+## Distributing a Theme outside this repository
+
+An external Theme package depends only on `@riebeckite/core`, uses `defineTheme`,
+and exposes its stylesheet through a `./style.css` export. Do not reference
+monorepo paths. See
+[Public packages and import paths](./framework-reference.md#public-packages-and-import-paths)
+for the supported package surface and current constraints.
+
 Following the shared contract keeps themes replaceable without changing
 application logic.

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm --filter @riebeckite/web predev && pnpm --filter @riebeckite/web dev",
     "build": "pnpm --filter @riebeckite/cli build && pnpm --filter @riebeckite/web build",
+    "build:packages": "pnpm -r --filter \"./packages/**\" run build",
     "lint": "biome lint .",
     "format": "biome format --write .",
     "check": "biome check --write ."
@@ -13,6 +14,7 @@
     "@riebeckite/cli": "workspace:*",
     "@biomejs/biome": "^2.4.16",
     "@types/node": "^24.5.2",
+    "esbuild": "^0.28.2",
     "typescript": "^5.0.0"
   }
 }

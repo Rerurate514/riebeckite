@@ -42,13 +42,15 @@ image: https://example.com/og.png
 | `favicon` | favicon の URL |
 | `image` | プレビュー画像の URL |
 
+`title` と `description` は二重引用符で囲んでもよい（囲んだ場合は内部の `\"` をアンエスケープする）。`url`、`image`、`favicon` は `http(s)` または相対 URL のみ受け付ける。`javascript:` などの安全でないスキームは拒否し、`url` の場合はブロック全体を変換せず、`image`・`favicon` の場合はその要素を出力しない。
+
 カードは別タブで開きます。画像と favicon は遅延読み込みされ、`data-lightbox-ignore="true"` が付くため、Lightbox の対象にはなりません。
 
 ## オプションと API
 
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |
-| `className` | `string` | `"rr-cardlink"` | カードのルート要素に付ける CSS クラス |
+| `className` | `string` | `(なし)` | カードのルート要素に追加する CSS クラス。`rr-cardlink` フックは常に付与する |
 
 - `autoCardLinkPlugin(options?)` — プラグインファクトリ
 - `remarkAutoCardLink(options?)` — Remark 変換だけを利用する場合の API

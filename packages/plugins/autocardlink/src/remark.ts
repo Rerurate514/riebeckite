@@ -3,20 +3,21 @@ import type { Code, Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import type { AutoCardLink, AutoCardLinkOptions } from "./types.js";
 
-const DEFAULT_CLASS_NAME = "rr-cardlink";
+const CARD_CLASS = "rr-cardlink";
 const CARDLINK_LANGUAGE = "cardlink";
+const SAFE_LINK_SCHEMES = new Set(["http", "https"]);
 
 const fieldPrefixes = {
   url: "url: ",
-  title: 'title: "',
-  description: 'description: "',
+  title: "title: ",
+  description: "description: ",
   host: "host: ",
   favicon: "favicon: ",
   image: "image: ",
 } as const;
 
 export function remarkAutoCardLink(options: AutoCardLinkOptions = {}) {
-  const className = options.className ?? DEFAULT_CLASS_NAME;
+  const extraClassName = options.className?.trim() ?? "";
 
   return (tree: Root) => {
     visit(tree, "code", (node, index, parent) => {
@@ -24,9 +25,13 @@ export function remarkAutoCardLink(options: AutoCardLinkOptions = {}) {
       if (!parent || index === undefined) return;
 
       const cardLink = parseAutoCardLink(node);
-      if (!cardLink.url) return;
+      if (!cardLink.url || !hasSafeLinkScheme(cardLink.url)) return;
 
-      parent.children.splice(index, 1, renderAutoCardLink(cardLink, className));
+      parent.children.splice(
+        index,
+        1,
+        renderAutoCardLink(cardLink, extraClassName),
+      );
     });
   };
 }
@@ -36,43 +41,61 @@ function parseAutoCardLink(node: Code): AutoCardLink {
 
   return {
     url: findField(lines, fieldPrefixes.url),
-    title: trimQuotedField(findField(lines, fieldPrefixes.title)),
-    description: trimQuotedField(findField(lines, fieldPrefixes.description)),
+    title: normalizeQuotedField(findField(lines, fieldPrefixes.title)),
+    description: normalizeQuotedField(
+      findField(lines, fieldPrefixes.description),
+    ),
     host: findField(lines, fieldPrefixes.host),
     favicon: findField(lines, fieldPrefixes.favicon),
     image: findField(lines, fieldPrefixes.image),
   };
 }
 
-function findField(lines: string[], prefix: string): string {
+function findField(lines: readonly string[], prefix: string): string {
   const line = lines.find((currentLine) => currentLine.startsWith(prefix));
   if (!line) return "";
 
   return line.slice(prefix.length).trim();
 }
 
-function trimQuotedField(value: string): string {
-  return value.replace(/^"|"$/g, "");
+function normalizeQuotedField(value: string): string {
+  if (!isDoubleQuoted(value)) return value;
+
+  return value.slice(1, -1).replace(/\\"/g, '"');
 }
 
-function renderAutoCardLink(cardLink: AutoCardLink, className: string): Html {
+function isDoubleQuoted(value: string): boolean {
+  return value.length >= 2 && value.startsWith('"') && value.endsWith('"');
+}
+
+function hasSafeLinkScheme(url: string): boolean {
+  const scheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.exec(url.trim())?.[0];
+  if (!scheme) return true;
+
+  return SAFE_LINK_SCHEMES.has(scheme.slice(0, -1).toLowerCase());
+}
+
+function renderAutoCardLink(
+  cardLink: AutoCardLink,
+  extraClassName: string,
+): Html {
   const title = cardLink.title || cardLink.url;
   const label = cardLink.host || cardLink.url;
-  const rootClassName = cardLink.image
-    ? className
-    : `${className} ${className}--no-image`;
+  const imageUrl = pickSafeUrl(cardLink.image);
+  const faviconUrl = pickSafeUrl(cardLink.favicon);
+  const rootClassName = buildRootClassName(imageUrl !== "", extraClassName);
 
   return {
     type: "html",
     value: `<a href="${escapeHtmlAttribute(cardLink.url)}" class="${escapeHtmlAttribute(rootClassName)}" target="_blank" rel="noopener noreferrer">
-  <span class="${escapeHtmlAttribute(className)}__body">
-    ${renderImage(cardLink, className)}
-    <span class="${escapeHtmlAttribute(className)}__content">
-      <span class="${escapeHtmlAttribute(className)}__title">${escapeHtml(title)}</span>
-      ${renderDescription(cardLink.description, className)}
-      <span class="${escapeHtmlAttribute(className)}__meta">
-        ${renderFavicon(cardLink, className)}
-        <span class="${escapeHtmlAttribute(className)}__host">${escapeHtml(label)}</span>
+  <span class="${CARD_CLASS}__body">
+    ${renderImage(imageUrl, cardLink)}
+    <span class="${CARD_CLASS}__content">
+      <span class="${CARD_CLASS}__title">${escapeHtml(title)}</span>
+      ${renderDescription(cardLink.description)}
+      <span class="${CARD_CLASS}__meta">
+        ${renderFavicon(faviconUrl)}
+        <span class="${CARD_CLASS}__host">${escapeHtml(label)}</span>
       </span>
     </span>
   </span>
@@ -80,22 +103,35 @@ function renderAutoCardLink(cardLink: AutoCardLink, className: string): Html {
   };
 }
 
-function renderImage(cardLink: AutoCardLink, className: string): string {
-  if (!cardLink.image) return "";
+function buildRootClassName(hasImage: boolean, extraClassName: string): string {
+  const classNames = [CARD_CLASS];
+  if (!hasImage) classNames.push(`${CARD_CLASS}--no-image`);
+  if (extraClassName) classNames.push(extraClassName);
+
+  return classNames.join(" ");
+}
+
+function pickSafeUrl(value: string): string {
+  if (!value || !hasSafeLinkScheme(value)) return "";
+
+  return value;
+}
+
+function renderImage(imageUrl: string, cardLink: AutoCardLink): string {
+  if (!imageUrl) return "";
 
   const alt = cardLink.host || cardLink.title || "link preview";
-  return `<span class="${escapeHtmlAttribute(className)}__image-frame"><img class="${escapeHtmlAttribute(className)}__image" src="${escapeHtmlAttribute(cardLink.image)}" alt="${escapeHtmlAttribute(alt)}" loading="lazy" decoding="async" data-lightbox-ignore="true"></span>`;
+  return `<span class="${CARD_CLASS}__image-frame"><img class="${CARD_CLASS}__image" src="${escapeHtmlAttribute(imageUrl)}" alt="${escapeHtmlAttribute(alt)}" loading="lazy" decoding="async" data-lightbox-ignore="true"></span>`;
 }
 
-function renderDescription(description: string, className: string): string {
+function renderDescription(description: string): string {
   if (!description) return "";
 
-  return `<span class="${escapeHtmlAttribute(className)}__description">${escapeHtml(description)}</span>`;
+  return `<span class="${CARD_CLASS}__description">${escapeHtml(description)}</span>`;
 }
 
-function renderFavicon(cardLink: AutoCardLink, className: string): string {
-  if (!cardLink.favicon) return "";
+function renderFavicon(faviconUrl: string): string {
+  if (!faviconUrl) return "";
 
-  const alt = cardLink.host ? `${cardLink.host} favicon` : "favicon";
-  return `<img class="${escapeHtmlAttribute(className)}__favicon" src="${escapeHtmlAttribute(cardLink.favicon)}" alt="${escapeHtmlAttribute(alt)}" loading="lazy" decoding="async" data-lightbox-ignore="true">`;
+  return `<img class="${CARD_CLASS}__favicon" src="${escapeHtmlAttribute(faviconUrl)}" alt="" loading="lazy" decoding="async" data-lightbox-ignore="true">`;
 }

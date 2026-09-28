@@ -362,6 +362,12 @@ function assertBuildOutput(siteDir) {
   if (!combined.includes("rr-query__table")) {
     fail("generated HTML is missing the query plugin table output");
   }
+  if (!combined.includes('class="rr-cardlink')) {
+    fail("autocardlink plugin did not render a cardlink block");
+  }
+  if (!combined.includes('class="rr-cardlink__image"')) {
+    fail("autocardlink plugin did not render the card preview image");
+  }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
   }

@@ -1,9 +1,6 @@
 const CARD_CLASS = "rr-cardlink";
 const IMAGE_CLASS = "rr-cardlink__image";
 
-const MEDIA_WIDTH_MIN = 112;
-const MEDIA_WIDTH_MAX_FRACTION = 0.38;
-
 export type AutoCardLinkLayoutOptions = {
   cardClass?: string;
   imageClass?: string;
@@ -54,19 +51,14 @@ function applyImageRatio(
   const displayHeight = body?.clientHeight ?? image.clientHeight;
   if (displayHeight === 0) return;
 
-  const maxWidth = card.clientWidth * MEDIA_WIDTH_MAX_FRACTION;
-  const mediaWidth = clampWidth(displayHeight * aspectRatio, maxWidth);
-
+  // Set the display width for the current card height; CSS clamps it to the
+  // `.rr-cardlink` grid bounds, so no width-dependent recomputation is needed.
   card.style.setProperty(
     "--rr-autocardlink-media-width",
-    `${mediaWidth.toFixed(0)}px`,
+    `${(displayHeight * aspectRatio).toFixed(0)}px`,
   );
   card.style.setProperty(
     "--rr-autocardlink-image-ratio",
     `${width} / ${height}`,
   );
-}
-
-function clampWidth(width: number, maxWidth: number): number {
-  return Math.min(maxWidth, Math.max(MEDIA_WIDTH_MIN, width));
 }

@@ -38,11 +38,16 @@ image: https://example.com/og.png
 | Field | Description |
 | ----- | ----------- |
 | `url` | Link target. Required — blocks without `url` are left untouched |
-| `title` | Card title (quoted values allowed). Falls back to `url` |
-| `description` | Card description (quoted values allowed) |
+| `title` | Card title (double quotes optional). Falls back to `url` |
+| `description` | Card description (double quotes optional) |
 | `host` | Host label. Falls back to `url` |
 | `favicon` | Favicon image URL |
 | `image` | Preview image URL. Without it the card uses the no-image layout |
+
+`title` and `description` may be wrapped in double quotes; escaped quotes
+(`\"`) inside them are unescaped. `url`, `image`, and `favicon` must use an
+`http(s)` or relative URL — unsafe schemes such as `javascript:` are rejected
+(the whole block is skipped for `url`, and the asset is dropped otherwise).
 
 Rendered cards open in a new tab (`target="_blank" rel="noopener
 noreferrer"`). The preview image and favicon are lazy-loaded and marked
@@ -53,7 +58,7 @@ noreferrer"`). The preview image and favicon are lazy-loaded and marked
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `className` | `string` | `"rr-cardlink"` | Root CSS class of the card |
+| `className` | `string` | `(none)` | Extra CSS class added to the card root. The `rr-cardlink` hook is always applied |
 
 ## Exports
 
@@ -63,4 +68,4 @@ noreferrer"`). The preview image and favicon are lazy-loaded and marked
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)

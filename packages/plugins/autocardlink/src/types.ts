@@ -8,5 +8,6 @@ export type AutoCardLink = {
 };
 
 export type AutoCardLinkOptions = {
+  /** Extra CSS class added to the card root. The `rr-cardlink` hook is always applied. */
   className?: string;
 };

@@ -13,6 +13,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/garden-explorer",
   "packages/plugins/lightbox",
   "packages/plugins/local-graph",
+  "packages/plugins/markmap",
   "packages/plugins/media",
   "packages/plugins/mermaid",
   "packages/plugins/obsidian-markdown",

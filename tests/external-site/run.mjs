@@ -68,6 +68,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-recent-posts",
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
+  {
+    directory: "packages/plugins/markmap",
+    name: "@riebeckite/plugin-markmap",
+  },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
 ];
 
@@ -77,6 +81,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const MARKMAP_MARKER = "RIEBECKITE_EXTERNAL_MARKMAP_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -421,6 +426,37 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  // The markmap plugin renders on the client, so its build-time artifact is the
+  // placeholder figure holding the raw Markdown. The marker must travel inside
+  // the `data-markmap-source` attribute, and the emitted client bundle must
+  // carry the initializer identifier.
+  if (!combined.includes("rb-markmap")) {
+    fail("generated HTML is missing the markmap plugin output (rb-markmap)");
+  }
+  if (!combined.includes('data-markmap="pending"')) {
+    fail("markmap figure is missing its pending state attribute");
+  }
+  if (
+    !new RegExp(`data-markmap-source="[^"]*${MARKMAP_MARKER}`).test(combined)
+  ) {
+    fail(
+      `markmap source attribute is missing the marker (${MARKMAP_MARKER})`,
+    );
+  }
+  if (!combined.includes(MARKMAP_MARKER)) {
+    fail(`generated HTML is missing the markmap marker (${MARKMAP_MARKER})`);
+  }
+
+  const jsFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
+  const clientBundle = jsFiles
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
+  if (!clientBundle.includes("rb-markmap")) {
+    fail("the markmap plugin client bundle is missing its `rb-markmap` identifier");
+  }
+  if (!clientBundle.includes("initMarkmap")) {
+    fail("the markmap plugin client bundle is missing its `initMarkmap` initializer");
   }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(

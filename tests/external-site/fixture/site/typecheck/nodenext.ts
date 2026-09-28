@@ -41,6 +41,8 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { markmap } from "@riebeckite/plugin-markmap";
+import { initMarkmap } from "@riebeckite/plugin-markmap/client";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
@@ -75,6 +77,8 @@ export const resolvedEntries = {
   initAutoCardLink,
   backlinksPlugin,
   Backlinks,
+  markmap,
+  initMarkmap,
   obsidianMarkdown,
   recentPostsPlugin,
   RecentPosts,
@@ -101,7 +105,13 @@ export type UiPrimitiveProps =
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },
   theme: defaultTheme(),
-  plugins: [obsidianMarkdown(), autoCardLinkPlugin(), tocPlugin(), searchPlugin()],
+  plugins: [
+    obsidianMarkdown(),
+    markmap(),
+    autoCardLinkPlugin(),
+    tocPlugin(),
+    searchPlugin(),
+  ],
 });
 
 export function html(post: PostContent): string {

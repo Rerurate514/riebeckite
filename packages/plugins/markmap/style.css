@@ -1,0 +1,67 @@
+.rb-markmap {
+  --rb-markmap-paper: var(--rb-color-paper, #ffffff);
+  --rb-markmap-ink: var(--rb-color-ink, #000000);
+  --rb-markmap-muted: var(--rb-color-muted, #69645c);
+  --rb-markmap-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-markmap-ink) 18%, transparent)
+  );
+  margin: 2rem 0;
+  border: 1px solid var(--rb-markmap-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-markmap-paper) 96%,
+    var(--rb-markmap-ink)
+  );
+  color: var(--rb-markmap-ink);
+}
+
+.rb-markmap__caption {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--rb-markmap-rule);
+  color: var(--rb-markmap-muted);
+  font-size: 0.875rem;
+}
+
+.rb-markmap__canvas {
+  overflow: auto;
+  padding: 1rem;
+}
+
+.rb-markmap__canvas > .rb-markmap__svg,
+.rb-markmap__canvas > svg {
+  display: block;
+  max-width: 100%;
+}
+
+.rb-markmap__fallback {
+  border-top: 1px solid var(--rb-markmap-rule);
+  color: var(--rb-markmap-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-markmap__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rb-markmap__fallback pre {
+  overflow: auto;
+  margin: 0 1rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rb-markmap-rule);
+  color: var(--rb-markmap-ink);
+  background: color-mix(in srgb, var(--rb-markmap-ink) 6%, transparent);
+}
+
+.rb-markmap[data-markmap="error"] .rb-markmap__canvas:empty::before,
+.rb-markmap[data-markmap="pending"] .rb-markmap__canvas:empty::before {
+  content: "Mind map could not be rendered.";
+  color: var(--rb-markmap-muted);
+}
+
+html[data-theme="dark"] .rb-markmap,
+html.dark .rb-markmap {
+  --rb-markmap-paper: var(--rb-color-ink, #000000);
+  --rb-markmap-ink: var(--rb-color-paper, #ffffff);
+}

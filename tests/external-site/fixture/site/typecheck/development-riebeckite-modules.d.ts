@@ -98,6 +98,14 @@ declare module "@riebeckite/plugin-recent-posts/components" {
   export default RecentPosts;
 }
 
+declare module "@riebeckite/plugin-related-posts" {
+  export const relatedPosts: any;
+  export const relatedPostsPlugin: any;
+  export const resolveRelatedPostsOptions: any;
+  export const buildRelatedPosts: any;
+  export const renderRelatedPosts: any;
+}
+
 declare module "@riebeckite/plugin-search" {
   export const initSearch: any;
   export const SearchBar: any;

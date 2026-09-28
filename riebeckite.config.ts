@@ -16,6 +16,7 @@ import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { tocPlugin } from "@riebeckite/plugin-toc";
@@ -92,6 +93,7 @@ export default defineConfig({
     queryPlugin(),
     dataviewPlugin(),
     recentPostsPlugin(),
+    relatedPosts(),
     localGraphPlugin(),
     gardenExplorerPlugin(),
     diagnostics({

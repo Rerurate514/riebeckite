@@ -1,0 +1,51 @@
+.rb-related-posts {
+  --rb-related-posts-ink: var(--rb-color-ink, #000000);
+  --rb-related-posts-muted: var(--rb-color-muted, #69645c);
+  --rb-related-posts-rule: color-mix(
+    in srgb,
+    var(--rb-related-posts-ink) 16%,
+    transparent
+  );
+
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-related-posts-rule);
+  color: var(--rb-related-posts-ink);
+}
+
+.rb-related-posts__heading {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.rb-related-posts ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-related-posts__item {
+  margin: 0;
+  padding: 0;
+}
+
+.rb-related-posts__link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rb-related-posts-rule);
+  text-underline-offset: 0.2em;
+}
+
+.rb-related-posts__link:hover,
+.rb-related-posts__link:focus-visible {
+  text-decoration-color: var(--rb-related-posts-muted);
+}
+
+html[data-theme="dark"] .rb-related-posts,
+html.dark .rb-related-posts {
+  --rb-related-posts-ink: var(--rb-color-paper, #ffffff);
+}

@@ -37,9 +37,6 @@ catalogs:
       specifier: ^8.0.9
       version: 8.0.16
 
-patchedDependencies:
-  '@hono/vite-ssg@0.3.3': 956adda67183c381f6fdfe2a9baadedf3154d23fa3a79ef632023f3ea46d982f
-
 importers:
 
   .:
@@ -141,9 +138,6 @@ importers:
       '@hono/vite-dev-server':
         specifier: ^0.25.2
         version: 0.25.3(hono@4.12.26)(miniflare@4.20260617.1)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1))
-      '@hono/vite-ssg':
-        specifier: ^0.3.3
-        version: 0.3.3(patch_hash=956adda67183c381f6fdfe2a9baadedf3154d23fa3a79ef632023f3ea46d982f)(hono@4.12.26)
       '@riebeckite/cli':
         specifier: workspace:*
         version: link:../../packages/cli
@@ -364,9 +358,6 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
-      '@riebeckite/plugin-search':
-        specifier: workspace:*
-        version: link:../search
       hono:
         specifier: 'catalog:'
         version: 4.12.26
@@ -1093,12 +1084,6 @@ packages:
         optional: true
       wrangler:
         optional: true
-
-  '@hono/vite-ssg@0.3.3':
-    resolution: {integrity: sha512-i8mIZhgW1S/xpNLcLHDFvAiwRkLQolJlQWTwNMWZcGnSkc8/Mq+TCWv4NDRWmDayNGWlOqbjIUwk8w5wp/eHTg==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: '>=4.8.0'
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -4050,10 +4035,6 @@ snapshots:
     optionalDependencies:
       miniflare: 4.20260617.1
       wrangler: 4.103.0(@cloudflare/workers-types@4.20260621.1)
-
-  '@hono/vite-ssg@0.3.3(patch_hash=956adda67183c381f6fdfe2a9baadedf3154d23fa3a79ef632023f3ea46d982f)(hono@4.12.26)':
-    dependencies:
-      hono: 4.12.26
 
   '@iconify/types@2.0.0': {}
 

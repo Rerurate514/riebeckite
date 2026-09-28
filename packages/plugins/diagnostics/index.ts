@@ -3,7 +3,7 @@ import type {
   PluginContext,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { definePlugin } from "@riebeckite/core";
+import { definePlugin, FileSystemContentSource } from "@riebeckite/core";
 import { analyzeContent } from "./src/analyze.js";
 import { buildReport, DiagnosticsFailure } from "./src/report.js";
 import type {
@@ -95,6 +95,12 @@ function toAnalyzerConfig(
   }
   return {
     directory: target.content.directory,
+    source:
+      target.content.source ??
+      new FileSystemContentSource(
+        target.content.directory,
+        target.content.exclude,
+      ),
     exclude: [...target.content.exclude, ...(options.exclude ?? [])],
     publishStrategy: target.content.filters.publishStrategy,
   };

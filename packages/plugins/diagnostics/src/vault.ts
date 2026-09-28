@@ -1,6 +1,5 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import {
+  FileSystemContentSource,
   IMAGE_EXTENSIONS,
   isAttachmentPath,
   isExcluded,
@@ -60,7 +59,9 @@ export type WikilinkMatch = {
 export async function scanVault(
   config: AnalyzerContentConfig,
 ): Promise<ScanResult> {
-  const directory = config.directory;
+  const source =
+    config.source ??
+    new FileSystemContentSource(config.directory, config.exclude);
   const targetIndex = new Map<string, string>();
   const filePaths = new Set<string>();
   const noteSlugs = new Set<string>();
@@ -70,29 +71,17 @@ export async function scanVault(
   const includedNotes: ScannedNote[] = [];
   const excludedNotes: ScannedNote[] = [];
 
-  const entries = await fs.readdir(directory, {
-    withFileTypes: true,
-    recursive: true,
-  });
+  const entries = await source.scan();
 
   for (const entry of entries) {
-    if (!entry.isFile()) continue;
-
-    const relative = toPosixPath(
-      path.relative(directory, path.join(entry.parentPath, entry.name)),
-    );
+    const relative = entry.path;
     filePaths.add(relative);
     const excluded = isExcluded(config.exclude, relative);
     const extension = getExtension(relative);
 
     if (extension === NOTE_EXTENSION) {
       const slug = relative.slice(0, -NOTE_EXTENSION.length - 1);
-      const markdown = normalizeMarkdown(
-        await fs.readFile(
-          path.join(directory, ...relative.split("/")),
-          "utf-8",
-        ),
-      );
+      const markdown = normalizeMarkdown(await readMarkdown(source, entry));
       const fm = parseFrontmatter(markdown);
       const note: ScannedNote = {
         relativePath: relative,
@@ -204,8 +193,8 @@ export function resolveLocalReference(
     return null;
   }
 
-  const base = path.posix.dirname(noteSlug);
-  const resolved = path.posix.normalize(path.posix.join(base, decoded));
+  const base = noteSlug.split("/").slice(0, -1);
+  const resolved = normalizeRelativePath([...base, ...decoded.split("/")]);
   if (resolved === ".." || resolved.startsWith("../")) return null;
   return resolved;
 }
@@ -225,7 +214,7 @@ export function resolveVaultRelative(value: string): string | null {
     return null;
   }
 
-  return path.posix.normalize(decoded);
+  return normalizeRelativePath(decoded.split("/"));
 }
 
 function addToIndex(
@@ -295,13 +284,33 @@ function normalizeMarkdown(markdown: string): string {
   return markdown.replace(/\r\n/g, "\n");
 }
 
-function toPosixPath(value: string): string {
-  return value.replace(/\\/g, "/");
-}
-
 export function getExtension(filePath: string): string {
   const lastSegment = filePath.split("/").pop() ?? filePath;
   const dotIndex = lastSegment.lastIndexOf(".");
   if (dotIndex < 0) return "";
   return lastSegment.slice(dotIndex + 1).toLowerCase();
+}
+
+async function readMarkdown(
+  source: import("@riebeckite/core").ContentSource,
+  entry: import("@riebeckite/core").ContentSourceEntry,
+): Promise<string> {
+  const content = await source.read(entry);
+  return typeof content === "string"
+    ? content
+    : new TextDecoder().decode(content);
+}
+
+function normalizeRelativePath(parts: readonly string[]): string {
+  const normalized: string[] = [];
+  for (const part of parts) {
+    if (!part || part === ".") continue;
+    if (part === "..") {
+      if (normalized.length === 0) return "..";
+      normalized.pop();
+      continue;
+    }
+    normalized.push(part);
+  }
+  return normalized.join("/");
 }

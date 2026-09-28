@@ -104,6 +104,9 @@ importers:
       '@riebeckite/plugin-recent-posts':
         specifier: workspace:*
         version: link:../../packages/plugins/recent-posts
+      '@riebeckite/plugin-responsive-image':
+        specifier: workspace:*
+        version: link:../../packages/plugins/responsive-image
       '@riebeckite/plugin-search':
         specifier: workspace:*
         version: link:../../packages/plugins/search
@@ -436,6 +439,12 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/responsive-image:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/search:
     dependencies:

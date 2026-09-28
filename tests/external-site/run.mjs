@@ -36,6 +36,10 @@ const PACKAGES = [
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
   },
+  {
+    directory: "packages/plugins/responsive-image",
+    name: "@riebeckite/plugin-responsive-image",
+  },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
 ];
@@ -378,6 +382,24 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes('class="rb-responsive-image"')) {
+    fail("responsive-image plugin did not wrap a marked image in <picture>");
+  }
+  if (!combined.includes("<picture")) {
+    fail("responsive-image plugin did not emit a <picture> element");
+  }
+  if (!combined.includes('loading="lazy"')) {
+    fail('responsive-image plugin did not add loading="lazy"');
+  }
+  if (!combined.includes('decoding="async"')) {
+    fail('responsive-image plugin did not add decoding="async"');
+  }
+  if (!combined.includes("/attachments/rb-photo-640.webp")) {
+    fail("responsive-image plugin did not discover a pre-generated variant");
+  }
+  if (!combined.includes('srcset="/attachments/rb-photo-640.webp 640w')) {
+    fail("responsive-image plugin did not emit a width-described srcset");
   }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(

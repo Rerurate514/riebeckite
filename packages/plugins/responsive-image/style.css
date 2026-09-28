@@ -1,0 +1,11 @@
+.rb-responsive-image {
+  display: block;
+  max-width: 100%;
+}
+
+.rb-responsive-image > img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}

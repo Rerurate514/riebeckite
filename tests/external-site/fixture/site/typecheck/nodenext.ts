@@ -32,6 +32,7 @@ import Backlinks from "@riebeckite/plugin-backlinks/components";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
+import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
 import SearchBar from "@riebeckite/plugin-search/components";
@@ -64,6 +65,7 @@ export const resolvedEntries = {
   obsidianMarkdown,
   recentPostsPlugin,
   RecentPosts,
+  responsiveImage,
   searchPlugin,
   initSearch,
   SearchBar,

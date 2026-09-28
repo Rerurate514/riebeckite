@@ -14,6 +14,7 @@ import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { tocPlugin } from "@riebeckite/plugin-toc";
@@ -88,6 +89,7 @@ export default defineConfig({
     backlinksPlugin(),
     queryPlugin(),
     recentPostsPlugin(),
+    responsiveImage(),
     localGraphPlugin(),
     gardenExplorerPlugin(),
     diagnostics({

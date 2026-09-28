@@ -85,6 +85,10 @@ declare module "@riebeckite/plugin-recent-posts/components" {
   export default RecentPosts;
 }
 
+declare module "@riebeckite/plugin-responsive-image" {
+  export const responsiveImage: any;
+}
+
 declare module "@riebeckite/plugin-search" {
   export const initSearch: any;
   export const SearchBar: any;

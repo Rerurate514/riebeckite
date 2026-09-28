@@ -98,6 +98,9 @@ importers:
       '@riebeckite/plugin-hover-preview':
         specifier: workspace:*
         version: link:../../packages/plugins/hover-preview
+      '@riebeckite/plugin-kanban':
+        specifier: workspace:*
+        version: link:../../packages/plugins/kanban
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugins/lightbox
@@ -122,6 +125,9 @@ importers:
       '@riebeckite/plugin-related-posts':
         specifier: workspace:*
         version: link:../../packages/plugins/related-posts
+      '@riebeckite/plugin-responsive-image':
+        specifier: workspace:*
+        version: link:../../packages/plugins/responsive-image
       '@riebeckite/plugin-search':
         specifier: workspace:*
         version: link:../../packages/plugins/search
@@ -413,6 +419,18 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/kanban:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+
   packages/plugins/lightbox:
     dependencies:
       '@riebeckite/core':
@@ -507,6 +525,12 @@ importers:
         version: 4.12.26
 
   packages/plugins/related-posts:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/responsive-image:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

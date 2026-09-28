@@ -110,17 +110,15 @@ so they are documented here instead of being hidden with `skipLibCheck`.
   the unpatched plugin falls back to. Running the CLI from a different working
   directory would break. This is a latent external-consumer risk worth tracking.
 
-## Root model note (A3/A4)
+## Root model
 
-The fixture's `vite.config.ts` passes `workspaceRoot: appRoot` to
-`riebeckite(...)` explicitly. The default is `resolve(root, "../..")`, which
-assumes the HonoX app sits at `<repo>/apps/<name>` and that the Riebeckite
-monorepo is two directories up. For a standalone site that assumption points
-above the site, and the config loader then fails to find `riebeckite.config.ts`.
+The fixture calls `riebeckite({ appRoot })` without a workspace option.
+`appRoot` defaults to the Vite root and determines the base for
+`content.directory`; `configRoot` defaults to that same directory and determines
+where `riebeckite.config.*` is imported from. The fixture intentionally points
+content outside `appRoot` to exercise the resolved absolute `contentRoot`.
 
-The CLI's own `resolveRiebeckiteProject` uses the discovered `configRoot` as
-both project root and workspace root, while the Vite plugin has a separate
-`workspaceRoot`. `workspaceRoot`, `projectRoot`, `configRoot`, `appRoot`, and
-the content root are not yet unified. Passing `workspaceRoot` explicitly is the
-minimum change needed to make this fixture build; unifying those roots is
-tracked as A3/A4.
+`workspaceRoot` is only an explicit monorepo-development option for resolving
+unbuilt source packages. It is not needed by installed npm consumers. The CLI
+and the Vite integration both use `resolveHonoxApplication`, which resolves
+`configRoot`, `appRoot`, and `contentRoot` together.

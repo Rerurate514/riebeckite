@@ -8,7 +8,6 @@ import {
   readOnlyContentGraph,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
-import { resolveHonoxApplicationRoot } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
 import { loadProjectConfig } from "../load_config.js";
 import type {
@@ -81,7 +80,7 @@ export async function collectContentInspection(
   config: ResolvedRiebeckiteConfig,
   project: RiebeckiteProject,
 ): Promise<ContentInspection> {
-  const source = await resolveContentSource(config, project);
+  const source = resolveContentSource(config, project);
   const paths = (await source.scan())
     .map((entry) => entry.path)
     .toSorted((left, right) => left.localeCompare(right));
@@ -127,7 +126,7 @@ export async function collectGraphInspection(
   project: RiebeckiteProject,
 ): Promise<GraphInspection> {
   const config = await loadProjectConfig(project);
-  const source = await resolveContentSource(config, project);
+  const source = resolveContentSource(config, project);
   const locations = await new ContentManager(source, [], {
     config,
   }).getContentLocations();
@@ -170,14 +169,13 @@ export async function collectBuildInspection(
   };
 }
 
-async function resolveContentSource(
+function resolveContentSource(
   config: ResolvedRiebeckiteConfig,
   project: RiebeckiteProject,
-): Promise<ContentSource> {
+): ContentSource {
   if (config.content.source) return config.content.source;
-  const hostRoot = await resolveHonoxApplicationRoot(project.configRoot);
   return new FileSystemContentSource(
-    path.resolve(hostRoot, config.content.directory),
+    project.contentRoot,
     config.content.exclude,
   );
 }

@@ -1,11 +1,28 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { Tracer } from "@riebeckite/core";
+import type { ResolvedRiebeckiteConfig, Tracer } from "@riebeckite/core";
 import { build, createServer } from "vite";
+import {
+  loadRiebeckiteConfig,
+  resolveHonoxConfig,
+  type RiebeckiteConfigLoaderOptions,
+} from "./config_loader.js";
 
 export type HonoxApplicationOptions = {
   root: string;
   tracer?: Tracer;
+};
+
+export type ResolvedHonoxApplication = {
+  config: ResolvedRiebeckiteConfig;
+  configRoot: string;
+  appRoot: string;
+  contentRoot: string;
+};
+
+export type ResolveHonoxApplicationOptions = RiebeckiteConfigLoaderOptions & {
+  /** Overrides automatic Vite application discovery when supplied. */
+  appRoot?: string;
 };
 
 const viteConfigFileNames = [
@@ -33,6 +50,45 @@ export class HonoxApplicationRootError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "HonoxApplicationRootError";
+  }
+}
+
+/**
+ * Resolves all filesystem roots used by a Riebeckite application in one place.
+ * Config imports are based on configRoot; content paths are based on appRoot.
+ */
+export async function resolveHonoxApplication(
+  options: ResolveHonoxApplicationOptions,
+): Promise<ResolvedHonoxApplication> {
+  const configRoot = path.resolve(options.configRoot);
+  const appRoot = options.appRoot
+    ? path.resolve(options.appRoot)
+    : await resolveHonoxApplicationRoot(configRoot);
+  const workspaceRoot =
+    options.workspaceRoot ?? (await findWorkspaceRoot(configRoot));
+  const rawConfig = await loadRiebeckiteConfig({
+    configRoot,
+    configFile: options.configFile,
+    workspaceRoot,
+  });
+  const config = resolveHonoxConfig(rawConfig, appRoot);
+
+  return {
+    config,
+    configRoot,
+    appRoot,
+    contentRoot: config.content.directory,
+  };
+}
+
+async function findWorkspaceRoot(
+  configRoot: string,
+): Promise<string | undefined> {
+  try {
+    const workspaceConfig = path.join(configRoot, "pnpm-workspace.yaml");
+    return (await fs.stat(workspaceConfig)).isFile() ? configRoot : undefined;
+  } catch {
+    return undefined;
   }
 }
 
@@ -90,7 +146,8 @@ async function findViteApplicationRoots(root: string): Promise<string[]> {
       if (
         !entry.isDirectory() ||
         entry.name === "node_modules" ||
-        entry.name === ".git"
+        entry.name === ".git" ||
+        entry.name === "tests"
       ) {
         continue;
       }

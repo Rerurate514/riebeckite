@@ -1,5 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import {
+  resolveHonoxApplication,
+  type ResolvedHonoxApplication,
+} from "@riebeckite/honox";
 
 const configFileNames = [
   "riebeckite.config.ts",
@@ -12,6 +16,9 @@ export type RiebeckiteProject = {
   projectRoot: string;
   configRoot: string;
   configPath: string;
+  appRoot: string;
+  contentRoot: string;
+  config: ResolvedHonoxApplication["config"];
 };
 
 export async function resolveRiebeckiteProject(
@@ -27,11 +34,18 @@ export async function resolveRiebeckiteProject(
   }
 
   const configRoot = path.dirname(configPath);
+  const application = await resolveHonoxApplication({
+    configRoot,
+    configFile: configPath,
+  });
   return {
     invocationCwd,
     projectRoot: configRoot,
     configRoot,
     configPath,
+    appRoot: application.appRoot,
+    contentRoot: application.contentRoot,
+    config: application.config,
   };
 }
 

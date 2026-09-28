@@ -25,7 +25,11 @@ export default defineConfig({
       client: { input: ["/app/client.ts", "/app/style.css"] },
     }),
     tailwindcss(),
-    riebeckite({ appRoot }),
+    riebeckite({
+      appRoot,
+      configRoot: path.resolve(appRoot, "../.."),
+      workspaceRoot: path.resolve(appRoot, "../.."),
+    }),
     build(),
     ssg({
       entry: path.join(appRoot, "app/server.ts"),

@@ -68,6 +68,11 @@ if (entries.length === 0) {
   process.exit(0);
 }
 
+fs.rmSync(path.join(packageDirectory, "dist"), {
+  recursive: true,
+  force: true,
+});
+
 await esbuild.build({
   entryPoints: entries,
   outdir: "dist",
@@ -83,12 +88,21 @@ await esbuild.build({
   logLevel: "warning",
 });
 
+const ignoredSourceDirectories = new Set([
+  "node_modules",
+  "dist",
+  "test",
+  "tests",
+  "__tests__",
+  "spec",
+  "__spec__",
+]);
+
 function collectSourceFiles(directory) {
   const files = [];
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     if (
-      entry.name === "node_modules" ||
-      entry.name === "dist" ||
+      ignoredSourceDirectories.has(entry.name) ||
       entry.name.startsWith(".")
     ) {
       continue;

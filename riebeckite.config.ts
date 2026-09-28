@@ -15,6 +15,7 @@ import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
+import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { kanban } from "@riebeckite/plugin-kanban";
@@ -95,6 +96,10 @@ export default defineConfig({
         dark: 1,
       },
       layout: "dagre",
+    }),
+    graphviz({
+      render: "build",
+      engine: "dot",
     }),
     excalidraw(),
     canvas(),

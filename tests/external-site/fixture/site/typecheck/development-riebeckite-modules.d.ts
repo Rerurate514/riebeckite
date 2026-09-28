@@ -123,6 +123,11 @@ declare module "@riebeckite/plugin-properties" {
   export const properties: any;
 }
 
+declare module "@riebeckite/plugin-graphviz" {
+  export const graphviz: any;
+  export const graphvizPlugin: any;
+}
+
 declare module "@riebeckite/plugin-query" {
   export const queryPlugin: any;
 }

@@ -90,6 +90,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
   {
+    directory: "packages/plugins/graphviz",
+    name: "@riebeckite/plugin-graphviz",
+  },
+  {
     directory: "packages/plugins/chartjs",
     name: "@riebeckite/plugin-chartjs",
   },
@@ -118,6 +122,7 @@ const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
 const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
 const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
 const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
+const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -618,6 +623,15 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail(
       `generated HTML is missing the analytics script attribute (${ANALYTICS_SCRIPT_ATTRIBUTE})`,
     );
+  }
+  if (!combined.includes(GRAPHVIZ_MARKER)) {
+    fail(`generated HTML is missing the graphviz marker (${GRAPHVIZ_MARKER})`);
+  }
+  if (!combined.includes("rb-graphviz")) {
+    fail("generated HTML is missing the graphviz plugin output");
+  }
+  if (!combined.includes('data-graphviz="rendered"')) {
+    fail("graphviz diagram was not rendered at build time");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

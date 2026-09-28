@@ -10,6 +10,7 @@ import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { d2 } from "@riebeckite/plugin-d2";
+import { graphviz } from "@riebeckite/plugin-graphviz";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
@@ -47,6 +48,7 @@ export default defineConfig({
     codeAnnotations(),
     canvas(),
     aliasPlugin(),
+    graphviz({ render: "build", engine: "dot" }),
     autoCardLinkPlugin(),
     highlight(),
     d2(),

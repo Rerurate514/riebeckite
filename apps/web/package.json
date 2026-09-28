@@ -29,6 +29,7 @@
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-flashcards": "workspace:*",
     "@riebeckite/plugin-garden-explorer": "workspace:*",
+    "@riebeckite/plugin-graphviz": "workspace:*",
     "@riebeckite/plugin-highlight": "workspace:*",
     "@riebeckite/plugin-hover-preview": "workspace:*",
     "@riebeckite/plugin-kanban": "workspace:*",

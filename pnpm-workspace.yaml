@@ -22,3 +22,5 @@ allowBuilds:
   puppeteer: true
   sharp: true
   workerd: true
+minimumReleaseAgeExclude:
+  - '@viz-js/viz@3.31.0'

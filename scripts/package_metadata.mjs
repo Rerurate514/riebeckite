@@ -20,6 +20,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/excalidraw",
   "packages/plugins/flashcards",
   "packages/plugins/garden-explorer",
+  "packages/plugins/graphviz",
   "packages/plugins/highlight",
   "packages/plugins/hover-preview",
   "packages/plugins/kanban",

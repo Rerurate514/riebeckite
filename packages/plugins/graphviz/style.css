@@ -1,0 +1,68 @@
+.rb-graphviz {
+  --rb-graphviz-paper: var(--rb-color-paper, #ffffff);
+  --rb-graphviz-ink: var(--rb-color-ink, #000000);
+  --rb-graphviz-muted: var(--rb-color-muted, #69645c);
+  --rb-graphviz-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-graphviz-ink) 18%, transparent)
+  );
+  margin: 2rem 0;
+  border: 1px solid var(--rb-graphviz-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-graphviz-paper) 96%,
+    var(--rb-graphviz-ink)
+  );
+  color: var(--rb-graphviz-ink);
+}
+
+.rb-graphviz__caption {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--rb-graphviz-rule);
+  color: var(--rb-graphviz-muted);
+  font-size: 0.875rem;
+}
+
+.rb-graphviz__canvas {
+  overflow: auto;
+  padding: 1rem;
+}
+
+.rb-graphviz__canvas > svg {
+  display: block;
+  justify-self: center;
+  max-width: 100%;
+  height: auto;
+}
+
+.rb-graphviz__fallback {
+  border-top: 1px solid var(--rb-graphviz-rule);
+  color: var(--rb-graphviz-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-graphviz__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rb-graphviz__fallback pre {
+  overflow: auto;
+  margin: 0 1rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rb-graphviz-rule);
+  color: var(--rb-graphviz-ink);
+  background: color-mix(in srgb, var(--rb-graphviz-ink) 6%, transparent);
+}
+
+.rb-graphviz[data-graphviz="error"] .rb-graphviz__canvas::before,
+.rb-graphviz[data-graphviz="pending"] .rb-graphviz__canvas:empty::before {
+  content: "Diagram could not be rendered.";
+  color: var(--rb-graphviz-muted);
+}
+
+html[data-theme="dark"] .rb-graphviz,
+html.dark .rb-graphviz {
+  --rb-graphviz-paper: var(--rb-color-ink, #000000);
+  --rb-graphviz-ink: var(--rb-color-paper, #ffffff);
+}

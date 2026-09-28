@@ -4,6 +4,11 @@ export {
   isPublished,
   resolveConfig,
 } from "./src/config";
+export { ConfigValidationError } from "./src/config_validation";
+export type {
+  ConfigValidationIssue,
+  PluginOptionsValidator,
+} from "./src/types/config_validation";
 export {
   ATTACHMENTS_BASE_PATH,
   attachmentUrl,

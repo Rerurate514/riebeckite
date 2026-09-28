@@ -17,6 +17,7 @@ import type {
   PipelinePlugin,
 } from "./plugin_pipeline";
 import type { PluginSeoExtension } from "./plugin_seo";
+import type { PluginOptionsValidator } from "./config_validation";
 import { resolvePluginDependencies } from "../plugin/plugin_dependency";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
@@ -28,6 +29,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   requires?: string[];
   optional?: string[];
   cacheVersion?: string;
+  validateOptions?: PluginOptionsValidator<TOptions>;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];
   setup?(context: PluginLifecycleContext): void | Promise<void>;

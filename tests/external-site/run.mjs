@@ -118,6 +118,27 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const DATAVIEW_NOTE_TITLE = "Dataview Alpha";
+const PROPERTY_MARKER = "RIEBECKITE_EXTERNAL_PROPERTY_MARKER";
+const KANBAN_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_MARKER";
+const KANBAN_BLOCK_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_BLOCK_MARKER";
+const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
+const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
+const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
+const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
+const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
+const FLASHCARDS_CLIENT_IDENTIFIER = "rb-flashcards";
+const CODE_ANNOTATIONS_MARKER = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
+const SHORTCODE_MARKER = "RIEBECKITE_EXTERNAL_SHORTCODE_MARKER";
+const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
+const RICHEMBED_MARKER = "RIEBECKITE_EXTERNAL_RICHEMBED_MARKER";
+const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
+const PLANTUML_MARKER = "RIEBECKITE_EXTERNAL_PLANTUML_MARKER";
+const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
+const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";
+const SERIES_MARKER = "RIEBECKITE_EXTERNAL_SERIES_MARKER";
+const SERIES_PART_1_PERMALINK = "/notes/series-demo-1";
 const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
 const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
 const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
@@ -841,6 +862,19 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!js.includes("initCanvas")) {
     fail("the canvas client initializer was not bundled into the dist JavaScript");
   }
+  if (!combined.includes("rb-d2")) {
+    fail("generated HTML is missing the D2 plugin output (rb-d2)");
+  }
+  if (!combined.includes('data-d2="rendered"')) {
+    fail("D2 diagram was not rendered to SVG at build time");
+  }
+  const d2Source = combined.match(/data-d2-source="([^"]*)"/);
+  if (!d2Source?.[1].includes(D2_MARKER)) {
+    fail(`D2 figure source does not contain the fixture marker (${D2_MARKER})`);
+  }
+  if (!/<figure[^>]*\bclass="rb-d2"[^>]*>[\s\S]*?<svg/.test(combined)) {
+    fail("D2 figure does not contain a rendered inline SVG");
+  }
 
   for (const file of htmlFiles) {
     console.log(`  ${path.relative(siteDir, file)}`);
@@ -901,20 +935,6 @@ function assertStarterOutput(siteDir) {
     .join("\n");
   if (!combined.includes("starter")) {
     fail("starter HTML is missing the generated site title");
-  }
-
-  if (!combined.includes("rb-d2")) {
-    fail("generated HTML is missing the D2 plugin output (rb-d2)");
-  }
-  if (!combined.includes('data-d2="rendered"')) {
-    fail("D2 diagram was not rendered to SVG at build time");
-  }
-  const d2Source = combined.match(/data-d2-source="([^"]*)"/);
-  if (!d2Source?.[1].includes(D2_MARKER)) {
-    fail(`D2 figure source does not contain the fixture marker (${D2_MARKER})`);
-  }
-  if (!/<figure[^>]*\bclass="rb-d2"[^>]*>[\s\S]*?<svg/.test(combined)) {
-    fail("D2 figure does not contain a rendered inline SVG");
   }
 
   for (const file of htmlFiles) {

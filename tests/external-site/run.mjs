@@ -67,6 +67,10 @@ const PACKAGES = [
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
   },
+  {
+    directory: "packages/plugins/related-posts",
+    name: "@riebeckite/plugin-related-posts",
+  },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
 ];
@@ -407,6 +411,21 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes("data-related-posts")) {
+    fail("related-posts plugin did not annotate any entry");
+  }
+  if (!combined.includes('class="rb-related-posts"')) {
+    fail("related-posts plugin did not render its navigation container");
+  }
+  if (!combined.includes("rb-related-posts__link")) {
+    fail("related-posts plugin did not render its links");
+  }
+  if (!combined.includes('data-related-score="')) {
+    fail("related-posts plugin did not render related scores");
+  }
+  if (!combined.includes('href="/notes/related-b"')) {
+    fail("related-posts plugin did not link a known related fixture note");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

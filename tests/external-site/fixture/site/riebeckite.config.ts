@@ -6,6 +6,7 @@ import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { localFixturePlugin } from "./extensions/local-plugin";
@@ -31,6 +32,7 @@ export default defineConfig({
     backlinksPlugin(),
     queryPlugin(),
     recentPostsPlugin(),
+    relatedPosts(),
     searchPlugin(),
     localFixturePlugin(),
   ],

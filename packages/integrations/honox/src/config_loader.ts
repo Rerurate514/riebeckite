@@ -24,8 +24,8 @@ export async function loadRiebeckiteConfig(
       stdin: {
         contents: `
           import rawConfig from ${JSON.stringify(path.join(options.workspaceRoot, configFile))};
-          import { resolveConfig } from "@riebeckite/core";
-          export default resolveConfig(rawConfig);
+          import { resolveConfigModule } from "@riebeckite/core";
+          export default resolveConfigModule(rawConfig);
         `,
         resolveDir: options.workspaceRoot,
         loader: "ts",

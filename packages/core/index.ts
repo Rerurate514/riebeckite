@@ -3,6 +3,7 @@ export {
   isExcluded,
   isPublished,
   resolveConfig,
+  resolveConfigModule,
 } from "./src/config";
 export { ConfigValidationError } from "./src/config_validation";
 export {

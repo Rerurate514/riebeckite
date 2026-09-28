@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
-import { resolveConfig } from "@riebeckite/core";
+import { resolveConfigModule } from "@riebeckite/core";
 import { formatDiagnostics, runDiagnostics } from "./index.js";
 import type { DiagnosticsOptions, DiagnosticsReport } from "./src/types.js";
 
@@ -172,8 +172,7 @@ async function loadConfigFile(
     );
   }
 
-  const raw = (module as { default?: unknown }).default ?? module;
-  const resolved = resolveConfig(raw as Parameters<typeof resolveConfig>[0]);
+  const resolved = resolveConfigModule(module);
   const directory = path.resolve(process.cwd(), resolved.content.directory);
   return {
     ...resolved,

@@ -53,6 +53,10 @@ const PACKAGES = [
     directory: "packages/plugins/autocardlink",
     name: "@riebeckite/plugin-autocardlink",
   },
+  {
+    directory: "packages/plugins/highlight",
+    name: "@riebeckite/plugin-highlight",
+  },
   { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
   {
     directory: "packages/plugins/backlinks",
@@ -69,6 +73,7 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -369,6 +374,15 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes(HIGHLIGHT_MARKER)) {
+    fail(`generated HTML is missing the highlight marker (${HIGHLIGHT_MARKER})`);
+  }
+  if (!combined.includes("<mark")) {
+    fail("generated HTML is missing the highlight <mark> element");
+  }
+  if (!combined.includes("rb-highlight")) {
+    fail("generated HTML is missing the rb-highlight class");
   }
 
   for (const file of htmlFiles) {

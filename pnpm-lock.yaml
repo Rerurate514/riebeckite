@@ -89,6 +89,9 @@ importers:
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
+      '@riebeckite/plugin-highlight':
+        specifier: workspace:*
+        version: link:../../packages/plugins/highlight
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugins/lightbox
@@ -358,6 +361,18 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/highlight:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
 
   packages/plugins/lightbox:
     dependencies:

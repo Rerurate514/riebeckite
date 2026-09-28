@@ -1,5 +1,4 @@
 import { execFile } from "node:child_process";
-import path from "node:path";
 import { promisify } from "node:util";
 import type { DiffRevision, GitHistoryReaderOptions } from "../types.js";
 
@@ -19,7 +18,7 @@ export class GitMarkdownHistoryReader {
   }
 
   getHistory(filePath: string): Promise<DiffRevision[]> {
-    const normalizedPath = normalizeGitPath(this.#cwd, filePath);
+    const normalizedPath = normalizeGitPath(filePath);
     const cached = this.#historyCache.get(normalizedPath);
     if (cached) return cached;
 
@@ -29,7 +28,7 @@ export class GitMarkdownHistoryReader {
   }
 
   getRevisionMarkdown(filePath: string, hash: string): Promise<string | null> {
-    const normalizedPath = normalizeGitPath(this.#cwd, filePath);
+    const normalizedPath = normalizeGitPath(filePath);
     const cacheKey = `${hash}:${normalizedPath}`;
     const cached = this.#markdownCache.get(cacheKey);
     if (cached) return cached;
@@ -121,11 +120,8 @@ function getRevisionPath(
   return paths.at(-1) ?? fallbackPath;
 }
 
-function normalizeGitPath(cwd: string, filePath: string): string {
-  const absolutePath = path.isAbsolute(filePath)
-    ? filePath
-    : path.resolve(cwd, filePath);
-  return path.relative(cwd, absolutePath).split(path.sep).join("/");
+function normalizeGitPath(filePath: string): string {
+  return filePath.replace(/\\/g, "/").replace(/^\.\//, "");
 }
 
 async function runGit(

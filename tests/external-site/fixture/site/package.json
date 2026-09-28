@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@hono/vite-build": "^1.11.1",
-    "@hono/vite-ssg": "0.3.3",
     "hono": "4.12.26",
     "honox": "0.1.56"
   },

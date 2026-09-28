@@ -4,9 +4,14 @@
 
 ## Public API
 
-The integration exports `riebeckite`, `loadRiebeckiteConfig`, `resolveHonoxApplication`, `buildHonoxApplication`, `resolveHonoxApplicationRoot`, `startHonoxDevServer`, and `riebeckiteSsgExtensionMap`.
+The integration exports `riebeckite`, `loadRiebeckiteConfig`, `resolveHonoxApplication`, `buildHonoxApplication`, `resolveHonoxApplicationRoot`, `startHonoxDevServer`, `riebeckiteSsg`, and `riebeckiteSsgExtensionMap`.
 
 The Vite plugin accepts optional `configRoot`, `appRoot`, `configFile`, and the monorepo-only `workspaceRoot`. `appRoot` defaults to the Vite root, and `configRoot` defaults to `appRoot`. A config path is imported relative to `configRoot`; `content.directory` is resolved relative to `appRoot`. `resolveHonoxApplication` returns these roots together with the resolved config, so CLI and Vite use the same model. `workspaceRoot` is only for source-package aliases during monorepo development; installed npm consumers use their own `node_modules` without it. The plugin creates generated import entries below `app/.riebeckite/` and exposes the required client module. Generated files are integration output: do not edit them as application source.
+
+Use `riebeckiteSsg({ entry, extensionMap })` for static generation. It starts
+its internal Vite server with the resolved application root and define values,
+so invoking `riebeckite build` from a subdirectory yields the same output as
+invoking it from the application root.
 
 ## Boundary rules
 

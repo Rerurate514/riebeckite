@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "@types/mdast": "^4.0.4",
-    "unist-util-visit": "^5.1.0",
-    "vfile-matter": "^5.0.1"
+    "@types/mdast": "catalog:",
+    "unist-util-visit": "catalog:",
+    "vfile-matter": "catalog:"
   },
   "publishConfig": {
     "access": "public"

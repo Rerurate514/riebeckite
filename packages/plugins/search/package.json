@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "hono": "^4.12.25"
+    "hono": "catalog:"
   },
   "publishConfig": {
     "access": "public"

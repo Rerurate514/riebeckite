@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@riebeckite/honox": "workspace:*",
-    "esbuild": "^0.28.2",
-    "vite": "^8.0.9"
+    "esbuild": "catalog:",
+    "vite": "catalog:"
   },
   "publishConfig": {
     "access": "public"

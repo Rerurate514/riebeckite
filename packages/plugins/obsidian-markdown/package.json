@@ -6,11 +6,11 @@
   "types": "./dist/index.d.ts",
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "@types/mdast": "^4.0.4",
-    "@types/unist": "^3.0.3",
+    "@types/mdast": "catalog:",
+    "@types/unist": "catalog:",
     "github-slugger": "^2.0.0",
     "slugify": "^1.6.9",
-    "unist-util-visit": "^5.1.0"
+    "unist-util-visit": "catalog:"
   },
   "publishConfig": {
     "access": "public"

@@ -10,7 +10,7 @@
 | 8 | R7 | 共通ユーティリティをCoreへ集約 | ✅ 完了 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
 | 9 | R12 | 読了時間をCoreユーティリティ化 | ✅ 完了 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
 | 10 | R8 | 空CSS削除とlint warning解消 | ✅ 完了 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
-| 11 | R9 | Package metadata規約の機械検証 | 未着手 | Medium | ~30 package.jsonの定型を`scripts/check_packages.mjs`で検証。依存はpnpm catalog集約（Phase 2） |
+| 11 | R9 | Package metadata規約の機械検証 | ✅ 完了 | Medium | `check:packages`で29公開packageのメタデータを検証。重複依存はpnpm catalogへ集約（Phase 2） |
 | **12** | **A3/A4** | **Root / Config resolutionを一本化** | 未着手 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
 | **13** | **A4.5** | **External HonoX/SSG境界を安定化** | 未着手 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
 | **14** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
@@ -159,7 +159,7 @@
 - **検証**: `pnpm exec biome lint .`、`pnpm build`（apps/web）。
 - **成果**: 未参照の空CSS 2件と対応する`@import`を削除。現行のBiome設定では`code-enhance/style.css`の`noDescendingSpecificity`警告は再現せず、lint warning 0を確認。
 
-### #11 R9: Package metadata規約の機械検証（Phase 2 / Medium / 依存: Phase 1）
+### #11 R9: Package metadata規約の機械検証（✅ 完了 / Phase 2 / Medium / 依存: Phase 1）
 - **概要**: ~30 パッケージの `package.json` 定型（`exports`/`files`/`scripts.build`/`prepack`/`publishConfig`/`repository`/`homepage`/`bugs`/`license`）の重複を、生成ではなく**検証**で統制。
 - **対象**: `scripts/build_package.mjs`、各 `packages/**/package.json`、`pnpm-workspace.yaml`、ルート `package.json`
 - **実装方針**:
@@ -169,6 +169,7 @@
   4. 重複する依存バージョンは可能な範囲で `pnpm-workspace.yaml` の catalog へ集約し `catalog:` 参照へ。
 - **完了条件**: `pnpm run check:packages` が全パッケージ緑。`build:packages` の出力が不変。
 - **検証**: `pnpm run check:packages` → `pnpm run build:packages` → `pnpm test:e2e:external`。
+- **成果**: `scripts/package_metadata.mjs`に29公開packageの共通メタデータ・package種別ごとの`files`/build script規約・catalog対象依存を集約。`scripts/check_packages.mjs`がrepository/license/publishConfig/homepage/bugs、`files`、build/prepack、exports entryの出力規約、catalog参照を検証する。`pnpm run check:packages`で実行できる。
 
 ### #12 A3/A4: Root / Config resolutionを一本化（A系 / Medium–Large / 依存なし）
 - **概要**: `projectRoot/appRoot/configRoot/contentRoot` の意味を確定し、CLI と HonoX で同一 resolver を共有。通常 consumer から `workspaceRoot` 前提を除去。

@@ -3,53 +3,60 @@
 | 1 | A1 | Package公開境界を作る | ✅ 完了 | Large | 外部Plugin/Theme ecosystemの前提 |
 | 2 | A1.5 | npm配布形式を完成させる | ✅ 完了 | Medium–Large | ESM + `.d.ts` + NodeNext + LICENSE + `pnpm pack` + external consumer検証済み |
 | 3 | A1.6 | External Site Build E2E | ✅ 完了 | Medium | tarballのみで`check/doctor/inspect/build`、Bundler/NodeNext typecheckを保証 |
-| **4** | **R1** | **Graph layout重複解消** | 🔧 次 | Medium | `local-graph` / `garden-explorer`の共通実装を抽出（Phase 1） |
+| **4** | **R1** | **Graph layout重複解消** | ✅ 完了 | Medium | `local-graph` / `garden-explorer`の共通実装を抽出（Phase 1） |
 | 5 | R5 | Backlink走査共通化 | 未着手 | Small | Core ContentGraphへ寄せる（Phase 1） |
 | 6 | R6 | clientEntries/endpoints規約 | 未着手 | Small | 外部Plugin author向けの正解パターンを固定（Phase 1） |
-| 7 | R7 | 共通ユーティリティをCoreへ集約 | 未着手 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消。`@riebeckite/core` indexから公開（Phase 1） |
-| 8 | R8 | 空CSS削除とlint warning解消 | 未着手 | Small | 0バイトの`apps/web/app/styles/tag.css`・`tasklist.css`と`style.css`の`@import`を削除。`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
-| 9 | R9 | Package metadata規約の機械検証 | 未着手 | Medium | ~30 package.jsonの定型(exports/files/scripts/publishConfig/repository等)を`scripts/check_packages.mjs`で検証。依存はpnpm catalogへ集約（Phase 2） |
-| **10** | **A3/A4** | **Root / Config resolutionを一本化** | 未着手 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
-| **11** | **A4.5** | **External HonoX/SSG境界を安定化** | 未着手 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
-| **12** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
-| **13** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
-| 14 | R2 | ContentManager責務分割 | 未着手 | Medium | 約443行の責務整理。build調整(prepareBuild/commitBuildState)とpermalink/redirect解決を協調オブジェクト/helperへ抽出し公開APIは不変（Phase 3） |
-| 15 | R10 | seoプラグイン分割 | 未着手 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
-| 16 | R11 | diagnostics analyze分割 | 未着手 | Small–Medium | 472行の`plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
-| **17** | **A2** | **Plugin間の直接依存を排除** | 未着手 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
-| **18** | **A6** | **HonoX UI primitiveの境界固定** | 未着手 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
-| **19** | **A7** | **Site Application拡張contract** | 未着手 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
-| **20** | **A8** | **Local Plugin / Local Theme対応保証** | 未着手 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
-| 21 | C1/C2 | Content Query API | 未着手 | Medium | tag/folder/date/frontmatter等の共通問い合わせ基盤 |
-| 22 | F1 | Taxonomy / Collection / Archive | 未着手 | Medium | Query APIを利用してtag/archive等を汎用化 |
-| 23 | P1 | provides/requires規約整備 | 未着手 | Medium | capability systemを実Pluginで利用可能に |
-| **24** | **S1** | **Publish Boundary / Leak Check** | 未着手 | Medium | Private Vaultから非公開note/attachmentが公開artifactへ漏れないことを保証 |
-| 25 | C3 | Incremental build依存改善 | 未着手 | Medium | asset依存・build state APIを整理。外部Vault CIにも重要 |
-| 26 | P2 | Plugin CSS contract | 未着手 | Medium | `rb-<plugin>-*`等のstable styling hookを定義 |
-| 27 | R4 | `startBuild` lifecycle整理 | 未着手 | Small | 複数経路から呼ばれる問題を整理 |
-| **28** | **C4** | **HonoX高レベルhelper** | 未着手 | Medium | Vite/HonoX/SSR externals等の内部知識をconsumerから隠す |
-| **29** | **D1** | **`create-riebeckite` / `riebeckite init`** | 未着手 | Large | 完成したSite Application contractからstarterを生成 |
-| **30** | **D1.5** | **Cloudflare deployment template** | 未着手 | Medium | GitHub Actions + Workers Static Assetsの標準構成 |
-| 31 | D2 | CLI config/scan重複削減 | 未着手 | Medium | command間のconfig/source解決重複を整理 |
-| 32 | D3 | `inspect build`強化 | 未着手 | Small | invalid reason等を表示 |
-| 33 | D4 | `doctor` build-state検証強化 | 未着手 | Medium | fingerprint不一致等を検出 |
-| 34 | D5 | `profile` diagnostics対応 | 未着手 | Small | profile観測範囲を拡張 |
-| 35 | D6 | CLI error renderer強化 | 未着手 | Small | error code/file/hint等を表示 |
-| **36** | **D7** | **Dependency hygiene E2E** | 未着手 | Small–Medium | `apps/web`等のundeclared/hoisted dependency依存を検出 |
-| 37 | F2 | Pagination | 未着手 | Small | Query APIへoffset/limit等を追加 |
-| 38 | — | Related Posts Plugin | 未着手 | Small–Medium | ContentGraphを利用 |
-| 39 | — | Reading Time Plugin | 未着手 | Small | 本文から読了時間算出 |
+| 7 | R7 | 共通ユーティリティをCoreへ集約 | 未着手 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
+| 8 | R12 | 読了時間をCoreユーティリティ化 | 未着手 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
+| 9 | R8 | 空CSS削除とlint warning解消 | 未着手 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
+| 10 | R9 | Package metadata規約の機械検証 | 未着手 | Medium | ~30 package.jsonの定型を`scripts/check_packages.mjs`で検証。依存はpnpm catalog集約（Phase 2） |
+| **11** | **A3/A4** | **Root / Config resolutionを一本化** | 未着手 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
+| **12** | **A4.5** | **External HonoX/SSG境界を安定化** | 未着手 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
+| **13** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
+| **14** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
+| 15 | R2 | ContentManager責務分割 | 未着手 | Medium | 約443行の責務整理。build調整とpermalink/redirect解決を抽出し公開APIは不変（Phase 3 / A5.5後） |
+| 16 | R10 | seoプラグイン分割 | 未着手 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
+| 17 | R11 | diagnostics analyze分割 | 未着手 | Small–Medium | 472行の`plugins/diagnostics/src/analyze.ts`を`checks/`へ分割。`analyzeContent`はオーケストレータ化（Phase 3） |
+| **18** | **A2** | **Plugin間の直接依存を排除** | 未着手 | Medium | `garden-explorer → plugin-search`を切りPlugin独立性を確保 |
+| **19** | **A6** | **HonoX UI primitiveの境界固定** | 未着手 | Small | IntegrationがComponent Framework化するのを防ぎ、Site側の拡張境界を固定 |
+| **20** | **A7** | **Site Application拡張contract** | 未着手 | Medium | 外部Siteの`routes/components/islands/style`の所有・override方法を正式化 |
+| **21** | **A8** | **Local Plugin / Local Theme対応保証** | 未着手 | Medium | Site内extensionとnpm版を同一contractで扱えることをE2E保証 |
+| 22 | C1/C2 | Content Query API | 未着手 | Medium | tag/folder/date/frontmatter等の共通問い合わせ基盤 |
+| 23 | F1 | Taxonomy / Collection / Archive | 未着手 | Medium | Query APIを利用してtag/archive等を汎用化 |
+| 24 | P1 | provides/requires規約整備 | 未着手 | Medium | capability systemを実Pluginで利用可能に |
+| **25** | **S1** | **Publish Boundary / Leak Check** | 未着手 | Medium | Private Vaultから非公開note/attachmentが公開artifactへ漏れないことを保証 |
+| 26 | C3 | Incremental build依存改善 | 未着手 | Medium | asset依存・build state APIを整理。外部Vault CIにも重要 |
+| 27 | P2 | Plugin CSS contract | 未着手 | Medium | `rb-<plugin>-*`等のstable styling hookを定義 |
+| 28 | R4 | `startBuild` lifecycle整理 | 未着手 | Small | 複数経路から呼ばれる問題を整理 |
+| **29** | **C4** | **HonoX高レベルhelper** | 未着手 | Medium | Vite/HonoX/SSR externals等の内部知識をconsumerから隠す |
+| **30** | **D1** | **`create-riebeckite` / `riebeckite init`** | 未着手 | Large | 完成したSite Application contractからstarterを生成 |
+| **31** | **D1.5** | **Cloudflare deployment template** | 未着手 | Medium | GitHub Actions + Workers Static Assetsの標準構成 |
+| 32 | D2 | CLI config/scan重複削減 | 未着手 | Medium | command間のconfig/source解決重複を整理 |
+| 33 | D3 | `inspect build`強化 | 未着手 | Small | invalid reason等を表示 |
+| 34 | D4 | `doctor` build-state検証強化 | 未着手 | Medium | fingerprint不一致等を検出 |
+| 35 | D5 | `profile` diagnostics対応 | 未着手 | Small | profile観測範囲を拡張 |
+| 36 | D6 | CLI error renderer強化 | 未着手 | Small | error code/file/hint等を表示 |
+| **37** | **D7** | **Dependency hygiene E2E** | 未着手 | Small–Medium | `apps/web`等のundeclared/hoisted dependency依存を検出 |
+| 38 | F2 | Pagination | 未着手 | Small | Query APIへoffset/limit等を追加 |
+| 39 | — | Related Posts Plugin | 未着手 | Small–Medium | ContentGraphを利用 |
 | 40 | — | OG Image Plugin | 未着手 | Medium | build時OG image生成 |
 | 41 | — | Citation Plugin | 未着手 | Medium | 引用・参考文献管理 |
 | 42 | — | Scheduled Publish表示Plugin | 未着手 | Small | PublishStrategyをUI/diagnosticsへ表示 |
 
+## 優先度の考え方
+
+1. **完了済み（#1–#3）**: 外部 ecosystem の基盤。変更時は再検証。
+2. **リファクタリング Phase 1–2（#4–#10）を最優先**: 挙動を変えない低リスク整理。後続の A 系・Phase 3 の土台になり、作業コストあたりの効果が高い。`R12`（読了時間の Core 化）は `R7`（Core ユーティリティ集約）と同じ性質のため Phase 1 に統合。
+3. **A 系インフラ（#11–#14）**: 外部 consumer 成立の要（root 解決・SSG 境界・外部 Vault・filesystem 境界）。
+4. **Phase 3（#15–#17）**: `R2` は A5.5 の境界確定後。`R10`/`R11` は独立した大型分割。
+5. **A 系 contract（#18–#21）**: Plugin 独立性・UI/Site 拡張 contract。
+6. **以降（#22–#42）**: Query/Taxonomy/Publish 保証 → CLI/開発体験 → 追加 Plugin。
+
 ## リファクタリング一掃の実施順（2026-09-28 計画）
 
-優先度順の内訳:
-
-- **Phase 1（低リスク重複解消 / 最優先 #4–#8）**: R1 → R5 → R6 → R7 → R8
-- **Phase 2（パッケージ規約 / #9）**: R9
-- **Phase 3（大型モジュール分割 / A5.5 の後 #14–#16）**: R2 → R10 → R11
+- **Phase 1（低リスク重複解消・分離 / 最優先 #4–#9）**: R1 → R5 → R6 → R7 → R12 → R8
+- **Phase 2（パッケージ規約 / #10）**: R9
+- **Phase 3（大型モジュール分割 / A5.5 の後 #15–#17）**: R2 → R10 → R11
 
 横断方針:
 
@@ -80,7 +87,7 @@
 
 ---
 
-### #4 R1: Graph layout重複解消（🔧 次 / Phase 1 / Medium / 依存なし）
+### #4 R1: Graph layout重複解消（✅ 完了 / Phase 1 / Medium / 依存なし）
 - **概要**: `local-graph` と `garden-explorer` の `src/graph.ts` が byte 一致（各78行）で二重管理。共通実装を Core へ移設する。
 - **対象**:
   - `packages/plugins/local-graph/src/graph.ts`（削除対象）
@@ -137,7 +144,22 @@
 - **完了条件**: 各関数の定義が 1 つ。タグ正規化・エスケープ結果の出力 HTML が不変。
 - **検証**: `test:e2e:external`、該当プラグインの HTML 出力 diff（attachment/media/excalidraw/autocardlink/obsidian-markdown）。
 
-### #8 R8: 空CSS削除とlint warning解消（Phase 1 / Small / 依存なし）
+### #8 R12: 読了時間をCoreユーティリティ化（Phase 1 / Small / 依存なし）
+- **概要**: 読了時間の算出は**すでに実装済み**。ただし `packages/plugins/seo/index.ts:377` の `calculateReadingTime` は SEO の `PluginSeoExtension` 経由でしか使えず、`apps/web` は `lib/seo.ts:68-77` の `findSeoProvider()` を経由するため **SEO プラグイン未設定だと例外**になる。純粋関数を Core へ移して結合を解消する（新規プラグインは作らない）。
+- **対象**:
+  - `packages/plugins/seo/index.ts:377`（`calculateReadingTime`、および依存する private `stripHtml:477`）
+  - `packages/core`（新規ユーティリティ、例: `src/utils/text.ts`）
+  - `packages/core/src/types/plugin_seo.ts`（extension の `calculateReadingTime` を削除/非推奨化するか判断）
+  - `apps/web/app/lib/seo.ts:12`（re-export を削除）、`apps/web/app/components/article.tsx:8,21`（import 先を Core に変更）
+- **実装方針**:
+  1. `calculateReadingTime` と必要な `stripHtml` を Core の新規ユーティリティへ移動（**仕様保持**: CJK 500字/分 + ラテン語 220語/分、最小1分）。
+  2. `packages/core/index.ts` から `calculateReadingTime` を公開。
+  3. `seo` は Core から import して構造化データ（`timeRequired` `PTxM`、`seo/index.ts:147,163,179-180`）の内部利用を維持。
+  4. `apps/web` は `@riebeckite/core` から直接 import し、`lib/seo.ts` の re-export を削除。
+- **完了条件**: SEO プラグイン未設定でも読了時間が算出・表示できる。既存表示（「X min」）と SEO 構造化データが不変。
+- **検証**: `pnpm build` → apps/web の記事表示 → `test:e2e:external`。
+
+### #9 R8: 空CSS削除とlint warning解消（Phase 1 / Small / 依存なし）
 - **概要**: 死にファイルと唯一の lint warning を解消。
 - **対象**: `apps/web/app/styles/tag.css`（0バイト）, `apps/web/app/styles/tasklist.css`（0バイト）, `apps/web/app/style.css:5-6`（`@import`）, `packages/plugins/code-enhance/style.css:108`（`noDescendingSpecificity`）
 - **実装方針**:
@@ -146,7 +168,7 @@
 - **完了条件**: 0 バイト CSS が消え、`biome lint .` が warning 0。
 - **検証**: `pnpm exec biome lint .`、`pnpm build`（apps/web）。
 
-### #9 R9: Package metadata規約の機械検証（Phase 2 / Medium / 依存: Phase 1）
+### #10 R9: Package metadata規約の機械検証（Phase 2 / Medium / 依存: Phase 1）
 - **概要**: ~30 パッケージの `package.json` 定型（`exports`/`files`/`scripts.build`/`prepack`/`publishConfig`/`repository`/`homepage`/`bugs`/`license`）の重複を、生成ではなく**検証**で統制。
 - **対象**: `scripts/build_package.mjs`、各 `packages/**/package.json`、`pnpm-workspace.yaml`、ルート `package.json`
 - **実装方針**:
@@ -157,7 +179,7 @@
 - **完了条件**: `pnpm run check:packages` が全パッケージ緑。`build:packages` の出力が不変。
 - **検証**: `pnpm run check:packages` → `pnpm run build:packages` → `pnpm test:e2e:external`。
 
-### #10 A3/A4: Root / Config resolutionを一本化（A系 / Medium–Large / 依存なし）
+### #11 A3/A4: Root / Config resolutionを一本化（A系 / Medium–Large / 依存なし）
 - **概要**: `projectRoot/appRoot/configRoot/contentRoot` の意味を確定し、CLI と HonoX で同一 resolver を共有。通常 consumer から `workspaceRoot` 前提を除去。
 - **現状**:
   - `packages/cli/src/application_root.ts`: `RiebeckiteProject = {invocationCwd, projectRoot, configRoot, configPath}`（`projectRoot === configRoot`）。`resolveRiebeckiteProject` が親ディレクトリ探索で config を発見。
@@ -174,28 +196,28 @@
 - **検証**: `test:e2e:external`（fixture は standalone npm）、`pnpm build`、docs/en configuration・architecture の更新。
 - **注意**: Core に HonoX/Vite を持ち込まない（resolver は Core か Integration の適切な層に置く）。
 
-### #11 A4.5: External HonoX/SSG境界を安定化（A系 / Medium / 依存: A3/A4）
+### #12 A4.5: External HonoX/SSG境界を安定化（A系 / Medium / 依存: A3/A4）
 - **概要**: `@hono/vite-ssg` patch が npm consumer に伝播しない問題と cwd 依存を解消。
 - **対象**: `patches/@hono__vite-ssg@0.3.3.patch`、`packages/integrations/honox/src/vite_runner.ts`（`findViteApplicationRoots(configRoot)`）、`vite_plugin.ts`（`process.env.RIEBECKITE_APP_ROOT` 伝播）
 - **実装方針**: patch 依存を解消または integration 内に同梱する方針を決める。app root 探索を明示 `appRoot` 引数へ寄せ、cwd 相対の暗黙解決を排除。SSG 呼び出しを integration 内で完結。
 - **完了条件**: patch 無し（または同梱）で外部 consumer が build 可能、別 cwd から実行しても同一結果。
 - **検証**: `test:e2e:external` を複数 cwd から実行。
 
-### #12 A5: External Content Source / Vault対応を保証（A系 / Medium / 依存: A3/A4）
+### #13 A5: External Content Source / Vault対応を保証（A系 / Medium / 依存: A3/A4）
 - **概要**: Site 外の Obsidian Vault を正式サポート。`contentRoot` が project 外でも成立させる。
 - **対象**: `packages/core/src/content/file_system_content_source.ts`、`content_source.ts`、`attachment.ts`、`plugins/attachment`, `plugins/media`
 - **実装方針**: content source が `contentRoot`（vault）と `projectRoot` を分離して扱う。attachment/media のパス解決を content source 基準へ統一。doctor/check の root 表示を調整。
 - **完了条件**: 絶対/相対の外部 `contentRoot` で build が通る。
 - **検証**: `test:e2e:external` に外部 Vault ケースを追加。
 
-### #13 A5.5: Pluginのfilesystem直接依存を除去（A系 / Medium–Large / 依存: A3/A4）
+### #14 A5.5: Pluginのfilesystem直接依存を除去（A系 / Medium–Large / 依存: A3/A4）
 - **概要**: プラグインからの `node:fs`/`node:path` 直接依存を ContentSource/Asset 境界へ移行。
 - **現状の直接依存**: `plugins/diagnostics/src/vault.ts:1-2`, `diagnostics/bin.ts:1`, `excalidraw/index.ts:1-2`, `attachment/index.ts:1-2`, `media/index.ts:1`, `diff/index.ts:1`, `mermaid/src/render-static.ts:1,3`, `diff/src/git/history_reader.ts:2`
 - **実装方針**: Core の content source / asset / build-time API 経由に置換し、Node 専用処理は build-time contract として明示。`diagnostics/bin.ts` は CLI 側へ移す等の層整理も検討。
 - **完了条件**: プラグイン本体から `node:fs` 直接 import が消える（または境界 API 経由に限定）。
 - **検証**: build、`test:e2e:external`、diagnostics/excalidraw/attachment の実動作。
 
-### #14 R2: ContentManager責務分割（Phase 3 / Medium / 依存: A5.5）
+### #15 R2: ContentManager責務分割（Phase 3 / Medium / 依存: A5.5）
 - **概要**: `packages/core/src/content/content_manager.ts`（443行）を責務分割。**公開 API は不変**。
 - **現状**: `class ContentManager` の公開メソッド `getAllPosts/scan/getPost/getContentIndex/getProcessedContent/getManifest/build/getBacklinks/getContentGraph/getDiagnostics/inspect/dispose/getContentLocations`、private `getContentEntries/getPermalinks/populateRedirects/readTextEntry/readContentEntry/getBuildPreparation/enableBuildTime/prepareBuild/commitBuildState/observability`。
 - **実装方針**:
@@ -206,142 +228,140 @@
 - **完了条件**: 公開メソッド・戻り値・状態ファイル（`.riebeckite/build/content-state.json`）の形式が不変。
 - **検証**: build → `check`/`doctor`/`inspect` → `test:e2e:external`。
 
-### #15 R10: seoプラグイン分割（Phase 3 / Small–Medium / 依存なし）
+### #16 R10: seoプラグイン分割（Phase 3 / Small–Medium / 依存なし）
 - **概要**: `packages/plugins/seo/index.ts`（454行）を `src/` 配下へ分割し、`index.ts` は re-export のみに。
 - **現状の公開 API**: `seo`, `buildArticleSeo`, `buildWebsiteSeo`, `buildAbsoluteUrl`, `buildPostUrl`, `getDescription`, `filterFeedEntries`, `renderSitemap`, `renderRobots`, `renderRssFeed`, `renderAtomFeed`, `renderJsonFeed`, `getEntryPublishedTime`, `getEntryUpdatedTime`, `getHtmlLanguage`, `calculateReadingTime`、型 `FeedOptions`/`SeoPluginOptions` 等。
 - **実装方針**: 責務別ファイル（metadata builders / feeds / sitemap・robots / schema / url / xml-escape）に移動し、`index.ts` で re-export。`createSeoEndpoints` は endpoints モジュールへ。
 - **完了条件**: 公開 API が不変、`index.ts` が薄い re-export。
 - **検証**: build → apps/web（sitemap/robots/feed 出力）→ `test:e2e:external`。
+- **注意**: `#8 R12` で `calculateReadingTime` を Core へ移した場合は re-export 対象から除外する。
 
-### #16 R11: diagnostics analyze分割（Phase 3 / Small–Medium / 依存なし）
+### #17 R11: diagnostics analyze分割（Phase 3 / Small–Medium / 依存なし）
 - **概要**: `packages/plugins/diagnostics/src/analyze.ts`（472行）を `checks/` 配下へ分割。
 - **現状の関数**: `analyzeContent`（オーケストレータ）、`checkWikilinks`, `checkMarkdownReferences`, `checkFrontmatter`, `checkSlugCollisions`, `checkDuplicateTitles`, `checkOrphans`, `checkUnusedAssets`, `checkExcludedPublic`、補助 `addIncoming`/`push`/`severityFor`/`normalizeOptions`。
 - **実装方針**: 各 `check*` を個別ファイルへ移動し、`analyzeContent` はチェックを集約するオーケストレータとして残す。`AnalysisState` 型は共有モジュールへ。
 - **完了条件**: 診断結果（件数・severity・message）が不変。
 - **検証**: `riebeckite check` の出力 diff → `test:e2e:external`。
 
-### #17 A2: Plugin間の直接依存を排除（A系 / Medium / 依存: P1 と関連）
+### #18 A2: Plugin間の直接依存を排除（A系 / Medium / 依存: P1 と関連）
 - **概要**: `garden-explorer → plugin-search` の直接依存を切る。
 - **現状**: `packages/plugins/garden-explorer/src/garden-explorer.ts:1` が `import type { SearchItem } from "@riebeckite/plugin-search"`。
 - **実装方針**: `SearchItem` 相当の型を Core の contract へ移すか garden-explorer 側でローカル定義。連携は `provides`/`requires` capability 経由の任意依存にする。
 - **完了条件**: `garden-explorer/package.json` の依存から `@riebeckite/plugin-search` が消え、型の重複/循環がない。
 - **検証**: build、`test:e2e:external`。
 
-### #18 A6: HonoX UI primitiveの境界固定（A系 / Small）
+### #19 A6: HonoX UI primitiveの境界固定（A系 / Small）
 - **概要**: Integration が Component Framework 化するのを防ぎ、公開 primitive の境界を固定。
 - **対象**: `packages/integrations/honox/src/ui/primitives.tsx`
 - **実装方針**: 公開 primitive 一覧を確定し docs 化。apps/web がそれのみを使うよう整理。
 - **完了条件**: 公開 primitive が文書化され、apps/web・外部 Site が同一 contract を使用。
 - **検証**: `pnpm build`、docs 更新。
 
-### #19 A7: Site Application拡張contract（A系 / Medium）
+### #20 A7: Site Application拡張contract（A系 / Medium）
 - **概要**: 外部 Site の `routes`/`components`/`islands`/`style` の所有・override 方法を正式化。
 - **実装方針**: apps/web を contract に沿わせ、override 点（レイアウト・ルート・スタイル）を明文化。外部 Site の最小例を docs に追加。
 - **完了条件**: docs と実例で override が再現可能。
 - **検証**: `test:e2e:external`、apps/web build。
 
-### #20 A8: Local Plugin / Local Theme対応保証（A系 / Medium）
+### #21 A8: Local Plugin / Local Theme対応保証（A系 / Medium）
 - **概要**: Site 内 extension と npm 版を同一 contract で扱えることを E2E 保証。
 - **実装方針**: fixture に local plugin/theme を追加し、npm 版と同様に解決・適用されることを検証。
 - **完了条件**: local/npm 双方が同一 API で動作。
 - **検証**: `test:e2e:external` 拡張。
 
-### #21 C1/C2: Content Query API（Medium）
+### #22 C1/C2: Content Query API（Medium）
 - **概要**: tag/folder/date/frontmatter 等の共通問い合わせ基盤。
 - **対象**: `packages/core/src/content/content_manager.ts`、`types/content_manifest.ts`
 - **実装方針**: manifest/graph 上でフィルタ・ソート・グルーピングする Query API を Core に追加。プラグインはこれを使ってページ生成。
 - **完了条件**: 代表クエリ（tag 一覧、期間、フォルダ）が API で表現可能。
 - **検証**: build、利用プラグインの出力。
 
-### #22 F1: Taxonomy / Collection / Archive（Medium / 依存: C1/C2）
+### #23 F1: Taxonomy / Collection / Archive（Medium / 依存: C1/C2）
 - **概要**: Query API を利用して tag/archive 等を汎用化。
 - **実装方針**: collection 抽象（taxonomy→URL→一覧ページ）を Core/Plugin 契約として定義し、既存 tag ページを移行。
 - **完了条件**: tag/archive が同一メカニズムで生成される。
 
-### #23 P1: provides/requires規約整備（Medium）
+### #24 P1: provides/requires規約整備（Medium）
 - **概要**: capability system を実 Plugin で利用可能にする。
 - **対象**: `packages/core/src/plugin/plugin_dependency.ts`、`types/plugin.ts`
 - **実装方針**: provides/requires/optional の解決・診断・エラー（`plugin_dependency_error.ts`）を実利用に耐える形へ。A2 の連携基盤にする。
 - **完了条件**: 依存解決とエラー表示が E2E で確認できる。
 
-### #24 S1: Publish Boundary / Leak Check（Medium）
+### #25 S1: Publish Boundary / Leak Check（Medium）
 - **概要**: 非公開 note/attachment が公開 artifact に漏れないことを保証。
 - **対象**: `packages/core/src/types/publish_strategy.ts`、build 出力、`plugins/diagnostics`
 - **実装方針**: publish 判定を一貫適用し、出力/マニフェスト/検索インデックス/添付へ非公開物が混入しないことを検査する diagnostics を追加。
 - **完了条件**: 混入を検出するチェックが存在し、E2E で漏れなしを保証。
 
-### #25 C3: Incremental build依存改善（Medium）
+### #26 C3: Incremental build依存改善（Medium）
 - **概要**: asset 依存・build state API を整理。
 - **対象**: `content_build_state.ts`, `content_build_state_store.ts`, `content_fingerprint.ts`, `affected_content.ts`, `content_change_set.ts`
 - **実装方針**: asset/URL の依存を fingerprint に取り込み、変化時の再生成範囲を正しく算出。
 - **完了条件**: 増分ビルドの結果がフルビルドと一致。
 
-### #26 P2: Plugin CSS contract（Medium）
+### #27 P2: Plugin CSS contract（Medium）
 - **概要**: `rb-<plugin>-*` 等の stable styling hook を定義。
 - **対象**: `apps/web/app/.riebeckite/plugin-styles.css` 生成、各 plugin `style.css`、themes
 - **実装方針**: 命名規約を確定し docs 化。生成 CSS とテーマの適用順を安定化。
 - **完了条件**: hook 名が安定し、テーマ側からスタイル可能。
 
-### #27 R4: `startBuild` lifecycle整理（Small / 依存なし）
+### #28 R4: `startBuild` lifecycle整理（Small / 依存なし）
 - **概要**: `PluginRuntime.startBuild` が複数経路から呼ばれる問題を整理。
 - **現状**: `packages/core/src/plugin/plugin_runtime.ts:48` の `startBuild`（`buildStarted` ガード、`runSetup → runBuildStart → onBuildStart → onConfigResolved`）。呼び出し元は `content_manager.ts:156`（`getProcessedContent`）と `:318`（`getContentLocations`）の2経路。
 - **実装方針**: ライフサイクル段階（setup/configResolved/buildStart/…）を明示し、どの公開メソッドから呼ばれても同一順序で一度だけ実行されることを保証。必要なら状態機械またはテスト可能なフックに。
 - **完了条件**: 両経路でフック順序が同一、重複実行なし。
 - **検証**: `check`/`doctor`、`test:e2e:external`。
 
-### #28 C4: HonoX高レベルhelper（Medium）
+### #29 C4: HonoX高レベルhelper（Medium）
 - **概要**: Vite/HonoX/SSR externals 等の内部知識を consumer から隠す。
 - **対象**: `packages/integrations/honox/src/vite_plugin.ts`, `vite_runner.ts`, `ssg.ts`
 - **実装方針**: 設定一体型の higher-level helper を提供し、内部オプションを不要に。
 - **完了条件**: consumer が詳細オプション無しで build/dev 可能。
 
-### #29 D1: `create-riebeckite` / `riebeckite init`（Large / 依存: A7 等）
+### #30 D1: `create-riebeckite` / `riebeckite init`（Large / 依存: A7 等）
 - **概要**: 完成した Site Application contract から starter を生成。
 - **実装方針**: CLI に `init` を追加し、テンプレートから最小 Site を生成。`create-riebeckite` パッケージも提供。
 - **完了条件**: 生成物がそのまま `check/build` を通る。
 
-### #30 D1.5: Cloudflare deployment template（Medium）
+### #31 D1.5: Cloudflare deployment template（Medium）
 - **概要**: GitHub Actions + Workers Static Assets の標準構成。
 - **実装方針**: テンプレートと wrangler 設定、CI を提供。
 - **完了条件**: テンプレートでデプロイが再現。
 
-### #31 D2: CLI config/scan重複削減（Medium）
+### #32 D2: CLI config/scan重複削減（Medium）
 - **概要**: command 間の config/source 解決重複を整理。
 - **対象**: `packages/cli/src/application_root.ts`, `load_config.ts`, `commands/*`
 - **実装方針**: 解決処理を共通化。A3/A4 の resolver と統合。
 - **完了条件**: commands から重複コードが消える。
 
-### #32 D3: `inspect build`強化（Small）
+### #33 D3: `inspect build`強化（Small）
 - **概要**: invalid reason 等を表示。
 - **対象**: `packages/cli/src/inspect/collectors.ts`, `renderer.ts`, `types.ts`
 - **完了条件**: 無効化理由が出力される。
 
-### #33 D4: `doctor` build-state検証強化（Medium）
+### #34 D4: `doctor` build-state検証強化（Medium）
 - **概要**: fingerprint 不一致等を検出。
 - **対象**: `packages/cli/src/doctor/checks/build_state.ts`
 - **完了条件**: 不一致を検出して報告。
 
-### #34 D5: `profile` diagnostics対応（Small）
+### #35 D5: `profile` diagnostics対応（Small）
 - **概要**: profile 観測範囲を拡張。
 - **対象**: `packages/cli/src/profile/*`, `core/src/observability.ts`
 
-### #35 D6: CLI error renderer強化（Small）
+### #36 D6: CLI error renderer強化（Small）
 - **概要**: error code/file/hint 等を表示。
 - **対象**: `packages/cli/src/error_renderer.ts`
 
-### #36 D7: Dependency hygiene E2E（Small–Medium）
+### #37 D7: Dependency hygiene E2E（Small–Medium）
 - **概要**: `apps/web` 等の undeclared/hoisted 依存を検出。
 - **実装方針**: 宣言外 import を検出するチェックを E2E に追加。
 
-### #37 F2: Pagination（Small / 依存: C1/C2）
+### #38 F2: Pagination（Small / 依存: C1/C2）
 - **概要**: Query API へ offset/limit 等を追加。
 
-### #38 Related Posts Plugin（Small–Medium）
+### #39 Related Posts Plugin（Small–Medium）
 - **概要**: `ContentGraph` を利用して関連記事を算出。
 - **対象**: 新規 `packages/plugins/related-posts`、`core/src/content/content_graph.ts`
-
-### #39 Reading Time Plugin（Small）
-- **概要**: 本文から読了時間を算出（`plugins/seo` の `calculateReadingTime` を参考/共用）。
 
 ### #40 OG Image Plugin（Medium）
 - **概要**: build 時に OG image を生成。

@@ -44,9 +44,9 @@
 | 42 | — | OG Image Plugin | 未着手 | Medium | build時OG image生成 |
 | 43 | — | Citation Plugin | 未着手 | Medium | 引用・参考文献管理 |
 | 44 | — | Scheduled Publish表示Plugin | 未着手 | Small | PublishStrategyをUI/diagnosticsへ表示 |
-| 45 | — | diagnosticsのnote/attachment誤判定修正 | 未着手 | Small | `resolveWikilinkTarget`がnote slugを拡張子なしでindexするためnote targetを`attachment`と誤判定し`checkWikilinks`のnote分岐がデッド（#26 S1で回避済み） |
-| 46 | — | SSG動的routeの出力ファイル名修正 | 未着手 | Small–Medium | tag/archive等の動的routeが`<content-slug>`名のファイルで出力される既存挙動 |
-| 47 | — | 非ASCIIタグのslug空化対応 | 未着手 | Small | `slugify(...,{strict:true})`が空になり（例 `仕訳`）`/tags`に集約され得る既存挙動 |
+| 45 | — | diagnosticsのnote/attachment誤判定修正 | ✅ 完了 | Small | `resolveWikilinkTarget`がnote slugを拡張子なしでindexするためnote targetを`attachment`と誤判定し`checkWikilinks`のnote分岐がデッド（#26 S1で回避済み） |
+| 46 | — | SSG動的routeの出力ファイル名修正 | ✅ 完了 | Small–Medium | tag/archive等の動的routeが`<content-slug>`名のファイルで出力される既存挙動 |
+| 47 | — | 非ASCIIタグのslug空化対応 | ✅ 完了 | Small | `slugify(...,{strict:true})`が空になり（例 `仕訳`）`/tags`に集約され得る既存挙動 |
 
 ## 優先度の考え方
 
@@ -434,23 +434,29 @@
 
 ---
 
-### #45 diagnosticsのnote/attachment誤判定修正（Small）
+### #45 diagnosticsのnote/attachment誤判定修正（✅ 完了 / Small）
 - **概要**: diagnostics の `resolveWikilinkTarget` が note slug を拡張子なしで index するため、note target を `attachment` と誤判定し `checkWikilinks` の note 分岐（fragment 検証・incoming 収集）が実質デッド。
 - **対象**: `packages/plugins/diagnostics/src/`（Wikilink 解決・`checks/`）
 - **実装方針**: note と attachment の target 解決を区別し、note slug index を正しいキーで引く。既存の `#26 S1` の publish boundary チェックは `source.noteSlugs.has(value)` で回避しているため、その workaround の解消も検討。
 - **完了条件**: note target の fragment 検証・incoming 収集が機能し、診断結果が変化する場合は既存 E2E と整合。
 - **検証**: `pnpm --filter @riebeckite/plugin-diagnostics run build`、`pnpm run test:e2e:external`、`riebeckite check` 出力 diff。
+- **成果**: `ScanResult.targetIndex` を `Map<string, ResolvedTarget>` に変更し、note と attachment/image を区別して解決するようにした（`56fb32e`）。`publish_boundary.ts` の `source.noteSlugs.has(value)` workaround を削除。note target の incoming 収集が機能することを確認。
+- **検証結果**: `build:packages` / `test:e2e:external` / `biome lint`（348 files, error 0）/ `check:packages`（30 packages）すべて成功。
 
-### #46 SSG動的routeの出力ファイル名修正（Small–Medium）
+### #46 SSG動的routeの出力ファイル名修正（✅ 完了 / Small–Medium）
 - **概要**: tag/archive 等の動的 route が `<content-slug>` 名のファイルで出力される既存挙動（`dist/tags`, `dist/archive`）。
 - **対象**: HonoX SSG 統合（`packages/integrations/honox/src/ssg.ts` 等）と apps/web の動的 route。
 - **実装方針**: route の params 解決と出力パス決定を見直し、意図した URL 構造（`/tags/<slug>`, `/archive/<year>` 等）でファイルを出力する。
 - **完了条件**: 動的 route が正しいパスで出力され、リンクと一致。
 - **検証**: `pnpm build`、`dist` の構造確認、`test:e2e:external`。
+- **成果**: 浅い catch-all が深い sibling の SSG 列挙リクエストを横取りする問題を `contentRouteSsgParams` で、`next()` を呼ぶ handler が SSG 列挙から除外される（`handler.length > 1`）問題を `ssgEnumerableHandler` で解消（`276e031`）。あわせて `normalizeRequestPath` が percent-encoded を生成していたため非ASCII permalink が解決できなかった既存バグを、decode 方式に修正。scaffold の slugRoute テンプレートも追随。
+- **検証結果**: `pnpm build`（apps/web）で `dist/articles/*.html` 24 件すべてが実記事（`404 Not Found` は 0 件）、`dist/tags/<slug>.html`・`dist/archive/<year>/<month>.html` が正しいパスで出力され、リンクと一致。`build:packages` / `test:e2e:external` / `biome lint` / `check:packages` 成功。
 
-### #47 非ASCIIタグのslug空化対応（Small）
+### #47 非ASCIIタグのslug空化対応（✅ 完了 / Small）
 - **概要**: `slugify(...,{strict:true})` が非ASCIIタグ（例 `仕訳`）で空文字になり、`/tags` に集約され得る既存挙動。
 - **対象**: tag URL 解決（Core/permalink/apps/web）。
 - **実装方針**: 非ASCIIタグの slug 生成規則（transliteration または percent-encoding / 一意な hash 等）を定め、衝突を回避。
 - **完了条件**: 非ASCIIタグが一意な URL を持ち、衝突しない。
 - **検証**: `pnpm build`、tag ページ出力、`test:e2e:external`。
+- **成果**: `slugifyTagPath` をセグメント単位に分割し、slugify が空になる非ASCIIセグメントでは元のセグメントを保持する fallback を追加（`f240ad4`）。ASCII タグの URL は従来どおり。
+- **検証結果**: `pnpm build` で `dist/tags/仕訳.html`・`dist/tags/diary/睡眠時間.html` が生成されリンクと一致。`test:e2e:external` / `biome lint` / `check:packages` 成功。

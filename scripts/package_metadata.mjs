@@ -151,6 +151,10 @@ const packagePublishingMetadata = {
     description: "D2 diagram rendering for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "d2", "diagrams"],
   },
+  "packages/plugins/daily-notes": {
+    description: "Daily Note snippet widgets for Riebeckite sites.",
+    keywords: ["riebeckite", "plugin", "daily-notes", "obsidian"],
+  },
   "packages/plugins/dataview": {
     description: "Build-time dataview queries for Riebeckite content.",
     keywords: ["riebeckite", "plugin", "dataview", "obsidian"],
@@ -158,6 +162,10 @@ const packagePublishingMetadata = {
   "packages/plugins/diagnostics": {
     description: "Content diagnostics for Riebeckite and Obsidian vaults.",
     keywords: ["riebeckite", "plugin", "diagnostics", "obsidian"],
+  },
+  "packages/plugins/deploy": {
+    description: "Static hosting deployment output for Riebeckite sites.",
+    keywords: ["riebeckite", "plugin", "deploy", "static-hosting"],
   },
   "packages/plugins/diff": {
     description: "Git-backed note diffs and revision history for Riebeckite.",
@@ -245,6 +253,10 @@ const packagePublishingMetadata = {
     description: "Inline SVG QR code rendering for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "qr-code", "svg"],
   },
+  "packages/plugins/quality": {
+    description: "Static quality and accessibility inspection for Riebeckite HTML.",
+    keywords: ["riebeckite", "plugin", "accessibility", "quality"],
+  },
   "packages/plugins/query": {
     description: "Build-time content queries for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "query", "markdown"],
@@ -252,6 +264,10 @@ const packagePublishingMetadata = {
   "packages/plugins/recent-posts": {
     description: "Recent posts lists for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "recent-posts", "blog"],
+  },
+  "packages/plugins/rename": {
+    description: "Rename and move redirects for published Riebeckite notes.",
+    keywords: ["riebeckite", "plugin", "redirects", "rename"],
   },
   "packages/plugins/related-posts": {
     description: "Build-time related-post navigation for Riebeckite.",
@@ -281,6 +297,10 @@ const packagePublishingMetadata = {
   "packages/plugins/shortcodes": {
     description: "Remark directive shortcodes for Riebeckite Markdown.",
     keywords: ["riebeckite", "plugin", "shortcodes", "remark"],
+  },
+  "packages/plugins/text-fragment": {
+    description: "Text Fragment links and quotes for Riebeckite articles.",
+    keywords: ["riebeckite", "plugin", "text-fragment", "sharing"],
   },
   "packages/plugins/toc": {
     description: "Scroll-aware table of contents for Riebeckite articles.",

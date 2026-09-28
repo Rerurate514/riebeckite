@@ -1,7 +1,7 @@
 import { defineConfig } from "@riebeckite/core";
+import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { analytics } from "@riebeckite/plugin-analytics";
 import { attachment } from "@riebeckite/plugin-attachment";
-import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
@@ -83,8 +83,24 @@ export default defineConfig({
     obsidianMarkdown(),
     properties({
       render: "slot",
-      // include: ["title", "created", "updated", "tags"],
-      // order: ["title", "created", "updated", "tags"],
+      include: [
+        "created",
+        "modified",
+        "tags",
+        "status",
+        "kind",
+        "date",
+        "source",
+      ],
+      order: [
+        "created",
+        "modified",
+        "tags",
+        "status",
+        "kind",
+        "date",
+        "source",
+      ],
     }),
     aliasPlugin(),
     seo({

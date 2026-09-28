@@ -113,6 +113,9 @@ importers:
       '@riebeckite/plugin-seo':
         specifier: workspace:*
         version: link:../../packages/plugins/seo
+      '@riebeckite/plugin-series':
+        specifier: workspace:*
+        version: link:../../packages/plugins/series
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../../packages/plugins/toc
@@ -456,6 +459,12 @@ importers:
         version: 4.12.26
 
   packages/plugins/seo:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/series:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

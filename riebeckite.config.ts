@@ -16,6 +16,7 @@ import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
+import { series } from "@riebeckite/plugin-series";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { defaultTheme } from "@riebeckite/theme-default";
 
@@ -90,6 +91,7 @@ export default defineConfig({
     recentPostsPlugin(),
     localGraphPlugin(),
     gardenExplorerPlugin(),
+    series(),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

@@ -29,6 +29,7 @@
     "@riebeckite/plugin-recent-posts": "workspace:*",
     "@riebeckite/plugin-search": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
+    "@riebeckite/plugin-series": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
     "@riebeckite/theme-default": "workspace:*",
     "hono": "^4.12.25",

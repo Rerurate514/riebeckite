@@ -64,11 +64,15 @@ const PACKAGES = [
     name: "@riebeckite/plugin-recent-posts",
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
+  { directory: "packages/plugins/series", name: "@riebeckite/plugin-series" },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const SERIES_MARKER = "RIEBECKITE_EXTERNAL_SERIES_MARKER";
+const SERIES_PART_1_PERMALINK = "/notes/series-demo-1";
+const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -369,6 +373,20 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes(SERIES_MARKER)) {
+    fail(`generated HTML is missing the series marker (${SERIES_MARKER})`);
+  }
+  if (!combined.includes("rb-series")) {
+    fail("generated HTML is missing the series plugin output");
+  }
+  if (!combined.includes(`href="${SERIES_PART_1_PERMALINK}"`)) {
+    fail(`series navigation is missing part 1 (${SERIES_PART_1_PERMALINK})`);
+  }
+  if (!combined.includes(`href="${SERIES_PART_2_PERMALINK}"`)) {
+    fail(
+      `series navigation is missing the part 1 -> part 2 link (${SERIES_PART_2_PERMALINK})`,
+    );
   }
 
   for (const file of htmlFiles) {

@@ -1,0 +1,91 @@
+.rb-series {
+  --rb-series-paper: var(--rb-color-paper, #ffffff);
+  --rb-series-ink: var(--rb-color-ink, #1a1a1a);
+  --rb-series-muted: var(--rb-color-muted, #69645c);
+  --rb-series-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-series-ink) 16%, transparent)
+  );
+  --rb-series-accent: var(--rb-color-accent, #b4471f);
+  margin: 2rem 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rb-series-rule);
+  background: color-mix(
+    in srgb,
+    var(--rb-series-paper) 97%,
+    var(--rb-series-ink)
+  );
+  color: var(--rb-series-ink);
+}
+
+.rb-series__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.rb-series__title a,
+.rb-series__list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rb-series__title a:hover,
+.rb-series__list a:hover {
+  text-decoration: underline;
+}
+
+.rb-series__position {
+  margin-left: 0.5rem;
+  color: var(--rb-series-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.rb-series__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--rb-series-ink);
+}
+
+.rb-series__item {
+  margin: 0.25rem 0;
+}
+
+.rb-series__item a[aria-current="page"] {
+  color: var(--rb-series-accent);
+  font-weight: 600;
+}
+
+.rb-series__nav {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rb-series-rule);
+  font-size: 0.875rem;
+}
+
+.rb-series__prev,
+.rb-series__next {
+  color: var(--rb-series-accent);
+  text-decoration: none;
+}
+
+.rb-series__prev:hover,
+.rb-series__next:hover {
+  text-decoration: underline;
+}
+
+.rb-series--index {
+  margin: 2rem 0;
+}
+
+.rb-series--index .rb-series__title {
+  text-transform: none;
+}

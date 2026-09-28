@@ -29,6 +29,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/recent-posts",
   "packages/plugins/related-posts",
   "packages/plugins/responsive-image",
+  "packages/plugins/rich-embed",
   "packages/plugins/search",
   "packages/plugins/seo",
   "packages/plugins/shortcodes",

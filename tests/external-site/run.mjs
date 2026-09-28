@@ -61,6 +61,10 @@ const PACKAGES = [
     directory: "packages/plugins/responsive-image",
     name: "@riebeckite/plugin-responsive-image",
   },
+  {
+    directory: "packages/plugins/rich-embed",
+    name: "@riebeckite/plugin-rich-embed",
+  },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   {
     directory: "packages/plugins/diagnostics",
@@ -88,16 +92,8 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
-const DATAVIEW_NOTE_TITLE = "Dataview Alpha";
-const PROPERTY_MARKER = "RIEBECKITE_EXTERNAL_PROPERTY_MARKER";
-const KANBAN_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_MARKER";
-const KANBAN_BLOCK_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_BLOCK_MARKER";
-const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
-const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
-const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
-const CODE_ANNOTATIONS_MARKER = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
-const SHORTCODE_MARKER = "RIEBECKITE_EXTERNAL_SHORTCODE_MARKER";
 const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
+const RICHEMBED_MARKER = "RIEBECKITE_EXTERNAL_RICHEMBED_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -522,6 +518,12 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail(
       `generated HTML is missing the flashcards fixture card text (${FLASHCARDS_MARKER})`,
     );
+  }
+  if (!combined.includes(RICHEMBED_MARKER)) {
+    fail(`generated HTML is missing the rich embed marker (${RICHEMBED_MARKER})`);
+  }
+  if (!combined.includes("www.youtube-nocookie.com/embed/")) {
+    fail("generated HTML is missing the rich embed YouTube iframe");
   }
   if (
     !combined.includes('data-attachment-path="attachments/external-guide.pdf"')

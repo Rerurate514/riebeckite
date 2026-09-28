@@ -15,6 +15,7 @@ import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
+import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
@@ -49,6 +50,7 @@ export default defineConfig({
     recentPostsPlugin(),
     relatedPosts(),
     responsiveImage(),
+    richEmbed(),
     searchPlugin(),
     hoverPreviewPlugin(),
     shortcodes(),

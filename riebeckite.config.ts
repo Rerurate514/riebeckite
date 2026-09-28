@@ -23,6 +23,7 @@ import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
+import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
@@ -79,6 +80,7 @@ export default defineConfig({
     excalidraw(),
     canvas(),
     media(),
+    richEmbed(),
     attachment(),
     autoCardLinkPlugin(),
     codeEnhance({

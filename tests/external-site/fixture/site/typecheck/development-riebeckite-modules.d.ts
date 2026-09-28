@@ -78,6 +78,11 @@ declare module "@riebeckite/plugin-backlinks/components" {
   export default Backlinks;
 }
 
+declare module "@riebeckite/plugin-bases" {
+  export const bases: any;
+  export const basesPlugin: any;
+}
+
 declare module "@riebeckite/plugin-hover-preview" {
   export const hoverPreview: any;
   export const hoverPreviewPlugin: any;

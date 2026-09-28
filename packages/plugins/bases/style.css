@@ -1,0 +1,145 @@
+.rb-bases {
+  --rb-bases-ink: var(--rb-color-ink, #000000);
+  --rb-bases-paper: var(--rb-color-paper, #ffffff);
+  --rb-bases-muted: var(--rb-color-muted, #69645c);
+  --rb-bases-accent: var(--rb-color-accent, #686868);
+  --rb-bases-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-bases-ink) 18%, transparent)
+  );
+  --rb-bases-surface: color-mix(
+    in srgb,
+    var(--rb-bases-paper) 94%,
+    var(--rb-bases-ink)
+  );
+
+  margin: 1.5rem 0;
+  color: var(--rb-bases-ink);
+}
+
+.rb-bases__view + .rb-bases__view {
+  margin-top: 1.5rem;
+}
+
+.rb-bases__view-name {
+  margin: 0 0 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.rb-bases__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.rb-bases__heading {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rb-bases-ink);
+  text-align: left;
+  font-weight: 700;
+}
+
+.rb-bases__cell {
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+}
+
+.rb-bases__row:not(:last-child) .rb-bases__cell {
+  border-bottom: 1px solid var(--rb-bases-rule);
+}
+
+.rb-bases__link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rb-bases-rule);
+  text-underline-offset: 0.2em;
+}
+
+.rb-bases__link:hover,
+.rb-bases__link:focus-visible {
+  text-decoration-color: var(--rb-bases-accent);
+}
+
+.rb-bases__tag {
+  margin-right: 0.35rem;
+  color: var(--rb-bases-muted);
+  font-size: 0.8125em;
+  white-space: nowrap;
+}
+
+.rb-bases__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-bases__card {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rb-bases-rule);
+  background: var(--rb-bases-surface);
+}
+
+.rb-bases__card-title {
+  font-weight: 700;
+}
+
+.rb-bases__fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.75rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.rb-bases__field {
+  display: contents;
+}
+
+.rb-bases__field-label {
+  color: var(--rb-bases-muted);
+  font-weight: 400;
+}
+
+.rb-bases__field-value {
+  margin: 0;
+}
+
+.rb-bases__empty {
+  margin: 0;
+  color: var(--rb-bases-muted);
+  font-style: italic;
+}
+
+.rb-bases__fallback {
+  margin-top: 1rem;
+  color: var(--rb-bases-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-bases__fallback pre {
+  overflow-x: auto;
+  margin: 0.5rem 0 0;
+  padding: 0.75rem;
+  border: 1px solid var(--rb-bases-rule);
+  background: var(--rb-bases-surface);
+  font-size: 0.8125rem;
+}
+
+.rb-bases--error {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rb-bases-ink);
+  background: var(--rb-bases-surface);
+  font-size: 0.875rem;
+}
+
+html[data-theme="dark"] .rb-bases,
+html.dark .rb-bases {
+  --rb-bases-ink: var(--rb-color-paper, #ffffff);
+  --rb-bases-paper: var(--rb-color-ink, #000000);
+}

@@ -43,6 +43,7 @@ const PACKAGES = [
     directory: "packages/plugins/backlinks",
     name: "@riebeckite/plugin-backlinks",
   },
+  { directory: "packages/plugins/bases", name: "@riebeckite/plugin-bases" },
   {
     directory: "packages/plugins/canvas",
     name: "@riebeckite/plugin-canvas",
@@ -130,6 +131,7 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const BASES_MARKER = "RIEBECKITE_EXTERNAL_BASES_MARKER";
 const DATAVIEW_NOTE_TITLE = "Dataview Alpha";
 const PROPERTY_MARKER = "RIEBECKITE_EXTERNAL_PROPERTY_MARKER";
 const KANBAN_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_MARKER";
@@ -508,6 +510,21 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes(BASES_MARKER)) {
+    fail(`generated HTML is missing the bases marker (${BASES_MARKER})`);
+  }
+  if (!combined.includes("rb-bases")) {
+    fail("generated HTML is missing the bases plugin output");
+  }
+  if (!combined.includes("data-bases")) {
+    fail("bases placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes('class="rb-bases__link"')) {
+    fail("bases plugin did not render an entry link");
+  }
+  if (!combined.includes('href="/notes/example"')) {
+    fail("bases plugin did not link to the known fixture note");
   }
   if (!combined.includes('data-dataview-type="list"')) {
     fail("dataview plugin did not render a LIST result");

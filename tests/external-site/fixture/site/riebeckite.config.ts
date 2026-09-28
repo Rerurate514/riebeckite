@@ -3,6 +3,7 @@ import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { analytics } from "@riebeckite/plugin-analytics";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
@@ -63,6 +64,7 @@ export default defineConfig({
     wavedrom(),
     backlinksPlugin(),
     queryPlugin(),
+    bases(),
     dataviewPlugin(),
     flashcardsPlugin(),
     kanban(),

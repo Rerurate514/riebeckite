@@ -4,6 +4,7 @@ import { attachment } from "@riebeckite/plugin-attachment";
 import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
@@ -132,6 +133,7 @@ export default defineConfig({
     tocPlugin(),
     backlinksPlugin(),
     queryPlugin(),
+    bases(),
     dataviewPlugin(),
     flashcardsPlugin(),
     kanban(),

@@ -50,6 +50,7 @@ import { analytics } from "@riebeckite/plugin-analytics";
 import { initAnalytics } from "@riebeckite/plugin-analytics/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { bases } from "@riebeckite/plugin-bases";
 import {
   hoverPreviewPlugin,
   resolveHoverPreviewOptions,
@@ -127,6 +128,7 @@ export const resolvedEntries = {
   initAnalytics,
   backlinksPlugin,
   Backlinks,
+  bases,
   hoverPreviewPlugin,
   resolveHoverPreviewOptions,
   initHoverPreview,

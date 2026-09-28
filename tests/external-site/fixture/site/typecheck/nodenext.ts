@@ -42,6 +42,7 @@ import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { qrCode } from "@riebeckite/plugin-qr-code";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -76,6 +77,7 @@ export const resolvedEntries = {
   backlinksPlugin,
   Backlinks,
   obsidianMarkdown,
+  qrCode,
   recentPostsPlugin,
   RecentPosts,
   searchPlugin,

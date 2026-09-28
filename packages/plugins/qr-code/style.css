@@ -1,0 +1,72 @@
+.rb-qr {
+  --rb-qr-paper: var(--rb-color-paper, #ffffff);
+  --rb-qr-ink: var(--rb-color-ink, #000000);
+  --rb-qr-muted: var(--rb-color-muted, #69645c);
+  --rb-qr-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-qr-ink) 18%, transparent)
+  );
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 100%;
+  margin: 2rem auto;
+  border: 1px solid var(--rb-qr-rule);
+  background: var(--rb-qr-paper);
+  color: var(--rb-qr-ink);
+}
+
+.rb-qr__caption {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rb-qr-rule);
+  color: var(--rb-qr-muted);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.rb-qr__canvas {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.rb-qr__canvas > svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.rb-qr__fallback {
+  border-top: 1px solid var(--rb-qr-rule);
+  color: var(--rb-qr-muted);
+  font-size: 0.8125rem;
+}
+
+.rb-qr__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rb-qr__fallback pre {
+  overflow: auto;
+  margin: 0 1rem 0.75rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rb-qr-rule);
+  color: var(--rb-qr-ink);
+  background: color-mix(in srgb, var(--rb-qr-ink) 6%, transparent);
+}
+
+.rb-qr[data-qr="error"] .rb-qr__canvas:empty::before {
+  content: "QR code could not be rendered.";
+  color: var(--rb-qr-muted);
+}
+
+.rb-qr[data-qr="pending"] .rb-qr__canvas:empty::before {
+  content: "Rendering QR code…";
+  color: var(--rb-qr-muted);
+}
+
+html[data-theme="dark"] .rb-qr,
+html.dark .rb-qr {
+  --rb-qr-paper: var(--rb-color-ink, #000000);
+  --rb-qr-ink: var(--rb-color-paper, #ffffff);
+}

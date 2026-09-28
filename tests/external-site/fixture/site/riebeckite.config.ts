@@ -4,6 +4,7 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { qrCode } from "@riebeckite/plugin-qr-code";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -24,6 +25,7 @@ export default defineConfig({
   theme: localFixtureTheme(),
   plugins: [
     obsidianMarkdown(),
+    qrCode(),
     media(),
     attachment(),
     autoCardLinkPlugin(),

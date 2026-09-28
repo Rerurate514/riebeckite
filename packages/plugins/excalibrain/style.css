@@ -1,0 +1,94 @@
+.rb-excalibrain {
+  --rb-excalibrain-ink: var(--rb-color-ink, #000000);
+  --rb-excalibrain-paper: var(--rb-color-paper, #ffffff);
+  --rb-excalibrain-muted: var(--rb-color-muted, #69645c);
+  --rb-excalibrain-accent: var(--rb-color-accent, #686868);
+  --rb-excalibrain-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-excalibrain-ink) 18%, transparent)
+  );
+  --rb-excalibrain-surface: color-mix(
+    in srgb,
+    var(--rb-excalibrain-paper) 95%,
+    var(--rb-excalibrain-ink)
+  );
+
+  margin: 2rem 0;
+  color: var(--rb-excalibrain-ink);
+}
+
+.rb-excalibrain__heading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.rb-excalibrain__canvas {
+  overflow: auto;
+  border: 1px solid var(--rb-excalibrain-rule);
+  background: var(--rb-excalibrain-surface);
+}
+
+.rb-excalibrain__svg {
+  display: block;
+  width: 100%;
+  min-width: 32rem;
+  height: auto;
+}
+
+.rb-excalibrain__link {
+  fill: none;
+  stroke: var(--rb-excalibrain-rule);
+  stroke-width: 1.25;
+}
+
+.rb-excalibrain__link[data-relation-type="defined"] {
+  stroke: var(--rb-excalibrain-accent);
+}
+
+.rb-excalibrain__node-box {
+  fill: var(--rb-excalibrain-paper);
+  stroke: var(--rb-excalibrain-rule);
+  stroke-width: 1.25;
+}
+
+.rb-excalibrain__node[data-node-role="center"] .rb-excalibrain__node-box {
+  stroke: var(--rb-excalibrain-ink);
+  stroke-width: 2;
+}
+
+.rb-excalibrain__node[data-node-virtual="true"] .rb-excalibrain__node-box {
+  fill: none;
+  stroke-dasharray: 4 3;
+}
+
+.rb-excalibrain__node-label {
+  fill: var(--rb-excalibrain-ink);
+  font-size: 0.8125rem;
+}
+
+.rb-excalibrain__node-link {
+  text-decoration: none;
+}
+
+.rb-excalibrain__node-link:hover .rb-excalibrain__node-box,
+.rb-excalibrain__node-link:focus-visible .rb-excalibrain__node-box {
+  stroke: var(--rb-excalibrain-accent);
+  stroke-width: 2;
+}
+
+.rb-excalibrain[data-excalibrain-render="client"] .rb-excalibrain__canvas:empty::before {
+  display: block;
+  padding: 1rem;
+  content: "ExcaliBrain map is rendered in the browser.";
+  color: var(--rb-excalibrain-muted);
+  font-size: 0.8125rem;
+}
+
+html[data-theme="dark"] .rb-excalibrain,
+html.dark .rb-excalibrain {
+  --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
+  --rb-excalibrain-paper: var(--rb-color-ink, #000000);
+}

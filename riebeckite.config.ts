@@ -5,6 +5,7 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
+import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
@@ -65,6 +66,7 @@ export default defineConfig({
         dark: "dark",
       },
     }),
+    excaliBrain(),
     excalidraw(),
     media(),
     attachment(),

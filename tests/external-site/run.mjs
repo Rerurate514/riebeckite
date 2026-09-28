@@ -38,6 +38,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  {
+    directory: "packages/plugins/excalibrain",
+    name: "@riebeckite/plugin-excalibrain",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
@@ -46,6 +50,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const EXCALIBRAIN_MARKER = "RIEBECKITE_EXTERNAL_EXCALIBRAIN_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -392,6 +397,42 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes('data-fixture-theme="local"')) {
     fail("site-local theme attribute was not applied to the document");
+  }
+
+  const centerPage = htmlFiles
+    .map((file) => ({ file, html: fs.readFileSync(file, "utf8") }))
+    .find(({ html }) =>
+      html.includes('data-excalibrain-center="notes/excalibrain-center"'),
+    );
+  if (!centerPage) {
+    fail("the ExcaliBrain center page was not found in the build output");
+  }
+  const center = centerPage.html;
+  for (const snippet of [
+    "rb-excalibrain",
+    "data-excalibrain",
+    'data-node-role="parent"',
+    'data-node-role="child"',
+    'data-node-role="left-friend"',
+    'data-node-role="sibling"',
+  ]) {
+    if (!center.includes(snippet)) {
+      fail(`ExcaliBrain center page is missing ${snippet}`);
+    }
+  }
+  if (!center.includes(EXCALIBRAIN_MARKER)) {
+    fail(
+      `ExcaliBrain center page is missing the marker-titled related note (${EXCALIBRAIN_MARKER})`,
+    );
+  }
+  if (!center.includes('href="/notes/excalibrain-parent"')) {
+    fail("ExcaliBrain center page is missing the permalink to the parent note");
+  }
+  if (!center.includes('data-excalibrain-render="build"')) {
+    fail("ExcaliBrain center page did not report the build render mode");
+  }
+  if (!center.includes('<svg class="rb-excalibrain__svg"')) {
+    fail("ExcaliBrain center page did not inline the build-time SVG");
   }
 
   const cssFiles = walkFiles(distDir, (full) => full.endsWith(".css"));

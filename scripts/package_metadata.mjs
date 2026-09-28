@@ -9,6 +9,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/code-tabs",
   "packages/plugins/diagnostics",
   "packages/plugins/diff",
+  "packages/plugins/excalibrain",
   "packages/plugins/excalidraw",
   "packages/plugins/garden-explorer",
   "packages/plugins/lightbox",

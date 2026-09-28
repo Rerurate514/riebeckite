@@ -19,6 +19,7 @@
     "@riebeckite/plugin-backlinks": "workspace:*",
     "@riebeckite/plugin-code-enhance": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
+    "@riebeckite/plugin-excalibrain": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-garden-explorer": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",

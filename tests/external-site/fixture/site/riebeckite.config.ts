@@ -20,6 +20,7 @@ import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
+import { qrCode } from "@riebeckite/plugin-qr-code";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
@@ -51,6 +52,7 @@ export default defineConfig({
     obsidianMarkdown(),
     properties(),
     plantuml(),
+    qrCode(),
     media(),
     attachment(),
     marp(),

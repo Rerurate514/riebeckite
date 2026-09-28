@@ -67,6 +67,7 @@ import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { marp, marpPlugin } from "@riebeckite/plugin-marp";
+import { qrCode } from "@riebeckite/plugin-qr-code";
 import { properties } from "@riebeckite/plugin-properties";
 import {
   kanban,
@@ -147,6 +148,7 @@ export const resolvedEntries = {
   obsidianMarkdown,
   marp,
   marpPlugin,
+  qrCode,
   properties,
   kanban,
   kanbanPlugin,

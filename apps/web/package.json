@@ -41,6 +41,7 @@
     "@riebeckite/plugin-mermaid": "workspace:*",
     "@riebeckite/plugin-plantuml": "workspace:*",
     "@riebeckite/plugin-properties": "workspace:*",
+    "@riebeckite/plugin-qr-code": "workspace:*",
     "@riebeckite/plugin-query": "workspace:*",
     "@riebeckite/plugin-recent-posts": "workspace:*",
     "@riebeckite/plugin-related-posts": "workspace:*",

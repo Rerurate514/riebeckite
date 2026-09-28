@@ -34,6 +34,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/permalink",
   "packages/plugins/plantuml",
   "packages/plugins/properties",
+  "packages/plugins/qr-code",
   "packages/plugins/query",
   "packages/plugins/recent-posts",
   "packages/plugins/related-posts",

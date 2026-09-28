@@ -123,6 +123,7 @@ const PACKAGES = [
     name: "@riebeckite/plugin-ux",
   },
   { directory: "packages/plugins/marp", name: "@riebeckite/plugin-marp" },
+  { directory: "packages/plugins/qr-code", name: "@riebeckite/plugin-qr-code" },
   {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
@@ -140,6 +141,7 @@ const KANBAN_BLOCK_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_BLOCK_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const QR_MARKER = "RIEBECKITE_EXTERNAL_QR_MARKER";
 const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
 const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
 const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
@@ -711,6 +713,18 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes("rb-qr")) {
+    fail("qr-code plugin did not render the fixture QR block");
+  }
+  if (!combined.includes('data-qr="rendered"')) {
+    fail("qr-code plugin did not render the QR code at build time");
+  }
+  if (!combined.includes("<svg")) {
+    fail("qr-code plugin did not emit an inline SVG");
+  }
+  if (!combined.includes(QR_MARKER)) {
+    fail(`generated HTML is missing the qr fixture marker (${QR_MARKER})`);
   }
   if (!combined.includes(VEGALITE_MARKER)) {
     fail(`generated HTML is missing the Vega-Lite marker (${VEGALITE_MARKER})`);

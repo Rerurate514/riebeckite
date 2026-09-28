@@ -40,6 +40,8 @@ import SearchBar from "@riebeckite/plugin-search/components";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
+import { wavedrom } from "@riebeckite/plugin-wavedrom";
+import { initWaveDrom } from "@riebeckite/plugin-wavedrom/client";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 // Touch the resolved values so that unused-import elimination cannot hide a
@@ -71,13 +73,21 @@ export const resolvedEntries = {
   tocPlugin,
   initTableOfContents,
   TableOfContents,
+  wavedrom,
+  initWaveDrom,
   defaultTheme,
 } as const;
 
 export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },
   theme: defaultTheme(),
-  plugins: [obsidianMarkdown(), autoCardLinkPlugin(), tocPlugin(), searchPlugin()],
+  plugins: [
+    obsidianMarkdown(),
+    autoCardLinkPlugin(),
+    tocPlugin(),
+    searchPlugin(),
+    wavedrom(),
+  ],
 });
 
 export function html(post: PostContent): string {

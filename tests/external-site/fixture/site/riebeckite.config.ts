@@ -8,6 +8,7 @@ import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { tocPlugin } from "@riebeckite/plugin-toc";
+import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -31,5 +32,6 @@ export default defineConfig({
     queryPlugin(),
     recentPostsPlugin(),
     searchPlugin(),
+    wavedrom(),
   ],
 });

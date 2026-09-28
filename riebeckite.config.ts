@@ -17,6 +17,7 @@ import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { tocPlugin } from "@riebeckite/plugin-toc";
+import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -66,6 +67,7 @@ export default defineConfig({
       },
     }),
     excalidraw(),
+    wavedrom(),
     media(),
     attachment(),
     autoCardLinkPlugin(),

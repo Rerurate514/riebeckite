@@ -69,11 +69,16 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  {
+    directory: "packages/plugins/wavedrom",
+    name: "@riebeckite/plugin-wavedrom",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const WAVEDROM_MARKER = "RIEBECKITE_EXTERNAL_WAVEDROM_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -403,6 +408,17 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes(WAVEDROM_MARKER)) {
+    fail(
+      `generated HTML is missing the wavedrom marker (${WAVEDROM_MARKER})`,
+    );
+  }
+  if (!combined.includes("data-wavedrom-spec")) {
+    fail("generated HTML is missing the wavedrom figure configuration");
+  }
+  if (!combined.includes("rb-wavedrom")) {
+    fail("generated HTML is missing the wavedrom figure markup");
   }
 
   for (const file of htmlFiles) {

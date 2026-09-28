@@ -22,6 +22,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/search",
   "packages/plugins/seo",
   "packages/plugins/toc",
+  "packages/plugins/wavedrom",
   "packages/themes/default",
   "packages/themes/gruvbox",
   "packages/themes/minimal",

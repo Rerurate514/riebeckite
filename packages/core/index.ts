@@ -184,6 +184,8 @@ export type {
   PluginContentLocationResolver,
   PluginContentRenderer,
   PluginContext,
+  PluginGeneratedHtml,
+  PluginGeneratedHtmlInspector,
   PluginGraphContext,
   PluginLifecycleContext,
   PluginManifestContext,

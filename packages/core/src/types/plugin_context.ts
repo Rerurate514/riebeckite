@@ -81,3 +81,19 @@ export type PluginRenderInput = {
   url: string;
   embed: boolean;
 };
+
+export type PluginGeneratedHtml = {
+  /** Output-relative path of the generated HTML file (e.g. "index.html"). */
+  path: string;
+  /** Final page HTML produced by the SSG build. */
+  html: string;
+};
+
+/**
+ * Inspects a fully rendered HTML page after the SSG stage. Use this instead of
+ * `addDiagnostics` when the rule needs the final document (head, layout,
+ * navigation) rather than the article body HTML only.
+ */
+export type PluginGeneratedHtmlInspector = (
+  page: PluginGeneratedHtml,
+) => readonly Diagnostic[];

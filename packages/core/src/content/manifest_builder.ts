@@ -6,6 +6,7 @@ import type {
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import type { PostContent } from "../types/post_content.js";
+import { uniqueStrings } from "../utils/collections.js";
 import { createContentGraph } from "./content_graph.js";
 import { extractContentLinks } from "./content_links.js";
 import {
@@ -103,10 +104,6 @@ function uniqueAssets(assets: ContentAsset[]): ContentAsset[] {
   return Array.from(
     new Map(assets.map((asset) => [asset.path, asset])).values(),
   );
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values));
 }
 
 function appendToMap<K, V>(map: Map<K, V[]>, key: K, value: V) {

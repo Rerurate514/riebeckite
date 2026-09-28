@@ -7,7 +7,7 @@
 | 5 | R5 | Backlink走査共通化 | ✅ 完了 | Small | Core ContentGraphへ寄せる（Phase 1） |
 | 6 | C5 | 画像コピーの増分化でbuild高速化 | 未着手 | Small | `build_images.ts`が参照画像約100MBを毎回無条件コピー。検証buildを高速化（Phase 1） |
 | 7 | R6 | clientEntries/endpoints規約 | ✅ 完了 | Small | Core helperとドキュメントで外部Plugin author向けの正解パターンを固定（Phase 1） |
-| 8 | R7 | 共通ユーティリティをCoreへ集約 | 未着手 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
+| 8 | R7 | 共通ユーティリティをCoreへ集約 | ✅ 完了 | Medium | `uniqueStrings`(7箇所)/`escapeHtml`・`escapeHtmlAttribute`(6箇所)/`normalizeTag`(2箇所)の重複を解消（Phase 1） |
 | 9 | R12 | 読了時間をCoreユーティリティ化 | 未着手 | Small | `calculateReadingTime`を`seo`からCoreへ移し、`apps/web`のSEOプラグイン依存を解消（Phase 1） |
 | 10 | R8 | 空CSS削除とlint warning解消 | 未着手 | Small | 0バイトCSSと`@import`削除、`code-enhance/style.css`のnoDescendingSpecificity解消（Phase 1） |
 | 11 | R9 | Package metadata規約の機械検証 | 未着手 | Medium | ~30 package.jsonの定型を`scripts/check_packages.mjs`で検証。依存はpnpm catalog集約（Phase 2） |

@@ -1,7 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { PluginRenderContext } from "@riebeckite/core";
-import { definePlugin, getExtension } from "@riebeckite/core";
+import {
+  definePlugin,
+  escapeHtml,
+  escapeHtmlAttribute,
+  getExtension,
+  type PluginRenderContext,
+} from "@riebeckite/core";
 
 export type AttachmentOptions = {
   showSize?: boolean;
@@ -88,17 +93,4 @@ function formatBytes(bytes: number): string {
   }
   const digits = value >= 10 || unitIndex === 0 ? 0 : 1;
   return `${value.toFixed(digits)} ${units[unitIndex]}`;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function escapeHtmlAttribute(value: string): string {
-  return escapeHtml(value);
 }

@@ -1,3 +1,4 @@
+import { normalizeTag } from "@riebeckite/core";
 import type { Content, Parent, Root, Text } from "mdast";
 import slugify from "slugify";
 import { visit } from "unist-util-visit";
@@ -73,16 +74,6 @@ export function remarkObsidianTag(opt: TagOptions = {}) {
       }
     });
   };
-}
-
-function normalizeTag(raw: string): string | null {
-  const cleaned = raw.replace(/[/-]+$/, "");
-  if (!cleaned) return null;
-
-  const isPurelyNumeric = /^[\p{N}/\-_]+$/u.test(cleaned);
-  if (isPurelyNumeric) return null;
-
-  return cleaned;
 }
 
 function buildTagUrl(tag: string, tagBase: string): string {

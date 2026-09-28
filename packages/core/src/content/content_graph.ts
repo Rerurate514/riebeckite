@@ -2,6 +2,7 @@ import type {
   ContentLink,
   ContentManifestEntry,
 } from "../types/content_manifest.js";
+import { uniqueStrings } from "../utils/collections.js";
 
 export type ContentGraphSource = {
   entries: ContentManifestEntry[];
@@ -94,8 +95,4 @@ function isResolvedNoteLink(
   link: ContentLink,
 ): link is ContentLink & { slug: string } {
   return link.kind === "note" && link.slug !== null;
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values));
 }

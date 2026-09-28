@@ -1,3 +1,4 @@
+import { uniqueStrings } from "@riebeckite/core";
 import { config } from "../config";
 
 type CssVariable = [name: string, value: string | undefined];
@@ -53,8 +54,4 @@ export function getThemeStylesheets(): string[] {
 
 export function getPluginScripts(): string[] {
   return [];
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return [...new Set(values)];
 }

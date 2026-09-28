@@ -1,4 +1,9 @@
-import { attachmentUrl, isAttachmentPath, isImagePath } from "@riebeckite/core";
+import {
+  attachmentUrl,
+  escapeHtmlAttribute,
+  isAttachmentPath,
+  isImagePath,
+} from "@riebeckite/core";
 import { slug } from "github-slugger";
 import type { Content, Html, Paragraph, Parent, Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
@@ -284,14 +289,6 @@ function createNoteEmbedNode(
     type: "html",
     value: `<div class="wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}"${fragmentAttribute}>${html}</div>`,
   };
-}
-
-function escapeHtmlAttribute(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
 }
 
 type Resolved = { kind: "note" | "image" | "attachment"; value: string };

@@ -1,6 +1,11 @@
 import path from "node:path";
-import type { PluginRenderContext } from "@riebeckite/core";
-import { definePlugin, getExtension } from "@riebeckite/core";
+import {
+  definePlugin,
+  escapeHtml,
+  escapeHtmlAttribute,
+  getExtension,
+  type PluginRenderContext,
+} from "@riebeckite/core";
 
 export type MediaPreload = "none" | "metadata" | "auto";
 
@@ -191,17 +196,4 @@ function getUrlFragment(value: string): string | null {
 function stripUrlHash(value: string): string {
   const fragmentStart = value.indexOf("#");
   return fragmentStart < 0 ? value : value.slice(0, fragmentStart);
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function escapeHtmlAttribute(value: string): string {
-  return escapeHtml(value);
 }

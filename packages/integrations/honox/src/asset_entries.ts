@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import { type ResolvedRiebeckiteConfig, uniqueStrings } from "@riebeckite/core";
 
 export type GeneratedAssetPaths = {
   pluginStyles: string;
@@ -44,8 +44,4 @@ function createStylesheetEntry(moduleSpecifiers: string[]): string {
 function writeGeneratedFile(filePath: string, contents: string): void {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, contents);
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return [...new Set(values)];
 }

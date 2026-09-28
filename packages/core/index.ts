@@ -50,6 +50,9 @@ export type {
 export { FileSystemContentSource } from "./src/content/file_system_content_source.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
+export { uniqueStrings } from "./src/utils/collections.js";
+export { escapeHtml, escapeHtmlAttribute } from "./src/utils/html.js";
+export { normalizeTag } from "./src/utils/tags.js";
 export type {
   LogContext,
   Logger,

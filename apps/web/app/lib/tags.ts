@@ -1,4 +1,4 @@
-import { isPublished, type PostContent } from "@riebeckite/core";
+import { escapeHtml, isPublished, type PostContent } from "@riebeckite/core";
 import slugify from "slugify";
 import { config } from "../config";
 import { content } from "../content";
@@ -64,13 +64,4 @@ export async function buildTagIndex(): Promise<Map<string, TagEntry>> {
 
   cachedTagIndex = map;
   return map;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }

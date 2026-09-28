@@ -1,3 +1,6 @@
+import { uniqueStrings } from "../utils/collections.js";
+import { normalizeTag } from "../utils/tags.js";
+
 const TAG_PATTERN = /(^|[\s([{"'])#([\p{L}\p{N}_\-/]+)/gu;
 
 export function extractContentTags(markdown: string): string[] {
@@ -52,16 +55,6 @@ export function extractFrontmatterAliases(markdown: string): string[] {
   return uniqueStrings(aliases.map((alias) => alias.trim()).filter(Boolean));
 }
 
-function normalizeTag(raw: string): string | null {
-  const cleaned = raw.replace(/[/-]+$/, "");
-  if (!cleaned) return null;
-
-  const isPurelyNumeric = /^[\p{N}/\-_]+$/u.test(cleaned);
-  if (isPurelyNumeric) return null;
-
-  return cleaned;
-}
-
 function parseYamlScalarOrList(value: string): string[] {
   const trimmed = value.trim();
   if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
@@ -75,8 +68,4 @@ function stripYamlQuotes(value: string): string {
     .trim()
     .replace(/^[']|[']$/g, "")
     .replace(/^["]|["]$/g, "");
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values));
 }

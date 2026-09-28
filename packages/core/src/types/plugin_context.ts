@@ -54,6 +54,18 @@ export type PluginContentLocationResolver = (
   | readonly ContentPublicLocation[]
   | Promise<readonly ContentPublicLocation[]>;
 
+/**
+ * Context for augmenting already-resolved public locations.
+ *
+ * Runs after every `resolveContentLocations` resolver, so a plugin can add
+ * redirects or metadata without replacing (and therefore without needing to
+ * reproduce) the canonical permalink another plugin resolved.
+ */
+export type PluginContentLocationAugmentContext = PluginContext & {
+  entries: readonly ContentLocationInput[];
+  locations: Map<string, ContentPublicLocation>;
+};
+
 export type PluginRenderTarget = {
   kind: string;
   path: string;

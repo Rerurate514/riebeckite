@@ -59,6 +59,7 @@ const PACKAGES = [
     name: "@riebeckite/plugin-backlinks",
   },
   { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
+  { directory: "packages/plugins/alias", name: "@riebeckite/plugin-alias" },
   {
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
@@ -69,6 +70,7 @@ const PACKAGES = [
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
 const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
+const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -369,6 +371,12 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("data-rr-query-result")) {
     fail("query placeholder was not replaced with rendered output");
+  }
+  if (!combined.includes(ALIAS_MARKER)) {
+    fail(`generated HTML is missing the alias marker (${ALIAS_MARKER})`);
+  }
+  if (!combined.includes("kind=redirect target=/notes/alias-demo")) {
+    fail("an Obsidian alias did not resolve to a redirect route");
   }
 
   for (const file of htmlFiles) {

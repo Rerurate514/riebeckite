@@ -52,6 +52,7 @@ export type {
   ContentInspection,
 } from "./src/content/content_manager.js";
 export { ContentManager } from "./src/content/content_manager.js";
+export { extractFrontmatterAliases } from "./src/content/content_metadata.js";
 export type {
   ContentSource,
   ContentSourceContent,
@@ -131,6 +132,7 @@ export {
 } from "./src/types/plugin_asset.js";
 export type {
   PluginContentContext,
+  PluginContentLocationAugmentContext,
   PluginContentLocationContext,
   PluginContentLocationResolver,
   PluginContentRenderer,

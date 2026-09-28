@@ -339,6 +339,11 @@ export class ContentManager {
       }
       locations.set(location.slug, location);
     }
+    await this.pluginRuntime.extendContentLocations(
+      inputs,
+      locations,
+      contentIndex,
+    );
     this.contentLocations = locations;
     return locations;
   }

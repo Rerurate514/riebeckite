@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
@@ -21,6 +22,7 @@ export default defineConfig({
   theme: defaultTheme(),
   plugins: [
     obsidianMarkdown(),
+    aliasPlugin(),
     autoCardLinkPlugin(),
     tocPlugin(),
     backlinksPlugin(),

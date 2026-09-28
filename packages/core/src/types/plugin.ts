@@ -4,6 +4,7 @@ import type { Diagnostic } from "./diagnostic.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
   PluginContentContext,
+  PluginContentLocationAugmentContext,
   PluginContentLocationResolver,
   PluginContentRenderer,
   PluginContext,
@@ -40,6 +41,9 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   onConfigResolved?(context: PluginContext): void | Promise<void>;
   onContentLoaded?(context: PluginContentContext): void | Promise<void>;
   resolveContentLocations?: PluginContentLocationResolver;
+  extendContentLocations?(
+    context: PluginContentLocationAugmentContext,
+  ): void | Promise<void>;
   onPostParsed?(context: PluginPostContext): void | Promise<void>;
   onPostProcessed?(context: PluginPostContext): void | Promise<void>;
   onManifestCreated?(context: PluginManifestContext): void | Promise<void>;

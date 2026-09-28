@@ -2,7 +2,7 @@
 
 Riebeckite の移植可能なフレームワーク契約です。設定、コンテンツソース、ContentManager、Markdown/HTML パイプライン、Plugin と Theme の契約、診断、可観測性を担います。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

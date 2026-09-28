@@ -141,7 +141,7 @@ For a site outside this repository, start from the [Cloudflare deployment templa
 
 ## 8. Extend the site
 
-- **Add a plugin.** Install or reference the package, then register it in the `plugins` array. Read the package README under `packages/plugins/*/README_en.md` for its options. Plugins can add Markdown transforms, HTML transforms, assets, browser behavior, endpoints, SEO, and diagnostics.
+- **Add a plugin.** Install or reference the package, then register it in the `plugins` array. Read the package README under `packages/plugins/*/README.md` for its options. Plugins can add Markdown transforms, HTML transforms, assets, browser behavior, endpoints, SEO, and diagnostics.
 - **Change presentation.** Swap the `theme` value or edit the theme options. See [Theme system](./theme-system.md).
 - **Add routes and islands.** Site-specific pages belong in the application (`apps/web/app/routes`, `app/islands`). Keep HonoX and Vite APIs in the application or the integration, not in plugins.
 

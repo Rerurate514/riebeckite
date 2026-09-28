@@ -2,7 +2,7 @@
 
 ノートのフロントマターを、Obsidian 風のプロパティパネルとしてビルド時に描画するプラグインです。クライアント側の JavaScript は不要です。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## できること
 

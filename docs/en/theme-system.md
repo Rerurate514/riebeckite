@@ -130,7 +130,7 @@ packages/themes/example/
 ├─ package.json
 ├─ style.css
 ├─ README_ja.md
-└─ README_en.md
+└─ README.md
 ```
 
 ## Distributing a Theme outside this repository

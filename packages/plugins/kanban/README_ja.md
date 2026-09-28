@@ -2,7 +2,7 @@
 
 Obsidian の Kanban ボードを、ビルド時に静的 HTML へ変換するプラグインです。クライアント側の JavaScript は不要です。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 使い方
 

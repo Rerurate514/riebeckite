@@ -2,7 +2,7 @@
 
 Riebeckite のコマンドラインインターフェースです。プロジェクトの検証・診断・状態の確認・ビルドを行う、Node.js のビルド時ツールを提供します。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

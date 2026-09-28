@@ -75,7 +75,7 @@ Theme-specific options are applied to the root element as safe `data-*`
 attributes (`data-rerurate-initial`). `initial` can also be overridden directly
 from `config` via `attributes: { "data-rerurate-initial": "on" }`.
 
-See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
+See the [`@riebeckite/theme-default`](../default/README.md) README for the
 full token list — the token contract is identical. Red and green are used only
 for the functional `danger` / `success` tokens.
 
@@ -88,7 +88,7 @@ for the functional `danger` / `success` tokens.
 ## See also
 
 - [Plugin guide](../../../docs/plugins_en.md)
-- [`@riebeckite/theme-default`](../default/README_en.md)
-- [`@riebeckite/theme-sakura`](../sakura/README_en.md)
-- [`@riebeckite/theme-tokyonight`](../tokyonight/README_en.md)
-- [`@riebeckite/theme-gruvbox`](../gruvbox/README_en.md)
+- [`@riebeckite/theme-default`](../default/README.md)
+- [`@riebeckite/theme-sakura`](../sakura/README.md)
+- [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)
+- [`@riebeckite/theme-gruvbox`](../gruvbox/README.md)

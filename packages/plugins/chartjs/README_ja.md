@@ -2,7 +2,7 @@
 
 ` ```chart ` コードブロックを、レスポンシブな [Chart.js](https://www.chartjs.org/) のグラフとして表示するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

@@ -11,7 +11,9 @@ import {
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 
 function readJson(relativePath) {
-  return JSON.parse(fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8"));
+  return JSON.parse(
+    fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8"),
+  );
 }
 
 function canonicalJson(value) {
@@ -39,7 +41,13 @@ function reportDifference(errors, packageName, property, expected, actual) {
 
 function checkExactValue(errors, packageName, manifest, property, expected) {
   if (!sameJson(manifest[property], expected)) {
-    reportDifference(errors, packageName, property, expected, manifest[property]);
+    reportDifference(
+      errors,
+      packageName,
+      property,
+      expected,
+      manifest[property],
+    );
   }
 }
 
@@ -56,7 +64,9 @@ function expectedExportEntry(source) {
 function checkExports(errors, directory, manifest) {
   if (!manifest.exports || typeof manifest.exports !== "object") {
     if (directory !== "packages/cli") {
-      errors.push(`${manifest.name}: exports must define the public package entry points`);
+      errors.push(
+        `${manifest.name}: exports must define the public package entry points`,
+      );
     }
     return;
   }
@@ -64,32 +74,105 @@ function checkExports(errors, directory, manifest) {
   for (const [subpath, target] of Object.entries(manifest.exports)) {
     if (typeof target === "string") {
       if (!target.startsWith("./")) {
-        errors.push(`${manifest.name}: exports.${subpath} must be a package-relative path`);
+        errors.push(
+          `${manifest.name}: exports.${subpath} must be a package-relative path`,
+        );
       }
       continue;
     }
 
-    if (!target || typeof target !== "object" || typeof target.source !== "string") {
-      errors.push(`${manifest.name}: exports.${subpath} must define a source entry point`);
+    if (
+      !target ||
+      typeof target !== "object" ||
+      typeof target.source !== "string"
+    ) {
+      errors.push(
+        `${manifest.name}: exports.${subpath} must define a source entry point`,
+      );
       continue;
     }
 
     const expected = expectedExportEntry(target.source);
     if (!sameJson(target, expected)) {
-      reportDifference(errors, manifest.name, `exports.${subpath}`, expected, target);
+      reportDifference(
+        errors,
+        manifest.name,
+        `exports.${subpath}`,
+        expected,
+        target,
+      );
     }
   }
 
   const rootExport = manifest.exports["."];
   if (!rootExport || typeof rootExport !== "object") {
-    errors.push(`${manifest.name}: exports["."] must define the primary entry point`);
+    errors.push(
+      `${manifest.name}: exports["."] must define the primary entry point`,
+    );
     return;
   }
   if (manifest.main !== rootExport.import) {
-    reportDifference(errors, manifest.name, "main", rootExport.import, manifest.main);
+    reportDifference(
+      errors,
+      manifest.name,
+      "main",
+      rootExport.import,
+      manifest.main,
+    );
   }
   if (manifest.types !== rootExport.types) {
-    reportDifference(errors, manifest.name, "types", rootExport.types, manifest.types);
+    reportDifference(
+      errors,
+      manifest.name,
+      "types",
+      rootExport.types,
+      manifest.types,
+    );
+  }
+}
+
+function checkPublishReadinessMetadata(errors, directory, manifest) {
+  if (
+    typeof manifest.description !== "string" ||
+    manifest.description.trim() === ""
+  ) {
+    errors.push(`${manifest.name}: description must be a non-empty string`);
+  }
+  if (
+    !Array.isArray(manifest.keywords) ||
+    manifest.keywords.length === 0 ||
+    manifest.keywords.some(
+      (keyword) => typeof keyword !== "string" || keyword.trim() === "",
+    )
+  ) {
+    errors.push(
+      `${manifest.name}: keywords must be a non-empty array of strings`,
+    );
+  }
+  if (
+    typeof manifest.engines?.node !== "string" ||
+    manifest.engines.node.trim() === ""
+  ) {
+    errors.push(`${manifest.name}: engines.node must be a non-empty string`);
+  }
+  if (
+    manifest.sideEffects !== false &&
+    (!Array.isArray(manifest.sideEffects) ||
+      manifest.sideEffects.length === 0 ||
+      manifest.sideEffects.some(
+        (entry) => typeof entry !== "string" || !entry.startsWith("./"),
+      ))
+  ) {
+    errors.push(
+      `${manifest.name}: sideEffects must be false or package-relative paths`,
+    );
+  }
+
+  const readme = path.join(repositoryRoot, directory, "README.md");
+  if (!fs.existsSync(readme)) {
+    errors.push(
+      `${manifest.name}: README.md must exist so npm can render package documentation`,
+    );
   }
 }
 
@@ -112,13 +195,16 @@ function checkPackage(directory) {
     checkExactValue(errors, manifest.name, manifest, property, value);
   }
   checkExports(errors, directory, manifest);
+  checkPublishReadinessMetadata(errors, directory, manifest);
 
   for (const dependencySection of [
     "dependencies",
     "devDependencies",
     "peerDependencies",
   ]) {
-    for (const [name, version] of Object.entries(manifest[dependencySection] ?? {})) {
+    for (const [name, version] of Object.entries(
+      manifest[dependencySection] ?? {},
+    )) {
       if (version === catalogDependencies[name]) {
         errors.push(
           `${manifest.name}: ${dependencySection}.${name} must use "catalog:" instead of ${JSON.stringify(version)}`,
@@ -131,22 +217,34 @@ function checkPackage(directory) {
 }
 
 function checkCatalog() {
-  const workspace = fs.readFileSync(path.join(repositoryRoot, "pnpm-workspace.yaml"), "utf8");
+  const workspace = fs.readFileSync(
+    path.join(repositoryRoot, "pnpm-workspace.yaml"),
+    "utf8",
+  );
   const errors = [];
   for (const [name, version] of Object.entries(catalogDependencies)) {
     const expected = `  ${name.startsWith("@") ? `'${name}'` : name}: ${version}`;
     if (!workspace.includes(expected)) {
-      errors.push(`pnpm-workspace.yaml: catalog entry missing: ${expected.trim()}`);
+      errors.push(
+        `pnpm-workspace.yaml: catalog entry missing: ${expected.trim()}`,
+      );
     }
   }
   return errors;
 }
 
-const errors = [...checkCatalog(), ...PACKAGE_DIRECTORIES.flatMap(checkPackage)];
+const errors = [
+  ...checkCatalog(),
+  ...PACKAGE_DIRECTORIES.flatMap(checkPackage),
+];
 if (errors.length > 0) {
-  console.error(`Package metadata validation failed (${errors.length} error(s)):`);
+  console.error(
+    `Package metadata validation failed (${errors.length} error(s)):`,
+  );
   for (const error of errors) console.error(`- ${error}`);
   process.exitCode = 1;
 } else {
-  console.log(`Package metadata validated for ${PACKAGE_DIRECTORIES.length} public packages.`);
+  console.log(
+    `Package metadata validated for ${PACKAGE_DIRECTORIES.length} public packages.`,
+  );
 }

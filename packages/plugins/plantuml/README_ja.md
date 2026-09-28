@@ -2,7 +2,7 @@
 
 `plantuml` コードブロックを PlantUML の図として表示するプラグインです。ビルド時に PlantUML サーバーの画像 URL を組み立てるだけで、ビルド中にネットワークへアクセスしません。クライアント用の JavaScript も配布しません。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

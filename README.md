@@ -66,7 +66,7 @@ Start with the [English documentation index](./docs/en/README.md). The most comm
 4. [Content System](./docs/en/content-system.md) for sources, manifests, and graphs.
 5. [Plugin System](./docs/en/plugin-system.md) and [Theme System](./docs/en/theme-system.md) before extending a site.
 
-Individual plugins and themes are documented beside their packages (`packages/plugins/*/README_en.md`, `packages/themes/*/README_en.md`). Japanese readers can start from [README_ja.md](./README_ja.md) or the [Japanese documentation index](./docs/ja/README.md).
+Individual plugins and themes are documented beside their packages (`packages/plugins/*/README.md`, `packages/themes/*/README.md`). Japanese readers can start from [README_ja.md](./README_ja.md) or the [Japanese documentation index](./docs/ja/README.md).
 
 ## Repository layout
 

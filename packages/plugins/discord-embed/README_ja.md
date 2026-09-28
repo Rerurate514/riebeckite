@@ -8,7 +8,7 @@ Discord の `Discordbot` は共有されたページの `<head>` メタデータ
 - 埋め込みの左側ボーダー色に使われる `<meta name="theme-color">`
 - `og:image:alt`（任意で `og:image:width` / `og:image:height`）
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

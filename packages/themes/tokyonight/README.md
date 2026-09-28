@@ -65,7 +65,7 @@ Theme-specific options are applied to the root element as safe `data-*`
 attributes (`data-tokyonight-neon`). `neon` can also be overridden directly
 from `config` via `attributes: { "data-tokyonight-neon": "on" }`.
 
-See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
+See the [`@riebeckite/theme-default`](../default/README.md) README for the
 full token list — the token contract is identical.
 
 ## Exports
@@ -77,5 +77,5 @@ full token list — the token contract is identical.
 ## See also
 
 - [Plugin guide](../../../docs/plugins_en.md)
-- [`@riebeckite/theme-default`](../default/README_en.md)
-- [`@riebeckite/theme-sakura`](../sakura/README_en.md)
+- [`@riebeckite/theme-default`](../default/README.md)
+- [`@riebeckite/theme-sakura`](../sakura/README.md)

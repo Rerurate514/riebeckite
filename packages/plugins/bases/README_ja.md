@@ -2,7 +2,7 @@
 
 フェンスコードブロック `base` に書いた Obsidian Bases 定義を HTML にレンダリングします。フィルタ・ソート・ビューの組み立てはビルド時にコンテンツマニフェストに対して行われるため、クライアントサイド JavaScript は不要です。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

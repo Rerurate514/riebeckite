@@ -60,7 +60,7 @@ Theme-specific options are applied to the root element as safe `data-*`
 attributes (`data-sakura-bloom`). `bloom` can also be overridden directly from
 `config` via `attributes: { "data-sakura-bloom": "vivid" }`.
 
-See the [`@riebeckite/theme-default`](../default/README_en.md) README for the
+See the [`@riebeckite/theme-default`](../default/README.md) README for the
 full token list — the token contract is identical.
 
 ## Exports
@@ -72,4 +72,4 @@ full token list — the token contract is identical.
 ## See also
 
 - [Plugin guide](../../../docs/plugins_en.md)
-- [`@riebeckite/theme-default`](../default/README_en.md)
+- [`@riebeckite/theme-default`](../default/README.md)

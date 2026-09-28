@@ -2,7 +2,7 @@
 
 Obsidian 形式の添付ファイルリンクを、ダウンロードリンクや添付カードとして表示するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## まず何を解決するか
 

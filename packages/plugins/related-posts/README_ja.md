@@ -5,7 +5,7 @@
 関連ノートのセクションを HTML に追記します。クライアント側 JavaScript は
 不要です。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 仕組み
 

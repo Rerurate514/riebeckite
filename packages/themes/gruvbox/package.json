@@ -23,7 +23,7 @@
   },
   "files": [
     "LICENSE",
-    "README_en.md",
+    "README.md",
     "README_ja.md",
     "dist",
     "styles"
@@ -40,5 +40,18 @@
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
-  }
+  },
+  "description": "A Gruvbox-inspired CSS theme for Riebeckite sites.",
+  "keywords": [
+    "riebeckite",
+    "theme",
+    "css",
+    "gruvbox"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./styles/*.css"
+  ]
 }

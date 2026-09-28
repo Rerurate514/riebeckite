@@ -2,7 +2,7 @@
 
 Tokyo Night の濃い藍色と鮮やかな青を使うテーマです。昼向けの明るい配色と、定番の深い夜向け配色を切り替えられます。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

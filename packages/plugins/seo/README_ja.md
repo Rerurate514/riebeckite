@@ -2,7 +2,7 @@
 
 記事のメタデータ、サイトマップ、robots.txt、RSS・Atom・JSON Feed をまとめて生成するプラグインです。アプリケーションはプラグインが提供する SEO 拡張を受け取り、各ページの出力に利用します。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 設定する
 

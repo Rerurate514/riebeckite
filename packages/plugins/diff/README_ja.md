@@ -2,7 +2,7 @@
 
 ローカル Git リポジトリから、Markdown ノートの履歴と行単位の差分を取得するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## できること
 

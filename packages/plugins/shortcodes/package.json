@@ -24,7 +24,7 @@
   },
   "files": [
     "LICENSE",
-    "README_en.md",
+    "README.md",
     "README_ja.md",
     "dist",
     "style.css"
@@ -41,5 +41,18 @@
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
-  }
+  },
+  "description": "Remark directive shortcodes for Riebeckite Markdown.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "shortcodes",
+    "remark"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./style.css"
+  ]
 }

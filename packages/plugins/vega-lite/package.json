@@ -31,7 +31,7 @@
   },
   "files": [
     "LICENSE",
-    "README_en.md",
+    "README.md",
     "README_ja.md",
     "dist",
     "style.css"
@@ -48,5 +48,18 @@
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
-  }
+  },
+  "description": "Vega-Lite chart rendering for Riebeckite code blocks.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "vega-lite",
+    "charts"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./style.css"
+  ]
 }

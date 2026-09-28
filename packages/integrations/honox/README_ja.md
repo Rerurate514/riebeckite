@@ -2,7 +2,7 @@
 
 Riebeckite の HonoX / Vite 統合です。移植可能な Core の振る舞いを HonoX アプリケーションへ接続します。アプリケーション・設定ルートの解決、Vite の開発・ビルドワークフロー、静的生成（SSG）、Plugin と Theme の生成スタイル、サーバーへのマウント、公開 UI primitive を担います。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

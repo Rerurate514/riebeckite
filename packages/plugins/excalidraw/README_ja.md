@@ -2,7 +2,7 @@
 
 Obsidian の Excalidraw 埋め込みを SVG として表示するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## できること
 

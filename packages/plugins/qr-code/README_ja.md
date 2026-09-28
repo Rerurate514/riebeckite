@@ -2,7 +2,7 @@
 
 ` ```qr ` コードブロックを、ビルド時にインライン SVG の QR コードへ変換するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 

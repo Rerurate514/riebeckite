@@ -16,6 +16,7 @@ export default createRoute(async (c) => {
   if (!isPublished(config, post?.frontmatter)) {
     return c.notFound();
   }
+  c.set("headTags", indexEntry?.headTags ?? []);
 
   return c.render(
     <>

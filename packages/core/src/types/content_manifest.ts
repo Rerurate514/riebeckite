@@ -1,6 +1,7 @@
 import type { ContentGraph } from "../content/content_graph.js";
 import type { Diagnostic } from "./diagnostic.js";
 import type { PluginAsset } from "./plugin_asset.js";
+import type { PluginHeadTag } from "./plugin_head.js";
 import type { PostFrontmatter } from "./post_content.js";
 
 export type ContentLinkKind = "note" | "image" | "attachment" | "unresolved";
@@ -28,6 +29,11 @@ export type ContentManifestEntry = {
   title: string;
   frontmatter: PostFrontmatter;
   html: string;
+  /**
+   * Head tags a plugin wants the Site shell to render for this entry.
+   * The Site owns the shell, so it decides whether to render them.
+   */
+  headTags?: readonly PluginHeadTag[];
   tags: string[];
   links: ContentLink[];
   backlinks: string[];

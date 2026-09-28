@@ -68,6 +68,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-recent-posts",
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
+  {
+    directory: "packages/plugins/discord-embed",
+    name: "@riebeckite/plugin-discord-embed",
+  },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
 ];
 
@@ -416,6 +420,9 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes('name="theme-color" content="#1ABC9C"')) {
+    fail("discord-embed plugin did not emit the frontmatter theme color");
   }
 
   for (const file of htmlFiles) {

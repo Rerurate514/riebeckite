@@ -5,6 +5,7 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
@@ -58,6 +59,7 @@ export default defineConfig({
       sitemap: true,
       robots: true,
     }),
+    discordEmbed(),
     mermaid({
       render: "build",
       theme: {

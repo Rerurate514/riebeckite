@@ -1,3 +1,4 @@
+import type { PluginHeadTag } from "@riebeckite/core";
 import type { SeoMetadata } from "./lib/seo";
 
 declare module "virtual:riebeckite/client" {
@@ -8,6 +9,7 @@ declare module "hono" {
   interface Env {
     Variables: {
       seo?: SeoMetadata;
+      headTags?: readonly PluginHeadTag[];
     };
     Bindings: Record<string, never>;
   }

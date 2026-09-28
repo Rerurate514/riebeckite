@@ -1,3 +1,4 @@
+import type { PluginHeadTag } from "@riebeckite/core";
 import { SearchBar } from "@riebeckite/plugin-search";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
@@ -21,12 +22,14 @@ export default jsxRenderer(({ children }, c) => {
     });
   const twitterCard = seo.imageUrl ? "summary_large_image" : "summary";
   const themeStyle = getThemeStyle();
+  const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
 
   return (
     <html lang={getHtmlLanguage()} {...getThemeAttributes()}>
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {headTags.map(renderHeadTag)}
         <meta name="description" content={seo.description} />
         <meta name="author" content={site.author} />
         {seo.noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -84,3 +87,22 @@ export default jsxRenderer(({ children }, c) => {
     </html>
   );
 });
+
+/**
+ * Maps a plugin-provided head tag to JSX. The site owns the shell; this is
+ * where `entry.headTags` from plugins become actual document elements.
+ */
+function renderHeadTag(tag: PluginHeadTag, index: number) {
+  const key = `${tag.tag}-${index}`;
+  if (tag.tag === "meta") return <meta {...tag.attrs} key={key} />;
+  if (tag.tag === "link") return <link {...tag.attrs} key={key} />;
+  return (
+    <script
+      {...tag.attrs}
+      key={key}
+      dangerouslySetInnerHTML={
+        tag.children ? { __html: tag.children } : undefined
+      }
+    />
+  );
+}

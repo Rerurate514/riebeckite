@@ -20,6 +20,7 @@ export default createRoute(async (c) => {
       path: "/explore",
     }),
   );
+  c.set("headTags", []);
 
   return c.render(
     <main class="garden-explorer-page">

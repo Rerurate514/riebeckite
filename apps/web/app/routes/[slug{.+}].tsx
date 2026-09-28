@@ -58,6 +58,7 @@ export default createRoute(
     });
     const tableOfContents = extractTableOfContents(post.html ?? "");
     c.set("seo", buildArticleSeo(route.entry.permalink, post));
+    c.set("headTags", route.entry.headTags ?? []);
 
     return c.render(
       <Article

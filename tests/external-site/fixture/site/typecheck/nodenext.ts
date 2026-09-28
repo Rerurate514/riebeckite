@@ -41,6 +41,7 @@ import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
@@ -75,6 +76,7 @@ export const resolvedEntries = {
   initAutoCardLink,
   backlinksPlugin,
   Backlinks,
+  discordEmbed,
   obsidianMarkdown,
   recentPostsPlugin,
   RecentPosts,

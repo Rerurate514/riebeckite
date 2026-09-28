@@ -151,6 +151,7 @@ export type {
   PluginDiagnostic,
   PluginDiagnosticLevel,
 } from "./src/types/plugin_diagnostic.js";
+export type { PluginHeadTag } from "./src/types/plugin_head.js";
 export type {
   PluginEndpoint,
   PluginEndpointContext,

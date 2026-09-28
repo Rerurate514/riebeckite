@@ -76,6 +76,29 @@ post from `ContentManager`, resolves request URLs with
 tree. The reference application in `apps/web` is one implementation, not a
 required layout.
 
+### Head tag handoff
+
+When a plugin provides document head tags, the shell still belongs to the
+site. A plugin only describes `meta` / `link` / `script` on
+`ContentManifestEntry.headTags`; it never renders them. A site route passes the
+value to the shell with `c.set("headTags", entry.headTags ?? [])`, and
+`app/routes/_renderer.tsx` decides whether to render it. A plugin does not own
+the `<head>` or the tag order.
+
+```tsx
+// app/routes/_renderer.tsx
+const headTags = c.get("headTags") ?? [];
+
+<head>
+  {headTags.map((tag) =>
+    tag.tag === "meta" ? <meta {...tag.attrs} /> : null,
+  )}
+</head>;
+```
+
+For example, `@riebeckite/plugin-discord-embed`, which aligns the Discord embed
+color, supplies `theme-color` through this contract.
+
 For example, an external site can compose an article with the stable primitive
 contract while retaining all presentation ownership:
 

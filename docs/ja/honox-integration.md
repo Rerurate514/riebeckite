@@ -52,6 +52,23 @@ Riebeckite の Site は通常の HonoX application です。integration が担�
 
 `app/routes/_renderer.tsx` は Site の shell です。document head、navigation、page chrome、application client entry はここで管理します。route は `ContentManager` から post を取得し、`resolveContentRoute(manifest, c.req.path)` で request URL を解決したうえで、どの component tree を描画するかを Site 側で決めます。`apps/web` はその一例であり、同じ layout を使う必要はありません。
 
+### head tags の受け渡し
+
+Plugin が document head の tag を提供する場合も、shell の所有権は Site にあります。Plugin は `ContentManifestEntry.headTags` に `meta` / `link` / `script` を記述するだけで、描画は行いません。Site の route がその値を `c.set("headTags", entry.headTags ?? [])` で shell へ渡し、`app/routes/_renderer.tsx` が描画するかどうかを決めます。Plugin は `<head>` や tag の順序を所有しません。
+
+```tsx
+// app/routes/_renderer.tsx
+const headTags = c.get("headTags") ?? [];
+
+<head>
+  {headTags.map((tag) =>
+    tag.tag === "meta" ? <meta {...tag.attrs} /> : null,
+  )}
+</head>;
+```
+
+たとえば Discord の埋め込み色を揃える `@riebeckite/plugin-discord-embed` は、この contract で `theme-color` を提供します。
+
 たとえば外部 Site では、stable な primitive contract を使いつつ、表示は Site 側で自由に組み立てられます。
 
 ```tsx

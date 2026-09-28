@@ -17,6 +17,7 @@ export default createRoute(
     const entry = tagIndex.get(slug);
     if (!entry) return c.notFound();
     c.set("seo", buildTagSeo(entry.tag, `/tags/${slug}`));
+    c.set("headTags", []);
 
     return c.render(<Article content={buildTagPage(entry)} />);
   },

@@ -1,7 +1,7 @@
 // Ambient module declaration for the virtual module injected by the
-// riebeckite Vite plugin. Hono's `Env` is a type alias, so it cannot be
-// augmented with `interface Env` from an external site; this fixture does
-// not need custom bindings, so it declares only the virtual module.
+// riebeckite Vite plugin. This file must stay a script (no top-level
+// import/export) so the declaration is ambient rather than a module
+// augmentation. Hono context variables are typed in `hono.d.ts`.
 declare module "virtual:riebeckite/client" {
   export function initRiebeckiteClient(): void;
 }

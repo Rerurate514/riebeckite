@@ -30,6 +30,7 @@ export default createRoute(
     if (!isPublished(config, post.frontmatter)) {
       return c.notFound();
     }
+    c.set("headTags", route.entry.headTags ?? []);
 
     return c.render(<FixtureArticle post={post} />);
   },

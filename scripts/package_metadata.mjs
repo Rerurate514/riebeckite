@@ -9,6 +9,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/code-tabs",
   "packages/plugins/diagnostics",
   "packages/plugins/diff",
+  "packages/plugins/discord-embed",
   "packages/plugins/excalidraw",
   "packages/plugins/garden-explorer",
   "packages/plugins/lightbox",
@@ -85,9 +86,13 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory.startsWith("packages/plugins/")) {
-    const hasStyle = !["diagnostics", "obsidian-markdown", "permalink", "seo"].some(
-      (plugin) => directory.endsWith(`/${plugin}`),
-    );
+    const hasStyle = ![
+      "diagnostics",
+      "discord-embed",
+      "obsidian-markdown",
+      "permalink",
+      "seo",
+    ].some((plugin) => directory.endsWith(`/${plugin}`));
     return {
       files: [
         "LICENSE",

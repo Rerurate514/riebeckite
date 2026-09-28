@@ -1,6 +1,6 @@
+import type { ConfigValidationIssue } from "./types/config_validation";
 import type { RiebeckitePlugin } from "./types/plugin";
 import type { RiebeckiteConfig } from "./types/riebeckite_config";
-import type { ConfigValidationIssue } from "./types/config_validation";
 
 export class ConfigValidationError extends Error {
   readonly issues: readonly ConfigValidationIssue[];
@@ -17,7 +17,9 @@ export function validateConfig(config: RiebeckiteConfig): void {
   if (issues.length > 0) throw new ConfigValidationError(issues);
 }
 
-function validateConfigIssues(config: RiebeckiteConfig): ConfigValidationIssue[] {
+function validateConfigIssues(
+  config: RiebeckiteConfig,
+): ConfigValidationIssue[] {
   const issues: ConfigValidationIssue[] = [];
   const value: unknown = config;
   if (!isRecord(value)) {
@@ -59,7 +61,10 @@ function validateFeed(value: unknown, issues: ConfigValidationIssue[]): void {
   validateOptionalString(value.language, "site.feed.language", issues);
 }
 
-function validateContent(value: unknown, issues: ConfigValidationIssue[]): void {
+function validateContent(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
   if (value === undefined) return;
   if (!isRecord(value)) {
     issues.push({ path: "content", message: "Expected an object." });
@@ -78,14 +83,23 @@ function validateContentSource(
 ): void {
   if (value === undefined) return;
   if (!isRecord(value)) {
-    issues.push({ path: "content.source", message: "Expected a ContentSource." });
+    issues.push({
+      path: "content.source",
+      message: "Expected a ContentSource.",
+    });
     return;
   }
   if (typeof value.scan !== "function") {
-    issues.push({ path: "content.source.scan", message: "Expected a function." });
+    issues.push({
+      path: "content.source.scan",
+      message: "Expected a function.",
+    });
   }
   if (typeof value.read !== "function") {
-    issues.push({ path: "content.source.read", message: "Expected a function." });
+    issues.push({
+      path: "content.source.read",
+      message: "Expected a function.",
+    });
   }
 }
 
@@ -135,8 +149,18 @@ function validateThemeConfig(
   issues: ConfigValidationIssue[],
 ): void {
   validateOptionalString(value.name, `${path}.name`, issues);
-  validateOneOf(value.colorMode, `${path}.colorMode`, ["light", "dark", "system"], issues);
-  validateOneOf(value.typography, `${path}.typography`, ["system", "serif", "sans"], issues);
+  validateOneOf(
+    value.colorMode,
+    `${path}.colorMode`,
+    ["light", "dark", "system"],
+    issues,
+  );
+  validateOneOf(
+    value.typography,
+    `${path}.typography`,
+    ["system", "serif", "sans"],
+    issues,
+  );
   validateOneOf(
     value.articleLayout,
     `${path}.articleLayout`,
@@ -169,7 +193,10 @@ function validateThemeStyles(
   }
 }
 
-function validatePlugins(value: unknown, issues: ConfigValidationIssue[]): void {
+function validatePlugins(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
   if (value === undefined) return;
   if (!Array.isArray(value)) {
     issues.push({ path: "plugins", message: "Expected an array." });
@@ -187,7 +214,10 @@ function validatePlugins(value: unknown, issues: ConfigValidationIssue[]): void 
     const plugin = input as RiebeckitePlugin;
     const path = `plugins[${index}]`;
     if (!isNonEmptyString(plugin.name)) {
-      issues.push({ path: `${path}.name`, message: "Expected a non-empty string." });
+      issues.push({
+        path: `${path}.name`,
+        message: "Expected a non-empty string.",
+      });
     } else if (plugin.enabled !== false) {
       const duplicateIndex = names.get(plugin.name);
       if (duplicateIndex !== undefined) {
@@ -227,9 +257,7 @@ function validatePluginOptions(
     const optionIssues = plugin.validateOptions(plugin.options) ?? [];
     for (const issue of optionIssues) {
       issues.push({
-        path: issue.path
-          ? `${path}.options.${issue.path}`
-          : `${path}.options`,
+        path: issue.path ? `${path}.options.${issue.path}` : `${path}.options`,
         message: issue.message,
       });
     }
@@ -284,7 +312,8 @@ function validateAbsoluteUrl(
 
   try {
     const url = new URL(value);
-    if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error();
+    if (url.protocol !== "http:" && url.protocol !== "https:")
+      throw new Error();
   } catch {
     issues.push({ path, message: "Expected an absolute HTTP(S) URL." });
   }
@@ -305,7 +334,9 @@ function validateStringArray(
     if (typeof item !== "string" || (nonEmpty && !item.trim())) {
       issues.push({
         path: `${path}[${index}]`,
-        message: nonEmpty ? "Expected a non-empty string." : "Expected a string.",
+        message: nonEmpty
+          ? "Expected a non-empty string."
+          : "Expected a string.",
       });
     }
   }
@@ -317,12 +348,17 @@ function validateOneOf(
   choices: readonly string[],
   issues: ConfigValidationIssue[],
 ): void {
-  if (value !== undefined && (typeof value !== "string" || !choices.includes(value))) {
+  if (
+    value !== undefined &&
+    (typeof value !== "string" || !choices.includes(value))
+  ) {
     issues.push({ path, message: `Expected one of: ${choices.join(", ")}.` });
   }
 }
 
-function formatValidationIssues(issues: readonly ConfigValidationIssue[]): string {
+function formatValidationIssues(
+  issues: readonly ConfigValidationIssue[],
+): string {
   return [
     "Invalid Riebeckite configuration:",
     ...issues.map((issue) => `\n${issue.path}\n  ${issue.message}`),

@@ -13,21 +13,21 @@ import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
-import type { RiebeckitePlugin } from "./types/plugin";
-import { resolvePlugins } from "./types/plugin";
+import type { Observability } from "./observability";
+import { noopObservability } from "./observability";
+import type { PluginCache } from "./plugin/plugin_cache";
 import {
   createPluginCache,
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache";
-import type { PluginCache } from "./plugin/plugin_cache";
+import type { RiebeckitePlugin } from "./types/plugin";
+import { resolvePlugins } from "./types/plugin";
 import type {
   MarkdownEmbedFragment,
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline";
 import type { PostContent, PostFrontmatter } from "./types/post_content";
-import { noopObservability } from "./observability";
-import type { Observability } from "./observability";
 
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
@@ -39,6 +39,7 @@ export class Pipeline {
 
   constructor(
     private contentIndex: Map<string, string>,
+    private permalinks: ReadonlyMap<string, string> = new Map(),
     private getMarkdownBySlug?: (slug: string) => Promise<string>,
     private options: PipelineOptions = {},
     private isBuildTime = false,
@@ -64,6 +65,8 @@ export class Pipeline {
 
     const markdownPipelineContext: MarkdownPipelineContext = {
       contentIndex: this.contentIndex,
+      resolvePermalink: (slug) =>
+        this.permalinks.get(slug) ?? legacyPermalink(slug),
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
       renderContent: this.createContentRenderer(),
     };
@@ -205,6 +208,10 @@ export class Pipeline {
     this.pluginCaches.set(plugin.name, cache);
     return cache;
   }
+}
+
+function legacyPermalink(slug: string): string {
+  return slug === "index" ? "/" : `/${slug}`;
 }
 
 function selectEmbedMarkdownFragment(

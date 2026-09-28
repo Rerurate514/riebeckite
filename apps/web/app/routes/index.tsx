@@ -13,11 +13,16 @@ import { getArticleTitle } from "../lib/article-title";
 import { buildIndexSeo } from "../lib/seo";
 
 export default createRoute(async (c) => {
+  const manifest = await content.getManifest();
+  const indexEntry = manifest.bySlug.get("index");
+  if (indexEntry && indexEntry.permalink !== "/") {
+    return c.redirect(indexEntry.permalink, 308);
+  }
+
   const post = await content.getProcessedContent("index");
   if (!isPublished(config, post?.frontmatter)) {
     return c.notFound();
   }
-  const manifest = await content.getManifest();
   const [backlinks, recentPosts] = await Promise.all([
     getPublishedBacklinks({
       manifest,
@@ -26,7 +31,7 @@ export default createRoute(async (c) => {
       resolveTitle: getArticleTitle,
     }),
     getRecentPosts({
-      posts: await content.getAllPosts(),
+      posts: manifest.entries,
       config,
       getProcessedContent: (slug) => content.getProcessedContent(slug),
       resolveTitle: getArticleTitle,

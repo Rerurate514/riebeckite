@@ -340,7 +340,7 @@ function NoteDetails(props: {
     <div class="garden-explorer__details">
       <p class="garden-explorer__eyebrow">Selected Note</p>
       <h2>
-        <a href={`/${encodeURI(props.note.slug)}`}>{props.note.title}</a>
+        <a href={props.note.permalink}>{props.note.title}</a>
       </h2>
       <p class="garden-explorer__path">{props.note.slug}</p>
       {props.note.excerpt && <p>{props.note.excerpt}</p>}

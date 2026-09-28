@@ -1,9 +1,13 @@
-import type { ContentManifest, ContentManifestEntry } from "./content_manifest";
+import type { Logger, Tracer } from "../observability";
+import type { PluginCache } from "../plugin/plugin_cache";
+import type {
+  ContentManifest,
+  ContentManifestEntry,
+  ContentPublicLocation,
+} from "./content_manifest";
 import type { Diagnostic } from "./diagnostic";
 import type { PostContent } from "./post_content";
-import type { PluginCache } from "../plugin/plugin_cache";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config";
-import type { Logger, Tracer } from "../observability";
 
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
@@ -38,6 +42,23 @@ export type PluginManifestContext = PluginContext & {
 export type PluginGraphContext = PluginContext & {
   entries: ContentManifestEntry[];
 };
+
+export type PluginContentLocationInput = {
+  slug: string;
+  path: string;
+  markdown: string;
+};
+
+/** Generic build-time extension point for canonical content locations. */
+export type PluginContentLocationContext = PluginContext & {
+  entries: readonly PluginContentLocationInput[];
+};
+
+export type PluginContentLocationResolver = (
+  context: PluginContentLocationContext,
+) =>
+  | readonly ContentPublicLocation[]
+  | Promise<readonly ContentPublicLocation[]>;
 
 export type PluginRenderTarget = {
   kind: string;

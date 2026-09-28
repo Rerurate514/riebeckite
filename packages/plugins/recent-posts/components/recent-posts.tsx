@@ -22,7 +22,7 @@ export default function RecentPosts(props: Props) {
 
           return (
             <li class="recent-posts__item" key={post.slug}>
-              <a class="recent-posts__link" href={`/${post.slug}`}>
+              <a class="recent-posts__link" href={post.permalink}>
                 <time
                   class="recent-posts__date"
                   dateTime={formattedDate.isoDate}

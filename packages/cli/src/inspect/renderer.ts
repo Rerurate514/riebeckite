@@ -100,7 +100,14 @@ export function renderContentInspection(
       field(entry.extension, entry.count),
     ),
     ...(options.list
-      ? ["", "Paths", ...inspection.paths.map((entry) => `  ${entry}`)]
+      ? [
+          "",
+          "PATH  ID  ID SOURCE  PERMALINK",
+          ...inspection.paths.map(
+            (entry) =>
+              `  ${entry.path}  ${entry.id ?? "-"}  ${entry.idSource ?? "-"}  ${entry.permalink ?? "-"}`,
+          ),
+        ]
       : []),
   ].join("\n");
 }

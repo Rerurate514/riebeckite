@@ -1,8 +1,8 @@
+import type { ContentSource } from "../content/content_source";
 import type { RiebeckitePlugin } from "./plugin";
 import type { PublishStrategy } from "./publish_strategy";
 import type { SiteConfig } from "./site_config";
 import type { ThemeConfig, ThemeStyle } from "./theme_config";
-import type { ContentSource } from "../content/content_source";
 
 export type ResolvedRiebeckiteConfig = {
   site: Required<SiteConfig>;

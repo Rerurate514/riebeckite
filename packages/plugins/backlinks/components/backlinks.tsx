@@ -14,7 +14,7 @@ export default function Backlinks(props: Props) {
       <ul class="article-backlinks__list">
         {props.backlinks.map((backlink) => (
           <li class="article-backlinks__item" key={backlink.slug}>
-            <a class="article-backlinks__link" href={`/${backlink.slug}`}>
+            <a class="article-backlinks__link" href={backlink.permalink}>
               {backlink.title}
             </a>
           </li>

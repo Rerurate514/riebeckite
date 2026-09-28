@@ -1,9 +1,9 @@
+import type { Tracer } from "../observability";
 import type { RiebeckitePlugin } from "../types/plugin";
 import type {
   PluginLifecycleContext,
   PluginManifestContext,
 } from "../types/plugin_context";
-import type { Tracer } from "../observability";
 
 type LifecycleHookName = "setup" | "buildStart" | "buildEnd" | "dispose";
 

@@ -1,5 +1,5 @@
-import { resolvePlugins } from "./types/plugin";
 import { validateConfig } from "./config_validation";
+import { resolvePlugins } from "./types/plugin";
 import type { PostFrontmatter } from "./types/post_content";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config";
 import type { RiebeckiteConfig } from "./types/riebeckite_config";

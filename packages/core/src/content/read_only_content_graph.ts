@@ -1,16 +1,25 @@
-import type { ContentManifestEntry } from "../types/content_manifest";
+import type {
+  ContentManifestEntry,
+  ContentPublicLocation,
+} from "../types/content_manifest";
 import type { ContentGraph } from "./content_graph";
-import { extractContentLinks } from "./content_links";
 import { ContentIndexBuilder } from "./content_index_builder";
-import { ManifestBuilder } from "./manifest_builder";
+import { extractContentLinks } from "./content_links";
 import type { ContentSource, ContentSourceEntry } from "./content_source";
+import { ManifestBuilder } from "./manifest_builder";
 
 /**
  * Builds the framework's content graph without rendering content, invoking
  * plugins, or writing incremental build state.
+ *
+ * Public locations are resolved before this call (for example via
+ * `ContentManager`) and passed in, so this helper stays unaware of permalink
+ * plugins, ID strategies, and path modes, and never fabricates a canonical URL
+ * itself.
  */
 export async function readOnlyContentGraph(
   source: ContentSource,
+  locations: ReadonlyMap<string, ContentPublicLocation>,
 ): Promise<ContentGraph> {
   const entries = await source.scan();
   const contentIndex = await new ContentIndexBuilder(source).build(entries);
@@ -24,7 +33,7 @@ export async function readOnlyContentGraph(
     })),
   );
   const graphEntries = markdownContents.map(({ entry, markdown }) =>
-    createGraphEntry(entry, markdown, contentIndex),
+    createGraphEntry(entry, markdown, contentIndex, locations),
   );
 
   return new ManifestBuilder().build(graphEntries, contentIndex).graph;
@@ -34,10 +43,17 @@ function createGraphEntry(
   entry: ContentSourceEntry,
   markdown: string,
   contentIndex: Map<string, string>,
+  locations: ReadonlyMap<string, ContentPublicLocation>,
 ): ContentManifestEntry {
   const slug = entry.path.replace(/\.md$/, "");
+  const location = locations.get(slug);
+  if (!location) {
+    throw new Error(`Content public location was not resolved: ${slug}`);
+  }
   return {
     slug,
+    permalink: location.permalink,
+    publicLocation: location,
     title: slug,
     frontmatter: {},
     html: "",

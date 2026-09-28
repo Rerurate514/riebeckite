@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
-import type { ContentSourceContent, ContentSourceEntry } from "./content_source";
 import type { FingerprintedContentEntry } from "./content_build_state";
+import type {
+  ContentSourceContent,
+  ContentSourceEntry,
+} from "./content_source";
 
 export async function fingerprintContentEntries(
   entries: readonly ContentSourceEntry[],

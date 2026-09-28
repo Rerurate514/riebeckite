@@ -58,6 +58,7 @@ export function getLocalGraph(args: {
 
     return {
       slug: entry.slug,
+      permalink: entry.permalink,
       title: args.resolveTitle(entry.slug, entry.frontmatter.title),
       relation: getRelation(
         nodeSlug,

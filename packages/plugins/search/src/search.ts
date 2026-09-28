@@ -1,5 +1,6 @@
 export type SearchItem = {
   slug: string;
+  permalink: string;
   title: string;
   headings: string[];
   body: string;

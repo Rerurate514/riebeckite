@@ -6,6 +6,7 @@ export type LocalGraphNodeRelation =
 
 export type LocalGraphNode = {
   slug: string;
+  permalink: string;
   title: string;
   relation: LocalGraphNodeRelation;
   outgoing: string[];

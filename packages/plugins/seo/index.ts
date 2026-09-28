@@ -33,8 +33,8 @@ export function seo(options: SeoPluginOptions = {}) {
     name: "seo",
     options,
     seo: {
-      buildArticleSeo: (config, slug, post) =>
-        buildArticleSeo(config, options, slug, post),
+      buildArticleSeo: (config, permalink, post) =>
+        buildArticleSeo(config, options, permalink, post),
       buildWebsiteSeo: (config, input) =>
         buildWebsiteSeo(config, options, input),
       buildAbsoluteUrl,
@@ -121,15 +121,15 @@ function createSeoEndpoints(options: SeoPluginOptions): PluginEndpoint[] {
 export function buildArticleSeo(
   config: ResolvedRiebeckiteConfig,
   options: SeoPluginOptions,
-  slug: string,
+  permalink: string,
   post: PostContent,
 ): SeoMetadata {
   const siteName = getSiteName(config, options);
-  const title = getArticleTitle(config, slug, post.frontmatter.title);
+  const title = getArticleTitle(config, permalink, post.frontmatter.title);
   const canonicalUrl = buildCanonicalUrl(
     config,
     post.frontmatter.canonical,
-    slug,
+    permalink,
   );
   const description = getDescription(post) || config.site.description;
   const imageUrl = buildImageUrl(
@@ -237,9 +237,16 @@ export function buildAbsoluteUrl(
 
 export function buildPostUrl(
   config: ResolvedRiebeckiteConfig,
-  slug: string,
+  permalink: string,
 ): string {
-  return buildAbsoluteUrl(config, slug === "index" ? "/" : `/${slug}`);
+  return buildAbsoluteUrl(
+    config,
+    permalink.startsWith("/")
+      ? permalink
+      : permalink === "index"
+        ? "/"
+        : `/${permalink}`,
+  );
 }
 
 export function getDescription(
@@ -273,9 +280,9 @@ export function renderSitemap(
   const urls = [
     { loc: buildAbsoluteUrl(config, "/"), lastmod: undefined },
     ...filterFeedEntries(config, entries)
-      .filter((entry) => entry.slug !== "index")
+      .filter((entry) => entry.permalink !== "/")
       .map((entry) => ({
-        loc: buildPostUrl(config, entry.slug),
+        loc: buildPostUrl(config, entry.permalink),
         lastmod: getEntryUpdatedTime(entry),
       })),
   ];
@@ -303,7 +310,7 @@ export function renderRssFeed(
   entries: RenderableFeedEntry[],
 ): string {
   const items = entries.map((entry) => {
-    const url = buildPostUrl(config, entry.slug);
+    const url = buildPostUrl(config, entry.permalink);
     const pubDate = getEntryPublishedTime(entry);
     return `<item><title>${escapeXml(entry.title)}</title><link>${escapeXml(url)}</link><guid>${escapeXml(url)}</guid><description>${escapeXml(getDescription(entry))}</description>${pubDate ? `<pubDate>${new Date(pubDate).toUTCString()}</pubDate>` : ""}</item>`;
   });
@@ -318,7 +325,7 @@ export function renderAtomFeed(
   const updated =
     entries.map(getEntryUpdatedTime).find(Boolean) ?? new Date(0).toISOString();
   const items = entries.map((entry) => {
-    const url = buildPostUrl(config, entry.slug);
+    const url = buildPostUrl(config, entry.permalink);
     return `<entry><title>${escapeXml(entry.title)}</title><link href="${escapeXml(url)}"/><id>${escapeXml(url)}</id><updated>${escapeXml(getEntryUpdatedTime(entry) ?? updated)}</updated><summary>${escapeXml(getDescription(entry))}</summary></entry>`;
   });
 
@@ -337,7 +344,7 @@ export function renderJsonFeed(
     description: config.site.feed.description,
     language: getHtmlLanguage(config),
     items: entries.map((entry) => {
-      const url = buildPostUrl(config, entry.slug);
+      const url = buildPostUrl(config, entry.permalink);
       return removeUndefined({
         id: url,
         url,
@@ -391,13 +398,13 @@ export function calculateReadingTime(html: string): number {
 function buildCanonicalUrl(
   config: ResolvedRiebeckiteConfig,
   canonical: unknown,
-  slug: string,
+  permalink: string,
 ): string {
   if (typeof canonical === "string" && canonical.trim()) {
     return buildAbsoluteUrl(config, canonical.trim());
   }
 
-  return buildPostUrl(config, slug);
+  return buildPostUrl(config, permalink);
 }
 
 function buildImageUrl(

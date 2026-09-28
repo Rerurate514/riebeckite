@@ -1,27 +1,32 @@
+import type { Observability } from "../observability";
+import { noopObservability } from "../observability";
 import type { PipelineOptions } from "../pipeline";
 import type {
   ContentManifest,
   ContentManifestEntry,
+  ContentPublicLocation,
 } from "../types/content_manifest";
 import type { Diagnostic } from "../types/diagnostic";
-import { resolvePlugins } from "../types/plugin";
 import type { RiebeckitePlugin } from "../types/plugin";
-import type { PluginContext } from "../types/plugin_context";
+import { resolvePlugins } from "../types/plugin";
+import type {
+  PluginContentLocationInput,
+  PluginContentLocationResolver,
+  PluginContext,
+} from "../types/plugin_context";
 import type { PostContent } from "../types/post_content";
+import type { PluginCache } from "./plugin_cache";
+import {
+  createPluginCache,
+  createUnavailablePluginCache,
+  resolvePluginCacheDirectory,
+} from "./plugin_cache";
 import {
   runBuildEnd,
   runBuildStart,
   runDispose,
   runSetup,
 } from "./plugin_lifecycle";
-import {
-  createPluginCache,
-  createUnavailablePluginCache,
-  resolvePluginCacheDirectory,
-} from "./plugin_cache";
-import type { PluginCache } from "./plugin_cache";
-import { noopObservability } from "../observability";
-import type { Observability } from "../observability";
 
 type PluginContextBase = Omit<PluginContext, "cache" | "logger" | "tracer">;
 type PluginContextWithCache<TContext extends PluginContextBase> = TContext &
@@ -63,6 +68,24 @@ export class PluginRuntime {
       slug,
       markdown,
     });
+  }
+
+  async resolveContentLocations(
+    entries: readonly PluginContentLocationInput[],
+    contentIndex: Map<string, string>,
+  ): Promise<readonly ContentPublicLocation[]> {
+    const context = { ...this.createContext(contentIndex), entries };
+    const locations: ContentPublicLocation[] = [];
+    for (const plugin of this.plugins()) {
+      const resolver: PluginContentLocationResolver | undefined =
+        plugin.resolveContentLocations;
+      if (!resolver) continue;
+      const resolved = await resolver(
+        this.createPluginContext(plugin, context),
+      );
+      locations.push(...resolved);
+    }
+    return locations;
   }
 
   async runPostHook(

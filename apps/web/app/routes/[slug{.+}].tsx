@@ -1,4 +1,5 @@
 import { isPublished } from "@riebeckite/core";
+import { resolveContentRoute } from "@riebeckite/honox/server";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
 import { getLocalGraph, LocalGraph } from "@riebeckite/plugin-local-graph";
 import {
@@ -18,28 +19,31 @@ export default createRoute(
     const manifest = await content.getManifest();
     return manifest.entries
       .filter((entry) => isPublished(config, entry.frontmatter))
-      .map((entry) => ({ slug: entry.slug }));
+      .filter((entry) => entry.permalink !== "/")
+      .map((entry) => ({ slug: entry.permalink.replace(/^\/+/, "") }));
   }),
   async (c, next) => {
-    const slug = c.req.param("slug");
+    const requestedSlug = c.req.param("slug");
     if (c.req.path.startsWith("/tags/")) {
       return next();
     }
 
-    if (!slug) return c.notFound();
+    if (!requestedSlug) return c.notFound();
 
-    if (/\.[a-zA-Z0-9]+$/.test(slug)) return c.notFound();
+    if (/\.[a-zA-Z0-9]+$/.test(requestedSlug)) return c.notFound();
+
+    const manifest = await content.getManifest();
+    const route = resolveContentRoute(manifest, c.req.path);
+    if (!route) return c.notFound();
+    if (route.kind === "redirect")
+      return c.redirect(route.location, route.status);
+    const slug = route.entry.slug;
 
     const post = await content.getProcessedContent(slug);
     if (!isPublished(config, post.frontmatter)) {
       return c.notFound();
     }
 
-    if (slug === "index") {
-      return c.redirect("/", 301);
-    }
-
-    const manifest = await content.getManifest();
     const backlinks = getPublishedBacklinks({
       manifest,
       config,
@@ -53,7 +57,7 @@ export default createRoute(
       resolveTitle: getArticleTitle,
     });
     const tableOfContents = extractTableOfContents(post.html ?? "");
-    c.set("seo", buildArticleSeo(slug, post));
+    c.set("seo", buildArticleSeo(route.entry.permalink, post));
 
     return c.render(
       <Article

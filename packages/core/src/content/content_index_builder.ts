@@ -46,7 +46,9 @@ export class ContentIndexBuilder {
 }
 
 function readText(content: string | Uint8Array): string {
-  return typeof content === "string" ? content : new TextDecoder().decode(content);
+  return typeof content === "string"
+    ? content
+    : new TextDecoder().decode(content);
 }
 
 function addIndexEntry(index: Map<string, string>, key: string, value: string) {

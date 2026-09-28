@@ -30,7 +30,7 @@ export type RenderableFeedEntry = ContentManifestEntry & {
 export type PluginSeoExtension = {
   buildArticleSeo(
     config: ResolvedRiebeckiteConfig,
-    slug: string,
+    permalink: string,
     post: PostContent,
   ): SeoMetadata;
   buildWebsiteSeo(
@@ -38,7 +38,7 @@ export type PluginSeoExtension = {
     input: WebsiteSeoInput,
   ): SeoMetadata;
   buildAbsoluteUrl(config: ResolvedRiebeckiteConfig, pathOrUrl: string): string;
-  buildPostUrl(config: ResolvedRiebeckiteConfig, slug: string): string;
+  buildPostUrl(config: ResolvedRiebeckiteConfig, permalink: string): string;
   getDescription(post: Pick<PostContent, "frontmatter" | "html">): string;
   getEntryPublishedTime(entry: ContentManifestEntry): string | null;
   getEntryUpdatedTime(entry: ContentManifestEntry): string | null;

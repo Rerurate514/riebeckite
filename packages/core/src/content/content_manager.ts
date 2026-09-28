@@ -1,14 +1,18 @@
+import type { Observability } from "../observability";
+import { noopObservability } from "../observability";
 import type { PipelineOptions } from "../pipeline";
 import { Pipeline } from "../pipeline";
 import { PluginRuntime } from "../plugin/plugin_runtime";
-import type { ContentManifest } from "../types/content_manifest";
+import type {
+  ContentManifest,
+  ContentPublicLocation,
+} from "../types/content_manifest";
 import type { Diagnostic } from "../types/diagnostic";
 import type { PostContent } from "../types/post_content";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
-import type { ContentGraph } from "./content_graph";
 import {
-  determineAffectedContent,
   type AffectedContent,
+  determineAffectedContent,
 } from "./affected_content";
 import {
   CONTENT_BUILD_STATE_VERSION,
@@ -16,23 +20,22 @@ import {
   type FingerprintedContentEntry,
 } from "./content_build_state";
 import {
-  allContentChanged,
-  diffContentEntries,
-  hasContentChanges,
-  type ContentChangeSet,
-} from "./content_change_set";
-import {
   loadContentBuildState,
   resolveContentBuildStatePath,
   saveContentBuildState,
 } from "./content_build_state_store";
+import {
+  allContentChanged,
+  type ContentChangeSet,
+  diffContentEntries,
+  hasContentChanges,
+} from "./content_change_set";
 import { fingerprintContentEntries } from "./content_fingerprint";
+import type { ContentGraph } from "./content_graph";
 import { ContentIndexBuilder } from "./content_index_builder";
 import type { ContentSource, ContentSourceEntry } from "./content_source";
 import { FileSystemContentSource } from "./file_system_content_source";
 import { ManifestBuilder } from "./manifest_builder";
-import { noopObservability } from "../observability";
-import type { Observability } from "../observability";
 
 export type Backlink = {
   slug: string;
@@ -69,6 +72,7 @@ export class ContentManager {
   private contentEntries: readonly ContentSourceEntry[] | null = null;
   private contentTexts = new Map<string, Promise<string>>();
   private manifest: ContentManifest | null = null;
+  private contentLocations: Map<string, ContentPublicLocation> | null = null;
   private pipeline: Pipeline | null = null;
   private buildPreparation: Promise<ContentBuildPreparation> | null = null;
   private buildStatePath: string;
@@ -79,13 +83,17 @@ export class ContentManager {
     exclude: string[] = [],
     private pipelineOptions: PipelineOptions = {},
   ) {
+    this.pipelineOptions = {
+      ...pipelineOptions,
+      plugins: pipelineOptions.plugins ?? pipelineOptions.config?.plugins,
+    };
     this.source =
       typeof content === "string"
         ? (pipelineOptions.config?.content.source ??
           new FileSystemContentSource(content, exclude))
         : content;
     this.contentIndexBuilder = new ContentIndexBuilder(this.source);
-    this.pluginRuntime = new PluginRuntime(pipelineOptions);
+    this.pluginRuntime = new PluginRuntime(this.pipelineOptions);
     this.buildStatePath = resolveContentBuildStatePath(
       pipelineOptions.config,
       typeof content === "string" ? content : undefined,
@@ -149,6 +157,7 @@ export class ContentManager {
 
         this.pipeline ??= new Pipeline(
           contentIndex,
+          await this.getPermalinks(),
           (postSlug) => this.getPost(postSlug),
           this.pipelineOptions,
           this.isBuildTime,
@@ -191,9 +200,10 @@ export class ContentManager {
       "content.manifest",
       {},
       async () => {
-        const [posts, contentIndex] = await Promise.all([
+        const [posts, contentIndex, locations] = await Promise.all([
           this.getAllPosts(),
           this.getContentIndex(preparation),
+          this.getContentLocations(),
         ]);
         const entries = await Promise.all(
           posts.map(async (post) => {
@@ -207,6 +217,7 @@ export class ContentManager {
               rawPost,
               processed,
               contentIndex,
+              locations.get(post.slug) ?? legacyContentLocation(post.slug),
             );
           }),
         );
@@ -217,6 +228,7 @@ export class ContentManager {
           {},
           () => this.manifestBuilder.build(entries, contentIndex),
         );
+        this.populateRedirects(manifest, locations);
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
 
         manifest.assets = this.pluginRuntime.collectAssets();
@@ -281,6 +293,67 @@ export class ContentManager {
       () => this.source.scan(),
     );
     return this.contentEntries;
+  }
+
+  /**
+   * Resolves the canonical public location for every Markdown entry, applying
+   * plugin location resolvers. Reads frontmatter but does not render content or
+   * write build state.
+   */
+  async getContentLocations(): Promise<
+    ReadonlyMap<string, ContentPublicLocation>
+  > {
+    if (this.contentLocations) return this.contentLocations;
+    const [entries, contentIndex] = await Promise.all([
+      this.getContentEntries(),
+      this.getContentIndex(),
+    ]);
+    await this.pluginRuntime.startBuild(contentIndex);
+    const inputs = await Promise.all(
+      entries
+        .filter((entry) => entry.path.endsWith(".md"))
+        .map(async (entry) => ({
+          slug: toSlug(entry.path),
+          path: entry.path,
+          markdown: await this.readContentEntry(entry),
+        })),
+    );
+    const locations = new Map(
+      inputs.map(({ slug }) => [slug, legacyContentLocation(slug)]),
+    );
+    for (const location of await this.pluginRuntime.resolveContentLocations(
+      inputs,
+      contentIndex,
+    )) {
+      if (!locations.has(location.slug)) {
+        throw new Error(
+          `Content public location references an unknown slug: ${location.slug}`,
+        );
+      }
+      locations.set(location.slug, location);
+    }
+    this.contentLocations = locations;
+    return locations;
+  }
+
+  private async getPermalinks(): Promise<Map<string, string>> {
+    return new Map(
+      Array.from(
+        (await this.getContentLocations()).entries(),
+        ([slug, location]) => [slug, location.permalink] as const,
+      ),
+    );
+  }
+
+  private populateRedirects(
+    manifest: ContentManifest,
+    locations: ReadonlyMap<string, ContentPublicLocation>,
+  ): void {
+    for (const [slug, location] of locations) {
+      for (const redirect of location.redirects ?? []) {
+        manifest.redirects.set(redirect.path, { ...redirect, slug });
+      }
+    }
   }
 
   private async readTextEntry(logicalPath: string): Promise<string> {
@@ -403,6 +476,10 @@ export class ContentManager {
 
 function toSlug(path: string): string {
   return path.replace(/\.md$/, "");
+}
+
+function legacyContentLocation(slug: string): ContentPublicLocation {
+  return { slug, permalink: slug === "index" ? "/" : `/${slug}` };
 }
 
 declare module "../pipeline" {

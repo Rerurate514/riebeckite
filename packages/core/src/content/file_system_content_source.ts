@@ -40,7 +40,9 @@ export class FileSystemContentSource implements ContentSource {
       if (directoryEntry.isSymbolicLink()) continue;
 
       const logicalPath = normalizeContentPath(
-        parentPath ? `${parentPath}/${directoryEntry.name}` : directoryEntry.name,
+        parentPath
+          ? `${parentPath}/${directoryEntry.name}`
+          : directoryEntry.name,
       );
       const filePath = path.join(directory, directoryEntry.name);
 
@@ -65,8 +67,10 @@ export class FileSystemContentSource implements ContentSource {
 
   private isExcluded(logicalPath: string): boolean {
     if (isExcluded(this.exclude, logicalPath)) return true;
-    return logicalPath.endsWith(".md") &&
-      isExcluded(this.exclude, logicalPath.slice(0, -3));
+    return (
+      logicalPath.endsWith(".md") &&
+      isExcluded(this.exclude, logicalPath.slice(0, -3))
+    );
   }
 
   private resolveFilePath(logicalPath: string): string {

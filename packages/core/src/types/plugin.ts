@@ -1,7 +1,10 @@
+import { resolvePluginDependencies } from "../plugin/plugin_dependency";
+import type { PluginOptionsValidator } from "./config_validation";
 import type { Diagnostic } from "./diagnostic";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset";
 import type {
   PluginContentContext,
+  PluginContentLocationResolver,
   PluginContentRenderer,
   PluginContext,
   PluginGraphContext,
@@ -17,8 +20,6 @@ import type {
   PipelinePlugin,
 } from "./plugin_pipeline";
 import type { PluginSeoExtension } from "./plugin_seo";
-import type { PluginOptionsValidator } from "./config_validation";
-import { resolvePluginDependencies } from "../plugin/plugin_dependency";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
   name: string;
@@ -38,6 +39,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   dispose?(context: PluginLifecycleContext): void | Promise<void>;
   onConfigResolved?(context: PluginContext): void | Promise<void>;
   onContentLoaded?(context: PluginContentContext): void | Promise<void>;
+  resolveContentLocations?: PluginContentLocationResolver;
   onPostParsed?(context: PluginPostContext): void | Promise<void>;
   onPostProcessed?(context: PluginPostContext): void | Promise<void>;
   onManifestCreated?(context: PluginManifestContext): void | Promise<void>;

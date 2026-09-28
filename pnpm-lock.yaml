@@ -369,6 +369,15 @@ importers:
         specifier: ^4.0.4
         version: 4.0.4
 
+  packages/plugins/permalink:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      yaml:
+        specifier: ^2.9.0
+        version: 2.9.0
+
   packages/plugins/recent-posts:
     dependencies:
       '@riebeckite/core':

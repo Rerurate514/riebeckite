@@ -3,6 +3,7 @@ import type {
   ContentLink,
   ContentManifest,
   ContentManifestEntry,
+  ContentPublicLocation,
 } from "../types/content_manifest";
 import type { PostContent } from "../types/post_content";
 import { createContentGraph } from "./content_graph";
@@ -18,6 +19,7 @@ export class ManifestBuilder {
     markdown: string,
     processed: PostContent,
     contentIndex: Map<string, string>,
+    location: ContentPublicLocation,
   ): ContentManifestEntry {
     const links = extractContentLinks(markdown, contentIndex);
     const assets = links
@@ -30,6 +32,8 @@ export class ManifestBuilder {
 
     return {
       slug,
+      permalink: location.permalink,
+      publicLocation: location,
       title: getManifestTitle(slug, processed.frontmatter.title),
       frontmatter: processed.frontmatter,
       html: processed.html,
@@ -48,6 +52,9 @@ export class ManifestBuilder {
     contentIndex: Map<string, string>,
   ): ContentManifest {
     const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));
+    const byPermalink = new Map(
+      entries.map((entry) => [entry.permalink, entry]),
+    );
     const byTag = new Map<string, ContentManifestEntry[]>();
     const byAsset = new Map<string, ContentManifestEntry[]>();
     const outgoingLinks = new Map<string, ContentLink[]>();
@@ -74,6 +81,8 @@ export class ManifestBuilder {
     const manifest = {
       entries,
       bySlug,
+      byPermalink,
+      redirects: new Map(),
       byTag,
       byAsset,
       outgoingLinks,

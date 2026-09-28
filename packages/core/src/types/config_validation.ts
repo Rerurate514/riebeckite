@@ -4,7 +4,7 @@ export type ConfigValidationIssue = {
 };
 
 export type PluginOptionsValidator<TOptions = unknown> = {
-  validate(options: TOptions | undefined):
-    | readonly ConfigValidationIssue[]
-    | undefined;
+  validate(
+    options: TOptions | undefined,
+  ): readonly ConfigValidationIssue[] | undefined;
 }["validate"];

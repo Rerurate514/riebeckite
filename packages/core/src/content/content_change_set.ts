@@ -1,4 +1,7 @@
-import type { ContentBuildState, FingerprintedContentEntry } from "./content_build_state";
+import type {
+  ContentBuildState,
+  FingerprintedContentEntry,
+} from "./content_build_state";
 
 export type ContentChangeSet = {
   readonly added: readonly string[];

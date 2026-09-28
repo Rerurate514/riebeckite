@@ -5,7 +5,7 @@ import { content } from "../content";
 
 export interface TagEntry {
   tag: string;
-  posts: { slug: string; title: string }[];
+  posts: { permalink: string; title: string }[];
 }
 
 export function slugifyTagPath(tag: string): string {
@@ -23,7 +23,7 @@ export function buildTagPage(entry: TagEntry): PostContent {
   const posts = entry.posts
     .map(
       (post) =>
-        `<li><a href="/${encodeURI(post.slug)}">${escapeHtml(post.title)}</a></li>`,
+        `<li><a href="${escapeHtml(post.permalink)}">${escapeHtml(post.title)}</a></li>`,
     )
     .join("");
   const exploreHref = `/explore?tag=${encodeURIComponent(entry.tag)}`;
@@ -56,7 +56,7 @@ export async function buildTagIndex(): Promise<Map<string, TagEntry>> {
       if (!tagEntry) continue;
 
       tagEntry.posts.push({
-        slug: entry.slug,
+        permalink: entry.permalink,
         title: entry.title,
       });
     }

@@ -61,7 +61,9 @@ function collectDependencies(
     const optionalDependencies = (plugin.optional ?? []).flatMap(
       (capability) => {
         const providerIndex = providers.get(capability);
-        return providerIndex === undefined ? [] : [{ providerIndex, capability }];
+        return providerIndex === undefined
+          ? []
+          : [{ providerIndex, capability }];
       },
     );
 
@@ -74,13 +76,16 @@ function stableTopologicalSort(
   dependencies: readonly PluginDependency[][],
 ): RiebeckitePlugin[] {
   const dependents = plugins.map(() => new Set<number>());
-  const remainingDependencies = dependencies.map((pluginDependencies, index) => {
-    for (const dependency of pluginDependencies) {
-      dependents[dependency.providerIndex].add(index);
-    }
-    return new Set(pluginDependencies.map((dependency) => dependency.providerIndex))
-      .size;
-  });
+  const remainingDependencies = dependencies.map(
+    (pluginDependencies, index) => {
+      for (const dependency of pluginDependencies) {
+        dependents[dependency.providerIndex].add(index);
+      }
+      return new Set(
+        pluginDependencies.map((dependency) => dependency.providerIndex),
+      ).size;
+    },
+  );
   const available = remainingDependencies
     .map((count, index) => (count === 0 ? index : -1))
     .filter((index) => index >= 0);
@@ -144,7 +149,13 @@ function findCycle(
   const visited = new Set<number>();
 
   for (const index of remaining) {
-    const cycle = visitDependency(index, dependencies, remaining, visiting, visited);
+    const cycle = visitDependency(
+      index,
+      dependencies,
+      remaining,
+      visiting,
+      visited,
+    );
     if (cycle) return cycle;
   }
 

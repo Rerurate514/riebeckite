@@ -5,6 +5,7 @@ import { visit } from "unist-util-visit";
 
 export interface WikilinkOptions {
   contentIndex: Map<string, string>;
+  resolvePermalink: (slug: string) => string;
   assetBase?: string;
   renderNoteEmbed?: (
     slug: string,
@@ -28,7 +29,13 @@ const WIKILINK_PATTERN =
   "(!)?\\[\\[([^\\]|#]+)(?:#(\\^[^\\]|]+|[^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
-  const { contentIndex, assetBase = "/", renderNoteEmbed, renderContent } = opt;
+  const {
+    contentIndex,
+    assetBase = "/",
+    renderNoteEmbed,
+    renderContent,
+    resolvePermalink,
+  } = opt;
 
   return async (tree: Root) => {
     const replacements: {
@@ -96,7 +103,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         } else {
           newNodes.push({
             type: "link",
-            url: `/${resolved.value}`,
+            url: resolvePermalink(resolved.value),
             data: {
               hProperties: {
                 class: "wikilink-embed-unresolved",
@@ -137,7 +144,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         const anchor = fragment ? `#${slugifyFragment(fragment)}` : "";
         newNodes.push({
           type: "link",
-          url: `/${resolved.value}${anchor}`,
+          url: `${resolvePermalink(resolved.value)}${anchor}`,
           data: { hProperties: { class: "wikilink" } },
           children: [{ type: "text", value: label }],
         });

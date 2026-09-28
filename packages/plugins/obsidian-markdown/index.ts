@@ -34,6 +34,7 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
       pipeline.use(remarkObsidianBlockReference);
       pipeline.use(remarkObsidianWikilink, {
         contentIndex: context.contentIndex,
+        resolvePermalink: context.resolvePermalink,
         assetBase: options.assetBase,
         renderNoteEmbed: context.renderNoteEmbed,
         renderContent: context.renderContent,

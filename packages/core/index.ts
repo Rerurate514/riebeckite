@@ -5,10 +5,6 @@ export {
   resolveConfig,
 } from "./src/config";
 export { ConfigValidationError } from "./src/config_validation";
-export type {
-  ConfigValidationIssue,
-  PluginOptionsValidator,
-} from "./src/types/config_validation";
 export {
   ATTACHMENTS_BASE_PATH,
   attachmentUrl,
@@ -18,36 +14,27 @@ export {
   isMarkdownPath,
   normalizeContentPath,
 } from "./src/content/attachment";
-export type { ContentGraph } from "./src/content/content_graph";
-export { createContentGraph } from "./src/content/content_graph";
-export { readOnlyContentGraph } from "./src/content/read_only_content_graph";
-export { ContentManager } from "./src/content/content_manager";
-export type {
-  ContentBuildOptions,
-  ContentInspection,
-} from "./src/content/content_manager";
+export type { ContentBuildStateStatus } from "./src/content/content_build_state_store";
 export {
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
 } from "./src/content/content_build_state_store";
-export type { ContentBuildStateStatus } from "./src/content/content_build_state_store";
-export { FileSystemContentSource } from "./src/content/file_system_content_source";
+export type { ContentGraph } from "./src/content/content_graph";
+export { createContentGraph } from "./src/content/content_graph";
+export type {
+  ContentBuildOptions,
+  ContentInspection,
+} from "./src/content/content_manager";
+export { ContentManager } from "./src/content/content_manager";
 export type {
   ContentSource,
   ContentSourceContent,
   ContentSourceEntry,
   ContentSourceMetadata,
 } from "./src/content/content_source";
+export { FileSystemContentSource } from "./src/content/file_system_content_source";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions";
-export type { PipelineOptions } from "./src/pipeline";
-export { Pipeline } from "./src/pipeline";
-export {
-  CompositeTraceSink,
-  ConsoleLogger,
-  NoopLogger,
-  NoopTracer,
-  SinkTracer,
-} from "./src/observability";
+export { readOnlyContentGraph } from "./src/content/read_only_content_graph";
 export type {
   LogContext,
   Logger,
@@ -56,16 +43,36 @@ export type {
   ObservabilityValue,
   TraceAttributes,
   TraceEvent,
+  Tracer,
   TraceSink,
   TraceSpan,
-  Tracer,
 } from "./src/observability";
+export {
+  CompositeTraceSink,
+  ConsoleLogger,
+  NoopLogger,
+  NoopTracer,
+  SinkTracer,
+} from "./src/observability";
+export type { PipelineOptions } from "./src/pipeline";
+export { Pipeline } from "./src/pipeline";
+export type { JsonValue, PluginCache } from "./src/plugin/plugin_cache";
+export {
+  PluginDependencyError,
+  type PluginDependencyErrorKind,
+} from "./src/plugin/plugin_dependency_error";
+export type {
+  ConfigValidationIssue,
+  PluginOptionsValidator,
+} from "./src/types/config_validation";
 export type {
   ContentAsset,
   ContentLink,
   ContentLinkKind,
   ContentManifest,
   ContentManifestEntry,
+  ContentPublicLocation,
+  ContentRedirect,
 } from "./src/types/content_manifest";
 export type {
   Diagnostic,
@@ -74,6 +81,7 @@ export type {
 } from "./src/types/diagnostic";
 export type {
   PluginInput,
+  ResolvedPluginMetadata,
   RiebeckitePlugin,
 } from "./src/types/plugin";
 export {
@@ -81,12 +89,6 @@ export {
   getResolvedPluginMetadata,
   resolvePlugins,
 } from "./src/types/plugin";
-export type { ResolvedPluginMetadata } from "./src/types/plugin";
-export type { JsonValue, PluginCache } from "./src/plugin/plugin_cache";
-export {
-  PluginDependencyError,
-  type PluginDependencyErrorKind,
-} from "./src/plugin/plugin_dependency_error";
 export type {
   PluginAsset,
   PluginAssetKind,
@@ -94,6 +96,9 @@ export type {
 } from "./src/types/plugin_asset";
 export type {
   PluginContentContext,
+  PluginContentLocationContext,
+  PluginContentLocationInput,
+  PluginContentLocationResolver,
   PluginContentRenderer,
   PluginContext,
   PluginGraphContext,

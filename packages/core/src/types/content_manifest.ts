@@ -22,6 +22,9 @@ export type ContentManifestPluginAsset = PluginAsset & {
 
 export type ContentManifestEntry = {
   slug: string;
+  /** Canonical site-local URL. Plugins may replace the legacy slug-derived URL. */
+  permalink: string;
+  publicLocation: ContentPublicLocation;
   title: string;
   frontmatter: PostFrontmatter;
   html: string;
@@ -31,9 +34,27 @@ export type ContentManifestEntry = {
   assets: ContentAsset[];
 };
 
+export type ContentRedirect = {
+  path: string;
+  status: 301 | 302 | 307 | 308;
+};
+
+/**
+ * A generic public location declared by a plugin. `metadata` is intentionally
+ * opaque to Core; it lets a plugin expose its own inspect-only details.
+ */
+export type ContentPublicLocation = {
+  slug: string;
+  permalink: string;
+  redirects?: readonly ContentRedirect[];
+  metadata?: Readonly<Record<string, string>>;
+};
+
 export type ContentManifest = {
   entries: ContentManifestEntry[];
   bySlug: Map<string, ContentManifestEntry>;
+  byPermalink: Map<string, ContentManifestEntry>;
+  redirects: Map<string, ContentRedirect & { slug: string }>;
   byTag: Map<string, ContentManifestEntry[]>;
   byAsset: Map<string, ContentManifestEntry[]>;
   outgoingLinks: Map<string, ContentLink[]>;

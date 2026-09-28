@@ -157,7 +157,7 @@ export function initSearch() {
       if (!result) return;
 
       event.preventDefault();
-      window.location.href = `/${encodeURI(result.slug)}`;
+      window.location.href = result.permalink;
     }
   });
 }
@@ -182,7 +182,7 @@ function createResultElement(
 ): HTMLAnchorElement {
   const link = document.createElement("a");
   link.className = "search-result";
-  link.href = `/${encodeURI(result.slug)}`;
+  link.href = result.permalink;
   link.dataset.searchResult = "true";
   link.setAttribute("role", "option");
 

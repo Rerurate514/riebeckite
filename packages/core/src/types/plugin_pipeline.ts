@@ -12,6 +12,7 @@ export type HtmlPipeline = MarkdownPipeline;
 
 export type MarkdownPipelineContext = {
   contentIndex: Map<string, string>;
+  resolvePermalink: (slug: string) => string;
   renderNoteEmbed?: (
     slug: string,
     fragment: MarkdownEmbedFragment | null,

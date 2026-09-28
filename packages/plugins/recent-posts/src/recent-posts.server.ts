@@ -1,7 +1,7 @@
 import { isPublished, type ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { RecentPost } from "./recent-posts";
 
-type PostRef = { slug: string };
+type PostRef = { slug: string; permalink: string };
 type ProcessedPost = { frontmatter: Record<string, unknown> };
 type TitleResolver = (slug: string, title: unknown) => string;
 
@@ -27,6 +27,7 @@ export async function getRecentPosts(args: {
 
         return {
           slug: post.slug,
+          permalink: post.permalink,
           title: args.resolveTitle(post.slug, processed.frontmatter.title),
           postedAt,
         };

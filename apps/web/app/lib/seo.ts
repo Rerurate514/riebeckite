@@ -19,8 +19,11 @@ export const renderRobots = seoProvider.renderRobots;
 export const renderRssFeed = seoProvider.renderRssFeed;
 export const renderSitemap = seoProvider.renderSitemap;
 
-export function buildArticleSeo(slug: string, post: PostContent): SeoMetadata {
-  return seoProvider.buildArticleSeo(config, slug, post);
+export function buildArticleSeo(
+  permalink: string,
+  post: PostContent,
+): SeoMetadata {
+  return seoProvider.buildArticleSeo(config, permalink, post);
 }
 
 export function buildIndexSeo(post?: PostContent): SeoMetadata {
@@ -54,8 +57,8 @@ export function buildAbsoluteUrl(pathOrUrl: string): string {
   return seoProvider.buildAbsoluteUrl(config, pathOrUrl);
 }
 
-export function buildPostUrl(slug: string): string {
-  return seoProvider.buildPostUrl(config, slug);
+export function buildPostUrl(permalink: string): string {
+  return seoProvider.buildPostUrl(config, permalink);
 }
 
 export function getHtmlLanguage(): string {

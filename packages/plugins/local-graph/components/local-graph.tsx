@@ -80,7 +80,7 @@ export default function LocalGraph(props: Props) {
               key={node.slug}
             >
               <a
-                href={`/${encodeURI(node.slug)}`}
+                href={node.permalink}
                 aria-label={
                   isCurrent
                     ? `Current note: ${node.title}`

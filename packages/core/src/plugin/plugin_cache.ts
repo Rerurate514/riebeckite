@@ -1,8 +1,8 @@
 import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
 import type { Logger, Tracer } from "../observability";
+import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config";
 
 export type JsonValue =
   | null

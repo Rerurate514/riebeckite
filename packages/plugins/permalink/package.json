@@ -1,0 +1,15 @@
+{
+  "name": "@riebeckite/plugin-permalink",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "yaml": "^2.9.0"
+  }
+}

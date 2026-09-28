@@ -47,7 +47,12 @@ export type ContentInspection = {
     readonly extension: string;
     readonly count: number;
   }[];
-  readonly paths: readonly string[];
+  readonly paths: readonly {
+    readonly path: string;
+    readonly id?: string;
+    readonly idSource?: string;
+    readonly permalink?: string;
+  }[];
 };
 
 export type GraphInspection = {

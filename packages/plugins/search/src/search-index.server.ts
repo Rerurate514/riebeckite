@@ -20,6 +20,7 @@ export function buildSearchItems(args: {
 
     return {
       slug: entry.slug,
+      permalink: entry.permalink,
       title: resolveTitle(entry.slug, entry.frontmatter.title),
       headings: extractHeadings(entry.html),
       body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),

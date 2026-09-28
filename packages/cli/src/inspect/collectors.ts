@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
+  ContentManager,
   FileSystemContentSource,
   getResolvedPluginMetadata,
   readContentBuildStateStatus,
@@ -98,17 +99,43 @@ export async function collectContentInspection(
     source: contentSourceName(config),
     entryCount: paths.length,
     extensions,
-    paths,
+    paths: await inspectPaths(config, source, paths),
   };
+}
+
+async function inspectPaths(
+  config: ResolvedRiebeckiteConfig,
+  source: ContentSource,
+  paths: readonly string[],
+): Promise<ContentInspection["paths"]> {
+  if (!config.plugins.some((plugin) => plugin.name === "permalink")) {
+    return paths.map((path) => ({ path }));
+  }
+  const manifest = await new ContentManager(source, [], {
+    config,
+  }).getManifest();
+  const bySlug = manifest.bySlug;
+  return paths.map((path) => {
+    if (!path.endsWith(".md")) return { path };
+    const entry = bySlug.get(path.replace(/\.md$/, ""));
+    return {
+      path,
+      id: entry?.publicLocation.metadata?.id,
+      idSource: entry?.publicLocation.metadata?.idSource,
+      permalink: entry?.permalink,
+    };
+  });
 }
 
 export async function collectGraphInspection(
   project: RiebeckiteProject,
 ): Promise<GraphInspection> {
   const config = await loadProjectConfig(project);
-  const graph = await readOnlyContentGraph(
-    await resolveContentSource(config, project),
-  );
+  const source = await resolveContentSource(config, project);
+  const locations = await new ContentManager(source, [], {
+    config,
+  }).getContentLocations();
+  const graph = await readOnlyContentGraph(source, locations);
   const nodes = graph.nodes();
   const mostLinked = nodes
     .map((node) => ({

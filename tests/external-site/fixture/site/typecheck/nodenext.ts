@@ -50,6 +50,8 @@ import { analytics } from "@riebeckite/plugin-analytics";
 import { initAnalytics } from "@riebeckite/plugin-analytics/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { excaliBrain } from "@riebeckite/plugin-excalibrain";
+import { initExcaliBrain } from "@riebeckite/plugin-excalibrain/client";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { initMarkmap } from "@riebeckite/plugin-markmap/client";
 import { bases } from "@riebeckite/plugin-bases";
@@ -132,6 +134,8 @@ export const resolvedEntries = {
   initAnalytics,
   backlinksPlugin,
   Backlinks,
+  excaliBrain,
+  initExcaliBrain,
   markmap,
   initMarkmap,
   bases,
@@ -211,6 +215,7 @@ export const config: RiebeckiteConfig = defineConfig({
     obsidianMarkdown(),
     markmap(),
     autoCardLinkPlugin(),
+    excaliBrain(),
     highlight(),
     tocPlugin(),
     searchPlugin(),

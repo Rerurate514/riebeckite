@@ -13,6 +13,7 @@ import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { d2 } from "@riebeckite/plugin-d2";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
+import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
@@ -113,6 +114,7 @@ export default defineConfig({
       render: "build",
       engine: "dot",
     }),
+    excaliBrain(),
     excalidraw(),
     canvas(),
     media(),

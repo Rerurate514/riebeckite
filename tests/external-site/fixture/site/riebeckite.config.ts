@@ -7,6 +7,7 @@ import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { marp } from "@riebeckite/plugin-marp";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
@@ -63,6 +64,7 @@ export default defineConfig({
     aliasPlugin(),
     graphviz({ render: "build", engine: "dot" }),
     autoCardLinkPlugin(),
+    excaliBrain(),
     highlight(),
     d2(),
     tocPlugin(),

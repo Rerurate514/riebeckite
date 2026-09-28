@@ -101,6 +101,9 @@ importers:
       '@riebeckite/plugin-diagnostics':
         specifier: workspace:*
         version: link:../../packages/plugins/diagnostics
+      '@riebeckite/plugin-excalibrain':
+        specifier: workspace:*
+        version: link:../../packages/plugins/excalibrain
       '@riebeckite/plugin-excalidraw':
         specifier: workspace:*
         version: link:../../packages/plugins/excalidraw
@@ -441,6 +444,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.6
+
+  packages/plugins/excalibrain:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/excalidraw:
     dependencies:

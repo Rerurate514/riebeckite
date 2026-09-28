@@ -129,6 +129,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-markmap",
   },
   {
+    directory: "packages/plugins/excalibrain",
+    name: "@riebeckite/plugin-excalibrain",
+  },
+  {
     directory: "packages/create-riebeckite",
     name: "create-riebeckite",
   },
@@ -147,6 +151,7 @@ const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
 const QR_MARKER = "RIEBECKITE_EXTERNAL_QR_MARKER";
 const MARKMAP_MARKER = "RIEBECKITE_EXTERNAL_MARKMAP_MARKER";
+const EXCALIBRAIN_MARKER = "RIEBECKITE_EXTERNAL_EXCALIBRAIN_MARKER";
 const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
 const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
 const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
@@ -934,6 +939,42 @@ function assertBuildOutput(siteDir, vaultDir) {
         `non-published note leaked into a generated index: ${path.relative(siteDir, file)}`,
       );
     }
+  }
+
+  const centerPage = htmlFiles
+    .map((file) => ({ file, html: fs.readFileSync(file, "utf8") }))
+    .find(({ html }) =>
+      html.includes('data-excalibrain-center="notes/excalibrain-center"'),
+    );
+  if (!centerPage) {
+    fail("the ExcaliBrain center page was not found in the build output");
+  }
+  const center = centerPage.html;
+  for (const snippet of [
+    "rb-excalibrain",
+    "data-excalibrain",
+    'data-node-role="parent"',
+    'data-node-role="child"',
+    'data-node-role="left-friend"',
+    'data-node-role="sibling"',
+  ]) {
+    if (!center.includes(snippet)) {
+      fail(`ExcaliBrain center page is missing ${snippet}`);
+    }
+  }
+  if (!center.includes(EXCALIBRAIN_MARKER)) {
+    fail(
+      `ExcaliBrain center page is missing the marker-titled related note (${EXCALIBRAIN_MARKER})`,
+    );
+  }
+  if (!center.includes('href="/notes/excalibrain-parent"')) {
+    fail("ExcaliBrain center page is missing the permalink to the parent note");
+  }
+  if (!center.includes('data-excalibrain-render="build"')) {
+    fail("ExcaliBrain center page did not report the build render mode");
+  }
+  if (!center.includes('<svg class="rb-excalibrain__svg"')) {
+    fail("ExcaliBrain center page did not inline the build-time SVG");
   }
 
   const cssFiles = walkFiles(distDir, (full) => full.endsWith(".css"));

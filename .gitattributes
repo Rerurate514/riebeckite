@@ -1,8 +1,1 @@
-# Keep this file itself LF so its patterns parse on every platform.
-.gitattributes text eol=lf
-
-# The external-site fixture vault ships "binary" stand-ins whose byte size and
-# content are asserted by the E2E. Keep them byte-exact so a checkout with
-# `core.autocrlf=true` cannot rewrite their line endings.
-tests/external-site/fixture/vault/attachments/* -text
-tests/external-site/fixture/vault/media/* -text
+tests/external-site/fixture/vault/** -text

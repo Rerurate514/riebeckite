@@ -6,8 +6,14 @@ import { build as buildWithEsbuild } from "esbuild";
 import { workspacePackageResolver } from "./workspace_packages.js";
 
 export type RiebeckiteConfigLoaderOptions = {
-  workspaceRoot: string;
+  /** Directory that contains the Riebeckite configuration file. */
+  configRoot: string;
   configFile?: string;
+  /**
+   * Optional monorepo development root. npm consumers resolve packages through
+   * their own node_modules and must not need this option.
+   */
+  workspaceRoot?: string;
 };
 
 export async function loadRiebeckiteConfig(
@@ -23,11 +29,11 @@ export async function loadRiebeckiteConfig(
     await buildWithEsbuild({
       stdin: {
         contents: `
-          import rawConfig from ${JSON.stringify(path.join(options.workspaceRoot, configFile))};
+          import rawConfig from ${JSON.stringify(path.resolve(options.configRoot, configFile))};
           import { resolveConfigModule } from "@riebeckite/core";
           export default resolveConfigModule(rawConfig);
         `,
-        resolveDir: options.workspaceRoot,
+        resolveDir: options.configRoot,
         loader: "ts",
       },
       outfile: outputFile,
@@ -42,7 +48,9 @@ export async function loadRiebeckiteConfig(
       banner: {
         js: 'import { createRequire as __riebeckiteCreateRequire } from "node:module"; const require = __riebeckiteCreateRequire(import.meta.url);',
       },
-      plugins: [workspacePackageResolver(options.workspaceRoot)],
+      plugins: options.workspaceRoot
+        ? [workspacePackageResolver(options.workspaceRoot)]
+        : [],
     });
 
     const module = await import(`${pathToFileUrl(outputFile)}?t=${Date.now()}`);

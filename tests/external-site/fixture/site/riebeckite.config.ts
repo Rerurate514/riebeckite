@@ -7,6 +7,7 @@ import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { queryPlugin } from "@riebeckite/plugin-query";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { searchPlugin } from "@riebeckite/plugin-search";
+import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { localFixturePlugin } from "./extensions/local-plugin";
 import { localFixtureTheme } from "./extensions/local-theme";
@@ -32,6 +33,7 @@ export default defineConfig({
     queryPlugin(),
     recentPostsPlugin(),
     searchPlugin(),
+    shortcodes(),
     localFixturePlugin(),
   ],
 });

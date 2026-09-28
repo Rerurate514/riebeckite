@@ -35,6 +35,7 @@ import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
 import SearchBar from "@riebeckite/plugin-search/components";
+import { shortcodes, type ShortcodeRenderer } from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
@@ -67,6 +68,7 @@ export const resolvedEntries = {
   searchPlugin,
   initSearch,
   SearchBar,
+  shortcodes,
   tocPlugin,
   initTableOfContents,
   TableOfContents,
@@ -87,6 +89,9 @@ export const config: RiebeckiteConfig = defineConfig({
   theme: defaultTheme(),
   plugins: [obsidianMarkdown(), autoCardLinkPlugin(), tocPlugin(), searchPlugin()],
 });
+
+export const shortcodeRenderer: ShortcodeRenderer = ({ label }) =>
+  `<span>${label}</span>`;
 
 export function html(post: PostContent): string {
   return post.html ?? "";

@@ -21,6 +21,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/recent-posts",
   "packages/plugins/search",
   "packages/plugins/seo",
+  "packages/plugins/shortcodes",
   "packages/plugins/toc",
   "packages/themes/default",
   "packages/themes/gruvbox",

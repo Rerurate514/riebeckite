@@ -110,6 +110,9 @@ importers:
       '@riebeckite/plugin-seo':
         specifier: workspace:*
         version: link:../../packages/plugins/seo
+      '@riebeckite/plugin-shortcodes':
+        specifier: workspace:*
+        version: link:../../packages/plugins/shortcodes
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../../packages/plugins/toc
@@ -451,6 +454,18 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/shortcodes:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
 
   packages/plugins/toc:
     dependencies:

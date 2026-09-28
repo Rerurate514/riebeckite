@@ -38,6 +38,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  {
+    directory: "packages/plugins/shortcodes",
+    name: "@riebeckite/plugin-shortcodes",
+  },
 ];
 
 const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
@@ -46,6 +50,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
 const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+const SHORTCODE_MARKER = "RIEBECKITE_EXTERNAL_SHORTCODE_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -378,6 +383,23 @@ function assertBuildOutput(siteDir) {
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {
     fail("external vault media URL was not generated from its logical path");
+  }
+  if (!combined.includes("rb-shortcode--youtube")) {
+    fail("shortcodes plugin did not render the youtube built-in");
+  }
+  if (!combined.includes("rb-shortcode--kbd")) {
+    fail("shortcodes plugin did not render the kbd built-in");
+  }
+  if (!combined.includes("rb-shortcode--note")) {
+    fail("shortcodes plugin did not render the note built-in");
+  }
+  if (!combined.includes("rb-shortcode--badge")) {
+    fail("shortcodes plugin did not render the badge built-in");
+  }
+  if (!combined.includes(SHORTCODE_MARKER)) {
+    fail(
+      `generated HTML is missing the shortcode fixture marker (${SHORTCODE_MARKER})`,
+    );
   }
   if (!combined.includes(LOCAL_PLUGIN_MARKER)) {
     fail(

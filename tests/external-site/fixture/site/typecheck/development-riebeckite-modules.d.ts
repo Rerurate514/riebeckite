@@ -100,6 +100,14 @@ declare module "@riebeckite/plugin-search/components" {
   export default SearchBar;
 }
 
+declare module "@riebeckite/plugin-shortcodes" {
+  export const shortcodes: any;
+  export const shortcodesPlugin: any;
+  export const renderShortcode: any;
+  export const resolveShortcodeOptions: any;
+  export type ShortcodeRenderer = any;
+}
+
 declare module "@riebeckite/plugin-toc" {
   export const initTableOfContents: any;
   export const tocPlugin: any;

@@ -1,5 +1,1 @@
-# The external-site fixture vault is copied into an isolated build and some
-# assertions compare raw byte sizes (for example the attachment card size).
-# Git must not rewrite line endings on checkout, or the checked-in 21-byte
-# fixture becomes 22 bytes on Windows (core.autocrlf=true).
 tests/external-site/fixture/vault/** -text

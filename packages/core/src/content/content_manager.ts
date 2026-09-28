@@ -11,29 +11,15 @@ import type { Diagnostic } from "../types/diagnostic.js";
 import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
-  type AffectedContent,
-  determineAffectedContent,
-} from "./affected_content.js";
-import {
-  CONTENT_BUILD_STATE_VERSION,
-  type ContentBuildState,
-  type FingerprintedContentEntry,
-} from "./content_build_state.js";
-import {
-  loadContentBuildState,
-  resolveContentBuildStatePath,
-  saveContentBuildState,
-} from "./content_build_state_store.js";
-import {
-  allContentChanged,
-  type ContentChangeSet,
-  diffContentEntries,
-  hasContentChanges,
-} from "./content_change_set.js";
-import { fingerprintContentEntries } from "./content_fingerprint.js";
+  ContentBuildCoordinator,
+  type ContentBuildPreparation,
+} from "./content_build_coordinator.js";
+import { resolveContentBuildStatePath } from "./content_build_state_store.js";
+import { hasContentChanges } from "./content_change_set.js";
+import { ContentEntryReader } from "./content_entry_reader.js";
 import type { ContentGraph } from "./content_graph.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
-import { resolveDefaultContentLocation } from "./content_location.js";
+import { ContentLocationResolver } from "./content_location_resolver.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
@@ -56,13 +42,6 @@ export type ContentInspection = {
   readonly diagnostics: readonly Diagnostic[];
 };
 
-type ContentBuildPreparation = {
-  previousState: ContentBuildState | undefined;
-  currentEntries: readonly FingerprintedContentEntry[];
-  changeSet: ContentChangeSet;
-  affected: AffectedContent;
-};
-
 export class ContentManager {
   private source: ContentSource;
   private contentIndexBuilder: ContentIndexBuilder;
@@ -70,13 +49,11 @@ export class ContentManager {
   private pluginRuntime: PluginRuntime;
   private contentIndex: Map<string, string> | null = null;
   private contentCache = new Map<string, PostContent>();
-  private contentEntries: readonly ContentSourceEntry[] | null = null;
-  private contentTexts = new Map<string, Promise<string>>();
   private manifest: ContentManifest | null = null;
-  private contentLocations: Map<string, ContentPublicLocation> | null = null;
   private pipeline: Pipeline | null = null;
-  private buildPreparation: Promise<ContentBuildPreparation> | null = null;
-  private buildStatePath: string;
+  private entryReader: ContentEntryReader;
+  private locationResolver: ContentLocationResolver;
+  private buildCoordinator: ContentBuildCoordinator;
   private isBuildTime = false;
 
   constructor(
@@ -99,10 +76,24 @@ export class ContentManager {
     };
     this.contentIndexBuilder = new ContentIndexBuilder(this.source);
     this.pluginRuntime = new PluginRuntime(this.pipelineOptions);
-    this.buildStatePath = resolveContentBuildStatePath(
+    const buildStatePath = resolveContentBuildStatePath(
       pipelineOptions.config,
       typeof content === "string" ? content : undefined,
     );
+    const observability = this.observability();
+    this.entryReader = new ContentEntryReader(this.source, observability);
+    this.locationResolver = new ContentLocationResolver({
+      getEntries: () => this.entryReader.getEntries(),
+      readEntry: (entry) => this.entryReader.read(entry),
+      getContentIndex: () => this.getContentIndex(),
+      pluginRuntime: this.pluginRuntime,
+    });
+    this.buildCoordinator = new ContentBuildCoordinator({
+      buildStatePath,
+      getEntries: () => this.entryReader.getEntries(),
+      readEntry: (entry) => this.entryReader.read(entry),
+      observability,
+    });
   }
 
   async getAllPosts(): Promise<ContentPostReference[]> {
@@ -113,11 +104,11 @@ export class ContentManager {
 
   /** Scans the configured content source without processing content. */
   async scan(): Promise<readonly ContentSourceEntry[]> {
-    return await this.getContentEntries();
+    return await this.entryReader.getEntries();
   }
 
   async getPost(slug: string): Promise<string> {
-    return await this.readTextEntry(`${slug}.md`);
+    return await this.entryReader.readText(`${slug}.md`);
   }
 
   async getContentIndex(
@@ -136,8 +127,8 @@ export class ContentManager {
     }
 
     this.contentIndex = await this.contentIndexBuilder.build(
-      await this.getContentEntries(),
-      (entry) => this.readContentEntry(entry),
+      await this.entryReader.getEntries(),
+      (entry) => this.entryReader.read(entry),
     );
     return this.contentIndex;
   }
@@ -162,7 +153,7 @@ export class ContentManager {
 
         this.pipeline ??= new Pipeline(
           contentIndex,
-          await this.getPermalinks(),
+          await this.locationResolver.getPermalinks(),
           (postSlug) => this.getPost(postSlug),
           this.pipelineOptions,
           this.isBuildTime,
@@ -199,7 +190,7 @@ export class ContentManager {
 
     if (options) this.enableBuildTime();
     const preparation = options
-      ? await this.getBuildPreparation(options)
+      ? await this.buildCoordinator.getPreparation(options.incremental)
       : undefined;
     return await this.observability().tracer.span(
       "content.manifest",
@@ -239,7 +230,7 @@ export class ContentManager {
           {},
           () => this.manifestBuilder.build(entries, contentIndex),
         );
-        this.populateRedirects(manifest, locations);
+        this.locationResolver.populateRedirects(manifest, locations);
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
 
         manifest.assets = this.pluginRuntime.collectAssets();
@@ -249,7 +240,8 @@ export class ContentManager {
         ];
 
         await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
-        if (preparation) await this.commitBuildState(preparation, manifest);
+        if (preparation)
+          await this.buildCoordinator.commit(preparation, manifest);
         this.manifest = manifest;
         return manifest;
       },
@@ -283,7 +275,7 @@ export class ContentManager {
    */
   async inspect(): Promise<ContentInspection> {
     const [entries, contentIndex] = await Promise.all([
-      this.getContentEntries(),
+      this.entryReader.getEntries(),
       this.getContentIndex(),
     ]);
     const diagnostics =
@@ -297,15 +289,6 @@ export class ContentManager {
     await this.pluginRuntime.dispose(this.contentIndex);
   }
 
-  private async getContentEntries(): Promise<readonly ContentSourceEntry[]> {
-    this.contentEntries ??= await this.observability().tracer.span(
-      "content.scan",
-      {},
-      () => this.source.scan(),
-    );
-    return this.contentEntries;
-  }
-
   /**
    * Resolves the canonical public location for every Markdown entry, applying
    * plugin location resolvers. Reads frontmatter but does not render content or
@@ -314,85 +297,7 @@ export class ContentManager {
   async getContentLocations(): Promise<
     ReadonlyMap<string, ContentPublicLocation>
   > {
-    if (this.contentLocations) return this.contentLocations;
-    const [entries, contentIndex] = await Promise.all([
-      this.getContentEntries(),
-      this.getContentIndex(),
-    ]);
-    await this.pluginRuntime.startBuild(contentIndex);
-    const inputs = await Promise.all(
-      entries
-        .filter((entry) => entry.path.endsWith(".md"))
-        .map(async (entry) => ({
-          slug: toSlug(entry.path),
-          path: entry.path,
-          markdown: await this.readContentEntry(entry),
-        })),
-    );
-    const locations = new Map(
-      inputs.map((input) => [input.slug, resolveDefaultContentLocation(input)]),
-    );
-    for (const location of await this.pluginRuntime.resolveContentLocations(
-      inputs,
-      contentIndex,
-    )) {
-      if (!locations.has(location.slug)) {
-        throw new Error(
-          `Content public location references an unknown slug: ${location.slug}`,
-        );
-      }
-      locations.set(location.slug, location);
-    }
-    this.contentLocations = locations;
-    return locations;
-  }
-
-  private async getPermalinks(): Promise<Map<string, string>> {
-    return new Map(
-      Array.from(
-        (await this.getContentLocations()).entries(),
-        ([slug, location]) => [slug, location.permalink] as const,
-      ),
-    );
-  }
-
-  private populateRedirects(
-    manifest: ContentManifest,
-    locations: ReadonlyMap<string, ContentPublicLocation>,
-  ): void {
-    for (const [slug, location] of locations) {
-      for (const redirect of location.redirects ?? []) {
-        manifest.redirects.set(redirect.path, { ...redirect, slug });
-      }
-    }
-  }
-
-  private async readTextEntry(logicalPath: string): Promise<string> {
-    const entries = await this.getContentEntries();
-    const entry = entries.find((current) => current.path === logicalPath);
-    if (!entry) throw new Error(`Content entry was not found: ${logicalPath}`);
-
-    return await this.readContentEntry(entry);
-  }
-
-  private readContentEntry(entry: ContentSourceEntry): Promise<string> {
-    const cached = this.contentTexts.get(entry.path);
-    if (cached) return cached;
-
-    const content = this.source
-      .read(entry)
-      .then((value) =>
-        typeof value === "string" ? value : new TextDecoder().decode(value),
-      );
-    this.contentTexts.set(entry.path, content);
-    return content;
-  }
-
-  private getBuildPreparation(
-    options: ContentBuildOptions,
-  ): Promise<ContentBuildPreparation> {
-    this.buildPreparation ??= this.prepareBuild(options);
-    return this.buildPreparation;
+    return await this.locationResolver.getLocations();
   }
 
   private enableBuildTime(): void {
@@ -400,93 +305,9 @@ export class ContentManager {
     this.pluginRuntime.enableBuildTime();
   }
 
-  private async prepareBuild(
-    options: ContentBuildOptions,
-  ): Promise<ContentBuildPreparation> {
-    const currentEntries = await fingerprintContentEntries(
-      await this.getContentEntries(),
-      (entry) => this.readContentEntry(entry),
-    );
-    const previousState =
-      options.incremental === false
-        ? undefined
-        : await loadContentBuildState(this.buildStatePath);
-    const changeSet = previousState
-      ? diffContentEntries(previousState, currentEntries)
-      : allContentChanged(currentEntries);
-
-    const preparation = {
-      previousState,
-      currentEntries,
-      changeSet,
-      affected: determineAffectedContent(
-        changeSet,
-        previousState,
-        currentEntries.map(({ entry }) => entry.path),
-      ),
-    };
-    this.observability().tracer.event("build.incremental", {
-      incremental: options.incremental !== false,
-      added: changeSet.added.length,
-      changed: changeSet.changed.length,
-      removed: changeSet.removed.length,
-      unchanged: changeSet.unchanged.length,
-      affected:
-        preparation.affected.direct.size + preparation.affected.dependent.size,
-    });
-    return preparation;
-  }
-
-  private async commitBuildState(
-    preparation: ContentBuildPreparation,
-    manifest: ContentManifest,
-  ): Promise<void> {
-    const entriesBySlug = new Map(
-      manifest.entries.map((entry) => [entry.slug, entry]),
-    );
-    const state: ContentBuildState = {
-      version: CONTENT_BUILD_STATE_VERSION,
-      entries: Object.fromEntries(
-        preparation.currentEntries.map(({ entry, fingerprint }) => {
-          const manifestEntry = entriesBySlug.get(toSlug(entry.path));
-          return [
-            entry.path,
-            {
-              fingerprint,
-              dependencies: manifestEntry
-                ? manifestEntry.links
-                    .filter(
-                      (link): link is typeof link & { slug: string } =>
-                        link.kind === "note" && link.slug !== null,
-                    )
-                    .map((link) => link.slug)
-                    .sort()
-                : [],
-            },
-          ];
-        }),
-      ),
-      contentIndex: Object.fromEntries(
-        [...manifest.contentIndex.entries()].sort(([left], [right]) =>
-          left.localeCompare(right),
-        ),
-      ),
-    };
-
-    try {
-      await saveContentBuildState(this.buildStatePath, state);
-    } catch {
-      // Build state is an optimization; the completed build remains valid.
-    }
-  }
-
   private observability(): Observability {
     return this.pipelineOptions.observability ?? noopObservability;
   }
-}
-
-function toSlug(path: string): string {
-  return path.replace(/\.md$/, "");
 }
 
 declare module "../pipeline" {

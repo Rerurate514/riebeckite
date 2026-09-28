@@ -1,37 +1,44 @@
 /** @jsxImportSource hono/jsx */
 
-type Children = unknown;
+/** Content rendered inside a UI primitive. */
+export type PrimitiveChildren = unknown;
 
-type PrimitiveProps = {
-  children?: Children;
+/** Shared props accepted by every UI primitive. */
+export type PrimitiveProps = {
+  children?: PrimitiveChildren;
   class?: string;
   className?: string;
 };
 
-type PrimitiveClassProps = {
+/** Shared class props for primitives that do not render arbitrary children. */
+export type PrimitiveClassProps = {
   class?: string;
   className?: string;
 };
 
-type ArticleProps = PrimitiveProps & {
+/** Props for the semantic article wrapper. */
+export type ArticleProps = PrimitiveProps & {
   "data-slot"?: string;
 };
 
-type ArticleLayoutProps = PrimitiveProps & {
-  aside?: Children;
+/** Props for the article body and optional adjacent content layout. */
+export type ArticleLayoutProps = PrimitiveProps & {
+  aside?: PrimitiveChildren;
 };
 
-type ArticleHeaderProps =
+/** Props for the article header. HTML and children are mutually exclusive. */
+export type ArticleHeaderProps =
   | (PrimitiveClassProps & {
       dangerouslySetInnerHTML: { __html: string };
       children?: never;
     })
   | (PrimitiveClassProps & {
       dangerouslySetInnerHTML?: never;
-      children?: Children;
+      children?: PrimitiveChildren;
     });
 
-type ArticleContentProps =
+/** Props for the article content container. HTML and children are mutually exclusive. */
+export type ArticleContentProps =
   | (PrimitiveClassProps & {
       html: string;
       children?: never;
@@ -39,17 +46,22 @@ type ArticleContentProps =
     })
   | (PrimitiveClassProps & {
       html?: never;
-      children?: Children;
+      children?: PrimitiveChildren;
       "data-slot"?: string;
     });
 
-type ArticleMetaProps = PrimitiveProps & {
+/** Props for article metadata. */
+export type ArticleMetaProps = PrimitiveProps & {
   label?: string;
 };
 
-type SidebarProps = PrimitiveProps & {
+/** Props for a complementary sidebar. */
+export type SidebarProps = PrimitiveProps & {
   label?: string;
 };
+
+/** Props for the semantic article footer. */
+export type ArticleFooterProps = PrimitiveProps;
 
 export function Article(props: ArticleProps) {
   return (
@@ -140,7 +152,7 @@ export function ArticleContent(props: ArticleContentProps) {
   );
 }
 
-export function ArticleFooter(props: PrimitiveProps) {
+export function ArticleFooter(props: ArticleFooterProps) {
   return (
     <footer
       class={joinClassNames("rb-article-footer", props.class, props.className)}

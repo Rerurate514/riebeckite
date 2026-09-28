@@ -349,9 +349,6 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
-      '@riebeckite/plugin-search':
-        specifier: workspace:*
-        version: link:../search
       hono:
         specifier: 'catalog:'
         version: 4.12.26

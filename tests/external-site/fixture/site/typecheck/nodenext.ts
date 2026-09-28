@@ -61,6 +61,8 @@ import { codeAnnotations, parseCodeAnnotations } from "@riebeckite/plugin-code-a
 import { canvas } from "@riebeckite/plugin-canvas";
 import { initCanvas } from "@riebeckite/plugin-canvas/client";
 import { highlight, highlightPlugin } from "@riebeckite/plugin-highlight";
+import { d2 } from "@riebeckite/plugin-d2";
+import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
 import {
@@ -129,6 +131,8 @@ export const resolvedEntries = {
   initCanvas,
   highlight,
   highlightPlugin,
+  d2,
+  initD2Diagrams,
   obsidianMarkdown,
   properties,
   kanban,

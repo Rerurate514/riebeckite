@@ -23,6 +23,7 @@
     "@riebeckite/plugin-chartjs": "workspace:*",
     "@riebeckite/plugin-code-annotations": "workspace:*",
     "@riebeckite/plugin-code-enhance": "workspace:*",
+    "@riebeckite/plugin-d2": "workspace:*",
     "@riebeckite/plugin-dataview": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",

@@ -9,6 +9,7 @@ import { attachment } from "@riebeckite/plugin-attachment";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { highlight } from "@riebeckite/plugin-highlight";
+import { d2 } from "@riebeckite/plugin-d2";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
@@ -48,6 +49,7 @@ export default defineConfig({
     aliasPlugin(),
     autoCardLinkPlugin(),
     highlight(),
+    d2(),
     tocPlugin(),
     backlinksPlugin(),
     queryPlugin(),

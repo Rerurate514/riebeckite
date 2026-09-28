@@ -19,6 +19,10 @@ const PACKAGES = [
     name: "@riebeckite/plugin-obsidian-markdown",
   },
   {
+    directory: "packages/plugins/d2",
+    name: "@riebeckite/plugin-d2",
+  },
+  {
     directory: "packages/plugins/autocardlink",
     name: "@riebeckite/plugin-autocardlink",
   },
@@ -113,6 +117,7 @@ const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
 const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
 const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
 const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
+const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
 
 const step = (message) => console.log(`\n[external-site] ${message}`);
 const fail = (message) => {
@@ -882,6 +887,20 @@ function assertStarterOutput(siteDir) {
     .join("\n");
   if (!combined.includes("starter")) {
     fail("starter HTML is missing the generated site title");
+  }
+
+  if (!combined.includes("rb-d2")) {
+    fail("generated HTML is missing the D2 plugin output (rb-d2)");
+  }
+  if (!combined.includes('data-d2="rendered"')) {
+    fail("D2 diagram was not rendered to SVG at build time");
+  }
+  const d2Source = combined.match(/data-d2-source="([^"]*)"/);
+  if (!d2Source?.[1].includes(D2_MARKER)) {
+    fail(`D2 figure source does not contain the fixture marker (${D2_MARKER})`);
+  }
+  if (!/<figure[^>]*\bclass="rb-d2"[^>]*>[\s\S]*?<svg/.test(combined)) {
+    fail("D2 figure does not contain a rendered inline SVG");
   }
 
   for (const file of htmlFiles) {

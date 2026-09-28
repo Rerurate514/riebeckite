@@ -9,6 +9,7 @@ import { chartjs } from "@riebeckite/plugin-chartjs";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
+import { d2 } from "@riebeckite/plugin-d2";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
@@ -87,6 +88,14 @@ export default defineConfig({
     }),
     chartjs(),
     plantuml(),
+    d2({
+      render: "build",
+      theme: {
+        light: 0,
+        dark: 1,
+      },
+      layout: "dagre",
+    }),
     excalidraw(),
     canvas(),
     media(),

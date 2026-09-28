@@ -59,7 +59,7 @@ pnpm dev
 pnpm build
 ```
 
-The CLI is intended to run from an application directory. Its main commands are:
+The CLI is intended to run from a root directory. Its main commands are:
 
 ```bash
 pnpm exec riebeckite check          # validate configuration and plugins

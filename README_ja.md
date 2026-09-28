@@ -59,7 +59,7 @@ pnpm dev
 pnpm build
 ```
 
-CLI はアプリケーションディレクトリで実行します。主なコマンドは次のとおりです。
+CLI はルートディレクトリで実行します。主なコマンドは次のとおりです。
 
 ```bash
 pnpm exec riebeckite check          # 設定とプラグインの解決を検証する

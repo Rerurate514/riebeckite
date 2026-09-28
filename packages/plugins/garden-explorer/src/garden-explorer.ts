@@ -1,7 +1,17 @@
 import type { GraphEdge } from "@riebeckite/core";
-import type { SearchItem } from "@riebeckite/plugin-search";
 
-export type GardenExplorerNote = SearchItem & {
+type GardenExplorerSearchFields = {
+  slug: string;
+  permalink: string;
+  title: string;
+  headings: string[];
+  body: string;
+  excerpt: string;
+  tags: string[];
+  date: string | null;
+};
+
+export type GardenExplorerNote = GardenExplorerSearchFields & {
   folder: string;
   outgoing: string[];
   backlinks: string[];

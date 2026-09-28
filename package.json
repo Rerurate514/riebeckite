@@ -7,6 +7,7 @@
     "dev": "pnpm --filter @riebeckite/web predev && pnpm --filter @riebeckite/web dev",
     "build": "pnpm --filter @riebeckite/cli build && pnpm --filter @riebeckite/web build",
     "build:packages": "pnpm -r --filter \"./packages/**\" run build",
+    "bump:version": "node scripts/bump_version.mjs",
     "check:packages": "node scripts/check_packages.mjs",
     "check:dependencies": "node scripts/check_dependencies.mjs",
     "check:templates": "node scripts/check_deploy_template.mjs",

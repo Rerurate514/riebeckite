@@ -67,6 +67,7 @@ const PACKAGES = [
     directory: "packages/plugins/recent-posts",
     name: "@riebeckite/plugin-recent-posts",
   },
+  { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
   {
     directory: "packages/plugins/chartjs",

@@ -24,7 +24,13 @@ export default defineConfig({
 
 ## Filesystem roots
 
-`configRoot` is the directory containing `riebeckite.config.*`; `appRoot` is the HonoX/Vite application directory. Config modules are imported from `configRoot`, while relative `content.directory` values are resolved from `appRoot`. The integration resolves these roots and the resulting absolute `contentRoot` together. In a typical standalone site both roots are the Vite root; set `configRoot` only when the configuration intentionally lives elsewhere.
+`configRoot` is the directory containing `riebeckite.config.*`; `appRoot` is the HonoX/Vite application directory. Config modules are imported from `configRoot`, while relative `content.directory` values are resolved from `appRoot`. The integration resolves these roots and the resulting absolute `contentRoot` together. `contentRoot` may be outside both the project and application roots, so an Obsidian vault can remain separate from the site application:
+
+```ts
+content: { directory: "../my-obsidian-vault" }
+```
+
+Filesystem content and attachment plugins use this resolved vault root rather than the current working directory. In a typical standalone site both roots are the Vite root; set `configRoot` only when the configuration intentionally lives elsewhere.
 
 ## Plugins and themes
 

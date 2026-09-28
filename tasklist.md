@@ -13,7 +13,7 @@
 | 11 | R9 | Package metadata規約の機械検証 | ✅ 完了 | Medium | `check:packages`で29公開packageのメタデータを検証。重複依存はpnpm catalogへ集約（Phase 2） |
 | **12** | **A3/A4** | **Root / Config resolutionを一本化** | ✅ 完了 | Medium–Large | `projectRoot/appRoot/configRoot/contentRoot`を明確化。`workspaceRoot`の通常consumer依存を除去しCLI/HonoXでresolverを共有 |
 | **13** | **A4.5** | **External HonoX/SSG境界を安定化** | ✅ 完了 | Medium | `@hono/vite-ssg` patchがnpm consumerへ伝播しない問題、cwd依存を解消 |
-| **14** | **A5** | **External Content Source / Vault対応を保証** | 未着手 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
+| **14** | **A5** | **External Content Source / Vault対応を保証** | ✅ 完了 | Medium | Site外のObsidian Vaultを正式サポート。`contentRoot`がproject外でも成立させる |
 | **15** | **A5.5** | **Pluginのfilesystem直接依存を除去** | 未着手 | Medium–Large | attachment/excalidraw/diff等をContentSource/Asset境界へ移行 |
 | 16 | R2 | ContentManager責務分割 | 未着手 | Medium | 約443行の責務整理。build調整とpermalink/redirect解決を抽出し公開APIは不変（Phase 3 / A5.5後） |
 | 17 | R10 | seoプラグイン分割 | 未着手 | Small–Medium | 454行の`plugins/seo/index.ts`を`src/`へ分割しre-export化。公開API維持（Phase 3） |
@@ -196,12 +196,13 @@
 - **完了条件**: patch 無し（または同梱）で外部 consumer が build 可能、別 cwd から実行しても同一結果。
 - **検証**: `test:e2e:external` は `site/app` から実行して cwd 非依存を確認。
 
-### #14 A5: External Content Source / Vault対応を保証（A系 / Medium / 依存: A3/A4）
+### #14 A5: External Content Source / Vault対応を保証（✅ 完了 / A系 / Medium / 依存: A3/A4）
 - **概要**: Site 外の Obsidian Vault を正式サポート。`contentRoot` が project 外でも成立させる。
 - **対象**: `packages/core/src/content/file_system_content_source.ts`、`content_source.ts`、`attachment.ts`、`plugins/attachment`, `plugins/media`
 - **実装方針**: content source が `contentRoot`（vault）と `projectRoot` を分離して扱う。attachment/media のパス解決を content source 基準へ統一。doctor/check の root 表示を調整。
 - **完了条件**: 絶対/相対の外部 `contentRoot` で build が通る。
-- **検証**: `test:e2e:external` に外部 Vault ケースを追加。
+- **検証**: `test:e2e:external` に site root 外の Vault、attachment のサイズ読み込み、media embed のケースを追加。
+- **成果**: A3/A4 の解決済み絶対 `contentRoot` を filesystem content source と attachment plugin が共有する既存境界を、公開 tarball の E2E で保証。fixture は site 外の相対 Vault を指定し、attachment と media の logical path・attachment size を検証する。英日 configuration docs に外部 Vault の基準と例を明記。
 
 ### #15 A5.5: Pluginのfilesystem直接依存を除去（A系 / Medium–Large / 依存: A3/A4）
 - **概要**: プラグインからの `node:fs`/`node:path` 直接依存を ContentSource/Asset 境界へ移行。

@@ -18,7 +18,13 @@ export default defineConfig({
 
 ## Filesystem root
 
-`configRoot` は `riebeckite.config.*` を置く directory、`appRoot` は HonoX/Vite application の directory です。config module は `configRoot` 基準で import し、相対 `content.directory` は `appRoot` 基準で解決します。integration はこれらの root と、解決済みの絶対 `contentRoot` を一緒に決定します。通常の standalone site では両者とも Vite root です。config を意図的に別の場所に置く場合だけ `configRoot` を指定してください。
+`configRoot` は `riebeckite.config.*` を置く directory、`appRoot` は HonoX/Vite application の directory です。config module は `configRoot` 基準で import し、相対 `content.directory` は `appRoot` 基準で解決します。integration はこれらの root と、解決済みの絶対 `contentRoot` を一緒に決定します。`contentRoot` は project/application root の外部にも置けるため、Obsidian Vault を site application と分離したまま利用できます。
+
+```ts
+content: { directory: "../my-obsidian-vault" }
+```
+
+filesystem content と attachment plugin は current working directory ではなく、この解決済み Vault root を基準に扱います。通常の standalone site では両者とも Vite root です。config を意図的に別の場所に置く場合だけ `configRoot` を指定してください。
 
 PluginInput は conditional config の `false`、`null`、`undefined` を許容します。resolve は無効 input を除外し、enabled plugin を stable order で並べ、capability を検証します。Theme は raw config または宣言済み theme を指定できます。HonoX/Vite 固有設定を Core config に持ち込まないでください。
 

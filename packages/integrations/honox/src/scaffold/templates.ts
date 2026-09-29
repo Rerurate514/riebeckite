@@ -59,7 +59,7 @@ function packageJson(variables: SiteTemplateVariables): string {
       dependencies: {
         "@riebeckite/core": "^0.0.1",
         "@riebeckite/honox": "^0.0.1",
-"@riebeckite/plugin-color-mode": "^0.0.1",
+        "@riebeckite/plugin-color-mode": "^0.0.1",
         "@riebeckite/plugin-l10n": "^0.0.1",
         "@riebeckite/plugin-obsidian-markdown": "^0.0.1",
         "@riebeckite/theme-default": "^0.0.1",

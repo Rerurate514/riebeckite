@@ -47,6 +47,7 @@ export default createRoute(async (c) => {
   return c.render(
     <Article
       content={post}
+      title={post.frontmatter.title}
       propertiesHtml={indexEntry?.bodySlots?.properties}
       bodySlots={indexEntry?.bodySlots}
       asideContent={

@@ -1,0 +1,199 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { ContentManager, type ContentSource } from "@riebeckite/core";
+import { getLocalization, getLocalizedContent, l10n } from "../index.js";
+
+function source(files: Record<string, string>): ContentSource {
+  return {
+    async scan() {
+      return Object.keys(files).map((path) => ({ path }));
+    },
+    async read(entry) {
+      return files[entry.path] ?? "";
+    },
+  };
+}
+
+function manager(files: Record<string, string>, options = {}) {
+  return new ContentManager(source(files), [], {
+    plugins: [
+      l10n({
+        defaultLang: "ja",
+        languages: ["ja", "en", "en-US", "zh-CN"],
+        ...options,
+      }),
+    ],
+  });
+}
+
+test("detects configured filename conventions and leaves ordinary Markdown at the default language", async () => {
+  const content = manager({
+    "README.md": "# Default",
+    "README.en.md": "# Dot",
+    "README-en.md": "# Dash",
+    "README_en.md": "# Underscore",
+    "README.en-US.md": "# Region",
+    "README.zh-CN.md": "# Chinese",
+  });
+  const locations = await content.getContentLocations();
+
+  assert.equal(locations.get("README")?.metadata?.["l10n.lang"], "ja");
+  assert.equal(locations.get("README.en")?.metadata?.["l10n.lang"], "en");
+  assert.equal(locations.get("README-en")?.metadata?.["l10n.lang"], "en");
+  assert.equal(locations.get("README_en")?.metadata?.["l10n.lang"], "en");
+  assert.equal(locations.get("README.en-US")?.metadata?.["l10n.lang"], "en-US");
+  assert.equal(locations.get("README.zh-CN")?.metadata?.["l10n.lang"], "zh-CN");
+  assert.equal(
+    locations.get("README.en")?.metadata?.["l10n.translationId"],
+    "README",
+  );
+  assert.equal(locations.get("README.en")?.permalink, "/en/README");
+  assert.equal(locations.get("README")?.permalink, "/README");
+});
+
+test("detects configured directory names and removes them from the derived translation identity", async () => {
+  const content = manager({
+    "en/README.md": "# English",
+    "ja/README.md": "# Japanese",
+  });
+  const locations = await content.getContentLocations();
+  assert.equal(locations.get("en/README")?.permalink, "/en/README");
+  assert.equal(locations.get("ja/README")?.permalink, "/README");
+  assert.equal(
+    locations.get("en/README")?.metadata?.["l10n.translationId"],
+    "README",
+  );
+});
+
+test("frontmatter wins over filename and directory signals and exposes a conflict diagnostic", async () => {
+  const content = manager(
+    { "en/README.ja.md": "---\nlang: fr\n---\n# Hello" },
+    { languages: ["ja", "en", "fr"] },
+  );
+  const locations = await content.getContentLocations();
+  assert.equal(locations.get("en/README.ja")?.metadata?.["l10n.lang"], "fr");
+  const diagnostics = await content.getDiagnostics();
+  assert.equal(diagnostics[0]?.code, "L10N_LANGUAGE_CONFLICT");
+  assert.equal(diagnostics[0]?.severity, "warning");
+  assert.ok(
+    (await content.inspect()).diagnostics.some(
+      (item) => item.code === "L10N_LANGUAGE_CONFLICT",
+    ),
+  );
+});
+
+test("rejects an invalid language configuration", () => {
+  assert.throws(
+    () => l10n({ defaultLang: "ja", languages: ["en", "en"] }),
+    /defaultLang must be included.*duplicate language tags/s,
+  );
+});
+
+test("groups arbitrarily named translations by explicit frontmatter identity and supports different slugs", async () => {
+  const content = manager({
+    "日本語/はじめに.md":
+      "---\nlang: ja\ntranslation: getting-started\nslug: hajimete\n---\n# はじめに",
+    "English/getting-started.md":
+      "---\nlang: en\ntranslation: getting-started\nslug: getting-started\n---\n# Getting started",
+  });
+  const manifest = await content.getManifest();
+  const japanese = manifest.bySlug.get("日本語/はじめに");
+  const english = manifest.bySlug.get("English/getting-started");
+  assert.equal(japanese?.permalink, "/日本語/はじめに");
+  assert.equal(english?.permalink, "/en/English/getting-started");
+  assert.deepEqual(
+    getLocalization(manifest, japanese?.slug ?? "")?.translations,
+    {
+      en: "/en/English/getting-started",
+      ja: "/日本語/はじめに",
+    },
+  );
+});
+
+test("does not invent missing translations and adds hreflang only for existing variants", async () => {
+  const content = manager({
+    "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
+    "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
+    "only.ja.md": "---\ntranslation: only\n---\n# 一つだけ",
+  });
+  const manifest = await content.getManifest();
+  const only = manifest.bySlug.get("only.ja");
+  assert.deepEqual(getLocalization(manifest, "only.ja")?.availableLanguages, [
+    "ja",
+  ]);
+  assert.equal(only?.headTags?.length, 1);
+  assert.deepEqual(only?.headTags?.[0], {
+    tag: "link",
+    attrs: { rel: "alternate", hreflang: "ja", href: "/only" },
+  });
+  assert.equal(manifest.byPermalink.has("/en/only"), false);
+});
+
+test("reports duplicate translation identities without exposing an ambiguous translation", async () => {
+  const content = manager({
+    "a.en.md": "---\ntranslation: same\n---\n# A",
+    "b.en.md": "---\ntranslation: same\n---\n# B",
+  });
+  const manifest = await content.getManifest();
+  assert.ok(
+    (await content.getDiagnostics()).some(
+      (item) => item.code === "L10N_DUPLICATE_TRANSLATION",
+    ),
+  );
+  assert.deepEqual(getLocalization(manifest, "a.en")?.translations, {});
+  assert.equal(getLocalizedContent(manifest, "a.en", "en"), null);
+  assert.deepEqual(manifest.bySlug.get("a.en")?.headTags, []);
+});
+
+test("strict mode fails location validation for conflicting localization signals", async () => {
+  const content = manager(
+    { "en/README.ja.md": "---\nlang: ja\n---\n# Hello" },
+    { strict: true },
+  );
+  await assert.rejects(content.getContentLocations(), /L10N_LANGUAGE_CONFLICT/);
+});
+
+test("strict mode fails location validation for duplicate translations", async () => {
+  const content = manager(
+    {
+      "a.en.md": "---\ntranslation: same\n---\n# A",
+      "b.en.md": "---\ntranslation: same\n---\n# B",
+    },
+    { strict: true },
+  );
+  await assert.rejects(
+    content.getContentLocations(),
+    /L10N_DUPLICATE_TRANSLATION/,
+  );
+});
+
+test("accepts a custom detector for unsupported conventions", async () => {
+  const content = manager(
+    { "French/bonjour.md": "# Bonjour" },
+    {
+      languages: ["ja", "en", "fr"],
+      detect: ({ path }) =>
+        path.startsWith("French/")
+          ? { lang: "fr", translationId: "hello" }
+          : undefined,
+    },
+  );
+  const locations = await content.getContentLocations();
+  assert.equal(locations.get("French/bonjour")?.metadata?.["l10n.lang"], "fr");
+  assert.equal(
+    locations.get("French/bonjour")?.metadata?.["l10n.translationId"],
+    "hello",
+  );
+});
+
+test("rewrites Content Graph WikiLink targets to the source language when that translation exists", async () => {
+  const content = manager({
+    "source.en.md": "---\ntranslation: source\n---\n[[target.en]]",
+    "source.ja.md": "---\ntranslation: source\n---\n[[target.en]]",
+    "target.en.md": "---\ntranslation: target\n---\n# English",
+    "target.ja.md": "---\ntranslation: target\n---\n# Japanese",
+  });
+  const graph = await content.getContentGraph();
+  assert.deepEqual(graph.outgoingSlugs("source.en"), ["target.en"]);
+  assert.deepEqual(graph.outgoingSlugs("source.ja"), ["target.ja"]);
+});

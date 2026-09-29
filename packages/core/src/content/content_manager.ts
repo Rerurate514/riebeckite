@@ -282,6 +282,10 @@ export class ContentManager {
     const [entries, contentIndex] = await Promise.all([
       this.entryReader.getEntries(),
       this.getContentIndex(),
+      // Location resolution is the generic phase where plugins can inspect all
+      // content entries (including their frontmatter) and register diagnostics.
+      // Run it for inspect/doctor as well as for a full manifest build.
+      this.getContentLocations(),
     ]);
     const diagnostics =
       await this.pluginRuntime.collectDiagnostics(contentIndex);

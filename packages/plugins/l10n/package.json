@@ -1,0 +1,58 @@
+{
+  "name": "@riebeckite/plugin-l10n",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/l10n"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Content localization, localized URLs, and translation metadata for Riebeckite.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "localization",
+    "i18n",
+    "l10n"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
+}

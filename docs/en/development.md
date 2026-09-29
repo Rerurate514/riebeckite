@@ -12,7 +12,7 @@ pnpm check
 pnpm build
 ```
 
-`lint` runs Biome linting. `format` writes formatting changes, and the root `check` script runs Biome checks with writes; review its diff rather than treating it as read-only. For framework behavior use the Riebeckite CLI commands from [CLI](cli.md).
+`lint` runs Biome linting and `check` runs Biome checks, both read-only; `check` reports issues without writing. Apply fixes explicitly with `check:fix`, or run `format` for formatting writes, and review the resulting diff. For framework behavior use the Riebeckite CLI commands from [CLI](cli.md).
 
 ## Make focused changes
 

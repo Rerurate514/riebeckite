@@ -2,6 +2,15 @@ export {
   loadRiebeckiteConfig,
   resolveHonoxConfig,
 } from "./src/config_loader.js";
+export { replaceHonoxIslandDependencyPlugin } from "./src/honox_islands.js";
+export type {
+  ScaffoldSiteOptions,
+  ScaffoldSiteResult,
+} from "./src/scaffold/index.js";
+export {
+  ScaffoldSiteError,
+  scaffoldRiebeckiteSite,
+} from "./src/scaffold/index.js";
 export {
   createRiebeckiteSsg,
   defaultSsgEntry,
@@ -18,14 +27,6 @@ export {
   riebeckite,
   riebeckiteVite,
 } from "./src/vite_plugin.js";
-export type {
-  ScaffoldSiteOptions,
-  ScaffoldSiteResult,
-} from "./src/scaffold/index.js";
-export {
-  ScaffoldSiteError,
-  scaffoldRiebeckiteSite,
-} from "./src/scaffold/index.js";
 export type {
   ResolvedHonoxApplication,
   ResolveHonoxApplicationOptions,

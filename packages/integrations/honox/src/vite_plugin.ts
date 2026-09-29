@@ -28,6 +28,7 @@ export const defaultSsrExternals = [
   "parse-numeric-range",
   "slugify",
   "vfile-matter",
+  "yaml",
 ] as const;
 
 export type RiebeckiteViteOptions = RiebeckiteIntegrationOptions & {

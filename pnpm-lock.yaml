@@ -349,6 +349,9 @@ importers:
 
   packages/integrations/honox:
     dependencies:
+      '@babel/parser':
+        specifier: ^7.29.3
+        version: 7.29.7
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
@@ -4595,7 +4598,7 @@ snapshots:
 
   '@babel/generator@7.29.1':
     dependencies:
-      '@babel/parser': 7.29.3
+      '@babel/parser': 7.29.7
       '@babel/types': 7.29.0
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
@@ -4628,7 +4631,7 @@ snapshots:
       '@babel/code-frame': 7.29.7
       '@babel/generator': 7.29.1
       '@babel/helper-globals': 7.29.7
-      '@babel/parser': 7.29.3
+      '@babel/parser': 7.29.7
       '@babel/template': 7.29.7
       '@babel/types': 7.29.0
       debug: 4.4.3
@@ -7404,7 +7407,7 @@ snapshots:
 
   node-source-walk@7.0.2:
     dependencies:
-      '@babel/parser': 7.29.3
+      '@babel/parser': 7.29.7
 
   normalize-path@3.0.0: {}
 

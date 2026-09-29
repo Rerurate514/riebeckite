@@ -26,6 +26,7 @@
     }
   },
   "dependencies": {
+    "@babel/parser": "^7.29.3",
     "@riebeckite/core": "workspace:*",
     "esbuild": "catalog:",
     "hono": "catalog:",

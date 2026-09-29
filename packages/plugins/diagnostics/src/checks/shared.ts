@@ -17,6 +17,8 @@ const DEFAULT_SEVERITY: Record<string, DiagnosticSeverity> = {
   "publish-conflict": "warning",
   "duplicate-title": "warning",
   "slug-collision": "error",
+  "duplicate-content-id": "error",
+  "invalid-content-id": "error",
   "excluded-public": "warning",
   "publish-boundary": "warning",
   "analytics-untracked": "info",

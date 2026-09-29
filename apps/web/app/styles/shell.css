@@ -8,12 +8,18 @@
     padding-block: var(--rb-space-8);
   }
 
-  @media (max-width: 42rem) {
+@media (max-width: 48rem) {
     .riebeckite-page {
-      /* The fixed 4rem padding feels oversized on phones, where the shell
+/* The fixed 4rem padding feels oversized on phones, where the shell
          already stacks the chrome (search bar) above the article. Keep a
          modest margin without eating the viewport. */
       padding-block: var(--rb-space-3);
+    }
+
+    /* Keep the color-mode pill compact and centered when the chrome stacks on
+       phones instead of letting it stretch full-width. */
+    .rr-color-mode {
+      align-self: center;
     }
 
     /* Keep the color-mode buttons reachable touch targets. */

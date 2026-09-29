@@ -76,6 +76,13 @@
     stroke-linejoin: round;
   }
 
+  @media (max-width: 48rem) {
+    .rr-color-mode__button {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .rr-color-mode__button {
       transition: none;

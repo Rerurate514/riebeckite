@@ -1,0 +1,113 @@
+# @riebeckite/plugin-breadcrumbs
+
+ノートのスラッグ階層からパンくずナビゲーションをビルド時に生成する
+プラグインです。公開対象の各エントリについて、記事上部に `<nav>` を挿入し、
+階層構造を反映した BreadcrumbList の JSON-LD も出力します。クライアント側
+JavaScript は不要です。
+
+[English](./README.md)
+
+## 仕組み
+
+`breadcrumbs()` はエントリのスラッグを「/」で区切り、必ずサイトのホームから
+始まるパンくず列を作ります。
+
+- `folder/sub-folder/note` の場合: `ホーム / folder / sub-folder / note`
+- サイト直下のノートの場合: `ホーム / note`
+
+途中のフォルダはマニフェストと突き合わせて解決します。フォルダ自身に
+インデックスノート（フォルダと同名のスラッグを持つノート）があればその
+タイトルを使い、なければセグメントをタイトルケース（先頭大文字）にして
+代用します。最後のパンくずはそのノート自身で、パーマリンクへリンクします。
+
+`entry.html` と、コンテンツルートが描画するキャッシュ済みの
+`PostContent.html` の両方を更新するため、生成ページとフィードの両方に
+ナビゲーションが反映されます。
+
+## JSON-LD
+
+`breadcrumbs()` は階層的な BreadcrumbList を `entry.headTags` の
+`<script type="application/ld+json">` として提供します。Site シェルがこれを
+文書の `<head>` に描画します（リファレンスアプリの `_renderer.tsx` は
+`entry.headTags` を描画します）。アイテムの URL は設定の `baseUrl` に基づき
+絶対 URL に変換されます。
+
+`seo` プラグインも有効な場合、seo 側の記事 JSON-LD に 2 階層の
+BreadcrumbList（`ホーム / ノート`）が含まれます。この 2 つは共存するため、
+BreadcrumbList の重複を避けたい Site は記事ページで seo の暫定版を除去して
+ください（リファレンスアプリのコンテンツルートで実施例を確認できます）。
+無効にする場合は本プラグインの `jsonLd: false` も利用できます。
+
+## 使い方
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
+
+export default defineConfig({
+  // ...
+  plugins: [breadcrumbs()],
+});
+```
+
+## オプション
+
+| オプション | 型 | 既定値 | 説明 |
+| ---------- | -- | ------ | ---- |
+| `homeLabel` | `string` | サイトタイトル | ホームのパンくずラベル |
+| `className` | `string` | `"rb-breadcrumbs"` | ルート要素の CSS クラス |
+| `ariaLabel` | `string` | `"Breadcrumbs"` | ナビゲーションのアクセシブル名 |
+| `separator` | `string` | `"/"` | パンくず間の文字 |
+| `jsonLd` | `boolean` | `true` | BreadcrumbList スクリプトを出力・置換する |
+
+```ts
+breadcrumbs({
+  homeLabel: "ブログ",
+  separator: "›",
+});
+```
+
+## 出力
+
+```html
+<nav class="rb-breadcrumbs" data-breadcrumbs aria-label="Breadcrumbs">
+  <ol>
+    <li class="rb-breadcrumbs__item">
+      <a class="rb-breadcrumbs__link" href="/">ブログ</a>
+      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
+    </li>
+    <li class="rb-breadcrumbs__item">
+      <a class="rb-breadcrumbs__link" href="/folder">フォルダ</a>
+      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
+    </li>
+    <li class="rb-breadcrumbs__item">
+      <span class="rb-breadcrumbs__current" aria-current="page">ノート</span>
+    </li>
+  </ol>
+</nav>
+```
+
+## スタイル
+
+パッケージに `style.css` が含まれます。他のプラグインと同じように読み込みます。
+
+```ts
+import "@riebeckite/plugin-breadcrumbs/style.css";
+```
+
+## エクスポート
+
+- `breadcrumbs(options?)` — プラグインファクトリ
+- `breadcrumbsPlugin` — `breadcrumbs` のエイリアス
+- `resolveBreadcrumbsOptions(options?)` — オプションの既定値を適用する
+- `buildBreadcrumbItems({ manifest, entry, config, homeLabel })` — パンくず列を組み立てる
+- `renderBreadcrumbNav(items, options)` — ナビゲーション HTML を生成する
+- `buildBreadcrumbJsonLd(config, items)` — JSON-LD オブジェクトを生成する
+- `injectBreadcrumbNav(html, nav)` / `injectBreadcrumbJsonLd(html, schema)` — HTML 注入ヘルパー
+- 型: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`
+
+## 制約
+
+- パンくず列はビルド時に確定します。再ビルドすれば常に正しく再計算されます。
+- スラッグ階層のみを参照します。frontmatter の並び順や series プラグインの
+  順序は意図的に考慮しません。

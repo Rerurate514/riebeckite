@@ -83,6 +83,9 @@ importers:
       '@riebeckite/plugin-bases':
         specifier: workspace:*
         version: link:../../packages/plugins/bases
+      '@riebeckite/plugin-breadcrumbs':
+        specifier: workspace:*
+        version: link:../../packages/plugins/breadcrumbs
       '@riebeckite/plugin-canvas':
         specifier: workspace:*
         version: link:../../packages/plugins/canvas
@@ -203,6 +206,9 @@ importers:
       '@riebeckite/plugin-shortcodes':
         specifier: workspace:*
         version: link:../../packages/plugins/shortcodes
+      '@riebeckite/plugin-sidenotes':
+        specifier: workspace:*
+        version: link:../../packages/plugins/sidenotes
       '@riebeckite/plugin-text-fragment':
         specifier: workspace:*
         version: link:../../packages/plugins/text-fragment
@@ -419,6 +425,12 @@ importers:
         specifier: 'catalog:'
         version: 5.0.1
 
+  packages/plugins/breadcrumbs:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/plugins/canvas:
     dependencies:
       '@riebeckite/core':
@@ -532,6 +544,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.6
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/diff:
     dependencies:
@@ -846,6 +861,12 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+
+  packages/plugins/sidenotes:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/text-fragment:
     dependencies:

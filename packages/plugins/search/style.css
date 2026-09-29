@@ -213,7 +213,7 @@
     border-radius: 0.15rem;
   }
 
-  @media (max-width: 42rem) {
+  @media (max-width: 48rem) {
     body {
       flex-direction: column;
       align-items: stretch;
@@ -229,6 +229,7 @@
     .search-bar__trigger {
       width: 100%;
       min-width: auto;
+      min-height: 2.75rem;
     }
 
     .search-bar__key {

@@ -47,9 +47,13 @@ function writeManifest(manifestPath, manifest) {
 }
 
 function main() {
-  const [version, ...extraArguments] = process.argv.slice(2);
+  const rawArguments = process.argv.slice(2);
+  const dryRun = rawArguments.includes("--dry-run");
+  const [version, ...extraArguments] = rawArguments.filter(
+    (argument) => argument !== "--dry-run",
+  );
   if (!version || extraArguments.length > 0) {
-    throw new Error("Usage: pnpm bump:version <version>");
+    throw new Error("Usage: pnpm bump:version <version> [--dry-run]");
   }
   if (!SEMVER_PATTERN.test(version)) {
     throw new Error(
@@ -58,6 +62,25 @@ function main() {
   }
 
   const manifests = PACKAGE_DIRECTORIES.map(readManifest);
+  if (dryRun) {
+    const changed = manifests.filter(
+      ({ manifest }) => manifest.version !== version,
+    );
+    if (changed.length === 0) {
+      console.log(
+        `All ${manifests.length} public packages already use ${version}.`,
+      );
+      return;
+    }
+    console.log(
+      `[dry-run] Would update ${changed.length} public package(s) to ${version}:`,
+    );
+    for (const { manifest, relativePath } of changed) {
+      console.log(`  ${relativePath}: ${manifest.version} -> ${version}`);
+    }
+    return;
+  }
+
   for (const { manifest, manifestPath, relativePath } of manifests) {
     manifest.version = version;
     try {

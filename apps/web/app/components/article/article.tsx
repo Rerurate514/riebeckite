@@ -14,6 +14,10 @@ import ContentSlot from "../content-slot/content-slot";
 
 type Props = {
   content: PostContent;
+  /**
+   * The note's resolved title (frontmatter `title`, else slug). Used as the
+   * header heading when the body has no leading `<h1>`.
+   */
   title?: string;
   propertiesHtml?: string;
   asideContent?: unknown;

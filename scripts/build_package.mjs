@@ -152,6 +152,7 @@ if (errors.length > 0) {
     }),
   );
   console.log(`[${packageJson.name}] ${errors.length} declaration error(s)`);
+  process.exit(1);
 }
 
 if (emitResult.emitSkipped) {

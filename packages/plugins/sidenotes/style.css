@@ -1,0 +1,127 @@
+/*
+ * @riebeckite/plugin-sidenotes
+ *
+ * Tufte-style side notes. The same `.rr-sidenotes__note` element is a static
+ * margin note on desktop (>= 48rem) and the popover source on mobile
+ * (< 48rem). Plugin CSS intentionally loads before theme CSS, so a theme can
+ * restyle these hooks without editing the plugin.
+ */
+
+.rr-sidenotes__toggle {
+  color: var(--rb-color-accent, #3f5f87);
+  font-size: 0.75em;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.rr-sidenotes__toggle:focus-visible {
+  outline: 2px solid var(--rb-color-accent, #3f5f87);
+  outline-offset: 2px;
+}
+
+.rr-sidenotes__note {
+  --rr-sidenotes-ink: var(--rb-color-ink, #202020);
+  --rr-sidenotes-muted: var(--rb-color-muted, #6b6b6b);
+  --rr-sidenotes-rule: color-mix(
+    in srgb,
+    var(--rr-sidenotes-ink) 18%,
+    transparent
+  );
+
+  color: var(--rr-sidenotes-ink);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.rr-sidenotes__index {
+  display: inline-block;
+  margin-right: 0.4em;
+  color: var(--rr-sidenotes-muted);
+  font-size: 0.75em;
+  font-weight: 600;
+}
+
+.rr-sidenotes__body p {
+  margin: 0 0 0.5em;
+}
+
+.rr-sidenotes__body p:last-child {
+  margin-bottom: 0;
+}
+
+.rr-sidenotes__footnotes {
+  font-size: 0.875rem;
+  color: var(--rr-sidenotes-ink);
+}
+
+/* Mobile: notes are hidden and become tap-open popovers. */
+@media (max-width: 48rem) {
+  .rr-sidenotes__note {
+    position: fixed;
+    z-index: 60;
+    bottom: var(--rb-space-2, 1rem);
+    left: var(--rb-space-2, 1rem);
+    right: var(--rb-space-2, 1rem);
+    display: none;
+    max-height: min(60vh, 24rem);
+    overflow: auto;
+    padding: var(--rb-space-3, 1.5rem);
+    background: var(--rb-color-surface, #ffffff);
+    border: var(--rb-rule-width, 1px) solid var(--rr-sidenotes-rule);
+    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.18);
+  }
+
+  /* Right-edge panel variant driven by `popoverAlignment: "end"`. */
+  .rr-sidenotes__note--popover-end {
+    top: 50%;
+    bottom: auto;
+    left: auto;
+    width: min(20rem, calc(100vw - 2 * var(--rb-space-2, 1rem)));
+    transform: translateY(-50%);
+  }
+
+  .rr-sidenotes__note--open {
+    display: block;
+  }
+}
+
+/* Desktop: static margin notes beside their paragraph anchor. */
+@media (min-width: 48rem) {
+  :is(
+    p,
+    li,
+    dd,
+    dt,
+    td,
+    th,
+    figcaption,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    blockquote
+  ):has(.rr-sidenotes__ref) {
+    position: relative;
+  }
+
+  .rr-sidenotes__note {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: var(--rr-sidenotes-width, 16rem);
+    max-width: calc(100vw - 100% - 1rem);
+    margin-left: var(--rb-space-3, 1.5rem);
+    padding-left: var(--rb-space-2, 1rem);
+    border-left: calc(var(--rb-rule-width, 1px) * 2) solid
+      var(--rr-sidenotes-rule);
+  }
+
+  /* Margin notes are always visible, so the trailing definitions are hidden. */
+  .rr-sidenotes__footnotes {
+    display: none;
+  }
+}

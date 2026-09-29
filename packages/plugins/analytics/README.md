@@ -61,6 +61,12 @@ stable ID is not tracked. The initializer is a no-op during builds/SSR and is
 idempotent in a document. Riebeckite's current static document navigation needs
 no SPA route hooks; SPA navigation is not tracked automatically.
 
+Content IDs are an authoring responsibility. Duplicate or conflicting `id`/`uid`
+declarations across published notes are reported by
+[`@riebeckite/plugin-diagnostics`](../plugins/diagnostics/README.md)
+(`duplicate-content-id` / `invalid-content-id`) and validated by the plugin's own
+`validateAnalyticsOptions` at `check` time.
+
 ## Provider contract
 
 ```ts

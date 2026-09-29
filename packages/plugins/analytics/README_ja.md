@@ -44,6 +44,8 @@ Core の安定コンテンツ ID（フロントマターの `id`、互換用の 
 
 `path` と `lang` は補助情報であり、ID ではありません。安定 ID のないコンテンツは誤って計測しません。ビルド時・SSR 時は何もせず、同じドキュメント内での初期化も冪等です。現行リポジトリは静的なドキュメント遷移のため SPA フックは追加しておらず、SPA 遷移は自動計測しません。
 
+コンテンツ ID は執筆側の責務です。公開ノート間での `id`/`uid` の重複・抵触は [`@riebeckite/plugin-diagnostics`](../plugins/diagnostics/README_ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
+
 ## 診断
 
 `@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定 content ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けを `check` / `doctor` / build の診断で確認できます。

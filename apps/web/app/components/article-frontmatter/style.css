@@ -49,4 +49,11 @@
   .article-frontmatter__tag:focus-visible {
     color: var(--rb-color-accent);
   }
+
+  /* Narrow screens: give tag links a taller hit target for touch. */
+  @media (max-width: 48rem) {
+    .article-frontmatter__tag {
+      padding-block: 0.5rem;
+    }
+  }
 }

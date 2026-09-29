@@ -174,6 +174,13 @@ function checkPublishReadinessMetadata(errors, directory, manifest) {
       `${manifest.name}: README.md must exist so npm can render package documentation`,
     );
   }
+
+  const readmeJa = path.join(repositoryRoot, directory, "README_ja.md");
+  if (!fs.existsSync(readmeJa)) {
+    errors.push(
+      `${manifest.name}: README_ja.md must exist so package documentation is available in Japanese`,
+    );
+  }
 }
 
 function checkPackage(directory) {

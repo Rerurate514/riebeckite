@@ -1,5 +1,5 @@
 {
-  "name": "@riebeckite/plugin-diagnostics",
+  "name": "@riebeckite/plugin-breadcrumbs",
   "version": "0.0.3",
   "license": "Apache-2.0",
   "type": "module",
@@ -11,21 +11,11 @@
       "import": "./dist/index.js",
       "source": "./index.ts",
       "default": "./dist/index.js"
-    }
-  },
-  "bin": {
-    "riebeckite-diagnostics": "./dist/bin.js"
+    },
+    "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
-    "remark-parse": "catalog:",
-    "unified": "catalog:",
-    "unist-util-visit": "catalog:"
-  },
-  "devDependencies": {
-    "@types/mdast": "catalog:",
-    "@types/node": "catalog:",
-    "tsx": "^4.22.4"
+    "@riebeckite/core": "workspace:*"
   },
   "publishConfig": {
     "access": "public"
@@ -34,31 +24,33 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
-    "dist"
+    "dist",
+    "style.css"
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
-    "test": "node --import tsx --test \"test/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Rerurate514/riebeckite.git",
-    "directory": "packages/plugins/diagnostics"
+    "directory": "packages/plugins/breadcrumbs"
   },
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Content diagnostics for Riebeckite and Obsidian vaults.",
+  "description": "Slug-hierarchy breadcrumb navigation for Riebeckite.",
   "keywords": [
     "riebeckite",
     "plugin",
-    "diagnostics",
-    "obsidian"
+    "breadcrumbs",
+    "navigation"
   ],
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "./style.css"
+  ]
 }

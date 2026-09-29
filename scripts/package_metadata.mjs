@@ -419,7 +419,7 @@ export function expectedPackageMetadata(directory) {
   if (directory === "packages/create-riebeckite") {
     return {
       ...publishingMetadata(directory, false),
-      files: ["LICENSE", "README.md", "bin", "dist"],
+      files: ["LICENSE", "README.md", "README_ja.md", "bin", "dist"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
         prepack: "pnpm run build",

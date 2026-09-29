@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  escapeScriptJson,
+} from "@riebeckite/core";
 import type { ExcalidrawPayload, ExcalidrawScene } from "./types.js";
 
 export function renderExcalidrawPlaceholder(input: {
@@ -41,11 +45,4 @@ function renderSizeStyle(
     size.height ? `--rr-excalidraw-height:${size.height}px` : null,
   ].filter(Boolean);
   return ` style="${declarations.join(";")}"`;
-}
-
-function escapeScriptJson(value: string): string {
-  return value
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026");
 }

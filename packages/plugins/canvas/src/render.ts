@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  escapeScriptJson,
+} from "@riebeckite/core";
 import { buildCanvasLayout } from "./parse.js";
 import type {
   CanvasDocument,
@@ -188,15 +192,6 @@ function cssLength(value: number | string | undefined): string | null {
 function limitNodes(nodes: readonly CanvasNode[], maxNodes?: number): CanvasNode[] {
   if (maxNodes === undefined || maxNodes <= 0) return [...nodes];
   return nodes.slice(0, maxNodes);
-}
-
-export function escapeScriptJson(value: string): string {
-  return value
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026")
-    .replace(/\u2028/g, "\\u2028")
-    .replace(/\u2029/g, "\\u2029");
 }
 
 function getFileName(contentPath: string): string {

@@ -1,4 +1,4 @@
-import { escapeHtmlAttribute } from "@riebeckite/core";
+import { escapeHtmlAttribute, escapeScriptJson } from "@riebeckite/core";
 import type {
   HoverPreviewIndex,
   ResolvedHoverPreviewOptions,
@@ -26,11 +26,4 @@ export function renderHoverPreviewPayload(
 
 export function hasInternalLink(html: string): boolean {
   return /href\s*=\s*["']?\//.test(html);
-}
-
-export function escapeScriptJson(value: string): string {
-  return value
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026");
 }

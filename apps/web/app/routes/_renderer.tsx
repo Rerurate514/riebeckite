@@ -1,4 +1,7 @@
-import type { PluginHeadTag } from "@riebeckite/core";
+import {
+  escapeScriptJson,
+  type PluginHeadTag,
+} from "@riebeckite/core";
 import {
   ColorModeScript,
   ColorModeToggle,
@@ -72,7 +75,9 @@ export default jsxRenderer(({ children }, c) => {
         {seo.jsonLd && (
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(seo.jsonLd) }}
+            dangerouslySetInnerHTML={{
+              __html: escapeScriptJson(JSON.stringify(seo.jsonLd)),
+            }}
           />
         )}
         <ColorModeScript />

@@ -1,6 +1,7 @@
 import {
   escapeHtml,
   escapeHtmlAttribute,
+  escapeScriptJson,
   type PluginHeadTag,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
@@ -73,7 +74,7 @@ export function buildBreadcrumbHeadTag(
   return {
     tag: "script",
     attrs: { type: "application/ld+json" },
-    children: JSON.stringify(schema),
+    children: escapeScriptJson(JSON.stringify(schema)),
   };
 }
 

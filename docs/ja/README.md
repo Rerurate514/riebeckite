@@ -1,5 +1,9 @@
 > 日本語ドキュメント · [English](../en/README.md) · [Agent documentation](../agents/README.md)
 
+<p align="center">
+  <img src="../../assets/logos/riebeckite-logo-horizontal.png" alt="Riebeckite" width="360" />
+</p>
+
 # Riebeckite Documentation
 
 Riebeckite は、Markdown と Obsidian のノートを Web サイトとして公開するための、拡張可能な HonoX ベースのコンテンツフレームワークです。コンテンツの読み込み、解釈、拡張、表示、ビルドを一つの処理に混在させず、それぞれを交換可能な責務として扱います。

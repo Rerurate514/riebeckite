@@ -1,5 +1,9 @@
 > English documentation · [日本語](../ja/README.md) · [Agent documentation](../agents/README.md)
 
+<p align="center">
+  <img src="../../assets/logos/riebeckite-logo-horizontal.png" alt="Riebeckite" width="360" />
+</p>
+
 # Riebeckite Documentation
 
 Riebeckite is an extensible, HonoX-based content framework for publishing Markdown and Obsidian-oriented notes on the web. It keeps content loading, interpretation, extension, presentation, and builds as separate, replaceable responsibilities instead of combining them into one Markdown-to-HTML process.

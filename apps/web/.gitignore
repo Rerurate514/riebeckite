@@ -28,5 +28,9 @@ lerna-debug.log*
 .DS_Store
 
 public/*
-!public/favicon.ico
 !public/.assetsignore
+!public/favicon.ico
+!public/ogp.png
+!public/riebeckite-logo.png
+!public/riebeckite-logo-horizontal.png
+!public/riebeckite-logo-stacked.png

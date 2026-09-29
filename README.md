@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/logos/riebeckite-logo-horizontal.png" alt="Riebeckite" width="480" />
+</p>
+
 # Riebeckite
 
 > [日本語](./README_ja.md)

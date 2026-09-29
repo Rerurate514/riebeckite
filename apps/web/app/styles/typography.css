@@ -26,3 +26,62 @@
     }
   }
 }
+
+/* Dark mode: the Tailwind typography plugin pins its palette (near-black text,
+   headings, code, etc.) directly on `.prose`, so it stays dark even when the
+   theme flips `--rb-color-*` to the dark scheme. Re-point the prose variables
+   at the theme tokens here instead. Unlayered so these declarations beat the
+   plugin's `@layer utilities` rules regardless of import order. */
+:root[data-theme="dark"] .prose {
+  --tw-prose-body: var(--rb-color-ink);
+  --tw-prose-headings: var(--rb-color-ink);
+  --tw-prose-lead: var(--rb-color-muted);
+  --tw-prose-links: var(--rb-color-ink);
+  --tw-prose-bold: var(--rb-color-ink);
+  --tw-prose-counters: var(--rb-color-muted);
+  --tw-prose-bullets: var(--rb-color-muted);
+  --tw-prose-hr: var(--rb-color-border);
+  --tw-prose-quotes: var(--rb-color-ink);
+  --tw-prose-quote-borders: var(--rb-color-border);
+  --tw-prose-captions: var(--rb-color-muted);
+  --tw-prose-kbd: var(--rb-color-ink);
+  --tw-prose-kbd-shadows: color-mix(
+    in oklab,
+    var(--rb-color-ink) 10%,
+    transparent
+  );
+  --tw-prose-code: var(--rb-color-ink);
+  --tw-prose-pre-code: var(--rb-color-ink);
+  --tw-prose-pre-bg: var(--rb-color-code-background);
+  --tw-prose-th-borders: var(--rb-color-border);
+  --tw-prose-td-borders: var(--rb-color-border);
+}
+
+/* Same treatment when the color mode is "system" (no explicit `data-theme`
+   attribute) and the OS reports a dark preference. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .prose {
+    --tw-prose-body: var(--rb-color-ink);
+    --tw-prose-headings: var(--rb-color-ink);
+    --tw-prose-lead: var(--rb-color-muted);
+    --tw-prose-links: var(--rb-color-ink);
+    --tw-prose-bold: var(--rb-color-ink);
+    --tw-prose-counters: var(--rb-color-muted);
+    --tw-prose-bullets: var(--rb-color-muted);
+    --tw-prose-hr: var(--rb-color-border);
+    --tw-prose-quotes: var(--rb-color-ink);
+    --tw-prose-quote-borders: var(--rb-color-border);
+    --tw-prose-captions: var(--rb-color-muted);
+    --tw-prose-kbd: var(--rb-color-ink);
+    --tw-prose-kbd-shadows: color-mix(
+      in oklab,
+      var(--rb-color-ink) 10%,
+      transparent
+    );
+    --tw-prose-code: var(--rb-color-ink);
+    --tw-prose-pre-code: var(--rb-color-ink);
+    --tw-prose-pre-bg: var(--rb-color-code-background);
+    --tw-prose-th-borders: var(--rb-color-border);
+    --tw-prose-td-borders: var(--rb-color-border);
+  }
+}

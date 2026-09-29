@@ -13,7 +13,7 @@ pnpm exec riebeckite check
 pnpm exec riebeckite doctor
 ```
 
-`init` writes a self-contained site (configuration, HonoX application shell, routes, stylesheet, and starter content) and refuses a non-empty target unless `--force` is passed.
+`init` writes a self-contained site (configuration, HonoX application shell, routes, stylesheet, and starter content) and refuses a non-empty target unless `--force` is passed. Choose the starter composition with `--preset <name>`; the default is `starter`, which observes and highlights seven languages. Run `pnpm exec riebeckite init --list-presets` to see every preset from `empty` and `minimal` up to `full`, `max`, and `ultra`.
 
 Run these from the application directory when using the CLI. `check` confirms configuration and plugin capability validity; `doctor` reports broader health. Neither generates a deployment build.
 

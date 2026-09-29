@@ -13,7 +13,7 @@ pnpm exec riebeckite check
 pnpm exec riebeckite doctor
 ```
 
-`init` は config、HonoX の application shell、route、stylesheet、初期 content を含む自己完結の Site を生成します。生成対象のファイルが既にあるディレクトリには `--force` なしでは書き込みません。
+`init` は config、HonoX の application shell、route、stylesheet、初期 content を含む自己完結の Site を生成します。生成対象のファイルが既にあるディレクトリには `--force` なしでは書き込みません。構成は `--preset <name>` で選択でき、既定は `starter`（7 言語対応）です。`pnpm exec riebeckite init --list-presets` で `empty`・`minimal` から `full`・`max`・`ultra` までの全 preset を確認できます。
 
 CLI は application directory から実行します。`check` は config/plugin capability の有効性、`doctor` は広い health を確認します。どちらも deployment build を生成しません。
 

@@ -1212,6 +1212,24 @@ function generateCreateStarterSite(tempRoot) {
   if (!fs.existsSync(path.join(starterDir, "riebeckite.config.ts"))) {
     fail("create-riebeckite did not generate riebeckite.config.ts");
   }
+
+  step("create-riebeckite lists the scaffold presets");
+  const listResult = run(process.execPath, [
+    path.join(
+      repoRoot,
+      "packages",
+      "create-riebeckite",
+      "bin",
+      "create-riebeckite.mjs",
+    ),
+    "--list-presets",
+  ]);
+  const listOutput = listResult.stdout ?? "";
+  for (const name of ["empty", "minimal", "starter", "rich", "full", "max", "ultra"]) {
+    if (!listOutput.includes(name)) {
+      fail(`create-riebeckite --list-presets must list the ${name} preset`);
+    }
+  }
 }
 
 function assertStarterOutput(siteDir) {

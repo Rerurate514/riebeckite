@@ -3,7 +3,7 @@
 Run commands from an application directory. The CLI resolves the application root from the current working directory and reports command errors safely with a non-zero exit code.
 
 ```text
-riebeckite init [directory] [--force]
+riebeckite init [directory] [--preset <name>] [--force] [--list-presets]
 riebeckite dev
 riebeckite check
 riebeckite doctor
@@ -28,7 +28,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 
 Plugin option validation runs as part of `check`. Each plugin's `validateOptions` (the analytics plugin, for example, validates its provider and collector URL) contributes to configuration validity, so an invalid plugin setup fails `check` before any build starts.
 
-`init` scaffolds a self-contained site (configuration, Vite/HonoX application shell, routes, stylesheet, and starter content) in the target directory, which defaults to the current directory. It refuses to write into a directory that already contains generated files unless `--force` is passed. Install dependencies, then run `check` and `build` in the generated site. The `create-riebeckite` package runs the same generator through `npm create riebeckite`.
+`init` scaffolds a self-contained site (configuration, Vite/HonoX application shell, routes, stylesheet, and starter content) in the target directory, which defaults to the current directory. It refuses to write into a directory that already contains generated files unless `--force` is passed. The composition is selected with `--preset <name>` (default: `starter`); run `--list-presets` to see the available presets and their descriptions. Install dependencies, then run `check` and `build` in the generated site. The `create-riebeckite` package runs the same generator through `npm create riebeckite` and accepts the same `--preset` / `--list-presets` flags.
 
 Command failures are reported with the error name, message, and, when present, the error `code`, file path, and a remediation `hint`. Nested causes are printed as `Caused by:` lines.
 

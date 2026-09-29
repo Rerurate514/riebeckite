@@ -7,4 +7,24 @@
     align-items: center;
     padding-block: var(--rb-space-8);
   }
+
+  @media (max-width: 42rem) {
+    .riebeckite-page {
+      /* The fixed 4rem padding feels oversized on phones, where the shell
+         already stacks the chrome (color-mode toggle, search bar) above the
+         article. Keep a modest margin without eating the viewport. */
+      padding-block: var(--rb-space-3);
+    }
+
+    /* Keep the color-mode pill compact and centered, and grow its buttons to
+       reachable touch targets, instead of letting it stretch full-width. */
+    .rr-color-mode {
+      align-self: center;
+    }
+
+    .rr-color-mode__button {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
 }

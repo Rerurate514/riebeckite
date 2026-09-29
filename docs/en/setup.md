@@ -202,7 +202,7 @@ pnpm run build               # write the publishable files to dist/
 
 ### 3-1. How publishing works
 
-During a build, Riebeckite renders every page to a static file (this approach is called SSG). Publishing means placing the contents of the `dist/` folder on Cloudflare Workers as static assets. No server-side program is required, which keeps both the cost and the setup simple.
+During a build, Riebeckite renders every page to a static file (this approach is called SSG). Publishing means placing the contents of the `dist/` folder on Cloudflare Workers as static assets. No server-side program is required, which keeps both the cost and the setup simple. (Optional: page-view tracking is a separate Worker; see [Analytics](./analytics.md) when you want it.)
 
 ### 3-2. Method A: publish from your machine (recommended)
 

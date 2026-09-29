@@ -19,6 +19,7 @@ const DEFAULT_SEVERITY: Record<string, DiagnosticSeverity> = {
   "slug-collision": "error",
   "excluded-public": "warning",
   "publish-boundary": "warning",
+  "analytics-untracked": "info",
   "internal-error": "error",
 };
 
@@ -35,6 +36,7 @@ export type AnalysisState = {
 export type NormalizedOptions = {
   reportUnusedAssets: boolean;
   reportOrphans: boolean;
+  reportAnalyticsCoverage: boolean;
   requiredFrontmatter: string[];
   severity: Partial<Record<string, DiagnosticSeverity>>;
 };
@@ -52,6 +54,7 @@ export function normalizeOptions(
   return {
     reportUnusedAssets: options.reportUnusedAssets ?? false,
     reportOrphans: options.reportOrphans ?? false,
+    reportAnalyticsCoverage: options.reportAnalyticsCoverage ?? false,
     requiredFrontmatter: options.requiredFrontmatter ?? [],
     severity: options.severity ?? {},
   };

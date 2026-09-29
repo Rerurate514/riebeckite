@@ -44,6 +44,10 @@ Core の安定コンテンツ ID（フロントマターの `id`、互換用の 
 
 `path` と `lang` は補助情報であり、ID ではありません。安定 ID のないコンテンツは誤って計測しません。ビルド時・SSR 時は何もせず、同じドキュメント内での初期化も冪等です。現行リポジトリは静的なドキュメント遷移のため SPA フックは追加しておらず、SPA 遷移は自動計測しません。
 
+## 診断
+
+`@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定 content ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けを `check` / `doctor` / build の診断で確認できます。
+
 ## 主なエクスポート
 
 - `analytics()` / `analyticsPlugin()`

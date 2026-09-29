@@ -83,6 +83,7 @@ Build tooling
 |[Plugin System](./plugin-system.md)|Plugin contracts, lifecycle, capabilities and dependencies, option validation, pipelines, renderers, assets, cache, and observability|
 |[Theme System](./theme-system.md)|Theme contracts, color modes, typography, design tokens, CSS cascade, plugin boundaries, and package layout|
 |[HonoX Integration](./honox-integration.md)|The HonoX/Vite connection, Application Root responsibilities, and Cloudflare Workers/SSG boundaries|
+|[Analytics](./analytics.md)|Browser page-view tracking (`@riebeckite/plugin-analytics`) and the independent Cloudflare Worker collector (`@riebeckite/analytics-cloudflare`)|
 
 ### Builds, operations, and inspection
 
@@ -109,6 +110,7 @@ Compose the plugins your site needs. The repository includes capabilities in the
 - **Reading experience**: syntax highlighting, enhanced code blocks, code tabs, diffs, TOC, backlinks, recent posts, lightbox, and automatic card links.
 - **Navigation**: search, local graph, garden explorer, and a graph of content relationships.
 - **Publishing and discovery**: SEO, RSS / Atom / JSON Feed, sitemap, `robots.txt`, and plugin-provided endpoints.
+- **Analytics**: storage-independent page-view tracking keyed by stable content IDs, plus an independent Cloudflare Worker collector with D1/KV storage.
 - **Developer experience**: config and plugin-option validation, incremental builds, Plugin Cache, diagnostics, doctor, structured logging, tracing, profiling, and inspector.
 - **Presentation**: replaceable themes and a CSS contract shared by themes and plugins, including runtime color-mode switching (`@riebeckite/plugin-color-mode`).
 

@@ -41,7 +41,7 @@ from the application root. `defaultSsgEntry` is the root-relative
 `./app/server.ts` entry, and `defaultSsrExternals` is the SSR externals list
 both helpers use. Other exports are `loadRiebeckiteConfig`,
 `resolveHonoxApplication`, `resolveHonoxApplicationRoot`, `buildHonoxApplication`,
-and `startHonoxDevServer`. `scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, overwrite? })` writes a minimal, self-contained site (configuration, Vite/HonoX application shell, routes, stylesheet, and starter content) and returns the generated file list. It throws `ScaffoldSiteError` when the target already contains generated files and `overwrite` is not set. `riebeckite init` and `create-riebeckite` are thin command wrappers around it.
+and `startHonoxDevServer`. `scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, overwrite? })` writes a self-contained starter site (configuration, a Vite/HonoX application shell, routes, stylesheet, multi-language starter content localized via `@riebeckite/plugin-l10n`, and showcase pages linking to the plugin and theme ecosystem) and returns the generated file list. It throws `ScaffoldSiteError` when the target already contains generated files and `overwrite` is not set. `riebeckite init` and `create-riebeckite` are thin command wrappers around it.
 
 Catch-all routes need two small helpers so runtime routing and static
 generation agree. `contentRouteSsgParams(routePath, params)` is a drop-in

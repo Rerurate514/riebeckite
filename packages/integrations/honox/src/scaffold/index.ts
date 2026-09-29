@@ -1,6 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  resolveScaffoldPreset,
+  type ScaffoldPreset,
+  type ScaffoldPresetName,
+} from "./presets.js";
+import {
   type SiteTemplateFile,
   type SiteTemplateVariables,
   siteTemplateFiles,
@@ -13,6 +18,7 @@ export type ScaffoldSiteOptions = {
   readonly description?: string;
   readonly baseUrl?: string;
   readonly locale?: string;
+  readonly preset?: ScaffoldPresetName | ScaffoldPreset;
   readonly overwrite?: boolean;
 };
 
@@ -32,7 +38,11 @@ export async function scaffoldRiebeckiteSite(
   options: ScaffoldSiteOptions,
 ): Promise<ScaffoldSiteResult> {
   const targetDirectory = path.resolve(options.targetDirectory);
-  const files = siteTemplateFiles(templateVariables(options, targetDirectory));
+  const preset = resolveScaffoldPreset(options.preset);
+  const files = siteTemplateFiles(
+    preset,
+    templateVariables(options, targetDirectory),
+  );
   await assertTargetWritable(
     targetDirectory,
     files,

@@ -1,9 +1,13 @@
 import path from "node:path";
-import { scaffoldRiebeckiteSite } from "@riebeckite/honox";
+import {
+  type ScaffoldPresetName,
+  scaffoldRiebeckiteSite,
+} from "@riebeckite/honox";
 
 export type InitOptions = {
   readonly directory: string;
   readonly force: boolean;
+  readonly preset: ScaffoldPresetName;
 };
 
 export async function runInit(options: InitOptions): Promise<void> {
@@ -11,10 +15,11 @@ export async function runInit(options: InitOptions): Promise<void> {
   const result = await scaffoldRiebeckiteSite({
     targetDirectory,
     overwrite: options.force,
+    preset: options.preset,
   });
 
   const relative = path.relative(process.cwd(), result.targetDirectory) || ".";
-  console.log(`Created a Riebeckite site in ${relative}`);
+  console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
   console.log("");
   console.log("Next steps:");
   if (relative !== ".") console.log(`  cd ${relative}`);

@@ -74,6 +74,7 @@ Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugi
 |Incremental Build and cache semantics|[Build System](../en/build-system.md)|
 |Commands and their user-facing behavior|[CLI](../en/cli.md)|
 |Diagnostics and inspection|[Diagnostics](../en/diagnostics.md) / [Framework Inspector](../en/inspector.md)|
+|Browser tracking and the analytics Worker|[Analytics](../en/analytics.md)|
 |Public framework surface|[Framework Reference](../en/framework-reference.md)|
 
 Use the localized Japanese documentation when that is the target audience; the rules in this directory remain the implementation baseline.

@@ -6,7 +6,11 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| — | — | （バックログ内の実装対象はすべて完了） | 完了 | — | — |
+| 1 | K | honox scaffold の型チェックエラーを修正する（`templates.ts` の `ScaffoldOptions` を `string` に代入できない箇所） | 未着手 | Small | `pnpm run typecheck` / リリースをブロックする実バグ |
+| 2 | L | JSON-LD（`<script type="application/ld+json">`）への XSS 対策を入れる | 未着手 | Small | `JSON.stringify` は `<` `>` `&` U+2028/U+2029 をエスケープしないため `</script>` による script インジェクションの余地。`_renderer.tsx` と plugin-breadcrumbs の両方が対象。`escapeScriptJson` を Core の `utils/html.ts` に集約して適用し、重複している canvas / excalidraw / hover-preview の実装を置き換える |
+| 3 | M | レビュー時の `pnpm check --write .` で発生したフォーマット差分を整理する | 未着手 | Small | 作業ツリーに ~604 ファイルの整形ノイズが残っている。honox scaffold/templates.ts のユーザー未コミット作業（OPTION_DEPTH / optionContext / renderOptions 等）は保持する |
+| 4 | N | ルート `pnpm check` を書き込みモードから分離する（読み取り専用 `check` + 明示 `check:fix`） | 未着手 | Small | レビュー/CI で意図しない一括フォーマットが走る（M の原因）。docs には既存挙動の記載があるため変更時は en/ja 両方の更新が必要 |
+| 5 | P4 | 外部 E2E の `pnpm pack` フェーズを高速化する | 未着手 | Medium | 45 パッケージの pack が 240 秒の制限を超えてタイムアウト。pack のキャッシュ/並列化または CI 予算の拡大を検討 |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

@@ -1,4 +1,5 @@
 import type { Diagnostic } from "@riebeckite/core";
+import { checkAnalyticsCoverage } from "./checks/analytics.js";
 import { checkUnusedAssets } from "./checks/assets.js";
 import { checkExcludedPublic } from "./checks/excluded_public.js";
 import { checkFrontmatter } from "./checks/frontmatter.js";
@@ -41,6 +42,7 @@ export async function analyzeContent(
   checkUnusedAssets(source, state, normalizedOptions, diagnostics);
   checkExcludedPublic(source, normalizedOptions, diagnostics);
   checkPublishBoundary(source, normalizedOptions, diagnostics);
+  checkAnalyticsCoverage(source, normalizedOptions, diagnostics);
 
   return diagnostics;
 }

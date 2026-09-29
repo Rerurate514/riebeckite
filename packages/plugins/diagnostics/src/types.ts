@@ -9,6 +9,7 @@ export type DiagnosticsOptions = {
   failOnError?: boolean;
   reportUnusedAssets?: boolean;
   reportOrphans?: boolean;
+  reportAnalyticsCoverage?: boolean;
   requiredFrontmatter?: string[];
   severity?: Partial<Record<DiagnosticCode, DiagnosticSeverity>>;
   exclude?: string[];

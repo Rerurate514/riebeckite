@@ -10,7 +10,7 @@ pnpm check
 pnpm build
 ```
 
-`lint` は Biome lint、`format` は format を書き込みます。root の `check` も Biome check を write mode で実行するため、read-only validation とみなさず差分を確認してください。framework の動作確認は [CLI](cli.md) の Riebeckite command を利用します。
+`lint` は Biome lint、`check` は Biome check を、どちらも読み取り専用で実行します（`check` はファイルを書き換えず、問題を報告するだけです）。`check` が報告した修正は `check:fix` で、format の書き込みは `format` で、書き込み系のスクリプトを明示してから適用し、差分を確認してください。framework の動作確認は [CLI](cli.md) の Riebeckite command を利用します。
 
 ## 変更手順
 

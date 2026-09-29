@@ -1,0 +1,84 @@
+@layer components {
+  .rr-color-mode {
+    --rr-color-mode-ink: var(--rb-color-ink);
+    --rr-color-mode-muted: var(--rb-color-muted);
+    --rr-color-mode-surface: var(--rb-color-surface);
+    --rr-color-mode-surface-hover: var(--rb-color-surface-hover);
+    --rr-color-mode-border: var(--rb-color-border);
+
+    display: none;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    min-width: 0;
+    padding: 0.2rem;
+    border: 1px solid var(--rr-color-mode-border);
+    border-radius: 999px;
+  }
+
+  /* The legend names the group for assistive technology only. */
+  .rr-color-mode__legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* The control only appears once the runtime marked the page as ready, so
+     pages with JavaScript disabled never show a non-functional switch. */
+  html[data-rb-color-mode="ready"] .rr-color-mode {
+    display: inline-flex;
+  }
+
+  .rr-color-mode__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--rr-color-mode-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      background-color 120ms linear,
+      color 120ms linear;
+  }
+
+  .rr-color-mode__button:hover {
+    color: var(--rr-color-mode-ink);
+    background: var(--rr-color-mode-surface-hover);
+  }
+
+  .rr-color-mode__button[aria-pressed="true"] {
+    color: var(--rr-color-mode-ink);
+    background: var(--rr-color-mode-surface);
+    box-shadow: inset 0 0 0 1px var(--rr-color-mode-border);
+  }
+
+  .rr-color-mode__icon {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .rr-color-mode__icon path,
+  .rr-color-mode__icon circle,
+  .rr-color-mode__icon rect {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rr-color-mode__button {
+      transition: none;
+    }
+  }
+}

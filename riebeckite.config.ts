@@ -10,6 +10,7 @@ import { chartjs } from "@riebeckite/plugin-chartjs";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
+import { colorModePlugin } from "@riebeckite/plugin-color-mode";
 import { d2 } from "@riebeckite/plugin-d2";
 import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
@@ -162,6 +163,7 @@ export default defineConfig({
       wrapToggle: true,
     }),
     codeTabs(),
+    colorModePlugin(),
     codeAnnotations(),
     lightboxPlugin(),
     searchPlugin(),

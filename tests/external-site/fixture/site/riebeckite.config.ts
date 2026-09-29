@@ -12,6 +12,7 @@ import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { marp } from "@riebeckite/plugin-marp";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
+import { colorModePlugin } from "@riebeckite/plugin-color-mode";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
@@ -62,6 +63,7 @@ export default defineConfig({
     attachment(),
     marp(),
     codeAnnotations(),
+    colorModePlugin(),
     canvas(),
     aliasPlugin(),
     graphviz({ render: "build", engine: "dot" }),

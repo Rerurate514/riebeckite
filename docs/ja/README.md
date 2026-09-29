@@ -110,7 +110,7 @@ Riebeckite では必要な Plugin を選んでサイトを構成します。リ�
 - **ナビゲーション**: search、local graph、garden explorer、コンテンツ間のリンクグラフ。
 - **公開と発見性**: SEO、RSS / Atom / JSON Feed、sitemap、`robots.txt`、Plugin による endpoint。
 - **開発者体験**: 設定・Plugin options の検証、incremental build、Plugin Cache、diagnostics、doctor、structured logging、tracing、profiling、inspector。
-- **表示**: 交換可能な Theme と、Theme/Plugin 間で共有する CSS contract。
+- **表示**: 交換可能な Theme と、Theme/Plugin 間で共有する CSS contract。実行時のカラーモード切り替え（`@riebeckite/plugin-color-mode`）も含みます。
 
 利用可能な機能、設定値、実装上の制約は各 Plugin と Theme の package、および上記のシステム別ドキュメントで確認してください。
 

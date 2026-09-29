@@ -110,7 +110,7 @@ Compose the plugins your site needs. The repository includes capabilities in the
 - **Navigation**: search, local graph, garden explorer, and a graph of content relationships.
 - **Publishing and discovery**: SEO, RSS / Atom / JSON Feed, sitemap, `robots.txt`, and plugin-provided endpoints.
 - **Developer experience**: config and plugin-option validation, incremental builds, Plugin Cache, diagnostics, doctor, structured logging, tracing, profiling, and inspector.
-- **Presentation**: replaceable themes and a CSS contract shared by themes and plugins.
+- **Presentation**: replaceable themes and a CSS contract shared by themes and plugins, including runtime color-mode switching (`@riebeckite/plugin-color-mode`).
 
 Check the relevant package and the system documentation above for exact availability, options, and implementation constraints.
 

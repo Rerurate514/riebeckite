@@ -1,4 +1,8 @@
 import type { PluginHeadTag } from "@riebeckite/core";
+import {
+  ColorModeScript,
+  ColorModeToggle,
+} from "@riebeckite/plugin-color-mode";
 import { SearchBar } from "@riebeckite/plugin-search";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
@@ -68,6 +72,7 @@ export default jsxRenderer(({ children }, c) => {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(seo.jsonLd) }}
           />
         )}
+        <ColorModeScript />
         <Link href="/app/style.css" rel="stylesheet" />
         {themeStyle && (
           <style dangerouslySetInnerHTML={{ __html: themeStyle }} />
@@ -81,6 +86,7 @@ export default jsxRenderer(({ children }, c) => {
         <Script src="/app/client.ts" async />
       </head>
       <body class="riebeckite-page rb-site">
+        <ColorModeToggle />
         <SearchBar />
         {children}
       </body>

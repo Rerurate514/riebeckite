@@ -95,6 +95,9 @@ importers:
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
+      '@riebeckite/plugin-color-mode':
+        specifier: workspace:*
+        version: link:../../packages/plugins/color-mode
       '@riebeckite/plugin-d2':
         specifier: workspace:*
         version: link:../../packages/plugins/d2
@@ -442,6 +445,15 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/color-mode:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.12.26
 
   packages/plugins/d2:
     dependencies:

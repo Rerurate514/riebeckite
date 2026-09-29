@@ -77,6 +77,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
   {
+    directory: "packages/plugins/color-mode",
+    name: "@riebeckite/plugin-color-mode",
+  },
+  {
     directory: "packages/plugins/diagnostics",
     name: "@riebeckite/plugin-diagnostics",
   },
@@ -1066,6 +1070,21 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!js.includes("initMarkmap")) {
     fail("the markmap plugin client bundle is missing its `initMarkmap` initializer");
+  }
+  if (!combined.includes('class="rr-color-mode"')) {
+    fail("color-mode plugin did not render its rr-color-mode root hook");
+  }
+  if (!combined.includes("data-color-mode-root")) {
+    fail("color-mode plugin did not render the color-mode toggle root");
+  }
+  if (!combined.includes("riebeckite-color-mode")) {
+    fail("color-mode plugin did not emit its storage key");
+  }
+  if (!js.includes("initColorMode")) {
+    fail("color-mode plugin client bundle is missing initColorMode");
+  }
+  if (!css.includes("rr-color-mode")) {
+    fail("color-mode plugin stylesheet is missing its rr-color-mode classes");
   }
   if (!combined.includes("rb-d2")) {
     fail("generated HTML is missing the D2 plugin output (rb-d2)");

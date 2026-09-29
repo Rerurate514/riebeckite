@@ -54,6 +54,7 @@ function packageJson(variables: SiteTemplateVariables): string {
       dependencies: {
         "@riebeckite/core": "^0.0.1",
         "@riebeckite/honox": "^0.0.1",
+        "@riebeckite/plugin-color-mode": "^0.0.1",
         "@riebeckite/plugin-obsidian-markdown": "^0.0.1",
         "@riebeckite/theme-default": "^0.0.1",
         hono: "^4.12.25",
@@ -74,6 +75,7 @@ function packageJson(variables: SiteTemplateVariables): string {
 
 function riebeckiteConfig(variables: SiteTemplateVariables): string {
   return `import { defineConfig } from "@riebeckite/core";
+import { colorModePlugin } from "@riebeckite/plugin-color-mode";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { defaultTheme } from "@riebeckite/theme-default";
 
@@ -88,7 +90,7 @@ export default defineConfig({
     directory: "content",
   },
   theme: defaultTheme(),
-  plugins: [obsidianMarkdown()],
+  plugins: [obsidianMarkdown(), colorModePlugin()],
 });
 `;
 }
@@ -313,6 +315,8 @@ body {
 
 .site-header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
   padding: 1rem;
   border-bottom: 1px solid #d1d5db;
@@ -334,7 +338,8 @@ body {
 }
 
 function siteHeader(): string {
-  return `import { config } from "../config";
+  return `import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
+import { config } from "../config";
 
 export function SiteHeader() {
   return (
@@ -342,6 +347,7 @@ export function SiteHeader() {
       <a href="/" class="site-header__home">
         {config.site.title}
       </a>
+      <ColorModeToggle />
     </header>
   );
 }
@@ -369,6 +375,7 @@ export function SiteArticle({ post }: { post: PostContent }) {
 function renderer(): string {
   return `import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
+import { ColorModeScript } from "@riebeckite/plugin-color-mode";
 import { SiteHeader } from "../components/site-header";
 import { config } from "../config";
 
@@ -391,6 +398,7 @@ export default jsxRenderer(({ children }) => {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{config.site.title}</title>
+        <ColorModeScript />
         <Link href="/app/style.css" rel="stylesheet" />
         <Script src="/app/client.ts" async />
       </head>

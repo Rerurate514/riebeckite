@@ -7,3 +7,5 @@ The stable structural hooks include `.rb-site`, `.rb-article`, `.rb-article-layo
 Themes must not replace components, inject JSX, add routes/plugins/client scripts, transform DOM, own islands, access the filesystem, or call ContentManager. Put interactive behavior in a plugin/application and visual styling in the theme.
 
 Theme input may be a raw config or a `defineTheme` result. Supported high-level choices are color mode (`light`, `dark`, `system`), typography (`system`, `serif`, `sans`), and article layout (`article`, `sidebar`, `full-width`).
+
+Color mode is a runtime contract: light is `:root`, dark is `:root[data-theme="dark"]`, and system is the `@media (prefers-color-scheme: dark)` block matched by `:root:not([data-theme])`. Runtime switching sets/removes `data-theme` on `<html>`; an empty attribute breaks the system state. Interactive switching belongs to a plugin (see `@riebeckite/plugin-color-mode`), never to a theme.

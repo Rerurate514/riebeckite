@@ -24,6 +24,7 @@
     "@riebeckite/plugin-chartjs": "workspace:*",
     "@riebeckite/plugin-code-annotations": "workspace:*",
     "@riebeckite/plugin-code-enhance": "workspace:*",
+    "@riebeckite/plugin-color-mode": "workspace:*",
     "@riebeckite/plugin-d2": "workspace:*",
     "@riebeckite/plugin-daily-notes": "workspace:*",
     "@riebeckite/plugin-dataview": "workspace:*",

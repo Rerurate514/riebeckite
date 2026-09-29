@@ -14,6 +14,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/code-annotations",
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",
+  "packages/plugins/color-mode",
   "packages/plugins/d2",
   "packages/plugins/daily-notes",
   "packages/plugins/dataview",
@@ -146,6 +147,10 @@ const packagePublishingMetadata = {
   "packages/plugins/code-tabs": {
     description: "Accessible tabbed code blocks for Riebeckite.",
     keywords: ["riebeckite", "plugin", "code-blocks", "tabs"],
+  },
+  "packages/plugins/color-mode": {
+    description: "Light / dark / system color-mode switching for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "theme", "color-mode", "dark-mode"],
   },
   "packages/plugins/d2": {
     description: "D2 diagram rendering for Riebeckite code blocks.",

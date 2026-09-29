@@ -61,6 +61,27 @@ type ThemeColorMode = "light" | "dark" | "system";
 と semantic token を利用し、個別 component に色を hardcode
 することを避けます。
 
+### 実行時の切り替え
+
+Theme の配色は次の 3 つの CSS 状態で決まります:
+
+- `:root` — ライト
+- `:root[data-theme="dark"]` — ダーク
+- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }` — OS に追随（system）
+
+サーバーは Theme の `colorMode` が `"system"` のとき以外は `<html>` に
+`data-theme` を出力し、`"system"` のときは属性を省略します（media query が
+配色を決めます）。実行時切り替えも同じ契約に従います:
+`document.documentElement.dataset.theme` に `"light"` か `"dark"` を設定するか、
+`"system"` なら**属性を削除**します。空文字の属性は同等ではありません —
+空の `data-theme` でも `[data-theme]` セレクタに一致してしまい、
+media query が機能しなくなります。
+
+`@riebeckite/plugin-color-mode` がこの契約の参照実装です。描画前に実行される
+`ColorModeScript`（インラインスクリプト）、切替コントロール `ColorModeToggle`、
+`localStorage` に選択を保存するクライアントエントリ `initColorMode` で
+構成されます（[README](../../packages/plugins/color-mode/README_ja.md)）。
+
 ## Typography
 
 ``` ts

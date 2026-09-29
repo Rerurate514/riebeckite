@@ -66,6 +66,28 @@ options can be exposed to CSS through namespaced `data-*` attributes.
 Theme-specific concepts should remain inside the theme package rather
 than expanding Core `ThemeConfig`.
 
+## Color mode at runtime
+
+Themes derive their palette from three CSS states:
+
+- `:root` — light
+- `:root[data-theme="dark"]` — dark
+- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }` — follow the OS ("system")
+
+The server writes `data-theme` on `<html>` unless the theme's `colorMode` is
+`"system"`, in which case the attribute is omitted and the media query picks
+the palette. Runtime switching follows the same contract: set
+`document.documentElement.dataset.theme` to `"light"` or `"dark"`, or **remove**
+the attribute for `"system"`. An empty attribute is not equivalent — an empty
+`data-theme` still matches `[data-theme]` selectors and defeats the media
+query.
+
+`@riebeckite/plugin-color-mode` is the reference implementation of this
+contract: `ColorModeScript` (a before-paint inline script), `ColorModeToggle`
+(a control), and an `initColorMode` client entry that persists the choice in
+`localStorage`. See its
+[`README`](../../packages/plugins/color-mode/README.md).
+
 ## Stable CSS hooks
 
 Themes target documented stable hooks instead of internal markup. Riebeckite

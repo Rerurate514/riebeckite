@@ -62,11 +62,13 @@ export default createRoute(
     const tableOfContents = extractTableOfContents(post.html ?? "");
     c.set("seo", buildArticleSeo(route.entry.permalink, post));
     c.set("headTags", route.entry.headTags ?? []);
+    c.set("htmlLanguage", route.entry.publicLocation.metadata?.["l10n.lang"]);
 
     return c.render(
       <Article
         content={post}
         propertiesHtml={route.entry.bodySlots?.properties}
+        bodySlots={route.entry.bodySlots}
         asideContent={
           <TableOfContents
             className="table-of-contents--desktop"

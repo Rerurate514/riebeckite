@@ -140,6 +140,9 @@ importers:
       '@riebeckite/plugin-kanban':
         specifier: workspace:*
         version: link:../../packages/plugins/kanban
+      '@riebeckite/plugin-l10n':
+        specifier: workspace:*
+        version: link:../../packages/plugins/l10n
       '@riebeckite/plugin-lightbox':
         specifier: workspace:*
         version: link:../../packages/plugins/lightbox

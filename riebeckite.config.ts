@@ -25,6 +25,7 @@ import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { kanban } from "@riebeckite/plugin-kanban";
+import { l10n } from "@riebeckite/plugin-l10n";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { markmap } from "@riebeckite/plugin-markmap";
@@ -179,6 +180,7 @@ export default defineConfig({
     relatedPosts(),
     responsiveImage(),
     localGraphPlugin(),
+    l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
     gardenExplorerPlugin(),
     hoverPreviewPlugin(),
     shortcodes(),

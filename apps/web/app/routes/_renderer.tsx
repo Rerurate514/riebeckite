@@ -29,7 +29,10 @@ export default jsxRenderer(({ children }, c) => {
   const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
 
   return (
-    <html lang={getHtmlLanguage()} {...getThemeAttributes()}>
+    <html
+      lang={c.get("htmlLanguage") ?? getHtmlLanguage()}
+      {...getThemeAttributes()}
+    >
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -53,7 +56,7 @@ export default jsxRenderer(({ children }, c) => {
         {seo.modifiedTime && (
           <meta property="article:modified_time" content={seo.modifiedTime} />
         )}
-        {seo.tags.map((tag) => (
+        {seo.tags.map((tag: string | undefined) => (
           <meta property="article:tag" content={tag} key={tag} />
         ))}
         <meta name="twitter:card" content={twitterCard} />

@@ -1,6 +1,6 @@
 # @riebeckite/plugin-l10n
 
-Content localization for Riebeckite Markdown. It detects a locale and a separate translation identity for every note, prefixes non-default URLs, exposes real translation variants to themes, and contributes `hreflang` links. It does not translate Riebeckite UI or render a language switcher.
+Content localization for Riebeckite Markdown. It detects a locale and a separate translation identity for every note, prefixes non-default URLs, contributes a standard language switcher, and adds `hreflang` links. It does not translate Riebeckite UI strings.
 
 [日本語](./README_ja.md)
 
@@ -48,7 +48,28 @@ English/getting-started.md lang: en, translation: getting-started
 
 The default language keeps Core's resolved URL (`/about`); other languages are prefixed (`/en/about`). The plugin augments the existing content-location resolver, so it works with other URL plugins rather than creating a router. Different source paths or a permalink plugin can provide different resolved URLs for translations.
 
-No fallback pages are generated. `getLocalization(manifest, slug)` returns `availableLanguages` and language-to-href `translations` only for notes that exist; themes own the switcher UI. `getLocalizedContent(manifest, slug, lang)` returns `null` for a missing translation.
+No fallback pages are generated. `getLocalization(manifest, slug)` returns `availableLanguages` and language-to-href `translations` only for notes that exist; `getLocalizedContent(manifest, slug, lang)` returns `null` for a missing translation.
+
+## Standard LanguageSwitcher
+
+`l10n(...)` publishes the built-in, styled LanguageSwitcher in the standard `article.after-meta` layout slot. A standard Site consumer renders that slot, so no l10n-specific article integration is needed. It is omitted when a page has fewer than two real translations.
+
+```ts
+// Keep URLs and metadata but do not publish UI.
+l10n({ defaultLang: "ja", languages: ["ja", "en"], ui: false });
+
+// Use another standard slot, or replace the server-rendered component.
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  ui: {
+    slot: "article.footer",
+    render: ({ localization }) => `<p>${localization.lang}</p>`,
+  },
+});
+```
+
+Themes can override the default component through its `.l10n-switcher` CSS classes. `ui.render` is framework-neutral HTML so custom Sites can supply their own server-rendered component without coupling the plugin to a specific app.
 
 ## Custom detector
 

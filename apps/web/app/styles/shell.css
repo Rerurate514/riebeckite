@@ -11,20 +11,28 @@
   @media (max-width: 42rem) {
     .riebeckite-page {
       /* The fixed 4rem padding feels oversized on phones, where the shell
-         already stacks the chrome (color-mode toggle, search bar) above the
-         article. Keep a modest margin without eating the viewport. */
+         already stacks the chrome (search bar) above the article. Keep a
+         modest margin without eating the viewport. */
       padding-block: var(--rb-space-3);
     }
 
-    /* Keep the color-mode pill compact and centered, and grow its buttons to
-       reachable touch targets, instead of letting it stretch full-width. */
-    .rr-color-mode {
-      align-self: center;
-    }
-
+    /* Keep the color-mode buttons reachable touch targets. */
     .rr-color-mode__button {
       width: 2.5rem;
       height: 2.5rem;
     }
   }
+}
+
+/* `ColorModeToggle` floats over the viewport instead of reserving page space,
+   so the article starts at the top of the page. Unlayered so it wins over the
+   plugin shell styles imported later. */
+.rr-color-mode {
+  position: fixed;
+  inset-inline-start: 1.5rem;
+  inset-block-end: 1.5rem;
+  z-index: 50;
+  background: var(--rr-color-mode-surface, var(--rb-color-surface));
+  box-shadow: 0 2px 12px
+    color-mix(in oklab, var(--rb-color-ink) 18%, transparent);
 }

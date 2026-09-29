@@ -55,9 +55,13 @@ export default function Article(props: Props) {
           {props.afterContent}
           <ContentSlot html={props.bodySlots?.["article.after-content"]} />
         </ArticleContent>
+        {(props.bodySlots?.["article.footer"] || props.footerContent) && (
+          <div class="article-shell__outro">
+            <ContentSlot html={props.bodySlots?.["article.footer"]} />
+            {props.footerContent}
+          </div>
+        )}
       </ArticleLayout>
-      <ContentSlot html={props.bodySlots?.["article.footer"]} />
-      {props.footerContent}
     </ArticlePrimitive>
   );
 }

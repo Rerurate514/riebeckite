@@ -90,7 +90,9 @@ export function localizedContentFiles(
     } else if (page === "guide") {
       pushEnglishOnly("guide", guideContent);
     } else if (page === "examples") {
-      pushEnglishOnly("examples", () => examplesContent(preset));
+      pushLocalized("examples", (language) =>
+        examplesContent(preset, language),
+      );
     } else if (page === "reference/plugins") {
       pushEnglishOnly("reference/plugins", () =>
         referencePluginsContent(preset, variables),
@@ -118,7 +120,7 @@ function heading(level: number, text: string): string {
 }
 
 function codeBlock(language: string, code: string): string {
-  return ["```" + language, code, "```", ""].join("\n");
+  return `\`\`\`${language}\n${code}\n\`\`\`\n`;
 }
 
 // ----- Index ---------------------------------------------------------------
@@ -1105,23 +1107,44 @@ function guideContent(): string {
   ].join("\n");
 }
 
-function examplesContent(preset: ScaffoldPreset): string {
+/** A short two-language label falling back to English for other languages. */
+type SummaryText = { readonly en: string; readonly ja?: string };
+
+function readSummary(text: SummaryText, language: ScaffoldLanguage): string {
+  return text[language] ?? text.en;
+}
+
+const EXAMPLES_COPY: {
+  readonly heading: SummaryText;
+  readonly intro: SummaryText;
+} = {
+  heading: {
+    en: "Examples",
+    ja: "サンプル集",
+  },
+  intro: {
+    en: "A working demo of every diagram, chart, and code feature this preset ships. Fenced code blocks are turned into rendered output at build time by the diagram plugins; code blocks gain toolbars from the code plugins. Each section below is also copy-pasteable into any Markdown document.",
+    ja: "このプリセットが含む、すべての図表・チャート・コード機能の実例です。フェンス付きコードブロックはビルド時に図表プラグインが描画し、コードブロックにはコードプラグインがツールバーを追加します。以下の各セクションは、任意の Markdown 文書にそのままコピーして使えます。",
+  },
+};
+
+function examplesContent(
+  preset: ScaffoldPreset,
+  language: ScaffoldLanguage,
+): string {
   const lines: string[] = [
     frontmatter(),
-    heading(1, "Examples"),
+    heading(1, readSummary(EXAMPLES_COPY.heading, language)),
     "",
-    "A working demo of every diagram, chart, and code feature this preset",
-    "ships. Fenced code blocks are turned into rendered output at build time",
-    "by the diagram plugins; code blocks gain toolbars from the code plugins.",
-    "Each section below is also copy-pasteable into any Markdown document.",
+    readSummary(EXAMPLES_COPY.intro, language),
     "",
   ];
   for (const key of README_DEMO_ORDER) {
     const packageName = demoPackage(key);
     if (!hasPlugin(preset, packageName)) continue;
     const demo = README_DEMOS[key];
-    lines.push(heading(2, demo.title.en), "");
-    lines.push(demo.intro.en, "");
+    lines.push(heading(2, readSummary(demo.title, language)), "");
+    lines.push(readSummary(demo.intro, language), "");
     lines.push(demo.markdown, "");
   }
   return lines.join("\n");

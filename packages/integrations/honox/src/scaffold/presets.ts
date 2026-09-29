@@ -79,9 +79,50 @@ export type ScaffoldPluginSpec = {
   readonly package: string;
   /** Factory/import name, for example `seo`. */
   readonly factory: string;
-  /** Optional literal source for the factory call arguments. */
-  readonly options?: string;
+  /** Options source for the factory call; see {@link ScaffoldOptions}. */
+  readonly options?: ScaffoldOptions;
 };
+
+/**
+ * Context passed to option sources. `variables` are the user-supplied site
+ * values (`title`, `baseUrl`, ...), `languages` the preset's configured
+ * languages, and `depth` the preset tier: 1 = rich essentials,
+ * 2 = full/max standard set, 3 = ultra full coverage.
+ */
+export type ScaffoldOptionContext = {
+  readonly variables: {
+    readonly name: string;
+    readonly title: string;
+    readonly description: string;
+    readonly baseUrl: string;
+    readonly locale: string;
+  };
+  readonly languages: readonly ScaffoldLanguage[];
+  readonly depth: number;
+};
+
+/** A single option value: a literal, or a function of the scaffold context. */
+export type ScaffoldOptionValue =
+  | string
+  | ((context: ScaffoldOptionContext) => string);
+
+/** A config field gated to a minimum preset depth. */
+export type ScaffoldOptionField = {
+  /** The lowest `ScaffoldOptionContext.depth` that includes this field. */
+  readonly depth: number;
+  readonly value: ScaffoldOptionValue;
+};
+
+/**
+ * Options for a generated plugin call: a literal source string, a function
+ * producing one, or a field map whose fields appear from a minimum depth.
+ * The field map form lets each preset tier demonstrate the configuration
+ * surface step by step while keeping one source of truth per plugin.
+ */
+export type ScaffoldOptions =
+  | string
+  | ((context: ScaffoldOptionContext) => string)
+  | Readonly<Record<string, ScaffoldOptionField>>;
 
 /** Content pages the scaffold can emit. */
 export type ScaffoldPageKey =
@@ -132,7 +173,7 @@ export type ScaffoldPreset = {
 const np = (
   package_: string,
   factory: string,
-  options?: string,
+  options?: ScaffoldOptions,
 ): ScaffoldPluginSpec => ({
   package: package_,
   factory,
@@ -140,11 +181,17 @@ const np = (
 });
 
 /**
- * Option-bearing plugins carry their full option object so the generated
- * `riebeckite.config.ts` doubles as a settings reference and every preset
- * tier demonstrates the configuration surface step by step. Factories that
- * take no options (or are left deliberately bare, like the color-mode
- * toggle) stay as `factory()`.
+ * Option-bearing plugins carry tiered option definitions so the generated
+ * `riebeckite.config.ts` doubles as a settings reference and each preset tier
+ * demonstrates the configuration surface step by step:
+ *
+ * - `rich` shows the essential options (depth 1)
+ * - `full` and `max` show the standard set (depth 2)
+ * - `ultra` shows every option (depth 3)
+ *
+ * Factories that take no options (or are left deliberately bare, like the
+ * color-mode toggle) stay as `factory()`. Options may reference the scaffold
+ * context, so values like `seo.siteName` follow the user's site title.
  */
 
 /** The foundation plugin, shared by every non-empty preset. */
@@ -155,61 +202,85 @@ const obsidianMarkdown = np(
 
 /** The next tier: look and language. */
 const colorMode = np("@riebeckite/plugin-color-mode", "colorModePlugin");
-const l10n = np("@riebeckite/plugin-l10n", "l10n");
+const l10n = np("@riebeckite/plugin-l10n", "l10n", (context) => {
+  const defaultLang = defaultLanguageForLocale(context.variables.locale);
+  return `{ defaultLang: ${JSON.stringify(defaultLang)}, languages: ${JSON.stringify(context.languages)} }`;
+});
 
 /** Core publishing and reading experience. */
-const seo = np(
-  "@riebeckite/plugin-seo",
-  "seo",
-  `{ siteName: "Riebeckite", defaultImage: "/ogp.png", feed: { rss: true, atom: true, json: true }, sitemap: true, robots: true }`,
-);
+const seo = np("@riebeckite/plugin-seo", "seo", {
+  siteName: {
+    depth: 1,
+    value: (context) => JSON.stringify(context.variables.title),
+  },
+  sitemap: { depth: 1, value: "true" },
+  robots: { depth: 2, value: "true" },
+  defaultImage: { depth: 3, value: '"/ogp.png"' },
+  feed: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
+});
 const toc = np("@riebeckite/plugin-toc", "tocPlugin");
-const properties = np(
-  "@riebeckite/plugin-properties",
-  "properties",
-  `{ render: "slot", include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }`,
-);
+const properties = np("@riebeckite/plugin-properties", "properties", {
+  render: { depth: 1, value: '"slot"' },
+  include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
+  order: { depth: 2, value: '["created", "modified", "tags", "status"]' },
+});
 const alias = np("@riebeckite/plugin-alias", "aliasPlugin", `{ status: 308 }`);
-const codeEnhance = np(
-  "@riebeckite/plugin-code-enhance",
-  "codeEnhance",
-  `{ theme: { light: "github-light", dark: "github-dark" }, lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true, wrapToggle: true }`,
-);
+const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {
+  lineNumbers: { depth: 1, value: "true" },
+  copyButton: { depth: 1, value: "true" },
+  filename: { depth: 2, value: "true" },
+  lineHighlight: { depth: 2, value: "true" },
+  diffHighlight: { depth: 2, value: "true" },
+  theme: { depth: 3, value: '{ light: "github-light", dark: "github-dark" }' },
+  wrapToggle: { depth: 3, value: "true" },
+});
 
 /** Discovery, media, and reading polish. */
 const search = np("@riebeckite/plugin-search", "searchPlugin");
 const backlinks = np("@riebeckite/plugin-backlinks", "backlinksPlugin");
-const relatedPosts = np(
-  "@riebeckite/plugin-related-posts",
-  "relatedPosts",
-  `{ limit: 5, minScore: 1, heading: true, headingText: "Related", className: "rb-related-posts", useTags: true, useBacklinks: true }`,
-);
+const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts", {
+  limit: { depth: 2, value: "5" },
+  useTags: { depth: 2, value: "true" },
+  useBacklinks: { depth: 2, value: "true" },
+  minScore: { depth: 3, value: "1" },
+  heading: { depth: 3, value: "true" },
+  headingText: { depth: 3, value: '"Related"' },
+  className: { depth: 3, value: '"rb-related-posts"' },
+});
 const recentPosts = np("@riebeckite/plugin-recent-posts", "recentPostsPlugin");
 const attachment = np(
   "@riebeckite/plugin-attachment",
   "attachment",
   `{ showSize: true }`,
 );
-const media = np(
-  "@riebeckite/plugin-media",
-  "media",
-  `{ preload: "metadata", lazy: true, showCaption: true, showDownload: false, showOpenOriginal: true }`,
-);
+const media = np("@riebeckite/plugin-media", "media", {
+  preload: { depth: 2, value: '"metadata"' },
+  lazy: { depth: 2, value: "true" },
+  showCaption: { depth: 3, value: "true" },
+  showDownload: { depth: 3, value: "false" },
+  showOpenOriginal: { depth: 3, value: "true" },
+});
 const responsiveImage = np(
   "@riebeckite/plugin-responsive-image",
   "responsiveImage",
-  `{ lazy: true, decoding: true, sizes: "100vw", widths: [640, 1280, 1920], formats: ["webp", "avif"] }`,
+  {
+    lazy: { depth: 2, value: "true" },
+    decoding: { depth: 2, value: "true" },
+    sizes: { depth: 2, value: '"100vw"' },
+    widths: { depth: 2, value: "[640, 1280, 1920]" },
+    formats: { depth: 3, value: '["webp", "avif"]' },
+    className: { depth: 3, value: '"rb-responsive-image"' },
+  },
 );
 const lightbox = np(
   "@riebeckite/plugin-lightbox",
   "lightboxPlugin",
   `{ selectorClass: "rr-lightbox-trigger" }`,
 );
-const highlight = np(
-  "@riebeckite/plugin-highlight",
-  "highlight",
-  `{ className: "rb-mark", tag: "mark" }`,
-);
+const highlight = np("@riebeckite/plugin-highlight", "highlight", {
+  tag: { depth: 2, value: '"mark"' },
+  className: { depth: 3, value: '"rb-mark"' },
+});
 const codeTabs = np(
   "@riebeckite/plugin-code-tabs",
   "codeTabs",
@@ -225,11 +296,14 @@ const shortcodes = np(
   "shortcodes",
   `{ builtins: true }`,
 );
-const series = np(
-  "@riebeckite/plugin-series",
-  "series",
-  `{ key: "series", orderKey: "series_order", titleKey: "series_title", heading: true, className: "rb-series", positionLabel: false }`,
-);
+const series = np("@riebeckite/plugin-series", "series", {
+  key: { depth: 2, value: '"series"' },
+  orderKey: { depth: 2, value: '"series_order"' },
+  titleKey: { depth: 2, value: '"series_title"' },
+  positionLabel: { depth: 2, value: "false" },
+  heading: { depth: 3, value: "true" },
+  className: { depth: 3, value: '"rb-series"' },
+});
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
   "autoCardLinkPlugin",
@@ -238,120 +312,146 @@ const autoCardLink = np(
 const richEmbed = np(
   "@riebeckite/plugin-rich-embed",
   "richEmbed",
-  `{ allowHosts: ["player.example.com"] }`,
+  `{ providers: ["youtube", "vimeo", "spotify"] }`,
 );
 
 /** Diagrams, charts, and knowledge tools for the heavy tiers. */
-const mermaid = np(
-  "@riebeckite/plugin-mermaid",
-  "mermaid",
-  `{ render: "build", theme: { light: "default", dark: "dark" }, caption: true }`,
-);
-const graphviz = np(
-  "@riebeckite/plugin-graphviz",
-  "graphviz",
-  `{ render: "build", engine: "dot", caption: true, fallback: true }`,
-);
-const d2 = np(
-  "@riebeckite/plugin-d2",
-  "d2",
-  `{ render: "build", theme: { light: 0, dark: 1 }, layout: "dagre", caption: true }`,
-);
-const plantuml = np(
-  "@riebeckite/plugin-plantuml",
-  "plantuml",
-  `{ server: "https://www.plantuml.com/plantuml", format: "svg", caption: true, fallback: true }`,
-);
-const chartjs = np(
-  "@riebeckite/plugin-chartjs",
-  "chartjs",
-  `{ responsive: true, caption: true, className: "rb-chartjs" }`,
-);
-const vegaLite = np(
-  "@riebeckite/plugin-vega-lite",
-  "vegaLite",
-  `{ caption: true, actions: false, theme: "light", renderer: "canvas" }`,
-);
-const wavedrom = np(
-  "@riebeckite/plugin-wavedrom",
-  "wavedrom",
-  `{ skin: "default", caption: true, fallback: true, className: "rb-wavedrom" }`,
-);
-const markmap = np(
-  "@riebeckite/plugin-markmap",
-  "markmap",
-  `{ caption: true, height: 320, colorFreezeLevel: 2 }`,
-);
-const marp = np(
-  "@riebeckite/plugin-marp",
-  "marp",
-  `{ theme: "default", allowHtml: true, math: true, caption: true }`,
-);
-const qrCode = np(
-  "@riebeckite/plugin-qr-code",
-  "qrCode",
-  `{ level: "M", margin: 1, width: 160, dark: "#000000", light: "#ffffff", caption: true, className: "rb-qr" }`,
-);
-const discordEmbed = np(
-  "@riebeckite/plugin-discord-embed",
-  "discordEmbed",
-  `{ themeColor: "#5865F2", imageAlt: true, imageDimensions: true }`,
-);
+const mermaid = np("@riebeckite/plugin-mermaid", "mermaid", {
+  render: { depth: 2, value: '"build"' },
+  theme: { depth: 2, value: '{ light: "default", dark: "dark" }' },
+  caption: { depth: 3, value: "true" },
+  fallback: { depth: 3, value: "true" },
+});
+const graphviz = np("@riebeckite/plugin-graphviz", "graphviz", {
+  render: { depth: 2, value: '"build"' },
+  engine: { depth: 2, value: '"dot"' },
+  caption: { depth: 3, value: "true" },
+  fallback: { depth: 3, value: "true" },
+});
+const d2 = np("@riebeckite/plugin-d2", "d2", {
+  render: { depth: 2, value: '"build"' },
+  theme: { depth: 2, value: "{ light: 0, dark: 1 }" },
+  layout: { depth: 2, value: '"dagre"' },
+  caption: { depth: 3, value: "true" },
+});
+const plantuml = np("@riebeckite/plugin-plantuml", "plantuml", {
+  server: { depth: 2, value: '"https://www.plantuml.com/plantuml"' },
+  format: { depth: 2, value: '"svg"' },
+  caption: { depth: 3, value: "true" },
+  fallback: { depth: 3, value: "true" },
+});
+const chartjs = np("@riebeckite/plugin-chartjs", "chartjs", {
+  responsive: { depth: 2, value: "true" },
+  caption: { depth: 2, value: "true" },
+  className: { depth: 3, value: '"rb-chartjs"' },
+});
+const vegaLite = np("@riebeckite/plugin-vega-lite", "vegaLite", {
+  caption: { depth: 2, value: "true" },
+  theme: { depth: 2, value: '"light"' },
+  renderer: { depth: 2, value: '"canvas"' },
+  actions: { depth: 3, value: "false" },
+  className: { depth: 3, value: '"rb-vega-lite"' },
+});
+const wavedrom = np("@riebeckite/plugin-wavedrom", "wavedrom", {
+  skin: { depth: 2, value: '"default"' },
+  caption: { depth: 2, value: "true" },
+  fallback: { depth: 3, value: "true" },
+  className: { depth: 3, value: '"rb-wavedrom"' },
+});
+const markmap = np("@riebeckite/plugin-markmap", "markmap", {
+  caption: { depth: 2, value: "true" },
+  height: { depth: 2, value: "320" },
+  colorFreezeLevel: { depth: 3, value: "2" },
+});
+const marp = np("@riebeckite/plugin-marp", "marp", {
+  theme: { depth: 2, value: '"default"' },
+  allowHtml: { depth: 2, value: "true" },
+  math: { depth: 2, value: "true" },
+  caption: { depth: 3, value: "true" },
+});
+const qrCode = np("@riebeckite/plugin-qr-code", "qrCode", {
+  level: { depth: 2, value: '"M"' },
+  margin: { depth: 2, value: "1" },
+  width: { depth: 2, value: "160" },
+  dark: { depth: 3, value: '"#000000"' },
+  light: { depth: 3, value: '"#ffffff"' },
+  caption: { depth: 3, value: "true" },
+  className: { depth: 3, value: '"rb-qr"' },
+});
+const discordEmbed = np("@riebeckite/plugin-discord-embed", "discordEmbed", {
+  themeColor: { depth: 2, value: '"#5865F2"' },
+  imageAlt: { depth: 3, value: "true" },
+  imageDimensions: { depth: 3, value: "true" },
+});
 const excalidraw = np(
   "@riebeckite/plugin-excalidraw",
   "excalidraw",
   `{ lazy: true }`,
 );
-const excaliBrain = np(
-  "@riebeckite/plugin-excalibrain",
-  "excaliBrain",
-  `{ render: "build", auto: true, heading: true, headingText: "ExcaliBrain", infer: true, siblings: true, width: 720, height: 480 }`,
-);
-const canvas = np(
-  "@riebeckite/plugin-canvas",
-  "canvas",
-  `{ className: "rb-canvas", language: "canvas", render: "both" }`,
-);
-const bases = np(
-  "@riebeckite/plugin-bases",
-  "bases",
-  `{ className: "rb-bases", language: "base", limit: 100, showFallback: true }`,
-);
-const dataview = np(
-  "@riebeckite/plugin-dataview",
-  "dataviewPlugin",
-  `{ className: "rb-dataview", hideFallback: false, limit: 50 }`,
-);
-const flashcards = np(
-  "@riebeckite/plugin-flashcards",
-  "flashcardsPlugin",
-  `{ className: "rb-flashcards", shuffle: true, fallback: true }`,
-);
-const kanban = np(
-  "@riebeckite/plugin-kanban",
-  "kanban",
-  `{ className: "rb-kanban", columnMarker: "##", autoDetect: true, fallback: true }`,
-);
-const query = np(
-  "@riebeckite/plugin-query",
-  "queryPlugin",
-  `{ className: "rb-query", defaultFormat: "list", defaultLimit: 50, excludeSelf: true }`,
-);
+const excaliBrain = np("@riebeckite/plugin-excalibrain", "excaliBrain", {
+  render: { depth: 2, value: '"build"' },
+  auto: { depth: 2, value: "true" },
+  heading: { depth: 2, value: "true" },
+  infer: { depth: 2, value: "true" },
+  siblings: { depth: 2, value: "true" },
+  headingText: { depth: 3, value: '"ExcaliBrain"' },
+  width: { depth: 3, value: "720" },
+  height: { depth: 3, value: "480" },
+});
+const canvas = np("@riebeckite/plugin-canvas", "canvas", {
+  language: { depth: 2, value: '"canvas"' },
+  render: { depth: 2, value: '"both"' },
+  className: { depth: 3, value: '"rb-canvas"' },
+});
+const bases = np("@riebeckite/plugin-bases", "bases", {
+  language: { depth: 2, value: '"base"' },
+  limit: { depth: 2, value: "100" },
+  className: { depth: 3, value: '"rb-bases"' },
+  showFallback: { depth: 3, value: "true" },
+});
+const dataview = np("@riebeckite/plugin-dataview", "dataviewPlugin", {
+  limit: { depth: 2, value: "50" },
+  className: { depth: 3, value: '"rb-dataview"' },
+  hideFallback: { depth: 3, value: "false" },
+});
+const flashcards = np("@riebeckite/plugin-flashcards", "flashcardsPlugin", {
+  shuffle: { depth: 2, value: "true" },
+  fallback: { depth: 2, value: "true" },
+  className: { depth: 3, value: '"rb-flashcards"' },
+});
+const kanban = np("@riebeckite/plugin-kanban", "kanban", {
+  columnMarker: { depth: 2, value: '"##"' },
+  autoDetect: { depth: 2, value: "true" },
+  className: { depth: 3, value: '"rb-kanban"' },
+  fallback: { depth: 3, value: "true" },
+});
+const query = np("@riebeckite/plugin-query", "queryPlugin", {
+  defaultFormat: { depth: 2, value: '"list"' },
+  defaultLimit: { depth: 2, value: "50" },
+  className: { depth: 3, value: '"rb-query"' },
+  excludeSelf: { depth: 3, value: "true" },
+});
 const localGraph = np("@riebeckite/plugin-local-graph", "localGraphPlugin");
 const hoverPreview = np(
   "@riebeckite/plugin-hover-preview",
   "hoverPreviewPlugin",
-  `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }`,
+  {
+    delay: { depth: 2, value: "120" },
+    excerptLength: { depth: 2, value: "160" },
+    selector: { depth: 2, value: 'a[href^="/"]' },
+    includeTitles: { depth: 3, value: "true" },
+  },
 );
 const gardenExplorer = np(
   "@riebeckite/plugin-garden-explorer",
   "gardenExplorerPlugin",
 );
-const ux = np(
-  "@riebeckite/plugin-ux",
-  "uxPlugin",
-  `{ progress: true, backToTop: true, tocScrollSpy: true, codeCopy: true }`,
-);
+const ux = np("@riebeckite/plugin-ux", "uxPlugin", {
+  progress: { depth: 2, value: "true" },
+  backToTop: { depth: 2, value: "true" },
+  tocScrollSpy: { depth: 2, value: "true" },
+  codeCopy: { depth: 3, value: "true" },
+});
 
 /** Developer-experience and ops plugins for the top tier. */
 const dailyNotes = np(
@@ -367,7 +467,7 @@ const rename = np(
 const textFragment = np(
   "@riebeckite/plugin-text-fragment",
   "textFragmentPlugin",
-  `{ prefix: "Riebeckite: " }`,
+  (context) => `{ prefix: ${JSON.stringify(`${context.variables.title}: `)} }`,
 );
 const quality = np(
   "@riebeckite/plugin-quality",
@@ -377,7 +477,8 @@ const quality = np(
 const deploy = np(
   "@riebeckite/plugin-deploy",
   "deployPlugin",
-  `{ provider: "cloudflare-pages" }`,
+  (context) =>
+    `{ provider: "cloudflare-pages", baseUrl: ${JSON.stringify(context.variables.baseUrl)} }`,
 );
 const diagnostics = np(
   "@riebeckite/plugin-diagnostics",

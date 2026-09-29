@@ -2,6 +2,9 @@ import { defaultSsrExternals } from "../vite_plugin.js";
 import { localizedContentFiles } from "./localized-content.js";
 import {
   defaultLanguageForLocale,
+  type ScaffoldOptionContext,
+  type ScaffoldOptions,
+  type ScaffoldOptionValue,
   type ScaffoldPreset,
   type ScaffoldPresetName,
 } from "./presets.js";
@@ -200,18 +203,70 @@ function riebeckiteConfig(
   return `${lines.join("\n")}\n`;
 }
 
+/**
+ * A preset's option depth: `rich` shows essentials, `full` and `max` the
+ * standard set, `ultra` everything. The lower presets carry no option-bearing
+ * plugins and keep depth 0.
+ */
+const OPTION_DEPTH: Readonly<Record<ScaffoldPresetName, number>> = {
+  empty: 0,
+  minimal: 0,
+  starter: 0,
+  rich: 1,
+  full: 2,
+  max: 2,
+  ultra: 3,
+};
+
+function optionContext(
+  preset: ScaffoldPreset,
+  variables: SiteTemplateVariables,
+): ScaffoldOptionContext {
+  return {
+    variables,
+    languages: preset.languages,
+    depth: OPTION_DEPTH[preset.name],
+  };
+}
+
+function renderOptionValue(
+  value: ScaffoldOptionValue,
+  context: ScaffoldOptionContext,
+): string {
+  return typeof value === "function" ? value(context) : value;
+}
+
+/**
+ * Resolve a plugin's options literal for the preset's depth, or `null` when
+ * the plugin takes no options at that depth (and should be called bare).
+ */
+export function renderOptions(
+  options: ScaffoldOptions | undefined,
+  context: ScaffoldOptionContext,
+): string | null {
+  if (options === undefined) return null;
+  if (typeof options === "string") return options;
+  if (typeof options === "function") return options(context);
+  const fields = Object.entries(options)
+    .filter(([, field]) => field.depth <= context.depth)
+    .map(
+      ([key, field]) => `${key}: ${renderOptionValue(field.value, context)}`,
+    );
+  return fields.length === 0 ? null : `{ ${fields.join(", ")} }`;
+}
+
 function pluginExpression(
   plugin: ScaffoldPreset["plugins"][number],
   preset: ScaffoldPreset,
   variables: SiteTemplateVariables,
 ): string {
-  if (plugin.package === "@riebeckite/plugin-l10n") {
-    const defaultLang = defaultLanguageForLocale(variables.locale);
-    return `l10n({ defaultLang: ${JSON.stringify(defaultLang)}, languages: ${JSON.stringify(preset.languages)} })`;
-  }
-  return plugin.options
-    ? `${plugin.factory}(${plugin.options})`
-    : `${plugin.factory}()`;
+  const options = renderOptions(
+    plugin.options,
+    optionContext(preset, variables),
+  );
+  return options === null
+    ? `${plugin.factory}()`
+    : `${plugin.factory}(${options})`;
 }
 
 function viteConfig(): string {
@@ -819,10 +874,13 @@ const README_PAGE_LINKS: Readonly<
   "reference/themes": { en: "Theme reference", ja: "テーマリファレンス" },
 };
 
-/** English-only demo pages keep a `.en` suffix unless `en` is the default language. */
+/**
+ * English-only content pages keep a `.en` suffix unless `en` is the default
+ * language. `examples` is intentionally absent: it is localized like the
+ * tour pages, with English as the fallback for untranslated languages.
+ */
 export const ENGLISH_ONLY_PAGES = new Set([
   "guide",
-  "examples",
   "reference/plugins",
   "reference/themes",
 ]);
@@ -847,17 +905,16 @@ export function demoPackage(key: string): string {
   return key.split("/", 2).join("/");
 }
 
-/** The options object literal used for a plugin, or `null` when it takes none. */
+/**
+ * The options object literal used for a plugin at this preset's depth, or
+ * `null` when it takes no options at that depth.
+ */
 export function readmePluginOptions(
   variables: SiteTemplateVariables,
   preset: ScaffoldPreset,
   plugin: ScaffoldPreset["plugins"][number],
 ): string | null {
-  if (plugin.package === "@riebeckite/plugin-l10n") {
-    const defaultLang = defaultLanguageForLocale(variables.locale);
-    return `{ defaultLang: ${JSON.stringify(defaultLang)}, languages: ${JSON.stringify(preset.languages)} }`;
-  }
-  return plugin.options ?? null;
+  return renderOptions(plugin.options, optionContext(preset, variables));
 }
 
 function configurationReferenceLines(

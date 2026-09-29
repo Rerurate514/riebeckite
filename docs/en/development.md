@@ -27,3 +27,7 @@ Do not solve an application concern by importing HonoX or `apps/web` into Core. 
 ## Documentation changes
 
 Keep English and Japanese references aligned, use relative links, and describe ownership, inputs/outputs, failure behavior, and boundaries—not only happy paths. Update the agent guides when a cross-package invariant changes.
+
+## Implementation backlog record
+
+The initial implementation backlog lives in [tasklist.md](../../tasklist.md) (all tasks closed). Use it as a historical record of earlier decisions, not as an active plan or tracker.

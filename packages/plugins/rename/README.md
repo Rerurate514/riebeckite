@@ -119,5 +119,5 @@ Types:
 
 ## See also
 
-- [Permalink plugin](../permalink/README_en.md) — stable URLs and `redirect_from`
+- [Permalink plugin](../permalink/README.md) — stable URLs and `redirect_from`
 - [Plugin guide](../../../docs/en/plugin-system.md)

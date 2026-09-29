@@ -110,3 +110,7 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 - The trail is fixed at build time. A full rebuild always recomputes correctly.
 - Only the slug hierarchy is considered; folder ordering from frontmatter or
   series plugins is intentionally ignored.
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

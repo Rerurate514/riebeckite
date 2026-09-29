@@ -111,3 +111,7 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 - パンくず列はビルド時に確定します。再ビルドすれば常に正しく再計算されます。
 - スラッグ階層のみを参照します。frontmatter の並び順や series プラグインの
   順序は意図的に考慮しません。
+
+## ????
+
+- [?????????](../../../docs/ja/plugin-system.md)

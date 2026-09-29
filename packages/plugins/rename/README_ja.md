@@ -2,7 +2,7 @@
 
 ノートのリネームや移動で発生するリンク切れを減らすプラグインです。検出したリネームを、Riebeckite が既に持つリダイレクト機構（`manifest.redirects`）に恒久的なリダイレクトとして登録します。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 基本的な使い方
 

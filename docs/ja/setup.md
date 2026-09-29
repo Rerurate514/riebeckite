@@ -9,7 +9,7 @@
 3. Cloudflare Workers へ公開する
 
 > **いまの公開状況**
-> Riebeckite の本体パッケージ（`@riebeckite/*`）はまだ npm に公開されていません。そのため、いまは「このリポジトリを clone して使う」のが現実的な方法です。npm に公開されたあとは、`npm create riebeckite` だけで新しいサイトを作れるようになります。この資料では、公開後も同じ手順が使えるように書き分けています。
+> Riebeckite の本体パッケージ（`@riebeckite/*`）はまだ npm に公開されていません。そのため、いまは「このリポジトリを clone して使う」のが現実的な方法です。npm に公開されたあとは、`npx create-riebeckite` だけで新しいサイトを作れるようになります。この資料では、公開後も同じ手順が使えるように書き分けています。
 
 ## この資料の使い方
 
@@ -180,9 +180,9 @@ publish: true
 
 ### 2-5. 部品をインストールする（公開状況に注意）
 
-生成された `package.json` は `@riebeckite/core@^0.0.1` などの部品を参照しますが、これらはまだ npm に公開されていません。そのため、いま `pnpm install` を実行すると、部品が見つからず失敗します。
+生成された `package.json` は `@riebeckite/core@^0.0.3` などの部品を参照しますが、これらはまだ npm に公開されていません。そのため、いま `npm install` を実行すると、部品が見つからず失敗します。
 
-- **npm 公開後**: サイトのフォルダで `pnpm install` を実行するだけで使えます。
+- **npm 公開後**: サイトのフォルダで `npm install` を実行するだけで使えます。
 - **いま試したい場合**: このリポジトリの [external-site フィクスチャ](../../tests/external-site/README.md) と同じ方法で、各部品を tarball に固めて読み込ませる必要があります。手順は同 README にまとまっています。少し上級者向けです。
 
 いま動くブログが1つほしいだけなら、新しいサイトを作らず、1章の見本サイトをそのまま使って3章で公開するのが一番の近道です。
@@ -192,10 +192,10 @@ publish: true
 インストールが済んだあとは、サイトのフォルダで次を使います。
 
 ```sh
-pnpm dev                     # 開発サーバーを起動する
-pnpm exec riebeckite check   # 設定が正しいか確認する
-pnpm exec riebeckite doctor  # 詳しい健康診断
-pnpm run build               # 公開用のファイルを dist/ に書き出す
+npx riebeckite dev           # 開発サーバーを起動する
+npx riebeckite check         # 設定が正しいか確認する
+npx riebeckite doctor        # 詳しい健康診断
+npx riebeckite build         # 公開用のファイルを dist/ に書き出す
 ```
 
 ## 3. Cloudflare Workers へ公開する
@@ -212,31 +212,25 @@ Cloudflare の画面で細かく設定する必要がなく、一番わかりや
 2. サイトのフォルダで wrangler（Cloudflare の公開用コマンド）を入れます。
 
    ```sh
-   pnpm add -D wrangler
+   npm install -D wrangler
    ```
 
 3. 配布物である `templates/cloudflare/wrangler.jsonc` をサイト直下にコピーし、`name` を自分だけの Worker 名に変えます。`assets` の `directory` が `./dist` になっていることを確認します。
-4. `package.json` に次の1行を足します（バージョンは手元の `pnpm -v` に合わせます）。
-
-   ```json
-   "packageManager": "pnpm@11.5.3"
-   ```
-
-5. ビルドして、Cloudflare にログインし、公開します。
+4. ビルドして、Cloudflare にログインし、公開します。
 
    ```sh
-   pnpm run build
-   pnpm exec wrangler login
-   pnpm exec wrangler deploy
+   npx riebeckite build
+   npx wrangler login
+   npx wrangler deploy
    ```
 
-6. 最後に表示される URL（`https://<name>.<account>.workers.dev` の形）をブラウザで開きます。表示されれば公開成功です。この URL を `riebeckite.config.ts` の `baseUrl` に書き、もう一度ビルドして公開し直すと、サイトマップなどが正しい URL になります。
+5. 最後に表示される URL（`https://<name>.<account>.workers.dev` の形）をブラウザで開きます。表示されれば公開成功です。この URL を `riebeckite.config.ts` の `baseUrl` に書き、もう一度ビルドして公開し直すと、サイトマップなどが正しい URL になります。
 
 公開前に、実際にアップロードせず確認することもできます。
 
 ```sh
-pnpm exec wrangler deploy --dry-run   # 設定とファイルを検証するだけ
-pnpm exec wrangler dev                # 公開したときと同じ内容を手元で表示する
+npx wrangler deploy --dry-run   # 設定とファイルを検証するだけ
+npx wrangler dev                # 公開したときと同じ内容を手元で表示する
 ```
 
 **このリポジトリの見本サイトを公開する場合**は、wrangler と `wrangler.jsonc` がすでに用意されています。ルートで次を実行します。Worker 名は `apps/web/wrangler.jsonc` の `name` で変えられます。
@@ -258,7 +252,7 @@ pnpm --filter @riebeckite/web exec wrangler deploy
    - `CLOUDFLARE_ACCOUNT_ID`
 4. `main` ブランチに push するか、Actions タブから手動で実行する。
 
-この方法では、サイトの `package.json` に `packageManager`（例: `"pnpm@11.5.3"`）が書かれている必要があります。GitHub 側が pnpm を自動で用意するために使います。詳しい前提と流れは[テンプレートの README](../../templates/cloudflare/README_ja.md)にまとまっています。
+この方法では、最初の `npm install` で作られる `package-lock.json` をコミットしておく必要があります。GitHub Actions の `npm ci` がこれをそのまま使います。詳しい前提と流れは[テンプレートの README](../../templates/cloudflare/README_ja.md)にまとまっています。
 
 ## うまくいかないときは
 
@@ -267,23 +261,23 @@ pnpm --filter @riebeckite/web exec wrangler deploy
 |`Cannot find module ... cli.js` と出る|CLI がまだビルドされていない|`pnpm build` を実行する|
 |`riebeckite` コマンドが見つからない|同上、または違うフォルダにいる|`pnpm build`、そのあとリポジトリのルートにいるか確認|
 |記事が表示されない|`content/` が空、または `publish: true` や `title` が無い|frontmatter の2行を確認する|
-|`pnpm install` で `@riebeckite/*` が 404 になる|本体がまだ npm に無い|1章の見本サイトを使う、または公開を待つ|
+|`npm install` で `@riebeckite/*` が 404 になる|本体がまだ npm に無い|1章の見本サイトを使う、または公開を待つ|
 |ページが 404 になる|ファイル名と URL がずれている|ファイル名と `content/` の場所を確認する|
-|公開したのに 404 になる|ビルド結果が `dist/` に出ていない|`pnpm run build` を実行し、`wrangler.jsonc` の `directory` を確認する|
+|公開したのに 404 になる|ビルド結果が `dist/` に出ていない|`npx riebeckite build` を実行し、`wrangler.jsonc` の `directory` を確認する|
 |`doctor` で Content に `✗` が出る|記事に問題がある|表示されたメッセージのとおりに直す|
-|古い内容が残る|差分ビルドが古い状態を持っている|`pnpm exec riebeckite build --full` で作り直す|
+|古い内容が残る|差分ビルドが古い状態を持っている|`npx riebeckite build --full` で作り直す|
 
 ## 用語のかんたん説明
 
 - **リポジトリ**: プログラムとファイルを1つにまとめた置き場。ここでは Riebeckite 本体のことです。
-- **依存パッケージ**: プログラムが動くために必要な部品。`pnpm install` でまとめて入ります。
+- **依存パッケージ**: プログラムが動くために必要な部品。`npm install` でまとめて入ります。
 - **ビルド**: 書いたプログラムを、実際に動かせる形に変換すること。
-- **dev サーバー**: 手元のパソコンだけでサイトを表示する仕組み。`pnpm dev` で起動します。
+- **dev サーバー**: 手元のパソコンだけでサイトを表示する仕組み。`npx riebeckite dev` で起動します。
 - **SSG / 静的アセット**: あらかじめ全ページをファイルとして作っておき、そのまま配る方式。
 - **Cloudflare Workers**: サイトを公開する場所。ここでは静的なファイルを置くだけに使います。
 - **wrangler**: Cloudflare に公開するためのコマンド。
 - **frontmatter**: Markdown ファイルの先頭に `---` で囲んで書く設定（`title` や `publish` など）。
-- **pnpm**: 部品を入れたり、コマンドを動かしたりする道具。
+- **npm / npx**: 部品を入れたり、コマンドを動かしたりする道具。
 
 ## 関連資料
 

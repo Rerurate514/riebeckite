@@ -2,6 +2,8 @@
 
 Create a new Riebeckite site from an official starter preset.
 
+[日本語](./README_ja.md)
+
 ## Usage
 
 ```sh

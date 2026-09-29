@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Unifies the release flow for every public Riebeckite package:
-//   bump:version -> build:packages -> check:packages + check:dependencies
+//   bump:version -> build:packages -> check:packages + check:dependencies + check:docs + check:docs
 //   -> publish (workspace topological order) -> git commit + tag
 //
 // Rehearse the same flow with --dry-run (no versions, tarballs, or git
@@ -21,7 +21,7 @@ const usage = `Usage:
   node scripts/release.mjs --help
 
 Unified release flow for every public Riebeckite package:
-  bump:version -> build:packages -> check:packages + check:dependencies
+  bump:version -> build:packages -> check:packages + check:dependencies + check:docs
   -> publish (workspace topological order) -> git commit + tag
 
 Options:
@@ -69,6 +69,7 @@ function runStep(label, command, args, cwd) {
 function runChecks() {
   runStep("check:packages", "pnpm", ["run", "check:packages"]);
   runStep("check:dependencies", "pnpm", ["run", "check:dependencies"]);
+  runStep("check:docs", "pnpm", ["run", "check:docs"]);
 }
 
 // Publish layers in dependency order (dependencies of a layer are always

@@ -18,4 +18,11 @@ riebeckite inspect build
 
 Inspect は事実を表示するだけで mutation しません。build の起動、incremental state/plugin cache の書込み、asset emission、表示だけの artifact render、Vite/HonoX build、configuration auto-fix を行ってはいけません。まだ build がなく情報が存在しない場合は、その状態を明確に報告します。
 
-resolve 済み config/enabled plugin/content/relationship/build state の理解には Inspector、config/plugin resolution の validation には `check`、environment を含む health には `doctor`、output/state の作成には `build` を使用します。この分離により CI の診断 command が cache や deployment output を意図せず変更しません。
+## いつどのツールを使うか
+
+- resolve 済みの config や enabled plugin、content、relationship、build state を理解するには **Inspector** を使います。
+- config と plugin resolution を検証するには **check** を使います。
+- environment を含む health を診断するには **doctor** を使います。
+- build output や state を意図的に作成・更新するには **build** を使います。
+
+この分離により、CI の診断 command が cache や deployment output を意図せず変更しません。詳細は [CLI](cli.md) と [Diagnostics](diagnostics.md) を参照してください。

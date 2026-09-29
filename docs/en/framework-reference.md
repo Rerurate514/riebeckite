@@ -82,9 +82,8 @@ exports.
 
 ### Versioning and publication status
 
-The initial public release is version `0.0.1` for every public package. To
-prepare a later release, update every public package together from the
-repository root:
+All public packages share a single version. To prepare a release, update every
+public package together from the repository root:
 
 ```bash
 pnpm bump:version 0.0.2
@@ -110,8 +109,8 @@ package checks and builds.
   it into each package before the tarball is created
   (`scripts/copy_license.mjs`), and every published package declares
   `"license": "Apache-2.0"`.
-- Ranges such as `^1.0.0` in the examples are illustrative; the initial public
-  release is `0.0.1`.
+- Ranges such as `^1.0.0` in the examples are illustrative; the exact version is
+  chosen at release time with `bump:version`.
 
 ## Extension surfaces
 

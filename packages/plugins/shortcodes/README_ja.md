@@ -108,4 +108,4 @@ container }` を受け取り、文字列を返します。コンテナ型では�
 
 ## 関連
 
-- [プラグインガイド](../../docs/plugins_ja.md)
+- [プラグインガイド](../../../docs/ja/plugin-system.md)

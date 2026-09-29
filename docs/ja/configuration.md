@@ -6,13 +6,15 @@
 import { defineConfig } from "@riebeckite/core";
 
 export default defineConfig({
-  site: { title: "My site", url: "https://example.com" },
-  content: { directory: "content", exclude: ["drafts/**"], filters: { publishStrategy: "published" } },
+  site: { title: "My site", baseUrl: "https://example.com" },
+  content: { directory: "content", exclude: ["drafts/**"], filters: { publishStrategy: "explicit" } },
   markdown: { syntaxHighlight: { theme: "github-dark" } },
   theme: { colorMode: "system", articleLayout: "article" },
   plugins: [],
 });
 ```
+
+## Content selection
 
 `content.directory` は標準 filesystem source の場所、`content.source` は別の ContentSource です。競合する reader を二重に設定しません。`exclude` は content 化前に除外し、`filters.publishStrategy` は publication policy を指定します。対応する helper は `isExcluded` と `isPublished` です。
 
@@ -127,6 +129,8 @@ pnpm exec riebeckite build
 5. `build` で integration と route rendering を検証します。
 
 `riebeckite.config.ts` を意図的に Vite application の外へ置く場合は、`riebeckiteVite()` に `configRoot` を渡します。`appRoot` は site root のままにし、相対 `content.directory` はその root 基準で指定してください。
+
+## Plugins and themes
 
 PluginInput は conditional config の `false`、`null`、`undefined` を許容します。resolve は無効 input を除外し、enabled plugin を stable order で並べ、capability を検証します。Theme は raw config または宣言済み theme を指定できます。HonoX/Vite 固有設定を Core config に持ち込まないでください。
 

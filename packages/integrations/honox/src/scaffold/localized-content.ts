@@ -430,7 +430,7 @@ function themesContent(language: ScaffoldLanguage): string {
   lines.push(heading(2, read(copy.switchHeading, language)), "");
   lines.push(read(copy.switchCurrent, language), "");
   lines.push(read(copy.switchStep1, language), "");
-  lines.push(codeBlock("sh", "pnpm add @riebeckite/theme-sakura"));
+  lines.push(codeBlock("sh", "npm install @riebeckite/theme-sakura"));
   lines.push(read(copy.switchStep2, language), "");
   lines.push(
     codeBlock(
@@ -992,7 +992,7 @@ function pluginsContent(language: ScaffoldLanguage): string {
   lines.push(read(copy.intro, language), "");
   lines.push(heading(2, read(copy.installHeading, language)), "");
   lines.push(read(copy.installStep1, language), "");
-  lines.push(codeBlock("sh", "pnpm add @riebeckite/plugin-mermaid"));
+  lines.push(codeBlock("sh", "npm install @riebeckite/plugin-mermaid"));
   lines.push(read(copy.installStep2, language), "");
   lines.push(
     codeBlock(
@@ -1060,7 +1060,7 @@ function guideContent(): string {
     "",
     codeBlock(
       "sh",
-      ["pnpm install", "pnpm exec riebeckite dev", "pnpm exec riebeckite build"].join("\n"),
+      ["npm install", "npx riebeckite dev", "npx riebeckite build"].join("\n"),
     ),
     "",
     heading(2, "Localize a page"),

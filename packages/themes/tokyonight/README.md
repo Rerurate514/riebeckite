@@ -76,6 +76,6 @@ full token list — the token contract is identical.
 
 ## See also
 
-- [Plugin guide](../../../docs/plugins_en.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)

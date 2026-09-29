@@ -2,7 +2,7 @@
 
 記事内で選択したテキストから、Text Fragment のディープリンク（`#:~:text=`）と Markdown の引用を作るプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## できること
 

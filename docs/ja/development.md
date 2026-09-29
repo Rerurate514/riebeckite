@@ -21,3 +21,11 @@ pnpm build
 5. 最小の relevant validation から実行し、必要な repository check を続けます。
 
 Core に HonoX や `apps/web` を import して application 問題を解かず、再利用可能な plugin behavior を route に置かず、Theme に JavaScript/DOM transform を入れません。文書は英日版の相対 link と、責務・入力出力・失敗時・境界を同期します。
+
+## ドキュメントの変更
+
+英語版と日本語版の記述は相対リンクで揃え、責務、入出力、失敗時の挙動、境界を説明してください（正常系だけにしない）。パッケージ間の不変条件が変わった場合は、エージェント向けガイド（[Agent documentation](../agents/README.md)）も更新します。
+
+## 実装バックログの記録
+
+初期構築時の実装バックログは [tasklist.md](../../tasklist.md) に記録しています（すべて完了済み）。作業の計画や進捗管理に使うのではなく、過去の判断経緯を確認したいときに参照してください。

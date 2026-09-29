@@ -14,7 +14,7 @@ l10n({ defaultLang: "ja", languages: ["ja", "en", "zh-CN"] });
 
 ## ロケール検出と翻訳グループ
 
-ファイル名は `README.en.md` を推奨します。`README-en.md`、`README_en.md`、`README.en-US.md`、`README.zh-CN.md` も利用できます。設定済みの言語名に一致する先頭ディレクトリ（`en/README.md`）も検出します。
+ファイル名はこのリポジトリの慣例に合わせ、アンダースコアの `README_ja.md` 形式を推奨します。`README.ja.md`、`README-ja.md`、`README.en.md`、`README.en-US.md`、`README.zh-CN.md` も利用できます。設定済みの言語名に一致する先頭ディレクトリ（`en/README.md`）も検出します。
 
 frontmatter も利用できます。
 
@@ -70,3 +70,7 @@ l10n({
 ```
 
 独自検出の言語は frontmatter より弱く、ファイル名・ディレクトリより強く扱われます。`translationId` は明示的な翻訳グループ ID です。
+
+## ????
+
+- [?????????](../../../docs/ja/plugin-system.md)

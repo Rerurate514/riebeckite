@@ -118,3 +118,7 @@ Stable hooks follow the `rr-sidenotes` convention: `rr-sidenotes__toggle`,
   room for the notes, and themes can restyle `.rr-sidenotes__note` freely.
 - Notes inside tables or deeply nested inline markup are placed after the
   nearest block ancestor, so their vertical position is approximate.
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

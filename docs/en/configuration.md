@@ -6,11 +6,11 @@ Create configuration with `defineConfig` and let the integration resolve it befo
 import { defineConfig } from "@riebeckite/core";
 
 export default defineConfig({
-  site: { title: "My site", url: "https://example.com" },
+  site: { title: "My site", baseUrl: "https://example.com" },
   content: {
     directory: "content",
     exclude: ["drafts/**"],
-    filters: { publishStrategy: "published" },
+    filters: { publishStrategy: "explicit" },
   },
   markdown: { syntaxHighlight: { theme: "github-dark" } },
   theme: { colorMode: "system", articleLayout: "article" },

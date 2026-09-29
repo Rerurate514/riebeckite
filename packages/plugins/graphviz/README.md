@@ -123,4 +123,4 @@ a lingering worker.
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)

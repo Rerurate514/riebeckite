@@ -52,3 +52,7 @@ a future pipeline extension.
 
 - `media(options?)` / `mediaPlugin` — plugin factory
 - Types: `MediaOptions`, `MediaPreload`
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

@@ -88,5 +88,5 @@ const results = searchItems(items, "#obsidian");
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
-- [`@riebeckite/plugin-garden-explorer`](../plugin-garden-explorer/README.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)
+- [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README.md)

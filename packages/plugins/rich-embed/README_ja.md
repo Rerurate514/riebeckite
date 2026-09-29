@@ -129,4 +129,4 @@ Gist の場合は iframe の代わりに
 
 ## 関連
 
-- [プラグインガイド](../../docs/plugins_ja.md)
+- [プラグインガイド](../../../docs/ja/plugin-system.md)

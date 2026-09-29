@@ -23,7 +23,7 @@ export async function runInit(options: InitOptions): Promise<void> {
   console.log("");
   console.log("Next steps:");
   if (relative !== ".") console.log(`  cd ${relative}`);
-  console.log("  pnpm install");
-  console.log("  pnpm exec riebeckite check");
-  console.log("  pnpm exec riebeckite build");
+  console.log("  npm install");
+  console.log("  npx riebeckite check");
+  console.log("  npx riebeckite build");
 }

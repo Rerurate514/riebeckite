@@ -2,6 +2,8 @@
 
 `@riebeckite/plugin-analytics` のための独立した Cloudflare Worker 実行環境です。汎用プラグインには Cloudflare 固有コードを含めません。
 
+[English](./README.md)
+
 ## ストレージは必ず一つ選ぶ
 
 - **D1**: UTC 日単位で集計し、原子的な upsert、コンテンツ別 PV、人気記事、日バケット単位の期間指定に対応します。生イベントは保存しません。時刻境界は日単位であり、サブ日精度ではありません。

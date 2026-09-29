@@ -2,7 +2,7 @@
 
 Riebeckite が生成する HTML を静的に検査し、品質とアクセシビリティの問題を報告するプラグインです。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 
@@ -56,4 +56,4 @@ export default defineConfig({
 
 ## 関連
 
-- [プラグインガイド](../../docs/plugins_ja.md)
+- [プラグインガイド](../../../docs/ja/plugin-system.md)

@@ -18,7 +18,7 @@ This guide walks through publishing a site with Riebeckite, from installation to
 
 - Node.js (LTS) and pnpm are installed.
 - You run commands from the repository root. Content and the application are separate: Markdown lives under `content/`, and the HonoX application lives in `apps/web`.
-- Riebeckite ships an `init` command: `pnpm exec riebeckite init my-site` (or `npm create riebeckite my-site`) generates a standalone site you can install and build. The reference application and the E2E fixture remain useful examples for a fully customized site.
+- Riebeckite ships a scaffolder: `npx create-riebeckite my-site` generates a standalone site you can install and build (while the packages are unpublished, the same generator runs inside this repository as `pnpm exec riebeckite init my-site`). The reference application and the E2E fixture remain useful examples for a fully customized site.
 
 ## 1. Install dependencies
 
@@ -138,7 +138,7 @@ pnpm --filter @riebeckite/web deploy    # build and deploy to Cloudflare Workers
 
 Deployment settings live in `apps/web/wrangler.jsonc`; `assets.directory` points at `./dist`. Adjust the worker name, compatibility flags, and bindings there before your first deploy.
 
-For a site outside this repository, start from the [Cloudflare deployment template](../../templates/cloudflare/README_en.md). It provides a generic `wrangler.jsonc` and a GitHub Actions workflow that checks, builds, and deploys the generated `dist/` as Workers Static Assets. Because Riebeckite pre-renders content routes and plugin endpoints, the asset-only Worker mirrors the reference configuration; no runtime `main` entry is required. Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then adjust the Worker name in the template. Validate locally with `pnpm exec wrangler deploy --dry-run` before the first deploy.
+For a site outside this repository, start from the [Cloudflare deployment template](../../templates/cloudflare/README_en.md). It provides a generic `wrangler.jsonc` and a GitHub Actions workflow that checks, builds, and deploys the generated `dist/` as Workers Static Assets. Because Riebeckite pre-renders content routes and plugin endpoints, the asset-only Worker mirrors the reference configuration; no runtime `main` entry is required. Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then adjust the Worker name in the template. Validate locally with `npx wrangler deploy --dry-run` before the first deploy.
 
 Page-view tracking is an optional, separate Worker. Configure `@riebeckite/plugin-analytics` on the site and deploy the collector from `templates/analytics-cloudflare` (D1 or KV) in its own repository; see [Analytics](./analytics.md).
 
@@ -150,18 +150,17 @@ Page-view tracking is an optional, separate Worker. Configure `@riebeckite/plugi
 
 ## Use your own project
 
-Generate a standalone site with the CLI or the scaffolder package, then install and build it:
+Generate a standalone site, then install and build it:
 
 ```bash
-pnpm exec riebeckite init my-site
-# or: npm create riebeckite my-site
+npx create-riebeckite my-site
 cd my-site
-pnpm install
-pnpm exec riebeckite check
-pnpm exec riebeckite build
+npm install
+npx riebeckite check
+npx riebeckite build
 ```
 
-`init` writes a self-contained site that passes `check` and `build` as generated. It refuses to overwrite an existing non-empty target unless `--force` is passed.
+The scaffolder writes a self-contained site that passes `check` and `build` as generated. It refuses to overwrite an existing non-empty target unless `--force` is passed.
 
 The generated site follows the same site-application contract as the E2E fixture at [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site). The fixture adds site-local extensions and an external vault, so it remains the reference when you need those. The essential files are:
 

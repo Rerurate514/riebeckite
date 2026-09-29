@@ -4,6 +4,8 @@ Independent Cloudflare Worker runtime for `@riebeckite/plugin-analytics`. The
 generic plugin contains only browser configuration and analytics contracts; this
 package owns Worker bindings and storage.
 
+[日本語](./README_ja.md)
+
 ## Architecture
 
 `createWorker` is the presentation boundary for a dedicated Worker runtime. It

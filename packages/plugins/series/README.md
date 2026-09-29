@@ -141,4 +141,4 @@ matched with `.rb-series__item a[aria-current="page"]`.
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)

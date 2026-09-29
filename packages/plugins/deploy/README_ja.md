@@ -4,7 +4,7 @@ Riebeckite の静的ホスティング向け出力ヘルパーです。デプロ
 ファイルを組み立て、ビルドの generated-output シンク経由で出力します。
 アップロードは行わず、ファイルシステムにも書き込みません。
 
-[English](./README_en.md)
+[English](./README.md)
 
 ## 概要
 
@@ -61,3 +61,7 @@ GitHub Pages には `_redirects` 構文がないため、各リダイレクト�
 - リダイレクトの `from` は出力パスにする前に `.` と `..` を解決し、すべてのパスが
   `normalizeGeneratedOutputPath` を通ります。
 - アップロード、キャッシュ無効化、プロバイダ認証は対象外です。
+
+## ????
+
+- [?????????](../../../docs/ja/plugin-system.md)

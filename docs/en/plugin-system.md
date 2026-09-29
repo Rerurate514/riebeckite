@@ -25,7 +25,20 @@ export function examplePlugin() {
 ```
 
 A plugin factory may expose typed options and retain the resolved
-options on the plugin object.
+options on the plugin object:
+
+``` ts
+type ExampleOptions = {
+  enabled?: boolean;
+};
+
+export function examplePlugin(options: ExampleOptions = {}) {
+  return definePlugin({
+    name: "example",
+    options,
+  });
+}
+```
 
 ## Contract overview
 
@@ -50,8 +63,15 @@ Use only the extension points a plugin actually needs.
 
 ## Ordering and capabilities
 
-Disabled/false/null inputs are removed. `order` provides a basic
-ordering, while capability dependencies express real requirements.
+Disabled/false/null inputs are removed, and `enabled: false` is never
+executed. `order` provides a basic ordering before dependency resolution,
+while capability dependencies express real requirements:
+
+``` ts
+plugins: [
+  condition && myPlugin(),
+]
+```
 
 ``` ts
 definePlugin({
@@ -61,6 +81,10 @@ definePlugin({
   optional: ["example.optional"],
 });
 ```
+
+- `provides`: capabilities this plugin provides.
+- `requires`: capabilities that must exist.
+- `optional`: capabilities used when present.
 
 The resolver places providers before consumers and detects missing
 requirements, duplicate providers, and cycles while preserving unrelated
@@ -78,6 +102,17 @@ The base context contains resolved config when available,
 `contentIndex`, diagnostics, plugin-scoped cache, Logger, and Tracer.
 Specialized hooks add post, manifest, graph, location, or render data.
 
+``` ts
+type PluginContext = {
+  config?: ResolvedRiebeckiteConfig;
+  contentIndex: Map<string, string>;
+  diagnostics: Diagnostic[];
+  cache: PluginCache;
+  logger: Logger;
+  tracer: Tracer;
+};
+```
+
 Prefer injected context services over plugin-owned global singletons.
 
 ## Lifecycle
@@ -91,9 +126,49 @@ plugin/hook identity and original cause.
 
 ## Markdown and HTML pipelines
 
-Plugins can declare remark/rehype plugins directly or extend the
-framework pipelines. Semantic Markdown/HTML transformation belongs here
-rather than in application components.
+Plugins can declare remark/rehype plugins directly:
+
+``` ts
+definePlugin({
+  name: "example",
+  remarkPlugins: [remarkExample],
+  rehypePlugins: [rehypeExample],
+});
+```
+
+Or compose the framework pipelines themselves:
+
+``` ts
+definePlugin({
+  name: "example",
+  extendMarkdownPipeline(pipeline, context) {
+    pipeline.use(remarkExample);
+  },
+  extendHtmlPipeline(pipeline) {
+    pipeline.use(rehypeExample);
+  },
+});
+```
+
+Semantic Markdown/HTML transformation belongs here, not in application
+components.
+
+## Content Hooks
+
+Content hooks join named phases of content processing:
+
+``` text
+config resolved
+-> content loaded
+-> public location resolved
+-> post parsed
+-> post processed
+-> content graph
+-> manifest created
+```
+
+Use only the hooks a phase genuinely requires, and do not rebuild later-phase
+information in an earlier hook.
 
 ## Content Graph
 
@@ -210,15 +285,28 @@ Use the injected Logger for operational logging.
 ## Plugin Cache
 
 `context.cache` is a plugin-scoped, regenerable **build-time** cache.
-Store only JSON-serializable values, respect plugin namespaces, and use
-`cacheVersion` when compatibility changes. It is not a database or
-Cloudflare Workers runtime storage.
 
-## Observability
+- Store only regenerable, JSON-serializable values.
+- Reference only your own plugin namespace.
+- Use `cacheVersion` when compatibility changes.
+- Treat a corrupt cache as a safe miss.
+- Writes are atomic.
 
-Use `context.logger` and `context.tracer`. The Profiler consumes
-structured tracing, so plugins do not need their own timing/reporting
-system.
+It is not a database or Cloudflare Workers runtime storage.
+
+## Observability (Logger / Tracer)
+
+Use `context.logger` and `context.tracer`:
+
+``` ts
+context.logger.info("...");
+await context.tracer.span("plugin.example.work", { plugin: "example" }, async () => {
+  // work
+});
+```
+
+The Profiler consumes structured tracing, so plugins do not need their own
+timing/reporting system.
 
 ## Suggested package layout
 
@@ -279,11 +367,29 @@ published packages.
 
 ## Responsibility boundary
 
-Use a Plugin for reusable content/browser extensions. Put framework-wide
-contracts in Core, HonoX/Vite connections in Integration,
-application-specific routes/layouts in App, and appearance-only changes
-in Themes.
+Put in a plugin:
+
+- Markdown/HTML interpretation and reusable content transformation.
+- Plugin-specific renderers, reusable browser behavior, and diagnostics.
+- Plugin-specific endpoint/SEO extensions.
+
+Do not put in a plugin:
+
+- Framework-wide content model — belongs in Core.
+- HonoX/Vite connections — belong in the Integration.
+- Application-specific routes/layouts — belong in the App.
+- Appearance-only changes — belong in Themes.
+
+## ESM
 
 For NodeNext/ESM packages, ensure built JavaScript uses import paths
 Node can actually resolve; do not depend on a TypeScript loader
 repairing runtime resolution.
+
+## Related
+
+- [Architecture](./architecture.md)
+- [Content System](./content-system.md)
+- [Observability](./observability.md)
+- [Theme System](./theme-system.md)
+- [Framework Reference](./framework-reference.md)

@@ -403,10 +403,10 @@ function readmeEn(
   lines.push(`## ${words.commands}`, "");
   lines.push(
     "```sh",
-    "pnpm install",
-    "pnpm exec riebeckite check",
-    "pnpm exec riebeckite dev",
-    "pnpm exec riebeckite build",
+    "npm install",
+    "npx riebeckite check",
+    "npx riebeckite dev",
+    "npx riebeckite build",
     "```",
     "",
   );
@@ -454,10 +454,10 @@ function readmeJa(
   lines.push(`## ${words.commands}`, "");
   lines.push(
     "```sh",
-    "pnpm install",
-    "pnpm exec riebeckite check",
-    "pnpm exec riebeckite dev",
-    "pnpm exec riebeckite build",
+    "npm install",
+    "npx riebeckite check",
+    "npx riebeckite dev",
+    "npx riebeckite build",
     "```",
     "",
   );

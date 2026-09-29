@@ -69,4 +69,4 @@ the app calls on page initialization.
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)

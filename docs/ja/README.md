@@ -136,4 +136,4 @@ pnpm exec riebeckite profile  # trace ベースの性能レポート
 
 初めて利用する場合は、[Getting Started](./getting-started.md) → [Configuration](./configuration.md) → [Content System](./content-system.md) の順が基本です。Plugin を追加する前に [Plugin System](./plugin-system.md)、見た目を変更する前に [Theme System](./theme-system.md) を読んでください。問題の切り分けには `check`、`doctor`、`inspect` を順に使います。
 
-自動化ツールやコーディングエージェント向けには、短く規則中心の [Agent documentation](../agents/README.md) を用意しています。
+自動化ツールやコーディングエージェント向けには、短く規則中心の [Agent documentation](../agents/README.md) を用意しています（英語のみの提供です）。

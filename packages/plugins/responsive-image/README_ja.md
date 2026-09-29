@@ -67,3 +67,7 @@ export default defineConfig({
 - `applyResponsiveImages(html, existingPaths, options?)` — HTML 変換
 - `collectKnownAssetPaths(manifest)` — マニフェストのアセット集合を取得
 - 型: `ResponsiveImageOptions`、`ResolvedResponsiveImageOptions`、`ResponsiveImagePlan`、`ResponsiveImageSource`、`ResponsiveImageVariant`
+
+## ????
+
+- [?????????](../../../docs/ja/plugin-system.md)

@@ -17,7 +17,7 @@ imports the public UI primitives from `@riebeckite/honox/ui`.
 ## Installation
 
 ```sh
-npm install @riebeckite/core @riebeckite/honox honox hono vite
+pnpm add @riebeckite/core @riebeckite/honox honox hono vite
 ```
 
 `@riebeckite/honox` declares Core, HonoX, and Vite as dependencies, but a site

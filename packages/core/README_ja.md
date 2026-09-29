@@ -13,7 +13,7 @@ Riebeckite の移植可能なフレームワーク契約です。設定、コン
 ## インストール
 
 ```sh
-npm install @riebeckite/core
+pnpm add @riebeckite/core
 ```
 
 `@riebeckite/honox`、`@riebeckite/plugin-*`、`@riebeckite/theme-*` をインストールすると、依存として一緒に入ります。

@@ -11,7 +11,7 @@ Riebeckite のコマンドラインインターフェースです。プロジェ
 ## インストール
 
 ```sh
-npm install --save-dev @riebeckite/cli
+pnpm add -D @riebeckite/cli
 ```
 
 このパッケージはバイナリ（`bin/riebeckite.mjs`）のみを公開し、ライブラリのエントリポイントは持ちません。

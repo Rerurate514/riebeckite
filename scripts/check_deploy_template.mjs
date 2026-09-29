@@ -201,8 +201,8 @@ if (errors.length === 0) {
     "cloudflare/wrangler-action@",
     "secrets.CLOUDFLARE_API_TOKEN",
     "secrets.CLOUDFLARE_ACCOUNT_ID",
-    "pnpm install",
-    "pnpm run build",
+    "npm ci",
+    "npm run build",
     "workflow_dispatch",
   ]) {
     expect(workflow.includes(needle), `deploy.yml must reference ${needle}`);

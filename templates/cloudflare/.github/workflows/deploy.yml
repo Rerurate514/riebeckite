@@ -18,23 +18,20 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Enable Corepack (uses the project's packageManager)
-        run: corepack enable
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Validate configuration and plugins
-        run: pnpm run check
+        run: npm run check
 
       - name: Build the site
-        run: pnpm run build
+        run: npm run build
 
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@v3

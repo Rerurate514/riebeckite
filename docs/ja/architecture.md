@@ -37,4 +37,12 @@ Plugin は公開された contract から処理を拡張します。Theme は st
 
 `.riebeckite/build/content-state.json`、plugin cache、CLI、Doctor、Inspector、profile trace は Node/build-time の state です。Cloudflare Workers request runtime はこれらを読み書きせず、生成済み application と安定した content data のみを使います。失敗した build は以前の有効な state を置き換えません。
 
-関連: [Content system](content-system.md)、[Plugin system](plugin-system.md)、[Theme system](theme-system.md)。
+## 配置場所の判断
+
+- 持ち運べる型やライフサイクル contract を追加するなら **Core**。
+- 再利用可能な content の振る舞いを追加するなら **plugin**。
+- Vite・HonoX・platform のつなぎ込みを追加するなら **integration**。
+- route・page composition・island を追加するなら **`apps/web`**。
+- 見た目の token と CSS だけを追加するなら **theme**。
+
+境界を変更する前に、[Content system](content-system.md)、[Plugin system](plugin-system.md)、[Theme system](theme-system.md)、[HonoX integration](honox-integration.md) を読んでください。

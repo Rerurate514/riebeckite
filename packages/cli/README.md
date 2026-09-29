@@ -16,7 +16,7 @@ only `build` and `dev` mutate output or start a server.
 ## Installation
 
 ```sh
-npm install --save-dev @riebeckite/cli
+pnpm add -D @riebeckite/cli
 ```
 
 The package exposes only the binary (`bin/riebeckite.mjs`); it has no library

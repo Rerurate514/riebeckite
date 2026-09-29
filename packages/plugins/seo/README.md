@@ -107,4 +107,4 @@ they are never rebuilt from slugs.
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)

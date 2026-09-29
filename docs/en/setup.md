@@ -9,7 +9,7 @@ It covers three things.
 3. Publish it to Cloudflare Workers
 
 > **Publication status**
-> The core Riebeckite packages (`@riebeckite/*`) are not published to npm yet. Until they are, cloning this repository and using it locally is the practical path. Once the packages are on npm, a single `npm create riebeckite` will be enough. This guide marks the steps that change after publication so the same page keeps working then.
+> The core Riebeckite packages (`@riebeckite/*`) are not published to npm yet. Until they are, cloning this repository and using it locally is the practical path. Once the packages are on npm, a single `npx create-riebeckite` will be enough. This guide marks the steps that change after publication so the same page keeps working then.
 
 ## How to use this guide
 
@@ -180,9 +180,9 @@ The file name becomes part of the URL. `content/first-post.md` is served at `/fi
 
 ### 2-5. Install the packages (mind the publication status)
 
-The generated `package.json` refers to packages such as `@riebeckite/core@^0.0.1`, but these are not on npm yet. Running `pnpm install` right now therefore fails with a not-found error.
+The generated `package.json` refers to packages such as `@riebeckite/core@^0.0.3`, but these are not on npm yet. Running `npm install` right now therefore fails with a not-found error.
 
-- **After publication**: run `pnpm install` inside the site folder and you are done.
+- **After publication**: run `npm install` inside the site folder and you are done.
 - **To try it today**: you have to pack the packages into tarballs and point the site at them, exactly as the [external-site fixture](../../tests/external-site/README.md) does. The steps are in that README and are somewhat advanced.
 
 If all you want is one working blog now, skip the new site and use the reference site from section 1 as-is; section 3 shows how to publish it.
@@ -192,10 +192,10 @@ If all you want is one working blog now, skip the new site and use the reference
 Once the install succeeds, use these from inside the site folder.
 
 ```sh
-pnpm dev                     # start the development server
-pnpm exec riebeckite check   # validate the configuration
-pnpm exec riebeckite doctor  # fuller health check
-pnpm run build               # write the publishable files to dist/
+npx riebeckite dev           # start the development server
+npx riebeckite check         # validate the configuration
+npx riebeckite doctor        # fuller health check
+npx riebeckite build         # write the publishable files to dist/
 ```
 
 ## 3. Publish to Cloudflare Workers
@@ -212,31 +212,25 @@ This avoids fiddling with Cloudflare's dashboard and is the easiest route.
 2. In the site folder, install wrangler (Cloudflare's publishing command).
 
    ```sh
-   pnpm add -D wrangler
+   npm install -D wrangler
    ```
 
 3. Copy `templates/cloudflare/wrangler.jsonc` into the site root and change `name` to a Worker name unique to you. Confirm that `assets.directory` is `./dist`.
-4. Add one line to `package.json` (match the version to your installed `pnpm -v`).
-
-   ```json
-   "packageManager": "pnpm@11.5.3"
-   ```
-
-5. Build, log in to Cloudflare, and publish.
+4. Build, log in to Cloudflare, and publish.
 
    ```sh
-   pnpm run build
-   pnpm exec wrangler login
-   pnpm exec wrangler deploy
+   npx riebeckite build
+   npx wrangler login
+   npx wrangler deploy
    ```
 
-6. Open the URL printed at the end (`https://<name>.<account>.workers.dev`). If the site appears, you are done. Put that URL into `baseUrl` in `riebeckite.config.ts`, then rebuild and redeploy so the sitemap and feeds use the correct address.
+5. Open the URL printed at the end (`https://<name>.<account>.workers.dev`). If the site appears, you are done. Put that URL into `baseUrl` in `riebeckite.config.ts`, then rebuild and redeploy so the sitemap and feeds use the correct address.
 
 You can verify everything without uploading:
 
 ```sh
-pnpm exec wrangler deploy --dry-run   # validate the config and files only
-pnpm exec wrangler dev                # serve the same output locally
+npx wrangler deploy --dry-run   # validate the config and files only
+npx wrangler dev                # serve the same output locally
 ```
 
 **To publish the reference site in this repository**, wrangler and `wrangler.jsonc` are already in place. Run this from the repository root. You can change the Worker name via `name` in `apps/web/wrangler.jsonc`.
@@ -258,7 +252,7 @@ If running the publish command by hand gets tedious, automate it with GitHub Act
    - `CLOUDFLARE_ACCOUNT_ID`
 4. Push to `main`, or run the workflow manually from the Actions tab.
 
-This method requires `packageManager` (for example `"pnpm@11.5.3"`) in the site's `package.json` so GitHub can provision pnpm. The template README lists the full prerequisites and flow.
+This method uses `npm ci` for installation, so commit the `package-lock.json` that your first `npm install` creates. The template README lists the full prerequisites and flow.
 
 ## When something goes wrong
 
@@ -267,23 +261,23 @@ This method requires `packageManager` (for example `"pnpm@11.5.3"`) in the site'
 |`Cannot find module ... cli.js`|The CLI is not built yet|Run `pnpm build`|
 |The `riebeckite` command is not found|Same as above, or you are in the wrong folder|Run `pnpm build`, then confirm you are at the repository root|
 |A page does not appear|`content/` is empty, or `publish: true` / `title` is missing|Check the two frontmatter lines|
-|`pnpm install` returns 404 for `@riebeckite/*`|The packages are not on npm yet|Use the reference site from section 1, or wait for publication|
+|`npm install` returns 404 for `@riebeckite/*`|The packages are not on npm yet|Use the reference site from section 1, or wait for publication|
 |A page returns 404|The file name and URL do not match|Check the file name and its location under `content/`|
-|The published site returns 404|The build output is not in `dist/`|Run `pnpm run build` and check `directory` in `wrangler.jsonc`|
+|The published site returns 404|The build output is not in `dist/`|Run `npx riebeckite build` and check `directory` in `wrangler.jsonc`|
 |`doctor` marks Content with `✗`|A page has a problem|Fix it as the printed message describes|
-|Old content keeps appearing|The incremental build holds stale state|Rebuild with `pnpm exec riebeckite build --full`|
+|Old content keeps appearing|The incremental build holds stale state|Rebuild with `npx riebeckite build --full`|
 
 ## A plain-language glossary
 
 - **Repository**: a single home for a program and its files. Here it means Riebeckite itself.
-- **Dependency**: a package a program needs in order to run. `pnpm install` fetches them all.
+- **Dependency**: a package a program needs in order to run. `npm install` fetches them all.
 - **Build**: converting source files into a form that can actually run.
-- **Dev server**: a way to show the site on your own machine only. Start it with `pnpm dev`.
+- **Dev server**: a way to show the site on your own machine only. Start it with `npx riebeckite dev`.
 - **SSG / static assets**: rendering every page to a file ahead of time and serving those files directly.
 - **Cloudflare Workers**: where the site is published. Here it only stores static files.
 - **wrangler**: the command that publishes to Cloudflare.
 - **frontmatter**: the settings between `---` markers at the top of a Markdown file (`title`, `publish`, and so on).
-- **pnpm**: the tool that installs packages and runs commands.
+- **npm / npx**: the tools that install packages and run commands.
 
 ## See also
 

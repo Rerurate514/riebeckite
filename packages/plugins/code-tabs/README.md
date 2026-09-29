@@ -95,3 +95,7 @@ all panels remain visible so every code block can still be read.
 - `rehypeCodeTabs(options?)` — rehype transform
 - `initCodeTabs(options?)` — client initializer
 - Types: `CodeTabsOptions`, `CodeTabsClientOptions`
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

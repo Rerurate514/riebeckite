@@ -19,7 +19,7 @@ Plugins and themes are plain objects created by `definePlugin` and `defineTheme`
 ## Installation
 
 ```sh
-npm install @riebeckite/core
+pnpm add @riebeckite/core
 ```
 
 Core is also installed transitively by `@riebeckite/honox` and by the

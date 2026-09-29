@@ -18,7 +18,7 @@
 
 - Node.js（LTS）と pnpm が必要です。
 - コマンドはリポジトリのルートで実行します。コンテンツとアプリケーションは分かれています。Markdown は `content/`、HonoX アプリケーションは `apps/web` にあります。
-- Riebeckite には `init` コマンドがあります。`pnpm exec riebeckite init my-site`（または `npm create riebeckite my-site`）で、そのまま install・build できる単体サイトを生成できます。参照用アプリケーションと E2E フィクスチャは、さらに作り込んだサイトの例として引き続き有用です。
+- Riebeckite には scaffold コマンドがあります。`npx create-riebeckite my-site` で、そのまま install・build できる単体サイトを生成できます（パッケージ未公開の間は、リポジトリ内で `pnpm exec riebeckite init my-site` という同じ generator を実行できます）。参照用アプリケーションと E2E フィクスチャは、さらに作り込んだサイトの例として引き続き有用です。
 
 ## 1. 依存関係をインストールする
 
@@ -138,7 +138,7 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 
 デプロイ設定は `apps/web/wrangler.jsonc` にあり、`assets.directory` が `./dist` を指します。最初のデプロイの前に、worker 名、compatibility flags、バインディングを確認してください。
 
-リポジトリの外のサイトでは、[Cloudflare デプロイテンプレート](../../templates/cloudflare/README_ja.md) を出発点にします。汎用の `wrangler.jsonc` と、check・build を行い生成された `dist/` を Workers Static Assets としてデプロイする GitHub Actions ワークフローを提供します。Riebeckite はコンテンツのルートと Plugin のエンドポイントを事前生成するため、runtime の `main` を持たない静的アセットのみの構成が参照用アプリケーションと同じ形になります。`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリのシークレットに設定し、テンプレートの Worker 名を変更してください。最初のデプロイの前に `pnpm exec wrangler deploy --dry-run` でローカル検証できます。
+リポジトリの外のサイトでは、[Cloudflare デプロイテンプレート](../../templates/cloudflare/README_ja.md) を出発点にします。汎用の `wrangler.jsonc` と、check・build を行い生成された `dist/` を Workers Static Assets としてデプロイする GitHub Actions ワークフローを提供します。Riebeckite はコンテンツのルートと Plugin のエンドポイントを事前生成するため、runtime の `main` を持たない静的アセットのみの構成が参照用アプリケーションと同じ形になります。`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリのシークレットに設定し、テンプレートの Worker 名を変更してください。最初のデプロイの前に `npx wrangler deploy --dry-run` でローカル検証できます。
 
 ページビュー計測は任意の独立した Worker です。サイトに `@riebeckite/plugin-analytics` を設定し、`templates/analytics-cloudflare`（D1 または KV）のコレクタを専用リポジトリとしてデプロイします。[Analytics](./analytics.md) を参照してください。
 
@@ -150,18 +150,17 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 
 ## 独自プロジェクトで使う
 
-CLI または scaffolder パッケージで単体サイトを生成し、install・build します。
+単体サイトを生成し、install・build します。
 
 ```bash
-pnpm exec riebeckite init my-site
-# または: npm create riebeckite my-site
+npx create-riebeckite my-site
 cd my-site
-pnpm install
-pnpm exec riebeckite check
-pnpm exec riebeckite build
+npm install
+npx riebeckite check
+npx riebeckite build
 ```
 
-`init` は生成直後の状態で `check` と `build` を通る自己完結のサイトを書き出します。生成対象のファイルが既にあるディレクトリには `--force` なしでは上書きしません。
+scaffolder は生成直後の状態で `check` と `build` を通る自己完結のサイトを書き出します。生成対象のファイルが既にあるディレクトリには `--force` なしでは上書きしません。
 
 生成されるサイトは、E2E フィクスチャ [`tests/external-site/fixture/site`](../../tests/external-site/fixture/site) と同じ site application contract に従います。フィクスチャはサイト内 extension と外部 Vault を追加しているため、それらが必要な場合の参照実装になります。主要なファイルは次のとおりです。
 

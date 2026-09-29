@@ -14,7 +14,7 @@ Riebeckite サイト向けの、[GitHub Actions](https://docs.github.com/actions
 ## 前提
 
 - `build` スクリプトを持つ動作中の Riebeckite サイト。参照用アプリケーションと [external-site フィクスチャ](../../tests/external-site/README.md) はどちらも `riebeckite build` を使い、Vite の出力を `dist/` へ書き出します。
-- サイトの `package.json` の `packageManager` で `pnpm` を宣言していること。CI で Corepack が pnpm を用意します。
+- 最初の `npm install` で作られた `package-lock.json` をコミットしていること。CI で `npm ci` を再現性よく実行するために使います。
 - Workers を有効にした Cloudflare アカウント。
 
 ## テンプレートの適用
@@ -31,19 +31,19 @@ Riebeckite サイト向けの、[GitHub Actions](https://docs.github.com/actions
 デプロイせずにビルドと設定を確認できます。
 
 ```sh
-pnpm install
-pnpm run build
-pnpm exec wrangler deploy --dry-run
+npm install
+npm run build
+npx wrangler deploy --dry-run
 ```
 
-`wrangler deploy --dry-run` は Cloudflare に接続せず、`wrangler.jsonc` とアセットディレクトリを検証します。`pnpm exec wrangler dev` を使うと同じ出力をローカルで配信できます。
+`wrangler deploy --dry-run` は Cloudflare に接続せず、`wrangler.jsonc` とアセットディレクトリを検証します。`npx wrangler dev` を使うと同じ出力をローカルで配信できます。
 
 ## ワークフローの流れ
 
-1. リポジトリをチェックアウトし、Corepack を有効化する。
-2. `pnpm install --frozen-lockfile` で依存をインストールする。
-3. `pnpm run check` で設定と Plugin を読み取り専用で検証する。
-4. `pnpm run build` で `dist/` を生成する。
+1. リポジトリをチェックアウトする。
+2. `npm ci` で依存をインストールする。
+3. `npm run check` で設定と Plugin を読み取り専用で検証する。
+4. `npm run build` で `dist/` を生成する。
 5. リポジトリのシークレットを使って `cloudflare/wrangler-action` でデプロイする。
 
 ## 補足

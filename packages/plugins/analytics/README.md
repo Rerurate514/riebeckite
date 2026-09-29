@@ -63,7 +63,7 @@ no SPA route hooks; SPA navigation is not tracked automatically.
 
 Content IDs are an authoring responsibility. Duplicate or conflicting `id`/`uid`
 declarations across published notes are reported by
-[`@riebeckite/plugin-diagnostics`](../plugins/diagnostics/README.md)
+[`@riebeckite/plugin-diagnostics`](../diagnostics/README.md)
 (`duplicate-content-id` / `invalid-content-id`) and validated by the plugin's own
 `validateAnalyticsOptions` at `check` time.
 
@@ -95,3 +95,7 @@ diagnostics.
 - `MemoryAnalyticsProvider`
 - Event, query/result, provider/capability, and public-config types
 - `UnsupportedAnalyticsQueryError` and capability helpers
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

@@ -62,3 +62,7 @@ skipped because the root cannot be stubbed.
 - Redirect `from` values are resolved (`.` and `..` segments) before they become
   output paths, and every planned path passes `normalizeGeneratedOutputPath`.
 - Uploading, cache invalidation, and provider authentication are out of scope.
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

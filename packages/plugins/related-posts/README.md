@@ -91,3 +91,7 @@ import "@riebeckite/plugin-related-posts/style.css";
 - Ranking is fixed at build time. A full rebuild always recomputes correctly.
 - Only tags, direct links, and co-citations are considered. Reading time,
   recency, and folders are intentionally ignored to keep ranking deterministic.
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

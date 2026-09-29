@@ -47,3 +47,7 @@ export default defineConfig({
 
 - `media(options?)` / `mediaPlugin` — プラグインファクトリ
 - `MediaOptions`、`MediaPreload` — 型
+
+## ????
+
+- [?????????](../../../docs/ja/plugin-system.md)

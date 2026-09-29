@@ -9,7 +9,7 @@ authoring rule, or as a blank canvas for your own theme.
 ## Overview
 
 `minimalTheme()` creates a theme named `minimal`. It is the smallest valid
-Theme that still follows the [theme authoring contract](../../../docs/theme_authoring_en.md):
+Theme that still follows the [theme authoring contract](../../../docs/en/theme-system.md):
 it exposes the full set of `--rb-*` semantic tokens, maps them into an
 `@theme` block, and only touches token values — no `data-*` attributes, no
 custom base rules beyond `html`/`body`/`::selection`/`:focus-visible`.
@@ -58,7 +58,7 @@ full token list — the token contract is identical.
 
 ## See also
 
-- [Theme authoring contract](../../../docs/theme_authoring_en.md)
+- [Theme authoring contract](../../../docs/en/theme-system.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)

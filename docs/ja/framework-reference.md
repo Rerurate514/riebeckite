@@ -78,9 +78,8 @@ declaration）を workspace の依存順に build します。各 package は `b
 
 ### version 管理と npm publish に向けた状態
 
-最初の public release では、すべての public package が version `0.0.1` です。次の
-release を準備するときは、repository root で全 public package の version をまとめて
-更新します。
+すべての public package は同じ version を共有します。release を準備するときは、
+repository root で全 public package の version をまとめて更新します。
 
 ```bash
 pnpm bump:version 0.0.2
@@ -104,7 +103,7 @@ publish 前には manifest の diff を確認し、必要な package check と b
 -   repository root に canonical な Apache-2.0 `LICENSE` があります。build は
     tarball 生成前に各 package へそれをコピーし（`scripts/copy_license.mjs`）、
     公開 package は `"license": "Apache-2.0"` を宣言します。
--   例の `^1.0.0` は説明用です。最初の public release の version は `0.0.1` です。
+-   例の `^1.0.0` は説明用です。実際の version は `bump:version` で release 時に決めます。
 
 ## 拡張点
 
@@ -116,6 +115,8 @@ publish 前には manifest の diff を確認し、必要な package check と b
 | Integration | Core と framework/bundler の接続。現在は HonoX/Vite |
 
 Renderer は扱わない input に `null` を返します。Endpoint は reusable HTTP behavior を公開できますが、Core を HonoX router にするものではありません。
+
+## Contract discipline
 
 build/runtime boundary を越える public data は serializable に保ちます。既存 abstraction を迂回する export を増やす前に ownership を決めてください。config validation や plugin dependency failure は明示的な error として扱い、null protocol を新設しません。
 

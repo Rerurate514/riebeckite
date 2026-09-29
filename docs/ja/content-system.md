@@ -6,6 +6,8 @@
 
 `ContentManager` は data の意味を扱います。parse、Markdown/HTML pipeline、post processing、plugin orchestration、manifest 作成、content graph 構築を担当します。filesystem を直接扱う機能をここへ足して ContentSource を迂回しないでください。
 
+## Processing model
+
 ```text
 scan/read
   -> public location を解決        (default resolver + plugin hooks)
@@ -45,6 +47,8 @@ id: note-7f4e9b
 
 既存の `uid` は互換 fallback としてのみ受け付けます。両方を指定した場合は同じ値でなければなりません。値は前後に空白のない non-empty string とし、manifest 内で一意でなければなりません。不正または重複した ID は曖昧な identity を黙って選ばず、manifest build を失敗させます。
 
+## Manifest, graph, and runtime
+
 Manifest は application が使う生成済み content 表現、content graph は関係表現です。runtime manifest の参照は明示的 build ではありません。incremental state は explicit build 専用で、Worker runtime の可変依存にはできません。
 
 ## Content query
@@ -65,4 +69,13 @@ Core は解決済み manifest entry に対する portable な query 層を公開
 
 definition に `pageSize` を指定すると collection を複数 page に分割できます。各 page は独立した `ContentCollection` として生成され、`path` は 2 page 目以降 `collection path + /page/<n>` になります。`page` metadata は `current`、`count`、`size`、`total`、`previousPath`、`nextPath` を持ち、navigation の構築に使えます。
 
-canonical content identity を source/manifest/graph で保ち、slug と permalink を別概念として public URL は解決済み `ContentPublicLocation` からのみ取得し、metadata を過信せず、publication/exclusion policy を config に表し、recoverable error を黙って content から落とさず diagnostics にします。
+## Correctness rules
+
+- canonical content identity を source/manifest/graph で保ちます。
+- slug と permalink を別概念として扱い、public URL は解決済み `ContentPublicLocation` からのみ取得します。
+- source metadata は変更の証拠であり、常に正しいとは限りません。
+- publication/exclusion policy を config に可視化します。
+- recoverable な user-facing 問題は diagnostics として返し、content を黙って省略しません。
+- 同じ入力に対して content graph の拡張が決定的になるよう保ちます。
+
+関連: [Configuration](configuration.md)、[Build system](build-system.md)、[Plugin system](plugin-system.md)。

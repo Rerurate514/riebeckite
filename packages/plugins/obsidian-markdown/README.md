@@ -86,5 +86,5 @@ built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
-- [`@riebeckite/plugin-attachment`](../plugin-attachment/README.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)
+- [`@riebeckite/plugin-attachment`](../attachment/README.md)

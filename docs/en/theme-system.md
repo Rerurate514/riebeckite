@@ -15,14 +15,20 @@ routes, manifest, graph, or client behavior.
 ## Minimal theme
 
 ``` ts
-import { defineTheme } from "@riebeckite/core";
-
-export function minimalTheme() {
+function minimalTheme() {
   return defineTheme({
     name: "minimal",
     styles: [{ moduleSpecifier: "@riebeckite/theme-minimal/style.css" }],
   });
 }
+```
+
+On the consuming side, hand it to the config:
+
+``` ts
+export default defineConfig({
+  theme: minimalTheme(),
+});
 ```
 
 ## Contract
@@ -39,11 +45,42 @@ type ThemeTypographyPreset = "system" | "serif" | "sans";
 type ThemeArticleLayoutPreset = "article" | "sidebar" | "full-width";
 ```
 
+## Typography
+
+A typography preset is reflected in the semantic font tokens for body
+and heading text:
+
+``` ts
+type ThemeTypographyPreset = "system" | "serif" | "sans";
+```
+
+## Article Layout
+
+A theme defines the presentation of each layout preset; it never replaces
+routes or the component tree:
+
+``` ts
+type ThemeArticleLayoutPreset = "article" | "sidebar" | "full-width";
+```
+
 ## Design tokens
 
 `ThemeDesignTokens` groups semantic values for colors, typography, and
 layout. Themes expose these through shared `--rb-*` CSS custom
 properties.
+
+### Color
+
+`paper`, `ink`, `muted`, `accent`, `border`, `borderStrong`, `surface`,
+`surfaceHover`, `overlay`, `danger`, `success`, and `codeBackground`.
+
+### Typography
+
+`bodyFont`, `headingFont`, and `monoFont`.
+
+### Layout
+
+`pageMaxWidth`, `articleMaxWidth`, `sidebarWidth`, and `contentGap`.
 
 ``` css
 :root {
@@ -56,15 +93,78 @@ properties.
 ```
 
 Components and plugins should consume semantic tokens instead of
-hard-coding a specific theme palette. Plugin-specific semantics remain
-owned by the plugin and may fall back to `--rb-*` tokens.
+hard-coding a specific theme palette:
 
-## Styles and attributes
+``` css
+/* good */
+.rr-example {
+  color: var(--rb-color-ink);
+  background: var(--rb-color-surface);
+}
 
-Theme styles are bundler-resolved module specifiers. Theme-specific
-options can be exposed to CSS through namespaced `data-*` attributes.
-Theme-specific concepts should remain inside the theme package rather
-than expanding Core `ThemeConfig`.
+/* avoid */
+.rr-example {
+  color: #171717;
+  background: #f6efe2;
+}
+```
+
+Plugin-specific semantics remain owned by the plugin and may fall back to
+`--rb-*` tokens.
+
+## Styles
+
+Theme styles are bundler-resolved module specifiers; this is not a
+contract for copying filesystem paths into the application:
+
+``` ts
+styles: [
+  { moduleSpecifier: "@riebeckite/theme-example/style.css" },
+]
+```
+
+## Attributes
+
+Theme-specific options can reach CSS through safe `data-*` attributes:
+
+``` ts
+return defineTheme({
+  name: "newspaper",
+  attributes: {
+    "data-newspaper-density": "compact",
+  },
+});
+```
+
+Do not turn `class`, `style`, `id`, or `lang` into settable theme
+attributes, and keep the framework-owned attribute namespace separate
+from theme-specific ones.
+
+## Theme factory options
+
+Resolve theme-specific options inside the theme package:
+
+``` ts
+type NewspaperOptions = {
+  density?: "compact" | "comfortable";
+};
+
+export function newspaperTheme(options: NewspaperOptions = {}) {
+  return defineTheme({
+    name: "newspaper",
+    options,
+    attributes: {
+      "data-newspaper-density": options.density ?? "comfortable",
+    },
+    styles: [
+      { moduleSpecifier: "@riebeckite/theme-newspaper/style.css" },
+    ],
+  });
+}
+```
+
+Keep theme-specific concepts inside the theme package rather than
+expanding Core `ThemeConfig`.
 
 ## Color mode at runtime
 
@@ -132,7 +232,8 @@ The order is stable, not incidental. `@riebeckite/honox` generates
 stylesheet before the theme stylesheet, so the theme CSS always wins the
 plugin/theme cascade while preserving `userCss` as the final user override.
 Do not reorder those imports, and do not edit the generated files by hand;
-each carries a header comment stating its position in the cascade.
+each carries a header comment stating its position in the cascade. The
+cascade normally does not rely on `!important`.
 
 ## Theme vs Plugin
 
@@ -143,6 +244,9 @@ behavior, endpoints, diagnostics, and SEO extensions.
 Themes must not replace components, inject JSX, add routes, add/remove
 plugins, execute client scripts, transform the DOM, register islands,
 access the filesystem, or use ContentManager.
+
+Do not create a plugin merely to change appearance, and do not extend a
+theme to add functionality.
 
 ## Suggested package layout
 
@@ -193,3 +297,14 @@ export function localTheme() {
 A site-local theme is resolved, sanitized, and applied through the same
 `resolveThemeConfig` path as a packaged theme, including its own stylesheet and
 `data-*` attributes.
+
+Following the shared contract keeps themes replaceable without changing
+application logic. A theme-specific option is meaningful only for that
+theme and never leaks into Core or another theme.
+
+## Related
+
+- [Architecture](./architecture.md)
+- [Plugin System](./plugin-system.md)
+- [Configuration](./configuration.md)
+- [Framework Reference](./framework-reference.md)

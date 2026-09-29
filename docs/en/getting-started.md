@@ -5,15 +5,14 @@
 For a new site, generate one first, then install and validate:
 
 ```sh
-pnpm exec riebeckite init my-site
-# or, using the scaffolder package: npm create riebeckite my-site
+npx create-riebeckite my-site
 cd my-site
-pnpm install
-pnpm exec riebeckite check
-pnpm exec riebeckite doctor
+npm install
+npx riebeckite check
+npx riebeckite doctor
 ```
 
-`init` writes a self-contained site (configuration, HonoX application shell, routes, stylesheet, and starter content) and refuses a non-empty target unless `--force` is passed. Choose the starter composition with `--preset <name>`; the default is `starter`, which observes and highlights seven languages. Run `pnpm exec riebeckite init --list-presets` to see every preset from `empty` and `minimal` up to `full`, `max`, and `ultra`.
+`create-riebeckite` writes a self-contained site (configuration, HonoX application shell, routes, stylesheet, and starter content) and refuses a non-empty target unless `--force` is passed. Choose the starter composition with `--preset <name>`; the default is `starter`, which observes and highlights seven languages. Run `npx create-riebeckite --list-presets` to see every preset from `empty` and `minimal` up to `full`, `max`, and `ultra`.
 
 Run these from the application directory when using the CLI. `check` confirms configuration and plugin capability validity; `doctor` reports broader health. Neither generates a deployment build.
 
@@ -26,9 +25,9 @@ Create the application's Riebeckite config with a required `site` object, then c
 Place content in the configured source, then inspect resolved results:
 
 ```sh
-pnpm exec riebeckite inspect config
-pnpm exec riebeckite inspect content --list
-pnpm exec riebeckite inspect graph
+npx riebeckite inspect config
+npx riebeckite inspect content --list
+npx riebeckite inspect graph
 ```
 
 Inspect is read-only. If configuration or content is invalid, correct it instead of expecting inspection to generate missing state.
@@ -36,8 +35,8 @@ Inspect is read-only. If configuration or content is invalid, correct it instead
 ## 4. Develop and build
 
 ```sh
-pnpm exec riebeckite dev
-pnpm exec riebeckite build
+npx riebeckite dev
+npx riebeckite build
 ```
 
 Use `build --full` when deliberately bypassing incremental reuse. Add functionality as a plugin, presentation as a theme, and routes/islands in the application. Follow [Architecture](architecture.md) before choosing a package.

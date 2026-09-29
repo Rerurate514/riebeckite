@@ -87,3 +87,7 @@ commit them next to the original image. Sites copy referenced vault assets into
 - `collectKnownAssetPaths(manifest)` — manifest asset set helper
 - Types: `ResponsiveImageOptions`, `ResolvedResponsiveImageOptions`,
   `ResponsiveImagePlan`, `ResponsiveImageSource`, `ResponsiveImageVariant`
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

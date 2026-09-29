@@ -18,8 +18,7 @@ repository to build on every push and deploy the generated assets.
 - A working Riebeckite site with a `build` script. The reference application and
   the [external-site fixture](../../tests/external-site/README.md) both use
   `riebeckite build`, which writes the Vite output to `dist/`.
-- `pnpm` declared through `packageManager` in the site's `package.json`, so
-  Corepack can provision it in CI.
+- A committed `package-lock.json`, so CI can run `npm ci` reproducibly.
 - A Cloudflare account with Workers enabled.
 
 ## Apply the template
@@ -39,21 +38,21 @@ repository to build on every push and deploy the generated assets.
 The build and the configuration can be exercised without deploying:
 
 ```sh
-pnpm install
-pnpm run build
-pnpm exec wrangler deploy --dry-run
+npm install
+npm run build
+npx wrangler deploy --dry-run
 ```
 
 `wrangler deploy --dry-run` validates `wrangler.jsonc` and the asset directory
-without contacting Cloudflare. `pnpm exec wrangler dev` serves the same output
+without contacting Cloudflare. `npx wrangler dev` serves the same output
 locally.
 
 ## How the workflow works
 
-1. Checks out the repository and enables Corepack.
-2. Installs dependencies with `pnpm install --frozen-lockfile`.
-3. Runs `pnpm run check`, the read-only configuration and plugin validation.
-4. Runs `pnpm run build` to generate `dist/`.
+1. Checks out the repository.
+2. Installs dependencies with `npm ci`.
+3. Runs `npm run check`, the read-only configuration and plugin validation.
+4. Runs `npm run build` to generate `dist/`.
 5. Deploys with `cloudflare/wrangler-action`, using the repository secrets.
 
 ## Notes

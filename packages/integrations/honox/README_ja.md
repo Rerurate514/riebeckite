@@ -11,7 +11,7 @@ Riebeckite の HonoX / Vite 統合です。移植可能な Core の振る舞い�
 ## インストール
 
 ```sh
-npm install @riebeckite/core @riebeckite/honox honox hono vite
+pnpm add @riebeckite/core @riebeckite/honox honox hono vite
 ```
 
 `@riebeckite/honox` は Core、HonoX、Vite を依存に持ちますが、サイト自身のビルド設定のために `honox`、`hono`、`vite` も直接インストールします。

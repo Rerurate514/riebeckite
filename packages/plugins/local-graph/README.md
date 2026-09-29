@@ -81,6 +81,6 @@ internal selection key `/explore?note=<slug>`.
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
-- [`@riebeckite/plugin-backlinks`](../plugin-backlinks/README.md)
-- [`@riebeckite/plugin-garden-explorer`](../plugin-garden-explorer/README.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)
+- [`@riebeckite/plugin-backlinks`](../backlinks/README.md)
+- [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README.md)

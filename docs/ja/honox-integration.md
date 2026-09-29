@@ -128,6 +128,10 @@ island も通常の Site module です。`app/islands/` に HonoX island を置�
 
 external-site E2E fixture には、最小の Site shell、`@riebeckite/honox/ui` で組んだローカル article component、ローカル island、Site CSS を置いています。この fixture は npm tarball だけで build するため、これらの境界を copy・override する際のサポート対象の例です。
 
+## Boundary rules
+
 記事 routing は、manifest に既に解決済みの public location（`byPermalink`、次に `redirects`）に対して request を解決します。filesystem path、directory layout、slug から URL を逆算しません。slug は content の内部 lookup key であり、public URL は解決済みの `permalink` です。
 
 HonoX/Vite/Cloudflare/route API はこの integration か `apps/web` に閉じます。Plugin は asset、client entry、endpoint、renderer を公開できますが、Core は HonoX routing を所有しません。実際の route composition と island は application の責務です。
+
+state の扱いは [Build system](build-system.md)、package の所有は [Architecture](architecture.md) を参照してください。

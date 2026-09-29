@@ -17,7 +17,7 @@ export default defineConfig({
 
 ## Locale detection
 
-Use `README.en.md` as the recommended filename form. The plugin also accepts `README-en.md`, `README_en.md`, and configured BCP 47-style tags such as `README.en-US.md` and `README.zh-CN.md`.
+Use `README_ja.md`-style filenames with an underscore as the recommended form, matching this repository's convention. The plugin also accepts `README.en.md`, `README-en.md`, and configured BCP 47-style tags such as `README.en-US.md` and `README.zh-CN.md`.
 
 Directory detection is also supported:
 
@@ -89,3 +89,7 @@ l10n({
 Before the existing Content Graph is built, WikiLink graph targets are switched to the source note's language when that translation exists; otherwise their original target remains. No second graph is created. Normal Markdown links retain their authored destination.
 
 Each translated entry receives one `<link rel="alternate" hreflang="…">` per existing translation through Core's `headTags` extension point. The site shell remains responsible for rendering those tags and for selecting `<html lang>` for a request.
+
+## See also
+
+- [Plugin guide](../../../docs/en/plugin-system.md)

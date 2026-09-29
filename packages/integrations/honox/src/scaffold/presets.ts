@@ -139,6 +139,14 @@ const np = (
   options,
 });
 
+/**
+ * Option-bearing plugins carry their full option object so the generated
+ * `riebeckite.config.ts` doubles as a settings reference and every preset
+ * tier demonstrates the configuration surface step by step. Factories that
+ * take no options (or are left deliberately bare, like the color-mode
+ * toggle) stay as `factory()`.
+ */
+
 /** The foundation plugin, shared by every non-empty preset. */
 const obsidianMarkdown = np(
   "@riebeckite/plugin-obsidian-markdown",
@@ -150,84 +158,248 @@ const colorMode = np("@riebeckite/plugin-color-mode", "colorModePlugin");
 const l10n = np("@riebeckite/plugin-l10n", "l10n");
 
 /** Core publishing and reading experience. */
-const seo = np("@riebeckite/plugin-seo", "seo");
+const seo = np(
+  "@riebeckite/plugin-seo",
+  "seo",
+  `{ siteName: "Riebeckite", defaultImage: "/ogp.png", feed: { rss: true, atom: true, json: true }, sitemap: true, robots: true }`,
+);
 const toc = np("@riebeckite/plugin-toc", "tocPlugin");
-const properties = np("@riebeckite/plugin-properties", "properties");
-const alias = np("@riebeckite/plugin-alias", "aliasPlugin");
-const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance");
+const properties = np(
+  "@riebeckite/plugin-properties",
+  "properties",
+  `{ render: "slot", include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }`,
+);
+const alias = np("@riebeckite/plugin-alias", "aliasPlugin", `{ status: 308 }`);
+const codeEnhance = np(
+  "@riebeckite/plugin-code-enhance",
+  "codeEnhance",
+  `{ theme: { light: "github-light", dark: "github-dark" }, lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true, wrapToggle: true }`,
+);
 
 /** Discovery, media, and reading polish. */
 const search = np("@riebeckite/plugin-search", "searchPlugin");
 const backlinks = np("@riebeckite/plugin-backlinks", "backlinksPlugin");
-const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts");
+const relatedPosts = np(
+  "@riebeckite/plugin-related-posts",
+  "relatedPosts",
+  `{ limit: 5, minScore: 1, heading: true, headingText: "Related", className: "rb-related-posts", useTags: true, useBacklinks: true }`,
+);
 const recentPosts = np("@riebeckite/plugin-recent-posts", "recentPostsPlugin");
-const attachment = np("@riebeckite/plugin-attachment", "attachment");
-const media = np("@riebeckite/plugin-media", "media");
+const attachment = np(
+  "@riebeckite/plugin-attachment",
+  "attachment",
+  `{ showSize: true }`,
+);
+const media = np(
+  "@riebeckite/plugin-media",
+  "media",
+  `{ preload: "metadata", lazy: true, showCaption: true, showDownload: false, showOpenOriginal: true }`,
+);
 const responsiveImage = np(
   "@riebeckite/plugin-responsive-image",
   "responsiveImage",
+  `{ lazy: true, decoding: true, sizes: "100vw", widths: [640, 1280, 1920], formats: ["webp", "avif"] }`,
 );
-const lightbox = np("@riebeckite/plugin-lightbox", "lightboxPlugin");
-const highlight = np("@riebeckite/plugin-highlight", "highlight");
-const codeTabs = np("@riebeckite/plugin-code-tabs", "codeTabs");
+const lightbox = np(
+  "@riebeckite/plugin-lightbox",
+  "lightboxPlugin",
+  `{ selectorClass: "rr-lightbox-trigger" }`,
+);
+const highlight = np(
+  "@riebeckite/plugin-highlight",
+  "highlight",
+  `{ className: "rb-mark", tag: "mark" }`,
+);
+const codeTabs = np(
+  "@riebeckite/plugin-code-tabs",
+  "codeTabs",
+  `{ syncTabs: true }`,
+);
 const codeAnnotations = np(
   "@riebeckite/plugin-code-annotations",
   "codeAnnotations",
+  `{ className: "rb-code" }`,
 );
-const shortcodes = np("@riebeckite/plugin-shortcodes", "shortcodes");
-const series = np("@riebeckite/plugin-series", "series");
+const shortcodes = np(
+  "@riebeckite/plugin-shortcodes",
+  "shortcodes",
+  `{ builtins: true }`,
+);
+const series = np(
+  "@riebeckite/plugin-series",
+  "series",
+  `{ key: "series", orderKey: "series_order", titleKey: "series_title", heading: true, className: "rb-series", positionLabel: false }`,
+);
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
   "autoCardLinkPlugin",
+  `{ className: "rb-cardlink" }`,
 );
-const richEmbed = np("@riebeckite/plugin-rich-embed", "richEmbed");
+const richEmbed = np(
+  "@riebeckite/plugin-rich-embed",
+  "richEmbed",
+  `{ allowHosts: ["player.example.com"] }`,
+);
 
 /** Diagrams, charts, and knowledge tools for the heavy tiers. */
-const mermaid = np("@riebeckite/plugin-mermaid", "mermaid");
-const graphviz = np("@riebeckite/plugin-graphviz", "graphviz");
-const d2 = np("@riebeckite/plugin-d2", "d2");
-const plantuml = np("@riebeckite/plugin-plantuml", "plantuml");
-const chartjs = np("@riebeckite/plugin-chartjs", "chartjs");
-const vegaLite = np("@riebeckite/plugin-vega-lite", "vegaLite");
-const wavedrom = np("@riebeckite/plugin-wavedrom", "wavedrom");
-const markmap = np("@riebeckite/plugin-markmap", "markmap");
-const marp = np("@riebeckite/plugin-marp", "marp");
-const qrCode = np("@riebeckite/plugin-qr-code", "qrCode");
-const discordEmbed = np("@riebeckite/plugin-discord-embed", "discordEmbed");
-const excalidraw = np("@riebeckite/plugin-excalidraw", "excalidraw");
-const excaliBrain = np("@riebeckite/plugin-excalibrain", "excaliBrain");
-const canvas = np("@riebeckite/plugin-canvas", "canvas");
-const bases = np("@riebeckite/plugin-bases", "bases");
-const dataview = np("@riebeckite/plugin-dataview", "dataviewPlugin");
-const flashcards = np("@riebeckite/plugin-flashcards", "flashcardsPlugin");
-const kanban = np("@riebeckite/plugin-kanban", "kanban");
-const query = np("@riebeckite/plugin-query", "queryPlugin");
+const mermaid = np(
+  "@riebeckite/plugin-mermaid",
+  "mermaid",
+  `{ render: "build", theme: { light: "default", dark: "dark" }, caption: true }`,
+);
+const graphviz = np(
+  "@riebeckite/plugin-graphviz",
+  "graphviz",
+  `{ render: "build", engine: "dot", caption: true, fallback: true }`,
+);
+const d2 = np(
+  "@riebeckite/plugin-d2",
+  "d2",
+  `{ render: "build", theme: { light: 0, dark: 1 }, layout: "dagre", caption: true }`,
+);
+const plantuml = np(
+  "@riebeckite/plugin-plantuml",
+  "plantuml",
+  `{ server: "https://www.plantuml.com/plantuml", format: "svg", caption: true, fallback: true }`,
+);
+const chartjs = np(
+  "@riebeckite/plugin-chartjs",
+  "chartjs",
+  `{ responsive: true, caption: true, className: "rb-chartjs" }`,
+);
+const vegaLite = np(
+  "@riebeckite/plugin-vega-lite",
+  "vegaLite",
+  `{ caption: true, actions: false, theme: "light", renderer: "canvas" }`,
+);
+const wavedrom = np(
+  "@riebeckite/plugin-wavedrom",
+  "wavedrom",
+  `{ skin: "default", caption: true, fallback: true, className: "rb-wavedrom" }`,
+);
+const markmap = np(
+  "@riebeckite/plugin-markmap",
+  "markmap",
+  `{ caption: true, height: 320, colorFreezeLevel: 2 }`,
+);
+const marp = np(
+  "@riebeckite/plugin-marp",
+  "marp",
+  `{ theme: "default", allowHtml: true, math: true, caption: true }`,
+);
+const qrCode = np(
+  "@riebeckite/plugin-qr-code",
+  "qrCode",
+  `{ level: "M", margin: 1, width: 160, dark: "#000000", light: "#ffffff", caption: true, className: "rb-qr" }`,
+);
+const discordEmbed = np(
+  "@riebeckite/plugin-discord-embed",
+  "discordEmbed",
+  `{ themeColor: "#5865F2", imageAlt: true, imageDimensions: true }`,
+);
+const excalidraw = np(
+  "@riebeckite/plugin-excalidraw",
+  "excalidraw",
+  `{ lazy: true }`,
+);
+const excaliBrain = np(
+  "@riebeckite/plugin-excalibrain",
+  "excaliBrain",
+  `{ render: "build", auto: true, heading: true, headingText: "ExcaliBrain", infer: true, siblings: true, width: 720, height: 480 }`,
+);
+const canvas = np(
+  "@riebeckite/plugin-canvas",
+  "canvas",
+  `{ className: "rb-canvas", language: "canvas", render: "both" }`,
+);
+const bases = np(
+  "@riebeckite/plugin-bases",
+  "bases",
+  `{ className: "rb-bases", language: "base", limit: 100, showFallback: true }`,
+);
+const dataview = np(
+  "@riebeckite/plugin-dataview",
+  "dataviewPlugin",
+  `{ className: "rb-dataview", hideFallback: false, limit: 50 }`,
+);
+const flashcards = np(
+  "@riebeckite/plugin-flashcards",
+  "flashcardsPlugin",
+  `{ className: "rb-flashcards", shuffle: true, fallback: true }`,
+);
+const kanban = np(
+  "@riebeckite/plugin-kanban",
+  "kanban",
+  `{ className: "rb-kanban", columnMarker: "##", autoDetect: true, fallback: true }`,
+);
+const query = np(
+  "@riebeckite/plugin-query",
+  "queryPlugin",
+  `{ className: "rb-query", defaultFormat: "list", defaultLimit: 50, excludeSelf: true }`,
+);
 const localGraph = np("@riebeckite/plugin-local-graph", "localGraphPlugin");
 const hoverPreview = np(
   "@riebeckite/plugin-hover-preview",
   "hoverPreviewPlugin",
+  `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }`,
 );
 const gardenExplorer = np(
   "@riebeckite/plugin-garden-explorer",
   "gardenExplorerPlugin",
 );
-const ux = np("@riebeckite/plugin-ux", "uxPlugin");
+const ux = np(
+  "@riebeckite/plugin-ux",
+  "uxPlugin",
+  `{ progress: true, backToTop: true, tocScrollSpy: true, codeCopy: true }`,
+);
 
 /** Developer-experience and ops plugins for the top tier. */
-const dailyNotes = np("@riebeckite/plugin-daily-notes", "dailyNotesPlugin");
-const rename = np("@riebeckite/plugin-rename", "renamePlugin");
+const dailyNotes = np(
+  "@riebeckite/plugin-daily-notes",
+  "dailyNotesPlugin",
+  `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }`,
+);
+const rename = np(
+  "@riebeckite/plugin-rename",
+  "renamePlugin",
+  `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }`,
+);
 const textFragment = np(
   "@riebeckite/plugin-text-fragment",
   "textFragmentPlugin",
+  `{ prefix: "Riebeckite: " }`,
 );
-const quality = np("@riebeckite/plugin-quality", "qualityPlugin");
-const deploy = np("@riebeckite/plugin-deploy", "deployPlugin");
-const diagnostics = np("@riebeckite/plugin-diagnostics", "diagnostics");
+const quality = np(
+  "@riebeckite/plugin-quality",
+  "qualityPlugin",
+  `{ a11y: { enabled: true }, ignoreRules: [] }`,
+);
+const deploy = np(
+  "@riebeckite/plugin-deploy",
+  "deployPlugin",
+  `{ provider: "cloudflare-pages" }`,
+);
+const diagnostics = np(
+  "@riebeckite/plugin-diagnostics",
+  "diagnostics",
+  `{ reportUnusedAssets: true, reportOrphans: true, requiredFrontmatter: ["title"] }`,
+);
 
 const defaultTheme = {
   package: "@riebeckite/theme-default",
   factory: "defaultTheme",
 } satisfies ScaffoldThemeSpec;
+
+/**
+ * The showcasing tiers also set every theme option so `riebeckite.config.ts`
+ * demonstrates the theme configuration surface.
+ */
+const showCaseTheme: ScaffoldThemeSpec = {
+  package: "@riebeckite/theme-default",
+  factory: "defaultTheme",
+  options:
+    '{ colorMode: "system", typography: "system", articleLayout: "article", userCss: [] }',
+};
 
 const minimalTheme = {
   package: "@riebeckite/theme-minimal",
@@ -287,7 +459,7 @@ export const rich: ScaffoldPreset = {
   description:
     "A showcasing starter: publishing and reading plugins plus guided ecosystem tour pages in seven languages.",
   languages: [...SCAFFOLD_LANGUAGES],
-  theme: defaultTheme,
+  theme: showCaseTheme,
   plugins: [
     obsidianMarkdown,
     colorMode,
@@ -308,7 +480,7 @@ export const full: ScaffoldPreset = {
   description:
     "A ready blog: discovery, media, and reading plugins plus a build guide.",
   languages: [...SCAFFOLD_LANGUAGES],
-  theme: defaultTheme,
+  theme: showCaseTheme,
   plugins: [
     obsidianMarkdown,
     colorMode,
@@ -344,7 +516,7 @@ export const max: ScaffoldPreset = {
   description:
     "Diagram and knowledge plugins on top of full, with showcase example pages.",
   languages: [...SCAFFOLD_LANGUAGES],
-  theme: defaultTheme,
+  theme: showCaseTheme,
   plugins: [
     obsidianMarkdown,
     colorMode,
@@ -409,7 +581,7 @@ export const ultra: ScaffoldPreset = {
   description:
     "The full plugin catalog and theme reference pages — everything the ecosystem offers.",
   languages: [...SCAFFOLD_LANGUAGES],
-  theme: defaultTheme,
+  theme: showCaseTheme,
   plugins: [
     obsidianMarkdown,
     colorMode,

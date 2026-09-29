@@ -1,10 +1,18 @@
-import type { SiteTemplateFile, SiteTemplateVariables } from "./templates.js";
 import {
-  SCAFFOLD_LANGUAGES,
   defaultLanguageForLocale,
+  SCAFFOLD_LANGUAGES,
   type ScaffoldLanguage,
   type ScaffoldPreset,
 } from "./presets.js";
+import {
+  demoPackage,
+  hasPlugin,
+  README_DEMO_ORDER,
+  README_DEMOS,
+  readmePluginOptions,
+  type SiteTemplateFile,
+  type SiteTemplateVariables,
+} from "./templates.js";
 
 const HELPERS = {
   en: "https://github.com/Rerurate514/riebeckite/blob/main/docs/en/README.md",
@@ -74,15 +82,19 @@ export function localizedContentFiles(
     if (page === "index") {
       pushLocalized("index", (language) => indexContent(variables, language));
     } else if (page === "framework/plugins") {
-      pushLocalized("framework/plugins", (language) => pluginsContent(language));
+      pushLocalized("framework/plugins", (language) =>
+        pluginsContent(language),
+      );
     } else if (page === "framework/themes") {
       pushLocalized("framework/themes", (language) => themesContent(language));
     } else if (page === "guide") {
       pushEnglishOnly("guide", guideContent);
     } else if (page === "examples") {
-      pushEnglishOnly("examples", examplesContent);
+      pushEnglishOnly("examples", () => examplesContent(preset));
     } else if (page === "reference/plugins") {
-      pushEnglishOnly("reference/plugins", () => referencePluginsContent(preset));
+      pushEnglishOnly("reference/plugins", () =>
+        referencePluginsContent(preset, variables),
+      );
     } else if (page === "reference/themes") {
       pushEnglishOnly("reference/themes", referenceThemesContent);
     }
@@ -124,7 +136,8 @@ const INDEX = {
   translatedNote: {
     en: "Every page of this starter is available in seven languages. Switch with the selector below the page title.",
     ja: "このスターターのすべてのページは 7 言語で利用できます。ページタイトル下のセレクターで切り替えられます。",
-    "zh-CN": "本模板的每个页面均提供七种语言版本，可用页面标题下方的选择器切换。",
+    "zh-CN":
+      "本模板的每个页面均提供七种语言版本，可用页面标题下方的选择器切换。",
     es: "Cada página de este starter está disponible en siete idiomas. Cámbialos con el selector bajo el título.",
     de: "Jede Seite dieses Starters ist in sieben Sprachen verfügbar. Wechsel mit dem Auswahlfeld unter dem Seitentitel.",
     fr: "Chaque page de ce starter est disponible en sept langues. Changez avec le sélecteur sous le titre.",
@@ -142,7 +155,8 @@ const INDEX = {
   whatBody: {
     en: "Riebeckite is an extensible, content-first framework that builds fast static sites from plain Markdown — the same notes you keep in Obsidian. The ecosystem includes 50+ plugins and six themes, and this site demos both.",
     ja: "Riebeckite は、プレーンな Markdown（Obsidian で管理しているのと同じノート）から高速な静的サイトを生成する、拡張性のあるコンテンツファーストのフレームワークです。エコシステムには 50 以上のプラグインと 6 つのテーマがあり、このサイトはその両方をデモしています。",
-    "zh-CN": "Riebeckite 是一个可扩展、内容优先的框架，可从纯 Markdown（即你在 Obsidian 中保存的笔记）构建快速的静态站点。生态包含 50+ 插件与六个主题，本站点同时演示两者。",
+    "zh-CN":
+      "Riebeckite 是一个可扩展、内容优先的框架，可从纯 Markdown（即你在 Obsidian 中保存的笔记）构建快速的静态站点。生态包含 50+ 插件与六个主题，本站点同时演示两者。",
     es: "Riebeckite es un framework extensible y orientado al contenido que construye sitios estáticos rápidos desde Markdown simple — las mismas notas que guardas en Obsidian. El ecosistema incluye más de 50 plugins y seis temas; este sitio demuestra ambos.",
     de: "Riebeckite ist ein erweiterbares, inhaltsorientiertes Framework, das schnelle statische Seiten aus einfachem Markdown baut — denselben Notizen, die du in Obsidian führst. Das Ökosystem umfasst 50+ Plugins und sechs Themes; diese Seite demonstriert beides.",
     fr: "Riebeckite est un framework extensible et centré sur le contenu qui construit des sites statiques rapides à partir de Markdown simple — les mêmes notes que vous gardez dans Obsidian. L'écosystème inclut plus de 50 plugins et six thèmes ; ce site en démontre les deux.",
@@ -187,7 +201,8 @@ const INDEX = {
   editLead: {
     en: "Content lives in `content/` as plain Markdown. Add a file, give it `publish: true` in the frontmatter, and it appears in the built site.",
     ja: "コンテンツは `content/` にプレーンな Markdown として置きます。ファイルを追加してフロントマターに `publish: true` を書けば、ビルドされたサイトに反映されます。",
-    "zh-CN": "内容以纯 Markdown 存于 `content/`。新建文件并在 frontmatter 中写入 `publish: true`，它就会出现在构建后的站点中。",
+    "zh-CN":
+      "内容以纯 Markdown 存于 `content/`。新建文件并在 frontmatter 中写入 `publish: true`，它就会出现在构建后的站点中。",
     es: "El contenido vive en `content/` como Markdown simple. Añade un archivo, pon `publish: true` en el frontmatter y aparecerá en el sitio compilado.",
     de: "Inhalte liegen als einfaches Markdown in `content/`. Füge eine Datei hinzu, setze `publish: true` ins Frontmatter, und sie erscheint in der gebauten Seite.",
     fr: "Le contenu vit dans `content/` en Markdown simple. Ajoutez un fichier, donnez-lui `publish: true` dans le frontmatter, et il apparaîtra dans le site construit.",
@@ -196,7 +211,8 @@ const INDEX = {
   editL10n: {
     en: "Localized pages use the `<base>.<lang>.md` convention next to the default file — for example `about.ja.md`. The l10n plugin serves them under `/lang/` paths and links them automatically.",
     ja: "翻訳ページは既定ファイルの隣に `<base>.<lang>.md` の命名規則で置きます（例：`about.ja.md`）。l10n プラグインが `/lang/` パスの配下で配信し、自動的にリンクします。",
-    "zh-CN": "本地化页面采用默认文件旁的 `<base>.<lang>.md` 命名约定（例如 `about.ja.md`）。l10n 插件会在 `/lang/` 路径下提供服务并自动互链。",
+    "zh-CN":
+      "本地化页面采用默认文件旁的 `<base>.<lang>.md` 命名约定（例如 `about.ja.md`）。l10n 插件会在 `/lang/` 路径下提供服务并自动互链。",
     es: "Las páginas localizadas usan la convención `<base>.<lang>.md` junto al archivo por defecto (p. ej. `about.ja.md`). El plugin l10n las sirve bajo rutas `/lang/` y las enlaza automáticamente.",
     de: "Übersetzte Seiten folgen der Konvention `<base>.<lang>.md` neben der Standarddatei (z. B. `about.ja.md`). Das l10n-Plugin liefert sie unter `/lang/`-Pfaden und verlinkt sie automatisch.",
     fr: "Les pages localisées suivent la convention `<base>.<lang>.md` à côté du fichier par défaut (ex. `about.ja.md`). Le plugin l10n les sert sous des chemins `/lang/` et les relie automatiquement.",
@@ -261,7 +277,8 @@ const THEMES_COPY: ThemesCopy = {
   intro: {
     en: "A theme changes the whole look and feel of a site — colors, typography, and layout — without touching your content or routes. Riebeckite ships with six themes; switch by installing a package and changing one line.",
     ja: "テーマを変えるだけで、色・文字組み・レイアウトといったサイト全体の見た目が変わります。コンテンツやルートには一切触れる必要はありません。Riebeckite には 6 つのテーマが用意されており、パッケージをインストールして 1 行書き換えるだけで切り替えられます。",
-    "zh-CN": "主题能整体改变站点的观感——配色、排版与布局——而无需改动你的内容或路由。Riebeckite 内置六个主题，安装一个包、改一行配置即可切换。",
+    "zh-CN":
+      "主题能整体改变站点的观感——配色、排版与布局——而无需改动你的内容或路由。Riebeckite 内置六个主题，安装一个包、改一行配置即可切换。",
     es: "Un tema cambia toda la apariencia del sitio — colores, tipografía y diseño — sin tocar tu contenido ni tus rutas. Riebeckite incluye seis temas: instala un paquete y cambia una línea.",
     de: "Ein Theme verändert das gesamte Erscheinungsbild einer Seite — Farben, Typografie, Layout — ohne dass du Inhalte oder Routen anfasst. Riebeckite bringt sechs Themes mit; der Wechsel ist eine Paketinstallation plus eine Zeile.",
     fr: "Un thème change tout l'aspect d'un site — couleurs, typographie, mise en page — sans toucher au contenu ni aux routes. Riebeckite fournit six thèmes ; installez un paquet et changez une ligne.",
@@ -502,7 +519,8 @@ const PLUGINS_COPY: PluginsCopy = {
   intro: {
     en: "Riebeckite's power comes from its plugin ecosystem — over fifty packages that extend Markdown, rendering, search, SEO, and more. Below are representative examples grouped by capability; every entry links to its full README.",
     ja: "Riebeckite の力はプラグインエコシステムにあります——50 以上のパッケージが Markdown・描画・検索・SEO などを拡張します。ここでは代表的なプラグインを機能別に紹介します。各項目のリンクから詳細な README を参照できます。",
-    "zh-CN": "Riebeckite 的强大来自其插件生态——五十多个扩展 Markdown、渲染、搜索、SEO 等的包。下面按能力分组展示代表性示例，每一项都链接到完整 README。",
+    "zh-CN":
+      "Riebeckite 的强大来自其插件生态——五十多个扩展 Markdown、渲染、搜索、SEO 等的包。下面按能力分组展示代表性示例，每一项都链接到完整 README。",
     es: "El poder de Riebeckite viene de su ecosistema de plugins — más de cincuenta paquetes que extienden Markdown, renderizado, búsqueda, SEO y más. Aquí tienes ejemplos representativos agrupados por capacidad; cada uno enlaza a su README completo.",
     de: "Riebeckites Stärke kommt aus seinem Plugin-Ökosystem — über fünfzig Pakete, die Markdown, Rendering, Suche, SEO und mehr erweitern. Hier finden sich repräsentative Beispiele nach Fähigkeit gruppiert; jeder Eintrag verlinkt auf sein volles README.",
     fr: "La puissance de Riebeckite vient de son écosystème de plugins — plus de cinquante paquets qui étendent Markdown, le rendu, la recherche, le SEO et plus encore. Voici des exemples représentatifs groupés par capacité ; chaque entrée renvoie vers son README complet.",
@@ -879,7 +897,8 @@ const PLUGIN_CATEGORIES: readonly PluginCategory[] = [
         desc: {
           en: "Localized URLs, a language switcher, and hreflang metadata — this site runs on it.",
           ja: "ローカライズ済み URL・言語スイッチャー・hreflang メタデータ——このサイトもこれで動いています。",
-          "zh-CN": "本地化 URL、语言切换器与 hreflang 元数据——本站就运行在它之上。",
+          "zh-CN":
+            "本地化 URL、语言切换器与 hreflang 元数据——本站就运行在它之上。",
           es: "URLs localizadas, selector de idioma y metadatos hreflang — este sitio se ejecuta sobre él.",
           de: "Lokalisierte URLs, Sprachumschalter und hreflang-Metadaten — diese Seite läuft darauf.",
           fr: "URLs localisées, sélecteur de langue et métadonnées hreflang — ce site repose dessus.",
@@ -1011,12 +1030,17 @@ function pluginsContent(language: ScaffoldLanguage): string {
     ),
   );
   lines.push(read(copy.fullList, language), "");
-  lines.push(`[${read(copy.fullListLabel, language)}](${PLUGIN_INDEX_URL})`, "");
+  lines.push(
+    `[${read(copy.fullListLabel, language)}](${PLUGIN_INDEX_URL})`,
+    "",
+  );
 
   for (const category of categories) {
     lines.push(heading(2, read(category.title, language)), "");
     lines.push(read(category.summary, language), "");
-    lines.push(`| ${read(copy.columnPlugin, language)} | ${read(copy.columnDescription, language)} |`);
+    lines.push(
+      `| ${read(copy.columnPlugin, language)} | ${read(copy.columnDescription, language)} |`,
+    );
     lines.push("| --- | --- |");
     for (const plugin of category.plugins) {
       const packageName = `@riebeckite/plugin-${plugin.slug}`;
@@ -1053,7 +1077,9 @@ function guideContent(): string {
     "",
     codeBlock(
       "md",
-      ["---", "publish: true", "---", "", "# Hello", "", "Body text..."].join("\n"),
+      ["---", "publish: true", "---", "", "# Hello", "", "Body text..."].join(
+        "\n",
+      ),
     ),
     "",
     heading(2, "Run the site"),
@@ -1079,65 +1105,47 @@ function guideContent(): string {
   ].join("\n");
 }
 
-function examplesContent(): string {
-  return [
+function examplesContent(preset: ScaffoldPreset): string {
+  const lines: string[] = [
     frontmatter(),
     heading(1, "Examples"),
     "",
-    "A tour of what the richer Riebeckite presets enable. Fenced code blocks",
-    "are turned into rendered diagrams and charts at build time by the",
-    "diagram plugins; code blocks gain toolbars from the code plugins.",
+    "A working demo of every diagram, chart, and code feature this preset",
+    "ships. Fenced code blocks are turned into rendered output at build time",
+    "by the diagram plugins; code blocks gain toolbars from the code plugins.",
+    "Each section below is also copy-pasteable into any Markdown document.",
     "",
-    heading(2, "Mermaid"),
-    "",
-    codeBlock("mermaid", "flowchart LR\n  A[Note] --> B{Published?}\n  B -->|yes| C[Site]\n  B -->|no| D[Draft]"),
-    "",
-    heading(2, "D2"),
-    "",
-    codeBlock("d2", "site: Riebeckite\n  content -> build -> deploy"),
-    "",
-    heading(2, "Graphviz / DOT"),
-    "",
-    codeBlock("dot", "digraph G {\n  notes -> pages;\n  pages -> html;\n}"),
-    "",
-    heading(2, "A chart"),
-    "",
-    codeBlock("chartjs", "line\nlabels: Jan, Feb, Mar\nvalues: 3, 7, 5"),
-    "",
-    heading(2, "Code with a toolbar"),
-    "",
-    codeBlock(
-      "ts",
-      [
-        "// Syntax highlighting, line numbers, and copy buttons",
-        'export function hello(name: string): string {',
-        '  return "Hello, " + name + "!";',
-        "}",
-      ].join("\n"),
-    ),
-    "",
-    heading(2, "Callouts"),
-    "",
-    "> [!tip] Try it",
-    "> Callouts from `@riebeckite/plugin-obsidian-markdown` render as styled",
-    "> blocks. Add one with `> [!info]`, `> [!warning]`, or `> [!question]`.",
-    "",
-  ].join("\n");
+  ];
+  for (const key of README_DEMO_ORDER) {
+    const packageName = demoPackage(key);
+    if (!hasPlugin(preset, packageName)) continue;
+    const demo = README_DEMOS[key];
+    lines.push(heading(2, demo.title.en), "");
+    lines.push(demo.intro.en, "");
+    lines.push(demo.markdown, "");
+  }
+  return lines.join("\n");
 }
 
-function referencePluginsContent(preset: ScaffoldPreset): string {
+function referencePluginsContent(
+  preset: ScaffoldPreset,
+  variables: SiteTemplateVariables,
+): string {
   const lines: string[] = [frontmatter()];
   lines.push(heading(1, "Plugin reference"), "");
   lines.push(
-    "Every plugin registered by this preset, with the factory used in",
-    "`riebeckite.config.ts`. Full documentation lives in each package README.",
+    "Every plugin registered by this preset, with the factory and options",
+    "used in `riebeckite.config.ts`. Full documentation lives in each package",
+    "README.",
     "",
   );
-  lines.push("| Package | Factory |");
-  lines.push("| --- | --- |");
+  lines.push("| Package | Factory | Options |");
+  lines.push("| --- | --- | --- |");
   for (const plugin of preset.plugins) {
+    const options = readmePluginOptions(variables, preset, plugin);
+    const cell = options === null ? "—" : `\`${options}\``;
     lines.push(
-      `| [\`${plugin.package}\`](${pluginReadmeUrl(plugin.package.replace(/^@riebeckite\/plugin-/, ""))}) | \`${plugin.factory}\` |`,
+      `| [\`${plugin.package}\`](${pluginReadmeUrl(plugin.package.replace(/^@riebeckite\/plugin-/, ""))}) | \`${plugin.factory}\` | ${cell} |`,
     );
   }
   lines.push("");

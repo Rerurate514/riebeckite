@@ -1,27 +1,10 @@
 import type { SiteTemplateFile, SiteTemplateVariables } from "./templates.js";
-
-export const SCAFFOLD_LANGUAGES = [
-  "en",
-  "ja",
-  "zh-CN",
-  "es",
-  "de",
-  "fr",
-  "ko",
-] as const;
-
-export type ScaffoldLanguage = (typeof SCAFFOLD_LANGUAGES)[number];
-
-export function defaultLanguageForLocale(locale: string): string {
-  const normalized = locale.toLowerCase();
-  if (normalized.startsWith("ja")) return "ja";
-  if (normalized.startsWith("zh")) return "zh-CN";
-  if (normalized.startsWith("es")) return "es";
-  if (normalized.startsWith("de")) return "de";
-  if (normalized.startsWith("fr")) return "fr";
-  if (normalized.startsWith("ko")) return "ko";
-  return "en";
-}
+import {
+  SCAFFOLD_LANGUAGES,
+  defaultLanguageForLocale,
+  type ScaffoldLanguage,
+  type ScaffoldPreset,
+} from "./presets.js";
 
 const HELPERS = {
   en: "https://github.com/Rerurate514/riebeckite/blob/main/docs/en/README.md",
@@ -42,37 +25,69 @@ function themeReadmeUrl(slug: string): string {
 }
 
 /**
- * Generates the localized content pages for the scaffold.
+ * Generates the content pages for a scaffold preset.
  *
- * Naming follows the l10n plugin convention: the default-language page keeps
- * the plain name (`index.md`) while every other language uses the
- * `<base>.<lang>.md` suffix. The l10n plugin derives the translation group
- * from the path, so `content/index.ja.md` and `content/index.md` share a
- * translation while being served under `/` and `/ja/`.
+ * Localized pages (`index`, `framework/plugins`, `framework/themes`) follow the
+ * l10n plugin convention: the default-language page keeps the plain name
+ * (`index.md`) while every other language uses the `<base>.<lang>.md` suffix.
+ * Presets without l10n emit the index in the site's default language only.
+ * Extra pages (`guide`, `examples`, `reference/*`) are English-only and are
+ * suffixed with `.en` when English is not the site's default language.
  */
 export function localizedContentFiles(
   variables: SiteTemplateVariables,
+  preset: ScaffoldPreset,
 ): readonly SiteTemplateFile[] {
   const defaultLang = defaultLanguageForLocale(variables.locale);
-  const pages: ReadonlyArray<{
-    readonly basePath: string;
-    readonly build: (language: ScaffoldLanguage) => string;
-  }> = [
-    { basePath: "index", build: (language) => indexContent(variables, language) },
-    { basePath: "framework/plugins", build: (language) => pluginsContent(language) },
-    { basePath: "framework/themes", build: (language) => themesContent(language) },
-  ];
-
   const files: SiteTemplateFile[] = [];
-  for (const page of pages) {
+  const localized = preset.languages.length > 1;
+
+  const pushLocalized = (
+    basePath: string,
+    build: (language: ScaffoldLanguage) => string,
+  ): void => {
+    if (!localized) {
+      files.push({
+        path: `content/${basePath}.md`,
+        content: build(defaultLang as ScaffoldLanguage),
+      });
+      return;
+    }
     for (const language of SCAFFOLD_LANGUAGES) {
       const suffix = language === defaultLang ? "" : `.${language}`;
       files.push({
-        path: `content/${page.basePath}${suffix}.md`,
-        content: page.build(language),
+        path: `content/${basePath}${suffix}.md`,
+        content: build(language),
       });
     }
+  };
+
+  const pushEnglishOnly = (basePath: string, build: () => string): void => {
+    const suffix = defaultLang === "en" ? "" : ".en";
+    files.push({
+      path: `content/${basePath}${suffix}.md`,
+      content: build(),
+    });
+  };
+
+  for (const page of preset.contentPages) {
+    if (page === "index") {
+      pushLocalized("index", (language) => indexContent(variables, language));
+    } else if (page === "framework/plugins") {
+      pushLocalized("framework/plugins", (language) => pluginsContent(language));
+    } else if (page === "framework/themes") {
+      pushLocalized("framework/themes", (language) => themesContent(language));
+    } else if (page === "guide") {
+      pushEnglishOnly("guide", guideContent);
+    } else if (page === "examples") {
+      pushEnglishOnly("examples", examplesContent);
+    } else if (page === "reference/plugins") {
+      pushEnglishOnly("reference/plugins", () => referencePluginsContent(preset));
+    } else if (page === "reference/themes") {
+      pushEnglishOnly("reference/themes", referenceThemesContent);
+    }
   }
+
   return files;
 }
 
@@ -1017,6 +1032,138 @@ function pluginsContent(language: ScaffoldLanguage): string {
     `Riebeckite: [documentation](${HELPERS.en}) · [日本語ドキュメント](${HELPERS.ja})`,
     "",
   );
+  lines.push("");
+  return lines.join("\n");
+}
+
+// ----- English-only extra pages --------------------------------------------
+
+function guideContent(): string {
+  return [
+    frontmatter(),
+    heading(1, "Getting started"),
+    "",
+    "This site was generated from a Riebeckite scaffold preset. Everything",
+    "you see lives in this repository, ready to edit.",
+    "",
+    heading(2, "Add a page"),
+    "",
+    "Drop a Markdown file into `content/` with `publish: true` in its",
+    "frontmatter and it appears in the built site:",
+    "",
+    codeBlock(
+      "md",
+      ["---", "publish: true", "---", "", "# Hello", "", "Body text..."].join("\n"),
+    ),
+    "",
+    heading(2, "Run the site"),
+    "",
+    codeBlock(
+      "sh",
+      ["pnpm install", "pnpm exec riebeckite dev", "pnpm exec riebeckite build"].join("\n"),
+    ),
+    "",
+    heading(2, "Localize a page"),
+    "",
+    "Add a translated file next to the default one using the",
+    "`<base>.<lang>.md` convention (`about.ja.md`, `about.en.md`). With the",
+    "l10n plugin enabled, translations are served under `/lang/` paths and",
+    "linked by the language switcher.",
+    "",
+    heading(2, "Extend"),
+    "",
+    "Plugins and themes are registered in `riebeckite.config.ts`. Install a",
+    "package, import its factory, and add it to the `plugins` array or point",
+    "`theme` at a new theme factory.",
+    "",
+  ].join("\n");
+}
+
+function examplesContent(): string {
+  return [
+    frontmatter(),
+    heading(1, "Examples"),
+    "",
+    "A tour of what the richer Riebeckite presets enable. Fenced code blocks",
+    "are turned into rendered diagrams and charts at build time by the",
+    "diagram plugins; code blocks gain toolbars from the code plugins.",
+    "",
+    heading(2, "Mermaid"),
+    "",
+    codeBlock("mermaid", "flowchart LR\n  A[Note] --> B{Published?}\n  B -->|yes| C[Site]\n  B -->|no| D[Draft]"),
+    "",
+    heading(2, "D2"),
+    "",
+    codeBlock("d2", "site: Riebeckite\n  content -> build -> deploy"),
+    "",
+    heading(2, "Graphviz / DOT"),
+    "",
+    codeBlock("dot", "digraph G {\n  notes -> pages;\n  pages -> html;\n}"),
+    "",
+    heading(2, "A chart"),
+    "",
+    codeBlock("chartjs", "line\nlabels: Jan, Feb, Mar\nvalues: 3, 7, 5"),
+    "",
+    heading(2, "Code with a toolbar"),
+    "",
+    codeBlock(
+      "ts",
+      [
+        "// Syntax highlighting, line numbers, and copy buttons",
+        'export function hello(name: string): string {',
+        '  return "Hello, " + name + "!";',
+        "}",
+      ].join("\n"),
+    ),
+    "",
+    heading(2, "Callouts"),
+    "",
+    "> [!tip] Try it",
+    "> Callouts from `@riebeckite/plugin-obsidian-markdown` render as styled",
+    "> blocks. Add one with `> [!info]`, `> [!warning]`, or `> [!question]`.",
+    "",
+  ].join("\n");
+}
+
+function referencePluginsContent(preset: ScaffoldPreset): string {
+  const lines: string[] = [frontmatter()];
+  lines.push(heading(1, "Plugin reference"), "");
+  lines.push(
+    "Every plugin registered by this preset, with the factory used in",
+    "`riebeckite.config.ts`. Full documentation lives in each package README.",
+    "",
+  );
+  lines.push("| Package | Factory |");
+  lines.push("| --- | --- |");
+  for (const plugin of preset.plugins) {
+    lines.push(
+      `| [\`${plugin.package}\`](${pluginReadmeUrl(plugin.package.replace(/^@riebeckite\/plugin-/, ""))}) | \`${plugin.factory}\` |`,
+    );
+  }
+  lines.push("");
+  lines.push(`[Riebeckite plugins on GitHub](${PLUGIN_INDEX_URL})`, "");
+  lines.push("");
+  return lines.join("\n");
+}
+
+function referenceThemesContent(): string {
+  const lines: string[] = [frontmatter()];
+  lines.push(heading(1, "Theme reference"), "");
+  lines.push(
+    "The bundled themes. Switch by installing a package and changing the",
+    "`theme` factory in `riebeckite.config.ts`.",
+    "",
+  );
+  lines.push("| Theme | Factory | Description |");
+  lines.push("| --- | --- | --- |");
+  for (const theme of THEMES) {
+    const packageName = `@riebeckite/theme-${theme.slug}`;
+    lines.push(
+      `| [\`${packageName}\`](${themeReadmeUrl(theme.slug)}) | \`${theme.factory}\` | ${read(theme.desc, "en")} |`,
+    );
+  }
+  lines.push("");
+  lines.push(`[Riebeckite themes on GitHub](${THEMES_INDEX_URL})`, "");
   lines.push("");
   return lines.join("\n");
 }

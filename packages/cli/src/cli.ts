@@ -1,3 +1,9 @@
+import {
+  isScaffoldPresetName,
+  SCAFFOLD_PRESET_NAMES,
+  type ScaffoldPresetName,
+  scaffoldPresets,
+} from "@riebeckite/honox";
 import { resolveRiebeckiteProject } from "./application_root.js";
 import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
@@ -13,7 +19,15 @@ export async function main(arguments_: readonly string[]): Promise<void> {
     const command = parseCommand(arguments_);
 
     if (command.name === "init") {
-      await runInit({ directory: command.directory, force: command.force });
+      if (command.listPresets) {
+        printPresets();
+        return;
+      }
+      await runInit({
+        directory: command.directory,
+        force: command.force,
+        preset: command.preset,
+      });
       return;
     }
 
@@ -56,7 +70,13 @@ type Command =
   | { name: "build"; full: boolean }
   | { name: "check" }
   | { name: "doctor" }
-  | { name: "init"; directory: string; force: boolean }
+  | {
+      name: "init";
+      directory: string;
+      force: boolean;
+      preset: ScaffoldPresetName;
+      listPresets: boolean;
+    }
   | { name: "profile"; full: boolean }
   | { name: "inspect"; target?: InspectTarget; list: boolean };
 
@@ -81,29 +101,64 @@ function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <init [directory] [--force] | dev | build [--full] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 
 function parseInitCommand(options: readonly string[]): Command {
   let directory: string | undefined;
   let force = false;
+  let listPresets = false;
+  let preset: ScaffoldPresetName | undefined;
 
-  for (const option of options) {
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
     if (option === "--force") {
       force = true;
+      continue;
+    }
+    if (option === "--list-presets") {
+      listPresets = true;
+      continue;
+    }
+    if (option === "--preset") {
+      const value = options[index + 1];
+      if (value === undefined || !isScaffoldPresetName(value)) {
+        throw new CliUsageError(
+          `Unknown preset: ${value ?? "(missing)"}. ` +
+            `Available presets: ${SCAFFOLD_PRESET_NAMES.join(", ")}.`,
+        );
+      }
+      preset = value;
+      index += 1;
       continue;
     }
     if (option.startsWith("-")) {
       throw new CliUsageError(`Unknown init option: ${option}`);
     }
     if (directory !== undefined) {
-      throw new CliUsageError("Usage: riebeckite init [directory] [--force]");
+      throw new CliUsageError(
+        "Usage: riebeckite init [directory] [--preset <name>] [--force]",
+      );
     }
     directory = option;
   }
 
-  return { name: "init", directory: directory ?? ".", force };
+  return {
+    name: "init",
+    directory: directory ?? ".",
+    force,
+    preset: preset ?? "starter",
+    listPresets,
+  };
+}
+
+function printPresets(): void {
+  console.log("Available presets:");
+  console.log("");
+  for (const name of SCAFFOLD_PRESET_NAMES) {
+    console.log(`  ${name}: ${scaffoldPresets[name].description}`);
+  }
 }
 
 function parseInspectCommand(options: readonly string[]): Command {

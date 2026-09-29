@@ -11,6 +11,22 @@ export {
   ScaffoldSiteError,
   scaffoldRiebeckiteSite,
 } from "./src/scaffold/index.js";
+export type {
+  ScaffoldAppFileKey,
+  ScaffoldPageKey,
+  ScaffoldPluginSpec,
+  ScaffoldPreset,
+  ScaffoldPresetName,
+  ScaffoldReadmeLevel,
+  ScaffoldThemeSpec,
+} from "./src/scaffold/presets.js";
+export {
+  isScaffoldPresetName,
+  resolveScaffoldPreset,
+  SCAFFOLD_DEFAULT_PRESET,
+  SCAFFOLD_PRESET_NAMES,
+  scaffoldPresets,
+} from "./src/scaffold/presets.js";
 export {
   createRiebeckiteSsg,
   defaultSsgEntry,

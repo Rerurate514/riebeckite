@@ -14,9 +14,9 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/honox": "workspace:*",
+    "@riebeckite/plugin-alias": "workspace:*",
     "@riebeckite/plugin-analytics": "workspace:*",
     "@riebeckite/plugin-attachment": "workspace:*",
-    "@riebeckite/plugin-alias": "workspace:*",
     "@riebeckite/plugin-autocardlink": "workspace:*",
     "@riebeckite/plugin-backlinks": "workspace:*",
     "@riebeckite/plugin-bases": "workspace:*",
@@ -39,9 +39,9 @@
     "@riebeckite/plugin-highlight": "workspace:*",
     "@riebeckite/plugin-hover-preview": "workspace:*",
     "@riebeckite/plugin-kanban": "workspace:*",
+    "@riebeckite/plugin-l10n": "workspace:*",
     "@riebeckite/plugin-lightbox": "workspace:*",
     "@riebeckite/plugin-local-graph": "workspace:*",
-    "@riebeckite/plugin-l10n": "workspace:*",
     "@riebeckite/plugin-markmap": "workspace:*",
     "@riebeckite/plugin-marp": "workspace:*",
     "@riebeckite/plugin-media": "workspace:*",
@@ -71,10 +71,10 @@
     "slugify": "^1.6.9"
   },
   "devDependencies": {
-    "@riebeckite/cli": "workspace:*",
     "@cloudflare/workers-types": "^4.20260420.1",
     "@hono/vite-build": "^1.11.1",
     "@hono/vite-dev-server": "^0.25.2",
+    "@riebeckite/cli": "workspace:*",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.2.2",
     "esbuild": "^0.28.2",

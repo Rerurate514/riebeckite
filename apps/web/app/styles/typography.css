@@ -3,4 +3,25 @@
   .prose code::after {
     content: none;
   }
+
+  /* Narrow screens: keep the prose column from overflowing horizontally.
+     Long URLs / unbroken strings wrap, GFM tables scroll inside their own
+     box (GitHub-style pattern), and images never exceed the content width. */
+  @media (max-width: 48rem) {
+    .prose {
+      overflow-wrap: break-word;
+    }
+
+    .prose table:not([class]) {
+      display: block;
+      width: max-content;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .prose img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
 }

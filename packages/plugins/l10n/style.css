@@ -1,0 +1,45 @@
+.l10n-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin: 0.75rem 0 1.25rem;
+  font-size: 0.8125rem;
+}
+
+.l10n-switcher__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(
+    --rb-color-muted,
+    color-mix(in srgb, currentColor 48%, transparent)
+  );
+  text-transform: uppercase;
+}
+
+.l10n-switcher__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.l10n-switcher__link {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+}
+
+.l10n-switcher__link:hover,
+.l10n-switcher__link:focus-visible {
+  color: var(--rb-color-accent, currentColor);
+  text-decoration: underline;
+}
+
+.l10n-switcher__link[aria-current="page"] {
+  font-weight: 700;
+  text-decoration: underline;
+}

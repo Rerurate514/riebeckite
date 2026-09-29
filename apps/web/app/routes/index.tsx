@@ -42,11 +42,13 @@ export default createRoute(async (c) => {
   const tableOfContents = extractTableOfContents(post.html ?? "");
   c.set("seo", buildIndexSeo(post));
   c.set("headTags", indexEntry?.headTags ?? []);
+  c.set("htmlLanguage", indexEntry?.publicLocation.metadata?.["l10n.lang"]);
 
   return c.render(
     <Article
       content={post}
       propertiesHtml={indexEntry?.bodySlots?.properties}
+      bodySlots={indexEntry?.bodySlots}
       asideContent={
         <TableOfContents
           className="table-of-contents--desktop"

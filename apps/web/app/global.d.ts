@@ -10,6 +10,7 @@ declare module "hono" {
     Variables: {
       seo?: SeoMetadata;
       headTags?: readonly PluginHeadTag[];
+      htmlLanguage?: string;
     };
     Bindings: Record<string, never>;
   }

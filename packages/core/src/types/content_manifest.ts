@@ -22,6 +22,20 @@ export type ContentManifestPluginAsset = PluginAsset & {
   path: string;
 };
 
+/**
+ * A semantic position in a Site-owned article layout.
+ *
+ * The standard article consumer recognizes the `article.*` positions below.
+ * Other names remain valid so a custom Site can define its own layout slots.
+ */
+export type ContentBodySlot =
+  | "article.after-header"
+  | "article.after-meta"
+  | "article.before-content"
+  | "article.after-content"
+  | "article.footer"
+  | (string & {});
+
 export type ContentManifestEntry = {
   slug: string;
   permalink: string;
@@ -45,6 +59,25 @@ export type ContentManifestEntry = {
   backlinks: string[];
   assets: ContentAsset[];
 };
+
+/**
+ * Appends a Plugin-provided HTML fragment to a named Site layout slot.
+ *
+ * Plugins publish fragments; the Site chooses which slots to render and where.
+ * Appending preserves contributions from earlier plugins in resolved order.
+ */
+export function appendContentBodySlot(
+  entry: ContentManifestEntry,
+  slot: ContentBodySlot,
+  html: string,
+): void {
+  if (!html.trim()) return;
+  const previous = entry.bodySlots?.[slot];
+  entry.bodySlots = {
+    ...entry.bodySlots,
+    [slot]: previous ? `${previous}\n${html}` : html,
+  };
+}
 
 export type ContentRedirect = {
   path: string;

@@ -6,6 +6,7 @@ import {
   Article as ArticlePrimitive,
 } from "@riebeckite/honox/ui";
 import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
+import ContentSlot from "../content-slot/content-slot";
 
 type Props = {
   content: PostContent;
@@ -13,6 +14,7 @@ type Props = {
   asideContent?: unknown;
   afterContent?: unknown;
   footerContent?: unknown;
+  bodySlots?: Readonly<Record<string, string>>;
 };
 
 export default function Article(props: Props) {
@@ -29,6 +31,7 @@ export default function Article(props: Props) {
           <ArticleHeader
             dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
           />
+          <ContentSlot html={props.bodySlots?.["article.after-header"]} />
           {propertiesHtml ? (
             <div
               class="article-properties"
@@ -39,10 +42,14 @@ export default function Article(props: Props) {
             frontmatter={props.content.frontmatter}
             readingTimeMinutes={readingTimeMinutes}
           />
+          <ContentSlot html={props.bodySlots?.["article.after-meta"]} />
+          <ContentSlot html={props.bodySlots?.["article.before-content"]} />
           <div dangerouslySetInnerHTML={{ __html: articleHtml.rest }} />
           {props.afterContent}
+          <ContentSlot html={props.bodySlots?.["article.after-content"]} />
         </ArticleContent>
       </ArticleLayout>
+      <ContentSlot html={props.bodySlots?.["article.footer"]} />
       {props.footerContent}
     </ArticlePrimitive>
   );

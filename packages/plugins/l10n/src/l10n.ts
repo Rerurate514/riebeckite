@@ -1,10 +1,15 @@
 import {
+  appendContentBodySlot,
+  type ContentBodySlot,
   type ContentLocationInput,
   type ContentManifest,
   type ContentManifestEntry,
   type ContentPublicLocation,
+  createStyleAsset,
   type Diagnostic,
   definePlugin,
+  escapeHtml,
+  escapeHtmlAttribute,
   type PostFrontmatter,
 } from "@riebeckite/core";
 import { parse } from "yaml";
@@ -34,7 +39,21 @@ export type L10nOptions = {
   languages: readonly string[];
   strict?: boolean;
   detect?: (content: L10nDetectorContext) => L10nDetectorResult | undefined;
+  /**
+   * Publishes the built-in switcher into a standard article layout slot.
+   * Pass `false` to keep localization metadata and URLs without UI.
+   */
+  ui?: L10nUiOptions;
 };
+
+export type L10nUiOptions =
+  | false
+  | {
+      /** Defaults to the standard `article.after-meta` slot. */
+      slot?: ContentBodySlot;
+      /** Replaces the built-in server-rendered LanguageSwitcher. */
+      render?: (context: LanguageSwitcherRenderContext) => string | null;
+    };
 
 export type LocalizedContent = {
   readonly slug: string;
@@ -44,6 +63,19 @@ export type LocalizedContent = {
   readonly availableLanguages: readonly string[];
   readonly translations: Readonly<Record<string, string>>;
 };
+
+export type LanguageSwitcherRenderContext = {
+  readonly localization: LocalizedContent;
+};
+
+type ResolvedUiOptions =
+  | false
+  | {
+      readonly slot: ContentBodySlot;
+      readonly render: (
+        context: LanguageSwitcherRenderContext,
+      ) => string | null;
+    };
 
 type DetectedContent = L10nContent & {
   readonly lang: string;
@@ -64,6 +96,7 @@ export function l10n(options: L10nOptions) {
   return definePlugin({
     name: "l10n",
     options,
+    assets: [createStyleAsset("l10n")],
     validateOptions: () =>
       validateOptions(options).map((message) => ({ path: "l10n", message })),
     extendContentLocations: ({ entries, locations }) => {
@@ -100,6 +133,7 @@ export function l10n(options: L10nOptions) {
     },
     onManifestCreated: ({ manifest }) => {
       addLocalizationHeadTags(manifest, state);
+      addLanguageSwitchers(manifest, resolved.ui);
     },
     addDiagnostics: () => state.diagnostics,
   });
@@ -172,6 +206,7 @@ function resolveOptions(options: L10nOptions) {
     ),
     strict: options.strict ?? false,
     detect: options.detect,
+    ui: resolveUiOptions(options.ui),
   };
 }
 
@@ -207,7 +242,30 @@ function validateOptions(options: L10nOptions): string[] {
   if (options.detect !== undefined && typeof options.detect !== "function") {
     errors.push("l10n.detect must be a function.");
   }
+  if (options.ui !== undefined && options.ui !== false) {
+    if (typeof options.ui !== "object") {
+      errors.push("l10n.ui must be false or an object.");
+    } else if (
+      options.ui.slot !== undefined &&
+      (typeof options.ui.slot !== "string" || !options.ui.slot.trim())
+    ) {
+      errors.push("l10n.ui.slot must be a non-empty string.");
+    } else if (
+      options.ui.render !== undefined &&
+      typeof options.ui.render !== "function"
+    ) {
+      errors.push("l10n.ui.render must be a function.");
+    }
+  }
   return errors;
+}
+
+function resolveUiOptions(ui: L10nUiOptions | undefined): ResolvedUiOptions {
+  if (ui === false) return false;
+  return {
+    slot: ui?.slot ?? "article.after-meta",
+    render: ui?.render ?? renderLanguageSwitcher,
+  };
 }
 
 function canonicalLanguage(value: string): string {
@@ -472,6 +530,37 @@ function addLocalizationHeadTags(
       })),
     ];
   }
+}
+
+function addLanguageSwitchers(
+  manifest: ContentManifest,
+  ui: ResolvedUiOptions,
+): void {
+  if (ui === false) return;
+  for (const entry of manifest.entries) {
+    const localization = getLocalization(manifest, entry.slug);
+    if (!localization) continue;
+    const html = ui.render({ localization });
+    if (html) appendContentBodySlot(entry, ui.slot, html);
+  }
+}
+
+/** Framework-neutral default renderer for the standard LanguageSwitcher. */
+export function renderLanguageSwitcher({
+  localization,
+}: LanguageSwitcherRenderContext): string | null {
+  if (localization.availableLanguages.length < 2) return null;
+  const links = localization.availableLanguages
+    .map((lang) => {
+      const href = localization.translations[lang];
+      if (!href) return "";
+      const current = lang === localization.lang ? ' aria-current="page"' : "";
+      const escaped = escapeHtml(lang);
+      return `<li><a class="l10n-switcher__link" href="${escapeHtmlAttribute(href)}" hreflang="${escapeHtmlAttribute(lang)}" lang="${escapeHtmlAttribute(lang)}"${current}>${escaped}</a></li>`;
+    })
+    .join("");
+  if (!links) return null;
+  return `<nav class="l10n-switcher" aria-label="Language"><span class="l10n-switcher__label">Language</span><ul class="l10n-switcher__list">${links}</ul></nav>`;
 }
 
 function uniqueLanguageEntries(

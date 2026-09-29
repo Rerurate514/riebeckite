@@ -137,6 +137,7 @@ export type {
 } from "./src/types/config_validation.js";
 export type {
   ContentAsset,
+  ContentBodySlot,
   ContentLink,
   ContentLinkKind,
   ContentLocationInput,
@@ -145,6 +146,7 @@ export type {
   ContentPublicLocation,
   ContentRedirect,
 } from "./src/types/content_manifest.js";
+export { appendContentBodySlot } from "./src/types/content_manifest.js";
 export type {
   Diagnostic,
   DiagnosticCode,

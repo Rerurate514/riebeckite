@@ -129,6 +129,45 @@ test("does not invent missing translations and adds hreflang only for existing v
   assert.equal(manifest.byPermalink.has("/en/only"), false);
 });
 
+test("publishes the default LanguageSwitcher in a Site-owned article slot", async () => {
+  const content = manager({
+    "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
+    "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
+  });
+  const manifest = await content.getManifest();
+  const html =
+    manifest.bySlug.get("guide.en")?.bodySlots?.["article.after-meta"];
+  assert.match(html ?? "", /class="l10n-switcher"/);
+  assert.match(html ?? "", /href="\/guide"/);
+  assert.match(html ?? "", /href="\/en\/guide"/);
+  assert.ok(
+    manifest.assets.some(
+      (asset) => asset.moduleSpecifier === "@riebeckite/plugin-l10n/style.css",
+    ),
+  );
+});
+
+test("allows the switcher to be disabled, moved, or replaced", async () => {
+  const files = {
+    "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
+    "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
+  };
+  const disabled = await manager(files, { ui: false }).getManifest();
+  assert.equal(disabled.bySlug.get("guide.en")?.bodySlots, undefined);
+
+  const custom = await manager(files, {
+    ui: {
+      slot: "article.footer",
+      render: ({ localization }: { localization: { lang: string } }) =>
+        `<p data-language="${localization.lang}">Translations</p>`,
+    },
+  }).getManifest();
+  assert.equal(
+    custom.bySlug.get("guide.en")?.bodySlots?.["article.footer"],
+    '<p data-language="en">Translations</p>',
+  );
+});
+
 test("reports duplicate translation identities without exposing an ambiguous translation", async () => {
   const content = manager({
     "a.en.md": "---\ntranslation: same\n---\n# A",

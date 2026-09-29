@@ -1,6 +1,6 @@
 # @riebeckite/plugin-l10n
 
-Riebeckite の Markdown コンテンツをローカライズするプラグインです。UI 文言の翻訳や言語切替 UI は担当しません。
+Riebeckite の Markdown コンテンツをローカライズするプラグインです。UI 文言の翻訳は担当しませんが、標準の言語切替 UI を提供します。
 
 [English](./README.md)
 
@@ -33,7 +33,28 @@ translation: getting-started
 
 既定言語は既存の URL（`/about`）、その他は言語プレフィックス付き（`/en/about`）です。既存の Content Location を拡張するため、別の URL 解決プラグインとも併用できます。翻訳ごとに URL を変える場合は、異なるソースパスまたは permalink プラグインを使います。
 
-テーマは `getLocalization(manifest, slug)` から現在の言語、存在する言語、各翻訳の href を取得できます。`getLocalizedContent()` は翻訳がなければ `null` を返します。言語切替 UI はテーマ側で実装してください。
+テーマは `getLocalization(manifest, slug)` から現在の言語、存在する言語、各翻訳の href を取得できます。`getLocalizedContent()` は翻訳がなければ `null` を返します。
+
+## 標準 LanguageSwitcher
+
+`l10n(...)` は標準記事レイアウトの `article.after-meta` スロットへ、組み込みの LanguageSwitcher を登録します。標準 Site consumer がこのスロットを描画するため、l10n 専用の記事レイアウト実装は不要です。実在する翻訳が 2 つ未満のページには表示されません。
+
+```ts
+// URL とメタデータは維持し、UI だけを無効化します。
+l10n({ defaultLang: "ja", languages: ["ja", "en"], ui: false });
+
+// 配置の変更、またはサーバー描画コンポーネントの置換。
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  ui: {
+    slot: "article.footer",
+    render: ({ localization }) => `<p>${localization.lang}</p>`,
+  },
+});
+```
+
+Theme は `.l10n-switcher` の CSS class を上書きできます。`ui.render` はフレームワーク非依存の HTML renderer なので、カスタム Site は任意のサーバー描画コンポーネントへ置き換えられます。
 
 各ページには実在する翻訳だけを対象に `hreflang` の alternate link を追加します。WikiLink の Content Graph は同言語の翻訳を優先し、なければ元のリンク先を使います。通常の Markdown リンクは記述された URL を維持します。
 

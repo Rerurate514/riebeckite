@@ -20,7 +20,11 @@ function expect(condition, message) {
   if (!condition) errors.push(message);
 }
 
-const analyticsTemplateRoot = path.join(repositoryRoot, "templates", "analytics-cloudflare");
+const analyticsTemplateRoot = path.join(
+  repositoryRoot,
+  "templates",
+  "analytics-cloudflare",
+);
 const analyticsPackageRoot = path.join(
   repositoryRoot,
   "packages",
@@ -45,23 +49,30 @@ const analyticsTemplates = [
 ];
 
 function readWorkerSource(directory) {
-  return fs.readFileSync(path.join(analyticsTemplateRoot, directory, "src", "worker.ts"), "utf8");
+  return fs.readFileSync(
+    path.join(analyticsTemplateRoot, directory, "src", "worker.ts"),
+    "utf8",
+  );
 }
 
 for (const template of analyticsTemplates) {
   const name = `analytics-cloudflare/${template.directory}`;
-  const configPath = path.join(analyticsTemplateRoot, template.directory, "wrangler.jsonc");
-  const readmePath = path.join(analyticsTemplateRoot, template.directory, "README.md");
-  expect(
-    fs.existsSync(configPath),
-    `${name}/wrangler.jsonc is missing`,
+  const configPath = path.join(
+    analyticsTemplateRoot,
+    template.directory,
+    "wrangler.jsonc",
   );
-  expect(
-    fs.existsSync(readmePath),
-    `${name}/README.md is missing`,
+  const readmePath = path.join(
+    analyticsTemplateRoot,
+    template.directory,
+    "README.md",
   );
+  expect(fs.existsSync(configPath), `${name}/wrangler.jsonc is missing`);
+  expect(fs.existsSync(readmePath), `${name}/README.md is missing`);
   expect(
-    fs.existsSync(path.join(analyticsTemplateRoot, template.directory, "src", "worker.ts")),
+    fs.existsSync(
+      path.join(analyticsTemplateRoot, template.directory, "src", "worker.ts"),
+    ),
     `${name}/src/worker.ts is missing`,
   );
 
@@ -96,8 +107,7 @@ for (const template of analyticsTemplates) {
   );
   for (const key of template.idPath) {
     expect(
-      typeof binding?.[key] === "string" &&
-        (binding?.[key] ?? "").length > 0,
+      typeof binding?.[key] === "string" && (binding?.[key] ?? "").length > 0,
       `${name}/wrangler.jsonc ${template.storageKind}[0].${key} must be set`,
     );
   }
@@ -195,15 +205,14 @@ if (errors.length === 0) {
     "pnpm run build",
     "workflow_dispatch",
   ]) {
-    expect(
-      workflow.includes(needle),
-      `deploy.yml must reference ${needle}`,
-    );
+    expect(workflow.includes(needle), `deploy.yml must reference ${needle}`);
   }
 }
 
 if (errors.length > 0) {
-  console.error(`Deploy template validation failed (${errors.length} error(s)):`);
+  console.error(
+    `Deploy template validation failed (${errors.length} error(s)):`,
+  );
   for (const error of errors) console.error(`- ${error}`);
   process.exitCode = 1;
 } else {

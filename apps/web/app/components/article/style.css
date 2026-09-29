@@ -42,3 +42,41 @@
     }
   }
 }
+
+.article-shell__outro {
+  min-width: 0;
+  padding-inline: var(--rb-space-2);
+}
+
+/* App-level layout: on the default `article` layout the table of contents
+   becomes a sticky rail on the LEFT of the article column, and the outro
+   (article footer slots) stays aligned with the article body. These rules are
+   unlayered on purpose so they beat the plugin styles (which place the TOC on
+   the right) imported later via `.riebeckite/plugin-styles.css`. */
+@media (min-width: 88rem) {
+  :root[data-article-layout="article"] .article-shell__layout {
+    grid-template-columns:
+      var(--rb-layout-sidebar)
+      minmax(0, var(--rb-layout-article-max));
+    justify-content: center;
+  }
+
+  :root[data-article-layout="article"] .article-shell__body {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  :root[data-article-layout="article"]
+    .article-shell__layout
+    .table-of-contents--desktop {
+    grid-column: 1;
+    grid-row: 1;
+    margin-inline-start: 0;
+    /* Keep the sticky rail clear of the floating color-mode switch. */
+    max-height: calc(100vh - 7rem);
+  }
+
+  :root[data-article-layout="article"] .article-shell__outro {
+    grid-column: 2;
+  }
+}

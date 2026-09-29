@@ -6,11 +6,7 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| 1 | K | honox scaffold の型チェックエラーを修正する（`templates.ts` の `ScaffoldOptions` を `string` に代入できない箇所） | 未着手 | Small | `pnpm run typecheck` / リリースをブロックする実バグ |
-| 2 | L | JSON-LD（`<script type="application/ld+json">`）への XSS 対策を入れる | 未着手 | Small | `JSON.stringify` は `<` `>` `&` U+2028/U+2029 をエスケープしないため `</script>` による script インジェクションの余地。`_renderer.tsx` と plugin-breadcrumbs の両方が対象。`escapeScriptJson` を Core の `utils/html.ts` に集約して適用し、重複している canvas / excalidraw / hover-preview の実装を置き換える |
-| 3 | M | レビュー時の `pnpm check --write .` で発生したフォーマット差分を整理する | 未着手 | Small | 作業ツリーに ~604 ファイルの整形ノイズが残っている。honox scaffold/templates.ts のユーザー未コミット作業（OPTION_DEPTH / optionContext / renderOptions 等）は保持する |
-| 4 | N | ルート `pnpm check` を書き込みモードから分離する（読み取り専用 `check` + 明示 `check:fix`） | 未着手 | Small | レビュー/CI で意図しない一括フォーマットが走る（M の原因）。docs には既存挙動の記載があるため変更時は en/ja 両方の更新が必要 |
-| 5 | P4 | 外部 E2E の `pnpm pack` フェーズを高速化する | 未着手 | Medium | 45 パッケージの pack が 240 秒の制限を超えてタイムアウト。pack のキャッシュ/並列化または CI 予算の拡大を検討 |
+| — | — | （バックログ内の実装対象はすべて完了） | 完了 | — | — |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -34,6 +30,11 @@
 | G | 型チェックを強制する | Medium | `build_package.mjs` が型エラー時に exit 1 するよう変更＋ `scripts/typecheck_packages.mjs`（`tsc --noEmit` 全 66 パッケージ集約）と root `typecheck` スクリプトを追加。`skipLibCheck: true` は維持 |
 | 8 | plugin-breadcrumbs: スラッグの階層からパンくずを生成し構造化データ（BreadcrumbList）も出力する | Small | 新規 `packages/plugins/breadcrumbs/`。`onManifestCreated` で記事フラグメント先頭に `<nav data-breadcrumbs>` を挿入し、階層 BreadcrumbList を `entry.headTags` の `application/ld+json` として提供。`[slug{.+}].tsx` では seo プラグインの 2 階層 BreadcrumbList を除去して重複を回避 |
 | 9 | plugin-sidenotes: 引用/脚注をマージン注にした Tufte 風サイドノートを実装する（脚注ポップオーバー付き） | Medium | 新規 `packages/plugins/sidenotes/`。GFM 脚注を rehype 変換でマージン注（デスクトップ）/ポップオーバー（モバイル）に書き換え。`rr-sidenotes__note` をブロック先祖の直後に配置、`data-footnotes` の定義と backlink は維持。client は 48rem 以上で無効化 |
+| K | honox scaffold の型チェックエラーを確認する | Small | commit 1eda2b2 で既に解消済みと確認。`pnpm run typecheck` 68 packages OK、`check:scaffold` も PASS。変更不要 |
+| L | JSON-LD（`<script type="application/ld+json">`）への XSS 対策を入れる | Small | `escapeScriptJson` を Core の `utils/html.ts` に集約し Core public API から export。`_renderer.tsx` と plugin-breadcrumbs の sink を修復、canvas / excalidraw / hover-preview のローカル実装を import に置換。commit 0f85b9e |
+| M | レビュー時の `pnpm check --write .` で発生したフォーマット差分を整理する | Small | 作業ツリーはクリーン。ユーザー作業（OPTION_DEPTH / optionContext / renderOptions 等）は 1eda2b2 に保存済みで剰務なし |
+| N | ルート `pnpm check` を書き込みモードから分離する（読み取り専用 `check` + 明示 `check:fix`） | Small | `package.json`: `check` → `biome check .`（読み取り専用）、`check:fix` → `biome check --write .` を新設。docs en/ja を更新。commit 7ae8a58 |
+| P4 | 外部 E2E の `pnpm pack` フェーズを高速化する | Medium | `runAsync` を追加し並列度 4 の pool で `packPackages` を並列化。pack フェーズ 240 秒超 → ~80 秒に短縮、E2E フル PASS。commit 32d6a64 |
 
 ## 実装メモ（agents 用）
 

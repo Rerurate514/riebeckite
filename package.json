@@ -11,6 +11,7 @@
     "check:packages": "node scripts/check_packages.mjs",
     "check:dependencies": "node scripts/check_dependencies.mjs",
     "check:templates": "node scripts/check_deploy_template.mjs",
+    "release": "node scripts/release.mjs",
     "test:e2e:external": "node tests/external-site/run.mjs",
     "lint": "biome lint .",
     "format": "biome format --write .",

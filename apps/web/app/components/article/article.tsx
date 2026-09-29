@@ -41,7 +41,7 @@ export default function Article(props: Props) {
       <ArticleLayout>
         {props.asideContent}
         <ArticleContent>
-<ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
+          <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
           <ContentSlot html={props.bodySlots?.["article.after-header"]} />
           {propertiesHtml ? (
             <div

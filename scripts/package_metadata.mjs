@@ -10,6 +10,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/autocardlink",
   "packages/plugins/backlinks",
   "packages/plugins/bases",
+  "packages/plugins/breadcrumbs",
   "packages/plugins/canvas",
   "packages/plugins/chartjs",
   "packages/plugins/code-annotations",
@@ -54,6 +55,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/seo",
   "packages/plugins/series",
   "packages/plugins/shortcodes",
+  "packages/plugins/sidenotes",
   "packages/plugins/text-fragment",
   "packages/plugins/toc",
   "packages/plugins/ux",
@@ -132,6 +134,10 @@ const packagePublishingMetadata = {
   "packages/plugins/bases": {
     description: "Build-time rendering for Obsidian Bases definitions.",
     keywords: ["riebeckite", "plugin", "obsidian", "bases"],
+  },
+  "packages/plugins/breadcrumbs": {
+    description: "Slug-hierarchy breadcrumb navigation for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "breadcrumbs", "navigation"],
   },
   "packages/plugins/canvas": {
     description: "Obsidian Canvas diagram rendering for Riebeckite.",
@@ -319,6 +325,11 @@ const packagePublishingMetadata = {
   "packages/plugins/shortcodes": {
     description: "Remark directive shortcodes for Riebeckite Markdown.",
     keywords: ["riebeckite", "plugin", "shortcodes", "remark"],
+  },
+  "packages/plugins/sidenotes": {
+    description:
+      "Tufte-style side notes for Riebeckite footnotes, with mobile popovers",
+    keywords: ["riebeckite", "plugin", "sidenotes", "footnotes"],
   },
   "packages/plugins/text-fragment": {
     description: "Text Fragment links and quotes for Riebeckite articles.",

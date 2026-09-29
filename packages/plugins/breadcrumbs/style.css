@@ -1,0 +1,39 @@
+.rb-breadcrumbs {
+  margin-block: 0 0.75rem;
+}
+
+.rb-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rb-breadcrumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.rb-breadcrumbs__link {
+  color: var(--rb-color-muted, inherit);
+  text-decoration: none;
+}
+
+.rb-breadcrumbs__link:hover {
+  color: var(--rb-color-accent, inherit);
+  text-decoration: underline;
+}
+
+.rb-breadcrumbs__current {
+  color: var(--rb-color-ink, inherit);
+  font-weight: 600;
+}
+
+.rb-breadcrumbs__separator {
+  color: var(--rb-color-muted, inherit);
+  opacity: 0.6;
+}

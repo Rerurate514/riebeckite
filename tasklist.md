@@ -6,9 +6,7 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| 1 | G | 型チェックを強制する（`tsc --noEmit` の導入と `build_package.mjs` の型エラー失敗化） | 未着手 | Medium | `build_package.mjs` は型エラーをログするだけで exit 1 しない。`skipLibCheck: true` の妥当性も再検討 |
-| 2 | — | plugin-breadcrumbs: スラッグの階層からパンくずを生成し構造化データ（BreadcrumbList）も出力する | 未着手 | Small | 階層ナビゲーションの欠落を補う。renderer + seo で実装可能 |
-| 3 | — | plugin-sidenotes: 引用/脚注をマージン注にした Tufte 風サイドノートを実装する（脚注ポップオーバー付き） | 未着手 | Medium | remark/rehype + CSS + client で完結。読書体験の差別化。既存の脚注（GFM）と互換 |
+| — | — | （バックログ内の実装対象はすべて完了） | 完了 | — | — |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -29,6 +27,9 @@
 | 11 | モバイル表示時にトップ余白が大きすぎる問題を修正する | Small | `shell.css` で `.riebeckite-page` のモバイル上余白を 4rem → 1rem に縮小（`48rem` 境界、他のモバイルブレークポイントと統一） |
 | I | リリース手順を一本化する | Medium | `scripts/release.mjs` を新設。bump（`--dry-run` 対応）→ build → check 一括 → 依存グラフのトポロジカル順 publish → commit/tag。root に `release` スクリプト追加 |
 | J | メタ情報のドリフトを解消する | Small | `taskfile.yaml` 削除、`create-riebeckite` の README_ja.md 追加と tarball 同梱（`files` 修正）、`apps/web` 依存ソート、`check_packages.mjs` で README_ja を必須化 |
+| G | 型チェックを強制する | Medium | `build_package.mjs` が型エラー時に exit 1 するよう変更＋ `scripts/typecheck_packages.mjs`（`tsc --noEmit` 全 66 パッケージ集約）と root `typecheck` スクリプトを追加。`skipLibCheck: true` は維持 |
+| 8 | plugin-breadcrumbs: スラッグの階層からパンくずを生成し構造化データ（BreadcrumbList）も出力する | Small | 新規 `packages/plugins/breadcrumbs/`。`onManifestCreated` で記事フラグメント先頭に `<nav data-breadcrumbs>` を挿入し、階層 BreadcrumbList を `entry.headTags` の `application/ld+json` として提供。`[slug{.+}].tsx` では seo プラグインの 2 階層 BreadcrumbList を除去して重複を回避 |
+| 9 | plugin-sidenotes: 引用/脚注をマージン注にした Tufte 風サイドノートを実装する（脚注ポップオーバー付き） | Medium | 新規 `packages/plugins/sidenotes/`。GFM 脚注を rehype 変換でマージン注（デスクトップ）/ポップオーバー（モバイル）に書き換え。`rr-sidenotes__note` をブロック先祖の直後に配置、`data-footnotes` の定義と backlink は維持。client は 48rem 以上で無効化 |
 
 ## 実装メモ（agents 用）
 
@@ -39,23 +40,4 @@
 - 変更前に `docs/en/development.md` を読み、依存方向のルールを守る（Core にアプリ固有の import を置かない等）。
 - 新規プラグインは `packages/plugins/related-posts` をテンプレートにする。
 
-### 1. G: 型チェックの強制（Medium）
-
-- **対象**: `scripts/build_package.mjs`（型エラー時に exit 1）、各パッケージまたはルートの `tsc --noEmit` スクリプト、`tsconfig.json`（`include` は現状 `riebeckite.config.ts` のみ）、`skipLibCheck` の扱い
-- **前提**: なし（着手前に既存の型エラー数を把握する）
-- **手順**: 全ソースに対して `tsc --noEmit` 相当を試行し現状のエラーを列挙 → `build_package.mjs` を `errors.length > 0` で `process.exitCode = 1` に変更 → 既存エラーを順次解消 → 必要ならパッケージ単位の typecheck スクリプトとルート集約を追加
-- **完了条件**: 型エラーがビルドを失敗させる。`pnpm build:packages` が型エラー 0 で通る
-
-### 2. plugin-breadcrumbs（Small）
-
-- **対象**: 新規 `packages/plugins/breadcrumbs/`（`index.ts`・`src/`・`style.css`・`package.json`・`README.md`・`README_ja.md`）、`scripts/package_metadata.mjs` への登録、`riebeckite.config.ts` への追加、`apps/web/package.json` への依存追加
-- **前提**: 新規プラグイン手順（`related-posts` をテンプレート）。slug 階層からパンくずを生成し、前段の題名解決は `getArticleTitle` 相当を使う
-- **手順**: パンくず配列の生成 → 記事上部への `<nav>` 挿入（`onManifestCreated` で `entry.html` に追記、`related-posts` と同パターン）→ BreadcrumbList JSON-LD を seo 出力に追加。README 対訳を作成
-- **完了条件**: `pnpm check:packages` 通過。ビルドでパンくず nav と BreadcrumbList が出力される
-
-### 3. plugin-sidenotes（Medium）
-
-- **対象**: 新規 `packages/plugins/sidenotes/`（同上の登録一式）。remark/rehype 変換 + CSS + client（ポップオーバー）
-- **前提**: 新規プラグイン手順。既存脚注（GFM / rehype）との互換を先に設計。client 資産の登録は `plugin-toc` や `code-annotations` のパターンを参照
-- **手順**: 脚注をマージン注として描画するレイアウト変換 → デスクトップはマージン注、モバイルはポップオーバー/折りたたみの CSS と client を実装。README 対訳を作成
-- **完了条件**: `pnpm check:packages` 通過。デスクトップでマージン注、モバイルでポップオーバーが動作する
+（実装メモはすべて解決済み。次にプラグインを追加する際は `plugin-breadcrumbs` / `plugin-sidenotes` を新しいテンプレートにすると良い。）

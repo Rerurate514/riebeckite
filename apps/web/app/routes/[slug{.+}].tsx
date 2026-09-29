@@ -5,6 +5,7 @@ import {
   ssgEnumerableHandler,
 } from "@riebeckite/honox/server";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
+import { hasBreadcrumbHeadTag } from "@riebeckite/plugin-breadcrumbs";
 import { getLocalGraph, LocalGraph } from "@riebeckite/plugin-local-graph";
 import {
   extractTableOfContents,
@@ -15,7 +16,7 @@ import Article from "../components/article/article";
 import { config } from "../config";
 import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
-import { buildArticleSeo } from "../lib/seo";
+import { buildArticleSeo, type SeoMetadata } from "../lib/seo";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", async () => {
@@ -60,14 +61,21 @@ export default createRoute(
       resolveTitle: getArticleTitle,
     });
     const tableOfContents = extractTableOfContents(post.html ?? "");
-    c.set("seo", buildArticleSeo(route.entry.permalink, post));
+    const seo = buildArticleSeo(route.entry.permalink, post);
+    // The breadcrumbs plugin contributes the hierarchical BreadcrumbList as a
+    // head tag; drop the seo plugin's two-level placeholder for this entry so
+    // the page carries a single BreadcrumbList entity.
+    if (hasBreadcrumbHeadTag(route.entry.headTags)) {
+      seo.jsonLd = withoutBreadcrumbList(seo.jsonLd);
+    }
+    c.set("seo", seo);
     c.set("headTags", route.entry.headTags ?? []);
     c.set("htmlLanguage", route.entry.publicLocation.metadata?.["l10n.lang"]);
 
     return c.render(
       <Article
         content={post}
-title={getArticleTitle(slug, post.frontmatter.title)}
+        title={getArticleTitle(slug, post.frontmatter.title)}
         propertiesHtml={route.entry.bodySlots?.properties}
         bodySlots={route.entry.bodySlots}
         asideContent={
@@ -86,3 +94,11 @@ title={getArticleTitle(slug, post.frontmatter.title)}
     );
   }),
 );
+
+/** Removes the seo plugin's placeholder BreadcrumbList from article JSON-LD. */
+function withoutBreadcrumbList(
+  jsonLd: SeoMetadata["jsonLd"],
+): SeoMetadata["jsonLd"] {
+  if (!Array.isArray(jsonLd)) return jsonLd;
+  return jsonLd.filter((schema) => schema?.["@type"] !== "BreadcrumbList");
+}

@@ -3,6 +3,7 @@ import { aliasPlugin } from "@riebeckite/plugin-alias";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { chartjs } from "@riebeckite/plugin-chartjs";
@@ -46,6 +47,7 @@ import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
+import { sidenotes } from "@riebeckite/plugin-sidenotes";
 import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { uxPlugin } from "@riebeckite/plugin-ux";
@@ -168,6 +170,7 @@ export default defineConfig({
     searchPlugin(),
     tocPlugin(),
     backlinksPlugin(),
+    breadcrumbs(),
     queryPlugin(),
     bases(),
     dataviewPlugin(),
@@ -182,6 +185,7 @@ export default defineConfig({
     gardenExplorerPlugin(),
     hoverPreviewPlugin(),
     shortcodes(),
+    sidenotes(),
     series(),
     dailyNotesPlugin(),
     renamePlugin(),

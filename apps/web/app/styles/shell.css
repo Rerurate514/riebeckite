@@ -7,4 +7,10 @@
     align-items: center;
     padding-block: var(--rb-space-8);
   }
+
+  @media (max-width: 48rem) {
+    .riebeckite-page {
+      padding-block: var(--rb-space-2) var(--rb-space-8);
+    }
+  }
 }

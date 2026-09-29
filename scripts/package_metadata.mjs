@@ -31,6 +31,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/highlight",
   "packages/plugins/hover-preview",
   "packages/plugins/kanban",
+  "packages/plugins/l10n",
   "packages/plugins/lightbox",
   "packages/plugins/local-graph",
   "packages/plugins/markmap",
@@ -217,6 +218,17 @@ const packagePublishingMetadata = {
   "packages/plugins/kanban": {
     description: "Build-time rendering for Obsidian Kanban boards.",
     keywords: ["riebeckite", "plugin", "kanban", "obsidian"],
+  },
+  "packages/plugins/l10n": {
+    description:
+      "Content localization, localized URLs, and translation metadata for Riebeckite.",
+    keywords: [
+      "riebeckite",
+      "plugin",
+      "localization",
+      "i18n",
+      "l10n",
+    ],
   },
   "packages/plugins/lightbox": {
     description: "Click-to-zoom image lightboxes for Riebeckite.",
@@ -456,6 +468,7 @@ export function expectedPackageMetadata(directory) {
       "analytics",
       "daily-notes",
       "deploy",
+      "l10n",
       "quality",
       "rename",
       "text-fragment",

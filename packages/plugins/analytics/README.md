@@ -75,6 +75,13 @@ Capabilities are `capture`, `content_page_views`, and `popular_content`. Call
 `assertAnalyticsQuerySupported(provider, query)` when implementing a provider
 that may not support all queries.
 
+## Diagnostics
+
+`@riebeckite/plugin-diagnostics` reports an `analytics-untracked` finding for
+published content without a stable content ID when the site enables this
+plugin, so tracking gaps are visible in `check`, `doctor`, and build
+diagnostics.
+
 ## Exports
 
 - `analytics()` / `analyticsPlugin()`

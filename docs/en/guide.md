@@ -80,6 +80,7 @@ Frontmatter the reference application reads:
 | Key | Effect |
 | --- | --- |
 | `title` | Page title. Required by the reference diagnostics configuration |
+| `id` | Stable content ID used by the analytics plugin; without it the page publishes but is not tracked |
 | `publish` | Publishes the entry under the explicit strategy |
 | `private`, `draft` | Excludes the entry under the selective strategy |
 | `noindex` | Keeps the entry out of listings and the sites index |
@@ -139,6 +140,8 @@ Deployment settings live in `apps/web/wrangler.jsonc`; `assets.directory` points
 
 For a site outside this repository, start from the [Cloudflare deployment template](../../templates/cloudflare/README_en.md). It provides a generic `wrangler.jsonc` and a GitHub Actions workflow that checks, builds, and deploys the generated `dist/` as Workers Static Assets. Because Riebeckite pre-renders content routes and plugin endpoints, the asset-only Worker mirrors the reference configuration; no runtime `main` entry is required. Set `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then adjust the Worker name in the template. Validate locally with `pnpm exec wrangler deploy --dry-run` before the first deploy.
 
+Page-view tracking is an optional, separate Worker. Configure `@riebeckite/plugin-analytics` on the site and deploy the collector from `templates/analytics-cloudflare` (D1 or KV) in its own repository; see [Analytics](./analytics.md).
+
 ## 8. Extend the site
 
 - **Add a plugin.** Install or reference the package, then register it in the `plugins` array. Read the package README under `packages/plugins/*/README.md` for its options. Plugins can add Markdown transforms, HTML transforms, assets, browser behavior, endpoints, SEO, and diagnostics.
@@ -179,6 +182,8 @@ The fixture keeps its Obsidian vault in a sibling `vault/` directory and points 
 | --- | --- |
 | Content does not appear | `publish: true` (explicit strategy), `content.exclude` patterns, and `inspect content --list` |
 | A page 404s despite an existing file | The resolved permalink from `inspect graph` or `inspect content --list` |
+| Analytics shows no views for a page | The content has no stable `id`; `doctor` and diagnostics report it as `analytics-untracked` |
+| No browser events reach the collector | The site `collectorUrl` and the Worker's allowed origins disagree; check both |
 | Attachments 404 after deployment | The site-owned copy step ran before the build and targeted `public/assets/attachments/` |
 | `doctor` reports a content failure | `inspect config` for the resolved content directory and its existence |
 | Build output is stale | Rerun without incremental reuse: `riebeckite build --full` |

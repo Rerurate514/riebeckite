@@ -83,6 +83,7 @@ Build tooling
 |[Plugin System](./plugin-system.md)|Plugin、lifecycle、capability と依存関係、options validation、pipeline、renderer、assets、cache、observability|
 |[Theme System](./theme-system.md)|Theme contract、color mode、タイポグラフィ、design token、CSS cascade、Plugin との境界、テーマパッケージ構成|
 |[HonoX Integration](./honox-integration.md)|HonoX/Vite への接続、Application Root との役割分担、Cloudflare Workers と SSG の境界|
+|[Analytics](./analytics.md)|ブラウザのページビュー計測（`@riebeckite/plugin-analytics`）と、独立デプロイの Cloudflare Worker コレクタ（`@riebeckite/analytics-cloudflare`）|
 
 ### ビルド・運用・調査
 
@@ -109,6 +110,7 @@ Riebeckite では必要な Plugin を選んでサイトを構成します。リ�
 - **記事体験**: syntax highlighting、コードブロックの強化、code tabs、diff、TOC、backlinks、recent posts、lightbox、auto card link。
 - **ナビゲーション**: search、local graph、garden explorer、コンテンツ間のリンクグラフ。
 - **公開と発見性**: SEO、RSS / Atom / JSON Feed、sitemap、`robots.txt`、Plugin による endpoint。
+- **アクセス解析**: 安定 content ID をキーにしたストレージ非依存のページビュー計測と、D1/KV を備えた独立 Cloudflare Worker コレクタ。
 - **開発者体験**: 設定・Plugin options の検証、incremental build、Plugin Cache、diagnostics、doctor、structured logging、tracing、profiling、inspector。
 - **表示**: 交換可能な Theme と、Theme/Plugin 間で共有する CSS contract。実行時のカラーモード切り替え（`@riebeckite/plugin-color-mode`）も含みます。
 

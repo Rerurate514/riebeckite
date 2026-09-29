@@ -17,6 +17,8 @@ framework に依存します。npm から install できる想定の package は
 | `@riebeckite/honox` | HonoX/Vite integration | `.`, `./server`, `./ui` |
 | `@riebeckite/cli` | `riebeckite` build-time command | `riebeckite` executable |
 | `@riebeckite/plugin-*` | 公式 Plugin | `.` と package が宣言する `./client`, `./components`, `./style.css` |
+| `@riebeckite/plugin-analytics` | ストレージ非依存の analytics plugin と provider / query 契約 | `.`, `./client` |
+| `@riebeckite/analytics-cloudflare` | D1/KV ストレージを備えた Cloudflare Worker コレクタ | `.` |
 | `@riebeckite/theme-*` | 公式 Theme | `.` と `./style.css`（`./styles/theme.css`） |
 
 public なのは package root と、各 package の `exports` が宣言する subpath だけ
@@ -116,3 +118,5 @@ publish 前には manifest の diff を確認し、必要な package check と b
 Renderer は扱わない input に `null` を返します。Endpoint は reusable HTTP behavior を公開できますが、Core を HonoX router にするものではありません。
 
 build/runtime boundary を越える public data は serializable に保ちます。既存 abstraction を迂回する export を増やす前に ownership を決めてください。config validation や plugin dependency failure は明示的な error として扱い、null protocol を新設しません。
+
+詳細な contract は [Content system](content-system.md)、[Plugin system](plugin-system.md)、[Theme system](theme-system.md)、[HonoX integration](honox-integration.md) を参照してください。ページビュー計測の plugin と Cloudflare Worker コレクタは [Analytics](analytics.md) を参照してください。

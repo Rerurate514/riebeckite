@@ -1,6 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
 import { aliasPlugin } from "@riebeckite/plugin-alias";
-import { analytics } from "@riebeckite/plugin-analytics";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
@@ -81,7 +80,6 @@ export default defineConfig({
     userCss: [],
   }),
   plugins: [
-    analytics({ provider: "plausible", domain: "my-blog.pages.dev" }),
     obsidianMarkdown(),
     properties({
       render: "slot",

@@ -1,136 +1,84 @@
 # @riebeckite/plugin-analytics
 
-Provider analytics injection for Riebeckite sites: a static bootstrap endpoint
-plus a browser entry that loads it.
+Storage-independent analytics primitives and browser page-view tracking for
+Riebeckite. It contains no Cloudflare, Worker, database, or vendor code.
 
 [日本語](./README_ja.md)
 
-## Overview
+## Design
 
-`analytics()` registers:
-
-- one GET endpoint (default `/_analytics.js`) that serves a small provider
-  bootstrap written in JavaScript, and
-- one client entry, `initAnalytics`, that appends
-  `<script defer src="/_analytics.js">` to `document.head` exactly once.
-
-The plugin is build-time only. It never executes provider code during the static
-build.
+- `AnalyticsEvent` includes a typed `page_view` event and can be extended with
+  provider-specific event unions.
+- `AnalyticsProvider` declares discoverable capabilities and exposes `capture`
+  and `query`. Queries cover per-content page views and popular content, with
+  optional ISO-8601 time ranges.
+- `UnsupportedAnalyticsQueryError` makes unsupported query capabilities
+  explicit. `MemoryAnalyticsProvider` is included for tests and local examples.
+- Provider runtime configuration (credentials, storage, bindings) stays inside
+  the provider. The browser receives only `AnalyticsPublicConfig`.
 
 ## Usage
 
 ```ts
-import { defineConfig } from "@riebeckite/core";
-import { analytics } from "@riebeckite/plugin-analytics";
+import { analytics, MemoryAnalyticsProvider } from "@riebeckite/plugin-analytics";
 
-export default defineConfig({
-  // ...
+const provider = new MemoryAnalyticsProvider();
+
+export default {
   plugins: [
-    analytics({ provider: "plausible", domain: "example.com" }),
+    analytics({
+      provider,
+      publicConfig: { collectorUrl: "/analytics/events" },
+    }),
   ],
+};
+```
+
+`collectorUrl` is intentionally public. It is a relative path or an HTTP(S)
+URL for a collector that accepts a JSON `POST` body. A future provider package
+can expose a collector backed by its own private runtime configuration.
+
+## Browser behavior
+
+For every published content entry with Core's source-authored stable `id` (or
+legacy `uid`), the plugin places a small content-ID marker in rendered HTML and
+registers `initAnalytics` with the generic public-config client mechanism.
+
+In a browser, the initializer sends exactly one event per document:
+
+```json
+{
+  "type": "page_view",
+  "contentId": "guide-1",
+  "occurredAt": "2026-01-01T00:00:00.000Z",
+  "path": "/guide",
+  "lang": "en"
+}
+```
+
+`path` and `lang` are contextual metadata, not identity. Content without a
+stable ID is not tracked. The initializer is a no-op during builds/SSR and is
+idempotent in a document. Riebeckite's current static document navigation needs
+no SPA route hooks; SPA navigation is not tracked automatically.
+
+## Provider contract
+
+```ts
+const result = await provider.query({
+  type: "popular_content",
+  limit: 10,
+  timeRange: { from: "2026-01-01T00:00:00.000Z" },
 });
 ```
 
-Provider examples:
-
-```ts
-analytics({ provider: "plausible", domain: "example.com" });
-analytics({ provider: "umami", siteId: "xxxxxxxx-xxxx-xxxx" });
-analytics({ provider: "umami", siteId: "…", domain: "example.com" });
-analytics({ provider: "google-analytics", measurementId: "G-XXXXXXXXXX" });
-analytics({ provider: "custom", scriptUrl: "https://cdn.example.com/a.js" });
-analytics({ provider: "custom", snippet: "window.__analytics = true;" });
-```
-
-## Options
-
-| Option | Type | Required | Description |
-| ------ | ---- | -------- | ----------- |
-| `provider` | `"plausible" \| "umami" \| "google-analytics" \| "custom"` | yes | Provider whose bootstrap is served |
-| `domain` | `string` | Plausible; optional for Umami | Plausible `data-domain`, or Umami `data-domains` |
-| `siteId` | `string` | Umami | Umami `data-website-id` |
-| `measurementId` | `string` | google-analytics | GA measurement id (`G-…`) |
-| `scriptUrl` | `string` | Provider default | Overrides the provider script URL; the custom script URL when no `snippet` is given |
-| `snippet` | `string` | custom (with no `scriptUrl`) | Raw bootstrap JavaScript, served verbatim |
-| `scriptPath` | `string` | `/_analytics.js` | Endpoint and client script path |
-
-`validateOptions` reports missing or mistyped fields through the standard
-Riebeckite config validation, so `riebeckite check` fails fast on a bad setup.
-
-Provider script URL defaults:
-
-| Provider | Default URL |
-| -------- | ----------- |
-| `plausible` | `https://plausible.io/js/script.js` |
-| `umami` | `https://cloud.umami.is/script.js` |
-| `google-analytics` | `https://www.googletagmanager.com/gtag/js` |
-
-## Endpoint contract
-
-- `GET /_analytics.js`
-- `200 OK`
-- `Content-Type: application/javascript; charset=utf-8`
-- `Cache-Control: public, max-age=3600`
-- Body: a self-executing snippet that creates the provider `<script>` tag
-  (`async`/`defer` as appropriate). All configured values are JSON-encoded, so
-  they cannot break out of their string literals.
-
-`google-analytics` also defines `window.dataLayer` and `window.gtag` before
-configuring the measurement id. `custom` returns the `snippet` verbatim, or a
-generic loader for `scriptUrl`.
-
-## Client behavior (`initAnalytics`)
-
-- Runs on page load through `initRiebeckiteClient()`; no component or layout
-  change is required.
-- Appends one `<script defer src="/_analytics.js" data-riebeckite-analytics>`
-  to `document.head`, and is a no-op if that tag already exists.
-
-## Privacy and trust boundary
-
-- No analytics data is collected at build time; the endpoint only serves code.
-- The `custom` provider's `snippet` (or any `scriptUrl`) is injected as-is into
-  visitors' pages. Treat it as trusted configuration, never as user input.
-- Nothing is sanitized or proxied: whatever provider you configure receives the
-  requests directly from the browser, under the site's own origin and privacy
-  policy.
-
-## Verifiability
-
-Static builds do not execute client JavaScript. To keep analytics verifiable in
-built HTML, `onManifestCreated` appends functional tags to every entry:
-
-```html
-<link rel="preload" as="script" href="/_analytics.js" />
-<script defer src="/_analytics.js" data-riebeckite-analytics></script>
-```
-
-These are the real tags the browser would load, so no fabricated marker is
-inserted. The injection is idempotent (guarded by `data-riebeckite-analytics`)
-and does not alter the surrounding document structure.
-
-## Limitations
-
-- **Static client path.** The client entry receives no options, so it always
-  loads `/_analytics.js`. If you override `scriptPath`, mount the endpoint and
-  load it yourself with a custom client entry.
-- **No SPA route tracking.** Client-side routed SPA navigations are not
-  reported automatically; configure the provider or send events manually.
-- **Document lifecycle only.** The bootstrap runs once on initial load. Provide
-  your own `snippet` if you need a more involved lifecycle.
-- **No consent management.** The plugin does not gate loading on user consent;
-  add that in a client entry if your jurisdiction requires it.
+Capabilities are `capture`, `content_page_views`, and `popular_content`. Call
+`assertAnalyticsQuerySupported(provider, query)` when implementing a provider
+that may not support all queries.
 
 ## Exports
 
-- `analytics(options)` / `analyticsPlugin(options)` — plugin factory
-- `initAnalytics` — browser initializer (also via
-  `@riebeckite/plugin-analytics/client`)
-- `buildAnalyticsScript(options)` — pure bootstrap builder
-- `validateAnalyticsOptions(options)` — options validator
-- Constants: `ANALYTICS_SCRIPT_PATH`, `ANALYTICS_SCRIPT_ATTRIBUTE`
-- Types: `AnalyticsOptions`, `AnalyticsProvider`
-
-## See also
-
-- [Plugin guide](../../docs/plugins_en.md)
+- `analytics()` / `analyticsPlugin()`
+- `initAnalytics` (`@riebeckite/plugin-analytics/client`)
+- `MemoryAnalyticsProvider`
+- Event, query/result, provider/capability, and public-config types
+- `UnsupportedAnalyticsQueryError` and capability helpers

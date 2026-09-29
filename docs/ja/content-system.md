@@ -17,12 +17,13 @@ URL を必要とする content を処理する前に public location を解決�
 
 ## Public Location と URL
 
-Content entry は二つの identity を分けて持ちます。
+Content entry は三つの identity を分けて持ちます。
 
 - **slug** — `contentIndex`、manifest の `bySlug`、content graph、`/explore?note=<slug>` のような application 内の selection key に使う内部 lookup key。
 - **permalink** — article link、feed、sitemap、metadata に使う解決済みの canonical public URL。
+- **content ID** — rename や public location の変更に左右されない任意の source-authored identity。`ContentManifestEntry.contentId` で参照でき、`ContentManifest.byContentId` に索引される。
 
-両者は別物です。public URL が必要な consumer は `ContentManifestEntry.permalink`（`entry.publicLocation` も同じ）を読み、slug や filesystem path から URL を組み立てません。slug から URL を作るのは Core の default resolver だけです。
+これらは別物です。public URL が必要な consumer は `ContentManifestEntry.permalink`（`entry.publicLocation` も同じ）を読み、slug や filesystem path から URL を組み立てません。slug から URL を作るのは Core の default resolver だけです。
 
 解決は単一の stateless な流れです。
 
@@ -31,6 +32,18 @@ Content entry は二つの identity を分けて持ちます。
 3. `ContentManager.getContentLocations()` が解決済みの `ReadonlyMap<string, ContentPublicLocation>` を返します。`ContentPublicLocation` は canonical な `permalink`、任意の `redirects`、Core が解釈しない opaque な `metadata` を持ちます。
 
 Manifest は解決結果を保持します（`ContentManifestEntry.permalink` / `.publicLocation`、`byPermalink` 索引、`redirects`）。content graph と `readOnlyContentGraph(source, locations)` は URL を再生成せず、この解決済み entry を使います。location が未解決の場合は slug 由来 URL で補わず、明示的な error にします。
+
+### 安定 content ID
+
+rename、permalink の変更、alias、redirect をまたいで content を識別する必要がある場合は、標準 frontmatter field の `id` を設定します。ID は任意です。`id` がない既存 content に Core が代替 ID を生成することはなく、従来の動作を保ちます。slug、path、permalink、alias、redirect を stable ID として使うこともありません。
+
+```yaml
+---
+id: note-7f4e9b
+---
+```
+
+既存の `uid` は互換 fallback としてのみ受け付けます。両方を指定した場合は同じ値でなければなりません。値は前後に空白のない non-empty string とし、manifest 内で一意でなければなりません。不正または重複した ID は曖昧な identity を黙って選ばず、manifest build を失敗させます。
 
 Manifest は application が使う生成済み content 表現、content graph は関係表現です。runtime manifest の参照は明示的 build ではありません。incremental state は explicit build 専用で、Worker runtime の可変依存にはできません。
 

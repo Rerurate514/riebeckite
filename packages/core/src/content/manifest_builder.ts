@@ -13,6 +13,7 @@ import {
   extractContentTags,
   normalizeFrontmatterTags,
 } from "./content_metadata.js";
+import { resolveContentStableId } from "./content_stable_id.js";
 
 export class ManifestBuilder {
   createEntry(
@@ -31,8 +32,10 @@ export class ManifestBuilder {
       )
       .map((link) => ({ path: link.slug }));
 
+    const contentId = resolveContentStableId(processed.frontmatter);
     return {
       slug,
+      ...(contentId === undefined ? {} : { contentId }),
       permalink: location.permalink,
       publicLocation: location,
       title: getManifestTitle(slug, processed.frontmatter.title),
@@ -53,6 +56,7 @@ export class ManifestBuilder {
     contentIndex: Map<string, string>,
   ): ContentManifest {
     const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));
+    const byContentId = createContentIdIndex(entries);
     const byPermalink = new Map(
       entries.map((entry) => [entry.permalink, entry]),
     );
@@ -83,6 +87,7 @@ export class ManifestBuilder {
       entries,
       publicEntries: [...entries],
       bySlug,
+      byContentId,
       byPermalink,
       redirects: new Map(),
       publicRedirects: new Map(),
@@ -92,11 +97,29 @@ export class ManifestBuilder {
       incomingLinks,
       contentIndex,
       assets: [],
+      clientEntries: [],
       diagnostics: [],
       generatedOutputs: [],
     };
     return { ...manifest, graph: createContentGraph(manifest) };
   }
+}
+
+function createContentIdIndex(
+  entries: ContentManifestEntry[],
+): Map<string, ContentManifestEntry> {
+  const byContentId = new Map<string, ContentManifestEntry>();
+  for (const entry of entries) {
+    if (!entry.contentId) continue;
+    const existing = byContentId.get(entry.contentId);
+    if (existing) {
+      throw new Error(
+        `Duplicate content ID "${entry.contentId}" for "${existing.slug}" and "${entry.slug}".`,
+      );
+    }
+    byContentId.set(entry.contentId, entry);
+  }
+  return byContentId;
 }
 
 function getManifestTitle(slug: string, title: unknown): string {

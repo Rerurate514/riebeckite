@@ -1,6 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
 import { aliasPlugin } from "@riebeckite/plugin-alias";
-import { analytics } from "@riebeckite/plugin-analytics";
+import { analytics, MemoryAnalyticsProvider } from "@riebeckite/plugin-analytics";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
@@ -52,7 +52,10 @@ export default defineConfig({
   },
   theme: localFixtureTheme(),
   plugins: [
-    analytics({ provider: "plausible", domain: "example.com" }),
+    analytics({
+      provider: new MemoryAnalyticsProvider(),
+      publicConfig: { collectorUrl: "https://analytics.example.com/events" },
+    }),
     obsidianMarkdown(),
     discordEmbed(),
     markmap(),

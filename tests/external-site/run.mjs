@@ -12,6 +12,10 @@ const fixtureRoot = path.join(here, "fixture");
 const PACKAGES = [
   { directory: "packages/core", name: "@riebeckite/core" },
   { directory: "packages/cli", name: "@riebeckite/cli" },
+  {
+    directory: "packages/integrations/analytics-cloudflare",
+    name: "@riebeckite/analytics-cloudflare",
+  },
   { directory: "packages/integrations/honox", name: "@riebeckite/honox" },
   { directory: "packages/themes/default", name: "@riebeckite/theme-default" },
   {
@@ -175,8 +179,8 @@ const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";
 const SERIES_MARKER = "RIEBECKITE_EXTERNAL_SERIES_MARKER";
 const SERIES_PART_1_PERMALINK = "/notes/series-demo-1";
 const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
-const ANALYTICS_SCRIPT_PATH = "/_analytics.js";
-const ANALYTICS_SCRIPT_ATTRIBUTE = "data-riebeckite-analytics";
+const ANALYTICS_CONTENT_ID_ATTRIBUTE = "data-riebeckite-content-id";
+const ANALYTICS_CONTENT_ID = "external-fixture-home";
 const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
 const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
 const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
@@ -721,15 +725,11 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!combined.includes('rel="prev"') || !combined.includes('rel="next"')) {
     fail("series navigation is missing the previous/next links");
   }
-  if (!combined.includes(ANALYTICS_SCRIPT_PATH)) {
-    fail(
-      `generated HTML is missing the analytics script path (${ANALYTICS_SCRIPT_PATH})`,
-    );
-  }
-  if (!combined.includes(ANALYTICS_SCRIPT_ATTRIBUTE)) {
-    fail(
-      `generated HTML is missing the analytics script attribute (${ANALYTICS_SCRIPT_ATTRIBUTE})`,
-    );
+  if (
+    !combined.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE) ||
+    !combined.includes(ANALYTICS_CONTENT_ID)
+  ) {
+    fail("generated HTML is missing the stable analytics content ID marker");
   }
   if (!combined.includes(GRAPHVIZ_MARKER)) {
     fail(`generated HTML is missing the graphviz marker (${GRAPHVIZ_MARKER})`);

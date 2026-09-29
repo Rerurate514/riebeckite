@@ -242,6 +242,7 @@ export class ContentManager {
 
         this.applyPublicView(manifest);
         manifest.assets = this.pluginRuntime.collectAssets();
+        manifest.clientEntries = this.pluginRuntime.collectClientEntries();
         manifest.diagnostics = [
           ...this.pluginRuntime.getDiagnostics(),
           ...(await this.pluginRuntime.collectDiagnostics(contentIndex)),

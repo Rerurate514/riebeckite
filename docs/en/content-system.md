@@ -20,10 +20,11 @@ Public locations are resolved before any content that needs a URL is processed, 
 
 ## Public location and URLs
 
-A content entry separates two notions of identity:
+A content entry separates three notions of identity:
 
 - **slug** — the internal lookup key used by `contentIndex`, the manifest `bySlug` map, the content graph, and application-level selection keys such as `/explore?note=<slug>`.
 - **permalink** — the resolved canonical public URL used in article links, feeds, sitemaps, and metadata.
+- **content ID** — an optional, source-authored stable identity exposed as `ContentManifestEntry.contentId` and indexed by `ContentManifest.byContentId`. It is independent of both the slug and all public locations.
 
 They are distinct. A consumer that needs a public URL reads `ContentManifestEntry.permalink` (also available as `entry.publicLocation`); it must not build a URL from a slug or filesystem path. Turning a slug into a URL is the Core default resolver's job alone.
 
@@ -34,6 +35,25 @@ Resolution is a single, stateless pipeline:
 3. `ContentManager.getContentLocations()` returns the resolved `ReadonlyMap<string, ContentPublicLocation>`. A `ContentPublicLocation` carries the canonical `permalink`, optional `redirects`, and optional opaque `metadata` that Core does not interpret.
 
 The manifest stores the resolved result: `ContentManifestEntry.permalink` and `.publicLocation`, plus the `byPermalink` index and the `redirects` map. The content graph and `readOnlyContentGraph(source, locations)` consume those resolved entries rather than deriving URLs. If a public location is not resolved for an entry, Core raises an explicit error instead of falling back to a slug-derived URL.
+
+### Stable content IDs
+
+Set the standard `id` frontmatter field when content needs an identity that
+survives a rename, permalink change, alias, or redirect. IDs are optional, so
+existing content without `id` has no generated substitute and keeps its current
+behavior. Core never uses a slug, path, permalink, alias, or redirect as a
+stable ID.
+
+```yaml
+---
+id: note-7f4e9b
+---
+```
+
+An existing `uid` field is accepted only as a compatibility fallback. If both
+fields are present, they must be identical. Values must be non-empty, trimmed
+strings, and each explicit ID must be unique within a manifest; invalid or
+duplicate IDs fail the manifest build rather than silently selecting an identity.
 
 ## Manifest, graph, and runtime
 

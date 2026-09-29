@@ -1,22 +1,44 @@
-import {
-  ANALYTICS_SCRIPT_ATTRIBUTE,
-  ANALYTICS_SCRIPT_PATH,
-} from "./constants.js";
+import type { AnalyticsPageViewEvent } from "./event.js";
+import type { AnalyticsPublicConfig } from "./options.js";
+
+export const ANALYTICS_CONTENT_ID_ATTRIBUTE = "data-riebeckite-content-id";
+const INITIALIZED_ATTRIBUTE = "data-riebeckite-analytics-initialized";
 
 /**
- * Injects the analytics bootstrap `<script>` into `document.head` exactly once.
- * The bootstrap endpoint then loads the configured provider script.
- *
- * This initializer is static: it always loads `ANALYTICS_SCRIPT_PATH`. It has
- * no SPA route awareness — see the README for the documented limitations.
+ * Sends one document-level page view. Static Riebeckite sites reload documents
+ * on navigation; SPA history hooks are intentionally not installed.
  */
-export function initAnalytics(): void {
-  if (typeof document === "undefined") return;
-  if (document.querySelector(`script[${ANALYTICS_SCRIPT_ATTRIBUTE}]`)) return;
+export function initAnalytics(config: AnalyticsPublicConfig): void {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (document.documentElement.hasAttribute(INITIALIZED_ATTRIBUTE)) return;
+  document.documentElement.setAttribute(INITIALIZED_ATTRIBUTE, "");
 
-  const script = document.createElement("script");
-  script.defer = true;
-  script.src = ANALYTICS_SCRIPT_PATH;
-  script.setAttribute(ANALYTICS_SCRIPT_ATTRIBUTE, "");
-  document.head.appendChild(script);
+  const contentId = document
+    .querySelector(`[${ANALYTICS_CONTENT_ID_ATTRIBUTE}]`)
+    ?.getAttribute(ANALYTICS_CONTENT_ID_ATTRIBUTE);
+  if (!contentId) return;
+
+  const event: AnalyticsPageViewEvent = {
+    type: "page_view",
+    contentId,
+    occurredAt: new Date().toISOString(),
+    path: window.location.pathname,
+    ...(document.documentElement.lang
+      ? { lang: document.documentElement.lang }
+      : {}),
+  };
+  void sendAnalyticsEvent(config.collectorUrl, event);
+}
+
+async function sendAnalyticsEvent(
+  collectorUrl: string,
+  event: AnalyticsPageViewEvent,
+): Promise<void> {
+  await fetch(collectorUrl, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(event),
+    keepalive: true,
+    credentials: "same-origin",
+  }).catch(() => undefined);
 }

@@ -14,6 +14,10 @@ import type {
   GeneratedOutputSink,
 } from "../types/generated_output.js";
 import { normalizeGeneratedOutputPath } from "../types/generated_output.js";
+import {
+  serializePublicClientConfig,
+  type PluginClientEntry,
+} from "../types/plugin_asset.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
 import type {
@@ -201,6 +205,22 @@ export class PluginRuntime {
         path: asset.moduleSpecifier,
         pluginName: asset.pluginName || plugin.name,
       })),
+    );
+  }
+
+  /**
+   * Returns browser entries with only explicitly registered public
+   * configuration. Validation occurs here as well as in integrations so a
+   * manifest can safely be serialized by a future static HTML host.
+   */
+  collectClientEntries(): PluginClientEntry[] {
+    return this.plugins().flatMap((plugin) =>
+      (plugin.clientEntries ?? []).map((entry) => {
+        if (entry.publicConfig !== undefined) {
+          serializePublicClientConfig(entry.publicConfig);
+        }
+        return entry;
+      }),
     );
   }
 

@@ -103,3 +103,52 @@ test("default publish strategy is explicit (deny by default)", async () => {
     ["public"],
   );
 });
+
+test("content IDs stay attached to the canonical entry across redirects", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [redirectPlugin],
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "note.md": "---\nid: note-7f4e9b\naliases: [Previous note]\n---\n\n# Note\n",
+      "legacy.md": "---\nuid: legacy-42\n---\n\n# Legacy\n",
+      "plain.md": "# Plain\n",
+    }),
+    [],
+    { config },
+  );
+
+  const manifest = await manager.getManifest();
+
+  assert.equal(manifest.bySlug.get("note")?.contentId, "note-7f4e9b");
+  assert.equal(manifest.byPermalink.get("/note")?.contentId, "note-7f4e9b");
+  assert.equal(manifest.redirects.get("/old-note")?.slug, "note");
+  assert.equal(manifest.byContentId.get("note-7f4e9b")?.slug, "note");
+  assert.equal(manifest.byContentId.get("legacy-42")?.slug, "legacy");
+  assert.equal(manifest.bySlug.get("plain")?.contentId, undefined);
+});
+
+test("content IDs reject ambiguous or invalid frontmatter", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "first.md": "---\nid: shared\n---\n\n# First\n",
+      "second.md": "---\nid: shared\n---\n\n# Second\n",
+    }),
+  );
+  await assert.rejects(manager.getManifest(), /Duplicate content ID/);
+
+  const conflicting = new ContentManager(
+    memorySource({
+      "note.md": "---\nid: current\nuid: legacy\n---\n\n# Note\n",
+    }),
+  );
+  await assert.rejects(conflicting.getManifest(), /must have the same value/);
+
+  const invalid = new ContentManager(
+    memorySource({
+      "note.md": "---\nid: 42\n---\n\n# Note\n",
+    }),
+  );
+  await assert.rejects(invalid.getManifest(), /must be a string/);
+});

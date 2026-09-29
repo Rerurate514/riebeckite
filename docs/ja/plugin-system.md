@@ -304,11 +304,15 @@ clientEntries: [{
   pluginName: "example",
   moduleSpecifier: "@riebeckite/plugin-example/client",
   exportName: "initExample",
+  publicConfig: { selector: ".example" },
 }]
 ```
 
 SSR/build-time だけで完結する Plugin に client JavaScript
-を追加しないことが重要です。
+を追加しないことが重要です。`publicConfig` は client initializer に渡され、
+static host が利用できるよう manifest にも記録されます。Plugin の `options` は
+自動では client に渡されません。token、credential、private service URL などを
+公開設定として登録しないでください。
 
 ## Endpoints
 

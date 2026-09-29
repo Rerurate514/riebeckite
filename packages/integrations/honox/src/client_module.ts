@@ -1,4 +1,7 @@
-import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import {
+  serializePublicClientConfig,
+  type ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
 import type { Plugin } from "vite";
 
 const clientModuleId = "virtual:riebeckite/client";
@@ -34,13 +37,18 @@ function createClientModule(config: ResolvedRiebeckiteConfig): string {
     imports.push(
       `import ${importTarget} from ${JSON.stringify(entry.moduleSpecifier)};`,
     );
-    initializers.push(localName);
+    const publicConfig = entry.publicConfig;
+    initializers.push(
+      publicConfig === undefined
+        ? `${localName}()`
+        : `${localName}(${serializePublicClientConfig(publicConfig)})`,
+    );
   }
 
   return `${imports.join("\n")}
 
 export function initRiebeckiteClient() {
-${initializers.map((name) => `  ${name}();`).join("\n")}
+${initializers.map((initializer) => `  ${initializer};`).join("\n")}
 }
 `;
 }

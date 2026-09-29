@@ -29,6 +29,11 @@ import {
   resolveContentRoute,
 } from "@riebeckite/honox/server";
 import {
+  createWorker,
+  d1Storage,
+  kvStorage,
+} from "@riebeckite/analytics-cloudflare";
+import {
   Article as ArticlePrimitive,
   ArticleContent,
   ArticleFooter,
@@ -46,7 +51,10 @@ import {
 } from "@riebeckite/honox/ui";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
-import { analytics } from "@riebeckite/plugin-analytics";
+import {
+  analytics,
+  MemoryAnalyticsProvider,
+} from "@riebeckite/plugin-analytics";
 import { initAnalytics } from "@riebeckite/plugin-analytics/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
@@ -105,6 +113,9 @@ import { initWaveDrom } from "@riebeckite/plugin-wavedrom/client";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export const resolvedEntries = {
+  createWorker,
+  d1Storage,
+  kvStorage,
   buildContentCollections,
   groupContentEntries,
   queryContentEntries,
@@ -213,7 +224,10 @@ export const config: RiebeckiteConfig = defineConfig({
   site: { title: "fixture" },
   theme: defaultTheme(),
   plugins: [
-    analytics({ provider: "plausible", domain: "example.com" }),
+    analytics({
+      provider: new MemoryAnalyticsProvider(),
+      publicConfig: { collectorUrl: "https://analytics.example.com/events" },
+    }),
     obsidianMarkdown(),
     markmap(),
     autoCardLinkPlugin(),

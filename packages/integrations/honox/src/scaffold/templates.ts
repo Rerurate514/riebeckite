@@ -2,6 +2,7 @@ import {
   defaultLanguageForLocale,
   localizedContentFiles,
 } from "./localized-content.js";
+import { defaultSsrExternals } from "../vite_plugin.js";
 
 export type SiteTemplateVariables = {
   readonly name: string;
@@ -112,6 +113,9 @@ plugins: [
 }
 
 function viteConfig(): string {
+  const ssrExternals = [...defaultSsrExternals]
+    .map((name) => `          "${name}",`)
+    .join("\n");
   return `import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/node";
@@ -141,13 +145,7 @@ export default defineConfig({
     ssr: {
       resolve: {
         external: [
-          "extend",
-          "debug",
-          "node:fs/promises",
-          "node:path",
-          "parse-numeric-range",
-          "slugify",
-          "vfile-matter",
+${ssrExternals}
         ],
       },
     },

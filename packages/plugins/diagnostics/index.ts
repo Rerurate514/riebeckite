@@ -50,7 +50,10 @@ export function diagnostics(options: DiagnosticsOptions = {}) {
       const config = context.config;
       if (!config) return [];
       try {
-        return await analyzeContent(toAnalyzerConfig(config, options), options);
+        return await analyzeContent(
+          toAnalyzerConfig(config, options),
+          analyticsCoverageOptions(config, options),
+        );
       } catch (error) {
         return [createInternalError(error)];
       }
@@ -71,6 +74,34 @@ export function diagnostics(options: DiagnosticsOptions = {}) {
 }
 
 export const diagnosticsPlugin = diagnostics;
+
+const ANALYTICS_PLUGIN_NAME = "analytics";
+
+/**
+ * Reports whether the resolved configuration enables the analytics plugin, so
+ * the analytics coverage check turns itself on without coupling to the plugin.
+ */
+export function hasEnabledAnalyticsPlugin(
+  config?: ResolvedRiebeckiteConfig,
+): boolean {
+  return (
+    config?.plugins.some(
+      (plugin) =>
+        plugin.name === ANALYTICS_PLUGIN_NAME && plugin.enabled !== false,
+    ) ?? false
+  );
+}
+
+function analyticsCoverageOptions(
+  config: ResolvedRiebeckiteConfig,
+  options: DiagnosticsOptions,
+): DiagnosticsOptions {
+  return {
+    ...options,
+    reportAnalyticsCoverage:
+      options.reportAnalyticsCoverage ?? hasEnabledAnalyticsPlugin(config),
+  };
+}
 
 function createInternalError(error: unknown): Diagnostic {
   const message = error instanceof Error ? error.message : String(error);

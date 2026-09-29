@@ -80,6 +80,7 @@ modified: 2026-09-28
 | キー | 効果 |
 | --- | --- |
 | `title` | ページのタイトル。参照用の診断設定では必須 |
+| `id` | analytics プラグインが使う安定 content ID。ない場合は公開されるが計測されない |
 | `publish` | explicit 戦略で項目を公開する |
 | `private`、`draft` | selective 戦略で項目を除外する |
 | `noindex` | 一覧やサイト内インデックスから除外する |
@@ -139,6 +140,8 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 
 リポジトリの外のサイトでは、[Cloudflare デプロイテンプレート](../../templates/cloudflare/README_ja.md) を出発点にします。汎用の `wrangler.jsonc` と、check・build を行い生成された `dist/` を Workers Static Assets としてデプロイする GitHub Actions ワークフローを提供します。Riebeckite はコンテンツのルートと Plugin のエンドポイントを事前生成するため、runtime の `main` を持たない静的アセットのみの構成が参照用アプリケーションと同じ形になります。`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリのシークレットに設定し、テンプレートの Worker 名を変更してください。最初のデプロイの前に `pnpm exec wrangler deploy --dry-run` でローカル検証できます。
 
+ページビュー計測は任意の独立した Worker です。サイトに `@riebeckite/plugin-analytics` を設定し、`templates/analytics-cloudflare`（D1 または KV）のコレクタを専用リポジトリとしてデプロイします。[Analytics](./analytics.md) を参照してください。
+
 ## 8. サイトを拡張する
 
 - **Plugin を追加する**: パッケージを参照し、`plugins` 配列に登録します。設定できる項目は `packages/plugins/*/README_ja.md` を参照してください。Plugin は Markdown・HTML の変換、アセット、ブラウザ側の動作、エンドポイント、SEO、診断を追加できます。
@@ -179,6 +182,8 @@ pnpm exec riebeckite build
 | --- | --- |
 | コンテンツが表示されない | explicit 戦略での `publish: true`、`content.exclude` のパターン、`inspect content --list` |
 | ファイルはあるのにページが 404 になる | `inspect graph` または `inspect content --list` で解決済みの permalink を確認する |
+| あるページのアクセス解析に表示が出ない | コンテンツに安定 `id` がない。`doctor` と diagnostics が `analytics-untracked` として報告する |
+| ブラウザのイベントがコレクタに届かない | サイトの `collectorUrl` と Worker の許可 Origin を両方確認する |
 | デプロイ後に添付ファイルが 404 になる | prebuild のコピー手順がビルド前に実行され、`public/assets/attachments/` を対象にしているか |
 | `doctor` がコンテンツの失敗を報告する | `inspect config` で解決済みのコンテンツディレクトリとその存在を確認する |
 | ビルド結果が古い | 差分の再利用なしで `riebeckite build --full` を実行する |

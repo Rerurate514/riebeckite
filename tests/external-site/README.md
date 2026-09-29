@@ -51,8 +51,9 @@ the app/site root fails immediately.
 7. Run `riebeckite check`, `riebeckite doctor`, `riebeckite inspect`, and
    `riebeckite build` from `site/app`, rather than the application root.
 8. Assert the generated `dist/` HTML contains the fixture markers, including one
-   produced by a **site-local plugin** (`extensions/local-plugin.ts`) and theme
+   produced by a **site-local plugin** (`extensions/local-plugin.ts`), theme
    attributes produced by a **site-local theme** (`extensions/local-theme.ts`),
+   and the stable content-ID marker emitted by `@riebeckite/plugin-analytics`,
    and that both site-local stylesheets are bundled into the emitted CSS.
 9. Type-check with `moduleResolution: bundler` and `moduleResolution: NodeNext`.
    Both configs use `skipLibCheck: false`; the NodeNext config imports every

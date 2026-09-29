@@ -43,9 +43,8 @@ The Worker binding is constructed per request because `env` exists only in
 ## Endpoints and validation
 
 - `POST /events` accepts only JSON `page_view` payloads with an ISO timestamp,
-  a 1–160 character safe content ID (`[A-Za-z0-9._:-]` after the first
-  alphanumeric character), optional bounded path and language, and no unknown
-  fields. Bodies are limited to 8 KiB.
+  a 1–160 character trimmed content ID without control characters, optional
+  bounded path and language, and no unknown fields. Bodies are limited to 8 KiB.
 - `GET /content/:contentId/page-views?from=&to=` and `GET /popular?limit=&from=&to=`
   are available only when storage advertises the corresponding capability.
 

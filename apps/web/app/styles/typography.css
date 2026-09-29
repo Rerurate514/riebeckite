@@ -4,19 +4,20 @@
     content: none;
   }
 
+/* Keep wide tables scannable on small screens: the table becomes its own
+     horizontal scroll container instead of overflowing the article column. */
+  .prose :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
   /* Narrow screens: keep the prose column from overflowing horizontally.
-     Long URLs / unbroken strings wrap, GFM tables scroll inside their own
-     box (GitHub-style pattern), and images never exceed the content width. */
+     Long URLs / unbroken strings wrap and images never exceed the content
+     width. */
   @media (max-width: 48rem) {
     .prose {
       overflow-wrap: break-word;
-    }
-
-    .prose table:not([class]) {
-      display: block;
-      width: max-content;
-      max-width: 100%;
-      overflow-x: auto;
     }
 
     .prose img {

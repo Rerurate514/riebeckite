@@ -1,7 +1,11 @@
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { resolveConfigModule } from "@riebeckite/core";
-import { formatDiagnostics, runDiagnostics } from "./index.js";
+import {
+  formatDiagnostics,
+  hasEnabledAnalyticsPlugin,
+  runDiagnostics,
+} from "./index.js";
 import type { DiagnosticsOptions, DiagnosticsReport } from "./src/types.js";
 
 type CliArgs = {
@@ -16,6 +20,7 @@ type CliArgs = {
   requiredFrontmatter: string[];
   reportUnusedAssets: boolean;
   reportOrphans: boolean;
+  reportAnalyticsCoverage: boolean;
   publishStrategy: "explicit" | "selective" | null;
   explicit: Set<string>;
 };
@@ -38,6 +43,9 @@ Options:
   --publish-strategy <mode>   explicit | selective (default: selective)
   --report-unused-assets      Report images never referenced by any note
   --report-orphans            Report published notes with no incoming links
+  --report-analytics-coverage Report published notes without a stable content ID
+                              (auto-enabled when riebeckite.config.ts enables the
+                              analytics plugin)
   --required-frontmatter <f>  Comma-separated required frontmatter fields
   --fail-on-error             Exit with code 1 when errors are found (default)
   --exit-on <severity>        Exit with code 1 at/above severity (info|warning|error)
@@ -73,6 +81,11 @@ export async function main(argv: string[]): Promise<number> {
     ...(args.explicit.has("reportOrphans")
       ? { reportOrphans: args.reportOrphans }
       : {}),
+    ...(args.explicit.has("reportAnalyticsCoverage")
+      ? { reportAnalyticsCoverage: args.reportAnalyticsCoverage }
+      : config
+        ? { reportAnalyticsCoverage: hasEnabledAnalyticsPlugin(config) }
+        : {}),
     ...(args.explicit.has("requiredFrontmatter")
       ? { requiredFrontmatter: args.requiredFrontmatter }
       : {}),
@@ -200,6 +213,7 @@ function parseArgs(argv: string[]): CliArgs {
     requiredFrontmatter: [],
     reportUnusedAssets: false,
     reportOrphans: false,
+    reportAnalyticsCoverage: false,
     publishStrategy: null,
     explicit: new Set<string>(),
   };
@@ -224,6 +238,10 @@ function parseArgs(argv: string[]): CliArgs {
       case "--report-orphans":
         args.reportOrphans = true;
         args.explicit.add("reportOrphans");
+        break;
+      case "--report-analytics-coverage":
+        args.reportAnalyticsCoverage = true;
+        args.explicit.add("reportAnalyticsCoverage");
         break;
       case "--format":
         args.format = (argv[++i] ?? "text") === "json" ? "json" : "text";

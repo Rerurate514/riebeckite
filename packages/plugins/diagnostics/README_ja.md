@@ -41,6 +41,7 @@ export default defineConfig({
 | `invalid-content-id` | error | `id`/`uid` の frontmatter が安定コンテンツ ID の契約を満たしていない |
 | `excluded-public` | warning | 除外されたノートに `publish: true` が指定されている |
 | `publish-boundary` | warning | 公開コンテンツから非公開コンテンツへリンク・埋め込みしている |
+| `analytics-untracked` | info | 安定 `id` のない公開ノートは analytics プラグインで計測されない（`reportAnalyticsCoverage` で有効化。設定で analytics プラグインが有効な場合は自動で有効化） |
 | `internal-error` | error | コンテンツ解析中に処理できないエラーが発生した |
 
 未使用アセットと孤立ノートは、明示的に有効化した場合だけ確認します。意図的に孤立させるトップページなどがあるなら、`reportOrphans` の結果を公開方針と照らして判断してください。
@@ -52,6 +53,7 @@ export default defineConfig({
 | `failOnError` | `false` | error レベルの診断があればビルドを失敗させる |
 | `reportUnusedAssets` | `false` | 未参照画像を報告する |
 | `reportOrphans` | `false` | 孤立した公開ノートを報告する |
+| `reportAnalyticsCoverage` | `false` | analytics プラグインで計測されない公開ノートを報告する（解決済み設定で analytics プラグインが有効なら自動で有効化） |
 | `requiredFrontmatter` | `[]` | 必須にする frontmatter フィールド |
 | `severity` | コードごとの既定値 | 診断コード別の重要度を上書きする |
 | `exclude` | `[]` | 解析対象から追加で除外する glob |
@@ -91,6 +93,7 @@ assertNoErrors(report);
 - `diagnostics(options?)` / `diagnosticsPlugin`: プラグインを作成する
 - `runDiagnostics(target, options?)`: 診断と集計を実行する
 - `analyzeContent(config, options?)`: 生の `Diagnostic[]` を取得する
+- `hasEnabledAnalyticsPlugin(config?)`: 解決済み設定で analytics プラグインが有効かを判定する
 - `formatDiagnostics`、`summarize`、`groupByCode`、`assertNoErrors`: レポート処理用の補助関数
 - `DiagnosticsFailure`: `failOnError` または `assertNoErrors` が送出するエラー
 - `riebeckite-diagnostics`: CLI

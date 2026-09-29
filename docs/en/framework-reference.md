@@ -17,6 +17,8 @@ package entry points. These packages are intended to be installable from npm:
 | `@riebeckite/honox` | HonoX/Vite integration | `.`, `./server`, `./ui` |
 | `@riebeckite/cli` | `riebeckite` build-time command | executable `riebeckite` |
 | `@riebeckite/plugin-*` | Official plugins | `.` plus the package's declared `./client`, `./components`, and `./style.css` |
+| `@riebeckite/plugin-analytics` | Storage-independent analytics plugin and the provider/query contracts | `.`, `./client` |
+| `@riebeckite/analytics-cloudflare` | Cloudflare Worker collector with D1/KV storage | `.` |
 | `@riebeckite/theme-*` | Official themes | `.` and `./style.css` (`./styles/theme.css`) |
 
 Only the package root and the subpaths declared in each package's `exports` map
@@ -124,4 +126,4 @@ Each extension has a narrow contract. For example, a renderer returns `null` for
 
 Keep public data serializable where it crosses a build/runtime boundary. Use explicit errors such as configuration validation and plugin dependency failures instead of inventing null protocols. Do not add an export merely to bypass an existing abstraction; first decide which package owns the behavior.
 
-Read [Content system](content-system.md), [Plugin system](plugin-system.md), [Theme system](theme-system.md), and [HonoX integration](honox-integration.md) for detailed contracts.
+Read [Content system](content-system.md), [Plugin system](plugin-system.md), [Theme system](theme-system.md), and [HonoX integration](honox-integration.md) for detailed contracts. See [Analytics](analytics.md) for the tracking plugin and its Cloudflare Worker collector.

@@ -52,6 +52,7 @@ export default defineConfig({
 | `invalid-content-id` | `error` | `id`/`uid` frontmatter violates the stable content ID contract |
 | `excluded-public` | `warning` | Excluded note is marked `publish: true` |
 | `publish-boundary` | `warning` | Published content links to or embeds non-published content |
+| `analytics-untracked` | `info` | Published note has no stable `id` and the analytics plugin will not track it (enabled with `reportAnalyticsCoverage`, or automatically when the config enables the analytics plugin) |
 | `internal-error` | `error` | Content analysis failed |
 
 ## Options
@@ -61,6 +62,7 @@ export default defineConfig({
 | `failOnError` | `boolean` | `false` | Fail the build on error-level diagnostics |
 | `reportUnusedAssets` | `boolean` | `false` | Report unreferenced images |
 | `reportOrphans` | `boolean` | `false` | Report published notes without incoming links |
+| `reportAnalyticsCoverage` | `boolean` | `false` | Report published notes the analytics plugin will not track (auto-enabled when the resolved config enables the analytics plugin) |
 | `requiredFrontmatter` | `string[]` | `[]` | Required frontmatter fields |
 | `severity` | `Partial<Record<DiagnosticCode, DiagnosticSeverity>>` | table above | Override severity per code |
 | `exclude` | `string[]` | `[]` | Extra exclude globs |
@@ -81,6 +83,7 @@ riebeckite-diagnostics --content ./content --report-orphans
 | `--publish-strategy <mode>` | `explicit` \| `selective` (default: `selective`) |
 | `--report-unused-assets` | Report images never referenced by any note |
 | `--report-orphans` | Report published notes with no incoming links |
+| `--report-analytics-coverage` | Report published notes without a stable content ID (auto-enabled for `--config` when the config enables the analytics plugin) |
 | `--required-frontmatter <f>` | Comma-separated required frontmatter fields |
 | `--fail-on-error` | Exit with code 1 when errors are found (default) |
 | `--exit-on <severity>` | Exit with code 1 at/above severity (`info` \| `warning` \| `error`) |
@@ -117,6 +120,7 @@ assertNoErrors(report);
 - `diagnostics(options?)` / `diagnosticsPlugin` — plugin factory
 - `runDiagnostics(target, options?)` — run the analysis directly
 - `analyzeContent(config, options?)` — raw analysis returning `Diagnostic[]`
+- `hasEnabledAnalyticsPlugin(config?)` — whether the resolved config enables the analytics plugin
 - Report helpers: `buildReport`, `formatDiagnostics`, `groupByCode`,
   `summarize`, `assertNoErrors`, `DiagnosticsFailure`
 - Types: `DiagnosticsOptions`, `DiagnosticsReport`, `DiagnosticsSummary`,

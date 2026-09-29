@@ -1,8 +1,17 @@
 # Getting Started
 
-## 1. Prepare the workspace
+The shortest route from nothing to a running site: **create the site → configure → write an article → run it**.
 
-For a new site, generate one first, then install and validate:
+If you want to go step by step from environment setup all the way to publishing, start with the [Setup Guide](./setup.md) instead.
+
+## Prerequisites
+
+- **Node.js (LTS)**: `node -v` should print `v20` or later. If not, install it from [nodejs.org](https://nodejs.org/).
+- npm ships with Node.js, so no separate install is needed.
+
+> **npm availability**: The Riebeckite packages (`@riebeckite/*`) are not yet published to npm. Until they are, clone the repository and run `pnpm exec riebeckite init my-site` — the same generator (see [Setup Guide](./setup.md) for details). Once published, the commands on this page work as written.
+
+## 1. Create the site
 
 ```sh
 npx create-riebeckite my-site
@@ -12,17 +21,64 @@ npx riebeckite check
 npx riebeckite doctor
 ```
 
-`create-riebeckite` writes a self-contained site (configuration, HonoX application shell, routes, stylesheet, and starter content) and refuses a non-empty target unless `--force` is passed. Choose the starter composition with `--preset <name>`; the default is `starter`, which observes and highlights seven languages. Run `npx create-riebeckite --list-presets` to see every preset from `empty` and `minimal` up to `full`, `max`, and `ultra`.
+- You get a config file (`riebeckite.config.ts`), a HonoX application shell (`app/`), routes, a stylesheet, and starter content (`content/`).
+- `create-riebeckite` refuses directories that already have files unless you pass `--force`.
+- Choose the composition with `--preset <name>` (default `starter`). List them with `npx create-riebeckite --list-presets`.
 
-Run these from the application directory when using the CLI. `check` confirms configuration and plugin capability validity; `doctor` reports broader health. Neither generates a deployment build.
+`check` validates config and plugin resolution; `doctor` reports broader health including content loading. Neither writes anything. A successful check prints:
 
-## 2. Add configuration
+```text
+Riebeckite configuration is valid.
+```
 
-Create the application's Riebeckite config with a required `site` object, then choose content directory/source, publication policy, plugins, and a theme. Start with the defaults and add only behavior the site needs. See [Configuration](configuration.md).
+## 2. Configure
 
-## 3. Create and inspect content
+Start with the smallest useful `riebeckite.config.ts`:
 
-Place content in the configured source, then inspect resolved results:
+```ts
+// riebeckite.config.ts
+import { defineConfig } from "@riebeckite/core";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { defaultTheme } from "@riebeckite/theme-default";
+
+export default defineConfig({
+  site: {
+    title: "My site",
+    description: "Daily notes",
+    baseUrl: "https://example.com",
+    locale: "ja",
+  },
+  content: {
+    directory: "content",
+  },
+  theme: defaultTheme(),
+  plugins: [obsidianMarkdown()],
+});
+```
+
+| Field | Role |
+| --- | --- |
+| `site` | Title, URL, language, and other metadata (used for SEO and feeds) |
+| `content.directory` | Where articles live; default `content/`. For an external vault, see [Separating content from the site](./content-and-site-repos.md) |
+| `theme` | The appearance; start with `defaultTheme()` |
+| `plugins` | Features; the example registers only `obsidianMarkdown()` |
+
+By default, only content marked `publish: true` is published (the **explicit** strategy). Full details are in [Configuration](./configuration.md).
+
+## 3. Write an article
+
+Put a Markdown file in `content/`:
+
+```md
+---
+title: Hello
+publish: true
+---
+
+My first article. A WikiLink like [[another-note]] works too.
+```
+
+Without `publish: true`, the page does not appear under the explicit strategy. Verify what loaded with the read-only Inspector:
 
 ```sh
 npx riebeckite inspect config
@@ -30,17 +86,37 @@ npx riebeckite inspect content --list
 npx riebeckite inspect graph
 ```
 
-Inspect is read-only. If configuration or content is invalid, correct it instead of expecting inspection to generate missing state.
+- `inspect config` … resolved config and content location
+- `inspect content --list` … loaded content
+- `inspect graph` … WikiLink relationships
 
-## 4. Develop and build
+Fix the files based on what it shows (the Inspector does not generate state).
+
+## 4. Run it
 
 ```sh
 npx riebeckite dev
+```
+
+Open `http://localhost:5173` in a browser to see the articles. Edits apply immediately; stop with `Ctrl + C`.
+
+Generate publishable files under `dist/` with:
+
+```sh
 npx riebeckite build
 ```
 
-Use `build --full` when deliberately bypassing incremental reuse. Add functionality as a plugin, presentation as a theme, and routes/islands in the application. Follow [Architecture](architecture.md) before choosing a package.
+Build is normally an **incremental build** that reuses unchanged content. Use `build --full` only when you want to skip that reuse.
+
+```sh
+npx riebeckite build --full
+```
+
+Where to add things when extending: features go to a plugin ([Your first plugin](./plugin-tutorial.md)), appearance to a theme ([Your first theme](./theme-tutorial.md)), and site-specific routes to the app (`app/`). See [Architecture](./architecture.md) for the overall picture.
 
 ## Suggested reading
 
-Read [Content system](content-system.md), [Plugin system](plugin-system.md), [Theme system](theme-system.md), then [HonoX integration](honox-integration.md) for deployment-specific behavior.
+- [Setup Guide](./setup.md) — environment setup through publishing
+- [Usage Guide](./guide.md) — step-by-step from install to deploy
+- [Separating content from the site](./content-and-site-repos.md) — managing articles (a vault) separately from the site
+- [Configuration](./configuration.md) / [Content System](./content-system.md) / [Plugin System](./plugin-system.md) / [Theme System](./theme-system.md)

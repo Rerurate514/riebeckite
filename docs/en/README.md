@@ -20,6 +20,8 @@ In a typical project, you point Riebeckite at a content directory, configure Mar
 |Find configuration fields|[Configuration](./configuration.md)|
 |Understand ownership and dependency direction|[Architecture](./architecture.md)|
 |Create or change a plugin or theme|[Plugin System](./plugin-system.md) / [Theme System](./theme-system.md)|
+|Create a theme or plugin for the first time|[Your first theme](./theme-tutorial.md) / [Your first plugin](./plugin-tutorial.md)|
+|Keep articles and the site in separate places|[Separating content from the site](./content-and-site-repos.md)|
 |Investigate a problem|[Diagnostics](./diagnostics.md) / [Framework Inspector](./inspector.md)|
 |Contribute to this repository|[Repository Development](./development.md)|
 
@@ -71,7 +73,8 @@ Build tooling
 |---|---|
 |[Setup Guide](./setup.md)|A beginner path through running the repository, creating a new site, and publishing to Cloudflare Workers|
 |[Usage Guide](./guide.md)|The step-by-step path from installation and configuration to content, validation, build, and deployment|
-|[Getting Started](./getting-started.md)|Prerequisites, installation, development server, normal and full builds, and a minimal configuration|
+|[Getting Started](./getting-started.md)|Prerequisites, a minimal configuration, install, verifying content, the dev server, and normal and full builds|
+|[Separating content from the site](./content-and-site-repos.md)|Managing articles (an Obsidian vault, for example) and the site in separate repositories or folders, referencing an external vault with `content.directory`|
 |[Configuration](./configuration.md)|`riebeckite.config.ts`, Application Root, site, content, themes, plugins, validation, and secret handling|
 |[CLI](./cli.md)|The `check`, `doctor`, `inspect`, `profile`, `build`, and `dev` commands, exit behavior, and packaging|
 
@@ -82,6 +85,8 @@ Build tooling
 |[Content System](./content-system.md)|`ContentSource`, logical paths, `ContentManager`, public locations (`ContentPublicLocation`), Manifest, Content Graph, attachments, publication, and incremental metadata|
 |[Plugin System](./plugin-system.md)|Plugin contracts, lifecycle, capabilities and dependencies, option validation, pipelines, renderers, assets, cache, and observability|
 |[Theme System](./theme-system.md)|Theme contracts, color modes, typography, design tokens, CSS cascade, plugin boundaries, and package layout|
+|[Your first theme](./theme-tutorial.md)|A minimal theme with `defineTheme`, CSS with semantic tokens and stable hooks, packaging for distribution, and verification|
+|[Your first plugin](./plugin-tutorial.md)|A minimal plugin with `definePlugin`, assets and pipeline, packaging for distribution, key extension points, and verification|
 |[HonoX Integration](./honox-integration.md)|The HonoX/Vite connection, Application Root responsibilities, and Cloudflare Workers/SSG boundaries|
 |[Analytics](./analytics.md)|Browser page-view tracking (`@riebeckite/plugin-analytics`) and the independent Cloudflare Worker collector (`@riebeckite/analytics-cloudflare`)|
 
@@ -134,6 +139,6 @@ pnpm exec riebeckite profile  # trace-based performance report
 
 ## Suggested reading path
 
-For a new site, start with [Getting Started](./getting-started.md), [Configuration](./configuration.md), and [Content System](./content-system.md). Read [Plugin System](./plugin-system.md) before adding a plugin, and [Theme System](./theme-system.md) before changing appearance. To investigate an issue, use `check`, `doctor`, and `inspect` in that order.
+For a new site, start with [Getting Started](./getting-started.md), [Configuration](./configuration.md), and [Content System](./content-system.md). Read [Plugin System](./plugin-system.md) before adding a plugin, and [Theme System](./theme-system.md) before changing appearance. If you are creating a theme or plugin for the first time, [Your first theme](./theme-tutorial.md) and [Your first plugin](./plugin-tutorial.md) are good starting points; for keeping articles and the site separate, see [Separating content from the site](./content-and-site-repos.md). To investigate an issue, use `check`, `doctor`, and `inspect` in that order.
 
 For coding agents and automation, use the concise, rule-oriented [Agent documentation](../agents/README.md).

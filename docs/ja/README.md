@@ -20,6 +20,8 @@ Riebeckite は、Markdown と Obsidian のノートを Web サイトとして公
 |設定項目を確認したい|[Configuration](./configuration.md)|
 |既存コードの責務や依存方向を理解したい|[Architecture](./architecture.md)|
 |Plugin または Theme を作成・変更したい|[Plugin System](./plugin-system.md) / [Theme System](./theme-system.md)|
+|テーマやプラグインをはじめて作る|[はじめてのテーマ作成](./theme-tutorial.md) / [はじめてのプラグイン作成](./plugin-tutorial.md)|
+|記事とサイトを別々の場所で管理したい|[記事とサイトのリポジトリ分離](./content-and-site-repos.md)|
 |問題を調査したい|[Diagnostics](./diagnostics.md) / [Framework Inspector](./inspector.md)|
 |このリポジトリ自体を開発したい|[Repository Development](./development.md)|
 
@@ -71,7 +73,8 @@ Build tooling
 |---|---|
 |[セットアップガイド](./setup.md)|はじめての人向けに、リポジトリの環境構築、新しいサイトの作成、Cloudflare Workers への公開を順番に説明|
 |[利用ガイド](./guide.md)|インストールと設定から、コンテンツ、検証、ビルド、デプロイまでの手順|
-|[Getting Started](./getting-started.md)|必要な環境、インストール、開発サーバー、通常・フルビルド、最小設定例|
+|[Getting Started](./getting-started.md)|必要な環境、最小設定例、インストール、コンテンツの確認、開発サーバー、通常・フルビルド|
+|[記事とサイトのリポジトリ分離](./content-and-site-repos.md)|記事（Obsidian Vault など）とサイトを別リポジトリや別フォルダで管理し、`content.directory` で外部の Vault を参照する方法|
 |[Configuration](./configuration.md)|`riebeckite.config.ts`、Application Root、site、content、theme、plugins、検証と secret の扱い|
 |[CLI](./cli.md)|`check`、`doctor`、`inspect`、`profile`、`build`、`dev` の用途、終了動作、パッケージング|
 
@@ -82,6 +85,8 @@ Build tooling
 |[Content System](./content-system.md)|`ContentSource`、logical path、`ContentManager`、public location（`ContentPublicLocation`）、Manifest、Content Graph、添付ファイル、公開判定、差分メタデータ|
 |[Plugin System](./plugin-system.md)|Plugin、lifecycle、capability と依存関係、options validation、pipeline、renderer、assets、cache、observability|
 |[Theme System](./theme-system.md)|Theme contract、color mode、タイポグラフィ、design token、CSS cascade、Plugin との境界、テーマパッケージ構成|
+|[はじめてのテーマ作成](./theme-tutorial.md)|`defineTheme` を使った最小テーマ、セマンティック token と stable hook を使う CSS、配布用パッケージ化、検証手順|
+|[はじめてのプラグイン作成](./plugin-tutorial.md)|`definePlugin` を使った最小プラグイン、assets と pipeline、配布用パッケージ化、代表的な拡張ポイント、検証手順|
 |[HonoX Integration](./honox-integration.md)|HonoX/Vite への接続、Application Root との役割分担、Cloudflare Workers と SSG の境界|
 |[Analytics](./analytics.md)|ブラウザのページビュー計測（`@riebeckite/plugin-analytics`）と、独立デプロイの Cloudflare Worker コレクタ（`@riebeckite/analytics-cloudflare`）|
 
@@ -134,6 +139,6 @@ pnpm exec riebeckite profile  # trace ベースの性能レポート
 
 ## 読み進め方
 
-初めて利用する場合は、[Getting Started](./getting-started.md) → [Configuration](./configuration.md) → [Content System](./content-system.md) の順が基本です。Plugin を追加する前に [Plugin System](./plugin-system.md)、見た目を変更する前に [Theme System](./theme-system.md) を読んでください。問題の切り分けには `check`、`doctor`、`inspect` を順に使います。
+初めて利用する場合は、[Getting Started](./getting-started.md) → [Configuration](./configuration.md) → [Content System](./content-system.md) の順が基本です。Plugin を追加する前に [Plugin System](./plugin-system.md)、見た目を変更する前に [Theme System](./theme-system.md) を読んでください。テーマやプラグインを初めて作る場合は [はじめてのテーマ作成](./theme-tutorial.md) と [はじめてのプラグイン作成](./plugin-tutorial.md) が、記事とサイトを別々に管理したい場合は [記事とサイトのリポジトリ分離](./content-and-site-repos.md) が参考になります。問題の切り分けには `check`、`doctor`、`inspect` を順に使います。
 
 自動化ツールやコーディングエージェント向けには、短く規則中心の [Agent documentation](../agents/README.md) を用意しています（英語のみの提供です）。

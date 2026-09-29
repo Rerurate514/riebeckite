@@ -59,6 +59,7 @@ export function contentRouteSsgParams(
  * `next()` to defer to a more specific route, so wrapping the handler in a
  * rest-parameter function keeps `length === 0` while preserving `(c, next)`.
  */
+// biome-ignore lint/suspicious/noExplicitAny: Hono's Handler generics (env/path/response) are intentionally left open so any route handler can pass through.
 export function ssgEnumerableHandler<H extends Handler<any, any, any>>(
   handler: H,
 ): H {
@@ -75,10 +76,7 @@ function isDynamicRoute(path: string): boolean {
 
 function normalizeRequestPath(pathname: string): string {
   const trailingSlash = pathname.length > 1 && pathname.endsWith("/");
-  const segments = pathname
-    .split("/")
-    .filter(Boolean)
-    .map(decodeSegment);
+  const segments = pathname.split("/").filter(Boolean).map(decodeSegment);
   const path = `/${segments.join("/")}`;
   return trailingSlash ? `${path}/` : path;
 }

@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  escapeScriptJson,
+} from "@riebeckite/core";
 import type {
   FlashcardsCard,
   FlashcardsPayload,
@@ -31,7 +35,7 @@ export function renderFlashcardsPayload(
   cards: readonly FlashcardsCard[],
 ): string {
   const payload: FlashcardsPayload = { cards: [...cards] };
-  return `<script type="application/json" data-flashcards-payload>${escapeJsonForScript(JSON.stringify(payload))}</script>`;
+  return `<script type="application/json" data-flashcards-payload>${escapeScriptJson(JSON.stringify(payload))}</script>`;
 }
 
 export function renderFlashcardsFallback(
@@ -53,13 +57,4 @@ function renderFallbackItem(card: FlashcardsCard, className: string): string {
     `<span class="${escapeHtmlAttribute(className)}__back">${back}</span>`,
     "</li>",
   ].join("");
-}
-
-function escapeJsonForScript(json: string): string {
-  return json
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026")
-    .replace(/\u2028/g, "\\u2028")
-    .replace(/\u2029/g, "\\u2029");
 }

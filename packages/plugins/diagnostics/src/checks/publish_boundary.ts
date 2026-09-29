@@ -9,8 +9,8 @@ import {
   type ScanResult,
 } from "../vault.js";
 import {
-  type NoteLocation,
   type NormalizedOptions,
+  type NoteLocation,
   pushDiagnostic,
 } from "./shared.js";
 
@@ -36,7 +36,7 @@ export function checkPublishBoundary(
 
     for (const match of getWikilinkMatches(note.markdown)) {
       const resolved = resolveWikilinkTarget(match.target, source.targetIndex);
-      if (!resolved || resolved.kind !== "note") continue;
+      if (resolved?.kind !== "note") continue;
 
       const { line, column } = position.positionAt(match.index);
       reportBoundaryReference(

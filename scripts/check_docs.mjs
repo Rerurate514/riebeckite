@@ -36,7 +36,8 @@ function isExcluded(relativePath) {
     return true;
   }
   return EXCLUDED_PREFIXES.some(
-    (prefix) => relativePath === prefix || relativePath.startsWith(`${prefix}/`),
+    (prefix) =>
+      relativePath === prefix || relativePath.startsWith(`${prefix}/`),
   );
 }
 
@@ -96,8 +97,7 @@ function collectPaths() {
   return { markdownFiles, allFiles };
 }
 
-const LINK_PATTERN =
-  /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+const LINK_PATTERN = /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
 
 // Rule 1: relative links must resolve to an existing file.
 function checkLinks(markdownFiles, allFiles) {
@@ -106,9 +106,12 @@ function checkLinks(markdownFiles, allFiles) {
     const text = fs.readFileSync(file.absolute, "utf8");
     const lines = text.split(/\r?\n/);
     lines.forEach((line, index) => {
-      let match;
       LINK_PATTERN.lastIndex = 0;
-      while ((match = LINK_PATTERN.exec(line))) {
+      for (
+        let match = LINK_PATTERN.exec(line);
+        match;
+        match = LINK_PATTERN.exec(line)
+      ) {
         const rawTarget = match[1];
         if (/^(https?:|mailto:|tel:)|^(data:)/i.test(rawTarget)) continue;
         const anchorIndex = rawTarget.indexOf("#");
@@ -134,15 +137,15 @@ function checkLinks(markdownFiles, allFiles) {
   return errors;
 }
 
-function readLines(absolutePath) {
-  return fs.readFileSync(absolutePath, "utf8").split(/\r?\n/);
-}
-
 // Rule 2: docs/en and docs/ja must be name-for-name parallel.
 function checkLanguageParity(documents) {
   const errors = [];
-  const english = new Set(documents.en.map((file) => path.basename(file.absolute)));
-  const japanese = new Set(documents.ja.map((file) => path.basename(file.absolute)));
+  const english = new Set(
+    documents.en.map((file) => path.basename(file.absolute)),
+  );
+  const japanese = new Set(
+    documents.ja.map((file) => path.basename(file.absolute)),
+  );
   const enOnly = [...english].filter((name) => !japanese.has(name)).sort();
   const jaOnly = [...japanese].filter((name) => !english.has(name)).sort();
   for (const name of enOnly) {

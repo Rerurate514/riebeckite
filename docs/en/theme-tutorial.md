@@ -110,6 +110,7 @@ npx riebeckite build          # check the generated output
 
 ## Further reading
 
+- [Themes in depth](./theme-in-depth.md) — the in-depth companion (options, tokens, hooks, cascade, packaging)
 - [Theme System](./theme-system.md) — theme contract, tokens, hooks, cascade
 - [Plugin System](./plugin-system.md) — the boundary with themes (features = plugins)
 - [Framework Reference](./framework-reference.md) — public APIs like `defineTheme`

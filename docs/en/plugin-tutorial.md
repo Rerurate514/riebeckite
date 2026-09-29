@@ -118,6 +118,7 @@ npx riebeckite build           # confirm it appears in the output
 
 ## Further reading
 
+- [Plugins in depth](./plugin-in-depth.md) — the in-depth companion (extension points, capabilities, lifecycle, packaging)
 - [Plugin System](./plugin-system.md) — all extension points in detail
 - [Architecture](./architecture.md) — responsibilities of Core / Plugin / Integration / Theme / App
 - [Framework Reference](./framework-reference.md) — public APIs like `definePlugin`

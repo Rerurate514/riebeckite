@@ -118,6 +118,7 @@ npx riebeckite build           # 生成物に反映されるか確認
 
 ## 関連資料
 
+- [プラグイン作成の詳細](./plugin-in-depth.md) — この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
 - [Plugin System](./plugin-system.md) — すべての拡張ポイントの詳細
 - [Architecture](./architecture.md) — Core / Plugin / Integration / Theme / App の責務
 - [Framework Reference](./framework-reference.md) — `definePlugin` などの公開 API

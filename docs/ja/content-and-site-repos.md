@@ -152,6 +152,7 @@ workflow の `actions/checkout@v4` に `submodules: recursive` を足します�
 
 ## 関連資料
 
+- [リポジトリ分離の詳細編](./content-and-site-repos-in-depth.md) — このガイドの詳細編（root 解決・CI 認証・assets・トラブル対応）
 - [Configuration](./configuration.md) — root の解決規則の詳細
 - [利用ガイド](./guide.md) — 外部 Vault の設定例と assets の扱い
 - [Cloudflare デプロイテンプレート](../../templates/cloudflare/README_ja.md) — デプロイ workflow の詳細

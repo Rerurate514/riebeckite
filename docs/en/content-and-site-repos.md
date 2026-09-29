@@ -152,6 +152,7 @@ Add `submodules: recursive` to `actions/checkout@v4` in the workflow. After upda
 
 ## Further reading
 
+- [Separating content and the site (in depth)](./content-and-site-repos-in-depth.md) — the in-depth companion (root resolution, CI auth, assets, troubleshooting)
 - [Configuration](./configuration.md) — root resolution details
 - [Usage Guide](./guide.md) — external vault examples and assets
 - [Cloudflare deploy template](../../templates/cloudflare/README_en.md) — deployment workflow details

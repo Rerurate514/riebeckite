@@ -110,6 +110,7 @@ npx riebeckite build          # 生成物を確認
 
 ## 関連資料
 
+- [テーマ作成の詳細](./theme-in-depth.md) — この入門の詳細編（option・token・hook・cascade・配布）
 - [Theme System](./theme-system.md) — theme contract、token、hook、cascade の詳細
 - [Plugin System](./plugin-system.md) — テーマとの境界（機能は Plugin）
 - [Framework Reference](./framework-reference.md) — `defineTheme` などの公開 API

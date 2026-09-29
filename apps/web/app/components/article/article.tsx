@@ -10,6 +10,11 @@ import ContentSlot from "../content-slot/content-slot";
 
 type Props = {
   content: PostContent;
+  /**
+   * The note's resolved title (frontmatter `title`, else slug). Used as the
+   * header heading when the body has no leading `<h1>`.
+   */
+  title?: string;
   propertiesHtml?: string;
   asideContent?: unknown;
   afterContent?: unknown;
@@ -28,9 +33,15 @@ export default function Article(props: Props) {
       <ArticleLayout>
         {props.asideContent}
         <ArticleContent>
-          <ArticleHeader
-            dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
-          />
+          {articleHtml.lead ? (
+            <ArticleHeader
+              dangerouslySetInnerHTML={{ __html: articleHtml.lead }}
+            />
+          ) : (
+            <ArticleHeader>
+              {props.title ? <h1>{props.title}</h1> : null}
+            </ArticleHeader>
+          )}
           <ContentSlot html={props.bodySlots?.["article.after-header"]} />
           {propertiesHtml ? (
             <div

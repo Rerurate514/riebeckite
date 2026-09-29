@@ -67,6 +67,7 @@ export default createRoute(
     return c.render(
       <Article
         content={post}
+        title={getArticleTitle(route.entry.slug, post.frontmatter.title)}
         propertiesHtml={route.entry.bodySlots?.properties}
         bodySlots={route.entry.bodySlots}
         asideContent={

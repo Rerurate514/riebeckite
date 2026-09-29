@@ -7,7 +7,7 @@
 | 5 | E | Analytics Worker は独立デプロイにする（templates/analytics-cloudflare + createWorker API） | 完了 | 要調査 | `createWorker` API と d1/kv templates を実装、main に統合済み |
 | 6 | P1 | Generic Analytics 再設計: event model / AnalyticsProvider / Query model / client page_view | 完了 | Large | event/provider/query/memory provider/init/options/client を実装済み。テストあり |
 | 7 | P2 | @riebeckite/analytics-cloudflare: createWorker API + D1/KV Storage Adapter | 完了 | Large | D1/KV storage、migration、worker テストまで実装済み |
-| 8 | P3 | Analytics の diagnostics・テスト・docs・外部 E2E・全検証 | 実施中 | Large | check/doctor/inspect 連携、docs（en/ja）、外部 E2E、Static Assets-only 回帰確認 |
+| 8 | P3 | Analytics の diagnostics・テスト・docs・外部 E2E・全検証 | 完了 | Large | 診断統合（analytics-untracked）、テスト拡充、docs（en/ja）、外部 E2E と Static Assets 検証を完了 |
 | 9 | — | ページ遷移時にノートタイトルが消える問題を修正する | 実施中 | 要調査 | ページ遷移後もノートのタイトルを正しく表示する |
 | 10 | — | モバイル表示全般の対応を改善する | 実施中 | 要調査 | 小さな画面でも操作・閲覧しやすくする |
 | 11 | — | モバイル表示時にトップ余白が大きすぎる問題を修正する | 実施中 | Small | 画面上部の無駄な余白を減らす |

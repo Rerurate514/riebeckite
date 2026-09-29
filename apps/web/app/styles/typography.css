@@ -3,4 +3,12 @@
   .prose code::after {
     content: none;
   }
+
+  /* Keep wide tables scannable on small screens: the table becomes its own
+     horizontal scroll container instead of overflowing the article column. */
+  .prose :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
 }

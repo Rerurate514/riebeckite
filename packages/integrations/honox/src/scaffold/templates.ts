@@ -148,6 +148,7 @@ export default defineConfig({
           "parse-numeric-range",
           "slugify",
           "vfile-matter",
+          "yaml",
         ],
       },
     },

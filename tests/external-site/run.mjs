@@ -181,6 +181,8 @@ const SERIES_PART_1_PERMALINK = "/notes/series-demo-1";
 const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
 const ANALYTICS_CONTENT_ID_ATTRIBUTE = "data-riebeckite-content-id";
 const ANALYTICS_CONTENT_ID = "external-fixture-home";
+const ANALYTICS_DEMO_CONTENT_ID = "analytics-demo";
+const ANALYTICS_PAGE_MARKER = "RIEBECKITE_EXTERNAL_ANALYTICS_PAGE_MARKER";
 const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
 const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
 const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
@@ -731,6 +733,58 @@ function assertBuildOutput(siteDir, vaultDir) {
   ) {
     fail("generated HTML is missing the stable analytics content ID marker");
   }
+  if (!combined.includes(ANALYTICS_DEMO_CONTENT_ID)) {
+    fail(
+      "generated HTML is missing the analytics demo content ID marker " +
+        `(${ANALYTICS_DEMO_CONTENT_ID})`,
+    );
+  }
+  // Every page must carry at most one content-ID marker, and each content ID
+  // must be unique across the site: a shared ID would merge analytics page
+  // views for different notes.
+  const contentIdOwners = new Map();
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, "utf8");
+    const ids = [
+      ...html.matchAll(
+        new RegExp(`${ANALYTICS_CONTENT_ID_ATTRIBUTE}="([^"]*)"`, "g"),
+      ),
+    ].map((match) => match[1]);
+    if (ids.length > 1) {
+      fail(
+        `page ${path.relative(siteDir, file)} carries ${ids.length} analytics content ID markers`,
+      );
+    }
+    const contentId = ids[0];
+    if (!contentId) continue;
+    const owner = contentIdOwners.get(contentId);
+    if (owner) {
+      fail(
+        `analytics content ID "${contentId}" appears on both ${owner} and ${path.relative(siteDir, file)}`,
+      );
+    }
+    contentIdOwners.set(contentId, path.relative(siteDir, file));
+  }
+  for (const contentId of [ANALYTICS_CONTENT_ID, ANALYTICS_DEMO_CONTENT_ID]) {
+    if (!contentIdOwners.has(contentId)) {
+      fail(
+        `analytics content ID "${contentId}" is missing from the emitted pages`,
+      );
+    }
+  }
+  const analyticsDemoPage = htmlFiles
+    .map((file) => ({ file, html: fs.readFileSync(file, "utf8") }))
+    .find(({ html }) => html.includes(ANALYTICS_PAGE_MARKER));
+  if (!analyticsDemoPage) {
+    fail(`the analytics demo page was not built (${ANALYTICS_PAGE_MARKER})`);
+  }
+  if (
+    !analyticsDemoPage.html.includes(
+      `${ANALYTICS_CONTENT_ID_ATTRIBUTE}="${ANALYTICS_DEMO_CONTENT_ID}"`,
+    )
+  ) {
+    fail("the analytics demo page is missing its content ID marker");
+  }
   if (!combined.includes(GRAPHVIZ_MARKER)) {
     fail(`generated HTML is missing the graphviz marker (${GRAPHVIZ_MARKER})`);
   }
@@ -1038,6 +1092,24 @@ function assertBuildOutput(siteDir, vaultDir) {
 
   const jsFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
   const js = jsFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  // The analytics client initializer must be part of the emitted browser
+  // bundle. `initAnalytics` is the factory registered through the generic
+  // public-config mechanism; the attribute string and the event type are
+  // identifiers that only exist in the plugin's client source.
+  if (!js.includes("initAnalytics")) {
+    fail("the analytics client bundle is missing initAnalytics");
+  }
+  if (!js.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE)) {
+    fail("the analytics client bundle is missing its content ID selector");
+  }
+  if (!js.includes("page_view")) {
+    fail("the analytics client bundle is missing the page_view event type");
+  }
+  // The fixture collector URL is part of the public config serialized into the
+  // client module; its presence proves the browser entry received the config.
+  if (!js.includes("analytics.example.com")) {
+    fail("the analytics public config was not bundled into the client module");
+  }
   if (!js.includes(FLASHCARDS_CLIENT_IDENTIFIER)) {
     fail(
       `emitted client bundle is missing the flashcards identifier (${FLASHCARDS_CLIENT_IDENTIFIER})`,

@@ -468,6 +468,7 @@ export function expectedPackageMetadata(directory) {
       "analytics",
       "daily-notes",
       "deploy",
+      "diagnostics",
       "l10n",
       "quality",
       "rename",

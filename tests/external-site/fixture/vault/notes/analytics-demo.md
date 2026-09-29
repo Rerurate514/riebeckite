@@ -1,6 +1,7 @@
 ---
 title: Analytics Demo
 description: A published note used to verify provider analytics injection.
+id: analytics-demo
 publish: true
 ---
 

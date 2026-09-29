@@ -48,6 +48,8 @@ export default defineConfig({
 | `publish-conflict` | `warning` | `publish: true` combined with `draft: true` / `private: true` |
 | `duplicate-title` | `warning` | Multiple published notes share a title |
 | `slug-collision` | `error` | Slugs collide case-insensitively |
+| `duplicate-content-id` | `error` | Published notes share a stable content ID (`id`/`uid`) |
+| `invalid-content-id` | `error` | `id`/`uid` frontmatter violates the stable content ID contract |
 | `excluded-public` | `warning` | Excluded note is marked `publish: true` |
 | `publish-boundary` | `warning` | Published content links to or embeds non-published content |
 | `internal-error` | `error` | Content analysis failed |
@@ -123,4 +125,4 @@ assertNoErrors(report);
 
 ## See also
 
-- [Plugin guide](../../docs/plugins_en.md)
+- [Plugin guide](../../../docs/en/plugin-system.md)

@@ -24,6 +24,8 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 
 `check` が示すのは有効性であり、output が build/deploy 済みであることではありません。Doctor は可能な独立診断を継続し、失敗時は non-zero で終了します。Inspector は build、state/cache/assets の書込み、Vite/HonoX build、artifact render、auto-fix を絶対に起動しない read-only command です。
 
+plugin の option validation は `check` の一部として実行されます。各 plugin の `validateOptions`（analytics プラグインは provider と collector URL を検証します）が configuration validity に寄与するため、不正な plugin 設定は build 前に `check` で失敗します。
+
 `init` は config、Vite/HonoX の application shell、route、stylesheet、初期 content を含む自己完結の Site を対象ディレクトリ（既定は current directory）に生成します。生成対象のファイルが既にあるディレクトリには `--force` なしでは書き込みません。生成後は依存関係を install し、`check` と `build` を実行してください。`create-riebeckite` パッケージは `npm create riebeckite` から同じ generator を実行します。
 
 command の失敗は error 名、message、存在する場合は error の `code`・file path・remediation の `hint` とともに表示されます。ネストした cause は `Caused by:` 行として表示されます。

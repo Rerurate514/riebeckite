@@ -25,7 +25,8 @@ const HELP = `riebeckite-diagnostics
 Check an Obsidian vault / Riebeckite content directory for content problems:
 broken wikilinks, broken images, broken markdown links, unused assets,
 orphan notes, missing frontmatter, publish conflicts, duplicate titles,
-slug collisions, and excluded-but-public notes.
+slug collisions, duplicate or invalid content IDs, and excluded-but-public
+notes.
 
 Usage:
   riebeckite-diagnostics [options]

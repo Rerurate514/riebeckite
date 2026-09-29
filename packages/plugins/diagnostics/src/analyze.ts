@@ -1,5 +1,6 @@
 import type { Diagnostic } from "@riebeckite/core";
 import { checkUnusedAssets } from "./checks/assets.js";
+import { checkContentIdIntegrity } from "./checks/content_identity.js";
 import { checkExcludedPublic } from "./checks/excluded_public.js";
 import { checkFrontmatter } from "./checks/frontmatter.js";
 import { checkMarkdownReferences } from "./checks/markdown_references.js";
@@ -37,6 +38,7 @@ export async function analyzeContent(
 
   checkSlugCollisions(source, normalizedOptions, diagnostics);
   checkDuplicateTitles(source, normalizedOptions, diagnostics);
+  checkContentIdIntegrity(source, normalizedOptions, diagnostics);
   checkOrphans(source, state, normalizedOptions, diagnostics);
   checkUnusedAssets(source, state, normalizedOptions, diagnostics);
   checkExcludedPublic(source, normalizedOptions, diagnostics);

@@ -37,6 +37,8 @@ export default defineConfig({
 | `publish-conflict` | warning | `publish: true` と `draft: true` または `private: true` が同居している |
 | `duplicate-title` | warning | 公開ノート同士でタイトルが重複している |
 | `slug-collision` | error | 大文字・小文字を区別しない slug が衝突している |
+| `duplicate-content-id` | error | 公開ノート同士で安定コンテンツ ID（`id`/`uid`）が重複している |
+| `invalid-content-id` | error | `id`/`uid` の frontmatter が安定コンテンツ ID の契約を満たしていない |
 | `excluded-public` | warning | 除外されたノートに `publish: true` が指定されている |
 | `publish-boundary` | warning | 公開コンテンツから非公開コンテンツへリンク・埋め込みしている |
 | `internal-error` | error | コンテンツ解析中に処理できないエラーが発生した |

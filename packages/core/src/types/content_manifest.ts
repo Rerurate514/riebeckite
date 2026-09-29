@@ -1,7 +1,7 @@
 import type { ContentGraph } from "../content/content_graph.js";
 import type { Diagnostic } from "./diagnostic.js";
 import type { GeneratedOutput } from "./generated_output.js";
-import type { PluginAsset } from "./plugin_asset.js";
+import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type { PluginHeadTag } from "./plugin_head.js";
 import type { PostFrontmatter } from "./post_content.js";
 
@@ -22,8 +22,16 @@ export type ContentManifestPluginAsset = PluginAsset & {
   path: string;
 };
 
+/** Client entries and their explicitly public configuration. */
+export type ContentManifestPluginClientEntry = PluginClientEntry;
+
 export type ContentManifestEntry = {
   slug: string;
+  /**
+   * Optional source-authored stable content identity. It is independent of the
+   * slug, permalink, aliases, and redirects.
+   */
+  contentId?: string;
   permalink: string;
   publicLocation: ContentPublicLocation;
   title: string;
@@ -73,6 +81,8 @@ export type ContentManifest = {
    */
   publicEntries: ContentManifestEntry[];
   bySlug: Map<string, ContentManifestEntry>;
+  /** Contains only entries with an explicit source-authored content ID. */
+  byContentId: Map<string, ContentManifestEntry>;
   byPermalink: Map<string, ContentManifestEntry>;
   redirects: Map<string, ContentRedirect & { slug: string }>;
   /**
@@ -87,6 +97,11 @@ export type ContentManifest = {
   contentIndex: Map<string, string>;
   graph: ContentGraph;
   assets: ContentManifestPluginAsset[];
+  /**
+   * Browser entries registered by plugins. This contains only each entry's
+   * explicit `publicConfig`, never the plugin's complete `options` object.
+   */
+  clientEntries: ContentManifestPluginClientEntry[];
   diagnostics: Diagnostic[];
   generatedOutputs: GeneratedOutput[];
 };

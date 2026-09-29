@@ -33,6 +33,7 @@
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
+    "test": "pnpm exec tsx --test \"test/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {
@@ -44,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Analytics provider integration for Riebeckite sites.",
+  "description": "Storage-independent analytics foundation for Riebeckite sites.",
   "keywords": [
     "riebeckite",
     "plugin",

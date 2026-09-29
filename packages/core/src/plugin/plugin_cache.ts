@@ -2,15 +2,10 @@ import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { Logger, Tracer } from "../observability.js";
+import type { JsonValue } from "../types/json_value.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 
-export type JsonValue =
-  | null
-  | boolean
-  | number
-  | string
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+export type { JsonValue } from "../types/json_value.js";
 
 export type PluginCache = {
   get<T extends JsonValue>(key: string): Promise<T | undefined>;

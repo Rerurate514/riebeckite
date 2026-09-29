@@ -144,13 +144,20 @@ export function examplePlugin() {
   return definePlugin({
     name: "example",
     assets: [createStyleAsset("example")],
-    clientEntries: [createClientEntry("example", "initExample")],
+    clientEntries: [
+      createClientEntry("example", "initExample", { selector: ".example" }),
+    ],
   });
 }
 ```
 
 Omit `assets` or `clientEntries` when the plugin does not need them. The client
-entry's export name is optional and defaults to the module default export.
+entry's export name is optional and defaults to the module default export. Its
+third argument is an optional JSON value passed to that initializer. It is the
+only plugin configuration exposed to browser code (and recorded in the
+manifest for static hosts); `options` are never copied to the client. Register
+only deliberately public values—never tokens, credentials, or private service
+URLs. An initializer without public config continues to receive no arguments.
 
 ## CSS hooks
 

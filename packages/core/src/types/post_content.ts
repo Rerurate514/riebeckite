@@ -4,6 +4,13 @@ export type PostContent = {
 };
 
 export type PostFrontmatter = Record<string, unknown> & {
+  /**
+   * Optional source-authored stable content identity. Unlike a slug or URL,
+   * this value survives a rename or public-location change.
+   */
+  id?: string;
+  /** @deprecated Use `id`. Read only as a compatibility fallback. */
+  uid?: string;
   title?: string;
   description?: string;
   date?: string | Date;

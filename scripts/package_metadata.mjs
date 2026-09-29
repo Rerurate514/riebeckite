@@ -2,6 +2,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
   "packages/create-riebeckite",
+  "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
   "packages/plugins/alias",
   "packages/plugins/analytics",
@@ -102,12 +103,16 @@ const packagePublishingMetadata = {
     description: "HonoX and Vite integration for building Riebeckite sites.",
     keywords: ["riebeckite", "honox", "vite", "static-site-generator"],
   },
+  "packages/integrations/analytics-cloudflare": {
+    description: "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
+    keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
+  },
   "packages/plugins/alias": {
     description: "Obsidian alias redirects for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "obsidian", "redirects"],
   },
   "packages/plugins/analytics": {
-    description: "Analytics provider integration for Riebeckite sites.",
+    description: "Storage-independent analytics foundation for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "analytics", "web-analytics"],
   },
   "packages/plugins/attachment": {
@@ -405,6 +410,18 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
+  if (directory === "packages/integrations/analytics-cloudflare") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
+      scripts: {
+        build: "node ../../../scripts/build_package.mjs",
+        test: "pnpm exec tsx --test \"test/*.test.ts\"",
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
   if (directory === "packages/integrations/honox") {
     return {
       ...publishingMetadata(directory, false),
@@ -431,12 +448,17 @@ export function expectedPackageMetadata(directory) {
       "seo",
     ].includes(pluginName);
     const hasTests = [
+      "analytics",
       "daily-notes",
       "deploy",
       "quality",
       "rename",
       "text-fragment",
     ].includes(pluginName);
+    const testCommand =
+      pluginName === "analytics"
+        ? "pnpm exec tsx --test \"test/*.test.ts\""
+        : "node --import tsx --test \"test/*.test.ts\"";
     return {
       ...publishingMetadata(directory, hasStyle ? ["./style.css"] : false),
       files: [
@@ -449,7 +471,7 @@ export function expectedPackageMetadata(directory) {
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
         ...(hasTests
-          ? { test: "node --import tsx --test \"test/*.test.ts\"" }
+          ? { test: testCommand }
           : {}),
         prepack: "pnpm run build",
       },

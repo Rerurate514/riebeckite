@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "my-riebeckite-analytics",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-06-09",
+  "d1_databases": [
+    {
+      "binding": "ANALYTICS_DB",
+      "database_name": "my-riebeckite-analytics",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+    }
+  ]
+}

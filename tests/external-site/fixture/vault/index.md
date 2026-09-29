@@ -1,5 +1,6 @@
 ---
 title: External Fixture Home
+id: external-fixture-home
 description: Home page of the external build fixture.
 publish: true
 ---

@@ -335,6 +335,12 @@ importers:
         specifier: workspace:*
         version: link:../integrations/honox
 
+  packages/integrations/analytics-cloudflare:
+    dependencies:
+      '@riebeckite/plugin-analytics':
+        specifier: workspace:*
+        version: link:../../plugins/analytics
+
   packages/integrations/honox:
     dependencies:
       '@riebeckite/core':

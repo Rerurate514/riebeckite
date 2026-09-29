@@ -17,6 +17,41 @@ This repository is a pnpm monorepo containing the framework core, its CLI, the H
 
 Dependencies are managed with pnpm workspaces, so install and run commands with pnpm.
 
+## Create a new site
+
+Scaffold a standalone site from an official preset with
+[`create-riebeckite`](./packages/create-riebeckite):
+
+```bash
+npx create-riebeckite my-site
+cd my-site
+npm install
+npx riebeckite build
+```
+
+| Option | What it does |
+| --- | --- |
+| `[directory]` | Directory to scaffold into (default: the current directory) |
+| `--preset <name>` | Starter composition to use (default: `starter`) |
+| `--force` | Scaffold even when the target directory is not empty |
+| `--list-presets` | List the available presets and their descriptions |
+
+Every preset is a self-contained starter, from smallest to largest:
+
+| Preset | What it does |
+| --- | --- |
+| `empty` | Blank application shell — no plugins, theme, or content |
+| `minimal` | Smallest useful site: Obsidian Markdown, the minimal theme, one page |
+| `starter` | Default starter: Obsidian Markdown, color mode, seven languages, site header |
+| `rich` | Publishing and reading plugins plus guided ecosystem tour pages |
+| `full` | Ready blog: discovery, media, and reading plugins plus a build guide |
+| `max` | Diagram and knowledge plugins on top of `full`, with example pages |
+| `ultra` | Full plugin catalog and theme reference pages |
+
+Start from `starter` and add only what your site needs. The reference
+application in this repository is a fully customized example. See
+[Getting Started](./docs/en/getting-started.md) for the complete flow.
+
 ## Start the reference application
 
 ```bash
@@ -78,6 +113,7 @@ Individual plugins and themes are documented beside their packages (`packages/pl
 | --- | --- |
 | [`packages/core`](./packages/core) | Content contracts, pipeline, plugin and theme APIs, diagnostics, and observability |
 | [`packages/cli`](./packages/cli) | Node.js CLI and build-time tooling |
+| [`packages/create-riebeckite`](./packages/create-riebeckite) | Scaffolds a new site (`npx create-riebeckite`) |
 | [`packages/integrations/honox`](./packages/integrations/honox) | HonoX and Vite integration |
 | [`packages/plugins`](./packages/plugins) | Reusable content, presentation, and publishing extensions |
 | [`packages/themes`](./packages/themes) | Built-in CSS themes and token implementations |

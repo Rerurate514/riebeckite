@@ -11,14 +11,20 @@ npm install
 npx riebeckite build
 ```
 
-The default preset is `starter`. Pass `--preset <name>` to choose another
-composition:
+## Options
+
+| Option | Description |
+| --- | --- |
+| `[directory]` | Directory to scaffold into (default: the current directory) |
+| `--preset <name>` | Starter composition, e.g. `rich` (default: `starter`) |
+| `--force` | Scaffold even when the target directory is not empty |
+| `--list-presets` | Print the available presets and their descriptions, then exit |
+
+For example, scaffold with the `rich` preset:
 
 ```sh
 npx create-riebeckite my-site --preset rich
 ```
-
-Pass `--force` to scaffold into a non-empty directory.
 
 ## Presets
 
@@ -39,7 +45,17 @@ largest:
 | `rich`  | default      | 8       | index, framework/plugins, framework/themes (7 languages) |
 | `full`  | default      | 23      | rich + guide                                          |
 | `max`   | default      | 46      | full + examples                                       |
-| `ultra` | default      | 51      | max + reference/plugins, reference/themes             |
+| `ultra` | default      | 52      | max + reference/plugins, reference/themes             |
+
+Each preset has a one-line description, shown by `--list-presets`:
+
+- `empty` — A blank application shell: no plugins, theme, content, or components.
+- `minimal` — The smallest useful site: Obsidian Markdown, the minimal theme, one page.
+- `starter` — The default starter: Obsidian Markdown, color mode, seven languages, and a site header.
+- `rich` — Publishing and reading plugins plus guided ecosystem tour pages in seven languages.
+- `full` — A ready blog: discovery, media, and reading plugins plus a build guide.
+- `max` — Diagram and knowledge plugins on top of `full`, with showcase example pages.
+- `ultra` — The full plugin catalog and theme reference pages — everything the ecosystem offers.
 
 Presets are defined in `@riebeckite/honox` and can be imported into your own
 tooling:

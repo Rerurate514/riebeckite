@@ -17,6 +17,39 @@ Riebeckite は、Markdown と Obsidian 形式のノートを Web サイトとし
 
 依存関係は pnpm workspace で管理します。インストールと実行には pnpm を使ってください。
 
+## 新しいサイトを作成する
+
+公式の preset から単体のサイトを
+[`create-riebeckite`](./packages/create-riebeckite) で生成できます。
+
+```bash
+npx create-riebeckite my-site
+cd my-site
+npm install
+npx riebeckite build
+```
+
+| オプション | 内容 |
+| --- | --- |
+| `[directory]` | 生成先ディレクトリ（既定はカレントディレクトリ） |
+| `--preset <name>` | 使用するスターター構成（既定は `starter`） |
+| `--force` | 空でないディレクトリにも展開する |
+| `--list-presets` | 利用可能な preset と説明を一覧表示する |
+
+各 preset は自己完結のスターターで、小さいものから順に次のとおりです。
+
+| Preset | 内容 |
+| --- | --- |
+| `empty` | 空のアプリケーションシェル（Plugin・Theme・コンテンツなし） |
+| `minimal` | 最小構成のサイト（Obsidian Markdown、minimal Theme、1 ページ） |
+| `starter` | 標準のスターター（Obsidian Markdown、カラーモード、7 言語、サイトヘッダー） |
+| `rich` | 公開・閲覧向け Plugin に加え、エコシステムを紹介するページ付き |
+| `full` | ブログ一式（検索・メディア・関連記事などの Plugin とビルドガイド） |
+| `max` | `full` に図表・ナレッジ系 Plugin とサンプルページを追加 |
+| `ultra` | 全 Plugin カタログと Theme リファレンスページを同梱 |
+
+`starter` から始めて、サイトに必要なものだけを追加してください。このリポジトリの参照アプリケーションは、完全にカスタマイズした例として役立ちます。詳しい手順は [Getting Started](./docs/ja/getting-started.md) を参照してください。
+
 ## 参照アプリケーションを起動する
 
 ```bash
@@ -78,6 +111,7 @@ pnpm exec riebeckite inspect    # フレームワークが解釈した状態を�
 | --- | --- |
 | [`packages/core`](./packages/core) | コンテンツの契約、Pipeline、Plugin・Theme API、診断、観測機能 |
 | [`packages/cli`](./packages/cli) | Node.js 向け CLI とビルド時ツール |
+| [`packages/create-riebeckite`](./packages/create-riebeckite) | 新しいサイトを生成する（`npx create-riebeckite`） |
 | [`packages/integrations/honox`](./packages/integrations/honox) | HonoX と Vite の統合 |
 | [`packages/plugins`](./packages/plugins) | コンテンツ、表示、公開を拡張するプラグイン |
 | [`packages/themes`](./packages/themes) | 組み込み CSS テーマとトークン実装 |

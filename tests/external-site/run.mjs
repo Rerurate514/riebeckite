@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -194,6 +194,8 @@ const fail = (message) => {
   throw new Error(message);
 };
 
+const MAX_BUFFER = 128 * 1024 * 1024;
+
 function quote(value) {
   const text = String(value);
   return /[\s"]/.test(text) ? `"${text.replace(/"/g, '\\"')}"` : text;
@@ -206,7 +208,7 @@ function run(command, args, options = {}) {
     cwd: options.cwd ?? repoRoot,
     env: { ...process.env, ...options.env },
     encoding: "utf8",
-    maxBuffer: 128 * 1024 * 1024,
+    maxBuffer: MAX_BUFFER,
   });
 
   if (result.error) {
@@ -220,6 +222,67 @@ function run(command, args, options = {}) {
     );
   }
   return result;
+}
+
+// Async counterpart of `run` for parallel jobs. Mirrors the synchronous
+// semantics: shell execution, maxBuffer cap, and failure (exit code or
+// spawn error) that rejects the returned promise.
+function runAsync(command, args, options = {}) {
+  const line = [command, ...args].map(quote).join(" ");
+  return new Promise((resolve, reject) => {
+    const child = spawn(line, {
+      shell: true,
+      cwd: options.cwd ?? repoRoot,
+      env: { ...process.env, ...options.env },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+
+    let settled = false;
+    let exceeded = false;
+    let stdout = "";
+    let stderr = "";
+
+    const onData = (kind, chunk) => {
+      const target = kind === "stdout" ? stdout : stderr;
+      if (target.length + chunk.length > MAX_BUFFER) {
+        exceeded = true;
+        child.kill("SIGKILL");
+        return;
+      }
+      if (kind === "stdout") stdout += chunk;
+      else stderr += chunk;
+    };
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk) => onData("stdout", chunk));
+    child.stderr.on("data", (chunk) => onData("stderr", chunk));
+
+    child.on("error", (error) => {
+      if (settled) return;
+      settled = true;
+      reject(new Error(`Failed to run: ${line}\n${error.message}`));
+    });
+
+    child.on("close", (status) => {
+      if (settled) return;
+      settled = true;
+      if (exceeded) {
+        reject(new Error(`Command output exceeded ${MAX_BUFFER} bytes: ${line}`));
+        return;
+      }
+      if (status !== 0 && !options.allowFailure) {
+        reject(
+          new Error(
+            `Command failed (exit ${status}): ${line}\n` +
+              `--- stdout ---\n${stdout}\n` +
+              `--- stderr ---\n${stderr}`,
+          ),
+        );
+        return;
+      }
+      resolve({ status, stdout, stderr });
+    });
+  });
 }
 
 function walkFiles(root, predicate = () => true) {
@@ -247,11 +310,13 @@ function extractHoverPreviewPayload(html) {
   return [...matches].map((match) => match[1] ?? "").join("\n");
 }
 
-function packPackages(tarballDir) {
-  step(`packing ${PACKAGES.length} packages with pnpm pack`);
+async function packPackages(tarballDir, concurrency = 4, packages = PACKAGES) {
+  step(
+    `packing ${packages.length} packages with pnpm pack (concurrency ${concurrency})`,
+  );
   const packed = new Map();
 
-  for (const pkg of PACKAGES) {
+  const packOne = async (pkg) => {
     const packageDir = path.join(repoRoot, pkg.directory);
     if (!fs.existsSync(packageDir)) {
       fail(`Package directory is missing: ${pkg.directory}`);
@@ -259,7 +324,7 @@ function packPackages(tarballDir) {
     const manifest = JSON.parse(
       fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
     );
-    run("pnpm", ["pack", "--pack-destination", tarballDir], {
+    await runAsync("pnpm", ["pack", "--pack-destination", tarballDir], {
       cwd: packageDir,
     });
 
@@ -271,8 +336,36 @@ function packPackages(tarballDir) {
     if (!fs.existsSync(tarball)) {
       fail(`pnpm pack did not produce the expected tarball: ${tarball}`);
     }
-    packed.set(pkg.name, { tarball, version: manifest.version });
     console.log(`  packed ${pkg.name} -> ${path.basename(tarball)}`);
+    return { pkg, version: manifest.version, tarball };
+  };
+
+  // Limited-concurrency pool: keep at most `concurrency` pnpm pack processes
+  // in flight. Logs appear in completion order; the result Map below is filled
+  // in input order.
+  const results = new Array(packages.length);
+  let nextIndex = 0;
+  const worker = async () => {
+    while (nextIndex < packages.length) {
+      const index = nextIndex++;
+      results[index] = await packOne(packages[index]);
+    }
+  };
+
+  const batch = await Promise.allSettled(
+    Array.from({ length: Math.min(concurrency, packages.length) }, worker),
+  );
+  const failure = batch.find((result) => result.status === "rejected");
+  if (failure) {
+    // All in-flight jobs have settled by now; surface the first failure.
+    throw failure.reason;
+  }
+
+  for (const result of results) {
+    packed.set(result.pkg.name, {
+      tarball: result.tarball,
+      version: result.version,
+    });
   }
 
   return packed;
@@ -1256,7 +1349,7 @@ function assertStarterOutput(siteDir) {
   }
 }
 
-function main() {
+async function main() {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "riebeckite-e2e-"));
   const siteDir = path.join(tempRoot, "site");
   const vaultDir = path.join(tempRoot, "vault");
@@ -1265,7 +1358,7 @@ function main() {
 
   step(`temporary workspace: ${tempRoot}`);
   try {
-    const packed = packPackages(tarballDir);
+    const packed = await packPackages(tarballDir);
 
     step(
       "copying fixture site and vault (content stays outside the site root)",
@@ -1355,9 +1448,7 @@ function main() {
   }
 }
 
-try {
-  main();
-} catch (error) {
+main().catch((error) => {
   console.error(`\n[external-site] FAIL: ${error.message}`);
   process.exitCode = 1;
-}
+});

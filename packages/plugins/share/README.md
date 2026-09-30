@@ -139,4 +139,4 @@ optional `className` is added to the root without replacing them.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

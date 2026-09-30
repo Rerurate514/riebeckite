@@ -71,4 +71,4 @@ Set a strategy to `false` to disable it. `pathPattern` supports `{YYYY}`,
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

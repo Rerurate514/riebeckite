@@ -103,4 +103,4 @@ kanban-plugin: board
 
 ## 関連資料
 
-- [プラグインガイド](../../../docs/ja/plugin-system.md)
+- [プラグインガイド](../../../docs/ja/reference/plugin-api.md)

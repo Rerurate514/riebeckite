@@ -84,8 +84,8 @@ A colliding alias is not registered; the existing path wins.
 
 ## Related
 
-- [Plugin system](../../../docs/en/plugin-system.md)
+- [Plugin system](../../../docs/en/reference/plugin-api.md)
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

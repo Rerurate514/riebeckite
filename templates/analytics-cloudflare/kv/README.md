@@ -15,3 +15,4 @@ design. Use the D1 template for reports or accurate increments.
 KV also cannot back an atomic rate limiter. This template leaves `rateLimit`
 unset; if you need per-IP limiting without D1, configure Cloudflare Rate Limiting
 instead. Origin checks are not authentication, so treat totals as untrusted.
+

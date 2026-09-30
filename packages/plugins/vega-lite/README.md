@@ -125,4 +125,4 @@ JavaScript is disabled and the spec stays readable in the fallback `details`.
 
 ## See also
 
-- [Plugin system](../../../docs/en/plugin-system.md)
+- [Plugin system](../../../docs/en/reference/plugin-api.md)

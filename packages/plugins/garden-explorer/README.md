@@ -85,5 +85,5 @@ in the browser.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README.md)

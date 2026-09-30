@@ -117,4 +117,4 @@ untouched. No options are passed from the build to the client; the deck reads
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

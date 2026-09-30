@@ -92,6 +92,6 @@ Styles ship in `style.css`.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)
 - [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README.md)

@@ -68,4 +68,4 @@ noreferrer"`). The preview image and favicon are lazy-loaded and marked
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

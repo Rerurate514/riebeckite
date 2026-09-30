@@ -52,8 +52,8 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 
 `doctor` continues independent checks where possible and exits unsuccessfully
 when health checks fail. `inspect` is deliberately read-only and never triggers
-a build or writes state. See [Diagnostics](../../docs/en/diagnostics.md) and
-[Framework Inspector](../../docs/en/inspector.md) for how to interpret output.
+a build or writes state. See [Diagnostics](../../docs/en/framework/diagnostics.md) and
+[Framework Inspector](../../docs/en/framework/inspector.md) for how to interpret output.
 
 ## Typical workflow
 
@@ -66,6 +66,6 @@ pnpm exec riebeckite build
 
 ## See also
 
-- [CLI Reference](../../docs/en/cli.md)
-- [Build System](../../docs/en/build-system.md)
-- [Diagnostics](../../docs/en/diagnostics.md) / [Framework Inspector](../../docs/en/inspector.md)
+- [CLI Reference](../../docs/en/reference/cli.md)
+- [Build System](../../docs/en/framework/build-system.md)
+- [Diagnostics](../../docs/en/framework/diagnostics.md) / [Framework Inspector](../../docs/en/framework/inspector.md)

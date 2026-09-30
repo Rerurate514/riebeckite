@@ -98,4 +98,4 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

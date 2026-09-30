@@ -121,4 +121,4 @@ Stable hooks follow the `rr-sidenotes` convention: `rr-sidenotes__toggle`,
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

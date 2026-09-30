@@ -98,4 +98,4 @@ all panels remain visible so every code block can still be read.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

@@ -150,4 +150,4 @@ import "@riebeckite/plugin-changelog/style.css";
 ## See also
 
 - [plugin-diff](../diff/README.md) — revision history and line diffs
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

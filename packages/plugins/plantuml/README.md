@@ -96,4 +96,4 @@ Encoding failures are reported with `file.message(...)`. Diagnostics use
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

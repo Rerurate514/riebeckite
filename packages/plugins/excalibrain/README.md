@@ -169,4 +169,4 @@ wrapping an `<a href>` around its `<rect>` and `<text>`. Links are
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

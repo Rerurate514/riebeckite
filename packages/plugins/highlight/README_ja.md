@@ -88,4 +88,4 @@ highlight({ className: "my-highlight", tag: "span" });
 
 ## 関連資料
 
-- [プラグインガイド](../../../docs/ja/plugin-system.md)
+- [プラグインガイド](../../../docs/ja/reference/plugin-api.md)

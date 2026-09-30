@@ -6,7 +6,7 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 
 ## 概要
 
-テーマの配色は次の 3 つの CSS 状態で決まります（[theme-system.md](../../../docs/ja/theme-system.md) 参照）:
+テーマの配色は次の 3 つの CSS 状態で決まります（[theme-system.md](../../../docs/ja/reference/theme-api.md) 参照）:
 
 - `:root` — ライト
 - `:root[data-theme="dark"]` — ダーク
@@ -132,5 +132,5 @@ document.addEventListener("riebeckite:color-mode", (event) => {
 
 ## 関連
 
-- [テーマシステム](../../../docs/ja/theme-system.md)
+- [テーマシステム](../../../docs/ja/reference/theme-api.md)
 - [`@riebeckite/plugin-ux`](../ux/README_ja.md)

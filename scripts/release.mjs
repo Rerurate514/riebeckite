@@ -138,7 +138,15 @@ function computePublishOrder() {
   return order;
 }
 
-function publishPackages(order, dryRun) {
+function isPackageVersionPublished(packageName, version) {
+  const result = spawnSync("npm", ["view", `${packageName}@${version}`, "version"], {
+    cwd: repositoryRoot,
+    stdio: "ignore",
+  });
+  return result.status === 0;
+}
+
+function publishPackages(order, dryRun, version) {
   console.log("\nPublishing in workspace topological order:");
   for (const directory of order) {
     console.log(`  - ${directory}`);
@@ -146,6 +154,14 @@ function publishPackages(order, dryRun) {
   const args = ["publish", "--no-git-checks"];
   if (dryRun) args.push("--dry-run");
   for (const directory of order) {
+    const manifest = JSON.parse(
+      fs.readFileSync(path.join(repositoryRoot, directory, "package.json"), "utf8"),
+    );
+    if (!dryRun && isPackageVersionPublished(manifest.name, version)) {
+      console.log(`\n[step] publish ${directory}`);
+      console.log(`${manifest.name}@${version} is already published; skipping.`);
+      continue;
+    }
     runStep(
       `publish ${directory}`,
       "pnpm",
@@ -256,7 +272,7 @@ function main() {
   runChecks();
 
   const publishOrder = computePublishOrder();
-  publishPackages(publishOrder, dryRun);
+  publishPackages(publishOrder, dryRun, version);
 
   if (dryRun) {
     console.log(

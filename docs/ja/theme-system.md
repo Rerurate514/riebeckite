@@ -65,9 +65,9 @@ type ThemeColorMode = "light" | "dark" | "system";
 
 Theme の配色は次の 3 つの CSS 状態で決まります:
 
-- `:root` — ライト
-- `:root[data-theme="dark"]` — ダーク
-- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }` — OS に追随（system）
+- `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` — ライト
+- `:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"]` — ダーク
+- `@media (prefers-color-scheme: dark) { :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) }` — OS に追随（system）
 
 サーバーは Theme の `colorMode` が `"system"` のとき以外は `<html>` に
 `data-theme` を出力し、`"system"` のときは属性を省略します（media query が
@@ -139,12 +139,15 @@ Theme stylesheet ではこれらを `--rb-*` semantic CSS custom properties
 として扱います。
 
 ``` css
-:root {
-  --rb-color-paper: #fafafa;
-  --rb-color-ink: #202020;
-  --rb-color-accent: #555;
-  --rb-font-body: system-ui, sans-serif;
-  --rb-layout-article-max: 48rem;
+@layer base {
+  /* <name> はテーマの identity name（例: "minimal"） */
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+    --rb-color-paper: #fafafa;
+    --rb-color-ink: #202020;
+    --rb-color-accent: #555;
+    --rb-font-body: system-ui, sans-serif;
+    --rb-layout-article-max: 48rem;
+  }
 }
 ```
 
@@ -169,6 +172,58 @@ Component や Plugin が特定 Theme の色名を直接参照すると、Theme
 
 Plugin 固有の意味を持つ token は Plugin が所有し、fallback として
 `--rb-*` を利用できます。
+
+## Theme root selector
+
+組み込みテーマは裸の `:root` を対象にしません。各テーマはルールを *theme root* に限定し、同じ stylesheet で実サイトの document と埋め込み preview の両方を描画できるようにします。
+
+``` css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"]
+```
+
+`<name>` はテーマの identity name です。default テーマは `riebeckite`、それ以外は `minimal`、`gruvbox`、`sakura`、`tokyonight`、`rerurate` のいずれかです。
+
+- 実サイトでは application が `<html>` に `data-theme-name` を付けるため、`:root` の分岐が document root に一致します。
+- preview（テーマギャラリーなど）では、`class="rb-theme-root" data-theme-name="<name>"` を持つ任意の要素に同じ stylesheet が適用されます。1 つの document 内で複数テーマを並べて表示できます。
+
+テーマが宣言するすべての selector に同じ prefix が付きます。
+
+``` css
+/* ライト */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* ... */ }
+
+/* ダーク */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] {
+  /* ... */
+}
+
+/* system */
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) {
+    /* ... */
+  }
+}
+
+/* typography preset */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-typography="serif"] {
+  /* ... */
+}
+
+/* theme option */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-tokyonight-neon="on"] {
+  /* ... */
+}
+```
+
+要素・擬似要素のルールも同じ prefix で preview 内に収めます。
+
+``` css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] :focus-visible { /* ... */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] ::selection { /* ... */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] * { /* ... */ }
+```
+
+`data-theme-name` は framework が出力します。preview 側は `.rb-theme-root` hook と一致する name を用意するだけです。
 
 ## Styles
 
@@ -249,12 +304,22 @@ Theme 固有概念を Core の `ThemeConfig` に増やさないことが重要�
 
 Theme は内部 markup ではなく、文書化された stable hook を対象にします。Riebeckite では class を 2 つの namespace に分けます。
 
--   `rb-*` — framework が提供する構造 hook と semantic design token。構造 hook は `.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar` です。
+-   `rb-*` — framework が提供する構造 hook と semantic design token。構造 hook は `.rb-theme-root`（テーマ root のコンテナ）、`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar` です。
 -   `rr-<feature>` — Plugin / feature が描画する最外要素に付く root hook。例として `.rr-search`、`.rr-callout`、`.rr-table-of-contents`、`.rr-backlinks`、`.rr-local-graph`、`.rr-code`、`.rr-code-tabs`、`.rr-lightbox`、`.rr-excalidraw`、`.rr-mermaid`、`.rr-query`、`.rr-cardlink`、`.rr-diff-history`、`.rr-attachment`、`.rr-media`、`.rr-recent-posts`、`.rr-garden-explorer` があります。
 
 Theme が style してよいのはこの root hook と、Plugin が文書化した子孫 class です。BEM の element (`__...`) と modifier (`--...`) は原則 internal、`.sr-only` のような汎用 helper class は Plugin hook ではありません。Plugin は後方互換のため従来 class も残すので、同じ要素に `.rr-<feature>` と旧 class が並ぶことがあります。Theme は `rr-*` を対象にしてください。
 
 Plugin 固有の意味を持つ token は `--rr-*` として Plugin が所有し、fallback として `--rb-*` を利用できます。Plugin 側の規約は [Plugin System](./plugin-system.md#css-hooks) を参照してください。
+
+## Character layer
+
+テーマは token だけに留まりません。theme の境界を守る限り、stable hook を直接 style してサイトに視覚的な個性（character）を与えられます。
+
+-   token の定義は `@layer base` に置き、視覚的な character のルールは **unlayered** にします。application の構造 CSS と Plugin CSS は unlayered なので、unlayered な theme ルールは `!important` なしでそれらに勝ちます。`!important` は使わないでください。
+-   対象は stable hook だけです。`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、`.prose`、そして [Stable CSS hooks](#stable-css-hooks) に挙げた `rr-*` Plugin root です。新しい `rb-*` / `rr-*` class 名を発明しないでください。`.rr-*` の BEM part は internal です。
+-   テーマは self-hosted webfont（Latin subset）を package 内の `styles/fonts/` に同梱し、相対 `url()` で参照できます。font の license ファイルも含めてください。日本語などの CJK は大きな font file を同梱せず、system font stack に fallback させます。
+
+character ルールも presentation 専用です。content・structure・behavior を変えてはいけません。
 
 ## CSS cascade
 

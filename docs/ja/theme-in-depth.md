@@ -82,10 +82,10 @@ type ThemeColorMode = "light" | "dark" | "system";
 実行時の配色は次の 3 つの CSS 状態で決まります。
 
 ```css
-:root { /* ライト */ }
-:root[data-theme="dark"] { /* ダーク */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* ライト */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* ダーク */ }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) { /* OS に追従（system） */ }
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) { /* OS に追従（system） */ }
 }
 ```
 
@@ -146,16 +146,18 @@ Core の `ThemeDesignTokens` は次の semantic group を持ちます。styleshe
 | --- | --- |
 | `pageMaxWidth` | `--rb-layout-page-max` |
 | `articleMaxWidth` | `--rb-layout-article-max` |
-| `sidebarWidth` | `--rb-layout-sidebar-width` |
-| `contentGap` | `--rb-layout-content-gap` |
+| `sidebarWidth` | `--rb-layout-sidebar` |
+| `contentGap` | `--rb-layout-gap` |
 
 ```css
-:root {
-  --rb-color-paper: #fafafa;
-  --rb-color-ink: #202020;
-  --rb-color-accent: #555;
-  --rb-font-body: system-ui, sans-serif;
-  --rb-layout-article-max: 48rem;
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+    --rb-color-paper: #fafafa;
+    --rb-color-ink: #202020;
+    --rb-color-accent: #555;
+    --rb-font-body: system-ui, sans-serif;
+    --rb-layout-article-max: 48rem;
+  }
 }
 ```
 
@@ -189,6 +191,34 @@ theme: defaultTheme({
 }),
 ```
 
+### 3-6. Theme root selector
+
+組み込みテーマは裸の `:root` を対象にしません。すべてのルールをテーマの identity name に限定し、同じ stylesheet で実サイトの document と埋め込み preview の両方を描画できるようにします。
+
+```css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"]
+```
+
+`<name>` はテーマの identity name です。default テーマは `riebeckite`、それ以外は `minimal`、`gruvbox`、`sakura`、`tokyonight`、`rerurate` のいずれかです。
+
+- 実サイトでは app が `<html>` に `data-theme-name` を付けるため、`:root` の分岐が document root に一致します。
+- テーマギャラリーのような preview では、`class="rb-theme-root" data-theme-name="<name>"` を持つ任意の要素に同じ stylesheet が適用されます。1 つの document 内で複数テーマを並べて表示できます。
+
+light・dark・system・typography・theme option・要素/擬似要素のルールはすべて同じ prefix を付けます。
+
+```css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* ライト */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* ダーク */ }
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) { /* system */ }
+}
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-typography="serif"] { /* typography */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-tokyonight-neon="on"] { /* theme option */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] :focus-visible { /* 要素/擬似要素 */ }
+```
+
+`data-theme-name` は app が出力します。preview 側は `.rb-theme-root` hook と一致する name を用意するだけです。
+
 ## 4. Color mode と Attributes の詳細
 
 上記 3-1 の契約に加えて、theme 固有 option を CSS に渡したい場合は safe な `data-*` attribute を利用します。
@@ -208,10 +238,41 @@ Theme API が `class`、`style`、`id`、`lang` を任意変更する設計に�
 
 Theme は内部 markup ではなく、文書化された stable hook を対象にします。class は 2 つの namespace に分かれています。
 
-- **`rb-*`** — framework が提供する構造 hook と semantic design token。構造 hook は `.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar` です。
+- **`rb-*`** — framework が提供する構造 hook と semantic design token。構造 hook は `.rb-theme-root`（テーマ root のコンテナ）、`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar` です。
 - **`rr-<feature>`** — Plugin / feature が描画する最外要素に付く root hook。例: `.rr-search`、`.rr-callout`、`.rr-table-of-contents`、`.rr-backlinks`、`.rr-local-graph`、`.rr-code`、`.rr-code-tabs`、`.rr-lightbox`、`.rr-excalidraw`、`.rr-mermaid`、`.rr-query`、`.rr-cardlink`、`.rr-diff-history`、`.rr-attachment`、`.rr-media`、`.rr-recent-posts`、`.rr-garden-explorer`。
 
 Theme が style してよいのは、この root hook と、Plugin が文書化した子孫 class だけです。BEM の element（`__…`）と modifier（`--…`）は原則 internal な実装詳細です。`.sr-only` のような汎用 helper class は Plugin hook ではありません。Plugin は後方互換のため従来 class も残すので、同じ要素に `.rr-<feature>` と旧 class が並ぶことがあります。Theme は `rr-*` を対象にしてください。
+
+### 5-1. Character layer
+
+テーマは token だけに留まりません。theme の境界を守る限り、stable hook を直接 style してサイトに視覚的な個性（character）を与えられます。
+
+-   token の定義は `@layer base` に置き、視覚的な character のルールは **unlayered** にします。app の構造 CSS と Plugin CSS は unlayered なので、unlayered な theme ルールは `!important` なしでそれらに勝ちます。`!important` は使わないでください。
+-   対象は stable hook だけです。`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、`.prose`、そして上に挙げた `rr-*` Plugin root です。新しい `rb-*` / `rr-*` class 名を発明しないでください。`.rr-*` の BEM part は internal です。
+-   テーマは self-hosted webfont（Latin subset）を package 内の `styles/fonts/` に同梱し、相対 `url()` で参照できます。font の license ファイルも含めてください。日本語などの CJK は大きな font file を同梱せず、system font stack に fallback させます。
+
+```css
+/* token は layer に置く。 */
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="example"] {
+    --rb-color-accent: #b45309;
+  }
+}
+
+/* character ルールは unlayered。app と Plugin の CSS に勝つ。 */
+:is(:root, .rb-theme-root)[data-theme-name="example"] .rb-article-header {
+  border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
+}
+
+@font-face {
+  font-family: "Example Serif";
+  src: url("./fonts/example-serif-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+```
+
+character ルールも presentation 専用です。content・structure・behavior を変えてはいけません。
 
 ## 6. CSS cascade
 

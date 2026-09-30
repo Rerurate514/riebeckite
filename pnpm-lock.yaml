@@ -380,6 +380,12 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
 
+  packages/integrations/webmention-cloudflare:
+    dependencies:
+      '@riebeckite/plugin-webmention':
+        specifier: workspace:*
+        version: link:../../plugins/webmention
+
   packages/plugins/alias:
     dependencies:
       '@riebeckite/core':
@@ -963,6 +969,12 @@ importers:
       wavedrom:
         specifier: ^3.7.0
         version: 3.7.0
+
+  packages/plugins/webmention:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/themes/default:
     dependencies:

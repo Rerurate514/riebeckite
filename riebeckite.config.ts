@@ -58,6 +58,10 @@ import { tocPlugin } from "@riebeckite/plugin-toc";
 import { uxPlugin } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
+import {
+  MemoryWebmentionProvider,
+  webmention,
+} from "@riebeckite/plugin-webmention";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -188,6 +192,7 @@ export default defineConfig({
     share(),
     relatedPosts(),
     changelog(),
+    webmention({ provider: new MemoryWebmentionProvider() }),
     responsiveImage(),
     localGraphPlugin(),
     l10n({ defaultLang: "ja", languages: ["ja", "en"] }),

@@ -1,0 +1,56 @@
+{
+  "name": "@riebeckite/webmention-cloudflare",
+  "version": "0.0.5",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@riebeckite/plugin-webmention": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "migrations",
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "test": "pnpm exec tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/integrations/webmention-cloudflare"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Cloudflare Workers, D1, and KV runtime for Riebeckite Webmentions.",
+  "keywords": [
+    "riebeckite",
+    "webmention",
+    "cloudflare",
+    "workers",
+    "d1",
+    "kv"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
+}

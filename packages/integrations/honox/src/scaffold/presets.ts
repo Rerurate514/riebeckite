@@ -263,6 +263,10 @@ const changelog = np("@riebeckite/plugin-changelog", "changelog", {
   dateFormat: { depth: 3, value: '"iso"' },
   siteWide: { depth: 3, value: "false" },
 });
+const webmention = np("@riebeckite/plugin-webmention", "webmention", {
+  headingText: { depth: 2, value: '"Mentions"' },
+  limit: { depth: 3, value: "20" },
+});
 const attachment = np(
   "@riebeckite/plugin-attachment",
   "attachment",
@@ -639,6 +643,7 @@ export const full: ScaffoldPreset = {
     relatedPosts,
     share,
     changelog,
+    webmention,
     recentPosts,
     attachment,
     pdf,
@@ -679,6 +684,7 @@ export const max: ScaffoldPreset = {
     relatedPosts,
     share,
     changelog,
+    webmention,
     recentPosts,
     attachment,
     pdf,
@@ -749,6 +755,7 @@ export const ultra: ScaffoldPreset = {
     relatedPosts,
     share,
     changelog,
+    webmention,
     recentPosts,
     attachment,
     pdf,

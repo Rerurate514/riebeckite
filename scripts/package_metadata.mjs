@@ -4,6 +4,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/create-riebeckite",
   "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
+  "packages/integrations/webmention-cloudflare",
   "packages/plugins/alias",
   "packages/plugins/analytics",
   "packages/plugins/attachment",
@@ -66,6 +67,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/ux",
   "packages/plugins/vega-lite",
   "packages/plugins/wavedrom",
+  "packages/plugins/webmention",
   "packages/themes/default",
   "packages/themes/gruvbox",
   "packages/themes/minimal",
@@ -116,6 +118,10 @@ const packagePublishingMetadata = {
     description:
       "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
     keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
+  },
+  "packages/integrations/webmention-cloudflare": {
+    description: "Cloudflare Workers, D1, and KV runtime for Riebeckite Webmentions.",
+    keywords: ["riebeckite", "webmention", "cloudflare", "workers", "d1", "kv"],
   },
   "packages/plugins/alias": {
     description: "Obsidian alias redirects for Riebeckite sites.",
@@ -380,6 +386,11 @@ const packagePublishingMetadata = {
     description: "WaveDrom timing diagram rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "wavedrom", "diagrams"],
   },
+  "packages/plugins/webmention": {
+    description:
+      "Receive verified Webmentions and render them as mentions for Riebeckite sites.",
+    keywords: ["riebeckite", "plugin", "webmention", "indieweb", "mentions"],
+  },
   "packages/themes/default": {
     description: "The default CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "default-theme"],
@@ -474,6 +485,18 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
+  if (directory === "packages/integrations/webmention-cloudflare") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
+      scripts: {
+        build: "node ../../../scripts/build_package.mjs",
+        test: "pnpm exec tsx --test \"test/*.test.ts\"",
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
   if (directory === "packages/integrations/honox") {
     return {
       ...publishingMetadata(directory, false),
@@ -509,9 +532,10 @@ export function expectedPackageMetadata(directory) {
       "rename",
       "share",
       "text-fragment",
+      "webmention",
     ].includes(pluginName);
     const testCommand =
-      pluginName === "analytics"
+      ["analytics", "webmention"].includes(pluginName)
         ? 'pnpm exec tsx --test "test/*.test.ts"'
         : 'node --import tsx --test "test/*.test.ts"';
     return {

@@ -12,6 +12,8 @@ export type MarkdownPipeline = {
 export type HtmlPipeline = MarkdownPipeline;
 
 export type MarkdownPipelineContext = {
+  /** Slug of the content currently being rendered, when available. */
+  sourceSlug?: string;
   contentIndex: Map<string, string>;
   resolvePermalink: (slug: string) => string;
   renderNoteEmbed?: (

@@ -82,6 +82,22 @@ test("plugins can extend the HTML pipeline", async () => {
   assert.match(html, /class="tagged"/);
 });
 
+test("passes the current content slug to Markdown pipeline plugins", async () => {
+  let sourceSlug: string | undefined;
+  const plugin = definePlugin({
+    name: "source-slug",
+    extendMarkdownPipeline: (_pipeline, context) => {
+      sourceSlug = context.sourceSlug;
+    },
+  });
+
+  await new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [plugin],
+  }).execute("# Title", 0, new Set(), "guide.ja");
+
+  assert.equal(sourceSlug, "guide.ja");
+});
+
 type HtmlNode = {
   type: string;
   tagName?: string;

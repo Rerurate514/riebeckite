@@ -56,7 +56,7 @@ l10n({
 
 Theme は `.l10n-switcher` の CSS class を上書きできます。`ui.render` はフレームワーク非依存の HTML renderer なので、カスタム Site は任意のサーバー描画コンポーネントへ置き換えられます。
 
-各ページには実在する翻訳だけを対象に `hreflang` の alternate link を追加します。WikiLink の Content Graph は同言語の翻訳を優先し、なければ元のリンク先を使います。通常の Markdown リンクは記述された URL を維持します。
+各ページには実在する翻訳だけを対象に `hreflang` の alternate link を追加します。WikiLink の Content Graph は同言語の翻訳を優先し、なければ元のリンク先を使います。本文の WikiLink と Markdown リンクも、現在のページと同じ言語の翻訳があればその URL に切り替えます。クエリ文字列とフラグメントは維持し、翻訳がないリンク、外部 URL、コンテンツ以外の URL は変更しません。
 
 ## 独自検出
 

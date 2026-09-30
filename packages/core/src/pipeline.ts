@@ -53,6 +53,7 @@ export class Pipeline {
     markDownContent: string,
     embedDepth = 0,
     embedTrail = new Set<string>(),
+    sourceSlug?: string,
   ): Promise<PostContent> {
     const processor = unified();
     const plugins = resolvePlugins(this.options.plugins);
@@ -68,6 +69,7 @@ export class Pipeline {
     this.use(processor, remarkGfm);
 
     const markdownPipelineContext: MarkdownPipelineContext = {
+      sourceSlug,
       contentIndex: this.contentIndex,
       resolvePermalink: (slug) => this.getPermalink(slug),
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
@@ -163,6 +165,7 @@ export class Pipeline {
         markdown,
         embedDepth + 1,
         nextEmbedTrail,
+        slug,
       );
       return content.html;
     };

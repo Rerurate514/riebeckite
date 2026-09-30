@@ -12,24 +12,23 @@
 }
 
 @layer base {
-  :root {
+  /* Light / medium: bg0 = light0, bg1 = light0_soft. */
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] {
     color-scheme: light;
     --rb-color-paper: #fbf1c7;
-    --rb-color-surface: #fff4d6;
-    --rb-color-surface-hover: #f2e5b0;
-    --rb-color-ink: #282828;
-    --rb-color-muted: #928374;
-    --rb-color-accent: #d65d0e;
-    --rb-color-border: color-mix(in srgb, currentColor 18%, transparent);
-    --rb-color-border-strong: color-mix(in srgb, currentColor 28%, transparent);
+    --rb-color-surface: #f2e5bc;
+    --rb-color-surface-hover: #ebdbb2;
+    --rb-color-ink: #3c3836;
+    --rb-color-muted: #665c54;
+    --rb-color-accent: #076678;
+    --rb-color-border: #d5c4a1;
+    --rb-color-border-strong: #bdae93;
     --rb-color-danger: #9d0006;
     --rb-color-success: #79740e;
-    --rb-color-code-background: color-mix(
-      in srgb,
-      var(--rb-color-ink) 8%,
-      transparent
-    );
-    --rb-color-overlay: rgb(0 0 0 / 0.4);
+    --rb-color-code-background: #f2e5bc;
+    --rb-color-overlay: rgb(29 32 33 / 0.4);
+    --gruvbox-warning: #b57614;
+    --gruvbox-focus-ring: #af3a03;
     --rb-font-body:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       sans-serif;
@@ -48,95 +47,128 @@
     --rb-layout-gap: 2rem;
   }
 
-  :root[data-gruvbox-contrast="soft"] {
+  /* Light / soft: bg0 = light0_soft. */
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="gruvbox"][data-gruvbox-contrast="soft"] {
     --rb-color-paper: #f2e5bc;
-    --rb-color-surface: #f7ecd0;
-    --rb-color-surface-hover: #e8dba8;
+    --rb-color-surface: #ebdbb2;
+    --rb-color-surface-hover: #d5c4a1;
+    --rb-color-code-background: #ebdbb2;
   }
 
-  :root[data-gruvbox-contrast="hard"] {
+  /* Light / hard: bg0 = light0_hard. */
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="gruvbox"][data-gruvbox-contrast="hard"] {
     --rb-color-paper: #f9f5d7;
-    --rb-color-surface: #fffbe3;
-    --rb-color-surface-hover: #efe7bf;
+    --rb-color-surface: #f2e5bc;
+    --rb-color-surface-hover: #ebdbb2;
+    --rb-color-code-background: #f2e5bc;
   }
 
-  :root[data-theme="dark"] {
+  /* Dark / medium: bg0 = dark0, bg1 = dark0_soft. */
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"][data-theme="dark"] {
     color-scheme: dark;
     --rb-color-paper: #282828;
-    --rb-color-surface: #313131;
-    --rb-color-surface-hover: #3a3a3a;
+    --rb-color-surface: #32302f;
+    --rb-color-surface-hover: #3c3836;
     --rb-color-ink: #ebdbb2;
-    --rb-color-muted: #928374;
-    --rb-color-accent: #fe8019;
+    --rb-color-muted: #a89984;
+    --rb-color-accent: #83a598;
+    --rb-color-border: #504945;
+    --rb-color-border-strong: #665c54;
     --rb-color-danger: #fb4934;
     --rb-color-success: #b8bb26;
-    --rb-color-code-background: color-mix(
-      in srgb,
-      var(--rb-color-ink) 12%,
-      transparent
-    );
+    --rb-color-code-background: #1d2021;
     --rb-color-overlay: rgb(0 0 0 / 0.6);
+    --gruvbox-warning: #fabd2f;
+    --gruvbox-focus-ring: #fabd2f;
   }
 
-  :root[data-theme="dark"][data-gruvbox-contrast="soft"] {
+  /* Dark / soft: bg0 = dark0_soft. */
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="gruvbox"][data-theme="dark"][data-gruvbox-contrast="soft"] {
     --rb-color-paper: #32302f;
-    --rb-color-surface: #3a3837;
-    --rb-color-surface-hover: #444140;
+    --rb-color-surface: #3c3836;
+    --rb-color-surface-hover: #504945;
+    --rb-color-code-background: #1d2021;
   }
 
-  :root[data-theme="dark"][data-gruvbox-contrast="hard"] {
+  /* Dark / hard: bg0 = dark0_hard. */
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="gruvbox"][data-theme="dark"][data-gruvbox-contrast="hard"] {
     --rb-color-paper: #1d2021;
-    --rb-color-surface: #262a2b;
-    --rb-color-surface-hover: #303536;
+    --rb-color-surface: #282828;
+    --rb-color-surface-hover: #32302f;
+    --rb-color-code-background: #282828;
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]:not([data-theme]) {
       color-scheme: dark;
       --rb-color-paper: #282828;
-      --rb-color-surface: #313131;
-      --rb-color-surface-hover: #3a3a3a;
+      --rb-color-surface: #32302f;
+      --rb-color-surface-hover: #3c3836;
       --rb-color-ink: #ebdbb2;
-      --rb-color-muted: #928374;
-      --rb-color-accent: #fe8019;
+      --rb-color-muted: #a89984;
+      --rb-color-accent: #83a598;
+      --rb-color-border: #504945;
+      --rb-color-border-strong: #665c54;
       --rb-color-danger: #fb4934;
       --rb-color-success: #b8bb26;
-      --rb-color-code-background: color-mix(
-        in srgb,
-        var(--rb-color-ink) 12%,
-        transparent
-      );
+      --rb-color-code-background: #1d2021;
       --rb-color-overlay: rgb(0 0 0 / 0.6);
+      --gruvbox-warning: #fabd2f;
+      --gruvbox-focus-ring: #fabd2f;
     }
 
-    :root:not([data-theme])[data-gruvbox-contrast="soft"] {
+    :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]:not(
+        [data-theme]
+      )[data-gruvbox-contrast="soft"] {
       --rb-color-paper: #32302f;
-      --rb-color-surface: #3a3837;
-      --rb-color-surface-hover: #444140;
+      --rb-color-surface: #3c3836;
+      --rb-color-surface-hover: #504945;
+      --rb-color-code-background: #1d2021;
     }
 
-    :root:not([data-theme])[data-gruvbox-contrast="hard"] {
+    :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]:not(
+        [data-theme]
+      )[data-gruvbox-contrast="hard"] {
       --rb-color-paper: #1d2021;
-      --rb-color-surface: #262a2b;
-      --rb-color-surface-hover: #303536;
+      --rb-color-surface: #282828;
+      --rb-color-surface-hover: #32302f;
+      --rb-color-code-background: #282828;
     }
   }
 
-  :root[data-typography="serif"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="gruvbox"][data-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       sans-serif;
   }
 
-  :root[data-typography="sans"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="gruvbox"][data-typography="sans"] {
     --rb-font-body:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  html {
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -144,39 +176,410 @@
     caret-color: var(--rb-color-accent);
   }
 
-  body {
-    margin: 0;
-    background: var(--rb-color-paper);
-    color: var(--rb-color-ink);
-  }
-
-  ::selection {
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] ::selection {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
   }
 
-  :focus-visible {
-    outline: 2px solid var(--rb-color-accent);
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] :focus-visible {
+    outline: 2px solid var(--gruvbox-focus-ring);
     outline-offset: 2px;
   }
 
-  * {
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] * {
     scrollbar-color: var(--rb-color-muted) transparent;
     scrollbar-width: thin;
   }
 
-  ::-webkit-scrollbar {
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
 
-  ::-webkit-scrollbar-thumb {
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+    ::-webkit-scrollbar-thumb {
     background: var(--rb-color-muted);
     border-radius: 10px;
     border: 2px solid var(--rb-color-paper);
   }
 
-  ::-webkit-scrollbar-track {
+  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+    ::-webkit-scrollbar-track {
     background: transparent;
   }
+}
+
+/* ------------------------------------------------------------------ *
+ * Character layer — warm, retro, low-glare Gruvbox.
+ *
+ * The palette alone lives in @layer base above. These rules are
+ * intentionally unlayered so they win over the app's structural CSS and
+ * plugin CSS without `!important`, and they target only stable hooks.
+ * Corners stay small and shadow-free; color carries hierarchy + semantics.
+ * ------------------------------------------------------------------ */
+
+/* ---- Site shell ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-site {
+  background: var(--rb-color-paper);
+  color: var(--rb-color-ink);
+}
+
+/* ---- Long-form rhythm ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body {
+  font-family: var(--rb-font-body);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body p {
+  margin: 1em 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  :is(ul, ol) {
+  margin: 1.1em 0;
+  padding-left: 1.4em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body li {
+  margin: 0.3em 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  li::marker {
+  color: var(--rb-color-muted);
+}
+
+/* ---- Headings: warm ink, clear size steps, quiet h2 rule ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-header {
+  margin-bottom: 1.25rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-header h1 {
+  margin: 0;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.7rem, 1.4rem + 1.2vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  :is(h2, h3, h4, h5, h6) {
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  line-height: 1.3;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body h2 {
+  margin: 2.2em 0 0.7em;
+  padding-bottom: 0.3em;
+  border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body h3 {
+  margin: 1.8em 0 0.55em;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body h4 {
+  margin: 1.5em 0 0.45em;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  :is(h5, h6) {
+  margin: 1.3em 0 0.4em;
+  color: var(--rb-color-muted);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* ---- Links: Gruvbox blue, underline on hover ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(.rb-article-body, .rb-article-footer, .rb-article-meta, .rb-sidebar)
+  a {
+  color: var(--rb-color-accent);
+  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(.rb-article-body, .rb-article-footer, .rb-article-meta, .rb-sidebar)
+  a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Blockquote: flat, gray left rule (Gruvbox markdownBlockquote) ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  blockquote {
+  margin: 1.5em 0;
+  border-left: 3px solid var(--rb-color-muted);
+  background: none;
+  padding: 0.1em 0 0.1em 1.1em;
+  color: color-mix(in srgb, var(--rb-color-ink) 78%, var(--rb-color-muted));
+  font-style: normal;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  blockquote
+  p:first-of-type::before,
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  blockquote
+  p:last-of-type::after {
+  content: none;
+}
+
+/* ---- Rules ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body hr {
+  margin: 2.6em 0;
+  border: 0;
+  border-top: var(--rb-rule-width) solid var(--rb-color-border);
+}
+
+/* ---- Inline code: chip on the Gruvbox code surface ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  :not(pre)
+  > code {
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  border-radius: 2px;
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-ink);
+  padding: 0.15em 0.4em;
+  font-family: var(--rb-font-mono);
+  font-size: 0.85em;
+}
+
+/* ---- Bare fenced code (plugin code keeps its own frame/padding) ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)) {
+  margin: 1.5em 0;
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  border-radius: 2px;
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-ink);
+  padding: 0.9rem 1rem;
+  font-family: var(--rb-font-mono);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  overflow-x: auto;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  pre:not(:where(.rr-code *))
+  code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* ---- Tables: hairlines + a tinted header row ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body table {
+  margin: 1.6em 0;
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  :is(th, td) {
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  thead
+  th {
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 8%,
+    var(--rb-color-surface)
+  );
+  color: var(--rb-color-ink);
+  font-weight: 700;
+}
+
+/* ---- Media ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(
+    .rb-article-body img,
+    .rb-article-body video,
+    .rr-media,
+    .rr-attachment,
+    .rr-lightbox,
+    .rr-mermaid
+  ) {
+  border-radius: 2px;
+}
+
+/* ---- Article chrome ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-meta {
+  margin: 0 0 1.6rem;
+  color: var(--rb-color-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-footer {
+  margin-top: 2.5rem;
+  border-top: var(--rb-rule-width) solid var(--rb-color-border);
+  padding-top: 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-sidebar {
+  border-left: var(--rb-rule-width) solid var(--rb-color-border-strong);
+  padding-left: 1rem;
+  font-size: 0.92rem;
+}
+
+/* ---- Plugin: quiet flat panels ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(
+    .rr-table-of-contents,
+    .rr-backlinks,
+    .rr-recent-posts,
+    .rr-garden-explorer,
+    .rr-query
+  ) {
+  margin: 1.6rem 0;
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  border-radius: 2px;
+  background: var(--rb-color-surface);
+  padding: 0.9rem 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
+  a {
+  color: var(--rb-color-ink);
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
+  a:hover {
+  color: var(--rb-color-accent);
+  text-decoration: underline;
+}
+
+/* ---- Plugin: code frames (the plugin owns its own spacing) ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(.rr-code, .rr-code-tabs) {
+  margin: 1.6rem 0;
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  border-radius: 2px;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-code:not([data-terminal="true"]),
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-code-tabs {
+  background: var(--rb-color-code-background);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(.rr-code-tabs, .rr-code:not([data-terminal="true"]))
+  pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-mono);
+}
+
+/* ---- Plugin: callouts (flat, semantic left rule) ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-callout {
+  margin: 1.6rem 0;
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  border-left: 3px solid var(--rb-color-accent);
+  border-radius: 2px;
+  background: var(--rb-color-surface);
+  color: var(--rb-color-ink);
+  padding: 0.9rem 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout
+  > :first-child {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout
+  > :last-child {
+  margin-bottom: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout[data-callout="warning"],
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout[data-callout="caution"] {
+  border-left-color: var(--gruvbox-warning);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout[data-callout="danger"],
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout[data-callout="error"] {
+  border-left-color: var(--rb-color-danger);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout[data-callout="success"],
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-callout[data-callout="tip"] {
+  border-left-color: var(--rb-color-success);
+}
+
+/* ---- Plugin: surfaces ---- */
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(.rr-search, .rr-cardlink, .rr-local-graph, .rr-mermaid) {
+  border: var(--rb-rule-width) solid var(--rb-color-border);
+  border-radius: 2px;
+  background: var(--rb-color-surface);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-cardlink {
+  padding: 0.9rem 1rem;
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-cardlink:hover {
+  border-color: var(--rb-color-accent);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rr-search
+  :is(input, button) {
+  border-radius: 2px;
 }

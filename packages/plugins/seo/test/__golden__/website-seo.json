@@ -1,0 +1,31 @@
+{
+  "title": "Notes | Riebeckite",
+  "description": "Site description",
+  "canonicalUrl": "https://example.com/notes",
+  "imageUrl": "https://example.com/static/og.png",
+  "type": "website",
+  "noindex": false,
+  "tags": [],
+  "jsonLd": [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Riebeckite",
+      "description": "Site description",
+      "url": "https://example.com/notes",
+      "inLanguage": "en-US"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Riebeckite",
+          "item": "https://example.com/"
+        }
+      ]
+    }
+  ]
+}

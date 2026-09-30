@@ -1,0 +1,162 @@
+{
+  "width": 720,
+  "height": 480,
+  "nodes": [
+    {
+      "id": "center",
+      "role": "center",
+      "region": "center",
+      "relationType": "defined",
+      "title": "Center",
+      "slug": "center",
+      "permalink": "/center",
+      "virtual": false,
+      "x": 324,
+      "y": 220,
+      "width": 72,
+      "height": 40
+    },
+    {
+      "id": "parent",
+      "role": "parent",
+      "region": "parents",
+      "relationType": "defined",
+      "title": "Parent",
+      "slug": "parent",
+      "permalink": "/parent",
+      "virtual": false,
+      "x": 330,
+      "y": 78,
+      "width": 60,
+      "height": 36
+    },
+    {
+      "id": "child",
+      "role": "child",
+      "region": "children",
+      "relationType": "defined",
+      "title": "Child",
+      "slug": "child",
+      "permalink": "/child",
+      "virtual": false,
+      "x": 332,
+      "y": 366,
+      "width": 56,
+      "height": 36
+    },
+    {
+      "id": "left",
+      "role": "leftFriend",
+      "region": "left-friends",
+      "relationType": "defined",
+      "title": "Left Friend",
+      "slug": "left",
+      "permalink": "/left",
+      "virtual": false,
+      "x": 170,
+      "y": 222,
+      "width": 93,
+      "height": 36
+    },
+    {
+      "id": "right",
+      "role": "rightFriend",
+      "region": "right-friends",
+      "relationType": "defined",
+      "title": "Right Friend",
+      "slug": "right",
+      "permalink": "/right",
+      "virtual": false,
+      "x": 455,
+      "y": 222,
+      "width": 99,
+      "height": 36
+    },
+    {
+      "id": "previous",
+      "role": "previous",
+      "region": "previous",
+      "relationType": "defined",
+      "title": "Previous",
+      "slug": "previous",
+      "permalink": "/previous",
+      "virtual": false,
+      "x": 112,
+      "y": 222,
+      "width": 73,
+      "height": 36
+    },
+    {
+      "id": "next",
+      "role": "next",
+      "region": "next",
+      "relationType": "defined",
+      "title": "Next",
+      "slug": "next",
+      "permalink": "/next",
+      "virtual": false,
+      "x": 544,
+      "y": 222,
+      "width": 56,
+      "height": 36
+    },
+    {
+      "id": "sibling",
+      "role": "sibling",
+      "region": "siblings",
+      "relationType": "defined",
+      "title": "Sibling",
+      "slug": "sibling",
+      "permalink": "/sibling",
+      "virtual": false,
+      "x": 189,
+      "y": 84,
+      "width": 66,
+      "height": 36
+    }
+  ],
+  "links": [
+    {
+      "from": "center",
+      "to": "parent",
+      "role": "parent",
+      "relationType": "defined"
+    },
+    {
+      "from": "center",
+      "to": "child",
+      "role": "child",
+      "relationType": "defined"
+    },
+    {
+      "from": "center",
+      "to": "left",
+      "role": "leftFriend",
+      "relationType": "defined"
+    },
+    {
+      "from": "center",
+      "to": "right",
+      "role": "rightFriend",
+      "relationType": "defined"
+    },
+    {
+      "from": "center",
+      "to": "previous",
+      "role": "previous",
+      "relationType": "defined"
+    },
+    {
+      "from": "center",
+      "to": "next",
+      "role": "next",
+      "relationType": "defined"
+    },
+    {
+      "from": "center",
+      "to": "sibling",
+      "role": "sibling",
+      "relationType": "defined"
+    }
+  ]
+}

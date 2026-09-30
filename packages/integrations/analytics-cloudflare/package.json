@@ -16,6 +16,9 @@
   "dependencies": {
     "@riebeckite/plugin-analytics": "workspace:*"
   },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
   "publishConfig": {
     "access": "public"
   },

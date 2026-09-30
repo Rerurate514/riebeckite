@@ -17,6 +17,8 @@
     "check:docs": "node scripts/check_docs.mjs",
     "typecheck": "node scripts/typecheck_packages.mjs",
     "release": "node scripts/release.mjs",
+    "test": "pnpm -r test",
+    "test:update": "node scripts/run_tests.mjs --update",
     "test:e2e:external": "node tests/external-site/run.mjs",
     "lint": "biome lint .",
     "format": "biome format --write ."

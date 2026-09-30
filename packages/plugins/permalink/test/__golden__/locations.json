@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "index",
+    "permalink": "/n/home",
+    "redirects": [],
+    "metadata": {
+      "id": "home",
+      "idSource": "frontmatter"
+    }
+  },
+  {
+    "slug": "notes/hello",
+    "permalink": "/n/hello",
+    "redirects": [
+      {
+        "path": "/old/hello",
+        "status": 308
+      },
+      {
+        "path": "/legacy/hello",
+        "status": 308
+      }
+    ],
+    "metadata": {
+      "id": "hello",
+      "idSource": "frontmatter"
+    }
+  },
+  {
+    "slug": "notes/derived",
+    "permalink": "/n/mjVFR3BvA-6N",
+    "redirects": [],
+    "metadata": {
+      "id": "mjVFR3BvA-6N",
+      "idSource": "derived"
+    }
+  },
+  {
+    "slug": "notes/aliased",
+    "permalink": "/custom/aliased",
+    "redirects": [],
+    "metadata": {
+      "id": "aliased",
+      "idSource": "frontmatter"
+    }
+  }
+]

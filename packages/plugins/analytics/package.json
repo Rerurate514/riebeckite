@@ -22,6 +22,9 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*"
   },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
   "publishConfig": {
     "access": "public"
   },

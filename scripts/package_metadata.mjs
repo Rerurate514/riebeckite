@@ -476,14 +476,33 @@ export function expectedPackageMetadata(directory) {
       "seo",
     ].includes(pluginName);
     const hasTests = [
+      "alias",
       "analytics",
+      "backlinks",
+      "breadcrumbs",
+      "code-annotations",
       "daily-notes",
       "deploy",
       "diagnostics",
+      "diff",
+      "excalibrain",
+      "highlight",
       "l10n",
+      "local-graph",
+      "permalink",
+      "properties",
       "quality",
+      "query",
+      "recent-posts",
+      "related-posts",
       "rename",
+      "responsive-image",
+      "search",
+      "seo",
+      "series",
+      "shortcodes",
       "text-fragment",
+      "toc",
     ].includes(pluginName);
     const testCommand =
       pluginName === "analytics"

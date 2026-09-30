@@ -1,0 +1,317 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import {
+  type ContentManifest,
+  type ContentManifestEntry,
+  type PluginManifestContext,
+  type PluginPostContext,
+  resolveConfig,
+} from "@riebeckite/core";
+import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import {
+  BREADCRUMBS_ATTRIBUTE,
+  breadcrumbs,
+  breadcrumbsPlugin,
+  buildBreadcrumbHeadTag,
+  buildBreadcrumbJsonLd,
+  hasBreadcrumbHeadTag,
+  injectBreadcrumbNav,
+  renderBreadcrumbNav,
+  resolveBreadcrumbsOptions,
+} from "../index.ts";
+
+function makeEntry(
+  overrides: Partial<ContentManifestEntry> & { slug: string },
+): ContentManifestEntry {
+  const permalink = overrides.slug === "index" ? "/" : `/${overrides.slug}`;
+
+  return {
+    slug: overrides.slug,
+    permalink,
+    publicLocation: { slug: overrides.slug, permalink },
+    title: "",
+    frontmatter: {},
+    html: "",
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+    ...overrides,
+  };
+}
+
+function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
+  return {
+    entries,
+    publicEntries: entries,
+    bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
+  } as unknown as ContentManifest;
+}
+
+const config = resolveConfig({
+  site: { title: "My Site", baseUrl: "https://example.com" },
+});
+
+test("renders an accessible ordered list with links and a current crumb", () => {
+  const html = renderBreadcrumbNav(
+    [
+      { name: "Home", url: "/" },
+      { name: "Intro", url: "/n/intro" },
+    ],
+    resolveBreadcrumbsOptions({}),
+  );
+
+  assert.equal(
+    html,
+    '<nav class="rb-breadcrumbs" data-breadcrumbs aria-label="Breadcrumbs">' +
+      "<ol>" +
+      '<li class="rb-breadcrumbs__item"><a class="rb-breadcrumbs__link" href="/">Home</a>' +
+      '<span class="rb-breadcrumbs__separator" aria-hidden="true">/</span></li>' +
+      '<li class="rb-breadcrumbs__item"><span class="rb-breadcrumbs__current" aria-current="page">Intro</span></li>' +
+      "</ol></nav>",
+  );
+});
+
+test("returns an empty string when there is nothing to render", () => {
+  assert.equal(renderBreadcrumbNav([], resolveBreadcrumbsOptions({})), "");
+});
+
+test("escapes crumb names, urls and options", () => {
+  const html = renderBreadcrumbNav(
+    [
+      { name: 'A <b> & "q"', url: "/a?x=<y>&z" },
+      { name: "Done", url: "/done" },
+    ],
+    resolveBreadcrumbsOptions({
+      className: 'c"x',
+      ariaLabel: 'L"x',
+      separator: "<",
+    }),
+  );
+
+  assert.ok(html.includes('href="/a?x=&lt;y&gt;&amp;z"'));
+  assert.ok(html.includes("A &lt;b&gt; &amp; &quot;q&quot;"));
+  assert.ok(html.includes('aria-hidden="true">&lt;</span>'));
+  assert.ok(html.includes('class="c&quot;x__link"'));
+  assert.ok(!html.includes("<b>"));
+  assert.ok(!html.includes('aria-label="L"x"'));
+});
+
+test("buildBreadcrumbJsonLd builds a positioned list with absolute urls", () => {
+  const schema = buildBreadcrumbJsonLd(config, [
+    { name: "Home", url: "/" },
+    { name: "Intro", url: "/n/intro" },
+  ]);
+
+  assert.deepEqual(schema, {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://example.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Intro",
+        item: "https://example.com/n/intro",
+      },
+    ],
+  });
+});
+
+test("buildBreadcrumbJsonLd falls back to a default base url", () => {
+  const noBase = resolveConfig({ site: { title: "My Site" } });
+  const schema = buildBreadcrumbJsonLd(noBase, [{ name: "Home", url: "/" }]);
+  const element = (
+    schema.itemListElement as Array<{ item: string }> | undefined
+  )?.[0];
+  assert.equal(element?.item, "https://example.com/");
+});
+
+test("buildBreadcrumbHeadTag escapes the embedded JSON", () => {
+  const schema = { "@type": "BreadcrumbList", name: "</script><b>&" };
+  const tag = buildBreadcrumbHeadTag(schema);
+
+  assert.equal(tag.tag, "script");
+  assert.deepEqual(tag.attrs, { type: "application/ld+json" });
+  assert.equal(tag.children?.includes("<"), false);
+  assert.equal(tag.children?.includes("\\u003c"), true);
+  assert.deepEqual(JSON.parse(tag.children ?? "{}"), schema);
+});
+
+test("hasBreadcrumbHeadTag detects an existing BreadcrumbList script", () => {
+  assert.equal(hasBreadcrumbHeadTag(undefined), false);
+  assert.equal(hasBreadcrumbHeadTag([]), false);
+  assert.equal(
+    hasBreadcrumbHeadTag([{ tag: "meta", attrs: { name: "x" } }]),
+    false,
+  );
+  assert.equal(
+    hasBreadcrumbHeadTag([{ tag: "script", children: "{}" }]),
+    false,
+  );
+  assert.equal(
+    hasBreadcrumbHeadTag([
+      buildBreadcrumbHeadTag({ "@type": "BreadcrumbList" }),
+    ]),
+    true,
+  );
+});
+
+test("injectBreadcrumbNav places the nav in the right spot", () => {
+  const nav = "<nav>x</nav>";
+
+  assert.equal(injectBreadcrumbNav("<p>x</p>", ""), "<p>x</p>");
+  assert.equal(
+    injectBreadcrumbNav(`<p ${BREADCRUMBS_ATTRIBUTE}>x</p>`, nav),
+    `<p ${BREADCRUMBS_ATTRIBUTE}>x</p>`,
+  );
+  assert.equal(injectBreadcrumbNav("<p>x</p>", nav), `<nav>x</nav>\n<p>x</p>`);
+  assert.equal(
+    injectBreadcrumbNav('<article class="post"><p>x</p></article>', nav),
+    `<article class="post">${nav}<p>x</p></article>`,
+  );
+  assert.equal(
+    injectBreadcrumbNav("<body><p>x</p></body>", nav),
+    `<body>${nav}<p>x</p></body>`,
+  );
+  assert.equal(
+    injectBreadcrumbNav("<body><article><p>x</p></article></body>", nav),
+    `<body><article>${nav}<p>x</p></article></body>`,
+  );
+});
+
+test("golden: rendered breadcrumb navigation", () => {
+  const html = renderBreadcrumbNav(
+    [
+      { name: "Home", url: "/" },
+      { name: "Docs & Guides", url: "/docs" },
+      { name: "API v2", url: "/docs/api" },
+      { name: "GET /users", url: "/docs/api/users" },
+    ],
+    resolveBreadcrumbsOptions({
+      className: "crumbs",
+      ariaLabel: "You are here",
+      separator: "›",
+    }),
+  );
+
+  assertGolden(html, new URL("./__golden__/nav.html", import.meta.url));
+});
+
+test("onManifestCreated injects the nav and a JSON-LD head tag", async () => {
+  const plugin = breadcrumbs({ homeLabel: "Home" });
+  const folder = makeEntry({ slug: "docs", title: "Documentation" });
+  const entry = makeEntry({
+    slug: "docs/intro",
+    title: "Intro",
+    html: "<p>Body</p>",
+    permalink: "/n/docs/intro",
+  });
+  const manifest = makeManifest([folder, entry]);
+  const context = {
+    manifest,
+    config,
+    diagnostics: [],
+  } as unknown as PluginManifestContext;
+
+  await plugin.onManifestCreated?.(context);
+
+  assert.ok(entry.html.startsWith('<nav class="rb-breadcrumbs"'));
+  assert.ok(entry.html.endsWith("<p>Body</p>"));
+  assert.equal(entry.headTags?.length, 1);
+
+  const head = entry.headTags?.[0];
+  assert.equal(head?.tag, "script");
+  const schema = JSON.parse(
+    head?.tag === "script" ? (head.children ?? "{}") : "{}",
+  );
+  assert.equal(schema["@type"], "BreadcrumbList");
+  assert.deepEqual(
+    (schema.itemListElement as Array<{ name: string }>).map(
+      (item) => item.name,
+    ),
+    ["Home", "Documentation", "Intro"],
+  );
+
+  const injected = entry.html;
+  await plugin.onManifestCreated?.(context);
+  assert.equal(entry.html, injected);
+  assert.equal(entry.headTags?.length, 1);
+});
+
+test("onManifestCreated can skip the JSON-LD script", async () => {
+  const plugin = breadcrumbs({ jsonLd: false });
+  const entry = makeEntry({
+    slug: "docs/intro",
+    title: "Intro",
+    html: "<p>Body</p>",
+    permalink: "/n/docs/intro",
+  });
+  const manifest = makeManifest([
+    makeEntry({ slug: "docs", title: "Docs" }),
+    entry,
+  ]);
+  const context = {
+    manifest,
+    config,
+    diagnostics: [],
+  } as unknown as PluginManifestContext;
+
+  await plugin.onManifestCreated?.(context);
+
+  assert.ok(entry.html.includes(BREADCRUMBS_ATTRIBUTE));
+  assert.equal(entry.headTags, undefined);
+});
+
+test("onManifestCreated leaves an entry with no trail untouched", async () => {
+  const plugin = breadcrumbs();
+  const entry = makeEntry({ slug: "", html: "<p>Body</p>" });
+  const manifest = makeManifest([entry]);
+  const context = {
+    manifest,
+    config,
+    diagnostics: [],
+  } as unknown as PluginManifestContext;
+
+  await plugin.onManifestCreated?.(context);
+
+  assert.equal(entry.html, "<p>Body</p>");
+  assert.equal(entry.headTags, undefined);
+});
+
+test("onPostProcessed content receives the injected HTML", async () => {
+  const plugin = breadcrumbs();
+  const content = { frontmatter: {}, html: "<p>Body</p>" };
+  await plugin.onPostProcessed?.({
+    slug: "docs/intro",
+    content,
+  } as unknown as PluginPostContext);
+
+  const entry = makeEntry({
+    slug: "docs/intro",
+    title: "Intro",
+    html: "<p>Body</p>",
+    permalink: "/n/docs/intro",
+  });
+  const manifest = makeManifest([
+    makeEntry({ slug: "docs", title: "Docs" }),
+    entry,
+  ]);
+
+  await plugin.onManifestCreated?.({
+    manifest,
+    config,
+    diagnostics: [],
+  } as unknown as PluginManifestContext);
+
+  assert.ok(content.html.includes(BREADCRUMBS_ATTRIBUTE));
+});
+
+test("breadcrumbsPlugin is the same factory", () => {
+  assert.equal(breadcrumbsPlugin, breadcrumbs);
+});

@@ -25,6 +25,7 @@ Riebeckite は、Markdown と Obsidian のノートを Web サイトとして公
 |記事とサイトを別々の場所で管理したい|[記事とサイトのリポジトリ分離](./content-and-site-repos.md)（詳細編: [分離運用の詳細](./content-and-site-repos-in-depth.md)）|
 |問題を調査したい|[Diagnostics](./diagnostics.md) / [Framework Inspector](./inspector.md)|
 |このリポジトリ自体を開発したい|[Repository Development](./development.md)|
+|テストを書く・実行する|[Testing](./testing.md)|
 
 ## 仕組みの全体像
 
@@ -110,6 +111,7 @@ Build tooling
 |[Architecture](./architecture.md)|Core / Plugin / Integration / Theme / App の責務、依存方向、build-time と runtime の分離|
 |[Framework Reference](./framework-reference.md)|Config、Content、Pipeline、Plugin、Theme、Diagnostics、Observability の主要公開 API|
 |[Repository Development](./development.md)|monorepo 構成、コードの配置、品質確認、CLI smoke check、ESM、生成済み状態|
+|[Testing](./testing.md)|unit test の配置、実行と更新、golden file、パッケージのテスト用メタデータ|
 
 ## 代表的な利用機能
 

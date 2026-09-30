@@ -1,0 +1,20 @@
+[
+  {
+    "code": "missing-frontmatter",
+    "severity": "info",
+    "message": "Loaded note"
+  },
+  {
+    "code": "orphan-note",
+    "severity": "warning",
+    "message": "No backlinks",
+    "slug": "note",
+    "pluginName": "checker"
+  },
+  {
+    "code": "broken-wikilink",
+    "severity": "error",
+    "message": "Missing [[x]]",
+    "pluginName": "external-rule"
+  }
+]

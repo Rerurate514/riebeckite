@@ -25,6 +25,7 @@ In a typical project, you point Riebeckite at a content directory, configure Mar
 |Keep articles and the site in separate places|[Separating content from the site](./content-and-site-repos.md) (in depth: [Separating content and the site (in depth)](./content-and-site-repos-in-depth.md))|
 |Investigate a problem|[Diagnostics](./diagnostics.md) / [Framework Inspector](./inspector.md)|
 |Contribute to this repository|[Repository Development](./development.md)|
+|Write or run tests|[Testing](./testing.md)|
 
 ## How it fits together
 
@@ -110,6 +111,7 @@ Build tooling
 |[Architecture](./architecture.md)|Core / Plugin / Integration / Theme / App ownership, dependency direction, and build-time/runtime separation|
 |[Framework Reference](./framework-reference.md)|Major public Core APIs for config, content, pipeline, plugins, themes, diagnostics, and observability|
 |[Repository Development](./development.md)|Monorepo layout, code placement, quality checks, CLI smoke checks, ESM, and generated state|
+|[Testing](./testing.md)|Unit test layout, running and updating tests, golden files, and package test metadata|
 
 ## Representative capabilities
 

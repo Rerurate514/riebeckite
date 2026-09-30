@@ -1,0 +1,25 @@
+[
+  {
+    "slug": "docs/guide/index",
+    "permalink": "/docs/docs/guide/guide/",
+    "redirects": [
+      {
+        "path": "/old-guide/",
+        "status": 301
+      }
+    ],
+    "metadata": {
+      "id": "guide",
+      "idSource": "frontmatter"
+    }
+  },
+  {
+    "slug": "docs/guide/intro",
+    "permalink": "/docs/docs/guide/intro/",
+    "redirects": [],
+    "metadata": {
+      "id": "intro",
+      "idSource": "frontmatter"
+    }
+  }
+]

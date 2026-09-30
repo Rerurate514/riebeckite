@@ -1,0 +1,87 @@
+{
+  "entries": [
+    {
+      "slug": "index",
+      "permalink": "/",
+      "title": "Home",
+      "tags": "welcome deep-topic",
+      "links": [
+        {
+          "raw": "note-a",
+          "slug": "note-a",
+          "kind": "note",
+          "embed": false
+        },
+        {
+          "raw": "Alpha Note",
+          "slug": "note-a",
+          "kind": "note",
+          "embed": false
+        },
+        {
+          "raw": "missing note",
+          "slug": null,
+          "kind": "unresolved",
+          "embed": false
+        },
+        {
+          "raw": "diagram.png",
+          "slug": "diagram.png",
+          "kind": "image",
+          "embed": true
+        },
+        {
+          "raw": "report.pdf",
+          "slug": "report.pdf",
+          "kind": "attachment",
+          "embed": false
+        }
+      ],
+      "backlinks": "note-a",
+      "assets": [
+        {
+          "path": "diagram.png"
+        },
+        {
+          "path": "report.pdf"
+        }
+      ]
+    },
+    {
+      "slug": "note-a",
+      "permalink": "/note-a",
+      "title": "Note A",
+      "tags": "welcome how-to",
+      "links": [
+        {
+          "raw": "index",
+          "slug": "index",
+          "kind": "note",
+          "embed": false
+        }
+      ],
+      "backlinks": "index",
+      "assets": []
+    },
+    {
+      "slug": "draft",
+      "permalink": "/draft",
+      "title": "Draft",
+      "tags": "",
+      "links": [],
+      "backlinks": "",
+      "assets": []
+    }
+  ],
+  "publicSlugs": "index note-a",
+  "tags": {
+    "welcome": "index note-a",
+    "deep-topic": "index",
+    "how-to": "note-a"
+  },
+  "graph": {
+    "index": "note-a",
+    "note-a": "index",
+    "draft": ""
+  }
+}

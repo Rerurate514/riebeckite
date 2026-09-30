@@ -1,6 +1,3 @@
-import type { PluginHeadTag } from "@riebeckite/core";
-import type { SeoMetadata } from "./lib/seo";
-
 declare module "virtual:riebeckite/client" {
   export function initRiebeckiteClient(): void;
 }
@@ -8,8 +5,8 @@ declare module "virtual:riebeckite/client" {
 declare module "hono" {
   interface Env {
     Variables: {
-      seo?: SeoMetadata;
-      headTags?: readonly PluginHeadTag[];
+      seo?: import("./lib/seo").SeoMetadata;
+      headTags?: readonly import("@riebeckite/core").PluginHeadTag[];
       htmlLanguage?: string;
     };
     Bindings: Record<string, never>;

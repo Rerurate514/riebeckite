@@ -11,6 +11,14 @@ import path from "node:path";
 import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
+const scaffoldVersionFile = path.join(
+  "packages",
+  "integrations",
+  "honox",
+  "src",
+  "scaffold",
+  "version.ts",
+);
 
 const SEMVER_PATTERN =
   /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
@@ -165,13 +173,14 @@ function commitAndTag(version) {
   const manifests = PACKAGE_DIRECTORIES.map((directory) =>
     path.join(directory, "package.json"),
   );
-  runStep("git add", "git", ["add", "--", ...manifests]);
+  const releaseFiles = [...manifests, scaffoldVersionFile];
+  runStep("git add", "git", ["add", "--", ...releaseFiles]);
   runStep("git commit", "git", [
     "commit",
     "-m",
     `chore: release ${tagName}`,
     "--",
-    ...manifests,
+    ...releaseFiles,
   ]);
   runStep("git tag", "git", ["tag", tagName]);
   console.log(`\nCommitted and tagged ${tagName} locally (tag not pushed).`);

@@ -490,7 +490,7 @@ const hoverPreview = np(
   {
     delay: { depth: 2, value: "120" },
     excerptLength: { depth: 2, value: "160" },
-    selector: { depth: 2, value: 'a[href^="/"]' },
+    selector: { depth: 2, value: "'a[href^=\"/\"]'" },
     includeTitles: { depth: 3, value: "true" },
   },
 );

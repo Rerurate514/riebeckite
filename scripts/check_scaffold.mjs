@@ -33,6 +33,33 @@ function expect(condition, message) {
   if (!condition) errors.push(message);
 }
 
+function expectConfigPassesBiome(root, label) {
+  const configPath = path.join(root, "riebeckite.config.ts");
+  if (!fs.existsSync(configPath)) return;
+
+  try {
+    execSync(`npx --no-install biome lint "${configPath}"`, {
+      cwd: repositoryRoot,
+      stdio: "inherit",
+    });
+  } catch {
+    errors.push(
+      `${label}: generated riebeckite.config.ts must pass biome lint`,
+    );
+  }
+}
+
+function expectHoverPreviewSelector(config, label) {
+  expect(
+    config.includes("selector: 'a[href^=\"/\"]'"),
+    `${label}: hoverPreview selector must be emitted as a quoted string literal`,
+  );
+  expect(
+    !config.includes('selector: a[href^="/"]'),
+    `${label}: hoverPreview selector must not be emitted as an unquoted expression`,
+  );
+}
+
 function readSiteFile(root, name) {
   const file = path.join(root, name);
   return fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
@@ -98,6 +125,7 @@ async function generate(scaffoldRiebeckiteSite, tmpRoot, name, options) {
     ...options,
   });
   checkGeneratedCommands(target, name);
+  expectConfigPassesBiome(target, name);
   return target;
 }
 
@@ -248,6 +276,7 @@ async function checkMax(scaffoldRiebeckiteSite, tmpRoot) {
       !config.includes("rb-qr"),
       "max: depth-3 className options must be excluded",
     );
+    expectHoverPreviewSelector(config, "max");
   }
   const examples = readSiteFile(root, "content/examples.md");
   expect(examples !== null, "max: content/examples.md is missing");
@@ -295,6 +324,7 @@ async function checkUltra(scaffoldRiebeckiteSite, tmpRoot) {
       config.includes("reportUnusedAssets: true"),
       "ultra: diagnostics must show its options",
     );
+    expectHoverPreviewSelector(config, "ultra");
   }
   const readme = readSiteFile(root, "README.md");
   expect(readme !== null, "ultra: README.md is missing");

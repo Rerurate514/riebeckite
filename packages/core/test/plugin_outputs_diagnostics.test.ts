@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { assertGoldenJson } from "../../../tests/helpers/golden.js";
+import { assertGoldenJson } from "@riebeckite/test";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
 import { definePlugin } from "../src/types/plugin.js";

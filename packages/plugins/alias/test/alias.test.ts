@@ -5,7 +5,7 @@ import type {
   ContentPublicLocation,
   PluginContentLocationAugmentContext,
 } from "@riebeckite/core";
-import { assertGoldenJson } from "../../../../tests/helpers/golden.ts";
+import { assertGoldenJson } from "@riebeckite/test";
 import { type AliasOptions, alias, resolveAliasPath } from "../index.ts";
 import { resolveAliasOptions } from "../src/alias.ts";
 

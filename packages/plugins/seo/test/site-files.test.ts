@@ -5,7 +5,7 @@ import {
   type ResolvedRiebeckiteConfig,
   resolveConfig,
 } from "@riebeckite/core";
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 import { renderRobots, renderSitemap } from "../index.ts";
 
 const config: ResolvedRiebeckiteConfig = resolveConfig({

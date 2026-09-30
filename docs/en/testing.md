@@ -6,7 +6,10 @@ expensive to assert by hand is recorded as committed golden files, which keeps
 changes to that output visible in review.
 
 End-to-end coverage of a real site lives separately in `tests/external-site` and
-runs with `pnpm test:e2e:external`; this document covers package unit tests.
+runs with `pnpm test:e2e:external`; this document covers package unit tests. The
+reusable engine that drives it lives in `@riebeckite/test/e2e`, while the
+repository-specific fixture, package list, and assertions stay in
+`tests/external-site`.
 
 ## Running tests
 
@@ -31,8 +34,8 @@ script (`node --import tsx --test "test/*.test.ts"`). Test directories and test
 files are excluded from type checking, from builds, and from published `files`,
 so they never ship or affect consumers.
 
-Shared test utilities live under `tests/` at the repository root, which is not a
-workspace package. Tests import them with a relative path.
+Shared test utilities live in the workspace package `@riebeckite/test`. Add it
+to a package's `devDependencies` and import from `@riebeckite/test`.
 
 ## Writing a test
 
@@ -69,7 +72,7 @@ const manifest = await manager.getManifest();
 
 ## Golden files
 
-`tests/helpers/golden.ts` provides two helpers for large or structured output:
+`@riebeckite/test` provides two helpers for large or structured output:
 
 - `assertGolden(actual, goldenUrl)` for text (HTML, Markdown, serialized JSON).
 - `assertGoldenJson(value, goldenUrl)` for objects, which formats the value
@@ -79,7 +82,7 @@ Pass the expected file as a `URL` built from `import.meta.url` and keep the
 recorded file under `test/__golden__/`:
 
 ```ts
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 
 test("renders the table of contents", () => {
   assertGolden(renderToc(entries), new URL("./__golden__/toc.html", import.meta.url));
@@ -102,9 +105,11 @@ not used because it requires Node 22.3+, while Riebeckite supports Node 20.19+.
 
 1. Add `tsx` to the package's `devDependencies` and a `test` script:
    `node --import tsx --test "test/*.test.ts"`.
-2. If the package is a plugin, add its directory name to the `hasTests` list in
+2. If the tests use the golden helpers, add `@riebeckite/test` to
+   `devDependencies` and import them from `@riebeckite/test`.
+3. If the package is a plugin, add its directory name to the `hasTests` list in
    `scripts/package_metadata.mjs`.
-3. Run `pnpm install` when dependencies change, then `pnpm check:packages` to
+4. Run `pnpm install` when dependencies change, then `pnpm check:packages` to
    confirm the expected metadata matches.
 
 `scripts/check_packages.mjs` compares each package's metadata against

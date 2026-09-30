@@ -39,7 +39,10 @@ with the resolved application root and define values, so invoking
 `riebeckite build` from a subdirectory yields the same output as invoking it
 from the application root. `defaultSsgEntry` is the root-relative
 `./app/server.ts` entry, and `defaultSsrExternals` is the SSR externals list
-both helpers use. Other exports are `loadRiebeckiteConfig`,
+both helpers use. The SSG entry must re-export the resolved `config` and
+`content` (`export { config, content }`): that is how `riebeckiteSsg` finds the
+manifest to emit plugin-generated outputs and to run the per-page HTML
+inspections. Other exports are `loadRiebeckiteConfig`,
 `resolveHonoxApplication`, `resolveHonoxApplicationRoot`, `buildHonoxApplication`,
 and `startHonoxDevServer`. `scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, preset?, overwrite? })` writes a self-contained starter site (configuration, a Vite/HonoX application shell, routes, stylesheet, and multi-language starter content localized via `@riebeckite/plugin-l10n`) and returns the generated file list. The `preset` option selects the composition — a preset name from `@riebeckite/honox` (default `starter`), or a preset object defined by you; see the presets module for the full set from `empty` to `ultra`. It throws `ScaffoldSiteError` when the target already contains generated files and `overwrite` is not set. `riebeckite init` and `create-riebeckite` are thin command wrappers around it.
 

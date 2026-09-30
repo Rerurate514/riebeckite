@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 import type { DiffRevision, PostDiff } from "../index.ts";
 import {
   createLineDiff,

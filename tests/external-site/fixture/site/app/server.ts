@@ -10,3 +10,5 @@ const app = createApp({
 });
 
 export default app;
+
+export { config, content };

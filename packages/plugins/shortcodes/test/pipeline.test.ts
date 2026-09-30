@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 import { shortcodesPlugin } from "../index.ts";
 
 function createPipeline(): Pipeline {

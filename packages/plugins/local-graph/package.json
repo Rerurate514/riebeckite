@@ -25,6 +25,7 @@
     "hono": "catalog:"
   },
   "devDependencies": {
+    "@riebeckite/test": "workspace:*",
     "tsx": "^4.22.4"
   },
   "publishConfig": {

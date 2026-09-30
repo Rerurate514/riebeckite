@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { ContentManifestEntry } from "@riebeckite/core";
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 import {
   renderQueryError,
   renderQueryResult,

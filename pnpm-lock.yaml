@@ -53,6 +53,9 @@ importers:
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -358,6 +361,9 @@ importers:
         specifier: 'catalog:'
         version: 5.0.1
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -412,6 +418,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -453,6 +462,9 @@ importers:
         specifier: 'catalog:'
         version: 4.12.26
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -478,6 +490,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -513,6 +528,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -623,6 +641,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.6
@@ -642,6 +663,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -726,6 +750,9 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -776,6 +803,9 @@ importers:
         specifier: 'catalog:'
         version: 4.12.26
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -861,6 +891,9 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -877,6 +910,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -915,6 +951,9 @@ importers:
         specifier: 'catalog:'
         version: 5.0.1
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -938,6 +977,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -958,6 +1000,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -987,6 +1032,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -997,6 +1045,9 @@ importers:
         specifier: workspace:*
         version: link:../../core
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -1023,6 +1074,9 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -1038,6 +1092,10 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/text-fragment:
     dependencies:
@@ -1058,6 +1116,9 @@ importers:
         specifier: 'catalog:'
         version: 4.12.26
     devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -1097,6 +1158,12 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/test:
     devDependencies:
       tsx:
         specifier: ^4.22.4

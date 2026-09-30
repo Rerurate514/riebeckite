@@ -4,7 +4,7 @@ import type {
   ContentLocationInput,
   PluginContentLocationContext,
 } from "@riebeckite/core";
-import { assertGoldenJson } from "../../../../tests/helpers/golden.ts";
+import { assertGoldenJson } from "@riebeckite/test";
 import { type PermalinkOptions, permalink } from "../index.ts";
 
 function input(

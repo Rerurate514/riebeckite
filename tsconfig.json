@@ -14,6 +14,8 @@
       "@riebeckite/honox/ui": [
         "packages/integrations/honox/src/ui/primitives.tsx"
       ],
+      "@riebeckite/test/e2e": ["packages/test/e2e/index.ts"],
+      "@riebeckite/test": ["packages/test/index.ts"],
       "@riebeckite/plugin-*": ["packages/plugins/*/index.ts"],
       "@riebeckite/plugin-*/client": ["packages/plugins/*/client.ts"],
       "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]

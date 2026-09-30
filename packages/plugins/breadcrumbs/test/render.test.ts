@@ -7,7 +7,7 @@ import {
   type PluginPostContext,
   resolveConfig,
 } from "@riebeckite/core";
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 import {
   BREADCRUMBS_ATTRIBUTE,
   breadcrumbs,

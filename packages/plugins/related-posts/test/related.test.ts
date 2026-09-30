@@ -7,7 +7,7 @@ import {
   type ContentSource,
   resolveConfig,
 } from "@riebeckite/core";
-import { assertGoldenJson } from "../../../../tests/helpers/golden.ts";
+import { assertGoldenJson } from "@riebeckite/test";
 import {
   buildRelatedPosts,
   CO_CITATION_WEIGHT,

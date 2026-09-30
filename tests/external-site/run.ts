@@ -1,15 +1,39 @@
 #!/usr/bin/env node
-import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import {
+  assertDeclaredDependencies,
+  assertNoMonorepoEscapeHatches,
+  createLogger,
+  type ExternalSiteE2EConfig,
+  type ExternalSiteWorkspace,
+  extractScriptPayloads,
+  formatBytes,
+  type PackageSpec,
+  run,
+  runCli,
+  runExternalSiteE2E,
+  walkFiles,
+  writeFileDependencies,
+} from "@riebeckite/test/e2e";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "..", "..");
 const fixtureRoot = path.join(here, "fixture");
+const dependencyCheckScript = path.join(
+  repoRoot,
+  "scripts",
+  "check_dependencies.mjs",
+);
+const logger = createLogger("external-site");
 
-const PACKAGES = [
+function fail(message: string): never {
+  throw new Error(message);
+}
+
+const PACKAGES: PackageSpec[] = [
   { directory: "packages/core", name: "@riebeckite/core" },
   { directory: "packages/cli", name: "@riebeckite/cli" },
   {
@@ -193,367 +217,8 @@ const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
 const WAVEDROM_MARKER = "RIEBECKITE_EXTERNAL_WAVEDROM_MARKER";
 const MARP_MARKER = "RIEBECKITE_EXTERNAL_MARP_MARKER";
 
-const step = (message) => console.log(`\n[external-site] ${message}`);
-const fail = (message) => {
-  throw new Error(message);
-};
-
-const MAX_BUFFER = 128 * 1024 * 1024;
-
-function quote(value) {
-  const text = String(value);
-  return /[\s"]/.test(text) ? `"${text.replace(/"/g, '\\"')}"` : text;
-}
-
-function run(command, args, options = {}) {
-  const line = [command, ...args].map(quote).join(" ");
-  const result = spawnSync(line, {
-    shell: true,
-    cwd: options.cwd ?? repoRoot,
-    env: { ...process.env, ...options.env },
-    encoding: "utf8",
-    maxBuffer: MAX_BUFFER,
-  });
-
-  if (result.error) {
-    fail(`Failed to run: ${line}\n${result.error.message}`);
-  }
-  if (result.status !== 0 && !options.allowFailure) {
-    fail(
-      `Command failed (exit ${result.status}): ${line}\n` +
-        `--- stdout ---\n${result.stdout ?? ""}\n` +
-        `--- stderr ---\n${result.stderr ?? ""}`,
-    );
-  }
-  return result;
-}
-
-// Async counterpart of `run` for parallel jobs. Mirrors the synchronous
-// semantics: shell execution, maxBuffer cap, and failure (exit code or
-// spawn error) that rejects the returned promise.
-function runAsync(command, args, options = {}) {
-  const line = [command, ...args].map(quote).join(" ");
-  return new Promise((resolve, reject) => {
-    const child = spawn(line, {
-      shell: true,
-      cwd: options.cwd ?? repoRoot,
-      env: { ...process.env, ...options.env },
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-
-    let settled = false;
-    let exceeded = false;
-    let stdout = "";
-    let stderr = "";
-
-    const onData = (kind, chunk) => {
-      const target = kind === "stdout" ? stdout : stderr;
-      if (target.length + chunk.length > MAX_BUFFER) {
-        exceeded = true;
-        child.kill("SIGKILL");
-        return;
-      }
-      if (kind === "stdout") stdout += chunk;
-      else stderr += chunk;
-    };
-    child.stdout.setEncoding("utf8");
-    child.stderr.setEncoding("utf8");
-    child.stdout.on("data", (chunk) => onData("stdout", chunk));
-    child.stderr.on("data", (chunk) => onData("stderr", chunk));
-
-    child.on("error", (error) => {
-      if (settled) return;
-      settled = true;
-      reject(new Error(`Failed to run: ${line}\n${error.message}`));
-    });
-
-    child.on("close", (status) => {
-      if (settled) return;
-      settled = true;
-      if (exceeded) {
-        reject(
-          new Error(`Command output exceeded ${MAX_BUFFER} bytes: ${line}`),
-        );
-        return;
-      }
-      if (status !== 0 && !options.allowFailure) {
-        reject(
-          new Error(
-            `Command failed (exit ${status}): ${line}\n` +
-              `--- stdout ---\n${stdout}\n` +
-              `--- stderr ---\n${stderr}`,
-          ),
-        );
-        return;
-      }
-      resolve({ status, stdout, stderr });
-    });
-  });
-}
-
-function walkFiles(root, predicate = () => true) {
-  const found = [];
-  if (!fs.existsSync(root)) return found;
-  const stack = [root];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
-      const full = path.join(current, entry.name);
-      if (entry.isDirectory()) {
-        stack.push(full);
-      } else if (predicate(full)) {
-        found.push(full);
-      }
-    }
-  }
-  return found;
-}
-
-function extractHoverPreviewPayload(html) {
-  const matches = html.matchAll(
-    /<script[^>]*data-rb-hover-preview[^>]*>([\s\S]*?)<\/script>/g,
-  );
-  return [...matches].map((match) => match[1] ?? "").join("\n");
-}
-
-async function packPackages(tarballDir, concurrency = 4, packages = PACKAGES) {
-  step(
-    `packing ${packages.length} packages with pnpm pack (concurrency ${concurrency})`,
-  );
-  const packed = new Map();
-
-  const packOne = async (pkg) => {
-    const packageDir = path.join(repoRoot, pkg.directory);
-    if (!fs.existsSync(packageDir)) {
-      fail(`Package directory is missing: ${pkg.directory}`);
-    }
-    const manifest = JSON.parse(
-      fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
-    );
-    await runAsync("pnpm", ["pack", "--pack-destination", tarballDir], {
-      cwd: packageDir,
-    });
-
-    const sanitized = pkg.name.replace(/^@/, "").replace(/\//g, "-");
-    const tarball = path.join(
-      tarballDir,
-      `${sanitized}-${manifest.version}.tgz`,
-    );
-    if (!fs.existsSync(tarball)) {
-      fail(`pnpm pack did not produce the expected tarball: ${tarball}`);
-    }
-    console.log(`  packed ${pkg.name} -> ${path.basename(tarball)}`);
-    return { pkg, version: manifest.version, tarball };
-  };
-
-  // Limited-concurrency pool: keep at most `concurrency` pnpm pack processes
-  // in flight. Logs appear in completion order; the result Map below is filled
-  // in input order.
-  const results = new Array(packages.length);
-  let nextIndex = 0;
-  const worker = async () => {
-    while (nextIndex < packages.length) {
-      const index = nextIndex++;
-      results[index] = await packOne(packages[index]);
-    }
-  };
-
-  const batch = await Promise.allSettled(
-    Array.from({ length: Math.min(concurrency, packages.length) }, worker),
-  );
-  const failure = batch.find((result) => result.status === "rejected");
-  if (failure) {
-    // All in-flight jobs have settled by now; surface the first failure.
-    throw failure.reason;
-  }
-
-  for (const result of results) {
-    packed.set(result.pkg.name, {
-      tarball: result.tarball,
-      version: result.version,
-    });
-  }
-
-  return packed;
-}
-
-function writeSitePackageJson(siteDir, packed) {
-  const manifestPath = path.join(siteDir, "package.json");
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-  manifest.dependencies = { ...manifest.dependencies };
-  manifest.devDependencies = { ...manifest.devDependencies };
-  manifest.overrides = { ...manifest.overrides };
-
-  for (const [name, info] of packed) {
-    const fileSpec = `file:${path
-      .relative(siteDir, info.tarball)
-      .split(path.sep)
-      .join("/")}`;
-    if (name in manifest.devDependencies) {
-      manifest.devDependencies[name] = fileSpec;
-    } else {
-      manifest.dependencies[name] = fileSpec;
-    }
-    manifest.overrides[name] = fileSpec;
-  }
-
-  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-}
-
-function writeExternalConsumerTsconfig(siteDir) {
-  step("layering the external-consumer type libraries (vite/client)");
-  const configPath = path.join(siteDir, "tsconfig.json");
-  const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  const types = new Set(config.compilerOptions?.types ?? []);
-  types.add("node");
-  types.add("vite/client");
-  config.compilerOptions = { ...config.compilerOptions, types: [...types] };
-  config.exclude = ["typecheck/development-riebeckite-modules.d.ts"];
-  fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
-
-  const nodeNextConfigPath = path.join(siteDir, "tsconfig.nodenext.json");
-  const nodeNextConfig = JSON.parse(
-    fs.readFileSync(nodeNextConfigPath, "utf8"),
-  );
-  nodeNextConfig.include = ["typecheck/nodenext.ts"];
-  fs.writeFileSync(
-    nodeNextConfigPath,
-    `${JSON.stringify(nodeNextConfig, null, 2)}\n`,
-  );
-
-  const written = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  const effective = new Set(written.compilerOptions?.types ?? []);
-  if (!effective.has("vite/client")) {
-    fail("external-consumer tsconfig is missing the vite/client type library");
-  }
-  console.log(`  site/tsconfig.json types: ${[...effective].join(", ")}`);
-}
-
-function assertDeclaredDependencies(siteDir) {
-  step("checking the site for undeclared (hoisted) dependencies");
-  run(process.execPath, [
-    path.join(repoRoot, "scripts", "check_dependencies.mjs"),
-    siteDir,
-  ]);
-}
-
-function assertNoMonorepoEscapeHatches(siteDir) {
-  step("checking the site for monorepo escape hatches");
-  const manifest = JSON.parse(
-    fs.readFileSync(path.join(siteDir, "package.json"), "utf8"),
-  );
-  if (JSON.stringify(manifest).includes("workspace:")) {
-    fail("site/package.json must not contain `workspace:` protocol references");
-  }
-
-  const sourceFiles = walkFiles(siteDir, (full) => {
-    const rel = path.relative(siteDir, full);
-    if (rel.startsWith(`node_modules${path.sep}`)) return false;
-    if (rel.startsWith(`dist${path.sep}`)) return false;
-    return /\.(ts|tsx|mts|cts|js|mjs|json)$/.test(full);
-  });
-
-  for (const file of sourceFiles) {
-    const contents = fs.readFileSync(file, "utf8");
-    if (contents.includes("workspace:")) {
-      fail(`${path.relative(siteDir, file)} contains \`workspace:\``);
-    }
-    if (/\.\.\/\.\.\/(\.\.\/)*packages\//.test(contents)) {
-      fail(
-        `${path.relative(siteDir, file)} reaches into the monorepo \`packages/\``,
-      );
-    }
-  }
-
-  if (fs.existsSync(path.join(siteDir, "packages"))) {
-    fail("site must not contain a `packages/` directory");
-  }
-}
-
-function assertIsolatedInstall(siteDir, tempRoot) {
-  step("verifying standalone install (no pnpm/monorepo inheritance)");
-
-  const relativeToRepo = path.relative(repoRoot, tempRoot);
-  const insideRepo =
-    relativeToRepo === "" ||
-    (!relativeToRepo.startsWith("..") && !path.isAbsolute(relativeToRepo));
-  if (insideRepo) {
-    fail("the external workspace must live outside the Riebeckite repository");
-  }
-
-  const forbiddenState = [
-    path.join(tempRoot, "pnpm-workspace.yaml"),
-    path.join(tempRoot, "pnpm-lock.yaml"),
-    path.join(siteDir, "pnpm-workspace.yaml"),
-    path.join(siteDir, "pnpm-lock.yaml"),
-    path.join(siteDir, "node_modules", ".pnpm"),
-  ];
-  for (const file of forbiddenState) {
-    if (fs.existsSync(file)) {
-      fail(
-        `external site must not inherit pnpm workspace state: ${path.relative(
-          tempRoot,
-          file,
-        )}`,
-      );
-    }
-  }
-
-  const nodeModules = path.join(siteDir, "node_modules");
-  if (!fs.existsSync(nodeModules)) {
-    fail("the isolated install did not create site/node_modules");
-  }
-
-  const viteClientTypes = path.join(nodeModules, "vite", "client.d.ts");
-  if (!fs.existsSync(viteClientTypes)) {
-    fail("vite/client types are missing from the isolated install");
-  }
-
-  const tsc = path.join(nodeModules, "typescript", "bin", "tsc");
-  if (!fs.existsSync(tsc)) {
-    fail("the isolated install has no local TypeScript compiler");
-  }
-
-  console.log(
-    `  site/node_modules is local; vite/client -> ${path.relative(
-      siteDir,
-      viteClientTypes,
-    )}`,
-  );
-}
-
-function assertPublishedArtifacts(siteDir) {
-  step("verifying @riebeckite/* resolves to installed tarballs only");
-  const scopeDir = path.join(siteDir, "node_modules", "@riebeckite");
-  if (!fs.existsSync(scopeDir)) {
-    fail("no @riebeckite/* packages were installed");
-  }
-
-  for (const entry of fs.readdirSync(scopeDir)) {
-    const full = path.join(scopeDir, entry);
-    const real = fs.realpathSync(full);
-    const relativeToRepo = path.relative(repoRoot, real);
-    const insideRepo =
-      relativeToRepo === "" ||
-      (!relativeToRepo.startsWith("..") && !path.isAbsolute(relativeToRepo));
-    if (insideRepo) {
-      fail(
-        `@riebeckite/${entry} resolves into the Riebeckite repository (${real}); ` +
-          "the fixture must use installed tarballs only",
-      );
-    }
-    if (fs.lstatSync(full).isSymbolicLink()) {
-      fail(
-        `@riebeckite/${entry} is a symlink; expected a real installed directory`,
-      );
-    }
-    console.log(`  @riebeckite/${entry} -> ${real}`);
-  }
-}
-
-function runCli(siteDir, command, cwd = siteDir) {
-  step(`riebeckite ${command}`);
-  const cli = path.join(
+const cliEntryFor = (siteDir: string): string =>
+  path.join(
     siteDir,
     "node_modules",
     "@riebeckite",
@@ -561,43 +226,9 @@ function runCli(siteDir, command, cwd = siteDir) {
     "bin",
     "riebeckite.mjs",
   );
-  const result = run(process.execPath, [cli, ...command.split(" ")], {
-    cwd,
-  });
-  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
-  if (output) console.log(output);
-  return result;
-}
 
-function cliText(result) {
-  return `${result.stdout ?? ""}${result.stderr ?? ""}`;
-}
-
-function runTypecheck(siteDir, project) {
-  step(`tsc --noEmit -p ${project}`);
-  const tsc = path.join(siteDir, "node_modules", "typescript", "bin", "tsc");
-  const result = run(process.execPath, [tsc, "--noEmit", "-p", project], {
-    cwd: siteDir,
-  });
-  const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
-  if (output) console.log(output);
-  return result;
-}
-
-function formatBytes(bytes) {
-  const units = ["B", "KB", "MB", "GB"];
-  let value = bytes;
-  let unitIndex = 0;
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex++;
-  }
-  const digits = value >= 10 || unitIndex === 0 ? 0 : 1;
-  return `${value.toFixed(digits)} ${units[unitIndex]}`;
-}
-
-function assertBuildOutput(siteDir, vaultDir) {
-  step("checking generated site output");
+function assertBuildOutput(siteDir: string, vaultDir: string): void {
+  logger.step("checking generated site output");
   const distDir = path.join(siteDir, "dist");
   if (!fs.existsSync(distDir)) {
     fail("build did not create a dist/ directory");
@@ -851,7 +482,9 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!fs.existsSync(tagJson)) {
     fail("taxonomy plugin did not emit the /tags/featured JSON feed");
   }
-  const tagJsonBody = JSON.parse(fs.readFileSync(tagJson, "utf8"));
+  const tagJsonBody = JSON.parse(fs.readFileSync(tagJson, "utf8")) as {
+    version?: unknown;
+  };
   if (tagJsonBody.version !== "https://jsonfeed.org/version/1.1") {
     fail("taxonomy JSON feed is not JSON Feed 1.1");
   }
@@ -881,7 +514,7 @@ function assertBuildOutput(siteDir, vaultDir) {
   // Every page must carry at most one content-ID marker, and each content ID
   // must be unique across the site: a shared ID would merge analytics page
   // views for different notes.
-  const contentIdOwners = new Map();
+  const contentIdOwners = new Map<string, string>();
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
     const ids = [
@@ -1140,7 +773,10 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (!combined.includes("data-rb-hover-preview")) {
     fail("generated HTML is missing the hover preview payload script");
   }
-  const hoverPreviewPayload = extractHoverPreviewPayload(combined);
+  const hoverPreviewPayload = extractScriptPayloads(
+    combined,
+    "data-rb-hover-preview",
+  );
   if (!hoverPreviewPayload.includes(HOVER_PREVIEW_TITLE_MARKER)) {
     fail("hover preview payload is missing the fixture note title");
   }
@@ -1327,13 +963,14 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
 }
 
-function generateStarterSite(tempRoot) {
-  step("generating a starter site with riebeckite init");
+function generateStarterSite(tempRoot: string): string {
+  logger.step("generating a starter site with riebeckite init");
   const starterDir = path.join(tempRoot, "starter");
   const cli = path.join(repoRoot, "packages", "cli", "bin", "riebeckite.mjs");
-  run(process.execPath, [cli, "init", starterDir]);
+  run(process.execPath, [cli, "init", starterDir], { cwd: repoRoot });
 
   const rerun = run(process.execPath, [cli, "init", starterDir], {
+    cwd: repoRoot,
     allowFailure: true,
   });
   if (rerun.status === 0) {
@@ -1343,35 +980,26 @@ function generateStarterSite(tempRoot) {
   return starterDir;
 }
 
-function generateCreateStarterSite(tempRoot) {
-  step("generating a starter site with create-riebeckite");
+function generateCreateStarterSite(tempRoot: string): void {
+  logger.step("generating a starter site with create-riebeckite");
   const starterDir = path.join(tempRoot, "starter-create");
-  run(process.execPath, [
-    path.join(
-      repoRoot,
-      "packages",
-      "create-riebeckite",
-      "bin",
-      "create-riebeckite.mjs",
-    ),
-    starterDir,
-  ]);
+  const createBin = path.join(
+    repoRoot,
+    "packages",
+    "create-riebeckite",
+    "bin",
+    "create-riebeckite.mjs",
+  );
+  run(process.execPath, [createBin, starterDir], { cwd: repoRoot });
   if (!fs.existsSync(path.join(starterDir, "riebeckite.config.ts"))) {
     fail("create-riebeckite did not generate riebeckite.config.ts");
   }
 
-  step("create-riebeckite lists the scaffold presets");
-  const listResult = run(process.execPath, [
-    path.join(
-      repoRoot,
-      "packages",
-      "create-riebeckite",
-      "bin",
-      "create-riebeckite.mjs",
-    ),
-    "--list-presets",
-  ]);
-  const listOutput = listResult.stdout ?? "";
+  logger.step("create-riebeckite lists the scaffold presets");
+  const listResult = run(process.execPath, [createBin, "--list-presets"], {
+    cwd: repoRoot,
+  });
+  const listOutput = listResult.stdout;
   for (const name of [
     "empty",
     "minimal",
@@ -1387,8 +1015,8 @@ function generateCreateStarterSite(tempRoot) {
   }
 }
 
-function assertStarterOutput(siteDir) {
-  step("checking generated starter output");
+function assertStarterOutput(siteDir: string): void {
+  logger.step("checking generated starter output");
   const distDir = path.join(siteDir, "dist");
   if (!fs.existsSync(distDir)) {
     fail("starter build did not create a dist/ directory");
@@ -1411,106 +1039,136 @@ function assertStarterOutput(siteDir) {
   }
 }
 
-async function main() {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "riebeckite-e2e-"));
-  const siteDir = path.join(tempRoot, "site");
-  const vaultDir = path.join(tempRoot, "vault");
-  const tarballDir = path.join(tempRoot, "tarballs");
-  fs.mkdirSync(tarballDir, { recursive: true });
+function runStarterChecks(workspace: ExternalSiteWorkspace): void {
+  generateCreateStarterSite(workspace.tempRoot);
+  const starterDir = generateStarterSite(workspace.tempRoot);
+  writeFileDependencies(starterDir, workspace.packed);
+  assertNoMonorepoEscapeHatches(starterDir, {
+    monorepoPackagesDirectory: "packages",
+    logger,
+  });
+  assertDeclaredDependencies(starterDir, {
+    dependencyCheckScript,
+    cwd: repoRoot,
+    logger,
+  });
 
-  step(`temporary workspace: ${tempRoot}`);
-  try {
-    const packed = await packPackages(tarballDir);
+  logger.step("npm install the generated starter");
+  run("npm", ["install", "--no-audit", "--no-fund", "--loglevel=error"], {
+    cwd: starterDir,
+  });
 
-    step(
-      "copying fixture site and vault (content stays outside the site root)",
-    );
-    fs.cpSync(path.join(fixtureRoot, "site"), siteDir, { recursive: true });
-    fs.cpSync(path.join(fixtureRoot, "vault"), vaultDir, { recursive: true });
-
-    writeExternalConsumerTsconfig(siteDir);
-    writeSitePackageJson(siteDir, packed);
-
-    step("npm install (tarballs + normal registry dependencies)");
-    run("npm", ["install", "--no-audit", "--no-fund", "--loglevel=error"], {
-      cwd: siteDir,
-    });
-
-    assertIsolatedInstall(siteDir, tempRoot);
-    assertNoMonorepoEscapeHatches(siteDir);
-    assertDeclaredDependencies(siteDir);
-    assertPublishedArtifacts(siteDir);
-
-    step("verifying capability dependency resolution");
-    run(process.execPath, [path.join(siteDir, "capability-check.mjs")], {
-      cwd: siteDir,
-    });
-
-    step("verifying the publish boundary");
-    run(process.execPath, [path.join(siteDir, "publish-boundary-check.mjs")], {
-      cwd: siteDir,
-    });
-
-    const nestedWorkingDirectory = path.join(siteDir, "app");
-    runCli(siteDir, "check", nestedWorkingDirectory);
-    runCli(siteDir, "doctor", nestedWorkingDirectory);
-    runCli(siteDir, "inspect", nestedWorkingDirectory);
-    const configInspection = runCli(
-      siteDir,
-      "inspect config",
-      nestedWorkingDirectory,
-    );
-    if (!cliText(configInspection).includes("fixture-local")) {
-      fail(
-        "inspect config did not report the site-local theme (fixture-local)",
-      );
-    }
-    const pluginInspection = runCli(
-      siteDir,
-      "inspect plugins",
-      nestedWorkingDirectory,
-    );
-    if (!cliText(pluginInspection).includes("fixture-local")) {
-      fail(
-        "inspect plugins did not report the site-local plugin (fixture-local)",
-      );
-    }
-    runCli(siteDir, "build", nestedWorkingDirectory);
-
-    assertBuildOutput(siteDir, vaultDir);
-
-    runTypecheck(siteDir, "tsconfig.json");
-    runTypecheck(siteDir, "tsconfig.nodenext.json");
-
-    generateCreateStarterSite(tempRoot);
-    const starterDir = generateStarterSite(tempRoot);
-    writeSitePackageJson(starterDir, packed);
-    assertNoMonorepoEscapeHatches(starterDir);
-    assertDeclaredDependencies(starterDir);
-
-    step("npm install the generated starter");
-    run("npm", ["install", "--no-audit", "--no-fund", "--loglevel=error"], {
-      cwd: starterDir,
-    });
-
-    runCli(starterDir, "check");
-    runCli(starterDir, "doctor");
-    runCli(starterDir, "build");
-    assertStarterOutput(starterDir);
-
-    console.log(
-      "\n[external-site] PASS: external site built from published artifacts",
-    );
-  } finally {
-    if (process.env.RIEBECKITE_E2E_KEEP) {
-      console.log(`\n[external-site] kept workspace: ${tempRoot}`);
-    } else {
-      fs.rmSync(tempRoot, { recursive: true, force: true });
-    }
-  }
+  runCli(["check"], {
+    cliEntry: cliEntryFor(starterDir),
+    cwd: starterDir,
+    cliName: "riebeckite",
+    logger,
+  });
+  runCli(["doctor"], {
+    cliEntry: cliEntryFor(starterDir),
+    cwd: starterDir,
+    cliName: "riebeckite",
+    logger,
+  });
+  runCli(["build"], {
+    cliEntry: cliEntryFor(starterDir),
+    cwd: starterDir,
+    cliName: "riebeckite",
+    logger,
+  });
+  assertStarterOutput(starterDir);
 }
 
-main().catch((error) => {
-  console.error(`\n[external-site] FAIL: ${error.message}`);
+const config: ExternalSiteE2EConfig = {
+  repoRoot,
+  packages: PACKAGES,
+  fixture: {
+    site: path.join(fixtureRoot, "site"),
+    vault: path.join(fixtureRoot, "vault"),
+  },
+  dependencyCheckScript,
+  scope: "@riebeckite",
+  cliName: "riebeckite",
+  resolveCliEntry: cliEntryFor,
+  cliCommands: [
+    { args: ["check"] },
+    { args: ["doctor"] },
+    { args: ["inspect"] },
+    {
+      args: ["inspect", "config"],
+      assertOutput: (output) => {
+        if (!output.includes("fixture-local")) {
+          fail(
+            "inspect config did not report the site-local theme (fixture-local)",
+          );
+        }
+      },
+    },
+    {
+      args: ["inspect", "plugins"],
+      assertOutput: (output) => {
+        if (!output.includes("fixture-local")) {
+          fail(
+            "inspect plugins did not report the site-local plugin (fixture-local)",
+          );
+        }
+      },
+    },
+    { args: ["build"] },
+  ],
+  cliWorkingDirectory: "app",
+  typecheckProjects: ["tsconfig.json", "tsconfig.nodenext.json"],
+  additionalTypeLibraries: ["vite/client"],
+  bundlerTypeExclude: ["typecheck/development-riebeckite-modules.d.ts"],
+  nodeNextProject: {
+    config: "tsconfig.nodenext.json",
+    include: ["typecheck/nodenext.ts"],
+  },
+  requiredInstallPaths: [
+    {
+      label: "vite/client",
+      relativePath: path.join("node_modules", "vite", "client.d.ts"),
+      missingMessage: "vite/client types are missing from the isolated install",
+    },
+    {
+      label: "typescript/tsc",
+      relativePath: path.join("node_modules", "typescript", "bin", "tsc"),
+      missingMessage: "the isolated install has no local TypeScript compiler",
+      report: false,
+    },
+  ],
+  monorepoPackagesDirectory: "packages",
+  siteChecks: [
+    (workspace) => {
+      logger.step("verifying capability dependency resolution");
+      run(
+        process.execPath,
+        [path.join(workspace.siteDir, "capability-check.mjs")],
+        { cwd: workspace.siteDir },
+      );
+    },
+    (workspace) => {
+      logger.step("verifying the publish boundary");
+      run(
+        process.execPath,
+        [path.join(workspace.siteDir, "publish-boundary-check.mjs")],
+        { cwd: workspace.siteDir },
+      );
+    },
+  ],
+  assertions: { buildOutput: assertBuildOutput },
+  afterSiteChecks: runStarterChecks,
+  stepLabel: "external-site",
+  keepEnv: "RIEBECKITE_E2E_KEEP",
+  logger,
+};
+
+async function main(): Promise<void> {
+  await runExternalSiteE2E(config);
+}
+
+main().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`\n[external-site] FAIL: ${message}`);
   process.exitCode = 1;
 });

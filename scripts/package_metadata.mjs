@@ -69,6 +69,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/vega-lite",
   "packages/plugins/wavedrom",
   "packages/plugins/webmention",
+  "packages/test",
   "packages/themes/default",
   "packages/themes/gruvbox",
   "packages/themes/minimal",
@@ -397,6 +398,11 @@ const packagePublishingMetadata = {
       "Receive verified Webmentions and render them as mentions for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "webmention", "indieweb", "mentions"],
   },
+  "packages/test": {
+    description:
+      "Shared test utilities and a generic external-site end-to-end engine for Riebeckite packages.",
+    keywords: ["riebeckite", "testing", "test-utilities", "golden", "e2e"],
+  },
   "packages/themes/default": {
     description: "The default CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "default-theme"],
@@ -514,6 +520,18 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
+  if (directory === "packages/test") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
   if (directory.startsWith("packages/plugins/")) {
     const pluginName = directory.slice("packages/plugins/".length);
     const hasStyle = ![
@@ -557,6 +575,7 @@ export function expectedPackageMetadata(directory) {
       "series",
       "share",
       "shortcodes",
+      "taxonomy",
       "text-fragment",
       "toc",
       "webmention",

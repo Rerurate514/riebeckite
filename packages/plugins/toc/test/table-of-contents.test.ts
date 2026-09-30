@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { assertGoldenJson } from "../../../../tests/helpers/golden.ts";
+import { assertGoldenJson } from "@riebeckite/test";
 import { extractTableOfContents } from "../index.ts";
 
 test("extracts h2-h4 headings that carry an id", () => {

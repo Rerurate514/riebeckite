@@ -2,7 +2,7 @@
 
 Riebeckite のテストは Node.js 組み込みのテストランナー（`node:test`）と、TypeScript 実行用の `tsx` で動きます。追加のテストフレームワークは不要です。手で確認するのが大変な出力は golden file としてコミットし、その変化がレビューで見えるようにしています。
 
-実サイトを使った end-to-end の確認は別系統で、`tests/external-site` に置いてあります（`pnpm test:e2e:external`）。このドキュメントが扱うのは各パッケージの unit test です。
+実サイトを使った end-to-end の確認は別系統で、`tests/external-site` に置いてあります（`pnpm test:e2e:external`）。このドキュメントが扱うのは各パッケージの unit test です。これを動かす再利用可能な engine は `@riebeckite/test/e2e` にあり、リポジトリ固有の fixture・パッケージ一覧・アサーションは `tests/external-site` に残します。
 
 ## テストの実行
 
@@ -23,7 +23,7 @@ $env:UPDATE_GOLDEN=1; pnpm --filter @riebeckite/plugin-toc test
 
 各パッケージはテストを `test/*.test.ts` に置き、`test` script（`node --import tsx --test "test/*.test.ts"`）を自分で持ちます。テスト用ディレクトリとテストファイルは type check とビルドの対象から外れ、公開する `files` にも含まれないため、利用者側に配布されたり影響を与えたりしません。
 
-共有のテスト用ユーティリティはリポジトリ root の `tests/` にあります。ここは workspace のパッケージではないので、テストからは相対パスで import します。
+共有のテスト用ユーティリティは workspace パッケージ `@riebeckite/test` にあります。パッケージの `devDependencies` に追加し、`@riebeckite/test` から import します。
 
 ## テストの書き方
 
@@ -58,7 +58,7 @@ const manifest = await manager.getManifest();
 
 ## Golden file
 
-大きい出力や構造化された出力には `tests/helpers/golden.ts` の 2 つの helper を使います。
+大きい出力や構造化された出力には `@riebeckite/test` の 2 つの helper を使います。
 
 - `assertGolden(actual, goldenUrl)` はテキスト（HTML、Markdown、シリアライズした JSON など）向けです。
 - `assertGoldenJson(value, goldenUrl)` はオブジェクト向けで、比較前に `JSON.stringify(value, null, 2)` で整形します。
@@ -66,7 +66,7 @@ const manifest = await manager.getManifest();
 期待値のファイルは `import.meta.url` から組み立てた `URL` で渡し、`test/__golden__/` の下に置きます。
 
 ```ts
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 
 test("renders the table of contents", () => {
   assertGolden(renderToc(entries), new URL("./__golden__/toc.html", import.meta.url));
@@ -82,8 +82,9 @@ Node 組み込みの snapshot assertion（`--test-update-snapshots`）は使っ�
 ## パッケージにテストを追加する
 
 1. パッケージの `devDependencies` に `tsx` を、`scripts` に `test`（`node --import tsx --test "test/*.test.ts"`）を追加します。
-2. Plugin の場合は、`scripts/package_metadata.mjs` の `hasTests` にディレクトリ名を追加します。
-3. 依存関係を変えたら `pnpm install` を実行し、`pnpm check:packages` で期待するメタデータと一致するか確認します。
+2. golden helper を使う場合は、`devDependencies` に `@riebeckite/test` を追加し、`@riebeckite/test` から import します。
+3. Plugin の場合は、`scripts/package_metadata.mjs` の `hasTests` にディレクトリ名を追加します。
+4. 依存関係を変えたら `pnpm install` を実行し、`pnpm check:packages` で期待するメタデータと一致するか確認します。
 
 `scripts/check_packages.mjs` は各パッケージのメタデータを `scripts/package_metadata.mjs` と比較します。`test` script の欠落や `hasTests` への追加漏れは失敗として報告されます。
 

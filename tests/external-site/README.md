@@ -10,11 +10,11 @@ into the Riebeckite repository.
 
 ```
 tests/external-site/
-├─ run.mjs                       # the automated test
+├─ run.ts                        # the automated test
 ├─ README.md                     # this file
 └─ fixture/
    ├─ site/                      # copied to <temp>/site (owns node_modules)
-   │  ├─ package.json            # normal deps; tarballs injected by run.mjs
+   │  ├─ package.json            # normal deps; tarballs injected by run.ts
    │  ├─ tsconfig.json           # moduleResolution: bundler (base; see below)
    │  ├─ tsconfig.nodenext.json  # moduleResolution: NodeNext (skipLibCheck: false)
    │  ├─ riebeckite.config.ts
@@ -73,7 +73,7 @@ definition file for 'vite/client'` for a library that only exists after the
 copy + install.
 
 `fixture/site/typecheck/development-riebeckite-modules.d.ts` therefore provides
-editor-only declarations for the uninstalled fixture. `run.mjs` excludes that
+editor-only declarations for the uninstalled fixture. `run.ts` excludes that
 file from the copied configs, then layers the external-consumer requirement —
 `node` + `vite/client` — onto `site/tsconfig.json` immediately before installing.
 The isolated copy therefore still proves that published packages resolve exactly

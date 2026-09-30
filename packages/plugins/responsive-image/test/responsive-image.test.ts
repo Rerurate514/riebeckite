@@ -5,7 +5,7 @@ import {
   type ContentSource,
   resolveConfig,
 } from "@riebeckite/core";
-import { assertGolden } from "../../../../tests/helpers/golden.ts";
+import { assertGolden } from "@riebeckite/test";
 import {
   applyResponsiveImages,
   buildResponsiveSrcset,

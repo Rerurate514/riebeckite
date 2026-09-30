@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { assertGolden } from "@riebeckite/test";
 import type { Node } from "unist";
-import { assertGolden } from "../../../tests/helpers/golden.js";
 import { Pipeline } from "../src/pipeline.js";
 import { definePlugin } from "../src/types/plugin.js";
 

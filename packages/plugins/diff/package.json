@@ -24,6 +24,7 @@
     "@riebeckite/core": "workspace:*"
   },
   "devDependencies": {
+    "@riebeckite/test": "workspace:*",
     "@types/node": "catalog:",
     "tsx": "^4.22.4"
   },

@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import {
-  assertGolden,
-  assertGoldenJson,
-} from "../../../../tests/helpers/golden.ts";
+import { assertGolden, assertGoldenJson } from "@riebeckite/test";
 import {
   type ExcaliBrainGraph,
   type ExcaliBrainLayout,

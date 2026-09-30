@@ -89,6 +89,9 @@ importers:
       '@riebeckite/plugin-canvas':
         specifier: workspace:*
         version: link:../../packages/plugins/canvas
+      '@riebeckite/plugin-changelog':
+        specifier: workspace:*
+        version: link:../../packages/plugins/changelog
       '@riebeckite/plugin-chartjs':
         specifier: workspace:*
         version: link:../../packages/plugins/chartjs
@@ -218,6 +221,9 @@ importers:
       '@riebeckite/plugin-sidenotes':
         specifier: workspace:*
         version: link:../../packages/plugins/sidenotes
+      '@riebeckite/plugin-taxonomy':
+        specifier: workspace:*
+        version: link:../../packages/plugins/taxonomy
       '@riebeckite/plugin-text-fragment':
         specifier: workspace:*
         version: link:../../packages/plugins/text-fragment
@@ -233,6 +239,9 @@ importers:
       '@riebeckite/plugin-wavedrom':
         specifier: workspace:*
         version: link:../../packages/plugins/wavedrom
+      '@riebeckite/plugin-webmention':
+        specifier: workspace:*
+        version: link:../../packages/plugins/webmention
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default
@@ -385,6 +394,10 @@ importers:
       '@riebeckite/plugin-webmention':
         specifier: workspace:*
         version: link:../../plugins/webmention
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/alias:
     dependencies:
@@ -975,6 +988,10 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/themes/default:
     dependencies:

@@ -855,12 +855,7 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (tagJsonBody.version !== "https://jsonfeed.org/version/1.1") {
     fail("taxonomy JSON feed is not JSON Feed 1.1");
   }
-  const tagRelatedFeed = path.join(
-    distDir,
-    "tags",
-    "related-demo",
-    "feed.xml",
-  );
+  const tagRelatedFeed = path.join(distDir, "tags", "related-demo", "feed.xml");
   if (!fs.existsSync(tagRelatedFeed)) {
     fail("taxonomy plugin did not emit the /tags/related-demo RSS feed");
   }

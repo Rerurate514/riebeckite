@@ -120,7 +120,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
   },
   "packages/integrations/webmention-cloudflare": {
-    description: "Cloudflare Workers, D1, and KV runtime for Riebeckite Webmentions.",
+    description:
+      "Cloudflare Workers, D1, and KV runtime for Riebeckite Webmentions.",
     keywords: ["riebeckite", "webmention", "cloudflare", "workers", "d1", "kv"],
   },
   "packages/plugins/alias": {
@@ -491,7 +492,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
-        test: "pnpm exec tsx --test \"test/*.test.ts\"",
+        test: 'node --import tsx --test "test/*.test.ts"',
         prepack: "pnpm run build",
       },
     };
@@ -535,7 +536,7 @@ export function expectedPackageMetadata(directory) {
       "webmention",
     ].includes(pluginName);
     const testCommand =
-      ["analytics", "webmention"].includes(pluginName)
+      pluginName === "analytics"
         ? 'pnpm exec tsx --test "test/*.test.ts"'
         : 'node --import tsx --test "test/*.test.ts"';
     return {

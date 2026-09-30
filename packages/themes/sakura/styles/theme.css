@@ -331,7 +331,6 @@
   .rb-article-body
   :is(ul, ol) {
   margin-block: 1.4rem;
-  padding-inline-start: 1.4em;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body li {

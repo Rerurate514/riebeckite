@@ -240,7 +240,6 @@
   .rb-article-body
   :is(ul, ol) {
   margin-block: 1.3rem;
-  padding-inline-start: 1.4em;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body li {

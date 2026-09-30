@@ -129,7 +129,7 @@ async function generate(scaffoldRiebeckiteSite, tmpRoot, name, options) {
   return target;
 }
 
-// Every generated site must teach the package scripts (`npm run …`), not
+// Every generated site must teach the local CLI (`npm exec riebeckite …`), not
 // `npx riebeckite`, which probes the npm registry for a non-existent package
 // when the local binary is missing.
 function checkGeneratedCommands(root, label) {
@@ -144,7 +144,7 @@ function checkGeneratedCommands(root, label) {
       const text = fs.readFileSync(absolute, "utf8");
       if (text.includes("npx riebeckite")) {
         errors.push(
-          `${label}: ${path.relative(root, absolute)} must use npm run commands instead of npx riebeckite`,
+          `${label}: ${path.relative(root, absolute)} must use npm exec riebeckite commands instead of npx riebeckite`,
         );
       }
     }

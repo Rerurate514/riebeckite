@@ -194,10 +194,10 @@ The packages are published to npm, so this is all it takes. Wait for it to finis
 Once the install succeeds, use these from inside the site folder.
 
 ```sh
-npm run dev           # start the development server
-npm run check         # validate the configuration
-npm run doctor        # fuller health check
-npm run build         # write the publishable files to dist/
+npm exec riebeckite dev           # start the development server
+npm exec riebeckite check         # validate the configuration
+npm exec riebeckite doctor        # fuller health check
+npm exec riebeckite build         # write the publishable files to dist/
 ```
 
 ## 3. Publish to Cloudflare Workers
@@ -221,7 +221,7 @@ This avoids fiddling with Cloudflare's dashboard and is the easiest route.
 4. Build, log in to Cloudflare, and publish.
 
    ```sh
-   npm run build
+   npm exec riebeckite build
    npx wrangler login
    npx wrangler deploy
    ```
@@ -265,16 +265,16 @@ This method uses `npm ci` for installation, so commit the `package-lock.json` th
 |A page does not appear|`content/` is empty, or `publish: true` / `title` is missing|Check the two frontmatter lines|
 |`npm install` returns 404 for `@riebeckite/*`|A transient registry problem, or a version mismatch|Wait a moment and retry; if it persists, try `npm cache clean --force`|
 |A page returns 404|The file name and URL do not match|Check the file name and its location under `content/`|
-|The published site returns 404|The build output is not in `dist/`|Run `npm run build` and check `directory` in `wrangler.jsonc`|
+|The published site returns 404|The build output is not in `dist/`|Run `npm exec riebeckite build` and check `directory` in `wrangler.jsonc`|
 |`doctor` marks Content with `✗`|A page has a problem|Fix it as the printed message describes|
-|Old content keeps appearing|The incremental build holds stale state|Rebuild with `npm run build -- --full`|
+|Old content keeps appearing|The incremental build holds stale state|Rebuild with `npm exec riebeckite build --full`|
 
 ## A plain-language glossary
 
 - **Repository**: a single home for a program and its files. Here it means Riebeckite itself.
 - **Dependency**: a package a program needs in order to run. `npm install` fetches them all.
 - **Build**: converting source files into a form that can actually run.
-- **Dev server**: a way to show the site on your own machine only. Start it with `npm run dev`.
+- **Dev server**: a way to show the site on your own machine only. Start it with `npm exec riebeckite dev`.
 - **SSG / static assets**: rendering every page to a file ahead of time and serving those files directly.
 - **Cloudflare Workers**: where the site is published. Here it only stores static files.
 - **wrangler**: the command that publishes to Cloudflare.

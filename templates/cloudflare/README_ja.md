@@ -32,7 +32,7 @@ Riebeckite サイト向けの、[GitHub Actions](https://docs.github.com/actions
 
 ```sh
 npm install
-npm run build
+npm exec riebeckite build
 npx wrangler deploy --dry-run
 ```
 
@@ -42,8 +42,8 @@ npx wrangler deploy --dry-run
 
 1. リポジトリをチェックアウトする。
 2. `npm ci` で依存をインストールする。
-3. `npm run check` で設定と Plugin を読み取り専用で検証する。
-4. `npm run build` で `dist/` を生成する。
+3. `npm exec riebeckite check` で設定と Plugin を読み取り専用で検証する。
+4. `npm exec riebeckite build` で `dist/` を生成する。
 5. リポジトリのシークレットを使って `cloudflare/wrangler-action` でデプロイする。
 
 ## 補足

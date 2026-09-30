@@ -194,10 +194,10 @@ npm install
 インストールが済んだあとは、サイトのフォルダで次を使います。
 
 ```sh
-npm run dev           # 開発サーバーを起動する
-npm run check         # 設定が正しいか確認する
-npm run doctor        # 詳しい健康診断
-npm run build         # 公開用のファイルを dist/ に書き出す
+npm exec riebeckite dev           # 開発サーバーを起動する
+npm exec riebeckite check         # 設定が正しいか確認する
+npm exec riebeckite doctor        # 詳しい健康診断
+npm exec riebeckite build         # 公開用のファイルを dist/ に書き出す
 ```
 
 ## 3. Cloudflare Workers へ公開する
@@ -221,7 +221,7 @@ Cloudflare の画面で細かく設定する必要がなく、一番わかりや
 4. ビルドして、Cloudflare にログインし、公開します。
 
    ```sh
-   npm run build
+   npm exec riebeckite build
    npx wrangler login
    npx wrangler deploy
    ```
@@ -265,16 +265,16 @@ pnpm --filter @riebeckite/web exec wrangler deploy
 |記事が表示されない|`content/` が空、または `publish: true` や `title` が無い|frontmatter の2行を確認する|
 |`npm install` で `@riebeckite/*` が 404 になる|レジストリの一時的な問題、またはバージョン指定のずれ|少し待って再実行する。直らなければ `npm cache clean --force` を試す|
 |ページが 404 になる|ファイル名と URL がずれている|ファイル名と `content/` の場所を確認する|
-|公開したのに 404 になる|ビルド結果が `dist/` に出ていない|`npm run build` を実行し、`wrangler.jsonc` の `directory` を確認する|
+|公開したのに 404 になる|ビルド結果が `dist/` に出ていない|`npm exec riebeckite build` を実行し、`wrangler.jsonc` の `directory` を確認する|
 |`doctor` で Content に `✗` が出る|記事に問題がある|表示されたメッセージのとおりに直す|
-|古い内容が残る|差分ビルドが古い状態を持っている|`npm run build -- --full` で作り直す|
+|古い内容が残る|差分ビルドが古い状態を持っている|`npm exec riebeckite build --full` で作り直す|
 
 ## 用語のかんたん説明
 
 - **リポジトリ**: プログラムとファイルを1つにまとめた置き場。ここでは Riebeckite 本体のことです。
 - **依存パッケージ**: プログラムが動くために必要な部品。`npm install` でまとめて入ります。
 - **ビルド**: 書いたプログラムを、実際に動かせる形に変換すること。
-- **dev サーバー**: 手元のパソコンだけでサイトを表示する仕組み。`npm run dev` で起動します。
+- **dev サーバー**: 手元のパソコンだけでサイトを表示する仕組み。`npm exec riebeckite dev` で起動します。
 - **SSG / 静的アセット**: あらかじめ全ページをファイルとして作っておき、そのまま配る方式。
 - **Cloudflare Workers**: サイトを公開する場所。ここでは静的なファイルを置くだけに使います。
 - **wrangler**: Cloudflare に公開するためのコマンド。

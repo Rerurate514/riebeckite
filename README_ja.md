@@ -26,7 +26,7 @@ Riebeckite は、Markdown と Obsidian 形式のノートを Web サイトとし
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm run build
+npm exec riebeckite build
 ```
 
 | オプション | 内容 |

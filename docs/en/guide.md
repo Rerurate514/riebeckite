@@ -156,8 +156,8 @@ Generate a standalone site, then install and build it:
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm run check
-npm run build
+npm exec riebeckite check
+npm exec riebeckite build
 ```
 
 The scaffolder writes a self-contained site that passes `check` and `build` as generated. It refuses to overwrite an existing non-empty target unless `--force` is passed.

@@ -99,10 +99,10 @@ export default defineConfig({
 ### 4. 読み込みを確認する
 
 ```sh
-npm run check
-npm run doctor
-npm run inspect -- config
-npm run inspect -- content --list
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect config
+npm exec riebeckite inspect content --list
 ```
 
 - パスがずれている場合、大半は `directory` の相対パスが原因です。`inspect config` で解決済みディレクトリを確認してください。

@@ -108,10 +108,10 @@ packages/plugins/backlinks/
 ## 5. 検証する
 
 ```sh
-npm run check              # 設定と Plugin の解決を検証
-npm run doctor             # 健全性診断
-npm run inspect -- plugins # 解決済みの Plugin 一覧を確認
-npm run build              # 生成物に反映されるか確認
+npm exec riebeckite check              # 設定と Plugin の解決を検証
+npm exec riebeckite doctor             # 健全性診断
+npm exec riebeckite inspect plugins# 解決済みの Plugin 一覧を確認
+npm exec riebeckite build              # 生成物に反映されるか確認
 ```
 
 `check` / `doctor` / `inspect` は読み取り専用です。解決されない場合は、まず `check` のメッセージで capability エラーや import エラーを確認してください。プラグインを作る前に「本当に Plugin が必要か（設定や App 実装で済まないか）」も確認してください。

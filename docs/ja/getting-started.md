@@ -17,8 +17,8 @@
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm run check
-npm run doctor
+npm exec riebeckite check
+npm exec riebeckite doctor
 ```
 
 - 生成されるのは、設定ファイル（`riebeckite.config.ts`）、HonoX の application shell（`app/`）、route、stylesheet、初期コンテンツ（`content/`）です。
@@ -81,9 +81,9 @@ publish: true
 `publish: true` が無いと explicit 方式では表示されません。読み込んだ状態は Inspector で確認できます（読み取り専用です）。
 
 ```sh
-npm run inspect -- config
-npm run inspect -- content --list
-npm run inspect -- graph
+npm exec riebeckite inspect config
+npm exec riebeckite inspect content --list
+npm exec riebeckite inspect graph
 ```
 
 - `inspect config` … 解決済みの設定とコンテンツの場所
@@ -97,7 +97,7 @@ npm run inspect -- graph
 開発サーバーで確認します。
 
 ```sh
-npm run dev
+npm exec riebeckite dev
 ```
 
 `http://localhost:5173` をブラウザで開くと記事が表示されます。編集はその場で反映され、停止は `Ctrl + C` です。
@@ -105,13 +105,13 @@ npm run dev
 公開用ファイルを `dist/` に生成するにはビルドします。
 
 ```sh
-npm run build
+npm exec riebeckite build
 ```
 
 build は通常、変更の無いコンテンツを再利用する **incremental build** です。差分の再利用を避けたい場合だけ `build --full` を使ってください。
 
 ```sh
-npm run build -- --full
+npm exec riebeckite build --full
 ```
 
 サイトを拡張するときの置き場所は、「機能 → Plugin（[はじめてのプラグイン作成](./plugin-tutorial.md)）」「見た目 → Theme（[はじめてのテーマ作成](./theme-tutorial.md)）」「固有の route → App（`app/`）」です。全体像は [Architecture](./architecture.md) を参照してください。

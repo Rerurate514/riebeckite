@@ -17,8 +17,8 @@ If you want to go step by step from environment setup all the way to publishing,
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm run check
-npm run doctor
+npm exec riebeckite check
+npm exec riebeckite doctor
 ```
 
 - You get a config file (`riebeckite.config.ts`), a HonoX application shell (`app/`), routes, a stylesheet, and starter content (`content/`).
@@ -81,9 +81,9 @@ My first article. A WikiLink like [[another-note]] works too.
 Without `publish: true`, the page does not appear under the explicit strategy. Verify what loaded with the read-only Inspector:
 
 ```sh
-npm run inspect -- config
-npm run inspect -- content --list
-npm run inspect -- graph
+npm exec riebeckite inspect config
+npm exec riebeckite inspect content --list
+npm exec riebeckite inspect graph
 ```
 
 - `inspect config` … resolved config and content location
@@ -95,7 +95,7 @@ Fix the files based on what it shows (the Inspector does not generate state).
 ## 4. Run it
 
 ```sh
-npm run dev
+npm exec riebeckite dev
 ```
 
 Open `http://localhost:5173` in a browser to see the articles. Edits apply immediately; stop with `Ctrl + C`.
@@ -103,13 +103,13 @@ Open `http://localhost:5173` in a browser to see the articles. Edits apply immed
 Generate publishable files under `dist/` with:
 
 ```sh
-npm run build
+npm exec riebeckite build
 ```
 
 Build is normally an **incremental build** that reuses unchanged content. Use `build --full` only when you want to skip that reuse.
 
 ```sh
-npm run build -- --full
+npm exec riebeckite build --full
 ```
 
 Where to add things when extending: features go to a plugin ([Your first plugin](./plugin-tutorial.md)), appearance to a theme ([Your first theme](./theme-tutorial.md)), and site-specific routes to the app (`app/`). See [Architecture](./architecture.md) for the overall picture.

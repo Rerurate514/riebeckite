@@ -202,7 +202,8 @@ if (errors.length === 0) {
     "secrets.CLOUDFLARE_API_TOKEN",
     "secrets.CLOUDFLARE_ACCOUNT_ID",
     "npm ci",
-    "npm run build",
+    "npm exec riebeckite check",
+    "npm exec riebeckite build",
     "workflow_dispatch",
   ]) {
     expect(workflow.includes(needle), `deploy.yml must reference ${needle}`);

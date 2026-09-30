@@ -353,10 +353,10 @@ A distributed theme depends only on `@riebeckite/core` and exports its styleshee
 ## 9. Verify
 
 ```sh
-npm run check             # validate config and plugin resolution
-npm run inspect -- config # inspect the resolved theme
-npm run dev               # check the look locally
-npm run build             # check the generated output
+npm exec riebeckite check             # validate config and plugin resolution
+npm exec riebeckite inspect config# inspect the resolved theme
+npm exec riebeckite dev               # check the look locally
+npm exec riebeckite build             # check the generated output
 ```
 
 `check` / `doctor` / `inspect` are read-only. Swapping a theme does not change routes, the manifest, the graph, or client behavior. If the look is wrong, check the cascade order (`userCss` last) and whether you are targeting `rr-*` or `rb-*`.

@@ -10,7 +10,7 @@ Create a new Riebeckite site from an official starter preset.
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm run build
+npm exec riebeckite build
 ```
 
 ## Options

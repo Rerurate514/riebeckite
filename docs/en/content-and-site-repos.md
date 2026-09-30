@@ -99,10 +99,10 @@ export default defineConfig({
 ### 4. Verify loading
 
 ```sh
-npm run check
-npm run doctor
-npm run inspect -- config
-npm run inspect -- content --list
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect config
+npm exec riebeckite inspect content --list
 ```
 
 - A wrong path is usually the relative `directory`. Check the resolved directory with `inspect config`.

@@ -108,10 +108,10 @@ A distributed plugin depends only on `@riebeckite/core` and declares its own sub
 ## 5. Verify
 
 ```sh
-npm run check              # validate config and plugin resolution
-npm run doctor             # health check
-npm run inspect -- plugins # list resolved plugins
-npm run build              # confirm it appears in the output
+npm exec riebeckite check              # validate config and plugin resolution
+npm exec riebeckite doctor             # health check
+npm exec riebeckite inspect plugins# list resolved plugins
+npm exec riebeckite build              # confirm it appears in the output
 ```
 
 `check` / `doctor` / `inspect` are read-only. If a plugin does not resolve, start with `check` for capability or import errors. Before writing a plugin, also ask whether you really need one — maybe configuration or an app implementation suffices.

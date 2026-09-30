@@ -39,7 +39,7 @@ The build and the configuration can be exercised without deploying:
 
 ```sh
 npm install
-npm run build
+npm exec riebeckite build
 npx wrangler deploy --dry-run
 ```
 
@@ -51,8 +51,8 @@ locally.
 
 1. Checks out the repository.
 2. Installs dependencies with `npm ci`.
-3. Runs `npm run check`, the read-only configuration and plugin validation.
-4. Runs `npm run build` to generate `dist/`.
+3. Runs `npm exec riebeckite check`, the read-only configuration and plugin validation.
+4. Runs `npm exec riebeckite build` to generate `dist/`.
 5. Deploys with `cloudflare/wrangler-action`, using the repository secrets.
 
 ## Notes

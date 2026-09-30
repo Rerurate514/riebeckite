@@ -28,10 +28,10 @@ jobs:
         run: npm ci
 
       - name: Validate configuration and plugins
-        run: npm run check
+        run: npm exec riebeckite check
 
       - name: Build the site
-        run: npm run build
+        run: npm exec riebeckite build
 
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@v3

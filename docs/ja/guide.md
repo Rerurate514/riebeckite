@@ -156,8 +156,8 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm run check
-npm run build
+npm exec riebeckite check
+npm exec riebeckite build
 ```
 
 scaffolder は生成直後の状態で `check` と `build` を通る自己完結のサイトを書き出します。生成対象のファイルが既にあるディレクトリには `--force` なしでは上書きしません。

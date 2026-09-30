@@ -6,7 +6,12 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| — | — | （バックログ内の実装対象はすべて完了） | 完了 | — | — |
+| 1 | F1 | Core `extractFrontmatterAliases` が単数形 `alias:` を認識しない問題を修正する | 未着手 | Small | alias プラグインが案内する frontmatter キーが無効で、期待した redirect が生成されない |
+| 2 | F2 | plugin-code-annotations の HTML コメント形式 `<!-- [!code ...] -->` を解釈できるようにする | 未着手 | Small | `--` の貪欲一致が `<!--` を消費し、ドキュメント記載の記法が無効 |
+| 3 | F3 | plugin-query のタイトルリンクに `frontmatter.title` を反映する | 未着手 | Small | `entry.title` 依存で、表示タイトルが frontmatter とずれる |
+| 4 | F4 | plugin-excalibrain の ontology 上書きをマージにし、sibling 推論の条件を整理する | 未着手 | Medium | デフォルト配列が置換され、`infer:false` でも sibling が推論される |
+| 5 | F5 | plugin-diff の日時表示をロケール/タイムゾーン非依存にする | 未着手 | Small | `toLocaleDateString("en")` により出力が環境依存 |
+| 6 | F6 | 既存の Biome フォーマット崩れ（`pnpm check` 143 件・既存テスト 7 ファイル）を解消する | 未着手 | Medium | リポジトリ全体の `pnpm check` が失敗し続け、差分検証の妨げになる |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -16,7 +21,7 @@
 |---|---|---|---|
 | A | 安定 Content ID を Core に導入する（最小限） | 要調査 | `resolveContentStableId` を Core に実装し、manifest entry の `contentId` と `byContentId` 索引として公開。analytics プラグインが参照 |
 | B | plugin-analytics を全面改修する（既存外部プロバイダ注入と置き換え） | 要調査 | provider/query/event の新設計に統一。plausible/umami/GA/custom の旧注入は除去済み |
-| C | 単体テストランナーは導入しない | Small | 依存を増やさず E2E ハーネス＋golden で代替。需要が出れば recon Q3 の方針で再検討 |
+| C | 単体テストランナーは導入しない | Small | 依存を増やさず E2E ハーネス＋golden で代替。需要が出れば recon Q3 の方針で再検討（後に node:test + tsx ベースの単体テストを導入し方針転換。Z を参照） |
 | D | client config 伝達用の汎用機構を Core に導入する | 要調査 | `clientEntries` + `publicConfig` + `serializePublicClientConfig` を Core に実装。honox の `virtual:riebeckite/client` で配信 |
 | E | Analytics Worker は独立デプロイにする（templates/analytics-cloudflare + createWorker API） | 要調査 | `createWorker` API と d1/kv templates を実装、main に統合済み |
 | P1 | Generic Analytics 再設計: event model / AnalyticsProvider / Query model / client page_view | Large | event/provider/query/memory provider/init/options/client を実装済み。テストあり |
@@ -41,6 +46,7 @@
 | U | plugin-map: `map` ブロック / frontmatter 座標から地図埋め込みを表示する | Medium | 新規 `packages/plugins/map/`。`map` フェンス/frontmatter を解析し静的フォールバック＋JSON を常時出力、`[data-rr-map]` がある時のみ Leaflet を遅延ロード。commit d106e48 |
 | V | plugin-changelog: git 履歴から記事/サイトの変更履歴ページを生成する | Medium | 新規 `packages/plugins/changelog/`。git 履歴から per-note 変更履歴（`article.after-content` スロット）と `buildSiteChangelog` を提供。非 git は降格診断。route 非所有。commit 9bff854 |
 | W | plugin-webmention: Webmention 受信 endpoint と「言及」表示を実装する | Large | 新規 `packages/plugins/webmention/`（provider 抽象・送信元検証・SSRF ガード付き fetcher・POST 受信/GET JSON feed・`rr-webmention`）と `packages/integrations/webmention-cloudflare/`（D1/KV storage・createWorker・migration）。Core の endpoint 型に POST を追加。テスト計20件。commit 170ee62 |
+| Z | 単体テスト基盤と主要パッケージのテストを追加する | Large | node:test + tsx を継続し、依存ゼロの golden ヘルパー `tests/helpers/golden.ts` と root の `test` / `test:update`（`scripts/run_tests.mjs`）を新設。core＋19 プラグインに約305件のテストと golden を追加（`hasTests` を27プラグインへ拡張、各 package.json に `tsx` devDependency と `test` script、analytics / analytics-cloudflare の `tsx` 宣言漏れも修正）。`docs/en|ja/testing.md` を追加。既知の不具合は F1〜F6 に記録 |
 
 ## 実装メモ（agents 用）
 

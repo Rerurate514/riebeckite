@@ -123,7 +123,11 @@ function createContentIdIndex(
 }
 
 function getManifestTitle(slug: string, title: unknown): string {
-  return typeof title === "string" && title.trim() ? title : slug;
+  if (typeof title === "string" && title.trim()) {
+    return title.trim();
+  }
+
+  return slug.split("/").at(-1) ?? slug;
 }
 
 function uniqueAssets(assets: ContentAsset[]): ContentAsset[] {

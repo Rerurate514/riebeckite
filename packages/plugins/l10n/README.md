@@ -86,7 +86,7 @@ l10n({
 
 ## Links and SEO
 
-Before the existing Content Graph is built, WikiLink graph targets are switched to the source note's language when that translation exists; otherwise their original target remains. The rendered article rewrites both WikiLinks and Markdown links to an existing translation in the current page's language, preserving query strings and fragments. Links without a translation, external URLs, and non-content URLs remain unchanged. No second graph is created.
+Before the existing Content Graph is built, WikiLink graph targets are switched to the source note's language when that translation exists; otherwise their original target remains. The rendered article rewrites both Obsidian WikiLinks (after `@riebeckite/plugin-obsidian-markdown` resolves them) and Markdown links to an existing translation in the current page's language, preserving query strings and fragments. When no translation exists, the original/default target remains linked. External, fragment-only, unknown, asset, and other non-content URLs remain unchanged. The Content Graph and rendered links use the same resolution policy; no second graph is created.
 
 Each translated entry receives one `<link rel="alternate" hreflang="…">` per existing translation through Core's `headTags` extension point. The site shell remains responsible for rendering those tags and for selecting `<html lang>` for a request.
 

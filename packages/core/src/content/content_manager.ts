@@ -162,12 +162,9 @@ export class ContentManager {
           this.pipelineOptions,
           this.isBuildTime,
         );
-        const content = await this.pipeline.execute(
-          rawPost,
-          0,
-          new Set([slug]),
-          slug,
-        );
+        const content = await this.pipeline.execute(rawPost, {
+          sourceSlug: slug,
+        });
 
         await this.pluginRuntime.runPostHook(
           "onPostParsed",

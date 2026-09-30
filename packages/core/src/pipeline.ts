@@ -27,6 +27,7 @@ import type { RiebeckitePlugin } from "./types/plugin.js";
 import { resolvePlugins } from "./types/plugin.js";
 import type {
   MarkdownEmbedFragment,
+  MarkdownExecutionContext,
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent, PostFrontmatter } from "./types/post_content.js";
@@ -51,9 +52,21 @@ export class Pipeline {
 
   async execute(
     markDownContent: string,
-    embedDepth = 0,
-    embedTrail = new Set<string>(),
-    sourceSlug?: string,
+    context: MarkdownExecutionContext = {},
+  ): Promise<PostContent> {
+    return await this.executeWithEmbedState(
+      markDownContent,
+      context,
+      0,
+      new Set(context.sourceSlug ? [context.sourceSlug] : []),
+    );
+  }
+
+  private async executeWithEmbedState(
+    markDownContent: string,
+    context: MarkdownExecutionContext,
+    embedDepth: number,
+    embedTrail: ReadonlySet<string>,
   ): Promise<PostContent> {
     const processor = unified();
     const plugins = resolvePlugins(this.options.plugins);
@@ -69,7 +82,7 @@ export class Pipeline {
     this.use(processor, remarkGfm);
 
     const markdownPipelineContext: MarkdownPipelineContext = {
-      sourceSlug,
+      sourceSlug: context.sourceSlug,
       contentIndex: this.contentIndex,
       resolvePermalink: (slug) => this.getPermalink(slug),
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
@@ -145,7 +158,7 @@ export class Pipeline {
 
   private createNoteEmbedRenderer(
     embedDepth: number,
-    embedTrail: Set<string>,
+    embedTrail: ReadonlySet<string>,
   ): MarkdownPipelineContext["renderNoteEmbed"] {
     if (!this.getMarkdownBySlug || embedDepth >= 3) return undefined;
 
@@ -161,11 +174,11 @@ export class Pipeline {
       const nextEmbedTrail = new Set(embedTrail);
       nextEmbedTrail.add(slug);
 
-      const content = await this.execute(
+      const content = await this.executeWithEmbedState(
         markdown,
+        { sourceSlug: slug },
         embedDepth + 1,
         nextEmbedTrail,
-        slug,
       );
       return content.html;
     };

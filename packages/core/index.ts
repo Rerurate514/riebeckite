@@ -215,6 +215,7 @@ export type { PluginHeadTag } from "./src/types/plugin_head.js";
 export type {
   HtmlPipeline,
   MarkdownEmbedFragment,
+  MarkdownExecutionContext,
   MarkdownPipeline,
   MarkdownPipelineContext,
   PipelinePlugin,

@@ -1,8 +1,17 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { ContentManager, type ContentSource } from "@riebeckite/core";
+import {
+  ContentManager,
+  type ContentSource,
+  type RiebeckitePlugin,
+} from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
-import { getLocalization, getLocalizedContent, l10n } from "../index.js";
+import {
+  getLocalization,
+  getLocalizedContent,
+  type L10nOptions,
+  l10n,
+} from "../index.js";
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -17,8 +26,8 @@ function source(files: Record<string, string>): ContentSource {
 
 function manager(
   files: Record<string, string>,
-  options = {},
-  additionalPlugins = [],
+  options: Partial<L10nOptions> = {},
+  additionalPlugins: readonly RiebeckitePlugin<unknown>[] = [],
 ) {
   return new ContentManager(source(files), [], {
     plugins: [
@@ -270,6 +279,47 @@ test("rewrites article links to the current language while preserving query stri
   assert.match(source?.html ?? "", /href="\/target#section"/);
 });
 
+test("rewrites WikiLinks and Markdown links after Obsidian resolution", async () => {
+  const content = manager(
+    {
+      "about.md": "---\ntranslation: about\n---\n[Guide](/guide#installation)",
+      "about.ja.md":
+        "---\ntranslation: about\n---\n[[Guide#Installation]]\n\n[Guide](/guide#installation)",
+      "guide.md": "---\ntranslation: guide\n---\n# Guide",
+      "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
+    },
+    { defaultLang: "en" },
+    [obsidianMarkdown()],
+  );
+
+  const source = (await content.getManifest()).bySlug.get("about.ja");
+  assert.match(source?.html ?? "", /href="\/ja\/guide#installation"/);
+  assert.equal(
+    (source?.html.match(/href="\/ja\/guide#installation"/g) ?? []).length,
+    2,
+  );
+  const defaultSource = (await content.getManifest()).bySlug.get("about");
+  assert.match(defaultSource?.html ?? "", /href="\/guide#installation"/);
+});
+
+test("uses the embedded note as the source of locale-aware link resolution", async () => {
+  const content = manager(
+    {
+      "about.md": "---\ntranslation: about\n---\n# About",
+      "about.ja.md": "---\ntranslation: about\n---\n![[embedded_ja]]",
+      "embedded.md": "---\ntranslation: embedded\n---\n[[guide]]",
+      "embedded_ja.md": "---\ntranslation: embedded\n---\n[[guide]]",
+      "guide.md": "---\ntranslation: guide\n---\n# Guide",
+      "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
+    },
+    { defaultLang: "en" },
+    [obsidianMarkdown()],
+  );
+
+  const source = (await content.getManifest()).bySlug.get("about.ja");
+  assert.match(source?.html ?? "", /href="\/ja\/guide"/);
+});
+
 test("leaves article links unchanged when no translation exists", async () => {
   const content = manager({
     "source.ja.md":
@@ -280,4 +330,19 @@ test("leaves article links unchanged when no translation exists", async () => {
   const source = (await content.getManifest()).bySlug.get("source.ja");
   assert.match(source?.html ?? "", /href="\/en\/only#details"/);
   assert.match(source?.html ?? "", /href="https:\/\/example\.com\/only"/);
+});
+
+test("leaves fragment-only, unknown, and asset links unchanged", async () => {
+  const content = manager(
+    {
+      "source.ja.md":
+        "---\ntranslation: source\n---\n[Fragment](#installation)\n\n[Unknown](/missing)\n\n[Asset](/manual.pdf)",
+    },
+    { defaultLang: "en" },
+  );
+
+  const source = (await content.getManifest()).bySlug.get("source.ja");
+  assert.match(source?.html ?? "", /href="#installation"/);
+  assert.match(source?.html ?? "", /href="\/missing"/);
+  assert.match(source?.html ?? "", /href="\/manual\.pdf"/);
 });

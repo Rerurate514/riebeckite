@@ -11,9 +11,15 @@ export type MarkdownPipeline = {
 
 export type HtmlPipeline = MarkdownPipeline;
 
-export type MarkdownPipelineContext = {
+/** Identifies the source being processed by a Markdown pipeline execution. */
+export type MarkdownExecutionContext = {
   /** Slug of the content currently being rendered, when available. */
   sourceSlug?: string;
+};
+
+export type MarkdownPipelineContext = {
+  /** Source identity supplied for this execution, when available. */
+  sourceSlug?: MarkdownExecutionContext["sourceSlug"];
   contentIndex: Map<string, string>;
   resolvePermalink: (slug: string) => string;
   renderNoteEmbed?: (

@@ -125,16 +125,8 @@ export function l10n(options: L10nOptions) {
         if (!source) continue;
         entry.links = entry.links.map((link) => {
           if (!link.slug) return link;
-          const target = state.contents.get(link.slug);
-          if (!target) return link;
-          const localized = findTranslation(
-            state,
-            target.translationId,
-            source.lang,
-          );
-          return localized
-            ? { ...link, kind: "note", slug: localized.slug }
-            : link;
+          const target = resolveLocalizedTarget(state, source, link.slug);
+          return target ? { ...link, kind: "note", slug: target.slug } : link;
         });
       }
     },
@@ -201,17 +193,8 @@ function localizeLinkUrl(
   const targetSlug = slugsByPermalink.get(permalink);
   if (!targetSlug) return url;
 
-  const target = options.state.contents.get(targetSlug);
-  if (!target || target.lang === source.lang) return url;
-
-  const localized = findTranslation(
-    options.state,
-    target.translationId,
-    source.lang,
-  );
-  return localized
-    ? `${options.resolvePermalink(localized.slug)}${suffix}`
-    : url;
+  const target = resolveLocalizedTarget(options.state, source, targetSlug);
+  return target ? `${options.resolvePermalink(target.slug)}${suffix}` : url;
 }
 
 function splitLinkUrl(url: string): { permalink: string; suffix: string } {
@@ -581,6 +564,20 @@ function findTranslation(
         content.translationId === translationId && content.lang === lang,
     ) ?? null
   );
+}
+
+/**
+ * Resolves a content target using the source locale, falling back to the
+ * original target when no unambiguous translation exists.
+ */
+function resolveLocalizedTarget(
+  state: L10nState,
+  source: DetectedContent,
+  targetSlug: string,
+): DetectedContent | null {
+  const target = state.contents.get(targetSlug);
+  if (!target) return null;
+  return findTranslation(state, target.translationId, source.lang) ?? target;
 }
 
 function addLocalizationHeadTags(

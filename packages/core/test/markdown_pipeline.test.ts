@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assertGolden } from "@riebeckite/test";
 import type { Node } from "unist";
+import { ContentManager, type ContentSource } from "../index.js";
 import { Pipeline } from "../src/pipeline.js";
 import { definePlugin } from "../src/types/plugin.js";
 
@@ -93,7 +94,26 @@ test("passes the current content slug to Markdown pipeline plugins", async () =>
 
   await new Pipeline(new Map(), new Map(), undefined, {
     plugins: [plugin],
-  }).execute("# Title", 0, new Set(), "guide.ja");
+  }).execute("# Title", { sourceSlug: "guide.ja" });
+
+  assert.equal(sourceSlug, "guide.ja");
+});
+
+test("ContentManager supplies the source slug to Markdown pipeline plugins", async () => {
+  let sourceSlug: string | undefined;
+  const plugin = definePlugin({
+    name: "source-slug",
+    extendMarkdownPipeline: (_pipeline, context) => {
+      sourceSlug = context.sourceSlug;
+    },
+  });
+  const content = new ContentManager(
+    memorySource({ "guide.ja.md": "# Guide" }),
+    [],
+    { plugins: [plugin] },
+  );
+
+  await content.getProcessedContent("guide.ja");
 
   assert.equal(sourceSlug, "guide.ja");
 });
@@ -110,4 +130,15 @@ function markHeadings(node: HtmlNode): void {
     node.properties = { ...node.properties, className: ["tagged"] };
   }
   for (const child of node.children ?? []) markHeadings(child);
+}
+
+function memorySource(files: Record<string, string>): ContentSource {
+  return {
+    async scan() {
+      return Object.keys(files).map((path) => ({ path }));
+    },
+    async read(entry) {
+      return files[entry.path] ?? "";
+    },
+  };
 }

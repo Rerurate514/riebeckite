@@ -529,6 +529,7 @@ export function expectedPackageMetadata(directory) {
       "backlinks",
       "breadcrumbs",
       "code-annotations",
+      "code-enhance",
       "daily-notes",
       "deploy",
       "diagnostics",

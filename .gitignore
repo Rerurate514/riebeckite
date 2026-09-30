@@ -7,3 +7,5 @@ apps/web/.riebeckite/
 packages/**/dist/
 packages/**/LICENSE
 .riebeckite/
+
+.obsidian

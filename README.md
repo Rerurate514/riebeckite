@@ -1,3 +1,13 @@
+<p align="center">
+  <img src="./assets/logos/riebeckite-logo-horizontal.png" alt="Riebeckite" width="360" />
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@riebeckite/cli"><img src="https://img.shields.io/npm/v/%40riebeckite%2Fcli?label=npm" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/@riebeckite/cli"><img src="https://img.shields.io/npm/dm/%40riebeckite%2Fcli" alt="npm downloads" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/Rerurate514/riebeckite" alt="License" /></a>
+</p>
+
 # Riebeckite
 
 Riebeckite is a framework for publishing Markdown and Obsidian-style content as a fast static site. It provides a content pipeline, plugins, themes, HonoX integration, diagnostics, and Cloudflare Workers deployment support.

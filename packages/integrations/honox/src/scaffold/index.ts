@@ -66,7 +66,7 @@ export async function scaffoldRiebeckiteSite(
   for (const file of files) {
     const filePath = path.join(targetDirectory, file.path);
     await fs.mkdir(path.dirname(filePath), { recursive: true });
-    await fs.writeFile(filePath, file.content, "utf8");
+    await fs.writeFile(filePath, file.content);
   }
 
   return { targetDirectory, files: files.map((file) => file.path) };

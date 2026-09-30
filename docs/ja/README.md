@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../assets/logos/riebeckite-logo-horizontal.png" alt="Riebeckite" width="360" />
+</p>
+
 # Riebeckite ドキュメント
 
 Riebeckite は、Markdown や Obsidian のノートを公開サイトにするためのフレームワークです。このドキュメントは、使う人、拡張する人、本体を開発する人の入口を分けています。

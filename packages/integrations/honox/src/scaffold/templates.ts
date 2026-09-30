@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { defaultSsrExternals } from "../vite_plugin.js";
 import {
   appConfig,
@@ -34,7 +35,7 @@ export type SiteTemplateVariables = {
 
 export type SiteTemplateFile = {
   readonly path: string;
-  readonly content: string;
+  readonly content: string | Uint8Array;
 };
 
 export function siteTemplateFiles(
@@ -51,9 +52,26 @@ export function siteTemplateFiles(
     { path: "tsconfig.json", content: tsconfig() },
     { path: ".gitignore", content: gitignore() },
     { path: "README.md", content: readme(preset, variables) },
+    { path: "public/favicon.ico", content: readPackageAsset("favicon.ico") },
+    {
+      path: "public/riebeckite-logo.png",
+      content: readPackageAsset("riebeckite-logo.png"),
+    },
     ...localizedContentFiles(variables, preset),
     ...appFiles(preset),
   ];
+}
+
+function readPackageAsset(fileName: string): Uint8Array {
+  const candidates = [
+    new URL(`../../assets/${fileName}`, import.meta.url),
+    new URL(`../../../assets/${fileName}`, import.meta.url),
+    new URL(`../assets/${fileName}`, import.meta.url),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) return fs.readFileSync(candidate);
+  }
+  throw new Error(`Missing Riebeckite scaffold asset: ${fileName}`);
 }
 
 const APP_FILE_LABELS = [

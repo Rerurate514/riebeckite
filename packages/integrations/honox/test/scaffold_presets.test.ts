@@ -35,10 +35,27 @@ test("each preset generates its intended self-contained composition", async () =
         "utf8",
       );
       assert.ok(await exists(path.join(targetDirectory, "README.md")));
+      assert.ok(await exists(path.join(targetDirectory, "public/favicon.ico")));
+      assert.ok(
+        await exists(path.join(targetDirectory, "public/riebeckite-logo.png")),
+      );
+      const renderer = await fs.readFile(
+        path.join(targetDirectory, "app/routes/_renderer.tsx"),
+        "utf8",
+      );
+      assert.match(renderer, /rel="icon" href="\/favicon\.ico"/);
       if (preset === "empty") {
         assert.ok(!config.includes("@riebeckite/plugin-"));
       } else {
         assert.ok(config.includes("@riebeckite/plugin-obsidian-markdown"));
+        const headerPath = path.join(
+          targetDirectory,
+          "app/components/site-header.tsx",
+        );
+        if (await exists(headerPath)) {
+          const header = await fs.readFile(headerPath, "utf8");
+          assert.match(header, /\/riebeckite-logo\.png/);
+        }
         const slugRoute = await fs.readFile(
           path.join(targetDirectory, "app/routes/[slug{.+}].tsx"),
           "utf8",

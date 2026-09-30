@@ -134,9 +134,18 @@ export function style(preset: ScaffoldPreset): string {
       "}",
       "",
       ".site-header__home {",
+      "  display: inline-flex;",
+      "  align-items: center;",
+      "  gap: 0.5rem;",
       "  color: #111827;",
       "  font-weight: 700;",
       "  text-decoration: none;",
+      "}",
+      "",
+      ".site-header__logo {",
+      "  width: 1.75rem;",
+      "  height: 1.75rem;",
+      "  object-fit: contain;",
       "}",
       "",
     );
@@ -173,6 +182,13 @@ export function SiteHeader() {
   return (
     <header class="site-header">
       <a href="/" class="site-header__home">
+        <img
+          src="/riebeckite-logo.png"
+          alt=""
+          class="site-header__logo"
+          width="28"
+          height="28"
+        />
         {config.site.title}
       </a>
       <ColorModeToggle />
@@ -248,6 +264,7 @@ export default jsxRenderer(({ children }, c) => {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{config.site.title}</title>
+        <link rel="icon" href="/favicon.ico" />
 ${hasColorMode ? `        <ColorModeScript />\n` : ""}        <Link href="/app/style.css" rel="stylesheet" />
         {headTags.map(renderHeadTag)}
         <Script src="/app/client.ts" async />
@@ -287,6 +304,7 @@ export default jsxRenderer(({ children }, c) => (
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>{config.site.title}</title>
+      <link rel="icon" href="/favicon.ico" />
       <Link href="/app/style.css" rel="stylesheet" />
       <Script src="/app/client.ts" async />
     </head>

@@ -37,9 +37,11 @@ export default defineConfig({
 ```
 
 `gardenExplorerPlugin()` registers the `/explore` page type and bundles
-`style.css` into the app stylesheet. A catch-all route using
+`style.css` and its client hydrator into the app. A catch-all route using
 `resolveRiebeckiteRoute()` and `pluginPageSsgParams()` renders and emits it;
-no plugin-specific application route is needed.
+no plugin-specific application route is needed. The page is server-rendered
+first, then the registered client entry hydrates its graph, filters, and URL
+state after loading.
 
 ### Embed the component elsewhere
 

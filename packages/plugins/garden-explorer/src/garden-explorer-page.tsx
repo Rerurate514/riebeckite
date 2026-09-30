@@ -1,3 +1,4 @@
+import { escapeScriptJson } from "@riebeckite/core";
 import { renderToString } from "hono/jsx/dom/server";
 import GardenExplorer from "../components/garden-explorer.js";
 import type { GardenExplorerData } from "./garden-explorer.js";
@@ -16,7 +17,16 @@ export function renderGardenExplorerPage(
           Digital Garden を探索できます。
         </p>
       </header>
-      <GardenExplorer data={data} />
+      <div data-riebeckite-garden-explorer>
+        <GardenExplorer data={data} />
+      </div>
+      <script
+        id="riebeckite-garden-explorer-data"
+        type="application/json"
+        dangerouslySetInnerHTML={{
+          __html: escapeScriptJson(JSON.stringify(data)),
+        }}
+      />
     </main>,
   );
 }

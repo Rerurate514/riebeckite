@@ -18,6 +18,12 @@
       "source": "./components/garden-explorer.tsx",
       "default": "./dist/components/garden-explorer.js"
     },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.tsx",
+      "default": "./dist/client.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {

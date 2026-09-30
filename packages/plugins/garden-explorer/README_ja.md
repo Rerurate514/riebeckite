@@ -26,9 +26,12 @@ export default defineConfig({
 });
 ```
 
-`gardenExplorerPlugin()` は `/explore` の Page Type とスタイルを登録します。
+`gardenExplorerPlugin()` は `/explore` の Page Type、スタイル、クライアント側の
+hydrator を登録します。
 `resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う共通 catch-all route
 が表示と SSG を担当するため、Plugin 固有の route は不要です。
+ページはまずサーバーで描画し、読み込み後に登録済みの client entry がグラフ、
+フィルター、URL 状態を hydration します。
 
 コンポーネントを別の site-owned component に埋め込む場合だけ、manifest から
 表示用データを作って渡します。

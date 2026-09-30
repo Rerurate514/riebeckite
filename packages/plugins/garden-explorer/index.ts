@@ -1,4 +1,4 @@
-import { definePlugin } from "@riebeckite/core";
+import { createClientEntry, definePlugin } from "@riebeckite/core";
 import { getGardenExplorerData } from "./src/garden-explorer.server.js";
 import { renderGardenExplorerPage } from "./src/garden-explorer-page.js";
 
@@ -22,6 +22,7 @@ export function gardenExplorerPlugin() {
         moduleSpecifier: "@riebeckite/plugin-garden-explorer/style.css",
       },
     ],
+    clientEntries: [createClientEntry("garden-explorer")],
     pageTypes: [
       {
         id: "garden-explorer",

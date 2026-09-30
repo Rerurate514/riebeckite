@@ -38,13 +38,13 @@ export function extractFrontmatterAliases(markdown: string): string[] {
   const lines = frontmatter[1].split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i] ?? "";
-    const inlineMatch = line.match(/^aliases?:\s*(.+)$/i);
+    const inlineMatch = line.match(/^alias(?:es)?:\s*(.+)$/i);
     if (inlineMatch?.[1]) {
       aliases.push(...parseYamlScalarOrList(inlineMatch[1]));
       continue;
     }
 
-    if (/^aliases?:\s*$/i.test(line)) {
+    if (/^alias(?:es)?:\s*$/i.test(line)) {
       for (let j = i + 1; j < lines.length; j++) {
         const itemMatch = lines[j]?.match(/^\s*-\s*(.+)$/);
         if (!itemMatch?.[1]) break;

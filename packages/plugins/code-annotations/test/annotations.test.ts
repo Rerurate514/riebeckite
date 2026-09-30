@@ -66,6 +66,61 @@ test("stripInlineCodeAnnotation recognises prefixes and line counts", () => {
   });
 });
 
+test("stripInlineCodeAnnotation recognises HTML comment markers", () => {
+  assert.deepEqual(
+    stripInlineCodeAnnotation("const a = 1; <!-- [!code ++] -->"),
+    {
+      line: "const a = 1;",
+      annotation: { kind: "added", lineCount: 1 },
+    },
+  );
+  assert.deepEqual(
+    stripInlineCodeAnnotation("const b = 2; <!-- [!code focus] -->"),
+    {
+      line: "const b = 2;",
+      annotation: { kind: "focus", lineCount: 1 },
+    },
+  );
+  assert.deepEqual(stripInlineCodeAnnotation("<!-- [!code --] -->"), {
+    line: "",
+    annotation: { kind: "removed", lineCount: 1 },
+  });
+  assert.deepEqual(
+    stripInlineCodeAnnotation("const c = 3; <!-- [!code highlight:2] -->"),
+    {
+      line: "const c = 3;",
+      annotation: { kind: "highlight", lineCount: 2 },
+    },
+  );
+});
+
+test("stripInlineCodeAnnotation ignores non-trailing HTML comments", () => {
+  assert.deepEqual(stripInlineCodeAnnotation("<!-- [!code focus] --> tail"), {
+    line: "<!-- [!code focus] --> tail",
+    annotation: null,
+  });
+});
+
+test("collectCodeAnnotations merges HTML markers with fence meta", () => {
+  const collected = collectCodeAnnotations(
+    "{2}",
+    [
+      "a // [!code ++]",
+      "b <!-- [!code --] -->",
+      "c <!-- [!code focus:2] -->",
+    ].join("\n"),
+  );
+
+  assert.equal(collected.hasAnnotations, true);
+  assert.equal(collected.code, "a\nb\nc");
+  assert.deepEqual(collected.plan, {
+    highlight: [2],
+    added: [1],
+    removed: [2],
+    focus: [3, 4],
+  });
+});
+
 test("collectCodeAnnotations merges meta and inline markers and strips them", () => {
   const collected = collectCodeAnnotations(
     "{1}",

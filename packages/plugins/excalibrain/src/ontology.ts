@@ -78,8 +78,15 @@ export function resolveOntology(
 ): ResolvedOntology {
   const merged: Required<ExcaliBrainOntology> = {
     ...DEFAULT_ONTOLOGY,
-    ...overrides,
   };
+  // Ontology overrides extend the defaults per role rather than replacing them.
+  for (const role of FIELD_ROLE_ORDER) {
+    const extra = overrides[role];
+    if (extra && extra.length > 0) {
+      merged[role] = [...DEFAULT_ONTOLOGY[role], ...extra];
+    }
+  }
+
   const fieldRole = new Map<string, ExcaliBrainFieldRole>();
 
   for (const role of FIELD_ROLE_ORDER) {

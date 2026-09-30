@@ -1,6 +1,7 @@
 import type { DiffRevision, PostDiff } from "../types.js";
 import { escapeHtml } from "./diff-line.js";
 import { renderDiffViewer } from "./diff-viewer.js";
+import { formatDiffDate } from "./format-date.js";
 
 export type DiffHistoryProps = {
   history: DiffRevision[];
@@ -40,15 +41,9 @@ function renderRevisionButton(
 ): string {
   return `<li class="rr-diff-history__item">
     <button class="rr-diff-history__commit" type="button" data-rr-diff-select="${escapeHtml(revision.hash)}" aria-pressed="${selected}">
-      <span class="rr-diff-history__date">${escapeHtml(formatDate(revision.date))}</span>
+      <span class="rr-diff-history__date">${escapeHtml(formatDiffDate(revision.date))}</span>
       <span class="rr-diff-history__message">${escapeHtml(revision.message || "Untitled change")}</span>
       <span class="rr-diff-history__meta">${escapeHtml(revision.shortHash)} · ${escapeHtml(revision.author)}</span>
     </button>
   </li>`;
-}
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString("en", { month: "short", day: "numeric" });
 }

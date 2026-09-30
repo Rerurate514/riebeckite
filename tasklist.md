@@ -6,12 +6,7 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| 1 | F1 | Core `extractFrontmatterAliases` が単数形 `alias:` を認識しない問題を修正する | 未着手 | Small | alias プラグインが案内する frontmatter キーが無効で、期待した redirect が生成されない |
-| 2 | F2 | plugin-code-annotations の HTML コメント形式 `<!-- [!code ...] -->` を解釈できるようにする | 未着手 | Small | `--` の貪欲一致が `<!--` を消費し、ドキュメント記載の記法が無効 |
-| 3 | F3 | plugin-query のタイトルリンクに `frontmatter.title` を反映する | 未着手 | Small | `entry.title` 依存で、表示タイトルが frontmatter とずれる |
-| 4 | F4 | plugin-excalibrain の ontology 上書きをマージにし、sibling 推論の条件を整理する | 未着手 | Medium | デフォルト配列が置換され、`infer:false` でも sibling が推論される |
-| 5 | F5 | plugin-diff の日時表示をロケール/タイムゾーン非依存にする | 未着手 | Small | `toLocaleDateString("en")` により出力が環境依存 |
-| 6 | F6 | 既存の Biome フォーマット崩れ（`pnpm check` 143 件・既存テスト 7 ファイル）を解消する | 未着手 | Medium | リポジトリ全体の `pnpm check` が失敗し続け、差分検証の妨げになる |
+| — | — | （バックログ内の実装対象はすべて完了） | 完了 | — | — |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -47,6 +42,12 @@
 | V | plugin-changelog: git 履歴から記事/サイトの変更履歴ページを生成する | Medium | 新規 `packages/plugins/changelog/`。git 履歴から per-note 変更履歴（`article.after-content` スロット）と `buildSiteChangelog` を提供。非 git は降格診断。route 非所有。commit 9bff854 |
 | W | plugin-webmention: Webmention 受信 endpoint と「言及」表示を実装する | Large | 新規 `packages/plugins/webmention/`（provider 抽象・送信元検証・SSRF ガード付き fetcher・POST 受信/GET JSON feed・`rr-webmention`）と `packages/integrations/webmention-cloudflare/`（D1/KV storage・createWorker・migration）。Core の endpoint 型に POST を追加。テスト計20件。commit 170ee62 |
 | Z | 単体テスト基盤と主要パッケージのテストを追加する | Large | node:test + tsx を継続し、依存ゼロの golden ヘルパー `tests/helpers/golden.ts` と root の `test` / `test:update`（`scripts/run_tests.mjs`）を新設。core＋19 プラグインに約305件のテストと golden を追加（`hasTests` を27プラグインへ拡張、各 package.json に `tsx` devDependency と `test` script、analytics / analytics-cloudflare の `tsx` 宣言漏れも修正）。`docs/en|ja/testing.md` を追加。既知の不具合は F1〜F6 に記録 |
+| F1 | Core `extractFrontmatterAliases` が単数形 `alias:` を認識しない問題を修正する | Small | `content_metadata.ts` の正規表現を `alias(?:es)?` に修正し単数形・複数形の両方を認識。`packages/core/test/content_metadata.test.ts` を新設、alias プラグインに単数形ケースを追加。core 47 / alias 14 pass |
+| F2 | plugin-code-annotations の HTML コメント形式 `<!-- [!code ...] -->` を解釈できるようにする | Small | インラインマーカーの HTML コメント分岐に欠けていた閉じ `\]` を追加。`focus`/`++`/`--`/`highlight:N` と非末尾 `<!--` のテストを追加。14 pass |
+| F3 | plugin-query のタイトルリンクに `frontmatter.title` を反映する | Small | `renderTitleLink` が非空の `frontmatter.title` を優先し `entry.title` へフォールバック（`getManifestTitle` と同条件）。golden 2 件更新、テスト追加。23 pass |
+| F4 | plugin-excalibrain の ontology 上書きをマージにし、sibling 推論の条件を整理する | Medium | `resolveOntology` をロール単位のマージ（既定＋上書き、FIELD_ROLE_ORDER 先勝ち維持）に変更。sibling 推論を `infer && siblings` に限定。テスト更新、英日 README 更新。20 pass |
+| F5 | plugin-diff の日時表示をロケール/タイムゾーン非依存にする | Small | 共有 `formatDiffDate`（固定月名＋UTC getter）を新設し 2 コンポーネントから使用。TZ 非依存のテストを追加。12 pass |
+| F6 | 既存の Biome フォーマット崩れ（`pnpm check` 143 件・既存テスト 7 ファイル）を解消する | Medium | 原因は作業ツリーの CRLF で、`.gitattributes` の `* text=auto eol=lf`（commit `30311c1`）によりクリーン checkout では既に防止済み。クリーン worktree で `pnpm check` が通過することを確認し、残っていた `useTemplate` info 1 件（webmention-cloudflare テスト）も修正して diagnostics 0 にした |
 
 ## 実装メモ（agents 用）
 

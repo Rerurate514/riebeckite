@@ -134,7 +134,7 @@ test("returns a bare center for hidden notes unless showHidden is set", async ()
   assert.ok(shown.nodes.length > 0);
 });
 
-test("skips inference when infer is disabled", async () => {
+test("skips inference and siblings when infer is disabled", async () => {
   const graph = buildExcaliBrainGraph({
     slug: "hub",
     frontmatter: HUB_FRONTMATTER,
@@ -145,11 +145,11 @@ test("skips inference when infer is disabled", async () => {
 
   assert.deepEqual(
     graph.nodes.map((node) => node.id),
-    ["root", "cousin"],
+    ["root"],
   );
   assert.deepEqual(
     graph.nodes.map((node) => node.relationType),
-    ["defined", "inferred"],
+    ["defined"],
   );
   assert.deepEqual(graph.links, [
     {
@@ -157,12 +157,6 @@ test("skips inference when infer is disabled", async () => {
       to: "root",
       role: "parent",
       relationType: "defined",
-    },
-    {
-      from: "hub",
-      to: "cousin",
-      role: "sibling",
-      relationType: "inferred",
     },
   ]);
 });

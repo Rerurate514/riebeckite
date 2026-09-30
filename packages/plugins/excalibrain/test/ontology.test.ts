@@ -25,7 +25,11 @@ test("resolves the default and overridden ontologies", () => {
 
   const custom = resolveOntology({ parents: ["ancestor"] });
   assert.equal(custom.fieldRole.get("ancestor"), "parents");
-  assert.equal(custom.fieldRole.get("parent"), undefined);
+  assert.equal(custom.fieldRole.get("parent"), "parents");
+
+  const merged = resolveOntology({ hidden: ["secret"] });
+  assert.equal(merged.fieldRole.get("hidden"), "hidden");
+  assert.equal(merged.fieldRole.get("secret"), "hidden");
 });
 
 test("earlier ontology roles win when a field is listed twice", () => {

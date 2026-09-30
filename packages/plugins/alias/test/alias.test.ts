@@ -98,6 +98,18 @@ test("adds a redirect per alias without touching the canonical permalink", async
   assert.deepEqual(context.diagnostics, []);
 });
 
+test("reads the singular alias frontmatter key", async () => {
+  const context = await apply(
+    [entry("note", "---\nalias: Old Name\n---\n")],
+    [location("note", "/n/note")],
+  );
+
+  assert.deepEqual(context.locations.get("note")?.redirects, [
+    { path: "/Old%20Name", status: 308 },
+  ]);
+  assert.deepEqual(context.diagnostics, []);
+});
+
 test("reads inline and block alias lists with the configured status", async () => {
   const context = await apply(
     [

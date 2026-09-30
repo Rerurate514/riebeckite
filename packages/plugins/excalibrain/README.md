@@ -81,6 +81,12 @@ hyphens. The default ontology is:
 | `next` | `next`, `n`, `east`, `e`, `after` |
 | `hidden` | `hidden` |
 
+The `ontology` option extends the defaults: each role's field names are
+appended to that role's defaults rather than replacing them. An override can
+still add an existing field to another role, but earlier roles in the
+canonical order (`parents`, `children`, `leftFriends`, `rightFriends`,
+`previous`, `next`, `hidden`) win when a field is listed twice.
+
 ## Inference
 
 When `infer` is enabled (the default):
@@ -90,9 +96,10 @@ When `infer` is enabled (the default):
 - a mutual link (this note ↔ other) becomes a `leftFriend`.
 
 With `siblings` enabled (the default), the other children of this note's
-parents become `sibling` nodes. Link targets are resolved against the content
-manifest; unresolved targets become virtual nodes labelled with the raw link
-text (`data-node-virtual="true"`).
+parents become `sibling` nodes. Sibling inference also requires `infer`:
+setting `infer: false` disables it. Link targets are resolved against the
+content manifest; unresolved targets become virtual nodes labelled with the
+raw link text (`data-node-virtual="true"`).
 
 ## Rendering
 
@@ -124,8 +131,8 @@ The `render` option selects where the map is produced:
 | `className` | `string` | `"rb-excalibrain"` | Root CSS class |
 | `maxPerRegion` | `number` | `8` | Maximum nodes per region |
 | `infer` | `boolean` | `true` | Infer relations from links |
-| `siblings` | `boolean` | `true` | Infer siblings from parents |
-| `ontology` | object | — | Partial ontology field overrides |
+| `siblings` | `boolean` | `true` | Infer siblings from parents (requires `infer`) |
+| `ontology` | object | — | Ontology field names appended per role |
 | `showHidden` | `boolean` | `false` | Include notes marked hidden |
 | `width` | `number` | `720` | SVG viewBox width |
 | `height` | `number` | `480` | SVG viewBox height |

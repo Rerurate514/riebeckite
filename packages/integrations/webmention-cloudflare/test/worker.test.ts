@@ -149,7 +149,7 @@ test("worker receives a verified mention and serves the feed", async () => {
 
   const feed = await worker.fetch(
     new Request(
-      "https://target.example/webmentions?target=" + encodeURIComponent(TARGET),
+      `https://target.example/webmentions?target=${encodeURIComponent(TARGET)}`,
     ),
   );
   assert.equal(feed.status, 200);

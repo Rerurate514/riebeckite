@@ -14,7 +14,7 @@ const FOCUS_META_PATTERN = /(?:^|\s)focus[:=]\{([^}]*)\}/g;
 const HIGHLIGHT_META_PATTERN = /\{([^{}]*)\}/g;
 
 const INLINE_ANNOTATION_PATTERN =
-  /([ \t]*)(?:(?:\/\/|#|--)[ \t]*\[!code[ \t]+(focus|highlight|\+\+|--)(?::(\d+))?\]|<!--[ \t]*\[!code[ \t]+(focus|highlight|\+\+|--)(?::(\d+))?[ \t]*-->)[ \t]*$/;
+  /([ \t]*)(?:(?:\/\/|#|--)[ \t]*\[!code[ \t]+(focus|highlight|\+\+|--)(?::(\d+))?\]|<!--[ \t]*\[!code[ \t]+(focus|highlight|\+\+|--)(?::(\d+))?[ \t]*\][ \t]*-->)[ \t]*$/;
 
 export function createEmptyPlan(): CodeAnnotationPlan {
   return { highlight: [], added: [], removed: [], focus: [] };

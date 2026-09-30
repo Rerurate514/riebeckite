@@ -164,6 +164,16 @@ test("frontmatter values are escaped and arrays are joined", () => {
   assert.match(html, />true</);
 });
 
+test("the title link prefers a non-empty frontmatter title over entry.title", () => {
+  const html = renderQueryResult(
+    [entry("slug-name", { title: "Frontmatter Title" })],
+    resolveQuery({ columns: ["title"] }, {}),
+  );
+
+  assert.match(html, /href="\/slug-name"/);
+  assert.match(html, />Frontmatter Title<\/a>/);
+});
+
 test("the title link escapes the title and the permalink attribute", () => {
   const html = renderQueryResult(
     [{ ...entry("evil"), title: '<X> & "y"' }],

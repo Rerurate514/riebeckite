@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ContentManager, type ContentSource } from "@riebeckite/core";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { getLocalization, getLocalizedContent, l10n } from "../index.js";
 
 function source(files: Record<string, string>): ContentSource {
@@ -14,9 +15,14 @@ function source(files: Record<string, string>): ContentSource {
   };
 }
 
-function manager(files: Record<string, string>, options = {}) {
+function manager(
+  files: Record<string, string>,
+  options = {},
+  additionalPlugins = [],
+) {
   return new ContentManager(source(files), [], {
     plugins: [
+      ...additionalPlugins,
       l10n({
         defaultLang: "ja",
         languages: ["ja", "en", "en-US", "zh-CN"],
@@ -235,4 +241,43 @@ test("rewrites Content Graph WikiLink targets to the source language when that t
   const graph = await content.getContentGraph();
   assert.deepEqual(graph.outgoingSlugs("source.en"), ["target.en"]);
   assert.deepEqual(graph.outgoingSlugs("source.ja"), ["target.ja"]);
+});
+
+test("keeps Content Graph links when the target has no current-language translation", async () => {
+  const content = manager({
+    "source.ja.md": "---\ntranslation: source\n---\n[[target_en]]",
+    "target_en.md": "---\ntranslation: target\n---\n# English",
+  });
+
+  const graph = await content.getContentGraph();
+  assert.deepEqual(graph.outgoingSlugs("source.ja"), ["target_en"]);
+});
+
+test("rewrites article links to the current language while preserving query strings and fragments", async () => {
+  const content = manager(
+    {
+      "source.ja.md":
+        "---\ntranslation: source\n---\n[Markdown](/en/target?tab=details#section)\n\n[[target_en#Section|WikiLink]]",
+      "target.ja.md": "---\ntranslation: target\n---\n# セクション",
+      "target_en.md": "---\ntranslation: target\n---\n# Section",
+    },
+    {},
+    [obsidianMarkdown()],
+  );
+
+  const source = (await content.getManifest()).bySlug.get("source.ja");
+  assert.match(source?.html ?? "", /href="\/target\?tab=details#section"/);
+  assert.match(source?.html ?? "", /href="\/target#section"/);
+});
+
+test("leaves article links unchanged when no translation exists", async () => {
+  const content = manager({
+    "source.ja.md":
+      "---\ntranslation: source\n---\n[English only](/en/only#details)\n\n[External](https://example.com/only)",
+    "only.en.md": "---\ntranslation: only\n---\n# English only",
+  });
+
+  const source = (await content.getManifest()).bySlug.get("source.ja");
+  assert.match(source?.html ?? "", /href="\/en\/only#details"/);
+  assert.match(source?.html ?? "", /href="https:\/\/example\.com\/only"/);
 });

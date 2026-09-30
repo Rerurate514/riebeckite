@@ -166,6 +166,7 @@ export class ContentManager {
           rawPost,
           0,
           new Set([slug]),
+          slug,
         );
 
         await this.pluginRuntime.runPostHook(

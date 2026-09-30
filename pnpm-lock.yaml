@@ -799,6 +799,9 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
     devDependencies:
+      '@riebeckite/plugin-obsidian-markdown':
+        specifier: workspace:*
+        version: link:../obsidian-markdown
       tsx:
         specifier: ^4.22.4
         version: 4.22.4

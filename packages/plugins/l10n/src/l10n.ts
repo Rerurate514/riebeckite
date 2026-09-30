@@ -86,6 +86,7 @@ type L10nState = {
   readonly contents: ReadonlyMap<string, DetectedContent>;
   readonly diagnostics: Diagnostic[];
   readonly conflictedGroups: ReadonlySet<string>;
+  readonly locations: ReadonlyMap<string, ContentPublicLocation> | null;
 };
 
 export function l10n(options: L10nOptions) {
@@ -99,7 +100,7 @@ export function l10n(options: L10nOptions) {
     validateOptions: () =>
       validateOptions(options).map((message) => ({ path: "l10n", message })),
     extendContentLocations: ({ entries, locations }) => {
-      state = detectContents(entries, resolved);
+      state = { ...detectContents(entries, resolved), locations };
       throwForStrictDiagnostics(state.diagnostics, resolved.strict);
 
       for (const content of state.contents.values()) {
@@ -110,6 +111,13 @@ export function l10n(options: L10nOptions) {
           withLocalization(location, content, resolved),
         );
       }
+    },
+    extendMarkdownPipeline: (pipeline, context) => {
+      pipeline.use(remarkLocalizedLinks, {
+        state,
+        sourceSlug: context.sourceSlug,
+        resolvePermalink: context.resolvePermalink,
+      });
     },
     extendContentGraph: ({ entries }) => {
       for (const entry of entries) {
@@ -126,7 +134,7 @@ export function l10n(options: L10nOptions) {
           );
           return localized
             ? { ...link, kind: "note", slug: localized.slug }
-            : { ...link, kind: "note" };
+            : link;
         });
       }
     },
@@ -139,6 +147,79 @@ export function l10n(options: L10nOptions) {
 }
 
 export const l10nPlugin = l10n;
+
+type LocalizedLinkOptions = {
+  readonly state: L10nState;
+  readonly sourceSlug: string | undefined;
+  readonly resolvePermalink: (slug: string) => string;
+};
+
+type MarkdownNode = {
+  readonly type?: string;
+  url?: string;
+  readonly children?: MarkdownNode[];
+};
+
+function remarkLocalizedLinks(options: LocalizedLinkOptions) {
+  return (tree: MarkdownNode) => {
+    const source = options.sourceSlug
+      ? options.state.contents.get(options.sourceSlug)
+      : undefined;
+    if (!source || !options.state.locations) return;
+
+    const slugsByPermalink = new Map(
+      [...options.state.locations].map(([slug, location]) => [
+        location.permalink,
+        slug,
+      ]),
+    );
+    localizeLinks(tree, source, options, slugsByPermalink);
+  };
+}
+
+function localizeLinks(
+  node: MarkdownNode,
+  source: DetectedContent,
+  options: LocalizedLinkOptions,
+  slugsByPermalink: ReadonlyMap<string, string>,
+): void {
+  if (node.type === "link" && node.url) {
+    node.url = localizeLinkUrl(node.url, source, options, slugsByPermalink);
+  }
+  for (const child of node.children ?? []) {
+    localizeLinks(child, source, options, slugsByPermalink);
+  }
+}
+
+function localizeLinkUrl(
+  url: string,
+  source: DetectedContent,
+  options: LocalizedLinkOptions,
+  slugsByPermalink: ReadonlyMap<string, string>,
+): string {
+  const { permalink, suffix } = splitLinkUrl(url);
+  const targetSlug = slugsByPermalink.get(permalink);
+  if (!targetSlug) return url;
+
+  const target = options.state.contents.get(targetSlug);
+  if (!target || target.lang === source.lang) return url;
+
+  const localized = findTranslation(
+    options.state,
+    target.translationId,
+    source.lang,
+  );
+  return localized
+    ? `${options.resolvePermalink(localized.slug)}${suffix}`
+    : url;
+}
+
+function splitLinkUrl(url: string): { permalink: string; suffix: string } {
+  const suffixIndex = url.search(/[?#]/);
+  return suffixIndex < 0
+    ? { permalink: url, suffix: "" }
+    : { permalink: url.slice(0, suffixIndex), suffix: url.slice(suffixIndex) };
+}
 
 /** Returns one entry's language and available real translations. */
 export function getLocalization(
@@ -360,7 +441,7 @@ function detectContents(
       owners.set(key, content);
     }
   }
-  return { contents, diagnostics, conflictedGroups };
+  return { contents, diagnostics, conflictedGroups, locations: null };
 }
 
 function parseFrontmatter(entry: ContentLocationInput): PostFrontmatter {
@@ -658,5 +739,10 @@ function throwForStrictDiagnostics(
 }
 
 function emptyState(): L10nState {
-  return { contents: new Map(), diagnostics: [], conflictedGroups: new Set() };
+  return {
+    contents: new Map(),
+    diagnostics: [],
+    conflictedGroups: new Set(),
+    locations: null,
+  };
 }

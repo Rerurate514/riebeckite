@@ -8,25 +8,14 @@ import {
 } from "@riebeckite/core";
 import { config } from "../config";
 import { content } from "../content";
-import { slugifyTagPath } from "./tags";
 
-export const TAG_BASE_PATH = "/tags";
 export const ARCHIVE_BASE_PATH = "/archive";
 
 /**
- * Listing pages are generated from the same Core collection mechanism: each
- * definition maps a taxonomy or archive to a site-local path, and the shared
- * query engine selects and orders the entries. Only the URL shape stays local
- * to the site.
+ * Archive pages are generated from the Core collection mechanism. Taxonomy
+ * listings are provided by the taxonomy plugin's Page Type instead.
  */
 const definitions: readonly ContentCollectionDefinition[] = [
-  {
-    kind: "tag",
-    basePath: TAG_BASE_PATH,
-    groupBy: { by: "tags" },
-    resolveTitle: ({ value }) => `#${value}`,
-    resolvePath: ({ value }) => `${TAG_BASE_PATH}/${slugifyTagPath(value)}`,
-  },
   {
     kind: "archive",
     basePath: ARCHIVE_BASE_PATH,

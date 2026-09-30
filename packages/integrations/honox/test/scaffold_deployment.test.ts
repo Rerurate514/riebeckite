@@ -24,6 +24,9 @@ test("every scaffold preset inherits the same-repository GitHub Actions workflow
       );
       assertWorkflowContract(workflow);
       assert.ok(!workflow.includes("external content repository"));
+      await assertFileIsAbsent(
+        path.join(targetDirectory, "github/notify-site.yml"),
+      );
     }
   });
 });
@@ -33,8 +36,11 @@ test("every scaffold preset omits deployment files until GitHub Actions is reque
     for (const preset of SCAFFOLD_PRESET_NAMES) {
       const targetDirectory = path.join(directory, preset);
       await scaffoldRiebeckiteSite({ targetDirectory, preset });
-      await assert.rejects(
-        fs.access(path.join(targetDirectory, ".github/workflows/deploy.yml")),
+      await assertFileIsAbsent(
+        path.join(targetDirectory, ".github/workflows/deploy.yml"),
+      );
+      await assertFileIsAbsent(
+        path.join(targetDirectory, "github/notify-site.yml"),
       );
     }
   });
@@ -50,7 +56,6 @@ test("every scaffold preset supports external content and content-push dispatch"
         githubActions: true,
         contentRepository: "octo-org/notes",
         siteRepository: "octo-org/site",
-        notifyOnContentPush: true,
       });
       const workflow = await fs.readFile(
         path.join(targetDirectory, ".github/workflows/deploy.yml"),
@@ -61,8 +66,10 @@ test("every scaffold preset supports external content and content-push dispatch"
         "utf8",
       );
       assertWorkflowContract(workflow);
+      assert.match(workflow, /Check out the external content repository/);
       assert.match(workflow, /repository: octo-org\/notes/);
       assert.match(workflow, /RIEBECKITE_CONTENT_READ_TOKEN \|\| github.token/);
+      assert.match(workflow, /path: content/);
       assert.match(notify, /owner: "octo-org"/);
       assert.match(notify, /repo: "site"/);
       assert.match(notify, /SITE_DISPATCH_TOKEN/);
@@ -71,7 +78,27 @@ test("every scaffold preset supports external content and content-push dispatch"
   });
 });
 
-test("scaffold rejects malformed external repository names", async () => {
+test("scaffold validates external-content deployment options", async () => {
+  await assert.rejects(
+    () =>
+      scaffoldRiebeckiteSite({
+        targetDirectory: path.join(
+          os.tmpdir(),
+          "riebeckite-external-no-actions",
+        ),
+        contentRepository: "octo-org/notes",
+      }),
+    /--content-repository requires --github-actions/,
+  );
+  await assert.rejects(
+    () =>
+      scaffoldRiebeckiteSite({
+        targetDirectory: path.join(os.tmpdir(), "riebeckite-external-no-site"),
+        githubActions: true,
+        contentRepository: "octo-org/notes",
+      }),
+    /--site-repository is required when --content-repository is used with --github-actions/,
+  );
   await assert.rejects(
     () =>
       scaffoldRiebeckiteSite({
@@ -81,6 +108,16 @@ test("scaffold rejects malformed external repository names", async () => {
         ),
         githubActions: true,
         contentRepository: "not a repository",
+      }),
+    ScaffoldSiteError,
+  );
+  await assert.rejects(
+    () =>
+      scaffoldRiebeckiteSite({
+        targetDirectory: path.join(os.tmpdir(), "riebeckite-invalid-site"),
+        githubActions: true,
+        contentRepository: "octo-org/notes",
+        siteRepository: "not a repository",
       }),
     ScaffoldSiteError,
   );
@@ -100,6 +137,10 @@ function assertWorkflowContract(workflow: string): void {
   ]) {
     assert.ok(workflow.includes(value), `workflow is missing ${value}`);
   }
+}
+
+async function assertFileIsAbsent(filePath: string): Promise<void> {
+  await assert.rejects(fs.access(filePath));
 }
 
 async function withTemporaryDirectory(

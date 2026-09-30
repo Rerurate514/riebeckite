@@ -23,9 +23,8 @@ npm exec riebeckite build
 | `--force` | 空でないディレクトリにも展開する |
 | `--list-presets` | 利用可能な preset と説明を一覧表示して終了する |
 | `--github-actions` | Cloudflare へのデプロイ workflow を生成する |
-| `--content-repository <owner/repository>` | デプロイ時にこのリポジトリを `content/` へ checkout する（`--github-actions` が必要） |
-| `--site-repository <owner/repository>` | 生成する記事通知 workflow が通知する site リポジトリ |
-| `--notify-on-content-push` | 記事リポジトリ用の `github/notify-site.yml` を生成する（Actions、記事・site リポジトリが必要） |
+| `--content-repository <owner/repository>` | このリポジトリをデプロイ時の content source にする。`--github-actions` と `--site-repository` が必要で、`github/notify-site.yml` も生成する。 |
+| `--site-repository <owner/repository>` | 生成した記事通知 workflow の通知先 site リポジトリ。`--content-repository` と同時に必要。 |
 
 たとえば、`rich` preset で生成する場合は次のようにします。
 
@@ -39,14 +38,16 @@ workflow を一度だけ生成します。preset による違いはありませ�
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository OWNER/notes \
-  --site-repository OWNER/my-site \
-  --notify-on-content-push
+  --site-repository OWNER/my-site
 ```
 
 `content.directory` は `"content"` にし、必要な repository Secret を登録した後、
 `github/notify-site.yml` を記事リポジトリの
 `.github/workflows/notify-site.yml` にコピーします。詳細は[別記事リポジトリの
 デプロイガイド](../../templates/cloudflare/README_ja.md)を参照してください。
+
+`--content-repository` を指定すると、外部 content の checkout、
+`content-updated` の repository dispatch receiver、`github/notify-site.yml` がまとめて構成されます。以前の通知用オプションは廃止しました。
 
 ## Preset
 

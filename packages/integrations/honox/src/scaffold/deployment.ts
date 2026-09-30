@@ -3,7 +3,6 @@ import type { SiteTemplateFile } from "./templates.js";
 export type ScaffoldDeploymentOptions = {
   readonly contentRepository?: string;
   readonly siteRepository?: string;
-  readonly notifyOnContentPush?: boolean;
 };
 
 const GITHUB_REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
@@ -26,9 +25,9 @@ export function deploymentTemplateFiles(
   if (options.siteRepository !== undefined) {
     assertGitHubRepository(options.siteRepository, "siteRepository");
   }
-  if (options.notifyOnContentPush && options.siteRepository === undefined) {
+  if (contentRepository !== undefined && options.siteRepository === undefined) {
     throw new Error(
-      "siteRepository is required when notifyOnContentPush is true.",
+      "siteRepository is required when contentRepository is provided.",
     );
   }
 
@@ -38,7 +37,7 @@ export function deploymentTemplateFiles(
       path: ".github/workflows/deploy.yml",
       content: deployWorkflow(contentRepository),
     },
-    ...(options.notifyOnContentPush && options.siteRepository !== undefined
+    ...(contentRepository !== undefined && options.siteRepository !== undefined
       ? [
           {
             path: "github/notify-site.yml",
@@ -77,7 +76,7 @@ on:
     types: [content-updated]
 
 concurrency:
-  group: deploy-\${{ github.ref }}
+  group: riebeckite-deploy
   cancel-in-progress: true
 
 jobs:

@@ -8,7 +8,7 @@ on:
     types: [content-updated]
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: riebeckite-deploy
   cancel-in-progress: true
 
 jobs:

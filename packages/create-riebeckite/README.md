@@ -22,9 +22,8 @@ npm exec riebeckite build
 | `--force` | Scaffold even when the target directory is not empty |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
 | `--github-actions` | Generate the Cloudflare deployment workflow |
-| `--content-repository <owner/repository>` | Check out this repository into `content/` during deployment (requires `--github-actions`) |
-| `--site-repository <owner/repository>` | Site repository notified by the generated content workflow |
-| `--notify-on-content-push` | Generate `github/notify-site.yml` for the content repository (requires Actions, content, and site repositories) |
+| `--content-repository <owner/repository>` | Use this repository as the deployment content source. Requires `--github-actions` and `--site-repository`; also generates `github/notify-site.yml`. |
+| `--site-repository <owner/repository>` | Site repository that the generated content workflow notifies. Required with `--content-repository`. |
 
 For example, scaffold with the `rich` preset:
 
@@ -38,14 +37,17 @@ pushed, generate the common workflow once (the preset does not affect it):
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository OWNER/notes \
-  --site-repository OWNER/my-site \
-  --notify-on-content-push
+  --site-repository OWNER/my-site
 ```
 
 Set `content.directory` to `"content"`, add the documented repository secrets,
 then copy `github/notify-site.yml` into the content repository as
 `.github/workflows/notify-site.yml`. See the [separate-content deployment
 guide](../../templates/cloudflare/README_en.md).
+
+`--content-repository` automatically configures the external checkout, the
+`content-updated` repository-dispatch receiver, and `github/notify-site.yml`.
+The previous notification option was removed; omit it when migrating an older command.
 
 ## Presets
 

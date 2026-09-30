@@ -110,13 +110,12 @@ Generate the site with the common GitHub Actions deployment assets. This works w
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository <you>/notes \
-  --site-repository <you>/my-site \
-  --notify-on-content-push
+  --site-repository <you>/my-site
 cd my-site
 npm install
 ```
 
-The generated deployment checks out the vault into the site's `content/` directory. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with.
+The generated deployment checks out the vault into the site's `content/` directory. Because `--content-repository` is present, it also generates the `content-updated` dispatch receiver and `github/notify-site.yml`. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with.
 
 ```text
 workspace/
@@ -167,7 +166,7 @@ A wrong path is usually the relative `directory`. If articles do not appear, che
 
 ### 5. Set up checkout, trigger, and secrets
 
-The generated deploy workflow checks out the site and then the configured content repository into `content/`. It runs for a site push, manual dispatch, or `content-updated` repository dispatch. The content checkout and that trigger are deliberately separate: a checkout does **not** observe pushes in another repository.
+The generated deploy workflow checks out the site and then the configured content repository into `content/`. It runs for a site push, manual dispatch, or `content-updated` repository dispatch. The generated notification workflow supplies the cross-repository trigger; the content checkout itself does **not** observe pushes in another repository.
 
 Copy the generated `github/notify-site.yml` into the content repository as `.github/workflows/notify-site.yml`. Its `main` push sends `content-updated` to the site. Store `SITE_DISPATCH_TOKEN` only in the content repository. A fine-grained PAT restricted to the site repository needs **Contents: read and write**; alternatively use a classic PAT with `repo` scope or a GitHub App installation token with **Contents: write**.
 

@@ -110,13 +110,12 @@ git push -u origin main
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository <you>/notes \
-  --site-repository <you>/my-site \
-  --notify-on-content-push
+  --site-repository <you>/my-site
 cd my-site
 npm install
 ```
 
-生成したデプロイ workflow は Vault を site 内の `content/` に checkout します。`create-riebeckite` は `--preset` で雛形を選べます。最初は既定の `starter` で問題ありません。
+生成したデプロイ workflow は Vault を site 内の `content/` に checkout します。`--content-repository` を指定したため、`content-updated` の dispatch receiver と `github/notify-site.yml` も生成されます。`create-riebeckite` は `--preset` で雛形を選べます。最初は既定の `starter` で問題ありません。
 
 ```text
 workspace/
@@ -167,7 +166,7 @@ npm exec riebeckite inspect content --list
 
 ### 5. checkout・起動・Secret を設定する
 
-生成された deploy workflow は site を checkout した後、指定した記事リポジトリを `content/` に checkout します。site push、手動実行、`content-updated` repository dispatch で動きます。記事 checkout と起動は別の責務です。checkout しただけでは、別リポジトリの push を検知しません。
+生成された deploy workflow は site を checkout した後、指定した記事リポジトリを `content/` に checkout します。site push、手動実行、`content-updated` repository dispatch で動きます。別リポジトリからの起動は、同時に生成される通知 workflow が担います。記事 checkout だけでは、別リポジトリの push を検知しません。
 
 生成された `github/notify-site.yml` を記事リポジトリの `.github/workflows/notify-site.yml` にコピーします。`main` への push が site に `content-updated` を送ります。`SITE_DISPATCH_TOKEN` は記事リポジトリ側だけに登録します。site リポジトリだけに対象を絞った fine-grained PAT には **Contents: read and write** が必要です。classic PAT の `repo` scope、または **Contents: write** の GitHub App installation token も使えます。
 

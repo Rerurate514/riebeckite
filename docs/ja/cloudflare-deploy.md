@@ -88,6 +88,22 @@ npx wrangler dev
 
 手元で毎回 `npx wrangler deploy` を実行する代わりに、GitHub に push したら公開する構成も使えます。詳しい手順は [Cloudflare デプロイテンプレート](../../templates/cloudflare/README_ja.md) を参照してください。
 
+同じリポジトリで記事とサイトを管理する場合は、次のように生成します。
+
+```sh
+npx create-riebeckite my-site --github-actions
+```
+
+記事を別リポジトリに置く場合は、次のようにします。
+
+```sh
+npx create-riebeckite my-site --github-actions \
+  --content-repository OWNER/notes \
+  --site-repository OWNER/my-site
+```
+
+この構成では、`OWNER/notes` を `content/` へ checkout し、`content-updated` の repository dispatch を受け付ける site workflow と、記事リポジトリに置くための `github/notify-site.yml` を生成します。後者を記事リポジトリの `.github/workflows/notify-site.yml` にコピーしてください。外部 content を checkout するだけでは、記事 push で site workflow は起動しません。
+
 ## 次に読むもの
 
 - [サイト公開までの最短ガイド](./quick-publish.md)

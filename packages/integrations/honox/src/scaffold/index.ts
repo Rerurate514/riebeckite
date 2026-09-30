@@ -31,8 +31,6 @@ export type ScaffoldSiteOptions = {
   readonly contentRepository?: string;
   /** Site repository to notify from the generated content workflow. */
   readonly siteRepository?: string;
-  /** Generate a content-repository workflow that dispatches after a push. */
-  readonly notifyOnContentPush?: boolean;
 };
 
 export type ScaffoldSiteResult = {
@@ -80,7 +78,6 @@ function deploymentOptions(
   return {
     contentRepository: options.contentRepository,
     siteRepository: options.siteRepository,
-    notifyOnContentPush: options.notifyOnContentPush,
   };
 }
 
@@ -99,19 +96,16 @@ function validateDeploymentOptions(options: ScaffoldSiteOptions): void {
   }
   if (options.contentRepository !== undefined && !options.githubActions) {
     throw new ScaffoldSiteError(
-      "contentRepository requires githubActions to generate its checkout workflow.",
+      "--content-repository requires --github-actions.",
     );
   }
-  if (options.notifyOnContentPush && !options.githubActions) {
-    throw new ScaffoldSiteError("notifyOnContentPush requires githubActions.");
-  }
-  if (options.notifyOnContentPush && options.contentRepository === undefined) {
+  if (
+    options.contentRepository !== undefined &&
+    options.siteRepository === undefined
+  ) {
     throw new ScaffoldSiteError(
-      "notifyOnContentPush requires contentRepository.",
+      "--site-repository is required when --content-repository is used with --github-actions.",
     );
-  }
-  if (options.notifyOnContentPush && options.siteRepository === undefined) {
-    throw new ScaffoldSiteError("notifyOnContentPush requires siteRepository.");
   }
 }
 

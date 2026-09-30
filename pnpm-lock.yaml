@@ -164,6 +164,9 @@ importers:
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugins/mermaid
+      '@riebeckite/plugin-pdf':
+        specifier: workspace:*
+        version: link:../../packages/plugins/pdf
       '@riebeckite/plugin-plantuml':
         specifier: workspace:*
         version: link:../../packages/plugins/plantuml
@@ -736,6 +739,12 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+
+  packages/plugins/pdf:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/permalink:
     dependencies:

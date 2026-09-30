@@ -33,6 +33,7 @@ import { marp } from "@riebeckite/plugin-marp";
 import { media } from "@riebeckite/plugin-media";
 import { mermaid } from "@riebeckite/plugin-mermaid";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { pdf } from "@riebeckite/plugin-pdf";
 import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
 import { qrCode } from "@riebeckite/plugin-qr-code";
@@ -149,6 +150,7 @@ export default defineConfig({
     media(),
     richEmbed(),
     attachment(),
+    pdf(),
     autoCardLinkPlugin(),
     highlight(),
     codeEnhance({

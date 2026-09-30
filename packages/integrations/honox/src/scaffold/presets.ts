@@ -253,6 +253,13 @@ const attachment = np(
   "attachment",
   `{ showSize: true }`,
 );
+const pdf = np("@riebeckite/plugin-pdf", "pdf", {
+  height: { depth: 2, value: '"640px"' },
+  initialPage: { depth: 2, value: "1" },
+  toolbar: { depth: 2, value: "true" },
+  showMetadata: { depth: 3, value: "true" },
+  downloadLabel: { depth: 3, value: '"Download PDF"' },
+});
 const media = np("@riebeckite/plugin-media", "media", {
   preload: { depth: 2, value: '"metadata"' },
   lazy: { depth: 2, value: "true" },
@@ -596,6 +603,7 @@ export const full: ScaffoldPreset = {
     relatedPosts,
     recentPosts,
     attachment,
+    pdf,
     media,
     responsiveImage,
     lightbox,
@@ -632,6 +640,7 @@ export const max: ScaffoldPreset = {
     relatedPosts,
     recentPosts,
     attachment,
+    pdf,
     media,
     responsiveImage,
     lightbox,
@@ -697,6 +706,7 @@ export const ultra: ScaffoldPreset = {
     relatedPosts,
     recentPosts,
     attachment,
+    pdf,
     media,
     responsiveImage,
     lightbox,

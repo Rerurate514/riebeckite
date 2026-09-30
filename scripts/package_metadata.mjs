@@ -40,6 +40,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/media",
   "packages/plugins/mermaid",
   "packages/plugins/obsidian-markdown",
+  "packages/plugins/pdf",
   "packages/plugins/permalink",
   "packages/plugins/plantuml",
   "packages/plugins/properties",
@@ -259,6 +260,10 @@ const packagePublishingMetadata = {
   "packages/plugins/obsidian-markdown": {
     description: "Obsidian-flavored Markdown support for Riebeckite.",
     keywords: ["riebeckite", "plugin", "obsidian", "markdown"],
+  },
+  "packages/plugins/pdf": {
+    description: "Inline PDF attachment viewing for Obsidian wikilinks.",
+    keywords: ["riebeckite", "plugin", "pdf", "attachments"],
   },
   "packages/plugins/permalink": {
     description: "Stable, configurable content permalinks for Riebeckite.",

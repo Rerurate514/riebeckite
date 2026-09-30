@@ -57,6 +57,18 @@ export default defineConfig({
 
 ## 手順: 別リポジトリにする場合（パターン C）
 
+### デプロイはどう起きるか（全体の流れ）
+
+別リポジトリでは、「CI が記事を**読める**」ことと「デプロイが**起動する**」ことは別です。生成される構成は、次の順でつながります。
+
+1. 記事リポジトリの `main` に push する。
+2. 記事リポジトリの `notify-site.yml` が、site リポジトリへ `content-updated` を送る（`SITE_DISPATCH_TOKEN`）。
+3. site リポジトリの deploy workflow が `repository_dispatch` で起動する。
+4. workflow が site を checkout し、続けて記事リポジトリを `content/` に checkout する（private なら `RIEBECKITE_CONTENT_READ_TOKEN`）。
+5. `riebeckite check` → `riebeckite build` → Cloudflare Workers へ deploy。
+
+ポイントは 2 と 3 です。追加 checkout は「記事を読める」ようにするだけで、記事リポジトリの push を site workflow が検知するわけではありません。GitHub Actions は **workflow を置いたリポジトリのイベントしか拾わない**ため、別リポジトリの push はこの通知（repository dispatch）でつなぎます。
+
 ### 0. 用語をそろえる
 
 - **Vault**: 記事（`.md`）と添付ファイルを入れるフォルダ。Obsidian で開く単位。

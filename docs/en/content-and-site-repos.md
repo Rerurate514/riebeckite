@@ -57,6 +57,18 @@ The steps below are for C. For A and B the configuration is the same; only **ste
 
 ## Steps: separate repositories (pattern C)
 
+### How deployment is triggered (the whole flow)
+
+With separate repositories, letting CI **read** the articles and **starting** the deployment are two different things. The generated setup connects them in this order:
+
+1. You push to `main` in the articles repository.
+2. The articles repository's `notify-site.yml` sends `content-updated` to the site repository (`SITE_DISPATCH_TOKEN`).
+3. The site repository's deploy workflow starts via `repository_dispatch`.
+4. The workflow checks out the site, then checks out the articles repository into `content/` (with `RIEBECKITE_CONTENT_READ_TOKEN` when private).
+5. `riebeckite check` → `riebeckite build` → deploy to Cloudflare Workers.
+
+Steps 2 and 3 are the point. The extra checkout only makes the articles **readable**; it does not make the site workflow observe pushes to the articles repository. GitHub Actions only picks up events in the repository that contains the workflow, so a push to another repository is connected by this notification (repository dispatch).
+
 ### 0. Align on terms
 
 - **Vault**: the folder holding articles (`.md`) and attachments; the unit Obsidian opens.

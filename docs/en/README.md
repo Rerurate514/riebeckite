@@ -14,7 +14,11 @@ In a typical project, you point Riebeckite at a content directory, configure Mar
 
 |Goal|Read first|
 |---|---|
+|Create a new site and publish it as quickly as possible|[Fast path to publishing a site](./quick-publish.md)|
 |Start from scratch and go all the way to publishing|[Setup Guide](./setup.md)|
+|Publish notes from Obsidian|[Publishing Obsidian notes](./obsidian-publishing.md)|
+|Learn how to write articles|[Writing content](./writing-content.md)|
+|Check only the Cloudflare Workers deployment steps|[Cloudflare Workers deployment](./cloudflare-deploy.md)|
 |Use the framework step by step|[Usage Guide](./guide.md)|
 |Run or build a project|[Getting Started](./getting-started.md)|
 |Find configuration fields|[Configuration](./configuration.md)|
@@ -73,11 +77,15 @@ Build tooling
 
 |Document|What it covers|
 |---|---|
+|[Fast path to publishing a site](./quick-publish.md)|The shortest path through creating a new site, writing the first article, previewing locally, and publishing to Cloudflare Workers|
 |[Setup Guide](./setup.md)|A beginner path through running the repository, creating a new site, and publishing to Cloudflare Workers|
 |[Usage Guide](./guide.md)|The step-by-step path from installation and configuration to content, validation, build, and deployment|
 |[Getting Started](./getting-started.md)|Prerequisites, a minimal configuration, install, verifying content, the dev server, and normal and full builds|
+|[Writing content](./writing-content.md)|Frontmatter, Markdown, file names and URLs, images, published articles, and drafts|
+|[Publishing Obsidian notes](./obsidian-publishing.md)|Using an Obsidian vault as content, publication flags, images, and private notes|
 |[Separating content from the site](./content-and-site-repos.md)|Managing articles (an Obsidian vault, for example) and the site in separate repositories or folders, referencing an external vault with `content.directory`|
 |[Separating content and the site (in depth)](./content-and-site-repos-in-depth.md)|Root resolution rules, pattern comparison, fetching a private vault in CI (extra checkout / submodule), copying assets, authentication, and troubleshooting|
+|[Cloudflare Workers deployment](./cloudflare-deploy.md)|Building `dist/`, configuring `wrangler.jsonc`, logging in, manual deployment, and updating `baseUrl`|
 |[Configuration](./configuration.md)|`riebeckite.config.ts`, Application Root, site, content, themes, plugins, validation, and secret handling|
 |[CLI](./cli.md)|The `check`, `doctor`, `inspect`, `profile`, `build`, and `dev` commands, exit behavior, and packaging|
 

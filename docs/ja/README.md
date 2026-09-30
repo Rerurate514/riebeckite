@@ -14,7 +14,11 @@ Riebeckite は、Markdown と Obsidian のノートを Web サイトとして公
 
 |目的|最初に読むドキュメント|
 |---|---|
+|新しいサイトを作って公開まで最短で進めたい|[サイト公開までの最短ガイド](./quick-publish.md)|
 |はじめてで、環境準備から公開まで通して知りたい|[セットアップガイド](./setup.md)|
+|Obsidian のノートを公開サイトにしたい|[Obsidian のノートをサイトにするガイド](./obsidian-publishing.md)|
+|記事の書き方を知りたい|[記事の書き方ガイド](./writing-content.md)|
+|Cloudflare Workers への公開だけ確認したい|[Cloudflare Workers 公開ガイド](./cloudflare-deploy.md)|
 |フレームワークを順を追って使いたい|[利用ガイド](./guide.md)|
 |プロジェクトを起動・ビルドしたい|[Getting Started](./getting-started.md)|
 |設定項目を確認したい|[Configuration](./configuration.md)|
@@ -73,11 +77,15 @@ Build tooling
 
 |ドキュメント|内容|
 |---|---|
+|[サイト公開までの最短ガイド](./quick-publish.md)|新しいサイトの作成、最初の記事、ローカル確認、Cloudflare Workers への公開だけを最短手順で説明|
 |[セットアップガイド](./setup.md)|はじめての人向けに、リポジトリの環境構築、新しいサイトの作成、Cloudflare Workers への公開を順番に説明|
 |[利用ガイド](./guide.md)|インストールと設定から、コンテンツ、検証、ビルド、デプロイまでの手順|
 |[Getting Started](./getting-started.md)|必要な環境、最小設定例、インストール、コンテンツの確認、開発サーバー、通常・フルビルド|
+|[記事の書き方ガイド](./writing-content.md)|frontmatter、Markdown、ファイル名と URL、画像、公開・下書きの基本|
+|[Obsidian のノートをサイトにするガイド](./obsidian-publishing.md)|Obsidian Vault を content として使う方法、公開フラグ、画像、非公開メモの扱い|
 |[記事とサイトのリポジトリ分離](./content-and-site-repos.md)|記事（Obsidian Vault など）とサイトを別リポジトリや別フォルダで管理し、`content.directory` で外部の Vault を参照する方法|
 |[リポジトリ分離の詳細編](./content-and-site-repos-in-depth.md)|root の解決規則、パターン比較、private Vault の CI 取得（追加 checkout / submodule）、assets のコピー、認証とトラブルシューティング|
+|[Cloudflare Workers 公開ガイド](./cloudflare-deploy.md)|`dist/` のビルド、`wrangler.jsonc`、ログイン、手動デプロイ、`baseUrl` の更新|
 |[Configuration](./configuration.md)|`riebeckite.config.ts`、Application Root、site、content、theme、plugins、検証と secret の扱い|
 |[CLI](./cli.md)|`check`、`doctor`、`inspect`、`profile`、`build`、`dev` の用途、終了動作、パッケージング|
 

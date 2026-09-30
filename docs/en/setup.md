@@ -2,6 +2,30 @@
 
 This guide walks a first-time user through Riebeckite from preparing a machine to publishing a blog. It is written so that you can follow it from top to bottom even if you are not comfortable with a terminal yet.
 
+You do not need engineering experience to use it. If an unfamiliar word appears, copy and run the command first, then come back to the explanation. The final section explains the basic terms.
+
+## Quickest way to see it running
+
+If you only want to display the reference site locally, follow this sequence first.
+
+1. Install [Node.js](https://nodejs.org/) and [Git](https://git-scm.com/).
+2. Open a terminal. Use **PowerShell** on Windows or **Terminal** on macOS.
+3. Copy and run these commands one line at a time.
+
+   ```sh
+   npm install -g pnpm
+   git clone https://github.com/Rerurate514/riebeckite.git
+   cd riebeckite
+   pnpm install
+   pnpm build
+   pnpm dev
+   ```
+
+4. Open the printed URL, usually something like `http://localhost:5173`.
+5. If the page has no content, continue to [1-5. Add content to display](#1-5-add-content-to-display) and create one first article.
+
+If something stops, copy the full error message and check [When something goes wrong](#when-something-goes-wrong). Press `Ctrl + C` to stop the running server.
+
 It covers three things.
 
 1. Run this repository on your own machine
@@ -17,9 +41,9 @@ You do not have to do everything at once. Start from the section that matches yo
 
 |Goal|Read|
 |---|---|
-|Publish one working blog quickly|[1. Run this repository](#1-run-this-repository-on-your-machine) then [3. Publish to Cloudflare Workers](#3-publish-to-cloudflare-workers)|
-|Build your own site from scratch|[1. Run this repository](#1-run-this-repository-on-your-machine) then [2. Create a new site](#2-create-a-new-site-with-riebeckite)|
-|Contribute to development|[1. Run this repository](#1-run-this-repository-on-your-machine) then [Repository Development](./development.md)|
+|Run this repository's reference site|[1. Run this repository](#1-run-this-repository-on-your-machine)|
+|Publish one working blog quickly|[2. Create a new site](#2-create-a-new-site-with-riebeckite) then [3. Publish to Cloudflare Workers](#3-publish-to-cloudflare-workers)|
+|Contribute to Riebeckite itself|[1. Run this repository](#1-run-this-repository-on-your-machine) then [Repository Development](./development.md)|
 
 ## What you need
 
@@ -31,6 +55,8 @@ You do not have to do everything at once. Start from the section that matches yo
 |A Cloudflare account|Where the site is published|[cloudflare.com](https://www.cloudflare.com/) (used in section 3)|
 |A GitHub account|Only for automated deploys|[github.com](https://github.com/) (used in section 3, method B)|
 
+If an installer asks questions, the default choices are usually fine. When installing Git on Windows, keep the default settings unless you already know you need something else.
+
 Confirm that all three command-line tools are available. Open a terminal (PowerShell on Windows, Terminal on macOS) and run each line.
 
 ```sh
@@ -39,7 +65,7 @@ pnpm -v
 git --version
 ```
 
-Success looks like a version string such as `v24.11.1`. If a command is not found, that tool is not installed yet.
+Success looks like a version string such as `v24.11.1`. If a command is not found, that tool is not installed yet. If you just installed it, close the terminal and open it again.
 
 ## 1. Run this repository on your machine
 

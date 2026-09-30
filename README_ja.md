@@ -17,6 +17,8 @@ Riebeckite は、Markdown と Obsidian 形式のノートを Web サイトとし
 
 依存関係は pnpm workspace で管理します。インストールと実行には pnpm を使ってください。
 
+環境構築に慣れていない場合は、先に [セットアップガイド](./docs/ja/setup.md) を読んでください。Node.js や Git の入れ方から、画面を表示するところまで順番に説明しています。
+
 ## 新しいサイトを作成する
 
 公式の preset から単体のサイトを
@@ -97,11 +99,11 @@ pnpm exec riebeckite inspect    # フレームワークが解釈した状態を�
 
 [日本語ドキュメント一覧](./docs/ja/README.md) から始めてください。よく使う入口は次のとおりです。
 
-1. [利用ガイド](./docs/ja/guide.md): インストールからデプロイまでの手順
-2. [Getting Started](./docs/ja/getting-started.md): 最小構成のプロジェクトと開発の流れ
-3. [Configuration](./docs/ja/configuration.md): `riebeckite.config.ts`、コンテンツディレクトリ、テーマ
-4. [Content System](./docs/ja/content-system.md): ソース、manifest、グラフ
-5. [Plugin System](./docs/ja/plugin-system.md) と [Theme System](./docs/ja/theme-system.md): サイトを拡張する前に読む章
+1. [サイト公開までの最短ガイド](./docs/ja/quick-publish.md): 新しいサイトを作って公開するまでの最短手順
+2. [Obsidian のノートをサイトにするガイド](./docs/ja/obsidian-publishing.md): Vault を公開サイトのコンテンツとして使う手順
+3. [記事の書き方ガイド](./docs/ja/writing-content.md): frontmatter、Markdown、画像、下書きの基本
+4. [利用ガイド](./docs/ja/guide.md): インストールからデプロイまでの全体手順
+5. [Configuration](./docs/ja/configuration.md): `riebeckite.config.ts`、コンテンツディレクトリ、テーマ
 
 個々の Plugin と Theme は各パッケージの README（`packages/plugins/*/README_ja.md`、`packages/themes/*/README_ja.md`）で説明しています。英語版は [README.md](./README.md) と [英語ドキュメント一覧](./docs/en/README.md) から読めます。
 

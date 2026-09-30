@@ -17,6 +17,8 @@ This repository is a pnpm monorepo containing the framework core, its CLI, the H
 
 Dependencies are managed with pnpm workspaces, so install and run commands with pnpm.
 
+If you are not used to setting up development tools, start with the [Setup Guide](./docs/en/setup.md). It walks through installing Node.js and Git, then opening the site in a browser.
+
 ## Create a new site
 
 Scaffold a standalone site from an official preset with
@@ -99,11 +101,11 @@ pnpm exec riebeckite inspect    # inspect the framework's resolved state
 
 Start with the [English documentation index](./docs/en/README.md). The most common entry points are:
 
-1. [Usage Guide](./docs/en/guide.md) for the step-by-step flow from install to deployment.
-2. [Getting Started](./docs/en/getting-started.md) for a minimal project and the development loop.
-3. [Configuration](./docs/en/configuration.md) for `riebeckite.config.ts`, content directories, and themes.
-4. [Content System](./docs/en/content-system.md) for sources, manifests, and graphs.
-5. [Plugin System](./docs/en/plugin-system.md) and [Theme System](./docs/en/theme-system.md) before extending a site.
+1. [Fast path to publishing a site](./docs/en/quick-publish.md) for creating and deploying a new site as quickly as possible.
+2. [Publishing Obsidian notes](./docs/en/obsidian-publishing.md) for using an Obsidian vault as site content.
+3. [Writing content](./docs/en/writing-content.md) for frontmatter, Markdown, images, and drafts.
+4. [Usage Guide](./docs/en/guide.md) for the full step-by-step flow from install to deployment.
+5. [Configuration](./docs/en/configuration.md) for `riebeckite.config.ts`, content directories, and themes.
 
 Individual plugins and themes are documented beside their packages (`packages/plugins/*/README.md`, `packages/themes/*/README.md`). Japanese readers can start from [README_ja.md](./README_ja.md) or the [Japanese documentation index](./docs/ja/README.md).
 

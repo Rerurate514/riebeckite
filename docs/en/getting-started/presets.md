@@ -1,95 +1,57 @@
 # Presets
 
-`create-riebeckite` writes a complete site from a **preset**. A preset decides four things:
+`create-riebeckite` writes a complete site from a **preset**. A preset chooses the registered plugins, theme, generated content, and HonoX application files.
 
-- which plugins are registered in `riebeckite.config.ts`
-- which theme is applied
-- which content pages are generated
-- which `app/` shell files are written
-
-You choose one with `--preset <name>`. The default is `starter`.
+Choose one with `--preset <name>`. The default is `starter`.
 
 ```sh
 npx create-riebeckite my-site --preset starter
-npx create-riebeckite --list-presets   # print the names and descriptions
+npx create-riebeckite --list-presets
 ```
-
-Presets are defined explicitly, so each tier is self-contained. `full` and above include the plugins of the tiers below them, plus more.
 
 ## Which preset should I choose?
 
-Start from your goal, not from the feature count.
-
 | Goal | Preset |
 | --- | --- |
-| I want an empty HonoX shell and will assemble everything myself | `empty` |
-| I want the smallest possible publishable site | `minimal` |
-| I want the normal starting point for a real site | `starter` (default) |
-| I want a starter that shows off what the ecosystem can do, so I can copy from it | `rich` |
-| I want a blog with discovery, media, and reading features out of the box | `full` |
-| I want diagrams, charts, and knowledge tools (Mermaid, Dataview, Kanban, …) | `max` |
-| I want to browse the whole plugin catalog and theme reference in a running site | `ultra` |
+| I will assemble the application myself | `empty` |
+| I want the smallest publishable Markdown site | `minimal` |
+| I want the recommended starting point for a real garden or blog | `starter` (default) |
+| I want to explore the complete plugin catalog, rendered examples, and references | `showcase` |
 
-If you are unsure, keep `starter`. You can add plugins later by editing `riebeckite.config.ts`.
+If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`.
 
 ## The presets
 
-| Preset | Plugins | Languages | Theme | Representative features |
+| Preset | Theme | Languages | Contents | Representative features |
 | --- | --- | --- | --- | --- |
-| `empty` | 0 | — | none | Bare application shell |
-| `minimal` | 1 | English | `minimal` | Obsidian Markdown, one page |
-| `starter` | 3 | 7 | `default` | Obsidian Markdown, color mode, l10n, site header |
-| `rich` | 8 | 7 | `default` | SEO, TOC, properties, aliases, code enhancement, tour pages |
-| `full` | 29 | 7 | `default` | Search, backlinks, media, lightbox, tabs, taxonomy, gallery, … |
-| `max` | 53 | 7 | `default` | Mermaid, Graphviz, D2, PlantUML, charts, Dataview, Kanban, flashcards, … |
-| `ultra` | 59 | 7 | `default` | Daily notes, rename, text fragments, quality, deploy, diagnostics |
+| `starter` | `default` | 7 | index, guide, examples, connected notes | Markdown publishing, search, backlinks, related and recent posts, taxonomy, series |
+| `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
+| `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, knowledge tools, diagnostics, deployment |
+| `empty` | none | — | none | Blank application shell |
 
-The seven languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `minimal` uses English only and does not register the l10n plugin; `empty` has no content at all.
-
-### `empty`
-
-A blank application shell: no plugins, no theme, no content, no components. Choose it when you want to build the site structure yourself and add plugins one at a time.
-
-### `minimal`
-
-The smallest useful site: Obsidian Markdown, the `minimal` theme, and one page, in English only. Choose it for a tiny personal page or when you want to start lean and grow.
+The seven languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `minimal` does not register l10n; `empty` has no theme, plugins, or content.
 
 ### `starter`
 
-The default starter: Obsidian Markdown, color mode, seven languages, and a site header, on the `default` theme. This is the normal starting point for a public site.
+The practical default. It includes Obsidian Markdown, color mode, l10n, SEO, table of contents, properties and aliases, code enhancement, search and discovery, responsive images and lightbox, series, and taxonomy. Its connected sample notes exercise backlinks, related posts, search, recent posts, series, and tags without adding niche integrations.
 
-### `rich`
+### `minimal`
 
-A showcasing starter: publishing and reading plugins (SEO, TOC, properties, aliases, code enhancement) plus guided ecosystem tour pages in seven languages. Choose it when you want working examples to copy from.
+Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a small site or a deliberately lean starting point.
 
-### `full`
+### `showcase`
 
-A ready blog: discovery, media, and reading plugins on top of `rich` — search, backlinks, related posts, share, changelog, webmentions, recent posts, attachments, PDF, media, responsive images, lightbox, highlighting, code tabs, code annotations, shortcodes, series, taxonomy, auto card links, rich embeds, and a gallery — plus a build guide page.
+The self-contained reference site. It enables the complete plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
 
-### `max`
+### `empty`
 
-Diagram and knowledge plugins on top of `full`, with showcase example pages: Mermaid, Graphviz, D2, PlantUML, Chart.js, Vega-Lite, WaveDrom, Markmap, maps, Marp slides, QR codes, Discord embeds, Excalidraw, ExcaliBrain, Canvas, Bases, Dataview, flashcards, Kanban, queries, local graph, hover previews, the garden explorer, and reading UX.
+A blank application shell with no plugins, theme, content, or components. Choose it to establish the site structure and add each part yourself.
 
-### `ultra`
+## Generated configuration
 
-The full plugin catalog and theme reference pages — everything the ecosystem offers. On top of `max` it adds daily notes, rename redirects, text fragments, quality inspection, deployment output, and content diagnostics.
+`starter` writes practical plugin options. `showcase` writes the complete option surface as a configuration reference. `empty` and `minimal` deliberately keep configuration small. See [Configuration](../reference/configuration.md) and each package README under [`packages/plugins`](../../../packages/plugins) for details.
 
-## How presets affect the generated config
+## Next
 
-The preset writes a `riebeckite.config.ts` whose plugin calls already carry sensible options. Higher tiers show more of each plugin's option surface:
-
-- `rich` sets the essential options.
-- `full` and `max` set the standard options.
-- `ultra` sets every option.
-
-The generated file is therefore also a settings reference. To change a plugin's behavior, edit its call; see [Configuration](../reference/configuration.md) and the individual package README under [`packages/plugins`](../../../packages/plugins).
-
-## What to do after generating
-
-Continue to [First content](./first-content.md) to write and preview an article, or [Deployment](./deployment.md) to publish it.
-
-## See also
-
-- [Installation](./installation.md) — generate a site
-- [Configuration](../reference/configuration.md) — the full `riebeckite.config.ts` reference
-- [Plugins](../plugins/README.md) — what each generated plugin does
+- [First content](./first-content.md) — write and preview an article
+- [Deployment](./deployment.md) — publish the site

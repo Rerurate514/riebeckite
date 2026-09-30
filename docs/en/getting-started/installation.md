@@ -55,7 +55,7 @@ The `@riebeckite/*` packages are published to npm, so this is all it takes. The 
 | `package.json` | The packages and the `riebeckite` commands |
 | `README.md` | A short note specific to the generated site |
 
-The exact files depend on the preset: `empty` generates a bare application shell, while `full` and above add plugins, sample pages, and a longer README. See [Presets](./presets.md).
+The exact files depend on the preset: `empty` generates a bare application shell, `starter` generates a practical site with connected sample notes, and `showcase` adds references, rendered examples, and local fixtures. See [Presets](./presets.md).
 
 ## Point the settings at your site
 

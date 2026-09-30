@@ -109,9 +109,9 @@ async function main() {
   try {
     checkScaffoldVersion();
     await checkStarter(scaffoldRiebeckiteSite, tmpRoot);
-    await checkRich(scaffoldRiebeckiteSite, tmpRoot);
-    await checkMax(scaffoldRiebeckiteSite, tmpRoot);
-    await checkUltra(scaffoldRiebeckiteSite, tmpRoot);
+    await checkMinimal(scaffoldRiebeckiteSite, tmpRoot);
+    await checkShowcase(scaffoldRiebeckiteSite, tmpRoot);
+    await checkEmpty(scaffoldRiebeckiteSite, tmpRoot);
   } finally {
     fs.rmSync(tmpRoot, { recursive: true, force: true });
   }
@@ -182,7 +182,20 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
       config.includes('l10n({ defaultLang: "en", languages: ['),
       "starter: l10n must be resolved dynamically",
     );
-    expect(!config.includes("seo("), "starter: seo must not be registered");
+    expect(
+      config.includes(
+        'seo({ siteName: "Starter Demo", sitemap: true, robots: true })',
+      ),
+      "starter: seo must include practical options",
+    );
+    expect(
+      config.includes("searchPlugin()"),
+      "starter: search must be registered",
+    );
+    expect(
+      !config.includes("mermaid("),
+      "starter: niche diagram plugins must be excluded",
+    );
   }
   const readme = readSiteFile(root, "README.md");
   expect(readme !== null, "starter: README.md is missing");
@@ -211,158 +224,132 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
   }
 }
 
-async function checkRich(scaffoldRiebeckiteSite, tmpRoot) {
-  const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "rich", {
-    preset: "rich",
-    siteTitle: "Rich Blog",
-    baseUrl: "https://rich.example.com",
+async function checkMinimal(scaffoldRiebeckiteSite, tmpRoot) {
+  const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "minimal", {
+    preset: "minimal",
+    siteTitle: "Minimal Blog",
+    baseUrl: "https://minimal.example.com",
     locale: "en_US",
   });
   const config = readSiteFile(root, "riebeckite.config.ts");
-  expect(config !== null, "rich: riebeckite.config.ts is missing");
+  expect(config !== null, "minimal: riebeckite.config.ts is missing");
   if (config) {
     expect(
-      config.includes('seo({ siteName: "Rich Blog", sitemap: true })'),
-      "rich: seo must show only the essential options",
+      config.includes("obsidianMarkdown()"),
+      "minimal: Obsidian Markdown must be registered",
     );
     expect(
-      config.includes("codeEnhance({ lineNumbers: true, copyButton: true })"),
-      "rich: codeEnhance must show only the essential options",
-    );
-    expect(
-      config.includes('properties({ render: "slot" })'),
-      "rich: properties must show only the essential options",
-    );
-    expect(
-      !config.includes("robots: true") && !config.includes("defaultImage"),
-      "rich: seo must not include depth-2/3 options",
-    );
-    expect(
-      !config.includes("github-light"),
-      "rich: codeEnhance must not include the depth-3 theme",
+      config.includes("minimalTheme()"),
+      "minimal: the minimal theme must be registered",
     );
   }
-  const readme = readSiteFile(root, "README.md");
-  expect(readme !== null, "rich: README.md is missing");
-  if (readme) {
-    expect(
-      readme.includes("| Package | Factory | Options |"),
-      "rich: README must include the configuration reference table",
-    );
-    expect(
-      readme.includes("content/framework/plugins.md"),
-      "rich: README must link the plugin tour content page",
-    );
-  }
+  expect(
+    readSiteFile(root, "content/index.md") !== null,
+    "minimal: index is missing",
+  );
+  expect(
+    readSiteFile(root, "content/guide.md") === null,
+    "minimal: guide must not be generated",
+  );
 }
 
-async function checkMax(scaffoldRiebeckiteSite, tmpRoot) {
-  const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "max", {
-    preset: "max",
-    siteTitle: "Max Blog",
-    baseUrl: "https://max.example.com",
-    locale: "en",
-  });
-  const config = readSiteFile(root, "riebeckite.config.ts");
-  expect(config !== null, "max: riebeckite.config.ts is missing");
-  if (config) {
-    expect(
-      config.includes(
-        'mermaid({ render: "build", theme: { light: "default", dark: "dark" } })',
-      ),
-      "max: mermaid must show the standard options",
-    );
-    expect(
-      !config.includes("rb-qr"),
-      "max: depth-3 className options must be excluded",
-    );
-    expectHoverPreviewSelector(config, "max");
-  }
-  const examples = readSiteFile(root, "content/examples.md");
-  expect(examples !== null, "max: content/examples.md is missing");
-  if (examples) {
-    expect(
-      examples.startsWith("---\npublish: true\n---\n\n# Examples\n"),
-      "max: examples page must have the English heading",
-    );
-  }
-}
-
-async function checkUltra(scaffoldRiebeckiteSite, tmpRoot) {
-  const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "ultra", {
-    preset: "ultra",
+async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
+  const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "showcase", {
+    preset: "showcase",
     siteTitle: "私のブログ",
-    baseUrl: "https://ultra.example.com",
+    baseUrl: "https://showcase.example.com",
     locale: "ja_JP",
   });
   const config = readSiteFile(root, "riebeckite.config.ts");
-  expect(config !== null, "ultra: riebeckite.config.ts is missing");
+  expect(config !== null, "showcase: riebeckite.config.ts is missing");
   if (config) {
     expect(
       config.includes(
         'seo({ siteName: "私のブログ", sitemap: true, robots: true, defaultImage: "/ogp.png", feed: { rss: true, atom: true, json: true } })',
       ),
-      "ultra: seo must show every option and follow the site title",
+      "showcase: seo must show every option and follow the site title",
     );
     expect(
       config.includes(
         'l10n({ defaultLang: "ja", languages: ["en","ja","zh-CN","es","de","fr","ko"] })',
       ),
-      "ultra: l10n must resolve the Japanese default",
+      "showcase: l10n must resolve the Japanese default",
     );
     expect(
       config.includes(
-        'deployPlugin({ provider: "cloudflare-pages", baseUrl: "https://ultra.example.com" })',
+        'deployPlugin({ provider: "cloudflare-pages", baseUrl: "https://showcase.example.com" })',
       ),
-      "ultra: deploy must include the site baseUrl",
+      "showcase: deploy must include the site baseUrl",
     );
     expect(
       config.includes('textFragmentPlugin({ prefix: "私のブログ: " })'),
-      "ultra: textFragment prefix must follow the site title",
+      "showcase: textFragment prefix must follow the site title",
     );
     expect(
       config.includes("reportUnusedAssets: true"),
-      "ultra: diagnostics must show its options",
+      "showcase: diagnostics must show its options",
     );
-    expectHoverPreviewSelector(config, "ultra");
+    expectHoverPreviewSelector(config, "showcase");
   }
   const readme = readSiteFile(root, "README.md");
-  expect(readme !== null, "ultra: README.md is missing");
+  expect(readme !== null, "showcase: README.md is missing");
   if (readme) {
     expect(
       readme.includes("設定リファレンス"),
-      "ultra: README must have the Japanese config reference",
+      "showcase: README must have the Japanese config reference",
     );
     expect(
       readme.includes("デモを試す"),
-      "ultra: README must have the demo page links section",
+      "showcase: README must have the demo page links section",
     );
     expect(
       readme.includes("コピーして使えるデモ"),
-      "ultra: README must have the copy-paste demos section",
+      "showcase: README must have the copy-paste demos section",
     );
     expect(
       readme.includes("content/examples.md") &&
         !readme.includes("content/examples.en.md"),
-      "ultra: README must link the localized examples page",
+      "showcase: README must link the localized examples page",
     );
   }
   const examplesJa = readSiteFile(root, "content/examples.md");
-  expect(examplesJa !== null, "ultra: content/examples.md is missing");
+  expect(examplesJa !== null, "showcase: content/examples.md is missing");
   if (examplesJa) {
     expect(
       examplesJa.includes("# サンプル集"),
-      "ultra: Japanese examples page must use the translated heading",
+      "showcase: Japanese examples page must use the translated heading",
     );
   }
   const examplesEn = readSiteFile(root, "content/examples.en.md");
-  expect(examplesEn !== null, "ultra: content/examples.en.md is missing");
+  expect(examplesEn !== null, "showcase: content/examples.en.md is missing");
   if (examplesEn) {
     expect(
       examplesEn.includes("# Examples"),
-      "ultra: English examples page must exist",
+      "showcase: English examples page must exist",
     );
   }
+}
+
+async function checkEmpty(scaffoldRiebeckiteSite, tmpRoot) {
+  const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "empty", {
+    preset: "empty",
+    siteTitle: "Empty Blog",
+    baseUrl: "https://empty.example.com",
+    locale: "en",
+  });
+  const config = readSiteFile(root, "riebeckite.config.ts");
+  expect(config !== null, "empty: riebeckite.config.ts is missing");
+  if (config) {
+    expect(
+      !config.includes("@riebeckite/plugin-"),
+      "empty: plugins must be absent",
+    );
+    expect(!config.includes("theme:"), "empty: theme must be absent");
+  }
+  expect(
+    readSiteFile(root, "content/index.md") === null,
+    "empty: content must be absent",
+  );
 }
 
 await main();

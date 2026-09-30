@@ -853,23 +853,32 @@ function generateCreateStarterSite(tempRoot: string): void {
   if (!fs.existsSync(path.join(starterDir, "riebeckite.config.ts"))) {
     fail("create-riebeckite did not generate riebeckite.config.ts");
   }
+  const config = fs.readFileSync(
+    path.join(starterDir, "riebeckite.config.ts"),
+    "utf8",
+  );
+  if (!config.includes("@riebeckite/plugin-search")) {
+    fail("create-riebeckite must use the practical starter preset by default");
+  }
+  if (config.includes("@riebeckite/plugin-mermaid")) {
+    fail("create-riebeckite default must not use the showcase preset");
+  }
 
   logger.step("create-riebeckite lists the scaffold presets");
   const listResult = run(process.execPath, [createBin, "--list-presets"], {
     cwd: repoRoot,
   });
   const listOutput = listResult.stdout;
-  for (const name of [
-    "empty",
-    "minimal",
-    "starter",
-    "rich",
-    "full",
-    "max",
-    "ultra",
-  ]) {
+  for (const name of ["starter", "minimal", "showcase", "empty"]) {
     if (!listOutput.includes(name)) {
       fail(`create-riebeckite --list-presets must list the ${name} preset`);
+    }
+  }
+  for (const removed of ["rich", "full", "max", "ultra"]) {
+    if (listOutput.includes(`  ${removed}:`)) {
+      fail(
+        `create-riebeckite --list-presets must not list removed preset ${removed}`,
+      );
     }
   }
 }

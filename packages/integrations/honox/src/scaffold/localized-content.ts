@@ -321,7 +321,7 @@ const PLUGIN_MARKDOWN_GUIDES: Readonly<
       "---",
       "",
       "```daily-snippet",
-      "Fixed the ultra preset examples.",
+      "Updated the showcase examples.",
       "```",
     ].join("\n"),
   },
@@ -429,7 +429,9 @@ export function localizedContentFiles(
 
   for (const page of preset.contentPages) {
     if (page === "index") {
-      pushLocalized("index", (language) => indexContent(variables, language));
+      pushLocalized("index", (language) =>
+        indexContent(variables, preset, language),
+      );
     } else if (page === "framework/plugins") {
       pushLocalized("framework/plugins", (language) =>
         pluginsContent(language),
@@ -453,6 +455,13 @@ export function localizedContentFiles(
     }
   }
 
+  if (preset.name === "starter" || preset.name === "showcase") {
+    files.push(...knowledgeFixtureFiles(preset));
+  }
+  if (preset.name === "showcase") {
+    files.push(...showcaseAssetFiles());
+  }
+
   return files;
 }
 
@@ -472,6 +481,82 @@ function heading(level: number, text: string): string {
 
 function codeBlock(language: string, code: string): string {
   return `\`\`\`${language}\n${code}\n\`\`\`\n`;
+}
+
+/** Small connected notes exercise the discovery plugins without duplicating demos. */
+function knowledgeFixtureFiles(
+  preset: ScaffoldPreset,
+): readonly SiteTemplateFile[] {
+  const prefix = preset.name === "showcase" ? "demo" : "notes";
+  return [
+    {
+      path: `content/${prefix}/planning.md`,
+      content: [
+        "---",
+        "title: Planning a Markdown site",
+        "description: A related note used by the generated discovery examples.",
+        "date: 2026-09-30",
+        "tags: [riebeckite, project]",
+        "status: active",
+        "aliases: [/start-here/]",
+        "series: publish-a-site",
+        "series_title: Publish a site",
+        "series_order: 1",
+        "publish: true",
+        "---",
+        "",
+        "# Planning a Markdown site",
+        "",
+        "Start with [[writing]] to see backlinks, related posts, tags, and the series navigation working together.",
+      ].join("\n"),
+    },
+    {
+      path: `content/${prefix}/writing.md`,
+      content: [
+        "---",
+        "title: Writing the first note",
+        "description: A second connected note for search and related-content examples.",
+        "date: 2026-10-01",
+        "tags: [riebeckite, project]",
+        "status: active",
+        "series: publish-a-site",
+        "series_title: Publish a site",
+        "series_order: 2",
+        "publish: true",
+        "---",
+        "",
+        "# Writing the first note",
+        "",
+        "This note links back to [[planning]]. Search for **Markdown site** or browse the generated tags.",
+      ].join("\n"),
+    },
+  ];
+}
+
+/** Text fixtures are intentionally local so a generated showcase has no monorepo dependency. */
+function showcaseAssetFiles(): readonly SiteTemplateFile[] {
+  return [
+    {
+      path: "content/images/demo.svg",
+      content:
+        '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"><rect width="640" height="360" fill="#315b8c"/><text x="320" y="180" fill="white" font-size="32" text-anchor="middle">Riebeckite showcase</text></svg>\n',
+    },
+    {
+      path: "content/attachments/project-brief.pdf",
+      content:
+        "%PDF-1.1\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 0/Kids[]>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n",
+    },
+    {
+      path: "content/drawings/Architecture.excalidraw",
+      content:
+        '{"type":"excalidraw","version":2,"elements":[],"appState":{"viewBackgroundColor":"#ffffff"},"files":{}}\n',
+    },
+    {
+      path: "content/drawings/site.canvas",
+      content:
+        '{"nodes":[{"id":"note","type":"text","text":"Note","x":0,"y":0,"width":200,"height":60}],"edges":[]}\n',
+    },
+  ];
 }
 
 // ----- Index ---------------------------------------------------------------
@@ -575,6 +660,7 @@ const INDEX = {
 
 function indexContent(
   variables: SiteTemplateVariables,
+  preset: ScaffoldPreset,
   language: ScaffoldLanguage,
 ): string {
   const title = variables.title;
@@ -585,9 +671,21 @@ function indexContent(
     read(INDEX.translatedNote, language),
     heading(2, read(INDEX.whatHeading, language)),
     read(INDEX.whatBody, language),
-    heading(2, read(INDEX.exploreHeading, language)),
-    `- [${read(INDEX.explorePlugins, language)}](/framework/plugins)`,
-    `- [${read(INDEX.exploreThemes, language)}](/framework/themes)`,
+    ...(preset.name === "showcase"
+      ? [
+          heading(2, read(INDEX.exploreHeading, language)),
+          `- [${read(INDEX.explorePlugins, language)}](/framework/plugins)`,
+          `- [${read(INDEX.exploreThemes, language)}](/framework/themes)`,
+          "- [Working examples](/examples/)",
+          "- [Plugin reference](/reference/plugins/)",
+        ]
+      : preset.name === "starter"
+        ? [
+            heading(2, read(INDEX.exploreHeading, language)),
+            "- [Getting started](/guide/)",
+            "- [Example notes](/examples/)",
+          ]
+        : []),
     heading(2, read(INDEX.editHeading, language)),
     read(INDEX.editLead, language),
     read(INDEX.editL10n, language),
@@ -1531,10 +1629,17 @@ const EXAMPLES_COPY: {
     ja: "サンプル集",
   },
   intro: {
-    en: "A working demo of every diagram, chart, and code feature this preset ships. Fenced code blocks are turned into rendered output at build time by the diagram plugins; code blocks gain toolbars from the code plugins. Each section below is also copy-pasteable into any Markdown document.",
-    ja: "このプリセットが含む、すべての図表・チャート・コード機能の実例です。フェンス付きコードブロックはビルド時に図表プラグインが描画し、コードブロックにはコードプラグインがツールバーを追加します。以下の各セクションは、任意の Markdown 文書にそのままコピーして使えます。",
+    en: "Rendered examples for the diagram, chart, and code features in this preset. Fenced code blocks are turned into output at build time by the relevant plugins, while code blocks gain toolbars from the code plugins. Each section below is copy-pasteable into a Markdown document.",
+    ja: "このプリセットに含まれる図表・チャート・コード機能の描画例です。フェンス付きコードブロックは対応するプラグインによりビルド時に出力へ変換され、コードブロックにはツールバーが付きます。以下の各セクションは、Markdown 文書にそのままコピーして使えます。",
   },
 };
+
+const SHOWCASE_GUIDE_DEMOS = [
+  "@riebeckite/plugin-plantuml",
+  "@riebeckite/plugin-excalidraw",
+  "@riebeckite/plugin-canvas",
+  "@riebeckite/plugin-flashcards",
+] as const;
 
 function examplesContent(
   preset: ScaffoldPreset,
@@ -1554,6 +1659,19 @@ function examplesContent(
     lines.push(heading(2, readSummary(demo.title, language)), "");
     lines.push(readSummary(demo.intro, language), "");
     lines.push(demo.markdown, "");
+  }
+  if (preset.name === "showcase") {
+    for (const packageName of SHOWCASE_GUIDE_DEMOS) {
+      if (!hasPlugin(preset, packageName)) continue;
+      const guide = PLUGIN_MARKDOWN_GUIDES[packageName];
+      if (!guide) continue;
+      lines.push(
+        heading(2, packageName.replace("@riebeckite/plugin-", "")),
+        "",
+      );
+      lines.push(guide.summary, "");
+      lines.push(guide.markdown, "");
+    }
   }
   return lines.join("\n");
 }

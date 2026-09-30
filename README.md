@@ -25,7 +25,7 @@ Start here: [Getting Started](./docs/en/getting-started/README.md).
 ## What Riebeckite includes
 
 - Obsidian-flavored Markdown and content graph support
-- Presets from `empty` to `ultra`
+- Four self-contained presets: `starter`, `minimal`, `showcase`, and `empty`
 - Plugin system for Markdown, rendering, discovery, media, diagnostics, and deployment features
 - Theme system with official themes and CSS tokens
 - CLI commands for `check`, `doctor`, `inspect`, `dev`, `build`, and `profile`

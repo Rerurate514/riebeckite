@@ -22,11 +22,15 @@ export type {
   ScaffoldThemeSpec,
 } from "./src/scaffold/presets.js";
 export {
+  empty,
   isScaffoldPresetName,
+  minimal,
   resolveScaffoldPreset,
   SCAFFOLD_DEFAULT_PRESET,
   SCAFFOLD_PRESET_NAMES,
   scaffoldPresets,
+  showcase,
+  starter,
 } from "./src/scaffold/presets.js";
 export {
   createRiebeckiteSsg,

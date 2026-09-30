@@ -25,7 +25,7 @@ npm exec riebeckite build
 ## 主な機能
 
 - Obsidian 形式の Markdown とコンテンツグラフ
-- `empty` から `ultra` までの preset
+- 自己完結した4種類の preset: `starter`、`minimal`、`showcase`、`empty`
 - Markdown 処理、表示、検索、メディア、診断、デプロイを拡張する Plugin
 - 公式 Theme と CSS トークン
 - `check`、`doctor`、`inspect`、`dev`、`build`、`profile` を備えた CLI

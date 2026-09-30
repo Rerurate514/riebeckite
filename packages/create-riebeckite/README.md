@@ -18,17 +18,17 @@ npm exec riebeckite build
 | Option | Description |
 | --- | --- |
 | `[directory]` | Directory to scaffold into (default: the current directory) |
-| `--preset <name>` | Starter composition, e.g. `rich` (default: `starter`) |
+| `--preset <name>` | Starter composition, e.g. `showcase` (default: `starter`) |
 | `--force` | Scaffold even when the target directory is not empty |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
 | `--github-actions` | Generate the Cloudflare deployment workflow |
 | `--content-repository <owner/repository>` | Use this repository as the deployment content source. Requires `--github-actions` and `--site-repository`; also generates `github/notify-site.yml`. |
 | `--site-repository <owner/repository>` | Site repository that the generated content workflow notifies. Required with `--content-repository`. |
 
-For example, scaffold with the `rich` preset:
+For example, scaffold the complete feature tour:
 
 ```sh
-npx create-riebeckite my-site --preset rich
+npx create-riebeckite my-site --preset showcase
 ```
 
 To use a separate content repository and deploy after its `main` branch is
@@ -57,38 +57,31 @@ List the available presets with `--list-presets`:
 npx create-riebeckite --list-presets
 ```
 
-Every preset is a self-contained starter description. From smallest to
-largest:
+Every preset is a self-contained starter description:
 
-| Preset  | Theme        | Plugins | Content pages                                        |
-| ------- | ------------ | ------- | ---------------------------------------------------- |
-| `empty` | none         | none    | none (static index)                                  |
-| `minimal` | minimal    | 1       | index                                                |
-| `starter` | default    | 3       | index (7 languages)                                  |
-| `rich`  | default      | 8       | index, framework/plugins, framework/themes (7 languages) |
-| `full`  | default      | 23      | rich + guide                                          |
-| `max`   | default      | 46      | full + examples                                       |
-| `ultra` | default      | 52      | max + reference/plugins, reference/themes             |
+| Preset | Purpose |
+| --- | --- |
+| `starter` | Recommended for most sites |
+| `minimal` | Small Markdown site with minimal configuration |
+| `showcase` | Explore Riebeckite features and plugins with rendered examples and local fixtures |
+| `empty` | Blank shell for custom setups |
 
 Each preset has a one-line description, shown by `--list-presets`:
 
+- `starter` — Recommended for most sites: practical Markdown publishing, search, and discovery.
+- `minimal` — The smallest useful site: Obsidian Markdown, the minimal theme, and one page.
+- `showcase` — The complete plugin catalog with rendered examples, local fixtures, and reference pages.
 - `empty` — A blank application shell: no plugins, theme, content, or components.
-- `minimal` — The smallest useful site: Obsidian Markdown, the minimal theme, one page.
-- `starter` — The default starter: Obsidian Markdown, color mode, seven languages, and a site header.
-- `rich` — Publishing and reading plugins plus guided ecosystem tour pages in seven languages.
-- `full` — A ready blog: discovery, media, and reading plugins plus a build guide.
-- `max` — Diagram and knowledge plugins on top of `full`, with showcase example pages.
-- `ultra` — The full plugin catalog and theme reference pages — everything the ecosystem offers.
 
 Presets are defined in `@riebeckite/honox` and can be imported into your own
 tooling:
 
 ```ts
-import { scaffoldRiebeckiteSite, rich } from "@riebeckite/honox";
+import { scaffoldRiebeckiteSite, showcase } from "@riebeckite/honox";
 
 await scaffoldRiebeckiteSite({
   targetDirectory: "./my-site",
-  preset: rich,
+  preset: showcase,
 });
 ```
 

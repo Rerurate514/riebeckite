@@ -217,18 +217,14 @@ function riebeckiteConfig(
 }
 
 /**
- * A preset's option depth: `rich` shows essentials, `full` and `max` the
- * standard set, `ultra` everything. The lower presets carry no option-bearing
- * plugins and keep depth 0.
+ * `starter` includes practical configuration and `showcase` renders the full
+ * option surface. Lightweight presets deliberately keep depth 0.
  */
 const OPTION_DEPTH: Readonly<Record<ScaffoldPresetName, number>> = {
   empty: 0,
   minimal: 0,
-  starter: 0,
-  rich: 1,
-  full: 2,
-  max: 2,
-  ultra: 3,
+  starter: 2,
+  showcase: 3,
 };
 
 function optionContext(
@@ -378,24 +374,12 @@ const README_INTRO: Readonly<
     ja: "最小限で実用的な Riebeckite サイトです。Obsidian マークダウン・minimal テーマ・1 ページ構成。",
   },
   starter: {
-    en: "The default Riebeckite starter: Obsidian Markdown, a color-mode toggle, and seven languages.",
-    ja: "Riebeckite の既定スターターです。Obsidian マークダウン・カラーモード切替・7 言語対応。",
+    en: "Recommended for most sites: a practical Markdown garden with search, discovery, and reading essentials.",
+    ja: "大半のサイトにおすすめの構成です。検索・発見・閲覧に必要な機能を備えた実用的な Markdown サイトを作れます。",
   },
-  rich: {
-    en: "A showcasing starter: publishing and reading plugins plus guided ecosystem tour pages in seven languages.",
-    ja: "紹介を目的としたスターターです。公開・読書体験のプラグインと、7 言語のエコシステム紹介ページ付き。",
-  },
-  full: {
-    en: "A ready-to-use blog preset: discovery, media, and reading plugins plus a getting-started guide.",
-    ja: "そのまま使えるブログ向けプリセットです。検索・メディア・読書体験のプラグインと入門ガイド付き。",
-  },
-  max: {
-    en: "Diagram, chart, and knowledge plugins on top of full, with showcase example pages.",
-    ja: "full に図解・チャート・ナレッジ系プラグインを加えた構成で、お試し用サンプルページ付き。",
-  },
-  ultra: {
-    en: "The complete plugin catalog with plugin and theme reference pages.",
-    ja: "全プラグインを有効化した最上位構成。プラグイン/テーマのリファレンスページ付き。",
+  showcase: {
+    en: "Explore the complete Riebeckite ecosystem with rendered examples, reference pages, and local fixtures.",
+    ja: "描画例・リファレンスページ・ローカルのフィクスチャで、Riebeckite のエコシステム全体を確認できる構成です。",
   },
 };
 

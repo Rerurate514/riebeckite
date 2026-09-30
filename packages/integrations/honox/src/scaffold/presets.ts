@@ -12,7 +12,7 @@
  * Presets are cumulative in spirit but defined explicitly so each tier is
  * self-contained and can be imported and reused on its own:
  *
- *    import { full, starter } from "@riebeckite/honox/scaffold";
+ *    import { showcase, starter } from "@riebeckite/honox/scaffold";
  */
 
 export const SCAFFOLD_LANGUAGES = [
@@ -38,23 +38,13 @@ export function defaultLanguageForLocale(locale: string): string {
   return "en";
 }
 
-export type ScaffoldPresetName =
-  | "empty"
-  | "minimal"
-  | "starter"
-  | "rich"
-  | "full"
-  | "max"
-  | "ultra";
+export type ScaffoldPresetName = "starter" | "minimal" | "showcase" | "empty";
 
 export const SCAFFOLD_PRESET_NAMES: readonly ScaffoldPresetName[] = [
-  "empty",
-  "minimal",
   "starter",
-  "rich",
-  "full",
-  "max",
-  "ultra",
+  "minimal",
+  "showcase",
+  "empty",
 ];
 
 export function isScaffoldPresetName(
@@ -86,8 +76,9 @@ export type ScaffoldPluginSpec = {
 /**
  * Context passed to option sources. `variables` are the user-supplied site
  * values (`title`, `baseUrl`, ...), `languages` the preset's configured
- * languages, and `depth` the preset tier: 1 = rich essentials,
- * 2 = full/max standard set, 3 = ultra full coverage.
+ * languages, and configuration detail depth. `showcase` uses depth 3 so its
+ * generated config is a complete options reference; the other presets keep
+ * their configuration intentionally small.
  */
 export type ScaffoldOptionContext = {
   readonly variables: {
@@ -185,9 +176,8 @@ const np = (
  * `riebeckite.config.ts` doubles as a settings reference and each preset tier
  * demonstrates the configuration surface step by step:
  *
- * - `rich` shows the essential options (depth 1)
- * - `full` and `max` show the standard set (depth 2)
- * - `ultra` shows every option (depth 3)
+ * - `starter` uses the practical options needed by its included plugins
+ * - `showcase` shows every available option
  *
  * Factories that take no options (or are left deliberately bare, like the
  * color-mode toggle) stay as `factory()`. Options may reference the scaffold
@@ -598,154 +588,36 @@ export const minimal: ScaffoldPreset = {
 export const starter: ScaffoldPreset = {
   name: "starter",
   description:
-    "The default starter: Obsidian Markdown, color mode, seven languages, and a site header.",
+    "Recommended for most sites: a practical Markdown garden with search, discovery, and reading essentials.",
   languages: [...SCAFFOLD_LANGUAGES],
   theme: defaultTheme,
-  plugins: [obsidianMarkdown, colorMode, l10n],
-  contentPages: ["index"],
+  plugins: [
+    obsidianMarkdown,
+    colorMode,
+    l10n,
+    seo,
+    toc,
+    properties,
+    alias,
+    codeEnhance,
+    search,
+    backlinks,
+    relatedPosts,
+    recentPosts,
+    responsiveImage,
+    lightbox,
+    series,
+    taxonomy,
+  ],
+  contentPages: ["index", "guide", "examples"],
   appFiles: [...BASE_APP_FILES, "index", "slug", "header", "article"],
   readme: "standard",
 };
 
-export const rich: ScaffoldPreset = {
-  name: "rich",
+export const showcase: ScaffoldPreset = {
+  name: "showcase",
   description:
-    "A showcasing starter: publishing and reading plugins plus guided ecosystem tour pages in seven languages.",
-  languages: [...SCAFFOLD_LANGUAGES],
-  theme: showCaseTheme,
-  plugins: [
-    obsidianMarkdown,
-    colorMode,
-    l10n,
-    seo,
-    toc,
-    properties,
-    alias,
-    codeEnhance,
-  ],
-  contentPages: ["index", "framework/plugins", "framework/themes"],
-  appFiles: [...BASE_APP_FILES, "index", "slug", "header", "article"],
-  readme: "rich",
-};
-
-export const full: ScaffoldPreset = {
-  name: "full",
-  description:
-    "A ready blog: discovery, media, and reading plugins plus a build guide.",
-  languages: [...SCAFFOLD_LANGUAGES],
-  theme: showCaseTheme,
-  plugins: [
-    obsidianMarkdown,
-    colorMode,
-    l10n,
-    seo,
-    toc,
-    properties,
-    alias,
-    codeEnhance,
-    search,
-    backlinks,
-    relatedPosts,
-    share,
-    changelog,
-    webmention,
-    recentPosts,
-    attachment,
-    pdf,
-    media,
-    responsiveImage,
-    lightbox,
-    highlight,
-    codeTabs,
-    codeAnnotations,
-    shortcodes,
-    series,
-    taxonomy,
-    autoCardLink,
-    richEmbed,
-    gallery,
-  ],
-  contentPages: ["index", "framework/plugins", "framework/themes", "guide"],
-  appFiles: [...BASE_APP_FILES, "index", "slug", "header", "article"],
-  readme: "rich",
-};
-
-export const max: ScaffoldPreset = {
-  name: "max",
-  description:
-    "Diagram and knowledge plugins on top of full, with showcase example pages.",
-  languages: [...SCAFFOLD_LANGUAGES],
-  theme: showCaseTheme,
-  plugins: [
-    obsidianMarkdown,
-    colorMode,
-    l10n,
-    seo,
-    toc,
-    properties,
-    alias,
-    codeEnhance,
-    search,
-    backlinks,
-    relatedPosts,
-    share,
-    changelog,
-    webmention,
-    recentPosts,
-    attachment,
-    pdf,
-    media,
-    responsiveImage,
-    lightbox,
-    highlight,
-    codeTabs,
-    codeAnnotations,
-    shortcodes,
-    series,
-    taxonomy,
-    autoCardLink,
-    richEmbed,
-    gallery,
-    mermaid,
-    graphviz,
-    d2,
-    plantuml,
-    chartjs,
-    vegaLite,
-    wavedrom,
-    markmap,
-    map,
-    marp,
-    qrCode,
-    discordEmbed,
-    excalidraw,
-    excaliBrain,
-    canvas,
-    bases,
-    dataview,
-    flashcards,
-    kanban,
-    query,
-    localGraph,
-    hoverPreview,
-    gardenExplorer,
-    ux,
-  ],
-  contentPages: [
-    "index",
-    "framework/plugins",
-    "framework/themes",
-    "guide",
-    "examples",
-  ],
-  appFiles: [...BASE_APP_FILES, "index", "slug", "header", "article"],
-  readme: "rich",
-};
-
-export const ultra: ScaffoldPreset = {
-  name: "ultra",
-  description:
-    "The full plugin catalog and theme reference pages — everything the ecosystem offers.",
+    "Explore the complete Riebeckite ecosystem with rendered examples, reference pages, and local fixtures.",
   languages: [...SCAFFOLD_LANGUAGES],
   theme: showCaseTheme,
   plugins: [
@@ -824,7 +696,7 @@ export const ultra: ScaffoldPreset = {
 
 export const scaffoldPresets: Readonly<
   Record<ScaffoldPresetName, ScaffoldPreset>
-> = { empty, minimal, starter, rich, full, max, ultra } as const;
+> = { starter, minimal, showcase, empty } as const;
 
 export const SCAFFOLD_DEFAULT_PRESET: ScaffoldPresetName = "starter";
 

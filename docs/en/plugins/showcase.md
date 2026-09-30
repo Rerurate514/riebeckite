@@ -4,7 +4,7 @@ The plugin catalog lives in [Plugins](./README.md); this page shows what the plu
 
 The snippets are shown as fenced code so they read the same on GitHub and in a Riebeckite build. When this documentation is published as a Riebeckite site with the matching plugins enabled, the same source becomes a **live example** — the fence is the only thing between source and output.
 
-> The generated `rich`, `full`, `max`, and `ultra` presets ship these pages as ready-to-run demos in a new site, so you can also see them locally right after `npx create-riebeckite`.
+> The generated `showcase` preset ships rendered examples, references, and local fixtures in a new site, so you can explore them locally right after `npx create-riebeckite --preset showcase`.
 
 ## Obsidian Markdown
 
@@ -297,5 +297,4 @@ Some plugins are structural and cannot be shown with a single code fence. They a
 - [Plugins](./README.md) — the full catalog
 - [Writing a plugin](./writing-a-plugin.md) — build your own
 - [Plugin API](../reference/plugin-api.md) — the contract these plugins share
-
 

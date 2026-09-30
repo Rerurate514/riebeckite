@@ -26,10 +26,10 @@ npm exec riebeckite build
 | `--content-repository <owner/repository>` | このリポジトリをデプロイ時の content source にする。`--github-actions` と `--site-repository` が必要で、`github/notify-site.yml` も生成する。 |
 | `--site-repository <owner/repository>` | 生成した記事通知 workflow の通知先 site リポジトリ。`--content-repository` と同時に必要。 |
 
-たとえば、`rich` preset で生成する場合は次のようにします。
+たとえば、機能を一通り確認できる `showcase` preset で生成する場合は次のとおりです。
 
 ```sh
-npx create-riebeckite my-site --preset rich
+npx create-riebeckite my-site --preset showcase
 ```
 
 別の記事リポジトリを使い、その `main` への push でデプロイする場合は、共通の
@@ -57,27 +57,21 @@ npx create-riebeckite my-site --github-actions \
 npx create-riebeckite --list-presets
 ```
 
-すべての preset は自己完結のスターターで、小さいものから順に次のとおりです。
+すべての preset は自己完結のスターターです。
 
-| Preset | Theme | Plugins | コンテンツページ |
-| --- | --- | --- | --- |
-| `empty` | なし | なし | なし（静的インデックスのみ） |
-| `minimal` | minimal | 1 | index |
-| `starter` | default | 3 | index（7 言語） |
-| `rich` | default | 8 | index、framework/plugins、framework/themes（7 言語） |
-| `full` | default | 23 | rich + guide |
-| `max` | default | 46 | full + examples |
-| `ultra` | default | 52 | max + reference/plugins、reference/themes |
+| Preset | 用途 |
+| --- | --- |
+| `starter` | 大半のサイトにおすすめ |
+| `minimal` | 最小限の設定で作る Markdown サイト |
+| `showcase` | 描画例とローカルのフィクスチャで Riebeckite の機能と Plugin を確認する構成 |
+| `empty` | 独自構成のための空のシェル |
 
 各 preset の説明は次のとおりです（`--list-presets` で表示される内容と同じです）。
 
-- `empty` — 空のアプリケーションシェル（Plugin・Theme・コンテンツ・コンポーネントなし）
-- `minimal` — 最小構成のサイト（Obsidian Markdown、minimal Theme、1 ページ）
-- `starter` — 標準のスターター（Obsidian Markdown、カラーモード、7 言語、サイトヘッダー）
-- `rich` — 公開・閲覧向け Plugin と、エコシステムを紹介するページ（7 言語）
-- `full` — ブログ一式（検索・メディア・関連記事などの Plugin とビルドガイド）
-- `max` — `full` に図表・ナレッジ系 Plugin とサンプルページを追加
-- `ultra` — 全 Plugin カタログと Theme リファレンスページ（エコシステムの一式）
+- `starter` — 大半のサイト向け。Markdown の公開、検索、記事の発見に必要な機能を含みます。
+- `minimal` — Obsidian Markdown、minimal Theme、1 ページだけの最小構成です。
+- `showcase` — 全 Plugin カタログ、描画例、ローカルの fixture、リファレンスページを含みます。
+- `empty` — Plugin・Theme・コンテンツ・コンポーネントを含まない空のシェルです。
 
 Riebeckite は、Markdown や Obsidian 由来のノートを Web で公開するための
 拡張可能なフレームワークです。設定方法やプラグインについては

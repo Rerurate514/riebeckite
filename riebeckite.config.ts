@@ -87,7 +87,6 @@ export default defineConfig({
   markdown: {},
   theme: rerurateTheme({
     colorMode: "system",
-    initial: "large",
     motion: true,
   }),
   plugins: [

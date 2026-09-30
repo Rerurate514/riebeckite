@@ -430,7 +430,7 @@ const README_WORDS: Readonly<{
       "The generated site ships content pages that exercise these features:",
     copyDemos: "Copy-paste demos",
     copyDemosBody:
-      "Paste any of these snippets into a Markdown file under `content/` and run `npm exec riebeckite dev`. Each one renders through a plugin this preset registers.",
+      "Paste any of these snippets into a Markdown file under `content/` and run `pnpm exec riebeckite dev`. Each one renders through a plugin this preset registers.",
   },
   ja: {
     included: "含まれているもの",
@@ -459,7 +459,7 @@ const README_WORDS: Readonly<{
       "生成されたサイトには、各機能を体験できるコンテンツページが含まれています:",
     copyDemos: "コピーして使えるデモ",
     copyDemosBody:
-      "以下のスニペットを `content/` 配下の Markdown ファイルに貼り付けて `npm exec riebeckite dev` を実行してください。それぞれ、このプリセットが登録しているプラグインでレンダリングされます。",
+      "以下のスニペットを `content/` 配下の Markdown ファイルに貼り付けて `pnpm exec riebeckite dev` を実行してください。それぞれ、このプリセットが登録しているプラグインでレンダリングされます。",
   },
 };
 
@@ -504,10 +504,10 @@ function readmeEn(
   lines.push(`## ${words.commands}`, "");
   lines.push(
     "```sh",
-    "npm install",
-    "npm exec riebeckite check",
-    "npm exec riebeckite dev",
-    "npm exec riebeckite build",
+    "pnpm install",
+    "pnpm exec riebeckite check",
+    "pnpm exec riebeckite dev",
+    "pnpm exec riebeckite build",
     "```",
     "",
   );
@@ -560,10 +560,10 @@ function readmeJa(
   lines.push(`## ${words.commands}`, "");
   lines.push(
     "```sh",
-    "npm install",
-    "npm exec riebeckite check",
-    "npm exec riebeckite dev",
-    "npm exec riebeckite build",
+    "pnpm install",
+    "pnpm exec riebeckite check",
+    "pnpm exec riebeckite dev",
+    "pnpm exec riebeckite build",
     "```",
     "",
   );

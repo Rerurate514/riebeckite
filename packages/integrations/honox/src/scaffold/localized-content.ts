@@ -1101,9 +1101,9 @@ function guideContent(): string {
     codeBlock(
       "sh",
       [
-        "npm install",
-        "npm exec riebeckite dev",
-        "npm exec riebeckite build",
+        "pnpm install",
+        "pnpm exec riebeckite dev",
+        "pnpm exec riebeckite build",
       ].join("\n"),
     ),
     "",

@@ -30,8 +30,8 @@ export default createRoute(
   }),
   ssgEnumerableHandler(async (c, next) => {
     const requestedSlug = c.req.param("slug");
-    // Tags and archive have dedicated routes; defer to them.
-    if (c.req.path.startsWith("/tags/") || c.req.path.startsWith("/archive/")) {
+    // Archive has a dedicated route; defer to it.
+    if (c.req.path.startsWith("/archive/")) {
       return next();
     }
     if (!requestedSlug) return c.notFound();
@@ -51,7 +51,7 @@ export default createRoute(
           path: route.page.pathname,
         }),
       );
-      c.set("headTags", []);
+      c.set("headTags", route.page.headTags ?? []);
       return c.render(
         <div dangerouslySetInnerHTML={{ __html: route.page.body }} />,
       );

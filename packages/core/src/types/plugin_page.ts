@@ -1,5 +1,6 @@
 import type { ContentManifest } from "./content_manifest.js";
 import type { PluginContext } from "./plugin_context.js";
+import type { PluginHeadTag } from "./plugin_head.js";
 
 /** A framework-independent page supplied by a Riebeckite plugin. */
 export type PluginPage = {
@@ -11,6 +12,8 @@ export type PluginPage = {
   body: string;
   title?: string;
   description?: string;
+  /** Optional document metadata rendered by the site's document frame. */
+  headTags?: readonly PluginHeadTag[];
 };
 
 export type PluginPageContext = PluginContext & {

@@ -17,11 +17,10 @@ listing terms with the Core collection contract (`buildContentCollections`):
 Entries always link through their resolved `permalink`; the plugin never
 reconstructs a URL from a slug.
 
-The plugin owns data, feeds, and SEO only. It deliberately does **not** register
-application routes. Per-term feeds are written as static files through the
-build's generated-output sink, and an app renders `/tags/<tag>` and
-`/folders/<path>` from the exported helpers (see
-[App-route wiring](#app-route-wiring)).
+The plugin owns data, feeds, SEO, and the `/tags/<tag>` and `/folders/<path>`
+page types. Per-term feeds are written as static files through the build's
+generated-output sink. A site renders the page types through its generic
+Riebeckite catch-all route; no taxonomy-specific application route is needed.
 
 ## Usage
 
@@ -140,52 +139,16 @@ chosen permalink is recorded as `metadata["taxonomy.folder"]`. A location is
 never claimed when another note already owns it; the conflict is reported as a
 diagnostic instead.
 
-## App-route wiring
+## Page types
 
-The application owns routing. Register the listing paths in the app and render
-them from the plugin's data:
+`taxonomy()` registers `taxonomy-term`. Its SSG paths and resolver are derived
+from the public manifest, so unpublished entries never appear in tag or folder
+pages. The returned page body includes feed discovery `<link rel="alternate">`
+metadata, which the generic document frame renders in its head.
 
-```tsx
-// app/routes/tags/[slug{.+}].tsx
-import { ssgParams } from "hono/ssg";
-import { createRoute } from "honox/factory";
-import {
-  buildTaxonomyIndex,
-  buildTaxonomySeo,
-  renderTaxonomyPage,
-  resolveTaxonomyOptionsFromConfig,
-} from "@riebeckite/plugin-taxonomy";
-import Article from "../../components/article/article";
-import { config } from "../../config";
-import { content } from "../../content";
-
-export default createRoute(
-  ssgParams(async () => {
-    const options = resolveTaxonomyOptionsFromConfig(config);
-    const manifest = await content.getManifest();
-    return buildTaxonomyIndex(manifest.publicEntries, options).tags.map(
-      (term) => ({ slug: term.path.replace(/^\/tags\//, "") }),
-    );
-  }),
-  async (c) => {
-    const options = resolveTaxonomyOptionsFromConfig(config);
-    const manifest = await content.getManifest();
-    const term = buildTaxonomyIndex(manifest.publicEntries, options).tags.find(
-      (candidate) => candidate.path === c.req.path,
-    );
-    c.set("seo", term ? buildTaxonomySeo(config, term) : undefined);
-    if (!term) return c.notFound();
-    const page = renderTaxonomyPage(term, options);
-    c.set("headTags", page.headTags);
-    return c.render(<Article content={page} />);
-  },
-);
-```
-
-A folder route follows the same shape with `.folders` and `/folders/`. The
-`renderTaxonomyPage` result is `PostContent`-compatible (`frontmatter` + `html`),
-so it drops into the reference `Article` primitive; `headTags` adds the feed
-discovery `<link rel="alternate">` elements to the document head.
+Use `pluginPageSsgParams(content)` and `resolveRiebeckiteRoute(content, path)`
+from `@riebeckite/honox/server` in the site's generic catch-all route. This is
+the same wiring used for every plugin page type.
 
 ## Style
 

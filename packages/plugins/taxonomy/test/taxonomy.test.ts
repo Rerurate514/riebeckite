@@ -50,6 +50,32 @@ test("emits one feed per term and format into the manifest", async () => {
   );
 });
 
+test("provides tag and folder listings as plugin page types", async () => {
+  const content = new ContentManager(
+    source({
+      ...taggedNotes,
+      "guides/intro.md":
+        "---\ntitle: Intro\npublish: true\ntags:\n  - featured\n---\n\n# Intro\n",
+    }),
+    [],
+    { config: config() },
+  );
+
+  assert.deepEqual(await content.getPagePaths(), [
+    "/tags/featured",
+    "/folders/guides",
+  ]);
+
+  const tag = await content.resolvePage("/tags/featured");
+  assert.equal(tag?.type, "taxonomy-term");
+  assert.match(tag?.body ?? "", /data-rr-taxonomy="tag"/);
+  assert.equal(tag?.headTags?.[0]?.tag, "link");
+
+  const folder = await content.resolvePage("/folders/guides");
+  assert.equal(folder?.type, "taxonomy-term");
+  assert.match(folder?.body ?? "", /data-rr-taxonomy="folder"/);
+});
+
 test("renders the term feed from the manifest entries", async () => {
   const manifest = await manager(config()).getManifest();
   const rss = manifest.generatedOutputs.find(

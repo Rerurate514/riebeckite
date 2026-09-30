@@ -17,11 +17,11 @@ Riebeckite のビルド時タクソノミー（タグ・フォルダ）プラグ
 エントリのリンクには常に解決済みの `permalink` を使い、slug から URL を組み立てる
 ことはありません。
 
-このプラグインが持つのはデータ・フィード・SEO だけです。アプリケーションの
-ルートは登録しません。語ごとのフィードはビルドの generated-output sink 経由で
-静的ファイルとして出力し、`/tags/<tag>` と `/folders/<path>` のページは
-エクスポートしたヘルパーを使ってアプリ側で描画します
-（[アプリルートの配線](#アプリルートの配線) を参照）。
+このプラグインはデータ・フィード・SEO に加え、`/tags/<tag>` と
+`/folders/<path>` の Page Type を提供します。語ごとのフィードは build の
+generated-output sink 経由で静的ファイルとして出力します。サイトは共通の
+Riebeckite catch-all route で Page Type を描画するため、taxonomy 専用の
+アプリケーションルートは不要です。
 
 ## 使い方
 
@@ -137,52 +137,16 @@ Core `seo` 拡張ポイント（たとえば `@riebeckite/plugin-seo`）へ委�
 選ばれた permalink は `metadata["taxonomy.folder"]` に記録されます。すでに他の
 ノートが所有している location は決して奪わず、衝突は診断として報告します。
 
-## アプリルートの配線
+## Page Type
 
-ルーティングはアプリケーションが所有します。一覧パスをアプリに登録し、プラグインの
-データから描画してください。
+`taxonomy()` は `taxonomy-term` を登録します。SSG のパスと resolver は公開
+マニフェストから作るため、非公開エントリがタグ・フォルダページへ入ることはありません。
+返す page body にはフィード検出用の `<link rel="alternate">` メタデータを含め、
+共通の document frame が head に描画します。
 
-```tsx
-// app/routes/tags/[slug{.+}].tsx
-import { ssgParams } from "hono/ssg";
-import { createRoute } from "honox/factory";
-import {
-  buildTaxonomyIndex,
-  buildTaxonomySeo,
-  renderTaxonomyPage,
-  resolveTaxonomyOptionsFromConfig,
-} from "@riebeckite/plugin-taxonomy";
-import Article from "../../components/article/article";
-import { config } from "../../config";
-import { content } from "../../content";
-
-export default createRoute(
-  ssgParams(async () => {
-    const options = resolveTaxonomyOptionsFromConfig(config);
-    const manifest = await content.getManifest();
-    return buildTaxonomyIndex(manifest.publicEntries, options).tags.map(
-      (term) => ({ slug: term.path.replace(/^\/tags\//, "") }),
-    );
-  }),
-  async (c) => {
-    const options = resolveTaxonomyOptionsFromConfig(config);
-    const manifest = await content.getManifest();
-    const term = buildTaxonomyIndex(manifest.publicEntries, options).tags.find(
-      (candidate) => candidate.path === c.req.path,
-    );
-    c.set("seo", term ? buildTaxonomySeo(config, term) : undefined);
-    if (!term) return c.notFound();
-    const page = renderTaxonomyPage(term, options);
-    c.set("headTags", page.headTags);
-    return c.render(<Article content={page} />);
-  },
-);
-```
-
-フォルダのルートも `.folders` と `/folders/` に置き換えると同じ形です。
-`renderTaxonomyPage` の戻り値は `PostContent` 互換（`frontmatter` + `html`）なので、
-参照アプリの `Article` primitive にそのまま渡せます。`headTags` はフィード検出用の
-`<link rel="alternate">` を document head に追加します。
+サイトの共通 catch-all route では、`@riebeckite/honox/server` の
+`pluginPageSsgParams(content)` と `resolveRiebeckiteRoute(content, path)` を使います。
+これはすべての Plugin Page Type に共通の配線です。
 
 ## スタイル
 

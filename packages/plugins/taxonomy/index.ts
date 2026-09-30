@@ -14,6 +14,7 @@ import {
 import { renderTermFeed } from "./src/feeds.js";
 import { resolveFolderIndexLocations } from "./src/locations.js";
 import { resolveTaxonomyOptions } from "./src/options.js";
+import { renderTaxonomyPage } from "./src/pages.js";
 import type {
   ResolvedTaxonomyOptions,
   TaxonomyFeedFormat,
@@ -66,11 +67,10 @@ export const TAXONOMY_PLUGIN_NAME = "taxonomy";
  * Build-time taxonomy data, per-term feeds, SEO metadata, and folder-index
  * locations for Riebeckite.
  *
- * The plugin owns data, feeds, and SEO only. It does not register application
- * routes: an app renders `/tags/<tag>` and `/folders/<path>` from the exported
- * helpers (see the README for the documented wiring). Per-term feeds are
- * emitted as static files through the build's generated-output sink, so no
- * client JavaScript is required.
+ * The plugin owns data, feeds, SEO, and tag/folder page types. A generic site
+ * catch-all resolves those page types, so this plugin never needs application
+ * routes. Per-term feeds are emitted as static files through the build's
+ * generated-output sink, so no client JavaScript is required.
  */
 export function taxonomy(options: TaxonomyOptions = {}) {
   const resolved = resolveTaxonomyOptions(options);
@@ -87,6 +87,29 @@ export function taxonomy(options: TaxonomyOptions = {}) {
     resolveContentLocations: ({ entries, diagnostics }) =>
       resolveFolderIndexLocations(entries, resolved, diagnostics),
     endpoints: createTaxonomyEndpoints(resolved),
+    pageTypes: [
+      {
+        id: "taxonomy-term",
+        paths: ({ manifest }) =>
+          taxonomyPagePaths(manifest.publicEntries, resolved),
+        resolve: ({ manifest, pathname }) => {
+          const term = findTaxonomyTerm(
+            manifest.publicEntries,
+            resolved,
+            pathname,
+          );
+          if (!term) return null;
+          const page = renderTaxonomyPage(term, resolved);
+          return {
+            type: "taxonomy-term",
+            pathname: term.path,
+            title: page.title,
+            body: page.html,
+            headTags: page.headTags,
+          };
+        },
+      },
+    ],
     buildEnd(context) {
       const { config, manifest } = context;
       if (!config) return;
@@ -109,6 +132,25 @@ export function taxonomy(options: TaxonomyOptions = {}) {
 
 /** Alias matching the `*Plugin` suffix used by other plugin factories. */
 export const taxonomyPlugin = taxonomy;
+
+function taxonomyPagePaths(
+  entries: Parameters<typeof buildTaxonomyIndex>[0],
+  options: ResolvedTaxonomyOptions,
+): readonly string[] {
+  const index = buildTaxonomyIndex(entries, options);
+  return [...index.tags, ...index.folders].map((term) => term.path);
+}
+
+function findTaxonomyTerm(
+  entries: Parameters<typeof buildTaxonomyIndex>[0],
+  options: ResolvedTaxonomyOptions,
+  pathname: string,
+) {
+  const index = buildTaxonomyIndex(entries, options);
+  return [...index.tags, ...index.folders].find(
+    (term) => term.path === pathname,
+  );
+}
 
 /**
  * Reads the taxonomy plugin's resolved options back from a Riebeckite config.

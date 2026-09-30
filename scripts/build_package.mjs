@@ -39,7 +39,10 @@ function addEntry(target) {
   const source = target.replace(/^\.\//, "");
   if (!/\.(ts|tsx)$/.test(source) || seen.has(source)) return;
   seen.add(source);
-  entries.push({ in: source, out: source.replace(/\.(ts|tsx)$/, "") });
+  entries.push({
+    in: path.resolve(packageDirectory, source),
+    out: source.replace(/\.(ts|tsx)$/, ""),
+  });
 }
 
 for (const target of Object.values(packageJson.exports ?? {})) {

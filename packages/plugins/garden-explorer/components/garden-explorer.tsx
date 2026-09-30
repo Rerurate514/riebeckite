@@ -1,4 +1,4 @@
-import { layoutRadialGraph } from "@riebeckite/core";
+import { layoutRadialGraph } from "@riebeckite/core/client";
 import { useEffect, useMemo, useState } from "hono/jsx";
 import type {
   GardenExplorerData,

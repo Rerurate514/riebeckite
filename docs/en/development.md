@@ -9,10 +9,13 @@ pnpm install
 pnpm lint
 pnpm format
 pnpm check
+pnpm test
 pnpm build
 ```
 
 `lint` runs Biome linting and `check` runs Biome checks, both read-only; `check` reports issues without writing. Apply fixes explicitly with `check:fix`, or run `format` for formatting writes, and review the resulting diff. For framework behavior use the Riebeckite CLI commands from [CLI](cli.md).
+
+Tests run per package through `pnpm test` (or `pnpm test:update` to refresh golden files); see [Testing](testing.md) for the layout, writing tests, and adding a test script to a new package.
 
 ## Make focused changes
 

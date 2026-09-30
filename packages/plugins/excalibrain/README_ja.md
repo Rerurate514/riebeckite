@@ -76,6 +76,8 @@ related:: [[note-a]] and [[note-b]] are similar
 | `next` | `next`, `n`, `east`, `e`, `after` |
 | `hidden` | `hidden` |
 
+`ontology` オプションは既定のオントロジーを拡張します。各ロールのフィールド名は、そのロールの既定値を置き換えるのではなく末尾に追加されます。既存のフィールドを別のロールに追加することもできますが、正規の順序（`parents`、`children`、`leftFriends`、`rightFriends`、`previous`、`next`、`hidden`）で先に現れるロールが優先されます。
+
 ## 推論
 
 `infer` が有効な場合（既定）、次のように推論します。
@@ -84,7 +86,7 @@ related:: [[note-a]] and [[note-b]] are similar
 - 相手からこのノートへのバックリンクは `parent`
 - 相互リンクは `leftFriend`
 
-`siblings` が有効な場合（既定）、親ノートの他の子ノートを `sibling` として追加します。リンク先はコンテンツマニフェストから解決し、解決できない場合は元のリンクテキストをラベルにした仮想ノード（`data-node-virtual="true"`）にします。
+`siblings` が有効な場合（既定）、親ノートの他の子ノートを `sibling` として追加します。兄弟の推論には `infer` も必要で、`infer: false` にすると無効になります。リンク先はコンテンツマニフェストから解決し、解決できない場合は元のリンクテキストをラベルにした仮想ノード（`data-node-virtual="true"`）にします。
 
 ## 描画
 
@@ -114,8 +116,8 @@ related:: [[note-a]] and [[note-b]] are similar
 | `className` | `string` | `"rb-excalibrain"` | ルートの CSS クラス |
 | `maxPerRegion` | `number` | `8` | 領域ごとの最大ノード数 |
 | `infer` | `boolean` | `true` | リンクから関係を推論する |
-| `siblings` | `boolean` | `true` | 親から兄弟を推論する |
-| `ontology` | object | — | オントロジーの部分的な上書き |
+| `siblings` | `boolean` | `true` | 親から兄弟を推論する（`infer` が必要） |
+| `ontology` | object | — | ロールごとに末尾追加するオントロジーのフィールド名 |
 | `showHidden` | `boolean` | `false` | `hidden` のノートも含める |
 | `width` | `number` | `720` | SVG viewBox の幅 |
 | `height` | `number` | `480` | SVG viewBox の高さ |

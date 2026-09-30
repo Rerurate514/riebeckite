@@ -1,0 +1,58 @@
+{
+  "title": "Hello <World> | Custom Site",
+  "description": "A description",
+  "canonicalUrl": "https://example.com/posts/hello",
+  "imageUrl": "https://example.com/img/cover.png",
+  "type": "article",
+  "noindex": false,
+  "publishedTime": "2024-01-01T00:00:00.000Z",
+  "modifiedTime": "2024-02-01T00:00:00.000Z",
+  "tags": [
+    "a",
+    "b"
+  ],
+  "readingTimeMinutes": 1,
+  "jsonLd": [
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Hello <World>",
+      "description": "A description",
+      "url": "https://example.com/posts/hello",
+      "image": [
+        "https://example.com/img/cover.png"
+      ],
+      "datePublished": "2024-01-01T00:00:00.000Z",
+      "dateModified": "2024-02-01T00:00:00.000Z",
+      "author": {
+        "@type": "Person",
+        "name": "Ada"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Custom Site"
+      },
+      "keywords": "a, b",
+      "timeRequired": "PT1M",
+      "inLanguage": "en-US"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Custom Site",
+          "item": "https://example.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Hello <World>",
+          "item": "https://example.com/posts/hello"
+        }
+      ]
+    }
+  ]
+}

@@ -720,6 +720,18 @@ const PLUGIN_CATEGORIES: readonly PluginCategory[] = [
           ko: "Excalidraw 스케치 파일 렌더링.",
         },
       },
+      {
+        slug: "gallery",
+        desc: {
+          en: "Card grids for theme or project showcases.",
+          ja: "テーマやプロジェクトの紹介向けカードグリッド。",
+          "zh-CN": "用于主题或项目展示的卡片网格。",
+          es: "Cuadrículas de tarjetas para escaparates de temas o proyectos.",
+          de: "Kartenraster für Theme- oder Projekt-Showcases.",
+          fr: "Grilles de cartes pour vitrines de thèmes ou de projets.",
+          ko: "테마·프로젝트 소개용 카드 그리드.",
+        },
+      },
     ],
   },
   {
@@ -1108,7 +1120,7 @@ function guideContent(): string {
 type SummaryText = { readonly en: string; readonly ja?: string };
 
 function readSummary(text: SummaryText, language: ScaffoldLanguage): string {
-  return text[language] ?? text.en;
+  return language === "ja" ? (text.ja ?? text.en) : text.en;
 }
 
 const EXAMPLES_COPY: {

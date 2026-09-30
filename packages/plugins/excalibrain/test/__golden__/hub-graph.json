@@ -1,0 +1,105 @@
+{
+  "center": {
+    "id": "hub",
+    "slug": "hub",
+    "title": "Hub",
+    "permalink": "/hub",
+    "virtual": false,
+    "role": "center",
+    "relationType": "defined"
+  },
+  "nodes": [
+    {
+      "id": "root",
+      "slug": "root",
+      "title": "Root",
+      "permalink": "/root",
+      "virtual": false,
+      "role": "parent",
+      "relationType": "defined"
+    },
+    {
+      "id": "child-a",
+      "slug": "child-a",
+      "title": "Child A",
+      "permalink": "/child-a",
+      "virtual": false,
+      "role": "child",
+      "relationType": "inferred"
+    },
+    {
+      "id": "child-b",
+      "slug": "child-b",
+      "title": "Child B",
+      "permalink": "/child-b",
+      "virtual": false,
+      "role": "child",
+      "relationType": "inferred"
+    },
+    {
+      "id": "child-c",
+      "slug": "child-c",
+      "title": "Child C",
+      "permalink": "/child-c",
+      "virtual": false,
+      "role": "parent",
+      "relationType": "inferred"
+    },
+    {
+      "id": "peer",
+      "slug": "peer",
+      "title": "Peer",
+      "permalink": "/peer",
+      "virtual": false,
+      "role": "leftFriend",
+      "relationType": "inferred"
+    },
+    {
+      "id": "cousin",
+      "slug": "cousin",
+      "title": "Cousin",
+      "permalink": "/cousin",
+      "virtual": false,
+      "role": "sibling",
+      "relationType": "inferred"
+    }
+  ],
+  "links": [
+    {
+      "from": "hub",
+      "to": "root",
+      "role": "parent",
+      "relationType": "defined"
+    },
+    {
+      "from": "hub",
+      "to": "child-a",
+      "role": "child",
+      "relationType": "inferred"
+    },
+    {
+      "from": "hub",
+      "to": "child-b",
+      "role": "child",
+      "relationType": "inferred"
+    },
+    {
+      "from": "hub",
+      "to": "child-c",
+      "role": "parent",
+      "relationType": "inferred"
+    },
+    {
+      "from": "hub",
+      "to": "peer",
+      "role": "leftFriend",
+      "relationType": "inferred"
+    },
+    {
+      "from": "hub",
+      "to": "cousin",
+      "role": "sibling",
+      "relationType": "inferred"
+    }
+  ]
+}

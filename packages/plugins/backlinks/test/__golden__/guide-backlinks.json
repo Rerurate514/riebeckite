@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "index",
+    "permalink": "/",
+    "title": "Index"
+  },
+  {
+    "slug": "api",
+    "permalink": "/api",
+    "title": "API"
+  }
+]

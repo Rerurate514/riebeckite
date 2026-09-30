@@ -203,11 +203,11 @@ export default function GardenExplorer(props: Props) {
           viewBox={`0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}`}
           role="img"
           aria-label="Interactive graph of notes and internal links"
-          onWheel={(event) => {
+          onWheel={(event: WheelEvent) => {
             event.preventDefault();
             zoom(event.deltaY > 0 ? -0.1 : 0.1);
           }}
-          onPointerMove={(event) => {
+          onPointerMove={(event: PointerEvent) => {
             if (event.buttons !== 1) return;
             setView((current) => ({
               ...current,

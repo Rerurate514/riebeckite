@@ -1,0 +1,29 @@
+{
+  "currentSlug": "beta",
+  "nodes": [
+    {
+      "slug": "beta",
+      "permalink": "/beta",
+      "title": "Beta",
+      "relation": "current",
+      "outgoing": [
+        "alpha"
+      ],
+      "backlinks": [
+        "alpha"
+      ]
+    },
+    {
+      "slug": "alpha",
+      "permalink": "/alpha",
+      "title": "Alpha",
+      "relation": "both",
+      "outgoing": [
+        "beta"
+      ],
+      "backlinks": [
+        "beta"
+      ]
+    }
+  ]
+}

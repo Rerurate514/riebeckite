@@ -1,0 +1,107 @@
+.rr-map {
+  --rr-map-paper: var(--rb-color-paper, #ffffff);
+  --rr-map-ink: var(--rb-color-ink, #000000);
+  --rr-map-muted: var(--rb-color-muted, #69645c);
+  --rr-map-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rr-map-ink) 18%, transparent)
+  );
+  --rr-map-accent: var(--rb-color-accent, #0b6e99);
+  margin: 2rem 0;
+  border: 1px solid var(--rr-map-rule);
+  background: color-mix(in srgb, var(--rr-map-paper) 96%, var(--rr-map-ink));
+  color: var(--rr-map-ink);
+}
+
+.rr-map__caption {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--rr-map-rule);
+  color: var(--rr-map-muted);
+  font-size: 0.875rem;
+}
+
+.rr-map__canvas {
+  height: 320px;
+  background: color-mix(in srgb, var(--rr-map-ink) 4%, transparent);
+}
+
+.rr-map:not([data-rr-map="rendered"]) .rr-map__canvas {
+  display: none;
+}
+
+.rr-map__canvas .leaflet-container {
+  background: transparent;
+  font: inherit;
+}
+
+.rr-map__static {
+  padding: 0.75rem 0.875rem 0.875rem;
+  border-top: 1px solid var(--rr-map-rule);
+}
+
+.rr-map__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--rr-map-rule);
+}
+
+.rr-map__place {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.rr-map__markers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.rr-map__marker {
+  color: var(--rr-map-muted);
+  font-size: 0.875rem;
+}
+
+.rr-map__link {
+  color: var(--rr-map-accent);
+}
+
+.rr-map__attribution {
+  margin: 0.625rem 0 0;
+  color: var(--rr-map-muted);
+  font-size: 0.75rem;
+}
+
+.rr-map__fallback {
+  border-top: 1px solid var(--rr-map-rule);
+  color: var(--rr-map-muted);
+  font-size: 0.8125rem;
+}
+
+.rr-map__fallback summary {
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+}
+
+.rr-map__fallback pre {
+  overflow: auto;
+  margin: 0 1rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--rr-map-rule);
+  color: var(--rr-map-ink);
+  background: color-mix(in srgb, var(--rr-map-ink) 6%, transparent);
+}
+
+.rr-map[data-rr-map="error"] .rr-map__static::before {
+  content: "The interactive map could not be loaded. ";
+  color: var(--rr-map-muted);
+}
+
+html[data-theme="dark"] .rr-map,
+html.dark .rr-map {
+  --rr-map-paper: var(--rb-color-ink, #000000);
+  --rr-map-ink: var(--rb-color-paper, #ffffff);
+}

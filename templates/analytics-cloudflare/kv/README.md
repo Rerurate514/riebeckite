@@ -11,3 +11,7 @@ plugin's `publicConfig.collectorUrl` with the resulting `/events` URL.
 KV does not have atomic increment or aggregate queries. Concurrent counts may
 be lost; `GET /content/.../page-views` and `GET /popular` return HTTP 501 by
 design. Use the D1 template for reports or accurate increments.
+
+KV also cannot back an atomic rate limiter. This template leaves `rateLimit`
+unset; if you need per-IP limiting without D1, configure Cloudflare Rate Limiting
+instead. Origin checks are not authentication, so treat totals as untrusted.

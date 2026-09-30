@@ -45,8 +45,10 @@ export function initTextFragmentShare(): void {
   status.setAttribute("role", "status");
   status.setAttribute("aria-live", "polite");
 
-  actions.append(linkButton, quoteButton);
-  popover.append(actions, status);
+  actions.appendChild(linkButton);
+  actions.appendChild(quoteButton);
+  popover.appendChild(actions);
+  popover.appendChild(status);
   document.body.appendChild(popover);
 
   let active: ActiveSelection | null = null;

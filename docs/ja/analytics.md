@@ -91,13 +91,22 @@ export default {
 
 `env` は `fetch` 内でしか存在しないため、バインディングはリクエストごとに構築します。
 
+### レート制限は緩和策であり、認証ではない
+
+Origin は認証ではないため、許可された `Origin` を偽装して page view を直接 POST できます。任意の `rateLimit` 境界を渡すと、接続元 IP ごとの固定時間窓で回数を制限し、超過時に HTTP `429` を返します。
+
+- `D1AnalyticsRateLimiter` / `d1RateLimiter(db, { maxRequests, windowMs })` — D1 に原子的なカウンターを持ち、isolate 間で共有します。デプロイ前に `migrations/0002_analytics_rate_limits.sql` を適用してください。
+- `MemoryAnalyticsRateLimiter` — テストとローカル開発向けのプロセス内カウンターです。Worker の isolate は短命で共有されないため、分散したクライアントは制限できません。本番は D1 を使ってください。
+
+レート制限は単一クライアントからの濫用を減らすだけで、偽造や分散アクセスを完全には防げません。収集した計測は信頼できないデータとして扱ってください。
+
 ### エンドポイント
 
-- `POST /events` — JSON の `page_view` ペイロード（最大 8 KiB）を受け付け、`204` を返します。不正な JSON、未知のフィールド、安全でない文字列、JSON 以外の content type は `400`/`415`、大きすぎるボディは `413` で拒否します。
+- `POST /events` — JSON の `page_view` ペイロード（最大 8 KiB）を受け付け、`204` を返します。不正な JSON、未知のフィールド、安全でない文字列、JSON 以外の content type は `400`/`415`、大きすぎるボディは `413`、レート制限の時間窓を超えたクライアントは `429` で拒否します。
 - `GET /content/:contentId/page-views?from=&to=` — コンテンツ別の合計。
 - `GET /popular?limit=&from=&to=` — 人気ランキング。
 
-読み取り API は、ストレージアダプタが対応機能を宣言している場合にだけ利用できます。Origin は既定で拒否されるため、明示的に `allowedOrigins` を設定してください。`"any"` は意図的に公開するコレクタだけに使います。IP、Cookie、User-Agent、フィンガープリントは読み取らず保存もしません。`path` / `lang` は補助情報であり、D1 は保存しません。
+読み取り API は、ストレージアダプタが対応機能を宣言している場合にだけ利用できます。Origin は既定で拒否されるため、明示的に `allowedOrigins` を設定してください。`"any"` は意図的に公開するコレクタだけに使います。Cookie、User-Agent、フィンガープリントは読み取りも保存もしません。`path` / `lang` は補助情報であり、D1 は保存しません。レート制限を設定した場合に限り、接続元 IP（`CF-Connecting-IP`）をレート制限キーとして読み取ります。D1 版はそのキーを有効な時間窓のあいだだけ保存します。
 
 ### デプロイ
 
@@ -105,6 +114,7 @@ D1 schema はリクエスト中に実行せず、必ずデプロイ前に明示�
 
 ```sh
 pnpm exec wrangler d1 execute ANALYTICS_DB --file node_modules/@riebeckite/analytics-cloudflare/migrations/0001_analytics_page_views.sql
+pnpm exec wrangler d1 execute ANALYTICS_DB --file node_modules/@riebeckite/analytics-cloudflare/migrations/0002_analytics_rate_limits.sql
 pnpm exec wrangler deploy
 ```
 

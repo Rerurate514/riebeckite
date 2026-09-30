@@ -207,6 +207,7 @@ export type {
   PluginEndpointContext,
   PluginEndpointMethod,
   PluginEndpointOptions,
+  PluginEndpointRequest,
   PluginEndpointResponse,
 } from "./src/types/plugin_endpoint.js";
 export { defineEndpoint } from "./src/types/plugin_endpoint.js";

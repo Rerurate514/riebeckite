@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "direct",
+    "permalink": "/direct",
+    "title": "Direct",
+    "score": 3
+  },
+  {
+    "slug": "hub",
+    "permalink": "/hub",
+    "title": "Hub",
+    "score": 3
+  },
+  {
+    "slug": "tagged",
+    "permalink": "/tagged",
+    "title": "Tagged",
+    "score": 2
+  },
+  {
+    "slug": "co",
+    "permalink": "/co",
+    "title": "Co",
+    "score": 1
+  }
+]

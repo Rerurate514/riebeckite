@@ -89,6 +89,9 @@ importers:
       '@riebeckite/plugin-canvas':
         specifier: workspace:*
         version: link:../../packages/plugins/canvas
+      '@riebeckite/plugin-changelog':
+        specifier: workspace:*
+        version: link:../../packages/plugins/changelog
       '@riebeckite/plugin-chartjs':
         specifier: workspace:*
         version: link:../../packages/plugins/chartjs
@@ -128,6 +131,9 @@ importers:
       '@riebeckite/plugin-flashcards':
         specifier: workspace:*
         version: link:../../packages/plugins/flashcards
+      '@riebeckite/plugin-gallery':
+        specifier: workspace:*
+        version: link:../../packages/plugins/gallery
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
@@ -152,6 +158,9 @@ importers:
       '@riebeckite/plugin-local-graph':
         specifier: workspace:*
         version: link:../../packages/plugins/local-graph
+      '@riebeckite/plugin-map':
+        specifier: workspace:*
+        version: link:../../packages/plugins/map
       '@riebeckite/plugin-markmap':
         specifier: workspace:*
         version: link:../../packages/plugins/markmap
@@ -164,6 +173,9 @@ importers:
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugins/mermaid
+      '@riebeckite/plugin-pdf':
+        specifier: workspace:*
+        version: link:../../packages/plugins/pdf
       '@riebeckite/plugin-plantuml':
         specifier: workspace:*
         version: link:../../packages/plugins/plantuml
@@ -203,12 +215,18 @@ importers:
       '@riebeckite/plugin-series':
         specifier: workspace:*
         version: link:../../packages/plugins/series
+      '@riebeckite/plugin-share':
+        specifier: workspace:*
+        version: link:../../packages/plugins/share
       '@riebeckite/plugin-shortcodes':
         specifier: workspace:*
         version: link:../../packages/plugins/shortcodes
       '@riebeckite/plugin-sidenotes':
         specifier: workspace:*
         version: link:../../packages/plugins/sidenotes
+      '@riebeckite/plugin-taxonomy':
+        specifier: workspace:*
+        version: link:../../packages/plugins/taxonomy
       '@riebeckite/plugin-text-fragment':
         specifier: workspace:*
         version: link:../../packages/plugins/text-fragment
@@ -224,6 +242,9 @@ importers:
       '@riebeckite/plugin-wavedrom':
         specifier: workspace:*
         version: link:../../packages/plugins/wavedrom
+      '@riebeckite/plugin-webmention':
+        specifier: workspace:*
+        version: link:../../packages/plugins/webmention
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default
@@ -367,6 +388,10 @@ importers:
       '@riebeckite/plugin-analytics':
         specifier: workspace:*
         version: link:../../plugins/analytics
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/integrations/honox:
     dependencies:
@@ -386,17 +411,35 @@ importers:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
 
+  packages/integrations/webmention-cloudflare:
+    dependencies:
+      '@riebeckite/plugin-webmention':
+        specifier: workspace:*
+        version: link:../../plugins/webmention
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/alias:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/analytics:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/attachment:
     dependencies:
@@ -424,6 +467,10 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/bases:
     dependencies:
@@ -445,12 +492,26 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/canvas:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/changelog:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.13.6
 
   packages/plugins/chartjs:
     dependencies:
@@ -466,6 +527,10 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/code-enhance:
     dependencies:
@@ -478,6 +543,10 @@ importers:
       shiki:
         specifier: ^3.13.0
         version: 3.23.0
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/code-tabs:
     dependencies:
@@ -572,6 +641,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.6
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/discord-embed:
     dependencies:
@@ -584,6 +656,10 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/excalidraw:
     dependencies:
@@ -616,6 +692,25 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0
 
+  packages/plugins/gallery:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+      vfile-matter:
+        specifier: 'catalog:'
+        version: 5.0.1
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/garden-explorer:
     dependencies:
       '@riebeckite/core':
@@ -645,6 +740,10 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/hover-preview:
     dependencies:
@@ -691,6 +790,16 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/plugins/map:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/markmap:
     dependencies:
@@ -752,6 +861,12 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0
 
+  packages/plugins/pdf:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/plugins/permalink:
     dependencies:
       '@riebeckite/core':
@@ -760,6 +875,10 @@ importers:
       yaml:
         specifier: ^2.9.0
         version: 2.9.0
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/plantuml:
     dependencies:
@@ -772,6 +891,10 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/qr-code:
     dependencies:
@@ -806,6 +929,10 @@ importers:
       vfile-matter:
         specifier: 'catalog:'
         version: 5.0.1
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/recent-posts:
     dependencies:
@@ -815,12 +942,20 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/related-posts:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/rename:
     dependencies:
@@ -837,6 +972,10 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/rich-embed:
     dependencies:
@@ -852,18 +991,40 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/seo:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/series:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/plugins/share:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/shortcodes:
     dependencies:
@@ -876,8 +1037,18 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/sidenotes:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/taxonomy:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
@@ -901,6 +1072,10 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/ux:
     dependencies:
@@ -931,6 +1106,16 @@ importers:
       wavedrom:
         specifier: ^3.7.0
         version: 3.7.0
+
+  packages/plugins/webmention:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/themes/default:
     dependencies:

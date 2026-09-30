@@ -1,14 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { parse } from "@babel/parser";
-import type { Plugin } from "vite";
+import type { Plugin, PluginOption } from "vite";
 
 const honoxIslandDependencyPluginName = "inject-importing-islands";
 const importingIslandsExport = "__importing_islands";
 type ModuleResolver = {
   resolve(source: string, importer?: string): Promise<{ id: string } | null>;
 };
-type HonoxPlugin = Plugin | Promise<Plugin>;
 
 /**
  * Replaces HonoX's dependency walker with one that remains inside the app
@@ -17,17 +16,25 @@ type HonoxPlugin = Plugin | Promise<Plugin>;
  * imports an island.
  */
 export function replaceHonoxIslandDependencyPlugin(
-  plugins: HonoxPlugin[],
-): HonoxPlugin[] {
+  plugins: PluginOption[],
+): PluginOption[] {
   return [
     ...plugins.map(disableHonoxIslandDependencyPlugin),
     scopedIslandDependencyPlugin(),
   ];
 }
 
-function disableHonoxIslandDependencyPlugin(plugin: HonoxPlugin): HonoxPlugin {
+function disableHonoxIslandDependencyPlugin(
+  plugin: PluginOption,
+): PluginOption {
+  if (!plugin || typeof plugin === "boolean") return plugin;
+
+  if (Array.isArray(plugin)) {
+    return plugin.map(disableHonoxIslandDependencyPlugin);
+  }
+
   if (plugin instanceof Promise) {
-    return plugin.then(disableHonoxIslandDependencyPlugin);
+    return plugin.then(disableHonoxIslandDependencyPlugin) as PluginOption;
   }
 
   if (plugin.name !== honoxIslandDependencyPluginName) return plugin;

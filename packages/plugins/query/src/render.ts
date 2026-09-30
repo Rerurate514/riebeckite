@@ -137,11 +137,16 @@ function renderCell(
   }
 }
 
+function entryTitle(entry: ContentManifestEntry): string {
+  const title = entry.frontmatter.title;
+  return typeof title === "string" && title.trim() ? title : entry.title;
+}
+
 function renderTitleLink(
   entry: ContentManifestEntry,
   className: string,
 ): string {
-  return `<a class="${escapeHtmlAttribute(className)}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a>`;
+  return `<a class="${escapeHtmlAttribute(className)}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entryTitle(entry))}</a>`;
 }
 
 function renderTags(tags: readonly string[], className: string): string {

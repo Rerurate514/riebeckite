@@ -111,7 +111,7 @@ export function buildExcaliBrainGraph(
   }
 
   // 3. Siblings: other children of this note's parents.
-  if (options.siblings) {
+  if (options.infer && options.siblings) {
     const parents = [...relations.values()].filter(
       (relation) => relation.role === "parent",
     );

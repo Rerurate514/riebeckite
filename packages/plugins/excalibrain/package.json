@@ -23,6 +23,9 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*"
   },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -35,6 +38,7 @@
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {

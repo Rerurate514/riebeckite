@@ -55,14 +55,15 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
       processed.set(context.slug, context.content);
     },
     onManifestCreated: (context) => {
-      const { manifest } = context;
+      const { config, manifest } = context;
+      if (!config) return;
       for (const entry of manifest.entries) {
         if (entry.html.includes(BREADCRUMBS_ATTRIBUTE)) continue;
 
         const items = buildBreadcrumbItems({
           manifest,
           entry,
-          config: context.config,
+          config,
           homeLabel: resolved.homeLabel,
         });
         if (items.length === 0) continue;
@@ -71,7 +72,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
         const nav = renderBreadcrumbNav(items, resolved);
         html = injectBreadcrumbNav(html, nav);
         if (resolved.jsonLd) {
-          const schema = buildBreadcrumbJsonLd(context.config, items);
+          const schema = buildBreadcrumbJsonLd(config, items);
           if (!hasBreadcrumbHeadTag(entry.headTags)) {
             entry.headTags = [
               ...(entry.headTags ?? []),

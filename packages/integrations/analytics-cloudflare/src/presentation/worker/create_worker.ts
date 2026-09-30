@@ -1,4 +1,5 @@
 import type { AnalyticsEvent } from "@riebeckite/plugin-analytics";
+import type { AnalyticsRateLimiter } from "../../domain/analytics/rate_limit.js";
 import type { AnalyticsStorage } from "../../domain/analytics/storage.js";
 
 const MAX_BODY_BYTES = 8_192;
@@ -17,6 +18,12 @@ export type AnalyticsWorkerOptions = Readonly<{
   /** One explicitly selected runtime storage adapter. No default is provided. */
   storage: AnalyticsStorage;
   cors?: AnalyticsCorsOptions;
+  /**
+   * Optional per-client-IP limiter applied to `POST /events`. Rate limiting is
+   * a mitigation for event forgery, not authentication; see the domain
+   * `AnalyticsRateLimiter` contract.
+   */
+  rateLimit?: AnalyticsRateLimiter;
 }>;
 
 export type AnalyticsWorker = Readonly<{
@@ -35,7 +42,12 @@ export function createWorker(options: AnalyticsWorkerOptions): AnalyticsWorker {
       }
       const url = new URL(request.url);
       if (request.method === "POST" && url.pathname === "/events") {
-        return captureEvent(request, options.storage, corsHeaders);
+        return captureEvent(
+          request,
+          options.storage,
+          options.rateLimit,
+          corsHeaders,
+        );
       }
       if (request.method === "GET" && url.pathname === "/popular") {
         return queryPopular(url, options.storage, corsHeaders);
@@ -54,6 +66,7 @@ export function createWorker(options: AnalyticsWorkerOptions): AnalyticsWorker {
 async function captureEvent(
   request: Request,
   storage: AnalyticsStorage,
+  rateLimit: AnalyticsRateLimiter | undefined,
   headers: Headers,
 ): Promise<Response> {
   if (!request.headers.get("content-type")?.includes("application/json")) {
@@ -75,8 +88,22 @@ async function captureEvent(
   }
   const event = validateEvent(value);
   if (!event) return json({ error: "invalid_event" }, 400, headers);
+  if (rateLimit) {
+    const outcome = await rateLimit.check(clientIp(request));
+    if (outcome === "limited")
+      return json({ error: "rate_limited" }, 429, headers);
+  }
   await storage.capture(event);
   return new Response(null, { status: 204, headers });
+}
+
+/**
+ * Rate-limit key: the Cloudflare connecting IP, which Cloudflare sets and
+ * overwrites on every Worker request. Fall back to one shared bucket only when
+ * the header is absent (for example a local harness).
+ */
+function clientIp(request: Request): string {
+  return request.headers.get("cf-connecting-ip") ?? "unknown";
 }
 
 async function queryContent(

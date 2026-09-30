@@ -1,0 +1,27 @@
+[
+  {
+    "id": "getting-started",
+    "level": 2,
+    "title": "Getting started"
+  },
+  {
+    "id": "install",
+    "level": 3,
+    "title": "Install & run"
+  },
+  {
+    "id": "config",
+    "level": 4,
+    "title": "config.ts reference"
+  },
+  {
+    "id": "api",
+    "level": 2,
+    "title": "API"
+  },
+  {
+    "id": "options",
+    "level": 3,
+    "title": "Options"
+  }
+]

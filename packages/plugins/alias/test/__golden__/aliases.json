@@ -1,0 +1,74 @@
+{
+  "locations": [
+    {
+      "slug": "index",
+      "permalink": "/",
+      "redirects": [
+        {
+          "path": "/Home",
+          "status": 301
+        },
+        {
+          "path": "/Start%20Here",
+          "status": 301
+        }
+      ]
+    },
+    {
+      "slug": "notes/first",
+      "permalink": "/n/first",
+      "redirects": [
+        {
+          "path": "/First%20Note",
+          "status": 301
+        },
+        {
+          "path": "/notes/one",
+          "status": 301
+        }
+      ]
+    },
+    {
+      "slug": "notes/second",
+      "permalink": "/n/second",
+      "redirects": []
+    },
+    {
+      "slug": "notes/third",
+      "permalink": "/n/third",
+      "redirects": []
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "alias-collision",
+      "severity": "warning",
+      "slug": "notes/second",
+      "target": "/Home",
+      "meta": {
+        "alias": "Home",
+        "path": "/Home",
+        "conflictSlug": "index"
+      }
+    },
+    {
+      "code": "alias-invalid",
+      "severity": "warning",
+      "slug": "notes/second",
+      "meta": {
+        "alias": "bad?alias"
+      }
+    },
+    {
+      "code": "alias-collision",
+      "severity": "warning",
+      "slug": "notes/third",
+      "target": "/First%20Note",
+      "meta": {
+        "alias": "First Note",
+        "path": "/First%20Note",
+        "conflictSlug": "notes/first"
+      }
+    }
+  ]
+}

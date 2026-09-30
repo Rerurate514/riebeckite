@@ -50,6 +50,7 @@ export function rehypeCodeEnhance(options: CodeEnhanceOptions = {}) {
 
   return async (tree: HastNode, file: unknown) => {
     restoreCodeMeta(tree);
+    normalizeCodeLanguages(tree);
     if (typeof prettyCode === "function") {
       await (
         prettyCode as (tree: HastNode, file: unknown) => Promise<void> | void
@@ -68,6 +69,41 @@ function restoreCodeMeta(tree: HastNode) {
     if (!meta) return;
     node.data = { ...getRecord(node.data), meta };
   });
+}
+
+const LANGUAGE_CLASS_PREFIX = "language-";
+
+/**
+ * Shiki language ids are lowercase, but rehype-pretty-code reads the id
+ * verbatim from the `language-*` class on `<code>`. A capitalized fence like
+ * ```Kotlin``` therefore fails to load and silently renders unhighlighted, so
+ * normalize the id before highlighting runs.
+ */
+function normalizeCodeLanguages(tree: HastNode) {
+  visitElements(tree, (node) => {
+    if (node.tagName !== "code") return;
+    const className = normalizeLanguageClassNames(node.properties?.className);
+    if (className === undefined) return;
+    node.properties = { ...node.properties, className };
+  });
+}
+
+function normalizeLanguageClassNames(className: unknown): unknown {
+  if (Array.isArray(className)) {
+    return className.map(normalizeLanguageClassName);
+  }
+  if (typeof className === "string") {
+    return className.split(/\s+/).map(normalizeLanguageClassName).join(" ");
+  }
+  return className;
+}
+
+function normalizeLanguageClassName(value: unknown): unknown {
+  if (typeof value !== "string" || !value.startsWith(LANGUAGE_CLASS_PREFIX)) {
+    return value;
+  }
+  const language = value.slice(LANGUAGE_CLASS_PREFIX.length);
+  return `${LANGUAGE_CLASS_PREFIX}${language.toLowerCase()}`;
 }
 
 function getCodeMeta(node: ElementNode): string | null {

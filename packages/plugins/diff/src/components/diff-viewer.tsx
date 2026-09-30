@@ -1,5 +1,6 @@
 import type { DiffRevision, PostDiff } from "../types.js";
 import { escapeHtml, renderDiffLine } from "./diff-line.js";
+import { formatDiffDate } from "./format-date.js";
 
 export type DiffViewerProps = {
   history: DiffRevision[];
@@ -41,13 +42,7 @@ function renderRevisionSelect(
   return `<select data-rr-diff-${kind}>${emptyOption}${history
     .map(
       (revision) =>
-        `<option value="${escapeHtml(revision.hash)}"${revision.hash === value ? " selected" : ""}>${escapeHtml(revision.shortHash)} · ${escapeHtml(formatDate(revision.date))}</option>`,
+        `<option value="${escapeHtml(revision.hash)}"${revision.hash === value ? " selected" : ""}>${escapeHtml(revision.shortHash)} · ${escapeHtml(formatDiffDate(revision.date))}</option>`,
     )
     .join("")}</select>`;
-}
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString("en", { month: "short", day: "numeric" });
 }

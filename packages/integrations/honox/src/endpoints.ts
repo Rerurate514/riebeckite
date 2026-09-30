@@ -1,6 +1,8 @@
 import type {
   ContentManager,
   PluginEndpoint,
+  PluginEndpointMethod,
+  PluginEndpointRequest,
   PluginEndpointResponse,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
@@ -15,9 +17,27 @@ type HonoLikeApp = {
     path: string,
     handler: (context: HonoLikeContext) => Promise<unknown>,
   ): void;
+  post(
+    path: string,
+    handler: (context: HonoLikeContext) => Promise<unknown>,
+  ): void;
+};
+
+type HonoLikeHeaders = {
+  forEach(callback: (value: string, key: string) => void): void;
+};
+
+type HonoLikeRequest = {
+  method: string;
+  url: string;
+  path: string;
+  raw: { headers: HonoLikeHeaders };
+  query(): Record<string, string>;
+  text(): Promise<string>;
 };
 
 type HonoLikeContext = {
+  req: HonoLikeRequest;
   json(
     body: unknown,
     status?: number,
@@ -42,15 +62,23 @@ export function mountRiebeckiteEndpoints(
   const endpoints = collectPluginEndpoints(options.config);
 
   for (const endpoint of endpoints) {
-    app.get(endpoint.path, async (context) => {
+    const method: PluginEndpointMethod = endpoint.method ?? "GET";
+    const handler = async (context: HonoLikeContext): Promise<unknown> => {
       const manifest = await options.content.getManifest();
+      const request = await toPluginEndpointRequest(context, method);
       const response = await endpoint.handler({
         config: options.config,
         manifest,
+        request,
       });
 
       return toHonoResponse(context, response);
-    });
+    };
+    if (method === "POST") {
+      app.post(endpoint.path, handler);
+    } else {
+      app.get(endpoint.path, handler);
+    }
   }
 }
 
@@ -102,6 +130,25 @@ function validateEndpointPath(path: string): void {
       `Invalid Riebeckite plugin endpoint path: "${path}" conflicts with the static assets namespace.`,
     );
   }
+}
+
+async function toPluginEndpointRequest(
+  context: HonoLikeContext,
+  method: PluginEndpointMethod,
+): Promise<PluginEndpointRequest> {
+  const headers: Record<string, string> = {};
+  context.req.raw.headers.forEach((value, key) => {
+    headers[key.toLowerCase()] = value;
+  });
+
+  return {
+    method,
+    url: context.req.url,
+    path: context.req.path,
+    query: context.req.query(),
+    headers,
+    body: await context.req.text(),
+  };
 }
 
 function toHonoResponse(

@@ -1,9 +1,9 @@
 import type { Plugin } from "unified";
-import type { Node } from "unist";
 import type { ContentSource } from "../content/content_source.js";
 import type { PluginRenderInput } from "./plugin_context.js";
 
-export type PipelinePlugin = Plugin<[unknown?], Node, Node>;
+// biome-ignore lint/suspicious/noExplicitAny: Unified plugins define their own option and tree types; the pipeline accepts heterogeneous remark/rehype plugin factories at the boundary.
+export type PipelinePlugin = Plugin<any[], any, any>;
 
 export type MarkdownPipeline = {
   use(plugin: PipelinePlugin, options?: unknown): void;

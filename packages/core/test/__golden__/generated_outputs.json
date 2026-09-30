@@ -1,0 +1,12 @@
+[
+  {
+    "path": "_redirects",
+    "content": "/a /b 301",
+    "owner": "emitter"
+  },
+  {
+    "path": "daily/feed.xml",
+    "content": "<feed />",
+    "owner": "emitter"
+  }
+]

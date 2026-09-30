@@ -216,6 +216,8 @@ capability です。Page Type は安定した ID、SSG で出力する path、�
 priority、resolver を宣言します。resolver は public manifest と正規化済みの
 request path を受け取り、page body の HTML または `null` を返します。document
 frame と Theme は site 側に残るため、未知の Page Type を Theme が知る必要はありません。
+page は `title`、`description`、`headTags` も返せますが、それらをどのように描画するかは
+document frame が決めます。
 
 ```ts
 definePlugin({

@@ -205,7 +205,8 @@ does not handle a target so another renderer can participate.
 type declares its stable ID, SSG paths, optional priority, and a resolver. The
 resolver receives the public manifest and a normalized request path, then
 returns HTML for the page body or `null`. The site still owns its document frame
-and theme.
+and theme. A page may also return `title`, `description`, and `headTags`; the
+document frame decides how to render that metadata.
 
 ```ts
 definePlugin({
@@ -421,4 +422,3 @@ repairing runtime resolution.
 - [Observability](../framework/observability.md)
 - [Theme System](./theme-api.md)
 - [Framework Reference](./README.md)
-

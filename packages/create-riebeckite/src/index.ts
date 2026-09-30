@@ -17,7 +17,6 @@ export type CreateRiebeckiteOptions = {
   readonly githubActions: boolean;
   readonly contentRepository?: string;
   readonly siteRepository?: string;
-  readonly notifyOnContentPush: boolean;
 };
 
 export async function runCreateRiebeckite(
@@ -46,14 +45,13 @@ export async function runCreateRiebeckite(
       githubActions: options.githubActions,
       contentRepository: options.contentRepository,
       siteRepository: options.siteRepository,
-      notifyOnContentPush: options.notifyOnContentPush,
     });
     const relative =
       path.relative(process.cwd(), result.targetDirectory) || ".";
     console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
     console.log("");
     console.log(formatScaffoldNextSteps(relative));
-    if (options.notifyOnContentPush) {
+    if (options.contentRepository !== undefined) {
       console.log("");
       console.log(
         "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
@@ -79,7 +77,6 @@ function parseArguments(
   let githubActions = false;
   let contentRepository: string | undefined;
   let siteRepository: string | undefined;
-  let notifyOnContentPush = false;
 
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
@@ -93,10 +90,6 @@ function parseArguments(
     }
     if (argument === "--github-actions") {
       githubActions = true;
-      continue;
-    }
-    if (argument === "--notify-on-content-push") {
-      notifyOnContentPush = true;
       continue;
     }
     if (
@@ -129,7 +122,7 @@ function parseArguments(
     }
     if (directory !== undefined) {
       throw new Error(
-        "Usage: create-riebeckite [directory] [--preset <name>] [--github-actions] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--notify-on-content-push] [--force]",
+        "Usage: create-riebeckite [directory] [--preset <name>] [--github-actions] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
       );
     }
     directory = argument;
@@ -143,7 +136,6 @@ function parseArguments(
     githubActions,
     contentRepository,
     siteRepository,
-    notifyOnContentPush,
   };
 }
 

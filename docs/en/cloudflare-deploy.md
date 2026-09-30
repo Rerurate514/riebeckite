@@ -102,6 +102,26 @@ npx wrangler dev
 
 Instead of running `npx wrangler deploy` manually, you can deploy when you push to GitHub.
 
+For a same-repository site, generate the workflow with:
+
+```sh
+npx create-riebeckite my-site --github-actions
+```
+
+For a separate content repository, generate both workflow files with:
+
+```sh
+npx create-riebeckite my-site --github-actions \
+  --content-repository OWNER/notes \
+  --site-repository OWNER/my-site
+```
+
+The external form checks out `OWNER/notes` into `content/`, receives
+`content-updated` repository dispatch events, and writes `github/notify-site.yml`
+for the content repository. Copy that file to
+`.github/workflows/notify-site.yml` in the content repository. An external
+checkout alone does not start the site workflow on a content push.
+
 See the [Cloudflare deployment template](../../templates/cloudflare/README_en.md) for the full workflow.
 
 ## Next steps

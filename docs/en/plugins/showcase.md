@@ -287,6 +287,7 @@ Some plugins are structural and cannot be shown with a single code fence. They a
 | [`toc`](../../../packages/plugins/toc/README.md) | A table of contents that follows the scroll position |
 | [`backlinks`](../../../packages/plugins/backlinks/README.md) | A list of notes that link here |
 | [`garden-explorer`](../../../packages/plugins/garden-explorer/README.md) | A graph and search explorer |
+| [`taxonomy`](../../../packages/plugins/taxonomy/README.md) | Tag and folder listing pages |
 | [`lightbox`](../../../packages/plugins/lightbox/README.md) | Click an image to zoom |
 | [`diff`](../../../packages/plugins/diff/README.md) / [`changelog`](../../../packages/plugins/changelog/README.md) | Per-note git history |
 | [`l10n`](../../../packages/plugins/l10n/README.md) | A language switcher on translated pages |
@@ -297,4 +298,3 @@ Some plugins are structural and cannot be shown with a single code fence. They a
 - [Plugins](./README.md) — the full catalog
 - [Writing a plugin](./writing-a-plugin.md) — build your own
 - [Plugin API](../reference/plugin-api.md) — the contract these plugins share
-

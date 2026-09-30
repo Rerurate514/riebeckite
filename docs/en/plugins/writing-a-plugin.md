@@ -1,6 +1,6 @@
 # Your First Plugin
 
-A plugin adds **features** — Markdown/HTML transformation, client behavior, SEO, diagnostics, and more. For appearance, use a theme ([Your first theme](../themes/writing-a-theme.md)); for site-specific routes, use the app (`app/`).
+A plugin adds **features** — Markdown/HTML transformation, client behavior, standalone pages, SEO, diagnostics, and more. For appearance, use a theme ([Your first theme](../themes/writing-a-theme.md)). A Plugin Page Type uses the site's generic route; reserve an app route for a page that is specific to this site.
 
 Go in this order: create a minimal plugin → add CSS → transform Markdown.
 
@@ -88,7 +88,29 @@ export function localPlugin() {
 
 Use `extendMarkdownPipeline` / `extendHtmlPipeline` when you need finer control. Other extension points (dependencies, lifecycle, renderers, endpoints, …) are in [Plugin System](../reference/plugin-api.md).
 
-## 4. Package it for distribution (optional)
+## 4. Add a standalone page (when appropriate)
+
+Use `pageTypes` only for an independent screen. The page returns an HTML body;
+the site's generic catch-all route supplies the document frame and theme. Do not
+add a plugin-specific HonoX route. Article embeds such as Canvas, Bases, and
+Excalidraw stay `renderers`.
+
+```ts
+pageTypes: [{
+  id: "local.report",
+  paths: ["/report"],
+  resolve: ({ pathname }) => pathname === "/report"
+    ? { type: "local.report", pathname, title: "Report", body: "<p>Ready</p>" }
+    : null,
+}],
+```
+
+The scaffolded HonoX route already calls `resolveRiebeckiteRoute` and
+`pluginPageSsgParams`. Choose a globally unique ID, derive dynamic SSG paths
+from the public manifest, and return `null` for paths you do not own. See
+[Page System](../framework/page-system.md) for the boundary and full wiring.
+
+## 5. Package it for distribution (optional)
 
 Once it works in a site, you can package it. Use `packages/plugins/backlinks` as a template.
 
@@ -105,7 +127,7 @@ packages/plugins/backlinks/
 
 A distributed plugin depends only on `@riebeckite/core` and declares its own subpaths in `exports`. Never import `@riebeckite/core/src/**` or reference monorepo paths.
 
-## 5. Verify
+## 6. Verify
 
 ```sh
 npm exec riebeckite check              # validate config and plugin resolution
@@ -122,4 +144,3 @@ npm exec riebeckite build              # confirm it appears in the output
 - [Plugin System](../reference/plugin-api.md) — all extension points in detail
 - [Architecture](../framework/architecture.md) — responsibilities of Core / Plugin / Integration / Theme / App
 - [Framework Reference](../reference/README.md) — public APIs like `definePlugin`
-

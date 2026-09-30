@@ -1,6 +1,6 @@
 # Your First Theme
 
-A theme changes how a site **looks** (colors, typography, layout). It cannot add features. For features, see [Your first plugin](../plugins/writing-a-plugin.md).
+A theme changes how a site **looks** (colors, typography, layout). It cannot add features. For features, see [Your first plugin](../plugins/writing-a-plugin.md). A theme must also work for Page Types it does not know: style stable hooks and semantic tokens, not a list of route or Page Type IDs.
 
 Go in this order: adjust a built-in theme first, then build your own.
 
@@ -116,4 +116,3 @@ npm exec riebeckite build             # check the generated output
 - [Theme System](../reference/theme-api.md) — theme contract, tokens, hooks, cascade
 - [Plugin System](../reference/plugin-api.md) — the boundary with themes (features = plugins)
 - [Framework Reference](../reference/README.md) — public APIs like `defineTheme`
-

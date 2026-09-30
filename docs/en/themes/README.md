@@ -1,6 +1,6 @@
 # Themes
 
-Themes change how a Riebeckite site looks: color, typography, spacing, layout, and the styling of stable framework and plugin hooks. They do not add content features or client behavior; use a [Plugin](../plugins/README.md) for that.
+Themes change how a Riebeckite site looks: color, typography, spacing, layout, and the styling of stable framework and plugin hooks. They do not add content features or client behavior; use a [Plugin](../plugins/README.md) for that. A theme must remain usable for plugin Page Types it does not know, so target tokens and stable hooks rather than individual routes.
 
 ## Use a theme
 
@@ -64,5 +64,4 @@ export default defineConfig({
 ## Create or extend a theme
 
 Start with [Writing a theme](./writing-a-theme.md). The API contract — `defineTheme`, stylesheet module specifiers, design tokens, stable hooks, the cascade, and package layout — lives in [Theme API](../reference/theme-api.md). The internal boundary between themes, plugins, Core, and the HonoX integration is explained in [Framework / Theme system](../framework/theme-system.md).
-
 

@@ -1,6 +1,6 @@
 # はじめてのテーマ作成
 
-テーマはサイトの「見た目」（配色・文字組み・レイアウト）を変える仕組みです。**機能は足せません**。機能を足したいときは [はじめてのプラグイン作成](../plugins/writing-a-plugin.md) を参照してください。
+テーマはサイトの「見た目」（配色・文字組み・レイアウト）を変える仕組みです。**機能は足せません**。機能を足したいときは [はじめてのプラグイン作成](../plugins/writing-a-plugin.md) を参照してください。Theme は未知の Page Type にも対応できるよう、route や Page Type ID の一覧ではなく、stable hook と semantic token を対象にします。
 
 まず「組み込みテーマを調整する」→「自分で作る」の順で進めます。
 
@@ -116,4 +116,3 @@ npm exec riebeckite build             # 生成物を確認
 - [Theme System](../reference/theme-api.md) — theme contract、token、hook、cascade の詳細
 - [Plugin System](../reference/plugin-api.md) — テーマとの境界（機能は Plugin）
 - [Framework Reference](../reference/README.md) — `defineTheme` などの公開 API
-

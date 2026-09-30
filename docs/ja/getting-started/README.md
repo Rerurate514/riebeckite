@@ -1,6 +1,6 @@
 # Getting Started
 
-この章は、初めて Riebeckite でサイトを作る人のための一本道です。Riebeckite 本体のリポジトリを clone する手順は扱いません。
+この章は、初めて Riebeckite でサイトを作る人のための一本道です。Riebeckite 本体のリポジトリを clone する手順は扱いません。Plugin は WikiLink、図表、検索、SEO、独立ページなどの機能を追加し、Theme は見た目を変えます。組み込み Plugin のページを使うために route を設定する必要はありません。
 
 ## 流れ
 

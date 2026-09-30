@@ -22,7 +22,7 @@ Deploy                      → deployment.md
 
 ## What is Riebeckite?
 
-Riebeckite turns a folder of Markdown — including Obsidian vaults — into a static site. You describe the site in one config file (`riebeckite.config.ts`), and Riebeckite renders every page with HonoX and Vite. Plugins add capabilities such as WikiLinks, Mermaid diagrams, search, and SEO; themes change how the site looks.
+Riebeckite turns a folder of Markdown — including Obsidian vaults — into a static site. You describe the site in one config file (`riebeckite.config.ts`), and Riebeckite renders every page with HonoX and Vite. Plugins add capabilities such as WikiLinks, Mermaid diagrams, search, SEO, and standalone pages; themes change how the site looks. You do not need to configure routes for built-in plugin pages.
 
 You do **not** clone or install the Riebeckite repository to use it. A generator, [`create-riebeckite`](https://www.npmjs.com/package/create-riebeckite), writes a self-contained site for you.
 

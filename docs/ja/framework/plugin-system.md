@@ -75,7 +75,8 @@ plugins: [
 | Pipeline | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
 | Graph | `extendContentGraph` |
 | Diagnostics | `addDiagnostics` |
-| Rendering | `renderers` |
+| 本文内の描画 | `renderers` |
+| 独立ページ | `pageTypes` |
 | Browser integration | `assets`, `clientEntries` |
 | HTTP integration | `endpoints` |
 | SEO | `seo` |
@@ -172,7 +173,15 @@ Markdown/HTML の意味変換は Plugin に置き、application component に AS
 
 `renderers` は content target を Plugin 固有 HTML へ変換する拡張ポイントです。context には `kind`, `path`, `raw`, `label`, `url`, `embed` と通常の PluginContext が含まれます。処理対象でなければ `null` を返し、他 renderer に委ねられる設計にします。
 
-### 3-9. Assets
+### 3-9. Page Type
+
+`pageTypes` は、Site の共通 catch-all route から独立画面を提供する capability です。Page Type は全体で一意な `id`、静的または manifest から導く `paths`、必要なら `priority`、`resolve` を持ちます。resolver は framework 非依存の HTML body または `null` を返します。`title`、`description`、`headTags` も返せますが、それらを描画するのは Site の document frame です。
+
+taxonomy の一覧や explorer のような独立画面には Page Type を使います。Canvas、Bases、Excalidraw のような記事本文への埋め込みには renderer を使います。Plugin が HonoX の route file を増やしたり、document frame を所有したりしません。
+
+Page Type の ID は実行時にも検証され、重複できません。複数の型が request を解決した場合は最大 priority を選び、同順位はエラーにします。resolver では渡された public manifest だけを使います。application は `resolveRiebeckiteRoute` と `pluginPageSsgParams` を catch-all route に接続します。scaffold はこの接続を生成済みです。描画全体は [Page System](./page-system.md)、contract は [Plugin API](../reference/plugin-api.md#page-type) を参照してください。
+
+### 3-10. Assets
 
 Plugin 固有 stylesheet は Plugin package 内に置き、`assets` で module specifier を宣言します。
 
@@ -202,7 +211,7 @@ return definePlugin({
 
 未 publish の Plugin では `createStyleAsset()`（`@riebeckite/plugin-<name>/style.css` を生成）を利用できません。host bundler が解決できる module specifier を `assets` へ明示してください。
 
-### 3-10. CSS hooks
+### 3-11. CSS hooks
 
 Plugin 固有 CSS は Plugin package 内に置き、`assets` 経由でブラウザへ届けます。独立した再利用可能な feature を描画するときは、最外要素に stable な root hook を付けます。
 
@@ -211,7 +220,7 @@ Plugin 固有 CSS は Plugin package 内に置き、`assets` 経由でブラウ�
 - Plugin の出力を `rb-` namespace に置かないでください。`rb-*` class と `--rb-*` token は framework の構造 hook と semantic design token です。Plugin 固有 token は `--rr-*` とし、fallback に `--rb-*` を使えます。
 - `rr-<feature>__*` と `rr-<feature>--*` は internal な実装詳細です。Theme に style させたい子孫だけを文書化してください。
 
-### 3-11. Client Entries
+### 3-12. Client Entries
 
 ブラウザ初期化が必要な場合だけ `clientEntries` を使います。
 
@@ -226,11 +235,11 @@ clientEntries: [{
 
 SSR/build-time だけで完結する Plugin に client JavaScript を追加しないでください。`publicConfig` は client initializer に渡され、static host が利用できるよう manifest にも記録されます。Plugin の `options` は自動では client に渡されません。token、credential、private service URL などを公開設定として登録しないでください。
 
-### 3-12. Endpoints / SEO
+### 3-13. Endpoints / SEO
 
 HTTP endpoint は `endpoints` contract を使います。Route framework 固有の実装を Plugin 本体へ直接埋め込まず、Integration が endpoint contract を host router へ接続します。`seo` は metadata/feed 等の SEO 処理へ参加するための拡張ポイントです。Application route 側で Plugin 固有 SEO ロジックを再実装しないでください。
 
-### 3-13. Diagnostics
+### 3-14. Diagnostics
 
 ```ts
 addDiagnostics(context) {
@@ -242,7 +251,7 @@ addDiagnostics(context) {
 
 診断は可能な限り structured data として返します。CLI 出力を Plugin が直接 `console.log` するより、Diagnostics / Logger を利用します。
 
-### 3-14. Plugin Cache
+### 3-15. Plugin Cache
 
 `context.cache` は Plugin ごとに分離された **build-time cache** です。
 
@@ -256,7 +265,7 @@ addDiagnostics(context) {
 
 Cloudflare Workers runtime の永続 storage ではありません。
 
-### 3-15. Logger / Tracer
+### 3-16. Logger / Tracer
 
 ```ts
 context.logger.info("...");
@@ -309,5 +318,4 @@ npm exec riebeckite build              # 生成物に反映されるか確認
 - [Content System](./content-system.md) — Manifest / Graph / pipeline の契約
 - [Architecture](./architecture.md) — Core / Plugin / Integration / Theme / App の責務
 - [Framework Reference](../reference/README.md) — `definePlugin` などの公開 API
-
 

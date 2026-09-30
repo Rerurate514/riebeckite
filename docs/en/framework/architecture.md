@@ -7,7 +7,7 @@ Riebeckite is a pnpm workspace with intentionally one-way dependencies.
 | Area | Owns | Must not own |
 | --- | --- | --- |
 | `packages/core` | portable contracts, configuration, content orchestration, manifests, graphs, pipelines, plugin runtime, observability, and theme contracts | HonoX/Vite APIs, a named plugin, or application UI |
-| `packages/plugins/*` | reusable Markdown, HTML, metadata, asset, diagnostic, and optional browser extensions | application routes or framework-specific routing |
+| `packages/plugins/*` | reusable Markdown, HTML, metadata, asset, diagnostic, browser, and Page Type capabilities | application routes or framework-specific routing |
 | `packages/integrations/*` | framework, bundler, and platform adapters | reusable domain policy already represented by Core |
 | `packages/themes/*` | presentation configuration and CSS | components, routes, plugins, or content loading |
 | `apps/web` | the concrete routes, islands, application components, and Worker deployment | reusable framework contracts |
@@ -34,7 +34,7 @@ ContentSource -> ContentManager -> resolve public locations
                                       `-> integration/application rendering
 ```
 
-Plugins may extend the process through published contracts; they do not become a hidden second application layer. Themes only style the rendered result through theme configuration, CSS tokens, stable hooks, and `data-*` attributes.
+Plugins may extend the process through published contracts; they do not become a hidden second application layer. A Page Type contributes a framework-independent body and public paths, while the integration resolves it through a generic route and the application retains the document frame. Themes only style the rendered result through theme configuration, CSS tokens, stable hooks, and `data-*` attributes; they do not branch on Page Type IDs. See [Page system](./page-system.md).
 
 ## Build-time and runtime boundary
 

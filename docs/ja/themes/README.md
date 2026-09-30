@@ -1,6 +1,6 @@
 # Themes
 
-Theme はサイトの見た目を変えます。検索や Markdown 構文のような機能は Plugin の責務です。
+Theme はサイトの見た目を変えます。検索や Markdown 構文、独立ページのような機能は Plugin の責務です。Theme は未知の Plugin Page Type でも使えるよう、個別 route ではなく token と stable hook を対象にします。
 
 ## 使う
 
@@ -28,5 +28,4 @@ export default defineConfig({
 | [tokyonight](../../../packages/themes/tokyonight/README.md) | `tokyonightTheme` | Tokyo Night 風の高コントラスト theme |
 
 Theme の option は package README が正本です。Theme を作る場合は [Writing a Theme](./writing-a-theme.md)、API は [Theme API](../reference/theme-api.md) を参照してください。
-
 

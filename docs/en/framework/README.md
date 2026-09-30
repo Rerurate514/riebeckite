@@ -9,6 +9,7 @@ Framework documentation is for people who want to understand or develop Riebecki
 | Package ownership and dependency direction | [Architecture](./architecture.md) |
 | How Markdown and assets become pages | [Content system](./content-system.md) |
 | How plugins are resolved and run | [Plugin system](./plugin-system.md) |
+| How plugins provide standalone pages | [Page system](./page-system.md) |
 | How themes interact with CSS and plugin output | [Theme system](./theme-system.md) |
 | Incremental builds, build state, and plugin cache | [Build system](./build-system.md) |
 | The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |
@@ -30,5 +31,4 @@ Framework documentation is for people who want to understand or develop Riebecki
 ## For repository development
 
 The Riebeckite monorepo clone workflow is intentionally here, not in Getting Started. Use it only when you are changing Riebeckite itself: [Development](./development.md).
-
 

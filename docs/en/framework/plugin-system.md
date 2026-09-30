@@ -75,7 +75,8 @@ The current Core contract covers the following areas. **You do not implement all
 | Pipeline | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
 | Graph | `extendContentGraph` |
 | Diagnostics | `addDiagnostics` |
-| Rendering | `renderers` |
+| Rendering inside content | `renderers` |
+| Standalone pages | `pageTypes` |
 | Browser integration | `assets`, `clientEntries` |
 | HTTP integration | `endpoints` |
 | SEO | `seo` |
@@ -172,7 +173,15 @@ Semantic Markdown/HTML transformation belongs in the plugin; do not bring AST pr
 
 `renderers` transform a content target into plugin-specific HTML. The context includes `kind`, `path`, `raw`, `label`, `url`, `embed`, plus the usual `PluginContext`. Return `null` when the target is not yours so other renderers are tried.
 
-### 3-9. Assets
+### 3-9. Page Types
+
+`pageTypes` provides an independent screen through the site's generic catch-all route. A type has a globally unique `id`, static or manifest-derived `paths`, an optional `priority`, and `resolve`. It returns a framework-independent HTML body or `null`. It may also describe `title`, `description`, and `headTags`; the site document frame renders those values.
+
+Use a Page Type for a page such as a taxonomy listing or explorer. Use a renderer for an article embed such as Canvas, Bases, or Excalidraw. Plugins do not add HonoX route files or own the document frame.
+
+Page Type IDs are validated at runtime and must be unique. If more than one type resolves a request, the greatest priority wins; a tie is an error. Use only the public manifest passed to the resolver. The application wires `resolveRiebeckiteRoute` and `pluginPageSsgParams` into its catch-all route; the scaffold does this already. See [Page System](./page-system.md) for the full rendering flow and [Plugin API](../reference/plugin-api.md#pages) for the contract.
+
+### 3-10. Assets
 
 Put plugin stylesheets inside the plugin package and declare the module specifier in `assets`.
 
@@ -202,7 +211,7 @@ return definePlugin({
 
 For unpublished plugins, `createStyleAsset()` (which generates `@riebeckite/plugin-<name>/style.css`) is not available. Explicitly provide a module specifier the host bundler can resolve.
 
-### 3-10. CSS hooks
+### 3-11. CSS hooks
 
 Plugin CSS lives in the plugin package and reaches the browser through `assets`. When a plugin renders an independent, reusable feature, put a stable root hook on the outermost element.
 
@@ -211,7 +220,7 @@ Plugin CSS lives in the plugin package and reaches the browser through `assets`.
 - Do not put plugin output in the `rb-` namespace. `rb-*` classes and `--rb-*` tokens belong to the framework's structural hooks and semantic design tokens. Plugin-specific tokens are `--rr-*`, with `--rb-*` as fallback.
 - `rr-<feature>__*` and `rr-<feature>--*` are internal implementation details. Document only the descendants you want themes to style.
 
-### 3-11. Client entries
+### 3-12. Client entries
 
 Use `clientEntries` only when browser initialization is required.
 
@@ -226,11 +235,11 @@ clientEntries: [{
 
 Do not add client JavaScript to plugins that work purely at SSR/build time. `publicConfig` is passed to the client initializer and recorded in the manifest so static hosts can use it. Plugin `options` are not passed to the client automatically. Never register tokens, credentials, or private service URLs as public config.
 
-### 3-12. Endpoints and SEO
+### 3-13. Endpoints and SEO
 
 HTTP endpoints use the `endpoints` contract. Do not embed route-framework implementations in the plugin itself; the integration connects the endpoint contract to the host router. `seo` lets a plugin participate in SEO processing (metadata/feeds). Do not reimplement plugin-specific SEO logic in application routes.
 
-### 3-13. Diagnostics
+### 3-14. Diagnostics
 
 ```ts
 addDiagnostics(context) {
@@ -242,7 +251,7 @@ addDiagnostics(context) {
 
 Return diagnostics as structured data whenever possible. Use Diagnostics / Logger instead of `console.log` from the plugin.
 
-### 3-14. Plugin cache
+### 3-15. Plugin cache
 
 `context.cache` is a **build-time cache** isolated per plugin.
 
@@ -256,7 +265,7 @@ Return diagnostics as structured data whenever possible. Use Diagnostics / Logge
 
 It is not Cloudflare Workers persistent storage.
 
-### 3-15. Logger / tracer
+### 3-16. Logger / tracer
 
 ```ts
 context.logger.info("...");
@@ -309,5 +318,4 @@ If a plugin does not resolve, start with `check` for capability or import errors
 - [Content System](./content-system.md) — Manifest / Graph / pipeline contracts
 - [Architecture](./architecture.md) — responsibilities of Core / Plugin / Integration / Theme / App
 - [Framework Reference](../reference/README.md) — public APIs like `definePlugin`
-
 

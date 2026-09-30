@@ -7,6 +7,7 @@ Framework は、Riebeckite の内部構造を理解したい人と、Riebeckite 
 | 全体設計 | [Architecture](./architecture.md) |
 | コンテンツ処理 | [Content System](./content-system.md) |
 | Plugin の仕組み | [Plugin System](./plugin-system.md) |
+| Plugin が独立ページを提供する仕組み | [Page System](./page-system.md) |
 | Theme の仕組み | [Theme System](./theme-system.md) |
 | build / incremental state | [Build System](./build-system.md) |
 | HonoX 連携 | [HonoX Integration](./honox-integration.md) |

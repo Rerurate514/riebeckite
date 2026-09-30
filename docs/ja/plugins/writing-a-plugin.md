@@ -1,6 +1,6 @@
 # はじめてのプラグイン作成
 
-プラグインは**機能**（Markdown/HTML の変換、クライアント動作、SEO、診断など）を足す仕組みです。見た目を変えたいときはテーマ（[はじめてのテーマ作成](../themes/writing-a-theme.md)）、サイト固有の route を足したいときは App（`app/`）です。
+プラグインは**機能**（Markdown/HTML の変換、クライアント動作、独立ページ、SEO、診断など）を足す仕組みです。見た目を変えたいときはテーマ（[はじめてのテーマ作成](../themes/writing-a-theme.md)）を使います。Plugin の独立ページは Site の共通 route で表示します。Site 固有の画面だけを App（`app/`）の route に置いてください。
 
 「最小のプラグインを作る」→「CSS を足す」→「Markdown を変換する」の順で進めます。
 
@@ -88,7 +88,23 @@ export function localPlugin() {
 
 pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `extendHtmlPipeline` を使います。その他の拡張ポイント（依存関係・lifecycle・renderer・endpoint など）は [Plugin System](../reference/plugin-api.md) を参照してください。
 
-## 4. 配布用パッケージにする（任意）
+## 4. 独立ページを追加する（必要な場合）
+
+独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
+
+```ts
+pageTypes: [{
+  id: "local.report",
+  paths: ["/report"],
+  resolve: ({ pathname }) => pathname === "/report"
+    ? { type: "local.report", pathname, title: "Report", body: "<p>Ready</p>" }
+    : null,
+}],
+```
+
+scaffold が生成する HonoX route はすでに `resolveRiebeckiteRoute` と `pluginPageSsgParams` を使います。ID は全体で一意にし、動的ページの SSG path は public manifest から導き、所有しない path では `null` を返してください。責務と接続全体は [Page System](../framework/page-system.md) を参照してください。
+
+## 5. 配布用パッケージにする（任意）
 
 site 内プラグインとして動けば、パッケージにできます。雛形は `packages/plugins/backlinks` です。
 
@@ -105,7 +121,7 @@ packages/plugins/backlinks/
 
 外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。
 
-## 5. 検証する
+## 6. 検証する
 
 ```sh
 npm exec riebeckite check              # 設定と Plugin の解決を検証
@@ -122,4 +138,3 @@ npm exec riebeckite build              # 生成物に反映されるか確認
 - [Plugin System](../reference/plugin-api.md) — すべての拡張ポイントの詳細
 - [Architecture](../framework/architecture.md) — Core / Plugin / Integration / Theme / App の責務
 - [Framework Reference](../reference/README.md) — `definePlugin` などの公開 API
-

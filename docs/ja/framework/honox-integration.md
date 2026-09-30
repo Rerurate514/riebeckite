@@ -21,6 +21,8 @@ export default defineConfig({
 
 catch-all route では、runtime のルーティングと静的生成を一致させるために2つの小さな helper を使います。`contentRouteSsgParams(routePath, params)` は `hono/ssg` の `ssgParams` の置き換えで、その route 自身の列挙リクエストにだけ params を返します。これにより浅い catch-all（例 `/:slug{.+}`）が深い sibling（例 `/tags/:slug{.+}`）の列挙を横取りしません。`ssgEnumerableHandler(handler)` は、sibling に譲るために `next()` を呼ぶ handler を SSG の列挙対象に残します。Hono は middleware 形状の handler を既定で列挙から除外するためです。
 
+Plugin が Page Type を提供する場合は、`resolveContentRoute(manifest, path)` の代わりに `resolveRiebeckiteRoute(content, path)` を使い、content の parameter に `pluginPageSsgParams(content)` を加えます。resolver はまず plugin page を返し、次に content と redirect を解決します。page body は意図的に文字列です。既存の Site document frame 内で描画し、`page.headTags` は frame へ渡してください。scaffold の catch-all route はこの contract を使うため、Plugin package が HonoX の route file を追加する必要はありません。
+
 ## UI primitive
 
 `@riebeckite/honox/ui` は component framework ではなく、意図的に小さく保った構造用 contract です。公開する component は次だけです。
@@ -63,7 +65,7 @@ Riebeckite の Site は通常の HonoX application です。integration が担�
 | `app/islands/` | 任意の対話 UI と client-side state |
 | `app/style.css` とローカル CSS | visual token、layout、typography、生成済み extension style の import |
 
-`app/routes/_renderer.tsx` は Site の shell です。document head、navigation、page chrome、application client entry はここで管理します。route は `ContentManager` から post を取得し、`resolveContentRoute(manifest, c.req.path)` で request URL を解決したうえで、どの component tree を描画するかを Site 側で決めます。`apps/web` はその一例であり、同じ layout を使う必要はありません。
+`app/routes/_renderer.tsx` は Site の shell です。document head、navigation、page chrome、application client entry はここで管理します。route は `ContentManager` から post を取得し、`resolveRiebeckiteRoute(content, c.req.path)` で request URL を解決したうえで、どの component tree を描画するかを Site 側で決めます。`apps/web` はその一例であり、同じ layout を使う必要はありません。
 
 ### head tags の受け渡し
 

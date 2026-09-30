@@ -6,7 +6,7 @@ Riebeckite は依存方向を固定した pnpm workspace です。`packages/core
 
 | 場所 | 所有するもの |
 | --- | --- |
-| `packages/plugins/*` | 再利用可能な Markdown/HTML/metadata/assets/browser 拡張 |
+| `packages/plugins/*` | 再利用可能な Markdown/HTML/metadata/assets/browser/Page Type 拡張 |
 | `packages/integrations/*` | framework・bundler・platform の接続 |
 | `packages/themes/*` | theme config と CSS による presentation |
 | `apps/web` | 実際の routes、islands、application components、Workers 接続 |
@@ -31,7 +31,7 @@ ContentSource -> ContentManager -> public location 解決
                                       `-> plugin hooks
 ```
 
-Plugin は公開された contract から処理を拡張します。Theme は stable CSS hook、semantic token、`data-*` attribute、CSS cascade だけで見た目を変え、component や route を所有しません。
+Plugin は公開された contract から処理を拡張します。Page Type は framework 非依存の body と public path を提供し、integration の共通 route が解決します。document frame は application に残ります。Theme は stable CSS hook、semantic token、`data-*` attribute、CSS cascade だけで見た目を変え、Page Type ID、component、route を所有しません。詳しくは [Page System](./page-system.md) を参照してください。
 
 ## build-time と runtime
 

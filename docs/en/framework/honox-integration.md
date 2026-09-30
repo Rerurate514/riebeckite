@@ -55,6 +55,14 @@ does not capture the enumeration of a deeper sibling like `/tags/:slug{.+}`.
 enumeration while it still calls `next()` to defer to those siblings; Hono
 otherwise skips middleware-shaped handlers.
 
+When plugins provide Page Types, use `resolveRiebeckiteRoute(content, path)`
+instead of `resolveContentRoute(manifest, path)` and merge
+`pluginPageSsgParams(content)` with the content parameters. The resolver first
+returns a plugin page, then falls through to content and redirects. Its page
+body is intentionally a string: render it inside the site's existing document
+frame and pass `page.headTags` to that frame. The scaffolded catch-all route
+uses this contract, so plugin packages never need to add HonoX route files.
+
 ## UI primitives
 
 `@riebeckite/honox/ui` is deliberately a small structural contract, not a
@@ -114,7 +122,7 @@ integration, theme, or plugin:
 `app/routes/_renderer.tsx` is the site shell. It owns the document head,
 navigation, page chrome, and the application client entry. A route obtains a
 post from `ContentManager`, resolves request URLs with
-`resolveContentRoute(manifest, c.req.path)`, then chooses its own component
+`resolveRiebeckiteRoute(content, c.req.path)`, then chooses its own component
 tree. The reference application in `apps/web` is one implementation, not a
 required layout.
 

@@ -77,7 +77,7 @@ plugins: [process.env.NODE_ENV === "production" && qualityPlugin()],
 | [`kanban`](../../../packages/plugins/kanban/README.md) | Obsidian Kanban boards |
 | [`flashcards`](../../../packages/plugins/flashcards/README.md) | Interactive flashcard decks |
 
-### Content relationships
+### Standalone pages and content relationships
 
 | Plugin | What it does |
 | --- | --- |
@@ -85,10 +85,10 @@ plugins: [process.env.NODE_ENV === "production" && qualityPlugin()],
 | [`related-posts`](../../../packages/plugins/related-posts/README.md) | Build-time related-post navigation |
 | [`recent-posts`](../../../packages/plugins/recent-posts/README.md) | Recent-post lists |
 | [`series`](../../../packages/plugins/series/README.md) | Ordered multi-part navigation |
-| [`taxonomy`](../../../packages/plugins/taxonomy/README.md) | Tags and folders, per-term feeds |
+| [`taxonomy`](../../../packages/plugins/taxonomy/README.md) | Tags and folders, per-term feeds, and listing Page Types |
 | [`breadcrumbs`](../../../packages/plugins/breadcrumbs/README.md) | Slug-hierarchy breadcrumbs |
 | [`local-graph`](../../../packages/plugins/local-graph/README.md) | Local note graph visualizations |
-| [`garden-explorer`](../../../packages/plugins/garden-explorer/README.md) | Graph and search explorer |
+| [`garden-explorer`](../../../packages/plugins/garden-explorer/README.md) | Graph and search explorer Page Type |
 | [`hover-preview`](../../../packages/plugins/hover-preview/README.md) | Popover previews for internal links |
 | [`toc`](../../../packages/plugins/toc/README.md) | Scroll-aware table of contents |
 | [`query`](../../../packages/plugins/query/README.md) | Build-time content queries |
@@ -156,11 +156,18 @@ plugins: [process.env.NODE_ENV === "production" && qualityPlugin()],
 
 For the full option list and current behavior, always check the package README.
 
+### Pages versus embeds
+
+`taxonomy` and `garden-explorer` provide standalone Page Types through the
+generic application catch-all route. `canvas`, `bases`, and `excalidraw` are
+article-body renderers: they render embedded content and intentionally do not
+add Page Types. See [Page System](../framework/page-system.md) when authoring a
+plugin page.
+
 ## See also
 
 - [Plugin Showcase](./showcase.md) — live examples across the catalog
 - [Writing a plugin](./writing-a-plugin.md) — build your own
 - [Plugin API](../reference/plugin-api.md) — the contract behind every plugin
 - [Framework / Plugin system](../framework/plugin-system.md) — how resolution and lifecycle work
-
 

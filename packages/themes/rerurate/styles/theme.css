@@ -701,9 +701,17 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-table-of-contents {
-  margin: 2rem 0;
   padding: 1rem 1.15rem;
   font-size: 0.9rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .table-of-contents__eyebrow {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .table-of-contents__item {
+  line-height: 22;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-backlinks {

@@ -157,7 +157,11 @@ function toHonoResponse(
 ): unknown {
   const status = response.status ?? 200;
   if ("json" in response) {
-    return context.json(response.json, status, response.headers);
+    return context.json(
+      response.json,
+      status,
+      withJsonContentType(response.headers),
+    );
   }
   if (response.body === undefined) {
     return context.body("", status, response.headers);
@@ -169,6 +173,16 @@ function toHonoResponse(
   }
 
   return context.body(response.body, status, response.headers);
+}
+
+function withJsonContentType(
+  headers: Record<string, string> | undefined,
+): Record<string, string> {
+  if (findHeader(headers, "content-type")) return headers ?? {};
+  return {
+    ...headers,
+    "Content-Type": "application/json; charset=utf-8",
+  };
 }
 
 function findHeader(

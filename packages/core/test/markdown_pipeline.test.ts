@@ -118,6 +118,41 @@ test("ContentManager supplies the source slug to Markdown pipeline plugins", asy
   assert.equal(sourceSlug, "guide.ja");
 });
 
+test("rewrites markdown links to published content permalinks", async () => {
+  const contentIndex = new Map([
+    ["guide/setup", "guide/setup"],
+    ["guide/reference", "guide/reference"],
+    ["readme", "ja/README"],
+    ["en/readme", "en/README"],
+    ["ja/readme", "ja/README"],
+  ]);
+  const permalinks = new Map([
+    ["guide/setup", "/guide/setup"],
+    ["guide/reference", "/guide/reference"],
+    ["en/README", "/en/README"],
+    ["ja/README", "/README"],
+  ]);
+
+  const { html } = await new Pipeline(contentIndex, permalinks).execute(
+    [
+      "[setup](./setup.md#install)",
+      "[reference](reference.md?view=full#api)",
+      "[english](/en/README.md)",
+      "[default language](/ja/README.md)",
+      "[external](https://example.com/readme.md)",
+      "[unpublished](../../packages/example/README.md)",
+    ].join("\n\n"),
+    { sourceSlug: "guide/index" },
+  );
+
+  assert.match(html, /href="\/guide\/setup#install"/);
+  assert.match(html, /href="\/guide\/reference\?view=full#api"/);
+  assert.match(html, /href="\/en\/README"/);
+  assert.match(html, /href="\/README"/);
+  assert.match(html, /href="https:\/\/example.com\/readme.md"/);
+  assert.match(html, /href="\.\.\/\.\.\/packages\/example\/README.md"/);
+});
+
 type HtmlNode = {
   type: string;
   tagName?: string;

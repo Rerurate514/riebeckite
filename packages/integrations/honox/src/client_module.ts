@@ -38,14 +38,31 @@ function createClientModule(config: ResolvedRiebeckiteConfig): string {
       `import ${importTarget} from ${JSON.stringify(entry.moduleSpecifier)};`,
     );
     const publicConfig = entry.publicConfig;
-    initializers.push(
+    const initializer =
       publicConfig === undefined
         ? `${localName}()`
-        : `${localName}(${serializePublicClientConfig(publicConfig)})`,
+        : `${localName}(${serializePublicClientConfig(publicConfig)})`;
+    initializers.push(
+      `runPluginClientInitializer(${JSON.stringify(entry.moduleSpecifier)}, () => ${initializer})`,
     );
   }
 
   return `${imports.join("\n")}
+
+function runPluginClientInitializer(name, initialize) {
+  try {
+    const result = initialize();
+    if (result && typeof result.then === "function") {
+      result.catch((error) => reportPluginClientError(name, error));
+    }
+  } catch (error) {
+    reportPluginClientError(name, error);
+  }
+}
+
+function reportPluginClientError(name, error) {
+  console.error("[riebeckite] Plugin client initializer failed: " + name, error);
+}
 
 export function initRiebeckiteClient() {
 ${initializers.map((initializer) => `  ${initializer};`).join("\n")}

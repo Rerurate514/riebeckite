@@ -104,6 +104,8 @@ export class Pipeline {
       );
     }
 
+    this.use(processor, normalizeMarkdownLinks, markdownPipelineContext);
+
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
     this.use(processor, rehypeRaw);
 
@@ -255,6 +257,120 @@ function selectBlockFragment(markdown: string, blockId: string): string | null {
   const blockIdRe = new RegExp(`(?:^|\\s)\\^${escapeRegExp(blockId)}\\s*$`);
   const line = lines.find((currentLine) => blockIdRe.test(currentLine));
   return line?.replace(blockIdRe, "").trimEnd() || null;
+}
+
+function normalizeMarkdownLinks(context: MarkdownPipelineContext) {
+  return (tree: Node) => {
+    visitMarkdownLinkNodes(tree, (node) => {
+      const normalizedUrl = normalizeMarkdownLinkUrl(node.url, context);
+      if (normalizedUrl) node.url = normalizedUrl;
+    });
+  };
+}
+
+type MarkdownLinkNode = Node & {
+  url?: unknown;
+  children?: Node[];
+};
+
+function visitMarkdownLinkNodes(
+  node: Node,
+  visitor: (node: { url: string }) => void,
+): void {
+  const linkNode = node as MarkdownLinkNode;
+  if (
+    (node.type === "link" || node.type === "definition") &&
+    typeof linkNode.url === "string"
+  ) {
+    visitor(linkNode as { url: string });
+  }
+
+  for (const child of linkNode.children ?? []) {
+    visitMarkdownLinkNodes(child, visitor);
+  }
+}
+
+function normalizeMarkdownLinkUrl(
+  url: string,
+  context: MarkdownPipelineContext,
+): string | null {
+  if (!context.sourceSlug) return null;
+  if (!isMarkdownContentLink(url)) return null;
+
+  const [pathAndQuery, hash = ""] = splitOnce(url, "#");
+  const [rawPath, query = ""] = splitOnce(pathAndQuery, "?");
+  const decodedPath = decodeUriPath(rawPath);
+  if (!decodedPath?.toLowerCase().endsWith(".md")) return null;
+
+  const resolvedSlug = resolveRelativeMarkdownSlug(
+    context.sourceSlug,
+    decodedPath,
+  );
+  if (!resolvedSlug) return null;
+
+  const indexedSlug = getExactContentSlug(context, resolvedSlug);
+  if (!indexedSlug) return null;
+
+  const suffix = `${query ? `?${query}` : ""}${hash ? `#${hash}` : ""}`;
+  return `${context.resolvePermalink(indexedSlug)}${suffix}`;
+}
+
+function getExactContentSlug(
+  context: MarkdownPipelineContext,
+  slug: string,
+): string | null {
+  try {
+    context.resolvePermalink(slug);
+    return slug;
+  } catch {
+    return context.contentIndex.get(slug.toLowerCase()) ?? null;
+  }
+}
+
+function isMarkdownContentLink(url: string): boolean {
+  if (url.startsWith("#") || url.startsWith("//")) return false;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(url)) return false;
+  return true;
+}
+
+function resolveRelativeMarkdownSlug(
+  sourceSlug: string,
+  targetPath: string,
+): string | null {
+  const sourceDirectory = sourceSlug.includes("/")
+    ? sourceSlug.slice(0, sourceSlug.lastIndexOf("/"))
+    : "";
+  const baseParts = targetPath.startsWith("/")
+    ? []
+    : sourceDirectory.split("/");
+  const parts = [...baseParts, ...targetPath.replace(/^\/+/, "").split("/")];
+  const normalizedParts: string[] = [];
+
+  for (const part of parts) {
+    if (!part || part === ".") continue;
+    if (part === "..") {
+      if (normalizedParts.length === 0) return null;
+      normalizedParts.pop();
+      continue;
+    }
+    normalizedParts.push(part);
+  }
+
+  return normalizedParts.join("/").replace(/\.md$/i, "");
+}
+
+function decodeUriPath(path: string): string | null {
+  try {
+    return decodeURI(path);
+  } catch {
+    return null;
+  }
+}
+
+function splitOnce(value: string, separator: string): [string, string?] {
+  const index = value.indexOf(separator);
+  if (index < 0) return [value];
+  return [value.slice(0, index), value.slice(index + separator.length)];
 }
 
 function selectHeadingFragment(

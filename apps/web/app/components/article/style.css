@@ -68,19 +68,6 @@
   }
 
   :is(:root, .rb-theme-root)[data-article-layout="article"]
-    .article-shell__layout
-    .table-of-contents--desktop {
-    position: absolute;
-    top: 0;
-    left: calc(100% + var(--rb-layout-gap));
-    grid-column: 1;
-    grid-row: 1;
-    margin-inline-start: 0;
-    /* Keep the sticky rail clear of the floating color-mode switch. */
-    max-height: calc(100vh - 7rem);
-  }
-
-  :is(:root, .rb-theme-root)[data-article-layout="article"]
     .article-shell__outro {
     grid-column: 1;
   }

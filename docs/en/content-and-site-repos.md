@@ -1,10 +1,19 @@
 # Separating content from the site
 
-For **keeping articles (Markdown / an Obsidian vault) separate from the site (code, configuration, themes)**, this guide walks through the setup and how to run it day to day.
+For **keeping articles (Markdown / an Obsidian vault) separate from the site (code, configuration, themes)** — in different locations or different repositories — this guide walks through the setup and how to run it day to day. It favors getting things working; the mechanics and the finer points of CI authentication, assets, and submodules live in the [in-depth companion](./content-and-site-repos-in-depth.md).
+
+## Who this guide is for
+
+- You write notes in Obsidian and want them managed separately from the site code
+- You want articles private and only the site public
+- You want one vault shared by several sites
+- You want article updates and site updates deployed independently
+
+If all you want is a small personal blog in a single repository, there is no need to split anything. Pattern A (one repository) is enough.
 
 ## The idea: articles can live outside the site
 
-`content.directory` in `riebeckite.config.ts` is a **relative path from the site (appRoot)** and can point at a folder outside it. Articles do not have to live inside the site.
+`content.directory` in `riebeckite.config.ts` is a **relative path from the site root (appRoot)** and can point at a folder outside it. Articles do not have to live inside the site.
 
 ```ts
 // site/riebeckite.config.ts
@@ -16,19 +25,43 @@ export default defineConfig({
 });
 ```
 
-Because relative paths are always resolved from the site's root, the same vault is read no matter where you run the CLI. Resolution details are in [Configuration](./configuration.md), "Filesystem root and an external vault".
+The base for a relative path is always the site root. So the same vault is read whether you run the CLI from `app/` inside the site or from a CI working directory. The precise definitions (appRoot / configRoot / contentRoot) are in [Configuration](./configuration.md), "Filesystem root and an external vault".
+
+With this, you can split things like:
+
+| What to separate | Where it goes (example) |
+| --- | --- |
+| Article bodies (`.md`) | Any folder inside the vault |
+| Attachments and images | `attachments/` and similar inside the vault |
+| Site code and configuration | `site/` |
+| Notes you never publish | `private/` and similar inside the vault (excluded) |
 
 ## Choose a pattern
 
-| Pattern | Layout | Choose it when |
-| --- | --- | --- |
-| A. One repository | Site and articles in one Git repository (use `content/`) | You want a single repository for a personal blog |
-| B. Separate folders, one repository | `site/` and `vault/` side by side in one repository | You share history but want locations and visibility apart |
-| C. Separate repositories (recommended) | Articles private, site public | You want articles private or updates decoupled |
+First decide at what granularity to split articles from the site.
 
-Choose C if you do not want articles public. The steps below are for C. For A and B the configuration is the same; only step 5 (handling the second repository) is unnecessary.
+| Pattern | Layout | Article visibility | Choose it when |
+| --- | --- | --- | --- |
+| A. One repository | Site and articles in one Git repository (use `content/`) | Same visibility as the repository | You want a single repository for a personal blog |
+| B. Separate folders, one repository | `site/` and `vault/` side by side in one repository | Same visibility as the repository | You share history but want locations and settings apart |
+| C. Separate repositories | Articles private, site public | Independent for articles and site | You want articles private or updates decoupled |
+
+How to decide:
+
+- **You do not want articles public** → C. With a private repository, a forgotten `publish: true` cannot expose the content itself.
+- **Articles and site are both fine to publish** → A or B. One repository to manage.
+- **You want article updates decoupled from the site deploy** → C. A push to the articles runs the deploy by itself.
+- **You want one vault shared by several sites** → C, or a layout where the vault lives independently. Keep the vault in one place and have each site reference it read-only.
+
+The steps below are for C. For A and B the configuration is the same; only **step 5 (fetching the articles repository in deployment) is unnecessary**.
 
 ## Steps: separate repositories (pattern C)
+
+### 0. Align on terms
+
+- **Vault**: the folder holding articles (`.md`) and attachments; the unit Obsidian opens.
+- **`publish: true`**: marks a note as published. Under the explicit strategy, only marked notes reach the site.
+- **`exclude`**: patterns the site does not read. A file may be in the articles repository and still be kept out of the build.
 
 ### 1. Create the articles repository (the vault)
 
@@ -40,7 +73,7 @@ cd notes
 git init
 ```
 
-Add a first note. `publish: true` marks a note as published, so leave it off notes you want to keep private.
+Add a first note. Leave `publish: true` off notes you want to keep private.
 
 ```md
 ---
@@ -49,6 +82,15 @@ publish: true
 ---
 
 My first note.
+```
+
+If you do not want to track OS temp files or Obsidian workspace state, add a `.gitignore`. Committing `.obsidian/` itself is fine (the site side excludes it from reading later).
+
+```gitignore
+.DS_Store
+Thumbs.db
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
 ```
 
 Push to a **private** GitHub repository and the articles stay unpublished.
@@ -71,11 +113,15 @@ cd my-site
 npm install
 ```
 
+Right after generation, `content.directory` is `"content"` (the `content/` inside the site). The next step points it at the vault. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with.
+
 ```text
 workspace/
 ├─ notes/     ← the articles from step 1 (the vault)
 └─ my-site/   ← the site from step 2
 ```
+
+This "side by side" layout makes the relative path `../notes` work as-is and is easy to reproduce in CI.
 
 ### 3. Point content.directory at the vault
 
@@ -96,7 +142,11 @@ export default defineConfig({
 - `directory: "../notes"` references the vault outside the site.
 - `exclude` holds things you never publish: Obsidian settings (`.obsidian/**`), templates (`Templates/**`), and a private-notes folder (`private/**`).
 
+`exclude` keeps things from being loaded; `publish: true` marks things to publish. Using both gives you two layers of protection (see [Publication rules](#publication-rules)).
+
 ### 4. Verify loading
+
+Before checking the rendered site, verify loading with the CLI.
 
 ```sh
 npm exec riebeckite check
@@ -105,12 +155,16 @@ npm exec riebeckite inspect config
 npm exec riebeckite inspect content --list
 ```
 
-- A wrong path is usually the relative `directory`. Check the resolved directory with `inspect config`.
-- If articles do not appear, check for `publish: true` (the explicit strategy).
+- `check` validates the configuration and plugin contracts.
+- `doctor` reports unreadable or invalid content sources.
+- `inspect config` prints the resolved **absolute** path under `Directory`. Confirm it points at the intended vault.
+- `inspect content --list` lists the `PATH` of every loaded note. Use it to confirm how `exclude` is taking effect (more or fewer notes than expected).
+
+A wrong path is usually the relative `directory`. If articles do not appear, check for `publish: true` (the explicit strategy).
 
 ### 5. Use both repositories in deployment
 
-The default deploy workflow checks out **only the site repository**. With articles in a second repository, CI builds cannot find the vault. Pick one of:
+The default deploy workflow (`templates/cloudflare/.github/workflows/deploy.yml`) checks out **only the site repository**. With articles in a second repository, CI builds cannot find the vault. Pick one of:
 
 **Option 1: an additional checkout in the workflow (recommended)**
 
@@ -125,7 +179,7 @@ The default deploy workflow checks out **only the site repository**. With articl
     path: notes
 ```
 
-Deploys update as soon as articles are pushed, so this is the simplest when articles change often. Align the layout with local builds — set `directory` to `notes` in both places.
+Deploys update as soon as articles are pushed, so this is the simplest when articles change often. Because of `path: notes`, the site's working directory sees `notes/`. If your local layout uses `../notes` (siblings), switch `directory` to `notes` for CI. Keeping the local and CI layouts identical is the key.
 
 **Option 2: Git submodule**
 
@@ -133,20 +187,101 @@ Deploys update as soon as articles are pushed, so this is the simplest when arti
 git submodule add git@github.com:<you>/notes.git content
 ```
 
-Add `submodules: recursive` to `actions/checkout@v4` in the workflow. After updating articles, you must update the submodule reference on the site side and push.
+`content` becomes a link to the articles repository. Add `submodules: recursive` to `actions/checkout@v4` in the workflow so CI fetches the dependency. After updating articles, you must update the submodule reference on the site side and push (a two-step operation).
+
+With either option, run `riebeckite build` from the site directory. That is why the workflow runs `npm ci` → `npm exec riebeckite check` → `npm exec riebeckite build`.
+
+### 6. Day-to-day operation
+
+Once configured, you mostly just write and push.
+
+**Updating articles (Option 1)**
+
+```sh
+cd notes
+# edit in Obsidian
+git add .
+git commit -m "add an article"
+git push
+```
+
+The push triggers CI, which rebuilds and redeploys the site. Site-side changes live in the other repository: edit `my-site` and push as usual.
+
+**Updating articles (Option 2 / submodule)**
+
+```sh
+cd my-site
+cd content && git pull && cd ..
+git add content
+git commit -m "update articles"
+git push
+```
+
+**Checking locally**
+
+```sh
+cd my-site
+npm run dev      # local preview
+npm run check    # validate configuration
+npm run doctor   # diagnose loading problems
+```
 
 ## Publication rules
 
+When articles and the site are separate, be explicit about where the publication boundary lies.
+
+### How publication is decided
+
+`content.filters.publishStrategy` decides which notes are published. The default is `explicit`.
+
+| Strategy | Published when | Choose it when |
+| --- | --- | --- |
+| `explicit` (default, recommended) | Only notes with `publish: true` | You want to opt articles in deliberately |
+| `selective` | Notes without `private: true` or `draft: true` | You publish almost everything and hide only exceptions |
+
+Using `explicit` with a private vault is the safest arrangement: you may forget to publish something, but you are unlikely to publish something by accident.
+
+### Rules to follow
+
 - **Never put `publish: true` on private notes**, and exclude whole private folders with `content.exclude`.
-- **Attachments are not published automatically.** Files like `![[attachments/x.png]]` get URLs but are not copied. Add a prebuild step on the site side that copies only the files you publish (reference: call [`apps/web/scripts/build_images.ts`](../../apps/web/scripts/build_images.ts) from `prebuild`).
+- **Put `.obsidian/` in `exclude`** so Obsidian settings and workspace state never mix into the site.
+- **Exclude template folders** (`Templates/**` and the like) so note templates are not published as articles.
+- **Attachments are not published automatically.** Files like `![[attachments/x.png]]` get URLs but are not copied. Add a prebuild step on the site side that copies only the files you publish (reference: call [`apps/web/scripts/build_images.ts`](../../apps/web/scripts/build_images.ts) from `prebuild`). See the assets section of the [in-depth companion](./content-and-site-repos-in-depth.md) for how it works.
+
+## FAQ
+
+**Can I keep articles in the site's `content/` and make only some notes private?**
+
+Yes. Leave `content.directory` at the default `content`, remove `publish: true` from private notes, and add folders to `exclude` as needed. Repository separation is a way to place the vault physically elsewhere; publication control itself belongs to `publishStrategy` and `exclude`.
+
+**Articles vanished after I moved the vault.**
+
+`content.directory` is relative, so the distance from the site root changes when the vault moves. Check the resolved `Directory` with `inspect config` and fix the number of `../` levels. Absolute paths also work, but they drift between developer machines and CI, so relative paths are usually recommended.
+
+**Articles render but images 404.**
+
+Attachments are not copied automatically. Confirm the prebuild copy step runs before the build and targets `public/assets/attachments/`.
+
+**CI alone says the vault was not found.**
+
+CI does not have the vault unless you add the additional checkout or submodule. Check the step 5 setup and confirm the relative `directory` matches the CI layout (for example `notes`).
+
+**Does this work the same on Windows?**
+
+Yes. Write `exclude` patterns with `/` separators; they do not depend on the platform's path separator.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 | --- | --- |
 | Articles do not appear | Check `publish: true`, `exclude` patterns, and `inspect content --list` |
+| `Directory` does not point at the intended vault | Check `inspect config` and revisit the relative `directory` |
 | CI build cannot find the vault | Add the extra checkout or submodule support |
 | Images 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
+| Works locally but the path differs in CI | Check the CI working directory and the base (site root). `../notes` vs `notes` is a common source of drift |
+| Submodule articles do not update | Update the `content` reference on the site side, commit, and push |
+
+For deeper diagnosis, see the troubleshooting section of the [in-depth companion](./content-and-site-repos-in-depth.md).
 
 ## Further reading
 

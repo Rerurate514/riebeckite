@@ -85,6 +85,9 @@ export function resolveContentBuildStatePath(
   config: ResolvedRiebeckiteConfig | undefined,
   contentDirectory: string | undefined,
 ): string {
+  if (config?.buildDirectory) {
+    return path.join(config.buildDirectory, "build", "content-state.json");
+  }
   const directory =
     config?.content.directory ?? contentDirectory ?? process.cwd();
   return path.resolve(

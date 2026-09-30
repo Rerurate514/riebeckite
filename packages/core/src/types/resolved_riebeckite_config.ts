@@ -5,6 +5,11 @@ import type { SiteConfig } from "./site_config.js";
 import type { ThemeConfig, ThemeStyle } from "./theme_config.js";
 
 export type ResolvedRiebeckiteConfig = {
+  /**
+   * Directory for build-time cache and state. Host integrations resolve this
+   * relative to their application root.
+   */
+  buildDirectory?: string;
   site: Required<SiteConfig>;
   content: {
     directory: string;

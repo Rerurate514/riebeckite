@@ -10,6 +10,7 @@ const resolvedConfig = resolveConfigModule(rawConfigModule);
 
 export const config = {
   ...resolvedConfig,
+  buildDirectory: path.join(appRoot, ".riebeckite"),
   content: {
     ...resolvedConfig.content,
     directory: path.resolve(appRoot, resolvedConfig.content.directory),

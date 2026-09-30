@@ -125,6 +125,7 @@ export function resolvePluginCacheDirectory(
   config: ResolvedRiebeckiteConfig | undefined,
 ): string {
   if (!config) return path.resolve(process.cwd(), ".riebeckite", "cache");
+  if (config.buildDirectory) return path.join(config.buildDirectory, "cache");
   return path.resolve(config.content.directory, "..", ".riebeckite", "cache");
 }
 

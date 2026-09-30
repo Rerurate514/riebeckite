@@ -52,6 +52,25 @@ function createStylesheetEntry(
 }
 
 function writeGeneratedFile(filePath: string, contents: string): void {
+  if (readGeneratedFile(filePath) === contents) return;
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, contents);
+}
+
+function readGeneratedFile(filePath: string): string | undefined {
+  try {
+    return fs.readFileSync(filePath, "utf8");
+  } catch (error) {
+    if (isNotFoundError(error)) return undefined;
+    throw error;
+  }
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "ENOENT"
+  );
 }

@@ -341,7 +341,13 @@ function tsconfig(): string {
 }
 
 function gitignore(): string {
-  return ["node_modules/", "dist/", ".riebeckite/", ""].join("\n");
+  return [
+    "node_modules/",
+    "dist/",
+    ".riebeckite/",
+    "app/.riebeckite/",
+    "",
+  ].join("\n");
 }
 
 const REPO = "https://github.com/Rerurate514/riebeckite";
@@ -1109,6 +1115,7 @@ const resolvedConfig = resolveConfigModule(rawConfigModule);
 
 export const config = {
   ...resolvedConfig,
+  buildDirectory: path.join(appRoot, ".riebeckite"),
   content: {
     ...resolvedConfig.content,
     directory: path.resolve(appRoot, resolvedConfig.content.directory),

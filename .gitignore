@@ -3,6 +3,7 @@ node_modules/
 /content/
 apps/web/content/
 apps/web/app/.riebeckite/
+apps/web/.riebeckite/
 packages/**/dist/
 packages/**/LICENSE
 .riebeckite/

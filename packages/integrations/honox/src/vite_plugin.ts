@@ -73,6 +73,11 @@ export function riebeckite(
           define: {
             "process.env.RIEBECKITE_APP_ROOT": JSON.stringify(appRoot),
           },
+          server: {
+            watch: {
+              ignored: ["**/.riebeckite/**"],
+            },
+          },
           resolve: {
             alias: options.workspaceRoot
               ? createWorkspacePackageAliases(options.workspaceRoot)

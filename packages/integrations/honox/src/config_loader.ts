@@ -56,6 +56,7 @@ export function resolveHonoxConfig(
 ): ResolvedRiebeckiteConfig {
   return {
     ...config,
+    buildDirectory: path.join(appRoot, ".riebeckite"),
     content: {
       ...config.content,
       directory: path.resolve(appRoot, config.content.directory),

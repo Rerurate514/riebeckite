@@ -5,6 +5,8 @@ description: Official documentation for the Riebeckite framework.
 # Riebeckite Documentation
 ![[riebeckite-logo-horizontal.png]]
 
+![[HW]]
+
 Choose your language:
 
 - [English documentation](./en/README.md)

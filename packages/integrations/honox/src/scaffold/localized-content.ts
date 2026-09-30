@@ -6,6 +6,7 @@ import {
 } from "./presets.js";
 import {
   demoPackage,
+  fence,
   hasPlugin,
   README_DEMO_ORDER,
   README_DEMOS,
@@ -23,6 +24,354 @@ const PLUGIN_INDEX_URL =
   "https://github.com/Rerurate514/riebeckite/tree/main/packages/plugins";
 const THEMES_INDEX_URL =
   "https://github.com/Rerurate514/riebeckite/tree/main/packages/themes";
+const GALLERY_PACKAGE = "@riebeckite/plugin-gallery";
+
+const PLUGIN_MARKDOWN_GUIDES: Readonly<
+  Record<string, { readonly summary: string; readonly markdown: string }>
+> = {
+  "@riebeckite/plugin-color-mode": {
+    summary:
+      "Adds the light/dark/system color-mode control to the app shell. Markdown does not need special syntax; every page inherits the toggle.",
+    markdown:
+      "Write any page normally. Use the color-mode control in the header to see the same Markdown under light and dark tokens.",
+  },
+  "@riebeckite/plugin-l10n": {
+    summary:
+      "Routes translated Markdown files by language suffix and keeps the default-language file unsuffixed.",
+    markdown: fence(
+      "text",
+      [
+        "content/about.md       # default language",
+        "content/about.ja.md    # Japanese version served under /ja/about/",
+        "content/about.fr.md    # French version served under /fr/about/",
+      ].join("\n"),
+    ),
+  },
+  "@riebeckite/plugin-seo": {
+    summary:
+      "Turns Markdown frontmatter and site config into metadata, feeds, sitemap, and robots output.",
+    markdown: [
+      "---",
+      "title: Search-friendly title",
+      "description: Page-specific summary used for meta tags and cards.",
+      "image: /ogp/page.png",
+      "date: 2026-09-30",
+      "publish: true",
+      "---",
+      "",
+      "# Search-friendly title",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-toc": {
+    summary: "Builds a table of contents from Markdown headings.",
+    markdown: [
+      "# Page",
+      "",
+      "## First section",
+      "",
+      "### Nested section",
+      "",
+      "## Second section",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-properties": {
+    summary:
+      'Renders selected frontmatter properties near the article when configured with `render: "slot"`.',
+    markdown: [
+      "---",
+      "created: 2026-09-30",
+      "modified: 2026-09-30",
+      "tags: [riebeckite, demo]",
+      "status: active",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-alias": {
+    summary:
+      "Creates redirects from old Markdown paths declared in frontmatter.",
+    markdown: [
+      "---",
+      "aliases:",
+      "  - /old-page/",
+      "  - /notes/previous-name/",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-search": {
+    summary:
+      "Indexes published Markdown pages for client-side search. No special syntax is required; searchable text comes from each page body and metadata.",
+    markdown:
+      "# Indexed page\n\nThis body text becomes searchable after the site is built.",
+  },
+  "@riebeckite/plugin-backlinks": {
+    summary:
+      "Shows pages that link to the current page. Use normal Markdown links or Obsidian wikilinks.",
+    markdown:
+      "Mention another page with [[guide]] or [the guide](/guide/). The target page can show this page as a backlink.",
+  },
+  "@riebeckite/plugin-related-posts": {
+    summary: "Finds related pages from tags and backlink relationships.",
+    markdown: [
+      "---",
+      "tags: [typescript, static-site]",
+      "---",
+      "",
+      "Link to [[another-note]] to strengthen the relationship.",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-share": {
+    summary:
+      "Adds share links to rendered pages. Markdown does not need special syntax; page title and URL are used automatically.",
+    markdown: [
+      "---",
+      "title: Shareable article",
+      "---",
+      "",
+      "# Shareable article",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-changelog": {
+    summary:
+      "Surfaces recent or per-note update information from Markdown metadata.",
+    markdown: [
+      "---",
+      "title: Updated article",
+      "modified: 2026-09-30",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-webmention": {
+    summary:
+      "Displays webmentions for the page URL when data is available. Markdown controls the canonical page metadata.",
+    markdown: [
+      "---",
+      "title: Mentionable page",
+      "canonical: https://example.com/mentionable-page/",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-recent-posts": {
+    summary: "Builds recent-post lists from dated Markdown entries.",
+    markdown: [
+      "---",
+      "title: New post",
+      "date: 2026-09-30",
+      "publish: true",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-attachment": {
+    summary:
+      "Enhances links to downloadable assets, including size display when enabled.",
+    markdown: "Download the handout: [slides.pdf](/attachments/slides.pdf)",
+  },
+  "@riebeckite/plugin-pdf": {
+    summary: "Embeds linked PDFs with a viewer/fallback UI.",
+    markdown: "![Project brief](./attachments/project-brief.pdf)",
+  },
+  "@riebeckite/plugin-media": {
+    summary:
+      "Enhances Markdown audio/video embeds with lazy loading and captions.",
+    markdown:
+      "![Demo video](./media/demo.mp4)\n\n![Episode audio](./media/episode.mp3)",
+  },
+  "@riebeckite/plugin-responsive-image": {
+    summary:
+      "Rewrites Markdown image embeds into responsive images with configured widths and formats.",
+    markdown: "![A responsive landscape](./images/landscape.jpg)",
+  },
+  "@riebeckite/plugin-lightbox": {
+    summary:
+      "Makes image links open in a lightbox when the configured trigger class is present.",
+    markdown:
+      "[![Open in lightbox](./images/photo.jpg)](./images/photo.jpg){.rr-lightbox-trigger}",
+  },
+  "@riebeckite/plugin-highlight": {
+    summary: "Highlights marked inline text.",
+    markdown:
+      "This sentence contains ==highlighted text== inside normal Markdown.",
+  },
+  "@riebeckite/plugin-code-annotations": {
+    summary: "Adds callouts/annotations to code fences.",
+    markdown: [
+      "```ts",
+      "const answer = 42 // [!code focus]",
+      "console.log(answer)",
+      "```",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-shortcodes": {
+    summary: "Expands built-in shortcode syntax inside Markdown.",
+    markdown:
+      '{{< youtube dQw4w9WgXcQ >}}\n\n{{< figure src="/images/demo.png" caption="Demo image" >}}',
+  },
+  "@riebeckite/plugin-series": {
+    summary: "Groups Markdown pages into a reading series using frontmatter.",
+    markdown: [
+      "---",
+      "series: riebeckite-guide",
+      "series_title: Riebeckite Guide",
+      "series_order: 2",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-taxonomy": {
+    summary:
+      "Builds tag/folder taxonomy pages from Markdown metadata and content location.",
+    markdown: ["---", "tags: [design, notes]", "---", "", "# Tagged note"].join(
+      "\n",
+    ),
+  },
+  "@riebeckite/plugin-autocardlink": {
+    summary: "Turns suitable standalone links into rich card links.",
+    markdown: "https://example.com/articles/riebeckite-introduction",
+  },
+  "@riebeckite/plugin-plantuml": {
+    summary:
+      "A `plantuml` fence is rendered to SVG through the configured PlantUML server.",
+    markdown: fence(
+      "plantuml",
+      ["@startuml", "Alice -> Bob: Hello", "Bob --> Alice: Hi", "@enduml"].join(
+        "\n",
+      ),
+    ),
+  },
+  "@riebeckite/plugin-discord-embed": {
+    summary:
+      "Renders Discord-style rich embed metadata from frontmatter or embed blocks.",
+    markdown: [
+      "---",
+      "title: Discord preview",
+      "description: A page with rich metadata for card rendering.",
+      "image: /images/card.png",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-excalidraw": {
+    summary: "Embeds Excalidraw drawings referenced from Markdown.",
+    markdown:
+      "![[Architecture.excalidraw]]\n\n![Sketch](./drawings/sketch.excalidraw)",
+  },
+  "@riebeckite/plugin-excalibrain": {
+    summary:
+      "Builds an Excalibrain-style local graph from links, tags, headings, and inferred relationships.",
+    markdown:
+      "# Concept\n\nLinks to [[Parent idea]], [[Sibling idea]], and [[Related idea]] become graph relationships.",
+  },
+  "@riebeckite/plugin-canvas": {
+    summary: "Embeds Obsidian Canvas JSON as a rendered canvas/fallback.",
+    markdown: '```canvas\n{ "nodes": [], "edges": [] }\n```',
+  },
+  "@riebeckite/plugin-flashcards": {
+    summary: "Turns Q/A style Markdown into flashcards.",
+    markdown: [
+      "# Flashcards",
+      "",
+      "Q: What is Riebeckite?",
+      "A: A content-first static site framework.",
+      "",
+      "---",
+      "",
+      "What does SSG mean?::Static Site Generation",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-local-graph": {
+    summary: "Shows nearby notes based on Markdown links and wikilinks.",
+    markdown:
+      "# Local graph source\n\nConnect this page to [[guide]], [[examples]], and [[reference/plugins]].",
+  },
+  "@riebeckite/plugin-hover-preview": {
+    summary:
+      "Shows previews when hovering internal links generated from Markdown.",
+    markdown:
+      "Hover this internal link: [Guide](/guide/) or this wikilink: [[guide]].",
+  },
+  "@riebeckite/plugin-garden-explorer": {
+    summary:
+      "Adds garden navigation/explorer UI from the content tree. Markdown files and folders become the source data.",
+    markdown: fence(
+      "text",
+      [
+        "content/",
+        "  notes/",
+        "    ideas.md",
+        "    projects.md",
+        "  reference/",
+        "    plugins.md",
+      ].join("\n"),
+    ),
+  },
+  "@riebeckite/plugin-ux": {
+    summary:
+      "Adds reading UX such as progress, back-to-top, scroll spy, and copy buttons. Markdown headings and code blocks provide the anchors.",
+    markdown: [
+      "## Long section",
+      "",
+      "```ts",
+      "console.log('copy me')",
+      "```",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-daily-notes": {
+    summary:
+      "Extracts daily-note summaries/snippets from dated Markdown files.",
+    markdown: [
+      "---",
+      "daily-summary: Shipped the plugin reference page.",
+      "---",
+      "",
+      "```daily-snippet",
+      "Fixed the ultra preset examples.",
+      "```",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-rename": {
+    summary:
+      "Creates redirects when Markdown entries declare previous paths or when rename data is available.",
+    markdown: [
+      "---",
+      "previousPaths:",
+      "  - /old-slug/",
+      "  - /notes/old-title/",
+      "---",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-text-fragment": {
+    summary:
+      "Adds text-fragment friendly copy/open behavior for selected Markdown text.",
+    markdown:
+      "Select this sentence in the rendered page and copy a text-fragment link to it.",
+  },
+  "@riebeckite/plugin-quality": {
+    summary:
+      "Reports accessibility/content quality diagnostics from rendered Markdown output.",
+    markdown:
+      "![Missing alt text example](./images/needs-alt.png)\n\nUse headings in order: #, then ##, then ###.",
+  },
+  "@riebeckite/plugin-deploy": {
+    summary:
+      "Adds deployment integration for the generated site. Markdown does not need syntax; published pages become deployable output.",
+    markdown: [
+      "---",
+      "publish: true",
+      "---",
+      "",
+      "# This page is included in the deployed site",
+    ].join("\n"),
+  },
+  "@riebeckite/plugin-diagnostics": {
+    summary:
+      "Reports diagnostics such as missing required frontmatter, orphan pages, and unused assets.",
+    markdown: [
+      "---",
+      "title: Required title",
+      "publish: true",
+      "---",
+      "",
+      "Link orphan pages from another note to clear orphan diagnostics.",
+    ].join("\n"),
+  },
+};
 
 function pluginReadmeUrl(slug: string): string {
   return `https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/${slug}/README.md`;
@@ -86,7 +435,9 @@ export function localizedContentFiles(
         pluginsContent(language),
       );
     } else if (page === "framework/themes") {
-      pushLocalized("framework/themes", (language) => themesContent(language));
+      pushLocalized("framework/themes", (language) =>
+        themesContent(language, preset),
+      );
     } else if (page === "guide") {
       pushEnglishOnly("guide", guideContent);
     } else if (page === "examples") {
@@ -98,7 +449,7 @@ export function localizedContentFiles(
         referencePluginsContent(preset, variables),
       );
     } else if (page === "reference/themes") {
-      pushEnglishOnly("reference/themes", referenceThemesContent);
+      pushEnglishOnly("reference/themes", () => referenceThemesContent(preset));
     }
   }
 
@@ -256,6 +607,7 @@ type ThemeRow = {
 type ThemesCopy = {
   readonly title: LocalizedText;
   readonly intro: LocalizedText;
+  readonly galleryHeading: LocalizedText;
   readonly switchHeading: LocalizedText;
   readonly switchCurrent: LocalizedText;
   readonly switchStep1: LocalizedText;
@@ -285,6 +637,15 @@ const THEMES_COPY: ThemesCopy = {
     de: "Ein Theme verändert das gesamte Erscheinungsbild einer Seite — Farben, Typografie, Layout — ohne dass du Inhalte oder Routen anfasst. Riebeckite bringt sechs Themes mit; der Wechsel ist eine Paketinstallation plus eine Zeile.",
     fr: "Un thème change tout l'aspect d'un site — couleurs, typographie, mise en page — sans toucher au contenu ni aux routes. Riebeckite fournit six thèmes ; installez un paquet et changez une ligne.",
     ko: "테마를 바꾸면 색상·타이포그래피·레이아웃 등 사이트 전체 분위기가 달라집니다. 콘텐츠나 라우트는 건드릴 필요가 없습니다. Riebeckite는 6개 테마를 제공하며 패키지 설치 후 한 줄만 바꾸면 전환됩니다.",
+  },
+  galleryHeading: {
+    en: "Theme gallery",
+    ja: "テーマギャラリー",
+    "zh-CN": "主题画廊",
+    es: "Galería de temas",
+    de: "Theme-Galerie",
+    fr: "Galerie des thèmes",
+    ko: "테마 갤러리",
   },
   switchHeading: {
     en: "Switching themes",
@@ -441,11 +802,42 @@ const THEMES: readonly ThemeRow[] = [
   },
 ];
 
-function themesContent(language: ScaffoldLanguage): string {
+const THEME_LABELS: Readonly<Record<string, string>> = {
+  default: "Default",
+  minimal: "Minimal",
+  sakura: "Sakura",
+  gruvbox: "Gruvbox",
+  tokyonight: "Tokyo Night",
+  rerurate: "Rerurate",
+};
+
+function themeGalleryFence(description: (theme: ThemeRow) => string): string {
+  const items: string[] = ["columns: 3", "items:"];
+  for (const theme of THEMES) {
+    const label = THEME_LABELS[theme.slug] ?? theme.slug;
+    items.push(`  - title: ${JSON.stringify(label)}`);
+    items.push(`    description: ${JSON.stringify(description(theme))}`);
+    items.push(`    meta: ${JSON.stringify(theme.factory)}`);
+    items.push(`    href: ${JSON.stringify(themeReadmeUrl(theme.slug))}`);
+  }
+  return fence("gallery", items.join("\n"));
+}
+
+function themesContent(
+  language: ScaffoldLanguage,
+  preset: ScaffoldPreset,
+): string {
   const copy = THEMES_COPY;
   const lines: string[] = [frontmatter()];
   lines.push(heading(1, read(copy.title, language)), "");
   lines.push(read(copy.intro, language), "");
+  if (hasPlugin(preset, GALLERY_PACKAGE)) {
+    lines.push(heading(2, read(copy.galleryHeading, language)), "");
+    lines.push(
+      themeGalleryFence((theme) => read(theme.desc, language)),
+      "",
+    );
+  }
   lines.push(heading(2, read(copy.switchHeading, language)), "");
   lines.push(read(copy.switchCurrent, language), "");
   lines.push(read(copy.switchStep1, language), "");
@@ -1188,12 +1580,51 @@ function referencePluginsContent(
     );
   }
   lines.push("");
+
+  lines.push(heading(2, "Markdown behavior"), "");
+  lines.push(
+    "Every registered plugin is listed below with the Markdown that triggers it,",
+    "or with the Markdown/frontmatter/content shape it reads when the plugin is",
+    "site-wide rather than block-based. Paste the examples into files under",
+    "`content/` and run `pnpm exec riebeckite dev` to inspect the rendered result.",
+    "",
+  );
+
+  for (const plugin of preset.plugins) {
+    const demoKeys = README_DEMO_ORDER.filter(
+      (key) => demoPackage(key) === plugin.package,
+    );
+    const guide = PLUGIN_MARKDOWN_GUIDES[plugin.package];
+    const slug = plugin.package.replace(/^@riebeckite\/plugin-/, "");
+    lines.push(heading(3, plugin.package), "");
+    lines.push(
+      `Factory: \`${plugin.factory}\` · [README](${pluginReadmeUrl(slug)})`,
+      "",
+    );
+    if (guide) {
+      lines.push(guide.summary, "");
+      lines.push(guide.markdown, "");
+    }
+    for (const key of demoKeys) {
+      const demo = README_DEMOS[key];
+      lines.push(heading(4, demo.title.en), "");
+      lines.push(demo.intro.en, "");
+      lines.push(demo.markdown, "");
+    }
+    if (!guide && demoKeys.length === 0) {
+      lines.push(
+        "This plugin has no Markdown-specific demo in the scaffold yet. See its package README for the exact behavior and options.",
+        "",
+      );
+    }
+  }
+
   lines.push(`[Riebeckite plugins on GitHub](${PLUGIN_INDEX_URL})`, "");
   lines.push("");
   return lines.join("\n");
 }
 
-function referenceThemesContent(): string {
+function referenceThemesContent(preset: ScaffoldPreset): string {
   const lines: string[] = [frontmatter()];
   lines.push(heading(1, "Theme reference"), "");
   lines.push(
@@ -1201,6 +1632,13 @@ function referenceThemesContent(): string {
     "`theme` factory in `riebeckite.config.ts`.",
     "",
   );
+  if (hasPlugin(preset, GALLERY_PACKAGE)) {
+    lines.push(heading(2, "Theme gallery"), "");
+    lines.push(
+      themeGalleryFence((theme) => theme.desc.en),
+      "",
+    );
+  }
   lines.push("| Theme | Factory | Description |");
   lines.push("| --- | --- | --- |");
   for (const theme of THEMES) {

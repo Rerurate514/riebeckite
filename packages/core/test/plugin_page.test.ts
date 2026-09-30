@@ -94,3 +94,34 @@ test("duplicate page type IDs fail during plugin resolution", async () => {
     /provided by both first and second/,
   );
 });
+
+test("page types validate their runtime contract", async () => {
+  const plugin = {
+    name: "invalid-pages",
+    pageTypes: [{ id: "", resolve: null }],
+  } as unknown as ReturnType<typeof definePlugin>;
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+  });
+
+  await assert.rejects(manager.getManifest(), /id must be a non-empty string/);
+});
+
+test("page types can derive SSG paths from the public manifest", async () => {
+  const plugin = definePlugin({
+    name: "dynamic-pages",
+    pageTypes: [
+      {
+        id: "dynamic",
+        paths: ({ manifest }) =>
+          manifest.publicEntries.map((entry) => `/preview/${entry.slug}`),
+        resolve: () => null,
+      },
+    ],
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+  });
+
+  assert.deepEqual(await manager.getPagePaths(), ["/preview/index"]);
+});

@@ -428,7 +428,15 @@ export class PluginRuntime {
     const plugins = resolvePlugins(this.pipelineOptions.plugins);
     const pageTypes = new Map<string, string>();
     for (const plugin of plugins) {
-      for (const pageType of plugin.pageTypes ?? []) {
+      const declaredPageTypes = plugin.pageTypes;
+      if (
+        declaredPageTypes !== undefined &&
+        !Array.isArray(declaredPageTypes)
+      ) {
+        throw new TypeError(`Plugin ${plugin.name} pageTypes must be an array`);
+      }
+      for (const pageType of declaredPageTypes ?? []) {
+        validatePageType(plugin.name, pageType);
         const previous = pageTypes.get(pageType.id);
         if (previous) {
           throw new Error(
@@ -439,6 +447,46 @@ export class PluginRuntime {
       }
     }
     return plugins;
+  }
+}
+
+function validatePageType(pluginName: string, pageType: unknown): void {
+  if (typeof pageType !== "object" || pageType === null) {
+    throw new TypeError(`Plugin ${pluginName} pageTypes must contain objects`);
+  }
+  const candidate = pageType as {
+    id?: unknown;
+    resolve?: unknown;
+    paths?: unknown;
+    priority?: unknown;
+  };
+  if (typeof candidate.id !== "string" || candidate.id.trim() === "") {
+    throw new TypeError(
+      `Plugin ${pluginName} page type id must be a non-empty string`,
+    );
+  }
+  if (typeof candidate.resolve !== "function") {
+    throw new TypeError(
+      `Plugin ${pluginName} page type "${candidate.id}" must provide a resolve function`,
+    );
+  }
+  if (
+    candidate.paths !== undefined &&
+    !Array.isArray(candidate.paths) &&
+    typeof candidate.paths !== "function"
+  ) {
+    throw new TypeError(
+      `Plugin ${pluginName} page type "${candidate.id}" paths must be an array or function`,
+    );
+  }
+  if (
+    candidate.priority !== undefined &&
+    (typeof candidate.priority !== "number" ||
+      !Number.isFinite(candidate.priority))
+  ) {
+    throw new TypeError(
+      `Plugin ${pluginName} page type "${candidate.id}" priority must be a finite number`,
+    );
   }
 }
 

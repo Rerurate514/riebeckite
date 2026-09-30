@@ -39,6 +39,12 @@ test("each preset generates its intended self-contained composition", async () =
         assert.ok(!config.includes("@riebeckite/plugin-"));
       } else {
         assert.ok(config.includes("@riebeckite/plugin-obsidian-markdown"));
+        const slugRoute = await fs.readFile(
+          path.join(targetDirectory, "app/routes/[slug{.+}].tsx"),
+          "utf8",
+        );
+        assert.match(slugRoute, /resolveRiebeckiteRoute/);
+        assert.match(slugRoute, /pluginPageSsgParams/);
       }
       if (preset === "showcase") {
         assert.ok(

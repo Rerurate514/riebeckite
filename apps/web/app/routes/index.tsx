@@ -1,4 +1,5 @@
 import { isPublished } from "@riebeckite/core";
+import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
 import { DailyNotes, getDailyNotes } from "@riebeckite/plugin-daily-notes";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -11,16 +12,36 @@ import Article from "../components/article/article";
 import { config } from "../config";
 import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
-import { buildIndexSeo } from "../lib/seo";
+import { buildIndexSeo, buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(async (c) => {
   const manifest = await content.getManifest();
-  const indexEntry = manifest.bySlug.get("index");
-  if (indexEntry && indexEntry.permalink !== "/") {
-    return c.redirect(indexEntry.permalink, 308);
+  const configuredIndex = manifest.bySlug.get("index");
+  if (configuredIndex && configuredIndex.permalink !== "/") {
+    return c.redirect(configuredIndex.permalink, 308);
+  }
+  const route = await resolveRiebeckiteRoute(content, c.req.path);
+  if (!route) return c.notFound();
+  if (route.kind === "redirect")
+    return c.redirect(route.location, route.status);
+  if (route.kind === "page") {
+    c.set(
+      "seo",
+      buildWebsiteSeo({
+        title: route.page.title,
+        description: route.page.description,
+        path: route.page.pathname,
+      }),
+    );
+    c.set("headTags", route.page.headTags ?? []);
+    return c.render(
+      <div dangerouslySetInnerHTML={{ __html: route.page.body }} />,
+    );
   }
 
-  const post = await content.getProcessedContent("index");
+  const indexEntry = route.entry;
+  const indexSlug = indexEntry.slug;
+  const post = await content.getProcessedContent(indexSlug);
   if (!isPublished(config, post?.frontmatter)) {
     return c.notFound();
   }
@@ -28,7 +49,7 @@ export default createRoute(async (c) => {
     getPublishedBacklinks({
       manifest,
       config,
-      slug: "index",
+      slug: indexSlug,
       resolveTitle: getArticleTitle,
     }),
     getRecentPosts({
@@ -41,15 +62,15 @@ export default createRoute(async (c) => {
   const dailyNotes = getDailyNotes({ manifest, config });
   const tableOfContents = extractTableOfContents(post.html ?? "");
   c.set("seo", buildIndexSeo(post));
-  c.set("headTags", indexEntry?.headTags ?? []);
-  c.set("htmlLanguage", indexEntry?.publicLocation.metadata?.["l10n.lang"]);
+  c.set("headTags", indexEntry.headTags ?? []);
+  c.set("htmlLanguage", indexEntry.publicLocation.metadata?.["l10n.lang"]);
 
   return c.render(
     <Article
       content={post}
       title={post.frontmatter.title}
-      propertiesHtml={indexEntry?.bodySlots?.properties}
-      bodySlots={indexEntry?.bodySlots}
+      propertiesHtml={indexEntry.bodySlots?.properties}
+      bodySlots={indexEntry.bodySlots}
       asideContent={
         <TableOfContents
           className="table-of-contents--desktop"

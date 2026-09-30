@@ -141,6 +141,7 @@ const workflowPath = path.join(
   "workflows",
   "deploy.yml",
 );
+const notifyWorkflowPath = path.join(templateRoot, "notify-site.yml");
 const referenceConfigPath = path.join(
   repositoryRoot,
   "apps",
@@ -155,6 +156,10 @@ expect(
 expect(
   fs.existsSync(workflowPath),
   "templates/cloudflare/.github/workflows/deploy.yml is missing",
+);
+expect(
+  fs.existsSync(notifyWorkflowPath),
+  "templates/cloudflare/notify-site.yml is missing",
 );
 expect(
   fs.existsSync(referenceConfigPath),
@@ -205,8 +210,22 @@ if (errors.length === 0) {
     "npm exec riebeckite check",
     "npm exec riebeckite build",
     "workflow_dispatch",
+    "repository_dispatch",
+    "content-updated",
   ]) {
     expect(workflow.includes(needle), `deploy.yml must reference ${needle}`);
+  }
+  const notifyWorkflow = fs.readFileSync(notifyWorkflowPath, "utf8");
+  for (const needle of [
+    "SITE_DISPATCH_TOKEN",
+    "actions/github-script@v7",
+    'event_type: "content-updated"',
+    "permissions: {}",
+  ]) {
+    expect(
+      notifyWorkflow.includes(needle),
+      `notify-site.yml must reference ${needle}`,
+    );
   }
 }
 

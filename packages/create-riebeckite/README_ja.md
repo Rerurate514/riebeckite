@@ -22,12 +22,31 @@ npm exec riebeckite build
 | `--preset <name>` | 使用するスターター構成（既定は `starter`） |
 | `--force` | 空でないディレクトリにも展開する |
 | `--list-presets` | 利用可能な preset と説明を一覧表示して終了する |
+| `--github-actions` | Cloudflare へのデプロイ workflow を生成する |
+| `--content-repository <owner/repository>` | デプロイ時にこのリポジトリを `content/` へ checkout する（`--github-actions` が必要） |
+| `--site-repository <owner/repository>` | 生成する記事通知 workflow が通知する site リポジトリ |
+| `--notify-on-content-push` | 記事リポジトリ用の `github/notify-site.yml` を生成する（Actions、記事・site リポジトリが必要） |
 
 たとえば、`rich` preset で生成する場合は次のようにします。
 
 ```sh
 npx create-riebeckite my-site --preset rich
 ```
+
+別の記事リポジトリを使い、その `main` への push でデプロイする場合は、共通の
+workflow を一度だけ生成します。preset による違いはありません。
+
+```sh
+npx create-riebeckite my-site --github-actions \
+  --content-repository OWNER/notes \
+  --site-repository OWNER/my-site \
+  --notify-on-content-push
+```
+
+`content.directory` は `"content"` にし、必要な repository Secret を登録した後、
+`github/notify-site.yml` を記事リポジトリの
+`.github/workflows/notify-site.yml` にコピーします。詳細は[別記事リポジトリの
+デプロイガイド](../../templates/cloudflare/README_ja.md)を参照してください。
 
 ## Preset
 

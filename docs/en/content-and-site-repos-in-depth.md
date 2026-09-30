@@ -133,11 +133,11 @@ The basic flow is in [separating content from the site](./content-and-site-repos
 - The baseline for private notes is: no `publish: true`. Add a second layer by excluding a private folder (for example `private/**`) in `content.exclude` so those notes are not even loaded.
 - Leave `publishStrategy` at the default `explicit`. `selective` is the "publish almost everything, hide exceptions" model, which is riskier for a private vault.
 
-### 3-2. Two ways to fetch the articles repository in CI
+### 3-2. Fetching content is separate from triggering a deployment
 
 The default deploy workflow (`templates/cloudflare/.github/workflows/deploy.yml`) checks out **only the site repository**.
 
-**Option 1: an extra checkout in the workflow (recommended)**
+**Option 1: extra checkout plus repository dispatch (recommended for automatic deployment)**
 
 ```yaml
 - name: Check out the site
@@ -147,13 +147,13 @@ The default deploy workflow (`templates/cloudflare/.github/workflows/deploy.yml`
   uses: actions/checkout@v4
   with:
     repository: <you>/notes
-    path: notes
+    token: ${{ secrets.RIEBECKITE_CONTENT_READ_TOKEN || github.token }}
+    path: content
 ```
 
-- The `repository` key targets the (possibly private) articles repository; CI on the same GitHub repository authenticates automatically.
-- With `path: notes`, the checkout lands at `notes/` in the workflow working directory. If you use `../notes` locally, align `directory` in CI (for example `notes`, or a relative path based on the layout) so resolution matches. Keep the layout shape identical locally and in CI.
-- Deploys update whenever articles are pushed — the simplest option when article updates dominate.
-- To pin a branch or tag, add `ref:`. If you do not need the articles repository's full history, the default `fetch-depth: 1` is enough.
+- With `path: content`, set `content.directory` to `"content"`.
+- This checkout makes files available only after the site workflow starts. Add `repository_dispatch: types: [content-updated]` to the site workflow and put a notification workflow in the content repository to start it on its `main` pushes.
+- Do not set `ref` when article updates should deploy the newest default-branch content. The checkout then reads its current tip; the default `fetch-depth: 1` is enough.
 
 **Option 2: Git submodule**
 
@@ -179,8 +179,8 @@ git commit -m "update articles"
 
 | Aspect | Option 1 (extra checkout) | Option 2 (submodule) |
 | --- | --- | --- |
-| Article push deploys automatically | Yes | No (update the reference) |
-| Locality | Match the checkout path and `directory` | Fixed at `directory: "content"` |
+| Article push deploys automatically | Yes, with repository dispatch | No (update the reference) |
+| Locality | `path: content`, `directory: "content"` | Fixed at `directory: "content"` |
 | History pinning | Follows the branch tip | Can pin a specific commit |
 | Local operations | Often a normal clone | Requires `submodule update` |
 | Best for | Article-first workflows | Pinning article revisions on the site side |
@@ -189,9 +189,9 @@ If article updates dominate, Option 1 is the easier fit; if you want the history
 
 ### 3-3. Authentication for private repositories in CI
 
-- For a **private repository on the same GitHub account**, `actions/checkout` with `repository:` uses `github.token` automatically — no extra setup. Workflow `permissions` of `contents: read` is enough.
-- When that does not apply (another organization, another host such as GitLab, etc.), register a PAT (personal access token) or deploy key as a secret and pass it with `token:`.
-- Use a minimal-scope PAT that can read the private vault, under a dedicated secret name rather than the default token.
+- `github.token` is scoped to the current repository. It can read another **public** GitHub repository, but cannot read a different private or internal repository.
+- For a private/internal vault, register `RIEBECKITE_CONTENT_READ_TOKEN` in the site repository. Use a fine-grained PAT restricted to the vault with **Contents: read**, or an equivalent read-only GitHub App installation token.
+- The content notification needs a separate `SITE_DISPATCH_TOKEN` stored only in the content repository. Restrict a fine-grained PAT to the site repository with **Contents: read and write**; classic PATs require `repo` scope and GitHub App tokens require **Contents: write**.
 - If the submodule was added with an SSH URL (`git@github.com:...`), CI needs an SSH key. Switching to an HTTPS URL and passing `token:` is simpler to configure.
 
 ```yaml

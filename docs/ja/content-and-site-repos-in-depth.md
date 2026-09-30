@@ -133,11 +133,11 @@ Vault は読み取り専用の source として扱い、site ごとに `exclude`
 - 非公開ノートは `publish: true` を付けないことが基本です。加えて、非公開用のフォルダ（例: `private/**`）を `content.exclude` に入れて、**そもそも読み込ませない**二重の対策にします。
 - `publishStrategy` は既定の `explicit` のままで構いません。`selective` は「ほぼ全部公開・例外だけ伏せる」発想なので、private Vault には `explicit` のほうが事故に強いです。
 
-### 3-2. CI で記事リポジトリを取得する 2 つの方法
+### 3-2. content の取得とデプロイ起動は別の設定
 
 デフォルトのデプロイ workflow（`templates/cloudflare/.github/workflows/deploy.yml`）は **サイトのリポジトリしか取得しません**。
 
-**方法 1: workflow 内でもう 1 つ checkout する（おすすめ）**
+**方法 1: 追加 checkout と repository dispatch（自動デプロイにおすすめ）**
 
 ```yaml
 - name: Check out the site
@@ -147,13 +147,13 @@ Vault は読み取り専用の source として扱い、site ごとに `exclude`
   uses: actions/checkout@v4
   with:
     repository: <you>/notes
-    path: notes
+    token: ${{ secrets.RIEBECKITE_CONTENT_READ_TOKEN || github.token }}
+    path: content
 ```
 
-- `repository` に記事リポジトリ（private）を指定すると、同リポジトリの CI では自動的に認証されます。
-- `path: notes` にすると、workflow の working directory 上で `notes/` として取得されます。手元で `../notes` を使っていた場合、CI では `directory` を `notes`（あるいは `notes/` を基準にした相対）にそろえます。手元と CI で解決結果が同じになるよう、配置の形を合わせてください。
-- 記事の push だけでデプロイに反映されます。記事の更新が主な運用なら手軽です。
-- 特定の branch や tag を固定したい場合は `ref:` を足します。記事リポジトリの履歴全体が不要なら、`fetch-depth: 1`（既定）のままで十分です。
+- `path: content` にし、`content.directory` を `"content"` にします。
+- この checkout は site workflow が始まった後にファイルを読めるようにするだけです。記事 `main` の push で起動するには、site workflow に `repository_dispatch: types: [content-updated]` を追加し、記事リポジトリには通知 workflow を置きます。
+- 記事更新で既定 branch の最新を出すなら `ref` は固定しません。checkout はその時点の先頭を読み、既定の `fetch-depth: 1` で十分です。
 
 **方法 2: Git submodule**
 
@@ -179,8 +179,8 @@ git commit -m "記事を更新"
 
 | 観点 | 方法 1（追加 checkout） | 方法 2（submodule） |
 | --- | --- | --- |
-| 記事 push で自動デプロイ | される | されない（参照更新が必要） |
-| 局所性 | checkout 先と `directory` をそろえる | `directory: "content"` で固定 |
+| 記事 push で自動デプロイ | repository dispatch を設定すればされる | されない（参照更新が必要） |
+| 局所性 | `path: content` と `directory: "content"` | `directory: "content"` で固定 |
 | 履歴の固定 | branch 先頭に追従 | commit 単位で固定できる |
 | 手元の操作 | 通常の clone で済むことが多い | `submodule update` が要る |
 | 向いている運用 | 記事の更新が主 | 記事の版を site 側で固定したい |
@@ -189,9 +189,9 @@ git commit -m "記事を更新"
 
 ### 3-3. CI で private リポジトリを取得するときの認証
 
-- **同一 GitHub リポジトリの CI** から `repository:` 指定で取得する場合、`actions/checkout` は `github.token` を自動利用でき、追加設定は不要です。workflow の `permissions` は `contents: read` で足ります。
-- **同じ GitHub アカウント配下でも別組織・別 host**（GitLab など）など、`github.token` で解決できない場合は、PAT（personal access token）や deploy key を secret に登録し、`token:` で渡す必要があります。
-- private Vault を READ できる最小権限の PAT を用意し、`GITHUB_TOKEN` ではなく専用の secret 名で扱うと安全です。
+- `github.token` は現在のリポジトリに限定されます。別の **public** GitHub リポジトリは読めますが、別の private/internal リポジトリは読めません。
+- private/internal Vault では、site リポジトリ側に `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。Vault だけを対象に **Contents: read** を与えた fine-grained PAT、または同等の read-only GitHub App installation token を使います。
+- 記事からの通知には、記事リポジトリ側だけに `SITE_DISPATCH_TOKEN` を登録します。site リポジトリだけを対象に **Contents: read and write** を与えた fine-grained PAT を使います。classic PAT は `repo` scope、GitHub App token は **Contents: write** が必要です。
 - submodule を SSH URL（`git@github.com:...`）で追加した場合、CI では SSH key が必要になります。HTTPS URL にして `token:` を渡すほうが設定は単純です。
 
 ```yaml

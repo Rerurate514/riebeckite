@@ -50,7 +50,7 @@ export default defineConfig({
 
 - **記事を公開したくない**なら C。private リポジトリなら、`publish: true` を付け忘れても内容そのものが公開されることはありません。
 - **記事もサイトも公開してよい**なら A または B。管理するリポジトリが 1 つで済みます。
-- **記事の更新をサイトのデプロイと切り離したい**なら C。記事の push だけでデプロイを回せます。
+- **記事の更新をサイトのデプロイと切り離したい**なら C。記事 push でデプロイも起動したい場合は repository dispatch を追加します。追加 checkout だけでは、すでに始まったデプロイにファイルを渡すだけです。
 - **1 つの Vault を複数のサイトで使いたい**なら C（または Vault を独立した場所に置く構成）。Vault を 1 か所に保ち、サイト側は読み取り専用で参照します。
 
 以下は C の手順です。A・B は設定の考え方が同じで、**手順 5（デプロイで記事リポジトリを取得する）だけが不要**になります。
@@ -105,15 +105,18 @@ git push -u origin main
 
 ### 2. サイトを生成する
 
-記事リポジトリの **兄弟の場所** にサイトを生成します。
+共通の GitHub Actions デプロイ用ファイルを含めてサイトを生成します。preset は生成する site だけを変えるため、すべての preset でこの方法を使えます。
 
 ```sh
-npx create-riebeckite my-site
+npx create-riebeckite my-site --github-actions \
+  --content-repository <you>/notes \
+  --site-repository <you>/my-site \
+  --notify-on-content-push
 cd my-site
 npm install
 ```
 
-生成直後の `content.directory` は `"content"`（サイト内の `content/`）です。ここを次の手順で Vault に向け替えます。`create-riebeckite` は `--preset` で雛形を選べます。最初は既定の `starter` で問題ありません。
+生成したデプロイ workflow は Vault を site 内の `content/` に checkout します。`create-riebeckite` は `--preset` で雛形を選べます。最初は既定の `starter` で問題ありません。
 
 ```text
 workspace/
@@ -121,7 +124,7 @@ workspace/
 └─ my-site/   ← 手順 2 のサイト
 ```
 
-この「兄弟に並べる」配置にしておくと、相対パス `../notes` がそのまま使えて、CI でも同じ形を再現しやすくなります。
+この「兄弟に並べる」配置は手元では便利ですが、CI は site checkout 内の `content/` を使います。
 
 ### 3. content.directory を Vault に向ける
 
@@ -132,14 +135,14 @@ workspace/
 export default defineConfig({
   // ...
   content: {
-    directory: "../notes",
+    directory: "content",
     exclude: [".obsidian/**", "Templates/**", "private/**"],
   },
   // ...
 });
 ```
 
-- `directory: "../notes"` で、サイトの外にある Vault を参照します。
+- `directory: "content"` はデプロイ workflow の checkout 先と一致します。
 - `exclude` には公開したくないものを置きます。Obsidian の設定（`.obsidian/**`）、テンプレート（`Templates/**`）、非公開ノート用フォルダ（`private/**`）が典型です。
 
 `exclude` は「読み込ませない」対策で、`publish: true` は「公開する」対策です。両方を使って二重に守るのが基本です（→ [公開のルール](#公開のルール)）。
@@ -162,26 +165,28 @@ npm exec riebeckite inspect content --list
 
 パスがずれている場合、大半は `directory` の相対パスが原因です。記事が表示されないときは、explicit 方式なので `publish: true` が付いているかも確認してください。
 
-### 5. デプロイで両方のリポジトリを使う
+### 5. checkout・起動・Secret を設定する
 
-デフォルトのデプロイ workflow（`templates/cloudflare/.github/workflows/deploy.yml`）は**サイトのリポジトリしか取得しません**。記事が別リポジトリのままだと、CI のビルド時に Vault が見つからず失敗します。次のどちらかを選んでください。
+生成された deploy workflow は site を checkout した後、指定した記事リポジトリを `content/` に checkout します。site push、手動実行、`content-updated` repository dispatch で動きます。記事 checkout と起動は別の責務です。checkout しただけでは、別リポジトリの push を検知しません。
 
-**方法 1: workflow 内でもう 1 つ checkout する（おすすめ）**
+生成された `github/notify-site.yml` を記事リポジトリの `.github/workflows/notify-site.yml` にコピーします。`main` への push が site に `content-updated` を送ります。`SITE_DISPATCH_TOKEN` は記事リポジトリ側だけに登録します。site リポジトリだけに対象を絞った fine-grained PAT には **Contents: read and write** が必要です。classic PAT の `repo` scope、または **Contents: write** の GitHub App installation token も使えます。
 
 ```yaml
-- name: Check out the site
-  uses: actions/checkout@v4
-
-- name: Check out the notes
-  uses: actions/checkout@v4
-  with:
-    repository: <you>/notes
-    path: notes
+repository_dispatch:
+  types: [content-updated]
 ```
 
-記事の push だけでデプロイに反映されるので、記事の更新が主なら手軽です。`path: notes` にしたので、サイト側の作業ディレクトリには `notes/` として並びます。手元が `../notes`（兄弟）なら、CI 用に `directory` を `notes` へ切り替える必要があります。手元と CI で並び方をそろえるのがコツです。
+private または internal の記事リポジトリでは、site リポジトリ側の Secret に `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。対象を記事リポジトリだけに絞り **Contents: read** を与えた fine-grained PAT または GitHub App token を使います。記事リポジトリが public なら checkout 用 Secret は不要です。site の `GITHUB_TOKEN` は別の private/internal リポジトリを読めません。`ref` を固定しない checkout のため、dispatch ごとに記事の既定 branch の最新を読みます。
 
-**方法 2: Git submodule**
+| デプロイ方法 | 記事 push でデプロイ | 設定 |
+| --- | --- | --- |
+| 同じリポジトリ | される | `content/` をそのまま使い、site の `push` で workflow を起動する。 |
+| 別リポジトリ + dispatch | される | 外部 checkout と、上記の記事通知 workflow を設定する。 |
+| 別リポジトリ + schedule | 遅延する | site workflow に `schedule` を追加する。dispatch token は不要。 |
+| 手動実行 | されない | Actions タブで `workflow_dispatch` を実行する。 |
+| Git submodule | されない | site 側の submodule 参照を更新して push する。 |
+
+**submodule を選ぶ場合**
 
 ```sh
 git submodule add git@github.com:<you>/notes.git content
@@ -195,7 +200,7 @@ git submodule add git@github.com:<you>/notes.git content
 
 設定できたら、あとは記事を書いて push するだけです。
 
-**記事を更新する（方法 1 の場合）**
+**記事を更新する（repository dispatch の場合）**
 
 ```sh
 cd notes
@@ -205,9 +210,9 @@ git commit -m "記事を追加"
 git push
 ```
 
-push をきっかけに CI が動き、サイトが再ビルド・再デプロイされます。サイト側の変更は別のリポジトリで、通常どおり `my-site` を編集して push します。
+記事 workflow が site workflow を dispatch し、記事の既定 branch の最新を checkout して再ビルド・再デプロイします。dispatch Secret が無い場合は値を出さずに失敗します。権限不足、記事を読めない、build、Cloudflare の失敗も、それぞれの step で確認できます。site 側の変更は別のリポジトリで、通常どおり `my-site` を編集して push します。
 
-**記事を更新する（方法 2 / submodule の場合）**
+**記事を更新する（submodule を選ぶ場合）**
 
 ```sh
 cd my-site

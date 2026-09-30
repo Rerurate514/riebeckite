@@ -21,12 +21,31 @@ npm exec riebeckite build
 | `--preset <name>` | Starter composition, e.g. `rich` (default: `starter`) |
 | `--force` | Scaffold even when the target directory is not empty |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
+| `--github-actions` | Generate the Cloudflare deployment workflow |
+| `--content-repository <owner/repository>` | Check out this repository into `content/` during deployment (requires `--github-actions`) |
+| `--site-repository <owner/repository>` | Site repository notified by the generated content workflow |
+| `--notify-on-content-push` | Generate `github/notify-site.yml` for the content repository (requires Actions, content, and site repositories) |
 
 For example, scaffold with the `rich` preset:
 
 ```sh
 npx create-riebeckite my-site --preset rich
 ```
+
+To use a separate content repository and deploy after its `main` branch is
+pushed, generate the common workflow once (the preset does not affect it):
+
+```sh
+npx create-riebeckite my-site --github-actions \
+  --content-repository OWNER/notes \
+  --site-repository OWNER/my-site \
+  --notify-on-content-push
+```
+
+Set `content.directory` to `"content"`, add the documented repository secrets,
+then copy `github/notify-site.yml` into the content repository as
+`.github/workflows/notify-site.yml`. See the [separate-content deployment
+guide](../../templates/cloudflare/README_en.md).
 
 ## Presets
 

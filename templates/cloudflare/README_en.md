@@ -11,7 +11,8 @@ repository to build on every push and deploy the generated assets.
 | File | Role |
 | --- | --- |
 | `wrangler.jsonc` | Worker name, compatibility settings, and the static-assets directory (`./dist`) |
-| `.github/workflows/deploy.yml` | Check, build, and deploy the site on push to `main` (or by manual dispatch) |
+| `.github/workflows/deploy.yml` | Check, build, and deploy the site on push to `main`, manual dispatch, or `content-updated` repository dispatch |
+| `notify-site.yml` | Copy to a separate content repository as `.github/workflows/notify-site.yml` to notify the site after an article push |
 
 ## Prerequisites
 
@@ -32,6 +33,57 @@ repository to build on every push and deploy the generated assets.
    - `CLOUDFLARE_API_TOKEN`
    - `CLOUDFLARE_ACCOUNT_ID`
 4. Push to `main`, or run the workflow manually from the Actions tab.
+
+## Separate content repository
+
+Checking out an external content repository and triggering a deployment are
+separate concerns. An additional `actions/checkout` step lets the site workflow
+**read** articles; it does not make a push to that repository start the site
+workflow. To deploy on every article push, use both workflows below. This works
+with every `create-riebeckite` preset; presets only change the generated site.
+
+1. In the site workflow, retain `repository_dispatch: types: [content-updated]`
+   and add the content checkout before installing dependencies:
+
+   ```yaml
+   - name: Check out the external content repository
+     uses: actions/checkout@v4
+     with:
+       repository: OWNER/NOTES
+       token: ${{ secrets.RIEBECKITE_CONTENT_READ_TOKEN || github.token }}
+       path: content
+   ```
+
+   Set `content.directory` to `"content"`. The checkout has no `ref`, so every
+   `content-updated` run reads the current default-branch tip rather than an old
+   site commit.
+2. Copy `notify-site.yml` into the content repository as
+   `.github/workflows/notify-site.yml`, replace `OWNER` and `SITE_REPOSITORY`,
+   and add `SITE_DISPATCH_TOKEN` to **the content repository's** secrets.
+3. For the preferred fine-grained PAT, limit repository access to the **site
+   repository** and grant **Contents: read and write**. GitHub's repository
+   dispatch endpoint requires `Contents: write`; `read` is also required by the
+   repository-selection UI. A classic PAT needs the `repo` scope. A GitHub App
+   installation token with **Contents: write** also works. Do not use the
+   content repository's `GITHUB_TOKEN`: it cannot dispatch to another repository.
+4. For a public content repository, no content-read secret is needed. For a
+   private or internal content repository, add `RIEBECKITE_CONTENT_READ_TOKEN`
+   to **the site repository's** secrets. Use a fine-grained PAT restricted to
+   the content repository with **Contents: read**, or an equivalent read-only
+   GitHub App installation token.
+
+The notify workflow checks for a missing dispatch token without printing it.
+GitHub reports an invalid target repository or insufficient dispatch permission
+from `actions/github-script`; checkout reports a missing/private content
+repository separately before Riebeckite's check/build and Cloudflare deploy.
+
+| Method | Deploy on article push | Notes |
+| --- | ---: | --- |
+| Same repository | Yes | `push` is sufficient. |
+| Separate repository + repository dispatch | Yes | Latest content is checked out for each run. |
+| Separate repository + schedule | Delayed | Add a schedule trigger; no dispatch token. |
+| Manual dispatch | No | Start from the Actions tab. |
+| Git submodule | No | Update and push the site-side submodule reference. |
 
 ## Local verification
 

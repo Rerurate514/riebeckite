@@ -14,6 +14,10 @@ export type CreateRiebeckiteOptions = {
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;
   readonly listPresets: boolean;
+  readonly githubActions: boolean;
+  readonly contentRepository?: string;
+  readonly siteRepository?: string;
+  readonly notifyOnContentPush: boolean;
 };
 
 export async function runCreateRiebeckite(
@@ -39,12 +43,22 @@ export async function runCreateRiebeckite(
       targetDirectory,
       overwrite: options.force,
       preset: options.preset,
+      githubActions: options.githubActions,
+      contentRepository: options.contentRepository,
+      siteRepository: options.siteRepository,
+      notifyOnContentPush: options.notifyOnContentPush,
     });
     const relative =
       path.relative(process.cwd(), result.targetDirectory) || ".";
     console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
     console.log("");
     console.log(formatScaffoldNextSteps(relative));
+    if (options.notifyOnContentPush) {
+      console.log("");
+      console.log(
+        "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
+      );
+    }
   } catch (error) {
     if (error instanceof ScaffoldSiteError) {
       console.error(error.message);
@@ -62,6 +76,10 @@ function parseArguments(
   let force = false;
   let preset: ScaffoldPresetName | undefined;
   let listPresets = false;
+  let githubActions = false;
+  let contentRepository: string | undefined;
+  let siteRepository: string | undefined;
+  let notifyOnContentPush = false;
 
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
@@ -71,6 +89,27 @@ function parseArguments(
     }
     if (argument === "--list-presets") {
       listPresets = true;
+      continue;
+    }
+    if (argument === "--github-actions") {
+      githubActions = true;
+      continue;
+    }
+    if (argument === "--notify-on-content-push") {
+      notifyOnContentPush = true;
+      continue;
+    }
+    if (
+      argument === "--content-repository" ||
+      argument === "--site-repository"
+    ) {
+      const value = arguments_[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new Error(`${argument} requires an owner/repository value.`);
+      }
+      if (argument === "--content-repository") contentRepository = value;
+      else siteRepository = value;
+      index += 1;
       continue;
     }
     if (argument === "--preset") {
@@ -90,7 +129,7 @@ function parseArguments(
     }
     if (directory !== undefined) {
       throw new Error(
-        "Usage: create-riebeckite [directory] [--preset <name>] [--force]",
+        "Usage: create-riebeckite [directory] [--preset <name>] [--github-actions] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--notify-on-content-push] [--force]",
       );
     }
     directory = argument;
@@ -101,6 +140,10 @@ function parseArguments(
     force,
     preset: preset ?? "starter",
     listPresets,
+    githubActions,
+    contentRepository,
+    siteRepository,
+    notifyOnContentPush,
   };
 }
 

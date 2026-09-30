@@ -1,6 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  assertGitHubRepository,
+  deploymentTemplateFiles,
+  type ScaffoldDeploymentOptions,
+} from "./deployment.js";
+import {
   resolveScaffoldPreset,
   type ScaffoldPreset,
   type ScaffoldPresetName,
@@ -20,6 +25,14 @@ export type ScaffoldSiteOptions = {
   readonly locale?: string;
   readonly preset?: ScaffoldPresetName | ScaffoldPreset;
   readonly overwrite?: boolean;
+  /** Generate the Cloudflare Workers GitHub Actions workflow. */
+  readonly githubActions?: boolean;
+  /** Read content from this separate GitHub repository during deployment. */
+  readonly contentRepository?: string;
+  /** Site repository to notify from the generated content workflow. */
+  readonly siteRepository?: string;
+  /** Generate a content-repository workflow that dispatches after a push. */
+  readonly notifyOnContentPush?: boolean;
 };
 
 export type ScaffoldSiteResult = {
@@ -39,10 +52,13 @@ export async function scaffoldRiebeckiteSite(
 ): Promise<ScaffoldSiteResult> {
   const targetDirectory = path.resolve(options.targetDirectory);
   const preset = resolveScaffoldPreset(options.preset);
-  const files = siteTemplateFiles(
-    preset,
-    templateVariables(options, targetDirectory),
-  );
+  validateDeploymentOptions(options);
+  const files = [
+    ...siteTemplateFiles(preset, templateVariables(options, targetDirectory)),
+    ...(options.githubActions
+      ? deploymentTemplateFiles(deploymentOptions(options))
+      : []),
+  ];
   await assertTargetWritable(
     targetDirectory,
     files,
@@ -56,6 +72,47 @@ export async function scaffoldRiebeckiteSite(
   }
 
   return { targetDirectory, files: files.map((file) => file.path) };
+}
+
+function deploymentOptions(
+  options: ScaffoldSiteOptions,
+): ScaffoldDeploymentOptions {
+  return {
+    contentRepository: options.contentRepository,
+    siteRepository: options.siteRepository,
+    notifyOnContentPush: options.notifyOnContentPush,
+  };
+}
+
+function validateDeploymentOptions(options: ScaffoldSiteOptions): void {
+  try {
+    if (options.contentRepository !== undefined) {
+      assertGitHubRepository(options.contentRepository, "contentRepository");
+    }
+    if (options.siteRepository !== undefined) {
+      assertGitHubRepository(options.siteRepository, "siteRepository");
+    }
+  } catch (error) {
+    throw new ScaffoldSiteError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+  if (options.contentRepository !== undefined && !options.githubActions) {
+    throw new ScaffoldSiteError(
+      "contentRepository requires githubActions to generate its checkout workflow.",
+    );
+  }
+  if (options.notifyOnContentPush && !options.githubActions) {
+    throw new ScaffoldSiteError("notifyOnContentPush requires githubActions.");
+  }
+  if (options.notifyOnContentPush && options.contentRepository === undefined) {
+    throw new ScaffoldSiteError(
+      "notifyOnContentPush requires contentRepository.",
+    );
+  }
+  if (options.notifyOnContentPush && options.siteRepository === undefined) {
+    throw new ScaffoldSiteError("notifyOnContentPush requires siteRepository.");
+  }
 }
 
 function templateVariables(

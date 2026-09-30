@@ -50,7 +50,7 @@ How to decide:
 
 - **You do not want articles public** → C. With a private repository, a forgotten `publish: true` cannot expose the content itself.
 - **Articles and site are both fine to publish** → A or B. One repository to manage.
-- **You want article updates decoupled from the site deploy** → C. A push to the articles runs the deploy by itself.
+- **You want article updates decoupled from the site deploy** → C. Add a repository-dispatch notification if an articles push must start a deploy; an extra checkout alone only supplies files to a deploy that already started.
 - **You want one vault shared by several sites** → C, or a layout where the vault lives independently. Keep the vault in one place and have each site reference it read-only.
 
 The steps below are for C. For A and B the configuration is the same; only **step 5 (fetching the articles repository in deployment) is unnecessary**.
@@ -105,15 +105,18 @@ git push -u origin main
 
 ### 2. Generate the site
 
-Generate the site **next to** the articles repository.
+Generate the site with the common GitHub Actions deployment assets. This works with every preset; a preset changes only the starter site.
 
 ```sh
-npx create-riebeckite my-site
+npx create-riebeckite my-site --github-actions \
+  --content-repository <you>/notes \
+  --site-repository <you>/my-site \
+  --notify-on-content-push
 cd my-site
 npm install
 ```
 
-Right after generation, `content.directory` is `"content"` (the `content/` inside the site). The next step points it at the vault. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with.
+The generated deployment checks out the vault into the site's `content/` directory. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with.
 
 ```text
 workspace/
@@ -121,7 +124,7 @@ workspace/
 └─ my-site/   ← the site from step 2
 ```
 
-This "side by side" layout makes the relative path `../notes` work as-is and is easy to reproduce in CI.
+This side-by-side layout is useful locally, but CI uses `content/` inside the site checkout.
 
 ### 3. Point content.directory at the vault
 
@@ -132,14 +135,14 @@ In `my-site/riebeckite.config.ts`:
 export default defineConfig({
   // ...
   content: {
-    directory: "../notes",
+    directory: "content",
     exclude: [".obsidian/**", "Templates/**", "private/**"],
   },
   // ...
 });
 ```
 
-- `directory: "../notes"` references the vault outside the site.
+- `directory: "content"` matches the path used by the deployment workflow.
 - `exclude` holds things you never publish: Obsidian settings (`.obsidian/**`), templates (`Templates/**`), and a private-notes folder (`private/**`).
 
 `exclude` keeps things from being loaded; `publish: true` marks things to publish. Using both gives you two layers of protection (see [Publication rules](#publication-rules)).
@@ -162,26 +165,28 @@ npm exec riebeckite inspect content --list
 
 A wrong path is usually the relative `directory`. If articles do not appear, check for `publish: true` (the explicit strategy).
 
-### 5. Use both repositories in deployment
+### 5. Set up checkout, trigger, and secrets
 
-The default deploy workflow (`templates/cloudflare/.github/workflows/deploy.yml`) checks out **only the site repository**. With articles in a second repository, CI builds cannot find the vault. Pick one of:
+The generated deploy workflow checks out the site and then the configured content repository into `content/`. It runs for a site push, manual dispatch, or `content-updated` repository dispatch. The content checkout and that trigger are deliberately separate: a checkout does **not** observe pushes in another repository.
 
-**Option 1: an additional checkout in the workflow (recommended)**
+Copy the generated `github/notify-site.yml` into the content repository as `.github/workflows/notify-site.yml`. Its `main` push sends `content-updated` to the site. Store `SITE_DISPATCH_TOKEN` only in the content repository. A fine-grained PAT restricted to the site repository needs **Contents: read and write**; alternatively use a classic PAT with `repo` scope or a GitHub App installation token with **Contents: write**.
 
 ```yaml
-- name: Check out the site
-  uses: actions/checkout@v4
-
-- name: Check out the notes
-  uses: actions/checkout@v4
-  with:
-    repository: <you>/notes
-    path: notes
+repository_dispatch:
+  types: [content-updated]
 ```
 
-Deploys update as soon as articles are pushed, so this is the simplest when articles change often. Because of `path: notes`, the site's working directory sees `notes/`. If your local layout uses `../notes` (siblings), switch `directory` to `notes` for CI. Keeping the local and CI layouts identical is the key.
+For a private or internal content repository, store `RIEBECKITE_CONTENT_READ_TOKEN` in the **site** repository. Restrict its fine-grained PAT or GitHub App token to the content repository with **Contents: read**. A public content repository needs no extra checkout token. The site repository's `GITHUB_TOKEN` cannot read a different private/internal repository. The unpinned checkout intentionally reads the content default branch's newest tip for each dispatch.
 
-**Option 2: Git submodule**
+| Deployment choice | Article push deploys | Setup |
+| --- | --- | --- |
+| Same repository | Yes | Keep `content/`; site `push` starts the workflow. |
+| Separate repositories + dispatch | Yes | External checkout plus the content notification workflow above. |
+| Separate repositories + schedule | Delayed | Add `schedule` to the site workflow; no dispatch token. |
+| Manual dispatch | No | Run `workflow_dispatch` in the Actions tab. |
+| Git submodule | No | Update the site-side submodule reference and push it. |
+
+**Submodule alternative**
 
 ```sh
 git submodule add git@github.com:<you>/notes.git content
@@ -195,7 +200,7 @@ With either option, run `riebeckite build` from the site directory. That is why 
 
 Once configured, you mostly just write and push.
 
-**Updating articles (Option 1)**
+**Updating articles (repository dispatch)**
 
 ```sh
 cd notes
@@ -205,9 +210,9 @@ git commit -m "add an article"
 git push
 ```
 
-The push triggers CI, which rebuilds and redeploys the site. Site-side changes live in the other repository: edit `my-site` and push as usual.
+The content workflow dispatches the site workflow, which checks out the latest default-branch content, rebuilds, and deploys. A missing dispatch secret fails without printing its value; wrong token access, inaccessible content, build, and Cloudflare errors fail at their respective steps. Site-side changes live in the other repository: edit `my-site` and push as usual.
 
-**Updating articles (Option 2 / submodule)**
+**Updating articles (submodule alternative)**
 
 ```sh
 cd my-site

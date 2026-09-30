@@ -800,6 +800,32 @@ export const README_DEMOS: Readonly<Record<string, ReadmeDemo>> = {
       ].join("\n"),
     ),
   },
+  "@riebeckite/plugin-gallery": {
+    title: { en: "Gallery cards", ja: "ギャラリーカード" },
+    intro: {
+      en: "A `gallery` YAML fence renders a responsive grid of cards — handy for theme or project showcases.",
+      ja: "`gallery` の YAML フェンスがレスポンシブなカードグリッドを描画します。テーマやプロジェクトの紹介に便利です。",
+    },
+    markdown: fence(
+      "gallery",
+      [
+        "columns: 3",
+        "items:",
+        "  - title: Default",
+        "    description: A clean, typographic theme.",
+        "    meta: v0.0.5",
+        "    href: https://example.com/themes/default/",
+        "  - title: Minimal",
+        "    description: Stripped back to the essentials.",
+        "    meta: v0.0.5",
+        "    href: https://example.com/themes/minimal/",
+        "  - title: Gruvbox",
+        "    description: A warm, high-contrast palette.",
+        "    meta: v0.0.5",
+        "    href: https://example.com/themes/gruvbox/",
+      ].join("\n"),
+    ),
+  },
   "@riebeckite/plugin-dataview": {
     title: { en: "Dataview", ja: "Dataview" },
     intro: {
@@ -1006,6 +1032,7 @@ export const README_DEMO_ORDER = [
   "@riebeckite/plugin-marp",
   "@riebeckite/plugin-qr-code",
   "@riebeckite/plugin-rich-embed",
+  "@riebeckite/plugin-gallery",
   "@riebeckite/plugin-dataview",
   "@riebeckite/plugin-query",
   "@riebeckite/plugin-bases",

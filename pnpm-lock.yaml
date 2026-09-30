@@ -131,6 +131,9 @@ importers:
       '@riebeckite/plugin-flashcards':
         specifier: workspace:*
         version: link:../../packages/plugins/flashcards
+      '@riebeckite/plugin-gallery':
+        specifier: workspace:*
+        version: link:../../packages/plugins/gallery
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
@@ -673,6 +676,25 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+
+  packages/plugins/gallery:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+      vfile-matter:
+        specifier: 'catalog:'
+        version: 5.0.1
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/garden-explorer:
     dependencies:

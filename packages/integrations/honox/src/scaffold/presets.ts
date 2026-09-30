@@ -347,6 +347,11 @@ const richEmbed = np(
   "richEmbed",
   `{ providers: ["youtube", "vimeo", "spotify"] }`,
 );
+const gallery = np("@riebeckite/plugin-gallery", "gallery", {
+  columns: { depth: 2, value: "3" },
+  aspect: { depth: 2, value: '"4/3"' },
+  language: { depth: 3, value: '"gallery"' },
+});
 
 /** Diagrams, charts, and knowledge tools for the heavy tiers. */
 const mermaid = np("@riebeckite/plugin-mermaid", "mermaid", {
@@ -658,6 +663,7 @@ export const full: ScaffoldPreset = {
     taxonomy,
     autoCardLink,
     richEmbed,
+    gallery,
   ],
   contentPages: ["index", "framework/plugins", "framework/themes", "guide"],
   appFiles: [...BASE_APP_FILES, "index", "slug", "header", "article"],
@@ -699,6 +705,7 @@ export const max: ScaffoldPreset = {
     taxonomy,
     autoCardLink,
     richEmbed,
+    gallery,
     mermaid,
     graphviz,
     d2,
@@ -770,6 +777,7 @@ export const ultra: ScaffoldPreset = {
     taxonomy,
     autoCardLink,
     richEmbed,
+    gallery,
     mermaid,
     graphviz,
     d2,

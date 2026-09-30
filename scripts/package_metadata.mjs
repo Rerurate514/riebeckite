@@ -29,6 +29,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/excalibrain",
   "packages/plugins/excalidraw",
   "packages/plugins/flashcards",
+  "packages/plugins/gallery",
   "packages/plugins/garden-explorer",
   "packages/plugins/graphviz",
   "packages/plugins/highlight",
@@ -222,6 +223,10 @@ const packagePublishingMetadata = {
   "packages/plugins/flashcards": {
     description: "Interactive flashcard decks from Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "flashcards", "learning"],
+  },
+  "packages/plugins/gallery": {
+    description: "Markdown-driven card galleries for Riebeckite code blocks.",
+    keywords: ["riebeckite", "plugin", "gallery", "cards", "markdown"],
   },
   "packages/plugins/garden-explorer": {
     description: "Interactive graph and search explorer for Riebeckite notes.",
@@ -535,6 +540,7 @@ export function expectedPackageMetadata(directory) {
       "diagnostics",
       "diff",
       "excalibrain",
+      "gallery",
       "highlight",
       "l10n",
       "local-graph",

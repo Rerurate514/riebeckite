@@ -36,6 +36,7 @@
     "@riebeckite/plugin-excalibrain": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-flashcards": "workspace:*",
+    "@riebeckite/plugin-gallery": "workspace:*",
     "@riebeckite/plugin-garden-explorer": "workspace:*",
     "@riebeckite/plugin-graphviz": "workspace:*",
     "@riebeckite/plugin-highlight": "workspace:*",

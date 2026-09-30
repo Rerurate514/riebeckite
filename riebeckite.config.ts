@@ -21,6 +21,7 @@ import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { galleryPlugin } from "@riebeckite/plugin-gallery";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
@@ -184,6 +185,7 @@ export default defineConfig({
     breadcrumbs(),
     queryPlugin(),
     bases(),
+    galleryPlugin(),
     dataviewPlugin(),
     flashcardsPlugin(),
     kanban(),

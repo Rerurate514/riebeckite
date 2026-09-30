@@ -13,7 +13,6 @@ import type {
   GeneratedOutputSink,
 } from "../types/generated_output.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
-import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import { resolvePlugins } from "../types/plugin.js";
 import {
   type PluginClientEntry,
@@ -23,6 +22,7 @@ import type {
   PluginContentLocationResolver,
   PluginContext,
 } from "../types/plugin_context.js";
+import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
 import { GeneratedOutputRegistry } from "./generated_output_registry.js";
 import type { PluginCache } from "./plugin_cache.js";
@@ -427,7 +427,7 @@ export class PluginRuntime {
         const previous = pageTypes.get(pageType.id);
         if (previous) {
           throw new Error(
-            `Plugin page type \"${pageType.id}\" is provided by both ${previous} and ${plugin.name}`,
+            `Plugin page type "${pageType.id}" is provided by both ${previous} and ${plugin.name}`,
           );
         }
         pageTypes.set(pageType.id, plugin.name);

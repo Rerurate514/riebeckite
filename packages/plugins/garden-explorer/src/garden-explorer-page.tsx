@@ -1,6 +1,6 @@
 import { renderToString } from "hono/jsx/dom/server";
-import type { GardenExplorerData } from "./garden-explorer.js";
 import GardenExplorer from "../components/garden-explorer.js";
+import type { GardenExplorerData } from "./garden-explorer.js";
 
 export function renderGardenExplorerPage(
   data: GardenExplorerData,

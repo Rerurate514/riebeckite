@@ -1,6 +1,6 @@
 import { definePlugin } from "@riebeckite/core";
-import { renderGardenExplorerPage } from "./src/garden-explorer-page.js";
 import { getGardenExplorerData } from "./src/garden-explorer.server.js";
+import { renderGardenExplorerPage } from "./src/garden-explorer-page.js";
 
 export { default as GardenExplorer } from "./components/garden-explorer.js";
 export type {

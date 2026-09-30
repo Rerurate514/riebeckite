@@ -35,8 +35,6 @@ export default createRoute(
       );
     }
 
-    const manifest = await content.getManifest();
-
     const post = await content.getProcessedContent(route.entry.slug);
     if (!isPublished(config, post.frontmatter)) {
       return c.notFound();

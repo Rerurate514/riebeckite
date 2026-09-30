@@ -8,8 +8,8 @@ import type {
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
-import type { PostContent } from "../types/post_content.js";
 import type { ResolvedPluginPage } from "../types/plugin_page.js";
+import type { PostContent } from "../types/post_content.js";
 import { isPublishable } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
@@ -288,7 +288,11 @@ export class ContentManager {
       this.getManifest(),
       this.getContentIndex(),
     ]);
-    return await this.pluginRuntime.resolvePage(pathname, manifest, contentIndex);
+    return await this.pluginRuntime.resolvePage(
+      pathname,
+      manifest,
+      contentIndex,
+    );
   }
 
   /** Returns plugin page paths for SSG enumeration. */

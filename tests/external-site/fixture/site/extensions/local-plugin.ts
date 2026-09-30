@@ -1,7 +1,8 @@
 import { definePlugin } from "@riebeckite/core";
 
 export const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
-export const LOCAL_PLUGIN_PAGE_MARKER = "RIEBECKITE_EXTERNAL_PLUGIN_PAGE_MARKER";
+export const LOCAL_PLUGIN_PAGE_MARKER =
+  "RIEBECKITE_EXTERNAL_PLUGIN_PAGE_MARKER";
 
 type LocalHastNode =
   | {

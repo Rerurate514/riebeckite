@@ -70,7 +70,10 @@ test("same-priority page matches fail rather than silently choosing a plugin", a
     }),
   });
 
-  await assert.rejects(manager.resolvePage("/same"), /Multiple plugin page types/);
+  await assert.rejects(
+    manager.resolvePage("/same"),
+    /Multiple plugin page types/,
+  );
 });
 
 test("duplicate page type IDs fail during plugin resolution", async () => {
@@ -86,5 +89,8 @@ test("duplicate page type IDs fail during plugin resolution", async () => {
     }),
   });
 
-  await assert.rejects(manager.getManifest(), /provided by both first and second/);
+  await assert.rejects(
+    manager.getManifest(),
+    /provided by both first and second/,
+  );
 });

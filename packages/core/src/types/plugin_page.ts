@@ -24,10 +24,16 @@ export type PluginPageType = {
   /** Globally unique, stable page type identifier. */
   id: string;
   /** Paths emitted by SSG for this type. */
-  paths?: readonly string[] | ((context: PluginContext & { manifest: ContentManifest }) => readonly string[] | Promise<readonly string[]>);
+  paths?:
+    | readonly string[]
+    | ((
+        context: PluginContext & { manifest: ContentManifest },
+      ) => readonly string[] | Promise<readonly string[]>);
   /** Higher values win when more than one type matches a request. */
   priority?: number;
-  resolve(context: PluginPageContext): PluginPage | null | Promise<PluginPage | null>;
+  resolve(
+    context: PluginPageContext,
+  ): PluginPage | null | Promise<PluginPage | null>;
 };
 
 export type ResolvedPluginPage = PluginPage & {

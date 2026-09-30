@@ -15,6 +15,7 @@ import type {
   PluginPostContext,
 } from "./plugin_context.js";
 import type { PluginEndpoint } from "./plugin_endpoint.js";
+import type { PluginPageType } from "./plugin_page.js";
 import type {
   HtmlPipeline,
   MarkdownPipeline,
@@ -22,7 +23,6 @@ import type {
   PipelinePlugin,
 } from "./plugin_pipeline.js";
 import type { PluginSeoExtension } from "./plugin_seo.js";
-import type { PluginPageType } from "./plugin_page.js";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
   name: string;

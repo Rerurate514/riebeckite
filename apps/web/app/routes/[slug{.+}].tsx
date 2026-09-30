@@ -17,11 +17,7 @@ import Article from "../components/article/article";
 import { config } from "../config";
 import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
-import {
-  buildArticleSeo,
-  buildWebsiteSeo,
-  type SeoMetadata,
-} from "../lib/seo";
+import { buildArticleSeo, buildWebsiteSeo, type SeoMetadata } from "../lib/seo";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", async () => {

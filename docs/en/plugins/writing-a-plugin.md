@@ -1,146 +1,44 @@
-# Your First Plugin
+# Writing Your First Plugin
 
-A plugin adds **features** — Markdown/HTML transformation, client behavior, standalone pages, SEO, diagnostics, and more. For appearance, use a theme ([Your first theme](../themes/writing-a-theme.md)). A Plugin Page Type uses the site's generic route; reserve an app route for a page that is specific to this site.
+Plugins add **functionality** to Riebeckite: Markdown or HTML transformation, client-side behavior, standalone pages, SEO, diagnostics, and more. Use a Theme when you only want to change appearance.
 
-Go in this order: create a minimal plugin → add CSS → transform Markdown.
+A Plugin can live directly inside a site; it does not have to be published as a package.
 
-## 1. Create a minimal plugin
+## 1. Create a minimal Plugin
 
-A plugin is made with `definePlugin` (from `@riebeckite/core`). It does **not** need to be a published package — define it inside the site.
-
-```ts
-// extensions/local-plugin.ts
-import { definePlugin } from "@riebeckite/core";
-
-export function localPlugin() {
-  return definePlugin({
-    name: "local",
-  });
-}
-```
-
-Add it to the `plugins` array in `riebeckite.config.ts`.
-
-```ts
-// riebeckite.config.ts
-import { localPlugin } from "./extensions/local-plugin";
-
-export default defineConfig({
-  plugins: [localPlugin()],
-  // ...
-});
-```
-
-A plugin with only `name` does nothing — it is the minimal shape. To accept options, give the factory typed arguments:
-
-```ts
-type LocalOptions = { enabled?: boolean };
-
-export function localPlugin(options: LocalOptions = {}) {
-  return definePlugin({ name: "local", options });
-}
-```
+Create Plugins with `definePlugin` from `@riebeckite/core`. A Plugin with only a `name` is the smallest valid form. Plugin factories can accept typed options when configuration is needed.
 
 ## 2. Add CSS
 
-Declare plugin stylesheets with `assets`. Do not copy CSS into the site or reference `/node_modules` directly from the browser.
+Declare Plugin-specific stylesheets through `assets`. Do not copy CSS into the site manually or reference `/node_modules` directly from the browser.
 
-```ts
-// extensions/local-plugin.ts
-import { definePlugin } from "@riebeckite/core";
+Use a stable root hook such as `rr-<feature>` on rendered output. See [Plugin API](../reference/plugin-api.md) for the CSS contract.
 
-export function localPlugin() {
-  return definePlugin({
-    name: "local",
-    assets: [
-      {
-        pluginName: "local",
-        kind: "style",
-        moduleSpecifier: "/extensions/plugin.css",
-      },
-    ],
-  });
-}
-```
+## 3. Transform Markdown or HTML
 
-- `moduleSpecifier` is something the host bundler resolves; for an in-site plugin, use `/extensions/plugin.css`.
-- Put a stable root hook (`rr-<feature>`) on the outermost rendered element. See [Plugin System](../reference/plugin-api.md) for the CSS conventions.
+Semantic Markdown transformation belongs to Plugins. Simple remark Plugins can be declared as an array. Use `extendMarkdownPipeline` / `extendHtmlPipeline` when you need finer control of the processing pipeline.
 
-## 3. Transform Markdown / HTML
+For dependencies, lifecycle hooks, renderers, endpoints, and other extension points, see [Plugin API](../reference/plugin-api.md).
 
-Semantic Markdown transformation is the plugin's job. A simple remark plugin is declared as an array:
+## 4. Add a standalone page when needed
 
-```ts
-// extensions/local-plugin.ts
-import { definePlugin } from "@riebeckite/core";
+Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme.
 
-function remarkLocal() {
-  return (tree: unknown) => {
-    // manipulate the Markdown AST
-    return tree;
-  };
-}
+Do not add Plugin-specific HonoX routes. Content embeds such as Canvas, Bases, and Excalidraw remain `renderers`.
 
-export function localPlugin() {
-  return definePlugin({ name: "local", remarkPlugins: [remarkLocal] });
-}
-```
+See [Page System](../framework/page-system.md) for ownership, path resolution, and SSG behavior.
 
-Use `extendMarkdownPipeline` / `extendHtmlPipeline` when you need finer control. Other extension points (dependencies, lifecycle, renderers, endpoints, …) are in [Plugin System](../reference/plugin-api.md).
+## 5. Package it when needed
 
-## 4. Add a standalone page (when appropriate)
+Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths.
 
-Use `pageTypes` only for an independent screen. The page returns an HTML body;
-the site's generic catch-all route supplies the document frame and theme. Do not
-add a plugin-specific HonoX route. Article embeds such as Canvas, Bases, and
-Excalidraw stay `renderers`.
+## 6. Validate it
 
-```ts
-pageTypes: [{
-  id: "local.report",
-  paths: ["/report"],
-  resolve: ({ pathname }) => pathname === "/report"
-    ? { type: "local.report", pathname, title: "Report", body: "<p>Ready</p>" }
-    : null,
-}],
-```
+Use the repository's checks and tests relevant to the Plugin. `check`, `doctor`, and `inspect` are read-only diagnostics. Before creating a Plugin, also confirm that the requirement cannot be handled more simply by configuration or app-level code.
 
-The scaffolded HonoX route already calls `resolveRiebeckiteRoute` and
-`pluginPageSsgParams`. Choose a globally unique ID, derive dynamic SSG paths
-from the public manifest, and return `null` for paths you do not own. See
-[Page System](../framework/page-system.md) for the boundary and full wiring.
+## Related
 
-## 5. Package it for distribution (optional)
-
-Once it works in a site, you can package it. Use `packages/plugins/backlinks` as a template.
-
-```text
-packages/plugins/backlinks/
-├─ index.ts              ← factory calling definePlugin, re-exports public parts
-├─ components/           ← components (if any)
-├─ src/                  ← implementation (types, helpers)
-├─ styles/style.css      ← plugin CSS
-├─ package.json          ← exports "." / "./components" / "./style.css"
-├─ README_ja.md
-└─ README.md
-```
-
-A distributed plugin depends only on `@riebeckite/core` and declares its own subpaths in `exports`. Never import `@riebeckite/core/src/**` or reference monorepo paths.
-
-## 6. Verify
-
-```sh
-npm exec riebeckite check              # validate config and plugin resolution
-npm exec riebeckite doctor             # health check
-npm exec riebeckite inspect plugins# list resolved plugins
-npm exec riebeckite build              # confirm it appears in the output
-```
-
-`check` / `doctor` / `inspect` are read-only. If a plugin does not resolve, start with `check` for capability or import errors. Before writing a plugin, also ask whether you really need one — maybe configuration or an app implementation suffices.
-
-## Further reading
-
-- [Plugins in depth](../framework/plugin-system.md) — the in-depth companion (extension points, capabilities, lifecycle, packaging)
-- [Plugin System](../reference/plugin-api.md) — all extension points in detail
-- [Architecture](../framework/architecture.md) — responsibilities of Core / Plugin / Integration / Theme / App
-- [Framework Reference](../reference/README.md) — public APIs like `definePlugin`
+- [Plugin API](../reference/plugin-api.md)
+- [Plugin System](../framework/plugin-system.md)
+- [Architecture](../framework/architecture.md)
+- [Writing Your First Theme](../themes/writing-a-theme.md)

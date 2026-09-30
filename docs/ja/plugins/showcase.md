@@ -1,4 +1,4 @@
-﻿# Plugin Showcase
+# Plugin Showcase
 
 Plugin catalog は [Plugins](./README.md) にあります。このページでは、Plugin が実際に何を生成するかを確認できます。各項目では Markdown のソースと、Riebeckite 上での実行例を並べています。
 
@@ -6,7 +6,7 @@ Plugin catalog は [Plugins](./README.md) にあります。このページで�
 
 ## Obsidian Markdown
 
-### Callouts — [`obsidian-markdown`](../../../packages/plugins/obsidian-markdown/README.md)
+### Callouts — [`obsidian-markdown`](./obsidian-markdown.md)
 
 #### ソース
 
@@ -22,7 +22,7 @@ Plugin catalog は [Plugins](./README.md) にあります。このページで�
 > Callout は `[!type]` マーカー付きの block quote です。
 > `[!info]`、`[!warning]`、`[!question]` も同じように表示されます。
 
-### WikiLinks と埋め込み — [`obsidian-markdown`](../../../packages/plugins/obsidian-markdown/README.md)
+### WikiLinks と埋め込み — [`obsidian-markdown`](./obsidian-markdown.md)
 
 #### ソース
 
@@ -36,7 +36,7 @@ Plugin catalog は [Plugins](./README.md) にあります。このページで�
 
 ## Code
 
-### Toolbar 付きコード — [`code-enhance`](../../../packages/plugins/code-enhance/README.md)
+### Toolbar 付きコード — [`code-enhance`](./code-enhance.md)
 
 行番号、ファイル名バー、行ハイライト、copy button を確認できます。
 
@@ -58,7 +58,7 @@ export function hello(name: string): string {
 }
 ```
 
-### Code tabs — [`code-tabs`](../../../packages/plugins/code-tabs/README.md)
+### Code tabs — [`code-tabs`](./code-tabs.md)
 
 隣り合った `tab="..."` 付き code fence が、1 つの tab group になります。
 
@@ -86,7 +86,7 @@ console.log("Hello from JavaScript");
 
 ## 図表
 
-### Mermaid — [`mermaid`](../../../packages/plugins/mermaid/README.md)
+### Mermaid — [`mermaid`](./mermaid.md)
 
 #### ソース
 
@@ -108,7 +108,7 @@ flowchart LR
   B -->|no| D[Draft]
 ```
 
-### D2 — [`d2`](../../../packages/plugins/d2/README.md)
+### D2 — [`d2`](./d2.md)
 
 #### ソース
 
@@ -126,7 +126,7 @@ site: Riebeckite
 content -> build -> deploy
 ```
 
-### Graphviz / DOT — [`graphviz`](../../../packages/plugins/graphviz/README.md)
+### Graphviz / DOT — [`graphviz`](./graphviz.md)
 
 #### ソース
 
@@ -148,7 +148,7 @@ digraph G {
 }
 ```
 
-### Chart.js — [`chartjs`](../../../packages/plugins/chartjs/README.md)
+### Chart.js — [`chartjs`](./chartjs.md)
 
 #### ソース
 
@@ -176,7 +176,7 @@ digraph G {
 }
 ```
 
-### Vega-Lite — [`vega-lite`](../../../packages/plugins/vega-lite/README.md)
+### Vega-Lite — [`vega-lite`](./vega-lite.md)
 
 #### ソース
 
@@ -208,7 +208,7 @@ digraph G {
 }
 ```
 
-### WaveDrom — [`wavedrom`](../../../packages/plugins/wavedrom/README.md)
+### WaveDrom — [`wavedrom`](./wavedrom.md)
 
 #### ソース
 
@@ -230,7 +230,7 @@ digraph G {
 ] }
 ```
 
-### Markmap — [`markmap`](../../../packages/plugins/markmap/README.md)
+### Markmap — [`markmap`](./markmap.md)
 
 #### ソース
 
@@ -260,7 +260,7 @@ digraph G {
 ## Delivery
 ```
 
-### Marp slides — [`marp`](../../../packages/plugins/marp/README.md)
+### Marp slides — [`marp`](./marp.md)
 
 #### ソース
 
@@ -288,7 +288,7 @@ digraph G {
 # Second slide
 ```
 
-### Maps — [`map`](../../../packages/plugins/map/README.md)
+### Maps — [`map`](./map.md)
 
 静的な fallback を先に表示し、JavaScript が有効な環境では interactive map に拡張します。
 
@@ -316,7 +316,7 @@ markers:
   - 35.6586, 139.7454 | Tokyo Tower
 ```
 
-### QR codes — [`qr-code`](../../../packages/plugins/qr-code/README.md)
+### QR codes — [`qr-code`](./qr-code.md)
 
 Build 時に inline SVG として生成します。
 
@@ -338,7 +338,7 @@ https://example.com/
 
 ## Media
 
-### Rich embeds — [`rich-embed`](../../../packages/plugins/rich-embed/README.md)
+### Rich embeds — [`rich-embed`](./rich-embed.md)
 
 URL を YouTube、Vimeo、Spotify、CodePen、Gist などの埋め込みに変換します。
 
@@ -362,7 +362,7 @@ caption: A short caption
 aspect: 16/9
 ```
 
-### Gallery cards — [`gallery`](../../../packages/plugins/gallery/README.md)
+### Gallery cards — [`gallery`](./gallery.md)
 
 #### ソース
 
@@ -400,7 +400,7 @@ items:
 
 ## ナレッジとデータ
 
-### Dataview — [`dataview`](../../../packages/plugins/dataview/README.md)
+### Dataview — [`dataview`](./dataview.md)
 
 #### ソース
 
@@ -424,7 +424,7 @@ SORT file.name asc
 LIMIT 10
 ```
 
-### Query — [`query`](../../../packages/plugins/query/README.md)
+### Query — [`query`](./query.md)
 
 #### ソース
 
@@ -446,7 +446,7 @@ sort:
 limit: 5
 ```
 
-### Bases — [`bases`](../../../packages/plugins/bases/README.md)
+### Bases — [`bases`](./bases.md)
 
 #### ソース
 
@@ -480,7 +480,7 @@ views:
     limit: 10
 ```
 
-### Kanban boards — [`kanban`](../../../packages/plugins/kanban/README.md)
+### Kanban boards — [`kanban`](./kanban.md)
 
 本文に `##` 見出しの列と task list を置くと board になります。
 
@@ -516,15 +516,15 @@ views:
 
 | Plugin | 確認するもの |
 | --- | --- |
-| [`search`](../../../packages/plugins/search/README.md) | サイトを絞り込む検索ボックス |
-| [`toc`](../../../packages/plugins/toc/README.md) | スクロール位置に追従する目次 |
-| [`backlinks`](../../../packages/plugins/backlinks/README.md) | このノートを参照するノートの一覧 |
-| [`garden-explorer`](../../../packages/plugins/garden-explorer/README.md) | graph と検索の explorer Page Type |
-| [`taxonomy`](../../../packages/plugins/taxonomy/README.md) | tag と folder の一覧 Page Type |
-| [`lightbox`](../../../packages/plugins/lightbox/README.md) | 画像を拡大する操作 |
-| [`diff`](../../../packages/plugins/diff/README.md) / [`changelog`](../../../packages/plugins/changelog/README.md) | note ごとの git history |
-| [`l10n`](../../../packages/plugins/l10n/README.md) | 翻訳ページ上の language switcher |
-| [`color-mode`](../../../packages/plugins/color-mode/README.md) | light / dark / system の切り替え |
+| [`search`](./search.md) | サイトを絞り込む検索ボックス |
+| [`toc`](./toc.md) | スクロール位置に追従する目次 |
+| [`backlinks`](./backlinks.md) | このノートを参照するノートの一覧 |
+| [`garden-explorer`](./garden-explorer.md) | graph と検索の explorer Page Type |
+| [`taxonomy`](./taxonomy.md) | tag と folder の一覧 Page Type |
+| [`lightbox`](./lightbox.md) | 画像を拡大する操作 |
+| [`diff`](./diff.md) / [`changelog`](./changelog.md) | note ごとの git history |
+| [`l10n`](./l10n.md) | 翻訳ページ上の language switcher |
+| [`color-mode`](./color-mode.md) | light / dark / system の切り替え |
 
 ## 関連
 

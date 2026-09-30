@@ -20,12 +20,12 @@ export default defineConfig({
 
 ## 公式 Plugin の分類
 
-- Obsidian / Markdown: [obsidian-markdown](../../../packages/plugins/obsidian-markdown/README.md), [properties](../../../packages/plugins/properties/README.md), [alias](../../../packages/plugins/alias/README.md), [permalink](../../../packages/plugins/permalink/README.md)
-- 図表: [mermaid](../../../packages/plugins/mermaid/README.md), [graphviz](../../../packages/plugins/graphviz/README.md), [d2](../../../packages/plugins/d2/README.md), [plantuml](../../../packages/plugins/plantuml/README.md), [chartjs](../../../packages/plugins/chartjs/README.md), [vega-lite](../../../packages/plugins/vega-lite/README.md), [wavedrom](../../../packages/plugins/wavedrom/README.md), [markmap](../../../packages/plugins/markmap/README.md)
-- ナレッジ・本文埋め込み: [canvas](../../../packages/plugins/canvas/README.md), [bases](../../../packages/plugins/bases/README.md), [excalidraw](../../../packages/plugins/excalidraw/README.md), [dataview](../../../packages/plugins/dataview/README.md), [query](../../../packages/plugins/query/README.md), [kanban](../../../packages/plugins/kanban/README.md), [local-graph](../../../packages/plugins/local-graph/README.md)
-- 独立ページ・発見性: [taxonomy](../../../packages/plugins/taxonomy/README.md), [garden-explorer](../../../packages/plugins/garden-explorer/README.md), [search](../../../packages/plugins/search/README.md), [backlinks](../../../packages/plugins/backlinks/README.md), [related-posts](../../../packages/plugins/related-posts/README.md), [recent-posts](../../../packages/plugins/recent-posts/README.md), [toc](../../../packages/plugins/toc/README.md)
-- メディア: [attachment](../../../packages/plugins/attachment/README.md), [pdf](../../../packages/plugins/pdf/README.md), [media](../../../packages/plugins/media/README.md), [responsive-image](../../../packages/plugins/responsive-image/README.md), [lightbox](../../../packages/plugins/lightbox/README.md), [gallery](../../../packages/plugins/gallery/README.md), [rich-embed](../../../packages/plugins/rich-embed/README.md)
-- 運用・品質: [l10n](../../../packages/plugins/l10n/README.md), [seo](../../../packages/plugins/seo/README.md), [deploy](../../../packages/plugins/deploy/README.md), [diagnostics](../../../packages/plugins/diagnostics/README.md), [quality](../../../packages/plugins/quality/README.md), [analytics](../../../packages/plugins/analytics/README.md)
+- Obsidian / Markdown: [obsidian-markdown](./obsidian-markdown.md), [properties](./properties.md), [alias](./alias.md), [permalink](./permalink.md)
+- 図表: [mermaid](./mermaid.md), [graphviz](./graphviz.md), [d2](./d2.md), [plantuml](./plantuml.md), [chartjs](./chartjs.md), [vega-lite](./vega-lite.md), [wavedrom](./wavedrom.md), [markmap](./markmap.md)
+- ナレッジ・本文埋め込み: [canvas](./canvas.md), [bases](./bases.md), [excalidraw](./excalidraw.md), [dataview](./dataview.md), [query](./query.md), [kanban](./kanban.md), [local-graph](./local-graph.md)
+- 独立ページ・発見性: [taxonomy](./taxonomy.md), [garden-explorer](./garden-explorer.md), [search](./search.md), [backlinks](./backlinks.md), [related-posts](./related-posts.md), [recent-posts](./recent-posts.md), [toc](./toc.md)
+- メディア: [attachment](./attachment.md), [pdf](./pdf.md), [media](./media.md), [responsive-image](./responsive-image.md), [lightbox](./lightbox.md), [gallery](./gallery.md), [rich-embed](./rich-embed.md)
+- 運用・品質: [l10n](./l10n.md), [seo](./seo.md), [deploy](./deploy.md), [diagnostics](./diagnostics.md), [quality](./quality.md), [analytics](./analytics.md)
 
 `taxonomy` と `garden-explorer` は、共通 catch-all route から独立ページを提供する Page Type です。`canvas`、`bases`、`excalidraw` は記事本文を描画する renderer であり、意図的に Page Type を提供しません。Plugin のページを作る場合は [Page System](../framework/page-system.md) を参照してください。
 

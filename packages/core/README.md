@@ -37,7 +37,7 @@ export default defineConfig({
 ```
 
 The content directory is resolved relative to the application root. See
-[Configuration](../../docs/en/configuration.md) for the full field list and the
+[Configuration](../../docs/en/reference/configuration.md) for the full field list and the
 `projectRoot` / `appRoot` / `configRoot` / `contentRoot` resolution rules.
 
 ## Public API
@@ -88,7 +88,7 @@ The content directory is resolved relative to the application root. See
 
 ## See also
 
-- [Framework Reference](../../docs/en/framework-reference.md)
-- [Content System](../../docs/en/content-system.md)
-- [Plugin System](../../docs/en/plugin-system.md) / [Theme System](../../docs/en/theme-system.md)
-- [Architecture](../../docs/en/architecture.md)
+- [Framework Reference](../../docs/en/reference/README.md)
+- [Content System](../../docs/en/framework/content-system.md)
+- [Plugin System](../../docs/en/reference/plugin-api.md) / [Theme System](../../docs/en/reference/theme-api.md)
+- [Architecture](../../docs/en/framework/architecture.md)

@@ -105,4 +105,4 @@ Vega ランタイムは `import()` で動的に読み込むため、JavaScript �
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [プラグインシステム](../../../docs/ja/reference/plugin-api.md)

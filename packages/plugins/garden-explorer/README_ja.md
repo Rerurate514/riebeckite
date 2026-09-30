@@ -65,5 +65,5 @@ return <GardenExplorer data={data} />;
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [プラグインシステム](../../../docs/ja/reference/plugin-api.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README_ja.md)

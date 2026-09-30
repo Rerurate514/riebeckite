@@ -121,4 +121,4 @@ If the body is not valid JSON, is not an object, or has no `signal` / `assign` /
 
 ## See also
 
-- [Plugin system](../../../docs/en/plugin-system.md)
+- [Plugin system](../../../docs/en/reference/plugin-api.md)

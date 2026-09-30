@@ -5,8 +5,9 @@
 //
 // Verifies the conventions the docs depend on:
 //   1. Every relative Markdown link resolves to an existing file (case-insensitive).
-//   2. docs/en and docs/ja contain the same set of document names.
-//   3. Every document under docs/en and docs/ja is linked from its language index (README.md).
+//   2. docs/en and docs/ja contain the same relative document paths.
+//   3. Every document under docs/en and docs/ja is reachable from its language
+//      index through local Markdown links.
 //   4. Every package directory exposes exactly README.md + README_ja.md
 //      (extra README_en.md variants are rejected).
 //   5. README.md and README_ja.md link to each other where both exist.
@@ -137,44 +138,108 @@ function checkLinks(markdownFiles, allFiles) {
   return errors;
 }
 
-// Rule 2: docs/en and docs/ja must be name-for-name parallel.
+// Rule 2: docs/en and docs/ja must be path-for-path parallel.
 function checkLanguageParity(documents) {
   const errors = [];
   const english = new Set(
-    documents.en.map((file) => path.basename(file.absolute)),
+    documents.en.map((file) => file.relative.slice("docs/en/".length)),
   );
   const japanese = new Set(
-    documents.ja.map((file) => path.basename(file.absolute)),
+    documents.ja.map((file) => file.relative.slice("docs/ja/".length)),
   );
-  const enOnly = [...english].filter((name) => !japanese.has(name)).sort();
-  const jaOnly = [...japanese].filter((name) => !english.has(name)).sort();
-  for (const name of enOnly) {
-    errors.push(`docs/en/${name} has no docs/ja/${name} counterpart`);
+  const enOnly = [...english]
+    .filter((relative) => !japanese.has(relative))
+    .sort();
+  const jaOnly = [...japanese]
+    .filter((relative) => !english.has(relative))
+    .sort();
+  for (const relative of enOnly) {
+    errors.push(`docs/en/${relative} has no docs/ja/${relative} counterpart`);
   }
-  for (const name of jaOnly) {
-    errors.push(`docs/ja/${name} has no docs/en/${name} counterpart`);
+  for (const relative of jaOnly) {
+    errors.push(`docs/ja/${relative} has no docs/en/${relative} counterpart`);
   }
   return errors;
 }
 
-// Rule 3: each language index must link every document in its directory.
-function checkIndexCoverage(documents) {
+function linkedMarkdownTargets(file, docsRoot, knownDocuments) {
+  const targets = [];
+  const text = fs.readFileSync(file.absolute, "utf8");
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    LINK_PATTERN.lastIndex = 0;
+    for (
+      let match = LINK_PATTERN.exec(line);
+      match;
+      match = LINK_PATTERN.exec(line)
+    ) {
+      const rawTarget = match[1];
+      if (/^(https?:|mailto:|tel:)|^(data:)/i.test(rawTarget)) continue;
+      const anchorIndex = rawTarget.indexOf("#");
+      const targetWithoutAnchor =
+        anchorIndex >= 0 ? rawTarget.slice(0, anchorIndex) : rawTarget;
+      if (targetWithoutAnchor === "" || targetWithoutAnchor.startsWith("/")) {
+        continue;
+      }
+      let decoded;
+      try {
+        decoded = decodeURIComponent(targetWithoutAnchor);
+      } catch {
+        decoded = targetWithoutAnchor;
+      }
+      const absolute = path.resolve(path.dirname(file.absolute), decoded);
+      let target = absolute;
+      if (fs.existsSync(absolute) && fs.statSync(absolute).isDirectory()) {
+        target = path.join(absolute, "README.md");
+      }
+      const relative = path
+        .relative(docsRoot, target)
+        .split(path.sep)
+        .join("/");
+      if (!relative.startsWith("../") && knownDocuments.has(relative)) {
+        targets.push(relative);
+      }
+    }
+  }
+  return targets;
+}
+
+// Rule 3: every language document must be reachable from docs/<lang>/README.md.
+function checkReachability(documents) {
   const errors = [];
   for (const language of ["en", "ja"]) {
+    const docsRoot = path.join(repositoryRoot, "docs", language);
+    const byRelative = new Map(
+      documents[language].map((file) => [
+        file.relative.slice(`docs/${language}/`.length),
+        file,
+      ]),
+    );
     const index = documents[language].find(
-      (file) => path.basename(file.absolute) === "README.md",
+      (file) => file.relative === `docs/${language}/README.md`,
     );
     if (!index) {
       errors.push(`docs/${language}/README.md is missing`);
       continue;
     }
-    const indexContent = fs.readFileSync(index.absolute, "utf8");
-    for (const file of documents[language]) {
-      const name = path.basename(file.absolute);
-      if (name === "README.md") continue;
-      // The index must reference the markdown file name somewhere.
-      if (!indexContent.includes(`./${name}`)) {
-        errors.push(`docs/${language}/README.md does not link ./${name}`);
+    const seen = new Set(["README.md"]);
+    const queue = ["README.md"];
+    while (queue.length > 0) {
+      const current = queue.shift();
+      const file = byRelative.get(current);
+      if (!file) continue;
+      for (const target of linkedMarkdownTargets(file, docsRoot, byRelative)) {
+        if (!seen.has(target)) {
+          seen.add(target);
+          queue.push(target);
+        }
+      }
+    }
+    for (const relative of [...byRelative.keys()].sort()) {
+      if (!seen.has(relative)) {
+        errors.push(
+          `docs/${language}/${relative} is not reachable from docs/${language}/README.md`,
+        );
       }
     }
   }
@@ -253,7 +318,7 @@ const documents = {
 const errors = [
   ...checkLinks(markdownFiles, allFiles),
   ...checkLanguageParity(documents),
-  ...checkIndexCoverage(documents),
+  ...checkReachability(documents),
   ...checkPackageReadmes(markdownFiles),
   ...checkMutualReadmeLinks(markdownFiles, allFiles),
 ];

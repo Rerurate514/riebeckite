@@ -152,4 +152,4 @@ YAML として不正なブロック、未対応のフィルタ式やビュー形
 
 ## 関連
 
-- [プラグインガイド](../../../docs/ja/plugin-system.md)
+- [プラグインガイド](../../../docs/ja/reference/plugin-api.md)

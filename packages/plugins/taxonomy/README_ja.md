@@ -221,5 +221,5 @@ import "@riebeckite/plugin-taxonomy/style.css";
 
 ## 関連
 
-- [プラグインガイド](../../../docs/ja/plugin-system.md)
-- [コンテンツシステム](../../../docs/ja/content-system.md)
+- [プラグインガイド](../../../docs/ja/reference/plugin-api.md)
+- [コンテンツシステム](../../../docs/ja/framework/content-system.md)

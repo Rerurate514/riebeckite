@@ -67,10 +67,10 @@ import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
   site: {
-    title: "Riebeckite Blog",
-    description: "An Obsidian-to-Hono Blog Framework",
-    author: "Your Name",
-    baseUrl: "https://my-blog.pages.dev",
+    title: "Riebeckite Documentation",
+    description: "Official documentation for the Riebeckite framework",
+    author: "Riebeckite Maintainers",
+    baseUrl: "https://docs.riebeckite.dev",
     locale: "ja_JP",
     defaultOgImage: "/ogp.png",
     feed: {
@@ -78,10 +78,10 @@ export default defineConfig({
     },
   },
   content: {
-    directory: "../../content",
-    exclude: ["**/templates/**", "**/private/**"],
+    directory: "../../docs",
+    exclude: ["agents/**", "**/templates/**", "**/private/**"],
     filters: {
-      publishStrategy: "explicit",
+      publishStrategy: "selective",
     },
   },
   markdown: {},
@@ -116,7 +116,7 @@ export default defineConfig({
     }),
     aliasPlugin(),
     seo({
-      siteName: "Riebeckite Blog",
+      siteName: "Riebeckite Documentation",
       defaultImage: "/ogp.png",
       feed: {
         rss: true,

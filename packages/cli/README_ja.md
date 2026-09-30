@@ -44,7 +44,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `profile` | トレースに基づく性能レポートを実行する。`--full` は全体を対象にする | ビルドの実行による |
 | `inspect` | 解決済みの状態を事実として表示する（`config`、`plugins`、`content`、`graph`、`build`） | いいえ |
 
-`doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/ja/diagnostics.md) と [Framework Inspector](../../docs/ja/inspector.md) を参照してください。
+`doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/ja/framework/diagnostics.md) と [Framework Inspector](../../docs/ja/framework/inspector.md) を参照してください。
 
 ## 典型的な流れ
 
@@ -57,6 +57,6 @@ pnpm exec riebeckite build
 
 ## 関連資料
 
-- [CLI Reference](../../docs/ja/cli.md)
-- [Build System](../../docs/ja/build-system.md)
-- [Diagnostics](../../docs/ja/diagnostics.md) / [Framework Inspector](../../docs/ja/inspector.md)
+- [CLI Reference](../../docs/ja/reference/cli.md)
+- [Build System](../../docs/ja/framework/build-system.md)
+- [Diagnostics](../../docs/ja/framework/diagnostics.md) / [Framework Inspector](../../docs/ja/framework/inspector.md)

@@ -81,4 +81,4 @@ mode; leave it unset to follow the OS with `colorMode: "system"`.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

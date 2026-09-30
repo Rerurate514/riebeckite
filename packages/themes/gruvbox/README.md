@@ -134,7 +134,7 @@ project, and is distributed here under the license stated in the package
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)

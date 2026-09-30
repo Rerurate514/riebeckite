@@ -132,7 +132,7 @@ is distributed here under the license stated in the package `LICENSE` file.
 
 ## See also
 
-- [Theme authoring contract](../../../docs/en/theme-system.md)
+- [Theme authoring contract](../../../docs/en/reference/theme-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)

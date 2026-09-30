@@ -122,4 +122,4 @@ import "@riebeckite/plugin-changelog/style.css";
 ## 関連資料
 
 - [plugin-diff](../diff/README_ja.md) — リビジョン履歴と行差分
-- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [プラグインシステム](../../../docs/ja/reference/plugin-api.md)

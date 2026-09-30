@@ -39,4 +39,4 @@ return <Article afterContent={<RecentPosts posts={posts} />} />;
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [プラグインシステム](../../../docs/ja/reference/plugin-api.md)

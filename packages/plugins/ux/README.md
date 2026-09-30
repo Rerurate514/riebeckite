@@ -116,4 +116,4 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

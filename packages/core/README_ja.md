@@ -29,7 +29,7 @@ export default defineConfig({
 });
 ```
 
-コンテンツディレクトリはアプリケーションルート基準で解決します。設定項目の全体と `projectRoot` / `appRoot` / `configRoot` / `contentRoot` の解決規則は [Configuration](../../docs/ja/configuration.md) を参照してください。
+コンテンツディレクトリはアプリケーションルート基準で解決します。設定項目の全体と `projectRoot` / `appRoot` / `configRoot` / `contentRoot` の解決規則は [Configuration](../../docs/ja/reference/configuration.md) を参照してください。
 
 ## 公開 API
 
@@ -69,7 +69,7 @@ export default defineConfig({
 
 ## 関連資料
 
-- [Framework Reference](../../docs/ja/framework-reference.md)
-- [Content System](../../docs/ja/content-system.md)
-- [Plugin System](../../docs/ja/plugin-system.md) / [Theme System](../../docs/ja/theme-system.md)
-- [Architecture](../../docs/ja/architecture.md)
+- [Framework Reference](../../docs/ja/reference/README.md)
+- [Content System](../../docs/ja/framework/content-system.md)
+- [Plugin System](../../docs/ja/reference/plugin-api.md) / [Theme System](../../docs/ja/reference/theme-api.md)
+- [Architecture](../../docs/ja/framework/architecture.md)

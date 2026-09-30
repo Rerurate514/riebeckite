@@ -139,4 +139,4 @@ import "@riebeckite/plugin-share/style.css";
 
 ## 関連
 
-- [プラグインガイド](../../../docs/ja/plugin-system.md)
+- [プラグインガイド](../../../docs/ja/reference/plugin-api.md)

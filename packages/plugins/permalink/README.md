@@ -961,5 +961,5 @@ permalink({
 
 # See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
-- [Content system](../../../docs/en/content-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)
+- [Content system](../../../docs/en/framework/content-system.md)

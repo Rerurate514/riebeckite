@@ -133,5 +133,5 @@ highlighting regardless.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)
 - [`@riebeckite/plugin-code-enhance`](../code-enhance/README.md)

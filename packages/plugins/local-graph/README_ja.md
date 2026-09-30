@@ -37,6 +37,6 @@ return <Article footerContent={graph && <LocalGraph graph={graph} />} />;
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/ja/plugin-system.md)
+- [プラグインシステム](../../../docs/ja/reference/plugin-api.md)
 - [`@riebeckite/plugin-backlinks`](../backlinks/README_ja.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)

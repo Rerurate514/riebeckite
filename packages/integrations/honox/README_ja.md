@@ -84,7 +84,7 @@ const app = createApp({
 
 ## 関連資料
 
-- [HonoX Integration](../../../docs/ja/honox-integration.md)
-- [CLI Reference](../../../docs/ja/cli.md)
-- [Configuration](../../../docs/ja/configuration.md)
-- [Plugin System](../../../docs/ja/plugin-system.md) / [Theme System](../../../docs/ja/theme-system.md)
+- [HonoX Integration](../../../docs/ja/framework/honox-integration.md)
+- [CLI Reference](../../../docs/ja/reference/cli.md)
+- [Configuration](../../../docs/ja/reference/configuration.md)
+- [Plugin System](../../../docs/ja/reference/plugin-api.md) / [Theme System](../../../docs/ja/reference/theme-api.md)

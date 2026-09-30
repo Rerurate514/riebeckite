@@ -61,7 +61,7 @@ F7 は既存の指摘をコード確認で裏付けたもの、F10・F12 は今�
 
 - 着手時は「状態」を `実施中` に更新する。
 - 完了時は実装内容を 1 行で「完了済み」表へ移し、ID は引き継ぐ。
-- 変更前に `docs/en/development.md` を読み、依存方向のルールを守る（Core にアプリ固有の import を置かない等）。
+- 変更前に `docs/en/framework/development.md` を読み、依存方向のルールを守る（Core にアプリ固有の import を置かない等）。
 - 新規プラグインは `packages/plugins/related-posts` をテンプレートにする。
 
 項目別メモ（F7〜F12）:

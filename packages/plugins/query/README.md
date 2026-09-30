@@ -119,4 +119,4 @@ emits a `content-query-invalid` error diagnostic. Unknown fields emit a
 
 ## See also
 
-- [Plugin guide](../../../docs/en/plugin-system.md)
+- [Plugin guide](../../../docs/en/reference/plugin-api.md)

@@ -60,6 +60,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/share",
   "packages/plugins/shortcodes",
   "packages/plugins/sidenotes",
+  "packages/plugins/taxonomy",
   "packages/plugins/text-fragment",
   "packages/plugins/toc",
   "packages/plugins/ux",
@@ -348,6 +349,11 @@ const packagePublishingMetadata = {
     description:
       "Tufte-style side notes for Riebeckite footnotes, with mobile popovers",
     keywords: ["riebeckite", "plugin", "sidenotes", "footnotes"],
+  },
+  "packages/plugins/taxonomy": {
+    description:
+      "Build-time tag and folder taxonomy data, per-term feeds, and SEO for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "taxonomy", "tags", "feeds"],
   },
   "packages/plugins/text-fragment": {
     description: "Text Fragment links and quotes for Riebeckite articles.",

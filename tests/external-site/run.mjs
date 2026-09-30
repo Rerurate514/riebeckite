@@ -94,6 +94,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/series", name: "@riebeckite/plugin-series" },
   {
+    directory: "packages/plugins/taxonomy",
+    name: "@riebeckite/plugin-taxonomy",
+  },
+  {
     directory: "packages/plugins/analytics",
     name: "@riebeckite/plugin-analytics",
   },
@@ -825,6 +829,47 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes('rel="prev"') || !combined.includes('rel="next"')) {
     fail("series navigation is missing the previous/next links");
+  }
+  // The taxonomy plugin emits per-term feeds through the build's
+  // generated-output sink: one file per tag/folder and feed format.
+  const tagRss = path.join(distDir, "tags", "featured", "feed.xml");
+  if (!fs.existsSync(tagRss)) {
+    fail("taxonomy plugin did not emit the /tags/featured RSS feed");
+  }
+  const tagRssBody = fs.readFileSync(tagRss, "utf8");
+  if (!tagRssBody.includes("<rss")) {
+    fail("taxonomy tag feed is not an RSS document");
+  }
+  if (!tagRssBody.includes("/notes/example")) {
+    fail("taxonomy tag feed did not link the fixture note");
+  }
+  const tagAtom = path.join(distDir, "tags", "featured", "atom.xml");
+  if (!fs.existsSync(tagAtom)) {
+    fail("taxonomy plugin did not emit the /tags/featured Atom feed");
+  }
+  const tagJson = path.join(distDir, "tags", "featured", "feed.json");
+  if (!fs.existsSync(tagJson)) {
+    fail("taxonomy plugin did not emit the /tags/featured JSON feed");
+  }
+  const tagJsonBody = JSON.parse(fs.readFileSync(tagJson, "utf8"));
+  if (tagJsonBody.version !== "https://jsonfeed.org/version/1.1") {
+    fail("taxonomy JSON feed is not JSON Feed 1.1");
+  }
+  const tagRelatedFeed = path.join(
+    distDir,
+    "tags",
+    "related-demo",
+    "feed.xml",
+  );
+  if (!fs.existsSync(tagRelatedFeed)) {
+    fail("taxonomy plugin did not emit the /tags/related-demo RSS feed");
+  }
+  const folderFeed = path.join(distDir, "folders", "notes", "feed.xml");
+  if (!fs.existsSync(folderFeed)) {
+    fail("taxonomy plugin did not emit the /folders/notes RSS feed");
+  }
+  if (!fs.readFileSync(folderFeed, "utf8").includes("/notes/example")) {
+    fail("taxonomy folder feed did not link the fixture note");
   }
   if (
     !combined.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE) ||

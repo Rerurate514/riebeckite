@@ -52,6 +52,7 @@ import { series } from "@riebeckite/plugin-series";
 import { share } from "@riebeckite/plugin-share";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { sidenotes } from "@riebeckite/plugin-sidenotes";
+import { taxonomy } from "@riebeckite/plugin-taxonomy";
 import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { uxPlugin } from "@riebeckite/plugin-ux";
@@ -195,6 +196,7 @@ export default defineConfig({
     shortcodes(),
     sidenotes(),
     series(),
+    taxonomy({ folderIndexes: true }),
     dailyNotesPlugin(),
     renamePlugin(),
     textFragmentPlugin(),

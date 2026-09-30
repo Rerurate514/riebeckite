@@ -909,6 +909,12 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/taxonomy:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/plugins/text-fragment:
     dependencies:
       '@riebeckite/core':

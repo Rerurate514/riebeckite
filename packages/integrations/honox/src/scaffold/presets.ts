@@ -326,6 +326,13 @@ const series = np("@riebeckite/plugin-series", "series", {
   heading: { depth: 3, value: "true" },
   className: { depth: 3, value: '"rb-series"' },
 });
+const taxonomy = np("@riebeckite/plugin-taxonomy", "taxonomy", {
+  tags: { depth: 2, value: "true" },
+  folders: { depth: 2, value: "true" },
+  related: { depth: 2, value: "true" },
+  feeds: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
+  relatedLimit: { depth: 3, value: "8" },
+});
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
   "autoCardLinkPlugin",
@@ -643,6 +650,7 @@ export const full: ScaffoldPreset = {
     codeAnnotations,
     shortcodes,
     series,
+    taxonomy,
     autoCardLink,
     richEmbed,
   ],
@@ -682,6 +690,7 @@ export const max: ScaffoldPreset = {
     codeAnnotations,
     shortcodes,
     series,
+    taxonomy,
     autoCardLink,
     richEmbed,
     mermaid,
@@ -751,6 +760,7 @@ export const ultra: ScaffoldPreset = {
     codeAnnotations,
     shortcodes,
     series,
+    taxonomy,
     autoCardLink,
     richEmbed,
     mermaid,

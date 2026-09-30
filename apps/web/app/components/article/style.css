@@ -16,21 +16,24 @@
     padding-inline: var(--rb-space-2);
   }
 
-  :root[data-article-layout="full-width"] .article-shell {
+  :is(:root, .rb-theme-root)[data-article-layout="full-width"] .article-shell {
     width: 100%;
     max-width: none;
   }
 
-  :root[data-article-layout="full-width"] .article-shell__layout {
+  :is(:root, .rb-theme-root)[data-article-layout="full-width"]
+    .article-shell__layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  :root[data-article-layout="full-width"] .article-shell__body {
+  :is(:root, .rb-theme-root)[data-article-layout="full-width"]
+    .article-shell__body {
     max-width: none;
   }
 
   @media (min-width: 88rem) {
-    :root[data-article-layout="sidebar"] .article-shell__layout {
+    :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
+      .article-shell__layout {
       grid-template-columns:
         minmax(0, var(--rb-layout-article-max))
         var(--rb-layout-sidebar);
@@ -54,19 +57,21 @@
    unlayered on purpose so they beat the plugin styles (which place the TOC on
    the right) imported later via `.riebeckite/plugin-styles.css`. */
 @media (min-width: 88rem) {
-  :root[data-article-layout="article"] .article-shell__layout {
+  :is(:root, .rb-theme-root)[data-article-layout="article"]
+    .article-shell__layout {
     grid-template-columns:
       var(--rb-layout-sidebar)
       minmax(0, var(--rb-layout-article-max));
     justify-content: center;
   }
 
-  :root[data-article-layout="article"] .article-shell__body {
+  :is(:root, .rb-theme-root)[data-article-layout="article"]
+    .article-shell__body {
     grid-column: 2;
     grid-row: 1;
   }
 
-  :root[data-article-layout="article"]
+  :is(:root, .rb-theme-root)[data-article-layout="article"]
     .article-shell__layout
     .table-of-contents--desktop {
     grid-column: 1;
@@ -76,7 +81,8 @@
     max-height: calc(100vh - 7rem);
   }
 
-  :root[data-article-layout="article"] .article-shell__outro {
+  :is(:root, .rb-theme-root)[data-article-layout="article"]
+    .article-shell__outro {
     grid-column: 2;
   }
 }

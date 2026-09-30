@@ -27,12 +27,21 @@
   }
 }
 
+/* Code blocks follow the theme tokens in every mode. The plugin's default
+   `pre` colours are tuned for its own dark `pre` background, so on a light
+   theme (whose `pre` background comes from `--rb-color-code-background`) the
+   code text would stay light on light. Unlayered so it beats the plugin. */
+:is(:root, .rb-theme-root) .prose {
+  --tw-prose-pre-code: var(--rb-color-ink);
+  --tw-prose-pre-bg: var(--rb-color-code-background);
+}
+
 /* Dark mode: the Tailwind typography plugin pins its palette (near-black text,
    headings, code, etc.) directly on `.prose`, so it stays dark even when the
    theme flips `--rb-color-*` to the dark scheme. Re-point the prose variables
    at the theme tokens here instead. Unlayered so these declarations beat the
    plugin's `@layer utilities` rules regardless of import order. */
-:root[data-theme="dark"] .prose {
+:is(:root, .rb-theme-root)[data-theme="dark"] .prose {
   --tw-prose-body: var(--rb-color-ink);
   --tw-prose-headings: var(--rb-color-ink);
   --tw-prose-lead: var(--rb-color-muted);
@@ -60,7 +69,7 @@
 /* Same treatment when the color mode is "system" (no explicit `data-theme`
    attribute) and the OS reports a dark preference. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .prose {
+  :is(:root, .rb-theme-root):not([data-theme]) .prose {
     --tw-prose-body: var(--rb-color-ink);
     --tw-prose-headings: var(--rb-color-ink);
     --tw-prose-lead: var(--rb-color-muted);

@@ -13,6 +13,7 @@ import type {
   GeneratedOutputSink,
 } from "../types/generated_output.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
+import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import { resolvePlugins } from "../types/plugin.js";
 import {
   type PluginClientEntry,
@@ -227,6 +228,61 @@ export class PluginRuntime {
     return this.generatedOutputs.all();
   }
 
+  async resolvePage(
+    pathname: string,
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<ResolvedPluginPage | null> {
+    const matches: { page: ResolvedPluginPage; priority: number }[] = [];
+    const context = { ...this.createContext(contentIndex), manifest, pathname };
+    for (const plugin of this.plugins()) {
+      for (const pageType of plugin.pageTypes ?? []) {
+        const page = await pageType.resolve(
+          this.createPluginContext(plugin, context),
+        );
+        if (page) {
+          matches.push({
+            page: { ...page, type: pageType.id, pluginName: plugin.name },
+            priority: pageType.priority ?? 0,
+          });
+        }
+      }
+    }
+    if (matches.length === 0) return null;
+    const highestPriority = Math.max(...matches.map((match) => match.priority));
+    const highest = matches.filter(
+      (match) => match.priority === highestPriority,
+    );
+    if (highest.length !== 1) {
+      throw new Error(
+        `Multiple plugin page types match ${pathname} at priority ${highestPriority}: ${highest
+          .map((match) => match.page.type)
+          .join(", ")}`,
+      );
+    }
+    return highest[0].page;
+  }
+
+  async getPagePaths(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly string[]> {
+    const paths: string[] = [];
+    const context = { ...this.createContext(contentIndex), manifest };
+    for (const plugin of this.plugins()) {
+      for (const pageType of plugin.pageTypes ?? []) {
+        const declared = pageType.paths;
+        if (!declared) continue;
+        paths.push(
+          ...(typeof declared === "function"
+            ? await declared(this.createPluginContext(plugin, context))
+            : declared),
+        );
+      }
+    }
+    return [...new Set(paths.map(normalizePagePath))];
+  }
+
   async collectDiagnostics(
     contentIndex: Map<string, string>,
   ): Promise<Diagnostic[]> {
@@ -364,8 +420,26 @@ export class PluginRuntime {
   }
 
   private plugins() {
-    return resolvePlugins(this.pipelineOptions.plugins);
+    const plugins = resolvePlugins(this.pipelineOptions.plugins);
+    const pageTypes = new Map<string, string>();
+    for (const plugin of plugins) {
+      for (const pageType of plugin.pageTypes ?? []) {
+        const previous = pageTypes.get(pageType.id);
+        if (previous) {
+          throw new Error(
+            `Plugin page type \"${pageType.id}\" is provided by both ${previous} and ${plugin.name}`,
+          );
+        }
+        pageTypes.set(pageType.id, plugin.name);
+      }
+    }
+    return plugins;
   }
+}
+
+function normalizePagePath(pathname: string): string {
+  const path = `/${pathname.split("/").filter(Boolean).join("/")}`;
+  return path === "/" ? path : path.replace(/\/$/, "");
 }
 
 function countSeverity(

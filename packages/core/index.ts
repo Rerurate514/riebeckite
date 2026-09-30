@@ -47,6 +47,12 @@ export type {
   ContentInspection,
 } from "./src/content/content_manager.js";
 export { ContentManager } from "./src/content/content_manager.js";
+export type {
+  PluginPage,
+  PluginPageContext,
+  PluginPageType,
+  ResolvedPluginPage,
+} from "./src/types/plugin_page.js";
 export { extractFrontmatterAliases } from "./src/content/content_metadata.js";
 export type {
   ContentQueryDateFilter,

@@ -9,6 +9,7 @@ import type {
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
 import type { PostContent } from "../types/post_content.js";
+import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import { isPublishable } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
@@ -279,6 +280,24 @@ export class ContentManager {
   async getDiagnostics(): Promise<Diagnostic[]> {
     const manifest = await this.getManifest();
     return manifest.diagnostics;
+  }
+
+  /** Resolves a page contributed by an enabled plugin. */
+  async resolvePage(pathname: string): Promise<ResolvedPluginPage | null> {
+    const [manifest, contentIndex] = await Promise.all([
+      this.getManifest(),
+      this.getContentIndex(),
+    ]);
+    return await this.pluginRuntime.resolvePage(pathname, manifest, contentIndex);
+  }
+
+  /** Returns plugin page paths for SSG enumeration. */
+  async getPagePaths(): Promise<readonly string[]> {
+    const [manifest, contentIndex] = await Promise.all([
+      this.getManifest(),
+      this.getContentIndex(),
+    ]);
+    return await this.pluginRuntime.getPagePaths(manifest, contentIndex);
   }
 
   async inspect(): Promise<ContentInspection> {

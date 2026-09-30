@@ -22,6 +22,7 @@ import type {
   PipelinePlugin,
 } from "./plugin_pipeline.js";
 import type { PluginSeoExtension } from "./plugin_seo.js";
+import type { PluginPageType } from "./plugin_page.js";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
   name: string;
@@ -80,6 +81,8 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   seo?: PluginSeoExtension;
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];
+  /** Framework-independent page types contributed by this plugin. */
+  pageTypes?: PluginPageType[];
 };
 
 export type PluginInput = RiebeckitePlugin | false | null | undefined;

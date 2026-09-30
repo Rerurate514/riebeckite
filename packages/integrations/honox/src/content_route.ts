@@ -1,10 +1,45 @@
-import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
+import type {
+  ContentManager,
+  ContentManifest,
+  ContentManifestEntry,
+  ResolvedPluginPage,
+} from "@riebeckite/core";
 import type { Context, Handler, MiddlewareHandler } from "hono";
 
 export type ResolvedContentRoute =
   | { kind: "content"; entry: ContentManifestEntry }
   | { kind: "redirect"; location: string; status: 301 | 302 | 307 | 308 }
   | null;
+
+export type ResolvedRiebeckiteRoute =
+  | Exclude<ResolvedContentRoute, null>
+  | { kind: "page"; page: ResolvedPluginPage }
+  | null;
+
+/**
+ * Resolves plugin pages before manifest-backed content routes. This is the
+ * single HonoX adapter needed by a catch-all site route; plugins never add
+ * HonoX routes themselves.
+ */
+export async function resolveRiebeckiteRoute(
+  content: Pick<ContentManager, "resolvePage" | "getManifest">,
+  pathname: string,
+): Promise<ResolvedRiebeckiteRoute> {
+  const page = await content.resolvePage(pathname);
+  if (page) return { kind: "page", page };
+  return resolveContentRoute(await content.getManifest(), pathname);
+}
+
+/** Returns catch-all parameters for every plugin page registered for SSG. */
+export async function pluginPageSsgParams(
+  content: Pick<ContentManager, "getPagePaths">,
+  parameter = "slug",
+): Promise<Record<string, string>[]> {
+  const paths = await content.getPagePaths();
+  return paths
+    .filter((path) => path !== "/")
+    .map((path) => ({ [parameter]: path.replace(/^\/+/, "") }));
+}
 
 export function resolveContentRoute(
   manifest: ContentManifest,

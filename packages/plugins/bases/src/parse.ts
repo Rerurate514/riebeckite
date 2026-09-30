@@ -13,10 +13,12 @@ import type {
 /** Columns used when neither the Base nor the view configures any. */
 export const DEFAULT_COLUMNS = ["file.name", "file.tags"] as const;
 
-type Result<T> = { readonly ok: true; readonly value: T } | {
-  readonly ok: false;
-  readonly message: string;
-};
+type Result<T> =
+  | { readonly ok: true; readonly value: T }
+  | {
+      readonly ok: false;
+      readonly message: string;
+    };
 
 const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 const fail = (message: string): Result<never> => ({ ok: false, message });
@@ -98,10 +100,7 @@ function parseFilterObject(
 
   if ("and" in object || "or" in object || "not" in object) {
     if ("and" in object) {
-      const parsed = combineAnd(
-        toList(object.and),
-        `${path}.and`,
-      );
+      const parsed = combineAnd(toList(object.and), `${path}.and`);
       if (parsed.ok === false) return parsed;
       if (parsed.value) children.push(parsed.value);
     }
@@ -197,7 +196,11 @@ function toList(value: unknown): readonly unknown[] {
 
 function parseExpression(raw: string, path: string): Result<BasesCondition> {
   let text = raw.trim();
-  while (text.startsWith("(") && text.endsWith(")") && isBalanced(text.slice(1, -1))) {
+  while (
+    text.startsWith("(") &&
+    text.endsWith(")") &&
+    isBalanced(text.slice(1, -1))
+  ) {
     text = text.slice(1, -1).trim();
   }
   if (text === "") return fail(`${path} contains an empty filter expression.`);
@@ -324,9 +327,7 @@ function isBalanced(value: string): boolean {
 
 // --- properties ------------------------------------------------------------
 
-function parseProperties(
-  value: unknown,
-): Result<Record<string, string>> {
+function parseProperties(value: unknown): Result<Record<string, string>> {
   if (value === undefined || value === null) return ok({});
   if (typeof value !== "object" || Array.isArray(value)) {
     return fail("`properties` must be a YAML mapping.");
@@ -406,10 +407,7 @@ function parseView(
   });
 }
 
-function parseViewType(
-  value: unknown,
-  path: string,
-): Result<BasesViewType> {
+function parseViewType(value: unknown, path: string): Result<BasesViewType> {
   if (value === undefined || value === null) return ok("table");
   const text = String(value).trim().toLowerCase();
   if (text === "table" || text === "cards") return ok(text);
@@ -420,7 +418,8 @@ function parseColumns(
   object: Record<string, unknown>,
   properties: Readonly<Record<string, string>>,
 ): readonly string[] {
-  const configured = readStringList(object.order) ?? readStringList(object.columns);
+  const configured =
+    readStringList(object.order) ?? readStringList(object.columns);
   if (configured && configured.length > 0) return configured;
   const fromProperties = Object.keys(properties);
   if (fromProperties.length > 0) return fromProperties;
@@ -503,10 +502,7 @@ function mapSortField(property: string): string {
   }
 }
 
-function parseLimit(
-  value: unknown,
-  path: string,
-): Result<number | undefined> {
+function parseLimit(value: unknown, path: string): Result<number | undefined> {
   if (value === undefined || value === null) return ok(undefined);
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
     return fail(`${path} must be a non-negative number.`);

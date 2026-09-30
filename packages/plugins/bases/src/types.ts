@@ -7,14 +7,7 @@ export type BasesViewType = "table" | "cards";
 export type BasesLiteral = string | number | boolean | null;
 
 /** Comparison operators supported in filter expressions. */
-export type BasesOperator =
-  | "=="
-  | "!="
-  | ">"
-  | "<"
-  | ">="
-  | "<="
-  | "contains";
+export type BasesOperator = "==" | "!=" | ">" | "<" | ">=" | "<=" | "contains";
 
 /** Built-in `file.*` values exposed to filter expressions. */
 export type BasesBuiltinValue =

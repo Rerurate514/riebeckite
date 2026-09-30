@@ -149,10 +149,7 @@ function findDirectChild(
 function reportDiagnostic(file: unknown, message: string) {
   const reporter = (file as { message?: (reason: string) => unknown })?.message;
   if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(
-    file,
-    `Invalid Markmap source: ${message}`,
-  );
+  const diagnostic = reporter.call(file, `Invalid Markmap source: ${message}`);
   if (diagnostic && typeof diagnostic === "object") {
     Object.assign(diagnostic, {
       source: DIAGNOSTIC_SOURCE,
@@ -170,7 +167,12 @@ function visitElements(
   if (isElementNode(node)) visitor(node, parent, index);
 
   for (const [childIndex, child] of [...getChildren(node)].entries()) {
-    visitElements(child, visitor, hasChildren(node) ? node : parent, childIndex);
+    visitElements(
+      child,
+      visitor,
+      hasChildren(node) ? node : parent,
+      childIndex,
+    );
   }
 }
 
@@ -197,10 +199,7 @@ function getTextContent(node: HastNode): string {
   return getChildren(node).map(getTextContent).join("");
 }
 
-function getStringProperty(
-  node: ElementNode,
-  key: string,
-): string | null {
+function getStringProperty(node: ElementNode, key: string): string | null {
   const value = node.properties?.[key];
   if (typeof value === "string") return value;
   if (Array.isArray(value)) return value.join(" ");

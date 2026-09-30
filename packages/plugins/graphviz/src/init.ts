@@ -33,12 +33,12 @@ function renderFigure(
   fallbackEngine: GraphvizEngine,
 ) {
   const source = figure.dataset.graphvizSource;
-  const canvas = figure.querySelector<HTMLElement>(
-    "[data-graphviz-canvas]",
-  );
+  const canvas = figure.querySelector<HTMLElement>("[data-graphviz-canvas]");
   if (!source || !canvas) return;
 
-  const engine = normalizeEngine(figure.dataset.graphvizEngine ?? fallbackEngine);
+  const engine = normalizeEngine(
+    figure.dataset.graphvizEngine ?? fallbackEngine,
+  );
 
   try {
     const svg = renderer.renderString(source, { format: "svg", engine });
@@ -67,10 +67,9 @@ type VizModule = {
 function importModule(url: string): Promise<VizModule> {
   // A computed specifier keeps `@viz-js/viz` (and its WASM payload) out of the
   // host bundle; it is fetched from the CDN at runtime.
-  const importer = new Function(
-    "url",
-    "return import(url)",
-  ) as (url: string) => Promise<VizModule>;
+  const importer = new Function("url", "return import(url)") as (
+    url: string,
+  ) => Promise<VizModule>;
   return importer(url);
 }
 

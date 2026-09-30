@@ -134,14 +134,15 @@ function normalizeClassName(value: string | undefined): string {
   return className ? className : DEFAULT_RESPONSIVE_IMAGE_CLASS;
 }
 
-function normalizeWidths(value: readonly number[] | undefined): readonly number[] {
+function normalizeWidths(
+  value: readonly number[] | undefined,
+): readonly number[] {
   if (!value) return [...DEFAULT_RESPONSIVE_IMAGE_WIDTHS];
 
   const widths = Array.from(
     new Set(
       value.filter(
-        (width): width is number =>
-          Number.isInteger(width) && width > 0,
+        (width): width is number => Number.isInteger(width) && width > 0,
       ),
     ),
   ).toSorted((a, b) => a - b);

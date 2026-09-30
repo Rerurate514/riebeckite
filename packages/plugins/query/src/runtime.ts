@@ -8,9 +8,9 @@ import type {
 import { queryContentEntries } from "@riebeckite/core";
 import { matter } from "vfile-matter";
 import {
-  QUERY_ATTRIBUTE,
   createQueryPlaceholderPattern,
   decodeQuerySpec,
+  QUERY_ATTRIBUTE,
 } from "./placeholder.js";
 import { renderQueryError, renderQueryResult, resolveQuery } from "./render.js";
 import type { QueryOptions, QuerySpec } from "./types.js";

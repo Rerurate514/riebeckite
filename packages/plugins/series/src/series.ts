@@ -288,8 +288,10 @@ function compareEntries(
   b: ContentManifestEntry,
   resolved: ResolvedSeriesOptions,
 ): number {
-  const orderA = readSeriesOrder(a, resolved.orderKey) ?? Number.POSITIVE_INFINITY;
-  const orderB = readSeriesOrder(b, resolved.orderKey) ?? Number.POSITIVE_INFINITY;
+  const orderA =
+    readSeriesOrder(a, resolved.orderKey) ?? Number.POSITIVE_INFINITY;
+  const orderB =
+    readSeriesOrder(b, resolved.orderKey) ?? Number.POSITIVE_INFINITY;
   if (orderA !== orderB) return orderA < orderB ? -1 : 1;
 
   const dateA = readSeriesDate(a) ?? Number.POSITIVE_INFINITY;
@@ -347,10 +349,7 @@ function parseDate(value: unknown): number | undefined {
   return undefined;
 }
 
-function hasFrontmatterKey(
-  entry: ContentManifestEntry,
-  key: string,
-): boolean {
+function hasFrontmatterKey(entry: ContentManifestEntry, key: string): boolean {
   return Object.hasOwn(entry.frontmatter, key);
 }
 

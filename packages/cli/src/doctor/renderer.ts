@@ -24,7 +24,9 @@ export function renderDoctorResults(
   }
 
   const errors = results.filter((result) => result.status === "error").length;
-  const warnings = results.filter((result) => result.status === "warning").length;
+  const warnings = results.filter(
+    (result) => result.status === "warning",
+  ).length;
   lines.push("", "Summary", `${warnings} warnings`, `${errors} errors`);
   return lines.join("\n");
 }

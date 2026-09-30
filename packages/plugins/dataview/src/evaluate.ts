@@ -281,7 +281,12 @@ function compareValues(
 }
 
 function looseEquals(left: unknown, right: unknown): boolean {
-  if (left === null || left === undefined || right === null || right === undefined) {
+  if (
+    left === null ||
+    left === undefined ||
+    right === null ||
+    right === undefined
+  ) {
     return (left ?? null) === (right ?? null);
   }
 

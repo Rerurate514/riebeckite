@@ -70,5 +70,7 @@ export function resolveUxConfig(options: UxOptions = {}): UxResolvedConfig {
 }
 
 function normalizeLabel(value: string | undefined, fallback: string): string {
-  return typeof value === "string" && value.trim().length > 0 ? value : fallback;
+  return typeof value === "string" && value.trim().length > 0
+    ? value
+    : fallback;
 }

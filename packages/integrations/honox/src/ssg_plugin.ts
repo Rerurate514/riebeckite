@@ -1,5 +1,5 @@
-import { defaultExtensionMap, toSSG } from "hono/ssg";
 import { relative } from "node:path";
+import { defaultExtensionMap, toSSG } from "hono/ssg";
 import { createServer, type Plugin, type ResolvedConfig } from "vite";
 
 type ToSsgOptions = NonNullable<Parameters<typeof toSSG>[2]>;
@@ -80,7 +80,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
     async generateBundle(_outputOptions, bundle) {
       const config = resolvedConfig;
       if (!config) {
-        throw new Error("Riebeckite SSG could not resolve the Vite configuration.");
+        throw new Error(
+          "Riebeckite SSG could not resolve the Vite configuration.",
+        );
       }
 
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
@@ -108,10 +110,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           app,
           {
             writeFile: async (filePath, data) => {
-              const fileName = relative(config.build.outDir, filePath).replaceAll(
-                "\\",
-                "/",
-              );
+              const fileName = relative(
+                config.build.outDir,
+                filePath,
+              ).replaceAll("\\", "/");
               if (fileName.endsWith(".html") && typeof data === "string") {
                 generatedHtml.push({ path: fileName, html: data });
               }
@@ -131,9 +133,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         );
         if (!result.success) throw result.error;
 
-        await emitGeneratedOutputs(module, (asset) =>
-          this.emitFile(asset),
-        );
+        await emitGeneratedOutputs(module, (asset) => this.emitFile(asset));
         inspectGeneratedHtmlPages(module, generatedHtml, {
           warn: (message) => this.warn(message),
           info: (message) => this.info(message),
@@ -193,7 +193,10 @@ function inspectGeneratedHtmlPages(
 }
 
 function removeVirtualEntryChunk(
-  bundle: Record<string, { type: string; fileName: string; moduleIds?: string[] }>,
+  bundle: Record<
+    string,
+    { type: string; fileName: string; moduleIds?: string[] }
+  >,
   virtualEntryId: string,
 ): void {
   for (const chunk of Object.values(bundle)) {

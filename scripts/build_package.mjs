@@ -1,4 +1,3 @@
-
 import fs from "node:fs";
 import path from "node:path";
 import * as esbuild from "esbuild";
@@ -109,10 +108,7 @@ function collectSourceFiles(directory) {
     }
     const full = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...collectSourceFiles(full));
-    else if (
-      /\.(ts|tsx)$/.test(entry.name) &&
-      !entry.name.endsWith(".d.ts")
-    ) {
+    else if (/\.(ts|tsx)$/.test(entry.name) && !entry.name.endsWith(".d.ts")) {
       files.push(full);
     }
   }

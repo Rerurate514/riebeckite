@@ -1,8 +1,8 @@
 import {
+  type ConfigValidationIssue,
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  type ConfigValidationIssue,
 } from "@riebeckite/core";
 import type { HastNode, MermaidOptions } from "./src/types.js";
 

@@ -17,8 +17,7 @@ import type {
 
 export const CANVAS_NOTE_HREF = "#riebeckite-canvas-note";
 
-const WIKILINK_PATTERN =
-  /(!?)\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g;
+const WIKILINK_PATTERN = /(!?)\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g;
 
 export type RenderCanvasInput = {
   document: CanvasDocument;
@@ -47,7 +46,9 @@ export function renderCanvas(input: RenderCanvasInput): string {
 
   const style = renderHeightStyle(options.height);
   const maxNodes =
-    options.maxNodes === undefined ? "" : ` data-canvas-max-nodes="${options.maxNodes}"`;
+    options.maxNodes === undefined
+      ? ""
+      : ` data-canvas-max-nodes="${options.maxNodes}"`;
   return `<div class="${escapeHtmlAttribute(options.className)}" data-canvas="${escapeHtmlAttribute(source)}" data-canvas-nodes="${document.nodes.length}" data-canvas-edges="${document.edges.length}" data-canvas-render="${options.render}"${maxNodes}${style}>${parts.join("\n")}</div>`;
 }
 
@@ -66,11 +67,16 @@ function renderEdges(layout: CanvasLayout): string {
   return `<svg class="rb-canvas__edges" width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">${lines}</svg>`;
 }
 
-function renderEdgeLine(edge: CanvasEdge & { x1: number; y1: number; x2: number; y2: number }): string {
+function renderEdgeLine(
+  edge: CanvasEdge & { x1: number; y1: number; x2: number; y2: number },
+): string {
   return `<line class="rb-canvas__edge" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"></line>`;
 }
 
-function renderNodeCard(node: CanvasLayoutNode, resolver: CanvasResolver): string {
+function renderNodeCard(
+  node: CanvasLayoutNode,
+  resolver: CanvasResolver,
+): string {
   const color = node.color
     ? ` data-canvas-color="${escapeHtmlAttribute(node.color)}"`
     : "";
@@ -125,9 +131,7 @@ function renderText(value: string, resolver: CanvasResolver): string {
     const label = match[3]?.trim() || target;
     const resolved = target ? resolver.resolveWikilink(target) : null;
     output.push(
-      resolved
-        ? renderNoteAnchor(resolved.slug, label)
-        : escapeHtml(label),
+      resolved ? renderNoteAnchor(resolved.slug, label) : escapeHtml(label),
     );
     lastIndex = match.index + match[0].length;
   }
@@ -178,7 +182,9 @@ function renderPayload(document: CanvasDocument): string {
 
 function renderHeightStyle(height: number | string | undefined): string {
   const length = cssLength(height);
-  return length ? ` style="--rb-canvas-height:${escapeHtmlAttribute(length)}"` : "";
+  return length
+    ? ` style="--rb-canvas-height:${escapeHtmlAttribute(length)}"`
+    : "";
 }
 
 function cssLength(value: number | string | undefined): string | null {
@@ -189,7 +195,10 @@ function cssLength(value: number | string | undefined): string | null {
   return value.trim() || null;
 }
 
-function limitNodes(nodes: readonly CanvasNode[], maxNodes?: number): CanvasNode[] {
+function limitNodes(
+  nodes: readonly CanvasNode[],
+  maxNodes?: number,
+): CanvasNode[] {
   if (maxNodes === undefined || maxNodes <= 0) return [...nodes];
   return nodes.slice(0, maxNodes);
 }

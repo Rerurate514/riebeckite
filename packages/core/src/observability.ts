@@ -140,15 +140,13 @@ export class SinkTracer implements Tracer {
   event(name: string, attributes: TraceAttributes = {}): void {
     try {
       this.sink.onEvent({ name, time: wallClockNow(), attributes });
-    } catch {
-    }
+    } catch {}
   }
 
   private emitSpan(span: TraceSpan): void {
     try {
       this.sink.onSpan(span);
-    } catch {
-    }
+    } catch {}
   }
 }
 
@@ -159,8 +157,7 @@ export class CompositeTraceSink implements TraceSink {
     for (const sink of this.sinks) {
       try {
         sink.onSpan(span);
-      } catch {
-      }
+      } catch {}
     }
   }
 
@@ -168,8 +165,7 @@ export class CompositeTraceSink implements TraceSink {
     for (const sink of this.sinks) {
       try {
         sink.onEvent(event);
-      } catch {
-      }
+      } catch {}
     }
   }
 }

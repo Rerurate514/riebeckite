@@ -5,31 +5,31 @@ import {
 } from "@riebeckite/core";
 import { remarkKanban } from "./src/remark.js";
 import { createKanbanRuntime } from "./src/runtime.js";
-import { resolveKanbanOptions, type KanbanOptions } from "./src/types.js";
+import { type KanbanOptions, resolveKanbanOptions } from "./src/types.js";
 
-export { isKanbanNote, parseKanban, stripFrontmatter } from "./src/parse.js";
 export type {
   KanbanCard,
   KanbanColumn,
   KanbanParseResult,
 } from "./src/parse.js";
+export { isKanbanNote, parseKanban, stripFrontmatter } from "./src/parse.js";
 export {
-  KANBAN_ATTRIBUTE,
   createKanbanPlaceholder,
   createKanbanPlaceholderPattern,
   decodeKanbanSource,
   encodeKanbanSource,
+  KANBAN_ATTRIBUTE,
 } from "./src/placeholder.js";
-export { createKanbanLinkResolver, renderKanban } from "./src/render.js";
+export type { RemarkKanbanOptions } from "./src/remark.js";
+export { remarkKanban } from "./src/remark.js";
 export type {
   KanbanLink,
   KanbanLinkResolver,
   KanbanSource,
 } from "./src/render.js";
-export { remarkKanban } from "./src/remark.js";
-export type { RemarkKanbanOptions } from "./src/remark.js";
-export { resolveKanbanOptions } from "./src/types.js";
+export { createKanbanLinkResolver, renderKanban } from "./src/render.js";
 export type { KanbanOptions, ResolvedKanbanOptions } from "./src/types.js";
+export { resolveKanbanOptions } from "./src/types.js";
 
 export function kanban(options: KanbanOptions = {}) {
   const resolved = resolveKanbanOptions(options);
@@ -62,7 +62,10 @@ function validateKanbanOptions(
   const issues: ConfigValidationIssue[] = [];
   for (const key of ["className", "language", "columnMarker"] as const) {
     const value = options[key];
-    if (value !== undefined && (typeof value !== "string" || value.trim() === "")) {
+    if (
+      value !== undefined &&
+      (typeof value !== "string" || value.trim() === "")
+    ) {
       issues.push({ path: key, message: "Expected a non-empty string." });
     }
   }

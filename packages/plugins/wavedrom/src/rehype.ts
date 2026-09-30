@@ -168,15 +168,15 @@ function parseSpec(source: string): ParseResult {
   }
 
   const captionText =
-    typeof caption === "string" && caption.trim() !== "" ? caption.trim() : null;
+    typeof caption === "string" && caption.trim() !== ""
+      ? caption.trim()
+      : null;
   return { ok: true, spec, caption: captionText };
 }
 
 function hasWaveDromBody(spec: Record<string, unknown>): boolean {
   return (
-    Array.isArray(spec.signal) ||
-    Array.isArray(spec.assign) ||
-    "reg" in spec
+    Array.isArray(spec.signal) || Array.isArray(spec.assign) || "reg" in spec
   );
 }
 

@@ -1,13 +1,18 @@
 import {
+  createWorker,
+  d1Storage,
+  kvStorage,
+} from "@riebeckite/analytics-cloudflare";
+import {
   buildContentCollections,
-  defineConfig,
-  groupContentEntries,
-  queryContentEntries,
-  queryContentPage,
   type ContentCollection,
   type ContentCollectionDefinition,
   type ContentQueryGroup,
+  defineConfig,
+  groupContentEntries,
   type PostContent,
+  queryContentEntries,
+  queryContentPage,
   type RiebeckiteConfig,
 } from "@riebeckite/core";
 import {
@@ -16,82 +21,80 @@ import {
   defaultSsgEntry,
   defaultSsrExternals,
   loadRiebeckiteConfig,
+  type RiebeckiteViteOptions,
   resolveHonoxApplicationRoot,
   resolveHonoxConfig,
   riebeckite,
   riebeckiteSsg,
   riebeckiteSsgExtensionMap,
   riebeckiteVite,
-  type RiebeckiteViteOptions,
 } from "@riebeckite/honox";
 import {
   mountRiebeckiteEndpoints,
   resolveContentRoute,
 } from "@riebeckite/honox/server";
 import {
-  createWorker,
-  d1Storage,
-  kvStorage,
-} from "@riebeckite/analytics-cloudflare";
-import {
-  Article as ArticlePrimitive,
   ArticleContent,
-  ArticleFooter,
-  ArticleHeader,
-  ArticleLayout,
-  ArticleMeta,
-  Sidebar,
   type ArticleContentProps,
+  ArticleFooter,
   type ArticleFooterProps,
+  ArticleHeader,
   type ArticleHeaderProps,
+  ArticleLayout,
   type ArticleLayoutProps,
+  ArticleMeta,
   type ArticleMetaProps,
+  Article as ArticlePrimitive,
   type ArticleProps,
+  Sidebar,
   type SidebarProps,
 } from "@riebeckite/honox/ui";
-import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
-import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import {
   analytics,
   MemoryAnalyticsProvider,
 } from "@riebeckite/plugin-analytics";
 import { initAnalytics } from "@riebeckite/plugin-analytics/client";
+import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
+import { bases } from "@riebeckite/plugin-bases";
+import { canvas } from "@riebeckite/plugin-canvas";
+import { initCanvas } from "@riebeckite/plugin-canvas/client";
+import {
+  codeAnnotations,
+  parseCodeAnnotations,
+} from "@riebeckite/plugin-code-annotations";
+import { d2 } from "@riebeckite/plugin-d2";
+import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { initExcaliBrain } from "@riebeckite/plugin-excalibrain/client";
-import { markmap } from "@riebeckite/plugin-markmap";
-import { initMarkmap } from "@riebeckite/plugin-markmap/client";
-import { bases } from "@riebeckite/plugin-bases";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { initFlashcards } from "@riebeckite/plugin-flashcards/client";
+import { graphviz } from "@riebeckite/plugin-graphviz";
+import { highlight, highlightPlugin } from "@riebeckite/plugin-highlight";
 import {
   hoverPreviewPlugin,
   resolveHoverPreviewOptions,
 } from "@riebeckite/plugin-hover-preview";
 import { initHoverPreview } from "@riebeckite/plugin-hover-preview/client";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
-import { initFlashcards } from "@riebeckite/plugin-flashcards/client";
-import { codeAnnotations, parseCodeAnnotations } from "@riebeckite/plugin-code-annotations";
-import { canvas } from "@riebeckite/plugin-canvas";
-import { initCanvas } from "@riebeckite/plugin-canvas/client";
-import { highlight, highlightPlugin } from "@riebeckite/plugin-highlight";
-import { d2 } from "@riebeckite/plugin-d2";
-import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
-import { graphviz } from "@riebeckite/plugin-graphviz";
-import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
-import { marp, marpPlugin } from "@riebeckite/plugin-marp";
-import { qrCode } from "@riebeckite/plugin-qr-code";
-import { properties } from "@riebeckite/plugin-properties";
 import {
+  type KanbanOptions,
+  type KanbanParseResult,
   kanban,
   kanbanPlugin,
   parseKanban,
+  type ResolvedKanbanOptions,
   renderKanban,
   resolveKanbanOptions,
-  type KanbanOptions,
-  type KanbanParseResult,
-  type ResolvedKanbanOptions,
 } from "@riebeckite/plugin-kanban";
+import { markmap } from "@riebeckite/plugin-markmap";
+import { initMarkmap } from "@riebeckite/plugin-markmap/client";
+import { marp, marpPlugin } from "@riebeckite/plugin-marp";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { properties } from "@riebeckite/plugin-properties";
+import { qrCode } from "@riebeckite/plugin-qr-code";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
@@ -100,7 +103,10 @@ import { searchPlugin } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
 import SearchBar from "@riebeckite/plugin-search/components";
 import { series } from "@riebeckite/plugin-series";
-import { shortcodes, type ShortcodeRenderer } from "@riebeckite/plugin-shortcodes";
+import {
+  type ShortcodeRenderer,
+  shortcodes,
+} from "@riebeckite/plugin-shortcodes";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";

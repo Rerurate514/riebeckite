@@ -7,7 +7,12 @@ import {
   text,
   visitElements,
 } from "./hast.js";
-import type { ChartJsOptions, ElementNode, HastNode, ParentNode } from "./types.js";
+import type {
+  ChartJsOptions,
+  ElementNode,
+  HastNode,
+  ParentNode,
+} from "./types.js";
 
 const DEFAULT_CLASS_NAME = "rb-chartjs";
 const CHART_LANGUAGE_CLASS = "language-chart";
@@ -42,7 +47,9 @@ function replaceChartBlock(
   options: { className: string; responsive: boolean; caption: boolean },
 ) {
   const code = findDirectChild(pre, "code");
-  const source = code ? getTextContent(code).trim() : getTextContent(pre).trim();
+  const source = code
+    ? getTextContent(code).trim()
+    : getTextContent(pre).trim();
   const parsed = parseChartConfig(source);
   if (isParseFailure(parsed)) {
     reportDiagnostic(file, parsed.message);
@@ -129,7 +136,9 @@ function parseChartConfig(source: string): ParseResult {
   }
 
   const captionText =
-    typeof caption === "string" && caption.trim() !== "" ? caption.trim() : null;
+    typeof caption === "string" && caption.trim() !== ""
+      ? caption.trim()
+      : null;
 
   if (isRecord(rest.data)) {
     if (

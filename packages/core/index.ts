@@ -28,7 +28,6 @@ export {
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
 } from "./src/content/content_build_state_store.js";
-export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
 export type {
   ContentCollection,
   ContentCollectionContext,
@@ -36,6 +35,19 @@ export type {
   ContentCollectionPage,
 } from "./src/content/content_collection.js";
 export { buildContentCollections } from "./src/content/content_collection.js";
+export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
+export type {
+  ContentGraph,
+  ContentGraphNeighbors,
+} from "./src/content/content_graph.js";
+export { createContentGraph } from "./src/content/content_graph.js";
+export { resolveDefaultContentLocation } from "./src/content/content_location.js";
+export type {
+  ContentBuildOptions,
+  ContentInspection,
+} from "./src/content/content_manager.js";
+export { ContentManager } from "./src/content/content_manager.js";
+export { extractFrontmatterAliases } from "./src/content/content_metadata.js";
 export type {
   ContentQueryDateFilter,
   ContentQueryDateGranularity,
@@ -59,28 +71,6 @@ export {
   resolveContentQueryPagination,
 } from "./src/content/content_query.js";
 export type {
-  ContentGraph,
-  ContentGraphNeighbors,
-} from "./src/content/content_graph.js";
-export { createContentGraph } from "./src/content/content_graph.js";
-export {
-  buildGraphEdges,
-  layoutRadialGraph,
-} from "./src/content/graph_layout.js";
-export type {
-  GraphEdge,
-  GraphLayoutNode,
-  LinkableGraphNode,
-  RadialGraphLayoutOptions,
-} from "./src/content/graph_layout.js";
-export { resolveDefaultContentLocation } from "./src/content/content_location.js";
-export type {
-  ContentBuildOptions,
-  ContentInspection,
-} from "./src/content/content_manager.js";
-export { ContentManager } from "./src/content/content_manager.js";
-export { extractFrontmatterAliases } from "./src/content/content_metadata.js";
-export type {
   ContentSource,
   ContentSourceContent,
   ContentSourceEntry,
@@ -92,16 +82,18 @@ export {
 } from "./src/content/content_source.js";
 export { resolveContentStableId } from "./src/content/content_stable_id.js";
 export { FileSystemContentSource } from "./src/content/file_system_content_source.js";
+export type {
+  GraphEdge,
+  GraphLayoutNode,
+  LinkableGraphNode,
+  RadialGraphLayoutOptions,
+} from "./src/content/graph_layout.js";
+export {
+  buildGraphEdges,
+  layoutRadialGraph,
+} from "./src/content/graph_layout.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
-export { uniqueStrings } from "./src/utils/collections.js";
-export {
-  escapeHtml,
-  escapeHtmlAttribute,
-  escapeScriptJson,
-} from "./src/utils/html.js";
-export { normalizeTag } from "./src/utils/tags.js";
-export { calculateReadingTime, stripHtml } from "./src/utils/text.js";
 export type {
   LogContext,
   Logger,
@@ -123,8 +115,11 @@ export {
 } from "./src/observability.js";
 export type { PipelineOptions } from "./src/pipeline.js";
 export { Pipeline } from "./src/pipeline.js";
-export type { JsonValue } from "./src/types/json_value.js";
 export type { PluginCache } from "./src/plugin/plugin_cache.js";
+export {
+  PluginDependencyError,
+  type PluginDependencyErrorKind,
+} from "./src/plugin/plugin_dependency_error.js";
 export type {
   CreatePluginMemoOptions,
   PluginMemo,
@@ -133,10 +128,6 @@ export {
   createPluginMemo,
   stableStringify,
 } from "./src/plugin/plugin_memo.js";
-export {
-  PluginDependencyError,
-  type PluginDependencyErrorKind,
-} from "./src/plugin/plugin_dependency_error.js";
 export type {
   ConfigValidationIssue,
   PluginOptionsValidator,
@@ -169,6 +160,7 @@ export {
   createUnavailableGeneratedOutputSink,
   normalizeGeneratedOutputPath,
 } from "./src/types/generated_output.js";
+export type { JsonValue } from "./src/types/json_value.js";
 export type {
   PluginInput,
   ResolvedPluginMetadata,
@@ -210,15 +202,15 @@ export type {
   PluginDiagnostic,
   PluginDiagnosticLevel,
 } from "./src/types/plugin_diagnostic.js";
-export type { PluginHeadTag } from "./src/types/plugin_head.js";
 export type {
   PluginEndpoint,
   PluginEndpointContext,
   PluginEndpointMethod,
-  PluginEndpointResponse,
   PluginEndpointOptions,
+  PluginEndpointResponse,
 } from "./src/types/plugin_endpoint.js";
 export { defineEndpoint } from "./src/types/plugin_endpoint.js";
+export type { PluginHeadTag } from "./src/types/plugin_head.js";
 export type {
   HtmlPipeline,
   MarkdownEmbedFragment,
@@ -233,9 +225,10 @@ export type {
   WebsiteSeoInput,
 } from "./src/types/plugin_seo.js";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content.js";
-
-export type { PublishStrategy } from "./src/types/publish_strategy.js";
-export type { PublishFrontmatter } from "./src/types/publish_strategy.js";
+export type {
+  PublishFrontmatter,
+  PublishStrategy,
+} from "./src/types/publish_strategy.js";
 export { isPublishable } from "./src/types/publish_strategy.js";
 export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config.js";
 export type { RiebeckiteConfig } from "./src/types/riebeckite_config.js";
@@ -252,3 +245,11 @@ export type {
   ThemeTypographyPreset,
 } from "./src/types/theme_config.js";
 export { defineTheme } from "./src/types/theme_config.js";
+export { uniqueStrings } from "./src/utils/collections.js";
+export {
+  escapeHtml,
+  escapeHtmlAttribute,
+  escapeScriptJson,
+} from "./src/utils/html.js";
+export { normalizeTag } from "./src/utils/tags.js";
+export { calculateReadingTime, stripHtml } from "./src/utils/text.js";

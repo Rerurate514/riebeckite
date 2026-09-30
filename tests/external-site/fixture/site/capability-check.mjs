@@ -1,8 +1,5 @@
 import assert from "node:assert/strict";
-import {
-  PluginDependencyError,
-  resolvePlugins,
-} from "@riebeckite/core";
+import { PluginDependencyError, resolvePlugins } from "@riebeckite/core";
 
 const names = (plugins) => plugins.map((plugin) => plugin.name);
 

@@ -70,8 +70,7 @@ function renderFigure(
   const index = renderCounter++;
   canvas.id = `${CANVAS_ID_PREFIX}${index}`;
   // `renderWaveForm` reads the active skin from `window.WaveSkin`.
-  (window as unknown as { WaveSkin?: unknown }).WaveSkin =
-    skin ?? api.waveSkin;
+  (window as unknown as { WaveSkin?: unknown }).WaveSkin = skin ?? api.waveSkin;
   api.renderWaveForm(index, spec, CANVAS_ID_PREFIX, notFirstSignal);
 }
 

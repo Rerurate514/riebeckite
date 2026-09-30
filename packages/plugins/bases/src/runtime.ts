@@ -82,10 +82,7 @@ function replacePlaceholders(
   });
 }
 
-function diagnostic(
-  entry: ContentManifestEntry,
-  message: string,
-): Diagnostic {
+function diagnostic(entry: ContentManifestEntry, message: string): Diagnostic {
   return {
     code: "bases-invalid",
     severity: "error",

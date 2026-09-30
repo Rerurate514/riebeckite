@@ -6,15 +6,15 @@ import {
 } from "./src/options.js";
 import type { DiscordEmbedOptions } from "./src/types.js";
 
-export type {
-  DiscordEmbedOptions,
-  ResolvedDiscordEmbedOptions,
-} from "./src/types.js";
 export { buildDiscordHeadTags } from "./src/head.js";
 export {
   DEFAULT_THEME_COLOR,
   resolveDiscordEmbedOptions,
 } from "./src/options.js";
+export type {
+  DiscordEmbedOptions,
+  ResolvedDiscordEmbedOptions,
+} from "./src/types.js";
 
 /**
  * Completes a page's `<head>` for Discord link previews.

@@ -5,7 +5,10 @@ import {
   isPublished,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import type { RelatedPostsEntry, ResolvedRelatedPostsOptions } from "./types.js";
+import type {
+  RelatedPostsEntry,
+  ResolvedRelatedPostsOptions,
+} from "./types.js";
 
 /**
  * Weights are deterministic constants: the same manifest always produces the

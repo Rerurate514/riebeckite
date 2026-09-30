@@ -12,6 +12,6 @@ export const config = {
   ...resolvedConfig,
   content: {
     ...resolvedConfig.content,
-    directory: path.resolve(appRoot, resolvedConfig.content.directory)
-  }
+    directory: path.resolve(appRoot, resolvedConfig.content.directory),
+  },
 };

@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
-  resolveHonoxApplication,
   type ResolvedHonoxApplication,
+  resolveHonoxApplication,
 } from "@riebeckite/honox";
 
 const configFileNames = [

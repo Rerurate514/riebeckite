@@ -34,9 +34,7 @@ function normalizeHeight(height: number | undefined): number {
     : DEFAULT_MARKMAP_HEIGHT;
 }
 
-function normalizeColorFreezeLevel(
-  level: number | undefined,
-): number | null {
+function normalizeColorFreezeLevel(level: number | undefined): number | null {
   return typeof level === "number" && Number.isInteger(level) && level >= 0
     ? level
     : null;

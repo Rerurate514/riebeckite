@@ -12,12 +12,7 @@ import type {
   ResolvedCanvasOptions,
 } from "./types.js";
 
-const NODE_TYPES: readonly CanvasNodeType[] = [
-  "text",
-  "file",
-  "link",
-  "group",
-];
+const NODE_TYPES: readonly CanvasNodeType[] = ["text", "file", "link", "group"];
 const EDGE_SIDES: readonly CanvasEdgeSide[] = [
   "top",
   "right",
@@ -56,9 +51,7 @@ export function parseCanvas(json: string): CanvasDocument | null {
  * resolve edge endpoints to line segments. Pure: it never touches the DOM.
  */
 export function buildCanvasLayout(doc: CanvasDocument): CanvasLayout {
-  const positioned = doc.nodes.map((node, index) =>
-    normalizeNode(node, index),
-  );
+  const positioned = doc.nodes.map((node, index) => normalizeNode(node, index));
   const minX = positioned.length
     ? Math.min(...positioned.map((node) => node.x))
     : 0;
@@ -213,7 +206,9 @@ function asString(value: unknown): string | undefined {
 }
 
 function asNumber(value: unknown): number | undefined {
-  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  return typeof value === "number" && Number.isFinite(value)
+    ? value
+    : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

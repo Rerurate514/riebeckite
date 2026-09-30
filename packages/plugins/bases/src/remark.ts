@@ -46,12 +46,12 @@ export function remarkBases(options: RemarkBasesOptions = {}) {
   };
 }
 
-function parseYaml(
-  source: string,
-): { readonly ok: true; readonly value: unknown } | {
-  readonly ok: false;
-  readonly message: string;
-} {
+function parseYaml(source: string):
+  | { readonly ok: true; readonly value: unknown }
+  | {
+      readonly ok: false;
+      readonly message: string;
+    } {
   try {
     const document = `---\n${source}\n---\n`;
     const file = {
@@ -69,11 +69,7 @@ function parseYaml(
   }
 }
 
-function reportDiagnostic(
-  file: unknown,
-  message: string,
-  node: unknown,
-): void {
+function reportDiagnostic(file: unknown, message: string, node: unknown): void {
   const reporter = (file as { message?: (...args: unknown[]) => unknown })
     ?.message;
   if (typeof reporter !== "function") return;

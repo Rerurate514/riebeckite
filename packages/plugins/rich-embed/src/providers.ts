@@ -37,7 +37,13 @@ const SPOTIFY_HOSTS = new Set(["open.spotify.com"]);
 const CODEPEN_HOSTS = new Set(["codepen.io", "www.codepen.io"]);
 const GIST_HOSTS = new Set(["gist.github.com"]);
 
-const SPOTIFY_TYPES = new Set(["track", "album", "playlist", "episode", "show"]);
+const SPOTIFY_TYPES = new Set([
+  "track",
+  "album",
+  "playlist",
+  "episode",
+  "show",
+]);
 
 const YOUTUBE_ID = /^[A-Za-z0-9_-]{11}$/;
 const NUMERIC_ID = /^\d+$/;
@@ -111,7 +117,8 @@ export function parseEmbedBlock(source: string): ParsedEmbedBlock | null {
     if (value.length === 0) continue;
     if (key === "title") options.title = value;
     else if (key === "caption") options.caption = value;
-    else if (key === "aspect") options.aspect = normalizeAspect(value) ?? undefined;
+    else if (key === "aspect")
+      options.aspect = normalizeAspect(value) ?? undefined;
     else if (key === "start") options.start = parseStart(value);
   }
 
@@ -223,12 +230,7 @@ function detectProvider(url: URL, host: string): Detection | null {
 
   if (SPOTIFY_HOSTS.has(host)) {
     const [type, id] = pathSegments(url);
-    if (
-      type &&
-      SPOTIFY_TYPES.has(type) &&
-      id &&
-      SLUG_ID.test(id)
-    ) {
+    if (type && SPOTIFY_TYPES.has(type) && id && SLUG_ID.test(id)) {
       return {
         kind: "iframe",
         provider: "spotify",
@@ -270,7 +272,11 @@ function youtubeId(url: URL): string | null {
     const id = url.searchParams.get("v");
     return id && YOUTUBE_ID.test(id) ? id : null;
   }
-  if (segments[0] === "shorts" || segments[0] === "embed" || segments[0] === "live") {
+  if (
+    segments[0] === "shorts" ||
+    segments[0] === "embed" ||
+    segments[0] === "live"
+  ) {
     return segments[1] && YOUTUBE_ID.test(segments[1]) ? segments[1] : null;
   }
   return null;

@@ -101,7 +101,10 @@ export function renderExcaliBrainSection(
   ].join("");
 }
 
-function renderNode(node: ExcaliBrainPositionedNode, className: string): string {
+function renderNode(
+  node: ExcaliBrainPositionedNode,
+  className: string,
+): string {
   const box = `<rect class="${className}__node-box" x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" rx="4" />`;
   const label = `<text class="${className}__node-label" x="${round(
     node.x + node.width / 2,

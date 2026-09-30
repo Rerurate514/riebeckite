@@ -108,7 +108,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "honox", "vite", "static-site-generator"],
   },
   "packages/integrations/analytics-cloudflare": {
-    description: "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
+    description:
+      "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
     keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
   },
   "packages/plugins/alias": {
@@ -116,7 +117,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "plugin", "obsidian", "redirects"],
   },
   "packages/plugins/analytics": {
-    description: "Storage-independent analytics foundation for Riebeckite sites.",
+    description:
+      "Storage-independent analytics foundation for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "analytics", "web-analytics"],
   },
   "packages/plugins/attachment": {
@@ -228,13 +230,7 @@ const packagePublishingMetadata = {
   "packages/plugins/l10n": {
     description:
       "Content localization, localized URLs, and translation metadata for Riebeckite.",
-    keywords: [
-      "riebeckite",
-      "plugin",
-      "localization",
-      "i18n",
-      "l10n",
-    ],
+    keywords: ["riebeckite", "plugin", "localization", "i18n", "l10n"],
   },
   "packages/plugins/lightbox": {
     description: "Click-to-zoom image lightboxes for Riebeckite.",
@@ -282,7 +278,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "plugin", "qr-code", "svg"],
   },
   "packages/plugins/quality": {
-    description: "Static quality and accessibility inspection for Riebeckite HTML.",
+    description:
+      "Static quality and accessibility inspection for Riebeckite HTML.",
     keywords: ["riebeckite", "plugin", "accessibility", "quality"],
   },
   "packages/plugins/query": {
@@ -421,7 +418,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
-        test: "node --import tsx --test \"test/*.test.ts\"",
+        test: 'node --import tsx --test "test/*.test.ts"',
         prepack: "pnpm run build",
       },
     };
@@ -444,7 +441,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
-        test: "pnpm exec tsx --test \"test/*.test.ts\"",
+        test: 'pnpm exec tsx --test "test/*.test.ts"',
         prepack: "pnpm run build",
       },
     };
@@ -487,8 +484,8 @@ export function expectedPackageMetadata(directory) {
     ].includes(pluginName);
     const testCommand =
       pluginName === "analytics"
-        ? "pnpm exec tsx --test \"test/*.test.ts\""
-        : "node --import tsx --test \"test/*.test.ts\"";
+        ? 'pnpm exec tsx --test "test/*.test.ts"'
+        : 'node --import tsx --test "test/*.test.ts"';
     return {
       ...publishingMetadata(directory, hasStyle ? ["./style.css"] : false),
       files: [
@@ -500,9 +497,7 @@ export function expectedPackageMetadata(directory) {
       ],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
-        ...(hasTests
-          ? { test: testCommand }
-          : {}),
+        ...(hasTests ? { test: testCommand } : {}),
         prepack: "pnpm run build",
       },
     };

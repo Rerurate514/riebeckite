@@ -42,8 +42,7 @@ function isExcaliBrainBlock(node: HastNode, language: string): boolean {
   if (element?.tagName !== "pre") return false;
 
   const code = getChildren(element)?.find(
-    (child): child is ElementNode =>
-      asElement(child)?.tagName === "code",
+    (child): child is ElementNode => asElement(child)?.tagName === "code",
   );
   if (!code) return false;
 

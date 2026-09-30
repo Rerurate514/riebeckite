@@ -7,9 +7,9 @@ import { remarkBases } from "./src/remark.js";
 import { createBasesRuntime } from "./src/runtime.js";
 import type { BasesOptions } from "./src/types.js";
 
-export { remarkBases } from "./src/remark.js";
-export { parseBases } from "./src/parse.js";
 export { matchesCondition, resolveValueRef } from "./src/evaluate.js";
+export { parseBases } from "./src/parse.js";
+export { remarkBases } from "./src/remark.js";
 export type {
   BasesBuiltinValue,
   BasesCondition,

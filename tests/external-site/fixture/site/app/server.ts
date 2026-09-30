@@ -6,7 +6,7 @@ import { content } from "./content";
 const app = createApp({
   init: (app) => {
     mountRiebeckiteEndpoints(app, { config, content });
-  }
+  },
 });
 
 export default app;

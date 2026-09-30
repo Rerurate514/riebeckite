@@ -17,7 +17,11 @@ export function createCanvasResolver(
           label: getFileName(target),
         };
       }
-      return { kind: "note", slug: stripMarkdown(resolved), label: getFileName(target) };
+      return {
+        kind: "note",
+        slug: stripMarkdown(resolved),
+        label: getFileName(target),
+      };
     },
     resolveWikilink(target) {
       const value = target.trim();

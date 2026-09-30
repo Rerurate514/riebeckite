@@ -1,7 +1,4 @@
-import {
-  escapeScriptJson,
-  type PluginHeadTag,
-} from "@riebeckite/core";
+import { escapeScriptJson, type PluginHeadTag } from "@riebeckite/core";
 import {
   ColorModeScript,
   ColorModeToggle,

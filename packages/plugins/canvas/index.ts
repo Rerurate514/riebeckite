@@ -7,8 +7,8 @@ import {
   readContentSourceEntry,
 } from "@riebeckite/core";
 import { parseCanvas, resolveCanvasOptions } from "./src/parse.js";
-import { renderCanvas } from "./src/render.js";
 import { remarkCanvas } from "./src/remark.js";
+import { renderCanvas } from "./src/render.js";
 import { createCanvasResolver } from "./src/resolve.js";
 import { createCanvasRuntime } from "./src/runtime.js";
 import type { CanvasOptions, CanvasRenderMode } from "./src/types.js";
@@ -19,8 +19,8 @@ export {
   parseCanvas,
   resolveCanvasOptions,
 } from "./src/parse.js";
-export { CANVAS_NOTE_HREF } from "./src/render.js";
 export type { RenderCanvasInput } from "./src/render.js";
+export { CANVAS_NOTE_HREF } from "./src/render.js";
 export type {
   CanvasDocument,
   CanvasEdge,
@@ -146,7 +146,12 @@ function validateCanvasOptions(
 }
 
 function isCanvasRenderMode(value: CanvasRenderMode | undefined): boolean {
-  return value === undefined || value === "static" || value === "client" || value === "both";
+  return (
+    value === undefined ||
+    value === "static" ||
+    value === "client" ||
+    value === "both"
+  );
 }
 
 function isCanvasHeight(value: number | string): boolean {

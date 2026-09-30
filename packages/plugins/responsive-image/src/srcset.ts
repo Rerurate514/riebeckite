@@ -1,7 +1,4 @@
-import {
-  attachmentUrl,
-  type ContentManifest,
-} from "@riebeckite/core";
+import { attachmentUrl, type ContentManifest } from "@riebeckite/core";
 import {
   type ResponsiveImageOptions,
   resolveResponsiveImageOptions,
@@ -60,7 +57,9 @@ export function buildResponsiveSrcset(
   for (const format of resolved.formats) {
     if (format === split.extension) continue;
     const widthVariants = variants
-      .filter((variant) => variant.format === format && variant.width !== undefined)
+      .filter(
+        (variant) => variant.format === format && variant.width !== undefined,
+      )
       .toSorted((a, b) => (a.width ?? 0) - (b.width ?? 0));
 
     if (widthVariants.length > 0) {
@@ -104,9 +103,7 @@ export function buildResponsiveSrcset(
 }
 
 /** Collect every asset path the content manifest knows about. */
-export function collectKnownAssetPaths(
-  manifest: ContentManifest,
-): Set<string> {
+export function collectKnownAssetPaths(manifest: ContentManifest): Set<string> {
   const paths = new Set<string>();
 
   for (const entry of manifest.entries) {
@@ -160,10 +157,7 @@ function collectVariants(
   return [...variants.values()];
 }
 
-function matchKnownAsset(
-  known: Set<string>,
-  src: string,
-): AssetMatch | null {
+function matchKnownAsset(known: Set<string>, src: string): AssetMatch | null {
   const clean = stripQueryAndFragment(src);
   if (!clean || hasUrlScheme(clean)) return null;
 

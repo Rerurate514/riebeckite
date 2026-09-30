@@ -267,7 +267,9 @@ function runAsync(command, args, options = {}) {
       if (settled) return;
       settled = true;
       if (exceeded) {
-        reject(new Error(`Command output exceeded ${MAX_BUFFER} bytes: ${line}`));
+        reject(
+          new Error(`Command output exceeded ${MAX_BUFFER} bytes: ${line}`),
+        );
         return;
       }
       if (status !== 0 && !options.allowFailure) {
@@ -755,7 +757,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     );
   }
   if (!combined.includes(RICHEMBED_MARKER)) {
-    fail(`generated HTML is missing the rich embed marker (${RICHEMBED_MARKER})`);
+    fail(
+      `generated HTML is missing the rich embed marker (${RICHEMBED_MARKER})`,
+    );
   }
   if (!combined.includes("www.youtube-nocookie.com/embed/")) {
     fail("generated HTML is missing the rich embed YouTube iframe");
@@ -785,7 +789,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("an Obsidian alias did not resolve to a redirect route");
   }
   if (!combined.includes(HIGHLIGHT_MARKER)) {
-    fail(`generated HTML is missing the highlight marker (${HIGHLIGHT_MARKER})`);
+    fail(
+      `generated HTML is missing the highlight marker (${HIGHLIGHT_MARKER})`,
+    );
   }
   if (!combined.includes("<mark")) {
     fail("generated HTML is missing the highlight <mark> element");
@@ -939,9 +945,7 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (
     !new RegExp(`data-markmap-source="[^"]*${MARKMAP_MARKER}`).test(combined)
   ) {
-    fail(
-      `markmap source attribute is missing the marker (${MARKMAP_MARKER})`,
-    );
+    fail(`markmap source attribute is missing the marker (${MARKMAP_MARKER})`);
   }
   if (!combined.includes(MARKMAP_MARKER)) {
     fail(`generated HTML is missing the markmap marker (${MARKMAP_MARKER})`);
@@ -950,15 +954,15 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail(`generated HTML is missing the Vega-Lite marker (${VEGALITE_MARKER})`);
   }
   if (!combined.includes("rb-vega-lite")) {
-    fail("generated HTML is missing the Vega-Lite plugin output (rb-vega-lite)");
+    fail(
+      "generated HTML is missing the Vega-Lite plugin output (rb-vega-lite)",
+    );
   }
   if (!combined.includes("data-vega-lite")) {
     fail("Vega-Lite figure is missing the output data attributes");
   }
   if (!combined.includes(WAVEDROM_MARKER)) {
-    fail(
-      `generated HTML is missing the wavedrom marker (${WAVEDROM_MARKER})`,
-    );
+    fail(`generated HTML is missing the wavedrom marker (${WAVEDROM_MARKER})`);
   }
   if (!combined.includes("data-wavedrom-spec")) {
     fail("generated HTML is missing the wavedrom figure configuration");
@@ -1041,7 +1045,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("code-annotations did not mark a [!code --] line as removed");
   }
   if (!combined.includes('data-line="2"')) {
-    fail("code-annotations did not materialize per-line wrappers with data-line");
+    fail(
+      "code-annotations did not materialize per-line wrappers with data-line",
+    );
   }
   if (!combined.includes(CODE_ANNOTATIONS_MARKER)) {
     fail(
@@ -1104,7 +1110,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     .map((file) => fs.readFileSync(file, "utf8"))
     .join("\n");
   if (!scripts.includes("rb-hover-preview")) {
-    fail("client bundle is missing the hover preview runtime (rb-hover-preview)");
+    fail(
+      "client bundle is missing the hover preview runtime (rb-hover-preview)",
+    );
   }
   if (!scripts.includes("initHoverPreview")) {
     fail(
@@ -1216,7 +1224,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("canvas styles/logic were not bundled into the dist JavaScript");
   }
   if (!js.includes("initCanvas")) {
-    fail("the canvas client initializer was not bundled into the dist JavaScript");
+    fail(
+      "the canvas client initializer was not bundled into the dist JavaScript",
+    );
   }
   // The ux plugin has no article HTML of its own, so its build-time
   // configuration element and its emitted client bundle are the observable
@@ -1231,10 +1241,14 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("the ux plugin stylesheet is missing its `rb-ux` classes");
   }
   if (!js.includes("rb-markmap")) {
-    fail("the markmap plugin client bundle is missing its `rb-markmap` identifier");
+    fail(
+      "the markmap plugin client bundle is missing its `rb-markmap` identifier",
+    );
   }
   if (!js.includes("initMarkmap")) {
-    fail("the markmap plugin client bundle is missing its `initMarkmap` initializer");
+    fail(
+      "the markmap plugin client bundle is missing its `initMarkmap` initializer",
+    );
   }
   if (!combined.includes('class="rr-color-mode"')) {
     fail("color-mode plugin did not render its rr-color-mode root hook");
@@ -1318,7 +1332,15 @@ function generateCreateStarterSite(tempRoot) {
     "--list-presets",
   ]);
   const listOutput = listResult.stdout ?? "";
-  for (const name of ["empty", "minimal", "starter", "rich", "full", "max", "ultra"]) {
+  for (const name of [
+    "empty",
+    "minimal",
+    "starter",
+    "rich",
+    "full",
+    "max",
+    "ultra",
+  ]) {
     if (!listOutput.includes(name)) {
       fail(`create-riebeckite --list-presets must list the ${name} preset`);
     }

@@ -4,7 +4,10 @@ import { normalizeGeneratedOutputPath } from "../src/types/generated_output.js";
 
 test("normalizeGeneratedOutputPath keeps relative paths and fixes separators", () => {
   assert.equal(normalizeGeneratedOutputPath("_redirects"), "_redirects");
-  assert.equal(normalizeGeneratedOutputPath("daily/feed.xml"), "daily/feed.xml");
+  assert.equal(
+    normalizeGeneratedOutputPath("daily/feed.xml"),
+    "daily/feed.xml",
+  );
   assert.equal(
     normalizeGeneratedOutputPath("daily\\feed.xml"),
     "daily/feed.xml",

@@ -2,7 +2,7 @@ import type { Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import { isKanbanNote, parseKanban, stripFrontmatter } from "./parse.js";
 import { createKanbanPlaceholder } from "./placeholder.js";
-import { resolveKanbanOptions, type KanbanOptions } from "./types.js";
+import { type KanbanOptions, resolveKanbanOptions } from "./types.js";
 
 export type RemarkKanbanOptions = KanbanOptions;
 

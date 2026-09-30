@@ -5,9 +5,7 @@ export type ElementNode = {
   children?: HastNode[];
 };
 
-export type HastNode =
-  | ElementNode
-  | { type: string; [key: string]: unknown };
+export type HastNode = ElementNode | { type: string; [key: string]: unknown };
 
 export type HastFile = {
   message(reason: string, options?: { source?: string }): unknown;

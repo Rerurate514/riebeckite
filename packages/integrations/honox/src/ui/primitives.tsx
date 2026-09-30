@@ -1,4 +1,3 @@
-
 export type PrimitiveChildren = unknown;
 
 export type PrimitiveProps = {

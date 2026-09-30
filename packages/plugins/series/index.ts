@@ -12,18 +12,18 @@ import {
 } from "./src/series.js";
 import type { SeriesOptions } from "./src/types.js";
 
-export type {
-  ResolvedSeriesOptions,
-  SeriesIndex,
-  SeriesMember,
-  SeriesOptions,
-} from "./src/types.js";
 export {
   buildSeriesIndex,
   collectSeriesIndexes,
   renderSeriesIndex,
   renderSeriesNavigation,
 } from "./src/series.js";
+export type {
+  ResolvedSeriesOptions,
+  SeriesIndex,
+  SeriesMember,
+  SeriesOptions,
+} from "./src/types.js";
 
 /**
  * Series (ordered multi-part posts) for Riebeckite.
@@ -55,7 +55,11 @@ export function series(options: SeriesOptions = {}) {
           const entry = manifest.bySlug.get(member.slug);
           if (!entry) continue;
           injected.add(member.slug);
-          const navigation = renderSeriesNavigation(index, member.slug, options);
+          const navigation = renderSeriesNavigation(
+            index,
+            member.slug,
+            options,
+          );
           entry.html = `${entry.html}\n${navigation}`;
           const content = tracked.get(member.slug);
           if (content) content.html = entry.html;
@@ -76,7 +80,10 @@ function validateSeriesOptions(
   const issues: ConfigValidationIssue[] = [];
   for (const key of ["key", "orderKey", "titleKey", "className"] as const) {
     const value = options[key];
-    if (value !== undefined && (typeof value !== "string" || value.trim() === "")) {
+    if (
+      value !== undefined &&
+      (typeof value !== "string" || value.trim() === "")
+    ) {
       issues.push({ path: key, message: "Expected a non-empty string." });
     }
   }

@@ -239,7 +239,9 @@ function setupTocScrollSpy(): void {
 
 /** Adds a copy button to each code block that lacks one. */
 function setupCodeCopy(config: UxResolvedConfig): void {
-  const blocks = Array.from(document.querySelectorAll<HTMLElement>("pre > code"));
+  const blocks = Array.from(
+    document.querySelectorAll<HTMLElement>("pre > code"),
+  );
   for (const code of blocks) {
     const pre = code.parentElement;
     if (!pre || pre.dataset.rbUxCopy === "true") continue;

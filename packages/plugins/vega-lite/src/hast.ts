@@ -9,7 +9,12 @@ export function visitElements(
   if (isElementNode(node)) visitor(node, parent, index);
 
   for (const [childIndex, child] of [...getChildren(node)].entries()) {
-    visitElements(child, visitor, hasChildren(node) ? node : parent, childIndex);
+    visitElements(
+      child,
+      visitor,
+      hasChildren(node) ? node : parent,
+      childIndex,
+    );
   }
 }
 

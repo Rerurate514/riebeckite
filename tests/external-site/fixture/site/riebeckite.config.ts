@@ -1,25 +1,28 @@
 import { defineConfig } from "@riebeckite/core";
 import { aliasPlugin } from "@riebeckite/plugin-alias";
-import { analytics, MemoryAnalyticsProvider } from "@riebeckite/plugin-analytics";
+import {
+  analytics,
+  MemoryAnalyticsProvider,
+} from "@riebeckite/plugin-analytics";
+import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
-import { dataviewPlugin } from "@riebeckite/plugin-dataview";
-import { attachment } from "@riebeckite/plugin-attachment";
-import { discordEmbed } from "@riebeckite/plugin-discord-embed";
-import { excaliBrain } from "@riebeckite/plugin-excalibrain";
-import { marp } from "@riebeckite/plugin-marp";
-import { markmap } from "@riebeckite/plugin-markmap";
+import { chartjs } from "@riebeckite/plugin-chartjs";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { colorModePlugin } from "@riebeckite/plugin-color-mode";
-import { chartjs } from "@riebeckite/plugin-chartjs";
+import { d2 } from "@riebeckite/plugin-d2";
+import { dataviewPlugin } from "@riebeckite/plugin-dataview";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
+import { excaliBrain } from "@riebeckite/plugin-excalibrain";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { kanban } from "@riebeckite/plugin-kanban";
-import { d2 } from "@riebeckite/plugin-d2";
-import { graphviz } from "@riebeckite/plugin-graphviz";
+import { markmap } from "@riebeckite/plugin-markmap";
+import { marp } from "@riebeckite/plugin-marp";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";

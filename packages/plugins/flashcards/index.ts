@@ -29,8 +29,8 @@ export {
   renderFlashcardsFallback,
   renderFlashcardsPayload,
 } from "./src/render.js";
-export { createFlashcardsRuntime } from "./src/runtime.js";
 export type { FlashcardsRuntime } from "./src/runtime.js";
+export { createFlashcardsRuntime } from "./src/runtime.js";
 export type {
   FlashcardsCard,
   FlashcardsOptions,

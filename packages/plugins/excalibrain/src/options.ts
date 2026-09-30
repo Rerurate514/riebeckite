@@ -1,8 +1,5 @@
 import type { ConfigValidationIssue } from "@riebeckite/core";
-import {
-  resolveOntology,
-  type ResolvedOntology,
-} from "./ontology.js";
+import { type ResolvedOntology, resolveOntology } from "./ontology.js";
 import type {
   ExcaliBrainOntology,
   ExcaliBrainOptions,
@@ -59,7 +56,13 @@ export function validateExcaliBrainOptions(
     });
   }
 
-  for (const key of ["auto", "heading", "infer", "siblings", "showHidden"] as const) {
+  for (const key of [
+    "auto",
+    "heading",
+    "infer",
+    "siblings",
+    "showHidden",
+  ] as const) {
     if (options[key] !== undefined && typeof options[key] !== "boolean") {
       issues.push({ path: key, message: "Expected a boolean." });
     }

@@ -4,5 +4,5 @@ import { CONTENT_DIR } from "./constants/paths";
 
 export const content = new ContentManager(CONTENT_DIR, config.content.exclude, {
   config,
-  plugins: config.plugins
+  plugins: config.plugins,
 });

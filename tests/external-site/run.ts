@@ -47,6 +47,7 @@ const {
   SITE_COMPONENT_MARKER,
   SITE_ISLAND_MARKER,
   LOCAL_PLUGIN_MARKER,
+  LOCAL_PLUGIN_PAGE_MARKER,
   QR_MARKER,
   MARKMAP_MARKER,
   EXCALIBRAIN_MARKER,
@@ -107,6 +108,9 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   }
   if (!combined.includes(NOTE_MARKER)) {
     fail(`generated HTML is missing the note marker (${NOTE_MARKER})`);
+  }
+  if (!combined.includes(LOCAL_PLUGIN_PAGE_MARKER)) {
+    fail("external plugin page was not emitted through the public page API");
   }
   if (!combined.includes(QUERY_MARKER)) {
     fail(`generated HTML is missing the query marker (${QUERY_MARKER})`);

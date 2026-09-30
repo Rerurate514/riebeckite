@@ -1,6 +1,7 @@
 import { definePlugin } from "@riebeckite/core";
 
 export const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
+export const LOCAL_PLUGIN_PAGE_MARKER = "RIEBECKITE_EXTERNAL_PLUGIN_PAGE_MARKER";
 
 type LocalHastNode =
   | {
@@ -44,6 +45,21 @@ export function localFixturePlugin() {
         pluginName: "fixture-local",
         kind: "style",
         moduleSpecifier: "/extensions/local-plugin.css",
+      },
+    ],
+    pageTypes: [
+      {
+        id: "fixture-local-page",
+        paths: ["/plugin-page"],
+        resolve: ({ pathname }) =>
+          pathname === "/plugin-page"
+            ? {
+                type: "fixture-local-page",
+                pathname,
+                title: "External plugin page",
+                body: `<main data-plugin-page="${LOCAL_PLUGIN_PAGE_MARKER}">${LOCAL_PLUGIN_PAGE_MARKER}</main>`,
+              }
+            : null,
       },
     ],
   });

@@ -11,8 +11,9 @@ Choose a remark/rehype or pipeline extension for semantic source transforms;
 use a content hook only when a named content phase is required. Use assets for
 CSS, client entries only for necessary browser code, endpoints for reusable
 HTTP behavior, and renderers for a specific target. Do not use a plugin to add
-application routes or to hide framework-specific routing. The application or
-integration owns that work.
+application routes or to hide framework-specific routing. Use `pageTypes` for
+a reusable, framework-independent page; the integration owns the one generic
+route that renders it.
 
 ## Minimal plugin
 
@@ -54,7 +55,8 @@ export function examplePlugin(options: ExampleOptions = {}) {
   Pipeline              remark/rehype declarations and extension hooks
   Graph                 `extendContentGraph`
   Diagnostics           `addDiagnostics`
-  Rendering             `renderers`
+   Rendering             `renderers`
+   Pages                 `pageTypes`
   Browser integration   `assets`, `clientEntries`
   HTTP integration      `endpoints`
   SEO                   `seo`
@@ -196,6 +198,32 @@ explicit error, not a slug fallback.
 Renderers receive a target (`kind`, `path`, `raw`, `label`, `url`,
 `embed`) plus normal plugin context. Return `null` when the renderer
 does not handle a target so another renderer can participate.
+
+## Pages
+
+`pageTypes` supplies standalone pages without adding application routes. A page
+type declares its stable ID, SSG paths, optional priority, and a resolver. The
+resolver receives the public manifest and a normalized request path, then
+returns HTML for the page body or `null`. The site still owns its document frame
+and theme.
+
+```ts
+definePlugin({
+  name: "example-pages",
+  pageTypes: [{
+    id: "example.report",
+    paths: ["/report"],
+    resolve: ({ pathname, manifest }) => pathname === "/report"
+      ? { type: "example.report", pathname, body: `<p>${manifest.publicEntries.length}</p>` }
+      : null,
+  }],
+});
+```
+
+Use `resolveRiebeckiteRoute(content, c.req.path)` and
+`pluginPageSsgParams(content)` from `@riebeckite/honox/server` in a catch-all
+route. Duplicate IDs fail at plugin resolution. When multiple types match, the
+highest `priority` wins; ties fail explicitly.
 
 ## Assets and client entries
 
@@ -393,5 +421,4 @@ repairing runtime resolution.
 - [Observability](../framework/observability.md)
 - [Theme System](./theme-api.md)
 - [Framework Reference](./README.md)
-
 

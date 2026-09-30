@@ -7,7 +7,7 @@ Riebeckite Plugin は、コンテンツの解釈・変換・表示拡張・診�
 
 ## まず最小の extension point を選ぶ
 
-semantic な source transform には remark/rehype または pipeline extension、明確な content phase が必要な場合だけ content hook を使います。CSS は asset、必要な browser code だけを client entry、再利用可能な HTTP behavior は endpoint、特定 target の表示は renderer で公開します。application route や framework 固有 routing を Plugin に隠さず、application/integration の責務として保ってください。
+semantic な source transform には remark/rehype または pipeline extension、明確な content phase が必要な場合だけ content hook を使います。CSS は asset、必要な browser code だけを client entry、再利用可能な HTTP behavior は endpoint、特定 target の表示は renderer で公開します。独立画面には `pageTypes` を使い、Plugin 固有の application route は増やしません。共通 catch-all route と document frame は application/integration の責務として保ちます。
 
 ## 最小 Plugin
 
@@ -73,7 +73,9 @@ export function examplePlugin(options: ExampleOptions = {}) {
 
   Diagnostics                         `addDiagnostics`
 
-  Rendering                           `renderers`
+   Rendering                           `renderers`
+
+   Pages                               `pageTypes`
 
   Browser integration                 `assets`, `clientEntries`
 
@@ -206,6 +208,32 @@ config resolved
 
 各段階で本当に必要な hook
 だけを使います。後段の情報を前段で再構築しないでください。
+
+## Page Type
+
+`pageTypes` は、application route を追加せずに独立した画面を提供するための
+capability です。Page Type は安定した ID、SSG で出力する path、必要なら
+priority、resolver を宣言します。resolver は public manifest と正規化済みの
+request path を受け取り、page body の HTML または `null` を返します。document
+frame と Theme は site 側に残るため、未知の Page Type を Theme が知る必要はありません。
+
+```ts
+definePlugin({
+  name: "example-pages",
+  pageTypes: [{
+    id: "example.report",
+    paths: ["/report"],
+    resolve: ({ pathname, manifest }) => pathname === "/report"
+      ? { type: "example.report", pathname, body: `<p>${manifest.publicEntries.length}</p>` }
+      : null,
+  }],
+});
+```
+
+HonoX の catch-all route では
+`resolveRiebeckiteRoute(content, c.req.path)` と
+`pluginPageSsgParams(content)` を使います。同じ ID は Plugin 解決時に失敗します。
+複数の Page Type が一致すると priority の最大値を採用し、同順位は曖昧なため明示的に失敗します。
 
 ## Content Graph
 
@@ -421,5 +449,3 @@ NodeNext/ESM package では、build 後に Node が解決できる import
 -   [Observability](../framework/observability.md)
 -   [Theme System](./theme-api.md)
 -   [Framework Reference](./README.md)
-
-

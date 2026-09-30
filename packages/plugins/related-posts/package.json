@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-related-posts",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",

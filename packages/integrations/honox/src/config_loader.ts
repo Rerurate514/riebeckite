@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { build as buildWithEsbuild } from "esbuild";
@@ -16,7 +15,7 @@ export async function loadRiebeckiteConfig(
 ): Promise<ResolvedRiebeckiteConfig> {
   const configFile = options.configFile ?? "riebeckite.config.ts";
   const temporaryDirectory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-config-"),
+    path.join(options.configRoot, ".riebeckite-config-"),
   );
   const outputFile = path.join(temporaryDirectory, "config.mjs");
 

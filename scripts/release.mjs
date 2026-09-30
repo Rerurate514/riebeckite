@@ -139,15 +139,55 @@ function computePublishOrder() {
 }
 
 function isPackageVersionPublished(packageName, version) {
+  const packageSpec = `${packageName}@${version}`;
+  // npm is a .cmd shim on Windows and needs the shell to resolve, just like
+  // pnpm in runCommand. If npm itself cannot be started, fail closed instead
+  // of treating the package as unpublished and attempting a duplicate publish.
+  const shellCommand = process.platform === "win32";
+  const result = shellCommand
+    ? spawnSync(`npm view ${packageSpec} version`, {
+        cwd: repositoryRoot,
+        shell: true,
+      })
+    : spawnSync("npm", ["view", packageSpec, "version"], {
+        cwd: repositoryRoot,
+      });
+  if (result.error) {
+    throw new ReleaseError(
+      `Could not check whether ${packageSpec} is published: ${result.error.message}`,
+    );
+  }
+  if (result.signal) {
+    throw new ReleaseError(
+      `npm view ${packageSpec} terminated by signal ${result.signal}.`,
+    );
+  }
+  return result.status === 0;
+}
+
+function hasStagedChanges(paths) {
   const result = spawnSync(
-    "npm",
-    ["view", `${packageName}@${version}`, "version"],
+    "git",
+    ["diff", "--cached", "--quiet", "--", ...paths],
     {
       cwd: repositoryRoot,
       stdio: "ignore",
     },
   );
-  return result.status === 0;
+  if (result.error) {
+    throw new ReleaseError(
+      `Could not inspect staged release changes: ${result.error.message}`,
+    );
+  }
+  if (result.signal) {
+    throw new ReleaseError(`git diff terminated by signal ${result.signal}.`);
+  }
+  if (result.status === 0) return false;
+  if (result.status === 1) return true;
+  throw new ReleaseError(
+    `Could not inspect staged release changes; git diff exited with ${result.status}.`,
+    result.status,
+  );
 }
 
 function publishPackages(order, dryRun, version) {
@@ -200,15 +240,25 @@ function commitAndTag(version) {
   );
   const releaseFiles = [...manifests, scaffoldVersionFile];
   runStep("git add", "git", ["add", "--", ...releaseFiles]);
-  runStep("git commit", "git", [
-    "commit",
-    "-m",
-    `release ${tagName}`,
-    "--",
-    ...releaseFiles,
-  ]);
+  const createdCommit = hasStagedChanges(releaseFiles);
+  if (createdCommit) {
+    runStep("git commit", "git", [
+      "commit",
+      "-m",
+      `release ${tagName}`,
+      "--",
+      ...releaseFiles,
+    ]);
+  } else {
+    console.log("\n[step] git commit");
+    console.log("No staged release changes; skipping commit.");
+  }
   runStep("git tag", "git", ["tag", tagName]);
-  console.log(`\nCommitted and tagged ${tagName} locally (tag not pushed).`);
+  if (createdCommit) {
+    console.log(`\nCommitted and tagged ${tagName} locally (tag not pushed).`);
+  } else {
+    console.log(`\nTagged ${tagName} locally (tag not pushed).`);
+  }
 }
 
 function printPushInstructions(version) {

@@ -1,13 +1,13 @@
+import { parseFrom } from "./parse-from.js";
+import { DataviewParseError, splitTopLevel, unquote } from "./parse-shared.js";
 import type {
   DataviewColumn,
   DataviewComparisonOperator,
   DataviewExpression,
-  DataviewFrom,
   DataviewParseResult,
   DataviewQueryType,
   DataviewSort,
   DataviewSortOrder,
-  DataviewSource,
   DataviewSpec,
 } from "./types.js";
 
@@ -21,8 +21,6 @@ const QUERY_TYPES = new Set<DataviewQueryType>([
 const CLAUSE_PATTERN = /^(from|where|sort|group\s+by|limit)\b(.*)$/i;
 const FIELD_PATTERN =
   /^[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*$/;
-
-class DataviewParseError extends Error {}
 
 /**
  * Parse a declarative `dataview` block body into a {@link DataviewSpec}.
@@ -207,130 +205,6 @@ function parseField(value: string, context: string): string {
     throw new DataviewParseError(`unsupported ${context} field \`${field}\`.`);
   }
   return field;
-}
-
-/* -------------------------------------------------------------------------- */
-/* FROM                                                                       */
-/* -------------------------------------------------------------------------- */
-
-type FromToken =
-  | { type: "lparen" }
-  | { type: "rparen" }
-  | { type: "not" }
-  | { type: "and" }
-  | { type: "or" }
-  | { type: "source"; source: DataviewSource };
-
-const FROM_TOKEN_PATTERN =
-  /(\[\[[^\]]*\]\])|(#[^\s()]+)|("(?:[^"\\]|\\.)*")|('(?:[^'\\]|\\.)*')|(\()|(\))|(!|-)|([^\s()]+)/g;
-
-function parseFrom(text: string): DataviewFrom {
-  const tokens: FromToken[] = [];
-  FROM_TOKEN_PATTERN.lastIndex = 0;
-
-  for (
-    let match = FROM_TOKEN_PATTERN.exec(text);
-    match !== null;
-    match = FROM_TOKEN_PATTERN.exec(text)
-  ) {
-    tokens.push(toFromToken(match));
-  }
-
-  if (tokens.length === 0) {
-    throw new DataviewParseError("the FROM clause is empty.");
-  }
-
-  const state = { tokens, index: 0 };
-  const node = parseFromOr(state);
-  if (state.index < tokens.length) {
-    throw new DataviewParseError("unexpected token in FROM.");
-  }
-  return node;
-}
-
-function toFromToken(match: RegExpExecArray): FromToken {
-  const [raw, link, tag, doubleQuoted, singleQuoted, lparen, rparen, negate] =
-    match;
-  if (link !== undefined) {
-    const value = link.slice(2, -2).split("|")[0].split("#")[0].trim();
-    if (value.length === 0) {
-      throw new DataviewParseError("a link source in FROM is empty.");
-    }
-    return { type: "source", source: { kind: "link", value } };
-  }
-  if (tag !== undefined) {
-    return { type: "source", source: { kind: "tag", value: tag.slice(1) } };
-  }
-  if (doubleQuoted !== undefined || singleQuoted !== undefined) {
-    return {
-      type: "source",
-      source: { kind: "folder", value: unquote(raw.trim()) },
-    };
-  }
-  if (lparen !== undefined) return { type: "lparen" };
-  if (rparen !== undefined) return { type: "rparen" };
-  if (negate !== undefined) return { type: "not" };
-
-  const word = (raw ?? "").toLowerCase();
-  if (word === "and") return { type: "and" };
-  if (word === "or") return { type: "or" };
-  return { type: "source", source: { kind: "folder", value: raw.trim() } };
-}
-
-type FromState = { tokens: FromToken[]; index: number };
-
-function parseFromOr(state: FromState): DataviewFrom {
-  let node = parseFromAnd(state);
-  while (state.tokens[state.index]?.type === "or") {
-    state.index += 1;
-    node = { kind: "or", left: node, right: parseFromAnd(state) };
-  }
-  return node;
-}
-
-function parseFromAnd(state: FromState): DataviewFrom {
-  let node = parseFromUnary(state);
-  for (;;) {
-    const token = state.tokens[state.index];
-    if (token?.type === "and") {
-      state.index += 1;
-      node = { kind: "and", left: node, right: parseFromUnary(state) };
-      continue;
-    }
-    if (
-      token?.type === "source" ||
-      token?.type === "lparen" ||
-      token?.type === "not"
-    ) {
-      node = { kind: "and", left: node, right: parseFromUnary(state) };
-      continue;
-    }
-    return node;
-  }
-}
-
-function parseFromUnary(state: FromState): DataviewFrom {
-  const token = state.tokens[state.index];
-  if (!token) throw new DataviewParseError("unexpected end of FROM.");
-
-  if (token.type === "not") {
-    state.index += 1;
-    return { kind: "not", child: parseFromUnary(state) };
-  }
-  if (token.type === "lparen") {
-    state.index += 1;
-    const node = parseFromOr(state);
-    if (state.tokens[state.index]?.type !== "rparen") {
-      throw new DataviewParseError("unbalanced parentheses in FROM.");
-    }
-    state.index += 1;
-    return node;
-  }
-  if (token.type === "source") {
-    state.index += 1;
-    return { kind: "source", source: token.source };
-  }
-  throw new DataviewParseError("unexpected token in FROM.");
 }
 
 /* -------------------------------------------------------------------------- */
@@ -558,50 +432,4 @@ function isWord(token: ExpressionToken | undefined, value: string): boolean {
   return token?.type === "word" && token.value.toLowerCase() === value;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Shared helpers                                                             */
-/* -------------------------------------------------------------------------- */
-
-function splitTopLevel(text: string, separator: string): string[] {
-  const parts: string[] = [];
-  let current = "";
-  let depth = 0;
-  let quote: string | null = null;
-
-  for (const char of text) {
-    if (quote) {
-      current += char;
-      if (char === quote) quote = null;
-      continue;
-    }
-    if (char === '"' || char === "'") {
-      quote = char;
-      current += char;
-      continue;
-    }
-    if (char === "(") depth += 1;
-    if (char === ")") depth = Math.max(0, depth - 1);
-    if (char === separator && depth === 0) {
-      parts.push(current.trim());
-      current = "";
-      continue;
-    }
-    current += char;
-  }
-
-  parts.push(current.trim());
-  return parts.filter((part) => part.length > 0);
-}
-
-function unquote(value: string): string {
-  if (value.length >= 2) {
-    const first = value[0];
-    const last = value[value.length - 1];
-    if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
-      return value.slice(1, -1);
-    }
-  }
-  return value;
-}
-
-export { DataviewParseError };
+export { DataviewParseError } from "./parse-shared.js";

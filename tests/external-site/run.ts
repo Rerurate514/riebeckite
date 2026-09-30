@@ -11,7 +11,6 @@ import {
   type ExternalSiteWorkspace,
   extractScriptPayloads,
   formatBytes,
-  type PackageSpec,
   run,
   runCli,
   runExternalSiteE2E,
@@ -33,189 +32,49 @@ function fail(message: string): never {
   throw new Error(message);
 }
 
-const PACKAGES: PackageSpec[] = [
-  { directory: "packages/core", name: "@riebeckite/core" },
-  { directory: "packages/cli", name: "@riebeckite/cli" },
-  {
-    directory: "packages/integrations/analytics-cloudflare",
-    name: "@riebeckite/analytics-cloudflare",
-  },
-  { directory: "packages/integrations/honox", name: "@riebeckite/honox" },
-  { directory: "packages/themes/default", name: "@riebeckite/theme-default" },
-  {
-    directory: "packages/plugins/obsidian-markdown",
-    name: "@riebeckite/plugin-obsidian-markdown",
-  },
-  {
-    directory: "packages/plugins/d2",
-    name: "@riebeckite/plugin-d2",
-  },
-  {
-    directory: "packages/plugins/autocardlink",
-    name: "@riebeckite/plugin-autocardlink",
-  },
-  {
-    directory: "packages/plugins/attachment",
-    name: "@riebeckite/plugin-attachment",
-  },
-  {
-    directory: "packages/plugins/code-annotations",
-    name: "@riebeckite/plugin-code-annotations",
-  },
-  {
-    directory: "packages/plugins/highlight",
-    name: "@riebeckite/plugin-highlight",
-  },
-  { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
-  {
-    directory: "packages/plugins/backlinks",
-    name: "@riebeckite/plugin-backlinks",
-  },
-  { directory: "packages/plugins/bases", name: "@riebeckite/plugin-bases" },
-  {
-    directory: "packages/plugins/canvas",
-    name: "@riebeckite/plugin-canvas",
-  },
-  { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
-  { directory: "packages/plugins/alias", name: "@riebeckite/plugin-alias" },
-  { directory: "packages/plugins/kanban", name: "@riebeckite/plugin-kanban" },
-  {
-    directory: "packages/plugins/dataview",
-    name: "@riebeckite/plugin-dataview",
-  },
-  {
-    directory: "packages/plugins/properties",
-    name: "@riebeckite/plugin-properties",
-  },
-  {
-    directory: "packages/plugins/recent-posts",
-    name: "@riebeckite/plugin-recent-posts",
-  },
-  {
-    directory: "packages/plugins/related-posts",
-    name: "@riebeckite/plugin-related-posts",
-  },
-  {
-    directory: "packages/plugins/responsive-image",
-    name: "@riebeckite/plugin-responsive-image",
-  },
-  {
-    directory: "packages/plugins/rich-embed",
-    name: "@riebeckite/plugin-rich-embed",
-  },
-  { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
-  {
-    directory: "packages/plugins/color-mode",
-    name: "@riebeckite/plugin-color-mode",
-  },
-  {
-    directory: "packages/plugins/diagnostics",
-    name: "@riebeckite/plugin-diagnostics",
-  },
-  {
-    directory: "packages/plugins/plantuml",
-    name: "@riebeckite/plugin-plantuml",
-  },
-  { directory: "packages/plugins/series", name: "@riebeckite/plugin-series" },
-  {
-    directory: "packages/plugins/taxonomy",
-    name: "@riebeckite/plugin-taxonomy",
-  },
-  {
-    directory: "packages/plugins/analytics",
-    name: "@riebeckite/plugin-analytics",
-  },
-  { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
-  {
-    directory: "packages/plugins/graphviz",
-    name: "@riebeckite/plugin-graphviz",
-  },
-  {
-    directory: "packages/plugins/chartjs",
-    name: "@riebeckite/plugin-chartjs",
-  },
-  {
-    directory: "packages/plugins/hover-preview",
-    name: "@riebeckite/plugin-hover-preview",
-  },
-  {
-    directory: "packages/plugins/flashcards",
-    name: "@riebeckite/plugin-flashcards",
-  },
-  {
-    directory: "packages/plugins/shortcodes",
-    name: "@riebeckite/plugin-shortcodes",
-  },
-  {
-    directory: "packages/plugins/vega-lite",
-    name: "@riebeckite/plugin-vega-lite",
-  },
-  {
-    directory: "packages/plugins/wavedrom",
-    name: "@riebeckite/plugin-wavedrom",
-  },
-  {
-    directory: "packages/plugins/ux",
-    name: "@riebeckite/plugin-ux",
-  },
-  { directory: "packages/plugins/marp", name: "@riebeckite/plugin-marp" },
-  { directory: "packages/plugins/qr-code", name: "@riebeckite/plugin-qr-code" },
-  {
-    directory: "packages/plugins/markmap",
-    name: "@riebeckite/plugin-markmap",
-  },
-  {
-    directory: "packages/plugins/excalibrain",
-    name: "@riebeckite/plugin-excalibrain",
-  },
-  {
-    directory: "packages/plugins/discord-embed",
-    name: "@riebeckite/plugin-discord-embed",
-  },
-  {
-    directory: "packages/create-riebeckite",
-    name: "create-riebeckite",
-  },
-];
+import * as fixture from "./fixture-spec.js";
+import { PACKAGES } from "./fixture-spec.js";
 
-const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
-const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";
-const QUERY_MARKER = "RIEBECKITE_EXTERNAL_QUERY_MARKER";
-const BASES_MARKER = "RIEBECKITE_EXTERNAL_BASES_MARKER";
-const DATAVIEW_NOTE_TITLE = "Dataview Alpha";
-const PROPERTY_MARKER = "RIEBECKITE_EXTERNAL_PROPERTY_MARKER";
-const KANBAN_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_MARKER";
-const KANBAN_BLOCK_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_BLOCK_MARKER";
-const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
-const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
-const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
-const QR_MARKER = "RIEBECKITE_EXTERNAL_QR_MARKER";
-const MARKMAP_MARKER = "RIEBECKITE_EXTERNAL_MARKMAP_MARKER";
-const EXCALIBRAIN_MARKER = "RIEBECKITE_EXTERNAL_EXCALIBRAIN_MARKER";
-const PRIVATE_MARKER = "RIEBECKITE_EXTERNAL_PRIVATE_MARKER";
-const HOVER_PREVIEW_TITLE_MARKER = "Hover Preview Alpha Note";
-const FLASHCARDS_MARKER = "RIEBECKITE_EXTERNAL_FLASHCARDS_MARKER";
-const FLASHCARDS_CLIENT_IDENTIFIER = "rb-flashcards";
-const CODE_ANNOTATIONS_MARKER = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
-const SHORTCODE_MARKER = "RIEBECKITE_EXTERNAL_SHORTCODE_MARKER";
-const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
-const RICHEMBED_MARKER = "RIEBECKITE_EXTERNAL_RICHEMBED_MARKER";
-const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
-const PLANTUML_MARKER = "RIEBECKITE_EXTERNAL_PLANTUML_MARKER";
-const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
-const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";
-const SERIES_MARKER = "RIEBECKITE_EXTERNAL_SERIES_MARKER";
-const SERIES_PART_1_PERMALINK = "/notes/series-demo-1";
-const SERIES_PART_2_PERMALINK = "/notes/series-demo-2";
-const ANALYTICS_CONTENT_ID_ATTRIBUTE = "data-riebeckite-content-id";
-const ANALYTICS_CONTENT_ID = "external-fixture-home";
-const ANALYTICS_DEMO_CONTENT_ID = "analytics-demo";
-const ANALYTICS_PAGE_MARKER = "RIEBECKITE_EXTERNAL_ANALYTICS_PAGE_MARKER";
-const D2_MARKER = "RIEBECKITE_EXTERNAL_D2_MARKER";
-const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
-const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
-const WAVEDROM_MARKER = "RIEBECKITE_EXTERNAL_WAVEDROM_MARKER";
-const MARP_MARKER = "RIEBECKITE_EXTERNAL_MARP_MARKER";
+const {
+  HOME_MARKER,
+  NOTE_MARKER,
+  QUERY_MARKER,
+  BASES_MARKER,
+  DATAVIEW_NOTE_TITLE,
+  PROPERTY_MARKER,
+  KANBAN_MARKER,
+  KANBAN_BLOCK_MARKER,
+  SITE_COMPONENT_MARKER,
+  SITE_ISLAND_MARKER,
+  LOCAL_PLUGIN_MARKER,
+  QR_MARKER,
+  MARKMAP_MARKER,
+  EXCALIBRAIN_MARKER,
+  PRIVATE_MARKER,
+  HOVER_PREVIEW_TITLE_MARKER,
+  FLASHCARDS_MARKER,
+  FLASHCARDS_CLIENT_IDENTIFIER,
+  CODE_ANNOTATIONS_MARKER,
+  SHORTCODE_MARKER,
+  CANVAS_MARKER,
+  RICHEMBED_MARKER,
+  CHARTJS_MARKER,
+  PLANTUML_MARKER,
+  ALIAS_MARKER,
+  HIGHLIGHT_MARKER,
+  SERIES_MARKER,
+  SERIES_PART_1_PERMALINK,
+  SERIES_PART_2_PERMALINK,
+  ANALYTICS_CONTENT_ID_ATTRIBUTE,
+  ANALYTICS_CONTENT_ID,
+  ANALYTICS_DEMO_CONTENT_ID,
+  ANALYTICS_PAGE_MARKER,
+  D2_MARKER,
+  GRAPHVIZ_MARKER,
+  VEGALITE_MARKER,
+  WAVEDROM_MARKER,
+  MARP_MARKER,
+} = fixture;
 
 const cliEntryFor = (siteDir: string): string =>
   path.join(

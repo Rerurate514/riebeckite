@@ -178,7 +178,7 @@ function commitAndTag(version) {
   runStep("git commit", "git", [
     "commit",
     "-m",
-    `chore: release ${tagName}`,
+    `release ${tagName}`,
     "--",
     ...releaseFiles,
   ]);

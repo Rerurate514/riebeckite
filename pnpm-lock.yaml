@@ -206,6 +206,9 @@ importers:
       '@riebeckite/plugin-series':
         specifier: workspace:*
         version: link:../../packages/plugins/series
+      '@riebeckite/plugin-share':
+        specifier: workspace:*
+        version: link:../../packages/plugins/share
       '@riebeckite/plugin-shortcodes':
         specifier: workspace:*
         version: link:../../packages/plugins/shortcodes
@@ -858,6 +861,16 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/share:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/shortcodes:
     dependencies:

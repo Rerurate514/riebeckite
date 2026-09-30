@@ -47,6 +47,7 @@ import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { series } from "@riebeckite/plugin-series";
+import { share } from "@riebeckite/plugin-share";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { sidenotes } from "@riebeckite/plugin-sidenotes";
 import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
@@ -180,6 +181,7 @@ export default defineConfig({
     kanban(),
     recentPostsPlugin(),
     uxPlugin(),
+    share(),
     relatedPosts(),
     responsiveImage(),
     localGraphPlugin(),

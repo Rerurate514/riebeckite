@@ -247,6 +247,15 @@ const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts", {
   headingText: { depth: 3, value: '"Related"' },
   className: { depth: 3, value: '"rb-related-posts"' },
 });
+const share = np("@riebeckite/plugin-share", "share", {
+  placement: { depth: 2, value: '"bottom"' },
+  services: {
+    depth: 3,
+    value:
+      '["x", "bluesky", "mastodon", "facebook", "linkedin", "hatena", "copy"]',
+  },
+  mastodonInstance: { depth: 3, value: '"mastodon.social"' },
+});
 const recentPosts = np("@riebeckite/plugin-recent-posts", "recentPostsPlugin");
 const attachment = np(
   "@riebeckite/plugin-attachment",
@@ -601,6 +610,7 @@ export const full: ScaffoldPreset = {
     search,
     backlinks,
     relatedPosts,
+    share,
     recentPosts,
     attachment,
     pdf,
@@ -638,6 +648,7 @@ export const max: ScaffoldPreset = {
     search,
     backlinks,
     relatedPosts,
+    share,
     recentPosts,
     attachment,
     pdf,
@@ -704,6 +715,7 @@ export const ultra: ScaffoldPreset = {
     search,
     backlinks,
     relatedPosts,
+    share,
     recentPosts,
     attachment,
     pdf,

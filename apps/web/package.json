@@ -61,6 +61,7 @@
     "@riebeckite/plugin-search": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
     "@riebeckite/plugin-series": "workspace:*",
+    "@riebeckite/plugin-share": "workspace:*",
     "@riebeckite/plugin-shortcodes": "workspace:*",
     "@riebeckite/plugin-sidenotes": "workspace:*",
     "@riebeckite/plugin-text-fragment": "workspace:*",

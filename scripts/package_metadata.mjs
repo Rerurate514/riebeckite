@@ -55,6 +55,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/search",
   "packages/plugins/seo",
   "packages/plugins/series",
+  "packages/plugins/share",
   "packages/plugins/shortcodes",
   "packages/plugins/sidenotes",
   "packages/plugins/text-fragment",
@@ -324,6 +325,11 @@ const packagePublishingMetadata = {
     description: "Ordered multi-part post navigation for Riebeckite.",
     keywords: ["riebeckite", "plugin", "series", "navigation"],
   },
+  "packages/plugins/share": {
+    description:
+      "Per-article share links and copy-to-clipboard for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "share", "social"],
+  },
   "packages/plugins/shortcodes": {
     description: "Remark directive shortcodes for Riebeckite Markdown.",
     keywords: ["riebeckite", "plugin", "shortcodes", "remark"],
@@ -485,6 +491,7 @@ export function expectedPackageMetadata(directory) {
       "l10n",
       "quality",
       "rename",
+      "share",
       "text-fragment",
     ].includes(pluginName);
     const testCommand =

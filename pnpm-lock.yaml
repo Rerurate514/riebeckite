@@ -227,6 +227,21 @@ importers:
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default
+      '@riebeckite/theme-gruvbox':
+        specifier: workspace:*
+        version: link:../../packages/themes/gruvbox
+      '@riebeckite/theme-minimal':
+        specifier: workspace:*
+        version: link:../../packages/themes/minimal
+      '@riebeckite/theme-rerurate':
+        specifier: workspace:*
+        version: link:../../packages/themes/rerurate
+      '@riebeckite/theme-sakura':
+        specifier: workspace:*
+        version: link:../../packages/themes/sakura
+      '@riebeckite/theme-tokyonight':
+        specifier: workspace:*
+        version: link:../../packages/themes/tokyonight
       hono:
         specifier: ^4.12.25
         version: 4.12.26

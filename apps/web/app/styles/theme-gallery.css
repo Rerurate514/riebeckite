@@ -1,0 +1,89 @@
+/* Theme gallery.
+ *
+ * Loads every built-in theme so `/themes` can render them side by side. Each
+ * theme writes only through `:is(:root, .rb-theme-root)[data-theme-name="..."]`,
+ * so importing them globally cannot leak into the site's configured theme: a
+ * preview only reacts to the theme whose `data-theme-name` it carries.
+ *
+ * The gallery chrome below is app-owned and uses the `theme-gallery__*`
+ * namespace so it can never collide with the `rb-*` / `rr-*` theme hooks. */
+
+@import "@riebeckite/theme-default/style.css";
+@import "@riebeckite/theme-gruvbox/style.css";
+@import "@riebeckite/theme-minimal/style.css";
+@import "@riebeckite/theme-rerurate/style.css";
+@import "@riebeckite/theme-sakura/style.css";
+@import "@riebeckite/theme-tokyonight/style.css";
+
+.theme-gallery {
+  width: min(100%, var(--rb-layout-page-max));
+  margin-inline: auto;
+  padding: var(--rb-space-6) var(--rb-space-4) var(--rb-space-8);
+}
+
+.theme-gallery__header {
+  border-block-end: 1px solid var(--rb-color-border);
+  padding-block-end: var(--rb-space-3);
+}
+
+.theme-gallery__eyebrow {
+  margin: 0 0 var(--rb-space-1);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rb-color-muted);
+}
+
+.theme-gallery__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 1.1rem + 2vw, 2.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.theme-gallery__intro {
+  margin: var(--rb-space-2) 0 0;
+  max-width: 60ch;
+  color: var(--rb-color-muted);
+}
+
+.theme-gallery__list {
+  display: grid;
+  gap: var(--rb-space-6);
+  margin-block-start: var(--rb-space-6);
+}
+
+@media (min-width: 90rem) {
+  .theme-gallery__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.theme-gallery__caption {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rb-space-2);
+  margin-block-end: var(--rb-space-1);
+}
+
+.theme-gallery__name {
+  font-family: var(--rb-font-mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.theme-gallery__meta {
+  font-size: 0.8125rem;
+  color: var(--rb-color-muted);
+}
+
+.theme-gallery__frame {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+.theme-gallery__preview {
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+}

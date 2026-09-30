@@ -75,6 +75,10 @@ function readScaffoldVersion() {
 
 function writeScaffoldVersion(version) {
   const text = fs.readFileSync(scaffoldVersionPath, "utf8");
+  const scaffoldVersion = readScaffoldVersion();
+  if (scaffoldVersion === version) {
+    return;
+  }
   const updated = text.replace(SCAFFOLD_VERSION_PATTERN, `$1${version}$3`);
   if (updated === text) {
     throw new Error(

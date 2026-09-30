@@ -37,9 +37,12 @@ export async function loadRiebeckiteConfig(
       banner: {
         js: 'import { createRequire as __riebeckiteCreateRequire } from "node:module"; const require = __riebeckiteCreateRequire(import.meta.url);',
       },
-      plugins: options.workspaceRoot
-        ? [workspacePackageResolver(options.workspaceRoot)]
-        : [],
+      plugins: [
+        externalizeBareModuleImports(),
+        ...(options.workspaceRoot
+          ? [workspacePackageResolver(options.workspaceRoot)]
+          : []),
+      ],
     });
 
     const module = await import(`${pathToFileUrl(outputFile)}?t=${Date.now()}`);
@@ -59,6 +62,25 @@ export function resolveHonoxConfig(
     content: {
       ...config.content,
       directory: path.resolve(appRoot, config.content.directory),
+    },
+  };
+}
+
+function externalizeBareModuleImports() {
+  return {
+    name: "externalize-bare-module-imports",
+    setup(buildApi: {
+      onResolve: (
+        options: { filter: RegExp },
+        callback: (args: {
+          path: string;
+        }) => { path: string; external: true } | null,
+      ) => void;
+    }) {
+      buildApi.onResolve({ filter: /^[^./]|^\.[^./]|^\.\.$/ }, (args) => {
+        if (path.isAbsolute(args.path)) return null;
+        return { path: args.path, external: true };
+      });
     },
   };
 }

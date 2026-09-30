@@ -1,8 +1,6 @@
 > English documentation · [日本語](../ja/README.md) · [Agent documentation](../agents/README.md)
 
-<p align="center">
-  <img src="../../assets/logos/riebeckite-logo-horizontal.png" alt="Riebeckite" width="360" />
-</p>
+![[riebeckite-logo-horizontal.png]]
 
 # Riebeckite Documentation
 

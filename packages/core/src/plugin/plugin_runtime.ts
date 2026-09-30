@@ -10,10 +10,8 @@ import type {
 import type { Diagnostic } from "../types/diagnostic.js";
 import type {
   GeneratedOutput,
-  GeneratedOutputInput,
   GeneratedOutputSink,
 } from "../types/generated_output.js";
-import { normalizeGeneratedOutputPath } from "../types/generated_output.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
 import {
@@ -25,6 +23,7 @@ import type {
   PluginContext,
 } from "../types/plugin_context.js";
 import type { PostContent } from "../types/post_content.js";
+import { GeneratedOutputRegistry } from "./generated_output_registry.js";
 import type { PluginCache } from "./plugin_cache.js";
 import {
   createPluginCache,
@@ -64,8 +63,7 @@ export class PluginRuntime {
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
   private pluginCaches = new Map<string, PluginCache>();
-  private generatedOutputs: GeneratedOutput[] = [];
-  private generatedOutputOwners = new Map<string, string>();
+  private generatedOutputs = new GeneratedOutputRegistry();
   private isBuildTime = false;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
@@ -226,9 +224,7 @@ export class PluginRuntime {
 
   /** Returns registered outputs sorted by path for a deterministic build. */
   collectGeneratedOutputs(): GeneratedOutput[] {
-    return [...this.generatedOutputs].sort((a, b) =>
-      a.path < b.path ? -1 : a.path > b.path ? 1 : 0,
-    );
+    return this.generatedOutputs.all();
   }
 
   async collectDiagnostics(
@@ -319,23 +315,7 @@ export class PluginRuntime {
   private generatedOutputSinkFor(
     plugin: RiebeckitePlugin,
   ): GeneratedOutputSink {
-    return {
-      emit: (output: GeneratedOutputInput) => {
-        const path = normalizeGeneratedOutputPath(output.path);
-        const owner = this.generatedOutputOwners.get(path);
-        if (owner) {
-          throw new Error(
-            `Duplicate generated output path "${path}" declared by "${owner}" and "${plugin.name}".`,
-          );
-        }
-        this.generatedOutputOwners.set(path, plugin.name);
-        this.generatedOutputs.push({
-          path,
-          content: output.content,
-          owner: plugin.name,
-        });
-      },
-    };
+    return this.generatedOutputs.sinkFor(plugin.name);
   }
 
   private cacheFor(plugin: RiebeckitePlugin): PluginCache {

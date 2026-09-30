@@ -8,13 +8,11 @@
 |---:|---|---|---|---|---|
 | 1 | F7 | 依存パッケージの既知脆弱性を修正版へ更新する（`pnpm audit` high 30 / moderate 26） | 未着手 | Medium | ロック済み `hono@4.12.26` 等が SSR 出力の漏えい・XSS・ReDoS・`toSSG()` の出力外書込みの修正未適用。本番の実行時リスク。上流更新が不可なら `pnpm.overrides`、`pnpm audit --prod` を gate 化 |
 | 2 | F10 | 型チェックの偽陰性を解消する（strict 化と `apps/web` を含む project references 化） | 未着手 | Large | `pnpm typecheck` は packages を非 strict の個別 Program で検査し `apps/web` を除外するため、`apps/web/tsconfig.json` を直接 strict 実行すると `virtual:riebeckite/client` 宣言欠落・`PipelinePlugin` の型不整合・nullability 等で exit 1。Vite build 成功は型安全を保証しない |
-| 3 | F8 | plugin-webmention の送信元検証を修正する（リダイレクト SSRF と本文全読みのメモリ枯渇） | 未着手 | Medium | `verify.ts` がリダイレクト先を無検査で取得し、プライベート IP／メタデータサービスへ誘導可能。`response.text()` 後のサイズ検査は上限を超える本文を先にメモリへ載せる。最終 URL を送信元 identity に使うか仕様化も必要 |
-| 4 | F9 | analytics-cloudflare collector のイベント偽装を緩和する | 未着手 | Small | CORS `Origin` は認証でなく、偽装した直接リクエストで PV を任意に汚染できる。計測を認可データとして扱わない運用か Rate Limiting/WAF を追加 |
-| 5 | F12 | plugin 解決結果を不変化してキャッシュし、plugin name の一意性を必須にする | 未着手 | Medium | `PluginRuntime.plugins()`／`Pipeline.execute()`／`createContentRenderer()` が毎回 `resolvePlugins` を再実行する。cache と output ownership は `plugin.name` キーのため同名 instance で衝突し、依存検証も name 重複を検出しない |
+| 3 | F12 | plugin 解決結果を不変化してキャッシュし、plugin name の一意性を必須にする | 未着手 | Medium | `PluginRuntime.plugins()`／`Pipeline.execute()`／`createContentRenderer()` が毎回 `resolvePlugins` を再実行する。cache と output ownership は `plugin.name` キーのため同名 instance で衝突し、依存検証も name 重複を検出しない |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
-F7〜F9 は既存の指摘をコード確認で裏付けたもの、F10・F12 は今回のレビューで追加した項目。優先順は F7 → F10（型検査の復旧）→ F8 → F9 → F12 とし、F10 は F7 と同格として扱う。
+F7 は既存の指摘をコード確認で裏付けたもの、F10・F12 は今回のレビューで追加した項目。F8・F9 は対応済み（完了済み表を参照）。優先順は F7 → F10（型検査の復旧）→ F12 とし、F10 は F7 と同格として扱う。
 
 ## 完了済み
 
@@ -54,6 +52,8 @@ F7〜F9 は既存の指摘をコード確認で裏付けたもの、F10・F12 �
 | F4 | plugin-excalibrain の ontology 上書きをマージにし、sibling 推論の条件を整理する | Medium | `resolveOntology` をロール単位のマージ（既定＋上書き、FIELD_ROLE_ORDER 先勝ち維持）に変更。sibling 推論を `infer && siblings` に限定。テスト更新、英日 README 更新。20 pass |
 | F5 | plugin-diff の日時表示をロケール/タイムゾーン非依存にする | Small | 共有 `formatDiffDate`（固定月名＋UTC getter）を新設し 2 コンポーネントから使用。TZ 非依存のテストを追加。12 pass |
 | F6 | 既存の Biome フォーマット崩れ（`pnpm check` 143 件・既存テスト 7 ファイル）を解消する | Medium | 原因は作業ツリーの CRLF で、`.gitattributes` の `* text=auto eol=lf`（commit `30311c1`）によりクリーン checkout では既に防止済み。クリーン worktree で `pnpm check` が通過することを確認し、残っていた `useTemplate` info 1 件（webmention-cloudflare テスト）も修正して diagnostics 0 にした |
+| F8 | plugin-webmention の送信元検証を修正する（リダイレクト SSRF と本文全読みのメモリ枯渇） | Medium | `redirect: "manual"` のループで各ホップを URL 正規化してから検査し、ホスト名に加えて DNS 解決後の IP も拒否リストで判定（解決関数は `resolveHostname` で注入可能、公開 API は維持）。本文は `response.body.getReader()` で上限到達時に即 cancel し、`Content-Length` でも事前確認。テスト 28 件追加。commit 4ea026c |
+| F9 | analytics-cloudflare collector のイベント偽装を緩和する | Small | ドメインに `AnalyticsRateLimiter` 境界、infrastructure に D1（原子的な加算）と memory の実装、migration `0002` を追加。`createWorker` の `rateLimit` で IP 単位に固定時間窓の 429 を返し、D1 テンプレートは 60 回/60 秒で接続。KV は原子的加算ができず未対応とし Cloudflare Rate Limiting を案内。テスト 4 件追加。commit 00e3662 |
 
 ## 実装メモ（agents 用）
 

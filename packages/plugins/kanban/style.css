@@ -56,6 +56,7 @@
 .rb-kanban__card {
   display: flex;
   gap: 0.5rem;
+  margin: 0 1rem;
   align-items: baseline;
   padding: 0.5rem 0.625rem;
   border: 1px solid var(--rb-kanban-rule);
@@ -77,6 +78,10 @@
   margin-top: 0.2em;
   border: 1px solid var(--rb-kanban-ink);
   transform: translateY(0.05em);
+}
+
+.rb-kanban__card .rb-kanban__checkbox {
+  margin: 0 0 0 0.5rem;
 }
 
 .rb-kanban__card[data-checked="true"] .rb-kanban__checkbox {

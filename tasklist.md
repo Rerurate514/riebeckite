@@ -6,12 +6,7 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| 1 | R | plugin-taxonomy: タグ/フォルダ単位の索引ページとタグ別フィードを生成する | 完了（未マージ task/r-taxonomy） | Medium | `query`/`dataview` は記事内の一覧のみ。`/tags/<tag>`・`/folders/<path>` の固定ページとタグ別 RSS/Atom/JSON Feed、関連タグ導線を `resolveContentLocations` と `endpoints` で提供する。回遊性と SEO に効く |
-| 2 | S | plugin-pdf: 添付 PDF をインラインビューアで表示する | 完了（未マージ task/s-pdf） | Small | `attachment` はダウンロードリンク中心。`kind: "pdf"` を renderer で埋め込み表示に変える。既定はブラウザ標準 viewer、必要な場合だけ client を足す |
-| 3 | T | plugin-share: 記事の共有ボタン群を追加する | 完了（未マージ task/t-share） | Small | `text-fragment`・`qr-code` は近いが共有 UI がない。SSR でリンクを生成し client は最小限。site 設定で対象サービスを選べるようにする |
-| 4 | U | plugin-map: `map` ブロック / frontmatter 座標から地図埋め込みを表示する | 完了（未マージ task/u-map） | Medium | geo 系が皆無。タイル地図はクライアント前提なので markmap と同様に遅延ロードし、静的フォールバック（座標・リンク）を先に出す |
-| 5 | V | plugin-changelog: git 履歴から記事/サイトの変更履歴ページを生成する | 完了（未マージ task/v-changelog） | Medium | `diff` は記事内の差分表示。こちらは「いつ何を更新したか」の一覧。git を読む点は diff と共有し、ページ生成は application route に委ねる境界を守る |
-| 6 | W | plugin-webmention: Webmention 受信 endpoint と「言及」表示を実装する | 完了（未マージ task/w-webmention） | Large | 読者参加系で唯一の空白。送信元検証・保存・描画が必要。`endpoints` と独立 Worker（analytics-cloudflare と同型）を使い、comments 系の土台にもなる |
+| — | — | （バックログ内の実装対象はすべて完了） | 完了 | — | — |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -40,6 +35,12 @@
 | M | レビュー時の `pnpm check --write .` で発生したフォーマット差分を整理する | Small | 作業ツリーはクリーン。ユーザー作業（OPTION_DEPTH / optionContext / renderOptions 等）は 1eda2b2 に保存済みで剰務なし |
 | N | ルート `pnpm check` を書き込みモードから分離する（読み取り専用 `check` + 明示 `check:fix`） | Small | `package.json`: `check` → `biome check .`（読み取り専用）、`check:fix` → `biome check --write .` を新設。docs en/ja を更新。commit 7ae8a58 |
 | P4 | 外部 E2E の `pnpm pack` フェーズを高速化する | Medium | `runAsync` を追加し並列度 4 の pool で `packPackages` を並列化。pack フェーズ 240 秒超 → ~80 秒に短縮、E2E フル PASS。commit 32d6a64 |
+| R | plugin-taxonomy: タグ/フォルダ単位の索引ページとタグ別フィードを生成する | Medium | 新規 `packages/plugins/taxonomy/`。Core `buildContentCollections` で `/tags/<slug>`・`/folders/<path>` を生成、タグ別 RSS/Atom/JSON Feed を `context.output.emit` で静的出力、`/taxonomy/index.json` endpoint・関連タグ導線・`seo` 拡張を実装。`taxonomy({folderIndexes:true})`。commit 3e40585 |
+| S | plugin-pdf: 添付 PDF をインラインビューアで表示する | Small | 新規 `packages/plugins/pdf/`。`.pdf` を `<object type="application/pdf">` で埋め込み、フォールバック DL リンクとメタ表示。renderer order:-20 で media/attachment より優先。commit 7a3b0b6 |
+| T | plugin-share: 記事の共有ボタン群を追加する | Small | 新規 `packages/plugins/share/`。X/Bluesky/Mastodon/Facebook/LinkedIn/Hatena＋コピー。SSR リンク＋最小 client、`onManifestCreated` で entry.html / PostContent.html に注入。テスト13件。commit 2c59ce0 |
+| U | plugin-map: `map` ブロック / frontmatter 座標から地図埋め込みを表示する | Medium | 新規 `packages/plugins/map/`。`map` フェンス/frontmatter を解析し静的フォールバック＋JSON を常時出力、`[data-rr-map]` がある時のみ Leaflet を遅延ロード。commit d106e48 |
+| V | plugin-changelog: git 履歴から記事/サイトの変更履歴ページを生成する | Medium | 新規 `packages/plugins/changelog/`。git 履歴から per-note 変更履歴（`article.after-content` スロット）と `buildSiteChangelog` を提供。非 git は降格診断。route 非所有。commit 9bff854 |
+| W | plugin-webmention: Webmention 受信 endpoint と「言及」表示を実装する | Large | 新規 `packages/plugins/webmention/`（provider 抽象・送信元検証・SSRF ガード付き fetcher・POST 受信/GET JSON feed・`rr-webmention`）と `packages/integrations/webmention-cloudflare/`（D1/KV storage・createWorker・migration）。Core の endpoint 型に POST を追加。テスト計20件。commit 170ee62 |
 
 ## 実装メモ（agents 用）
 

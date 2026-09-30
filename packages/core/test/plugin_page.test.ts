@@ -40,7 +40,7 @@ test("plugins resolve framework-independent pages and declare SSG paths", async 
   });
 
   assert.deepEqual(await manager.getPagePaths(), ["/example"]);
-  assert.deepEqual(await manager.resolvePage("/example"), {
+  assert.deepEqual(await manager.resolvePage("/example/"), {
     type: "example",
     pluginName: "example-pages",
     pathname: "/example",

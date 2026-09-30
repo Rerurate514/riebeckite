@@ -234,7 +234,12 @@ export class PluginRuntime {
     contentIndex: Map<string, string>,
   ): Promise<ResolvedPluginPage | null> {
     const matches: { page: ResolvedPluginPage; priority: number }[] = [];
-    const context = { ...this.createContext(contentIndex), manifest, pathname };
+    const normalizedPathname = normalizePagePath(pathname);
+    const context = {
+      ...this.createContext(contentIndex),
+      manifest,
+      pathname: normalizedPathname,
+    };
     for (const plugin of this.plugins()) {
       for (const pageType of plugin.pageTypes ?? []) {
         const page = await pageType.resolve(
@@ -255,7 +260,7 @@ export class PluginRuntime {
     );
     if (highest.length !== 1) {
       throw new Error(
-        `Multiple plugin page types match ${pathname} at priority ${highestPriority}: ${highest
+        `Multiple plugin page types match ${normalizedPathname} at priority ${highestPriority}: ${highest
           .map((match) => match.page.type)
           .join(", ")}`,
       );

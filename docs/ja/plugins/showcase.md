@@ -430,12 +430,9 @@ LIMIT 10
 
 ````md
 ```query
-filter:
-  tags:
-    any: [diary]
 sort:
-  field: date
-  order: desc
+  field: title
+  order: asc
 limit: 5
 ```
 ````
@@ -443,12 +440,9 @@ limit: 5
 #### 実行例
 
 ```query
-filter:
-  tags:
-    any: [diary]
 sort:
-  field: date
-  order: desc
+  field: title
+  order: asc
 limit: 5
 ```
 

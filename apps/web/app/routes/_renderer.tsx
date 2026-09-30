@@ -15,6 +15,11 @@ import {
   getThemeStylesheets,
 } from "../lib/theme";
 
+// Plugin client entries are browser capabilities, not HonoX islands. HonoX
+// gates its client `<Script>` on this export, so keep the client runtime in
+// SSG output even when a page has no island component.
+export const __importing_islands = true;
+
 export default jsxRenderer(({ children }, c) => {
   const { site } = config;
   const seo =

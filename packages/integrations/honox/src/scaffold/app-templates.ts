@@ -252,6 +252,10 @@ function themeAttributes() {
   };
 }
 
+// Riebeckite plugin client entries need the HonoX client bundle even without
+// an island component.
+export const __importing_islands = true;
+
 export default jsxRenderer(({ children }, c) => {
   const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
 
@@ -297,6 +301,10 @@ export function bareRenderer(): string {
   return `import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import { config } from "../config";
+
+// Riebeckite plugin client entries need the HonoX client bundle even without
+// an island component.
+export const __importing_islands = true;
 
 export default jsxRenderer(({ children }, c) => (
   <html lang={c.get("htmlLanguage") ?? config.site.locale}>

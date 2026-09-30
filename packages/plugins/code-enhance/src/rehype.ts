@@ -67,7 +67,10 @@ function restoreCodeMeta(tree: HastNode) {
     if (!code) return;
     const meta = getCodeMeta(code);
     if (!meta) return;
-    node.data = { ...getRecord(node.data), meta };
+    // rehype-pretty-code reads fence metadata from the `<code>` node. The
+    // Markdown-to-HAST bridge can keep it in several places, so normalize it
+    // here before handing the tree to the highlighter.
+    code.data = { ...getRecord(code.data), meta };
   });
 }
 

@@ -44,6 +44,7 @@ test("each preset generates its intended self-contained composition", async () =
         "utf8",
       );
       assert.match(renderer, /rel="icon" href="\/favicon\.ico"/);
+      assert.match(renderer, /export const __importing_islands = true/);
       if (preset === "empty") {
         assert.ok(!config.includes("@riebeckite/plugin-"));
       } else {

@@ -235,12 +235,9 @@ LIMIT 10
 
 ````md
 ```query
-filter:
-  tags:
-    any: [diary]
 sort:
-  field: date
-  order: desc
+  field: title
+  order: asc
 limit: 5
 ```
 ````

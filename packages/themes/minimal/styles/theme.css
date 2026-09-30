@@ -12,13 +12,17 @@
 }
 
 @layer base {
-  :root {
+  /* Surface hierarchy is carried by semantic tokens rather than fixed shades
+     (`paper` → `surface` → `surface-hover`), so a future background-contrast
+     variant could remap these three values without touching the character
+     layer. See the README for the upstream contrast variants. */
+  :is(:root, .rb-theme-root)[data-theme-name="minimal"] {
     color-scheme: light;
     --rb-color-paper: #ffffff;
     --rb-color-surface: #f7f7f7;
     --rb-color-surface-hover: #ececec;
     --rb-color-ink: #1a1a1a;
-    --rb-color-muted: #737373;
+    --rb-color-muted: #6b6b6b;
     --rb-color-accent: #1a1a1a;
     --rb-color-border: color-mix(in srgb, currentColor 18%, transparent);
     --rb-color-border-strong: color-mix(in srgb, currentColor 28%, transparent);
@@ -37,12 +41,12 @@
     --rb-space-8: 4rem;
     --rb-rule-width: 1px;
     --rb-layout-page-max: 80rem;
-    --rb-layout-article-max: 48rem;
+    --rb-layout-article-max: 43rem;
     --rb-layout-sidebar: 14rem;
     --rb-layout-gap: 2rem;
   }
 
-  :root[data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-theme-name="minimal"][data-theme="dark"] {
     color-scheme: dark;
     --rb-color-paper: #1a1a1a;
     --rb-color-surface: #242424;
@@ -57,7 +61,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-theme-name="minimal"]:not([data-theme]) {
       color-scheme: dark;
       --rb-color-paper: #1a1a1a;
       --rb-color-surface: #242424;
@@ -72,35 +76,462 @@
     }
   }
 
-  :root[data-typography="serif"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="minimal"][data-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading: ui-sans-serif, system-ui, sans-serif;
   }
 
-  :root[data-typography="sans"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="minimal"][data-typography="sans"] {
     --rb-font-body: ui-sans-serif, system-ui, sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  html {
+  :is(:root, .rb-theme-root)[data-theme-name="minimal"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
   }
+}
 
-  body {
-    margin: 0;
-    background: var(--rb-color-paper);
-    color: var(--rb-color-ink);
-  }
+/* ------------------------------------------------------------------ *
+ * Character layer
+ *
+ * Minimal identity: nothing but type and space. A deliberately close
+ * reading measure (~43rem), generous leading and paragraph rhythm,
+ * headings differentiated by size/weight/tracking instead of colour or
+ * boxes, and hairlines only where structure genuinely needs a boundary.
+ * Near-chromeless: the only accent is ink itself. Unlayered on purpose
+ * so it wins over the layered app and plugin stylesheets without
+ * `!important`.
+ * ------------------------------------------------------------------ */
 
-  ::selection {
-    background: var(--rb-color-accent);
-    color: var(--rb-color-paper);
-  }
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] ::selection {
+  background: var(--rb-color-accent);
+  color: var(--rb-color-paper);
+}
 
-  :focus-visible {
-    outline: 2px solid var(--rb-color-accent);
-    outline-offset: 2px;
-  }
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] :focus-visible {
+  outline: 2px solid var(--rb-color-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Body rhythm: open leading, generous paragraphs. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body {
+  font-family: var(--rb-font-body);
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body p {
+  margin: 1.2em 0;
+  text-wrap: pretty;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  :is(ul, ol) {
+  margin: 1.35em 0;
+  padding-left: 1.5em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  :is(ul, ol)
+  :is(ul, ol) {
+  margin: 0.5em 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body li {
+  margin: 0.5em 0;
+  padding-left: 0.15em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  li::marker {
+  color: var(--rb-color-muted);
+}
+
+/* ---- Headings: size, weight and tracking do the work. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-header {
+  margin-bottom: 2.5rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-header h1 {
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.9rem, 1.5rem + 1.4vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body h2 {
+  margin: 3.25rem 0 1rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rb-color-border);
+  font-family: var(--rb-font-heading);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body h3 {
+  margin: 2.25rem 0 0.75rem;
+  font-family: var(--rb-font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body h4 {
+  margin: 1.9rem 0 0.6rem;
+  font-family: var(--rb-font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  :is(h5, h6) {
+  margin: 1.6rem 0 0.5rem;
+  font-family: var(--rb-font-heading);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rb-color-muted);
+}
+
+/* ---- Links: ink, with a quiet underline that firms up on hover. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  a {
+  color: var(--rb-color-ink);
+  text-decoration: underline;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--rb-color-ink) 30%,
+    transparent
+  );
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  a:hover {
+  text-decoration-color: var(--rb-color-ink);
+}
+
+/* ---- Blockquote: a single hairline, muted ink, no fill. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  blockquote {
+  margin: 2rem 0;
+  padding: 0.1rem 0 0.1rem 1.25rem;
+  border: 0;
+  border-left: 1px solid var(--rb-color-border-strong);
+  background: none;
+  color: color-mix(in srgb, var(--rb-color-ink) 78%, var(--rb-color-muted));
+  font-style: normal;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  blockquote
+  p:first-of-type::before,
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  blockquote
+  p:last-of-type::after {
+  content: none;
+}
+
+/* ---- Rules: a low-contrast hairline. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body hr {
+  width: 100%;
+  height: 1px;
+  margin: 3.5rem 0;
+  border: 0;
+  background: var(--rb-color-border);
+}
+
+/* ---- Inline code: a monochrome chip. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  :not(pre)
+  > code {
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-ink) 6%, transparent);
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-mono);
+  font-size: 0.85em;
+}
+
+/* ---- Bare code blocks: flat, hairline border, bare tint. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)) {
+  margin: 2rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-ink) 4%, transparent);
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  pre:not(:where(.rr-code *))
+  code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* ---- Tables: hairlines and a quiet, weighted header. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body table {
+  margin: 2rem 0;
+  border: 0;
+  font-size: 0.95em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  :is(th, td) {
+  padding: 0.55em 0.85em;
+  border-bottom: 1px solid var(--rb-color-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  thead
+  th {
+  border-bottom: 1px solid var(--rb-color-border-strong);
+  background: none;
+  color: var(--rb-color-ink);
+  font-weight: 600;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  tbody
+  tr:last-child
+  :is(th, td) {
+  border-bottom: 0;
+}
+
+/* ---- Media and embedded plugin frames: square corners. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(
+    .rb-article-body img,
+    .rb-article-body video,
+    .rr-media,
+    .rr-attachment,
+    .rr-excalidraw,
+    .rr-query,
+    .rr-diff-history
+  ) {
+  border-radius: 0;
+}
+
+/* ---- Article chrome: quiet hairlines. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-meta {
+  margin: 0 0 2.5rem;
+  padding-block: 0.75rem;
+  border-block: 1px solid var(--rb-color-border);
+  color: var(--rb-color-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-color-border);
+  color: var(--rb-color-muted);
+  font-size: 0.9rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-sidebar {
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--rb-color-border);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* ---- Plugin roots: hairlines, no fill, room to breathe. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-table-of-contents {
+  margin: 2.5rem 0;
+  padding: 1.25rem 1.15rem;
+  border-radius: 0;
+  background: none;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rr-backlinks, .rr-recent-posts) {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
+  a {
+  color: var(--rb-color-ink);
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
+  a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rr-code, .rr-code-tabs) {
+  margin: 2rem 0;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+}
+
+/* Keep the plugin's code-surface tokens so terminal blocks still invert;
+   ordinary blocks resolve to the reading surface. The code-enhance plugin
+   owns `.rr-code__pre` / `.rr-code__line` padding, so only the surface colour
+   and the flat square frame are themed here. */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-code {
+  background: var(--rr-code-paper, var(--rb-color-code-background));
+  color: var(--rr-code-ink, var(--rb-color-ink));
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-code-tabs {
+  background: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rr-code, .rr-code-tabs)
+  pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-family: var(--rb-font-mono);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout {
+  margin: 2rem 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rb-color-border);
+  border-left: 1px solid var(--rb-color-border-strong);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--rb-color-ink);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rr-callout
+  .callout-title {
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rr-callout
+  .callout-icon {
+  color: var(--rb-color-muted);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout p:last-child {
+  margin-bottom: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  :is(.rr-local-graph, .rr-mermaid) {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: none;
+}
+
+/* `.rr-search` is the fixed wrapper, so it carries no frame of its own; the
+   plugin's trigger and modal already read the semantic tokens. Square the
+   controls and drop the modal shadow to match the flat character. */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rr-search
+  :is(input, button, a, kbd) {
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rr-search
+  [role="dialog"] {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-cardlink {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: none;
+  color: var(--rb-color-ink);
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-cardlink:hover,
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rr-cardlink:focus-visible {
+  border-color: var(--rb-color-border-strong);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-lightbox img {
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-garden-explorer {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: none;
+}
+
+/* The color-mode toggle is authored as a pill; flatten it to match. Both
+   classes are documented plugin hooks (`rr-color-mode`, `rr-color-mode__button`). */
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-color-mode,
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-color-mode__button {
+  border-radius: 0;
 }

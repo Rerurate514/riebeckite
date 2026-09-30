@@ -151,7 +151,8 @@ function createDeckUi(doc: Document, prefix: string): DeckUi {
   answer.className = `${prefix}__answer`;
   answer.hidden = true;
 
-  card.append(question, answer);
+  card.appendChild(question);
+  card.appendChild(answer);
 
   const controls = doc.createElement("div");
   controls.className = `${prefix}__controls`;
@@ -162,8 +163,13 @@ function createDeckUi(doc: Document, prefix: string): DeckUi {
   const shuffle = createButton(doc, prefix, "shuffle", "Shuffle cards");
   reveal.setAttribute("aria-pressed", "false");
 
-  controls.append(prev, reveal, next, shuffle);
-  root.append(counter, card, controls);
+  controls.appendChild(prev);
+  controls.appendChild(reveal);
+  controls.appendChild(next);
+  controls.appendChild(shuffle);
+  root.appendChild(counter);
+  root.appendChild(card);
+  root.appendChild(controls);
 
   return { root, counter, question, answer, reveal, prev, next, shuffle };
 }

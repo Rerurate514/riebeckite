@@ -127,7 +127,9 @@ function getTabBlock(node: ElementNode): TabBlock | null {
   if (!metaOwner) return null;
 
   const meta = getCodeMeta(metaOwner);
-  const label = meta ? parseTabLabel(meta) : null;
+  if (!meta) return null;
+
+  const label = parseTabLabel(meta);
   if (!label) return null;
 
   removeTabMeta(metaOwner, meta);

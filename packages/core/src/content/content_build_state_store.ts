@@ -102,7 +102,9 @@ function isContentBuildState(value: unknown): value is ContentBuildState {
   );
 }
 
-function isContentBuildStateShape(value: Record<string, unknown>): boolean {
+function isContentBuildStateShape(
+  value: Record<string, unknown>,
+): value is ContentBuildState {
   if (!isRecord(value.entries) || !isRecord(value.contentIndex)) return false;
 
   return (

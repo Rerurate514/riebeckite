@@ -83,6 +83,7 @@ function renderRss(
   title: string,
   feedUrl: string,
 ): string {
+  const feed = getResolvedFeedMetadata(config);
   const self = buildTaxonomyAbsoluteUrl(config, `${term.path}/feed.xml`);
   const items = entries
     .map((entry) => {
@@ -92,7 +93,7 @@ function renderRss(
     })
     .join("");
 
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${escapeTaxonomyXml(title)}</title><link>${escapeTaxonomyXml(feedUrl)}</link><description>${escapeTaxonomyXml(config.site.feed.description)}</description><language>${escapeTaxonomyXml(config.site.feed.language)}</language><atom:link href="${escapeTaxonomyXml(self)}" rel="self" type="application/rss+xml"/>${items}</channel></rss>`;
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${escapeTaxonomyXml(title)}</title><link>${escapeTaxonomyXml(feedUrl)}</link><description>${escapeTaxonomyXml(feed.description)}</description><language>${escapeTaxonomyXml(feed.language)}</language><atom:link href="${escapeTaxonomyXml(self)}" rel="self" type="application/rss+xml"/>${items}</channel></rss>`;
 }
 
 function renderAtom(
@@ -121,14 +122,15 @@ function renderJson(
   entries: readonly ContentManifestEntry[],
   title: string,
 ): string {
+  const feed = getResolvedFeedMetadata(config);
   const self = buildTaxonomyAbsoluteUrl(config, `${term.path}/feed.json`);
   return JSON.stringify({
     version: "https://jsonfeed.org/version/1.1",
     title,
     home_page_url: buildTaxonomyAbsoluteUrl(config, ""),
     feed_url: self,
-    description: config.site.feed.description,
-    language: config.site.feed.language,
+    description: feed.description,
+    language: feed.language,
     items: entries.map((entry) => {
       const url = buildTaxonomyAbsoluteUrl(config, entry.permalink);
       return {
@@ -143,6 +145,16 @@ function renderJson(
       };
     }),
   });
+}
+
+function getResolvedFeedMetadata(config: ResolvedRiebeckiteConfig): {
+  description: string;
+  language: string;
+} {
+  return {
+    description: config.site.feed.description ?? config.site.description,
+    language: config.site.feed.language ?? config.site.locale.replace("_", "-"),
+  };
 }
 
 function getDescription(entry: ContentManifestEntry): string {

@@ -63,13 +63,11 @@ export function defineEndpoint(
     path,
     handler: async (context) => {
       const response = await handler(context);
-      return {
-        ...response,
-        headers: {
-          ...response.headers,
-          "Cache-Control": options.cacheControl,
-        },
-      };
+      const headers: Record<string, string> = { ...response.headers };
+      if (options.cacheControl !== undefined) {
+        headers["Cache-Control"] = options.cacheControl;
+      }
+      return { ...response, headers };
     },
   };
 }

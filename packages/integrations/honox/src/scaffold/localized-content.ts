@@ -1120,7 +1120,7 @@ function guideContent(): string {
 type SummaryText = { readonly en: string; readonly ja?: string };
 
 function readSummary(text: SummaryText, language: ScaffoldLanguage): string {
-  return text[language] ?? text.en;
+  return language === "ja" ? (text.ja ?? text.en) : text.en;
 }
 
 const EXAMPLES_COPY: {

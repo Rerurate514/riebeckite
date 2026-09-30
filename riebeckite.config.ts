@@ -29,6 +29,7 @@ import { kanban } from "@riebeckite/plugin-kanban";
 import { l10n } from "@riebeckite/plugin-l10n";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
 import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+import { map } from "@riebeckite/plugin-map";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { marp } from "@riebeckite/plugin-marp";
 import { media } from "@riebeckite/plugin-media";
@@ -128,6 +129,7 @@ export default defineConfig({
       },
     }),
     markmap(),
+    map(),
     marp(),
     qrCode(),
     chartjs(),

@@ -385,6 +385,20 @@ const markmap = np("@riebeckite/plugin-markmap", "markmap", {
   height: { depth: 2, value: "320" },
   colorFreezeLevel: { depth: 3, value: "2" },
 });
+const map = np("@riebeckite/plugin-map", "map", {
+  zoom: { depth: 2, value: "13" },
+  height: { depth: 2, value: "320" },
+  tileUrl: {
+    depth: 3,
+    value: JSON.stringify("https://tile.openstreetmap.org/{z}/{x}/{y}.png"),
+  },
+  attribution: {
+    depth: 3,
+    value: JSON.stringify(
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    ),
+  },
+});
 const marp = np("@riebeckite/plugin-marp", "marp", {
   theme: { depth: 2, value: '"default"' },
   allowHtml: { depth: 2, value: "true" },
@@ -678,6 +692,7 @@ export const max: ScaffoldPreset = {
     vegaLite,
     wavedrom,
     markmap,
+    map,
     marp,
     qrCode,
     discordEmbed,
@@ -746,6 +761,7 @@ export const ultra: ScaffoldPreset = {
     vegaLite,
     wavedrom,
     markmap,
+    map,
     marp,
     qrCode,
     discordEmbed,

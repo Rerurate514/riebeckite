@@ -152,6 +152,9 @@ importers:
       '@riebeckite/plugin-local-graph':
         specifier: workspace:*
         version: link:../../packages/plugins/local-graph
+      '@riebeckite/plugin-map':
+        specifier: workspace:*
+        version: link:../../packages/plugins/map
       '@riebeckite/plugin-markmap':
         specifier: workspace:*
         version: link:../../packages/plugins/markmap
@@ -692,6 +695,12 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.12.26
+
+  packages/plugins/map:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
 
   packages/plugins/markmap:
     dependencies:

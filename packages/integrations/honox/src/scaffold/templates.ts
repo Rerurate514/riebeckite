@@ -745,6 +745,24 @@ export const README_DEMOS: Readonly<Record<string, ReadmeDemo>> = {
       ].join("\n"),
     ),
   },
+  "@riebeckite/plugin-map": {
+    title: { en: "Maps", ja: "地図" },
+    intro: {
+      en: "A `map` fence embeds an OpenStreetMap: a static fallback (coordinates and links) first, upgraded to an interactive map when JavaScript is available.",
+      ja: "`map` フェンスが OpenStreetMap を埋め込みます。まず静的なフォールバック（座標とリンク）を表示し、JavaScript がある場合はインタラクティブな地図に拡張します。",
+    },
+    markdown: fence(
+      "map",
+      [
+        "center: 35.6812, 139.7671",
+        "zoom: 13",
+        "label: Tokyo Station",
+        "markers:",
+        "  - 35.6812, 139.7671 | Tokyo Station",
+        "  - 35.6586, 139.7454 | Tokyo Tower",
+      ].join("\n"),
+    ),
+  },
   "@riebeckite/plugin-marp": {
     title: { en: "Marp slides", ja: "Marp スライド" },
     intro: {
@@ -984,6 +1002,7 @@ export const README_DEMO_ORDER = [
   "@riebeckite/plugin-vega-lite",
   "@riebeckite/plugin-wavedrom",
   "@riebeckite/plugin-markmap",
+  "@riebeckite/plugin-map",
   "@riebeckite/plugin-marp",
   "@riebeckite/plugin-qr-code",
   "@riebeckite/plugin-rich-embed",

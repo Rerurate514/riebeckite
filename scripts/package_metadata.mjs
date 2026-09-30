@@ -36,6 +36,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/l10n",
   "packages/plugins/lightbox",
   "packages/plugins/local-graph",
+  "packages/plugins/map",
   "packages/plugins/markmap",
   "packages/plugins/marp",
   "packages/plugins/media",
@@ -246,6 +247,10 @@ const packagePublishingMetadata = {
   "packages/plugins/local-graph": {
     description: "Local note graph visualizations for Riebeckite.",
     keywords: ["riebeckite", "plugin", "graph", "backlinks"],
+  },
+  "packages/plugins/map": {
+    description: "Interactive and static OpenStreetMap embeds for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "map", "openstreetmap", "leaflet"],
   },
   "packages/plugins/markmap": {
     description: "Markdown mindmap rendering with Markmap for Riebeckite.",

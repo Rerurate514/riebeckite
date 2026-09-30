@@ -2,4 +2,4 @@
 // `pnpm bump:version` rewrites this value together with the workspace
 // manifests, and scripts/check_scaffold.mjs fails when it drifts from the
 // release version.
-export const RIEBECKITE_VERSION = "^0.0.8";
+export const RIEBECKITE_VERSION = "^0.0.9";

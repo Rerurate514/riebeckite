@@ -1,8 +1,9 @@
 # @riebeckite/theme-tokyonight
 
 An assertive Tokyo Night theme for Riebeckite: high-contrast twilight day mode
-and the classic deep-indigo night mode, with an electric-blue accent and
-magenta/neon flourishes.
+and the classic deep-indigo night mode, rebuilt as a technical "developer tool"
+look — mono display headings, a tight rhythm, square hairline-bordered surfaces,
+an electric-blue accent, and an optional neon glow.
 
 [日本語](./README_ja.md)
 
@@ -21,9 +22,16 @@ Compared with the subtler default theme, Tokyo Night dials up the contrast:
 - **Dark ("night")** — the classic Tokyo Night background `#1a1b26` with pale
   fuji-blue ink (`#c0caf5`) and a glowing `#7aa2f7` accent
 
-Beyond the tokens it also applies assertive base styling: an accent-color
-`caret`/`accent-color`, an electric `:focus-visible` outline, neon-tinted
-`::selection`, and a slim accent-tinted scrollbar.
+Beyond the palette it carries a distinct visual character rather than being a
+color swap: uppercase mono headings with accent rules, square corners and 1px
+borders, chunky bordered code, hairline tables, underline-on-hover links, and
+flat shadow-free chrome. Latin text uses a self-hosted JetBrains Mono for
+headings and `--rb-font-mono`; Japanese glyphs fall back to the system stack and
+body copy stays sans.
+
+It also applies assertive base styling: an accent-color `caret`/`accent-color`,
+an electric `:focus-visible` outline, neon-tinted `::selection`, and a slim
+accent-tinted scrollbar.
 
 ## Usage
 
@@ -37,6 +45,8 @@ export default defineConfig({
     colorMode: "system",
     typography: "system",
     articleLayout: "article",
+    density: "cozy",
+    heading: "tech",
     neon: true,
     userCss: [],
   }),
@@ -50,11 +60,13 @@ either theme without other configuration changes. The root-level
 ## Options
 
 `tokyonightTheme(options?)` accepts any `ThemeConfig` field except `name`, plus
-the theme-specific `neon` option:
+the theme-specific `density`, `heading`, and `neon` options:
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `neon` | `boolean` | `false` | Neon flourish (applied via the `data-tokyonight-neon="on"` attribute): glowing accent `:focus-visible` outline, `::selection`, and accent-tinted scrollbar |
+| `density` | `"cozy" \| "compact"` | `"cozy"` | Vertical rhythm (applied via `data-tokyonight-density`). `compact` tightens the `--rb-space-*` scale and heading, paragraph, and list spacing throughout |
+| `heading` | `"tech" \| "plain"` | `"tech"` | Heading treatment (applied via `data-tokyonight-heading`). `tech` = uppercase mono headings with accent bars; `plain` = normal-case, undecorated headings in the body font |
+| `neon` | `boolean` | `false` | Neon flourish (applied via `data-tokyonight-neon="on"`): glowing accent `:focus-visible` outline, `::selection`, scrollbar, link hover, and heading accents |
 | `colorMode` | `"light" \| "dark" \| "system"` | `"system"` | Color mode. `system` follows `prefers-color-scheme` unless `data-theme` is set |
 | `typography` | `"system" \| "serif" \| "sans"` | `"system"` | Typography preset, applied via the `data-typography` attribute |
 | `articleLayout` | `"article" \| "sidebar" \| "full-width"` | `"article"` | Article layout preset for consumers that read `data-article-layout` |
@@ -62,11 +74,20 @@ the theme-specific `neon` option:
 | `userCss` | `string[]` | `[]` | Extra user stylesheets |
 
 Theme-specific options are applied to the root element as safe `data-*`
-attributes (`data-tokyonight-neon`). `neon` can also be overridden directly
-from `config` via `attributes: { "data-tokyonight-neon": "on" }`.
+attributes (`data-tokyonight-density`, `data-tokyonight-heading`,
+`data-tokyonight-neon`). `neon` can also be overridden directly from `config`
+via `attributes: { "data-tokyonight-neon": "on" }`.
 
 See the [`@riebeckite/theme-default`](../default/README.md) README for the
 full token list — the token contract is identical.
+
+## Fonts
+
+The Latin subset of [JetBrains Mono](https://www.jetbrains.com/lp/mono/) is
+self-hosted (no network request) and vendored under `styles/fonts/` together
+with its SIL Open Font License (`jetbrains-mono-LICENSE.txt`). It is used for
+mono text and, with `heading: "tech"`, for display headings; CJK glyphs fall
+back to the system font stack.
 
 ## Exports
 

@@ -7,8 +7,8 @@ import { remarkQuery } from "./src/remark.js";
 import { createQueryRuntime } from "./src/runtime.js";
 import type { QueryOptions } from "./src/types.js";
 
-export { remarkQuery } from "./src/remark.js";
 export { queryContentEntries } from "@riebeckite/core";
+export { remarkQuery } from "./src/remark.js";
 export type {
   QueryOptions,
   QueryOutputFormat,
@@ -82,7 +82,10 @@ function validateQueryOptions(
   ) {
     issues.push({ path: "emptyMessage", message: "Expected a string." });
   }
-  if (options.excludeSelf !== undefined && typeof options.excludeSelf !== "boolean") {
+  if (
+    options.excludeSelf !== undefined &&
+    typeof options.excludeSelf !== "boolean"
+  ) {
     issues.push({ path: "excludeSelf", message: "Expected a boolean." });
   }
   return issues;

@@ -1,7 +1,7 @@
 import type { Code, Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
-import { createFlashcardsPlaceholder } from "./placeholder.js";
 import { parseFlashcards } from "./parse.js";
+import { createFlashcardsPlaceholder } from "./placeholder.js";
 
 export const FLASHCARDS_DIAGNOSTIC_SOURCE = "@riebeckite/plugin-flashcards";
 

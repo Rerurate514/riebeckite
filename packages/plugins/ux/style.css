@@ -5,11 +5,7 @@
   z-index: 60;
   height: 3px;
   pointer-events: none;
-  background: color-mix(
-    in srgb,
-    var(--rb-color-ink, #1c1a17) 8%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--rb-color-ink, #1c1a17) 8%, transparent);
 }
 
 .rb-ux__progress-bar {

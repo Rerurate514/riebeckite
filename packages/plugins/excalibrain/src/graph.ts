@@ -90,10 +90,7 @@ export function buildExcaliBrainGraph(
   }
 
   // 2. Inferred relations from the content graph.
-  const outgoing = noteLinkSlugs(
-    manifest.outgoingLinks.get(slug) ?? [],
-    slug,
-  );
+  const outgoing = noteLinkSlugs(manifest.outgoingLinks.get(slug) ?? [], slug);
   const incoming = unique(
     (manifest.incomingLinks.get(slug) ?? []).filter(
       (candidate) => candidate !== slug,
@@ -132,14 +129,12 @@ export function buildExcaliBrainGraph(
   }
 
   const nodes = [...relations.values()].map((relation) => relation.node);
-  const links: ExcaliBrainLink[] = [...relations.values()].map(
-    (relation) => ({
-      from: slug,
-      to: relation.node.id,
-      role: relation.role as ExcaliBrainRole,
-      relationType: relation.relationType,
-    }),
-  );
+  const links: ExcaliBrainLink[] = [...relations.values()].map((relation) => ({
+    from: slug,
+    to: relation.node.id,
+    role: relation.role as ExcaliBrainRole,
+    relationType: relation.relationType,
+  }));
 
   return { center, nodes, links };
 }
@@ -179,10 +174,7 @@ function resolveNode(
   };
 }
 
-function resolveSlug(
-  target: string,
-  manifest: ContentManifest,
-): string | null {
+function resolveSlug(target: string, manifest: ContentManifest): string | null {
   const direct = manifest.bySlug.get(target);
   if (direct) return direct.slug;
 

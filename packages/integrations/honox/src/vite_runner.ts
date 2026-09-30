@@ -4,8 +4,8 @@ import type { ResolvedRiebeckiteConfig, Tracer } from "@riebeckite/core";
 import { build, createServer } from "vite";
 import {
   loadRiebeckiteConfig,
-  resolveHonoxConfig,
   type RiebeckiteConfigLoaderOptions,
+  resolveHonoxConfig,
 } from "./config_loader.js";
 
 export type HonoxApplicationOptions = {
@@ -157,8 +157,7 @@ async function hasViteConfig(directory: string): Promise<boolean> {
   for (const fileName of viteConfigFileNames) {
     try {
       if ((await fs.stat(path.join(directory, fileName))).isFile()) return true;
-    } catch {
-    }
+    } catch {}
   }
   return false;
 }

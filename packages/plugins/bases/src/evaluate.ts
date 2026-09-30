@@ -1,7 +1,4 @@
-import type {
-  ContentLink,
-  ContentManifestEntry,
-} from "@riebeckite/core";
+import type { ContentLink, ContentManifestEntry } from "@riebeckite/core";
 import type {
   BasesBuiltinValue,
   BasesCondition,
@@ -175,11 +172,10 @@ function scalarEquals(actual: unknown, expected: BasesLiteral): boolean {
 
 function containsValue(actual: unknown, expected: BasesLiteral): boolean {
   if (Array.isArray(actual)) {
-    return actual.some(
-      (item) =>
-        typeof item === "string" && typeof expected === "string"
-          ? item.toLowerCase().includes(expected.toLowerCase())
-          : scalarEquals(item, expected),
+    return actual.some((item) =>
+      typeof item === "string" && typeof expected === "string"
+        ? item.toLowerCase().includes(expected.toLowerCase())
+        : scalarEquals(item, expected),
     );
   }
   if (typeof actual === "string") {
@@ -188,10 +184,7 @@ function containsValue(actual: unknown, expected: BasesLiteral): boolean {
   return false;
 }
 
-function compareOrder(
-  actual: unknown,
-  expected: BasesLiteral,
-): number | null {
+function compareOrder(actual: unknown, expected: BasesLiteral): number | null {
   if (actual === undefined || actual === null) return null;
 
   const left = toComparableNumber(actual);

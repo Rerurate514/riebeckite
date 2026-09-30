@@ -1,8 +1,8 @@
 import {
+  type ConfigValidationIssue,
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  type ConfigValidationIssue,
 } from "@riebeckite/core";
 import type { GraphvizOptions } from "./src/types.js";
 
@@ -53,8 +53,7 @@ function validateGraphvizOptions(
   ) {
     issues.push({
       path: "engine",
-      message:
-        'Expected "dot", "neato", "fdp", "sfdp", "circo", or "twopi".',
+      message: 'Expected "dot", "neato", "fdp", "sfdp", "circo", or "twopi".',
     });
   }
   for (const key of ["caption", "fallback"] as const) {
@@ -62,7 +61,10 @@ function validateGraphvizOptions(
       issues.push({ path: key, message: "Expected a boolean." });
     }
   }
-  if (options.className !== undefined && typeof options.className !== "string") {
+  if (
+    options.className !== undefined &&
+    typeof options.className !== "string"
+  ) {
     issues.push({ path: "className", message: "Expected a string." });
   }
   return issues;

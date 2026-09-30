@@ -24,9 +24,7 @@ const CAPABILITY_DECLARATIONS: readonly CapabilityDeclaration[] = [
   "optional",
 ];
 
-function validateCapabilityNames(
-  plugins: readonly RiebeckitePlugin[],
-): void {
+function validateCapabilityNames(plugins: readonly RiebeckitePlugin[]): void {
   for (const plugin of plugins) {
     for (const declaration of CAPABILITY_DECLARATIONS) {
       for (const capability of plugin[declaration] ?? []) {
@@ -77,16 +75,18 @@ function collectDependencies(
   const availableCapabilities = [...providers.keys()];
 
   return plugins.map((plugin, pluginIndex) => {
-    const requiredDependencies = (plugin.requires ?? []).map((rawCapability) => {
-      const capability = normalize(rawCapability);
-      return resolveDependency({
-        pluginIndex,
-        pluginName: plugin.name,
-        capability,
-        availableCapabilities,
-        providers,
-      });
-    });
+    const requiredDependencies = (plugin.requires ?? []).map(
+      (rawCapability) => {
+        const capability = normalize(rawCapability);
+        return resolveDependency({
+          pluginIndex,
+          pluginName: plugin.name,
+          capability,
+          availableCapabilities,
+          providers,
+        });
+      },
+    );
     const optionalDependencies = (plugin.optional ?? []).flatMap(
       (rawCapability) => {
         const capability = normalize(rawCapability);

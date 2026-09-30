@@ -23,8 +23,7 @@ type CodeTarget = {
   node: MdNode;
 };
 
-const EMBED_PATTERN =
-  /^!?\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]$/;
+const EMBED_PATTERN = /^!?\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]$/;
 
 export function remarkCanvas(input: RemarkCanvasOptions) {
   const language = input.options.language;

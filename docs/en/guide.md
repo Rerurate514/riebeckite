@@ -18,7 +18,7 @@ This guide walks through publishing a site with Riebeckite, from installation to
 
 - Node.js (LTS) and pnpm are installed.
 - You run commands from the repository root. Content and the application are separate: Markdown lives under `content/`, and the HonoX application lives in `apps/web`.
-- Riebeckite ships a scaffolder: `npx create-riebeckite my-site` generates a standalone site you can install and build (while the packages are unpublished, the same generator runs inside this repository as `pnpm exec riebeckite init my-site`). The reference application and the E2E fixture remain useful examples for a fully customized site.
+- Riebeckite ships a scaffolder: `npx create-riebeckite my-site` generates a standalone site you can install and build. The reference application and the E2E fixture remain useful examples for a fully customized site.
 
 ## 1. Install dependencies
 
@@ -156,8 +156,8 @@ Generate a standalone site, then install and build it:
 npx create-riebeckite my-site
 cd my-site
 npm install
-npx riebeckite check
-npx riebeckite build
+npm run check
+npm run build
 ```
 
 The scaffolder writes a self-contained site that passes `check` and `build` as generated. It refuses to overwrite an existing non-empty target unless `--force` is passed.

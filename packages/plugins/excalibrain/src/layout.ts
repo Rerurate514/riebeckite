@@ -126,9 +126,7 @@ export function layoutExcaliBrain(
     const radius = anchor.radius === "far" ? farRadius : nearRadius;
     group.forEach((node, index) => {
       const angle = spreadAngle(anchor.angle, index, group.length);
-      positioned.push(
-        positionNode(node, angle, radius, cx, cy, width, height),
-      );
+      positioned.push(positionNode(node, angle, radius, cx, cy, width, height));
     });
   }
 

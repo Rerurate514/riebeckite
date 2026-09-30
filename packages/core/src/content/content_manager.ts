@@ -11,7 +11,10 @@ import type { Diagnostic } from "../types/diagnostic.js";
 import type { PostContent } from "../types/post_content.js";
 import { isPublishable } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
-import { ContentBuildCoordinator, type ContentBuildPreparation } from "./content_build_coordinator.js";
+import {
+  ContentBuildCoordinator,
+  type ContentBuildPreparation,
+} from "./content_build_coordinator.js";
 import { CONTENT_BUILD_STATE_EXCLUDE } from "./content_build_state.js";
 import { resolveContentBuildStatePath } from "./content_build_state_store.js";
 import { hasContentChanges } from "./content_change_set.js";
@@ -249,7 +252,8 @@ export class ContentManager {
         ];
 
         await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
-        manifest.generatedOutputs = this.pluginRuntime.collectGeneratedOutputs();
+        manifest.generatedOutputs =
+          this.pluginRuntime.collectGeneratedOutputs();
         if (preparation)
           await this.buildCoordinator.commit(preparation, manifest);
         this.manifest = manifest;

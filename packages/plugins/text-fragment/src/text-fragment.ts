@@ -39,10 +39,7 @@ export function encodeTextFragment(text: string): string {
     encoded = encodeURIComponent(text.replace(/[\uD800-\uDFFF]/g, "\uFFFD"));
   }
 
-  return encoded
-    .replace(/&/g, "%26")
-    .replace(/,/g, "%2C")
-    .replace(/-/g, "%2D");
+  return encoded.replace(/&/g, "%26").replace(/,/g, "%2C").replace(/-/g, "%2D");
 }
 
 /**
@@ -92,7 +89,8 @@ function buildTextDirective(
   const suffix = normalizeNewlines(options.suffix ?? "").trim();
 
   const useRange =
-    normalized.length > MAX_TEXT_FRAGMENT_LENGTH || NEWLINE_TEST.test(selection);
+    normalized.length > MAX_TEXT_FRAGMENT_LENGTH ||
+    NEWLINE_TEST.test(selection);
 
   let match: string;
   if (useRange) {

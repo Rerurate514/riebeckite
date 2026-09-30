@@ -17,7 +17,7 @@ pnpm add -D @riebeckite/cli
 このパッケージはバイナリ（`bin/riebeckite.mjs`）のみを公開し、ライブラリのエントリポイントは持ちません。
 
 ```sh
-npx riebeckite check
+npx @riebeckite/cli check
 ```
 
 pnpm のプロジェクトでは `pnpm exec riebeckite` で実行します。

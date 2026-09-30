@@ -11,11 +11,15 @@ import {
   resolveResponsiveImageOptions,
   validateResponsiveImageOptions,
 } from "./src/options.js";
-import { rehypeResponsiveImage, RESPONSIVE_IMAGE_MARKER } from "./src/rehype.js";
+import {
+  RESPONSIVE_IMAGE_MARKER,
+  rehypeResponsiveImage,
+} from "./src/rehype.js";
 import { collectKnownAssetPaths } from "./src/srcset.js";
 
 const PLUGIN_NAME = "responsive-image";
 
+export { applyResponsiveImages } from "./src/html.js";
 export type {
   ResolvedResponsiveImageOptions,
   ResponsiveImageOptions,
@@ -27,14 +31,13 @@ export {
   DEFAULT_RESPONSIVE_IMAGE_WIDTHS,
   resolveResponsiveImageOptions,
 } from "./src/options.js";
+export { rehypeResponsiveImage } from "./src/rehype.js";
+export { buildResponsiveSrcset, collectKnownAssetPaths } from "./src/srcset.js";
 export type {
   ResponsiveImagePlan,
   ResponsiveImageSource,
   ResponsiveImageVariant,
 } from "./src/types.js";
-export { buildResponsiveSrcset, collectKnownAssetPaths } from "./src/srcset.js";
-export { rehypeResponsiveImage } from "./src/rehype.js";
-export { applyResponsiveImages } from "./src/html.js";
 
 /**
  * Build-time responsive image layer.

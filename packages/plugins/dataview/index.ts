@@ -7,30 +7,27 @@ import { remarkDataview } from "./src/remark.js";
 import { createDataviewRuntime } from "./src/runtime.js";
 import type { DataviewOptions } from "./src/types.js";
 
-export { parseDataview, DataviewParseError } from "./src/parse.js";
 export {
-  selectDataviewEntries,
-  evaluateDataviewExpression,
-  matchesDataviewFrom,
-  readDataviewField,
-  toDataviewTime,
-  isTruthy,
   DataviewEvaluationError,
   type DataviewGroup,
   type DataviewScope,
   type DataviewSelection,
+  evaluateDataviewExpression,
+  isTruthy,
+  matchesDataviewFrom,
+  readDataviewField,
+  selectDataviewEntries,
+  toDataviewTime,
 } from "./src/evaluate.js";
-export { renderDataview, renderDataviewError } from "./src/render.js";
-export { remarkDataview, type RemarkDataviewOptions } from "./src/remark.js";
+export { DataviewParseError, parseDataview } from "./src/parse.js";
 export {
-  DATAVIEW_ATTRIBUTE,
   createDataviewPlaceholder,
   createDataviewPlaceholderPattern,
+  DATAVIEW_ATTRIBUTE,
 } from "./src/placeholder.js";
+export { type RemarkDataviewOptions, remarkDataview } from "./src/remark.js";
+export { renderDataview, renderDataviewError } from "./src/render.js";
 export {
-  DEFAULT_DATAVIEW_CLASS_NAME,
-  DEFAULT_DATAVIEW_LANGUAGE,
-  resolveDataviewOptions,
   type DataviewColumn,
   type DataviewComparisonOperator,
   type DataviewExpression,
@@ -42,7 +39,10 @@ export {
   type DataviewSortOrder,
   type DataviewSource,
   type DataviewSpec,
+  DEFAULT_DATAVIEW_CLASS_NAME,
+  DEFAULT_DATAVIEW_LANGUAGE,
   type ResolvedDataviewOptions,
+  resolveDataviewOptions,
 } from "./src/types.js";
 
 export function dataviewPlugin(options: DataviewOptions = {}) {

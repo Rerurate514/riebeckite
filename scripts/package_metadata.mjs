@@ -4,6 +4,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/create-riebeckite",
   "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
+  "packages/integrations/webmention-cloudflare",
   "packages/plugins/alias",
   "packages/plugins/analytics",
   "packages/plugins/attachment",
@@ -12,6 +13,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/bases",
   "packages/plugins/breadcrumbs",
   "packages/plugins/canvas",
+  "packages/plugins/changelog",
   "packages/plugins/chartjs",
   "packages/plugins/code-annotations",
   "packages/plugins/code-enhance",
@@ -35,11 +37,13 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/l10n",
   "packages/plugins/lightbox",
   "packages/plugins/local-graph",
+  "packages/plugins/map",
   "packages/plugins/markmap",
   "packages/plugins/marp",
   "packages/plugins/media",
   "packages/plugins/mermaid",
   "packages/plugins/obsidian-markdown",
+  "packages/plugins/pdf",
   "packages/plugins/permalink",
   "packages/plugins/plantuml",
   "packages/plugins/properties",
@@ -54,13 +58,16 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/search",
   "packages/plugins/seo",
   "packages/plugins/series",
+  "packages/plugins/share",
   "packages/plugins/shortcodes",
   "packages/plugins/sidenotes",
+  "packages/plugins/taxonomy",
   "packages/plugins/text-fragment",
   "packages/plugins/toc",
   "packages/plugins/ux",
   "packages/plugins/vega-lite",
   "packages/plugins/wavedrom",
+  "packages/plugins/webmention",
   "packages/themes/default",
   "packages/themes/gruvbox",
   "packages/themes/minimal",
@@ -108,15 +115,22 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "honox", "vite", "static-site-generator"],
   },
   "packages/integrations/analytics-cloudflare": {
-    description: "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
+    description:
+      "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
     keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
+  },
+  "packages/integrations/webmention-cloudflare": {
+    description:
+      "Cloudflare Workers, D1, and KV runtime for Riebeckite Webmentions.",
+    keywords: ["riebeckite", "webmention", "cloudflare", "workers", "d1", "kv"],
   },
   "packages/plugins/alias": {
     description: "Obsidian alias redirects for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "obsidian", "redirects"],
   },
   "packages/plugins/analytics": {
-    description: "Storage-independent analytics foundation for Riebeckite sites.",
+    description:
+      "Storage-independent analytics foundation for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "analytics", "web-analytics"],
   },
   "packages/plugins/attachment": {
@@ -142,6 +156,10 @@ const packagePublishingMetadata = {
   "packages/plugins/canvas": {
     description: "Obsidian Canvas diagram rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "obsidian", "canvas"],
+  },
+  "packages/plugins/changelog": {
+    description: "Git-backed change history and changelogs for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "git", "changelog"],
   },
   "packages/plugins/chartjs": {
     description: "Chart.js code block rendering for Riebeckite.",
@@ -228,13 +246,7 @@ const packagePublishingMetadata = {
   "packages/plugins/l10n": {
     description:
       "Content localization, localized URLs, and translation metadata for Riebeckite.",
-    keywords: [
-      "riebeckite",
-      "plugin",
-      "localization",
-      "i18n",
-      "l10n",
-    ],
+    keywords: ["riebeckite", "plugin", "localization", "i18n", "l10n"],
   },
   "packages/plugins/lightbox": {
     description: "Click-to-zoom image lightboxes for Riebeckite.",
@@ -243,6 +255,10 @@ const packagePublishingMetadata = {
   "packages/plugins/local-graph": {
     description: "Local note graph visualizations for Riebeckite.",
     keywords: ["riebeckite", "plugin", "graph", "backlinks"],
+  },
+  "packages/plugins/map": {
+    description: "Interactive and static OpenStreetMap embeds for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "map", "openstreetmap", "leaflet"],
   },
   "packages/plugins/markmap": {
     description: "Markdown mindmap rendering with Markmap for Riebeckite.",
@@ -264,6 +280,10 @@ const packagePublishingMetadata = {
     description: "Obsidian-flavored Markdown support for Riebeckite.",
     keywords: ["riebeckite", "plugin", "obsidian", "markdown"],
   },
+  "packages/plugins/pdf": {
+    description: "Inline PDF attachment viewing for Obsidian wikilinks.",
+    keywords: ["riebeckite", "plugin", "pdf", "attachments"],
+  },
   "packages/plugins/permalink": {
     description: "Stable, configurable content permalinks for Riebeckite.",
     keywords: ["riebeckite", "plugin", "permalinks", "redirects"],
@@ -282,7 +302,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "plugin", "qr-code", "svg"],
   },
   "packages/plugins/quality": {
-    description: "Static quality and accessibility inspection for Riebeckite HTML.",
+    description:
+      "Static quality and accessibility inspection for Riebeckite HTML.",
     keywords: ["riebeckite", "plugin", "accessibility", "quality"],
   },
   "packages/plugins/query": {
@@ -322,6 +343,11 @@ const packagePublishingMetadata = {
     description: "Ordered multi-part post navigation for Riebeckite.",
     keywords: ["riebeckite", "plugin", "series", "navigation"],
   },
+  "packages/plugins/share": {
+    description:
+      "Per-article share links and copy-to-clipboard for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "share", "social"],
+  },
   "packages/plugins/shortcodes": {
     description: "Remark directive shortcodes for Riebeckite Markdown.",
     keywords: ["riebeckite", "plugin", "shortcodes", "remark"],
@@ -330,6 +356,11 @@ const packagePublishingMetadata = {
     description:
       "Tufte-style side notes for Riebeckite footnotes, with mobile popovers",
     keywords: ["riebeckite", "plugin", "sidenotes", "footnotes"],
+  },
+  "packages/plugins/taxonomy": {
+    description:
+      "Build-time tag and folder taxonomy data, per-term feeds, and SEO for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "taxonomy", "tags", "feeds"],
   },
   "packages/plugins/text-fragment": {
     description: "Text Fragment links and quotes for Riebeckite articles.",
@@ -355,6 +386,11 @@ const packagePublishingMetadata = {
   "packages/plugins/wavedrom": {
     description: "WaveDrom timing diagram rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "wavedrom", "diagrams"],
+  },
+  "packages/plugins/webmention": {
+    description:
+      "Receive verified Webmentions and render them as mentions for Riebeckite sites.",
+    keywords: ["riebeckite", "plugin", "webmention", "indieweb", "mentions"],
   },
   "packages/themes/default": {
     description: "The default CSS theme for Riebeckite sites.",
@@ -421,7 +457,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
-        test: "node --import tsx --test \"test/*.test.ts\"",
+        test: 'node --import tsx --test "test/*.test.ts"',
         prepack: "pnpm run build",
       },
     };
@@ -444,7 +480,19 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
-        test: "pnpm exec tsx --test \"test/*.test.ts\"",
+        test: 'pnpm exec tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/integrations/webmention-cloudflare") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
+      scripts: {
+        build: "node ../../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
         prepack: "pnpm run build",
       },
     };
@@ -500,14 +548,16 @@ export function expectedPackageMetadata(directory) {
       "search",
       "seo",
       "series",
+      "share",
       "shortcodes",
       "text-fragment",
       "toc",
+      "webmention",
     ].includes(pluginName);
     const testCommand =
       pluginName === "analytics"
-        ? "pnpm exec tsx --test \"test/*.test.ts\""
-        : "node --import tsx --test \"test/*.test.ts\"";
+        ? 'pnpm exec tsx --test "test/*.test.ts"'
+        : 'node --import tsx --test "test/*.test.ts"';
     return {
       ...publishingMetadata(directory, hasStyle ? ["./style.css"] : false),
       files: [
@@ -519,9 +569,7 @@ export function expectedPackageMetadata(directory) {
       ],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
-        ...(hasTests
-          ? { test: testCommand }
-          : {}),
+        ...(hasTests ? { test: testCommand } : {}),
         prepack: "pnpm run build",
       },
     };

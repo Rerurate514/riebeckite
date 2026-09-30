@@ -152,17 +152,13 @@ async function loadRuntime(
 function importModule(url: string): Promise<Record<string, unknown>> {
   // A computed specifier keeps the renderer out of the host bundle; it is
   // fetched from the CDN at runtime.
-  const importer = new Function(
-    "url",
-    "return import(url)",
-  ) as (url: string) => Promise<Record<string, unknown>>;
+  const importer = new Function("url", "return import(url)") as (
+    url: string,
+  ) => Promise<Record<string, unknown>>;
   return importer(url);
 }
 
-function readExport(
-  module: Record<string, unknown>,
-  name: string,
-): unknown {
+function readExport(module: Record<string, unknown>, name: string): unknown {
   if (name in module) return module[name];
   const fallback = module.default as Record<string, unknown> | undefined;
   return fallback?.[name];

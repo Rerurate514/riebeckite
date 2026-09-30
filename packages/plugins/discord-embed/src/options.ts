@@ -8,7 +8,8 @@ import type {
 export const DEFAULT_THEME_COLOR = "#5865F2";
 
 /** Accepts `#rgb`, `#rgba`, `#rrggbb`, and `#rrggbbaa`. */
-export const HEX_COLOR_PATTERN = /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+export const HEX_COLOR_PATTERN =
+  /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 
 export function resolveDiscordEmbedOptions(
   options: DiscordEmbedOptions = {},

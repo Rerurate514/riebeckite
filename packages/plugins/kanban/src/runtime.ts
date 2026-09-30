@@ -5,9 +5,9 @@ import type {
 } from "@riebeckite/core";
 import { isKanbanNote, parseKanban, stripFrontmatter } from "./parse.js";
 import {
-  KANBAN_ATTRIBUTE,
   createKanbanPlaceholderPattern,
   decodeKanbanSource,
+  KANBAN_ATTRIBUTE,
 } from "./placeholder.js";
 import {
   createKanbanLinkResolver,

@@ -77,10 +77,7 @@ test("buildTextFragmentUrl reduces a long selection to start,end", () => {
 
 test("buildTextFragmentUrl keeps a single long token without a separator", () => {
   const token = "a".repeat(240);
-  assert.equal(
-    buildTextFragmentUrl(PAGE, token),
-    `${PAGE}#:~:text=${token}`,
-  );
+  assert.equal(buildTextFragmentUrl(PAGE, token), `${PAGE}#:~:text=${token}`);
 });
 
 test("buildTextFragmentUrl returns an empty string for an empty selection", () => {

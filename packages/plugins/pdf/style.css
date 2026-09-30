@@ -1,0 +1,47 @@
+.rr-pdf {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+}
+
+.rr-pdf__viewer {
+  display: block;
+  width: 100%;
+  height: var(--rr-pdf-height, 640px);
+  border: 1px solid var(--rb-color-border, currentColor);
+  border-radius: 0.25rem;
+  background: var(--rb-color-surface, #ffffff);
+}
+
+.rr-pdf__fallback {
+  display: block;
+  padding: 1rem;
+  font-weight: 700;
+}
+
+.rr-pdf__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.rr-pdf__format {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.rr-pdf__name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.rr-pdf__size {
+  color: var(--rb-color-muted, inherit);
+}
+
+.rr-pdf__download {
+  margin-inline-start: auto;
+  width: fit-content;
+}

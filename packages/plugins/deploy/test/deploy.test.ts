@@ -7,10 +7,10 @@ import {
   type PluginManifestContext,
 } from "@riebeckite/core";
 import {
-  deployPlugin,
   type DeployOutput,
-  planDeployOutputs,
+  deployPlugin,
   type PublicRedirect,
+  planDeployOutputs,
   renderRedirectLines,
   renderRedirectStub,
   renderVercelConfig,

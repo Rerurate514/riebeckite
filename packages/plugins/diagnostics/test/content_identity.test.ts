@@ -3,7 +3,7 @@ import { test } from "node:test";
 import type { Diagnostic } from "@riebeckite/core";
 import { checkContentIdIntegrity } from "../src/checks/content_identity.js";
 import { normalizeOptions } from "../src/checks/shared.js";
-import type { ScanResult, ScannedNote } from "../src/vault.js";
+import type { ScannedNote, ScanResult } from "../src/vault.js";
 
 function note(
   slug: string,

@@ -7,8 +7,8 @@ import type {
 import { selectDataviewEntries } from "./evaluate.js";
 import { parseDataview } from "./parse.js";
 import {
-  DATAVIEW_ATTRIBUTE,
   createDataviewPlaceholderPattern,
+  DATAVIEW_ATTRIBUTE,
   decodeDataviewSource,
 } from "./placeholder.js";
 import { renderDataview, renderDataviewError } from "./render.js";
@@ -45,7 +45,12 @@ export function createDataviewRuntime(
           continue;
         }
 
-        const html = replacePlaceholders(entry, manifest, resolved, diagnostics);
+        const html = replacePlaceholders(
+          entry,
+          manifest,
+          resolved,
+          diagnostics,
+        );
         if (html === entry.html) continue;
 
         entry.html = html;

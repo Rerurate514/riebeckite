@@ -212,7 +212,8 @@ function renderCalendar(
   const byDay = new Map<number, ContentManifestEntry[]>();
   for (const item of dated) {
     const date = new Date(item.time);
-    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month) continue;
+    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month)
+      continue;
     const day = date.getUTCDate();
     const bucket = byDay.get(day) ?? [];
     bucket.push(item.entry);

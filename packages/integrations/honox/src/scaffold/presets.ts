@@ -247,12 +247,38 @@ const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts", {
   headingText: { depth: 3, value: '"Related"' },
   className: { depth: 3, value: '"rb-related-posts"' },
 });
+const share = np("@riebeckite/plugin-share", "share", {
+  placement: { depth: 2, value: '"bottom"' },
+  services: {
+    depth: 3,
+    value:
+      '["x", "bluesky", "mastodon", "facebook", "linkedin", "hatena", "copy"]',
+  },
+  mastodonInstance: { depth: 3, value: '"mastodon.social"' },
+});
 const recentPosts = np("@riebeckite/plugin-recent-posts", "recentPostsPlugin");
+const changelog = np("@riebeckite/plugin-changelog", "changelog", {
+  perNote: { depth: 2, value: "true" },
+  lookbackDays: { depth: 3, value: "90" },
+  dateFormat: { depth: 3, value: '"iso"' },
+  siteWide: { depth: 3, value: "false" },
+});
+const webmention = np("@riebeckite/plugin-webmention", "webmention", {
+  headingText: { depth: 2, value: '"Mentions"' },
+  limit: { depth: 3, value: "20" },
+});
 const attachment = np(
   "@riebeckite/plugin-attachment",
   "attachment",
   `{ showSize: true }`,
 );
+const pdf = np("@riebeckite/plugin-pdf", "pdf", {
+  height: { depth: 2, value: '"640px"' },
+  initialPage: { depth: 2, value: "1" },
+  toolbar: { depth: 2, value: "true" },
+  showMetadata: { depth: 3, value: "true" },
+  downloadLabel: { depth: 3, value: '"Download PDF"' },
+});
 const media = np("@riebeckite/plugin-media", "media", {
   preload: { depth: 2, value: '"metadata"' },
   lazy: { depth: 2, value: "true" },
@@ -303,6 +329,13 @@ const series = np("@riebeckite/plugin-series", "series", {
   positionLabel: { depth: 2, value: "false" },
   heading: { depth: 3, value: "true" },
   className: { depth: 3, value: '"rb-series"' },
+});
+const taxonomy = np("@riebeckite/plugin-taxonomy", "taxonomy", {
+  tags: { depth: 2, value: "true" },
+  folders: { depth: 2, value: "true" },
+  related: { depth: 2, value: "true" },
+  feeds: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
+  relatedLimit: { depth: 3, value: "8" },
 });
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
@@ -362,6 +395,20 @@ const markmap = np("@riebeckite/plugin-markmap", "markmap", {
   caption: { depth: 2, value: "true" },
   height: { depth: 2, value: "320" },
   colorFreezeLevel: { depth: 3, value: "2" },
+});
+const map = np("@riebeckite/plugin-map", "map", {
+  zoom: { depth: 2, value: "13" },
+  height: { depth: 2, value: "320" },
+  tileUrl: {
+    depth: 3,
+    value: JSON.stringify("https://tile.openstreetmap.org/{z}/{x}/{y}.png"),
+  },
+  attribution: {
+    depth: 3,
+    value: JSON.stringify(
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    ),
+  },
 });
 const marp = np("@riebeckite/plugin-marp", "marp", {
   theme: { depth: 2, value: '"default"' },
@@ -594,8 +641,12 @@ export const full: ScaffoldPreset = {
     search,
     backlinks,
     relatedPosts,
+    share,
+    changelog,
+    webmention,
     recentPosts,
     attachment,
+    pdf,
     media,
     responsiveImage,
     lightbox,
@@ -604,6 +655,7 @@ export const full: ScaffoldPreset = {
     codeAnnotations,
     shortcodes,
     series,
+    taxonomy,
     autoCardLink,
     richEmbed,
   ],
@@ -630,8 +682,12 @@ export const max: ScaffoldPreset = {
     search,
     backlinks,
     relatedPosts,
+    share,
+    changelog,
+    webmention,
     recentPosts,
     attachment,
+    pdf,
     media,
     responsiveImage,
     lightbox,
@@ -640,6 +696,7 @@ export const max: ScaffoldPreset = {
     codeAnnotations,
     shortcodes,
     series,
+    taxonomy,
     autoCardLink,
     richEmbed,
     mermaid,
@@ -650,6 +707,7 @@ export const max: ScaffoldPreset = {
     vegaLite,
     wavedrom,
     markmap,
+    map,
     marp,
     qrCode,
     discordEmbed,
@@ -695,8 +753,12 @@ export const ultra: ScaffoldPreset = {
     search,
     backlinks,
     relatedPosts,
+    share,
+    changelog,
+    webmention,
     recentPosts,
     attachment,
+    pdf,
     media,
     responsiveImage,
     lightbox,
@@ -705,6 +767,7 @@ export const ultra: ScaffoldPreset = {
     codeAnnotations,
     shortcodes,
     series,
+    taxonomy,
     autoCardLink,
     richEmbed,
     mermaid,
@@ -715,6 +778,7 @@ export const ultra: ScaffoldPreset = {
     vegaLite,
     wavedrom,
     markmap,
+    map,
     marp,
     qrCode,
     discordEmbed,

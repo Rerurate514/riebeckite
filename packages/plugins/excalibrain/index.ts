@@ -1,37 +1,32 @@
 import {
+  type ContentManifest,
   createClientEntry,
   createStyleAsset,
   definePlugin,
   isPublished,
-  type ContentManifest,
   type PostContent,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { buildExcaliBrainGraph } from "./src/graph.js";
 import { layoutExcaliBrain } from "./src/layout.js";
 import {
-  hasExcaliBrainPlaceholder,
-  replaceExcaliBrainPlaceholders,
-} from "./src/placeholder.js";
-import { renderExcaliBrainSection } from "./src/render.js";
-import { rehypeExcaliBrain } from "./src/rehype.js";
-import {
   resolveExcaliBrainOptions,
   validateExcaliBrainOptions,
 } from "./src/options.js";
+import {
+  hasExcaliBrainPlaceholder,
+  replaceExcaliBrainPlaceholders,
+} from "./src/placeholder.js";
+import { rehypeExcaliBrain } from "./src/rehype.js";
+import { renderExcaliBrainSection } from "./src/render.js";
 import type { ExcaliBrainOptions } from "./src/types.js";
 
 export { buildExcaliBrainGraph } from "./src/graph.js";
 export { layoutExcaliBrain } from "./src/layout.js";
-export {
-  renderExcaliBrainSection,
-  renderExcaliBrainSvg,
-} from "./src/render.js";
-export {
-  resolveExcaliBrainOptions,
-  validateExcaliBrainOptions,
-} from "./src/options.js";
-export type { ResolvedExcaliBrainOptions } from "./src/options.js";
+export type {
+  DefinedRelation,
+  ResolvedOntology,
+} from "./src/ontology.js";
 export {
   collectDefinedRelations,
   DEFAULT_ONTOLOGY,
@@ -39,10 +34,15 @@ export {
   normalizeFieldName,
   resolveOntology,
 } from "./src/ontology.js";
-export type {
-  DefinedRelation,
-  ResolvedOntology,
-} from "./src/ontology.js";
+export type { ResolvedExcaliBrainOptions } from "./src/options.js";
+export {
+  resolveExcaliBrainOptions,
+  validateExcaliBrainOptions,
+} from "./src/options.js";
+export {
+  renderExcaliBrainSection,
+  renderExcaliBrainSvg,
+} from "./src/render.js";
 export type {
   ExcaliBrainBuildInput,
   ExcaliBrainClientOptions,

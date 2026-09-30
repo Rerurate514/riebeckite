@@ -2,10 +2,10 @@ import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import type { Content, Html, Parent, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import {
-  SHORTCODE_CHILDREN_MARKER,
   createShortcodeRenderContext,
   renderShortcode,
   resolveShortcodeOptions,
+  SHORTCODE_CHILDREN_MARKER,
 } from "./render.js";
 import type {
   DirectiveNode,
@@ -99,7 +99,14 @@ function transformDirective(
     parent.children.splice(
       index,
       1,
-      ...createFallback(resolved.className, name, label, attributes, container, children),
+      ...createFallback(
+        resolved.className,
+        name,
+        label,
+        attributes,
+        container,
+        children,
+      ),
     );
     return;
   }
@@ -234,9 +241,7 @@ function sourceText(
 function attributesText(attributes: ShortcodeAttributes): string {
   const entries = Object.entries(attributes);
   if (entries.length === 0) return "";
-  const body = entries
-    .map(([key, value]) => `${key}="${value}"`)
-    .join(" ");
+  const body = entries.map(([key, value]) => `${key}="${value}"`).join(" ");
   return `{${body}}`;
 }
 

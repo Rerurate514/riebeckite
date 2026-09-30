@@ -20,6 +20,13 @@ const honoxPackageRoot = path.join(
   "honox",
 );
 
+// The scaffold pins every generated Riebeckite dependency to the workspace
+// release version. This is the value those pins must match.
+const honoxManifest = JSON.parse(
+  fs.readFileSync(path.join(honoxPackageRoot, "package.json"), "utf8"),
+);
+const expectedRiebeckiteSpec = `^${honoxManifest.version}`;
+
 const errors = [];
 
 function expect(condition, message) {
@@ -35,6 +42,8 @@ const scaffoldSources = [
   path.join(scaffoldDir, "presets.ts"),
   path.join(scaffoldDir, "templates.ts"),
   path.join(scaffoldDir, "localized-content.ts"),
+  path.join(scaffoldDir, "next-steps.ts"),
+  path.join(scaffoldDir, "version.ts"),
   path.join(repositoryRoot, "scripts", "check_scaffold.mjs"),
 ];
 
@@ -71,6 +80,7 @@ async function main() {
 
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "check-scaffold-"));
   try {
+    checkScaffoldVersion();
     await checkStarter(scaffoldRiebeckiteSite, tmpRoot);
     await checkRich(scaffoldRiebeckiteSite, tmpRoot);
     await checkMax(scaffoldRiebeckiteSite, tmpRoot);
@@ -87,7 +97,39 @@ async function generate(scaffoldRiebeckiteSite, tmpRoot, name, options) {
     overwrite: true,
     ...options,
   });
+  checkGeneratedCommands(target, name);
   return target;
+}
+
+// Every generated site must teach the package scripts (`npm run …`), not
+// `npx riebeckite`, which probes the npm registry for a non-existent package
+// when the local binary is missing.
+function checkGeneratedCommands(root, label) {
+  const scan = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        scan(absolute);
+        continue;
+      }
+      if (!/\.(md|json|ts|tsx|txt)$/.test(entry.name)) continue;
+      const text = fs.readFileSync(absolute, "utf8");
+      if (text.includes("npx riebeckite")) {
+        errors.push(
+          `${label}: ${path.relative(root, absolute)} must use npm run commands instead of npx riebeckite`,
+        );
+      }
+    }
+  };
+  scan(root);
+}
+
+function checkScaffoldVersion() {
+  const source = fs.readFileSync(path.join(scaffoldDir, "version.ts"), "utf8");
+  expect(
+    source.includes(`"${expectedRiebeckiteSpec}"`),
+    `version.ts must pin ${expectedRiebeckiteSpec} to match the workspace release version`,
+  );
 }
 
 async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
@@ -120,6 +162,23 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
     expect(
       !readme.includes("Configuration reference"),
       "starter: README must not gain the configuration reference section",
+    );
+  }
+  const manifestFile = readSiteFile(root, "package.json");
+  expect(manifestFile !== null, "starter: package.json is missing");
+  if (manifestFile) {
+    const manifest = JSON.parse(manifestFile);
+    expect(
+      manifest.dependencies?.["@riebeckite/core"] === expectedRiebeckiteSpec,
+      `starter: @riebeckite/core must be pinned to ${expectedRiebeckiteSpec}`,
+    );
+    expect(
+      manifest.dependencies?.["@riebeckite/honox"] === expectedRiebeckiteSpec,
+      `starter: @riebeckite/honox must be pinned to ${expectedRiebeckiteSpec}`,
+    );
+    expect(
+      manifest.devDependencies?.["@riebeckite/cli"] === expectedRiebeckiteSpec,
+      `starter: @riebeckite/cli must be pinned to ${expectedRiebeckiteSpec}`,
     );
   }
 }

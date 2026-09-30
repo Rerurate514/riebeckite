@@ -1,8 +1,8 @@
 import {
+  type ConfigValidationIssue,
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  type ConfigValidationIssue,
 } from "@riebeckite/core";
 import type { D2Options, HastNode } from "./src/types.js";
 

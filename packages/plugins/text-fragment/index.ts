@@ -5,13 +5,13 @@ import {
   type RiebeckitePlugin,
 } from "@riebeckite/core";
 
+export { initTextFragmentShare } from "./src/text-fragment.client.js";
 export {
   buildQuoteMarkdown,
   buildTextFragmentUrl,
   encodeTextFragment,
   type TextFragmentOptions,
 } from "./src/text-fragment.js";
-export { initTextFragmentShare } from "./src/text-fragment.client.js";
 
 /**
  * Registers the client-only text fragment share plugin: a selection popover

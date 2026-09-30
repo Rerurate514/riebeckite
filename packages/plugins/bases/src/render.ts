@@ -4,7 +4,7 @@ import {
   escapeHtmlAttribute,
   queryContentEntries,
 } from "@riebeckite/core";
-import { resolveValueRef, matchesCondition } from "./evaluate.js";
+import { matchesCondition, resolveValueRef } from "./evaluate.js";
 import { DEFAULT_COLUMNS, parseValueRef } from "./parse.js";
 import type { BasesOptions, BasesSpec, BasesView } from "./types.js";
 
@@ -45,9 +45,7 @@ export function renderBases(
     .map((view) => renderView(view, spec, className, entries, limit))
     .join("");
   const fallback =
-    options.showFallback === false
-      ? ""
-      : renderFallback(className, source);
+    options.showFallback === false ? "" : renderFallback(className, source);
   const firstType = views[0]?.type ?? "table";
 
   return `<div class="${escapeHtmlAttribute(className)}" data-bases data-bases-view="${firstType}">${sections}${fallback}</div>`;
@@ -62,7 +60,10 @@ export function renderBasesError(
   return `<div class="${escapeHtmlAttribute(className)} ${escapeHtmlAttribute(className)}--error" role="status">${escapeHtml(message)}</div>`;
 }
 
-function selectViews(spec: BasesSpec, requested: string | undefined): BasesView[] {
+function selectViews(
+  spec: BasesSpec,
+  requested: string | undefined,
+): BasesView[] {
   const configured = spec.views;
   if (requested && requested.trim() !== "") {
     const target = requested.trim().toLowerCase();
@@ -97,7 +98,8 @@ function renderView(
   limit: number,
 ): string {
   const pool = entries.filter(
-    (entry) => view.filter === undefined || matchesCondition(view.filter, entry),
+    (entry) =>
+      view.filter === undefined || matchesCondition(view.filter, entry),
   );
   const effectiveLimit = Math.min(view.limit ?? limit, limit);
   const selected = queryContentEntries(pool, {
@@ -162,9 +164,7 @@ function renderCards(
   const titleProperty = view.columns.find((property) =>
     TITLE_PROPERTIES.has(property.toLowerCase()),
   );
-  const fields = view.columns.filter(
-    (property) => property !== titleProperty,
-  );
+  const fields = view.columns.filter((property) => property !== titleProperty);
 
   const items = entries
     .map((entry) => {
@@ -239,7 +239,8 @@ function columnLabel(property: string, spec: BasesSpec): string {
 function formatValue(value: unknown): string {
   if (value === undefined || value === null) return "";
   if (value instanceof Date) return formatDate(value);
-  if (Array.isArray(value)) return value.map((item) => formatValue(item)).join(", ");
+  if (Array.isArray(value))
+    return value.map((item) => formatValue(item)).join(", ");
   if (typeof value === "string") {
     return DATE_ONLY.test(value.trim()) ? value.trim() : value;
   }

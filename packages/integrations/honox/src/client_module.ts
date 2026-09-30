@@ -1,6 +1,6 @@
 import {
-  serializePublicClientConfig,
   type ResolvedRiebeckiteConfig,
+  serializePublicClientConfig,
 } from "@riebeckite/core";
 import type { Plugin } from "vite";
 

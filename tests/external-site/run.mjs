@@ -94,6 +94,10 @@ const PACKAGES = [
   },
   { directory: "packages/plugins/series", name: "@riebeckite/plugin-series" },
   {
+    directory: "packages/plugins/taxonomy",
+    name: "@riebeckite/plugin-taxonomy",
+  },
+  {
     directory: "packages/plugins/analytics",
     name: "@riebeckite/plugin-analytics",
   },
@@ -267,7 +271,9 @@ function runAsync(command, args, options = {}) {
       if (settled) return;
       settled = true;
       if (exceeded) {
-        reject(new Error(`Command output exceeded ${MAX_BUFFER} bytes: ${line}`));
+        reject(
+          new Error(`Command output exceeded ${MAX_BUFFER} bytes: ${line}`),
+        );
         return;
       }
       if (status !== 0 && !options.allowFailure) {
@@ -755,7 +761,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     );
   }
   if (!combined.includes(RICHEMBED_MARKER)) {
-    fail(`generated HTML is missing the rich embed marker (${RICHEMBED_MARKER})`);
+    fail(
+      `generated HTML is missing the rich embed marker (${RICHEMBED_MARKER})`,
+    );
   }
   if (!combined.includes("www.youtube-nocookie.com/embed/")) {
     fail("generated HTML is missing the rich embed YouTube iframe");
@@ -785,7 +793,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("an Obsidian alias did not resolve to a redirect route");
   }
   if (!combined.includes(HIGHLIGHT_MARKER)) {
-    fail(`generated HTML is missing the highlight marker (${HIGHLIGHT_MARKER})`);
+    fail(
+      `generated HTML is missing the highlight marker (${HIGHLIGHT_MARKER})`,
+    );
   }
   if (!combined.includes("<mark")) {
     fail("generated HTML is missing the highlight <mark> element");
@@ -819,6 +829,42 @@ function assertBuildOutput(siteDir, vaultDir) {
   }
   if (!combined.includes('rel="prev"') || !combined.includes('rel="next"')) {
     fail("series navigation is missing the previous/next links");
+  }
+  // The taxonomy plugin emits per-term feeds through the build's
+  // generated-output sink: one file per tag/folder and feed format.
+  const tagRss = path.join(distDir, "tags", "featured", "feed.xml");
+  if (!fs.existsSync(tagRss)) {
+    fail("taxonomy plugin did not emit the /tags/featured RSS feed");
+  }
+  const tagRssBody = fs.readFileSync(tagRss, "utf8");
+  if (!tagRssBody.includes("<rss")) {
+    fail("taxonomy tag feed is not an RSS document");
+  }
+  if (!tagRssBody.includes("/notes/example")) {
+    fail("taxonomy tag feed did not link the fixture note");
+  }
+  const tagAtom = path.join(distDir, "tags", "featured", "atom.xml");
+  if (!fs.existsSync(tagAtom)) {
+    fail("taxonomy plugin did not emit the /tags/featured Atom feed");
+  }
+  const tagJson = path.join(distDir, "tags", "featured", "feed.json");
+  if (!fs.existsSync(tagJson)) {
+    fail("taxonomy plugin did not emit the /tags/featured JSON feed");
+  }
+  const tagJsonBody = JSON.parse(fs.readFileSync(tagJson, "utf8"));
+  if (tagJsonBody.version !== "https://jsonfeed.org/version/1.1") {
+    fail("taxonomy JSON feed is not JSON Feed 1.1");
+  }
+  const tagRelatedFeed = path.join(distDir, "tags", "related-demo", "feed.xml");
+  if (!fs.existsSync(tagRelatedFeed)) {
+    fail("taxonomy plugin did not emit the /tags/related-demo RSS feed");
+  }
+  const folderFeed = path.join(distDir, "folders", "notes", "feed.xml");
+  if (!fs.existsSync(folderFeed)) {
+    fail("taxonomy plugin did not emit the /folders/notes RSS feed");
+  }
+  if (!fs.readFileSync(folderFeed, "utf8").includes("/notes/example")) {
+    fail("taxonomy folder feed did not link the fixture note");
   }
   if (
     !combined.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE) ||
@@ -939,9 +985,7 @@ function assertBuildOutput(siteDir, vaultDir) {
   if (
     !new RegExp(`data-markmap-source="[^"]*${MARKMAP_MARKER}`).test(combined)
   ) {
-    fail(
-      `markmap source attribute is missing the marker (${MARKMAP_MARKER})`,
-    );
+    fail(`markmap source attribute is missing the marker (${MARKMAP_MARKER})`);
   }
   if (!combined.includes(MARKMAP_MARKER)) {
     fail(`generated HTML is missing the markmap marker (${MARKMAP_MARKER})`);
@@ -950,15 +994,15 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail(`generated HTML is missing the Vega-Lite marker (${VEGALITE_MARKER})`);
   }
   if (!combined.includes("rb-vega-lite")) {
-    fail("generated HTML is missing the Vega-Lite plugin output (rb-vega-lite)");
+    fail(
+      "generated HTML is missing the Vega-Lite plugin output (rb-vega-lite)",
+    );
   }
   if (!combined.includes("data-vega-lite")) {
     fail("Vega-Lite figure is missing the output data attributes");
   }
   if (!combined.includes(WAVEDROM_MARKER)) {
-    fail(
-      `generated HTML is missing the wavedrom marker (${WAVEDROM_MARKER})`,
-    );
+    fail(`generated HTML is missing the wavedrom marker (${WAVEDROM_MARKER})`);
   }
   if (!combined.includes("data-wavedrom-spec")) {
     fail("generated HTML is missing the wavedrom figure configuration");
@@ -1041,7 +1085,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("code-annotations did not mark a [!code --] line as removed");
   }
   if (!combined.includes('data-line="2"')) {
-    fail("code-annotations did not materialize per-line wrappers with data-line");
+    fail(
+      "code-annotations did not materialize per-line wrappers with data-line",
+    );
   }
   if (!combined.includes(CODE_ANNOTATIONS_MARKER)) {
     fail(
@@ -1104,7 +1150,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     .map((file) => fs.readFileSync(file, "utf8"))
     .join("\n");
   if (!scripts.includes("rb-hover-preview")) {
-    fail("client bundle is missing the hover preview runtime (rb-hover-preview)");
+    fail(
+      "client bundle is missing the hover preview runtime (rb-hover-preview)",
+    );
   }
   if (!scripts.includes("initHoverPreview")) {
     fail(
@@ -1216,7 +1264,9 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("canvas styles/logic were not bundled into the dist JavaScript");
   }
   if (!js.includes("initCanvas")) {
-    fail("the canvas client initializer was not bundled into the dist JavaScript");
+    fail(
+      "the canvas client initializer was not bundled into the dist JavaScript",
+    );
   }
   // The ux plugin has no article HTML of its own, so its build-time
   // configuration element and its emitted client bundle are the observable
@@ -1231,10 +1281,14 @@ function assertBuildOutput(siteDir, vaultDir) {
     fail("the ux plugin stylesheet is missing its `rb-ux` classes");
   }
   if (!js.includes("rb-markmap")) {
-    fail("the markmap plugin client bundle is missing its `rb-markmap` identifier");
+    fail(
+      "the markmap plugin client bundle is missing its `rb-markmap` identifier",
+    );
   }
   if (!js.includes("initMarkmap")) {
-    fail("the markmap plugin client bundle is missing its `initMarkmap` initializer");
+    fail(
+      "the markmap plugin client bundle is missing its `initMarkmap` initializer",
+    );
   }
   if (!combined.includes('class="rr-color-mode"')) {
     fail("color-mode plugin did not render its rr-color-mode root hook");
@@ -1318,7 +1372,15 @@ function generateCreateStarterSite(tempRoot) {
     "--list-presets",
   ]);
   const listOutput = listResult.stdout ?? "";
-  for (const name of ["empty", "minimal", "starter", "rich", "full", "max", "ultra"]) {
+  for (const name of [
+    "empty",
+    "minimal",
+    "starter",
+    "rich",
+    "full",
+    "max",
+    "ultra",
+  ]) {
     if (!listOutput.includes(name)) {
       fail(`create-riebeckite --list-presets must list the ${name} preset`);
     }

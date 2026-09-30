@@ -72,7 +72,9 @@ function renderTable(
     .map((entry) => {
       const cells = columns
         .map((field) => {
-          const modifier = escapeHtmlAttribute(`rr-query__cell--${slugify(field)}`);
+          const modifier = escapeHtmlAttribute(
+            `rr-query__cell--${slugify(field)}`,
+          );
           return `<td class="${escapeHtmlAttribute(className)}__cell ${modifier}">${renderCell(entry, field, className)}</td>`;
         })
         .join("");
@@ -173,7 +175,8 @@ function columnLabel(field: string): string {
 function formatValue(value: unknown): string {
   if (value === undefined || value === null) return "";
   if (value instanceof Date) return formatDate(value);
-  if (Array.isArray(value)) return value.map((item) => formatValue(item)).join(", ");
+  if (Array.isArray(value))
+    return value.map((item) => formatValue(item)).join(", ");
   if (typeof value === "string") {
     return DATE_ONLY.test(value.trim()) ? value.trim() : value;
   }

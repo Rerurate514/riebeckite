@@ -6,7 +6,12 @@ import {
   text,
   visitElements,
 } from "./hast.js";
-import type { ElementNode, HastNode, ParentNode, VegaLiteOptions } from "./types.js";
+import type {
+  ElementNode,
+  HastNode,
+  ParentNode,
+  VegaLiteOptions,
+} from "./types.js";
 
 const DEFAULT_CLASS_NAME = "rb-vega-lite";
 const DEFAULT_THEME = "light";
@@ -52,7 +57,9 @@ function replaceVegaLiteBlock(
   options: ResolvedOptions,
 ) {
   const code = findDirectChild(pre, "code");
-  const source = code ? getTextContent(code).trim() : getTextContent(pre).trim();
+  const source = code
+    ? getTextContent(code).trim()
+    : getTextContent(pre).trim();
   const parsed = parseSpec(source);
   if (parsed.ok === false) {
     reportDiagnostic(file, parsed.message);

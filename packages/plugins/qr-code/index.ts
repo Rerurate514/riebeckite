@@ -1,7 +1,7 @@
 import {
+  type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
-  type ConfigValidationIssue,
 } from "@riebeckite/core";
 import {
   DEFAULT_QR_CODE_OPTIONS,
@@ -10,8 +10,8 @@ import {
 } from "./src/options.js";
 import type { HastNode, QrCodeOptions } from "./src/types.js";
 
-export { buildQrSvg } from "./src/render.js";
 export { resolveQrCodeOptions } from "./src/options.js";
+export { buildQrSvg } from "./src/render.js";
 export type {
   QrBuildResult,
   QrCodeLevel,

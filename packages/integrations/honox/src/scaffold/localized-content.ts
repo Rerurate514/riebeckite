@@ -1086,10 +1086,7 @@ function guideContent(): string {
     "",
     heading(2, "Run the site"),
     "",
-    codeBlock(
-      "sh",
-      ["npm install", "npx riebeckite dev", "npx riebeckite build"].join("\n"),
-    ),
+    codeBlock("sh", ["npm install", "npm run dev", "npm run build"].join("\n")),
     "",
     heading(2, "Localize a page"),
     "",

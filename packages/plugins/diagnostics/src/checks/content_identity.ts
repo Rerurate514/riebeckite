@@ -1,6 +1,6 @@
 import type { Diagnostic, PostFrontmatter } from "@riebeckite/core";
 import { resolveContentStableId } from "@riebeckite/core";
-import type { ScanResult, ScannedNote } from "../vault.js";
+import type { ScannedNote, ScanResult } from "../vault.js";
 import { type NormalizedOptions, pushDiagnostic } from "./shared.js";
 
 /**

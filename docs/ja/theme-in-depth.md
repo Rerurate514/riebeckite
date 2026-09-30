@@ -272,10 +272,10 @@ packages/themes/minimal/
 ## 9. 検証する
 
 ```sh
-npx riebeckite check          # 設定と Plugin の解決を検証
-npx riebeckite inspect config # 解決済みのテーマを確認
-npx riebeckite dev            # ローカルで見た目を確認
-npx riebeckite build          # 生成物を確認
+npm run check             # 設定と Plugin の解決を検証
+npm run inspect -- config # 解決済みのテーマを確認
+npm run dev               # ローカルで見た目を確認
+npm run build             # 生成物を確認
 ```
 
 `check` / `doctor` / `inspect` は読み取り専用です。Theme を交換しても route、manifest、graph、client behavior は変わりません。意図した見た目にならない場合、まず cascade の順序（`userCss` が最後）と、`rr-*` / `rb-*` のどちらを狙っているかを確認してください。

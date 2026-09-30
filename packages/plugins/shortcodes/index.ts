@@ -1,18 +1,18 @@
 import { createStyleAsset, definePlugin } from "@riebeckite/core";
 import { builtinShortcodeNames, builtinShortcodes } from "./src/builtins.js";
 import {
-  DEFAULT_SHORTCODE_CLASS_NAME,
-  SHORTCODE_CHILDREN_MARKER,
-  createShortcodeRenderContext,
-  renderShortcode,
-  resolveShortcodeOptions,
-} from "./src/render.js";
-import {
   DIAGNOSTIC_INVALID,
   DIAGNOSTIC_UNKNOWN,
-  SHORTCODES_SOURCE,
   remarkShortcodes,
+  SHORTCODES_SOURCE,
 } from "./src/remark.js";
+import {
+  createShortcodeRenderContext,
+  DEFAULT_SHORTCODE_CLASS_NAME,
+  renderShortcode,
+  resolveShortcodeOptions,
+  SHORTCODE_CHILDREN_MARKER,
+} from "./src/render.js";
 import type { ShortcodeOptions } from "./src/types.js";
 
 export type {
@@ -21,24 +21,22 @@ export type {
   ResolvedShortcodeOptions,
   ShortcodeAttributes,
   ShortcodeOptions,
-  ShortcodeRenderInput,
   ShortcodeRenderer,
+  ShortcodeRenderInput,
   ShortcodeRenderRequest,
 } from "./src/types.js";
-
-export { builtinShortcodeNames, builtinShortcodes };
 export {
-  DEFAULT_SHORTCODE_CLASS_NAME,
-  SHORTCODE_CHILDREN_MARKER,
+  builtinShortcodeNames,
+  builtinShortcodes,
   createShortcodeRenderContext,
-  renderShortcode,
-  resolveShortcodeOptions,
-};
-export {
+  DEFAULT_SHORTCODE_CLASS_NAME,
   DIAGNOSTIC_INVALID,
   DIAGNOSTIC_UNKNOWN,
-  SHORTCODES_SOURCE,
   remarkShortcodes,
+  renderShortcode,
+  resolveShortcodeOptions,
+  SHORTCODE_CHILDREN_MARKER,
+  SHORTCODES_SOURCE,
 };
 
 const PLUGIN_NAME = "shortcodes";

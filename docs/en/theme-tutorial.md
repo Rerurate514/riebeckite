@@ -100,10 +100,10 @@ packages/themes/minimal/
 ## 5. Verify
 
 ```sh
-npx riebeckite check          # validate config and plugin resolution
-npx riebeckite inspect config # inspect the resolved theme
-npx riebeckite dev            # check the look locally
-npx riebeckite build          # check the generated output
+npm run check             # validate config and plugin resolution
+npm run inspect -- config # inspect the resolved theme
+npm run dev               # check the look locally
+npm run build             # check the generated output
 ```
 
 `check` / `doctor` / `inspect` are read-only. Fix what the diagnostics say.

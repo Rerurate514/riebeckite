@@ -1,7 +1,7 @@
 import {
+  type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
-  type ConfigValidationIssue,
 } from "@riebeckite/core";
 import type { HastNode, MarpOptions } from "./src/types.js";
 

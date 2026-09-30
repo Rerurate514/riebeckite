@@ -74,7 +74,8 @@ async function replaceGraphvizBlock(
   const id = `rr-graphviz-${hashSource(source)}`;
 
   const buildEnabled = options.render === "build" || options.render === "both";
-  const clientEnabled = options.render === "client" || options.render === "both";
+  const clientEnabled =
+    options.render === "client" || options.render === "both";
   const renderResult = buildEnabled
     ? await renderStaticSvg(source, options.engine, file)
     : null;

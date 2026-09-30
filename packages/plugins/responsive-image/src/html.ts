@@ -4,8 +4,8 @@ import {
   type ResolvedResponsiveImageOptions,
   resolveResponsiveImageOptions,
 } from "./options.js";
-import { buildResponsiveSrcset } from "./srcset.js";
 import { RESPONSIVE_IMAGE_MARKER } from "./rehype.js";
+import { buildResponsiveSrcset } from "./srcset.js";
 
 const IMG_TAG_PATTERN = /<img\b(?:[^>"']|"[^"]*"|'[^']*')*>/gi;
 const ATTRIBUTE_PATTERN =
@@ -53,8 +53,7 @@ function transformImgTag(
 
   const resolved = resolveResponsiveImageOptions(options);
   const baseAttributes = attributes.filter(
-    (attribute) =>
-      attribute.name.toLowerCase() !== RESPONSIVE_IMAGE_MARKER,
+    (attribute) => attribute.name.toLowerCase() !== RESPONSIVE_IMAGE_MARKER,
   );
   const imageAttributes = normalizeImageAttributes(baseAttributes, resolved);
   if (plan.imgSrcset) {
@@ -136,9 +135,7 @@ function parseAttributes(source: string): OutputAttribute[] {
 }
 
 function serializeAttributes(attributes: readonly OutputAttribute[]): string {
-  return attributes
-    .map((attribute) => serializeAttribute(attribute))
-    .join(" ");
+  return attributes.map((attribute) => serializeAttribute(attribute)).join(" ");
 }
 
 function serializeAttribute(attribute: OutputAttribute): string {

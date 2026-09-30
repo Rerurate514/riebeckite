@@ -9,7 +9,9 @@ export type ResolvedAliasOptions = {
   status: AliasRedirectStatus;
 };
 
-export function resolveAliasOptions(options: AliasOptions): ResolvedAliasOptions {
+export function resolveAliasOptions(
+  options: AliasOptions,
+): ResolvedAliasOptions {
   const status = options.status ?? 308;
   if (!([301, 302, 307, 308] as const).includes(status)) {
     throw new Error(`Invalid alias redirect status: ${status}`);

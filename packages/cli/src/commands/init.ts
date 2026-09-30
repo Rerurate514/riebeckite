@@ -1,5 +1,6 @@
 import path from "node:path";
 import {
+  formatScaffoldNextSteps,
   type ScaffoldPresetName,
   scaffoldRiebeckiteSite,
 } from "@riebeckite/honox";
@@ -21,9 +22,5 @@ export async function runInit(options: InitOptions): Promise<void> {
   const relative = path.relative(process.cwd(), result.targetDirectory) || ".";
   console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
   console.log("");
-  console.log("Next steps:");
-  if (relative !== ".") console.log(`  cd ${relative}`);
-  console.log("  npm install");
-  console.log("  npx riebeckite check");
-  console.log("  npx riebeckite build");
+  console.log(formatScaffoldNextSteps(relative));
 }

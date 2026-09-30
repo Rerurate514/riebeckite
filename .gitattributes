@@ -1,3 +1,8 @@
+# Normalize every text file to LF in the repository and in every checkout,
+# regardless of the local `core.autocrlf` setting. Biome enforces LF, so a
+# CRLF working tree makes `pnpm check` fail on Windows.
+* text=auto eol=lf
+
 # Keep the external content fixtures byte-stable across platforms. The E2E
 # asserts exact attachment sizes, so line-ending conversion must not apply.
 tests/external-site/fixture/vault/** -text

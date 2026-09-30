@@ -42,7 +42,10 @@ function validateChartJsOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
-  if (options.responsive !== undefined && typeof options.responsive !== "boolean") {
+  if (
+    options.responsive !== undefined &&
+    typeof options.responsive !== "boolean"
+  ) {
     issues.push({ path: "responsive", message: "Expected a boolean." });
   }
   if (options.caption !== undefined && typeof options.caption !== "boolean") {

@@ -19,7 +19,8 @@ const QUERY_TYPES = new Set<DataviewQueryType>([
 ]);
 
 const CLAUSE_PATTERN = /^(from|where|sort|group\s+by|limit)\b(.*)$/i;
-const FIELD_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*$/;
+const FIELD_PATTERN =
+  /^[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*$/;
 
 class DataviewParseError extends Error {}
 
@@ -55,7 +56,9 @@ function parseSpec(source: string): DataviewSpec {
   const first = lines[firstIndex].trim();
   const typeMatch = /^([A-Za-z]+)\b(.*)$/.exec(first);
   if (!typeMatch) {
-    throw new DataviewParseError("a dataview block must start with a query type.");
+    throw new DataviewParseError(
+      "a dataview block must start with a query type.",
+    );
   }
 
   const type = typeMatch[1].toLowerCase();
@@ -75,13 +78,13 @@ function parseSpec(source: string): DataviewSpec {
   let expression: string | null = null;
   if (type === "table") {
     columns =
-      headText.length > 0
-        ? parseColumns(headText)
-        : [{ field: "file.link" }];
+      headText.length > 0 ? parseColumns(headText) : [{ field: "file.link" }];
   } else if (type === "list" || type === "calendar") {
     expression = headText.length > 0 ? headText : null;
   } else if (headText.length > 0) {
-    throw new DataviewParseError("TASK does not accept a column or expression list.");
+    throw new DataviewParseError(
+      "TASK does not accept a column or expression list.",
+    );
   }
 
   const fromText = takeClause(clauses, "from");
@@ -137,11 +140,15 @@ function takeClause(clauses: readonly Clause[], key: string): string | null {
   const matches = clauses.filter((clause) => clause.key === key);
   if (matches.length === 0) return null;
   if (matches.length > 1) {
-    throw new DataviewParseError(`the \`${key.toUpperCase()}\` clause appears more than once.`);
+    throw new DataviewParseError(
+      `the \`${key.toUpperCase()}\` clause appears more than once.`,
+    );
   }
   const text = matches[0].lines.join(" ").trim();
   if (text.length === 0) {
-    throw new DataviewParseError(`the \`${key.toUpperCase()}\` clause is empty.`);
+    throw new DataviewParseError(
+      `the \`${key.toUpperCase()}\` clause is empty.`,
+    );
   }
   return text;
 }
@@ -178,7 +185,8 @@ function parseSort(text: string): DataviewSort[] {
     }
     return {
       field: parseField(match[1], "SORT"),
-      order: (match[2]?.toLowerCase() as DataviewSortOrder | undefined) ?? "asc",
+      order:
+        (match[2]?.toLowerCase() as DataviewSortOrder | undefined) ?? "asc",
     };
   });
 }
@@ -186,7 +194,9 @@ function parseSort(text: string): DataviewSort[] {
 function parseLimit(text: string): number {
   const match = /^(\d+)$/.exec(text.trim());
   if (!match) {
-    throw new DataviewParseError(`LIMIT expects a non-negative integer, received \`${text}\`.`);
+    throw new DataviewParseError(
+      `LIMIT expects a non-negative integer, received \`${text}\`.`,
+    );
   }
   return Number(match[1]);
 }
@@ -242,11 +252,7 @@ function toFromToken(match: RegExpExecArray): FromToken {
   const [raw, link, tag, doubleQuoted, singleQuoted, lparen, rparen, negate] =
     match;
   if (link !== undefined) {
-    const value = link
-      .slice(2, -2)
-      .split("|")[0]
-      .split("#")[0]
-      .trim();
+    const value = link.slice(2, -2).split("|")[0].split("#")[0].trim();
     if (value.length === 0) {
       throw new DataviewParseError("a link source in FROM is empty.");
     }
@@ -369,11 +375,7 @@ function tokenizeExpression(text: string): ExpressionToken[] {
     }
 
     const pair = text.slice(index, index + 2);
-    if (
-      pair === ">=" ||
-      pair === "<=" ||
-      pair === "!="
-    ) {
+    if (pair === ">=" || pair === "<=" || pair === "!=") {
       tokens.push({ type: "op", value: pair as DataviewComparisonOperator });
       index += 2;
       continue;
@@ -409,7 +411,10 @@ function tokenizeExpression(text: string): ExpressionToken[] {
       index = quoted.next;
       continue;
     }
-    if (/[0-9]/.test(char) || (char === "-" && /[0-9]/.test(text[index + 1] ?? ""))) {
+    if (
+      /[0-9]/.test(char) ||
+      (char === "-" && /[0-9]/.test(text[index + 1] ?? ""))
+    ) {
       const match = /^-?\d+(?:\.\d+)?/.exec(text.slice(index));
       if (match) {
         tokens.push({ type: "number", value: Number(match[0]) });
@@ -549,10 +554,7 @@ function parseCall(state: ExpressionState, name: string): DataviewExpression {
   return { kind: "call", name, args };
 }
 
-function isWord(
-  token: ExpressionToken | undefined,
-  value: string,
-): boolean {
+function isWord(token: ExpressionToken | undefined, value: string): boolean {
   return token?.type === "word" && token.value.toLowerCase() === value;
 }
 

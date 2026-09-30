@@ -1,5 +1,8 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
-import type { RelatedPostsEntry, ResolvedRelatedPostsOptions } from "./types.js";
+import type {
+  RelatedPostsEntry,
+  ResolvedRelatedPostsOptions,
+} from "./types.js";
 
 /** Boolean attribute that marks the generated navigation for tests and styling. */
 export const RELATED_POSTS_ATTRIBUTE = "data-related-posts";

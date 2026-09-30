@@ -146,9 +146,7 @@ function renderKbd(input: ShortcodeRenderInput): string {
 
   return parts
     .filter((part) => part.length > 0)
-    .map(
-      (part) => `<kbd class="rb-shortcode__kbd">${escapeHtml(part)}</kbd>`,
-    )
+    .map((part) => `<kbd class="rb-shortcode__kbd">${escapeHtml(part)}</kbd>`)
     .join('<span class="rb-shortcode__kbd-separator">+</span>');
 }
 
@@ -160,9 +158,7 @@ function renderBadge(input: ShortcodeRenderInput): string {
     "default",
   );
   const title = first(input.attributes, ["title"]);
-  const titleAttribute = title
-    ? ` title="${escapeHtmlAttribute(title)}"`
-    : "";
+  const titleAttribute = title ? ` title="${escapeHtmlAttribute(title)}"` : "";
 
   return `<span class="rb-shortcode__badge rb-shortcode__badge--${escapeHtmlAttribute(
     variant,
@@ -290,6 +286,5 @@ export const builtinShortcodes: Record<
   file: renderFile,
 };
 
-export const builtinShortcodeNames: readonly string[] = Object.keys(
-  builtinShortcodes,
-);
+export const builtinShortcodeNames: readonly string[] =
+  Object.keys(builtinShortcodes);

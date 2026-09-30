@@ -50,18 +50,19 @@ test("manifest exposes a public-only view without stripping raw entries", async 
 
   const manifest = await manager.getManifest();
 
-  assert.deepEqual(
-    manifest.entries.map((entry) => entry.slug).sort(),
-    ["index", "public", "secret"],
-  );
-  assert.deepEqual(
-    manifest.publicEntries.map((entry) => entry.slug).sort(),
-    ["index", "public"],
-  );
-  assert.deepEqual(
-    [...manifest.publicRedirects.keys()].sort(),
-    ["/old-index", "/old-public"],
-  );
+  assert.deepEqual(manifest.entries.map((entry) => entry.slug).sort(), [
+    "index",
+    "public",
+    "secret",
+  ]);
+  assert.deepEqual(manifest.publicEntries.map((entry) => entry.slug).sort(), [
+    "index",
+    "public",
+  ]);
+  assert.deepEqual([...manifest.publicRedirects.keys()].sort(), [
+    "/old-index",
+    "/old-public",
+  ]);
 });
 
 test("selective publish strategy keeps non-private notes and drops private ones", async () => {
@@ -80,10 +81,9 @@ test("selective publish strategy keeps non-private notes and drops private ones"
   );
 
   const manifest = await manager.getManifest();
-  assert.deepEqual(
-    manifest.publicEntries.map((entry) => entry.slug).sort(),
-    ["note"],
-  );
+  assert.deepEqual(manifest.publicEntries.map((entry) => entry.slug).sort(), [
+    "note",
+  ]);
 });
 
 test("default publish strategy is explicit (deny by default)", async () => {
@@ -111,7 +111,8 @@ test("content IDs stay attached to the canonical entry across redirects", async 
   });
   const manager = new ContentManager(
     memorySource({
-      "note.md": "---\nid: note-7f4e9b\naliases: [Previous note]\n---\n\n# Note\n",
+      "note.md":
+        "---\nid: note-7f4e9b\naliases: [Previous note]\n---\n\n# Note\n",
       "legacy.md": "---\nuid: legacy-42\n---\n\n# Legacy\n",
       "plain.md": "# Plain\n",
     }),

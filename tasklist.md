@@ -35,6 +35,12 @@
 | M | レビュー時の `pnpm check --write .` で発生したフォーマット差分を整理する | Small | 作業ツリーはクリーン。ユーザー作業（OPTION_DEPTH / optionContext / renderOptions 等）は 1eda2b2 に保存済みで剰務なし |
 | N | ルート `pnpm check` を書き込みモードから分離する（読み取り専用 `check` + 明示 `check:fix`） | Small | `package.json`: `check` → `biome check .`（読み取り専用）、`check:fix` → `biome check --write .` を新設。docs en/ja を更新。commit 7ae8a58 |
 | P4 | 外部 E2E の `pnpm pack` フェーズを高速化する | Medium | `runAsync` を追加し並列度 4 の pool で `packPackages` を並列化。pack フェーズ 240 秒超 → ~80 秒に短縮、E2E フル PASS。commit 32d6a64 |
+| R | plugin-taxonomy: タグ/フォルダ単位の索引ページとタグ別フィードを生成する | Medium | 新規 `packages/plugins/taxonomy/`。Core `buildContentCollections` で `/tags/<slug>`・`/folders/<path>` を生成、タグ別 RSS/Atom/JSON Feed を `context.output.emit` で静的出力、`/taxonomy/index.json` endpoint・関連タグ導線・`seo` 拡張を実装。`taxonomy({folderIndexes:true})`。commit 3e40585 |
+| S | plugin-pdf: 添付 PDF をインラインビューアで表示する | Small | 新規 `packages/plugins/pdf/`。`.pdf` を `<object type="application/pdf">` で埋め込み、フォールバック DL リンクとメタ表示。renderer order:-20 で media/attachment より優先。commit 7a3b0b6 |
+| T | plugin-share: 記事の共有ボタン群を追加する | Small | 新規 `packages/plugins/share/`。X/Bluesky/Mastodon/Facebook/LinkedIn/Hatena＋コピー。SSR リンク＋最小 client、`onManifestCreated` で entry.html / PostContent.html に注入。テスト13件。commit 2c59ce0 |
+| U | plugin-map: `map` ブロック / frontmatter 座標から地図埋め込みを表示する | Medium | 新規 `packages/plugins/map/`。`map` フェンス/frontmatter を解析し静的フォールバック＋JSON を常時出力、`[data-rr-map]` がある時のみ Leaflet を遅延ロード。commit d106e48 |
+| V | plugin-changelog: git 履歴から記事/サイトの変更履歴ページを生成する | Medium | 新規 `packages/plugins/changelog/`。git 履歴から per-note 変更履歴（`article.after-content` スロット）と `buildSiteChangelog` を提供。非 git は降格診断。route 非所有。commit 9bff854 |
+| W | plugin-webmention: Webmention 受信 endpoint と「言及」表示を実装する | Large | 新規 `packages/plugins/webmention/`（provider 抽象・送信元検証・SSRF ガード付き fetcher・POST 受信/GET JSON feed・`rr-webmention`）と `packages/integrations/webmention-cloudflare/`（D1/KV storage・createWorker・migration）。Core の endpoint 型に POST を追加。テスト計20件。commit 170ee62 |
 
 ## 実装メモ（agents 用）
 

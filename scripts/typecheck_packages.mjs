@@ -41,10 +41,7 @@ function collectSourceFiles(directory) {
     }
     const full = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...collectSourceFiles(full));
-    else if (
-      /\.(ts|tsx)$/.test(entry.name) &&
-      !entry.name.endsWith(".d.ts")
-    ) {
+    else if (/\.(ts|tsx)$/.test(entry.name) && !entry.name.endsWith(".d.ts")) {
       files.push(full);
     }
   }
@@ -84,7 +81,9 @@ for (const directory of PACKAGE_DIRECTORIES) {
   const program = ts.createProgram(files, options);
   const errors = ts
     .getPreEmitDiagnostics(program)
-    .filter((diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error);
+    .filter(
+      (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error,
+    );
 
   checked += 1;
   if (errors.length === 0) continue;

@@ -36,7 +36,12 @@ export function createPluginMemo(
         const cached = await cache.get<T>(memoKey);
         if (cached !== undefined) return cached;
       } catch (error) {
-        warn(options.logger, "Plugin cache read failed; recomputing.", key, error);
+        warn(
+          options.logger,
+          "Plugin cache read failed; recomputing.",
+          key,
+          error,
+        );
       }
 
       const value = await compute();
@@ -44,7 +49,12 @@ export function createPluginMemo(
       try {
         await cache.set(memoKey, value);
       } catch (error) {
-        warn(options.logger, "Plugin cache write failed; result not cached.", key, error);
+        warn(
+          options.logger,
+          "Plugin cache write failed; result not cached.",
+          key,
+          error,
+        );
       }
 
       return value;

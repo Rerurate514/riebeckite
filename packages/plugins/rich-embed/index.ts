@@ -1,7 +1,7 @@
 import {
+  type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
-  type ConfigValidationIssue,
 } from "@riebeckite/core";
 import { RICH_EMBED_PROVIDERS } from "./src/providers.js";
 import { rehypeRichEmbed } from "./src/rehype.js";

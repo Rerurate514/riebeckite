@@ -18,7 +18,7 @@
 
 - Node.js（LTS）と pnpm が必要です。
 - コマンドはリポジトリのルートで実行します。コンテンツとアプリケーションは分かれています。Markdown は `content/`、HonoX アプリケーションは `apps/web` にあります。
-- Riebeckite には scaffold コマンドがあります。`npx create-riebeckite my-site` で、そのまま install・build できる単体サイトを生成できます（パッケージ未公開の間は、リポジトリ内で `pnpm exec riebeckite init my-site` という同じ generator を実行できます）。参照用アプリケーションと E2E フィクスチャは、さらに作り込んだサイトの例として引き続き有用です。
+- Riebeckite には scaffold コマンドがあります。`npx create-riebeckite my-site` で、そのまま install・build できる単体サイトを生成できます。参照用アプリケーションと E2E フィクスチャは、さらに作り込んだサイトの例として引き続き有用です。
 
 ## 1. 依存関係をインストールする
 
@@ -156,8 +156,8 @@ pnpm --filter @riebeckite/web deploy    # ビルドして Cloudflare Workers へ
 npx create-riebeckite my-site
 cd my-site
 npm install
-npx riebeckite check
-npx riebeckite build
+npm run check
+npm run build
 ```
 
 scaffolder は生成直後の状態で `check` と `build` を通る自己完結のサイトを書き出します。生成対象のファイルが既にあるディレクトリには `--force` なしでは上書きしません。

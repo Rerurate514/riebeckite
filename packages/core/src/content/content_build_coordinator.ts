@@ -78,8 +78,7 @@ export class ContentBuildCoordinator {
 
     try {
       await saveContentBuildState(this.dependencies.buildStatePath, state);
-    } catch {
-    }
+    } catch {}
   }
 
   private async prepare(

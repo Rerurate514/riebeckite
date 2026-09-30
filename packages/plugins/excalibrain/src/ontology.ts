@@ -1,7 +1,4 @@
-import type {
-  ExcaliBrainOntology,
-  ExcaliBrainNodeRole,
-} from "./types.js";
+import type { ExcaliBrainNodeRole, ExcaliBrainOntology } from "./types.js";
 
 export type ExcaliBrainFieldRole =
   | "parents"
@@ -152,8 +149,7 @@ export function isNoteHidden(input: {
   return false;
 }
 
-const WIKILINK_PATTERN =
-  /\[\[([^\]|#^]+)(?:[#^][^\]|]+)?(?:\|[^\]]+)?\]\]/g;
+const WIKILINK_PATTERN = /\[\[([^\]|#^]+)(?:[#^][^\]|]+)?(?:\|[^\]]+)?\]\]/g;
 
 /** Extract `[[target]]` link targets from a raw value. */
 export function extractWikilinkTargets(value: string): string[] {
@@ -186,8 +182,7 @@ function extractTargets(value: unknown): string[] {
   return [trimmed];
 }
 
-const INLINE_BRACKET_FIELD =
-  /\[([A-Za-z][A-Za-z0-9 _-]*)::\s*([^\]]+)\]/g;
+const INLINE_BRACKET_FIELD = /\[([A-Za-z][A-Za-z0-9 _-]*)::\s*([^\]]+)\]/g;
 const INLINE_LINE_FIELD = /^[ \t>*+-]*([A-Za-z][A-Za-z0-9 _-]*)::[ \t]*(.+)$/gm;
 const FENCED_CODE = /```[\s\S]*?```|~~~[\s\S]*?~~~/g;
 

@@ -8,9 +8,9 @@
     padding-block: var(--rb-space-8);
   }
 
-@media (max-width: 48rem) {
+  @media (max-width: 48rem) {
     .riebeckite-page {
-/* The fixed 4rem padding feels oversized on phones, where the shell
+      /* The fixed 4rem padding feels oversized on phones, where the shell
          already stacks the chrome (search bar) above the article. Keep a
          modest margin without eating the viewport. */
       padding-block: var(--rb-space-3);

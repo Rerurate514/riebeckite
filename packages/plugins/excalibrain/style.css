@@ -79,7 +79,8 @@
   stroke-width: 2;
 }
 
-.rb-excalibrain[data-excalibrain-render="client"] .rb-excalibrain__canvas:empty::before {
+.rb-excalibrain[data-excalibrain-render="client"]
+  .rb-excalibrain__canvas:empty::before {
   display: block;
   padding: 1rem;
   content: "ExcaliBrain map is rendered in the browser.";

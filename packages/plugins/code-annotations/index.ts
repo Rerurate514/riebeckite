@@ -1,9 +1,13 @@
 import { createStyleAsset, definePlugin } from "@riebeckite/core";
+import { resolveCodeAnnotationsOptions } from "./src/options.js";
 import { rehypeCodeAnnotations } from "./src/rehype.js";
 import { remarkCodeAnnotations } from "./src/remark.js";
-import { resolveCodeAnnotationsOptions } from "./src/options.js";
 import type { CodeAnnotationsOptions } from "./src/types.js";
 
+export type {
+  CollectedCodeAnnotations,
+  InlineCodeAnnotation,
+} from "./src/annotations.js";
 export {
   ANNOTATIONS_META_PREFIX,
   collectCodeAnnotations,
@@ -17,16 +21,12 @@ export {
   serializeAnnotations,
   stripInlineCodeAnnotation,
 } from "./src/annotations.js";
-export type {
-  CollectedCodeAnnotations,
-  InlineCodeAnnotation,
-} from "./src/annotations.js";
-export { rehypeCodeAnnotations } from "./src/rehype.js";
-export { remarkCodeAnnotations } from "./src/remark.js";
 export {
   DEFAULT_CODE_ANNOTATIONS_OPTIONS,
   resolveCodeAnnotationsOptions,
 } from "./src/options.js";
+export { rehypeCodeAnnotations } from "./src/rehype.js";
+export { remarkCodeAnnotations } from "./src/remark.js";
 export type {
   CodeAnnotationKind,
   CodeAnnotationPlan,

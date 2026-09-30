@@ -1,7 +1,7 @@
 import {
+  type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
-  type ConfigValidationIssue,
 } from "@riebeckite/core";
 import { remarkHighlight } from "./src/remark.js";
 import type { HighlightOptions } from "./src/types.js";
@@ -32,7 +32,10 @@ function validateHighlightOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
-  if (options.className !== undefined && typeof options.className !== "string") {
+  if (
+    options.className !== undefined &&
+    typeof options.className !== "string"
+  ) {
     issues.push({ path: "className", message: "Expected a string." });
   }
   if (

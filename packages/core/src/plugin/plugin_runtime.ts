@@ -14,12 +14,12 @@ import type {
   GeneratedOutputSink,
 } from "../types/generated_output.js";
 import { normalizeGeneratedOutputPath } from "../types/generated_output.js";
-import {
-  serializePublicClientConfig,
-  type PluginClientEntry,
-} from "../types/plugin_asset.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
+import {
+  type PluginClientEntry,
+  serializePublicClientConfig,
+} from "../types/plugin_asset.js";
 import type {
   PluginContentLocationResolver,
   PluginContext,

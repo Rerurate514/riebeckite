@@ -294,10 +294,10 @@ NodeNext/ESM package では、build 後に Node が解決できる import を維
 ## 5. 検証する
 
 ```sh
-npx riebeckite check           # 設定と Plugin の解決を検証
-npx riebeckite doctor          # 健全性診断
-npx riebeckite inspect plugins # 解決済みの Plugin 一覧を確認
-npx riebeckite build           # 生成物に反映されるか確認
+npm run check              # 設定と Plugin の解決を検証
+npm run doctor             # 健全性診断
+npm run inspect -- plugins # 解決済みの Plugin 一覧を確認
+npm run build              # 生成物に反映されるか確認
 ```
 
 解決されない場合は、まず `check` のメッセージで capability エラーや import エラーを確認してください。プラグインを作る前に「本当に Plugin が必要か（設定や App 実装で済まないか）」も確認してください。

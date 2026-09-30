@@ -9,7 +9,7 @@
 - **Node.js（LTS）**: `node -v` で `v20` 以降になっていれば OK です。入っていなければ [nodejs.org](https://nodejs.org/ja) から。
 - npm は Node.js に同梱されているので、追加のインストールは不要です。
 
-> **npm 公開について**: 本体パッケージ（`@riebeckite/*`）はまだ npm に公開されていません。今のうちはリポジトリを clone して `pnpm exec riebeckite init my-site` で同じ手順を進めてください（詳しくは [セットアップガイド](./setup.md)）。公開後は本ページのコマンドがそのまま使えます。
+> **npm 公開について**: 本体パッケージ（`@riebeckite/*`）は npm に公開されています。本ページのコマンドはそのまま使えます。
 
 ## 1. サイトをつくる
 
@@ -17,8 +17,8 @@
 npx create-riebeckite my-site
 cd my-site
 npm install
-npx riebeckite check
-npx riebeckite doctor
+npm run check
+npm run doctor
 ```
 
 - 生成されるのは、設定ファイル（`riebeckite.config.ts`）、HonoX の application shell（`app/`）、route、stylesheet、初期コンテンツ（`content/`）です。
@@ -81,9 +81,9 @@ publish: true
 `publish: true` が無いと explicit 方式では表示されません。読み込んだ状態は Inspector で確認できます（読み取り専用です）。
 
 ```sh
-npx riebeckite inspect config
-npx riebeckite inspect content --list
-npx riebeckite inspect graph
+npm run inspect -- config
+npm run inspect -- content --list
+npm run inspect -- graph
 ```
 
 - `inspect config` … 解決済みの設定とコンテンツの場所
@@ -97,7 +97,7 @@ npx riebeckite inspect graph
 開発サーバーで確認します。
 
 ```sh
-npx riebeckite dev
+npm run dev
 ```
 
 `http://localhost:5173` をブラウザで開くと記事が表示されます。編集はその場で反映され、停止は `Ctrl + C` です。
@@ -105,13 +105,13 @@ npx riebeckite dev
 公開用ファイルを `dist/` に生成するにはビルドします。
 
 ```sh
-npx riebeckite build
+npm run build
 ```
 
 build は通常、変更の無いコンテンツを再利用する **incremental build** です。差分の再利用を避けたい場合だけ `build --full` を使ってください。
 
 ```sh
-npx riebeckite build --full
+npm run build -- --full
 ```
 
 サイトを拡張するときの置き場所は、「機能 → Plugin（[はじめてのプラグイン作成](./plugin-tutorial.md)）」「見た目 → Theme（[はじめてのテーマ作成](./theme-tutorial.md)）」「固有の route → App（`app/`）」です。全体像は [Architecture](./architecture.md) を参照してください。

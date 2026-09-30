@@ -3,8 +3,8 @@ import { test } from "node:test";
 import { resolveConfig } from "../src/config.js";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
-import { serializePublicClientConfig } from "../src/types/plugin_asset.js";
 import { definePlugin } from "../src/types/plugin.js";
+import { serializePublicClientConfig } from "../src/types/plugin_asset.js";
 
 function memorySource(files: Record<string, string>): ContentSource {
   return {

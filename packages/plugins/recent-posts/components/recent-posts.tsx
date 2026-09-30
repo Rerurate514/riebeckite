@@ -8,7 +8,10 @@ export default function RecentPosts(props: Props) {
   if (props.posts.length === 0) return null;
 
   return (
-    <section class="recent-posts rr-recent-posts" aria-labelledby="recent-posts-title">
+    <section
+      class="recent-posts rr-recent-posts"
+      aria-labelledby="recent-posts-title"
+    >
       <div class="recent-posts__header">
         <p class="recent-posts__eyebrow">RECENT POSTS</p>
         <h2 class="recent-posts__title" id="recent-posts-title">

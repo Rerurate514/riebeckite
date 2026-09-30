@@ -63,7 +63,7 @@ import {
   MemoryWebmentionProvider,
   webmention,
 } from "@riebeckite/plugin-webmention";
-import { defaultTheme } from "@riebeckite/theme-default";
+import { rerurateTheme } from "@riebeckite/theme-rerurate";
 
 export default defineConfig({
   site: {
@@ -85,11 +85,10 @@ export default defineConfig({
     },
   },
   markdown: {},
-  theme: defaultTheme({
-    colorMode: "light",
-    typography: "system",
-    articleLayout: "article",
-    userCss: [],
+  theme: rerurateTheme({
+    colorMode: "system",
+    initial: "large",
+    motion: true,
   }),
   plugins: [
     obsidianMarkdown(),

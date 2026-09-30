@@ -26,7 +26,12 @@ export default defineConfig({
 });
 ```
 
-ルート側では manifest から表示用データを作り、コンポーネントに渡します。
+`gardenExplorerPlugin()` は `/explore` の Page Type とスタイルを登録します。
+`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う共通 catch-all route
+が表示と SSG を担当するため、Plugin 固有の route は不要です。
+
+コンポーネントを別の site-owned component に埋め込む場合だけ、manifest から
+表示用データを作って渡します。
 
 ```tsx
 import GardenExplorer, {

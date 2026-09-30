@@ -1,7 +1,8 @@
 import { isPublished } from "@riebeckite/core";
 import {
   contentRouteSsgParams,
-  resolveContentRoute,
+  pluginPageSsgParams,
+  resolveRiebeckiteRoute,
   ssgEnumerableHandler,
 } from "@riebeckite/honox/server";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
@@ -16,15 +17,20 @@ import Article from "../components/article/article";
 import { config } from "../config";
 import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
-import { buildArticleSeo, type SeoMetadata } from "../lib/seo";
+import {
+  buildArticleSeo,
+  buildWebsiteSeo,
+  type SeoMetadata,
+} from "../lib/seo";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", async () => {
     const manifest = await content.getManifest();
-    return manifest.entries
+    const contentPaths = manifest.entries
       .filter((entry) => isPublished(config, entry.frontmatter))
       .filter((entry) => entry.permalink !== "/")
       .map((entry) => ({ slug: entry.permalink.replace(/^\/+/, "") }));
+    return [...contentPaths, ...(await pluginPageSsgParams(content))];
   }),
   ssgEnumerableHandler(async (c, next) => {
     const requestedSlug = c.req.param("slug");
@@ -36,11 +42,25 @@ export default createRoute(
 
     if (/\.[a-zA-Z0-9]+$/.test(requestedSlug)) return c.notFound();
 
-    const manifest = await content.getManifest();
-    const route = resolveContentRoute(manifest, c.req.path);
+    const route = await resolveRiebeckiteRoute(content, c.req.path);
     if (!route) return c.notFound();
     if (route.kind === "redirect")
       return c.redirect(route.location, route.status);
+    if (route.kind === "page") {
+      c.set(
+        "seo",
+        buildWebsiteSeo({
+          title: route.page.title,
+          description: route.page.description,
+          path: route.page.pathname,
+        }),
+      );
+      c.set("headTags", []);
+      return c.render(
+        <div dangerouslySetInnerHTML={{ __html: route.page.body }} />,
+      );
+    }
+    const manifest = await content.getManifest();
     const slug = route.entry.slug;
 
     const post = await content.getProcessedContent(slug);

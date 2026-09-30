@@ -36,10 +36,12 @@ export default defineConfig({
 });
 ```
 
-`gardenExplorerPlugin()` registers the plugin in the plugin list and bundles
-`style.css` into the app stylesheet.
+`gardenExplorerPlugin()` registers the `/explore` page type and bundles
+`style.css` into the app stylesheet. A catch-all route using
+`resolveRiebeckiteRoute()` and `pluginPageSsgParams()` renders and emits it;
+no plugin-specific application route is needed.
 
-### Render the component
+### Embed the component elsewhere
 
 ```tsx
 import GardenExplorer, {
@@ -56,7 +58,7 @@ const data = getGardenExplorerData({
   resolveTitle: getArticleTitle,
 });
 
-// ...in your /explore route
+// ...in a site-owned component
 return <GardenExplorer data={data} />;
 ```
 

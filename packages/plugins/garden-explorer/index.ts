@@ -1,4 +1,6 @@
 import { definePlugin } from "@riebeckite/core";
+import { renderGardenExplorerPage } from "./src/garden-explorer-page.js";
+import { getGardenExplorerData } from "./src/garden-explorer.server.js";
 
 export { default as GardenExplorer } from "./components/garden-explorer.js";
 export type {
@@ -18,6 +20,32 @@ export function gardenExplorerPlugin() {
         pluginName: "garden-explorer",
         kind: "style",
         moduleSpecifier: "@riebeckite/plugin-garden-explorer/style.css",
+      },
+    ],
+    pageTypes: [
+      {
+        id: "garden-explorer",
+        paths: ["/explore"],
+        resolve: ({ pathname, manifest, config }) => {
+          if (pathname !== "/explore" || !config) return null;
+          const siteTitle = config.site.title;
+          return {
+            type: "garden-explorer",
+            pathname,
+            title: "Garden Explorer",
+            description:
+              "Explore notes through links, backlinks, tags, and folders.",
+            body: renderGardenExplorerPage(
+              getGardenExplorerData({
+                manifest,
+                config,
+                resolveTitle: (slug, title) =>
+                  typeof title === "string" && title.trim() ? title : slug,
+              }),
+              siteTitle,
+            ),
+          };
+        },
       },
     ],
   });

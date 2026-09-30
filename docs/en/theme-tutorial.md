@@ -55,27 +55,29 @@ export default defineConfig({
 
 ## 3. Write the CSS
 
-Do not hardcode colors. Use **semantic tokens (`--rb-*`) and stable hooks (`rb-*` / `rr-<feature>`)** so themes stay swappable.
+Do not hardcode colors. Use **semantic tokens (`--rb-*`) and stable hooks (`rb-*` / `rr-<feature>`)** so themes stay swappable, and scope every rule to the theme root selector. Replace `<name>` with the theme's identity name — here the theme is named `local`.
 
 ```css
 /* Example: adjust background, text color, and article width */
-.rb-site {
+:is(:root, .rb-theme-root)[data-theme-name="local"] .rb-site {
   background: var(--rb-color-paper);
   color: var(--rb-color-ink);
 }
 
-.rb-article {
+:is(:root, .rb-theme-root)[data-theme-name="local"] .rb-article {
   max-width: var(--rb-layout-article-max);
 }
 ```
 
+The theme root selector `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` matches the document root on a real site (the app sets `data-theme-name` on `<html>`) and any `class="rb-theme-root" data-theme-name="<name>"` container in a preview.
+
 Support color modes with these three states:
 
 ```css
-:root { /* light */ }
-:root[data-theme="dark"] { /* dark */ }
+:is(:root, .rb-theme-root)[data-theme-name="local"] { /* light */ }
+:is(:root, .rb-theme-root)[data-theme-name="local"][data-theme="dark"] { /* dark */ }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) { /* follows the OS (system) */ }
+  :is(:root, .rb-theme-root)[data-theme-name="local"]:not([data-theme]) { /* follows the OS (system) */ }
 }
 ```
 

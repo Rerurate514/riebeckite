@@ -83,12 +83,15 @@ properties.
 `pageMaxWidth`, `articleMaxWidth`, `sidebarWidth`, and `contentGap`.
 
 ``` css
-:root {
-  --rb-color-paper: #fafafa;
-  --rb-color-ink: #202020;
-  --rb-color-accent: #555;
-  --rb-font-body: system-ui, sans-serif;
-  --rb-layout-article-max: 48rem;
+@layer base {
+  /* <name> is the theme's identity name, for example "minimal". */
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+    --rb-color-paper: #fafafa;
+    --rb-color-ink: #202020;
+    --rb-color-accent: #555;
+    --rb-font-body: system-ui, sans-serif;
+    --rb-layout-article-max: 48rem;
+  }
 }
 ```
 
@@ -111,6 +114,66 @@ hard-coding a specific theme palette:
 
 Plugin-specific semantics remain owned by the plugin and may fall back to
 `--rb-*` tokens.
+
+## Theme root selector
+
+Built-in themes do not target the bare `:root` selector. Each theme scopes
+its rules to a *theme root* so the same stylesheet can style the real
+document and an embedded preview:
+
+``` css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"]
+```
+
+`<name>` is the theme's identity name: `riebeckite` for the default theme,
+otherwise `minimal`, `gruvbox`, `sakura`, `tokyonight`, or `rerurate`.
+
+- On a real site the application sets `data-theme-name` on `<html>`, so the
+  `:root` branch matches the document root.
+- In a preview (for example a theme gallery), the same stylesheet styles any
+  element that carries `class="rb-theme-root" data-theme-name="<name>"`.
+  Several themes can therefore render side by side in one document.
+
+Every selector a theme declares carries the same prefix:
+
+``` css
+/* light */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* ... */ }
+
+/* dark */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] {
+  /* ... */
+}
+
+/* system */
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) {
+    /* ... */
+  }
+}
+
+/* typography preset */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-typography="serif"] {
+  /* ... */
+}
+
+/* theme option */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-tokyonight-neon="on"] {
+  /* ... */
+}
+```
+
+Element and pseudo-element rules use the same prefix so they stay inside the
+preview container:
+
+``` css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] :focus-visible { /* ... */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] ::selection { /* ... */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] * { /* ... */ }
+```
+
+The framework emits `data-theme-name`; a preview container only needs the
+`.rb-theme-root` hook and the matching name.
 
 ## Styles
 
@@ -170,9 +233,9 @@ expanding Core `ThemeConfig`.
 
 Themes derive their palette from three CSS states:
 
-- `:root` — light
-- `:root[data-theme="dark"]` — dark
-- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }` — follow the OS ("system")
+- `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` — light
+- `:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"]` — dark
+- `@media (prefers-color-scheme: dark) { :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) }` — follow the OS ("system")
 
 The server writes `data-theme` on `<html>` unless the theme's `colorMode` is
 `"system"`, in which case the attribute is omitted and the media query picks
@@ -194,9 +257,10 @@ Themes target documented stable hooks instead of internal markup. Riebeckite
 uses two class namespaces:
 
 - `rb-*` — framework structural hooks and semantic design tokens. Structural
-  hooks include `.rb-site`, `.rb-article`, `.rb-article-layout`,
-  `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`,
-  `.rb-article-footer`, and `.rb-sidebar`.
+  hooks include `.rb-theme-root` (the theme root container), `.rb-site`,
+  `.rb-article`, `.rb-article-layout`, `.rb-article-header`,
+  `.rb-article-body`, `.rb-article-meta`, `.rb-article-footer`, and
+  `.rb-sidebar`.
 - `rr-<feature>` — the root hook a plugin or feature emits on the outermost
   element it renders, for example `.rr-search`, `.rr-callout`,
   `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`,
@@ -215,6 +279,28 @@ on the same element; a theme should target the `rr-*` hook.
 Plugins may also expose plugin-owned custom properties under `--rr-*` and
 fall back to the semantic `--rb-*` tokens. See [Plugin System](./plugin-system.md#css-hooks)
 for the plugin-side rule.
+
+## Character layer
+
+A theme is not limited to tokens. Within the theme boundary it may style the
+stable hooks directly to give a site a visual character.
+
+- Put token definitions inside `@layer base`; put visual character rules
+  **unlayered**. The application's structural CSS and plugin CSS are
+  unlayered, so unlayered theme rules win over them without `!important`.
+  Never use `!important`.
+- Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
+  `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`,
+  `.rb-article-footer`, `.rb-sidebar`, `.prose`, and the `rr-*` plugin roots
+  listed under [Stable CSS hooks](#stable-css-hooks). Do not invent new
+  `rb-*` / `rr-*` class names; `.rr-*` BEM parts are internal.
+- A theme may ship self-hosted webfonts (Latin subsets) inside its package
+  under `styles/fonts/`, reference them with relative `url()`, and include the
+  font license file. Japanese and other CJK text should fall back to system
+  font stacks instead of shipping large font files.
+
+Character rules are still presentation-only: they must not change content,
+structure, or behavior.
 
 ## Cascade
 

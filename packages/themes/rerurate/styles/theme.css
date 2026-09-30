@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  :root {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] {
     --rr-color-paper: #f6efe2;
     --rr-color-ink: #171717;
     --rr-color-orange: #f66620;
@@ -59,7 +59,7 @@
     --rb-layout-gap: 2rem;
   }
 
-  :root[data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"] {
     color-scheme: dark;
     --rb-color-paper: #1c1a17;
     --rb-color-surface: #26231f;
@@ -78,7 +78,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme]) {
       color-scheme: dark;
       --rb-color-paper: #1c1a17;
       --rb-color-surface: #26231f;
@@ -97,21 +97,27 @@
     }
   }
 
-  :root[data-typography="serif"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading:
       Futura, "Futura PT", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans",
       "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
   }
 
-  :root[data-typography="sans"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-typography="sans"] {
     --rb-font-body:
       Futura, "Futura PT", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans",
       "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  html {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -119,49 +125,704 @@
     caret-color: var(--rb-color-accent);
   }
 
-  body {
-    margin: 0;
-    background: var(--rb-color-paper);
-    color: var(--rb-color-ink);
-  }
-
-  ::selection {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] ::selection {
     background: var(--rb-color-accent);
     color: var(--rr-color-paper, #f6efe2);
   }
 
-  :focus-visible {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] :focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
 
-  :root[data-rerurate-initial="on"]
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-rerurate-initial-size="small"] {
+    --rr-initial-size: 1.8em;
+  }
+
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-rerurate-initial-size="medium"] {
+    --rr-initial-size: 2.4em;
+  }
+
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-rerurate-initial-size="large"] {
+    --rr-initial-size: 3.2em;
+  }
+
+  :is(
+      :root,
+      .rb-theme-root
+    )[data-theme-name="rerurate"][data-rerurate-initial="on"]
     .rb-article-body
     p:first-of-type::first-letter {
     float: left;
     margin: 0.02em 0.12em 0 0;
     color: var(--rb-color-accent);
-    font-size: 3.2em;
+    font-size: var(--rr-initial-size, 2.4em);
     font-weight: 700;
-    line-height: 0.85;
+    line-height: 1;
   }
 
-  * {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] * {
     scrollbar-color: var(--rb-color-muted) transparent;
     scrollbar-width: thin;
   }
 
-  ::-webkit-scrollbar {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
 
-  ::-webkit-scrollbar-thumb {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+    ::-webkit-scrollbar-thumb {
     background: var(--rb-color-muted);
     border: 2px solid var(--rb-color-paper);
   }
 
-  ::-webkit-scrollbar-track {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+    ::-webkit-scrollbar-track {
     background: transparent;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Rerurate character layer
+ *
+ * Paper / Ink / Orange, 1px rules that stop at the text edge, type as
+ * graphic, flat surfaces, and a multi-colour rule motif (dark red ->
+ * yellow -> muted green, three equal segments) as the sanctioned
+ * replacement for a gradient. A short page-load composition draws a rule
+ * that turns into a geometric diagram. All SVG is embedded through CSS
+ * only.
+ *
+ * Unlayered on purpose so it beats the layered app styles and the plugin
+ * defaults by cascade order, without `!important`.
+ * ------------------------------------------------------------------ */
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] {
+  /* Secondary palette: used only as thin adjacent rule segments. */
+  --rr-color-red: #802520;
+  --rr-color-ochre: #ba8530;
+  --rr-color-green: #5c7f71;
+
+  /* Motion tokens. Short, restrained page-load composition only. */
+  --rr-motion-duration: 460ms;
+  --rr-motion-slow: 560ms;
+  --rr-motion-fast: 180ms;
+  --rr-motion-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --rr-motion-distance: 0.5rem;
+
+  /* Link hover: accent mixed toward ink so it clears WCAG AA on Paper. */
+  --rr-link-hover: color-mix(
+    in srgb,
+    var(--rb-color-accent) 55%,
+    var(--rb-color-ink)
+  );
+
+  /* Embedded SVG: multi-colour rule motif, vector mark, quote chevrons. */
+  --rr-svg-rule: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='96'%20height='3'%20viewBox='0%200%2096%203'%3E%3Crect%20width='32'%20height='3'%20fill='%23802520'/%3E%3Crect%20x='32'%20width='32'%20height='3'%20fill='%23b98430'/%3E%3Crect%20x='64'%20width='32'%20height='3'%20fill='%235c7f71'/%3E%3C/svg%3E");
+  --rr-svg-mark: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='68'%20height='16'%20viewBox='0%200%2068%2016'%3E%3Crect%20y='7'%20width='58'%20height='2'%20fill='%23fff'/%3E%3Ccircle%20cx='4'%20cy='8'%20r='4'%20fill='%23fff'/%3E%3Cpath%20d='M56%203%20L64%208%20L56%2013'%20fill='none'%20stroke='%23fff'%20stroke-width='2'/%3E%3C/svg%3E");
+  --rr-svg-quote: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='32'%20viewBox='0%200%2040%2032'%3E%3Cpath%20d='M3%205%20L15%2016%20L3%2027'%20fill='none'%20stroke='%23f66620'%20stroke-width='3'/%3E%3Cpath%20d='M19%205%20L31%2016%20L19%2027'%20fill='none'%20stroke='%23f66620'%20stroke-width='3'/%3E%3C/svg%3E");
+}
+
+/* ---- Body rhythm: readable body, kept off the display treatment. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body {
+  font-family: var(--rb-font-body);
+  line-height: 1.75;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body p {
+  margin: 1.1em 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  :is(ul, ol) {
+  margin: 1.1em 0;
+  padding-left: 1.4em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body li {
+  margin: 0.35em 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  li::marker {
+  color: var(--rb-color-accent);
+}
+
+/* ---- Article header: rule first, then the title, then a diagram. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-header {
+  margin-bottom: 2rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-header::before {
+  content: "";
+  display: block;
+  width: 6rem;
+  height: 3px;
+  margin-bottom: 1.25rem;
+  background-image: var(--rr-svg-rule);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  transform-origin: left center;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-header h1 {
+  margin: 0;
+  color: var(--rb-color-accent);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.8rem, 1.3rem + 2.1vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* Rule -> diagram: a precise vector mark drawn from the header rule. */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-header::after {
+  content: "";
+  display: block;
+  width: 68px;
+  height: 16px;
+  margin-top: 1.5rem;
+  background: var(--rb-color-ink);
+  transform-origin: left center;
+  -webkit-mask-image: var(--rr-svg-mark);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-image: var(--rr-svg-mark);
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
+
+/* ---- Metadata: sparse ALL CAPS English, led by a short Orange rule. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 2rem;
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-heading);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-meta::before {
+  content: "";
+  flex: none;
+  width: 1.75rem;
+  height: 2px;
+  background: var(--rb-color-accent);
+}
+
+/* ---- Headings: hierarchy from size, weight and whitespace. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body h2 {
+  margin: 2.75rem 0 0.9rem;
+  padding-top: calc(3px + 0.6rem);
+  font-family: var(--rb-font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.002em;
+  /* The rule motif reappears, short, as an h2 accent, painted above the text
+     so `::before` stays free for the markdown-style `##` mark. */
+  background-image: var(--rr-svg-rule);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 2.75rem 3px;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body h3 {
+  margin: 2rem 0 0.6rem;
+  font-family: var(--rb-font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body h4 {
+  margin: 1.5rem 0 0.5rem;
+  font-family: var(--rb-font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  :is(h5, h6) {
+  margin: 1.25rem 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--rb-color-muted);
+}
+
+/* ---- Markdown-style heading marks: `#` .. `#####` inline before the heading
+   text so each heading reads as if the marks were typed from the start. The
+   marks inherit the heading's own size, colour and font. On by default;
+   `data-rerurate-heading-marks="off"` removes them. h6 is left unmarked. ---- */
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+    [data-rerurate-heading-marks="off"]
+  )
+  :is(
+    .rb-article-header h1,
+    .rb-article-body h2,
+    .rb-article-body h3,
+    .rb-article-body h4,
+    .rb-article-body h5
+  )::before {
+  display: inline;
+  margin-right: 0.4em;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+    [data-rerurate-heading-marks="off"]
+  )
+  .rb-article-header
+  h1::before {
+  content: "#";
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+    [data-rerurate-heading-marks="off"]
+  )
+  .rb-article-body
+  h2::before {
+  content: "##";
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+    [data-rerurate-heading-marks="off"]
+  )
+  .rb-article-body
+  h3::before {
+  content: "###";
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+    [data-rerurate-heading-marks="off"]
+  )
+  .rb-article-body
+  h4::before {
+  content: "####";
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+    [data-rerurate-heading-marks="off"]
+  )
+  .rb-article-body
+  h5::before {
+  content: "#####";
+}
+
+/* ---- `largeHeadings` opts into a slightly larger heading scale. ---- */
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  .rb-article-header
+  h1 {
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 2.9rem);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  .rb-article-body
+  h2 {
+  font-size: 1.35rem;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  .rb-article-body
+  h3 {
+  font-size: 1.1rem;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  .rb-article-body
+  h4 {
+  font-size: 0.95rem;
+}
+
+/* ---- Links: Ink -> Orange, with the rule (underline) expanding. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(
+    .rb-article-body,
+    .rb-article-footer,
+    .rb-article-meta,
+    .rr-table-of-contents,
+    .rr-backlinks,
+    .rr-recent-posts
+  )
+  a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--rb-color-ink) 35%,
+    transparent
+  );
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition:
+    color var(--rr-motion-fast) var(--rr-motion-ease),
+    text-decoration-color var(--rr-motion-fast) var(--rr-motion-ease),
+    text-decoration-thickness var(--rr-motion-fast) var(--rr-motion-ease);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(
+    .rb-article-body,
+    .rb-article-footer,
+    .rb-article-meta,
+    .rr-table-of-contents,
+    .rr-backlinks,
+    .rr-recent-posts
+  )
+  a:hover {
+  color: var(--rr-link-hover);
+  text-decoration-color: var(--rb-color-accent);
+  text-decoration-thickness: 2px;
+}
+
+/* ---- Blockquote: flat, marked by Orange quote chevrons. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  blockquote {
+  position: relative;
+  margin: 1.75rem 0;
+  padding: 0.1rem 0 0.1rem 3.25rem;
+  border: 0;
+  background: none;
+  color: color-mix(in srgb, var(--rb-color-ink) 86%, var(--rb-color-muted));
+  font-style: normal;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  blockquote::before {
+  content: "";
+  position: absolute;
+  top: 0.3rem;
+  left: 0;
+  width: 2.25rem;
+  height: 1.75rem;
+  background-image: var(--rr-svg-quote);
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: contain;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  blockquote
+  p:first-of-type::before,
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  blockquote
+  p:last-of-type::after {
+  content: none;
+}
+
+/* ---- Rules: 1px Ink, Paper-safe, stopping at the text edge. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body hr {
+  width: 100%;
+  height: 1px;
+  margin: 3rem 0;
+  border: 0;
+  background: var(--rb-color-border-strong);
+}
+
+/* ---- Inline code and bare pre (guarded against the code plugin). ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  :not(pre)
+  > code {
+  padding: 0.15em 0.4em;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: var(--rb-color-code-background);
+  font-family: var(--rb-font-mono);
+  font-size: 0.85em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)) {
+  margin: 1.75rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-mono);
+  font-size: 0.85rem;
+  line-height: 1.65;
+  overflow-x: auto;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  pre:not(:where(.rr-code *))
+  code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: inherit;
+}
+
+/* ---- Tables: hairline rules, no card chrome. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body table {
+  margin: 1.75rem 0;
+  font-size: 0.92em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  :is(th, td) {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--rb-color-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  thead
+  th {
+  border-bottom: 1px solid var(--rb-color-ink);
+  background: color-mix(in srgb, var(--rb-color-ink) 4%, transparent);
+  font-weight: 600;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
+  tbody
+  tr:last-child
+  :is(th, td) {
+  border-bottom: 0;
+}
+
+/* ---- Article chrome: flat rules, square corners. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rb-color-border);
+  font-size: 0.9rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-sidebar {
+  padding-left: 1rem;
+  border-left: 1px solid var(--rb-color-border-strong);
+  font-size: 0.9rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(.rb-article-body img, .rb-article-body video, .rr-media, .rr-attachment) {
+  border-radius: 0;
+}
+
+/* ---- Plugin roots: flatten radii and normalise rules. ---- */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code {
+  margin: 1.75rem 0;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--rb-font-mono);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code-tabs {
+  border-radius: 0;
+}
+
+/* Callouts: flat Paper/Ink, 1px rule, Orange left rule, ALL CAPS title. */
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-callout {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rb-color-border);
+  border-left: 3px solid var(--rb-color-accent);
+  border-radius: 0;
+  background-color: color-mix(
+    in srgb,
+    var(--rb-color-ink) 4%,
+    var(--rb-color-paper)
+  );
+  box-shadow: none;
+  color: var(--rb-color-ink);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rr-callout
+  .callout-title {
+  font-family: var(--rb-font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rb-color-ink);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rr-callout
+  .callout-icon {
+  color: var(--rb-color-accent);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-table-of-contents {
+  margin: 2rem 0;
+  padding: 1rem 1.15rem;
+  font-size: 0.9rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-backlinks {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-color-border);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-recent-posts {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-color-border);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rr-recent-posts
+  a:hover {
+  color: var(--rr-link-hover);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(.rr-backlinks, .rr-cardlink)
+  a {
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-cardlink {
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-search {
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rr-search
+  :is(input, button, a) {
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-mermaid {
+  border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-lightbox__image {
+  border-radius: 0;
+}
+
+/* ---- Page-load composition: rule draw-in, title rise, rule -> diagram.
+   Short (under 600ms) and staggered across a few elements only. The final
+   state is valid without motion: no base opacity/transform is hidden. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+      [data-rerurate-motion="off"]
+    )
+    .rb-article-header::before {
+    animation: rr-rule-draw var(--rr-motion-duration) var(--rr-motion-ease) both;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+      [data-rerurate-motion="off"]
+    )
+    .rb-article-header
+    h1 {
+    animation: rr-rise var(--rr-motion-duration) var(--rr-motion-ease) 60ms both;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+      [data-rerurate-motion="off"]
+    )
+    .rb-article-header::after {
+    animation: rr-mark-in var(--rr-motion-slow) var(--rr-motion-ease) 120ms both;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
+      [data-rerurate-motion="off"]
+    )
+    .rb-article-meta {
+    animation: rr-fade var(--rr-motion-duration) var(--rr-motion-ease) 180ms
+      both;
+  }
+}
+
+@keyframes rr-rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rr-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rr-motion-distance));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rr-mark-in {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rr-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

@@ -55,27 +55,29 @@ export default defineConfig({
 
 ## 3. CSS を書く
 
-色をハードコードせず、**セマンティック token（`--rb-*`）と安定したフック（`rb-*` / `rr-<feature>`）** を使います。こうするとテーマを差し替えやすくなります。
+色をハードコードせず、**セマンティック token（`--rb-*`）と安定したフック（`rb-*` / `rr-<feature>`）** を使い、すべてのルールを theme root selector に限定します。`<name>` はテーマの identity name に置き換えてください（ここではテーマ名 `local`）。
 
 ```css
 /* 例: 背景と文字色、記事幅を調整 */
-.rb-site {
+:is(:root, .rb-theme-root)[data-theme-name="local"] .rb-site {
   background: var(--rb-color-paper);
   color: var(--rb-color-ink);
 }
 
-.rb-article {
+:is(:root, .rb-theme-root)[data-theme-name="local"] .rb-article {
   max-width: var(--rb-layout-article-max);
 }
 ```
 
+theme root selector `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` は、実サイトでは document root（app が `<html>` に `data-theme-name` を付ける）に一致し、preview では `class="rb-theme-root" data-theme-name="<name>"` を持つ任意のコンテナに一致します。
+
 カラーモード対応は次の 3 つの状態で書きます。
 
 ```css
-:root { /* ライト */ }
-:root[data-theme="dark"] { /* ダーク */ }
+:is(:root, .rb-theme-root)[data-theme-name="local"] { /* ライト */ }
+:is(:root, .rb-theme-root)[data-theme-name="local"][data-theme="dark"] { /* ダーク */ }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) { /* OS に追従（system） */ }
+  :is(:root, .rb-theme-root)[data-theme-name="local"]:not([data-theme]) { /* OS に追従（system） */ }
 }
 ```
 

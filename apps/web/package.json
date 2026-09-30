@@ -75,6 +75,11 @@
     "@riebeckite/plugin-wavedrom": "workspace:*",
     "@riebeckite/plugin-webmention": "workspace:*",
     "@riebeckite/theme-default": "workspace:*",
+    "@riebeckite/theme-gruvbox": "workspace:*",
+    "@riebeckite/theme-minimal": "workspace:*",
+    "@riebeckite/theme-rerurate": "workspace:*",
+    "@riebeckite/theme-sakura": "workspace:*",
+    "@riebeckite/theme-tokyonight": "workspace:*",
     "hono": "^4.12.25",
     "honox": "0.1.56",
     "slugify": "^1.6.9"

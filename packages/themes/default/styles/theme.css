@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  :root {
+  :is(:root, .rb-theme-root)[data-theme-name="riebeckite"] {
     color-scheme: light;
     --rb-color-paper: #fafafa;
     --rb-color-surface: #ffffff;
@@ -40,9 +40,11 @@
     --rb-layout-article-max: 48rem;
     --rb-layout-sidebar: 14rem;
     --rb-layout-gap: 2rem;
+    --rb-default-radius: 0.375rem;
+    --rb-default-radius-sm: 0.25rem;
   }
 
-  :root[data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-theme-name="riebeckite"][data-theme="dark"] {
     color-scheme: dark;
     --rb-color-paper: #17171a;
     --rb-color-surface: #212124;
@@ -57,7 +59,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-theme-name="riebeckite"]:not([data-theme]) {
       color-scheme: dark;
       --rb-color-paper: #17171a;
       --rb-color-surface: #212124;
@@ -72,35 +74,447 @@
     }
   }
 
-  :root[data-typography="serif"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="riebeckite"][data-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading: ui-sans-serif, system-ui, sans-serif;
   }
 
-  :root[data-typography="sans"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="riebeckite"][data-typography="sans"] {
     --rb-font-body: ui-sans-serif, system-ui, sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  html {
+  :is(:root, .rb-theme-root)[data-theme-name="riebeckite"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
   }
 
-  body {
-    margin: 0;
-    background: var(--rb-color-paper);
-    color: var(--rb-color-ink);
-  }
-
-  ::selection {
+  :is(:root, .rb-theme-root)[data-theme-name="riebeckite"] ::selection {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
   }
 
-  :focus-visible {
+  :is(:root, .rb-theme-root)[data-theme-name="riebeckite"] :focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
+}
+
+/* -------------------------------------------------------------------------
+   Character layer — unlayered on purpose.
+   The app's structural CSS and the plugin defaults live inside @layer, so
+   these unlayered rules win without `!important`. Every selector stays scoped
+   to the theme root, so an embedded preview container (`.rb-theme-root`) gets
+   the same result as the document root. The default theme is the restrained
+   reference: hierarchy comes from type and hairlines, never decoration.
+   ------------------------------------------------------------------------- */
+
+/* Article shell: a comfortable editorial measure. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article {
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-body);
+  font-size: 1.0625rem;
+  line-height: 1.78;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-header h1 {
+  margin: 0 0 0.75rem;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.9rem, 4vw, 2.4rem);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.16;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-meta {
+  margin-block: 0 2.25rem;
+  color: var(--rb-color-muted);
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-footer {
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-color-border);
+  color: var(--rb-color-muted);
+  font-size: 0.9375rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-sidebar {
+  color: var(--rb-color-muted);
+  font-size: 0.9375rem;
+}
+
+/* Headings: hierarchy from size and weight; only h2 carries a hairline. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  :is(h2, h3, h4, h5, h6) {
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body h2 {
+  margin-block: 2.75rem 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--rb-color-border);
+  font-size: 1.5rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body h3 {
+  margin-block: 2.1rem 0.75rem;
+  font-size: 1.25rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body h4 {
+  margin-block: 1.6rem 0.6rem;
+  font-size: 1.0625rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body h5,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body h6 {
+  margin-block: 1.4rem 0.5rem;
+  color: color-mix(in srgb, var(--rb-color-muted) 60%, var(--rb-color-ink));
+  font-size: 0.9375rem;
+  letter-spacing: 0.02em;
+}
+
+/* Paragraph rhythm. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body p {
+  margin-block: 1.3rem;
+  text-wrap: pretty;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  > :first-child {
+  margin-block-start: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  > :last-child {
+  margin-block-end: 0;
+}
+
+/* Links: accent tone, offset underline, clear hover. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body a {
+  color: color-mix(in srgb, var(--rb-color-accent) 68%, var(--rb-color-ink));
+  text-decoration: underline;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--rb-color-accent) 55%,
+    transparent
+  );
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition:
+    color 140ms ease,
+    text-decoration-color 140ms ease;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  a:hover {
+  color: var(--rb-color-ink);
+  text-decoration-color: currentColor;
+}
+
+/* Lists: quiet spacing, muted markers. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  :is(ul, ol) {
+  margin-block: 1.3rem;
+  padding-inline-start: 1.4em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body li {
+  margin-block: 0.35rem;
+  padding-inline-start: 0.1em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  :is(ul, ol)
+  > li::marker {
+  color: var(--rb-color-muted);
+}
+
+/* Blockquote: a quiet left rule and muted text, no fill. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  blockquote {
+  margin: 2rem 0;
+  padding: 0.2rem 0 0.2rem 1.15rem;
+  border-inline-start: 2px solid var(--rb-color-border-strong);
+  background: none;
+  color: var(--rb-color-muted);
+  font-style: normal;
+  quotes: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  blockquote
+  p {
+  margin-block: 0.55rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  blockquote
+  p::before,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  blockquote
+  p::after {
+  content: none;
+}
+
+/* hr: a single hairline. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body hr {
+  height: 0;
+  margin-block: 3rem;
+  border: 0;
+  border-top: 1px solid var(--rb-color-border);
+  background: none;
+}
+
+/* Inline code: a subtle chip with a hairline edge. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  :not(pre)
+  > code {
+  padding: 0.15em 0.4em;
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius-sm);
+  background: color-mix(
+    in srgb,
+    var(--rb-color-code-background) 62%,
+    var(--rb-color-surface)
+  );
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-mono);
+  font-size: 0.875em;
+}
+
+/* A bare <pre> gets the flat code surface; the plugin owns its own chrome. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)) {
+  margin-block: 1.75rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius);
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-mono);
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+/* Code-enhance plugin: flat surface, hairline border, small radius. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-code {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius);
+  background: var(--rr-code-paper, var(--rb-color-code-background));
+  color: var(--rr-code-ink, var(--rb-color-ink));
+  overflow: hidden;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rr-code:not([data-terminal="true"]) {
+  --rr-code-paper: var(--rb-color-code-background);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  :is(.rr-code, .rr-code-tabs) {
+  border-radius: var(--rb-default-radius);
+  overflow: hidden;
+}
+
+/* Tables: hairline grid and a subtly tinted header row. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  table {
+  margin-block: 1.75rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius-sm);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 0.9375em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  :is(th, td) {
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid var(--rb-color-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  thead
+  th {
+  background: var(--rb-color-surface);
+  color: var(--rb-color-ink);
+  font-weight: 650;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  tbody
+  tr:last-child
+  td {
+  border-bottom: 0;
+}
+
+/* Images: hairline frame, no heavy shadow. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-body > img,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  p
+  > img,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  figure
+  img {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius-sm);
+}
+
+/* Callouts: flat surface, hairline frame, muted left rule. The project's
+   existing callout title treatment is left untouched. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-callout {
+  margin-block: 1.75rem;
+  padding: 0.95rem 1.15rem;
+  border: 1px solid var(--rb-color-border);
+  border-inline-start: 2px solid
+    color-mix(
+      in srgb,
+      var(--callout-tone, var(--rb-color-muted)) 60%,
+      var(--rb-color-border-strong)
+    );
+  border-radius: var(--rb-default-radius-sm);
+  background: color-mix(
+    in srgb,
+    var(--callout-tone, var(--rb-color-muted)) 4%,
+    var(--rb-color-surface)
+  );
+  color: var(--rb-color-ink);
+  box-shadow: none;
+}
+
+/* Plugin roots: the same quiet hairline language everywhere. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-table-of-contents {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius-sm);
+  background: var(--rb-color-surface);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rr-table-of-contents
+  a {
+  color: var(--rb-color-muted);
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rr-table-of-contents
+  a:hover {
+  color: var(--rb-color-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-backlinks,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-local-graph,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-recent-posts {
+  margin-top: 3.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rb-color-border);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-backlinks a,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-recent-posts a {
+  border-radius: var(--rb-default-radius-sm);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-search {
+  border-radius: var(--rb-default-radius-sm);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rr-search
+  :is(input, button, a) {
+  border-radius: var(--rb-default-radius-sm);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-cardlink {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius);
+  overflow: hidden;
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-cardlink:hover,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rr-cardlink:focus-visible {
+  border-color: var(--rb-color-border-strong);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-attachment,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-mermaid {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-default-radius-sm);
+  background: var(--rb-color-surface);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-lightbox img,
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rr-media
+  :is(img, video, audio) {
+  border-radius: var(--rb-default-radius-sm);
+}
+
+/* Scrollbar: neutral hairlines, no accent glow. */
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] * {
+  scrollbar-color: var(--rb-color-border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  ::-webkit-scrollbar-thumb {
+  border: 2px solid var(--rb-color-paper);
+  border-radius: 999px;
+  background: var(--rb-color-border-strong);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  ::-webkit-scrollbar-track {
+  background: transparent;
 }

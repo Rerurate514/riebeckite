@@ -13,6 +13,15 @@ design system as CSS custom properties (`--rb-color-*`, `--rb-font-*`,
 `@theme` block, so the tokens are usable both from plain CSS and from
 Tailwind-style utilities.
 
+It is also the reference theme in character: a restrained, editorially-clean
+default that could ship on any site. Hierarchy comes from type and hairline
+rules rather than decoration — a comfortable article measure, an h2 with a
+single 1px rule beneath it, offset accent links, a quiet left-ruled blockquote,
+chip-style inline code, flat code blocks, and hairline table and plugin chrome.
+Palette, radii, and spacing stay neutral so the theme reads as a sensible
+ground rather than a statement. The character layer is unlayered at the end of
+`styles/theme.css`, scoped to the theme root, and needs no `!important`.
+
 The theme is used automatically when `config.theme` is omitted from
 `riebeckite.config.ts`.
 

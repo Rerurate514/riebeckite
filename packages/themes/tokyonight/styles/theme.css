@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  :root {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] {
     color-scheme: light;
     --rb-color-paper: #e1e2e7;
     --rb-color-surface: #d6d8df;
@@ -34,7 +34,8 @@
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       sans-serif;
     --rb-font-heading: var(--rb-font-body);
-    --rb-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    --rb-font-mono:
+      "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     --rb-space-1: 0.5rem;
     --rb-space-2: 1rem;
     --rb-space-3: 1.5rem;
@@ -48,7 +49,7 @@
     --rb-layout-gap: 2rem;
   }
 
-  :root[data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"][data-theme="dark"] {
     color-scheme: dark;
     --rb-color-paper: #1a1b26;
     --rb-color-surface: #212332;
@@ -67,7 +68,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]:not([data-theme]) {
       color-scheme: dark;
       --rb-color-paper: #1a1b26;
       --rb-color-surface: #212332;
@@ -86,21 +87,27 @@
     }
   }
 
-  :root[data-typography="serif"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       sans-serif;
   }
 
-  :root[data-typography="sans"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-typography="sans"] {
     --rb-font-body:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  html {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -108,55 +115,590 @@
     caret-color: var(--rb-color-accent);
   }
 
-  body {
-    margin: 0;
-    background: var(--rb-color-paper);
-    color: var(--rb-color-ink);
-  }
-
-  ::selection {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] ::selection {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
   }
 
-  :focus-visible {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] :focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
 
-  :root[data-tokyonight-neon="on"] :focus-visible {
+  :is(
+      :root,
+      .rb-theme-root
+    )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
+    :focus-visible {
     outline-color: var(--rb-color-accent);
     box-shadow:
       0 0 0 4px color-mix(in srgb, var(--rb-color-accent) 30%, transparent),
       0 0 16px color-mix(in srgb, var(--rb-color-accent) 40%, transparent);
   }
 
-  :root[data-tokyonight-neon="on"] ::selection {
+  :is(
+      :root,
+      .rb-theme-root
+    )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
+    ::selection {
     background: color-mix(in srgb, var(--rb-color-accent) 85%, transparent);
     color: color-mix(in srgb, var(--rb-color-paper) 90%, transparent);
   }
 
-  * {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] * {
     scrollbar-color: var(--rb-color-muted) transparent;
     scrollbar-width: thin;
   }
 
-  ::-webkit-scrollbar {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
 
-  ::-webkit-scrollbar-thumb {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+    ::-webkit-scrollbar-thumb {
     background: var(--rb-color-muted);
     border-radius: 10px;
     border: 2px solid var(--rb-color-paper);
   }
 
-  :root[data-tokyonight-neon="on"] ::-webkit-scrollbar-thumb {
+  :is(
+      :root,
+      .rb-theme-root
+    )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
+    ::-webkit-scrollbar-thumb {
     background: var(--rb-color-accent);
   }
 
-  ::-webkit-scrollbar-track {
+  :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+    ::-webkit-scrollbar-track {
     background: transparent;
   }
+}
+
+/* ------------------------------------------------------------------ *
+ * Character layer
+ *
+ * Tokyo Night identity: technical / neon. Mono display headings,
+ * a tight rhythm, square 1px-bordered surfaces, electric accents and
+ * an optional neon glow. Unlayered on purpose so it wins over the
+ * layered app and plugin stylesheets without `!important`.
+ * ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/jetbrains-mono-latin-wght-normal.woff2")
+    format("woff2-variations");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Display + mono identity (Latin only; CJK falls back to the system stack). */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] {
+  --rb-font-heading:
+    "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+    "Hiragino Sans", "Noto Sans JP", "Yu Gothic", ui-monospace, monospace;
+}
+
+/* ---- Body rhythm ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body {
+  font-family: var(--rb-font-body);
+  line-height: 1.7;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body p {
+  margin: 0.9em 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  :is(ul, ol) {
+  margin: 1em 0;
+  padding-left: 1.4em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body li {
+  margin: 0.3em 0;
+}
+
+/* ---- Headings: tech (default) ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-header {
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--rb-color-accent);
+  padding-bottom: 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-header h1 {
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.75rem, 1.4rem + 1.6vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body h2 {
+  margin: 2em 0 0.75em;
+  border-left: 3px solid var(--rb-color-accent);
+  padding-left: 0.6em;
+  font-family: var(--rb-font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body h3 {
+  margin: 1.6em 0 0.5em;
+  border-left: 2px solid var(--rb-color-border-strong);
+  padding-left: 0.5em;
+  font-family: var(--rb-font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body h4 {
+  margin: 1.4em 0 0.4em;
+  font-family: var(--rb-font-heading);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rb-color-muted);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  :is(h5, h6) {
+  margin: 1.2em 0 0.4em;
+  font-family: var(--rb-font-heading);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rb-color-muted);
+}
+
+/* ---- Headings: plain (opt-out) ---- */
+:is(
+  :root,
+  .rb-theme-root
+)[data-theme-name="tokyonight"][data-tokyonight-heading="plain"] {
+  --rb-font-heading: var(--rb-font-body);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-heading="plain"]
+  :is(.rb-article-header h1, .rb-article-body h1, .rb-article-body h2),
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-heading="plain"]
+  .rb-article-body
+  :is(h3, h4, h5, h6) {
+  border-left: 0;
+  padding-left: 0;
+  color: var(--rb-color-ink);
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* ---- Links ---- */
+/* Accent text is mixed toward ink so it clears WCAG AA on the day paper
+   (#2e7de9 alone is ~3.1:1) while staying an electric blue. */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  a {
+  color: color-mix(in srgb, var(--rb-color-accent) 50%, var(--rb-color-ink));
+  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Blockquote ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  blockquote {
+  margin: 1.5em 0;
+  border-left: 3px solid var(--rb-color-accent);
+  background: color-mix(in srgb, var(--rb-color-accent) 6%, transparent);
+  padding: 0.75em 1em;
+  color: color-mix(in srgb, var(--rb-color-ink) 85%, var(--rb-color-muted));
+  font-style: normal;
+  font-weight: 400;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  blockquote
+  p:first-of-type::before,
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  blockquote
+  p:last-of-type::after {
+  content: none;
+}
+
+/* ---- Rules ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body hr {
+  margin: 2.5em 0;
+  border: 0;
+  border-top: 1px solid var(--rb-color-accent);
+}
+
+/* ---- Code ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  :not(pre)
+  > code {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: var(--rb-color-code-background);
+  padding: 0.15em 0.4em;
+  font-family: var(--rb-font-mono);
+  font-size: 0.85em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)) {
+  margin: 1.5em 0;
+  border: 1px solid var(--rb-color-border);
+  border-left: 3px solid var(--rb-color-accent);
+  border-radius: 0;
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-ink);
+  padding: 0.75rem 1rem;
+  font-family: var(--rb-font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  pre
+  code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ---- Tables ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  table {
+  margin: 1.5em 0;
+  border: 1px solid var(--rb-color-border);
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  thead {
+  background: color-mix(in srgb, var(--rb-color-accent) 8%, transparent);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-body
+  :is(th, td) {
+  border: 1px solid var(--rb-color-border);
+  padding: 0.5em 0.75em;
+}
+
+/* ---- Media: square corners ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rb-article-body img, .rb-article-body video, .rr-media, .rr-attachment) {
+  border-radius: 0;
+}
+
+/* ---- Article chrome ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-meta {
+  margin: 0 0 1.5rem;
+  border: 1px solid var(--rb-color-border);
+  border-left: 3px solid var(--rb-color-accent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-surface) 55%, transparent);
+  padding: 0.5rem 0.75rem;
+  font-family: var(--rb-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rb-color-muted);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-footer {
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--rb-color-border);
+  padding-top: 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-sidebar {
+  border-left: 2px solid var(--rb-color-border-strong);
+  padding-left: 1rem;
+  font-size: 0.9rem;
+}
+
+/* ---- Plugin roots ---- */
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rr-table-of-contents, .rr-backlinks) {
+  margin: 1.5rem 0;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-surface) 50%, transparent);
+  padding: 0.9rem 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
+  a {
+  color: var(--rb-color-ink);
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
+  a:hover {
+  color: color-mix(in srgb, var(--rb-color-accent) 50%, var(--rb-color-ink));
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rr-recent-posts {
+  margin: 1.5rem 0;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-surface) 50%, transparent);
+  padding: 0.9rem 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rr-code, .rr-code-tabs) {
+  margin: 1.5rem 0;
+  border: 1px solid var(--rb-color-border);
+  border-left: 3px solid var(--rb-color-accent);
+  border-radius: 0;
+  background: var(--rb-color-code-background);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rr-code, .rr-code-tabs)
+  pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-mono);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rr-callout {
+  margin: 1.5rem 0;
+  border: 1px solid var(--rb-color-border);
+  border-left: 3px solid var(--rb-color-accent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-accent) 6%, transparent);
+  padding: 0.9rem 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rr-callout
+  > :first-child {
+  font-family: var(--rb-font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--rb-color-accent) 50%, var(--rb-color-ink));
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rr-callout
+  p:last-child {
+  margin-bottom: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  :is(.rr-local-graph, .rr-mermaid) {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: var(--rb-color-surface);
+  padding: 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rr-search {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: var(--rb-color-surface);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rr-search
+  :is(input, button) {
+  border-radius: 0;
+  font-family: var(--rb-font-mono);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rr-cardlink {
+  border: 1px solid var(--rb-color-border);
+  border-left: 3px solid var(--rb-color-accent);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-surface) 50%, transparent);
+  padding: 0.9rem 1rem;
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rr-cardlink:hover {
+  border-color: var(--rb-color-accent);
+}
+
+/* ---- Density: compact ---- */
+:is(
+  :root,
+  .rb-theme-root
+)[data-theme-name="tokyonight"][data-tokyonight-density="compact"] {
+  --rb-space-1: 0.375rem;
+  --rb-space-2: 0.75rem;
+  --rb-space-3: 1.125rem;
+  --rb-space-4: 1.5rem;
+  --rb-space-6: 2.25rem;
+  --rb-space-8: 3rem;
+  --rb-layout-gap: 1.25rem;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body {
+  line-height: 1.6;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  p {
+  margin: 0.65em 0;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  :is(ul, ol) {
+  margin: 0.75em 0;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  li {
+  margin: 0.2em 0;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  h2 {
+  margin: 1.4em 0 0.5em;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  h3 {
+  margin: 1.15em 0 0.4em;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  :is(h4, h5, h6) {
+  margin: 1em 0 0.35em;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  :is(pre, blockquote, table) {
+  margin: 1.1em 0;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
+  .rb-article-body
+  hr {
+  margin: 1.75em 0;
+}
+
+/* ---- Neon (opt-in) ---- */
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
+  :is(.rb-article-header h1, .rb-article-body h2, .rb-article-body h3) {
+  text-shadow: 0 0 8px
+    color-mix(in srgb, var(--rb-color-accent) 35%, transparent);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
+  .rb-article-body
+  a:hover {
+  text-shadow: 0 0 6px
+    color-mix(in srgb, var(--rb-color-accent) 55%, transparent);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
+  ::-webkit-scrollbar-thumb {
+  box-shadow: 0 0 6px
+    color-mix(in srgb, var(--rb-color-accent) 60%, transparent);
 }

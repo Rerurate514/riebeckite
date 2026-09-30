@@ -82,10 +82,10 @@ type ThemeColorMode = "light" | "dark" | "system";
 At runtime the palette is decided by three CSS states.
 
 ```css
-:root { /* light */ }
-:root[data-theme="dark"] { /* dark */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) { /* follows the OS (system) */ }
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) { /* follows the OS (system) */ }
 }
 ```
 
@@ -146,16 +146,18 @@ Core's `ThemeDesignTokens` has the following semantic groups. In stylesheets the
 | --- | --- |
 | `pageMaxWidth` | `--rb-layout-page-max` |
 | `articleMaxWidth` | `--rb-layout-article-max` |
-| `sidebarWidth` | `--rb-layout-sidebar-width` |
-| `contentGap` | `--rb-layout-content-gap` |
+| `sidebarWidth` | `--rb-layout-sidebar` |
+| `contentGap` | `--rb-layout-gap` |
 
 ```css
-:root {
-  --rb-color-paper: #fafafa;
-  --rb-color-ink: #202020;
-  --rb-color-accent: #555;
-  --rb-font-body: system-ui, sans-serif;
-  --rb-layout-article-max: 48rem;
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+    --rb-color-paper: #fafafa;
+    --rb-color-ink: #202020;
+    --rb-color-accent: #555;
+    --rb-font-body: system-ui, sans-serif;
+    --rb-layout-article-max: 48rem;
+  }
 }
 ```
 
@@ -189,6 +191,42 @@ theme: defaultTheme({
 }),
 ```
 
+### 3-6. Theme root selector
+
+Built-in themes do not target the bare `:root`. Every rule is scoped to the
+theme's identity name so the same stylesheet can style the real document and
+an embedded preview:
+
+```css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"]
+```
+
+`<name>` is the theme's identity name: `riebeckite` for the default theme,
+otherwise one of `minimal`, `gruvbox`, `sakura`, `tokyonight`, `rerurate`.
+
+- On a real site the app sets `data-theme-name` on `<html>`, so the `:root`
+  branch matches the document root.
+- In a preview such as a theme gallery, the same stylesheet styles any
+  element carrying `class="rb-theme-root" data-theme-name="<name>"`, so
+  several themes can render side by side in one document.
+
+Light, dark, system, typography, theme options, and element/pseudo rules all
+carry the same prefix:
+
+```css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) { /* system */ }
+}
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-typography="serif"] { /* typography */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-tokyonight-neon="on"] { /* theme option */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] :focus-visible { /* element/pseudo */ }
+```
+
+The app provides `data-theme-name`; a preview container only needs the
+`.rb-theme-root` hook and the matching name.
+
 ## 4. Color mode, attributes, and options in detail
 
 Beyond the contract in 3-1, theme-specific options can be passed to CSS through safe `data-*` attributes.
@@ -208,10 +246,53 @@ The theme API is not designed to modify `class`, `style`, `id`, or `lang` freely
 
 Themes target documented stable hooks, not internal markup. There are two class namespaces.
 
-- **`rb-*`** — structural hooks and semantic design tokens provided by the framework. Structural hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`.
+- **`rb-*`** — structural hooks and semantic design tokens provided by the framework. Structural hooks: `.rb-theme-root` (the theme root container), `.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`.
 - **`rr-<feature>`** — the root hook on the outermost element rendered by a plugin or feature. Examples: `.rr-search`, `.rr-callout`, `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`, `.rr-code-tabs`, `.rr-lightbox`, `.rr-excalidraw`, `.rr-mermaid`, `.rr-query`, `.rr-cardlink`, `.rr-diff-history`, `.rr-attachment`, `.rr-media`, `.rr-recent-posts`, `.rr-garden-explorer`.
 
 A theme should style only these root hooks and the descendants a plugin documents. BEM elements (`__…`) and modifiers (`--…`) are internal implementation details. Generic helpers such as `.sr-only` are not plugin hooks. Plugins keep legacy classes for backward compatibility, so the same element can carry both `.rr-<feature>` and the old class; target `rr-*` from themes.
+
+### 5-1. Character layer
+
+A theme is not limited to tokens. Within the theme boundary it may style the
+stable hooks directly to give a site a visual character.
+
+- Put token definitions inside `@layer base`; put visual character rules
+  **unlayered**. The app's structural CSS and plugin CSS are unlayered, so
+  unlayered theme rules win over them without `!important`. Never use
+  `!important`.
+- Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
+  `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`,
+  `.rb-article-footer`, `.rb-sidebar`, `.prose`, and the `rr-*` plugin roots
+  above. Do not invent new `rb-*` / `rr-*` class names; `.rr-*` BEM parts are
+  internal.
+- A theme may ship self-hosted webfonts (Latin subsets) in its package under
+  `styles/fonts/`, reference them with relative `url()`, and include the font
+  license file. Japanese and other CJK text should fall back to system font
+  stacks rather than shipping large font files.
+
+```css
+/* Tokens stay layered. */
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="example"] {
+    --rb-color-accent: #b45309;
+  }
+}
+
+/* Character rules are unlayered, so they beat app and plugin CSS. */
+:is(:root, .rb-theme-root)[data-theme-name="example"] .rb-article-header {
+  border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
+}
+
+@font-face {
+  font-family: "Example Serif";
+  src: url("./fonts/example-serif-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+```
+
+Character rules are still presentation-only: they must not change content,
+structure, or behavior.
 
 ## 6. CSS cascade
 

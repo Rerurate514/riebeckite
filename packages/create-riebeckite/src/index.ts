@@ -1,5 +1,6 @@
 import path from "node:path";
 import {
+  formatScaffoldNextSteps,
   isScaffoldPresetName,
   SCAFFOLD_PRESET_NAMES,
   type ScaffoldPresetName,
@@ -43,11 +44,7 @@ export async function runCreateRiebeckite(
       path.relative(process.cwd(), result.targetDirectory) || ".";
     console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
     console.log("");
-    console.log("Next steps:");
-    if (relative !== ".") console.log(`  cd ${relative}`);
-    console.log("  npm install");
-    console.log("  npx riebeckite check");
-    console.log("  npx riebeckite build");
+    console.log(formatScaffoldNextSteps(relative));
   } catch (error) {
     if (error instanceof ScaffoldSiteError) {
       console.error(error.message);

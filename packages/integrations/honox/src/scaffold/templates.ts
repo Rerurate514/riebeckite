@@ -8,6 +8,7 @@ import {
   type ScaffoldPreset,
   type ScaffoldPresetName,
 } from "./presets.js";
+import { RIEBECKITE_VERSION } from "./version.js";
 
 export type SiteTemplateVariables = {
   readonly name: string;
@@ -116,8 +117,6 @@ function appFiles(preset: ScaffoldPreset): readonly SiteTemplateFile[] {
       : []),
   ];
 }
-
-const RIEBECKITE_VERSION = "^0.0.3";
 
 function packageJson(
   preset: ScaffoldPreset,
@@ -411,7 +410,7 @@ const README_WORDS: Readonly<{
       "The generated site ships content pages that exercise these features:",
     copyDemos: "Copy-paste demos",
     copyDemosBody:
-      "Paste any of these snippets into a Markdown file under `content/` and run `npx riebeckite dev`. Each one renders through a plugin this preset registers.",
+      "Paste any of these snippets into a Markdown file under `content/` and run `npm run dev`. Each one renders through a plugin this preset registers.",
   },
   ja: {
     included: "含まれているもの",
@@ -440,7 +439,7 @@ const README_WORDS: Readonly<{
       "生成されたサイトには、各機能を体験できるコンテンツページが含まれています:",
     copyDemos: "コピーして使えるデモ",
     copyDemosBody:
-      "以下のスニペットを `content/` 配下の Markdown ファイルに貼り付けて `npx riebeckite dev` を実行してください。それぞれ、このプリセットが登録しているプラグインでレンダリングされます。",
+      "以下のスニペットを `content/` 配下の Markdown ファイルに貼り付けて `npm run dev` を実行してください。それぞれ、このプリセットが登録しているプラグインでレンダリングされます。",
   },
 };
 
@@ -486,9 +485,9 @@ function readmeEn(
   lines.push(
     "```sh",
     "npm install",
-    "npx riebeckite check",
-    "npx riebeckite dev",
-    "npx riebeckite build",
+    "npm run check",
+    "npm run dev",
+    "npm run build",
     "```",
     "",
   );
@@ -542,9 +541,9 @@ function readmeJa(
   lines.push(
     "```sh",
     "npm install",
-    "npx riebeckite check",
-    "npx riebeckite dev",
-    "npx riebeckite build",
+    "npm run check",
+    "npm run dev",
+    "npm run build",
     "```",
     "",
   );

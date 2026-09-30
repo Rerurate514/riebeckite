@@ -26,7 +26,7 @@ Scaffold a standalone site from an official preset with
 npx create-riebeckite my-site
 cd my-site
 npm install
-npx riebeckite build
+npm run build
 ```
 
 | Option | What it does |

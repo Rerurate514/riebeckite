@@ -77,8 +77,6 @@ workspace/
 └─ my-site/   ← 手順 2 のサイト
 ```
 
-> パッケージがまだ npm に公開されていない場合は、clone したリポジトリ内で `pnpm exec riebeckite init ../my-site` としてください（[セットアップガイド](./setup.md)）。
-
 ### 3. content.directory を Vault に向ける
 
 `my-site/riebeckite.config.ts` の `content` を次のようにします。
@@ -101,10 +99,10 @@ export default defineConfig({
 ### 4. 読み込みを確認する
 
 ```sh
-npx riebeckite check
-npx riebeckite doctor
-npx riebeckite inspect config
-npx riebeckite inspect content --list
+npm run check
+npm run doctor
+npm run inspect -- config
+npm run inspect -- content --list
 ```
 
 - パスがずれている場合、大半は `directory` の相対パスが原因です。`inspect config` で解決済みディレクトリを確認してください。

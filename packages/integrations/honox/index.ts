@@ -11,6 +11,7 @@ export {
   ScaffoldSiteError,
   scaffoldRiebeckiteSite,
 } from "./src/scaffold/index.js";
+export { formatScaffoldNextSteps } from "./src/scaffold/next-steps.js";
 export type {
   ScaffoldAppFileKey,
   ScaffoldPageKey,

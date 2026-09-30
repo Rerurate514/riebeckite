@@ -9,7 +9,7 @@ If you want to go step by step from environment setup all the way to publishing,
 - **Node.js (LTS)**: `node -v` should print `v20` or later. If not, install it from [nodejs.org](https://nodejs.org/).
 - npm ships with Node.js, so no separate install is needed.
 
-> **npm availability**: The Riebeckite packages (`@riebeckite/*`) are not yet published to npm. Until they are, clone the repository and run `pnpm exec riebeckite init my-site` — the same generator (see [Setup Guide](./setup.md) for details). Once published, the commands on this page work as written.
+> **npm availability**: The Riebeckite packages (`@riebeckite/*`) are published to npm, so the commands on this page work as written.
 
 ## 1. Create the site
 
@@ -17,8 +17,8 @@ If you want to go step by step from environment setup all the way to publishing,
 npx create-riebeckite my-site
 cd my-site
 npm install
-npx riebeckite check
-npx riebeckite doctor
+npm run check
+npm run doctor
 ```
 
 - You get a config file (`riebeckite.config.ts`), a HonoX application shell (`app/`), routes, a stylesheet, and starter content (`content/`).
@@ -81,9 +81,9 @@ My first article. A WikiLink like [[another-note]] works too.
 Without `publish: true`, the page does not appear under the explicit strategy. Verify what loaded with the read-only Inspector:
 
 ```sh
-npx riebeckite inspect config
-npx riebeckite inspect content --list
-npx riebeckite inspect graph
+npm run inspect -- config
+npm run inspect -- content --list
+npm run inspect -- graph
 ```
 
 - `inspect config` … resolved config and content location
@@ -95,7 +95,7 @@ Fix the files based on what it shows (the Inspector does not generate state).
 ## 4. Run it
 
 ```sh
-npx riebeckite dev
+npm run dev
 ```
 
 Open `http://localhost:5173` in a browser to see the articles. Edits apply immediately; stop with `Ctrl + C`.
@@ -103,13 +103,13 @@ Open `http://localhost:5173` in a browser to see the articles. Edits apply immed
 Generate publishable files under `dist/` with:
 
 ```sh
-npx riebeckite build
+npm run build
 ```
 
 Build is normally an **incremental build** that reuses unchanged content. Use `build --full` only when you want to skip that reuse.
 
 ```sh
-npx riebeckite build --full
+npm run build -- --full
 ```
 
 Where to add things when extending: features go to a plugin ([Your first plugin](./plugin-tutorial.md)), appearance to a theme ([Your first theme](./theme-tutorial.md)), and site-specific routes to the app (`app/`). See [Architecture](./architecture.md) for the overall picture.

@@ -46,6 +46,51 @@ function writeManifest(manifestPath, manifest) {
   }
 }
 
+// The scaffold pins every generated Riebeckite dependency to one version
+// spec. Keep it in lockstep with the manifests so freshly created sites
+// install the released packages instead of a stale line.
+const scaffoldVersionRelative =
+  "packages/integrations/honox/src/scaffold/version.ts";
+const scaffoldVersionPath = path.join(repositoryRoot, scaffoldVersionRelative);
+const SCAFFOLD_VERSION_PATTERN =
+  /(export const RIEBECKITE_VERSION = "\^)([^"]*)(";)/;
+
+function readScaffoldVersion() {
+  let text;
+  try {
+    text = fs.readFileSync(scaffoldVersionPath, "utf8");
+  } catch (error) {
+    throw new Error(
+      `Could not read ${scaffoldVersionRelative}: ${error.message}`,
+    );
+  }
+  const match = SCAFFOLD_VERSION_PATTERN.exec(text);
+  if (!match) {
+    throw new Error(
+      `Could not find RIEBECKITE_VERSION in ${scaffoldVersionRelative}`,
+    );
+  }
+  return match[2];
+}
+
+function writeScaffoldVersion(version) {
+  const text = fs.readFileSync(scaffoldVersionPath, "utf8");
+  const updated = text.replace(SCAFFOLD_VERSION_PATTERN, `$1${version}$3`);
+  if (updated === text) {
+    throw new Error(
+      `Could not update RIEBECKITE_VERSION in ${scaffoldVersionRelative}`,
+    );
+  }
+  const temporaryPath = `${scaffoldVersionPath}.${process.pid}.${Date.now()}.tmp`;
+  try {
+    fs.writeFileSync(temporaryPath, updated, "utf8");
+    fs.renameSync(temporaryPath, scaffoldVersionPath);
+  } catch (error) {
+    fs.rmSync(temporaryPath, { force: true });
+    throw error;
+  }
+}
+
 function main() {
   const rawArguments = process.argv.slice(2);
   const dryRun = rawArguments.includes("--dry-run");
@@ -66,7 +111,9 @@ function main() {
     const changed = manifests.filter(
       ({ manifest }) => manifest.version !== version,
     );
-    if (changed.length === 0) {
+    const scaffoldVersion = readScaffoldVersion();
+    const scaffoldChanged = scaffoldVersion !== version;
+    if (changed.length === 0 && !scaffoldChanged) {
       console.log(
         `All ${manifests.length} public packages already use ${version}.`,
       );
@@ -77,6 +124,11 @@ function main() {
     );
     for (const { manifest, relativePath } of changed) {
       console.log(`  ${relativePath}: ${manifest.version} -> ${version}`);
+    }
+    if (scaffoldChanged) {
+      console.log(
+        `  ${scaffoldVersionRelative}: ^${scaffoldVersion} -> ^${version}`,
+      );
     }
     return;
   }
@@ -90,7 +142,11 @@ function main() {
     }
   }
 
-  console.log(`Updated ${manifests.length} public packages to ${version}.`);
+  writeScaffoldVersion(version);
+
+  console.log(
+    `Updated ${manifests.length} public packages and the scaffold version to ${version}.`,
+  );
 }
 
 try {

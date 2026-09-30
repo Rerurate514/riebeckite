@@ -77,8 +77,6 @@ workspace/
 └─ my-site/   ← the site from step 2
 ```
 
-> Until the packages are published to npm, run `pnpm exec riebeckite init ../my-site` inside a clone of the repository (see [Setup Guide](./setup.md)).
-
 ### 3. Point content.directory at the vault
 
 In `my-site/riebeckite.config.ts`:
@@ -101,10 +99,10 @@ export default defineConfig({
 ### 4. Verify loading
 
 ```sh
-npx riebeckite check
-npx riebeckite doctor
-npx riebeckite inspect config
-npx riebeckite inspect content --list
+npm run check
+npm run doctor
+npm run inspect -- config
+npm run inspect -- content --list
 ```
 
 - A wrong path is usually the relative `directory`. Check the resolved directory with `inspect config`.

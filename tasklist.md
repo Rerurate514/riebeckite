@@ -6,7 +6,12 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| — | — | （バックログ内の実装対象はすべて完了） | 完了 | — | — |
+| 1 | R | plugin-taxonomy: タグ/フォルダ単位の索引ページとタグ別フィードを生成する | 未着手 | Medium | `query`/`dataview` は記事内の一覧のみ。`/tags/<tag>`・`/folders/<path>` の固定ページとタグ別 RSS/Atom/JSON Feed、関連タグ導線を `resolveContentLocations` と `endpoints` で提供する。回遊性と SEO に効く |
+| 2 | S | plugin-pdf: 添付 PDF をインラインビューアで表示する | 未着手 | Small | `attachment` はダウンロードリンク中心。`kind: "pdf"` を renderer で埋め込み表示に変える。既定はブラウザ標準 viewer、必要な場合だけ client を足す |
+| 3 | T | plugin-share: 記事の共有ボタン群を追加する | 未着手 | Small | `text-fragment`・`qr-code` は近いが共有 UI がない。SSR でリンクを生成し client は最小限。site 設定で対象サービスを選べるようにする |
+| 4 | U | plugin-map: `map` ブロック / frontmatter 座標から地図埋め込みを表示する | 未着手 | Medium | geo 系が皆無。タイル地図はクライアント前提なので markmap と同様に遅延ロードし、静的フォールバック（座標・リンク）を先に出す |
+| 5 | V | plugin-changelog: git 履歴から記事/サイトの変更履歴ページを生成する | 未着手 | Medium | `diff` は記事内の差分表示。こちらは「いつ何を更新したか」の一覧。git を読む点は diff と共有し、ページ生成は application route に委ねる境界を守る |
+| 6 | W | plugin-webmention: Webmention 受信 endpoint と「言及」表示を実装する | 未着手 | Large | 読者参加系で唯一の空白。送信元検証・保存・描画が必要。`endpoints` と独立 Worker（analytics-cloudflare と同型）を使い、comments 系の土台にもなる |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

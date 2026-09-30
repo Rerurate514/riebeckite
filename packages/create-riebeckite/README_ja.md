@@ -11,7 +11,7 @@ CLI ツールです。
 npx create-riebeckite my-site
 cd my-site
 npm install
-npx riebeckite build
+npm run build
 ```
 
 ## オプション

@@ -23,7 +23,7 @@ The package exposes only the binary (`bin/riebeckite.mjs`); it has no library
 entry point.
 
 ```sh
-npx riebeckite check
+npx @riebeckite/cli check
 ```
 
 In a pnpm project, use `pnpm exec riebeckite`.

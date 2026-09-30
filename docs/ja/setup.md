@@ -9,7 +9,7 @@
 3. Cloudflare Workers へ公開する
 
 > **いまの公開状況**
-> Riebeckite の本体パッケージ（`@riebeckite/*`）はまだ npm に公開されていません。そのため、いまは「このリポジトリを clone して使う」のが現実的な方法です。npm に公開されたあとは、`npx create-riebeckite` だけで新しいサイトを作れるようになります。この資料では、公開後も同じ手順が使えるように書き分けています。
+> Riebeckite の本体パッケージ（`@riebeckite/*`）は npm に公開されています。`npx create-riebeckite` で新しいサイトを作れます（2章）。1章では、このリポジトリ自体を clone して動かす手順を説明します。
 
 ## この資料の使い方
 
@@ -125,17 +125,17 @@ pnpm exec riebeckite doctor
 
 ## 2. riebeckite で新しいサイトを作る
 
-ここからは、このリポジトリとは別に、自分のサイトを新しく作る手順です。1章が終わっている（`pnpm build` 済み）ことが前提です。
+ここからは、このリポジトリとは別に、自分のサイトを新しく作る手順です。Node.js が入っていることを前提にします。
 
 ### 2-1. ひな形を生成する
 
-リポジトリのルートで、次のように実行します。`my-site` の部分は好きな名前に変えてください。
+サイトを作りたいフォルダで、次のように実行します。`my-site` の部分は好きな名前に変えてください。
 
 ```sh
-pnpm exec riebeckite init ../my-site
+npx create-riebeckite my-site
 ```
 
-`../my-site` は「1つ上のフォルダに `my-site` を作る」という意味です。中身のあるフォルダを指定すると、間違えて上書きしないようエラーで止まります。上書きしたいときだけ `--force` を付けます。
+`my-site` フォルダが作られ、その中にサイト一式が入ります。いまいるフォルダに直接作りたいときは名前を省略します。中身のあるフォルダを指定すると、間違えて上書きしないようエラーで止まります。上書きしたいときだけ `--force` を付けます。`--preset` で構成（`starter`、`rich` など）を選べます。
 
 ### 2-2. 何が生成されるか
 
@@ -178,24 +178,26 @@ publish: true
 
 ファイル名がそのまま URL の一部になります。`content/first-post.md` なら `/first-post` で見られます。
 
-### 2-5. 部品をインストールする（公開状況に注意）
+### 2-5. 部品をインストールする
 
-生成された `package.json` は `@riebeckite/core@^0.0.3` などの部品を参照しますが、これらはまだ npm に公開されていません。そのため、いま `npm install` を実行すると、部品が見つからず失敗します。
+サイトのフォルダに移動し、`npm install` で `@riebeckite/*` などの部品を入れます。
 
-- **npm 公開後**: サイトのフォルダで `npm install` を実行するだけで使えます。
-- **いま試したい場合**: このリポジトリの [external-site フィクスチャ](../../tests/external-site/README.md) と同じ方法で、各部品を tarball に固めて読み込ませる必要があります。手順は同 README にまとまっています。少し上級者向けです。
+```sh
+cd my-site
+npm install
+```
 
-いま動くブログが1つほしいだけなら、新しいサイトを作らず、1章の見本サイトをそのまま使って3章で公開するのが一番の近道です。
+部品は npm に公開されているので、これだけで揃います。しばらく待って、エラーが出なければ完了です。
 
 ### 2-6. 新しいサイトでの日常的なコマンド
 
 インストールが済んだあとは、サイトのフォルダで次を使います。
 
 ```sh
-npx riebeckite dev           # 開発サーバーを起動する
-npx riebeckite check         # 設定が正しいか確認する
-npx riebeckite doctor        # 詳しい健康診断
-npx riebeckite build         # 公開用のファイルを dist/ に書き出す
+npm run dev           # 開発サーバーを起動する
+npm run check         # 設定が正しいか確認する
+npm run doctor        # 詳しい健康診断
+npm run build         # 公開用のファイルを dist/ に書き出す
 ```
 
 ## 3. Cloudflare Workers へ公開する
@@ -219,7 +221,7 @@ Cloudflare の画面で細かく設定する必要がなく、一番わかりや
 4. ビルドして、Cloudflare にログインし、公開します。
 
    ```sh
-   npx riebeckite build
+   npm run build
    npx wrangler login
    npx wrangler deploy
    ```
@@ -261,18 +263,18 @@ pnpm --filter @riebeckite/web exec wrangler deploy
 |`Cannot find module ... cli.js` と出る|CLI がまだビルドされていない|`pnpm build` を実行する|
 |`riebeckite` コマンドが見つからない|同上、または違うフォルダにいる|`pnpm build`、そのあとリポジトリのルートにいるか確認|
 |記事が表示されない|`content/` が空、または `publish: true` や `title` が無い|frontmatter の2行を確認する|
-|`npm install` で `@riebeckite/*` が 404 になる|本体がまだ npm に無い|1章の見本サイトを使う、または公開を待つ|
+|`npm install` で `@riebeckite/*` が 404 になる|レジストリの一時的な問題、またはバージョン指定のずれ|少し待って再実行する。直らなければ `npm cache clean --force` を試す|
 |ページが 404 になる|ファイル名と URL がずれている|ファイル名と `content/` の場所を確認する|
-|公開したのに 404 になる|ビルド結果が `dist/` に出ていない|`npx riebeckite build` を実行し、`wrangler.jsonc` の `directory` を確認する|
+|公開したのに 404 になる|ビルド結果が `dist/` に出ていない|`npm run build` を実行し、`wrangler.jsonc` の `directory` を確認する|
 |`doctor` で Content に `✗` が出る|記事に問題がある|表示されたメッセージのとおりに直す|
-|古い内容が残る|差分ビルドが古い状態を持っている|`npx riebeckite build --full` で作り直す|
+|古い内容が残る|差分ビルドが古い状態を持っている|`npm run build -- --full` で作り直す|
 
 ## 用語のかんたん説明
 
 - **リポジトリ**: プログラムとファイルを1つにまとめた置き場。ここでは Riebeckite 本体のことです。
 - **依存パッケージ**: プログラムが動くために必要な部品。`npm install` でまとめて入ります。
 - **ビルド**: 書いたプログラムを、実際に動かせる形に変換すること。
-- **dev サーバー**: 手元のパソコンだけでサイトを表示する仕組み。`npx riebeckite dev` で起動します。
+- **dev サーバー**: 手元のパソコンだけでサイトを表示する仕組み。`npm run dev` で起動します。
 - **SSG / 静的アセット**: あらかじめ全ページをファイルとして作っておき、そのまま配る方式。
 - **Cloudflare Workers**: サイトを公開する場所。ここでは静的なファイルを置くだけに使います。
 - **wrangler**: Cloudflare に公開するためのコマンド。

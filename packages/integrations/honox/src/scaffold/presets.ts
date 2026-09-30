@@ -257,6 +257,12 @@ const share = np("@riebeckite/plugin-share", "share", {
   mastodonInstance: { depth: 3, value: '"mastodon.social"' },
 });
 const recentPosts = np("@riebeckite/plugin-recent-posts", "recentPostsPlugin");
+const changelog = np("@riebeckite/plugin-changelog", "changelog", {
+  perNote: { depth: 2, value: "true" },
+  lookbackDays: { depth: 3, value: "90" },
+  dateFormat: { depth: 3, value: '"iso"' },
+  siteWide: { depth: 3, value: "false" },
+});
 const attachment = np(
   "@riebeckite/plugin-attachment",
   "attachment",
@@ -611,6 +617,7 @@ export const full: ScaffoldPreset = {
     backlinks,
     relatedPosts,
     share,
+    changelog,
     recentPosts,
     attachment,
     pdf,
@@ -649,6 +656,7 @@ export const max: ScaffoldPreset = {
     backlinks,
     relatedPosts,
     share,
+    changelog,
     recentPosts,
     attachment,
     pdf,
@@ -716,6 +724,7 @@ export const ultra: ScaffoldPreset = {
     backlinks,
     relatedPosts,
     share,
+    changelog,
     recentPosts,
     attachment,
     pdf,

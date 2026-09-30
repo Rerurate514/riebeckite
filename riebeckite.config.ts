@@ -6,6 +6,7 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
 import { breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import { canvas } from "@riebeckite/plugin-canvas";
+import { changelog } from "@riebeckite/plugin-changelog";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
@@ -183,6 +184,7 @@ export default defineConfig({
     uxPlugin(),
     share(),
     relatedPosts(),
+    changelog(),
     responsiveImage(),
     localGraphPlugin(),
     l10n({ defaultLang: "ja", languages: ["ja", "en"] }),

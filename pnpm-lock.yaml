@@ -443,6 +443,16 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/changelog:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.13.6
+
   packages/plugins/chartjs:
     dependencies:
       '@riebeckite/core':

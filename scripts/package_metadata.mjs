@@ -12,6 +12,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/bases",
   "packages/plugins/breadcrumbs",
   "packages/plugins/canvas",
+  "packages/plugins/changelog",
   "packages/plugins/chartjs",
   "packages/plugins/code-annotations",
   "packages/plugins/code-enhance",
@@ -146,6 +147,10 @@ const packagePublishingMetadata = {
   "packages/plugins/canvas": {
     description: "Obsidian Canvas diagram rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "obsidian", "canvas"],
+  },
+  "packages/plugins/changelog": {
+    description: "Git-backed change history and changelogs for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "git", "changelog"],
   },
   "packages/plugins/chartjs": {
     description: "Chart.js code block rendering for Riebeckite.",

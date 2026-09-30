@@ -1,6 +1,23 @@
+/* Self-hosted Source Serif 4 (Latin subset, variable weight 100–900).
+   Japanese glyphs are outside this subset and fall back to the system serif. */
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("./fonts/source-serif-4-latin-wght-normal.woff2")
+    format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
 @theme {
   --font-sans: var(--rb-font-body);
-  --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-serif:
+    "Source Serif 4", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
+    Georgia, serif;
   --font-mono: var(--rb-font-mono);
   --color-rb-paper: var(--rb-color-paper);
   --color-rb-ink: var(--rb-color-ink);
@@ -12,7 +29,7 @@
 }
 
 @layer base {
-  :root {
+  :is(:root, .rb-theme-root)[data-theme-name="sakura"] {
     color-scheme: light;
     --rb-color-paper: #fff8fa;
     --rb-color-surface: #ffffff;
@@ -31,8 +48,8 @@
     );
     --rb-color-overlay: rgb(0 0 0 / 0.4);
     --rb-font-body:
-      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      sans-serif;
+      "Source Serif 4", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
+      Georgia, serif;
     --rb-font-heading: var(--rb-font-body);
     --rb-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     --rb-space-1: 0.5rem;
@@ -43,17 +60,32 @@
     --rb-space-8: 4rem;
     --rb-rule-width: 1px;
     --rb-layout-page-max: 80rem;
-    --rb-layout-article-max: 48rem;
+    --rb-layout-article-max: 46rem;
     --rb-layout-sidebar: 14rem;
     --rb-layout-gap: 2rem;
+    /* Character-layer radius. `roundness="soft"` is the default; the crisp
+       override below shrinks both. */
+    --rb-sakura-radius: 0.625rem;
+    --rb-sakura-radius-sm: 0.375rem;
   }
 
-  :root[data-sakura-bloom="vivid"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="sakura"][data-sakura-roundness="crisp"] {
+    --rb-sakura-radius: 2px;
+    --rb-sakura-radius-sm: 2px;
+  }
+
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="sakura"][data-sakura-bloom="vivid"] {
     --rb-color-accent: #d8558a;
     --rb-color-surface-hover: #fbdce9;
   }
 
-  :root[data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-theme-name="sakura"][data-theme="dark"] {
     color-scheme: dark;
     --rb-color-paper: #241520;
     --rb-color-surface: #2b1a26;
@@ -71,13 +103,16 @@
     --rb-color-overlay: rgb(0 0 0 / 0.6);
   }
 
-  :root[data-theme="dark"][data-sakura-bloom="vivid"] {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="sakura"][data-theme="dark"][data-sakura-bloom="vivid"] {
     --rb-color-accent: #f08aae;
     --rb-color-surface-hover: #42232f;
   }
 
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-theme-name="sakura"]:not([data-theme]) {
       color-scheme: dark;
       --rb-color-paper: #241520;
       --rb-color-surface: #2b1a26;
@@ -95,45 +130,518 @@
       --rb-color-overlay: rgb(0 0 0 / 0.6);
     }
 
-    :root:not([data-theme])[data-sakura-bloom="vivid"] {
+    :is(:root, .rb-theme-root)[data-theme-name="sakura"]:not(
+        [data-theme]
+      )[data-sakura-bloom="vivid"] {
       --rb-color-accent: #f08aae;
       --rb-color-surface-hover: #42232f;
     }
   }
 
-  :root[data-typography="serif"] {
-    --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
-    --rb-font-heading:
-      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      sans-serif;
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="sakura"][data-typography="serif"] {
+    --rb-font-body:
+      "Source Serif 4", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
+      Georgia, serif;
+    --rb-font-heading: var(--rb-font-body);
   }
 
-  :root[data-typography="sans"] {
+  :is(:root, .rb-theme-root)[data-theme-name="sakura"][data-typography="sans"] {
     --rb-font-body:
-      ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      ui-sans-serif, system-ui, "Hiragino Sans", "Noto Sans JP", "Yu Gothic",
       sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  html {
+  :is(:root, .rb-theme-root)[data-theme-name="sakura"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
   }
 
-  body {
-    margin: 0;
-    background: var(--rb-color-paper);
-    color: var(--rb-color-ink);
-  }
-
-  ::selection {
+  :is(:root, .rb-theme-root)[data-theme-name="sakura"] ::selection {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
   }
 
-  :focus-visible {
+  :is(:root, .rb-theme-root)[data-theme-name="sakura"] :focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
+}
+
+/* -------------------------------------------------------------------------
+   Character layer — unlayered on purpose.
+   The app's structural CSS and the plugin defaults all live inside @layer,
+   so these unlayered rules win without `!important`. Every selector is
+   scoped to the theme root, so the same styles apply to an embedded preview
+   container (`.rb-theme-root`) as to the document root.
+   ------------------------------------------------------------------------- */
+
+/* Article shell: warm serif body with a generous measure and leading. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article {
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-body);
+  font-size: 1.0625rem;
+  line-height: 1.9;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-header h1 {
+  margin: 0 0 0.75rem;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-meta {
+  margin-block: 0 2rem;
+  padding-block: 0.8rem;
+  border-block: 1px solid var(--rb-color-border);
+  color: color-mix(in srgb, var(--rb-color-muted) 72%, var(--rb-color-ink));
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rb-color-border);
+  color: color-mix(in srgb, var(--rb-color-muted) 72%, var(--rb-color-ink));
+  font-size: 0.95rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-sidebar {
+  color: color-mix(in srgb, var(--rb-color-muted) 72%, var(--rb-color-ink));
+  font-size: 0.95rem;
+}
+
+/* Headings: serif, 600, distinguished by size and weight. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  :is(h2, h3, h4) {
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body h2 {
+  position: relative;
+  margin-block: 2.75rem 1.1rem;
+  padding-bottom: 0.65rem;
+  font-size: 1.6rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body h3 {
+  margin-block: 2.1rem 0.8rem;
+  font-size: 1.3rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body h4 {
+  margin-block: 1.6rem 0.6rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.01em;
+}
+
+/* Blossom rule under h2; removed when `heading="plain"`. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  h2::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  width: 2.75rem;
+  height: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rb-color-accent) 75%, transparent);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="sakura"][data-sakura-heading="plain"]
+  .rb-article-body
+  h2 {
+  padding-bottom: 0;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-theme-name="sakura"][data-sakura-heading="plain"]
+  .rb-article-body
+  h2::after {
+  content: none;
+}
+
+/* Paragraphs. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body p {
+  margin-block: 1.4rem;
+  text-wrap: pretty;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  > :first-child {
+  margin-block-start: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  > :last-child {
+  margin-block-end: 0;
+}
+
+/* Links: accent tone with an offset underline; hover thickens it. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body a {
+  color: color-mix(in srgb, var(--rb-color-accent) 55%, var(--rb-color-ink));
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--rb-color-accent) 55%,
+    transparent
+  );
+  text-underline-offset: 0.22em;
+  transition:
+    color 140ms ease,
+    text-decoration-color 140ms ease,
+    text-decoration-thickness 140ms ease;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body a:hover {
+  color: color-mix(in srgb, var(--rb-color-accent) 42%, var(--rb-color-ink));
+  text-decoration-thickness: 2px;
+  text-decoration-color: currentColor;
+}
+
+/* Lists: quiet spacing with blossom-tinted markers. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  :is(ul, ol) {
+  margin-block: 1.4rem;
+  padding-inline-start: 1.4em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body li {
+  margin-block: 0.35rem;
+  padding-inline-start: 0.15em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  :is(ul, ol)
+  > li::marker {
+  color: color-mix(in srgb, var(--rb-color-accent) 72%, var(--rb-color-ink));
+}
+
+/* Blockquote: rounded plum-tinted surface with an accent left rule. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  blockquote {
+  margin: 2rem 0;
+  padding: 1.1rem 1.35rem;
+  border: 1px solid color-mix(in srgb, var(--rb-color-accent) 22%, transparent);
+  border-inline-start: 3px solid var(--rb-color-accent);
+  border-radius: var(--rb-sakura-radius);
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 7%,
+    var(--rb-color-surface)
+  );
+  color: color-mix(in srgb, var(--rb-color-ink) 86%, var(--rb-color-accent));
+  font-style: normal;
+  quotes: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  blockquote
+  p {
+  margin-block: 0.6rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  blockquote
+  > :first-child {
+  margin-block-start: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  blockquote
+  > :last-child {
+  margin-block-end: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  blockquote
+  p::before,
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  blockquote
+  p::after {
+  content: none;
+}
+
+/* hr: a short centered accent rule. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body hr {
+  width: 4rem;
+  height: 2px;
+  margin-block: 3rem;
+  margin-inline: auto;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rb-color-accent) 55%, transparent);
+}
+
+/* Code. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  :not(pre)
+  > code {
+  padding: 0.18em 0.42em;
+  border: 1px solid color-mix(in srgb, var(--rb-color-accent) 18%, transparent);
+  border-radius: var(--rb-sakura-radius-sm);
+  background: var(--rb-color-code-background);
+  color: color-mix(in srgb, var(--rb-color-ink) 82%, var(--rb-color-accent));
+  font-size: 0.88em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)) {
+  margin-block: 1.75rem;
+  padding: 1.05rem 1.2rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius);
+  background: var(--rb-color-code-background);
+  line-height: 1.7;
+  box-shadow: 0 8px 22px -18px
+    color-mix(in srgb, var(--rb-color-ink) 60%, transparent);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-code {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius);
+  overflow: hidden;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rr-code:not([data-terminal="true"]) {
+  --rr-code-paper: var(--rb-color-code-background);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-code-tabs {
+  border-radius: var(--rb-sakura-radius);
+  overflow: hidden;
+}
+
+/* Tables: hairline rules and a tinted header row. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body table {
+  margin-block: 1.75rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius-sm);
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95em;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  :is(th, td) {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--rb-color-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body thead th {
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 9%,
+    var(--rb-color-surface)
+  );
+  color: var(--rb-color-ink);
+  font-weight: 600;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  tbody
+  tr:last-child
+  td {
+  border-bottom: 0;
+}
+
+/* Images: the only elements that get a real soft shadow. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body > img,
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-body p > img,
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  figure
+  img {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius);
+  box-shadow: 0 14px 30px -22px
+    color-mix(in srgb, var(--rb-color-ink) 65%, transparent);
+}
+
+/* Plugin roots. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-callout {
+  margin-block: 1.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--rb-color-accent) 24%, transparent);
+  border-inline-start: 3px solid var(--rb-color-accent);
+  border-radius: var(--rb-sakura-radius);
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 7%,
+    var(--rb-color-surface)
+  );
+  color: var(--rb-color-ink);
+  box-shadow: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-table-of-contents {
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius);
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 4%,
+    var(--rb-color-surface)
+  );
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-table-of-contents a {
+  color: color-mix(in srgb, var(--rb-color-muted) 78%, var(--rb-color-ink));
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-backlinks {
+  margin-top: 3.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rb-color-border);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-backlinks a {
+  border-radius: var(--rb-sakura-radius-sm);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-local-graph {
+  margin-top: 3.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rb-color-border);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-recent-posts {
+  margin-top: 3.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rb-color-border);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-recent-posts a {
+  border-radius: var(--rb-sakura-radius-sm);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-search {
+  border-radius: var(--rb-sakura-radius);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rr-search
+  :is(input, button, a) {
+  border-radius: var(--rb-sakura-radius-sm);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-cardlink {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius);
+  overflow: hidden;
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-cardlink:hover,
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rr-cardlink:focus-visible {
+  border-color: color-mix(
+    in srgb,
+    var(--rb-color-accent) 55%,
+    var(--rb-color-border)
+  );
+  box-shadow: 0 14px 30px -20px
+    color-mix(in srgb, var(--rb-color-ink) 60%, transparent);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-lightbox img {
+  border-radius: var(--rb-sakura-radius-sm);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-mermaid {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius);
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 4%,
+    var(--rb-color-surface)
+  );
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-attachment {
+  border: 1px solid var(--rb-color-border);
+  border-radius: var(--rb-sakura-radius);
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 4%,
+    var(--rb-color-surface)
+  );
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rr-media
+  :is(img, video, audio) {
+  border-radius: var(--rb-sakura-radius-sm);
+}
+
+/* Slim, accent-tinted scrollbar. */
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] * {
+  scrollbar-color: color-mix(
+      in srgb,
+      var(--rb-color-accent) 50%,
+      var(--rb-color-muted)
+    )
+    transparent;
+  scrollbar-width: thin;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] ::-webkit-scrollbar-thumb {
+  border: 2px solid var(--rb-color-paper);
+  border-radius: 999px;
+  background: color-mix(
+    in srgb,
+    var(--rb-color-accent) 50%,
+    var(--rb-color-muted)
+  );
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="sakura"] ::-webkit-scrollbar-track {
+  background: transparent;
 }

@@ -7,6 +7,7 @@ import {
   d1Storage,
   KvAnalyticsStorage,
   kvStorage,
+  MemoryAnalyticsRateLimiter,
 } from "../index.js";
 
 test("worker validates events and exposes D1 read endpoints", async () => {
@@ -373,6 +374,42 @@ test("worker enforces the 8 KiB payload limit by length and by bytes", async () 
   const byBytes = await worker.fetch(oversized);
   assert.equal(byBytes.status, 413);
   assert.deepEqual(await byBytes.json(), { error: "payload_too_large" });
+});
+
+test("worker rate limits capture per client IP and returns 429", async () => {
+  const database = new FakeD1();
+  let now = 0;
+  const worker = createWorker({
+    storage: new D1AnalyticsStorage(database),
+    cors: { allowedOrigins: "any", allowMissingOrigin: true },
+    rateLimit: new MemoryAnalyticsRateLimiter({
+      maxRequests: 2,
+      windowMs: 60_000,
+      now: () => now,
+    }),
+  });
+  const post = (ip: string) =>
+    worker.fetch(
+      new Request("https://analytics.example/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "CF-Connecting-IP": ip,
+        },
+        body: JSON.stringify(pageView("a", "2026-01-01T00:00:00.000Z")),
+      }),
+    );
+
+  assert.equal((await post("198.51.100.1")).status, 204);
+  assert.equal((await post("198.51.100.1")).status, 204);
+  const limited = await post("198.51.100.1");
+  assert.equal(limited.status, 429);
+  assert.deepEqual(await limited.json(), { error: "rate_limited" });
+  // The limit is per client, not global.
+  assert.equal((await post("198.51.100.2")).status, 204);
+  // The next window admits the original client again.
+  now = 60_000;
+  assert.equal((await post("198.51.100.1")).status, 204);
 });
 
 test("worker validates query parameters for read endpoints", async () => {

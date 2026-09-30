@@ -42,18 +42,43 @@ export default { fetch: (request: Request, env: Env) =>
 The Worker binding is constructed per request because `env` exists only in
 `fetch`.
 
+## Rate limiting is a mitigation, not authentication
+
+Origin checking is not authentication: any client can forge an allowed `Origin`
+and POST fabricated `page_view` events. The optional `rateLimit` boundary adds a
+fixed-window limit per connecting IP and returns HTTP `429` once exceeded.
+
+- **`D1AnalyticsRateLimiter` / `d1RateLimiter(db, { maxRequests, windowMs })`**:
+  an atomic, isolate-shared D1 counter. Apply
+  `migrations/0002_analytics_rate_limits.sql` before deploying.
+- **`MemoryAnalyticsRateLimiter`**: process-local counters for tests and local
+  development. Worker isolates are short-lived and not shared, so this does not
+  limit a distributed client across isolates. Use D1 for production.
+
+Rate limiting only reduces abuse from a single client; it never fully prevents
+fabricated or distributed page views. Treat collected analytics as untrusted.
+
+```ts
+rateLimit: new D1AnalyticsRateLimiter(env.ANALYTICS_DB, {
+  maxRequests: 60,
+  windowMs: 60_000,
+}),
+```
+
 ## Endpoints and validation
 
 - `POST /events` accepts only JSON `page_view` payloads with an ISO timestamp,
   a 1–160 character trimmed content ID without control characters, optional
   bounded path and language, and no unknown fields. Bodies are limited to 8 KiB.
+  When a rate limiter is configured, a client over its window limit gets `429`.
 - `GET /content/:contentId/page-views?from=&to=` and `GET /popular?limit=&from=&to=`
   are available only when storage advertises the corresponding capability.
 
 Origin access is deny-by-default. Set explicit `allowedOrigins`; use `"any"`
-only for a consciously public collector. No request IP, cookies, user-agent,
-or fingerprinting data is read or stored. The accepted `path` and `lang` are
-contextual metadata and D1 does not persist them.
+only for a consciously public collector. `path` and `lang` are contextual
+metadata and D1 does not persist them. When a rate limiter is configured, the
+connecting IP (`CF-Connecting-IP`) is read as the rate-limit key; the D1
+limiter stores that key only for the active window.
 
 ## D1 schema and deployment
 
@@ -62,6 +87,7 @@ deploying:
 
 ```sh
 pnpm exec wrangler d1 execute ANALYTICS_DB --file node_modules/@riebeckite/analytics-cloudflare/migrations/0001_analytics_page_views.sql
+pnpm exec wrangler d1 execute ANALYTICS_DB --file node_modules/@riebeckite/analytics-cloudflare/migrations/0002_analytics_rate_limits.sql
 pnpm exec wrangler deploy
 ```
 

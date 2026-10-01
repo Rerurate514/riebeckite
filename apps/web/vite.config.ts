@@ -22,6 +22,13 @@ export default defineConfig({
     // parser chunk. All of them are behind dynamic imports, so a tighter limit
     // would only hide the size of code the initial route never downloads.
     chunkSizeWarningLimit: 2048,
+    rolldownOptions: {
+      checks: {
+        // riebeckite-ssg renders every page inside the Vite pass, so it always
+        // dominates plugin time and there is no threshold to tune.
+        pluginTimings: false,
+      },
+    },
   },
   plugins: [
     ...replaceHonoxIslandDependencyPlugin(

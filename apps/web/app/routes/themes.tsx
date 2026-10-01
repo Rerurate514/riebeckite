@@ -180,7 +180,7 @@ export default createRoute(async (c) => {
                 data-theme={preview.mode}
                 {...(preview.attrs ?? {})}
               >
-                <SampleArticle title={preview.theme} />
+                <SampleArticle title={preview.theme} id={preview.id} />
               </div>
             </div>
           </section>
@@ -194,7 +194,8 @@ export default createRoute(async (c) => {
  * A single sample article exercising the stable hooks a theme may style:
  * headings, prose, lists, code, table, a callout, a TOC, and backlinks.
  */
-function SampleArticle(props: { title: string }) {
+function SampleArticle(props: { title: string; id: string }) {
+  const demoId = `sample-${props.id}`;
   const codeLines = [
     "export const theme = defineTheme({",
     `  name: "${props.title}",`,
@@ -211,21 +212,22 @@ function SampleArticle(props: { title: string }) {
         <p>
           この段落はテーマの本文組版を示します。インラインコードは
           <code>const theme = "{props.title}"</code> のように表示され、
-          <a href="#sample">リンク</a>や<strong>強調</strong>、<em>斜体</em>
+          <a href={`#${demoId}`}>リンク</a>や<strong>強調</strong>、
+          <em>斜体</em>
           も含みます。
         </p>
-        <h2>見出しレベル2</h2>
+        <h2 id={demoId}>見出しレベル2</h2>
         <p>
           Riebeckite
           のテーマは色だけでなく、余白・罫線・角丸・組版まで変えられます。
           段落のリズムと見出しの階層に注目してください。
         </p>
-        <h4>補足的な見出し</h4>
-        <p>h4 までの階層を用意し、見出しサイズの差も比較できます。</p>
+        <h3>補足的な見出し</h3>
+        <p>h3 までの階層を用意し、見出しサイズの差も比較できます。</p>
         <blockquote>
           <p>引用はテーマごとに異なる表情を持ちます。</p>
         </blockquote>
-        <h3>箇条書き</h3>
+        <h3 id={`${demoId}-toc`}>箇条書き</h3>
         <ul>
           <li>設計トークンで色を決める</li>
           <li>安定したフックで構造を組む</li>
@@ -288,18 +290,18 @@ function SampleArticle(props: { title: string }) {
           <p>目次</p>
           <ul>
             <li>
-              <a href="#sample">見出しレベル2</a>
+              <a href={`#${demoId}`}>見出しレベル2</a>
             </li>
             <li>
-              <a href="#sample">箇条書き</a>
+              <a href={`#${demoId}-toc`}>箇条書き</a>
             </li>
           </ul>
         </nav>
         <aside class="rr-backlinks">
-          <h2>バックリンク</h2>
+          <h2 id={`${demoId}-backlinks`}>バックリンク</h2>
           <ul>
             <li>
-              <a href="#sample">関連するノート</a>
+              <a href={`#${demoId}-backlinks`}>関連するノート</a>
             </li>
           </ul>
         </aside>

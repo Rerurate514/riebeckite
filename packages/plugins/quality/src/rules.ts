@@ -147,8 +147,10 @@ function brokenInternalAnchor({ elements }: InspectionContext): Diagnostic[] {
 }
 
 function headingOrder({ elements }: InspectionContext): Diagnostic[] {
+  const graphics = graphicRanges(elements);
   const levels: number[] = [];
   for (const element of elements) {
+    if (isInsideGraphic(element, graphics)) continue;
     const level = headingLevel(element.tag);
     if (level !== null) levels.push(level);
   }
@@ -273,6 +275,32 @@ function headingLevel(tag: string): number | null {
   if (tag.length !== 2 || tag[0] !== "h") return null;
   const level = Number.parseInt(tag[1] ?? "", 10);
   return level >= 1 && level <= 6 ? level : null;
+}
+
+/**
+ * Ranges of `<svg>` and `<foreignObject>` elements. Diagram embeds such as
+ * Marp render their slides as `<svg><foreignObject><section>…`, which puts
+ * real `<h1>` tags inside graphic markup; those headings belong to the
+ * drawing, not to the document outline.
+ */
+function graphicRanges(
+  elements: readonly HtmlElement[],
+): Array<readonly [number, number]> {
+  const ranges: Array<readonly [number, number]> = [];
+  for (const element of elements) {
+    if (element.tag !== "svg" && element.tag !== "foreignobject") continue;
+    ranges.push([element.start, element.end + element.content.length]);
+  }
+  return ranges;
+}
+
+function isInsideGraphic(
+  element: HtmlElement,
+  ranges: readonly (readonly [number, number])[],
+): boolean {
+  return ranges.some(
+    ([start, end]) => element.start >= start && element.start < end,
+  );
 }
 
 function createDiagnostic(

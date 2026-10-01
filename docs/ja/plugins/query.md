@@ -14,6 +14,26 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 コンテンツのメタデータなどを条件にして、該当する記事群を取り出して表示したい場合に利用します。たとえば特定タグの記事一覧や条件付きのコンテンツ一覧を作る用途です。
 
+### ソース
+
+````markdown
+```query
+sort:
+  field: title
+  order: asc
+limit: 5
+```
+````
+
+### 実行例
+
+```query
+sort:
+  field: title
+  order: asc
+limit: 5
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

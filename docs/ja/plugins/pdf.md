@@ -18,6 +18,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 [[documents/guide.pdf|資料]]
 ```
 
+`![[report.pdf]]` はビルド時にページ内 PDF ビューアへ置き換わり、ダウンロード用リンクとファイル情報も併記されます。表示には PDF ファイルの配置が必要です。
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

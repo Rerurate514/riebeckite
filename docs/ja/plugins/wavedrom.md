@@ -14,11 +14,25 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 デジタル信号のタイミングを WaveDrom の記述から可視化する用途に使えます。
 
+### ソース
+
 ````markdown
 ```wavedrom
-{ signal: [{ name: "clk", wave: "p....." }, { name: "data", wave: "x.345x", data: "A B C" }] }
+{ "signal": [
+  { "name": "clk", "wave": "p......" },
+  { "name": "bus", "wave": "x.34.5x", "data": "head body tail" }
+] }
 ```
 ````
+
+### 実行例
+
+```wavedrom
+{ "signal": [
+  { "name": "clk", "wave": "p......" },
+  { "name": "bus", "wave": "x.34.5x", "data": "head body tail" }
+] }
+```
 
 ## 使いどころ
 

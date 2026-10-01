@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Obsidian Excalidraw で作成した図を記事と一緒に公開したい場合に利用します。Excalidrawノートや埋め込み画像を含むVaultを、その関係を保ったまま公開する用途です。
 
+`![[drawing.excalidraw]]` はビルド時にプレースホルダが生成され、ブラウザ側で SVG に置き換わって記事内に図が表示されます。`.excalidraw` ファイルの配置が必要です。
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

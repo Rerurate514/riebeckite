@@ -94,7 +94,7 @@ content: {
 
 ## 公開条件
 
-どのコンテンツを公開するかは `publishStrategy` で設定できます。
+どのコンテンツを公開するかは、既定では `publishStrategy` で設定します。
 
 ```ts id="hp9zx8"
 content: {
@@ -112,7 +112,24 @@ publish: true
 ---
 ```
 
-内部では `isPublished` が publication policy と frontmatter をもとに公開状態を判定します。
+現在の公開状態は Core で一度だけ解決され、Plugin には次の manifest view として渡されます。
+
+| View | 含まれるもの | 用途 |
+| --- | --- | --- |
+| `manifest.publicEntries` | ルーティングできるページ。`public` と `unlisted` | ページ表示、SSG の path 列挙 |
+| `manifest.discoverableEntries` | 発見可能な `public` ページだけ | docs navigation、search、feed、sitemap、taxonomy、graph、backlinks、related/recent |
+
+frontmatter で明示的な公開状態を指定できます。
+
+| Frontmatter | 結果 |
+| --- | --- |
+| `visibility: public` | URL で表示でき、一覧や検索にも出る |
+| `visibility: unlisted` | URL を知っていれば表示できるが、一覧や検索には出ない |
+| `visibility: draft` | URL でも表示されず、一覧や検索にも出ない |
+| `publishAt: 2026-01-01T00:00:00.000Z` | build 時刻がその日時より前なら非公開、以後の build で `public` になる |
+| `visibility` / `publishAt` なし | `publishStrategy` に従う。`explicit` は `publish: true` が必要。`selective` は `private: true` と `draft: true` を除外する |
+
+`visibility` や `publishAt` が不正な場合、推測せず build を失敗させます。scheduled publishing は build 時刻だけで判定します。Riebeckite は runtime timer を起動しません。
 
 `exclude` と `publishStrategy` は似ていますが、役割が異なります。
 
@@ -133,7 +150,7 @@ flowchart LR
     Publish -->|No| Private
 ```
 
-`exclude` は **Content System に入れるか**、`publishStrategy` は **Site に公開するか**を決めます。
+`exclude` は **Content System に入れるか**、`publishStrategy` や `visibility` は **Site でどう扱うか**を決めます。`exclude` されたファイルは link resolution や graph、diagnostics にも現れません。一方、`draft`、`unlisted`、公開前の `publishAt` は raw manifest には残りますが、Core が route 用 view と discovery 用 view から適切に外します。
 
 # ContentSource
 

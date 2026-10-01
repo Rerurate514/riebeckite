@@ -14,6 +14,32 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 棒グラフや折れ線グラフなど、データ可視化を記事へ組み込みたい場合に利用します。具体的なデータ指定形式は package README の対応構文を確認してください。
 
+### ソース
+
+````markdown
+```chart
+{
+  "type": "bar",
+  "data": {
+    "labels": ["Mon", "Tue", "Wed"],
+    "datasets": [{ "label": "Visits", "data": [12, 19, 8] }]
+  }
+}
+```
+````
+
+### 実行例
+
+```chart
+{
+  "type": "bar",
+  "data": {
+    "labels": ["Mon", "Tue", "Wed"],
+    "datasets": [{ "label": "Visits", "data": [12, 19, 8] }]
+  }
+}
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

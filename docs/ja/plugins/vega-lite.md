@@ -14,6 +14,36 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 データを宣言的な仕様からグラフとして可視化したい記事で利用します。数値データを解説するレポートや分析記事に向いています。
 
+### ソース
+
+````markdown
+```vega-lite
+{
+  "title": "Revenue",
+  "data": { "values": [{ "category": "A", "value": 28 }, { "category": "B", "value": 55 }] },
+  "mark": "bar",
+  "encoding": {
+    "x": { "field": "category", "type": "nominal" },
+    "y": { "field": "value", "type": "quantitative" }
+  }
+}
+```
+````
+
+### 実行例
+
+```vega-lite
+{
+  "title": "Revenue",
+  "data": { "values": [{ "category": "A", "value": 28 }, { "category": "B", "value": 55 }] },
+  "mark": "bar",
+  "encoding": {
+    "x": { "field": "category", "type": "nominal" },
+    "y": { "field": "value", "type": "quantitative" }
+  }
+}
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

@@ -14,6 +14,28 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 同じ処理を複数の言語やパッケージマネージャーで示すドキュメントに向いています。たとえば `npm` / `pnpm` / `bun` のコマンドを切り替えて提示できます。
 
+### ソース
+
+````markdown
+```ts tab="React"
+const greeting = "Hello from React";
+```
+
+```js tab="Vanilla"
+console.log("Hello from JavaScript");
+```
+````
+
+### 実行例
+
+```ts tab="React"
+const greeting = "Hello from React";
+```
+
+```js tab="Vanilla"
+console.log("Hello from JavaScript");
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

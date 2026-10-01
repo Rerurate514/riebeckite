@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Graphviz の DOT 記法で、依存関係や状態遷移などの図を記事内に記述できます。
 
+### ソース
+
 ````markdown
 ```dot
 digraph G {
@@ -22,6 +24,15 @@ digraph G {
 }
 ```
 ````
+
+### 実行例
+
+```dot
+digraph G {
+  Markdown -> Riebeckite;
+  Riebeckite -> Web;
+}
+```
 
 ## 使いどころ
 

@@ -14,6 +14,32 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Kanban形式で管理している情報を記事として公開したい場合に利用します。タスクやロードマップなど、列ごとに状態を整理したコンテンツに向いています。
 
+### ソース
+
+````markdown
+## Backlog
+
+- [ ] Draft the release notes
+- [ ] Link to [[README]]
+
+## Done
+
+- [x] Publish the fixture
+````
+
+### 実行例
+
+```kanban
+## Backlog
+
+- [ ] Draft the release notes
+- [ ] Link to [[README]]
+
+## Done
+
+- [x] Publish the fixture
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

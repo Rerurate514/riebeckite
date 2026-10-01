@@ -14,9 +14,15 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 大きな画像を多く含むサイトで、閲覧環境に合わせた画像配信を行いたい場合に利用します。記事側では通常どおり画像を参照し、Pluginに画像処理を任せる構成にできます。
 
+### ソース
+
 ```markdown
-![[images/screenshot.png]]
+![[riebeckite-logo-horizontal.png]]
 ```
+
+### 実行例
+
+![[riebeckite-logo-horizontal.png]]
 
 ## 使いどころ
 

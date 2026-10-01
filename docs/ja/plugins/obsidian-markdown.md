@@ -14,12 +14,21 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Obsidian で普段使っている WikiLink や Callout を、そのまま公開用コンテンツに利用できます。
 
+### ソース
+
 ```markdown
-[[getting-started|Getting Started]]
+[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
 
 > [!NOTE]
 > このノートは Riebeckite で公開されています。
 ```
+
+### 実行例
+
+[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+
+> [!NOTE]
+> このノートは Riebeckite で公開されています。
 
 ## 使いどころ
 

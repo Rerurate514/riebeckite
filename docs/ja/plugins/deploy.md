@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Riebeckiteサイトをビルド後の公開先へ届ける処理をPluginとして組み込みたい場合に利用します。実際のデプロイ手順は環境ごとに異なるため、[Deployment Guide](../guides/deployment/README.md) と併せて確認してください。
 
+ビルド出力に、対象プロバイダの設定ファイルが生成されます。Cloudflare Pages / Netlify 向けの `_redirects` と `_headers`、Vercel 向けの `vercel.json`、GitHub Pages 向けの `.nojekyll` と `CNAME` などです。
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

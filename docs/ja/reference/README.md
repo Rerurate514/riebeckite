@@ -215,7 +215,7 @@ stableStringify
 
 Plugin の定義や解決、Endpoint などに使用します。
 
-Plugin を作成する場合は [Plugin API](./plugin-api.md) と [プラグイン作成の詳細](../framework/plugin-development.md) を参照してください。
+Plugin を作成する場合は [Plugin API](./plugin-api.md) と [プラグイン作成の詳細](../framework/plugin-system.md) を参照してください。
 
 ## Themes
 
@@ -230,7 +230,7 @@ ThemeArticleLayoutPreset
 
 Theme の定義と Presentation Contract に使用します。
 
-Theme を作成する場合は [Theme API](./theme-api.md) と [テーマ作成の詳細](../framework/theme-development.md) を参照してください。
+Theme を作成する場合は [Theme API](./theme-api.md) と [テーマ作成の詳細](../framework/theme-system.md) を参照してください。
 
 ## Pipeline
 

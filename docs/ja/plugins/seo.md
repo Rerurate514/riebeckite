@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 公開記事のタイトル・説明・canonical情報などを検索エンジンやSNS向けに整える用途です。記事ごとの frontmatter と組み合わせて利用できます。
 
+ビルドすると、各ページの `<head>` に canonical・OGP・JSON-LD が挿入され、`sitemap.xml`・`robots.txt`・RSS/Atom/JSON Feed も出力されます。
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

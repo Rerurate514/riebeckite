@@ -14,12 +14,21 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 コードブロックの可読性を高めたい技術記事で利用します。通常の fenced code block を書き、Plugin 側で表示を強化します。
 
+### ソース
+
 ````markdown
-```ts
+```ts title="hello.ts"
 const message = "Hello, Riebeckite";
 console.log(message);
 ```
 ````
+
+### 実行例
+
+```ts title="hello.ts"
+const message = "Hello, Riebeckite";
+console.log(message);
+```
 
 ## 使いどころ
 

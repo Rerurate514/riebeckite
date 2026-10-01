@@ -14,7 +14,20 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 見出し構造を持つ Markdown をマインドマップとして見せたい記事で利用できます。
 
+### ソース
+
 ```markdown
+# Riebeckite
+## Core
+## Plugins
+### Mermaid
+### Search
+## Themes
+```
+
+### 実行例
+
+```markmap
 # Riebeckite
 ## Core
 ## Plugins

@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 公開前にコンテンツの品質上の問題を検出したい場合に利用します。多数の記事を管理するサイトで、レビュー時のチェックを自動化する用途に向いています。
 
+生成済みの HTML に対するチェック結果が、manifest の diagnostic に流れます。例: `quality:img-alt-missing`、`duplicate-id`、`heading-order`、`empty-link-text`。`failOn` を指定すると、条件に当てはまる場合にビルドを失敗させられます。
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

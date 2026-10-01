@@ -14,6 +14,38 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Obsidian Bases を利用して整理している情報を公開サイト側でも扱いたい場合に利用します。対応範囲はPluginの実装と package README を基準にしてください。
 
+### ソース
+
+````markdown
+```base
+filters:
+  and:
+    - file.hasTag("featured")
+properties:
+  file.name:
+    displayName: Title
+views:
+  - type: table
+    name: Featured
+    limit: 10
+```
+````
+
+### 実行例
+
+```base
+filters:
+  and:
+    - file.hasTag("featured")
+properties:
+  file.name:
+    displayName: Title
+views:
+  - type: table
+    name: Featured
+    limit: 10
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

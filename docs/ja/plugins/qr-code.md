@@ -14,12 +14,21 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 記事内のURLや文字列をQRコードとして提示したい場合に利用します。スマートフォンへURLを渡したい手順書やイベント資料などで利用できます。
 
+### ソース
+
 ````md
 ```qr
 # caption: Project page
 https://example.com/
 ```
 ````
+
+### 実行例
+
+```qr
+# caption: Project page
+https://example.com/
+```
 
 ## 使いどころ
 

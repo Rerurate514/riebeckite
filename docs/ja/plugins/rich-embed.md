@@ -14,8 +14,24 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 外部ページへのリンクを、URLだけではなくタイトルや概要を含むリッチなカードとして見せたい場合に利用します。
 
-```markdown
-https://example.com/article
+### ソース
+
+````markdown
+```embed
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+title: Demo video
+caption: A short caption
+aspect: 16/9
+```
+````
+
+### 実行例
+
+```embed
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+title: Demo video
+caption: A short caption
+aspect: 16/9
 ```
 
 ## 使いどころ

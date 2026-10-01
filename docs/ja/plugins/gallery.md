@@ -14,10 +14,38 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 複数の画像をまとめて紹介する記事で、画像一覧をギャラリーとして見せる用途に向いています。
 
-```markdown
-![[images/01.png]]
-![[images/02.png]]
-![[images/03.png]]
+### ソース
+
+````markdown
+```gallery
+columns: 3
+items:
+  - title: Default
+    description: A clean, typographic theme.
+    href: https://example.com/themes/default/
+  - title: Minimal
+    description: Stripped back to the essentials.
+    href: https://example.com/themes/minimal/
+  - title: Gruvbox
+    description: A warm, high-contrast palette.
+    href: https://example.com/themes/gruvbox/
+```
+````
+
+### 実行例
+
+```gallery
+columns: 3
+items:
+  - title: Default
+    description: A clean, typographic theme.
+    href: https://example.com/themes/default/
+  - title: Minimal
+    description: Stripped back to the essentials.
+    href: https://example.com/themes/minimal/
+  - title: Gruvbox
+    description: A warm, high-contrast palette.
+    href: https://example.com/themes/gruvbox/
 ```
 
 ## 使いどころ

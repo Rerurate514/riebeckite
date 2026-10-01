@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 ファイル配置とは独立した安定URLを記事に持たせたい場合に利用します。ファイルを整理・移動しても公開URLを維持したいサイトで便利です。
 
+frontmatter の `id` などを手掛かりに正規 URL（canonical）が決まり、`redirects` に指定した旧 URL からは 308 リダイレクトが返されます。
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

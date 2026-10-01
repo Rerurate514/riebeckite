@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 記事内に Mermaid のコードブロックを書くと、その場で図として表示できます。
 
+### ソース
+
 ````markdown
 ```mermaid
 graph LR
@@ -21,6 +23,14 @@ graph LR
   B --> C[Web site]
 ```
 ````
+
+### 実行例
+
+```mermaid
+graph LR
+  A[Markdown] --> B[Riebeckite]
+  B --> C[Web site]
+```
 
 ## 使いどころ
 

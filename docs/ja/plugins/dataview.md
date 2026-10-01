@@ -14,6 +14,28 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Obsidian Dataview を使っているノートの公開を想定し、Dataview由来の情報をWeb側でも扱いたい場合に利用します。対応する構文・制約は package README で確認してください。
 
+### ソース
+
+````markdown
+```dataview
+TABLE file.name AS "Name", status
+FROM #project
+WHERE status = "active"
+SORT file.name asc
+LIMIT 10
+```
+````
+
+### 実行例
+
+```dataview
+TABLE file.name AS "Name", status
+FROM #project
+WHERE status = "active"
+SORT file.name asc
+LIMIT 10
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

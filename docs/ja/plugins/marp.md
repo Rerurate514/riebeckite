@@ -14,6 +14,32 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Markdownから作ったMarpスライドをRiebeckiteのコンテンツとして扱いたい場合に利用します。発表資料と通常の記事を同じリポジトリで管理する用途に向いています。
 
+### ソース
+
+````markdown
+```marp title="Intro deck"
+# First slide
+
+- a bullet
+
+---
+
+# Second slide
+```
+````
+
+### 実行例
+
+```marp title="Intro deck"
+# First slide
+
+- a bullet
+
+---
+
+# Second slide
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

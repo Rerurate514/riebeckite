@@ -14,6 +14,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 公開後のサイトでページ閲覧などを計測したい場合に利用します。利用する解析サービスに必要な設定を行い、Riebeckite側の統合点として使用します。具体的な設定キーは package README を参照してください。
 
+このページのビューは、設定した provider に送信されます。集計の確認は provider 側の画面や、`analytics-untracked` を含む診断レポートで行います。
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

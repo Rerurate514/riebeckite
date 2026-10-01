@@ -60,6 +60,7 @@ const {
   CANVAS_MARKER,
   RICHEMBED_MARKER,
   CHARTJS_MARKER,
+  CITATIONS_MARKER,
   PLANTUML_MARKER,
   ALIAS_MARKER,
   HIGHLIGHT_MARKER,
@@ -264,6 +265,17 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   }
   if (!combined.includes(CHARTJS_MARKER)) {
     fail(`generated HTML is missing the chartjs marker (${CHARTJS_MARKER})`);
+  }
+  if (!combined.includes(CITATIONS_MARKER)) {
+    fail(
+      `generated HTML is missing the citations marker (${CITATIONS_MARKER})`,
+    );
+  }
+  if (!combined.includes('href="#ref-smith2024"')) {
+    fail("citations plugin did not link citation labels to references");
+  }
+  if (!combined.includes("External Consumer Citations")) {
+    fail("citations plugin did not render the bibliography entry");
   }
   if (!combined.includes("data-chartjs-config")) {
     fail("generated HTML is missing the chartjs canvas configuration");

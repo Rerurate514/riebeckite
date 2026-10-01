@@ -102,6 +102,10 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/plugin-chartjs",
   },
   {
+    directory: "packages/plugins/citations",
+    name: "@riebeckite/plugin-citations",
+  },
+  {
     directory: "packages/plugins/hover-preview",
     name: "@riebeckite/plugin-hover-preview",
   },
@@ -171,6 +175,7 @@ export const SHORTCODE_MARKER = "RIEBECKITE_EXTERNAL_SHORTCODE_MARKER";
 export const CANVAS_MARKER = "RIEBECKITE_EXTERNAL_CANVAS_MARKER";
 export const RICHEMBED_MARKER = "RIEBECKITE_EXTERNAL_RICHEMBED_MARKER";
 export const CHARTJS_MARKER = "RIEBECKITE_EXTERNAL_CHARTJS_MARKER";
+export const CITATIONS_MARKER = "RIEBECKITE_EXTERNAL_CITATIONS_MARKER";
 export const PLANTUML_MARKER = "RIEBECKITE_EXTERNAL_PLANTUML_MARKER";
 export const ALIAS_MARKER = "RIEBECKITE_EXTERNAL_ALIAS_MARKER";
 export const HIGHLIGHT_MARKER = "RIEBECKITE_EXTERNAL_HIGHLIGHT_MARKER";

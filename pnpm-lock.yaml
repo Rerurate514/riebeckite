@@ -537,6 +537,18 @@ importers:
         specifier: ^4.5.1
         version: 4.5.1
 
+  packages/plugins/citations:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+
   packages/plugins/code-annotations:
     dependencies:
       '@riebeckite/core':

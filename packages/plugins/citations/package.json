@@ -1,0 +1,55 @@
+{
+  "name": "@riebeckite/plugin-citations",
+  "version": "0.0.13",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "@types/mdast": "catalog:",
+    "unist-util-visit": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "prepack": "pnpm run build",
+    "test": "node --import tsx --test \"test/*.test.ts\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/citations"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "BibTeX and BibLaTeX citation rendering for Riebeckite Markdown content.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "citations",
+    "bibtex",
+    "markdown"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
+}

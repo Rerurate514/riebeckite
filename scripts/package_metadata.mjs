@@ -15,6 +15,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/canvas",
   "packages/plugins/changelog",
   "packages/plugins/chartjs",
+  "packages/plugins/citations",
   "packages/plugins/code-annotations",
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",
@@ -166,6 +167,11 @@ const packagePublishingMetadata = {
   "packages/plugins/chartjs": {
     description: "Chart.js code block rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "chartjs", "charts"],
+  },
+  "packages/plugins/citations": {
+    description:
+      "BibTeX and BibLaTeX citation rendering for Riebeckite Markdown content.",
+    keywords: ["riebeckite", "plugin", "citations", "bibtex", "markdown"],
   },
   "packages/plugins/code-annotations": {
     description:
@@ -538,6 +544,7 @@ export function expectedPackageMetadata(directory) {
     const hasStyle = ![
       "alias",
       "analytics",
+      "citations",
       "deploy",
       "diagnostics",
       "discord-embed",
@@ -552,6 +559,7 @@ export function expectedPackageMetadata(directory) {
       "analytics",
       "backlinks",
       "breadcrumbs",
+      "citations",
       "code-annotations",
       "code-enhance",
       "daily-notes",

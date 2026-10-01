@@ -112,6 +112,11 @@ declare module "@riebeckite/plugin-canvas" {
   export const canvas: any;
 }
 
+declare module "@riebeckite/plugin-citations" {
+  export const citations: any;
+  export const citationsPlugin: any;
+}
+
 declare module "@riebeckite/plugin-canvas/client" {
   export const initCanvas: any;
 }

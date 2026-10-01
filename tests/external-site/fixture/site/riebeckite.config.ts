@@ -10,6 +10,7 @@ import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { chartjs } from "@riebeckite/plugin-chartjs";
+import { citations } from "@riebeckite/plugin-citations";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { colorModePlugin } from "@riebeckite/plugin-color-mode";
 import { d2 } from "@riebeckite/plugin-d2";
@@ -88,6 +89,7 @@ export default defineConfig({
     flashcardsPlugin(),
     kanban(),
     chartjs(),
+    citations({ bibliography: "references.bib" }),
     recentPostsPlugin(),
     relatedPosts(),
     responsiveImage(),

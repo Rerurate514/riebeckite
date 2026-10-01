@@ -14,6 +14,7 @@ Plugin は、Riebeckite のサイトに機能を追加する仕組みです。�
 | 画像を拡大表示したい | [Lightbox](./lightbox.md) |
 | Excalidraw を表示したい | [Excalidraw](./excalidraw.md) |
 | Obsidian Canvas を表示したい | [Canvas](./canvas.md) |
+| BibTeX の引用を使いたい | [Citations](./citations.md) |
 | 多言語サイトにしたい | [Localization](./l10n.md) |
 
 この表は、目的から探すための入口です。すべての Plugin は下の一覧から確認できます。
@@ -48,6 +49,7 @@ export default defineConfig({
 - [Canvas](./canvas.md)
 - [Changelog](./changelog.md)
 - [Chart.js](./chartjs.md)
+- [Citations](./citations.md)
 - [Code Enhance](./code-enhance.md)
 - [Code Tabs](./code-tabs.md)
 - [color-mode](./color-mode.md)

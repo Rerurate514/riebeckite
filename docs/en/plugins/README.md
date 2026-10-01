@@ -14,6 +14,7 @@ Plugins add features to a Riebeckite site. Use them when you want more than plai
 | Enlarge images in an overlay | [Lightbox](./lightbox.md) |
 | Show Excalidraw drawings | [Excalidraw](./excalidraw.md) |
 | Show Obsidian Canvas files | [Canvas](./canvas.md) |
+| Use BibTeX citations | [Citations](./citations.md) |
 | Build a multilingual site | [Localization](./l10n.md) |
 
 This table is an entry point, not the full API reference. For all packages, see the list below.
@@ -48,6 +49,7 @@ Each Plugin page shows the package name, import name, and common settings. The p
 - [Canvas](./canvas.md)
 - [Changelog](./changelog.md)
 - [Chart.js](./chartjs.md)
+- [Citations](./citations.md)
 - [Code Enhance](./code-enhance.md)
 - [Code Tabs](./code-tabs.md)
 - [color-mode](./color-mode.md)

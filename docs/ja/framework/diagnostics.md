@@ -1,54 +1,147 @@
 # Diagnostics
 
-Diagnostics は Core、plugin、tooling が出す structured finding です。config、content、capability、environment の問題を、単なる console string ではなく実行可能な情報として伝えます。
+Diagnostics は、Riebeckite の設定やコンテンツ、プラグイン、実行環境に問題がないかを検査し、開発者に報告するための仕組みです。
 
-## Producers and consumers
+単にエラーメッセージを `console.log` へ出すのではなく、
 
-Plugin は `addDiagnostics` で finding を提供できます。Core/integration は `check` や `doctor` のために集約します。actionable な条件を名指しし、可能なら対象 content/config を特定し、output correctness に応じた severity と具体的な remediation を示してください。
+- 何が問題なのか
+- どこで問題が起きているのか
+- どの程度重要なのか
+- どう直せばよいのか
 
-`check` は config/plugin validity、`doctor` はより広い health を扱います。Doctor は一部の失敗で他の独立 finding を隠しません。失敗した health check は non-zero exit になります。
+といった情報を、Riebeckite が扱える共通形式の診断情報（diagnostic）として表現します。
 
-Doctor の build-state 検査は、incremental state が読めること、および保存された fingerprint が現在の content source と一致することを確認します。前回の build 以降に entry が追加・変更・削除されている場合は、件数と sample を含む warning として報告します。次の build で state は更新されます。
+これにより、Core や各プラグインが見つけた問題を `check` や `doctor` からまとめて確認できます。
 
-## コンテンツ ID の整合性
+## Diagnostics の流れ
 
-安定コンテンツ ID は、フロントマターの任意フィールド `id` から取得します（従来コンテンツ用に `uid` も受け付けます）。analytics プラグインのページビュー計測など、コンテンツ単位の利用者にとっての識別キーです。diagnostics プラグインはこの ID にまつわるコンテンツレベルの不変条件を 2 つ検査します。
+プラグインは `addDiagnostics` を使って独自の診断を追加できます。
 
-| コード | 既定の重要度 | 対象 |
+追加された診断は Core や integration によって集約され、主に `check` や `doctor` から利用されます。
+
+診断を追加するときは、可能な限り次の情報を明確にしてください。
+
+- 問題が発生する条件
+- 問題のあるコンテンツや設定
+- 問題の重要度（severity）
+- 修正方法（remediation）
+
+たとえば「設定が不正です」とだけ報告するのではなく、「どの設定が不正で、どのように変更すればよいか」まで分かる診断を推奨します。
+
+## `check` と `doctor`
+
+`check` と `doctor` は役割が少し異なります。
+
+`check` は主に設定やプラグインの構成が正しいかを検査します。
+
+`doctor` はそれに加えて、Riebeckite が正常に動作できる状態かをより広く検査します。
+
+Doctor では、1つの検査に失敗しても、可能な限り他の独立した検査を続行します。そのため、複数の問題がある場合でも一度の実行でまとめて確認できます。
+
+問題が見つかった場合、コマンドは non-zero exit code で終了します。
+
+### Build state の検査
+
+Doctor は incremental build で使用する build state も検査します。
+
+主に次の状態を確認します。
+
+- 保存されている state を正常に読み込めるか
+- 保存された fingerprint と現在のコンテンツが一致しているか
+
+前回の build 以降にコンテンツが追加・変更・削除されている場合は、変更件数と一部のサンプルを warning として報告します。
+
+これは state の破損を意味するものではありません。次回の build が完了すると、現在のコンテンツに合わせて state が更新されます。
+
+## コンテンツ ID の検査
+
+Riebeckite では、コンテンツを継続的に識別するための「安定コンテンツ ID」を設定できます。
+
+通常はフロントマターの `id` を使用します。
+
+```yaml
+---
+id: my-article
+---
+```
+
+従来のコンテンツとの互換性のため、`uid` も利用できます。
+
+この ID は、たとえば analytics プラグインがページごとの閲覧数を記録するときなど、URLとは別にコンテンツそのものを識別したい場合に利用されます。
+
+Diagnostics プラグインは、コンテンツ ID について次の問題を検査します。
+
+| コード | 重要度 | 意味 |
 | --- | --- | --- |
-| `duplicate-content-id` | error | 複数の公開ノートが同じ安定コンテンツ ID を共有している。コンテンツ単位の指標が黙って合算される |
-| `invalid-content-id` | error | `id`/`uid` のフロントマターが安定コンテンツ ID の契約を満たしていない（例: `id` と `uid` が抵触）。ビルドが失敗する |
+| `duplicate-content-id` | error | 複数の公開コンテンツが同じ ID を使用している |
+| `invalid-content-id` | error | `id` / `uid` がコンテンツ ID のルールを満たしていない |
 
-いずれも汎用のコンテンツ診断であり、diagnostics プラグインは analytics 固有の要求をチェック抽象化に hardcode しません。
+たとえば、2つの記事が同じ ID を持っていると、analytics などで別の記事のデータが同じコンテンツとして扱われる可能性があります。
+
+また、`id` と `uid` に異なる値が指定されるなど、どの ID を使用すべきか判断できない状態もエラーになります。
+
+これらは analytics 専用の検査ではありません。コンテンツ ID を利用するすべての機能に共通する整合性チェックとして Diagnostics が担当します。
 
 ## サイト全体のコンテンツ整合性
 
-diagnostics プラグインは、公開サイト全体のリンクや参照に問題がないか確認します。
+Diagnostics プラグインは、公開サイト内のリンクや参照が正しく解決できるかも検査します。
 
-次のような問題を `content-integrity:*` の診断として報告します。
+たとえば、次のような問題を検出します。
 
-- 存在しないページへのサイト内リンク
+- 存在しないページへのリンク
 - 解決できない Wikiリンク
 - 存在しない画像や添付ファイルへの参照
-- 複数のコンテンツが同じ公開パスを使用している状態
-- 存在しない転送先や循環など、リダイレクトの問題
+- 複数のコンテンツによる公開パスの重複
+- 存在しない転送先へのリダイレクト
+- 循環しているリダイレクト
 
-検査には、Riebeckite がすでに解決した公開コンテンツや公開パスの情報を使用します。そのため、整合性検査のためにコンテンツをもう一度読み込んだり、Markdown を再解析したりすることはありません。
+これらは `content-integrity:*` の診断として報告されます。
 
-なお、画像の `alt` 属性や見出し構造など、個々のページの HTML 品質は `@riebeckite/plugin-quality` が担当します。
+### どの情報を使って検査するのか
 
-### プラグインからページやアセットを公開する場合
+整合性検査では、Riebeckite がすでに解決した公開コンテンツや公開パスの情報を使用します。
 
-プラグインが独自のページや生成ファイル、アセットを公開する場合は、Riebeckite が提供する対応する仕組みに登録してください。
+そのため、Diagnostics のためだけに Markdown をもう一度解析したり、コンテンツを最初から読み直したりすることはありません。
 
-正しく登録された公開先は整合性検査でも認識されるため、それらへのリンクが誤って「存在しないリンク」として報告されることはありません。
+また、permalink、alias、rename、多言語化、公開・除外設定などによって最終的な公開先が変わっている場合も、Riebeckite が解決した結果を基準に検査します。
 
-## Authoring rules
+### HTML の品質検査との違い
 
-- option validation は pure にし、file read・mutation・background work を始めない
-- 不確実なら unsafe output を黙って選ばず報告する
-- stack trace、token、不要な絶対 path を user-facing message に漏らさない
-- stable identifier と remediation を優先し、text matching に依存しない
-- diagnostic から auto-fix/build/cache/state mutation をしない
+Diagnostics が担当するのは、主にサイト全体の参照や構成の整合性です。
 
-事実の閲覧は [Inspector](inspector.md)、log/trace は [Observability](observability.md) を参照してください。
+一方で、
+
+- 画像に適切な `alt` があるか
+- 見出し構造が適切か
+- 生成された HTML に問題がないか
+
+といった個々のページの HTML 品質は `@riebeckite/plugin-quality` が担当します。
+
+## プラグインからページやアセットを公開する場合
+
+プラグインが独自のページ、生成ファイル、アセットなどを公開する場合は、Riebeckite が提供する対応する仕組みを使って登録してください。
+
+正しく登録された公開先は Diagnostics からも認識されます。
+
+そのため、たとえばプラグインが `/explore` というページを正式に公開していれば、
+
+```text
+/explore
+```
+
+へのリンクが「存在しないページ」として誤って報告されることはありません。
+
+## Diagnostics を実装するときのルール
+
+Diagnostics を追加するときは、次の原則に従ってください。
+
+- option validation ではファイルの読み込みや状態変更を行わない
+- 安全な結果を判断できない場合は、推測して処理を続けず診断として報告する
+- stack trace、token、不要な絶対パスをユーザー向けメッセージへ含めない
+- メッセージ文字列ではなく、安定した diagnostic identifier を使って問題を識別する
+- 可能な限り具体的な修正方法を示す
+- diagnostic の生成中に auto-fix、build、cache 更新、state 更新を行わない
+
+Diagnostics は問題を**発見して説明する仕組み**です。問題を自動的に修正したり、ビルド状態を変更したりする仕組みではありません。
+
+現在の状態そのものを確認したい場合は [Inspector](inspector.md)、ログやトレースを確認したい場合は [Observability](observability.md) を参照してください。

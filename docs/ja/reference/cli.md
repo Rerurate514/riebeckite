@@ -1,44 +1,470 @@
 # CLI Reference
 
-CLI は current working directory から application root を解決します。application directory で実行してください。
+Riebeckite CLI は、Site の作成、開発、検証、診断、Build などを行うためのコマンドです。
 
-```text
+基本的には **Riebeckite Site の application directory で実行します。**
+
+```sh id="vgst3p"
+pnpm exec riebeckite <command>
+```
+
+CLI は current working directory から application root を解決します。
+
+# コマンド一覧
+
+```text id="7uw50m"
 riebeckite init [directory] [--preset <name>] [--force] [--list-presets]
+
 riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] | graph | build]
+
+riebeckite inspect config
+riebeckite inspect plugins
+riebeckite inspect content [--list]
+riebeckite inspect graph
+riebeckite inspect build
 ```
 
-## command の契約
+それぞれの役割は次のとおりです。
 
-| command | 意味 | build state を書くか |
+| Command | 何をする？ | Build State |
 | --- | --- | --- |
-| `init` | preset テンプレートから Site を生成 | 書かない |
-| `dev` | integration の development workflow を起動 | integration に依存 |
-| `check` | config/plugin/capability の妥当性を検証 | 書かない |
-| `doctor` | environment/config/plugin/content/state の health を診断 | 書かない |
-| `build` | build を実行。`--full` は incremental reuse を避ける | 成功時のみ |
-| `profile` | trace に基づく性能報告 | build に依存 |
-| `inspect` | resolve 済みの事実を表示 | 書かない |
+| `init` | 新しい Site を作る | 変更しない |
+| `dev` | 開発環境を起動する | Integration に依存 |
+| `check` | 設定が正しいか検証する | 変更しない |
+| `doctor` | Project 全体の問題を診断する | 変更しない |
+| `build` | Site を Build する | 成功時のみ更新 |
+| `profile` | Build の性能を調査する | Build に依存 |
+| `inspect` | 現在の解決結果を見る | 変更しない |
 
-`check` が示すのは有効性であり、output が build/deploy 済みであることではありません。Doctor は可能な独立診断を継続し、失敗時は non-zero で終了します。非推奨の検出は `Deprecated usage` の warning として表示され、`doctor` を失敗扱いにはしません。Inspector は build、state/cache/assets の書込み、Vite/HonoX build、artifact render、auto-fix を絶対に起動しない read-only command です。
+# どのコマンドを使う？
 
-plugin の option validation は `check` の一部として実行されます。各 plugin の `validateOptions`（analytics プラグインは provider と collector URL を検証します）が configuration validity に寄与するため、不正な plugin 設定は build 前に `check` で失敗します。
+目的から選ぶと分かりやすくなります。
 
-`init` は config、Vite/HonoX の application shell、route、stylesheet、初期 content を含む自己完結の Site を対象ディレクトリ（既定は current directory）に生成します。生成対象のファイルが既にあるディレクトリには `--force` なしでは書き込みません。構成は `--preset <name>` で選択します（既定は `starter`）。利用可能な preset と説明は `--list-presets` で確認できます。生成後は依存関係を install し、`check` と `build` を実行してください。`create-riebeckite` パッケージは `npx create-riebeckite` から同じ generator を実行し、同じ `--preset` / `--list-presets` フラグに対応します。
+```mermaid id="ctqx7e"
+flowchart TD
+    Q{"何をしたい？"}
 
-command の失敗は error 名、message、存在する場合は error の `code`・file path・remediation の `hint` とともに表示されます。ネストした cause は `Caused by:` 行として表示されます。
+    Q -->|"Siteを作りたい"| Init["init"]
+    Q -->|"開発したい"| Dev["dev"]
+    Q -->|"設定が正しいか確認したい"| Check["check"]
+    Q -->|"問題の原因を調べたい"| Doctor["doctor"]
+    Q -->|"Siteを生成したい"| Build["build"]
+    Q -->|"Buildが遅い"| Profile["profile"]
+    Q -->|"現在の状態を見たい"| Inspect["inspect"]
+```
 
-```sh
+特に混同しやすいのが `check`、`doctor`、`inspect`、`build` です。
+
+簡単に分けると、
+
+```text id="1djofm"
+check
+  → 正しい？
+
+doctor
+  → 問題はない？
+
+inspect
+  → 今どうなっている？
+
+build
+  → 実際に生成する
+```
+
+と考えると分かりやすいです。
+
+# `init`
+
+新しい Riebeckite Site を作成します。
+
+```sh id="18r7wl"
+riebeckite init
+```
+
+別のディレクトリへ作成する場合は、
+
+```sh id="81jmbp"
+riebeckite init my-site
+```
+
+のように指定します。
+
+生成される Site には、基本的な
+
+- Riebeckite config
+- Vite / HonoX application
+- route
+- stylesheet
+- 初期 content
+
+が含まれます。
+
+生成された Site は Riebeckite monorepo に依存しない、自己完結した application です。
+
+## Preset を選ぶ
+
+```sh id="vt7gdb"
+riebeckite init my-site --preset starter
+```
+
+`--preset` で Site の初期構成を選択できます。
+
+既定値は `starter` です。
+
+利用できる preset は、
+
+```sh id="b0n6ph"
+riebeckite init --list-presets
+```
+
+で確認できます。
+
+## 既存ファイルがある場合
+
+`init` は、生成対象となるファイルがすでに存在する場合、そのまま上書きしません。
+
+意図的に上書きする場合は、
+
+```sh id="l5kjod"
+riebeckite init my-site --force
+```
+
+を使用します。
+
+`--force` は既存ファイルへ影響するため、内容を確認してから使用してください。
+
+## `create-riebeckite`
+
+同じ Site generator は `create-riebeckite` からも利用できます。
+
+```sh id="kyw0rx"
+npx create-riebeckite
+```
+
+`--preset` や `--list-presets` も同様に利用できます。
+
+Site を生成した後は依存関係を install し、
+
+```sh id="gzg1my"
+pnpm install
 pnpm exec riebeckite check
-pnpm exec riebeckite doctor
-pnpm exec riebeckite inspect plugins
 pnpm exec riebeckite build
 ```
 
-## 通常の workflow
+で正常に構成されていることを確認できます。
 
-項目ごとに content を確認したい場合は `inspect content --list`、リンクやグラフ拡張の調査では `inspect graph` を使ってください。診断の解釈は [Diagnostics](../framework/diagnostics.md)、非推奨と移行の考え方は [Upgrading](../guides/upgrading.md)、state の意味は [Build system](../framework/build-system.md) を参照してください。
+# `dev`
+
+開発環境を起動します。
+
+```sh id="ujiy7q"
+pnpm exec riebeckite dev
+```
+
+Riebeckite Integration の development workflow を利用して Site を起動します。
+
+実際の development server や Build State の扱いは、使用している Integration に依存します。
+
+通常の HonoX Site では、開発中のページ確認にこのコマンドを使用します。
+
+# `check`
+
+Config、Plugin、Capability の設定が有効か検証します。
+
+```sh id="5a2lrf"
+pnpm exec riebeckite check
+```
+
+たとえば、
+
+- config の形式が正しいか
+- Plugin の設定が正しいか
+- 必要な capability が成立しているか
+
+などを確認します。
+
+```mermaid id="8ewhbp"
+flowchart LR
+    Config["Config"]
+    Plugins["Plugins"]
+    Capability["Capabilities"]
+
+    Config --> Check["check"]
+    Plugins --> Check
+    Capability --> Check
+
+    Check --> Result{"Valid?"}
+```
+
+`check` が成功したからといって、Site がすでに Build / Deploy されていることを意味するわけではありません。
+
+`check` が保証するのは **Configuration が有効であること**です。
+
+## Plugin Option Validation
+
+Plugin の option validation も `check` の一部として実行されます。
+
+Plugin は `validateOptions` を使って、自身の設定を検証できます。
+
+たとえば Analytics Plugin なら、
+
+- provider
+- collector URL
+
+などの設定を検証できます。
+
+不正な Plugin 設定は、実際の Build より前に `check` で検出できます。
+
+# `doctor`
+
+Project の状態を広く診断します。
+
+```sh id="zruccx"
+pnpm exec riebeckite doctor
+```
+
+`doctor` は、
+
+- environment
+- config
+- Plugin
+- content
+- Build State
+
+などを確認します。
+
+```mermaid id="f8k3hz"
+flowchart LR
+    Environment["Environment"]
+    Config["Config"]
+    Plugin["Plugins"]
+    Content["Content"]
+    State["Build State"]
+
+    Environment --> Doctor["doctor"]
+    Config --> Doctor
+    Plugin --> Doctor
+    Content --> Doctor
+    State --> Doctor
+
+    Doctor --> Diagnostics["Diagnostics"]
+```
+
+1つの診断に失敗しても、安全に続行できる独立した診断は可能な限り継続します。
+
+Health check が失敗した場合は non-zero status で終了します。
+
+## Deprecated Usage
+
+古い API や非推奨の設定が検出された場合は、
+
+```text id="q0zh69"
+Deprecated usage
+```
+
+として warning が表示されます。
+
+これは移行を促すための情報であり、それだけで `doctor` が失敗扱いになるわけではありません。
+
+# `build`
+
+Site を Build します。
+
+```sh id="iznhhd"
+pnpm exec riebeckite build
+```
+
+通常は incremental state を利用して、再利用可能な処理を省略します。
+
+```mermaid id="l50vlh"
+flowchart TD
+    Build["riebeckite build"]
+    State{"再利用可能なState?"}
+
+    Build --> State
+    State -->|Yes| Incremental["Incremental Build"]
+    State -->|No| Full["必要な処理を再実行"]
+
+    Incremental --> Success{"成功？"}
+    Full --> Success
+
+    Success -->|Yes| Save["新しいStateを保存"]
+    Success -->|No| Keep["以前の有効なStateを維持"]
+```
+
+Build State は **Build が成功した場合だけ**更新されます。
+
+失敗した Build が以前の正常な state を壊すことはありません。
+
+## Full Build
+
+incremental state の再利用を避けたい場合は、
+
+```sh id="wpr38p"
+pnpm exec riebeckite build --full
+```
+
+を使用します。
+
+Build の再現確認や incremental behavior の問題を切り分ける場合に利用できます。
+
+詳しくは [Build System](../framework/build-system.md) を参照してください。
+
+# `profile`
+
+Build のどこに時間がかかっているか調査します。
+
+```sh id="5pvcmf"
+pnpm exec riebeckite profile
+```
+
+Trace を収集し、Build phase や Plugin 処理などの performance report を表示します。
+
+incremental reuse を避けて計測する場合は、
+
+```sh id="mqr87f"
+pnpm exec riebeckite profile --full
+```
+
+を使用します。
+
+`profile` は性能調査のための command であり、Configuration validity を確認するための command ではありません。
+
+# `inspect`
+
+Riebeckite が現在認識している状態を確認します。
+
+```sh id="enl4wg"
+pnpm exec riebeckite inspect plugins
+```
+
+Inspector は **read-only** です。
+
+実行しても、
+
+- Build
+- Build State の書き込み
+- Plugin Cache の書き込み
+- Asset emission
+- Vite / HonoX Build
+- Artifact render
+- Config の自動修正
+
+を行いません。
+
+## Config
+
+```sh id="c3x2ak"
+pnpm exec riebeckite inspect config
+```
+
+解決済みの Configuration を確認します。
+
+## Plugins
+
+```sh id="wnn5fz"
+pnpm exec riebeckite inspect plugins
+```
+
+現在有効な Plugin を確認します。
+
+## Content
+
+```sh id="qqht5s"
+pnpm exec riebeckite inspect content --list
+```
+
+現在の Content entry と解決済みの canonical permalink などを確認します。
+
+特定の記事がどの URL として認識されているか確認したい場合に便利です。
+
+## Graph
+
+```sh id="s8q7lx"
+pnpm exec riebeckite inspect graph
+```
+
+Content Graph を確認します。
+
+WikiLink、backlink、graph extension などを調査するときに利用できます。
+
+## Build
+
+```sh id="y2uc9f"
+pnpm exec riebeckite inspect build
+```
+
+現在の incremental Build State を確認します。
+
+State が存在しない場合や壊れている場合も、新しい state を生成せず、その状態と理由を表示します。
+
+Inspector の詳しい設計については [Inspector](../framework/inspector.md) を参照してください。
+
+# Error の表示
+
+CLI command が失敗した場合は、可能な範囲で構造化されたエラー情報を表示します。
+
+主に、
+
+- Error 名
+- Message
+- Error code
+- File path
+- 修正方法の hint
+
+などです。
+
+原因となった error がネストしている場合は、
+
+```text id="bf6q65"
+Caused by:
+```
+
+として表示されます。
+
+単に「失敗した」と表示するのではなく、**何が失敗し、どこを確認すればよいか**が分かることを目標としています。
+
+# 通常の Workflow
+
+新しく Site を作る場合は、次のような流れになります。
+
+```mermaid id="gr7mks"
+flowchart LR
+    Init["init"]
+    Install["pnpm install"]
+    Check["check"]
+    Dev["dev"]
+    Build["build"]
+    Deploy["Deploy"]
+
+    Init --> Install
+    Install --> Check
+    Check --> Dev
+    Dev --> Build
+    Build --> Deploy
+```
+
+問題が発生した場合は、目的に応じて `doctor`、`inspect`、`profile` を使います。
+
+```mermaid id="9g1nvs"
+flowchart TD
+    Problem{"問題がある"}
+
+    Problem -->|"設定がおかしい？"| Check["check"]
+    Problem -->|"原因が分からない"| Doctor["doctor"]
+    Problem -->|"解決結果を確認したい"| Inspect["inspect"]
+    Problem -->|"Buildが遅い"| Profile["profile"]
+    Problem -->|"Incrementalを疑う"| Full["build --full"]
+```
+
+迷った場合は、
+
+**作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、速度を調べるなら `profile`**
+
+と覚えておくと、各 command の役割を区別しやすくなります。
+
+診断結果については [Diagnostics](../framework/diagnostics.md)、非推奨 API からの移行については [Upgrading](../guides/upgrading.md)、Build State については [Build System](../framework/build-system.md) を参照してください。

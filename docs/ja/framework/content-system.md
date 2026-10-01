@@ -1,116 +1,545 @@
 # Content System
 
-Content System は、Markdown やアセットを「サイトで扱えるコンテンツ」に変換するための中核です。ファイルを読むだけでなく、論理パス、メタデータ、公開先、コンテンツグラフ、Plugin による処理結果をそろえて、ページ生成と runtime から同じ情報を参照できるようにします。
+Content System は、Markdown や画像などのファイルを、Riebeckite がサイトとして扱えるコンテンツへ変換する仕組みです。
 
-全体像は次の流れです。
+単に Markdown を HTML に変換するだけではありません。
 
-```text
-Markdown / assets
-       ↓
-ContentSource
-       ↓
-ContentManager
-       ├─ Manifest
-       ├─ コンテンツグラフ
-       └─ 公開先
-       ↓
-Plugin による処理
-       ↓
-ページ生成
+Riebeckite が、
+
+- このファイルは何の記事なのか
+- 公開してよいのか
+- どの URL で公開するのか
+- 他の記事とどうつながっているのか
+- Plugin によって何が追加・変更されたのか
+
+を解決し、Site 全体から同じ情報を利用できる状態にします。
+
+# 全体の流れ
+
+Content System の大まかな流れは次のとおりです。
+
+```mermaid id="r6gvss"
+flowchart TD
+    Files["Markdown / Assets"]
+    Source["ContentSource<br/>コンテンツを読み込む"]
+    Manager["ContentManager<br/>コンテンツを解決・処理する"]
+    Plugin["Plugin Hooks"]
+    Manifest["Manifest"]
+    Graph["Content Graph"]
+    Location["Public Location"]
+    Site["Page Generation / Runtime"]
+
+    Files --> Source
+    Source --> Manager
+
+    Manager <--> Plugin
+
+    Manager --> Manifest
+    Manager --> Graph
+    Manager --> Location
+
+    Manifest --> Site
+    Graph --> Site
+    Location --> Site
 ```
 
-`ContentSource` は API 名です。人間向けに言えば「コンテンツの読み込み元」です。`ContentManager` は読み込んだコンテンツを管理し、Plugin や HonoX 側が使う index を作ります。
+中心になるのが `ContentSource` と `ContentManager` です。
 
-## ContentSource
+簡単に言えば、
 
-`ContentSource` は、Markdown とアセットをどこから読むかを抽象化します。典型的には `content.directory` が指すディレクトリです。外部 Vault や別リポジトリの content でも、最終的には同じ `ContentSource` として扱われます。
+```text id="a4xsh7"
+ContentSource
+  = どこからコンテンツを読むか
 
-重要なのは、ファイルシステム上のパスと、Riebeckite 内部の論理パスを分けることです。
+ContentManager
+  = 読み込んだコンテンツをどう扱うか
+```
 
-- ファイルシステム上のパス: 実際のファイルの場所
-- 論理パス: content root から見たコンテンツの識別子
-- 公開先: サイト上でアクセスされる URL
+という役割分担です。
 
-この分離により、content repository を別にしても、サイト側の処理は同じ規則で動きます。
+# ContentSource
 
-## ContentManager
+`ContentSource` は、Markdown やアセットを**どこから、どう読み込むか**を抽象化した API です。
 
-`ContentManager` は `ContentSource` から読み込んだエントリを管理します。主な役割は次の通りです。
+通常は、
+
+```text id="9u1ygf"
+content/
+```
+
+のような `content.directory` で指定されたディレクトリから読み込みます。
+
+しかし Content System 自体は、コンテンツが必ず Site repository 内に存在するとは考えません。
+
+たとえば、
+
+```text id="eynh5j"
+Site Repository
+└─ content/
+
+External Repository
+└─ notes/
+
+Obsidian Vault
+└─ notes/
+```
+
+のどこから取得した場合でも、最終的には `ContentSource` という同じ interface を通して ContentManager に渡します。
+
+```mermaid id="0xpl01"
+flowchart LR
+    Local["Site Repository"]
+    External["External Repository"]
+    Vault["Obsidian Vault"]
+
+    Local --> Source["ContentSource"]
+    External --> Source
+    Vault --> Source
+
+    Source --> Manager["ContentManager"]
+```
+
+これにより、コンテンツの保存場所が変わっても、それ以降の処理を同じ仕組みで扱えます。
+
+## 3種類の「場所」
+
+Content System を理解するときに重要なのが、次の3つを区別することです。
+
+| 種類 | 意味 |
+| --- | --- |
+| ファイルシステム上のパス | 実際にファイルが保存されている場所 |
+| 論理パス | content root から見たコンテンツの識別子 |
+| 公開先 | Web Site 上の URL |
+
+たとえば、
+
+```text id="dfblcr"
+C:\projects\garden\content\posts\hello.md
+```
+
+というファイルがあったとしても、Riebeckite 内部では、
+
+```text id="ej2j1k"
+posts/hello.md
+```
+
+という論理パスとして扱えます。
+
+さらに、実際の公開先は、
+
+```text id="dkv7ak"
+/blog/hello/
+```
+
+かもしれません。
+
+```mermaid id="qvyr9m"
+flowchart LR
+    FS["Filesystem Path<br/>C:/.../content/posts/hello.md"]
+    Logical["Logical Path<br/>posts/hello.md"]
+    Public["Public Location<br/>/blog/hello/"]
+
+    FS --> Logical
+    Logical --> Public
+```
+
+この3つを分離することで、content repository を別の repository に移しても、Site 側の URL やコンテンツ処理を同じ規則で扱えます。
+
+# ContentManager
+
+`ContentManager` は `ContentSource` から受け取ったコンテンツを管理し、Site で利用できる状態へ変換します。
+
+主な役割は次のとおりです。
 
 - Markdown の frontmatter と本文を読み込む
-- `publish: true` などの公開判定を適用する
+- コンテンツを公開するか判断する
 - slug、permalink、content ID を整理する
-- Plugin hook にコンテンツを渡す
-- Manifest とコンテンツグラフを作る
-- runtime で使う問い合わせ API のための index を用意する
+- Plugin hooks を実行する
+- 公開先を解決する
+- Manifest を生成する
+- Content Graph を生成する
+- Query 用の index を用意する
 
-Plugin は `onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated` などの hook で、この処理に参加します。
+つまり ContentManager は、Content System の中心となる orchestrator です。
 
-## slug、permalink、content ID
+## Plugin が処理に参加する
 
-似た名前ですが、役割は違います。
+Plugin は ContentManager の lifecycle に hook できます。
 
-| 名前 | 役割 |
+代表的な hook には、
+
+```text id="l0z0fr"
+onContentLoaded
+onPostParsed
+onPostProcessed
+onManifestCreated
+```
+
+などがあります。
+
+概念的には次のような流れになります。
+
+```mermaid id="c1cjn0"
+flowchart TD
+    Load["Content Loaded"]
+    H1["onContentLoaded"]
+    Parse["Markdown Parse"]
+    H2["onPostParsed"]
+    Process["Content Processing"]
+    H3["onPostProcessed"]
+    Manifest["Manifest Created"]
+    H4["onManifestCreated"]
+
+    Load --> H1
+    H1 --> Parse
+    Parse --> H2
+    H2 --> Process
+    Process --> H3
+    H3 --> Manifest
+    Manifest --> H4
+```
+
+Plugin はこの lifecycle を利用してコンテンツを拡張します。
+
+# slug / permalink / content ID
+
+この3つは似ていますが、役割が異なります。
+
+| 名前 | 何を表す？ | 例 |
+| --- | --- | --- |
+| `slug` | コンテンツの短い名前 | `hello-world` |
+| `permalink` | Site 上の公開 URL | `/blog/hello-world/` |
+| content ID | コンテンツそのものを安定して識別する ID | `article-01` |
+
+特に重要なのは、**slug と公開 URL は同じものではない**という点です。
+
+たとえば、
+
+```text id="73lmb5"
+slug
+  hello-world
+
+permalink
+  /blog/hello-world/
+
+content ID
+  019abc...
+```
+
+のように、それぞれ別の目的を持ちます。
+
+## Default Public Location
+
+標準では `resolveDefaultContentLocation` が公開先を解決します。
+
+基本的には、
+
+```text id="olpxjg"
+index
+  ↓
+/
+
+その他
+  ↓
+/{slug}
+```
+
+として扱います。
+
+ただし、これはあくまで default resolver です。
+
+Plugin は、
+
+```text id="sc5pbi"
+resolveContentLocations
+```
+
+hook を使って公開先を追加・変更できます。
+
+# ContentPublicLocation
+
+`ContentPublicLocation` は、コンテンツが **Site 上のどこで公開されるか** を表します。
+
+通常は1つの記事に1つの canonical な公開先があります。
+
+```text id="ul2l2c"
+Article
+   ↓
+/blog/article/
+```
+
+しかし Plugin によって、別名 URL や redirect が追加される場合があります。
+
+```mermaid id="k15b5h"
+flowchart LR
+    Article["Article"]
+
+    Article --> Canonical["Canonical<br/>/blog/article/"]
+    Article --> Alias["Alias<br/>/article/"]
+    Alias -->|"redirect"| Canonical
+```
+
+公開先はページ生成だけで使う情報ではありません。
+
+たとえば、
+
+- Site 内リンク
+- redirect
+- sitemap
+- search index
+- language switcher
+- Content Graph
+
+なども公開先を参照します。
+
+そのため Riebeckite では URL を単なる文字列として各機能が独自に計算するのではなく、`ContentPublicLocation` として明示的に管理します。
+
+# Manifest
+
+Manifest は、**Build 時に確定したコンテンツの一覧**です。
+
+各 entry には、たとえば次の情報が含まれます。
+
+- 論理パス
+- metadata
+- 公開先
+- Plugin による処理結果
+- incremental build に必要な情報
+
+```mermaid id="s23io5"
+flowchart LR
+    Manager["ContentManager"]
+    Manifest["Manifest"]
+
+    Manager --> Manifest
+
+    Manifest --> Page["Page Generation"]
+    Manifest --> Runtime["Runtime Queries"]
+    Manifest --> Build["Incremental Build"]
+    Manifest --> Inspect["inspect content"]
+```
+
+Manifest は、Content System が解決した結果を他の仕組みへ渡す重要な境界です。
+
+各 consumer が Markdown を読み直して同じ情報を再計算するのではなく、解決済みの Manifest を利用します。
+
+# Content Graph
+
+Content Graph は、コンテンツ同士の関係を表します。
+
+たとえば、
+
+```markdown id="9o2p6a"
+[[Article B]]
+```
+
+という WikiLink があれば、
+
+```mermaid id="pdu2pi"
+graph LR
+    A["Article A"] --> B["Article B"]
+```
+
+という関係を持つことができます。
+
+この情報から backlink も扱えます。
+
+```mermaid id="8grb4h"
+graph LR
+    A["Article A"] --> B["Article B"]
+    C["Article C"] --> B
+
+    B -. "backlinks" .-> A
+    B -. "backlinks" .-> C
+```
+
+Content Graph は単なるグラフ表示用のデータではありません。
+
+たとえば、
+
+- WikiLink
+- Markdown link
+- backlinks
+- taxonomy
+- series
+- related posts
+- local graph
+- garden explorer
+
+などの基盤として利用できます。
+
+Plugin は、
+
+```text id="g5uz6h"
+extendContentGraph
+```
+
+を使ってグラフへ情報を追加できます。
+
+# Content Queries
+
+Build 後のコンテンツを検索・整理するために、Query API が用意されています。
+
+代表的な API は次のとおりです。
+
+```text id="5yib25"
+queryContentEntries
+queryContentPage
+groupContentEntries
+```
+
+重要なのは、これらが**ファイルを検索する API ではない**という点です。
+
+```mermaid id="bf0k8w"
+flowchart LR
+    Files["Markdown Files"]
+    Build["Build / ContentManager"]
+    Index["Resolved Content Index"]
+    Query["Content Query"]
+    Result["Result"]
+
+    Files --> Build
+    Build --> Index
+    Query --> Index
+    Index --> Result
+```
+
+Query は、Build 時にすでに解決された index に対して実行します。
+
+Runtime や Plugin が Markdown を直接読み直して独自に状態を再構築することは避けます。
+
+# Content Collections
+
+`buildContentCollections` は、複数のコンテンツを一覧として扱うための仕組みです。
+
+たとえば、
+
+```text id="63ph8a"
+すべての記事
+     ↓
+日付順に並べる
+     ↓
+タグごとに分類する
+     ↓
+ページ単位に分割する
+```
+
+といった処理に利用できます。
+
+`pageSize` を指定すると pagination も扱えます。
+
+```mermaid id="is4p7e"
+flowchart LR
+    Entries["Published Entries"]
+    Sort["Sort"]
+    Group["Group"]
+    Paginate["Paginate"]
+    Pages["Collection Pages"]
+
+    Entries --> Sort
+    Sort --> Group
+    Group --> Paginate
+    Paginate --> Pages
+```
+
+Plugin や Site Application は、この仕組みを使って記事一覧、タグ一覧などを作成できます。
+
+# Assets
+
+画像や添付ファイルは Markdown 本文とは別の entry として扱います。
+
+たとえば、
+
+```text id="0yuczl"
+content/
+├─ article.md
+└─ images/
+   └─ example.png
+```
+
+があった場合、Riebeckite はアセットの論理パスを保ちながら、Site 上で利用できる URL へ対応付けます。
+
+```mermaid id="r3f54e"
+flowchart LR
+    Asset["Content Asset<br/>images/example.png"]
+    Resolver["Asset Resolution"]
+    Public["Public Asset URL"]
+
+    Asset --> Resolver
+    Resolver --> Public
+```
+
+実際の URL 形式は Plugin や設定によって変わる場合があります。
+
+重要なのは、content root の外にある任意のファイルを公開 URL に変換しないことです。
+
+Content System の公開境界を通して、安全に公開対象を決定します。
+
+# Content Repository を分離する場合
+
+Site と Content を別 repository にしても、Content System の基本的な流れは変わりません。
+
+```mermaid id="48opm6"
+flowchart LR
+    ContentRepo["Content Repository"]
+    Checkout["Checkout / Content Source"]
+    SiteRepo["Site Repository"]
+    Build["Riebeckite Build"]
+    Site["Generated Site"]
+
+    ContentRepo --> Checkout
+    Checkout --> Build
+    SiteRepo --> Build
+    Build --> Site
+```
+
+Content Repository はコンテンツを提供します。
+
+最終的に、
+
+- 何を公開するか
+- どの Plugin を使うか
+- どの URL で公開するか
+- どの Site を生成するか
+
+を決定するのは Site Repository 側の Build です。
+
+このため、Content Repository が分離されていても ContentManager や Plugin が filesystem の配置を特別扱いする必要はありません。
+
+# Content System の境界
+
+Content System を変更するときは、次の原則を維持してください。
+
+| 原則 | 理由 |
 | --- | --- |
-| slug | URL の基本になる短い名前 |
-| permalink | 明示的に指定された公開 URL |
-| content ID | コンテンツを安定して識別する ID |
+| `content.directory` は `appRoot` 基準で解決する | Site ごとに安定した基準を持つため |
+| Plugin は filesystem path に依存しない | Content Source を交換可能にするため |
+| 公開判定は `publishStrategy` と frontmatter に従う | 公開境界を一元化するため |
+| 公開先は `ContentPublicLocation` として登録する | URL を各機能が独自計算しないため |
+| Runtime は Build 済み index を利用する | Runtime から source filesystem を分離するため |
+| Site Build が最終的な公開状態を決める | Content Repository と Site の責務を分離するため |
 
-`resolveDefaultContentLocation` は、`index` を `/` に、それ以外を `/{slug}` に対応させます。Plugin は `resolveContentLocations` で `ContentPublicLocation` を追加または変更できます。
+全体として重要なのは、
 
-## 公開先と ContentPublicLocation
+```mermaid id="gjgygr"
+flowchart LR
+    Source["Source<br/>どこから読む？"]
+    Content["ContentManager<br/>何として扱う？"]
+    Public["Public Location<br/>どこで公開する？"]
+    Index["Manifest / Graph<br/>何が解決された？"]
+    Consumer["Site / Plugin<br/>どう利用する？"]
 
-`ContentPublicLocation` は、1つのコンテンツがサイト上のどこで公開されるかを表します。通常は1記事につき1つですが、Plugin によって別名 URL や redirect 用の場所が追加されることがあります。
+    Source --> Content
+    Content --> Public
+    Public --> Index
+    Index --> Consumer
+```
 
-公開先は、ページ生成だけでなく、リンク解決、sitemap、検索 index、言語切り替えにも影響します。そのため、単なる文字列ではなく、明示的な構造として扱います。
+という境界を崩さないことです。
 
-## Manifest
+**Source は読み込み方、ContentManager はコンテンツの解決、Public Location は公開先、Manifest / Graph は解決結果を表します。**
 
-Manifest は、ビルド時に確定したコンテンツ一覧です。各エントリには、論理パス、メタデータ、公開先、処理結果、差分判定に使う情報が含まれます。
-
-Manifest は次の目的で使われます。
-
-- HonoX 側でページを生成する
-- runtime で記事一覧や関連情報を読む
-- incremental build で再利用できる状態を判断する
-- `inspect content` で現在の解決結果を確認する
-
-## コンテンツグラフ
-
-コンテンツグラフは、ページ同士の関係を表します。WikiLink、Markdown link、backlinks、taxonomy、series、related posts などは、この関係を利用します。
-
-Plugin は `extendContentGraph` でグラフに情報を追加できます。グラフは単なる表示機能ではなく、検索、関連表示、ローカルグラフ、garden explorer の基盤です。
-
-## Content queries
-
-runtime や Plugin は、生成済みの index に対して問い合わせできます。
-
-- `queryContentEntries`
-- `queryContentPage`
-- `groupContentEntries`
-
-これらはファイルを直接読み直すための API ではありません。ビルド時に解決されたコンテンツ状態を、安全に参照するための API です。
-
-## Content collections
-
-`buildContentCollections` は、記事一覧やタグ別一覧のような collection を作ります。`pageSize` を指定すると pagination も扱えます。
-
-collection は、公開済みエントリを並べ替え、グループ化し、ページ単位に分けるための仕組みです。Plugin やアプリ側は、これを使って一覧ページを作れます。
-
-## アセット
-
-画像や添付ファイルは、Markdown 本文とは別に扱われます。Riebeckite は content root からの論理パスを保ちながら、公開先のアセット URL へ写像します。添付ファイルの URL 形は Plugin や設定に依存しますが、content root の外側にある非公開ファイルを不用意に公開しないことが重要です。
-
-## 正しさのルール
-
-Content System で守るべき境界は次の通りです。
-
-- `content.directory` はサイトの app root を基準に解決する
-- Plugin はファイルシステムの場所ではなく、論理パスと公開先を前提に扱う
-- 公開判定は `publishStrategy` と frontmatter に従う
-- Plugin が公開先を追加する場合は `ContentPublicLocation` として明示する
-- runtime はビルド済みの index を読む。任意のファイルを直接読む前提にしない
-- content repository を別にしても、site repository の build が最終的な公開状態を決める
+各機能が filesystem や Markdown を独自に読み直すのではなく、この Content System を通して同じ解決結果を共有することが、Riebeckite の Content Architecture の基本です。
 
 ## 関連ページ
 
@@ -118,6 +547,3 @@ Content System で守るべき境界は次の通りです。
 - [Plugin API](../reference/plugin-api.md)
 - [Content Repositories](../guides/content-repositories.md)
 - [Separate Content Repository](../guides/deployment/separate-content-repository.md)
-
-
-

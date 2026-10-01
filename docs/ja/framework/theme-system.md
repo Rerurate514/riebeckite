@@ -1,123 +1,404 @@
 # テーマ作成の詳細
 
-[はじめてのテーマ作成](../themes/writing-a-theme.md) は、テーマを動かすまでの流れを短く説明したドキュメントです。このページはその「詳細編」で、テーマを作るときに参照する全項目（option、token、フック、CSS cascade、package 化）をまとめています。
+このページは、Riebeckite Theme を実際に設計・実装するときの詳細ガイドです。
 
-はじめての人はまず [theme-tutorial](../themes/writing-a-theme.md) を読み、このページは「もっと詳しく知りたい」ときに使ってください。API surface の詳細は [Theme API](../reference/theme-api.md) を参照してください。
+初めて Theme を作る場合は、先に [はじめてのテーマ作成](../themes/writing-a-theme.md) を読んでください。
 
-## 1. Theme ができること・できないこと
+このページでは、その先に必要になる、
 
-Theme は **presentation layer** です。token、stylesheet rule、theme 固有の `data-*` attribute だけを変更できます。content の意味や application structure は変更できません。
+- Theme の責務
+- `defineTheme`
+- Color Mode
+- Typography
+- Layout
+- Design Token
+- Stable CSS Hook
+- Theme 固有 Option
+- CSS Cascade
+- Package としての配布
 
-| できる | できない |
+までをまとめて扱います。
+
+各型やフィールドの完全な定義を確認したい場合は [Theme API](../reference/theme-api.md) を参照してください。
+
+# 1. Theme にするべき変更
+
+Theme は **Presentation Layer** です。
+
+Site の機能や Content の意味は変更せず、見た目だけを変更します。
+
+| Theme でできる | Theme ではしない |
 | --- | --- |
-| token の上書き・追加 | Component replacement |
-| stylesheet rule の定義 | JSX の注入 |
-| theme 固有 `data-*` attribute | route の追加 |
-| color mode / typography / layout preset の宣言 | Plugin の追加・削除 |
-| `userCss` による最終上書き | client script の実行 |
-| stable hook への CSS | DOM 変換・Island 登録・filesystem アクセス・ContentManager アクセス |
+| Token の上書き・追加 | Component Replacement |
+| CSS Rule の定義 | JSX の注入 |
+| Theme 固有 `data-*` Attribute | Route の追加 |
+| Color Mode の宣言 | Plugin の追加・削除 |
+| Typography の宣言 | Client Script の実行 |
+| Layout Preset の宣言 | DOM Transformation |
+| Stable Hook の Styling | Island の登録 |
+| `userCss` による最終上書き | Filesystem / ContentManager へのアクセス |
 
-「見た目を変えるだけ」の目的で Plugin を作るのではなく、「機能を足す」目的で Theme を拡張しないのが原則です。機能は Plugin、素の見た目は Theme、サイト固有の route は App に置きます。
+迷った場合は、次のように判断します。
 
-## 2. defineTheme の contract
+```mermaid id="5c6pd8"
+flowchart TD
+    Q{"何を変更したい？"}
 
-`defineTheme` は `@riebeckite/core` から import します。Theme が扱う主要 contract は次の 5 つです。
+    Q -->|"見た目"| Theme["Theme"]
+    Q -->|"再利用可能な機能"| Plugin["Plugin"]
+    Q -->|"Site固有Route / Layout構造"| App["Application"]
+    Q -->|"Framework共通Model"| Core["Core"]
+```
 
-| 領域 | 内容 |
-| --- | --- |
-| Identity | `name` |
-| Factory options | `options` |
-| Styles | `styles[].moduleSpecifier` |
-| Common config | `colorMode`、`typography`、`articleLayout`、`tokens`、`userCss` |
-| Attributes | safe な `data-*` attribute |
+基本的には、
 
-```ts
+```text id="kl9kkm"
+機能
+  → Plugin
+
+見た目
+  → Theme
+
+Site 固有 Route
+  → Application
+```
+
+です。
+
+見た目を変えるためだけに Plugin を作ったり、機能を追加するために Theme を拡張したりしないでください。
+
+# 2. 最小の Theme
+
+Theme は `defineTheme()` で定義します。
+
+```ts id="yplspq"
 import { defineTheme } from "@riebeckite/core";
 
 export function exampleTheme() {
   return defineTheme({
     name: "example",
-    options: { /* theme 独自 option */ },
+
     styles: [
-      { moduleSpecifier: "@riebeckite/theme-example/style.css" },
+      {
+        moduleSpecifier:
+          "@riebeckite/theme-example/style.css",
+      },
     ],
-    attributes: { "data-example-flag": "on" },
   });
 }
 ```
 
-`styles[].moduleSpecifier` は host bundler が解決する module specifier です。filesystem path を application へコピーする contract ではありません。
+Site では `theme` に指定します。
 
-### 2-1. Site 内 Theme
+```ts id="ij1yvm"
+export default defineConfig({
+  theme: exampleTheme(),
+});
+```
 
-Theme は publish されていなくても動きます。既存 Theme を合成するか、`defineTheme` で直接定義して `theme` へ渡します。
+これが最小構成です。
 
-```ts
+# 3. `defineTheme` の Contract
+
+Theme が扱う主な Contract は次のとおりです。
+
+| 領域 | 内容 |
+| --- | --- |
+| Identity | `name` |
+| Theme 固有設定 | `options` |
+| CSS | `styles[].moduleSpecifier` |
+| 共通設定 | `colorMode`, `typography`, `articleLayout`, `tokens`, `userCss` |
+| Attributes | 安全な `data-*` Attribute |
+
+たとえば、
+
+```ts id="k0nh8m"
+import { defineTheme } from "@riebeckite/core";
+
+export function exampleTheme() {
+  return defineTheme({
+    name: "example",
+
+    options: {
+      // Theme 固有 Option
+    },
+
+    styles: [
+      {
+        moduleSpecifier:
+          "@riebeckite/theme-example/style.css",
+      },
+    ],
+
+    attributes: {
+      "data-example-flag": "on",
+    },
+  });
+}
+```
+
+のように定義できます。
+
+`styles[].moduleSpecifier` は Host Bundler が解決する Module Specifier です。
+
+CSS File を Application Directory へコピーするための Path ではありません。
+
+# 4. Site 内だけで使う Theme
+
+Theme は npm Package として公開しなくても利用できます。
+
+たとえば、
+
+```text id="10b70z"
+site/
+└─ extensions/
+   ├─ local-theme.ts
+   └─ theme.css
+```
+
+のように Site 内へ置けます。
+
+```ts id="31fzcq"
 // site/extensions/local-theme.ts
+
 import { defineTheme } from "@riebeckite/core";
 
 export function localTheme() {
   return defineTheme({
     name: "site-local",
+
     styles: [
-      { moduleSpecifier: "/extensions/theme.css" },
+      {
+        moduleSpecifier:
+          "/extensions/theme.css",
+      },
     ],
-    attributes: { "data-site-local": "on" },
+
+    attributes: {
+      "data-site-local": "on",
+    },
   });
 }
 ```
 
-site 内 Theme の `name`、`styles`、`attributes`、`tokens` は published Theme と同じ `resolveThemeConfig` 経路で解決・sanitize・適用されます。
+Site-local Theme の、
 
-## 3. Common config の各項目
+- `name`
+- `styles`
+- `attributes`
+- `tokens`
 
-### 3-1. colorMode
+も Published Theme と同じ `resolveThemeConfig` の経路で解決・sanitize・適用されます。
 
-```ts
-type ThemeColorMode = "light" | "dark" | "system";
+# 5. Color Mode
+
+Theme は3種類の Color Mode を扱えます。
+
+```ts id="9qfwqg"
+type ThemeColorMode =
+  | "light"
+  | "dark"
+  | "system";
 ```
 
-`"system"` は OS の設定に追従できるモードです。Theme は `data-theme` attribute と semantic token を利用し、個別 component に色をハードコードしないようにします。
+| Mode | 動作 |
+| --- | --- |
+| `light` | Light 配色 |
+| `dark` | Dark 配色 |
+| `system` | OS の設定に追従 |
 
-実行時の配色は次の 3 つの CSS 状態で決まります。
+Theme は `data-theme` と Semantic Token を使って配色を切り替えます。
 
-```css
-:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* ライト */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* ダーク */ }
+個々の Component に Light / Dark の色を直接埋め込まないでください。
+
+# 6. Color Mode の CSS
+
+基本となる CSS は次の形です。
+
+```css id="m87m0s"
+/* Light */
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"] {
+  /* ... */
+}
+
+/* Dark */
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"]
+[data-theme="dark"] {
+  /* ... */
+}
+
+/* System */
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) { /* OS に追従（system） */ }
+  :is(:root, .rb-theme-root)
+  [data-theme-name="<name>"]
+  :not([data-theme]) {
+    /* ... */
+  }
 }
 ```
 
-サーバーは Theme の `colorMode` が `"system"` 以外のときは `<html>` に `data-theme` を出力します。`"system"` のときは属性を省略します（media query が配色を決めます）。
+Server は `colorMode` が `"system"` 以外なら `<html>` に `data-theme` を出力します。
 
-**実行時切り替えの契約**: `document.documentElement.dataset.theme` に `"light"` か `"dark"` を設定するか、`"system"` なら**属性を削除**します。空文字の `data-theme=""` を設定しないでください。空の属性も `[data-theme]` セレクタに一致してしまい、media query が機能しなくなります。
-
-`@riebeckite/plugin-color-mode` がこの契約の参照実装です（[README](../../../packages/plugins/color-mode/README_ja.md)）。描画前のインラインスクリプト `ColorModeScript`、切替コントロール `ColorModeToggle`、`localStorage` に選択を保存する client entry `initColorMode` で構成されます。
-
-### 3-2. typography
-
-```ts
-type ThemeTypographyPreset = "system" | "serif" | "sans";
+```html id="s6hs50"
+<html
+  data-theme-name="example"
+  data-theme="dark"
+>
 ```
 
-preset は body / heading などの semantic font token に反映されます。
+`"system"` の場合は `data-theme` を出力しません。
 
-### 3-3. articleLayout
-
-```ts
-type ThemeArticleLayoutPreset = "article" | "sidebar" | "full-width";
+```html id="k3dd13"
+<html data-theme-name="example">
 ```
 
-Theme は layout preset の presentation を定義できますが、route や component tree 自体は差し替えません。
+この違いは重要です。
 
-### 3-4. tokens
+# 7. `system` では Attribute を削除する
 
-Core の `ThemeDesignTokens` は次の semantic group を持ちます。stylesheet では `--rb-*` semantic CSS custom properties として扱います。
+実行時に Color Mode を変更する場合は、
 
-**Color:**
+```text id="h03gwl"
+light
+  → data-theme="light"
 
-| token | CSS 変数 |
+dark
+  → data-theme="dark"
+
+system
+  → data-theme を削除
+```
+
+とします。
+
+たとえば、
+
+```ts id="iyf9ao"
+document.documentElement.dataset.theme =
+  "dark";
+```
+
+から System へ戻す場合は、
+
+```ts id="6t0p0r"
+delete document.documentElement.dataset.theme;
+```
+
+とします。
+
+次のように空文字へ変更してはいけません。
+
+```ts id="o2i8bp"
+document.documentElement.dataset.theme = "";
+```
+
+これは、
+
+```html id="25ohm9"
+<html data-theme="">
+```
+
+となり、依然として `[data-theme]` Selector に一致するためです。
+
+その結果、
+
+```css id="qfrb4j"
+:not([data-theme])
+```
+
+が成立せず、System Mode の Media Query が機能しません。
+
+`@riebeckite/plugin-color-mode` がこの Contract の参照実装です。
+
+# 8. Typography
+
+Theme は Typography Preset を指定できます。
+
+```ts id="6q5em7"
+type ThemeTypographyPreset =
+  | "system"
+  | "serif"
+  | "sans";
+```
+
+Preset は、
+
+- Body
+- Heading
+- Code
+
+などの Semantic Font Token に反映されます。
+
+Font を個々の Component に直接指定するのではなく、Semantic Token を通して Site 全体の Typography を統一します。
+
+# 9. Article Layout
+
+Theme は Article Layout Preset を指定できます。
+
+```ts id="l0kwo9"
+type ThemeArticleLayoutPreset =
+  | "article"
+  | "sidebar"
+  | "full-width";
+```
+
+Theme が決めるのは Layout の **Presentation** です。
+
+Route や Component Tree そのものを Theme が差し替えるわけではありません。
+
+```mermaid id="6oqsru"
+flowchart LR
+    App["Application<br/>Component Structure"]
+    Hooks["Stable Layout Hooks"]
+    Theme["Theme<br/>Presentation"]
+
+    App --> Hooks
+    Theme --> Hooks
+```
+
+# 10. Design Tokens
+
+Theme の中心となるのが Semantic Design Token です。
+
+Component や Plugin は、
+
+```text id="9vwkwf"
+このThemeの黒
+このThemeの灰色
+```
+
+のような Theme 固有の値を参照するのではなく、
+
+```text id="zfg9dh"
+本文色
+背景色
+Accent
+Border
+```
+
+という**意味**を参照します。
+
+```mermaid id="e6x8ou"
+flowchart LR
+    UI["Component / Plugin"]
+    Token["--rb-color-ink"]
+    ThemeA["Theme A<br/>#202020"]
+    ThemeB["Theme B<br/>#d8dee9"]
+
+    UI --> Token
+    ThemeA --> Token
+    ThemeB --> Token
+```
+
+これによって Theme を交換しても Component を変更する必要がありません。
+
+# 11. Color Tokens
+
+主な Color Token は次のとおりです。
+
+| Token | CSS Variable |
 | --- | --- |
 | `paper` | `--rb-color-paper` |
 | `ink` | `--rb-color-ink` |
@@ -132,220 +413,812 @@ Core の `ThemeDesignTokens` は次の semantic group を持ちます。styleshe
 | `success` | `--rb-color-success` |
 | `codeBackground` | `--rb-color-code-background` |
 
-**Typography:**
+# 12. Typography Tokens
 
-| token | CSS 変数 |
+| Token | CSS Variable |
 | --- | --- |
 | `bodyFont` | `--rb-font-body` |
 | `headingFont` | `--rb-font-heading` |
 | `monoFont` | `--rb-font-mono` |
 
-**Layout:**
+# 13. Layout Tokens
 
-| token | CSS 変数 |
+| Token | CSS Variable |
 | --- | --- |
 | `pageMaxWidth` | `--rb-layout-page-max` |
 | `articleMaxWidth` | `--rb-layout-article-max` |
 | `sidebarWidth` | `--rb-layout-sidebar` |
 | `contentGap` | `--rb-layout-gap` |
 
-```css
+CSS では次のように定義します。
+
+```css id="u6csj3"
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+  :is(:root, .rb-theme-root)
+  [data-theme-name="example"] {
     --rb-color-paper: #fafafa;
     --rb-color-ink: #202020;
     --rb-color-accent: #555;
-    --rb-font-body: system-ui, sans-serif;
+
+    --rb-font-body:
+      system-ui, sans-serif;
+
     --rb-layout-article-max: 48rem;
   }
 }
 ```
 
-CSS 変数名の `-strong`、`-hover`、`-code-background` などの接尾辞は、token 名（`borderStrong` 等）を kebab-case にしたものです。token の入力名と CSS 変数名が異なる点に注意してください。
+Token 名と CSS Variable 名が完全に同じとは限りません。
 
-**Semantic token を使う理由**: Component や Plugin が特定 Theme の色名を直接参照すると、Theme の差し替えができなくなります。
+たとえば、
 
-```css
-/* good */
+```text id="avjyrb"
+borderStrong
+  → --rb-color-border-strong
+
+surfaceHover
+  → --rb-color-surface-hover
+
+codeBackground
+  → --rb-color-code-background
+```
+
+のように kebab-case へ変換されます。
+
+# 14. Semantic Token を使う
+
+Plugin や Component でも Semantic Token を利用してください。
+
+```css id="0ld7xq"
+/* Good */
+
 .rr-example {
-  color: var(--rb-color-ink);
-  background: var(--rb-color-surface);
-}
+  color:
+    var(--rb-color-ink);
 
-/* avoid */
+  background:
+    var(--rb-color-surface);
+}
+```
+
+次のように Theme 固有の色を直接指定することは避けます。
+
+```css id="5tkz4j"
+/* Avoid */
+
 .rr-example {
   color: #171717;
   background: #f6efe2;
 }
 ```
 
-Plugin 固有の意味を持つ token は Plugin が `--rr-*` として所有し、fallback として `--rb-*` を利用できます。
+後者では Theme を交換しても Plugin の色が変わりません。
 
-### 3-5. userCss
+Plugin 固有の意味を持つ Token が必要なら、
 
-`userCss` は cascaade の最上位（最後）に読み込まれる上書き CSS です。site 側が「このテーマを使いながら、ここだけ直したい」ときに使います。Theme の stylesheet は `userCss` より先に読み込まれるため、`userCss` が最終結果になります。
-
-```ts
-theme: defaultTheme({
-  userCss: ["/extensions/custom.css"],
-}),
+```text id="fbfuw6"
+--rr-*
 ```
 
-### 3-6. Theme root selector
+を Plugin 側で定義できます。
 
-組み込みテーマは裸の `:root` を対象にしません。すべてのルールをテーマの identity name に限定し、同じ stylesheet で実サイトの document と埋め込み preview の両方を描画できるようにします。
+必要に応じて、
 
-```css
-:is(:root, .rb-theme-root)[data-theme-name="<name>"]
+```css id="8qr5yn"
+--rr-example-background:
+  var(--rb-color-surface);
 ```
 
-`<name>` はテーマの identity name です。default テーマは `riebeckite`、それ以外は `minimal`、`gruvbox`、`sakura`、`tokyonight`、`rerurate` のいずれかです。
+のように `--rb-*` を fallback として利用できます。
 
-- 実サイトでは app が `<html>` に `data-theme-name` を付けるため、`:root` の分岐が document root に一致します。
-- テーマギャラリーのような preview では、`class="rb-theme-root" data-theme-name="<name>"` を持つ任意の要素に同じ stylesheet が適用されます。1 つの document 内で複数テーマを並べて表示できます。
+# 15. Theme Root
 
-light・dark・system・typography・theme option・要素/擬似要素のルールはすべて同じ prefix を付けます。
+Theme CSS は Document 全体へ無条件に適用しません。
 
-```css
-:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* ライト */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* ダーク */ }
-@media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) { /* system */ }
+基本 Selector は、
+
+```css id="36j35i"
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"]
+```
+
+です。
+
+`<name>` には Theme の Identity Name が入ります。
+
+組み込み Theme では、たとえば、
+
+```text id="l0yyse"
+riebeckite
+minimal
+gruvbox
+sakura
+tokyonight
+rerurate
+```
+
+があります。
+
+# 16. Theme Root が必要な理由
+
+通常の Site では Application が `<html>` に Theme 名を付けます。
+
+```html id="18amdy"
+<html data-theme-name="minimal">
+```
+
+この場合は `:root` が Theme Root になります。
+
+一方、Theme Gallery では、
+
+```html id="3ynnb9"
+<div
+  class="rb-theme-root"
+  data-theme-name="minimal"
+>
+  ...
+</div>
+
+<div
+  class="rb-theme-root"
+  data-theme-name="gruvbox"
+>
+  ...
+</div>
+```
+
+のように、同じ Document 内で複数 Theme を表示できます。
+
+```mermaid id="5jjg45"
+flowchart TD
+    CSS["同じTheme CSS"]
+
+    CSS --> Site["実Site<br/>:root"]
+    CSS --> PreviewA["Preview<br/>.rb-theme-root"]
+    CSS --> PreviewB["別Theme Preview<br/>.rb-theme-root"]
+```
+
+そのため Theme CSS を裸の、
+
+```css id="69pszy"
+:root {
+  /* ... */
 }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-typography="serif"] { /* typography */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-tokyonight-neon="on"] { /* theme option */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"] :focus-visible { /* 要素/擬似要素 */ }
 ```
 
-`data-theme-name` は app が出力します。preview 側は `.rb-theme-root` hook と一致する name を用意するだけです。
+として定義しないでください。
 
-## 4. Color mode と Attributes の詳細
+# 17. Theme Rule の Scope
 
-上記 3-1 の契約に加えて、theme 固有 option を CSS に渡したい場合は safe な `data-*` attribute を利用します。
+Color Mode、Typography、Theme Option、Element Rule も同じ Theme Root に閉じ込めます。
 
-```ts
+```css id="bsov79"
+/* Light */
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"] {
+  /* ... */
+}
+
+/* Dark */
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"]
+[data-theme="dark"] {
+  /* ... */
+}
+
+/* System */
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)
+  [data-theme-name="<name>"]
+  :not([data-theme]) {
+    /* ... */
+  }
+}
+
+/* Typography */
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"]
+[data-typography="serif"] {
+  /* ... */
+}
+
+/* Theme Option */
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"]
+[data-example-option="on"] {
+  /* ... */
+}
+
+/* Elements */
+:is(:root, .rb-theme-root)
+[data-theme-name="<name>"]
+:focus-visible {
+  /* ... */
+}
+```
+
+`data-theme-name` は Application が出力します。
+
+Preview では `.rb-theme-root` と同じ Theme Name を指定します。
+
+# 18. Theme 固有 Attributes
+
+Theme 固有 Option を CSS へ渡したい場合は、安全な `data-*` Attribute を利用します。
+
+```ts id="ylx4jp"
 return defineTheme({
   name: "newspaper",
+
   attributes: {
-    "data-newspaper-density": "compact",
+    "data-newspaper-density":
+      "compact",
   },
 });
 ```
 
-Theme API が `class`、`style`、`id`、`lang` を任意変更する設計にはしません。Framework が所有する attribute と Theme 固有 attribute の namespace を分けます。
+CSS では、
 
-## 5. Stable CSS hooks
-
-Theme は内部 markup ではなく、文書化された stable hook を対象にします。class は 2 つの namespace に分かれています。
-
-- **`rb-*`** — framework が提供する構造 hook と semantic design token。構造 hook は `.rb-theme-root`（テーマ root のコンテナ）、`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar` です。
-- **`rr-<feature>`** — Plugin / feature が描画する最外要素に付く root hook。例: `.rr-search`、`.rr-callout`、`.rr-table-of-contents`、`.rr-backlinks`、`.rr-local-graph`、`.rr-code`、`.rr-code-tabs`、`.rr-lightbox`、`.rr-excalidraw`、`.rr-mermaid`、`.rr-query`、`.rr-cardlink`、`.rr-diff-history`、`.rr-attachment`、`.rr-media`、`.rr-recent-posts`、`.rr-garden-explorer`。
-
-Theme が style してよいのは、この root hook と、Plugin が文書化した子孫 class だけです。BEM の element（`__…`）と modifier（`--…`）は原則 internal な実装詳細です。`.sr-only` のような汎用 helper class は Plugin hook ではありません。Plugin は後方互換のため従来 class も残すので、同じ要素に `.rr-<feature>` と旧 class が並ぶことがあります。Theme は `rr-*` を対象にしてください。
-
-### 5-1. Character layer
-
-テーマは token だけに留まりません。theme の境界を守る限り、stable hook を直接 style してサイトに視覚的な個性（character）を与えられます。
-
--   token の定義は `@layer base` に置き、視覚的な character のルールは **unlayered** にします。app の構造 CSS と Plugin CSS は unlayered なので、unlayered な theme ルールは `!important` なしでそれらに勝ちます。`!important` は使わないでください。
--   対象は stable hook だけです。`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、`.prose`、そして上に挙げた `rr-*` Plugin root です。新しい `rb-*` / `rr-*` class 名を発明しないでください。`.rr-*` の BEM part は internal です。
--   テーマは self-hosted webfont（Latin subset）を package 内の `styles/fonts/` に同梱し、相対 `url()` で参照できます。font の license ファイルも含めてください。日本語などの CJK は大きな font file を同梱せず、system font stack に fallback させます。
-
-```css
-/* token は layer に置く。 */
-@layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="example"] {
-    --rb-color-accent: #b45309;
-  }
-}
-
-/* character ルールは unlayered。app と Plugin の CSS に勝つ。 */
-:is(:root, .rb-theme-root)[data-theme-name="example"] .rb-article-header {
-  border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
-}
-
-@font-face {
-  font-family: "Example Serif";
-  src: url("./fonts/example-serif-latin.woff2") format("woff2");
-  font-weight: 400 700;
-  font-display: swap;
+```css id="4evhcs"
+:is(:root, .rb-theme-root)
+[data-theme-name="newspaper"]
+[data-newspaper-density="compact"] {
+  /* ... */
 }
 ```
 
-character ルールも presentation 専用です。content・structure・behavior を変えてはいけません。
+のように利用できます。
 
-## 6. CSS cascade
+Theme API から、
 
-読み込み順は presentation extension の重要な contract です。
-
-```text
-base / app structural CSS
-→ Plugin default CSS
-→ Theme CSS
-→ config token inline style
-→ userCss
+```text id="cn9sza"
+class
+style
+id
+lang
 ```
 
-この順序は偶発的なものではなく保証された contract です。`@riebeckite/honox` が `.riebeckite/plugin-styles.css`（resolved plugin order の Plugin style）と `.riebeckite/theme-styles.css`（Theme style）を生成します。Site は plugin stylesheet を theme stylesheet より先に import するため、Theme CSS は常に Plugin default を上書きし、利用者の `userCss` が最終 override になります。
+などを自由に変更する設計にはしません。
 
-この import 順を入れ替えたり、生成ファイルを直接編集したりしないでください。各生成ファイルの先頭コメントにも cascade 上の位置が記載されています。通常は `!important` に依存しません。
+Framework が所有する Attribute と Theme 固有 Attribute を分離してください。
 
-## 7. Theme factory options
+# 19. Theme Factory Options
 
-Theme 独自 option は Theme package 内で解決します。Core の `ThemeConfig` に増やさないことが重要です。
+Theme 固有の機能は Factory Option として定義します。
 
-```ts
+```ts id="94pd1f"
 type NewspaperOptions = {
-  density?: "compact" | "comfortable";
+  density?:
+    | "compact"
+    | "comfortable";
 };
 
-export function newspaperTheme(options: NewspaperOptions = {}) {
+export function newspaperTheme(
+  options: NewspaperOptions = {},
+) {
   return defineTheme({
     name: "newspaper",
+
     options,
+
     attributes: {
-      "data-newspaper-density": options.density ?? "comfortable",
+      "data-newspaper-density":
+        options.density
+        ?? "comfortable",
     },
+
     styles: [
-      { moduleSpecifier: "@riebeckite/theme-newspaper/style.css" },
+      {
+        moduleSpecifier:
+          "@riebeckite/theme-newspaper/style.css",
+      },
     ],
   });
 }
 ```
 
-Theme-specific option はその Theme を選んだ場合だけ意味を持ち、Core や他 Theme へ漏らしません。
+重要なのは、この Option を Core の `ThemeConfig` に追加しないことです。
 
-## 8. 配布用パッケージにする
+```text id="2cqt02"
+newspaper の density
+  → newspaperTheme が所有
 
-雛形は `packages/themes/minimal` です。構成:
+tokyonight の neon
+  → tokyonightTheme が所有
+```
 
-```text
-packages/themes/minimal/
-├─ src/index.ts      ← defineTheme を呼ぶ factory
-├─ styles/theme.css  ← テーマの stylesheet
-├─ package.json      ← ./style.css を exports で公開
+Theme 固有の概念は、その Theme Package 内で完結させます。
+
+# 20. Stable CSS Hooks
+
+Theme は Application や Plugin の内部 Markup ではなく、公開された Stable CSS Hook を対象にします。
+
+Hook には大きく2つの Namespace があります。
+
+| Namespace | 所有者 | 用途 |
+| --- | --- | --- |
+| `rb-*` | Framework | Site の構造 |
+| `rr-*` | Plugin / Feature | Plugin UI |
+
+Framework が提供する代表的な Hook は、
+
+```text id="etblkj"
+.rb-theme-root
+.rb-site
+.rb-article
+.rb-article-layout
+.rb-article-header
+.rb-article-body
+.rb-article-meta
+.rb-article-footer
+.rb-sidebar
+```
+
+です。
+
+Plugin は、
+
+```text id="rt44pe"
+.rr-search
+.rr-callout
+.rr-table-of-contents
+.rr-backlinks
+.rr-local-graph
+.rr-code
+.rr-code-tabs
+.rr-lightbox
+.rr-excalidraw
+.rr-mermaid
+.rr-query
+.rr-cardlink
+.rr-diff-history
+.rr-attachment
+.rr-media
+.rr-recent-posts
+.rr-garden-explorer
+```
+
+などの Root Hook を提供できます。
+
+Theme はこれらの Stable Hook を対象にします。
+
+# 21. Plugin の内部 Class
+
+Plugin は内部で、
+
+```text id="u7bmkr"
+.rr-search
+.rr-search__input
+.rr-search__result
+.rr-search--loading
+```
+
+のような BEM Class を使う場合があります。
+
+基本的に Public Hook は、
+
+```text id="9k6dgy"
+.rr-search
+```
+
+です。
+
+```text id="1ggxg1"
+__input
+__result
+--loading
+```
+
+などは、Plugin が明示的に Public Hook として文書化していない限り内部実装として扱います。
+
+`.sr-only` のような一般的な Helper Class も Plugin Hook ではありません。
+
+後方互換性のため旧 Class と `.rr-*` が同じ要素に存在する場合でも、Theme は `.rr-*` を利用してください。
+
+# 22. Character Layer
+
+Theme は Token を変更するだけでなく、Stable Hook を直接 Style して視覚的な個性を与えられます。
+
+たとえば、
+
+```css id="n72uhc"
+:is(:root, .rb-theme-root)
+[data-theme-name="example"]
+.rb-article-header {
+  border-bottom:
+    var(--rb-rule-width)
+    solid
+    var(--rb-color-border);
+}
+```
+
+のような変更です。
+
+対象にできるのは Stable Hook です。
+
+Theme 側で新しい、
+
+```text id="mkmfyh"
+rb-*
+rr-*
+```
+
+Class を発明して Framework Contract のように扱わないでください。
+
+Character Layer も Presentation 専用です。
+
+Content、Structure、Behavior を変更してはいけません。
+
+# 23. CSS Layer
+
+Token Definition は `@layer base` に置きます。
+
+```css id="43rbsh"
+@layer base {
+  :is(:root, .rb-theme-root)
+  [data-theme-name="example"] {
+    --rb-color-accent: #b45309;
+  }
+}
+```
+
+一方、Stable Hook に対する Character Rule は **unlayered** にします。
+
+```css id="s2xwqm"
+:is(:root, .rb-theme-root)
+[data-theme-name="example"]
+.rb-article-header {
+  border-bottom:
+    var(--rb-rule-width)
+    solid
+    var(--rb-color-border);
+}
+```
+
+Application の Structural CSS と Plugin CSS も unlayered です。
+
+Theme CSS はそれらより後に読み込まれるため、通常は `!important` を使わなくても上書きできます。
+
+`!important` に依存しないでください。
+
+# 24. Web Font
+
+Theme Package は Self-hosted Web Font を含めることができます。
+
+たとえば、
+
+```text id="8g43c5"
+styles/
+├─ theme.css
+└─ fonts/
+   └─ example-serif-latin.woff2
+```
+
+のように配置します。
+
+CSS では相対 URL を使います。
+
+```css id="66ktv6"
+@font-face {
+  font-family: "Example Serif";
+
+  src:
+    url("./fonts/example-serif-latin.woff2")
+    format("woff2");
+
+  font-weight: 400 700;
+  font-display: swap;
+}
+```
+
+Font を同梱する場合は、その Font の License File も Package に含めてください。
+
+Latin Subset のような比較的小さい Font は同梱できます。
+
+日本語などの CJK Font は File Size が大きいため、基本的には System Font Stack へ fallback します。
+
+# 25. `userCss`
+
+`userCss` は Site 利用者が Theme の上から最終調整するための CSS です。
+
+```ts id="mphtk3"
+theme: defaultTheme({
+  userCss: [
+    "/extensions/custom.css",
+  ],
+}),
+```
+
+Theme の Stylesheet より後に読み込まれるため、`userCss` が最終的な Override になります。
+
+Theme Package 側で `userCss` より強い Selector や `!important` を多用しないでください。
+
+# 26. CSS Cascade
+
+Riebeckite では CSS の読み込み順も Contract の一部です。
+
+```mermaid id="e5j94x"
+flowchart TD
+    Base["Base / Application<br/>Structural CSS"]
+    Plugin["Plugin Default CSS"]
+    Theme["Theme CSS"]
+    Token["Config Token<br/>Inline Style"]
+    User["userCss"]
+
+    Base --> Plugin
+    Plugin --> Theme
+    Theme --> Token
+    Token --> User
+```
+
+順番は、
+
+```text id="jz92ku"
+Base / Application CSS
+        ↓
+Plugin Default CSS
+        ↓
+Theme CSS
+        ↓
+Config Token Inline Style
+        ↓
+userCss
+```
+
+です。
+
+この順番は偶然ではなく、Presentation Extension の Contract として保証されます。
+
+`@riebeckite/honox` は、
+
+```text id="i2y97j"
+.riebeckite/plugin-styles.css
+.riebeckite/theme-styles.css
+```
+
+を生成します。
+
+Site は Plugin Stylesheet を Theme Stylesheet より先に読み込みます。
+
+そのため、
+
+```text id="4w8d9d"
+Plugin
+  → 標準の見た目
+
+Theme
+  → Plugin の見た目を変更
+
+userCss
+  → Site 利用者が最終調整
+```
+
+という関係になります。
+
+生成された Stylesheet を直接編集したり、Import 順を変更したりしないでください。
+
+# 27. Package として配布する
+
+公開 Theme は、たとえば次の構成にできます。
+
+```text id="c4cx40"
+packages/themes/example/
+├─ src/
+│  └─ index.ts
+├─ styles/
+│  ├─ theme.css
+│  └─ fonts/          # 必要な場合のみ
+├─ package.json
 ├─ README_ja.md
 └─ README.md
 ```
 
-外部配布の Theme package は `@riebeckite/core` だけに依存し、stylesheet を `./style.css` の export として公開します。monorepo 内の path は参照しないでください。対応する package surface と現時点の制約は [Framework Reference](../reference/README.md) の「Public package と import path」を参照してください。
+Riebeckite Repository 内では、
 
-## 9. 検証する
-
-```sh
-npm exec riebeckite check             # 設定と Plugin の解決を検証
-npm exec riebeckite inspect config# 解決済みのテーマを確認
-npm exec riebeckite dev               # ローカルで見た目を確認
-npm exec riebeckite build             # 生成物を確認
+```text id="7s39yd"
+packages/themes/minimal
 ```
 
-`check` / `doctor` / `inspect` は読み取り専用です。Theme を交換しても route、manifest、graph、client behavior は変わりません。意図した見た目にならない場合、まず cascade の順序（`userCss` が最後）と、`rr-*` / `rb-*` のどちらを狙っているかを確認してください。
+が雛形になります。
+
+`src/index.ts` では Theme Factory を公開します。
+
+```ts id="lhhz91"
+import { defineTheme } from "@riebeckite/core";
+
+export function exampleTheme() {
+  return defineTheme({
+    name: "example",
+
+    styles: [
+      {
+        moduleSpecifier:
+          "@riebeckite/theme-example/style.css",
+      },
+    ],
+  });
+}
+```
+
+`package.json` では Stylesheet を、
+
+```text id="8md3uw"
+./style.css
+```
+
+として Export します。
+
+# 28. Repository 外で Theme を配布する
+
+外部 Theme Package は Riebeckite monorepo の内部構造へ依存させません。
+
+基本的には、
+
+```text id="a8r4we"
+@riebeckite/core
+```
+
+の Public API だけを利用します。
+
+次のような Internal Import は避けてください。
+
+```ts id="0q5wfe"
+import {
+  something,
+} from "@riebeckite/core/src/...";
+```
+
+また、
+
+```text id="mpy5js"
+../../../../packages/core/...
+```
+
+のような monorepo 内部 Path にも依存しません。
+
+Theme の Stylesheet も Package 自身の Export として公開します。
+
+# 29. Theme を検証する
+
+Theme を作成・変更したら、次の順番で確認します。
+
+```mermaid id="muvx0f"
+flowchart LR
+    Check["check"]
+    Inspect["inspect config"]
+    Dev["dev"]
+    Build["build"]
+
+    Check --> Inspect
+    Inspect --> Dev
+    Dev --> Build
+```
+
+まず Configuration を確認します。
+
+```sh id="cb8y30"
+pnpm exec riebeckite check
+```
+
+次に解決された Theme 設定を確認します。
+
+```sh id="56lmdw"
+pnpm exec riebeckite inspect config
+```
+
+実際の表示を確認する場合は、
+
+```sh id="i9vjkb"
+pnpm exec riebeckite dev
+```
+
+を使います。
+
+最後に生成物まで確認します。
+
+```sh id="tsbdjv"
+pnpm exec riebeckite build
+```
+
+`check`、`doctor`、`inspect` は Build Output を変更しません。
+
+Theme を交換しても、
+
+- Route
+- Manifest
+- Content Graph
+- Client Behavior
+
+は変わらないことが基本です。
+
+# 30. 見た目がおかしい場合
+
+Theme が期待どおりに適用されない場合は、まず次の順番で確認します。
+
+```mermaid id="pm3ukv"
+flowchart TD
+    Start["Themeが適用されない"]
+
+    Start --> Name{"data-theme-name は正しい？"}
+    Name -->|No| FixName["Theme nameを確認"]
+    Name -->|Yes| Hook{"正しいHookを対象にしている？"}
+
+    Hook -->|No| FixHook["rb-* / rr-* を確認"]
+    Hook -->|Yes| Cascade{"Cascadeは正しい？"}
+
+    Cascade -->|No| FixCascade["Plugin → Theme → userCssを確認"]
+    Cascade -->|Yes| Mode{"Color Mode条件は正しい？"}
+
+    Mode -->|No| FixMode["data-theme / systemを確認"]
+    Mode -->|Yes| CSS["Selector / CSSを確認"]
+```
+
+特に確認するのは、
+
+1. `data-theme-name` が Theme の `name` と一致しているか
+2. `.rb-*` / `.rr-*` の正しい Stable Hook を対象にしているか
+3. Plugin CSS → Theme CSS → `userCss` の順になっているか
+4. `system` なのに `data-theme=""` が残っていないか
+5. Theme Root の外へ Selector が漏れていないか
+
+です。
+
+# 31. Theme を作るときの基本方針
+
+Theme の実装では、最終的に次の境界を維持することが重要です。
+
+```mermaid id="sdf2dm"
+flowchart LR
+    App["Application"]
+    Plugin["Plugin"]
+
+    App --> Hooks["Stable Hooks"]
+    Plugin --> Hooks
+
+    Core["Core"] --> Tokens["Semantic Tokens"]
+
+    Hooks --> Contract["Presentation Contract"]
+    Tokens --> Contract
+
+    Theme["Theme"] --> Contract
+
+    Contract --> Site["Final Site"]
+```
+
+Theme は Application や Plugin の内部構造を所有しません。
+
+Framework と Plugin が公開した、
+
+```text id="ysb8qa"
+Stable CSS Hooks
+Semantic Design Tokens
+Theme Attributes
+CSS Cascade
+```
+
+という Presentation Contract を利用します。
+
+Theme 固有の設定は Theme Package 内に閉じ込め、Core へ漏らしません。
+
+そして、Theme の変更によって、
+
+```text id="e6c5sk"
+Content
+Route
+Manifest
+Content Graph
+Plugin Behavior
+Client Behavior
+```
+
+が変化しない状態を維持してください。
+
+**機能は Plugin、構造は Framework / Application、見た目は Theme**
+
+という境界を守ることで、Theme を交換しても同じ Site と Plugin をそのまま利用できます。
 
 ## 関連資料
 
-- [はじめてのテーマ作成](../themes/writing-a-theme.md) — 流れに沿った入門
-- [Theme System](./theme-system.md) — contract の概念的な説明
-- [Plugin System](./plugin-system.md) — テーマとの境界（機能は Plugin）
-- [Framework Reference](../reference/README.md) — `defineTheme` などの公開 API
-
-
+- [はじめてのテーマ作成](../themes/writing-a-theme.md) — 最初の Theme を作る
+- [Theme System](./theme-system.md) — Theme System 全体の考え方
+- [Plugin System](./plugin-system.md) — Plugin との責務の違い
+- [Framework Reference](../reference/README.md) — `defineTheme` などの Public API

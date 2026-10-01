@@ -68,14 +68,15 @@ Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugi
 
 |Subject|Reference|
 |---|---|
-|Content sources, manifest, graph, and publication|[Content System](../en/framework/content-system.md)|
-|Plugin API and lifecycle|[Plugin System](../en/reference/plugin-api.md)|
-|Theme contract and CSS cascade|[Theme System](../en/reference/theme-api.md)|
-|Incremental Build and cache semantics|[Build System](../en/framework/build-system.md)|
-|Commands and their user-facing behavior|[CLI](../en/reference/cli.md)|
-|Diagnostics and inspection|[Diagnostics](../en/framework/diagnostics.md) / [Framework Inspector](../en/framework/inspector.md)|
-|Browser tracking and the analytics Worker|[Analytics](../en/guides/analytics.md)|
-|Public framework surface|[Framework Reference](../en/reference/README.md)|
+|Content sources, manifest, graph, and publication|[Content System](../en/docs/framework/content-system.md)|
+|Plugin API and lifecycle|[Plugin System](../en/docs/reference/plugin-api.md)|
+|Theme contract and CSS cascade|[Theme System](../en/docs/reference/theme-api.md)|
+|Incremental Build and cache semantics|[Build System](../en/docs/framework/build-system.md)|
+|Commands and their user-facing behavior|[CLI](../en/docs/reference/cli.md)|
+|Diagnostics and inspection|[Diagnostics](../en/docs/framework/diagnostics.md) / [Framework Inspector](../en/docs/framework/inspector.md)|
+|Browser tracking and the analytics Worker|[Analytics](../en/docs/guides/analytics.md)|
+|Public framework surface|[Framework Reference](../en/docs/reference/README.md)|
 
 Use the localized Japanese documentation when that is the target audience; the rules in this directory remain the implementation baseline.
+
 

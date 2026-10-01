@@ -115,5 +115,6 @@ manifest time, mentions whose target is not a published entry are reported as
 
 ## See also
 
-- [Plugin guide](../../../docs/en/reference/plugin-api.md)
+- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
 - [@riebeckite/webmention-cloudflare](../../integrations/webmention-cloudflare/README.md)
+

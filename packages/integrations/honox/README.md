@@ -100,7 +100,8 @@ layout, islands, and CSS.
 
 ## See also
 
-- [HonoX Integration](../../../docs/en/framework/honox-integration.md)
-- [CLI Reference](../../../docs/en/reference/cli.md)
-- [Configuration](../../../docs/en/reference/configuration.md)
-- [Plugin System](../../../docs/en/reference/plugin-api.md) / [Theme System](../../../docs/en/reference/theme-api.md)
+- [HonoX Integration](../../../docs/en/docs/framework/honox-integration.md)
+- [CLI Reference](../../../docs/en/docs/reference/cli.md)
+- [Configuration](../../../docs/en/docs/reference/configuration.md)
+- [Plugin System](../../../docs/en/docs/reference/plugin-api.md) / [Theme System](../../../docs/en/docs/reference/theme-api.md)
+

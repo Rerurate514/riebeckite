@@ -105,5 +105,6 @@ full token list — the token contract is identical.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/reference/plugin-api.md)
+- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
+

@@ -28,15 +28,15 @@ flowchart LR
     Build --> Deploy
 ```
 
-まず [Quick Start](./getting-started/quick-start.md) から始めてください。
+まず [Quick Start](./docs/getting-started/quick-start.md) から始めてください。
 
 順番に進めたい場合は、
 
-1. [Quick Start](./getting-started/quick-start.md)
-2. [Installation](./getting-started/installation.md)
-3. [First Content](./getting-started/first-content.md)
-4. [Presets](./getting-started/presets.md)
-5. [Deployment](./getting-started/deployment.md)
+1. [Quick Start](./docs/getting-started/quick-start.md)
+2. [Installation](./docs/getting-started/installation.md)
+3. [First Content](./docs/getting-started/first-content.md)
+4. [Presets](./docs/getting-started/presets.md)
+5. [Deployment](./docs/getting-started/deployment.md)
 
 の順で読めます。
 
@@ -66,24 +66,24 @@ deploy
 
 | 目的 | 読むページ |
 | --- | --- |
-| 初めて Riebeckite を使う | [Quick Start](./getting-started/quick-start.md) |
-| インストール方法を確認する | [Installation](./getting-started/installation.md) |
-| 最初の記事を書く | [First Content](./getting-started/first-content.md) |
-| Site の構成を選ぶ | [Presets](./getting-started/presets.md) |
-| デプロイする | [Deployment](./getting-started/deployment.md) |
-| Deploy 先ごとの手順を確認する | [Deployment Guides](./guides/deployment/README.md) |
-| Markdown / Frontmatter の書き方を知る | [Writing Content](./guides/writing-content.md) |
-| Obsidian Vault を公開する | [Obsidian](./guides/obsidian.md) |
-| Content と Site を別 Repository にする | [Content Repositories](./guides/content-repositories.md) |
-| 多言語 Site を作る | [Localization](./guides/localization.md) |
-| Riebeckite を更新する | [Upgrading](./guides/upgrading.md) |
-| Plugin を探す | [Plugins](./plugins/README.md) |
-| Theme を選ぶ | [Themes](./themes/README.md) |
-| Accessibility の責任範囲を確認する | [Accessibility](./accessibility.md) |
-| Security / Trust Model を確認する | [Security Model](./security.md) |
-| 設定や CLI、Public API を調べる | [Reference](./reference/README.md) |
-| Riebeckite の内部構造を理解する | [Framework](./framework/README.md) |
-| Riebeckite 本体を開発する | [Framework Development](./framework/development.md) |
+| 初めて Riebeckite を使う | [Quick Start](./docs/getting-started/quick-start.md) |
+| インストール方法を確認する | [Installation](./docs/getting-started/installation.md) |
+| 最初の記事を書く | [First Content](./docs/getting-started/first-content.md) |
+| Site の構成を選ぶ | [Presets](./docs/getting-started/presets.md) |
+| デプロイする | [Deployment](./docs/getting-started/deployment.md) |
+| Deploy 先ごとの手順を確認する | [Deployment Guides](./docs/guides/deployment/README.md) |
+| Markdown / Frontmatter の書き方を知る | [Writing Content](./docs/guides/writing-content.md) |
+| Obsidian Vault を公開する | [Obsidian](./docs/guides/obsidian.md) |
+| Content と Site を別 Repository にする | [Content Repositories](./docs/guides/content-repositories.md) |
+| 多言語 Site を作る | [Localization](./docs/guides/localization.md) |
+| Riebeckite を更新する | [Upgrading](./docs/guides/upgrading.md) |
+| Plugin を探す | [Plugins](./docs/plugins/README.md) |
+| Theme を選ぶ | [Themes](./docs/themes/README.md) |
+| Accessibility の責任範囲を確認する | [Accessibility](./docs/accessibility.md) |
+| Security / Trust Model を確認する | [Security Model](./docs/security.md) |
+| 設定や CLI、Public API を調べる | [Reference](./docs/reference/README.md) |
+| Riebeckite の内部構造を理解する | [Framework](./docs/framework/README.md) |
+| Riebeckite 本体を開発する | [Framework Development](./docs/framework/development.md) |
 
 ## ドキュメントの構成
 
@@ -199,7 +199,7 @@ Riebeckite 自体へ変更を加える場合だけ Repository を clone しま�
 
 などを扱います。
 
-詳しくは [Framework Development](./framework/development.md) を参照してください。
+詳しくは [Framework Development](./docs/framework/development.md) を参照してください。
 
 `apps/web` は Riebeckite の Documentation / Reference Application であり、一般ユーザーが Site を作るための Template ではありません。
 
@@ -250,3 +250,4 @@ Riebeckite本体を変更する
 です。
 
 Coding Agent 向けの短い開発ルールは [agents](../agents/README.md) に分けています。
+

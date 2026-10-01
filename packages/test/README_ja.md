@@ -32,7 +32,7 @@ assertGoldenJson(manifest, new URL("./__golden__/manifest.json", import.meta.url
 
 golden ファイルが無い、または一致しない場合はテストが失敗します。リポジトリルートで `pnpm test:update`（単一パッケージなら `UPDATE_GOLDEN=1`）を実行して記録を更新し、差分を確認してください。
 
-詳しいワークフローは [Testing](../../docs/ja/framework/testing.md) を参照してください。
+詳しいワークフローは [Testing](../../docs/ja/docs/framework/testing.md) を参照してください。
 
 ## External-site engine
 
@@ -66,4 +66,5 @@ engine は、それが組み立てられている下位ステップも公開し�
 
 ## 関連資料
 
-- [Testing](../../docs/ja/framework/testing.md)
+- [Testing](../../docs/ja/docs/framework/testing.md)
+

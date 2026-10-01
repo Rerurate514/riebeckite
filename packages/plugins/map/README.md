@@ -173,4 +173,5 @@ to inject a fake Leaflet).
 
 ## See also
 
-- [Plugin system](../../../docs/en/reference/plugin-api.md)
+- [Plugin system](../../../docs/en/docs/reference/plugin-api.md)
+

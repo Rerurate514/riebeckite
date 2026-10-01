@@ -19,7 +19,7 @@ npm exec riebeckite dev
 npm exec riebeckite build
 ```
 
-最初に読むページ: [Getting Started](./docs/ja/getting-started/README.md)
+最初に読むページ: [Getting Started](./docs/ja/docs/getting-started/README.md)
 
 ## 主な機能
 
@@ -34,14 +34,14 @@ npm exec riebeckite build
 ## ドキュメント
 
 - [ドキュメントの入口](./docs/ja/README.md)
-- [Preset](./docs/ja/getting-started/presets.md)
-- [Guides](./docs/ja/guides/README.md)
-- [Plugins](./docs/ja/plugins/README.md)
-- [Themes](./docs/ja/themes/README.md)
-- [Reference](./docs/ja/reference/README.md)
-- [Framework Development](./docs/ja/framework/development.md)
+- [Preset](./docs/ja/docs/getting-started/presets.md)
+- [Guides](./docs/ja/docs/guides/README.md)
+- [Plugins](./docs/ja/docs/plugins/README.md)
+- [Themes](./docs/ja/docs/themes/README.md)
+- [Reference](./docs/ja/docs/reference/README.md)
+- [Framework Development](./docs/ja/docs/framework/development.md)
 - [English README](./README.md)
 
 ## Riebeckite 本体を開発する場合
 
-この monorepo を clone するのは、Riebeckite 本体、integration、Plugin、Theme、参照アプリを開発するときだけです。セットアップとコマンドは [Framework Development](./docs/ja/framework/development.md) を参照してください。
+この monorepo を clone するのは、Riebeckite 本体、integration、Plugin、Theme、参照アプリを開発するときだけです。セットアップとコマンドは [Framework Development](./docs/ja/docs/framework/development.md) を参照してください。

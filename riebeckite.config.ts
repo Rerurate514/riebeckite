@@ -19,6 +19,7 @@ import { deployPlugin } from "@riebeckite/plugin-deploy";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { diff } from "@riebeckite/plugin-diff";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
+import { docs } from "@riebeckite/plugin-docs";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
@@ -198,6 +199,11 @@ export default defineConfig({
     responsiveImage(),
     localGraphPlugin(),
     l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+    docs({
+      root: "docs",
+      sidebar: { auto: true, label: "Documentation" },
+      prevNext: true,
+    }),
     gardenExplorerPlugin(),
     hoverPreviewPlugin(),
     shortcodes(),

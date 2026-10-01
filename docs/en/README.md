@@ -6,7 +6,7 @@
 
 Riebeckite publishes Markdown and Obsidian-style notes as a fast static site.
 
-New here? Start with **[Getting Started](./getting-started/README.md)**. It takes you from `create-riebeckite` to a running site, your first Markdown page, and a first deployment.
+New here? Start with **[Getting Started](./docs/getting-started/README.md)**. It takes you from `create-riebeckite` to a running site, your first Markdown page, and a first deployment.
 
 ```text
 Quick Start
@@ -24,23 +24,23 @@ Deployment
 
 | I want to… | Go to |
 | --- | --- |
-| Use Riebeckite for the first time | [Quick Start](./getting-started/quick-start.md) |
-| Create a site and deploy it today | [Quick Start](./getting-started/quick-start.md) → [Deployment](./getting-started/deployment.md) |
-| Choose which `create-riebeckite` preset to use | [Presets](./getting-started/presets.md) |
-| Write and organize articles | [Guides / Writing content](./guides/writing-content.md) |
-| Publish an Obsidian vault | [Guides / Obsidian](./guides/obsidian.md) |
-| Keep content and site in separate repositories | [Guides / Content repositories](./guides/content-repositories.md) |
-| Build a multilingual site | [Guides / Localization](./guides/localization.md) |
-| Deploy to Cloudflare Workers / GitHub Actions | [Guides / Deployment](./guides/deployment/README.md) |
-| Upgrade Riebeckite or read migration notes | [Guides / Upgrading](./guides/upgrading.md) |
-| Find and install a Plugin | [Plugins](./plugins/README.md) |
-| See Plugins in action | [Plugin Showcase](./plugins/showcase.md) |
-| Change the look of my site | [Themes](./themes/README.md) |
-| Keep the site usable for more people | [Accessibility](./accessibility.md) |
-| Understand the trust model | [Security model](./security.md) |
-| Look up configuration, CLI, or an API | [Reference](./reference/README.md) |
-| Understand how Riebeckite works inside | [Framework](./framework/README.md) |
-| Contribute to Riebeckite itself | [Framework / Development](./framework/development.md) |
+| Use Riebeckite for the first time | [Quick Start](./docs/getting-started/quick-start.md) |
+| Create a site and deploy it today | [Quick Start](./docs/getting-started/quick-start.md) → [Deployment](./docs/getting-started/deployment.md) |
+| Choose which `create-riebeckite` preset to use | [Presets](./docs/getting-started/presets.md) |
+| Write and organize articles | [Guides / Writing content](./docs/guides/writing-content.md) |
+| Publish an Obsidian vault | [Guides / Obsidian](./docs/guides/obsidian.md) |
+| Keep content and site in separate repositories | [Guides / Content repositories](./docs/guides/content-repositories.md) |
+| Build a multilingual site | [Guides / Localization](./docs/guides/localization.md) |
+| Deploy to Cloudflare Workers / GitHub Actions | [Guides / Deployment](./docs/guides/deployment/README.md) |
+| Upgrade Riebeckite or read migration notes | [Guides / Upgrading](./docs/guides/upgrading.md) |
+| Find and install a Plugin | [Plugins](./docs/plugins/README.md) |
+| See Plugins in action | [Plugin Showcase](./docs/plugins/showcase.md) |
+| Change the look of my site | [Themes](./docs/themes/README.md) |
+| Keep the site usable for more people | [Accessibility](./docs/accessibility.md) |
+| Understand the trust model | [Security model](./docs/security.md) |
+| Look up configuration, CLI, or an API | [Reference](./docs/reference/README.md) |
+| Understand how Riebeckite works inside | [Framework](./docs/framework/README.md) |
+| Contribute to Riebeckite itself | [Framework / Development](./docs/framework/development.md) |
 
 ## Where to go next
 
@@ -63,6 +63,7 @@ my-site/
 └─ package.json          Local commands
 ```
 
-A site author mainly edits `content/` and `riebeckite.config.ts`. Internal architecture is documented in [Framework](./framework/README.md).
+A site author mainly edits `content/` and `riebeckite.config.ts`. Internal architecture is documented in [Framework](./docs/framework/README.md).
 
 For coding agents and automation, use the concise, rule-oriented [Agent documentation](../agents/README.md).
+

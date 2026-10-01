@@ -122,4 +122,5 @@ const html = renderSeriesIndex(manifest, "何かを作る");
 
 ## 関連
 
-- [プラグインガイド](../../../docs/ja/reference/plugin-api.md)
+- [プラグインガイド](../../../docs/ja/docs/reference/plugin-api.md)
+

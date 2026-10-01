@@ -125,6 +125,7 @@ locally.
 
 ## See also
 
-- [Usage Guide — Preview and deploy](../../docs/en/guides/README.md#7-preview-and-deploy)
-- [HonoX Integration](../../docs/en/framework/honox-integration.md)
-- [Build System](../../docs/en/framework/build-system.md)
+- [Usage Guide — Preview and deploy](../../docs/en/docs/guides/README.md#7-preview-and-deploy)
+- [HonoX Integration](../../docs/en/docs/framework/honox-integration.md)
+- [Build System](../../docs/en/docs/framework/build-system.md)
+

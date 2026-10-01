@@ -67,5 +67,6 @@ Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 
 ## See also
 
-- [Plugin guide](../../../docs/en/reference/plugin-api.md)
+- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README.md)
+

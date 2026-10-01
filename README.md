@@ -29,7 +29,7 @@ Then edit Markdown in `content/`, confirm it in the browser, and build:
 npm exec riebeckite build
 ```
 
-Start here: [Getting Started](./docs/en/getting-started/README.md).
+Start here: [Getting Started](./docs/en/docs/getting-started/README.md).
 
 ## What Riebeckite includes
 
@@ -44,14 +44,15 @@ Start here: [Getting Started](./docs/en/getting-started/README.md).
 ## Documentation
 
 - [Documentation home](./docs/en/README.md)
-- [Presets](./docs/en/getting-started/presets.md)
-- [Guides](./docs/en/guides/README.md)
-- [Plugins](./docs/en/plugins/README.md)
-- [Themes](./docs/en/themes/README.md)
-- [Reference](./docs/en/reference/README.md)
-- [Framework development](./docs/en/framework/development.md)
+- [Presets](./docs/en/docs/getting-started/presets.md)
+- [Guides](./docs/en/docs/guides/README.md)
+- [Plugins](./docs/en/docs/plugins/README.md)
+- [Themes](./docs/en/docs/themes/README.md)
+- [Reference](./docs/en/docs/reference/README.md)
+- [Framework development](./docs/en/docs/framework/development.md)
 - [日本語 README](./README_ja.md)
 
 ## Developing Riebeckite itself
 
-Clone this monorepo only when you are working on Riebeckite core, integrations, plugins, themes, or the reference app. Use [Framework Development](./docs/en/framework/development.md) for repository setup and commands.
+Clone this monorepo only when you are working on Riebeckite core, integrations, plugins, themes, or the reference app. Use [Framework Development](./docs/en/docs/framework/development.md) for repository setup and commands.
+

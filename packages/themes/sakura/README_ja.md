@@ -57,5 +57,6 @@ export default defineConfig({
 
 ## 関連資料
 
-- [テーマシステム](../../../docs/ja/reference/theme-api.md)
+- [テーマシステム](../../../docs/ja/docs/reference/theme-api.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
+

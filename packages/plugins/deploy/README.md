@@ -65,4 +65,5 @@ skipped because the root cannot be stubbed.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/reference/plugin-api.md)
+- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+

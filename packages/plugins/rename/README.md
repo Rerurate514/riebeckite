@@ -120,4 +120,5 @@ Types:
 ## See also
 
 - [Permalink plugin](../permalink/README.md) — stable URLs and `redirect_from`
-- [Plugin guide](../../../docs/en/reference/plugin-api.md)
+- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+

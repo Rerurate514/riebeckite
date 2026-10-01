@@ -109,6 +109,7 @@ npx wrangler deploy --dry-run
 
 ## 関連資料
 
-- [利用ガイド — プレビューとデプロイ](../../docs/ja/guides/README.md#7-プレビューとデプロイ)
-- [HonoX Integration](../../docs/ja/framework/honox-integration.md)
-- [Build System](../../docs/ja/framework/build-system.md)
+- [利用ガイド — プレビューとデプロイ](../../docs/ja/docs/guides/README.md#7-プレビューとデプロイ)
+- [HonoX Integration](../../docs/ja/docs/framework/honox-integration.md)
+- [Build System](../../docs/ja/docs/framework/build-system.md)
+

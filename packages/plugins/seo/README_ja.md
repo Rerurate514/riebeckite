@@ -65,4 +65,5 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/ja/reference/plugin-api.md)
+- [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
+

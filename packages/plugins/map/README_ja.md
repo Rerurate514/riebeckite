@@ -139,4 +139,5 @@ Leaflet（`leaflet.js` と `leaflet.css`）は、`[data-rr-map="pending"]` の f
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/ja/reference/plugin-api.md)
+- [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
+

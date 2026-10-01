@@ -1,24 +1,44 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import path from "node:path";
 import type { DiffRevision, GitHistoryReaderOptions } from "../types.js";
+import {
+  type GitRepositoryPaths,
+  isResolvedRepository,
+  normalizeContentPath,
+  type RepositoryPathsResolution,
+  resolveRepositoryPaths,
+  toRepositoryPath,
+} from "./repo_paths.js";
+import { runGit } from "./run_git.js";
 
-const execFileAsync = promisify(execFile);
 const fieldSeparator = "\u001f";
 const recordSeparator = "\u001e";
 
+/**
+ * Reads Markdown revisions out of a local Git repository.
+ *
+ * Callers speak content-relative paths — the same paths the content index
+ * reports. The reader resolves the owning work tree once and translates every
+ * path itself, so the process working directory never influences a result.
+ */
 export class GitMarkdownHistoryReader {
-  readonly #cwd: string;
+  readonly #contentRoot: string;
   readonly #historyCache = new Map<string, Promise<DiffRevision[]>>();
   readonly #markdownCache = new Map<string, Promise<string | null>>();
+  /** Maps a content-relative path to `<revision hash>` → work tree path. */
   readonly #revisionPathCache = new Map<string, Map<string, string>>();
-  #repositoryAvailable?: Promise<boolean>;
+  #repository?: Promise<RepositoryPathsResolution>;
 
   constructor(options: GitHistoryReaderOptions = {}) {
-    this.#cwd = options.cwd ?? process.cwd();
+    this.#contentRoot = path.resolve(options.cwd ?? process.cwd());
   }
 
+  /**
+   * Revision history for one file, newest first, following renames.
+   *
+   * @param filePath Content-relative path, e.g. `notes/hello.md`.
+   */
   getHistory(filePath: string): Promise<DiffRevision[]> {
-    const normalizedPath = normalizeGitPath(filePath);
+    const normalizedPath = normalizeContentPath(filePath);
     const cached = this.#historyCache.get(normalizedPath);
     if (cached) return cached;
 
@@ -27,8 +47,9 @@ export class GitMarkdownHistoryReader {
     return history;
   }
 
+  /** Content of one revision of a file, or `null` when Git cannot read it. */
   getRevisionMarkdown(filePath: string, hash: string): Promise<string | null> {
-    const normalizedPath = normalizeGitPath(filePath);
+    const normalizedPath = normalizeContentPath(filePath);
     const cacheKey = `${hash}:${normalizedPath}`;
     const cached = this.#markdownCache.get(cacheKey);
     if (cached) return cached;
@@ -39,25 +60,34 @@ export class GitMarkdownHistoryReader {
   }
 
   async #readHistory(filePath: string): Promise<DiffRevision[]> {
-    if (!(await this.#isRepositoryAvailable())) return [];
+    const repository = await this.#resolvePaths();
+    if (!repository) return [];
 
     const format = ["%H", "%h", "%cI", "%s", "%an"].join(fieldSeparator);
-    const result = await runGit(this.#cwd, [
-      "log",
-      "--follow",
-      "--name-status",
-      `--format=${recordSeparator}${format}`,
-      "--",
-      filePath,
-    ]);
+    const result = await runGit(
+      [
+        "log",
+        "--follow",
+        "--name-status",
+        `--format=${recordSeparator}${format}`,
+        "--",
+        toRepositoryPath(repository, filePath),
+      ],
+      repository.repositoryRoot,
+    );
     if (!result.ok || !result.stdout.trim()) return [];
 
+    // `--name-status` prints work tree paths, which is exactly what
+    // `git show <rev>:<path>` needs. Keep them untranslated and fall back to
+    // the translated current path for commits Git listed without a name-status
+    // line (for example an empty merge commit).
     const revisionPaths = new Map<string, string>();
+    const fallbackPath = toRepositoryPath(repository, filePath);
     const revisions = result.stdout
       .split(recordSeparator)
       .map((record) => record.trim())
       .filter(Boolean)
-      .map((record) => parseRevisionRecord(record, revisionPaths, filePath))
+      .map((record) => parseRevisionRecord(record, revisionPaths, fallbackPath))
       .filter((revision): revision is DiffRevision => revision !== null);
 
     this.#revisionPathCache.set(filePath, revisionPaths);
@@ -68,23 +98,27 @@ export class GitMarkdownHistoryReader {
     filePath: string,
     hash: string,
   ): Promise<string | null> {
-    if (!(await this.#isRepositoryAvailable())) return null;
+    const repository = await this.#resolvePaths();
+    if (!repository) return null;
 
     await this.getHistory(filePath);
     const revisionPath =
-      this.#revisionPathCache.get(filePath)?.get(hash) ?? filePath;
+      this.#revisionPathCache.get(filePath)?.get(hash) ??
+      toRepositoryPath(repository, filePath);
 
-    const result = await runGit(this.#cwd, ["show", `${hash}:${revisionPath}`]);
+    const result = await runGit(
+      ["show", `${hash}:${revisionPath}`],
+      repository.repositoryRoot,
+    );
     return result.ok ? result.stdout : null;
   }
 
-  #isRepositoryAvailable(): Promise<boolean> {
-    this.#repositoryAvailable ??= runGit(this.#cwd, [
-      "rev-parse",
-      "--is-inside-work-tree",
-    ]).then((result) => result.ok && result.stdout.trim() === "true");
-
-    return this.#repositoryAvailable;
+  /** `null` when the content directory has no readable work tree. */
+  async #resolvePaths(): Promise<GitRepositoryPaths | null> {
+    this.#repository ??= resolveRepositoryPaths(this.#contentRoot);
+    const resolution = await this.#repository;
+    if (!isResolvedRepository(resolution)) return null;
+    return resolution.paths;
   }
 }
 
@@ -109,6 +143,11 @@ function parseRevisionRecord(
   };
 }
 
+/**
+ * Picks the surviving path of a `--name-status` line: the destination for a
+ * rename or copy, otherwise the single changed path. All of them are work tree
+ * relative, which is what `git show <rev>:<path>` expects.
+ */
 function getRevisionPath(
   nameStatusLines: string[],
   fallbackPath: string,
@@ -117,31 +156,5 @@ function getRevisionPath(
   if (!line) return fallbackPath;
 
   const [, ...paths] = line.split("\t");
-  return paths.at(-1) ?? fallbackPath;
-}
-
-function normalizeGitPath(filePath: string): string {
-  return filePath.replace(/\\/g, "/").replace(/^\.\//, "");
-}
-
-async function runGit(
-  cwd: string,
-  args: string[],
-): Promise<{ ok: true; stdout: string } | { ok: false; stdout: string }> {
-  try {
-    const { stdout } = await execFileAsync("git", args, {
-      cwd,
-      maxBuffer: 1024 * 1024 * 10,
-    });
-    return { ok: true, stdout };
-  } catch (error) {
-    const stdout =
-      typeof error === "object" &&
-      error !== null &&
-      "stdout" in error &&
-      typeof error.stdout === "string"
-        ? error.stdout
-        : "";
-    return { ok: false, stdout };
-  }
+  return normalizeContentPath(paths.at(-1) ?? fallbackPath);
 }

@@ -28,7 +28,7 @@ const current = await api.getCurrentDiff("notes/hello.md");
 | `getCurrentDiff(filePath)` | 最新と一つ前のリビジョンの差分 |
 | `compareRevisions(input)` | 指定した二つのリビジョンの差分 |
 
-`cwd` は Git コマンドを実行するディレクトリで、既定値は `process.cwd()` です。Git リポジトリ外を指定しても例外は投げず、空の結果を返します。
+`cwd` は Git リポジトリを探すためのコンテンツルートで、既定値はビルド内の `config.content.directory`、それ以外では `process.cwd()` です。相対パスは `process.cwd()` 基準で解決されます。Git リポジトリ外を指定しても例外は投げず、空の結果を返します。
 
 ## 公開 API
 

@@ -17,6 +17,7 @@ import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
 import { dataviewPlugin } from "@riebeckite/plugin-dataview";
 import { deployPlugin } from "@riebeckite/plugin-deploy";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
+import { diff } from "@riebeckite/plugin-diff";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
@@ -192,6 +193,7 @@ export default defineConfig({
     share(),
     relatedPosts(),
     changelog(),
+    diff({ ui: { maxRevisions: 10 } }),
     webmention({ provider: new MemoryWebmentionProvider() }),
     responsiveImage(),
     localGraphPlugin(),

@@ -9,9 +9,12 @@ import {
 import {
   buildNoteChangeHistory,
   buildSiteChangelog,
+  resolveContentFilePath,
   resolveLookbackSince,
 } from "./src/changelog.js";
 import { GitChangelogReader } from "./src/git/history_reader.js";
+import type { RepositoryPathsResolution } from "./src/git/repo_paths.js";
+import { isRepositoryUnavailable } from "./src/git/repo_paths.js";
 import { resolveChangelogOptions } from "./src/options.js";
 import {
   CHANGELOG_NOTE_ATTRIBUTE,
@@ -29,6 +32,7 @@ export {
   buildSiteChangelog,
   filterChangelogCommits,
   formatChangelogDate,
+  resolveContentFilePath,
   resolveLookbackSince,
 } from "./src/changelog.js";
 export {
@@ -110,9 +114,12 @@ async function applyChangelog(
 ): Promise<void> {
   if (!options.perNote && !options.siteWide) return;
 
-  const reader = new GitChangelogReader({ cwd: options.cwd });
-  if (!(await reader.isAvailable())) {
-    reportGitUnavailable(context);
+  const reader = new GitChangelogReader({
+    cwd: resolveContentRoot(context, options),
+  });
+  const resolution = await reader.resolveRepository();
+  if (isRepositoryUnavailable(resolution)) {
+    reportRepositoryUnavailable(context, resolution);
     return;
   }
 
@@ -188,22 +195,46 @@ function resolveEntryFilePath(
   entry: ContentManifestEntry,
   contentIndex: Map<string, string>,
 ): string {
-  const indexedPath = contentIndex.get(entry.slug.toLowerCase());
-  return indexedPath ?? `${entry.slug}.md`;
+  return resolveContentFilePath(contentIndex, entry.slug) ?? `${entry.slug}.md`;
 }
 
 function hasSlot(entry: ContentManifestEntry, attribute: string): boolean {
   return entry.bodySlots?.[CHANGELOG_BODY_SLOT]?.includes(attribute) ?? false;
 }
 
-function reportGitUnavailable(context: PluginManifestContext): void {
-  const message =
-    "changelog: Git is unavailable or this directory is not a Git repository; change history was skipped.";
+/**
+ * Content root the plugin locates Git from.
+ *
+ * The configured content directory wins over the process working directory:
+ * in a monorepo build the working directory is the app folder, which is not
+ * the directory holding the notes.
+ */
+function resolveContentRoot(
+  context: PluginManifestContext,
+  options: ResolvedChangelogOptions,
+): string {
+  return options.cwd ?? context.config?.content.directory ?? process.cwd();
+}
+
+function reportRepositoryUnavailable(
+  context: PluginManifestContext,
+  resolution: Exclude<RepositoryPathsResolution, { kind: "resolved" }>,
+): void {
+  const gitUnavailable = resolution.kind === "git-unavailable";
+  const message = gitUnavailable
+    ? `changelog: Git could not be started; change history was skipped. (${resolution.detail})`
+    : `changelog: the content directory is not inside a Git working tree; change history was skipped. (${resolution.detail})`;
+
   context.diagnostics.push({
-    code: "changelog-git-unavailable",
+    code: gitUnavailable
+      ? "changelog-git-unavailable"
+      : "changelog-content-outside-repository",
     severity: "warning",
     pluginName: CHANGELOG_PLUGIN_NAME,
     message,
+    suggestion: gitUnavailable
+      ? "Install Git and make sure it is available on PATH."
+      : "Move the content directory inside a Git working tree, or set the plugin's cwd option to a path inside one.",
   });
   context.logger.warn(message);
 }

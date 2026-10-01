@@ -4,8 +4,10 @@ export type ChangelogDateFormat = "iso" | "long" | "short";
 /** Options accepted by `changelog()`. */
 export type ChangelogOptions = {
   /**
-   * Working directory for Git commands. Defaults to `process.cwd()`. Point it
-   * at the content directory when the site is built from elsewhere.
+   * Content root: the directory holding the notes, used to locate the owning
+   * Git work tree. Defaults to `config.content.directory` when the plugin runs
+   * inside a build, otherwise `process.cwd()`. A relative value is resolved
+   * against `process.cwd()`.
    */
   cwd?: string;
   /**
@@ -69,7 +71,7 @@ export type ChangelogCommit = {
   date: string;
   subject: string;
   author: string;
-  /** Paths changed by the commit, relative to the Git working directory. */
+  /** Content-relative path of the file changed by the commit. */
   files: string[];
 };
 
@@ -112,6 +114,6 @@ export type SiteChangelog = {
 
 /** Options accepted by `GitChangelogReader`. */
 export type GitChangelogReaderOptions = {
-  /** Working directory for Git commands. Defaults to `process.cwd()`. */
+  /** Content root used to locate the Git work tree. Defaults to `process.cwd()`. */
   cwd?: string;
 };

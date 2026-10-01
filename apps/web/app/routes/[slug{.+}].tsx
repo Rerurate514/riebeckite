@@ -1,4 +1,3 @@
-import { isPublished } from "@riebeckite/core";
 import {
   contentRouteSsgParams,
   pluginPageSsgParams,
@@ -22,8 +21,7 @@ import { buildArticleSeo, buildWebsiteSeo, type SeoMetadata } from "../lib/seo";
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", async () => {
     const manifest = await content.getManifest();
-    const contentPaths = manifest.entries
-      .filter((entry) => isPublished(config, entry.frontmatter))
+    const contentPaths = manifest.publicEntries
       .filter((entry) => entry.permalink !== "/")
       .map((entry) => ({ slug: entry.permalink.replace(/^\/+/, "") }));
     return [...contentPaths, ...(await pluginPageSsgParams(content))];
@@ -60,10 +58,6 @@ export default createRoute(
     const slug = route.entry.slug;
 
     const post = await content.getProcessedContent(slug);
-    if (!isPublished(config, post.frontmatter)) {
-      return c.notFound();
-    }
-
     const backlinks = getPublishedBacklinks({
       manifest,
       config,

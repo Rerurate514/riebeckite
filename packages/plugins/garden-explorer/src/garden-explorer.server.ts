@@ -2,7 +2,6 @@ import {
   buildGraphEdges,
   type ContentManifest,
   type ContentManifestEntry,
-  isPublished,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type {
@@ -22,9 +21,7 @@ export function getGardenExplorerData(args: {
   resolveTitle: TitleResolver;
 }): GardenExplorerData {
   const graph = args.manifest.graph;
-  const publishedEntries = graph
-    .nodes()
-    .filter((entry) => isPublished(args.config, entry.frontmatter));
+  const publishedEntries = args.manifest.discoverableEntries;
   const publishedSlugs = new Set(publishedEntries.map((entry) => entry.slug));
 
   const notes = publishedEntries

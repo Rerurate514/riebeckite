@@ -324,10 +324,8 @@ export default jsxRenderer(({ children }, c) => (
 
 export function indexRoute(preset: ScaffoldPreset): string {
   if (!preset.appFiles.includes("article")) return staticIndexRoute();
-  return `import { isPublished } from "@riebeckite/core";
-import { createRoute } from "honox/factory";
+  return `import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
-import { config } from "../config";
 import { content } from "../content";
 
 export default createRoute(async (c) => {
@@ -338,7 +336,7 @@ export default createRoute(async (c) => {
   }
 
   const post = await content.getProcessedContent("index");
-  if (!isPublished(config, post.frontmatter)) {
+  if (!indexEntry?.publishing.routable) {
     return c.notFound();
   }
 
@@ -373,22 +371,19 @@ export default createRoute((c) =>
 }
 
 export function slugRoute(): string {
-  return `import { isPublished } from "@riebeckite/core";
-import {
+  return `import {
   contentRouteSsgParams,
   pluginPageSsgParams,
   resolveRiebeckiteRoute,
 } from "@riebeckite/honox/server";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
-import { config } from "../config";
 import { content } from "../content";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", async () => {
     const manifest = await content.getManifest();
-    const contentPaths = manifest.entries
-      .filter((entry) => isPublished(config, entry.frontmatter))
+    const contentPaths = manifest.publicEntries
       .filter((entry) => entry.permalink !== "/")
       .map((entry) => ({ slug: entry.permalink.replace(/^\\/+/, "") }));
     return [...contentPaths, ...(await pluginPageSsgParams(content))];
@@ -410,10 +405,6 @@ export default createRoute(
     }
 
     const post = await content.getProcessedContent(route.entry.slug);
-    if (!isPublished(config, post.frontmatter)) {
-      return c.notFound();
-    }
-
     c.set("htmlLanguage", route.entry.publicLocation.metadata?.["l10n.lang"]);
     c.set("headTags", route.entry.headTags ?? []);
 

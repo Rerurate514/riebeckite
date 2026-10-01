@@ -1,4 +1,5 @@
 import type { ContentGraph } from "../content/content_graph.js";
+import type { ResolvedPublishingState } from "../content/publishing.js";
 import type { Diagnostic } from "./diagnostic.js";
 import type { GeneratedOutput } from "./generated_output.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
@@ -51,6 +52,7 @@ export type ContentManifestEntry = {
   publicLocation: ContentPublicLocation;
   title: string;
   frontmatter: PostFrontmatter;
+  publishing: ResolvedPublishingState;
   html: string;
   /**
    * Head tags a plugin wants the Site shell to render for this entry.
@@ -114,10 +116,14 @@ export type ContentManifest = {
    * this view so unpublished notes never reach generated output.
    */
   publicEntries: ContentManifestEntry[];
+  /** Entries that may appear on discovery surfaces such as navigation, search, feeds, taxonomy, and public graphs. */
+  discoverableEntries: ContentManifestEntry[];
   bySlug: Map<string, ContentManifestEntry>;
   /** Contains only entries with an explicit source-authored content ID. */
   byContentId: Map<string, ContentManifestEntry>;
   byPermalink: Map<string, ContentManifestEntry>;
+  /** Contains only routable entries: public and unlisted, excluding draft and scheduled-before entries. */
+  byRoutablePermalink: Map<string, ContentManifestEntry>;
   redirects: Map<string, ContentRedirect & { slug: string }>;
   /**
    * Redirects whose owning entry is public. Prevents unpublished notes from

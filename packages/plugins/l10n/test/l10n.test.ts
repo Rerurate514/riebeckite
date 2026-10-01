@@ -4,6 +4,7 @@ import {
   ContentManager,
   type ContentSource,
   type RiebeckitePlugin,
+  resolveConfig,
 } from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
@@ -30,6 +31,10 @@ function manager(
   additionalPlugins: readonly RiebeckitePlugin<unknown>[] = [],
 ) {
   return new ContentManager(source(files), [], {
+    config: resolveConfig({
+      site: { title: "Test" },
+      content: { filters: { publishStrategy: "selective" } },
+    }),
     plugins: [
       ...additionalPlugins,
       l10n({

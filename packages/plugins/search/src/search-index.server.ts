@@ -1,7 +1,6 @@
-import {
-  type ContentManifest,
-  isPublished,
-  type ResolvedRiebeckiteConfig,
+import type {
+  ContentManifest,
+  ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { SearchItem } from "./search.js";
 
@@ -15,24 +14,18 @@ export function buildSearchItems(args: {
   resolveTitle?: TitleResolver;
 }): SearchItem[] {
   const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
-  const items = args.manifest.entries.map((entry) => {
-    if (!isPublished(args.config, entry.frontmatter)) return null;
+  const items = args.manifest.discoverableEntries.map((entry) => ({
+    slug: entry.slug,
+    permalink: entry.permalink,
+    title: resolveTitle(entry.slug, entry.frontmatter.title),
+    headings: extractHeadings(entry.html),
+    body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
+    excerpt: createExcerpt(entry),
+    tags: entry.tags,
+    date: getEntryDate(entry.frontmatter),
+  }));
 
-    return {
-      slug: entry.slug,
-      permalink: entry.permalink,
-      title: resolveTitle(entry.slug, entry.frontmatter.title),
-      headings: extractHeadings(entry.html),
-      body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
-      excerpt: createExcerpt(entry),
-      tags: entry.tags,
-      date: getEntryDate(entry.frontmatter),
-    };
-  });
-
-  return items
-    .filter((item): item is SearchItem => item !== null)
-    .sort((a, b) => a.title.localeCompare(b.title, "ja"));
+  return items.sort((a, b) => a.title.localeCompare(b.title, "ja"));
 }
 
 function getDefaultArticleTitle(slug: string, title: unknown): string {

@@ -1,10 +1,8 @@
 import {
   definePlugin,
-  isPublished,
   type JsonValue,
   type Logger,
   type PluginCache,
-  type PostFrontmatter,
   type RiebeckitePlugin,
 } from "@riebeckite/core";
 import {
@@ -99,9 +97,7 @@ export function renamePlugin(
       }
 
       const previous = await readLock(cache, logger);
-      const current = buildRouteLock(manifest.entries, (frontmatter) =>
-        isPublished(config, frontmatter as PostFrontmatter),
-      );
+      const current = buildRouteLock(manifest.publicEntries);
       const result = diffRoutes(previous, current, {
         status,
         onUnexpectedRemoval,

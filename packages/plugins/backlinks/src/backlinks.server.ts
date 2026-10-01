@@ -1,7 +1,6 @@
-import {
-  type ContentManifest,
-  isPublished,
-  type ResolvedRiebeckiteConfig,
+import type {
+  ContentManifest,
+  ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { ArticleBacklink } from "./backlinks.js";
 
@@ -13,8 +12,11 @@ export function getPublishedBacklinks(args: {
   slug: string;
   resolveTitle: TitleResolver;
 }): ArticleBacklink[] {
+  const discoverableSlugs = new Set(
+    args.manifest.discoverableEntries.map((entry) => entry.slug),
+  );
   const results = args.manifest.graph.incoming(args.slug).map((entry) => {
-    if (!isPublished(args.config, entry.frontmatter)) return null;
+    if (!discoverableSlugs.has(entry.slug)) return null;
 
     return {
       slug: entry.slug,

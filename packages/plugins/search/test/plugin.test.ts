@@ -21,6 +21,12 @@ function entry(
     publicLocation: { slug, permalink },
     title: slug,
     frontmatter,
+    publishing:
+      frontmatter.publish === false ||
+      frontmatter.private === true ||
+      frontmatter.draft === true
+        ? { visibility: "draft", routable: false, discoverable: false }
+        : { visibility: "public", routable: true, discoverable: true },
     html,
     tags,
     links: [],
@@ -30,9 +36,14 @@ function entry(
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
+  const publicEntries = entries.filter((item) => item.publishing.routable);
+  const discoverableEntries = entries.filter(
+    (item) => item.publishing.discoverable,
+  );
   return {
     entries,
-    publicEntries: entries,
+    publicEntries,
+    discoverableEntries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
     contentIndex: new Map(),
   } as unknown as ContentManifest;

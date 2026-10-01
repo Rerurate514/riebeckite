@@ -1,4 +1,4 @@
-import { isPublished, type ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { RecentPost } from "./recent-posts.js";
 
 type PostRef = { slug: string; permalink: string };
@@ -18,8 +18,6 @@ export async function getRecentPosts(args: {
       .filter((post) => post.slug !== "index")
       .map(async (post) => {
         const processed = await args.getProcessedContent(post.slug);
-        if (!isPublished(args.config, processed.frontmatter)) return null;
-
         const postedAt = parseFrontmatterDate(
           processed.frontmatter.date ?? processed.frontmatter.created,
         );

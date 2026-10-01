@@ -50,7 +50,7 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
     },
     onManifestCreated: (context) => {
       const { manifest } = context;
-      for (const entry of manifest.entries) {
+      for (const entry of manifest.discoverableEntries) {
         if (entry.html.includes(RELATED_POSTS_ATTRIBUTE)) continue;
         if (!isEligibleRelatedEntry(entry, manifest, context.config)) continue;
 

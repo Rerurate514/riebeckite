@@ -3,7 +3,6 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  isPublished,
   type PostContent,
 } from "@riebeckite/core";
 import { injectUxConfig } from "./src/inject.js";
@@ -33,10 +32,7 @@ export function uxPlugin(options: UxOptions = {}) {
       tracked.set(context.slug, context.content);
     },
     onManifestCreated: (context) => {
-      const siteConfig = context.config;
-      for (const entry of context.manifest.entries) {
-        if (siteConfig && !isPublished(siteConfig, entry.frontmatter)) continue;
-
+      for (const entry of context.manifest.publicEntries) {
         const html = injectUxConfig(entry.html, config);
         if (html === entry.html) continue;
 

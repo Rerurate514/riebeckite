@@ -46,7 +46,7 @@ export function resolveContentRoute(
   pathname: string,
 ): ResolvedContentRoute {
   const path = normalizeRequestPath(pathname);
-  const entry = manifest.byPermalink.get(path);
+  const entry = manifest.byRoutablePermalink.get(path);
   if (entry) return { kind: "content", entry };
   const redirect = manifest.redirects.get(path);
   if (!redirect) return null;

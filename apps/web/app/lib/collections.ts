@@ -3,10 +3,8 @@ import {
   type ContentCollection,
   type ContentCollectionDefinition,
   escapeHtml,
-  isPublished,
   type PostContent,
 } from "@riebeckite/core";
-import { config } from "../config";
 import { content } from "../content";
 
 export const ARCHIVE_BASE_PATH = "/archive";
@@ -39,7 +37,7 @@ export async function buildCollections(): Promise<ContentCollection[]> {
 
   const manifest = await content.getManifest();
   cachedCollections = buildContentCollections(
-    manifest.entries.filter((entry) => isPublished(config, entry.frontmatter)),
+    manifest.discoverableEntries,
     definitions,
   );
   return cachedCollections;

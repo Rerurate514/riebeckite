@@ -7,6 +7,7 @@ import { ContentIndexBuilder } from "./content_index_builder.js";
 import { extractContentLinks } from "./content_links.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
+import { resolvePublishingState } from "./publishing.js";
 
 export async function readOnlyContentGraph(
   source: ContentSource,
@@ -47,6 +48,13 @@ function createGraphEntry(
     publicLocation: location,
     title: slug,
     frontmatter: {},
+    publishing: resolvePublishingState(
+      {},
+      {
+        strategy: "selective",
+        buildTime: new Date(0),
+      },
+    ),
     html: "",
     tags: [],
     links: extractContentLinks(markdown, contentIndex),

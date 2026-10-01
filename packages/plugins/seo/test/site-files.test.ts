@@ -24,6 +24,7 @@ function entry(
     publicLocation: { slug, permalink },
     title: slug,
     frontmatter: {},
+    publishing: { visibility: "public", routable: true, discoverable: true },
     html: "",
     tags: [],
     links: [],
@@ -33,13 +34,12 @@ function entry(
   };
 }
 
-test("renderSitemap lists the home page plus published entries and lastmod", () => {
+test("renderSitemap lists the home page plus discoverable entries and lastmod", () => {
   const xml = renderSitemap(config, [
     entry("index", { frontmatter: { publish: true, updated: "2024-01-01" } }),
     entry("a", { frontmatter: { publish: true, updated: "2024-01-05" } }),
     entry("b", { frontmatter: { publish: true, published: "2024-01-04" } }),
     entry("c", { frontmatter: { publish: true, noindex: true } }),
-    entry("d", { frontmatter: { publish: false } }),
   ]);
 
   assert.equal((xml.match(/<url>/g) ?? []).length, 3);

@@ -39,8 +39,8 @@ export function createQueryRuntime(options: QueryOptions): QueryRuntime {
       tracked.set(slug, content);
     },
     resolve(manifest, diagnostics) {
-      const entries = manifest.entries;
-      for (const entry of entries) {
+      const entries = manifest.discoverableEntries;
+      for (const entry of manifest.publicEntries) {
         if (!entry.html.includes(QUERY_ATTRIBUTE)) continue;
 
         const html = replacePlaceholders(entry, entries, options, diagnostics);

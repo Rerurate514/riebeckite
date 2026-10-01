@@ -1,9 +1,8 @@
-import {
-  type ContentLink,
-  type ContentManifest,
-  type ContentManifestEntry,
-  isPublished,
-  type ResolvedRiebeckiteConfig,
+import type {
+  ContentLink,
+  ContentManifest,
+  ContentManifestEntry,
+  ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type {
   RelatedPostsEntry,
@@ -30,9 +29,9 @@ export type BuildRelatedPostsArgs = {
 };
 
 /**
- * Ranks the published entries related to `entry` using the manifest's content
- * graph. Pure build-time computation: it only reads `byTag`, `outgoingLinks`,
- * `incomingLinks`, `redirects`, and `bySlug`.
+ * Ranks the discoverable entries related to `entry` using the manifest's
+ * content graph. Pure build-time computation: it only reads manifest indexes
+ * and the Core-resolved publishing view.
  */
 export function buildRelatedPosts(
   args: BuildRelatedPostsArgs,
@@ -90,20 +89,17 @@ export function buildRelatedPosts(
 
 /**
  * An entry may receive a related-posts section (and be offered as a related
- * candidate) only when it is published and its canonical permalink is not
- * shadowed by a redirect. Unpublished and redirect-only entries are skipped.
+ * candidate) only when it is discoverable and its canonical permalink is not
+ * shadowed by a redirect. Hidden and redirect-only entries are skipped.
  */
 export function isEligibleRelatedEntry(
   entry: ContentManifestEntry,
   manifest: ContentManifest,
-  config?: ResolvedRiebeckiteConfig,
+  _config?: ResolvedRiebeckiteConfig,
 ): boolean {
   if (manifest.redirects.has(entry.permalink)) return false;
-  if (config) return isPublished(config, entry.frontmatter);
-  return (
-    entry.frontmatter.private !== true &&
-    entry.frontmatter.draft !== true &&
-    entry.frontmatter.publish !== false
+  return manifest.discoverableEntries.some(
+    (candidate) => candidate.slug === entry.slug,
   );
 }
 

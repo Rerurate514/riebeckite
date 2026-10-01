@@ -65,6 +65,114 @@ test("manifest exposes a public-only view without stripping raw entries", async 
   ]);
 });
 
+test("manifest separates routable and discoverable publishing views", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    content: { filters: { publishStrategy: "explicit" } },
+    plugins: [redirectPlugin],
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "public.md": "---\ntitle: Public\nvisibility: public\n---\n\n# Public\n",
+      "unlisted.md":
+        "---\ntitle: Unlisted\nvisibility: unlisted\n---\n\n# Unlisted\n",
+      "draft.md": "---\ntitle: Draft\nvisibility: draft\n---\n\n# Draft\n",
+    }),
+    [],
+    { config },
+  );
+
+  const manifest = await manager.getManifest();
+
+  assert.deepEqual(manifest.entries.map((entry) => entry.slug).sort(), [
+    "draft",
+    "public",
+    "unlisted",
+  ]);
+  assert.deepEqual(manifest.publicEntries.map((entry) => entry.slug).sort(), [
+    "public",
+    "unlisted",
+  ]);
+  assert.deepEqual(
+    manifest.discoverableEntries.map((entry) => entry.slug),
+    ["public"],
+  );
+  assert.equal(manifest.byPermalink.get("/draft")?.slug, "draft");
+  assert.equal(manifest.byRoutablePermalink.get("/draft"), undefined);
+  assert.equal(manifest.byRoutablePermalink.get("/unlisted")?.slug, "unlisted");
+  assert.deepEqual([...manifest.publicRedirects.keys()].sort(), [
+    "/old-public",
+    "/old-unlisted",
+  ]);
+});
+
+test("scheduled publishing is resolved from deterministic build time", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    content: { filters: { publishStrategy: "explicit" } },
+  });
+  const files = {
+    "past.md":
+      "---\ntitle: Past\npublishAt: 2024-01-01T00:00:00.000Z\n---\n\n# Past\n",
+    "future.md":
+      "---\ntitle: Future\npublishAt: 2024-01-03T00:00:00.000Z\n---\n\n# Future\n",
+  };
+  const manager = new ContentManager(memorySource(files), [], {
+    config,
+    publishingBuildTime: "2024-01-02T00:00:00.000Z",
+  });
+
+  const manifest = await manager.getManifest();
+
+  assert.deepEqual(
+    manifest.publicEntries.map((entry) => entry.slug),
+    ["past"],
+  );
+  assert.deepEqual(
+    manifest.discoverableEntries.map((entry) => entry.slug),
+    ["past"],
+  );
+  assert.equal(
+    manifest.bySlug.get("future")?.publishing.visibility,
+    "scheduled",
+  );
+  assert.equal(manifest.byRoutablePermalink.get("/future"), undefined);
+
+  const laterManager = new ContentManager(memorySource(files), [], {
+    config,
+    publishingBuildTime: "2024-01-04T00:00:00.000Z",
+  });
+  const laterManifest = await laterManager.getManifest();
+  assert.deepEqual(
+    laterManifest.publicEntries.map((entry) => entry.slug),
+    ["past", "future"],
+  );
+});
+
+test("malformed publishing fields fail closed", async () => {
+  const config = resolveConfig({ site: { title: "Test" } });
+  const badVisibility = new ContentManager(
+    memorySource({
+      "note.md": "---\ntitle: Note\nvisibility: hidden\n---\n\n# Note\n",
+    }),
+    [],
+    { config },
+  );
+  await assert.rejects(
+    badVisibility.getManifest(),
+    /Invalid content visibility/,
+  );
+
+  const badDate = new ContentManager(
+    memorySource({
+      "note.md": "---\ntitle: Note\npublishAt: not-a-date\n---\n\n# Note\n",
+    }),
+    [],
+    { config },
+  );
+  await assert.rejects(badDate.getManifest(), /Invalid publishAt/);
+});
+
 test("selective publish strategy keeps non-private notes and drops private ones", async () => {
   const config = resolveConfig({
     site: { title: "Test" },

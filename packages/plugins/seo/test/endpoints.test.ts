@@ -16,7 +16,11 @@ const config: ResolvedRiebeckiteConfig = resolveConfig({
   content: { filters: { publishStrategy: "explicit" } },
 });
 
-const manifest = { entries: [] } as unknown as ContentManifest;
+const manifest = {
+  entries: [],
+  publicEntries: [],
+  discoverableEntries: [],
+} as unknown as ContentManifest;
 
 test("seo() registers no endpoints by default", () => {
   assert.deepEqual(seo().endpoints, []);

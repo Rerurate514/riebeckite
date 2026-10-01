@@ -89,16 +89,14 @@ test("getRecentPosts skips the index slug without reading it", async () => {
   assert.deepEqual(harnessed.calls, ["post"]);
 });
 
-test("getRecentPosts drops unpublished notes and unusable dates", async () => {
+test("getRecentPosts drops notes with unusable dates", async () => {
   const harnessed = harness(
     [
-      { slug: "draft", permalink: "/draft" },
       { slug: "bad", permalink: "/bad" },
       { slug: "undated", permalink: "/undated" },
       { slug: "good", permalink: "/good" },
     ],
     {
-      draft: { frontmatter: { publish: false, date: "2024-01-01" } },
       bad: { frontmatter: { publish: true, date: "not-a-date" } },
       undated: { frontmatter: { publish: true } },
       good: published("2024-01-01"),

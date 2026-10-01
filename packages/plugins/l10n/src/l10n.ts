@@ -216,7 +216,7 @@ export function getLocalization(
     entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY];
   if (!lang || !translationId) return null;
 
-  const candidates = manifest.entries.filter(
+  const candidates = manifest.discoverableEntries.filter(
     (candidate) =>
       candidate.publicLocation.metadata?.[TRANSLATION_METADATA_KEY] ===
       translationId,
@@ -246,7 +246,7 @@ export function getLocalizedContent(
 ): ContentManifestEntry | null {
   const localization = getLocalization(manifest, slug);
   if (!localization) return null;
-  const candidates = manifest.entries.filter(
+  const candidates = manifest.publicEntries.filter(
     (entry) =>
       entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY] ===
         localization.translationId &&
@@ -584,11 +584,11 @@ function addLocalizationHeadTags(
   manifest: ContentManifest,
   state: L10nState,
 ): void {
-  for (const entry of manifest.entries) {
+  for (const entry of manifest.discoverableEntries) {
     const content = state.contents.get(entry.slug);
     if (!content) continue;
     const translations = uniqueLanguageEntries(
-      manifest.entries.filter(
+      manifest.discoverableEntries.filter(
         (candidate) =>
           candidate.publicLocation.metadata?.[TRANSLATION_METADATA_KEY] ===
           content.translationId,
@@ -614,7 +614,7 @@ function addLanguageSwitchers(
   ui: ResolvedUiOptions,
 ): void {
   if (ui === false) return;
-  for (const entry of manifest.entries) {
+  for (const entry of manifest.discoverableEntries) {
     const localization = getLocalization(manifest, entry.slug);
     if (!localization) continue;
     const html = ui.render({ localization });

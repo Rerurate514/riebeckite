@@ -14,6 +14,7 @@ import {
   normalizeFrontmatterTags,
 } from "./content_metadata.js";
 import { resolveContentStableId } from "./content_stable_id.js";
+import type { ResolvedPublishingState } from "./publishing.js";
 
 export class ManifestBuilder {
   createEntry(
@@ -22,6 +23,7 @@ export class ManifestBuilder {
     processed: PostContent,
     contentIndex: Map<string, string>,
     location: ContentPublicLocation,
+    publishing: ResolvedPublishingState,
   ): ContentManifestEntry {
     const links = extractContentLinks(markdown, contentIndex);
     const assets = links
@@ -40,6 +42,7 @@ export class ManifestBuilder {
       publicLocation: location,
       title: getManifestTitle(slug, processed.frontmatter.title),
       frontmatter: processed.frontmatter,
+      publishing,
       html: processed.html,
       tags: uniqueStrings([
         ...normalizeFrontmatterTags(processed.frontmatter.tags),
@@ -86,9 +89,11 @@ export class ManifestBuilder {
     const manifest = {
       entries,
       publicEntries: [...entries],
+      discoverableEntries: [...entries],
       bySlug,
       byContentId,
       byPermalink,
+      byRoutablePermalink: new Map(byPermalink),
       redirects: new Map(),
       publicRedirects: new Map(),
       byTag,

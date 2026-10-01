@@ -20,6 +20,8 @@ export type PostFrontmatter = Record<string, unknown> & {
   publish?: boolean;
   private?: boolean;
   draft?: boolean;
+  visibility?: "public" | "unlisted" | "draft";
+  publishAt?: string | Date;
   tags?: string[];
   image?: string;
   ogImage?: string;

@@ -19,6 +19,11 @@ function makeEntry(
     publicLocation: { slug: overrides.slug, permalink },
     title: "",
     frontmatter: {},
+    publishing: {
+      visibility: "draft",
+      routable: false,
+      discoverable: false,
+    },
     html: "",
     tags: [],
     links: [],
@@ -29,7 +34,14 @@ function makeEntry(
 }
 
 function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
-  return { entries, publicEntries: entries } as unknown as ContentManifest;
+  const discoverableEntries = entries.filter(
+    (entry) => entry.frontmatter.publish === true,
+  );
+  return {
+    entries,
+    publicEntries: entries,
+    discoverableEntries,
+  } as unknown as ContentManifest;
 }
 
 const explicitConfig: ResolvedRiebeckiteConfig = resolveConfig({

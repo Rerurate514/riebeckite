@@ -31,6 +31,7 @@ function entry(
     publicLocation: { slug, permalink },
     title: slug,
     frontmatter: {},
+    publishing: { visibility: "public", routable: true, discoverable: true },
     html: "",
     tags: [],
     links: [],
@@ -71,7 +72,7 @@ test("getDescription strips markup, collapses whitespace, and truncates", () => 
   assert.equal(long, "a".repeat(160));
 });
 
-test("filterFeedEntries drops unpublished and noindex entries and sorts by recency", () => {
+test("filterFeedEntries drops noindex entries and sorts discoverable input by recency", () => {
   const entries = [
     entry("a", {
       frontmatter: { publish: true, updated: "2024-01-03" },
@@ -79,7 +80,6 @@ test("filterFeedEntries drops unpublished and noindex entries and sorts by recen
     entry("b", {
       frontmatter: { publish: true, updated: "2024-01-05" },
     }),
-    entry("c", { frontmatter: { publish: false } }),
     entry("d", { frontmatter: { publish: true, noindex: true } }),
     entry("e", { frontmatter: { publish: true, published: "2024-01-04" } }),
   ];

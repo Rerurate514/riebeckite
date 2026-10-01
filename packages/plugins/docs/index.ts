@@ -5,7 +5,6 @@ import {
   type ContentManifestEntry,
   createStyleAsset,
   definePlugin,
-  isPublished,
 } from "@riebeckite/core";
 import {
   buildDocsNavigation,
@@ -38,8 +37,8 @@ export function docs(options: DocsOptions) {
     options,
     validateOptions: validateDocsOptions,
     assets: [createStyleAsset(DOCS_PLUGIN_NAME)],
-    onManifestCreated: ({ manifest, config }) => {
-      const entries = getPublishedEntries(manifest, config);
+    onManifestCreated: ({ manifest }) => {
+      const entries = getPublishedEntries(manifest);
       for (const entry of entries) {
         const localizedEntries = entries.filter((candidate) =>
           sameLanguage(entry, candidate),
@@ -71,13 +70,8 @@ export const docsPlugin = docs;
 
 function getPublishedEntries(
   manifest: ContentManifest,
-  config: Parameters<typeof isPublished>[0] | undefined,
 ): readonly ContentManifestEntry[] {
-  return manifest.entries.filter((entry) =>
-    config
-      ? isPublished(config, entry.frontmatter)
-      : entry.frontmatter.publish === true,
-  );
+  return manifest.discoverableEntries;
 }
 
 function sameLanguage(

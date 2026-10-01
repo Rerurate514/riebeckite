@@ -148,13 +148,15 @@ test("collapseRedirects is idempotent and sorted", () => {
   assert.deepEqual(collapseRedirects(collapsed), collapsed);
 });
 
-test("excludes unpublished notes from the lock and redirects", () => {
+test("excludes non-routable notes from the lock and redirects", () => {
   const entries = [
     entry("pub", "/pub", { publish: true }, "<p>pub</p>"),
     entry("priv", "/priv", { private: true }, "<p>priv</p>"),
   ];
 
-  const current = buildRouteLock(entries, (fm) => fm.publish === true);
+  const current = buildRouteLock(
+    entries.filter((item) => item.frontmatter.publish === true),
+  );
 
   assert.deepEqual(Object.keys(current.routes), ["pub"]);
   assert.deepEqual(current.redirects, []);
@@ -217,8 +219,8 @@ test("produces deterministic, sorted lock serialization", () => {
     entry("mid", "/mid", {}, "<p>m</p>"),
   ];
 
-  const first = buildRouteLock(entries, () => true);
-  const second = buildRouteLock([...entries].reverse(), () => true);
+  const first = buildRouteLock(entries);
+  const second = buildRouteLock([...entries].reverse());
 
   assert.deepEqual(Object.keys(first.routes), ["alpha", "mid", "zeta"]);
   assert.equal(JSON.stringify(first), JSON.stringify(second));
@@ -305,15 +307,27 @@ function fakeManifest(
     ...item,
     publicLocation: { slug: item.slug, permalink: item.permalink },
     title: "",
+    publishing:
+      item.frontmatter.private === true
+        ? { visibility: "draft", routable: false, discoverable: false }
+        : { visibility: "public", routable: true, discoverable: true },
     tags: [],
     links: [],
     backlinks: [],
     assets: [],
   }));
+  const publicEntries = full.filter((item) => item.publishing.routable);
   return {
     entries: full,
+    publicEntries,
+    discoverableEntries: publicEntries.filter(
+      (item) => item.publishing.discoverable,
+    ),
     redirects: new Map(),
     byPermalink: new Map(full.map((item) => [item.permalink, item])),
+    byRoutablePermalink: new Map(
+      publicEntries.map((item) => [item.permalink, item]),
+    ),
   } as unknown as ContentManifest;
 }
 

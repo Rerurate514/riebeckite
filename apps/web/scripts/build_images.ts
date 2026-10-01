@@ -5,7 +5,6 @@ import {
   ContentManager,
   IMAGE_EXTENSIONS,
   isAttachmentPath,
-  isPublished,
   normalizeContentPath,
 } from "@riebeckite/core";
 import { config } from "../app/config";
@@ -201,9 +200,7 @@ async function collectReferencedAssets(): Promise<ReferencedAssets> {
   const content = new ContentManager(CONTENT_DIR, config.content.exclude);
   const manifest = await content.build();
 
-  for (const entry of manifest.entries) {
-    if (!isPublished(config, entry.frontmatter)) continue;
-
+  for (const entry of manifest.publicEntries) {
     for (const link of entry.links) {
       if (!link.slug) continue;
       const normalizedPath = normalizeAssetPath(link.slug);

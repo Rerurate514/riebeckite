@@ -3,7 +3,6 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  isPublished,
   type PostContent,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
@@ -78,11 +77,9 @@ function createExcaliBrainRuntime(options: ExcaliBrainOptions) {
     },
     resolve(
       manifest: ContentManifest,
-      config?: ResolvedRiebeckiteConfig,
+      _config?: ResolvedRiebeckiteConfig,
     ): void {
-      for (const entry of manifest.entries) {
-        if (config && !isPublished(config, entry.frontmatter)) continue;
-
+      for (const entry of manifest.publicEntries) {
         const note = notes.get(entry.slug);
         const markdown = note?.markdown ?? "";
 

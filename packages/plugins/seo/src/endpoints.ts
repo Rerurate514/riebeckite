@@ -14,7 +14,7 @@ export function createSeoEndpoints(
       path: "/sitemap.xml",
       handler: ({ config, manifest }) => ({
         headers: { "content-type": "application/xml; charset=utf-8" },
-        body: renderSitemap(config, manifest.entries),
+        body: renderSitemap(config, manifest.discoverableEntries),
       }),
     });
   }
@@ -36,7 +36,7 @@ export function createSeoEndpoints(
         headers: { "content-type": "application/rss+xml; charset=utf-8" },
         body: renderRssFeed(
           config,
-          filterFeedEntries(config, manifest.entries),
+          filterFeedEntries(config, manifest.discoverableEntries),
         ),
       }),
     });
@@ -49,7 +49,7 @@ export function createSeoEndpoints(
         headers: { "content-type": "application/atom+xml; charset=utf-8" },
         body: renderAtomFeed(
           config,
-          filterFeedEntries(config, manifest.entries),
+          filterFeedEntries(config, manifest.discoverableEntries),
         ),
       }),
     });
@@ -60,7 +60,10 @@ export function createSeoEndpoints(
       path: "/feed.json",
       handler: ({ config, manifest }) => ({
         json: JSON.parse(
-          renderJsonFeed(config, filterFeedEntries(config, manifest.entries)),
+          renderJsonFeed(
+            config,
+            filterFeedEntries(config, manifest.discoverableEntries),
+          ),
         ),
       }),
     });

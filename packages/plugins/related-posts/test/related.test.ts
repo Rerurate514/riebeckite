@@ -72,6 +72,7 @@ function makeEntry(
     publicLocation: { slug: overrides.slug, permalink },
     title: overrides.slug,
     frontmatter: {},
+    publishing: { visibility: "public", routable: true, discoverable: true },
     html: "",
     tags: [],
     links: [],
@@ -239,7 +240,7 @@ test("never recommends the source entry itself", async () => {
   );
 });
 
-test("excludes ineligible candidates when a config is supplied", async () => {
+test("excludes ineligible candidates through the Core discovery view", async () => {
   const files = {
     "source.md": "---\npublish: true\ntags: [x]\n---\n# Source",
     "secret.md": "---\ntitle: Secret\ntags: [x]\n---\n# Secret\n\n[[source]]",
@@ -254,15 +255,13 @@ test("excludes ineligible candidates when a config is supplied", async () => {
     entry: entryOf(manifest, "source"),
     options: resolveRelatedPostsOptions(),
   });
-  assert.deepEqual(
-    withoutConfig.map((item) => item.slug),
-    ["secret"],
-  );
+  assert.deepEqual(withoutConfig, []);
 });
 
 test("isEligibleRelatedEntry rejects redirect-shadowed permalinks", () => {
   const entry = makeEntry({ slug: "old" });
   const manifest = {
+    discoverableEntries: [entry],
     redirects: new Map([
       [
         entry.permalink,
@@ -274,49 +273,24 @@ test("isEligibleRelatedEntry rejects redirect-shadowed permalinks", () => {
   assert.equal(isEligibleRelatedEntry(entry, manifest, explicitConfig), false);
 });
 
-test("isEligibleRelatedEntry applies the config publish strategy", () => {
-  const manifest = { redirects: new Map() } as unknown as ContentManifest;
+test("isEligibleRelatedEntry uses the Core discovery view", () => {
+  const discoverable = makeEntry({ slug: "yes" });
+  const hidden = makeEntry({
+    slug: "hidden",
+    publishing: { visibility: "unlisted", routable: true, discoverable: false },
+  });
+  const manifest = {
+    discoverableEntries: [discoverable],
+    redirects: new Map(),
+  } as unknown as ContentManifest;
 
   assert.equal(
-    isEligibleRelatedEntry(
-      makeEntry({ slug: "yes", frontmatter: { publish: true } }),
-      manifest,
-      explicitConfig,
-    ),
+    isEligibleRelatedEntry(discoverable, manifest, explicitConfig),
     true,
   );
+  assert.equal(isEligibleRelatedEntry(hidden, manifest, explicitConfig), false);
   assert.equal(
-    isEligibleRelatedEntry(makeEntry({ slug: "no" }), manifest, explicitConfig),
-    false,
-  );
-});
-
-test("isEligibleRelatedEntry falls back to private/draft/publish flags", () => {
-  const manifest = { redirects: new Map() } as unknown as ContentManifest;
-
-  assert.equal(
-    isEligibleRelatedEntry(makeEntry({ slug: "plain" }), manifest),
-    true,
-  );
-  assert.equal(
-    isEligibleRelatedEntry(
-      makeEntry({ slug: "private", frontmatter: { private: true } }),
-      manifest,
-    ),
-    false,
-  );
-  assert.equal(
-    isEligibleRelatedEntry(
-      makeEntry({ slug: "draft", frontmatter: { draft: true } }),
-      manifest,
-    ),
-    false,
-  );
-  assert.equal(
-    isEligibleRelatedEntry(
-      makeEntry({ slug: "off", frontmatter: { publish: false } }),
-      manifest,
-    ),
+    isEligibleRelatedEntry(makeEntry({ slug: "unknown" }), manifest),
     false,
   );
 });

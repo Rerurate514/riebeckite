@@ -141,6 +141,8 @@ export function isPublished(
   config: ResolvedRiebeckiteConfig,
   frontmatter: PostFrontmatter | undefined,
 ): boolean {
+  if (frontmatter?.visibility === "unlisted") return true;
+  if (frontmatter?.visibility === "draft") return false;
   return isPublishable(config.content.filters.publishStrategy, frontmatter);
 }
 

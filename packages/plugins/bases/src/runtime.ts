@@ -5,7 +5,6 @@ import type {
   PostContent,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { isPublished } from "@riebeckite/core";
 import {
   BASES_ATTRIBUTE,
   createBasesPlaceholderPattern,
@@ -36,13 +35,9 @@ export function createBasesRuntime(options: BasesOptions): BasesRuntime {
     track(slug, content) {
       tracked.set(slug, content);
     },
-    resolve(manifest, diagnostics, config) {
-      const entries = config
-        ? manifest.entries.filter((entry) =>
-            isPublished(config, entry.frontmatter),
-          )
-        : manifest.entries;
-      for (const entry of entries) {
+    resolve(manifest, diagnostics, _config) {
+      const entries = manifest.discoverableEntries;
+      for (const entry of manifest.publicEntries) {
         if (!entry.html.includes(BASES_ATTRIBUTE)) continue;
 
         const html = replacePlaceholders(entry, entries, options, diagnostics);

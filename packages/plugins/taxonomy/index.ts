@@ -91,10 +91,10 @@ export function taxonomy(options: TaxonomyOptions = {}) {
       {
         id: "taxonomy-term",
         paths: ({ manifest }) =>
-          taxonomyPagePaths(manifest.publicEntries, resolved),
+          taxonomyPagePaths(manifest.discoverableEntries, resolved),
         resolve: ({ manifest, pathname }) => {
           const term = findTaxonomyTerm(
-            manifest.publicEntries,
+            manifest.discoverableEntries,
             resolved,
             pathname,
           );
@@ -113,7 +113,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
     buildEnd(context) {
       const { config, manifest } = context;
       if (!config) return;
-      const index = buildTaxonomyIndex(manifest.publicEntries, resolved);
+      const index = buildTaxonomyIndex(manifest.discoverableEntries, resolved);
       for (const term of [...index.tags, ...index.folders]) {
         for (const format of enabledFormats(resolved)) {
           const path = feedFilePath(term.path, format);
@@ -179,7 +179,7 @@ function createTaxonomyEndpoints(
       resolved.dataEndpoint,
       ({ manifest }) => ({
         json: serializeTaxonomyIndex(
-          buildTaxonomyIndex(manifest.publicEntries, resolved),
+          buildTaxonomyIndex(manifest.discoverableEntries, resolved),
         ),
       }),
       { cacheControl: "public, max-age=300" },

@@ -1,7 +1,6 @@
-import {
-  type ContentManifest,
-  isPublished,
-  type ResolvedRiebeckiteConfig,
+import type {
+  ContentManifest,
+  ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { LocalGraphData, LocalGraphNode } from "./local-graph.js";
 
@@ -17,7 +16,10 @@ export function getLocalGraph(args: {
 }): LocalGraphData | null {
   const graph = args.manifest.graph;
   const current = graph.get(args.slug);
-  if (!current || !isPublished(args.config, current.frontmatter)) return null;
+  const discoverableSlugs = new Set(
+    args.manifest.discoverableEntries.map((entry) => entry.slug),
+  );
+  if (!current || !discoverableSlugs.has(current.slug)) return null;
 
   const { outgoingSlugs, incomingSlugs } = graph.filterNeighbors(
     args.slug,
@@ -40,7 +42,7 @@ export function getLocalGraph(args: {
 
   function isPublishedSlug(nodeSlug: string): boolean {
     const entry = graph.get(nodeSlug);
-    return entry !== null && isPublished(args.config, entry.frontmatter);
+    return entry !== null && discoverableSlugs.has(entry.slug);
   }
 
   function toLocalGraphNode(

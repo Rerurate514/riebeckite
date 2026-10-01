@@ -3,7 +3,7 @@ import type {
   PostContent,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { isPublished, stripHtml } from "@riebeckite/core";
+import { stripHtml } from "@riebeckite/core";
 
 export function getDescription(
   post: Pick<PostContent, "frontmatter" | "html">,
@@ -20,11 +20,10 @@ export function getDescription(
 }
 
 export function filterFeedEntries(
-  config: ResolvedRiebeckiteConfig,
+  _config: ResolvedRiebeckiteConfig,
   entries: ContentManifestEntry[],
 ): ContentManifestEntry[] {
   return entries
-    .filter((entry) => isPublished(config, entry.frontmatter))
     .filter((entry) => entry.frontmatter.noindex !== true)
     .sort((a, b) => getSortableTime(b) - getSortableTime(a));
 }

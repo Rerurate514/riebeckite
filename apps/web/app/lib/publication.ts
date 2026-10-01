@@ -1,15 +1,10 @@
-import { type ContentManifestEntry, isPublished } from "@riebeckite/core";
-import { config } from "../config";
+import type { ContentManifestEntry } from "@riebeckite/core";
 import { content } from "../content";
 
 export async function getPublishedEntries(): Promise<ContentManifestEntry[]> {
   const manifest = await content.getManifest();
-  return manifest.entries
-    .filter(
-      (entry) =>
-        isPublished(config, entry.frontmatter) &&
-        entry.frontmatter.noindex !== true,
-    )
+  return manifest.discoverableEntries
+    .filter((entry) => entry.frontmatter.noindex !== true)
     .sort((a, b) => getSortableTime(b) - getSortableTime(a));
 }
 

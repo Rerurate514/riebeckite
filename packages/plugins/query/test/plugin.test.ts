@@ -20,6 +20,7 @@ function entry(
     publicLocation: { slug, permalink },
     title: slug,
     frontmatter,
+    publishing: { visibility: "public", routable: true, discoverable: true },
     html,
     tags: [],
     links: [],
@@ -32,6 +33,7 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   return {
     entries,
     publicEntries: entries,
+    discoverableEntries: entries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
     contentIndex: new Map(),
   } as unknown as ContentManifest;

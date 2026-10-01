@@ -97,6 +97,15 @@ export {
   layoutRadialGraph,
 } from "./src/content/graph_layout.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
+export type {
+  PublishingResolutionOptions,
+  PublishingVisibility,
+  ResolvedPublishingState,
+} from "./src/content/publishing.js";
+export {
+  resolvePublishingBuildTime,
+  resolvePublishingState,
+} from "./src/content/publishing.js";
 export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
 export {
   createDeprecationDiagnostic,

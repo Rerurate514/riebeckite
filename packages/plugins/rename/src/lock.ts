@@ -46,8 +46,8 @@ export type DiffRoutesOptions = {
 
 /**
  * Minimal shape `buildRouteLock` reads from a content manifest entry. Only
- * published entries should reach this function; the caller supplies the
- * publish predicate so this module stays free of any runtime Core import.
+ * routable entries should reach this function so this module stays free of any
+ * runtime Core import.
  */
 export type RouteLockSourceEntry = {
   slug: string;
@@ -69,17 +69,15 @@ export function isRedirectStatus(value: unknown): value is RedirectStatus {
 }
 
 /**
- * Builds the current route lock from manifest entries. Entries are keyed by
- * slug and only published entries are considered. Output is deterministic:
+ * Builds the current route lock from the routed manifest view. Entries are keyed by
+ * slug and only routable entries are considered. Output is deterministic:
  * route keys are sorted and redirects (always empty here) stay sorted.
  */
 export function buildRouteLock(
   entries: readonly RouteLockSourceEntry[],
-  isPublished: (frontmatter: Record<string, unknown>) => boolean,
 ): RouteLock {
   const routes: Record<string, RouteLockRoute> = {};
   for (const entry of entries) {
-    if (!isPublished(entry.frontmatter)) continue;
     const id = readId(entry.frontmatter);
     routes[entry.slug] = id
       ? { permalink: entry.permalink, contentHash: hashContent(entry.html), id }

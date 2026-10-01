@@ -10,7 +10,6 @@ import type {
 import type { Diagnostic } from "../types/diagnostic.js";
 import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
-import { isPublishable } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
   ContentBuildCoordinator,
@@ -26,6 +25,10 @@ import { ContentLocationResolver } from "./content_location_resolver.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
+import {
+  resolvePublishingBuildTime,
+  resolvePublishingState,
+} from "./publishing.js";
 
 export type Backlink = {
   slug: string;
@@ -58,6 +61,7 @@ export class ContentManager {
   private locationResolver: ContentLocationResolver;
   private buildCoordinator: ContentBuildCoordinator;
   private isBuildTime = false;
+  private publishingBuildTime: Date;
 
   constructor(
     content: string | ContentSource,
@@ -68,6 +72,9 @@ export class ContentManager {
       ...pipelineOptions,
       plugins: pipelineOptions.plugins ?? pipelineOptions.config?.plugins,
     };
+    this.publishingBuildTime = resolvePublishingBuildTime(
+      pipelineOptions.publishingBuildTime,
+    );
     this.source =
       typeof content === "string"
         ? (pipelineOptions.config?.content.source ??
@@ -229,6 +236,12 @@ export class ContentManager {
               processed,
               contentIndex,
               location,
+              resolvePublishingState(processed.frontmatter, {
+                strategy:
+                  this.pipelineOptions.config?.content.filters
+                    .publishStrategy ?? "explicit",
+                buildTime: this.publishingBuildTime,
+              }),
             );
           }),
         );
@@ -240,9 +253,8 @@ export class ContentManager {
           () => this.manifestBuilder.build(entries, contentIndex),
         );
         this.locationResolver.populateRedirects(manifest, locations);
-        await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
-
         this.applyPublicView(manifest);
+        await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
         ];
@@ -337,13 +349,26 @@ export class ContentManager {
     const strategy =
       this.pipelineOptions.config?.content.filters.publishStrategy ??
       "explicit";
-    manifest.publicEntries = manifest.entries.filter((entry) =>
-      isPublishable(strategy, entry.frontmatter),
+    for (const entry of manifest.entries) {
+      entry.publishing = resolvePublishingState(entry.frontmatter, {
+        strategy,
+        buildTime: this.publishingBuildTime,
+      });
+    }
+    manifest.publicEntries = manifest.entries.filter(
+      (entry) => entry.publishing.routable,
+    );
+    manifest.discoverableEntries = manifest.entries.filter(
+      (entry) => entry.publishing.discoverable,
     );
 
     const publicSlugs = new Set(
       manifest.publicEntries.map((entry) => entry.slug),
     );
+    const publicPermalinks = new Map(
+      manifest.publicEntries.map((entry) => [entry.permalink, entry]),
+    );
+    manifest.byRoutablePermalink = publicPermalinks;
     manifest.publicRedirects = new Map(
       [...manifest.redirects].filter(([, redirect]) =>
         publicSlugs.has(redirect.slug),
@@ -364,5 +389,6 @@ export class ContentManager {
 declare module "../pipeline" {
   interface PipelineOptions {
     config?: ResolvedRiebeckiteConfig;
+    publishingBuildTime?: Date | string;
   }
 }

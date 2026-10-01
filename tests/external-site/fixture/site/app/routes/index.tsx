@@ -1,7 +1,5 @@
-import { isPublished } from "@riebeckite/core";
 import { createRoute } from "honox/factory";
 import { FixtureArticle } from "../components/article";
-import { config } from "../config";
 import { content } from "../content";
 import BuildMarker from "../islands/build-marker";
 
@@ -13,7 +11,7 @@ export default createRoute(async (c) => {
   }
 
   const post = await content.getProcessedContent("index");
-  if (!isPublished(config, post?.frontmatter)) {
+  if (!indexEntry?.publishing.routable) {
     return c.notFound();
   }
   c.set("headTags", indexEntry?.headTags ?? []);

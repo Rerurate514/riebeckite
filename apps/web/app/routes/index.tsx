@@ -1,4 +1,3 @@
-import { isPublished } from "@riebeckite/core";
 import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
 import { DailyNotes, getDailyNotes } from "@riebeckite/plugin-daily-notes";
@@ -42,9 +41,6 @@ export default createRoute(async (c) => {
   const indexEntry = route.entry;
   const indexSlug = indexEntry.slug;
   const post = await content.getProcessedContent(indexSlug);
-  if (!isPublished(config, post?.frontmatter)) {
-    return c.notFound();
-  }
   const [backlinks, recentPosts] = await Promise.all([
     getPublishedBacklinks({
       manifest,
@@ -53,7 +49,7 @@ export default createRoute(async (c) => {
       resolveTitle: getArticleTitle,
     }),
     getRecentPosts({
-      posts: manifest.entries,
+      posts: manifest.discoverableEntries,
       config,
       getProcessedContent: (slug) => content.getProcessedContent(slug),
       resolveTitle: getArticleTitle,

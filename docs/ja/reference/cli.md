@@ -24,7 +24,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `profile` | trace に基づく性能報告 | build に依存 |
 | `inspect` | resolve 済みの事実を表示 | 書かない |
 
-`check` が示すのは有効性であり、output が build/deploy 済みであることではありません。Doctor は可能な独立診断を継続し、失敗時は non-zero で終了します。Inspector は build、state/cache/assets の書込み、Vite/HonoX build、artifact render、auto-fix を絶対に起動しない read-only command です。
+`check` が示すのは有効性であり、output が build/deploy 済みであることではありません。Doctor は可能な独立診断を継続し、失敗時は non-zero で終了します。非推奨の検出は `Deprecated usage` の warning として表示され、`doctor` を失敗扱いにはしません。Inspector は build、state/cache/assets の書込み、Vite/HonoX build、artifact render、auto-fix を絶対に起動しない read-only command です。
 
 plugin の option validation は `check` の一部として実行されます。各 plugin の `validateOptions`（analytics プラグインは provider と collector URL を検証します）が configuration validity に寄与するため、不正な plugin 設定は build 前に `check` で失敗します。
 
@@ -41,4 +41,4 @@ pnpm exec riebeckite build
 
 ## 通常の workflow
 
-項目ごとに content を確認したい場合は `inspect content --list`、リンクやグラフ拡張の調査では `inspect graph` を使ってください。解釈は [Diagnostics](../framework/diagnostics.md)、state の意味は [Build system](../framework/build-system.md) を参照してください。
+項目ごとに content を確認したい場合は `inspect content --list`、リンクやグラフ拡張の調査では `inspect graph` を使ってください。診断の解釈は [Diagnostics](../framework/diagnostics.md)、非推奨と移行の考え方は [Upgrading](../guides/upgrading.md)、state の意味は [Build system](../framework/build-system.md) を参照してください。

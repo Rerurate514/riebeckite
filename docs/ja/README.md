@@ -28,6 +28,7 @@ Deployment
 | Obsidian Vault を公開する | [Obsidian](./guides/obsidian.md) |
 | content と site を別リポジトリにする | [Content Repositories](./guides/content-repositories.md) |
 | 多言語サイトにする | [Localization](./guides/localization.md) |
+| Riebeckite をアップグレードする | [Upgrading](./guides/upgrading.md) |
 | Plugin を探す | [Plugins](./plugins/README.md) |
 | Theme を選ぶ | [Themes](./themes/README.md) |
 | 設定や CLI を調べる | [Reference](./reference/README.md) |

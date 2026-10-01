@@ -32,6 +32,7 @@ Deployment
 | Keep content and site in separate repositories | [Guides / Content repositories](./guides/content-repositories.md) |
 | Build a multilingual site | [Guides / Localization](./guides/localization.md) |
 | Deploy to Cloudflare Workers / GitHub Actions | [Guides / Deployment](./guides/deployment/README.md) |
+| Upgrade Riebeckite or read migration notes | [Guides / Upgrading](./guides/upgrading.md) |
 | Find and install a Plugin | [Plugins](./plugins/README.md) |
 | See Plugins in action | [Plugin Showcase](./plugins/showcase.md) |
 | Change the look of my site | [Themes](./themes/README.md) |
@@ -42,7 +43,7 @@ Deployment
 ## Where to go next
 
 - **Getting Started** — install, presets, first content, deployment. Nothing about the framework internals.
-- **Guides** — task-oriented: writing content, Obsidian, content repositories, localization, deployment, analytics.
+- **Guides** — task-oriented: writing content, Obsidian, content repositories, localization, deployment, analytics, upgrading.
 - **Plugins** — the catalog, the showcase, and how to write your own.
 - **Themes** — the catalog and how to write your own.
 - **Reference** — configuration fields, the CLI, the Plugin API, and the Theme API.

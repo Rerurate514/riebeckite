@@ -5,6 +5,10 @@ export {
   resolveConfig,
   resolveConfigModule,
 } from "./src/config.js";
+export {
+  type ConfigDeprecationNotice,
+  collectConfigDeprecationDiagnostics,
+} from "./src/config_deprecations.js";
 export { ConfigValidationError } from "./src/config_validation.js";
 export {
   ATTACHMENTS_BASE_PATH,
@@ -94,6 +98,12 @@ export {
 } from "./src/content/graph_layout.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
+export {
+  createDeprecationDiagnostic,
+  type DeprecationKind,
+  type DeprecationNotice,
+  formatDeprecationMessage,
+} from "./src/deprecation.js";
 export type {
   LogContext,
   Logger,

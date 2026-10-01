@@ -10,6 +10,7 @@ Guides は「何をしたいか」から探す場所です。設定値や API �
 | 多言語サイトにする | [Localization](./localization.md) |
 | Analytics を使う | [Analytics](./analytics.md) |
 | デプロイ方法を選ぶ | [Deployment](./deployment/README.md) |
+| Riebeckite をアップグレードする | [Upgrading](./upgrading.md) |
 | Cloudflare Workers に公開する | [Cloudflare Workers](./deployment/cloudflare-workers.md) |
 | GitHub Actions で公開する | [GitHub Actions](./deployment/github-actions.md) |
 | separate content repository を運用する | [Separate Content Repository](./deployment/separate-content-repository.md) |

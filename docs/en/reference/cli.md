@@ -24,7 +24,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
 
-`doctor` continues independent checks where possible and exits unsuccessfully when health checks fail. `check` establishes validity, not that output has been built or deployed. `inspect` is deliberately read-only: it must not trigger a build, write caches/assets/state, invoke Vite/HonoX builds, render special artifacts, or auto-fix problems.
+`doctor` continues independent checks where possible and exits unsuccessfully when health checks fail. Deprecation findings are reported as warnings under `Deprecated usage`; they do not make `doctor` fail. `check` establishes validity, not that output has been built or deployed. `inspect` is deliberately read-only: it must not trigger a build, write caches/assets/state, invoke Vite/HonoX builds, render special artifacts, or auto-fix problems.
 
 Plugin option validation runs as part of `check`. Each plugin's `validateOptions` (the analytics plugin, for example, validates its provider and collector URL) contributes to configuration validity, so an invalid plugin setup fails `check` before any build starts.
 
@@ -41,4 +41,4 @@ pnpm exec riebeckite inspect plugins
 pnpm exec riebeckite build
 ```
 
-Choose `inspect content --list` for item-level content output and `inspect graph` when investigating links or graph extensions. Use [Diagnostics](../framework/diagnostics.md) for interpretation and [Build system](../framework/build-system.md) for state semantics.
+Choose `inspect content --list` for item-level content output and `inspect graph` when investigating links or graph extensions. Use [Diagnostics](../framework/diagnostics.md) for interpretation, [Upgrading](../guides/upgrading.md) for deprecation and migration guidance, and [Build system](../framework/build-system.md) for state semantics.

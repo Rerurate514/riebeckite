@@ -12,6 +12,7 @@ Guides start from a task: "I want to publish an Obsidian vault", "I want a multi
 | Build a multilingual site | [Localization](./localization.md) |
 | Collect page views | [Analytics](./analytics.md) |
 | Deploy | [Deployment](./deployment/README.md) |
+| Upgrade Riebeckite or read migration notes | [Upgrading](./upgrading.md) |
 
 ## Deployment guides
 

@@ -10,7 +10,7 @@
 
 # Riebeckite
 
-Riebeckite is a framework for publishing Markdown and Obsidian-style content as a fast static site. It provides a content pipeline, plugins, themes, HonoX integration, diagnostics, and Cloudflare Workers deployment support.
+Riebeckite publishes Markdown and Obsidian-style notes as a fast static site. Start with the `starter` preset, write in `content/`, preview in a browser, build to `dist/`, and deploy when you are ready.
 
 ## Create a site
 
@@ -20,11 +20,10 @@ You do not need to clone this repository to use Riebeckite.
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm exec riebeckite check
 npm exec riebeckite dev
 ```
 
-Then write Markdown in `content/`, preview locally, build, and deploy:
+Then edit Markdown in `content/`, confirm it in the browser, and build:
 
 ```bash
 npm exec riebeckite build
@@ -35,12 +34,12 @@ Start here: [Getting Started](./docs/en/getting-started/README.md).
 ## What Riebeckite includes
 
 - Obsidian-flavored Markdown and content graph support
-- Four self-contained presets: `starter`, `minimal`, `showcase`, and `empty`
+- Four self-contained presets. If you are unsure, use the default `starter` preset
 - Plugin system for Markdown, rendering, discovery, media, diagnostics, and deployment features
-- Theme system with official themes and CSS tokens
-- CLI commands for `check`, `doctor`, `inspect`, `dev`, `build`, and `profile`
+- Theme system with official themes
+- CLI commands for local preview, builds, and deeper diagnostics when needed
 - Cloudflare Workers and GitHub Actions deployment templates
-- Optional same-repository or separate content repository workflows
+- Optional separate content repository workflows for advanced setups
 
 ## Documentation
 

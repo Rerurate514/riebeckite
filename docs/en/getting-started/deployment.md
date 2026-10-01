@@ -1,14 +1,30 @@
 # Deployment
 
-Riebeckite builds a **static site**: `riebeckite build` renders every page into `dist/`, and deployment means hosting that folder. The reference target is [Cloudflare Workers](https://workers.cloudflare.com/) with static assets, but any static host works.
+Riebeckite builds a static site: `npm exec riebeckite build` writes the publishable files to `dist/`. Deployment means hosting that folder. The reference target is [Cloudflare Workers](https://workers.cloudflare.com/) with static assets.
 
-This page is the shortest deployment path. For automation and separate repositories, see [Guides / Deployment](../guides/deployment/README.md).
+Think about deployment in three stages:
 
-## Option A — deploy from your machine
+```text
+1. First deploy
+   ↓
+   Deploy manually to Cloudflare Workers
+
+2. Automatic deploy
+   ↓
+   Deploy with GitHub Actions
+
+3. Advanced setup
+   ↓
+   Split site and content repositories
+```
+
+This beginner page covers stages 1 and 2. If you want the advanced split, see [Content Repositories](../guides/content-repositories.md) and [Separate Content Repository](../guides/deployment/separate-content-repository.md).
+
+## 1. First deploy from your machine
 
 1. Create a [Cloudflare account](https://www.cloudflare.com/).
 
-2. In the site folder, install Wrangler (Cloudflare's CLI):
+2. In the site folder, install Wrangler:
 
    ```sh
    npm install -D wrangler
@@ -25,7 +41,7 @@ This page is the shortest deployment path. For automation and separate repositor
    }
    ```
 
-   Change `name` to a Worker name unique to you. Keep `assets.directory` as `./dist`, which is where `riebeckite build` writes.
+   Change `name` to a Worker name unique to you. Keep `assets.directory` as `./dist`.
 
 4. Build, log in, and deploy:
 
@@ -35,38 +51,40 @@ This page is the shortest deployment path. For automation and separate repositor
    npx wrangler deploy
    ```
 
-5. Open the URL printed at the end (`https://<name>.<account>.workers.dev`). After the site loads, put that URL into `site.baseUrl` in `riebeckite.config.ts`, then build and deploy once more so the sitemap and feeds use the real address.
+5. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 
-You can validate without uploading:
+After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address.
 
-```sh
-npx wrangler deploy --dry-run   # check the config and files only
-npx wrangler dev                # serve the built output locally
-```
+## 2. Automatic deploy with GitHub Actions
 
-## Option B — deploy on every push with GitHub Actions
-
-Generate the site with the actions option and the workflow is written for you:
+If you want deploys to run on every push, generate the site with the GitHub Actions option:
 
 ```sh
-npx create-riebeckite my-site --preset starter --github-actions
+npx create-riebeckite my-site --github-actions
 ```
 
-This adds `wrangler.jsonc` and `.github/workflows/deploy.yml` to the generated site. Add these repository secrets in GitHub (Settings → Secrets and variables → Actions), then push to `main` or run the workflow from the Actions tab:
+This adds:
 
-- `CLOUDFLARE_API_TOKEN` — create it in Cloudflare with the **Workers Scripts: Edit** permission
+- `wrangler.jsonc`
+- `.github/workflows/deploy.yml`
+
+The generated workflow installs dependencies with `npm ci`, runs `npm exec riebeckite check`, builds with `npm exec riebeckite build`, and deploys with `cloudflare/wrangler-action@v3`.
+
+Add these repository secrets in GitHub (Settings → Secrets and variables → Actions):
+
+- `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
-The generated workflow installs with `npm ci`, so commit the `package-lock.json` created by your first `npm install`.
+Commit the `package-lock.json` created by `npm install`, then push to `main` or run the workflow manually from the Actions tab.
 
-Full workflow details, the separate content-repository setup, triggers, and authentication are documented under [Guides / Deployment](../guides/deployment/README.md).
+## 3. Advanced: separate content repository
 
-## What deployment does not require
+Some teams keep the site implementation and Markdown content in separate repositories. That setup is useful for an existing Obsidian vault, separate editor/developer workflows, or different lifecycles for content and site code.
 
-Riebeckite pre-renders content routes and plugin endpoints, so the Worker only serves static assets. There is no runtime `main` entry and no server-side program to operate.
-
-Page-view tracking is optional and separate: it is a second Worker. See [Analytics](../guides/analytics.md) when you want it.
+You do not need this for your first site. When you do, start with [Content Repositories](../guides/content-repositories.md). The GitHub Actions automation details live in [Separate Content Repository](../guides/deployment/separate-content-repository.md).
 
 ## Next
 
-- [Guides →](../guides/README.md) — writing content, Obsidian, content repositories, localization, deployment in depth
+- [Guides →](../guides/README.md) — writing content, Obsidian, localization, and deployment in depth
+- [Plugins →](../plugins/README.md) — add features by goal
+- [Themes →](../themes/README.md) — change the site's look

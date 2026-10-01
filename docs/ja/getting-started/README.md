@@ -1,16 +1,34 @@
 # Getting Started
 
-この章は、初めて Riebeckite でサイトを作る人のための一本道です。Riebeckite 本体のリポジトリを clone する手順は扱いません。Plugin は WikiLink、図表、検索、SEO、独立ページなどの機能を追加し、Theme は見た目を変えます。組み込み Plugin のページを使うために route を設定する必要はありません。
+この章は、初めて Riebeckite でサイトを公開する人のための一本道です。高度な診断、Plugin 開発、リポジトリ分離は、必要になったときに読むページへ分けています。
 
-## 流れ
+```text
+Quick Start
+    ↓
+Installation
+    ↓
+First Content
+    ↓
+Presets
+    ↓
+Deployment
+```
 
-1. [Installation](./installation.md) で必要な環境を確認する
-2. `create-riebeckite` でサイトを作る
-3. [Presets](./presets.md) で用途に合う preset を選ぶ
-4. [First Content](./first-content.md) に沿って最初の記事を書く
-5. ローカルで確認する
-6. ビルドする
-7. [Deployment](./deployment.md) に沿って公開する
+## Riebeckite とは
+
+Riebeckite は、Markdown や Obsidian 形式のノートを高速な静的サイトにするためのツールです。`content/` に Markdown を置き、ローカルで確認し、`dist/` にビルドして公開します。
+
+Riebeckite を使うために、このリポジトリを clone する必要はありません。[`create-riebeckite`](https://www.npmjs.com/package/create-riebeckite) が、サイト用のファイル一式を生成します。
+
+## この章のページ
+
+| ページ | できること |
+| --- | --- |
+| [Quick Start](./quick-start.md) | 作成、起動、Markdown 編集、確認、ビルドを短い手順で試す |
+| [Installation](./installation.md) | 必要な環境と生成されるファイルを確認する |
+| [First Content](./first-content.md) | 最初の公開ページを書く、またはサンプルを編集する |
+| [Presets](./presets.md) | `starter`、`minimal`、`showcase`、`empty` を比較する |
+| [Deployment](./deployment.md) | まず手元から公開し、その後 GitHub Actions で自動化する |
 
 ## 最短手順
 
@@ -18,16 +36,19 @@
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm exec riebeckite check
 npm exec riebeckite dev
 ```
 
-`content/` に Markdown を置き、`publish: true` を付けると公開対象になります。
+ターミナルに表示されたローカル URL をブラウザで開きます。`content/` の Markdown を編集し、公開したいページに `publish: true` を付けたら、最後にビルドします。
 
 ```bash
 npm exec riebeckite build
 ```
 
-Cloudflare Workers に公開する場合は、ビルド後に Wrangler で `dist/` をデプロイします。GitHub Actions を使う場合は `create-riebeckite --github-actions` で生成される workflow を使います。
+preset で迷ったら、既定の `starter` を使ってください。
 
-Riebeckite 本体を開発する場合は [Framework Development](../framework/development.md) へ進んでください。
+> **Riebeckite 本体を開発する場合** は [Framework / Development](../framework/development.md) へ進んでください。
+
+## 次に読むページ
+
+- [Quick Start →](./quick-start.md)

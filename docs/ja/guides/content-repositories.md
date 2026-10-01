@@ -1,6 +1,6 @@
 # 記事とサイトのリポジトリ分離
 
-**記事（Markdown / Obsidian Vault）とサイト（コード・設定・テーマ）を別々の場所・別々のリポジトリで管理したい**ときに、どう設定して、どう運用するかを順を追って説明します。ここでは「動くようにする」ことを優先し、なぜそうなるのかという仕組みや、CI 認証・assets・submodule の細部は [詳細編](./deployment/separate-content-repository.md) に分けています。
+**記事（Markdown / Obsidian Vault）とサイト（コード・設定・テーマ）を別々の場所・別々のリポジトリで管理したい**ときに、なぜ分けるのか、どのような構成になるのかを説明します。`repository_dispatch`、外部 checkout、`notify-site.yml` などの具体的な GitHub Actions 構成は [詳細編](./deployment/separate-content-repository.md) に分けています。
 
 ## このガイドが向いている人
 
@@ -10,6 +10,31 @@
 - 記事の更新とサイトの更新を切り離してデプロイしたい
 
 逆に、小さい個人ブログを 1 つのリポジトリで完結させたいだけなら、無理に分ける必要はありません。パターン A（1 リポジトリ）で十分です。
+
+## まずは1リポジトリで始める
+
+初心者向けの基本構成では、content と site のコードを同じリポジトリに置きます。
+
+```text
+site repository
+├─ content/
+├─ app/
+├─ riebeckite.config.ts
+└─ package.json
+```
+
+これは `npx create-riebeckite my-site` が生成する構成です。既存 Vault や別リポジトリ運用が必要だと分かっている場合を除き、最初のサイトはこの形で十分です。
+
+分離する場合は、次のような形になります。
+
+```text
+site repository           content repository
+├─ app/                  ├─ article-a.md
+├─ riebeckite.config.ts  ├─ article-b.md
+└─ ...                   └─ attachments/
+```
+
+site repository はアプリ、設定、Theme、Plugin、デプロイを持ちます。content repository は Markdown と添付ファイルを持ちます。
 
 ## 考え方: 記事は「サイトの外」で OK
 
@@ -59,7 +84,7 @@ export default defineConfig({
 
 ### デプロイはどう起きるか（全体の流れ）
 
-別リポジトリでは、「CI が記事を**読める**」ことと「デプロイが**起動する**」ことは別です。`--notify-on-content-push` で生成する構成は、次の順でつながります。
+別リポジトリでは、「CI が記事を**読める**」ことと「デプロイが**起動する**」ことは別です。`--github-actions --content-repository <owner/repo> --site-repository <owner/repo>` で生成する構成は、次の順でつながります。
 
 1. 記事リポジトリの `main` に push する。
 2. 記事リポジトリの `notify-site.yml` が、site リポジトリへ `content-updated` を送る（`SITE_DISPATCH_TOKEN`）。

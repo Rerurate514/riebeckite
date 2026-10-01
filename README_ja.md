@@ -1,6 +1,6 @@
 # Riebeckite
 
-Riebeckite は、Markdown や Obsidian 形式のコンテンツを高速な静的サイトとして公開するためのフレームワークです。コンテンツ処理、Plugin、Theme、HonoX 連携、診断、Cloudflare Workers へのデプロイをまとめて扱えます。
+Riebeckite は、Markdown や Obsidian 形式のノートを高速な静的サイトとして公開するためのフレームワークです。まずは既定の `starter` preset でサイトを作り、`content/` に Markdown を書き、ブラウザで確認して、`dist/` にビルドします。
 
 ## サイトを作る
 
@@ -10,11 +10,10 @@ Riebeckite を使うだけなら、このリポジトリを clone する必要�
 npx create-riebeckite my-site
 cd my-site
 npm install
-npm exec riebeckite check
 npm exec riebeckite dev
 ```
 
-あとは `content/` に Markdown を置き、ローカルで確認して、ビルドします。
+あとは `content/` の Markdown を編集し、ブラウザで確認して、ビルドします。
 
 ```bash
 npm exec riebeckite build
@@ -25,12 +24,12 @@ npm exec riebeckite build
 ## 主な機能
 
 - Obsidian 形式の Markdown とコンテンツグラフ
-- 自己完結した4種類の preset: `starter`、`minimal`、`showcase`、`empty`
+- 自己完結した4種類の preset。迷ったら既定の `starter` を使います
 - Markdown 処理、表示、検索、メディア、診断、デプロイを拡張する Plugin
-- 公式 Theme と CSS トークン
-- `check`、`doctor`、`inspect`、`dev`、`build`、`profile` を備えた CLI
+- 公式 Theme
+- ローカル確認、ビルド、必要に応じた診断に使える CLI
 - Cloudflare Workers と GitHub Actions 用テンプレート
-- サイトとコンテンツを同じリポジトリ、または別リポジトリで運用する構成
+- 必要になったときに選べる、サイトとコンテンツの別リポジトリ運用
 
 ## ドキュメント
 

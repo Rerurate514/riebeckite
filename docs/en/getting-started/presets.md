@@ -53,5 +53,4 @@ A blank application shell with no plugins, theme, content, or components. Choose
 
 ## Next
 
-- [First content](./first-content.md) — write and preview an article
-- [Deployment](./deployment.md) — publish the site
+- [Deployment →](./deployment.md)

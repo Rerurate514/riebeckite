@@ -1,22 +1,42 @@
 # Plugins
 
-Plugins add functionality to Riebeckite. Markdown processing, search, diagrams, media, SEO, diagnostics, and standalone pages are provided as Plugins.
+Plugins add features to a Riebeckite site. Use them when you want more than plain Markdown: Obsidian syntax, search, diagrams, media, SEO, discovery widgets, localization, and diagnostics.
+
+## What do you want to do?
+
+| Goal | Plugin |
+| --- | --- |
+| Use Obsidian WikiLinks and embeds | [Obsidian Markdown](./obsidian-markdown.md) |
+| Show Mermaid diagrams | [Mermaid](./mermaid.md) |
+| Add site search | [Search](./search.md) |
+| Use tags and classification pages | [Taxonomy](./taxonomy.md) |
+| Show backlinks | [Backlinks](./backlinks.md) |
+| Enlarge images in an overlay | [Lightbox](./lightbox.md) |
+| Show Excalidraw drawings | [Excalidraw](./excalidraw.md) |
+| Show Obsidian Canvas files | [Canvas](./canvas.md) |
+| Build a multilingual site | [Localization](./l10n.md) |
+
+This table is an entry point, not the full API reference. For all packages, see the list below.
 
 ## Add a Plugin
+
+Install the package:
 
 ```bash
 npm install @riebeckite/plugin-search
 ```
 
-Register the Plugin in the `plugins` array of `riebeckite.config.ts`. Check each package README for the exact export name and options.
+Register it in the `plugins` array of `riebeckite.config.ts`:
 
-## Plugin documentation
+```ts
+import { searchPlugin } from "@riebeckite/plugin-search";
 
-Each Plugin page includes an overview, installation instructions, a usage example, common use cases, and a link to the package README for the detailed specification.
+export default defineConfig({
+  plugins: [searchPlugin()],
+});
+```
 
-See the [Plugin Showcase](./showcase.md) for features that can be demonstrated directly in the documentation.
-
-For the Plugin API, see [Plugin API](../reference/plugin-api.md). To create your own Plugin, see [Writing a Plugin](./writing-a-plugin.md).
+Each Plugin page shows the package name, import name, and common settings. The package README remains the source of truth for detailed options.
 
 ## Official Plugins
 
@@ -67,3 +87,12 @@ For the Plugin API, see [Plugin API](../reference/plugin-api.md). To create your
 - [Table of Contents](./toc.md)
 - [Vega-Lite](./vega-lite.md)
 - [WaveDrom](./wavedrom.md)
+
+## If you want to build a Plugin
+
+Start with [Writing a Plugin](./writing-a-plugin.md). Exact contracts live in [Plugin API](../reference/plugin-api.md), and the framework-level page model is described in [Framework / Page system](../framework/page-system.md).
+
+## Next
+
+- [Plugin Showcase](./showcase.md)
+- [Writing a Plugin](./writing-a-plugin.md)

@@ -6,6 +6,8 @@ Obsidian で書いている Markdown ノートを、Riebeckite の公開サイ�
 
 Riebeckite は、指定したフォルダの Markdown を読み込んでサイトにします。Obsidian Vault も Markdown のフォルダなので、`content.directory` に Vault の場所を指定すれば記事の置き場として使えます。
 
+既存の Vault を Riebeckite 用に作り直す必要はありません。Riebeckite は設定されたフォルダから Markdown を読み込みます。通常の `dev`、`check`、`doctor`、`inspect`、`build` でノートを書き換えるわけではありません。編集はこれまで通り Obsidian で行い、公開したいノートだけに印を付けます。
+
 公開するかどうかは、各ノートの frontmatter で決めます。
 
 ```md
@@ -15,7 +17,7 @@ publish: true
 ---
 ```
 
-`publish: true` がないノートは公開されません。下書きや個人的なメモを同じ Vault に置いていても、公開用の印を付けたノートだけをサイトに出せます。
+既定の公開ルールでは、`publish: true` がないノートは公開されません。下書きや個人的なメモを同じ Vault に置いていても、公開用の印を付けたノートだけをサイトに出せます。
 
 ## パターンA: サイトの中に Vault を置く
 
@@ -57,6 +59,8 @@ content: {
 ```
 
 詳しい分離運用は [記事とサイトのリポジトリ分離](./content-repositories.md) にあります。
+
+この形でも、既存 Vault をそのまま参照できます。大事なのは公開ルールです。既定では `publish: true` があるノートだけが公開対象になります。Riebeckite はプレビューやビルドのために Vault を読み込みますが、Vault の整理や Markdown の書き換えを勝手に行うものではありません。
 
 ## Obsidian 側で書くときのルール
 

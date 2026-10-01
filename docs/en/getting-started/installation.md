@@ -87,43 +87,18 @@ npm exec riebeckite dev
 
 The terminal prints a URL such as `http://localhost:5173`. Open it in a browser; Markdown and application edits are picked up while the server runs. Press `Ctrl + C` to stop.
 
-## Check the state
-
-Two read-only commands tell you why something looks wrong. Neither writes anything.
-
-```sh
-npm exec riebeckite check      # validate configuration and plugin resolution
-npm exec riebeckite doctor     # broader health check: environment, config, plugins, content
-```
-
-On success, `check` prints:
-
-```text
-Riebeckite configuration is valid.
-```
-
-`doctor` marks problems with `✗`. A fresh site with no content yet reports content findings; writing an article (see [First content](./first-content.md)) clears them. `inspect` shows the interpreted state:
-
-```sh
-npm exec riebeckite inspect config
-npm exec riebeckite inspect content --list
-npm exec riebeckite inspect plugins
-```
-
 ## Everyday commands
 
 Run these from inside the site folder:
 
 ```sh
 npm exec riebeckite dev           # start the development server
-npm exec riebeckite check         # validate the configuration
-npm exec riebeckite doctor        # fuller health check
-npm exec riebeckite inspect       # show the interpreted state
 npm exec riebeckite build         # write the publishable files to dist/
 npm exec riebeckite build --full  # rebuild without incremental reuse
-npm exec riebeckite profile       # trace-based performance report
 ```
+
+For the first successful run, `dev` and `build` are enough. If something looks wrong later, the CLI also has read-only diagnostic commands such as `check`, `doctor`, and `inspect`; see the [CLI reference](../reference/cli.md).
 
 ## Next
 
-- [Choose a preset →](./presets.md)
+- [First Content →](./first-content.md)

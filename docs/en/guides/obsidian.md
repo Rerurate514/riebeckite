@@ -6,6 +6,8 @@ This guide shows how to use Markdown notes from an Obsidian vault as the content
 
 Riebeckite turns Markdown files from a configured folder into a site. An Obsidian vault is also a Markdown folder, so you can point `content.directory` at the vault.
 
+You do not have to rebuild an existing vault for Riebeckite. Riebeckite reads Markdown from the configured folder; it does not rewrite your notes as part of normal `dev`, `check`, `doctor`, `inspect`, or `build` commands. Keep using Obsidian as your editor, and opt in only the notes you want to publish.
+
 Each note decides whether it is published through frontmatter.
 
 ```md
@@ -15,7 +17,7 @@ publish: true
 ---
 ```
 
-Notes without `publish: true` are not published. This lets you keep private notes and public articles in the same vault.
+Notes without `publish: true` are not published by the default explicit publish strategy. This lets you keep private notes and public articles in the same vault.
 
 ## Pattern A: Put the vault inside the site
 
@@ -57,6 +59,8 @@ content: {
 ```
 
 `../notes` means "the `notes` folder one level above the site". For more advanced separation, see [Separating content from the site](./content-repositories.md).
+
+This pattern is safe for an existing vault as long as you understand the publish rule: only notes with `publish: true` become public by default. Riebeckite reads the vault during preview and build; it does not reorganize the vault or edit Markdown files for you.
 
 ## Writing notes in Obsidian
 

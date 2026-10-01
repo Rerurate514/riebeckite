@@ -2,7 +2,7 @@
 
 [記事とサイトのリポジトリ分離](../content-repositories.md) は、別リポジトリ運用を「流れ」に沿って説明したドキュメントです。このページはその「詳細編」で、「どうしてこの設定になるのか」と「踏み込みたいケース（root の解決、assets のコピー、CI の認証、submodule の運用）」を補足します。
 
-はじめての人はまず [content-and-site-repos](../content-repositories.md) を読み、このページは「仕組みを理解したい」「運用で困った」ときに使ってください。
+はじめての人はまず [Content Repositories](../content-repositories.md) を読み、このページは「仕組みを理解したい」「運用で困った」ときに使ってください。
 
 ## 1. なぜ「サイトの外」で動くのか
 
@@ -124,7 +124,7 @@ Vault は読み取り専用の source として扱い、site ごとに `exclude`
 
 ## 3. パターン C の詳細手順
 
-基本の流れは [content-and-site-repos](../content-repositories.md) にあります。ここでは省略されがちな詳細を補足します。
+基本の流れは [Content Repositories](../content-repositories.md) にあります。ここでは省略されがちな詳細を補足します。
 
 ### 3-1. Vault を private リポジトリに
 
@@ -317,4 +317,3 @@ pnpm exec riebeckite build
 - [利用ガイド](../README.md) — 外部 Vault の設定例と assets の扱い
 - [Cloudflare デプロイテンプレート](../../../../templates/cloudflare/README_ja.md) — デプロイ workflow の詳細
 - E2E フィクスチャ [`tests/external-site/fixture/site`](../../../../tests/external-site/fixture/site) — Vault を site の外に置いた構成の実例
-

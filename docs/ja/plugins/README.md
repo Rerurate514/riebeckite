@@ -1,33 +1,98 @@
 # Plugins
 
-Plugin は Riebeckite の機能を追加します。Markdown 処理、検索、図表、メディア、SEO、診断、独立ページなどは Plugin として提供されます。
+Plugin は、Riebeckite のサイトに機能を追加する仕組みです。通常の Markdown だけでは足りないとき、Obsidian 記法、検索、図表、メディア、SEO、記事の発見、多言語対応、診断などを追加できます。
 
-## 追加する
+## 何をしたいですか？
+
+| やりたいこと | Plugin |
+| --- | --- |
+| Obsidian の WikiLink や埋め込みを使いたい | [Obsidian Markdown](./obsidian-markdown.md) |
+| Mermaid を表示したい | [Mermaid](./mermaid.md) |
+| サイト内検索を追加したい | [Search](./search.md) |
+| タグや分類を使いたい | [Taxonomy](./taxonomy.md) |
+| Backlink を表示したい | [Backlinks](./backlinks.md) |
+| 画像を拡大表示したい | [Lightbox](./lightbox.md) |
+| Excalidraw を表示したい | [Excalidraw](./excalidraw.md) |
+| Obsidian Canvas を表示したい | [Canvas](./canvas.md) |
+| 多言語サイトにしたい | [Localization](./l10n.md) |
+
+この表は、目的から探すための入口です。すべての Plugin は下の一覧から確認できます。
+
+## Plugin を追加する
+
+package をインストールします。
 
 ```bash
 npm install @riebeckite/plugin-search
 ```
 
+`riebeckite.config.ts` の `plugins` に登録します。
+
 ```ts
-import { searchPlugin } from "@riebeckite/plugin-search"
+import { searchPlugin } from "@riebeckite/plugin-search";
 
 export default defineConfig({
   plugins: [searchPlugin()],
-})
+});
 ```
 
-`false`、`null`、`undefined` は無効な Plugin として扱われるため、条件付きで登録できます。
+各 Plugin ページでは、package 名、import 名、よく使う設定を説明します。詳しい option は各 package README が正本です。
 
-## 公式 Plugin の分類
+## 公式 Plugin
 
-- Obsidian / Markdown: [obsidian-markdown](./obsidian-markdown.md), [properties](./properties.md), [alias](./alias.md), [permalink](./permalink.md)
-- 図表: [mermaid](./mermaid.md), [graphviz](./graphviz.md), [d2](./d2.md), [plantuml](./plantuml.md), [chartjs](./chartjs.md), [vega-lite](./vega-lite.md), [wavedrom](./wavedrom.md), [markmap](./markmap.md)
-- ナレッジ・本文埋め込み: [canvas](./canvas.md), [bases](./bases.md), [excalidraw](./excalidraw.md), [dataview](./dataview.md), [query](./query.md), [kanban](./kanban.md), [local-graph](./local-graph.md)
-- 独立ページ・発見性: [taxonomy](./taxonomy.md), [garden-explorer](./garden-explorer.md), [search](./search.md), [backlinks](./backlinks.md), [related-posts](./related-posts.md), [recent-posts](./recent-posts.md), [toc](./toc.md)
-- メディア: [attachment](./attachment.md), [pdf](./pdf.md), [media](./media.md), [responsive-image](./responsive-image.md), [lightbox](./lightbox.md), [gallery](./gallery.md), [rich-embed](./rich-embed.md)
-- 運用・品質: [l10n](./l10n.md), [seo](./seo.md), [deploy](./deploy.md), [diagnostics](./diagnostics.md), [quality](./quality.md), [analytics](./analytics.md)
+- [Alias](./alias.md)
+- [Analytics](./analytics.md)
+- [Attachment](./attachment.md)
+- [Backlinks](./backlinks.md)
+- [Bases](./bases.md)
+- [Canvas](./canvas.md)
+- [Changelog](./changelog.md)
+- [Chart.js](./chartjs.md)
+- [Code Enhance](./code-enhance.md)
+- [Code Tabs](./code-tabs.md)
+- [color-mode](./color-mode.md)
+- [D2](./d2.md)
+- [Dataview](./dataview.md)
+- [Deploy](./deploy.md)
+- [Diagnostics](./diagnostics.md)
+- [Diff](./diff.md)
+- [Excalidraw](./excalidraw.md)
+- [Gallery](./gallery.md)
+- [Garden Explorer](./garden-explorer.md)
+- [Graphviz](./graphviz.md)
+- [Kanban](./kanban.md)
+- [Localization](./l10n.md)
+- [Lightbox](./lightbox.md)
+- [Local Graph](./local-graph.md)
+- [Map](./map.md)
+- [Markmap](./markmap.md)
+- [Marp](./marp.md)
+- [Media](./media.md)
+- [Mermaid](./mermaid.md)
+- [Obsidian Markdown](./obsidian-markdown.md)
+- [PDF](./pdf.md)
+- [Permalink](./permalink.md)
+- [PlantUML](./plantuml.md)
+- [Properties](./properties.md)
+- [QR Code](./qr-code.md)
+- [Quality](./quality.md)
+- [Query](./query.md)
+- [Recent Posts](./recent-posts.md)
+- [Related Posts](./related-posts.md)
+- [Responsive Image](./responsive-image.md)
+- [Rich Embed](./rich-embed.md)
+- [Search](./search.md)
+- [SEO](./seo.md)
+- [Taxonomy](./taxonomy.md)
+- [Table of Contents](./toc.md)
+- [Vega-Lite](./vega-lite.md)
+- [WaveDrom](./wavedrom.md)
 
-`taxonomy` と `garden-explorer` は、共通 catch-all route から独立ページを提供する Page Type です。`canvas`、`bases`、`excalidraw` は記事本文を描画する renderer であり、意図的に Page Type を提供しません。Plugin のページを作る場合は [Page System](../framework/page-system.md) を参照してください。
+## Plugin を作りたい場合
 
-実例は [Plugin Showcase](./showcase.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md)、API は [Plugin API](../reference/plugin-api.md) を参照してください。
+まず [Writing a Plugin](./writing-a-plugin.md) を読んでください。正確な contract は [Plugin API](../reference/plugin-api.md)、ページ生成の仕組みは [Framework / Page system](../framework/page-system.md) にあります。
 
+## 次に読むページ
+
+- [Plugin Showcase](./showcase.md)
+- [Writing a Plugin](./writing-a-plugin.md)

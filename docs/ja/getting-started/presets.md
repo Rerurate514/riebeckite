@@ -49,7 +49,6 @@ Plugin、Theme、コンテンツ、コンポーネントを含まない空のア
 
 `starter` は実用的な Plugin の設定を出力し、`showcase` は設定リファレンスとして全オプションを出力します。`empty` と `minimal` の設定は意図的に小さくしています。詳細は [Configuration](../reference/configuration.md) と [`packages/plugins`](../../../packages/plugins) の各 README を参照してください。
 
-## 次へ
+## 次に読むページ
 
-- [最初のコンテンツ](./first-content.md)
-- [デプロイ](./deployment.md)
+- [Deployment →](./deployment.md)

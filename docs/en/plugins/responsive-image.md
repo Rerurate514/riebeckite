@@ -15,7 +15,7 @@ Check the implementation and package README as the source of truth for the Plugi
 Use it on image-heavy sites to deliver images appropriate to the reader's environment while keeping normal image references in article Markdown.
 
 ```markdown
-![Screenshot](./images/screenshot.png)
+![[images/screenshot.png]]
 ```
 
 ## When to use it

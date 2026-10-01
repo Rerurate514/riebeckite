@@ -15,7 +15,7 @@ Check the implementation and package README as the source of truth for the Plugi
 Use ordinary Markdown images and allow readers to open them in a larger view on the published site.
 
 ```markdown
-![Architecture](./images/architecture.png)
+![[images/architecture.png]]
 ```
 
 ## When to use it

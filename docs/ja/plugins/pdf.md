@@ -15,7 +15,7 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 記事から PDF を参照したときに、単なる外部リンクではなく閲覧しやすい形で扱いたい場合に利用します。
 
 ```markdown
-[資料](./documents/guide.pdf)
+[[documents/guide.pdf|資料]]
 ```
 
 ## 使いどころ

@@ -15,9 +15,9 @@ Check the implementation and package README as the source of truth for the Plugi
 Use it for articles that present a collection of images together.
 
 ```markdown
-![Screenshot 1](./images/01.png)
-![Screenshot 2](./images/02.png)
-![Screenshot 3](./images/03.png)
+![[images/01.png]]
+![[images/02.png]]
+![[images/03.png]]
 ```
 
 ## When to use it

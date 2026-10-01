@@ -15,7 +15,7 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 通常の Markdown 画像を記事に置き、公開サイトではクリックして拡大表示できるようにします。
 
 ```markdown
-![Architecture](./images/architecture.png)
+![[images/architecture.png]]
 ```
 
 ## 使いどころ

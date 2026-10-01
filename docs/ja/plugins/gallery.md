@@ -15,9 +15,9 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 複数の画像をまとめて紹介する記事で、画像一覧をギャラリーとして見せる用途に向いています。
 
 ```markdown
-![Screenshot 1](./images/01.png)
-![Screenshot 2](./images/02.png)
-![Screenshot 3](./images/03.png)
+![[images/01.png]]
+![[images/02.png]]
+![[images/03.png]]
 ```
 
 ## 使いどころ

@@ -15,8 +15,8 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 ノートから PDF や ZIP などの添付ファイルへリンクし、公開サイトから参照できるようにする用途です。
 
 ```markdown
-[仕様書を開く](./files/specification.pdf)
-[サンプルを取得](./files/example.zip)
+[[files/specification.pdf|仕様書を開く]]
+[[files/example.zip|サンプルを取得]]
 ```
 
 ## 使いどころ

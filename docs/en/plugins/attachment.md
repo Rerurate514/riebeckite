@@ -15,8 +15,8 @@ Check the implementation and package README as the source of truth for the Plugi
 Use it to link PDFs, ZIP files, and other attachments from notes and make them available on the published site.
 
 ```markdown
-[仕様書を開く](./files/specification.pdf)
-[サンプルを取得](./files/example.zip)
+[[files/specification.pdf|Open the specification]]
+[[files/example.zip|Download the sample]]
 ```
 
 ## When to use it

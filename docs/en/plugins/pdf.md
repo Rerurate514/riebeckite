@@ -15,7 +15,7 @@ Check the implementation and package README as the source of truth for the Plugi
 Use it when notes link to or embed PDF documents that should remain accessible on the published site.
 
 ```markdown
-[資料](./documents/guide.pdf)
+[[documents/guide.pdf|Project guide]]
 ```
 
 ## When to use it

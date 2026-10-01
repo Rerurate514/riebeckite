@@ -25,12 +25,12 @@ Most generated sites already include a theme package. `minimal` uses `@riebeckit
 
 | Theme | Package | Factory | Best for |
 | --- | --- | --- | --- |
-| Default | [`@riebeckite/theme-default`](../../../packages/themes/default/README.md) | `defaultTheme()` | The normal starting point: readable, configurable, and compatible with color mode |
-| Minimal | [`@riebeckite/theme-minimal`](../../../packages/themes/minimal/README.md) | `minimalTheme()` | A small baseline when you want little visual opinion |
-| Gruvbox | [`@riebeckite/theme-gruvbox`](../../../packages/themes/gruvbox/README.md) | package README | A warm, high-contrast Gruvbox-inspired look |
-| Rerurate | [`@riebeckite/theme-rerurate`](../../../packages/themes/rerurate/README.md) | package README | Rerurate's visual grammar |
-| Sakura | [`@riebeckite/theme-sakura`](../../../packages/themes/sakura/README.md) | package README | A sakura-inspired palette |
-| Tokyo Night | [`@riebeckite/theme-tokyonight`](../../../packages/themes/tokyonight/README.md) | package README | A Tokyo Night-inspired dark/editor-like look |
+| [Default](./default.md) | [`@riebeckite/theme-default`](../../../packages/themes/default/README.md) | `defaultTheme()` | The normal starting point: readable, configurable, and compatible with color mode |
+| [Minimal](./minimal.md) | [`@riebeckite/theme-minimal`](../../../packages/themes/minimal/README.md) | `minimalTheme()` | A small baseline when you want little visual opinion |
+| [Gruvbox](./gruvbox.md) | [`@riebeckite/theme-gruvbox`](../../../packages/themes/gruvbox/README.md) | `gruvboxTheme()` | A warm, high-contrast Gruvbox-inspired look |
+| [Rerurate](./rerurate.md) | [`@riebeckite/theme-rerurate`](../../../packages/themes/rerurate/README.md) | `rerurateTheme()` | Rerurate's visual grammar |
+| [Sakura](./sakura.md) | [`@riebeckite/theme-sakura`](../../../packages/themes/sakura/README.md) | `sakuraTheme()` | A sakura-inspired palette |
+| [Tokyo Night](./tokyonight.md) | [`@riebeckite/theme-tokyonight`](../../../packages/themes/tokyonight/README.md) | `tokyonightTheme()` | A Tokyo Night-inspired dark/editor-like look |
 
 The package README is the source of truth for each theme's exported factory name and options.
 
@@ -64,4 +64,3 @@ export default defineConfig({
 ## Create or extend a theme
 
 Start with [Writing a theme](./writing-a-theme.md). The API contract — `defineTheme`, stylesheet module specifiers, design tokens, stable hooks, the cascade, and package layout — lives in [Theme API](../reference/theme-api.md). The internal boundary between themes, plugins, Core, and the HonoX integration is explained in [Framework / Theme system](../framework/theme-system.md).
-

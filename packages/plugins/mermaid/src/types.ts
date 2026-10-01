@@ -33,6 +33,15 @@ export type MermaidBuildRenderer = (
   theme: string,
 ) => Promise<MermaidBuildRenderResult>;
 
+/**
+ * Build-scoped render resource. Owns one browser/page session, serializes
+ * renders, and releases the browser on `dispose`.
+ */
+export type MermaidRenderSession = {
+  render: MermaidBuildRenderer;
+  dispose: () => Promise<void>;
+};
+
 export type MermaidClientOptions = {
   theme?: MermaidTheme;
   mermaid?: MermaidApi;

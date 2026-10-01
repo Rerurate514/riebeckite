@@ -56,6 +56,7 @@ export class ContentManager {
   private contentIndex: Map<string, string> | null = null;
   private contentCache = new Map<string, PostContent>();
   private manifest: ContentManifest | null = null;
+  private manifestPromise: Promise<ContentManifest> | null = null;
   private pipeline: Pipeline | null = null;
   private entryReader: ContentEntryReader;
   private locationResolver: ContentLocationResolver;
@@ -196,6 +197,21 @@ export class ContentManager {
   }
 
   async getManifest(options?: ContentBuildOptions): Promise<ContentManifest> {
+    if (this.manifest) return this.manifest;
+    if (this.manifestPromise) return await this.manifestPromise;
+
+    this.manifestPromise = this.buildManifest(options);
+    try {
+      return await this.manifestPromise;
+    } catch (error) {
+      this.manifestPromise = null;
+      throw error;
+    }
+  }
+
+  private async buildManifest(
+    options?: ContentBuildOptions,
+  ): Promise<ContentManifest> {
     if (this.manifest) return this.manifest;
 
     // Plugin caches (and pipeline caches) must be usable whenever a manifest is

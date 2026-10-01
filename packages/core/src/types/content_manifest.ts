@@ -31,6 +31,7 @@ export type ContentManifestPluginAsset = PluginAsset & {
 export type ContentBodySlot =
   | "article.after-header"
   | "article.after-meta"
+  | "article.aside"
   | "article.before-content"
   | "article.after-content"
   | "article.footer"

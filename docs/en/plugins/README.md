@@ -16,6 +16,7 @@ Plugins add features to a Riebeckite site. Use them when you want more than plai
 | Show Obsidian Canvas files | [Canvas](./canvas.md) |
 | Use BibTeX citations | [Citations](./citations.md) |
 | Build a multilingual site | [Localization](./l10n.md) |
+| Add docs sidebar and previous/next links | [Docs](./docs.md) |
 
 This table is an entry point, not the full API reference. For all packages, see the list below.
 
@@ -58,6 +59,7 @@ Each Plugin page shows the package name, import name, and common settings. The p
 - [Deploy](./deploy.md)
 - [Diagnostics](./diagnostics.md)
 - [Diff](./diff.md)
+- [Docs](./docs.md)
 - [Excalidraw](./excalidraw.md)
 - [Gallery](./gallery.md)
 - [Garden Explorer](./garden-explorer.md)

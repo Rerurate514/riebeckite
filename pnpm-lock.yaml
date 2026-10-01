@@ -684,6 +684,19 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/docs:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/excalibrain:
     dependencies:
       '@riebeckite/core':

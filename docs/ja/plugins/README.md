@@ -16,6 +16,7 @@ Plugin は、Riebeckite のサイトに機能を追加する仕組みです。�
 | Obsidian Canvas を表示したい | [Canvas](./canvas.md) |
 | BibTeX の引用を使いたい | [Citations](./citations.md) |
 | 多言語サイトにしたい | [Localization](./l10n.md) |
+| Docs 用の sidebar と previous/next を追加したい | [Docs](./docs.md) |
 
 この表は、目的から探すための入口です。すべての Plugin は下の一覧から確認できます。
 
@@ -58,6 +59,7 @@ export default defineConfig({
 - [Deploy](./deploy.md)
 - [Diagnostics](./diagnostics.md)
 - [Diff](./diff.md)
+- [Docs](./docs.md)
 - [Excalidraw](./excalidraw.md)
 - [Gallery](./gallery.md)
 - [Garden Explorer](./garden-explorer.md)

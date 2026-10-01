@@ -1,0 +1,20 @@
+diff --git a/lib/eva.js b/lib/eva.js
+index bd3437df9b951bc633f5a1f6636c3750a24b26d0..8bdb7106b23be3cceb4c369042603cdf99cf145a 100644
+--- a/lib/eva.js
++++ b/lib/eva.js
+@@ -14,13 +14,13 @@ function eva (id) {
+     let source;
+     if (TheTextBox.type && TheTextBox.type === 'textarea') {
+         try {
+-            source = eval('(' + TheTextBox.value + ')');
++            source = (0, eval)('(' + TheTextBox.value + ')');
+         } catch (e) {
+             return erra(e);
+         }
+     } else {
+         try {
+-            source = eval('(' + TheTextBox.innerHTML + ')');
++            source = (0, eval)('(' + TheTextBox.innerHTML + ')');
+         } catch (e) {
+             return erra(e);
+         }

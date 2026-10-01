@@ -37,6 +37,9 @@ catalogs:
       specifier: ^8.0.9
       version: 8.0.16
 
+patchedDependencies:
+  wavedrom@3.7.0: 66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a
+
 importers:
 
   .:
@@ -1194,7 +1197,7 @@ importers:
         version: link:../../core
       wavedrom:
         specifier: ^3.7.0
-        version: 3.7.0
+        version: 3.7.0(patch_hash=66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a)
 
   packages/plugins/webmention:
     dependencies:
@@ -8702,7 +8705,7 @@ snapshots:
 
   vscode-uri@3.0.8: {}
 
-  wavedrom@3.7.0:
+  wavedrom@3.7.0(patch_hash=66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a):
     dependencies:
       bit-field: 1.9.0
       json5: 2.2.3

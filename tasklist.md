@@ -9,6 +9,7 @@
 | 1 | F7 | 依存パッケージの既知脆弱性を修正版へ更新する（`pnpm audit` high 30 / moderate 26） | 未着手 | Medium | ロック済み `hono@4.12.26` 等が SSR 出力の漏えい・XSS・ReDoS・`toSSG()` の出力外書込みの修正未適用。本番の実行時リスク。上流更新が不可なら `pnpm.overrides`、`pnpm audit --prod` を gate 化 |
 | 2 | F10 | 型チェックの偽陰性を解消する（strict 化と `apps/web` を含む project references 化） | 未着手 | Large | `pnpm typecheck` は packages を非 strict の個別 Program で検査し `apps/web` を除外するため、`apps/web/tsconfig.json` を直接 strict 実行すると `virtual:riebeckite/client` 宣言欠落・`PipelinePlugin` の型不整合・nullability 等で exit 1。Vite build 成功は型安全を保証しない |
 | 3 | F12 | plugin 解決結果を不変化してキャッシュし、plugin name の一意性を必須にする | 未着手 | Medium | `PluginRuntime.plugins()`／`Pipeline.execute()`／`createContentRenderer()` が毎回 `resolvePlugins` を再実行する。cache と output ownership は `plugin.name` キーのため同名 instance で衝突し、依存検証も name 重複を検出しない |
+| 4 | F13 | Plugin / ContentSource の build・dev 時キャッシュ失効機構を整理する | 未着手 | Medium | citations などの Plugin が Map<string, Promise<...>> で source 読み込み結果をキャッシュした場合、長時間稼働する dev server 中の source 編集を検知して失効する汎用 lifecycle がない。Citations 固有の仕組みは作らず、既存 Plugin の cache 利用状況を調査した上で framework-wide な invalidation 契約を設計する |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

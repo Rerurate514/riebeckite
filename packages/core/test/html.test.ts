@@ -1,6 +1,24 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { escapeScriptJson } from "../src/utils/html.js";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  escapeScriptJson,
+} from "../src/utils/html.js";
+
+test("escapeHtml escapes text for HTML body contexts", () => {
+  assert.equal(
+    escapeHtml(`<img src=x onerror="alert('x')"> & text`),
+    "&lt;img src=x onerror=&quot;alert(&#39;x&#39;)&quot;&gt; &amp; text",
+  );
+});
+
+test("escapeHtmlAttribute escapes quoted attribute contexts", () => {
+  assert.equal(
+    `<a href="${escapeHtmlAttribute('https://example.test/?q="x"&a=<b>')}">`,
+    '<a href="https://example.test/?q=&quot;x&quot;&amp;a=&lt;b&gt;">',
+  );
+});
 
 test("escapeScriptJson escapes <, >, &, U+2028 and U+2029", () => {
   const input = `<script> & "quotes" \u2028\u2029`;

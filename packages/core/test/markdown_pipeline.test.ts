@@ -57,6 +57,26 @@ test("renders frontmatter, slugs, GFM, math, and raw HTML", async () => {
   );
 });
 
+test("raw HTML is preserved as trusted author content", async () => {
+  const { html } = await createPipeline().execute(
+    [
+      "# Trusted HTML",
+      "",
+      '<img src="x" onerror="alert(1)">',
+      '<script type="application/json">{"ok":true}</script>',
+      '<iframe src="https://example.com/embed"></iframe>',
+      "<svg><foreignObject><p>HTML</p></foreignObject></svg>",
+      '<a href="javascript:alert(1)">trusted link</a>',
+    ].join("\n"),
+  );
+
+  assert.match(html, /onerror="alert\(1\)"/);
+  assert.match(html, /<script type="application\/json">/);
+  assert.match(html, /<iframe src="https:\/\/example\.com\/embed"><\/iframe>/);
+  assert.match(html, /<foreignObject>/);
+  assert.match(html, /href="javascript:alert\(1\)"/);
+});
+
 test("frontmatter-only content produces no body html", async () => {
   const { frontmatter, html } = await createPipeline().execute(
     "---\ntitle: Only\n---\n",

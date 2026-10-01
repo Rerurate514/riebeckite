@@ -100,6 +100,7 @@ export class ManifestBuilder {
       clientEntries: [],
       diagnostics: [],
       generatedOutputs: [],
+      pagePaths: [],
     };
     return { ...manifest, graph: createContentGraph(manifest) };
   }

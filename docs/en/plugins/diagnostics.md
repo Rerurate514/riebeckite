@@ -1,6 +1,10 @@
 # Diagnostics
 
-Provides diagnostic information for investigating build and Plugin problems.
+Provides diagnostic information for investigating build, Plugin, and site-wide content integrity problems.
+
+The Plugin reports site-wide reference issues from the resolved Riebeckite manifest: missing internal routes, unresolved WikiLinks, missing local assets, duplicate public locations, and redirect conflicts/cycles. It reuses `ContentPublicLocation`, public entries, public redirects, plugin page paths, plugin assets, and generated outputs, so permalink, alias, rename, l10n, publish/exclude, and Page System behavior match the build pipeline.
+
+It does not crawl external URLs, run SEO/Lighthouse checks, or auto-fix content. External schemes such as `http:`, `https:`, `mailto:`, `tel:`, and `data:` are ignored; query strings and fragments are stripped before checking a site-local route.
 
 ## Installation
 

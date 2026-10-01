@@ -6,6 +6,7 @@ import type {
 import { definePlugin, FileSystemContentSource } from "@riebeckite/core";
 import { analyzeContent } from "./src/analyze.js";
 import { buildReport, DiagnosticsFailure } from "./src/report.js";
+import { checkSiteIntegrity } from "./src/site_integrity.js";
 import type {
   AnalyzerContentConfig,
   DiagnosticsOptions,
@@ -50,13 +51,16 @@ export function diagnostics(options: DiagnosticsOptions = {}) {
       const config = context.config;
       if (!config) return [];
       try {
-        return await analyzeContent(
-          toAnalyzerConfig(config, options),
-          analyticsCoverageOptions(config, options),
-        );
+        return await analyzeContent(toAnalyzerConfig(config, options), {
+          ...analyticsCoverageOptions(config, options),
+          skipReferenceIntegrity: true,
+        });
       } catch (error) {
         return [createInternalError(error)];
       }
+    },
+    onManifestCreated: ({ manifest, diagnostics }) => {
+      diagnostics.push(...checkSiteIntegrity(manifest, options));
     },
     onBuildEnd: ({ manifest }) => {
       if (!options.failOnError) return undefined;

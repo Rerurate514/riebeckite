@@ -1,6 +1,6 @@
 # @riebeckite/plugin-diagnostics
 
-コンテンツのリンク切れ、公開設定の矛盾、frontmatter の不足などを検出するプラグインです。ビルド時の診断だけでなく、CLI とプログラムからの実行にも対応します。
+サイト全体の参照整合性、公開設定の矛盾、frontmatter の不足などを検出するプラグインです。ビルド時の診断だけでなく、CLI とプログラムからの実行にも対応します。
 
 [English](./README.md)
 
@@ -42,9 +42,24 @@ export default defineConfig({
 | `excluded-public` | warning | 除外されたノートに `publish: true` が指定されている |
 | `publish-boundary` | warning | 公開コンテンツから非公開コンテンツへリンク・埋め込みしている |
 | `analytics-untracked` | info | 安定 `id` のない公開ノートは analytics プラグインで計測されない（`reportAnalyticsCoverage` で有効化。設定で analytics プラグインが有効な場合は自動で有効化） |
+| `content-integrity:broken-link` | warning | 公開ページが、公開または登録されていないサイト内経路へリンクしている |
+| `content-integrity:unresolved-wikilink` | warning | 公開ページ内の Wikiリンクを、設定済みの解決規則で解決できない |
+| `content-integrity:broken-asset` | warning | 公開ページが、解決済みアセット・プラグインアセット・生成出力・公開経路のいずれにもないローカルアセットを参照している |
+| `content-integrity:duplicate-public-location` | error | 複数の公開コンテンツまたは生成経路が、同じ最終公開パスを所有している |
+| `content-integrity:redirect-target-missing` | warning | 公開リダイレクトの転送先コンテンツが公開されない |
+| `content-integrity:redirect-cycle` | error | 公開リダイレクトが循環している |
+| `content-integrity:redirect-public-location-conflict` | error | リダイレクト元のパスが別の公開経路と衝突している |
 | `internal-error` | error | コンテンツ解析中に処理できないエラーが発生した |
 
 未使用アセットと孤立ノートは、明示的に有効化した場合だけ確認します。意図的に孤立させるトップページなどがあるなら、`reportOrphans` の結果を公開方針と照らして判断してください。
+
+## サイト全体の参照整合性
+
+Riebeckite のプラグインとして使う場合、リンク関係の検査はコンテンツを再走査せず、解決済み manifest から行います。`publicEntries`、解決済み `ContentLink`、`ContentPublicLocation`、`publicRedirects`、プラグインページのパス、プラグインアセット、生成出力を参照します。これにより permalink、alias、rename によるリダイレクト、l10n、公開・除外設定、Page System の扱いがビルド処理と揃います。
+
+外部 URL の疎通確認、SEO、スペルチェック、Lighthouse、自動修復は行いません。`http:`、`https:`、`mailto:`、`tel:`、`data:`、プロトコル相対 URL、ページ内フラグメントだけのリンクは対象外です。経路の存在確認では、クエリ文字列とフラグメントを除いて判定します。生成ページや生成アセットを提供するプラグインは、Page Type、生成出力、アセット登録の既存契約を使ってください。登録されていれば、整合性検査でも有効な公開先として扱われます。
+
+`runDiagnostics()` と単体 CLI は、完全な manifest を持たないため、従来の content source 解析を使います。
 
 ## 設定項目
 

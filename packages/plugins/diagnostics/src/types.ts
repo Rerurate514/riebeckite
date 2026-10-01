@@ -14,6 +14,7 @@ export type DiagnosticsOptions = {
   severity?: Partial<Record<DiagnosticCode, DiagnosticSeverity>>;
   exclude?: string[];
   publishStrategy?: "explicit" | "selective";
+  skipReferenceIntegrity?: boolean;
 };
 
 export type DiagnosticsSummary = {

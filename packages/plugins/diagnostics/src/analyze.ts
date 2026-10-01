@@ -26,14 +26,16 @@ export async function analyzeContent(
   const diagnostics: Diagnostic[] = [];
 
   for (const note of source.includedNotes) {
-    checkWikilinks(note, source, state, normalizedOptions, diagnostics);
-    checkMarkdownReferences(
-      note,
-      source,
-      state,
-      normalizedOptions,
-      diagnostics,
-    );
+    if (!options.skipReferenceIntegrity) {
+      checkWikilinks(note, source, state, normalizedOptions, diagnostics);
+      checkMarkdownReferences(
+        note,
+        source,
+        state,
+        normalizedOptions,
+        diagnostics,
+      );
+    }
     checkFrontmatter(note, source, state, normalizedOptions, diagnostics);
   }
 
@@ -43,7 +45,8 @@ export async function analyzeContent(
   checkOrphans(source, state, normalizedOptions, diagnostics);
   checkUnusedAssets(source, state, normalizedOptions, diagnostics);
   checkExcludedPublic(source, normalizedOptions, diagnostics);
-  checkPublishBoundary(source, normalizedOptions, diagnostics);
+  if (!options.skipReferenceIntegrity)
+    checkPublishBoundary(source, normalizedOptions, diagnostics);
   checkAnalyticsCoverage(source, normalizedOptions, diagnostics);
 
   return diagnostics;

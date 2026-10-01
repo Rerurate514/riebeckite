@@ -243,6 +243,9 @@ export class ContentManager {
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
 
         this.applyPublicView(manifest);
+        manifest.pagePaths = [
+          ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
+        ];
         manifest.assets = this.pluginRuntime.collectAssets();
         manifest.clientEntries = this.pluginRuntime.collectClientEntries();
         manifest.diagnostics = [

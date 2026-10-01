@@ -21,6 +21,12 @@ Stable content IDs come from the optional source-authored `id` frontmatter field
 
 These checks are generic content diagnostics; the diagnostics plugin does not hardcode an analytics-specific requirement into its check abstraction.
 
+## Site-wide content integrity
+
+The diagnostics plugin also reports manifest-level reference integrity for the published site. It checks resolved public entries and plugin-provided public routes rather than creating a parallel filesystem scanner. This covers missing internal links, unresolved WikiLinks, missing local assets, duplicate final public locations, and redirect problems (`content-integrity:*`). Page-local HTML quality remains the responsibility of `@riebeckite/plugin-quality`.
+
+Generated pages and generated assets should be registered through Page Types, generated outputs, or plugin assets. Registered paths are treated as valid public targets and should not be reported as broken links.
+
 ## Authoring rules
 
 - Validate options with a pure validator; do not read files, mutate state, or start work while validating.

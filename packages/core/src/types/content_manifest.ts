@@ -137,4 +137,5 @@ export type ContentManifest = {
   clientEntries: ContentManifestPluginClientEntry[];
   diagnostics: Diagnostic[];
   generatedOutputs: GeneratedOutput[];
+  pagePaths: string[];
 };

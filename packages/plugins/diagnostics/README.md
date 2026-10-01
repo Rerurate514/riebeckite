@@ -1,8 +1,8 @@
 # @riebeckite/plugin-diagnostics
 
-Content diagnostics for Obsidian vaults / Riebeckite content: broken links,
-frontmatter issues, orphan notes, unused assets, and more. Usable as a build
-plugin, a programmatic API, and a CLI.
+Content diagnostics for Obsidian vaults / Riebeckite content: site-wide
+reference integrity, frontmatter issues, orphan notes, unused assets, and more.
+Usable as a build plugin, a programmatic API, and a CLI.
 
 [日本語](./README_ja.md)
 
@@ -53,7 +53,34 @@ export default defineConfig({
 | `excluded-public` | `warning` | Excluded note is marked `publish: true` |
 | `publish-boundary` | `warning` | Published content links to or embeds non-published content |
 | `analytics-untracked` | `info` | Published note has no stable `id` and the analytics plugin will not track it (enabled with `reportAnalyticsCoverage`, or automatically when the config enables the analytics plugin) |
+| `content-integrity:broken-link` | `warning` | A published page links to a site-local route that is not published or registered |
+| `content-integrity:unresolved-wikilink` | `warning` | A published entry contains a WikiLink that the configured WikiLink/content index resolution did not resolve |
+| `content-integrity:broken-asset` | `warning` | A published page references a local asset that is not in resolved content assets, plugin assets, generated outputs, or public routes |
+| `content-integrity:duplicate-public-location` | `error` | Two published entries or generated routes claim the same final public path |
+| `content-integrity:redirect-target-missing` | `warning` | A public redirect points at content whose public target is unavailable |
+| `content-integrity:redirect-cycle` | `error` | Public redirects form a cycle |
+| `content-integrity:redirect-public-location-conflict` | `error` | A redirect path conflicts with another public route |
 | `internal-error` | `error` | Content analysis failed |
+
+## Site-wide content integrity
+
+When used as a Riebeckite plugin, diagnostics runs site-wide integrity checks
+from the resolved manifest instead of rescanning content for link rules. It uses
+`publicEntries`, resolved `ContentLink` metadata, `ContentPublicLocation`,
+`publicRedirects`, plugin page paths, plugin assets, and generated outputs.
+This keeps permalink, alias, rename redirect, l10n, publish/exclude, and Page
+System behavior aligned with the build pipeline.
+
+It does not check external HTTP reachability, SEO, spelling, Lighthouse, or
+automatic repairs. External URLs (`http:`, `https:`, `mailto:`, `tel:`, `data:`),
+protocol-relative URLs, and fragment-only links are ignored. Query strings and
+fragments are stripped before route existence checks. Plugin authors should
+register generated routes through Page Types and generated files/assets through
+the existing plugin output/asset contracts so integrity checks can treat them as
+valid public targets.
+
+`runDiagnostics()` and the standalone CLI still use the filesystem/content-source
+analyzer because no full manifest is available in that mode.
 
 ## Options
 

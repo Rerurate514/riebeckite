@@ -199,6 +199,11 @@ function checkPackage(directory) {
   });
 
   for (const [property, value] of Object.entries(expected)) {
+    if (property === "scripts") {
+      checkRequiredScripts(errors, manifest.name, manifest, value);
+      continue;
+    }
+
     checkExactValue(errors, manifest.name, manifest, property, value);
   }
   checkExports(errors, directory, manifest);
@@ -221,6 +226,24 @@ function checkPackage(directory) {
   }
 
   return errors;
+}
+
+function checkRequiredScripts(errors, packageName, manifest, expectedScripts) {
+  for (const [scriptName, expectedCommand] of Object.entries(
+    expectedScripts ?? {},
+  )) {
+    const actualCommand = manifest.scripts?.[scriptName];
+
+    if (actualCommand !== expectedCommand) {
+      reportDifference(
+        errors,
+        packageName,
+        `scripts.${scriptName}`,
+        expectedCommand,
+        actualCommand,
+      );
+    }
+  }
 }
 
 function checkCatalog() {

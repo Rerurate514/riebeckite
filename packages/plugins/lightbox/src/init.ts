@@ -60,7 +60,14 @@ export function initLightbox(
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (dialog.element.hidden || event.key !== "Escape") return;
+    if (dialog.element.hidden) return;
+
+    if (event.key === "Tab") {
+      trapFocus(event, dialog.element);
+      return;
+    }
+
+    if (event.key !== "Escape") return;
 
     event.preventDefault();
     close();
@@ -82,6 +89,38 @@ export function initLightbox(
     delete document.documentElement.dataset.lightboxOpen;
     for (const trigger of wrappedTriggers) unwrapImage(trigger);
   };
+}
+
+function trapFocus(event: KeyboardEvent, container: HTMLElement) {
+  const focusableElements = getFocusableElements(container);
+  if (focusableElements.length === 0) {
+    event.preventDefault();
+    container.focus();
+    return;
+  }
+
+  const first = focusableElements[0];
+  const last = focusableElements[focusableElements.length - 1];
+  const active = document.activeElement;
+
+  if (event.shiftKey && active === first) {
+    event.preventDefault();
+    last.focus();
+    return;
+  }
+
+  if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((element) => !element.hasAttribute("disabled"));
 }
 
 function wrapImages(

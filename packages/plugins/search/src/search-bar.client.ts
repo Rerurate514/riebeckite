@@ -26,9 +26,12 @@ export function initSearch() {
   let searchItems: SearchItem[] | null = null;
   let selectedIndex = 0;
   let currentResults: SearchResult[] = [];
+  let previouslyFocused: HTMLElement | null = null;
 
   const openSearch = async () => {
+    previouslyFocused = document.activeElement as HTMLElement | null;
     modal.hidden = false;
+    setOpenButtonState(openButtons, true);
     input.focus();
     await loadSearchItems();
     renderResults(input.value);
@@ -36,7 +39,10 @@ export function initSearch() {
 
   const closeSearch = () => {
     modal.hidden = true;
+    setOpenButtonState(openButtons, false);
     input.blur();
+    previouslyFocused?.focus();
+    previouslyFocused = null;
   };
 
   const loadSearchItems = async () => {
@@ -160,6 +166,15 @@ export function initSearch() {
       window.location.href = result.permalink;
     }
   });
+}
+
+function setOpenButtonState(
+  buttons: readonly HTMLButtonElement[],
+  expanded: boolean,
+) {
+  for (const button of buttons) {
+    button.setAttribute("aria-expanded", String(expanded));
+  }
 }
 
 function isSearchShortcut(event: KeyboardEvent): boolean {

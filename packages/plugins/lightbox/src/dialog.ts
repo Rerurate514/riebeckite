@@ -4,6 +4,7 @@ export function createDialog() {
   element.setAttribute("role", "dialog");
   element.setAttribute("aria-modal", "true");
   element.setAttribute("aria-label", "画像の拡大表示");
+  element.tabIndex = -1;
   element.setAttribute("hidden", "");
 
   const frame = document.createElement("figure");

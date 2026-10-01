@@ -71,6 +71,9 @@ export default defineConfig({
 
 theme root selector `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` は、実サイトでは document root（app が `<html>` に `data-theme-name` を付ける）に一致し、preview では `class="rb-theme-root" data-theme-name="<name>"` を持つ任意のコンテナに一致します。
 
+Theme を作るときは、文字やリンクの見やすさ、キーボード操作中の表示、Light/Dark モードでの読みやすさなどにも注意してください。
+詳しいポイントは、[アクセシビリティ](../accessibility.md) を参照してください。
+
 カラーモード対応は次の 3 つの状態で書きます。
 
 ```css

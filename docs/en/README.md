@@ -36,6 +36,7 @@ Deployment
 | Find and install a Plugin | [Plugins](./plugins/README.md) |
 | See Plugins in action | [Plugin Showcase](./plugins/showcase.md) |
 | Change the look of my site | [Themes](./themes/README.md) |
+| Keep the site usable for more people | [Accessibility](./accessibility.md) |
 | Understand the trust model | [Security model](./security.md) |
 | Look up configuration, CLI, or an API | [Reference](./reference/README.md) |
 | Understand how Riebeckite works inside | [Framework](./framework/README.md) |
@@ -47,6 +48,7 @@ Deployment
 - **Guides** — task-oriented: writing content, Obsidian, content repositories, localization, deployment, analytics, upgrading.
 - **Plugins** — the catalog, the showcase, and how to write your own.
 - **Themes** — the catalog and how to write your own.
+- **Accessibility** — what Riebeckite handles by default and what Themes, Plugins, and content authors must keep accessible.
 - **Security model** — trusted content, Plugin-generated HTML, endpoints, and external-provider boundaries.
 - **Reference** — configuration fields, the CLI, the Plugin API, and the Theme API.
 - **Framework** — architecture, the content system, the plugin and theme systems, the build system, the HonoX integration, diagnostics, testing, and repository development.

@@ -71,6 +71,8 @@ Do not hardcode colors. Use **semantic tokens (`--rb-*`) and stable hooks (`rb-*
 
 The theme root selector `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` matches the document root on a real site (the app sets `data-theme-name` on `<html>`) and any `class="rb-theme-root" data-theme-name="<name>"` container in a preview.
 
+Themes also own the visual accessibility contract. Keep visible focus styles, readable contrast in light and dark modes, recognizable links, scalable text, reduced-motion behavior, and non-color-only state cues. See [Accessibility](../accessibility.md).
+
 Support color modes with these three states:
 
 ```css

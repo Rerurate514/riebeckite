@@ -7,6 +7,7 @@ export default function SearchBar() {
         data-search-open
         aria-haspopup="dialog"
         aria-controls="search-dialog"
+        aria-expanded="false"
       >
         <span class="search-bar__icon" aria-hidden="true">
           ⌕

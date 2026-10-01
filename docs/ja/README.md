@@ -31,6 +31,7 @@ Deployment
 | Riebeckite をアップグレードする | [Upgrading](./guides/upgrading.md) |
 | Plugin を探す | [Plugins](./plugins/README.md) |
 | Theme を選ぶ | [Themes](./themes/README.md) |
+| アクセシビリティの責任範囲を確認する | [Accessibility](./accessibility.md) |
 | trust model を確認する | [Security Model](./security.md) |
 | 設定や CLI を調べる | [Reference](./reference/README.md) |
 | 内部構造を理解する | [Framework](./framework/README.md) |

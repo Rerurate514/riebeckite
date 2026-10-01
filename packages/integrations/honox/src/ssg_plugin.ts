@@ -1,6 +1,11 @@
 import { relative } from "node:path";
 import { defaultExtensionMap, toSSG } from "hono/ssg";
-import { createServer, type Plugin, type ResolvedConfig } from "vite";
+import {
+  type ConfigEnv,
+  createServer,
+  type Plugin,
+  type ResolvedConfig,
+} from "vite";
 
 type ToSsgOptions = NonNullable<Parameters<typeof toSSG>[2]>;
 
@@ -55,7 +60,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
 
   return {
     name: "riebeckite-ssg",
-    apply: "build",
+    apply: shouldApplyRiebeckiteSsg,
     enforce: "post",
     config() {
       return {
@@ -143,6 +148,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       }
     },
   };
+}
+
+export function shouldApplyRiebeckiteSsg(
+  _config: unknown,
+  env: ConfigEnv,
+): boolean {
+  return env.command === "build" && env.mode !== "client";
 }
 
 /**

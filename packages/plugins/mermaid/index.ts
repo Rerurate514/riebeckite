@@ -4,23 +4,38 @@ import {
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
-import type { HastNode, MermaidOptions } from "./src/types.js";
+import { createMermaidRenderSession } from "./src/render-static.js";
+import type {
+  HastNode,
+  MermaidOptions,
+  MermaidRenderSession,
+} from "./src/types.js";
 
 export type {
   MermaidClientOptions,
   MermaidOptions,
   MermaidRenderMode,
+  MermaidRenderSession,
   MermaidTheme,
 } from "./src/types.js";
 
 export function mermaid(options: MermaidOptions = {}) {
+  // One render session per plugin instance: the browser is launched lazily
+  // on the first build render and closed when the build ends.
+  const session: MermaidRenderSession = createMermaidRenderSession();
   return definePlugin({
     name: "mermaid",
     order: -10,
     options,
     validateOptions: validateMermaidOptions,
     extendHtmlPipeline: (pipeline) => {
-      pipeline.use(rehypeMermaidLazy, options);
+      pipeline.use(rehypeMermaidLazy, { options, session });
+    },
+    buildEnd: async () => {
+      await session.dispose();
+    },
+    dispose: async () => {
+      await session.dispose();
     },
     assets: [createStyleAsset("mermaid")],
     clientEntries: [createClientEntry("mermaid", "initMermaidDiagrams")],
@@ -72,10 +87,15 @@ function isMermaidTheme(value: unknown): boolean {
   );
 }
 
-function rehypeMermaidLazy(options: MermaidOptions = {}) {
+type RehypeMermaidLazySettings = {
+  options: MermaidOptions;
+  session: MermaidRenderSession;
+};
+
+function rehypeMermaidLazy(settings: RehypeMermaidLazySettings) {
   return async (tree: HastNode, file: unknown) => {
     const { rehypeMermaid } = await import("./src/rehype.js");
-    const transformer = rehypeMermaid(options) as (
+    const transformer = rehypeMermaid(settings.options, settings.session) as (
       tree: HastNode,
       file: unknown,
     ) => Promise<void> | void;

@@ -15,6 +15,15 @@ const appRoot = fileURLToPath(new URL(".", import.meta.url));
 const workspaceRoot = path.resolve(appRoot, "../..");
 
 export default defineConfig({
+  build: {
+    rolldownOptions: {
+      checks: {
+        // riebeckite-ssg renders every page inside the Vite pass, so it always
+        // dominates plugin time and there is no threshold to tune.
+        pluginTimings: false,
+      },
+    },
+  },
   plugins: [
     ...replaceHonoxIslandDependencyPlugin(
       honox({

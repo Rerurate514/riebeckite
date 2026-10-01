@@ -705,12 +705,14 @@
   font-size: 0.9rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .table-of-contents__eyebrow {
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .table-of-contents__eyebrow {
   font-size: 1rem;
   margin-bottom: 1rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .table-of-contents__item {
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .table-of-contents__item {
   line-height: 22;
 }
 

@@ -46,7 +46,7 @@ class ReleaseError extends Error {
   }
 }
 
-function runCommand(command, args, cwd = repositoryRoot) {
+function runCommand(command, args, cwd = repositoryRoot, options = {}) {
   // pnpm is a .cmd shim on Windows and needs the shell to resolve. Passing a
   // single command string (instead of args) avoids Node's shell+args warning.
   const shellCommand = process.platform === "win32" && command === "pnpm";
@@ -55,9 +55,19 @@ function runCommand(command, args, cwd = repositoryRoot) {
         cwd,
         stdio: "inherit",
         shell: true,
+        timeout: options.timeout,
       })
-    : spawnSync(command, args, { cwd, stdio: "inherit" });
+    : spawnSync(command, args, {
+        cwd,
+        stdio: "inherit",
+        timeout: options.timeout,
+      });
   if (result.error) {
+    if (result.error.code === "ETIMEDOUT") {
+      throw new ReleaseError(
+        `${options.label ?? command} timed out after ${Math.round((options.timeout ?? 0) / 1000)}s.`,
+      );
+    }
     throw new ReleaseError(`Failed to run ${command}: ${result.error.message}`);
   }
   if (result.signal) {
@@ -66,9 +76,9 @@ function runCommand(command, args, cwd = repositoryRoot) {
   return result.status;
 }
 
-function runStep(label, command, args, cwd) {
+function runStep(label, command, args, cwd, options) {
   console.log(`\n[step] ${label}`);
-  const status = runCommand(command, args, cwd);
+  const status = runCommand(command, args, cwd, { ...options, label });
   if (status !== 0) {
     throw new ReleaseError(`${label} failed with exit code ${status}.`, status);
   }
@@ -148,11 +158,18 @@ function isPackageVersionPublished(packageName, version) {
     ? spawnSync(`npm view ${packageSpec} version`, {
         cwd: repositoryRoot,
         shell: true,
+        timeout: 60_000,
       })
     : spawnSync("npm", ["view", packageSpec, "version"], {
         cwd: repositoryRoot,
+        timeout: 60_000,
       });
   if (result.error) {
+    if (result.error.code === "ETIMEDOUT") {
+      throw new ReleaseError(
+        `Timed out after 60s while checking whether ${packageSpec} is published with npm view.`,
+      );
+    }
     throw new ReleaseError(
       `Could not check whether ${packageSpec} is published: ${result.error.message}`,
     );
@@ -197,15 +214,21 @@ function publishPackages(order, dryRun, version) {
   }
   const args = ["publish", "--no-git-checks"];
   if (dryRun) args.push("--dry-run");
-  for (const directory of order) {
+  for (let index = 0; index < order.length; index += 1) {
+    const directory = order[index];
     const manifest = JSON.parse(
       fs.readFileSync(
         path.join(repositoryRoot, directory, "package.json"),
         "utf8",
       ),
     );
+    console.log(
+      `\n[publish ${index + 1}/${order.length}] ${manifest.name}@${version}`,
+    );
+    if (!dryRun) {
+      console.log("Checking existing version with npm view...");
+    }
     if (!dryRun && isPackageVersionPublished(manifest.name, version)) {
-      console.log(`\n[step] publish ${directory}`);
       console.log(
         `${manifest.name}@${version} is already published; skipping.`,
       );
@@ -216,6 +239,7 @@ function publishPackages(order, dryRun, version) {
       "pnpm",
       args,
       path.join(repositoryRoot, directory),
+      { timeout: 10 * 60_000 },
     );
   }
 }

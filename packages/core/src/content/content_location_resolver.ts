@@ -17,6 +17,11 @@ type ContentLocationResolverDependencies = {
 
 export class ContentLocationResolver {
   private locations: Map<string, ContentPublicLocation> | null = null;
+  private locationsPromise: Promise<
+    ReadonlyMap<string, ContentPublicLocation>
+  > | null = null;
+  private permalinks: Map<string, string> | null = null;
+  private permalinksPromise: Promise<Map<string, string>> | null = null;
 
   constructor(
     private readonly dependencies: ContentLocationResolverDependencies,
@@ -24,12 +29,18 @@ export class ContentLocationResolver {
 
   async getLocations(): Promise<ReadonlyMap<string, ContentPublicLocation>> {
     if (this.locations) return this.locations;
+    if (this.locationsPromise) return await this.locationsPromise;
 
-    return await this.dependencies.observability.tracer.span(
+    this.locationsPromise = this.dependencies.observability.tracer.span(
       "content.locations",
       {},
       () => this.resolveLocations(),
     );
+    try {
+      return await this.locationsPromise;
+    } finally {
+      this.locationsPromise = null;
+    }
   }
 
   private async resolveLocations(): Promise<
@@ -73,6 +84,19 @@ export class ContentLocationResolver {
   }
 
   async getPermalinks(): Promise<Map<string, string>> {
+    if (this.permalinks) return this.permalinks;
+    if (this.permalinksPromise) return await this.permalinksPromise;
+
+    this.permalinksPromise = this.createPermalinks();
+    try {
+      this.permalinks = await this.permalinksPromise;
+      return this.permalinks;
+    } finally {
+      this.permalinksPromise = null;
+    }
+  }
+
+  private async createPermalinks(): Promise<Map<string, string>> {
     return new Map(
       Array.from(
         (await this.getLocations()).entries(),

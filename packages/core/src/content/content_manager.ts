@@ -65,6 +65,7 @@ export class ContentManager {
   private manifestBuilder = new ManifestBuilder();
   private pluginRuntime: PluginRuntime;
   private contentIndex: Map<string, string> | null = null;
+  private contentIndexPromise: Promise<Map<string, string>> | null = null;
   private contentCache = new Map<string, PostContent>();
   private manifest: ContentManifest | null = null;
   private manifestPromise: Promise<ContentManifest> | null = null;
@@ -146,6 +147,8 @@ export class ContentManager {
     preparation?: ContentBuildPreparation,
   ): Promise<Map<string, string>> {
     if (this.contentIndex) return this.contentIndex;
+    if (!preparation && this.contentIndexPromise)
+      return await this.contentIndexPromise;
 
     if (
       preparation?.previousState &&
@@ -162,7 +165,7 @@ export class ContentManager {
       return this.contentIndex;
     }
 
-    this.contentIndex = await this.observability().tracer.span(
+    const promise = this.observability().tracer.span(
       "content.index",
       {},
       async () =>
@@ -171,7 +174,13 @@ export class ContentManager {
           (entry) => this.entryReader.read(entry),
         ),
     );
-    return this.contentIndex;
+    if (!preparation) this.contentIndexPromise = promise;
+    try {
+      this.contentIndex = await promise;
+      return this.contentIndex;
+    } finally {
+      if (!preparation) this.contentIndexPromise = null;
+    }
   }
 
   async getProcessedContent(slug: string): Promise<PostContent> {

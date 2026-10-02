@@ -123,7 +123,13 @@ async function runBuild(siteRoot, scenario) {
     ".riebeckite",
     `${scenario}.ssg.json`,
   );
+  const traceFile = path.join(
+    siteRoot,
+    ".riebeckite",
+    `${scenario}.trace.jsonl`,
+  );
   process.env.RIEBECKITE_SSG_METRICS_FILE = metricsFile;
+  process.env.RIEBECKITE_BENCH_TRACE_FILE = traceFile;
   process.env.RIEBECKITE_APP_ROOT = siteRoot;
   const memorySamples = [];
   const sampler = setInterval(
@@ -173,6 +179,7 @@ async function runBuild(siteRoot, scenario) {
   memorySamples.push(process.memoryUsage());
   const wallClockMs = Math.round(performance.now() - start);
   const ssgMetrics = JSON.parse(await fs.readFile(metricsFile, "utf8"));
+  const traceMetrics = await readTraceMetrics(traceFile);
   return {
     scenario,
     wallClockMs,
@@ -181,6 +188,37 @@ async function runBuild(siteRoot, scenario) {
       Math.max(...memorySamples.map((sample) => sample.heapUsed)),
     ),
     ...ssgMetrics,
+    ...traceMetrics,
+  };
+}
+
+async function readTraceMetrics(traceFile) {
+  let raw;
+  try {
+    raw = await fs.readFile(traceFile, "utf8");
+  } catch (error) {
+    if (error && error.code === "ENOENT") return {};
+    throw error;
+  }
+  const executionCounts = {};
+  const coreTimingsMs = {};
+  for (const line of raw.split(/\r?\n/)) {
+    if (!line) continue;
+    const record = JSON.parse(line);
+    executionCounts[record.name] = (executionCounts[record.name] ?? 0) + 1;
+    if (record.type === "span") {
+      coreTimingsMs[record.name] =
+        (coreTimingsMs[record.name] ?? 0) + record.durationMs;
+    }
+  }
+  return {
+    executionCounts,
+    coreTimingsMs: Object.fromEntries(
+      Object.entries(coreTimingsMs).map(([name, duration]) => [
+        name,
+        Math.round(duration),
+      ]),
+    ),
   };
 }
 
@@ -205,9 +243,24 @@ export const config = resolveConfig(defineConfig({ site: { title: "Benchmark" },
   );
   await fs.writeFile(
     path.join(siteRoot, "app", "content.ts"),
-    `import { ContentManager } from "@riebeckite/core";
+    `import { appendFileSync, mkdirSync, rmSync } from "node:fs";
+import { dirname } from "node:path";
+import { ContentManager, NoopLogger, SinkTracer } from "@riebeckite/core";
 import { config } from "./config";
-export const content = new ContentManager(config.content.directory, config.content.exclude, { config, plugins: config.plugins });
+const traceFile = process.env.RIEBECKITE_BENCH_TRACE_FILE;
+if (traceFile) {
+  mkdirSync(dirname(traceFile), { recursive: true });
+  rmSync(traceFile, { force: true });
+}
+const tracer = new SinkTracer({
+  onSpan: (span) => {
+    if (traceFile) appendFileSync(traceFile, JSON.stringify({ type: "span", name: span.name, durationMs: span.durationMs }) + "\\n");
+  },
+  onEvent: (event) => {
+    if (traceFile) appendFileSync(traceFile, JSON.stringify({ type: "event", name: event.name, attributes: event.attributes }) + "\\n");
+  },
+});
+export const content = new ContentManager(config.content.directory, config.content.exclude, { config, plugins: config.plugins, observability: { logger: new NoopLogger(), tracer } });
 `,
   );
   await fs.writeFile(

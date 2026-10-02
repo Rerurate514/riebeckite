@@ -3,6 +3,7 @@ import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 
 export class ContentEntryReader {
   private entries: readonly ContentSourceEntry[] | null = null;
+  private entriesPromise: Promise<readonly ContentSourceEntry[]> | null = null;
   private entriesByPath: Map<string, ContentSourceEntry> | null = null;
   private texts = new Map<string, Promise<string>>();
 
@@ -12,17 +13,23 @@ export class ContentEntryReader {
   ) {}
 
   async getEntries(): Promise<readonly ContentSourceEntry[]> {
-    if (!this.entries) {
-      this.entries = await this.observability.tracer.span(
-        "content.scan",
-        {},
-        () => this.source.scan(),
-      );
+    if (this.entries) return this.entries;
+    if (this.entriesPromise) return await this.entriesPromise;
+
+    this.entriesPromise = this.observability.tracer.span(
+      "content.scan",
+      {},
+      () => this.source.scan(),
+    );
+    try {
+      this.entries = await this.entriesPromise;
       this.entriesByPath = new Map(
         this.entries.map((entry) => [entry.path, entry]),
       );
+      return this.entries;
+    } finally {
+      this.entriesPromise = null;
     }
-    return this.entries;
   }
 
   async readText(logicalPath: string): Promise<string> {

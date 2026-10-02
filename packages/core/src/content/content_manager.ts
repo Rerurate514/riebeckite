@@ -317,6 +317,7 @@ export class ContentManager {
         this.locationResolver.populateRedirects(manifest, locations);
         this.applyPublicView(manifest);
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
+        this.synchronizeManifestHtml(manifest, cacheManifestEntries);
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
         ];
@@ -498,6 +499,27 @@ export class ContentManager {
         publicSlugs.has(redirect.slug),
       ),
     );
+  }
+
+  private synchronizeManifestHtml(
+    manifest: ContentManifest,
+    preHookEntries: readonly ContentManifestEntry[],
+  ): void {
+    const preHookHtml = new Map(
+      preHookEntries.map((entry) => [entry.slug, entry.html]),
+    );
+    for (const entry of manifest.entries) {
+      const changed = preHookHtml.get(entry.slug) !== entry.html;
+      const cached = this.contentCache.get(entry.slug);
+      if (cached) {
+        if (changed) cached.html = entry.html;
+        continue;
+      }
+      this.contentCache.set(entry.slug, {
+        frontmatter: entry.frontmatter,
+        html: entry.html,
+      });
+    }
   }
 
   private publishStrategy(): PublishStrategy {

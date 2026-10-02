@@ -26,26 +26,30 @@ export type GeneratedOutput = GeneratedOutputInput & {
   owner: string;
 };
 
+export type ContentAssetOutputInput = {
+  path: string;
+  content: GeneratedOutputContent;
+  dependencies?: readonly OutputDependency[];
+};
+
 export type GeneratedOutputSink = {
   emit(output: GeneratedOutputInput): void;
+  emitAsset(output: ContentAssetOutputInput): void;
 };
 
 export function createUnavailableGeneratedOutputSink(): GeneratedOutputSink {
+  const unavailable = () => {
+    throw new Error(
+      "Generated output is available only during a build lifecycle.",
+    );
+  };
   return {
-    emit() {
-      throw new Error(
-        "Generated output is available only during a build lifecycle.",
-      );
-    },
+    emit: unavailable,
+    emitAsset: unavailable,
   };
 }
 
-/**
- * Normalizes a plugin-provided output path and rejects anything that could
- * escape the output directory or collide with reserved namespaces. Rejecting
- * (rather than silently rewriting) keeps `..` traversal from being laundered.
- */
-export function normalizeGeneratedOutputPath(input: string): string {
+function normalizeOutputPathSegments(input: string): string {
   if (typeof input !== "string" || input.length === 0) {
     throw new Error("Generated output path must be a non-empty string.");
   }
@@ -76,9 +80,30 @@ export function normalizeGeneratedOutputPath(input: string): string {
     }
   }
 
-  const normalized = segments.join("/");
+  return segments.join("/");
+}
+
+/**
+ * Normalizes a plugin-provided output path and rejects anything that could
+ * escape the output directory or collide with reserved namespaces. Rejecting
+ * (rather than silently rewriting) keeps `..` traversal from being laundered.
+ */
+export function normalizeGeneratedOutputPath(input: string): string {
+  const normalized = normalizeOutputPathSegments(input);
   if (
     normalized === STATIC_ASSETS_DIR ||
+    normalized.startsWith(`${STATIC_ASSETS_DIR}/`)
+  ) {
+    throw new Error(
+      `Generated output path must not conflict with the static assets namespace: "${input}".`,
+    );
+  }
+  return rejectInternalRiebeckitePath(normalized, input);
+}
+
+export function normalizeContentAssetOutputPath(input: string): string {
+  const normalized = normalizeOutputPathSegments(input);
+  if (
     normalized === ATTACHMENTS_NAMESPACE ||
     normalized.startsWith(`${ATTACHMENTS_NAMESPACE}/`)
   ) {
@@ -86,6 +111,13 @@ export function normalizeGeneratedOutputPath(input: string): string {
       `Generated output path must not conflict with the attachment namespace: "${input}".`,
     );
   }
+  return rejectInternalRiebeckitePath(normalized, input);
+}
+
+function rejectInternalRiebeckitePath(
+  normalized: string,
+  input: string,
+): string {
   if (normalized === ".riebeckite" || normalized.startsWith(".riebeckite/")) {
     throw new Error(
       `Generated output path must not target internal Riebeckite files: "${input}".`,

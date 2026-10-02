@@ -8,7 +8,7 @@ import type {
   ContentSourceEntry,
 } from "./content_source.js";
 
-const INTERNAL_CONTENT_IGNORE_PATTERNS = [
+export const INTERNAL_CONTENT_IGNORE_PATTERNS = [
   ".git",
   ".git/**",
   ".github",
@@ -89,12 +89,7 @@ export class FileSystemContentSource implements ContentSource {
   }
 
   private isExcluded(logicalPath: string): boolean {
-    if (isExcluded(INTERNAL_CONTENT_IGNORE_PATTERNS, logicalPath)) return true;
-    if (isExcluded(this.exclude, logicalPath)) return true;
-    return (
-      logicalPath.endsWith(".md") &&
-      isExcluded(this.exclude, logicalPath.slice(0, -3))
-    );
+    return isIgnoredContentPath(logicalPath, this.exclude);
   }
 
   private resolveFilePath(logicalPath: string): string {
@@ -106,6 +101,17 @@ export class FileSystemContentSource implements ContentSource {
     }
     return filePath;
   }
+}
+
+export function isIgnoredContentPath(
+  logicalPath: string,
+  exclude: readonly string[] = [],
+): boolean {
+  if (isExcluded(INTERNAL_CONTENT_IGNORE_PATTERNS, logicalPath)) return true;
+  if (isExcluded(exclude, logicalPath)) return true;
+  return (
+    logicalPath.endsWith(".md") && isExcluded(exclude, logicalPath.slice(0, -3))
+  );
 }
 
 function normalizeLogicalPath(logicalPath: string): string {

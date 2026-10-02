@@ -27,11 +27,6 @@ export type PersistentContentCacheOptions = {
   tracer?: Tracer;
 };
 
-export type PersistentContentCache = {
-  get(key: string): Promise<PersistentContentCacheEntry | undefined>;
-  set(key: string, value: PersistentContentCacheEntry): Promise<void>;
-};
-
 const CONTENT_CACHE_NAMESPACE = "content";
 export const CONTENT_CACHE_SCHEMA_VERSION = 3;
 
@@ -82,6 +77,12 @@ async function writeAtomically(
     throw error;
   }
 }
+
+export type PersistentContentCache = {
+  get(key: string): Promise<PersistentContentCacheEntry | undefined>;
+  set(key: string, value: PersistentContentCacheEntry): Promise<void>;
+  clear(): Promise<void>;
+};
 
 export function createPersistentContentCache(
   options: PersistentContentCacheOptions,

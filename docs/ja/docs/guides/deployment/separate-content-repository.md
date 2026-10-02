@@ -868,36 +868,39 @@ directory: "notes"
 
 可能なら、Local と CI の Layout を揃えておくと設定を単純にできます。
 
-## 16. Attachment は自動コピーされない
+## 16. Content image と Attachment は公開方法が異なる
 
-Obsidian の、
+Vault 内のファイルは3種類に分かれ、公開を担当する場所も異なります。
+
+| 種類 | 対象 | 公開 URL | 公開の担当 |
+| --- | --- | --- | --- |
+| Content image | 画像（png、jpg、svg など） | `/<Vault からの相対 logical path>` | build 時に generated output として書き出される |
+| Attachment / Media | Markdown でも画像でもないファイル | `/assets/attachments/<Vault からの相対 logical path>` | Site 側の Prebuild |
+| Static asset | Site 自身が管理するファイル | `/` 配下 | Vite の `public/` |
+
+Content image に Site 側の作業は不要です。`obsidianMarkdown()` が公開ページから参照されている image を logical path を保ったまま build の出力に書き出します。開発サーバーでも同じ logical path のまま Content から配信されます。参照されていない image、非公開ページからの image は書き出されません。
+
+一方の attachment / media は、
 
 ```md id="uuzvg8"
-![[attachments/x.png]]
+![[attachments/report.pdf]]
 ```
 
-のような Embed は、公開 URL を生成できます。
-
-ただし、
+のような Embed が URL を生成しても、
 
 **Vault にある File 自体が自動的に Public Directory へコピーされるわけではありません。**
 
 ```mermaid id="4nfh04"
 flowchart LR
-    Vault["Vault"]
-    Note["公開Note"]
-    Reference["Attachmentへの参照"]
-    Copy["Prebuild Copy"]
-    Public["Public Asset"]
+    Image["content image<br/>assets/logo.png"]
+    Attach["![[attachments/report.pdf]]"]
 
-    Vault --> Note
-    Note --> Reference
-    Reference --> Copy
-    Vault --> Copy
+    Image -->|"build が書き出す"| Public["Public Asset"]
+    Attach -->|"URL だけ生成"| Copy["Prebuild Copy"]
     Copy --> Public
 ```
 
-公開する Attachment は Site 側の Prebuild 処理でコピーします。
+公開する attachment / media は Site 側の Prebuild 処理でコピーします。
 
 Riebeckite Repository では、
 
@@ -928,6 +931,8 @@ Vault 全体を `public/` へコピーするのは避けてください。
 5. Public 側に残った不要な Attachment を削除する
 
 という流れになります。
+
+Content image は build が公開対象を判断して書き出すため、この Prebuild 処理は主に attachment / media を担当します。参照実装は画像も `public/` へ写しますが、これは初回 build 前の開発サーバーでも配信できるようにするためです。
 
 ```mermaid id="44q02p"
 flowchart TD
@@ -961,30 +966,39 @@ Vaultに存在する
 
 Vault 全体をコピーすると、
 
+- 非公開 Note からの image
 - 非公開 Note の Attachment
 - 未使用 Attachment
 - `.obsidian` Metadata
 
 などを誤って公開する可能性があります。
 
-## 18. Attachment の Public URL
+## 18. Asset の Public URL
 
-Attachment は安定した形式として、
+Content image は Vault からの Logical Path をそのまま保ちます。
+
+```text id="9tix0h"
+Vault:
+assets/logo.png
+
+Public URL:
+/assets/logo.png
+```
+
+Attachment / Media には専用の Prefix が使われるため、同じ論理 path に画像があっても衝突しません。
 
 ```text id="6zxxa5"
 /assets/attachments/<Vaultからの相対logical path>
 ```
 
-を利用します。
-
 たとえば、
 
-```text id="9tix0h"
+```text id="6zxxa5b"
 Vault:
-attachments/diagram.png
+attachments/report.pdf
 
 Public URL:
-/assets/attachments/attachments/diagram.png
+/assets/attachments/attachments/report.pdf
 ```
 
 のように、Vault Root からの Logical Path を基準にします。
@@ -1145,7 +1159,8 @@ npm exec -- riebeckite inspect content --list
 | Private Vault を Checkout できない | Read Token と権限 |
 | Submodule が CI にない | `submodules: recursive` |
 | Submodule の記事が古い | Site 側の Submodule Commit を更新 |
-| Deploy 後に画像が 404 | Prebuild Copy と Public Asset Path |
+| Deploy 後に画像が 404 | 公開 Note からの参照と build の出力 |
+| Deploy 後に Attachment が 404 | Prebuild Copy と Public Asset Path |
 | Vault にある画像がコピーされない | 参照元 Note が公開対象か |
 | Local では動くが CI では Path が違う | `appRoot` と Checkout 先 |
 | `exclude` が効かない | Pattern の Anchor と `**/` |

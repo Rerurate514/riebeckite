@@ -244,22 +244,48 @@ The decision is centralized in `isPublished` / `isPublishable`, and note renderi
 
 `exclude` filters before loading, so excluded notes never appear in link resolution or the graph. For notes you want private, in addition to leaving off `publish: true`, exclude the whole folder where possible.
 
-### 4-3. Attachments are not copied automatically
+### 4-3. Content images and attachments are published differently
 
-Files like `![[attachments/x.png]]` get URLs but are **not automatically copied**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: [`apps/web/scripts/build_images.ts`](../../../../../apps/web/scripts/build_images.ts) (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
+Vault files fall into three kinds, and each one is published by a different owner:
+
+|Kind|Subject|Public URL|Published by|
+| --- | --- | --- | --- |
+|Content image|An image (`png`, `jpg`, `svg`, …)|`/<relative logical path from the vault>`|The build, as generated output|
+|Attachment / Media|A file that is neither Markdown nor an image|`/assets/attachments/<relative logical path from the vault>`|A prebuild step on the site side|
+|Static asset|A file the site application owns|anywhere under `/`|Vite's `public/` directory|
+
+Content images need nothing from the site side: `obsidianMarkdown()` writes every image referenced from a published page into the build output, keeping its logical path, and the development server serves the same logical path straight from the content. Images that nothing references, or that only non-public pages reference, are not written.
+
+Attachments and media are different. An embed such as:
+
+```md
+![[attachments/report.pdf]]
+```
+
+produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: [`apps/web/scripts/build_images.ts`](../../../../../apps/web/scripts/build_images.ts) (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
 
 That implementation works like this:
 
 1. Walk contentRoot to enumerate images (`IMAGE_EXTENSIONS`) and attachments (`isAttachmentPath`).
 2. Build the content with `ContentManager` and collect only the assets **referenced** by published notes — from links and from `src` / `href` in the rendered HTML.
-3. Copy only referenced assets into `public/assets/attachments/<relative path from the vault>` (images into `public/<relative path>`), skipping the copy when size and mtime are unchanged.
+3. Copy only referenced assets into `public/assets/attachments/<relative path from the vault>` (images into `public/<relative path>`, so the dev server can serve them before the first build), skipping the copy when size and mtime are unchanged.
 4. Delete orphaned attachments that exist in public but not in content.
 
-In short, the rule is "copy because a **published note references it**", not "copy because it exists in the vault". Do not take the shortcut of copying the entire vault. It risks leaking private notes, unreferenced attachments, and `.obsidian` metadata. Until a publish boundary check is introduced, the publish filter and asset-copy policy are the site application's responsibility. For an example of checking the boundary yourself, see the E2E fixture's [`publish-boundary-check.mjs`](../../../../../tests/external-site/fixture/site/publish-boundary-check.mjs).
+In short, the rule is "copy because a **published note references it**", not "copy because it exists in the vault". Do not take the shortcut of copying the entire vault. It risks leaking private notes, images referenced only from non-public pages, unreferenced attachments, and `.obsidian` metadata. Content images are already filtered by the build; attachment and media publishing stays the site application's responsibility until a publish boundary check is introduced. For an example of checking the boundary yourself, see the E2E fixture's [`publish-boundary-check.mjs`](../../../../../tests/external-site/fixture/site/publish-boundary-check.mjs).
 
 ### 4-4. The generated URL
 
-The generated URL has this stable shape:
+A content image keeps its logical path from the vault:
+
+```text
+Vault:
+assets/logo.png
+
+Public URL:
+/assets/logo.png
+```
+
+Attachments and media use a dedicated prefix so that a file and an image with the same name cannot collide:
 
 ```text
 /assets/attachments/<relative logical path from the vault>
@@ -305,7 +331,8 @@ Check the results in this order:
 | A private repository not resolvable via `github.token` (e.g., another host) | Confirm a dedicated secret (PAT, etc.) is passed with `token:` |
 | The submodule is not fetched in CI | Confirm `actions/checkout@v4` has `submodules: recursive`, and that an SSH URL has a key available |
 | Submodule articles do not update | On the site side: `cd content && git pull` → `git add content` → commit → push |
-| Images 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
+| Images 404 after deploy | Confirm a published page references the image and that it is in the build output |
+| Attachments or media 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
 | An image exists in the vault but is not copied | Confirm the referencing note is published (`publish: true`) and that the reference is collected as a `link.kind` |
 | Works locally but the path differs in CI | Check the CI working directory and the relative base (appRoot). `../notes` vs `notes` is a common source of drift |
 | An excluded folder is still loaded | Remember patterns are anchored; add `**/` if needed (4-2) |

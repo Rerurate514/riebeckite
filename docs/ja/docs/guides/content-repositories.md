@@ -891,30 +891,34 @@ private/**
 
 ## 添付ファイルに注意する
 
-Vault 内の添付ファイルは、Markdown と同じように自動で Public Directory へコピーされるわけではありません。
+Vault 内の Asset は、content image と attachment / media で公開方法が異なります。
 
-たとえば、
+| 種類 | 対象 | URL | 公開の担当 |
+| --- | --- | --- | --- |
+| Content image | 画像（png、jpg、svg など） | `/<Vault からの相対 logical path>` | build 時に generated output として書き出される |
+| Attachment / Media | Markdown でも画像でもないファイル | `/assets/attachments/<Vault からの相対 logical path>` | Site 側の Prebuild |
+
+Content image は、公開ページから参照されているものだけが build の出力に含まれるため、手動で `public/` へコピーする必要はありません。
+
+一方の attachment / media について、
 
 ```md
-![[attachments/example.png]]
+![[attachments/report.pdf]]
 ```
 
-が URL に変換されても、実際の `example.png` が Public Output に存在しなければ Browser では `404` になります。
+が URL に変換されても、実際の `report.pdf` が Public Output に存在しなければ Browser では `404` になります。
 
 ```mermaid
 flowchart LR
-    Markdown["![[attachments/x.png]]"]
-    URL["Public URL"]
-    File{"実ファイルが<br/>Publicにある？"}
+    Image["content image<br/>assets/logo.png"]
+    Attach["![[attachments/report.pdf]]"]
 
-    Markdown --> URL
-    URL --> File
-
-    File -->|"Yes"| Image["表示"]
-    File -->|"No"| Error["404"]
+    Image -->|"build が書き出す"| Output["Public Output"]
+    Attach -->|"URL だけ生成"| Prebuild["Prebuild Copy"]
+    Prebuild --> Output
 ```
 
-公開する添付ファイルだけをコピーする Prebuild 処理を Site 側に用意してください。
+公開する attachment / media だけをコピーする Prebuild 処理を Site 側に用意してください。
 
 Riebeckite Repository 内では、
 
@@ -963,11 +967,13 @@ npm exec riebeckite inspect config
 
 絶対 Path も利用できますが、開発端末と CI で環境が異なりやすいため、通常は相対 Path の方が扱いやすくなります。
 
-### 記事は表示されるのに画像だけ `404` になる
+### 記事は表示されるのに Asset だけ `404` になる
 
-添付ファイルの Copy 処理を確認してください。
+まず、どの種類の Asset かを区別してください。
 
-URL が生成されていても、実ファイルが、
+画像が `404` になる場合は、その画像が公開ページから参照されているか確認します。content image は公開ページから参照されているものだけが build の出力に含まれるため、参照が漏れていないかを先に確認します。
+
+Attachment / Media が `404` になる場合は Copy 処理を確認してください。URL が生成されていても、実ファイルが、
 
 ```text
 public/assets/attachments/
@@ -1005,7 +1011,8 @@ CI 上に Content Repository が存在するか確認してください。
 | CI で Vault が見つからない | 外部 Checkout / Submodule |
 | Content Push で Deploy されない | `notify-site.yml` / `SITE_DISPATCH_TOKEN` / `repository_dispatch` |
 | Private Content を Checkout できない | `RIEBECKITE_CONTENT_READ_TOKEN` |
-| 画像だけ `404` | Prebuild の Asset Copy |
+| 画像だけ `404` | 公開ページからの参照があるか、build の出力を確認 |
+| Attachment / Media だけ `404` | Prebuild の Asset Copy |
 | ローカルと CI で Path が違う | Site Root を基準にした相対 Path |
 | Submodule が更新されない | Site 側の Submodule Reference |
 

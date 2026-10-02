@@ -312,6 +312,7 @@ export class ContentManager {
           {},
           () => this.manifestBuilder.build(entries, contentIndex),
         );
+        const cacheManifestEntries = structuredClone(manifest.entries);
         this.locationResolver.populateRedirects(manifest, locations);
         this.applyPublicView(manifest);
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
@@ -362,6 +363,7 @@ export class ContentManager {
                   ...this.outputChangeSet.unchanged,
                 ]
               : [],
+            cacheManifestEntries,
           );
         this.manifest = manifest;
         return manifest;

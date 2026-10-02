@@ -58,6 +58,7 @@ export class ContentBuildCoordinator {
     manifest: ContentManifest,
     pipelineFingerprint: string | undefined,
     outputs: readonly OutputDescriptor[] = [],
+    manifestEntries: readonly ContentManifestEntry[] = manifest.entries,
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -83,7 +84,7 @@ export class ContentBuildCoordinator {
         ),
       ),
       pipelineFingerprint,
-      manifestEntries: manifest.entries,
+      manifestEntries,
       outputs,
     };
 

@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { defaultExtensionMap, toSSG } from "hono/ssg";
 import {
@@ -331,23 +331,41 @@ function routeOutputPath(routePath: string, contentType: string): string {
   return `${normalized}.${extension}`;
 }
 
-async function loadOutputCache(
+export async function loadOutputCache(
   path: string,
 ): Promise<OutputCacheState | undefined> {
   try {
-    const parsed = JSON.parse(await readFile(path, "utf8")) as OutputCacheState;
-    return parsed.version === 1 ? parsed : undefined;
+    const parsed = JSON.parse(await readFile(path, "utf8")) as unknown;
+    return isOutputCacheState(parsed) ? parsed : undefined;
   } catch {
     return undefined;
   }
 }
 
-async function saveOutputCache(
+export async function saveOutputCache(
   path: string,
   state: OutputCacheState,
 ): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(state)}\n`, "utf8");
+  const temporaryPath = `${path}.${process.pid}.${Date.now()}.tmp`;
+  await writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8");
+  await rename(temporaryPath, path);
+}
+
+function isOutputCacheState(value: unknown): value is OutputCacheState {
+  if (!value || typeof value !== "object") return false;
+  const state = value as { version?: unknown; outputs?: unknown };
+  if (state.version !== 1) return false;
+  if (!state.outputs || typeof state.outputs !== "object") return false;
+  for (const [path, entry] of Object.entries(state.outputs)) {
+    if (typeof path !== "string") return false;
+    if (!entry || typeof entry !== "object") return false;
+    const output = entry as { source?: unknown; encoding?: unknown };
+    if (typeof output.source !== "string") return false;
+    if (output.encoding !== "utf8" && output.encoding !== "base64")
+      return false;
+  }
+  return true;
 }
 
 function encodeOutput(source: string | Uint8Array): OutputCacheEntry {

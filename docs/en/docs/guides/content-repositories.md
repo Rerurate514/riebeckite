@@ -287,7 +287,7 @@ Using `explicit` with a private vault is the safest arrangement: you may forget 
 - **Never put `publish: true` on private notes**, and exclude whole private folders with `content.exclude`.
 - **Put `.obsidian/` in `exclude`** so Obsidian settings and workspace state never mix into the site.
 - **Exclude template folders** (`Templates/**` and the like) so note templates are not published as articles.
-- **Attachments are not published automatically.** Files like `![[attachments/x.png]]` get URLs but are not copied. Add a prebuild step on the site side that copies only the files you publish (reference: call [`apps/web/scripts/build_images.ts`](../../../../apps/web/scripts/build_images.ts) from `prebuild`). See the assets section of the [in-depth companion](./deployment/separate-content-repository.md) for how it works.
+- **Know which asset kind you are copying.** Content images (png, jpg, svg, and similar) are published by the build as generated output, so they need no manual copy. Attachments and media (files that are neither Markdown nor images) get URLs but are not copied, so they need a prebuild step on the site side that copies only the files you publish (reference: call [`apps/web/scripts/build_images.ts`](../../../../apps/web/scripts/build_images.ts) from `prebuild`). See the assets section of the [in-depth companion](./deployment/separate-content-repository.md) for how it works.
 
 ## FAQ
 
@@ -299,9 +299,9 @@ Yes. Leave `content.directory` at the default `content`, remove `publish: true` 
 
 `content.directory` is relative, so the distance from the site root changes when the vault moves. Check the resolved `Directory` with `inspect config` and fix the number of `../` levels. Absolute paths also work, but they drift between developer machines and CI, so relative paths are usually recommended.
 
-**Articles render but images 404.**
+**Articles render but assets 404.**
 
-Attachments are not copied automatically. Confirm the prebuild copy step runs before the build and targets `public/assets/attachments/`.
+First identify the asset kind. If an image 404s, confirm a published page actually references it: content images reach the build output only through a reference from a published page. If an attachment or media file 404s, confirm the prebuild copy step runs before the build and targets `public/assets/attachments/`.
 
 **CI alone says the vault was not found.**
 
@@ -318,7 +318,8 @@ Yes. Write `exclude` patterns with `/` separators; they do not depend on the pla
 | Articles do not appear | Check `publish: true`, `exclude` patterns, and `inspect content --list` |
 | `Directory` does not point at the intended vault | Check `inspect config` and revisit the relative `directory` |
 | CI build cannot find the vault | Add the extra checkout or submodule support |
-| Images 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
+| Images 404 after deploy | Confirm a published page references the image and that it is in the build output |
+| Attachments or media 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
 | Works locally but the path differs in CI | Check the CI working directory and the base (site root). `../notes` vs `notes` is a common source of drift |
 | Submodule articles do not update | Update the `content` reference on the site side, commit, and push |
 

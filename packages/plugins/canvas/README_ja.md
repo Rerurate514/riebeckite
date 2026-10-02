@@ -35,7 +35,7 @@ export default defineConfig({
 - `div.rb-canvas__stage` — `render` が `"client"` または `"both"` のときの空の領域。`initCanvas()` が内容を充填します
 - `details.rb-canvas__fallback` — ノードとエッジの一覧（JS なしでも内容を確認できます）
 
-`file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、`entry.html` と `PostContent.html` の両方を書き換えます。`text` ノードは最小限の Markdown（wikilink とエスケープ）だけを扱います。
+`file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、マニフェストエントリの HTML を書き換えます。Core がその HTML をコンテンツルートの描画 HTML と同期します。`text` ノードは最小限の Markdown（wikilink とエスケープ）だけを扱います。
 
 ## クライアント側
 

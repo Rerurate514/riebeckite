@@ -31,9 +31,6 @@ export function queryPlugin(options: QueryOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkQuery, { language });
     },
-    onPostProcessed: (context) => {
-      runtime.track(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics);
     },

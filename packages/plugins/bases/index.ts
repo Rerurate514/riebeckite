@@ -45,9 +45,6 @@ export function bases(options: BasesOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkBases, { language });
     },
-    onPostProcessed: (context) => {
-      runtime.track(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics, context.config);
     },

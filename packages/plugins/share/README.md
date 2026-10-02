@@ -11,9 +11,9 @@ JavaScript; only the copy-link action is a progressive enhancement.
 
 `share()` resolves each note's `permalink` to an absolute URL, composes the
 service URLs from the note title and URL, and inserts the controls near the
-article. Both `entry.html` and the cached `PostContent.html` that the content
-route renders are updated, so the controls appear on generated pages and in
-feeds.
+article. The controls are inserted into the manifest entry's HTML, which Core
+synchronizes with the content the route renders, so they appear on generated
+pages and in feeds.
 
 Supported services:
 

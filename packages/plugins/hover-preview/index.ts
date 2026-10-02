@@ -47,9 +47,6 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
     },
     options,
     validateOptions: validateHoverPreviewOptions,
-    onPostProcessed: (context) => {
-      runtime.track(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       // Only published entries may appear in the hover preview payload: the
       // payload is embedded into page HTML, so indexing drafts or private notes

@@ -57,7 +57,7 @@ export default defineConfig({
 <script type="application/json" id="rb-ux-config" data-rb-ux-config>{...}</script>
 ```
 
-`initUx()` はこの要素を読み取って設定を復元します。要素が無い場合は全機能が有効な既定値で動作します。挿入は `onPostProcessed` で行い、`onManifestCreated` でも未挿入の記事エントリへ反映し、`getProcessedContent()` が返すキャッシュ済み HTML も同時に更新します。挿入はページごとに一度だけで、`data-rb-ux-config` を目印に重複挿入を防ぎます。
+`initUx()` はこの要素を読み取って設定を復元します。要素が無い場合は全機能が有効な既定値で動作します。挿入は `onPostProcessed` で行い、`onManifestCreated` でも未挿入の記事エントリへ反映します。挿入はページごとに一度だけで、`data-rb-ux-config` を目印に重複挿入を防ぎます。
 
 ## 出力される HTML / CSS フック
 

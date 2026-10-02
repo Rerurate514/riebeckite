@@ -3,7 +3,6 @@ import {
   createClientEntry,
   definePlugin,
   escapeHtmlAttribute,
-  type PostContent,
 } from "@riebeckite/core";
 import { ANALYTICS_CONTENT_ID_ATTRIBUTE } from "./src/init.js";
 import {
@@ -45,7 +44,6 @@ export type {
  * registered with the browser entry.
  */
 export function analytics(options: AnalyticsOptions) {
-  const tracked = new Map<string, PostContent>();
   return definePlugin({
     name: "analytics",
     options,
@@ -53,12 +51,9 @@ export function analytics(options: AnalyticsOptions) {
     clientEntries: [
       createClientEntry("analytics", "initAnalytics", options.publicConfig),
     ],
-    onPostProcessed: ({ slug, content }) => {
-      tracked.set(slug, content);
-    },
     onManifestCreated: ({ manifest }) => {
       for (const entry of manifest.entries) {
-        appendContentIdentity(entry, tracked.get(entry.slug));
+        appendContentIdentity(entry);
       }
     },
   });
@@ -66,16 +61,10 @@ export function analytics(options: AnalyticsOptions) {
 
 export const analyticsPlugin = analytics;
 
-function appendContentIdentity(
-  entry: ContentManifestEntry,
-  content: PostContent | undefined,
-): void {
+function appendContentIdentity(entry: ContentManifestEntry): void {
   if (!entry.contentId) return;
   const marker = `<span hidden ${ANALYTICS_CONTENT_ID_ATTRIBUTE}="${escapeHtmlAttribute(entry.contentId)}"></span>`;
   if (!entry.html.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE)) {
     entry.html = `${entry.html}\n${marker}`;
-  }
-  if (content && !content.html.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE)) {
-    content.html = `${content.html}\n${marker}`;
   }
 }

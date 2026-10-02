@@ -2,7 +2,6 @@ import {
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
-  type PostContent,
 } from "@riebeckite/core";
 import { resolveRelatedPostsOptions } from "./src/options.js";
 import { buildRelatedPosts, isEligibleRelatedEntry } from "./src/related.js";
@@ -33,13 +32,11 @@ export const RELATED_POSTS_PLUGIN_NAME = "related-posts";
  * Build-time "related notes" navigation.
  *
  * For every published entry it ranks the other entries in the manifest, then
- * appends a `<nav>` section to both `entry.html` and the cached
- * `PostContent.html` that the content route renders. No client runtime is
- * required.
+ * appends a `<nav>` section to the manifest entry HTML, which is the final
+ * rendering source. No client runtime is required.
  */
 export function relatedPosts(options: RelatedPostsOptions = {}) {
   const resolved = resolveRelatedPostsOptions(options);
-  const processed = new Map<string, PostContent>();
 
   return definePlugin({
     name: RELATED_POSTS_PLUGIN_NAME,
@@ -49,9 +46,6 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
     },
     options,
     validateOptions: validateRelatedPostsOptions,
-    onPostProcessed: (context) => {
-      processed.set(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       const { manifest } = context;
       for (const entry of manifest.discoverableEntries) {
@@ -67,10 +61,7 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
         if (related.length === 0) continue;
 
         entry.html = `${entry.html}${renderRelatedPosts(related, resolved)}`;
-        const content = processed.get(entry.slug);
-        if (content) content.html = entry.html;
       }
-      processed.clear();
     },
     assets: [createStyleAsset(RELATED_POSTS_PLUGIN_NAME)],
   });

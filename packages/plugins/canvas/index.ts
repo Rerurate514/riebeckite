@@ -97,9 +97,6 @@ export function canvas(options: CanvasOptions = {}) {
         },
       },
     ],
-    onPostProcessed: (context) => {
-      runtime.track(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest);
     },

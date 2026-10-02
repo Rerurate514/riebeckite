@@ -676,3 +676,166 @@ test("a manifest hook writeback reaches the content route after an incremental e
     );
   }
 });
+
+function manifestOnlyDecorator(marker: string) {
+  return definePlugin({
+    name: "manifest-only-decorator",
+    processedContentCache: {
+      version: "manifest-only-v1",
+      dependencyMode: "none",
+    },
+    onManifestCreated: ({ manifest }) => {
+      for (const entry of manifest.entries) {
+        if (!entry.html.includes(marker)) {
+          entry.html = `${entry.html}\n<p>${marker}</p>`;
+        }
+      }
+    },
+  });
+}
+
+async function buildWithManifestOnly(
+  files: Record<string, string>,
+  directory: string,
+  marker: string,
+) {
+  const events: { name: string }[] = [];
+  const tracer = new SinkTracer({
+    onEvent: (event) => events.push(event),
+    onSpan: () => {},
+  });
+  const config = testConfig(directory);
+  const plugins = [...config.plugins, manifestOnlyDecorator(marker)];
+  const manager = new ContentManager(memorySource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+    observability: { logger: new NoopLogger(), tracer },
+  });
+  const manifest = await manager.build({ incremental: true });
+  const processed = new Map<string, string>();
+  for (const entry of manifest.entries) {
+    processed.set(
+      entry.slug,
+      (await manager.getProcessedContent(entry.slug)).html,
+    );
+  }
+  await manager.dispose();
+  return {
+    manifest,
+    processed,
+    reused: events.filter((event) => event.name === "content.reuse").length,
+  };
+}
+
+function markerCount(value: string, marker: string): number {
+  return value.match(new RegExp(`<p>${marker}</p>`, "g"))?.length ?? 0;
+}
+
+test("a manifest hook html mutation reaches getProcessedContent without a plugin writeback", async () => {
+  const directory = await tempDirectory("manifest-only-basic");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  const cold = await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+
+  for (const entry of cold.manifest.entries) {
+    assert.equal(
+      markerCount(entry.html, "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} manifest`,
+    );
+    const html = cold.processed.get(entry.slug) ?? "";
+    assert.equal(html, entry.html, `${entry.slug} processed`);
+    assert.equal(
+      markerCount(html, "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} processed`,
+    );
+  }
+});
+
+test("a manifest hook html mutation survives a no-change rebuild exactly once", async () => {
+  const directory = await tempDirectory("manifest-only-no-change");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  const cold = await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+  const warm = await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+
+  assert.equal(warm.reused, 2);
+  assert.deepEqual([...warm.processed], [...cold.processed]);
+  for (const entry of warm.manifest.entries) {
+    assert.equal(
+      markerCount(entry.html, "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} manifest`,
+    );
+    assert.equal(
+      markerCount(warm.processed.get(entry.slug) ?? "", "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} processed`,
+    );
+  }
+});
+
+test("repeated manifest hook rebuilds do not duplicate output in processed content", async () => {
+  const directory = await tempDirectory("manifest-only-repeat");
+  const files = { "a.md": "# A", "b.md": "# B" };
+
+  await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+  await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+  const third = await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+
+  for (const entry of third.manifest.entries) {
+    assert.equal(
+      markerCount(entry.html, "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} manifest`,
+    );
+    assert.equal(
+      markerCount(third.processed.get(entry.slug) ?? "", "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} processed`,
+    );
+  }
+});
+
+test("a manifest hook html mutation is preserved across an incremental edit", async () => {
+  const directory = await tempDirectory("manifest-only-edit");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+
+  files["b.md"] += "\nEdited.";
+  const warm = await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+
+  for (const entry of warm.manifest.entries) {
+    assert.equal(
+      markerCount(entry.html, "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} manifest`,
+    );
+    const html = warm.processed.get(entry.slug) ?? "";
+    assert.equal(html, entry.html, `${entry.slug} processed`);
+    assert.equal(
+      markerCount(html, "MANIFEST_ONLY"),
+      1,
+      `${entry.slug} processed`,
+    );
+  }
+  assert.match(warm.processed.get("b") ?? "", /Edited/);
+});
+
+test("a manifest hook html mutation is not persisted in the content caches", async () => {
+  const directory = await tempDirectory("manifest-only-cache");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  await buildWithManifestOnly(files, directory, "MANIFEST_ONLY");
+
+  const entries = await fs.readdir(directory, { recursive: true });
+  for (const relative of entries) {
+    const fullPath = path.join(directory, relative);
+    const stat = await fs.stat(fullPath);
+    if (!stat.isFile()) continue;
+    const text = await fs.readFile(fullPath, "utf8");
+    assert.equal(
+      text.includes("MANIFEST_ONLY"),
+      false,
+      `${relative} must not contain a post-hook mutation`,
+    );
+  }
+});

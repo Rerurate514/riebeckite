@@ -115,16 +115,14 @@ test("extendMarkdownPipeline registers remarkQuery with the configured language"
   assert.deepEqual(uses[1]?.[1], { language: "sql" });
 });
 
-test("the plugin hooks track content and resolve placeholders at manifest time", async () => {
+test("the plugin resolves placeholders at manifest time", async () => {
   const plugin = queryPlugin();
   const one = entry(
     "one",
     {},
     `<p>one</p>${createQueryPlaceholder("limit: 1")}`,
   );
-  const content = { frontmatter: one.frontmatter, html: one.html };
 
-  await plugin.onPostProcessed?.({ slug: "one", content } as never);
   const diagnostics: Diagnostic[] = [];
   await plugin.onManifestCreated?.({
     manifest: manifestOf([one]),
@@ -133,5 +131,4 @@ test("the plugin hooks track content and resolve placeholders at manifest time",
 
   assert.deepEqual(diagnostics, []);
   assert.match(one.html, /data-rr-query-result/);
-  assert.equal(content.html, one.html);
 });

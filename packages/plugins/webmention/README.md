@@ -57,8 +57,8 @@ Rejection codes: `invalid_request`, `missing_source_or_target`,
 ## Rendering
 
 At `onManifestCreated` the plugin queries the provider once, groups verified
-mentions by target, and appends a section to each matching entry's HTML (and to
-the cached `PostContent`) using stable hooks:
+mentions by target, and appends a section to each matching entry's HTML. Core
+synchronizes that HTML with the content the route renders, using stable hooks:
 
 ```html
 <section class="rr-webmention" data-webmention data-webmention-count="2">

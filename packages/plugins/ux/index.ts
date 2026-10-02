@@ -3,7 +3,6 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  type PostContent,
 } from "@riebeckite/core";
 import { injectUxConfig } from "./src/inject.js";
 import { resolveUxConfig, type UxOptions } from "./src/options.js";
@@ -19,7 +18,6 @@ export type { UxOptions, UxResolvedConfig } from "./src/options.js";
  */
 export function uxPlugin(options: UxOptions = {}) {
   const config = resolveUxConfig(options);
-  const tracked = new Map<string, PostContent>();
 
   return definePlugin({
     name: "ux",
@@ -33,7 +31,6 @@ export function uxPlugin(options: UxOptions = {}) {
     clientEntries: [createClientEntry("ux", "initUx")],
     onPostProcessed: (context) => {
       context.content.html = injectUxConfig(context.content.html, config);
-      tracked.set(context.slug, context.content);
     },
     onManifestCreated: (context) => {
       for (const entry of context.manifest.publicEntries) {
@@ -41,8 +38,6 @@ export function uxPlugin(options: UxOptions = {}) {
         if (html === entry.html) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
     },
   });

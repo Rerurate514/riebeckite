@@ -3,7 +3,6 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  type PostContent,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { buildExcaliBrainGraph } from "./src/graph.js";
@@ -64,7 +63,6 @@ const SECTION_ATTRIBUTE = "data-excalibrain";
 
 type TrackedNote = {
   markdown: string;
-  content: PostContent;
 };
 
 function createExcaliBrainRuntime(options: ExcaliBrainOptions) {
@@ -72,8 +70,8 @@ function createExcaliBrainRuntime(options: ExcaliBrainOptions) {
   const resolved = resolveExcaliBrainOptions(options);
 
   return {
-    track(slug: string, markdown: string, content: PostContent): void {
-      notes.set(slug, { markdown, content });
+    track(slug: string, markdown: string): void {
+      notes.set(slug, { markdown });
     },
     resolve(
       manifest: ContentManifest,
@@ -108,15 +106,8 @@ function createExcaliBrainRuntime(options: ExcaliBrainOptions) {
 
         if (hasFence) {
           entry.html = replaceExcaliBrainPlaceholders(entry.html, section);
-          if (note) {
-            note.content.html = replaceExcaliBrainPlaceholders(
-              note.content.html,
-              section,
-            );
-          }
         } else {
           entry.html = `${entry.html}${section}`;
-          if (note) note.content.html = `${note.content.html}${section}`;
         }
       }
     },
@@ -140,7 +131,7 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
       pipeline.use(rehypeExcaliBrain, { language });
     },
     onPostParsed: (context) => {
-      runtime.track(context.slug, context.markdown, context.content);
+      runtime.track(context.slug, context.markdown);
     },
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.config);

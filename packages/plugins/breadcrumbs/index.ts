@@ -2,7 +2,6 @@ import {
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
-  type PostContent,
 } from "@riebeckite/core";
 import { buildBreadcrumbItems } from "./src/breadcrumbs.js";
 import { resolveBreadcrumbsOptions } from "./src/options.js";
@@ -38,14 +37,13 @@ export const BREADCRUMBS_PLUGIN_NAME = "breadcrumbs";
  * Slug-hierarchy breadcrumbs for Riebeckite notes.
  *
  * For every published entry it derives a trail from the note's slug and
- * inserts a `<nav>` at the top of both `entry.html` and the cached
- * `PostContent.html` that the content route renders. The hierarchical
- * BreadcrumbList JSON-LD is contributed through `entry.headTags` so the Site
- * shell can render it in the document `<head>`. No client runtime is required.
+ * inserts a `<nav>` at the top of the manifest entry HTML, which is the final
+ * rendering source. The hierarchical BreadcrumbList JSON-LD is contributed
+ * through `entry.headTags` so the Site shell can render it in the document
+ * `<head>`. No client runtime is required.
  */
 export function breadcrumbs(options: BreadcrumbsOptions = {}) {
   const resolved = resolveBreadcrumbsOptions(options);
-  const processed = new Map<string, PostContent>();
 
   return definePlugin({
     name: BREADCRUMBS_PLUGIN_NAME,
@@ -55,9 +53,6 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
     },
     options,
     validateOptions: validateBreadcrumbsOptions,
-    onPostProcessed: (context) => {
-      processed.set(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       const { config, manifest } = context;
       if (!config) return;
@@ -85,11 +80,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
           }
         }
         entry.html = html;
-
-        const content = processed.get(entry.slug);
-        if (content) content.html = html;
       }
-      processed.clear();
     },
     assets: [createStyleAsset(BREADCRUMBS_PLUGIN_NAME)],
   });

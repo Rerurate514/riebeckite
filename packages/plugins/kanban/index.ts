@@ -47,7 +47,7 @@ export function kanban(options: KanbanOptions = {}) {
       pipeline.use(remarkKanban, resolved);
     },
     onPostProcessed: (context) => {
-      runtime.track(context.slug, context.markdown, context.content);
+      runtime.track(context.slug, context.markdown);
     },
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest);

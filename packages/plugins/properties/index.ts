@@ -4,7 +4,6 @@ import {
   type Diagnostic,
   definePlugin,
   type PluginManifestContext,
-  type PostContent,
 } from "@riebeckite/core";
 import {
   DEFAULT_PROPERTIES_CLASS,
@@ -47,13 +46,10 @@ const PACKAGE_NAME = "@riebeckite/plugin-properties";
 /**
  * Renders each note's frontmatter as an Obsidian-style property panel at build
  * time. By default the panel is prepended (or appended) to the manifest entry
- * HTML and to the cached `PostContent` so both the manifest-driven and the
- * content-driven routes show it (the query-plugin dual-mutation pattern). With
- * `render: "slot"` the panel is instead published on
- * `ContentManifestEntry.bodySlots` for the Site to place.
+ * HTML, which is the final rendering source. With `render: "slot"` the panel is
+ * instead published on `ContentManifestEntry.bodySlots` for the Site to place.
  */
 export function properties(options: PropertiesOptions = {}) {
-  const tracked = new Map<string, PostContent>();
   const resolved = resolvePropertiesOptions(options);
 
   return definePlugin({
@@ -65,11 +61,8 @@ export function properties(options: PropertiesOptions = {}) {
     options,
     validateOptions: validatePropertiesOptions,
     assets: [createStyleAsset(PLUGIN_NAME)],
-    onPostProcessed: (context) => {
-      tracked.set(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
-      applyPropertiesPanels(context, tracked, resolved);
+      applyPropertiesPanels(context, resolved);
     },
   });
 }
@@ -78,7 +71,6 @@ export const propertiesPlugin = properties;
 
 function applyPropertiesPanels(
   context: PluginManifestContext,
-  tracked: Map<string, PostContent>,
   resolved: ReturnType<typeof resolvePropertiesOptions>,
 ): void {
   const { manifest, diagnostics } = context;
@@ -107,9 +99,6 @@ function applyPropertiesPanels(
         ? `${entry.html}${panel}`
         : `${panel}${entry.html}`;
     entry.html = html;
-
-    const content = tracked.get(entry.slug);
-    if (content) content.html = html;
   }
 }
 

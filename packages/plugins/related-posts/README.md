@@ -21,8 +21,9 @@ Candidates are sorted by score (descending), then by title, then by slug, and
 clamped to `limit`. Entries that score below `minScore` are dropped. When no
 candidate qualifies, the entry's HTML is left untouched.
 
-The plugin updates both `entry.html` and the cached `PostContent.html` that the
-content route renders, so the section appears on generated pages and in feeds.
+The plugin appends the section to the manifest entry's HTML. Core synchronizes
+that HTML with the content the route renders, so the section appears on generated
+pages and in feeds.
 
 ## Usage
 

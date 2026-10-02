@@ -2,7 +2,6 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  type PostContent,
 } from "@riebeckite/core";
 import { resolveShareOptions, validateShareOptions } from "./src/options.js";
 import {
@@ -52,14 +51,12 @@ export const SHARE_PLUGIN_NAME = "share";
  * Per-article share controls.
  *
  * For every entry the plugin builds absolute share URLs for the configured
- * services and injects the controls into both `entry.html` and the cached
- * `PostContent.html` that the content route renders. The links are ordinary
- * anchors, so they work without JavaScript; only the copy-link action is
- * enhanced at runtime.
+ * services and injects the controls into the manifest entry HTML, which is the
+ * final rendering source. The links are ordinary anchors, so they work without
+ * JavaScript; only the copy-link action is enhanced at runtime.
  */
 export function share(options: ShareOptions = {}) {
   const resolved = resolveShareOptions(options);
-  const processed = new Map<string, PostContent>();
 
   return definePlugin({
     name: SHARE_PLUGIN_NAME,
@@ -69,9 +66,6 @@ export function share(options: ShareOptions = {}) {
     },
     options,
     validateOptions: validateShareOptions,
-    onPostProcessed: (context) => {
-      processed.set(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       const { manifest, config } = context;
       if (!config) return;
@@ -87,11 +81,7 @@ export function share(options: ShareOptions = {}) {
 
         const html = injectShareControls(entry.html, block, resolved.placement);
         entry.html = html;
-
-        const content = processed.get(entry.slug);
-        if (content) content.html = html;
       }
-      processed.clear();
     },
     assets: [createStyleAsset(SHARE_PLUGIN_NAME)],
     clientEntries: [createClientEntry(SHARE_PLUGIN_NAME, "initShare")],

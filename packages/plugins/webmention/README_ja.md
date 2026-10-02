@@ -55,8 +55,8 @@ provider を省略するとインメモリ provider が使われます。ロー�
 ## 表示
 
 `onManifestCreated` で provider を一度 query し、検証済みメンションをターゲット別に
-グループ化して、対応する entry の HTML（およびキャッシュされた `PostContent`）へ
-セクションを追記します。フックは安定した `rr-webmention` 名です。
+グループ化して、対応する entry の HTML へセクションを追記します。Core がその HTML を
+コンテンツルートの描画 HTML と同期します。フックは安定した `rr-webmention` 名です。
 
 ```html
 <section class="rr-webmention" data-webmention data-webmention-count="2">

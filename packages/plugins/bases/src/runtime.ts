@@ -2,7 +2,6 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   Diagnostic,
-  PostContent,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import {
@@ -14,12 +13,6 @@ import { renderBases, renderBasesError } from "./render.js";
 import type { BasesOptions } from "./types.js";
 
 export type BasesRuntime = {
-  /**
-   * Remembers the processed content object for a slug. `ContentManager` caches
-   * and reuses this exact object, so replacing its `html` here is what makes the
-   * rewrite visible to consumers that render `getProcessedContent()`.
-   */
-  track(slug: string, content: PostContent): void;
   /** Replaces every Base placeholder in the manifest with rendered output. */
   resolve(
     manifest: ContentManifest,
@@ -29,12 +22,7 @@ export type BasesRuntime = {
 };
 
 export function createBasesRuntime(options: BasesOptions): BasesRuntime {
-  const tracked = new Map<string, PostContent>();
-
   return {
-    track(slug, content) {
-      tracked.set(slug, content);
-    },
     resolve(manifest, diagnostics, _config) {
       const entries = manifest.discoverableEntries;
       for (const entry of manifest.publicEntries) {
@@ -44,8 +32,6 @@ export function createBasesRuntime(options: BasesOptions): BasesRuntime {
         if (html === entry.html) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
     },
   };

@@ -1,12 +1,7 @@
-import {
-  type ContentManifest,
-  escapeHtmlAttribute,
-  type PostContent,
-} from "@riebeckite/core";
+import { type ContentManifest, escapeHtmlAttribute } from "@riebeckite/core";
 import { CANVAS_NOTE_HREF } from "./render.js";
 
 export type CanvasRuntime = {
-  track(slug: string, content: PostContent): void;
   resolve(manifest: ContentManifest): void;
 };
 
@@ -16,12 +11,7 @@ const NOTE_LINK_PATTERN = new RegExp(
 );
 
 export function createCanvasRuntime(): CanvasRuntime {
-  const tracked = new Map<string, PostContent>();
-
   return {
-    track(slug, content) {
-      tracked.set(slug, content);
-    },
     resolve(manifest) {
       for (const entry of manifest.entries) {
         if (typeof entry.html !== "string") continue;
@@ -31,8 +21,6 @@ export function createCanvasRuntime(): CanvasRuntime {
         if (html === entry.html) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
     },
   };

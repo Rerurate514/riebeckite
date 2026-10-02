@@ -20,8 +20,9 @@ has an index note of its own (a note with the folder slug), that note's title
 is used for the crumb, otherwise the segment is title-cased. The final crumb is
 the note itself and links to its permalink.
 
-The plugin updates both `entry.html` and the cached `PostContent.html` that the
-content route renders, so the nav appears on generated pages and in feeds.
+The plugin injects the nav into the manifest entry's HTML. Core synchronizes
+that HTML with the content the route renders, so the nav appears on generated
+pages and in feeds.
 
 ## JSON-LD
 

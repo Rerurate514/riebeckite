@@ -60,9 +60,6 @@ export function gallery(options: GalleryOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkGallery, { language: resolved.language });
     },
-    onPostProcessed: (context) => {
-      runtime.track(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics);
     },

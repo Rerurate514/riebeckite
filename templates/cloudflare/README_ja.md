@@ -35,9 +35,12 @@ Riebeckite サイト向けの、[GitHub Actions](https://docs.github.com/actions
 ごとにデプロイするには、次の両方を設定します。これはすべての
 `create-riebeckite` preset で利用でき、preset は生成する site だけを変えます。
 
-サイトを生成するときは、`--github-actions --content-repository OWNER/notes
---site-repository OWNER/my-site` を指定します。これにより、外部 content の
-checkout、repository dispatch receiver、`github/notify-site.yml` がまとめて生成されます。以下は、このテンプレートを手動で適用する場合の手順です。
+サイトを生成するときは、対話式の CLI で `Separate GitHub repository` を選んで
+content と site のリポジトリ名を入力します。外部 content の checkout、
+repository dispatch receiver、`github/notify-site.yml` がまとめて生成されます。
+コマンドラインで指定する場合は
+`--github-actions --content-repository OWNER/notes
+--site-repository OWNER/my-site` を渡します。以下は、このテンプレートを手動で適用する場合の手順です。
 
 1. site workflow の `repository_dispatch: types: [content-updated]` を残し、依存
    関係のインストール前に記事 checkout を追加します。

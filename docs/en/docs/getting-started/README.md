@@ -35,11 +35,19 @@ You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`
 | [First Content](./first-content.md) | Write or edit your first published Markdown page |
 | [Presets](./presets.md) | Compare `starter`, `minimal`, `showcase`, and `empty` |
 | [Deployment](./deployment.md) | Deploy manually first, then automate with GitHub Actions |
+| [Use Your Obsidian Vault](./obsidian-vault.md) | Connect an existing Obsidian Vault and publish selected notes |
+| [Add Your First Plugin](./first-plugin.md) | Install a plugin and see `==highlight==` syntax work |
+| [Change Your Theme](./first-theme.md) | Swap the theme and see the design change |
 
 ## The shortest path
 
 ```sh
-npx create-riebeckite my-site
+npx create-riebeckite
+```
+
+The CLI asks for the project name, preset, content source, and deployment. Keep `starter`, `This project`, and `Not now` to start locally, then:
+
+```sh
 cd my-site
 npm install
 npm exec riebeckite dev
@@ -51,9 +59,17 @@ Open the local URL printed in the terminal. Edit Markdown in `content/`, make su
 npm exec riebeckite build
 ```
 
-If you are unsure which preset to choose, use the default `starter` preset.
+If you are unsure which preset to choose, use the `starter` preset.
 
 > **Developing Riebeckite itself?** Start with [Framework / Development](../framework/development.md) instead.
+
+## Customize Riebeckite
+
+| Goal | Guide |
+| --- | --- |
+| Already use Obsidian | [Use Your Obsidian Vault](./obsidian-vault.md) |
+| Add features (search, diagrams, embeds…) | [Add Your First Plugin](./first-plugin.md) |
+| Change appearance (colors, fonts, layout…) | [Change Your Theme](./first-theme.md) |
 
 ## Next
 

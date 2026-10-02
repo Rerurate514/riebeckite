@@ -8,6 +8,8 @@ sidebar:
 
 `create-riebeckite` は **preset** をもとに、Plugin、Theme、初期コンテンツ、HonoX アプリケーションのファイルを選んでサイト一式を生成します。既定値は `starter` です。
 
+対話式の CLI は、実行中に preset を選ぶよう確認してきます。迷ったら `starter` を選びます。コマンドラインから指定する場合は `--preset <name>` を使います（既定は `starter`）。
+
 ```sh
 npx create-riebeckite my-site --preset starter
 npx create-riebeckite --list-presets

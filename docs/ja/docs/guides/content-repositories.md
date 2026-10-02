@@ -278,7 +278,7 @@ Site Repository
 
 ## 2. Site を作る
 
-GitHub Actions を利用する場合は、Content Repository と Site Repository を指定して Site を生成できます。
+GitHub Actions を利用する場合は、Content Repository と Site Repository を指定して Site を生成できます。対話式の CLI では `Separate GitHub repository` を選び、Content repository と Site repository を入力するのと同じ構成になります（GitHub Actions のデプロイ設定は自動です）。
 
 ```sh
 npx create-riebeckite my-site \

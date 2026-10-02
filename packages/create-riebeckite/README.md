@@ -6,12 +6,38 @@ Create a new Riebeckite site from an official starter preset.
 
 ## Usage
 
+Interactive (recommended): run without arguments and answer the prompts for
+the project name, preset, content source, and deployment.
+
+```sh
+npx create-riebeckite
+```
+
+Passing any argument keeps the command non-interactive:
+
 ```sh
 npx create-riebeckite my-site
 cd my-site
 npm install
 npm exec riebeckite build
 ```
+
+## Choices
+
+The prompts ask, in order:
+
+| Prompt | Options | Recommendation |
+| --- | --- | --- |
+| Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
+| Preset | `starter`, `minimal`, `showcase`, `empty` | `starter` for most sites |
+| Content source | `This project`, `Separate GitHub repository` | `This project` to start |
+| Deployment | `GitHub Actions + Cloudflare Workers`, `Not now` | `Not now` for local development |
+
+`Separate GitHub repository` also asks for the content and site repositories,
+and GitHub Actions deployment is then configured for you. That setup is covered
+in the [content repository guide](../../docs/en/guides/content-repositories.md).
+Deployment can be added later, described in
+[Deployment](../../docs/en/getting-started/deployment.md).
 
 ## Options
 
@@ -30,6 +56,8 @@ For example, scaffold the complete feature tour:
 ```sh
 npx create-riebeckite my-site --preset showcase
 ```
+
+## External content repository
 
 To use a separate content repository and deploy after its `main` branch is
 pushed, generate the common workflow once (the preset does not affect it):

@@ -1,9 +1,3 @@
----
-title: First Content
-sidebar:
-  label: First Content
-  order: 30
----
 # First Content
 
 Markdown をサイトに表示する方法を確認します。`starter` preset が生成したサンプルを編集しても、新しいファイルを作っても構いません。
@@ -16,9 +10,8 @@ Markdown をサイトに表示する方法を確認します。`starter` preset 
 my-site/
 ├─ content/
 │  ├─ index.md
-│  ├─ index.ja.md
-│  ├─ guide.md
-│  ├─ examples.md
+│  ├─ guide.en.md
+│  ├─ examples.en.md
 │  └─ notes/
 │     ├─ planning.md
 │     └─ writing.md
@@ -53,9 +46,7 @@ publish: true
 Hello from Riebeckite.
 ```
 
-`publish: true` は、そのページを公開対象にする指定です。通常、`content/first-post.md` は `/first-post` として表示されます。`index` 系のファイルは、その階層のトップページになります。
-
-`title` は frontmatter に書くメタデータで、検索データや一覧などページの外側で使われます。**ページ本文の見出しとは別物**なので、ブラウザに大きな見出しを表示したいときは本文側に Markdown の `#` を書きます。`starter` preset のサンプルも `title` に加えて本文に `# Getting started` のように見出しを持っています。
+`title` はページのタイトルです。`publish: true` は、そのページを公開対象にする指定です。通常、`content/first-post.md` は `/first-post` として表示されます。`index` 系のファイルは、その階層のトップページになります。
 
 本文は通常の Markdown で書けます。`starter` preset には Obsidian 風の Markdown support も含まれているため、生成されたサンプルノートでは `[[planning]]` のような WikiLink も使えます。
 

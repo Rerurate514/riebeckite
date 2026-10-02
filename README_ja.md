@@ -7,11 +7,21 @@ Riebeckite は、Markdown や Obsidian 形式のノートを高速な静的サ�
 Riebeckite を使うだけなら、このリポジトリを clone する必要はありません。
 
 ```bash
-npx create-riebeckite my-site
+npx create-riebeckite
+```
+
+プロンプト（プロジェクト名・preset・コンテンツの取得元・デプロイ設定）に
+答えたら、続けて次を実行します。
+
+```bash
 cd my-site
 npm install
 npm exec riebeckite dev
 ```
+
+`my-site` は入力したプロジェクト名に置き換えてください。preset は迷ったら
+`starter` のままで問題ありません。引数を渡す（例:
+`npx create-riebeckite my-site`）とプロンプトは省略されます。
 
 あとは `content/` の Markdown を編集し、ブラウザで確認して、ビルドします。
 

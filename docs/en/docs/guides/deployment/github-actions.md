@@ -4,6 +4,8 @@ The deployment workflow checks, builds, and deploys a Riebeckite site on every p
 
 ## Generate the workflow
 
+The interactive CLI asks about deployment at the end of setup; choose `GitHub Actions + Cloudflare Workers`. From the command line:
+
 ```sh
 npx create-riebeckite my-site --preset starter --github-actions
 ```

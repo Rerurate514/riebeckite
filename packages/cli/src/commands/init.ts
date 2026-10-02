@@ -22,5 +22,8 @@ export async function runInit(options: InitOptions): Promise<void> {
   const relative = path.relative(process.cwd(), result.targetDirectory) || ".";
   console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
   console.log("");
-  console.log(formatScaffoldNextSteps(relative));
+  const editFile = result.files.includes("content/index.md")
+    ? "content/index.md"
+    : undefined;
+  console.log(formatScaffoldNextSteps(relative, { editFile }));
 }

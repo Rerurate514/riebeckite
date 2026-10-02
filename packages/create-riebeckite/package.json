@@ -27,10 +27,12 @@
     "access": "public"
   },
   "dependencies": {
+    "@clack/prompts": "^1.8.1",
     "@riebeckite/honox": "workspace:*"
   },
   "scripts": {
     "build": "node ../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {

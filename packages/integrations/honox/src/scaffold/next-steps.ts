@@ -6,7 +6,17 @@
 // that lockfile rather than a pnpm one. `riebeckite` is a local dependency,
 // so `npm exec riebeckite` resolves the binary from `node_modules/.bin`
 // instead of the registry.
-export function formatScaffoldNextSteps(relativeDirectory: string): string {
+export type ScaffoldNextStepsOptions = {
+  /** First Markdown file to edit, when the scaffold wrote one. */
+  readonly editFile?: string;
+  /** The site keeps its content in a separate repository. */
+  readonly externalContent?: boolean;
+};
+
+export function formatScaffoldNextSteps(
+  relativeDirectory: string,
+  options: ScaffoldNextStepsOptions = {},
+): string {
   const lines = ["Next steps:"];
   if (relativeDirectory !== ".") {
     lines.push(`  cd ${relativeDirectory}`);
@@ -15,5 +25,16 @@ export function formatScaffoldNextSteps(relativeDirectory: string): string {
   lines.push("  npm exec riebeckite check");
   lines.push("  npm exec riebeckite dev");
   lines.push("  npm exec riebeckite build");
+  if (options.editFile !== undefined) {
+    lines.push("");
+    lines.push("Then edit:");
+    lines.push(`  ${options.editFile}`);
+  }
+  if (options.externalContent === true) {
+    lines.push("");
+    lines.push(
+      "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
+    );
+  }
   return lines.join("\n");
 }

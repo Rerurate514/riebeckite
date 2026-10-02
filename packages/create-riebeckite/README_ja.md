@@ -7,12 +7,34 @@ CLI ツールです。
 
 ## 使い方
 
+対話モード（推奨）: 引数なしで実行すると、プロジェクト名・preset・
+コンテンツの格納場所・デプロイについて順に確認します。
+
+```sh
+npx create-riebeckite
+```
+
+引数を1つでも渡すと、従来どおり非対話で動作します。
+
 ```sh
 npx create-riebeckite my-site
 cd my-site
 npm install
 npm exec riebeckite build
 ```
+
+## Choices
+
+対話式の CLI は、次の順に確認します。
+
+| 質問 | 選択肢 | 推奨 |
+| --- | --- | --- |
+| Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
+| Preset | `starter`、`minimal`、`showcase`、`empty` | 大半のサイトは `starter` |
+| Content source | `This project`、`Separate GitHub repository` | 最初は `This project` |
+| デプロイ設定 | `GitHub Actions + Cloudflare Workers`、`Not now` | 手元で試すなら `Not now` |
+
+`Separate GitHub repository` を選ぶと content と site のリポジトリ名も入力し、GitHub Actions のデプロイ設定が自動で構成されます。この構成は[content repository ガイド](../../docs/ja/guides/content-repositories.md)に、デプロイの追加方法は [Deployment](../../docs/ja/getting-started/deployment.md) にあります。
 
 ## オプション
 
@@ -31,6 +53,8 @@ npm exec riebeckite build
 ```sh
 npx create-riebeckite my-site --preset showcase
 ```
+
+## External content repository
 
 別の記事リポジトリを使い、その `main` への push でデプロイする場合は、共通の
 workflow を一度だけ生成します。preset による違いはありません。

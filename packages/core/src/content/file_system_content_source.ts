@@ -8,6 +8,20 @@ import type {
   ContentSourceEntry,
 } from "./content_source.js";
 
+const INTERNAL_CONTENT_IGNORE_PATTERNS = [
+  ".git",
+  ".git/**",
+  ".github",
+  ".github/**",
+  ".obsidian",
+  ".obsidian/**",
+  "node_modules",
+  "node_modules/**",
+  "**/.DS_Store",
+  "**/Thumbs.db",
+  "**/desktop.ini",
+] as const;
+
 export class FileSystemContentSource implements ContentSource {
   constructor(
     private contentDirectory: string,
@@ -15,7 +29,14 @@ export class FileSystemContentSource implements ContentSource {
   ) {}
 
   async scan(): Promise<readonly ContentSourceEntry[]> {
-    return await this.scanDirectory(this.contentDirectory, "");
+    try {
+      return await this.scanDirectory(this.contentDirectory, "");
+    } catch (error) {
+      if (isMissingDirectoryError(error, this.contentDirectory)) {
+        throw missingContentDirectoryError(this.contentDirectory);
+      }
+      throw error;
+    }
   }
 
   async read(entry: ContentSourceEntry): Promise<ContentSourceContent> {
@@ -46,11 +67,13 @@ export class FileSystemContentSource implements ContentSource {
       );
       const filePath = path.join(directory, directoryEntry.name);
 
+      if (this.isExcluded(logicalPath)) continue;
+
       if (directoryEntry.isDirectory()) {
         entries.push(...(await this.scanDirectory(filePath, logicalPath)));
         continue;
       }
-      if (!directoryEntry.isFile() || this.isExcluded(logicalPath)) continue;
+      if (!directoryEntry.isFile()) continue;
 
       const stats = await fs.stat(filePath);
       entries.push({
@@ -66,6 +89,7 @@ export class FileSystemContentSource implements ContentSource {
   }
 
   private isExcluded(logicalPath: string): boolean {
+    if (isExcluded(INTERNAL_CONTENT_IGNORE_PATTERNS, logicalPath)) return true;
     if (isExcluded(this.exclude, logicalPath)) return true;
     return (
       logicalPath.endsWith(".md") &&
@@ -96,4 +120,27 @@ function normalizeLogicalPath(logicalPath: string): string {
     throw new Error(`Invalid content path: ${logicalPath}`);
   }
   return normalizedPath;
+}
+
+function isMissingDirectoryError(
+  error: unknown,
+  directory: string,
+): error is NodeJS.ErrnoException {
+  return (
+    error instanceof Error &&
+    "code" in error &&
+    error.code === "ENOENT" &&
+    "path" in error &&
+    error.path === directory
+  );
+}
+
+function missingContentDirectoryError(directory: string): Error {
+  const relative = path.relative(process.cwd(), directory);
+  const display = relative && !relative.startsWith("..") ? relative : directory;
+  const error = new Error(
+    `Could not find the content directory:\n\n  ${display}`,
+  ) as Error & { hint?: string };
+  error.hint = "Check `content.directory` in your Riebeckite configuration.";
+  return error;
 }

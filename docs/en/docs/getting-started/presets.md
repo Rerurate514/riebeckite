@@ -8,7 +8,7 @@ sidebar:
 
 `create-riebeckite` writes a complete site from a **preset**. A preset chooses the registered plugins, theme, generated content, and HonoX application files.
 
-Choose one with `--preset <name>`. The default is `starter`.
+The interactive CLI asks you to choose a preset while it runs; `starter` is the recommendation when you are unsure. To choose one from the command line instead, use `--preset <name>` (default `starter`).
 
 ```sh
 npx create-riebeckite my-site --preset starter

@@ -94,6 +94,22 @@ test("each preset generates its intended self-contained composition", async () =
           await exists(path.join(targetDirectory, "content/notes/planning.md")),
         );
         assert.ok(!config.includes("@riebeckite/plugin-mermaid"));
+        for (const page of ["index.md", "guide.md", "examples.md"]) {
+          assert.ok(
+            await exists(path.join(targetDirectory, `content/${page}`)),
+          );
+        }
+        const index = await fs.readFile(
+          path.join(targetDirectory, "content/index.md"),
+          "utf8",
+        );
+        assert.match(index, /content\/index\.md/);
+        const guide = await fs.readFile(
+          path.join(targetDirectory, "content/guide.md"),
+          "utf8",
+        );
+        assert.match(guide, /npm exec riebeckite dev/);
+        assert.match(guide, /content\/hello\.md/);
       }
     }
   });

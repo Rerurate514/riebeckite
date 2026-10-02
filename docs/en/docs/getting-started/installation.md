@@ -29,16 +29,26 @@ Both should print a version such as `v22.0.0`. If a command is not found, instal
 
 ## Create a site
 
-In the folder where you want the site, run the generator. Replace `my-site` with any name.
+In the folder where you want the site, run the generator:
 
 ```sh
-npx create-riebeckite my-site
+npx create-riebeckite
 ```
 
-Omit the name to generate into the current folder. `npx` downloads `create-riebeckite` and runs it once; nothing is installed globally.
+`npx` downloads `create-riebeckite` and runs it once; nothing is installed globally. The CLI asks, in order:
+
+1. **Project name** — the folder to create, for example `my-site`
+2. **Preset** — the site's composition; keep `starter` when unsure. See [Presets](./presets.md)
+3. **Content source** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault: it asks for the content and site repositories and configures GitHub Actions deployment automatically. See [Content Repositories](../guides/content-repositories.md)
+4. **Deployment** — `GitHub Actions + Cloudflare Workers` or `Not now`. `Not now` is fine until you want to publish; see [Deployment](./deployment.md)
+
+To script the same setup instead of answering prompts, pass arguments, for example:
+
+```sh
+npx create-riebeckite my-site --preset starter
+```
 
 - If the target folder already has files, the command stops instead of overwriting. Add `--force` only when you really want to overwrite.
-- Choose the composition with `--preset <name>` (default `starter`). See [Presets](./presets.md).
 - List the available presets with `npx create-riebeckite --list-presets`.
 
 Then move into the folder and install the packages:
@@ -62,6 +72,23 @@ The `@riebeckite/*` packages are published to npm, so this is all it takes. The 
 | `README.md` | A short note specific to the generated site |
 
 The exact files depend on the preset: `empty` generates a bare application shell, `starter` generates a practical site with connected sample notes, and `showcase` adds references, rendered examples, and local fixtures. See [Presets](./presets.md).
+
+## Directory structure
+
+The generated site folder looks like this:
+
+```text
+my-site/
+├─ content/               Your Markdown files
+├─ public/                Static files
+├─ app/                   Generated app code (rarely edited)
+├─ riebeckite.config.ts   Site configuration
+├─ package.json
+├─ vite.config.ts
+├─ tsconfig.json
+├─ README.md
+└─ dist/                  Production build output (after build)
+```
 
 ## Point the settings at your site
 

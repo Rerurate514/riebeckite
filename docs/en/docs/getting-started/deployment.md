@@ -63,7 +63,7 @@ After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to t
 
 ## 2. Automatic deploy with GitHub Actions
 
-If you want deploys to run on every push, generate the site with the GitHub Actions option:
+If you want deploys to run on every push, choose `GitHub Actions + Cloudflare Workers` when the CLI asks for the deployment. From the command line, the same choice is:
 
 ```sh
 npx create-riebeckite my-site --github-actions

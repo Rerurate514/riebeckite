@@ -17,11 +17,20 @@ Riebeckite publishes Markdown and Obsidian-style notes as a fast static site. St
 You do not need to clone this repository to use Riebeckite.
 
 ```bash
-npx create-riebeckite my-site
+npx create-riebeckite
+```
+
+Follow the prompts (project name, preset, content source, deployment), then:
+
+```bash
 cd my-site
 npm install
 npm exec riebeckite dev
 ```
+
+Use the folder name you entered instead of `my-site`, and keep the `starter`
+preset unless you know you want another one. Passing an argument, such as
+`npx create-riebeckite my-site`, skips the prompts.
 
 Then edit Markdown in `content/`, confirm it in the browser, and build:
 

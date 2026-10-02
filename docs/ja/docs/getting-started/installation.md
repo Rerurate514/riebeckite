@@ -31,20 +31,36 @@ git --version
 
 ## サイトを作る
 
+サイトを作るフォルダで、次のコマンドを実行します。
+
 ```bash
-npx create-riebeckite my-site
+npx create-riebeckite
+```
+
+`npx` は `create-riebeckite` を一度だけ実行するため、グローバルには何も入れません。次の順に確認されます。
+
+1. **Project name** — 作るフォルダ名。例: `my-site`
+2. **Preset** — サイトの構成。迷ったら `starter` のまま。比較は [Presets](./presets.md)
+3. **Content source** — `This project` は `content/` をサイト内に置く最も簡単な形。`Separate GitHub repository` は既存 Vault 向けの高度な構成で、content と site のリポジトリ名を入力すると GitHub Actions のデプロイ設定が自動で構成されます。詳細は [Content Repositories](../guides/content-repositories.md)
+4. **デプロイ設定** — `GitHub Actions + Cloudflare Workers` か `Not now`。公開するまでは `Not now` で問題ありません。詳細は [Deployment](./deployment.md)
+
+プロンプトの代わりにコマンドラインで同じ設定を渡すこともできます。
+
+```bash
+npx create-riebeckite my-site --preset starter
+```
+
+- 既存ディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
+- 利用可能な preset は `npx create-riebeckite --list-presets` で確認できます。
+
+続けて、フォルダへ移動して package を入れます。
+
+```bash
 cd my-site
 npm install
 ```
 
-既定の preset は `starter` です。迷ったら `starter` のままで進めてください。別の preset を選ぶ場合だけ指定します。
-
-```bash
-npx create-riebeckite my-site --preset minimal
-npx create-riebeckite --list-presets
-```
-
-既存ディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
+`@riebeckite/*` は npm から入るので、これだけで足ります。最初の install は少し時間がかかることがあります。
 
 ## 生成される主なファイル
 
@@ -68,6 +84,23 @@ my-site/
 ```
 
 content を別リポジトリに分ける構成は、必要になってから [Content Repositories](../guides/content-repositories.md) を読めば十分です。
+
+## ディレクトリ構造
+
+生成されたサイトのフォルダ構成はこちらです。
+
+```text
+my-site/
+├─ content/               Your Markdown files
+├─ public/                Static files
+├─ app/                   Generated app code (rarely edited)
+├─ riebeckite.config.ts   Site configuration
+├─ package.json
+├─ vite.config.ts
+├─ tsconfig.json
+├─ README.md
+└─ dist/                  Production build output (after build)
+```
 
 ## サイト設定を確認する
 

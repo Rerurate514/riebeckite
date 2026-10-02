@@ -75,6 +75,10 @@ export type SiteSources = {
     readonly path: string;
     readonly content: string;
   };
+  readonly contentAsset?: {
+    readonly path: string;
+    readonly content: string;
+  };
   readonly publicFiles?: Readonly<Record<string, string>>;
   readonly duplicateGeneratedOutput?: boolean;
 };
@@ -187,6 +191,7 @@ function serverSource(): string {
 
 export function configSource(siteRoot: string, sources: SiteSources): string {
   const asset = sources.generatedAsset;
+  const contentAsset = sources.contentAsset;
   const lines = [
     'import { defineConfig, definePlugin } from "@riebeckite/core";',
     "const demo = definePlugin({",
@@ -219,6 +224,15 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
       "    output.emit({",
       `      path: ${JSON.stringify(asset.path)},`,
       `      content: ${JSON.stringify(asset.content)},`,
+      '      dependencies: [{ type: "global" }],',
+      "    });",
+    );
+  }
+  if (contentAsset) {
+    lines.push(
+      "    output.emitAsset({",
+      `      path: ${JSON.stringify(contentAsset.path)},`,
+      `      content: ${JSON.stringify(contentAsset.content)},`,
       '      dependencies: [{ type: "global" }],',
       "    });",
     );

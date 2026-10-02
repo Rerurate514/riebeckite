@@ -39,12 +39,13 @@ test("emits images referenced by public Obsidian notes", async () => {
   assert.deepEqual(manifest.generatedOutputs[0].content, sample);
 });
 
-test("emits images stored inside the assets namespace", async () => {
-  const logo = new Uint8Array([137, 80, 78, 71, 13]);
+test("emits content images under the assets namespace and renders their URL", async () => {
+  const logo = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]);
   const manager = new ContentManager(
     memorySource({
-      "index.md": "---\npublish: true\n---\n\n![[assets/logo.png]]\n",
-      "assets/logo.png": logo,
+      "index.md":
+        "---\npublish: true\n---\n\n![[assets/riebeckite-logo.png]]\n",
+      "assets/riebeckite-logo.png": logo,
     }),
     [],
     { plugins: [obsidianMarkdown()] },
@@ -54,9 +55,16 @@ test("emits images stored inside the assets namespace", async () => {
 
   assert.deepEqual(
     manifest.generatedOutputs.map((output) => output.path),
-    ["assets/logo.png"],
+    ["assets/riebeckite-logo.png"],
   );
   assert.deepEqual(manifest.generatedOutputs[0].content, logo);
+  assert.equal(manifest.generatedOutputs[0].owner, "obsidian-markdown");
+
+  const entry = manifest.publicEntries.find(
+    (candidate) => candidate.permalink === "/",
+  );
+  assert.ok(entry);
+  assert.match(entry.html, /src="\/assets\/riebeckite-logo\.png"/);
 });
 
 test("retries image emission after a failed emit", async () => {

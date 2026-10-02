@@ -70,7 +70,7 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
         if (emittedImagePaths.has(imagePath)) continue;
         const content = await readContentSourceEntry(source, imagePath);
         if (content === null) continue;
-        context.output.emit({
+        context.output.emitAsset({
           path: imagePath,
           content,
           dependencies: [{ type: "global" }],

@@ -186,6 +186,7 @@ export type {
   DiagnosticSeverity,
 } from "./src/types/diagnostic.js";
 export type {
+  ContentAssetOutputInput,
   GeneratedOutput,
   GeneratedOutputContent,
   GeneratedOutputInput,
@@ -193,6 +194,7 @@ export type {
 } from "./src/types/generated_output.js";
 export {
   createUnavailableGeneratedOutputSink,
+  normalizeContentAssetOutputPath,
   normalizeGeneratedOutputPath,
 } from "./src/types/generated_output.js";
 export type { JsonValue } from "./src/types/json_value.js";

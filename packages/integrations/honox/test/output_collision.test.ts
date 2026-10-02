@@ -34,9 +34,9 @@ test("site public assets take precedence over colliding generated outputs", asyn
     renderTag: "v1",
     noteCount: 2,
     editedNotes: [],
-    generatedAsset: { path: "assets/shared.png", content: "GENERATED" },
+    generatedAsset: { path: "generated/shared.txt", content: "GENERATED" },
     publicFiles: {
-      "assets/shared.png": "PUBLIC",
+      "generated/shared.txt": "PUBLIC",
       "assets/site-only.txt": "SITE",
     },
   };
@@ -46,13 +46,13 @@ test("site public assets take precedence over colliding generated outputs", asyn
   assert.equal(cold.fullRegenerationRequired, true);
   assert.equal(cold.shadowedOutputCount, 1);
   let snapshot = await snapshotTree(distPath(site));
-  assert.equal(readText(snapshot, "assets/shared.png"), "PUBLIC");
+  assert.equal(readText(snapshot, "generated/shared.txt"), "PUBLIC");
   assert.equal(readText(snapshot, "assets/site-only.txt"), "SITE");
   assert.ok(Object.hasOwn(snapshot, "custom.json"));
   assert.ok(
     !Object.hasOwn(
       readOutputs(await readFile(cachePath(site), "utf8")),
-      "assets/shared.png",
+      "generated/shared.txt",
     ),
     "a shadowed output must not enter the SSG output cache",
   );
@@ -66,15 +66,15 @@ test("site public assets take precedence over colliding generated outputs", asyn
     Number(noChange.unchangedOutputCount) - 1,
   );
   snapshot = await snapshotTree(distPath(site));
-  assert.equal(readText(snapshot, "assets/shared.png"), "PUBLIC");
+  assert.equal(readText(snapshot, "generated/shared.txt"), "PUBLIC");
   assert.equal(readText(snapshot, "assets/site-only.txt"), "SITE");
 
-  await rm(path.join(site, "public", "assets", "shared.png"));
+  await rm(path.join(site, "public", "generated", "shared.txt"));
   const restored = await incrementalBuild(site, "public-removed");
   assert.equal(restored.fullRegenerationRequired, true);
   assert.equal(restored.shadowedOutputCount, 0);
   snapshot = await snapshotTree(distPath(site));
-  assert.equal(readText(snapshot, "assets/shared.png"), "GENERATED");
+  assert.equal(readText(snapshot, "generated/shared.txt"), "GENERATED");
 });
 
 test("site public assets and content-derived assets coexist at different paths", async (t) => {
@@ -88,7 +88,7 @@ test("site public assets and content-derived assets coexist at different paths",
     renderTag: "v1",
     noteCount: 1,
     editedNotes: [],
-    generatedAsset: { path: "assets/content-only.png", content: "CONTENT" },
+    contentAsset: { path: "assets/content-only.png", content: "CONTENT" },
     publicFiles: { "assets/site-only.txt": "SITE" },
   };
   await createSite(site, sources);
@@ -123,7 +123,7 @@ test("two plugins claiming the same output path fail the build", async (t) => {
     renderTag: "v1",
     noteCount: 1,
     editedNotes: [],
-    generatedAsset: { path: "assets/dup.png", content: "ONE" },
+    generatedAsset: { path: "generated/dup.txt", content: "ONE" },
     duplicateGeneratedOutput: true,
   };
   await createSite(site, sources);

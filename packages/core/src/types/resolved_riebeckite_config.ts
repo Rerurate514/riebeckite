@@ -10,6 +10,14 @@ export type ResolvedRiebeckiteConfig = {
    * relative to their application root.
    */
   buildDirectory?: string;
+  /**
+   * Persistent processed content cache configuration. Omitted or disabled means
+   * processed content is rebuilt on every run.
+   */
+  cache?: {
+    directory?: string;
+    enabled?: boolean;
+  };
   site: Required<SiteConfig>;
   content: {
     directory: string;

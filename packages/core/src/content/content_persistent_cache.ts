@@ -78,6 +78,12 @@ async function writeAtomically(
   }
 }
 
+export type PersistentContentCache = {
+  get(key: string): Promise<PersistentContentCacheEntry | undefined>;
+  set(key: string, value: PersistentContentCacheEntry): Promise<void>;
+  clear(): Promise<void>;
+};
+
 export function createPersistentContentCache(
   options: PersistentContentCacheOptions,
 ) {

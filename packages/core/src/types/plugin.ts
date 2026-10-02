@@ -45,6 +45,14 @@ export type RiebeckitePlugin<TOptions = unknown> = {
    */
   optional?: string[];
   cacheVersion?: string;
+  /**
+   * Declares how the plugin interacts with the processed content cache:
+   * `"none"` never affects processed content, `"tracked"` affects it through
+   * tracked dependencies, and `"unsafe"` disables persistent caching.
+   */
+  processedContentCache?: {
+    dependencyMode: "none" | "tracked" | "unsafe";
+  };
   validateOptions?: PluginOptionsValidator<TOptions>;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];

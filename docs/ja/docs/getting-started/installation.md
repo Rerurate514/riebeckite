@@ -15,6 +15,8 @@ Riebeckite でサイトを作るだけなら、この monorepo は clone しま�
 | Node.js LTS | Riebeckite のコマンドを動かす |
 | npm | package のインストールに使う。Node.js に同梱されています |
 | ターミナル | コマンドを実行する |
+| Git | サイトをリポジトリとして管理するために使う |
+| GitHub アカウント | GitHub Actions で自動デプロイするときに使う |
 | Cloudflare アカウント | デプロイするときに使う |
 
 確認します。
@@ -22,9 +24,10 @@ Riebeckite でサイトを作るだけなら、この monorepo は clone しま�
 ```bash
 node -v
 npm -v
+git --version
 ```
 
-どちらもバージョンが表示されれば準備できています。
+どれもバージョンが表示されれば準備できています。Git が入っていない場合は [git-scm.com](https://git-scm.com/) からインストールしてください。手元から Cloudflare へ直接公開するだけの場合、Git と GitHub アカウントは後からでも構いません。自動デプロイ（[Deployment](./deployment.md)）のところで使います。
 
 ## サイトを作る
 

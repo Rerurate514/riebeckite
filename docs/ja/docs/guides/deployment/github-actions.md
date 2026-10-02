@@ -20,7 +20,7 @@ flowchart LR
 
 Site と Content が同じ Repository にある一般的な構成なら、`main` へ Push するだけで Build と Deploy を実行できます。
 
-# GitHub Actions を有効にして Site を作る
+## GitHub Actions を有効にして Site を作る
 
 Site 作成時に、
 
@@ -51,7 +51,7 @@ my-site/
 
 通常は、生成された Workflow を出発点として利用します。
 
-# 必要なもの
+## 必要なもの
 
 GitHub Actions から Deployment するには、次の設定が必要です。
 
@@ -59,7 +59,7 @@ GitHub Actions から Deployment するには、次の設定が必要です。
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
-## `package-lock.json`
+### `package-lock.json`
 
 生成される Workflow は、
 
@@ -88,13 +88,81 @@ npm ci
 
 `package-lock.json` がない状態では、生成 Workflow の `npm ci` をそのまま利用できません。
 
-# Cloudflare の Secrets
+## Repository を GitHub に置く
+
+GitHub Actions は GitHub 上の Repository を読みます。Site Repository がまだなければ、作ります。
+
+### Git で初期化する
+
+Site の Directory で、次を実行します。
+
+```sh
+git init
+git add .
+git commit -m "First commit"
+```
+
+`.gitignore` は生成済みなので `node_modules/` や `dist/` は commit されません。一方で `package-lock.json` は commit されます。このファイルが無いと、この後説明する `npm ci` が動かないので必ず残してください。
+
+Git を初めて使う場合、`git commit` が `Author identity unknown` で失敗することがあります。そのときは次を設定してからやり直します。
+
+```sh
+git config --global user.name "あなたの名前"
+git config --global user.email "you@example.com"
+```
+
+### GitHub に Repository を作って push する
+
+1. [GitHub で New repository](https://github.com/new) を開きます。Repository 名を決めて作成します。**Add a README file** と **Add .gitignore** は**付けません**。ローカルに既に履歴があるため、両方を入れると push が拒否されます。
+2. 作成直後の画面に表示される「…or push an existing repository from the command line」のコマンドを、そのまま実行します。`main` を使う構成の例は次のとおりです。
+
+```sh
+git remote add origin https://github.com/<you>/my-site.git
+git branch -M main
+git push -u origin main
+```
+
+`git push -u origin main` が成功したら、GitHub の Repository ページにファイルが表示されます。これで `main` への次回 push から Workflow を動かせます。
+
+## Cloudflare の Secrets
 
 Site Repository に、次の GitHub Actions Secrets を設定します。
 
 ```text id="79c4ea"
 CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
+```
+
+どちらも Cloudflare 側で用意します。
+
+### `CLOUDFLARE_API_TOKEN` を作る
+
+1. [Cloudflare ダッシュボード](https://dash.cloudflare.com/) にログインし、右上のアカウントメニューから **My Profile** を開きます。直接 [API Tokens](https://dash.cloudflare.com/profile/api-tokens) でも開けます。
+2. **Create Token** → **Create Custom Token** を選びます。
+3. **Permissions** に **Account** / **Workers Scripts** / **Edit** を追加します。
+4. **Account Resources** に自分の Account を含めます。
+5. **Continue to review** → **Create Token** を押します。
+6. 表示されたトークンの値をコピーします。この画面を閉じると、この値は二度と表示されません。
+
+権限の詳しい考え方は [Cloudflare の公式手順](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) を参照してください。トークンが事故で漏れたときは、同じ画面からローテーションできます。
+
+### `CLOUDFLARE_ACCOUNT_ID` を探す
+
+ダッシュボードで **Workers & Pages** を開くと、ブラウザのアドレスバーが次の形式になります。
+
+```text
+https://dash.cloudflare.com/<ACCOUNT_ID>/workers-and-pages
+```
+
+`<ACCOUNT_ID>` が `CLOUDFLARE_ACCOUNT_ID` の値です。Worker の詳細ページに表示される **Account ID** と同じ値でも構いません。
+
+### GitHub に登録する
+
+GitHub の Site Repository → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** を開き、名前と値をそれぞれ登録します。
+
+```text
+名前: CLOUDFLARE_API_TOKEN   値: 上でコピーしたトークン
+名前: CLOUDFLARE_ACCOUNT_ID  値: 上の ACCOUNT_ID
 ```
 
 GitHub Repository の Actions から、Workflow がこれらを参照します。
@@ -111,7 +179,7 @@ flowchart LR
 
 これらは Source Code や `riebeckite.config.ts` に直接書かず、Repository Secret として管理します。
 
-# Workflow が動くタイミング
+## Workflow が動くタイミング
 
 生成される Workflow は、次の3つの Trigger に対応します。
 
@@ -133,7 +201,7 @@ Deploy
 
 という流れになります。
 
-# Site と Content が同じ Repository の場合
+## Site と Content が同じ Repository の場合
 
 最も単純な構成です。
 
@@ -165,7 +233,7 @@ flowchart LR
 
 記事を変更して `main` に Push すれば、その Push 自体が Workflow を起動します。
 
-# Site と Content が別 Repository の場合
+## Site と Content が別 Repository の場合
 
 Content Repository を分離している場合は少し流れが変わります。
 
@@ -193,7 +261,7 @@ flowchart LR
 
 Content の更新から Site を自動 Deploy するには、Content Repository から Site Repository へ通知します。
 
-# `repository_dispatch`
+## `repository_dispatch`
 
 別 Repository から Site Workflow を起動するために、
 
@@ -233,7 +301,7 @@ flowchart LR
 
 となります。
 
-# `notify-site.yml`
+## `notify-site.yml`
 
 Content Repository 側には、
 
@@ -256,7 +324,7 @@ Site Repositoryへ
 
 その通知を受けた Site Repository の `deploy.yml` が Build と Deploy を実行します。
 
-# `SITE_DISPATCH_TOKEN`
+## `SITE_DISPATCH_TOKEN`
 
 Content Repository から Site Repository へ `repository_dispatch` を送るには、
 
@@ -282,7 +350,7 @@ flowchart LR
 
 です。
 
-# Workflow の流れ
+## Workflow の流れ
 
 生成された Deployment Workflow は、概ね次の順番で処理します。
 
@@ -306,7 +374,7 @@ flowchart TD
     Build --> Deploy
 ```
 
-## 1. Site Repository を Checkout
+### 1. Site Repository を Checkout
 
 最初に Site Repository を取得します。
 
@@ -326,7 +394,7 @@ Site Repository
 
 などが含まれます。
 
-# 2. 外部 Content を Checkout
+### 2. 外部 Content を Checkout
 
 Content が同じ Repository にある場合、この追加処理は必要ありません。
 
@@ -358,7 +426,7 @@ content: {
 
 として読み込めます。
 
-# 3. Node.js を設定
+### 3. Node.js を設定
 
 生成 Workflow では Node.js 22 を設定します。
 
@@ -370,7 +438,7 @@ Node.js 22
 
 その後の `npm ci` や Riebeckite CLI はこの環境で実行されます。
 
-# 4. Package をインストール
+### 4. Package をインストール
 
 ```sh id="82x1ig"
 npm ci
@@ -382,7 +450,7 @@ npm ci
 
 そのため、生成 Workflow を利用する場合は `package-lock.json` を Commit しておく必要があります。
 
-# 5. Site を検証
+### 5. Site を検証
 
 次に、
 
@@ -406,7 +474,7 @@ check
 
 壊れた設定のまま Deployment まで進めないための確認です。
 
-# 6. Site を Build
+### 6. Site を Build
 
 `check` が成功したら、
 
@@ -435,7 +503,7 @@ riebeckite build
 dist/
 ```
 
-# 7. Cloudflare Workers へ Deploy
+### 7. Cloudflare Workers へ Deploy
 
 最後に、
 
@@ -466,7 +534,7 @@ CLOUDFLARE_ACCOUNT_ID
 
 が利用されます。
 
-# Private Content Repository を使う
+## Private Content Repository を使う
 
 Content Repository が Public の場合と Private の場合では、Checkout の認証が異なります。
 
@@ -494,7 +562,7 @@ flowchart LR
 
 です。
 
-# 2つの Token を混同しない
+## 2つの Token を混同しない
 
 Repository を分離した構成では、似た名前の Token が2つ登場します。
 
@@ -530,11 +598,11 @@ flowchart LR
 
 です。
 
-# Site Push と Content Push の違い
+## Site Push と Content Push の違い
 
 Repository を分離した場合は、2つの Deployment 経路があります。
 
-## Site を変更した場合
+### Site を変更した場合
 
 ```text id="z48j9w"
 Site Repository
@@ -552,7 +620,7 @@ Deploy
 
 Site の `push` が直接 Workflow を起動します。
 
-## Content を変更した場合
+### Content を変更した場合
 
 ```text id="rqr5jk"
 Content Repository
@@ -576,7 +644,7 @@ Deploy
 
 どちらの場合も、最終的に **Site Repository 側で Build する**点は同じです。
 
-# 手動で Deploy Workflow を実行する
+## 手動で Deploy Workflow を実行する
 
 生成 Workflow は、
 
@@ -600,7 +668,7 @@ Run workflow
 
 Content や Site に新しい Commit を作らず、現在の状態でもう一度 Deployment したい場合などに利用できます。
 
-# Deployment が動かない場合
+## Deployment が動かない場合
 
 まず「Workflow が起動していない」のか、「Workflow は起動したが失敗した」のかを分けます。
 
@@ -624,7 +692,7 @@ flowchart TD
     Failed --> Deploy["Cloudflare Deploy"]
 ```
 
-# Workflow が起動しない
+## Workflow が起動しない
 
 Site Repository への Push なら、
 
@@ -647,7 +715,7 @@ content-updated
 
 Content Repository への Push だけでは Site Workflow は起動しません。
 
-# `npm ci` で失敗する
+## `npm ci` で失敗する
 
 生成 Workflow は、
 
@@ -665,7 +733,7 @@ package-lock.json
 
 が Repository に Commit されているか確認してください。
 
-# Content の Checkout で失敗する
+## Content の Checkout で失敗する
 
 Private Content Repository の場合は、
 
@@ -677,7 +745,7 @@ RIEBECKITE_CONTENT_READ_TOKEN
 
 Site Repository の Workflow が、その Token を使って Content Repository を読み取れる必要があります。
 
-# `check` で失敗する
+## `check` で失敗する
 
 ```sh id="5jffy5"
 npm exec riebeckite check
@@ -687,7 +755,7 @@ npm exec riebeckite check
 
 Config や Plugin の問題を修正してから Push してください。
 
-# `build` で失敗する
+## `build` で失敗する
 
 手元で、
 
@@ -699,7 +767,7 @@ npm exec riebeckite build
 
 Repository を分離している場合は、CI と同じ場所に Content が存在することも確認してください。
 
-# Cloudflare Deployment で失敗する
+## Cloudflare Deployment で失敗する
 
 Build までは成功している場合は、
 
@@ -713,7 +781,7 @@ wrangler.jsonc
 
 Riebeckite の Build と Cloudflare Deployment は別の段階なので、どちらで失敗したかを分けて調べると原因を特定しやすくなります。
 
-# まとめ
+## まとめ
 
 通常の Site Repository では、
 
@@ -769,7 +837,7 @@ CLOUDFLARE_ACCOUNT_ID
 
 という役割の違いです。
 
-## 関連資料
+### 関連資料
 
 - [Deployment Guides](./README.md) — Deployment 方法の選択
 - [Cloudflare Workers](./cloudflare-workers.md) — Cloudflare Workers の設定と手動 Deployment

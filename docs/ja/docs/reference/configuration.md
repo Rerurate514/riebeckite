@@ -50,7 +50,7 @@ export default defineConfig({
 
 Config は Content や Plugin の処理が始まる前に Integration によって解決されます。
 
-# Content の設定
+## Content の設定
 
 通常は `content.directory` で Markdown などを読み込むディレクトリを指定します。
 
@@ -74,7 +74,7 @@ my-site/
 
 のような構成になります。
 
-## 除外するファイル
+### 除外するファイル
 
 `exclude` を使うと、Content System に読み込ませないファイルを指定できます。
 
@@ -92,7 +92,7 @@ content: {
 
 内部では `isExcluded` がこの判定を行います。
 
-## 公開条件
+### 公開条件
 
 どのコンテンツを公開するかは、既定では `publishStrategy` で設定します。
 
@@ -152,7 +152,7 @@ flowchart LR
 
 `exclude` は **Content System に入れるか**、`publishStrategy` や `visibility` は **Site でどう扱うか**を決めます。`exclude` されたファイルは link resolution や graph、diagnostics にも現れません。一方、`draft`、`unlisted`、公開前の `publishAt` は raw manifest には残りますが、Core が route 用 view と discovery 用 view から適切に外します。
 
-# ContentSource
+## ContentSource
 
 通常は `content.directory` を使用しますが、独自の読み込み元を使用する場合は `content.source` を指定できます。
 
@@ -176,7 +176,7 @@ content.source
 
 `content.source` を指定する場合は、標準 filesystem reader を置き換えるものとして扱います。
 
-# 3つの Root
+## 3つの Root
 
 外部 Vault や monorepo 構成を扱う場合に重要なのが、
 
@@ -204,7 +204,7 @@ flowchart TD
 
 この3つは別の役割を持ちます。
 
-# appRoot
+## appRoot
 
 `appRoot` は **Site Application の基準となるディレクトリ**です。
 
@@ -237,7 +237,7 @@ appRoot = site/
 
 など Site Application の基準になります。
 
-# configRoot
+## configRoot
 
 `configRoot` は、
 
@@ -260,7 +260,7 @@ appRoot
 
 重要なのは、**`configRoot` を変更しても `content.directory` の基準は変わらない**ことです。
 
-# contentRoot
+## contentRoot
 
 `contentRoot` は、実際に Markdown や asset を読み込む場所です。
 
@@ -295,7 +295,7 @@ flowchart LR
 
 そのため CLI を別の directory から実行しても、同じ Site Application を解決できれば同じ Vault を参照できます。
 
-# 外部 Vault を使う
+## 外部 Vault を使う
 
 Obsidian Vault を Site と独立して管理したい場合は、Site の外へ置く構成を推奨します。
 
@@ -341,7 +341,7 @@ vault/
 
 Vault を Vite application root にする必要はありません。
 
-# 外部 Vault の設定例
+## 外部 Vault の設定例
 
 ```ts id="p5vg19"
 // site/riebeckite.config.ts
@@ -397,7 +397,7 @@ content: {
 
 ただし絶対パスは開発 PC や CI で場所が変わると使えなくなるため、通常は Site からの相対パスを推奨します。
 
-# `process.cwd()` に依存しない
+## `process.cwd()` に依存しない
 
 Content directory を次のように組み立てることは避けてください。
 
@@ -434,7 +434,7 @@ flowchart LR
 
 この境界を維持してください。
 
-# Application から ContentManager を使う
+## Application から ContentManager を使う
 
 通常、HonoX Integration が `contentRoot` を自動的に解決します。
 
@@ -494,7 +494,7 @@ flowchart LR
     Absolute --> Manager
 ```
 
-# Attachment と Media
+## Attachment と Media
 
 Obsidian の attachment や media も `contentRoot` を基準に扱います。
 
@@ -544,7 +544,7 @@ attachments/report.pdf
 
 のように logical path を維持します。
 
-# Asset URL と実ファイルは別
+## Asset URL と実ファイルは別
 
 ここは特に重要です。
 
@@ -580,7 +580,7 @@ public/assets/attachments/
 
 参照 Application の `build_images.ts` は、実際に参照されている asset だけを差分コピーする実装例です。
 
-# Vault 全体を公開しない
+## Vault 全体を公開しない
 
 次のような実装は避けてください。
 
@@ -619,7 +619,7 @@ flowchart TD
 
 Publish filter と asset copy policy は、publish boundary check が導入されるまでは Site Application 側の責務です。
 
-# Plugin の設定
+## Plugin の設定
 
 Plugin は `plugins` に指定します。
 
@@ -657,7 +657,7 @@ Config resolve 時に無効な input は除外され、有効な Plugin は安�
 
 その後 capability の整合性が検証されます。
 
-# Theme の設定
+## Theme の設定
 
 Theme は `theme` で設定します。
 
@@ -690,7 +690,7 @@ flowchart TD
     Integration -. "Core Configへ混ぜない" .-> Config
 ```
 
-# Config の検証
+## Config の検証
 
 Configuration に問題がある場合は `ConfigValidationError` として報告されます。
 
@@ -699,12 +699,12 @@ Configuration に問題がある場合は `ConfigValidationError` として報�
 Config を変更した後は、
 
 ```sh id="khhx15"
-pnpm exec riebeckite check
+npm exec riebeckite check
 ```
 
 を実行してください。
 
-# 外部 Vault のトラブルシュート
+## 外部 Vault のトラブルシュート
 
 外部 Vault や複雑な directory 構成を使っている場合は、次の順番で確認すると原因を切り分けやすくなります。
 
@@ -722,47 +722,47 @@ flowchart LR
     Content --> Build
 ```
 
-## 1. Config を検証する
+### 1. Config を検証する
 
 ```sh id="7x4ypg"
-pnpm exec riebeckite check
+npm exec riebeckite check
 ```
 
 Config と Plugin contract が正しいか確認します。
 
-## 2. Content Source を診断する
+### 2. Content Source を診断する
 
 ```sh id="t7e22k"
-pnpm exec riebeckite doctor
+npm exec riebeckite doctor
 ```
 
 filesystem content source が存在しない、読み込めないなどの問題を確認します。
 
-## 3. 解決された Directory を確認する
+### 3. 解決された Directory を確認する
 
 ```sh id="rgnpgo"
-pnpm exec riebeckite inspect config
+npm exec riebeckite inspect config
 ```
 
 `content.directory` が期待する絶対 path に解決されているか確認します。
 
-## 4. Content を確認する
+### 4. Content を確認する
 
 ```sh id="4ssq64"
-pnpm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 WikiLink や embed を調査する前に、期待する logical path と content が認識されていることを確認します。
 
-## 5. 実際に Build する
+### 5. 実際に Build する
 
 ```sh id="9wnm73"
-pnpm exec riebeckite build
+npm exec riebeckite build
 ```
 
 最後に Integration、SSG、route rendering まで含めて確認します。
 
-# Config を Site の外へ置く
+## Config を Site の外へ置く
 
 通常、
 
@@ -794,7 +794,7 @@ contentRoot
 
 相対 `content.directory` は、`configRoot` ではなく引き続き **`appRoot` を基準**に指定します。
 
-# まとめ
+## まとめ
 
 Configuration で特に重要なのは、Site と Content の場所を混同しないことです。
 

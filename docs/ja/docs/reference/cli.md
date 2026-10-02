@@ -5,12 +5,12 @@ Riebeckite CLI は、Site の作成、開発、検証、診断、Build などを
 基本的には **Riebeckite Site の application directory で実行します。**
 
 ```sh id="vgst3p"
-pnpm exec riebeckite <command>
+npm exec riebeckite <command>
 ```
 
 CLI は current working directory から application root を解決します。
 
-# コマンド一覧
+## コマンド一覧
 
 ```text id="7uw50m"
 riebeckite init [directory] [--preset <name>] [--force] [--list-presets]
@@ -40,7 +40,7 @@ riebeckite inspect build
 | `profile` | Build の性能を調査する | Build に依存 |
 | `inspect` | 現在の解決結果を見る | 変更しない |
 
-# どのコマンドを使う？
+## どのコマンドを使う？
 
 目的から選ぶと分かりやすくなります。
 
@@ -77,7 +77,7 @@ build
 
 と考えると分かりやすいです。
 
-# `init`
+## `init`
 
 新しい Riebeckite Site を作成します。
 
@@ -105,7 +105,7 @@ riebeckite init my-site
 
 生成された Site は Riebeckite monorepo に依存しない、自己完結した application です。
 
-## Preset を選ぶ
+### Preset を選ぶ
 
 ```sh id="vt7gdb"
 riebeckite init my-site --preset starter
@@ -123,7 +123,7 @@ riebeckite init --list-presets
 
 で確認できます。
 
-## 既存ファイルがある場合
+### 既存ファイルがある場合
 
 `init` は、生成対象となるファイルがすでに存在する場合、そのまま上書きしません。
 
@@ -137,7 +137,7 @@ riebeckite init my-site --force
 
 `--force` は既存ファイルへ影響するため、内容を確認してから使用してください。
 
-## `create-riebeckite`
+### `create-riebeckite`
 
 同じ Site generator は `create-riebeckite` からも利用できます。
 
@@ -150,19 +150,19 @@ npx create-riebeckite
 Site を生成した後は依存関係を install し、
 
 ```sh id="gzg1my"
-pnpm install
-pnpm exec riebeckite check
-pnpm exec riebeckite build
+npm install
+npm exec riebeckite check
+npm exec riebeckite build
 ```
 
 で正常に構成されていることを確認できます。
 
-# `dev`
+## `dev`
 
 開発環境を起動します。
 
 ```sh id="ujiy7q"
-pnpm exec riebeckite dev
+npm exec riebeckite dev
 ```
 
 Riebeckite Integration の development workflow を利用して Site を起動します。
@@ -171,12 +171,12 @@ Riebeckite Integration の development workflow を利用して Site を起動�
 
 通常の HonoX Site では、開発中のページ確認にこのコマンドを使用します。
 
-# `check`
+## `check`
 
 Config、Plugin、Capability の設定が有効か検証します。
 
 ```sh id="5a2lrf"
-pnpm exec riebeckite check
+npm exec riebeckite check
 ```
 
 たとえば、
@@ -204,7 +204,7 @@ flowchart LR
 
 `check` が保証するのは **Configuration が有効であること**です。
 
-## Plugin Option Validation
+### Plugin Option Validation
 
 Plugin の option validation も `check` の一部として実行されます。
 
@@ -219,12 +219,12 @@ Plugin は `validateOptions` を使って、自身の設定を検証できます
 
 不正な Plugin 設定は、実際の Build より前に `check` で検出できます。
 
-# `doctor`
+## `doctor`
 
 Project の状態を広く診断します。
 
 ```sh id="zruccx"
-pnpm exec riebeckite doctor
+npm exec riebeckite doctor
 ```
 
 `doctor` は、
@@ -258,7 +258,7 @@ flowchart LR
 
 Health check が失敗した場合は non-zero status で終了します。
 
-## Deprecated Usage
+### Deprecated Usage
 
 古い API や非推奨の設定が検出された場合は、
 
@@ -270,12 +270,12 @@ Deprecated usage
 
 これは移行を促すための情報であり、それだけで `doctor` が失敗扱いになるわけではありません。
 
-# `build`
+## `build`
 
 Site を Build します。
 
 ```sh id="iznhhd"
-pnpm exec riebeckite build
+npm exec riebeckite build
 ```
 
 通常は incremental state を利用して、再利用可能な処理を省略します。
@@ -300,12 +300,12 @@ Build State は **Build が成功した場合だけ**更新されます。
 
 失敗した Build が以前の正常な state を壊すことはありません。
 
-## Full Build
+### Full Build
 
 incremental state の再利用を避けたい場合は、
 
 ```sh id="wpr38p"
-pnpm exec riebeckite build --full
+npm exec -- riebeckite build --full
 ```
 
 を使用します。
@@ -314,12 +314,12 @@ Build の再現確認や incremental behavior の問題を切り分ける場合�
 
 詳しくは [Build System](../framework/build-system.md) を参照してください。
 
-# `profile`
+## `profile`
 
 Build のどこに時間がかかっているか調査します。
 
 ```sh id="5pvcmf"
-pnpm exec riebeckite profile
+npm exec riebeckite profile
 ```
 
 Trace を収集し、Build phase や Plugin 処理などの performance report を表示します。
@@ -327,19 +327,19 @@ Trace を収集し、Build phase や Plugin 処理などの performance report �
 incremental reuse を避けて計測する場合は、
 
 ```sh id="mqr87f"
-pnpm exec riebeckite profile --full
+npm exec -- riebeckite profile --full
 ```
 
 を使用します。
 
 `profile` は性能調査のための command であり、Configuration validity を確認するための command ではありません。
 
-# `inspect`
+## `inspect`
 
 Riebeckite が現在認識している状態を確認します。
 
 ```sh id="enl4wg"
-pnpm exec riebeckite inspect plugins
+npm exec riebeckite inspect plugins
 ```
 
 Inspector は **read-only** です。
@@ -356,46 +356,46 @@ Inspector は **read-only** です。
 
 を行いません。
 
-## Config
+### Config
 
 ```sh id="c3x2ak"
-pnpm exec riebeckite inspect config
+npm exec riebeckite inspect config
 ```
 
 解決済みの Configuration を確認します。
 
-## Plugins
+### Plugins
 
 ```sh id="wnn5fz"
-pnpm exec riebeckite inspect plugins
+npm exec riebeckite inspect plugins
 ```
 
 現在有効な Plugin を確認します。
 
-## Content
+### Content
 
 ```sh id="qqht5s"
-pnpm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 現在の Content entry と解決済みの canonical permalink などを確認します。
 
 特定の記事がどの URL として認識されているか確認したい場合に便利です。
 
-## Graph
+### Graph
 
 ```sh id="s8q7lx"
-pnpm exec riebeckite inspect graph
+npm exec riebeckite inspect graph
 ```
 
 Content Graph を確認します。
 
 WikiLink、backlink、graph extension などを調査するときに利用できます。
 
-## Build
+### Build
 
 ```sh id="y2uc9f"
-pnpm exec riebeckite inspect build
+npm exec riebeckite inspect build
 ```
 
 現在の incremental Build State を確認します。
@@ -404,7 +404,7 @@ State が存在しない場合や壊れている場合も、新しい state を�
 
 Inspector の詳しい設計については [Inspector](../framework/inspector.md) を参照してください。
 
-# Error の表示
+## Error の表示
 
 CLI command が失敗した場合は、可能な範囲で構造化されたエラー情報を表示します。
 
@@ -428,14 +428,14 @@ Caused by:
 
 単に「失敗した」と表示するのではなく、**何が失敗し、どこを確認すればよいか**が分かることを目標としています。
 
-# 通常の Workflow
+## 通常の Workflow
 
 新しく Site を作る場合は、次のような流れになります。
 
 ```mermaid id="gr7mks"
 flowchart LR
     Init["init"]
-    Install["pnpm install"]
+    Install["npm install"]
     Check["check"]
     Dev["dev"]
     Build["build"]

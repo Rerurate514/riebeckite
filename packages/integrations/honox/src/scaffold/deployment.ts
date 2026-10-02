@@ -1,4 +1,5 @@
 import type { SiteTemplateFile } from "./templates.js";
+import { WRANGLER_DEFAULTS, GITHUB_ACTIONS_SECRETS } from "./wrangler-defaults.js";
 
 export type ScaffoldDeploymentOptions = {
   readonly contentRepository?: string;
@@ -49,16 +50,7 @@ export function deploymentTemplateFiles(
 }
 
 function wranglerConfig(): string {
-  return `${JSON.stringify(
-    {
-      name: "riebeckite-site",
-      compatibility_date: "2026-03-10",
-      compatibility_flags: ["nodejs_compat"],
-      assets: { directory: "./dist" },
-    },
-    null,
-    2,
-  )}\n`;
+  return `${JSON.stringify(WRANGLER_DEFAULTS, null, 2)}\n`;
 }
 
 function deployWorkflow(contentRepository: string | undefined): string {
@@ -106,8 +98,8 @@ ${contentCheckout}
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: \${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: \${{ secrets.${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN} }}
+          accountId: \${{ secrets.${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID} }}
           command: deploy
 `;
 }
@@ -128,7 +120,7 @@ jobs:
     steps:
       - name: Validate dispatch configuration
         env:
-          SITE_DISPATCH_TOKEN: \${{ secrets.SITE_DISPATCH_TOKEN }}
+          SITE_DISPATCH_TOKEN: \${{ secrets.${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN} }}
         run: |
           if [ -z "$SITE_DISPATCH_TOKEN" ]; then
             echo "::error::SITE_DISPATCH_TOKEN is not configured. Add a token that can dispatch to ${siteRepository}."
@@ -138,7 +130,7 @@ jobs:
       - name: Notify the site repository
         uses: actions/github-script@v7
         with:
-          github-token: \${{ secrets.SITE_DISPATCH_TOKEN }}
+          github-token: \${{ secrets.${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN} }}
           script: |
             await github.rest.repos.createDispatchEvent({
               owner: ${JSON.stringify(owner)},

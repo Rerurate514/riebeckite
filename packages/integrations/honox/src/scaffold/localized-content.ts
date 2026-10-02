@@ -1591,9 +1591,9 @@ function guideContent(): string {
     codeBlock(
       "sh",
       [
-        "pnpm install",
-        "pnpm exec riebeckite dev",
-        "pnpm exec riebeckite build",
+        "npm install",
+        "npm exec riebeckite dev",
+        "npm exec riebeckite build",
       ].join("\n"),
     ),
     "",
@@ -1704,7 +1704,7 @@ function referencePluginsContent(
     "Every registered plugin is listed below with the Markdown that triggers it,",
     "or with the Markdown/frontmatter/content shape it reads when the plugin is",
     "site-wide rather than block-based. Paste the examples into files under",
-    "`content/` and run `pnpm exec riebeckite dev` to inspect the rendered result.",
+    "`content/` and run `npm exec riebeckite dev` to inspect the rendered result.",
     "",
   );
 

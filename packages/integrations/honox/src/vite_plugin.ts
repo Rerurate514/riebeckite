@@ -3,6 +3,7 @@ import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
+import { riebeckiteContentAssets } from "./content_assets.js";
 import { riebeckiteContentWatch } from "./content_watch.js";
 import { createRiebeckiteSsg } from "./ssg.js";
 import type { RiebeckiteSsgOptions } from "./ssg_plugin.js";
@@ -90,6 +91,11 @@ export function riebeckite(
       },
     },
     riebeckiteClientModule(getConfig),
+    riebeckiteContentAssets({
+      appRoot: () => requireContentWatchRoots(contentWatchRoots).appRoot,
+      contentRoot: () =>
+        requireContentWatchRoots(contentWatchRoots).contentRoot,
+    }),
     riebeckiteContentWatch({
       appRoot: () => requireContentWatchRoots(contentWatchRoots).appRoot,
       contentRoot: () =>

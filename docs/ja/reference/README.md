@@ -89,7 +89,7 @@ Plugin の仕組みそのものを理解したい場合は [Plugin System](../fr
 
 Theme の設計思想や仕組みを理解したい場合は [Theme System](../framework/theme-system.md) を参照してください。
 
-# 公開 Package
+## 公開 Package
 
 Riebeckite の外部 Plugin / Theme / Site は、**公開 Package と公開 Export だけ**に依存してください。
 
@@ -123,7 +123,7 @@ flowchart BT
 
 外部 Package から Riebeckite monorepo の内部実装へ直接依存しないことが重要です。
 
-# Public API と Internal API
+## Public API と Internal API
 
 外部 Package では Package の Public Export を利用します。
 
@@ -167,13 +167,13 @@ Public API は外部利用を前提とした Contract です。
 
 `src/**` や monorepo 内部 Path は実装詳細であり、Package の更新によって変更される可能性があります。
 
-# `@riebeckite/core`
+## `@riebeckite/core`
 
 `@riebeckite/core` は、Riebeckite の Framework 非依存な Public API を提供します。
 
 主な Export は次のとおりです。
 
-## Config
+### Config
 
 ```text
 defineConfig
@@ -187,7 +187,7 @@ Config の宣言、解決、Publication Policy などに使用します。
 
 詳しくは [Configuration](./configuration.md) を参照してください。
 
-## Content
+### Content
 
 ```text
 ContentManager
@@ -203,7 +203,7 @@ Content の読み込み、解決、Collection、Graph、Query、Public Location 
 
 仕組みについては [Content System](../framework/content-system.md) を参照してください。
 
-## Plugins
+### Plugins
 
 ```text
 definePlugin
@@ -217,7 +217,7 @@ Plugin の定義や解決、Endpoint などに使用します。
 
 Plugin を作成する場合は [Plugin API](./plugin-api.md) と [プラグイン作成の詳細](../framework/plugin-system.md) を参照してください。
 
-## Themes
+### Themes
 
 ```text
 defineTheme
@@ -232,7 +232,7 @@ Theme の定義と Presentation Contract に使用します。
 
 Theme を作成する場合は [Theme API](./theme-api.md) と [テーマ作成の詳細](../framework/theme-system.md) を参照してください。
 
-## Pipeline
+### Pipeline
 
 ```text
 Pipeline
@@ -244,7 +244,7 @@ Markdown / HTML の処理 Pipeline を拡張するときに使用します。
 
 通常の Site 利用で直接扱う必要はありません。
 
-## Utilities
+### Utilities
 
 ```text
 escapeHtml
@@ -256,7 +256,7 @@ stripHtml
 
 Plugin や Integration から利用できる共通 Utility です。
 
-## Observability
+### Observability
 
 ```text
 Logger
@@ -269,7 +269,7 @@ Log や Trace を Framework と統合するための型です。
 
 詳しくは [Observability](../framework/observability.md) を参照してください。
 
-# どのドキュメントを見るべきか
+## どのドキュメントを見るべきか
 
 迷った場合は、次の基準で選べます。
 

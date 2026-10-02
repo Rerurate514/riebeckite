@@ -27,7 +27,7 @@ Riebeckite では、**記事とサイトを同じ Repository に置く必要は�
 
 `repository_dispatch`、外部 Checkout、`notify-site.yml` などの詳細な GitHub Actions 構成は [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) を参照してください。
 
-# この構成が向いている人
+## この構成が向いている人
 
 Repository の分離は、特に次のような場合に便利です。
 
@@ -39,7 +39,7 @@ Repository の分離は、特に次のような場合に便利です。
 
 一方、小さな個人 Site を1つの Repository で管理するだけなら、無理に分離する必要はありません。
 
-# まずは1 Repository で始める
+## まずは1 Repository で始める
 
 通常の Riebeckite Site は、
 
@@ -66,7 +66,7 @@ flowchart LR
 
 既存の Obsidian Vault を利用するなど、明確に分離する理由がなければ、最初はこの構成で十分です。
 
-# Repository を分けるとどうなる？
+## Repository を分けるとどうなる？
 
 分離すると、
 
@@ -101,7 +101,7 @@ flowchart LR
 
 Riebeckite Build が両方を組み合わせて、最終的な Site を生成します。
 
-# どの構成を選ぶ？
+## どの構成を選ぶ？
 
 大きく3つの構成があります。
 
@@ -134,7 +134,7 @@ flowchart TD
 
 A と B でも Content の設定方法は基本的に同じですが、外部 Repository の Checkout や Repository Dispatch は必要ありません。
 
-# 記事は Site の外に置ける
+## 記事は Site の外に置ける
 
 Riebeckite の `content.directory` は、Site Root からの相対 Path で外部 Directory を指定できます。
 
@@ -172,7 +172,7 @@ export default defineConfig({
 
 詳しい Root の解決規則は [Configuration](../reference/configuration.md) の「Filesystem root と外部 Vault」を参照してください。
 
-# 何をどこへ置く？
+## 何をどこへ置く？
 
 たとえば次のように分けられます。
 
@@ -189,7 +189,7 @@ export default defineConfig({
 
 Riebeckite が公開対象として扱う範囲は、後述する `publishStrategy` と `exclude` で制御します。
 
-# 別 Repository 構成を作る
+## 別 Repository 構成を作る
 
 ここからは、
 
@@ -203,7 +203,7 @@ my-site
 
 として説明します。
 
-# 1. Content Repository を作る
+## 1. Content Repository を作る
 
 まず記事用の Repository を用意します。
 
@@ -234,7 +234,7 @@ publish: true
 
 が付いた Note だけが公開対象になります。
 
-# `.gitignore`
+## `.gitignore`
 
 OS の一時 File や Obsidian の Workspace State を Git 管理したくない場合は `.gitignore` に追加します。
 
@@ -250,7 +250,7 @@ Thumbs.db
 
 Site の Content として読みたくないものは、後で `exclude` から除外できます。
 
-# Private Repository にする
+## Private Repository にする
 
 記事そのものを公開したくない場合は、Content Repository を GitHub の Private Repository にします。
 
@@ -276,7 +276,7 @@ Site Repository
 
 という構成にできます。
 
-# 2. Site を作る
+## 2. Site を作る
 
 GitHub Actions を利用する場合は、Content Repository と Site Repository を指定して Site を生成できます。
 
@@ -312,7 +312,7 @@ github/notify-site.yml
 
 も生成されます。
 
-# ローカルでの配置
+## ローカルでの配置
 
 開発環境では、
 
@@ -335,7 +335,7 @@ my-site/
 
 ローカル配置と CI 配置が同じとは限らない点に注意してください。
 
-# 3. `content.directory` を設定する
+## 3. `content.directory` を設定する
 
 生成された Deploy Workflow に合わせる場合は、
 
@@ -373,7 +373,7 @@ private/**
 
 などです。
 
-# `exclude` と `publish: true` は別物
+## `exclude` と `publish: true` は別物
 
 この2つは役割が異なります。
 
@@ -404,7 +404,7 @@ flowchart LR
 
 Private Content を扱う場合は、両方を利用して公開境界を明確にしておくのがおすすめです。
 
-# 4. Content が読めているか確認する
+## 4. Content が読めているか確認する
 
 表示を確認する前に CLI で状態を確認できます。
 
@@ -412,7 +412,7 @@ Private Content を扱う場合は、両方を利用して公開境界を明確�
 npm exec riebeckite check
 npm exec riebeckite doctor
 npm exec riebeckite inspect config
-npm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 それぞれの役割は次のとおりです。
@@ -443,7 +443,7 @@ Directory がここを指しているか確認
 また、
 
 ```sh
-npm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 では読み込まれた Note の `PATH` を確認できます。
@@ -452,7 +452,7 @@ npm exec riebeckite inspect content --list
 
 記事が読み込まれているのに公開されない場合は、`publish: true` も確認します。
 
-# 5. CI を理解する
+## 5. CI を理解する
 
 別 Repository 構成では、特に重要な違いがあります。
 
@@ -503,7 +503,7 @@ Site CI を起動する
 
 この2つを混同しないでください。
 
-# 6. Content Repository から Site へ通知する
+## 6. Content Repository から Site へ通知する
 
 生成された、
 
@@ -537,7 +537,7 @@ repository_dispatch:
 
 を受け取って Deploy Workflow を起動します。
 
-# `SITE_DISPATCH_TOKEN`
+## `SITE_DISPATCH_TOKEN`
 
 Content Repository 側には、
 
@@ -563,7 +563,9 @@ Fine-grained PAT を利用する場合は、
 
 Classic PAT の `repo` Scope や、`Contents: write` を持つ GitHub App Installation Token も利用できます。
 
-# `RIEBECKITE_CONTENT_READ_TOKEN`
+Fine-grained PAT も Classic PAT も、[GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) から作成できます。作成した値は、この Content Repository の **Settings → Secrets and variables → Actions** に `SITE_DISPATCH_TOKEN` という名前で登録します。
+
+## `RIEBECKITE_CONTENT_READ_TOKEN`
 
 Content Repository が Private または Internal の場合は、Site Repository 側に、
 
@@ -591,7 +593,9 @@ Content Repository が Public なら、この Secret は不要です。
 
 Site Repository の通常の `GITHUB_TOKEN` では、別の Private / Internal Repository を読むことはできません。
 
-# 2つの Token の違い
+この Token は **Site Repository の Settings → Secrets and variables → Actions** に登録します。
+
+## 2つの Token の違い
 
 名前が似ていますが、役割はまったく異なります。
 
@@ -611,7 +615,7 @@ flowchart LR
 
 この関係を覚えておくと CI の問題を切り分けやすくなります。
 
-# 7. Deploy の流れ
+## 7. Deploy の流れ
 
 Repository Dispatch を利用した場合は、最終的に次の順番になります。
 
@@ -651,7 +655,7 @@ Build
 
 という順番です。
 
-# 他の運用方法
+## 他の運用方法
 
 Repository Dispatch 以外の方法も利用できます。
 
@@ -663,7 +667,7 @@ Repository Dispatch 以外の方法も利用できます。
 | Manual | されない | 必要なときだけ実行 |
 | Git Submodule | されない | Site 側で参照 Commit の更新が必要 |
 
-# Schedule
+## Schedule
 
 Site Workflow に `schedule` を追加すれば、定期的に Content Repository の最新状態を取得できます。
 
@@ -677,7 +681,7 @@ SITE_DISPATCH_TOKEN
 
 ただし Content 更新から Deploy まで遅延します。
 
-# Git Submodule
+## Git Submodule
 
 Content Repository を Git Submodule として管理することもできます。
 
@@ -724,7 +728,7 @@ git push
 
 そのため、記事 Push だけで自動 Deploy したい場合は Repository Dispatch の方が向いています。
 
-# 日常の運用
+## 日常の運用
 
 Repository Dispatch を設定した後は、記事側では通常どおり編集して Push します。
 
@@ -756,7 +760,7 @@ Deploy
 
 Site Code を変更するときは Site Repository を通常どおり編集して Push します。
 
-# 手元で確認する
+## 手元で確認する
 
 Site は Site Directory から実行します。
 
@@ -772,7 +776,7 @@ npm run doctor
 
 Content Repository は入力であり、Riebeckite Application 自体を実行する場所ではありません。
 
-# 公開のルール
+## 公開のルール
 
 Repository を分離しても、**Repository の公開範囲と Riebeckite の公開判定は別物**です。
 
@@ -801,7 +805,7 @@ flowchart TD
     Strategy --> Site["Public Site"]
 ```
 
-# `publishStrategy`
+## `publishStrategy`
 
 公開対象は、
 
@@ -831,7 +835,7 @@ explicit
   → 起こりにくい
 ```
 
-# 公開境界を二重にする
+## 公開境界を二重にする
 
 Private Content を扱う場合は、
 
@@ -871,7 +875,7 @@ publish: true
 
 を付けます。
 
-# Obsidian で除外した方がよいもの
+## Obsidian で除外した方がよいもの
 
 一般的には、
 
@@ -885,7 +889,7 @@ private/**
 
 特に `.obsidian/` には Workspace State や Obsidian 固有の設定が含まれるため、Content として読み込ませないようにします。
 
-# 添付ファイルに注意する
+## 添付ファイルに注意する
 
 Vault 内の添付ファイルは、Markdown と同じように自動で Public Directory へコピーされるわけではありません。
 
@@ -922,9 +926,9 @@ apps/web/scripts/build_images.ts
 
 詳しい Asset の扱いは [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) を参照してください。
 
-# よくある質問
+## よくある質問
 
-## Site 内の `content/` のまま一部だけ非公開にできる？
+### Site 内の `content/` のまま一部だけ非公開にできる？
 
 できます。
 
@@ -945,7 +949,7 @@ Repositoryを物理的に分ける
 
 という運用もできます。
 
-## Vault を移動したら記事が表示されなくなった
+### Vault を移動したら記事が表示されなくなった
 
 `content.directory` を確認してください。
 
@@ -959,7 +963,7 @@ npm exec riebeckite inspect config
 
 絶対 Path も利用できますが、開発端末と CI で環境が異なりやすいため、通常は相対 Path の方が扱いやすくなります。
 
-## 記事は表示されるのに画像だけ `404` になる
+### 記事は表示されるのに画像だけ `404` になる
 
 添付ファイルの Copy 処理を確認してください。
 
@@ -971,7 +975,7 @@ public/assets/attachments/
 
 などの Public Directory に存在しなければ表示できません。
 
-## CI でだけ Vault が見つからない
+### CI でだけ Vault が見つからない
 
 CI 上に Content Repository が存在するか確認してください。
 
@@ -984,7 +988,7 @@ CI 上に Content Repository が存在するか確認してください。
 
 そのうえで `content.directory` が CI 上の配置と一致しているか確認します。
 
-## Windows でも同じ設定を使える？
+### Windows でも同じ設定を使える？
 
 はい。
 
@@ -992,7 +996,7 @@ CI 上に Content Repository が存在するか確認してください。
 
 実際の OS の Path Separator には依存しません。
 
-# トラブルシューティング
+## トラブルシューティング
 
 | 症状 | 確認すること |
 | --- | --- |
@@ -1005,7 +1009,7 @@ CI 上に Content Repository が存在するか確認してください。
 | ローカルと CI で Path が違う | Site Root を基準にした相対 Path |
 | Submodule が更新されない | Site 側の Submodule Reference |
 
-# 問題を切り分ける
+## 問題を切り分ける
 
 問題が起きた場合は、次の順番で確認すると原因を絞りやすくなります。
 
@@ -1035,7 +1039,7 @@ flowchart TD
 
 より詳しい CI 認証、Root 解決、Asset、GitHub Actions の問題については [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) を参照してください。
 
-# まとめ
+## まとめ
 
 最初から Repository を分離する必要はありません。
 
@@ -1067,7 +1071,7 @@ Repository を分離すること自体は、Riebeckite の公開判定を変更�
 
 **Repository の境界、Content の読み込み、Deploy の起動、Site への公開は、それぞれ別の責務です。**
 
-## 関連資料
+### 関連資料
 
 - [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) — Root 解決、CI 認証、Assets、GitHub Actions、トラブル対応
 - [Configuration](../reference/configuration.md) — `appRoot` / `configRoot` / `contentRoot`

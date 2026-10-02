@@ -24,7 +24,7 @@ flowchart LR
 
 Riebeckite の通常の静的 Site では、Build で生成された `dist/` を Cloudflare Workers の Static Assets として公開します。
 
-# 前提
+## 前提
 
 Site の Directory で、依存 Package をインストールします。
 
@@ -59,15 +59,15 @@ Cloudflare Workers へ公開するのは、この `dist/` の内容です。
 
 `.riebeckite/` や Plugin Cache などの Build 時の状態は公開対象ではありません。
 
-# 1. Cloudflare アカウントを作る
+## 1. Cloudflare アカウントを作る
 
-まだ Cloudflare アカウントを持っていない場合は、[Cloudflare](https://www.cloudflare.com/?utm_source=chatgpt.com) で作成します。
+まだ Cloudflare アカウントを持っていない場合は、[Cloudflare](https://www.cloudflare.com/) で作成します。
 
 最初は無料枠で始められます。
 
 アカウントを作成したら、次に Cloudflare Workers へ Deploy するための Wrangler を準備します。
 
-# 2. Wrangler をインストールする
+## 2. Wrangler をインストールする
 
 Site の Directory で実行します。
 
@@ -85,30 +85,23 @@ npx wrangler
 
 から実行できます。
 
-# 3. `wrangler.jsonc` を作る
+## 3. `wrangler.jsonc` を作る
 
-Cloudflare Workers へ何を Deploy するかを `wrangler.jsonc` で設定します。
-
-Riebeckite Repository を Clone している場合は、
-
-```text
-templates/cloudflare/wrangler.jsonc
-```
-
-を Site Root へコピーします。
-
-生成した Site だけを手元に置いている場合は、Template の内容を新しい `wrangler.jsonc` にコピーしても構いません。
-
-最小構成は次のようになります。
+Cloudflare Workers へ何を Deploy するかを `wrangler.jsonc` で設定します。Site の Root に `wrangler.jsonc` を作り、次の内容を貼り付けてください。
 
 ```jsonc
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "my-riebeckite-site",
+  "compatibility_date": "2026-06-09",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist"
   }
 }
 ```
+
+`--github-actions` でサイトを作った場合、このファイルは生成済みです。手動で公開する場合だけ作ります。この内容は [templates/cloudflare/wrangler.jsonc](https://github.com/Rerurate514/riebeckite/blob/main/templates/cloudflare/wrangler.jsonc) と同じです。
 
 `name` は、自分の Worker 名に変更します。
 
@@ -138,7 +131,7 @@ dist/ を Static Assets として公開
 
 という対応になっています。
 
-# 4. Cloudflare にログインする
+## 4. Cloudflare にログインする
 
 Wrangler から Cloudflare へログインします。
 
@@ -150,7 +143,7 @@ Browser が開いたら、Cloudflare にログインして Wrangler からのア
 
 これで手元の Wrangler から Cloudflare Workers へ Deploy できるようになります。
 
-# 5. Site を公開する
+## 5. Site を公開する
 
 まず Riebeckite を Build します。
 
@@ -188,7 +181,7 @@ https://<name>.<account>.workers.dev
 
 表示された URL を Browser で開き、Site が表示されれば最初の Deployment は成功です。
 
-# 6. `baseUrl` を公開 URL に合わせる
+## 6. `baseUrl` を公開 URL に合わせる
 
 最初の Deployment で Site の URL が分かったら、`riebeckite.config.ts` の `baseUrl` を実際の公開 URL に変更します。
 
@@ -236,11 +229,11 @@ flowchart TD
     SecondBuild --> SecondDeploy
 ```
 
-# 7. 公開前に確認する
+## 7. 公開前に確認する
 
 実際に Deploy せず、Cloudflare Workers 向けの設定を確認することもできます。
 
-## Dry Run
+### Dry Run
 
 ```sh
 npx wrangler deploy --dry-run
@@ -250,7 +243,7 @@ npx wrangler deploy --dry-run
 
 「まだ本番へ出したくないが、Wrangler の設定に問題がないか確認したい」という場合に利用できます。
 
-## Wrangler Dev
+### Wrangler Dev
 
 ```sh
 npx wrangler dev
@@ -283,7 +276,7 @@ Cloudflareでの配信状態を確認
   → wrangler deploy
 ```
 
-# 8. 更新した Site を再公開する
+## 8. 更新した Site を再公開する
 
 一度公開した後に記事や設定を変更した場合も、手順は同じです。
 
@@ -312,7 +305,7 @@ npm exec riebeckite build
 
 を実行します。
 
-# 9. 公開前の確認手順
+## 9. 公開前の確認手順
 
 本番へ Deploy する前には、次の順で確認できます。
 
@@ -350,7 +343,7 @@ flowchart LR
     Dry --> Deploy
 ```
 
-# Build と Deploy は別の処理
+## Build と Deploy は別の処理
 
 Riebeckite の Build と Cloudflare の Deploy は別の処理です。
 
@@ -378,7 +371,7 @@ npx wrangler deploy
 
 この境界を分けて考えると、Deployment の問題を調査しやすくなります。
 
-# GitHub Actions で自動公開する
+## GitHub Actions で自動公開する
 
 毎回、
 
@@ -403,7 +396,7 @@ flowchart LR
 
 詳しい仕組みと設定は [GitHub Actions](./github-actions.md) を参照してください。
 
-# Site と Content が同じ Repository の場合
+## Site と Content が同じ Repository の場合
 
 GitHub Actions 付きで Site を生成します。
 
@@ -415,7 +408,7 @@ npx create-riebeckite my-site --github-actions
 
 その後は Site Repository の `main` への Push から、自動 Build・Deploy できます。
 
-# Content を別 Repository にする場合
+## Content を別 Repository にする場合
 
 Content と Site を別 Repository にする場合は、
 
@@ -455,7 +448,7 @@ OWNER/my-site
 
 へコピーします。
 
-# 外部 Content では「取得」と「通知」が必要
+## 外部 Content では「取得」と「通知」が必要
 
 Content Repository を分離した場合は、
 
@@ -493,9 +486,9 @@ flowchart LR
 
 Repository を分離する場合の詳しい設定は [Separate Content Repository](./separate-content-repository.md) を参照してください。
 
-# よくある問題
+## よくある問題
 
-## `dist/` がない
+### `dist/` がない
 
 先に、
 
@@ -507,7 +500,7 @@ npm exec riebeckite build
 
 Cloudflare Workers に公開する Static Assets は `dist/` に生成されます。
 
-## Site を更新したのに公開内容が古い
+### Site を更新したのに公開内容が古い
 
 変更後にもう一度、
 
@@ -520,7 +513,7 @@ npx wrangler deploy
 
 `wrangler deploy` は Riebeckite の Build の代わりにはなりません。
 
-## 公開後に URL が正しくない
+### 公開後に URL が正しくない
 
 `riebeckite.config.ts` の、
 
@@ -534,7 +527,7 @@ site: {
 
 変更した場合は再度 Build・Deploy してください。
 
-## Riebeckite の Build で失敗する
+### Riebeckite の Build で失敗する
 
 ```sh
 npm exec riebeckite check
@@ -543,7 +536,7 @@ npm exec riebeckite doctor
 
 で Riebeckite 側の Config や Content を確認します。
 
-## Wrangler で失敗する
+### Wrangler で失敗する
 
 Riebeckite の `build` が成功しているなら、
 
@@ -563,7 +556,7 @@ npx wrangler deploy --dry-run
 
 も確認してください。
 
-# まとめ
+## まとめ
 
 Riebeckite Site を Cloudflare Workers へ公開する最小手順は、
 
@@ -610,7 +603,7 @@ wrangler deploy
 
 自動 Deployment が必要になったら、手動 Deploy の仕組みを変えるのではなく、その一連の処理を [GitHub Actions](./github-actions.md) から実行する形に移行します。
 
-## 次に読むもの
+### 次に読むもの
 
 - [サイト公開までの最短ガイド](../../getting-started/deployment.md) — 初回公開までの最短手順
 - [GitHub Actions](./github-actions.md) — GitHub への Push から自動公開する

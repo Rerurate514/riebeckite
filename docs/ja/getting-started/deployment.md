@@ -34,14 +34,15 @@ Riebeckite は静的サイトを作ります。`npm exec riebeckite build` を�
 
    ```jsonc
    {
+     "$schema": "node_modules/wrangler/config-schema.json",
      "name": "my-site",
-     "compatibility_date": "2026-03-10",
+     "compatibility_date": "2026-06-09",
      "compatibility_flags": ["nodejs_compat"],
      "assets": { "directory": "./dist" }
    }
    ```
 
-   `name` は自分の Worker 名に変えてください。`assets.directory` は、Riebeckite のビルド結果である `./dist` のままにします。
+   `name` は自分の Worker 名に変えてください。`assets.directory` は、Riebeckite のビルド結果である `./dist` のままにします。他のフィールドはそのままにしておきます。内容は [templates/cloudflare/wrangler.jsonc](https://github.com/Rerurate514/riebeckite/blob/main/templates/cloudflare/wrangler.jsonc) と同じです。
 
 4. ビルドして、ログインし、デプロイします。
 
@@ -57,7 +58,7 @@ Riebeckite は静的サイトを作ります。`npm exec riebeckite build` を�
 
 ## 2. GitHub Actions で自動デプロイする
 
-push のたびにデプロイしたい場合は、生成時に GitHub Actions 用のファイルも作ります。
+push のたびにデプロイしたい場合は、GitHub Actions 用のファイルを作って進めます。まだサイトを作っていないなら、作るときから指定します。
 
 ```bash
 npx create-riebeckite my-site --github-actions
@@ -70,12 +71,17 @@ npx create-riebeckite my-site --github-actions
 
 生成された workflow は `npm ci` で依存 package を入れ、`npm exec riebeckite check`、`npm exec riebeckite build`、`cloudflare/wrangler-action@v3` によるデプロイを順に実行します。
 
-GitHub の Settings → Secrets and variables → Actions に、次の secret を追加します。
+すでに `my-site` を作っている場合、このコマンドは既存ファイルと衝突して停止します（[Installation](./installation.md) を参照）。`--force` を付ければ生成ファイルを上書きできますが、自分で変更したファイルも置き換わるため、その旨を確認できたときだけ使ってください。
 
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+次に、次の3つを用意します。
 
-`npm install` で作られた `package-lock.json` も commit してください。その後、`main` へ push するか、Actions タブから workflow を手動実行します。
+1. サイトのリポジトリを GitHub へ push する
+2. Cloudflare の API トークンと Account ID を用意する
+3. GitHub リポジトリの Secret に登録する
+
+手順は [GitHub Actions](../guides/deployment/github-actions.md) にまとめています。特に `package-lock.json` は commit してください。生成 workflow の `npm ci` はこのファイルがないと実行できません。
+
+準備ができたら、`main` へ push するか、Actions タブから workflow を手動実行します。
 
 ## 3. 高度な構成: content を別リポジトリに分ける
 

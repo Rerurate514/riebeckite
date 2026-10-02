@@ -34,7 +34,7 @@ flowchart LR
 
 重要なのは、**Content の保存場所と、Riebeckite Application の場所は別にできる**ということです。
 
-# 1. 外部 Vault が使える仕組み
+## 1. 外部 Vault が使える仕組み
 
 Riebeckite では、
 
@@ -95,7 +95,7 @@ export default defineConfig({
 
 と指定できます。
 
-# `process.cwd()` は基準ではない
+## `process.cwd()` は基準ではない
 
 `content.directory` を、
 
@@ -140,7 +140,7 @@ Vault
 
 として分離します。
 
-# 2. Root が決まるまで
+## 2. Root が決まるまで
 
 CLI では、まず Riebeckite Config を探します。
 
@@ -164,7 +164,7 @@ flowchart TD
     Directory --> ContentRoot
 ```
 
-## Config を探す
+### Config を探す
 
 CLI は実行した Working Directory から親へ、
 
@@ -186,7 +186,7 @@ Could not find riebeckite.config.*
 
 で失敗します。
 
-## `appRoot` を決める
+### `appRoot` を決める
 
 次に `configRoot` の下から、
 
@@ -212,7 +212,7 @@ Found multiple Vite applications
 
 これは Riebeckite が「どの Application を使うべきか」を一意に判断できないためです。
 
-## `contentRoot` を決める
+### `contentRoot` を決める
 
 最後に、
 
@@ -224,7 +224,7 @@ path.resolve(appRoot, content.directory)
 
 絶対 Path を指定した場合も、最終的には同じ Content Root として扱われます。
 
-# Config を Application の外に置く場合
+## Config を Application の外に置く場合
 
 `riebeckite.config.ts` を Vite Application の外に意図的に置く構成では、`riebeckiteVite()` に、
 
@@ -247,7 +247,7 @@ content.directory
 appRootを基準に解決
 ```
 
-# 3. Repository 構成の3パターン
+## 3. Repository 構成の3パターン
 
 Content と Site の配置は、大きく3つに分けられます。
 
@@ -257,7 +257,7 @@ Content と Site の配置は、大きく3つに分けられます。
 | B | 同じ Repository 内で Directory を分離 | 履歴は共有しつつ場所を分けたい |
 | C | Content と Site が別 Repository | Private Vault、独立した更新 |
 
-## A. 1 Repository
+### A. 1 Repository
 
 ```text id="1z6dgc"
 blog/
@@ -280,7 +280,7 @@ content: {
 
 `create-riebeckite` で作成する基本構成です。
 
-# B. 同じ Repository 内で分離
+### B. 同じ Repository 内で分離
 
 ```text id="0xlm9v"
 notes-repo/
@@ -309,7 +309,7 @@ Content
 
 の Directory を分けられます。
 
-# C. 別 Repository
+### C. 別 Repository
 
 ```text id="r2wghf"
 Content Repository
@@ -325,7 +325,7 @@ Site Repository
 
 CI では、Site Repository だけでなく Content Repository も取得する必要があります。
 
-# 4. 1つの Vault を複数 Site で使う
+## 4. 1つの Vault を複数 Site で使う
 
 外部 Vault は、複数の Site から利用することもできます。
 
@@ -371,7 +371,7 @@ Vault は読み取り専用の Source として扱います。
 
 つまり、同じ Note を元にしていても、Site ごとに異なる公開範囲や見せ方を設定できます。
 
-# 5. Private Vault の基本設定
+## 5. Private Vault の基本設定
 
 Private Repository の Vault を使う場合は、**公開対象を明示する方式**が扱いやすくなります。
 
@@ -417,7 +417,7 @@ publishStrategy
 
 という違いです。
 
-# 6. `.obsidian/` の扱い
+## 6. `.obsidian/` の扱い
 
 Obsidian Vault には、
 
@@ -447,7 +447,7 @@ Obsidian の Workspace 状態だけ Git に含めたくない場合は、`.gitig
 
 を除外する方法もあります。
 
-# 7. `publishStrategy`
+## 7. `publishStrategy`
 
 Riebeckite の公開判定には、
 
@@ -489,7 +489,7 @@ Asset Collection
 
 などで公開判定がずれることを防げます。
 
-# 8. `exclude` の Pattern
+## 8. `exclude` の Pattern
 
 `exclude` は `contentRoot` からの相対 Path に対して適用されます。
 
@@ -537,7 +537,7 @@ Path Separator は `/` に正規化されます。
 
 などにも現れません。
 
-# 9. CI では Content を取得する必要がある
+## 9. CI では Content を取得する必要がある
 
 Site と Content が別 Repository の場合、Site Repository の Workflow を開始しただけでは Vault は存在しません。
 
@@ -586,7 +586,7 @@ content: {
 
 に合わせます。
 
-# 10. Checkout と Deploy Trigger は別物
+## 10. Checkout と Deploy Trigger は別物
 
 ここは特に重要です。
 
@@ -635,7 +635,7 @@ flowchart LR
 
 という2つの仕組みが必要です。
 
-# 11. Private Repository の認証
+## 11. Private Repository の認証
 
 Content Repository が Private または Internal の場合は、専用の認証が必要です。
 
@@ -671,7 +671,7 @@ Contents: read
 
 同等の Read-only GitHub App Installation Token でも構いません。
 
-# 12. Content から Site を起動する認証
+## 12. Content から Site を起動する認証
 
 逆方向の、
 
@@ -713,6 +713,8 @@ Contents: read and write
 
 Classic PAT なら `repo` Scope、GitHub App Token なら `Contents: write` が必要です。
 
+PAT は [GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) から作成し、作成した値をそれぞれの Repository の **Settings → Secrets and variables → Actions** に登録します。
+
 重要なのは、2つの Token の役割を混ぜないことです。
 
 ```text id="zhft93"
@@ -723,7 +725,7 @@ SITE_DISPATCH_TOKEN
   → ContentからSiteのWorkflowを起動する
 ```
 
-# 13. Content の Version を固定するか
+## 13. Content の Version を固定するか
 
 追加 Checkout で特定の `ref` を指定しなければ、Content Repository の Default Branch の最新状態を取得できます。
 
@@ -743,7 +745,7 @@ Site Workflow
 
 一方、Site が使用する Content の Commit を明示的に固定したい場合は Git Submodule という選択肢があります。
 
-# 14. Git Submodule を使う
+## 14. Git Submodule を使う
 
 Site Repository から Content Repository を Submodule として登録できます。
 
@@ -772,7 +774,7 @@ with:
 
 のように Submodule も取得します。
 
-# Submodule の注意点
+## Submodule の注意点
 
 Submodule は Content Repository の **特定 Commit** を Site Repository に記録します。
 
@@ -803,7 +805,7 @@ git commit -m "記事を更新"
 
 `git submodule update --remote` を利用することもできますが、最終的には Site Repository 側で新しい Submodule Commit を記録する必要があります。
 
-# 追加 Checkout と Submodule
+## 追加 Checkout と Submodule
 
 | 観点 | 追加 Checkout | Submodule |
 | --- | --- | --- |
@@ -817,7 +819,7 @@ git commit -m "記事を更新"
 
 Content の Version を Site Repository から厳密に固定したい場合は Submodule が利用できます。
 
-# 15. 手元と CI の Directory
+## 15. 手元と CI の Directory
 
 相対 `content.directory` は `appRoot` 基準です。
 
@@ -866,7 +868,7 @@ directory: "notes"
 
 可能なら、Local と CI の Layout を揃えておくと設定を単純にできます。
 
-# 16. Attachment は自動コピーされない
+## 16. Attachment は自動コピーされない
 
 Obsidian の、
 
@@ -913,7 +915,7 @@ tsx scripts/build_images.ts
 
 として実行します。
 
-# 17. 公開する Asset だけをコピーする
+## 17. 公開する Asset だけをコピーする
 
 Vault 全体を `public/` へコピーするのは避けてください。
 
@@ -965,7 +967,7 @@ Vault 全体をコピーすると、
 
 などを誤って公開する可能性があります。
 
-# 18. Attachment の Public URL
+## 18. Attachment の Public URL
 
 Attachment は安定した形式として、
 
@@ -993,7 +995,7 @@ Public URL:
 
 Public Directory 上の物理配置と URL の対応を揃えておくことで、Build 後の 404 を避けやすくなります。
 
-# 19. 公開境界を考える
+## 19. 公開境界を考える
 
 Repository を Private にすることと、Riebeckite で何を公開するかは別の問題です。
 
@@ -1021,39 +1023,39 @@ publishStrategy
 
 特に Asset は Vault 全体をそのまま `public/` へコピーしないようにしてください。
 
-# 20. 検証する
+## 20. 検証する
 
 Root、Content、公開境界を確認するときは、次の順番で調べます。
 
 ```sh id="w4tr7v"
-pnpm exec riebeckite check
-pnpm exec riebeckite doctor
-pnpm exec riebeckite inspect config
-pnpm exec riebeckite inspect content --list
-pnpm exec riebeckite inspect graph
-pnpm exec riebeckite build
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect config
+npm exec -- riebeckite inspect content --list
+npm exec riebeckite inspect graph
+npm exec riebeckite build
 ```
 
-## `check`
+### `check`
 
 ```sh id="9j1jjc"
-pnpm exec riebeckite check
+npm exec riebeckite check
 ```
 
 Config と Plugin Contract を検証します。
 
-## `doctor`
+### `doctor`
 
 ```sh id="cxapj6"
-pnpm exec riebeckite doctor
+npm exec riebeckite doctor
 ```
 
 読み込めない Content Source や、不正な Filesystem Content Source などを確認します。
 
-## `inspect config`
+### `inspect config`
 
 ```sh id="ph34ym"
-pnpm exec riebeckite inspect config
+npm exec riebeckite inspect config
 ```
 
 まずここで、
@@ -1070,30 +1072,30 @@ Exclude
 
 ここで Riebeckite が本当に目的の Vault を見ているか確認します。
 
-## `inspect content --list`
+### `inspect content --list`
 
 ```sh id="v3e8bp"
-pnpm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 期待している Logical Path が Content として読み込まれているか確認します。
 
 WikiLink や Embed を調査する前に、まず Content 自体が存在するか確認してください。
 
-## `inspect graph`
+### `inspect graph`
 
 ```sh id="ll3gqv"
-pnpm exec riebeckite inspect graph
+npm exec riebeckite inspect graph
 ```
 
 除外したはずの Note が Graph に残っていないか確認できます。
 
-## `build`
+### `build`
 
 最後に、
 
 ```sh id="1f83u0"
-pnpm exec riebeckite build
+npm exec riebeckite build
 ```
 
 で Integration と Route Rendering を含む実際の Build を確認します。
@@ -1114,7 +1116,7 @@ flowchart LR
     Graph --> Build
 ```
 
-# 21. Working Directory に依存していないか確認する
+## 21. Working Directory に依存していないか確認する
 
 Root Resolution の問題を調べる場合は、Site Root だけでなく Nested Directory から CLI を実行してみる方法もあります。
 
@@ -1123,15 +1125,15 @@ Root Resolution の問題を調べる場合は、Site Root だけでなく Neste
 ```sh id="kps5t4"
 cd site/app
 
-pnpm exec riebeckite inspect config
-pnpm exec riebeckite inspect content --list
+npm exec riebeckite inspect config
+npm exec -- riebeckite inspect content --list
 ```
 
 としても同じ Application / Vault が解決されることを確認します。
 
 ただし、無関係な Directory から実行した場合は Config 自体を発見できないことがあります。
 
-# トラブルシューティング
+## トラブルシューティング
 
 | 症状 | 確認すること |
 | --- | --- |
@@ -1148,7 +1150,7 @@ pnpm exec riebeckite inspect content --list
 | Local では動くが CI では Path が違う | `appRoot` と Checkout 先 |
 | `exclude` が効かない | Pattern の Anchor と `**/` |
 
-# よくある Path の問題
+## よくある Path の問題
 
 Content が見つからない場合は、まず、
 
@@ -1167,7 +1169,7 @@ Content が見つからない場合は、まず、
 そのために、
 
 ```sh id="znwr0s"
-pnpm exec riebeckite inspect config
+npm exec riebeckite inspect config
 ```
 
 を利用します。
@@ -1185,7 +1187,7 @@ appRoot
   ○
 ```
 
-# よくある CI の問題
+## よくある CI の問題
 
 CI の問題は、
 
@@ -1216,7 +1218,7 @@ flowchart TD
 
 この2つは別の仕組みなので、問題を切り分けて確認してください。
 
-# まとめ
+## まとめ
 
 Content と Site を分離するときは、4つの境界を分けて考えると整理しやすくなります。
 
@@ -1262,7 +1264,7 @@ Content RepositoryをPrivateにする
 
 Private Vault を利用する場合でも、`publishStrategy`、`exclude`、Asset Copy のすべてで Public Boundary を維持してください。
 
-## 関連資料
+### 関連資料
 
 - [記事とサイトのリポジトリ分離](../content-repositories.md) — 分離構成を最初から作る
 - [Configuration](../../reference/configuration.md) — Root Resolution と外部 Vault

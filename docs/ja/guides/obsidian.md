@@ -108,11 +108,11 @@ flowchart TD
 
 **公開記事と個人的なノートを同じ Vault に置いたまま運用できます。**
 
-# Vault の置き方
+## Vault の置き方
 
 Vault の配置方法は、大きく2つあります。
 
-## パターンA：Site の `content/` を Vault にする
+### パターンA：Site の `content/` を Vault にする
 
 最も簡単な方法です。
 
@@ -155,7 +155,7 @@ Riebeckite Content
 
 同じフォルダが両方の役割を持ちます。
 
-# パターンB：既存 Vault を利用する
+## パターンB：既存 Vault を利用する
 
 すでに Obsidian Vault がある場合は、Site の外に置いたまま利用できます。
 
@@ -202,7 +202,7 @@ Vault を Site Directory へコピーする必要はありません。
 
 Repository 自体も分離したい場合は、[記事とサイトのリポジトリ分離](./content-repositories.md) を参照してください。
 
-# どちらを選ぶ？
+## どちらを選ぶ？
 
 迷った場合は、次の基準で選べます。
 
@@ -215,7 +215,7 @@ Repository 自体も分離したい場合は、[記事とサイトのリポジ�
 
 既存 Vault があるなら、Riebeckite のためだけに移動する必要はありません。
 
-# Obsidian で記事を書く
+## Obsidian で記事を書く
 
 公開する記事には、最低限 `title` と `publish` を指定します。
 
@@ -248,7 +248,7 @@ Obsidian の WikiLink も利用できます。
 
 対応する Plugin が、Riebeckite の Content 情報を使って公開先のリンクを解決します。
 
-# ファイル名と URL
+## ファイル名と URL
 
 ファイル名は Content の識別や既定の Public Location を決める材料になります。
 
@@ -276,7 +276,7 @@ Plugin や設定によって Public Location が変更される場合があり�
 
 URL の仕組みを詳しく知りたい場合は [Content System](../framework/content-system.md) を参照してください。
 
-# Obsidian の設定ファイル
+## Obsidian の設定ファイル
 
 Vault には通常、
 
@@ -316,7 +316,7 @@ content: {
 
 のように指定できます。
 
-# `exclude` と `publish: true`
+## `exclude` と `publish: true`
 
 この2つは役割が異なります。
 
@@ -355,7 +355,7 @@ private/
 
 のように明らかに Site で扱わない Directory は `exclude` し、それ以外の Note は `publish: true` で公開を選ぶ、という使い方ができます。
 
-# 非公開メモを混ぜる
+## 非公開メモを混ぜる
 
 Private Note や下書きを同じ Vault に置く場合は、`publish: true` を付けません。
 
@@ -384,7 +384,7 @@ publish: true
 
 Private Vault を扱う場合は、**公開するものだけを明示する**運用にすると管理しやすくなります。
 
-# 公開記事から非公開ノートへのリンク
+## 公開記事から非公開ノートへのリンク
 
 公開記事から、
 
@@ -404,7 +404,7 @@ npm exec riebeckite doctor
 
 Site 内リンクの整合性を診断する Plugin を利用している場合は、公開先が存在しない WikiLink なども検出できます。
 
-# 画像と添付ファイル
+## 画像と添付ファイル
 
 画像や添付ファイルも Vault 内で管理できます。
 
@@ -445,7 +445,7 @@ Vault の外にある File や、Build 後の Public Output に存在しない F
 
 添付ファイルを Site へ公開する構成では、公開対象の Asset が実際に Output へ含まれていることも確認してください。
 
-# Site を確認する
+## Site を確認する
 
 記事を書いたら、Riebeckite Site の Directory で Development Server を起動します。
 
@@ -472,7 +472,7 @@ npm exec riebeckite inspect content --list
 
 を利用できます。
 
-# 記事が表示されないとき
+## 記事が表示されないとき
 
 記事が表示されない場合は、次の順番で確認すると原因を絞りやすくなります。
 
@@ -508,7 +508,7 @@ npm exec riebeckite inspect content --list
 
 で確認できます。
 
-# 普段の使い方
+## 普段の使い方
 
 設定が終わった後は、特別な操作はほとんど必要ありません。
 
@@ -534,7 +534,7 @@ flowchart TD
 
 Riebeckite は、その Vault を公開 Site の Content Source として利用します。
 
-# まとめ
+## まとめ
 
 Obsidian と Riebeckite の関係はシンプルです。
 
@@ -579,7 +579,7 @@ my-site/
 
 この3つを分けて設定すれば、普段の Obsidian Vault に非公開 Note を残したまま、必要な記事だけを Riebeckite で公開できます。
 
-## 次に読むもの
+### 次に読むもの
 
 - [記事の書き方ガイド](./writing-content.md)
 - [記事とサイトのリポジトリ分離](./content-repositories.md)

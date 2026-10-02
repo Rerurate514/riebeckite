@@ -36,11 +36,13 @@ npm exec riebeckite dev
 
 `content/` フォルダを開きます。`starter` preset では、最初から次のようなサンプル Markdown が生成されます。
 
-- `content/index.en.md`
-- `content/guide.en.md`
-- `content/examples.en.md`
+- `content/index.md` — 英語のトップページ
+- `content/guide.md`
+- `content/examples.md`
 - `content/notes/planning.md`
 - `content/notes/writing.md`
+
+多言語用には `content/index.ja.md` のように `<元ファイル>.<言語>.md` の名前が隣に並びます。日本語から始めるなら `content/index.ja.md` を編集してください。
 
 新しいファイルを作らなくても、まずはこれらを編集して動作を確認できます。保存したらブラウザで変更を確認してください。
 
@@ -57,7 +59,7 @@ Hello from Riebeckite.
 
 `publish: true` が重要です。既定では、この指定がある Markdown だけが公開対象になります。
 
-成功すると、ローカルサイトからページを開けます。たとえば `content/first-post.md` は `/first-post` として表示されます。`content/index.en.md` は英語コンテンツのトップページに使われます。
+成功すると、ローカルサイトからページを開けます。たとえば `content/first-post.md` は `/first-post` として表示されます。`content/index.md` は英語コンテンツのトップページに使われます。
 
 ## 4. ビルドする
 

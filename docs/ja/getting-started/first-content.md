@@ -9,9 +9,10 @@ Markdown をサイトに表示する方法を確認します。`starter` preset 
 ```text
 my-site/
 ├─ content/
-│  ├─ index.en.md
-│  ├─ guide.en.md
-│  ├─ examples.en.md
+│  ├─ index.md
+│  ├─ index.ja.md
+│  ├─ guide.md
+│  ├─ examples.md
 │  └─ notes/
 │     ├─ planning.md
 │     └─ writing.md
@@ -31,7 +32,7 @@ my-site/
 npm exec riebeckite dev
 ```
 
-ターミナルに表示されたローカル URL をブラウザで開きます。次に `content/notes/writing.md` や `content/index.en.md` を編集して保存してください。ブラウザに変更した文章が表示されれば成功です。
+ターミナルに表示されたローカル URL をブラウザで開きます。次に `content/notes/writing.md` や `content/index.md` を編集して保存してください。ブラウザに変更した文章が表示されれば成功です。
 
 ## 最小のページを作る
 
@@ -46,7 +47,9 @@ publish: true
 Hello from Riebeckite.
 ```
 
-`title` はページのタイトルです。`publish: true` は、そのページを公開対象にする指定です。通常、`content/first-post.md` は `/first-post` として表示されます。`index` 系のファイルは、その階層のトップページになります。
+`publish: true` は、そのページを公開対象にする指定です。通常、`content/first-post.md` は `/first-post` として表示されます。`index` 系のファイルは、その階層のトップページになります。
+
+`title` は frontmatter に書くメタデータで、検索データや一覧などページの外側で使われます。**ページ本文の見出しとは別物**なので、ブラウザに大きな見出しを表示したいときは本文側に Markdown の `#` を書きます。`starter` preset のサンプルも `title` に加えて本文に `# Getting started` のように見出しを持っています。
 
 本文は通常の Markdown で書けます。`starter` preset には Obsidian 風の Markdown support も含まれているため、生成されたサンプルノートでは `[[planning]]` のような WikiLink も使えます。
 

@@ -86,7 +86,7 @@ flowchart LR
 
 `check` が成功しただけで終わらせず、`doctor` と実際の `build` まで確認してください。
 
-# Deprecated Warning を確認する
+## Deprecated Warning を確認する
 
 アップグレード後は、
 
@@ -116,7 +116,7 @@ Deprecated になっただけで、その Release から突然 Build が失敗�
   → それまでにMigration
 ```
 
-## Warning に表示される情報
+### Warning に表示される情報
 
 Deprecated Warning には、原則として次の情報が含まれます。
 
@@ -145,7 +145,7 @@ Removal:
 
 のような情報から、必要な変更を判断します。
 
-# Deprecated Warning が出たら
+## Deprecated Warning が出たら
 
 Warning に表示された対象を確認します。
 
@@ -189,7 +189,7 @@ flowchart TD
     Check --> Doctor
 ```
 
-# Warning と Error の違い
+## Warning と Error の違い
 
 Deprecated Usage は基本的に Warning です。
 
@@ -217,7 +217,7 @@ Deprecated Warning があるからといって、すぐに Site が動かなく�
 
 ただし削除予定 Version が示されている場合は、それまでに Migration してください。
 
-# Deprecation Policy
+## Deprecation Policy
 
 Riebeckite では、API や Config の変更状態を次のように区別します。
 
@@ -228,7 +228,7 @@ Riebeckite では、API や Config の変更状態を次のように区別しま
 | Breaking Change | Site 側の変更が必要になる可能性がある変更 |
 | Migration | 古い Contract から新しい Contract へ移るための手順 |
 
-## Deprecated
+### Deprecated
 
 Deprecated になった Contract は、当面利用できます。
 
@@ -244,7 +244,7 @@ Migration期間
 Removed
 ```
 
-## Removed
+### Removed
 
 Removed になった Contract は、すでに Support されていません。
 
@@ -258,7 +258,7 @@ Removed になった Contract は、すでに Support されていません。
 
 Deprecated Warning が出ていた Contract を長期間そのままにすると、将来の Upgrade で Removed に到達する可能性があります。
 
-## Breaking Change
+### Breaking Change
 
 Breaking Change は、
 
@@ -274,7 +274,7 @@ Breaking Change は、
 
 Migration Documentation がある場合は、その内容を確認してください。
 
-# Pre-1.0 の互換性
+## Pre-1.0 の互換性
 
 Riebeckite は現在 pre-1.0 です。
 
@@ -308,7 +308,7 @@ flowchart LR
 
 つまり、利用者が新しい Contract へ移行するための期間を設ける方針です。
 
-# Migration Note の読み方
+## Migration Note の読み方
 
 Upgrade で問題が出た場合は、まず `doctor` を確認してください。
 
@@ -332,7 +332,7 @@ Siteを変更
 
 という順番で確認する方が効率的です。
 
-## Replacement がある場合
+### Replacement がある場合
 
 Warning に直接 Replacement が示されている場合は、それを確認します。
 
@@ -344,7 +344,7 @@ replacement
 new contract
 ```
 
-## Replacement がない場合
+### Replacement がない場合
 
 すべての Breaking Change が、
 
@@ -370,7 +370,7 @@ Plugin構成を変更する
 
 といった Migration もあり得ます。
 
-# Migration は自動ではない
+## Migration は自動ではない
 
 現時点の Riebeckite には、
 
@@ -400,7 +400,7 @@ Commit
 
 自動で書き換えないことで、Upgrade によって Site のどこが変わったのかを利用者自身が確認できます。
 
-# 変更は分けて Commit する
+## 変更は分けて Commit する
 
 Migration を適用したら、その変更を Commit しておくと次回以降の Upgrade を確認しやすくなります。
 
@@ -414,7 +414,7 @@ Migration を適用したら、その変更を Commit しておくと次回以�
 
 を Git の履歴から追えるようにしておくと、問題が発生した場合の切り分けも容易になります。
 
-# Upgrade で問題が起きたら
+## Upgrade で問題が起きたら
 
 問題の種類によって確認する場所を変えます。
 
@@ -446,7 +446,7 @@ npm exec riebeckite build
 
 Deprecated Warning なら Migration、Error ならその Diagnostic が示している問題を先に解決します。
 
-# Upgrade Checklist
+## Upgrade Checklist
 
 Riebeckite を更新するときは、次の項目を確認します。
 
@@ -461,7 +461,7 @@ Riebeckite を更新するときは、次の項目を確認します。
 - 生成された Site を確認した
 - Upgrade と Migration の変更を Commit した
 
-# まとめ
+## まとめ
 
 Riebeckite の Upgrade は、Package Version を変更するだけで終わりではありません。
 

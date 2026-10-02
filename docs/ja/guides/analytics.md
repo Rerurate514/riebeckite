@@ -67,7 +67,7 @@ Analytics Worker
   → @riebeckite/analytics-cloudflare
 ```
 
-# 計測の仕組み
+## 計測の仕組み
 
 Page View は、Content の **安定した Content ID** を基準に記録します。
 
@@ -88,7 +88,7 @@ sequenceDiagram
 
 大きく3段階あります。
 
-## 1. Content ID
+### 1. Content ID
 
 計測対象の記事には、Frontmatter で安定した `id` を指定します。
 
@@ -113,7 +113,7 @@ URL を変更しても同じ Content として扱いたい場合があるため�
 
 詳しくは [Content System](../framework/content-system.md#安定-content-id) を参照してください。
 
-## 2. Build 時にマーカーを追加する
+### 2. Build 時にマーカーを追加する
 
 Build 時に、安定 Content ID を持つ公開 Entry へ隠し要素が追加されます。
 
@@ -125,7 +125,7 @@ Build 時に、安定 Content ID を持つ公開 Entry へ隠し要素が追加�
 
 Browser 側の Analytics はこのマーカーから Content ID を取得します。
 
-## 3. Browser から Event を送る
+### 3. Browser から Event を送る
 
 `initAnalytics` は Document ごとに一度実行されます。
 
@@ -153,7 +153,7 @@ contentId
 
 安定 Content ID のない Content は計測されません。
 
-# Page View の単位
+## Page View の単位
 
 現在の Riebeckite は静的な Document Navigation を使用します。
 
@@ -173,7 +173,7 @@ page_view × 1
 
 SPA の Route Transition は自動計測しません。
 
-# Site 側を設定する
+## Site 側を設定する
 
 Site では `@riebeckite/plugin-analytics` を設定します。
 
@@ -209,7 +209,7 @@ publicConfig.collectorUrl
 
 の2つです。
 
-## `provider`
+### `provider`
 
 `provider` は `AnalyticsProvider` Contract を実装した Runtime です。
 
@@ -227,7 +227,7 @@ query
 
 Browser へ渡してはいけません。
 
-## `publicConfig.collectorUrl`
+### `publicConfig.collectorUrl`
 
 `collectorUrl` は Browser が Event を送信する URL です。
 
@@ -249,7 +249,7 @@ publicConfig: {
 
 秘密情報を含めないでください。
 
-## `MemoryAnalyticsProvider`
+### `MemoryAnalyticsProvider`
 
 `MemoryAnalyticsProvider` は、
 
@@ -262,7 +262,7 @@ publicConfig: {
 
 本番では Cloudflare Worker などの実際の Collector を使用します。
 
-# 設定を確認する
+## 設定を確認する
 
 Analytics Plugin の Option も通常の Plugin Validation の対象です。
 
@@ -285,7 +285,7 @@ pnpm exec riebeckite doctor
 
 で確認できます。
 
-# AnalyticsProvider
+## AnalyticsProvider
 
 `AnalyticsProvider` は、Provider がどの Analytics 機能に対応しているかを `capabilities` で宣言します。
 
@@ -299,7 +299,7 @@ popular_content
 
 です。
 
-## Event を保存する
+### Event を保存する
 
 ```ts id="6ey01d"
 await provider.capture(event);
@@ -307,7 +307,7 @@ await provider.capture(event);
 
 `capture` は Page View Event を保存します。
 
-## Content の Page View を取得する
+### Content の Page View を取得する
 
 ```ts id="4gohio"
 await provider.query({
@@ -325,7 +325,7 @@ await provider.query({
 
 期間は任意です。
 
-## 人気 Content を取得する
+### 人気 Content を取得する
 
 ```ts id="3n12mu"
 await provider.query({
@@ -338,7 +338,7 @@ Page View をもとにしたランキングを取得します。
 
 `limit` と期間は任意です。
 
-## 対応していない Query
+### 対応していない Query
 
 Provider が対応していない Query には、
 
@@ -361,7 +361,7 @@ assertAnalyticsQuerySupported(
 
 Capability / Query Helper は Package Root から Export されています。
 
-# Cloudflare Worker を使う
+## Cloudflare Worker を使う
 
 Cloudflare で Event を収集する場合は、
 
@@ -383,14 +383,14 @@ Storage の既定値はありません。
 
 **D1 または KV のどちらか1つを明示的に選択します。**
 
-# D1 と KV
+## D1 と KV
 
 | Storage | Event 保存 | 合計 Page View | 人気ランキング | 期間指定 |
 | --- | --- | --- | --- | --- |
 | D1 | ○ | ○ | ○ | ○ |
 | KV | ○ | × | × | × |
 
-## D1
+### D1
 
 D1 では、
 
@@ -416,7 +416,7 @@ SQLite の Atomic Upsert を利用し、**生の Page View Event は保存しま
 
 本格的に Analytics の集計結果を利用する場合はこちらを使用します。
 
-## KV
+### KV
 
 KV では、
 
@@ -442,7 +442,7 @@ popular_content
 
 これらの API を利用すると HTTP `501` を返します。
 
-# D1 Worker の例
+## D1 Worker の例
 
 ```ts id="ak02xw"
 import {
@@ -489,7 +489,7 @@ createWorker(...)
 
 Module Top-level で `env` を取得しようとしないでください。
 
-# Worker の Endpoint
+## Worker の Endpoint
 
 Analytics Worker は次の Endpoint を提供します。
 
@@ -499,7 +499,7 @@ Analytics Worker は次の Endpoint を提供します。
 | `GET /content/:contentId/page-views` | Content の Page View 合計 |
 | `GET /popular` | 人気 Content |
 
-## `POST /events`
+### `POST /events`
 
 JSON の `page_view` Payload を受け付けます。
 
@@ -523,7 +523,7 @@ Body の最大 Size は 8 KiB です。
 | 8 KiB を超える Body | `413` |
 | Rate Limit 超過 | `429` |
 
-## Page View API
+### Page View API
 
 ```text id="lv9m44"
 GET /content/:contentId/page-views?from=&to=
@@ -531,7 +531,7 @@ GET /content/:contentId/page-views?from=&to=
 
 特定 Content の Page View 合計を取得します。
 
-## Popular API
+### Popular API
 
 ```text id="ckwlsu"
 GET /popular?limit=&from=&to=
@@ -541,7 +541,7 @@ GET /popular?limit=&from=&to=
 
 読み取り API は Storage Adapter が対応する Capability を宣言している場合だけ利用できます。
 
-# CORS
+## CORS
 
 Origin は既定で拒否されます。
 
@@ -565,7 +565,7 @@ cors: {
 
 これは意図的に Public Collector として公開する場合だけ使用してください。
 
-# CORS は認証ではない
+## CORS は認証ではない
 
 `allowedOrigins` を設定しても、Analytics Event が信頼できるようになるわけではありません。
 
@@ -589,7 +589,7 @@ flowchart LR
 
 そのため、収集した Page View は**信頼できない計測データ**として扱います。
 
-# Rate Limit
+## Rate Limit
 
 濫用を減らすため、任意で `rateLimit` を設定できます。
 
@@ -603,7 +603,7 @@ Rate Limit は接続元 IP ごとの固定時間窓で Request 数を制限し�
 
 を返します。
 
-## D1 Rate Limiter
+### D1 Rate Limiter
 
 本番環境では、
 
@@ -634,7 +634,7 @@ migrations/0002_analytics_rate_limits.sql
 
 をデプロイ前に適用してください。
 
-## Memory Rate Limiter
+### Memory Rate Limiter
 
 ```text id="b8ct77"
 MemoryAnalyticsRateLimiter
@@ -646,7 +646,7 @@ Process 内の Counter しか持たないため、短命な Worker Isolate 間�
 
 本番環境の分散した Request を制限する用途には適していません。
 
-# Rate Limit の限界
+## Rate Limit の限界
 
 Rate Limit は認証機能ではありません。
 
@@ -668,7 +668,7 @@ Rate Limit は認証機能ではありません。
 
 ことが重要です。
 
-# Privacy
+## Privacy
 
 Analytics Worker は、
 
@@ -699,7 +699,7 @@ CF-Connecting-IP
 
 D1 Rate Limiter では、その Key を有効な Rate Limit Window の間だけ保存します。
 
-# D1 を準備する
+## D1 を準備する
 
 D1 Schema は Request 中に自動生成しません。
 
@@ -717,7 +717,7 @@ pnpm exec wrangler d1 execute ANALYTICS_DB \
 
 2つ目は D1 Rate Limit を利用する場合に必要です。
 
-# Worker をデプロイする
+## Worker をデプロイする
 
 Riebeckite には Analytics Worker 用 Template があります。
 
@@ -784,7 +784,7 @@ flowchart LR
     Worker --> D1
 ```
 
-# Diagnostics
+## Diagnostics
 
 `@riebeckite/plugin-diagnostics` を利用している場合、Analytics Plugin が有効なのに安定 Content ID を持たない公開 Note を検出できます。
 
@@ -822,7 +822,7 @@ Diagnostics は Content を自動変更しません。
 
 詳しくは [Diagnostics](../framework/diagnostics.md) を参照してください。
 
-# 導入の流れ
+## 導入の流れ
 
 初めて Analytics を導入する場合は、次の順番で進めると分かりやすくなります。
 
@@ -850,7 +850,7 @@ flowchart TD
 
 KV は `capture` のみを必要とする用途に限定してください。
 
-# まとめ
+## まとめ
 
 Riebeckite Analytics は、静的 Site と Analytics Backend を分離しています。
 
@@ -888,7 +888,7 @@ Abuse mitigation
 
 特に、CORS や Rate Limit は Analytics Event の正当性を保証する認証機能ではありません。収集された Page View は信頼できない計測データとして扱ってください。
 
-## 関連資料
+### 関連資料
 
 - [Content System](../framework/content-system.md#安定-content-id) — 安定 Content ID
 - [Diagnostics](../framework/diagnostics.md) — Structured Finding と `check` / `doctor`

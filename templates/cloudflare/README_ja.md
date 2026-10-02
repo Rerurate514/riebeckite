@@ -24,7 +24,7 @@ Riebeckite サイト向けの、[GitHub Actions](https://docs.github.com/actions
 2. `.github/workflows/deploy.yml` をサイトのリポジトリの同じパス（`.github/workflows/deploy.yml`）へコピーします。
 3. **Workers Scripts: Edit** 権限を持つ Cloudflare API トークンを作成し、リポジトリのシークレットに次を追加します。
    - `CLOUDFLARE_API_TOKEN`
-   - `CLOUDFLARE_ACCOUNT_ID`
+   - `CLOUDFLARE_ACCOUNT_ID` — Cloudflare ダッシュボードの Workers & Pages を開くと、URL `https://dash.cloudflare.com/<ACCOUNT_ID>/workers-and-pages` の部分が Account ID です。
 4. `main` へ push するか、Actions タブからワークフローを手動実行します。
 
 ## 別記事リポジトリ
@@ -109,6 +109,6 @@ npx wrangler deploy --dry-run
 
 ## 関連資料
 
-- [利用ガイド — プレビューとデプロイ](../../docs/ja/guides/README.md#7-プレビューとデプロイ)
+- [利用ガイド — デプロイ方法を選ぶ](../../docs/ja/guides/deployment/README.md)
 - [HonoX Integration](../../docs/ja/framework/honox-integration.md)
 - [Build System](../../docs/ja/framework/build-system.md)

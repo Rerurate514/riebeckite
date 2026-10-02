@@ -16,6 +16,8 @@
 
 `getGardenExplorerData()` は `manifest.discoverableEntries` と `manifest.graph` から表示データを作ります。見出し、本文テキストの先頭 4,000 文字、タグ、フォルダー、送信リンク、被リンクを含みます。Graph のノードは公開・発見可能なページと解決済み note link だけなので、未公開・除外・存在しないページは表示されません。
 
+Explorer パネルのノート一覧は、UI 性能のため先頭 80 件に制限して表示します。Global Graph は絞り込み後の全ノートを使用します。URL で選択されたノートが先頭 80 件の外にある場合、Global Graph で保持されます。
+
 ## Local Graph と Global Graph
 
 - **Local Graph** は選択中のノートを起点に、`depth` で指定した hop 数までの隣接ノートを表示します。既定値は `depth: 1` で、Obsidian / Quartz と同じく直接の outgoing link と backlink を見る用途に合わせています。`depth: 0` では選択中のノートだけを表示します。
@@ -25,8 +27,8 @@
 
 ## Layout
 
-- **Force layout**（`layout: "force"`、既定）: 小さな組み込み実装で repulsion、link distance、centering、damping、安定化を行います。重い依存は追加していません。
-- **Radial layout**（`layout: "radial"`）: 既存の Riebeckite の放射状 layout を使います。コンパクトで決定的な見た目にしたい場合に使えます。
+- **Force layout**（`layout: "force"`、既定）: 小さな組み込み実装で repulsion、link distance、centering、damping、安定化を行います。重い依存は追加していません。大きなグラフ（300 ノード以上）では force layout の計算時間が目立つようになり、ツールバーに警告が表示されます。大きな Global Graph には radial layout の使用を推奨します。500 ノード以上では、ユーザーの明示的な承認なしに force layout は実行されません。
+- **Radial layout**（`layout: "radial"`）: 既存の Riebeckite の放射状 layout を使います。コンパクトで決定的な見た目にしたい場合に使えます。近似線形時間で動作し、数千ノードでも瞬時に描画できます。
 
 ## 設定してページに配置する
 

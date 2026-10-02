@@ -156,6 +156,42 @@
     color: var(--rb-color-muted);
   }
 
+  .garden-explorer__count-badge {
+    margin-inline-start: var(--rb-space-1);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--rb-color-muted);
+  }
+
+  .garden-explorer__perf-warning {
+    margin-inline-start: var(--rb-space-2);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--rb-color-error);
+  }
+
+  .garden-explorer__force-approve {
+    margin-inline-start: var(--rb-space-1);
+    padding: 0.2rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    border: var(--rb-rule-width) solid var(--rb-color-error);
+    background: var(--rb-color-paper);
+    color: var(--rb-color-error);
+    cursor: pointer;
+  }
+
+  .garden-explorer__force-approve:hover {
+    background: var(--rb-color-error);
+    color: var(--rb-color-paper);
+  }
+
   .garden-explorer__graph-toolbar {
     display: flex;
     justify-content: space-between;

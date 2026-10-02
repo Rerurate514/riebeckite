@@ -2,6 +2,7 @@ import {
   type GraphLayoutNode,
   layoutForceGraph,
   layoutRadialGraph,
+  shouldGuardForceLayout,
 } from "@riebeckite/core/client";
 import { useEffect, useMemo, useState } from "hono/jsx";
 import type {
@@ -56,6 +57,7 @@ export default function GardenExplorer(props: Props) {
   const [pinnedNodes, setPinnedNodes] = useState<
     Record<string, { x: number; y: number }>
   >({});
+  const [forceLayoutApproved, setForceLayoutApproved] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -83,8 +85,10 @@ export default function GardenExplorer(props: Props) {
       return true;
     });
     const searched = query ? searchGardenExplorerNotes(base, query) : base;
-    return searched.slice(0, 80);
+    return searched;
   }, [props.data.notes, query, selectedTag, selectedFolder]);
+
+  const listNotes = useMemo(() => filteredNotes.slice(0, 80), [filteredNotes]);
 
   const visibleSlugSet = useMemo(
     () => new Set(filteredNotes.map((note) => note.slug)),
@@ -98,17 +102,27 @@ export default function GardenExplorer(props: Props) {
       ),
     [props.data.edges, visibleSlugSet],
   );
-  const graphNotes = useMemo(
-    () =>
-      graphMode === "local"
-        ? getGardenExplorerLocalGraphNotes(
-            filteredNotes,
-            selectedSlug,
-            props.data.options.depth,
-          )
-        : filteredNotes,
-    [filteredNotes, graphMode, selectedSlug, props.data.options.depth],
-  );
+  const graphNotes = useMemo(() => {
+    if (graphMode === "local") {
+      return getGardenExplorerLocalGraphNotes(
+        filteredNotes,
+        selectedSlug,
+        props.data.options.depth,
+      );
+    }
+    const notes = filteredNotes;
+    const selectedNote = noteBySlug.get(selectedSlug);
+    if (selectedNote && !notes.some((n) => n.slug === selectedSlug)) {
+      return [selectedNote, ...notes];
+    }
+    return notes;
+  }, [
+    filteredNotes,
+    graphMode,
+    selectedSlug,
+    props.data.options.depth,
+    noteBySlug,
+  ]);
   const graphSlugSet = useMemo(
     () => new Set(graphNotes.map((note) => note.slug)),
     [graphNotes],
@@ -125,15 +139,29 @@ export default function GardenExplorer(props: Props) {
     () => graphNotes.map((note) => note.slug).join("\0"),
     [graphNotes],
   );
-  const baseGraphNodes = useMemo(
-    () => layoutNodes(graphNotes, selectedSlug, props.data.options),
-    [graphNotes, selectedSlug, props.data.options],
-  );
+
+  const shouldGuard = shouldGuardForceLayout({
+    layout: props.data.options.layout,
+    mode: graphMode,
+    nodeCount: graphNotes.length,
+    approved: forceLayoutApproved,
+  });
+
+  const baseGraphNodes = useMemo(() => {
+    if (shouldGuard) {
+      return layoutRadialGraph(graphNotes, {
+        width: GRAPH_WIDTH,
+        height: GRAPH_HEIGHT,
+        centerSlug: selectedSlug,
+      });
+    }
+    return layoutNodes(graphNotes, selectedSlug, props.data.options);
+  }, [shouldGuard, graphNotes, selectedSlug, props.data.options]);
   const graphNodes = useMemo(
     () => applyPinnedNodes(baseGraphNodes, pinnedNodes),
     [baseGraphNodes, pinnedNodes],
   );
-  const selectedNote = noteBySlug.get(selectedSlug) ?? filteredNotes[0] ?? null;
+  const selectedNote = noteBySlug.get(selectedSlug) ?? listNotes[0] ?? null;
   const relatedNotes = useMemo(
     () => (selectedNote ? getRelatedNotes(selectedNote, props.data.notes) : []),
     [selectedNote, props.data.notes],
@@ -145,14 +173,15 @@ export default function GardenExplorer(props: Props) {
 
   useEffect(() => {
     if (filteredNotes.length === 0 || visibleSlugSet.has(selectedSlug)) return;
-    setSelectedSlug(filteredNotes[0]?.slug ?? "");
-  }, [filteredNotes, selectedSlug, visibleSlugSet]);
+    setSelectedSlug(listNotes[0]?.slug ?? "");
+  }, [filteredNotes, selectedSlug, visibleSlugSet, listNotes]);
 
   useEffect(() => {
     setHoveredSlug(null);
     setDrag(null);
     setSuppressNodeNavigation(false);
     setPinnedNodes({});
+    setForceLayoutApproved(false);
   }, [graphKey, graphMode, props.data.options.layout]);
 
   const selectNote = (slug: string) => {
@@ -170,6 +199,10 @@ export default function GardenExplorer(props: Props) {
     setQuery("");
     setSelectedTag(null);
     setSelectedFolder(null);
+  };
+
+  const approveForceLayout = () => {
+    setForceLayoutApproved(true);
   };
 
   const zoom = (delta: number, origin?: { x: number; y: number }) => {
@@ -297,9 +330,16 @@ export default function GardenExplorer(props: Props) {
         ) : null}
 
         <div class="garden-explorer__section">
-          <p class="garden-explorer__eyebrow">Notes</p>
+          <p class="garden-explorer__eyebrow">
+            Notes
+            {filteredNotes.length > listNotes.length && (
+              <span class="garden-explorer__count-badge">
+                showing {listNotes.length} of {filteredNotes.length}
+              </span>
+            )}
+          </p>
           <NoteList
-            notes={filteredNotes}
+            notes={listNotes}
             selectedSlug={selectedSlug}
             onSelect={selectNote}
           />
@@ -311,6 +351,33 @@ export default function GardenExplorer(props: Props) {
           <span>
             {graphMode === "local" ? "Local" : "Global"} graph ·{" "}
             {graphNotes.length} notes
+            {graphMode === "global" &&
+              filteredNotes.length !== graphNotes.length && (
+                <>
+                  {" (of "}
+                  {filteredNotes.length}
+                  {" filtered)"}
+                </>
+              )}
+            {shouldGuard && (
+              <span class="garden-explorer__perf-warning" aria-live="polite">
+                ⚠ Force layout may freeze this page ({graphNotes.length} nodes)
+              </span>
+            )}
+            {shouldGuard && !forceLayoutApproved && (
+              <>
+                <span class="garden-explorer__perf-warning">
+                  Force layout not run automatically.
+                </span>
+                <button
+                  type="button"
+                  class="garden-explorer__force-approve"
+                  onClick={approveForceLayout}
+                >
+                  Run force layout anyway
+                </button>
+              </>
+            )}
           </span>
           <div>
             <button

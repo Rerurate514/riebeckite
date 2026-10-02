@@ -27,6 +27,24 @@ export type ForceGraphLayoutOptions = {
   maxNodeRadius?: number;
 };
 
+export type ForceLayoutGuardOptions = {
+  layout: "force" | "radial";
+  mode: "local" | "global";
+  nodeCount: number;
+  approved: boolean;
+};
+
+export const FORCE_LAYOUT_CONFIRM_NODE_COUNT = 500;
+
+export function shouldGuardForceLayout(options: ForceLayoutGuardOptions): boolean {
+  return (
+    options.layout === "force" &&
+    options.mode === "global" &&
+    options.nodeCount >= FORCE_LAYOUT_CONFIRM_NODE_COUNT &&
+    !options.approved
+  );
+}
+
 export type RadialGraphLayoutOptions = {
   width: number;
   height: number;

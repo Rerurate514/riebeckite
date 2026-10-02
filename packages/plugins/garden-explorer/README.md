@@ -26,6 +26,10 @@ chars), tags, folders, outgoing links, and backlinks. The graph only contains
 published/discoverable notes and resolved note links, so unpublished, excluded,
 or missing pages do not appear as graph nodes.
 
+The note list in the Explorer panel shows the first 80 filtered notes for UI
+performance. The Global Graph uses all filtered notes. If a URL-selected note
+falls outside the first 80, it is preserved in the Global Graph.
+
 ## Local and global graph
 
 - **Local graph** starts at the selected note and shows neighbors up to `depth`
@@ -43,9 +47,13 @@ of rescanning the vault in the browser.
 
 - **Force layout** (`layout: "force"`, default) uses a small deterministic
   built-in simulation: repulsion, link distance, centering, damping, and bounded
-  stabilization. It adds no large dependency.
+  stabilization. It adds no large dependency. With large graphs (>300 nodes) the
+  force layout computation becomes noticeable; a warning is shown in the toolbar.
+  For large Global Graphs, consider using the radial layout. Above 500 nodes,
+  explicit user approval is required before the force layout runs.
 - **Radial layout** (`layout: "radial"`) keeps the existing Riebeckite radial
-  layout available for compact or deterministic presentations.
+  layout available for compact or deterministic presentations. It runs in
+  near-linear time and handles thousands of nodes instantly.
 
 ## Usage
 

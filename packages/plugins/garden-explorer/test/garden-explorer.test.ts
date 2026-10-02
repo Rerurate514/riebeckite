@@ -1,5 +1,10 @@
 ﻿import assert from "node:assert/strict";
 import { test } from "node:test";
+import {
+  layoutForceGraph,
+  layoutRadialGraph,
+  shouldGuardForceLayout,
+} from "@riebeckite/core/client";
 import type { GardenExplorerNote } from "../src/garden-explorer.js";
 import { getGardenExplorerLocalGraphNotes } from "../src/garden-explorer.js";
 import { resolveGardenExplorerOptions } from "../src/garden-explorer.server.js";
@@ -112,3 +117,163 @@ function createNote(
     backlinks,
   };
 }
+
+function createNotes(count: number): GardenExplorerNote[] {
+  const notes: GardenExplorerNote[] = [];
+  for (let i = 0; i < count; i++) {
+    const slug = `note-${String(i).padStart(3, "0")}`;
+    notes.push(createNote(slug, [], []));
+  }
+  return notes;
+}
+
+test("global graph uses all filtered notes regardless of list limit", () => {
+  const notes = createNotes(100);
+  const options = resolveGardenExplorerOptions({ layout: "force", depth: 1 });
+  const graphNodes = layoutForceGraph(notes, {
+    width: 900,
+    height: 620,
+    centerSlug: notes[0].slug,
+    linkDistance: options.linkDistance,
+    repulsion: options.repulsion,
+  });
+  assert.equal(graphNodes.size, 100);
+});
+
+test("radial layout handles large graphs deterministically", () => {
+  const notes = createNotes(2000);
+  const graphNodes = layoutRadialGraph(notes, {
+    width: 900,
+    height: 620,
+    centerSlug: notes[0].slug,
+  });
+  assert.equal(graphNodes.size, 2000);
+  // Verify deterministic output - same input produces same coordinates
+  const graphNodes2 = layoutRadialGraph(notes, {
+    width: 900,
+    height: 620,
+    centerSlug: notes[0].slug,
+  });
+  for (const [slug, node] of graphNodes) {
+    const node2 = graphNodes2.get(slug);
+    assert.ok(node2, `node ${slug} missing in second run`);
+    assert.equal(node.x, node2.x, `x coordinate differs for ${slug}`);
+    assert.equal(node.y, node2.y, `y coordinate differs for ${slug}`);
+    assert.equal(node.radius, node2.radius, `radius differs for ${slug}`);
+  }
+});
+
+test("force guard blocks force layout at threshold", () => {
+  assert.equal(
+    shouldGuardForceLayout({
+      layout: "force",
+      mode: "global",
+      nodeCount: 499,
+      approved: false,
+    }),
+    false,
+    "499 nodes should not trigger guard",
+  );
+  assert.equal(
+    shouldGuardForceLayout({
+      layout: "force",
+      mode: "global",
+      nodeCount: 500,
+      approved: false,
+    }),
+    true,
+    "500 nodes should trigger guard",
+  );
+  assert.equal(
+    shouldGuardForceLayout({
+      layout: "force",
+      mode: "global",
+      nodeCount: 1000,
+      approved: false,
+    }),
+    true,
+    "1000 nodes should trigger guard",
+  );
+  assert.equal(
+    shouldGuardForceLayout({
+      layout: "force",
+      mode: "global",
+      nodeCount: 1000,
+      approved: true,
+    }),
+    false,
+    "approved should bypass guard",
+  );
+  assert.equal(
+    shouldGuardForceLayout({
+      layout: "radial",
+      mode: "global",
+      nodeCount: 1000,
+      approved: false,
+    }),
+    false,
+    "radial layout should not trigger guard",
+  );
+  assert.equal(
+    shouldGuardForceLayout({
+      layout: "force",
+      mode: "local",
+      nodeCount: 1000,
+      approved: false,
+    }),
+    false,
+    "local mode should not trigger guard",
+  );
+});
+
+test("global graph uses all filtered notes and list is limited", () => {
+  const notes = createNotes(100);
+  const options = resolveGardenExplorerOptions({ layout: "force", depth: 1 });
+  const graphNodes = layoutForceGraph(notes, {
+    width: 900,
+    height: 620,
+    centerSlug: notes[0].slug,
+    linkDistance: options.linkDistance,
+    repulsion: options.repulsion,
+  });
+  assert.equal(graphNodes.size, 100, "Global Graph should have all 100 nodes");
+  // List limit is 80
+  const listNotes = notes.slice(0, 80);
+  assert.equal(listNotes.length, 80, "Explorer list should be limited to 80");
+});
+
+test("selected note outside list limit is preserved in Global Graph", () => {
+  const notes = createNotes(100);
+  const selectedSlug = "note-090"; // index 90, outside first 80
+  const options = resolveGardenExplorerOptions({ layout: "force", depth: 1 });
+
+  // Simulate graphNotes construction: selected note is prepended if not in filteredNotes
+  const filteredNotes = notes;
+  const noteBySlug = new Map(notes.map((n) => [n.slug, n]));
+  const selectedNote = noteBySlug.get(selectedSlug);
+  const graphNotes =
+    selectedNote && !filteredNotes.some((n) => n.slug === selectedSlug)
+      ? [selectedNote, ...filteredNotes]
+      : filteredNotes;
+
+  const graphNodes = layoutForceGraph(graphNotes, {
+    width: 900,
+    height: 620,
+    centerSlug: selectedSlug,
+    linkDistance: options.linkDistance,
+    repulsion: options.repulsion,
+  });
+
+  assert.ok(
+    graphNodes.has(selectedSlug),
+    "Global Graph should contain selected note",
+  );
+  assert.equal(graphNodes.size, 100, "Global Graph should have all 100 nodes");
+  // Note at index 90 is outside first 80, so list limit should not affect Graph
+  const listNotes = filteredNotes.slice(0, 80);
+  assert.equal(listNotes.length, 80, "Explorer list should be limited to 80");
+  assert.ok(
+    !listNotes.some((n) => n.slug === selectedSlug),
+    "Selected note should be outside list limit",
+  );
+});

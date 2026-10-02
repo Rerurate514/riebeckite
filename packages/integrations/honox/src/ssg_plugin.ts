@@ -306,6 +306,8 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               nextOutputCache.outputs[path] = cached;
             }
           });
+        }
+        if (outputChangeSet) {
           for (const output of outputChangeSet.removed) {
             await rm(join(config.build.outDir, output.path), {
               force: true,

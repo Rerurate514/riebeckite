@@ -1,7 +1,7 @@
 import {
   contentRouteSsgParams,
-  pluginPageSsgParams,
   resolveRiebeckiteRoute,
+  riebeckiteSsgParams,
   ssgEnumerableHandler,
 } from "@riebeckite/honox/server";
 import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
@@ -19,13 +19,7 @@ import { getArticleTitle } from "../lib/article-title";
 import { buildArticleSeo, buildWebsiteSeo, type SeoMetadata } from "../lib/seo";
 
 export default createRoute(
-  contentRouteSsgParams("/:slug{.+}", async () => {
-    const manifest = await content.getManifest();
-    const contentPaths = manifest.publicEntries
-      .filter((entry) => entry.permalink !== "/")
-      .map((entry) => ({ slug: entry.permalink.replace(/^\/+/, "") }));
-    return [...contentPaths, ...(await pluginPageSsgParams(content))];
-  }),
+  contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
   ssgEnumerableHandler(async (c, next) => {
     const requestedSlug = c.req.param("slug");
     // Archive has a dedicated route; defer to it.

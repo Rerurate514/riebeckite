@@ -1,6 +1,6 @@
 import {
-  pluginPageSsgParams,
   resolveRiebeckiteRoute,
+  riebeckiteSsgParams,
 } from "@riebeckite/honox/server";
 import { ssgParams } from "hono/ssg";
 import { createRoute } from "honox/factory";
@@ -8,13 +8,7 @@ import { FixtureArticle } from "../components/article";
 import { content } from "../content";
 
 export default createRoute(
-  ssgParams(async () => {
-    const manifest = await content.getManifest();
-    const contentPaths = manifest.publicEntries
-      .filter((entry) => entry.permalink !== "/")
-      .map((entry) => ({ slug: entry.permalink.replace(/^\/+/, "") }));
-    return [...contentPaths, ...(await pluginPageSsgParams(content))];
-  }),
+  ssgParams(() => riebeckiteSsgParams(content)),
   async (c) => {
     const requestedSlug = c.req.param("slug");
     if (!requestedSlug) return c.notFound();

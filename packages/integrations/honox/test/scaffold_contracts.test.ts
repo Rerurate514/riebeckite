@@ -561,9 +561,9 @@ test("Contract 10: Getting Started documentation links are valid", () => {
     "docs/ja/docs/getting-started/first-content.md",
     "docs/ja/docs/getting-started/deployment.md",
     "docs/ja/docs/getting-started/presets.md",
-    "docs/ja/guides/deployment/cloudflare-workers.md",
-    "docs/ja/guides/deployment/github-actions.md",
-    "docs/ja/guides/deployment/separate-content-repository.md",
+    "docs/ja/docs/guides/deployment/cloudflare-workers.md",
+    "docs/ja/docs/guides/deployment/github-actions.md",
+    "docs/ja/docs/guides/deployment/separate-content-repository.md",
   ];
 
   for (const file of gettingStartedFiles) {

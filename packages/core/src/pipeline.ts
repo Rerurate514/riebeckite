@@ -100,6 +100,88 @@ export class Pipeline {
     embedTrail: ReadonlySet<string>,
     rootDependencyTracker: ContentDependencyTracker | null,
   ): Promise<PostContent> {
+    const dependencyTracker = rootDependencyTracker;
+    const effectiveContentSource = dependencyTracker
+      ? dependencyTracker.contentSource
+      : this.options.contentSource;
+
+    if (
+      embedDepth === 0 &&
+      this.persistentCache &&
+      this.pipelineFingerprint &&
+      context.sourceSlug &&
+      this.options.contentSource
+    ) {
+      const cacheable = isPersistentlyCacheable(
+        context.sourceSlug,
+        this.options.config,
+      );
+      if (cacheable.cacheable) {
+        const frontmatter = extractFrontmatter(markDownContent);
+        const cacheKey = computeContentCacheKey({
+          slug: context.sourceSlug,
+          source: markDownContent,
+          frontmatter,
+          pipelineFingerprint: this.pipelineFingerprint,
+        });
+
+        const cachedEntry = await this.persistentCache.get(cacheKey);
+        if (cachedEntry) {
+          const validationTracker = createContentDependencyTracker(
+            this.options.contentSource,
+          );
+          let valid = true;
+          for (const dep of cachedEntry.dependencies) {
+            if (dep.kind === "content") {
+              const content = await validationTracker.readContent(
+                dep.id,
+                async () => (await this.getMarkdownBySlug?.(dep.id)) ?? "",
+              );
+              if (fingerprintContent(content) !== dep.fingerprint) {
+                valid = false;
+                break;
+              }
+            } else if (dep.kind === "file") {
+              const fileContent = await validationTracker.contentSource.read({
+                path: dep.id,
+              });
+              if (fingerprintContent(fileContent) !== dep.fingerprint) {
+                valid = false;
+                break;
+              }
+            } else if (dep.kind === "link") {
+              if (
+                fingerprintContent(this.resolveLinkDependency(dep.id)) !==
+                dep.fingerprint
+              ) {
+                valid = false;
+                break;
+              }
+            }
+          }
+          if (valid) {
+            this.options.observability?.tracer?.event(
+              "persistentContentCache.hit",
+              { key: cacheKey, slug: context.sourceSlug },
+            );
+            return {
+              frontmatter: cachedEntry.value.frontmatter,
+              html: cachedEntry.value.html,
+            };
+          }
+        }
+        this.options.observability?.tracer?.event(
+          "persistentContentCache.miss",
+          { key: cacheKey, slug: context.sourceSlug },
+        );
+      } else {
+        this.options.observability?.tracer?.event(
+          "persistentContentCache.bypass",
+          { slug: context.sourceSlug, reason: cacheable.reason },
+        );
+      }
+    }
+
     const processor = unified();
     const plugins = resolvePlugins(this.options.plugins);
     this.use(processor, remarkParse);
@@ -112,13 +194,6 @@ export class Pipeline {
     });
     this.use(processor, remarkMath);
     this.use(processor, remarkGfm);
-
-    // One tracker per top-level execution. Nested embed processing reuses it so
-    // transitive embed dependencies are captured by the root cache entry.
-    const dependencyTracker = rootDependencyTracker;
-    const effectiveContentSource = dependencyTracker
-      ? dependencyTracker.contentSource
-      : this.options.contentSource;
 
     const markdownPipelineContext: MarkdownPipelineContext = {
       sourceSlug: context.sourceSlug,
@@ -174,88 +249,6 @@ export class Pipeline {
     this.use(processor, rehypeFormat);
 
     this.use(processor, rehypeStringify, { allowDangerousHtml: true });
-
-    // Only use persistent cache for top-level content (not embeds)
-    if (
-      embedDepth === 0 &&
-      this.persistentCache &&
-      this.pipelineFingerprint &&
-      context.sourceSlug
-    ) {
-      const cacheable = isPersistentlyCacheable(
-        context.sourceSlug,
-        this.options.config,
-      );
-      if (cacheable.cacheable) {
-        const frontmatter = extractFrontmatter(markDownContent);
-        const cacheKey = computeContentCacheKey({
-          slug: context.sourceSlug,
-          source: markDownContent,
-          frontmatter,
-          pipelineFingerprint: this.pipelineFingerprint,
-        });
-
-        // Try to read from cache
-        const cachedEntry = await this.persistentCache.get(cacheKey);
-        if (cachedEntry) {
-          // Validate dependencies using a fresh tracker
-          const validationTracker = createContentDependencyTracker(
-            this.options.contentSource!,
-          );
-          let valid = true;
-          for (const dep of cachedEntry.dependencies) {
-            if (dep.kind === "content") {
-              const content = await validationTracker.readContent(
-                dep.id,
-                async () => {
-                  return (await this.getMarkdownBySlug?.(dep.id)) ?? "";
-                },
-              );
-              if (fingerprintContent(content) !== dep.fingerprint) {
-                valid = false;
-                break;
-              }
-            } else if (dep.kind === "file") {
-              // Validate file dependency by reading through contentSource
-              const fileContent = await validationTracker.contentSource.read({
-                path: dep.id,
-              });
-              if (fingerprintContent(fileContent) !== dep.fingerprint) {
-                valid = false;
-                break;
-              }
-            } else if (dep.kind === "link") {
-              if (
-                fingerprintContent(this.resolveLinkDependency(dep.id)) !==
-                dep.fingerprint
-              ) {
-                valid = false;
-                break;
-              }
-            }
-          }
-          if (valid) {
-            this.options.observability?.tracer?.event(
-              "persistentContentCache.hit",
-              { key: cacheKey, slug: context.sourceSlug },
-            );
-            return {
-              frontmatter: cachedEntry.value.frontmatter,
-              html: cachedEntry.value.html,
-            };
-          }
-        }
-        this.options.observability?.tracer?.event(
-          "persistentContentCache.miss",
-          { key: cacheKey, slug: context.sourceSlug },
-        );
-      } else {
-        this.options.observability?.tracer?.event(
-          "persistentContentCache.bypass",
-          { slug: context.sourceSlug, reason: cacheable.reason },
-        );
-      }
-    }
 
     const file = await processor.process(markDownContent.trim());
 

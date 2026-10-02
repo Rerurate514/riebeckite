@@ -1,0 +1,221 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { performance } from "node:perf_hooks";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const { ContentManager, NoopLogger, SinkTracer, defineConfig, resolveConfig } =
+  await import(pathToFileURL(path.join(root, "packages/core/index.ts")));
+
+const sizes = parseList(
+  process.env.RIEBECKITE_BENCH_SIZES ?? "100,1000,10000",
+).map(Number);
+const scenarioFilter = new Set(
+  parseList(process.env.RIEBECKITE_BENCH_SCENARIOS ?? ""),
+);
+const baseDir = path.join(os.tmpdir(), "riebeckite-large-vault-benchmark");
+
+for (const size of sizes) {
+  const directory = path.join(baseDir, String(size), "vault");
+  const cacheDirectory = path.join(baseDir, String(size), "cache");
+  await fs.rm(path.join(baseDir, String(size)), {
+    recursive: true,
+    force: true,
+  });
+  await generateVault(directory, size);
+
+  const scenarios = [
+    { name: "cold build", prepare: async () => undefined },
+    { name: "no-change warm build", prepare: async () => undefined },
+    {
+      name: "single independent note edit",
+      prepare: () =>
+        append(directory, notePath(size - 1), "\nIndependent edit.\n"),
+    },
+    {
+      name: "highly-linked note edit",
+      prepare: () => append(directory, notePath(0), "\nHub edit.\n"),
+    },
+    {
+      name: "embedded note edit",
+      prepare: () => append(directory, notePath(5), "\nEmbed edit.\n"),
+    },
+    {
+      name: "referenced local asset edit",
+      prepare: () =>
+        fs.writeFile(
+          path.join(directory, "assets", "asset-0.png"),
+          Buffer.from(`asset changed ${size}`),
+        ),
+    },
+    {
+      name: "new note",
+      prepare: () => writeNote(directory, size, { extra: "New note." }),
+    },
+    {
+      name: "deleted note",
+      prepare: () =>
+        fs.rm(path.join(directory, notePath(size - 2)), { force: true }),
+    },
+    {
+      name: "rename move",
+      prepare: () => renameMove(directory, Math.max(1, size - 3)),
+    },
+    {
+      name: "plugin config change",
+      prepare: async () => undefined,
+      pluginVersion: "v2",
+    },
+  ];
+
+  const rows = [];
+  for (const scenario of scenarios) {
+    if (scenarioFilter.size > 0 && !scenarioFilter.has(scenario.name)) continue;
+    await scenario.prepare();
+    const row = await measure(
+      directory,
+      cacheDirectory,
+      scenario.name,
+      scenario.pluginVersion ?? "v1",
+    );
+    rows.push({ size, ...row });
+    console.log(JSON.stringify({ size, ...row }));
+  }
+
+  console.log(JSON.stringify(rows, null, 2));
+}
+
+function parseList(value) {
+  return value
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+async function measure(directory, cacheDirectory, scenario, pluginVersion) {
+  const events = [];
+  const spans = [];
+  const tracer = new SinkTracer({
+    onEvent: (event) => events.push(event),
+    onSpan: (span) => spans.push(span),
+  });
+  const config = resolveConfig(
+    defineConfig({
+      site: { title: "Benchmark" },
+      content: { directory, filters: { publishStrategy: "selective" } },
+      cache: { enabled: true, directory: cacheDirectory },
+      plugins: [benchmarkPlugin(pluginVersion)],
+    }),
+  );
+  const startMemory = process.memoryUsage().rss;
+  const start = performance.now();
+  const manager = new ContentManager(directory, [], {
+    config,
+    observability: { logger: new NoopLogger(), tracer },
+  });
+  const manifest = await manager.build({ incremental: true });
+  await manager.dispose();
+  const wallClockMs = performance.now() - start;
+  const endMemory = process.memoryUsage().rss;
+  return {
+    scenario,
+    wallClockMs: Math.round(wallClockMs),
+    processedContentCount: spans.filter(
+      (span) => span.name === "content.process",
+    ).length,
+    cacheHits: events.filter(
+      (event) => event.name === "persistentContentCache.hit",
+    ).length,
+    cacheMisses: events.filter(
+      (event) => event.name === "persistentContentCache.miss",
+    ).length,
+    invalidatedContentCount: Number(
+      events.find((event) => event.name === "build.incremental")?.attributes
+        ?.affected ?? manifest.entries.length,
+    ),
+    regeneratedOutputCount:
+      manifest.publicEntries.length +
+      manifest.pagePaths.length +
+      manifest.generatedOutputs.length,
+    peakRssMb: Math.round(Math.max(startMemory, endMemory) / 1024 / 1024),
+    entries: manifest.entries.length,
+  };
+}
+
+function benchmarkPlugin(version) {
+  return {
+    name: "benchmark-plugin",
+    cacheVersion: version,
+    processedContentCache: { version, dependencyMode: "tracked" },
+  };
+}
+
+async function generateVault(directory, size) {
+  await fs.mkdir(path.join(directory, "assets"), { recursive: true });
+  for (let index = 0; index < Math.max(1, Math.ceil(size / 100)); index++) {
+    await fs.writeFile(
+      path.join(directory, "assets", `asset-${index}.png`),
+      Buffer.from(`asset ${index}`),
+    );
+  }
+  for (let index = 0; index < size; index++) {
+    await writeNote(directory, index);
+  }
+}
+
+async function writeNote(directory, index, options = {}) {
+  const file = path.join(directory, notePath(index));
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  const links = [];
+  if (index > 0 && index % 3 === 0) links.push(`[[${slugPath(index - 1)}]]`);
+  if (index > 10 && index % 10 === 0) links.push(`[[${slugPath(0)}]]`);
+  if (index > 5 && index % 25 === 0) links.push(`![[${slugPath(5)}]]`);
+  if (index % 20 === 0)
+    links.push(
+      `![asset](../assets/asset-${index % Math.max(1, Math.ceil((index + 1) / 100))}.png)`,
+    );
+  const tags = [`tag${index % 20}`, `group${index % 7}`];
+  const alias = `Alias ${index}`;
+  const markdown = [
+    "---",
+    `title: Note ${index}`,
+    "visibility: public",
+    `aliases: ["${alias}"]`,
+    `tags: [${tags.map((tag) => `"${tag}"`).join(", ")}]`,
+    "---",
+    "",
+    `# Note ${index}`,
+    "",
+    `This is deterministic content for note ${index}.`,
+    ...links,
+    "",
+    `#${tags[0]} #${tags[1]}`,
+    options.extra ?? "",
+  ].join("\n");
+  await fs.writeFile(file, markdown, "utf8");
+}
+
+function notePath(index) {
+  return `${slugPath(index)}.md`;
+}
+
+function slugPath(index) {
+  const section = String(Math.floor(index / 100)).padStart(3, "0");
+  return `notes/section-${section}/note-${String(index).padStart(5, "0")}`;
+}
+
+async function append(directory, relativePath, text) {
+  await fs.appendFile(path.join(directory, relativePath), text, "utf8");
+}
+
+async function renameMove(directory, index) {
+  const from = path.join(directory, notePath(index));
+  const to = path.join(
+    directory,
+    "moved",
+    `note-${String(index).padStart(5, "0")}.md`,
+  );
+  await fs.mkdir(path.dirname(to), { recursive: true });
+  await fs.rename(from, to);
+}

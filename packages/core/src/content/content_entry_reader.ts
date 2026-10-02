@@ -3,6 +3,7 @@ import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 
 export class ContentEntryReader {
   private entries: readonly ContentSourceEntry[] | null = null;
+  private entriesByPath: Map<string, ContentSourceEntry> | null = null;
   private texts = new Map<string, Promise<string>>();
 
   constructor(
@@ -11,18 +12,22 @@ export class ContentEntryReader {
   ) {}
 
   async getEntries(): Promise<readonly ContentSourceEntry[]> {
-    this.entries ??= await this.observability.tracer.span(
-      "content.scan",
-      {},
-      () => this.source.scan(),
-    );
+    if (!this.entries) {
+      this.entries = await this.observability.tracer.span(
+        "content.scan",
+        {},
+        () => this.source.scan(),
+      );
+      this.entriesByPath = new Map(
+        this.entries.map((entry) => [entry.path, entry]),
+      );
+    }
     return this.entries;
   }
 
   async readText(logicalPath: string): Promise<string> {
-    const entry = (await this.getEntries()).find(
-      (current) => current.path === logicalPath,
-    );
+    await this.getEntries();
+    const entry = this.entriesByPath?.get(logicalPath);
     if (!entry) throw new Error(`Content entry was not found: ${logicalPath}`);
 
     return await this.read(entry);

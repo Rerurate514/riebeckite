@@ -165,6 +165,9 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
   const wallClockMs = performance.now() - start;
   const endMemory = process.memoryUsage().rss;
   const peakMemory = summarizePeakMemory(memorySamples);
+  const outputMetrics = events.find(
+    (event) => event.name === "build.incremental.outputs",
+  )?.attributes;
   return {
     scenario,
     wallClockMs: Math.round(wallClockMs),
@@ -184,9 +187,15 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
         ?.affected ?? manifest.entries.length,
     ),
     candidateOutputCount:
+      toMetricNumber(outputMetrics?.candidateOutputCount) ??
       manifest.publicEntries.length +
-      manifest.pagePaths.length +
-      manifest.generatedOutputs.length,
+        manifest.pagePaths.length +
+        manifest.generatedOutputs.length,
+    affectedOutputCount: toMetricNumber(outputMetrics?.affectedOutputCount),
+    removedOutputCount: toMetricNumber(outputMetrics?.removedOutputCount),
+    unchangedOutputCount: toMetricNumber(outputMetrics?.unchangedOutputCount),
+    fullOutputRegenerationRequired:
+      outputMetrics?.fullRegenerationRequired ?? null,
     renderedOutputCount: null,
     writtenOutputCount: null,
     skippedOutputCount: null,
@@ -245,6 +254,10 @@ function summarizePeakMemory(samples) {
 
 function toMb(bytes) {
   return Math.round(bytes / 1024 / 1024);
+}
+
+function toMetricNumber(value) {
+  return value === undefined ? null : Number(value);
 }
 
 function summarizePhaseDurations(spans) {

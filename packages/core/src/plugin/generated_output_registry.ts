@@ -21,7 +21,12 @@ export class GeneratedOutputRegistry {
           );
         }
         this.owners.set(path, pluginName);
-        this.outputs.push({ path, content: output.content, owner: pluginName });
+        this.outputs.push({
+          path,
+          content: output.content,
+          dependencies: output.dependencies,
+          owner: pluginName,
+        });
       },
     };
   }

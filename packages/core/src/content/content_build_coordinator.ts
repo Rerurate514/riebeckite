@@ -21,6 +21,7 @@ import {
 import { fingerprintContentEntries } from "./content_fingerprint.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
 import type { ContentSourceEntry } from "./content_source.js";
+import type { OutputDescriptor } from "./output_dependency.js";
 
 export type ContentBuildPreparation = {
   readonly previousState: ContentBuildState | undefined;
@@ -56,6 +57,7 @@ export class ContentBuildCoordinator {
     preparation: ContentBuildPreparation,
     manifest: ContentManifest,
     pipelineFingerprint: string | undefined,
+    outputs: readonly OutputDescriptor[] = [],
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -82,6 +84,7 @@ export class ContentBuildCoordinator {
       ),
       pipelineFingerprint,
       manifestEntries: manifest.entries,
+      outputs,
     };
 
     try {

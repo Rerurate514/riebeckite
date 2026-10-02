@@ -1,3 +1,5 @@
+import type { OutputDependency } from "./output_dependency.js";
+
 export type GeneratedOutputContent = string | Uint8Array;
 
 /**
@@ -12,6 +14,7 @@ export type GeneratedOutputInput = {
    */
   path: string;
   content: GeneratedOutputContent;
+  dependencies?: readonly OutputDependency[];
 };
 
 export type GeneratedOutput = GeneratedOutputInput & {

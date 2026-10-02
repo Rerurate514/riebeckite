@@ -1,5 +1,6 @@
 import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
+import type { OutputDescriptor } from "./output_dependency.js";
 
 export const CONTENT_BUILD_STATE_VERSION = 4;
 
@@ -24,6 +25,7 @@ export type ContentBuildState = {
   readonly contentIndex: Readonly<Record<string, string>>;
   readonly pipelineFingerprint?: string;
   readonly manifestEntries?: readonly ContentManifestEntry[];
+  readonly outputs?: readonly OutputDescriptor[];
 };
 
 export type FingerprintedContentEntry = {

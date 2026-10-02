@@ -1,4 +1,5 @@
 import type { ContentManifest } from "./content_manifest.js";
+import type { OutputDependency } from "./output_dependency.js";
 import type { PluginContext } from "./plugin_context.js";
 import type { PluginHeadTag } from "./plugin_head.js";
 
@@ -34,6 +35,14 @@ export type PluginPageType = {
       ) => readonly string[] | Promise<readonly string[]>);
   /** Higher values win when more than one type matches a request. */
   priority?: number;
+  outputDependencies?:
+    | readonly OutputDependency[]
+    | ((
+        context: PluginContext & {
+          manifest: ContentManifest;
+          pathname: string;
+        },
+      ) => readonly OutputDependency[] | Promise<readonly OutputDependency[]>);
   resolve(
     context: PluginPageContext,
   ): PluginPage | null | Promise<PluginPage | null>;

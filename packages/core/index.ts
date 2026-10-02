@@ -104,6 +104,16 @@ export {
 } from "./src/content/graph_layout.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export type {
+  OutputChangeSet,
+  OutputDescriptor,
+  OutputKind,
+} from "./src/content/output_dependency.js";
+export {
+  buildOutputInventory,
+  determineOutputChanges,
+  htmlOutputPath,
+} from "./src/content/output_dependency.js";
+export type {
   PublishingResolutionOptions,
   PublishingVisibility,
   ResolvedPublishingState,
@@ -186,6 +196,7 @@ export {
   normalizeGeneratedOutputPath,
 } from "./src/types/generated_output.js";
 export type { JsonValue } from "./src/types/json_value.js";
+export type { OutputDependency } from "./src/types/output_dependency.js";
 export type {
   PluginInput,
   ResolvedPluginMetadata,

@@ -1,3 +1,7 @@
+import {
+  htmlOutputPath,
+  type OutputDescriptor,
+} from "../content/output_dependency.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
@@ -288,6 +292,42 @@ export class PluginRuntime {
     return [...new Set(paths.map(normalizePagePath))];
   }
 
+  async getPageOutputs(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly OutputDescriptor[]> {
+    const outputs: OutputDescriptor[] = [];
+    const context = { ...this.createContext(contentIndex), manifest };
+    for (const plugin of this.plugins()) {
+      for (const pageType of plugin.pageTypes ?? []) {
+        const declared = pageType.paths;
+        if (!declared) continue;
+        const paths =
+          typeof declared === "function"
+            ? await declared(this.createPluginContext(plugin, context))
+            : declared;
+        for (const rawPath of paths) {
+          const pathname = normalizePagePath(rawPath);
+          const dependencyContext = { ...context, pathname };
+          const dependencies = pageType.outputDependencies
+            ? typeof pageType.outputDependencies === "function"
+              ? await pageType.outputDependencies(
+                  this.createPluginContext(plugin, dependencyContext),
+                )
+              : pageType.outputDependencies
+            : [{ type: "unknown" as const }];
+          outputs.push({
+            kind: "plugin-page",
+            path: htmlOutputPath(pathname),
+            producer: `plugin:${plugin.name}:page:${pageType.id}`,
+            dependencies,
+          });
+        }
+      }
+    }
+    return uniqueOutputs(outputs);
+  }
+
   async collectDiagnostics(
     contentIndex: Map<string, string>,
   ): Promise<Diagnostic[]> {
@@ -460,6 +500,7 @@ function validatePageType(pluginName: string, pageType: unknown): void {
     resolve?: unknown;
     paths?: unknown;
     priority?: unknown;
+    outputDependencies?: unknown;
   };
   if (typeof candidate.id !== "string" || candidate.id.trim() === "") {
     throw new TypeError(
@@ -489,6 +530,15 @@ function validatePageType(pluginName: string, pageType: unknown): void {
       `Plugin ${pluginName} page type "${candidate.id}" priority must be a finite number`,
     );
   }
+  if (
+    candidate.outputDependencies !== undefined &&
+    !Array.isArray(candidate.outputDependencies) &&
+    typeof candidate.outputDependencies !== "function"
+  ) {
+    throw new TypeError(
+      `Plugin ${pluginName} page type "${candidate.id}" outputDependencies must be an array or function`,
+    );
+  }
 }
 
 function normalizePagePath(pathname: string): string {
@@ -502,4 +552,14 @@ function countSeverity(
 ): number {
   return diagnostics.filter((diagnostic) => diagnostic.severity === severity)
     .length;
+}
+
+function uniqueOutputs(
+  outputs: readonly OutputDescriptor[],
+): readonly OutputDescriptor[] {
+  const byPath = new Map<string, OutputDescriptor>();
+  for (const output of outputs) byPath.set(output.path, output);
+  return [...byPath.values()].sort((left, right) =>
+    left.path.localeCompare(right.path),
+  );
 }

@@ -31,6 +31,10 @@ import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
 import {
+  determineOutputChanges,
+  type OutputChangeSet,
+} from "./output_dependency.js";
+import {
   resolvePublishingBuildTime,
   resolvePublishingState,
 } from "./publishing.js";
@@ -72,6 +76,7 @@ export class ContentManager {
   private publishingBuildTime: Date;
   private routableSlugs: Set<string> | null = null;
   private processedContentCount = 0;
+  private outputChangeSet: OutputChangeSet | null = null;
 
   constructor(
     content: string | ContentSource,
@@ -323,11 +328,40 @@ export class ContentManager {
         await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
         manifest.generatedOutputs =
           this.pluginRuntime.collectGeneratedOutputs();
+        const pluginPageOutputs = await this.pluginRuntime.getPageOutputs(
+          manifest,
+          contentIndex,
+        );
+        this.outputChangeSet = preparation
+          ? determineOutputChanges({
+              manifest,
+              previousState: preparation.previousState,
+              changeSet: preparation.changeSet,
+              affectedContent: preparation.affectedContent,
+              pluginPageOutputs,
+            })
+          : null;
+        if (this.outputChangeSet) {
+          this.observability().tracer.event("build.incremental.outputs", {
+            candidateOutputCount: this.outputChangeSet.candidateOutputCount,
+            affectedOutputCount: this.outputChangeSet.affectedOutputCount,
+            removedOutputCount: this.outputChangeSet.removedOutputCount,
+            unchangedOutputCount: this.outputChangeSet.unchangedOutputCount,
+            fullRegenerationRequired:
+              this.outputChangeSet.fullRegenerationRequired,
+          });
+        }
         if (preparation)
           await this.buildCoordinator.commit(
             preparation,
             manifest,
             this.getPipelineFingerprint(),
+            this.outputChangeSet
+              ? [
+                  ...this.outputChangeSet.affected,
+                  ...this.outputChangeSet.unchanged,
+                ]
+              : [],
           );
         this.manifest = manifest;
         return manifest;
@@ -337,6 +371,36 @@ export class ContentManager {
 
   async build(options: ContentBuildOptions = {}): Promise<ContentManifest> {
     return await this.getManifest(options);
+  }
+
+  async getOutputChangeSet(
+    options: ContentBuildOptions = {},
+  ): Promise<OutputChangeSet> {
+    await this.getManifest(options);
+    if (!this.outputChangeSet) {
+      const manifest = await this.getManifest();
+      const contentIndex = await this.getContentIndex();
+      const pluginPageOutputs = await this.pluginRuntime.getPageOutputs(
+        manifest,
+        contentIndex,
+      );
+      return determineOutputChanges({
+        manifest,
+        previousState: undefined,
+        changeSet: {
+          added: manifest.entries.map((entry) => `${entry.slug}.md`),
+          changed: [],
+          removed: [],
+          unchanged: [],
+        },
+        affectedContent: {
+          direct: new Set(manifest.entries.map((entry) => entry.slug)),
+          dependent: new Set(),
+        },
+        pluginPageOutputs,
+      });
+    }
+    return this.outputChangeSet;
   }
 
   async getBacklinks(targetSlug: string): Promise<Backlink[]> {

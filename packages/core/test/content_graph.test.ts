@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { assertGoldenJson } from "@riebeckite/test";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
+import { layoutForceGraph } from "../src/content/graph_layout.js";
 
 function memorySource(files: Record<string, string>): ContentSource {
   return {
@@ -111,6 +112,84 @@ test("manifest computes backlinks and a navigable content graph", async () => {
   assert.deepEqual(graph.neighborSlugs("draft"), []);
   assert.equal(graph.get("missing"), null);
   assert.equal(graph.get("note-a")?.title, "Note A");
+});
+
+test("force graph layout initializes deterministic bounded positions", () => {
+  const nodes = [
+    { slug: "index", outgoing: ["note-a", "note-b"], backlinks: [] },
+    { slug: "note-a", outgoing: [], backlinks: ["index"] },
+    { slug: "note-b", outgoing: ["note-a"], backlinks: ["index"] },
+  ];
+
+  const first = layoutForceGraph(nodes, {
+    width: 320,
+    height: 240,
+    centerSlug: "index",
+    iterations: 40,
+  });
+  const second = layoutForceGraph(nodes, {
+    width: 320,
+    height: 240,
+    centerSlug: "index",
+    iterations: 40,
+  });
+
+  assert.deepEqual([...first], [...second]);
+  for (const node of first.values()) {
+    assert.ok(node.x >= node.radius && node.x <= 320 - node.radius);
+    assert.ok(node.y >= node.radius && node.y <= 240 - node.radius);
+  }
+});
+
+test("force graph layout handles empty, single, and invalid dimension inputs", () => {
+  assert.deepEqual(
+    [...layoutForceGraph([], { width: 0, height: Number.NaN })],
+    [],
+  );
+
+  const single = layoutForceGraph(
+    [{ slug: "only", outgoing: ["only"], backlinks: ["only"] }],
+    {
+      width: 0,
+      height: Number.POSITIVE_INFINITY,
+      centerSlug: "only",
+      iterations: Number.POSITIVE_INFINITY,
+      linkDistance: Number.NaN,
+      repulsion: Number.NEGATIVE_INFINITY,
+      damping: Number.POSITIVE_INFINITY,
+    },
+  );
+  const node = single.get("only");
+  assert.ok(node);
+  assert.ok(Number.isFinite(node.x));
+  assert.ok(Number.isFinite(node.y));
+  assert.ok(node.x >= node.radius);
+  assert.ok(node.y >= node.radius);
+});
+
+test("force graph layout is stable across unnecessary input order changes", () => {
+  const nodes = [
+    { slug: "c", outgoing: ["a"], backlinks: ["b"] },
+    { slug: "a", outgoing: ["b"], backlinks: ["c"] },
+    { slug: "b", outgoing: ["c"], backlinks: ["a"] },
+    { slug: "isolated", outgoing: [], backlinks: [] },
+  ];
+  const reversed = [...nodes].reverse();
+
+  const first = layoutForceGraph(nodes, {
+    width: 360,
+    height: 260,
+    centerSlug: "a",
+    iterations: 30,
+  });
+  const second = layoutForceGraph(reversed, {
+    width: 360,
+    height: 260,
+    centerSlug: "a",
+    iterations: 30,
+  });
+
+  assert.deepEqual([...first], [...second]);
 });
 
 test("manifest indexes tags, assets, and case-insensitive link targets", async () => {

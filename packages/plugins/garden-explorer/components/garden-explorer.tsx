@@ -1,9 +1,15 @@
-import { layoutRadialGraph } from "@riebeckite/core/client";
+import {
+  type GraphLayoutNode,
+  layoutForceGraph,
+  layoutRadialGraph,
+} from "@riebeckite/core/client";
 import { useEffect, useMemo, useState } from "hono/jsx";
 import type {
   GardenExplorerData,
+  GardenExplorerGraphMode,
   GardenExplorerNote,
 } from "../src/garden-explorer.js";
+import { getGardenExplorerLocalGraphNotes } from "../src/garden-explorer.js";
 import { searchGardenExplorerNotes } from "../src/search-notes.js";
 import { FilterList, NoteDetails, NoteList } from "./explorer-panels.js";
 
@@ -12,11 +18,23 @@ type Props = {
 };
 
 type MobilePanel = "graph" | "explorer" | "details";
+type ViewState = { x: number; y: number; scale: number };
+type DragState =
+  | { kind: "pan"; x: number; y: number }
+  | {
+      kind: "node";
+      slug: string;
+      startClientX: number;
+      startClientY: number;
+      hasMoved: boolean;
+    }
+  | null;
 
 const GRAPH_WIDTH = 900;
 const GRAPH_HEIGHT = 620;
 const MIN_SCALE = 0.6;
 const MAX_SCALE = 2.4;
+const DRAG_THRESHOLD_PX = 4;
 
 export default function GardenExplorer(props: Props) {
   const noteBySlug = useMemo(
@@ -30,7 +48,14 @@ export default function GardenExplorer(props: Props) {
     () => props.data.notes[0]?.slug ?? "",
   );
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("graph");
-  const [view, setView] = useState({ x: 0, y: 0, scale: 1 });
+  const [graphMode, setGraphMode] = useState<GardenExplorerGraphMode>("local");
+  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
+  const [view, setView] = useState<ViewState>({ x: 0, y: 0, scale: 1 });
+  const [drag, setDrag] = useState<DragState>(null);
+  const [suppressNodeNavigation, setSuppressNodeNavigation] = useState(false);
+  const [pinnedNodes, setPinnedNodes] = useState<
+    Record<string, { x: number; y: number }>
+  >({});
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -73,19 +98,72 @@ export default function GardenExplorer(props: Props) {
       ),
     [props.data.edges, visibleSlugSet],
   );
+  const graphNotes = useMemo(
+    () =>
+      graphMode === "local"
+        ? getGardenExplorerLocalGraphNotes(
+            filteredNotes,
+            selectedSlug,
+            props.data.options.depth,
+          )
+        : filteredNotes,
+    [filteredNotes, graphMode, selectedSlug, props.data.options.depth],
+  );
+  const graphSlugSet = useMemo(
+    () => new Set(graphNotes.map((note) => note.slug)),
+    [graphNotes],
+  );
+  const graphEdges = useMemo(
+    () =>
+      visibleEdges.filter(
+        (edge) =>
+          graphSlugSet.has(edge.source) && graphSlugSet.has(edge.target),
+      ),
+    [visibleEdges, graphSlugSet],
+  );
+  const graphKey = useMemo(
+    () => graphNotes.map((note) => note.slug).join("\0"),
+    [graphNotes],
+  );
+  const baseGraphNodes = useMemo(
+    () => layoutNodes(graphNotes, selectedSlug, props.data.options),
+    [graphNotes, selectedSlug, props.data.options],
+  );
   const graphNodes = useMemo(
-    () => layoutNodes(filteredNotes, selectedSlug),
-    [filteredNotes, selectedSlug],
+    () => applyPinnedNodes(baseGraphNodes, pinnedNodes),
+    [baseGraphNodes, pinnedNodes],
   );
   const selectedNote = noteBySlug.get(selectedSlug) ?? filteredNotes[0] ?? null;
   const relatedNotes = useMemo(
     () => (selectedNote ? getRelatedNotes(selectedNote, props.data.notes) : []),
     [selectedNote, props.data.notes],
   );
+  const emphasizedSlugs = useMemo(
+    () => getRelatedSlugSet(selectedSlug, hoveredSlug, graphEdges),
+    [selectedSlug, hoveredSlug, graphEdges],
+  );
+
+  useEffect(() => {
+    if (filteredNotes.length === 0 || visibleSlugSet.has(selectedSlug)) return;
+    setSelectedSlug(filteredNotes[0]?.slug ?? "");
+  }, [filteredNotes, selectedSlug, visibleSlugSet]);
+
+  useEffect(() => {
+    setHoveredSlug(null);
+    setDrag(null);
+    setSuppressNodeNavigation(false);
+    setPinnedNodes({});
+  }, [graphKey, graphMode, props.data.options.layout]);
 
   const selectNote = (slug: string) => {
     setSelectedSlug(slug);
     setMobilePanel("details");
+  };
+
+  const navigateToNote = (slug: string) => {
+    const note = noteBySlug.get(slug);
+    if (!note) return;
+    window.location.href = note.permalink;
   };
 
   const clearFilters = () => {
@@ -94,11 +172,62 @@ export default function GardenExplorer(props: Props) {
     setSelectedFolder(null);
   };
 
-  const zoom = (delta: number) => {
+  const zoom = (delta: number, origin?: { x: number; y: number }) => {
+    setView((current) => zoomView(current, delta, origin));
+  };
+
+  const toSvgPoint = (event: PointerEvent | WheelEvent) => {
+    const svg = event.currentTarget as SVGSVGElement;
+    const rect = svg.getBoundingClientRect();
+    return {
+      x: ((event.clientX - rect.left) / rect.width) * GRAPH_WIDTH,
+      y: ((event.clientY - rect.top) / rect.height) * GRAPH_HEIGHT,
+    };
+  };
+
+  const toGraphPoint = (event: PointerEvent, current: ViewState) => {
+    const point = toSvgPoint(event);
+    return {
+      x: (point.x - current.x) / current.scale,
+      y: (point.y - current.y) / current.scale,
+    };
+  };
+
+  const startPan = (event: PointerEvent) => {
+    const point = toSvgPoint(event);
+    setDrag({ kind: "pan", x: point.x, y: point.y });
+    (event.currentTarget as SVGSVGElement).setPointerCapture(event.pointerId);
+  };
+
+  const movePan = (
+    event: PointerEvent,
+    currentDrag: Extract<DragState, { kind: "pan" }>,
+  ) => {
+    const point = toSvgPoint(event);
     setView((current) => ({
       ...current,
-      scale: clamp(current.scale + delta, MIN_SCALE, MAX_SCALE),
+      x: current.x + point.x - currentDrag.x,
+      y: current.y + point.y - currentDrag.y,
     }));
+    setDrag({ kind: "pan", x: point.x, y: point.y });
+  };
+
+  const moveNode = (
+    event: PointerEvent,
+    currentDrag: Extract<DragState, { kind: "node" }>,
+  ) => {
+    const hasMoved =
+      currentDrag.hasMoved ||
+      Math.hypot(
+        event.clientX - currentDrag.startClientX,
+        event.clientY - currentDrag.startClientY,
+      ) >= DRAG_THRESHOLD_PX;
+    if (!hasMoved) return;
+
+    const point = toGraphPoint(event, view);
+    setSuppressNodeNavigation(true);
+    setPinnedNodes((current) => ({ ...current, [currentDrag.slug]: point }));
+    if (!currentDrag.hasMoved) setDrag({ ...currentDrag, hasMoved: true });
   };
 
   return (
@@ -140,28 +269,32 @@ export default function GardenExplorer(props: Props) {
           </button>
         </div>
 
-        <FilterList
-          title="Tags"
-          items={props.data.tags.map((tag) => ({
-            key: tag.name,
-            label: `#${tag.name}`,
-            count: tag.count,
-          }))}
-          selectedKey={selectedTag}
-          onSelect={(key) => setSelectedTag(key === selectedTag ? null : key)}
-        />
-        <FilterList
-          title="Folders"
-          items={props.data.folders.map((folder) => ({
-            key: folder.path,
-            label: folder.path,
-            count: folder.count,
-          }))}
-          selectedKey={selectedFolder}
-          onSelect={(key) =>
-            setSelectedFolder(key === selectedFolder ? null : key)
-          }
-        />
+        {props.data.options.showTags ? (
+          <FilterList
+            title="Tags"
+            items={props.data.tags.map((tag) => ({
+              key: tag.name,
+              label: `#${tag.name}`,
+              count: tag.count,
+            }))}
+            selectedKey={selectedTag}
+            onSelect={(key) => setSelectedTag(key === selectedTag ? null : key)}
+          />
+        ) : null}
+        {props.data.options.showFolders ? (
+          <FilterList
+            title="Folders"
+            items={props.data.folders.map((folder) => ({
+              key: folder.path,
+              label: folder.path,
+              count: folder.count,
+            }))}
+            selectedKey={selectedFolder}
+            onSelect={(key) =>
+              setSelectedFolder(key === selectedFolder ? null : key)
+            }
+          />
+        ) : null}
 
         <div class="garden-explorer__section">
           <p class="garden-explorer__eyebrow">Notes</p>
@@ -175,8 +308,25 @@ export default function GardenExplorer(props: Props) {
 
       <section class={panelClass("graph", mobilePanel)} aria-label="Note graph">
         <div class="garden-explorer__graph-toolbar">
-          <span>{filteredNotes.length} notes</span>
+          <span>
+            {graphMode === "local" ? "Local" : "Global"} graph ·{" "}
+            {graphNotes.length} notes
+          </span>
           <div>
+            <button
+              type="button"
+              aria-pressed={graphMode === "local"}
+              onClick={() => setGraphMode("local")}
+            >
+              Local
+            </button>
+            <button
+              type="button"
+              aria-pressed={graphMode === "global"}
+              onClick={() => setGraphMode("global")}
+            >
+              Global
+            </button>
             <button
               type="button"
               onClick={() => zoom(-0.2)}
@@ -206,25 +356,48 @@ export default function GardenExplorer(props: Props) {
           aria-label="Interactive graph of notes and internal links"
           onWheel={(event: WheelEvent) => {
             event.preventDefault();
-            zoom(event.deltaY > 0 ? -0.1 : 0.1);
+            zoom(event.deltaY > 0 ? -0.1 : 0.1, toSvgPoint(event));
+          }}
+          onPointerDown={(event: PointerEvent) => {
+            const target = event.target as Element;
+            if (target.closest(".garden-graph__node")) return;
+            startPan(event);
           }}
           onPointerMove={(event: PointerEvent) => {
-            if (event.buttons !== 1) return;
-            setView((current) => ({
-              ...current,
-              x: current.x + event.movementX / current.scale,
-              y: current.y + event.movementY / current.scale,
-            }));
+            if (!drag) return;
+            if (drag.kind === "pan") {
+              movePan(event, drag);
+              return;
+            }
+            moveNode(event, drag);
+          }}
+          onPointerUp={(event: PointerEvent) => {
+            setDrag(null);
+            const svg = event.currentTarget as SVGSVGElement;
+            if (svg.hasPointerCapture(event.pointerId)) {
+              svg.releasePointerCapture(event.pointerId);
+            }
+          }}
+          onPointerCancel={() => {
+            setDrag(null);
+            setSuppressNodeNavigation(false);
           }}
         >
           <g transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
-            {visibleEdges.map((edge) => {
+            {graphEdges.map((edge) => {
               const source = graphNodes.get(edge.source);
               const target = graphNodes.get(edge.target);
               if (!source || !target) return null;
+              const emphasized =
+                emphasizedSlugs.has(edge.source) &&
+                emphasizedSlugs.has(edge.target);
               return (
                 <line
                   class="garden-graph__edge"
+                  data-muted={
+                    emphasizedSlugs.size > 0 && !emphasized ? "true" : "false"
+                  }
+                  data-emphasized={emphasized ? "true" : "false"}
                   x1={source.x}
                   y1={source.y}
                   x2={target.x}
@@ -233,29 +406,63 @@ export default function GardenExplorer(props: Props) {
                 />
               );
             })}
-            {filteredNotes.map((note) => {
+            {graphNotes.map((note) => {
               const node = graphNodes.get(note.slug);
               if (!node) return null;
               const selected = note.slug === selectedSlug;
+              const active =
+                emphasizedSlugs.size === 0 || emphasizedSlugs.has(note.slug);
               return (
-                <g class="garden-graph__node" key={note.slug}>
+                <g
+                  class="garden-graph__node"
+                  data-muted={active ? "false" : "true"}
+                  key={note.slug}
+                  onPointerEnter={() => setHoveredSlug(note.slug)}
+                  onPointerLeave={() => setHoveredSlug(null)}
+                >
                   <a
-                    href={`/explore?note=${encodeURIComponent(note.slug)}`}
-                    aria-label={`Select ${note.title}`}
+                    href={note.permalink}
+                    aria-label={`Open ${note.title}`}
                     onClick={(event) => {
                       event.preventDefault();
-                      selectNote(note.slug);
+                      if (suppressNodeNavigation) {
+                        setSuppressNodeNavigation(false);
+                        return;
+                      }
+                      navigateToNote(note.slug);
                     }}
                   >
                     <circle
                       cx={node.x}
                       cy={node.y}
-                      r={selected ? 15 : node.radius}
+                      r={
+                        selected
+                          ? 15
+                          : node.radius * props.data.options.nodeSize
+                      }
                       data-selected={selected ? "true" : "false"}
+                      onPointerDown={(event: PointerEvent) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setSelectedSlug(note.slug);
+                        setSuppressNodeNavigation(false);
+                        setDrag({
+                          kind: "node",
+                          slug: note.slug,
+                          startClientX: event.clientX,
+                          startClientY: event.clientY,
+                          hasMoved: false,
+                        });
+                        (
+                          event.currentTarget as SVGCircleElement
+                        ).setPointerCapture(event.pointerId);
+                      }}
                     />
-                    <text x={node.x + 18} y={node.y + 5}>
-                      {note.title}
-                    </text>
+                    {props.data.options.showLabels ? (
+                      <text x={node.x + 18} y={node.y + 5}>
+                        {note.title}
+                      </text>
+                    ) : null}
                   </a>
                 </g>
               );
@@ -280,12 +487,38 @@ export default function GardenExplorer(props: Props) {
   );
 }
 
-function layoutNodes(notes: GardenExplorerNote[], selectedSlug: string) {
-  return layoutRadialGraph(notes, {
+function layoutNodes(
+  notes: GardenExplorerNote[],
+  selectedSlug: string,
+  options: GardenExplorerData["options"],
+): Map<string, GraphLayoutNode> {
+  if (options.layout === "radial") {
+    return layoutRadialGraph(notes, {
+      width: GRAPH_WIDTH,
+      height: GRAPH_HEIGHT,
+      centerSlug: selectedSlug,
+    });
+  }
+
+  return layoutForceGraph(notes, {
     width: GRAPH_WIDTH,
     height: GRAPH_HEIGHT,
     centerSlug: selectedSlug,
+    linkDistance: options.linkDistance,
+    repulsion: options.repulsion,
   });
+}
+
+function applyPinnedNodes(
+  layout: Map<string, GraphLayoutNode>,
+  pinnedNodes: Record<string, { x: number; y: number }>,
+): Map<string, GraphLayoutNode> {
+  const next = new Map(layout);
+  for (const [slug, point] of Object.entries(pinnedNodes)) {
+    const current = next.get(slug);
+    if (current) next.set(slug, { ...current, x: point.x, y: point.y });
+  }
+  return next;
 }
 
 function getRelatedNotes(
@@ -315,6 +548,21 @@ function getRelatedNotes(
     .map((item) => item.note);
 }
 
+function getRelatedSlugSet(
+  selectedSlug: string,
+  hoveredSlug: string | null,
+  edges: { source: string; target: string }[],
+): Set<string> {
+  const origin = hoveredSlug ?? selectedSlug;
+  if (!origin) return new Set();
+  const related = new Set([origin]);
+  for (const edge of edges) {
+    if (edge.source === origin) related.add(edge.target);
+    if (edge.target === origin) related.add(edge.source);
+  }
+  return related;
+}
+
 function panelClass(panel: MobilePanel, activePanel: MobilePanel): string {
   return `garden-explorer__panel garden-explorer__panel--${panel}${
     panel === activePanel ? " garden-explorer__panel--active" : ""
@@ -323,4 +571,20 @@ function panelClass(panel: MobilePanel, activePanel: MobilePanel): string {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
+}
+
+function zoomView(
+  current: ViewState,
+  delta: number,
+  origin = { x: GRAPH_WIDTH / 2, y: GRAPH_HEIGHT / 2 },
+): ViewState {
+  const scale = clamp(current.scale + delta, MIN_SCALE, MAX_SCALE);
+  if (scale === current.scale) return current;
+  const graphX = (origin.x - current.x) / current.scale;
+  const graphY = (origin.y - current.y) / current.scale;
+  return {
+    x: origin.x - graphX * scale,
+    y: origin.y - graphY * scale,
+    scale,
+  };
 }

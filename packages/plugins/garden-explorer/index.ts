@@ -1,4 +1,5 @@
 import { createClientEntry, definePlugin } from "@riebeckite/core";
+import type { GardenExplorerPluginOptions } from "./src/garden-explorer.js";
 import { getGardenExplorerData } from "./src/garden-explorer.server.js";
 import { renderGardenExplorerPage } from "./src/garden-explorer-page.js";
 
@@ -8,11 +9,15 @@ export type {
   GardenExplorerEdge,
   GardenExplorerFolder,
   GardenExplorerNote,
+  GardenExplorerOptions,
+  GardenExplorerPluginOptions,
   GardenExplorerTag,
 } from "./src/garden-explorer.js";
 export { getGardenExplorerData } from "./src/garden-explorer.server.js";
 
-export function gardenExplorerPlugin() {
+export function gardenExplorerPlugin(
+  options: GardenExplorerPluginOptions = {},
+) {
   return definePlugin({
     name: "garden-explorer",
     assets: [
@@ -42,6 +47,7 @@ export function gardenExplorerPlugin() {
                 config,
                 resolveTitle: (slug, title) =>
                   typeof title === "string" && title.trim() ? title : slug,
+                options,
               }),
               siteTitle,
             ),

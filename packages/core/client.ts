@@ -1,4 +1,5 @@
 export type {
+  ForceGraphLayoutOptions,
   GraphEdge,
   GraphLayoutNode,
   LinkableGraphNode,
@@ -7,5 +8,6 @@ export type {
 
 export {
   buildGraphEdges,
+  layoutForceGraph,
   layoutRadialGraph,
 } from "./src/content/graph_layout.js";

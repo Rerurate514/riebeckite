@@ -87,6 +87,7 @@ export {
 export { resolveContentStableId } from "./src/content/content_stable_id.js";
 export { FileSystemContentSource } from "./src/content/file_system_content_source.js";
 export type {
+  ForceGraphLayoutOptions,
   GraphEdge,
   GraphLayoutNode,
   LinkableGraphNode,
@@ -94,6 +95,7 @@ export type {
 } from "./src/content/graph_layout.js";
 export {
   buildGraphEdges,
+  layoutForceGraph,
   layoutRadialGraph,
 } from "./src/content/graph_layout.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";

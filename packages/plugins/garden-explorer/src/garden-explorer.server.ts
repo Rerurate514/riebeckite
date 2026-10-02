@@ -8,6 +8,8 @@ import type {
   GardenExplorerData,
   GardenExplorerFolder,
   GardenExplorerNote,
+  GardenExplorerOptions,
+  GardenExplorerPluginOptions,
   GardenExplorerTag,
 } from "./garden-explorer.js";
 
@@ -19,6 +21,7 @@ export function getGardenExplorerData(args: {
   manifest: ContentManifest;
   config: ResolvedRiebeckiteConfig;
   resolveTitle: TitleResolver;
+  options?: GardenExplorerPluginOptions;
 }): GardenExplorerData {
   const graph = args.manifest.graph;
   const publishedEntries = args.manifest.discoverableEntries;
@@ -35,7 +38,29 @@ export function getGardenExplorerData(args: {
     edges: buildGraphEdges(notes, publishedSlugs),
     tags: buildTags(notes),
     folders: buildFolders(notes),
+    options: resolveGardenExplorerOptions(args.options),
   };
+}
+
+export function resolveGardenExplorerOptions(
+  options: GardenExplorerPluginOptions = {},
+): GardenExplorerOptions {
+  return {
+    layout: resolveGraphLayout(options.layout),
+    depth: clampInteger(options.depth ?? 1, 0, 4),
+    showTags: options.showTags ?? true,
+    showFolders: options.showFolders ?? true,
+    nodeSize: clampNumber(options.nodeSize ?? 1, 0.6, 2),
+    linkDistance: clampNumber(options.linkDistance ?? 84, 36, 180),
+    repulsion: clampNumber(options.repulsion ?? 1_800, 200, 8_000),
+    showLabels: options.showLabels ?? true,
+  };
+}
+
+function resolveGraphLayout(
+  layout: GardenExplorerPluginOptions["layout"],
+): GardenExplorerOptions["layout"] {
+  return layout === "radial" || layout === "force" ? layout : "force";
 }
 
 function toGardenNote(
@@ -141,4 +166,13 @@ function toPlainText(html: string): string {
     .replace(/&#39;/g, "'")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function clampInteger(value: number, min: number, max: number): number {
+  return Math.round(clampNumber(value, min, max));
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) return min;
+  return Math.min(Math.max(value, min), max);
 }

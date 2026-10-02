@@ -1,28 +1,51 @@
 # @riebeckite/plugin-garden-explorer
 
-Interactive note garden explorer: a graph, search box, tag/folder filters, and
-note details in a single page.
+Interactive note garden explorer: a local/global content graph, search box,
+tag/folder filters, and note details in a single page.
 
 [日本語](./README_ja.md)
 
 ## Overview
 
-`gardenExplorer()` provides an interactive `GardenExplorer` component with three
-panels:
+`gardenExplorerPlugin()` provides an interactive `GardenExplorer` component with
+three panels:
 
-- **Explorer** — search box plus tag and folder filter chips (with counts) and
-  a filtered note list
-- **Graph** — an interactive radial SVG graph of notes and internal links with
-  zoom (`+`/`−`/wheel), pan (drag), and reset
+- **Explorer** — search box plus optional tag and folder filter chips (with
+  counts) and a filtered note list
+- **Graph** — an SVG graph of published notes and internal links with local and
+  global modes, force or radial layout, hover neighbor emphasis, node drag,
+  wheel/button zoom, canvas pan, reset, and click-to-open navigation
 - **Details** — the selected note's links, tags, excerpt, and related notes
 
 Selection state is mirrored to the URL query (`?note=`, `?tag=`, `?folder=`),
 so the view is shareable and the filter list adapts to the current selection.
 
-`getGardenExplorerData()` builds the note set from published entries, including
-headings, a plain-text body (truncated to 4,000 chars), tags, folders, outgoing
-links, and backlinks. Its client-side note search and radial graph layout are
-self-contained, so this plugin does not require the search plugin.
+`getGardenExplorerData()` builds the note set from `manifest.discoverableEntries`
+and `manifest.graph`, including headings, a plain-text body (truncated to 4,000
+chars), tags, folders, outgoing links, and backlinks. The graph only contains
+published/discoverable notes and resolved note links, so unpublished, excluded,
+or missing pages do not appear as graph nodes.
+
+## Local and global graph
+
+- **Local graph** starts at the selected note and shows neighbors up to `depth`
+  hops. The default is `depth: 1`, matching the common Obsidian/Quartz model of
+  direct backlinks and outgoing links. Use `depth: 0` to show only the selected
+  note.
+- **Global graph** shows all currently filtered public notes and their published
+  internal links.
+
+This is intentionally close to Obsidian's exploration model, but it uses
+Riebeckite's Page System, public manifest, permalinks, and content graph instead
+of rescanning the vault in the browser.
+
+## Layouts
+
+- **Force layout** (`layout: "force"`, default) uses a small deterministic
+  built-in simulation: repulsion, link distance, centering, damping, and bounded
+  stabilization. It adds no large dependency.
+- **Radial layout** (`layout: "radial"`) keeps the existing Riebeckite radial
+  layout available for compact or deterministic presentations.
 
 ## Usage
 
@@ -34,6 +57,23 @@ export default defineConfig({
   // ...
   plugins: [gardenExplorerPlugin()],
 });
+```
+
+With configuration:
+
+```ts
+plugins: [
+  gardenExplorerPlugin({
+    layout: "force",
+    depth: 1,
+    showTags: true,
+    showFolders: false,
+    nodeSize: 1,
+    linkDistance: 84,
+    repulsion: 1800,
+    showLabels: true,
+  }),
+];
 ```
 
 `gardenExplorerPlugin()` registers the `/explore` page type and bundles
@@ -58,14 +98,16 @@ const data = getGardenExplorerData({
   manifest,
   config,
   resolveTitle: getArticleTitle,
+  options: { layout: "radial", depth: 2 },
 });
 
 // ...in a site-owned component
 return <GardenExplorer data={data} />;
 ```
 
-The component is client-side interactive and expects `window` to be available
-in the browser.
+The component is client-side interactive and expects `window` to be available in
+the browser. The server-rendered fallback still exposes the surrounding
+explorer/detail structure and links in semantic lists.
 
 ## Data
 
@@ -76,16 +118,18 @@ in the browser.
 - `edges` — note-to-note graph edges between published notes
 - `tags` — tag counts, most frequent first
 - `folders` — folder counts, alphabetical; root-level notes are `"Root"`
+- `options` — resolved graph options used by the hydrated component
 
 ## Exports
 
-- `gardenExplorerPlugin()` — plugin factory
+- `gardenExplorerPlugin(options?)` — plugin factory
 - `GardenExplorer` — interactive explorer component (default export of
   `components/garden-explorer.tsx`)
-- `getGardenExplorerData({ manifest, config, resolveTitle })` — builds the
-  explorer dataset
+- `getGardenExplorerData({ manifest, config, resolveTitle, options? })` — builds
+  the explorer dataset
 - Types: `GardenExplorerData`, `GardenExplorerEdge`, `GardenExplorerFolder`,
-  `GardenExplorerNote`, `GardenExplorerTag`
+  `GardenExplorerGraphLayout`, `GardenExplorerGraphMode`, `GardenExplorerNote`,
+  `GardenExplorerOptions`, `GardenExplorerPluginOptions`, `GardenExplorerTag`
 
 ## See also
 

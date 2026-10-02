@@ -53,6 +53,8 @@ export type ContentInspection = {
   readonly diagnostics: readonly Diagnostic[];
 };
 
+const CONTENT_PROCESSING_CONCURRENCY = 16;
+
 export class ContentManager {
   private source: ContentSource;
   private contentIndexBuilder: ContentIndexBuilder;
@@ -69,6 +71,7 @@ export class ContentManager {
   private isBuildTime = false;
   private publishingBuildTime: Date;
   private routableSlugs: Set<string> | null = null;
+  private processedContentCount = 0;
 
   constructor(
     content: string | ContentSource,
@@ -193,6 +196,12 @@ export class ContentManager {
         const content = await this.pipeline.execute(rawPost, {
           sourceSlug: slug,
         });
+        this.processedContentCount += 1;
+        if (this.processedContentCount % 100 === 0) {
+          this.observability().tracer.event("content.process.sample", {
+            processed: this.processedContentCount,
+          });
+        }
 
         await this.pluginRuntime.runPostHook(
           "onPostParsed",
@@ -259,8 +268,10 @@ export class ContentManager {
           "content.manifest.entries",
           {},
           () =>
-            Promise.all(
-              posts.map(async (post) => {
+            mapConcurrent(
+              posts,
+              CONTENT_PROCESSING_CONCURRENCY,
+              async (post) => {
                 const reused = this.reuseManifestEntry(post.slug, preparation);
                 if (reused) return reused;
 
@@ -286,7 +297,7 @@ export class ContentManager {
                     buildTime: this.publishingBuildTime,
                   }),
                 );
-              }),
+              },
             ),
         );
 
@@ -476,16 +487,14 @@ export class ContentManager {
     const strategy = this.publishStrategy();
     const posts = await this.getAllPosts();
     const routableSlugs = new Set<string>();
-    await Promise.all(
-      posts.map(async (post) => {
-        const markdown = await this.getPost(post.slug);
-        const publishing = resolvePublishingState(readFrontmatter(markdown), {
-          strategy,
-          buildTime: this.publishingBuildTime,
-        });
-        if (publishing.routable) routableSlugs.add(post.slug);
-      }),
-    );
+    await mapConcurrent(posts, CONTENT_PROCESSING_CONCURRENCY, async (post) => {
+      const markdown = await this.getPost(post.slug);
+      const publishing = resolvePublishingState(readFrontmatter(markdown), {
+        strategy,
+        buildTime: this.publishingBuildTime,
+      });
+      if (publishing.routable) routableSlugs.add(post.slug);
+    });
     this.routableSlugs = routableSlugs;
     return routableSlugs;
   }
@@ -511,4 +520,29 @@ function readFrontmatter(markdown: string): PostFrontmatter {
   const file = new VFile({ value: markdown });
   matter(file);
   return (file.data.matter ?? {}) as PostFrontmatter;
+}
+
+async function mapConcurrent<T, U>(
+  values: readonly T[],
+  concurrency: number,
+  map: (value: T) => Promise<U>,
+): Promise<U[]> {
+  const results = new Array<U>(values.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < values.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      const value = values[index];
+      if (value !== undefined) results[index] = await map(value);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, values.length) }, () =>
+      worker(),
+    ),
+  );
+  return results;
 }

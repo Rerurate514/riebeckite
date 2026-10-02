@@ -41,7 +41,8 @@ export class ContentEntryReader {
       .read(entry)
       .then((value) =>
         typeof value === "string" ? value : new TextDecoder().decode(value),
-      );
+      )
+      .finally(() => this.texts.delete(entry.path));
     this.texts.set(entry.path, content);
     return content;
   }

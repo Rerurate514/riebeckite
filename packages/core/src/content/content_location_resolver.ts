@@ -40,14 +40,14 @@ export class ContentLocationResolver {
       this.dependencies.getContentIndex(),
     ]);
     await this.dependencies.pluginRuntime.startBuild(contentIndex);
-    const inputs = await Promise.all(
-      entries
-        .filter((entry) => entry.path.endsWith(".md"))
-        .map(async (entry) => ({
-          slug: toSlug(entry.path),
-          path: entry.path,
-          markdown: await this.dependencies.readEntry(entry),
-        })),
+    const inputs = await mapConcurrent(
+      entries.filter((entry) => entry.path.endsWith(".md")),
+      64,
+      async (entry) => ({
+        slug: toSlug(entry.path),
+        path: entry.path,
+        markdown: await this.dependencies.readEntry(entry),
+      }),
     );
     const locations = new Map(
       inputs.map((input) => [input.slug, resolveDefaultContentLocation(input)]),
@@ -95,4 +95,29 @@ export class ContentLocationResolver {
 
 function toSlug(path: string): string {
   return path.replace(/\.md$/, "");
+}
+
+async function mapConcurrent<T, U>(
+  values: readonly T[],
+  concurrency: number,
+  map: (value: T) => Promise<U>,
+): Promise<U[]> {
+  const results = new Array<U>(values.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < values.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      const value = values[index];
+      if (value !== undefined) results[index] = await map(value);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, values.length) }, () =>
+      worker(),
+    ),
+  );
+  return results;
 }

@@ -120,9 +120,18 @@ function parseList(value) {
 async function measure(directory, cacheDirectory, scenario, pluginVersion) {
   const events = [];
   const spans = [];
+  const memorySamples = [];
+  sampleMemory(memorySamples, "before manager");
   const tracer = new SinkTracer({
-    onEvent: (event) => events.push(event),
-    onSpan: (span) => spans.push(span),
+    onEvent: (event) => {
+      events.push(event);
+      if (isMemoryEvent(event.name)) sampleMemory(memorySamples, event.name);
+    },
+    onSpan: (span) => {
+      spans.push(span);
+      if (isMemorySpan(span.name))
+        sampleMemory(memorySamples, `after ${span.name}`);
+    },
   });
   const config = resolveConfig(
     defineConfig({
@@ -138,10 +147,24 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
     config,
     observability: { logger: new NoopLogger(), tracer },
   });
+  sampleMemory(memorySamples, "after manager");
+  const peak = startPeakSampler(memorySamples);
   const manifest = await manager.build({ incremental: true });
+  sampleMemory(memorySamples, "after build");
+  if (globalThis.gc) {
+    globalThis.gc();
+    sampleMemory(memorySamples, "after build gc");
+  }
   await manager.dispose();
+  sampleMemory(memorySamples, "after dispose");
+  if (globalThis.gc) {
+    globalThis.gc();
+    sampleMemory(memorySamples, "after dispose gc");
+  }
+  peak.stop();
   const wallClockMs = performance.now() - start;
   const endMemory = process.memoryUsage().rss;
+  const peakMemory = summarizePeakMemory(memorySamples);
   return {
     scenario,
     wallClockMs: Math.round(wallClockMs),
@@ -168,10 +191,60 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
     writtenOutputCount: null,
     skippedOutputCount: null,
     deletedOutputCount: null,
-    peakRssMb: Math.round(Math.max(startMemory, endMemory) / 1024 / 1024),
+    peakRssMb:
+      peakMemory.rssMb ??
+      Math.round(Math.max(startMemory, endMemory) / 1024 / 1024),
+    peakHeapUsedMb: peakMemory.heapUsedMb,
+    finalHeapUsedMb: toMb(process.memoryUsage().heapUsed),
     entries: manifest.entries.length,
     phaseDurationsMs: summarizePhaseDurations(spans),
+    memorySamples,
   };
+}
+
+function isMemorySpan(name) {
+  return [
+    "content.discovery",
+    "content.fingerprint",
+    "content.index",
+    "content.locations",
+    "content.manifest.entries",
+    "content.graph",
+    "content.manifest",
+  ].includes(name);
+}
+
+function isMemoryEvent(name) {
+  return name === "build.incremental" || name === "content.process.sample";
+}
+
+function startPeakSampler(samples) {
+  const interval = setInterval(() => sampleMemory(samples, "interval"), 250);
+  return { stop: () => clearInterval(interval) };
+}
+
+function sampleMemory(samples, label) {
+  const memory = process.memoryUsage();
+  samples.push({
+    label,
+    rssMb: toMb(memory.rss),
+    heapUsedMb: toMb(memory.heapUsed),
+    heapTotalMb: toMb(memory.heapTotal),
+    externalMb: toMb(memory.external),
+    arrayBuffersMb: toMb(memory.arrayBuffers),
+  });
+}
+
+function summarizePeakMemory(samples) {
+  if (samples.length === 0) return {};
+  return {
+    rssMb: Math.max(...samples.map((sample) => sample.rssMb)),
+    heapUsedMb: Math.max(...samples.map((sample) => sample.heapUsedMb)),
+  };
+}
+
+function toMb(bytes) {
+  return Math.round(bytes / 1024 / 1024);
 }
 
 function summarizePhaseDurations(spans) {

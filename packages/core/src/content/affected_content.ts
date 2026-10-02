@@ -10,6 +10,7 @@ export function determineAffectedContent(
   changeSet: ContentChangeSet,
   previousState: ContentBuildState | undefined,
   currentPaths: readonly string[],
+  currentContentIndex: ReadonlyMap<string, string>,
 ): AffectedContent {
   const changedPaths = [
     ...changeSet.added,
@@ -26,12 +27,20 @@ export function determineAffectedContent(
     return { direct, dependent };
   }
 
-  // Added/removed entries change the content index used to resolve links
-  // (aliases, extension fallbacks, same-stem collisions). Which notes resolve
-  // differently cannot be derived from the previous dependency graph, so fall
-  // back to regenerating every note.
   if (changeSet.added.length > 0 || changeSet.removed.length > 0) {
-    addAllNotes(dependent, currentPaths, direct);
+    const changedIndexKeys = findChangedIndexKeys(
+      previousState.contentIndex,
+      currentContentIndex,
+    );
+    for (const [path, entry] of Object.entries(previousState.entries)) {
+      if (!isMarkdownPath(path)) continue;
+      const slug = toDependencyKey(path);
+      if (direct.has(slug) || dependent.has(slug)) continue;
+      if (!entry.linkTargets?.some((target) => changedIndexKeys.has(target))) {
+        continue;
+      }
+      dependent.add(slug);
+    }
   }
 
   // Propagate through the recorded dependency graph. A note depends on the
@@ -60,6 +69,20 @@ export function determineAffectedContent(
   }
 
   return { direct, dependent };
+}
+
+function findChangedIndexKeys(
+  previousIndex: Readonly<Record<string, string>>,
+  currentIndex: ReadonlyMap<string, string>,
+): Set<string> {
+  const changed = new Set<string>();
+  for (const [key, previousValue] of Object.entries(previousIndex)) {
+    if (currentIndex.get(key) !== previousValue) changed.add(key);
+  }
+  for (const key of currentIndex.keys()) {
+    if (!(key in previousIndex)) changed.add(key);
+  }
+  return changed;
 }
 
 function addAllNotes(

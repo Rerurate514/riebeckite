@@ -19,11 +19,13 @@ import {
   diffContentEntries,
 } from "./content_change_set.js";
 import { fingerprintContentEntries } from "./content_fingerprint.js";
+import { ContentIndexBuilder } from "./content_index_builder.js";
 import type { ContentSourceEntry } from "./content_source.js";
 
 export type ContentBuildPreparation = {
   readonly previousState: ContentBuildState | undefined;
   readonly currentEntries: readonly FingerprintedContentEntry[];
+  readonly currentContentIndex: Map<string, string>;
   readonly changeSet: ContentChangeSet;
   readonly affectedContent: ReturnType<typeof determineAffectedContent>;
 };
@@ -68,6 +70,7 @@ export class ContentBuildCoordinator {
             {
               fingerprint,
               dependencies: collectDependencies(manifestEntry),
+              linkTargets: collectLinkTargets(manifestEntry),
             },
           ];
         }),
@@ -90,10 +93,32 @@ export class ContentBuildCoordinator {
     incremental: boolean | undefined,
     pipelineFingerprint: string | undefined,
   ): Promise<ContentBuildPreparation> {
-    const currentEntries = await fingerprintContentEntries(
-      await this.dependencies.getEntries(),
-      (entry) => this.dependencies.readEntry(entry),
+    const entries = await this.dependencies.observability.tracer.span(
+      "content.discovery",
+      {},
+      () => this.dependencies.getEntries(),
     );
+    const currentEntries = await this.dependencies.observability.tracer.span(
+      "content.fingerprint",
+      {},
+      () =>
+        fingerprintContentEntries(entries, (entry) =>
+          this.dependencies.readEntry(entry),
+        ),
+    );
+    const currentContentIndex =
+      await this.dependencies.observability.tracer.span(
+        "content.index",
+        {},
+        () =>
+          new ContentIndexBuilder({
+            scan: async () => currentEntries.map(({ entry }) => entry),
+            read: (entry) => this.dependencies.readEntry(entry),
+          }).build(
+            currentEntries.map(({ entry }) => entry),
+            (entry) => this.dependencies.readEntry(entry),
+          ),
+      );
     const previousState =
       incremental === false
         ? undefined
@@ -107,11 +132,13 @@ export class ContentBuildCoordinator {
             changeSet,
             previousState,
             currentEntries.map(({ entry }) => entry.path),
+            currentContentIndex,
           )
         : determineAffectedContent(
             allContentChanged(currentEntries),
             undefined,
             currentEntries.map(({ entry }) => entry.path),
+            currentContentIndex,
           );
     this.dependencies.observability.tracer.event("build.incremental", {
       incremental: incremental !== false,
@@ -124,6 +151,7 @@ export class ContentBuildCoordinator {
     return {
       previousState,
       currentEntries,
+      currentContentIndex,
       changeSet,
       affectedContent: affected,
     };
@@ -153,5 +181,14 @@ function collectDependencies(
         .map((link) => link.slug),
       ...manifestEntry.assets.map((asset) => asset.path),
     ]),
+  ].sort();
+}
+
+function collectLinkTargets(
+  manifestEntry: ContentManifestEntry | undefined,
+): string[] {
+  if (!manifestEntry) return [];
+  return [
+    ...new Set(manifestEntry.links.map((link) => link.raw.toLowerCase())),
   ].sort();
 }

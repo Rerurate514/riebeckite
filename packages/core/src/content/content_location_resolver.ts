@@ -1,3 +1,4 @@
+import type { Observability } from "../observability.js";
 import type { PluginRuntime } from "../plugin/plugin_runtime.js";
 import type {
   ContentManifest,
@@ -11,6 +12,7 @@ type ContentLocationResolverDependencies = {
   readonly readEntry: (entry: ContentSourceEntry) => Promise<string>;
   readonly getContentIndex: () => Promise<Map<string, string>>;
   readonly pluginRuntime: PluginRuntime;
+  readonly observability: Observability;
 };
 
 export class ContentLocationResolver {
@@ -23,6 +25,16 @@ export class ContentLocationResolver {
   async getLocations(): Promise<ReadonlyMap<string, ContentPublicLocation>> {
     if (this.locations) return this.locations;
 
+    return await this.dependencies.observability.tracer.span(
+      "content.locations",
+      {},
+      () => this.resolveLocations(),
+    );
+  }
+
+  private async resolveLocations(): Promise<
+    ReadonlyMap<string, ContentPublicLocation>
+  > {
     const [entries, contentIndex] = await Promise.all([
       this.dependencies.getEntries(),
       this.dependencies.getContentIndex(),

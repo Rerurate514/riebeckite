@@ -170,7 +170,30 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
     deletedOutputCount: null,
     peakRssMb: Math.round(Math.max(startMemory, endMemory) / 1024 / 1024),
     entries: manifest.entries.length,
+    phaseDurationsMs: summarizePhaseDurations(spans),
   };
+}
+
+function summarizePhaseDurations(spans) {
+  const phases = {
+    discovery: ["content.discovery"],
+    fingerprint: ["content.fingerprint"],
+    index: ["content.index"],
+    location: ["content.locations"],
+    processing: ["content.process"],
+    manifest: ["content.manifest.entries"],
+    graphBacklinkTaxonomy: ["content.graph"],
+  };
+  return Object.fromEntries(
+    Object.entries(phases).map(([phase, names]) => [
+      phase,
+      Math.round(
+        spans
+          .filter((span) => names.includes(span.name))
+          .reduce((total, span) => total + span.durationMs, 0),
+      ),
+    ]),
+  );
 }
 
 function summarizeSamples(scenario, samples) {

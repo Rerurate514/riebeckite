@@ -215,16 +215,168 @@ test("add delete and rename rebuild the complete manifest without stale entries"
   await build(files, directory);
   files["c.md"] = "# C";
   let next = await build(files, directory);
+  assert.equal(next.processed, 1);
+  assert.equal(next.reused, 2);
   assert.deepEqual([...next.manifest.bySlug.keys()].sort(), ["a", "b", "c"]);
 
   delete files["b.md"];
   next = await build(files, directory);
+  assert.equal(next.processed, 0);
+  assert.equal(next.reused, 2);
   assert.deepEqual([...next.manifest.bySlug.keys()].sort(), ["a", "c"]);
 
   files["moved/a.md"] = files["a.md"];
   delete files["a.md"];
   next = await build(files, directory);
+  assert.equal(next.processed, 1);
+  assert.equal(next.reused, 1);
   assert.deepEqual([...next.manifest.bySlug.keys()].sort(), ["c", "moved/a"]);
+});
+
+test("add independent note does not process existing notes", async () => {
+  const directory = await tempDirectory("incremental-add-independent");
+  const files = Object.fromEntries(
+    Array.from({ length: 120 }, (_, index) => [
+      `note-${index}.md`,
+      `# Note ${index}`,
+    ]),
+  );
+
+  await build(files, directory);
+  files["new-note.md"] = "# New";
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 1);
+  assert.equal(second.reused, 120);
+});
+
+test("add resolving wikilink processes previous unresolved link source", async () => {
+  const directory = await tempDirectory("incremental-add-wikilink");
+  const files = {
+    "source.md": "# Source\n\n[[missing-note]]",
+    "other.md": "# Other",
+  };
+
+  await build(files, directory);
+  files["missing-note.md"] = "# Missing";
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 2);
+  assert.equal(second.reused, 1);
+  assert.equal(
+    second.manifest.bySlug.get("source")?.links[0]?.slug,
+    "missing-note",
+  );
+  assert.deepEqual(second.manifest.bySlug.get("missing-note")?.backlinks, [
+    "source",
+  ]);
+});
+
+test("add alias target processes previous unresolved alias reference", async () => {
+  const directory = await tempDirectory("incremental-add-alias");
+  const files = {
+    "source.md": "# Source\n\n[[friendly name]]",
+    "other.md": "# Other",
+  };
+
+  await build(files, directory);
+  files["target.md"] = "---\naliases: [friendly name]\n---\n\n# Target";
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 2);
+  assert.equal(second.reused, 1);
+  assert.equal(second.manifest.bySlug.get("source")?.links[0]?.slug, "target");
+});
+
+test("delete independent note does not process remaining notes", async () => {
+  const directory = await tempDirectory("incremental-delete-independent");
+  const files = {
+    "a.md": "# A",
+    "b.md": "# B",
+    "c.md": "# C",
+  };
+
+  await build(files, directory);
+  delete files["c.md"];
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 0);
+  assert.equal(second.reused, 2);
+  assert.equal(second.manifest.bySlug.has("c"), false);
+});
+
+test("delete referenced note processes reference sources", async () => {
+  const directory = await tempDirectory("incremental-delete-referenced");
+  const files = {
+    "source.md": "# Source\n\n[[target]]",
+    "target.md": "# Target",
+    "other.md": "# Other",
+  };
+
+  await build(files, directory);
+  delete files["target.md"];
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 1);
+  assert.equal(second.reused, 1);
+  assert.equal(second.manifest.bySlug.get("source")?.links[0]?.slug, null);
+});
+
+test("delete embedded note processes embed sources", async () => {
+  const directory = await tempDirectory("incremental-delete-embedded");
+  const files = {
+    "source.md": "# Source\n\n![[target]]",
+    "target.md": "# Target",
+    "other.md": "# Other",
+  };
+
+  await build(files, directory);
+  delete files["target.md"];
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 1);
+  assert.equal(second.reused, 1);
+  assert.equal(second.manifest.bySlug.get("source")?.links[0]?.slug, null);
+});
+
+test("rename referenced note processes old dependents and renamed content", async () => {
+  const directory = await tempDirectory("incremental-rename-referenced");
+  const files = {
+    "source.md": "# Source\n\n[[target]]",
+    "target.md": "# Target",
+    "other.md": "# Other",
+  };
+
+  await build(files, directory);
+  files["renamed.md"] = files["target.md"];
+  delete files["target.md"];
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 2);
+  assert.equal(second.reused, 1);
+  assert.equal(second.manifest.bySlug.get("source")?.links[0]?.slug, null);
+});
+
+test("structural changes keep backlink and taxonomy derived state fresh", async () => {
+  const directory = await tempDirectory("incremental-structural-derived");
+  const files = {
+    "source.md": "# Source\n\n[[target]] #old",
+    "target.md": "# Target",
+  };
+
+  await build(files, directory);
+  files["added.md"] = "# Added #new";
+  let second = await build(files, directory);
+  assert.deepEqual(second.manifest.bySlug.get("target")?.backlinks, ["source"]);
+  assert.deepEqual(
+    second.manifest.byTag.get("new")?.map((entry) => entry.slug),
+    ["added"],
+  );
+
+  delete files["source.md"];
+  second = await build(files, directory);
+  assert.deepEqual(second.manifest.bySlug.get("target")?.backlinks, []);
+  assert.equal(second.manifest.byTag.has("old"), false);
 });
 
 test("plugin config change does not reuse old processed entries", async () => {

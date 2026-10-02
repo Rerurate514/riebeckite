@@ -108,6 +108,7 @@ export class ContentManager {
       readEntry: (entry) => this.entryReader.read(entry),
       getContentIndex: () => this.getContentIndex(),
       pluginRuntime: this.pluginRuntime,
+      observability,
     });
     this.buildCoordinator = new ContentBuildCoordinator({
       buildStatePath,
@@ -146,9 +147,19 @@ export class ContentManager {
       return this.contentIndex;
     }
 
-    this.contentIndex = await this.contentIndexBuilder.build(
-      await this.entryReader.getEntries(),
-      (entry) => this.entryReader.read(entry),
+    if (preparation) {
+      this.contentIndex = preparation.currentContentIndex;
+      return this.contentIndex;
+    }
+
+    this.contentIndex = await this.observability().tracer.span(
+      "content.index",
+      {},
+      async () =>
+        await this.contentIndexBuilder.build(
+          await this.entryReader.getEntries(),
+          (entry) => this.entryReader.read(entry),
+        ),
     );
     return this.contentIndex;
   }
@@ -244,34 +255,39 @@ export class ContentManager {
           this.getContentIndex(preparation),
           this.getContentLocations(),
         ]);
-        const entries = await Promise.all(
-          posts.map(async (post) => {
-            const reused = this.reuseManifestEntry(post.slug, preparation);
-            if (reused) return reused;
+        const entries = await this.observability().tracer.span(
+          "content.manifest.entries",
+          {},
+          () =>
+            Promise.all(
+              posts.map(async (post) => {
+                const reused = this.reuseManifestEntry(post.slug, preparation);
+                if (reused) return reused;
 
-            const [rawPost, processed] = await Promise.all([
-              this.getPost(post.slug),
-              this.getProcessedContent(post.slug),
-            ]);
-            const location = locations.get(post.slug);
-            if (!location) {
-              throw new Error(
-                `Content public location was not resolved: ${post.slug}`,
-              );
-            }
+                const [rawPost, processed] = await Promise.all([
+                  this.getPost(post.slug),
+                  this.getProcessedContent(post.slug),
+                ]);
+                const location = locations.get(post.slug);
+                if (!location) {
+                  throw new Error(
+                    `Content public location was not resolved: ${post.slug}`,
+                  );
+                }
 
-            return this.manifestBuilder.createEntry(
-              post.slug,
-              rawPost,
-              processed,
-              contentIndex,
-              location,
-              resolvePublishingState(processed.frontmatter, {
-                strategy: this.publishStrategy(),
-                buildTime: this.publishingBuildTime,
+                return this.manifestBuilder.createEntry(
+                  post.slug,
+                  rawPost,
+                  processed,
+                  contentIndex,
+                  location,
+                  resolvePublishingState(processed.frontmatter, {
+                    strategy: this.publishStrategy(),
+                    buildTime: this.publishingBuildTime,
+                  }),
+                );
               }),
-            );
-          }),
+            ),
         );
 
         await this.pluginRuntime.runGraphHook(entries, contentIndex);

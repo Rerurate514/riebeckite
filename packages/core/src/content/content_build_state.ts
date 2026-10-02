@@ -1,7 +1,7 @@
 import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 3;
+export const CONTENT_BUILD_STATE_VERSION = 4;
 
 /**
  * Build state lives under `<content directory>/.riebeckite`. That directory is
@@ -15,6 +15,7 @@ export const CONTENT_BUILD_STATE_EXCLUDE = `${CONTENT_BUILD_STATE_DIRECTORY}/**`
 export type ContentBuildEntry = {
   readonly fingerprint: string;
   readonly dependencies: readonly string[];
+  readonly linkTargets?: readonly string[];
 };
 
 export type ContentBuildState = {

@@ -19,6 +19,7 @@ Plugins add features to a Riebeckite site. Use them when you want more than plai
 | Show backlinks | [Backlinks](./backlinks.md) |
 | Enlarge images in an overlay | [Lightbox](./lightbox.md) |
 | Show Excalidraw drawings | [Excalidraw](./excalidraw.md) |
+| Show how notes relate to each other | [ExcaliBrain](./excalibrain.md) |
 | Show Obsidian Canvas files | [Canvas](./canvas.md) |
 | Use BibTeX citations | [Citations](./citations.md) |
 | Build a multilingual site | [Localization](./l10n.md) |
@@ -66,6 +67,7 @@ Each Plugin page shows the package name, import name, and common settings. The p
 - [Diagnostics](./diagnostics.md)
 - [Diff](./diff.md)
 - [Docs](./docs.md)
+- [ExcaliBrain](./excalibrain.md)
 - [Excalidraw](./excalidraw.md)
 - [Gallery](./gallery.md)
 - [Garden Explorer](./garden-explorer.md)

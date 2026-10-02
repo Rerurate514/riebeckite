@@ -32,6 +32,7 @@
     "@riebeckite/plugin-dataview": "workspace:*",
     "@riebeckite/plugin-deploy": "workspace:*",
     "@riebeckite/plugin-diagnostics": "workspace:*",
+    "@riebeckite/plugin-diff": "workspace:*",
     "@riebeckite/plugin-discord-embed": "workspace:*",
     "@riebeckite/plugin-excalibrain": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",

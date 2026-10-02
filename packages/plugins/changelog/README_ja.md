@@ -33,7 +33,7 @@ export default defineConfig({
 
 | オプション | 型 | 初期値 | 説明 |
 | --- | --- | --- | --- |
-| `cwd` | `string` | `process.cwd()` | Git コマンドを実行するディレクトリ |
+| `cwd` | `string` | `config.content.directory`、無ければ `process.cwd()` | Git リポジトリを探すためのコンテンツルート |
 | `lookbackDays` | `number` | なし（全履歴） | 直近この日数以内のコミットだけを含める |
 | `dateFormat` | `"iso" \| "long" \| "short"` | `"iso"` | 日付の表示形式 |
 | `locale` | `string` | `"en"` | `"long"` / `"short"` のロケール |
@@ -97,7 +97,7 @@ const html = renderSiteChangelog(dataset, options);
 
 ## 失敗時の挙動
 
-`git` が無い、または `cwd` が Git リポジトリでない場合、プラグインは `changelog-git-unavailable` 警告診断とロガー警告を出し、ビルド成果物には何も加えません。履歴が取得できないことを理由にビルドが失敗することはなく、空のリポジトリでも同じです。
+`git` を起動できない場合は `changelog-git-unavailable` 警告診断、コンテンツディレクトリが Git ワーキングツリーの外にある場合は `changelog-content-outside-repository` 警告診断を出し、どちらの場合もロガー警告を伴い、ビルド成果物には何も加えません。履歴が取得できないことを理由にビルドが失敗することはなく、空のリポジトリでも同じです。
 
 ## スタイル
 

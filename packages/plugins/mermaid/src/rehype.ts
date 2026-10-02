@@ -12,13 +12,17 @@ import type {
   MermaidBuildRenderErrorKind,
   MermaidBuildRenderResult,
   MermaidOptions,
+  MermaidRenderSession,
   ParentNode,
 } from "./types.js";
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
 const CAPTION_PATTERN = /^%%\s*caption\s*:\s*(.+)$/im;
 
-export function rehypeMermaid(options: MermaidOptions = {}) {
+export function rehypeMermaid(
+  options: MermaidOptions = {},
+  session: MermaidRenderSession,
+) {
   const renderMode = options.render ?? "build";
   const theme = options.theme ?? DEFAULT_THEME;
 
@@ -32,6 +36,7 @@ export function rehypeMermaid(options: MermaidOptions = {}) {
           theme,
           caption: options.caption !== false,
           fallback: options.fallback !== false,
+          session,
         }),
       );
     });
@@ -46,6 +51,7 @@ async function replaceMermaidBlock(
   file: unknown,
   options: Required<MermaidOptions> & {
     theme: NonNullable<MermaidOptions["theme"]>;
+    session: MermaidRenderSession;
   },
 ) {
   const code = findDirectChild(pre, "code");
@@ -55,7 +61,7 @@ async function replaceMermaidBlock(
   const caption = options.caption ? extractCaption(source, pre, code) : null;
   const id = `rr-mermaid-${hashSource(source)}`;
   const renderResult = shouldRenderAtBuild(options.render)
-    ? await renderStaticSvg(id, source, options.theme, file)
+    ? await renderStaticSvg(id, source, options.theme, file, options.session)
     : null;
   const staticSvg = renderResult?.ok ? renderResult.svg : null;
 
@@ -125,10 +131,10 @@ async function renderStaticSvg(
   source: string,
   theme: NonNullable<MermaidOptions["theme"]>,
   file: unknown,
+  session: MermaidRenderSession,
 ): Promise<MermaidBuildRenderResult> {
   try {
-    const { renderMermaidStaticSvg } = await import("./render-static.js");
-    const result = await renderMermaidStaticSvg(
+    const result = await session.render(
       id,
       source,
       selectTheme(theme, "light"),

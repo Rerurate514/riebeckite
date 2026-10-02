@@ -1,8 +1,16 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import path from "node:path";
 import type { ChangelogCommit, GitChangelogReaderOptions } from "../types.js";
+import {
+  type GitRepositoryPaths,
+  isResolvedRepository,
+  normalizeContentPath,
+  type RepositoryPathsResolution,
+  resolveRepositoryPaths,
+  toContentPath,
+  toRepositoryPath,
+} from "./repo_paths.js";
+import { runGit } from "./run_git.js";
 
-const execFileAsync = promisify(execFile);
 const fieldSeparator = "\u001f";
 const recordSeparator = "\u001e";
 const logFormat = ["%H", "%h", "%cI", "%s", "%an"].join(fieldSeparator);
@@ -14,27 +22,49 @@ export type GitLogWindow = {
 };
 
 /**
- * Reads local Git history for individual files and for the whole working
+ * Reads local Git history for individual files and for the whole content
  * directory. Mirrors the Git access used by `@riebeckite/plugin-diff`: it runs
  * `git` through `execFile` and degrades to empty results when Git is missing or
- * the directory is not a repository.
+ * the content directory is not a repository.
+ *
+ * Callers speak content-relative paths — the same paths the content index
+ * reports. The reader resolves the owning work tree once and translates every
+ * path itself, so the process working directory never influences a result.
  */
 export class GitChangelogReader {
-  readonly #cwd: string;
+  readonly #contentRoot: string;
   readonly #fileCache = new Map<string, Promise<ChangelogCommit[]>>();
   #recentCache?: Promise<ChangelogCommit[]>;
-  #repositoryAvailable?: Promise<boolean>;
+  #repository?: Promise<RepositoryPathsResolution>;
 
   constructor(options: GitChangelogReaderOptions = {}) {
-    this.#cwd = options.cwd ?? process.cwd();
+    this.#contentRoot = path.resolve(options.cwd ?? process.cwd());
   }
 
-  /** Commit history for one file, newest first, following renames. */
+  /**
+   * Resolves the Git work tree that owns the content directory, or the reason
+   * it cannot be resolved. Memoized: every Git query reuses the same answer.
+   */
+  resolveRepository(): Promise<RepositoryPathsResolution> {
+    this.#repository ??= resolveRepositoryPaths(this.#contentRoot);
+    return this.#repository;
+  }
+
+  /** True when the content directory lives inside a Git work tree. */
+  async isAvailable(): Promise<boolean> {
+    return isResolvedRepository(await this.resolveRepository());
+  }
+
+  /**
+   * Commit history for one file, newest first, following renames.
+   *
+   * @param filePath Content-relative path, e.g. `notes/hello.md`.
+   */
   getFileHistory(
     filePath: string,
     window: GitLogWindow = {},
   ): Promise<ChangelogCommit[]> {
-    const normalizedPath = normalizeGitPath(filePath);
+    const normalizedPath = normalizeContentPath(filePath);
     if (window.since)
       return this.#readFileHistory(normalizedPath, window.since);
 
@@ -47,8 +77,8 @@ export class GitChangelogReader {
   }
 
   /**
-   * Recent commits that touch the working directory, newest first, each with
-   * the paths it changed.
+   * Recent commits that touch the content directory, newest first, each with
+   * the content-relative paths it changed.
    */
   getRecentCommits(window: GitLogWindow = {}): Promise<ChangelogCommit[]> {
     if (window.since) return this.#readRecentCommits(window.since);
@@ -56,33 +86,25 @@ export class GitChangelogReader {
     return this.#recentCache;
   }
 
-  /** True when `cwd` is inside a Git working tree. */
-  async isAvailable(): Promise<boolean> {
-    this.#repositoryAvailable ??= runGit(this.#cwd, [
-      "rev-parse",
-      "--is-inside-work-tree",
-    ]).then((result) => result.ok && result.stdout.trim() === "true");
-
-    return this.#repositoryAvailable;
-  }
-
   async #readFileHistory(
     filePath: string,
     since?: string,
   ): Promise<ChangelogCommit[]> {
-    if (!(await this.isAvailable())) return [];
+    const repository = await this.#resolvePaths();
+    if (!repository) return [];
 
     const args = ["log", "--follow", `--format=${recordSeparator}${logFormat}`];
     if (since) args.push(`--since=${since}`);
-    args.push("--", filePath);
+    args.push("--", toRepositoryPath(repository, filePath));
 
-    const result = await runGit(this.#cwd, args);
+    const result = await runGit(args, repository.repositoryRoot);
     if (!result.ok) return [];
     return parseCommitRecords(result.stdout);
   }
 
   async #readRecentCommits(since?: string): Promise<ChangelogCommit[]> {
-    if (!(await this.isAvailable())) return [];
+    const repository = await this.#resolvePaths();
+    if (!repository) return [];
 
     const args = [
       "log",
@@ -90,11 +112,25 @@ export class GitChangelogReader {
       "--name-only",
     ];
     if (since) args.push(`--since=${since}`);
-    args.push("--", ".");
+    // `--name-only` prints paths relative to the work tree root, so scope the
+    // walk to the content directory and translate each printed path back.
+    args.push("--", repository.contentPrefix || ".");
 
-    const result = await runGit(this.#cwd, args);
+    const result = await runGit(args, repository.repositoryRoot);
     if (!result.ok) return [];
-    return parseCommitRecords(result.stdout);
+    return parseCommitRecords(result.stdout).map((commit) => ({
+      ...commit,
+      files: commit.files
+        .map((file) => toContentPath(repository, file))
+        .filter((file): file is string => file !== null),
+    }));
+  }
+
+  /** `null` when the content directory has no readable work tree. */
+  async #resolvePaths(): Promise<GitRepositoryPaths | null> {
+    const resolution = await this.resolveRepository();
+    if (!isResolvedRepository(resolution)) return null;
+    return resolution.paths;
   }
 }
 
@@ -123,32 +159,6 @@ function parseCommitRecord(chunk: string): ChangelogCommit | null {
     files: rest
       .map((line) => line.trim())
       .filter(Boolean)
-      .map(normalizeGitPath),
+      .map(normalizeContentPath),
   };
-}
-
-function normalizeGitPath(filePath: string): string {
-  return filePath.replace(/\\/g, "/").replace(/^\.\//, "");
-}
-
-async function runGit(
-  cwd: string,
-  args: string[],
-): Promise<{ ok: true; stdout: string } | { ok: false; stdout: string }> {
-  try {
-    const { stdout } = await execFileAsync("git", args, {
-      cwd,
-      maxBuffer: 1024 * 1024 * 10,
-    });
-    return { ok: true, stdout };
-  } catch (error) {
-    const stdout =
-      typeof error === "object" &&
-      error !== null &&
-      "stdout" in error &&
-      typeof error.stdout === "string"
-        ? error.stdout
-        : "";
-    return { ok: false, stdout };
-  }
 }

@@ -136,10 +136,27 @@ function invertContentIndex(
 ): Map<string, string> {
   const byPath = new Map<string, string>();
   for (const entry of entries) {
-    const path = contentIndex.get(entry.slug.toLowerCase());
-    if (path) byPath.set(normalizePath(path), entry.slug);
+    const path = resolveContentFilePath(contentIndex, entry.slug);
+    if (path) byPath.set(path, entry.slug);
   }
   return byPath;
+}
+
+/**
+ * Resolves the content-relative file path of a note from the content index.
+ *
+ * Index values drop the `.md` extension of Markdown notes, so it is restored
+ * here: Git needs the real on-disk path, not the slug-shaped key the index is
+ * built for.
+ *
+ * Returns `null` when the slug is not in the index.
+ */
+export function resolveContentFilePath(
+  contentIndex: Map<string, string>,
+  slug: string,
+): string | null {
+  const indexedPath = contentIndex.get(slug.toLowerCase());
+  return indexedPath ? `${normalizePath(indexedPath)}.md` : null;
 }
 
 function resolveCutoff(lookbackDays: number | undefined): number | null {

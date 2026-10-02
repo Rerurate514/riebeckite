@@ -37,6 +37,9 @@ catalogs:
       specifier: ^8.0.9
       version: 8.0.16
 
+patchedDependencies:
+  wavedrom@3.7.0: 66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a
+
 importers:
 
   .:
@@ -122,6 +125,9 @@ importers:
       '@riebeckite/plugin-diagnostics':
         specifier: workspace:*
         version: link:../../packages/plugins/diagnostics
+      '@riebeckite/plugin-diff':
+        specifier: workspace:*
+        version: link:../../packages/plugins/diff
       '@riebeckite/plugin-discord-embed':
         specifier: workspace:*
         version: link:../../packages/plugins/discord-embed
@@ -530,6 +536,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.13.6
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/chartjs:
     dependencies:
@@ -1197,7 +1206,7 @@ importers:
         version: link:../../core
       wavedrom:
         specifier: ^3.7.0
-        version: 3.7.0
+        version: 3.7.0(patch_hash=66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a)
 
   packages/plugins/webmention:
     dependencies:
@@ -8749,7 +8758,7 @@ snapshots:
 
   vscode-uri@3.0.8: {}
 
-  wavedrom@3.7.0:
+  wavedrom@3.7.0(patch_hash=66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a):
     dependencies:
       bit-field: 1.9.0
       json5: 2.2.3

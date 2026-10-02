@@ -14,6 +14,8 @@ Check the implementation and package README as the source of truth for the Plugi
 
 Use it to publish release notes or project change history in a form that is easy to follow on the site.
 
+When the content directory is inside a Git working tree, a "Change history" list of commit date, subject, and author is appended to the end of each note. History is resolved from `content.directory`, so it still works when the build's working directory is an app folder inside a monorepo. Outside a working tree the plugin reports a `changelog-content-outside-repository` warning and adds nothing.
+
 ## When to use it
 
 Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.

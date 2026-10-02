@@ -20,6 +20,8 @@ Use it when explaining before-and-after changes in an article with diff code blo
 ```
 ````
 
+When the content directory is inside a Git working tree, a revision panel is appended to the end of the note so past changes can be followed. History is resolved from `content.directory`, so it still works when the build's working directory is an app folder inside a monorepo. Outside a working tree no panel is added.
+
 ## When to use it
 
 Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.

@@ -32,6 +32,12 @@ export type RevisionComparisonInput = {
 };
 
 export type GitHistoryReaderOptions = {
+  /**
+   * Content root: the directory holding the notes, used to locate the owning
+   * Git work tree. Defaults to `config.content.directory` when the plugin runs
+   * inside a build, otherwise `process.cwd()`. A relative value is resolved
+   * against `process.cwd()`.
+   */
   cwd?: string;
 };
 

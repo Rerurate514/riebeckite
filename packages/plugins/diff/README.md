@@ -61,7 +61,7 @@ const compare = await api.compareRevisions({
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `cwd` | `string` | `process.cwd()` | Working directory for Git commands |
+| `cwd` | `string` | `config.content.directory`, else `process.cwd()` | Content root used to locate the Git work tree |
 
 When `cwd` is not inside a Git repository, API calls resolve to empty results
 (`[]` / `null`) instead of throwing.

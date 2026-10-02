@@ -44,7 +44,7 @@ export default defineConfig({
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `cwd` | `string` | `process.cwd()` | Working directory for Git commands |
+| `cwd` | `string` | `config.content.directory`, else `process.cwd()` | Content root used to locate the Git work tree |
 | `lookbackDays` | `number` | — (full history) | Only include commits newer than this many days |
 | `dateFormat` | `"iso" \| "long" \| "short"` | `"iso"` | How dates are rendered |
 | `locale` | `string` | `"en"` | Locale for `"long"` / `"short"` dates |
@@ -114,10 +114,12 @@ exported HTML directly.
 
 ## Failure behavior
 
-When `git` is missing or `cwd` is not a Git repository, the plugin reports a
-`changelog-git-unavailable` warning diagnostic and a logger warning, then leaves
-the build output untouched. The build never fails because history is
-unavailable, and the same guarantee holds for an empty repository.
+When `git` cannot be started, the plugin reports a `changelog-git-unavailable`
+warning diagnostic. When the content directory is not inside a Git working
+tree, it reports `changelog-content-outside-repository`. Either way a logger
+warning accompanies it and the build output is left untouched. The build never
+fails because history is unavailable, and the same guarantee holds for an empty
+repository.
 
 ## Style
 

@@ -47,8 +47,11 @@ export type PostDiffApi = {
 };
 
 export function diff(options: DiffPluginOptions = {}) {
-  const api = createPostDiffApi(options);
   const ui = { enabled: true, maxRevisions: 20, ...options.ui };
+  // Created on the first post hook, where the build config is available: the
+  // content directory is what locates Git, and the process working directory
+  // is only a fallback for programmatic use.
+  let api: PostDiffApi | undefined;
 
   return definePlugin({
     name: "diff",
@@ -61,6 +64,10 @@ export function diff(options: DiffPluginOptions = {}) {
     onPostProcessed: async (context) => {
       if (ui.enabled === false) return;
 
+      api ??= createPostDiffApi({
+        ...options,
+        cwd: options.cwd ?? context.config?.content.directory,
+      });
       const filePath = resolvePostFilePath(context);
       const history = (await api.getHistory(filePath)).slice(
         0,

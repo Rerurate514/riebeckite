@@ -106,6 +106,19 @@ test("heading-order reports skipped levels and missing h1", () => {
   assert.equal(inspectHtml("<p>no headings</p>").length, 0);
 });
 
+test("heading-order ignores headings embedded in svg graphics", () => {
+  const deck =
+    "<h1>Page</h1><h2>Deck</h2><svg><foreignObject><section>" +
+    "<h1>Slide</h1></section></foreignObject></svg><h3>after</h3>";
+  assert.equal(inspectHtml(deck).length, 0);
+  assert.ok(
+    hasCode(
+      inspectHtml("<h1>a</h1><svg><h1>b</h1></svg><h3>c</h3>"),
+      RULE_CODES.headingOrder,
+    ),
+  );
+});
+
 test("empty-link-text ignores named links and anchor targets", () => {
   assert.ok(
     hasCode(inspectHtml('<a href="/x">   </a>'), RULE_CODES.emptyLinkText),

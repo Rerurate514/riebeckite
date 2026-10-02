@@ -5,6 +5,7 @@ import {
   readFile,
   rename,
   rm,
+  stat,
   writeFile,
 } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
@@ -113,6 +114,7 @@ export type RiebeckiteSsgOptions = {
 };
 
 const defaultEntry = "./src/index.tsx";
+const cloudflareWorkerAssetLimit = 25 * 1024 * 1024;
 
 export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
   const virtualId = "virtual:riebeckite-ssg-void-entry";
@@ -387,7 +389,58 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         await server.close();
       }
     },
+    async closeBundle() {
+      if (!resolvedConfig) return;
+
+      const outDir = resolve(resolvedConfig.root, resolvedConfig.build.outDir);
+      const oversizedAssets = await findOversizedAssets(outDir);
+      for (const asset of oversizedAssets) {
+        this.warn(
+          `Generated asset ${asset.path} is ${formatBytes(asset.size)}, exceeding Cloudflare Workers' ${formatBytes(cloudflareWorkerAssetLimit)} asset limit.`,
+        );
+      }
+    },
   };
+}
+
+async function findOversizedAssets(
+  directory: string,
+  relativeDirectory = "",
+): Promise<{ path: string; size: number }[]> {
+  let entries: Awaited<ReturnType<typeof readdir>>;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (isMissingDirectoryError(error)) return [];
+    throw error;
+  }
+  const nestedAssets = await Promise.all(
+    entries.map(async (entry) => {
+      const path = join(directory, entry.name);
+      const relativePath = join(relativeDirectory, entry.name).replaceAll(
+        "\\",
+        "/",
+      );
+      if (entry.isDirectory()) {
+        return findOversizedAssets(path, relativePath);
+      }
+      if (!entry.isFile()) return [];
+
+      const size = (await stat(path)).size;
+      return size > cloudflareWorkerAssetLimit
+        ? [{ path: relativePath, size }]
+        : [];
+    }),
+  );
+  return nestedAssets.flat();
+}
+
+function isMissingDirectoryError(error: unknown): boolean {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+function formatBytes(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
 }
 
 export function shouldApplyRiebeckiteSsg(

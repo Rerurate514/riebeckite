@@ -16,7 +16,7 @@ export default defineConfig({
     seo({
       siteName: "Riebeckite Blog",
       defaultImage: "/ogp.png",
-      feed: { rss: true, atom: true, json: true },
+      feed: { rss: true, atom: true, json: true, limit: 30 },
       sitemap: true,
       robots: true,
     }),
@@ -28,7 +28,7 @@ export default defineConfig({
 | --- | --- |
 | `siteName` | ページタイトルに使うサイト名。省略時は `site.title` |
 | `defaultImage` | 既定の OGP 画像。省略時は `site.defaultOgImage` |
-| `feed` | RSS、Atom、JSON Feed の出力を個別に有効化する |
+| `feed` | RSS、Atom、JSON Feed の出力を個別に有効化する。`limit` は全形式共通の件数上限で、既定値は 30 件 |
 | `sitemap` | サイトマップを出力する |
 | `robots` | robots.txt を出力する |
 
@@ -51,7 +51,7 @@ export default defineConfig({
 
 ## 公開物に含まれる記事
 
-サイトマップとフィードは、公開済みで `noindex: true` ではないエントリーだけを対象にし、更新日時の新しい順に並べます。URL には各エントリーの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
+サイトマップとフィードは、公開済みで `noindex: true` ではないエントリーだけを対象にし、更新日時の新しい順に並べます。フィードは既定で最新 30 件を含み、`feed.limit` で RSS・Atom・JSON Feed 共通の件数上限を変更できます。URL には各エントリーの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
 
 読了時間は CJK 文字を毎分 500 文字、ラテン文字の単語を毎分 220 語として数え、最低 1 分に切り上げます。
 
@@ -66,4 +66,3 @@ export default defineConfig({
 ## 関連資料
 
 - [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
-

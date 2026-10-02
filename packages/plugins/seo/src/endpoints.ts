@@ -36,7 +36,11 @@ export function createSeoEndpoints(
         headers: { "content-type": "application/rss+xml; charset=utf-8" },
         body: renderRssFeed(
           config,
-          filterFeedEntries(config, manifest.discoverableEntries),
+          filterFeedEntries(
+            config,
+            manifest.discoverableEntries,
+            options.feed?.limit,
+          ),
         ),
       }),
     });
@@ -49,7 +53,11 @@ export function createSeoEndpoints(
         headers: { "content-type": "application/atom+xml; charset=utf-8" },
         body: renderAtomFeed(
           config,
-          filterFeedEntries(config, manifest.discoverableEntries),
+          filterFeedEntries(
+            config,
+            manifest.discoverableEntries,
+            options.feed?.limit,
+          ),
         ),
       }),
     });
@@ -62,7 +70,11 @@ export function createSeoEndpoints(
         json: JSON.parse(
           renderJsonFeed(
             config,
-            filterFeedEntries(config, manifest.discoverableEntries),
+            filterFeedEntries(
+              config,
+              manifest.discoverableEntries,
+              options.feed?.limit,
+            ),
           ),
         ),
       }),

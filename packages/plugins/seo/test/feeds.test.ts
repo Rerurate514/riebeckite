@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { type ResolvedRiebeckiteConfig, resolveConfig } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
 import {
+  filterFeedEntries,
   type RenderableFeedEntry,
   renderAtomFeed,
   renderJsonFeed,
@@ -124,4 +125,24 @@ test("renderJsonFeed emits JSON Feed 1.1 and omits undefined fields", () => {
   assert.equal("date_published" in parsed.items[1], false);
 
   assertGolden(json, new URL("./__golden__/feed.json", import.meta.url));
+});
+
+test("filterFeedEntries limits feeds to the latest 30 entries by default", () => {
+  const entries = Array.from({ length: 31 }, (_, index) =>
+    entry(`posts/${index}`, {
+      frontmatter: {
+        updated: new Date(Date.UTC(2024, 0, index + 1)).toISOString(),
+      },
+    }),
+  );
+
+  const filtered = filterFeedEntries(config, entries);
+
+  assert.equal(filtered.length, 30);
+  assert.equal(filtered[0]?.slug, "posts/30");
+  assert.equal(filtered.at(-1)?.slug, "posts/1");
+  assert.deepEqual(
+    filterFeedEntries(config, entries, 2).map((item) => item.slug),
+    ["posts/30", "posts/29"],
+  );
 });

@@ -28,6 +28,9 @@ export default defineConfig({
 ```
 
 `diff(options?)` accepts the same `GitHistoryReaderOptions` as the API.
+The revision panel renders the initial comparison during the build and computes
+other selected comparisons in the browser. It embeds each available revision
+once rather than every pairwise diff, keeping generated pages compact.
 
 ## Programmatic API
 

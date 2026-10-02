@@ -22,7 +22,7 @@ export default defineConfig({
     seo({
       siteName: "Riebeckite Blog",
       defaultImage: "/ogp.png",
-      feed: { rss: true, atom: true, json: true },
+      feed: { rss: true, atom: true, json: true, limit: 30 },
       sitemap: true,
       robots: true,
     }),
@@ -36,7 +36,7 @@ export default defineConfig({
 | ------ | ---- | ----------- |
 | `siteName` | `string` | Site name used in page titles. Defaults to `site.title`. |
 | `defaultImage` | `string` | Default OG image. Falls back to `site.defaultOgImage`. |
-| `feed` | `{ rss?: boolean; atom?: boolean; json?: boolean }` | Feed output settings. |
+| `feed` | `{ rss?: boolean; atom?: boolean; json?: boolean; limit?: number }` | Feed output settings. `limit` defaults to 30 and applies to every format. |
 | `sitemap` | `boolean` | Sitemap output settings. |
 | `robots` | `boolean` | robots.txt output settings. |
 
@@ -75,6 +75,8 @@ Feed and sitemap entries are filtered with `isPublished`, exclude
 `noindex: true`, and are sorted by the most recent update first. Their URLs use
 each entry's resolved canonical `permalink` (`ContentManifestEntry.permalink`);
 they are never rebuilt from slugs.
+Feeds include the latest 30 entries by default. Set `feed.limit` to change the
+shared limit for RSS, Atom, and JSON Feed.
 
 ## Reading time
 
@@ -108,4 +110,3 @@ they are never rebuilt from slugs.
 ## See also
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
-

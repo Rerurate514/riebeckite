@@ -18,6 +18,7 @@ import type {
   DiffPluginUiOptions,
   DiffRevision,
   GitHistoryReaderOptions,
+  MarkdownRevision,
   PostDiff,
   RevisionComparisonInput,
 } from "./src/types.js";
@@ -77,11 +78,12 @@ export function diff(options: DiffPluginOptions = {}) {
         0,
         ui.maxRevisions,
       );
-      const diffs = await buildRevisionDiffs(api, filePath, history);
+      const revisions = await getMarkdownRevisions(api, filePath, history);
+      const selected = await api.getCurrentDiff(filePath);
 
       context.content.html += renderDiffHistory({
-        history,
-        diffs,
+        revisions,
+        selected,
       });
     },
   });
@@ -142,47 +144,20 @@ export function createPostDiffApi(
   };
 }
 
-function getPreviousRevision(
-  history: DiffRevision[],
-  hash: string,
-): DiffRevision | null {
-  const index = history.findIndex((revision) => revision.hash === hash);
-  return index >= 0 ? (history[index + 1] ?? null) : null;
-}
-
-async function buildRevisionDiffs(
+async function getMarkdownRevisions(
   api: PostDiffApi,
   filePath: string,
   history: DiffRevision[],
-): Promise<PostDiff[]> {
-  const comparisons: RevisionComparisonInput[] = [];
-
-  for (let toIndex = 0; toIndex < history.length; toIndex += 1) {
-    const to = history[toIndex];
-    const previous = getPreviousRevision(history, to.hash);
-    comparisons.push({
-      filePath,
-      fromHash: previous?.hash ?? null,
-      toHash: to.hash,
-    });
-
-    for (
-      let fromIndex = toIndex + 2;
-      fromIndex < history.length;
-      fromIndex += 1
-    ) {
-      comparisons.push({
-        filePath,
-        fromHash: history[fromIndex].hash,
-        toHash: to.hash,
-      });
-    }
-  }
-
-  const diffs = await Promise.all(
-    comparisons.map((comparison) => api.compareRevisions(comparison)),
+): Promise<MarkdownRevision[]> {
+  const revisions = await Promise.all(
+    history.map(async (revision) => ({
+      revision,
+      markdown: await api.getRevisionMarkdown(filePath, revision.hash),
+    })),
   );
-  return diffs.filter((entry): entry is PostDiff => entry !== null);
+  return revisions.flatMap(({ revision, markdown }) =>
+    markdown === null ? [] : [{ ...revision, markdown }],
+  );
 }
 
 function resolvePostFilePath(context: {

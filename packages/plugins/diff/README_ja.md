@@ -30,6 +30,8 @@ const current = await api.getCurrentDiff("notes/hello.md");
 
 `cwd` は Git リポジトリを探すためのコンテンツルートで、既定値はビルド内の `config.content.directory`、それ以外では `process.cwd()` です。相対パスは `process.cwd()` 基準で解決されます。Git リポジトリ外を指定しても例外は投げず、空の結果を返します。
 
+リビジョンパネルは初期表示の差分だけをビルド時に描画し、利用者が選んだ比較はブラウザ上で計算します。各リビジョンは一度だけ埋め込むため、全組み合わせの差分を出力する場合より生成ページを小さく保てます。
+
 ## 公開 API
 
 - `diff(options?)`、`createPostDiffApi(options?)`
@@ -39,4 +41,3 @@ const current = await api.getCurrentDiff("notes/hello.md");
 ## 関連資料
 
 - [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
-

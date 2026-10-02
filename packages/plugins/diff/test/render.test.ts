@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assertGolden } from "@riebeckite/test";
-import type { DiffRevision, PostDiff } from "../index.ts";
+import type { DiffRevision, MarkdownRevision, PostDiff } from "../index.ts";
 import {
   createLineDiff,
   renderDiffHistory,
@@ -50,11 +50,11 @@ test("golden: renderDiffPanel renders the diff table markup", () => {
 });
 
 test("renderDiffHistory falls back to an empty state", () => {
-  const html = renderDiffHistory({ history: [], diffs: [] });
+  const html = renderDiffHistory({ revisions: [], selected: null });
 
   assert.ok(html.includes("rr-diff-history__empty"));
   assert.ok(html.includes("No Git history is available"));
-  assert.ok(html.includes('"history":[]'));
+  assert.ok(html.includes('"revisions":[]'));
 });
 
 test("formatDiffDate formats a valid ISO timestamp with a fixed English abbreviation", () => {
@@ -77,14 +77,15 @@ test("renderDiffHistory escapes the payload and revision text", () => {
     "</script>",
     "Alice",
   );
-  const history = [to];
-  const diffs: PostDiff[] = [{ from: null, to, lines: [] }];
+  const revisions: MarkdownRevision[] = [{ ...to, markdown: "</script>" }];
+  const selected: PostDiff = { from: null, to, lines: [] };
 
-  const html = renderDiffHistory({ history, diffs });
+  const html = renderDiffHistory({ revisions, selected });
 
   assert.ok(html.includes("&lt;/script&gt;"));
   assert.ok(html.includes("\\u003c/script>"));
   assert.ok(!html.includes("</script></span>"));
+  assert.ok(!html.includes('"selected"'));
 });
 
 test("renderDiffHistory renders locale-independent revision dates", () => {
@@ -95,10 +96,10 @@ test("renderDiffHistory renders locale-independent revision dates", () => {
     "A change",
     "Alice",
   );
-  const history = [to];
-  const diffs: PostDiff[] = [{ from: null, to, lines: [] }];
+  const revisions: MarkdownRevision[] = [{ ...to, markdown: "" }];
+  const selected: PostDiff = { from: null, to, lines: [] };
 
-  const html = renderDiffHistory({ history, diffs });
+  const html = renderDiffHistory({ revisions, selected });
 
   assert.ok(html.includes('<span class="rr-diff-history__date">Jan 2</span>'));
   assert.ok(html.includes("bbbbbbb · Jan 2"));

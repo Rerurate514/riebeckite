@@ -12,7 +12,7 @@ Check the implementation and package README as the source of truth for the Plugi
 
 ## Example
 
-Use it to prepare titles, descriptions, canonical information, and related metadata for search engines and social platforms.
+Use it to prepare titles, descriptions, canonical information, and related metadata for search engines and social platforms. RSS, Atom, and JSON Feed include the latest 30 entries by default; configure `feed.limit` to use a shared different limit.
 
 ## When to use it
 
@@ -23,4 +23,3 @@ When a rendered example is available, you can also see it in the [Plugin Showcas
 ## Detailed specification
 
 For configuration options, public APIs, constraints, and additional examples, see the [package README](../../../../packages/plugins/seo/README.md). For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.md).
-

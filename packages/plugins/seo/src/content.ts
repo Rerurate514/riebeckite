@@ -22,10 +22,12 @@ export function getDescription(
 export function filterFeedEntries(
   _config: ResolvedRiebeckiteConfig,
   entries: ContentManifestEntry[],
+  limit = 30,
 ): ContentManifestEntry[] {
   return entries
     .filter((entry) => entry.frontmatter.noindex !== true)
-    .sort((a, b) => getSortableTime(b) - getSortableTime(a));
+    .sort((a, b) => getSortableTime(b) - getSortableTime(a))
+    .slice(0, Math.max(0, Math.floor(limit)));
 }
 
 export function getEntryPublishedTime(

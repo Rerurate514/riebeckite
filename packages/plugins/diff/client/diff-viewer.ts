@@ -1,8 +1,9 @@
 import { escapeHtml } from "../src/components/diff-line.js";
-import type { PostDiff } from "../src/types.js";
+import { createLineDiff } from "../src/diff/line_diff.js";
+import type { MarkdownRevision, PostDiff } from "../src/types.js";
 
 type DiffHistoryPayload = {
-  diffs: PostDiff[];
+  revisions: MarkdownRevision[];
 };
 
 export function initDiffHistory() {
@@ -15,7 +16,10 @@ export function initDiffHistory() {
 
 function initDiffHistoryRoot(root: HTMLElement) {
   const payload = readPayload(root);
-  if (!payload || payload.diffs.length === 0) return;
+  if (!payload || payload.revisions.length === 0) return;
+  const revisions = new Map(
+    payload.revisions.map((revision) => [revision.hash, revision]),
+  );
 
   const fromSelect = root.querySelector<HTMLSelectElement>(
     "[data-rr-diff-from]",
@@ -29,7 +33,8 @@ function initDiffHistoryRoot(root: HTMLElement) {
   )) {
     button.addEventListener("click", () => {
       const toHash = button.dataset.rrDiffSelect;
-      const diff = payload.diffs.find((entry) => entry.to.hash === toHash);
+      if (!toHash) return;
+      const diff = createDiff(revisions, fromSelect.value, toHash);
       if (!diff) return;
       fromSelect.value = diff.from?.hash ?? "";
       toSelect.value = diff.to.hash;
@@ -39,11 +44,7 @@ function initDiffHistoryRoot(root: HTMLElement) {
   }
 
   const updateFromSelects = () => {
-    const diff = payload.diffs.find(
-      (entry) =>
-        (entry.from?.hash ?? "") === fromSelect.value &&
-        entry.to.hash === toSelect.value,
-    );
+    const diff = createDiff(revisions, fromSelect.value, toSelect.value);
     if (!diff) return;
     updateSelectedCommit(root, diff.to.hash);
     renderPanel(panel, diff);
@@ -51,6 +52,24 @@ function initDiffHistoryRoot(root: HTMLElement) {
 
   fromSelect.addEventListener("change", updateFromSelects);
   toSelect.addEventListener("change", updateFromSelects);
+}
+
+function createDiff(
+  revisions: ReadonlyMap<string, MarkdownRevision>,
+  fromHash: string,
+  toHash: string,
+): PostDiff | null {
+  const to = revisions.get(toHash);
+  if (!to) return null;
+
+  const from = fromHash ? revisions.get(fromHash) : null;
+  if (fromHash && !from) return null;
+
+  return {
+    from: from ?? null,
+    to,
+    lines: createLineDiff(from?.markdown ?? "", to.markdown),
+  };
 }
 
 function readPayload(root: HTMLElement): DiffHistoryPayload | null {

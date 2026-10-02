@@ -4,6 +4,7 @@ export type FeedOptions = {
   rss?: boolean;
   atom?: boolean;
   json?: boolean;
+  limit?: number;
 };
 
 export type SeoPluginOptions = {

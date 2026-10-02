@@ -1,33 +1,40 @@
-import type { DiffRevision, PostDiff } from "../types.js";
+import type { DiffRevision, MarkdownRevision, PostDiff } from "../types.js";
 import { escapeHtml } from "./diff-line.js";
 import { renderDiffViewer } from "./diff-viewer.js";
 import { formatDiffDate } from "./format-date.js";
 
 export type DiffHistoryProps = {
-  history: DiffRevision[];
-  diffs: PostDiff[];
+  revisions: MarkdownRevision[];
+  selected: PostDiff | null;
 };
 
 export function renderDiffHistory(input: DiffHistoryProps): string {
-  const selected = input.diffs[0] ?? null;
-  const payload = JSON.stringify(input).replace(/</g, "\\u003c");
+  const history = input.revisions;
+  const selected = input.selected;
+  const payload = JSON.stringify({ revisions: input.revisions }).replace(
+    /</g,
+    "\\u003c",
+  );
 
   return `<section class="rr-diff-history" data-rr-diff-history>
   <div class="rr-diff-history__header">
     <h2 class="rr-diff-history__title">History</h2>
-    <span class="rr-diff-history__count">${input.history.length} changes</span>
+    <span class="rr-diff-history__count">${history.length} changes</span>
   </div>
-  ${input.history.length === 0 || !selected ? renderEmptyState() : renderContent(input, selected)}
+  ${history.length === 0 || !selected ? renderEmptyState() : renderContent(history, selected)}
   <script type="application/json" data-rr-diff-history-data>${payload}</script>
 </section>`;
 }
 
-function renderContent(input: DiffHistoryProps, selected: PostDiff): string {
+function renderContent(
+  history: MarkdownRevision[],
+  selected: PostDiff,
+): string {
   return `<div class="rr-diff-history__layout">
     <ol class="rr-diff-history__list" aria-label="Commit history">
-      ${input.history.map((revision, index) => renderRevisionButton(revision, index === 0)).join("")}
+      ${history.map((revision, index) => renderRevisionButton(revision, index === 0)).join("")}
     </ol>
-    ${renderDiffViewer({ history: input.history, selected })}
+    ${renderDiffViewer({ history, selected })}
   </div>`;
 }
 

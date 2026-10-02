@@ -126,7 +126,29 @@ export function resolvePlugins(
     .filter((plugin) => plugin.enabled !== false)
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
+  assertUniquePluginNames(orderedPlugins);
+
   return resolvePluginDependencies(orderedPlugins);
+}
+
+/**
+ * `plugin.name` is the ownership key for the plugin cache and the generated
+ * output registry, so two enabled plugins sharing a name silently collide
+ * there. `validateConfig` already reports this for config-driven plugins; this
+ * guard covers direct `resolvePlugins` callers such as the pipeline and the
+ * plugin runtime.
+ */
+function assertUniquePluginNames(plugins: readonly RiebeckitePlugin[]): void {
+  const owners = new Map<string, number>();
+  plugins.forEach((plugin, index) => {
+    const previous = owners.get(plugin.name);
+    if (previous !== undefined) {
+      throw new Error(
+        `Plugin name "${plugin.name}" is used by both plugins[${previous}] and plugins[${index}]`,
+      );
+    }
+    owners.set(plugin.name, index);
+  });
 }
 
 export function getResolvedPluginMetadata(

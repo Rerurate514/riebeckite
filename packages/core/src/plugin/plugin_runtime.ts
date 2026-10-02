@@ -70,6 +70,7 @@ export class PluginRuntime {
   private pluginCaches = new Map<string, PluginCache>();
   private generatedOutputs = new GeneratedOutputRegistry();
   private isBuildTime = false;
+  private resolvedPlugins: RiebeckitePlugin[] | null = null;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
 
@@ -466,28 +467,32 @@ export class PluginRuntime {
   }
 
   private plugins() {
-    const plugins = resolvePlugins(this.pipelineOptions.plugins);
-    const pageTypes = new Map<string, string>();
-    for (const plugin of plugins) {
-      const declaredPageTypes = plugin.pageTypes;
-      if (
-        declaredPageTypes !== undefined &&
-        !Array.isArray(declaredPageTypes)
-      ) {
-        throw new TypeError(`Plugin ${plugin.name} pageTypes must be an array`);
-      }
-      for (const pageType of declaredPageTypes ?? []) {
-        validatePageType(plugin.name, pageType);
-        const previous = pageTypes.get(pageType.id);
-        if (previous) {
-          throw new Error(
-            `Plugin page type "${pageType.id}" is provided by both ${previous} and ${plugin.name}`,
-          );
-        }
-        pageTypes.set(pageType.id, plugin.name);
-      }
+    if (this.resolvedPlugins === null) {
+      const resolved = resolvePlugins(this.pipelineOptions.plugins);
+      collectPageTypeOwners(resolved);
+      this.resolvedPlugins = resolved;
     }
-    return plugins;
+    return this.resolvedPlugins;
+  }
+}
+
+function collectPageTypeOwners(plugins: readonly RiebeckitePlugin[]): void {
+  const pageTypes = new Map<string, string>();
+  for (const plugin of plugins) {
+    const declaredPageTypes = plugin.pageTypes;
+    if (declaredPageTypes !== undefined && !Array.isArray(declaredPageTypes)) {
+      throw new TypeError(`Plugin ${plugin.name} pageTypes must be an array`);
+    }
+    for (const pageType of declaredPageTypes ?? []) {
+      validatePageType(plugin.name, pageType);
+      const previous = pageTypes.get(pageType.id);
+      if (previous) {
+        throw new Error(
+          `Plugin page type "${pageType.id}" is provided by both ${previous} and ${plugin.name}`,
+        );
+      }
+      pageTypes.set(pageType.id, plugin.name);
+    }
   }
 }
 

@@ -31,6 +31,18 @@ export type ContentBuildPreparation = {
   readonly affectedContent: ReturnType<typeof determineAffectedContent>;
 };
 
+export type ContentBuildCommit = {
+  readonly manifest: ContentManifest;
+  /**
+   * Entries captured before `onManifestCreated` ran. Reusing them on a warm
+   * build and replaying the plugin hook reproduces the cold build output, while
+   * persisting post-hook entries would append plugin output a second time.
+   */
+  readonly reusableEntries: readonly ContentManifestEntry[];
+  readonly pipelineFingerprint: string | undefined;
+  readonly outputs: readonly OutputDescriptor[];
+};
+
 type ContentBuildCoordinatorDependencies = {
   readonly buildStatePath: string;
   readonly getEntries: () => Promise<readonly ContentSourceEntry[]>;
@@ -55,10 +67,9 @@ export class ContentBuildCoordinator {
 
   async commit(
     preparation: ContentBuildPreparation,
-    manifest: ContentManifest,
-    pipelineFingerprint: string | undefined,
-    outputs: readonly OutputDescriptor[] = [],
+    commit: ContentBuildCommit,
   ): Promise<void> {
+    const { manifest, reusableEntries, pipelineFingerprint, outputs } = commit;
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
     );
@@ -83,13 +94,21 @@ export class ContentBuildCoordinator {
         ),
       ),
       pipelineFingerprint,
-      manifestEntries: manifest.entries,
+      manifestEntries: reusableEntries,
       outputs,
     };
 
     try {
       await saveContentBuildState(this.dependencies.buildStatePath, state);
-    } catch {}
+    } catch (error) {
+      this.dependencies.observability.logger.warn(
+        "Incremental build state could not be persisted; the next build regenerates every note instead of reusing stale output.",
+        {
+          path: this.dependencies.buildStatePath,
+          reason: error instanceof Error ? error.message : String(error),
+        },
+      );
+    }
   }
 
   private async prepare(

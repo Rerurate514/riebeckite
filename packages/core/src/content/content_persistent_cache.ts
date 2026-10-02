@@ -254,18 +254,7 @@ export function computePipelineFingerprint(
   const plugins = config.plugins;
 
   const fingerprintData = {
-    // Core version could be added here if available
-    plugins: plugins.map((p) => ({
-      name: p.name,
-      order: p.order ?? 0,
-      options: sanitizeForFingerprint(p.options) as JsonValue,
-      remarkPlugins: p.remarkPlugins?.length ?? 0,
-      rehypePlugins: p.rehypePlugins?.length ?? 0,
-      extendMarkdownPipeline: typeof p.extendMarkdownPipeline === "function",
-      extendHtmlPipeline: typeof p.extendHtmlPipeline === "function",
-      cacheVersion: p.cacheVersion,
-      processedContentCache: p.processedContentCache,
-    })),
+    plugins: plugins.map((p) => pluginFingerprint(p)),
     markdown: config.markdown as JsonValue,
     content: {
       filters: config.content.filters,
@@ -275,11 +264,38 @@ export function computePipelineFingerprint(
   return hash(stableStringify(fingerprintData as JsonValue));
 }
 
+const pluginFingerprints = new WeakMap<object, JsonValue>();
+
+function pluginFingerprint(
+  plugin: ResolvedRiebeckiteConfig["plugins"][number],
+): JsonValue {
+  const cached = pluginFingerprints.get(plugin);
+  if (cached !== undefined) return cached;
+  const fingerprint = sanitizeForFingerprint(plugin) as JsonValue;
+  pluginFingerprints.set(plugin, fingerprint);
+  return fingerprint;
+}
+
+const functionSourceFingerprints = new Map<string, string>();
+
+function fingerprintFunctionSource(value: (...args: never[]) => unknown) {
+  const source = Function.prototype.toString.call(value);
+  const cached = functionSourceFingerprints.get(source);
+  if (cached !== undefined) return cached;
+  const fingerprint = `fn:${hash(source)}`;
+  functionSourceFingerprints.set(source, fingerprint);
+  return fingerprint;
+}
+
 function sanitizeForFingerprint(value: unknown): unknown {
   if (value === null || value === undefined) return value;
-  if (typeof value === "function") return "[Function]";
+  if (typeof value === "function") {
+    return fingerprintFunctionSource(value as (...args: never[]) => unknown);
+  }
   if (typeof value === "symbol") return "[Symbol]";
   if (Array.isArray(value)) return value.map(sanitizeForFingerprint);
+  if (value instanceof Map || value instanceof Set)
+    return `[${value.constructor.name}]`;
   if (typeof value === "object") {
     const result: Record<string, unknown> = {};
     for (const [key, val] of Object.entries(value)) {

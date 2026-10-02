@@ -68,6 +68,7 @@ export class ContentManager {
   private contentCache = new Map<string, PostContent>();
   private manifest: ContentManifest | null = null;
   private manifestPromise: Promise<ContentManifest> | null = null;
+  private pipelineFingerprint: string | null = null;
   private pipeline: Pipeline | null = null;
   private entryReader: ContentEntryReader;
   private locationResolver: ContentLocationResolver;
@@ -314,6 +315,7 @@ export class ContentManager {
         );
         this.locationResolver.populateRedirects(manifest, locations);
         this.applyPublicView(manifest);
+        const reusableEntries = manifest.entries.map(cloneManifestEntry);
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
@@ -352,17 +354,17 @@ export class ContentManager {
           });
         }
         if (preparation)
-          await this.buildCoordinator.commit(
-            preparation,
+          await this.buildCoordinator.commit(preparation, {
             manifest,
-            this.getPipelineFingerprint(),
-            this.outputChangeSet
+            reusableEntries,
+            pipelineFingerprint: this.getPipelineFingerprint(),
+            outputs: this.outputChangeSet
               ? [
                   ...this.outputChangeSet.affected,
                   ...this.outputChangeSet.unchanged,
                 ]
               : [],
-          );
+          });
         this.manifest = manifest;
         return manifest;
       },
@@ -522,20 +524,15 @@ export class ContentManager {
     );
     if (!entry) return null;
     this.observability().tracer.event("content.reuse", { slug });
-    return {
-      ...entry,
-      publicLocation: { ...entry.publicLocation },
-      frontmatter: { ...entry.frontmatter },
-      tags: [...entry.tags],
-      links: entry.links.map((link) => ({ ...link })),
-      backlinks: [...entry.backlinks],
-      assets: entry.assets.map((asset) => ({ ...asset })),
-    };
+    return cloneManifestEntry(entry);
   }
 
   private getPipelineFingerprint(): string | undefined {
     if (!this.pipelineOptions.config) return undefined;
-    return computePipelineFingerprint(this.pipelineOptions.config);
+    this.pipelineFingerprint ??= computePipelineFingerprint(
+      this.pipelineOptions.config,
+    );
+    return this.pipelineFingerprint;
   }
 
   private isRoutable(slug: string): boolean {
@@ -584,6 +581,20 @@ function readFrontmatter(markdown: string): PostFrontmatter {
   const file = new VFile({ value: markdown });
   matter(file);
   return (file.data.matter ?? {}) as PostFrontmatter;
+}
+
+function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
+  return {
+    ...entry,
+    publicLocation: { ...entry.publicLocation },
+    frontmatter: { ...entry.frontmatter },
+    tags: [...entry.tags],
+    links: entry.links.map((link) => ({ ...link })),
+    backlinks: [...entry.backlinks],
+    assets: entry.assets.map((asset) => ({ ...asset })),
+    ...(entry.headTags ? { headTags: [...entry.headTags] } : {}),
+    ...(entry.bodySlots ? { bodySlots: { ...entry.bodySlots } } : {}),
+  };
 }
 
 async function mapConcurrent<T, U>(

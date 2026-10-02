@@ -355,6 +355,7 @@ export class PluginRuntime {
     return {
       config: this.pipelineOptions.config,
       contentIndex,
+      contentSource: this.pipelineOptions.contentSource,
       diagnostics: this.diagnostics,
     };
   }

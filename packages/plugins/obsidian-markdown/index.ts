@@ -1,4 +1,9 @@
-import { definePlugin } from "@riebeckite/core";
+import {
+  definePlugin,
+  isImagePath,
+  normalizeContentPath,
+  readContentSourceEntry,
+} from "@riebeckite/core";
 import { remarkObsidianBlockReference } from "./src/remark_obsidian_block_reference.js";
 import {
   type CalloutOptions,
@@ -26,6 +31,8 @@ export type ObsidianMarkdownOptions = {
 const PLUGIN_NAME = "obsidian-markdown";
 
 export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
+  const emittedImagePaths = new Set<string>();
+
   return definePlugin({
     name: PLUGIN_NAME,
     order: -20,
@@ -41,6 +48,26 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
       });
       pipeline.use(remarkObsidianCallout, options.callout);
       pipeline.use(remarkObsidianTag, options.tag);
+    },
+    buildEnd: async (context) => {
+      const source = context.contentSource;
+      if (!source) return;
+
+      const publicImagePaths = new Set(
+        context.manifest.publicEntries.flatMap((entry) =>
+          entry.assets
+            .map((asset) => normalizeContentPath(asset.path))
+            .filter(isImagePath),
+        ),
+      );
+
+      for (const imagePath of publicImagePaths) {
+        if (emittedImagePaths.has(imagePath)) continue;
+        emittedImagePaths.add(imagePath);
+        const content = await readContentSourceEntry(source, imagePath);
+        if (content === null) continue;
+        context.output.emit({ path: imagePath, content });
+      }
     },
   });
 }

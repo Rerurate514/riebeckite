@@ -71,7 +71,11 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
         emittedImagePaths.add(imagePath);
         const content = await readContentSourceEntry(source, imagePath);
         if (content === null) continue;
-        context.output.emit({ path: imagePath, content });
+        context.output.emit({
+          path: imagePath,
+          content,
+          dependencies: [{ type: "global" }],
+        });
       }
     },
   });

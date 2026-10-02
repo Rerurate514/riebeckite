@@ -92,6 +92,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
         id: "taxonomy-term",
         paths: ({ manifest }) =>
           taxonomyPagePaths(manifest.discoverableEntries, resolved),
+        outputDependencies: [{ type: "global" }],
         resolve: ({ manifest, pathname }) => {
           const term = findTaxonomyTerm(
             manifest.discoverableEntries,
@@ -122,6 +123,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
           context.output.emit({
             path,
             content: renderTermFeed(config, term, format, resolved.feedLimit),
+            dependencies: [{ type: "global" }],
           });
         }
       }

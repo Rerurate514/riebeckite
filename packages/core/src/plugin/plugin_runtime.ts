@@ -1,7 +1,4 @@
-import {
-  htmlOutputPath,
-  type OutputDescriptor,
-} from "../content/output_dependency.js";
+import type { OutputDescriptor } from "../content/output_dependency.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
@@ -319,7 +316,7 @@ export class PluginRuntime {
             : [{ type: "unknown" as const }];
           outputs.push({
             kind: "plugin-page",
-            path: htmlOutputPath(pathname),
+            path: pathname,
             producer: `plugin:${plugin.name}:page:${pageType.id}`,
             dependencies,
           });

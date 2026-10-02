@@ -26,7 +26,7 @@ test("independent content edit affects own page and global outputs only", () => 
   });
   const result = changes(previous, current, { changed: ["a.md"] });
 
-  assert.deepEqual(paths(result.affected), ["a/index.html", "feed.xml"]);
+  assert.deepEqual(paths(result.affected), ["a.html", "feed.xml"]);
   assert.deepEqual(paths(result.removed), []);
   assert.equal(result.fullRegenerationRequired, false);
 });
@@ -45,9 +45,9 @@ test("wikilink changes affect old and new backlink target pages", () => {
   const result = changes(previous, current, { changed: ["source.md"] });
 
   assert.deepEqual(paths(result.affected), [
-    "new/index.html",
-    "old/index.html",
-    "source/index.html",
+    "new.html",
+    "old.html",
+    "source.html",
   ]);
 });
 
@@ -65,10 +65,7 @@ test("embed dependency changes affect embedding page", () => {
     dependent: ["source"],
   });
 
-  assert.deepEqual(paths(result.affected), [
-    "embed/index.html",
-    "source/index.html",
-  ]);
+  assert.deepEqual(paths(result.affected), ["embed.html", "source.html"]);
 });
 
 test("tag changes affect old and new taxonomy plugin pages", () => {
@@ -81,9 +78,9 @@ test("tag changes affect old and new taxonomy plugin pages", () => {
   ]);
 
   assert.deepEqual(paths(result.affected), [
-    "note/index.html",
-    "tags/new/index.html",
-    "tags/old/index.html",
+    "note.html",
+    "tags/new.html",
+    "tags/old.html",
   ]);
 });
 
@@ -96,9 +93,9 @@ test("add affects new page and collection or global outputs", () => {
   ]);
 
   assert.deepEqual(paths(result.affected), [
-    "feed/index.html",
-    "folder/b/index.html",
-    "folder/index.html",
+    "feed.html",
+    "folder.html",
+    "folder/b.html",
   ]);
 });
 
@@ -113,11 +110,8 @@ test("delete reports removed page and affected derived outputs", () => {
     pluginPage("folder", [{ type: "folder", folder: "folder" }]),
   ]);
 
-  assert.deepEqual(paths(result.affected), [
-    "folder/index.html",
-    "tags/gone/index.html",
-  ]);
-  assert.deepEqual(paths(result.removed), ["folder/b/index.html"]);
+  assert.deepEqual(paths(result.affected), ["folder.html", "tags/gone.html"]);
+  assert.deepEqual(paths(result.removed), ["folder/b.html"]);
 });
 
 test("rename and move remove old output and affect new output", () => {
@@ -128,8 +122,8 @@ test("rename and move remove old output and affect new output", () => {
     removed: ["old/path.md"],
   });
 
-  assert.deepEqual(paths(result.affected), ["new/path/index.html"]);
-  assert.deepEqual(paths(result.removed), ["old/path/index.html"]);
+  assert.deepEqual(paths(result.affected), ["new/path.html"]);
+  assert.deepEqual(paths(result.removed), ["old/path.html"]);
 });
 
 test("alias and redirect outputs follow public redirect lifecycle", () => {
@@ -141,11 +135,8 @@ test("alias and redirect outputs follow public redirect lifecycle", () => {
   ]);
   const result = changes(previous, current, { changed: ["note.md"] });
 
-  assert.deepEqual(paths(result.affected), [
-    "note/index.html",
-    "older/index.html",
-  ]);
-  assert.deepEqual(paths(result.removed), ["old/index.html"]);
+  assert.deepEqual(paths(result.affected), ["note.html", "older.html"]);
+  assert.deepEqual(paths(result.removed), ["old.html"]);
 });
 
 test("page type dependencies can narrow affected plugin pages", () => {
@@ -156,14 +147,8 @@ test("page type dependencies can narrow affected plugin pages", () => {
     pluginPage("preview/b", [{ type: "content", slug: "b" }]),
   ]);
 
-  assert.deepEqual(paths(result.affected), [
-    "a/index.html",
-    "preview/a/index.html",
-  ]);
-  assert.deepEqual(paths(result.unchanged), [
-    "b/index.html",
-    "preview/b/index.html",
-  ]);
+  assert.deepEqual(paths(result.affected), ["a.html", "preview/a.html"]);
+  assert.deepEqual(paths(result.unchanged), ["b.html", "preview/b.html"]);
 });
 
 test("plugin-generated outputs use declared dependencies", () => {
@@ -189,8 +174,8 @@ test("plugin-generated outputs use declared dependencies", () => {
   });
   const result = changes(previous, current, { changed: ["a.md"] });
 
-  assert.deepEqual(paths(result.affected), ["a.json", "a/index.html"]);
-  assert.deepEqual(paths(result.unchanged), ["b.json", "b/index.html"]);
+  assert.deepEqual(paths(result.affected), ["a.html", "a.json"]);
+  assert.deepEqual(paths(result.unchanged), ["b.html", "b.json"]);
 });
 
 test("plugin or config change can request full output regeneration", () => {
@@ -207,7 +192,7 @@ test("plugin or config change can request full output regeneration", () => {
     affectedContent: { direct: new Set(["a", "b"]), dependent: new Set() },
   });
 
-  assert.deepEqual(paths(result.affected), ["a/index.html", "b/index.html"]);
+  assert.deepEqual(paths(result.affected), ["a.html", "b.html"]);
   assert.equal(result.candidateOutputCount, 2);
 });
 
@@ -221,8 +206,8 @@ test("unknown dependency fallback marks output affected and requires full regene
   ]);
 
   assert.deepEqual(paths(result.affected), [
-    "a/index.html",
-    "custom/index.html",
+    "a.html",
+    "custom.html",
     "plugin.bin",
   ]);
   assert.equal(result.fullRegenerationRequired, true);

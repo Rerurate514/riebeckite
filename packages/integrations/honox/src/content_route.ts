@@ -41,6 +41,41 @@ export async function pluginPageSsgParams(
     .map((path) => ({ [parameter]: path.replace(/^\/+/, "") }));
 }
 
+export async function riebeckiteSsgParams(
+  content: Pick<
+    ContentManager,
+    "getManifest" | "getOutputChangeSet" | "getPagePaths"
+  >,
+  parameter = "slug",
+): Promise<Record<string, string>[]> {
+  const [manifest, changeSet] = await Promise.all([
+    content.getManifest({ incremental: true }),
+    content.getOutputChangeSet({ incremental: true }),
+  ]);
+  if (changeSet.fullRegenerationRequired) {
+    return [
+      ...manifest.publicEntries
+        .filter((entry) => entry.permalink !== "/")
+        .map((entry) => ({ [parameter]: entry.permalink.replace(/^\/+/, "") })),
+      ...(await pluginPageSsgParams(content, parameter)),
+    ];
+  }
+
+  const affected = new Set(
+    changeSet.affected
+      .filter((output) => output.kind !== "generated")
+      .map((output) => output.path),
+  );
+  const contentParams = manifest.publicEntries
+    .filter((entry) => affected.has(routeOutputPath(entry.permalink)))
+    .map((entry) => ({ [parameter]: entry.permalink.replace(/^\/+/, "") }));
+  const pluginPageParams = (await content.getPagePaths())
+    .filter((path) => affected.has(routeOutputPath(path)))
+    .filter((path) => path !== "/")
+    .map((path) => ({ [parameter]: path.replace(/^\/+/, "") }));
+  return [...contentParams, ...pluginPageParams];
+}
+
 export function resolveContentRoute(
   manifest: ContentManifest,
   pathname: string,
@@ -114,6 +149,14 @@ function normalizeRequestPath(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean).map(decodeSegment);
   const path = `/${segments.join("/")}`;
   return trailingSlash ? `${path}/` : path;
+}
+
+function routeOutputPath(pathname: string): string {
+  const normalized = normalizeRequestPath(pathname);
+  if (normalized === "/") return "index.html";
+  const withoutSlash = normalized.replace(/^\//, "");
+  if (pathname.endsWith("/")) return `${withoutSlash}/index.html`;
+  return `${withoutSlash}.html`;
 }
 
 /**

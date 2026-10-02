@@ -1,5 +1,6 @@
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
+import { performance } from "node:perf_hooks";
 import { defaultExtensionMap, toSSG } from "hono/ssg";
 import {
   type ConfigEnv,
@@ -55,6 +56,13 @@ type SsgModule = {
   };
 };
 
+type SsgOutputChangeSet =
+  NonNullable<SsgModule["content"]> extends {
+    getOutputChangeSet(): Promise<infer T>;
+  }
+    ? T
+    : never;
+
 type SsgOutputMetrics = {
   candidateOutputCount: number;
   affectedOutputCount: number;
@@ -67,6 +75,13 @@ type SsgOutputMetrics = {
   fullRegenerationRequired: boolean;
   htmlOutputCount: number;
   assetOutputCount: number;
+  cacheFileSizeBytes: number | null;
+  cacheEntriesRead: number;
+  cacheEntriesSerialized: number;
+  enumeratedRouteCount: number;
+  renderedRouteCount: number;
+  skippedRouteCount: number;
+  timingsMs: Record<string, number>;
 };
 
 type OutputCacheEntry = {
@@ -125,33 +140,45 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         );
       }
 
+      const timingsMs: Record<string, number> = {};
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
-      const server = await createServer({
-        root: config.root,
-        define: config.define,
-        resolve: {
-          ...config.resolve,
-          builtins: [...config.resolve.builtins, /^node:/],
-        },
-        plugins: [],
-        build: { ssr: true },
-        mode: config.mode,
-      });
+      const server = await measure(timingsMs, "ssgSetup", () =>
+        createServer({
+          root: config.root,
+          define: config.define,
+          resolve: {
+            ...config.resolve,
+            builtins: [...config.resolve.builtins, /^node:/],
+          },
+          plugins: [],
+          build: { ssr: true },
+          mode: config.mode,
+        }),
+      );
 
       try {
-        const module = await server.ssrLoadModule(entry);
+        const module = await measure(timingsMs, "ssrModuleLoad", () =>
+          server.ssrLoadModule(entry),
+        );
         const app = module.default;
         if (!app) {
           throw new Error(`Failed to find a default export from ${entry}.`);
         }
 
-        const outputChangeSet = await module.content?.getOutputChangeSet();
+        const outputChangeSet = await measure<SsgOutputChangeSet | undefined>(
+          timingsMs,
+          "outputDependencyResolution",
+          () => module.content?.getOutputChangeSet(),
+        );
         const outputCachePath = join(
           config.root,
           ".riebeckite",
           "ssg-output-cache.json",
         );
-        const previousOutputCache = await loadOutputCache(outputCachePath);
+        const previousOutputCache = await loadOutputCache(
+          outputCachePath,
+          timingsMs,
+        );
         const canUseIncremental =
           outputChangeSet &&
           !outputChangeSet.fullRegenerationRequired &&
@@ -180,85 +207,113 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           fullRegenerationRequired: !canUseIncremental,
           htmlOutputCount: 0,
           assetOutputCount: 0,
+          cacheFileSizeBytes: previousOutputCache?.fileSizeBytes ?? null,
+          cacheEntriesRead: previousOutputCache
+            ? Object.keys(previousOutputCache.outputs).length
+            : 0,
+          cacheEntriesSerialized: 0,
+          enumeratedRouteCount: 0,
+          renderedRouteCount: 0,
+          skippedRouteCount: 0,
+          timingsMs,
         };
-        const result = await toSSG(
-          app,
-          {
-            writeFile: async (filePath, data) => {
-              const fileName = relative(
-                config.build.outDir,
-                filePath,
-              ).replaceAll("\\", "/");
-              if (canUseIncremental && !affectedPaths.has(fileName)) return;
-              if (fileName.endsWith(".html") && typeof data === "string") {
-                metrics.renderedOutputCount += 1;
-                metrics.htmlOutputCount += 1;
-                generatedHtml.push({ path: fileName, html: data });
-              } else {
-                metrics.assetOutputCount += 1;
-              }
-              this.emitFile({
-                type: "asset",
-                fileName,
-                source: data,
-              });
-              metrics.emittedOutputCount += 1;
-              nextOutputCache.outputs[fileName] = encodeOutput(data);
+        const result = await measure(timingsMs, "toSSG", () =>
+          toSSG(
+            app,
+            {
+              writeFile: async (filePath, data) => {
+                const fileName = relative(
+                  config.build.outDir,
+                  filePath,
+                ).replaceAll("\\", "/");
+                if (canUseIncremental && !affectedPaths.has(fileName)) {
+                  metrics.skippedRouteCount += 1;
+                  return;
+                }
+                if (fileName.endsWith(".html") && typeof data === "string") {
+                  metrics.renderedOutputCount += 1;
+                  metrics.htmlOutputCount += 1;
+                  generatedHtml.push({ path: fileName, html: data });
+                } else {
+                  metrics.assetOutputCount += 1;
+                }
+                this.emitFile({
+                  type: "asset",
+                  fileName,
+                  source: data,
+                });
+                metrics.emittedOutputCount += 1;
+                nextOutputCache.outputs[fileName] = encodeOutput(data);
+              },
+              async mkdir() {},
             },
-            async mkdir() {},
-          },
-          {
-            dir: config.build.outDir,
-            plugins: [
-              ...(options.plugins ?? []),
-              ...(canUseIncremental
-                ? [createIncrementalSsgPlugin(affectedPaths)]
-                : []),
-            ],
-            extensionMap: options.extensionMap ?? defaultExtensionMap,
-          },
+            {
+              dir: config.build.outDir,
+              plugins: [
+                ...(options.plugins ?? []),
+                ...(canUseIncremental
+                  ? [createIncrementalSsgPlugin(affectedPaths, metrics)]
+                  : []),
+              ],
+              extensionMap: options.extensionMap ?? defaultExtensionMap,
+            },
+          ),
         );
+        metrics.renderedRouteCount = result.files.length;
         if (!result.success) throw result.error;
 
-        const emittedGeneratedOutputCount = await emitGeneratedOutputs(
-          module,
-          (asset) => {
-            this.emitFile(asset);
-            metrics.emittedOutputCount += 1;
-            nextOutputCache.outputs[asset.fileName] = encodeOutput(
-              asset.source,
-            );
-          },
-          canUseIncremental
-            ? new Set(
-                outputChangeSet.affected
-                  .filter((output) => output.kind === "generated")
-                  .map((output) => output.path),
-              )
-            : undefined,
+        const emittedGeneratedOutputCount = await measure(
+          timingsMs,
+          "generatedOutputs",
+          () =>
+            emitGeneratedOutputs(
+              module,
+              (asset) => {
+                this.emitFile(asset);
+                metrics.emittedOutputCount += 1;
+                nextOutputCache.outputs[asset.fileName] = encodeOutput(
+                  asset.source,
+                );
+              },
+              canUseIncremental
+                ? new Set(
+                    outputChangeSet.affected
+                      .filter((output) => output.kind === "generated")
+                      .map((output) => output.path),
+                  )
+                : undefined,
+            ),
         );
         if (!outputChangeSet)
           metrics.candidateOutputCount =
             result.files.length + emittedGeneratedOutputCount;
         if (canUseIncremental) {
-          for (const output of outputChangeSet.unchanged) {
-            const cached = previousOutputCache.outputs[output.path];
-            if (!cached) continue;
-            this.emitFile({
-              type: "asset",
-              fileName: output.path,
-              source: decodeOutput(cached),
-            });
-            metrics.emittedOutputCount += 1;
-            metrics.reusedOutputCount += 1;
-            nextOutputCache.outputs[output.path] = cached;
-          }
+          await measure(timingsMs, "unchangedOutputReuse", async () => {
+            for (const output of outputChangeSet.unchanged) {
+              const path = output.path;
+              const cached = previousOutputCache.outputs[path];
+              if (!cached) continue;
+              this.emitFile({
+                type: "asset",
+                fileName: path,
+                source: decodeOutput(cached),
+              });
+              metrics.emittedOutputCount += 1;
+              metrics.reusedOutputCount += 1;
+              nextOutputCache.outputs[path] = cached;
+            }
+          });
           for (const output of outputChangeSet.removed) {
-            await rm(join(config.build.outDir, output.path), { force: true });
+            await rm(join(config.build.outDir, output.path), {
+              force: true,
+            });
             metrics.deletedOutputCount += 1;
           }
         }
-        await saveOutputCache(outputCachePath, nextOutputCache);
+        metrics.cacheEntriesSerialized = Object.keys(
+          nextOutputCache.outputs,
+        ).length;
+        await saveOutputCache(outputCachePath, nextOutputCache, timingsMs);
         await writeSsgOutputMetrics(metrics);
         inspectGeneratedHtmlPages(module, generatedHtml, {
           warn: (message) => this.warn(message),
@@ -306,15 +361,21 @@ async function emitGeneratedOutputs(
 
 function createIncrementalSsgPlugin(
   affectedPaths: ReadonlySet<string>,
+  metrics: SsgOutputMetrics,
 ): NonNullable<ToSsgOptions["plugins"]>[number] {
   return {
     afterResponseHook: async (response) => {
+      metrics.enumeratedRouteCount += 1;
       const contentType =
         response.headers.get("Content-Type")?.split(";")[0] ?? "text/plain";
-      if (!response.url) return response;
+      if (!response.url) {
+        return response;
+      }
       const routePath = new URL(response.url).pathname;
       const outputPath = routeOutputPath(routePath, contentType);
-      return affectedPaths.has(outputPath) ? response : false;
+      if (affectedPaths.has(outputPath)) return response;
+      metrics.skippedRouteCount += 1;
+      return false;
     },
   };
 }
@@ -333,10 +394,19 @@ function routeOutputPath(routePath: string, contentType: string): string {
 
 export async function loadOutputCache(
   path: string,
-): Promise<OutputCacheState | undefined> {
+  timingsMs?: Record<string, number>,
+): Promise<(OutputCacheState & { fileSizeBytes?: number }) | undefined> {
   try {
-    const parsed = JSON.parse(await readFile(path, "utf8")) as unknown;
-    return isOutputCacheState(parsed) ? parsed : undefined;
+    const content = await measure(timingsMs, "outputCacheRead", () =>
+      readFile(path, "utf8"),
+    );
+    const parsed = measureSync(timingsMs, "outputCacheParse", () =>
+      JSON.parse(content),
+    ) as unknown;
+    if (!isOutputCacheState(parsed)) return undefined;
+    return timingsMs
+      ? { ...parsed, fileSizeBytes: Buffer.byteLength(content) }
+      : parsed;
   } catch {
     return undefined;
   }
@@ -345,11 +415,21 @@ export async function loadOutputCache(
 export async function saveOutputCache(
   path: string,
   state: OutputCacheState,
+  timingsMs?: Record<string, number>,
 ): Promise<void> {
   await mkdir(dirname(path), { recursive: true });
   const temporaryPath = `${path}.${process.pid}.${Date.now()}.tmp`;
-  await writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8");
-  await rename(temporaryPath, path);
+  const serialized = measureSync(
+    timingsMs,
+    "outputCacheSerialize",
+    () => `${JSON.stringify(state)}\n`,
+  );
+  await measure(timingsMs, "outputCacheWrite", () =>
+    writeFile(temporaryPath, serialized, "utf8"),
+  );
+  await measure(timingsMs, "outputCacheRename", () =>
+    rename(temporaryPath, path),
+  );
 }
 
 function isOutputCacheState(value: unknown): value is OutputCacheState {
@@ -384,6 +464,34 @@ async function writeSsgOutputMetrics(metrics: SsgOutputMetrics): Promise<void> {
   const file = process.env.RIEBECKITE_SSG_METRICS_FILE;
   if (!file) return;
   await writeFile(file, `${JSON.stringify(metrics)}\n`, "utf8");
+}
+
+async function measure<T>(
+  timingsMs: Record<string, number> | undefined,
+  name: string,
+  fn: () => Promise<T>,
+): Promise<T> {
+  const start = performance.now();
+  try {
+    return await fn();
+  } finally {
+    if (timingsMs)
+      timingsMs[name] = (timingsMs[name] ?? 0) + performance.now() - start;
+  }
+}
+
+function measureSync<T>(
+  timingsMs: Record<string, number> | undefined,
+  name: string,
+  fn: () => T,
+): T {
+  const start = performance.now();
+  try {
+    return fn();
+  } finally {
+    if (timingsMs)
+      timingsMs[name] = (timingsMs[name] ?? 0) + performance.now() - start;
+  }
 }
 
 /**

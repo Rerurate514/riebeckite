@@ -127,7 +127,8 @@ export function htmlOutputPath(pathname: string): string {
   const normalized = normalizePublicPath(pathname);
   if (normalized === "/") return "index.html";
   const withoutSlash = normalized.replace(/^\//, "");
-  return `${withoutSlash}/index.html`;
+  if (pathname.endsWith("/")) return `${withoutSlash}/index.html`;
+  return `${withoutSlash}.html`;
 }
 
 function contentOutput(entry: ContentManifestEntry): OutputDescriptor {

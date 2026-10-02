@@ -285,4 +285,59 @@ describe("riebeckiteContentWatch", () => {
     ]);
     assert.deepEqual(fake.sends, [{ type: "full-reload" }]);
   });
+
+  it("keeps once listeners as once listeners", () => {
+    const contentRoot = path.resolve("/site/vault");
+    const appRoot = path.resolve("/site");
+    const fake = createServer([]);
+    const onceCalls: string[] = [];
+    fake.watcher.once("add", () => onceCalls.push("once:add"));
+    configure(contentRoot, appRoot, fake);
+
+    fake.watcher.emit("add", path.join(appRoot, "app", "routes/new.tsx"));
+    fake.watcher.emit("add", path.join(appRoot, "app", "routes/other.tsx"));
+    fake.watcher.emit("add", path.join(contentRoot, "notes/new.md"));
+    fake.watcher.emit("add", path.join(appRoot, "app", "routes/third.tsx"));
+
+    assert.deepEqual(onceCalls, ["once:add"]);
+  });
+
+  it("does not duplicate listeners when configured twice", async () => {
+    const contentRoot = path.resolve("/site/vault");
+    const appRoot = path.resolve("/site");
+    const fake = createServer([
+      { file: path.join(appRoot, "app", "content.ts") },
+    ]);
+    configure(contentRoot, appRoot, fake);
+    configure(contentRoot, appRoot, fake);
+
+    fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
+    await delay(150);
+
+    assert.equal(fake.sends.length, 1);
+    assert.equal(fake.invalidated.length, 1);
+  });
+
+  it("drops the pending reload when the dev server closes", async () => {
+    const contentRoot = path.resolve("/site/vault");
+    const appRoot = path.resolve("/site");
+    const fake = createServer([
+      { file: path.join(appRoot, "app", "content.ts") },
+    ]);
+    const closed: Array<() => void> = [];
+    (fake.server as unknown as { httpServer: unknown }).httpServer = {
+      once(event: string, handler: () => void) {
+        closed.push(handler);
+        assert.equal(event, "close");
+      },
+    };
+    configure(contentRoot, appRoot, fake);
+
+    fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
+    for (const handler of closed) handler();
+    await delay(150);
+
+    assert.deepEqual(fake.sends, []);
+    assert.deepEqual(fake.invalidated, []);
+  });
 });

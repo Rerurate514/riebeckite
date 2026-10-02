@@ -17,6 +17,8 @@ type ContentEvent = "add" | "change" | "unlink";
 
 const CONTENT_RELOAD_DEBOUNCE_MS = 60;
 
+const configuredWatchers = new WeakSet<object>();
+
 export function riebeckiteContentWatch(
   options: RiebeckiteContentWatchOptions,
 ): Plugin {
@@ -25,6 +27,8 @@ export function riebeckiteContentWatch(
     apply: "serve",
     enforce: "post",
     configureServer(server) {
+      if (configuredWatchers.has(server.watcher)) return;
+      configuredWatchers.add(server.watcher);
       const appRoot = options.appRoot();
       const contentRoot = options.contentRoot();
       const exclude = options.exclude();
@@ -113,9 +117,9 @@ function suppressRestartOnContentEvents(
   isContentFile: (file: string) => boolean,
 ): void {
   for (const event of ["add", "unlink"] as const) {
-    const listeners = server.watcher.listeners(event) as Array<
-      (file: string) => unknown
-    >;
+    const listeners = (
+      server.watcher.rawListeners(event) as Array<(file: string) => unknown>
+    ).slice();
     server.watcher.removeAllListeners(event);
     for (const listener of listeners) {
       server.watcher.on(event, (file: string) => {

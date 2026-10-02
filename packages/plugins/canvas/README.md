@@ -44,9 +44,9 @@ The plugin emits `div.rb-canvas` with `data-canvas` (the input), `data-canvas-no
 
 `file` nodes resolve through `contentIndex`: notes link to their permalink and
 other files link to their attachment URL. Note links are finalised in
-`onManifestCreated` from the manifest, rewriting both `entry.html` and the cached
-`PostContent.html`. `text` nodes get minimal Markdown handling (wikilinks and
-escaping).
+`onManifestCreated` from the manifest, rewriting the manifest entry's HTML. Core
+synchronizes that HTML with the content the route renders. `text` nodes get
+minimal Markdown handling (wikilinks and escaping).
 
 ## Client
 

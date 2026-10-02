@@ -2,7 +2,6 @@ import {
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
-  type PostContent,
 } from "@riebeckite/core";
 import {
   collectSeriesDiagnostics,
@@ -35,8 +34,6 @@ export type {
  * fall back to `date`, then `title`, then `slug` for deterministic results.
  */
 export function series(options: SeriesOptions = {}) {
-  const tracked = new Map<string, PostContent>();
-
   return definePlugin({
     name: "series",
     processedContentCache: {
@@ -45,9 +42,6 @@ export function series(options: SeriesOptions = {}) {
     },
     options,
     validateOptions: validateSeriesOptions,
-    onPostProcessed: ({ slug, content }) => {
-      tracked.set(slug, content);
-    },
     onManifestCreated: ({ manifest, diagnostics }) => {
       diagnostics.push(...collectSeriesDiagnostics(manifest, options));
 
@@ -67,8 +61,6 @@ export function series(options: SeriesOptions = {}) {
           if (!entry.html.includes(navigation)) {
             entry.html = `${entry.html}\n${navigation}`;
           }
-          const content = tracked.get(member.slug);
-          if (content) content.html = entry.html;
         }
       }
     },

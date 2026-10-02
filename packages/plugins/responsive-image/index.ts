@@ -2,8 +2,6 @@ import {
   createStyleAsset,
   definePlugin,
   type PluginManifestContext,
-  type PluginPostContext,
-  type PostContent,
 } from "@riebeckite/core";
 import { applyResponsiveImages } from "./src/html.js";
 import {
@@ -49,7 +47,6 @@ export type {
  */
 export function responsiveImage(options: ResponsiveImageOptions = {}) {
   const resolved = resolveResponsiveImageOptions(options);
-  const tracked = new Map<string, PostContent>();
 
   return definePlugin({
     name: PLUGIN_NAME,
@@ -63,9 +60,6 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeResponsiveImage, options);
     },
-    onPostProcessed: (context: PluginPostContext) => {
-      tracked.set(context.slug, context.content);
-    },
     onManifestCreated: (context: PluginManifestContext) => {
       const knownPaths = collectKnownAssetPaths(context.manifest);
 
@@ -76,8 +70,6 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
         if (html === entry.html) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
 
       if (resolved.generate) {

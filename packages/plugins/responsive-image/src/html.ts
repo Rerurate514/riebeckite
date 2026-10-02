@@ -21,8 +21,8 @@ type OutputAttribute = {
  * Manifest pass: replace marked `<img>` elements with a `<picture>` element
  * built from sibling variants that already exist in the content manifest.
  *
- * This is the "dual mutation" step used by the query plugin: the manifest
- * entry HTML and the cached `PostContent.html` must stay in sync.
+ * The mutated entry HTML becomes the final rendering source; the Core
+ * synchronization step makes it visible to `getProcessedContent`.
  */
 export function applyResponsiveImages(
   html: string,

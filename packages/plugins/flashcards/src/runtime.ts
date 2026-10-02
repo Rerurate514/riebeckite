@@ -3,7 +3,6 @@ import {
   type ContentManifestEntry,
   type Diagnostic,
   escapeHtml,
-  type PostContent,
 } from "@riebeckite/core";
 import { resolveFlashcardsOptions } from "./options.js";
 import { parseFlashcards } from "./parse.js";
@@ -16,7 +15,6 @@ import { renderFlashcards } from "./render.js";
 import type { FlashcardsOptions, ResolvedFlashcardsOptions } from "./types.js";
 
 export type FlashcardsRuntime = {
-  track(slug: string, content: PostContent): void;
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };
 
@@ -24,12 +22,8 @@ export function createFlashcardsRuntime(
   options: FlashcardsOptions,
 ): FlashcardsRuntime {
   const resolved = resolveFlashcardsOptions(options);
-  const tracked = new Map<string, PostContent>();
 
   return {
-    track(slug, content) {
-      tracked.set(slug, content);
-    },
     resolve(manifest, diagnostics) {
       for (const entry of manifest.entries) {
         if (!entry.html.includes(FLASHCARDS_ATTRIBUTE)) continue;
@@ -38,8 +32,6 @@ export function createFlashcardsRuntime(
         if (html === entry.html) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
     },
   };

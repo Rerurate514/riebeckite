@@ -1,8 +1,4 @@
-import {
-  createStyleAsset,
-  definePlugin,
-  type PostContent,
-} from "@riebeckite/core";
+import { createStyleAsset, definePlugin } from "@riebeckite/core";
 import {
   buildWebmentionDiagnostics,
   WEBMENTION_PLUGIN_NAME,
@@ -136,7 +132,6 @@ export const webmentionPlugin = webmention;
 export function webmention(options: WebmentionOptions = {}) {
   const resolved = resolveWebmentionOptions(options);
   const provider = resolved.provider;
-  const processed = new Map<string, PostContent>();
 
   return definePlugin({
     name: WEBMENTION_PLUGIN_NAME,
@@ -146,15 +141,11 @@ export function webmention(options: WebmentionOptions = {}) {
     },
     options,
     validateOptions: validateWebmentionOptions,
-    onPostProcessed: ({ slug, content }) => {
-      processed.set(slug, content);
-    },
     onManifestCreated: async (context) => {
       if (
         !resolved.render ||
         !supportsWebmentionCapability(provider, "query")
       ) {
-        processed.clear();
         return;
       }
 
@@ -173,7 +164,6 @@ export function webmention(options: WebmentionOptions = {}) {
             cause: error instanceof Error ? error.message : String(error),
           },
         });
-        processed.clear();
         return;
       }
 
@@ -191,8 +181,6 @@ export function webmention(options: WebmentionOptions = {}) {
         );
         if (section === "") continue;
         entry.html = `${entry.html}${section}`;
-        const content = processed.get(slug);
-        if (content) content.html = entry.html;
       }
 
       const unmatched = countUnmatchedMentions(
@@ -208,7 +196,6 @@ export function webmention(options: WebmentionOptions = {}) {
           message: `${unmatched} verified webmention(s) target a URL that is not a published entry and were not rendered.`,
         });
       }
-      processed.clear();
     },
     endpoints: createWebmentionEndpoints(resolved),
     assets: [createStyleAsset(WEBMENTION_PLUGIN_NAME)],

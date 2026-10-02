@@ -1,8 +1,4 @@
-import type {
-  ContentManifest,
-  ContentManifestEntry,
-  PostContent,
-} from "@riebeckite/core";
+import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
 import { isKanbanNote, parseKanban, stripFrontmatter } from "./parse.js";
 import {
   createKanbanPlaceholderPattern,
@@ -17,7 +13,7 @@ import {
 import type { ResolvedKanbanOptions } from "./types.js";
 
 export type KanbanRuntime = {
-  track(slug: string, markdown: string, content: PostContent): void;
+  track(slug: string, markdown: string): void;
   resolve(manifest: ContentManifest): void;
 };
 
@@ -25,12 +21,10 @@ export function createKanbanRuntime(
   options: ResolvedKanbanOptions,
 ): KanbanRuntime {
   const markdownBySlug = new Map<string, string>();
-  const contentBySlug = new Map<string, PostContent>();
 
   return {
-    track(slug, markdown, content) {
+    track(slug, markdown) {
       markdownBySlug.set(slug, markdown);
-      contentBySlug.set(slug, content);
     },
     resolve(manifest) {
       const resolveLink = createKanbanLinkResolver(manifest);
@@ -43,7 +37,7 @@ export function createKanbanRuntime(
           isKanbanNote(entry.frontmatter)
         ) {
           const parsed = parseKanban(stripFrontmatter(markdown), options);
-          applyHtml(entry, contentBySlug, resolveLink, options, "note", parsed);
+          applyHtml(entry, resolveLink, options, "note", parsed);
           continue;
         }
 
@@ -51,8 +45,6 @@ export function createKanbanRuntime(
         const html = replacePlaceholders(entry, options, resolveLink);
         if (html !== entry.html) {
           entry.html = html;
-          const content = contentBySlug.get(entry.slug);
-          if (content) content.html = html;
         }
       }
     },
@@ -61,7 +53,6 @@ export function createKanbanRuntime(
 
 function applyHtml(
   entry: ContentManifestEntry,
-  contentBySlug: Map<string, PostContent>,
   resolveLink: KanbanLinkResolver,
   options: ResolvedKanbanOptions,
   source: "block" | "note",
@@ -70,8 +61,6 @@ function applyHtml(
   const html = renderKanban(parsed, options, resolveLink, source);
   if (html === entry.html) return;
   entry.html = html;
-  const content = contentBySlug.get(entry.slug);
-  if (content) content.html = html;
 }
 
 function replacePlaceholders(

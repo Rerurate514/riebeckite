@@ -4,7 +4,6 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   Diagnostic,
-  PostContent,
 } from "@riebeckite/core";
 import { createQueryPlaceholder } from "../src/placeholder.ts";
 import { createQueryRuntime } from "../src/runtime.ts";
@@ -41,16 +40,7 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   } as unknown as ContentManifest;
 }
 
-function track(entries: ContentManifestEntry[]): Map<string, PostContent> {
-  return new Map(
-    entries.map((item) => [
-      item.slug,
-      { frontmatter: item.frontmatter, html: item.html },
-    ]),
-  );
-}
-
-test("resolve replaces placeholders, selects entries, and syncs tracked content", () => {
+test("resolve replaces placeholders and selects entries", () => {
   const source = "format: list\nlimit: 1";
   const one = entry("one", {}, `<p>one</p>${createQueryPlaceholder(source)}`, [
     "a",
@@ -59,10 +49,8 @@ test("resolve replaces placeholders, selects entries, and syncs tracked content"
     "b",
   ]);
   const manifest = manifestOf([one, two]);
-  const tracked = track([one, two]);
 
   const runtime = createQueryRuntime({});
-  for (const [slug, content] of tracked) runtime.track(slug, content);
   const diagnostics: Diagnostic[] = [];
   runtime.resolve(manifest, diagnostics);
 
@@ -71,8 +59,7 @@ test("resolve replaces placeholders, selects entries, and syncs tracked content"
   assert.match(one.html, /data-rr-query-result/);
   assert.match(one.html, /<li class="rr-query__item">/);
   assert.match(one.html, /href="\/one"/);
-  assert.equal(tracked.get("one")?.html, one.html);
-  assert.equal(tracked.get("two")?.html, two.html);
+  assert.match(two.html, /data-rr-query-result/);
 });
 
 test("excludeSelf removes the owning entry from the pool", () => {

@@ -4,7 +4,6 @@ import {
   type ContentManifest,
   type ContentManifestEntry,
   type PluginManifestContext,
-  type PluginPostContext,
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
@@ -283,34 +282,6 @@ test("onManifestCreated leaves an entry with no trail untouched", async () => {
 
   assert.equal(entry.html, "<p>Body</p>");
   assert.equal(entry.headTags, undefined);
-});
-
-test("onPostProcessed content receives the injected HTML", async () => {
-  const plugin = breadcrumbs();
-  const content = { frontmatter: {}, html: "<p>Body</p>" };
-  await plugin.onPostProcessed?.({
-    slug: "docs/intro",
-    content,
-  } as unknown as PluginPostContext);
-
-  const entry = makeEntry({
-    slug: "docs/intro",
-    title: "Intro",
-    html: "<p>Body</p>",
-    permalink: "/n/docs/intro",
-  });
-  const manifest = makeManifest([
-    makeEntry({ slug: "docs", title: "Docs" }),
-    entry,
-  ]);
-
-  await plugin.onManifestCreated?.({
-    manifest,
-    config,
-    diagnostics: [],
-  } as unknown as PluginManifestContext);
-
-  assert.ok(content.html.includes(BREADCRUMBS_ATTRIBUTE));
 });
 
 test("breadcrumbsPlugin is the same factory", () => {

@@ -2,7 +2,6 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   Diagnostic,
-  PostContent,
 } from "@riebeckite/core";
 import { selectDataviewEntries } from "./evaluate.js";
 import { parseDataview } from "./parse.js";
@@ -19,7 +18,6 @@ import {
 } from "./types.js";
 
 export type DataviewRuntime = {
-  track(slug: string, content: PostContent): void;
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };
 
@@ -30,12 +28,8 @@ export function createDataviewRuntime(
   options: DataviewOptions = {},
 ): DataviewRuntime {
   const resolved = resolveDataviewOptions(options);
-  const tracked = new Map<string, PostContent>();
 
   return {
-    track(slug, content) {
-      tracked.set(slug, content);
-    },
     resolve(manifest, diagnostics) {
       for (const entry of manifest.entries) {
         if (
@@ -54,8 +48,6 @@ export function createDataviewRuntime(
         if (html === entry.html) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
     },
   };

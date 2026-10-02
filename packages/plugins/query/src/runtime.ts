@@ -3,7 +3,6 @@ import type {
   ContentManifestEntry,
   ContentQuerySpec,
   Diagnostic,
-  PostContent,
 } from "@riebeckite/core";
 import { queryContentEntries } from "@riebeckite/core";
 import { matter } from "vfile-matter";
@@ -16,7 +15,6 @@ import { renderQueryError, renderQueryResult, resolveQuery } from "./render.js";
 import type { QueryOptions, QuerySpec } from "./types.js";
 
 export type QueryRuntime = {
-  track(slug: string, content: PostContent): void;
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };
 
@@ -32,12 +30,7 @@ const KNOWN_KEYS = new Set([
 ]);
 
 export function createQueryRuntime(options: QueryOptions): QueryRuntime {
-  const tracked = new Map<string, PostContent>();
-
   return {
-    track(slug, content) {
-      tracked.set(slug, content);
-    },
     resolve(manifest, diagnostics) {
       const entries = manifest.discoverableEntries;
       for (const entry of manifest.publicEntries) {
@@ -47,8 +40,6 @@ export function createQueryRuntime(options: QueryOptions): QueryRuntime {
         if (html === entry.html) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
     },
   };

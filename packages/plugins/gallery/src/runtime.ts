@@ -1,8 +1,4 @@
-import type {
-  ContentManifest,
-  Diagnostic,
-  PostContent,
-} from "@riebeckite/core";
+import type { ContentManifest, Diagnostic } from "@riebeckite/core";
 import type { ResolvedGalleryOptions } from "./options.js";
 import { parseGallery } from "./parse.js";
 import {
@@ -13,12 +9,6 @@ import {
 import { renderGallery, renderGalleryError } from "./render.js";
 
 export type GalleryRuntime = {
-  /**
-   * Remembers the processed content object for a slug. `ContentManager` caches
-   * and reuses this exact object, so replacing its `html` here is what makes the
-   * rewrite visible to consumers that render `getProcessedContent()`.
-   */
-  track(slug: string, content: PostContent): void;
   /** Replaces every gallery placeholder in the manifest with rendered output. */
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };
@@ -26,12 +16,7 @@ export type GalleryRuntime = {
 export function createGalleryRuntime(
   options: ResolvedGalleryOptions,
 ): GalleryRuntime {
-  const tracked = new Map<string, PostContent>();
-
   return {
-    track(slug, content) {
-      tracked.set(slug, content);
-    },
     resolve(manifest, diagnostics) {
       for (const entry of manifest.entries) {
         if (!entry.html.includes(GALLERY_ATTRIBUTE)) continue;
@@ -45,10 +30,7 @@ export function createGalleryRuntime(
         if (!replaced) continue;
 
         entry.html = html;
-        const content = tracked.get(entry.slug);
-        if (content) content.html = html;
       }
-      tracked.clear();
     },
   };
 }

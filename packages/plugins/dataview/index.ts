@@ -61,9 +61,6 @@ export function dataviewPlugin(options: DataviewOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkDataview, { language });
     },
-    onPostProcessed: (context) => {
-      runtime.track(context.slug, context.content);
-    },
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics);
     },

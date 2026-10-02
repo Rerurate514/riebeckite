@@ -4,7 +4,6 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   Diagnostic,
-  PostContent,
   PostFrontmatter,
 } from "@riebeckite/core";
 import { properties, propertiesPlugin } from "../index.ts";
@@ -42,12 +41,8 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
 async function runHook(
   plugin: ReturnType<typeof properties>,
   entries: ContentManifestEntry[],
-  contents: Array<[string, PostContent]> = [],
 ): Promise<Diagnostic[]> {
   const manifest = manifestOf(entries);
-  for (const [slug, content] of contents) {
-    await plugin.onPostProcessed?.({ slug, content } as never);
-  }
   const diagnostics: Diagnostic[] = [];
   await plugin.onManifestCreated?.({ manifest, diagnostics } as never);
   return diagnostics;
@@ -64,20 +59,15 @@ test("properties() is re-exported as propertiesPlugin and registers its styleshe
   ]);
 });
 
-test("the manifest hook prepends the panel and updates the tracked content", async () => {
+test("the manifest hook prepends the panel", async () => {
   const entries = [entry("a", { title: "A" }, "<p>A</p>")];
-  const content: PostContent = {
-    frontmatter: { title: "A" },
-    html: "<p>A</p>",
-  };
 
-  const diagnostics = await runHook(properties(), entries, [["a", content]]);
+  const diagnostics = await runHook(properties(), entries);
 
   assert.equal(diagnostics.length, 0);
   assert.ok(entries[0]?.html.startsWith('<section class="rb-properties"'));
   assert.ok(entries[0]?.html.endsWith("<p>A</p>"));
   assert.match(entries[0]?.html ?? "", /data-properties/);
-  assert.equal(content.html, entries[0]?.html);
 });
 
 test("position end appends the panel", async () => {

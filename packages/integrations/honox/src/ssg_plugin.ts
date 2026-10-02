@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import { relative } from "node:path";
 import { defaultExtensionMap, toSSG } from "hono/ssg";
 import {
@@ -42,6 +43,14 @@ type SsgModule = {
   config?: {
     plugins?: readonly SsgHtmlInspectorPlugin[];
   };
+};
+
+type SsgOutputMetrics = {
+  candidateOutputCount: number;
+  renderedOutputCount: number;
+  emittedGeneratedOutputCount: number;
+  htmlOutputCount: number;
+  assetOutputCount: number;
 };
 
 export type RiebeckiteSsgOptions = {
@@ -111,16 +120,28 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         }
 
         const generatedHtml: { path: string; html: string }[] = [];
+        const metrics: SsgOutputMetrics = {
+          candidateOutputCount: 0,
+          renderedOutputCount: 0,
+          emittedGeneratedOutputCount: 0,
+          htmlOutputCount: 0,
+          assetOutputCount: 0,
+        };
         const result = await toSSG(
           app,
           {
             writeFile: async (filePath, data) => {
+              metrics.candidateOutputCount += 1;
               const fileName = relative(
                 config.build.outDir,
                 filePath,
               ).replaceAll("\\", "/");
               if (fileName.endsWith(".html") && typeof data === "string") {
+                metrics.renderedOutputCount += 1;
+                metrics.htmlOutputCount += 1;
                 generatedHtml.push({ path: fileName, html: data });
+              } else {
+                metrics.assetOutputCount += 1;
               }
               this.emitFile({
                 type: "asset",
@@ -138,7 +159,12 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         );
         if (!result.success) throw result.error;
 
-        await emitGeneratedOutputs(module, (asset) => this.emitFile(asset));
+        metrics.emittedGeneratedOutputCount = await emitGeneratedOutputs(
+          module,
+          (asset) => this.emitFile(asset),
+        );
+        metrics.candidateOutputCount += metrics.emittedGeneratedOutputCount;
+        await writeSsgOutputMetrics(metrics);
         inspectGeneratedHtmlPages(module, generatedHtml, {
           warn: (message) => this.warn(message),
           info: (message) => this.info(message),
@@ -164,18 +190,27 @@ export function shouldApplyRiebeckiteSsg(
 async function emitGeneratedOutputs(
   module: SsgModule,
   emit: (asset: GeneratedOutputAsset) => void,
-): Promise<void> {
+): Promise<number> {
   const content = module.content;
-  if (!content) return;
+  if (!content) return 0;
 
   const manifest = await content.getManifest();
+  let count = 0;
   for (const output of manifest.generatedOutputs ?? []) {
     emit({
       type: "asset",
       fileName: output.path,
       source: output.content,
     });
+    count += 1;
   }
+  return count;
+}
+
+async function writeSsgOutputMetrics(metrics: SsgOutputMetrics): Promise<void> {
+  const file = process.env.RIEBECKITE_SSG_METRICS_FILE;
+  if (!file) return;
+  await writeFile(file, `${JSON.stringify(metrics)}\n`, "utf8");
 }
 
 /**

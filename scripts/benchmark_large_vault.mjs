@@ -14,18 +14,58 @@ const sizes = parseList(
 const scenarioFilter = new Set(
   parseList(process.env.RIEBECKITE_BENCH_SCENARIOS ?? ""),
 );
+const repeatCount = Number(process.env.RIEBECKITE_BENCH_REPEATS ?? "3");
 const baseDir = path.join(os.tmpdir(), "riebeckite-large-vault-benchmark");
 
 for (const size of sizes) {
-  const directory = path.join(baseDir, String(size), "vault");
-  const cacheDirectory = path.join(baseDir, String(size), "cache");
-  await fs.rm(path.join(baseDir, String(size)), {
-    recursive: true,
-    force: true,
-  });
-  await generateVault(directory, size);
+  const samplesByScenario = new Map();
+  for (let runIndex = 0; runIndex < repeatCount; runIndex++) {
+    const directory = path.join(
+      baseDir,
+      String(size),
+      String(runIndex),
+      "vault",
+    );
+    const cacheDirectory = path.join(
+      baseDir,
+      String(size),
+      String(runIndex),
+      "cache",
+    );
+    await fs.rm(path.join(baseDir, String(size), String(runIndex)), {
+      recursive: true,
+      force: true,
+    });
+    await generateVault(directory, size);
 
-  const scenarios = [
+    for (const scenario of createScenarios(directory, size)) {
+      if (scenarioFilter.size > 0 && !scenarioFilter.has(scenario.name))
+        continue;
+      await scenario.prepare();
+      const sample = await measure(
+        directory,
+        cacheDirectory,
+        scenario.name,
+        scenario.pluginVersion ?? "v1",
+      );
+      const samples = samplesByScenario.get(scenario.name) ?? [];
+      samples.push(sample);
+      samplesByScenario.set(scenario.name, samples);
+    }
+  }
+
+  const rows = [];
+  for (const [scenario, samples] of samplesByScenario) {
+    const row = summarizeSamples(scenario, samples);
+    rows.push({ size, ...row });
+    console.log(JSON.stringify({ size, ...row }));
+  }
+
+  console.log(JSON.stringify(rows, null, 2));
+}
+
+function createScenarios(directory, size) {
+  return [
     { name: "cold build", prepare: async () => undefined },
     { name: "no-change warm build", prepare: async () => undefined },
     {
@@ -68,22 +108,6 @@ for (const size of sizes) {
       pluginVersion: "v2",
     },
   ];
-
-  const rows = [];
-  for (const scenario of scenarios) {
-    if (scenarioFilter.size > 0 && !scenarioFilter.has(scenario.name)) continue;
-    await scenario.prepare();
-    const row = await measure(
-      directory,
-      cacheDirectory,
-      scenario.name,
-      scenario.pluginVersion ?? "v1",
-    );
-    rows.push({ size, ...row });
-    console.log(JSON.stringify({ size, ...row }));
-  }
-
-  console.log(JSON.stringify(rows, null, 2));
 }
 
 function parseList(value) {
@@ -136,13 +160,43 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
       events.find((event) => event.name === "build.incremental")?.attributes
         ?.affected ?? manifest.entries.length,
     ),
-    regeneratedOutputCount:
+    candidateOutputCount:
       manifest.publicEntries.length +
       manifest.pagePaths.length +
       manifest.generatedOutputs.length,
+    renderedOutputCount: null,
+    writtenOutputCount: null,
+    skippedOutputCount: null,
+    deletedOutputCount: null,
     peakRssMb: Math.round(Math.max(startMemory, endMemory) / 1024 / 1024),
     entries: manifest.entries.length,
   };
+}
+
+function summarizeSamples(scenario, samples) {
+  const keys = Object.keys(samples[0]).filter((key) => key !== "scenario");
+  const summary = { scenario, runs: samples.length };
+  for (const key of keys) {
+    const values = samples.map((sample) => sample[key]);
+    if (values.some((value) => value === null)) {
+      summary[key] = null;
+      continue;
+    }
+    if (values.every((value) => typeof value === "number")) {
+      summary[key] = median(values);
+      summary[`${key}Min`] = Math.min(...values);
+      summary[`${key}Max`] = Math.max(...values);
+      continue;
+    }
+    summary[key] = values.at(-1);
+  }
+  summary.samples = samples;
+  return summary;
+}
+
+function median(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.floor(sorted.length / 2)];
 }
 
 function benchmarkPlugin(version) {

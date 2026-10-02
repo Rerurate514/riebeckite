@@ -25,6 +25,7 @@ export type ContentBuildPreparation = {
   readonly previousState: ContentBuildState | undefined;
   readonly currentEntries: readonly FingerprintedContentEntry[];
   readonly changeSet: ContentChangeSet;
+  readonly affectedContent: ReturnType<typeof determineAffectedContent>;
 };
 
 type ContentBuildCoordinatorDependencies = {
@@ -43,14 +44,16 @@ export class ContentBuildCoordinator {
 
   getPreparation(
     incremental: boolean | undefined,
+    pipelineFingerprint: string | undefined,
   ): Promise<ContentBuildPreparation> {
-    this.preparation ??= this.prepare(incremental);
+    this.preparation ??= this.prepare(incremental, pipelineFingerprint);
     return this.preparation;
   }
 
   async commit(
     preparation: ContentBuildPreparation,
     manifest: ContentManifest,
+    pipelineFingerprint: string | undefined,
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -74,6 +77,8 @@ export class ContentBuildCoordinator {
           left.localeCompare(right),
         ),
       ),
+      pipelineFingerprint,
+      manifestEntries: manifest.entries,
     };
 
     try {
@@ -83,6 +88,7 @@ export class ContentBuildCoordinator {
 
   private async prepare(
     incremental: boolean | undefined,
+    pipelineFingerprint: string | undefined,
   ): Promise<ContentBuildPreparation> {
     const currentEntries = await fingerprintContentEntries(
       await this.dependencies.getEntries(),
@@ -95,11 +101,18 @@ export class ContentBuildCoordinator {
     const changeSet = previousState
       ? diffContentEntries(previousState, currentEntries)
       : allContentChanged(currentEntries);
-    const affected = determineAffectedContent(
-      changeSet,
-      previousState,
-      currentEntries.map(({ entry }) => entry.path),
-    );
+    const affected =
+      previousState?.pipelineFingerprint === pipelineFingerprint
+        ? determineAffectedContent(
+            changeSet,
+            previousState,
+            currentEntries.map(({ entry }) => entry.path),
+          )
+        : determineAffectedContent(
+            allContentChanged(currentEntries),
+            undefined,
+            currentEntries.map(({ entry }) => entry.path),
+          );
     this.dependencies.observability.tracer.event("build.incremental", {
       incremental: incremental !== false,
       added: changeSet.added.length,
@@ -108,7 +121,12 @@ export class ContentBuildCoordinator {
       unchanged: changeSet.unchanged.length,
       affected: affected.direct.size + affected.dependent.size,
     });
-    return { previousState, currentEntries, changeSet };
+    return {
+      previousState,
+      currentEntries,
+      changeSet,
+      affectedContent: affected,
+    };
   }
 }
 
@@ -127,12 +145,13 @@ function collectDependencies(
 ): string[] {
   if (!manifestEntry) return [];
   return [
-    ...new Set(
-      manifestEntry.links
+    ...new Set([
+      ...manifestEntry.links
         .filter(
           (link): link is typeof link & { slug: string } => link.slug !== null,
         )
         .map((link) => link.slug),
-    ),
+      ...manifestEntry.assets.map((asset) => asset.path),
+    ]),
   ].sort();
 }

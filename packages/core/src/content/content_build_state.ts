@@ -1,6 +1,7 @@
+import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 2;
+export const CONTENT_BUILD_STATE_VERSION = 3;
 
 /**
  * Build state lives under `<content directory>/.riebeckite`. That directory is
@@ -20,6 +21,8 @@ export type ContentBuildState = {
   readonly version: number;
   readonly entries: Readonly<Record<string, ContentBuildEntry>>;
   readonly contentIndex: Readonly<Record<string, string>>;
+  readonly pipelineFingerprint?: string;
+  readonly manifestEntries?: readonly ContentManifestEntry[];
 };
 
 export type FingerprintedContentEntry = {

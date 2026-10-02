@@ -124,6 +124,8 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
     processedContentCount: spans.filter(
       (span) => span.name === "content.process",
     ).length,
+    reusedContentCount: events.filter((event) => event.name === "content.reuse")
+      .length,
     cacheHits: events.filter(
       (event) => event.name === "persistentContentCache.hit",
     ).length,

@@ -7,6 +7,7 @@ import { Pipeline } from "../pipeline.js";
 import { PluginRuntime } from "../plugin/plugin_runtime.js";
 import type {
   ContentManifest,
+  ContentManifestEntry,
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
@@ -25,6 +26,7 @@ import { ContentEntryReader } from "./content_entry_reader.js";
 import type { ContentGraph } from "./content_graph.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
 import { ContentLocationResolver } from "./content_location_resolver.js";
+import { computePipelineFingerprint } from "./content_persistent_cache.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
@@ -228,7 +230,10 @@ export class ContentManager {
     this.enableBuildTime();
 
     const preparation = options
-      ? await this.buildCoordinator.getPreparation(options.incremental)
+      ? await this.buildCoordinator.getPreparation(
+          options.incremental,
+          this.getPipelineFingerprint(),
+        )
       : undefined;
     return await this.observability().tracer.span(
       "content.manifest",
@@ -241,6 +246,9 @@ export class ContentManager {
         ]);
         const entries = await Promise.all(
           posts.map(async (post) => {
+            const reused = this.reuseManifestEntry(post.slug, preparation);
+            if (reused) return reused;
+
             const [rawPost, processed] = await Promise.all([
               this.getPost(post.slug),
               this.getProcessedContent(post.slug),
@@ -289,7 +297,11 @@ export class ContentManager {
         manifest.generatedOutputs =
           this.pluginRuntime.collectGeneratedOutputs();
         if (preparation)
-          await this.buildCoordinator.commit(preparation, manifest);
+          await this.buildCoordinator.commit(
+            preparation,
+            manifest,
+            this.getPipelineFingerprint(),
+          );
         this.manifest = manifest;
         return manifest;
       },
@@ -398,6 +410,41 @@ export class ContentManager {
     return (
       this.pipelineOptions.config?.content.filters.publishStrategy ?? "explicit"
     );
+  }
+
+  private reuseManifestEntry(
+    slug: string,
+    preparation: ContentBuildPreparation | undefined,
+  ): ContentManifestEntry | null {
+    if (!preparation?.previousState?.manifestEntries) return null;
+    if (
+      preparation.previousState.pipelineFingerprint !==
+      this.getPipelineFingerprint()
+    ) {
+      return null;
+    }
+    if (preparation.affectedContent.direct.has(slug)) return null;
+    if (preparation.affectedContent.dependent.has(slug)) return null;
+
+    const entry = preparation.previousState.manifestEntries.find(
+      (candidate) => candidate.slug === slug,
+    );
+    if (!entry) return null;
+    this.observability().tracer.event("content.reuse", { slug });
+    return {
+      ...entry,
+      publicLocation: { ...entry.publicLocation },
+      frontmatter: { ...entry.frontmatter },
+      tags: [...entry.tags],
+      links: entry.links.map((link) => ({ ...link })),
+      backlinks: [...entry.backlinks],
+      assets: entry.assets.map((asset) => ({ ...asset })),
+    };
+  }
+
+  private getPipelineFingerprint(): string | undefined {
+    if (!this.pipelineOptions.config) return undefined;
+    return computePipelineFingerprint(this.pipelineOptions.config);
   }
 
   private isRoutable(slug: string): boolean {

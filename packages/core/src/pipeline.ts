@@ -31,16 +31,29 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent, PostFrontmatter } from "./types/post_content.js";
+import {
+  createPersistentContentCache,
+  computeContentCacheKey,
+  computePipelineFingerprint,
+  extractFrontmatter,
+  isPersistentlyCacheable,
+  type PersistentContentCache,
+} from "./content/content_persistent_cache.js";
+import { createContentDependencyTracker, fingerprintContent } from "./content/content_dependency_tracker.js";
 
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
   observability?: Observability;
   config?: import("./types/resolved_riebeckite_config.js").ResolvedRiebeckiteConfig;
   contentSource?: ContentSource;
+  isRoutable?: (slug: string) => boolean;
 }
 
 export class Pipeline {
   private pluginCaches = new Map<string, PluginCache>();
+  private persistentCache: PersistentContentCache | null = null;
+  private pipelineFingerprint: string | null = null;
+  private dependencyTracker: ReturnType<typeof createContentDependencyTracker> | null = null;
 
   constructor(
     private contentIndex: Map<string, string>,
@@ -48,7 +61,19 @@ export class Pipeline {
     private getMarkdownBySlug?: (slug: string) => Promise<string>,
     private options: PipelineOptions = {},
     private isBuildTime = false,
-  ) {}
+  ) {
+    if (
+      this.options.config &&
+      this.options.config.cache?.enabled !== false
+    ) {
+      this.persistentCache = createPersistentContentCache({
+        config: this.options.config,
+        logger: this.options.observability?.logger,
+        tracer: this.options.observability?.tracer,
+      });
+      this.pipelineFingerprint = computePipelineFingerprint(this.options.config);
+    }
+  }
 
   async execute(
     markDownContent: string,
@@ -81,13 +106,24 @@ export class Pipeline {
     this.use(processor, remarkMath);
     this.use(processor, remarkGfm);
 
+    // Create dependency tracker for top-level content to capture dependencies during execution
+    let dependencyTracker: ReturnType<typeof createContentDependencyTracker> | null = null;
+    let effectiveContentSource = this.options.contentSource;
+
+    if (embedDepth === 0 && this.options.contentSource) {
+      dependencyTracker = createContentDependencyTracker(this.options.contentSource);
+      this.dependencyTracker = dependencyTracker;
+      effectiveContentSource = dependencyTracker.contentSource;
+    }
+
     const markdownPipelineContext: MarkdownPipelineContext = {
       sourceSlug: context.sourceSlug,
       contentIndex: this.contentIndex,
       resolvePermalink: (slug) => this.getPermalink(slug),
+      isRoutable: this.options.isRoutable,
       renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
       renderContent: this.createContentRenderer(),
-      contentSource: this.options.contentSource,
+      contentSource: effectiveContentSource,
     };
 
     for (const plugin of plugins) {
@@ -126,12 +162,87 @@ export class Pipeline {
 
     this.use(processor, rehypeStringify, { allowDangerousHtml: true });
 
+    // Only use persistent cache for top-level content (not embeds)
+    if (embedDepth === 0 && this.persistentCache && this.pipelineFingerprint && context.sourceSlug) {
+      const cacheable = isPersistentlyCacheable(context.sourceSlug, this.options.config);
+      if (cacheable.cacheable) {
+        const frontmatter = extractFrontmatter(markDownContent);
+        const cacheKey = computeContentCacheKey({
+          slug: context.sourceSlug,
+          source: markDownContent,
+          frontmatter,
+          pipelineFingerprint: this.pipelineFingerprint,
+        });
+
+        // Try to read from cache
+        const cachedEntry = await this.persistentCache.get(cacheKey);
+        if (cachedEntry) {
+          // Validate dependencies using a fresh tracker
+          const validationTracker = createContentDependencyTracker(this.options.contentSource!);
+          let valid = true;
+          for (const dep of cachedEntry.dependencies) {
+            if (dep.kind === "content") {
+              const content = await validationTracker.readContent(dep.id, async () => {
+                return await this.getMarkdownBySlug?.(dep.id) ?? "";
+              });
+              if (fingerprintContent(content) !== dep.fingerprint) {
+                valid = false;
+                break;
+              }
+            } else if (dep.kind === "file") {
+              // Validate file dependency by reading through contentSource
+              const fileContent = await validationTracker.contentSource.read({ path: dep.id });
+              if (fingerprintContent(fileContent) !== dep.fingerprint) {
+                valid = false;
+                break;
+              }
+            }
+          }
+          if (valid) {
+            this.options.observability?.tracer?.event("persistentContentCache.hit", { key: cacheKey, slug: context.sourceSlug });
+            return {
+              frontmatter: cachedEntry.value.frontmatter,
+              html: cachedEntry.value.html,
+            };
+          }
+        }
+        this.options.observability?.tracer?.event("persistentContentCache.miss", { key: cacheKey, slug: context.sourceSlug });
+      } else {
+        this.options.observability?.tracer?.event("persistentContentCache.bypass", { slug: context.sourceSlug, reason: cacheable.reason });
+      }
+    }
+
     const file = await processor.process(markDownContent.trim());
 
-    return {
+    const result = {
       frontmatter: (file.data.matter || {}) as PostFrontmatter,
       html: String(file.value),
     };
+
+    // Write to cache after successful processing, capturing dependencies from tracker
+    if (embedDepth === 0 && this.persistentCache && this.pipelineFingerprint && context.sourceSlug && dependencyTracker) {
+      const cacheable = isPersistentlyCacheable(context.sourceSlug, this.options.config);
+      if (cacheable.cacheable) {
+        const frontmatter = extractFrontmatter(markDownContent);
+        const cacheKey = computeContentCacheKey({
+          slug: context.sourceSlug,
+          source: markDownContent,
+          frontmatter,
+          pipelineFingerprint: this.pipelineFingerprint,
+        });
+
+        const dependencies = dependencyTracker.dependencies();
+        const entry = {
+          schemaVersion: 2,
+          key: cacheKey,
+          dependencies,
+          value: result,
+        };
+        await this.persistentCache.set(cacheKey, entry);
+      }
+    }
+
+    return result;
   }
 
   private getPermalink(slug: string): string {
@@ -165,6 +276,9 @@ export class Pipeline {
     if (!this.getMarkdownBySlug || embedDepth >= 3) return undefined;
 
     return async (slug: string, fragment: MarkdownEmbedFragment | null) => {
+      if (this.options.isRoutable && !this.options.isRoutable(slug)) {
+        return null;
+      }
       if (embedTrail.has(slug)) return null;
 
       const sourceMarkdown = await this.getMarkdownBySlug?.(slug);
@@ -175,6 +289,11 @@ export class Pipeline {
 
       const nextEmbedTrail = new Set(embedTrail);
       nextEmbedTrail.add(slug);
+
+      // Track embed as content dependency for top-level content
+      if (embedDepth === 0 && this.dependencyTracker) {
+        await this.dependencyTracker.readContent(slug, async () => markdown);
+      }
 
       const content = await this.executeWithEmbedState(
         markdown,
@@ -310,6 +429,7 @@ function normalizeMarkdownLinkUrl(
 
   const indexedSlug = getExactContentSlug(context, resolvedSlug);
   if (!indexedSlug) return null;
+  if (context.isRoutable && !context.isRoutable(indexedSlug)) return null;
 
   const suffix = `${query ? `?${query}` : ""}${hash ? `#${hash}` : ""}`;
   return `${context.resolvePermalink(indexedSlug)}${suffix}`;

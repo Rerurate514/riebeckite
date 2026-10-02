@@ -42,7 +42,7 @@ export function citations(options: CitationsOptions = {}) {
         sourceSlug: context.sourceSlug,
         contentSource: context.contentSource,
         diagnostics: state.diagnostics,
-        loadBibliography: async (path) => {
+        loadBibliography: async (path: string) => {
           if (!context.contentSource) return null;
           const content = await readContentSourceEntry(
             context.contentSource,

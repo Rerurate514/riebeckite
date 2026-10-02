@@ -260,12 +260,10 @@ test("rehype replaces code blocks with a placeholder", () => {
 
   rehypeExcaliBrain()(tree as never);
 
-  assert.equal(tree.children[0]?.type, "raw");
-  assert.equal(
-    (tree.children[0] as { value: string }).value,
-    '<div data-rb-excalibrain=""></div>',
-  );
-  assert.equal(tree.children[1]?.type, "element");
+  const [first, second] = tree.children as { type: string; value?: string }[];
+  assert.equal(first?.type, "raw");
+  assert.equal(first?.value, '<div data-rb-excalibrain=""></div>');
+  assert.equal(second?.type, "element");
 });
 
 test("replaces placeholder divs with the rendered section", () => {

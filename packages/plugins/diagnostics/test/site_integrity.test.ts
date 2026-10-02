@@ -54,14 +54,19 @@ function entry(
   permalink: string,
   options: Partial<ContentManifestEntry> & { published?: boolean } = {},
 ): ContentManifestEntry {
+  const published = options.published !== false;
   return {
     slug,
     permalink,
     publicLocation: { slug, permalink },
     title: slug,
-    frontmatter:
-      options.published === false ? { publish: false } : { publish: true },
+    frontmatter: published ? { publish: true } : { publish: false },
     html: options.html ?? "",
+    publishing: {
+      visibility: published ? "public" : "draft",
+      routable: published,
+      discoverable: published,
+    },
     tags: [],
     links: options.links ?? [],
     backlinks: [],
@@ -76,11 +81,15 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   return {
     entries,
     publicEntries,
+    discoverableEntries: publicEntries,
     bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
     byContentId: new Map(),
     byPermalink: new Map(entries.map((entry) => [entry.permalink, entry])),
     redirects: new Map(),
     publicRedirects: new Map(),
+    byRoutablePermalink: new Map(
+      publicEntries.map((entry) => [entry.permalink, entry]),
+    ),
     byTag: new Map(),
     byAsset: new Map(),
     outgoingLinks: new Map(),

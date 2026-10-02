@@ -32,6 +32,7 @@ const config = {
     styles: [],
   },
   plugins: [],
+  cache: { enabled: true, directory: ".riebeckite/cache" },
 } satisfies ResolvedRiebeckiteConfig;
 
 test("doctor deprecation check renders warnings without making the result an error", () => {

@@ -93,7 +93,7 @@ test("validatePropertiesOptions reports every invalid field with its path", () =
     hideEmpty: "yes",
     className: "   ",
     collapsed: "no",
-  });
+  } as never);
 
   assert.deepEqual(
     issues.map((issue) => issue.path),

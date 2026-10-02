@@ -56,7 +56,7 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
     order: 100,
     processedContentCache: {
       version: "responsive-image-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateResponsiveImageOptions,

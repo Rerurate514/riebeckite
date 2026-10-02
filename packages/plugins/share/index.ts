@@ -65,7 +65,7 @@ export function share(options: ShareOptions = {}) {
     name: SHARE_PLUGIN_NAME,
     processedContentCache: {
       version: "share-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateShareOptions,

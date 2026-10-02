@@ -43,7 +43,7 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
     name: "hover-preview",
     processedContentCache: {
       version: "hover-preview-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateHoverPreviewOptions,

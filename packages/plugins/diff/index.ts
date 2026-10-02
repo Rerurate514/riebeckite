@@ -57,7 +57,7 @@ export function diff(options: DiffPluginOptions = {}) {
     name: "diff",
     processedContentCache: {
       version: "diff-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     assets: ui.enabled === false ? [] : [createStyleAsset("diff")],

@@ -60,7 +60,7 @@ export function properties(options: PropertiesOptions = {}) {
     name: PLUGIN_NAME,
     processedContentCache: {
       version: "properties-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validatePropertiesOptions,

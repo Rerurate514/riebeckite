@@ -132,7 +132,7 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
     order: -10,
     processedContentCache: {
       version: "excalibrain-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateExcaliBrainOptions,

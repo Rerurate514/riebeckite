@@ -45,7 +45,7 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
     name: RELATED_POSTS_PLUGIN_NAME,
     processedContentCache: {
       version: "related-posts-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateRelatedPostsOptions,

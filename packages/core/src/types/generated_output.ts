@@ -1,4 +1,8 @@
+import { ATTACHMENTS_BASE_PATH } from "../content/attachment.js";
 import type { OutputDependency } from "./output_dependency.js";
+
+const ATTACHMENTS_NAMESPACE = ATTACHMENTS_BASE_PATH.replace(/^\/+/, "");
+const STATIC_ASSETS_DIR = "assets";
 
 export type GeneratedOutputContent = string | Uint8Array;
 
@@ -73,9 +77,13 @@ export function normalizeGeneratedOutputPath(input: string): string {
   }
 
   const normalized = segments.join("/");
-  if (normalized === "assets" || normalized.startsWith("assets/")) {
+  if (
+    normalized === STATIC_ASSETS_DIR ||
+    normalized === ATTACHMENTS_NAMESPACE ||
+    normalized.startsWith(`${ATTACHMENTS_NAMESPACE}/`)
+  ) {
     throw new Error(
-      `Generated output path must not conflict with the static assets namespace: "${input}".`,
+      `Generated output path must not conflict with the attachment namespace: "${input}".`,
     );
   }
   if (normalized === ".riebeckite" || normalized.startsWith(".riebeckite/")) {

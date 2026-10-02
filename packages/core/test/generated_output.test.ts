@@ -36,7 +36,8 @@ test("normalizeGeneratedOutputPath rejects traversal and absolute paths", () => 
 test("normalizeGeneratedOutputPath rejects reserved namespaces", () => {
   for (const reserved of [
     "assets",
-    "assets/logo.svg",
+    "assets/attachments",
+    "assets/attachments/notes/diagram.bin",
     ".riebeckite",
     ".riebeckite/cache/x.json",
   ]) {
@@ -45,4 +46,15 @@ test("normalizeGeneratedOutputPath rejects reserved namespaces", () => {
       `expected "${reserved}" to be rejected`,
     );
   }
+});
+
+test("normalizeGeneratedOutputPath allows images inside the static assets namespace", () => {
+  assert.equal(
+    normalizeGeneratedOutputPath("assets/riebeckite-logo.png"),
+    "assets/riebeckite-logo.png",
+  );
+  assert.equal(
+    normalizeGeneratedOutputPath("assets\\logo\\horizontal.png"),
+    "assets/logo/horizontal.png",
+  );
 });

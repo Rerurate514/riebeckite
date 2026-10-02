@@ -8,6 +8,7 @@ import {
   createStyleAsset,
   type Diagnostic,
   definePlugin,
+  type PluginHeadTag,
   type PostFrontmatter,
 } from "@riebeckite/core";
 import { parse } from "yaml";
@@ -596,15 +597,18 @@ function addLocalizationHeadTags(
     );
     entry.headTags = [
       ...(entry.headTags ?? []),
-      ...translations.map((translation) => ({
-        tag: "link" as const,
-        attrs: {
-          rel: "alternate",
-          hreflang:
-            translation.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ?? "",
-          href: translation.permalink,
-        },
-      })),
+      ...translations.map(
+        (translation): PluginHeadTag => ({
+          tag: "link",
+          attrs: {
+            rel: "alternate",
+            hreflang:
+              translation.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ??
+              "",
+            href: translation.permalink,
+          },
+        }),
+      ),
     ];
   }
 }

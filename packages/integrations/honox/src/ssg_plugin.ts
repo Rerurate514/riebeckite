@@ -1,4 +1,5 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { defaultExtensionMap, toSSG } from "hono/ssg";
 import {
@@ -32,6 +33,7 @@ type SsgHtmlInspectorPlugin = {
 };
 
 type SsgModule = {
+  default: Parameters<typeof toSSG>[0];
   content?: {
     getManifest(): Promise<{
       generatedOutputs?: readonly {
@@ -139,7 +141,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       });
 
       try {
-        const module = await server.ssrLoadModule(entry);
+        const module = (await server.ssrLoadModule(entry)) as SsgModule;
         const app = module.default;
         if (!app) {
           throw new Error(`Failed to find a default export from ${entry}.`);
@@ -151,7 +153,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           ".riebeckite",
           "ssg-output-cache.json",
         );
-        const previousOutputCache = await loadOutputCache(outputCachePath);
+        const previousOutputCache = await loadOutputCache(
+          outputCachePath,
+          (message) => this.warn(message),
+        );
         const canUseIncremental =
           outputChangeSet &&
           !outputChangeSet.fullRegenerationRequired &&
@@ -258,7 +263,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             metrics.deletedOutputCount += 1;
           }
         }
-        await saveOutputCache(outputCachePath, nextOutputCache);
+        try {
+          await saveOutputCache(outputCachePath, nextOutputCache);
+        } catch (error) {
+          this.warn(
+            `SSG output cache could not be saved; the next build regenerates every output. ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          );
+        }
         await writeSsgOutputMetrics(metrics);
         inspectGeneratedHtmlPages(module, generatedHtml, {
           warn: (message) => this.warn(message),
@@ -333,21 +346,91 @@ function routeOutputPath(routePath: string, contentType: string): string {
 
 async function loadOutputCache(
   path: string,
+  log: (message: string) => void,
 ): Promise<OutputCacheState | undefined> {
+  let raw: string;
   try {
-    const parsed = JSON.parse(await readFile(path, "utf8")) as OutputCacheState;
-    return parsed.version === 1 ? parsed : undefined;
-  } catch {
+    raw = await readFile(path, "utf8");
+  } catch (error) {
+    if (isNotFoundError(error)) return undefined;
+    log(
+      `SSG output cache could not be read; the build regenerates every output. ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
     return undefined;
   }
+
+  let parsed: OutputCacheState;
+  try {
+    parsed = JSON.parse(raw) as OutputCacheState;
+  } catch (error) {
+    log(
+      `SSG output cache is corrupted and will be rebuilt. ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    return undefined;
+  }
+
+  if (parsed.version !== 1 || typeof parsed.outputs !== "object") {
+    log("SSG output cache uses an unsupported format and will be rebuilt.");
+    return undefined;
+  }
+  return parsed;
 }
 
 async function saveOutputCache(
   path: string,
   state: OutputCacheState,
 ): Promise<void> {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(state)}\n`, "utf8");
+  const directory = dirname(path);
+  await mkdir(directory, { recursive: true });
+  const temporaryPath = `${path}.${randomUUID()}.tmp`;
+
+  try {
+    await writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8");
+    await replaceFile(temporaryPath, path);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
+/**
+ * `fs.rename` replaces the destination on POSIX but fails on Windows when the
+ * destination already exists. Removing the destination first keeps the cache
+ * write atomic on both platforms; a crash between the two steps only costs a
+ * cache miss because the temporary file is never read back.
+ */
+async function replaceFile(
+  temporaryPath: string,
+  targetPath: string,
+): Promise<void> {
+  try {
+    await rename(temporaryPath, targetPath);
+  } catch (error) {
+    if (!isReplacementFailure(error)) throw error;
+    await rm(targetPath, { force: true });
+    await rename(temporaryPath, targetPath);
+  }
+}
+
+function isReplacementFailure(error: unknown): boolean {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return false;
+  }
+  const code = String(error.code);
+  return code === "EPERM" || code === "EEXIST" || code === "EACCES";
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "ENOENT"
+  );
 }
 
 function encodeOutput(source: string | Uint8Array): OutputCacheEntry {

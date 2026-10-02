@@ -27,8 +27,8 @@ export default createRoute(async (c) => {
     c.set(
       "seo",
       buildWebsiteSeo({
-        title: route.page.title,
-        description: route.page.description,
+        title: route.page.title ?? "",
+        description: route.page.description ?? "",
         path: route.page.pathname,
       }),
     );

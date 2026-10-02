@@ -6,14 +6,11 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 |
 |---:|---|---|---|---|---|
-| 1 | F7 | 依存パッケージの既知脆弱性を修正版へ更新する（`pnpm audit` high 30 / moderate 26） | 未着手 | Medium | ロック済み `hono@4.12.26` 等が SSR 出力の漏えい・XSS・ReDoS・`toSSG()` の出力外書込みの修正未適用。本番の実行時リスク。上流更新が不可なら `pnpm.overrides`、`pnpm audit --prod` を gate 化 |
-| 2 | F10 | 型チェックの偽陰性を解消する（strict 化と `apps/web` を含む project references 化） | 未着手 | Large | `pnpm typecheck` は packages を非 strict の個別 Program で検査し `apps/web` を除外するため、`apps/web/tsconfig.json` を直接 strict 実行すると `virtual:riebeckite/client` 宣言欠落・`PipelinePlugin` の型不整合・nullability 等で exit 1。Vite build 成功は型安全を保証しない |
-| 3 | F12 | plugin 解決結果を不変化してキャッシュし、plugin name の一意性を必須にする | 未着手 | Medium | `PluginRuntime.plugins()`／`Pipeline.execute()`／`createContentRenderer()` が毎回 `resolvePlugins` を再実行する。cache と output ownership は `plugin.name` キーのため同名 instance で衝突し、依存検証も name 重複を検出しない |
-| 4 | F13 | Plugin / ContentSource の build・dev 時キャッシュ失効機構を整理する | 未着手 | Medium | citations などの Plugin が Map<string, Promise<...>> で source 読み込み結果をキャッシュした場合、長時間稼働する dev server 中の source 編集を検知して失効する汎用 lifecycle がない。Citations 固有の仕組みは作らず、既存 Plugin の cache 利用状況を調査した上で framework-wide な invalidation の仕組みを設計する |
+| 1 | F13 | Plugin / ContentSource の build・dev 時キャッシュ失効機構を整理する | 未着手 | Medium | citations などの Plugin が Map<string, Promise<...>> で source 読み込み結果をキャッシュした場合、長時間稼働する dev server 中の source 編集を検知して失効する汎用 lifecycle がない。Citations 固有の仕組みは作らず、既存 Plugin の cache 利用状況を調査した上で framework-wide な invalidation の仕組みを設計する |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
-F7 は既存の指摘をコード確認で裏付けたもの、F10・F12 は今回のレビューで追加した項目。F8・F9 は対応済み（完了済み表を参照）。優先順は F7 → F10（型検査の復旧）→ F12 とし、F10 は F7 と同格として扱う。
+F7・F8・F9・F10・F12 は対応済み（完了済み表を参照）。残る未着手は F13 のみ。
 
 ## 完了済み
 
@@ -55,6 +52,9 @@ F7 は既存の指摘をコード確認で裏付けたもの、F10・F12 は今�
 | F6 | 既存の Biome フォーマット崩れ（`pnpm check` 143 件・既存テスト 7 ファイル）を解消する | Medium | 原因は作業ツリーの CRLF で、`.gitattributes` の `* text=auto eol=lf`（commit `30311c1`）によりクリーン checkout では既に防止済み。クリーン worktree で `pnpm check` が通過することを確認し、残っていた `useTemplate` info 1 件（webmention-cloudflare テスト）も修正して diagnostics 0 にした |
 | F8 | plugin-webmention の送信元検証を修正する（リダイレクト SSRF と本文全読みのメモリ枯渇） | Medium | `redirect: "manual"` のループで各ホップを URL 正規化してから検査し、ホスト名に加えて DNS 解決後の IP も拒否リストで判定（解決関数は `resolveHostname` で注入可能、公開 API は維持）。本文は `response.body.getReader()` で上限到達時に即 cancel し、`Content-Length` でも事前確認。テスト 28 件追加。commit 4ea026c |
 | F9 | analytics-cloudflare collector のイベント偽装を緩和する | Small | ドメインに `AnalyticsRateLimiter` 境界、infrastructure に D1（原子的な加算）と memory の実装、migration `0002` を追加。`createWorker` の `rateLimit` で IP 単位に固定時間窓の 429 を返し、D1 テンプレートは 60 回/60 秒で接続。KV は原子的加算ができず未対応とし Cloudflare Rate Limiting を案内。テスト 4 件追加。commit 00e3662 |
+| F7 | 依存パッケージの既知脆弱性を修正版へ更新する | Medium | `pnpm-workspace.yaml` に `overrides:` を追加し、`pnpm audit --json` を 0 にした。対象は `@hono/node-server` / `@xmldom/xmldom` / `brace-expansion`（2.x・5.x の 2 レンジ）/ `dompurify` / `lodash-es` / `nanoid`（3.x・4.x の 2 レンジ）/ `postcss` / `sharp` / `undici`。lockfile を再生成し `pnpm build:packages` と全 package テストが通過することを確認 |
+| F10 | 型チェックの偽陰性を解消する | Large | `scripts/typecheck_packages.mjs` を 2 段構成に再設計。production source は `strict: true` で全 package を検査し、test tree は `noImplicitAny`/`strictNullChecks`/`noUncheckedIndexedAccess` を緩めた設定で検査対象から除外しない（緩めるのは検査対象から外すためではない）。`apps/web` は自身の `tsconfig.json` から program を構築して追加。`allowImportingTsExtensions` が必要。`'@riebeckite/core'` などの宣言は `dist` 解決になるため `pnpm build:packages` が前提。gate 追加は `.github/workflows/ci.yml` の typecheck job |
+| F12 | plugin 解決結果を不変化してキャッシュし、plugin name の一意性を必須にする | Medium | `PluginRuntime` と `Pipeline` が解決済み plugin 配列をインスタンスごとに 1 回だけ計算して再利用する。page type の検証は解決時に 1 回だけ走らせる。`resolvePlugins()` に plugin name の重複検出を追加し、`plugin.name` を所有キーとする plugin cache / generated output の衝突を早期に拒否する（config 経由は `validateConfig` が先に弾く） |
 
 ## 実装メモ（agents 用）
 
@@ -67,10 +67,10 @@ F7 は既存の指摘をコード確認で裏付けたもの、F10・F12 は今�
 
 項目別メモ（F7〜F12）:
 
-- F7: `pnpm audit --json` の実測は info 0 / low 4 / moderate 26 / high 30 / critical 0。`apps/web` の `hono` は `^4.12.25`（lock 4.12.26）で、4.12.34 未満の CORS ReDoS・4.13.5 未満の `toSSG()` 出力外書込みや parseBody メモリ枯渇の影響下。plugin-excalidraw（`@excalidraw/excalidraw` 配下の nanoid/lodash-es）、plugin-marp（`@marp-team/marp-core` 配下の `@xmldom/xmldom` 0.9.10）にも high 多数。開発/ビルド鎖（`brace-expansion` / `sharp` / `undici` / `postcss` / `@hono/node-server`）は切り分ける。
-- F10: `scripts/typecheck_packages.mjs` は `strict` 未指定で各 package を個別 Program 化し `apps/web` を意図的に除外する。共通 strict tsconfig＋project references を導入し `tsc -b` を唯一の正とする。`PipelinePlugin` など Core 拡張型を正確化し、`virtual:riebeckite/client` の `.d.ts` を提供する。declaration emit を保つ場合も build と同一 tsconfig を使う。gate だけ先に足す場合は `tsc --project apps/web/tsconfig.json --noEmit` を CI/release に追加（根本解決ではない）。
+- F7: `pnpm audit --json` は対応完了で 0。`pnpm-workspace.yaml` の `overrides:` が効いており、lockfile を再生成したうえで `pnpm build:packages` と全 package テストが通ることを確認済み。上流側が未修正のものは override で塞いでいるため、override を外すと脆弱性が戻るので注意。
+- F10: `scripts/typecheck_packages.mjs` は production source を `strict: true` で検査し、test tree も検査対象に含めたうえで `noImplicitAny` / `strictNullChecks` / `noUncheckedIndexedAccess` だけを緩めている。`apps/web` は `ts.getParsedCommandLineOfConfigFile` で自身の tsconfig を読み、program を追加している。`'@riebeckite/core'` などの workspace 宣言は `dist` から解決されるため、`pnpm typecheck` の前に `pnpm build:packages` が必要。
 - F8: 初期 URL のみ `isDisallowedHost` で文字列検査し、`fetch(url, { redirect: "follow" })` の先は未検査。DNS rebinding／ホスト名の私設 IP 解決も防げない。`redirect: "manual"` で各 hop を URL 正規化 → scheme/credential 禁止 → DNS/IP egress 方針で検査してから再取得し、本文は `response.body.getReader()` で上限到達時に即 cancel（圧縮展開後の bytes 含む）。timeout は全 hop の deadline にする。`verifyWebmention` は `parseWebmentionSource(document.html, source)` と元 source を base にしており、最終 URL を使っていない点も仕様化する。Node/Cloudflare 別の DNS/egress 保証を明示し、redirect-to-private・IPv6/IPv4-mapped・DNS rebinding・chunked oversized をテストする。generic plugin から安全でない既定 fetch を外し transport を必須注入にする選択肢もある。
 - F9: `create_worker.ts` の POST `/events` は CORS のみ（`allowedOrigins: "any"` も可）。`Origin` は直接リクエストで偽装でき、contentId/occurredAt/path を任意投入できる。analytics を「未検証の best effort」と API/docs で明示し、管理・課金・ランキングの根拠にしない。正確性が要るなら Cloudflare WAF / Rate Limiting（IP・contentId・path）・Bot 対策・異常検知・集計レート制限を Worker 前置で入れる。静的サイトの署名トークン単独では漏えいして偽装を防がない。
-- F12: 構成は ContentManager 生成時に固定されるため、constructor で一度だけ `resolvePlugins` して検証済み readonly list をキャッシュする。plugin の options を後から差し替える可変 API をサポートしている場合は破壊的になるため config は変更不可であることを明示する。resolved list で `plugin.name` の一意性を必須にする（cache/output ownership キーの衝突防止）。
+- F12: 構成は ContentManager 生成時に固定されるため、`PluginRuntime` / `Pipeline` がそれぞれ resolved list を 1 回だけ計算して以後再利用する。page type の検証（id 重複・契約違反）も解決時にまとめて 1 回だけ走る。config を後から差し替える可変 API はサポートしていない。`resolvePlugins()` は `plugin.name` の重複を検出して拒否する（cache と output ownership の衝突防止）。config 経由の重複は `validateConfig` が先に `Duplicate plugin name` として弾く。
 
-（実装メモはすべて解決済み。次にプラグインを追加する際は `plugin-breadcrumbs` / `plugin-sidenotes` を新しいテンプレートにすると良い。）
+（実装メモのうち F7・F8・F9・F10・F12 はすべて解決済み。次にプラグインを追加する際は `plugin-breadcrumbs` / `plugin-sidenotes` を新しいテンプレートにすると良い。）

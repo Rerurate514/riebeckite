@@ -16,8 +16,8 @@ function paragraph(value: string) {
   };
 }
 
-function childNodes(tree: ReturnType<typeof paragraph>): unknown[] {
-  return (tree.children[0] as { children: unknown[] }).children;
+function childNodes(tree: ReturnType<typeof paragraph>): TextNode[] {
+  return (tree.children[0] as { children: TextNode[] }).children;
 }
 
 test("splits a ==highlight== span into text and html nodes", () => {
@@ -27,7 +27,10 @@ test("splits a ==highlight== span into text and html nodes", () => {
 
   const nodes = childNodes(tree);
   assert.equal(nodes.length, 3);
-  assert.deepEqual(nodes[0] satisfies TextNode, { type: "text", value: "a " });
+  assert.deepEqual(nodes[0] satisfies TextNode, {
+    type: "text",
+    value: "a ",
+  });
   assert.deepEqual(nodes[1], {
     type: "html",
     value: '<mark class="rb-highlight">x</mark>',

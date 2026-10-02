@@ -90,7 +90,15 @@ export class ContentBuildCoordinator {
 
     try {
       await saveContentBuildState(this.dependencies.buildStatePath, state);
-    } catch {}
+    } catch (error) {
+      this.dependencies.observability.logger.warn(
+        "Incremental build state could not be persisted; the next build regenerates every note instead of reusing stale output.",
+        {
+          path: this.dependencies.buildStatePath,
+          reason: error instanceof Error ? error.message : String(error),
+        },
+      );
+    }
   }
 
   private async prepare(

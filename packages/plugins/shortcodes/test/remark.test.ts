@@ -36,9 +36,12 @@ test("unknown shortcodes become an escaped fallback and are diagnosed", () => {
     ],
   };
 
+  const root = tree as unknown as {
+    children: { type: string; value: string }[];
+  };
   remarkShortcodes()(tree as never, file);
 
-  const [node] = tree.children;
+  const node = root.children[0];
   assert.equal(node.type, "html");
   assert.ok(node.value.includes("rb-shortcode--unknown"));
   assert.ok(node.value.includes('data-shortcode-name="no&quot;pe"'));
@@ -60,9 +63,12 @@ test("malformed attributes are dropped and diagnosed", () => {
     ],
   };
 
+  const root = tree as unknown as {
+    children: { type: string; value: string }[];
+  };
   remarkShortcodes()(tree as never, file);
 
-  const [node] = tree.children;
+  const node = root.children[0];
   assert.equal(node.type, "html");
   assert.ok(node.value.includes(">Hi<"));
   assert.ok(!node.value.includes("bad key"));

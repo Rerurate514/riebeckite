@@ -68,6 +68,7 @@ export class ContentManager {
   private contentCache = new Map<string, PostContent>();
   private manifest: ContentManifest | null = null;
   private manifestPromise: Promise<ContentManifest> | null = null;
+  private pipelineFingerprint: string | null = null;
   private pipeline: Pipeline | null = null;
   private entryReader: ContentEntryReader;
   private locationResolver: ContentLocationResolver;
@@ -524,20 +525,15 @@ export class ContentManager {
     );
     if (!entry) return null;
     this.observability().tracer.event("content.reuse", { slug });
-    return {
-      ...entry,
-      publicLocation: { ...entry.publicLocation },
-      frontmatter: { ...entry.frontmatter },
-      tags: [...entry.tags],
-      links: entry.links.map((link) => ({ ...link })),
-      backlinks: [...entry.backlinks],
-      assets: entry.assets.map((asset) => ({ ...asset })),
-    };
+    return cloneManifestEntry(entry);
   }
 
   private getPipelineFingerprint(): string | undefined {
     if (!this.pipelineOptions.config) return undefined;
-    return computePipelineFingerprint(this.pipelineOptions.config);
+    this.pipelineFingerprint ??= computePipelineFingerprint(
+      this.pipelineOptions.config,
+    );
+    return this.pipelineFingerprint;
   }
 
   private isRoutable(slug: string): boolean {
@@ -586,6 +582,20 @@ function readFrontmatter(markdown: string): PostFrontmatter {
   const file = new VFile({ value: markdown });
   matter(file);
   return (file.data.matter ?? {}) as PostFrontmatter;
+}
+
+function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
+  return {
+    ...entry,
+    publicLocation: { ...entry.publicLocation },
+    frontmatter: { ...entry.frontmatter },
+    tags: [...entry.tags],
+    links: entry.links.map((link) => ({ ...link })),
+    backlinks: [...entry.backlinks],
+    assets: entry.assets.map((asset) => ({ ...asset })),
+    ...(entry.headTags ? { headTags: [...entry.headTags] } : {}),
+    ...(entry.bodySlots ? { bodySlots: { ...entry.bodySlots } } : {}),
+  };
 }
 
 async function mapConcurrent<T, U>(

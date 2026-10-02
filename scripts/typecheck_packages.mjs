@@ -1,13 +1,23 @@
 // Type-only check across every publishable package.
 //
-// `build_package.mjs` already runs a per-package TypeScript program for
-// declaration emit and now fails the build on type errors. This script runs the
-// same program with noEmit so contributors and CI can verify types across the
-// whole workspace without paying for esbuild bundling.
+// `build_package.mjs` runs a per-package TypeScript program for declaration
+// emit. This script runs its own programs with noEmit so contributors and CI can
+// verify types across the whole workspace without paying for esbuild bundling.
 //
-// Scope mirrors `build_package.mjs`: source files under each package directory,
-// excluding node_modules / dist / test trees. Editor projects (apps/web, which
-// depends on Vite virtual modules) are intentionally outside this check.
+// Coverage is deliberately wider than `build_package.mjs`. It used to omit
+// `strict`, skip test trees entirely and ignore `apps/web`, which is how the
+// twelve real errors already present in production sources went unnoticed. The
+// check now runs two tiers per package:
+//
+//   sources: every non-test file under `strict`
+//   tests:   test files under `strict` with the fixture-shaped flags relaxed
+//
+// The test tier keeps `allowImportingTsExtensions` (tests import with explicit
+// `.ts` specifiers) but relaxes `noImplicitAny`, `strictNullChecks` and
+// `noUncheckedIndexedAccess`, because test fixtures intentionally model partial
+// and invalid data. Relaxing those three does not make the tier a no-op: it
+// still reports assignability, arity, overload, return-type and property
+// errors, which is what a green tier is meant to guarantee.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -20,15 +30,9 @@ const repositoryRoot = path.resolve(
   "..",
 );
 
-const ignoredSourceDirectories = new Set([
-  "node_modules",
-  "dist",
-  "test",
-  "tests",
-  "__tests__",
-  "spec",
-  "__spec__",
-]);
+const ignoredSourceDirectories = new Set(["node_modules", "dist"]);
+const testDirectoryPattern =
+  /(^|[\\/])(test|tests|__tests__|spec|__spec__)([\\/]|$)/;
 
 function collectSourceFiles(directory) {
   const files = [];
@@ -48,7 +52,11 @@ function collectSourceFiles(directory) {
   return files;
 }
 
-const options = {
+function isTestFile(file) {
+  return testDirectoryPattern.test(path.relative(repositoryRoot, file));
+}
+
+const baseOptions = {
   target: ts.ScriptTarget.ESNext,
   module: ts.ModuleKind.ESNext,
   moduleResolution: ts.ModuleResolutionKind.Bundler,
@@ -56,11 +64,38 @@ const options = {
   jsxImportSource: "hono/jsx",
   noEmit: true,
   skipLibCheck: true,
+  strict: true,
+  allowImportingTsExtensions: true,
   esModuleInterop: true,
   allowSyntheticDefaultImports: true,
   resolveJsonModule: true,
   types: ["node"],
 };
+
+const testOptions = {
+  ...baseOptions,
+  noImplicitAny: false,
+  strictNullChecks: false,
+  noUncheckedIndexedAccess: false,
+};
+
+const formatHost = {
+  getCanonicalFileName: (fileName) => fileName,
+  getCurrentDirectory: () => repositoryRoot,
+  getNewLine: () => "\n",
+};
+
+function reportErrors(label, program) {
+  const errors = ts
+    .getPreEmitDiagnostics(program)
+    .filter(
+      (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error,
+    );
+  if (errors.length === 0) return 0;
+  console.log(ts.formatDiagnostics(errors, formatHost));
+  console.log(`[typecheck] ${label}: ${errors.length} type error(s)`);
+  return errors.length;
+}
 
 let totalErrors = 0;
 let checked = 0;
@@ -78,32 +113,54 @@ for (const directory of PACKAGE_DIRECTORIES) {
   const files = collectSourceFiles(absolute);
   if (files.length === 0) continue;
 
-  const program = ts.createProgram(files, options);
-  const errors = ts
-    .getPreEmitDiagnostics(program)
-    .filter(
-      (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error,
+  const sourceFiles = files.filter((file) => !isTestFile(file));
+  if (sourceFiles.length > 0) {
+    totalErrors += reportErrors(
+      `${packageJson.name} (sources)`,
+      ts.createProgram(sourceFiles, baseOptions),
     );
+    checked += 1;
+  }
 
-  checked += 1;
-  if (errors.length === 0) continue;
+  const testFiles = files.filter((file) => isTestFile(file));
+  if (testFiles.length > 0) {
+    totalErrors += reportErrors(
+      `${packageJson.name} (tests)`,
+      ts.createProgram(testFiles, testOptions),
+    );
+    checked += 1;
+  }
+}
 
-  console.log(
-    ts.formatDiagnostics(errors, {
-      getCanonicalFileName: (fileName) => fileName,
-      getCurrentDirectory: () => absolute,
-      getNewLine: () => "\n",
-    }),
+const webConfigPath = path.join(repositoryRoot, "apps/web/tsconfig.json");
+if (fs.existsSync(webConfigPath)) {
+  const webConfig = ts.getParsedCommandLineOfConfigFile(
+    webConfigPath,
+    {},
+    {
+      ...ts.sys,
+      onUnRecoverableConfigFileDiagnostic: (diagnostic) => {
+        console.log(ts.formatDiagnostics([diagnostic], formatHost));
+      },
+    },
   );
-  console.log(`[${packageJson.name}] ${errors.length} type error(s)`);
-  totalErrors += errors.length;
+  if (webConfig) {
+    totalErrors += reportErrors(
+      "apps/web",
+      ts.createProgram({
+        rootNames: webConfig.fileNames,
+        options: { ...webConfig.options, noEmit: true },
+      }),
+    );
+    checked += 1;
+  }
 }
 
 if (totalErrors > 0) {
   console.error(
-    `[typecheck] ${totalErrors} type error(s) across ${PACKAGE_DIRECTORIES.length} packages`,
+    `[typecheck] ${totalErrors} type error(s) in ${checked} projects`,
   );
   process.exit(1);
 }
 
-console.log(`[typecheck] ${checked} packages OK (no type errors)`);
+console.log(`[typecheck] ${checked} projects OK (no type errors)`);

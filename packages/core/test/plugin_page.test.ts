@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { resolveConfig } from "../src/config.js";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
-import { definePlugin } from "../src/types/plugin.js";
+import { definePlugin, resolvePlugins } from "../src/types/plugin.js";
 
 function source(): ContentSource {
   return {
@@ -93,6 +93,70 @@ test("duplicate page type IDs fail during plugin resolution", async () => {
     manager.getManifest(),
     /provided by both first and second/,
   );
+});
+
+test("config-driven duplicate plugin names fail during config resolution", () => {
+  const plugin = () => definePlugin({ name: "duplicate-name" });
+
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Test" },
+        plugins: [plugin(), plugin()],
+      }),
+    /Duplicate plugin name "duplicate-name"/,
+  );
+});
+
+test("direct resolvePlugins callers reject duplicate plugin names", () => {
+  const plugin = () => definePlugin({ name: "duplicate-name" });
+
+  assert.throws(
+    () => resolvePlugins([plugin(), plugin()]),
+    /Plugin name "duplicate-name" is used by both/,
+  );
+});
+
+test("disabled plugins may reuse a name without colliding", async () => {
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({
+      site: { title: "Test" },
+      plugins: [
+        definePlugin({ name: "shared", enabled: false }),
+        definePlugin({ name: "shared" }),
+      ],
+    }),
+  });
+
+  const manifest = await manager.getManifest();
+  assert.equal(manifest.entries.length, 1);
+});
+
+test("the resolved plugin set is reused across hook invocations", async () => {
+  const seen: string[] = [];
+  const observer = definePlugin({
+    name: "observer",
+    onManifestCreated: () => {
+      seen.push("manifest");
+    },
+    buildEnd: () => {
+      seen.push("buildEnd");
+    },
+    addDiagnostics: () => [],
+  });
+  const plugins: ReturnType<typeof definePlugin>[] = [observer];
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins }),
+  });
+
+  await manager.getManifest();
+  assert.deepEqual(seen, ["manifest", "buildEnd"]);
+
+  plugins.push(definePlugin({ name: "late" }));
+  await manager.getPagePaths();
+  await manager.getManifest();
+
+  assert.deepEqual(seen, ["manifest", "buildEnd"]);
 });
 
 test("page types validate their runtime contract", async () => {

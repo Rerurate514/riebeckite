@@ -1,3 +1,4 @@
+﻿import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { performance } from "node:perf_hooks";
@@ -33,6 +34,7 @@ type SsgHtmlInspectorPlugin = {
 };
 
 type SsgModule = {
+  default: Parameters<typeof toSSG>[0];
   content?: {
     getManifest(): Promise<{
       generatedOutputs?: readonly {
@@ -157,9 +159,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       );
 
       try {
-        const module = await measure(timingsMs, "ssrModuleLoad", () =>
+        const module = (await measure(timingsMs, "ssrModuleLoad", () =>
           server.ssrLoadModule(entry),
-        );
+        )) as SsgModule;
         const app = module.default;
         if (!app) {
           throw new Error(`Failed to find a default export from ${entry}.`);
@@ -168,7 +170,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         const outputChangeSet = await measure<SsgOutputChangeSet | undefined>(
           timingsMs,
           "outputDependencyResolution",
-          () => module.content?.getOutputChangeSet(),
+          async () => module.content?.getOutputChangeSet(),
         );
         const outputCachePath = join(
           config.root,
@@ -178,6 +180,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         const previousOutputCache = await loadOutputCache(
           outputCachePath,
           timingsMs,
+          (message) => this.warn(message),
         );
         const canUseIncremental =
           outputChangeSet &&
@@ -313,7 +316,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         metrics.cacheEntriesSerialized = Object.keys(
           nextOutputCache.outputs,
         ).length;
-        await saveOutputCache(outputCachePath, nextOutputCache, timingsMs);
+        try {
+          await saveOutputCache(outputCachePath, nextOutputCache, timingsMs);
+        } catch (error) {
+          this.warn(
+            `SSG output cache could not be saved; the next build regenerates every output. ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          );
+        }
         await writeSsgOutputMetrics(metrics);
         inspectGeneratedHtmlPages(module, generatedHtml, {
           warn: (message) => this.warn(message),
@@ -395,21 +406,67 @@ function routeOutputPath(routePath: string, contentType: string): string {
 export async function loadOutputCache(
   path: string,
   timingsMs?: Record<string, number>,
+  log: (message: string) => void = () => {},
 ): Promise<(OutputCacheState & { fileSizeBytes?: number }) | undefined> {
+  let raw: string;
   try {
-    const content = await measure(timingsMs, "outputCacheRead", () =>
+    raw = await measure(timingsMs, "outputCacheRead", () =>
       readFile(path, "utf8"),
     );
-    const parsed = measureSync(timingsMs, "outputCacheParse", () =>
-      JSON.parse(content),
-    ) as unknown;
-    if (!isOutputCacheState(parsed)) return undefined;
-    return timingsMs
-      ? { ...parsed, fileSizeBytes: Buffer.byteLength(content) }
-      : parsed;
-  } catch {
+  } catch (error) {
+    if (isNotFoundError(error)) return undefined;
+    log(
+      `SSG output cache could not be read; the build regenerates every output. ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
     return undefined;
   }
+
+  let parsed: unknown;
+  try {
+    parsed = measureSync(timingsMs, "outputCacheParse", () => JSON.parse(raw));
+  } catch (error) {
+    log(
+      `SSG output cache is corrupted and will be rebuilt. ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+    return undefined;
+  }
+
+  if (!isOutputCacheState(parsed)) {
+    log("SSG output cache uses an unsupported format and will be rebuilt.");
+    return undefined;
+  }
+  return timingsMs
+    ? { ...parsed, fileSizeBytes: Buffer.byteLength(raw) }
+    : parsed;
+}
+
+function isOutputCacheState(value: unknown): value is OutputCacheState {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as {
+    version?: unknown;
+    outputs?: unknown;
+  };
+  return candidate.version === 1 && isOutputCacheEntries(candidate.outputs);
+}
+
+function isOutputCacheEntries(
+  value: unknown,
+): value is OutputCacheState["outputs"] {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+  return Object.values(value).every(
+    (entry) =>
+      typeof entry === "object" &&
+      entry !== null &&
+      typeof (entry as OutputCacheEntry).source === "string" &&
+      ((entry as OutputCacheEntry).encoding === "utf8" ||
+        (entry as OutputCacheEntry).encoding === "base64"),
+  );
 }
 
 export async function saveOutputCache(
@@ -417,35 +474,56 @@ export async function saveOutputCache(
   state: OutputCacheState,
   timingsMs?: Record<string, number>,
 ): Promise<void> {
-  await mkdir(dirname(path), { recursive: true });
-  const temporaryPath = `${path}.${process.pid}.${Date.now()}.tmp`;
+  const directory = dirname(path);
+  await mkdir(directory, { recursive: true });
+  const temporaryPath = `${path}.${randomUUID()}.tmp`;
   const serialized = measureSync(
     timingsMs,
     "outputCacheSerialize",
     () => `${JSON.stringify(state)}\n`,
   );
-  await measure(timingsMs, "outputCacheWrite", () =>
-    writeFile(temporaryPath, serialized, "utf8"),
-  );
-  await measure(timingsMs, "outputCacheRename", () =>
-    rename(temporaryPath, path),
-  );
+
+  try {
+    await measure(timingsMs, "outputCacheWrite", () =>
+      writeFile(temporaryPath, serialized, "utf8"),
+    );
+    await measure(timingsMs, "outputCacheRename", () =>
+      replaceFile(temporaryPath, path),
+    );
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
 }
 
-function isOutputCacheState(value: unknown): value is OutputCacheState {
-  if (!value || typeof value !== "object") return false;
-  const state = value as { version?: unknown; outputs?: unknown };
-  if (state.version !== 1) return false;
-  if (!state.outputs || typeof state.outputs !== "object") return false;
-  for (const [path, entry] of Object.entries(state.outputs)) {
-    if (typeof path !== "string") return false;
-    if (!entry || typeof entry !== "object") return false;
-    const output = entry as { source?: unknown; encoding?: unknown };
-    if (typeof output.source !== "string") return false;
-    if (output.encoding !== "utf8" && output.encoding !== "base64")
-      return false;
+async function replaceFile(
+  temporaryPath: string,
+  targetPath: string,
+): Promise<void> {
+  try {
+    await rename(temporaryPath, targetPath);
+  } catch (error) {
+    if (!isReplacementFailure(error)) throw error;
+    await rm(targetPath, { force: true });
+    await rename(temporaryPath, targetPath);
   }
-  return true;
+}
+
+function isReplacementFailure(error: unknown): boolean {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return false;
+  }
+  const code = String(error.code);
+  return code === "EPERM" || code === "EEXIST" || code === "EACCES";
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "ENOENT"
+  );
 }
 
 function encodeOutput(source: string | Uint8Array): OutputCacheEntry {

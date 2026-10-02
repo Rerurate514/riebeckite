@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { resolveConfig } from "@riebeckite/core";
+import type {
+  AnalyticsCapability,
+  AnalyticsEvent,
+  AnalyticsProvider,
+  AnalyticsQuery,
+  AnalyticsResult,
+} from "../index.js";
 import {
   analytics,
   assertAnalyticsQuerySupported,
@@ -293,10 +300,12 @@ test("every query type maps to its own required capability", () => {
 
 test("supportsAnalyticsCapability distinguishes capture-only providers", () => {
   const captureOnly = new MemoryAnalyticsProvider();
-  const provider = {
-    capabilities: new Set(["capture"] as const),
-    async capture() {},
-    async query() {},
+  const provider: AnalyticsProvider = {
+    capabilities: new Set<AnalyticsCapability>(["capture"]),
+    async capture(_event: AnalyticsEvent) {},
+    async query(_query: AnalyticsQuery): Promise<AnalyticsResult> {
+      return { type: "popular_content", items: [] };
+    },
   };
   assert.equal(
     supportsAnalyticsCapability(captureOnly, "popular_content"),

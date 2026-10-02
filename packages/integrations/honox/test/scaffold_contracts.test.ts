@@ -99,10 +99,10 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
       "package.json",
     );
     assert.ok(pkg, "package.json must exist");
-    assert.ok(pkg.scripts?.dev, "dev script must exist");
-    assert.ok(pkg.scripts?.build, "build script must exist");
-    assert.ok(pkg.scripts?.check, "check script must exist");
-    assert.ok(pkg.scripts?.doctor, "doctor script must exist");
+    assert.ok(pkg?.scripts?.dev, "dev script must exist");
+    assert.ok(pkg?.scripts?.build, "build script must exist");
+    assert.ok(pkg?.scripts?.check, "check script must exist");
+    assert.ok(pkg?.scripts?.doctor, "doctor script must exist");
 
     // Run npm install
     const { execSync } = await import("node:child_process");
@@ -236,6 +236,7 @@ test("Contract 2b: Getting Started first-post example matches actual generated s
 
     // Verify the exact path structure documented in quick-start.md
     // content/first-post.md should work when created by user
+    const _contentDir = path.join(targetDir, "content");
     assert.ok(
       await dirExists(targetDir, "content"),
       "content/ directory must exist",
@@ -284,34 +285,39 @@ test("Contract 3: generated site uses npm consistently across all touchpoints", 
 
     // Should contain npm install, not pnpm install
     assert.ok(
-      readme.includes("npm install"),
+      readme?.includes("npm install"),
       "README must contain 'npm install'",
     );
     assert.ok(
-      !readme.includes("pnpm install"),
+      !readme?.includes("pnpm install"),
       "README must not contain 'pnpm install'",
     );
 
     // Should contain npm exec riebeckite, not pnpm exec riebeckite
     assert.ok(
-      readme.includes("npm exec riebeckite"),
+      readme?.includes("npm exec riebeckite"),
       "README must contain 'npm exec riebeckite'",
     );
     assert.ok(
-      !readme.includes("pnpm exec riebeckite"),
+      !readme?.includes("pnpm exec riebeckite"),
       "README must not contain 'pnpm exec riebeckite'",
     );
 
     // Check GitHub Actions workflow uses npm
     const workflow = await readFile(targetDir, ".github/workflows/deploy.yml");
     assert.ok(workflow, "deploy.yml must exist when githubActions: true");
-    assert.ok(workflow.includes("cache: npm"), "workflow must use npm cache");
-    assert.ok(workflow.includes("npm ci"), "workflow must use npm ci");
+    assert.ok(workflow?.includes("cache: npm"), "workflow must use npm cache");
+    assert.ok(workflow?.includes("npm ci"), "workflow must use npm ci");
     assert.ok(
-      workflow.includes("npm exec riebeckite"),
+      workflow?.includes("npm exec riebeckite"),
       "workflow must use npm exec riebeckite",
     );
-    assert.ok(!workflow.includes("pnpm"), "workflow must not reference pnpm");
+    assert.ok(!workflow?.includes("pnpm"), "workflow must not reference pnpm");
+
+    // Check CLI next-steps use npm (formatScaffoldNextSteps)
+    const _nextSteps = await readFile(targetDir, ".riebeckite/NEXT_STEPS.md");
+    // Note: next-steps are printed to console, not written to file
+    // We verify via the scaffold source in a different test
   });
 });
 
@@ -554,7 +560,7 @@ test("Contract 7: generated .gitignore excludes build artifacts but keeps lockfi
     // Required exclusions
     for (const pattern of GITIGNORE_REQUIRED) {
       assert.ok(
-        gitignore.includes(pattern),
+        gitignore?.includes(pattern),
         `.gitignore must exclude ${pattern}`,
       );
     }
@@ -562,7 +568,7 @@ test("Contract 7: generated .gitignore excludes build artifacts but keeps lockfi
     // Must NOT exclude lockfile
     for (const pattern of GITIGNORE_FORBIDDEN) {
       assert.ok(
-        !gitignore.includes(pattern),
+        !gitignore?.includes(pattern),
         `.gitignore must not exclude ${pattern} (needed for npm ci)`,
       );
     }
@@ -611,7 +617,7 @@ Hello Riebeckite.
     const outputHtml = await readFile(targetDir, "dist/first-post.html");
     assert.ok(outputHtml, "first-post.html must be readable");
     assert.ok(
-      outputHtml.includes("Hello Riebeckite"),
+      outputHtml?.includes("Hello Riebeckite"),
       "output must contain article body",
     );
   });
@@ -651,11 +657,11 @@ Body text without heading.
     // The <title> tag should be the SITE title, not the frontmatter title
     // (Current behavior: site title from config, not frontmatter)
     // The frontmatter title is used for SEO/listings/feeds but not for <title> or <h1>
-    assert.ok(outputHtml.includes("<title>"), "page must have <title> tag");
+    assert.ok(outputHtml?.includes("<title>"), "page must have <title> tag");
 
     // Body heading must come from markdown body (# Heading), not frontmatter
     assert.ok(
-      !outputHtml.includes("<h1>Frontmatter Title Only</h1>"),
+      !outputHtml?.includes("<h1>Frontmatter Title Only</h1>"),
       "frontmatter title must not render as <h1>",
     );
 
@@ -679,11 +685,11 @@ Body text.
     const outputHtml2 = await readFile(targetDir, "dist/with-heading.html");
     assert.ok(outputHtml2, "output must exist");
     assert.ok(
-      outputHtml2.includes("<h1"),
+      outputHtml2?.includes("<h1"),
       "body # heading must render as <h1>",
     );
     assert.ok(
-      outputHtml2.includes("Body Heading"),
+      outputHtml2?.includes("Body Heading"),
       "body heading text must appear in output",
     );
   });

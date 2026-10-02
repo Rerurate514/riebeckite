@@ -65,8 +65,8 @@ test("D1 storage upserts canonical targets and maps rows", async () => {
           values = bound;
           return statement;
         },
-        async all() {
-          return { results: rows };
+        async all<T = unknown>() {
+          return { results: rows as T[] };
         },
         async run() {
           runs.push({ sql, values });

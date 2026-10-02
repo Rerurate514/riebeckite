@@ -21,6 +21,7 @@ function entry(
     title: slug,
     frontmatter,
     html,
+    publishing: { visibility: "public", routable: true, discoverable: true },
     tags: [],
     links: [],
     backlinks: [],

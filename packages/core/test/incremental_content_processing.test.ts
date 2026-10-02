@@ -6,6 +6,7 @@ import { test } from "node:test";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
 import { NoopLogger, SinkTracer } from "../src/observability.js";
+import type { ContentManifestEntry } from "../src/types/content_manifest.js";
 import { definePlugin } from "../src/types/plugin.js";
 import type { ResolvedRiebeckiteConfig } from "../src/types/resolved_riebeckite_config.js";
 
@@ -48,6 +49,8 @@ function testConfig(
       typography: "system",
       articleLayout: "article",
       tokens: {},
+      attributes: {},
+      userCss: [],
       styles: [],
     },
     plugins: [
@@ -392,4 +395,228 @@ test("plugin config change does not reuse old processed entries", async () => {
   assert.equal(second.affected, 2);
   assert.equal(second.processed, 2);
   assert.equal(second.reused, 0);
+});
+
+function manifestDecorator(marker: string) {
+  return definePlugin({
+    name: "manifest-decorator",
+    onManifestCreated: ({ manifest }) => {
+      for (const entry of manifest.entries) {
+        entry.html = `${entry.html}\n<p>${marker}</p>`;
+        entry.headTags = [
+          ...(entry.headTags ?? []),
+          { tag: "meta" as const, attrs: { name: "marker", content: marker } },
+        ];
+        entry.bodySlots = {
+          ...(entry.bodySlots ?? {}),
+          footer: `<footer>${marker}</footer>`,
+        };
+      }
+    },
+  });
+}
+
+function v2ManifestDecorator(marker: string) {
+  return definePlugin({
+    name: "manifest-decorator",
+    onManifestCreated: ({ manifest }) => {
+      for (const entry of manifest.entries) {
+        entry.html = `${entry.html}\n<p>${marker}</p><hr>`;
+        entry.headTags = [
+          ...(entry.headTags ?? []),
+          { tag: "meta" as const, attrs: { name: "marker", content: marker } },
+        ];
+        entry.bodySlots = {
+          ...(entry.bodySlots ?? {}),
+          footer: `<footer>${marker}</footer>`,
+        };
+      }
+    },
+  });
+}
+
+function lifecycleConfig(
+  directory: string,
+  marker: string,
+  decorator: (
+    marker: string,
+  ) => ReturnType<typeof definePlugin> = manifestDecorator,
+): ResolvedRiebeckiteConfig {
+  const config = testConfig(directory);
+  return { ...config, plugins: [...config.plugins, decorator(marker)] };
+}
+
+async function buildWithDecorator(
+  files: Record<string, string>,
+  directory: string,
+  marker: string,
+  decorator?: (marker: string) => ReturnType<typeof definePlugin>,
+) {
+  const events: { name: string; attributes?: Record<string, unknown> }[] = [];
+  const tracer = new SinkTracer({
+    onEvent: (event) => events.push(event),
+    onSpan: () => {},
+  });
+  const config = lifecycleConfig(directory, marker, decorator);
+  const manager = new ContentManager(memorySource(files), [], {
+    config,
+    plugins: config.plugins,
+    observability: { logger: new NoopLogger(), tracer },
+  });
+  const manifest = await manager.build({ incremental: true });
+  await manager.dispose();
+  return {
+    manifest,
+    reused: events.filter((event) => event.name === "content.reuse").length,
+  };
+}
+
+function entryView(manifest: { entries: ContentManifestEntry[] }) {
+  return manifest.entries.map((entry) => ({
+    slug: entry.slug,
+    html: entry.html,
+    headTags: entry.headTags ?? [],
+    bodySlots: entry.bodySlots ?? {},
+    links: entry.links,
+    backlinks: entry.backlinks,
+  }));
+}
+
+test("warm rebuild reproduces the cold build when a plugin decorates entries", async () => {
+  const directory = await tempDirectory("incremental-decorator");
+  const files = { "a.md": "# A", "b.md": "# B" };
+
+  const cold = await buildWithDecorator(files, directory, "first");
+  const warm = await buildWithDecorator(files, directory, "first");
+
+  assert.equal(warm.reused, 2);
+  assert.deepEqual(entryView(warm.manifest), entryView(cold.manifest));
+});
+
+test("repeated warm rebuilds do not duplicate plugin output", async () => {
+  const directory = await tempDirectory("incremental-decorator-repeat");
+  const files = { "a.md": "# A", "b.md": "# B" };
+
+  await buildWithDecorator(files, directory, "marker");
+  await buildWithDecorator(files, directory, "marker");
+  const third = await buildWithDecorator(files, directory, "marker");
+
+  for (const entry of third.manifest.entries) {
+    assert.equal(
+      entry.html?.match(/<p>marker<\/p>/g)?.length ?? 0,
+      1,
+      `${entry.slug} html`,
+    );
+    assert.equal(
+      entry.headTags?.filter((tag) => tag.attrs.name === "marker").length ?? 0,
+      1,
+      `${entry.slug} headTags`,
+    );
+    assert.equal(
+      entry.bodySlots?.footer,
+      "<footer>marker</footer>",
+      `${entry.slug} bodySlots`,
+    );
+  }
+});
+
+test("plugin implementation change invalidates reused manifest entries", async () => {
+  const directory = await tempDirectory("incremental-decorator-change");
+  const files = { "a.md": "# A" };
+
+  const first = await buildWithDecorator(files, directory, "first");
+  const changed = await buildWithDecorator(
+    files,
+    directory,
+    "second",
+    v2ManifestDecorator,
+  );
+
+  assert.equal(changed.reused, 0);
+  for (const entry of changed.manifest.entries) {
+    assert.match(entry.html, /<p>second<\/p><hr>/);
+    assert.equal(entry.html?.match(/<p>first<\/p>/g)?.length ?? 0, 0);
+  }
+  assert.notDeepEqual(entryView(changed.manifest), entryView(first.manifest));
+});
+
+test("a plugin whose source is unchanged keeps reusing entries", async () => {
+  const directory = await tempDirectory("incremental-decorator-stable");
+  const files = { "a.md": "# A" };
+
+  await buildWithDecorator(files, directory, "marker", v2ManifestDecorator);
+  const second = await buildWithDecorator(
+    files,
+    directory,
+    "marker",
+    v2ManifestDecorator,
+  );
+
+  assert.equal(second.reused, 1);
+  assert.match(second.manifest.entries[0]?.html ?? "", /<hr>/);
+});
+
+test("cacheVersion change invalidates reused manifest entries", async () => {
+  const directory = await tempDirectory("incremental-decorator-version");
+  const files = { "a.md": "# A" };
+
+  await build(files, directory, "v1");
+  const versioned = await (async () => {
+    const config = lifecycleConfig(directory, "marker");
+    const versioned: ResolvedRiebeckiteConfig = {
+      ...config,
+      plugins: config.plugins.map((plugin) =>
+        plugin.name === "incremental-test-plugin"
+          ? { ...plugin, cacheVersion: "v2" }
+          : plugin,
+      ),
+    };
+    const tracer = new SinkTracer({ onEvent: () => {}, onSpan: () => {} });
+    const manager = new ContentManager(memorySource(files), [], {
+      config: versioned,
+      plugins: versioned.plugins,
+      observability: { logger: new NoopLogger(), tracer },
+    });
+    const manifest = await manager.build({ incremental: true });
+    await manager.dispose();
+    return manifest;
+  })();
+
+  assert.equal(versioned.entries.length, 1);
+  assert.match(versioned.entries[0]?.html ?? "", /<p>marker<\/p>/);
+});
+
+test("dependency change still invalidates only affected content with a decorating plugin", async () => {
+  const directory = await tempDirectory("incremental-decorator-depends");
+  const files = {
+    "a.md": "# A\n\n[[b]]",
+    "b.md": "# B",
+    "c.md": "# C",
+  };
+
+  await buildWithDecorator(files, directory, "marker");
+  files["b.md"] += "\nEdited.";
+
+  const events: { name: string }[] = [];
+  const tracer = new SinkTracer({
+    onEvent: (event) => events.push(event),
+    onSpan: () => {},
+  });
+  const config = lifecycleConfig(directory, "marker");
+  const manager = new ContentManager(memorySource(files), [], {
+    config,
+    plugins: config.plugins,
+    observability: { logger: new NoopLogger(), tracer },
+  });
+  const manifest = await manager.build({ incremental: true });
+  await manager.dispose();
+
+  assert.equal(
+    events.filter((event) => event.name === "content.reuse").length,
+    1,
+  );
+  for (const entry of manifest.entries) {
+    assert.match(entry.html, /<p>marker<\/p>/);
+    assert.equal(entry.html?.match(/<p>marker<\/p>/g)?.length ?? 0, 1);
+  }
 });

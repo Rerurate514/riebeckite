@@ -56,8 +56,8 @@ export function remarkCitations(options: RemarkCitationsOptions) {
     visit(
       tree,
       "text",
-      (node: Text, index: number | undefined, parent: Parent) => {
-        if (index === undefined || !parent.children) return;
+      (node: Text, index: number | undefined, parent: Parent | undefined) => {
+        if (index === undefined || !parent?.children) return;
         if (blocked.has(node)) return;
         const replacement = transformTextNode(node, context);
         if (replacement.length === 1 && replacement[0] === node) return;

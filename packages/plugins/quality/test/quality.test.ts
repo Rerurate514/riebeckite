@@ -44,6 +44,7 @@ function entry(slug: string, html: string): ContentManifestEntry {
     publicLocation: { slug, permalink: `/${slug}` },
     title: slug,
     frontmatter: {},
+    publishing: { visibility: "public", routable: true, discoverable: true },
     tags: [],
     links: [],
     backlinks: [],

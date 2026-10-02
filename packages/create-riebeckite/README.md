@@ -35,9 +35,9 @@ The prompts ask, in order:
 
 `Separate GitHub repository` also asks for the content and site repositories,
 and GitHub Actions deployment is then configured for you. That setup is covered
-in the [content repository guide](../../docs/en/guides/content-repositories.md).
+in the [content repository guide](../../docs/en/docs/guides/content-repositories.md).
 Deployment can be added later, described in
-[Deployment](../../docs/en/getting-started/deployment.md).
+[Deployment](../../docs/en/docs/getting-started/deployment.md).
 
 ## Options
 

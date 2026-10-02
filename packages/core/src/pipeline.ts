@@ -58,6 +58,7 @@ export class Pipeline {
   private pluginCaches = new Map<string, PluginCache>();
   private persistentCache: PersistentContentCache | null = null;
   private pipelineFingerprint: string | null = null;
+  private resolvedPlugins: RiebeckitePlugin[] | null = null;
 
   constructor(
     private contentIndex: Map<string, string>,
@@ -105,21 +106,23 @@ export class Pipeline {
       ? dependencyTracker.contentSource
       : this.options.contentSource;
 
+    const sourceSlug = context.sourceSlug;
     if (
       embedDepth === 0 &&
       this.persistentCache &&
       this.pipelineFingerprint &&
-      context.sourceSlug &&
-      this.options.contentSource
+      sourceSlug &&
+      this.options.contentSource &&
+      this.options.config
     ) {
       const cacheable = isPersistentlyCacheable(
-        context.sourceSlug,
+        sourceSlug,
         this.options.config,
       );
       if (cacheable.cacheable) {
         const frontmatter = extractFrontmatter(markDownContent);
         const cacheKey = computeContentCacheKey({
-          slug: context.sourceSlug,
+          slug: sourceSlug,
           source: markDownContent,
           frontmatter,
           pipelineFingerprint: this.pipelineFingerprint,
@@ -162,7 +165,7 @@ export class Pipeline {
           if (valid) {
             this.options.observability?.tracer?.event(
               "persistentContentCache.hit",
-              { key: cacheKey, slug: context.sourceSlug },
+              { key: cacheKey, slug: sourceSlug },
             );
             return {
               frontmatter: cachedEntry.value.frontmatter,
@@ -172,18 +175,21 @@ export class Pipeline {
         }
         this.options.observability?.tracer?.event(
           "persistentContentCache.miss",
-          { key: cacheKey, slug: context.sourceSlug },
+          { key: cacheKey, slug: sourceSlug },
         );
       } else {
         this.options.observability?.tracer?.event(
           "persistentContentCache.bypass",
-          { slug: context.sourceSlug, reason: cacheable.reason },
+          {
+            slug: sourceSlug,
+            ...(cacheable.reason ? { reason: cacheable.reason } : {}),
+          },
         );
       }
     }
 
     const processor = unified();
-    const plugins = resolvePlugins(this.options.plugins);
+    const plugins = this.resolvePlugins();
     this.use(processor, remarkParse);
     this.use(processor, remarkDirective);
     this.use(processor, remarkFrontmatter, ["yaml", "toml"]);
@@ -226,7 +232,8 @@ export class Pipeline {
     this.use(processor, normalizeMarkdownLinks, {
       ...markdownPipelineContext,
       recordLinkResolution: dependencyTracker
-        ? (id, value) => dependencyTracker.recordLinkResolution(id, value)
+        ? (id: string, value: string) =>
+            dependencyTracker.recordLinkResolution(id, value)
         : undefined,
     });
 
@@ -262,17 +269,18 @@ export class Pipeline {
       embedDepth === 0 &&
       this.persistentCache &&
       this.pipelineFingerprint &&
-      context.sourceSlug &&
-      dependencyTracker
+      sourceSlug &&
+      dependencyTracker &&
+      this.options.config
     ) {
       const cacheable = isPersistentlyCacheable(
-        context.sourceSlug,
+        sourceSlug,
         this.options.config,
       );
       if (cacheable.cacheable) {
         const frontmatter = extractFrontmatter(markDownContent);
         const cacheKey = computeContentCacheKey({
-          slug: context.sourceSlug,
+          slug: sourceSlug,
           source: markDownContent,
           frontmatter,
           pipelineFingerprint: this.pipelineFingerprint,
@@ -364,10 +372,15 @@ export class Pipeline {
     };
   }
 
+  private resolvePlugins(): RiebeckitePlugin[] {
+    this.resolvedPlugins ??= resolvePlugins(this.options.plugins);
+    return this.resolvedPlugins;
+  }
+
   private createContentRenderer(
     contentSource: ContentSource | undefined,
   ): MarkdownPipelineContext["renderContent"] {
-    const renderers = resolvePlugins(this.options.plugins).flatMap((plugin) =>
+    const renderers = this.resolvePlugins().flatMap((plugin) =>
       (plugin.renderers ?? []).map((renderer) => ({ plugin, renderer })),
     );
     if (renderers.length === 0) return undefined;

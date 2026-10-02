@@ -8,6 +8,7 @@ import {
   createStyleAsset,
   type Diagnostic,
   definePlugin,
+  type PluginHeadTag,
   type PostFrontmatter,
 } from "@riebeckite/core";
 import { parse } from "yaml";
@@ -594,15 +595,17 @@ function addLocalizationHeadTags(
           content.translationId,
       ),
     );
-    const headTags = translations.map((translation) => ({
-      tag: "link" as const,
-      attrs: {
-        rel: "alternate",
-        hreflang:
-          translation.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ?? "",
-        href: translation.permalink,
-      },
-    }));
+    const headTags = translations.map(
+      (translation): PluginHeadTag => ({
+        tag: "link",
+        attrs: {
+          rel: "alternate",
+          hreflang:
+            translation.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ?? "",
+          href: translation.permalink,
+        },
+      }),
+    );
     entry.headTags = [
       ...(entry.headTags ?? []).filter(
         (tag) => !headTags.some((generated) => sameHeadTag(tag, generated)),
@@ -627,14 +630,7 @@ function addLanguageSwitchers(
   }
 }
 
-function sameHeadTag(
-  left: ContentManifestEntry["headTags"] extends readonly (infer T)[]
-    ? T
-    : never,
-  right: ContentManifestEntry["headTags"] extends readonly (infer T)[]
-    ? T
-    : never,
-): boolean {
+function sameHeadTag(left: PluginHeadTag, right: PluginHeadTag): boolean {
   return (
     left.tag === right.tag &&
     left.attrs?.rel === right.attrs?.rel &&

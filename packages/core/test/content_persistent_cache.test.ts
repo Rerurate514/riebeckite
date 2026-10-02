@@ -59,6 +59,8 @@ function createTestConfig(
       typography: "system",
       articleLayout: "article",
       tokens: {},
+      attributes: {},
+      userCss: [],
       styles: [],
     },
     plugins,

@@ -13,7 +13,7 @@ import {
 } from "../index.ts";
 
 function makeEntry(
-  overrides: Partial<ContentManifestEntry> & { slug: string },
+  overrides: Omit<Partial<ContentManifestEntry>, "slug"> & { slug: string },
 ): ContentManifestEntry {
   const permalink = overrides.slug === "index" ? "/" : `/${overrides.slug}`;
 
@@ -24,6 +24,7 @@ function makeEntry(
     title: "",
     frontmatter: {},
     html: "",
+    publishing: { visibility: "public", routable: true, discoverable: true },
     tags: [],
     links: [],
     backlinks: [],

@@ -499,12 +499,12 @@ class FakeStatement {
     this.database.counts.set(key, (this.database.counts.get(key) ?? 0) + 1);
   }
 
-  async all() {
+  async all<T = unknown>() {
     if (this.database.failNextQuery) throw new Error("storage exploded");
     if (this.query.includes("GROUP BY content_id")) {
-      return { results: this.popularRows() };
+      return { results: this.popularRows() as T[] };
     }
-    return { results: [{ page_views: this.contentTotal() }] };
+    return { results: [{ page_views: this.contentTotal() }] as T[] };
   }
 
   private boundRangeValues(startIndex: number): Array<string | undefined> {

@@ -50,7 +50,7 @@ test("the robots and sitemap endpoints return generated files", async () => {
 
   const robots = await plugin.endpoints
     ?.find((endpoint) => endpoint.path === "/robots.txt")
-    ?.handler({ config, manifest });
+    ?.handler({ config, manifest } as never);
   assert.equal(robots?.headers?.["content-type"], "text/plain; charset=utf-8");
   assert.match(
     robots?.body ?? "",
@@ -59,7 +59,7 @@ test("the robots and sitemap endpoints return generated files", async () => {
 
   const sitemap = await plugin.endpoints
     ?.find((endpoint) => endpoint.path === "/sitemap.xml")
-    ?.handler({ config, manifest });
+    ?.handler({ config, manifest } as never);
   assert.equal(
     sitemap?.headers?.["content-type"],
     "application/xml; charset=utf-8",
@@ -69,7 +69,10 @@ test("the robots and sitemap endpoints return generated files", async () => {
 
 test("the json feed endpoint returns a parsed object", async () => {
   const plugin = seo({ feed: { json: true } });
-  const response = await plugin.endpoints?.[0]?.handler({ config, manifest });
+  const response = await plugin.endpoints?.[0]?.handler({
+    config,
+    manifest,
+  } as never);
 
   assert.equal(
     (response?.json as { version: string }).version,

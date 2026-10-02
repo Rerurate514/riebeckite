@@ -36,7 +36,9 @@ export type ForceLayoutGuardOptions = {
 
 export const FORCE_LAYOUT_CONFIRM_NODE_COUNT = 500;
 
-export function shouldGuardForceLayout(options: ForceLayoutGuardOptions): boolean {
+export function shouldGuardForceLayout(
+  options: ForceLayoutGuardOptions,
+): boolean {
   return (
     options.layout === "force" &&
     options.mode === "global" &&

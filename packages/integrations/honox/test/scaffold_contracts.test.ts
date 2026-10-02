@@ -1,20 +1,18 @@
 import assert from "node:assert/strict";
-import fs from "node:fs/promises";
 import fsSync from "node:fs";
+import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import {
-  WRANGLER_DEFAULTS,
-  GITHUB_ACTIONS_SECRETS,
-  PACKAGE_MANAGER,
-  LOCKFILE_NAME,
-  GITIGNORE_REQUIRED,
-  GITIGNORE_FORBIDDEN,
   DEFAULT_PRESET,
-  STARTER_CONTENT_PAGES,
+  GITHUB_ACTIONS_SECRETS,
+  GITIGNORE_FORBIDDEN,
+  GITIGNORE_REQUIRED,
+  LOCKFILE_NAME,
   STARTER_LANGUAGES,
+  WRANGLER_DEFAULTS,
 } from "../src/scaffold/wrangler-defaults.js";
 
 /**
@@ -25,7 +23,9 @@ import {
 async function withTemporaryDirectory(
   callback: (directory: string) => Promise<void>,
 ): Promise<void> {
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-contract-"));
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-contract-"),
+  );
   try {
     await callback(directory);
   } finally {
@@ -42,7 +42,10 @@ async function generateStarterSite(targetDirectory: string) {
   });
 }
 
-async function readFile(root: string, relativePath: string): Promise<string | null> {
+async function readFile(
+  root: string,
+  relativePath: string,
+): Promise<string | null> {
   const fullPath = path.join(root, relativePath);
   try {
     return await fs.readFile(fullPath, "utf8");
@@ -51,13 +54,19 @@ async function readFile(root: string, relativePath: string): Promise<string | nu
   }
 }
 
-async function readJson<T>(root: string, relativePath: string): Promise<T | null> {
+async function readJson<T>(
+  root: string,
+  relativePath: string,
+): Promise<T | null> {
   const content = await readFile(root, relativePath);
   if (!content) return null;
   return JSON.parse(content) as T;
 }
 
-async function fileExists(root: string, relativePath: string): Promise<boolean> {
+async function fileExists(
+  root: string,
+  relativePath: string,
+): Promise<boolean> {
   try {
     await fs.access(path.join(root, relativePath));
     return true;
@@ -85,19 +94,25 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
     await generateStarterSite(targetDir);
 
     // Verify package.json has npm scripts that work
-    const pkg = await readJson<{ scripts: Record<string, string> }>(targetDir, "package.json");
+    const pkg = await readJson<{ scripts: Record<string, string> }>(
+      targetDir,
+      "package.json",
+    );
     assert.ok(pkg, "package.json must exist");
-    assert.ok(pkg!.scripts?.dev, "dev script must exist");
-    assert.ok(pkg!.scripts?.build, "build script must exist");
-    assert.ok(pkg!.scripts?.check, "check script must exist");
-    assert.ok(pkg!.scripts?.doctor, "doctor script must exist");
+    assert.ok(pkg.scripts?.dev, "dev script must exist");
+    assert.ok(pkg.scripts?.build, "build script must exist");
+    assert.ok(pkg.scripts?.check, "check script must exist");
+    assert.ok(pkg.scripts?.doctor, "doctor script must exist");
 
     // Run npm install
     const { execSync } = await import("node:child_process");
     execSync("npm install", { cwd: targetDir, stdio: "pipe" });
 
     // Verify lockfile was created
-    assert.ok(await fileExists(targetDir, LOCKFILE_NAME), `${LOCKFILE_NAME} must be created by npm install`);
+    assert.ok(
+      await fileExists(targetDir, LOCKFILE_NAME),
+      `${LOCKFILE_NAME} must be created by npm install`,
+    );
 
     // Run check command
     execSync("npm exec riebeckite check", { cwd: targetDir, stdio: "pipe" });
@@ -108,12 +123,27 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
     // Verify critical build outputs exist
     // Default locale (en) content is at root (e.g., dist/examples.html, dist/guide.html)
     // Other locales have their own folders (dist/ja/index.html, etc.)
-    assert.ok(await fileExists(targetDir, "dist/examples.html"), "dist/examples.html must exist (default locale content)");
-    assert.ok(await fileExists(targetDir, "dist/sitemap.xml"), "dist/sitemap.xml must exist after build");
-    assert.ok(await fileExists(targetDir, "dist/robots.txt"), "dist/robots.txt must exist after build");
-    assert.ok(await dirExists(targetDir, "dist/assets"), "dist/assets directory must exist after build");
+    assert.ok(
+      await fileExists(targetDir, "dist/examples.html"),
+      "dist/examples.html must exist (default locale content)",
+    );
+    assert.ok(
+      await fileExists(targetDir, "dist/sitemap.xml"),
+      "dist/sitemap.xml must exist after build",
+    );
+    assert.ok(
+      await fileExists(targetDir, "dist/robots.txt"),
+      "dist/robots.txt must exist after build",
+    );
+    assert.ok(
+      await dirExists(targetDir, "dist/assets"),
+      "dist/assets directory must exist after build",
+    );
     // Verify at least one localized index exists
-    assert.ok(await fileExists(targetDir, "dist/ja/index.html"), "dist/ja/index.html must exist (localized content)");
+    assert.ok(
+      await fileExists(targetDir, "dist/ja/index.html"),
+      "dist/ja/index.html must exist (localized content)",
+    );
   });
 });
 
@@ -135,7 +165,10 @@ test("Contract 2: starter preset generates exact content files documented in Get
       "content/notes/writing.md",
     ];
     for (const file of expectedBaseFiles) {
-      assert.ok(await fileExists(targetDir, file), `Starter content file ${file} must exist`);
+      assert.ok(
+        await fileExists(targetDir, file),
+        `Starter content file ${file} must exist`,
+      );
     }
 
     // Verify localized variants: index and examples get all languages, guide and notes do not
@@ -157,14 +190,20 @@ test("Contract 2: starter preset generates exact content files documented in Get
       "content/examples.ko.md",
     ];
     for (const file of localizedFiles) {
-      assert.ok(await fileExists(targetDir, file), `Localized content file ${file} must exist`);
+      assert.ok(
+        await fileExists(targetDir, file),
+        `Localized content file ${file} must exist`,
+      );
     }
 
     // Verify guide.md does NOT have localized variants (current scaffold behavior)
     for (const lang of STARTER_LANGUAGES) {
       if (lang === "en") continue;
       const localizedFile = `content/guide.${lang}.md`;
-      assert.ok(!(await fileExists(targetDir, localizedFile)), `guide.md must not have ${localizedFile} (current behavior)`);
+      assert.ok(
+        !(await fileExists(targetDir, localizedFile)),
+        `guide.md must not have ${localizedFile} (current behavior)`,
+      );
     }
 
     // Verify notes/* do NOT have localized variants (current scaffold behavior)
@@ -172,14 +211,20 @@ test("Contract 2: starter preset generates exact content files documented in Get
       for (const lang of STARTER_LANGUAGES) {
         if (lang === "en") continue;
         const localizedFile = `content/notes/${note}.${lang}.md`;
-        assert.ok(!(await fileExists(targetDir, localizedFile)), `notes/${note}.md must not have ${localizedFile} (current behavior)`);
+        assert.ok(
+          !(await fileExists(targetDir, localizedFile)),
+          `notes/${note}.md must not have ${localizedFile} (current behavior)`,
+        );
       }
     }
 
     // Verify no .en.md files exist (base file is unsuffixed)
     for (const file of expectedBaseFiles) {
       const enFile = file.replace(".md", ".en.md");
-      assert.ok(!(await fileExists(targetDir, enFile)), `Must not generate ${enFile} (base file is unsuffixed)`);
+      assert.ok(
+        !(await fileExists(targetDir, enFile)),
+        `Must not generate ${enFile} (base file is unsuffixed)`,
+      );
     }
   });
 });
@@ -191,16 +236,36 @@ test("Contract 2b: Getting Started first-post example matches actual generated s
 
     // Verify the exact path structure documented in quick-start.md
     // content/first-post.md should work when created by user
-    const contentDir = path.join(targetDir, "content");
-    assert.ok(await dirExists(targetDir, "content"), "content/ directory must exist");
+    assert.ok(
+      await dirExists(targetDir, "content"),
+      "content/ directory must exist",
+    );
 
     // The starter preset generates these specific files (from presets.ts)
-    assert.ok(await fileExists(targetDir, "content/index.md"), "content/index.md (base) must exist");
-    assert.ok(await fileExists(targetDir, "content/index.ja.md"), "content/index.ja.md must exist");
-    assert.ok(await fileExists(targetDir, "content/guide.md"), "content/guide.md must exist");
-    assert.ok(await fileExists(targetDir, "content/examples.md"), "content/examples.md must exist");
-    assert.ok(await fileExists(targetDir, "content/notes/planning.md"), "content/notes/planning.md must exist");
-    assert.ok(await fileExists(targetDir, "content/notes/writing.md"), "content/notes/writing.md must exist");
+    assert.ok(
+      await fileExists(targetDir, "content/index.md"),
+      "content/index.md (base) must exist",
+    );
+    assert.ok(
+      await fileExists(targetDir, "content/index.ja.md"),
+      "content/index.ja.md must exist",
+    );
+    assert.ok(
+      await fileExists(targetDir, "content/guide.md"),
+      "content/guide.md must exist",
+    );
+    assert.ok(
+      await fileExists(targetDir, "content/examples.md"),
+      "content/examples.md must exist",
+    );
+    assert.ok(
+      await fileExists(targetDir, "content/notes/planning.md"),
+      "content/notes/planning.md must exist",
+    );
+    assert.ok(
+      await fileExists(targetDir, "content/notes/writing.md"),
+      "content/notes/writing.md must exist",
+    );
   });
 });
 
@@ -218,38 +283,62 @@ test("Contract 3: generated site uses npm consistently across all touchpoints", 
     assert.ok(readme, "README.md must exist");
 
     // Should contain npm install, not pnpm install
-    assert.ok(readme!.includes("npm install"), "README must contain 'npm install'");
-    assert.ok(!readme!.includes("pnpm install"), "README must not contain 'pnpm install'");
+    assert.ok(
+      readme.includes("npm install"),
+      "README must contain 'npm install'",
+    );
+    assert.ok(
+      !readme.includes("pnpm install"),
+      "README must not contain 'pnpm install'",
+    );
 
     // Should contain npm exec riebeckite, not pnpm exec riebeckite
-    assert.ok(readme!.includes("npm exec riebeckite"), "README must contain 'npm exec riebeckite'");
-    assert.ok(!readme!.includes("pnpm exec riebeckite"), "README must not contain 'pnpm exec riebeckite'");
+    assert.ok(
+      readme.includes("npm exec riebeckite"),
+      "README must contain 'npm exec riebeckite'",
+    );
+    assert.ok(
+      !readme.includes("pnpm exec riebeckite"),
+      "README must not contain 'pnpm exec riebeckite'",
+    );
 
     // Check GitHub Actions workflow uses npm
     const workflow = await readFile(targetDir, ".github/workflows/deploy.yml");
     assert.ok(workflow, "deploy.yml must exist when githubActions: true");
-    assert.ok(workflow!.includes("cache: npm"), "workflow must use npm cache");
-    assert.ok(workflow!.includes("npm ci"), "workflow must use npm ci");
-    assert.ok(workflow!.includes("npm exec riebeckite"), "workflow must use npm exec riebeckite");
-    assert.ok(!workflow!.includes("pnpm"), "workflow must not reference pnpm");
-
-    // Check CLI next-steps use npm (formatScaffoldNextSteps)
-    const nextSteps = await readFile(targetDir, ".riebeckite/NEXT_STEPS.md");
-    // Note: next-steps are printed to console, not written to file
-    // We verify via the scaffold source in a different test
+    assert.ok(workflow.includes("cache: npm"), "workflow must use npm cache");
+    assert.ok(workflow.includes("npm ci"), "workflow must use npm ci");
+    assert.ok(
+      workflow.includes("npm exec riebeckite"),
+      "workflow must use npm exec riebeckite",
+    );
+    assert.ok(!workflow.includes("pnpm"), "workflow must not reference pnpm");
   });
 });
 
 test("Contract 3b: scaffold CLI prints npm commands in next steps", async () => {
   // This verifies the source of truth for CLI output
   // The formatScaffoldNextSteps function in next-steps.ts is the canonical source
-  const { formatScaffoldNextSteps } = await import("../src/scaffold/next-steps.js");
+  const { formatScaffoldNextSteps } = await import(
+    "../src/scaffold/next-steps.js"
+  );
   const steps = formatScaffoldNextSteps("my-site");
 
-  assert.ok(steps.includes("npm install"), "CLI next steps must include 'npm install'");
-  assert.ok(steps.includes("npm exec riebeckite check"), "CLI next steps must include 'npm exec riebeckite check'");
-  assert.ok(steps.includes("npm exec riebeckite dev"), "CLI next steps must include 'npm exec riebeckite dev'");
-  assert.ok(steps.includes("npm exec riebeckite build"), "CLI next steps must include 'npm exec riebeckite build'");
+  assert.ok(
+    steps.includes("npm install"),
+    "CLI next steps must include 'npm install'",
+  );
+  assert.ok(
+    steps.includes("npm exec riebeckite check"),
+    "CLI next steps must include 'npm exec riebeckite check'",
+  );
+  assert.ok(
+    steps.includes("npm exec riebeckite dev"),
+    "CLI next steps must include 'npm exec riebeckite dev'",
+  );
+  assert.ok(
+    steps.includes("npm exec riebeckite build"),
+    "CLI next steps must include 'npm exec riebeckite build'",
+  );
 
   assert.ok(!steps.includes("pnpm"), "CLI next steps must not mention pnpm");
 });
@@ -276,15 +365,24 @@ test("Contract 4: documented npm exec commands properly forward flags to Riebeck
     });
 
     // Should list content entries, not show npm warning
-    assert.ok(output.includes("Entries"), "inspect content --list should show Entries count");
-    assert.ok(!output.includes("npm warn"), "npm should not warn about unknown config");
+    assert.ok(
+      output.includes("Entries"),
+      "inspect content --list should show Entries count",
+    );
+    assert.ok(
+      !output.includes("npm warn"),
+      "npm should not warn about unknown config",
+    );
 
     // Test check command works
     const checkOutput = execSync("npm exec -- riebeckite check", {
       cwd: targetDir,
       encoding: "utf8",
     });
-    assert.ok(checkOutput.includes("valid"), "check should report configuration valid");
+    assert.ok(
+      checkOutput.includes("valid"),
+      "check should report configuration valid",
+    );
   });
 });
 
@@ -309,7 +407,7 @@ test("Contract 4b: documentation uses npm exec -- for commands with flags", asyn
       const trimmed = line.trim();
       // Match npm exec riebeckite <command> --flag patterns
       const match = trimmed.match(/^npm exec riebeckite (\w+)(?: (--\w+))?/);
-      if (match && match[2]) {
+      if (match?.[2]) {
         // Has a flag after the command - should use -- separator
         // This test documents the expectation; actual doc fix is separate
         // For now we just verify the pattern exists
@@ -335,8 +433,14 @@ test("Contract 5: generated wrangler.jsonc matches canonical defaults", async ()
     // Verify all canonical fields match
     assert.equal(wrangler.$schema, WRANGLER_DEFAULTS.$schema);
     assert.equal(wrangler.name, WRANGLER_DEFAULTS.name);
-    assert.equal(wrangler.compatibility_date, WRANGLER_DEFAULTS.compatibility_date);
-    assert.deepEqual(wrangler.compatibility_flags, WRANGLER_DEFAULTS.compatibility_flags);
+    assert.equal(
+      wrangler.compatibility_date,
+      WRANGLER_DEFAULTS.compatibility_date,
+    );
+    assert.deepEqual(
+      wrangler.compatibility_flags,
+      WRANGLER_DEFAULTS.compatibility_flags,
+    );
     assert.deepEqual(wrangler.assets, WRANGLER_DEFAULTS.assets);
   });
 });
@@ -345,17 +449,30 @@ test("Contract 5b: template wrangler.jsonc matches canonical defaults", async ()
   // Template is at repo root: templates/cloudflare/wrangler.jsonc
   // Test runs from packages/integrations/honox/test, so go up 4 levels to repo root
   const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..", "..");
-  const templatePath = path.join(repoRoot, "templates", "cloudflare", "wrangler.jsonc");
+  const templatePath = path.join(
+    repoRoot,
+    "templates",
+    "cloudflare",
+    "wrangler.jsonc",
+  );
   const templateContent = await fs.readFile(templatePath, "utf8");
 
   // Strip comments (JSONC) before parsing
-  const jsonContent = templateContent.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
+  const jsonContent = templateContent
+    .replace(/\/\/.*$/gm, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "");
   const template = JSON.parse(jsonContent);
 
   // Template should match the same defaults (name may differ as placeholder)
   assert.equal(template.$schema, WRANGLER_DEFAULTS.$schema);
-  assert.equal(template.compatibility_date, WRANGLER_DEFAULTS.compatibility_date);
-  assert.deepEqual(template.compatibility_flags, WRANGLER_DEFAULTS.compatibility_flags);
+  assert.equal(
+    template.compatibility_date,
+    WRANGLER_DEFAULTS.compatibility_date,
+  );
+  assert.deepEqual(
+    template.compatibility_flags,
+    WRANGLER_DEFAULTS.compatibility_flags,
+  );
   assert.deepEqual(template.assets, WRANGLER_DEFAULTS.assets);
 });
 
@@ -382,8 +499,14 @@ test("Contract 6: generated workflow includes required secret names", async () =
     );
 
     // Verify secret references use the correct format
-    assert.ok(workflow.includes("secrets.CLOUDFLARE_API_TOKEN"), "must use secrets.CLOUDFLARE_API_TOKEN");
-    assert.ok(workflow.includes("secrets.CLOUDFLARE_ACCOUNT_ID"), "must use secrets.CLOUDFLARE_ACCOUNT_ID");
+    assert.ok(
+      workflow.includes("secrets.CLOUDFLARE_API_TOKEN"),
+      "must use secrets.CLOUDFLARE_API_TOKEN",
+    );
+    assert.ok(
+      workflow.includes("secrets.CLOUDFLARE_ACCOUNT_ID"),
+      "must use secrets.CLOUDFLARE_ACCOUNT_ID",
+    );
   });
 });
 
@@ -431,7 +554,7 @@ test("Contract 7: generated .gitignore excludes build artifacts but keeps lockfi
     // Required exclusions
     for (const pattern of GITIGNORE_REQUIRED) {
       assert.ok(
-        gitignore!.includes(pattern),
+        gitignore.includes(pattern),
         `.gitignore must exclude ${pattern}`,
       );
     }
@@ -439,7 +562,7 @@ test("Contract 7: generated .gitignore excludes build artifacts but keeps lockfi
     // Must NOT exclude lockfile
     for (const pattern of GITIGNORE_FORBIDDEN) {
       assert.ok(
-        !gitignore!.includes(pattern),
+        !gitignore.includes(pattern),
         `.gitignore must not exclude ${pattern} (needed for npm ci)`,
       );
     }
@@ -470,7 +593,10 @@ publish: true
 
 Hello Riebeckite.
 `;
-    await fs.writeFile(path.join(targetDir, "content", "first-post.md"), firstPost);
+    await fs.writeFile(
+      path.join(targetDir, "content", "first-post.md"),
+      firstPost,
+    );
 
     // Build
     execSync("npm exec riebeckite build", { cwd: targetDir, stdio: "pipe" });
@@ -484,7 +610,10 @@ Hello Riebeckite.
     // Verify content was rendered
     const outputHtml = await readFile(targetDir, "dist/first-post.html");
     assert.ok(outputHtml, "first-post.html must be readable");
-    assert.ok(outputHtml!.includes("Hello Riebeckite"), "output must contain article body");
+    assert.ok(
+      outputHtml.includes("Hello Riebeckite"),
+      "output must contain article body",
+    );
   });
 });
 
@@ -509,7 +638,10 @@ publish: true
 
 Body text without heading.
 `;
-    await fs.writeFile(path.join(targetDir, "content", "no-heading.md"), articleNoHeading);
+    await fs.writeFile(
+      path.join(targetDir, "content", "no-heading.md"),
+      articleNoHeading,
+    );
 
     execSync("npm exec riebeckite build", { cwd: targetDir, stdio: "pipe" });
 
@@ -519,10 +651,13 @@ Body text without heading.
     // The <title> tag should be the SITE title, not the frontmatter title
     // (Current behavior: site title from config, not frontmatter)
     // The frontmatter title is used for SEO/listings/feeds but not for <title> or <h1>
-    assert.ok(outputHtml!.includes("<title>"), "page must have <title> tag");
+    assert.ok(outputHtml.includes("<title>"), "page must have <title> tag");
 
     // Body heading must come from markdown body (# Heading), not frontmatter
-    assert.ok(!outputHtml!.includes("<h1>Frontmatter Title Only</h1>"), "frontmatter title must not render as <h1>");
+    assert.ok(
+      !outputHtml.includes("<h1>Frontmatter Title Only</h1>"),
+      "frontmatter title must not render as <h1>",
+    );
 
     // Now test WITH a body heading
     const articleWithHeading = `---
@@ -534,14 +669,23 @@ publish: true
 
 Body text.
 `;
-    await fs.writeFile(path.join(targetDir, "content", "with-heading.md"), articleWithHeading);
+    await fs.writeFile(
+      path.join(targetDir, "content", "with-heading.md"),
+      articleWithHeading,
+    );
 
     execSync("npm exec riebeckite build", { cwd: targetDir, stdio: "pipe" });
 
     const outputHtml2 = await readFile(targetDir, "dist/with-heading.html");
     assert.ok(outputHtml2, "output must exist");
-    assert.ok(outputHtml2!.includes("<h1"), "body # heading must render as <h1>");
-    assert.ok(outputHtml2!.includes("Body Heading"), "body heading text must appear in output");
+    assert.ok(
+      outputHtml2.includes("<h1"),
+      "body # heading must render as <h1>",
+    );
+    assert.ok(
+      outputHtml2.includes("Body Heading"),
+      "body heading text must appear in output",
+    );
   });
 });
 
@@ -568,6 +712,9 @@ test("Contract 10: Getting Started documentation links are valid", () => {
 
   for (const file of gettingStartedFiles) {
     const fullPath = path.join(repoRoot, file);
-    assert.ok(fsSync.existsSync(fullPath), `Getting Started file ${file} must exist`);
+    assert.ok(
+      fsSync.existsSync(fullPath),
+      `Getting Started file ${file} must exist`,
+    );
   }
 });

@@ -55,9 +55,7 @@ export const GITIGNORE_REQUIRED = [
 ] as const;
 
 /** Files that must NOT be in .gitignore */
-export const GITIGNORE_FORBIDDEN = [
-  "package-lock.json",
-] as const;
+export const GITIGNORE_FORBIDDEN = ["package-lock.json"] as const;
 
 /** Default preset name used by create-riebeckite */
 export const DEFAULT_PRESET = "starter" as const;

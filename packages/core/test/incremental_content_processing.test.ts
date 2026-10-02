@@ -8,6 +8,7 @@ import type { ContentSource } from "../src/content/content_source.js";
 import { NoopLogger, SinkTracer } from "../src/observability.js";
 import type { ContentManifestEntry } from "../src/types/content_manifest.js";
 import { definePlugin } from "../src/types/plugin.js";
+import type { PostContent } from "../src/types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../src/types/resolved_riebeckite_config.js";
 
 function memorySource(files: Record<string, string>): ContentSource {
@@ -618,5 +619,60 @@ test("dependency change still invalidates only affected content with a decoratin
   for (const entry of manifest.entries) {
     assert.match(entry.html, /<p>marker<\/p>/);
     assert.equal(entry.html?.match(/<p>marker<\/p>/g)?.length ?? 0, 1);
+  }
+});
+
+function writebackDecorator(marker: string) {
+  const tracked = new Map<string, PostContent>();
+  return definePlugin({
+    name: "content-writeback",
+    processedContentCache: {
+      version: "content-writeback-v1",
+      dependencyMode: "none",
+    },
+    onPostProcessed: ({ slug, content }) => {
+      tracked.set(slug, content);
+    },
+    onManifestCreated: ({ manifest }) => {
+      for (const entry of manifest.entries) {
+        if (!entry.html.includes(marker)) {
+          entry.html = `${entry.html}\n<p>${marker}</p>`;
+        }
+        const content = tracked.get(entry.slug);
+        if (content) content.html = entry.html;
+      }
+      tracked.clear();
+    },
+  });
+}
+
+test("a manifest hook writeback reaches the content route after an incremental edit", async () => {
+  const directory = await tempDirectory("incremental-writeback");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  const buildOnce = async () => {
+    const config = testConfig(directory);
+    const plugins = [...config.plugins, writebackDecorator("WRITEBACK")];
+    const manager = new ContentManager(memorySource(files), [], {
+      config: { ...config, plugins },
+      plugins,
+    });
+    const manifest = await manager.build({ incremental: true });
+    const processed = await manager.getProcessedContent("b");
+    await manager.dispose();
+    return { manifest, processed };
+  };
+
+  await buildOnce();
+  files["b.md"] += "\nEdited.";
+  const warm = await buildOnce();
+
+  assert.match(warm.processed.html, /WRITEBACK/);
+  assert.equal(warm.processed.html, warm.manifest.bySlug.get("b")?.html);
+  for (const entry of warm.manifest.entries) {
+    assert.equal(
+      entry.html?.match(/WRITEBACK/g)?.length ?? 0,
+      1,
+      `${entry.slug} html`,
+    );
   }
 });

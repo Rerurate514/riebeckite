@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type {
-  ContentManifest,
-  ContentManifestEntry,
-  Diagnostic,
-  PostContent,
+import {
+  ContentManager,
+  type ContentManifest,
+  type ContentManifestEntry,
+  type ContentSource,
+  type Diagnostic,
+  type PostContent,
+  resolveConfig,
 } from "@riebeckite/core";
 import { series, seriesPlugin } from "../index.ts";
 
@@ -92,4 +95,40 @@ test("the manifest hook does not duplicate generated navigation", async () => {
     manifest.bySlug.get("p1")?.html.match(/<nav class="rb-series"/g)?.length,
     1,
   );
+});
+
+function source(files: Record<string, string>): ContentSource {
+  return {
+    async scan() {
+      return Object.keys(files).map((filePath) => ({ path: filePath }));
+    },
+    async read(entry) {
+      return files[entry.path] ?? "";
+    },
+  };
+}
+
+test("writes the navigation into the cached PostContent used by the content route", async () => {
+  const files = {
+    "part-1.md":
+      "---\npublish: true\ntitle: Part 1\nseries: Guide\nseries_order: 1\n---\n# Part 1",
+    "part-2.md":
+      "---\npublish: true\ntitle: Part 2\nseries: Guide\nseries_order: 2\n---\n# Part 2",
+  };
+  const config = resolveConfig({
+    site: { title: "Test" },
+    content: { filters: { publishStrategy: "explicit" } },
+  });
+  const content = new ContentManager(source(files), [], {
+    config,
+    plugins: [series()],
+  });
+
+  const manifest = await content.getManifest();
+  const processed = await content.getProcessedContent("part-1");
+
+  assert.equal(processed.html, manifest.bySlug.get("part-1")?.html);
+  assert.match(processed.html, /<nav class="rb-series"/);
+  assert.match(processed.html, /data-series="Guide"/);
+  assert.match(processed.html, /href="\/part-2"/);
 });

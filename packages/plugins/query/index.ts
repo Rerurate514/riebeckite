@@ -23,7 +23,7 @@ export function queryPlugin(options: QueryOptions = {}) {
     name: "query",
     processedContentCache: {
       version: "query-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     provides: ["content.query"],

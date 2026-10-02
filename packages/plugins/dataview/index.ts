@@ -53,7 +53,7 @@ export function dataviewPlugin(options: DataviewOptions = {}) {
     name: "dataview",
     processedContentCache: {
       version: "dataview-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     provides: ["content.dataview"],

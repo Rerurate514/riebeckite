@@ -25,7 +25,7 @@ export function uxPlugin(options: UxOptions = {}) {
     name: "ux",
     processedContentCache: {
       version: "ux-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateUxOptions,

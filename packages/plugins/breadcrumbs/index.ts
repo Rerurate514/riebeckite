@@ -51,7 +51,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
     name: BREADCRUMBS_PLUGIN_NAME,
     processedContentCache: {
       version: "breadcrumbs-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateBreadcrumbsOptions,

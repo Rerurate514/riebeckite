@@ -39,7 +39,7 @@ export function kanban(options: KanbanOptions = {}) {
     name: "kanban",
     processedContentCache: {
       version: "kanban-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateKanbanOptions,

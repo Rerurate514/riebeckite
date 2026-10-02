@@ -49,7 +49,7 @@ export function flashcards(options: FlashcardsOptions = {}) {
     name: "flashcards",
     processedContentCache: {
       version: "flashcards-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateFlashcardsOptions,

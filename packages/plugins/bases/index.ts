@@ -37,7 +37,7 @@ export function bases(options: BasesOptions = {}) {
     name: "bases",
     processedContentCache: {
       version: "bases-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     provides: ["content.bases"],

@@ -41,7 +41,7 @@ export function series(options: SeriesOptions = {}) {
     name: "series",
     processedContentCache: {
       version: "series-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateSeriesOptions,

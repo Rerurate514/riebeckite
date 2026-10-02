@@ -53,7 +53,7 @@ export function gallery(options: GalleryOptions = {}) {
     name: GALLERY_PLUGIN_NAME,
     processedContentCache: {
       version: "gallery-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateGalleryOptions,

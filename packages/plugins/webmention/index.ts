@@ -142,7 +142,7 @@ export function webmention(options: WebmentionOptions = {}) {
     name: WEBMENTION_PLUGIN_NAME,
     processedContentCache: {
       version: "webmention-v1",
-      dependencyMode: "unsafe",
+      dependencyMode: "none",
     },
     options,
     validateOptions: validateWebmentionOptions,

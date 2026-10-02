@@ -13,6 +13,20 @@ import { unified } from "unified";
 import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
+import {
+  type ContentDependencyTracker,
+  createContentDependencyTracker,
+  fingerprintContent,
+} from "./content/content_dependency_tracker.js";
+import {
+  CONTENT_CACHE_SCHEMA_VERSION,
+  computeContentCacheKey,
+  computePipelineFingerprint,
+  createPersistentContentCache,
+  extractFrontmatter,
+  isPersistentlyCacheable,
+  type PersistentContentCache,
+} from "./content/content_persistent_cache.js";
 import type { ContentSource } from "./content/content_source.js";
 import type { Observability } from "./observability.js";
 import { noopObservability } from "./observability.js";
@@ -31,15 +45,6 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent, PostFrontmatter } from "./types/post_content.js";
-import {
-  createPersistentContentCache,
-  computeContentCacheKey,
-  computePipelineFingerprint,
-  extractFrontmatter,
-  isPersistentlyCacheable,
-  type PersistentContentCache,
-} from "./content/content_persistent_cache.js";
-import { createContentDependencyTracker, fingerprintContent } from "./content/content_dependency_tracker.js";
 
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
@@ -53,7 +58,6 @@ export class Pipeline {
   private pluginCaches = new Map<string, PluginCache>();
   private persistentCache: PersistentContentCache | null = null;
   private pipelineFingerprint: string | null = null;
-  private dependencyTracker: ReturnType<typeof createContentDependencyTracker> | null = null;
 
   constructor(
     private contentIndex: Map<string, string>,
@@ -62,16 +66,15 @@ export class Pipeline {
     private options: PipelineOptions = {},
     private isBuildTime = false,
   ) {
-    if (
-      this.options.config &&
-      this.options.config.cache?.enabled !== false
-    ) {
+    if (this.options.config && this.options.config.cache?.enabled !== false) {
       this.persistentCache = createPersistentContentCache({
         config: this.options.config,
         logger: this.options.observability?.logger,
         tracer: this.options.observability?.tracer,
       });
-      this.pipelineFingerprint = computePipelineFingerprint(this.options.config);
+      this.pipelineFingerprint = computePipelineFingerprint(
+        this.options.config,
+      );
     }
   }
 
@@ -84,6 +87,9 @@ export class Pipeline {
       context,
       0,
       new Set(context.sourceSlug ? [context.sourceSlug] : []),
+      this.options.contentSource
+        ? createContentDependencyTracker(this.options.contentSource)
+        : null,
     );
   }
 
@@ -92,6 +98,7 @@ export class Pipeline {
     context: MarkdownExecutionContext,
     embedDepth: number,
     embedTrail: ReadonlySet<string>,
+    rootDependencyTracker: ContentDependencyTracker | null,
   ): Promise<PostContent> {
     const processor = unified();
     const plugins = resolvePlugins(this.options.plugins);
@@ -106,23 +113,24 @@ export class Pipeline {
     this.use(processor, remarkMath);
     this.use(processor, remarkGfm);
 
-    // Create dependency tracker for top-level content to capture dependencies during execution
-    let dependencyTracker: ReturnType<typeof createContentDependencyTracker> | null = null;
-    let effectiveContentSource = this.options.contentSource;
-
-    if (embedDepth === 0 && this.options.contentSource) {
-      dependencyTracker = createContentDependencyTracker(this.options.contentSource);
-      this.dependencyTracker = dependencyTracker;
-      effectiveContentSource = dependencyTracker.contentSource;
-    }
+    // One tracker per top-level execution. Nested embed processing reuses it so
+    // transitive embed dependencies are captured by the root cache entry.
+    const dependencyTracker = rootDependencyTracker;
+    const effectiveContentSource = dependencyTracker
+      ? dependencyTracker.contentSource
+      : this.options.contentSource;
 
     const markdownPipelineContext: MarkdownPipelineContext = {
       sourceSlug: context.sourceSlug,
       contentIndex: this.contentIndex,
       resolvePermalink: (slug) => this.getPermalink(slug),
       isRoutable: this.options.isRoutable,
-      renderNoteEmbed: this.createNoteEmbedRenderer(embedDepth, embedTrail),
-      renderContent: this.createContentRenderer(),
+      renderNoteEmbed: this.createNoteEmbedRenderer(
+        embedDepth,
+        embedTrail,
+        dependencyTracker,
+      ),
+      renderContent: this.createContentRenderer(effectiveContentSource),
       contentSource: effectiveContentSource,
     };
 
@@ -140,7 +148,12 @@ export class Pipeline {
       );
     }
 
-    this.use(processor, normalizeMarkdownLinks, markdownPipelineContext);
+    this.use(processor, normalizeMarkdownLinks, {
+      ...markdownPipelineContext,
+      recordLinkResolution: dependencyTracker
+        ? (id, value) => dependencyTracker.recordLinkResolution(id, value)
+        : undefined,
+    });
 
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
     this.use(processor, rehypeRaw);
@@ -163,8 +176,16 @@ export class Pipeline {
     this.use(processor, rehypeStringify, { allowDangerousHtml: true });
 
     // Only use persistent cache for top-level content (not embeds)
-    if (embedDepth === 0 && this.persistentCache && this.pipelineFingerprint && context.sourceSlug) {
-      const cacheable = isPersistentlyCacheable(context.sourceSlug, this.options.config);
+    if (
+      embedDepth === 0 &&
+      this.persistentCache &&
+      this.pipelineFingerprint &&
+      context.sourceSlug
+    ) {
+      const cacheable = isPersistentlyCacheable(
+        context.sourceSlug,
+        this.options.config,
+      );
       if (cacheable.cacheable) {
         const frontmatter = extractFrontmatter(markDownContent);
         const cacheKey = computeContentCacheKey({
@@ -178,37 +199,61 @@ export class Pipeline {
         const cachedEntry = await this.persistentCache.get(cacheKey);
         if (cachedEntry) {
           // Validate dependencies using a fresh tracker
-          const validationTracker = createContentDependencyTracker(this.options.contentSource!);
+          const validationTracker = createContentDependencyTracker(
+            this.options.contentSource!,
+          );
           let valid = true;
           for (const dep of cachedEntry.dependencies) {
             if (dep.kind === "content") {
-              const content = await validationTracker.readContent(dep.id, async () => {
-                return await this.getMarkdownBySlug?.(dep.id) ?? "";
-              });
+              const content = await validationTracker.readContent(
+                dep.id,
+                async () => {
+                  return (await this.getMarkdownBySlug?.(dep.id)) ?? "";
+                },
+              );
               if (fingerprintContent(content) !== dep.fingerprint) {
                 valid = false;
                 break;
               }
             } else if (dep.kind === "file") {
               // Validate file dependency by reading through contentSource
-              const fileContent = await validationTracker.contentSource.read({ path: dep.id });
+              const fileContent = await validationTracker.contentSource.read({
+                path: dep.id,
+              });
               if (fingerprintContent(fileContent) !== dep.fingerprint) {
+                valid = false;
+                break;
+              }
+            } else if (dep.kind === "link") {
+              if (
+                fingerprintContent(this.resolveLinkDependency(dep.id)) !==
+                dep.fingerprint
+              ) {
                 valid = false;
                 break;
               }
             }
           }
           if (valid) {
-            this.options.observability?.tracer?.event("persistentContentCache.hit", { key: cacheKey, slug: context.sourceSlug });
+            this.options.observability?.tracer?.event(
+              "persistentContentCache.hit",
+              { key: cacheKey, slug: context.sourceSlug },
+            );
             return {
               frontmatter: cachedEntry.value.frontmatter,
               html: cachedEntry.value.html,
             };
           }
         }
-        this.options.observability?.tracer?.event("persistentContentCache.miss", { key: cacheKey, slug: context.sourceSlug });
+        this.options.observability?.tracer?.event(
+          "persistentContentCache.miss",
+          { key: cacheKey, slug: context.sourceSlug },
+        );
       } else {
-        this.options.observability?.tracer?.event("persistentContentCache.bypass", { slug: context.sourceSlug, reason: cacheable.reason });
+        this.options.observability?.tracer?.event(
+          "persistentContentCache.bypass",
+          { slug: context.sourceSlug, reason: cacheable.reason },
+        );
       }
     }
 
@@ -220,8 +265,17 @@ export class Pipeline {
     };
 
     // Write to cache after successful processing, capturing dependencies from tracker
-    if (embedDepth === 0 && this.persistentCache && this.pipelineFingerprint && context.sourceSlug && dependencyTracker) {
-      const cacheable = isPersistentlyCacheable(context.sourceSlug, this.options.config);
+    if (
+      embedDepth === 0 &&
+      this.persistentCache &&
+      this.pipelineFingerprint &&
+      context.sourceSlug &&
+      dependencyTracker
+    ) {
+      const cacheable = isPersistentlyCacheable(
+        context.sourceSlug,
+        this.options.config,
+      );
       if (cacheable.cacheable) {
         const frontmatter = extractFrontmatter(markDownContent);
         const cacheKey = computeContentCacheKey({
@@ -233,7 +287,7 @@ export class Pipeline {
 
         const dependencies = dependencyTracker.dependencies();
         const entry = {
-          schemaVersion: 2,
+          schemaVersion: CONTENT_CACHE_SCHEMA_VERSION,
           key: cacheKey,
           dependencies,
           value: result,
@@ -251,6 +305,15 @@ export class Pipeline {
       throw new Error(`Content public location was not resolved: ${slug}`);
     }
     return permalink;
+  }
+
+  private resolveLinkDependency(id: string): string {
+    return resolveLinkDependencyValue(
+      id,
+      this.contentIndex,
+      (slug) => this.permalinks.get(slug),
+      this.options.isRoutable,
+    );
   }
 
   private use(
@@ -272,6 +335,7 @@ export class Pipeline {
   private createNoteEmbedRenderer(
     embedDepth: number,
     embedTrail: ReadonlySet<string>,
+    dependencyTracker: ContentDependencyTracker | null,
   ): MarkdownPipelineContext["renderNoteEmbed"] {
     if (!this.getMarkdownBySlug || embedDepth >= 3) return undefined;
 
@@ -290,9 +354,10 @@ export class Pipeline {
       const nextEmbedTrail = new Set(embedTrail);
       nextEmbedTrail.add(slug);
 
-      // Track embed as content dependency for top-level content
-      if (embedDepth === 0 && this.dependencyTracker) {
-        await this.dependencyTracker.readContent(slug, async () => markdown);
+      // Record every embed at any depth so transitive embed dependencies are
+      // captured by the root cache entry.
+      if (dependencyTracker) {
+        await dependencyTracker.readContent(slug, async () => markdown);
       }
 
       const content = await this.executeWithEmbedState(
@@ -300,12 +365,15 @@ export class Pipeline {
         { sourceSlug: slug },
         embedDepth + 1,
         nextEmbedTrail,
+        dependencyTracker,
       );
       return content.html;
     };
   }
 
-  private createContentRenderer(): MarkdownPipelineContext["renderContent"] {
+  private createContentRenderer(
+    contentSource: ContentSource | undefined,
+  ): MarkdownPipelineContext["renderContent"] {
     const renderers = resolvePlugins(this.options.plugins).flatMap((plugin) =>
       (plugin.renderers ?? []).map((renderer) => ({ plugin, renderer })),
     );
@@ -330,7 +398,7 @@ export class Pipeline {
               output: createUnavailableGeneratedOutputSink(),
               logger: observability.logger.child({ plugin: plugin.name }),
               tracer: observability.tracer,
-              contentSource: this.options.contentSource,
+              contentSource,
               ...input,
             }),
         );
@@ -378,13 +446,39 @@ function selectBlockFragment(markdown: string, blockId: string): string | null {
   return line?.replace(blockIdRe, "").trimEnd() || null;
 }
 
-function normalizeMarkdownLinks(context: MarkdownPipelineContext) {
+function normalizeMarkdownLinks(context: LinkNormalizationContext) {
   return (tree: Node) => {
     visitMarkdownLinkNodes(tree, (node) => {
       const normalizedUrl = normalizeMarkdownLinkUrl(node.url, context);
       if (normalizedUrl) node.url = normalizedUrl;
     });
   };
+}
+
+const LINK_INDEX_PREFIX = "index:";
+const LINK_LOCATION_PREFIX = "location:";
+
+type LinkNormalizationContext = MarkdownPipelineContext & {
+  recordLinkResolution?: (id: string, value: string) => void;
+};
+
+function resolveLinkDependencyValue(
+  id: string,
+  contentIndex: ReadonlyMap<string, string>,
+  lookupPermalink: (slug: string) => string | undefined,
+  isRoutable: ((slug: string) => boolean) | undefined,
+): string {
+  if (id.startsWith(LINK_INDEX_PREFIX)) {
+    return contentIndex.get(id.slice(LINK_INDEX_PREFIX.length)) ?? "";
+  }
+  if (id.startsWith(LINK_LOCATION_PREFIX)) {
+    const slug = id.slice(LINK_LOCATION_PREFIX.length);
+    const permalink = lookupPermalink(slug);
+    if (permalink === undefined) return "";
+    if (isRoutable && !isRoutable(slug)) return "";
+    return permalink;
+  }
+  return "";
 }
 
 type MarkdownLinkNode = Node & {
@@ -411,7 +505,7 @@ function visitMarkdownLinkNodes(
 
 function normalizeMarkdownLinkUrl(
   url: string,
-  context: MarkdownPipelineContext,
+  context: LinkNormalizationContext,
 ): string | null {
   if (!context.sourceSlug) return null;
   if (!isMarkdownContentLink(url)) return null;
@@ -429,21 +523,48 @@ function normalizeMarkdownLinkUrl(
 
   const indexedSlug = getExactContentSlug(context, resolvedSlug);
   if (!indexedSlug) return null;
+  recordLinkResolution(context, LINK_LOCATION_PREFIX, indexedSlug);
   if (context.isRoutable && !context.isRoutable(indexedSlug)) return null;
 
   const suffix = `${query ? `?${query}` : ""}${hash ? `#${hash}` : ""}`;
   return `${context.resolvePermalink(indexedSlug)}${suffix}`;
 }
 
+function recordLinkResolution(
+  context: LinkNormalizationContext,
+  prefix: string,
+  key: string,
+): void {
+  if (!context.recordLinkResolution) return;
+  const value =
+    prefix === LINK_INDEX_PREFIX
+      ? (context.contentIndex.get(key) ?? "")
+      : resolveLinkDependencyValue(
+          `${prefix}${key}`,
+          context.contentIndex,
+          (slug) => {
+            try {
+              return context.resolvePermalink(slug);
+            } catch {
+              return undefined;
+            }
+          },
+          context.isRoutable,
+        );
+  context.recordLinkResolution(`${prefix}${key}`, value);
+}
+
 function getExactContentSlug(
-  context: MarkdownPipelineContext,
+  context: LinkNormalizationContext,
   slug: string,
 ): string | null {
   try {
     context.resolvePermalink(slug);
     return slug;
   } catch {
-    return context.contentIndex.get(slug.toLowerCase()) ?? null;
+    const indexKey = slug.toLowerCase();
+    recordLinkResolution(context, LINK_INDEX_PREFIX, indexKey);
+    return context.contentIndex.get(indexKey) ?? null;
   }
 }
 

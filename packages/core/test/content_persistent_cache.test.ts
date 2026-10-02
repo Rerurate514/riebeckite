@@ -136,6 +136,88 @@ function createTrackedFilesPlugin(
   });
 }
 
+function createRendererDependencyPlugin(counters?: {
+  pipelineExecutions: number;
+}) {
+  return definePlugin({
+    name: "renderer-dependency-transformer",
+    cacheVersion: "renderer-dependency-transformer-v1",
+    processedContentCache: {
+      version: "renderer-dependency-transformer-v1",
+      dependencyMode: "tracked",
+    },
+    extendMarkdownPipeline: (pipeline, context) => {
+      pipeline.use(() => async (tree: { children?: unknown[] }) => {
+        if (counters) counters.pipelineExecutions += 1;
+        const rendered = await context.renderContent?.({
+          kind: "attachment",
+          path: "dep.txt",
+          raw: "",
+          label: "dep.txt",
+          url: "/dep.txt",
+          embed: true,
+        });
+        tree.children ??= [];
+        tree.children.push({
+          type: "html",
+          value: `<section data-attachment>${rendered ?? "missing"}</section>`,
+        });
+      });
+    },
+    renderers: [
+      {
+        name: "sized-attachment",
+        render: async (renderContext) => {
+          if (renderContext.kind !== "attachment") return null;
+          const content = renderContext.contentSource
+            ? await readContentSourceEntry(
+                renderContext.contentSource,
+                renderContext.path,
+              )
+            : null;
+          if (content === null) return null;
+          const size =
+            typeof content === "string"
+              ? new TextEncoder().encode(content).byteLength
+              : content.byteLength;
+          return `<p data-size="${size}">${size}</p>`;
+        },
+      },
+    ],
+  });
+}
+
+function createTransitiveEmbedPlugin(counters?: {
+  pipelineExecutions: number;
+}) {
+  return definePlugin({
+    name: "transitive-embed-transformer",
+    cacheVersion: "transitive-embed-transformer-v1",
+    processedContentCache: {
+      version: "transitive-embed-transformer-v1",
+      dependencyMode: "tracked",
+    },
+    extendMarkdownPipeline: (pipeline, context) => {
+      pipeline.use(() => async (tree: { children?: unknown[] }) => {
+        const next =
+          context.sourceSlug === "a"
+            ? "b"
+            : context.sourceSlug === "b"
+              ? "c"
+              : null;
+        if (!next) return;
+        if (counters) counters.pipelineExecutions += 1;
+        const embedded = await context.renderNoteEmbed?.(next, undefined);
+        tree.children ??= [];
+        tree.children.push({
+          type: "html",
+          value: `<section data-embed="${next}">${embedded ?? "missing"}</section>`,
+        });
+      });
+    },
+  });
+}
+
 function createTrackedEmbedPlugin(counters?: { pipelineExecutions: number }) {
   return definePlugin({
     name: "tracked-note-embed-transformer",
@@ -804,4 +886,242 @@ test("note embed content dependency misses when embedded content changes", async
   assert.match(firstHtml, /Dep v1/);
   assert.match(secondHtml, /Dep v2/);
   assert.equal(counters.pipelineExecutions, 2);
+});
+
+test("renderer content source reads invalidate the persistent cache", async () => {
+  const cacheDirectory = path.join(TEST_CACHE_DIR, "renderer-dependency");
+  await fs.rm(cacheDirectory, { recursive: true, force: true });
+
+  const counters = { pipelineExecutions: 0 };
+  const plugin = createRendererDependencyPlugin(counters);
+  const base = {
+    "note.md": "---\ntitle: Note\npublish: true\n---\n\n# Note\n",
+  };
+
+  const firstHtml = await processedHtml(
+    { ...base, "dep.txt": "v1" },
+    cacheDirectory,
+    "note",
+    plugin,
+  );
+  const secondHtml = await processedHtml(
+    { ...base, "dep.txt": "v1" },
+    cacheDirectory,
+    "note",
+    plugin,
+  );
+
+  assert.match(firstHtml, /data-size="2"/);
+  assert.equal(secondHtml, firstHtml);
+  assert.equal(counters.pipelineExecutions, 1);
+
+  const thirdHtml = await processedHtml(
+    { ...base, "dep.txt": "v1-longer" },
+    cacheDirectory,
+    "note",
+    plugin,
+  );
+  assert.match(thirdHtml, /data-size="9"/);
+  assert.equal(counters.pipelineExecutions, 2);
+
+  const fourthHtml = await processedHtml(
+    { ...base, "dep.txt": "v1-longer" },
+    cacheDirectory,
+    "note",
+    plugin,
+  );
+  assert.equal(fourthHtml, thirdHtml);
+  assert.equal(counters.pipelineExecutions, 2);
+});
+
+test("transitive note embed dependencies invalidate the root cache entry", async () => {
+  const cacheDirectory = path.join(TEST_CACHE_DIR, "transitive-embed");
+  await fs.rm(cacheDirectory, { recursive: true, force: true });
+
+  const counters = { pipelineExecutions: 0 };
+  const plugin = createTransitiveEmbedPlugin(counters);
+  const base = {
+    "a.md": "---\ntitle: A\npublish: true\n---\n\n# A\n",
+    "b.md": "---\ntitle: B\npublish: true\n---\n\n# B\n",
+  };
+  const cV1 = "c.md";
+  const cV1Body = "---\ntitle: C\npublish: true\n---\n\n# C v1\n";
+  const cV2Body = "---\ntitle: C\npublish: true\n---\n\n# C v2\n";
+
+  const firstHtml = await processedHtml(
+    { ...base, [cV1]: cV1Body },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  const secondHtml = await processedHtml(
+    { ...base, [cV1]: cV1Body },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+
+  assert.match(firstHtml, /C v1/);
+  assert.equal(secondHtml, firstHtml);
+  assert.equal(counters.pipelineExecutions, 2);
+
+  const thirdHtml = await processedHtml(
+    { ...base, [cV1]: cV2Body },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.match(thirdHtml, /C v2/);
+  assert.doesNotMatch(thirdHtml, /C v1/);
+  assert.equal(counters.pipelineExecutions, 4);
+
+  const fourthHtml = await processedHtml(
+    { ...base, [cV1]: cV2Body },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.equal(fourthHtml, thirdHtml);
+  assert.equal(counters.pipelineExecutions, 4);
+});
+
+test("link target removal invalidates the cached link resolution", async () => {
+  const cacheDirectory = path.join(TEST_CACHE_DIR, "link-target-removed");
+  await fs.rm(cacheDirectory, { recursive: true, force: true });
+
+  const plugin = definePlugin({ name: "link-fixture" });
+  const source = "---\ntitle: A\npublish: true\n---\n\n# A\n\n[to b](b.md)\n";
+  const withTarget = {
+    "a.md": source,
+    "b.md": "---\ntitle: B\npublish: true\n---\n\n# B\n",
+  };
+
+  const firstHtml = await processedHtml(
+    withTarget,
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  const secondHtml = await processedHtml(
+    withTarget,
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.match(firstHtml, /href="\/b"/);
+  assert.equal(secondHtml, firstHtml);
+
+  const thirdHtml = await processedHtml(
+    { "a.md": source },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.doesNotMatch(thirdHtml, /href="\/b"/);
+});
+
+test("link target addition invalidates the cached link resolution", async () => {
+  const cacheDirectory = path.join(TEST_CACHE_DIR, "link-target-added");
+  await fs.rm(cacheDirectory, { recursive: true, force: true });
+
+  const plugin = definePlugin({ name: "link-fixture" });
+  const source = "---\ntitle: A\npublish: true\n---\n\n# A\n\n[to b](b.md)\n";
+  const withoutTarget = { "a.md": source };
+  const withTarget = {
+    ...withoutTarget,
+    "b.md": "---\ntitle: B\npublish: true\n---\n\n# B\n",
+  };
+
+  const firstHtml = await processedHtml(
+    withoutTarget,
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  const secondHtml = await processedHtml(
+    withoutTarget,
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.doesNotMatch(firstHtml, /href="\/b"/);
+  assert.equal(secondHtml, firstHtml);
+
+  const thirdHtml = await processedHtml(
+    withTarget,
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.match(thirdHtml, /href="\/b"/);
+});
+
+test("link target publish flag change invalidates the cached link resolution", async () => {
+  const cacheDirectory = path.join(TEST_CACHE_DIR, "link-target-publish");
+  await fs.rm(cacheDirectory, { recursive: true, force: true });
+
+  const plugin = definePlugin({ name: "link-publish-fixture" });
+  const aSource = "---\ntitle: A\npublish: true\n---\n\n# A\n\n[to b](b.md)\n";
+
+  const firstHtml = await processedHtml(
+    { "a.md": aSource, "b.md": "---\ntitle: B\npublish: false\n---\n\n# B\n" },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  const secondHtml = await processedHtml(
+    { "a.md": aSource, "b.md": "---\ntitle: B\npublish: false\n---\n\n# B\n" },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+
+  assert.doesNotMatch(firstHtml, /href="\/b"/);
+  assert.equal(secondHtml, firstHtml);
+
+  const thirdHtml = await processedHtml(
+    { "a.md": aSource, "b.md": "---\ntitle: B\npublish: true\n---\n\n# B\n" },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.match(thirdHtml, /href="\/b"/);
+
+  const fourthHtml = await processedHtml(
+    { "a.md": aSource, "b.md": "---\ntitle: B\npublish: true\n---\n\n# B\n" },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  assert.equal(fourthHtml, thirdHtml);
+});
+
+test("unrelated body-only change keeps the cached link resolution valid", async () => {
+  const cacheDirectory = path.join(TEST_CACHE_DIR, "link-target-body-only");
+  await fs.rm(cacheDirectory, { recursive: true, force: true });
+
+  const plugin = definePlugin({ name: "link-body-fixture" });
+  const aSource = "---\ntitle: A\npublish: true\n---\n\n# A\n\n[to b](b.md)\n";
+
+  const firstHtml = await processedHtml(
+    {
+      "a.md": aSource,
+      "b.md": "---\ntitle: B\npublish: true\n---\n\n# B v1\n",
+    },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+  const secondHtml = await processedHtml(
+    {
+      "a.md": aSource,
+      "b.md": "---\ntitle: B\npublish: true\n---\n\n# B v2\n",
+    },
+    cacheDirectory,
+    "a",
+    plugin,
+  );
+
+  assert.match(firstHtml, /href="\/b"/);
+  assert.equal(secondHtml, firstHtml);
 });

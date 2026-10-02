@@ -6,7 +6,7 @@ import type {
 } from "./content_source.js";
 
 export type CachedContentDependency = {
-  readonly kind: "content" | "file";
+  readonly kind: "content" | "file" | "link";
   readonly id: string;
   readonly fingerprint: string;
 };
@@ -16,6 +16,7 @@ type DependencyIdentity = Pick<CachedContentDependency, "kind" | "id">;
 export type ContentDependencyTracker = {
   readonly contentSource: ContentSource;
   readContent(slug: string, read: () => Promise<string>): Promise<string>;
+  recordLinkResolution(id: string, value: string): void;
   dependencies(): readonly CachedContentDependency[];
 };
 
@@ -51,6 +52,9 @@ export function createContentDependencyTracker(
       const content = await read();
       record({ kind: "content", id: slug }, content);
       return content;
+    },
+    recordLinkResolution(id: string, value: string): void {
+      record({ kind: "link", id }, value);
     },
     dependencies: () =>
       [...dependencies.values()].toSorted((left, right) =>

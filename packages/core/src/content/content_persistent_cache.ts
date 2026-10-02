@@ -33,7 +33,7 @@ export type PersistentContentCache = {
 };
 
 const CONTENT_CACHE_NAMESPACE = "content";
-export const CONTENT_CACHE_SCHEMA_VERSION = 2;
+export const CONTENT_CACHE_SCHEMA_VERSION = 3;
 
 function hash(value: string): string {
   return createHash("sha256").update(value).digest("hex");
@@ -190,7 +190,9 @@ function isValidDependency(value: unknown): value is CachedContentDependency {
   if (typeof value !== "object" || value === null) return false;
   const candidate = value as Partial<CachedContentDependency>;
   return (
-    (candidate.kind === "content" || candidate.kind === "file") &&
+    (candidate.kind === "content" ||
+      candidate.kind === "file" ||
+      candidate.kind === "link") &&
     typeof candidate.id === "string" &&
     typeof candidate.fingerprint === "string"
   );

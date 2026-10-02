@@ -441,7 +441,7 @@ export function localizedContentFiles(
         themesContent(language, preset),
       );
     } else if (page === "guide") {
-      pushEnglishOnly("guide", guideContent);
+      pushEnglishOnly("guide", () => guideContent(preset));
     } else if (page === "examples") {
       pushLocalized("examples", (language) =>
         examplesContent(preset, language),
@@ -656,7 +656,51 @@ const INDEX = {
     fr: "Les pages localisées suivent la convention `<base>.<lang>.md` à côté du fichier par défaut (ex. `about.ja.md`). Le plugin l10n les sert sous des chemins `/lang/` et les relie automatiquement.",
     ko: "번역 페이지는 기본 파일 옆에 `<base>.<lang>.md` 규칙으로 둡니다(예: `about.ja.md`). l10n 플러그인이 `/lang/` 경로로 서빙하며 자동으로 링크합니다.",
   },
+  editFileNote: {
+    en: "This page is `content/index.md`. Open that file, change it, and save — the browser updates while you write.",
+    ja: "このページは `content/index.md` です。ファイルを開いて書き換えると、書いている途中でもブラウザの表示が更新されます。",
+    "zh-CN":
+      "这个页面来自 `content/index.md`。打开这个文件修改并保存，浏览器会随你的输入更新。",
+    es: "Esta página viene de `content/index.md`. Abre ese archivo, edítalo y guarda: el navegador se actualiza mientras escribes.",
+    de: "Diese Seite stammt aus `content/index.md`. Öffne die Datei, ändere sie und speichere — der Browser aktualisiert sich beim Schreiben.",
+    fr: "Cette page provient de `content/index.md`. Ouvrez ce fichier, modifiez-le et enregistrez — le navigateur se met à jour pendant que vous écrivez.",
+    ko: "이 페이지는 `content/index.md`에서 만들어집니다. 그 파일을 열어 수정하고 저장하면 글을 쓰는 동안 브라우저가 갱신됩니다.",
+  },
+  linkLine: {
+    en: "Link pages with a WikiLink, for example `[[guide]]`.",
+    ja: "ページ同士は WikiLink でリンクできます（例：`[[guide]]`）。",
+    "zh-CN": "用 WikiLink 连接页面，例如 `[[guide]]`。",
+    es: "Enlaza páginas con un WikiLink, por ejemplo `[[guide]]`.",
+    de: "Verbinde Seiten mit einem WikiLink, zum Beispiel `[[guide]]`.",
+    fr: "Reliez les pages avec un WikiLink, par exemple `[[guide]]`.",
+    ko: "WikiLink로 페이지를 연결하세요. 예: `[[guide]]`.",
+  },
 } satisfies Record<string, LocalizedText>;
+
+function starterIndexContent(
+  title: string,
+  language: ScaffoldLanguage,
+): string {
+  return [
+    frontmatter(),
+    heading(1, title),
+    "",
+    read(INDEX.lead, language),
+    "",
+    read(INDEX.editFileNote, language),
+    "",
+    heading(2, read(INDEX.editHeading, language)),
+    read(INDEX.editLead, language),
+    "",
+    read(INDEX.linkLine, language),
+    "",
+    heading(2, read(INDEX.exploreHeading, language)),
+    "",
+    "- [Getting started](/guide)",
+    "- [[examples]]",
+    "",
+  ].join("\n");
+}
 
 function indexContent(
   variables: SiteTemplateVariables,
@@ -664,6 +708,7 @@ function indexContent(
   language: ScaffoldLanguage,
 ): string {
   const title = variables.title;
+  if (preset.name === "starter") return starterIndexContent(title, language);
   return [
     frontmatter(),
     heading(1, title),
@@ -679,13 +724,7 @@ function indexContent(
           "- [Working examples](/examples/)",
           "- [Plugin reference](/reference/plugins/)",
         ]
-      : preset.name === "starter"
-        ? [
-            heading(2, read(INDEX.exploreHeading, language)),
-            "- [Getting started](/guide/)",
-            "- [Example notes](/examples/)",
-          ]
-        : []),
+      : []),
     heading(2, read(INDEX.editHeading, language)),
     read(INDEX.editLead, language),
     read(INDEX.editL10n, language),
@@ -1566,7 +1605,66 @@ function pluginsContent(language: ScaffoldLanguage): string {
 
 // ----- English-only extra pages --------------------------------------------
 
-function guideContent(): string {
+function starterGuideContent(): string {
+  return [
+    frontmatter(),
+    heading(1, "Getting started"),
+    "",
+    "This site was generated from a Riebeckite scaffold preset.",
+    "Everything below lives in this repository, ready to edit.",
+    "",
+    heading(2, "Run the site"),
+    "",
+    codeBlock("sh", ["npm install", "npm exec riebeckite dev"].join("\n")),
+    "",
+    "Open the URL printed in the terminal. The page reloads every time",
+    "you save a Markdown file.",
+    "",
+    heading(2, "Add a page"),
+    "",
+    "Create `content/hello.md`:",
+    "",
+    codeBlock(
+      "md",
+      [
+        "---",
+        "publish: true",
+        "---",
+        "",
+        "# Hello",
+        "",
+        "This is my second page.",
+      ].join("\n"),
+    ),
+    "",
+    "The dev server serves it at `/hello`.",
+    "",
+    heading(2, "Link the pages"),
+    "",
+    "Write `[[hello]]` anywhere and it becomes a link to that page.",
+    "",
+    heading(2, "Translate a page"),
+    "",
+    "Copy a file next to the original with the language suffix, for",
+    "example `hello.ja.md`. The language switcher picks it up.",
+    "",
+    heading(2, "Build"),
+    "",
+    codeBlock("sh", "npm exec riebeckite build"),
+    "",
+    "The static site is written to `dist/`.",
+    "",
+    heading(2, "Extend"),
+    "",
+    "Plugins and themes are registered in `riebeckite.config.ts`.",
+    "Install a package, import its factory, and add it to the `plugins`",
+    "array, or point `theme` at a new theme factory.",
+    "",
+  ].join("\n");
+}
+
+function guideContent(preset: ScaffoldPreset): string {
+  if (preset.name !== "showcase") return starterGuideContent();
   return [
     frontmatter(),
     heading(1, "Getting started"),
@@ -1641,10 +1739,91 @@ const SHOWCASE_GUIDE_DEMOS = [
   "@riebeckite/plugin-flashcards",
 ] as const;
 
+const STARTER_EXAMPLES: {
+  readonly heading: SummaryText;
+  readonly intro: SummaryText;
+  readonly linksHeading: SummaryText;
+  readonly linksBody: SummaryText;
+  readonly codeHeading: SummaryText;
+  readonly codeIntro: SummaryText;
+  readonly frontmatterHeading: SummaryText;
+  readonly frontmatterBody: SummaryText;
+} = {
+  heading: {
+    en: "Example",
+    ja: "サンプル",
+  },
+  intro: {
+    en: "A small page showing what Riebeckite Markdown can do. Copy any section into your own files.",
+    ja: "Riebeckite の Markdown でできることをまとめた小さなページです。必要なセクションを自分のファイルにコピーできます。",
+  },
+  linksHeading: {
+    en: "Links",
+    ja: "リンク",
+  },
+  linksBody: {
+    en: "WikiLinks connect pages: [[guide]] opens Getting started. Regular Markdown links work as well — [Home](/) returns to the home page.",
+    ja: "WikiLink でページをつなげます：[[guide]] は Getting started を開きます。通常の Markdown リンクも使えます — [Home](/) でホームに戻れます。",
+  },
+  codeHeading: {
+    en: "Code",
+    ja: "コード",
+  },
+  codeIntro: {
+    en: "A fenced code block keeps its formatting and gains a toolbar from the code plugins:",
+    ja: "フェンス付きコードブロックは書式を保ったまま表示され、コード系プラグインでツールバーが付きます：",
+  },
+  frontmatterHeading: {
+    en: "Frontmatter",
+    ja: "フロントマター",
+  },
+  frontmatterBody: {
+    en: "The block between the `---` lines at the top of a file controls the page. `publish: true` keeps it in the built site:",
+    ja: "ファイル先頭の `---` に挟まれた部分がページを制御します。`publish: true` を書き続けるとビルド対象に残ります：",
+  },
+};
+
+function starterExamplesContent(language: ScaffoldLanguage): string {
+  return [
+    frontmatter(),
+    heading(1, readSummary(STARTER_EXAMPLES.heading, language)),
+    "",
+    readSummary(STARTER_EXAMPLES.intro, language),
+    "",
+    heading(2, readSummary(STARTER_EXAMPLES.linksHeading, language)),
+    "",
+    readSummary(STARTER_EXAMPLES.linksBody, language),
+    "",
+    heading(2, readSummary(STARTER_EXAMPLES.codeHeading, language)),
+    "",
+    readSummary(STARTER_EXAMPLES.codeIntro, language),
+    "",
+    codeBlock(
+      "ts",
+      [
+        "export function hello(): string {",
+        '  return "Hello from Riebeckite";',
+        "}",
+      ].join("\n"),
+    ),
+    "",
+    heading(2, readSummary(STARTER_EXAMPLES.frontmatterHeading, language)),
+    "",
+    readSummary(STARTER_EXAMPLES.frontmatterBody, language),
+    "",
+    codeBlock(
+      "yaml",
+      ["---", "publish: true", "title: Example", "---"].join("\n"),
+    ),
+    "",
+  ].join("\n");
+}
+
 function examplesContent(
   preset: ScaffoldPreset,
   language: ScaffoldLanguage,
 ): string {
+  if (preset.name === "starter") return starterExamplesContent(language);
   const lines: string[] = [
     frontmatter(),
     heading(1, readSummary(EXAMPLES_COPY.heading, language)),

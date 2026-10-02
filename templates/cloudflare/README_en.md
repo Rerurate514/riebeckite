@@ -42,10 +42,12 @@ separate concerns. An additional `actions/checkout` step lets the site workflow
 workflow. To deploy on every article push, use both workflows below. This works
 with every `create-riebeckite` preset; presets only change the generated site.
 
-When scaffolding a site, use `--github-actions --content-repository OWNER/notes
---site-repository OWNER/my-site`. `create-riebeckite` then generates the
-external checkout, repository-dispatch receiver, and `github/notify-site.yml`
-together. The steps below are for applying this template manually.
+When scaffolding a site, choose `Separate GitHub repository` in the
+interactive CLI: it asks for both repository names and generates the external
+checkout, repository-dispatch receiver, and `github/notify-site.yml` together.
+The same setup from the command line is `--github-actions --content-repository
+OWNER/notes --site-repository OWNER/my-site`. The steps below are for applying
+this template manually.
 
 1. In the site workflow, retain `repository_dispatch: types: [content-updated]`
    and add the content checkout before installing dependencies:

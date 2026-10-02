@@ -9,7 +9,7 @@ Generated sites read Markdown from `content/` by default.
 ```text
 my-site/
 ├─ content/
-│  ├─ index.en.md
+│  ├─ index.md
 │  ├─ guide.en.md
 │  ├─ examples.en.md
 │  └─ notes/
@@ -31,7 +31,7 @@ Start the local preview if it is not already running:
 npm exec riebeckite dev
 ```
 
-Open the local URL printed in the terminal. Then edit `content/notes/writing.md` or `content/index.en.md` and save. When the browser shows your changed text, Markdown editing is working.
+Open the local URL printed in the terminal. Then edit `content/notes/writing.md` or `content/index.md` and save. When the browser shows your changed text, Markdown editing is working.
 
 ## Create the smallest page
 

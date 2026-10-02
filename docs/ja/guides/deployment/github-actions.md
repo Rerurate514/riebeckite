@@ -22,13 +22,11 @@ Site と Content が同じ Repository にある一般的な構成なら、`main`
 
 # GitHub Actions を有効にして Site を作る
 
-Site 作成時に、
+対話式の CLI では、最後にデプロイ設定を尋ねたところで `GitHub Actions + Cloudflare Workers` を選びます。コマンドラインから指定する場合は次のとおりです。
 
 ```bash id="f10w6x"
 npx create-riebeckite my-site --github-actions
 ```
-
-を指定します。
 
 これによって、Cloudflare Workers への Deployment に必要な、
 

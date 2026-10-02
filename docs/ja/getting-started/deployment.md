@@ -57,7 +57,7 @@ Riebeckite は静的サイトを作ります。`npm exec riebeckite build` を�
 
 ## 2. GitHub Actions で自動デプロイする
 
-push のたびにデプロイしたい場合は、生成時に GitHub Actions 用のファイルも作ります。
+push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions + Cloudflare Workers` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
 
 ```bash
 npx create-riebeckite my-site --github-actions

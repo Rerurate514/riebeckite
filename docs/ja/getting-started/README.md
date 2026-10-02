@@ -29,11 +29,19 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 | [First Content](./first-content.md) | 最初の公開ページを書く、またはサンプルを編集する |
 | [Presets](./presets.md) | `starter`、`minimal`、`showcase`、`empty` を比較する |
 | [Deployment](./deployment.md) | まず手元から公開し、その後 GitHub Actions で自動化する |
+| [Obsidian Vault を使う](./obsidian-vault.md) | 既存の Obsidian Vault を接続し、選んだノートを公開する |
+| [最初の Plugin を追加する](./first-plugin.md) | Plugin を入れて `==ハイライト==` 構文が効くことを確認する |
+| [最初の Theme を変える](./first-theme.md) | Theme を変えてデザインが変わることを確認する |
 
 ## 最短手順
 
 ```bash
-npx create-riebeckite my-site
+npx create-riebeckite
+```
+
+CLI が、プロジェクト名・preset・コンテンツの取得元・デプロイ設定を順に確認します。手元で試すだけなら `starter`、`This project`、`Not now` のまま進めてください。
+
+```bash
 cd my-site
 npm install
 npm exec riebeckite dev
@@ -48,6 +56,14 @@ npm exec riebeckite build
 preset で迷ったら、既定の `starter` を使ってください。
 
 > **Riebeckite 本体を開発する場合** は [Framework / Development](../framework/development.md) へ進んでください。
+
+## Riebeckite をカスタマイズする
+
+| やりたいこと | ガイド |
+| --- | --- |
+| すでに Obsidian を使っている | [Obsidian Vault を使う](./obsidian-vault.md) |
+| 機能を追加したい (検索、図表、埋め込み…​) | [最初の Plugin を追加する](./first-plugin.md) |
+| 見た目を変えたい (色、フォント、レイアウト…​) | [最初の Theme を変える](./first-theme.md) |
 
 ## 次に読むページ
 

@@ -57,8 +57,7 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       return;
     }
 
-    await runCheck(project);
-    console.log("Riebeckite configuration is valid.");
+    if (!(await runCheck(project))) process.exitCode = 1;
   } catch (error) {
     console.error(renderCliError(error));
     process.exitCode = 1;

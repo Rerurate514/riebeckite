@@ -9,7 +9,7 @@ Markdown をサイトに表示する方法を確認します。`starter` preset 
 ```text
 my-site/
 ├─ content/
-│  ├─ index.en.md
+│  ├─ index.md
 │  ├─ guide.en.md
 │  ├─ examples.en.md
 │  └─ notes/
@@ -31,7 +31,7 @@ my-site/
 npm exec riebeckite dev
 ```
 
-ターミナルに表示されたローカル URL をブラウザで開きます。次に `content/notes/writing.md` や `content/index.en.md` を編集して保存してください。ブラウザに変更した文章が表示されれば成功です。
+ターミナルに表示されたローカル URL をブラウザで開きます。次に `content/notes/writing.md` や `content/index.md` を編集して保存してください。ブラウザに変更した文章が表示されれば成功です。
 
 ## 最小のページを作る
 

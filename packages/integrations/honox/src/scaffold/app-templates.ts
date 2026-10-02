@@ -336,7 +336,7 @@ export default createRoute(async (c) => {
   }
 
   const post = await content.getProcessedContent("index");
-  if (!indexEntry?.publishing.routable) {
+  if (indexEntry?.publishing?.routable === false) {
     return c.notFound();
   }
 

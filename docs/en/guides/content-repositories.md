@@ -142,7 +142,7 @@ git push -u origin main
 
 ### 2. Generate the site
 
-Generate the site with the common GitHub Actions deployment assets. This works with every preset; a preset changes only the starter site.
+Generate the site with the common GitHub Actions deployment assets. This works with every preset; a preset changes only the starter site. In the interactive CLI the same setup is choosing `Separate GitHub repository` and entering the content and site repository values; the GitHub Actions deployment is then configured automatically.
 
 ```sh
 npx create-riebeckite my-site --github-actions \

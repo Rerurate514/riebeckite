@@ -22,6 +22,7 @@ export type MarkdownPipelineContext = {
   sourceSlug?: MarkdownExecutionContext["sourceSlug"];
   contentIndex: Map<string, string>;
   resolvePermalink: (slug: string) => string;
+  isRoutable?: (slug: string) => boolean;
   renderNoteEmbed?: (
     slug: string,
     fragment: MarkdownEmbedFragment | null,

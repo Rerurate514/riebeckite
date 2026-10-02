@@ -11,6 +11,7 @@ import { visit } from "unist-util-visit";
 export interface WikilinkOptions {
   contentIndex: Map<string, string>;
   resolvePermalink: (slug: string) => string;
+  isRoutable?: (slug: string) => boolean;
   assetBase?: string;
   renderNoteEmbed?: (
     slug: string,
@@ -40,6 +41,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
     renderNoteEmbed,
     renderContent,
     resolvePermalink,
+    isRoutable,
   } = opt;
 
   return async (tree: Root) => {
@@ -90,7 +92,13 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
 
       const target = rawTarget?.trim();
       const isEmbed = embedMark === "!";
-      const resolved = resolveTarget(target, contentIndex);
+      const targetResolved = resolveTarget(target, contentIndex);
+      const resolved =
+        targetResolved?.kind === "note" &&
+        isRoutable &&
+        !isRoutable(targetResolved.value)
+          ? null
+          : targetResolved;
       const fragment = parseFragment(rawFragment);
 
       if (isEmbed && resolved?.kind === "image") {

@@ -1,3 +1,5 @@
+import { VFile } from "vfile";
+import { matter } from "vfile-matter";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
@@ -9,7 +11,8 @@ import type {
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
 import type { ResolvedPluginPage } from "../types/plugin_page.js";
-import type { PostContent } from "../types/post_content.js";
+import type { PostContent, PostFrontmatter } from "../types/post_content.js";
+import type { PublishStrategy } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
   ContentBuildCoordinator,
@@ -63,6 +66,7 @@ export class ContentManager {
   private buildCoordinator: ContentBuildCoordinator;
   private isBuildTime = false;
   private publishingBuildTime: Date;
+  private routableSlugs: Set<string> | null = null;
 
   constructor(
     content: string | ContentSource,
@@ -72,6 +76,7 @@ export class ContentManager {
     this.pipelineOptions = {
       ...pipelineOptions,
       plugins: pipelineOptions.plugins ?? pipelineOptions.config?.plugins,
+      isRoutable: (slug) => this.isRoutable(slug),
     };
     this.publishingBuildTime = resolvePublishingBuildTime(
       pipelineOptions.publishingBuildTime,
@@ -164,6 +169,7 @@ export class ContentManager {
         await this.pluginRuntime.startBuild(contentIndex);
         await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
 
+        await this.ensureRoutableSlugs();
         this.pipeline ??= new Pipeline(
           contentIndex,
           await this.locationResolver.getPermalinks(),
@@ -253,9 +259,7 @@ export class ContentManager {
               contentIndex,
               location,
               resolvePublishingState(processed.frontmatter, {
-                strategy:
-                  this.pipelineOptions.config?.content.filters
-                    .publishStrategy ?? "explicit",
+                strategy: this.publishStrategy(),
                 buildTime: this.publishingBuildTime,
               }),
             );
@@ -362,9 +366,7 @@ export class ContentManager {
   }
 
   private applyPublicView(manifest: ContentManifest): void {
-    const strategy =
-      this.pipelineOptions.config?.content.filters.publishStrategy ??
-      "explicit";
+    const strategy = this.publishStrategy();
     for (const entry of manifest.entries) {
       entry.publishing = resolvePublishingState(entry.frontmatter, {
         strategy,
@@ -392,6 +394,39 @@ export class ContentManager {
     );
   }
 
+  private publishStrategy(): PublishStrategy {
+    return (
+      this.pipelineOptions.config?.content.filters.publishStrategy ?? "explicit"
+    );
+  }
+
+  private isRoutable(slug: string): boolean {
+    if (!this.routableSlugs) {
+      throw new Error(`Publishing state was not resolved: ${slug}`);
+    }
+    return this.routableSlugs.has(slug);
+  }
+
+  private async ensureRoutableSlugs(): Promise<Set<string>> {
+    if (this.routableSlugs) return this.routableSlugs;
+
+    const strategy = this.publishStrategy();
+    const posts = await this.getAllPosts();
+    const routableSlugs = new Set<string>();
+    await Promise.all(
+      posts.map(async (post) => {
+        const markdown = await this.getPost(post.slug);
+        const publishing = resolvePublishingState(readFrontmatter(markdown), {
+          strategy,
+          buildTime: this.publishingBuildTime,
+        });
+        if (publishing.routable) routableSlugs.add(post.slug);
+      }),
+    );
+    this.routableSlugs = routableSlugs;
+    return routableSlugs;
+  }
+
   private enableBuildTime(): void {
     this.isBuildTime = true;
     this.pluginRuntime.enableBuildTime();
@@ -407,4 +442,10 @@ declare module "../pipeline" {
     config?: ResolvedRiebeckiteConfig;
     publishingBuildTime?: Date | string;
   }
+}
+
+function readFrontmatter(markdown: string): PostFrontmatter {
+  const file = new VFile({ value: markdown });
+  matter(file);
+  return (file.data.matter ?? {}) as PostFrontmatter;
 }

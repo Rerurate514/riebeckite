@@ -88,6 +88,7 @@ export type ExcaliBrainBuildInput = {
   markdown: string;
   manifest: ContentManifest;
   options?: ExcaliBrainOptions;
+  isRoutable?: (slug: string) => boolean;
 };
 
 export type ExcaliBrainRegion =

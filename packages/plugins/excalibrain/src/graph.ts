@@ -61,7 +61,7 @@ export function buildExcaliBrainGraph(
     relationType: ExcaliBrainRelationType,
   ) => {
     if (role === "center") return;
-    const node = resolveNode(target, slug, manifest);
+    const node = resolveNode(target, slug, manifest, input.isRoutable);
     if (!node) return;
 
     const existing = relations.get(node.id);
@@ -143,12 +143,14 @@ function resolveNode(
   target: string,
   selfSlug: string,
   manifest: ContentManifest,
+  isRoutable?: (slug: string) => boolean,
 ): ExcaliBrainNode | null {
   const raw = target.trim();
   if (!raw) return null;
 
   const targetSlug = resolveSlug(raw, manifest);
   if (targetSlug && targetSlug !== selfSlug) {
+    if (isRoutable && !isRoutable(targetSlug)) return null;
     const entry = manifest.bySlug.get(targetSlug);
     if (entry) {
       return {

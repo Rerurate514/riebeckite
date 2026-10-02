@@ -160,3 +160,33 @@ test("skips inference and siblings when infer is disabled", async () => {
     },
   ]);
 });
+
+test("omits non-routable neighbors when isRoutable is provided", async () => {
+  const files = {
+    "hub.md": "---\npublish: true\ntitle: Hub\n---\n\n[[secret]]",
+    "secret.md": "---\npublish: false\ntitle: Secret\n---\n\n# Secret",
+  };
+  const manifest = await new ContentManager(source(files), [], {
+    config: explicitConfig,
+  }).getManifest();
+  const input = {
+    slug: "hub",
+    frontmatter: { publish: true, title: "Hub" },
+    markdown: "[[secret]]",
+    manifest,
+  };
+
+  const gated = buildExcaliBrainGraph({
+    ...input,
+    isRoutable: (candidate) =>
+      manifest.bySlug.get(candidate)?.publishing.routable ?? false,
+  });
+  assert.deepEqual(gated.nodes, []);
+  assert.deepEqual(gated.links, []);
+
+  const ungated = buildExcaliBrainGraph(input);
+  assert.deepEqual(
+    ungated.nodes.map((node) => node.slug),
+    ["secret"],
+  );
+});

@@ -89,6 +89,8 @@ function createExcaliBrainRuntime(options: ExcaliBrainOptions) {
           markdown,
           manifest,
           options,
+          isRoutable: (candidate) =>
+            manifest.bySlug.get(candidate)?.publishing.routable ?? false,
         });
         const layout = layoutExcaliBrain(graph, options);
         const hasNeighbour = graph.nodes.length > 0;

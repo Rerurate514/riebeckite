@@ -58,7 +58,7 @@ What this means:
 - `publish: false` keeps the note out of the built site.
 - Missing `publish` is treated as a draft in the default `starter` setup.
 
-If a published note links to a draft, the draft page is not generated. Before publishing, check public pages for links you do not want to expose.
+If a published note links to an unpublished note, the target page is not generated, and links to unpublished notes are not published as working site links — they render like broken links. Run `riebeckite-diagnostics` (from `@riebeckite/plugin-diagnostics`) to see `publish-boundary` warnings for these references.
 
 ## 4. Start Riebeckite
 

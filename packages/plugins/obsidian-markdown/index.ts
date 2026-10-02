@@ -42,6 +42,7 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
       pipeline.use(remarkObsidianWikilink, {
         contentIndex: context.contentIndex,
         resolvePermalink: context.resolvePermalink,
+        isRoutable: context.isRoutable,
         assetBase: options.assetBase,
         renderNoteEmbed: context.renderNoteEmbed,
         renderContent: context.renderContent,

@@ -16,6 +16,7 @@ import {
   type Plugin,
   type ResolvedConfig,
 } from "vite";
+import { collectSiteOwnedOutputPaths } from "./content_assets.js";
 
 type ToSsgOptions = NonNullable<Parameters<typeof toSSG>[2]>;
 
@@ -81,6 +82,7 @@ type SsgOutputMetrics = {
   emittedOutputCount: number;
   reusedOutputCount: number;
   deletedOutputCount: number;
+  shadowedOutputCount: number;
   fullRegenerationRequired: boolean;
   htmlOutputCount: number;
   assetOutputCount: number;
@@ -193,19 +195,27 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           timingsMs,
           (message) => this.warn(message),
         );
+        const siteOwnedOutputPaths = await measure(
+          timingsMs,
+          "siteOwnedOutputs",
+          () => collectSiteOwnedOutputPaths(config.publicDir),
+        );
         const canUseIncremental =
           outputChangeSet &&
           !outputChangeSet.fullRegenerationRequired &&
           previousOutputCache &&
           previousOutputCache.appFingerprint === appFingerprint &&
           outputChangeSet.unchanged.every(
-            (output) => previousOutputCache.outputs[output.path],
+            (output) =>
+              siteOwnedOutputPaths.has(output.path) ||
+              previousOutputCache.outputs[output.path],
           );
         const reusablePaths = new Set<string>(
           canUseIncremental
             ? outputChangeSet.unchanged.map((output) => output.path)
             : [],
         );
+        const shadowedOutputs = new Set<string>();
         const skippedRouteCount = canUseIncremental
           ? outputChangeSet.unchanged.filter(
               (output) => output.kind !== "generated",
@@ -226,6 +236,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           emittedOutputCount: 0,
           reusedOutputCount: 0,
           deletedOutputCount: 0,
+          shadowedOutputCount: 0,
           fullRegenerationRequired: !canUseIncremental,
           htmlOutputCount: 0,
           assetOutputCount: 0,
@@ -253,6 +264,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                   "/",
                 );
                 metrics.enumeratedRouteCount += 1;
+                if (siteOwnedOutputPaths.has(fileName)) {
+                  shadowedOutputs.add(fileName);
+                  return;
+                }
                 if (canUseIncremental && reusablePaths.has(fileName)) {
                   return;
                 }
@@ -304,6 +319,8 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                       .map((output) => output.path),
                   )
                 : undefined,
+              siteOwnedOutputPaths,
+              (path) => shadowedOutputs.add(path),
             ),
         );
         if (!outputChangeSet)
@@ -313,6 +330,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           await measure(timingsMs, "unchangedOutputReuse", async () => {
             for (const output of outputChangeSet.unchanged) {
               const path = output.path;
+              if (siteOwnedOutputPaths.has(path)) {
+                shadowedOutputs.add(path);
+                continue;
+              }
               const cached = previousOutputCache.outputs[path];
               if (!cached) continue;
               this.emitFile({
@@ -328,11 +349,22 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         }
         if (outputChangeSet) {
           for (const output of outputChangeSet.removed) {
+            if (siteOwnedOutputPaths.has(output.path)) continue;
             await rm(join(outDir, output.path), {
               force: true,
             });
             metrics.deletedOutputCount += 1;
           }
+        }
+        metrics.shadowedOutputCount = shadowedOutputs.size;
+        if (shadowedOutputs.size > 0) {
+          this.warn(
+            `Site public assets take precedence over generated outputs: ${[
+              ...shadowedOutputs,
+            ]
+              .sort()
+              .join(", ")}`,
+          );
         }
         metrics.cacheEntriesSerialized = Object.keys(
           nextOutputCache.outputs,
@@ -373,6 +405,8 @@ async function emitGeneratedOutputs(
   module: SsgModule,
   emit: (asset: GeneratedOutputAsset) => void,
   affectedPaths?: ReadonlySet<string>,
+  shadowedPaths?: ReadonlySet<string>,
+  onShadowed?: (path: string) => void,
 ): Promise<number> {
   const content = module.content;
   if (!content) return 0;
@@ -381,6 +415,10 @@ async function emitGeneratedOutputs(
   let count = 0;
   for (const output of manifest.generatedOutputs ?? []) {
     if (affectedPaths && !affectedPaths.has(output.path)) continue;
+    if (shadowedPaths?.has(output.path)) {
+      onShadowed?.(output.path);
+      continue;
+    }
     emit({
       type: "asset",
       fileName: output.path,

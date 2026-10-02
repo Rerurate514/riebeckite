@@ -298,6 +298,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20260420.1
         version: 4.20260621.1
+      '@hono/node-server':
+        specifier: ^1.19.17
+        version: 1.19.17(hono@4.13.12)
       '@hono/vite-build':
         specifier: ^1.11.1
         version: 1.11.1(hono@4.13.12)

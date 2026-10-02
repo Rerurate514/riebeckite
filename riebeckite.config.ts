@@ -193,7 +193,7 @@ export default defineConfig({
     uxPlugin(),
     share(),
     relatedPosts(),
-    changelog(),
+    changelog({ perNote: false }),
     diff({ ui: { maxRevisions: 10 } }),
     webmention({ provider: new MemoryWebmentionProvider() }),
     responsiveImage(),

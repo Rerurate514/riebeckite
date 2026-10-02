@@ -37,7 +37,7 @@ export default defineConfig({
 | `quality:img-alt-missing` | warning | `alt` のない `<img>`。装飾画像の `alt=""` は対象外です。 |
 | `quality:duplicate-id` | error | 同じ `id` が同一文書内で複数回使われています。 |
 | `quality:broken-internal-anchor` | warning | `href="#foo"` に対応する `id="foo"` が文書内にありません。 |
-| `quality:heading-order` | warning | 見出しレベルの飛び（`h1` → `h3` など）、または `h1` が1つもない状態。 |
+| `quality:heading-order` | warning | 見出しレベルの飛び（`h1` → `h3` など）、または `h1` が 1 つもない状態。 |
 | `quality:empty-link-text` | warning | テキストが空で、`aria-label`・`title`・alt 付き `img` もない `<a href>`。 |
 | `quality:html-lang-missing` | warning | 空でない `lang` を持たない `<html>`（完全な文書のみ）。 |
 | `quality:table-no-header` | warning | データセルはあるが `<th>`・`scope`・`headers` がない `<table>`。 |

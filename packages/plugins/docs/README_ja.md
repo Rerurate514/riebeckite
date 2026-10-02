@@ -1,8 +1,8 @@
 # @riebeckite/plugin-docs
 
-Riebeckite の Markdown content から Docs 用の sidebar と previous/next を
-build-time に生成する Plugin です。Docs 専用 router は追加せず、公開 URL も
-filesystem path から再計算しません。
+Riebeckite の Markdown コンテンツから、Docs 用のサイドバーと前後ページリンクを
+ビルド時に生成するプラグインです。Docs 専用の router は追加せず、公開 URL も
+ファイルシステムのパスから再計算しません。
 
 [English](./README.md)
 
@@ -29,8 +29,8 @@ export default defineConfig({
 });
 ```
 
-`root` は Docs として扱う content subtree です。`root: "docs"` の場合、
-`content/docs/` 配下だけが対象になり、`notes/` や `blog/` には Docs UI を出しません。
+`root` は Docs として扱うコンテンツサブツリーです。`root: "docs"` の場合、
+`content/docs/` 配下だけが対象になり、`notes/` や `blog/` には Docs の UI を出しません。
 
 ## Frontmatter
 
@@ -45,37 +45,37 @@ sidebar:
 ---
 ```
 
-対応する metadata は次の通りです。
+対応するメタデータは次の通りです。
 
-- `label`: navigation に表示する名前。未指定なら `title`、さらに未指定なら filename。
-- `order`: 明示的な並び順。未指定 item は明示 order の後で title/path 順に並びます。
-- `hidden`: sidebar と previous/next から除外します。
-- `collapsed`: Theme や client enhancement 用に `data-docs-collapsed` として出力します。
+- `label`: ナビゲーションに表示する名前。未指定なら `title`、さらに未指定ならファイル名。
+- `order`: 明示的な並び順。未指定の項目は明示された order のあとを title、path の順に並びます。
+- `hidden`: サイドバーと前後ページリンクから除外します。
+- `collapsed`: Theme やクライアント側の拡張のために `data-docs-collapsed` として出力します。
 
 ## Theme との統合
 
-Plugin は既存の汎用 article body slot に HTML fragment を提供します。
+Plugin は既存の汎用 article body slot に HTML フラグメントを提供します。
 
-- `article.aside`: Docs sidebar
-- `article.footer`: previous/next navigation
+- `article.aside`: Docs のサイドバー
+- `article.footer`: 前後ページリンクのナビゲーション
 
 CSS は最小限の構造だけです。Theme 側では `rb-docs-sidebar`、
 `aria-current="page"`、`data-docs-level`、`data-docs-collapsed`、
-`data-docs-previous`、`data-docs-next` などを hook として使えます。
+`data-docs-previous`、`data-docs-next` などをフックとして使えます。
 
-## l10n / publish boundary
+## l10n と公開の境界
 
-`@riebeckite/plugin-l10n` の metadata がある場合、現在の言語に対応する entry だけで
-navigation を作ります。URL は manifest の resolved permalink をそのまま使うため、
+`@riebeckite/plugin-l10n` のメタデータがある場合、現在の言語に対応する項目だけで
+ナビゲーションを作ります。URL は manifest の解決済み permalink をそのまま使うため、
 permalink / alias / rename / l10n の責務を壊しません。
 
-公開対象の entry だけを含めます。draft、private、excluded、hidden、root 外の content は
-sidebar / previous-next に出ません。
+公開対象の項目だけを含めます。draft、private、excluded、hidden、root 外のコンテンツは
+サイドバーと前後ページリンクに出ません。
 
-## Exports
+## エクスポート
 
-- `docs(options)` / `docsPlugin(options)`: plugin factory
-- `buildDocsNavigation(entries, options)`: framework-independent navigation model
-- `flattenDocsNavigation(items)`: previous/next 用 sequence
-- `renderDocsSidebar(...)` / `renderDocsPrevNext(...)`: server HTML renderer
-- Types: `DocsOptions`, `ResolvedDocsOptions`, `DocsNavigationItem`
+- `docs(options)` / `docsPlugin(options)`: プラグインファクトリ
+- `buildDocsNavigation(entries, options)`: フレームワークに依存しないナビゲーションモデル
+- `flattenDocsNavigation(items)`: 前後ページリンク用の並び
+- `renderDocsSidebar(...)` / `renderDocsPrevNext(...)`: サーバー側の HTML レンダラー
+- 型: `DocsOptions`、`ResolvedDocsOptions`、`DocsNavigationItem`

@@ -113,7 +113,9 @@ directly from `config` via
 `attributes: { "data-gruvbox-contrast": "hard" }`.
 
 See the [`@riebeckite/theme-default`](../default/README.md) README for the
-full token list — the token contract is identical.
+full token list. Colors, fonts, spacing, layout widths, and rule widths use the
+same tokens in every theme; corner radius is written directly in each theme's
+CSS instead of being exposed as a token.
 
 ## Exports
 

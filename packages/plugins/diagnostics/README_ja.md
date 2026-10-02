@@ -28,7 +28,7 @@ export default defineConfig({
 
 | コード | 既定の重要度 | 内容 |
 | --- | --- | --- |
-| `broken-wikilink` | error | Wikiリンクの参照先またはフラグメントを解決できない |
+| `broken-wikilink` | error | Wiki リンクの参照先またはフラグメントを解決できない |
 | `broken-image` | error | 埋め込み画像または画像リンクの参照先がない |
 | `broken-link` | error | Markdown リンクが存在しない、または除外されたノートを指す |
 | `unused-asset` | warning | どのノートからも参照されない画像 |
@@ -38,12 +38,12 @@ export default defineConfig({
 | `duplicate-title` | warning | 公開ノート同士でタイトルが重複している |
 | `slug-collision` | error | 大文字・小文字を区別しない slug が衝突している |
 | `duplicate-content-id` | error | 公開ノート同士で安定コンテンツ ID（`id`/`uid`）が重複している |
-| `invalid-content-id` | error | `id`/`uid` の frontmatter が安定コンテンツ ID の契約を満たしていない |
+| `invalid-content-id` | error | `id`/`uid` の frontmatter が安定コンテンツ ID の要件を満たしていない |
 | `excluded-public` | warning | 除外されたノートに `publish: true` が指定されている |
 | `publish-boundary` | warning | 公開コンテンツから非公開コンテンツへリンク・埋め込みしている |
 | `analytics-untracked` | info | 安定 `id` のない公開ノートは analytics プラグインで計測されない（`reportAnalyticsCoverage` で有効化。設定で analytics プラグインが有効な場合は自動で有効化） |
 | `content-integrity:broken-link` | warning | 公開ページが、公開または登録されていないサイト内経路へリンクしている |
-| `content-integrity:unresolved-wikilink` | warning | 公開ページ内の Wikiリンクを、設定済みの解決規則で解決できない |
+| `content-integrity:unresolved-wikilink` | warning | 公開ページ内の Wiki リンクを、設定済みの解決規則で解決できない |
 | `content-integrity:broken-asset` | warning | 公開ページが、解決済みアセット・プラグインアセット・生成出力・公開経路のいずれにもないローカルアセットを参照している |
 | `content-integrity:duplicate-public-location` | error | 複数の公開コンテンツまたは生成経路が、同じ最終公開パスを所有している |
 | `content-integrity:redirect-target-missing` | warning | 公開リダイレクトの転送先コンテンツが公開されない |
@@ -57,7 +57,7 @@ export default defineConfig({
 
 Riebeckite のプラグインとして使う場合、リンク関係の検査はコンテンツを再走査せず、解決済み manifest から行います。`publicEntries`、解決済み `ContentLink`、`ContentPublicLocation`、`publicRedirects`、プラグインページのパス、プラグインアセット、生成出力を参照します。これにより permalink、alias、rename によるリダイレクト、l10n、公開・除外設定、Page System の扱いがビルド処理と揃います。
 
-外部 URL の疎通確認、SEO、スペルチェック、Lighthouse、自動修復は行いません。`http:`、`https:`、`mailto:`、`tel:`、`data:`、プロトコル相対 URL、ページ内フラグメントだけのリンクは対象外です。経路の存在確認では、クエリ文字列とフラグメントを除いて判定します。生成ページや生成アセットを提供するプラグインは、Page Type、生成出力、アセット登録の既存契約を使ってください。登録されていれば、整合性検査でも有効な公開先として扱われます。
+外部 URL の疎通確認、SEO、スペルチェック、Lighthouse、自動修復は行いません。`http:`、`https:`、`mailto:`、`tel:`、`data:`、プロトコル相対 URL、ページ内フラグメントだけのリンクは対象外です。経路の存在確認では、クエリ文字列とフラグメントを除いて判定します。生成ページや生成アセットを提供するプラグインは、Page Type、生成出力、アセット登録の既存の仕組みを使ってください。登録されていれば、整合性検査でも有効な公開先として扱われます。
 
 `runDiagnostics()` と単体 CLI は、完全な manifest を持たないため、従来の content source 解析を使います。
 

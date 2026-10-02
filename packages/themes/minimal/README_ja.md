@@ -8,7 +8,7 @@
 
 `minimalTheme()` は名前が `minimal` のテーマを作ります。完全な `--rb-*` トークンを `@theme` に対応させたうえで、安定した構造フック（`.rb-article-*`、`.rb-sidebar`、`.prose`）とプラグインのルート（`rr-*`）にタイポグラフィの個性を重ねます。指定はすべて `[data-theme-name="minimal"]` にスコープし、`@layer base` の外に置いています。
 
-[Minimal for Obsidian](https://github.com/kepano/obsidian-minimal) の設計思想——内容が主役、静かな操作画面、強いタイポグラフィ、控えめなアクセント、詰まっていても読みやすいクローム——を、Riebeckite のセマンティックトークンと安定フックに置き換えて実装したものです。Obsidian デスクトップアプリの見た目を模したり、Obsidian の変数や DOM があることを前提にしたりはしません。
+[Minimal for Obsidian](https://github.com/kepano/obsidian-minimal) の設計思想（内容が主役、静かな操作画面、強いタイポグラフィ、控えめなアクセント、詰まっていても読みやすいクローム）を、Riebeckite のセマンティックトークンと安定フックに置き換えて実装したものです。Obsidian デスクトップアプリの見た目を模したり、Obsidian の変数や DOM があることを前提にしたりはしません。
 
 個性は引き算にあります。
 
@@ -56,7 +56,7 @@ export default defineConfig({
 | `tokens` | `{}` | 色、フォント、余白、レイアウト幅のトークンを上書きする |
 | `userCss` | `[]` | 追加のスタイルシート |
 
-トークンの意味と一覧は [`@riebeckite/theme-default`](../default/README_ja.md) を参照してください。トークン契約は同じです。
+トークンの意味と一覧は [`@riebeckite/theme-default`](../default/README_ja.md) を参照してください。色、フォント、余白、レイアウト幅、罫線幅のトークンはどのテーマでも共通です。角丸だけは各テーマの CSS に直接書いていて、トークンにはしていません。
 
 ## ライトとダーク
 
@@ -69,7 +69,7 @@ export default defineConfig({
 
 ## 背景コントラストのバリエーション
 
-本家 Minimal には背景コントラストのバリエーション（既定、低コントラスト、高コントラスト、トゥルーブラック）があります。いまの Riebeckite の Theme API にはバリエーションの概念がないため、このテーマは通常の見た目を既定として提供し、サーフェスの階層をセマンティックトークン（`--rb-color-paper`、`--rb-color-surface`、`--rb-color-surface-hover`、`--rb-color-code-background`）で表現しています。`tokens` オプションでサイトごとに上書きすることはすでに可能です。背景コントラストのバリエーションは、独自属性で見せかけるのではなく、将来 Theme API に追加できる拡張候補です。
+本家 Minimal には背景コントラストのバリエーション（既定、低コントラスト、高コントラスト、トゥルーブラック）があります。現在の Riebeckite の Theme API にはバリエーションの概念がないため、このテーマは通常の見た目を既定として提供し、サーフェスの階層をセマンティックトークン（`--rb-color-paper`、`--rb-color-surface`、`--rb-color-surface-hover`、`--rb-color-code-background`）で表現しています。`tokens` オプションでサイトごとに上書きすることはすでに可能です。背景コントラストのバリエーションは、独自属性で見せかけるのではなく、将来 Theme API に追加できる拡張候補です。
 
 ## 主なエクスポート
 
@@ -84,7 +84,7 @@ Riebeckite theme based on the design principles of Minimal for Obsidian by Steph
 - 原典: <https://github.com/kepano/obsidian-minimal>
 - 原典のライセンス: MIT
 
-このパッケージは、これらの設計思想を Riebeckite のセマンティックトークンと安定フックで独立に実装したものです。Obsidian Minimal の公式配布物ではなく、Obsidian デスクトップアプリを模したものでもありません。配布条件はパッケージの `LICENSE` ファイルに記載しています。
+配布条件はパッケージの `LICENSE` ファイルに記載しています。
 
 ## 関連資料
 

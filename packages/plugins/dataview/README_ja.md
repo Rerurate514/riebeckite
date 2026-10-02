@@ -18,7 +18,7 @@ LIMIT 10
 ```
 ````
 
-ブロックはマニフェスト（全ノートのフロントマター・タグ・リンク・パーマリンク）を使って描画されます。DataviewJS（`dataviewjs`）には対応しません。そのブロックはコードブロックのまま残り、診断を1件出します。
+ブロックはマニフェスト（全ノートの frontmatter・タグ・リンク・パーマリンク）を使って描画されます。DataviewJS（`dataviewjs`）には対応しません。そのブロックはコードブロックのまま残り、診断を 1 件出します。
 
 ## 設定
 
@@ -59,7 +59,7 @@ SORT file.date desc
 
 ### `TABLE`
 
-`TABLE` は表を描画します。列を省略すると `file.link` の1列だけになります。列はフィールドパスで、`AS` で見出しを付けられます。
+`TABLE` は表を描画します。列を省略すると `file.link` の 1 列だけになります。列はフィールドパスで、`AS` で見出しを付けられます。
 
 ```dataview
 TABLE file.name AS "Name", status, priority
@@ -88,7 +88,7 @@ FROM #project
 
 ### `FROM`
 
-`FROM` は候補となるノートを絞り込みます。使えるソースは次の3つです。
+`FROM` は候補となるノートを絞り込みます。使えるソースは次の 3 つです。
 
 | ソース | 意味 |
 | --- | --- |
@@ -104,7 +104,7 @@ FROM (#project or #area) and "notes" and !#archive
 
 ### `WHERE`
 
-`WHERE` は `file.*` とフロントマターのフィールドに対する真偽式でノートを絞り込みます。
+`WHERE` は `file.*` と frontmatter のフィールドに対する真偽式でノートを絞り込みます。
 
 | 機能 | 例 |
 | --- | --- |
@@ -116,7 +116,7 @@ FROM (#project or #area) and "notes" and !#archive
 
 文字列の `=` / `!=` と `contains()` は大文字小文字を区別しません。`date()` はミリ秒のタイムスタンプ（または `null`）を返すので、`date(a) < date(b)` は時系列で比較できます。`null` や未定義の値は `<` / `>` を満たしません。
 
-`file.*` で使えるフィールドは `file.name`、`file.title`、`file.slug`、`file.path`、`file.folder`、`file.link`、`file.permalink`、`file.url`、`file.tags`、`file.date`、`file.created`、`file.updated`、`file.published` です。それ以外はフロントマターのキーをそのまま名前で参照します（`status`、`priority`、`due` など）。
+`file.*` で使えるフィールドは `file.name`、`file.title`、`file.slug`、`file.path`、`file.folder`、`file.link`、`file.permalink`、`file.url`、`file.tags`、`file.date`、`file.created`、`file.updated`、`file.published` です。それ以外は frontmatter のキーをそのまま名前で参照します（`status`、`priority`、`due` など）。
 
 ### `SORT`
 
@@ -167,10 +167,10 @@ SORT priority desc, file.name asc
 ## 制限事項
 
 - **DataviewJS には対応しません。** `dataviewjs` は意図的に対象外です。
-- **インラインフィールド（`field:: value`）には対応しません。** 参照するのはフロントマターだけです。
+- **インラインフィールド（`field:: value`）には対応しません。** 参照するのは frontmatter だけです。
 - **`TABLE` の列はフィールドパスです。** 任意の式は書けません。見出しの変更は `AS "Label"` だけです（`file.size / 1024` のような計算列は不可）。
 - **`TASK` が絞り込むのはノートです。** `FROM` / `WHERE` はタスクを含むノートに働きます。
-- **`CALENDAR` が表示するのは1か月分**です。一致した日付のうち最も新しい月を描画します。
+- **`CALENDAR` が表示するのは 1 か月分**です。一致した日付のうち最も新しい月を描画します。
 - `file.size`、`file.mtime`、`file.ctime` はマニフェストから取得できず `undefined` になります。
 - 結果はビルド時に確定します。dataview ブロックが生成したリンクはコンテンツグラフ（バックリンク）には含まれません。フルビルドでは常に正しく再計算されます。
 

@@ -6,13 +6,13 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 
 ## 概要
 
-テーマの配色は次の 3 つの CSS 状態で決まります（[theme-system.md](../../../docs/ja/docs/reference/theme-api.md) 参照）:
+[theme-system.md](../../../docs/ja/docs/reference/theme-api.md) テーマの配色は、次の 3 つの CSS 状態で決まります。
 
 - `:root` — ライト
 - `:root[data-theme="dark"]` — ダーク
 - `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }` — OS に追随（system）
 
-プラグインはこの契約に対する薄い実行時スイッチです:
+プラグインは、この 3 つの CSS 状態を切り替えるだけの薄い実行時スイッチで、次の 3 つを提供します。
 
 - `ColorModeScript` — `<head>` に置く 1 行のインラインスクリプト。**最初の描画の前に**保存済みモードを適用し、テーマのちらつき（FOUC）を防ぎます。
 - `ColorModeToggle` — ライト / ダーク / システムのセグメント型コントロール。
@@ -104,7 +104,7 @@ return (
 
 ## イベント
 
-`initColorMode` は `document` 上で `CustomEvent` を発火します:
+`initColorMode` は `document` 上で `CustomEvent` を発火します。
 
 ```ts
 document.addEventListener("riebeckite:color-mode", (event) => {

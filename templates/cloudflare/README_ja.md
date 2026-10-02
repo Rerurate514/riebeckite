@@ -59,28 +59,28 @@ repository dispatch receiver、`github/notify-site.yml` がまとめて生成さ
 2. `notify-site.yml` を記事リポジトリの `.github/workflows/notify-site.yml` に
    コピーし、`OWNER` と `SITE_REPOSITORY` を置き換えます。`SITE_DISPATCH_TOKEN`
    は**記事リポジトリ側**の Secret に登録します。
-3. 推奨する fine-grained PAT は対象を**site repository**だけに絞り、
-   **Contents: read and write** を与えます。GitHub の repository dispatch API は
-   `Contents: write` を必要とし、トークン作成画面で対象 repository を選ぶには
-   `read` も必要です。classic PAT は `repo` scope、GitHub App は
-   **Contents: write** の installation token でも使えます。記事 repository の
-   `GITHUB_TOKEN` は別 repository へ dispatch できないため使いません。
-4. 記事 repository が public なら、記事 checkout 用 Secret は不要です。private
-   または internal なら、**site repository側**の Secret に
-   `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。対象を記事 repository に絞り
-   **Contents: read** を与えた fine-grained PAT、または同等の read-only GitHub App
-   installation token を使います。
+3. 推奨する fine-grained PAT は対象を**サイトのリポジトリ**だけに絞り、
+   **Contents: read and write** を与えます。GitHub の repository dispatch API
+   は `Contents: write` を必要とし、トークン作成画面で対象リポジトリを選ぶ
+   には `read` も必要です。classic PAT は `repo` scope、GitHub App は
+   **Contents: write** の installation token でも使えます。記事リポジトリの
+   `GITHUB_TOKEN` は別のリポジトリへ dispatch できないため使いません。
+4. 記事リポジトリが public なら、記事 checkout 用 Secret は不要です。private
+   または internal なら、**サイトのリポジトリ側**の Secret に
+   `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。対象を記事リポジトリに絞り
+   **Contents: read** を与えた fine-grained PAT、または同等の read-only GitHub
+   App installation token を使います。
 
-notify workflow は dispatch token が無い場合に値を出さず失敗します。対象 site
-repository の指定誤り・dispatch 権限不足は `actions/github-script`、存在しない／
-読めない記事 repository は checkout が明確に失敗させます。その後の
-Riebeckite check/build と Cloudflare deploy も別々に結果を確認できます。
+notify workflow は dispatch token が無い場合に値を出さず失敗します。対象サイト
+のリポジトリの指定誤り・dispatch 権限不足は `actions/github-script`、存在しない
+／読めない記事リポジトリは checkout が明確に失敗させます。その後の Riebeckite
+check/build と Cloudflare deploy も別々に結果を確認できます。
 
 | 方法 | 記事 push で自動 deploy | 特徴 |
 | --- | ---: | --- |
-| 同一 repository | Yes | `push` だけでよい。 |
-| 別 repository + repository dispatch | Yes | 毎回最新記事を checkout する。 |
-| 別 repository + schedule | 遅延あり | schedule trigger を追加する。dispatch token は不要。 |
+| 同一リポジトリ | Yes | `push` だけでよい。 |
+| 別リポジトリ + repository dispatch | Yes | 毎回最新記事を checkout する。 |
+| 別リポジトリ + schedule | 遅延あり | schedule trigger を追加する。dispatch token は不要。 |
 | manual dispatch | No | Actions タブから実行する。 |
 | Git submodule | No | site 側の submodule 参照を更新して push する。 |
 

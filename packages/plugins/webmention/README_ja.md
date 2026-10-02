@@ -13,12 +13,12 @@ Webmention を受信し、送信元ドキュメントが本当にターゲット
   capability を公開し、`store(mention)` と `query(query)` を持ちます。認証情報・
   データベースハンドル・実行時バインディングは adapter 内に留まり、プラグインの
   options や生成物へ漏れません。
-- `MemoryWebmentionProvider` はテスト・ローカルプレビュー・provider 契約の例として
+- `MemoryWebmentionProvider` はテスト・ローカルプレビューで使う provider の例として
   同梱されています。プロセス／isolate をまたいで永続化はしません。
 - プラグインは `endpoints` を宣言します。`POST {endpoint}` が Webmention を受信し、
   `GET {endpoint}` が検証済みメンションのフィードを返します。ルートフレームワークの
   詳細はこのパッケージへ入りません。HonoX 連携（`mountRiebeckiteEndpoints`）が
-  契約をホストルーターへマウントします。
+  エンドポイントをホストルーターへマウントします。
 - 検証は注入可能な `WebmentionSourceFetcher` を通じて送信元を取得し、ターゲットへの
   発リンクを確認したうえで、軽量な引用メタデータ（title・excerpt・author・公開日・
   `rel` 由来の種別）を記録します。既定の fetcher は loopback とプライベートネット

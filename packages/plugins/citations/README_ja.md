@@ -30,7 +30,7 @@ Pandoc を参考にした、安定した一部の記法を扱います。
 
 Riebeckite はこのプラグインより先に `:name` を directive として解釈します。directive 化によって引用キーが分断された場合はプラグインが組み直すため、`[@colon:2024]` と `@colon:2024 argues` の両方が動きます。キーに使えるのは英字、数字、`-`、`_`、`:`、`.` です。
 
-変換しない対象: inline code、fenced code block、HTML、frontmatter、任意の階層にある通常の Markdown リンク、Obsidian の WikiLink。
+変換しない対象: インラインコード、フェンスドコードブロック、HTML、frontmatter、任意の階層にある通常の Markdown リンク、Obsidian の Wikilink。
 
 ## 文献ファイルの読み込み
 
@@ -42,7 +42,7 @@ Riebeckite はこのプラグインより先に `:name` を directive として�
 
 重点的に扱う文献種別は `article`、`book`、`inproceedings`、`misc` です。その他の種別も汎用フィールドとして読み込んで表示し、`citation-unsupported-entry-type` として報告します。
 
-`@comment`、`@preamble`、`@string` は受け付けて読み飛ばします。壊れたエントリは `citation-malformed-bibliography` を出し、次の `@` から再開するため、1件の不正でファイル残りが消えることはありません。
+`@comment`、`@preamble`、`@string` は受け付けて読み飛ばします。壊れたエントリは `citation-malformed-bibliography` を出し、次の `@` から再開するため、1 件の不正でファイル残りが消えることはありません。
 
 対応する構文: 複数行フィールド、引用符と波括弧の値、ネストした波括弧、値の中のカンマ、エスケープ文字、末尾カンマ、空白、CRLF。
 

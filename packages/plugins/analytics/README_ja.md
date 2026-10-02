@@ -30,7 +30,7 @@ export default {
 
 ## ブラウザでの動作
 
-Core の安定コンテンツ ID（フロントマターの `id`、互換用の `uid`）がある公開コンテンツにだけ識別子マーカーを出力します。汎用 `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
+Core の安定コンテンツ ID（frontmatter の `id`、互換用の `uid`）がある公開コンテンツにだけ識別子マーカーを出力します。汎用 `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
 
 ```json
 {

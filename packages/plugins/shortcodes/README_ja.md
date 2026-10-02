@@ -1,6 +1,6 @@
 # @riebeckite/plugin-shortcodes
 
-`remark-directive` を土台にした汎用ショートコード機能です。
+`remark-directive` を使う汎用ショートコード機能です。
 
 [English](./README.md)
 

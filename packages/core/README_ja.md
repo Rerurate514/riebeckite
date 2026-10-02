@@ -1,12 +1,12 @@
 # @riebeckite/core
 
-Riebeckite の移植可能なフレームワーク契約です。設定、コンテンツソース、ContentManager、Markdown/HTML パイプライン、Plugin と Theme の契約、診断、可観測性を担います。
+Riebeckite の移植可能なフレームワーク本体です。設定、コンテンツソース、ContentManager、Markdown/HTML パイプライン、Plugin と Theme の拡張の約束、診断、可観測性を担います。
 
 [English](./README.md)
 
 ## 概要
 
-`@riebeckite/core` はコンテンツの読み込みと解釈、および拡張が依存する契約を所有します。HonoX や Vite、特定の Plugin・Theme・アプリケーションには依存しません。依存の向きは常に Core へ向かい、その逆には向かいません。
+`@riebeckite/core` はコンテンツの読み込みと解釈、および拡張が依存する取り決めを所有します。HonoX や Vite、特定の Plugin・Theme・アプリケーションには依存しません。依存の向きは常に Core へ向かい、その逆には向かいません。
 
 サイトは `defineConfig` で Core を設定し、[`@riebeckite/honox`](../integrations/honox/README_ja.md) のような integration がビルドを実行します。Plugin と Theme は `definePlugin`、`defineTheme` が返すただのオブジェクトです。
 
@@ -57,7 +57,7 @@ export default defineConfig({
 - `defineEndpoint`、`createClientEntry`、`createStyleAsset`
 - `Plugin*` のコンテキスト、アセット、エンドポイント、診断、SEO、パイプラインの型
 
-### Theme と契約
+### Theme と設定
 
 - `defineTheme` と `Theme*` の型
 - `RiebeckiteConfig`、`ResolvedRiebeckiteConfig`、`SiteConfig`、`PostContent`、`PostFrontmatter`、`PublishStrategy`

@@ -6,7 +6,7 @@ Gruvbox の温かい配色を Riebeckite のテーマにしたものです。明
 
 ## 概要
 
-`gruvboxTheme()` は `gruvbox` という名前のテーマを作ります。他の Riebeckite テーマと同じ `ThemeConfig` API とトークン契約に従い、デザイントークンを CSS カスタムプロパティ（`--rb-color-*`、`--rb-font-*`、`--rb-space-*`、`--rb-layout-*`）として公開したうえで、`@theme` ブロックで Tailwind の値に対応づけます。
+`gruvboxTheme()` は `gruvbox` という名前のテーマを作ります。他の Riebeckite テーマと同じ `ThemeConfig` API とトークンの名前空間に従い、デザイントークンを CSS カスタムプロパティ（`--rb-color-*`、`--rb-font-*`、`--rb-space-*`、`--rb-layout-*`）として公開したうえで、`@theme` ブロックで Tailwind の値に対応づけます。
 
 配色の差し替えだけでなく、見た目の性格も持たせています。見出しは温かいインク色で大きさの段階をはっきりつけ、`h2` の下に 1px の罫線を引きます。リンクは青、ホバーで下線。引用は灰色の左罫線で平らにまとめ、表は細い罫線と淡く色づけたヘッダー行、プラグインの面は 1px 罫線と小さめの角丸（2px）で統一します。グラデーションや影は使わず、角は控えめ、動きは付けません。本文は長文を読みやすい行間と、まぶしさを抑えた面で構成しています。
 
@@ -83,7 +83,7 @@ export default defineConfig({
 
 テーマ固有の項目は `data-gruvbox-contrast` としてルート要素に付きます。`contrast` は `attributes: { "data-gruvbox-contrast": "hard" }` として直接指定することもできます。
 
-共通トークンの一覧は [`@riebeckite/theme-default`](../default/README_ja.md) の README を参照してください。トークン契約は同じです。
+共通トークンの一覧は [`@riebeckite/theme-default`](../default/README_ja.md) の README を参照してください。色、フォント、余白、レイアウト幅、罫線幅のトークンはどのテーマでも共通です。角丸だけは各テーマの CSS に直接書いていて、トークンにはしていません。
 
 ## 主なエクスポート
 

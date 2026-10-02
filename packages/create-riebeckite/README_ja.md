@@ -14,7 +14,7 @@ CLI ツールです。
 npx create-riebeckite
 ```
 
-引数を1つでも渡すと、従来どおり非対話で動作します。
+引数を 1 つでも渡すと、従来どおり非対話で動作します。
 
 ```sh
 npx create-riebeckite my-site
@@ -87,7 +87,7 @@ npx create-riebeckite --list-presets
 | --- | --- |
 | `starter` | 大半のサイトにおすすめ |
 | `minimal` | 最小限の設定で作る Markdown サイト |
-| `showcase` | 描画例とローカルのフィクスチャで Riebeckite の機能と Plugin を確認する構成 |
+| `showcase` | 描画例とローカルの fixture で Riebeckite の機能と Plugin を確認する構成 |
 | `empty` | 独自構成のための空のシェル |
 
 各 preset の説明は次のとおりです（`--list-presets` で表示される内容と同じです）。

@@ -20,10 +20,10 @@ export default defineConfig({
 
 ## ボードの書き方
 
-入力は次の2通りです。
+入力は次の 2 通りです。
 
 - ` ```kanban ` のフェンスコードブロックの本文
-- フロントマターに `kanban-plugin` を持つノートの本文（`autoDetect`、既定で有効）
+- frontmatter に `kanban-plugin` を持つノートの本文（`autoDetect`、既定で有効）
 
 どちらも本文の書き方は同じです。`## `（`columnMarker` で変更可）で始まる行が列を区切り、その後に続くリスト項目がカードになります。カードは `- [ ]`（未完了）、`- [x]`（完了）、`- テキスト`（チェックボックスなし）をそのまま扱います。
 
@@ -39,7 +39,7 @@ export default defineConfig({
 - [x] フィクスチャを公開する
 ````
 
-ノート全体をボードにする場合は、本文に同じ内容を書き、フロントマターに `kanban-plugin` を追加します。
+ノート全体をボードにする場合は、本文に同じ内容を書き、frontmatter に `kanban-plugin` を追加します。
 
 ```md
 ---
@@ -88,7 +88,7 @@ kanban-plugin: board
 
 列でもリスト項目でもない行は、`fallback` を切らない限り `details.rb-kanban__fallback` にそのまま残ります。取りこぼしはありません。
 
-列が1つもないなど解析に問題がある場合は、`@riebeckite/plugin-kanban` を発行元とするメッセージを文書に付与します。
+列が 1 つもないなど解析に問題がある場合は、`@riebeckite/plugin-kanban` を発行元とするメッセージを文書に付与します。
 
 ## エクスポート
 

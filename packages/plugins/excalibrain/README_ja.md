@@ -18,7 +18,7 @@
 | Next | 右端 | `next` |
 | Siblings | 周辺 | `sibling` |
 
-関係は ExcaliBrain のオントロジーに従い、YAML フロントマターと本文中の Dataview インラインフィールドから取得します。明示されていない関係は、コンテンツグラフから推論します。
+関係は ExcaliBrain のオントロジーに従い、YAML frontmatter と本文中の Dataview インラインフィールドから取得します。明示されていない関係は、コンテンツグラフから推論します。
 
 ## 設定する
 
@@ -42,7 +42,7 @@ export default defineConfig({
 
 明示した関係は推論より優先されます。
 
-### YAML フロントマター
+### YAML frontmatter
 
 ```md
 ---

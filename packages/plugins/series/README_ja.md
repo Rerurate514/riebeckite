@@ -6,7 +6,7 @@
 
 ## 概要
 
-`series()` は frontmatter からシリーズ情報を読み取り、該当するノートをグループ化して並べ替えたうえで、各ノートの HTML に `<nav class="rb-series">` ブロックを追加します。リンクには Core が解決したパーマリンクを使うため、`permalink` プラグインなどとも併用できます。1件だけのシリーズにはナビゲーションを出力しません。
+`series()` は frontmatter からシリーズ情報を読み取り、該当するノートをグループ化して並べ替えたうえで、各ノートの HTML に `<nav class="rb-series">` ブロックを追加します。リンクには Core が解決したパーマリンクを使うため、`permalink` プラグインなどとも併用できます。1 件だけのシリーズにはナビゲーションを出力しません。
 
 このプラグインはビルド時のみ動作し、クライアント用のランタイムは持ちません（スタイルシートのみを登録します）。
 
@@ -53,7 +53,7 @@ series_order: 2
 
 ## 出力
 
-2件以上あるシリーズの各ノートには、次のブロックが HTML の末尾に追加されます。
+2 件以上あるシリーズの各ノートには、次のブロックが HTML の末尾に追加されます。
 
 ```html
 <nav class="rb-series" data-series="何かを作る"
@@ -82,9 +82,9 @@ series_order: 2
 ## 公開 API
 
 - `series(options?)` / `seriesPlugin(options?)` — プラグインファクトリ
-- `buildSeriesIndex(manifest, name, options?)` — 1つのシリーズの並び順付きメンバー（`SeriesIndex | null`）。ランディングページ向け
+- `buildSeriesIndex(manifest, name, options?)` — 1 つのシリーズの並び順付きメンバー（`SeriesIndex | null`）。ランディングページ向け
 - `renderSeriesIndex(manifest, name, options?)` — シリーズ全体の `<section>` ブロック
-- `renderSeriesNavigation(index, currentSlug, options?)` — ナビゲーション1つ分
+- `renderSeriesNavigation(index, currentSlug, options?)` — ナビゲーション 1 つ分
 - `collectSeriesIndexes(manifest, options?)` — 全シリーズを出現順で取得
 - `resolveSeriesOptions(options?)` — 既定値を適用したオプション
 - 型: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
@@ -115,8 +115,8 @@ const html = renderSeriesIndex(manifest, "何かを作る");
 
 ## 制限
 
-- 1つのノートが所属できるシリーズは1つだけです。
-- 1件だけのシリーズにはナビゲーションを出力しません。
+- 1 つのノートが所属できるシリーズは 1 つだけです。
+- 1 件だけのシリーズにはナビゲーションを出力しません。
 - `series_order` は有限の数値である必要があります。数値文字列は変換しません。
 - シリーズ用のルートは生成しません。ランディングページを作る場合は `renderSeriesIndex()` を自前のページと組み合わせてください。
 

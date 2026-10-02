@@ -1,6 +1,6 @@
 # @riebeckite/plugin-query
 
-`query` コードブロックを、コンテンツの一覧（表またはリスト）に変換するプラグインです。絞り込み・並べ替え・件数制限をフロントマターとタグに対して行い、ビルド時に HTML を生成します。クライアント側の JavaScript は不要です。
+`query` コードブロックを、コンテンツの一覧（表またはリスト）に変換するプラグインです。絞り込み・並べ替え・件数制限を frontmatter とタグに対して行い、ビルド時に HTML を生成します。クライアント側の JavaScript は不要です。
 
 [English](./README.md)
 
@@ -20,7 +20,7 @@ limit: 5
 ```
 ````
 
-を検出し、マニフェスト（全ノートのフロントマター・タグ・パーマリンク）を使って結果を描画します。
+を検出し、マニフェスト（全ノートの frontmatter・タグ・パーマリンク）を使って結果を描画します。
 
 ## 設定
 
@@ -41,11 +41,11 @@ export default defineConfig({
 | フィールド | 型 | 内容 |
 | --- | --- | --- |
 | `filter` | object | 絞り込み条件（下記） |
-| `sort` | object \| object[] | 並べ替え。`field`（フロントマターキー、`title`、`slug`、`permalink`）と `order`（`asc` / `desc`、既定 `asc`）。既定のフィールドは `date` |
+| `sort` | object \| object[] | 並べ替え。`field`（frontmatter キー、`title`、`slug`、`permalink`）と `order`（`asc` / `desc`、既定 `asc`）。既定のフィールドは `date` |
 | `limit` | number | 最大件数 |
 | `offset` | number | 先頭から読み飛ばす件数 |
 | `format` | `"table"` \| `"list"` | 表示形式。既定は `table` |
-| `columns` | string[] | 表の列。プリセット（`title`、`date`、`updated`、`created`、`published`、`tags`、`description`、`permalink`）またはフロントマターキー |
+| `columns` | string[] | 表の列。プリセット（`title`、`date`、`updated`、`created`、`published`、`tags`、`description`、`permalink`）または frontmatter キー |
 | `excludeSelf` | boolean | このブロックを含むノート自身を結果から除く |
 | `empty` | string | 一致が無いときのメッセージ |
 
@@ -57,7 +57,7 @@ export default defineConfig({
 | `tags.all` | string[] | すべてのタグを持つ |
 | `tags.none` | string[] | どのタグも持たない |
 | `folder` | string \| string[] | スラッグの前方一致 |
-| `frontmatter` | object | フロントマターの一致。値が配列ならそのいずれかに一致。文字列比較は大文字小文字を区別しない |
+| `frontmatter` | object | frontmatter の一致。値が配列ならそのいずれかに一致。文字列比較は大文字小文字を区別しない |
 | `date` | object | `field`（既定 `date`）と `from` / `to`（両端を含む） |
 
 ```yaml

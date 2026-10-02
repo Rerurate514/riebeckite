@@ -20,8 +20,8 @@ npm exec riebeckite dev
 ```
 
 `my-site` は入力したプロジェクト名に置き換えてください。preset は迷ったら
-`starter` のままで問題ありません。引数を渡す（例:
-`npx create-riebeckite my-site`）とプロンプトは省略されます。
+`starter` のままで問題ありません。引数を渡すと（例:
+`npx create-riebeckite my-site`）プロンプトは省略されます。
 
 あとは `content/` の Markdown を編集し、ブラウザで確認して、ビルドします。
 
@@ -34,7 +34,7 @@ npm exec riebeckite build
 ## 主な機能
 
 - Obsidian 形式の Markdown とコンテンツグラフ
-- 自己完結した4種類の preset。迷ったら既定の `starter` を使います
+- 自己完結した 4 種類の preset。迷ったら既定の `starter` を使います
 - Markdown 処理、表示、検索、メディア、診断、デプロイを拡張する Plugin
 - 公式 Theme
 - ローカル確認、ビルド、必要に応じた診断に使える CLI

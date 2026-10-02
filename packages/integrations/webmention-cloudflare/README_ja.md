@@ -8,7 +8,7 @@ Cloudflare Worker・D1・KV ランタイムです。汎用プラグインが sto
 
 ## アーキテクチャ
 
-`d1Storage` / `kvStorage` は汎用 `WebmentionProvider` 契約を実装するため、同じ
+`d1Storage` / `kvStorage` は汎用 `WebmentionProvider` を実装するため、同じ
 サイトの Worker 内でプラグインの `endpoints` をマウントし、バインディング由来の
 provider を渡せます。`createWorker` は別 Worker 配置向けの任意の単体レシーバーで、
 入力を検証し、送信元がターゲットへリンクしていることを確認し、メンションを保存して

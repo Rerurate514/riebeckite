@@ -1,12 +1,12 @@
 # @riebeckite/plugin-properties
 
-ノートのフロントマターを、Obsidian 風のプロパティパネルとしてビルド時に描画するプラグインです。クライアント側の JavaScript は不要です。
+ノートの frontmatter を、Obsidian 風のプロパティパネルとしてビルド時に描画するプラグインです。クライアント側の JavaScript は不要です。
 
 [English](./README.md)
 
 ## できること
 
-マニフェスト生成時に、`properties()` が各エントリのフロントマターから `section.rb-properties[data-properties]` を生成し、本文の先頭（または末尾）に挿入します。`render: "slot"` を指定すると、本文を書き換えずに `ContentManifestEntry.bodySlots.properties` として提供し、描画位置は Site が決めます。情報源はフロントマターだけなので、Markdown 本文に書くことはありません。
+マニフェスト生成時に、`properties()` が各エントリの frontmatter から `section.rb-properties[data-properties]` を生成し、本文の先頭（または末尾）に挿入します。`render: "slot"` を指定すると、本文を書き換えずに `ContentManifestEntry.bodySlots.properties` として提供し、描画位置は Site が決めます。情報源は frontmatter だけなので、Markdown 本文に書くことはありません。
 
 値は型に応じて描画されます。
 
@@ -42,7 +42,7 @@ export default defineConfig({
 | `position` | `"start" \| "end"` | `"start"` | 本文の前か後ろに挿入 |
 | `include` | `string[]` | なし | このキーだけを描画 |
 | `exclude` | `string[]` | `["publish", "permalink", "aliases", "redirect_from"]` | 非表示にするキー |
-| `order` | `string[]` | なし | 選択したキーの表示順。列挙したキーが先頭に並び、残りはフロントマター順 |
+| `order` | `string[]` | なし | 選択したキーの表示順。列挙したキーが先頭に並び、残りは frontmatter 順 |
 | `render` | `"html" \| "slot"` | `"html"` | `"html"` は本文先頭・末尾に挿入、`"slot"` は `bodySlots.properties` として提供 |
 | `hideEmpty` | `boolean` | `true` | `null`、`""`、`[]`、`{}` を省略 |
 | `className` | `string` | `"rb-properties"` | ルート要素の CSS クラス |

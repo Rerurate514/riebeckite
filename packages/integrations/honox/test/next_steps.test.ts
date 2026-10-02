@@ -9,7 +9,9 @@ test("next steps install, start the dev server, and point at the index page", ()
       "Next steps:",
       "  cd my-site",
       "  npm install",
+      "  npm exec riebeckite check",
       "  npm exec riebeckite dev",
+      "  npm exec riebeckite build",
       "",
       "Then edit:",
       "  content/index.md",
@@ -20,7 +22,13 @@ test("next steps install, start the dev server, and point at the index page", ()
 test("next steps omit cd when the site lives in the current directory", () => {
   assert.equal(
     formatScaffoldNextSteps("."),
-    ["Next steps:", "  npm install", "  npm exec riebeckite dev"].join("\n"),
+    [
+      "Next steps:",
+      "  npm install",
+      "  npm exec riebeckite check",
+      "  npm exec riebeckite dev",
+      "  npm exec riebeckite build",
+    ].join("\n"),
   );
 });
 
@@ -31,7 +39,9 @@ test("next steps skip the edit hint when the scaffold wrote no index page", () =
       "Next steps:",
       "  cd my-site",
       "  npm install",
+      "  npm exec riebeckite check",
       "  npm exec riebeckite dev",
+      "  npm exec riebeckite build",
     ].join("\n"),
   );
 });

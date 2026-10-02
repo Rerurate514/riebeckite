@@ -76,6 +76,7 @@ export class ContentManager {
   private isBuildTime = false;
   private publishingBuildTime: Date;
   private routableSlugs: Set<string> | null = null;
+  private routableSlugsPromise: Promise<Set<string>> | null = null;
   private processedContentCount = 0;
   private outputChangeSet: OutputChangeSet | null = null;
 
@@ -542,9 +543,7 @@ export class ContentManager {
     if (preparation.affectedContent.direct.has(slug)) return null;
     if (preparation.affectedContent.dependent.has(slug)) return null;
 
-    const entry = preparation.previousState.manifestEntries.find(
-      (candidate) => candidate.slug === slug,
-    );
+    const entry = preparation.previousManifestEntriesBySlug.get(slug);
     if (!entry) return null;
     this.observability().tracer.event("content.reuse", { slug });
     return cloneManifestEntry(entry);
@@ -567,7 +566,18 @@ export class ContentManager {
 
   private async ensureRoutableSlugs(): Promise<Set<string>> {
     if (this.routableSlugs) return this.routableSlugs;
+    if (this.routableSlugsPromise) return await this.routableSlugsPromise;
 
+    this.routableSlugsPromise = this.resolveRoutableSlugs();
+    try {
+      this.routableSlugs = await this.routableSlugsPromise;
+      return this.routableSlugs;
+    } finally {
+      this.routableSlugsPromise = null;
+    }
+  }
+
+  private async resolveRoutableSlugs(): Promise<Set<string>> {
     const strategy = this.publishStrategy();
     const posts = await this.getAllPosts();
     const routableSlugs = new Set<string>();
@@ -579,7 +589,6 @@ export class ContentManager {
       });
       if (publishing.routable) routableSlugs.add(post.slug);
     });
-    this.routableSlugs = routableSlugs;
     return routableSlugs;
   }
 

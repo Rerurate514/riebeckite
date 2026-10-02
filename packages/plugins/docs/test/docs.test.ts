@@ -236,6 +236,29 @@ test("renders accessible navigation semantics", async () => {
   assert.match(html, /data-docs-collapsed="false"/);
 });
 
+test("keeps the current branch expanded when a section is collapsed", async () => {
+  const manager = createManager({
+    "docs/index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",
+    "docs/plugins/index.md":
+      "---\ntitle: Plugins\npublish: true\nsidebar:\n  collapsed: true\n---\n# Plugins\n",
+    "docs/plugins/search.md":
+      "---\ntitle: Search\npublish: true\n---\n# Search\n",
+  });
+
+  const manifest = await manager.getManifest();
+  const home = manifest.bySlug.get("docs/index");
+  const search = manifest.bySlug.get("docs/plugins/search");
+
+  assert.match(
+    home?.bodySlots?.["article.aside"] ?? "",
+    /data-docs-collapsed="true"/,
+  );
+  assert.match(
+    search?.bodySlots?.["article.aside"] ?? "",
+    /data-docs-collapsed="false"/,
+  );
+});
+
 function createManager(files: Record<string, string>): ContentManager {
   const config = resolveConfig({
     site: { title: "Test" },

@@ -3,6 +3,7 @@ title: Plugins
 sidebar:
   label: Plugins
   order: 30
+  collapsed: true
 ---
 # Plugins
 

@@ -35,16 +35,29 @@ function renderItem(
   level: number,
 ): string {
   const isCurrent = item.href === currentPermalink;
+  const isCurrentBranch = item.children.some((child) =>
+    containsPermalink(child, currentPermalink),
+  );
   const children =
     item.children.length > 0
       ? renderItems(item.children, currentPermalink, level + 1)
       : "";
-  const collapsed = item.collapsed === true;
+  const collapsed = item.collapsed === true && !isCurrent && !isCurrentBranch;
   const state =
     item.children.length > 0
       ? ` data-docs-collapsed="${collapsed ? "true" : "false"}"`
       : "";
   return `<li class="rb-docs-sidebar__item rb-docs-sidebar__item--level-${level}" data-docs-level="${level}"${state}>${renderItemLabel(item, isCurrent)}${children}</li>`;
+}
+
+function containsPermalink(
+  item: DocsNavigationItem,
+  currentPermalink: string,
+): boolean {
+  return (
+    item.href === currentPermalink ||
+    item.children.some((child) => containsPermalink(child, currentPermalink))
+  );
 }
 
 function renderItemLabel(item: DocsNavigationItem, isCurrent: boolean): string {

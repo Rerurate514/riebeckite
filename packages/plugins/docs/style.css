@@ -19,6 +19,10 @@
   margin-block-start: 0.25rem;
 }
 
+.rb-docs-sidebar__item[data-docs-collapsed="true"] > .rb-docs-sidebar__list {
+  display: none;
+}
+
 .rb-docs-sidebar__link,
 .rb-docs-sidebar__section {
   display: block;

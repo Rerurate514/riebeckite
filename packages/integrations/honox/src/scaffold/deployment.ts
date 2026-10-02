@@ -1,5 +1,8 @@
 import type { SiteTemplateFile } from "./templates.js";
-import { WRANGLER_DEFAULTS, GITHUB_ACTIONS_SECRETS } from "./wrangler-defaults.js";
+import {
+  GITHUB_ACTIONS_SECRETS,
+  WRANGLER_DEFAULTS,
+} from "./wrangler-defaults.js";
 
 export type ScaffoldDeploymentOptions = {
   readonly contentRepository?: string;

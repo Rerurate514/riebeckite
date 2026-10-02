@@ -35,14 +35,16 @@ function manager(
   buildDirectory?: string,
 ) {
   return new ContentManager(source(files), [], {
-    config: resolveConfig({
+    config: {
+      ...resolveConfig({
+        site: { title: "Test" },
+        cache: buildDirectory
+          ? { enabled: true, directory: path.join(buildDirectory, "cache") }
+          : undefined,
+        content: { filters: { publishStrategy: "selective" } },
+      }),
       buildDirectory,
-      site: { title: "Test" },
-      cache: buildDirectory
-        ? { enabled: true, directory: path.join(buildDirectory, "cache") }
-        : undefined,
-      content: { filters: { publishStrategy: "selective" } },
-    }),
+    },
     plugins: [
       ...additionalPlugins,
       l10n({

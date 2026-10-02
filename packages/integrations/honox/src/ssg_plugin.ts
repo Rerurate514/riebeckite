@@ -344,9 +344,9 @@ function routeOutputPath(routePath: string, contentType: string): string {
   return `${normalized}.${extension}`;
 }
 
-async function loadOutputCache(
+export async function loadOutputCache(
   path: string,
-  log: (message: string) => void,
+  log: (message: string) => void = () => {},
 ): Promise<OutputCacheState | undefined> {
   let raw: string;
   try {
@@ -361,9 +361,9 @@ async function loadOutputCache(
     return undefined;
   }
 
-  let parsed: OutputCacheState;
+  let parsed: unknown;
   try {
-    parsed = JSON.parse(raw) as OutputCacheState;
+    parsed = JSON.parse(raw);
   } catch (error) {
     log(
       `SSG output cache is corrupted and will be rebuilt. ${
@@ -373,14 +373,39 @@ async function loadOutputCache(
     return undefined;
   }
 
-  if (parsed.version !== 1 || typeof parsed.outputs !== "object") {
+  if (!isOutputCacheState(parsed)) {
     log("SSG output cache uses an unsupported format and will be rebuilt.");
     return undefined;
   }
   return parsed;
 }
 
-async function saveOutputCache(
+function isOutputCacheState(value: unknown): value is OutputCacheState {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as {
+    version?: unknown;
+    outputs?: unknown;
+  };
+  return candidate.version === 1 && isOutputCacheEntries(candidate.outputs);
+}
+
+function isOutputCacheEntries(
+  value: unknown,
+): value is OutputCacheState["outputs"] {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+  return Object.values(value).every(
+    (entry) =>
+      typeof entry === "object" &&
+      entry !== null &&
+      typeof (entry as OutputCacheEntry).source === "string" &&
+      ((entry as OutputCacheEntry).encoding === "utf8" ||
+        (entry as OutputCacheEntry).encoding === "base64"),
+  );
+}
+
+export async function saveOutputCache(
   path: string,
   state: OutputCacheState,
 ): Promise<void> {

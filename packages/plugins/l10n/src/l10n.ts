@@ -630,10 +630,7 @@ function addLanguageSwitchers(
   }
 }
 
-function sameHeadTag(
-  left: PluginHeadTag,
-  right: PluginHeadTag,
-): boolean {
+function sameHeadTag(left: PluginHeadTag, right: PluginHeadTag): boolean {
   return (
     left.tag === right.tag &&
     left.attrs?.rel === right.attrs?.rel &&

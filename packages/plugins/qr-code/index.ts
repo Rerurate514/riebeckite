@@ -25,6 +25,10 @@ export function qrCode(options: QrCodeOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     order: -10,
+    processedContentCache: {
+      version: "qr-code-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateQrCodeOptions,
     extendHtmlPipeline: (pipeline) => {

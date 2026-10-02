@@ -45,6 +45,23 @@ export type RiebeckitePlugin<TOptions = unknown> = {
    */
   optional?: string[];
   cacheVersion?: string;
+  /**
+   * Explicit contract for the persistent processed-content cache.
+   *
+   * This is intentionally separate from `cacheVersion`, which versions the
+   * plugin-local cache storage. Content-transforming plugins without this
+   * contract are treated as unsafe for persistent `PostContent` reuse.
+   *
+   * - `none`: processed HTML depends only on the current content source,
+   *   frontmatter, plugin options, and this contract version.
+   * - `tracked`: external content/file inputs are read only through
+   *   framework-owned APIs that record dependency fingerprints.
+   * - `unsafe`: persistent processed-content cache must bypass this plugin.
+   */
+  processedContentCache?: {
+    version: string;
+    dependencyMode: "none" | "tracked" | "unsafe";
+  };
   validateOptions?: PluginOptionsValidator<TOptions>;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];

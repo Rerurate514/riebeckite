@@ -12,6 +12,10 @@ export type { RichEmbedOptions, RichEmbedProvider } from "./src/types.js";
 export function richEmbed(options: RichEmbedOptions = {}) {
   return definePlugin({
     name: "rich-embed",
+    processedContentCache: {
+      version: "rich-embed-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateRichEmbedOptions,
     extendHtmlPipeline: (pipeline) => {

@@ -21,4 +21,8 @@ export interface RiebeckiteConfig {
   };
   theme?: ThemeInput;
   plugins?: PluginInput[];
+  cache?: {
+    enabled?: boolean;
+    directory?: string;
+  };
 }

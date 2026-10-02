@@ -48,6 +48,10 @@ export function codeAnnotations(options: CodeAnnotationsOptions = {}) {
   return definePlugin({
     name: "code-annotations",
     order: 10,
+    processedContentCache: {
+      version: "code-annotations-v1",
+      dependencyMode: "none",
+    },
     options: resolved,
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkCodeAnnotations, resolved);

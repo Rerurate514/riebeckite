@@ -18,6 +18,10 @@ export function graphviz(options: GraphvizOptions = {}) {
   return definePlugin({
     name: "graphviz",
     order: -10,
+    processedContentCache: {
+      version: "graphviz-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateGraphvizOptions,
     extendHtmlPipeline: (pipeline) => {

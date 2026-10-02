@@ -49,6 +49,10 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
 
   return definePlugin({
     name: BREADCRUMBS_PLUGIN_NAME,
+    processedContentCache: {
+      version: "breadcrumbs-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateBreadcrumbsOptions,
     onPostProcessed: (context) => {

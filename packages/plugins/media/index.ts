@@ -46,6 +46,10 @@ export function media(options: MediaOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     order: -10,
+    processedContentCache: {
+      version: "media-v1",
+      dependencyMode: "none",
+    },
     options,
     renderers: [
       {

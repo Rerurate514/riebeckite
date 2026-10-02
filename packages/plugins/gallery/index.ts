@@ -51,6 +51,10 @@ export function gallery(options: GalleryOptions = {}) {
 
   return definePlugin({
     name: GALLERY_PLUGIN_NAME,
+    processedContentCache: {
+      version: "gallery-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateGalleryOptions,
     extendMarkdownPipeline: (pipeline) => {

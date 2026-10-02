@@ -43,6 +43,10 @@ export function map(options: MapOptions = {}) {
   return definePlugin({
     name: MAP_PLUGIN_NAME,
     order: -10,
+    processedContentCache: {
+      version: "map-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateMapOptions,
     extendHtmlPipeline: (pipeline) => {

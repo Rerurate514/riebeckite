@@ -54,6 +54,10 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     order: 100,
+    processedContentCache: {
+      version: "responsive-image-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateResponsiveImageOptions,
     extendHtmlPipeline: (pipeline) => {

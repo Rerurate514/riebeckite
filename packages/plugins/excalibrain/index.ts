@@ -130,6 +130,10 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
   return definePlugin({
     name: "excalibrain",
     order: -10,
+    processedContentCache: {
+      version: "excalibrain-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateExcaliBrainOptions,
     extendHtmlPipeline: (pipeline) => {

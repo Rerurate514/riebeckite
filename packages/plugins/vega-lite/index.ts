@@ -27,6 +27,10 @@ export function vegaLite(options: VegaLiteOptions = {}) {
   return definePlugin({
     name: "vega-lite",
     order: -10,
+    processedContentCache: {
+      version: "vega-lite-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateVegaLiteOptions,
     extendHtmlPipeline: (pipeline) => {

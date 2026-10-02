@@ -42,6 +42,10 @@ export function pdf(options: PdfOptions = {}) {
   return definePlugin({
     name: PDF_PLUGIN_NAME,
     order: -20,
+    processedContentCache: {
+      version: "pdf-v1",
+      dependencyMode: "tracked",
+    },
     options,
     validateOptions: validatePdfOptions,
     renderers: [

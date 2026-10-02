@@ -23,6 +23,10 @@ export function uxPlugin(options: UxOptions = {}) {
 
   return definePlugin({
     name: "ux",
+    processedContentCache: {
+      version: "ux-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateUxOptions,
     assets: [createStyleAsset("ux")],

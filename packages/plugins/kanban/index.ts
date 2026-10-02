@@ -37,6 +37,10 @@ export function kanban(options: KanbanOptions = {}) {
 
   return definePlugin({
     name: "kanban",
+    processedContentCache: {
+      version: "kanban-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateKanbanOptions,
     extendMarkdownPipeline: (pipeline) => {

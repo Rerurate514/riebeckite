@@ -21,6 +21,10 @@ export function wavedrom(options: WavedromOptions = {}) {
   return definePlugin({
     name: "wavedrom",
     order: -10,
+    processedContentCache: {
+      version: "wavedrom-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateWavedromOptions,
     extendHtmlPipeline: (pipeline) => {

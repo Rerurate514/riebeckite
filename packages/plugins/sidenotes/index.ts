@@ -36,6 +36,10 @@ export function sidenotes(options: SidenotesOptions = {}) {
   const resolved = resolveSidenotesOptions(options);
   return definePlugin({
     name: SIDENOTES_PLUGIN_NAME,
+    processedContentCache: {
+      version: "sidenotes-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateSidenotesOptions,
     rehypePlugins: [() => rehypeSidenotes(resolved)],

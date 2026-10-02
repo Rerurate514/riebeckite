@@ -39,6 +39,10 @@ export function series(options: SeriesOptions = {}) {
 
   return definePlugin({
     name: "series",
+    processedContentCache: {
+      version: "series-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateSeriesOptions,
     onPostProcessed: ({ slug, content }) => {

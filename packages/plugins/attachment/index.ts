@@ -2,9 +2,9 @@ import {
   definePlugin,
   escapeHtml,
   escapeHtmlAttribute,
-  getContentSourceEntry,
   getExtension,
   type PluginRenderContext,
+  readContentSourceEntry,
 } from "@riebeckite/core";
 
 export type AttachmentOptions = {
@@ -16,6 +16,10 @@ const PLUGIN_NAME = "attachment";
 export function attachment(options: AttachmentOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
+    processedContentCache: {
+      version: "attachment-v1",
+      dependencyMode: "tracked",
+    },
     options,
     renderers: [
       {
@@ -68,13 +72,16 @@ async function getAttachmentSize(
   context: PluginRenderContext,
 ): Promise<string | null> {
   if (!context.contentSource) return null;
-  const entry = await getContentSourceEntry(
+  const content = await readContentSourceEntry(
     context.contentSource,
     context.path,
   );
-  return entry?.metadata?.size === undefined
-    ? null
-    : formatBytes(entry.metadata.size);
+  if (content === null) return null;
+  const bytes =
+    typeof content === "string"
+      ? new TextEncoder().encode(content).byteLength
+      : content.byteLength;
+  return formatBytes(bytes);
 }
 
 function getFileName(contentPath: string): string {

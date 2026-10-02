@@ -21,6 +21,10 @@ export function queryPlugin(options: QueryOptions = {}) {
 
   return definePlugin({
     name: "query",
+    processedContentCache: {
+      version: "query-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     provides: ["content.query"],
     validateOptions: validateQueryOptions,

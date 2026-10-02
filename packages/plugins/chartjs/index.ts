@@ -23,6 +23,10 @@ export function chartjs(options: ChartJsOptions = {}) {
   return definePlugin({
     name: "chartjs",
     order: -10,
+    processedContentCache: {
+      version: "chartjs-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateChartJsOptions,
     extendHtmlPipeline: (pipeline) => {

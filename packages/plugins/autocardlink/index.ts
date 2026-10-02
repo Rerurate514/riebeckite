@@ -14,6 +14,10 @@ export type { AutoCardLink, AutoCardLinkOptions } from "./src/types.js";
 export function autoCardLinkPlugin(options: AutoCardLinkOptions = {}) {
   return definePlugin({
     name: "autocardlink",
+    processedContentCache: {
+      version: "autocardlink-v1",
+      dependencyMode: "none",
+    },
     options,
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkAutoCardLink, options);

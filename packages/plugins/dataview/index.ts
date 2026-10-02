@@ -51,6 +51,10 @@ export function dataviewPlugin(options: DataviewOptions = {}) {
 
   return definePlugin({
     name: "dataview",
+    processedContentCache: {
+      version: "dataview-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     provides: ["content.dataview"],
     validateOptions: validateDataviewOptions,

@@ -27,6 +27,10 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     order: -21,
+    processedContentCache: {
+      version: "excalidraw-v1",
+      dependencyMode: "tracked",
+    },
     options,
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkExcalidrawMarkdownEmbed, {
@@ -274,8 +278,8 @@ async function resolveEmbeddedFiles(input: {
         id: embeddedFile.fileId,
         dataURL: `data:${mimeType};base64,${toBase64(data)}`,
         mimeType,
-        created: Date.now(),
-        lastRetrieved: Date.now(),
+        created: 0,
+        lastRetrieved: 0,
       };
     } catch (error) {
       console.error("[plugin-excalidraw] Failed to resolve embedded file", {

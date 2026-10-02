@@ -35,6 +35,10 @@ export function bases(options: BasesOptions = {}) {
 
   return definePlugin({
     name: "bases",
+    processedContentCache: {
+      version: "bases-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     provides: ["content.bases"],
     validateOptions: validateBasesOptions,

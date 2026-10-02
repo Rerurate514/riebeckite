@@ -43,6 +43,10 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
 
   return definePlugin({
     name: RELATED_POSTS_PLUGIN_NAME,
+    processedContentCache: {
+      version: "related-posts-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateRelatedPostsOptions,
     onPostProcessed: (context) => {

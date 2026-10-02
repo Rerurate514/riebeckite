@@ -25,6 +25,10 @@ export function markmap(options: MarkmapOptions = {}) {
   return definePlugin({
     name: "markmap",
     order: -10,
+    processedContentCache: {
+      version: "markmap-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateMarkmapOptions,
     extendHtmlPipeline: (pipeline) => {

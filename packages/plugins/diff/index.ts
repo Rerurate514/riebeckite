@@ -55,6 +55,10 @@ export function diff(options: DiffPluginOptions = {}) {
 
   return definePlugin({
     name: "diff",
+    processedContentCache: {
+      version: "diff-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     assets: ui.enabled === false ? [] : [createStyleAsset("diff")],
     clientEntries:

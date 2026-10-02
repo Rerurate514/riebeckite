@@ -63,6 +63,10 @@ export function share(options: ShareOptions = {}) {
 
   return definePlugin({
     name: SHARE_PLUGIN_NAME,
+    processedContentCache: {
+      version: "share-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateShareOptions,
     onPostProcessed: (context) => {

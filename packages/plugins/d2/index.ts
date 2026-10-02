@@ -21,6 +21,10 @@ export function d2(options: D2Options = {}) {
   return definePlugin({
     name: "d2",
     order: -10,
+    processedContentCache: {
+      version: "d2-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateD2Options,
     extendHtmlPipeline: (pipeline) => {

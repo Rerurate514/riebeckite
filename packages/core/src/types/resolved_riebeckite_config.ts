@@ -29,4 +29,8 @@ export type ResolvedRiebeckiteConfig = {
     styles: ThemeStyle[];
   };
   plugins: RiebeckitePlugin[];
+  cache: {
+    enabled: boolean;
+    directory: string;
+  };
 };

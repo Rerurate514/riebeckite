@@ -140,6 +140,10 @@ export function webmention(options: WebmentionOptions = {}) {
 
   return definePlugin({
     name: WEBMENTION_PLUGIN_NAME,
+    processedContentCache: {
+      version: "webmention-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateWebmentionOptions,
     onPostProcessed: ({ slug, content }) => {

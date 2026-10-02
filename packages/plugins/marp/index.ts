@@ -23,6 +23,10 @@ export function marp(options: MarpOptions = {}) {
   return definePlugin({
     name: "marp",
     order: -10,
+    processedContentCache: {
+      version: "marp-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateMarpOptions,
     extendHtmlPipeline: (pipeline) => {

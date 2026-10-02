@@ -16,6 +16,10 @@ export type { PlantumlFormat, PlantumlOptions } from "./src/types.js";
 export function plantuml(options: PlantumlOptions = {}) {
   return definePlugin({
     name: "plantuml",
+    processedContentCache: {
+      version: "plantuml-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validatePlantumlOptions,
     extendHtmlPipeline: (pipeline) => {

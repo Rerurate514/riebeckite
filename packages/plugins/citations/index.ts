@@ -26,8 +26,16 @@ export function citations(options: CitationsOptions = {}) {
 
   return definePlugin({
     name: PLUGIN_NAME,
+    processedContentCache: {
+      version: "citations-v1",
+      dependencyMode: "tracked",
+    },
     options,
     validateOptions: validateCitationsOptions,
+    buildStart: () => {
+      state.bibliographies.clear();
+      state.diagnostics.length = 0;
+    },
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkCitations, {
         ...options,

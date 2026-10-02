@@ -14,6 +14,10 @@ const TAG_NAME_PATTERN = /^[a-zA-Z][a-zA-Z0-9-]*$/;
 export function highlight(options: HighlightOptions = {}) {
   return definePlugin({
     name: "highlight",
+    processedContentCache: {
+      version: "highlight-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateHighlightOptions,
     extendMarkdownPipeline: (pipeline) => {

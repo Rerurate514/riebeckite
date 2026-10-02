@@ -44,6 +44,10 @@ const PLUGIN_NAME = "shortcodes";
 export function shortcodes(options: ShortcodeOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
+    processedContentCache: {
+      version: "shortcodes-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkShortcodes, {

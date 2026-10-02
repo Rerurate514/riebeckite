@@ -15,6 +15,10 @@ export type { CodeTabsClientOptions, CodeTabsOptions } from "./src/types.js";
 export function codeTabs(options: CodeTabsOptions = {}) {
   return definePlugin({
     name: "code-tabs",
+    processedContentCache: {
+      version: "code-tabs-v1",
+      dependencyMode: "none",
+    },
     options,
     remarkPlugins: [remarkCodeMeta],
     extendHtmlPipeline: (pipeline) => {

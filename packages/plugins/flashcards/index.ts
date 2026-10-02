@@ -47,6 +47,10 @@ export function flashcards(options: FlashcardsOptions = {}) {
 
   return definePlugin({
     name: "flashcards",
+    processedContentCache: {
+      version: "flashcards-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateFlashcardsOptions,
     extendMarkdownPipeline: (pipeline) => {

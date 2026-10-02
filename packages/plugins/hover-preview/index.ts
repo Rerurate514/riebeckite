@@ -41,6 +41,10 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
 
   return definePlugin({
     name: "hover-preview",
+    processedContentCache: {
+      version: "hover-preview-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateHoverPreviewOptions,
     onPostProcessed: (context) => {

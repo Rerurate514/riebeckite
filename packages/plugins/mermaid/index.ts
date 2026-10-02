@@ -26,6 +26,10 @@ export function mermaid(options: MermaidOptions = {}) {
   return definePlugin({
     name: "mermaid",
     order: -10,
+    processedContentCache: {
+      version: "mermaid-v1",
+      dependencyMode: "none",
+    },
     options,
     validateOptions: validateMermaidOptions,
     extendHtmlPipeline: (pipeline) => {

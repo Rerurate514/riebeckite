@@ -36,6 +36,10 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     order: -20,
+    processedContentCache: {
+      version: "obsidian-markdown-v1",
+      dependencyMode: "tracked",
+    },
     options,
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkObsidianBlockReference);

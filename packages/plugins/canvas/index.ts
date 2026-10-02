@@ -46,6 +46,10 @@ export function canvas(options: CanvasOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     order: -15,
+    processedContentCache: {
+      version: "canvas-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validateCanvasOptions,
     extendMarkdownPipeline: (pipeline, context) => {

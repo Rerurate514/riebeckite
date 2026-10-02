@@ -83,6 +83,10 @@ export function resolveConfig(
     },
     theme,
     plugins: resolvePlugins(config.plugins),
+    cache: {
+      enabled: config.cache?.enabled ?? true,
+      directory: config.cache?.directory ?? "",
+    },
   };
 }
 

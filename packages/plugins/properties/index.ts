@@ -58,6 +58,10 @@ export function properties(options: PropertiesOptions = {}) {
 
   return definePlugin({
     name: PLUGIN_NAME,
+    processedContentCache: {
+      version: "properties-v1",
+      dependencyMode: "unsafe",
+    },
     options,
     validateOptions: validatePropertiesOptions,
     assets: [createStyleAsset(PLUGIN_NAME)],

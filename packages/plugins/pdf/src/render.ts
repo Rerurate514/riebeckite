@@ -1,9 +1,9 @@
 import {
   escapeHtml,
   escapeHtmlAttribute,
-  getContentSourceEntry,
   getExtension,
   type PluginRenderContext,
+  readContentSourceEntry,
 } from "@riebeckite/core";
 import type { ResolvedPdfOptions } from "./types.js";
 
@@ -81,13 +81,16 @@ async function getAttachmentSize(
   context: PluginRenderContext,
 ): Promise<string | null> {
   if (!context.contentSource) return null;
-  const entry = await getContentSourceEntry(
+  const content = await readContentSourceEntry(
     context.contentSource,
     context.path,
   );
-  return entry?.metadata?.size === undefined
-    ? null
-    : formatBytes(entry.metadata.size);
+  if (content === null) return null;
+  const bytes =
+    typeof content === "string"
+      ? new TextEncoder().encode(content).byteLength
+      : content.byteLength;
+  return formatBytes(bytes);
 }
 
 function getFileName(contentPath: string): string {

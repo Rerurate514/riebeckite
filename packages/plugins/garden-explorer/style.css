@@ -128,6 +128,7 @@
 
   .garden-explorer__chip[aria-pressed="true"],
   .garden-explorer__note-list button[aria-pressed="true"],
+  .garden-explorer__graph-toolbar button[aria-pressed="true"],
   .garden-explorer__mobile-tab[aria-pressed="true"] {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
@@ -190,6 +191,19 @@
   .garden-graph__edge {
     stroke: var(--rb-color-border);
     stroke-width: 1.2;
+    transition:
+      opacity 120ms ease,
+      stroke 120ms ease,
+      stroke-width 120ms ease;
+  }
+
+  .garden-graph__edge[data-muted="true"] {
+    opacity: 0.18;
+  }
+
+  .garden-graph__edge[data-emphasized="true"] {
+    stroke: var(--rb-color-accent);
+    stroke-width: 1.8;
   }
 
   .garden-graph__node circle {
@@ -199,6 +213,10 @@
     transition:
       fill 120ms ease,
       stroke 120ms ease;
+  }
+
+  .garden-graph__node[data-muted="true"] {
+    opacity: 0.28;
   }
 
   .garden-graph__node circle[data-selected="true"] {
@@ -214,6 +232,14 @@
 
   .garden-graph__node a {
     cursor: pointer;
+  }
+
+  .garden-graph__node circle {
+    cursor: grab;
+  }
+
+  .garden-graph__node circle:active {
+    cursor: grabbing;
   }
 
   .garden-explorer__details h2 {
@@ -247,6 +273,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .garden-graph__edge,
     .garden-graph__node circle {
       transition: none;
     }

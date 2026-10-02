@@ -22,6 +22,7 @@ Individual Plugin pages contain source examples where the feature can be demonst
 - [Deploy](./deploy.md)
 - [Diagnostics](./diagnostics.md)
 - [Diff](./diff.md)
+- [ExcaliBrain](./excalibrain.md)
 - [Excalidraw](./excalidraw.md)
 - [Gallery](./gallery.md)
 - [Garden Explorer](./garden-explorer.md)

@@ -19,6 +19,7 @@ Plugin は、Riebeckite のサイトに機能を追加する仕組みです。�
 | Backlink を表示したい | [Backlinks](./backlinks.md) |
 | 画像を拡大表示したい | [Lightbox](./lightbox.md) |
 | Excalidraw を表示したい | [Excalidraw](./excalidraw.md) |
+| ノート間の関係図を表示したい | [ExcaliBrain](./excalibrain.md) |
 | Obsidian Canvas を表示したい | [Canvas](./canvas.md) |
 | BibTeX の引用を使いたい | [Citations](./citations.md) |
 | 多言語サイトにしたい | [Localization](./l10n.md) |
@@ -66,6 +67,7 @@ export default defineConfig({
 - [Diagnostics](./diagnostics.md)
 - [Diff](./diff.md)
 - [Docs](./docs.md)
+- [ExcaliBrain](./excalibrain.md)
 - [Excalidraw](./excalidraw.md)
 - [Gallery](./gallery.md)
 - [Garden Explorer](./garden-explorer.md)

@@ -154,7 +154,10 @@ export default defineConfig({
       render: "build",
       engine: "dot",
     }),
-    excaliBrain(),
+    excaliBrain({
+      auto: false,
+      heading: false,
+    }),
     excalidraw(),
     canvas(),
     media(),

@@ -510,6 +510,24 @@ views:
 - [x] Publish the fixture
 ```
 
+### ExcaliBrain — [`excalibrain`](./excalibrain.md)
+
+ノートごとの関係を 7 つの領域に分けて表示します。`excalibrain` フェンスの中身は読みません。フェンスは「ここに描画する」という位置だけを決め、マップの中身はそのページ自身のリンクから組み立てます。
+
+#### ソース
+
+````md
+```excalibrain
+```
+````
+
+#### 実行例
+
+```excalibrain
+```
+
+上のマップには、このページの WikiLink から推論した関係が入ります。各 Plugin ページへは Markdown の相対リンクでリンクしているため、`child` に入るのは WikiLink で指定したページだけです。`parent` にはこのページへ WikiLink でリンクしているページが、`sibling` には `parent` が WikiLink でリンクしているページが並びます。
+
 ## コードフェンスだけでは示せない機能
 
 次の Plugin は画面やサイト全体に作用するため、1 つの Markdown 断片だけでは表現しきれません。このページ上でも検索 box、目次、color mode toggle などとして確認できます。

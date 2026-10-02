@@ -32,6 +32,7 @@ export function gardenExplorerPlugin(
       {
         id: "garden-explorer",
         paths: ["/explore"],
+        outputDependencies: [{ type: "global" }],
         resolve: ({ pathname, manifest, config }) => {
           if (pathname !== "/explore" || !config) return null;
           const siteTitle = config.site.title;

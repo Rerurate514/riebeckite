@@ -1,6 +1,13 @@
-﻿import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { dirname, join, relative } from "node:path";
+﻿import { createHash, randomUUID } from "node:crypto";
+import {
+  mkdir,
+  readdir,
+  readFile,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
+import { dirname, join, relative, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
 import { defaultExtensionMap, toSSG } from "hono/ssg";
 import {
@@ -93,6 +100,7 @@ type OutputCacheEntry = {
 
 type OutputCacheState = {
   version: 1;
+  appFingerprint?: string;
   outputs: Record<string, OutputCacheEntry>;
 };
 
@@ -172,6 +180,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           "outputDependencyResolution",
           async () => module.content?.getOutputChangeSet(),
         );
+        const appFingerprint = await measure(timingsMs, "appFingerprint", () =>
+          computeAppFingerprint(config.root, config.configFile),
+        );
         const outputCachePath = join(
           config.root,
           ".riebeckite",
@@ -186,18 +197,26 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outputChangeSet &&
           !outputChangeSet.fullRegenerationRequired &&
           previousOutputCache &&
+          previousOutputCache.appFingerprint === appFingerprint &&
           outputChangeSet.unchanged.every(
             (output) => previousOutputCache.outputs[output.path],
           );
-        const affectedPaths = new Set<string>(
+        const reusablePaths = new Set<string>(
           canUseIncremental
-            ? outputChangeSet.affected
-                .filter((output) => output.kind !== "generated")
-                .map((output) => output.path)
+            ? outputChangeSet.unchanged.map((output) => output.path)
             : [],
         );
+        const skippedRouteCount = canUseIncremental
+          ? outputChangeSet.unchanged.filter(
+              (output) => output.kind !== "generated",
+            ).length
+          : 0;
         const generatedHtml: { path: string; html: string }[] = [];
-        const nextOutputCache: OutputCacheState = { version: 1, outputs: {} };
+        const nextOutputCache: OutputCacheState = {
+          version: 1,
+          appFingerprint,
+          outputs: {},
+        };
         const metrics: SsgOutputMetrics = {
           candidateOutputCount: outputChangeSet?.candidateOutputCount ?? 0,
           affectedOutputCount: outputChangeSet?.affectedOutputCount ?? 0,
@@ -217,20 +236,24 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           cacheEntriesSerialized: 0,
           enumeratedRouteCount: 0,
           renderedRouteCount: 0,
-          skippedRouteCount: 0,
+          skippedRouteCount,
           timingsMs,
         };
+        process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental
+          ? ""
+          : "1";
+        const outDir = resolve(config.root, config.build.outDir);
         const result = await measure(timingsMs, "toSSG", () =>
           toSSG(
             app,
             {
               writeFile: async (filePath, data) => {
-                const fileName = relative(
-                  config.build.outDir,
-                  filePath,
-                ).replaceAll("\\", "/");
-                if (canUseIncremental && !affectedPaths.has(fileName)) {
-                  metrics.skippedRouteCount += 1;
+                const fileName = relative(outDir, filePath).replaceAll(
+                  "\\",
+                  "/",
+                );
+                metrics.enumeratedRouteCount += 1;
+                if (canUseIncremental && reusablePaths.has(fileName)) {
                   return;
                 }
                 if (fileName.endsWith(".html") && typeof data === "string") {
@@ -251,17 +274,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               async mkdir() {},
             },
             {
-              dir: config.build.outDir,
-              plugins: [
-                ...(options.plugins ?? []),
-                ...(canUseIncremental
-                  ? [createIncrementalSsgPlugin(affectedPaths, metrics)]
-                  : []),
-              ],
+              dir: outDir,
+              plugins: [...(options.plugins ?? [])],
               extensionMap: options.extensionMap ?? defaultExtensionMap,
             },
           ),
         );
+        delete process.env.RIEBECKITE_SSG_FULL_REGENERATION;
         metrics.renderedRouteCount = result.files.length;
         if (!result.success) throw result.error;
 
@@ -309,7 +328,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         }
         if (outputChangeSet) {
           for (const output of outputChangeSet.removed) {
-            await rm(join(config.build.outDir, output.path), {
+            await rm(join(outDir, output.path), {
               force: true,
             });
             metrics.deletedOutputCount += 1;
@@ -372,37 +391,65 @@ async function emitGeneratedOutputs(
   return count;
 }
 
-function createIncrementalSsgPlugin(
-  affectedPaths: ReadonlySet<string>,
-  metrics: SsgOutputMetrics,
-): NonNullable<ToSsgOptions["plugins"]>[number] {
-  return {
-    afterResponseHook: async (response) => {
-      metrics.enumeratedRouteCount += 1;
-      const contentType =
-        response.headers.get("Content-Type")?.split(";")[0] ?? "text/plain";
-      if (!response.url) {
-        return response;
-      }
-      const routePath = new URL(response.url).pathname;
-      const outputPath = routeOutputPath(routePath, contentType);
-      if (affectedPaths.has(outputPath)) return response;
-      metrics.skippedRouteCount += 1;
-      return false;
-    },
-  };
+const APP_FINGERPRINT_IGNORED_DIRECTORIES = new Set([
+  "node_modules",
+  ".riebeckite",
+  "dist",
+]);
+
+const APP_FINGERPRINT_CONFIG_FILES = [
+  "riebeckite.config.ts",
+  "riebeckite.config.mts",
+  "riebeckite.config.cts",
+  "riebeckite.config.js",
+  "riebeckite.config.mjs",
+  "riebeckite.config.cjs",
+];
+
+async function computeAppFingerprint(
+  root: string,
+  configFile: string | undefined,
+): Promise<string> {
+  const files: string[] = [];
+  await collectAppFiles(join(root, "app"), files);
+  if (configFile) files.push(configFile);
+  for (const name of APP_FINGERPRINT_CONFIG_FILES) {
+    files.push(join(root, name));
+  }
+  files.sort();
+  const hash = createHash("sha256");
+  for (const file of files) {
+    let content: Buffer;
+    try {
+      content = await readFile(file);
+    } catch {
+      continue;
+    }
+    hash.update(relative(root, file).replaceAll("\\", "/"));
+    hash.update("\0");
+    hash.update(content);
+    hash.update("\0");
+  }
+  return hash.digest("hex");
 }
 
-function routeOutputPath(routePath: string, contentType: string): string {
-  const extension =
-    contentType === "text/html"
-      ? "html"
-      : (defaultExtensionMap[contentType] ?? "html");
-  if (routePath === "/") return `index.${extension}`;
-  const normalized = routePath.split("/").filter(Boolean).join("/");
-  if (normalized.endsWith(`.${extension}`)) return normalized;
-  if (routePath.endsWith("/")) return `${normalized}/index.${extension}`;
-  return `${normalized}.${extension}`;
+async function collectAppFiles(
+  directory: string,
+  files: string[],
+): Promise<void> {
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    () => undefined,
+  );
+  if (!entries) return;
+  for (const entry of entries) {
+    const full = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      if (APP_FINGERPRINT_IGNORED_DIRECTORIES.has(entry.name)) continue;
+      await collectAppFiles(full, files);
+    } else if (entry.isFile()) {
+      files.push(full);
+    }
+  }
 }
 
 export async function loadOutputCache(
@@ -450,9 +497,15 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
   if (typeof value !== "object" || value === null) return false;
   const candidate = value as {
     version?: unknown;
+    appFingerprint?: unknown;
     outputs?: unknown;
   };
-  return candidate.version === 1 && isOutputCacheEntries(candidate.outputs);
+  return (
+    candidate.version === 1 &&
+    (candidate.appFingerprint === undefined ||
+      typeof candidate.appFingerprint === "string") &&
+    isOutputCacheEntries(candidate.outputs)
+  );
 }
 
 function isOutputCacheEntries(

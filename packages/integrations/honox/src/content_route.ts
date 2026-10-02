@@ -4,6 +4,7 @@ import type {
   ContentManifestEntry,
   ResolvedPluginPage,
 } from "@riebeckite/core";
+import { htmlOutputPath } from "@riebeckite/core";
 import type { Context, Handler, MiddlewareHandler } from "hono";
 
 export type ResolvedContentRoute =
@@ -52,7 +53,10 @@ export async function riebeckiteSsgParams(
     content.getManifest({ incremental: true }),
     content.getOutputChangeSet({ incremental: true }),
   ]);
-  if (changeSet.fullRegenerationRequired) {
+  if (
+    changeSet.fullRegenerationRequired ||
+    process.env.RIEBECKITE_SSG_FULL_REGENERATION === "1"
+  ) {
     return [
       ...manifest.publicEntries
         .filter((entry) => entry.permalink !== "/")
@@ -152,11 +156,7 @@ function normalizeRequestPath(pathname: string): string {
 }
 
 function routeOutputPath(pathname: string): string {
-  const normalized = normalizeRequestPath(pathname);
-  if (normalized === "/") return "index.html";
-  const withoutSlash = normalized.replace(/^\//, "");
-  if (pathname.endsWith("/")) return `${withoutSlash}/index.html`;
-  return `${withoutSlash}.html`;
+  return htmlOutputPath(normalizeRequestPath(pathname));
 }
 
 /**

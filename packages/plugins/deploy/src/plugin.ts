@@ -61,7 +61,10 @@ export function deployPlugin(options: DeployOptions): RiebeckitePlugin {
         ),
       );
       for (const entry of outputs) {
-        context.output.emit(entry);
+        context.output.emit({
+          ...entry,
+          dependencies: [{ type: "global" }],
+        });
       }
     },
   });

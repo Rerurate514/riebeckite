@@ -152,6 +152,32 @@ export function collectPublicImagePaths(
   return paths;
 }
 
+export async function collectSiteOwnedOutputPaths(
+  publicDir: string | false | undefined,
+): Promise<Set<string>> {
+  const paths = new Set<string>();
+  if (!publicDir) return paths;
+  const root = path.resolve(publicDir);
+
+  const walk = async (directory: string): Promise<void> => {
+    const entries = await fs
+      .readdir(directory, { withFileTypes: true })
+      .catch(() => undefined);
+    if (!entries) return;
+    for (const entry of entries) {
+      const full = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        await walk(full);
+      } else {
+        paths.add(path.relative(root, full).replaceAll("\\", "/"));
+      }
+    }
+  };
+
+  await walk(root);
+  return paths;
+}
+
 export function toContentPath(
   url: string | undefined,
   base: string,

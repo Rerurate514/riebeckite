@@ -7,6 +7,7 @@ import { describe, it } from "node:test";
 import type { Plugin, ViteDevServer } from "vite";
 import {
   collectPublicImagePaths,
+  collectSiteOwnedOutputPaths,
   imageContentType,
   riebeckiteContentAssets,
   toContentPath,
@@ -173,6 +174,36 @@ describe("imageContentType", () => {
     assert.equal(imageContentType("attachments/a.png"), "image/png");
     assert.equal(imageContentType("attachments/a.JPG"), "image/jpeg");
     assert.equal(imageContentType("attachments/a.pdf"), undefined);
+  });
+});
+
+describe("collectSiteOwnedOutputPaths", () => {
+  it("walks the public directory recursively with posix paths", async () => {
+    const appRoot = createTempRoot();
+    writeFile(path.join(appRoot, "public"), "favicon.ico", "ICON");
+    writeFile(path.join(appRoot, "public/assets"), "logo.png", "LOGO");
+    writeFile(path.join(appRoot, "public"), ".assetsignore", "");
+
+    const paths = await collectSiteOwnedOutputPaths(
+      path.join(appRoot, "public"),
+    );
+
+    assert.deepEqual([...paths].sort(), [
+      ".assetsignore",
+      "assets/logo.png",
+      "favicon.ico",
+    ]);
+  });
+
+  it("returns an empty set for a missing or disabled public directory", async () => {
+    const appRoot = createTempRoot();
+
+    assert.equal(
+      (await collectSiteOwnedOutputPaths(path.join(appRoot, "public"))).size,
+      0,
+    );
+    assert.equal((await collectSiteOwnedOutputPaths(false)).size, 0);
+    assert.equal((await collectSiteOwnedOutputPaths(undefined)).size, 0);
   });
 });
 

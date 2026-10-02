@@ -1,5 +1,5 @@
-import { writeFile } from "node:fs/promises";
-import { relative } from "node:path";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { dirname, join, relative } from "node:path";
 import { defaultExtensionMap, toSSG } from "hono/ssg";
 import {
   type ConfigEnv,
@@ -39,6 +39,16 @@ type SsgModule = {
         content: string | Uint8Array;
       }[];
     }>;
+    getOutputChangeSet(): Promise<{
+      affected: readonly { kind: string; path: string }[];
+      removed: readonly { kind: string; path: string }[];
+      unchanged: readonly { kind: string; path: string }[];
+      fullRegenerationRequired: boolean;
+      candidateOutputCount: number;
+      affectedOutputCount: number;
+      removedOutputCount: number;
+      unchangedOutputCount: number;
+    }>;
   };
   config?: {
     plugins?: readonly SsgHtmlInspectorPlugin[];
@@ -47,10 +57,26 @@ type SsgModule = {
 
 type SsgOutputMetrics = {
   candidateOutputCount: number;
+  affectedOutputCount: number;
+  removedOutputCount: number;
+  unchangedOutputCount: number;
   renderedOutputCount: number;
-  emittedGeneratedOutputCount: number;
+  emittedOutputCount: number;
+  reusedOutputCount: number;
+  deletedOutputCount: number;
+  fullRegenerationRequired: boolean;
   htmlOutputCount: number;
   assetOutputCount: number;
+};
+
+type OutputCacheEntry = {
+  source: string;
+  encoding: "utf8" | "base64";
+};
+
+type OutputCacheState = {
+  version: 1;
+  outputs: Record<string, OutputCacheEntry>;
 };
 
 export type RiebeckiteSsgOptions = {
@@ -119,11 +145,39 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           throw new Error(`Failed to find a default export from ${entry}.`);
         }
 
+        const outputChangeSet = await module.content?.getOutputChangeSet();
+        const outputCachePath = join(
+          config.root,
+          ".riebeckite",
+          "ssg-output-cache.json",
+        );
+        const previousOutputCache = await loadOutputCache(outputCachePath);
+        const canUseIncremental =
+          outputChangeSet &&
+          !outputChangeSet.fullRegenerationRequired &&
+          previousOutputCache &&
+          outputChangeSet.unchanged.every(
+            (output) => previousOutputCache.outputs[output.path],
+          );
+        const affectedPaths = new Set<string>(
+          canUseIncremental
+            ? outputChangeSet.affected
+                .filter((output) => output.kind !== "generated")
+                .map((output) => output.path)
+            : [],
+        );
         const generatedHtml: { path: string; html: string }[] = [];
+        const nextOutputCache: OutputCacheState = { version: 1, outputs: {} };
         const metrics: SsgOutputMetrics = {
-          candidateOutputCount: 0,
+          candidateOutputCount: outputChangeSet?.candidateOutputCount ?? 0,
+          affectedOutputCount: outputChangeSet?.affectedOutputCount ?? 0,
+          removedOutputCount: outputChangeSet?.removedOutputCount ?? 0,
+          unchangedOutputCount: outputChangeSet?.unchangedOutputCount ?? 0,
           renderedOutputCount: 0,
-          emittedGeneratedOutputCount: 0,
+          emittedOutputCount: 0,
+          reusedOutputCount: 0,
+          deletedOutputCount: 0,
+          fullRegenerationRequired: !canUseIncremental,
           htmlOutputCount: 0,
           assetOutputCount: 0,
         };
@@ -131,11 +185,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           app,
           {
             writeFile: async (filePath, data) => {
-              metrics.candidateOutputCount += 1;
               const fileName = relative(
                 config.build.outDir,
                 filePath,
               ).replaceAll("\\", "/");
+              if (canUseIncremental && !affectedPaths.has(fileName)) return;
               if (fileName.endsWith(".html") && typeof data === "string") {
                 metrics.renderedOutputCount += 1;
                 metrics.htmlOutputCount += 1;
@@ -148,22 +202,63 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 fileName,
                 source: data,
               });
+              metrics.emittedOutputCount += 1;
+              nextOutputCache.outputs[fileName] = encodeOutput(data);
             },
             async mkdir() {},
           },
           {
             dir: config.build.outDir,
-            plugins: options.plugins ?? [],
+            plugins: [
+              ...(options.plugins ?? []),
+              ...(canUseIncremental
+                ? [createIncrementalSsgPlugin(affectedPaths)]
+                : []),
+            ],
             extensionMap: options.extensionMap ?? defaultExtensionMap,
           },
         );
         if (!result.success) throw result.error;
 
-        metrics.emittedGeneratedOutputCount = await emitGeneratedOutputs(
+        const emittedGeneratedOutputCount = await emitGeneratedOutputs(
           module,
-          (asset) => this.emitFile(asset),
+          (asset) => {
+            this.emitFile(asset);
+            metrics.emittedOutputCount += 1;
+            nextOutputCache.outputs[asset.fileName] = encodeOutput(
+              asset.source,
+            );
+          },
+          canUseIncremental
+            ? new Set(
+                outputChangeSet.affected
+                  .filter((output) => output.kind === "generated")
+                  .map((output) => output.path),
+              )
+            : undefined,
         );
-        metrics.candidateOutputCount += metrics.emittedGeneratedOutputCount;
+        if (!outputChangeSet)
+          metrics.candidateOutputCount =
+            result.files.length + emittedGeneratedOutputCount;
+        if (canUseIncremental) {
+          for (const output of outputChangeSet.unchanged) {
+            const cached = previousOutputCache.outputs[output.path];
+            if (!cached) continue;
+            this.emitFile({
+              type: "asset",
+              fileName: output.path,
+              source: decodeOutput(cached),
+            });
+            metrics.emittedOutputCount += 1;
+            metrics.reusedOutputCount += 1;
+            nextOutputCache.outputs[output.path] = cached;
+          }
+          for (const output of outputChangeSet.removed) {
+            await rm(join(config.build.outDir, output.path), { force: true });
+            metrics.deletedOutputCount += 1;
+          }
+        }
+        await saveOutputCache(outputCachePath, nextOutputCache);
         await writeSsgOutputMetrics(metrics);
         inspectGeneratedHtmlPages(module, generatedHtml, {
           warn: (message) => this.warn(message),
@@ -190,6 +285,7 @@ export function shouldApplyRiebeckiteSsg(
 async function emitGeneratedOutputs(
   module: SsgModule,
   emit: (asset: GeneratedOutputAsset) => void,
+  affectedPaths?: ReadonlySet<string>,
 ): Promise<number> {
   const content = module.content;
   if (!content) return 0;
@@ -197,6 +293,7 @@ async function emitGeneratedOutputs(
   const manifest = await content.getManifest();
   let count = 0;
   for (const output of manifest.generatedOutputs ?? []) {
+    if (affectedPaths && !affectedPaths.has(output.path)) continue;
     emit({
       type: "asset",
       fileName: output.path,
@@ -205,6 +302,64 @@ async function emitGeneratedOutputs(
     count += 1;
   }
   return count;
+}
+
+function createIncrementalSsgPlugin(
+  affectedPaths: ReadonlySet<string>,
+): NonNullable<ToSsgOptions["plugins"]>[number] {
+  return {
+    afterResponseHook: async (response) => {
+      const contentType =
+        response.headers.get("Content-Type")?.split(";")[0] ?? "text/plain";
+      if (!response.url) return response;
+      const routePath = new URL(response.url).pathname;
+      const outputPath = routeOutputPath(routePath, contentType);
+      return affectedPaths.has(outputPath) ? response : false;
+    },
+  };
+}
+
+function routeOutputPath(routePath: string, contentType: string): string {
+  const extension =
+    contentType === "text/html"
+      ? "html"
+      : (defaultExtensionMap[contentType] ?? "html");
+  if (routePath === "/") return `index.${extension}`;
+  const normalized = routePath.split("/").filter(Boolean).join("/");
+  if (normalized.endsWith(`.${extension}`)) return normalized;
+  if (routePath.endsWith("/")) return `${normalized}/index.${extension}`;
+  return `${normalized}.${extension}`;
+}
+
+async function loadOutputCache(
+  path: string,
+): Promise<OutputCacheState | undefined> {
+  try {
+    const parsed = JSON.parse(await readFile(path, "utf8")) as OutputCacheState;
+    return parsed.version === 1 ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function saveOutputCache(
+  path: string,
+  state: OutputCacheState,
+): Promise<void> {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, `${JSON.stringify(state)}\n`, "utf8");
+}
+
+function encodeOutput(source: string | Uint8Array): OutputCacheEntry {
+  return typeof source === "string"
+    ? { source, encoding: "utf8" }
+    : { source: Buffer.from(source).toString("base64"), encoding: "base64" };
+}
+
+function decodeOutput(entry: OutputCacheEntry): string | Uint8Array {
+  return entry.encoding === "utf8"
+    ? entry.source
+    : Buffer.from(entry.source, "base64");
 }
 
 async function writeSsgOutputMetrics(metrics: SsgOutputMetrics): Promise<void> {

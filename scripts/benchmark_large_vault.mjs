@@ -32,15 +32,22 @@ for (const size of sizes) {
       String(runIndex),
       "cache",
     );
-    await fs.rm(path.join(baseDir, String(size), String(runIndex)), {
-      recursive: true,
-      force: true,
-    });
-    await generateVault(directory, size);
-
     for (const scenario of createScenarios(directory, size)) {
       if (scenarioFilter.size > 0 && !scenarioFilter.has(scenario.name))
         continue;
+      await fs.rm(path.join(baseDir, String(size), String(runIndex)), {
+        recursive: true,
+        force: true,
+      });
+      await generateVault(directory, size);
+      if (scenario.warm !== false) {
+        await measure(
+          directory,
+          cacheDirectory,
+          `${scenario.name} baseline`,
+          scenario.pluginVersion ?? "v1",
+        );
+      }
       await scenario.prepare();
       const sample = await measure(
         directory,
@@ -66,7 +73,7 @@ for (const size of sizes) {
 
 function createScenarios(directory, size) {
   return [
-    { name: "cold build", prepare: async () => undefined },
+    { name: "cold build", prepare: async () => undefined, warm: false },
     { name: "no-change warm build", prepare: async () => undefined },
     {
       name: "single independent note edit",

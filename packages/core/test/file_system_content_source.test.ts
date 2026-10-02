@@ -3,7 +3,27 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { FileSystemContentSource } from "../src/content/file_system_content_source.js";
+import {
+  FileSystemContentSource,
+  isIgnoredContentPath,
+} from "../src/content/file_system_content_source.js";
+
+test("isIgnoredContentPath covers internal metadata and user excludes", () => {
+  assert.equal(isIgnoredContentPath("notes/keep.md"), false);
+  assert.equal(isIgnoredContentPath("attachments/sample.png"), false);
+  assert.equal(isIgnoredContentPath(".obsidian/workspace.json"), true);
+  assert.equal(isIgnoredContentPath(".git/config"), true);
+  assert.equal(isIgnoredContentPath(".github/workflows/deploy.yml"), true);
+  assert.equal(isIgnoredContentPath("node_modules/pkg/index.md"), true);
+  assert.equal(isIgnoredContentPath(".DS_Store"), true);
+  assert.equal(isIgnoredContentPath("nested/Thumbs.db"), true);
+  assert.equal(isIgnoredContentPath("nested/desktop.ini"), true);
+  assert.equal(isIgnoredContentPath("drafts/secret.md", ["drafts/**"]), true);
+  assert.equal(isIgnoredContentPath("private/secret.md", ["private/**"]), true);
+  assert.equal(isIgnoredContentPath("private", ["private"]), true);
+  assert.equal(isIgnoredContentPath("private.md", ["private"]), true);
+  assert.equal(isIgnoredContentPath("published/note.md", ["private"]), false);
+});
 
 test("file-system content source skips internal metadata and tool directories", async () => {
   const root = await makeTempContentDirectory();

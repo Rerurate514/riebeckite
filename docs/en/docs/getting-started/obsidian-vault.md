@@ -77,6 +77,8 @@ npm exec riebeckite dev
 
 Open the local URL printed in the terminal.
 
+While the development server is running, saving a note in Obsidian is reflected on the next page view. Changing the `publish` setting is reflected the same way.
+
 ## 5. Check WikiLinks and images
 
 These examples were verified with a fresh `starter` site and a small test Vault.

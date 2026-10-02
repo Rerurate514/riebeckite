@@ -3,6 +3,7 @@ import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
+import { riebeckiteContentWatch } from "./content_watch.js";
 import { createRiebeckiteSsg } from "./ssg.js";
 import type { RiebeckiteSsgOptions } from "./ssg_plugin.js";
 import { resolveHonoxApplication } from "./vite_runner.js";
@@ -42,6 +43,7 @@ export function riebeckite(
   options: RiebeckiteIntegrationOptions = {},
 ): Plugin[] {
   let resolvedConfig: ResolvedRiebeckiteConfig | undefined;
+  let contentWatchRoots: { appRoot: string; contentRoot: string } | undefined;
   const getConfig = () => {
     if (!resolvedConfig) {
       throw new Error("Riebeckite config has not been loaded yet.");
@@ -64,6 +66,7 @@ export function riebeckite(
           workspaceRoot: options.workspaceRoot,
         });
         resolvedConfig = application.config;
+        contentWatchRoots = application;
         writeRiebeckiteAssetEntries(resolvedConfig, {
           pluginStyles: path.join(appRoot, "app/.riebeckite/plugin-styles.css"),
           themeStyles: path.join(appRoot, "app/.riebeckite/theme-styles.css"),
@@ -87,7 +90,22 @@ export function riebeckite(
       },
     },
     riebeckiteClientModule(getConfig),
+    riebeckiteContentWatch({
+      appRoot: () => requireContentWatchRoots(contentWatchRoots).appRoot,
+      contentRoot: () =>
+        requireContentWatchRoots(contentWatchRoots).contentRoot,
+      exclude: () => getConfig().content.exclude ?? [],
+    }),
   ];
+}
+
+function requireContentWatchRoots(
+  roots: { appRoot: string; contentRoot: string } | undefined,
+): { appRoot: string; contentRoot: string } {
+  if (!roots) {
+    throw new Error("Riebeckite application has not been resolved yet.");
+  }
+  return roots;
 }
 
 /**

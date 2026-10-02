@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 import {
   ContentManager,
@@ -29,10 +32,15 @@ function manager(
   files: Record<string, string>,
   options: Partial<L10nOptions> = {},
   additionalPlugins: readonly RiebeckitePlugin<unknown>[] = [],
+  buildDirectory?: string,
 ) {
   return new ContentManager(source(files), [], {
     config: resolveConfig({
+      buildDirectory,
       site: { title: "Test" },
+      cache: buildDirectory
+        ? { enabled: true, directory: path.join(buildDirectory, "cache") }
+        : undefined,
       content: { filters: { publishStrategy: "selective" } },
     }),
     plugins: [
@@ -164,6 +172,34 @@ test("publishes the default LanguageSwitcher in a Site-owned article slot", asyn
     manifest.assets.some(
       (asset) => asset.moduleSpecifier === "@riebeckite/plugin-l10n/style.css",
     ),
+  );
+});
+
+test("does not duplicate generated l10n fragments when entries are reused from cache", async () => {
+  const buildDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-l10n-cache-"),
+  );
+  const files = {
+    "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
+    "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
+  };
+
+  await manager(files, {}, [], buildDirectory).build({ incremental: true });
+  const manifest = await manager(files, {}, [], buildDirectory).build({
+    incremental: true,
+  });
+  const english = manifest.bySlug.get("guide.en");
+
+  assert.equal(
+    english?.headTags?.filter(
+      (tag) => tag.attrs?.rel === "alternate" && tag.attrs?.hreflang === "en",
+    ).length,
+    1,
+  );
+  assert.equal(
+    english?.bodySlots?.["article.after-meta"]?.match(/class="l10n-switcher"/g)
+      ?.length,
+    1,
   );
 });
 

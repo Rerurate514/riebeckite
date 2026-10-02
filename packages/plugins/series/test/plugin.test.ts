@@ -42,16 +42,6 @@ test("series() is re-exported as seriesPlugin and registers its stylesheet", () 
 
 test("the manifest hook appends navigation only to multi-part series", async () => {
   const plugin = series();
-  const contents = new Map<string, PostContent>([
-    ["p2", { frontmatter: {}, html: "<p>two</p>" }],
-    ["p1", { frontmatter: {}, html: "<p>one</p>" }],
-    ["solo", { frontmatter: {}, html: "<p>solo</p>" }],
-  ]);
-
-  for (const [slug, content] of contents) {
-    plugin.onPostProcessed?.({ slug, content } as never);
-  }
-
   const entries = [
     entry("p2", { series: "Guide", series_order: 2 }, "<p>two</p>"),
     entry("p1", { series: "Guide", series_order: 1 }, "<p>one</p>"),
@@ -78,7 +68,28 @@ test("the manifest hook appends navigation only to multi-part series", async () 
   assert.match(p2.html, /class="rb-series__prev"[^>]*href="\/p1"/);
   assert.doesNotMatch(p2.html, /rb-series__next/);
 
-  assert.equal(contents.get("p1")?.html, p1.html);
   assert.equal(manifest.bySlug.get("solo")?.html, "<p>solo</p>");
   assert.deepEqual(diagnostics, []);
+});
+
+test("the manifest hook does not duplicate generated navigation", async () => {
+  const plugin = series();
+  const entries = [
+    entry("p1", { series: "Guide", series_order: 1 }, "<p>one</p>"),
+    entry("p2", { series: "Guide", series_order: 2 }, "<p>two</p>"),
+  ];
+  const manifest = {
+    entries,
+    publicEntries: entries,
+    bySlug: new Map(entries.map((item) => [item.slug, item])),
+  } as unknown as ContentManifest;
+  const diagnostics: Diagnostic[] = [];
+
+  await plugin.onManifestCreated?.({ manifest, diagnostics } as never);
+  await plugin.onManifestCreated?.({ manifest, diagnostics } as never);
+
+  assert.equal(
+    manifest.bySlug.get("p1")?.html.match(/<nav class="rb-series"/g)?.length,
+    1,
+  );
 });

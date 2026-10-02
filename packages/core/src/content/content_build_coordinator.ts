@@ -31,18 +31,6 @@ export type ContentBuildPreparation = {
   readonly affectedContent: ReturnType<typeof determineAffectedContent>;
 };
 
-export type ContentBuildCommit = {
-  readonly manifest: ContentManifest;
-  /**
-   * Entries captured before `onManifestCreated` ran. Reusing them on a warm
-   * build and replaying the plugin hook reproduces the cold build output, while
-   * persisting post-hook entries would append plugin output a second time.
-   */
-  readonly reusableEntries: readonly ContentManifestEntry[];
-  readonly pipelineFingerprint: string | undefined;
-  readonly outputs: readonly OutputDescriptor[];
-};
-
 type ContentBuildCoordinatorDependencies = {
   readonly buildStatePath: string;
   readonly getEntries: () => Promise<readonly ContentSourceEntry[]>;
@@ -67,9 +55,11 @@ export class ContentBuildCoordinator {
 
   async commit(
     preparation: ContentBuildPreparation,
-    commit: ContentBuildCommit,
+    manifest: ContentManifest,
+    pipelineFingerprint: string | undefined,
+    outputs: readonly OutputDescriptor[] = [],
+    manifestEntries: readonly ContentManifestEntry[] = manifest.entries,
   ): Promise<void> {
-    const { manifest, reusableEntries, pipelineFingerprint, outputs } = commit;
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
     );
@@ -94,7 +84,7 @@ export class ContentBuildCoordinator {
         ),
       ),
       pipelineFingerprint,
-      manifestEntries: reusableEntries,
+      manifestEntries,
       outputs,
     };
 

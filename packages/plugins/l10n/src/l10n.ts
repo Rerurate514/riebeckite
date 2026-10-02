@@ -595,20 +595,22 @@ function addLocalizationHeadTags(
           content.translationId,
       ),
     );
+    const headTags = translations.map(
+      (translation): PluginHeadTag => ({
+        tag: "link",
+        attrs: {
+          rel: "alternate",
+          hreflang:
+            translation.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ?? "",
+          href: translation.permalink,
+        },
+      }),
+    );
     entry.headTags = [
-      ...(entry.headTags ?? []),
-      ...translations.map(
-        (translation): PluginHeadTag => ({
-          tag: "link",
-          attrs: {
-            rel: "alternate",
-            hreflang:
-              translation.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ??
-              "",
-            href: translation.permalink,
-          },
-        }),
+      ...(entry.headTags ?? []).filter(
+        (tag) => !headTags.some((generated) => sameHeadTag(tag, generated)),
       ),
+      ...headTags,
     ];
   }
 }
@@ -622,8 +624,22 @@ function addLanguageSwitchers(
     const localization = getLocalization(manifest, entry.slug);
     if (!localization) continue;
     const html = ui.render({ localization });
-    if (html) appendContentBodySlot(entry, ui.slot, html);
+    if (html && !entry.bodySlots?.[ui.slot]?.includes(html)) {
+      appendContentBodySlot(entry, ui.slot, html);
+    }
   }
+}
+
+function sameHeadTag(
+  left: PluginHeadTag,
+  right: PluginHeadTag,
+): boolean {
+  return (
+    left.tag === right.tag &&
+    left.attrs?.rel === right.attrs?.rel &&
+    left.attrs?.hreflang === right.attrs?.hreflang &&
+    left.attrs?.href === right.attrs?.href
+  );
 }
 
 export { renderLanguageSwitcher } from "./language-switcher.js";

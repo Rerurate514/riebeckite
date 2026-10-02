@@ -313,9 +313,9 @@ export class ContentManager {
           {},
           () => this.manifestBuilder.build(entries, contentIndex),
         );
+        const cacheManifestEntries = structuredClone(manifest.entries);
         this.locationResolver.populateRedirects(manifest, locations);
         this.applyPublicView(manifest);
-        const reusableEntries = manifest.entries.map(cloneManifestEntry);
         await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
@@ -354,17 +354,18 @@ export class ContentManager {
           });
         }
         if (preparation)
-          await this.buildCoordinator.commit(preparation, {
+          await this.buildCoordinator.commit(
+            preparation,
             manifest,
-            reusableEntries,
-            pipelineFingerprint: this.getPipelineFingerprint(),
-            outputs: this.outputChangeSet
+            this.getPipelineFingerprint(),
+            this.outputChangeSet
               ? [
                   ...this.outputChangeSet.affected,
                   ...this.outputChangeSet.unchanged,
                 ]
               : [],
-          });
+            cacheManifestEntries,
+          );
         this.manifest = manifest;
         return manifest;
       },

@@ -153,6 +153,9 @@ importers:
       '@riebeckite/plugin-flashcards':
         specifier: workspace:*
         version: link:../../packages/plugins/flashcards
+      '@riebeckite/plugin-folder-pages':
+        specifier: workspace:*
+        version: link:../../packages/plugins/folder-pages
       '@riebeckite/plugin-gallery':
         specifier: workspace:*
         version: link:../../packages/plugins/gallery
@@ -775,6 +778,22 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+
+  packages/plugins/folder-pages:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      '@riebeckite/plugin-l10n':
+        specifier: workspace:*
+        version: link:../l10n
+      '@riebeckite/plugin-taxonomy':
+        specifier: workspace:*
+        version: link:../taxonomy
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/gallery:
     dependencies:

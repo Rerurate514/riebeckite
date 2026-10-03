@@ -33,7 +33,6 @@ export function resolveTaxonomyOptions(
       options.relatedLimit,
       DEFAULT_TAXONOMY_RELATED_LIMIT,
     ),
-    folderIndexes: options.folderIndexes ?? false,
     feeds: {
       rss: options.feeds?.rss ?? true,
       atom: options.feeds?.atom ?? true,

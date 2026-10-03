@@ -12,7 +12,6 @@ import {
   serializeTaxonomyIndex,
 } from "./src/collections.js";
 import { renderTermFeed } from "./src/feeds.js";
-import { resolveFolderIndexLocations } from "./src/locations.js";
 import { resolveTaxonomyOptions } from "./src/options.js";
 import { renderTaxonomyPage } from "./src/pages.js";
 import type {
@@ -28,7 +27,6 @@ export {
   toEntryReference,
 } from "./src/collections.js";
 export { buildFeedHeadTags, renderTermFeed } from "./src/feeds.js";
-export { resolveFolderIndexLocations } from "./src/locations.js";
 export {
   DEFAULT_TAXONOMY_CLASS_NAME,
   DEFAULT_TAXONOMY_DATA_ENDPOINT,
@@ -84,8 +82,6 @@ export function taxonomy(options: TaxonomyOptions = {}) {
     name: TAXONOMY_PLUGIN_NAME,
     options,
     validateOptions: validateTaxonomyOptions,
-    resolveContentLocations: ({ entries, diagnostics }) =>
-      resolveFolderIndexLocations(entries, resolved, diagnostics),
     endpoints: createTaxonomyEndpoints(resolved),
     pageTypes: [
       {
@@ -240,7 +236,7 @@ function validateTaxonomyOptions(
     }
   };
 
-  for (const key of ["tags", "folders", "related", "folderIndexes"] as const) {
+  for (const key of ["tags", "folders", "related"] as const) {
     assertBoolean(key);
   }
   for (const key of [

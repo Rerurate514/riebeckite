@@ -35,7 +35,6 @@ export default defineConfig({
       tags: true,
       folders: true,
       related: true,
-      folderIndexes: true,
     }),
   ],
 });
@@ -53,7 +52,6 @@ export default defineConfig({
 | `minEntries` | `number` | `1` | Drop terms with fewer entries |
 | `related` | `boolean` | `true` | Compute related-tag navigation |
 | `relatedLimit` | `number` | `8` | Maximum related tags per tag |
-| `folderIndexes` | `boolean` | `false` | Resolve `<folder>/index.md` to `/<folder>` |
 | `feeds` | `{ rss?, atom?, json? }` | all `true` | Per-term feed formats |
 | `feedLimit` | `number` | `50` | Maximum entries per feed |
 | `resolveTitle` | `(context) => string` | `#value` / path | Custom term title |
@@ -133,11 +131,11 @@ provider is registered.
 
 ## Folder index notes
 
-With `folderIndexes: true`, the plugin's `resolveContentLocations` hook maps a
-note at `<folder>/index.md` to `/<folder>` instead of `/<folder>/index`. The
-chosen permalink is recorded as `metadata["taxonomy.folder"]`. A location is
-never claimed when another note already owns it; the conflict is reported as a
-diagnostic instead.
+Folder entry resolution is owned by
+[`@riebeckite/plugin-folder-pages`](../folder-pages/README.md), so taxonomy only
+generates tag and folder terms from the manifest's public view. Enable that
+plugin when a note at `<folder>/README.md` or `<folder>/index.md` should become
+the folder's landing page.
 
 ## Page types
 
@@ -171,7 +169,6 @@ import "@riebeckite/plugin-taxonomy/style.css";
 - `renderTaxonomyPage(term, options)` / `renderRelatedTerms(term, options)` — page fragments
 - `renderTermFeed(config, term, format, limit?)` / `buildFeedHeadTags(term)` — per-term feeds
 - `buildTaxonomySeo(config, term)` — listing-page SEO metadata
-- `resolveFolderIndexLocations(entries, options, diagnostics)` — folder-index location strategy
 - `slugifyTaxonomyValue(value)` — URL/file slug
 - `buildTaxonomyAbsoluteUrl(config, pathOrUrl)` — absolute URLs
 - Types: `TaxonomyOptions`, `ResolvedTaxonomyOptions`, `TaxonomyTerm`, `TaxonomyIndex`, `TaxonomyPage`, `TaxonomyTermData`, `TaxonomyIndexData`

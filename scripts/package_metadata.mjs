@@ -30,6 +30,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/excalibrain",
   "packages/plugins/excalidraw",
   "packages/plugins/flashcards",
+  "packages/plugins/folder-pages",
   "packages/plugins/gallery",
   "packages/plugins/garden-explorer",
   "packages/plugins/graphviz",
@@ -230,6 +231,10 @@ const packagePublishingMetadata = {
   "packages/plugins/flashcards": {
     description: "Interactive flashcard decks from Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "flashcards", "learning"],
+  },
+  "packages/plugins/folder-pages": {
+    description: "Folder entry pages and generated folder listings for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "folder", "navigation"],
   },
   "packages/plugins/gallery": {
     description: "Markdown-driven card galleries for Riebeckite code blocks.",
@@ -549,6 +554,7 @@ export function expectedPackageMetadata(directory) {
       "deploy",
       "diagnostics",
       "discord-embed",
+      "folder-pages",
       "obsidian-markdown",
       "permalink",
       "quality",
@@ -568,6 +574,7 @@ export function expectedPackageMetadata(directory) {
       "diagnostics",
       "diff",
       "excalibrain",
+      "folder-pages",
       "gallery",
       "highlight",
       "l10n",

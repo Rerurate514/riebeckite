@@ -99,7 +99,7 @@ export default defineConfig({
     shortcodes(),
     series(),
     uxPlugin(),
-    taxonomy({ folderIndexes: true }),
+    taxonomy(),
     localFixturePlugin(),
   ],
 });

@@ -36,7 +36,6 @@ export default defineConfig({
       tags: true,
       folders: true,
       related: true,
-      folderIndexes: true,
     }),
   ],
 });
@@ -54,7 +53,6 @@ export default defineConfig({
 | `minEntries` | `number` | `1` | これ未満のエントリ数しかない語を除外する |
 | `related` | `boolean` | `true` | 関連タグナビゲーションを生成する |
 | `relatedLimit` | `number` | `8` | タグごとの関連タグ上限 |
-| `folderIndexes` | `boolean` | `false` | `<folder>/index.md` を `/<folder>` に解決する |
 | `feeds` | `{ rss?, atom?, json? }` | すべて `true` | 語ごとのフィード形式 |
 | `feedLimit` | `number` | `50` | フィードあたりの最大エントリ数 |
 | `resolveTitle` | `(context) => string` | `#value` / パス | 語の表示タイトル |
@@ -132,10 +130,11 @@ Core `seo` 拡張ポイント（たとえば `@riebeckite/plugin-seo`）へ委�
 
 ## フォルダ index note
 
-`folderIndexes: true` のとき、プラグインの `resolveContentLocations` フックが
-`<folder>/index.md` のノートを `/<folder>/index` ではなく `/<folder>` に解決します。
-選ばれた permalink は `metadata["taxonomy.folder"]` に記録されます。すでに他の
-ノートが所有している location は決して奪わず、衝突は診断として報告します。
+フォルダ入口の解決は
+[`@riebeckite/plugin-folder-pages`](../folder-pages/README_ja.md) が所有します。
+taxonomy はマニフェストの公開ビューからタグ語とフォルダ語だけを生成します。
+`<folder>/README.md` や `<folder>/index.md` をフォルダのランディングページに
+する場合は、そのプラグインを有効にしてください。
 
 ## Page Type
 
@@ -169,7 +168,6 @@ import "@riebeckite/plugin-taxonomy/style.css";
 - `renderTaxonomyPage(term, options)` / `renderRelatedTerms(term, options)` — ページ断片
 - `renderTermFeed(config, term, format, limit?)` / `buildFeedHeadTags(term)` — 語ごとのフィード
 - `buildTaxonomySeo(config, term)` — 一覧ページの SEO メタデータ
-- `resolveFolderIndexLocations(entries, options, diagnostics)` — フォルダ index の location 戦略
 - `slugifyTaxonomyValue(value)` — URL・ファイル用の slug
 - `buildTaxonomyAbsoluteUrl(config, pathOrUrl)` — 絶対 URL
 - 型: `TaxonomyOptions`, `ResolvedTaxonomyOptions`, `TaxonomyTerm`, `TaxonomyIndex`, `TaxonomyPage`, `TaxonomyTermData`, `TaxonomyIndexData`

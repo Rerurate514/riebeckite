@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { type ResolvedRiebeckiteConfig, resolveConfig } from "@riebeckite/core";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
 import { getRecentPosts, RecentPosts, recentPostsPlugin } from "../index.ts";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 const config: ResolvedRiebeckiteConfig = resolveConfig({
   site: { title: "Test" },
@@ -162,4 +166,23 @@ test("recentPostsPlugin registers its stylesheet", () => {
 
 test("RecentPosts renders nothing without posts", () => {
   assert.equal(RecentPosts({ posts: [] }), null);
+});
+
+test("RecentPosts renders English labels and dates", () => {
+  const html = renderToString(
+    RecentPosts({
+      posts: [
+        {
+          slug: "post",
+          permalink: "/post",
+          title: "Hello",
+          postedAt: new Date(2024, 0, 5, 12, 0, 0),
+        },
+      ],
+    }),
+  );
+
+  assert.ok(html.includes("Recent Posts"), html);
+  assert.ok(html.includes("01/05/2024"), html);
+  assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });

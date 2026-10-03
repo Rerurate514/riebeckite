@@ -5,9 +5,13 @@ import {
   layoutRadialGraph,
   shouldGuardForceLayout,
 } from "@riebeckite/core/client";
+import { createElement, Fragment } from "hono/jsx";
 import type { GardenExplorerNote } from "../src/garden-explorer.js";
 import { getGardenExplorerLocalGraphNotes } from "../src/garden-explorer.js";
 import { resolveGardenExplorerOptions } from "../src/garden-explorer.server.js";
+import { renderGardenExplorerPage } from "../src/garden-explorer-page.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 test("garden explorer graph options keep useful defaults", () => {
   assert.deepEqual(resolveGardenExplorerOptions(), {
@@ -276,4 +280,21 @@ test("selected note outside list limit is preserved in Global Graph", () => {
     !listNotes.some((n) => n.slug === selectedSlug),
     "Selected note should be outside list limit",
   );
+});
+
+test("garden explorer page renders an English description", () => {
+  const html = renderGardenExplorerPage(
+    {
+      notes: [],
+      edges: [],
+      tags: [],
+      folders: [],
+      options: resolveGardenExplorerOptions(),
+    },
+    "My Garden",
+  );
+
+  assert.ok(html.includes("Explore your digital garden across"), html);
+  assert.ok(html.includes("My Garden"), html);
+  assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });

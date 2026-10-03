@@ -15,7 +15,7 @@ export default function RecentPosts(props: Props) {
       <div class="recent-posts__header">
         <p class="recent-posts__eyebrow">RECENT POSTS</p>
         <h2 class="recent-posts__title" id="recent-posts-title">
-          最近投稿された記事
+          Recent Posts
         </h2>
       </div>
       <ol class="recent-posts__list">
@@ -50,7 +50,7 @@ type FormattedDate = {
 
 function formatPostedDate(date: Date): FormattedDate {
   const isoDate = date.toISOString();
-  const displayDate = new Intl.DateTimeFormat("ja-JP", {
+  const displayDate = new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

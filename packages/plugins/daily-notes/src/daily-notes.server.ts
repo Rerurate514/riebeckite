@@ -9,8 +9,10 @@ import {
   DEFAULT_DIRECTORY,
   DEFAULT_LIMIT,
   extractDailyNoteSnippet,
+  formatDailyNoteDate,
   isDailyNoteSlug,
   resolveDailyNoteDate,
+  resolveDisplayOptions,
   resolveExtractOptions,
 } from "./daily-notes.js";
 
@@ -29,6 +31,7 @@ export function getDailyNotes(args: {
 }): DailyNote[] {
   const options = args.options;
   const extract = resolveExtractOptions(options);
+  const display = resolveDisplayOptions(options);
   const directory = options?.source?.directory ?? DEFAULT_DIRECTORY;
   const pathPattern = options?.source?.pathPattern;
   const limit = Math.max(0, options?.widget?.limit ?? DEFAULT_LIMIT);
@@ -45,9 +48,11 @@ export function getDailyNotes(args: {
     if (snippet === null) continue;
 
     const discoverable = discoverableSlugs.has(entry.slug);
+    const date = resolveDailyNoteDate(entry);
 
     notes.push({
-      date: resolveDailyNoteDate(entry),
+      date,
+      dateDisplay: formatDailyNoteDate(date, display),
       snippet,
       slug: entry.slug,
       sourceUrl: discoverable ? entry.permalink : null,

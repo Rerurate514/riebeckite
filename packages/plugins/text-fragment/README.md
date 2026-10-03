@@ -10,10 +10,10 @@ you select in an article.
 Client-only plugin. On page load it installs one selection popover with two
 actions:
 
-- **リンクをコピー** — builds a URL with a
+- **Copy link** — builds a URL with a
   [Text Fragment directive](https://wicg.github.io/scroll-to-text-fragment/)
   that highlights the selected text.
-- **引用をコピー** — builds a Markdown block quote with a link back to the page.
+- **Copy quote** — builds a Markdown block quote with a link back to the page.
 
 ## Usage
 
@@ -28,7 +28,8 @@ export default defineConfig({
 ```
 
 `textFragmentPlugin()` registers `style.css` and the `initTextFragmentShare`
-client entry, which the app calls during page initialization.
+client entry, which the app calls during page initialization. Pass
+`textFragmentPlugin({ labels })` to override individual UI labels.
 
 ## Behavior
 
@@ -56,14 +57,17 @@ The fragment follows `#:~:text=[prefix-,]start[,end][,-suffix]`:
 
 ## API
 
-- `textFragmentPlugin()` — plugin factory
-- `initTextFragmentShare()` — client initializer (also via
+- `textFragmentPlugin(options?)` — plugin factory; `options.labels` overrides
+  the UI labels
+- `initTextFragmentShare(labels?)` — client initializer (also via
   `@riebeckite/plugin-text-fragment/client`)
 - `encodeTextFragment(text)` — percent-encodes one text fragment term
 - `buildTextFragmentUrl(pageUrl, selection, options?)` — builds the deep link;
   `options` is `{ prefix?, suffix? }`
 - `buildQuoteMarkdown({ url, title, selection })` — builds the Markdown quote
-- Type: `TextFragmentOptions`
+- `DEFAULT_TEXT_FRAGMENT_LABELS` — the default English UI labels
+- Types: `TextFragmentOptions`, `TextFragmentLabels`,
+  `TextFragmentPluginOptions`
 
 ## See also
 

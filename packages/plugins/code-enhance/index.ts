@@ -20,7 +20,7 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
   return definePlugin({
     name: "code-enhance",
     processedContentCache: {
-      version: "code-enhance-v1",
+      version: "code-enhance-v2",
       dependencyMode: "none",
     },
     options,

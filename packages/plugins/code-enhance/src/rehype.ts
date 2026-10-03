@@ -234,7 +234,7 @@ function buildHeader(input: {
           className: "rr-code__action",
           dataCodeCopy: "true",
           dataCode: input.rawCode,
-          ariaLabel: "コードをコピー",
+          ariaLabel: "Copy code",
         },
         [text("Copy")],
       ),

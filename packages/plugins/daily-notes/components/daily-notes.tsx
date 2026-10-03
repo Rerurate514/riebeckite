@@ -21,7 +21,7 @@ export default function DailyNotes(props: Props) {
       <div class="daily-notes__header">
         <p class="daily-notes__eyebrow">DAILY NOTES</p>
         <h2 class="daily-notes__title" id="daily-notes-title">
-          最近のデイリーノート
+          Recent Daily Notes
         </h2>
       </div>
       <ul class="daily-notes__list">
@@ -30,7 +30,7 @@ export default function DailyNotes(props: Props) {
             <div class="daily-notes__meta">
               {note.date.length > 0 ? (
                 <time class="daily-notes__date" dateTime={note.date}>
-                  {formatDisplayDate(note.date)}
+                  {note.dateDisplay}
                 </time>
               ) : null}
               {note.sourceUrl !== null ? (
@@ -52,11 +52,4 @@ function resolveSourceLabel(note: DailyNote): string {
     return note.sourceTitle;
   }
   return note.sourceUrl ?? "";
-}
-
-function formatDisplayDate(date: string): string {
-  const [year, month, day] = date.split("-");
-  if (!year || !month || !day) return date;
-
-  return `${year}年${Number(month)}月${Number(day)}日`;
 }

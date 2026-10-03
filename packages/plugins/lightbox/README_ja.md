@@ -30,6 +30,8 @@ export default defineConfig({
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |
 | `selectorClass` | `string` | `"rr-lightbox-trigger"` | トリガーに使う CSS クラス |
+| `expandLabel` | `string` | `"Expand image"` | トリガーとダイアログのアクセシブルラベル |
+| `closeLabel` | `string` | `"Close"` | 閉じるボタンのアクセシブルラベル |
 | `autoWrapImages` | `boolean` | `true` | 初期化時に未処理の画像も囲むか。クライアント側だけの設定 |
 
 `initLightbox()` はイベントリスナー、ダイアログ、追加したトリガーを解除する cleanup 関数を返します。
@@ -39,6 +41,7 @@ export default defineConfig({
 - `lightboxPlugin(options?)` — プラグインファクトリ
 - `rehypeLightbox(options?)` — Rehype 変換
 - `initLightbox(root?, options?)` — ブラウザ初期化関数
+- `initLightboxFromOptions(options?)` — プラグインのクライアントスクリプトが呼ぶ、オプションを先に取る初期化関数
 - `LightboxOptions`、`LightboxInitOptions` — 型
 
 ## 関連資料

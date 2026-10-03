@@ -48,18 +48,25 @@ getDailyNotes({
     source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" },
     extract: { frontmatter: "daily-summary", section: "今日のひとこと" },
     widget: { limit: 3 },
+    dateFormat: "iso",
+    locale: "en",
   },
 });
 ```
 
 方法を `false` にすると、その抽出を無効にできます。`pathPattern` では `{YYYY}`、`{MM}`、`{DD}`、`*` が使え、ノートのファイル名を厳密に絞り込めます。
 
+`dateFormat` はウィジェットの日付表示を決めます。既定は `"iso"`（`YYYY-MM-DD`）で、ほかに `"long"` と `"short"` があります。`"long"` と `"short"` は `locale`（既定 `"en"`）で整形します。機械可読な `YYYY-MM-DD` は常に `<time datetime>` 属性に残り、`DailyNote.date` はその ISO 形式のまま、`DailyNote.dateDisplay` に整形後の文字列が入ります。
+
 ## 主なエクスポート
 
 - `dailyNotesPlugin(options?)`: プラグインを作る（`style.css` を登録する）
 - `getDailyNotes({ manifest, config, options? })`: 並べ替え済みの `DailyNote[]` を返す
 - `DailyNotes`: ウィジェットのコンポーネント（`{ notes, limit? }`）
-- 型: `DailyNote`、`DailyNotesOptions`、`ResolvedDailyNotesExtract`
+- `resolveDisplayOptions(options?)`: 日付表示の既定値を適用する
+- `formatDailyNoteDate(dateIso, display)`: 純粋な日付整形関数
+- 定数: `DEFAULT_DAILY_NOTES_DATE_FORMAT`、`DEFAULT_DAILY_NOTES_LOCALE`
+- 型: `DailyNote`、`DailyNotesOptions`、`DailyNotesDateFormat`、`ResolvedDailyNotesExtract`、`ResolvedDailyNotesDisplay`
 
 ## 関連資料
 

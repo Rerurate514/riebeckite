@@ -125,7 +125,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
             children: [
               {
                 type: "text",
-                value: `[[埋め込み未解決：${target}]]`,
+                value: `[[Unresolved embed: ${target}]]`,
               },
             ],
           });
@@ -150,7 +150,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       } else if (isEmbed) {
         newNodes.push({
           type: "text",
-          value: `[[埋め込み未解決：${target}]]`,
+          value: `[[Unresolved embed: ${target}]]`,
         });
       } else if (resolved?.kind === "note") {
         const label = alias?.trim() ?? target;

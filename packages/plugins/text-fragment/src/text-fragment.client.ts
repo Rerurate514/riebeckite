@@ -9,6 +9,24 @@ const EXCLUDED_SELECTOR = "pre, code, a[href], [data-no-share]";
 
 const POPOVER_GAP = 8;
 
+export type TextFragmentLabels = {
+  regionLabel: string;
+  copyLinkLabel: string;
+  copyQuoteLabel: string;
+  linkCopiedLabel: string;
+  quoteCopiedLabel: string;
+  copyFailedLabel: string;
+};
+
+export const DEFAULT_TEXT_FRAGMENT_LABELS: TextFragmentLabels = {
+  regionLabel: "Share selected text",
+  copyLinkLabel: "Copy link",
+  copyQuoteLabel: "Copy quote",
+  linkCopiedLabel: "Link copied",
+  quoteCopiedLabel: "Quote copied",
+  copyFailedLabel: "Could not copy. Select the text again.",
+};
+
 let initialized = false;
 
 type ActiveSelection = {
@@ -17,28 +35,32 @@ type ActiveSelection = {
 };
 
 /**
- * Enables a popover with "リンクをコピー" (text fragment deep link) and
- * "引用をコピー" (Markdown quote) actions for the current text selection.
+ * Enables a popover with copy-link (Text Fragment deep link) and copy-quote
+ * (Markdown quote) actions for the current text selection.
  *
  * Client-only: returns immediately when there is no `document`, and only wires
  * its listeners once per page.
  */
-export function initTextFragmentShare(): void {
+export function initTextFragmentShare(
+  labels: Partial<TextFragmentLabels> = {},
+): void {
   if (typeof document === "undefined") return;
   if (initialized) return;
   initialized = true;
+
+  const resolved = { ...DEFAULT_TEXT_FRAGMENT_LABELS, ...labels };
 
   const popover = document.createElement("div");
   popover.className = "rr-text-fragment";
   popover.hidden = true;
   popover.setAttribute("role", "group");
-  popover.setAttribute("aria-label", "選択したテキストを共有");
+  popover.setAttribute("aria-label", resolved.regionLabel);
 
   const actions = document.createElement("div");
   actions.className = "rr-text-fragment__actions";
 
-  const linkButton = createButton("リンクをコピー");
-  const quoteButton = createButton("引用をコピー");
+  const linkButton = createButton(resolved.copyLinkLabel);
+  const quoteButton = createButton(resolved.copyQuoteLabel);
 
   const status = document.createElement("p");
   status.className = "rr-text-fragment__status";
@@ -91,9 +113,7 @@ export function initTextFragmentShare(): void {
     isCopying = true;
     try {
       const copied = await copyToClipboard(buildValue(selection.text));
-      status.textContent = copied
-        ? successMessage
-        : "コピーできませんでした。テキストを選び直してください。";
+      status.textContent = copied ? successMessage : resolved.copyFailedLabel;
       // The fallback path may have hidden the popover; keep it visible.
       active = selection;
       popover.hidden = false;
@@ -109,7 +129,7 @@ export function initTextFragmentShare(): void {
   linkButton.addEventListener("click", () => {
     void copy(
       (selection) => buildTextFragmentUrl(resolvePageUrl(), selection),
-      "リンクをコピーしました",
+      resolved.linkCopiedLabel,
     );
   });
 
@@ -121,7 +141,7 @@ export function initTextFragmentShare(): void {
           title: document.title,
           selection,
         }),
-      "引用をコピーしました",
+      resolved.quoteCopiedLabel,
     );
   });
 

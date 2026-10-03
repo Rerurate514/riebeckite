@@ -6,7 +6,18 @@ import {
   type ResolvedRiebeckiteConfig,
   resolveConfig,
 } from "@riebeckite/core";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import DailyNotes from "../components/daily-notes.js";
+import {
+  DEFAULT_DAILY_NOTES_DATE_FORMAT,
+  DEFAULT_DAILY_NOTES_LOCALE,
+  formatDailyNoteDate,
+  resolveDisplayOptions,
+} from "../src/daily-notes.js";
 import { getDailyNotes } from "../src/daily-notes.server.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function makeEntry(
   overrides: Partial<ContentManifestEntry> & { slug: string },
@@ -308,4 +319,61 @@ test("derives the date from frontmatter created and filename, preferring frontma
   assert.equal(dates["Daily/2024-06-01"], "2024-07-01");
   assert.equal(dates["Daily/2024-06-02"], "2024-08-09");
   assert.equal(dates["Daily/2024-06-03"], "2024-06-03");
+});
+
+test("date display defaults to a locale-independent ISO date", () => {
+  const display = resolveDisplayOptions(undefined);
+
+  assert.equal(display.dateFormat, DEFAULT_DAILY_NOTES_DATE_FORMAT);
+  assert.equal(display.locale, DEFAULT_DAILY_NOTES_LOCALE);
+  assert.equal(formatDailyNoteDate("2024-01-05", display), "2024-01-05");
+});
+
+test("date display can use a locale-aware format", () => {
+  const display = resolveDisplayOptions({
+    dateFormat: "long",
+    locale: "en-US",
+  });
+
+  assert.match(formatDailyNoteDate("2024-01-05", display), /January 5, 2024/);
+  assert.equal(formatDailyNoteDate("", display), "");
+});
+
+test("getDailyNotes applies the configured date format", () => {
+  const manifest = makeManifest([
+    makeEntry({
+      slug: "Daily/2024-01-05",
+      frontmatter: { "daily-summary": "entry" },
+    }),
+  ]);
+
+  const notes = getDailyNotes({
+    manifest,
+    config: explicitConfig,
+    options: { dateFormat: "long", locale: "en-US" },
+  });
+
+  assert.equal(notes[0].date, "2024-01-05");
+  assert.match(notes[0].dateDisplay, /January 5, 2024/);
+});
+
+test("DailyNotes renders English labels and ISO dates", () => {
+  const html = renderToString(
+    DailyNotes({
+      notes: [
+        {
+          date: "2024-01-05",
+          dateDisplay: "2024-01-05",
+          snippet: "A short note",
+          slug: "Daily/2024-01-05",
+          sourceUrl: null,
+          sourceTitle: null,
+        },
+      ],
+    }),
+  );
+
+  assert.ok(html.includes("Recent Daily Notes"), html);
+  assert.ok(html.includes("2024-01-05"), html);
+  assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });

@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { initTextFragmentShare } from "../client.js";
+import {
+  DEFAULT_TEXT_FRAGMENT_LABELS,
+  initTextFragmentShare,
+} from "../client.js";
+import { textFragmentPlugin } from "../index.ts";
 import {
   buildQuoteMarkdown,
   buildTextFragmentUrl,
@@ -137,4 +141,43 @@ test("buildQuoteMarkdown normalizes CRLF newlines", () => {
 test("initTextFragmentShare is a no-op without a document", () => {
   assert.equal(typeof document, "undefined");
   assert.doesNotThrow(() => initTextFragmentShare());
+});
+
+test("text fragment defaults use English labels", () => {
+  assert.deepEqual(DEFAULT_TEXT_FRAGMENT_LABELS, {
+    regionLabel: "Share selected text",
+    copyLinkLabel: "Copy link",
+    copyQuoteLabel: "Copy quote",
+    linkCopiedLabel: "Link copied",
+    quoteCopiedLabel: "Quote copied",
+    copyFailedLabel: "Could not copy. Select the text again.",
+  });
+  for (const value of Object.values(DEFAULT_TEXT_FRAGMENT_LABELS)) {
+    assert.doesNotMatch(value, /[\u3040-\u30ff\u4e00-\u9faf]/);
+  }
+});
+
+test("initTextFragmentShare accepts label overrides without a document", () => {
+  assert.equal(typeof document, "undefined");
+  assert.doesNotThrow(() =>
+    initTextFragmentShare({ copyLinkLabel: "リンクをコピー" }),
+  );
+});
+
+test("textFragmentPlugin forwards labels to the client entry", () => {
+  const entry = textFragmentPlugin().clientEntries?.[0];
+
+  assert.deepEqual(entry?.publicConfig, DEFAULT_TEXT_FRAGMENT_LABELS);
+});
+
+test("textFragmentPlugin merges label overrides into the client entry", () => {
+  const entry = textFragmentPlugin({
+    labels: { copyLinkLabel: "Copy", regionLabel: "共有" },
+  }).clientEntries?.[0];
+
+  assert.deepEqual(entry?.publicConfig, {
+    ...DEFAULT_TEXT_FRAGMENT_LABELS,
+    copyLinkLabel: "Copy",
+    regionLabel: "共有",
+  });
 });

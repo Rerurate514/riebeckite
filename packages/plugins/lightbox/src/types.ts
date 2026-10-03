@@ -9,6 +9,8 @@ export type HastNode = ElementNode | { type: string; [key: string]: unknown };
 
 export type LightboxOptions = {
   selectorClass?: string;
+  expandLabel?: string;
+  closeLabel?: string;
 };
 
 export type LightboxInitOptions = LightboxOptions & {
@@ -16,3 +18,5 @@ export type LightboxInitOptions = LightboxOptions & {
 };
 
 export const DEFAULT_TRIGGER_CLASS = "rr-lightbox-trigger";
+export const DEFAULT_EXPAND_LABEL = "Expand image";
+export const DEFAULT_CLOSE_LABEL = "Close";

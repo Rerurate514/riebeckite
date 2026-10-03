@@ -13,8 +13,8 @@ export function renderGardenExplorerPage(
         <p class="garden-explorer-page__eyebrow">{siteTitle}</p>
         <h1 class="garden-explorer-page__title">Garden Explorer</h1>
         <p class="garden-explorer-page__description">
-          Graph, Search, Tags, Folders, Backlinks, and Related Notes を横断して
-          Digital Garden を探索できます。
+          Explore your digital garden across graph, search, tags, folders,
+          backlinks, and related notes.
         </p>
       </header>
       <div data-riebeckite-garden-explorer>

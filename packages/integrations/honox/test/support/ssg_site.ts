@@ -13,11 +13,22 @@ const appRequire = createRequire(
   path.join(repoRoot, "apps", "web", "package.json"),
 );
 
-const { build, defineConfig } = (await import(
+type ViteLogger = {
+  hasWarned: boolean;
+  info(message: string, options?: unknown): void;
+  warn(message: string, options?: unknown): void;
+  warnOnce(message: string, options?: unknown): void;
+  error(message: string, options?: unknown): void;
+  clearScreen(type: string): void;
+  hasErrorLogged(error: unknown): boolean;
+};
+
+const { build, defineConfig, createLogger } = (await import(
   pathToFileURL(appRequire.resolve("vite")).href
 )) as {
   build: (config: unknown) => Promise<unknown>;
   defineConfig: (config: unknown) => unknown;
+  createLogger: (level?: string) => ViteLogger;
 };
 const { default: honox } = (await import(
   pathToFileURL(appRequire.resolve("honox/vite")).href
@@ -344,16 +355,37 @@ export async function createSite(
 export async function buildSite(
   siteRoot: string,
   label: string,
-  options: { adapter?: boolean; emptyOutDir?: boolean } = {},
+  options: {
+    adapter?: boolean;
+    emptyOutDir?: boolean;
+    warnings?: string[];
+  } = {},
 ): Promise<Metrics> {
   const metricsDirectory = path.join(siteRoot, ".riebeckite", "metrics");
   await mkdir(metricsDirectory, { recursive: true });
   const metricsFile = path.join(metricsDirectory, `${label}.json`);
   process.env.RIEBECKITE_SSG_METRICS_FILE = metricsFile;
+  const warnings = options.warnings;
+  let customLogger: ViteLogger | undefined;
+  if (warnings) {
+    const baseLogger = createLogger("silent");
+    customLogger = {
+      ...baseLogger,
+      warn(message, loggerOptions) {
+        warnings.push(message);
+        baseLogger.warn(message, loggerOptions);
+      },
+      warnOnce(message, loggerOptions) {
+        warnings.push(message);
+        baseLogger.warnOnce(message, loggerOptions);
+      },
+    };
+  }
   await build(
     defineConfig({
       root: siteRoot,
       resolve: { alias },
+      customLogger,
       plugins: [
         honox({
           client: { input: ["/app/client.ts"] },

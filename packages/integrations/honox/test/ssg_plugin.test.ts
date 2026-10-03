@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import {
+  findBuildOutputSiteCollisions,
   loadOutputCache,
   saveOutputCache,
   shouldApplyRiebeckiteSsg,
@@ -27,6 +28,26 @@ test("riebeckite SSG is disabled during dev server", () => {
   assert.equal(
     shouldApplyRiebeckiteSsg({}, { command: "serve", mode: "development" }),
     false,
+  );
+});
+
+test("build outputs that collide with site public assets are reported", () => {
+  assert.deepEqual(
+    findBuildOutputSiteCollisions(
+      ["index.js", "assets/app.txt", "index.html"],
+      new Set(["index.js", "assets/app.txt", "favicon.ico"]),
+    ),
+    ["assets/app.txt", "index.js"],
+  );
+});
+
+test("build outputs without site public assets report no collision", () => {
+  assert.deepEqual(
+    findBuildOutputSiteCollisions(
+      ["index.js"],
+      new Set(["favicon.ico", "assets/logo.png"]),
+    ),
+    [],
   );
 });
 

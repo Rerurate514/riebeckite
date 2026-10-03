@@ -203,6 +203,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           "siteOwnedOutputs",
           () => collectSiteOwnedOutputPaths(config.publicDir),
         );
+        const siteOutputCollisions = findBuildOutputSiteCollisions(
+          Object.keys(bundle),
+          siteOwnedOutputPaths,
+        );
+        if (siteOutputCollisions.length > 0) {
+          this.warn(
+            `Build outputs take precedence over site public assets: ${siteOutputCollisions.join(", ")}`,
+          );
+        }
         const canUseIncremental =
           outputChangeSet &&
           !outputChangeSet.fullRegenerationRequired &&
@@ -448,6 +457,17 @@ export function shouldApplyRiebeckiteSsg(
   env: ConfigEnv,
 ): boolean {
   return env.command === "build" && env.mode !== "client";
+}
+
+export function findBuildOutputSiteCollisions(
+  buildOutputPaths: Iterable<string>,
+  siteOwnedOutputPaths: ReadonlySet<string>,
+): readonly string[] {
+  const collisions = new Set<string>();
+  for (const path of buildOutputPaths) {
+    if (siteOwnedOutputPaths.has(path)) collisions.add(path);
+  }
+  return [...collisions].sort();
 }
 
 /**

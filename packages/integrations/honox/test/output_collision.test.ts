@@ -77,6 +77,35 @@ test("site public assets take precedence over colliding generated outputs", asyn
   assert.equal(readText(snapshot, "generated/shared.txt"), "GENERATED");
 });
 
+test("worker build outputs take precedence over colliding site public assets", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "output-build-collision-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const site = path.join(root, "site");
+  const sources: SiteSources = {
+    title: "BuildCollision",
+    renderTag: "v1",
+    noteCount: 1,
+    editedNotes: [],
+    publicFiles: { "index.js": "PUBLIC" },
+  };
+  await createSite(site, sources);
+
+  const warnings: string[] = [];
+  await buildSite(site, "build-output-collision", { warnings });
+  assert.ok(
+    warnings.some((warning) =>
+      warning.includes(
+        "Build outputs take precedence over site public assets: index.js",
+      ),
+    ),
+    `expected a build output collision warning, received: ${warnings.join(" | ")}`,
+  );
+  const snapshot = await snapshotTree(distPath(site));
+  assert.notEqual(readText(snapshot, "index.js"), "PUBLIC");
+});
+
 test("site public assets and content-derived assets coexist at different paths", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "output-coexist-"));

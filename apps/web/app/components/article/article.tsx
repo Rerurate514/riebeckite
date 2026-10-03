@@ -40,7 +40,10 @@ export default function Article(props: Props) {
     <ArticlePrimitive class="prose">
       <ArticleLayout>
         {props.asideContent}
-        <ContentSlot html={props.bodySlots?.["article.aside"]} />
+        <ContentSlot
+          class="article-shell__aside"
+          html={props.bodySlots?.["article.aside"]}
+        />
         <ArticleContent>
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
           <ContentSlot html={props.bodySlots?.["article.after-header"]} />

@@ -23,6 +23,7 @@ import { docs } from "@riebeckite/plugin-docs";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { folderPages } from "@riebeckite/plugin-folder-pages";
 import { galleryPlugin } from "@riebeckite/plugin-gallery";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { graphviz } from "@riebeckite/plugin-graphviz";
@@ -202,6 +203,7 @@ export default defineConfig({
     responsiveImage(),
     localGraphPlugin(),
     l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+    folderPages(),
     docs({
       root: "docs",
       sidebar: { auto: true, label: "Documentation" },
@@ -212,7 +214,7 @@ export default defineConfig({
     shortcodes(),
     sidenotes(),
     series(),
-    taxonomy({ folderIndexes: true }),
+    taxonomy(),
     dailyNotesPlugin(),
     renamePlugin(),
     textFragmentPlugin(),

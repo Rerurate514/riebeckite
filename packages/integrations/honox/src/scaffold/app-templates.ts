@@ -146,16 +146,110 @@ export function style(preset: ScaffoldPreset): string {
       "  justify-content: space-between;",
       "  gap: 1rem;",
       "  padding: 1rem;",
-      "  border-bottom: 1px solid #d1d5db;",
+      "  border-bottom: 1px solid var(--rb-color-border);",
       "}",
       "",
       ".site-header__home {",
       "  display: inline-flex;",
       "  align-items: center;",
       "  gap: 0.5rem;",
-      "  color: #111827;",
+      "  color: var(--rb-color-ink);",
       "  font-weight: 700;",
       "  text-decoration: none;",
+      "}",
+      "",
+      ".rb-nav {",
+      "  color: var(--rb-color-ink);",
+      "}",
+      "",
+      ".rb-nav__list {",
+      "  display: flex;",
+      "  align-items: center;",
+      "  gap: 0.75rem;",
+      "  margin: 0;",
+      "  padding: 0;",
+      "  list-style: none;",
+      "}",
+      "",
+      ".rb-nav__item {",
+      "  position: relative;",
+      "}",
+      "",
+      ".rb-nav__link {",
+      "  color: inherit;",
+      "  text-decoration: none;",
+      "}",
+      "",
+      ".rb-nav__link:hover,",
+      ".rb-nav__link:focus-visible,",
+      ".rb-nav__link--active {",
+      "  color: var(--rb-color-accent);",
+      "}",
+      "",
+      ".rb-nav__link:focus-visible,",
+      ".rb-nav__toggle:focus-visible {",
+      "  outline: 2px solid var(--rb-color-accent);",
+      "  outline-offset: 2px;",
+      "}",
+      "",
+      ".rb-nav__children {",
+      "  display: none;",
+      "  position: absolute;",
+      "  top: 100%;",
+      "  left: 0;",
+      "  min-width: max-content;",
+      "  padding: 0.5rem;",
+      "  background: var(--rb-color-surface);",
+      "  border: 1px solid var(--rb-color-border);",
+      "}",
+      "",
+      ".rb-nav__item:hover > .rb-nav__children,",
+      ".rb-nav__item:focus-within > .rb-nav__children {",
+      "  display: flex;",
+      "  flex-direction: column;",
+      "  align-items: stretch;",
+      "}",
+      "",
+      ".rb-nav__mobile {",
+      "  display: none;",
+      "}",
+      "",
+      ".rb-site-footer {",
+      "  width: min(100% - 2rem, 48rem);",
+      "  margin: auto auto 0;",
+      "  padding-block: 1rem;",
+      "  border-top: 1px solid var(--rb-color-border);",
+      "}",
+      "",
+      "@media (max-width: 48rem) {",
+      "  .rb-site-header {",
+      "    flex-wrap: wrap;",
+      "  }",
+      "",
+      "  .rb-site-header > .rb-nav {",
+      "    display: none;",
+      "  }",
+      "",
+      "  .rb-nav__mobile {",
+      "    display: block;",
+      "  }",
+      "",
+      "  .rb-nav__mobile .rb-nav__list {",
+      "    flex-direction: column;",
+      "    align-items: flex-start;",
+      "    padding-top: 0.75rem;",
+      "  }",
+      "",
+      "  .rb-nav__mobile .rb-nav__children {",
+      "    display: flex;",
+      "    position: static;",
+      "    flex-direction: column;",
+      "    align-items: flex-start;",
+      "    gap: 0.5rem;",
+      "    margin-top: 0.5rem;",
+      "    background: transparent;",
+      "    border: 0;",
+      "  }",
       "}",
       "",
       ".site-header__logo {",
@@ -241,13 +335,16 @@ export function style(preset: ScaffoldPreset): string {
 }
 
 export function siteHeader(): string {
-  return `import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
+  return `import type { NavigationItem } from "@riebeckite/core";
+import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { config } from "../config";
 
-export function SiteHeader() {
+export function SiteHeader({ path }: { path: string }) {
+  const navigation = config.navigation.header.filter((item) => item.href !== "/");
+
   return (
-    <header class="site-header">
-      <a href="/" class="site-header__home">
+    <header class="site-header rb-site-header">
+      <a href="/" class="site-header__home rb-site-header__home">
         <img
           src="/riebeckite-logo.png"
           alt=""
@@ -257,9 +354,83 @@ export function SiteHeader() {
         />
         {config.site.title}
       </a>
+      {navigation.length > 0 ? (
+        <>
+          <SiteNavigation items={navigation} path={path} />
+          <details class="site-navigation__mobile rb-nav__mobile">
+            <summary class="rb-nav__toggle">Menu</summary>
+            <SiteNavigation items={navigation} path={path} />
+          </details>
+        </>
+      ) : null}
       <ColorModeToggle />
     </header>
   );
+}
+
+export function SiteFooter({ path }: { path: string }) {
+  if (config.navigation.footer.length === 0) return null;
+
+  return (
+    <footer class="site-footer rb-site-footer">
+      <SiteNavigation items={config.navigation.footer} path={path} />
+    </footer>
+  );
+}
+
+function SiteNavigation({
+  items,
+  path,
+}: {
+  items: readonly NavigationItem[];
+  path: string;
+}) {
+  return (
+    <nav class="site-navigation rb-nav" aria-label="Site navigation">
+      <NavigationItems items={items} path={path} />
+    </nav>
+  );
+}
+
+function NavigationItems({
+  items,
+  path,
+  isChildList = false,
+}: {
+  items: readonly NavigationItem[];
+  path: string;
+  isChildList?: boolean;
+}) {
+  return (
+    <ul class={isChildList ? "site-navigation__list rb-nav__list rb-nav__children" : "site-navigation__list rb-nav__list"}>
+      {items.map((item) => {
+        const active = isActive(item.href, path);
+        return (
+          <li class="site-navigation__item rb-nav__item">
+            <a
+              href={item.href}
+              class={active ? "site-navigation__link rb-nav__link rb-nav__link--active is-active" : "site-navigation__link rb-nav__link"}
+              aria-current={active ? "page" : undefined}
+              target={item.external ? "_blank" : undefined}
+              rel={item.external ? "noreferrer" : undefined}
+            >
+              {item.label}
+            </a>
+            {item.children && item.children.length > 0 ? (
+              <NavigationItems items={item.children} path={path} isChildList />
+            ) : null}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function isActive(href: string, path: string): boolean {
+  if (!href.startsWith("/")) return false;
+  const target = href.replace(/\\/+$/, "") || "/";
+  const current = path.replace(/^\\/[a-z]{2}(?:-[A-Z]{2})?(?=\\/|$)/, "").replace(/\\/+$/, "") || "/";
+  return target === "/" ? current === target : current === target || current.startsWith(\`\${target}/\`);
 }
 `;
 }
@@ -363,7 +534,7 @@ export function renderer(preset: ScaffoldPreset): string {
   return `import type { PluginHeadTag } from "@riebeckite/core";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
-${hasColorMode ? `import { ColorModeScript } from "@riebeckite/plugin-color-mode";\n` : ""}${hasSearch ? `import { SearchBar } from "@riebeckite/plugin-search";\n` : ""}${hasHeader ? `import { SiteHeader } from "../components/site-header";\n` : ""}import { config } from "../config";
+${hasColorMode ? `import { ColorModeScript } from "@riebeckite/plugin-color-mode";\n` : ""}${hasSearch ? `import { SearchBar } from "@riebeckite/plugin-search";\n` : ""}${hasHeader ? `import { SiteFooter, SiteHeader } from "../components/site-header";\n` : ""}import { config } from "../config";
 
 function themeAttributes() {
   const { theme } = config;
@@ -398,9 +569,9 @@ ${hasColorMode ? `        <ColorModeScript />\n` : ""}        <Link href="/app/s
         {headTags.map(renderHeadTag)}
         <Script src="/app/client.ts" async />
       </head>
-      <body class="riebeckite-page">
-${hasHeader ? `        <SiteHeader />\n` : ""}${hasSearch ? `        <SearchBar />\n` : ""}        {children}
-      </body>
+      <body class="riebeckite-page rb-site">
+ ${hasHeader ? `        <SiteHeader path={c.req.path} />\n` : ""}${hasSearch ? `        <SearchBar />\n` : ""}        {children}
+${hasHeader ? `        <SiteFooter path={c.req.path} />\n` : ""}      </body>
     </html>
   );
 });
@@ -441,7 +612,7 @@ export default jsxRenderer(({ children }, c) => (
       <Link href="/app/style.css" rel="stylesheet" />
       <Script src="/app/client.ts" async />
     </head>
-    <body class="riebeckite-page">{children}</body>
+    <body class="riebeckite-page rb-site">{children}</body>
   </html>
 ));
 `;

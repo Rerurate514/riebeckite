@@ -8,6 +8,83 @@
     padding-block: var(--rb-space-8);
   }
 
+  .rb-site-header,
+  .rb-site-footer {
+    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  }
+
+  .rb-site-header {
+    display: flex;
+    align-items: center;
+    gap: var(--rb-space-4);
+    padding-block: var(--rb-space-3);
+    border-bottom: 1px solid var(--rb-color-border);
+  }
+
+  .rb-site-header__home {
+    margin-right: auto;
+    color: var(--rb-color-ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .rb-nav__list {
+    display: flex;
+    gap: var(--rb-space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rb-nav__item {
+    position: relative;
+  }
+
+  .rb-nav__link {
+    color: var(--rb-color-ink);
+    text-decoration: none;
+  }
+
+  .rb-nav__link:hover,
+  .rb-nav__link:focus-visible,
+  .rb-nav__link--active {
+    color: var(--rb-color-accent);
+  }
+
+  .rb-nav__link:focus-visible,
+  .rb-nav__toggle:focus-visible {
+    outline: 2px solid var(--rb-color-accent);
+    outline-offset: 2px;
+  }
+
+  .rb-nav__children {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: max-content;
+    padding: var(--rb-space-2);
+    background: var(--rb-color-surface);
+    border: 1px solid var(--rb-color-border);
+  }
+
+  .rb-nav__item:hover > .rb-nav__children,
+  .rb-nav__item:focus-within > .rb-nav__children {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rb-space-2);
+  }
+
+  .rb-nav__mobile {
+    display: none;
+  }
+
+  .rb-site-footer {
+    margin-top: auto;
+    padding-block: var(--rb-space-4);
+    border-top: 1px solid var(--rb-color-border);
+  }
+
   @media (max-width: 48rem) {
     .riebeckite-page {
       /* The fixed 4rem padding feels oversized on phones, where the shell
@@ -26,6 +103,38 @@
     .rr-color-mode__button {
       width: 2.5rem;
       height: 2.5rem;
+    }
+
+    .rb-site-header {
+      flex-wrap: wrap;
+    }
+
+    .rb-site-header > .rb-nav {
+      display: none;
+    }
+
+    .rb-nav__mobile {
+      display: block;
+    }
+
+    .rb-nav__mobile .rb-nav__list,
+    .rb-nav__mobile .rb-nav__children {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--rb-space-2);
+    }
+
+    .rb-nav__mobile .rb-nav__list {
+      padding-top: var(--rb-space-3);
+    }
+
+    .rb-nav__mobile .rb-nav__children {
+      position: static;
+      margin-top: var(--rb-space-2);
+      padding: 0;
+      background: transparent;
+      border: 0;
     }
   }
 }

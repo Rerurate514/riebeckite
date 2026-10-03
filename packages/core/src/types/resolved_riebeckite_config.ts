@@ -1,4 +1,5 @@
 import type { ContentSource } from "../content/content_source.js";
+import type { NavigationConfig } from "./navigation_config.js";
 import type { RiebeckitePlugin } from "./plugin.js";
 import type { PublishStrategy } from "./publish_strategy.js";
 import type { SiteConfig } from "./site_config.js";
@@ -11,6 +12,7 @@ export type ResolvedRiebeckiteConfig = {
    */
   buildDirectory?: string;
   site: Required<SiteConfig>;
+  navigation: Required<NavigationConfig>;
   content: {
     directory: string;
     source?: ContentSource;

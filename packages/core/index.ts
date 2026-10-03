@@ -213,6 +213,10 @@ export {
   normalizeGeneratedOutputPath,
 } from "./src/types/generated_output.js";
 export type { JsonValue } from "./src/types/json_value.js";
+export type {
+  NavigationConfig,
+  NavigationItem,
+} from "./src/types/navigation_config.js";
 export type { OutputDependency } from "./src/types/output_dependency.js";
 export type {
   PluginInput,

@@ -260,7 +260,10 @@ uses two class namespaces:
   hooks include `.rb-theme-root` (the theme root container), `.rb-site`,
   `.rb-article`, `.rb-article-layout`, `.rb-article-header`,
   `.rb-article-body`, `.rb-article-meta`, `.rb-article-footer`, and
-  `.rb-sidebar`.
+  `.rb-sidebar`. Navigation uses `.rb-site-header`, `.rb-nav`,
+  `.rb-nav__list`, `.rb-nav__item`, `.rb-nav__link`,
+  `.rb-nav__link--active`, `.rb-nav__children`, `.rb-nav__mobile`,
+  `.rb-nav__toggle`, and `.rb-site-footer`.
 - `rr-<feature>` — the root hook a plugin or feature emits on the outermost
   element it renders, for example `.rr-search`, `.rr-callout`,
   `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`,
@@ -394,6 +397,4 @@ theme and never leaks into Core or another theme.
 - [Plugin System](./plugin-api.md)
 - [Configuration](./configuration.md)
 - [Framework Reference](./README.md)
-
-
 

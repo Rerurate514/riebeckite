@@ -38,6 +38,75 @@ test("resolveConfig fills documented defaults", () => {
     styles: [{ moduleSpecifier: "@riebeckite/theme-default/style.css" }],
   });
   assert.deepEqual(config.plugins, []);
+  assert.deepEqual(config.navigation, { header: [], footer: [] });
+});
+
+test("resolveConfig retains authored navigation", () => {
+  const config = resolveConfig({
+    site: { title: "My Site" },
+    navigation: {
+      header: [
+        {
+          label: "Docs",
+          href: "/docs",
+          children: [{ label: "Guide", href: "/docs/guide" }],
+        },
+      ],
+      footer: [
+        { label: "GitHub", href: "https://github.com/example", external: true },
+      ],
+    },
+  });
+
+  assert.deepEqual(config.navigation, {
+    header: [
+      {
+        label: "Docs",
+        href: "/docs",
+        children: [{ label: "Guide", href: "/docs/guide" }],
+      },
+    ],
+    footer: [
+      { label: "GitHub", href: "https://github.com/example", external: true },
+    ],
+  });
+});
+
+test("resolveConfig rejects malformed authored navigation", () => {
+  const recursive: { label: string; href: string; children?: unknown[] } = {
+    label: "Docs",
+    href: "/docs",
+  };
+  recursive.children = [recursive];
+
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        navigation: {
+          header: [
+            { label: "", href: "" },
+            { label: "External", href: "/external", external: "yes" },
+            recursive,
+          ],
+          footer: "footer",
+        },
+      } as unknown as RiebeckiteConfig),
+    (error: unknown) => {
+      assert.ok(error instanceof ConfigValidationError);
+      assert.deepEqual(
+        error.issues.map((issue) => issue.path),
+        [
+          "navigation.header[0].label",
+          "navigation.header[0].href",
+          "navigation.header[1].external",
+          "navigation.header[2].children[0]",
+          "navigation.footer",
+        ],
+      );
+      return true;
+    },
+  );
 });
 
 test("resolveConfig merges theme config and sanitizes theme attributes", () => {

@@ -65,6 +65,8 @@ test("each preset generates its intended self-contained composition", async () =
         assert.match(slugRoute, /pluginPageSsgParams/);
       }
       if (preset === "showcase") {
+        assert.match(config, /navigation: \{/);
+        assert.match(config, /label: "Framework"/);
         assert.ok(
           await exists(path.join(targetDirectory, "content/examples.md")),
         );
@@ -89,6 +91,8 @@ test("each preset generates its intended self-contained composition", async () =
         assert.ok(config.includes("@riebeckite/plugin-mermaid"));
       }
       if (preset === "starter") {
+        assert.match(config, /navigation: \{/);
+        assert.match(config, /label: "Notes"/);
         assert.ok(config.includes("@riebeckite/plugin-search"));
         assert.ok(
           await exists(path.join(targetDirectory, "content/notes/planning.md")),
@@ -111,6 +115,42 @@ test("each preset generates its intended self-contained composition", async () =
         assert.match(guide, /npm exec riebeckite dev/);
         assert.match(guide, /content\/hello\.md/);
       }
+    }
+  });
+});
+
+test("starter and showcase scaffolds render authored navigation in the site shell", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of ["starter", "showcase"] as const) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const header = await fs.readFile(
+        path.join(targetDirectory, "app/components/site-header.tsx"),
+        "utf8",
+      );
+      const renderer = await fs.readFile(
+        path.join(targetDirectory, "app/routes/_renderer.tsx"),
+        "utf8",
+      );
+      assert.match(header, /site-navigation__mobile/);
+      assert.match(header, /rb-site-header/);
+      assert.match(header, /rb-nav__link--active/);
+      assert.match(header, /rb-site-footer/);
+      assert.match(header, /aria-current/);
+      assert.match(header, /target=\{item.external/);
+      assert.match(header, /isChildList/);
+      assert.match(renderer, /<SiteHeader path=\{c.req.path\} \/>/);
+      assert.match(renderer, /<SiteFooter path=\{c.req.path\} \/>/);
+      assert.match(renderer, /class="riebeckite-page rb-site"/);
+      assert.match(
+        await fs.readFile(
+          path.join(targetDirectory, "riebeckite.config.ts"),
+          "utf8",
+        ),
+        preset === "starter"
+          ? /label: "Notes", href: "\/notes\/planning"/
+          : /label: "Framework", href: "\/framework\/plugins"/,
+      );
     }
   });
 });

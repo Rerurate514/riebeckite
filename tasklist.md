@@ -12,10 +12,7 @@
 | DEV1 | custom HonoX dev server entry 使用時の content asset 配信を監査する | 未着手 | Small | content asset ミドルウェアが entry を `appRoot()/app/server.ts` にハードコードしており（`content_assets.ts:62`）、custom dev entry では manifest 解決に失敗して画像 / 添付の dev 配信が 404 になり得る。標準契約は default entry 前提 | dev 配信が default `app/server.ts` entry 前提であることを確認済み。entry を設定から解決するか、この制約を docs に明記する。修正する場合は custom entry での回帰テストを追加する |
 | DX1 | `doctor` / `inspect` / build diagnostics の説明能力を再監査する | 未着手 | Small | doctor は build state の有効性・不一致内訳・invalid 理由を、inspect は build state・config exclude 件数・plugin provides/requires・content・graph を既に説明する。不足は doctor の `content.exclude` パターン数・除外理由と persistent cache / invalidation 状態 | 既存出力で説明できている項目は維持し、不足する除外理由と cache/invalidation 状態だけを doctor/inspect に追加する。除外パターン数・除外理由、persistent cache の有効/無効、build state の再利用可否を説明でき、通常出力を過剰に増やさないことをテストする |
 | GRAPH1 | 大規模 Vault における Graph 描画の性能境界を計測する | 未着手 | Small | 500 nodes guard は `shouldGuardForceLayout`（`graph_layout.ts:37-39`）として実装・テスト済み（`garden-explorer.test.ts:170-231`）。global force layout が ≥500 nodes で radial へフォールバックし凍結を防止するため、計測の実益は限定的 | 500 / 1000 / 2000 nodes で初期描画・layout・zoom/pan・drag を計測するハーネスを用意し、明確な問題が確認された場合のみ最適化する。Canvas/WebGL 等への置換は計測根拠なしでは行わない |
-| NAV1 | サイト全体ナビゲーションの authored 設定モデルを Core に追加する | 未着手 | Small | 生成ヘッダはホームリンク1本のみで、作者が設計するグローバルナビを表現する設定が Core に無い。Web サイト用途の土台 | `navigation`（header/footer・ラベル・リンク・子項目・外部リンク）の型と既定値、`riebeckite check` の検証、resolve/validate の単体テストを追加する。描画は対象外。依存なし |
-| NAV2 | 生成アプリで authored navigation をヘッダ・フッタ・モバイルドロワーに描画する | 未着手 | Medium | NAV1 の設定を表示する経路が無く、`siteHeader()` はホームリンクとカラートグルのみ | starter/showcase の生成サイトでヘッダ/フッタのリンクとドロワーが動作し現在ページが強調される。minimal/empty は不変。`check_scaffold` を更新。依存: NAV1 |
 | NAV3 | Plugin が navigation item を提供できる任意契約を追加する | 未着手 | Medium | plugin の `pageTypes` は route を登録するがリンク契約が無く、`/explore`・`/tags` 等を app へ直書きすると taxonomy の `tagsBasePath` 変更で drift する。MVP は config のみで成立するため、config 運用で不足が確認できた場合に実施 | plugin がラベル付きリンクを宣言でき、authored nav とマージ・重複診断される。契約テストを追加。依存: NAV1 |
-| NAV4 | サイトクロームの構造フックと既定スタイルを整備する | 未着手 | Small | header/footer/drawer の theme styling 点が無く、theme は presentation-only のため構造フックが必要 | `rb-site-header`/`rb-nav`/`rb-site-footer` 等の安定フックを描画側に付与し、既定スタイルと theme 向けドキュメントを追加する。依存: NAV2 |
 | NAV5 | ナビゲーションの責務分離と設定方法を docs に記載する | 未着手 | Small | navigation 設定が未文書化。plugin page が body のみ描画される実態と docs の記述に差がある | configuration リファレンスと guide に nav 設定、Site Navigation / Content Discovery / Content Relationship の分離、plugin page のクローム挙動を日英で追記する。依存: NAV1, NAV2 |
 | DISC1 | archive を Core の collection 機構を再利用した plugin として提供する | 未着手 | Medium | 月別アーカイブは reference app の `lib/collections.ts` と `archive/[slug{.+}]` にのみ存在し、どの preset も生成しない。`buildContentCollections` は Core にあり plugin 化できる | plugin を有効化すると `/archive/...` が生成され、ページネーションと locale ラベルが動作する。契約/回帰テストを追加。依存なし |
 | DISC2 | taxonomy に全タグ・全フォルダの一覧ページを追加する | 未着手 | Small | term ページはあるが一覧が無く `/tags`・`/folders` へ遷移できない。`buildTaxonomyIndex` と `/taxonomy/index.json` が既にあり新規 Core 不要 | `tagsBasePath`/`foldersBasePath` を尊重した一覧ページを pageType として追加し term へリンクする。テストを追加。依存なし |
@@ -33,6 +30,9 @@
 | ID | 作業 | 規模 | 実装結果・備考 |
 |---|---|---|---|
 | PAGE1 | Plugin Page Type の route collision と優先順位契約を監査する | Small | `PluginPageType.priority`（`plugin_page.ts:36-37`）と resolver `resolvePage`（`plugin_runtime.ts:271-283`）が優先度契約を実装済み。同一 route で最高 priority が複数なら throw し、サイレント解決しない。重複 pageType ID も解決時に拒否。`plugin_page.test.ts` に同 priority 衝突・priority 選択・directory-index 衝突・重複 ID のテストあり。追加実装は不要 |
+| NAV1 | サイト全体ナビゲーションの authored 設定モデルを Core に追加する | Small | トップレベル `navigation` に header/footer の authored item を追加。`NavigationItem` は label・href・children・external を持ち、resolve の既定値は空配列。設定形、必須文字列、external、再帰 children を検証し、resolve/validation テストを追加 |
+| NAV2 | 生成アプリで authored navigation をヘッダ・フッタ・モバイルドロワーに描画する | Medium | starter/showcase と reference app の site shell に、config 駆動の header/footer と標準 `details` による mobile navigation を追加。内部リンクの完全一致・配下 route を active 表示し、外部リンクと children を描画。minimal/empty は navigation を生成しない |
+| NAV4 | サイトクロームの構造フックと既定スタイルを整備する | Small | `rb-site-header`、`rb-nav`、`rb-site-footer` と子要素の安定フックを header/footer/drawer に付与。既定スタイルは semantic token を使い、theme API の hook 一覧を日英で更新 |
 
 ## 再監査で対象外とした項目
 

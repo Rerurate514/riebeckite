@@ -67,10 +67,11 @@ function NavigationItems({
     >
       {items.map((item) => {
         const active = isActive(item.href, path);
+        const href = localizeDocsHref(item.href, path);
         return (
           <li class="site-navigation__item rb-nav__item">
             <a
-              href={item.href}
+              href={href}
               class={
                 active
                   ? "site-navigation__link rb-nav__link rb-nav__link--active is-active"
@@ -101,4 +102,10 @@ function isActive(href: string, path: string): boolean {
   return target === "/"
     ? current === target
     : current === target || current.startsWith(`${target}/`);
+}
+
+export function localizeDocsHref(href: string, path: string): string {
+  const language = /^\/([a-z]{2}(?:-[A-Z]{2})?)(?=\/|$)/.exec(path)?.[1];
+  if (!language || !href.startsWith("/docs/")) return href;
+  return `/${language}${href}`;
 }

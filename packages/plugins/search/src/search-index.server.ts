@@ -14,16 +14,21 @@ export function buildSearchItems(args: {
   resolveTitle?: TitleResolver;
 }): SearchItem[] {
   const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
-  const items = args.manifest.discoverableEntries.map((entry) => ({
-    slug: entry.slug,
-    permalink: entry.permalink,
-    title: resolveTitle(entry.slug, entry.frontmatter.title),
-    headings: extractHeadings(entry.html),
-    body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
-    excerpt: createExcerpt(entry),
-    tags: entry.tags,
-    date: getEntryDate(entry.frontmatter),
-  }));
+  const items = args.manifest.discoverableEntries.map((entry) => {
+    const language = entry.publicLocation.metadata?.["l10n.lang"];
+    return {
+      slug: entry.slug,
+      permalink: entry.permalink,
+      title: resolveTitle(entry.slug, entry.frontmatter.title),
+      aliases: [...(entry.aliases ?? [])],
+      headings: extractHeadings(entry.html),
+      body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
+      excerpt: createExcerpt(entry),
+      tags: entry.tags,
+      ...(language === undefined ? {} : { language }),
+      date: getEntryDate(entry.frontmatter),
+    };
+  });
 
   return items.sort((a, b) => a.title.localeCompare(b.title, "ja"));
 }

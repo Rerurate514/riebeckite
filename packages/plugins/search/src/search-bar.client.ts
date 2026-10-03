@@ -1,6 +1,6 @@
 import {
-  normalizeSearchQuery,
   normalizeSearchText,
+  parseSearchQuery,
   type SearchItem,
   type SearchResult,
   searchItems as searchContentItems,
@@ -60,14 +60,14 @@ export function initSearch() {
   };
 
   const renderResults = (query: string) => {
-    const normalizedQuery = normalizeSearchQuery(query);
+    const parsedQuery = parseSearchQuery(query);
+    const normalizedQuery = parsedQuery.text;
     selectedIndex = 0;
 
-    if (normalizedQuery.length === 0) {
+    if (normalizedQuery.length === 0 && parsedQuery.filters.length === 0) {
       currentResults = [];
       results.replaceChildren();
-      status.textContent =
-        "Type a keyword, tag, or path to search published notes.";
+      status.textContent = "Type a keyword or use tag:, lang:, or path:.";
       return;
     }
 
@@ -84,7 +84,7 @@ export function initSearch() {
     updateSelectedResult();
     status.textContent =
       currentResults.length === 0
-        ? "No results found. Try a shorter keyword or tag."
+        ? "No results found. Try a shorter keyword or filter."
         : `${currentResults.length} result${currentResults.length === 1 ? "" : "s"}`;
   };
 

@@ -91,6 +91,7 @@ test("buildSearchItems filters unpublished notes and extracts every field", () =
     slug: "notes/alpha",
     permalink: "/notes/alpha",
     title: "Alpha",
+    aliases: [],
     headings: ["Intro", "Sub & Title"],
     body: "Intro Sub & Title Hello world",
     excerpt: "Desc",
@@ -136,6 +137,69 @@ test("the selective strategy keeps notes without a publish flag", () => {
   assert.deepEqual(
     items.map((entry) => entry.slug),
     ["open"],
+  );
+});
+
+test("buildSearchItems excludes unlisted, draft, and scheduled notes", () => {
+  const publicEntry = entry("public", { publish: true }, "<p>Public</p>");
+  const unlisted = entry("unlisted", { publish: true }, "<p>Unlisted</p>");
+  const draft = entry("draft", { publish: true }, "<p>Draft</p>");
+  const scheduled = entry("scheduled", { publish: true }, "<p>Scheduled</p>");
+  unlisted.publishing = {
+    visibility: "unlisted",
+    routable: true,
+    discoverable: false,
+  };
+  draft.publishing = {
+    visibility: "draft",
+    routable: false,
+    discoverable: false,
+  };
+  scheduled.publishing = {
+    visibility: "scheduled",
+    routable: false,
+    discoverable: false,
+    publishAt: new Date("2030-01-01T00:00:00.000Z"),
+  };
+
+  assert.deepEqual(
+    buildSearchItems({
+      config: explicit,
+      manifest: manifestOf([publicEntry, unlisted, draft, scheduled]),
+    }).map((item) => item.slug),
+    ["public"],
+  );
+});
+
+test("buildSearchItems uses manifest aliases and localization metadata", () => {
+  const localized = entry(
+    "docs/riverpod",
+    { publish: true, title: "Riverpod" },
+    "<p>State management</p>",
+    ["flutter"],
+  );
+  localized.aliases = ["Provider replacement"];
+  localized.publicLocation = {
+    ...localized.publicLocation,
+    metadata: { "l10n.lang": "ja" },
+  };
+
+  assert.deepEqual(
+    buildSearchItems({ config: explicit, manifest: manifestOf([localized]) }),
+    [
+      {
+        slug: "docs/riverpod",
+        permalink: "/docs/riverpod",
+        title: "Riverpod",
+        aliases: ["Provider replacement"],
+        headings: [],
+        body: "State management",
+        excerpt: "State management",
+        tags: ["flutter"],
+        language: "ja",
+        date: null,
+      },
+    ],
   );
 });
 

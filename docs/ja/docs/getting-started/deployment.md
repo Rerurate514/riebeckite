@@ -23,7 +23,7 @@ Content Repository 分離
   → site と content のリポジトリを分ける
 ```
 
-このページでは Local-first と GitHub Actions を中心に扱います。リポジトリ分離が必要な場合は、[Content Repositories](../guides/content-repositories.md) と [Separate Content Repository](../guides/deployment/separate-content-repository.md) を参照してください。
+このページでは Local-first、GitHub Actions、Custom Domain の設定を扱います。リポジトリ分離が必要な場合は、[Content Repositories](../guides/content-repositories.md) と [Separate Content Repository](../guides/deployment/separate-content-repository.md) を参照してください。
 
 ## 1. 手元から初回デプロイする（Local-first）
 
@@ -54,6 +54,38 @@ Content Repository 分離
 npm exec riebeckite build
 npm exec riebeckite deploy
 ```
+
+### Custom Domain を追加する
+
+最初の Worker デプロイが終わったら、site repository で次を実行します。
+
+```bash
+npm exec riebeckite deploy domain
+```
+
+`example.com` のような apex domain、または `docs.example.com` のような subdomain を入力します。この command は hostname だけを受け付け、変更内容を表示して確認を取ってから `wrangler.jsonc` または `wrangler.json` を更新します。追加される Wrangler 設定は次のとおりです。
+
+```jsonc
+{
+  "routes": [
+    { "pattern": "docs.example.com", "custom_domain": true }
+  ]
+}
+```
+
+`Deploy now` を選ぶと、通常の `riebeckite deploy` の流れで公開します。後で公開する場合は `npm exec riebeckite deploy` を実行してください。Cloudflare Workers では、同じ Cloudflare account で active な zone にある Custom Domain の DNS record と TLS certificate を Cloudflare が作成します。Worker が site の origin になるこの構成では、既存 origin の前に置く Worker Route ではなく Custom Domain を使います。
+
+この command は `wrangler.toml` を変更しません。TOML を使っている場合は、次の設定を手動で追加してください。
+
+```toml
+[[routes]]
+pattern = "docs.example.com"
+custom_domain = true
+```
+
+デプロイ前に、domain が同じ account の active な Cloudflare zone にあることを確認してください。既存の CNAME record、別 account の zone、同じ hostname にある Custom Domain ではない Worker Route は、先に解消が必要です。wildcard domain と URL path は Custom Domain に使えません。`workers.dev` URL も残したい場合は、必要に応じて TOML では `workers_dev = true`、JSON では `"workers_dev": true` を明示します。
+
+Cloudflare で hostname が有効になったら、`site.baseUrl` を `https://docs.example.com` または apex domain の URL に変更し、もう一度 build と deploy を実行します。domain の設定は version control に残るため、GitHub Actions でも push ごとに同じ Worker 設定を deploy できます。
 
 ## 2. GitHub Actions で自動デプロイする
 

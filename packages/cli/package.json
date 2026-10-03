@@ -23,6 +23,7 @@
     "@riebeckite/core": "workspace:*",
     "@riebeckite/honox": "workspace:*",
     "esbuild": "catalog:",
+    "jsonc-parser": "^3.3.1",
     "vite": "catalog:"
   },
   "publishConfig": {

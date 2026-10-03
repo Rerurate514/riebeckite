@@ -8,6 +8,7 @@ import { resolveRiebeckiteProject } from "./application_root.js";
 import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
 import { runDeploy } from "./commands/deploy.js";
+import { runDeployDomain } from "./commands/deploy_domain.js";
 import { runDeploySetup } from "./commands/deploy_setup.js";
 import { runDev } from "./commands/dev.js";
 import { runDoctorCommand } from "./commands/doctor.js";
@@ -51,6 +52,10 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       await runDeploySetup(project);
       return;
     }
+    if (command.name === "deploy-domain") {
+      await runDeployDomain(project);
+      return;
+    }
     if (command.name === "doctor") {
       if (!(await runDoctorCommand(project))) process.exitCode = 1;
       return;
@@ -79,6 +84,7 @@ type Command =
   | { name: "build"; full: boolean }
   | { name: "deploy"; dryRun: boolean }
   | { name: "deploy-setup" }
+  | { name: "deploy-domain" }
   | { name: "check" }
   | { name: "doctor" }
   | {
@@ -110,6 +116,9 @@ function parseCommand(arguments_: readonly string[]): Command {
     if (options.length === 1 && options[0] === "setup") {
       return { name: "deploy-setup" };
     }
+    if (options.length === 1 && options[0] === "domain") {
+      return { name: "deploy-domain" };
+    }
   }
   if (name === "inspect") return parseInspectCommand(options);
   if (name === "doctor" && options.length === 0) return { name };
@@ -121,7 +130,7 @@ function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | deploy [--dry-run | setup] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 

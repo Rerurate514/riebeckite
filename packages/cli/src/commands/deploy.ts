@@ -68,11 +68,19 @@ export async function runDeploy(
   }
 }
 
-async function ensureWranglerConfig(root: string): Promise<string> {
+export async function findWranglerConfig(
+  root: string,
+): Promise<string | undefined> {
   for (const fileName of WRANGLER_CONFIG_FILES) {
     const filePath = path.join(root, fileName);
     if (await isFile(filePath)) return filePath;
   }
+  return undefined;
+}
+
+async function ensureWranglerConfig(root: string): Promise<string> {
+  const existing = await findWranglerConfig(root);
+  if (existing !== undefined) return existing;
 
   const configPath = path.join(root, "wrangler.jsonc");
   const content = buildDefaultWranglerConfig(

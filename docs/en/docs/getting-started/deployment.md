@@ -29,7 +29,7 @@ Content Repository split
   → keep site and content repositories separate
 ```
 
-This beginner page covers Local-first and GitHub Actions. If you want the split, see [Content Repositories](../guides/content-repositories.md) and [Separate Content Repository](../guides/deployment/separate-content-repository.md).
+This beginner page covers Local-first, GitHub Actions, and adding a Custom Domain. If you want the split, see [Content Repositories](../guides/content-repositories.md) and [Separate Content Repository](../guides/deployment/separate-content-repository.md).
 
 ## 1. First deploy from your machine (Local-first)
 
@@ -60,6 +60,38 @@ After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to t
 npm exec riebeckite build
 npm exec riebeckite deploy
 ```
+
+### Add a Custom Domain
+
+After the first Worker deployment, run this from the site repository:
+
+```sh
+npm exec riebeckite deploy domain
+```
+
+Enter the apex domain such as `example.com`, or a subdomain such as `docs.example.com`. The command accepts a hostname only, shows the planned change, and asks for confirmation before updating `wrangler.jsonc` or `wrangler.json`. It adds this declarative Wrangler configuration:
+
+```jsonc
+{
+  "routes": [
+    { "pattern": "docs.example.com", "custom_domain": true }
+  ]
+}
+```
+
+Choose **Deploy now** to use the normal `riebeckite deploy` flow. Otherwise, deploy later with `npm exec riebeckite deploy`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
+
+The command leaves `wrangler.toml` unchanged. Add the equivalent configuration manually when you use TOML:
+
+```toml
+[[routes]]
+pattern = "docs.example.com"
+custom_domain = true
+```
+
+Before deploying, ensure the domain is in an active Cloudflare zone in the same account. A hostname with an existing CNAME record, a zone outside the account, or a non-Custom-Domain Worker Route for the hostname must be resolved first. Wildcard domains and URL paths are not Custom Domains. You can keep the `workers.dev` URL available by explicitly setting `workers_dev = true` (TOML) or `"workers_dev": true` (JSON) when your configuration needs it.
+
+After Cloudflare has activated the hostname, change `site.baseUrl` to `https://docs.example.com` (or your apex domain), build, and deploy again. The domain configuration stays in version control, so GitHub Actions deploys the same Worker configuration on every push.
 
 ## 2. Automatic deploy with GitHub Actions
 

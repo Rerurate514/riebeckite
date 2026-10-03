@@ -17,10 +17,42 @@ export class ContentIndexBuilder {
     return index;
   }
 
+  static buildFromAliases(
+    contentEntries: readonly ContentSourceEntry[],
+    aliasesByPath: ReadonlyMap<string, readonly string[]>,
+  ): Map<string, string> {
+    const index = new Map<string, string>();
+
+    for (const contentEntry of contentEntries) {
+      ContentIndexBuilder.indexContentEntryFromAliases(
+        index,
+        contentEntry,
+        aliasesByPath.get(contentEntry.path) ?? [],
+      );
+    }
+
+    return index;
+  }
+
   private async indexContentEntry(
     index: Map<string, string>,
     contentEntry: ContentSourceEntry,
     read: (entry: ContentSourceEntry) => Promise<string | Uint8Array>,
+  ) {
+    const aliases = contentEntry.path.toLowerCase().endsWith(".md")
+      ? extractFrontmatterAliases(readText(await read(contentEntry)))
+      : [];
+    ContentIndexBuilder.indexContentEntryFromAliases(
+      index,
+      contentEntry,
+      aliases,
+    );
+  }
+
+  private static indexContentEntryFromAliases(
+    index: Map<string, string>,
+    contentEntry: ContentSourceEntry,
+    aliases: readonly string[],
   ) {
     const contentPath = contentEntry.path;
     const ext = contentPath.split(".").pop()?.toLowerCase() ?? "";
@@ -37,10 +69,7 @@ export class ContentIndexBuilder {
     }
 
     if (ext === "md") {
-      const markdown = readText(await read(contentEntry));
-      for (const alias of extractFrontmatterAliases(markdown)) {
-        addIndexEntry(index, alias, value);
-      }
+      for (const alias of aliases) addIndexEntry(index, alias, value);
     }
   }
 }

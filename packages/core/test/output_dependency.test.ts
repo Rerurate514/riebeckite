@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { ContentBuildState } from "../src/content/content_build_state.js";
+import {
+  CONTENT_BUILD_STATE_VERSION,
+  type ContentBuildState,
+} from "../src/content/content_build_state.js";
 import type { ContentChangeSet } from "../src/content/content_change_set.js";
 import {
   buildOutputInventory,
@@ -273,11 +276,16 @@ function changes(
   pluginPageOutputs: readonly OutputDescriptor[] = [],
 ) {
   const previousState: ContentBuildState = {
-    version: 5,
+    version: CONTENT_BUILD_STATE_VERSION,
     entries: Object.fromEntries(
       previousManifest.entries.map((item) => [
         `${item.slug}.md`,
-        { fingerprint: item.title, dependencies: [], linkTargets: [] },
+        {
+          fingerprint: item.title,
+          aliases: [],
+          dependencies: [],
+          linkTargets: [],
+        },
       ]),
     ),
     contentIndex: {},

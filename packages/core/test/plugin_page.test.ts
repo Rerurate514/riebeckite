@@ -206,9 +206,11 @@ test("normal page types keep stripped paths and html outputs", async () => {
   });
 
   assert.deepEqual(await manager.getPagePaths(), ["/folder"]);
-  const pageOutputs = (await manager.getOutputChangeSet()).affected.filter(
-    (output) => output.kind === "plugin-page",
-  );
+  const pageOutputs = (
+    await manager.getOutputChangeSet({
+      incremental: false,
+    })
+  ).affected.filter((output) => output.kind === "plugin-page");
   assert.deepEqual(
     pageOutputs.map((output) => output.path),
     ["folder.html"],
@@ -250,9 +252,11 @@ test("directory-index page types resolve and emit trailing-slash index routes", 
     expected,
   );
 
-  const pageOutputs = (await manager.getOutputChangeSet()).affected.filter(
-    (output) => output.kind === "plugin-page",
-  );
+  const pageOutputs = (
+    await manager.getOutputChangeSet({
+      incremental: false,
+    })
+  ).affected.filter((output) => output.kind === "plugin-page");
   assert.deepEqual(
     pageOutputs.map((output) => output.path),
     ["docs/getting-started/index.html"],

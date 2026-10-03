@@ -4,6 +4,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  rename,
   rm,
   writeFile,
 } from "node:fs/promises";
@@ -133,6 +134,22 @@ test("incremental SSG matches a clean cold build", async (t) => {
   assert.equal(editMetrics.affectedOutputCount, 3);
   assert.equal(editMetrics.reusedOutputCount, editMetrics.unchangedOutputCount);
 
+  const frontmatterPath = notePath(inc, 1);
+  await writeFile(
+    frontmatterPath,
+    (await readFile(frontmatterPath, "utf8")).replace(
+      "title: Note 1",
+      "title: Renamed frontmatter note",
+    ),
+  );
+  const frontmatterMetrics = await incrementalBuild(
+    inc,
+    "frontmatter-edit",
+    leanBuildOptions,
+  );
+  await compareAgainstColdBuild("frontmatter-edit");
+  assert.equal(frontmatterMetrics.fullRegenerationRequired, false);
+
   await writeNote(inc, sources.noteCount, false);
   sources = { ...sources, noteCount: sources.noteCount + 1 };
   const addMetrics = await incrementalBuild(inc, "add", leanBuildOptions);
@@ -152,6 +169,13 @@ test("incremental SSG matches a clean cold build", async (t) => {
   await assertMatchesColdBuild(stateAfterEditCold, "delete");
   assert.equal(deleteMetrics.fullRegenerationRequired, false);
   assert.ok(Number(deleteMetrics.removedOutputCount) >= 1);
+
+  const renamedPath = path.join(inc, "vault", "notes", "renamed-note.md");
+  await rename(notePath(inc, 0), renamedPath);
+  const renameMetrics = await incrementalBuild(inc, "rename", leanBuildOptions);
+  await compareAgainstColdBuild("rename");
+  assert.equal(renameMetrics.fullRegenerationRequired, false);
+  assert.ok(Number(renameMetrics.removedOutputCount) >= 1);
 
   await writeFile(path.join(inc, "app", "render.ts"), renderSource("v2"));
   sources = { ...sources, renderTag: "v2" };

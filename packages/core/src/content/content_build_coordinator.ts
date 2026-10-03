@@ -22,6 +22,7 @@ import {
 import type { CachedContentDependency } from "./content_dependency_tracker.js";
 import { fingerprintContentEntries } from "./content_fingerprint.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
+import { extractFrontmatterAliases } from "./content_metadata.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
@@ -32,6 +33,7 @@ export type ContentBuildPreparation = {
     ContentManifestEntry
   >;
   readonly currentEntries: readonly FingerprintedContentEntry[];
+  readonly currentContentAliases: ReadonlyMap<string, readonly string[]>;
   readonly currentContentIndex: Map<string, string>;
   readonly changeSet: ContentChangeSet;
   readonly affectedContent: ReturnType<typeof determineAffectedContent>;
@@ -87,6 +89,7 @@ export class ContentBuildCoordinator {
             entry.path,
             {
               fingerprint,
+              aliases: preparation.currentContentAliases.get(entry.path) ?? [],
               dependencies: collectDependencies(
                 manifestEntry,
                 trackedDependencies.get(toSlug(entry.path)) ??
@@ -140,19 +143,6 @@ export class ContentBuildCoordinator {
           this.dependencies.readEntry(entry),
         ),
     );
-    const currentContentIndex =
-      await this.dependencies.observability.tracer.span(
-        "content.index",
-        {},
-        () =>
-          new ContentIndexBuilder({
-            scan: async () => currentEntries.map(({ entry }) => entry),
-            read: (entry) => this.dependencies.readEntry(entry),
-          }).build(
-            currentEntries.map(({ entry }) => entry),
-            (entry) => this.dependencies.readEntry(entry),
-          ),
-      );
     const previousState =
       incremental === false
         ? undefined
@@ -160,6 +150,21 @@ export class ContentBuildCoordinator {
     const changeSet = previousState
       ? diffContentEntries(previousState, currentEntries)
       : allContentChanged(currentEntries);
+    const currentContentAliases = await this.getContentAliases(
+      currentEntries,
+      previousState,
+      changeSet,
+    );
+    const currentContentIndex =
+      await this.dependencies.observability.tracer.span(
+        "content.index",
+        {},
+        () =>
+          ContentIndexBuilder.buildFromAliases(
+            currentEntries.map(({ entry }) => entry),
+            currentContentAliases,
+          ),
+      );
     const affected =
       !fullContentRegenerationRequired &&
       previousState?.pipelineFingerprint === pipelineFingerprint
@@ -192,11 +197,44 @@ export class ContentBuildCoordinator {
         ]),
       ),
       currentEntries,
+      currentContentAliases,
       currentContentIndex,
       changeSet,
       affectedContent: affected,
     };
   }
+
+  private async getContentAliases(
+    currentEntries: readonly FingerprintedContentEntry[],
+    previousState: ContentBuildState | undefined,
+    changeSet: ContentChangeSet,
+  ): Promise<ReadonlyMap<string, readonly string[]>> {
+    const changedPaths = new Set([...changeSet.added, ...changeSet.changed]);
+    const aliases = new Map<string, readonly string[]>();
+
+    for (const { entry } of currentEntries) {
+      if (!entry.path.toLowerCase().endsWith(".md")) continue;
+      const previousAliases = previousState?.entries[entry.path]?.aliases;
+      if (!changedPaths.has(entry.path) && previousAliases) {
+        aliases.set(entry.path, previousAliases);
+        continue;
+      }
+      aliases.set(
+        entry.path,
+        extractFrontmatterAliases(
+          readText(await this.dependencies.readEntry(entry)),
+        ),
+      );
+    }
+
+    return aliases;
+  }
+}
+
+function readText(content: string | Uint8Array): string {
+  return typeof content === "string"
+    ? content
+    : new TextDecoder().decode(content);
 }
 
 function toSlug(path: string): string {

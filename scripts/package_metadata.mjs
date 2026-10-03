@@ -233,7 +233,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "plugin", "flashcards", "learning"],
   },
   "packages/plugins/folder-pages": {
-    description: "Folder entry pages and generated folder listings for Riebeckite.",
+    description:
+      "Folder entry pages and generated folder listings for Riebeckite.",
     keywords: ["riebeckite", "plugin", "folder", "navigation"],
   },
   "packages/plugins/gallery": {

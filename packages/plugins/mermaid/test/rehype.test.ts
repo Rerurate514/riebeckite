@@ -70,7 +70,7 @@ test("build-rendered diagrams keep static svg and omit client source data", asyn
       (child) =>
         child.type === "element" &&
         child.tagName === "div" &&
-        child.children?.some(
+        (child as ElementNode).children?.some(
           (grandchild) =>
             grandchild.type === "raw" &&
             (grandchild as { value?: string }).value?.includes("<svg>"),

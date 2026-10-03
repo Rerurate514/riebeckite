@@ -404,8 +404,8 @@ test("Contract 4: documented npm exec commands properly forward flags to Riebeck
       encoding: "utf8",
     });
     assert.ok(
-      checkOutput.includes("valid"),
-      "check should report configuration valid",
+      checkOutput.includes("No problems found"),
+      "check should report no configuration problems",
     );
   });
 });

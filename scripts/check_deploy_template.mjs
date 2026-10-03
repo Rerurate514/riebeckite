@@ -192,11 +192,16 @@ if (errors.length === 0) {
     "wrangler.jsonc must not set main (static-assets deployment)",
   );
 
-  const templateKeys = Object.keys(config).sort();
-  const referenceKeys = Object.keys(reference).sort();
+  const siteSpecificKeys = new Set(["routes"]);
+  const templateKeys = Object.keys(config)
+    .filter((key) => !siteSpecificKeys.has(key))
+    .sort();
+  const referenceKeys = Object.keys(reference)
+    .filter((key) => !siteSpecificKeys.has(key))
+    .sort();
   expect(
     JSON.stringify(templateKeys) === JSON.stringify(referenceKeys),
-    `wrangler.jsonc keys must match apps/web/wrangler.jsonc (${JSON.stringify(
+    `wrangler.jsonc keys must match apps/web/wrangler.jsonc, ignoring site-specific keys (${JSON.stringify(
       referenceKeys,
     )}), received ${JSON.stringify(templateKeys)}`,
   );

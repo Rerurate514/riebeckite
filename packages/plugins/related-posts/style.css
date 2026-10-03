@@ -44,8 +44,3 @@
 .rb-related-posts__link:focus-visible {
   text-decoration-color: var(--rb-related-posts-muted);
 }
-
-html[data-theme="dark"] .rb-related-posts,
-html.dark .rb-related-posts {
-  --rb-related-posts-ink: var(--rb-color-paper, #ffffff);
-}

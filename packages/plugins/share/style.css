@@ -72,8 +72,3 @@
 .rr-share__status:empty {
   display: none;
 }
-
-html[data-theme="dark"] .rr-share,
-html.dark .rr-share {
-  --rr-share-ink: var(--rb-color-paper, #ffffff);
-}

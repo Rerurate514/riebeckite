@@ -184,9 +184,3 @@
   background: var(--rb-dataview-surface);
   font-size: 0.875rem;
 }
-
-html[data-theme="dark"] .rb-dataview,
-html.dark .rb-dataview {
-  --rb-dataview-ink: var(--rb-color-paper, #ffffff);
-  --rb-dataview-paper: var(--rb-color-ink, #000000);
-}

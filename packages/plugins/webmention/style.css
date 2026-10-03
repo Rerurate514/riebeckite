@@ -59,8 +59,3 @@
   font-size: 0.9375rem;
   line-height: 1.5;
 }
-
-html[data-theme="dark"] .rr-webmention,
-html.dark .rr-webmention {
-  --rr-webmention-ink: var(--rb-color-paper, #f5f2ec);
-}

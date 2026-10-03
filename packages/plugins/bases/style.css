@@ -137,9 +137,3 @@
   background: var(--rb-bases-surface);
   font-size: 0.875rem;
 }
-
-html[data-theme="dark"] .rb-bases,
-html.dark .rb-bases {
-  --rb-bases-ink: var(--rb-color-paper, #ffffff);
-  --rb-bases-paper: var(--rb-color-ink, #000000);
-}

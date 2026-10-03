@@ -121,9 +121,3 @@
 .rb-properties--unrenderable {
   background: var(--rb-properties-surface);
 }
-
-html[data-theme="dark"] .rb-properties,
-html.dark .rb-properties {
-  --rb-properties-ink: var(--rb-color-paper, #ffffff);
-  --rb-properties-paper: var(--rb-color-ink, #000000);
-}

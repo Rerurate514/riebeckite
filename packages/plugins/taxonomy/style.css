@@ -99,9 +99,3 @@
   border-color: var(--rr-taxonomy-accent);
   color: var(--rr-taxonomy-accent);
 }
-
-html[data-theme="dark"] .rr-taxonomy,
-html.dark .rr-taxonomy {
-  --rr-taxonomy-ink: var(--rb-color-paper, #ffffff);
-  --rr-taxonomy-muted: var(--rb-color-muted, #a8a29a);
-}

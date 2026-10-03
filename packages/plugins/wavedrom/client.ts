@@ -89,10 +89,14 @@ async function loadSkin(
   if (!SKINS.includes(skin) || skin === "default") return api.waveSkin;
 
   try {
-    const mod = (await import(
-      skin === "narrow" ? "wavedrom/skins/narrow" : "wavedrom/skins/lowkey"
-    )) as Record<string, unknown> & { default?: Record<string, unknown> };
-    return mod[skin] ?? mod.default?.[skin] ?? api.waveSkin;
+    const mod = (
+      skin === "narrow"
+        ? await import("wavedrom/skins/narrow")
+        : await import("wavedrom/skins/lowkey")
+    ) as Record<string, unknown> & {
+      default?: Record<string, unknown>;
+    };
+    return mod.default ?? mod;
   } catch {
     return api.waveSkin;
   }

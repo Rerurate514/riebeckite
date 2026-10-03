@@ -1,5 +1,6 @@
 .article-backlinks {
   margin-top: 4rem;
+  margin-bottom: 4rem;
   padding-top: 1.5rem;
   border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
 }

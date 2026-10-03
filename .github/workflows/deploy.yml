@@ -1,0 +1,66 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: riebeckite-deploy
+  cancel-in-progress: true
+
+env:
+  PNPM_VERSION: 11.5.3
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore Riebeckite build state
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.riebeckite/cache
+            apps/web/.riebeckite/build/content-state.json
+          key: riebeckite-build-v1-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            riebeckite-build-v1-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            riebeckite-content-v3-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Build the packages
+        run: pnpm build:packages
+
+      - name: Validate configuration and plugins
+        run: pnpm --filter @riebeckite/web exec riebeckite check
+
+      - name: Build the documentation site
+        run: pnpm --filter @riebeckite/web build
+
+      - name: Deploy the built assets
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/web
+          packageManager: pnpm
+          command: deploy

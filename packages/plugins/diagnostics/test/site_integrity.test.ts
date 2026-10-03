@@ -49,6 +49,19 @@ test("site integrity ignores external urls, fragments, query strings, and plugin
   assert.deepEqual(checkSiteIntegrity(manifest), []);
 });
 
+test("site integrity flags a directory-index plugin page sharing a content route", () => {
+  const manifest = manifestOf([
+    entry("docs/getting-started", "/docs/getting-started"),
+  ]);
+  manifest.pagePaths = ["/docs/getting-started/"];
+
+  const codes = checkSiteIntegrity(manifest).map(
+    (diagnostic) => diagnostic.code,
+  );
+
+  assert(codes.includes("content-integrity:duplicate-public-location"));
+});
+
 function entry(
   slug: string,
   permalink: string,

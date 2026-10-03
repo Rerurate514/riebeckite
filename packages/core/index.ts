@@ -91,6 +91,14 @@ export {
   isIgnoredContentPath,
 } from "./src/content/file_system_content_source.js";
 export type {
+  FolderEntryCandidate,
+  FolderEntryKind,
+  FolderEntryResolution,
+  FolderEntryScope,
+  ResolveFolderEntryOptions,
+} from "./src/content/folder_entry.js";
+export { resolveFolderEntry } from "./src/content/folder_entry.js";
+export type {
   ForceGraphLayoutOptions,
   GraphEdge,
   GraphLayoutNode,

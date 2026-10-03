@@ -25,6 +25,8 @@ import {
   writeNote,
 } from "./support/ssg_site.js";
 
+const leanBuildOptions = { adapter: false } as const;
+
 test("incremental SSG matches a clean cold build", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "incremental-ssg-test-"));
@@ -39,7 +41,7 @@ test("incremental SSG matches a clean cold build", async (t) => {
   };
   await createSite(inc, sources);
 
-  const coldMetrics = await buildSite(inc, "cold");
+  const coldMetrics = await buildSite(inc, "cold", leanBuildOptions);
   const coldSnapshot = await snapshotTree(distPath(inc));
   assert.equal(coldMetrics.fullRegenerationRequired, true);
   for (const required of [
@@ -71,7 +73,7 @@ test("incremental SSG matches a clean cold build", async (t) => {
     force: true,
   });
   await rm(distPath(inc), { recursive: true, force: true });
-  await buildSite(inc, "cold-again");
+  await buildSite(inc, "cold-again", leanBuildOptions);
   const coldAgainSnapshot = await snapshotTree(distPath(inc));
   assert.deepEqual(
     diffSnapshotKeys(coldSnapshot, coldAgainSnapshot),
@@ -79,7 +81,9 @@ test("incremental SSG matches a clean cold build", async (t) => {
     "two clean cold builds must be byte-identical",
   );
 
-  async function compareAgainstColdBuild(label: string): Promise<void> {
+  async function compareAgainstColdBuild(
+    label: string,
+  ): Promise<Record<string, string>> {
     const incremental = await snapshotTree(distPath(inc));
     await rm(path.join(inc, ".riebeckite"), { recursive: true, force: true });
     await rm(path.join(inc, "vault", ".riebeckite"), {
@@ -87,17 +91,30 @@ test("incremental SSG matches a clean cold build", async (t) => {
       force: true,
     });
     await rm(distPath(inc), { recursive: true, force: true });
-    await buildSite(inc, `cold-after-${label}`);
+    await buildSite(inc, `cold-after-${label}`, leanBuildOptions);
     const rebuilt = await snapshotTree(distPath(inc));
     assert.deepEqual(
       diffSnapshotKeys(incremental, rebuilt),
       [],
       `${label}: incremental dist must equal a clean cold dist`,
     );
+    return rebuilt;
+  }
+
+  async function assertMatchesColdBuild(
+    reference: Record<string, string>,
+    label: string,
+  ): Promise<void> {
+    const incremental = await snapshotTree(distPath(inc));
+    assert.deepEqual(
+      diffSnapshotKeys(incremental, reference),
+      [],
+      `${label}: incremental dist must equal a clean cold dist`,
+    );
   }
 
   await rm(distPath(inc), { recursive: true, force: true });
-  const noChangeMetrics = await buildSite(inc, "no-change");
+  const noChangeMetrics = await buildSite(inc, "no-change", leanBuildOptions);
   assert.deepEqual(await snapshotTree(distPath(inc)), coldSnapshot);
   assert.equal(noChangeMetrics.fullRegenerationRequired, false);
   assert.equal(noChangeMetrics.affectedOutputCount, 0);
@@ -110,15 +127,15 @@ test("incremental SSG matches a clean cold build", async (t) => {
 
   await appendFile(notePath(inc, 0), "\nEdited note 0.\n", "utf8");
   sources = { ...sources, editedNotes: [0] };
-  const editMetrics = await incrementalBuild(inc, "edit");
-  await compareAgainstColdBuild("edit");
+  const editMetrics = await incrementalBuild(inc, "edit", leanBuildOptions);
+  const stateAfterEditCold = await compareAgainstColdBuild("edit");
   assert.equal(editMetrics.fullRegenerationRequired, false);
   assert.equal(editMetrics.affectedOutputCount, 3);
   assert.equal(editMetrics.reusedOutputCount, editMetrics.unchangedOutputCount);
 
   await writeNote(inc, sources.noteCount, false);
   sources = { ...sources, noteCount: sources.noteCount + 1 };
-  const addMetrics = await incrementalBuild(inc, "add");
+  const addMetrics = await incrementalBuild(inc, "add", leanBuildOptions);
   await compareAgainstColdBuild("add");
   assert.equal(addMetrics.fullRegenerationRequired, false);
   assert.equal(addMetrics.affectedOutputCount, 3);
@@ -131,14 +148,18 @@ test("incremental SSG matches a clean cold build", async (t) => {
       (index) => index < sources.noteCount - 1,
     ),
   };
-  const deleteMetrics = await incrementalBuild(inc, "delete");
-  await compareAgainstColdBuild("delete");
+  const deleteMetrics = await incrementalBuild(inc, "delete", leanBuildOptions);
+  await assertMatchesColdBuild(stateAfterEditCold, "delete");
   assert.equal(deleteMetrics.fullRegenerationRequired, false);
   assert.ok(Number(deleteMetrics.removedOutputCount) >= 1);
 
   await writeFile(path.join(inc, "app", "render.ts"), renderSource("v2"));
   sources = { ...sources, renderTag: "v2" };
-  const appMetrics = await incrementalBuild(inc, "app-change");
+  const appMetrics = await incrementalBuild(
+    inc,
+    "app-change",
+    leanBuildOptions,
+  );
   await compareAgainstColdBuild("app-change");
   assert.equal(appMetrics.fullRegenerationRequired, true);
 
@@ -147,25 +168,38 @@ test("incremental SSG matches a clean cold build", async (t) => {
     configSource(inc, { ...sources, title: "Changed" }),
   );
   sources = { ...sources, title: "Changed" };
-  const configMetrics = await incrementalBuild(inc, "config-change");
-  await compareAgainstColdBuild("config-change");
+  const configMetrics = await incrementalBuild(
+    inc,
+    "config-change",
+    leanBuildOptions,
+  );
+  const stateAfterConfigChangeCold =
+    await compareAgainstColdBuild("config-change");
   assert.equal(configMetrics.fullRegenerationRequired, true);
 
   await rm(cachePath(inc), { force: true });
-  const missingMetrics = await incrementalBuild(inc, "missing-cache");
-  await compareAgainstColdBuild("missing-cache");
+  const missingMetrics = await incrementalBuild(
+    inc,
+    "missing-cache",
+    leanBuildOptions,
+  );
+  await assertMatchesColdBuild(stateAfterConfigChangeCold, "missing-cache");
   assert.equal(missingMetrics.fullRegenerationRequired, true);
 
   await writeFile(cachePath(inc), "{ not valid json", "utf8");
-  const malformedMetrics = await incrementalBuild(inc, "malformed-cache");
-  await compareAgainstColdBuild("malformed-cache");
+  const malformedMetrics = await incrementalBuild(
+    inc,
+    "malformed-cache",
+    leanBuildOptions,
+  );
+  await assertMatchesColdBuild(stateAfterConfigChangeCold, "malformed-cache");
   assert.equal(malformedMetrics.fullRegenerationRequired, true);
 
   await writeNote(inc, sources.noteCount, false);
   sources = { ...sources, noteCount: sources.noteCount + 1 };
-  await buildSite(inc, "stale-prep");
-  await rm(notePath(inc, sources.noteCount - 1));
+  await buildSite(inc, "stale-prep", leanBuildOptions);
   const removedNoteIndex = sources.noteCount - 1;
+  await rm(notePath(inc, removedNoteIndex));
   sources = {
     ...sources,
     noteCount: sources.noteCount - 1,
@@ -173,11 +207,19 @@ test("incremental SSG matches a clean cold build", async (t) => {
       (index) => index < removedNoteIndex,
     ),
   };
-  const staleMetrics = await buildSite(inc, "stale-delete");
+  await writeFile(path.join(distPath(inc), "stray.txt"), "keep", "utf8");
+  const staleMetrics = await buildSite(inc, "stale-delete", {
+    adapter: false,
+    emptyOutDir: false,
+  });
   const staleSnapshot = await snapshotTree(distPath(inc));
   assert.ok(
     !Object.hasOwn(staleSnapshot, `notes/note-${removedNoteIndex}.html`),
     "incremental build must delete removed outputs from a populated dist",
+  );
+  assert.ok(
+    Object.hasOwn(staleSnapshot, "stray.txt"),
+    "a non-emptied dist must retain files the build does not own",
   );
   assert.ok(Number(staleMetrics.removedOutputCount) >= 1);
 

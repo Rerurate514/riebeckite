@@ -344,6 +344,7 @@ export async function createSite(
 export async function buildSite(
   siteRoot: string,
   label: string,
+  options: { adapter?: boolean; emptyOutDir?: boolean } = {},
 ): Promise<Metrics> {
   const metricsDirectory = path.join(siteRoot, ".riebeckite", "metrics");
   await mkdir(metricsDirectory, { recursive: true });
@@ -359,10 +360,15 @@ export async function buildSite(
           islandComponents: { reactApiImportSource: "hono/jsx" },
         }),
         ...riebeckiteVite(),
-        viteBuild(),
+        ...(options.adapter === false ? [] : [viteBuild()]),
       ],
       logLevel: "silent",
-      build: { minify: false },
+      build: {
+        minify: false,
+        ...(options.emptyOutDir === undefined
+          ? {}
+          : { emptyOutDir: options.emptyOutDir }),
+      },
     }),
   );
   return JSON.parse(await readFile(metricsFile, "utf8")) as Metrics;
@@ -379,9 +385,10 @@ export function diffSnapshotKeys(
 export async function incrementalBuild(
   siteRoot: string,
   label: string,
+  options: { adapter?: boolean; emptyOutDir?: boolean } = {},
 ): Promise<Metrics> {
   await rm(distPath(siteRoot), { recursive: true, force: true });
-  return buildSite(siteRoot, label);
+  return buildSite(siteRoot, label, options);
 }
 
 export async function snapshotTree(

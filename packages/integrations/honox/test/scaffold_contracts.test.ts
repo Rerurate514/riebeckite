@@ -144,6 +144,22 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
       await fileExists(targetDir, "dist/ja/index.html"),
       "dist/ja/index.html must exist (localized content)",
     );
+
+    // Verify preset-enabled plugin UI is emitted into the built HTML
+    const guideHtml = await readFile(targetDir, "dist/guide.html");
+    assert.ok(guideHtml, "dist/guide.html must exist");
+    assert.ok(
+      guideHtml?.includes("rr-search"),
+      "generated site must render the search plugin UI",
+    );
+    assert.ok(
+      guideHtml?.includes("rr-table-of-contents"),
+      "generated site must render the table of contents",
+    );
+    assert.ok(
+      guideHtml?.includes("rr-backlinks"),
+      "generated site must render backlinks on linked pages",
+    );
   });
 });
 

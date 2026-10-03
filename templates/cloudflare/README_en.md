@@ -110,10 +110,11 @@ locally.
 
 1. Checks out the repository.
 2. Installs dependencies with `npm ci`.
-3. Restores `.riebeckite/cache` with `actions/cache`.
+3. Restores `.riebeckite/cache` and
+   `.riebeckite/build/content-state.json` with `actions/cache`.
 4. Runs `npm exec riebeckite check`, the read-only configuration and plugin validation.
 5. Runs `npm exec riebeckite build` to generate `dist/`.
-6. Saves the updated cache and deploys with `cloudflare/wrangler-action`, using the repository secrets.
+6. Saves a new cache generation and deploys with `cloudflare/wrangler-action`, using the repository secrets.
 
 ## Notes
 

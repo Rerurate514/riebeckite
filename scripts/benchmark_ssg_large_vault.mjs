@@ -5,6 +5,7 @@ import path from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
+import { gzipSync } from "node:zlib";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const execFileAsync = promisify(execFile);
@@ -52,6 +53,7 @@ const scenarios = new Set(
   parseList(process.env.RIEBECKITE_BENCH_SCENARIOS ?? ""),
 );
 const repeatCount = Number(process.env.RIEBECKITE_BENCH_REPEATS ?? "3");
+const cacheStateMode = process.env.RIEBECKITE_BENCH_CACHE_STATE ?? "all";
 
 if (process.env.RIEBECKITE_BENCH_BUILD_ONCE) {
   const input = JSON.parse(process.env.RIEBECKITE_BENCH_BUILD_ONCE);
@@ -75,10 +77,12 @@ for (const size of sizes) {
     }
     if (shouldRun("no-change")) {
       await measure(siteRoot, "no-change baseline");
+      await applyCacheStateMode(siteRoot);
       samples.push(await measure(siteRoot, "no-change"));
     }
     if (shouldRun("single-edit")) {
       await measure(siteRoot, "single-edit baseline");
+      await applyCacheStateMode(siteRoot);
       await fs.appendFile(
         path.join(siteRoot, "vault", notePath(size - 1)),
         "\nIndependent edit.\n",
@@ -93,9 +97,34 @@ for (const size of sizes) {
     );
     if (scenarioSamples.length > 0)
       console.log(
-        JSON.stringify({ size, ...summarize(scenario, scenarioSamples) }),
+        JSON.stringify({
+          size,
+          cacheState: cacheStateMode,
+          ...summarize(scenario, scenarioSamples),
+        }),
       );
   }
+}
+
+async function applyCacheStateMode(siteRoot) {
+  if (cacheStateMode === "all") return;
+  if (cacheStateMode === "pcc" || cacheStateMode === "pcc+state") {
+    await fs.rm(path.join(siteRoot, ".riebeckite", "ssg-output-cache.json"), {
+      force: true,
+    });
+  }
+  if (cacheStateMode === "pcc") {
+    for (const statePath of contentStatePaths(siteRoot)) {
+      await fs.rm(statePath, { force: true });
+    }
+  }
+}
+
+function contentStatePaths(siteRoot) {
+  return [
+    path.join(siteRoot, ".riebeckite", "build", "content-state.json"),
+    path.join(siteRoot, "vault", ".riebeckite", "content-state.json"),
+  ];
 }
 
 function shouldRun(name) {
@@ -180,6 +209,7 @@ async function runBuild(siteRoot, scenario) {
   const wallClockMs = Math.round(performance.now() - start);
   const ssgMetrics = JSON.parse(await fs.readFile(metricsFile, "utf8"));
   const traceMetrics = await readTraceMetrics(traceFile);
+  const persistentState = await measurePersistentState(siteRoot);
   return {
     scenario,
     wallClockMs,
@@ -189,7 +219,58 @@ async function runBuild(siteRoot, scenario) {
     ),
     ...ssgMetrics,
     ...traceMetrics,
+    ...persistentState,
   };
+}
+
+async function measurePersistentState(siteRoot) {
+  const entries = [
+    ["contentState", contentStatePaths(siteRoot)],
+    [
+      "outputCache",
+      [path.join(siteRoot, ".riebeckite", "ssg-output-cache.json")],
+    ],
+  ];
+  const result = {};
+  for (const [name, candidates] of entries) {
+    let bytes = null;
+    for (const candidate of candidates) {
+      try {
+        const content = await fs.readFile(candidate);
+        bytes = content.length;
+        const start = performance.now();
+        const compressed = gzipSync(content);
+        result[`${name}CompressionMs`] = round1(performance.now() - start);
+        result[`${name}GzipBytes`] = compressed.length;
+        break;
+      } catch (error) {
+        if (error && error.code === "ENOENT") continue;
+        throw error;
+      }
+    }
+    result[`${name}Bytes`] = bytes;
+  }
+  result.cacheDirectoryBytes = await directoryBytes(
+    path.join(siteRoot, ".riebeckite", "cache"),
+  );
+  return result;
+}
+
+async function directoryBytes(directory) {
+  const entries = await fs
+    .readdir(directory, { withFileTypes: true })
+    .catch(() => []);
+  let total = 0;
+  for (const entry of entries) {
+    const full = path.join(directory, entry.name);
+    if (entry.isDirectory()) total += await directoryBytes(full);
+    else if (entry.isFile()) total += (await fs.stat(full)).size;
+  }
+  return total;
+}
+
+function round1(value) {
+  return Math.round(value * 10) / 10;
 }
 
 async function readTraceMetrics(traceFile) {

@@ -3,11 +3,18 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
+import { deploymentTemplateFiles } from "../src/scaffold/deployment.js";
 import {
   ScaffoldSiteError,
   scaffoldRiebeckiteSite,
 } from "../src/scaffold/index.js";
 import { SCAFFOLD_PRESET_NAMES } from "../src/scaffold/presets.js";
+
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../../..",
+);
 
 test("every scaffold preset inherits the same-repository GitHub Actions workflow", async () => {
   await withTemporaryDirectory(async (directory) => {
@@ -123,6 +130,35 @@ test("scaffold validates external-content deployment options", async () => {
   );
 });
 
+test("the Cloudflare template matches the generated same-repository workflow", async () => {
+  const files = deploymentTemplateFiles({});
+  const workflow = files.find(
+    (file) => file.path === ".github/workflows/deploy.yml",
+  );
+  assert.ok(workflow, "deploymentTemplateFiles must include deploy.yml");
+  const template = await fs.readFile(
+    path.join(
+      repoRoot,
+      "templates",
+      "cloudflare",
+      ".github",
+      "workflows",
+      "deploy.yml",
+    ),
+    "utf8",
+  );
+  const generated = workflow.content;
+  const generatedText =
+    typeof generated === "string"
+      ? generated
+      : new TextDecoder().decode(generated);
+  assert.equal(
+    generatedText.replaceAll("\r\n", "\n"),
+    template.replaceAll("\r\n", "\n"),
+    "templates/cloudflare must match the generated same-repository workflow",
+  );
+});
+
 function assertWorkflowContract(workflow: string): void {
   for (const value of [
     "on:",
@@ -133,15 +169,76 @@ function assertWorkflowContract(workflow: string): void {
     "concurrency:",
     "contents: read",
     "actions/cache@v4",
-    "path: .riebeckite/cache",
-    "riebeckite-content-v3-$" +
-      "{{ runner.os }}-$" +
-      "{{ hashFiles('package-lock.json') }}",
     "npm exec riebeckite check",
     "npm exec riebeckite build",
   ]) {
     assert.ok(workflow.includes(value), `workflow is missing ${value}`);
   }
+  assertBuildStateCacheContract(workflow);
+}
+
+function assertBuildStateCacheContract(workflow: string): void {
+  const cacheStepStart = workflow.indexOf("actions/cache@v4");
+  assert.ok(cacheStepStart >= 0, "workflow must restore a Actions cache");
+  const cacheStepEnd = workflow.indexOf("\n\n", cacheStepStart);
+  const cacheStep = workflow.slice(
+    cacheStepStart,
+    cacheStepEnd === -1 ? undefined : cacheStepEnd,
+  );
+
+  for (const cachePath of [
+    ".riebeckite/cache",
+    ".riebeckite/build/content-state.json",
+  ]) {
+    assert.ok(
+      cacheStep.includes(cachePath),
+      `build-state cache must include ${cachePath}`,
+    );
+  }
+  assert.ok(
+    !cacheStep.includes("dist"),
+    "build-state cache must never include dist/",
+  );
+  assert.ok(
+    !cacheStep.includes("ssg-output-cache.json"),
+    "output cache must stay out of the build-state cache to avoid large transfers",
+  );
+  assert.ok(
+    /key: riebeckite-build-v1-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('package-lock\.json'\) \}\}-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/.test(
+      cacheStep,
+    ),
+    "cache key must be unique per run and attempt while scoping runner OS and lockfile",
+  );
+  assert.ok(
+    cacheStep.includes(
+      "\n          restore-keys: |\n            riebeckite-build-v1-$" +
+        "{{ runner.os }}-$" +
+        "{{ hashFiles('package-lock.json') }}-\n",
+    ),
+    "restore-keys must select the newest compatible generation",
+  );
+  assert.ok(
+    cacheStep.includes(
+      "riebeckite-content-v3-$" +
+        "{{ runner.os }}-$" +
+        "{{ hashFiles('package-lock.json') }}",
+    ),
+    "restore-keys must fall back to the previous persistent content cache",
+  );
+
+  const installIndex = workflow.indexOf("npm ci");
+  const restoreIndex = workflow.indexOf("actions/cache@v4");
+  const checkIndex = workflow.indexOf("npm exec riebeckite check");
+  const buildIndex = workflow.indexOf("npm exec riebeckite build");
+  const deployIndex = workflow.indexOf("cloudflare/wrangler-action");
+  assert.ok(
+    installIndex >= 0 &&
+      installIndex < restoreIndex &&
+      restoreIndex < checkIndex &&
+      checkIndex < buildIndex &&
+      buildIndex < deployIndex,
+    "workflow must install, restore state, check, build, then deploy",
+  );
 }
 
 async function assertFileIsAbsent(filePath: string): Promise<void> {

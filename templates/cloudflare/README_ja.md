@@ -100,10 +100,10 @@ npx wrangler deploy --dry-run
 
 1. リポジトリをチェックアウトする。
 2. `npm ci` で依存をインストールする。
-3. `actions/cache` で `.riebeckite/cache` を復元する。
+3. `actions/cache` で `.riebeckite/cache` と `.riebeckite/build/content-state.json` を復元する。
 4. `npm exec riebeckite check` で設定と Plugin を読み取り専用で検証する。
 5. `npm exec riebeckite build` で `dist/` を生成する。
-6. 更新済み cache を保存し、リポジトリのシークレットを使って `cloudflare/wrangler-action` でデプロイする。
+6. 新しい世代の cache を保存し、リポジトリのシークレットを使って `cloudflare/wrangler-action` でデプロイする。
 
 ## 補足
 

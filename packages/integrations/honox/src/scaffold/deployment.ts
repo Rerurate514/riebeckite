@@ -10,6 +10,12 @@ export type ScaffoldDeploymentOptions = {
 };
 
 const GITHUB_REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
+const BUILD_STATE_CACHE_KEY_PREFIX = "riebeckite-build-v1";
+const LEGACY_BUILD_CACHE_KEY_PREFIX = "riebeckite-content-v3";
+const BUILD_STATE_CACHE_PATHS = [
+  ".riebeckite/cache",
+  ".riebeckite/build/content-state.json",
+] as const;
 
 export function assertGitHubRepository(value: string, option: string): void {
   if (!GITHUB_REPOSITORY_PATTERN.test(value)) {
@@ -92,11 +98,15 @@ ${contentCheckout}
       - name: Install dependencies
         run: npm ci
 
-      - name: Restore Riebeckite build cache
+      - name: Restore Riebeckite build state
         uses: actions/cache@v4
         with:
-          path: .riebeckite/cache
-          key: riebeckite-content-v3-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}
+          path: |
+${BUILD_STATE_CACHE_PATHS.map((entry) => `            ${entry}`).join("\n")}
+          key: ${BUILD_STATE_CACHE_KEY_PREFIX}-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}-\${{ github.run_id }}-\${{ github.run_attempt }}
+          restore-keys: |
+            ${BUILD_STATE_CACHE_KEY_PREFIX}-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}-
+            ${LEGACY_BUILD_CACHE_KEY_PREFIX}-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}
 
       - name: Validate configuration and plugins
         run: npm exec riebeckite check

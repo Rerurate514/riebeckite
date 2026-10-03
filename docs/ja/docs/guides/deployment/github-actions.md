@@ -450,11 +450,11 @@ npm ci
 
 そのため、生成 Workflow を利用する場合は `package-lock.json` を Commit しておく必要があります。
 
-### 5. Riebeckite cache を復元
+### 5. Riebeckite の build state を復元
 
-生成 Workflow は `actions/cache` で `.riebeckite/cache` を復元します。key には runner OS、content cache schema、`package-lock.json` の hash を含めます。`dist/` は cache しません。依存関係を更新した場合に古い cache を使わず、feature branch でも同じ lockfile の default branch cache を再利用できます。
+生成 Workflow は `actions/cache` で `.riebeckite/cache`（Markdown と Plugin の処理 cache）と `.riebeckite/build/content-state.json`（incremental build の state）を復元します。key には runner OS、`package-lock.json` の hash、run ごとの generation を含めます。各 run は run id と attempt で新しい generation として保存し、`restore-keys` が最新の互換 generation を取得するため、既存 entry をその場で上書きしません。lockfile の hash は大まかな互換性の境界にすぎず、実際の再利用は Riebeckite の schema version、app/pipeline/content fingerprint、Plugin の cacheVersion が判断します。output cache（`.riebeckite/ssg-output-cache.json`）は大きく、build 短縮分が転送コストに見合わないため意図的に永続化しません。`dist/` は cache しません。
 
-build 後は更新済み cache が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` を見ると、Actions cache の復元後に Riebeckite 内部で実際に再利用されたかを確認できます。cache を削除する、または workflow の cache step を外すと cold processing になりますが、出力の正しさには影響しません。
+build 後は新しい cache generation が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` を見ると、Actions cache の復元後に Riebeckite 内部で実際に再利用されたかを確認できます。cache を削除する、または workflow の cache step を外すと cold processing になりますが、出力の正しさには影響しません。古い cache generation は GitHub が自動的に破棄するため、cache 一覧は肥大しません。
 
 ### 6. Site を検証
 

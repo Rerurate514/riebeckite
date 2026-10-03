@@ -216,7 +216,7 @@ export function style(preset: ScaffoldPreset): string {
       "",
       ".rb-site-footer {",
       "  width: min(100% - 2rem, 48rem);",
-      "  margin: auto auto 0;",
+      "  margin: 1rem auto 0;",
       "  padding-block: 1rem;",
       "  border-top: 1px solid var(--rb-color-border);",
       "}",

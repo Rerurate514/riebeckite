@@ -80,7 +80,7 @@
   }
 
   .rb-site-footer {
-    margin-top: auto;
+    margin-top: 1rem;
     padding-block: var(--rb-space-4);
     border-top: 1px solid var(--rb-color-border);
   }

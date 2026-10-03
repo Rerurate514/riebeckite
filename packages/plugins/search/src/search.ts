@@ -2,16 +2,18 @@ export type SearchItem = {
   slug: string;
   permalink: string;
   title: string;
+  aliases: string[];
   headings: string[];
   body: string;
   excerpt: string;
   tags: string[];
+  language?: string;
   date: string | null;
 };
 
 export type SearchField = keyof Pick<
   SearchItem,
-  "slug" | "title" | "body" | "tags" | "headings"
+  "slug" | "title" | "aliases" | "body" | "tags" | "headings"
 >;
 
 export type SearchMatch = {
@@ -29,6 +31,7 @@ export type SearchResult<T extends SearchItem = SearchItem> = T & {
 const FIELD_WEIGHTS: Record<SearchField, number> = {
   slug: 64,
   title: 56,
+  aliases: 50,
   tags: 44,
   headings: 32,
   body: 10,
@@ -38,13 +41,43 @@ export function searchItems<T extends SearchItem>(
   items: T[],
   query: string,
 ): SearchResult<T>[] {
-  const normalizedQuery = normalizeSearchQuery(query);
-  if (normalizedQuery.length === 0) return [];
+  const parsed = parseSearchQuery(query);
+  if (parsed.text.length === 0 && parsed.filters.length === 0) return [];
 
   return items
-    .map((item) => scoreSearchItem(item, normalizedQuery))
+    .filter((item) => matchesSearchFilters(item, parsed.filters))
+    .map((item) =>
+      parsed.text.length > 0
+        ? scoreSearchItem(item, parsed.text)
+        : scoreFilteredItem(item),
+    )
     .filter((result): result is SearchResult<T> => result !== null)
     .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, "ja"));
+}
+
+export type SearchFilter =
+  | { field: "tag"; value: string }
+  | { field: "lang"; value: string }
+  | { field: "path"; value: string };
+
+export type ParsedSearchQuery = {
+  raw: string;
+  text: string;
+  filters: SearchFilter[];
+};
+
+export function parseSearchQuery(raw: string): ParsedSearchQuery {
+  const filters: SearchFilter[] = [];
+  const terms: string[] = [];
+
+  for (const token of raw.trim().split(/\s+/)) {
+    if (!token) continue;
+    const filter = parseSearchFilter(token);
+    if (filter) filters.push(filter);
+    else terms.push(token);
+  }
+
+  return { raw, text: normalizeSearchQuery(terms.join(" ")), filters };
 }
 
 export function normalizeSearchQuery(value: string): string {
@@ -67,6 +100,9 @@ function scoreSearchItem<T extends SearchItem>(
   const values: SearchMatch[] = [
     scoreField("title", item.title, normalizedQuery),
     scoreField("slug", item.slug, normalizedQuery),
+    ...item.aliases.map((alias) =>
+      scoreField("aliases", alias, normalizedQuery),
+    ),
     ...item.tags.map((tag) => scoreField("tags", tag, normalizedQuery)),
     ...item.headings.map((heading) =>
       scoreField("headings", heading, normalizedQuery),
@@ -80,6 +116,53 @@ function scoreSearchItem<T extends SearchItem>(
   const score = values.reduce((sum, match) => sum + match.score, 0);
 
   return { ...item, score, match: best };
+}
+
+function scoreFilteredItem<T extends SearchItem>(item: T): SearchResult<T> {
+  return {
+    ...item,
+    score: 0,
+    match: { field: "slug", value: item.slug, score: 0, index: 0 },
+  };
+}
+
+function parseSearchFilter(token: string): SearchFilter | null {
+  const match = token.match(/^(tag|lang|path):(.+)$/i);
+  if (!match?.[1] || !match[2]) return null;
+
+  const value = normalizeSearchQuery(match[2]);
+  if (!value) return null;
+
+  if (match[1].toLowerCase() === "tag") return { field: "tag", value };
+  if (match[1].toLowerCase() === "lang") return { field: "lang", value };
+  return { field: "path", value: normalizeSearchPath(value) };
+}
+
+function matchesSearchFilters(
+  item: SearchItem,
+  filters: readonly SearchFilter[],
+): boolean {
+  return filters.every((filter) => {
+    if (filter.field === "tag") {
+      return item.tags.some(
+        (tag) => normalizeSearchQuery(tag) === filter.value,
+      );
+    }
+    if (filter.field === "lang") {
+      return (
+        item.language !== undefined &&
+        normalizeSearchQuery(item.language) === filter.value
+      );
+    }
+    const path = normalizeSearchPath(item.slug);
+    return path === filter.value || path.startsWith(`${filter.value}/`);
+  });
+}
+
+function normalizeSearchPath(value: string): string {
+  return normalizeSearchQuery(value.replace(/\\/g, "/"))
+    .replace(/^\/+|\/+$/g, "")
+    .replace(/\/{2,}/g, "/");
 }
 
 function scoreField(

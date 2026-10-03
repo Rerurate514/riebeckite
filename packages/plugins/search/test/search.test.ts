@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   normalizeSearchQuery,
   normalizeSearchText,
+  parseSearchQuery,
   type SearchItem,
   searchItems,
 } from "../src/search.ts";
@@ -12,6 +13,7 @@ function item(overrides: Partial<SearchItem> = {}): SearchItem {
     slug: "s",
     permalink: "/s",
     title: "",
+    aliases: [],
     headings: [],
     body: "",
     excerpt: "",
@@ -32,6 +34,25 @@ test("normalizeSearchQuery strips leading hashes after normalization", () => {
   assert.equal(normalizeSearchQuery("#Tag"), "tag");
   assert.equal(normalizeSearchQuery("##タグ"), "たぐ");
   assert.equal(normalizeSearchQuery("#"), "");
+});
+
+test("parseSearchQuery separates supported filters from text", () => {
+  assert.deepEqual(parseSearchQuery("riverpod tag:flutter lang:ja"), {
+    raw: "riverpod tag:flutter lang:ja",
+    text: "riverpod",
+    filters: [
+      { field: "tag", value: "flutter" },
+      { field: "lang", value: "ja" },
+    ],
+  });
+});
+
+test("parseSearchQuery leaves unknown and incomplete filters in the text", () => {
+  assert.deepEqual(parseSearchQuery("type:article tag:"), {
+    raw: "type:article tag:",
+    text: "type:article tag:",
+    filters: [],
+  });
 });
 
 test("searchItems returns nothing for an empty or hash-only query", () => {
@@ -57,6 +78,64 @@ test("an exact field match scores weight times three", () => {
   const slug = searchItems([item({ slug: "guide" })], "guide")[0];
   assert.equal(slug?.score, 192);
   assert.equal(slug?.match.field, "slug");
+
+  const alias = searchItems([item({ aliases: ["Legacy Guide"] })], "legacy")[0];
+  assert.equal(alias?.match.field, "aliases");
+});
+
+test("searchItems applies tag, language, and normalized path filters", () => {
+  const items = [
+    item({
+      slug: "docs/flutter/riverpod",
+      title: "Riverpod",
+      tags: ["flutter"],
+      language: "ja",
+    }),
+    item({
+      slug: "guides/flutter/riverpod",
+      title: "Riverpod English",
+      tags: ["flutter"],
+      language: "en",
+    }),
+  ];
+
+  assert.deepEqual(
+    searchItems(items, "tag:flutter").map((result) => result.slug),
+    ["docs/flutter/riverpod", "guides/flutter/riverpod"],
+  );
+  assert.deepEqual(
+    searchItems(items, "lang:ja").map((result) => result.slug),
+    ["docs/flutter/riverpod"],
+  );
+  assert.deepEqual(
+    searchItems(items, "path:docs\\flutter").map((result) => result.slug),
+    ["docs/flutter/riverpod"],
+  );
+});
+
+test("searchItems combines text and multiple filters with AND semantics", () => {
+  const results = searchItems(
+    [
+      item({
+        slug: "docs/flutter/riverpod",
+        title: "Riverpod",
+        tags: ["flutter"],
+        language: "ja",
+      }),
+      item({
+        slug: "docs/flutter/provider",
+        title: "Provider",
+        tags: ["flutter"],
+        language: "ja",
+      }),
+    ],
+    "riverpod tag:flutter lang:ja path:docs",
+  );
+
+  assert.deepEqual(
+    results.map((result) => result.slug),
+    ["docs/flutter/riverpod"],
+  );
 });
 
 test("a prefix match scores double and an inner match scores single weight", () => {

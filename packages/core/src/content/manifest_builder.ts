@@ -11,6 +11,7 @@ import { createContentGraph } from "./content_graph.js";
 import { extractContentLinks } from "./content_links.js";
 import {
   extractContentTags,
+  extractFrontmatterAliases,
   normalizeFrontmatterTags,
 } from "./content_metadata.js";
 import { resolveContentStableId } from "./content_stable_id.js";
@@ -41,6 +42,7 @@ export class ManifestBuilder {
       permalink: location.permalink,
       publicLocation: location,
       title: getManifestTitle(slug, processed.frontmatter.title),
+      aliases: extractFrontmatterAliases(markdown),
       frontmatter: processed.frontmatter,
       publishing,
       html: processed.html,

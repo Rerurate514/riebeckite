@@ -97,6 +97,7 @@ test("the search-data endpoint returns published items with cache headers", asyn
       slug: "a",
       permalink: "/a",
       title: "A",
+      aliases: [],
       headings: [],
       body: "Hi",
       excerpt: "Hi",

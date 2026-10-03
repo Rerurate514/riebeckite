@@ -51,6 +51,7 @@ export type ContentManifestEntry = {
   permalink: string;
   publicLocation: ContentPublicLocation;
   title: string;
+  aliases?: readonly string[];
   frontmatter: PostFrontmatter;
   publishing: ResolvedPublishingState;
   html: string;

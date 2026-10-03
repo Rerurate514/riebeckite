@@ -231,6 +231,7 @@ test("content IDs stay attached to the canonical entry across redirects", async 
   const manifest = await manager.getManifest();
 
   assert.equal(manifest.bySlug.get("note")?.contentId, "note-7f4e9b");
+  assert.deepEqual(manifest.bySlug.get("note")?.aliases, ["Previous note"]);
   assert.equal(manifest.byPermalink.get("/note")?.contentId, "note-7f4e9b");
   assert.equal(manifest.redirects.get("/old-note")?.slug, "note");
   assert.equal(manifest.byContentId.get("note-7f4e9b")?.slug, "note");

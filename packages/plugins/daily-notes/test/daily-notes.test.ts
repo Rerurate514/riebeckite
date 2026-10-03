@@ -6,7 +6,12 @@ import {
   type ResolvedRiebeckiteConfig,
   resolveConfig,
 } from "@riebeckite/core";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import DailyNotes from "../components/daily-notes.js";
 import { getDailyNotes } from "../src/daily-notes.server.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function makeEntry(
   overrides: Partial<ContentManifestEntry> & { slug: string },
@@ -308,4 +313,24 @@ test("derives the date from frontmatter created and filename, preferring frontma
   assert.equal(dates["Daily/2024-06-01"], "2024-07-01");
   assert.equal(dates["Daily/2024-06-02"], "2024-08-09");
   assert.equal(dates["Daily/2024-06-03"], "2024-06-03");
+});
+
+test("DailyNotes renders English labels and dates", () => {
+  const html = renderToString(
+    DailyNotes({
+      notes: [
+        {
+          date: "2024-01-05",
+          snippet: "A short note",
+          slug: "Daily/2024-01-05",
+          sourceUrl: null,
+          sourceTitle: null,
+        },
+      ],
+    }),
+  );
+
+  assert.ok(html.includes("Recent Daily Notes"), html);
+  assert.ok(html.includes("1/5/2024"), html);
+  assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });

@@ -141,7 +141,7 @@ test("private embed does not inline the private body", async () => {
   const html = await publicHtml();
   assert.doesNotMatch(html, new RegExp(PRIVATE_MARKER));
   assert.doesNotMatch(html, /wikilink-embed/);
-  assert.match(html, /\[\[埋め込み未解決：private\]\]/);
+  assert.match(html, /\[\[Unresolved embed: private\]\]/);
 });
 
 test("private marker never reaches published output", async () => {

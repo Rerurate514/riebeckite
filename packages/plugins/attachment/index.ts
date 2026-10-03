@@ -17,7 +17,7 @@ export function attachment(options: AttachmentOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     processedContentCache: {
-      version: "attachment-v1",
+      version: "attachment-v2",
       dependencyMode: "tracked",
     },
     options,
@@ -64,7 +64,7 @@ async function renderAttachment(
     ${sizeHtml}
   </div>
   <div class="attachment-card__name">${escapeHtml(fileName)}</div>
-  <a class="attachment-card__download" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(context.label || "ダウンロード")}</a>
+  <a class="attachment-card__download" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(context.label || "Download")}</a>
 </aside>`;
 }
 

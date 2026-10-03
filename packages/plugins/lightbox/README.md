@@ -36,6 +36,8 @@ the app calls on page initialization.
 - Adds `rr-lightbox-image` to the image
 - Skips images that have `data-lightbox-ignore="true"`, and images already
   inside an `<a>`, `<button>`, existing trigger, or the dialog
+- Uses `expandLabel` (default `"Expand image"`) for the trigger and dialog
+  accessible labels
 
 ### Client (`initLightbox`)
 
@@ -54,9 +56,11 @@ the app calls on page initialization.
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `selectorClass` | `string` | `"rr-lightbox-trigger"` | Trigger class (build and client) |
+| `expandLabel` | `string` | `"Expand image"` | Accessible label for triggers and the dialog |
+| `closeLabel` | `string` | `"Close"` | Accessible label for the dialog close button |
 | `autoWrapImages` | `boolean` | `true` | Client-only: wrap unhandled images on init |
 
-`LightboxOptions` = `{ selectorClass? }` (build),
+`LightboxOptions` = `{ selectorClass?, expandLabel?, closeLabel? }` (build),
 `LightboxInitOptions` = `LightboxOptions & { autoWrapImages? }` (client).
 
 ## Exports
@@ -65,6 +69,8 @@ the app calls on page initialization.
 - `rehypeLightbox(options?)` — rehype transform
 - `initLightbox(root?, options?)` — client initializer, returns a cleanup
   function
+- `initLightboxFromOptions(options?)` — option-first browser entry the plugin's
+  client script calls; wraps `initLightbox`
 - Types: `LightboxOptions`, `LightboxInitOptions`
 
 ## See also

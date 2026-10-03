@@ -1,9 +1,12 @@
-export function createDialog() {
+export function createDialog(options: {
+  expandLabel: string;
+  closeLabel: string;
+}) {
   const element = document.createElement("div");
   element.className = "rr-lightbox";
   element.setAttribute("role", "dialog");
   element.setAttribute("aria-modal", "true");
-  element.setAttribute("aria-label", "画像の拡大表示");
+  element.setAttribute("aria-label", options.expandLabel);
   element.tabIndex = -1;
   element.setAttribute("hidden", "");
 
@@ -20,7 +23,7 @@ export function createDialog() {
   const closeButton = document.createElement("button");
   closeButton.className = "rr-lightbox__close";
   closeButton.type = "button";
-  closeButton.setAttribute("aria-label", "閉じる");
+  closeButton.setAttribute("aria-label", options.closeLabel);
   closeButton.textContent = "×";
 
   frame.appendChild(image);

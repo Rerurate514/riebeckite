@@ -59,3 +59,10 @@ test("uses a fence title for the code header", async () => {
 
   assert.ok(html.includes('class="rr-code__title">hello.ts</span>'), html);
 });
+
+test("code copy button uses an English accessible label", async () => {
+  const html = await render(fenced("ts", "const hello = 1"));
+
+  assert.ok(html.includes('aria-label="Copy code"'), html);
+  assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
+});

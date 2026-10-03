@@ -1,9 +1,10 @@
 import { getStringProperty, mergeClassName, visitElements } from "./hast.js";
 import type { HastNode, LightboxOptions } from "./types.js";
-import { DEFAULT_TRIGGER_CLASS } from "./types.js";
+import { DEFAULT_EXPAND_LABEL, DEFAULT_TRIGGER_CLASS } from "./types.js";
 
 export function rehypeLightbox(options: LightboxOptions = {}) {
   const triggerClass = options.selectorClass ?? DEFAULT_TRIGGER_CLASS;
+  const expandLabel = options.expandLabel ?? DEFAULT_EXPAND_LABEL;
 
   return (tree: HastNode) => {
     visitElements(tree, (node, parent, index) => {
@@ -29,7 +30,7 @@ export function rehypeLightbox(options: LightboxOptions = {}) {
           href: src,
           dataLightboxSrc: src,
           dataLightboxAlt: alt,
-          ariaLabel: alt ? `画像を拡大表示: ${alt}` : "画像を拡大表示",
+          ariaLabel: alt ? `${expandLabel}: ${alt}` : expandLabel,
         },
         children: [
           {

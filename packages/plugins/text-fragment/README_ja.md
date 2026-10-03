@@ -8,8 +8,8 @@
 
 クライアント専用のプラグインです。ページ表示時に、選択範囲のそばへ小さなポップオーバーを出し、次の二つをコピーできます。
 
-- **リンクをコピー**: 選択したテキストをハイライトする [Text Fragment](https://wicg.github.io/scroll-to-text-fragment/) 付き URL を作ります。
-- **引用をコピー**: ページへのリンク付きで Markdown の引用ブロックを作ります。
+- **Copy link**: 選択したテキストをハイライトする [Text Fragment](https://wicg.github.io/scroll-to-text-fragment/) 付き URL を作ります。
+- **Copy quote**: ページへのリンク付きで Markdown の引用ブロックを作ります。
 
 ## 設定する
 
@@ -23,7 +23,7 @@ export default defineConfig({
 });
 ```
 
-`textFragmentPlugin()` はスタイルと `initTextFragmentShare` を登録します。初期化処理はアプリのページ初期化時に呼ばれます。
+`textFragmentPlugin()` はスタイルと `initTextFragmentShare` を登録します。初期化処理はアプリのページ初期化時に呼ばれます。`textFragmentPlugin({ labels })` で UI ラベルだけを差し替えられます。
 
 ## 挙動
 
@@ -45,12 +45,13 @@ export default defineConfig({
 
 ## 公開 API
 
-- `textFragmentPlugin()` — プラグインファクトリ
-- `initTextFragmentShare()` — ブラウザ初期化関数（`@riebeckite/plugin-text-fragment/client` からも読み込める）
+- `textFragmentPlugin(options?)` — プラグインファクトリ。`options.labels` で UI ラベルを上書きする
+- `initTextFragmentShare(labels?)` — ブラウザ初期化関数（`@riebeckite/plugin-text-fragment/client` からも読み込める）
 - `encodeTextFragment(text)` — テキスト片をパーセントエンコードする
 - `buildTextFragmentUrl(pageUrl, selection, options?)` — ディープリンクを作る。`options` は `{ prefix?, suffix? }`
 - `buildQuoteMarkdown({ url, title, selection })` — 引用ブロックを作る
-- `TextFragmentOptions` — オプションの型
+- `DEFAULT_TEXT_FRAGMENT_LABELS` — 既定の英語 UI ラベル
+- `TextFragmentOptions`、`TextFragmentLabels`、`TextFragmentPluginOptions` — 型
 
 ## 関連資料
 

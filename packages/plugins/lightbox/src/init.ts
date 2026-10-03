@@ -1,13 +1,22 @@
 import { createDialog } from "./dialog.js";
-import { DEFAULT_TRIGGER_CLASS, type LightboxInitOptions } from "./types.js";
+import {
+  DEFAULT_CLOSE_LABEL,
+  DEFAULT_EXPAND_LABEL,
+  DEFAULT_TRIGGER_CLASS,
+  type LightboxInitOptions,
+} from "./types.js";
 
 export function initLightbox(
   root: ParentNode = document,
   options: LightboxInitOptions = {},
 ): () => void {
   const triggerClass = options.selectorClass ?? DEFAULT_TRIGGER_CLASS;
+  const expandLabel = options.expandLabel ?? DEFAULT_EXPAND_LABEL;
+  const closeLabel = options.closeLabel ?? DEFAULT_CLOSE_LABEL;
   const wrappedTriggers =
-    options.autoWrapImages === false ? [] : wrapImages(root, triggerClass);
+    options.autoWrapImages === false
+      ? []
+      : wrapImages(root, triggerClass, expandLabel);
   const triggers = Array.from(
     root.querySelectorAll<HTMLAnchorElement>(`.${triggerClass}`),
   );
@@ -18,7 +27,7 @@ export function initLightbox(
   }
 
   let previouslyFocused: HTMLElement | null = null;
-  const dialog = createDialog();
+  const dialog = createDialog({ expandLabel, closeLabel });
   document.body.appendChild(dialog.element);
 
   const open = (trigger: HTMLAnchorElement) => {
@@ -126,6 +135,7 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
 function wrapImages(
   root: ParentNode,
   triggerClass: string,
+  expandLabel: string,
 ): HTMLAnchorElement[] {
   const images = Array.from(
     root.querySelectorAll<HTMLImageElement>("img[src]"),
@@ -149,7 +159,7 @@ function wrapImages(
     trigger.dataset.lightboxAlt = image.alt;
     trigger.setAttribute(
       "aria-label",
-      image.alt ? `画像を拡大表示: ${image.alt}` : "画像を拡大表示",
+      image.alt ? `${expandLabel}: ${image.alt}` : expandLabel,
     );
 
     image.parentNode?.insertBefore(trigger, image);

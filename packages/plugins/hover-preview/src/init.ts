@@ -11,6 +11,7 @@ type ResolvedClientConfig = {
   className: string;
   includeTitles: boolean;
   delay: number;
+  indexSrc: string;
 };
 
 export function initHoverPreview(): () => void {
@@ -24,15 +25,14 @@ export function initHoverPreview(): () => void {
   );
   if (!payload) return () => {};
 
-  const index = parsePayload(payload.textContent);
-  if (!index) return () => {};
-
   const config: ResolvedClientConfig = {
     selector: normalizeSelector(payload.dataset.selector),
     className: normalizeClassName(payload.dataset.className),
     includeTitles: payload.dataset.includeTitles !== "false",
     delay: normalizeDelay(payload.dataset.delay),
+    indexSrc: normalizeIndexSrc(payload.dataset.indexSrc),
   };
+  if (!config.indexSrc) return () => {};
 
   const anchors = Array.from(
     document.querySelectorAll<HTMLAnchorElement>(config.selector),
@@ -50,6 +50,7 @@ export function initHoverPreview(): () => void {
 
   let showTimer = 0;
   let activeAnchor: HTMLAnchorElement | null = null;
+  let indexPromise: Promise<HoverPreviewIndex | null> | null = null;
 
   const hide = () => {
     window.clearTimeout(showTimer);
@@ -58,15 +59,29 @@ export function initHoverPreview(): () => void {
     popover.hidden = true;
   };
 
+  const loadIndex = () => {
+    indexPromise ??= fetch(config.indexSrc, {
+      headers: { Accept: "application/json" },
+    })
+      .then((response) => (response.ok ? response.text() : null))
+      .then(parsePayload)
+      .catch(() => null);
+    return indexPromise;
+  };
+
   const show = (anchor: HTMLAnchorElement) => {
     window.clearTimeout(showTimer);
     showTimer = 0;
-    const entry = resolveEntry(index, anchor.getAttribute("href"));
-    if (!entry) return;
+    const href = anchor.getAttribute("href");
+    void loadIndex().then((index) => {
+      if (!index || activeAnchor !== anchor) return;
+      const entry = resolveEntry(index, href);
+      if (!entry) return;
 
-    renderPopover(popover, entry, config);
-    popover.hidden = false;
-    positionPopover(popover, anchor);
+      renderPopover(popover, entry, config);
+      popover.hidden = false;
+      positionPopover(popover, anchor);
+    });
     activeAnchor = anchor;
   };
 
@@ -226,4 +241,8 @@ function normalizeClassName(value: string | undefined): string {
 function normalizeDelay(value: string | undefined): number {
   const delay = Number(value ?? DEFAULT_DELAY);
   return Number.isFinite(delay) && delay >= 0 ? delay : DEFAULT_DELAY;
+}
+
+function normalizeIndexSrc(value: string | undefined): string {
+  return value && value.trim() !== "" ? value.trim() : "";
 }

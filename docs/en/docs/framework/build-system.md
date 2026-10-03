@@ -22,6 +22,12 @@ This cache is an optimization, never a correctness dependency. Missing entries, 
 
 For GitHub Actions, cache `.riebeckite/cache`, not `dist/`. The generated Cloudflare workflow does this automatically; see [GitHub Actions](../guides/deployment/github-actions.md).
 
+## Output-level incremental SSG
+
+Persistent per-content cache reuses Markdown and plugin processing. Output-level incremental SSG separately reuses final routes and generated files. After building the current manifest, Core compares its output descriptors with the previous successful state. HonoX renders only affected content and plugin-page routes, restores unchanged generated output from `.riebeckite/ssg-output-cache.json`, and removes outputs no longer owned by the site.
+
+The state and output cache are optimizations. A missing, incompatible, malformed, or incomplete output state, an application/configuration fingerprint change, or an `unknown` output dependency makes HonoX render every output. Delete `.riebeckite/build/content-state.json` and `.riebeckite/ssg-output-cache.json` to force that safe path. `dist/` is not a cache: Vite may recreate it, and unchanged site outputs are re-emitted from the output cache. This is a build optimization only; it does not change Wrangler's Cloudflare Workers deployment protocol.
+
 ## Commands and lifecycle
 
 ```sh

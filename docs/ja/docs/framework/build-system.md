@@ -151,6 +151,12 @@ entry の key には Markdown 本文、解析済み frontmatter、cache schema�
 
 GitHub Actions では `dist/` ではなく `.riebeckite/cache` を cache します。Cloudflare 用の生成 workflow は自動設定するため、[GitHub Actions](../guides/deployment/github-actions.md) を参照してください。
 
+## Output-level Incremental SSG
+
+Persistent Per-Content CacheはMarkdownとPluginの処理結果を再利用します。これとは別に、Output-level Incremental SSGは最終的なrouteと生成fileを再利用します。Coreは現在のmanifestを作ったあと、前回成功時のoutput descriptorと比較します。HonoXは影響を受けたContent routeとPlugin pageだけをrenderし、変化していない生成物は`.riebeckite/ssg-output-cache.json`から復元します。siteが所有しなくなったoutputは削除します。
+
+stateとoutput cacheは最適化であり、正しさの前提ではありません。output stateの欠落、version非互換、破損、必要な情報の不足、application/configuration fingerprintの変更、`unknown` output dependencyのいずれかでは、HonoXはすべてのoutputをrenderします。安全な経路を強制するには`.riebeckite/build/content-state.json`と`.riebeckite/ssg-output-cache.json`を削除します。`dist/`はcacheではありません。Viteが作り直す場合でも、変化していないsite outputはoutput cacheから再emitされます。これはbuildの最適化であり、WranglerによるCloudflare Workersのdeployment protocolは変更しません。
+
 ## Plugin Cache
 
 Plugin Cache は incremental state とは別の仕組みです。

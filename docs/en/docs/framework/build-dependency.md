@@ -71,6 +71,8 @@ Declare them in the following places.
 
 Use `content`, `tag`, or `folder` when the scope is known, and `global` for a manifest-wide collection transform. Use `unknown` only when the input cannot be represented.
 
+`none`, `tracked`, and `unsafe` describe processed-content reuse, not output reuse. A plugin can safely use `none` while declaring a `global` output dependency, or use `tracked` while a generated output has a narrow `content` dependency. An incorrect output declaration can preserve a stale file, so use `unknown` whenever the output scope cannot be stated completely. `unknown` deliberately trades incremental SSG for a full output render.
+
 ## Rules for plugin authors
 
 - Declare `processedContentCache` on every content-affecting plugin.

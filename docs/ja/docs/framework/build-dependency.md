@@ -70,6 +70,8 @@ Output DependencyはContent Dependencyとは別の契約です。種類ごとに
 
 対象が特定できる場合は`content`、`tag`、`folder`を使ってください。manifest全体に依存する集合変換は`global`です。表現できない入力だけに`unknown`を使います。
 
+`none`、`tracked`、`unsafe`は処理済みContentの再利用を示す契約であり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
+
 ## Plugin作者向けのルール
 
 - Contentを変化させるPluginはすべて`processedContentCache`を宣言します。

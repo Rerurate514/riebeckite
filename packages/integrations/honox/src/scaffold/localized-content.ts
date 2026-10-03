@@ -800,7 +800,7 @@ const THEMES_COPY: ThemesCopy = {
     es: "Este starter usa `@riebeckite/theme-default`. Para probar otro tema:",
     de: "Dieser Starter verwendet `@riebeckite/theme-default`. Um ein anderes Theme zu testen:",
     fr: "Ce starter utilise `@riebeckite/theme-default`. Pour essayer un autre thème :",
-    ko: "이 스타터는 `@riebeckite/theme-default`를 사용합니다. 다른 테마를 시도하려면：",
+    ko: "이 스타터는 `@riebeckite/theme-default`를 사용합니다. 다른 테마를 시도하려면:",
   },
   switchStep1: {
     en: "Install the package:",
@@ -809,7 +809,7 @@ const THEMES_COPY: ThemesCopy = {
     es: "Instala el paquete:",
     de: "Installiere das Paket:",
     fr: "Installez le paquet :",
-    ko: "패키지를 설치합니다：",
+    ko: "패키지를 설치합니다:",
   },
   switchStep2: {
     en: "Point `theme` at the new factory in `riebeckite.config.ts`:",
@@ -818,7 +818,7 @@ const THEMES_COPY: ThemesCopy = {
     es: "Apunta `theme` al nuevo factory en `riebeckite.config.ts`:",
     de: "Setze `theme` in `riebeckite.config.ts` auf den neuen Factory:",
     fr: "Pointez `theme` vers le nouveau factory dans `riebeckite.config.ts` :",
-    ko: "`riebeckite.config.ts`의 `theme`를 새 팩토리로 변경합니다：",
+    ko: "`riebeckite.config.ts`의 `theme`를 새 팩토리로 변경합니다:",
   },
   tableHeading: {
     en: "The bundled themes",
@@ -1073,7 +1073,7 @@ const PLUGINS_COPY: PluginsCopy = {
     es: "Instala el paquete:",
     de: "Installiere das Paket:",
     fr: "Installez le paquet :",
-    ko: "패키지를 설치합니다：",
+    ko: "패키지를 설치합니다:",
   },
   installStep2: {
     en: "Register it in the `plugins` array of `riebeckite.config.ts`:",
@@ -1082,7 +1082,7 @@ const PLUGINS_COPY: PluginsCopy = {
     es: "Regístralo en el array `plugins` de `riebeckite.config.ts`:",
     de: "Registriere es im `plugins`-Array der `riebeckite.config.ts`:",
     fr: "Enregistrez-le dans le tableau `plugins` de `riebeckite.config.ts` :",
-    ko: "`riebeckite.config.ts`의 `plugins` 배열에 등록합니다：",
+    ko: "`riebeckite.config.ts`의 `plugins` 배열에 등록합니다:",
   },
   fullList: {
     en: "The complete plugin index lives in the repository:",
@@ -1091,7 +1091,7 @@ const PLUGINS_COPY: PluginsCopy = {
     es: "El índice completo de plugins vive en el repositorio:",
     de: "Der vollständige Plugin-Index liegt im Repository:",
     fr: "L'index complet des plugins se trouve dans le dépôt :",
-    ko: "전체 플러그인 목록은 저장소에 있습니다：",
+    ko: "전체 플러그인 목록은 저장소에 있습니다:",
   },
   fullListLabel: {
     en: "Riebeckite plugins on GitHub",

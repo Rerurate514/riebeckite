@@ -215,6 +215,37 @@ if (errors.length === 0) {
   ]) {
     expect(workflow.includes(needle), `deploy.yml must reference ${needle}`);
   }
+  for (const cachePath of [
+    ".riebeckite/cache",
+    ".riebeckite/build/content-state.json",
+  ]) {
+    expect(
+      workflow.includes(cachePath),
+      `deploy.yml build-state cache must include ${cachePath}`,
+    );
+  }
+  expect(
+    !workflow.includes("ssg-output-cache.json"),
+    "deploy.yml must keep the output cache out of transfer-heavy caches",
+  );
+  expect(
+    workflow.includes("riebeckite-build-v1-"),
+    "deploy.yml cache key must use the versioned build-state prefix",
+  );
+  expect(
+    workflow.includes("github.run_id") &&
+      workflow.includes("github.run_attempt"),
+    "deploy.yml cache key must be unique per run and attempt",
+  );
+  expect(
+    workflow.includes("restore-keys:"),
+    "deploy.yml build-state cache must declare restore-keys",
+  );
+  expect(
+    workflow.includes("riebeckite-content-v3-"),
+    "deploy.yml restore-keys must fall back to the legacy content cache",
+  );
+  expect(!workflow.includes("path: dist"), "deploy.yml must never cache dist");
   const notifyWorkflow = fs.readFileSync(notifyWorkflowPath, "utf8");
   for (const needle of [
     "SITE_DISPATCH_TOKEN",

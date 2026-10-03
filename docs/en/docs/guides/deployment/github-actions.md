@@ -39,12 +39,12 @@ Then push to `main`, or run the workflow manually from the Actions tab.
 1. Checks out the site repository.
 2. (Only for a separate content repository) checks out the content repository into `content/`.
 3. Sets up Node.js and installs dependencies with `npm ci`.
-4. Restores `.riebeckite/cache` with `actions/cache` using the runner OS, content-cache schema, and `package-lock.json` hash.
+4. Restores `.riebeckite/cache` (processed content and plugin cache) and `.riebeckite/build/content-state.json` (incremental build state) with `actions/cache`, scoped by the runner OS and `package-lock.json` hash and saved under a per-run generation.
 5. Runs `npm exec riebeckite check` — the read-only configuration and plugin validation.
 6. Runs `npm exec riebeckite build` to generate `dist/`.
-7. Saves the updated cache automatically and deploys with [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action) using the repository secrets.
+7. Saves a new cache generation automatically and deploys with [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action) using the repository secrets.
 
-The cache is Riebeckite's processed-content and plugin cache, not `dist/`. The exact key avoids reuse after dependency changes; GitHub Actions can still restore an exact default-branch cache for a feature branch. A cache miss is safe and simply performs cold processing. Check the build's `Persistent content cache` line to distinguish a restored Actions cache from actual Riebeckite cache hits. Delete the Actions cache or remove the cache step to troubleshoot; output correctness is unchanged.
+The cached state is Riebeckite's processed-content, plugin, and incremental-build state, not `dist/`. Each run writes a new generation keyed by the run id and attempt, and `restore-keys` fall back to the newest compatible generation, so an existing entry is never overwritten in place. The lockfile hash is only a coarse compatibility boundary: Riebeckite's schema version, app/pipeline/content fingerprints, and plugin cache versions decide the actual reuse. The output cache (`.riebeckite/ssg-output-cache.json`) is deliberately not persisted because it is large and its build-time saving does not offset the transfer cost. A cache miss is safe and simply performs cold processing. Check the build's `Persistent content cache` line to distinguish a restored Actions cache from actual Riebeckite cache hits. Delete the Actions cache or remove the cache step to troubleshoot; output correctness is unchanged. GitHub evicts old cache generations automatically, so the cache list stays bounded.
 
 ## Triggers
 

@@ -149,7 +149,7 @@ entry の key には Markdown 本文、解析済み frontmatter、cache schema�
 
 この cache は correctness の前提ではなく最適化です。entry の不在、version 非互換、壊れた metadata、fingerprint/dependency の不一致、壊れた JSON はすべて安全な miss として cold processing に戻ります。cold processing に戻すには `.riebeckite/cache` を削除してください。ただし filesystem のアクセス失敗は調査が必要なため build を失敗させます。build log の `Persistent content cache` 行には `hits`、`misses`、`bypasses` が出力されます。
 
-GitHub Actions では `dist/` ではなく `.riebeckite/cache` を cache します。Cloudflare 用の生成 workflow は自動設定するため、[GitHub Actions](../guides/deployment/github-actions.md) を参照してください。
+GitHub Actions では `dist/` ではなく `.riebeckite/cache` と `.riebeckite/build/content-state.json` を cache します。output cache（`.riebeckite/ssg-output-cache.json`）は build 短縮分が転送コストに見合わないためローカルに留めます。Cloudflare 用の生成 workflow は自動設定するため、[GitHub Actions](../guides/deployment/github-actions.md) を参照してください。
 
 ## Output-level Incremental SSG
 

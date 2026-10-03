@@ -20,7 +20,7 @@ An entry key includes its Markdown source, parsed frontmatter, the cache schema,
 
 This cache is an optimization, never a correctness dependency. Missing entries, incompatible versions, malformed metadata, fingerprint or dependency mismatches, and corrupted JSON are safe misses. Delete `.riebeckite/cache` to force cold processing; a filesystem access failure still fails the build because it requires attention. The build log reports one `Persistent content cache` line with `hits`, `misses`, and `bypasses`.
 
-For GitHub Actions, cache `.riebeckite/cache`, not `dist/`. The generated Cloudflare workflow does this automatically; see [GitHub Actions](../guides/deployment/github-actions.md).
+For GitHub Actions, cache `.riebeckite/cache` and `.riebeckite/build/content-state.json`, not `dist/`. The output cache (`.riebeckite/ssg-output-cache.json`) stays local because its build-time saving does not offset the transfer cost. The generated Cloudflare workflow does this automatically; see [GitHub Actions](../guides/deployment/github-actions.md).
 
 ## Output-level incremental SSG
 

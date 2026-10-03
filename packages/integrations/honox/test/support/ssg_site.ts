@@ -71,6 +71,7 @@ export type SiteSources = {
   readonly renderTag: string;
   readonly noteCount: number;
   readonly editedNotes: readonly number[];
+  readonly buildDirectory?: string;
   readonly generatedAsset?: {
     readonly path: string;
     readonly content: string;
@@ -99,6 +100,22 @@ export function distPath(siteRoot: string): string {
 
 export function cachePath(siteRoot: string): string {
   return path.join(siteRoot, ".riebeckite", "ssg-output-cache.json");
+}
+
+export function contentStatePath(siteRoot: string): string {
+  return path.join(siteRoot, ".riebeckite", "build", "content-state.json");
+}
+
+export function pluginCachePath(siteRoot: string): string {
+  return path.join(siteRoot, ".riebeckite", "cache");
+}
+
+export function persistentStatePaths(siteRoot: string): readonly string[] {
+  return [
+    pluginCachePath(siteRoot),
+    contentStatePath(siteRoot),
+    cachePath(siteRoot),
+  ];
 }
 
 export async function writeNote(
@@ -254,6 +271,9 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
   }
   lines.push(
     "export default defineConfig({",
+    ...(sources.buildDirectory
+      ? [`  buildDirectory: ${JSON.stringify(sources.buildDirectory)},`]
+      : []),
     `  site: { title: ${JSON.stringify(sources.title)} },`,
     "  content: {",
     `    directory: ${JSON.stringify(path.join(siteRoot, "vault"))},`,
@@ -284,14 +304,21 @@ export async function createSite(
     path.join(siteRoot, "riebeckite.config.ts"),
     configSource(siteRoot, sources),
   );
+  const configLines = [
+    'import { resolveConfigModule } from "@riebeckite/core";',
+    'import * as rawConfigModule from "../riebeckite.config";',
+    "const resolvedConfig = resolveConfigModule(rawConfigModule);",
+    "export const config = {",
+    "  ...resolvedConfig,",
+    ...(sources.buildDirectory
+      ? [`  buildDirectory: ${JSON.stringify(sources.buildDirectory)},`]
+      : []),
+    "};",
+    "",
+  ];
   await writeFile(
     path.join(siteRoot, "app", "config.ts"),
-    [
-      'import { resolveConfigModule } from "@riebeckite/core";',
-      'import * as rawConfigModule from "../riebeckite.config";',
-      "export const config = resolveConfigModule(rawConfigModule);",
-      "",
-    ].join("\n"),
+    configLines.join("\n"),
   );
   await writeFile(
     path.join(siteRoot, "app", "content.ts"),

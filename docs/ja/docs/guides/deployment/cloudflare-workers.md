@@ -131,7 +131,7 @@ dist/ を Static Assets として公開
 
 という対応になっています。
 
-incremental processing は `riebeckite build` を実行するローカル環境または GitHub Actions runner 上で行います。その後、Wrangler が新しく生成された `dist/` を Workers Static Assets として upload します。Workers 自体が incremental build を実行するわけではありません。生成される GitHub Actions workflow が永続化するのは、この build 用の `.riebeckite/cache` であり、`dist/` ではありません。
+incremental processing は `riebeckite build` を実行するローカル環境または GitHub Actions runner 上で行います。その後、Wrangler が新しく生成された `dist/` を Workers Static Assets として upload します。Workers 自体が incremental build を実行するわけではありません。生成される GitHub Actions workflow が永続化するのは、この build 用の `.riebeckite/cache` と `.riebeckite/build/content-state.json` であり、`dist/` ではありません。
 
 ## 4. Cloudflare にログインする
 

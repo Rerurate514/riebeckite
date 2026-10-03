@@ -618,6 +618,16 @@ Framework の代表的な Stable Hook は、
 .rb-article-meta
 .rb-article-footer
 .rb-sidebar
+.rb-site-header
+.rb-nav
+.rb-nav__list
+.rb-nav__item
+.rb-nav__link
+.rb-nav__link--active
+.rb-nav__children
+.rb-nav__mobile
+.rb-nav__toggle
+.rb-site-footer
 ```
 
 です。

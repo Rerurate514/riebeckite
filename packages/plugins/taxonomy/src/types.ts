@@ -31,8 +31,6 @@ export type TaxonomyOptions = {
   related?: boolean;
   /** Maximum related terms per tag. Defaults to `8`. */
   relatedLimit?: number;
-  /** Encode folder index notes (`<folder>/index.md`) as `<folder>`. Defaults to `false`. */
-  folderIndexes?: boolean;
   /** Per-format feed generation. Defaults to RSS, Atom, and JSON. */
   feeds?: TaxonomyFeedOptions;
   /** Maximum entries included in a per-term feed. Defaults to `50`. */
@@ -55,7 +53,6 @@ export type ResolvedTaxonomyOptions = {
   minEntries: number;
   related: boolean;
   relatedLimit: number;
-  folderIndexes: boolean;
   feeds: Required<TaxonomyFeedOptions>;
   feedLimit: number;
   className: string;

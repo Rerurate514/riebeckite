@@ -18,6 +18,11 @@ export type DailyNotesOptions = {
     directory?: string;
     /** Optional slug template (for example `"Daily/{YYYY}-{MM}-{DD}"`). */
     pathPattern?: string;
+    /**
+     * Obsidian/Moment date format used by the note filenames. Defaults to
+     * `"YYYY-MM-DD"`.
+     */
+    dateFormat?: string;
   };
   extract?: {
     /** Frontmatter key to read the snippet from. Defaults to `"daily-summary"`. */
@@ -56,6 +61,7 @@ export const DEFAULT_CODE_BLOCK = "daily-snippet";
 export const DEFAULT_LIMIT = 5;
 export const DEFAULT_DAILY_NOTES_DATE_FORMAT: DailyNotesDateFormat = "iso";
 export const DEFAULT_DAILY_NOTES_LOCALE = "en";
+export const DEFAULT_SLUG_DATE_FORMAT = "YYYY-MM-DD";
 
 export function resolveExtractOptions(
   options: DailyNotesOptions | undefined,
@@ -238,15 +244,139 @@ export function extractCodeBlockSnippet(
 
 /**
  * Derives the note date deterministically: frontmatter `date`, then `created`,
- * then a `YYYY-MM-DD` sequence in the slug. Never reads the clock.
+ * then the note filename parsed with the configured Obsidian date format.
+ * Never reads the clock.
  */
-export function resolveDailyNoteDate(entry: ContentManifestEntry): string {
+export function resolveDailyNoteDate(
+  entry: ContentManifestEntry,
+  slugDateFormat: string = DEFAULT_SLUG_DATE_FORMAT,
+): string {
   const fromFrontmatter =
     normalizeDateValue(entry.frontmatter.date) ??
     normalizeDateValue(entry.frontmatter.created);
   if (fromFrontmatter !== null) return fromFrontmatter;
 
-  return matchDate(entry.slug) ?? "";
+  return matchSlugDate(entry.slug, slugDateFormat) ?? "";
+}
+
+const SLUG_DATE_TOKEN_SOURCES: Record<string, string> = {
+  YYYY: "\\d{4}",
+  YY: "\\d{2}",
+  MM: "\\d{2}",
+  M: "\\d{1,2}",
+  DD: "\\d{2}",
+  D: "\\d{1,2}",
+};
+
+const SLUG_DATE_TOKEN_FIELDS: Record<string, "year" | "month" | "day"> = {
+  YYYY: "year",
+  YY: "year",
+  MM: "month",
+  M: "month",
+  DD: "day",
+  D: "day",
+};
+
+function matchSlugDate(slug: string, format: string): string | null {
+  const matcher = compileSlugDateFormat(format);
+  if (matcher === null) return null;
+
+  const match = matcher.exec(slug);
+  if (match?.groups === undefined) return null;
+
+  const year = resolveSlugDateYear(match.groups);
+  const month = Number(match.groups.month);
+  const day = Number(match.groups.day);
+  if (year === null) return null;
+
+  return formatDate(year, month, day);
+}
+
+function resolveSlugDateYear(
+  groups: Readonly<Record<string, string | undefined>>,
+): number | null {
+  if (groups.year !== undefined) {
+    const year = Number(groups.year);
+    return Number.isInteger(year) ? year : null;
+  }
+
+  if (groups.yearShort !== undefined) {
+    const value = Number(groups.yearShort);
+    if (!Number.isInteger(value)) return null;
+    return value < 69 ? 2000 + value : 1900 + value;
+  }
+
+  return null;
+}
+
+function compileSlugDateFormat(format: string): RegExp | null {
+  let source = "";
+  const captured = new Set<"year" | "month" | "day">();
+  let hasYear = false;
+  let hasMonth = false;
+  let hasDay = false;
+  let index = 0;
+
+  while (index < format.length) {
+    const character = format[index];
+
+    if (character === "[") {
+      const end = format.indexOf("]", index + 1);
+      if (end === -1) return null;
+      source += escapeRegExp(format.slice(index + 1, end));
+      index = end + 1;
+      continue;
+    }
+
+    if (/[A-Za-z]/.test(character)) {
+      const token = readSlugDateToken(format, index);
+      if (token === null) return null;
+
+      const field = SLUG_DATE_TOKEN_FIELDS[token.value];
+      const group =
+        field === "year" && token.value === "YY" ? "yearShort" : field;
+      if (captured.has(field)) {
+        source += `(?:${SLUG_DATE_TOKEN_SOURCES[token.value]})`;
+      } else {
+        captured.add(field);
+        source += `(?<${group}>${SLUG_DATE_TOKEN_SOURCES[token.value]})`;
+      }
+
+      if (field === "year") hasYear = true;
+      if (field === "month") hasMonth = true;
+      if (field === "day") hasDay = true;
+      index = token.end;
+      continue;
+    }
+
+    source += escapeRegExp(character);
+    index += 1;
+  }
+
+  if (!hasYear || !hasMonth || !hasDay) return null;
+  return new RegExp(source);
+}
+
+function readSlugDateToken(
+  format: string,
+  start: number,
+): { value: string; end: number } | null {
+  const character = format[start];
+  let end = start;
+  while (end < format.length && format[end] === character) end += 1;
+  const run = format.slice(start, end);
+
+  if (character === "Y" && (run === "YYYY" || run === "YY")) {
+    return { value: run, end };
+  }
+  if (
+    (character === "M" || character === "D") &&
+    (run === "M" || run === "MM" || run === "D" || run === "DD")
+  ) {
+    return { value: run, end };
+  }
+
+  return null;
 }
 
 const DATE_PATTERN = /(\d{4})-(\d{1,2})-(\d{1,2})/;

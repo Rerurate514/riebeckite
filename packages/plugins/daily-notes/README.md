@@ -52,7 +52,11 @@ getDailyNotes({
   manifest,
   config,
   options: {
-    source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" },
+    source: {
+      directory: "Daily",
+      pathPattern: "Daily/{YYYY}-{MM}-{DD}",
+      dateFormat: "YYYY/MM/DD",
+    },
     extract: { frontmatter: "daily-summary", section: "今日のひとこと" },
     widget: { limit: 3 },
     dateFormat: "iso",
@@ -63,6 +67,12 @@ getDailyNotes({
 
 Set a strategy to `false` to disable it. `pathPattern` supports `{YYYY}`,
 `{MM}`, `{DD}`, and `*` so a note filename can be matched precisely.
+
+`source.dateFormat` is the Obsidian/Moment date format used by the note
+filenames (default `YYYY-MM-DD`). Set it to match Obsidian's Daily Notes date
+format (for example `YYYY/MM/DD` or `YYYY.MM.DD`); the slug date is read with
+exactly that format, and an unsupported format resolves no date rather than
+guessing another one.
 
 `dateFormat` controls the widget date: `"iso"` (the default, `YYYY-MM-DD`),
 `"long"`, or `"short"`. `"long"` and `"short"` are rendered with `locale`
@@ -77,7 +87,8 @@ form while `DailyNote.dateDisplay` holds the formatted text.
 - `DailyNotes` — widget component (`{ notes, limit? }`)
 - `resolveDisplayOptions(options?)` — apply date-format defaults
 - `formatDailyNoteDate(dateIso, display)` — pure date formatter
-- Constants: `DEFAULT_DAILY_NOTES_DATE_FORMAT`, `DEFAULT_DAILY_NOTES_LOCALE`
+- Constants: `DEFAULT_DAILY_NOTES_DATE_FORMAT`, `DEFAULT_DAILY_NOTES_LOCALE`,
+  `DEFAULT_SLUG_DATE_FORMAT`
 - Types: `DailyNote`, `DailyNotesOptions`, `DailyNotesDateFormat`,
   `ResolvedDailyNotesExtract`, `ResolvedDailyNotesDisplay`
 

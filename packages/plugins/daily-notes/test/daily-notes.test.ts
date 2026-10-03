@@ -20,7 +20,9 @@ import {
 import {
   DEFAULT_DAILY_NOTES_DATE_FORMAT,
   DEFAULT_DAILY_NOTES_LOCALE,
+  DEFAULT_SLUG_DATE_FORMAT,
   formatDailyNoteDate,
+  resolveDailyNoteDate,
   resolveDisplayOptions,
 } from "../src/daily-notes.js";
 import { getDailyNotes } from "../src/daily-notes.server.js";
@@ -329,6 +331,73 @@ test("derives the date from frontmatter created and filename, preferring frontma
   assert.equal(dates["Daily/2024-06-01"], "2024-07-01");
   assert.equal(dates["Daily/2024-06-02"], "2024-08-09");
   assert.equal(dates["Daily/2024-06-03"], "2024-06-03");
+});
+
+test("resolves a slug date using the configured Obsidian date format", () => {
+  assert.equal(
+    resolveDailyNoteDate(makeEntry({ slug: "Daily/2024/01/05" }), "YYYY/MM/DD"),
+    "2024-01-05",
+  );
+  assert.equal(
+    resolveDailyNoteDate(makeEntry({ slug: "Daily/2024.01.05" }), "YYYY.MM.DD"),
+    "2024-01-05",
+  );
+  assert.equal(
+    resolveDailyNoteDate(makeEntry({ slug: "Daily/24-01-05" }), "YY-MM-DD"),
+    "2024-01-05",
+  );
+});
+
+test("does not guess an alternative date format when the slug does not match", () => {
+  const entry = makeEntry({ slug: "Daily/2024/01/05" });
+
+  assert.equal(resolveDailyNoteDate(entry), "");
+  assert.equal(resolveDailyNoteDate(entry, DEFAULT_SLUG_DATE_FORMAT), "");
+  assert.equal(DEFAULT_SLUG_DATE_FORMAT, "YYYY-MM-DD");
+});
+
+test("resolves no date for an unsupported Obsidian date format", () => {
+  assert.equal(
+    resolveDailyNoteDate(makeEntry({ slug: "Daily/2024-01-05" }), "gggg-[W]ww"),
+    "",
+  );
+  assert.equal(
+    resolveDailyNoteDate(makeEntry({ slug: "Daily/2024-01-05" }), "YYYY-MM"),
+    "",
+  );
+});
+
+test("keeps frontmatter precedence over the configured slug date format", () => {
+  const entry = makeEntry({
+    slug: "Daily/2024/01/05",
+    frontmatter: { date: "2024-09-09" },
+  });
+
+  assert.equal(resolveDailyNoteDate(entry, "YYYY/MM/DD"), "2024-09-09");
+});
+
+test("getDailyNotes applies the configured slug date format", () => {
+  const manifest = makeManifest([
+    makeEntry({
+      slug: "Daily/2024/01/05",
+      frontmatter: { "daily-summary": "slash" },
+    }),
+    makeEntry({
+      slug: "Daily/2024-01-04",
+      frontmatter: { "daily-summary": "iso only" },
+    }),
+  ]);
+
+  const notes = getDailyNotes({
+    manifest,
+    config: explicitConfig,
+    options: { source: { dateFormat: "YYYY/MM/DD" }, widget: { limit: 10 } },
+  });
+
+  const dates = Object.fromEntries(notes.map((note) => [note.slug, note.date]));
+
+  assert.equal(dates["Daily/2024/01/05"], "2024-01-05");
+  assert.equal(dates["Daily/2024-01-04"], "");
 });
 
 test("date display defaults to a locale-independent ISO date", () => {

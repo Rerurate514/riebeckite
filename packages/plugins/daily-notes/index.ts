@@ -22,6 +22,7 @@ export {
   DAILY_NOTES_PLUGIN_NAME,
   DEFAULT_DAILY_NOTES_DATE_FORMAT,
   DEFAULT_DAILY_NOTES_LOCALE,
+  DEFAULT_SLUG_DATE_FORMAT,
   formatDailyNoteDate,
   resolveDisplayOptions,
 } from "./src/daily-notes.js";

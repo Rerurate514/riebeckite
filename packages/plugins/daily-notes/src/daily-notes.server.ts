@@ -10,6 +10,7 @@ import {
   type DailyNotesOptions,
   DEFAULT_DIRECTORY,
   DEFAULT_LIMIT,
+  DEFAULT_SLUG_DATE_FORMAT,
   extractDailyNoteSnippet,
   formatDailyNoteDate,
   isDailyNoteSlug,
@@ -53,6 +54,8 @@ export function getDailyNotes(args: {
   const display = resolveDisplayOptions(options);
   const directory = options?.source?.directory ?? DEFAULT_DIRECTORY;
   const pathPattern = options?.source?.pathPattern;
+  const slugDateFormat =
+    options?.source?.dateFormat ?? DEFAULT_SLUG_DATE_FORMAT;
   const limit = Math.max(0, options?.widget?.limit ?? DEFAULT_LIMIT);
 
   const notes: DailyNote[] = [];
@@ -67,7 +70,7 @@ export function getDailyNotes(args: {
     if (snippet === null) continue;
 
     const discoverable = discoverableSlugs.has(entry.slug);
-    const date = resolveDailyNoteDate(entry);
+    const date = resolveDailyNoteDate(entry, slugDateFormat);
 
     notes.push({
       date,

@@ -45,7 +45,11 @@ getDailyNotes({
   manifest,
   config,
   options: {
-    source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" },
+    source: {
+      directory: "Daily",
+      pathPattern: "Daily/{YYYY}-{MM}-{DD}",
+      dateFormat: "YYYY/MM/DD",
+    },
     extract: { frontmatter: "daily-summary", section: "今日のひとこと" },
     widget: { limit: 3 },
     dateFormat: "iso",
@@ -56,6 +60,8 @@ getDailyNotes({
 
 方法を `false` にすると、その抽出を無効にできます。`pathPattern` では `{YYYY}`、`{MM}`、`{DD}`、`*` が使え、ノートのファイル名を厳密に絞り込めます。
 
+`source.dateFormat` はノートのファイル名が使う Obsidian（Moment）の日付フォーマットです（既定 `YYYY-MM-DD`）。Obsidian の Daily Notes の日付フォーマットに合わせて設定します（例: `YYYY/MM/DD`、`YYYY.MM.DD`）。slug の日付はこの形式ちょうどで読み取り、対応していない形式ではほかの形式を推測せず日付なしにします。
+
 `dateFormat` はウィジェットの日付表示を決めます。既定は `"iso"`（`YYYY-MM-DD`）で、ほかに `"long"` と `"short"` があります。`"long"` と `"short"` は `locale`（既定 `"en"`）で整形します。機械可読な `YYYY-MM-DD` は常に `<time datetime>` 属性に残り、`DailyNote.date` はその ISO 形式のまま、`DailyNote.dateDisplay` に整形後の文字列が入ります。
 
 ## 主なエクスポート
@@ -65,7 +71,7 @@ getDailyNotes({
 - `DailyNotes`: ウィジェットのコンポーネント（`{ notes, limit? }`）
 - `resolveDisplayOptions(options?)`: 日付表示の既定値を適用する
 - `formatDailyNoteDate(dateIso, display)`: 純粋な日付整形関数
-- 定数: `DEFAULT_DAILY_NOTES_DATE_FORMAT`、`DEFAULT_DAILY_NOTES_LOCALE`
+- 定数: `DEFAULT_DAILY_NOTES_DATE_FORMAT`、`DEFAULT_DAILY_NOTES_LOCALE`、`DEFAULT_SLUG_DATE_FORMAT`
 - 型: `DailyNote`、`DailyNotesOptions`、`DailyNotesDateFormat`、`ResolvedDailyNotesExtract`、`ResolvedDailyNotesDisplay`
 
 ## 関連資料

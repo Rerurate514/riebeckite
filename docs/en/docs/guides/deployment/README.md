@@ -9,7 +9,7 @@ A Riebeckite build produces static files in `dist/`. Deployment means serving th
 | Read articles from a separate repository in CI | [Separate content repository](./separate-content-repository.md) |
 | Just get a site online today | [Getting Started / Deployment](../../getting-started/deployment.md) |
 
-Publishing locally is the quickest first step: `npm exec riebeckite deploy` builds the site, creates `wrangler.jsonc` when it is missing, opens the Wrangler login on the first run, and uploads `dist/`. GitHub Actions and repository separation are options you can add later.
+Publishing locally is the quickest first step: generate a site with `create-riebeckite`'s `Cloudflare Workers` choice, then run `npm run build` and `npm exec riebeckite deploy`. `deploy` does not build; it creates `wrangler.jsonc` when it is missing, opens the Wrangler login on the first run, and uploads `dist/`. GitHub Actions and repository separation are options you can add later.
 
 ## Choosing a method
 

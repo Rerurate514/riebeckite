@@ -19,9 +19,9 @@ npx create-riebeckite
 - **Project name** — 既定値の `my-site` のまま Enter を押します
 - **Preset** - 迷ったら `starter` のまま。[Presets](./presets.md) を参照
 - **Content source** - `This project` を選んで Markdown をサイトのフォルダ内に残します
-- **Deployment** - 手元で試すだけなら `Not now`。後から追加できます。[Deployment](./deployment.md) を参照
+- **Deployment** - 最短で公開するなら `Cloudflare Workers`。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。push ごとの自動公開は `GitHub Actions`、後回しは `Not now`。[Deployment](./deployment.md) を参照
 
-成功すると `Created a starter Riebeckite site in my-site`（入力した名前が入る）と、次に実行するコマンドの一覧が表示されます。フォルダへ移動して package を入れます。
+成功すると `Created a starter Riebeckite site in my-site`（入力した名前が入る）と、次に実行するコマンドの一覧が表示されます。`Cloudflare Workers` を選んだ場合は、生成の一部として依存関係が自動でインストールされます。それ以外を選んだ場合は、フォルダへ移動して package を入れます。
 
 ```bash
 cd my-site
@@ -74,14 +74,14 @@ npm exec riebeckite build
 
 ## 7. Cloudflare Workers へ公開する
 
-最初の公開もコマンドから行えます。Wrangler を入れてから `deploy` を実行します。
+生成時に `Cloudflare Workers` を選んだサイトには Wrangler の依存と `wrangler.jsonc` がすでに含まれているため、追加の準備は要りません。ビルドして公開します。
 
 ```bash
-npm install -D wrangler
+npm run build
 npm exec riebeckite deploy
 ```
 
-初回は Wrangler のログインがブラウザで開きます。`wrangler.jsonc` が無ければフォルダ名から自動で作られ、ビルド結果の `dist/` が Cloudflare Workers へ公開されます。成功すると `https://<name>.<account>.workers.dev` のような URL が表示されるので、ブラウザで開いて確認します。
+`Deploy now?` で `Yes` を選んだ場合は、生成直後に build と deploy まで自動で実行され、`https://<name>.<account>.workers.dev` のような URL が表示されます。`Later` を選んだ場合や、後から更新を公開する場合は上の2コマンドを実行します。初回は Wrangler のログインがブラウザで開きます。`Not now` で生成した既存サイトでは、先に `npm install -D wrangler` を実行してください。
 
 公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、サイトマップなどに正しい URL が入ります。
 

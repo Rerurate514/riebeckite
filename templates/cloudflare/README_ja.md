@@ -102,7 +102,7 @@ Wrangler を直接使う代わりに、ローカルからそのまま公開で�
 npm exec riebeckite deploy
 ```
 
-`riebeckite deploy` は初回に Wrangler の OAuth でログインし、`wrangler.jsonc` が無ければプロジェクト名から生成します。GitHub Actions を使う構成はこのテンプレートのままで、変更ありません。
+`riebeckite deploy` は初回に Wrangler の OAuth でログインし、`wrangler.jsonc` が無ければプロジェクト名から生成します。`create-riebeckite` で `Cloudflare Workers` を選ぶと、Wrangler の依存と `wrangler.jsonc` を含む Site が生成され、`Deploy now?` からそのまま初回公開できます。GitHub Actions を使う構成はこのテンプレートのままで、変更ありません。
 
 ## ワークフローの流れ
 

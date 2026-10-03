@@ -16,6 +16,7 @@ test("interactive answers without deployment map to a plain scaffold", () => {
     preset: "starter",
     listPresets: false,
     githubActions: false,
+    cloudflareWorkers: false,
     contentRepository: undefined,
     siteRepository: undefined,
   });
@@ -34,6 +35,26 @@ test("interactive answers with GitHub Actions enable the workflow", () => {
     preset: "starter",
     listPresets: false,
     githubActions: true,
+    cloudflareWorkers: false,
+    contentRepository: undefined,
+    siteRepository: undefined,
+  });
+});
+
+test("interactive answers with Cloudflare Workers select local-first deployment", () => {
+  const options = interactiveAnswersToOptions({
+    directory: "my-site",
+    preset: "starter",
+    contentSource: "local",
+    deployment: "cloudflare",
+  });
+  assert.deepEqual(options, {
+    directory: "my-site",
+    force: false,
+    preset: "starter",
+    listPresets: false,
+    githubActions: false,
+    cloudflareWorkers: true,
     contentRepository: undefined,
     siteRepository: undefined,
   });
@@ -54,6 +75,7 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
     preset: "showcase",
     listPresets: false,
     githubActions: true,
+    cloudflareWorkers: false,
     contentRepository: "OWNER/notes",
     siteRepository: "OWNER/site",
   });
@@ -67,6 +89,7 @@ test("non-interactive defaults are unchanged", () => {
     preset: "starter",
     listPresets: false,
     githubActions: false,
+    cloudflareWorkers: false,
     contentRepository: undefined,
     siteRepository: undefined,
   });
@@ -91,6 +114,7 @@ test("existing flags keep parsing", () => {
     preset: "showcase",
     listPresets: true,
     githubActions: true,
+    cloudflareWorkers: false,
     contentRepository: "OWNER/notes",
     siteRepository: "OWNER/site",
   });

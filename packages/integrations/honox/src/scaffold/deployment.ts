@@ -1,5 +1,6 @@
 import type { SiteTemplateFile } from "./templates.js";
 import {
+  buildDefaultWranglerConfig,
   GITHUB_ACTIONS_SECRETS,
   WRANGLER_DEFAULTS,
 } from "./wrangler-defaults.js";
@@ -58,8 +59,15 @@ export function deploymentTemplateFiles(
   ];
 }
 
+export function wranglerJsoncFile(workerName: string): SiteTemplateFile {
+  return {
+    path: "wrangler.jsonc",
+    content: buildDefaultWranglerConfig(workerName),
+  };
+}
+
 function wranglerConfig(): string {
-  return `${JSON.stringify(WRANGLER_DEFAULTS, null, 2)}\n`;
+  return buildDefaultWranglerConfig(WRANGLER_DEFAULTS.name);
 }
 
 function deployWorkflow(contentRepository: string | undefined): string {

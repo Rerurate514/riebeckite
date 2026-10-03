@@ -24,6 +24,7 @@ import {
   type ScaffoldPresetName,
 } from "./presets.js";
 import { RIEBECKITE_VERSION } from "./version.js";
+import { WRANGLER_VERSION } from "./wrangler-defaults.js";
 
 export type SiteTemplateVariables = {
   readonly name: string;
@@ -31,6 +32,10 @@ export type SiteTemplateVariables = {
   readonly description: string;
   readonly baseUrl: string;
   readonly locale: string;
+};
+
+export type SiteTemplateOptions = {
+  readonly cloudflareWorkers?: boolean;
 };
 
 export type SiteTemplateFile = {
@@ -41,9 +46,10 @@ export type SiteTemplateFile = {
 export function siteTemplateFiles(
   preset: ScaffoldPreset,
   variables: SiteTemplateVariables,
+  options: SiteTemplateOptions = {},
 ): readonly SiteTemplateFile[] {
   return [
-    { path: "package.json", content: packageJson(preset, variables) },
+    { path: "package.json", content: packageJson(preset, variables, options) },
     {
       path: "riebeckite.config.ts",
       content: riebeckiteConfig(preset, variables),
@@ -153,6 +159,7 @@ function appFiles(preset: ScaffoldPreset): readonly SiteTemplateFile[] {
 function packageJson(
   preset: ScaffoldPreset,
   variables: SiteTemplateVariables,
+  options: SiteTemplateOptions,
 ): string {
   const dependencies: Record<string, string> = {
     "@riebeckite/core": RIEBECKITE_VERSION,
@@ -187,6 +194,7 @@ function packageJson(
         "@types/node": "^24.5.2",
         typescript: "^5.0.0",
         vite: "^8.0.9",
+        ...(options.cloudflareWorkers ? { wrangler: WRANGLER_VERSION } : {}),
       },
     },
     null,

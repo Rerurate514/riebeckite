@@ -11,6 +11,7 @@ export type CreateRiebeckiteOptions = {
   readonly preset: ScaffoldPresetName;
   readonly listPresets: boolean;
   readonly githubActions: boolean;
+  readonly cloudflareWorkers: boolean;
   readonly contentRepository?: string;
   readonly siteRepository?: string;
 };
@@ -82,6 +83,7 @@ export function parseArguments(
     preset: preset ?? "starter",
     listPresets,
     githubActions,
+    cloudflareWorkers: false,
     contentRepository,
     siteRepository,
   };

@@ -19,9 +19,11 @@ Incremental processing happens during `riebeckite build` on your machine or GitH
 
 Create an account at [cloudflare.com](https://www.cloudflare.com/). The free plan is enough to get started.
 
-## 2. Install wrangler
+## 2. Get wrangler
 
-Run this in the site folder.
+A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes the Wrangler dependency and `wrangler.jsonc`, so no extra install or setup is needed.
+
+For a site generated with `Not now`, or when preparing one manually, run this in the site folder:
 
 ```sh
 npm install -D wrangler
@@ -70,7 +72,7 @@ A browser window opens. Log in to Cloudflare and grant access.
 npm exec riebeckite deploy
 ```
 
-`riebeckite deploy` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing. To run Wrangler directly instead, use `npx wrangler deploy`.
+`riebeckite deploy` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing. Choosing `Cloudflare Workers` in `create-riebeckite` and answering `Yes` to `Deploy now?` runs this build and deploy immediately after scaffolding. To run Wrangler directly instead, use `npx wrangler deploy`.
 
 The deploy prints a URL such as `https://<name>.<account>.workers.dev`. Open it in a browser. If the site loads, deployment worked.
 

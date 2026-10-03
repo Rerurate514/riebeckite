@@ -1,17 +1,19 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { WRANGLER_DEFAULTS } from "@riebeckite/honox";
+import {
+  buildDefaultWranglerConfig,
+  workerNameFromDirectory,
+} from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
+
+export { buildDefaultWranglerConfig, workerNameFromDirectory };
 
 const WRANGLER_CONFIG_FILES = [
   "wrangler.jsonc",
   "wrangler.json",
   "wrangler.toml",
 ] as const;
-
-const DEFAULT_WORKER_NAME = "riebeckite-site";
-const WORKER_NAME_MAX_LENGTH = 63;
 
 export type DeployOptions = {
   readonly dryRun: boolean;
@@ -42,21 +44,6 @@ export class DeployError extends Error {
     super(message);
     this.name = "DeployError";
   }
-}
-
-export function workerNameFromDirectory(directoryName: string): string {
-  const normalized = directoryName
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  const name = normalized.slice(0, WORKER_NAME_MAX_LENGTH).replace(/-+$/g, "");
-  return name.length > 0 ? name : DEFAULT_WORKER_NAME;
-}
-
-export function buildDefaultWranglerConfig(workerName: string): string {
-  return `${JSON.stringify({ ...WRANGLER_DEFAULTS, name: workerName }, null, 2)}\n`;
 }
 
 export async function runDeploy(

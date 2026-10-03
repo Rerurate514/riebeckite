@@ -150,6 +150,21 @@ npx create-riebeckite
 
 `--preset` や `--list-presets` も同様に利用できます。
 
+対話式では、Content source に続いてデプロイ設定を尋ねられます。
+
+| 選択肢 | 生成されるもの |
+| --- | --- |
+| `Cloudflare Workers` | Wrangler の依存と `wrangler.jsonc`。依存関係のインストール後に `Deploy now?` を確認 |
+| `GitHub Actions` | `wrangler.jsonc` と `.github/workflows/deploy.yml` |
+| `Not now` | デプロイ設定を追加しない |
+
+`Cloudflare Workers` で `Deploy now?` に `Yes` と答えると、生成後に build と `riebeckite deploy` が続けて実行されます。`Later` の場合は生成だけを行い、次を実行して公開します。
+
+```sh
+npm run build
+npm exec riebeckite deploy
+```
+
 Site を生成した後は依存関係を install し、
 
 ```sh id="gzg1my"
@@ -325,7 +340,7 @@ Build 済みの生成物を Cloudflare Workers へ公開します。
 npm exec riebeckite deploy
 ```
 
-`deploy` は Wrangler を呼び出して `dist/` を公開します。初回は Wrangler の OAuth で Cloudflare にログインし、`wrangler.jsonc` が無い場合はプロジェクト名から生成します。公開 URL は `https://<worker-name>.<account>.workers.dev` です。
+`deploy` は Wrangler を呼び出して `dist/` を公開します。初回は Wrangler の OAuth で Cloudflare にログインし、`wrangler.jsonc` が無い場合はプロジェクト名から生成します。公開 URL は `https://<worker-name>.<account>.workers.dev` です。`create-riebeckite` で `Cloudflare Workers` を選ぶと、Wrangler の依存と `wrangler.jsonc` を含む、このコマンドを実行できるサイトが生成されます。
 
 `deploy` は Build を行いません。先に `npm exec riebeckite build` を実行してください。
 

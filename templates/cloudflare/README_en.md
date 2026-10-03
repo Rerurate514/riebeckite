@@ -113,8 +113,10 @@ npm exec riebeckite deploy
 ```
 
 `riebeckite deploy` signs in with Wrangler OAuth on the first run and generates
-`wrangler.jsonc` from the project name if it is missing. The GitHub Actions
-setup this template describes is unchanged.
+`wrangler.jsonc` from the project name if it is missing. Choosing `Cloudflare
+Workers` in `create-riebeckite` includes the Wrangler dependency and
+`wrangler.jsonc` and can publish immediately through `Deploy now?`. The GitHub
+Actions setup this template describes is unchanged.
 
 ## How the workflow works
 

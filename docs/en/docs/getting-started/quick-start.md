@@ -25,9 +25,9 @@ Answer the prompts (recommended answers shown):
 - **Project name** — press Enter for the default `my-site`
 - **Preset** — keep `starter` when unsure; see [Presets](./presets.md)
 - **Content source** — choose `This project` so Markdown stays inside the site
-- **Deployment** — choose `Not now` for local development; you can add it later, see [Deployment](./deployment.md)
+- **Deployment** — choose `Cloudflare Workers` for the fastest first publish. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push, or `Not now` to skip deployment setup; see [Deployment](./deployment.md)
 
-When it succeeds, it prints `Created a starter Riebeckite site in my-site` and a short "Next steps" list. Move into the folder and install the packages:
+When it succeeds, it prints `Created a starter Riebeckite site in my-site` and a short "Next steps" list. Choosing `Cloudflare Workers` installs dependencies as part of scaffolding; otherwise move into the folder and install the packages:
 
 ```sh
 cd my-site
@@ -80,14 +80,14 @@ A successful build writes the publishable static output to `dist/`. Deployment m
 
 ## 7. Publish to Cloudflare Workers
 
-Publish your first version from the command line too. Install Wrangler, then run `deploy`:
+A site generated with `Cloudflare Workers` already includes the Wrangler dependency and `wrangler.jsonc`, so no extra setup is needed. Build and publish:
 
 ```sh
-npm install -D wrangler
+npm run build
 npm exec riebeckite deploy
 ```
 
-On the first run, Wrangler opens a browser to sign in. `riebeckite deploy` creates `wrangler.jsonc` from the folder name if it is missing, and publishes the built `dist/` to Cloudflare Workers. When it succeeds, it prints a URL like `https://<name>.<account>.workers.dev`; open it to confirm the site loads.
+Choosing `Yes` at `Deploy now?` runs the build and deploy immediately after scaffolding and prints a URL like `https://<name>.<account>.workers.dev`. If you chose `Later`, or you want to publish later updates, run the two commands above. The first run opens a browser to sign in to Wrangler. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
 
 After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address.
 

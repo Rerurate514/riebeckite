@@ -10,7 +10,7 @@ const DEFAULT_DIRECTORY = "my-riebeckite-site";
 
 export type InteractiveContentSource = "local" | "external";
 
-export type InteractiveDeployment = "github-actions" | "none";
+export type InteractiveDeployment = "cloudflare" | "github-actions" | "none";
 
 export type InteractiveAnswers = {
   readonly directory: string;
@@ -36,6 +36,7 @@ export function interactiveAnswersToOptions(
     preset: answers.preset,
     listPresets: false,
     githubActions: external || answers.deployment === "github-actions",
+    cloudflareWorkers: !external && answers.deployment === "cloudflare",
     contentRepository: external ? answers.contentRepository : undefined,
     siteRepository: external ? answers.siteRepository : undefined,
   };
@@ -78,6 +79,9 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
 
   let answers: InteractiveAnswers;
   if (contentSource === "external") {
+    log.info(
+      "Separate repositories use GitHub Actions so content updates can trigger site deployments.",
+    );
     const contentRepository = await text({
       message: "Content repository",
       placeholder: "OWNER/notes",
@@ -99,11 +103,17 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
   } else {
     const deployment = await select<InteractiveDeployment>({
       message: "Set up deployment?",
-      initialValue: "github-actions",
+      initialValue: "cloudflare",
       options: [
         {
+          value: "cloudflare",
+          label: "Cloudflare Workers",
+          hint: "Publish from this machine",
+        },
+        {
           value: "github-actions",
-          label: "GitHub Actions + Cloudflare Workers",
+          label: "GitHub Actions",
+          hint: "Deploy on every push",
         },
         { value: "none", label: "Not now" },
       ],
@@ -114,6 +124,19 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
 
   log.step("Creating Riebeckite site...");
   return answers;
+}
+
+export async function promptDeployNow(): Promise<boolean> {
+  const answer = await select<"yes" | "later">({
+    message: "Deploy now?",
+    initialValue: "yes",
+    options: [
+      { value: "yes", label: "Yes" },
+      { value: "later", label: "Later" },
+    ],
+  });
+  if (isCancel(answer)) return false;
+  return answer === "yes";
 }
 
 function capitalize(value: string): string {

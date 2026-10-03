@@ -4,6 +4,7 @@ import {
   assertGitHubRepository,
   deploymentTemplateFiles,
   type ScaffoldDeploymentOptions,
+  wranglerJsoncFile,
 } from "./deployment.js";
 import {
   resolveScaffoldPreset,
@@ -15,6 +16,7 @@ import {
   type SiteTemplateVariables,
   siteTemplateFiles,
 } from "./templates.js";
+import { workerNameFromDirectory } from "./wrangler-defaults.js";
 
 export type ScaffoldSiteOptions = {
   readonly targetDirectory: string;
@@ -27,6 +29,7 @@ export type ScaffoldSiteOptions = {
   readonly overwrite?: boolean;
   /** Generate the Cloudflare Workers GitHub Actions workflow. */
   readonly githubActions?: boolean;
+  readonly cloudflareWorkers?: boolean;
   /** Read content from this separate GitHub repository during deployment. */
   readonly contentRepository?: string;
   /** Site repository to notify from the generated content workflow. */
@@ -52,10 +55,18 @@ export async function scaffoldRiebeckiteSite(
   const preset = resolveScaffoldPreset(options.preset);
   validateDeploymentOptions(options);
   const files = [
-    ...siteTemplateFiles(preset, templateVariables(options, targetDirectory)),
+    ...siteTemplateFiles(preset, templateVariables(options, targetDirectory), {
+      cloudflareWorkers: options.cloudflareWorkers,
+    }),
     ...(options.githubActions
       ? deploymentTemplateFiles(deploymentOptions(options))
-      : []),
+      : options.cloudflareWorkers
+        ? [
+            wranglerJsoncFile(
+              workerNameFromDirectory(path.basename(targetDirectory)),
+            ),
+          ]
+        : []),
   ];
   await assertTargetWritable(
     targetDirectory,

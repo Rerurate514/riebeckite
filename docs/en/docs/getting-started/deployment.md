@@ -8,42 +8,49 @@ sidebar:
 
 Riebeckite builds a static site: `npm exec riebeckite build` writes the publishable files to `dist/`. Deployment means hosting that folder. The reference target is [Cloudflare Workers](https://workers.cloudflare.com/) with static assets.
 
-Think about deployment in three stages:
+There are three deployment methods, and they are options you add over time rather than mutually exclusive choices:
+
+| Method | Choose it when |
+| --- | --- |
+| Local-first (publish from your machine) | You want the fastest first publish |
+| GitHub Actions | You want to deploy on every push |
+| Content Repository split | You want the vault and site in separate repositories |
+
+Local-first does not replace GitHub Actions. Add GitHub Actions when you want automation.
 
 ```text
-1. First deploy
-   ↓
-   Deploy manually to Cloudflare Workers
+Local-first
+  → publish to Cloudflare Workers from your machine
 
-2. Automatic deploy
-   ↓
-   Deploy with GitHub Actions
+GitHub Actions
+  → publish automatically on push
 
-3. Advanced setup
-   ↓
-   Split site and content repositories
+Content Repository split
+  → keep site and content repositories separate
 ```
 
-This beginner page covers stages 1 and 2. If you want the advanced split, see [Content Repositories](../guides/content-repositories.md) and [Separate Content Repository](../guides/deployment/separate-content-repository.md).
+This beginner page covers Local-first and GitHub Actions. If you want the split, see [Content Repositories](../guides/content-repositories.md) and [Separate Content Repository](../guides/deployment/separate-content-repository.md).
 
-## 1. First deploy from your machine
+## 1. First deploy from your machine (Local-first)
+
+This is the fastest path to a public site.
 
 1. Create a [Cloudflare account](https://www.cloudflare.com/).
 
-2. In the site folder, install Wrangler:
+2. Scaffold a site with `Cloudflare Workers` as the deployment choice:
 
    ```sh
-   npm install -D wrangler
+   npx create-riebeckite my-site
    ```
 
-3. Build and deploy:
+   Choosing `Cloudflare Workers` includes the Wrangler dependency and `wrangler.jsonc` in the generated site, then asks `Deploy now?` after installing dependencies. `Yes` builds and deploys right away; `Later` finishes the scaffold and you run these commands afterwards:
 
    ```sh
-   npm exec riebeckite build
+   npm run build
    npm exec riebeckite deploy
    ```
 
-   `riebeckite deploy` creates `wrangler.jsonc` with `assets.directory` set to `./dist` when the file is missing, opens the Wrangler login on the first run, and publishes `dist/` to Cloudflare Workers. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. If you prefer to run Wrangler yourself, `npx wrangler login` and `npx wrangler deploy` do the same work.
+3. `riebeckite deploy` publishes `dist/` to Cloudflare Workers and opens the Wrangler login in a browser on the first run. It does not build, so create `dist/` with `riebeckite build` first. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
 
 4. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 
@@ -56,7 +63,7 @@ npm exec riebeckite deploy
 
 ## 2. Automatic deploy with GitHub Actions
 
-If you want deploys to run on every push, choose `GitHub Actions + Cloudflare Workers` when the CLI asks for the deployment. From the command line, the same choice is:
+If you want deploys to run on every push, choose `GitHub Actions` when the CLI asks for the deployment. From the command line, the same choice is:
 
 ```sh
 npx create-riebeckite my-site --github-actions

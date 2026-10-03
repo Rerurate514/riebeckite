@@ -36,8 +36,14 @@ export {
   starter,
 } from "./src/scaffold/presets.js";
 export {
+  buildDefaultWranglerConfig,
+  DEFAULT_WORKER_NAME,
+  PACKAGE_MANAGER,
+  WORKER_NAME_MAX_LENGTH,
   WRANGLER_DEFAULTS,
+  WRANGLER_VERSION,
   type WranglerDefaults,
+  workerNameFromDirectory,
 } from "./src/scaffold/wrangler-defaults.js";
 export {
   createRiebeckiteSsg,

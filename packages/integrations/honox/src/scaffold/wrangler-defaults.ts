@@ -28,6 +28,27 @@ export const WRANGLER_DEFAULTS = {
 /** Type for the wrangler config object */
 export type WranglerDefaults = typeof WRANGLER_DEFAULTS;
 
+export const WRANGLER_VERSION = "^4.83.0";
+
+export const DEFAULT_WORKER_NAME = "riebeckite-site";
+
+export const WORKER_NAME_MAX_LENGTH = 63;
+
+export function workerNameFromDirectory(directoryName: string): string {
+  const normalized = directoryName
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const name = normalized.slice(0, WORKER_NAME_MAX_LENGTH).replace(/-+$/g, "");
+  return name.length > 0 ? name : DEFAULT_WORKER_NAME;
+}
+
+export function buildDefaultWranglerConfig(workerName: string): string {
+  return `${JSON.stringify({ ...WRANGLER_DEFAULTS, name: workerName }, null, 2)}\n`;
+}
+
 /** Expected secret names in GitHub Actions workflow */
 export const GITHUB_ACTIONS_SECRETS = {
   /** Cloudflare API token with Workers Scripts: Edit permission */

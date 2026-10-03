@@ -2,42 +2,49 @@
 
 Riebeckite は静的サイトを作ります。`npm exec riebeckite build` を実行すると、公開用のファイルが `dist/` に作られます。デプロイでは、この `dist/` を配信します。標準的な公開先として、ここでは [Cloudflare Workers](https://workers.cloudflare.com/) を使います。
 
-デプロイは、次の3段階で考えると分かりやすくなります。
+デプロイには次の3つの方法があります。排他的な選択ではなく、後から追加できます。
+
+| 方法 | 向いているケース |
+| --- | --- |
+| Local-first（手元から公開） | 最短で初回公開したい |
+| GitHub Actions | push ごとに自動公開したい |
+| Content Repository 分離 | Vault と Site を別リポジトリで管理したい |
+
+Local-first は GitHub Actions の置き換えではありません。自動化が必要になったら GitHub Actions を追加します。
 
 ```text
-1. 初回デプロイ
-   ↓
-   手元から Cloudflare Workers へ公開する
+Local-first
+  → 手元から Cloudflare Workers へ公開する
 
-2. 自動デプロイ
-   ↓
-   GitHub Actions で push 時に公開する
+GitHub Actions
+  → push 時に自動で公開する
 
-3. 高度な構成
-   ↓
-   site と content のリポジトリを分ける
+Content Repository 分離
+  → site と content のリポジトリを分ける
 ```
 
-このページでは 1 と 2 を中心に扱います。リポジトリ分離が必要な場合は、[Content Repositories](../guides/content-repositories.md) と [Separate Content Repository](../guides/deployment/separate-content-repository.md) を参照してください。
+このページでは Local-first と GitHub Actions を中心に扱います。リポジトリ分離が必要な場合は、[Content Repositories](../guides/content-repositories.md) と [Separate Content Repository](../guides/deployment/separate-content-repository.md) を参照してください。
 
-## 1. 手元から初回デプロイする
+## 1. 手元から初回デプロイする（Local-first）
+
+最短で初回公開する方法です。
 
 1. [Cloudflare アカウント](https://www.cloudflare.com/)を用意します。
 
-2. サイトのフォルダで Wrangler を入れます。
+2. デプロイ設定で `Cloudflare Workers` を選んでサイトを作ります。
 
    ```bash
-   npm install -D wrangler
+   npx create-riebeckite my-site
    ```
 
-3. ビルドしてデプロイします。
+   `Cloudflare Workers` を選ぶと、生成されるサイトに Wrangler の依存と `wrangler.jsonc` が含まれ、依存関係のインストール後に `Deploy now?` と確認されます。`Yes` ならその場で build と deploy まで実行されます。`Later` の場合は生成だけを終え、後から次を実行します。
 
    ```bash
-   npm exec riebeckite build
+   npm run build
    npm exec riebeckite deploy
    ```
 
-   `riebeckite deploy` は、`wrangler.jsonc` が無ければ `assets.directory` を `./dist` に設定して自動で作り、初回は Wrangler のログインを開いてから `dist/` を Cloudflare Workers へ公開します。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。Wrangler を直接使いたい場合は `npx wrangler login` と `npx wrangler deploy` でも同じです。
+3. `riebeckite deploy` は `dist/` を Cloudflare Workers へ公開します。初回は Wrangler のログインがブラウザで開きます。`deploy` は build を行わないため、先に `riebeckite build` で `dist/` を作ります。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存サイトでは、先に `npm install -D wrangler` を実行してください。
 
 4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば初回デプロイは成功です。
 
@@ -50,7 +57,7 @@ npm exec riebeckite deploy
 
 ## 2. GitHub Actions で自動デプロイする
 
-push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions + Cloudflare Workers` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
+push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
 
 ```bash
 npx create-riebeckite my-site --github-actions

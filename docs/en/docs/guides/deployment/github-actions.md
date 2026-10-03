@@ -19,11 +19,37 @@ With `--github-actions`, the generator adds two things to the site:
 
 Without `--github-actions`, these files are not generated. See [Cloudflare Workers](./cloudflare-workers.md) for the manual path.
 
+## Add it to an existing site
+
+If you already published with Local-first, you can add continuous deployment without recreating the site. Run this in the project:
+
+```sh
+npm exec riebeckite deploy setup
+```
+
+The command:
+
+1. Detects the Git repository and the GitHub remote.
+2. Checks that the GitHub CLI (`gh`) is installed and logged in.
+3. Creates `.github/workflows/deploy.yml` from the same template when it does not exist. An existing non-Riebeckite workflow is reported and never overwritten; the command then stops before registering secrets.
+4. Reads the Cloudflare account from your Wrangler login, asking you to choose when there is more than one.
+5. Registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt, or from `CLOUDFLARE_API_TOKEN` in the environment for non-interactive use.
+
+It does not create a GitHub repository and does not push. When it finishes, push to deploy:
+
+```sh
+git push
+```
+
+Run it again any time. A matching workflow and existing secrets are detected and skipped, so only the remaining steps run. If a different deployment workflow already exists, replace or remove it first, then run the command again.
+
 ## Prerequisites
 
 - A site whose `build` script runs `riebeckite build` and writes `dist/`.
 - A **committed `package-lock.json`**, so CI can run `npm ci` reproducibly. Run `npm install` once locally and commit the lockfile.
 - A Cloudflare account with Workers enabled.
+- The GitHub CLI (`gh`) installed and logged in (`gh auth login`) to use `riebeckite deploy setup`.
+- Wrangler available in the project (`npm install -D wrangler`). Local-first sites already have it.
 
 ## Add the secrets
 
@@ -33,6 +59,8 @@ In the **site repository**, under Settings → Secrets and variables → Actions
 - `CLOUDFLARE_ACCOUNT_ID`
 
 Then push to `main`, or run the workflow manually from the Actions tab.
+
+`riebeckite deploy setup` performs these two registrations for a site that is already a Git repository, using the account from your Wrangler login and a token you paste into a hidden prompt. Follow the manual steps below when you prefer to add the secrets by hand or when the CLI is unavailable.
 
 ## How the workflow works
 

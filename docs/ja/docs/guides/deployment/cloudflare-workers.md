@@ -394,6 +394,14 @@ flowchart LR
 
 詳しい仕組みと設定は [GitHub Actions](./github-actions.md) を参照してください。
 
+すでに手元から公開している Site は、Site の Directory で次を実行すると、継続デプロイへ移行できます。
+
+```sh
+npm exec riebeckite deploy setup
+```
+
+`.github/workflows/deploy.yml` を作成し、`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を Repository Secret として登録したうえで、push を待ちます。
+
 ## Site と Content が同じ Repository の場合
 
 GitHub Actions 付きで Site を生成します。

@@ -49,6 +49,30 @@ my-site/
 
 通常は、生成された Workflow を出発点として利用します。
 
+## 既存の Site に追加する
+
+すでに Local-first で公開している場合は、Site を作り直さずに継続デプロイを追加できます。Site の Directory で次を実行します。
+
+```sh id="d3setupj1"
+npm exec riebeckite deploy setup
+```
+
+このコマンドは次の順で進みます。
+
+1. Git Repository と GitHub Remote を検出する
+2. GitHub CLI（`gh`）が install 済みでログイン済みか確認する
+3. `.github/workflows/deploy.yml` が無ければ、同じテンプレートから作成する。Riebeckite 以外の既存 workflow は上書きせず、検出したことを報告し、secret の登録には進まずに停止する
+4. Wrangler のログイン状態から Cloudflare Account を取得する。複数ある場合は選択する
+5. `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録する。Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取る
+
+GitHub Repository の作成と push は行いません。完了後、次で Deploy します。
+
+```sh
+git push
+```
+
+再実行も可能です。一致する workflow と登録済みの secret は検出され、残りの手順だけを実行します。別の deployment workflow が既にある場合は、置き換えるか削除してから再実行してください。
+
 ## 必要なもの
 
 GitHub Actions から Deployment するには、次の設定が必要です。
@@ -56,6 +80,7 @@ GitHub Actions から Deployment するには、次の設定が必要です。
 - `package-lock.json`
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
+- `deploy setup` を使う場合は GitHub CLI（`gh`）の install とログイン、および Wrangler の依存（Local-first の Site には含まれています）
 
 ### `package-lock.json`
 
@@ -162,6 +187,8 @@ GitHub の Site Repository → **Settings** → **Secrets and variables** → **
 名前: CLOUDFLARE_API_TOKEN   値: 上でコピーしたトークン
 名前: CLOUDFLARE_ACCOUNT_ID  値: 上の ACCOUNT_ID
 ```
+
+`riebeckite deploy setup` は、すでに Git Repository になっている Site に対してこの2つの登録を自動化します。Wrangler のログインから Account を取得し、Token は hidden prompt に貼り付けます。手元で secret を登録したい場合や、CLI を使えない場合は、上記の手動手順をそのまま利用してください。
 
 GitHub Repository の Actions から、Workflow がこれらを参照します。
 

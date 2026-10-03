@@ -3,6 +3,11 @@ export {
   resolveHonoxConfig,
 } from "./src/config_loader.js";
 export { replaceHonoxIslandDependencyPlugin } from "./src/honox_islands.js";
+export {
+  assertGitHubRepository,
+  deploymentTemplateFiles,
+  type ScaffoldDeploymentOptions,
+} from "./src/scaffold/deployment.js";
 export type {
   ScaffoldSiteOptions,
   ScaffoldSiteResult,
@@ -38,6 +43,7 @@ export {
 export {
   buildDefaultWranglerConfig,
   DEFAULT_WORKER_NAME,
+  GITHUB_ACTIONS_SECRETS,
   PACKAGE_MANAGER,
   WORKER_NAME_MAX_LENGTH,
   WRANGLER_DEFAULTS,

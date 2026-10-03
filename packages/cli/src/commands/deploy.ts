@@ -98,7 +98,7 @@ async function assertBuildOutput(root: string): Promise<void> {
   }
 }
 
-async function resolveWranglerEntry(root: string): Promise<string> {
+export async function resolveWranglerEntry(root: string): Promise<string> {
   for (const directory of parentDirectories(root)) {
     const entry = await readWranglerEntry(directory);
     if (entry) return entry;

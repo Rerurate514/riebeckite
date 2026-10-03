@@ -8,6 +8,7 @@ import { resolveRiebeckiteProject } from "./application_root.js";
 import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
 import { runDeploy } from "./commands/deploy.js";
+import { runDeploySetup } from "./commands/deploy_setup.js";
 import { runDev } from "./commands/dev.js";
 import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
@@ -46,6 +47,10 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       await runDeploy(project, { dryRun: command.dryRun });
       return;
     }
+    if (command.name === "deploy-setup") {
+      await runDeploySetup(project);
+      return;
+    }
     if (command.name === "doctor") {
       if (!(await runDoctorCommand(project))) process.exitCode = 1;
       return;
@@ -73,6 +78,7 @@ type Command =
   | { name: "dev" }
   | { name: "build"; full: boolean }
   | { name: "deploy"; dryRun: boolean }
+  | { name: "deploy-setup" }
   | { name: "check" }
   | { name: "doctor" }
   | {
@@ -96,12 +102,14 @@ function parseCommand(arguments_: readonly string[]): Command {
   ) {
     return { name, full: options[0] === "--full" };
   }
-  if (
-    name === "deploy" &&
-    (options.length === 0 ||
-      (options.length === 1 && options[0] === "--dry-run"))
-  ) {
-    return { name, dryRun: options[0] === "--dry-run" };
+  if (name === "deploy") {
+    if (options.length === 0) return { name, dryRun: false };
+    if (options.length === 1 && options[0] === "--dry-run") {
+      return { name, dryRun: true };
+    }
+    if (options.length === 1 && options[0] === "setup") {
+      return { name: "deploy-setup" };
+    }
   }
   if (name === "inspect") return parseInspectCommand(options);
   if (name === "doctor" && options.length === 0) return { name };
@@ -113,7 +121,7 @@ function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | deploy [--dry-run] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | deploy [--dry-run | setup] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 

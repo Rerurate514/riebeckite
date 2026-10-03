@@ -110,7 +110,15 @@ npx wrangler dev
 
 Instead of running `npm exec riebeckite deploy` manually, you can deploy when you push to GitHub.
 
-For a same-repository site, generate the workflow with:
+If the site is already published from your machine, promote it from the site folder:
+
+```sh
+npm exec riebeckite deploy setup
+```
+
+This creates `.github/workflows/deploy.yml` and registers `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then waits for you to push.
+
+For a same-repository site that is not published yet, generate the workflow with:
 
 ```sh
 npx create-riebeckite my-site --github-actions

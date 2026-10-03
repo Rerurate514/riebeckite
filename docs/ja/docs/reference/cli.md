@@ -19,7 +19,7 @@ riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
-riebeckite deploy [--dry-run]
+riebeckite deploy [--dry-run | setup]
 riebeckite profile [--full]
 
 riebeckite inspect config
@@ -38,7 +38,7 @@ riebeckite inspect build
 | `check` | 設定が正しいか検証する | 変更しない |
 | `doctor` | Project 全体の問題を診断する | 変更しない |
 | `build` | Site を Build する | 成功時のみ更新 |
-| `deploy` | 生成物を Cloudflare Workers へ公開する | 変更しない |
+| `deploy` | 生成物を Cloudflare Workers へ公開する。`--dry-run` は検証のみ、`setup` は GitHub Actions の継続デプロイを準備する | 変更しない |
 | `profile` | Build の性能を調査する | Build に依存 |
 | `inspect` | 現在の解決結果を見る | 変更しない |
 
@@ -353,6 +353,22 @@ npm exec -- riebeckite deploy --dry-run
 を使用します。`npm exec` は `--dry-run` を自身の option として解釈する場合があるため、`--` で区切ってください。
 
 push ごとに自動で deploy したい場合は GitHub Actions を利用できます。詳しくは [Deployment](../guides/deployment/README.md) を参照してください。
+
+### `deploy setup`
+
+すでに Local-first で公開している Site に、GitHub Actions による継続デプロイを追加します。
+
+```sh id="k4n8ws"
+npm exec riebeckite deploy setup
+```
+
+`deploy setup` は、Git Repository と GitHub Remote を検出し、GitHub CLI（`gh`）と Wrangler のログインを確認し、`create-riebeckite` と同じテンプレートから `.github/workflows/deploy.yml` を作成します。Wrangler のログイン状態から Cloudflare Account を取得し、複数ある場合は選択します。最後に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。
+
+Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取り、standard input 経由で `gh secret set` へ渡します。command line の引数には載せず、ファイルにも書き込みません。
+
+GitHub Repository の作成と push は行いません。Riebeckite 以外の既存 workflow を検出した場合は、上書きせずそのまま報告し、secret の登録には進まずに停止します。再実行すると、一致する workflow と登録済みの secret は検出され、残りの手順だけを実行します。別の deployment workflow が既にある場合は、置き換えるか削除してから再実行してください。
+
+`deploy setup` は Wrangler のログインを使うため、Wrangler の依存が Site に install されている必要があります。`create-riebeckite` で `Cloudflare Workers` を選んだ Site には含まれています。
 
 ## `profile`
 

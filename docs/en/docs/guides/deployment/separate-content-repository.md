@@ -271,7 +271,7 @@ That implementation works like this:
 3. Copy only referenced assets into `public/assets/attachments/<relative path from the vault>` (images into `public/<relative path>`, so the dev server can serve them before the first build), skipping the copy when size and mtime are unchanged.
 4. Delete orphaned attachments that exist in public but not in content.
 
-In short, the rule is "copy because a **published note references it**", not "copy because it exists in the vault". Do not take the shortcut of copying the entire vault. It risks leaking private notes, images referenced only from non-public pages, unreferenced attachments, and `.obsidian` metadata. Content images are already filtered by the build; attachment and media publishing stays the site application's responsibility until a publish boundary check is introduced. For an example of checking the boundary yourself, see the E2E fixture's [`publish-boundary-check.mjs`](../../../../../tests/external-site/fixture/site/publish-boundary-check.mjs).
+In short, the rule is "copy because a **published note references it**", not "copy because it exists in the vault". Do not take the shortcut of copying the entire vault. It risks leaking private notes, images referenced only from non-public pages, unreferenced attachments, and `.obsidian` metadata. Content images are already filtered by the build; attachment and media publishing stays the site application's responsibility, so copy only the files a **published** note references. To detect a published note that crosses the boundary by linking to an unpublished one, run `riebeckite-diagnostics` from `@riebeckite/plugin-diagnostics`; it reports those references as `publish-boundary` warnings, and `runDiagnostics()` produces the same result programmatically. See [Diagnostics](../../plugins/diagnostics.md).
 
 ### 4-4. The generated URL
 
@@ -343,6 +343,5 @@ Check the results in this order:
 - [Configuration](../../reference/configuration.md) — root resolution and external vaults in detail
 - [Usage Guide](../README.md) — external vault examples and assets
 - [Cloudflare deploy template](../../../../../templates/cloudflare/README_en.md) — deployment workflow details
-- E2E fixture [`tests/external-site/fixture/site`](../../../../../tests/external-site/fixture/site) — a working example of a vault outside the site
 
 

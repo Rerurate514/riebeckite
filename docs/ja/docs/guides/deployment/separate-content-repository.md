@@ -1037,6 +1037,8 @@ publishStrategy
 
 特に Asset は Vault 全体をそのまま `public/` へコピーしないようにしてください。
 
+公開ノートから未公開ノートへの参照は、`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` で `publish-boundary` 警告として確認できます。`runDiagnostics()` を使うと、同じ診断をプログラムからも取得できます。詳細は [Diagnostics](../../plugins/diagnostics.md) を参照してください。
+
 ## 20. 検証する
 
 Root、Content、公開境界を確認するときは、次の順番で調べます。
@@ -1285,5 +1287,4 @@ Private Vault を利用する場合でも、`publishStrategy`、`exclude`、Asse
 - [Configuration](../../reference/configuration.md) — Root Resolution と外部 Vault
 - [利用ガイド](../README.md) — Content / Asset の基本的な扱い
 - [Cloudflare デプロイテンプレート](../../../../../templates/cloudflare/README_ja.md) — Deployment Workflow
-- [`tests/external-site/fixture/site`](../../../../../tests/external-site/fixture/site) — 外部 Vault を利用する E2E 構成例
 

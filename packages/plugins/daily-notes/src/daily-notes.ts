@@ -2,11 +2,15 @@ import type { ContentManifestEntry } from "@riebeckite/core";
 
 export type DailyNote = {
   date: string;
+  dateDisplay: string;
   snippet: string;
   slug: string;
   sourceUrl: string | null;
   sourceTitle: string | null;
 };
+
+/** How Daily Note dates are formatted in the widget. */
+export type DailyNotesDateFormat = "iso" | "long" | "short";
 
 export type DailyNotesOptions = {
   source?: {
@@ -27,6 +31,10 @@ export type DailyNotesOptions = {
     /** Maximum number of notes to surface. Defaults to `5`. */
     limit?: number;
   };
+  /** Date format for the widget. Defaults to `"iso"`. */
+  dateFormat?: DailyNotesDateFormat;
+  /** Locale used by `"long"` and `"short"` dates. Defaults to `"en"`. */
+  locale?: string;
 };
 
 export type ResolvedDailyNotesExtract = {
@@ -35,11 +43,18 @@ export type ResolvedDailyNotesExtract = {
   codeBlock: string | false;
 };
 
+export type ResolvedDailyNotesDisplay = {
+  dateFormat: DailyNotesDateFormat;
+  locale: string;
+};
+
 export const DEFAULT_DIRECTORY = "Daily";
 export const DEFAULT_FRONTMATTER_KEY = "daily-summary";
 export const DEFAULT_SECTION = "今日のひとこと";
 export const DEFAULT_CODE_BLOCK = "daily-snippet";
 export const DEFAULT_LIMIT = 5;
+export const DEFAULT_DAILY_NOTES_DATE_FORMAT: DailyNotesDateFormat = "iso";
+export const DEFAULT_DAILY_NOTES_LOCALE = "en";
 
 export function resolveExtractOptions(
   options: DailyNotesOptions | undefined,
@@ -55,6 +70,36 @@ export function resolveExtractOptions(
     codeBlock:
       extract?.codeBlock === undefined ? DEFAULT_CODE_BLOCK : extract.codeBlock,
   };
+}
+
+export function resolveDisplayOptions(
+  options: DailyNotesOptions | undefined,
+): ResolvedDailyNotesDisplay {
+  const locale = options?.locale;
+
+  return {
+    dateFormat: options?.dateFormat ?? DEFAULT_DAILY_NOTES_DATE_FORMAT,
+    locale:
+      typeof locale === "string" && locale.trim() !== ""
+        ? locale.trim()
+        : DEFAULT_DAILY_NOTES_LOCALE,
+  };
+}
+
+/** Formats a normalized `YYYY-MM-DD` date for display. */
+export function formatDailyNoteDate(
+  dateIso: string,
+  display: ResolvedDailyNotesDisplay,
+): string {
+  if (display.dateFormat === "iso") return dateIso;
+
+  const date = new Date(`${dateIso}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return dateIso;
+
+  return new Intl.DateTimeFormat(display.locale, {
+    dateStyle: display.dateFormat === "long" ? "long" : "medium",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 /**

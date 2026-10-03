@@ -55,6 +55,8 @@ getDailyNotes({
     source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" },
     extract: { frontmatter: "daily-summary", section: "今日のひとこと" },
     widget: { limit: 3 },
+    dateFormat: "iso",
+    locale: "en",
   },
 });
 ```
@@ -62,12 +64,22 @@ getDailyNotes({
 Set a strategy to `false` to disable it. `pathPattern` supports `{YYYY}`,
 `{MM}`, `{DD}`, and `*` so a note filename can be matched precisely.
 
+`dateFormat` controls the widget date: `"iso"` (the default, `YYYY-MM-DD`),
+`"long"`, or `"short"`. `"long"` and `"short"` are rendered with `locale`
+(default `"en"`). The machine-readable `YYYY-MM-DD` value stays on the
+`<time datetime>` attribute regardless, and `DailyNote.date` keeps that ISO
+form while `DailyNote.dateDisplay` holds the formatted text.
+
 ## Exports
 
 - `dailyNotesPlugin(options?)` — plugin factory (registers `style.css`)
 - `getDailyNotes({ manifest, config, options? })` — sorted `DailyNote[]`
 - `DailyNotes` — widget component (`{ notes, limit? }`)
-- Types: `DailyNote`, `DailyNotesOptions`, `ResolvedDailyNotesExtract`
+- `resolveDisplayOptions(options?)` — apply date-format defaults
+- `formatDailyNoteDate(dateIso, display)` — pure date formatter
+- Constants: `DEFAULT_DAILY_NOTES_DATE_FORMAT`, `DEFAULT_DAILY_NOTES_LOCALE`
+- Types: `DailyNote`, `DailyNotesOptions`, `DailyNotesDateFormat`,
+  `ResolvedDailyNotesExtract`, `ResolvedDailyNotesDisplay`
 
 ## See also
 

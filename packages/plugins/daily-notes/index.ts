@@ -8,8 +8,16 @@ import type { DailyNotesOptions } from "./src/daily-notes.js";
 export { default as DailyNotes } from "./components/daily-notes.js";
 export type {
   DailyNote,
+  DailyNotesDateFormat,
   DailyNotesOptions,
+  ResolvedDailyNotesDisplay,
   ResolvedDailyNotesExtract,
+} from "./src/daily-notes.js";
+export {
+  DEFAULT_DAILY_NOTES_DATE_FORMAT,
+  DEFAULT_DAILY_NOTES_LOCALE,
+  formatDailyNoteDate,
+  resolveDisplayOptions,
 } from "./src/daily-notes.js";
 export { getDailyNotes } from "./src/daily-notes.server.js";
 

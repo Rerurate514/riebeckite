@@ -8,7 +8,8 @@
     "build": "vite build --mode client && vite build",
     "preview": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
-    "rb": "npm run prebuild && npm run build && npm run preview"
+    "rb": "npm run prebuild && npm run build && npm run preview",
+    "test": "node --import tsx --test \"test/*.test.ts\""
   },
   "private": true,
   "dependencies": {
@@ -93,6 +94,7 @@
     "@riebeckite/cli": "workspace:*",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "catalog:",
     "esbuild": "^0.28.2",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.22.4",

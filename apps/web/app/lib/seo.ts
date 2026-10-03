@@ -5,6 +5,7 @@ import type {
 } from "@riebeckite/core";
 import { resolvePlugins } from "@riebeckite/core";
 import { config } from "../config";
+import { buildArchiveDescription, buildTagDescription } from "./locale";
 
 const seoProvider = findSeoProvider();
 
@@ -34,19 +35,27 @@ export function buildIndexSeo(post?: PostContent): SeoMetadata {
   });
 }
 
-export function buildTagSeo(tag: string, path: string): SeoMetadata {
+export function buildTagSeo(
+  tag: string,
+  path: string,
+  lang?: string,
+): SeoMetadata {
   return buildWebsiteSeo({
     title: `#${tag} | ${config.site.title}`,
-    description: `${config.site.title} の #${tag} タグの記事一覧です。`,
+    description: buildTagDescription(config.site.title, tag, lang),
     path,
     kind: "tag",
   });
 }
 
-export function buildArchiveSeo(period: string, path: string): SeoMetadata {
+export function buildArchiveSeo(
+  period: string,
+  path: string,
+  lang?: string,
+): SeoMetadata {
   return buildWebsiteSeo({
     title: period,
-    description: `${config.site.title} の ${period} の記事一覧です。`,
+    description: buildArchiveDescription(config.site.title, period, lang),
     path,
     kind: "website",
   });

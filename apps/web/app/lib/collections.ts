@@ -6,6 +6,12 @@ import {
   type PostContent,
 } from "@riebeckite/core";
 import { content } from "../content";
+import {
+  archivePaginationLabels,
+  formatArchivePeriod,
+  resolveWebLocale,
+  type WebLocale,
+} from "./locale";
 
 export const ARCHIVE_BASE_PATH = "/archive";
 
@@ -13,41 +19,51 @@ export const ARCHIVE_BASE_PATH = "/archive";
  * Archive pages are generated from the Core collection mechanism. Taxonomy
  * listings are provided by the taxonomy plugin's Page Type instead.
  */
-const definitions: readonly ContentCollectionDefinition[] = [
-  {
-    kind: "archive",
-    basePath: ARCHIVE_BASE_PATH,
-    groupBy: {
-      by: "date",
-      fields: ["published", "date", "created"],
-      granularity: "month",
+function archiveDefinitions(
+  locale: WebLocale,
+): readonly ContentCollectionDefinition[] {
+  return [
+    {
+      kind: "archive",
+      basePath: ARCHIVE_BASE_PATH,
+      groupBy: {
+        by: "date",
+        fields: ["published", "date", "created"],
+        granularity: "month",
+      },
+      order: "desc",
+      pageSize: 10,
+      resolveTitle: ({ value }) => formatArchivePeriod(value, locale),
+      resolvePath: ({ value }) =>
+        `${ARCHIVE_BASE_PATH}/${value.replace(/-/g, "/")}`,
     },
-    order: "desc",
-    pageSize: 10,
-    resolveTitle: ({ value }) => formatArchivePeriod(value),
-    resolvePath: ({ value }) =>
-      `${ARCHIVE_BASE_PATH}/${value.replace(/-/g, "/")}`,
-  },
-];
+  ];
+}
 
-let cachedCollections: ContentCollection[] | null = null;
+const collectionCache = new Map<WebLocale, ContentCollection[]>();
 
-export async function buildCollections(): Promise<ContentCollection[]> {
-  if (cachedCollections) return cachedCollections;
+export async function buildCollections(
+  lang?: string,
+): Promise<ContentCollection[]> {
+  const locale = resolveWebLocale(lang);
+  const cached = collectionCache.get(locale);
+  if (cached) return cached;
 
   const manifest = await content.getManifest();
-  cachedCollections = buildContentCollections(
+  const collections = buildContentCollections(
     manifest.discoverableEntries,
-    definitions,
+    archiveDefinitions(locale),
   );
-  return cachedCollections;
+  collectionCache.set(locale, collections);
+  return collections;
 }
 
 export async function findCollection(
   kind: string,
   path: string,
+  lang?: string,
 ): Promise<ContentCollection | null> {
-  const collections = await buildCollections();
+  const collections = await buildCollections(lang);
   return (
     collections.find(
       (collection) => collection.kind === kind && collection.path === path,
@@ -55,7 +71,10 @@ export async function findCollection(
   );
 }
 
-export function buildArchivePage(collection: ContentCollection): PostContent {
+export function buildArchivePage(
+  collection: ContentCollection,
+  lang?: string,
+): PostContent {
   const posts = collection.entries
     .map(
       (entry) =>
@@ -63,16 +82,17 @@ export function buildArchivePage(collection: ContentCollection): PostContent {
     )
     .join("");
 
+  const labels = archivePaginationLabels(lang);
   const page = collection.page;
   const navigation: string[] = [];
   if (page.previousPath) {
     navigation.push(
-      `<a rel="prev" href="${escapeHtml(page.previousPath)}">前のページ</a>`,
+      `<a rel="prev" href="${escapeHtml(page.previousPath)}">${labels.previous}</a>`,
     );
   }
   if (page.nextPath) {
     navigation.push(
-      `<a rel="next" href="${escapeHtml(page.nextPath)}">次のページ</a>`,
+      `<a rel="next" href="${escapeHtml(page.nextPath)}">${labels.next}</a>`,
     );
   }
   const pagination =
@@ -86,11 +106,4 @@ export function buildArchivePage(collection: ContentCollection): PostContent {
     },
     html: `<h1>${escapeHtml(collection.title)}</h1><ul>${posts}</ul>${pagination}`,
   };
-}
-
-function formatArchivePeriod(value: string): string {
-  const [year, month] = value.split("-");
-  if (!year) return value;
-  if (!month) return year;
-  return `${year}年${Number(month)}月`;
 }

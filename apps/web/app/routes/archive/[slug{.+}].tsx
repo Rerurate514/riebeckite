@@ -7,13 +7,13 @@ import {
   buildCollections,
   findCollection,
 } from "../../lib/collections";
-import { buildArchiveSeo } from "../../lib/seo";
+import { buildArchiveSeo, getHtmlLanguage } from "../../lib/seo";
 
 const ARCHIVE_PREFIX = `${ARCHIVE_BASE_PATH}/`;
 
 export default createRoute(
   ssgParams(async () => {
-    const collections = await buildCollections();
+    const collections = await buildCollections(getHtmlLanguage());
     return collections
       .filter((collection) => collection.kind === "archive")
       .map((collection) => ({
@@ -24,14 +24,17 @@ export default createRoute(
     const slug = c.req.param("slug");
     if (!slug) return c.notFound();
 
+    const lang = getHtmlLanguage();
     const collection = await findCollection(
       "archive",
       `${ARCHIVE_PREFIX}${slug}`,
+      lang,
     );
     if (!collection) return c.notFound();
 
-    c.set("seo", buildArchiveSeo(collection.title, collection.path));
+    c.set("htmlLanguage", lang);
+    c.set("seo", buildArchiveSeo(collection.title, collection.path, lang));
 
-    return c.render(<Article content={buildArchivePage(collection)} />);
+    return c.render(<Article content={buildArchivePage(collection, lang)} />);
   },
 );

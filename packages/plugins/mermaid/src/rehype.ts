@@ -120,7 +120,8 @@ function buildFigure(input: {
       className: "rr-mermaid",
       dataMermaid:
         input.clientFallback && !input.staticSvg ? "pending" : undefined,
-      dataMermaidSource: input.source,
+      dataMermaidSource:
+        input.clientFallback && !input.staticSvg ? input.source : undefined,
     },
     children,
   );

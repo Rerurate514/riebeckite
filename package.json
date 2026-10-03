@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --filter @riebeckite/web dev",
-    "build": "pnpm --filter @riebeckite/cli build && pnpm --filter @riebeckite/web build",
+    "build": "pnpm build:packages && pnpm --filter @riebeckite/web build",
     "build:packages": "node scripts/build_packages.mjs",
     "bump:version": "node scripts/bump_version.mjs",
     "check": "biome check .",

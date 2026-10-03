@@ -57,6 +57,7 @@ export interface PipelineOptions {
     slug: string,
     dependencies: readonly CachedContentDependency[],
   ): void;
+  onPersistentContentCacheResult?(result: "hit" | "miss" | "bypass"): void;
 }
 
 export class Pipeline {
@@ -176,6 +177,7 @@ export class Pipeline {
               "persistentContentCache.hit",
               { key: cacheKey, slug: sourceSlug },
             );
+            this.options.onPersistentContentCacheResult?.("hit");
             return {
               frontmatter: cachedEntry.value.frontmatter,
               html: cachedEntry.value.html,
@@ -186,6 +188,7 @@ export class Pipeline {
           "persistentContentCache.miss",
           { key: cacheKey, slug: sourceSlug },
         );
+        this.options.onPersistentContentCacheResult?.("miss");
       } else {
         this.options.observability?.tracer?.event(
           "persistentContentCache.bypass",
@@ -194,6 +197,7 @@ export class Pipeline {
             ...(cacheable.reason ? { reason: cacheable.reason } : {}),
           },
         );
+        this.options.onPersistentContentCacheResult?.("bypass");
       }
     }
 

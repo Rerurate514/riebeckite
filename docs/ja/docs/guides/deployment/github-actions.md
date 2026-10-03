@@ -359,15 +359,17 @@ flowchart TD
     CheckoutContent["2. 外部ContentをCheckout<br/>必要な場合のみ"]
     Node["3. Node.js 22"]
     Install["4. npm ci"]
-    Check["5. riebeckite check"]
-    Build["6. riebeckite build"]
-    Deploy["7. CloudflareへDeploy"]
+    Cache["5. Riebeckite cacheを復元"]
+    Check["6. riebeckite check"]
+    Build["7. riebeckite build"]
+    Deploy["8. CloudflareへDeploy"]
 
     Start --> CheckoutSite
     CheckoutSite --> CheckoutContent
     CheckoutContent --> Node
     Node --> Install
-    Install --> Check
+    Install --> Cache
+    Cache --> Check
     Check --> Build
     Build --> Deploy
 ```
@@ -448,7 +450,13 @@ npm ci
 
 そのため、生成 Workflow を利用する場合は `package-lock.json` を Commit しておく必要があります。
 
-### 5. Site を検証
+### 5. Riebeckite cache を復元
+
+生成 Workflow は `actions/cache` で `.riebeckite/cache` を復元します。key には runner OS、content cache schema、`package-lock.json` の hash を含めます。`dist/` は cache しません。依存関係を更新した場合に古い cache を使わず、feature branch でも同じ lockfile の default branch cache を再利用できます。
+
+build 後は更新済み cache が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` を見ると、Actions cache の復元後に Riebeckite 内部で実際に再利用されたかを確認できます。cache を削除する、または workflow の cache step を外すと cold processing になりますが、出力の正しさには影響しません。
+
+### 6. Site を検証
 
 次に、
 
@@ -472,7 +480,7 @@ check
 
 壊れた設定のまま Deployment まで進めないための確認です。
 
-### 6. Site を Build
+### 7. Site を Build
 
 `check` が成功したら、
 

@@ -110,9 +110,10 @@ locally.
 
 1. Checks out the repository.
 2. Installs dependencies with `npm ci`.
-3. Runs `npm exec riebeckite check`, the read-only configuration and plugin validation.
-4. Runs `npm exec riebeckite build` to generate `dist/`.
-5. Deploys with `cloudflare/wrangler-action`, using the repository secrets.
+3. Restores `.riebeckite/cache` with `actions/cache`.
+4. Runs `npm exec riebeckite check`, the read-only configuration and plugin validation.
+5. Runs `npm exec riebeckite build` to generate `dist/`.
+6. Saves the updated cache and deploys with `cloudflare/wrangler-action`, using the repository secrets.
 
 ## Notes
 
@@ -122,6 +123,7 @@ locally.
   shape in `apps/web/wrangler.jsonc`.
 - **Build state stays at build time.** `.riebeckite/` and plugin caches are not
   part of `dist/` and never reach the Worker runtime.
+- **Caching and deployment are separate.** Riebeckite reuses processed content on the GitHub runner; Wrangler then deploys the freshly generated `dist/`. Workers do not run incremental builds.
 - **Attachments are site-owned.** Copy only the files you intend to publish in a
   `prebuild` step before the build, as the reference application does.
 
@@ -130,4 +132,3 @@ locally.
 - [Usage Guide — Preview and deploy](../../docs/en/docs/guides/README.md#7-preview-and-deploy)
 - [HonoX Integration](../../docs/en/docs/framework/honox-integration.md)
 - [Build System](../../docs/en/docs/framework/build-system.md)
-

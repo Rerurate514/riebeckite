@@ -12,6 +12,16 @@ Build state is application-scoped at `.riebeckite/build/content-state.json`. It 
 
 State tracks each entry's fingerprint together with its dependencies: the notes it links to (whose resolved permalink it may embed) and the assets it references (whose metadata, such as attachment size, it may render). A changed dependency invalidates the dependent entry and, transitively, its dependents. Added or removed entries invalidate link resolution globally, so they fall back to regenerating every note. The `.riebeckite` state directory is build-time state, not content, and is never scanned.
 
+## Persistent per-content cache
+
+The processed Markdown result for each note is stored in `.riebeckite/cache/content/v3`. A build without an entry is a **cold build**. Restoring compatible entries before a later build makes it a **warm build**: unchanged notes can reuse their processed HTML and frontmatter while the normal build still generates `dist/`.
+
+An entry key includes its Markdown source, parsed frontmatter, the cache schema, and the processing-pipeline fingerprint. The fingerprint includes Markdown and content-filter configuration, plugin configuration and order, plugin `cacheVersion` and processed-content cache contracts, and the Core compatibility version. Cached content also records logical content, file, and link dependencies; changed or missing dependencies are misses. Unsafe plugins bypass this cache. Cache data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
+
+This cache is an optimization, never a correctness dependency. Missing entries, incompatible versions, malformed metadata, fingerprint or dependency mismatches, and corrupted JSON are safe misses. Delete `.riebeckite/cache` to force cold processing; a filesystem access failure still fails the build because it requires attention. The build log reports one `Persistent content cache` line with `hits`, `misses`, and `bypasses`.
+
+For GitHub Actions, cache `.riebeckite/cache`, not `dist/`. The generated Cloudflare workflow does this automatically; see [GitHub Actions](../guides/deployment/github-actions.md).
+
 ## Commands and lifecycle
 
 ```sh

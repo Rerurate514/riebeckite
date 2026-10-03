@@ -13,6 +13,8 @@ npm exec riebeckite build
 
 A successful build creates `dist/`. Cloudflare Workers will serve the files from that folder.
 
+Incremental processing happens during `riebeckite build` on your machine or GitHub Actions runner. Wrangler then uploads the newly generated `dist/` as Workers Static Assets; Workers do not perform incremental builds. The generated GitHub Actions workflow persists `.riebeckite/cache` for this build step, never `dist/`.
+
 ## 1. Create a Cloudflare account
 
 Create an account at [cloudflare.com](https://www.cloudflare.com/). The free plan is enough to get started.
@@ -129,4 +131,3 @@ See the [Cloudflare deployment template](../../../../../templates/cloudflare/REA
 - [Fast path to publishing a site](../../getting-started/deployment.md)
 - [Usage Guide](../README.md)
 - [CLI](../../reference/cli.md)
-

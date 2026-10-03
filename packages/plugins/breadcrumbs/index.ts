@@ -51,6 +51,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
       version: "breadcrumbs-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateBreadcrumbsOptions,
     onManifestCreated: (context) => {

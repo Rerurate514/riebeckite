@@ -31,6 +31,44 @@ test("independent content edit affects own page and global outputs only", () => 
   assert.equal(result.fullRegenerationRequired, false);
 });
 
+test("manifest plugin global dependencies affect every content output", () => {
+  const previous = manifest([entry("a"), entry("b")]);
+  const current = manifest([entry("a", { title: "A2" }), entry("b")]);
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: {
+      version: 4,
+      entries: {},
+      contentIndex: {},
+      manifestEntries: previous.entries,
+      outputs: [],
+    },
+    changeSet: { added: [], changed: ["a.md"], removed: [], unchanged: [] },
+    affectedContent: { direct: new Set(["a"]), dependent: new Set() },
+    contentOutputDependencies: [{ type: "global" }],
+  });
+
+  assert.deepEqual(paths(result.affected), ["a.html", "b.html"]);
+});
+
+test("manifest plugin unknown dependencies require safe full regeneration", () => {
+  const current = manifest([entry("a"), entry("b")]);
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: undefined,
+    changeSet: {
+      added: [],
+      changed: [],
+      removed: [],
+      unchanged: ["a.md", "b.md"],
+    },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    contentOutputDependencies: [{ type: "unknown" }],
+  });
+
+  assert.equal(result.fullRegenerationRequired, true);
+});
+
 test("wikilink changes affect old and new backlink target pages", () => {
   const previous = manifest([
     entry("source", { links: ["old"] }),

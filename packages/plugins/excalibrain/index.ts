@@ -125,6 +125,7 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
       version: "excalibrain-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateExcaliBrainOptions,
     extendHtmlPipeline: (pipeline) => {

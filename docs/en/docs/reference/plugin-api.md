@@ -226,6 +226,50 @@ Use `resolveRiebeckiteRoute(content, c.req.path)` and
 route. Duplicate IDs fail at plugin resolution. When multiple types match, the
 highest `priority` wins; ties fail explicitly.
 
+## Build dependencies
+
+`processedContentCache` declares whether Core may reuse a plugin's processed
+content between builds. This is separate from `cacheVersion` and
+`context.cache`.
+
+```ts
+processedContentCache: {
+  version: "example-v1",
+  dependencyMode: "tracked",
+}
+```
+
+- `none` is for transforms that depend only on the source content, frontmatter,
+  options, and the declared version.
+- `tracked` is for transforms that read other content or files through Core.
+  Use `context.contentSource`, `readContentSourceEntry`, `renderContent`, or
+  `renderNoteEmbed`; Core owns `ContentDependencyTracker` and records those
+  content and file reads automatically. Do not read the filesystem directly.
+- `unsafe` is for inputs Core cannot track, such as Git, network, time, or
+  process state. It safely bypasses persistent processed-content reuse.
+
+Content dependencies decide which source content must be processed again.
+Output dependencies decide which emitted files must be written again. They are
+separate contracts. Page types declare `outputDependencies`; a plugin that
+updates existing manifest entry HTML in `onManifestCreated` declares root
+`outputDependencies`, which are added to those content outputs.
+
+```ts
+outputDependencies: [{ type: "global" }]
+
+pageTypes: [{
+  id: "example.report",
+  paths: ["/report"],
+  outputDependencies: [{ type: "tag", tag: "release" }],
+  resolve: () => null,
+}]
+```
+
+Use `content`, `tag`, or `folder` when the exact scope is known; use `global`
+for a manifest-wide collection transform. Use `unknown` only when the input
+cannot be represented: it regenerates safely and requests full output
+regeneration. Generated outputs without declared dependencies are `unknown`.
+
 ## Assets and client entries
 
 Plugin CSS remains in the plugin package and is declared through

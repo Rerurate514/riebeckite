@@ -34,6 +34,7 @@ export function docs(options: DocsOptions) {
 
   return definePlugin({
     name: `${DOCS_PLUGIN_NAME}:${resolved.root}`,
+    outputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateDocsOptions,
     assets: [createStyleAsset(DOCS_PLUGIN_NAME)],

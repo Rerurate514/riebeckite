@@ -34,6 +34,7 @@ function entry(
 
 test("series() is re-exported as seriesPlugin and registers its stylesheet", () => {
   assert.equal(seriesPlugin, series);
+  assert.deepEqual(series().outputDependencies, [{ type: "global" }]);
   assert.deepEqual(series().assets, [
     {
       pluginName: "series",

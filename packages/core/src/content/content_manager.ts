@@ -352,6 +352,8 @@ export class ContentManager {
               changeSet: preparation.changeSet,
               affectedContent: preparation.affectedContent,
               pluginPageOutputs,
+              contentOutputDependencies:
+                this.pluginRuntime.getContentOutputDependencies(),
             })
           : null;
         if (this.outputChangeSet) {
@@ -412,6 +414,8 @@ export class ContentManager {
           dependent: new Set(),
         },
         pluginPageOutputs,
+        contentOutputDependencies:
+          this.pluginRuntime.getContentOutputDependencies(),
       });
     }
     return this.outputChangeSet;

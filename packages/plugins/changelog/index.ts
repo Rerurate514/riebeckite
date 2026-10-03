@@ -98,6 +98,7 @@ export function changelog(options: ChangelogOptions = {}) {
 
   return definePlugin({
     name: CHANGELOG_PLUGIN_NAME,
+    outputDependencies: [{ type: "unknown" }],
     options,
     validateOptions: validateChangelogOptions,
     onManifestCreated: (context) => applyChangelog(context, resolved),

@@ -58,6 +58,7 @@ export function properties(options: PropertiesOptions = {}) {
       version: "properties-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     validateOptions: validatePropertiesOptions,
     assets: [createStyleAsset(PLUGIN_NAME)],

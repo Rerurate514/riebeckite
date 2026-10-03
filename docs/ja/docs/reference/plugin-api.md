@@ -511,6 +511,36 @@ headTags
 
 詳しくは [Page System](../framework/page-system.md) を参照してください。
 
+# Build Dependency
+
+`processedContentCache` は、Core が Plugin の処理済み Content を Build 間で再利用できるかを宣言する契約です。`cacheVersion` と `context.cache` とは別のものです。
+
+```ts
+processedContentCache: {
+  version: "example-v1",
+  dependencyMode: "tracked",
+}
+```
+
+- `none`: source Content、frontmatter、options、宣言した version だけに依存する変換です。
+- `tracked`: 他の Content や file を Core 経由で読む変換です。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、Core が `ContentDependencyTracker` により Content/file 読み取りを自動記録します。filesystem を直接読んではいけません。
+- `unsafe`: Git、network、時刻、process state など、Core が追跡できない入力です。処理済み Content の永続 Cache 再利用を安全側で無効にします。
+
+Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の契約です。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `outputDependencies` を宣言すると各 Content Output に加算されます。
+
+```ts
+outputDependencies: [{ type: "global" }]
+
+pageTypes: [{
+  id: "example.report",
+  paths: ["/report"],
+  outputDependencies: [{ type: "tag", tag: "release" }],
+  resolve: () => null,
+}]
+```
+
+対象を特定できる場合は `content`、`tag`、`folder` を使います。manifest 全体に依存する集合変換は `global` を使います。表現できない入力だけに `unknown` を使ってください。`unknown` は安全側で再生成し、全 Output の再生成を要求します。依存を宣言しない Generated Output も `unknown` です。
+
 # Content Graph
 
 Content Graph を拡張する場合は、

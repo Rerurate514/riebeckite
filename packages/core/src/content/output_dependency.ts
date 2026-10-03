@@ -35,8 +35,13 @@ export function determineOutputChanges(input: {
     readonly dependent: ReadonlySet<string>;
   };
   readonly pluginPageOutputs?: readonly OutputDescriptor[];
+  readonly contentOutputDependencies?: readonly OutputDependency[];
 }): OutputChangeSet {
-  const current = buildOutputInventory(input.manifest, input.pluginPageOutputs);
+  const current = buildOutputInventory(
+    input.manifest,
+    input.pluginPageOutputs,
+    input.contentOutputDependencies,
+  );
   const previous = new Map(
     (input.previousState?.outputs ?? []).map((output) => [output.path, output]),
   );
@@ -96,10 +101,11 @@ export function determineOutputChanges(input: {
 export function buildOutputInventory(
   manifest: ContentManifest,
   pluginPageOutputs: readonly OutputDescriptor[] = [],
+  contentOutputDependencies: readonly OutputDependency[] = [],
 ): readonly OutputDescriptor[] {
   const outputs = new Map<string, OutputDescriptor>();
   for (const entry of manifest.publicEntries) {
-    addOutput(outputs, contentOutput(entry));
+    addOutput(outputs, contentOutput(entry, contentOutputDependencies));
   }
   for (const [path, redirect] of manifest.publicRedirects) {
     addOutput(outputs, {
@@ -131,12 +137,15 @@ export function htmlOutputPath(pathname: string): string {
   return `${withoutSlash}.html`;
 }
 
-function contentOutput(entry: ContentManifestEntry): OutputDescriptor {
+function contentOutput(
+  entry: ContentManifestEntry,
+  dependencies: readonly OutputDependency[],
+): OutputDescriptor {
   return {
     kind: "content",
     path: htmlOutputPath(entry.permalink),
     producer: `content:${entry.slug}`,
-    dependencies: [{ type: "content", slug: entry.slug }],
+    dependencies: [{ type: "content", slug: entry.slug }, ...dependencies],
   };
 }
 

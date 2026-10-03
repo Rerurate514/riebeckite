@@ -55,6 +55,7 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
       version: "responsive-image-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateResponsiveImageOptions,
     extendHtmlPipeline: (pipeline) => {

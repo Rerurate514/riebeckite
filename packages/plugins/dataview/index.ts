@@ -55,6 +55,7 @@ export function dataviewPlugin(options: DataviewOptions = {}) {
       version: "dataview-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     provides: ["content.dataview"],
     validateOptions: validateDataviewOptions,

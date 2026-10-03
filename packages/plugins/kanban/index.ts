@@ -41,6 +41,7 @@ export function kanban(options: KanbanOptions = {}) {
       version: "kanban-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateKanbanOptions,
     extendMarkdownPipeline: (pipeline) => {

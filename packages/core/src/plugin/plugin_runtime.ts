@@ -13,6 +13,7 @@ import type {
   GeneratedOutput,
   GeneratedOutputSink,
 } from "../types/generated_output.js";
+import type { OutputDependency } from "../types/output_dependency.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
 import {
@@ -324,6 +325,10 @@ export class PluginRuntime {
       }
     }
     return uniqueOutputs(outputs);
+  }
+
+  getContentOutputDependencies(): readonly OutputDependency[] {
+    return this.plugins().flatMap((plugin) => plugin.outputDependencies ?? []);
   }
 
   async collectDiagnostics(

@@ -45,6 +45,7 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
       version: "hover-preview-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateHoverPreviewOptions,
     onManifestCreated: (context) => {

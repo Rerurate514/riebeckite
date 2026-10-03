@@ -1,6 +1,7 @@
 import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
 import type { PluginOptionsValidator } from "./config_validation.js";
 import type { Diagnostic } from "./diagnostic.js";
+import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
   PluginContentContext,
@@ -98,6 +99,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   seo?: PluginSeoExtension;
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];
+  outputDependencies?: readonly OutputDependency[];
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
 };

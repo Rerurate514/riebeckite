@@ -25,6 +25,7 @@ export function queryPlugin(options: QueryOptions = {}) {
       version: "query-v1",
       dependencyMode: "none",
     },
+    outputDependencies: [{ type: "global" }],
     options,
     provides: ["content.query"],
     validateOptions: validateQueryOptions,

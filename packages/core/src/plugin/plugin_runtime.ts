@@ -24,7 +24,10 @@ import type {
   PluginContentLocationResolver,
   PluginContext,
 } from "../types/plugin_context.js";
-import type { ResolvedPluginPage } from "../types/plugin_page.js";
+import type {
+  PluginPageType,
+  ResolvedPluginPage,
+} from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
 import { GeneratedOutputRegistry } from "./generated_output_registry.js";
 import type { PluginCache } from "./plugin_cache.js";
@@ -237,20 +240,28 @@ export class PluginRuntime {
     contentIndex: Map<string, string>,
   ): Promise<ResolvedPluginPage | null> {
     const matches: { page: ResolvedPluginPage; priority: number }[] = [];
-    const normalizedPathname = normalizePagePath(pathname);
-    const context = {
-      ...this.createContext(contentIndex),
-      manifest,
-      pathname: normalizedPathname,
-    };
+    const requestedPathname = normalizePagePath(pathname);
     for (const plugin of this.plugins()) {
       for (const pageType of plugin.pageTypes ?? []) {
+        const pagePathname = normalizePageTypePath(pathname, pageType);
+        const context = {
+          ...this.createContext(contentIndex),
+          manifest,
+          pathname: pagePathname,
+        };
         const page = await pageType.resolve(
           this.createPluginContext(plugin, context),
         );
         if (page) {
           matches.push({
-            page: { ...page, type: pageType.id, pluginName: plugin.name },
+            page: {
+              ...page,
+              pathname: pageType.directoryIndex
+                ? normalizeDirectoryPagePath(page.pathname)
+                : page.pathname,
+              type: pageType.id,
+              pluginName: plugin.name,
+            },
             priority: pageType.priority ?? 0,
           });
         }
@@ -263,7 +274,7 @@ export class PluginRuntime {
     );
     if (highest.length !== 1) {
       throw new Error(
-        `Multiple plugin page types match ${normalizedPathname} at priority ${highestPriority}: ${highest
+        `Multiple plugin page types match ${requestedPathname} at priority ${highestPriority}: ${highest
           .map((match) => match.page.type)
           .join(", ")}`,
       );
@@ -281,14 +292,16 @@ export class PluginRuntime {
       for (const pageType of plugin.pageTypes ?? []) {
         const declared = pageType.paths;
         if (!declared) continue;
-        paths.push(
-          ...(typeof declared === "function"
+        const resolved =
+          typeof declared === "function"
             ? await declared(this.createPluginContext(plugin, context))
-            : declared),
-        );
+            : declared;
+        for (const rawPath of resolved) {
+          paths.push(normalizePageTypePath(rawPath, pageType));
+        }
       }
     }
-    return [...new Set(paths.map(normalizePagePath))];
+    return [...new Set(paths)];
   }
 
   async getPageOutputs(
@@ -306,7 +319,7 @@ export class PluginRuntime {
             ? await declared(this.createPluginContext(plugin, context))
             : declared;
         for (const rawPath of paths) {
-          const pathname = normalizePagePath(rawPath);
+          const pathname = normalizePageTypePath(rawPath, pageType);
           const dependencyContext = { ...context, pathname };
           const dependencies = pageType.outputDependencies
             ? typeof pageType.outputDependencies === "function"
@@ -507,6 +520,7 @@ function validatePageType(pluginName: string, pageType: unknown): void {
     resolve?: unknown;
     paths?: unknown;
     priority?: unknown;
+    directoryIndex?: unknown;
     outputDependencies?: unknown;
   };
   if (typeof candidate.id !== "string" || candidate.id.trim() === "") {
@@ -546,6 +560,28 @@ function validatePageType(pluginName: string, pageType: unknown): void {
       `Plugin ${pluginName} page type "${candidate.id}" outputDependencies must be an array or function`,
     );
   }
+  if (
+    candidate.directoryIndex !== undefined &&
+    typeof candidate.directoryIndex !== "boolean"
+  ) {
+    throw new TypeError(
+      `Plugin ${pluginName} page type "${candidate.id}" directoryIndex must be a boolean`,
+    );
+  }
+}
+
+function normalizePageTypePath(
+  pathname: string,
+  pageType: Pick<PluginPageType, "directoryIndex">,
+): string {
+  return pageType.directoryIndex
+    ? normalizeDirectoryPagePath(pathname)
+    : normalizePagePath(pathname);
+}
+
+function normalizeDirectoryPagePath(pathname: string): string {
+  const path = normalizePagePath(pathname);
+  return path === "/" ? path : `${path}/`;
 }
 
 function normalizePagePath(pathname: string): string {

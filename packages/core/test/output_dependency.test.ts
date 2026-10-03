@@ -3,6 +3,7 @@ import { test } from "node:test";
 import type { ContentBuildState } from "../src/content/content_build_state.js";
 import type { ContentChangeSet } from "../src/content/content_change_set.js";
 import {
+  buildOutputInventory,
   determineOutputChanges,
   type OutputDescriptor,
 } from "../src/content/output_dependency.js";
@@ -249,6 +250,20 @@ test("unknown dependency fallback marks output affected and requires full regene
     "plugin.bin",
   ]);
   assert.equal(result.fullRegenerationRequired, true);
+});
+
+test("directory-index plugin pages emit index outputs", () => {
+  const outputs = buildOutputInventory(manifest([]), [
+    pluginPage("folder", []),
+    pluginPage("folder/", []),
+  ]);
+
+  assert.deepEqual(
+    outputs
+      .filter((output) => output.kind === "plugin-page")
+      .map((output) => output.path),
+    ["folder.html", "folder/index.html"],
+  );
 });
 
 function changes(

@@ -35,6 +35,7 @@ export type PluginPageType = {
       ) => readonly string[] | Promise<readonly string[]>);
   /** Higher values win when more than one type matches a request. */
   priority?: number;
+  directoryIndex?: boolean;
   outputDependencies?:
     | readonly OutputDependency[]
     | ((

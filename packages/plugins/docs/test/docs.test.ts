@@ -212,6 +212,45 @@ test("keeps localized docs navigation within the current language", async () => 
   assert.doesNotMatch(japanese, /English Home/);
 });
 
+test("localizes the previous and next labels by page language", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [localizedLocationPlugin, docs({ root: "docs" })],
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "docs/index.md":
+        "---\ntitle: Home\npublish: true\nsidebar:\n  order: 1\n---\n# Home\n",
+      "docs/install.md":
+        "---\ntitle: Install\npublish: true\nsidebar:\n  order: 2\n---\n# Install\n",
+      "docs/guide.md":
+        "---\ntitle: Guide\npublish: true\nsidebar:\n  order: 3\n---\n# Guide\n",
+      "ja/docs/index.md":
+        "---\ntitle: ホーム\npublish: true\nsidebar:\n  order: 1\n---\n# Home\n",
+      "ja/docs/install.md":
+        "---\ntitle: インストール\npublish: true\nsidebar:\n  order: 2\n---\n# Install\n",
+      "ja/docs/guide.md":
+        "---\ntitle: ガイド\npublish: true\nsidebar:\n  order: 3\n---\n# Guide\n",
+    }),
+    [],
+    { config },
+  );
+
+  const manifest = await manager.getManifest();
+  const english =
+    manifest.bySlug.get("docs/install")?.bodySlots?.["article.footer"] ?? "";
+  const japanese =
+    manifest.bySlug.get("ja/docs/install")?.bodySlots?.["article.footer"] ?? "";
+
+  assert.match(english, /aria-label="Previous and next docs pages"/);
+  assert.match(english, />Previous</);
+  assert.match(english, />Next</);
+  assert.match(japanese, /aria-label="前後のドキュメント"/);
+  assert.match(japanese, />前へ</);
+  assert.match(japanese, />次へ</);
+  assert.doesNotMatch(japanese, /Previous|Next/);
+});
+
 test("renders accessible navigation semantics", async () => {
   const manager = createManager({
     "docs/index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",

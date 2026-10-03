@@ -12,13 +12,15 @@ export function renderDocsSidebar(context: {
 export function renderDocsPrevNext(
   sequence: readonly DocsNavigationLink[],
   currentPermalink: string,
+  language?: string,
 ): string {
   const index = sequence.findIndex((item) => item.href === currentPermalink);
   if (index < 0) return "";
   const previous = sequence[index - 1];
   const next = sequence[index + 1];
   if (!previous && !next) return "";
-  return `<nav class="rb-docs-prev-next" aria-label="Previous and next docs pages" data-docs-prev-next>${renderPrevNextLink(previous, "previous")} ${renderPrevNextLink(next, "next")}</nav>`;
+  const labels = prevNextLabels(language);
+  return `<nav class="rb-docs-prev-next" aria-label="${escapeAttribute(labels.nav)}" data-docs-prev-next>${renderPrevNextLink(previous, "previous", labels)} ${renderPrevNextLink(next, "next", labels)}</nav>`;
 }
 
 function renderItems(
@@ -70,12 +72,37 @@ function renderItemLabel(item: DocsNavigationItem, isCurrent: boolean): string {
 function renderPrevNextLink(
   item: DocsNavigationLink | undefined,
   rel: "previous" | "next",
+  labels: PrevNextLabels,
 ): string {
   if (!item)
     return `<span class="rb-docs-prev-next__spacer" aria-hidden="true"></span>`;
-  const label = rel === "previous" ? "Previous" : "Next";
+  const label = rel === "previous" ? labels.previous : labels.next;
   const arrow = rel === "previous" ? "←" : "→";
   return `<a class="rb-docs-prev-next__link rb-docs-prev-next__link--${rel}" href="${escapeAttribute(item.href)}" data-docs-${rel}><span class="rb-docs-prev-next__label">${label}</span><span class="rb-docs-prev-next__title">${rel === "previous" ? `${arrow} ` : ""}${escapeHtml(item.title)}${rel === "next" ? ` ${arrow}` : ""}</span></a>`;
+}
+
+interface PrevNextLabels {
+  readonly nav: string;
+  readonly previous: string;
+  readonly next: string;
+}
+
+const PREV_NEXT_LABELS = {
+  en: {
+    nav: "Previous and next docs pages",
+    previous: "Previous",
+    next: "Next",
+  },
+  ja: {
+    nav: "前後のドキュメント",
+    previous: "前へ",
+    next: "次へ",
+  },
+} as const satisfies Record<string, PrevNextLabels>;
+
+function prevNextLabels(language: string | undefined): PrevNextLabels {
+  if (language === "ja") return PREV_NEXT_LABELS.ja;
+  return PREV_NEXT_LABELS.en;
 }
 
 function escapeHtml(value: string): string {

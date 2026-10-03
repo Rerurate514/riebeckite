@@ -60,7 +60,11 @@ export function docs(options: DocsOptions) {
         appendContentBodySlot(
           entry,
           "article.footer",
-          renderDocsPrevNext(sequence, entry.permalink),
+          renderDocsPrevNext(
+            sequence,
+            entry.permalink,
+            entry.publicLocation.metadata?.["l10n.lang"],
+          ),
         );
       }
     },

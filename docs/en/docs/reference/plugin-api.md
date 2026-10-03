@@ -239,6 +239,55 @@ Renderers receive a target (`kind`, `path`, `raw`, `label`, `url`,
 `embed`) plus normal plugin context. Return `null` when the renderer
 does not handle a target so another renderer can participate.
 
+## Body slots
+
+A plugin can contribute an HTML fragment to a named position in the
+Site-owned article layout without adding a route or touching the document
+shell. Core defines the slot names as `ContentBodySlot`; the Site decides
+which slots to render and where.
+
+The standard article layout recognizes:
+
+  Slot                     Position
+  ------------------------ -----------------------------------------------
+  article.after-header     directly after the article header
+  article.after-meta       after the title and meta block
+  article.aside            in the article aside
+  article.before-content   before the note body
+  article.after-content    after the note body
+  article.footer           in the article footer
+
+`ContentBodySlot` also accepts any other string, so a custom Site can define
+additional slot names; `properties` (used by `@riebeckite/plugin-properties`)
+is one non-standard slot.
+
+Publish a fragment with `appendContentBodySlot` from `@riebeckite/core`,
+typically from a manifest hook such as `onManifestCreated`:
+
+```ts
+import { appendContentBodySlot } from "@riebeckite/core";
+
+appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
+```
+
+Empty fragments are ignored, and fragments accumulate in resolved plugin
+order: contributions from earlier plugins are preserved and the new fragment
+is appended.
+
+The Site reads `entry.bodySlots` and chooses whether and where to render each
+value:
+
+```tsx
+// app/components/article/article.tsx
+<ContentSlot html={props.bodySlots?.["article.after-content"]} />
+```
+
+The reference app and the scaffolded starter consume the standard slots. A
+plugin publishes; the Site renders. A plugin never changes a route, the shell,
+or the render order. See
+[Body slot handoff](../framework/honox-integration.md#body-slot-handoff) for
+the route-level contract.
+
 ## Pages
 
 `pageTypes` supplies standalone pages without adding application routes. A page

@@ -464,6 +464,42 @@ embed
 
 対象でなければ `null` を返し、他の Renderer に処理を委ねられるようにします。
 
+# Body Slots
+
+Plugin は、route を追加したり document shell を書き換えたりせずに、Site が所有する article layout の名前付き位置へ HTML fragment を提供できます。slot 名の contract は Core の `ContentBodySlot` が定義し、どの slot をどこに描画するかは Site が決めます。
+
+標準の article layout は次の slot を認識します。
+
+| Slot | 位置 |
+| --- | --- |
+| `article.after-header` | article header の直後 |
+| `article.after-meta` | title / meta block の後 |
+| `article.aside` | article aside 内 |
+| `article.before-content` | 本文の前 |
+| `article.after-content` | 本文の後 |
+| `article.footer` | article footer 内 |
+
+`ContentBodySlot` は他の文字列も受け付けるため、独自 Site は追加の slot 名を定義できます。`@riebeckite/plugin-properties` が使う `properties` は、標準 set に含まれない独自 slot の例です。
+
+fragment は `@riebeckite/core` の `appendContentBodySlot` で提供します。通常は `onManifestCreated` などの manifest hook から呼び出します。
+
+```ts
+import { appendContentBodySlot } from "@riebeckite/core";
+
+appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
+```
+
+空の fragment は無視され、fragment は解決済み Plugin 順に蓄積されます。先に処理された Plugin の contribution は保持され、新しい fragment が末尾へ追加されます。
+
+Site は `entry.bodySlots` を読み、各値を描画するかどうかと描画位置を決めます。
+
+```tsx
+// app/components/article/article.tsx
+<ContentSlot html={props.bodySlots?.["article.after-content"]} />
+```
+
+参照アプリと scaffold の starter は標準 slot を消費します。Plugin は提供し、Site が描画します。Plugin が route、shell、描画順を変更することはありません。route レベルの contract は [Body Slots](../framework/honox-integration.md#body-slots) を参照してください。
+
 # Page Types
 
 `pageTypes` は Plugin が独立したページを提供するための仕組みです。

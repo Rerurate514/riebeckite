@@ -83,6 +83,16 @@ Add these repository secrets in GitHub (Settings → Secrets and variables → A
 
 Commit the `package-lock.json` created by `npm install`, then push to `main` or run the workflow manually from the Actions tab.
 
+### Add it later to a Local-first site
+
+If you already published from your machine, you do not need to recreate the site. Run this in the project:
+
+```sh
+npm exec riebeckite deploy setup
+```
+
+The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/deploy.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
+
 ## 3. Advanced: separate content repository
 
 Some teams keep the site implementation and Markdown content in separate repositories. That setup is useful for an existing Obsidian vault, separate editor/developer workflows, or different lifecycles for content and site code.

@@ -150,6 +150,25 @@ test("uses a README owner's title and public location for its crumb", () => {
   assert.equal(items[1]?.url, "/manual/");
 });
 
+test("omits a leading localized source folder hidden from the permalink", () => {
+  const entry = makeEntry({
+    slug: "ja/docs/getting-started/quick-start",
+    title: "quick-start",
+    permalink: "/docs/getting-started/quick-start",
+  });
+  const items = buildBreadcrumbItems({
+    manifest: makeManifest([entry]),
+    entry,
+    config,
+    homeLabel: "",
+  });
+
+  assert.deepEqual(
+    items.map((item) => item.name),
+    ["My Site", "Docs", "Getting-started", "quick-start"],
+  );
+});
+
 test("uses registered generated folder locations without synthesizing URLs", () => {
   const entry = makeEntry({
     slug: "docs/guide/intro",

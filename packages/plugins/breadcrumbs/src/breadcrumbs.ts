@@ -17,7 +17,7 @@ export function buildBreadcrumbItems(
   args: BuildBreadcrumbItemsArgs,
 ): BreadcrumbItem[] {
   const { manifest, entry, config, homeLabel } = args;
-  const segments = entry.slug.split("/").filter(Boolean);
+  const segments = breadcrumbSegments(entry);
   if (segments.length === 0) return [];
 
   const items: BreadcrumbItem[] = [];
@@ -54,6 +54,25 @@ function pushBreadcrumbItem(items: BreadcrumbItem[], item: BreadcrumbItem) {
     return;
   }
   items.push(item);
+}
+
+function breadcrumbSegments(entry: ContentManifestEntry): string[] {
+  const slugSegments = entry.slug.split("/").filter(Boolean);
+  const permalinkSegments = entry.publicLocation.permalink
+    .split("/")
+    .filter(Boolean);
+  const withoutLeadingSegment = slugSegments.slice(1);
+  return withoutLeadingSegment.length > 0 &&
+    sameSegments(withoutLeadingSegment, permalinkSegments)
+    ? withoutLeadingSegment
+    : slugSegments;
+}
+
+function sameSegments(left: readonly string[], right: readonly string[]) {
+  return (
+    left.length === right.length &&
+    left.every((segment, index) => segment === right[index])
+  );
 }
 
 function titleCaseSegment(segment: string): string {

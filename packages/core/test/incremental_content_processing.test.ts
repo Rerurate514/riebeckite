@@ -136,6 +136,39 @@ test("independent edit processes only the changed note", async () => {
   assert.match(second.manifest.bySlug.get("note-19")?.html ?? "", /Edited/);
 });
 
+test("an uncacheable content plugin safely reprocesses every note", async () => {
+  const directory = await tempDirectory("incremental-unsafe-plugin");
+  const files = {
+    "a.md": "# A",
+    "b.md": "# B",
+  };
+  const plugin = definePlugin({
+    name: "untracked-content-plugin",
+    extendMarkdownPipeline: () => {},
+  });
+  const buildOnce = async () => {
+    const config = { ...testConfig(directory), plugins: [plugin] };
+    const spans: { name: string }[] = [];
+    const manager = new ContentManager(memorySource(files), [], {
+      config,
+      plugins: config.plugins,
+      observability: {
+        logger: new NoopLogger(),
+        tracer: new SinkTracer({
+          onEvent: () => {},
+          onSpan: (span) => spans.push(span),
+        }),
+      },
+    });
+    await manager.build({ incremental: true });
+    await manager.dispose();
+    return spans.filter((span) => span.name === "content.process").length;
+  };
+
+  assert.equal(await buildOnce(), 2);
+  assert.equal(await buildOnce(), 2);
+});
+
 test("direct and transitive dependencies are processed when a dependency changes", async () => {
   const directory = await tempDirectory("incremental-dependencies");
   const files = {

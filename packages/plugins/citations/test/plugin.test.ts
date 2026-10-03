@@ -1,7 +1,19 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
-import type { ContentSource, ContentSourceEntry } from "@riebeckite/core";
-import { Pipeline } from "@riebeckite/core";
+import type {
+  ContentSource,
+  ContentSourceEntry,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
+import {
+  ContentManager,
+  NoopLogger,
+  Pipeline,
+  SinkTracer,
+} from "@riebeckite/core";
 import { citations } from "../index.js";
 
 const bibliography = `
@@ -349,11 +361,104 @@ test("produces identical output and diagnostics for identical input", async () =
   assert.deepEqual(first.diagnostics, second.diagnostics);
 });
 
+test("incrementally rebuilds only content that reads a changed bibliography", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-citations-"),
+  );
+  const files = {
+    "citing.md": "Citing [@smith2024]",
+    "unrelated.md": "# Unrelated",
+    "references.bib": bibliography,
+  };
+
+  const first = await buildIncrementally(files, directory);
+  assert.equal(first.processed, 2);
+
+  const unchanged = await buildIncrementally(files, directory);
+  assert.equal(unchanged.processed, 0);
+  assert.equal(unchanged.reused, 2);
+
+  files["references.bib"] = bibliography.replace(
+    "Citation Systems",
+    "Updated Citation Systems",
+  );
+  const changed = await buildIncrementally(files, directory);
+  assert.equal(changed.processed, 1);
+  assert.equal(changed.reused, 1);
+  assert.match(
+    changed.manifest.bySlug.get("citing")?.html ?? "",
+    /Updated Citation Systems/,
+  );
+
+  files["unrelated.bib"] = bibliography;
+  const unrelated = await buildIncrementally(files, directory);
+  assert.equal(unrelated.processed, 0);
+  assert.equal(unrelated.reused, 2);
+});
+
 async function renderOnce(markdown: string) {
   const plugin = citations({ bibliography: "references.bib" });
   const content = await render(markdown, plugin);
   const diagnostics = (await plugin.addDiagnostics?.(baseContext())) ?? [];
   return { html: content.html, diagnostics };
+}
+
+async function buildIncrementally(
+  files: Record<string, string>,
+  directory: string,
+) {
+  const spans: { name: string }[] = [];
+  const plugin = citations({ bibliography: "references.bib" });
+  const config: ResolvedRiebeckiteConfig = {
+    buildDirectory: directory,
+    site: {
+      title: "Test",
+      description: "",
+      author: "",
+      baseUrl: "http://test",
+      locale: "en",
+      twitterSite: "",
+      defaultOgImage: "",
+      feed: { title: "", description: "", language: "en" },
+    },
+    content: {
+      directory: "/test",
+      exclude: [],
+      filters: { publishStrategy: "explicit" },
+    },
+    markdown: { syntaxHighlight: { theme: "" } },
+    theme: {
+      name: "test",
+      colorMode: "system",
+      typography: "system",
+      articleLayout: "article",
+      tokens: {},
+      attributes: {},
+      userCss: [],
+      styles: [],
+    },
+    plugins: [plugin],
+    cache: { enabled: true, directory: path.join(directory, "cache") },
+  };
+  const events: { name: string }[] = [];
+  const manager = new ContentManager(new MemoryContentSource(files), [], {
+    config,
+    plugins: config.plugins,
+    observability: {
+      logger: new NoopLogger(),
+      tracer: new SinkTracer({
+        onEvent: (event) => events.push(event),
+        onSpan: (span) => spans.push(span),
+      }),
+    },
+  });
+  const manifest = await manager.build({ incremental: true });
+  await manager.dispose();
+  return {
+    manifest,
+    processed: spans.filter((span) => span.name === "content.process").length,
+    reused: events.filter((event) => event.name === "content.reuse").length,
+  };
 }
 
 async function render(

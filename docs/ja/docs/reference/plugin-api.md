@@ -342,6 +342,31 @@ definePlugin({
 
 Markdown AST や HTML AST の処理を Application Component に持ち込まず、Plugin の Pipeline 処理として実装するのが基本です。
 
+# 処理済み Content の Build Dependency
+
+Incremental Build の無効化は Core の責務です。Plugin は独自に affected content を計算せず、`processedContentCache` で契約を宣言します。
+
+```ts
+definePlugin({
+  name: "citations",
+  processedContentCache: {
+    version: "citations-v1",
+    dependencyMode: "tracked",
+  },
+  extendMarkdownPipeline(pipeline, context) {
+    pipeline.use(remarkCitations, { contentSource: context.contentSource });
+  },
+});
+```
+
+- `none` は、処理結果が Content 本体、frontmatter、options、宣言した version だけに依存することを表します。
+- `tracked` は、Pipeline が他の Content や file を読む場合に使います。`context.contentSource` 経由で読めば、Core が dependency を記録し、利用側だけを再処理します。たとえば citations Plugin は `readContentSourceEntry(context.contentSource, path)` で BibTeX file を読みます。
+- `unsafe` は処理済み Content の永続的な再利用を無効にします。Content 処理を行う Plugin が契約を宣言しない場合も、同じ安全側の全 Content 再処理になります。
+
+`tracked` の dependency は Content 処理中に取得します。Core が content/file の identity を永続化し、逆引き index から次回 Build で affected content を決定します。この用途で vault を独自に走査したり、Plugin 固有の Incremental Build state を保存したりしないでください。Framework API 経由で dependency を追跡できない場合は `unsafe` を使います。広い再処理は許容されますが、古い結果の再利用は許容されません。
+
+これは Output Dependency とは別の契約です。`pageTypes[].outputDependencies` と `context.output.emit(..., { dependencies })` は、再生成が必要な page や生成 file を表します。ここでは `content`、`tag`、`folder`、`global`、`unknown` を使います。`unknown` は安全側として全 Output の再生成を要求します。
+
 # Public Location
 
 Plugin は `resolveContentLocations` を使って、コンテンツの公開先を変更できます。

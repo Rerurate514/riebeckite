@@ -118,7 +118,10 @@ function isContentBuildStateShape(
         entry.fingerprint.length > 0 &&
         Array.isArray(entry.dependencies) &&
         entry.dependencies.every(
-          (dependency) => typeof dependency === "string",
+          (dependency) =>
+            isRecord(dependency) &&
+            (dependency.kind === "content" || dependency.kind === "file") &&
+            typeof dependency.id === "string",
         ),
     ) &&
     Object.values(value.contentIndex).every(

@@ -14,6 +14,7 @@ import type { Node } from "unist";
 import type { VFile } from "vfile";
 import { matter } from "vfile-matter";
 import {
+  type CachedContentDependency,
   type ContentDependencyTracker,
   createContentDependencyTracker,
   fingerprintContent,
@@ -52,6 +53,10 @@ export interface PipelineOptions {
   config?: import("./types/resolved_riebeckite_config.js").ResolvedRiebeckiteConfig;
   contentSource?: ContentSource;
   isRoutable?: (slug: string) => boolean;
+  onContentDependencies?(
+    slug: string,
+    dependencies: readonly CachedContentDependency[],
+  ): void;
 }
 
 export class Pipeline {
@@ -163,6 +168,10 @@ export class Pipeline {
             }
           }
           if (valid) {
+            this.reportContentDependencies(
+              sourceSlug,
+              cachedEntry.dependencies,
+            );
             this.options.observability?.tracer?.event(
               "persistentContentCache.hit",
               { key: cacheKey, slug: sourceSlug },
@@ -264,7 +273,13 @@ export class Pipeline {
       html: String(file.value),
     };
 
-    // Write to cache after successful processing, capturing dependencies from tracker
+    if (sourceSlug && dependencyTracker) {
+      this.reportContentDependencies(
+        sourceSlug,
+        dependencyTracker.dependencies(),
+      );
+    }
+
     if (
       embedDepth === 0 &&
       this.persistentCache &&
@@ -298,6 +313,13 @@ export class Pipeline {
     }
 
     return result;
+  }
+
+  private reportContentDependencies(
+    slug: string,
+    dependencies: readonly CachedContentDependency[],
+  ): void {
+    this.options.onContentDependencies?.(slug, dependencies);
   }
 
   private getPermalink(slug: string): string {

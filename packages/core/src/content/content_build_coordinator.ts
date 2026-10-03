@@ -6,6 +6,7 @@ import type {
 import { determineAffectedContent } from "./affected_content.js";
 import {
   CONTENT_BUILD_STATE_VERSION,
+  type ContentBuildDependency,
   type ContentBuildState,
   type FingerprintedContentEntry,
 } from "./content_build_state.js";
@@ -18,6 +19,7 @@ import {
   type ContentChangeSet,
   diffContentEntries,
 } from "./content_change_set.js";
+import type { CachedContentDependency } from "./content_dependency_tracker.js";
 import { fingerprintContentEntries } from "./content_fingerprint.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
 import type { ContentSourceEntry } from "./content_source.js";
@@ -25,7 +27,10 @@ import type { OutputDescriptor } from "./output_dependency.js";
 
 export type ContentBuildPreparation = {
   readonly previousState: ContentBuildState | undefined;
-  readonly previousManifestEntriesBySlug: ReadonlyMap<string, ContentManifestEntry>;
+  readonly previousManifestEntriesBySlug: ReadonlyMap<
+    string,
+    ContentManifestEntry
+  >;
   readonly currentEntries: readonly FingerprintedContentEntry[];
   readonly currentContentIndex: Map<string, string>;
   readonly changeSet: ContentChangeSet;
@@ -49,8 +54,13 @@ export class ContentBuildCoordinator {
   getPreparation(
     incremental: boolean | undefined,
     pipelineFingerprint: string | undefined,
+    fullContentRegenerationRequired = false,
   ): Promise<ContentBuildPreparation> {
-    this.preparation ??= this.prepare(incremental, pipelineFingerprint);
+    this.preparation ??= this.prepare(
+      incremental,
+      pipelineFingerprint,
+      fullContentRegenerationRequired,
+    );
     return this.preparation;
   }
 
@@ -60,6 +70,10 @@ export class ContentBuildCoordinator {
     pipelineFingerprint: string | undefined,
     outputs: readonly OutputDescriptor[] = [],
     manifestEntries: readonly ContentManifestEntry[] = manifest.entries,
+    trackedDependencies: ReadonlyMap<
+      string,
+      readonly CachedContentDependency[]
+    > = new Map(),
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -73,7 +87,13 @@ export class ContentBuildCoordinator {
             entry.path,
             {
               fingerprint,
-              dependencies: collectDependencies(manifestEntry),
+              dependencies: collectDependencies(
+                manifestEntry,
+                trackedDependencies.get(toSlug(entry.path)) ??
+                  preparation.previousState?.entries[entry.path]
+                    ?.dependencies ??
+                  [],
+              ),
               linkTargets: collectLinkTargets(manifestEntry),
             },
           ];
@@ -105,6 +125,7 @@ export class ContentBuildCoordinator {
   private async prepare(
     incremental: boolean | undefined,
     pipelineFingerprint: string | undefined,
+    fullContentRegenerationRequired: boolean,
   ): Promise<ContentBuildPreparation> {
     const entries = await this.dependencies.observability.tracer.span(
       "content.discovery",
@@ -140,6 +161,7 @@ export class ContentBuildCoordinator {
       ? diffContentEntries(previousState, currentEntries)
       : allContentChanged(currentEntries);
     const affected =
+      !fullContentRegenerationRequired &&
       previousState?.pipelineFingerprint === pipelineFingerprint
         ? determineAffectedContent(
             changeSet,
@@ -189,18 +211,41 @@ function toSlug(path: string): string {
  */
 function collectDependencies(
   manifestEntry: ContentManifestEntry | undefined,
-): string[] {
+  trackedDependencies:
+    | readonly CachedContentDependency[]
+    | readonly ContentBuildDependency[],
+): ContentBuildDependency[] {
   if (!manifestEntry) return [];
   return [
-    ...new Set([
-      ...manifestEntry.links
-        .filter(
-          (link): link is typeof link & { slug: string } => link.slug !== null,
-        )
-        .map((link) => link.slug),
-      ...manifestEntry.assets.map((asset) => asset.path),
-    ]),
-  ].sort();
+    ...new Map(
+      [
+        ...manifestEntry.links
+          .filter(
+            (link): link is typeof link & { slug: string } =>
+              link.slug !== null,
+          )
+          .map((link) => ({ kind: "content" as const, id: link.slug })),
+        ...manifestEntry.assets.map((asset) => ({
+          kind: "file" as const,
+          id: asset.path.replace(/\\/g, "/"),
+        })),
+        ...trackedDependencies
+          .filter(
+            (dependency): dependency is ContentBuildDependency =>
+              dependency.kind === "content" || dependency.kind === "file",
+          )
+          .map((dependency) => ({
+            kind: dependency.kind,
+            id: dependency.id.replace(/\\/g, "/"),
+          })),
+      ].map((dependency) => [
+        `${dependency.kind}:${dependency.id}`,
+        dependency,
+      ]),
+    ).values(),
+  ].toSorted((left, right) =>
+    `${left.kind}:${left.id}`.localeCompare(`${right.kind}:${right.id}`),
+  );
 }
 
 function collectLinkTargets(

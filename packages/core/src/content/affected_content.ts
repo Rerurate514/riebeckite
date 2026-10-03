@@ -1,4 +1,7 @@
-import type { ContentBuildState } from "./content_build_state.js";
+import type {
+  ContentBuildDependency,
+  ContentBuildState,
+} from "./content_build_state.js";
 import type { ContentChangeSet } from "./content_change_set.js";
 
 export type AffectedContent = {
@@ -18,7 +21,7 @@ export function determineAffectedContent(
     ...changeSet.removed,
   ];
   const direct = new Set(
-    changedPaths.filter(isMarkdownPath).map(toDependencyKey),
+    changedPaths.filter(isMarkdownPath).map(toDependencyId),
   );
   const dependent = new Set<string>();
 
@@ -34,7 +37,7 @@ export function determineAffectedContent(
     );
     for (const [path, entry] of Object.entries(previousState.entries)) {
       if (!isMarkdownPath(path)) continue;
-      const slug = toDependencyKey(path);
+      const slug = toDependencyId(path);
       if (direct.has(slug) || dependent.has(slug)) continue;
       if (!entry.linkTargets?.some((target) => changedIndexKeys.has(target))) {
         continue;
@@ -43,27 +46,21 @@ export function determineAffectedContent(
     }
   }
 
-  // Propagate through the recorded dependency graph. A note depends on the
-  // notes it links to (their resolved URL/permalink) and on the assets it
-  // references (attachment metadata such as file size), so a changed
-  // dependency invalidates the dependent note and, transitively, its own
-  // dependents.
-  const pending = changedPaths.map(toDependencyKey);
-  const seen = new Set(pending);
+  const dependentsByDependency = buildDependentsByDependency(previousState);
+  const pending = changedPaths.map(toDependency);
+  const seen = new Set(pending.map(dependencyKey));
   while (pending.length > 0) {
     const changed = pending.pop();
     if (changed === undefined) continue;
 
-    for (const [path, entry] of Object.entries(previousState.entries)) {
-      if (!isMarkdownPath(path)) continue;
-      const slug = toDependencyKey(path);
+    for (const slug of dependentsByDependency.get(dependencyKey(changed)) ??
+      []) {
       if (direct.has(slug) || dependent.has(slug)) continue;
-      if (!entry.dependencies.includes(changed)) continue;
-
       dependent.add(slug);
-      if (!seen.has(slug)) {
-        seen.add(slug);
-        pending.push(slug);
+      const dependency = { kind: "content" as const, id: slug };
+      if (!seen.has(dependencyKey(dependency))) {
+        seen.add(dependencyKey(dependency));
+        pending.push(dependency);
       }
     }
   }
@@ -92,7 +89,7 @@ function addAllNotes(
 ): void {
   for (const path of currentPaths) {
     if (!isMarkdownPath(path)) continue;
-    const slug = toDependencyKey(path);
+    const slug = toDependencyId(path);
     if (exclude?.has(slug)) continue;
     target.add(slug);
   }
@@ -106,6 +103,33 @@ function isMarkdownPath(path: string): boolean {
  * Dependency keys are note slugs (path without the `.md` extension) and asset
  * paths. Change set entries are source paths, so normalize both to compare.
  */
-function toDependencyKey(path: string): string {
+function toDependencyId(path: string): string {
   return path.replace(/\.md$/, "");
+}
+
+function toDependency(path: string): ContentBuildDependency {
+  return isMarkdownPath(path)
+    ? { kind: "content", id: toDependencyId(path) }
+    : { kind: "file", id: path.replace(/\\/g, "/") };
+}
+
+function buildDependentsByDependency(
+  state: ContentBuildState,
+): Map<string, Set<string>> {
+  const dependents = new Map<string, Set<string>>();
+  for (const [path, entry] of Object.entries(state.entries)) {
+    if (!isMarkdownPath(path)) continue;
+    const slug = toDependencyId(path);
+    for (const dependency of entry.dependencies) {
+      const key = dependencyKey(dependency);
+      const values = dependents.get(key) ?? new Set<string>();
+      values.add(slug);
+      dependents.set(key, values);
+    }
+  }
+  return dependents;
+}
+
+function dependencyKey(dependency: ContentBuildDependency): string {
+  return `${dependency.kind}:${dependency.id}`;
 }

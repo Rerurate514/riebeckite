@@ -45,6 +45,7 @@ flowchart LR
 | Plugin が独立したページを提供する仕組み | [Page System](./page-system.md) |
 | Theme が見た目を変更する仕組み | [Theme System](./theme-system.md) |
 | Build と Incremental Build の仕組み | [Build System](./build-system.md) |
+| Plugin が build dependency を宣言する仕組み | [Build Dependency Contract](./build-dependency.md) |
 | Riebeckite と HonoX / Vite の接続 | [HonoX Integration](./honox-integration.md) |
 | 設定や Content の問題を調べる | [Diagnostics](./diagnostics.md) |
 | 解決済みの設定や状態を確認する | [Inspector](./inspector.md) |

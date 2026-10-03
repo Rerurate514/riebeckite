@@ -19,6 +19,7 @@ Framework documentation is for people who want to understand or develop Riebecki
 | How plugins provide standalone pages | [Page system](./page-system.md) |
 | How themes interact with CSS and plugin output | [Theme system](./theme-system.md) |
 | Incremental builds, build state, and plugin cache | [Build system](./build-system.md) |
+| How plugins declare build dependencies | [Build dependency contract](./build-dependency.md) |
 | The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |
 | Diagnostics and Doctor | [Diagnostics](./diagnostics.md) |
 | Read-only inspection commands | [Inspector](./inspector.md) |

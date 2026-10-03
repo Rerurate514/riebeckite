@@ -1,9 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "riebeckite-docs",
+  "name": "riebeckite",
   "compatibility_date": "2026-06-09",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "riebeckite.dev",
+      "custom_domain": true
+    }
+  ]
 }

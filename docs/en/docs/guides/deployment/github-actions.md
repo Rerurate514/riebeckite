@@ -39,9 +39,12 @@ Then push to `main`, or run the workflow manually from the Actions tab.
 1. Checks out the site repository.
 2. (Only for a separate content repository) checks out the content repository into `content/`.
 3. Sets up Node.js and installs dependencies with `npm ci`.
-4. Runs `npm exec riebeckite check` — the read-only configuration and plugin validation.
-5. Runs `npm exec riebeckite build` to generate `dist/`.
-6. Deploys with [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action) using the repository secrets.
+4. Restores `.riebeckite/cache` with `actions/cache` using the runner OS, content-cache schema, and `package-lock.json` hash.
+5. Runs `npm exec riebeckite check` — the read-only configuration and plugin validation.
+6. Runs `npm exec riebeckite build` to generate `dist/`.
+7. Saves the updated cache automatically and deploys with [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action) using the repository secrets.
+
+The cache is Riebeckite's processed-content and plugin cache, not `dist/`. The exact key avoids reuse after dependency changes; GitHub Actions can still restore an exact default-branch cache for a feature branch. A cache miss is safe and simply performs cold processing. Check the build's `Persistent content cache` line to distinguish a restored Actions cache from actual Riebeckite cache hits. Delete the Actions cache or remove the cache step to troubleshoot; output correctness is unchanged.
 
 ## Triggers
 
@@ -77,5 +80,4 @@ npx wrangler deploy --dry-run
 - [Separate content repository](./separate-content-repository.md) — CI reading articles from another repository
 - [Cloudflare deployment template](../../../../../templates/cloudflare/README_en.md) — the source files
 - [Build system](../../framework/build-system.md) — what the build writes
-
 

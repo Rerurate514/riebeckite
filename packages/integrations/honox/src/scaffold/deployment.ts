@@ -92,6 +92,12 @@ ${contentCheckout}
       - name: Install dependencies
         run: npm ci
 
+      - name: Restore Riebeckite build cache
+        uses: actions/cache@v4
+        with:
+          path: .riebeckite/cache
+          key: riebeckite-content-v3-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}
+
       - name: Validate configuration and plugins
         run: npm exec riebeckite check
 

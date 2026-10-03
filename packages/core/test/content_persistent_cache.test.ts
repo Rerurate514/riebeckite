@@ -367,6 +367,32 @@ test("computePipelineFingerprint changes with plugin config", () => {
   assert.notEqual(fp1, fp2);
 });
 
+test("computePipelineFingerprint changes with plugin ordering", () => {
+  const first = createTestConfig([
+    { name: "first-plugin" },
+    { name: "second-plugin" },
+  ]);
+  const second = createTestConfig([
+    { name: "second-plugin" },
+    { name: "first-plugin" },
+  ]);
+
+  assert.notEqual(
+    computePipelineFingerprint(first),
+    computePipelineFingerprint(second),
+  );
+});
+
+test("computePipelineFingerprint changes with plugin cacheVersion", () => {
+  const first = createTestConfig([{ name: "plugin", cacheVersion: "v1" }]);
+  const second = createTestConfig([{ name: "plugin", cacheVersion: "v2" }]);
+
+  assert.notEqual(
+    computePipelineFingerprint(first),
+    computePipelineFingerprint(second),
+  );
+});
+
 test("extractFrontmatter parses YAML frontmatter", () => {
   // Test indirectly via cache key computation which uses extractFrontmatter internally
   const markdown1 =
@@ -602,21 +628,102 @@ test("createPersistentContentCache returns undefined when cache disabled", async
 
 test("persistent cache ignores corrupted entries", async () => {
   const config = createTestConfig([]);
+  config.cache.directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-corrupted-cache-"),
+  );
   const cache = createPersistentContentCache({ config });
 
-  // Write corrupted data directly
   const cacheDir = path.join(
-    TEST_CACHE_DIR,
+    config.cache.directory,
     "content",
     `v${CONTENT_CACHE_SCHEMA_VERSION}`,
   );
-  await fs.mkdir(cacheDir, { recursive: true });
   const key = "corrupted-key";
-  const filePath = path.join(cacheDir, `${key}.json`);
+  await cache.set(key, {
+    schemaVersion: CONTENT_CACHE_SCHEMA_VERSION,
+    key,
+    dependencies: [],
+    value: { frontmatter: {}, html: "" },
+  });
+  const [fileName] = await fs.readdir(cacheDir);
+  if (!fileName) throw new Error("Expected a cache entry");
+  const filePath = path.join(cacheDir, fileName);
   await fs.writeFile(filePath, "not valid json", "utf8");
 
   const result = await cache.get(key);
   assert.equal(result, undefined);
+  await fs.rm(config.cache.directory, { recursive: true, force: true });
+});
+
+test("persistent cache ignores incompatible entry versions", async () => {
+  const config = createTestConfig([]);
+  config.cache.directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-incompatible-cache-"),
+  );
+  const cache = createPersistentContentCache({ config });
+  const key = "incompatible-version";
+  const entry = {
+    schemaVersion: CONTENT_CACHE_SCHEMA_VERSION - 1,
+    key,
+    dependencies: [],
+    value: { frontmatter: {}, html: "" },
+  };
+  const cacheDir = path.join(
+    config.cache.directory,
+    "content",
+    `v${CONTENT_CACHE_SCHEMA_VERSION}`,
+  );
+  await cache.set(key, {
+    ...entry,
+    schemaVersion: CONTENT_CACHE_SCHEMA_VERSION,
+  });
+  const [fileName] = await fs.readdir(cacheDir);
+  if (!fileName) throw new Error("Expected a cache entry");
+  const filePath = path.join(cacheDir, fileName);
+  await fs.writeFile(filePath, JSON.stringify(entry), "utf8");
+
+  assert.equal(await cache.get(key), undefined);
+  await fs.rm(config.cache.directory, { recursive: true, force: true });
+});
+
+test("persistent cache is portable between workspaces", async () => {
+  const source = {
+    "note.md": "---\ntitle: Note\n---\n\n# Note\n",
+  };
+  const workspaceA = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-cache-workspace-a-"),
+  );
+  const workspaceB = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-cache-workspace-b-"),
+  );
+  try {
+    const firstConfig = createTestConfig([]);
+    firstConfig.cache.directory = path.join(workspaceA, "cache");
+    const first = new ContentManager(memorySource(source), [], {
+      config: firstConfig,
+      plugins: firstConfig.plugins,
+    });
+    const cold = await first.getProcessedContent("note");
+
+    await fs.cp(firstConfig.cache.directory, path.join(workspaceB, "cache"), {
+      recursive: true,
+    });
+    const results: string[] = [];
+    const secondConfig = createTestConfig([]);
+    secondConfig.cache.directory = path.join(workspaceB, "cache");
+    const second = new ContentManager(memorySource(source), [], {
+      config: secondConfig,
+      plugins: secondConfig.plugins,
+      onPersistentContentCacheResult: (result) => results.push(result),
+    });
+    const warm = await second.getProcessedContent("note");
+
+    assert.deepEqual(warm, cold);
+    assert.deepEqual(results, ["hit"]);
+  } finally {
+    await fs.rm(workspaceA, { recursive: true, force: true });
+    await fs.rm(workspaceB, { recursive: true, force: true });
+  }
 });
 
 test("persistent cache atomic write does not leave partial files", async () => {

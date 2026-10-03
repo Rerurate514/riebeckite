@@ -29,6 +29,7 @@ export type PersistentContentCacheOptions = {
 
 const CONTENT_CACHE_NAMESPACE = "content";
 export const CONTENT_CACHE_SCHEMA_VERSION = 3;
+export const CONTENT_CACHE_COMPATIBILITY_VERSION = 1;
 
 function hash(value: string): string {
   return createHash("sha256").update(value).digest("hex");
@@ -125,14 +126,16 @@ export function createPersistentContentCache(
           tracer?.event("persistentContentCache.miss", { key });
           return undefined;
         }
-        logger?.warn(
-          "Persistent content cache read failed; treating as miss.",
-          {
-            key,
-            error: error instanceof Error ? error.message : String(error),
-          },
-        );
-        return undefined;
+        if (error instanceof SyntaxError) {
+          logger?.warn(
+            "Persistent content cache entry is corrupted and will be ignored.",
+            {
+              key,
+            },
+          );
+          return undefined;
+        }
+        throw error;
       }
     },
 
@@ -147,15 +150,8 @@ export function createPersistentContentCache(
         );
       }
 
-      try {
-        await writeAtomically(filePath, versionDir, serialized);
-        tracer?.event("persistentContentCache.write", { key });
-      } catch (error) {
-        logger?.warn("Persistent content cache write failed.", {
-          key,
-          error: error instanceof Error ? error.message : String(error),
-        });
-      }
+      await writeAtomically(filePath, versionDir, serialized);
+      tracer?.event("persistentContentCache.write", { key });
     },
 
     async clear(): Promise<void> {
@@ -254,6 +250,7 @@ export function computePipelineFingerprint(
   const plugins = config.plugins;
 
   const fingerprintData = {
+    compatibilityVersion: CONTENT_CACHE_COMPATIBILITY_VERSION,
     plugins: plugins.map((p) => pluginFingerprint(p)),
     markdown: config.markdown as JsonValue,
     content: {

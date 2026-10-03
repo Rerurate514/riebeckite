@@ -141,6 +141,16 @@ flowchart LR
 
 追加・削除でリンク先の解決結果が変わると、そのリンク先を参照している entry も無効化の対象になります。初回 build や前回の state が無い場合だけ、すべての note が再生成されます。
 
+## Persistent Per-Content Cache
+
+Markdown を処理した各 note の結果は `.riebeckite/cache/content/v3` に保存されます。entry がない状態の build は **cold build**、先行 build の互換性がある entry を復元して実行する build は **warm build** です。warm build では変更のない note の HTML と frontmatter を再利用できますが、通常どおり `dist/` は生成します。
+
+entry の key には Markdown 本文、解析済み frontmatter、cache schema、processing pipeline fingerprint を含めます。fingerprint は Markdown と content filter の設定、Plugin の設定と順序、Plugin の `cacheVersion` と processed-content cache contract、Core compatibility version を含みます。さらに logical な content・file・link dependency を記録し、変更・削除された dependency は miss になります。安全性を宣言できない Plugin では cache を bypass します。cache metadata は workspace の絶対 path ではなく slug と正規化済みの source path を保存するため、同じ OS なら別 runner や別 workspace にコピーして再利用できます。
+
+この cache は correctness の前提ではなく最適化です。entry の不在、version 非互換、壊れた metadata、fingerprint/dependency の不一致、壊れた JSON はすべて安全な miss として cold processing に戻ります。cold processing に戻すには `.riebeckite/cache` を削除してください。ただし filesystem のアクセス失敗は調査が必要なため build を失敗させます。build log の `Persistent content cache` 行には `hits`、`misses`、`bypasses` が出力されます。
+
+GitHub Actions では `dist/` ではなく `.riebeckite/cache` を cache します。Cloudflare 用の生成 workflow は自動設定するため、[GitHub Actions](../guides/deployment/github-actions.md) を参照してください。
+
 ## Plugin Cache
 
 Plugin Cache は incremental state とは別の仕組みです。

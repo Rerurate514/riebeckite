@@ -100,14 +100,16 @@ npx wrangler deploy --dry-run
 
 1. リポジトリをチェックアウトする。
 2. `npm ci` で依存をインストールする。
-3. `npm exec riebeckite check` で設定と Plugin を読み取り専用で検証する。
-4. `npm exec riebeckite build` で `dist/` を生成する。
-5. リポジトリのシークレットを使って `cloudflare/wrangler-action` でデプロイする。
+3. `actions/cache` で `.riebeckite/cache` を復元する。
+4. `npm exec riebeckite check` で設定と Plugin を読み取り専用で検証する。
+5. `npm exec riebeckite build` で `dist/` を生成する。
+6. 更新済み cache を保存し、リポジトリのシークレットを使って `cloudflare/wrangler-action` でデプロイする。
 
 ## 補足
 
 - **静的アセットで足ります。** Riebeckite はビルド時にコンテンツのルートと Plugin のエンドポイントを事前生成するため、生成された `dist/` は runtime の `main` なしで静的アセットとしてデプロイされます。参照用アプリケーションも `apps/web/wrangler.jsonc` で同じ形を使っています。
 - **ビルド状態はビルド時に留まります。** `.riebeckite/` と Plugin cache は `dist/` に含まれず、Worker runtime へは渡りません。
+- **cache と deploy は別の段階です。** GitHub runner 上で Riebeckite が処理済み Content を再利用した後、Wrangler が新しく生成した `dist/` を deploy します。Workers 上で incremental build は動作しません。
 - **添付ファイルはサイトが管理します。** 公開するファイルだけを、参照用アプリケーションのようにビルド前の `prebuild` 手順でコピーしてください。
 
 ## 関連資料
@@ -115,4 +117,3 @@ npx wrangler deploy --dry-run
 - [利用ガイド — プレビューとデプロイ](../../docs/ja/docs/guides/README.md#7-プレビューとデプロイ)
 - [HonoX Integration](../../docs/ja/docs/framework/honox-integration.md)
 - [Build System](../../docs/ja/docs/framework/build-system.md)
-

@@ -132,6 +132,11 @@ function assertWorkflowContract(workflow: string): void {
     "types: [content-updated]",
     "concurrency:",
     "contents: read",
+    "actions/cache@v4",
+    "path: .riebeckite/cache",
+    "riebeckite-content-v3-$" +
+      "{{ runner.os }}-$" +
+      "{{ hashFiles('package-lock.json') }}",
     "npm exec riebeckite check",
     "npm exec riebeckite build",
   ]) {

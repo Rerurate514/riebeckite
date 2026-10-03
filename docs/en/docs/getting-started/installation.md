@@ -127,7 +127,7 @@ Run these from inside the site folder:
 ```sh
 npm exec riebeckite dev           # start the development server
 npm exec riebeckite build         # write the publishable files to dist/
-npm exec riebeckite build --full  # rebuild without incremental reuse
+npm exec -- riebeckite build --full  # rebuild without incremental reuse
 ```
 
 For the first successful run, `dev` and `build` are enough. If something looks wrong later, the CLI also has read-only diagnostic commands such as `check`, `doctor`, and `inspect`; see the [CLI reference](../reference/cli.md).

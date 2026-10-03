@@ -15,6 +15,9 @@ test("next steps install, start the dev server, and point at the index page", ()
       "",
       "Then edit:",
       "  content/index.md",
+      "",
+      "Common first settings:",
+      "  riebeckite.config.ts: site.title, site.baseUrl, content.directory",
     ].join("\n"),
   );
 });
@@ -51,6 +54,11 @@ test("external content keeps the workflow copy instruction", () => {
     externalContent: true,
   });
   assert.ok(!output.includes("Then edit:"));
+  assert.ok(
+    output.includes(
+      "Operational content lives in the content repository. CI checks it out to content/.",
+    ),
+  );
   assert.ok(
     output.includes(
       "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",

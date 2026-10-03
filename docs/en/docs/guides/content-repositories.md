@@ -152,7 +152,7 @@ cd my-site
 npm install
 ```
 
-The generated deployment checks out the vault into the site's `content/` directory. Because `--content-repository` is present, it also generates the `content-updated` dispatch receiver and `github/notify-site.yml`. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with.
+The generated deployment checks out the vault into the site's `content/` directory. Because `--content-repository` is present, it also generates the `content-updated` dispatch receiver and `github/notify-site.yml`. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with. The site repository may still contain starter files under `content/`; use them only as local examples. In day-to-day work, edit and push the content repository.
 
 ```text
 workspace/
@@ -160,7 +160,7 @@ workspace/
 └─ my-site/   ← the site from step 2
 ```
 
-This side-by-side layout is useful locally, but CI uses `content/` inside the site checkout.
+This side-by-side layout is useful locally, but CI uses `content/` inside the site checkout after the workflow checks out the content repository there. Keep your local preview aligned with CI by either copying/checking out the vault to `my-site/content` or by setting `content.directory` locally to the same files you intend CI to build.
 
 ### 3. Point content.directory at the vault
 
@@ -191,13 +191,13 @@ Before checking the rendered site, verify loading with the CLI.
 npm exec riebeckite check
 npm exec riebeckite doctor
 npm exec riebeckite inspect config
-npm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 - `check` validates the configuration and plugin contracts.
 - `doctor` reports unreadable or invalid content sources.
 - `inspect config` prints the resolved **absolute** path under `Directory`. Confirm it points at the intended vault.
-- `inspect content --list` lists the `PATH` of every loaded note. Use it to confirm how `exclude` is taking effect (more or fewer notes than expected).
+- `inspect content --list` lists the `PATH` of every loaded note. Use it to confirm how `exclude` is taking effect and whether you are loading starter content or the real content repository.
 
 A wrong path is usually the relative `directory`. If articles do not appear, check for `publish: true` (the explicit strategy).
 
@@ -212,7 +212,7 @@ repository_dispatch:
   types: [content-updated]
 ```
 
-For a private or internal content repository, store `RIEBECKITE_CONTENT_READ_TOKEN` in the **site** repository. Restrict its fine-grained PAT or GitHub App token to the content repository with **Contents: read**. A public content repository needs no extra checkout token. The site repository's `GITHUB_TOKEN` cannot read a different private/internal repository. The unpinned checkout intentionally reads the content default branch's newest tip for each dispatch.
+For a private or internal content repository, store `RIEBECKITE_CONTENT_READ_TOKEN` in the **site** repository. Restrict its fine-grained PAT or GitHub App token to the content repository with **Contents: read**. A public content repository needs no extra checkout token. The site repository's `GITHUB_TOKEN` cannot read a different private/internal repository. The unpinned checkout intentionally reads the content default branch's newest tip for each dispatch. The site repository also needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` for the deploy step.
 
 | Deployment choice | Article push deploys | Setup |
 | --- | --- | --- |
@@ -331,4 +331,3 @@ For deeper diagnosis, see the troubleshooting section of the [in-depth companion
 - [Configuration](../reference/configuration.md) — root resolution details
 - [Usage Guide](./README.md) — external vault examples and assets
 - [Cloudflare deploy template](../../../../templates/cloudflare/README_en.md) — deployment workflow details
-

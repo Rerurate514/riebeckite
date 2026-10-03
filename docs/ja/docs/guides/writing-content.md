@@ -445,7 +445,7 @@ Site 内リンクの整合性を診断する Plugin を利用している場合�
 記事が表示されない場合は、
 
 ```sh
-npm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 を利用できます。

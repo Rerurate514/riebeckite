@@ -271,7 +271,7 @@ That implementation works like this:
 3. Copy only referenced assets into `public/assets/attachments/<relative path from the vault>` (images into `public/<relative path>`, so the dev server can serve them before the first build), skipping the copy when size and mtime are unchanged.
 4. Delete orphaned attachments that exist in public but not in content.
 
-In short, the rule is "copy because a **published note references it**", not "copy because it exists in the vault". Do not take the shortcut of copying the entire vault. It risks leaking private notes, images referenced only from non-public pages, unreferenced attachments, and `.obsidian` metadata. Content images are already filtered by the build; attachment and media publishing stays the site application's responsibility, so copy only the files a **published** note references. To detect a published note that crosses the boundary by linking to an unpublished one, run `riebeckite-diagnostics` from `@riebeckite/plugin-diagnostics`; it reports those references as `publish-boundary` warnings, and `runDiagnostics()` produces the same result programmatically. See [Diagnostics](../../plugins/diagnostics.md).
+In short, the rule is "copy because a **published note references it**", not "copy because it exists in the vault". Do not take the shortcut of copying the entire vault. It risks leaking private notes, images referenced only from non-public pages, unreferenced attachments, and `.obsidian` metadata. Content images are already filtered and emitted by the build; attachment and media publishing stays the site application's responsibility, so copy only the files a **published** note references. To detect a published note that crosses the boundary by linking to an unpublished one, run `riebeckite-diagnostics` from `@riebeckite/plugin-diagnostics`; it reports those references as `publish-boundary` warnings, and `runDiagnostics()` produces the same result programmatically. See [Diagnostics](../../plugins/diagnostics.md).
 
 ### 4-4. The generated URL
 
@@ -302,12 +302,12 @@ You can confirm roots and publication boundaries before building, with the CLI. 
 
 ```sh
 cd site/app
-pnpm exec riebeckite check
-pnpm exec riebeckite doctor
-pnpm exec riebeckite inspect config
-pnpm exec riebeckite inspect content --list
-pnpm exec riebeckite inspect graph
-pnpm exec riebeckite build
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect config
+npm exec -- riebeckite inspect content --list
+npm exec riebeckite inspect graph
+npm exec riebeckite build
 ```
 
 Check the results in this order:
@@ -343,5 +343,4 @@ Check the results in this order:
 - [Configuration](../../reference/configuration.md) — root resolution and external vaults in detail
 - [Usage Guide](../README.md) — external vault examples and assets
 - [Cloudflare deploy template](../../../../../templates/cloudflare/README_en.md) — deployment workflow details
-
 

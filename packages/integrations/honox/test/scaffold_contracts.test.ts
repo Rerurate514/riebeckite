@@ -411,34 +411,36 @@ test("Contract 4: documented npm exec commands properly forward flags to Riebeck
 });
 
 test("Contract 4b: documentation uses npm exec -- for commands with flags", async () => {
-  // Verify documentation examples that pass flags to riebeckite CLI use -- separator
-  // We check key documentation files for the pattern
+  const docsRoot = path.join(process.cwd(), "docs");
+  const markdownFiles = await collectMarkdownFiles(docsRoot);
+  const offenders: string[] = [];
 
-  const docFiles = [
-    "docs/ja/getting-started/quick-start.md",
-    "docs/ja/getting-started/installation.md",
-    "docs/ja/getting-started/first-content.md",
-    "docs/ja/reference/cli.md",
-  ];
-
-  for (const docFile of docFiles) {
-    const content = await readFile(process.cwd(), docFile);
-    if (!content) continue; // Skip if file doesn't exist
-
-    // Find npm exec riebeckite commands with flags
+  for (const file of markdownFiles) {
+    const content = await fs.readFile(file, "utf8");
     const lines = content.split("\n");
-    for (const line of lines) {
-      const trimmed = line.trim();
-      // Match npm exec riebeckite <command> --flag patterns
-      const match = trimmed.match(/^npm exec riebeckite (\w+)(?: (--\w+))?/);
-      if (match?.[2]) {
-        // Has a flag after the command - should use -- separator
-        // This test documents the expectation; actual doc fix is separate
-        // For now we just verify the pattern exists
+    for (const [index, line] of lines.entries()) {
+      const command = line.trim().replace(/^[$>]\s*/, "");
+      if (/^npm exec riebeckite\b.*\s--[\w-]+/.test(command)) {
+        offenders.push(`${path.relative(process.cwd(), file)}:${index + 1}: ${command}`);
       }
     }
   }
+
+  assert.deepEqual(offenders, []);
 });
+
+async function collectMarkdownFiles(directory: string): Promise<string[]> {
+  const entries = await fs.readdir(directory, { withFileTypes: true });
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      const fullPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) return collectMarkdownFiles(fullPath);
+      if (entry.isFile() && entry.name.endsWith(".md")) return [fullPath];
+      return [];
+    }),
+  );
+  return files.flat();
+}
 
 // =============================================================================
 // CONTRACT 5: Wrangler configuration

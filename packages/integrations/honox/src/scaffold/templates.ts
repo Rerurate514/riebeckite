@@ -542,6 +542,16 @@ function readmeEn(
     "```",
     "",
   );
+  if (preset.name !== "empty") {
+    lines.push(
+      "## First edits",
+      "",
+      "- `content/index.md`: the first published page.",
+      "- `riebeckite.config.ts`: set `site.title`, `site.baseUrl`, and `content.directory`.",
+      "- `public/favicon.ico`: replace the site icon when you are ready.",
+      "",
+    );
+  }
   if (preset.readme === "rich") {
     lines.push(...demoPagesLines(preset, variables, words, "en"));
     lines.push(...copyPasteDemoLines(preset, words, "en"));
@@ -598,6 +608,16 @@ function readmeJa(
     "```",
     "",
   );
+  if (preset.name !== "empty") {
+    lines.push(
+      "## 最初に編集する場所",
+      "",
+      "- `content/index.md`: 最初に公開されるページです。",
+      "- `riebeckite.config.ts`: `site.title`、`site.baseUrl`、`content.directory` を設定します。",
+      "- `public/favicon.ico`: 必要になったらサイトアイコンを置き換えます。",
+      "",
+    );
+  }
   if (preset.readme === "rich") {
     lines.push(...demoPagesLines(preset, variables, words, "ja"));
     lines.push(...copyPasteDemoLines(preset, words, "ja"));

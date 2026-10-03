@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { parseArguments } from "../src/arguments.js";
-import { interactiveAnswersToOptions } from "../src/interactive.js";
+import {
+  DEFAULT_INTERACTIVE_DEPLOYMENT,
+  interactiveAnswersToOptions,
+} from "../src/interactive.js";
+
+test("interactive deployment defaults to no deployment setup", () => {
+  assert.equal(DEFAULT_INTERACTIVE_DEPLOYMENT, "none");
+});
 
 test("interactive answers without deployment map to a plain scaffold", () => {
   const options = interactiveAnswersToOptions({

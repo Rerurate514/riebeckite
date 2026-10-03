@@ -7,6 +7,7 @@ import {
 import type { CreateRiebeckiteOptions } from "./arguments.js";
 
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
+export const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";
 
 export type InteractiveContentSource = "local" | "external";
 
@@ -103,7 +104,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
   } else {
     const deployment = await select<InteractiveDeployment>({
       message: "Set up deployment?",
-      initialValue: "cloudflare",
+      initialValue: DEFAULT_INTERACTIVE_DEPLOYMENT,
       options: [
         {
           value: "cloudflare",

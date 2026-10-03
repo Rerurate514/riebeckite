@@ -467,7 +467,7 @@ npm exec riebeckite doctor
 実際に Riebeckite がどの Content を認識しているか確認したい場合は、
 
 ```sh id="h7xl6g"
-npm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 を利用できます。
@@ -503,7 +503,7 @@ npm exec riebeckite inspect config
 読み込まれている Content は、
 
 ```sh id="csgeqn"
-npm exec riebeckite inspect content --list
+npm exec -- riebeckite inspect content --list
 ```
 
 で確認できます。

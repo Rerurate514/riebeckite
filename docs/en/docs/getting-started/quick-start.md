@@ -25,9 +25,9 @@ Answer the prompts (recommended answers shown):
 - **Project name** — press Enter for the default `my-site`
 - **Preset** — keep `starter` when unsure; see [Presets](./presets.md)
 - **Content source** — choose `This project` so Markdown stays inside the site
-- **Deployment** — choose `Cloudflare Workers` for the fastest first publish. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push, or `Not now` to skip deployment setup; see [Deployment](./deployment.md)
+- **Deployment** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push; see [Deployment](./deployment.md)
 
-When it succeeds, it prints `Created a starter Riebeckite site in my-site` and a short "Next steps" list. Choosing `Cloudflare Workers` installs dependencies as part of scaffolding; otherwise move into the folder and install the packages:
+When it succeeds, it prints `Created a starter Riebeckite site in my-site` and a short "Next steps" list. The local-first default does not deploy or install packages; move into the folder and install them:
 
 ```sh
 cd my-site
@@ -35,6 +35,8 @@ npm install
 ```
 
 `npm install` installs the generated site's packages. The generated site is a single-repository project: the `@riebeckite/*` packages are published to npm, so this is all it takes.
+
+The first files most people edit are `content/index.md` for content and `riebeckite.config.ts` for `site.title`, `site.baseUrl`, and `content.directory`.
 
 ## 2. Start development
 

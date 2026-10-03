@@ -167,6 +167,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           plugins: [],
           build: { ssr: true },
           mode: config.mode,
+          server: { watch: null },
         }),
       );
 

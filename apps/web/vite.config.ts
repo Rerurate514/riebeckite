@@ -37,7 +37,7 @@ export default defineConfig({
           adapter,
           exclude: [
             ...defaultOptions.exclude,
-            /\.(png|jpe?g|gif|svg|webp)$/,
+            /\.(png|jpe?g|gif|svg|webp|ico)$/,
             /^\/assets\/attachments\//,
           ],
         },

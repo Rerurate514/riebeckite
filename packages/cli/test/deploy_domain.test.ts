@@ -211,8 +211,38 @@ test("runDeployDomain preserves the deployment failure after saving configuratio
   }
 });
 
-function project(projectRoot: string): RiebeckiteProject {
-  return { projectRoot } as RiebeckiteProject;
+test("runDeployDomain reads the Wrangler config from appRoot, not projectRoot", async () => {
+  const projectRoot = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-project-"),
+  );
+  const appRoot = path.join(projectRoot, "apps", "web");
+  await fs.mkdir(appRoot, { recursive: true });
+  const configPath = path.join(appRoot, "wrangler.json");
+  await fs.writeFile(configPath, '{ "name": "site" }');
+
+  try {
+    await runDeployDomain(project(projectRoot, appRoot), {
+      prompts: createPrompts("docs.example.com", [true, false]),
+    });
+
+    assert.match(await fs.readFile(configPath, "utf8"), /custom_domain/);
+    assert.equal(
+      await fs.stat(path.join(projectRoot, "wrangler.json")).then(
+        () => true,
+        () => false,
+      ),
+      false,
+    );
+  } finally {
+    await fs.rm(projectRoot, { recursive: true, force: true });
+  }
+});
+
+function project(
+  projectRoot: string,
+  appRoot = projectRoot,
+): RiebeckiteProject {
+  return { projectRoot, appRoot } as RiebeckiteProject;
 }
 
 function createPrompts(input: string, confirmations: readonly boolean[]) {

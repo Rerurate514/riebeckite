@@ -10,7 +10,7 @@ import {
   parseTree,
 } from "jsonc-parser";
 import type { RiebeckiteProject } from "../application_root.js";
-import { findWranglerConfig, runDeploy } from "./deploy.js";
+import { findWranglerConfig, resolveDeployRoot, runDeploy } from "./deploy.js";
 
 type DomainPrompts = {
   readonly interactive: boolean;
@@ -41,7 +41,7 @@ export async function runDeployDomain(
 ): Promise<void> {
   const prompts = options.prompts ?? createDomainPrompts();
   const writeLine = options.writeLine ?? ((line: string) => console.log(line));
-  const configPath = await findWranglerConfig(project.projectRoot);
+  const configPath = await findWranglerConfig(resolveDeployRoot(project));
   if (configPath === undefined) {
     throw new CustomDomainError(
       "Could not find a Wrangler configuration file.",

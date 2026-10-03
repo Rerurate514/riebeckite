@@ -19,6 +19,10 @@ export type DeployOptions = {
   readonly dryRun: boolean;
 };
 
+export function resolveDeployRoot(project: RiebeckiteProject): string {
+  return project.appRoot;
+}
+
 export class WranglerNotFoundError extends Error {
   readonly hint: string;
 
@@ -50,17 +54,18 @@ export async function runDeploy(
   project: RiebeckiteProject,
   options: DeployOptions,
 ): Promise<void> {
-  const configPath = await ensureWranglerConfig(project.projectRoot);
-  await assertBuildOutput(project.projectRoot);
-  const wranglerEntry = await resolveWranglerEntry(project.projectRoot);
+  const deployRoot = resolveDeployRoot(project);
+  const configPath = await ensureWranglerConfig(deployRoot);
+  await assertBuildOutput(deployRoot);
+  const wranglerEntry = await resolveWranglerEntry(deployRoot);
   if (!options.dryRun) {
-    await ensureAuthenticated(wranglerEntry, project.projectRoot);
+    await ensureAuthenticated(wranglerEntry, deployRoot);
   }
 
   const arguments_ = ["deploy", "--config", configPath];
   if (options.dryRun) arguments_.push("--dry-run");
   const exitCode = await runNode(wranglerEntry, arguments_, {
-    cwd: project.projectRoot,
+    cwd: deployRoot,
     stdio: "inherit",
   });
   if (exitCode !== 0) {

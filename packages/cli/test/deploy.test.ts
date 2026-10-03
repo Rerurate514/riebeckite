@@ -1,9 +1,21 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import type { RiebeckiteProject } from "../src/application_root.js";
 import {
   buildDefaultWranglerConfig,
+  resolveDeployRoot,
   workerNameFromDirectory,
 } from "../src/commands/deploy.js";
+
+test("resolveDeployRoot targets the app directory", () => {
+  assert.equal(
+    resolveDeployRoot({
+      projectRoot: "/repo",
+      appRoot: "/repo/apps/web",
+    } as RiebeckiteProject),
+    "/repo/apps/web",
+  );
+});
 
 test("workerNameFromDirectory normalizes directory names into Worker names", () => {
   assert.equal(workerNameFromDirectory("My Site"), "my-site");

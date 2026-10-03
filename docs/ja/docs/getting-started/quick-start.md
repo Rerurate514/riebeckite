@@ -44,6 +44,10 @@ npm exec riebeckite dev
 
 `content/index.md` を編集します。たとえば見出しを `# My Digital Garden` に変更します。ファイルを保存するとブラウザで変更が反映されます。
 
+## favicon を変更する
+
+生成されたサイトには、`public/favicon.ico` と document head の `<link rel="icon" href="/favicon.ico" />` が含まれています。自分の favicon を使う場合は、`public/favicon.ico` を同じファイル名の ICO ファイルで置き換えてください。PNG や SVG を使う場合は、`app/routes/_renderer.tsx` の `href` と必要に応じて `type` 属性も変更します。
+
 ## 4. もう一つページを作る
 
 `content/hello.md` を作成します。`publish: true` が必須です。

@@ -50,6 +50,10 @@ Keep the command running while you edit. Press `Ctrl + C` when you want to stop 
 
 Edit `content/index.md`. For example, change the heading to `# My Digital Garden`. Save the file and watch the browser update.
 
+## Change the favicon
+
+Generated sites include `public/favicon.ico` and `<link rel="icon" href="/favicon.ico" />` in the document head. To use your own favicon, replace `public/favicon.ico` with an ICO file of the same name. To use PNG or SVG instead, update the `href` and, if needed, the `type` attribute in `app/routes/_renderer.tsx`.
+
 ## 4. Create another page
 
 Create `content/hello.md` with exactly this frontmatter:

@@ -81,6 +81,9 @@ test("renders the term feed from the manifest entries", async () => {
   const rss = manifest.generatedOutputs.find(
     (output) => output.path === "tags/featured/feed.xml",
   );
+  const atom = manifest.generatedOutputs.find(
+    (output) => output.path === "tags/featured/atom.xml",
+  );
   const json = manifest.generatedOutputs.find(
     (output) => output.path === "tags/featured/feed.json",
   );
@@ -88,9 +91,58 @@ test("renders the term feed from the manifest entries", async () => {
   assert.ok(typeof rss?.content === "string");
   assert.match(rss.content, /<rss /);
   assert.match(rss.content, /https:\/\/example\.com\/alpha/);
+  assert.match(rss.content, /<description>Alpha<\/description>/);
+  assert.ok(typeof atom?.content === "string");
+  assert.match(atom.content, /<feed /);
+  assert.match(atom.content, /https:\/\/example\.com\/alpha/);
+  assert.match(atom.content, /<summary>Alpha<\/summary>/);
   assert.ok(typeof json?.content === "string");
-  assert.equal(
-    (JSON.parse(json.content) as { version: string }).version,
-    "https://jsonfeed.org/version/1.1",
+  const parsedJson = JSON.parse(json.content) as {
+    version: string;
+    items: Array<{
+      url: string;
+      summary: string;
+      content_text: string;
+      content_html?: string;
+    }>;
+  };
+  assert.equal(parsedJson.version, "https://jsonfeed.org/version/1.1");
+  assert.equal(parsedJson.items[0]?.url, "https://example.com/alpha");
+  assert.equal(parsedJson.items[0]?.summary, "Alpha");
+  assert.equal(parsedJson.items[0]?.content_text, "Alpha");
+  assert.equal("content_html" in (parsedJson.items[0] ?? {}), false);
+});
+
+test("renders folder JSON feeds with summary content and canonical URLs", async () => {
+  const content = new ContentManager(
+    source({
+      "guides/intro.md":
+        "---\ntitle: Intro\npublish: true\ndescription: Intro summary\n---\n\n# Intro\n",
+    }),
+    [],
+    { config: config() },
   );
+  const manifest = await content.getManifest();
+  const json = manifest.generatedOutputs.find(
+    (output) => output.path === "folders/guides/feed.json",
+  );
+
+  assert.ok(typeof json?.content === "string");
+  const parsedJson = JSON.parse(json.content) as {
+    feed_url: string;
+    items: Array<{
+      url: string;
+      summary: string;
+      content_text: string;
+      content_html?: string;
+    }>;
+  };
+  assert.equal(
+    parsedJson.feed_url,
+    "https://example.com/folders/guides/feed.json",
+  );
+  assert.equal(parsedJson.items[0]?.url, "https://example.com/guides/intro");
+  assert.equal(parsedJson.items[0]?.summary, "Intro summary");
+  assert.equal(parsedJson.items[0]?.content_text, "Intro summary");
+  assert.equal("content_html" in (parsedJson.items[0] ?? {}), false);
 });

@@ -137,7 +137,7 @@ function renderJson(
         id: url,
         url,
         title: entry.title,
-        content_html: entry.html,
+        content_text: getDescription(entry),
         summary: getDescription(entry),
         date_published: getPublishedTime(entry) ?? undefined,
         date_modified: getUpdatedTime(entry) ?? undefined,

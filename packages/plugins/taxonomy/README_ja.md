@@ -104,6 +104,8 @@ GET /taxonomy/index.json
 語ごとのタイトルと self link を持つため、タグの購読と
 `@riebeckite/plugin-seo` が持つサイト全体のフィードを区別できます。公開かつ
 `noindex` でないエントリだけがマニフェストの公開ビューに入り、フィードへ届きます。
+語ごとの RSS と Atom はエントリの要約を出します。語ごとの JSON Feed は同じ要約を
+`content_text` として出し、描画済みの記事 HTML は複製しません。
 
 ## 関連タグ
 
@@ -185,4 +187,3 @@ import "@riebeckite/plugin-taxonomy/style.css";
 
 - [プラグインガイド](../../../docs/ja/docs/reference/plugin-api.md)
 - [コンテンツシステム](../../../docs/ja/docs/framework/content-system.md)
-

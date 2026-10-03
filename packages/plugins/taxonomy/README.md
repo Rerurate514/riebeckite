@@ -104,6 +104,8 @@ Folder terms get the same files under `/folders/<path>/…`. Feed channels carry
 their own term title and self link, so a tag subscription is distinguishable
 from the site-wide feeds owned by `@riebeckite/plugin-seo`. Only published,
 non-`noindex` entries reach the manifest's public view and therefore the feeds.
+RSS and Atom term feeds expose entry summaries. JSON term feeds use the same
+summary as `content_text` and do not duplicate rendered article HTML.
 
 ## Related tags
 
@@ -185,4 +187,3 @@ import "@riebeckite/plugin-taxonomy/style.css";
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
 - [Content system](../../../docs/en/docs/framework/content-system.md)
-

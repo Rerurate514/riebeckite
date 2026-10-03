@@ -1,5 +1,6 @@
 import fs, { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   ATTACHMENTS_BASE_PATH,
   ContentManager,
@@ -28,10 +29,19 @@ type ReferencedAssets = {
 
 type CopyResult = "copied" | "skipped";
 
-async function buildImages() {
-  const images = await collectContentImages();
-  const attachments = await collectContentAttachments();
-  const referencedAssets = await collectReferencedAssets();
+export type BuildImagesOptions = {
+  contentDir?: string;
+  assetsRoot?: string;
+  exclude?: readonly string[];
+};
+
+export async function buildImages(options: BuildImagesOptions = {}) {
+  const contentDir = options.contentDir ?? CONTENT_DIR;
+  const assetsRoot = options.assetsRoot ?? ASSETS_ROOT;
+  const exclude = options.exclude ?? config.content.exclude;
+  const images = await collectContentImages(contentDir, assetsRoot);
+  const attachments = await collectContentAttachments(contentDir, assetsRoot);
+  const referencedAssets = await collectReferencedAssets(contentDir, exclude);
 
   let copied = 0;
   let skipped = 0;
@@ -73,7 +83,11 @@ async function buildImages() {
     }
   }
 
-  const orphaned = await removeOrphanedAttachments(attachments);
+  const orphanedImages = await removeOrphanedImages(images, assetsRoot);
+  removed += orphanedImages.removed;
+  failed += orphanedImages.failed;
+
+  const orphaned = await removeOrphanedAttachments(attachments, assetsRoot);
   removed += orphaned.removed;
   failed += orphaned.failed;
 
@@ -106,10 +120,11 @@ async function copyIfChanged(
   return "copied";
 }
 
-async function collectContentAttachments(): Promise<
-  Map<string, ContentAttachment>
-> {
-  const entries = await fs.readdir(CONTENT_DIR, {
+async function collectContentAttachments(
+  contentDir: string,
+  assetsRoot: string,
+): Promise<Map<string, ContentAttachment>> {
+  const entries = await fs.readdir(contentDir, {
     withFileTypes: true,
     recursive: true,
   });
@@ -119,12 +134,12 @@ async function collectContentAttachments(): Promise<
   for (const entry of entries) {
     const sourcePath = path.join(entry.parentPath, entry.name).normalize("NFC");
     const relativePath = normalizeAssetPath(
-      path.relative(CONTENT_DIR, sourcePath),
+      path.relative(contentDir, sourcePath),
     );
     if (!entry.isFile() || !isAttachmentPath(relativePath)) continue;
 
     const targetPath = path
-      .join(ASSETS_ROOT, ATTACHMENTS_PUBLIC_ROOT, relativePath)
+      .join(assetsRoot, ATTACHMENTS_PUBLIC_ROOT, relativePath)
       .normalize("NFC");
 
     attachments.set(relativePath, { sourcePath, targetPath, relativePath });
@@ -135,8 +150,9 @@ async function collectContentAttachments(): Promise<
 
 async function removeOrphanedAttachments(
   attachments: Map<string, ContentAttachment>,
+  assetsRoot: string,
 ): Promise<{ removed: number; failed: number }> {
-  const publicRoot = path.join(ASSETS_ROOT, ATTACHMENTS_PUBLIC_ROOT);
+  const publicRoot = path.join(assetsRoot, ATTACHMENTS_PUBLIC_ROOT);
   let removed = 0;
   let failed = 0;
 
@@ -169,8 +185,11 @@ async function removeOrphanedAttachments(
   return { removed, failed };
 }
 
-async function collectContentImages(): Promise<Map<string, ContentImage>> {
-  const entries = await fs.readdir(CONTENT_DIR, {
+async function collectContentImages(
+  contentDir: string,
+  assetsRoot: string,
+): Promise<Map<string, ContentImage>> {
+  const entries = await fs.readdir(contentDir, {
     withFileTypes: true,
     recursive: true,
   });
@@ -183,9 +202,9 @@ async function collectContentImages(): Promise<Map<string, ContentImage>> {
         .join(entry.parentPath, entry.name)
         .normalize("NFC");
       const relativePath = normalizeAssetPath(
-        path.relative(CONTENT_DIR, sourcePath),
+        path.relative(contentDir, sourcePath),
       );
-      const targetPath = path.join(ASSETS_ROOT, relativePath).normalize("NFC");
+      const targetPath = path.join(assetsRoot, relativePath).normalize("NFC");
 
       images.set(relativePath, { sourcePath, targetPath, relativePath });
     }
@@ -194,10 +213,55 @@ async function collectContentImages(): Promise<Map<string, ContentImage>> {
   return images;
 }
 
-async function collectReferencedAssets(): Promise<ReferencedAssets> {
+async function removeOrphanedImages(
+  images: Map<string, ContentImage>,
+  assetsRoot: string,
+): Promise<{ removed: number; failed: number }> {
+  let removed = 0;
+  let failed = 0;
+
+  if (!(await fileExists(assetsRoot))) {
+    return { removed, failed };
+  }
+
+  const entries = await fs.readdir(assetsRoot, {
+    withFileTypes: true,
+    recursive: true,
+  });
+
+  for (const entry of entries) {
+    if (
+      !entry.isFile() ||
+      !IMAGE_EXTENSIONS.includes(getExtension(entry.name))
+    ) {
+      continue;
+    }
+    const sourcePath = path.join(entry.parentPath, entry.name).normalize("NFC");
+    const relativePath = normalizeAssetPath(
+      path.relative(assetsRoot, sourcePath),
+    );
+    if (images.has(relativePath) || isReservedPublicImage(relativePath))
+      continue;
+
+    try {
+      await fs.rm(sourcePath);
+      removed++;
+    } catch (e) {
+      failed++;
+      console.error(`Failed to remove orphaned image ${relativePath}:`, e);
+    }
+  }
+
+  return { removed, failed };
+}
+
+async function collectReferencedAssets(
+  contentDir: string,
+  exclude: readonly string[],
+): Promise<ReferencedAssets> {
   const referencedImages = new Set<string>();
   const referencedAttachments = new Set<string>();
-  const content = new ContentManager(CONTENT_DIR, config.content.exclude);
+  const content = new ContentManager(contentDir, [...exclude]);
   const manifest = await content.build();
 
   for (const entry of manifest.publicEntries) {
@@ -261,6 +325,14 @@ function isSafeContentPath(assetPath: string): boolean {
   return !assetPath.startsWith("../") && !path.posix.isAbsolute(assetPath);
 }
 
+function isReservedPublicImage(assetPath: string): boolean {
+  return (
+    !assetPath.includes("/") ||
+    assetPath === ATTACHMENTS_PUBLIC_ROOT ||
+    assetPath.startsWith(`${ATTACHMENTS_PUBLIC_ROOT}/`)
+  );
+}
+
 function getExtension(filePath: string): string {
   return path.extname(filePath).replace(".", "").toLowerCase();
 }
@@ -300,7 +372,15 @@ function isFileNotFoundError(error: unknown): error is NodeJS.ErrnoException {
   );
 }
 
-buildImages().catch((error) => {
-  console.error("Failed to build images:", error);
-  process.exitCode = 1;
-});
+if (isDirectExecution()) {
+  buildImages().catch((error) => {
+    console.error("Failed to build images:", error);
+    process.exitCode = 1;
+  });
+}
+
+function isDirectExecution(): boolean {
+  return process.argv[1]
+    ? fileURLToPath(import.meta.url) === path.resolve(process.argv[1])
+    : false;
+}

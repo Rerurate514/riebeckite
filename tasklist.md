@@ -4,7 +4,16 @@
 
 ## 実装対象（優先度順）
 
-現在、実装対象はありません。
+| ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
+|---|---|---|---|---|---|
+| CACHE2 | l10n 有効時の Persistent Per-Content Cache 全面 bypass を再監査し、安全にキャッシュ可能な単位へ縮小できるか検証する | 未着手 | Large | Persistent Cache と Incremental SSG の基盤が整った一方、l10n 有効時は安全側に全面 bypass しており、実サイト構成でキャッシュ効果を失う可能性がある | 最新実装で bypass 条件と l10n の実依存を特定する。content・locale・translation group・route/location 等の依存を既存 dependency 契約で表現できるか検証し、安全に縮小可能なら実装と cold/incremental 同値テストを追加する。不可能または効果が小さい場合は根拠と計測値を残して対象外へ移す |
+| HMR1 | Content HMR と dependency graph / incremental invalidation の変更伝播を E2E で監査する | 未着手 | Medium | HMR・Persistent Cache・Incremental SSG は個別に整備済みだが、依存コンテンツをまたぐ変更伝播が一貫していることを横断的に保証したい | note edit、embed 元変更、asset replacement、rename、delete、visibility変更について、直接変更されたコンテンツだけでなく依存先まで必要十分に invalidation / HMR 通知されることを確認する。publication boundary を越えて private content が公開側へ漏れないことも確認し、不整合があれば修正と回帰テストを追加する |
+| CI1 | Persistent Cache / Incremental SSG の CI キャッシュ再利用を再監査する | 未着手 | Medium | ローカル incremental build の高速化に対して、CI が同じ state を十分再利用できていない可能性がある | GitHub Actions と現在の cache/state 保存先を調査し、CI で再利用可能か計測する。安全に保存可能な state が未保存で実測上の効果がある場合のみ cache 対象を追加する。cold build と cache hit build の成果物同値性を保証する |
+| PAGE1 | Plugin Page Type の route collision と優先順位契約を監査する | 未着手 | Medium | Page System の拡張に伴い、複数 Page Type が同一 route を生成した場合の暗黙選択を早期に検出できる方が Plugin 開発時の診断性が高い | 同一 route を複数 Page Type が生成するケースを再現し、現在の resolver 契約を確認する。曖昧な衝突が静かに解決される場合は diagnostic を追加し、明示された priority による意図的な競合は誤警告しないテストを追加する |
+| META1 | content metadata と HTML metadata の生成契約を監査する | 未着手 | Medium | `frontmatter.title`、description、canonical、OGP 等が複数 Plugin / route にまたがるため、表示タイトルと metadata の drift を防ぎたい | `<title>`、description、canonical、Open Graph、Twitter metadata の入力元と fallback を整理し、通常記事・Page Type・l10n・custom permalink で一貫性を検証する。実在する不整合のみ修正し、契約テストを追加する |
+| DEV1 | custom HonoX dev server entry 使用時の content asset 配信を監査する | 未着手 | Small | 標準構成外でも Plugin / Core の asset 契約が壊れないことを確認し、custom entry でのみ発生する 404 の可能性を切り分けたい | custom `honox.devServer.entry` 構成で content image / attachment / static asset の dev 配信を再現する。標準契約上サポート対象なら修正とテストを追加し、対象外なら制約を docs に明記する |
+| DX1 | `doctor` / `inspect` / build diagnostics の説明能力を再監査する | 未着手 | Medium | correctness 系の修正が進んだため、問題発生時に内部状態を CLI から説明できるようにすると保守性が上がる | `doctor` と `inspect` が build 対象・除外理由・cache/invalidation 状態をどこまで説明できるか調査する。実際のデバッグで不足する情報だけを追加し、通常出力を過剰に増やさない |
+| GRAPH1 | 大規模 Vault における Graph 描画の性能境界を計測する | 未着手 | Medium | 500 nodes guard は導入済みだが、実用上の上限と layout / interaction のボトルネックは未計測 | 500 / 1000 / 2000 nodes 程度で初期描画・layout・zoom/pan・drag の性能を計測する。明確な問題が確認された場合のみ最適化し、Canvas/WebGL 等への置換は計測根拠なしでは行わない |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -19,25 +28,16 @@
 - CACHE1: `processedContentCache.version` の手動更新が正式な invalidation 契約として機能し、テストと docs で裏付けられている。外部ヘルパーソースの自動解析は投機的。
 - TEST1: React シムは 3 テストファイルの局所回避に留まり増殖していない。テスト基盤を Vitest へ移す理由が無く、広がった時点で再検討する。
 
-## 完了済み
-
-| ID | 作業 | 規模 | 実装結果・備考 |
-|---|---|---|---|
-| OC0 | 本番ビルドで `public` 配下の静的アセットを生成物より優先する | Medium | `collectSiteOwnedOutputPaths` を追加し、SSG の emit・unchanged 再利用・removed 削除と `canUseIncremental` の条件からサイト所有パスを除外。`shadowedOutputCount` メトリクスと警告を追加。`output_collision.test.ts` を新設し、既存 Incremental SSG テストは維持。commit `3741dae`、main へマージ `1fb3f6e` |
-| UI1 | recent-posts / daily-notes を単独で使うと incremental SSG で出力が stale になり得る問題を解消する | Medium | recent-posts に `outputDependencies: [{ type: "global" }]`、daily-notes に既定ディレクトリ `Daily` の `folder` 依存（空ディレクトリ指定時は `global`）を宣言。`collectChangedFolders` を祖先フォルダまで含めるよう修正し、ネストした Daily ノートの追加・`date` 変更でも index が再生成されるようにした。core / 両プラグインのテストに再生成と狭い依存を検証するケースを追加 |
-| OC4 | `pnpm build` の前提（`pnpm build:packages` の先行）を明文化・自動化する | Small | root の `build` を `pnpm build:packages && pnpm --filter @riebeckite/web build` に変更し、packages → apps/web の順を保証。`build:packages` が cli を含む公開 package を build するため個別の cli build は不要。クリーン checkout で `pnpm install` 後に `pnpm build` のみがパッケージビルドを先行させて成功することを確認 |
-| UI2 | daily-notes の Plugin 設定がウィジェットに反映されない問題を解消する | Medium | `getDailyNotes` が `options` 未指定時に `resolveDailyNotesOptionsFromConfig(config)` で登録済み `dailyNotesPlugin(options)` の options を解決するようにした。プラグイン名は `DAILY_NOTES_PLUGIN_NAME` に集約。apps/web と scaffold は `getDailyNotes({ manifest, config })` のままで config の `source` / `extract` / `widget.limit` / `dateFormat` / `locale` を反映し、明示 `options` は上書きとして優先する。設定解決と config 反映を検証するテストを追加（daily-notes 26 pass） |
-| OC2 | SSG 管轄外の出力（`dist/index.js`・クライアントのハッシュ付きアセット）と `public` の衝突を扱う | Medium | Vite 8 は `vite:prepare-out-dir` の `renderStart` で `publicDir` を `outDir` へコピーした後に Rollup/Vite のバンドル出力を書く。SSG 生成物は `collectSiteOwnedOutputPaths` で public 優先、`@hono/vite-build` の `dist/index.js` はバンドル出力のため public より後に書かれ public 側が無言で上書きされる。`findBuildOutputSiteCollisions` を追加し `generateBundle` でバンドル出力と public の衝突を検出して警告（ownership は「ビルド出力が public に優先、衝突は警告」）。クライアントのハッシュ付きアセットは内容ハッシュ名のため public と同名になるのは手動配置時のみで実害なしと判断。`ssg_plugin.test.ts` と `output_collision.test.ts` に検出・所有のテストを追加 |
-| UI3 | showcase の生成コードがコンパイル・実 build で検証されない問題を解消する | Medium | `scaffold_contracts.test.ts` に Contract 11 を追加し、全 preset の生成 TSX（`app/**` + `riebeckite.config.ts` / `vite.config.ts`）を esbuild（`bundle` / `write:false` / `packages:"external"`）でコンパイル検証するようにした。これにより showcase の `footerContent` が壊れていた実バグを検出し、`app-templates.ts` の slugRoute を `<LocalGraph>` の条件式と `<Backlinks>` を個別 child にし外側 brace を外す形（indexRoute の `afterContent` と同型）へ修正。実 build と生成 HTML の検証は Contract 1（starter）が担い、`scaffold_presets.test.ts` の文字列 assert は維持 |
-| DN1 | daily-notes が Obsidian のカスタム日付フォーマットを解釈できない問題を解消する | Medium | ソース設定に `source.dateFormat`（Obsidian/Moment 形式、既定 `YYYY-MM-DD`）を追加し、slug の日付をこの形式ちょうどで解決するようにした。`resolveDailyNoteDate` は frontmatter `date` / `created` を優先し、無ければ設定形式で slug を解析する。`YYYY` / `YY`（69 未満は 2000 年代）/ `MM` / `M` / `DD` / `D` とリテラル（`[...]` 含む）に対応し、対応外の形式は他形式を推測せず日付なしにする。`DEFAULT_SLUG_DATE_FORMAT` を追加。設定形式の解決・非推測・frontmatter 優先を検証するテストを追加（daily-notes 31 pass）。README en/ja に説明を追記 |
-| I18N1 | docs プラグインの前後ナビが `Previous` / `Next` 固定で、ja ページでも英語表示になる問題を解消する | Small | `renderDocsPrevNext` / `renderPrevNextLink` に解決済み言語を渡し、`en` は `Previous` / `Next`、`ja` は `前へ` / `次へ`、ナビの aria-label も言語別（`Previous and next docs pages` / `前後のドキュメント`）に切り替えるようにした。`docs` プラグインは `entry.publicLocation.metadata?.["l10n.lang"]` を渡す。ja/en のラベル切り替えを検証するテストを追加（docs 9 pass） |
-| I18N4 | code-enhance のコピーラベル（`copyLabel` / `copiedLabel`）をプラグイン設定から渡せるようにする | Small | `CodeEnhanceOptions` を `CodeEnhanceClientOptions`（`copyLabel` / `copiedLabel`）を含む型にし、`codeEnhance(options)` が `createClientEntry("code-enhance", "initCodeEnhance", { copyLabel: options.copyLabel ?? DEFAULT_COPY_LABEL, copiedLabel: options.copiedLabel ?? DEFAULT_COPIED_LABEL })` で publicConfig を渡すようにした。`DEFAULT_COPY_LABEL` / `DEFAULT_COPIED_LABEL` を公開し、lightbox / text-fragment と同じ client config 契約に合わせた。既定値・上書き・片側のみ上書きを検証するテストを追加（code-enhance 8 pass）。README en/ja にオプションを追記。なお `check:docs` は `folder-pages` README の言語リンク欠落（既存・本変更と無関係）で失敗 |
-| UI4 | plugin-api.md が bodySlots / appendContentBodySlot を説明していない | Small | docs/en と docs/ja の reference/plugin-api.md に「Body slots」節を追加。`ContentBodySlot` の標準 6 slot（`article.after-header` / `article.after-meta` / `article.aside` / `article.before-content` / `article.after-content` / `article.footer`）と、任意文字列の slot 名、`properties` などの独自 slot、`appendContentBodySlot` の空 fragment 無視・解決済み Plugin 順での蓄積、Site が描画の有無と位置を決める境界、`onManifestCreated` からの公開例、参照アプリ / scaffold starter が標準 slot を消費する点を記述。実装（`content_manifest.ts`）と `honox-integration.md` の参照に一致 |
-
 ## 実装メモ（agents 用）
 
 共通ルール:
 
 - 着手時は「状態」を `実施中` に更新する。
+- 実装前に最新 `main` の実コード・テスト・設定を確認し、過去の監査結果だけを根拠に修正しない。
+- 問題を再現できない、既に解決済み、または現在の契約として妥当な場合はコードを変更しない。
+- 性能改善は変更前後を計測し、実測上の改善が確認できる場合のみ採用する。
+- 新しい抽象化・永続 state・独自 cache を、将来必要になるかもしれないという理由だけで追加しない。
+- 既存の Core / Plugin / HonoX の責務境界を優先し、局所的な workaround で契約を迂回しない。
+- 修正時は対象となる regression / contract test を追加する。
 - 完了時は実装内容を 1 行で「完了済み」表へ移し、ID は引き継ぐ。
 - 各項目の完了条件は実装対象表の「完了条件」列を参照する。

@@ -100,7 +100,7 @@ function appFiles(preset: ScaffoldPreset): readonly SiteTemplateFile[] {
     style: () => style(preset),
     renderer: () => renderer(preset),
     index: () => indexRoute(preset),
-    slug: () => slugRoute(),
+    slug: () => slugRoute(preset),
     header: () => siteHeader(),
     article: () => article(),
   };

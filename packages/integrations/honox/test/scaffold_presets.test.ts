@@ -115,7 +115,7 @@ test("each preset generates its intended self-contained composition", async () =
   });
 });
 
-test("starter and showcase scaffolds render plugin body slots", async () => {
+test("starter and showcase scaffolds render the standard body slots", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -124,17 +124,121 @@ test("starter and showcase scaffolds render plugin body slots", async () => {
         path.join(targetDirectory, "app/components/article.tsx"),
         "utf8",
       );
-      assert.match(article, /propertiesHtml\?: string/);
-      assert.match(article, /afterContent\?: string/);
-      assert.match(article, /class="article-properties"/);
-      assert.match(article, /class="site-article__after-content"/);
+      for (const prop of [
+        "propertiesHtml?: string",
+        "afterHeaderHtml?: string",
+        "afterMetaHtml?: string",
+        "beforeContentHtml?: string",
+        "afterContentHtml?: string",
+        "asideHtml?: string",
+        "footerHtml?: string",
+      ]) {
+        assert.ok(article.includes(prop), `article must accept ${prop}`);
+      }
+      for (const className of [
+        'class="article-properties"',
+        'class="site-article__after-header"',
+        'class="site-article__after-meta"',
+        'class="site-article__before-content"',
+        'class="site-article__after-content"',
+        'class="site-article__aside"',
+        'class="site-article__footer"',
+      ]) {
+        assert.ok(
+          article.includes(className),
+          `article must render ${className}`,
+        );
+      }
       for (const route of ["index.tsx", "[slug{.+}].tsx"]) {
         const source = await fs.readFile(
           path.join(targetDirectory, `app/routes/${route}`),
           "utf8",
         );
-        assert.match(source, /propertiesHtml=\{/);
-        assert.match(source, /afterContent=\{/);
+        for (const slot of [
+          "properties",
+          "article.after-header",
+          "article.after-meta",
+          "article.before-content",
+          "article.after-content",
+          "article.aside",
+          "article.footer",
+        ]) {
+          assert.ok(
+            source.includes(slot),
+            `${preset} ${route} must pass the ${slot} slot`,
+          );
+        }
+      }
+    }
+  });
+});
+
+test("starter scaffold renders the plugin UI enabled by its preset", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const targetDirectory = path.join(directory, "starter");
+    await scaffoldRiebeckiteSite({ targetDirectory, preset: "starter" });
+    const read = (relative: string) =>
+      fs.readFile(path.join(targetDirectory, relative), "utf8");
+    const renderer = await read("app/routes/_renderer.tsx");
+    const index = await read("app/routes/index.tsx");
+    const slug = await read("app/routes/[slug{.+}].tsx");
+    assert.match(renderer, /<SearchBar \/>/);
+    assert.match(index, /<TableOfContents/);
+    assert.match(index, /<Backlinks /);
+    assert.match(index, /<RecentPosts /);
+    assert.match(slug, /<TableOfContents/);
+    assert.match(slug, /<Backlinks /);
+  });
+});
+
+test("showcase scaffold renders local-graph and daily-notes", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const targetDirectory = path.join(directory, "showcase");
+    await scaffoldRiebeckiteSite({ targetDirectory, preset: "showcase" });
+    const read = (relative: string) =>
+      fs.readFile(path.join(targetDirectory, relative), "utf8");
+    const index = await read("app/routes/index.tsx");
+    const slug = await read("app/routes/[slug{.+}].tsx");
+    assert.match(index, /<DailyNotes /);
+    assert.match(slug, /<LocalGraph /);
+  });
+});
+
+test("generated scaffold code contains no un-interpolated template variables", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const leaked = [
+      "importLines",
+      "dataLines",
+      "propLines",
+      "afterChildren",
+      "footerChildren",
+      "titleHelper",
+      "dataBlock",
+      "hasScaffoldPlugin",
+      "articleTitleHelper",
+      "needsConfig",
+      "needsTitle",
+      "needsManifest",
+    ];
+    for (const preset of ["starter", "showcase", "minimal"] as const) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      for (const relative of [
+        "app/components/article.tsx",
+        "app/routes/index.tsx",
+        "app/routes/[slug{.+}].tsx",
+        "app/routes/_renderer.tsx",
+      ]) {
+        const source = await fs.readFile(
+          path.join(targetDirectory, relative),
+          "utf8",
+        );
+        for (const identifier of leaked) {
+          assert.ok(
+            !source.includes(identifier),
+            `${preset} ${relative} must not leak template variable ${identifier}`,
+          );
+        }
       }
     }
   });

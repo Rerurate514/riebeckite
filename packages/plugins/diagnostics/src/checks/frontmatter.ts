@@ -21,17 +21,7 @@ export function checkFrontmatter(
 ) {
   const location = { slug: note.slug, filePath: note.relativePath };
   const values = note.fm.values;
-  if (!note.fm.hasFrontmatter) {
-    pushDiagnostic(
-      diagnostics,
-      options,
-      location,
-      "missing-frontmatter",
-      "note has no frontmatter",
-      note.slug,
-      "add frontmatter with the required fields",
-    );
-  } else {
+  if (note.fm.hasFrontmatter) {
     for (const field of options.requiredFrontmatter) {
       if (!hasField(values, field))
         pushDiagnostic(
@@ -44,6 +34,16 @@ export function checkFrontmatter(
           `add "${field}" to the frontmatter`,
         );
     }
+  } else if (options.requiredFrontmatter.length > 0) {
+    pushDiagnostic(
+      diagnostics,
+      options,
+      location,
+      "missing-frontmatter",
+      "note has no frontmatter",
+      note.slug,
+      "add frontmatter with the required fields",
+    );
   }
   if (values.publish === true && values.draft === true)
     pushDiagnostic(

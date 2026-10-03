@@ -34,10 +34,12 @@ export function checkDuplicateTitles(
 ) {
   const byTitle = groupNotes(
     source.includedNotes.filter((note) => note.published),
-    (note) => getNoteTitle(note.fm.values, note.slug).toLowerCase(),
+    (note) =>
+      `${note.language ?? ""}\u0000${getNoteTitle(note.fm.values, note.slug).toLowerCase()}`,
   );
-  for (const [title, notes] of byTitle) {
+  for (const [groupKey, notes] of byTitle) {
     if (notes.length < 2) continue;
+    const title = groupKey.slice(groupKey.indexOf("\u0000") + 1);
     const slugs = notes.map((note) => note.slug).join(", ");
     for (const note of notes)
       pushDiagnostic(

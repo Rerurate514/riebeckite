@@ -223,7 +223,6 @@ export default defineConfig({
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,
-      requiredFrontmatter: ["title"],
     }),
   ],
 });

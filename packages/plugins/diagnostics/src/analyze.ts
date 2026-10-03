@@ -42,8 +42,10 @@ export async function analyzeContent(
   checkSlugCollisions(source, normalizedOptions, diagnostics);
   checkDuplicateTitles(source, normalizedOptions, diagnostics);
   checkContentIdIntegrity(source, normalizedOptions, diagnostics);
-  checkOrphans(source, state, normalizedOptions, diagnostics);
-  checkUnusedAssets(source, state, normalizedOptions, diagnostics);
+  if (!options.skipReferenceIntegrity) {
+    checkOrphans(source, state, normalizedOptions, diagnostics);
+    checkUnusedAssets(source, state, normalizedOptions, diagnostics);
+  }
   checkExcludedPublic(source, normalizedOptions, diagnostics);
   if (!options.skipReferenceIntegrity)
     checkPublishBoundary(source, normalizedOptions, diagnostics);

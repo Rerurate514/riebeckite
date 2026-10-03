@@ -33,9 +33,9 @@ export default defineConfig({
 | `broken-link` | error | Markdown リンクが存在しない、または除外されたノートを指す |
 | `unused-asset` | warning | どのノートからも参照されない画像 |
 | `orphan-note` | info | 公開ノートのうち、他のノートからリンクされていないもの |
-| `missing-frontmatter` | warning | frontmatter がない、または必須フィールドが欠けている |
+| `missing-frontmatter` | warning | 必須フィールドが欠けている |
 | `publish-conflict` | warning | `publish: true` と `draft: true` または `private: true` が同居している |
-| `duplicate-title` | warning | 公開ノート同士でタイトルが重複している |
+| `duplicate-title` | warning | 同じ言語の公開ノート同士でタイトルが重複している |
 | `slug-collision` | error | 大文字・小文字を区別しない slug が衝突している |
 | `duplicate-content-id` | error | 公開ノート同士で安定コンテンツ ID（`id`/`uid`）が重複している |
 | `invalid-content-id` | error | `id`/`uid` の frontmatter が安定コンテンツ ID の要件を満たしていない |
@@ -59,7 +59,7 @@ Riebeckite のプラグインとして使う場合、リンク関係の検査は
 
 外部 URL の疎通確認、SEO、スペルチェック、Lighthouse、自動修復は行いません。`http:`、`https:`、`mailto:`、`tel:`、`data:`、プロトコル相対 URL、ページ内フラグメントだけのリンクは対象外です。経路の存在確認では、クエリ文字列とフラグメントを除いて判定します。生成ページや生成アセットを提供するプラグインは、Page Type、生成出力、アセット登録の既存の仕組みを使ってください。登録されていれば、整合性検査でも有効な公開先として扱われます。
 
-`runDiagnostics()` と単体 CLI は、完全な manifest を持たないため、従来の content source 解析を使います。
+`runDiagnostics()` と単体 CLI は、完全な manifest を持たないため、従来の content source 解析を使います。そのため `orphan-note` と `unused-asset` は `runDiagnostics()` と単体 CLI でのみ報告されます。ビルド時はリンク関係を manifest から解決するため、これらは出力しません。
 
 ## 設定項目
 

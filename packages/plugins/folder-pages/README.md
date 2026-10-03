@@ -1,5 +1,7 @@
 # @riebeckite/plugin-folder-pages
 
+[日本語](./README_ja.md)
+
 Folder Page support for Riebeckite. The plugin turns folder entry notes into the
 folder's landing page and generates a listing page for folders that have no
 entry note.

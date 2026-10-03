@@ -80,6 +80,7 @@ export function diagnostics(options: DiagnosticsOptions = {}) {
 export const diagnosticsPlugin = diagnostics;
 
 const ANALYTICS_PLUGIN_NAME = "analytics";
+const L10N_PLUGIN_NAME = "l10n";
 
 /**
  * Reports whether the resolved configuration enables the analytics plugin, so
@@ -138,5 +139,19 @@ function toAnalyzerConfig(
       ),
     exclude: [...target.content.exclude, ...(options.exclude ?? [])],
     publishStrategy: target.content.filters.publishStrategy,
+    languages: resolveLanguages(target),
   };
+}
+
+function resolveLanguages(config: ResolvedRiebeckiteConfig): string[] {
+  const plugin = config.plugins.find(
+    (entry) => entry.name === L10N_PLUGIN_NAME && entry.enabled !== false,
+  );
+  const languages = (plugin?.options as { languages?: unknown } | undefined)
+    ?.languages;
+  return Array.isArray(languages)
+    ? languages.filter(
+        (language): language is string => typeof language === "string",
+      )
+    : [];
 }

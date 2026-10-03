@@ -30,7 +30,7 @@ Plugin の export 名や設定項目は、実装と package README を正本と�
 
 Pluginやコンテンツ処理の問題を調査するときに、診断情報を得るために利用します。開発時や「どの処理で問題が起きたか」を切り分けたい場合に向いています。
 
-ビルド後に manifest へ `broken-wikilink` や `orphan-note`、`missing-frontmatter` などの診断コードが出ます。`riebeckite-diagnostics` CLI を使ってレポートとして確認することもできます。
+ビルド後に manifest へ `broken-wikilink` などの診断コードが出ます。`orphan-note` と `unused-asset` はビルドの manifest ベース診断には含まれないため、`riebeckite-diagnostics` CLI や `runDiagnostics()` で確認します。
 
 ## 使いどころ
 

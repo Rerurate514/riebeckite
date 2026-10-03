@@ -1,5 +1,7 @@
 # @riebeckite/plugin-folder-pages
 
+[English](./README.md)
+
 Riebeckite の Folder Page を提供するプラグインです。フォルダの入口ノートを
 フォルダのランディングページにし、入口ノートのないフォルダには一覧ページを
 自動生成します。

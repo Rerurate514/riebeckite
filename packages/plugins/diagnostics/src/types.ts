@@ -40,4 +40,5 @@ export type AnalyzerContentConfig = {
   source?: ContentSource;
   exclude: string[];
   publishStrategy: "explicit" | "selective";
+  languages?: readonly string[];
 };

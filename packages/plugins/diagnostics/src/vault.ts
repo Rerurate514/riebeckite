@@ -15,6 +15,7 @@ const WIKILINK_TARGET_PATTERN =
 export type ScannedNote = {
   relativePath: string;
   slug: string;
+  language?: string;
   markdown: string;
   fm: ParsedFrontmatter;
   headings: Set<string>;
@@ -83,6 +84,7 @@ export async function scanVault(
       const note: ScannedNote = {
         relativePath: relative,
         slug,
+        language: resolveNoteLanguage(relative, config.languages),
         markdown,
         fm,
         headings: extractHeadings(markdown),
@@ -285,6 +287,16 @@ export function fragmentExists(note: ScannedNote, fragment: string): boolean {
 
 function normalizeMarkdown(markdown: string): string {
   return markdown.replace(/\r\n/g, "\n");
+}
+
+function resolveNoteLanguage(
+  relativePath: string,
+  languages: readonly string[] | undefined,
+): string | undefined {
+  if (!languages || languages.length === 0) return undefined;
+  const segment = relativePath.split("/")[0]?.toLowerCase();
+  if (!segment) return undefined;
+  return languages.find((language) => language.toLowerCase() === segment);
 }
 
 export function getExtension(filePath: string): string {

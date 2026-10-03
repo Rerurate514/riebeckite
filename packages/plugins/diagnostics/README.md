@@ -44,9 +44,9 @@ export default defineConfig({
 | `broken-link` | `error` | Markdown link points to a missing or excluded note/file |
 | `unused-asset` | `warning` | Image never referenced by any note (`reportUnusedAssets`) |
 | `orphan-note` | `info` | Published note has no incoming links (`reportOrphans`) |
-| `missing-frontmatter` | `warning` | No frontmatter, or required fields missing |
+| `missing-frontmatter` | `warning` | A required frontmatter field is missing |
 | `publish-conflict` | `warning` | `publish: true` combined with `draft: true` / `private: true` |
-| `duplicate-title` | `warning` | Multiple published notes share a title |
+| `duplicate-title` | `warning` | Multiple published notes share a title within the same language |
 | `slug-collision` | `error` | Slugs collide case-insensitively |
 | `duplicate-content-id` | `error` | Published notes share a stable content ID (`id`/`uid`) |
 | `invalid-content-id` | `error` | `id`/`uid` frontmatter violates the stable content ID contract |
@@ -80,7 +80,10 @@ the existing plugin output/asset contracts so integrity checks can treat them as
 valid public targets.
 
 `runDiagnostics()` and the standalone CLI still use the filesystem/content-source
-analyzer because no full manifest is available in that mode.
+analyzer because no full manifest is available in that mode. As a result,
+`orphan-note` and `unused-asset` are reported only by `runDiagnostics()` and the
+standalone CLI; during a build they are omitted because link relationships come
+from the manifest.
 
 ## Options
 

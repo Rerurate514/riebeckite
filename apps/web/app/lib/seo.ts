@@ -38,7 +38,7 @@ export function buildIndexSeo(post?: PostContent): SeoMetadata {
 export function buildTagSeo(
   tag: string,
   path: string,
-  lang?: string,
+  lang: string,
 ): SeoMetadata {
   return buildWebsiteSeo({
     title: `#${tag} | ${config.site.title}`,
@@ -51,7 +51,7 @@ export function buildTagSeo(
 export function buildArchiveSeo(
   period: string,
   path: string,
-  lang?: string,
+  lang: string,
 ): SeoMetadata {
   return buildWebsiteSeo({
     title: period,

@@ -43,7 +43,7 @@ function archiveDefinitions(
 const collectionCache = new Map<WebLocale, ContentCollection[]>();
 
 export async function buildCollections(
-  lang?: string,
+  lang: string,
 ): Promise<ContentCollection[]> {
   const locale = resolveWebLocale(lang);
   const cached = collectionCache.get(locale);
@@ -61,7 +61,7 @@ export async function buildCollections(
 export async function findCollection(
   kind: string,
   path: string,
-  lang?: string,
+  lang: string,
 ): Promise<ContentCollection | null> {
   const collections = await buildCollections(lang);
   return (
@@ -73,7 +73,7 @@ export async function findCollection(
 
 export function buildArchivePage(
   collection: ContentCollection,
-  lang?: string,
+  lang: string,
 ): PostContent {
   const posts = collection.entries
     .map(

@@ -183,7 +183,6 @@
 }
 
 .rr-diff-history__commit:focus-visible,
-.rr-diff-history__diff-head:focus-visible,
 .rr-diff-history__controls select:focus-visible {
   outline: 2px solid var(--rb-color-accent, #f66620);
   outline-offset: 2px;
@@ -222,39 +221,15 @@
     var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
 }
 
-.rr-diff-history__diff-head {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-block-end: 1px solid
-    var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
-  padding: 0.625rem 0.75rem;
-  font-family: var(
-    --rb-font-mono,
-    ui-monospace,
-    SFMono-Regular,
-    Consolas,
-    monospace
-  );
-  font-size: 0.8125rem;
-  cursor: pointer;
-  user-select: none;
-}
-
-.rr-diff-history__diff-head::marker {
-  color: var(
-    --rb-color-muted,
-    color-mix(in srgb, currentColor 62%, transparent)
-  );
-}
-
 .rr-diff-history__table-wrap {
   overflow-x: auto;
 }
 
 .rr-diff-history__table {
+  display: table;
   width: 100%;
   min-width: 42rem;
+  overflow-x: visible;
   border-collapse: collapse;
   font-family: var(
     --rb-font-mono,

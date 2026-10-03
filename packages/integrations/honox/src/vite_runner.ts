@@ -90,21 +90,41 @@ async function findWorkspaceRoot(
 export async function startHonoxDevServer(
   options: HonoxApplicationOptions,
 ): Promise<void> {
-  const server = await createServer({ root: options.root });
-  await server.listen();
-  server.printUrls();
-  await waitForShutdown(server);
+  const root = path.resolve(options.root);
+  await withWorkingDirectory(root, async () => {
+    const server = await createServer({ root });
+    await server.listen();
+    server.printUrls();
+    await waitForShutdown(server);
+  });
 }
 
 export async function buildHonoxApplication(
   options: HonoxApplicationOptions,
 ): Promise<void> {
-  await runTraced(options.tracer, "integration.honox.client_build", () =>
-    build({ root: options.root, mode: "client" }),
-  );
-  await runTraced(options.tracer, "integration.honox.server_build", () =>
-    build({ root: options.root }),
-  );
+  const root = path.resolve(options.root);
+  await withWorkingDirectory(root, async () => {
+    await runTraced(options.tracer, "integration.honox.client_build", () =>
+      build({ root, mode: "client" }),
+    );
+    await runTraced(options.tracer, "integration.honox.server_build", () =>
+      build({ root }),
+    );
+  });
+}
+
+async function withWorkingDirectory<T>(
+  root: string,
+  task: () => Promise<T>,
+): Promise<T> {
+  const previousDirectory = process.cwd();
+  if (previousDirectory === root) return await task();
+  process.chdir(root);
+  try {
+    return await task();
+  } finally {
+    process.chdir(previousDirectory);
+  }
 }
 
 async function runTraced<T>(

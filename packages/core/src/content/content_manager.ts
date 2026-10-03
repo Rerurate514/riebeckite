@@ -22,11 +22,15 @@ import {
 import { CONTENT_BUILD_STATE_EXCLUDE } from "./content_build_state.js";
 import { resolveContentBuildStatePath } from "./content_build_state_store.js";
 import { hasContentChanges } from "./content_change_set.js";
+import type { CachedContentDependency } from "./content_dependency_tracker.js";
 import { ContentEntryReader } from "./content_entry_reader.js";
 import type { ContentGraph } from "./content_graph.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
 import { ContentLocationResolver } from "./content_location_resolver.js";
-import { computePipelineFingerprint } from "./content_persistent_cache.js";
+import {
+  computePipelineFingerprint,
+  isPersistentlyCacheable,
+} from "./content_persistent_cache.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
@@ -80,6 +84,10 @@ export class ContentManager {
   private routableSlugsPromise: Promise<Set<string>> | null = null;
   private processedContentCount = 0;
   private outputChangeSet: OutputChangeSet | null = null;
+  private trackedContentDependencies = new Map<
+    string,
+    readonly CachedContentDependency[]
+  >();
 
   constructor(
     content: string | ContentSource,
@@ -105,6 +113,9 @@ export class ContentManager {
     this.pipelineOptions = {
       ...this.pipelineOptions,
       contentSource: this.source,
+      onContentDependencies: (slug, dependencies) => {
+        this.trackedContentDependencies.set(slug, dependencies);
+      },
     };
     this.contentIndexBuilder = new ContentIndexBuilder(this.source);
     this.pluginRuntime = new PluginRuntime(this.pipelineOptions);
@@ -269,6 +280,7 @@ export class ContentManager {
       ? await this.buildCoordinator.getPreparation(
           options.incremental,
           this.getPipelineFingerprint(),
+          this.requiresFullContentRegeneration(),
         )
       : undefined;
     return await this.observability().tracer.span(
@@ -378,6 +390,7 @@ export class ContentManager {
                 ]
               : [],
             cacheManifestEntries,
+            this.trackedContentDependencies,
           );
         this.manifest = manifest;
         return manifest;
@@ -568,6 +581,11 @@ export class ContentManager {
       this.pipelineOptions.config,
     );
     return this.pipelineFingerprint;
+  }
+
+  private requiresFullContentRegeneration(): boolean {
+    const config = this.pipelineOptions.config;
+    return config ? !isPersistentlyCacheable("", config).cacheable : false;
   }
 
   private isRoutable(slug: string): boolean {

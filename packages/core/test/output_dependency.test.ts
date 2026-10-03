@@ -258,7 +258,7 @@ function changes(
   pluginPageOutputs: readonly OutputDescriptor[] = [],
 ) {
   const previousState: ContentBuildState = {
-    version: 4,
+    version: 5,
     entries: Object.fromEntries(
       previousManifest.entries.map((item) => [
         `${item.slug}.md`,

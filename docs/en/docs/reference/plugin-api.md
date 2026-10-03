@@ -155,6 +155,46 @@ definePlugin({
 Semantic Markdown/HTML transformation belongs here, not in application
 components.
 
+## Processed-content build dependencies
+
+Core owns incremental invalidation. A plugin declares its cache contract with
+`processedContentCache`; it must not implement its own affected-content logic.
+
+```ts
+definePlugin({
+  name: "citations",
+  processedContentCache: {
+    version: "citations-v1",
+    dependencyMode: "tracked",
+  },
+  extendMarkdownPipeline(pipeline, context) {
+    pipeline.use(remarkCitations, { contentSource: context.contentSource });
+  },
+});
+```
+
+- `none` means processing depends only on the content source, frontmatter,
+  options, and the declared version.
+- `tracked` means the pipeline reads other content or files. Read them through
+  `context.contentSource` so Core records the dependency and selectively
+  rebuilds its consumers. For example, a citations plugin reads its BibTeX file
+  with `readContentSourceEntry(context.contentSource, path)`.
+- `unsafe` opts out of persistent processed-content reuse. A content-affecting
+  plugin without a contract receives the same safe full-content fallback.
+
+Tracked dependencies are captured while processing content. Core persists their
+content/file identities, builds a reverse index, and computes affected content
+on the next incremental build. Do not scan the vault independently or persist a
+plugin-specific incremental state for this purpose. If a dependency cannot be
+observed through the framework API, use `unsafe`; a broad rebuild is correct,
+where a stale result is not.
+
+This is separate from output dependencies. `pageTypes[].outputDependencies`
+and `context.output.emit(..., { dependencies })` declare which rendered pages
+or generated files require regeneration. Use `content`, `tag`, `folder`,
+`global`, or `unknown` there; `unknown` safely requests full output
+regeneration.
+
 ## Content Hooks
 
 Content hooks join named phases of content processing:

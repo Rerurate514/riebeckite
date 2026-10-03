@@ -34,7 +34,7 @@ You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`
 | [Installation](./installation.md) | Check requirements and understand the generated files |
 | [First Content](./first-content.md) | Write or edit your first published Markdown page |
 | [Presets](./presets.md) | Compare `starter`, `minimal`, `showcase`, and `empty` |
-| [Deployment](./deployment.md) | Deploy manually first, then automate with GitHub Actions |
+| [Deployment](./deployment.md) | Publish locally, then automate with GitHub Actions if needed |
 | [Use Your Obsidian Vault](./obsidian-vault.md) | Connect an existing Obsidian Vault and publish selected notes |
 | [Add Your First Plugin](./first-plugin.md) | Install a plugin and see `==highlight==` syntax work |
 | [Change Your Theme](./first-theme.md) | Swap the theme and see the design change |
@@ -58,6 +58,8 @@ Open the local URL printed in the terminal. Edit Markdown in `content/`, make su
 ```sh
 npm exec riebeckite build
 ```
+
+To publish the build output as-is, install Wrangler and run `npm exec riebeckite deploy`; login and `wrangler.jsonc` generation are automatic. See [Deployment](./deployment.md) for details.
 
 If you are unsure which preset to choose, use the `starter` preset.
 

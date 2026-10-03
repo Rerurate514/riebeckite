@@ -30,30 +30,23 @@ Riebeckite は静的サイトを作ります。`npm exec riebeckite build` を�
    npm install -D wrangler
    ```
 
-3. サイト直下に `wrangler.jsonc` を作ります。
-
-   ```jsonc
-   {
-     "name": "my-site",
-     "compatibility_date": "2026-03-10",
-     "compatibility_flags": ["nodejs_compat"],
-     "assets": { "directory": "./dist" }
-   }
-   ```
-
-   `name` は自分の Worker 名に変えてください。`assets.directory` は、Riebeckite のビルド結果である `./dist` のままにします。
-
-4. ビルドして、ログインし、デプロイします。
+3. ビルドしてデプロイします。
 
    ```bash
    npm exec riebeckite build
-   npx wrangler login
-   npx wrangler deploy
+   npm exec riebeckite deploy
    ```
 
-5. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば初回デプロイは成功です。
+   `riebeckite deploy` は、`wrangler.jsonc` が無ければ `assets.directory` を `./dist` に設定して自動で作り、初回は Wrangler のログインを開いてから `dist/` を Cloudflare Workers へ公開します。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。Wrangler を直接使いたい場合は `npx wrangler login` と `npx wrangler deploy` でも同じです。
+
+4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば初回デプロイは成功です。
 
 公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後もう一度ビルドとデプロイを実行すると、サイトマップなどに正しい URL が入ります。
+
+```bash
+npm exec riebeckite build
+npm exec riebeckite deploy
+```
 
 ## 2. GitHub Actions で自動デプロイする
 

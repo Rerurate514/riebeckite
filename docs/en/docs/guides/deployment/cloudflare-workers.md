@@ -31,7 +31,7 @@ wrangler is the official command-line tool for deploying to Cloudflare Workers.
 
 ## 3. Add wrangler.jsonc
 
-Copy [`templates/cloudflare/wrangler.jsonc`](../../../../../templates/cloudflare/wrangler.jsonc) from this repository into the site root. If you only have the generated site locally, copy the linked file contents into a new `wrangler.jsonc` file.
+`npm exec riebeckite deploy` creates `wrangler.jsonc` from the site folder name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, copy [`templates/cloudflare/wrangler.jsonc`](../../../../../templates/cloudflare/wrangler.jsonc) from this repository into the site root, or copy the linked file contents into a new `wrangler.jsonc`.
 
 ```text
 my-site/
@@ -56,6 +56,8 @@ Change `name` first.
 
 ## 4. Log in to Cloudflare
 
+`riebeckite deploy` opens the browser and asks you to log in on the first run. To log in ahead of time, or if you run Wrangler directly, use:
+
 ```sh
 npx wrangler login
 ```
@@ -65,10 +67,12 @@ A browser window opens. Log in to Cloudflare and grant access.
 ## 5. Deploy
 
 ```sh
-npx wrangler deploy
+npm exec riebeckite deploy
 ```
 
-wrangler prints a URL such as `https://<name>.<account>.workers.dev`. Open it in a browser. If the site loads, deployment worked.
+`riebeckite deploy` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing. To run Wrangler directly instead, use `npx wrangler deploy`.
+
+The deploy prints a URL such as `https://<name>.<account>.workers.dev`. Open it in a browser. If the site loads, deployment worked.
 
 ## 6. Match baseUrl to the deployed URL
 
@@ -84,7 +88,7 @@ Then build and deploy again.
 
 ```sh
 npm exec riebeckite build
-npx wrangler deploy
+npm exec riebeckite deploy
 ```
 
 This makes sitemap and feed URLs match the public site.
@@ -94,7 +98,7 @@ This makes sitemap and feed URLs match the public site.
 Use these commands if you want to verify before uploading.
 
 ```sh
-npx wrangler deploy --dry-run
+npm exec -- riebeckite deploy --dry-run
 npx wrangler dev
 ```
 
@@ -102,7 +106,7 @@ npx wrangler dev
 
 ## Automated deployment with GitHub Actions
 
-Instead of running `npx wrangler deploy` manually, you can deploy when you push to GitHub.
+Instead of running `npm exec riebeckite deploy` manually, you can deploy when you push to GitHub.
 
 For a same-repository site, generate the workflow with:
 

@@ -34,7 +34,7 @@ npm exec riebeckite build
 | GitHub への Push から自動公開したい | [GitHub Actions](./github-actions.md) |
 | Content と Site を別 Repository で運用したい | [Separate Content Repository](./separate-content-repository.md) |
 
-初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.md) を読むのがおすすめです。
+初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.md) を読むのがおすすめです。`npm exec riebeckite deploy` を使うと、Wrangler へのログインと `wrangler.jsonc` の生成を含めて手元から公開できます。
 
 ```mermaid
 flowchart TD
@@ -94,7 +94,7 @@ npm exec riebeckite build
 
 [Cloudflare Workers](./cloudflare-workers.md)
 
-`dist/` を Cloudflare Workers へ手元から公開する方法を説明します。
+`dist/` を Cloudflare Workers へ手元から公開する方法を説明します。`npm exec riebeckite deploy` がログインと `wrangler.jsonc` の生成を行います。
 
 ### GitHub Actions
 

@@ -70,10 +70,31 @@ This is my second page.
 npm exec riebeckite build
 ```
 
-成功すると、公開用の静的ファイルが `dist/` に作られます。デプロイするフォルダです。ここでは Cloudflare や GitHub Actions は導入しません。
+成功すると、公開用の静的ファイルが `dist/` に作られます。デプロイでは、この `dist/` を配信します。
+
+## 7. Cloudflare Workers へ公開する
+
+最初の公開もコマンドから行えます。Wrangler を入れてから `deploy` を実行します。
+
+```bash
+npm install -D wrangler
+npm exec riebeckite deploy
+```
+
+初回は Wrangler のログインがブラウザで開きます。`wrangler.jsonc` が無ければフォルダ名から自動で作られ、ビルド結果の `dist/` が Cloudflare Workers へ公開されます。成功すると `https://<name>.<account>.workers.dev` のような URL が表示されるので、ブラウザで開いて確認します。
+
+公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、サイトマップなどに正しい URL が入ります。
+
+```bash
+npm exec riebeckite build
+npm exec riebeckite deploy
+```
+
+push のたびに自動デプロイしたい場合は [Deployment](./deployment.md) の GitHub Actions へ進んでください。Content を別リポジトリに分けたい場合は [Separate Content Repository →](../guides/content-repositories.md) を参照してください。
 
 ## 次に読むページ
 
+- [Deployment](./deployment.md) - Cloudflare Workers への公開と GitHub Actions による自動化
 - [Presets](./presets.md) - `starter`、`minimal`、`showcase`、`empty` を比較する
 - [First Content](./first-content.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.md) - 要件とセットアップの詳しい解説

@@ -1,6 +1,6 @@
 # CLI Reference
 
-Riebeckite CLI は、Site の作成、開発、検証、診断、Build などを行うためのコマンドです。
+Riebeckite CLI は、Site の作成、開発、検証、診断、Build、公開などを行うためのコマンドです。
 
 基本的には **Riebeckite Site の application directory で実行します。**
 
@@ -19,6 +19,7 @@ riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
+riebeckite deploy [--dry-run]
 riebeckite profile [--full]
 
 riebeckite inspect config
@@ -37,6 +38,7 @@ riebeckite inspect build
 | `check` | 設定が正しいか検証する | 変更しない |
 | `doctor` | Project 全体の問題を診断する | 変更しない |
 | `build` | Site を Build する | 成功時のみ更新 |
+| `deploy` | 生成物を Cloudflare Workers へ公開する | 変更しない |
 | `profile` | Build の性能を調査する | Build に依存 |
 | `inspect` | 現在の解決結果を見る | 変更しない |
 
@@ -53,6 +55,7 @@ flowchart TD
     Q -->|"設定が正しいか確認したい"| Check["check"]
     Q -->|"問題の原因を調べたい"| Doctor["doctor"]
     Q -->|"Siteを生成したい"| Build["build"]
+    Q -->|"公開したい"| Deploy["deploy"]
     Q -->|"Buildが遅い"| Profile["profile"]
     Q -->|"現在の状態を見たい"| Inspect["inspect"]
 ```
@@ -314,6 +317,28 @@ Build の再現確認や incremental behavior の問題を切り分ける場合�
 
 詳しくは [Build System](../framework/build-system.md) を参照してください。
 
+## `deploy`
+
+Build 済みの生成物を Cloudflare Workers へ公開します。
+
+```sh id="k4n8we"
+npm exec riebeckite deploy
+```
+
+`deploy` は Wrangler を呼び出して `dist/` を公開します。初回は Wrangler の OAuth で Cloudflare にログインし、`wrangler.jsonc` が無い場合はプロジェクト名から生成します。公開 URL は `https://<worker-name>.<account>.workers.dev` です。
+
+`deploy` は Build を行いません。先に `npm exec riebeckite build` を実行してください。
+
+Cloudflare へ接続せずに設定とアセットを検証する場合は、
+
+```sh id="d9x2qb"
+npm exec -- riebeckite deploy --dry-run
+```
+
+を使用します。`npm exec` は `--dry-run` を自身の option として解釈する場合があるため、`--` で区切ってください。
+
+push ごとに自動で deploy したい場合は GitHub Actions を利用できます。詳しくは [Deployment](../guides/deployment/README.md) を参照してください。
+
 ## `profile`
 
 Build のどこに時間がかかっているか調査します。
@@ -439,7 +464,7 @@ flowchart LR
     Check["check"]
     Dev["dev"]
     Build["build"]
-    Deploy["Deploy"]
+    Deploy["deploy"]
 
     Init --> Install
     Install --> Check
@@ -447,6 +472,8 @@ flowchart LR
     Dev --> Build
     Build --> Deploy
 ```
+
+`build` の後は `npm exec riebeckite deploy` で生成物を公開できます。
 
 問題が発生した場合は、目的に応じて `doctor`、`inspect`、`profile` を使います。
 
@@ -463,7 +490,7 @@ flowchart TD
 
 迷った場合は、
 
-**作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、速度を調べるなら `profile`**
+**作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、公開するなら `deploy`、速度を調べるなら `profile`**
 
 と覚えておくと、各 command の役割を区別しやすくなります。
 

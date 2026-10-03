@@ -36,6 +36,10 @@ export {
   starter,
 } from "./src/scaffold/presets.js";
 export {
+  WRANGLER_DEFAULTS,
+  type WranglerDefaults,
+} from "./src/scaffold/wrangler-defaults.js";
+export {
   createRiebeckiteSsg,
   defaultSsgEntry,
   riebeckiteSsgExtensionMap,

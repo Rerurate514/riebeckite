@@ -76,10 +76,31 @@ Add `[[hello]]` (Obsidian WikiLink) to `content/index.md`. The starter preset en
 npm exec riebeckite build
 ```
 
-A successful build writes the publishable static output to `dist/`. This is the folder you deploy. Do not introduce Cloudflare or GitHub Actions here.
+A successful build writes the publishable static output to `dist/`. Deployment means hosting that folder.
+
+## 7. Publish to Cloudflare Workers
+
+Publish your first version from the command line too. Install Wrangler, then run `deploy`:
+
+```sh
+npm install -D wrangler
+npm exec riebeckite deploy
+```
+
+On the first run, Wrangler opens a browser to sign in. `riebeckite deploy` creates `wrangler.jsonc` from the folder name if it is missing, and publishes the built `dist/` to Cloudflare Workers. When it succeeds, it prints a URL like `https://<name>.<account>.workers.dev`; open it to confirm the site loads.
+
+After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address.
+
+```sh
+npm exec riebeckite build
+npm exec riebeckite deploy
+```
+
+To deploy automatically on every push, continue with GitHub Actions in [Deployment](./deployment.md). To keep content in a separate repository, see [Separate Content Repository →](../guides/content-repositories.md).
 
 ## Next
 
+- [Deployment](./deployment.md) — publish to Cloudflare Workers and automate with GitHub Actions
 - [Presets](./presets.md) — compare `starter`, `minimal`, `showcase`, and `empty`
 - [First Content](./first-content.md) — write and preview content more deliberately
 - [Installation](./installation.md) — requirements and setup deep-dive

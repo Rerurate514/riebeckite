@@ -34,7 +34,7 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 | [Installation](./installation.md) | 必要な環境と生成されるファイルを確認する |
 | [First Content](./first-content.md) | 最初の公開ページを書く、またはサンプルを編集する |
 | [Presets](./presets.md) | `starter`、`minimal`、`showcase`、`empty` を比較する |
-| [Deployment](./deployment.md) | まず手元から公開し、その後 GitHub Actions で自動化する |
+| [Deployment](./deployment.md) | 手元から公開し、必要なら GitHub Actions で自動化する |
 | [Obsidian Vault を使う](./obsidian-vault.md) | 既存の Obsidian Vault を接続し、選んだノートを公開する |
 | [最初の Plugin を追加する](./first-plugin.md) | Plugin を入れて `==ハイライト==` 構文が効くことを確認する |
 | [最初の Theme を変える](./first-theme.md) | Theme を変えてデザインが変わることを確認する |
@@ -58,6 +58,8 @@ npm exec riebeckite dev
 ```bash
 npm exec riebeckite build
 ```
+
+ビルド結果をそのまま公開する場合は、Wrangler を入れて `npm exec riebeckite deploy` を実行します。ログインと `wrangler.jsonc` の生成は自動です。詳しくは [Deployment](./deployment.md) を参照してください。
 
 preset で迷ったら、既定の `starter` を使ってください。
 

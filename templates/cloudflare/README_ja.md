@@ -96,6 +96,14 @@ npx wrangler deploy --dry-run
 
 `wrangler deploy --dry-run` は Cloudflare に接続せず、`wrangler.jsonc` とアセットディレクトリを検証します。`npx wrangler dev` を使うと同じ出力をローカルで配信できます。
 
+Wrangler を直接使う代わりに、ローカルからそのまま公開できます。
+
+```sh
+npm exec riebeckite deploy
+```
+
+`riebeckite deploy` は初回に Wrangler の OAuth でログインし、`wrangler.jsonc` が無ければプロジェクト名から生成します。GitHub Actions を使う構成はこのテンプレートのままで、変更ありません。
+
 ## ワークフローの流れ
 
 1. リポジトリをチェックアウトする。

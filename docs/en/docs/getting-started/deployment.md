@@ -36,30 +36,23 @@ This beginner page covers stages 1 and 2. If you want the advanced split, see [C
    npm install -D wrangler
    ```
 
-3. Create `wrangler.jsonc` in the site root:
-
-   ```jsonc
-   {
-     "name": "my-site",
-     "compatibility_date": "2026-03-10",
-     "compatibility_flags": ["nodejs_compat"],
-     "assets": { "directory": "./dist" }
-   }
-   ```
-
-   Change `name` to a Worker name unique to you. Keep `assets.directory` as `./dist`.
-
-4. Build, log in, and deploy:
+3. Build and deploy:
 
    ```sh
    npm exec riebeckite build
-   npx wrangler login
-   npx wrangler deploy
+   npm exec riebeckite deploy
    ```
 
-5. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
+   `riebeckite deploy` creates `wrangler.jsonc` with `assets.directory` set to `./dist` when the file is missing, opens the Wrangler login on the first run, and publishes `dist/` to Cloudflare Workers. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. If you prefer to run Wrangler yourself, `npx wrangler login` and `npx wrangler deploy` do the same work.
+
+4. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 
 After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address.
+
+```sh
+npm exec riebeckite build
+npm exec riebeckite deploy
+```
 
 ## 2. Automatic deploy with GitHub Actions
 

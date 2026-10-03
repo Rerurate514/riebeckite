@@ -106,6 +106,16 @@ npx wrangler deploy --dry-run
 without contacting Cloudflare. `npx wrangler dev` serves the same output
 locally.
 
+Instead of calling Wrangler directly, you can publish from your machine:
+
+```sh
+npm exec riebeckite deploy
+```
+
+`riebeckite deploy` signs in with Wrangler OAuth on the first run and generates
+`wrangler.jsonc` from the project name if it is missing. The GitHub Actions
+setup this template describes is unchanged.
+
 ## How the workflow works
 
 1. Checks out the repository.

@@ -204,15 +204,25 @@ import { Article, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
 
 export function SiteArticle({
   post,
+  propertiesHtml,
   afterMeta,
+  afterContent,
 }: {
   post: PostContent;
+  propertiesHtml?: string;
   afterMeta?: string;
+  afterContent?: string;
 }) {
   return (
     <Article class="site-article">
       <ArticleLayout>
         <ArticleContent>
+          {propertiesHtml ? (
+            <div
+              class="article-properties"
+              dangerouslySetInnerHTML={{ __html: propertiesHtml }}
+            />
+          ) : null}
           {afterMeta ? (
             <div
               class="site-article__after-meta"
@@ -220,6 +230,12 @@ export function SiteArticle({
             />
           ) : null}
           <div dangerouslySetInnerHTML={{ __html: post.html ?? "" }} />
+          {afterContent ? (
+            <div
+              class="site-article__after-content"
+              dangerouslySetInnerHTML={{ __html: afterContent }}
+            />
+          ) : null}
         </ArticleContent>
       </ArticleLayout>
     </Article>
@@ -348,7 +364,9 @@ export default createRoute(async (c) => {
   return c.render(
     <SiteArticle
       post={post}
+      propertiesHtml={indexEntry?.bodySlots?.properties}
       afterMeta={indexEntry?.bodySlots?.["article.after-meta"]}
+      afterContent={indexEntry?.bodySlots?.["article.after-content"]}
     />,
   );
 });
@@ -411,7 +429,9 @@ export default createRoute(
     return c.render(
       <SiteArticle
         post={post}
+        propertiesHtml={route.entry.bodySlots?.properties}
         afterMeta={route.entry.bodySlots?.["article.after-meta"]}
+        afterContent={route.entry.bodySlots?.["article.after-content"]}
       />,
     );
   },

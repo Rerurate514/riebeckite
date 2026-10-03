@@ -115,6 +115,31 @@ test("each preset generates its intended self-contained composition", async () =
   });
 });
 
+test("starter and showcase scaffolds render plugin body slots", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of ["starter", "showcase"] as const) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const article = await fs.readFile(
+        path.join(targetDirectory, "app/components/article.tsx"),
+        "utf8",
+      );
+      assert.match(article, /propertiesHtml\?: string/);
+      assert.match(article, /afterContent\?: string/);
+      assert.match(article, /class="article-properties"/);
+      assert.match(article, /class="site-article__after-content"/);
+      for (const route of ["index.tsx", "[slug{.+}].tsx"]) {
+        const source = await fs.readFile(
+          path.join(targetDirectory, `app/routes/${route}`),
+          "utf8",
+        );
+        assert.match(source, /propertiesHtml=\{/);
+        assert.match(source, /afterContent=\{/);
+      }
+    }
+  });
+});
+
 async function exists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);

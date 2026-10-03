@@ -100,7 +100,7 @@ app/.riebeckite/
 
 へ、plugin や theme を接続するためのファイルを生成します。
 
-たとえば plugin style や theme style、client module などです。
+たとえば plugin style や theme style です。client module は `.riebeckite` には生成されず、virtual module として提供されます。
 
 ```mermaid
 flowchart LR

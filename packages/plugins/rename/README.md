@@ -65,8 +65,9 @@ severity follows `onUnexpectedRemoval`.
 
 The plugin never writes files directly. The only cross-build state is the route
 lock, stored through `context.cache` under the key `routes.lock`. The cache is
-created under `<content.dir>/../.riebeckite/cache` and is gitignored, so the
-lock is machine-local and is regenerated from scratch when missing or corrupt.
+created under the resolved plugin cache directory (`.riebeckite/cache` in the
+standard HonoX setup) and is gitignored, so the lock is machine-local and is
+regenerated from scratch when missing or corrupt.
 
 Because the lock is machine-local, the first build on a fresh machine has no
 history and cannot detect a rename that happened before the lock existed.

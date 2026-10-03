@@ -11,6 +11,7 @@ import {
 } from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
+  getLanguageFromPath,
   getLocalization,
   getLocalizedContent,
   type L10nOptions,
@@ -93,6 +94,20 @@ test("detects configured directory names and removes them from the derived trans
     locations.get("en/README")?.metadata?.["l10n.translationId"],
     "README",
   );
+});
+
+test("detects a requested language from discoverable localized content", async () => {
+  const content = manager({
+    "guide.ja.md": "# ガイド",
+    "guide.en.md": "# Guide",
+    "private.en.md": "---\npublish: false\n---\n# Private",
+  });
+  const manifest = await content.getManifest();
+
+  assert.equal(getLanguageFromPath(manifest, "/EN/guide"), "en");
+  assert.equal(getLanguageFromPath(manifest, "/ja/guide"), "ja");
+  assert.equal(getLanguageFromPath(manifest, "/private/entry"), undefined);
+  assert.equal(getLanguageFromPath(manifest, "/guide"), undefined);
 });
 
 test("frontmatter wins over filename and directory signals and exposes a conflict diagnostic", async () => {

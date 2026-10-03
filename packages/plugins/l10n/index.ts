@@ -1,4 +1,5 @@
 export {
+  getLanguageFromPath,
   getLocalization,
   getLocalizedContent,
   type L10nContent,

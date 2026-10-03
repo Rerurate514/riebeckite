@@ -14,18 +14,28 @@ export function buildSearchItems(args: {
   resolveTitle?: TitleResolver;
 }): SearchItem[] {
   const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
-  const items = args.manifest.discoverableEntries.map((entry) => ({
-    slug: entry.slug,
-    permalink: entry.permalink,
-    title: resolveTitle(entry.slug, entry.frontmatter.title),
-    headings: extractHeadings(entry.html),
-    body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
-    excerpt: createExcerpt(entry),
-    tags: entry.tags,
-    date: getEntryDate(entry.frontmatter),
-  }));
+  const items = args.manifest.discoverableEntries.map((entry) => {
+    const aliases = aliasesFor(entry.slug, args.manifest);
+    return {
+      slug: entry.slug,
+      permalink: entry.permalink,
+      title: resolveTitle(entry.slug, entry.frontmatter.title),
+      headings: extractHeadings(entry.html),
+      body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
+      excerpt: createExcerpt(entry),
+      tags: entry.tags,
+      ...(aliases.length > 0 ? { aliases } : {}),
+      date: getEntryDate(entry.frontmatter),
+    };
+  });
 
   return items.sort((a, b) => a.title.localeCompare(b.title, "ja"));
+}
+
+function aliasesFor(slug: string, manifest: ContentManifest): string[] {
+  return [...manifest.contentIndex.entries()]
+    .filter(([, target]) => target === slug)
+    .map(([alias]) => alias);
 }
 
 function getDefaultArticleTitle(slug: string, title: unknown): string {

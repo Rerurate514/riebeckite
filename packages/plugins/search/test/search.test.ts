@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  findSmart404Candidates,
   normalizeSearchQuery,
   normalizeSearchText,
   type SearchItem,
   searchItems,
+  searchQueryFromPath,
 } from "../src/search.ts";
 
 function item(overrides: Partial<SearchItem> = {}): SearchItem {
@@ -105,5 +107,55 @@ test("results rank by score and break ties by Japanese title order", () => {
   assert.deepEqual(
     tied.map((result) => result.title),
     ["A", "B"],
+  );
+});
+
+test("Smart 404 normalizes paths and limits high-quality search candidates", () => {
+  assert.equal(
+    searchQueryFromPath("/guides/flutter-state-management/index.html/"),
+    "guides flutter state management",
+  );
+  assert.equal(
+    searchQueryFromPath("/guides/%E3%83%86%E3%82%B9%E3%83%88"),
+    "guides テスト",
+  );
+
+  const candidates = findSmart404Candidates(
+    [
+      item({ title: "Flutter", permalink: "/guides/flutter" }),
+      item({ title: "Private", permalink: "/private-page" }),
+    ],
+    "/guides/fluter/",
+    { limit: 2 },
+  );
+  assert.deepEqual(candidates, [
+    { title: "Flutter", permalink: "/guides/flutter" },
+  ]);
+  assert.deepEqual(
+    findSmart404Candidates([item({ title: "Unrelated" })], "/does-not-exist"),
+    [],
+  );
+});
+
+test("Smart 404 ranks aliases and the requested locale before other languages", () => {
+  const candidates = findSmart404Candidates(
+    [
+      item({
+        title: "Dependency Injection",
+        permalink: "/en/dependency-injection",
+        aliases: ["Dependency Injection Guide"],
+      }),
+      item({
+        title: "依存性の注入",
+        permalink: "/ja/dependency-injection",
+        aliases: ["Dependency Injection Guide"],
+      }),
+    ],
+    "/ja/dependency-injection-guide",
+    { language: "ja" },
+  );
+  assert.deepEqual(
+    candidates.map((candidate) => candidate.permalink),
+    ["/ja/dependency-injection", "/en/dependency-injection"],
   );
 });

@@ -27,3 +27,14 @@ test("search restores focus to the opener when closed", () => {
   assert.match(source, /previouslyFocused\?\.focus\(\)/);
   assert.match(source, /previouslyFocused = null/);
 });
+
+test("search opens with a query from the URL", () => {
+  const source = readFileSync(
+    new URL("../src/search-bar.client.ts", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /new URLSearchParams\(window\.location\.search\)/);
+  assert.match(source, /input\.value = initialQuery/);
+  assert.match(source, /void openSearch\(\)/);
+});

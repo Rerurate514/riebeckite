@@ -101,6 +101,31 @@ test("buildSearchItems filters unpublished notes and extracts every field", () =
   assert.equal(items[1]?.excerpt, "C");
 });
 
+test("buildSearchItems includes aliases only for discoverable targets", () => {
+  const manifest = manifestOf([
+    entry("public", { publish: true, title: "Public" }, "<p>Public</p>"),
+    entry("private", { publish: false, title: "Private" }, "<p>Private</p>"),
+  ]);
+  manifest.contentIndex = new Map([
+    ["public alias", "public"],
+    ["private alias", "private"],
+  ]);
+
+  assert.deepEqual(buildSearchItems({ config: explicit, manifest }), [
+    {
+      slug: "public",
+      permalink: "/public",
+      title: "Public",
+      headings: [],
+      body: "Public",
+      excerpt: "Public",
+      tags: [],
+      aliases: ["public alias"],
+      date: null,
+    },
+  ]);
+});
+
 test("buildSearchItems falls back to the slug and accepts a title resolver", () => {
   const manifest = manifestOf([
     entry("guides/setup", { publish: true }, "<p>Setup</p>"),

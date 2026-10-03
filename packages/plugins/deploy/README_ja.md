@@ -62,7 +62,6 @@ GitHub Pages には `_redirects` 構文がないため、各リダイレクト�
   `normalizeGeneratedOutputPath` を通ります。
 - アップロード、キャッシュ無効化、プロバイダ認証は対象外です。
 
-## ????
+## 関連リンク
 
-- [?????????](../../../docs/ja/docs/reference/plugin-api.md)
-
+- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)

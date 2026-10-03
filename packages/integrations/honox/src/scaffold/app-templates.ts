@@ -340,7 +340,7 @@ import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { config } from "../config";
 
 export function SiteHeader({ path }: { path: string }) {
-  const navigation = config.navigation.header.filter((item) => item.href !== "/");
+  const navigation = (config.navigation?.header ?? []).filter((item) => item.href !== "/");
 
   return (
     <header class="site-header rb-site-header">
@@ -369,11 +369,12 @@ export function SiteHeader({ path }: { path: string }) {
 }
 
 export function SiteFooter({ path }: { path: string }) {
-  if (config.navigation.footer.length === 0) return null;
+  const footerNavigation = config.navigation?.footer ?? [];
+  if (footerNavigation.length === 0) return null;
 
   return (
     <footer class="site-footer rb-site-footer">
-      <SiteNavigation items={config.navigation.footer} path={path} />
+      <SiteNavigation items={footerNavigation} path={path} />
     </footer>
   );
 }

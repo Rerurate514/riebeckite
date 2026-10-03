@@ -4,11 +4,11 @@
 
 Riebeckite は、**Markdown や Obsidian のノートから公開サイトを作るためのフレームワーク**です。
 
-Markdown を `content/` に置くだけのシンプルなサイトから、Plugin、Theme、多言語化、外部の Obsidian Vault を利用したサイトまで構築できます。
+Markdown を `content/` に置くだけのシンプルなサイトから、プラグイン、テーマ、多言語化、外部の Obsidian Vault を使うサイトまで構築できます。
 
-初めて使う場合は、Riebeckite のリポジトリを clone する必要はありません。
+初めて使う場合は、Riebeckite のリポジトリをクローンする必要はありません。
 
-`create-riebeckite` から新しい Site を作成します。
+`create-riebeckite` から新しいサイトを作成します。
 
 ## はじめる
 
@@ -16,11 +16,11 @@ Markdown を `content/` に置くだけのシンプルなサイトから、Plugi
 
 ```mermaid id="uh61o4"
 flowchart LR
-    Create["Siteを作る"]
+    Create["サイトを作る"]
     Content["Markdownを書く"]
     Dev["ブラウザで確認"]
-    Build["Build"]
-    Deploy["Deploy"]
+    Build["ビルド"]
+    Deploy["デプロイ"]
 
     Create --> Content
     Content --> Dev
@@ -28,21 +28,21 @@ flowchart LR
     Build --> Deploy
 ```
 
-まず [Quick Start](./docs/getting-started/quick-start.md) から始めてください。
+まず [クイックスタート](./docs/getting-started/quick-start.md) から始めてください。
 
 順番に進めたい場合は、
 
-1. [Quick Start](./docs/getting-started/quick-start.md)
-2. [Installation](./docs/getting-started/installation.md)
-3. [First Content](./docs/getting-started/first-content.md)
-4. [Presets](./docs/getting-started/presets.md)
-5. [Deployment](./docs/getting-started/deployment.md)
+1. [クイックスタート](./docs/getting-started/quick-start.md)
+2. [インストール](./docs/getting-started/installation.md)
+3. [最初の記事](./docs/getting-started/first-content.md)
+4. [プリセット](./docs/getting-started/presets.md)
+5. [デプロイ](./docs/getting-started/deployment.md)
 
 の順で読めます。
 
 ## 基本的な使い方
 
-Site を作成したら、基本的には次の流れで使います。
+サイトを作成したら、基本的には次の流れで使います。
 
 ```text id="f2xd10"
 create-riebeckite
@@ -58,7 +58,7 @@ riebeckite build
 deploy
 ```
 
-普段 Site を作るだけなら、Riebeckite 本体の内部構造を理解する必要はありません。
+普段サイトを作るだけなら、Riebeckite 本体の内部構造を理解する必要はありません。
 
 ## 何をしたいですか？
 
@@ -66,24 +66,24 @@ deploy
 
 | 目的 | 読むページ |
 | --- | --- |
-| 初めて Riebeckite を使う | [Quick Start](./docs/getting-started/quick-start.md) |
-| インストール方法を確認する | [Installation](./docs/getting-started/installation.md) |
-| 最初の記事を書く | [First Content](./docs/getting-started/first-content.md) |
-| Site の構成を選ぶ | [Presets](./docs/getting-started/presets.md) |
-| デプロイする | [Deployment](./docs/getting-started/deployment.md) |
-| Deploy 先ごとの手順を確認する | [Deployment Guides](./docs/guides/deployment/README.md) |
-| Markdown / Frontmatter の書き方を知る | [Writing Content](./docs/guides/writing-content.md) |
+| 初めて Riebeckite を使う | [クイックスタート](./docs/getting-started/quick-start.md) |
+| インストール方法を確認する | [インストール](./docs/getting-started/installation.md) |
+| 最初の記事を書く | [最初の記事](./docs/getting-started/first-content.md) |
+| サイトの構成を選ぶ | [プリセット](./docs/getting-started/presets.md) |
+| デプロイする | [デプロイ](./docs/getting-started/deployment.md) |
+| デプロイ先ごとの手順を確認する | [デプロイガイド](./docs/guides/deployment/README.md) |
+| Markdown と frontmatter の書き方を知る | [コンテンツの書き方](./docs/guides/writing-content.md) |
 | Obsidian Vault を公開する | [Obsidian](./docs/guides/obsidian.md) |
-| Content と Site を別 Repository にする | [Content Repositories](./docs/guides/content-repositories.md) |
-| 多言語 Site を作る | [Localization](./docs/guides/localization.md) |
+| コンテンツとサイトを別リポジトリにする | [コンテンツリポジトリ](./docs/guides/content-repositories.md) |
+| 多言語サイトを作る | [多言語化](./docs/guides/localization.md) |
 | Riebeckite を更新する | [Upgrading](./docs/guides/upgrading.md) |
-| Plugin を探す | [Plugins](./docs/plugins/README.md) |
-| Theme を選ぶ | [Themes](./docs/themes/README.md) |
-| Accessibility の責任範囲を確認する | [Accessibility](./docs/accessibility.md) |
-| Security / Trust Model を確認する | [Security Model](./docs/security.md) |
-| 設定や CLI、Public API を調べる | [Reference](./docs/reference/README.md) |
-| Riebeckite の内部構造を理解する | [Framework](./docs/framework/README.md) |
-| Riebeckite 本体を開発する | [Framework Development](./docs/framework/development.md) |
+| プラグインを探す | [プラグイン](./docs/plugins/README.md) |
+| テーマを選ぶ | [テーマ](./docs/themes/README.md) |
+| アクセシビリティの責任範囲を確認する | [アクセシビリティ](./docs/accessibility.md) |
+| セキュリティと信頼モデルを確認する | [セキュリティモデル](./docs/security.md) |
+| 設定や CLI、Public API を調べる | [リファレンス](./docs/reference/README.md) |
+| Riebeckite の内部構造を理解する | [フレームワーク](./docs/framework/README.md) |
+| Riebeckite 本体を開発する | [フレームワーク開発](./docs/framework/development.md) |
 
 ## ドキュメントの構成
 
@@ -105,9 +105,9 @@ flowchart TD
 
 ### Getting Started
 
-初めて Riebeckite を使う人向けです。
+初めて Riebeckite を使う人向けのページです。
 
-Site の作成から最初の記事、Preset、Deployment までを扱います。
+サイトの作成から最初の記事、プリセット、デプロイまでを扱います。
 
 ### Guides
 
@@ -116,40 +116,40 @@ Site の作成から最初の記事、Preset、Deployment までを扱います�
 たとえば、
 
 - Obsidian Vault を使う
-- Content Repository を分離する
+- コンテンツリポジトリを分離する
 - 多言語化する
 - Riebeckite をアップグレードする
-- 特定の環境へ Deploy する
+- 特定の環境へデプロイする
 
 といった作業を扱います。
 
-### Plugins
+### プラグイン
 
-Riebeckite に機能を追加する Plugin を探すためのページです。
+Riebeckite に機能を追加するプラグインを探すためのページです。
 
-記事表示、検索、Graph、Mermaid、Excalidraw など、必要な機能に応じて Plugin を追加できます。
+記事表示、検索、グラフ、Mermaid、Excalidraw など、必要な機能に応じてプラグインを追加できます。
 
-### Themes
+### テーマ
 
-Site の見た目を変更する Theme を探すためのページです。
+サイトの見た目を変更するテーマを探すためのページです。
 
-Theme を変更しても、Content や Plugin の機能そのものは変わりません。
+テーマを変更しても、コンテンツやプラグインの機能そのものは変わりません。
 
-### Reference
+### リファレンス
 
-設定値、CLI Command、Public API を調べるための資料です。
+設定値、CLI コマンド、Public API を調べるための資料です。
 
 「この設定は何を意味するのか」「この API は何を提供するのか」を確認したいときに利用します。
 
-### Framework
+### フレームワーク
 
 Riebeckite の内部構造を理解したい人向けです。
 
-Content System、Plugin System、Theme System、Build System、HonoX Integration などを説明します。
+コンテンツシステム、プラグインシステム、テーマシステム、ビルドシステム、HonoX 連携などを説明します。
 
-通常の Site 利用では読む必要はありません。
+通常のサイト利用では読む必要はありません。
 
-## Site を作る人と、本体を開発する人
+## サイトを作る人と、本体を開発する人
 
 Riebeckite には大きく2つの使い方があります。
 
@@ -157,23 +157,23 @@ Riebeckite には大きく2つの使い方があります。
 flowchart TD
     User{"あなたの目的"}
 
-    User -->|"RiebeckiteでSiteを作る"| Site["create-riebeckite"]
-    User -->|"Riebeckite自体を開発する"| Framework["Riebeckite repository"]
+    User -->|"Riebeckiteでサイトを作る"| Site["create-riebeckite"]
+    User -->|"Riebeckite自体を開発する"| Framework["Riebeckiteリポジトリ"]
 
     Site --> Getting["Getting Started / Guides"]
-    Framework --> Dev["Framework Development"]
+    Framework --> Dev["フレームワーク開発"]
 ```
 
-### Site を作る場合
+### サイトを作る場合
 
-Riebeckite repository を clone しません。
+Riebeckite のリポジトリはクローンしません。
 
 `create-riebeckite` から始めます。
 
 ```text id="4s6dql"
 create-riebeckite
       ↓
-生成されたSite
+生成されたサイト
       ↓
 content/
       ↓
@@ -182,26 +182,26 @@ dev / build
 deploy
 ```
 
-普段利用するのは、生成された Site 側です。
+普段利用するのは、生成されたサイト側です。
 
 ### Riebeckite 本体を開発する場合
 
-Riebeckite 自体へ変更を加える場合だけ Repository を clone します。
+Riebeckite 自体へ変更を加える場合だけ、リポジトリをクローンします。
 
 この場合は、
 
-- monorepo
-- root の `pnpm` Command
+- モノレポ
+- ルートの `pnpm` コマンド
 - `packages/*`
 - `apps/web`
-- Framework Test
-- External Site E2E
+- フレームワークテスト
+- 外部サイト E2E
 
 などを扱います。
 
-詳しくは [Framework Development](./docs/framework/development.md) を参照してください。
+詳しくは [フレームワーク開発](./docs/framework/development.md) を参照してください。
 
-`apps/web` は Riebeckite の Documentation / Reference Application であり、一般ユーザーが Site を作るための Template ではありません。
+`apps/web` は Riebeckite のドキュメント兼参照アプリです。一般ユーザーがサイトを作るためのテンプレートではありません。
 
 ## 迷ったら
 
@@ -250,4 +250,3 @@ Riebeckite本体を変更する
 です。
 
 Coding Agent 向けの短い開発ルールは [agents](../agents/README.md) に分けています。
-

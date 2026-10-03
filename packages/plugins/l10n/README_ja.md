@@ -71,7 +71,6 @@ l10n({
 
 独自検出の言語は frontmatter より弱く、ファイル名・ディレクトリより強く扱われます。`translationId` は明示的な翻訳グループ ID です。
 
-## ????
+## 関連リンク
 
-- [?????????](../../../docs/ja/docs/reference/plugin-api.md)
-
+- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)

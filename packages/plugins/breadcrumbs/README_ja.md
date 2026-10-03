@@ -112,7 +112,6 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 - スラッグ階層のみを参照します。frontmatter の並び順や series プラグインの
   順序は意図的に考慮しません。
 
-## ????
+## 関連リンク
 
-- [?????????](../../../docs/ja/docs/reference/plugin-api.md)
-
+- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)

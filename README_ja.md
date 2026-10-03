@@ -1,17 +1,16 @@
 # Riebeckite
 
-Riebeckite は、Markdown や Obsidian 形式のノートを高速な静的サイトとして公開するためのフレームワークです。まずは既定の `starter` preset でサイトを作り、`content/` に Markdown を書き、ブラウザで確認して、`dist/` にビルドします。
+Riebeckite は、Markdown や Obsidian 形式のノートを、高速な静的サイトとして公開するためのフレームワークです。まずは既定の `starter` プリセットでサイトを作り、`content/` に Markdown を書いて、ブラウザで確認します。問題なければ `dist/` にビルドします。
 
 ## サイトを作る
 
-Riebeckite を使うだけなら、このリポジトリを clone する必要はありません。
+Riebeckite でサイトを作るだけなら、このリポジトリをクローンする必要はありません。
 
 ```bash
 npx create-riebeckite
 ```
 
-プロンプト（プロジェクト名・preset・コンテンツの取得元・デプロイ設定）に
-答えたら、続けて次を実行します。
+プロジェクト名、プリセット、コンテンツの取得元、デプロイ設定を聞かれます。回答したら、続けて次のコマンドを実行します。
 
 ```bash
 cd my-site
@@ -19,24 +18,22 @@ npm install
 npm exec riebeckite dev
 ```
 
-`my-site` は入力したプロジェクト名に置き換えてください。preset は迷ったら
-`starter` のままで問題ありません。引数を渡すと（例:
-`npx create-riebeckite my-site`）プロンプトは省略されます。
+`my-site` は、入力したプロジェクト名に置き換えてください。プリセットは、迷ったら `starter` のままで問題ありません。`npx create-riebeckite my-site` のように引数を渡すと、プロンプトを省略できます。
 
-あとは `content/` の Markdown を編集し、ブラウザで確認して、ビルドします。
+あとは `content/` の Markdown を編集し、ブラウザで確認してからビルドします。
 
 ```bash
 npm exec riebeckite build
 ```
 
-最初に読むページ: [Getting Started](./docs/ja/docs/getting-started/README.md)
+最初に読むページ: [はじめに](./docs/ja/docs/getting-started/README.md)
 
 ## 主な機能
 
 - Obsidian 形式の Markdown とコンテンツグラフ
-- 自己完結した 4 種類の preset。迷ったら既定の `starter` を使います
-- Markdown 処理、表示、検索、メディア、診断、デプロイを拡張する Plugin
-- 公式 Theme
+- 自己完結した 4 種類のプリセット。迷ったら既定の `starter` を使います
+- Markdown 処理、表示、検索、メディア、診断、デプロイを拡張するプラグイン
+- 公式テーマ
 - ローカル確認、ビルド、必要に応じた診断に使える CLI
 - Cloudflare Workers と GitHub Actions 用テンプレート
 - 必要になったときに選べる、サイトとコンテンツの別リポジトリ運用
@@ -44,14 +41,14 @@ npm exec riebeckite build
 ## ドキュメント
 
 - [ドキュメントの入口](./docs/ja/README.md)
-- [Preset](./docs/ja/docs/getting-started/presets.md)
-- [Guides](./docs/ja/docs/guides/README.md)
-- [Plugins](./docs/ja/docs/plugins/README.md)
-- [Themes](./docs/ja/docs/themes/README.md)
-- [Reference](./docs/ja/docs/reference/README.md)
-- [Framework Development](./docs/ja/docs/framework/development.md)
+- [プリセット](./docs/ja/docs/getting-started/presets.md)
+- [ガイド](./docs/ja/docs/guides/README.md)
+- [プラグイン](./docs/ja/docs/plugins/README.md)
+- [テーマ](./docs/ja/docs/themes/README.md)
+- [リファレンス](./docs/ja/docs/reference/README.md)
+- [フレームワーク開発](./docs/ja/docs/framework/development.md)
 - [English README](./README.md)
 
 ## Riebeckite 本体を開発する場合
 
-この monorepo を clone するのは、Riebeckite 本体、integration、Plugin、Theme、参照アプリを開発するときだけです。セットアップとコマンドは [Framework Development](./docs/ja/docs/framework/development.md) を参照してください。
+このモノレポをクローンするのは、Riebeckite 本体、インテグレーション、プラグイン、テーマ、参照アプリを開発するときだけです。セットアップとコマンドは [フレームワーク開発](./docs/ja/docs/framework/development.md) を参照してください。

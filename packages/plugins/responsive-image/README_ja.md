@@ -68,7 +68,6 @@ export default defineConfig({
 - `collectKnownAssetPaths(manifest)` — マニフェストのアセット集合を取得
 - 型: `ResponsiveImageOptions`、`ResolvedResponsiveImageOptions`、`ResponsiveImagePlan`、`ResponsiveImageSource`、`ResponsiveImageVariant`
 
-## ????
+## 関連リンク
 
-- [?????????](../../../docs/ja/docs/reference/plugin-api.md)
-
+- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)

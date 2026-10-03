@@ -94,7 +94,6 @@ import "@riebeckite/plugin-related-posts/style.css";
 - 判定材料はタグ・直接リンク・共引用のみです。読了時間や新しさ、フォルダは
   順位を決定的に保つため意図的に使いません。
 
-## ????
+## 関連リンク
 
-- [?????????](../../../docs/ja/docs/reference/plugin-api.md)
-
+- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)

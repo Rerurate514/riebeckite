@@ -123,7 +123,6 @@ import "@riebeckite/plugin-sidenotes/style.css";
 - テーブル内や深く入れ子になったインライン要素の中の注は、最も近いブロック
   要素の後ろに置かれるため、縦位置はおおよその位置になります。
 
-## ????
+## 関連リンク
 
-- [?????????](../../../docs/ja/docs/reference/plugin-api.md)
-
+- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)

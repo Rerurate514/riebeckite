@@ -58,7 +58,6 @@ Core の安定コンテンツ ID（frontmatter の `id`、互換用の `uid`）�
 - イベント、クエリ／結果、プロバイダ／機能、公開設定の型
 - `UnsupportedAnalyticsQueryError` と機能確認ヘルパー
 
-## ????
+## 関連リンク
 
-- [?????????](../../../docs/ja/docs/reference/plugin-api.md)
-
+- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)

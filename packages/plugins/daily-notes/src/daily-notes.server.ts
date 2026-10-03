@@ -2,8 +2,10 @@ import type {
   ContentManifest,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { resolvePlugins } from "@riebeckite/core";
 import {
   compareDailyNotes,
+  DAILY_NOTES_PLUGIN_NAME,
   type DailyNote,
   type DailyNotesOptions,
   DEFAULT_DIRECTORY,
@@ -15,6 +17,22 @@ import {
   resolveDisplayOptions,
   resolveExtractOptions,
 } from "./daily-notes.js";
+
+/**
+ * Reads the daily-notes plugin's options back from a Riebeckite config.
+ *
+ * The widget is rendered by the host application route rather than the plugin
+ * itself, so `getDailyNotes` resolves the registered options here to keep the
+ * displayed widget in sync with `dailyNotesPlugin(options)`.
+ */
+export function resolveDailyNotesOptionsFromConfig(
+  config: ResolvedRiebeckiteConfig,
+): DailyNotesOptions {
+  const plugin = resolvePlugins(config.plugins).find(
+    (candidate) => candidate.name === DAILY_NOTES_PLUGIN_NAME,
+  );
+  return (plugin?.options as DailyNotesOptions | undefined) ?? {};
+}
 
 /**
  * Builds the widget view of the Daily Notes collection.
@@ -29,7 +47,8 @@ export function getDailyNotes(args: {
   config: ResolvedRiebeckiteConfig;
   options?: DailyNotesOptions;
 }): DailyNote[] {
-  const options = args.options;
+  const options =
+    args.options ?? resolveDailyNotesOptionsFromConfig(args.config);
   const extract = resolveExtractOptions(options);
   const display = resolveDisplayOptions(options);
   const directory = options?.source?.directory ?? DEFAULT_DIRECTORY;

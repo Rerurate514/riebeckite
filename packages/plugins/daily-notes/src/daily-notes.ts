@@ -48,6 +48,7 @@ export type ResolvedDailyNotesDisplay = {
   locale: string;
 };
 
+export const DAILY_NOTES_PLUGIN_NAME = "daily-notes";
 export const DEFAULT_DIRECTORY = "Daily";
 export const DEFAULT_FRONTMATTER_KEY = "daily-summary";
 export const DEFAULT_SECTION = "今日のひとこと";

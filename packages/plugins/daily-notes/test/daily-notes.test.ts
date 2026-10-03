@@ -13,7 +13,10 @@ import {
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import DailyNotes from "../components/daily-notes.js";
-import { dailyNotesPlugin } from "../index.ts";
+import {
+  dailyNotesPlugin,
+  resolveDailyNotesOptionsFromConfig,
+} from "../index.ts";
 import {
   DEFAULT_DAILY_NOTES_DATE_FORMAT,
   DEFAULT_DAILY_NOTES_LOCALE,
@@ -362,6 +365,98 @@ test("getDailyNotes applies the configured date format", () => {
 
   assert.equal(notes[0].date, "2024-01-05");
   assert.match(notes[0].dateDisplay, /January 5, 2024/);
+});
+
+test("resolveDailyNotesOptionsFromConfig returns the registered plugin options", () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [
+      dailyNotesPlugin({
+        source: { directory: "Journal" },
+        widget: { limit: 2 },
+        dateFormat: "long",
+        locale: "en-US",
+      }),
+    ],
+  });
+
+  assert.deepEqual(resolveDailyNotesOptionsFromConfig(config), {
+    source: { directory: "Journal" },
+    widget: { limit: 2 },
+    dateFormat: "long",
+    locale: "en-US",
+  });
+});
+
+test("resolveDailyNotesOptionsFromConfig is empty without the plugin", () => {
+  assert.deepEqual(resolveDailyNotesOptionsFromConfig(explicitConfig), {});
+});
+
+test("getDailyNotes reflects the plugin options registered in the config", () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [
+      dailyNotesPlugin({
+        source: { directory: "Journal" },
+        widget: { limit: 1 },
+        dateFormat: "long",
+        locale: "en-US",
+      }),
+    ],
+  });
+  const manifest = makeManifest([
+    makeEntry({
+      slug: "Journal/2024-01-05",
+      frontmatter: { "daily-summary": "newest" },
+    }),
+    makeEntry({
+      slug: "Journal/2024-01-04",
+      frontmatter: { "daily-summary": "older" },
+    }),
+    makeEntry({
+      slug: "Daily/2024-01-06",
+      frontmatter: { "daily-summary": "wrong directory" },
+    }),
+  ]);
+
+  const notes = getDailyNotes({ manifest, config });
+
+  assert.equal(notes.length, 1);
+  assert.equal(notes[0].slug, "Journal/2024-01-05");
+  assert.match(notes[0].dateDisplay, /January 5, 2024/);
+});
+
+test("explicit options override the plugin options from the config", () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [
+      dailyNotesPlugin({
+        source: { directory: "Journal" },
+        widget: { limit: 5 },
+      }),
+    ],
+  });
+  const manifest = makeManifest([
+    makeEntry({
+      slug: "Daily/2024-01-05",
+      frontmatter: { "daily-summary": "daily" },
+    }),
+    makeEntry({
+      slug: "Journal/2024-01-04",
+      frontmatter: { "daily-summary": "journal" },
+    }),
+  ]);
+
+  const notes = getDailyNotes({
+    manifest,
+    config,
+    options: { source: { directory: "Daily" } },
+  });
+
+  assert.deepEqual(
+    notes.map((note) => note.slug),
+    ["Daily/2024-01-05"],
+  );
 });
 
 test("DailyNotes renders English labels and ISO dates", () => {

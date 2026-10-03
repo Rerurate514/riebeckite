@@ -5,6 +5,7 @@ import {
   type RiebeckitePlugin,
 } from "@riebeckite/core";
 import {
+  DAILY_NOTES_PLUGIN_NAME,
   type DailyNotesOptions,
   DEFAULT_DIRECTORY,
 } from "./src/daily-notes.js";
@@ -18,12 +19,16 @@ export type {
   ResolvedDailyNotesExtract,
 } from "./src/daily-notes.js";
 export {
+  DAILY_NOTES_PLUGIN_NAME,
   DEFAULT_DAILY_NOTES_DATE_FORMAT,
   DEFAULT_DAILY_NOTES_LOCALE,
   formatDailyNoteDate,
   resolveDisplayOptions,
 } from "./src/daily-notes.js";
-export { getDailyNotes } from "./src/daily-notes.server.js";
+export {
+  getDailyNotes,
+  resolveDailyNotesOptionsFromConfig,
+} from "./src/daily-notes.server.js";
 
 /**
  * Registers the Daily Notes widget. Extraction options are consumed by
@@ -33,7 +38,7 @@ export function dailyNotesPlugin(
   options?: DailyNotesOptions,
 ): RiebeckitePlugin<DailyNotesOptions | undefined> {
   return definePlugin({
-    name: "daily-notes",
+    name: DAILY_NOTES_PLUGIN_NAME,
     options,
     cacheVersion: "1",
     outputDependencies: resolveOutputDependencies(options),

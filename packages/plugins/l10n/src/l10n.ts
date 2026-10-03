@@ -506,23 +506,31 @@ function withLocalization(
   content: DetectedContent,
   options: ReturnType<typeof resolveOptions>,
 ): ContentPublicLocation {
-  const unlocalizedPermalink = removeLocalePathSegments(
-    location.permalink,
-    content,
-  );
-  const permalink =
-    content.lang === options.defaultLang
-      ? unlocalizedPermalink
-      : prefixLanguage(unlocalizedPermalink, content.lang);
+  const permalink = localizePath(location.permalink, content, options);
   return {
     ...location,
     permalink,
+    redirects: location.redirects?.map((redirect) => ({
+      ...redirect,
+      path: localizePath(redirect.path, content, options),
+    })),
     metadata: {
       ...location.metadata,
       [LANGUAGE_METADATA_KEY]: content.lang,
       [TRANSLATION_METADATA_KEY]: content.translationId,
     },
   };
+}
+
+function localizePath(
+  pathname: string,
+  content: DetectedContent,
+  options: ReturnType<typeof resolveOptions>,
+): string {
+  const unlocalizedPath = removeLocalePathSegments(pathname, content);
+  return content.lang === options.defaultLang
+    ? unlocalizedPath
+    : prefixLanguage(unlocalizedPath, content.lang);
 }
 
 function removeLocalePathSegments(

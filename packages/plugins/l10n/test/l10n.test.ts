@@ -6,6 +6,7 @@ import { test } from "node:test";
 import {
   ContentManager,
   type ContentSource,
+  definePlugin,
   type RiebeckitePlugin,
   resolveConfig,
 } from "@riebeckite/core";
@@ -93,6 +94,35 @@ test("detects configured directory names and removes them from the derived trans
     locations.get("en/README")?.metadata?.["l10n.translationId"],
     "README",
   );
+});
+
+test("localizes explicit redirect sources with their canonical permalink", async () => {
+  const content = manager(
+    {
+      "guide.en.md": "# Guide",
+    },
+    {},
+    [
+      definePlugin({
+        name: "test-redirects",
+        resolveContentLocations: ({ entries }) =>
+          entries.map((entry) => ({
+            slug: entry.slug,
+            permalink: "/guide",
+            redirects: [{ path: "/old-guide", status: 308 }],
+          })),
+      }),
+    ],
+  );
+
+  const manifest = await content.getManifest();
+  assert.equal(manifest.bySlug.get("guide.en")?.permalink, "/en/guide");
+  assert.deepEqual(manifest.redirects.get("/en/old-guide"), {
+    path: "/en/old-guide",
+    status: 308,
+    slug: "guide.en",
+  });
+  assert.equal(manifest.redirects.has("/old-guide"), false);
 });
 
 test("frontmatter wins over filename and directory signals and exposes a conflict diagnostic", async () => {

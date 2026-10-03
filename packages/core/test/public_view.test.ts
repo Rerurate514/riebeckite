@@ -238,6 +238,27 @@ test("content IDs stay attached to the canonical entry across redirects", async 
   assert.equal(manifest.bySlug.get("plain")?.contentId, undefined);
 });
 
+test("manifest retains Obsidian aliases without turning them into redirects", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "note.md":
+        "---\naliases: [Old Name, Legacy]\npublish: true\n---\n\n# Note\n",
+    }),
+  );
+
+  const manifest = await manager.getManifest();
+
+  assert.deepEqual(manifest.bySlug.get("note")?.aliases, [
+    "Old Name",
+    "Legacy",
+  ]);
+  assert.deepEqual(
+    manifest.byAlias.get("old name")?.map((entry) => entry.slug),
+    ["note"],
+  );
+  assert.equal(manifest.publicRedirects.has("/Old%20Name"), false);
+});
+
 test("content IDs reject ambiguous or invalid frontmatter", async () => {
   const manager = new ContentManager(
     memorySource({

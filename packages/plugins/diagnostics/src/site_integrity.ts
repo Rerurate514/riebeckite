@@ -47,7 +47,7 @@ export function checkSiteIntegrity(
     checkHtmlReferences(entry, publicRoutes, assetPaths, diagnostics, options);
   }
 
-  checkRedirectTargets(manifest, publicRoutes, diagnostics, options);
+  checkRedirectTargets(manifest, diagnostics, options);
   checkRedirectCycles(manifest, diagnostics, options);
   checkAmbiguousFolderPageOwners(manifest, diagnostics, options);
 
@@ -250,16 +250,19 @@ function checkHtmlReferences(
 
 function checkRedirectTargets(
   manifest: ContentManifest,
-  publicRoutes: ReadonlySet<string>,
   diagnostics: Diagnostic[],
   options: SiteIntegrityOptions,
 ): void {
-  for (const [path, redirect] of manifest.publicRedirects) {
+  for (const [path, redirect] of manifest.redirects) {
     const owner = manifest.bySlug.get(redirect.slug);
     const target = owner
       ? normalizeRoutePath(owner.publicLocation.permalink)
       : null;
-    if (target && publicRoutes.has(target)) continue;
+    if (
+      target &&
+      manifest.byRoutablePermalink.get(target)?.slug === redirect.slug
+    )
+      continue;
     diagnostics.push(
       diagnostic(options, {
         code: "content-integrity:redirect-target-missing",

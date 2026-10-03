@@ -484,6 +484,7 @@ function manifestOf(...entries: ContentManifestEntry[]): ContentManifest {
     ),
     bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
     byContentId: new Map(),
+    byAlias: new Map(),
     byPermalink: new Map(entries.map((entry) => [entry.permalink, entry])),
     byRoutablePermalink: new Map(
       entries

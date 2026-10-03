@@ -49,6 +49,25 @@ test("site integrity ignores external urls, fragments, query strings, and plugin
   assert.deepEqual(checkSiteIntegrity(manifest), []);
 });
 
+test("site integrity reports redirects to non-routable content", () => {
+  const manifest = manifestOf([
+    entry("public", "/public"),
+    entry("draft", "/draft", { published: false }),
+  ]);
+  manifest.redirects.set("/old-draft", {
+    path: "/old-draft",
+    status: 308,
+    slug: "draft",
+  });
+
+  const diagnostic = checkSiteIntegrity(manifest).find(
+    (item) => item.code === "content-integrity:redirect-target-missing",
+  );
+  assert.ok(diagnostic);
+  assert.equal(diagnostic.slug, "draft");
+  assert.equal(diagnostic.target, "/old-draft");
+});
+
 test("site integrity flags a directory-index plugin page sharing a content route", () => {
   const manifest = manifestOf([
     entry("docs/getting-started", "/docs/getting-started"),
@@ -130,6 +149,7 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
     discoverableEntries: publicEntries,
     bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
     byContentId: new Map(),
+    byAlias: new Map(),
     byPermalink: new Map(entries.map((entry) => [entry.permalink, entry])),
     redirects: new Map(),
     publicRedirects: new Map(),

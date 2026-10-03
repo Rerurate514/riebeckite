@@ -47,6 +47,7 @@ function createGraphEntry(
     permalink: location.permalink,
     publicLocation: location,
     title: slug,
+    aliases: [],
     frontmatter: {},
     publishing: resolvePublishingState(
       {},

@@ -11,6 +11,7 @@ import { createContentGraph } from "./content_graph.js";
 import { extractContentLinks } from "./content_links.js";
 import {
   extractContentTags,
+  extractFrontmatterAliases,
   normalizeFrontmatterTags,
 } from "./content_metadata.js";
 import { resolveContentStableId } from "./content_stable_id.js";
@@ -41,6 +42,7 @@ export class ManifestBuilder {
       permalink: location.permalink,
       publicLocation: location,
       title: getManifestTitle(slug, processed.frontmatter.title),
+      aliases: extractFrontmatterAliases(markdown),
       frontmatter: processed.frontmatter,
       publishing,
       html: processed.html,
@@ -60,6 +62,7 @@ export class ManifestBuilder {
   ): ContentManifest {
     const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));
     const byContentId = createContentIdIndex(entries);
+    const byAlias = createAliasIndex(entries);
     const byPermalink = new Map(
       entries.map((entry) => [entry.permalink, entry]),
     );
@@ -92,6 +95,7 @@ export class ManifestBuilder {
       discoverableEntries: [...entries],
       bySlug,
       byContentId,
+      byAlias,
       byPermalink,
       byRoutablePermalink: new Map(byPermalink),
       redirects: new Map(),
@@ -111,6 +115,17 @@ export class ManifestBuilder {
     };
     return { ...manifest, graph: createContentGraph(manifest) };
   }
+}
+
+function createAliasIndex(
+  entries: readonly ContentManifestEntry[],
+): Map<string, ContentManifestEntry[]> {
+  const byAlias = new Map<string, ContentManifestEntry[]>();
+  for (const entry of entries) {
+    for (const alias of entry.aliases ?? [])
+      appendToMap(byAlias, alias.toLowerCase(), entry);
+  }
+  return byAlias;
 }
 
 function createContentIdIndex(

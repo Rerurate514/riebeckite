@@ -286,6 +286,7 @@ function entry(
     permalink: `/${slug}`,
     publicLocation: { slug, permalink: `/${slug}` },
     title: slug,
+    aliases: [],
     frontmatter: {},
     publishing: { visibility, routable, discoverable },
     html: "",
@@ -303,6 +304,7 @@ function manifestOf(...entries: ContentManifestEntry[]): ContentManifest {
     discoverableEntries: entries.filter((item) => item.publishing.discoverable),
     bySlug: new Map(entries.map((item) => [item.slug, item])),
     byContentId: new Map(),
+    byAlias: new Map(),
     byPermalink: new Map(entries.map((item) => [item.permalink, item])),
     byRoutablePermalink: new Map(
       entries

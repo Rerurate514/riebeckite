@@ -51,6 +51,7 @@ export type ContentManifestEntry = {
   permalink: string;
   publicLocation: ContentPublicLocation;
   title: string;
+  aliases?: readonly string[];
   frontmatter: PostFrontmatter;
   publishing: ResolvedPublishingState;
   html: string;
@@ -131,6 +132,7 @@ export type ContentManifest = {
   bySlug: Map<string, ContentManifestEntry>;
   /** Contains only entries with an explicit source-authored content ID. */
   byContentId: Map<string, ContentManifestEntry>;
+  byAlias: Map<string, ContentManifestEntry[]>;
   byPermalink: Map<string, ContentManifestEntry>;
   /** Contains only routable entries: public and unlisted, excluding draft and scheduled-before entries. */
   byRoutablePermalink: Map<string, ContentManifestEntry>;

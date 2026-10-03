@@ -654,6 +654,7 @@ function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
     ...entry,
     publicLocation: { ...entry.publicLocation },
     frontmatter: { ...entry.frontmatter },
+    aliases: [...(entry.aliases ?? [])],
     tags: [...entry.tags],
     links: entry.links.map((link) => ({ ...link })),
     backlinks: [...entry.backlinks],

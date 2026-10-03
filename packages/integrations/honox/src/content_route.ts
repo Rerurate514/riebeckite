@@ -61,6 +61,9 @@ export async function riebeckiteSsgParams(
       ...manifest.publicEntries
         .filter((entry) => entry.permalink !== "/")
         .map((entry) => ({ [parameter]: entry.permalink.replace(/^\/+/, "") })),
+      ...[...manifest.publicRedirects.keys()]
+        .filter((path) => path !== "/")
+        .map((path) => ({ [parameter]: path.replace(/^\/+/, "") })),
       ...(await pluginPageSsgParams(content, parameter)),
     ];
   }
@@ -73,11 +76,15 @@ export async function riebeckiteSsgParams(
   const contentParams = manifest.publicEntries
     .filter((entry) => affected.has(routeOutputPath(entry.permalink)))
     .map((entry) => ({ [parameter]: entry.permalink.replace(/^\/+/, "") }));
+  const redirectParams = [...manifest.publicRedirects.keys()]
+    .filter((path) => affected.has(routeOutputPath(path)))
+    .filter((path) => path !== "/")
+    .map((path) => ({ [parameter]: path.replace(/^\/+/, "") }));
   const pluginPageParams = (await content.getPagePaths())
     .filter((path) => affected.has(routeOutputPath(path)))
     .filter((path) => path !== "/")
     .map((path) => ({ [parameter]: path.replace(/^\/+/, "") }));
-  return [...contentParams, ...pluginPageParams];
+  return [...contentParams, ...redirectParams, ...pluginPageParams];
 }
 
 export function resolveContentRoute(
@@ -87,9 +94,11 @@ export function resolveContentRoute(
   const path = normalizeRequestPath(pathname);
   const entry = manifest.byRoutablePermalink.get(path);
   if (entry) return { kind: "content", entry };
-  const redirect = manifest.redirects.get(path);
+  const redirect = manifest.publicRedirects.get(path);
   if (!redirect) return null;
-  const target = manifest.bySlug.get(redirect.slug);
+  const target = manifest.byRoutablePermalink.get(
+    manifest.bySlug.get(redirect.slug)?.permalink ?? "",
+  );
   if (!target) return null;
   return {
     kind: "redirect",

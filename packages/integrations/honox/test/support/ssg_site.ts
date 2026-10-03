@@ -354,7 +354,10 @@ export async function buildSite(
       root: siteRoot,
       resolve: { alias },
       plugins: [
-        honox({ client: { input: ["/app/client.ts"] } }),
+        honox({
+          client: { input: ["/app/client.ts"] },
+          islandComponents: { reactApiImportSource: "hono/jsx" },
+        }),
         ...riebeckiteVite(),
         viteBuild(),
       ],

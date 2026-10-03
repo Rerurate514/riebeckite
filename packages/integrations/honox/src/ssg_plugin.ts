@@ -407,13 +407,12 @@ async function findOversizedAssets(
   directory: string,
   relativeDirectory = "",
 ): Promise<{ path: string; size: number }[]> {
-  let entries: Awaited<ReturnType<typeof readdir>>;
-  try {
-    entries = await readdir(directory, { withFileTypes: true });
-  } catch (error) {
-    if (isMissingDirectoryError(error)) return [];
-    throw error;
-  }
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    (error: unknown) => {
+      if (isMissingDirectoryError(error)) return [];
+      throw error;
+    },
+  );
   const nestedAssets = await Promise.all(
     entries.map(async (entry) => {
       const path = join(directory, entry.name);

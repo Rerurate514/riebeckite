@@ -24,7 +24,6 @@ export function collapseFolderEntryLocations(
     const basename = lastSegment(slug);
     if (!isEntryBasename(basename)) continue;
     const folder = parentFolder(slug);
-    if (folder === "") continue;
     const slugs = byFolder.get(folder);
     if (slugs) slugs.push(slug);
     else byFolder.set(folder, [slug]);

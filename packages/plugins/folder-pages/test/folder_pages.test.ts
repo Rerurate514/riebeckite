@@ -14,7 +14,7 @@ import {
 } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
-import { breadcrumbs } from "../../breadcrumbs/index.ts";
+import { breadcrumbs, buildBreadcrumbItems } from "../../breadcrumbs/index.ts";
 import { docs } from "../../docs/index.ts";
 import { buildFolderPages, folderPages } from "../index.js";
 
@@ -60,6 +60,32 @@ test("collapses a README folder entry to the folder URL and redirects the old UR
   assert.equal(manifest.redirects.get("/folder/README")?.slug, "folder/README");
   assert.deepEqual(await content.getPagePaths(), []);
   assert.equal(await content.resolvePage("/folder/"), null);
+});
+
+test("collapses a root README entry to the site root and redirects the old URL", async () => {
+  const content = manager({
+    "README.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",
+  });
+
+  const locations = await content.getContentLocations();
+  assert.equal(locations.get("README")?.permalink, "/");
+
+  const manifest = await content.getManifest();
+  assert.equal(manifest.bySlug.get("README")?.permalink, "/");
+  assert.equal(manifest.redirects.get("/README")?.status, 301);
+});
+
+test("keeps a root index entry at the site root", async () => {
+  const content = manager({
+    "index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",
+  });
+
+  const locations = await content.getContentLocations();
+  assert.equal(locations.get("index")?.permalink, "/");
+
+  const manifest = await content.getManifest();
+  assert.equal(manifest.bySlug.get("index")?.permalink, "/");
+  assert.equal(manifest.redirects.has("/index"), false);
 });
 
 test("collapses an index folder entry to the folder URL and redirects the old URL", async () => {
@@ -309,6 +335,64 @@ test("aligns localized folder pages, breadcrumbs, and docs navigation", async ()
   assert.match(english, /href="\/en\/docs\/"/);
   assert.match(english, /href="\/en\/docs\/guide\/"/);
   assert.doesNotMatch(english, /href="\/ja\//);
+});
+
+test("builds breadcrumbs from canonical landing page locations", async () => {
+  const plugins = [
+    folderPages(),
+    breadcrumbs({ homeLabel: "Riebeckite Documentation" }),
+  ];
+  const content = manager(
+    {
+      "README.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",
+      "docs/README.md": "---\ntitle: Docs\npublish: true\n---\n# Docs\n",
+      "docs/reference/README.md":
+        "---\ntitle: Reference\npublish: true\n---\n# Reference\n",
+      "docs/guide/setup.md": "---\ntitle: Setup\npublish: true\n---\n# Setup\n",
+    },
+    plugins,
+  );
+
+  const manifest = await content.getManifest();
+  assert.equal(manifest.bySlug.get("README")?.permalink, "/");
+  assert.equal(manifest.bySlug.get("docs/README")?.permalink, "/docs/");
+  assert.equal(
+    manifest.bySlug.get("docs/reference/README")?.permalink,
+    "/docs/reference/",
+  );
+
+  const reference = manifest.bySlug.get("docs/reference/README");
+  assert.ok(reference);
+  assert.deepEqual(
+    buildBreadcrumbItems({
+      manifest,
+      entry: reference,
+      config: config(plugins),
+      homeLabel: "Riebeckite Documentation",
+    }),
+    [
+      { name: "Riebeckite Documentation", url: "/" },
+      { name: "Docs", url: "/docs/" },
+      { name: "Reference", url: "/docs/reference/" },
+    ],
+  );
+
+  const setup = manifest.bySlug.get("docs/guide/setup");
+  assert.ok(setup);
+  assert.deepEqual(
+    buildBreadcrumbItems({
+      manifest,
+      entry: setup,
+      config: config(plugins),
+      homeLabel: "Riebeckite Documentation",
+    }),
+    [
+      { name: "Riebeckite Documentation", url: "/" },
+      { name: "Docs", url: "/docs/" },
+      { name: "Guide", url: "/docs/guide/" },
+      { name: "Setup", url: "/docs/guide/setup" },
+    ],
+  );
 });
 
 test("coexists with taxonomy regardless of plugin order", async () => {

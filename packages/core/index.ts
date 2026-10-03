@@ -102,6 +102,7 @@ export {
   resolveFolderEntry,
   resolveFolderLocation,
   resolveGeneratedFolderLocation,
+  resolvePublicFolderLocation,
 } from "./src/content/folder_entry.js";
 export type {
   ForceGraphLayoutOptions,

@@ -247,7 +247,7 @@ test("onManifestCreated injects the nav and a JSON-LD head tag", async () => {
     slug: "docs/intro",
     title: "Intro",
     html: "<p>Body</p>",
-    permalink: "/n/docs/intro",
+    permalink: "/docs/intro",
   });
   const manifest = makeManifest([folder, entry]);
   const context = {

@@ -34,9 +34,9 @@ export type {
 export const BREADCRUMBS_PLUGIN_NAME = "breadcrumbs";
 
 /**
- * Slug-hierarchy breadcrumbs for Riebeckite notes.
+ * Public-location breadcrumbs for Riebeckite notes.
  *
- * For every published entry it derives a trail from the note's slug and
+ * For every published entry it derives a trail from the note's canonical public location and
  * inserts a `<nav>` at the top of the manifest entry HTML, which is the final
  * rendering source. The hierarchical BreadcrumbList JSON-LD is contributed
  * through `entry.headTags` so the Site shell can render it in the document

@@ -82,6 +82,26 @@ export function resolveFolderLocation(
     : { type: "none" };
 }
 
+export function resolvePublicFolderLocation(
+  manifest: ContentManifest,
+  pathname: string,
+): FolderLocationResolution {
+  const normalizedPathname = normalizePathname(pathname);
+  const entry = manifest.publicEntries.find(
+    (candidate) =>
+      normalizePathname(candidate.publicLocation.permalink) ===
+      normalizedPathname,
+  );
+  if (entry) return { type: "content", entry };
+
+  const location = [...manifest.folderLocations.values()].find(
+    (candidate) => normalizePathname(candidate.pathname) === normalizedPathname,
+  );
+  return location
+    ? { type: "generated", pathname: location.pathname }
+    : { type: "none" };
+}
+
 export function resolveGeneratedFolderLocation(
   manifest: ContentManifest,
   folder: string,
@@ -127,6 +147,11 @@ function isInScope(
 
 function normalizeFolder(folder: string): string {
   return folder.split("/").filter(Boolean).join("/");
+}
+
+function normalizePathname(pathname: string): string {
+  const segments = pathname.split("/").filter(Boolean);
+  return segments.length === 0 ? "/" : `/${segments.join("/")}`;
 }
 
 function parentPath(pathname: string, levels: number): string | null {

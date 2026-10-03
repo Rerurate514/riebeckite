@@ -122,13 +122,14 @@ test("builds text-only crumbs for folders with no public location", () => {
 
   assert.deepEqual(items, [
     { name: "My Site", url: "/" },
+    { name: "N" },
     { name: "Docs" },
     { name: "Guide" },
     { name: "Intro", url: "/n/docs/guide/intro" },
   ]);
 });
 
-test("uses a README owner's title and public location for its crumb", () => {
+test("uses the canonical public hierarchy instead of a source folder owner", () => {
   const folder = makeEntry({
     slug: "docs/README",
     title: "Documentation",
@@ -146,8 +147,12 @@ test("uses a README owner's title and public location for its crumb", () => {
     homeLabel: "",
   });
 
-  assert.equal(items[1]?.name, "Documentation");
-  assert.equal(items[1]?.url, "/manual/");
+  assert.deepEqual(items, [
+    { name: "My Site", url: "/" },
+    { name: "N" },
+    { name: "Docs" },
+    { name: "Intro", url: "/n/docs/intro" },
+  ]);
 });
 
 test("omits a leading localized source folder hidden from the permalink", () => {
@@ -169,11 +174,11 @@ test("omits a leading localized source folder hidden from the permalink", () => 
   );
 });
 
-test("uses registered generated folder locations without synthesizing URLs", () => {
+test("uses generated locations registered for the canonical public hierarchy", () => {
   const entry = makeEntry({
     slug: "docs/guide/intro",
     title: "Intro",
-    permalink: "/manual/intro",
+    permalink: "/handbook/intro",
   });
   const manifest = makeManifest([entry]);
   manifest.folderLocations.set("docs", { pathname: "/handbook/" });
@@ -187,9 +192,8 @@ test("uses registered generated folder locations without synthesizing URLs", () 
 
   assert.deepEqual(items, [
     { name: "My Site", url: "/" },
-    { name: "Docs", url: "/handbook/" },
-    { name: "Guide" },
-    { name: "Intro", url: "/manual/intro" },
+    { name: "Handbook", url: "/handbook/" },
+    { name: "Intro", url: "/handbook/intro" },
   ]);
 });
 
@@ -236,7 +240,7 @@ test("returns an empty trail for an empty slug and ignores stray slashes", () =>
   });
   assert.deepEqual(
     items.map((item) => item.url),
-    ["/", undefined, "/n/docs/intro"],
+    ["/", undefined, undefined, "/n/docs/intro"],
   );
 });
 
@@ -244,7 +248,7 @@ test("titleCaseSegment only uppercases the first character", () => {
   const entry = makeEntry({
     slug: "myDocs/API/leaf",
     title: "Leaf",
-    permalink: "/n/leaf",
+    permalink: "/myDocs/API/leaf",
   });
   const items = buildBreadcrumbItems({
     manifest: makeManifest([entry]),

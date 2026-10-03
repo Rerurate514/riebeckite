@@ -3,7 +3,7 @@ import type {
   ContentManifestEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { resolveFolderLocation } from "@riebeckite/core";
+import { resolvePublicFolderLocation } from "@riebeckite/core";
 import type { BreadcrumbItem } from "./types.js";
 
 export type BuildBreadcrumbItemsArgs = {
@@ -17,16 +17,18 @@ export function buildBreadcrumbItems(
   args: BuildBreadcrumbItemsArgs,
 ): BreadcrumbItem[] {
   const { manifest, entry, config, homeLabel } = args;
-  const segments = breadcrumbSegments(entry);
-  if (segments.length === 0) return [];
+  if (!entry.slug) return [];
+  const segments = publicPathSegments(entry.publicLocation.permalink);
 
   const items: BreadcrumbItem[] = [];
   const homeName = homeLabel || config.site.title;
   if (homeName) pushBreadcrumbItem(items, { name: homeName, url: "/" });
 
+  if (segments.length === 0) return items;
+
   for (let index = 0; index < segments.length - 1; index++) {
-    const folderSlug = segments.slice(0, index + 1).join("/");
-    const location = resolveFolderLocation(manifest, folderSlug);
+    const pathname = `/${segments.slice(0, index + 1).join("/")}`;
+    const location = resolvePublicFolderLocation(manifest, pathname);
     pushBreadcrumbItem(items, {
       name:
         location.type === "content"
@@ -56,23 +58,8 @@ function pushBreadcrumbItem(items: BreadcrumbItem[], item: BreadcrumbItem) {
   items.push(item);
 }
 
-function breadcrumbSegments(entry: ContentManifestEntry): string[] {
-  const slugSegments = entry.slug.split("/").filter(Boolean);
-  const permalinkSegments = entry.publicLocation.permalink
-    .split("/")
-    .filter(Boolean);
-  const withoutLeadingSegment = slugSegments.slice(1);
-  return withoutLeadingSegment.length > 0 &&
-    sameSegments(withoutLeadingSegment, permalinkSegments)
-    ? withoutLeadingSegment
-    : slugSegments;
-}
-
-function sameSegments(left: readonly string[], right: readonly string[]) {
-  return (
-    left.length === right.length &&
-    left.every((segment, index) => segment === right[index])
-  );
+function publicPathSegments(permalink: string): string[] {
+  return permalink.split("/").filter(Boolean);
 }
 
 function titleCaseSegment(segment: string): string {

@@ -167,15 +167,13 @@ function updateSelectedCommit(root: HTMLElement, hash: string) {
 }
 
 function renderPanel(panel: HTMLElement, diff: PostDiff) {
-  const fromLabel = diff.from?.shortHash ?? "Beginning";
-  panel.innerHTML = `<details class="rr-diff-history__diff" data-rr-diff-rendered>
-    <summary class="rr-diff-history__diff-head">${escapeHtml(fromLabel)} → ${escapeHtml(diff.to.shortHash)}</summary>
+  panel.innerHTML = `<div class="rr-diff-history__diff" data-rr-diff-rendered>
     <div class="rr-diff-history__table-wrap">
       <table class="rr-diff-history__table">
         <tbody>${diff.lines.map(renderLine).join("")}</tbody>
       </table>
     </div>
-  </details>`;
+  </div>`;
 }
 
 function renderLine(line: PostDiff["lines"][number]): string {

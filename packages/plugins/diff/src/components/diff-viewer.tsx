@@ -21,15 +21,13 @@ export function renderDiffViewer({
 }
 
 export function renderDiffPanel(diff: PostDiff): string {
-  const fromLabel = diff.from?.shortHash ?? "Beginning";
-  return `<details class="rr-diff-history__diff" data-rr-diff-rendered>
-    <summary class="rr-diff-history__diff-head">${escapeHtml(fromLabel)} → ${escapeHtml(diff.to.shortHash)}</summary>
+  return `<div class="rr-diff-history__diff" data-rr-diff-rendered>
     <div class="rr-diff-history__table-wrap">
       <table class="rr-diff-history__table">
         <tbody>${diff.lines.map((line) => renderDiffLine({ line })).join("")}</tbody>
       </table>
     </div>
-  </details>`;
+  </div>`;
 }
 
 function renderRevisionSelect(

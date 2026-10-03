@@ -69,7 +69,8 @@ export function injectShareControls(
 
   const closeIndex = html.toLowerCase().lastIndexOf("</article>");
   if (closeIndex !== -1) {
-    return `${html.slice(0, closeIndex)}${block}${html.slice(closeIndex)}`;
+    const articleEnd = closeIndex + "</article>".length;
+    return `${html.slice(0, articleEnd)}${block}${html.slice(articleEnd)}`;
   }
   return `${html}\n${block}`;
 }

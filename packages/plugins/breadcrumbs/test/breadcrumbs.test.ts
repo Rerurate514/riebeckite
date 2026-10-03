@@ -79,6 +79,18 @@ test("homeLabel overrides the site title", () => {
   assert.equal(items[0]?.name, "Home");
 });
 
+test("dedupes the home crumb when it matches the current README title", () => {
+  const entry = makeEntry({ slug: "README", title: "README" });
+  const items = buildBreadcrumbItems({
+    manifest: makeManifest([entry]),
+    entry,
+    config,
+    homeLabel: "README",
+  });
+
+  assert.deepEqual(items, [{ name: "README", url: "/README" }]);
+});
+
 test("omits the home crumb when no label is available", () => {
   const entry = makeEntry({ slug: "about", title: "About" });
   const untitled = {

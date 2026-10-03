@@ -238,6 +238,10 @@
   line-height: 1.75;
 }
 
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-header {
+  border-bottom: 0;
+}
+
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-body p {
   margin: 1.1em 0;
 }

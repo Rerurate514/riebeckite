@@ -22,12 +22,12 @@ export function buildBreadcrumbItems(
 
   const items: BreadcrumbItem[] = [];
   const homeName = homeLabel || config.site.title;
-  if (homeName) items.push({ name: homeName, url: "/" });
+  if (homeName) pushBreadcrumbItem(items, { name: homeName, url: "/" });
 
   for (let index = 0; index < segments.length - 1; index++) {
     const folderSlug = segments.slice(0, index + 1).join("/");
     const location = resolveFolderLocation(manifest, folderSlug);
-    items.push({
+    pushBreadcrumbItem(items, {
       name:
         location.type === "content"
           ? location.entry.title
@@ -40,8 +40,20 @@ export function buildBreadcrumbItems(
     });
   }
 
-  items.push({ name: entry.title, url: entry.publicLocation.permalink });
+  pushBreadcrumbItem(items, {
+    name: entry.title,
+    url: entry.publicLocation.permalink,
+  });
   return items;
+}
+
+function pushBreadcrumbItem(items: BreadcrumbItem[], item: BreadcrumbItem) {
+  const previous = items.at(-1);
+  if (previous?.name === item.name) {
+    items[items.length - 1] = item;
+    return;
+  }
+  items.push(item);
 }
 
 function titleCaseSegment(segment: string): string {

@@ -154,7 +154,7 @@ test("injectShareControls places the block for each placement", () => {
   assert.equal(top.startsWith(`<article>${block}`), true);
 
   const bottom = injectShareControls(fragment, block, "bottom");
-  assert.equal(bottom.endsWith(`${block}</article>`), true);
+  assert.equal(bottom.endsWith(`</article>${block}`), true);
 
   const bare = injectShareControls("<p>Body</p>", block, "bottom");
   assert.equal(bare, `<p>Body</p>\n${block}`);

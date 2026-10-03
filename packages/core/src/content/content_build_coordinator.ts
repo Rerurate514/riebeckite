@@ -25,7 +25,10 @@ import type { OutputDescriptor } from "./output_dependency.js";
 
 export type ContentBuildPreparation = {
   readonly previousState: ContentBuildState | undefined;
-  readonly previousManifestEntriesBySlug: ReadonlyMap<string, ContentManifestEntry>;
+  readonly previousManifestEntriesBySlug: ReadonlyMap<
+    string,
+    ContentManifestEntry
+  >;
   readonly currentEntries: readonly FingerprintedContentEntry[];
   readonly currentContentIndex: Map<string, string>;
   readonly changeSet: ContentChangeSet;

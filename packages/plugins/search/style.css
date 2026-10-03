@@ -224,6 +224,7 @@
       position: static;
       width: auto;
       margin: 1rem 1rem 0;
+      align-self: flex-end;
     }
 
     .search-bar__trigger {

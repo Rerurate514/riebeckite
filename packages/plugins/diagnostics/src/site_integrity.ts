@@ -16,6 +16,7 @@ const DEFAULT_SEVERITY: Record<string, DiagnosticSeverity> = {
   "content-integrity:redirect-target-missing": "warning",
   "content-integrity:redirect-cycle": "error",
   "content-integrity:redirect-public-location-conflict": "error",
+  "content-integrity:ambiguous-folder-page-owner": "warning",
 };
 
 export type SiteIntegrityOptions = {
@@ -26,6 +27,7 @@ type RouteOwner = {
   readonly path: string;
   readonly slug: string;
   readonly kind: "content" | "redirect" | "page" | "output";
+  readonly producer?: string;
 };
 
 export function checkSiteIntegrity(
@@ -47,6 +49,7 @@ export function checkSiteIntegrity(
 
   checkRedirectTargets(manifest, publicRoutes, diagnostics, options);
   checkRedirectCycles(manifest, diagnostics, options);
+  checkAmbiguousFolderPageOwners(manifest, diagnostics, options);
 
   return diagnostics;
 }
@@ -72,15 +75,23 @@ function buildRouteOwners(
       kind: "redirect",
     });
   }
-  const pagePaths =
-    (manifest as ContentManifest & { pagePaths?: readonly string[] })
-      .pagePaths ?? [];
-  for (const path of pagePaths) {
+  const pageRoutes = manifest.pageRoutes ?? [];
+  for (const route of pageRoutes) {
     reserveRoute(owners, diagnostics, options, {
-      path: normalizeRoutePath(path),
-      slug: "(plugin-page)",
+      path: normalizeRoutePath(route.pathname),
+      slug: `(plugin-page:${route.pluginName}:${route.pageType})`,
       kind: "page",
+      producer: `${route.pluginName}:${route.pageType}`,
     });
+  }
+  if (pageRoutes.length === 0) {
+    for (const path of manifest.pagePaths ?? []) {
+      reserveRoute(owners, diagnostics, options, {
+        path: normalizeRoutePath(path),
+        slug: "(plugin-page)",
+        kind: "page",
+      });
+    }
   }
   for (const output of manifest.generatedOutputs ?? []) {
     reserveRoute(owners, diagnostics, options, {
@@ -374,7 +385,52 @@ function normalizeRoutePath(value: string): string {
 }
 
 function describeOwner(owner: RouteOwner): string {
-  return `${owner.kind} "${owner.slug}"`;
+  return `${owner.kind} "${owner.producer ?? owner.slug}"`;
+}
+
+function checkAmbiguousFolderPageOwners(
+  manifest: ContentManifest,
+  diagnostics: Diagnostic[],
+  options: SiteIntegrityOptions,
+): void {
+  const candidates = new Map<
+    string,
+    Partial<Record<"README" | "index", ContentManifestEntry>>
+  >();
+  for (const entry of manifest.entries) {
+    const basename = entry.slug.split("/").at(-1);
+    if (basename !== "README" && basename !== "index") continue;
+    const folder = entry.slug.split("/").slice(0, -1).join("/");
+    if (!folder) continue;
+    const folderCandidates = candidates.get(folder) ?? {};
+    folderCandidates[basename] = entry;
+    candidates.set(folder, folderCandidates);
+  }
+  for (const [folder, entries] of candidates) {
+    const readme = entries.README;
+    const index = entries.index;
+    if (!readme || !index) continue;
+    diagnostics.push(
+      diagnostic(options, {
+        code: "content-integrity:ambiguous-folder-page-owner",
+        target: folder,
+        message: `Folder "${folder}" has both README and index Folder Page candidates.`,
+        suggestion:
+          "Keep either README or index so the Folder Page owner is unambiguous.",
+        meta: {
+          folder,
+          readme: {
+            slug: readme.slug,
+            permalink: readme.publicLocation.permalink,
+          },
+          index: {
+            slug: index.slug,
+            permalink: index.publicLocation.permalink,
+          },
+        },
+      }),
+    );
+  }
 }
 
 function canonicalCycleKey(cycle: readonly string[]): string {

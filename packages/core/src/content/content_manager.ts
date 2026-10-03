@@ -338,11 +338,14 @@ export class ContentManager {
         const cacheManifestEntries = structuredClone(manifest.entries);
         this.locationResolver.populateRedirects(manifest, locations);
         this.applyPublicView(manifest);
-        await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
-        this.synchronizeManifestHtml(manifest, cacheManifestEntries);
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
         ];
+        manifest.pageRoutes = [
+          ...(await this.pluginRuntime.getPageRoutes(manifest, contentIndex)),
+        ];
+        await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
+        this.synchronizeManifestHtml(manifest, cacheManifestEntries);
         manifest.assets = this.pluginRuntime.collectAssets();
         manifest.clientEntries = this.pluginRuntime.collectClientEntries();
         manifest.diagnostics = [

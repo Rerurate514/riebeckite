@@ -4,6 +4,7 @@ import type {
   ContentPublicLocation,
   OutputDependency,
 } from "@riebeckite/core";
+import { resolveGeneratedFolderLocation } from "@riebeckite/core";
 import type { FolderPage, FolderPageLink, FolderPagesModel } from "./types.js";
 
 const ENTRY_BASENAMES = ["README", "index"] as const;
@@ -129,29 +130,14 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
   };
 
   const isListed = (folder: string): boolean =>
-    hasRoutableOwner(folder) || hasRoutablePage(folder) || isNavigable(folder);
+    hasRoutableOwner(folder) ||
+    hasRoutablePage(folder) ||
+    (isNavigable(folder) && generatedPath(folder) !== null);
 
-  const pathCache = new Map<string, string>();
-  const pathOf = (folder: string): string => {
-    const cached = pathCache.get(folder);
-    if (cached !== undefined) return cached;
-    const pages = sortedPages(folder);
-    if (pages.length > 0) {
-      const path = parentPath(pages[0].permalink);
-      pathCache.set(folder, path);
-      return path;
-    }
-    for (const sub of sortedSubfolders(folder)) {
-      const path = parentPath(folderLink(sub).permalink);
-      pathCache.set(folder, path);
-      return path;
-    }
-    const fallback = `/${folder}/`;
-    pathCache.set(folder, fallback);
-    return fallback;
-  };
+  const generatedPath = (folder: string): string | null =>
+    resolveGeneratedFolderLocation(manifest, folder);
 
-  const folderLink = (folder: string): FolderPageLink => {
+  const folderLink = (folder: string): FolderPageLink | null => {
     if (hasRoutableOwner(folder)) {
       const owner =
         routableBySlug.get(`${folder}/README`) ??
@@ -160,12 +146,20 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
     }
     const page = routableBySlug.get(folder);
     if (page) return { title: page.title, permalink: page.permalink };
-    return { title: lastSegment(folder), permalink: pathOf(folder) };
+    const pathname = generatedPath(folder);
+    if (!pathname) return null;
+    return { title: lastSegment(folder), permalink: pathname };
   };
 
-  const sortedSubfolders = (folder: string): string[] => {
-    const subs = [...(subfoldersOf.get(folder) ?? [])].filter(isListed);
-    subs.sort((a, b) => compareLinks(folderLink(a), folderLink(b)));
+  const sortedSubfolders = (
+    folder: string,
+  ): { folder: string; link: FolderPageLink }[] => {
+    const subs = [...(subfoldersOf.get(folder) ?? [])].flatMap((sub) => {
+      if (!isListed(sub)) return [];
+      const link = folderLink(sub);
+      return link ? [{ folder: sub, link }] : [];
+    });
+    subs.sort((a, b) => compareLinks(a.link, b.link));
     return subs;
   };
 
@@ -178,7 +172,8 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
     if (!isNavigable(folder)) continue;
     if (hasRoutableOwner(folder)) continue;
     if (hasRoutablePage(folder)) continue;
-    const pathname = pathOf(folder);
+    const pathname = generatedPath(folder);
+    if (!pathname) continue;
     if (pathname === "/") continue;
     if (routablePermalinks.has(stripTrailingSlash(pathname))) continue;
     if (takenPaths.has(pathname)) continue;
@@ -189,12 +184,12 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
       pathname,
       title: lastSegment(folder),
       pages: sortedPages(folder).map(toLink),
-      folders: folders_.map(folderLink),
+      folders: folders_.map((sub) => sub.link),
       dependencies: [
         { type: "folder", folder },
         ...folders_.map<OutputDependency>((sub) => ({
           type: "folder",
-          folder: sub,
+          folder: sub.folder,
         })),
       ],
     });
@@ -227,13 +222,6 @@ function parentFolder(path: string): string {
 function stripTrailingSlash(url: string): string {
   if (url.length > 1 && url.endsWith("/")) return url.slice(0, -1);
   return url;
-}
-
-function parentPath(url: string): string {
-  const trimmed = stripTrailingSlash(url);
-  const index = trimmed.lastIndexOf("/");
-  if (index <= 0) return "/";
-  return `${trimmed.slice(0, index)}/`;
 }
 
 function compareEntries(

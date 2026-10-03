@@ -22,12 +22,11 @@ import {
 function makeEntry(
   overrides: Omit<Partial<ContentManifestEntry>, "slug"> & { slug: string },
 ): ContentManifestEntry {
-  const permalink = overrides.slug === "index" ? "/" : `/${overrides.slug}`;
+  const permalink =
+    overrides.permalink ??
+    (overrides.slug === "index" ? "/" : `/${overrides.slug}`);
 
   return {
-    slug: overrides.slug,
-    permalink,
-    publicLocation: { slug: overrides.slug, permalink },
     title: "",
     frontmatter: {},
     html: "",
@@ -37,6 +36,12 @@ function makeEntry(
     backlinks: [],
     assets: [],
     ...overrides,
+    slug: overrides.slug,
+    permalink,
+    publicLocation: overrides.publicLocation ?? {
+      slug: overrides.slug,
+      permalink,
+    },
   };
 }
 
@@ -44,7 +49,9 @@ function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
   return {
     entries,
     publicEntries: entries,
+    discoverableEntries: entries,
     bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
+    folderLocations: new Map(),
   } as unknown as ContentManifest;
 }
 
@@ -74,6 +81,20 @@ test("renders an accessible ordered list with links and a current crumb", () => 
 
 test("returns an empty string when there is nothing to render", () => {
   assert.equal(renderBreadcrumbNav([], resolveBreadcrumbsOptions({})), "");
+});
+
+test("renders an unresolved intermediate crumb as text", () => {
+  const html = renderBreadcrumbNav(
+    [
+      { name: "Home", url: "/" },
+      { name: "Docs" },
+      { name: "Intro", url: "/docs/intro" },
+    ],
+    resolveBreadcrumbsOptions({}),
+  );
+
+  assert.match(html, /<span class="rb-breadcrumbs__text">Docs<\/span>/);
+  assert.doesNotMatch(html, /href="\/docs"/);
 });
 
 test("escapes crumb names, urls and options", () => {
@@ -121,6 +142,18 @@ test("buildBreadcrumbJsonLd builds a positioned list with absolute urls", () => 
       },
     ],
   });
+});
+
+test("buildBreadcrumbJsonLd omits nonexistent item URLs", () => {
+  const schema = buildBreadcrumbJsonLd(config, [
+    { name: "Home", url: "/" },
+    { name: "Docs" },
+    { name: "Intro", url: "/docs/intro" },
+  ]);
+  const elements = schema.itemListElement as Array<Record<string, unknown>>;
+
+  assert.equal(elements[1]?.item, undefined);
+  assert.equal(elements[1]?.name, "Docs");
 });
 
 test("buildBreadcrumbJsonLd falls back to a default base url", () => {
@@ -205,7 +238,11 @@ test("golden: rendered breadcrumb navigation", () => {
 
 test("onManifestCreated injects the nav and a JSON-LD head tag", async () => {
   const plugin = breadcrumbs({ homeLabel: "Home" });
-  const folder = makeEntry({ slug: "docs", title: "Documentation" });
+  const folder = makeEntry({
+    slug: "docs/README",
+    title: "Documentation",
+    permalink: "/docs/",
+  });
   const entry = makeEntry({
     slug: "docs/intro",
     title: "Intro",
@@ -253,7 +290,7 @@ test("onManifestCreated can skip the JSON-LD script", async () => {
     permalink: "/n/docs/intro",
   });
   const manifest = makeManifest([
-    makeEntry({ slug: "docs", title: "Docs" }),
+    makeEntry({ slug: "docs/README", title: "Docs", permalink: "/docs/" }),
     entry,
   ]);
   const context = {

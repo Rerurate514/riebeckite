@@ -1,7 +1,7 @@
 /** One crumb in the generated breadcrumb trail. */
 export type BreadcrumbItem = {
   name: string;
-  url: string;
+  url?: string;
 };
 
 export type BreadcrumbsOptions = {

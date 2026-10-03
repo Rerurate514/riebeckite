@@ -102,6 +102,16 @@ export type ContentPublicLocation = {
   metadata?: Readonly<Record<string, string>>;
 };
 
+export type FolderLocation = {
+  pathname: string;
+};
+
+export type PluginPageRoute = {
+  pathname: string;
+  pluginName: string;
+  pageType: string;
+};
+
 export type ContentLocationInput = {
   slug: string;
   path: string;
@@ -144,5 +154,7 @@ export type ContentManifest = {
   clientEntries: ContentManifestPluginClientEntry[];
   diagnostics: Diagnostic[];
   generatedOutputs: GeneratedOutput[];
+  folderLocations: Map<string, FolderLocation>;
+  pageRoutes: PluginPageRoute[];
   pagePaths: string[];
 };

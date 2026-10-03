@@ -68,7 +68,7 @@ function toNavigationEntry(
   const relativePath = resolveRelativeDocsPath(entry, root);
   if (!relativePath) return null;
   const segments = relativePath.split("/").filter(Boolean);
-  const isIndex = segments.at(-1) === "index";
+  const isIndex = ["index", "README"].includes(segments.at(-1) ?? "");
   const sidebar = readSidebarFrontmatter(entry.frontmatter.sidebar);
   return {
     entry,

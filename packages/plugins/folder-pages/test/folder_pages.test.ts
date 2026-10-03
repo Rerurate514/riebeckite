@@ -14,6 +14,8 @@ import {
 } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
+import { breadcrumbs } from "../../breadcrumbs/index.ts";
+import { docs } from "../../docs/index.ts";
 import { buildFolderPages, folderPages } from "../index.js";
 
 function source(files: Record<string, string>): ContentSource {
@@ -124,6 +126,54 @@ test("generates a folder page that lists only direct children", async () => {
   assert.match(sub?.body ?? "", /href="\/folder\/sub\/deep"/);
 });
 
+test("does not generate a folder page from conflicting custom public locations", async () => {
+  const content = manager(
+    {
+      "docs/foo/a.md": "---\ntitle: A\npublish: true\n---\n",
+      "docs/foo/b.md": "---\ntitle: B\npublish: true\n---\n",
+    },
+    [
+      {
+        name: "custom-locations",
+        resolveContentLocations: ({ entries }) =>
+          entries.map((entry) => ({
+            slug: entry.slug,
+            permalink: entry.slug === "docs/foo/a" ? "/articles/a" : "/notes/b",
+          })),
+      },
+      folderPages(),
+    ],
+  );
+
+  const paths = await content.getPagePaths();
+  assert.equal(paths.includes("/articles/"), false);
+  assert.equal(paths.includes("/notes/"), false);
+  assert.equal(paths.includes("/docs/foo/"), false);
+});
+
+test("does not generate a trailing-slash route owned by folder.md", async () => {
+  const content = manager(
+    {
+      "folder.md": "---\ntitle: Folder\npublish: true\n---\n",
+      "folder/page.md": "---\ntitle: Page\npublish: true\n---\n",
+    },
+    [
+      {
+        name: "custom-locations",
+        resolveContentLocations: ({ entries }) =>
+          entries.map((entry) => ({
+            slug: entry.slug,
+            permalink: entry.slug === "folder" ? "/foo" : "/foo/page",
+          })),
+      },
+      folderPages(),
+    ],
+  );
+
+  assert.deepEqual(await content.getPagePaths(), []);
+  assert.equal(await content.resolvePage("/foo/"), null);
+});
+
 test("declares folder dependencies for generated page outputs", async () => {
   const content = manager({
     "folder/page.md": "---\ntitle: Page\npublish: true\n---\n",
@@ -229,6 +279,38 @@ test("keeps locales separated and resolves redirects after localization", async 
   assert.doesNotMatch(english?.body ?? "", /\/docs\/ref\/a/);
 });
 
+test("aligns localized folder pages, breadcrumbs, and docs navigation", async () => {
+  const content = manager(
+    {
+      "ja/docs/README.md": "---\ntitle: 日本語 docs\npublish: true\n---\n",
+      "ja/docs/guide/page.md": "---\ntitle: 日本語 page\npublish: true\n---\n",
+      "en/docs/README.md": "---\ntitle: English docs\npublish: true\n---\n",
+      "en/docs/guide/page.md": "---\ntitle: English page\npublish: true\n---\n",
+    },
+    [
+      folderPages(),
+      l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+      breadcrumbs(),
+      docs({ root: "docs" }),
+    ],
+  );
+
+  const manifest = await content.getManifest();
+  assert.equal(manifest.bySlug.get("ja/docs/README")?.permalink, "/docs/");
+  assert.equal(manifest.bySlug.get("en/docs/README")?.permalink, "/en/docs/");
+  assert.ok((await content.getPagePaths()).includes("/docs/guide/"));
+  assert.ok((await content.getPagePaths()).includes("/en/docs/guide/"));
+
+  const japanese = manifest.bySlug.get("ja/docs/guide/page")?.html ?? "";
+  const english = manifest.bySlug.get("en/docs/guide/page")?.html ?? "";
+  assert.match(japanese, /href="\/docs\/"/);
+  assert.match(japanese, /href="\/docs\/guide\/"/);
+  assert.doesNotMatch(japanese, /href="\/ja\//);
+  assert.match(english, /href="\/en\/docs\/"/);
+  assert.match(english, /href="\/en\/docs\/guide\/"/);
+  assert.doesNotMatch(english, /href="\/ja\//);
+});
+
 test("coexists with taxonomy regardless of plugin order", async () => {
   const files = {
     "folder/page.md": "---\ntitle: Page\npublish: true\n---\n",
@@ -329,6 +411,45 @@ test("invalidates the folder page when a child publishing state changes", () => 
   assert.ok(outputPaths(drafted.affected).includes("folder/index.html"));
 });
 
+test("invalidates ancestor folder pages when a nested child is removed", () => {
+  const previous = manifestOf(note("a/keep"), note("a/b/c/page"));
+  const current = manifestOf(note("a/keep"));
+
+  const result = changes(previous, current, { removed: ["a/b/c/page.md"] });
+  const currentPaths = buildOutputInventory(
+    current,
+    pluginOutputs(current),
+  ).map((output) => output.path);
+  const incrementalPaths = [...result.affected, ...result.unchanged].map(
+    (output) => output.path,
+  );
+
+  assert.ok(outputPaths(result.affected).includes("a/index.html"));
+  assert.deepEqual(incrementalPaths.sort(), currentPaths.sort());
+});
+
+test("invalidates ancestor folder pages for nested additions, renames, and publishing changes", () => {
+  const added = changes(
+    manifestOf(note("a/keep")),
+    manifestOf(note("a/keep"), note("a/b/c/page")),
+    { added: ["a/b/c/page.md"] },
+  );
+  const renamed = changes(
+    manifestOf(note("a/keep"), note("a/b/c/old")),
+    manifestOf(note("a/keep"), note("a/b/c/new")),
+    { added: ["a/b/c/new.md"], removed: ["a/b/c/old.md"] },
+  );
+  const unpublished = changes(
+    manifestOf(note("a/keep"), note("a/b/c/page")),
+    manifestOf(note("a/keep"), note("a/b/c/page", { visibility: "draft" })),
+    { changed: ["a/b/c/page.md"] },
+  );
+
+  for (const result of [added, renamed, unpublished]) {
+    assert.ok(outputPaths(result.affected).includes("a/index.html"));
+  }
+});
+
 function note(
   slug: string,
   options: {
@@ -381,6 +502,8 @@ function manifestOf(...entries: ContentManifestEntry[]): ContentManifest {
     clientEntries: [],
     diagnostics: [],
     generatedOutputs: [],
+    folderLocations: new Map(),
+    pageRoutes: [],
     pagePaths: [],
   };
 }

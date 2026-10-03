@@ -3,6 +3,7 @@ import type {
   ContentManifestEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { resolveFolderLocation } from "@riebeckite/core";
 import type { BreadcrumbItem } from "./types.js";
 
 export type BuildBreadcrumbItemsArgs = {
@@ -12,15 +13,6 @@ export type BuildBreadcrumbItemsArgs = {
   homeLabel: string;
 };
 
-/**
- * Builds the breadcrumb trail for a note from its slug hierarchy.
- *
- * The first crumb is always the site home (the site title unless the consumer
- * provided a `homeLabel`); each intermediate slug segment becomes a crumb
- * pointing at the folder's own URL. When the folder has an index note of its
- * own, that note's title is used for the crumb instead of the raw segment.
- * The final crumb is the note itself and points at its permalink.
- */
 export function buildBreadcrumbItems(
   args: BuildBreadcrumbItemsArgs,
 ): BreadcrumbItem[] {
@@ -34,14 +26,21 @@ export function buildBreadcrumbItems(
 
   for (let index = 0; index < segments.length - 1; index++) {
     const folderSlug = segments.slice(0, index + 1).join("/");
-    const folderEntry = manifest.bySlug.get(folderSlug);
+    const location = resolveFolderLocation(manifest, folderSlug);
     items.push({
-      name: folderEntry?.title ?? titleCaseSegment(segments[index]),
-      url: `/${folderSlug}`,
+      name:
+        location.type === "content"
+          ? location.entry.title
+          : titleCaseSegment(segments[index]),
+      ...(location.type === "content"
+        ? { url: location.entry.publicLocation.permalink }
+        : location.type === "generated"
+          ? { url: location.pathname }
+          : {}),
     });
   }
 
-  items.push({ name: entry.title, url: entry.permalink });
+  items.push({ name: entry.title, url: entry.publicLocation.permalink });
   return items;
 }
 

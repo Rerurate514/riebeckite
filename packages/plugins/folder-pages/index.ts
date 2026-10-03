@@ -45,11 +45,17 @@ export function folderPages(options: FolderPagesOptions = {}) {
 
   return definePlugin({
     name: FOLDER_PAGES_PLUGIN_NAME,
+    provides: ["content.folder-pages"],
     options,
     optional: ["content.localization"],
     validateOptions: validateFolderPagesOptions,
     extendContentLocations: ({ locations }) => {
       collapseFolderEntryLocations(locations);
+    },
+    onManifestCreated: ({ manifest }) => {
+      for (const page of modelFor(manifest).byPath.values()) {
+        manifest.folderLocations.set(page.folder, { pathname: page.pathname });
+      }
     },
     pageTypes: [
       {

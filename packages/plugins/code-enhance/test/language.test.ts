@@ -66,3 +66,25 @@ test("code copy button uses an English accessible label", async () => {
   assert.ok(html.includes('aria-label="Copy code"'), html);
   assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });
+
+test("code copy button does not duplicate source in data-code", async () => {
+  const html = await render(fenced("ts", "const hello = 1"));
+
+  assert.ok(html.includes("data-code-copy"), html);
+  assert.ok(html.includes("const"), html);
+  assert.ok(!html.includes("data-code="), html);
+});
+
+test("rendered code preserves copyable text in the code DOM", async () => {
+  const html = await render(
+    fenced(
+      "html",
+      ['\t<div data-value="&<>😀">', "  text", "</div>"].join("\n"),
+    ),
+  );
+
+  assert.match(
+    html,
+    /<code[^>]*>[\s\S]*\t[\s\S]*&#x26;[\s\S]*&#x3C;[\s\S]*>😀[\s\S]*<\/code>/,
+  );
+});

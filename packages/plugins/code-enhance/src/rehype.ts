@@ -146,7 +146,6 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
     const titleNode = findTitleNode(node);
     const title = titleNode ? getTextContent(titleNode) : null;
     const language = getLanguage(pre, code);
-    const rawCode = code ? getTextContent(code) : getTextContent(pre);
     const isTerminal =
       options.terminal !== false && isTerminalLanguage(language);
 
@@ -184,7 +183,6 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
       buildHeader({
         title: options.filename === false ? null : title,
         language,
-        rawCode,
         copyButton: options.copyButton !== false,
         wrapToggle: options.wrapToggle !== false,
         collapsible: options.collapsible === true,
@@ -205,7 +203,6 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
 function buildHeader(input: {
   title: string | null;
   language: string;
-  rawCode: string;
   copyButton: boolean;
   wrapToggle: boolean;
   collapsible: boolean;
@@ -233,7 +230,6 @@ function buildHeader(input: {
           type: "button",
           className: "rr-code__action",
           dataCodeCopy: "true",
-          dataCode: input.rawCode,
           ariaLabel: "Copy code",
         },
         [text("Copy")],

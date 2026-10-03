@@ -37,7 +37,7 @@ async function copyCode(
   copyLabel: string,
   copiedLabel: string,
 ) {
-  const code = button.dataset.code ?? "";
+  const code = getCodeText(button);
   if (!code) return;
 
   await navigator.clipboard.writeText(code);
@@ -45,6 +45,12 @@ async function copyCode(
   window.setTimeout(() => {
     button.textContent = copyLabel;
   }, 1500);
+}
+
+function getCodeText(button: HTMLButtonElement): string {
+  const figure = button.closest<HTMLElement>(".rr-code");
+  const code = figure?.querySelector<HTMLElement>(".rr-code__code");
+  return code?.textContent ?? "";
 }
 
 function toggleWrap(button: HTMLButtonElement) {

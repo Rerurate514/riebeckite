@@ -6,6 +6,7 @@ import {
 import { SearchBar } from "@riebeckite/plugin-search";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
+import { SiteFooter, SiteHeader } from "../components/site-navigation";
 import { config } from "../config";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {
@@ -96,9 +97,11 @@ export default jsxRenderer(({ children }, c) => {
         <Script src="/app/client.ts" async />
       </head>
       <body class="riebeckite-page rb-site">
+        <SiteHeader path={c.req.path} />
         <ColorModeToggle />
         <SearchBar />
         {children}
+        <SiteFooter path={c.req.path} />
       </body>
     </html>
   );

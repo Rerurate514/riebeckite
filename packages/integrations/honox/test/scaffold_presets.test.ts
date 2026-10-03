@@ -138,8 +138,19 @@ test("starter and showcase scaffolds render authored navigation in the site shel
       assert.match(header, /rb-site-footer/);
       assert.match(header, /aria-current/);
       assert.match(header, /target=\{item.external/);
+      assert.match(header, /isChildList/);
       assert.match(renderer, /<SiteHeader path=\{c.req.path\} \/>/);
       assert.match(renderer, /<SiteFooter path=\{c.req.path\} \/>/);
+      assert.match(renderer, /class="riebeckite-page rb-site"/);
+      assert.match(
+        await fs.readFile(
+          path.join(targetDirectory, "riebeckite.config.ts"),
+          "utf8",
+        ),
+        preset === "starter"
+          ? /label: "Notes", href: "\/notes\/planning"/
+          : /label: "Framework", href: "\/framework\/plugins"/,
+      );
     }
   });
 });

@@ -68,6 +68,7 @@ function readSiteFile(root, name) {
 const scaffoldSources = [
   path.join(scaffoldDir, "presets.ts"),
   path.join(scaffoldDir, "templates.ts"),
+  path.join(scaffoldDir, "app-templates.ts"),
   path.join(scaffoldDir, "localized-content.ts"),
   path.join(scaffoldDir, "next-steps.ts"),
   path.join(scaffoldDir, "version.ts"),
@@ -171,6 +172,10 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
   expect(config !== null, "starter: riebeckite.config.ts is missing");
   if (config) {
     expect(
+      config.includes('label: "Notes", href: "/notes/planning"'),
+      "starter: navigation parent must target an existing page",
+    );
+    expect(
       config.includes("obsidianMarkdown()"),
       "starter: obsidianMarkdown must be bare",
     );
@@ -263,6 +268,10 @@ async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
   const config = readSiteFile(root, "riebeckite.config.ts");
   expect(config !== null, "showcase: riebeckite.config.ts is missing");
   if (config) {
+    expect(
+      config.includes('label: "Framework", href: "/framework/plugins"'),
+      "showcase: navigation parent must target an existing page",
+    );
     expect(
       config.includes(
         'seo({ siteName: "私のブログ", sitemap: true, robots: true, defaultImage: "/ogp.png", feed: { rss: true, atom: true, json: true } })',

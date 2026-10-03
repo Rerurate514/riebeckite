@@ -216,7 +216,7 @@ export function style(preset: ScaffoldPreset): string {
       "",
       ".rb-site-footer {",
       "  width: min(100% - 2rem, 48rem);",
-      "  margin-top: auto;",
+      "  margin: auto auto 0;",
       "  padding-block: 1rem;",
       "  border-top: 1px solid var(--rb-color-border);",
       "}",
@@ -358,7 +358,7 @@ export function SiteHeader({ path }: { path: string }) {
         <>
           <SiteNavigation items={navigation} path={path} />
           <details class="site-navigation__mobile rb-nav__mobile">
-            <summary class="rb-nav__toggle" aria-label="Open navigation">Menu</summary>
+            <summary class="rb-nav__toggle">Menu</summary>
             <SiteNavigation items={navigation} path={path} />
           </details>
         </>
@@ -395,14 +395,14 @@ function SiteNavigation({
 function NavigationItems({
   items,
   path,
-  children = false,
+  isChildList = false,
 }: {
   items: readonly NavigationItem[];
   path: string;
-  children?: boolean;
+  isChildList?: boolean;
 }) {
   return (
-    <ul class={children ? "site-navigation__list rb-nav__list rb-nav__children" : "site-navigation__list rb-nav__list"}>
+    <ul class={isChildList ? "site-navigation__list rb-nav__list rb-nav__children" : "site-navigation__list rb-nav__list"}>
       {items.map((item) => {
         const active = isActive(item.href, path);
         return (
@@ -417,7 +417,7 @@ function NavigationItems({
               {item.label}
             </a>
             {item.children && item.children.length > 0 ? (
-              <NavigationItems items={item.children} path={path} children />
+              <NavigationItems items={item.children} path={path} isChildList />
             ) : null}
           </li>
         );
@@ -429,7 +429,7 @@ function NavigationItems({
 function isActive(href: string, path: string): boolean {
   if (!href.startsWith("/")) return false;
   const target = href.replace(/\\/+$/, "") || "/";
-  const current = path.replace(/\\/+$/, "") || "/";
+  const current = path.replace(/^\\/[a-z]{2}(?:-[A-Z]{2})?(?=\\/|$)/, "").replace(/\\/+$/, "") || "/";
   return target === "/" ? current === target : current === target || current.startsWith(\`\${target}/\`);
 }
 `;
@@ -569,7 +569,7 @@ ${hasColorMode ? `        <ColorModeScript />\n` : ""}        <Link href="/app/s
         {headTags.map(renderHeadTag)}
         <Script src="/app/client.ts" async />
       </head>
-      <body class="riebeckite-page">
+      <body class="riebeckite-page rb-site">
  ${hasHeader ? `        <SiteHeader path={c.req.path} />\n` : ""}${hasSearch ? `        <SearchBar />\n` : ""}        {children}
 ${hasHeader ? `        <SiteFooter path={c.req.path} />\n` : ""}      </body>
     </html>
@@ -612,7 +612,7 @@ export default jsxRenderer(({ children }, c) => (
       <Link href="/app/style.css" rel="stylesheet" />
       <Script src="/app/client.ts" async />
     </head>
-    <body class="riebeckite-page">{children}</body>
+    <body class="riebeckite-page rb-site">{children}</body>
   </html>
 ));
 `;

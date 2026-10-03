@@ -15,9 +15,7 @@ export function SiteHeader({ path }: { path: string }) {
         <>
           <SiteNavigation items={navigation} path={path} />
           <details class="site-navigation__mobile rb-nav__mobile">
-            <summary class="rb-nav__toggle" aria-label="Open navigation">
-              Menu
-            </summary>
+            <summary class="rb-nav__toggle">Menu</summary>
             <SiteNavigation items={navigation} path={path} />
           </details>
         </>
@@ -53,16 +51,16 @@ function SiteNavigation({
 function NavigationItems({
   items,
   path,
-  children = false,
+  isChildList = false,
 }: {
   items: readonly NavigationItem[];
   path: string;
-  children?: boolean;
+  isChildList?: boolean;
 }) {
   return (
     <ul
       class={
-        children
+        isChildList
           ? "site-navigation__list rb-nav__list rb-nav__children"
           : "site-navigation__list rb-nav__list"
       }
@@ -85,7 +83,7 @@ function NavigationItems({
               {item.label}
             </a>
             {item.children && item.children.length > 0 ? (
-              <NavigationItems items={item.children} path={path} children />
+              <NavigationItems items={item.children} path={path} isChildList />
             ) : null}
           </li>
         );
@@ -97,7 +95,9 @@ function NavigationItems({
 function isActive(href: string, path: string): boolean {
   if (!href.startsWith("/")) return false;
   const target = href.replace(/\/+$/, "") || "/";
-  const current = path.replace(/\/+$/, "") || "/";
+  const current =
+    path.replace(/^\/[a-z]{2}(?:-[A-Z]{2})?(?=\/|$)/, "").replace(/\/+$/, "") ||
+    "/";
   return target === "/"
     ? current === target
     : current === target || current.startsWith(`${target}/`);

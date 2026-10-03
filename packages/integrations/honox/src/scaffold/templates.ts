@@ -247,7 +247,7 @@ function navigationConfig(preset: ScaffoldPreset): readonly string[] {
   if (preset.name === "starter") {
     return [
       "  navigation: {",
-      '    header: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Notes", href: "/notes", children: [{ label: "Planning", href: "/notes/planning" }, { label: "Writing", href: "/notes/writing" }] }],',
+      '    header: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Notes", href: "/notes/planning", children: [{ label: "Planning", href: "/notes/planning" }, { label: "Writing", href: "/notes/writing" }] }],',
       '    footer: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }],',
       "  },",
     ];
@@ -255,7 +255,7 @@ function navigationConfig(preset: ScaffoldPreset): readonly string[] {
   if (preset.name === "showcase") {
     return [
       "  navigation: {",
-      '    header: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }],',
+      '    header: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework/plugins", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }],',
       '    footer: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }],',
       "  },",
     ];

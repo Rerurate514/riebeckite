@@ -3,7 +3,9 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { ContentIndexBuilder } from "../src/content/content_index_builder.js";
 import { ContentManager } from "../src/content/content_manager.js";
+import { extractFrontmatterAliases } from "../src/content/content_metadata.js";
 import type { ContentSource } from "../src/content/content_source.js";
 import { NoopLogger, SinkTracer } from "../src/observability.js";
 import type { ContentManifestEntry } from "../src/types/content_manifest.js";
@@ -115,6 +117,100 @@ test("no-change rebuild reuses every manifest entry without processing content",
   assert.equal(second.affected, 0);
   assert.equal(second.processed, 0);
   assert.equal(second.reused, 2);
+});
+
+test("no-change rebuild does not reread content for index aliases", async () => {
+  const directory = await tempDirectory("incremental-index-aliases");
+  const files = {
+    "a.md": "---\naliases: [alpha]\n---\n\n# A",
+    "b.md": "---\naliases: [beta]\n---\n\n# B",
+  };
+  let reads = 0;
+  const source: ContentSource = {
+    async scan() {
+      return Object.keys(files).map((filePath) => ({ path: filePath }));
+    },
+    async read(entry) {
+      reads += 1;
+      return files[entry.path as keyof typeof files] ?? "";
+    },
+  };
+  const config = testConfig(directory);
+  const buildOnce = async () => {
+    const manager = new ContentManager(source, [], {
+      config,
+      plugins: config.plugins,
+      observability: {
+        logger: new NoopLogger(),
+        tracer: new SinkTracer({ onEvent: () => {}, onSpan: () => {} }),
+      },
+    });
+    const manifest = await manager.build({ incremental: true });
+    await manager.dispose();
+    return manifest;
+  };
+
+  await buildOnce();
+  reads = 0;
+  const manifest = await buildOnce();
+
+  assert.equal(reads, 4);
+  assert.equal(manifest.contentIndex.get("alpha"), "a");
+  assert.equal(manifest.contentIndex.get("beta"), "b");
+});
+
+test("alias-backed index matches the content-reading index", async () => {
+  const files = {
+    "folder/a.md": "---\naliases: [alpha]\n---\n\n# A",
+    "folder/b.md": "# B",
+    "folder/image.png": "image",
+  };
+  const source = memorySource(files);
+  const entries = await source.scan();
+  const aliases = new Map(
+    entries.map((entry) => [
+      entry.path,
+      extractFrontmatterAliases(files[entry.path] ?? ""),
+    ]),
+  );
+
+  const readIndex = await new ContentIndexBuilder(source).build(entries);
+  const aliasIndex = ContentIndexBuilder.buildFromAliases(entries, aliases);
+
+  assert.deepEqual(aliasIndex, readIndex);
+});
+
+test("frontmatter alias changes rebuild the content index", async () => {
+  const directory = await tempDirectory("incremental-index-alias-change");
+  const files = {
+    "source.md": "# Source\n\n[[old name]]",
+    "target.md": "---\naliases: [old name]\n---\n\n# Target",
+  };
+
+  await build(files, directory);
+  files["target.md"] = "---\naliases: [new name]\n---\n\n# Target";
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 2);
+  assert.equal(second.manifest.contentIndex.has("old name"), false);
+  assert.equal(second.manifest.contentIndex.get("new name"), "target");
+  assert.equal(second.manifest.bySlug.get("source")?.links[0]?.slug, null);
+});
+
+test("deleting an alias target reprocesses its link source", async () => {
+  const directory = await tempDirectory("incremental-index-alias-delete");
+  const files: Record<string, string> = {
+    "source.md": "# Source\n\n[[target alias]]",
+    "target.md": "---\naliases: [target alias]\n---\n\n# Target",
+  };
+
+  await build(files, directory);
+  delete files["target.md"];
+  const second = await build(files, directory);
+
+  assert.equal(second.processed, 1);
+  assert.equal(second.manifest.contentIndex.has("target alias"), false);
+  assert.equal(second.manifest.bySlug.get("source")?.links[0]?.slug, null);
 });
 
 test("independent edit processes only the changed note", async () => {

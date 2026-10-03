@@ -123,6 +123,8 @@ function isContentBuildStateShape(
         isRecord(entry) &&
         typeof entry.fingerprint === "string" &&
         entry.fingerprint.length > 0 &&
+        Array.isArray(entry.aliases) &&
+        entry.aliases.every((alias) => typeof alias === "string") &&
         Array.isArray(entry.dependencies) &&
         entry.dependencies.every(
           (dependency) =>

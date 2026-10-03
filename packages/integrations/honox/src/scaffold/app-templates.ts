@@ -668,7 +668,7 @@ export function slugRoute(preset: ScaffoldPreset): string {
     footerChildren.push("<Backlinks backlinks={backlinks} />");
   }
   if (footerChildren.length > 0) {
-    propLines.push(`        footerContent={<>{${footerChildren.join("")}}</>}`);
+    propLines.push(`        footerContent={<>${footerChildren.join("")}</>}`);
   }
 
   const titleHelper = needsTitle ? articleTitleHelper() : "";

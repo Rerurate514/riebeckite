@@ -6,11 +6,10 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
 |---:|---|---|---|---|---|---|
-| 1 | UI3 | showcase の生成コードがコンパイル・実 build で検証されない問題を解消する | 未着手 | Medium | Contract 1 は starter のみ install→build する。showcase 固有分岐は文字列 assert のみで、過去に `join("")` の literal 混入を文字列テストが見逃した実例がある。回帰防止テストの不足 | showcase（または代表 preset）の生成 TSX がコンパイル／型チェックを通過する契約テストを追加する<br>少なくとも 1 preset の実 build で生成 HTML を検証し、文字列 assert では拾えない生成コード不整合を検出する<br>全 preset への install→フル build は必須にしない |
-| 2 | DN1 | daily-notes が Obsidian のカスタム日付フォーマットを解釈できない問題を解消する | 未着手 | Medium | slug の日付抽出が `YYYY-MM-DD` 形式のみで、Obsidian 側を `YYYY/MM/DD` 等に設定していると日付が空になる。frontmatter の date/created が無いノートで顕在化する。Obsidian 互換性の問題 | Obsidian の日付フォーマットを明示設定として取り込み、その形式の slug から日付を解決できる<br>frontmatter date/created が無くても設定形式に一致すれば日付が空にならない<br>複数形式の推測（ヒューリスティック）に依存しない |
-| 3 | I18N1 | docs プラグインの前後ナビが `Previous` / `Next` 固定で、ja ページでも英語表示になる問題を解消する | 未着手 | Small | 前後リンクの文言がロケールを見ずに英語固定。l10n の解決済み言語を利用して ja/en を切り替える必要がある。UX 上の契約不一致 | docs prev/next のラベルがページの解決済み言語（ja/en）に応じて切り替わる<br>ja ページで日本語ラベル、en ページで英語ラベルになることを検証するテストがある |
-| 4 | I18N4 | code-enhance のコピーラベル（`copyLabel` / `copiedLabel`）をプラグイン設定から渡せるようにする | 未着手 | Small | `CodeEnhanceClientOptions` は存在するが `codeEnhance()` と `createClientEntry` に publicConfig の経路が無く、既定の `Copy` / `Copied` を上書きできない。公開 API 契約の不足 | `copyLabel` / `copiedLabel` が publicConfig 経由でクライアントへ渡り、既定値を上書きできる<br>lightbox / text-fragment と同じ client config 契約に整合する |
-| 5 | UI4 | plugin-api.md が bodySlots / appendContentBodySlot を説明していない | 未着手 | Small | `docs/en/docs/plugins/docs.md` や各プラグイン README が「Plugin API の standard article body slot」を参照しているが、参照先の plugin-api.md に記述がない（ja も同様）。公開契約ドキュメントの乖離 | plugin-api.md（en/ja）に bodySlots / appendContentBodySlot / 標準 slot の契約が記述される<br>記述が現行実装・他 doc の参照先と一致する |
+| 1 | DN1 | daily-notes が Obsidian のカスタム日付フォーマットを解釈できない問題を解消する | 未着手 | Medium | slug の日付抽出が `YYYY-MM-DD` 形式のみで、Obsidian 側を `YYYY/MM/DD` 等に設定していると日付が空になる。frontmatter の date/created が無いノートで顕在化する。Obsidian 互換性の問題 | Obsidian の日付フォーマットを明示設定として取り込み、その形式の slug から日付を解決できる<br>frontmatter date/created が無くても設定形式に一致すれば日付が空にならない<br>複数形式の推測（ヒューリスティック）に依存しない |
+| 2 | I18N1 | docs プラグインの前後ナビが `Previous` / `Next` 固定で、ja ページでも英語表示になる問題を解消する | 未着手 | Small | 前後リンクの文言がロケールを見ずに英語固定。l10n の解決済み言語を利用して ja/en を切り替える必要がある。UX 上の契約不一致 | docs prev/next のラベルがページの解決済み言語（ja/en）に応じて切り替わる<br>ja ページで日本語ラベル、en ページで英語ラベルになることを検証するテストがある |
+| 3 | I18N4 | code-enhance のコピーラベル（`copyLabel` / `copiedLabel`）をプラグイン設定から渡せるようにする | 未着手 | Small | `CodeEnhanceClientOptions` は存在するが `codeEnhance()` と `createClientEntry` に publicConfig の経路が無く、既定の `Copy` / `Copied` を上書きできない。公開 API 契約の不足 | `copyLabel` / `copiedLabel` が publicConfig 経由でクライアントへ渡り、既定値を上書きできる<br>lightbox / text-fragment と同じ client config 契約に整合する |
+| 4 | UI4 | plugin-api.md が bodySlots / appendContentBodySlot を説明していない | 未着手 | Small | `docs/en/docs/plugins/docs.md` や各プラグイン README が「Plugin API の standard article body slot」を参照しているが、参照先の plugin-api.md に記述がない（ja も同様）。公開契約ドキュメントの乖離 | plugin-api.md（en/ja）に bodySlots / appendContentBodySlot / 標準 slot の契約が記述される<br>記述が現行実装・他 doc の参照先と一致する |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -34,6 +33,7 @@
 | OC4 | `pnpm build` の前提（`pnpm build:packages` の先行）を明文化・自動化する | Small | root の `build` を `pnpm build:packages && pnpm --filter @riebeckite/web build` に変更し、packages → apps/web の順を保証。`build:packages` が cli を含む公開 package を build するため個別の cli build は不要。クリーン checkout で `pnpm install` 後に `pnpm build` のみがパッケージビルドを先行させて成功することを確認 |
 | UI2 | daily-notes の Plugin 設定がウィジェットに反映されない問題を解消する | Medium | `getDailyNotes` が `options` 未指定時に `resolveDailyNotesOptionsFromConfig(config)` で登録済み `dailyNotesPlugin(options)` の options を解決するようにした。プラグイン名は `DAILY_NOTES_PLUGIN_NAME` に集約。apps/web と scaffold は `getDailyNotes({ manifest, config })` のままで config の `source` / `extract` / `widget.limit` / `dateFormat` / `locale` を反映し、明示 `options` は上書きとして優先する。設定解決と config 反映を検証するテストを追加（daily-notes 26 pass） |
 | OC2 | SSG 管轄外の出力（`dist/index.js`・クライアントのハッシュ付きアセット）と `public` の衝突を扱う | Medium | Vite 8 は `vite:prepare-out-dir` の `renderStart` で `publicDir` を `outDir` へコピーした後に Rollup/Vite のバンドル出力を書く。SSG 生成物は `collectSiteOwnedOutputPaths` で public 優先、`@hono/vite-build` の `dist/index.js` はバンドル出力のため public より後に書かれ public 側が無言で上書きされる。`findBuildOutputSiteCollisions` を追加し `generateBundle` でバンドル出力と public の衝突を検出して警告（ownership は「ビルド出力が public に優先、衝突は警告」）。クライアントのハッシュ付きアセットは内容ハッシュ名のため public と同名になるのは手動配置時のみで実害なしと判断。`ssg_plugin.test.ts` と `output_collision.test.ts` に検出・所有のテストを追加 |
+| UI3 | showcase の生成コードがコンパイル・実 build で検証されない問題を解消する | Medium | `scaffold_contracts.test.ts` に Contract 11 を追加し、全 preset の生成 TSX（`app/**` + `riebeckite.config.ts` / `vite.config.ts`）を esbuild（`bundle` / `write:false` / `packages:"external"`）でコンパイル検証するようにした。これにより showcase の `footerContent` が壊れていた実バグを検出し、`app-templates.ts` の slugRoute を `<LocalGraph>` の条件式と `<Backlinks>` を個別 child にし外側 brace を外す形（indexRoute の `afterContent` と同型）へ修正。実 build と生成 HTML の検証は Contract 1（starter）が担い、`scaffold_presets.test.ts` の文字列 assert は維持 |
 
 ## 実装メモ（agents 用）
 
@@ -43,9 +43,8 @@
 - 完了時は実装内容を 1 行で「完了済み」表へ移し、ID は引き継ぐ。
 - 各項目の完了条件は実装対象表の「完了条件」列を参照する。
 
-項目別メモ（UI3 / DN1 / I18N1 / I18N4 / UI4）:
+項目別メモ（DN1 / I18N1 / I18N4 / UI4）:
 
-- UI3: `packages/integrations/honox/test/scaffold_contracts.test.ts` の Contract 1 は starter のみ `npm install` → `riebeckite build` する。showcase 固有の分岐（`getDailyNotes` / `<DailyNotes>` / `getLocalGraph` / `<LocalGraph>`）は `packages/integrations/honox/test/scaffold_presets.test.ts` の文字列 assert のみでコンパイルされない。`join("")` の literal 混入は文字列テストを通過した実例がある。生成 TSX の compile/typecheck 契約と、代表 preset 1 つの実 build を組み合わせる。全 preset の install→フル build はコストが高いため必須にしない。
 - DN1: daily-notes の `resolveDailyNoteDate` は frontmatter `date` → `created` → slug の `YYYY-MM-DD` の順で日付を決める。`pathPattern` は slug の絞り込み用で日付源ではない。Obsidian の日付フォーマットを既定以外（`YYYY/MM/DD`、`YYYY.MM.DD` など）にしているノートは、frontmatter に date/created が無いと日付が空になる。Obsidian のフォーマット設定を取り込む。複数形式を当てずっぽうで解釈するヒューリスティックは採用しない。
 - I18N1: `packages/plugins/docs/src/render.ts` の `renderPrevNextLink` が `Previous` / `Next` を固定で使う。l10n の解決済み言語（ページの `l10n.lang`、`packages/plugins/docs/index.ts` で取得済み）を渡し、ja では「前/次」等へ切り替える。Plugin 側の変更なので `apps/web` の locale ヘルパーとは分離して設計する。
 - I18N4: `packages/plugins/code-enhance/src/types.ts` の `CodeEnhanceClientOptions`（`copyLabel` / `copiedLabel`）と `initCodeEnhance(options)` は存在するが、`code-enhance/index.ts` の `codeEnhance(options)` は `CodeEnhanceOptions` のみを受け取り、`clientEntries` も `createClientEntry("code-enhance", "initCodeEnhance")` で publicConfig を渡していない。lightbox（`packages/plugins/lightbox/index.ts` の `initLightboxFromOptions`）と同様に publicConfig 経由で公開する。

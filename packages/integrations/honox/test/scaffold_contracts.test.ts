@@ -4,7 +4,9 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { build as buildWithEsbuild } from "esbuild";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
+import { SCAFFOLD_PRESET_NAMES } from "../src/scaffold/presets.js";
 import {
   DEFAULT_PRESET,
   GITHUB_ACTIONS_SECRETS,
@@ -740,3 +742,48 @@ test("Contract 10: Getting Started documentation links are valid", () => {
     );
   }
 });
+
+// =============================================================================
+// CONTRACT 11: Every preset's generated sources compile
+// =============================================================================
+
+test("Contract 11: every preset's generated sources compile", async () => {
+  await withTemporaryDirectory(async (tmpDir) => {
+    for (const preset of SCAFFOLD_PRESET_NAMES) {
+      const targetDir = path.join(tmpDir, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory: targetDir, preset });
+      const entryPoints = [
+        ...(await collectTypeScriptSources(path.join(targetDir, "app"))),
+        path.join(targetDir, "riebeckite.config.ts"),
+        path.join(targetDir, "vite.config.ts"),
+      ];
+      await buildWithEsbuild({
+        absWorkingDir: targetDir,
+        entryPoints,
+        bundle: true,
+        write: false,
+        outdir: "esbuild-out",
+        packages: "external",
+        external: ["virtual:*"],
+        platform: "node",
+        format: "esm",
+        jsx: "automatic",
+        jsxImportSource: "hono/jsx",
+        logLevel: "silent",
+      });
+    }
+  });
+});
+
+async function collectTypeScriptSources(directory: string): Promise<string[]> {
+  const sources: string[] = [];
+  for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      sources.push(...(await collectTypeScriptSources(fullPath)));
+    } else if (/\.[cm]?tsx?$/.test(entry.name)) {
+      sources.push(fullPath);
+    }
+  }
+  return sources;
+}

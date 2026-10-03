@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { OutputDependency } from "../types/output_dependency.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
   CONTENT_BUILD_STATE_DIRECTORY,
@@ -108,7 +109,13 @@ function isContentBuildState(value: unknown): value is ContentBuildState {
 function isContentBuildStateShape(
   value: Record<string, unknown>,
 ): value is ContentBuildState {
-  if (!isRecord(value.entries) || !isRecord(value.contentIndex)) return false;
+  if (
+    !isRecord(value.entries) ||
+    !isRecord(value.contentIndex) ||
+    (value.outputs !== undefined && !isOutputDescriptors(value.outputs))
+  ) {
+    return false;
+  }
 
   return (
     Object.values(value.entries).every(
@@ -127,6 +134,49 @@ function isContentBuildStateShape(
     Object.values(value.contentIndex).every(
       (entry) => typeof entry === "string",
     )
+  );
+}
+
+function isOutputDescriptors(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (output) =>
+        isRecord(output) &&
+        (output.kind === "content" ||
+          output.kind === "redirect" ||
+          output.kind === "plugin-page" ||
+          output.kind === "generated") &&
+        isOutputPath(output.path) &&
+        typeof output.producer === "string" &&
+        Array.isArray(output.dependencies) &&
+        output.dependencies.every(isOutputDependency),
+    )
+  );
+}
+
+function isOutputPath(value: unknown): value is string {
+  if (
+    typeof value !== "string" ||
+    value.length === 0 ||
+    value.includes("\\") ||
+    value.includes("\0") ||
+    value.startsWith("/")
+  ) {
+    return false;
+  }
+  return value
+    .split("/")
+    .every((segment) => segment !== "." && segment !== "..");
+}
+
+function isOutputDependency(value: unknown): value is OutputDependency {
+  if (!isRecord(value) || typeof value.type !== "string") return false;
+  if (value.type === "global" || value.type === "unknown") return true;
+  return (
+    (value.type === "content" && typeof value.slug === "string") ||
+    (value.type === "tag" && typeof value.tag === "string") ||
+    (value.type === "folder" && typeof value.folder === "string")
   );
 }
 

@@ -96,6 +96,7 @@ export function l10n(options: L10nOptions) {
 
   return definePlugin({
     name: "l10n",
+    provides: ["content.localization"],
     outputDependencies: [{ type: "global" }],
     options,
     assets: [createStyleAsset("l10n")],

@@ -258,6 +258,20 @@ export function getLocalizedContent(
   return candidates.length === 1 ? (candidates[0] ?? null) : null;
 }
 
+export function getLanguageFromPath(
+  manifest: ContentManifest,
+  pathname: string,
+): string | undefined {
+  const firstSegment = pathname.split("/").filter(Boolean)[0];
+  if (!firstSegment) return undefined;
+  return manifest.discoverableEntries
+    .map((entry) => entry.publicLocation.metadata?.[LANGUAGE_METADATA_KEY])
+    .find(
+      (language) =>
+        language?.toLocaleLowerCase() === firstSegment.toLocaleLowerCase(),
+    );
+}
+
 function resolveOptions(options: L10nOptions) {
   const validation = validateOptions(options);
   if (validation.length > 0) throw new Error(validation.join("\n"));

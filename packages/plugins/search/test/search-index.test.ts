@@ -18,6 +18,7 @@ function entry(
   frontmatter: PostFrontmatter,
   html: string,
   tags: string[] = [],
+  aliases: string[] = [],
 ): ContentManifestEntry {
   const permalink = `/${slug}`;
   return {
@@ -34,6 +35,7 @@ function entry(
         : { visibility: "public", routable: true, discoverable: true },
     html,
     tags,
+    aliases,
     links: [],
     backlinks: [],
     assets: [],
@@ -100,6 +102,39 @@ test("buildSearchItems filters unpublished notes and extracts every field", () =
   });
   assert.equal(items[1]?.date, "2024-02-03T00:00:00.000Z");
   assert.equal(items[1]?.excerpt, "C");
+});
+
+test("buildSearchItems includes aliases only for discoverable targets", () => {
+  const manifest = manifestOf([
+    entry(
+      "public",
+      { publish: true, title: "Public" },
+      "<p>Public</p>",
+      [],
+      ["public alias"],
+    ),
+    entry(
+      "private",
+      { publish: false, title: "Private" },
+      "<p>Private</p>",
+      [],
+      ["private alias"],
+    ),
+  ]);
+
+  assert.deepEqual(buildSearchItems({ config: explicit, manifest }), [
+    {
+      slug: "public",
+      permalink: "/public",
+      title: "Public",
+      headings: [],
+      body: "Public",
+      excerpt: "Public",
+      tags: [],
+      aliases: ["public alias"],
+      date: null,
+    },
+  ]);
 });
 
 test("buildSearchItems falls back to the slug and accepts a title resolver", () => {

@@ -117,6 +117,14 @@ export function initSearch() {
     button.addEventListener("click", closeSearch);
   });
 
+  const initialQuery = new URLSearchParams(window.location.search).get(
+    "search",
+  );
+  if (initialQuery) {
+    input.value = initialQuery;
+    void openSearch();
+  }
+
   document.addEventListener("keydown", (event) => {
     if (isSearchShortcut(event)) {
       event.preventDefault();

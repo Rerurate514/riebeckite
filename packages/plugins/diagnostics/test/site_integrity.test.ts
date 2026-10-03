@@ -62,6 +62,39 @@ test("site integrity flags a directory-index plugin page sharing a content route
   assert(codes.includes("content-integrity:duplicate-public-location"));
 });
 
+test("site integrity identifies colliding plugin page producers", () => {
+  const manifest = manifestOf([]);
+  manifest.pageRoutes = [
+    { pathname: "/foo", pluginName: "first", pageType: "first-page" },
+    { pathname: "/foo/", pluginName: "second", pageType: "second-page" },
+  ];
+
+  const diagnostic = checkSiteIntegrity(manifest).find(
+    (item) => item.code === "content-integrity:duplicate-public-location",
+  );
+
+  assert.ok(diagnostic);
+  assert.match(diagnostic.message, /first:first-page/);
+  assert.match(diagnostic.message, /second:second-page/);
+});
+
+test("site integrity reports ambiguous README and index folder owners", () => {
+  const manifest = manifestOf([
+    entry("docs/README", "/docs/README"),
+    entry("docs/index", "/docs/index"),
+  ]);
+  const diagnostic = checkSiteIntegrity(manifest).find(
+    (item) => item.code === "content-integrity:ambiguous-folder-page-owner",
+  );
+
+  assert.ok(diagnostic);
+  assert.deepEqual(diagnostic.meta, {
+    folder: "docs",
+    readme: { slug: "docs/README", permalink: "/docs/README" },
+    index: { slug: "docs/index", permalink: "/docs/index" },
+  });
+});
+
 function entry(
   slug: string,
   permalink: string,
@@ -123,6 +156,8 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
     clientEntries: [],
     diagnostics: [],
     generatedOutputs: [],
+    folderLocations: new Map(),
+    pageRoutes: [],
     pagePaths: [],
   };
 }

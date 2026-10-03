@@ -15,12 +15,11 @@ import {
 function makeEntry(
   overrides: Omit<Partial<ContentManifestEntry>, "slug"> & { slug: string },
 ): ContentManifestEntry {
-  const permalink = overrides.slug === "index" ? "/" : `/${overrides.slug}`;
+  const permalink =
+    overrides.permalink ??
+    (overrides.slug === "index" ? "/" : `/${overrides.slug}`);
 
   return {
-    slug: overrides.slug,
-    permalink,
-    publicLocation: { slug: overrides.slug, permalink },
     title: "",
     frontmatter: {},
     html: "",
@@ -30,6 +29,12 @@ function makeEntry(
     backlinks: [],
     assets: [],
     ...overrides,
+    slug: overrides.slug,
+    permalink,
+    publicLocation: overrides.publicLocation ?? {
+      slug: overrides.slug,
+      permalink,
+    },
   };
 }
 
@@ -37,7 +42,9 @@ function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
   return {
     entries,
     publicEntries: entries,
+    discoverableEntries: entries,
     bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
+    folderLocations: new Map(),
   } as unknown as ContentManifest;
 }
 
@@ -88,7 +95,7 @@ test("omits the home crumb when no label is available", () => {
   assert.deepEqual(items, [{ name: "About", url: "/about" }]);
 });
 
-test("builds a crumb per folder segment, title-casing unknown folders", () => {
+test("builds text-only crumbs for folders with no public location", () => {
   const entry = makeEntry({
     slug: "docs/guide/intro",
     title: "Intro",
@@ -103,14 +110,18 @@ test("builds a crumb per folder segment, title-casing unknown folders", () => {
 
   assert.deepEqual(items, [
     { name: "My Site", url: "/" },
-    { name: "Docs", url: "/docs" },
-    { name: "Guide", url: "/docs/guide" },
+    { name: "Docs" },
+    { name: "Guide" },
     { name: "Intro", url: "/n/docs/guide/intro" },
   ]);
 });
 
-test("uses a folder index note's title for its crumb", () => {
-  const folder = makeEntry({ slug: "docs", title: "Documentation" });
+test("uses a README owner's title and public location for its crumb", () => {
+  const folder = makeEntry({
+    slug: "docs/README",
+    title: "Documentation",
+    permalink: "/manual/",
+  });
   const entry = makeEntry({
     slug: "docs/intro",
     title: "Intro",
@@ -124,7 +135,49 @@ test("uses a folder index note's title for its crumb", () => {
   });
 
   assert.equal(items[1]?.name, "Documentation");
-  assert.equal(items[1]?.url, "/docs");
+  assert.equal(items[1]?.url, "/manual/");
+});
+
+test("uses registered generated folder locations without synthesizing URLs", () => {
+  const entry = makeEntry({
+    slug: "docs/guide/intro",
+    title: "Intro",
+    permalink: "/manual/intro",
+  });
+  const manifest = makeManifest([entry]);
+  manifest.folderLocations.set("docs", { pathname: "/handbook/" });
+
+  const items = buildBreadcrumbItems({
+    manifest,
+    entry,
+    config,
+    homeLabel: "",
+  });
+
+  assert.deepEqual(items, [
+    { name: "My Site", url: "/" },
+    { name: "Docs", url: "/handbook/" },
+    { name: "Guide" },
+    { name: "Intro", url: "/manual/intro" },
+  ]);
+});
+
+test("does not expose draft folder owner titles or locations", () => {
+  const draftOwner = makeEntry({
+    slug: "docs/README",
+    title: "Private documentation",
+    permalink: "/private-docs/",
+    publishing: { visibility: "draft", routable: false, discoverable: false },
+  });
+  const entry = makeEntry({ slug: "docs/page", title: "Page" });
+  const items = buildBreadcrumbItems({
+    manifest: makeManifest([draftOwner, entry]),
+    entry,
+    config,
+    homeLabel: "",
+  });
+
+  assert.deepEqual(items[1], { name: "Docs" });
 });
 
 test("returns an empty trail for an empty slug and ignores stray slashes", () => {
@@ -152,7 +205,7 @@ test("returns an empty trail for an empty slug and ignores stray slashes", () =>
   });
   assert.deepEqual(
     items.map((item) => item.url),
-    ["/", "/docs", "/n/docs/intro"],
+    ["/", undefined, "/n/docs/intro"],
   );
 });
 

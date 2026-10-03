@@ -31,9 +31,11 @@ export function renderBreadcrumbNav(
         ? `<span class="${className}__current" aria-current="page">${escapeHtml(
             item.name,
           )}</span>`
-        : `<a class="${className}__link" href="${escapeHtmlAttribute(
-            item.url,
-          )}">${escapeHtml(item.name)}</a>`;
+        : !item.url
+          ? `<span class="${className}__text">${escapeHtml(item.name)}</span>`
+          : `<a class="${className}__link" href="${escapeHtmlAttribute(
+              item.url,
+            )}">${escapeHtml(item.name)}</a>`;
       const trailing = isLast
         ? ""
         : `<span class="${className}__separator" aria-hidden="true">${separator}</span>`;
@@ -59,7 +61,7 @@ export function buildBreadcrumbJsonLd(
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: buildAbsoluteUrl(config, item.url),
+      ...(item.url ? { item: buildAbsoluteUrl(config, item.url) } : {}),
     })),
   };
 }

@@ -105,6 +105,8 @@ export class ManifestBuilder {
       clientEntries: [],
       diagnostics: [],
       generatedOutputs: [],
+      folderLocations: new Map(),
+      pageRoutes: [],
       pagePaths: [],
     };
     return { ...manifest, graph: createContentGraph(manifest) };

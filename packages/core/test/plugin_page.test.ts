@@ -76,6 +76,43 @@ test("same-priority page matches fail rather than silently choosing a plugin", a
   );
 });
 
+test("records distinct directory-index page routes while runtime priority selects one", async () => {
+  const page = (name: string, priority: number, path: string) =>
+    definePlugin({
+      name,
+      pageTypes: [
+        {
+          id: `${name}-page`,
+          directoryIndex: true,
+          priority,
+          paths: [path],
+          resolve: ({ pathname }) =>
+            pathname === "/foo/"
+              ? { type: "unused", pathname, body: "" }
+              : null,
+        },
+      ],
+    });
+  const observed: string[] = [];
+  const observer = definePlugin({
+    name: "observer",
+    onManifestCreated: ({ manifest }) => {
+      observed.push(...manifest.pageRoutes.map((route) => route.pluginName));
+    },
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({
+      site: { title: "Test" },
+      plugins: [page("low", 0, "/foo"), page("high", 1, "/foo/"), observer],
+    }),
+  });
+
+  await manager.getManifest();
+
+  assert.deepEqual(observed, ["low", "high"]);
+  assert.equal((await manager.resolvePage("/foo"))?.pluginName, "high");
+});
+
 test("duplicate page type IDs fail during plugin resolution", async () => {
   const plugin = (name: string) =>
     definePlugin({
@@ -279,9 +316,9 @@ test("directory-index page type output carries its declared dependencies", async
   const manager = new ContentManager(source(), [], {
     config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
   });
-  const pageOutputs = (await manager.getOutputChangeSet()).affected.filter(
-    (output) => output.kind === "plugin-page",
-  );
+  const pageOutputs = (
+    await manager.getOutputChangeSet({ incremental: false })
+  ).affected.filter((output) => output.kind === "plugin-page");
 
   assert.deepEqual(
     pageOutputs.map((output) => output.path),

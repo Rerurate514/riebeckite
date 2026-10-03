@@ -79,6 +79,30 @@ test("builds a deterministic hierarchy from a docs root", async () => {
   );
 });
 
+test("treats README and index as equivalent section entries", async () => {
+  const manager = createManager({
+    "docs/README.md": "---\ntitle: Introduction\npublish: true\n---\n# Docs\n",
+    "docs/guide/README.md": "---\ntitle: Guide\npublish: true\n---\n# Guide\n",
+    "docs/guide/install.md":
+      "---\ntitle: Install\npublish: true\n---\n# Install\n",
+  });
+
+  const manifest = await manager.getManifest();
+  const navigation = buildDocsNavigation(
+    manifest.publicEntries,
+    resolveDocsOptions({ root: "docs" }),
+  );
+
+  assert.deepEqual(
+    navigation.map((item) => ({ title: item.title, href: item.href })),
+    [
+      { title: "Introduction", href: "/docs/README" },
+      { title: "Guide", href: "/docs/guide/README" },
+    ],
+  );
+  assert.equal(navigation[1]?.children[0]?.href, "/manual/install");
+});
+
 test("uses explicit order before title and path fallback", async () => {
   const manager = createManager({
     "docs/beta.md": "---\ntitle: Beta\npublish: true\n---\n# Beta\n",

@@ -95,9 +95,14 @@ export type {
   FolderEntryKind,
   FolderEntryResolution,
   FolderEntryScope,
+  FolderLocationResolution,
   ResolveFolderEntryOptions,
 } from "./src/content/folder_entry.js";
-export { resolveFolderEntry } from "./src/content/folder_entry.js";
+export {
+  resolveFolderEntry,
+  resolveFolderLocation,
+  resolveGeneratedFolderLocation,
+} from "./src/content/folder_entry.js";
 export type {
   ForceGraphLayoutOptions,
   GraphEdge,
@@ -186,6 +191,8 @@ export type {
   ContentManifestPluginClientEntry,
   ContentPublicLocation,
   ContentRedirect,
+  FolderLocation,
+  PluginPageRoute,
 } from "./src/types/content_manifest.js";
 export { appendContentBodySlot } from "./src/types/content_manifest.js";
 export type {

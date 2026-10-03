@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { resolveFolderEntry } from "../src/content/folder_entry.js";
+import {
+  resolveFolderEntry,
+  resolveFolderLocation,
+  resolveGeneratedFolderLocation,
+} from "../src/content/folder_entry.js";
 import type { PublishingVisibility } from "../src/content/publishing.js";
 import type {
   ContentManifest,
@@ -199,6 +203,70 @@ test("scheduled entries are treated as unpublished until their publish time", ()
   assert.deepEqual(resolution, { type: "none" });
 });
 
+test("resolves a markdown folder owner without treating folder.md as an owner", () => {
+  const readme = entry(`${FOLDER}/README`);
+  const resolution = resolveFolderLocation(
+    manifestOf(readme, entry(FOLDER)),
+    FOLDER,
+  );
+
+  assert.deepEqual(resolution, { type: "content", entry: readme });
+});
+
+test("resolves registered generated locations and preserves ambiguous owners", () => {
+  const generated = manifestOf(entry("docs/guide/page"));
+  generated.folderLocations.set(FOLDER, { pathname: "/handbook/" });
+  assert.deepEqual(resolveFolderLocation(generated, FOLDER), {
+    type: "generated",
+    pathname: "/handbook/",
+  });
+
+  const ambiguous = resolveFolderLocation(
+    manifestOf(entry(`${FOLDER}/README`), entry(`${FOLDER}/index`)),
+    FOLDER,
+  );
+  assert.equal(ambiguous.type, "ambiguous");
+});
+
+test("derives a generated folder location only when public descendants agree", () => {
+  const standard = manifestOf(entry("docs/guide/a"), entry("docs/guide/b"));
+  assert.equal(
+    resolveGeneratedFolderLocation(standard, "docs/guide"),
+    "/docs/guide/",
+  );
+
+  const localized = manifestOf(
+    {
+      ...entry("ja/docs/guide/a"),
+      permalink: "/docs/guide/a",
+      publicLocation: { slug: "ja/docs/guide/a", permalink: "/docs/guide/a" },
+    },
+    {
+      ...entry("ja/docs/guide/b"),
+      permalink: "/docs/guide/b",
+      publicLocation: { slug: "ja/docs/guide/b", permalink: "/docs/guide/b" },
+    },
+  );
+  assert.equal(
+    resolveGeneratedFolderLocation(localized, "ja/docs/guide"),
+    "/docs/guide/",
+  );
+
+  const ambiguous = manifestOf(
+    {
+      ...entry("docs/foo/a"),
+      permalink: "/articles/a",
+      publicLocation: { slug: "docs/foo/a", permalink: "/articles/a" },
+    },
+    {
+      ...entry("docs/foo/b"),
+      permalink: "/notes/b",
+      publicLocation: { slug: "docs/foo/b", permalink: "/notes/b" },
+    },
+  );
+  assert.equal(resolveGeneratedFolderLocation(ambiguous, "docs/foo"), null);
+});
+
 function candidateKinds(
   resolution: ReturnType<typeof resolveFolderEntry>,
 ): string[] {
@@ -253,6 +321,8 @@ function manifestOf(...entries: ContentManifestEntry[]): ContentManifest {
     clientEntries: [],
     diagnostics: [],
     generatedOutputs: [],
+    folderLocations: new Map(),
+    pageRoutes: [],
     pagePaths: [],
   };
 }

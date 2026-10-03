@@ -7,6 +7,7 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
+  PluginPageRoute,
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
 import type {
@@ -302,6 +303,32 @@ export class PluginRuntime {
       }
     }
     return [...new Set(paths)];
+  }
+
+  async getPageRoutes(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly PluginPageRoute[]> {
+    const routes: PluginPageRoute[] = [];
+    const context = { ...this.createContext(contentIndex), manifest };
+    for (const plugin of this.plugins()) {
+      for (const pageType of plugin.pageTypes ?? []) {
+        const declared = pageType.paths;
+        if (!declared) continue;
+        const paths =
+          typeof declared === "function"
+            ? await declared(this.createPluginContext(plugin, context))
+            : declared;
+        for (const pathname of paths) {
+          routes.push({
+            pathname: normalizePageTypePath(pathname, pageType),
+            pluginName: plugin.name,
+            pageType: pageType.id,
+          });
+        }
+      }
+    }
+    return routes;
   }
 
   async getPageOutputs(

@@ -47,6 +47,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
 
   return definePlugin({
     name: BREADCRUMBS_PLUGIN_NAME,
+    optional: ["content.folder-pages"],
     processedContentCache: {
       version: "breadcrumbs-v1",
       dependencyMode: "none",
@@ -57,7 +58,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
     onManifestCreated: (context) => {
       const { config, manifest } = context;
       if (!config) return;
-      for (const entry of manifest.entries) {
+      for (const entry of manifest.publicEntries) {
         if (entry.html.includes(BREADCRUMBS_ATTRIBUTE)) continue;
 
         const items = buildBreadcrumbItems({

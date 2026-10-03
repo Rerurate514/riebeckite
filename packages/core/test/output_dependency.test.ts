@@ -378,6 +378,8 @@ function manifest(
     clientEntries: [],
     diagnostics: [],
     generatedOutputs: [],
+    folderLocations: new Map(),
+    pageRoutes: [],
     pagePaths: [],
     ...options,
   };

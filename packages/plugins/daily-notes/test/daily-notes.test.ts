@@ -1,14 +1,19 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  buildOutputInventory,
   type ContentManifest,
   type ContentManifestEntry,
+  determineOutputChanges,
+  type OutputDependency,
+  type OutputDescriptor,
   type ResolvedRiebeckiteConfig,
   resolveConfig,
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import DailyNotes from "../components/daily-notes.js";
+import { dailyNotesPlugin } from "../index.ts";
 import {
   DEFAULT_DAILY_NOTES_DATE_FORMAT,
   DEFAULT_DAILY_NOTES_LOCALE,
@@ -52,6 +57,8 @@ function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
     entries,
     publicEntries: entries,
     discoverableEntries,
+    publicRedirects: new Map(),
+    generatedOutputs: [],
   } as unknown as ContentManifest;
 }
 
@@ -377,3 +384,155 @@ test("DailyNotes renders English labels and ISO dates", () => {
   assert.ok(html.includes("2024-01-05"), html);
   assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });
+
+test("dailyNotesPlugin declares a folder output dependency for the default directory", () => {
+  assert.deepEqual(dailyNotesPlugin().outputDependencies, [
+    { type: "folder", folder: "Daily" },
+  ]);
+});
+
+test("dailyNotesPlugin scopes its output dependency to a custom source directory", () => {
+  assert.deepEqual(
+    dailyNotesPlugin({ source: { directory: "Journal" } }).outputDependencies,
+    [{ type: "folder", folder: "Journal" }],
+  );
+});
+
+test("dailyNotesPlugin falls back to a global dependency for an empty directory", () => {
+  assert.deepEqual(
+    dailyNotesPlugin({ source: { directory: "" } }).outputDependencies,
+    [{ type: "global" }],
+  );
+});
+
+test("adding a nested daily note regenerates the index with only the plugin dependency", () => {
+  const dependencies = dailyNotesPlugin().outputDependencies;
+  assert.ok(dependencies);
+  const previousEntries = [
+    makeEntry({ slug: "index" }),
+    makeEntry({
+      slug: "Daily/2024-01-01",
+      frontmatter: { "daily-summary": "older" },
+    }),
+  ];
+  const currentEntries = [
+    ...previousEntries,
+    makeEntry({
+      slug: "Daily/2024/01/02",
+      frontmatter: { "daily-summary": "newer" },
+    }),
+  ];
+
+  const result = determineOutputChanges({
+    manifest: makeManifest(currentEntries),
+    previousState: previousOutputState(previousEntries, dependencies),
+    changeSet: {
+      added: ["Daily/2024/01/02.md"],
+      changed: [],
+      removed: [],
+      unchanged: [],
+    },
+    affectedContent: {
+      direct: new Set(["Daily/2024/01/02"]),
+      dependent: new Set(),
+    },
+    contentOutputDependencies: dependencies,
+  });
+
+  assert.deepEqual(paths(result.affected), [
+    "Daily/2024-01-01.html",
+    "Daily/2024/01/02.html",
+    "index.html",
+  ]);
+});
+
+test("changing a daily note's frontmatter date regenerates the index", () => {
+  const dependencies = dailyNotesPlugin().outputDependencies;
+  assert.ok(dependencies);
+  const previousEntries = [
+    makeEntry({ slug: "index" }),
+    makeEntry({
+      slug: "Daily/2024-01-01",
+      frontmatter: { "daily-summary": "note", date: "2024-01-01" },
+    }),
+  ];
+  const currentEntries = [
+    makeEntry({ slug: "index" }),
+    makeEntry({
+      slug: "Daily/2024-01-01",
+      frontmatter: { "daily-summary": "note", date: "2024-02-01" },
+    }),
+  ];
+
+  const result = determineOutputChanges({
+    manifest: makeManifest(currentEntries),
+    previousState: previousOutputState(previousEntries, dependencies),
+    changeSet: {
+      added: [],
+      changed: ["Daily/2024-01-01.md"],
+      removed: [],
+      unchanged: [],
+    },
+    affectedContent: {
+      direct: new Set(["Daily/2024-01-01"]),
+      dependent: new Set(),
+    },
+    contentOutputDependencies: dependencies,
+  });
+
+  assert.deepEqual(paths(result.affected), [
+    "Daily/2024-01-01.html",
+    "index.html",
+  ]);
+});
+
+test("a non-daily note change leaves the index unchanged", () => {
+  const dependencies = dailyNotesPlugin().outputDependencies;
+  assert.ok(dependencies);
+  const daily = makeEntry({
+    slug: "Daily/2024-01-01",
+    frontmatter: { "daily-summary": "note" },
+  });
+  const previousEntries = [
+    makeEntry({ slug: "index" }),
+    makeEntry({ slug: "Notes/a" }),
+    daily,
+  ];
+  const currentEntries = [
+    makeEntry({ slug: "index" }),
+    makeEntry({ slug: "Notes/a", title: "Changed" }),
+    daily,
+  ];
+
+  const result = determineOutputChanges({
+    manifest: makeManifest(currentEntries),
+    previousState: previousOutputState(previousEntries, dependencies),
+    changeSet: {
+      added: [],
+      changed: ["Notes/a.md"],
+      removed: [],
+      unchanged: [],
+    },
+    affectedContent: { direct: new Set(["Notes/a"]), dependent: new Set() },
+    contentOutputDependencies: dependencies,
+  });
+
+  assert.ok(!paths(result.affected).includes("index.html"));
+});
+
+function previousOutputState(
+  entries: ContentManifestEntry[],
+  dependencies: readonly OutputDependency[],
+) {
+  return {
+    version: 1,
+    entries: {},
+    contentIndex: {},
+    manifestEntries: entries,
+    outputs: buildOutputInventory(makeManifest(entries), [], dependencies),
+  };
+}
+
+function paths(outputs: readonly OutputDescriptor[]): string[] {
+  return outputs.map((output) => output.path).sort();
+}

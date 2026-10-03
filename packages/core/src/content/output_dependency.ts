@@ -233,10 +233,20 @@ function collectChangedFolders(
   );
   const folders = new Set<string>();
   for (const slug of changedContent) {
-    folders.add(folderOf(previousBySlug.get(slug)?.slug ?? slug));
-    folders.add(folderOf(currentBySlug.get(slug)?.slug ?? slug));
+    addFolderAncestors(folders, previousBySlug.get(slug)?.slug ?? slug);
+    addFolderAncestors(folders, currentBySlug.get(slug)?.slug ?? slug);
   }
   return folders;
+}
+
+function addFolderAncestors(folders: Set<string>, slug: string): void {
+  const segments = slug.split("/");
+  segments.pop();
+  while (true) {
+    folders.add(segments.join("/"));
+    if (segments.length === 0) return;
+    segments.pop();
+  }
 }
 
 function linkTargets(entry: ContentManifestEntry | undefined): string[] {
@@ -258,12 +268,6 @@ function addOutput(
 function normalizePublicPath(pathname: string): string {
   const path = `/${pathname.split("/").filter(Boolean).join("/")}`;
   return path === "/" ? path : path.replace(/\/$/, "");
-}
-
-function folderOf(slug: string): string {
-  const segments = slug.split("/");
-  segments.pop();
-  return segments.join("/");
 }
 
 function isMarkdownPath(path: string): boolean {

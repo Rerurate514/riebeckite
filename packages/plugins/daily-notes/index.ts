@@ -1,9 +1,13 @@
 import {
   createStyleAsset,
   definePlugin,
+  type OutputDependency,
   type RiebeckitePlugin,
 } from "@riebeckite/core";
-import type { DailyNotesOptions } from "./src/daily-notes.js";
+import {
+  type DailyNotesOptions,
+  DEFAULT_DIRECTORY,
+} from "./src/daily-notes.js";
 
 export { default as DailyNotes } from "./components/daily-notes.js";
 export type {
@@ -23,7 +27,7 @@ export { getDailyNotes } from "./src/daily-notes.server.js";
 
 /**
  * Registers the Daily Notes widget. Extraction options are consumed by
- * `getDailyNotes`; the plugin itself only wires the stylesheet.
+ * `getDailyNotes`; the plugin wires the stylesheet and output dependencies.
  */
 export function dailyNotesPlugin(
   options?: DailyNotesOptions,
@@ -32,6 +36,15 @@ export function dailyNotesPlugin(
     name: "daily-notes",
     options,
     cacheVersion: "1",
+    outputDependencies: resolveOutputDependencies(options),
     assets: [createStyleAsset("daily-notes")],
   });
+}
+
+function resolveOutputDependencies(
+  options: DailyNotesOptions | undefined,
+): readonly OutputDependency[] {
+  const directory = options?.source?.directory ?? DEFAULT_DIRECTORY;
+  if (directory.length === 0) return [{ type: "global" }];
+  return [{ type: "folder", folder: directory }];
 }

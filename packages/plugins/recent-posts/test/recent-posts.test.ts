@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { type ResolvedRiebeckiteConfig, resolveConfig } from "@riebeckite/core";
+import {
+  buildOutputInventory,
+  type ContentManifest,
+  type ContentManifestEntry,
+  determineOutputChanges,
+  type OutputDependency,
+  type OutputDescriptor,
+  type ResolvedRiebeckiteConfig,
+  resolveConfig,
+} from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import { getRecentPosts, RecentPosts, recentPostsPlugin } from "../index.ts";
@@ -164,6 +173,40 @@ test("recentPostsPlugin registers its stylesheet", () => {
   ]);
 });
 
+test("recentPostsPlugin declares a global output dependency", () => {
+  assert.deepEqual(recentPostsPlugin().outputDependencies, [
+    { type: "global" },
+  ]);
+});
+
+test("a post date change regenerates the index with only the plugin dependency", () => {
+  const dependencies = recentPostsPlugin().outputDependencies;
+  assert.ok(dependencies);
+  const previousEntries = [
+    entry("index"),
+    entry("post", { date: "2024-01-01" }),
+  ];
+  const currentEntries = [
+    entry("index"),
+    entry("post", { date: "2024-02-01" }),
+  ];
+
+  const result = determineOutputChanges({
+    manifest: manifest(currentEntries),
+    previousState: previousOutputState(previousEntries, dependencies),
+    changeSet: {
+      added: [],
+      changed: ["post.md"],
+      removed: [],
+      unchanged: ["index.md"],
+    },
+    affectedContent: { direct: new Set(["post"]), dependent: new Set() },
+    contentOutputDependencies: dependencies,
+  });
+
+  assert.deepEqual(paths(result.affected), ["index.html", "post.html"]);
+});
+
 test("RecentPosts renders nothing without posts", () => {
   assert.equal(RecentPosts({ posts: [] }), null);
 });
@@ -186,3 +229,49 @@ test("RecentPosts renders English labels and dates", () => {
   assert.ok(html.includes("01/05/2024"), html);
   assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });
+
+function manifest(entries: ContentManifestEntry[]): ContentManifest {
+  return {
+    entries,
+    publicEntries: entries,
+    publicRedirects: new Map(),
+    generatedOutputs: [],
+  } as unknown as ContentManifest;
+}
+
+function previousOutputState(
+  entries: ContentManifestEntry[],
+  dependencies: readonly OutputDependency[],
+) {
+  return {
+    version: 1,
+    entries: {},
+    contentIndex: {},
+    manifestEntries: entries,
+    outputs: buildOutputInventory(manifest(entries), [], dependencies),
+  };
+}
+
+function entry(
+  slug: string,
+  frontmatter: Record<string, unknown> = {},
+): ContentManifestEntry {
+  const permalink = slug === "index" ? "/" : `/${slug}`;
+  return {
+    slug,
+    permalink,
+    publicLocation: { slug, permalink },
+    title: slug,
+    frontmatter,
+    publishing: { visibility: "public", routable: true, discoverable: true },
+    html: "",
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+  };
+}
+
+function paths(outputs: readonly OutputDescriptor[]): string[] {
+  return outputs.map((output) => output.path).sort();
+}

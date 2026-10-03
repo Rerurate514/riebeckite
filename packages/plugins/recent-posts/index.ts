@@ -7,6 +7,7 @@ export { getRecentPosts } from "./src/recent-posts.server.js";
 export function recentPostsPlugin() {
   return definePlugin({
     name: "recent-posts",
+    outputDependencies: [{ type: "global" }],
     assets: [
       {
         pluginName: "recent-posts",

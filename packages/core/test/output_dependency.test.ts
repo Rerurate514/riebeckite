@@ -15,6 +15,7 @@ import type {
   ContentManifestEntry,
   ContentRedirect,
 } from "../src/types/content_manifest.js";
+import type { OutputDependency } from "../src/types/output_dependency.js";
 
 test("independent content edit affects own page and global outputs only", () => {
   const previous = manifest([entry("a"), entry("b")]);
@@ -139,6 +140,20 @@ test("add affects new page and collection or global outputs", () => {
     "folder.html",
     "folder/b.html",
   ]);
+});
+
+test("folder dependency affects outputs for nested descendants", () => {
+  const previous = manifest([entry("Daily"), entry("Daily/a")]);
+  const current = manifest([
+    entry("Daily"),
+    entry("Daily/a"),
+    entry("Daily/a/b/c"),
+  ]);
+  const result = changes(previous, current, { added: ["Daily/a/b/c.md"] }, [
+    pluginPage("index", [{ type: "folder", folder: "Daily" }]),
+  ]);
+
+  assert.deepEqual(paths(result.affected), ["Daily/a/b/c.html", "index.html"]);
 });
 
 test("delete reports removed page and affected derived outputs", () => {
@@ -274,6 +289,7 @@ function changes(
   currentManifest: ContentManifest,
   change: Partial<ContentChangeSet> & { dependent?: readonly string[] },
   pluginPageOutputs: readonly OutputDescriptor[] = [],
+  contentOutputDependencies: readonly OutputDependency[] = [],
 ) {
   const previousState: ContentBuildState = {
     version: CONTENT_BUILD_STATE_VERSION,
@@ -305,6 +321,7 @@ function changes(
           dependent: new Set(),
         },
         pluginPageOutputs,
+        contentOutputDependencies,
       }).affected,
     ],
   };
@@ -327,6 +344,7 @@ function changes(
       dependent: new Set(change.dependent ?? []),
     },
     pluginPageOutputs,
+    contentOutputDependencies,
   });
 }
 

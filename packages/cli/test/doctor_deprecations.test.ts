@@ -15,6 +15,7 @@ const config = {
     defaultOgImage: "",
     feed: { title: "Test", description: "", language: "en" },
   },
+  navigation: { header: [], footer: [] },
   content: {
     directory: "content",
     exclude: [],

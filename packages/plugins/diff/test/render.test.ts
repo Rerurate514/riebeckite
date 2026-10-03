@@ -54,7 +54,7 @@ test("renderDiffHistory falls back to an empty state", () => {
 
   assert.ok(html.includes("rr-diff-history__empty"));
   assert.ok(html.includes("No Git history is available"));
-  assert.ok(html.includes('"revisions":[]'));
+  assert.equal(html.includes("data-rr-diff-history-data"), false);
 });
 
 test("formatDiffDate formats a valid ISO timestamp with a fixed English abbreviation", () => {
@@ -69,7 +69,7 @@ test("formatDiffDate returns invalid values unchanged", () => {
   assert.equal(formatDiffDate("not-a-date"), "not-a-date");
 });
 
-test("renderDiffHistory escapes the payload and revision text", () => {
+test("renderDiffHistory references the external payload and escapes revision text", () => {
   const to = revision(
     "a".repeat(40),
     "a".repeat(7),
@@ -80,10 +80,15 @@ test("renderDiffHistory escapes the payload and revision text", () => {
   const revisions: MarkdownRevision[] = [{ ...to, markdown: "</script>" }];
   const selected: PostDiff = { from: null, to, lines: [] };
 
-  const html = renderDiffHistory({ revisions, selected });
+  const html = renderDiffHistory({
+    revisions,
+    selected,
+    payloadPath: "/_riebeckite/diff/unsafe</script>.json",
+  });
 
   assert.ok(html.includes("&lt;/script&gt;"));
   assert.ok(html.includes("\\u003c/script>"));
+  assert.equal(html.includes('"markdown"'), false);
   assert.ok(!html.includes("</script></span>"));
   assert.ok(!html.includes('"selected"'));
 });

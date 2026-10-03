@@ -3,7 +3,8 @@ import { createLineDiff } from "../src/diff/line_diff.js";
 import type { MarkdownRevision, PostDiff } from "../src/types.js";
 
 type DiffHistoryPayload = {
-  revisions: MarkdownRevision[];
+  path?: string;
+  revisions?: MarkdownRevision[];
 };
 
 export function initDiffHistory() {
@@ -16,10 +17,12 @@ export function initDiffHistory() {
 
 function initDiffHistoryRoot(root: HTMLElement) {
   const payload = readPayload(root);
-  if (!payload || payload.revisions.length === 0) return;
-  const revisions = new Map(
-    payload.revisions.map((revision) => [revision.hash, revision]),
-  );
+  if (!payload) return;
+  let revisions = revisionsMap(payload.revisions ?? []);
+  let revisionsRequest: Promise<ReadonlyMap<
+    string,
+    MarkdownRevision
+  > | null> | null = null;
 
   const fromSelect = root.querySelector<HTMLSelectElement>(
     "[data-rr-diff-from]",
@@ -34,24 +37,91 @@ function initDiffHistoryRoot(root: HTMLElement) {
     button.addEventListener("click", () => {
       const toHash = button.dataset.rrDiffSelect;
       if (!toHash) return;
-      const diff = createDiff(revisions, fromSelect.value, toHash);
-      if (!diff) return;
-      fromSelect.value = diff.from?.hash ?? "";
-      toSelect.value = diff.to.hash;
-      updateSelectedCommit(root, diff.to.hash);
-      renderPanel(panel, diff);
+      void updateDiff({
+        root,
+        panel,
+        getRevisions: () => revisions,
+        setRevisions: (loaded) => {
+          revisions = loaded;
+        },
+        load: () => {
+          revisionsRequest ??= loadRevisions(payload.path);
+          return revisionsRequest;
+        },
+        fromHash: fromSelect.value,
+        toHash,
+        fromSelect,
+        toSelect,
+      });
     });
   }
 
   const updateFromSelects = () => {
-    const diff = createDiff(revisions, fromSelect.value, toSelect.value);
-    if (!diff) return;
-    updateSelectedCommit(root, diff.to.hash);
-    renderPanel(panel, diff);
+    void updateDiff({
+      root,
+      panel,
+      getRevisions: () => revisions,
+      setRevisions: (loaded) => {
+        revisions = loaded;
+      },
+      load: () => {
+        revisionsRequest ??= loadRevisions(payload.path);
+        return revisionsRequest;
+      },
+      fromHash: fromSelect.value,
+      toHash: toSelect.value,
+      fromSelect,
+      toSelect,
+    });
   };
 
   fromSelect.addEventListener("change", updateFromSelects);
   toSelect.addEventListener("change", updateFromSelects);
+}
+
+async function updateDiff(input: {
+  root: HTMLElement;
+  panel: HTMLElement;
+  getRevisions: () => ReadonlyMap<string, MarkdownRevision>;
+  setRevisions: (revisions: ReadonlyMap<string, MarkdownRevision>) => void;
+  load: () => Promise<ReadonlyMap<string, MarkdownRevision> | null>;
+  fromHash: string;
+  toHash: string;
+  fromSelect: HTMLSelectElement;
+  toSelect: HTMLSelectElement;
+}) {
+  const { root, panel, fromHash, toHash, fromSelect, toSelect } = input;
+  const token = `${fromHash}\n${toHash}`;
+  root.dataset.rrDiffPending = token;
+  const loaded = await input.load();
+  if (loaded) input.setRevisions(loaded);
+  if (root.dataset.rrDiffPending !== token) return;
+  const diff = createDiff(input.getRevisions(), fromHash, toHash);
+  if (!diff) return;
+  fromSelect.value = diff.from?.hash ?? "";
+  toSelect.value = diff.to.hash;
+  updateSelectedCommit(root, diff.to.hash);
+  renderPanel(panel, diff);
+}
+
+async function loadRevisions(
+  path: string | undefined,
+): Promise<ReadonlyMap<string, MarkdownRevision> | null> {
+  if (!path) return null;
+  try {
+    const response = await fetch(path);
+    if (!response.ok) return null;
+    const payload = (await response.json()) as DiffHistoryPayload;
+    return revisionsMap(payload.revisions ?? []);
+  } catch {
+    return null;
+  }
+}
+
+function revisionsMap(
+  revisions: readonly MarkdownRevision[],
+): ReadonlyMap<string, MarkdownRevision> {
+  return new Map(revisions.map((revision) => [revision.hash, revision]));
 }
 
 function createDiff(

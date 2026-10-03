@@ -80,13 +80,27 @@ export function diff(options: DiffPluginOptions = {}) {
       );
       const revisions = await getMarkdownRevisions(api, filePath, history);
       const selected = await api.getCurrentDiff(filePath);
+      const payloadPath =
+        revisions.length > 0 ? diffPayloadPath(context.slug) : undefined;
+      if (payloadPath) {
+        context.output.emit({
+          path: payloadPath,
+          content: JSON.stringify({ revisions }).replace(/</g, "\\u003c"),
+          dependencies: [{ type: "content", slug: context.slug }],
+        });
+      }
 
       context.content.html += renderDiffHistory({
         revisions,
         selected,
+        payloadPath: payloadPath ? `/${payloadPath}` : undefined,
       });
     },
   });
+}
+
+function diffPayloadPath(slug: string): string {
+  return `_riebeckite/diff/${Buffer.from(slug).toString("base64url")}.json`;
 }
 
 export function createPostDiffApi(

@@ -229,6 +229,7 @@
   display: table;
   width: 100%;
   min-width: 42rem;
+  margin-block: 0;
   overflow-x: visible;
   border-collapse: collapse;
   font-family: var(

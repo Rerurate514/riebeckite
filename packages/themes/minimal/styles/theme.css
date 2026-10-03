@@ -312,7 +312,9 @@
 }
 
 /* ---- Tables: hairlines and a quiet, weighted header. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body table {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
+  table:not(:where(.rr-diff-history *)) {
   margin: 2rem 0;
   border: 0;
   font-size: 0.95em;

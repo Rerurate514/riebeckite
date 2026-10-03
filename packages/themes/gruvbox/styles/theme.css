@@ -394,7 +394,9 @@
 }
 
 /* ---- Tables: hairlines + a tinted header row ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body table {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  .rb-article-body
+  table:not(:where(.rr-diff-history *)) {
   margin: 1.6em 0;
   border: var(--rb-rule-width) solid var(--rb-color-border);
   border-collapse: collapse;

@@ -350,7 +350,7 @@
 /* Tables: hairline grid and a subtly tinted header row. */
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
   .rb-article-body
-  table {
+  table:not(:where(.rr-diff-history *)) {
   margin-block: 1.75rem;
   border: 1px solid var(--rb-color-border);
   border-radius: var(--rb-default-radius-sm);

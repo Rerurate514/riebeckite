@@ -204,6 +204,46 @@ test("showcase scaffold renders local-graph and daily-notes", async () => {
   });
 });
 
+test("generated scaffold code contains no un-interpolated template variables", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const leaked = [
+      "importLines",
+      "dataLines",
+      "propLines",
+      "afterChildren",
+      "footerChildren",
+      "titleHelper",
+      "dataBlock",
+      "hasScaffoldPlugin",
+      "articleTitleHelper",
+      "needsConfig",
+      "needsTitle",
+      "needsManifest",
+    ];
+    for (const preset of ["starter", "showcase", "minimal"] as const) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      for (const relative of [
+        "app/components/article.tsx",
+        "app/routes/index.tsx",
+        "app/routes/[slug{.+}].tsx",
+        "app/routes/_renderer.tsx",
+      ]) {
+        const source = await fs.readFile(
+          path.join(targetDirectory, relative),
+          "utf8",
+        );
+        for (const identifier of leaked) {
+          assert.ok(
+            !source.includes(identifier),
+            `${preset} ${relative} must not leak template variable ${identifier}`,
+          );
+        }
+      }
+    }
+  });
+});
+
 async function exists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);

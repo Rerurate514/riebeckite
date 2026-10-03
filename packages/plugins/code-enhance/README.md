@@ -63,9 +63,12 @@ export default defineConfig({
 | `commandPrompt` | `boolean` | `true` | `$` prompt prefix on terminal lines |
 | `wrapToggle` | `boolean` | `true` | Show the wrap toggle button |
 | `defaultCollapsed` | `boolean` | `false` | Start collapsed (requires `collapsible`) |
+| `copyLabel` | `string` | `"Copy"` | Copy button label forwarded to the client |
+| `copiedLabel` | `string` | `"Copied"` | Label after copying, forwarded to the client |
 
 ## Client
 
+`codeEnhance()` forwards `copyLabel` / `copiedLabel` to the client entry.
 `initCodeEnhance(options?)` installs a document-level click handler for copy,
 wrap, and collapse buttons.
 
@@ -79,6 +82,7 @@ wrap, and collapse buttons.
 - `codeEnhance(options?)` — plugin factory
 - `rehypeCodeEnhance(options?)` — rehype transform
 - `initCodeEnhance(options?)` — client initializer
+- `DEFAULT_COPY_LABEL`, `DEFAULT_COPIED_LABEL` — default copy labels
 - Types: `CodeEnhanceOptions`, `CodeEnhanceClientOptions`, `CodeEnhanceTheme`
 
 ## See also

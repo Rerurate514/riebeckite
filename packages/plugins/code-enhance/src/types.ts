@@ -5,7 +5,12 @@ export type CodeEnhanceTheme =
       dark: string;
     };
 
-export type CodeEnhanceOptions = {
+export type CodeEnhanceClientOptions = {
+  copyLabel?: string;
+  copiedLabel?: string;
+};
+
+export type CodeEnhanceOptions = CodeEnhanceClientOptions & {
   theme?: CodeEnhanceTheme;
   lineNumbers?: boolean;
   copyButton?: boolean;
@@ -17,11 +22,6 @@ export type CodeEnhanceOptions = {
   commandPrompt?: boolean;
   wrapToggle?: boolean;
   defaultCollapsed?: boolean;
-};
-
-export type CodeEnhanceClientOptions = {
-  copyLabel?: string;
-  copiedLabel?: string;
 };
 
 export type ElementNode = {

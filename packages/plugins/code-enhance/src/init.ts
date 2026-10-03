@@ -1,7 +1,7 @@
 import type { CodeEnhanceClientOptions } from "./types.js";
 
-const DEFAULT_COPY_LABEL = "Copy";
-const DEFAULT_COPIED_LABEL = "Copied";
+export const DEFAULT_COPY_LABEL = "Copy";
+export const DEFAULT_COPIED_LABEL = "Copied";
 
 export function initCodeEnhance(options: CodeEnhanceClientOptions = {}) {
   const copyLabel = options.copyLabel ?? DEFAULT_COPY_LABEL;

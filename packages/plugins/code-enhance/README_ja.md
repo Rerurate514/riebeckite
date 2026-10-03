@@ -38,14 +38,16 @@ export default defineConfig({
 | `collapsible` / `defaultCollapsed` | `false` | 折りたたみと初期状態 |
 | `terminal` / `commandPrompt` | `true` | 端末風表示と `$` の付与 |
 | `wrapToggle` | `true` | 折り返し切替を表示するか |
+| `copyLabel` / `copiedLabel` | `"Copy"` / `"Copied"` | コピー前後のボタン文言（クライアントへ渡す） |
 
-`initCodeEnhance({ copyLabel, copiedLabel })` では、コピー前後のボタン文言を変更できます。
+`codeEnhance({ copyLabel, copiedLabel })` はコピー前後のボタン文言をクライアントへ渡します。`initCodeEnhance({ copyLabel, copiedLabel })` を直接呼ぶ場合も同じ文言を指定できます。
 
 ## 公開 API
 
 - `codeEnhance(options?)` — プラグインファクトリ
 - `rehypeCodeEnhance(options?)` — Rehype 変換
 - `initCodeEnhance(options?)` — ブラウザ初期化関数
+- `DEFAULT_COPY_LABEL`、`DEFAULT_COPIED_LABEL` — 既定のコピー文言
 - `CodeEnhanceOptions`、`CodeEnhanceClientOptions`、`CodeEnhanceTheme` — 型
 
 ## 関連資料

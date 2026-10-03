@@ -6,8 +6,7 @@
 
 | 順番 | ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
 |---:|---|---|---|---|---|---|
-| 1 | I18N4 | code-enhance のコピーラベル（`copyLabel` / `copiedLabel`）をプラグイン設定から渡せるようにする | 未着手 | Small | `CodeEnhanceClientOptions` は存在するが `codeEnhance()` と `createClientEntry` に publicConfig の経路が無く、既定の `Copy` / `Copied` を上書きできない。公開 API 契約の不足 | `copyLabel` / `copiedLabel` が publicConfig 経由でクライアントへ渡り、既定値を上書きできる<br>lightbox / text-fragment と同じ client config 契約に整合する |
-| 2 | UI4 | plugin-api.md が bodySlots / appendContentBodySlot を説明していない | 未着手 | Small | `docs/en/docs/plugins/docs.md` や各プラグイン README が「Plugin API の standard article body slot」を参照しているが、参照先の plugin-api.md に記述がない（ja も同様）。公開契約ドキュメントの乖離 | plugin-api.md（en/ja）に bodySlots / appendContentBodySlot / 標準 slot の契約が記述される<br>記述が現行実装・他 doc の参照先と一致する |
+| 1 | UI4 | plugin-api.md が bodySlots / appendContentBodySlot を説明していない | 未着手 | Small | `docs/en/docs/plugins/docs.md` や各プラグイン README が「Plugin API の standard article body slot」を参照しているが、参照先の plugin-api.md に記述がない（ja も同様）。公開契約ドキュメントの乖離 | plugin-api.md（en/ja）に bodySlots / appendContentBodySlot / 標準 slot の契約が記述される<br>記述が現行実装・他 doc の参照先と一致する |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 
@@ -34,6 +33,7 @@
 | UI3 | showcase の生成コードがコンパイル・実 build で検証されない問題を解消する | Medium | `scaffold_contracts.test.ts` に Contract 11 を追加し、全 preset の生成 TSX（`app/**` + `riebeckite.config.ts` / `vite.config.ts`）を esbuild（`bundle` / `write:false` / `packages:"external"`）でコンパイル検証するようにした。これにより showcase の `footerContent` が壊れていた実バグを検出し、`app-templates.ts` の slugRoute を `<LocalGraph>` の条件式と `<Backlinks>` を個別 child にし外側 brace を外す形（indexRoute の `afterContent` と同型）へ修正。実 build と生成 HTML の検証は Contract 1（starter）が担い、`scaffold_presets.test.ts` の文字列 assert は維持 |
 | DN1 | daily-notes が Obsidian のカスタム日付フォーマットを解釈できない問題を解消する | Medium | ソース設定に `source.dateFormat`（Obsidian/Moment 形式、既定 `YYYY-MM-DD`）を追加し、slug の日付をこの形式ちょうどで解決するようにした。`resolveDailyNoteDate` は frontmatter `date` / `created` を優先し、無ければ設定形式で slug を解析する。`YYYY` / `YY`（69 未満は 2000 年代）/ `MM` / `M` / `DD` / `D` とリテラル（`[...]` 含む）に対応し、対応外の形式は他形式を推測せず日付なしにする。`DEFAULT_SLUG_DATE_FORMAT` を追加。設定形式の解決・非推測・frontmatter 優先を検証するテストを追加（daily-notes 31 pass）。README en/ja に説明を追記 |
 | I18N1 | docs プラグインの前後ナビが `Previous` / `Next` 固定で、ja ページでも英語表示になる問題を解消する | Small | `renderDocsPrevNext` / `renderPrevNextLink` に解決済み言語を渡し、`en` は `Previous` / `Next`、`ja` は `前へ` / `次へ`、ナビの aria-label も言語別（`Previous and next docs pages` / `前後のドキュメント`）に切り替えるようにした。`docs` プラグインは `entry.publicLocation.metadata?.["l10n.lang"]` を渡す。ja/en のラベル切り替えを検証するテストを追加（docs 9 pass） |
+| I18N4 | code-enhance のコピーラベル（`copyLabel` / `copiedLabel`）をプラグイン設定から渡せるようにする | Small | `CodeEnhanceOptions` を `CodeEnhanceClientOptions`（`copyLabel` / `copiedLabel`）を含む型にし、`codeEnhance(options)` が `createClientEntry("code-enhance", "initCodeEnhance", { copyLabel: options.copyLabel ?? DEFAULT_COPY_LABEL, copiedLabel: options.copiedLabel ?? DEFAULT_COPIED_LABEL })` で publicConfig を渡すようにした。`DEFAULT_COPY_LABEL` / `DEFAULT_COPIED_LABEL` を公開し、lightbox / text-fragment と同じ client config 契約に合わせた。既定値・上書き・片側のみ上書きを検証するテストを追加（code-enhance 8 pass）。README en/ja にオプションを追記。なお `check:docs` は `folder-pages` README の言語リンク欠落（既存・本変更と無関係）で失敗 |
 
 ## 実装メモ（agents 用）
 
@@ -43,7 +43,6 @@
 - 完了時は実装内容を 1 行で「完了済み」表へ移し、ID は引き継ぐ。
 - 各項目の完了条件は実装対象表の「完了条件」列を参照する。
 
-項目別メモ（I18N4 / UI4）:
+項目別メモ（UI4）:
 
-- I18N4: `packages/plugins/code-enhance/src/types.ts` の `CodeEnhanceClientOptions`（`copyLabel` / `copiedLabel`）と `initCodeEnhance(options)` は存在するが、`code-enhance/index.ts` の `codeEnhance(options)` は `CodeEnhanceOptions` のみを受け取り、`clientEntries` も `createClientEntry("code-enhance", "initCodeEnhance")` で publicConfig を渡していない。lightbox（`packages/plugins/lightbox/index.ts` の `initLightboxFromOptions`）と同様に publicConfig 経由で公開する。
 - UI4: `docs/en/docs/reference/plugin-api.md` と `docs/ja/docs/reference/plugin-api.md` に bodySlots / appendContentBodySlot / 標準 slot の記述がない。一方 `docs/en/docs/plugins/docs.md` は「standard article body slot mechanism described in Plugin API」として plugin-api.md を参照し、properties / changelog / l10n も同契約を利用する。`ContentBodySlot`（`packages/core/src/types/content_manifest.ts`）の標準 slot、`appendContentBodySlot`、Site が描画を決める境界を一次参照先へ追記する。`34ec8d6` で scaffold が標準 slot を消費するようになったため、記述内容は現行実装に合わせる。

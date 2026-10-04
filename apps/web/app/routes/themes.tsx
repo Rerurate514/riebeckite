@@ -192,7 +192,7 @@ export default createRoute(async (c) => {
 
 /**
  * A single sample article exercising the stable hooks a theme may style:
- * headings, prose, lists, code, table, a callout, a TOC, and backlinks.
+ * headings, lists, code, table, a callout, a TOC, and backlinks.
  */
 function SampleArticle(props: { title: string; id: string }) {
   const demoId = `sample-${props.id}`;
@@ -203,7 +203,7 @@ function SampleArticle(props: { title: string; id: string }) {
     "});",
   ];
   return (
-    <article class="rb-article prose">
+    <article class="rb-article">
       <header class="rb-article-header">
         <h1>{props.title}</h1>
       </header>

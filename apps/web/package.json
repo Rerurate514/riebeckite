@@ -93,7 +93,6 @@
     "@hono/vite-build": "^1.11.1",
     "@hono/vite-dev-server": "^0.25.2",
     "@riebeckite/cli": "workspace:*",
-    "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "catalog:",
     "esbuild": "^0.28.2",

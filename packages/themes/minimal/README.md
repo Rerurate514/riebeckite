@@ -11,7 +11,7 @@ no JavaScript.
 `minimalTheme()` creates a theme named `minimal`. Under the hood it exposes
 the full set of `--rb-*` semantic tokens and maps them into an `@theme` block,
 then layers a typographic character on top of the stable structural hooks
-(`.rb-article-*`, `.rb-sidebar`, `.prose`) and the plugin roots (`rr-*`) — all
+(`.rb-article-*`, `.rb-sidebar`) and the plugin roots (`rr-*`) — all
 scoped to `[data-theme-name="minimal"]` and kept outside `@layer base`.
 
 It is a Riebeckite-native implementation of the design principles behind

@@ -37,7 +37,7 @@ export default function Article(props: Props) {
   const leadHtml = articleHtml.lead || renderTitleHeading(props.title);
 
   return (
-    <ArticlePrimitive class="prose">
+    <ArticlePrimitive>
       <ArticleLayout>
         {props.asideContent}
         <ContentSlot

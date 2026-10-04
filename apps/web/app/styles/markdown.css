@@ -1,0 +1,197 @@
+@layer components {
+  .rb-article-body :where(h1, h2, h3, h4, h5, h6) {
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  .rb-article-body :where(h1) {
+    margin-block: 0 2em;
+    font-size: 2.25em;
+  }
+
+  .rb-article-body :where(h2) {
+    margin-block: 2em 1em;
+    font-size: 1.5em;
+  }
+
+  .rb-article-body :where(h3) {
+    margin-block: 1.6em 0.6em;
+    font-size: 1.25em;
+  }
+
+  .rb-article-body :where(h4) {
+    margin-block: 1.5em 0.5em;
+    font-size: 1em;
+  }
+
+  .rb-article-body :where(p) {
+    margin-block: 1.25em;
+  }
+
+  .rb-article-body :where(a) {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .rb-article-body :where(strong) {
+    font-weight: 600;
+  }
+
+  .rb-article-body :where(ul) {
+    list-style-type: disc;
+  }
+
+  .rb-article-body :where(ol) {
+    list-style-type: decimal;
+  }
+
+  .rb-article-body :where(ol[type="A"]) {
+    list-style-type: upper-alpha;
+  }
+
+  .rb-article-body :where(ol[type="a"]) {
+    list-style-type: lower-alpha;
+  }
+
+  .rb-article-body :where(ol[type="I"]) {
+    list-style-type: upper-roman;
+  }
+
+  .rb-article-body :where(ol[type="i"]) {
+    list-style-type: lower-roman;
+  }
+
+  .rb-article-body :where(ul, ol) {
+    margin-block: 1.25em;
+    padding-inline-start: 1.625em;
+  }
+
+  .rb-article-body :where(li) {
+    margin-block: 0.5em;
+  }
+
+  .rb-article-body :where(ul ul, ul ol, ol ul, ol ol) {
+    margin-block: 0.75em;
+  }
+
+  .rb-article-body :where(.task-list-item) {
+    list-style: none;
+  }
+
+  .rb-article-body :where(.task-list-item) > :where(input[type="checkbox"]) {
+    margin-inline-end: 0.5em;
+  }
+
+  .rb-article-body :where(blockquote) {
+    margin-block: 2em;
+    padding-inline-start: 1em;
+    border-inline-start: 2px solid var(--rb-color-border);
+  }
+
+  .rb-article-body :where(hr) {
+    margin-block: 3em;
+    border: 0;
+    border-block-start: 1px solid var(--rb-color-border);
+  }
+
+  .rb-article-body :where(:not(pre) > code) {
+    font-family: var(--rb-font-mono);
+    font-size: 0.875em;
+  }
+
+  .rb-article-body :where(pre):not(:where(.rr-code *)) {
+    margin-block: 1.5em;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    background: var(--rb-color-code-background);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-mono);
+    font-size: 0.875em;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  .rb-article-body :where(pre):not(:where(.rr-code *)) :where(code) {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .rb-article-body :where(table) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-block: 1.5em;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+
+  .rb-article-body :where(figure) {
+    margin-block: 2em;
+  }
+
+  .rb-article-body :where(figure > *) {
+    margin-block: 0;
+  }
+
+  .rb-article-body :where(figcaption) {
+    margin-block-start: 0.75em;
+    color: var(--rb-color-muted);
+    font-size: 0.875em;
+    line-height: 1.43;
+  }
+
+  .rb-article-body :where(dl) {
+    margin-block: 1.25em;
+  }
+
+  .rb-article-body :where(dt) {
+    margin-block-start: 1.25em;
+    font-weight: 600;
+  }
+
+  .rb-article-body :where(dd) {
+    margin-block-start: 0.5em;
+    padding-inline-start: 1.625em;
+  }
+
+  .rb-article-body :where(kbd) {
+    padding: 0.15em 0.4em;
+    border: 1px solid var(--rb-color-border);
+    border-radius: 4px;
+    background: var(--rb-color-surface);
+    color: inherit;
+    font-family: var(--rb-font-mono);
+    font-size: 0.875em;
+  }
+
+  .rb-article-body :where(img, picture, video) {
+    margin-block: 2em;
+  }
+
+  .rb-article-body :where(picture > img) {
+    margin-block: 0;
+  }
+
+  .rb-article-body > :where(:first-child) {
+    margin-block-start: 0;
+  }
+
+  .rb-article-body > :where(:last-child) {
+    margin-block-end: 0;
+  }
+
+  .rb-article-body :where(hr, h2, h3, h4) + * {
+    margin-block-start: 0;
+  }
+
+  @media (max-width: 48rem) {
+    .rb-article-body {
+      overflow-wrap: break-word;
+    }
+  }
+}

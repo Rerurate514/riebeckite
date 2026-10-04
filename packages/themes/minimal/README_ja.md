@@ -6,7 +6,7 @@
 
 ## 何をするテーマか
 
-`minimalTheme()` は名前が `minimal` のテーマを作ります。完全な `--rb-*` トークンを `@theme` に対応させたうえで、安定した構造フック（`.rb-article-*`、`.rb-sidebar`、`.prose`）とプラグインのルート（`rr-*`）にタイポグラフィの個性を重ねます。指定はすべて `[data-theme-name="minimal"]` にスコープし、`@layer base` の外に置いています。
+`minimalTheme()` は名前が `minimal` のテーマを作ります。完全な `--rb-*` トークンを `@theme` に対応させたうえで、安定した構造フック（`.rb-article-*`、`.rb-sidebar`）とプラグインのルート（`rr-*`）にタイポグラフィの個性を重ねます。指定はすべて `[data-theme-name="minimal"]` にスコープし、`@layer base` の外に置いています。
 
 [Minimal for Obsidian](https://github.com/kepano/obsidian-minimal) の設計思想（内容が主役、静かな操作画面、強いタイポグラフィ、控えめなアクセント、詰まっていても読みやすいクローム）を、Riebeckite のセマンティックトークンと安定フックに置き換えて実装したものです。Obsidian デスクトップアプリの見た目を模したり、Obsidian の変数や DOM があることを前提にしたりはしません。
 

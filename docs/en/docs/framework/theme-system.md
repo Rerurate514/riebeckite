@@ -262,9 +262,15 @@ stable hooks directly to give a site a visual character.
   `!important`.
 - Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
   `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`,
-  `.rb-article-footer`, `.rb-sidebar`, `.prose`, and the `rr-*` plugin roots
-  above. Do not invent new `rb-*` / `rr-*` class names; `.rr-*` BEM parts are
-  internal.
+  `.rb-article-footer`, `.rb-sidebar`, and the `rr-*` plugin roots above. Do
+  not invent new `rb-*` / `rr-*` class names; `.rr-*` BEM parts are internal.
+- `.rb-article-body` is where the Markdown semantic baseline lives: the
+  structural rules that keep Markdown readable after the CSS reset (list
+  markers and indentation, headings, paragraph and block spacing, tables,
+  figures, definitions, inline code, and preformatted blocks). A theme styles
+  the appearance of that baseline through `--rb-*` tokens and character rules;
+  it does not need to re-declare the structure. The baseline is layered, so a
+  theme's unlayered character rules and utility classes both win over it.
 - A theme may ship self-hosted webfonts (Latin subsets) in its package under
   `styles/fonts/`, reference them with relative `url()`, and include the font
   license file. Japanese and other CJK text should fall back to system font

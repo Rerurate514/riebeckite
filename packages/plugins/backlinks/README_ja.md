@@ -6,7 +6,7 @@
 
 ## できること
 
-`getPublishedBacklinks()` はコンテンツマニフェストから被リンクを集め、`isPublished` を通るノートだけをマニフェスト順で返します。`Backlinks` コンポーネントはその結果をフッターのリンク一覧として描画します。表示対象がなければ何も出力しません。
+`backlinksPlugin()` はコンテンツマニフェストから被リンクを集め、公開対象のノートだけをマニフェスト順で `article.footer` body slot に追加します。`Backlinks` コンポーネントはその結果をフッターのリンク一覧として描画します。表示対象がなければ何も出力しません。
 
 ## 設定と配置
 
@@ -20,7 +20,11 @@ export default defineConfig({
 });
 ```
 
-プラグイン登録後も、表示位置はアプリ側で決めます。記事ルートなどでマニフェストを取得し、現在の `slug` に対する被リンクを渡してください。
+プラグインは公開済みの被リンクがある記事へ自動的に出力を追加します。記事レイアウトで `article.footer` body slot を描画してください。
+
+### 独自の配置
+
+Plugin が追加する footer ではなく、アプリ側で表示位置を決める場合は、記事ルートなどでマニフェストを取得し、現在の `slug` に対する被リンクを渡してください。
 
 ```tsx
 import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
@@ -43,4 +47,3 @@ return <Article footerContent={<Backlinks backlinks={items} />} />;
 - [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README_ja.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)
-

@@ -6,7 +6,6 @@
 
 | ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
 |---|---|---|---|---|---|
-| TEST2 | generated starter site の backlinks contract failure を原因調査・修正する | 未着手 | Small | `scaffold_contracts.test.ts` の Contract 1 が、install / check / build 後に `rr-backlinks` を検出できず失敗する | generated starter fixture で再現し、Plugin 有効化、content graph / inbound link、scaffold config、slot/rendering、SSG output を順に追跡して根本原因を特定する。assertion の削除・弱体化はしない。現行正式 contract に応じた実装またはテストと regression test を残す |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

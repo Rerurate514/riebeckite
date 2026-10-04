@@ -7,10 +7,10 @@ current note.
 
 ## Overview
 
-`backlinks()` provides a `Backlinks` component that renders a footer list of
-incoming links. `getPublishedBacklinks()` resolves the incoming links of a
-note from the content manifest, keeps only notes whose `frontmatter` passes
-`isPublished`, and returns them sorted in manifest order.
+`backlinksPlugin()` appends a footer list of incoming links to the
+`article.footer` body slot. `getPublishedBacklinks()` resolves the incoming
+links of a note from the content manifest, keeps only publicly discoverable
+notes, and returns them sorted in manifest order.
 
 Without incoming links (or when none of them are published), the component
 renders nothing.
@@ -27,10 +27,11 @@ export default defineConfig({
 });
 ```
 
-`backlinksPlugin()` registers the plugin in the plugin list and bundles
-`style.css` into the app stylesheet.
+`backlinksPlugin()` adds backlinks for every public entry with published
+incoming links and bundles `style.css` into the app stylesheet. Render the
+`article.footer` body slot in the article layout to display the list.
 
-### Render the component
+### Custom placement
 
 ```tsx
 import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
@@ -46,7 +47,6 @@ const backlinks = getPublishedBacklinks({
   resolveTitle: getArticleTitle,
 });
 
-// ...in your route
 return (
   <Article
     footerContent={<Backlinks backlinks={backlinks} />}
@@ -56,7 +56,7 @@ return (
 
 ## Component
 
-`Backlinks({ backlinks })` renders a `<footer class="article-backlinks">` with
+`Backlinks({ backlinks })` renders a `<footer class="article-backlinks rr-backlinks">` with
 an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
 ## Exports

@@ -7,6 +7,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/integrations/webmention-cloudflare",
   "packages/plugins/alias",
   "packages/plugins/analytics",
+  "packages/plugins/archive",
   "packages/plugins/attachment",
   "packages/plugins/autocardlink",
   "packages/plugins/backlinks",
@@ -136,6 +137,11 @@ const packagePublishingMetadata = {
     description:
       "Storage-independent analytics foundation for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "analytics", "web-analytics"],
+  },
+  "packages/plugins/archive": {
+    description:
+      "Monthly archive listing pages built on the Core collection engine.",
+    keywords: ["riebeckite", "plugin", "archive", "collections"],
   },
   "packages/plugins/attachment": {
     description: "Attachment link and embed rendering for Obsidian wikilinks.",
@@ -551,6 +557,7 @@ export function expectedPackageMetadata(directory) {
     const hasStyle = ![
       "alias",
       "analytics",
+      "archive",
       "citations",
       "deploy",
       "diagnostics",
@@ -565,6 +572,7 @@ export function expectedPackageMetadata(directory) {
     const hasTests = [
       "alias",
       "analytics",
+      "archive",
       "backlinks",
       "breadcrumbs",
       "citations",

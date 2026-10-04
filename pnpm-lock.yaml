@@ -481,6 +481,16 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/plugins/archive:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/attachment:
     dependencies:
       '@riebeckite/core':

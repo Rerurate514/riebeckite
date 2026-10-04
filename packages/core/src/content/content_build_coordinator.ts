@@ -19,7 +19,10 @@ import {
   type ContentChangeSet,
   diffContentEntries,
 } from "./content_change_set.js";
-import type { CachedContentDependency } from "./content_dependency_tracker.js";
+import {
+  type CachedContentDependency,
+  LINK_LOCATION_PREFIX,
+} from "./content_dependency_tracker.js";
 import { fingerprintContentEntries } from "./content_fingerprint.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
 import { extractFrontmatterAliases } from "./content_metadata.js";
@@ -268,9 +271,10 @@ function collectDependencies(
           id: asset.path.replace(/\\/g, "/"),
         })),
         ...trackedDependencies
+          .map(toBuildDependency)
           .filter(
             (dependency): dependency is ContentBuildDependency =>
-              dependency.kind === "content" || dependency.kind === "file",
+              dependency !== null,
           )
           .map((dependency) => ({
             kind: dependency.kind,
@@ -284,6 +288,22 @@ function collectDependencies(
   ].toSorted((left, right) =>
     `${left.kind}:${left.id}`.localeCompare(`${right.kind}:${right.id}`),
   );
+}
+
+function toBuildDependency(dependency: {
+  readonly kind: "content" | "file" | "link";
+  readonly id: string;
+}): ContentBuildDependency | null {
+  if (dependency.kind === "content" || dependency.kind === "file") {
+    return { kind: dependency.kind, id: dependency.id };
+  }
+  if (dependency.id.startsWith(LINK_LOCATION_PREFIX)) {
+    return {
+      kind: "content",
+      id: dependency.id.slice(LINK_LOCATION_PREFIX.length),
+    };
+  }
+  return null;
 }
 
 function collectLinkTargets(

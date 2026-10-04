@@ -5,6 +5,9 @@ import type {
   ContentSourceEntry,
 } from "./content_source.js";
 
+export const LINK_INDEX_PREFIX = "index:";
+export const LINK_LOCATION_PREFIX = "location:";
+
 export type CachedContentDependency = {
   readonly kind: "content" | "file" | "link";
   readonly id: string;

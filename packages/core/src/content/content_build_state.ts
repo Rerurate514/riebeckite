@@ -2,7 +2,7 @@ import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 6;
+export const CONTENT_BUILD_STATE_VERSION = 7;
 
 /**
  * Build state lives under `<content directory>/.riebeckite`. That directory is

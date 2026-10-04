@@ -18,7 +18,10 @@ import {
   type ContentDependencyTracker,
   createContentDependencyTracker,
   fingerprintContent,
+  LINK_INDEX_PREFIX,
+  LINK_LOCATION_PREFIX,
 } from "./content/content_dependency_tracker.js";
+import { extractContentLinks } from "./content/content_links.js";
 import {
   CONTENT_CACHE_SCHEMA_VERSION,
   computeContentCacheKey,
@@ -277,6 +280,10 @@ export class Pipeline {
       html: String(file.value),
     };
 
+    if (embedDepth === 0 && sourceSlug && dependencyTracker) {
+      this.recordNoteLinkDependencies(markDownContent, dependencyTracker);
+    }
+
     if (sourceSlug && dependencyTracker) {
       this.reportContentDependencies(
         sourceSlug,
@@ -341,6 +348,29 @@ export class Pipeline {
       (slug) => this.permalinks.get(slug),
       this.options.isRoutable,
     );
+  }
+
+  private recordNoteLinkDependencies(
+    markdown: string,
+    dependencyTracker: ContentDependencyTracker,
+  ): void {
+    for (const link of extractContentLinks(markdown, this.contentIndex)) {
+      if (link.slug !== null && link.kind === "note") {
+        const id = `${LINK_LOCATION_PREFIX}${link.slug}`;
+        dependencyTracker.recordLinkResolution(
+          id,
+          this.resolveLinkDependency(id),
+        );
+        continue;
+      }
+      if (link.kind === "unresolved") {
+        const id = `${LINK_INDEX_PREFIX}${link.raw.toLowerCase()}`;
+        dependencyTracker.recordLinkResolution(
+          id,
+          this.resolveLinkDependency(id),
+        );
+      }
+    }
   }
 
   private use(
@@ -486,9 +516,6 @@ function normalizeMarkdownLinks(context: LinkNormalizationContext) {
     });
   };
 }
-
-const LINK_INDEX_PREFIX = "index:";
-const LINK_LOCATION_PREFIX = "location:";
 
 type LinkNormalizationContext = MarkdownPipelineContext & {
   recordLinkResolution?: (id: string, value: string) => void;

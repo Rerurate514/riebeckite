@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 import {
   ContentManager,
@@ -175,3 +178,200 @@ function memorySource(
     },
   };
 }
+
+type IncrementalResult = {
+  html: string;
+  publicSlugs: string[];
+  routablePermalinks: string[];
+};
+
+async function incrementalBuild(
+  source: Record<string, string>,
+  directory: string,
+): Promise<IncrementalResult> {
+  const config = resolveConfig({
+    site: { title: "Boundary" },
+    plugins: [obsidianMarkdown()],
+  });
+  config.buildDirectory = directory;
+  config.cache = { enabled: true, directory: path.join(directory, "cache") };
+  const content = new ContentManager(memorySource(source), [], { config });
+  try {
+    const manifest = await content.build({ incremental: true });
+    return {
+      html: manifest.bySlug.get("index")?.html ?? "",
+      publicSlugs: manifest.publicEntries.map((entry) => entry.slug).sort(),
+      routablePermalinks: [...manifest.byRoutablePermalink.keys()].sort(),
+    };
+  } finally {
+    await content.dispose();
+  }
+}
+
+async function transitionDirectory(name: string): Promise<string> {
+  return await fs.mkdtemp(path.join(os.tmpdir(), `riebeckite-${name}-`));
+}
+
+test("private to public invalidates cached dependents without leaking", async () => {
+  const directory = await transitionDirectory("obsidian-private-public");
+  const source: Record<string, string> = {
+    "index.md": [
+      "---",
+      "publish: true",
+      "---",
+      "",
+      "[[target]]",
+      "![[target]]",
+      "",
+    ].join("\n"),
+    "target.md": ["---", "publish: false", "---", "", PRIVATE_MARKER, ""].join(
+      "\n",
+    ),
+  };
+
+  const first = await incrementalBuild(source, directory);
+  assert.doesNotMatch(first.html, new RegExp(PRIVATE_MARKER));
+  assert.match(first.html, /class="wikilink wikilink-broken">target<\/a>/);
+  assert.doesNotMatch(first.html, /href="\/target"/);
+
+  source["target.md"] = [
+    "---",
+    "publish: true",
+    "---",
+    "",
+    PRIVATE_MARKER,
+    "",
+  ].join("\n");
+  const second = await incrementalBuild(source, directory);
+  const cold = await incrementalBuild(
+    source,
+    await transitionDirectory("obsidian-cold"),
+  );
+
+  assert.equal(second.html, cold.html);
+  assert.deepEqual(second.publicSlugs, cold.publicSlugs);
+  assert.deepEqual(second.routablePermalinks, cold.routablePermalinks);
+  assert.match(second.html, /href="\/target"/);
+  assert.ok(second.publicSlugs.includes("target"));
+});
+
+test("public to private removes cached embed content from dependents", async () => {
+  const directory = await transitionDirectory("obsidian-public-private");
+  const source: Record<string, string> = {
+    "index.md": [
+      "---",
+      "publish: true",
+      "---",
+      "",
+      "[[target]]",
+      "![[target]]",
+      "",
+    ].join("\n"),
+    "target.md": ["---", "publish: true", "---", "", PRIVATE_MARKER, ""].join(
+      "\n",
+    ),
+  };
+
+  const first = await incrementalBuild(source, directory);
+  assert.match(first.html, /href="\/target"/);
+  assert.match(first.html, new RegExp(PRIVATE_MARKER));
+
+  source["target.md"] = [
+    "---",
+    "publish: false",
+    "---",
+    "",
+    PRIVATE_MARKER,
+    "",
+  ].join("\n");
+  const second = await incrementalBuild(source, directory);
+  const cold = await incrementalBuild(
+    source,
+    await transitionDirectory("obsidian-cold"),
+  );
+
+  assert.equal(second.html, cold.html);
+  assert.deepEqual(second.publicSlugs, cold.publicSlugs);
+  assert.deepEqual(second.routablePermalinks, cold.routablePermalinks);
+  assert.doesNotMatch(second.html, new RegExp(PRIVATE_MARKER));
+  assert.doesNotMatch(second.html, /href="\/target"/);
+  assert.match(second.html, /class="wikilink wikilink-broken">target<\/a>/);
+});
+
+test("adding a resolving note invalidates cached unresolved wikilinks", async () => {
+  const directory = await transitionDirectory("obsidian-unresolved-resolved");
+  const source: Record<string, string> = {
+    "index.md": [
+      "---",
+      "publish: true",
+      "---",
+      "",
+      "[[target]]",
+      "![[target]]",
+      "",
+    ].join("\n"),
+  };
+
+  const first = await incrementalBuild(source, directory);
+  assert.match(first.html, /class="wikilink wikilink-broken">target<\/a>/);
+  assert.match(first.html, /\[\[Unresolved embed: target\]\]/);
+
+  source["target.md"] = [
+    "---",
+    "publish: true",
+    "---",
+    "",
+    PRIVATE_MARKER,
+    "",
+  ].join("\n");
+  const second = await incrementalBuild(source, directory);
+  const cold = await incrementalBuild(
+    source,
+    await transitionDirectory("obsidian-cold"),
+  );
+
+  assert.equal(second.html, cold.html);
+  assert.deepEqual(second.publicSlugs, cold.publicSlugs);
+  assert.deepEqual(second.routablePermalinks, cold.routablePermalinks);
+  assert.match(second.html, /href="\/target"/);
+  assert.doesNotMatch(second.html, /wikilink-broken/);
+});
+
+test("adding a private note keeps cached wikilinks broken without leaking", async () => {
+  const directory = await transitionDirectory("obsidian-unresolved-private");
+  const source: Record<string, string> = {
+    "index.md": [
+      "---",
+      "publish: true",
+      "---",
+      "",
+      "[[secret]]",
+      "![[secret]]",
+      "",
+    ].join("\n"),
+  };
+
+  const first = await incrementalBuild(source, directory);
+  assert.match(first.html, /class="wikilink wikilink-broken">secret<\/a>/);
+
+  source["secret.md"] = [
+    "---",
+    "publish: false",
+    "---",
+    "",
+    PRIVATE_MARKER,
+    "",
+  ].join("\n");
+  const second = await incrementalBuild(source, directory);
+  const cold = await incrementalBuild(
+    source,
+    await transitionDirectory("obsidian-cold"),
+  );
+
+  assert.equal(second.html, cold.html);
+  assert.deepEqual(second.publicSlugs, cold.publicSlugs);
+  assert.deepEqual(second.routablePermalinks, cold.routablePermalinks);
+  assert.doesNotMatch(second.html, new RegExp(PRIVATE_MARKER));
+  assert.doesNotMatch(second.html, /href="\/secret"/);
+  assert.match(second.html, /class="wikilink wikilink-broken">secret<\/a>/);
+});

@@ -17,6 +17,7 @@ Guides start from a task: "I want to publish an Obsidian vault", "I want a multi
 | Keep content and the site in separate repositories | [Content repositories](./content-repositories.md) |
 | Build a multilingual site | [Localization](./localization.md) |
 | Collect page views | [Analytics](./analytics.md) |
+| Replace the icon, logo, or link preview image | [Branding your site](./branding.md) |
 | Deploy | [Deployment](./deployment/README.md) |
 | Upgrade Riebeckite or read migration notes | [Upgrading](./upgrading.md) |
 

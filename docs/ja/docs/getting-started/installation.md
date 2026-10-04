@@ -69,6 +69,7 @@ npm install
 | `riebeckite.config.ts` | サイト名、URL、言語、Theme、Plugin の設定 |
 | `content/` | Markdown を置く場所 |
 | `app/` | 生成サイトのアプリ部分。通常は最初に触らなくてよい |
+| `public/` | favicon・ヘッダーのロゴ・リンクプレビュー画像などの静的ファイル。差し替えは [サイトのアイコンとロゴ](../guides/branding.md) |
 | `vite.config.ts` | ビルド設定。通常は変更しません |
 | `package.json` | 依存 package とコマンド |
 | `README.md` | 生成されたサイト向けの短い説明 |

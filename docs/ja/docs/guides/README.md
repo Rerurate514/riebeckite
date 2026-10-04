@@ -54,6 +54,12 @@ Site Application と Markdown Content を別の Repository で管理する構成
 
 Riebeckite Site に Analytics を導入する方法を説明します。
 
+### アイコンやロゴを差し替える
+
+[サイトのアイコンとロゴ](./branding.md)
+
+Site 固有の favicon、ヘッダーのロゴ、リンクプレビュー画像を差し替える方法を説明します。
+
 ## デプロイする
 
 デプロイ方法を選ぶ場合は、まず [Deployment](./deployment/README.md) を参照してください。
@@ -102,6 +108,7 @@ Riebeckite の Package を新しい Version へ更新するときの手順と、
 | Content と Site を別 Repository にする | [Content Repositories](./content-repositories.md) |
 | 多言語 Site にする | [Localization](./localization.md) |
 | Analytics を導入する | [Analytics](./analytics.md) |
+| サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.md) |
 | デプロイ方法を選ぶ | [Deployment](./deployment/README.md) |
 | Cloudflare Workers に公開する | [Cloudflare Workers](./deployment/cloudflare-workers.md) |
 | GitHub Actions で自動デプロイする | [GitHub Actions](./deployment/github-actions.md) |

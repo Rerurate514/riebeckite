@@ -72,6 +72,7 @@ If you are unsure which preset to choose, use the `starter` preset.
 | Already use Obsidian | [Use Your Obsidian Vault](./obsidian-vault.md) |
 | Add features (search, diagrams, embeds…) | [Add Your First Plugin](./first-plugin.md) |
 | Change appearance (colors, fonts, layout…) | [Change Your Theme](./first-theme.md) |
+| Replace the icon, logo, or link preview image | [Branding your site](../guides/branding.md) |
 
 ## Next
 

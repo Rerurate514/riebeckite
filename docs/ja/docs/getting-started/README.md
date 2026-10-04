@@ -72,6 +72,7 @@ preset で迷ったら、既定の `starter` を使ってください。
 | すでに Obsidian を使っている | [Obsidian Vault を使う](./obsidian-vault.md) |
 | 機能を追加したい (検索、図表、埋め込み…​) | [最初の Plugin を追加する](./first-plugin.md) |
 | 見た目を変えたい (色、フォント、レイアウト…​) | [最初の Theme を変える](./first-theme.md) |
+| アイコンやロゴを差し替えたい | [サイトのアイコンとロゴ](../guides/branding.md) |
 
 ## 次に読むページ
 

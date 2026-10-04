@@ -46,10 +46,6 @@ npm exec riebeckite dev
 
 `content/index.md` を編集します。たとえば見出しを `# My Digital Garden` に変更します。ファイルを保存するとブラウザで変更が反映されます。
 
-## favicon を変更する
-
-生成されたサイトには、`public/favicon.ico` と document head の `<link rel="icon" href="/favicon.ico" />` が含まれています。自分の favicon を使う場合は、`public/favicon.ico` を同じファイル名の ICO ファイルで置き換えてください。PNG や SVG を使う場合は、`app/routes/_renderer.tsx` の `href` と必要に応じて `type` 属性も変更します。
-
 ## 4. もう一つページを作る
 
 `content/hello.md` を作成します。`publish: true` が必須です。
@@ -104,5 +100,6 @@ push のたびに自動デプロイしたい場合は [Deployment](./deployment.
 - [Presets](./presets.md) - `starter`、`minimal`、`showcase`、`empty` を比較する
 - [First Content](./first-content.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.md) - 要件とセットアップの詳しい解説
+- [サイトのアイコンとロゴ →](../guides/branding.md) - アイコン・ヘッダーのロゴ・リンクプレビュー画像を差し替える
 - [Obsidian Vault →](../guides/obsidian.md) - Obsidian Vault をコンテンツソースとして使う
 - [Separate Content Repository →](../guides/content-repositories.md) - コンテンツを別リポジトリに分割

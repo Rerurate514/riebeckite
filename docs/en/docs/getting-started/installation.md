@@ -67,6 +67,7 @@ The `@riebeckite/*` packages are published to npm, so this is all it takes. The 
 | `riebeckite.config.ts` | Site name, URL, language, theme, and plugins. The first file to edit |
 | `content/` | Where your Markdown pages live |
 | `app/` | The site's appearance and routing. `routes/` and `components/` do most of the work |
+| `public/` | Static assets copied as-is: the favicon, header logo, and link preview image. See [Branding your site](../guides/branding.md) |
 | `vite.config.ts` | Build settings. You normally leave this alone |
 | `package.json` | The packages and the `riebeckite` commands |
 | `README.md` | A short note specific to the generated site |

@@ -8,6 +8,8 @@ Riebeckite publishes Markdown and Obsidian-style notes as a fast static site.
 
 New here? Start with **[Getting Started](./docs/getting-started/README.md)**. It takes you from `create-riebeckite` to a running site, your first Markdown page, and a first deployment.
 
+For every section in one place, see the [Documentation index](./docs/README.md).
+
 ```text
 Quick Start
   ↓

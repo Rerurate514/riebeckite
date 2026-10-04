@@ -1,4 +1,5 @@
 import type { ContentManifestEntry } from "./content_manifest.js";
+import type { PluginHeadTag } from "./plugin_head.js";
 import type { PostContent } from "./post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
@@ -32,10 +33,12 @@ export type PluginSeoExtension = {
     config: ResolvedRiebeckiteConfig,
     permalink: string,
     post: PostContent,
+    headTags?: readonly PluginHeadTag[],
   ): SeoMetadata;
   buildWebsiteSeo(
     config: ResolvedRiebeckiteConfig,
     input: WebsiteSeoInput,
+    headTags?: readonly PluginHeadTag[],
   ): SeoMetadata;
   buildAbsoluteUrl(config: ResolvedRiebeckiteConfig, pathOrUrl: string): string;
   buildPostUrl(config: ResolvedRiebeckiteConfig, permalink: string): string;

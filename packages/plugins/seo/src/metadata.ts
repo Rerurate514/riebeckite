@@ -1,4 +1,5 @@
 import type {
+  PluginHeadTag,
   PostContent,
   ResolvedRiebeckiteConfig,
   SeoMetadata,
@@ -15,6 +16,7 @@ export function buildArticleSeo(
   options: SeoPluginOptions,
   permalink: string,
   post: PostContent,
+  headTags?: readonly PluginHeadTag[],
 ): SeoMetadata {
   const siteName = getSiteName(config, options);
   const title = getArticleTitle(config, permalink, post.frontmatter.title);
@@ -37,10 +39,34 @@ export function buildArticleSeo(
   const modifiedTime = getIsoDate(post.frontmatter.updated) ?? publishedTime;
   const tags = normalizeTags(post.frontmatter.tags);
   const readingTimeMinutes = calculateReadingTime(post.html);
-  const breadcrumb = buildBreadcrumbSchema(config, [
-    { name: siteName, url: buildAbsoluteUrl(config, "/") },
-    { name: title, url: canonicalUrl },
-  ]);
+  const jsonLd: Record<string, unknown>[] = [
+    removeUndefined({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: title,
+      description,
+      url: canonicalUrl,
+      image: imageUrl ? [imageUrl] : undefined,
+      datePublished: publishedTime,
+      dateModified: modifiedTime,
+      author: config.site.author
+        ? { "@type": "Person", name: config.site.author }
+        : undefined,
+      publisher: { "@type": "Organization", name: siteName },
+      keywords: tags.length > 0 ? tags.join(", ") : undefined,
+      timeRequired: readingTimeMinutes ? `PT${readingTimeMinutes}M` : undefined,
+      inLanguage: getHtmlLanguage(config),
+    }),
+  ];
+
+  if (!hasBreadcrumbListHeadTag(headTags)) {
+    jsonLd.push(
+      buildBreadcrumbSchema(config, [
+        { name: siteName, url: buildAbsoluteUrl(config, "/") },
+        { name: title, url: canonicalUrl },
+      ]),
+    );
+  }
 
   return {
     title: buildPageTitle(siteName, title),
@@ -53,28 +79,7 @@ export function buildArticleSeo(
     modifiedTime,
     tags,
     readingTimeMinutes,
-    jsonLd: [
-      removeUndefined({
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: title,
-        description,
-        url: canonicalUrl,
-        image: imageUrl ? [imageUrl] : undefined,
-        datePublished: publishedTime,
-        dateModified: modifiedTime,
-        author: config.site.author
-          ? { "@type": "Person", name: config.site.author }
-          : undefined,
-        publisher: { "@type": "Organization", name: siteName },
-        keywords: tags.length > 0 ? tags.join(", ") : undefined,
-        timeRequired: readingTimeMinutes
-          ? `PT${readingTimeMinutes}M`
-          : undefined,
-        inLanguage: getHtmlLanguage(config),
-      }),
-      breadcrumb,
-    ],
+    jsonLd,
   };
 }
 
@@ -82,6 +87,7 @@ export function buildWebsiteSeo(
   config: ResolvedRiebeckiteConfig,
   options: SeoPluginOptions,
   input: WebsiteSeoInput,
+  headTags?: readonly PluginHeadTag[],
 ): SeoMetadata {
   const siteName = getSiteName(config, options);
   const canonicalUrl = buildAbsoluteUrl(config, input.path);
@@ -89,6 +95,24 @@ export function buildWebsiteSeo(
   const imageUrl = buildImageUrl(config, options);
   const title =
     input.kind === "tag" ? input.title : buildPageTitle(siteName, input.title);
+  const jsonLd: Record<string, unknown>[] = [
+    removeUndefined({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: siteName,
+      description,
+      url: canonicalUrl,
+      inLanguage: getHtmlLanguage(config),
+    }),
+  ];
+
+  if (!hasBreadcrumbListHeadTag(headTags)) {
+    jsonLd.push(
+      buildBreadcrumbSchema(config, [
+        { name: siteName, url: buildAbsoluteUrl(config, "/") },
+      ]),
+    );
+  }
 
   return {
     title,
@@ -98,19 +122,7 @@ export function buildWebsiteSeo(
     type: "website",
     noindex: false,
     tags: [],
-    jsonLd: [
-      removeUndefined({
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: siteName,
-        description,
-        url: canonicalUrl,
-        inLanguage: getHtmlLanguage(config),
-      }),
-      buildBreadcrumbSchema(config, [
-        { name: siteName, url: buildAbsoluteUrl(config, "/") },
-      ]),
-    ],
+    jsonLd,
   };
 }
 
@@ -164,4 +176,17 @@ function getIsoDate(value: unknown): string | undefined {
   if (typeof value !== "string" || !value.trim()) return undefined;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
+function hasBreadcrumbListHeadTag(
+  headTags: readonly PluginHeadTag[] | undefined,
+): boolean {
+  return (
+    headTags?.some(
+      (tag) =>
+        tag.tag === "script" &&
+        typeof tag.children === "string" &&
+        tag.children.includes('"@type":"BreadcrumbList"'),
+    ) ?? false
+  );
 }

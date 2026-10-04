@@ -4,7 +4,6 @@ import {
   riebeckiteSsgParams,
   ssgEnumerableHandler,
 } from "@riebeckite/honox/server";
-import { hasBreadcrumbHeadTag } from "@riebeckite/plugin-breadcrumbs";
 import {
   extractTableOfContents,
   TableOfContents,
@@ -13,7 +12,7 @@ import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
 import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
-import { buildArticleSeo, buildWebsiteSeo, type SeoMetadata } from "../lib/seo";
+import { buildArticleSeo, buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
@@ -34,11 +33,14 @@ export default createRoute(
     if (route.kind === "page") {
       c.set(
         "seo",
-        buildWebsiteSeo({
-          title: route.page.title ?? "",
-          description: route.page.description ?? "",
-          path: route.page.pathname,
-        }),
+        buildWebsiteSeo(
+          {
+            title: route.page.title ?? "",
+            description: route.page.description ?? "",
+            path: route.page.pathname,
+          },
+          route.page.headTags,
+        ),
       );
       c.set("headTags", route.page.headTags ?? []);
       return c.render(
@@ -49,14 +51,10 @@ export default createRoute(
 
     const post = await content.getProcessedContent(slug);
     const tableOfContents = extractTableOfContents(post.html ?? "");
-    const seo = buildArticleSeo(route.entry.permalink, post);
-    // The breadcrumbs plugin contributes the hierarchical BreadcrumbList as a
-    // head tag; drop the seo plugin's two-level placeholder for this entry so
-    // the page carries a single BreadcrumbList entity.
-    if (hasBreadcrumbHeadTag(route.entry.headTags)) {
-      seo.jsonLd = withoutBreadcrumbList(seo.jsonLd);
-    }
-    c.set("seo", seo);
+    c.set(
+      "seo",
+      buildArticleSeo(route.entry.permalink, post, route.entry.headTags),
+    );
     c.set("headTags", route.entry.headTags ?? []);
     c.set("htmlLanguage", route.entry.publicLocation.metadata?.["l10n.lang"]);
 
@@ -76,11 +74,3 @@ export default createRoute(
     );
   }),
 );
-
-/** Removes the seo plugin's placeholder BreadcrumbList from article JSON-LD. */
-function withoutBreadcrumbList(
-  jsonLd: SeoMetadata["jsonLd"],
-): SeoMetadata["jsonLd"] {
-  if (!Array.isArray(jsonLd)) return jsonLd;
-  return jsonLd.filter((schema) => schema?.["@type"] !== "BreadcrumbList");
-}

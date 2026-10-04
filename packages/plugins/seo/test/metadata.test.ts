@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  type PluginHeadTag,
   type PostContent,
   type ResolvedRiebeckiteConfig,
   resolveConfig,
@@ -169,4 +170,54 @@ test("buildWebsiteSeo breadcrumbs contain only the site root", () => {
       },
     ],
   });
+});
+
+function breadcrumbHeadTag(): PluginHeadTag {
+  return {
+    tag: "script",
+    attrs: { type: "application/ld+json" },
+    children: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [],
+    }),
+  };
+}
+
+test("buildArticleSeo omits its BreadcrumbList when headTags already provide one", () => {
+  const result = buildArticleSeo(
+    config,
+    {},
+    "/posts/hello",
+    post({ title: "Hello" }, "<p>Body</p>"),
+    [breadcrumbHeadTag()],
+  );
+
+  assert.equal(result.jsonLd?.length, 1);
+  assert.equal(result.jsonLd?.[0]?.["@type"], "BlogPosting");
+});
+
+test("buildArticleSeo keeps its BreadcrumbList when headTags lack one", () => {
+  const result = buildArticleSeo(
+    config,
+    {},
+    "/posts/hello",
+    post({ title: "Hello" }, "<p>Body</p>"),
+    [{ tag: "link", attrs: { rel: "alternate", href: "/en" } }],
+  );
+
+  assert.equal(result.jsonLd?.length, 2);
+  assert.equal(result.jsonLd?.[1]?.["@type"], "BreadcrumbList");
+});
+
+test("buildWebsiteSeo omits its BreadcrumbList when headTags already provide one", () => {
+  const result = buildWebsiteSeo(
+    config,
+    {},
+    { title: "Notes", path: "/notes" },
+    [breadcrumbHeadTag()],
+  );
+
+  assert.equal(result.jsonLd?.length, 1);
+  assert.equal(result.jsonLd?.[0]?.["@type"], "WebSite");
 });

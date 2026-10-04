@@ -34,7 +34,7 @@ export default defineConfig({
 
 ## 記事の frontmatter が出力を決める
 
-`buildArticleSeo()` は記事タイトル、説明、canonical URL、OGP 画像、公開・更新日時、タグ、読了時間を組み立て、`BlogPosting` と `BreadcrumbList` の JSON-LD を作ります。値は次の順で補完されます。
+`buildArticleSeo()` は記事タイトル、説明、canonical URL、OGP 画像、公開・更新日時、タグ、読了時間を組み立て、`BlogPosting` と `BreadcrumbList` の JSON-LD を作ります。呼び出し側がページの `headTags` を渡し、そこに BreadcrumbList（breadcrumbs プラグインが提供するものなど）が既にある場合、重複を避けるためこのプラグイン側の BreadcrumbList は省略します。値は次の順で補完されます。
 
 | フィールド | 用途 |
 | --- | --- |

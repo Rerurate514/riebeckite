@@ -56,10 +56,15 @@ export default defineConfig({
 - `tags`, `readingTimeMinutes`
 - JSON-LD: `BlogPosting` and `BreadcrumbList`
 
+Pass the page's `headTags` when they already include a BreadcrumbList (for
+example contributed by the breadcrumbs plugin) and this plugin omits its own
+list, so the page keeps a single BreadcrumbList entity.
+
 ### Websites (`buildWebsiteSeo`)
 
 Title, description, canonical URL, default image, and JSON-LD `WebSite` +
-`BreadcrumbList` for index, tag, and other non-article pages.
+`BreadcrumbList` for index, tag, and other non-article pages. The
+BreadcrumbList is omitted under the same `headTags` condition as articles.
 
 ## Feeds, sitemap, and robots
 

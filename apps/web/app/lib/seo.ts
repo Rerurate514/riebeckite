@@ -1,4 +1,5 @@
 import type {
+  PluginHeadTag,
   PluginSeoExtension,
   PostContent,
   SeoMetadata,
@@ -22,17 +23,24 @@ export const renderSitemap = seoProvider.renderSitemap;
 export function buildArticleSeo(
   permalink: string,
   post: PostContent,
+  headTags?: readonly PluginHeadTag[],
 ): SeoMetadata {
-  return seoProvider.buildArticleSeo(config, permalink, post);
+  return seoProvider.buildArticleSeo(config, permalink, post, headTags);
 }
 
-export function buildIndexSeo(post?: PostContent): SeoMetadata {
-  return buildWebsiteSeo({
-    title: config.site.title,
-    description: post ? getDescription(post) : config.site.description,
-    path: "/",
-    kind: "index",
-  });
+export function buildIndexSeo(
+  post?: PostContent,
+  headTags?: readonly PluginHeadTag[],
+): SeoMetadata {
+  return buildWebsiteSeo(
+    {
+      title: config.site.title,
+      description: post ? getDescription(post) : config.site.description,
+      path: "/",
+      kind: "index",
+    },
+    headTags,
+  );
 }
 
 export function buildTagSeo(
@@ -61,13 +69,16 @@ export function buildArchiveSeo(
   });
 }
 
-export function buildWebsiteSeo(input: {
-  title: string;
-  description?: string;
-  path: string;
-  kind?: "index" | "tag" | "website";
-}): SeoMetadata {
-  return seoProvider.buildWebsiteSeo(config, input);
+export function buildWebsiteSeo(
+  input: {
+    title: string;
+    description?: string;
+    path: string;
+    kind?: "index" | "tag" | "website";
+  },
+  headTags?: readonly PluginHeadTag[],
+): SeoMetadata {
+  return seoProvider.buildWebsiteSeo(config, input, headTags);
 }
 
 export function buildAbsoluteUrl(pathOrUrl: string): string {

@@ -23,16 +23,19 @@ export const __importing_islands = true;
 
 export default jsxRenderer(({ children }, c) => {
   const { site } = config;
+  const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
   const seo =
     c.get("seo") ??
-    buildWebsiteSeo({
-      title: site.title,
-      description: site.description,
-      path: c.req.path,
-    });
+    buildWebsiteSeo(
+      {
+        title: site.title,
+        description: site.description,
+        path: c.req.path,
+      },
+      headTags,
+    );
   const twitterCard = seo.imageUrl ? "summary_large_image" : "summary";
   const themeStyle = getThemeStyle();
-  const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
 
   return (
     <html

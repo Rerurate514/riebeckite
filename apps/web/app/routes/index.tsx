@@ -25,11 +25,14 @@ export default createRoute(async (c) => {
   if (route.kind === "page") {
     c.set(
       "seo",
-      buildWebsiteSeo({
-        title: route.page.title ?? "",
-        description: route.page.description ?? "",
-        path: route.page.pathname,
-      }),
+      buildWebsiteSeo(
+        {
+          title: route.page.title ?? "",
+          description: route.page.description ?? "",
+          path: route.page.pathname,
+        },
+        route.page.headTags,
+      ),
     );
     c.set("headTags", route.page.headTags ?? []);
     return c.render(
@@ -48,7 +51,7 @@ export default createRoute(async (c) => {
   });
   const dailyNotes = getDailyNotes({ manifest, config });
   const tableOfContents = extractTableOfContents(post.html ?? "");
-  c.set("seo", buildIndexSeo(post));
+  c.set("seo", buildIndexSeo(post, indexEntry.headTags));
   c.set("headTags", indexEntry.headTags ?? []);
   c.set("htmlLanguage", indexEntry.publicLocation.metadata?.["l10n.lang"]);
 

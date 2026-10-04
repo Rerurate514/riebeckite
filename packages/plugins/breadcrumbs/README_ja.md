@@ -32,11 +32,11 @@ JavaScript は不要です。
 `entry.headTags` を描画します）。アイテムの URL は設定の `baseUrl` に基づき
 絶対 URL に変換されます。
 
-`seo` プラグインも有効な場合、seo 側の記事 JSON-LD に 2 階層の
-BreadcrumbList（`ホーム / ノート`）が含まれます。この 2 つは共存するため、
-BreadcrumbList の重複を避けたい Site は記事ページで seo の暫定版を除去して
-ください（リファレンスアプリのコンテンツルートで実施例を確認できます）。
-無効にする場合は本プラグインの `jsonLd: false` も利用できます。
+`seo` プラグインも有効な場合、seo 側は独自の 2 階層の BreadcrumbList
+（`ホーム / ノート`）を記事 JSON-LD に含めようとします。ページの `headTags`
+を seo 拡張へ渡すと、本プラグインが提供した BreadcrumbList を検出して seo 側の
+暫定版を省略するため、Site 側で調整しなくても BreadcrumbList は 1 つだけに
+なります。本プラグインからの出力自体を止めたい場合は `jsonLd: false` を使います。
 
 ## 使い方
 
@@ -58,7 +58,7 @@ export default defineConfig({
 | `className` | `string` | `"rb-breadcrumbs"` | ルート要素の CSS クラス |
 | `ariaLabel` | `string` | `"Breadcrumbs"` | ナビゲーションのアクセシブル名 |
 | `separator` | `string` | `"/"` | パンくず間の文字 |
-| `jsonLd` | `boolean` | `true` | BreadcrumbList スクリプトを出力・置換する |
+| `jsonLd` | `boolean` | `true` | BreadcrumbList スクリプトを出力する |
 
 ```ts
 breadcrumbs({

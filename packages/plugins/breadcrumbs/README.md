@@ -32,11 +32,12 @@ render it in the document `<head>` (the reference Riebeckite app renders
 `entry.headTags` in `_renderer.tsx`). Item URLs are made absolute against the
 configured site `baseUrl`.
 
-When the `seo` plugin is also enabled it emits a two-level BreadcrumbList
-(`Home / Note`) inside its own article JSON-LD. The two blocks coexist; to
-avoid duplicate BreadcrumbList entities a Site can drop the seo plugin's
-placeholder for article pages (shown in the reference app's content route) or
-disable `jsonLd` on this plugin (`jsonLd: false`).
+When the `seo` plugin is also enabled it would emit its own two-level
+BreadcrumbList (`Home / Note`) inside the article JSON-LD. Pass the page's
+`headTags` to the seo extension and it detects the BreadcrumbList this plugin
+contributed and omits its own placeholder, so the page carries a single
+BreadcrumbList entity without any Site-side coupling. Set `jsonLd: false` to
+stop this plugin from emitting one instead.
 
 ## Usage
 
@@ -58,7 +59,7 @@ export default defineConfig({
 | `className` | `string` | `"rb-breadcrumbs"` | Root CSS class |
 | `ariaLabel` | `string` | `"Breadcrumbs"` | Accessible nav name |
 | `separator` | `string` | `"/"` | Text between crumbs |
-| `jsonLd` | `boolean` | `true` | Emit/replace the BreadcrumbList script |
+| `jsonLd` | `boolean` | `true` | Emit the BreadcrumbList script |
 
 ```ts
 breadcrumbs({

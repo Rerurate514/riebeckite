@@ -17,9 +17,7 @@ export type BreadcrumbsOptions = {
   /** Text placed between siblings (defaults to "/"). */
   separator?: string;
   /**
-   * Emit a BreadcrumbList JSON-LD script. When the seo plugin already
-   * rendered one, its list is replaced with the hierarchical trail
-   * (defaults to `true`).
+   * Emit a hierarchical BreadcrumbList JSON-LD script (defaults to `true`).
    */
   jsonLd?: boolean;
 };

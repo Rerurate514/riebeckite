@@ -421,7 +421,9 @@ test("Contract 4b: documentation uses npm exec -- for commands with flags", asyn
     for (const [index, line] of lines.entries()) {
       const command = line.trim().replace(/^[$>]\s*/, "");
       if (/^npm exec riebeckite\b.*\s--[\w-]+/.test(command)) {
-        offenders.push(`${path.relative(process.cwd(), file)}:${index + 1}: ${command}`);
+        offenders.push(
+          `${path.relative(process.cwd(), file)}:${index + 1}: ${command}`,
+        );
       }
     }
   }

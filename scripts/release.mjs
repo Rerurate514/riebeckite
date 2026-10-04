@@ -72,15 +72,9 @@ class PublishError extends ReleaseError {
   }
 }
 
-function runCommand(
-  command,
-  args,
-  cwd = repositoryRoot,
-  options = {},
-) {
+function runCommand(command, args, cwd = repositoryRoot, options = {}) {
   const shellCommand =
-    process.platform === "win32" &&
-    (command === "pnpm" || command === "npm");
+    process.platform === "win32" && (command === "pnpm" || command === "npm");
 
   const result = shellCommand
     ? spawnSync([command, ...args].join(" "), {
@@ -104,27 +98,17 @@ function runCommand(
       );
     }
 
-    throw new ReleaseError(
-      `Failed to run ${command}: ${result.error.message}`,
-    );
+    throw new ReleaseError(`Failed to run ${command}: ${result.error.message}`);
   }
 
   if (result.signal) {
-    throw new ReleaseError(
-      `${command} terminated by signal ${result.signal}.`,
-    );
+    throw new ReleaseError(`${command} terminated by signal ${result.signal}.`);
   }
 
   return result.status;
 }
 
-function runStep(
-  label,
-  command,
-  args,
-  cwd = repositoryRoot,
-  options = {},
-) {
+function runStep(label, command, args, cwd = repositoryRoot, options = {}) {
   console.log(`\n[step] ${label}`);
 
   const status = runCommand(command, args, cwd, {
@@ -133,46 +117,25 @@ function runStep(
   });
 
   if (status !== 0) {
-    throw new ReleaseError(
-      `${label} failed with exit code ${status}.`,
-      status,
-    );
+    throw new ReleaseError(`${label} failed with exit code ${status}.`, status);
   }
 }
 
 function runChecks() {
-  runStep(
-    "check:packages",
-    "pnpm",
-    ["run", "check:packages"],
-  );
+  runStep("check:packages", "pnpm", ["run", "check:packages"]);
 
-  runStep(
-    "check:dependencies",
-    "pnpm",
-    ["run", "check:dependencies"],
-  );
+  runStep("check:dependencies", "pnpm", ["run", "check:dependencies"]);
 
-  runStep(
-    "check:docs",
-    "pnpm",
-    ["run", "check:docs"],
-  );
+  runStep("check:docs", "pnpm", ["run", "check:docs"]);
 }
 
 function readPackageManifests() {
   const manifests = new Map();
 
   for (const directory of PACKAGE_DIRECTORIES) {
-    const manifestPath = path.join(
-      repositoryRoot,
-      directory,
-      "package.json",
-    );
+    const manifestPath = path.join(repositoryRoot, directory, "package.json");
 
-    const manifest = JSON.parse(
-      fs.readFileSync(manifestPath, "utf8"),
-    );
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 
     manifests.set(directory, manifest);
   }
@@ -186,10 +149,7 @@ function computePublishLayers(manifests) {
   for (const directory of PACKAGE_DIRECTORIES) {
     const manifest = manifests.get(directory);
 
-    nameToDirectory.set(
-      manifest.name,
-      directory,
-    );
+    nameToDirectory.set(manifest.name, directory);
   }
 
   const internalDependencies = new Map();
@@ -203,50 +163,34 @@ function computePublishLayers(manifests) {
       "devDependencies",
       "peerDependencies",
     ]) {
-      for (const dependencyName of Object.keys(
-        manifest[section] ?? {},
-      )) {
-        const dependencyDirectory =
-          nameToDirectory.get(dependencyName);
+      for (const dependencyName of Object.keys(manifest[section] ?? {})) {
+        const dependencyDirectory = nameToDirectory.get(dependencyName);
 
-        if (
-          dependencyDirectory &&
-          dependencyDirectory !== directory
-        ) {
+        if (dependencyDirectory && dependencyDirectory !== directory) {
           dependencies.add(dependencyDirectory);
         }
       }
     }
 
-    internalDependencies.set(
-      directory,
-      dependencies,
-    );
+    internalDependencies.set(directory, dependencies);
   }
 
   const resolved = new Set();
   const layers = [];
 
-  while (
-    resolved.size <
-    PACKAGE_DIRECTORIES.length
-  ) {
+  while (resolved.size < PACKAGE_DIRECTORIES.length) {
     const ready = PACKAGE_DIRECTORIES.filter(
       (directory) =>
         !resolved.has(directory) &&
-        [
-          ...internalDependencies.get(directory),
-        ].every((dependency) =>
+        [...internalDependencies.get(directory)].every((dependency) =>
           resolved.has(dependency),
         ),
     );
 
     if (ready.length === 0) {
-      const unresolved =
-        PACKAGE_DIRECTORIES.filter(
-          (directory) =>
-            !resolved.has(directory),
-        );
+      const unresolved = PACKAGE_DIRECTORIES.filter(
+        (directory) => !resolved.has(directory),
+      );
 
       throw new ReleaseError(
         "Circular dependency among public packages; " +
@@ -265,16 +209,10 @@ function computePublishLayers(manifests) {
   return layers;
 }
 
-function spawnBuffered(
-  command,
-  args,
-  cwd,
-  options = {},
-) {
+function spawnBuffered(command, args, cwd, options = {}) {
   return new Promise((resolve, reject) => {
     const shell =
-      process.platform === "win32" &&
-      (command === "pnpm" || command === "npm");
+      process.platform === "win32" && (command === "pnpm" || command === "npm");
 
     const child = shell
       ? spawn([command, ...args].join(" "), {
@@ -335,11 +273,7 @@ function spawnBuffered(
         clearTimeout(timeout);
       }
 
-      reject(
-        new ReleaseError(
-          `Failed to run ${command}: ${error.message}`,
-        ),
-      );
+      reject(new ReleaseError(`Failed to run ${command}: ${error.message}`));
     });
 
     child.on("close", (status, signal) => {
@@ -354,11 +288,7 @@ function spawnBuffered(
       }
 
       if (signal) {
-        reject(
-          new ReleaseError(
-            `${command} terminated by signal ${signal}.`,
-          ),
-        );
+        reject(new ReleaseError(`${command} terminated by signal ${signal}.`));
 
         return;
       }
@@ -372,16 +302,10 @@ function spawnBuffered(
   });
 }
 
-function spawnInteractive(
-  command,
-  args,
-  cwd,
-  options = {},
-) {
+function spawnInteractive(command, args, cwd, options = {}) {
   return new Promise((resolve, reject) => {
     const shell =
-      process.platform === "win32" &&
-      (command === "pnpm" || command === "npm");
+      process.platform === "win32" && (command === "pnpm" || command === "npm");
 
     const child = shell
       ? spawn([command, ...args].join(" "), {
@@ -429,11 +353,7 @@ function spawnInteractive(
         clearTimeout(timeout);
       }
 
-      reject(
-        new ReleaseError(
-          `Failed to run ${command}: ${error.message}`,
-        ),
-      );
+      reject(new ReleaseError(`Failed to run ${command}: ${error.message}`));
     });
 
     child.on("close", (status, signal) => {
@@ -448,11 +368,7 @@ function spawnInteractive(
       }
 
       if (signal) {
-        reject(
-          new ReleaseError(
-            `${command} terminated by signal ${signal}.`,
-          ),
-        );
+        reject(new ReleaseError(`${command} terminated by signal ${signal}.`));
 
         return;
       }
@@ -464,11 +380,7 @@ function spawnInteractive(
   });
 }
 
-async function mapWithConcurrency(
-  items,
-  concurrency,
-  callback,
-) {
+async function mapWithConcurrency(items, concurrency, callback) {
   if (items.length === 0) {
     return [];
   }
@@ -485,66 +397,34 @@ async function mapWithConcurrency(
         return;
       }
 
-      results[index] = await callback(
-        items[index],
-        index,
-      );
+      results[index] = await callback(items[index], index);
     }
   }
 
-  const workerCount = Math.min(
-    concurrency,
-    items.length,
-  );
+  const workerCount = Math.min(concurrency, items.length);
 
-  await Promise.all(
-    Array.from(
-      { length: workerCount },
-      () => worker(),
-    ),
-  );
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
 
   return results;
 }
 
-function requiresInteractiveAuthentication(
-  stdout,
-  stderr,
-) {
-  const output =
-    `${stdout}\n${stderr}`.toLowerCase();
+function requiresInteractiveAuthentication(stdout, stderr) {
+  const output = `${stdout}\n${stderr}`.toLowerCase();
 
   return (
-    output.includes(
-      "err_pnpm_otp_non_interactive",
-    ) ||
-    output.includes(
-      "requires additional authentication",
-    ) ||
-    output.includes(
-      "pnpm is not running in an interactive terminal",
-    ) ||
-    output.includes(
-      "provide the --otp option",
-    )
+    output.includes("err_pnpm_otp_non_interactive") ||
+    output.includes("requires additional authentication") ||
+    output.includes("pnpm is not running in an interactive terminal") ||
+    output.includes("provide the --otp option")
   );
 }
 
-async function isPackageVersionPublished(
-  packageName,
-  version,
-) {
-  const packageSpec =
-    `${packageName}@${version}`;
+async function isPackageVersionPublished(packageName, version) {
+  const packageSpec = `${packageName}@${version}`;
 
   const result = await spawnBuffered(
     "npm",
-    [
-      "view",
-      packageSpec,
-      "version",
-      "--json",
-    ],
+    ["view", packageSpec, "version", "--json"],
     repositoryRoot,
     {
       timeout: NPM_VIEW_TIMEOUT_MS,
@@ -556,15 +436,12 @@ async function isPackageVersionPublished(
     return true;
   }
 
-  const output =
-    `${result.stdout}\n${result.stderr}`.toLowerCase();
+  const output = `${result.stdout}\n${result.stderr}`.toLowerCase();
 
   const notFound =
     output.includes("e404") ||
     output.includes("404 not found") ||
-    output.includes(
-      "is not in this registry",
-    );
+    output.includes("is not in this registry");
 
   if (notFound) {
     return false;
@@ -577,11 +454,7 @@ async function isPackageVersionPublished(
   );
 }
 
-async function inspectPublishedPackages(
-  manifests,
-  version,
-  dryRun,
-) {
+async function inspectPublishedPackages(manifests, version, dryRun) {
   if (dryRun) {
     return new Set();
   }
@@ -595,20 +468,13 @@ async function inspectPublishedPackages(
     PACKAGE_DIRECTORIES,
     NPM_VIEW_CONCURRENCY,
     async (directory) => {
-      const manifest =
-        manifests.get(directory);
+      const manifest = manifests.get(directory);
 
-      const published =
-        await isPackageVersionPublished(
-          manifest.name,
-          version,
-        );
+      const published = await isPackageVersionPublished(manifest.name, version);
 
       console.log(
         `  ${
-          published
-            ? "published  "
-            : "unpublished"
+          published ? "published  " : "unpublished"
         } ${manifest.name}@${version}`,
       );
 
@@ -621,24 +487,15 @@ async function inspectPublishedPackages(
 
   return new Set(
     checks
-      .filter(
-        ({ published }) => published,
-      )
-      .map(
-        ({ directory }) => directory,
-      ),
+      .filter(({ published }) => published)
+      .map(({ directory }) => directory),
   );
 }
 
-function findFirstPendingPackage(
-  layers,
-  publishedPackages,
-) {
+function findFirstPendingPackage(layers, publishedPackages) {
   for (const layer of layers) {
     for (const directory of layer) {
-      if (
-        !publishedPackages.has(directory)
-      ) {
+      if (!publishedPackages.has(directory)) {
         return directory;
       }
     }
@@ -647,45 +504,26 @@ function findFirstPendingPackage(
   return null;
 }
 
-async function publishInteractive(
-  directory,
-  manifest,
-  version,
-  reason,
-) {
-  const packageSpec =
-    `${manifest.name}@${version}`;
+async function publishInteractive(directory, manifest, version, reason) {
+  const packageSpec = `${manifest.name}@${version}`;
 
-  console.log(
-    "\n[interactive publish]",
-  );
+  console.log("\n[interactive publish]");
 
   if (reason) {
     console.log(reason);
   }
 
-  console.log(
-    `Publishing ${packageSpec} interactively.`,
-  );
+  console.log(`Publishing ${packageSpec} interactively.`);
 
-  console.log(
-    "Complete npm authentication when prompted.",
-  );
+  console.log("Complete npm authentication when prompted.");
 
   const result = await spawnInteractive(
     "pnpm",
-    [
-      "publish",
-      "--no-git-checks",
-    ],
-    path.join(
-      repositoryRoot,
-      directory,
-    ),
+    ["publish", "--no-git-checks"],
+    path.join(repositoryRoot, directory),
     {
       timeout: PUBLISH_TIMEOUT_MS,
-      label:
-        `interactive publish ${packageSpec}`,
+      label: `interactive publish ${packageSpec}`,
     },
   );
 
@@ -696,9 +534,7 @@ async function publishInteractive(
     );
   }
 
-  console.log(
-    `[interactive publish] finished ${packageSpec}`,
-  );
+  console.log(`[interactive publish] finished ${packageSpec}`);
 }
 
 async function publishPackage(
@@ -709,17 +545,11 @@ async function publishPackage(
   position,
   total,
 ) {
-  const packageSpec =
-    `${manifest.name}@${version}`;
+  const packageSpec = `${manifest.name}@${version}`;
 
-  console.log(
-    `[publish ${position}/${total}] starting ${packageSpec}`,
-  );
+  console.log(`[publish ${position}/${total}] starting ${packageSpec}`);
 
-  const args = [
-    "publish",
-    "--no-git-checks",
-  ];
+  const args = ["publish", "--no-git-checks"];
 
   if (dryRun) {
     args.push("--dry-run");
@@ -728,30 +558,21 @@ async function publishPackage(
   const result = await spawnBuffered(
     "pnpm",
     args,
-    path.join(
-      repositoryRoot,
-      directory,
-    ),
+    path.join(repositoryRoot, directory),
     {
       timeout: PUBLISH_TIMEOUT_MS,
       label: `publish ${packageSpec}`,
     },
   );
 
-  console.log(
-    `\n[publish ${position}/${total}] ${packageSpec}`,
-  );
+  console.log(`\n[publish ${position}/${total}] ${packageSpec}`);
 
   if (result.stdout.trim()) {
-    process.stdout.write(
-      `${result.stdout.trimEnd()}\n`,
-    );
+    process.stdout.write(`${result.stdout.trimEnd()}\n`);
   }
 
   if (result.stderr.trim()) {
-    process.stderr.write(
-      `${result.stderr.trimEnd()}\n`,
-    );
+    process.stderr.write(`${result.stderr.trimEnd()}\n`);
   }
 
   if (result.status !== 0) {
@@ -761,18 +582,15 @@ async function publishPackage(
         status: result.status,
         stdout: result.stdout,
         stderr: result.stderr,
-        authenticationRequired:
-          requiresInteractiveAuthentication(
-            result.stdout,
-            result.stderr,
-          ),
+        authenticationRequired: requiresInteractiveAuthentication(
+          result.stdout,
+          result.stderr,
+        ),
       },
     );
   }
 
-  console.log(
-    `[publish ${position}/${total}] finished ${packageSpec}`,
-  );
+  console.log(`[publish ${position}/${total}] finished ${packageSpec}`);
 }
 
 async function retryAuthenticationFailures(
@@ -782,30 +600,20 @@ async function retryAuthenticationFailures(
   publishedPackages,
 ) {
   for (const failure of failures) {
-    const {
-      directory,
-      error,
-    } = failure;
+    const { directory, error } = failure;
 
-    const manifest =
-      manifests.get(directory);
+    const manifest = manifests.get(directory);
 
-    const packageSpec =
-      `${manifest.name}@${version}`;
+    const packageSpec = `${manifest.name}@${version}`;
 
-    console.log(
-      `\n[authentication required] ${packageSpec}`,
+    console.log(`\n[authentication required] ${packageSpec}`);
+
+    console.log("The parallel publish requested additional authentication.");
+
+    const alreadyPublished = await isPackageVersionPublished(
+      manifest.name,
+      version,
     );
-
-    console.log(
-      "The parallel publish requested additional authentication.",
-    );
-
-    const alreadyPublished =
-      await isPackageVersionPublished(
-        manifest.name,
-        version,
-      );
 
     if (alreadyPublished) {
       console.log(
@@ -825,12 +633,8 @@ async function retryAuthenticationFailures(
 
     publishedPackages.add(directory);
 
-    if (
-      error instanceof PublishError
-    ) {
-      console.log(
-        "Authentication refreshed. Parallel publishing will resume.",
-      );
+    if (error instanceof PublishError) {
+      console.log("Authentication refreshed. Parallel publishing will resume.");
     }
   }
 }
@@ -842,44 +646,27 @@ async function publishPackages(
   dryRun,
   version,
 ) {
-  console.log(
-    "\nPublish dependency layers:",
-  );
+  console.log("\nPublish dependency layers:");
 
-  for (
-    let index = 0;
-    index < layers.length;
-    index += 1
-  ) {
-    console.log(
-      `  layer ${index + 1}:`,
-    );
+  for (let index = 0; index < layers.length; index += 1) {
+    console.log(`  layer ${index + 1}:`);
 
     for (const directory of layers[index]) {
-      const manifest =
-        manifests.get(directory);
+      const manifest = manifests.get(directory);
 
-      const suffix =
-        publishedPackages.has(directory)
-          ? " (already published)"
-          : "";
+      const suffix = publishedPackages.has(directory)
+        ? " (already published)"
+        : "";
 
-      console.log(
-        `    - ${manifest.name}${suffix}`,
-      );
+      console.log(`    - ${manifest.name}${suffix}`);
     }
   }
 
   if (!dryRun) {
-    const firstPending =
-      findFirstPendingPackage(
-        layers,
-        publishedPackages,
-      );
+    const firstPending = findFirstPendingPackage(layers, publishedPackages);
 
     if (firstPending) {
-      const manifest =
-        manifests.get(firstPending);
+      const manifest = manifests.get(firstPending);
 
       await publishInteractive(
         firstPending,
@@ -888,27 +675,16 @@ async function publishPackages(
         "Authenticating with the first pending package before parallel publishing.",
       );
 
-      publishedPackages.add(
-        firstPending,
-      );
+      publishedPackages.add(firstPending);
     }
   }
 
   const pendingCount = layers
     .flat()
-    .filter(
-      (directory) =>
-        dryRun ||
-        !publishedPackages.has(directory),
-    ).length;
+    .filter((directory) => dryRun || !publishedPackages.has(directory)).length;
 
-  if (
-    !dryRun &&
-    pendingCount === 0
-  ) {
-    console.log(
-      "\nAll packages are already published.",
-    );
+  if (!dryRun && pendingCount === 0) {
+    console.log("\nAll packages are already published.");
 
     return;
   }
@@ -921,31 +697,18 @@ async function publishPackages(
 
   let publishPosition = 0;
 
-  for (
-    let layerIndex = 0;
-    layerIndex < layers.length;
-    layerIndex += 1
-  ) {
-    const layer =
-      layers[layerIndex];
+  for (let layerIndex = 0; layerIndex < layers.length; layerIndex += 1) {
+    const layer = layers[layerIndex];
 
-    console.log(
-      `\n[publish layer ${layerIndex + 1}/${layers.length}]`,
-    );
+    console.log(`\n[publish layer ${layerIndex + 1}/${layers.length}]`);
 
     const pending = [];
 
     for (const directory of layer) {
-      const manifest =
-        manifests.get(directory);
+      const manifest = manifests.get(directory);
 
-      if (
-        !dryRun &&
-        publishedPackages.has(directory)
-      ) {
-        console.log(
-          `  skip ${manifest.name}@${version} (already published)`,
-        );
+      if (!dryRun && publishedPackages.has(directory)) {
+        console.log(`  skip ${manifest.name}@${version} (already published)`);
 
         continue;
       }
@@ -959,9 +722,7 @@ async function publishPackages(
     }
 
     if (pending.length === 0) {
-      console.log(
-        "  nothing to publish",
-      );
+      console.log("  nothing to publish");
 
       continue;
     }
@@ -969,12 +730,8 @@ async function publishPackages(
     const results = await mapWithConcurrency(
       pending,
       PUBLISH_CONCURRENCY,
-      async ({
-        directory,
-        position,
-      }) => {
-        const manifest =
-          manifests.get(directory);
+      async ({ directory, position }) => {
+        const manifest = manifests.get(directory);
 
         try {
           await publishPackage(
@@ -999,37 +756,24 @@ async function publishPackages(
       },
     );
 
-    const successful =
-      results.filter(
-        ({ error }) =>
-          error === null,
-      );
+    const successful = results.filter(({ error }) => error === null);
 
     for (const { directory } of successful) {
       publishedPackages.add(directory);
     }
 
-    const authenticationFailures =
-      results.filter(
-        ({ error }) =>
-          error instanceof PublishError &&
-          error.authenticationRequired,
-      );
+    const authenticationFailures = results.filter(
+      ({ error }) =>
+        error instanceof PublishError && error.authenticationRequired,
+    );
 
-    const otherFailures =
-      results.filter(
-        ({ error }) =>
-          error !== null &&
-          !(
-            error instanceof PublishError &&
-            error.authenticationRequired
-          ),
-      );
+    const otherFailures = results.filter(
+      ({ error }) =>
+        error !== null &&
+        !(error instanceof PublishError && error.authenticationRequired),
+    );
 
-    if (
-      authenticationFailures.length > 0 &&
-      !dryRun
-    ) {
+    if (authenticationFailures.length > 0 && !dryRun) {
       console.log(
         `\n${authenticationFailures.length} package(s) require interactive authentication.`,
       );
@@ -1043,49 +787,30 @@ async function publishPackages(
     }
 
     if (otherFailures.length > 0) {
-      console.error(
-        `\nPublish layer ${layerIndex + 1} failed:`,
-      );
+      console.error(`\nPublish layer ${layerIndex + 1} failed:`);
 
-      for (const {
-        directory,
-        error,
-      } of otherFailures) {
-        console.error(
-          `  - ${
-            manifests.get(directory).name
-          }: ${error.message}`,
-        );
+      for (const { directory, error } of otherFailures) {
+        console.error(`  - ${manifests.get(directory).name}: ${error.message}`);
       }
 
-      const firstError =
-        otherFailures[0].error;
+      const firstError = otherFailures[0].error;
 
       throw new ReleaseError(
         `${otherFailures.length} package(s) failed in publish layer ${
           layerIndex + 1
         }. Later layers were not started.`,
-        firstError instanceof ReleaseError
-          ? firstError.status
-          : 1,
+        firstError instanceof ReleaseError ? firstError.status : 1,
       );
     }
 
-    console.log(
-      `\n[publish layer ${layerIndex + 1}] complete`,
-    );
+    console.log(`\n[publish layer ${layerIndex + 1}] complete`);
   }
 }
 
 function ensureTagDoesNotExist(version) {
   const result = spawnSync(
     "git",
-    [
-      "rev-parse",
-      "-q",
-      "--verify",
-      `refs/tags/v${version}`,
-    ],
+    ["rev-parse", "-q", "--verify", `refs/tags/v${version}`],
     {
       cwd: repositoryRoot,
       stdio: "ignore",
@@ -1099,22 +824,14 @@ function ensureTagDoesNotExist(version) {
   }
 
   if (result.status === 0) {
-    throw new ReleaseError(
-      `Tag v${version} already exists; aborting.`,
-    );
+    throw new ReleaseError(`Tag v${version} already exists; aborting.`);
   }
 }
 
 function hasStagedChanges(paths) {
   const result = spawnSync(
     "git",
-    [
-      "diff",
-      "--cached",
-      "--quiet",
-      "--",
-      ...paths,
-    ],
+    ["diff", "--cached", "--quiet", "--", ...paths],
     {
       cwd: repositoryRoot,
       stdio: "ignore",
@@ -1128,9 +845,7 @@ function hasStagedChanges(paths) {
   }
 
   if (result.signal) {
-    throw new ReleaseError(
-      `git diff terminated by signal ${result.signal}.`,
-    );
+    throw new ReleaseError(`git diff terminated by signal ${result.signal}.`);
   }
 
   if (result.status === 0) {
@@ -1148,90 +863,47 @@ function hasStagedChanges(paths) {
 }
 
 function commitAndTag(version) {
-  const tagName =
-    `v${version}`;
+  const tagName = `v${version}`;
 
-  const manifests =
-    PACKAGE_DIRECTORIES.map(
-      (directory) =>
-        path.join(
-          directory,
-          "package.json",
-        ),
-    );
+  const manifests = PACKAGE_DIRECTORIES.map((directory) =>
+    path.join(directory, "package.json"),
+  );
 
-  const releaseFiles = [
-    ...manifests,
-    scaffoldVersionFile,
-  ];
+  const releaseFiles = [...manifests, scaffoldVersionFile];
 
-  runStep(
-    "git add",
-    "git",
-    [
-      "add",
+  runStep("git add", "git", ["add", "--", ...releaseFiles]);
+
+  const createdCommit = hasStagedChanges(releaseFiles);
+
+  if (createdCommit) {
+    runStep("git commit", "git", [
+      "commit",
+      "-m",
+      `release ${tagName}`,
       "--",
       ...releaseFiles,
-    ],
-  );
-
-  const createdCommit =
-    hasStagedChanges(releaseFiles);
-
-  if (createdCommit) {
-    runStep(
-      "git commit",
-      "git",
-      [
-        "commit",
-        "-m",
-        `release ${tagName}`,
-        "--",
-        ...releaseFiles,
-      ],
-    );
+    ]);
   } else {
-    console.log(
-      "\n[step] git commit",
-    );
+    console.log("\n[step] git commit");
 
-    console.log(
-      "No staged release changes; skipping commit.",
-    );
+    console.log("No staged release changes; skipping commit.");
   }
 
-  runStep(
-    "git tag",
-    "git",
-    [
-      "tag",
-      tagName,
-    ],
-  );
+  runStep("git tag", "git", ["tag", tagName]);
 
   if (createdCommit) {
-    console.log(
-      `\nCommitted and tagged ${tagName} locally (tag not pushed).`,
-    );
+    console.log(`\nCommitted and tagged ${tagName} locally (tag not pushed).`);
   } else {
-    console.log(
-      `\nTagged ${tagName} locally (tag not pushed).`,
-    );
+    console.log(`\nTagged ${tagName} locally (tag not pushed).`);
   }
 }
 
 function printPushInstructions(version) {
-  console.log(
-    "\nPush the locally created commit and tag when ready:",
-  );
+  console.log("\nPush the locally created commit and tag when ready:");
 
-  console.log(
-    "  git push",
-  );
+  console.log("  git push");
 
-  console.log(
-    `  git push origin v${version}`,
-  );
+  console.log(`  git push origin v${version}`);
 }
 
 function parseArguments(rawArguments) {
@@ -1245,27 +917,14 @@ function parseArguments(rawArguments) {
   for (const argument of rawArguments) {
     if (argument === "--dry-run") {
       options.dryRun = true;
-    } else if (
-      argument === "--check-only"
-    ) {
+    } else if (argument === "--check-only") {
       options.checkOnly = true;
-    } else if (
-      argument === "--help" ||
-      argument === "-h"
-    ) {
+    } else if (argument === "--help" || argument === "-h") {
       options.help = true;
-    } else if (
-      argument.startsWith("-")
-    ) {
-      throw new ReleaseError(
-        `Unknown option: ${argument}`,
-      );
-    } else if (
-      options.version !== null
-    ) {
-      throw new ReleaseError(
-        `Unexpected extra argument: ${argument}`,
-      );
+    } else if (argument.startsWith("-")) {
+      throw new ReleaseError(`Unknown option: ${argument}`);
+    } else if (options.version !== null) {
+      throw new ReleaseError(`Unexpected extra argument: ${argument}`);
     } else {
       options.version = argument;
     }
@@ -1275,10 +934,7 @@ function parseArguments(rawArguments) {
 }
 
 async function main() {
-  const options =
-    parseArguments(
-      process.argv.slice(2),
-    );
+  const options = parseArguments(process.argv.slice(2));
 
   if (options.help) {
     console.log(usage);
@@ -1288,22 +944,15 @@ async function main() {
   if (options.checkOnly) {
     runChecks();
 
-    console.log(
-      "\ncheck-only: metadata and dependency checks passed.",
-    );
+    console.log("\ncheck-only: metadata and dependency checks passed.");
 
     return;
   }
 
-  const {
-    dryRun,
-    version,
-  } = options;
+  const { dryRun, version } = options;
 
   if (!version) {
-    throw new ReleaseError(
-      `Missing <version>.\n\n${usage}`,
-    );
+    throw new ReleaseError(`Missing <version>.\n\n${usage}`);
   }
 
   if (!SEMVER_PATTERN.test(version)) {
@@ -1315,11 +964,7 @@ async function main() {
   }
 
   console.log(
-    `\nRiebeckite release ${
-      dryRun
-        ? "(dry-run) "
-        : ""
-    }v${version} for ${
+    `\nRiebeckite release ${dryRun ? "(dry-run) " : ""}v${version} for ${
       PACKAGE_DIRECTORIES.length
     } public packages.`,
   );
@@ -1328,48 +973,27 @@ async function main() {
     ensureTagDoesNotExist(version);
   }
 
-  const bumpArgs = [
-    "scripts/bump_version.mjs",
-    version,
-  ];
+  const bumpArgs = ["scripts/bump_version.mjs", version];
 
   if (dryRun) {
-    bumpArgs.push(
-      "--dry-run",
-    );
+    bumpArgs.push("--dry-run");
   }
 
-  runStep(
-    "version bump",
-    process.execPath,
-    bumpArgs,
-  );
+  runStep("version bump", process.execPath, bumpArgs);
 
-  runStep(
-    "build:packages",
-    "pnpm",
-    [
-      "run",
-      "build:packages",
-    ],
-  );
+  runStep("build:packages", "pnpm", ["run", "build:packages"]);
 
   runChecks();
 
-  const manifests =
-    readPackageManifests();
+  const manifests = readPackageManifests();
 
-  const publishLayers =
-    computePublishLayers(
-      manifests,
-    );
+  const publishLayers = computePublishLayers(manifests);
 
-  const publishedPackages =
-    await inspectPublishedPackages(
-      manifests,
-      version,
-      dryRun,
-    );
+  const publishedPackages = await inspectPublishedPackages(
+    manifests,
+    version,
+    dryRun,
+  );
 
   if (!dryRun) {
     console.log(
@@ -1395,23 +1019,16 @@ async function main() {
 
   commitAndTag(version);
 
-  printPushInstructions(
-    version,
-  );
+  printPushInstructions(version);
 }
 
 try {
   await main();
 } catch (error) {
-  if (
-    error instanceof ReleaseError
-  ) {
-    console.error(
-      `\nrelease failed: ${error.message}`,
-    );
+  if (error instanceof ReleaseError) {
+    console.error(`\nrelease failed: ${error.message}`);
 
-    process.exitCode =
-      error.status;
+    process.exitCode = error.status;
   } else {
     throw error;
   }

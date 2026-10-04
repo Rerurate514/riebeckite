@@ -31,11 +31,15 @@ export function formatScaffoldNextSteps(
     lines.push(`  ${options.editFile}`);
     lines.push("");
     lines.push("Common first settings:");
-    lines.push("  riebeckite.config.ts: site.title, site.baseUrl, content.directory");
+    lines.push(
+      "  riebeckite.config.ts: site.title, site.baseUrl, content.directory",
+    );
   }
   if (options.externalContent === true) {
     lines.push("");
-    lines.push("Operational content lives in the content repository. CI checks it out to content/.");
+    lines.push(
+      "Operational content lives in the content repository. CI checks it out to content/.",
+    );
     lines.push(
       "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
     );

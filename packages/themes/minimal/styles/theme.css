@@ -241,7 +241,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rb-article-body
   blockquote {
-  margin: 2rem 0;
+  margin: 2rem 0 0;
   padding: 0.1rem 0 0.1rem 1.25rem;
   border: 0;
   border-left: 1px solid var(--rb-color-border-strong);
@@ -288,7 +288,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rb-article-body
   pre:not(:where(.rr-code *)) {
-  margin: 2rem 0;
+  margin: 2rem 0 0;
   padding: 1rem 1.1rem;
   border: 1px solid var(--rb-color-border);
   border-radius: 0;

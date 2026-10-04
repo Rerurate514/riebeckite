@@ -1,5 +1,5 @@
 .rr-code-tabs {
-  margin-block: 1.5rem;
+  margin: 1.5rem 0 0;
   border: 1px solid
     var(--rb-color-border, color-mix(in srgb, currentColor 16%, transparent));
   background: var(--rb-color-surface, transparent);

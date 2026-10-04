@@ -423,7 +423,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="sakura"]
   .rb-article-body
   pre:not(:where(.rr-code *)) {
-  margin-block: 1.75rem;
+  margin: 1.75rem 0 0;
   padding: 1.05rem 1.2rem;
   border: 1px solid var(--rb-color-border);
   border-radius: var(--rb-sakura-radius);

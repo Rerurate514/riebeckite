@@ -521,7 +521,7 @@
   .rb-article-body
   blockquote {
   position: relative;
-  margin: 1.75rem 0;
+  margin: 1.75rem 0 0;
   padding: 0.1rem 0 0.1rem 3.25rem;
   border: 0;
   background: none;
@@ -580,7 +580,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
   .rb-article-body
   pre:not(:where(.rr-code *)) {
-  margin: 1.75rem 0;
+  margin: 1.75rem 0 0;
   padding: 0.85rem 1rem;
   border: 1px solid var(--rb-color-border);
   border-radius: 0;

@@ -338,7 +338,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
   .rb-article-body
   blockquote {
-  margin: 1.5em 0;
+  margin: 1.5em 0 0;
   border-left: 3px solid var(--rb-color-accent);
   background: color-mix(in srgb, var(--rb-color-accent) 6%, transparent);
   padding: 0.75em 1em;
@@ -463,7 +463,7 @@
 /* ---- Plugin roots ---- */
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
   :is(.rr-table-of-contents, .rr-backlinks) {
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 0;
   border: 1px solid var(--rb-color-border);
   border-radius: 0;
   background: color-mix(in srgb, var(--rb-color-surface) 50%, transparent);

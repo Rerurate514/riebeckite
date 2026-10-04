@@ -122,7 +122,6 @@ optional `className` is added to the root without replacing them.
 - `buildShareUrl(service, target, instance?)` — build one service URL
 - `buildShareLinks(options, target)` — build every link-bearing service
 - `renderShareControls(options, target)` — render the controls HTML
-- `injectShareControls(html, block, placement)` — insert into a note fragment
 - `initShare()` — client initializer (also via
   `@riebeckite/plugin-share/client`)
 - Constants: `SHARE_SERVICES`, `SHARE_ATTRIBUTE`, `SHARE_ROOT_CLASS`,
@@ -134,10 +133,9 @@ optional `className` is added to the root without replacing them.
 
 - Share URLs are fixed at build time. A full rebuild always recomputes them.
 - Mastodon cannot be enabled without a concrete instance.
-- The plugin inserts into the note fragment; a Site that owns its layout can
-  move the controls with CSS or omit them per page.
+- The plugin contributes controls to `article.before-content` for `top` and
+  `article.footer` for `bottom`; a Site places those semantic slots in its layout.
 
 ## See also
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
-

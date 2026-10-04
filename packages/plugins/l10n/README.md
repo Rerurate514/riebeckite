@@ -52,7 +52,7 @@ No fallback pages are generated. `getLocalization(manifest, slug)` returns `avai
 
 ## Standard LanguageSwitcher
 
-`l10n(...)` publishes the built-in, styled LanguageSwitcher in the standard `article.after-meta` layout slot. A standard Site consumer renders that slot, so no l10n-specific article integration is needed. It is omitted when a page has fewer than two real translations.
+`l10n(...)` publishes the built-in, styled LanguageSwitcher in the standard `article.metadata` layout slot. A standard Site consumer renders that slot, so no l10n-specific article integration is needed. It is omitted when a page has fewer than two real translations.
 
 ```ts
 // Keep URLs and metadata but do not publish UI.

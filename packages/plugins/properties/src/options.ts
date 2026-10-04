@@ -24,11 +24,9 @@ export function resolvePropertiesOptions(
   return {
     title:
       options.title === undefined ? DEFAULT_PROPERTIES_TITLE : options.title,
-    position: options.position ?? "start",
     include: options.include,
     exclude: options.exclude ?? DEFAULT_PROPERTIES_EXCLUDE,
     order: options.order,
-    render: options.render ?? "html",
     hideEmpty: options.hideEmpty ?? true,
     className: options.className ?? DEFAULT_PROPERTIES_CLASS,
     collapsed: options.collapsed ?? false,
@@ -49,13 +47,6 @@ export function validatePropertiesOptions(
   ) {
     issues.push({ path: "title", message: "Expected a string or null." });
   }
-  if (
-    options.position !== undefined &&
-    options.position !== "start" &&
-    options.position !== "end"
-  ) {
-    issues.push({ path: "position", message: 'Expected "start" or "end".' });
-  }
   for (const key of ["include", "exclude"] as const) {
     const value = options[key];
     if (value !== undefined && !isStringArray(value)) {
@@ -67,13 +58,6 @@ export function validatePropertiesOptions(
       path: "order",
       message: "Expected an array of non-empty strings.",
     });
-  }
-  if (
-    options.render !== undefined &&
-    options.render !== "html" &&
-    options.render !== "slot"
-  ) {
-    issues.push({ path: "render", message: 'Expected "html" or "slot".' });
   }
   if (
     options.hideEmpty !== undefined &&

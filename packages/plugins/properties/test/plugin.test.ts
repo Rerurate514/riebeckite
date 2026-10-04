@@ -59,66 +59,54 @@ test("properties() is re-exported as propertiesPlugin and registers its styleshe
   ]);
 });
 
-test("the manifest hook prepends the panel", async () => {
+test("the manifest hook contributes the panel to article metadata", async () => {
   const entries = [entry("a", { title: "A" }, "<p>A</p>")];
 
   const diagnostics = await runHook(properties(), entries);
 
   assert.equal(diagnostics.length, 0);
-  assert.ok(entries[0]?.html.startsWith('<section class="rb-properties"'));
-  assert.ok(entries[0]?.html.endsWith("<p>A</p>"));
-  assert.match(entries[0]?.html ?? "", /data-properties/);
-});
-
-test("position end appends the panel", async () => {
-  const entries = [entry("a", { title: "A" }, "<p>A</p>")];
-
-  await runHook(properties({ position: "end" }), entries);
-
-  assert.ok(entries[0]?.html.startsWith("<p>A</p><section"));
-  assert.ok(entries[0]?.html.endsWith("</section>"));
-});
-
-test("render slot publishes the panel instead of mutating the note html", async () => {
-  const entries = [entry("a", { title: "A" }, "<p>A</p>")];
-
-  const plugin = properties({ render: "slot" });
-  await runHook(plugin, entries);
-  await runHook(plugin, entries);
-
   assert.equal(entries[0]?.html, "<p>A</p>");
-  assert.ok(entries[0]?.bodySlots?.properties?.startsWith("<section"));
+  assert.ok(
+    entries[0]?.bodySlots?.["article.metadata"]?.startsWith("<section"),
+  );
+  await runHook(properties(), entries);
   assert.equal(
-    entries[0]?.bodySlots?.properties?.match(/data-properties/g)?.length,
+    entries[0]?.bodySlots?.["article.metadata"]?.match(/data-properties/g)
+      ?.length,
     1,
   );
 });
 
-test("render slot does not mistake a partial panel match for an existing panel", async () => {
+test("the manifest hook does not mistake a partial panel match for an existing panel", async () => {
   const entries = [entry("a", { title: "A" }, "<p>A</p>")];
-  entries[0].bodySlots = { properties: '<section class="rb-properties">' };
+  entries[0].bodySlots = {
+    "article.metadata": '<section class="rb-properties">',
+  };
 
-  await runHook(properties({ render: "slot" }), entries);
+  await runHook(properties(), entries);
 
   assert.equal(
-    entries[0]?.bodySlots?.properties?.match(/data-properties/g)?.length,
+    entries[0]?.bodySlots?.["article.metadata"]?.match(/data-properties/g)
+      ?.length,
     1,
   );
 });
 
 test("the manifest hook is idempotent and skips empty panels", async () => {
-  const already = entry(
-    "done",
-    { title: "A" },
-    "<section data-properties><p>A</p></section>",
-  );
+  const already = entry("done", { title: "A" }, "<p>A</p>");
+  already.bodySlots = {
+    "article.metadata": "<section data-properties><p>A</p></section>",
+  };
   const nothing = entry("nothing", { publish: true }, "<p>B</p>");
   const empty = entry("empty", { title: "C" }, "");
 
   await runHook(properties(), [already, nothing, empty]);
 
-  assert.equal(already.html, "<section data-properties><p>A</p></section>");
-  assert.equal(already.bodySlots, undefined);
+  assert.equal(already.html, "<p>A</p>");
+  assert.match(
+    already.bodySlots?.["article.metadata"] ?? "",
+    /data-properties/,
+  );
   assert.equal(nothing.html, "<p>B</p>");
   assert.equal(empty.html, "");
 });
@@ -136,8 +124,14 @@ test("wikilink values resolve through the manifest content index", async () => {
   const diagnostics: Diagnostic[] = [];
   await properties().onManifestCreated?.({ manifest, diagnostics } as never);
 
-  assert.match(linking.html, /href="\/note#Section"/);
-  assert.doesNotMatch(linking.html, /\[\[note/);
+  assert.match(
+    linking.bodySlots?.["article.metadata"] ?? "",
+    /href="\/note#Section"/,
+  );
+  assert.doesNotMatch(
+    linking.bodySlots?.["article.metadata"] ?? "",
+    /\[\[note/,
+  );
   assert.deepEqual(diagnostics, []);
 });
 

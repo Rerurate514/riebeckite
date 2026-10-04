@@ -1,14 +1,11 @@
 import {
+  appendContentBodySlot,
   createClientEntry,
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
 import { resolveShareOptions, validateShareOptions } from "./src/options.js";
-import {
-  injectShareControls,
-  renderShareControls,
-  SHARE_ATTRIBUTE,
-} from "./src/render.js";
+import { renderShareControls } from "./src/render.js";
 import { buildAbsoluteUrl } from "./src/services.js";
 import type { ShareOptions } from "./src/types.js";
 
@@ -24,7 +21,6 @@ export {
   validateShareOptions,
 } from "./src/options.js";
 export {
-  injectShareControls,
   renderShareControls,
   SHARE_ATTRIBUTE,
   SHARE_ROOT_CLASS,
@@ -51,8 +47,8 @@ export const SHARE_PLUGIN_NAME = "share";
  * Per-article share controls.
  *
  * For every entry the plugin builds absolute share URLs for the configured
- * services and injects the controls into the manifest entry HTML, which is the
- * final rendering source. The links are ordinary anchors, so they work without
+ * services and contributes the controls to an article layout slot. The links
+ * are ordinary anchors, so they work without
  * JavaScript; only the copy-link action is enhanced at runtime.
  */
 export function share(options: ShareOptions = {}) {
@@ -71,16 +67,19 @@ export function share(options: ShareOptions = {}) {
       if (!config) return;
 
       for (const entry of manifest.entries) {
-        if (!entry.html || entry.html.includes(SHARE_ATTRIBUTE)) continue;
-
         const block = renderShareControls(resolved, {
           url: buildAbsoluteUrl(config, entry.permalink),
           title: entry.title,
         });
         if (block === "") continue;
 
-        const html = injectShareControls(entry.html, block, resolved.placement);
-        entry.html = html;
+        const slot =
+          resolved.placement === "top"
+            ? "article.before-content"
+            : "article.footer";
+        if (!hasSlotFragment(entry.bodySlots?.[slot], block)) {
+          appendContentBodySlot(entry, slot, block);
+        }
       }
     },
     assets: [createStyleAsset(SHARE_PLUGIN_NAME)],
@@ -90,3 +89,13 @@ export function share(options: ShareOptions = {}) {
 
 /** Alias matching the `*Plugin` suffix used by other plugin factories. */
 export const sharePlugin = share;
+
+function hasSlotFragment(slot: string | undefined, fragment: string): boolean {
+  return (
+    slot === fragment ||
+    slot?.startsWith(`${fragment}\n`) ||
+    slot?.endsWith(`\n${fragment}`) ||
+    slot?.includes(`\n${fragment}\n`) ||
+    false
+  );
+}

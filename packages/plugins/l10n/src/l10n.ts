@@ -49,7 +49,7 @@ export type L10nOptions = {
 export type L10nUiOptions =
   | false
   | {
-      /** Defaults to the standard `article.after-meta` slot. */
+      /** Defaults to the standard `article.metadata` slot. */
       slot?: ContentBodySlot;
       /** Replaces the built-in server-rendered LanguageSwitcher. */
       render?: (context: LanguageSwitcherRenderContext) => string | null;
@@ -343,7 +343,7 @@ function validateOptions(options: L10nOptions): string[] {
 function resolveUiOptions(ui: L10nUiOptions | undefined): ResolvedUiOptions {
   if (ui === false) return false;
   return {
-    slot: ui?.slot ?? "article.after-meta",
+    slot: ui?.slot ?? "article.metadata",
     render: ui?.render ?? renderLanguageSwitcher,
   };
 }

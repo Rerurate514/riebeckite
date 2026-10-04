@@ -8,12 +8,11 @@ time. No client-side JavaScript is required.
 ## Overview
 
 When the content manifest is created, `properties()` renders a
-`section.rb-properties[data-properties]` from every entry's frontmatter. By
-default the panel is prepended (or appended) to the rendered note. With
-`render: "slot"` the note HTML is left untouched and the panel is published on
-`ContentManifestEntry.bodySlots.properties`, so the Site decides where to render
-it. The frontmatter stays the single source of truth — there is nothing to write
-in the Markdown body.
+`section.rb-properties[data-properties]` from every entry's frontmatter. The
+note HTML is left untouched and the panel is published on
+`ContentManifestEntry.bodySlots["article.metadata"]`, so the Site decides where
+to render it. The frontmatter stays the single source of truth — there is
+nothing to write in the Markdown body.
 
 Values are rendered by type:
 
@@ -47,11 +46,9 @@ export default defineConfig({
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `title` | `string \| null` | `"Properties"` | Panel heading. `null` omits it |
-| `position` | `"start" \| "end"` | `"start"` | Insert before or after the note body |
 | `include` | `string[]` | unset | Render only these keys |
 | `exclude` | `string[]` | `["publish", "permalink", "aliases", "redirect_from"]` | Keys to hide |
 | `order` | `string[]` | unset | Display order for selected keys: listed keys first, then the rest in frontmatter order |
-| `render` | `"html" \| "slot"` | `"html"` | `"html"` inserts at the start/end of the note; `"slot"` publishes on `bodySlots.properties` |
 | `hideEmpty` | `boolean` | `true` | Skip `null`, `""`, `[]`, and `{}` values |
 | `className` | `string` | `"rb-properties"` | Root CSS class |
 | `collapsed` | `boolean` | `false` | Render inside a `<details>` element |
@@ -59,27 +56,26 @@ export default defineConfig({
 ```ts
 properties({
   title: "メタデータ",
-  position: "end",
   exclude: ["publish", "permalink", "aliases", "redirect_from", "draft"],
   collapsed: true,
 });
 ```
 
-### Rendering into a body slot
+### Rendering the metadata slot
 
-With `render: "slot"`, the plugin writes the panel to
-`ContentManifestEntry.bodySlots.properties`. The Site route passes `bodySlots`
-to its article component, which chooses where to render it. Combine `include`
-and `order` to decide which keys are shown and in what order:
+The plugin writes the panel to `ContentManifestEntry.bodySlots["article.metadata"]`.
+The Site route passes `bodySlots` to its article component and chooses the
+metadata position in its layout. Combine `include` and `order` to decide which
+keys are shown and in what order:
 
 ```tsx
 // app/components/article.tsx (site side)
 function SiteArticle({ bodySlots }: { bodySlots?: Readonly<Record<string, string>> }) {
-  const propertiesHtml = bodySlots?.properties;
+  const propertiesHtml = bodySlots?.["article.metadata"];
 
   return propertiesHtml ? (
     <div
-      class="article-properties"
+      class="site-article__metadata"
       dangerouslySetInnerHTML={{ __html: propertiesHtml }}
     />
   ) : null;
@@ -88,7 +84,6 @@ function SiteArticle({ bodySlots }: { bodySlots?: Readonly<Record<string, string
 
 ```ts
 properties({
-  render: "slot",
   include: ["title", "created", "updated", "tags"],
   order: ["title", "created", "updated", "tags"],
 });
@@ -104,7 +99,7 @@ contract. A plugin never owns routes or the shell.
 - `resolvePropertiesOptions(options?)` — default resolution
 - `renderPropertiesPanel(frontmatter, options?, context?)` — pure renderer
 - `buildTagHref(tag)` — tag route builder
-- Types: `PropertiesOptions`, `PropertiesPosition`, `PropertiesRenderMode`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`, `PropertiesLinkResolver`, `PropertiesMessage`
+- Types: `PropertiesOptions`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`, `PropertiesLinkResolver`, `PropertiesMessage`
 
 ## See also
 

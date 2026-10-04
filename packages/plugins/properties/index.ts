@@ -25,9 +25,7 @@ export type {
   PropertiesLinkResolver,
   PropertiesMessage,
   PropertiesOptions,
-  PropertiesPosition,
   PropertiesRenderContext,
-  PropertiesRenderMode,
   ResolvedPropertiesOptions,
 } from "./src/types.js";
 export {
@@ -46,9 +44,8 @@ const PACKAGE_NAME = "@riebeckite/plugin-properties";
 
 /**
  * Renders each note's frontmatter as an Obsidian-style property panel at build
- * time. By default the panel is prepended (or appended) to the manifest entry
- * HTML, which is the final rendering source. With `render: "slot"` the panel is
- * instead published on `ContentManifestEntry.bodySlots` for the Site to place.
+ * time and contributes it to the article metadata slot. The Site decides where
+ * that semantic slot appears in its layout.
  */
 export function properties(options: PropertiesOptions = {}) {
   const resolved = resolvePropertiesOptions(options);
@@ -79,27 +76,15 @@ function applyPropertiesPanels(
   const resolveLink = createLinkResolver(manifest);
 
   for (const entry of manifest.entries) {
-    // Guard against double insertion when a panel was already rendered.
-    if (!entry.html || entry.html.includes(PROPERTIES_ATTRIBUTE)) continue;
-
     const panel = renderPropertiesPanel(entry.frontmatter, resolved, {
       resolveLink,
       onMessage: (message) => emitFileMessage(diagnostics, entry.slug, message),
     });
     if (!panel) continue;
 
-    if (resolved.render === "slot") {
-      if (!hasSlotPanel(entry.bodySlots?.properties, panel)) {
-        appendContentBodySlot(entry, "properties", panel);
-      }
-      continue;
+    if (!hasSlotPanel(entry.bodySlots?.["article.metadata"], panel)) {
+      appendContentBodySlot(entry, "article.metadata", panel);
     }
-
-    const html =
-      resolved.position === "end"
-        ? `${entry.html}${panel}`
-        : `${panel}${entry.html}`;
-    entry.html = html;
   }
 }
 

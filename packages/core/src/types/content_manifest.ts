@@ -30,8 +30,8 @@ export type ContentManifestPluginAsset = PluginAsset & {
  * Other names remain valid so a custom Site can define its own layout slots.
  */
 export type ContentBodySlot =
-  | "article.after-header"
-  | "article.after-meta"
+  | "article.header"
+  | "article.metadata"
   | "article.aside"
   | "article.before-content"
   | "article.after-content"

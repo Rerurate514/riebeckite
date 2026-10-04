@@ -1,16 +1,18 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import {
+  type ContentManifest,
+  type ContentManifestEntry,
+  resolveConfig,
+} from "@riebeckite/core";
 import { initShare } from "../client.js";
+import { share } from "../index.ts";
 import {
   DEFAULT_SHARE_SERVICES,
   resolveShareOptions,
   validateShareOptions,
 } from "../src/options.js";
-import {
-  injectShareControls,
-  renderShareControls,
-  SHARE_ATTRIBUTE,
-} from "../src/render.js";
+import { renderShareControls, SHARE_ATTRIBUTE } from "../src/render.js";
 import {
   buildShareLinks,
   buildShareUrl,
@@ -19,6 +21,15 @@ import {
 
 const URL = "https://example.com/posts/hello";
 const TITLE = "Hello World";
+
+function manifestOf(entry: ContentManifestEntry): ContentManifest {
+  return {
+    entries: [entry],
+    publicEntries: [entry],
+    bySlug: new Map([[entry.slug, entry]]),
+    contentIndex: new Map(),
+  } as unknown as ContentManifest;
+}
 
 test("normalizeMastodonInstance accepts hosts and full URLs", () => {
   assert.equal(normalizeMastodonInstance("mastodon.social"), "mastodon.social");
@@ -146,29 +157,36 @@ test("renderShareControls returns empty when nothing is renderable", () => {
   assert.equal(renderShareControls(options, { url: URL, title: TITLE }), "");
 });
 
-test("injectShareControls places the block for each placement", () => {
-  const block = `<div ${SHARE_ATTRIBUTE}></div>`;
-  const fragment = "<article><p>Body</p></article>";
+test("share contributes controls to its configured article slot", () => {
+  const entry: ContentManifestEntry = {
+    slug: "hello",
+    permalink: "/hello",
+    publicLocation: { slug: "hello", permalink: "/hello" },
+    title: TITLE,
+    frontmatter: {},
+    html: "<p>Body</p>",
+    publishing: { visibility: "public", routable: true, discoverable: true },
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+  };
+  const context = {
+    manifest: manifestOf(entry),
+    config: resolveConfig({
+      site: { title: "Test", baseUrl: "https://example.com" },
+    }),
+  };
 
-  const top = injectShareControls(fragment, block, "top");
-  assert.equal(top.startsWith(`<article>${block}`), true);
-
-  const bottom = injectShareControls(fragment, block, "bottom");
-  assert.equal(bottom.endsWith(`</article>${block}`), true);
-
-  const bare = injectShareControls("<p>Body</p>", block, "bottom");
-  assert.equal(bare, `<p>Body</p>\n${block}`);
-});
-
-test("injectShareControls is idempotent", () => {
-  const fragment = "<p>Body</p>";
-  const once = injectShareControls(
-    fragment,
-    "<div data-rr-share></div>",
-    "top",
+  share({ services: ["x"], placement: "top" }).onManifestCreated?.(
+    context as never,
   );
-  const twice = injectShareControls(once, "<div data-rr-share></div>", "top");
-  assert.equal(twice, once);
+
+  assert.equal(entry.html, "<p>Body</p>");
+  assert.match(
+    entry.bodySlots?.["article.before-content"] ?? "",
+    /data-rr-share/,
+  );
 });
 
 test("initShare is a no-op without a document", () => {

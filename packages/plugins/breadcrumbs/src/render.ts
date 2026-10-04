@@ -113,30 +113,3 @@ function hasBreadcrumbListType(value: unknown): boolean {
   if (record["@type"] === "BreadcrumbList") return true;
   return hasBreadcrumbListType(record["@graph"]);
 }
-
-/**
- * Places the completed navigation at the top of the note.
- *
- * When the HTML is a full page (it contains an `<article>` or `<body>` tag)
- * the nav is inserted right after that opening tag. The manifest `html` we
- * operate on is normally a content fragment the Site wraps in its own
- * `<article>`, in which case the nav is simply prepended so it renders above
- * the note's title.
- */
-export function injectBreadcrumbNav(html: string, nav: string): string {
-  if (nav === "" || html.includes(BREADCRUMBS_ATTRIBUTE)) return html;
-
-  const article = /<article\b[^>]*>/i.exec(html);
-  if (article) {
-    const end = article.index + article[0].length;
-    return `${html.slice(0, end)}${nav}${html.slice(end)}`;
-  }
-
-  const body = /<body\b[^>]*>/i.exec(html);
-  if (body) {
-    const end = body.index + body[0].length;
-    return `${html.slice(0, end)}${nav}${html.slice(end)}`;
-  }
-
-  return `${nav}\n${html}`;
-}

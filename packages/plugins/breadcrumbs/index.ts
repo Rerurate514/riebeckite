@@ -1,4 +1,5 @@
 import {
+  appendContentBodySlot,
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
@@ -6,11 +7,9 @@ import {
 import { buildBreadcrumbItems } from "./src/breadcrumbs.js";
 import { resolveBreadcrumbsOptions } from "./src/options.js";
 import {
-  BREADCRUMBS_ATTRIBUTE,
   buildBreadcrumbHeadTag,
   buildBreadcrumbJsonLd,
   hasBreadcrumbHeadTag,
-  injectBreadcrumbNav,
   renderBreadcrumbNav,
 } from "./src/render.js";
 import type { BreadcrumbsOptions } from "./src/types.js";
@@ -22,7 +21,6 @@ export {
   buildBreadcrumbHeadTag,
   buildBreadcrumbJsonLd,
   hasBreadcrumbHeadTag,
-  injectBreadcrumbNav,
   renderBreadcrumbNav,
 } from "./src/render.js";
 export type {
@@ -37,8 +35,8 @@ export const BREADCRUMBS_PLUGIN_NAME = "breadcrumbs";
  * Public-location breadcrumbs for Riebeckite notes.
  *
  * For every published entry it derives a trail from the note's canonical public location and
- * inserts a `<nav>` at the top of the manifest entry HTML, which is the final
- * rendering source. The hierarchical BreadcrumbList JSON-LD is contributed
+ * contributes a `<nav>` to the article header. The hierarchical BreadcrumbList
+ * JSON-LD is contributed
  * through `entry.headTags` so the Site shell can render it in the document
  * `<head>`. No client runtime is required.
  */
@@ -59,8 +57,6 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
       const { config, manifest } = context;
       if (!config) return;
       for (const entry of manifest.publicEntries) {
-        if (entry.html.includes(BREADCRUMBS_ATTRIBUTE)) continue;
-
         const items = buildBreadcrumbItems({
           manifest,
           entry,
@@ -69,9 +65,10 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
         });
         if (items.length === 0) continue;
 
-        let html = entry.html;
         const nav = renderBreadcrumbNav(items, resolved);
-        html = injectBreadcrumbNav(html, nav);
+        if (!hasSlotFragment(entry.bodySlots?.["article.header"], nav)) {
+          appendContentBodySlot(entry, "article.header", nav);
+        }
         if (resolved.jsonLd) {
           const schema = buildBreadcrumbJsonLd(config, items);
           if (!hasBreadcrumbHeadTag(entry.headTags)) {
@@ -81,7 +78,6 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
             ];
           }
         }
-        entry.html = html;
       }
     },
     assets: [createStyleAsset(BREADCRUMBS_PLUGIN_NAME)],
@@ -90,6 +86,16 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
 
 /** Alias matching the `*Plugin` suffix used by other plugin factories. */
 export const breadcrumbsPlugin = breadcrumbs;
+
+function hasSlotFragment(slot: string | undefined, fragment: string): boolean {
+  return (
+    slot === fragment ||
+    slot?.startsWith(`${fragment}\n`) ||
+    slot?.endsWith(`\n${fragment}`) ||
+    slot?.includes(`\n${fragment}\n`) ||
+    false
+  );
+}
 
 function validateBreadcrumbsOptions(
   options: BreadcrumbsOptions | undefined,

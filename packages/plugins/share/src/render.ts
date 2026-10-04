@@ -1,10 +1,6 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { buildShareLinks, type ShareTarget } from "./services.js";
-import type {
-  ResolvedShareOptions,
-  SharePlacement,
-  ShareService,
-} from "./types.js";
+import type { ResolvedShareOptions, ShareService } from "./types.js";
 
 /** Attribute that marks the generated controls for tests, CSS, and JS. */
 export const SHARE_ATTRIBUTE = "data-rr-share";
@@ -39,40 +35,6 @@ export function renderShareControls(
     `<p class="${SHARE_ROOT_CLASS}__status" role="status" aria-live="polite"></p>` +
     `</div>`
   );
-}
-
-/**
- * Inserts the rendered controls into a note fragment. Top placement lands
- * after the opening `<article>` (or at the start) and bottom placement lands
- * before the closing `</article>` (or at the end).
- */
-export function injectShareControls(
-  html: string,
-  block: string,
-  placement: SharePlacement,
-): string {
-  if (block === "" || html.includes(SHARE_ATTRIBUTE)) return html;
-
-  if (placement === "top") {
-    const article = /<article\b[^>]*>/i.exec(html);
-    if (article) {
-      const end = article.index + article[0].length;
-      return `${html.slice(0, end)}${block}${html.slice(end)}`;
-    }
-    const body = /<body\b[^>]*>/i.exec(html);
-    if (body) {
-      const end = body.index + body[0].length;
-      return `${html.slice(0, end)}${block}${html.slice(end)}`;
-    }
-    return `${block}\n${html}`;
-  }
-
-  const closeIndex = html.toLowerCase().lastIndexOf("</article>");
-  if (closeIndex !== -1) {
-    const articleEnd = closeIndex + "</article>".length;
-    return `${html.slice(0, articleEnd)}${block}${html.slice(articleEnd)}`;
-  }
-  return `${html}\n${block}`;
 }
 
 function renderLinkItem(link: {

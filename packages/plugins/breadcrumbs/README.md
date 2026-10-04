@@ -104,7 +104,6 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 - `buildBreadcrumbItems({ manifest, entry, config, homeLabel })` — build the trail
 - `renderBreadcrumbNav(items, options)` — render the navigation HTML
 - `buildBreadcrumbJsonLd(config, items)` — build the JSON-LD object
-- `injectBreadcrumbNav(html, nav)` / `injectBreadcrumbJsonLd(html, schema)` — HTML injection helpers
 - Types: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`
 
 ## Limitations
@@ -116,4 +115,3 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 ## See also
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
-

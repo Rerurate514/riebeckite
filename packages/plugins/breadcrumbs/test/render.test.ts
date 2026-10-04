@@ -14,7 +14,6 @@ import {
   buildBreadcrumbHeadTag,
   buildBreadcrumbJsonLd,
   hasBreadcrumbHeadTag,
-  injectBreadcrumbNav,
   renderBreadcrumbNav,
   resolveBreadcrumbsOptions,
 } from "../index.ts";
@@ -204,29 +203,6 @@ test("hasBreadcrumbHeadTag detects an existing BreadcrumbList script", () => {
   );
 });
 
-test("injectBreadcrumbNav places the nav in the right spot", () => {
-  const nav = "<nav>x</nav>";
-
-  assert.equal(injectBreadcrumbNav("<p>x</p>", ""), "<p>x</p>");
-  assert.equal(
-    injectBreadcrumbNav(`<p ${BREADCRUMBS_ATTRIBUTE}>x</p>`, nav),
-    `<p ${BREADCRUMBS_ATTRIBUTE}>x</p>`,
-  );
-  assert.equal(injectBreadcrumbNav("<p>x</p>", nav), `<nav>x</nav>\n<p>x</p>`);
-  assert.equal(
-    injectBreadcrumbNav('<article class="post"><p>x</p></article>', nav),
-    `<article class="post">${nav}<p>x</p></article>`,
-  );
-  assert.equal(
-    injectBreadcrumbNav("<body><p>x</p></body>", nav),
-    `<body>${nav}<p>x</p></body>`,
-  );
-  assert.equal(
-    injectBreadcrumbNav("<body><article><p>x</p></article></body>", nav),
-    `<body><article>${nav}<p>x</p></article></body>`,
-  );
-});
-
 test("golden: rendered breadcrumb navigation", () => {
   const html = renderBreadcrumbNav(
     [
@@ -245,7 +221,7 @@ test("golden: rendered breadcrumb navigation", () => {
   assertGolden(html, new URL("./__golden__/nav.html", import.meta.url));
 });
 
-test("onManifestCreated injects the nav and a JSON-LD head tag", async () => {
+test("onManifestCreated contributes the nav and a JSON-LD head tag", async () => {
   const plugin = breadcrumbs({ homeLabel: "Home" });
   const folder = makeEntry({
     slug: "docs/README",
@@ -267,8 +243,12 @@ test("onManifestCreated injects the nav and a JSON-LD head tag", async () => {
 
   await plugin.onManifestCreated?.(context);
 
-  assert.ok(entry.html.startsWith('<nav class="rb-breadcrumbs"'));
-  assert.ok(entry.html.endsWith("<p>Body</p>"));
+  assert.equal(entry.html, "<p>Body</p>");
+  assert.ok(
+    entry.bodySlots?.["article.header"]?.startsWith(
+      '<nav class="rb-breadcrumbs"',
+    ),
+  );
   assert.equal(entry.headTags?.length, 1);
 
   const head = entry.headTags?.[0];
@@ -284,9 +264,9 @@ test("onManifestCreated injects the nav and a JSON-LD head tag", async () => {
     ["Home", "Documentation", "Intro"],
   );
 
-  const injected = entry.html;
+  const contributed = entry.bodySlots?.["article.header"];
   await plugin.onManifestCreated?.(context);
-  assert.equal(entry.html, injected);
+  assert.equal(entry.bodySlots?.["article.header"], contributed);
   assert.equal(entry.headTags?.length, 1);
 });
 
@@ -310,7 +290,9 @@ test("onManifestCreated can skip the JSON-LD script", async () => {
 
   await plugin.onManifestCreated?.(context);
 
-  assert.ok(entry.html.includes(BREADCRUMBS_ATTRIBUTE));
+  assert.ok(
+    entry.bodySlots?.["article.header"]?.includes(BREADCRUMBS_ATTRIBUTE),
+  );
   assert.equal(entry.headTags, undefined);
 });
 

@@ -303,9 +303,7 @@ function showCopiedState(
 }
 
 function findArticle(): HTMLElement | null {
-  return document.querySelector<HTMLElement>(
-    ".rb-article-body, .article-shell__body, [data-slot='article-body'], article",
-  );
+  return document.querySelector<HTMLElement>('[data-slot="article-body"]');
 }
 
 function hasElement(className: string): boolean {

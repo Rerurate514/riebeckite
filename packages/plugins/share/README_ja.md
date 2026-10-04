@@ -122,7 +122,6 @@ import "@riebeckite/plugin-share/style.css";
 - `buildShareUrl(service, target, instance?)` — 1 サービスの URL を組み立てる
 - `buildShareLinks(options, target)` — リンクを持つサービスをすべて組み立てる
 - `renderShareControls(options, target)` — コントロールの HTML を生成する
-- `injectShareControls(html, block, placement)` — ノート断片に挿入する
 - `initShare()` — ブラウザ初期化関数（`@riebeckite/plugin-share/client` からも
   読み込める）
 - 定数: `SHARE_SERVICES`, `SHARE_ATTRIBUTE`, `SHARE_ROOT_CLASS`,
@@ -134,10 +133,9 @@ import "@riebeckite/plugin-share/style.css";
 
 - 共有 URL はビルド時に確定します。再ビルドすれば常に正しく再計算されます。
 - Mastodon は具体的なインスタンスなしには有効化できません。
-- プラグインはノート断片に挿入します。レイアウトを所有する Site は、CSS で
-  位置を変えたり、ページごとに出力しない選択もできます。
+- `top` は `article.before-content`、`bottom` は `article.footer` にコントロールを
+  提供します。Site は layout でその semantic slot を配置します。
 
 ## 関連
 
 - [プラグインガイド](../../../docs/ja/docs/reference/plugin-api.md)
-

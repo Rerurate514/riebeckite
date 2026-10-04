@@ -37,7 +37,7 @@ translation: getting-started
 
 ## 標準 LanguageSwitcher
 
-`l10n(...)` は標準記事レイアウトの `article.after-meta` スロットへ、組み込みの LanguageSwitcher を登録します。標準 Site consumer がこのスロットを描画するため、l10n 専用の記事レイアウト実装は不要です。実在する翻訳が 2 つ未満のページには表示されません。
+`l10n(...)` は標準記事レイアウトの `article.metadata` スロットへ、組み込みの LanguageSwitcher を登録します。標準 Site consumer がこのスロットを描画するため、l10n 専用の記事レイアウト実装は不要です。実在する翻訳が 2 つ未満のページには表示されません。
 
 ```ts
 // URL とメタデータは維持し、UI だけを無効化します。

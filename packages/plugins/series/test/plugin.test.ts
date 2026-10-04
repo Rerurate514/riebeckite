@@ -64,15 +64,36 @@ test("the manifest hook appends navigation only to multi-part series", async () 
   const p2 = manifest.bySlug.get("p2");
   assert.ok(p1);
   assert.ok(p2);
-  assert.match(p1.html, /^<p>one<\/p>\n<nav class="rb-series"/);
-  assert.match(p1.html, /data-series="Guide"/);
-  assert.doesNotMatch(p1.html, /rb-series__prev/);
-  assert.match(p1.html, /class="rb-series__next"[^>]*href="\/p2"/);
+  assert.equal(p1.html, "<p>one</p>");
+  assert.match(
+    p1.bodySlots?.["article.footer"] ?? "",
+    /^<nav class="rb-series"/,
+  );
+  assert.match(p1.bodySlots?.["article.footer"] ?? "", /data-series="Guide"/);
+  assert.doesNotMatch(
+    p1.bodySlots?.["article.footer"] ?? "",
+    /rb-series__prev/,
+  );
+  assert.match(
+    p1.bodySlots?.["article.footer"] ?? "",
+    /class="rb-series__next"[^>]*href="\/p2"/,
+  );
 
-  assert.match(p2.html, /class="rb-series__prev"[^>]*href="\/p1"/);
-  assert.doesNotMatch(p2.html, /rb-series__next/);
+  assert.equal(p2.html, "<p>two</p>");
+  assert.match(
+    p2.bodySlots?.["article.footer"] ?? "",
+    /class="rb-series__prev"[^>]*href="\/p1"/,
+  );
+  assert.doesNotMatch(
+    p2.bodySlots?.["article.footer"] ?? "",
+    /rb-series__next/,
+  );
 
   assert.equal(manifest.bySlug.get("solo")?.html, "<p>solo</p>");
+  assert.equal(
+    manifest.bySlug.get("solo")?.bodySlots?.["article.footer"],
+    undefined,
+  );
   assert.deepEqual(diagnostics, []);
 });
 
@@ -93,7 +114,9 @@ test("the manifest hook does not duplicate generated navigation", async () => {
   await plugin.onManifestCreated?.({ manifest, diagnostics } as never);
 
   assert.equal(
-    manifest.bySlug.get("p1")?.html.match(/<nav class="rb-series"/g)?.length,
+    manifest.bySlug
+      .get("p1")
+      ?.bodySlots?.["article.footer"]?.match(/<nav class="rb-series"/g)?.length,
     1,
   );
 });
@@ -109,7 +132,7 @@ function source(files: Record<string, string>): ContentSource {
   };
 }
 
-test("writes the navigation into the cached PostContent used by the content route", async () => {
+test("publishes navigation in the manifest footer slot without changing cached PostContent", async () => {
   const files = {
     "part-1.md":
       "---\npublish: true\ntitle: Part 1\nseries: Guide\nseries_order: 1\n---\n# Part 1",
@@ -129,7 +152,13 @@ test("writes the navigation into the cached PostContent used by the content rout
   const processed = await content.getProcessedContent("part-1");
 
   assert.equal(processed.html, manifest.bySlug.get("part-1")?.html);
-  assert.match(processed.html, /<nav class="rb-series"/);
-  assert.match(processed.html, /data-series="Guide"/);
-  assert.match(processed.html, /href="\/part-2"/);
+  assert.doesNotMatch(processed.html, /<nav class="rb-series"/);
+  assert.match(
+    manifest.bySlug.get("part-1")?.bodySlots?.["article.footer"] ?? "",
+    /data-series="Guide"/,
+  );
+  assert.match(
+    manifest.bySlug.get("part-1")?.bodySlots?.["article.footer"] ?? "",
+    /href="\/part-2"/,
+  );
 });

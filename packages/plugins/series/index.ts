@@ -1,4 +1,5 @@
 import {
+  appendContentBodySlot,
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
@@ -59,8 +60,10 @@ export function series(options: SeriesOptions = {}) {
             member.slug,
             options,
           );
-          if (!entry.html.includes(navigation)) {
-            entry.html = `${entry.html}\n${navigation}`;
+          if (
+            !hasSlotFragment(entry.bodySlots?.["article.footer"], navigation)
+          ) {
+            appendContentBodySlot(entry, "article.footer", navigation);
           }
         }
       }
@@ -70,6 +73,16 @@ export function series(options: SeriesOptions = {}) {
 }
 
 export const seriesPlugin = series;
+
+function hasSlotFragment(slot: string | undefined, fragment: string): boolean {
+  return (
+    slot === fragment ||
+    slot?.startsWith(`${fragment}\n`) ||
+    slot?.endsWith(`\n${fragment}`) ||
+    slot?.includes(`\n${fragment}\n`) ||
+    false
+  );
+}
 
 function validateSeriesOptions(
   options: SeriesOptions | undefined,

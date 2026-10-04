@@ -53,8 +53,8 @@ export default defineConfig({
 > More content.
 ```
 
-Output: `div.callout.callout-{type}` with `data-callout`, plus
-`is-collapsible` / `is-collapsed` for `+` / `-` markers. Titles fall back to
+Output: `div.rr-callout.rr-callout--{type}` with `data-callout`, plus
+`rr-callout--collapsible` / `rr-callout--collapsed` for `+` / `-` markers. Titles fall back to
 built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
 
 ### Inline tags
@@ -88,4 +88,3 @@ built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README.md)
-

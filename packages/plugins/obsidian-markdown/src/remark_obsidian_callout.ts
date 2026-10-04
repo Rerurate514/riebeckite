@@ -63,7 +63,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
           data: {
             hName: "div",
             hProperties: {
-              className: ["callout-title", `callout-${type}-title`],
+              className: ["rr-callout__title"],
             },
           },
           children: [
@@ -71,7 +71,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
               type: "paragraph",
               data: {
                 hName: "div",
-                hProperties: { className: ["callout-icon"] },
+                hProperties: { className: ["rr-callout__icon"] },
               },
               children: [],
             },
@@ -79,7 +79,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
               type: "paragraph",
               data: {
                 hName: "div",
-                hProperties: { className: ["callout-title-inner"] },
+                hProperties: { className: ["rr-callout__title-inner"] },
               },
               children: [{ type: "text", value: resolvedTitle }],
             },
@@ -90,14 +90,14 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
           type: "paragraph",
           data: {
             hName: "div",
-            hProperties: { className: ["callout-content"] },
+            hProperties: { className: ["rr-callout__content"] },
           },
           children: bodyChildren,
         } as unknown as BlockContent;
 
-        const className = ["callout", "rr-callout", `callout-${type}`];
-        if (fold) className.push("is-collapsible");
-        if (fold === "-") className.push("is-collapsed");
+        const className = ["rr-callout", `rr-callout--${type}`];
+        if (fold) className.push("rr-callout--collapsible");
+        if (fold === "-") className.push("rr-callout--collapsed");
 
         node.data = {
           ...node.data,

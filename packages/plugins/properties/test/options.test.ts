@@ -12,11 +12,9 @@ import {
 test("resolvePropertiesOptions applies documented defaults", () => {
   assert.deepEqual(resolvePropertiesOptions(), {
     title: DEFAULT_PROPERTIES_TITLE,
-    position: "start",
     include: undefined,
     exclude: DEFAULT_PROPERTIES_EXCLUDE,
     order: undefined,
-    render: "html",
     hideEmpty: true,
     className: DEFAULT_PROPERTIES_CLASS,
     collapsed: false,
@@ -40,22 +38,18 @@ test("resolvePropertiesOptions keeps explicit overrides including null title", (
   assert.deepEqual(
     resolvePropertiesOptions({
       title: null,
-      position: "end",
       include,
       exclude: ["x"],
       order,
-      render: "slot",
       hideEmpty: false,
       className: "custom",
       collapsed: true,
     }),
     {
       title: null,
-      position: "end",
       include,
       exclude: ["x"],
       order,
-      render: "slot",
       hideEmpty: false,
       className: "custom",
       collapsed: true,
@@ -69,11 +63,9 @@ test("validatePropertiesOptions accepts undefined and valid options", () => {
   assert.deepEqual(
     validatePropertiesOptions({
       title: null,
-      position: "start",
       include: ["a"],
       exclude: ["b"],
       order: ["b", "a"],
-      render: "slot",
       hideEmpty: false,
       className: "x",
       collapsed: true,
@@ -85,11 +77,9 @@ test("validatePropertiesOptions accepts undefined and valid options", () => {
 test("validatePropertiesOptions reports every invalid field with its path", () => {
   const issues = validatePropertiesOptions({
     title: 1,
-    position: "middle",
     include: "x",
     exclude: [1],
     order: [""],
-    render: "json",
     hideEmpty: "yes",
     className: "   ",
     collapsed: "no",
@@ -99,16 +89,13 @@ test("validatePropertiesOptions reports every invalid field with its path", () =
     issues.map((issue) => issue.path),
     [
       "title",
-      "position",
       "include",
       "exclude",
       "order",
-      "render",
       "hideEmpty",
       "className",
       "collapsed",
     ],
   );
-  assert.match(issues[1]?.message ?? "", /"start" or "end"/);
-  assert.match(issues[5]?.message ?? "", /"html" or "slot"/);
+  assert.match(issues[4]?.message ?? "", /boolean/);
 });

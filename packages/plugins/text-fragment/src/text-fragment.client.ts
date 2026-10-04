@@ -1,8 +1,7 @@
 import { buildQuoteMarkdown, buildTextFragmentUrl } from "./text-fragment.js";
 
 /** Article body container emitted by the Honox article primitives. */
-const ARTICLE_SELECTOR =
-  "[data-slot='article-body'], .rb-article-body, .prose, article";
+const ARTICLE_SELECTOR = '[data-slot="article-body"]';
 
 /** Regions a text fragment link makes no sense for. */
 const EXCLUDED_SELECTOR = "pre, code, a[href], [data-no-share]";

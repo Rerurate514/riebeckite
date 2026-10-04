@@ -1,4 +1,8 @@
-import { createStyleAsset, definePlugin } from "@riebeckite/core";
+import {
+  appendContentBodySlot,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 import {
   buildWebmentionDiagnostics,
   WEBMENTION_PLUGIN_NAME,
@@ -10,7 +14,7 @@ import {
   validateWebmentionOptions,
 } from "./src/options.js";
 import { supportsWebmentionCapability } from "./src/provider.js";
-import { renderWebmentionSection, WEBMENTION_ATTRIBUTE } from "./src/render.js";
+import { renderWebmentionSection } from "./src/render.js";
 import { countUnmatchedMentions, groupMentionsBySlug } from "./src/server.js";
 import type { WebmentionOptions } from "./src/types.js";
 
@@ -175,13 +179,15 @@ export function webmention(options: WebmentionOptions = {}) {
       );
       for (const [slug, list] of grouped) {
         const entry = context.manifest.bySlug.get(slug);
-        if (!entry || entry.html.includes(WEBMENTION_ATTRIBUTE)) continue;
+        if (!entry) continue;
         const section = renderWebmentionSection(
           list.slice(0, resolved.limit),
           resolved,
         );
         if (section === "") continue;
-        entry.html = `${entry.html}${section}`;
+        if (!hasSlotFragment(entry.bodySlots?.["article.footer"], section)) {
+          appendContentBodySlot(entry, "article.footer", section);
+        }
       }
 
       const unmatched = countUnmatchedMentions(
@@ -205,3 +211,13 @@ export function webmention(options: WebmentionOptions = {}) {
 }
 
 export { buildWebmentionDiagnostics };
+
+function hasSlotFragment(slot: string | undefined, fragment: string): boolean {
+  return (
+    slot === fragment ||
+    slot?.startsWith(`${fragment}\n`) ||
+    slot?.endsWith(`\n${fragment}`) ||
+    slot?.includes(`\n${fragment}\n`) ||
+    false
+  );
+}

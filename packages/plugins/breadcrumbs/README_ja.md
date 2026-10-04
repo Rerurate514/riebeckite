@@ -103,7 +103,6 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 - `buildBreadcrumbItems({ manifest, entry, config, homeLabel })` — パンくず列を組み立てる
 - `renderBreadcrumbNav(items, options)` — ナビゲーション HTML を生成する
 - `buildBreadcrumbJsonLd(config, items)` — JSON-LD オブジェクトを生成する
-- `injectBreadcrumbNav(html, nav)` / `injectBreadcrumbJsonLd(html, schema)` — HTML 注入ヘルパー
 - 型: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`
 
 ## 制約

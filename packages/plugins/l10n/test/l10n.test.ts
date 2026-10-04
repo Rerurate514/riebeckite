@@ -210,8 +210,7 @@ test("publishes the default LanguageSwitcher in a Site-owned article slot", asyn
     "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
   });
   const manifest = await content.getManifest();
-  const html =
-    manifest.bySlug.get("guide.en")?.bodySlots?.["article.after-meta"];
+  const html = manifest.bySlug.get("guide.en")?.bodySlots?.["article.metadata"];
   assert.match(html ?? "", /class="l10n-switcher"/);
   assert.match(html ?? "", /href="\/guide"/);
   assert.match(html ?? "", /href="\/en\/guide"/);
@@ -244,7 +243,7 @@ test("does not duplicate generated l10n fragments when entries are reused from c
     1,
   );
   assert.equal(
-    english?.bodySlots?.["article.after-meta"]?.match(/class="l10n-switcher"/g)
+    english?.bodySlots?.["article.metadata"]?.match(/class="l10n-switcher"/g)
       ?.length,
     1,
   );

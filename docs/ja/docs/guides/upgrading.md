@@ -332,6 +332,24 @@ Siteを変更
 
 という順番で確認する方が効率的です。
 
+## UI アーキテクチャの整理
+
+この major release では、以前の記事 UI contract との互換性を削除しました。
+
+| 以前 | 現在 | 対応 |
+| --- | --- | --- |
+| `article.after-header` | `article.header` | Site の見出しより前に描画します。 |
+| `article.after-meta` | `article.metadata` | 記事 metadata として描画します。 |
+| `bodySlots.properties` | `bodySlots["article.metadata"]` | Site の properties 専用分岐を削除します。 |
+| `properties({ position, render })` | `properties({ ... })` | 両方の option を削除します。Plugin は常に metadata を提供します。 |
+| `injectBreadcrumbNav`、`injectShareControls` | manifest body slot | import を削除し、Site が標準 slot を描画します。 |
+| `article-shell*`、`article-frontmatter*`、`.prose` | `rb-*`、`site-article-frontmatter*`、`[data-slot="article-body"]` | Site CSS と client selector を更新します。 |
+| `callout*`、`is-collapsed` | `rr-callout*` | Theme CSS を `rr-callout__*`、`rr-callout--*`、`data-callout` に更新します。 |
+
+標準 article slot は `article.header`、`article.metadata`、`article.aside`、
+`article.before-content`、`article.after-content`、`article.footer` です。Plugin は
+fragment を提供するだけで、HonoX route と Site component が配置を決めます。
+
 ### Replacement がある場合
 
 Warning に直接 Replacement が示されている場合は、それを確認します。

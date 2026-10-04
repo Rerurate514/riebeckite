@@ -68,7 +68,7 @@ No fallback pages are generated. If a translation is missing, the original targe
 
 ## Language switcher
 
-`l10n(...)` publishes a built-in, styled `LanguageSwitcher` in the standard `article.after-meta` layout slot. A standard site renders that slot, so no l10n-specific integration is needed. The switcher is omitted on a page with fewer than two real translations.
+`l10n(...)` publishes a built-in, styled `LanguageSwitcher` in the standard `article.metadata` layout slot. A standard site renders that slot, so no l10n-specific integration is needed. The switcher is omitted on a page with fewer than two real translations.
 
 ```ts
 // Keep URLs and metadata but do not render UI.

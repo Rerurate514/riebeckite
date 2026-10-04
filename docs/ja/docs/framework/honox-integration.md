@@ -297,8 +297,6 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
-また、後方互換のため、以前の `article-shell`、`article-shell__layout`、`article-shell__lead`、`article-frontmatter`、`article-shell__body` という class も出力します。これらは既存 CSS のための互換 hook であり、stable styling hook の contract には含まれません。新しい CSS は `rb-*` hook を対象にしてください。
-
 Primitive が担当するのは主に、
 
 - semantic HTML
@@ -509,7 +507,7 @@ properties
 
 のように article component 内の任意の位置へ配置できます。
 
-ここでの `Article` は Site 自身の article component であり、同名の `@riebeckite/honox/ui` primitive ではありません。scaffold の starter は標準 slot を決まった位置へ描画します(`article.aside`、`article.after-header`、`article.after-meta`、`article.before-content`、`article.after-content`、`article.footer`)。plugin 作者はこれらから選ぶか、Site に独自名の描画を依頼します。独自 slot は Site が描画を選ぶまで何も表示しません。slot renderer 自体は Site が所有し、`apps/web` の `ContentSlot` は Site-local な component であって公開 API ではありません。
+ここでの `Article` は Site 自身の article component であり、同名の `@riebeckite/honox/ui` primitive ではありません。scaffold の starter は標準 slot を決まった位置へ描画します(`article.aside`、`article.header`、`article.metadata`、`article.before-content`、`article.after-content`、`article.footer`)。plugin 作者はこれらから選ぶか、Site に独自名の描画を依頼します。独自 slot は Site が描画を選ぶまで何も表示しません。slot renderer 自体は Site が所有し、`apps/web` の `ContentSlot` は Site-local な component であって公開 API ではありません。
 
 Plugin が route や shell の構造を書き換える必要はありません。
 

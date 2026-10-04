@@ -77,11 +77,6 @@ The corresponding `*Props` types are public. These stable styling hooks are
 the only classes supplied by the contract: `rb-article`, `rb-article-layout`,
 `rb-article-header`, `rb-article-body`, `rb-article-meta`,
 `rb-article-footer`, and `rb-sidebar`, in the component order above.
-For backward compatibility, the primitives also emit the earlier
-`article-shell`, `article-shell__layout`, `article-shell__lead`,
-`article-frontmatter`, and `article-shell__body` class names. Those are
-compatibility hooks kept for existing CSS, not part of the stable styling
-contract; build new CSS on the `rb-*` hooks.
 Primitives provide semantic HTML, those hooks, and `class`/`className`
 composition only. They do not own article copy, metadata formatting,
 navigation, cards, page layouts, islands, or CSS. Those belong to the site
@@ -97,7 +92,7 @@ import {
   ArticleMeta,
 } from "@riebeckite/honox/ui";
 
-<Article class="prose">
+<Article>
   <ArticleLayout aside={<nav>…</nav>}>
     <ArticleContent>
       <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
@@ -175,7 +170,7 @@ article component, which decides whether and where to render each slot.
 The `Article` here is the site's own article component, not the
 `@riebeckite/honox/ui` primitive of the same name. The scaffolded starter
 renders the standard slots at fixed positions: `article.aside`,
-`article.after-header`, `article.after-meta`, `article.before-content`,
+`article.header`, `article.metadata`, `article.before-content`,
 `article.after-content`, and `article.footer`. A plugin author picks one of
 those, or asks the site to render a custom name; a custom slot renders nothing
 until the site chooses to render it. The slot renderer itself is site-owned,

@@ -50,3 +50,22 @@ Riebeckite is currently pre-1.0, so the project does not promise the same compat
 Start with the warning shown by `doctor`. It is the most specific source because it points at the old thing used by your site. Then read the linked migration documentation. If the warning has no direct replacement, follow the `Migration` action instead of searching for a one-to-one option.
 
 Riebeckite does not currently provide `riebeckite migrate` or automatic file rewriting. Apply migrations manually and commit the change so future upgrades are easier to review.
+
+## UI architecture cleanup
+
+This major release removes compatibility for the former article UI contracts.
+
+| Old | New | Action |
+| --- | --- | --- |
+| `article.after-header` | `article.header` | Render it before the site heading. |
+| `article.after-meta` | `article.metadata` | Render it with article metadata. |
+| `bodySlots.properties` | `bodySlots["article.metadata"]` | Remove the custom properties branch from the Site. |
+| `properties({ position, render })` | `properties({ ... })` | Remove both options; the plugin always contributes metadata. |
+| `injectBreadcrumbNav` and `injectShareControls` | manifest body slots | Remove imports and let the Site render standard slots. |
+| `article-shell*`, `article-frontmatter*`, `.prose` | `rb-*`, `site-article-frontmatter*`, `[data-slot="article-body"]` | Update Site CSS and client selectors. |
+| `callout*` and `is-collapsed` | `rr-callout*` | Update Theme CSS to use `rr-callout__*`, `rr-callout--*`, and `data-callout`. |
+
+The standard article slots are `article.header`, `article.metadata`,
+`article.aside`, `article.before-content`, `article.after-content`, and
+`article.footer`. Plugins only publish fragments; HonoX routes and Site
+components choose their placement.

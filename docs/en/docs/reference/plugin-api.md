@@ -250,16 +250,15 @@ The standard article layout recognizes:
 
   Slot                     Position
   ------------------------ -----------------------------------------------
-  article.after-header     directly after the article header
-  article.after-meta       after the title and meta block
+  article.header     directly after the article header
+  article.metadata       after the title and meta block
   article.aside            in the article aside
   article.before-content   before the note body
   article.after-content    after the note body
   article.footer           in the article footer
 
 `ContentBodySlot` also accepts any other string, so a custom Site can define
-additional slot names; `properties` (used by `@riebeckite/plugin-properties`)
-is one non-standard slot.
+additional slot names.
 
 Publish a fragment with `appendContentBodySlot` from `@riebeckite/core`,
 typically from a manifest hook such as `onManifestCreated`:

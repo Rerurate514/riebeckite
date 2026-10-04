@@ -472,14 +472,14 @@ Plugin は、route を追加したり document shell を書き換えたりせず
 
 | Slot | 位置 |
 | --- | --- |
-| `article.after-header` | article header の直後 |
-| `article.after-meta` | title / meta block の後 |
+| `article.header` | article header の直後 |
+| `article.metadata` | title / meta block の後 |
 | `article.aside` | article aside 内 |
 | `article.before-content` | 本文の前 |
 | `article.after-content` | 本文の後 |
 | `article.footer` | article footer 内 |
 
-`ContentBodySlot` は他の文字列も受け付けるため、独自 Site は追加の slot 名を定義できます。`@riebeckite/plugin-properties` が使う `properties` は、標準 set に含まれない独自 slot の例です。
+`ContentBodySlot` は他の文字列も受け付けるため、独自 Site は追加の slot 名を定義できます。
 
 fragment は `@riebeckite/core` の `appendContentBodySlot` で提供します。通常は `onManifestCreated` などの manifest hook から呼び出します。
 

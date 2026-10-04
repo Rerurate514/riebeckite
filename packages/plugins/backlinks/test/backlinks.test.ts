@@ -167,10 +167,11 @@ test("matches a structured link graph", async () => {
   );
 });
 
-test("backlinksPlugin registers only its stylesheet", () => {
+test("backlinksPlugin registers its stylesheet and manifest hook", () => {
   const plugin = backlinksPlugin();
 
   assert.equal(plugin.name, "backlinks");
+  assert.equal(typeof plugin.onManifestCreated, "function");
   assert.deepEqual(plugin.assets, [
     {
       pluginName: "backlinks",
@@ -190,11 +191,10 @@ test("publishes backlinks to the article footer only when present", async () => 
     { config: explicitConfig, plugins: [backlinksPlugin()] },
   ).getManifest();
 
-  assert.ok(
-    manifest.bySlug
-      .get("alpha")
-      ?.bodySlots?.["article.footer"]?.includes("article-backlinks"),
-  );
+  const footer = manifest.bySlug.get("alpha")?.bodySlots?.["article.footer"];
+  assert.ok(footer?.includes("article-backlinks rr-backlinks"));
+  assert.ok(footer?.includes('href="/beta"'));
+  assert.ok(footer?.includes(">Beta</a>"));
   assert.equal(
     manifest.bySlug.get("beta")?.bodySlots?.["article.footer"],
     undefined,

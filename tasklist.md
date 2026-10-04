@@ -7,7 +7,6 @@
 | ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
 |---|---|---|---|---|---|
 | DEP3 | l10n 有効サイトで効果のない deploy build cache を整理する | 未着手 | Small | `deploy.yml` は `.riebeckite/cache` と `build/content-state.json` を restore するが、docs site は l10n 有効のため persistent cache / manifest 再利用を常に bypass する。直近 GitHub Actions でも restore step は成功する一方、deploy 失敗により post-save は skipped だった | GitHub Actions 上で restore/save と再利用有無を確認し、効果ゼロなら不要な restore/save を削除して deploy correctness 不変を確認する。l10n persistent cache が安全に有効化された場合の再導入条件を記録する |
-| TEST2 | generated starter site の backlinks contract failure を原因調査・修正する | 未着手 | Small | `scaffold_contracts.test.ts` の Contract 1 が、install / check / build 後に `rr-backlinks` を検出できず失敗する | generated starter fixture で再現し、Plugin 有効化、content graph / inbound link、scaffold config、slot/rendering、SSG output を順に追跡して根本原因を特定する。assertion の削除・弱体化はしない。現行正式 contract に応じた実装またはテストと regression test を残す |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

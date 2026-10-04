@@ -73,6 +73,10 @@ export class PluginRuntime {
   private generatedOutputs = new GeneratedOutputRegistry();
   private isBuildTime = false;
   private resolvedPlugins: RiebeckitePlugin[] | null = null;
+  private pageDeclarations = new WeakMap<
+    ContentManifest,
+    Promise<readonly DeclaredPluginPage[]>
+  >();
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
 
@@ -287,84 +291,97 @@ export class PluginRuntime {
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ): Promise<readonly string[]> {
-    const paths: string[] = [];
-    const context = { ...this.createContext(contentIndex), manifest };
-    for (const plugin of this.plugins()) {
-      for (const pageType of plugin.pageTypes ?? []) {
-        const declared = pageType.paths;
-        if (!declared) continue;
-        const resolved =
-          typeof declared === "function"
-            ? await declared(this.createPluginContext(plugin, context))
-            : declared;
-        for (const rawPath of resolved) {
-          paths.push(normalizePageTypePath(rawPath, pageType));
-        }
-      }
-    }
-    return [...new Set(paths)];
+    return [
+      ...new Set(
+        (await this.getPageDeclarations(manifest, contentIndex)).map(
+          (declaration) => declaration.pathname,
+        ),
+      ),
+    ];
   }
 
   async getPageRoutes(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ): Promise<readonly PluginPageRoute[]> {
-    const routes: PluginPageRoute[] = [];
-    const context = { ...this.createContext(contentIndex), manifest };
-    for (const plugin of this.plugins()) {
-      for (const pageType of plugin.pageTypes ?? []) {
-        const declared = pageType.paths;
-        if (!declared) continue;
-        const paths =
-          typeof declared === "function"
-            ? await declared(this.createPluginContext(plugin, context))
-            : declared;
-        for (const pathname of paths) {
-          routes.push({
-            pathname: normalizePageTypePath(pathname, pageType),
-            pluginName: plugin.name,
-            pageType: pageType.id,
-          });
-        }
-      }
-    }
-    return routes;
+    return (await this.getPageDeclarations(manifest, contentIndex)).map(
+      ({ pathname, plugin, pageType }) => ({
+        pathname,
+        pluginName: plugin.name,
+        pageType: pageType.id,
+      }),
+    );
   }
 
   async getPageOutputs(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ): Promise<readonly OutputDescriptor[]> {
-    const outputs: OutputDescriptor[] = [];
-    const context = { ...this.createContext(contentIndex), manifest };
-    for (const plugin of this.plugins()) {
-      for (const pageType of plugin.pageTypes ?? []) {
-        const declared = pageType.paths;
-        if (!declared) continue;
-        const paths =
-          typeof declared === "function"
-            ? await declared(this.createPluginContext(plugin, context))
-            : declared;
-        for (const rawPath of paths) {
-          const pathname = normalizePageTypePath(rawPath, pageType);
-          const dependencyContext = { ...context, pathname };
+    const outputs = await Promise.all(
+      (await this.getPageDeclarations(manifest, contentIndex)).map(
+        async ({ pathname, plugin, pageType }) => {
+          const context = {
+            ...this.createContext(contentIndex),
+            manifest,
+            pathname,
+          };
           const dependencies = pageType.outputDependencies
             ? typeof pageType.outputDependencies === "function"
               ? await pageType.outputDependencies(
-                  this.createPluginContext(plugin, dependencyContext),
+                  this.createPluginContext(plugin, context),
                 )
               : pageType.outputDependencies
             : [{ type: "unknown" as const }];
-          outputs.push({
-            kind: "plugin-page",
-            path: pathname,
-            producer: `plugin:${plugin.name}:page:${pageType.id}`,
-            dependencies,
+          return {
+            output: {
+              kind: "plugin-page" as const,
+              path: pathname,
+              producer: `plugin:${plugin.name}:page:${pageType.id}`,
+              dependencies,
+            },
+            priority: pageType.priority ?? 0,
+          };
+        },
+      ),
+    );
+    return uniqueOutputs(outputs);
+  }
+
+  private async getPageDeclarations(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly DeclaredPluginPage[]> {
+    const existing = this.pageDeclarations.get(manifest);
+    if (existing) return await existing;
+    const declarations = this.resolvePageDeclarations(manifest, contentIndex);
+    this.pageDeclarations.set(manifest, declarations);
+    return await declarations;
+  }
+
+  private async resolvePageDeclarations(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly DeclaredPluginPage[]> {
+    const declarations: DeclaredPluginPage[] = [];
+    const context = { ...this.createContext(contentIndex), manifest };
+    for (const plugin of this.plugins()) {
+      for (const pageType of plugin.pageTypes ?? []) {
+        const paths = pageType.paths;
+        if (!paths) continue;
+        const resolved =
+          typeof paths === "function"
+            ? await paths(this.createPluginContext(plugin, context))
+            : paths;
+        for (const pathname of resolved) {
+          declarations.push({
+            pathname: normalizePageTypePath(pathname, pageType),
+            plugin,
+            pageType,
           });
         }
       }
     }
-    return uniqueOutputs(outputs);
+    return declarations;
   }
 
   getContentOutputDependencies(): readonly OutputDependency[] {
@@ -624,12 +641,33 @@ function countSeverity(
     .length;
 }
 
+type DeclaredPluginPage = {
+  readonly pathname: string;
+  readonly plugin: RiebeckitePlugin;
+  readonly pageType: PluginPageType;
+};
+
 function uniqueOutputs(
-  outputs: readonly OutputDescriptor[],
+  outputs: readonly { output: OutputDescriptor; priority: number }[],
 ): readonly OutputDescriptor[] {
-  const byPath = new Map<string, OutputDescriptor>();
-  for (const output of outputs) byPath.set(output.path, output);
-  return [...byPath.values()].sort((left, right) =>
-    left.path.localeCompare(right.path),
-  );
+  const byPath = new Map<
+    string,
+    { output: OutputDescriptor; priority: number }
+  >();
+  for (const output of outputs) {
+    const previous = byPath.get(output.output.path);
+    if (!previous || output.priority > previous.priority) {
+      byPath.set(output.output.path, output);
+      continue;
+    }
+    if (output.output.producer === previous.output.producer) continue;
+    if (output.priority === previous.priority) {
+      throw new Error(
+        `Multiple plugin page types declare ${output.output.path} at priority ${output.priority}: ${previous.output.producer}, ${output.output.producer}`,
+      );
+    }
+  }
+  return [...byPath.values()]
+    .map(({ output }) => output)
+    .sort((left, right) => left.path.localeCompare(right.path));
 }

@@ -113,6 +113,75 @@ test("records distinct directory-index page routes while runtime priority select
   assert.equal((await manager.resolvePage("/foo"))?.pluginName, "high");
 });
 
+test("declared page paths are evaluated once and outputs follow runtime priority", async () => {
+  let declarations = 0;
+  const page = (name: string, priority: number) =>
+    definePlugin({
+      name,
+      pageTypes: [
+        {
+          id: `${name}-page`,
+          directoryIndex: true,
+          priority,
+          paths: () => {
+            declarations += 1;
+            return ["/foo"];
+          },
+          outputDependencies: [{ type: "folder", folder: name }],
+          resolve: ({ pathname }) =>
+            pathname === "/foo/"
+              ? { type: "unused", pathname, body: "" }
+              : null,
+        },
+      ],
+    });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({
+      site: { title: "Test" },
+      plugins: [page("high", 1), page("low", 0)],
+    }),
+  });
+
+  const outputs = (
+    await manager.getOutputChangeSet({ incremental: false })
+  ).affected.filter((output) => output.kind === "plugin-page");
+
+  assert.equal(declarations, 2);
+  assert.deepEqual(outputs, [
+    {
+      kind: "plugin-page",
+      path: "foo/index.html",
+      producer: "plugin:high:page:high-page",
+      dependencies: [{ type: "folder", folder: "high" }],
+    },
+  ]);
+});
+
+test("same-priority declared page paths fail rather than choosing a producer", async () => {
+  const page = (name: string) =>
+    definePlugin({
+      name,
+      pageTypes: [
+        {
+          id: `${name}-page`,
+          paths: ["/same"],
+          resolve: () => null,
+        },
+      ],
+    });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({
+      site: { title: "Test" },
+      plugins: [page("first"), page("second")],
+    }),
+  });
+
+  await assert.rejects(
+    manager.getOutputChangeSet(),
+    /Multiple plugin page types declare \/same at priority 0/,
+  );
+});
+
 test("duplicate page type IDs fail during plugin resolution", async () => {
   const plugin = (name: string) =>
     definePlugin({

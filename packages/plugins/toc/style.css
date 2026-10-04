@@ -89,3 +89,7 @@
     }
   }
 }
+
+.table-of-contents .table-of-contents__link[aria-current="true"] {
+  color: var(--rb-color-accent);
+}

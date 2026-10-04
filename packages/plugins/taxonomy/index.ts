@@ -13,10 +13,11 @@ import {
 } from "./src/collections.js";
 import { renderTermFeed } from "./src/feeds.js";
 import { resolveTaxonomyOptions } from "./src/options.js";
-import { renderTaxonomyPage } from "./src/pages.js";
+import { renderTaxonomyIndexPage, renderTaxonomyPage } from "./src/pages.js";
 import type {
   ResolvedTaxonomyOptions,
   TaxonomyFeedFormat,
+  TaxonomyKind,
   TaxonomyOptions,
 } from "./src/types.js";
 
@@ -37,7 +38,11 @@ export {
   DEFAULT_TAXONOMY_TAGS_BASE_PATH,
   resolveTaxonomyOptions,
 } from "./src/options.js";
-export { renderRelatedTerms, renderTaxonomyPage } from "./src/pages.js";
+export {
+  renderRelatedTerms,
+  renderTaxonomyIndexPage,
+  renderTaxonomyPage,
+} from "./src/pages.js";
 export { buildTaxonomySeo } from "./src/seo.js";
 export { slugifyTaxonomyValue } from "./src/slug.js";
 export type {
@@ -106,6 +111,30 @@ export function taxonomy(options: TaxonomyOptions = {}) {
           };
         },
       },
+      {
+        id: "taxonomy-index",
+        paths: () => taxonomyIndexPagePaths(resolved),
+        outputDependencies: [{ type: "global" }],
+        resolve: ({ manifest, pathname }) => {
+          const kind = resolveTaxonomyIndexPath(pathname, resolved);
+          if (!kind) return null;
+          const index = buildTaxonomyIndex(
+            manifest.discoverableEntries,
+            resolved,
+          );
+          const page = renderTaxonomyIndexPage(
+            kind,
+            kind === "tag" ? index.tags : index.folders,
+            resolved,
+          );
+          return {
+            type: "taxonomy-index",
+            pathname,
+            title: page.title,
+            body: page.html,
+          };
+        },
+      },
     ],
     buildEnd(context) {
       const { config, manifest } = context;
@@ -148,6 +177,40 @@ function findTaxonomyTerm(
   return [...index.tags, ...index.folders].find(
     (term) => term.path === pathname,
   );
+}
+
+function taxonomyIndexPagePaths(
+  options: ResolvedTaxonomyOptions,
+): readonly string[] {
+  const paths: string[] = [];
+  if (options.tags && options.tagsBasePath !== "") {
+    paths.push(options.tagsBasePath);
+  }
+  if (options.folders && options.foldersBasePath !== "") {
+    paths.push(options.foldersBasePath);
+  }
+  return [...new Set(paths)];
+}
+
+function resolveTaxonomyIndexPath(
+  pathname: string,
+  options: ResolvedTaxonomyOptions,
+): TaxonomyKind | null {
+  if (
+    options.tags &&
+    options.tagsBasePath !== "" &&
+    pathname === options.tagsBasePath
+  ) {
+    return "tag";
+  }
+  if (
+    options.folders &&
+    options.foldersBasePath !== "" &&
+    pathname === options.foldersBasePath
+  ) {
+    return "folder";
+  }
+  return null;
 }
 
 /**

@@ -141,10 +141,12 @@ the folder's landing page.
 
 ## Page types
 
-`taxonomy()` registers `taxonomy-term`. Its SSG paths and resolver are derived
-from the public manifest, so unpublished entries never appear in tag or folder
-pages. The returned page body includes feed discovery `<link rel="alternate">`
-metadata, which the generic document frame renders in its head.
+`taxonomy()` registers two page types. `taxonomy-term` renders one tag or
+folder page and includes feed discovery `<link rel="alternate">` metadata.
+`taxonomy-index` renders the all-tags list at `tagsBasePath` and the
+all-folders list at `foldersBasePath`, linking to every term. Both derive
+their SSG paths and resolver from the public manifest, so unpublished entries
+never appear on a tag, folder, or index page.
 
 Use `pluginPageSsgParams(content)` and `resolveRiebeckiteRoute(content, path)`
 from `@riebeckite/honox/server` in the site's generic catch-all route. This is
@@ -169,6 +171,7 @@ import "@riebeckite/plugin-taxonomy/style.css";
 - `buildTaxonomyIndex(entries, options)` — build tag and folder terms
 - `serializeTaxonomyIndex(index)` / `serializeTaxonomyTerm(term)` — JSON-safe projections
 - `renderTaxonomyPage(term, options)` / `renderRelatedTerms(term, options)` — page fragments
+- `renderTaxonomyIndexPage(kind, terms, options)` — all-tags/all-folders page fragment
 - `renderTermFeed(config, term, format, limit?)` / `buildFeedHeadTags(term)` — per-term feeds
 - `buildTaxonomySeo(config, term)` — listing-page SEO metadata
 - `slugifyTaxonomyValue(value)` — URL/file slug

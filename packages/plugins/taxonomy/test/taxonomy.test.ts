@@ -64,6 +64,8 @@ test("provides tag and folder listings as plugin page types", async () => {
   assert.deepEqual(await content.getPagePaths(), [
     "/tags/featured",
     "/folders/guides",
+    "/tags",
+    "/folders",
   ]);
 
   const tag = await content.resolvePage("/tags/featured");
@@ -74,6 +76,58 @@ test("provides tag and folder listings as plugin page types", async () => {
   const folder = await content.resolvePage("/folders/guides");
   assert.equal(folder?.type, "taxonomy-term");
   assert.match(folder?.body ?? "", /data-rr-taxonomy="folder"/);
+
+  const tags = await content.resolvePage("/tags");
+  assert.equal(tags?.type, "taxonomy-index");
+  assert.match(tags?.body ?? "", /data-rr-taxonomy-index="tag"/);
+  assert.match(tags?.body ?? "", /href="\/tags\/featured"/);
+
+  const folders = await content.resolvePage("/folders");
+  assert.equal(folders?.type, "taxonomy-index");
+  assert.match(folders?.body ?? "", /data-rr-taxonomy-index="folder"/);
+  assert.match(folders?.body ?? "", /href="\/folders\/guides"/);
+});
+
+test("renders taxonomy index pages under custom base paths", async () => {
+  const content = new ContentManager(
+    source({
+      ...taggedNotes,
+      "guides/intro.md":
+        "---\ntitle: Intro\npublish: true\ntags:\n  - featured\n---\n\n# Intro\n",
+    }),
+    [],
+    {
+      config: resolveConfig({
+        site: { title: "Test", baseUrl: "https://example.com" },
+        plugins: [
+          taxonomy({
+            tagsBasePath: "/topics",
+            foldersBasePath: "/sections",
+          }),
+        ],
+      }),
+    },
+  );
+
+  assert.deepEqual(await content.getPagePaths(), [
+    "/topics/featured",
+    "/sections/guides",
+    "/topics",
+    "/sections",
+  ]);
+
+  const tags = await content.resolvePage("/topics");
+  assert.equal(tags?.type, "taxonomy-index");
+  assert.match(tags?.body ?? "", /data-rr-taxonomy-index="tag"/);
+  assert.match(tags?.body ?? "", /href="\/topics\/featured"/);
+
+  const folders = await content.resolvePage("/sections");
+  assert.equal(folders?.type, "taxonomy-index");
+  assert.match(folders?.body ?? "", /data-rr-taxonomy-index="folder"/);
+  assert.match(folders?.body ?? "", /href="\/sections\/guides"/);
+
+  assert.equal(await content.resolvePage("/tags"), null);
+  assert.equal(await content.resolvePage("/folders"), null);
 });
 
 test("renders the term feed from the manifest entries", async () => {

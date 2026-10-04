@@ -140,10 +140,12 @@ taxonomy はマニフェストの公開ビューからタグ語とフォルダ�
 
 ## Page Type
 
-`taxonomy()` は `taxonomy-term` を登録します。SSG のパスと resolver は公開
-マニフェストから作るため、非公開エントリがタグ・フォルダページへ入ることはありません。
-返す page body にはフィード検出用の `<link rel="alternate">` メタデータを含め、
-共通の document frame が head に描画します。
+`taxonomy()` は 2 つの Page Type を登録します。`taxonomy-term` は 1 つのタグ・
+フォルダページを描画し、フィード検出用の `<link rel="alternate">` メタデータを
+含みます。`taxonomy-index` は `tagsBasePath` に全タグ一覧、`foldersBasePath` に
+全フォルダ一覧を描画し、各語へリンクします。どちらも SSG のパスと resolver を
+公開マニフェストから作るため、非公開エントリがタグ・フォルダ・一覧ページへ
+入ることはありません。
 
 サイトの共通 catch-all route では、`@riebeckite/honox/server` の
 `pluginPageSsgParams(content)` と `resolveRiebeckiteRoute(content, path)` を使います。
@@ -168,6 +170,7 @@ import "@riebeckite/plugin-taxonomy/style.css";
 - `buildTaxonomyIndex(entries, options)` — タグ・フォルダ語を構築する
 - `serializeTaxonomyIndex(index)` / `serializeTaxonomyTerm(term)` — JSON 安全な射影
 - `renderTaxonomyPage(term, options)` / `renderRelatedTerms(term, options)` — ページ断片
+- `renderTaxonomyIndexPage(kind, terms, options)` — 全タグ・全フォルダ一覧のページ断片
 - `renderTermFeed(config, term, format, limit?)` / `buildFeedHeadTags(term)` — 語ごとのフィード
 - `buildTaxonomySeo(config, term)` — 一覧ページの SEO メタデータ
 - `slugifyTaxonomyValue(value)` — URL・ファイル用の slug

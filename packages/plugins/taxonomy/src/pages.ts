@@ -2,6 +2,7 @@ import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { buildFeedHeadTags } from "./feeds.js";
 import type {
   ResolvedTaxonomyOptions,
+  TaxonomyKind,
   TaxonomyPage,
   TaxonomyTerm,
 } from "./types.js";
@@ -57,6 +58,35 @@ export function renderRelatedTerms(
     )
     .join("");
   return `<nav class="${className}__related" aria-label="Related tags" data-rr-taxonomy-related><ul>${items}</ul></nav>`;
+}
+
+export function renderTaxonomyIndexPage(
+  kind: TaxonomyKind,
+  terms: readonly TaxonomyTerm[],
+  options: ResolvedTaxonomyOptions,
+): TaxonomyPage {
+  const className = escapeHtmlAttribute(options.className);
+  const label = kind === "tag" ? "Tags" : "Folders";
+  const items = terms
+    .map(
+      (term) =>
+        `<li class="${className}__item"><a class="${className}__link" href="${escapeHtmlAttribute(
+          term.path,
+        )}" data-rr-taxonomy-count="${term.entries.length}">${escapeHtml(
+          term.title,
+        )}</a></li>`,
+    )
+    .join("");
+  const html = `<section class="${className} ${className}--index" data-rr-taxonomy-index="${kind}"><h1 class="${className}__title">${escapeHtml(
+    label,
+  )}</h1><ul class="${className}__list">${items}</ul></section>`;
+
+  return {
+    title: label,
+    frontmatter: { title: label },
+    html,
+    headTags: [],
+  };
 }
 
 function renderFeedLinks(term: TaxonomyTerm, className: string): string {

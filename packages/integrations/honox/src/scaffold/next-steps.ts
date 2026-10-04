@@ -43,6 +43,17 @@ export function formatScaffoldNextSteps(
     lines.push(
       "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
     );
+    lines.push("");
+    lines.push("Required GitHub Actions repository secrets:");
+    lines.push(
+      "  RIEBECKITE_CONTENT_READ_TOKEN: site repository; only when the content repository is private or internal (Contents: read)",
+    );
+    lines.push(
+      "  SITE_DISPATCH_TOKEN: content repository (fine-grained token for the site repository, Contents: read and write)",
+    );
+    lines.push(
+      "  CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID: site repository",
+    );
   }
   return lines.join("\n");
 }

@@ -1,23 +1,38 @@
 # サイトのカスタマイズ
 
-Riebeckite Site は、最終的には通常の HonoX application です。見た目や振る舞いを変えるために、Riebeckite 独自のフロントエンド framework を覚える必要はありません。Riebeckite は content、manifest、plugin の接続を提供し、`app/` は自分で管理する通常の HonoX application です。
+Riebeckite で生成するサイトは、通常の **HonoX application** としてカスタマイズできます。
 
-このページは、Site が所有する範囲と、通常の HonoX / Hono JSX でそれを変える方法をまとめた地図です。HonoX の tutorial ではないため、framework 自体は HonoX の documentation を参照してください。
+Riebeckite 独自の UI framework を覚える必要はありません。ページ、component、CSS、interactive UI などは、通常の HonoX / Hono JSX と同じ方法で変更できます。
 
-## Site code を置く場所
+Riebeckite は主に、次の部分を担当します。
 
-| ディレクトリ | Site が持つ責務 |
+- Markdown などの content を読み込む
+- content や plugin の情報を Site に渡す
+- plugin が提供するページや UI を Site に接続する
+
+一方、実際のサイトを構成する `app/` は Site 側のコードです。
+
+## どこを変更すればいい？
+
+まずは、変更したいものに対応する場所を確認してください。
+
+| 変更したいもの | 主な場所 |
 | --- | --- |
-| `app/routes/` | URL 処理、ページ構成、redirect、response metadata |
-| `app/components/` | Site 固有の UI と、公開 UI primitive の組み合わせ |
-| `app/islands/` | 対話 UI とその client-side state |
-| `app/style.css` とローカル CSS | 色、layout、typography、生成される extension style |
+| ページや URL | `app/routes/` |
+| Header / Footer | `app/components/`、`app/routes/_renderer.tsx` |
+| 記事ページの構成 | `app/components/article.tsx` |
+| ボタンなどの UI | `app/components/` |
+| 操作できる UI | `app/islands/` |
+| 色・余白・文字・レイアウト | `app/style.css` や各 CSS |
+| Header / Footer のリンク | `riebeckite.config.ts` の `navigation` |
 
-`app/` 以下は application source です。integration は `app/.riebeckite/` に生成物を出力します。これは build output として扱い、source として編集しないでください。
+基本的には **`app/` 以下を編集すればサイトの見た目や構成を変更できる** と考えてかまいません。
 
-## Component
+ただし、`app/.riebeckite/` は Riebeckite が自動生成するディレクトリです。ビルドのたびに更新されるため、直接編集しないでください。
 
-`app/components/` には通常の Hono JSX component を書けます。特別な準備は必要ありません。
+## Component を作る
+
+`app/components/` には、通常の Hono JSX component を作成できます。
 
 ```tsx
 // app/components/callout.tsx
@@ -26,23 +41,180 @@ export function Callout({ children }: { children?: unknown }) {
 }
 ```
 
-Riebeckite が文書化している article 構造を使いたい場合は、公開 primitive である `@riebeckite/honox/ui`(`Article`、`ArticleLayout`、`ArticleContent` など)を組み合わせます。これは意図的に小さな構造 contract であり、component framework ではありません。使わずに独自の markup を書いてもかまいません。詳しくは [UI Primitive](../framework/honox-integration.md#ui-primitive) を参照してください。
+作成した component は、route や別の component から通常どおり import して利用できます。
 
-## Layout
+### Riebeckite の UI Primitive
 
-article の layout は Site が所有します。scaffold の starter では `app/components/article.tsx`(`SiteArticle` component)がそれにあたり、document shell は `app/routes/_renderer.tsx` です。
+記事ページを作るときは、`@riebeckite/honox/ui` が提供する次のような UI Primitive も利用できます。
 
-`SiteArticle` は公開 component ではなく Site component です。`@riebeckite/honox/ui` の `Article` primitive を包み、各 body slot をどこへ描画するかを決めます。article 構造を変えたり、見出しを足したり、plugin fragment の位置を動かしたりと自由に編集できます。route の例に現れる `Article` はこの Site component であり、同名の primitive ではありません。
+- `Article`
+- `ArticleLayout`
+- `ArticleContent`
 
-`app/routes/_renderer.tsx` は shell です。document の `<head>`、navigation、page chrome を所有し、integration が渡す head tag や生成 style を描画します。詳しくは [Head Tags](../framework/honox-integration.md#head-tags) を参照してください。
+これらは Riebeckite の記事構造を組み立てるための小さな部品です。
 
-## Route
+専用の component framework ではないため、必ず使う必要はありません。Site 側で独自の HTML 構造を作ることもできます。
 
-`app/routes/` は通常の HonoX route ディレクトリです。たとえば `/about` ページのように、route を追加・削除・組み替えられます。content と plugin page は scaffold が用意する catch-all route を通ります。この route は `@riebeckite/honox` の `resolveRiebeckiteRoute`、`contentRouteSsgParams`、`pluginPageSsgParams` を使います。これらが content と plugin の Page Type を解決するため、plugin page を表示するためだけに route を追加する必要はありません。
+詳しくは [UI Primitive](../framework/honox-integration.md#ui-primitive) を参照してください。
 
-## Plugin Component
+## 記事ページの Layout を変える
 
-多くの plugin は Hono JSX component を公開しており、Site の好きな場所へ配置できます。package から component を import し、自分の component tree 内で描画します。
+starter では、記事ページの主な構成を次の2か所で管理しています。
+
+```text
+app/components/article.tsx
+app/routes/_renderer.tsx
+```
+
+### `app/components/article.tsx`
+
+ここにある `SiteArticle` が、記事ページのレイアウトを決めます。
+
+たとえば、
+
+- 記事タイトルの位置を変える
+- 記事の前後に UI を追加する
+- breadcrumbs の位置を変える
+- backlinks や related posts の位置を変える
+- sidebar を追加する
+
+といった変更は、主にここで行います。
+
+`SiteArticle` は `@riebeckite/honox/ui` の `Article` を利用して作られていますが、Site 側の component なので自由に編集できます。
+
+なお、route 内で `Article` という名前で使われているものは、この Site component を指します。`@riebeckite/honox/ui` の `Article` とは別物です。
+
+### `app/routes/_renderer.tsx`
+
+`_renderer.tsx` は、サイト全体を包む外側のレイアウトです。
+
+主に次のものを管理します。
+
+- `<head>`
+- Header
+- Footer
+- Navigation
+- ページ全体の共通 UI
+- Riebeckite や plugin が生成した head tag / style
+
+サイト全体に共通する部分を変えたい場合は、こちらを編集します。
+
+詳しくは [Head Tags](../framework/honox-integration.md#head-tags) を参照してください。
+
+## Navigation を変える
+
+Header や Footer に表示するリンクは、`riebeckite.config.ts` の `navigation` で設定します。
+
+```ts
+navigation: {
+  header: [
+    { label: "Guide", href: "/guide" },
+    {
+      label: "Notes",
+      href: "/notes/planning",
+      children: [
+        { label: "Planning", href: "/notes/planning" },
+        { label: "Writing", href: "/notes/writing" },
+      ],
+    },
+  ],
+  footer: [{ label: "Guide", href: "/guide" }],
+}
+```
+
+starter では `app/components/site-header.tsx` がこれを表示します。
+
+そのため、
+
+- **リンクを追加・削除したい** → `navigation` を変更
+- **Header の見た目や HTML を変えたい** → `site-header.tsx` を変更
+- **Header / Footer 自体の配置を変えたい** → `_renderer.tsx` を変更
+
+と考えると分かりやすいです。
+
+設定できる項目については [Configuration リファレンス](../reference/configuration.md#navigation-の設定) を参照してください。
+
+## Plugin が作るページやリンク
+
+Riebeckite では、Header / Footer の Navigation とは別に、plugin がページやリンクを追加することがあります。
+
+大きく分けると、次の2種類があります。
+
+### 閲覧するためのページ
+
+たとえば、
+
+- Search
+- Tag / Folder 一覧
+- Taxonomy のページ
+- Feed
+- Sitemap
+
+などです。
+
+これらは plugin が必要なページや endpoint を生成します。
+
+有効化しただけで Header や Footer にリンクが追加されるわけではありません。Header に表示したい場合は、通常のページと同じように `navigation` へ追加してください。
+
+### 記事同士をつなぐ UI
+
+たとえば、
+
+- Breadcrumbs
+- Backlinks
+- Related Posts
+- Series の前後リンク
+- Local Graph
+
+などです。
+
+これらは主に記事ページの中へ表示されます。
+
+Plugin が提供する UI fragment は `article.header` や `article.footer` などの **Body Slot** を通して配置できます。
+
+つまり、
+
+```text
+Header / Footer のリンク
+        ↓
+riebeckite.config.ts の navigation
+
+検索・Tag・Folder などのページ
+        ↓
+Plugin の Page Type
+
+Breadcrumbs・Backlinks など
+        ↓
+Component / Body Slot
+```
+
+という違いがあります。
+
+## Route を追加する
+
+`app/routes/` は通常の HonoX route ディレクトリです。
+
+そのため、Site 独自のページも通常どおり追加できます。
+
+たとえば `/about` を作りたい場合は、HonoX の route として追加できます。
+
+一方、Markdown の content や plugin が提供するページについては、基本的に自分で route を追加する必要はありません。
+
+starter の catch-all route が、
+
+- `resolveRiebeckiteRoute`
+- `contentRouteSsgParams`
+- `pluginPageSsgParams`
+
+を利用して、content と plugin の Page Type を自動的に解決します。
+
+Plugin のページを Header や Footer に表示したい場合も、新しい route を作るのではなく `navigation` にリンクを追加します。
+
+## Plugin の Component を使う
+
+Plugin によっては、Site から直接利用できる Hono JSX component を提供しています。
+
+たとえば Backlinks や Table of Contents を Site の好きな場所へ配置できます。
 
 ```tsx
 import { Backlinks } from "@riebeckite/plugin-backlinks";
@@ -58,17 +230,56 @@ export function ArticleAside({ items, backlinks }: Props) {
 }
 ```
 
-各 component は package の `./components` subpath の default export でもあるため、`import Backlinks from "@riebeckite/plugin-backlinks/components"` でも利用できます。例外は `color-mode` で、`ColorModeScript` と `ColorModeToggle` を package root からのみ公開します。component 名、props、data helper は plugin ページと package README を確認してください。
+利用できる component や props は、それぞれの Plugin ページや package README を確認してください。
 
-component ではなく、または component に加えて、body slot へ HTML fragment を提供する plugin もあります。その場合は plugin を有効化し Site が slot を描画すれば自動で表示されます。[Body Slots](../reference/plugin-api.md#body-slots) と、作者向けの [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
+多くの component は `./components` から default import することもできます。
 
-## Island
+```tsx
+import Backlinks from "@riebeckite/plugin-backlinks/components";
+```
 
-状態や interaction が必要なときは、`app/islands/` に通常の HonoX island を置き、それを利用する route または component から import します。hydration と client-side state は Site 内に閉じます。`app/client.ts` では `createClient()` と `initRiebeckiteClient()` の両方を初期化します。`initRiebeckiteClient()` は、インストール済み plugin や theme が提供する browser entry を起動します。plugin は `app/islands/` を所有しませんし、plugin 用の island registry もありません。
+`color-mode` は例外で、`ColorModeScript` と `ColorModeToggle` を package root から公開しています。
 
-## Styling
+### Body Slot を使う Plugin
 
-`app/style.css` やローカル CSS で、通常どおり CSS や Tailwind を使えます。生成される extension style は一度だけ import します。
+Plugin によっては component を直接配置するのではなく、記事ページの決められた場所へ HTML を追加するものもあります。
+
+この仕組みが **Body Slot** です。
+
+Plugin を有効にして、Site 側の `SiteArticle` が対応する slot を描画していれば、自動的に表示されます。
+
+詳しくは [Body Slots](../reference/plugin-api.md#body-slots) と [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
+
+## 操作できる UI を作る
+
+クリックや状態管理など、ブラウザ側の処理が必要な UI は `app/islands/` に作ります。
+
+これは通常の HonoX island と同じです。
+
+作成した island を route や component から import して利用します。
+
+Riebeckite 専用の island の仕組みがあるわけではありません。
+
+`app/client.ts` では、
+
+```ts
+createClient();
+initRiebeckiteClient();
+```
+
+の両方を初期化します。
+
+`createClient()` は Site の client 処理を初期化し、`initRiebeckiteClient()` は Plugin や Theme が提供する browser-side の処理を起動します。
+
+Site の island は `app/islands/`、Plugin の browser 処理は Plugin 側、というように責務が分かれています。
+
+## CSS を変更する
+
+Site のデザインは、`app/style.css` や各 component の CSS から変更できます。
+
+通常の CSS や Tailwind を利用できます。
+
+Riebeckite が Plugin や Theme から生成した CSS は、Site の CSS から一度だけ読み込みます。
 
 ```css
 /* app/style.css */
@@ -76,10 +287,32 @@ component ではなく、または component に加えて、body slot へ HTML f
 @import "./.riebeckite/theme-styles.css";
 ```
 
-`app/.riebeckite/` の生成物は編集しないでください。plugin の出力は、文書化された `rr-<feature>` root hook、UI primitive は `rb-*` の構造 hook で style します。詳しくは [CSS Hooks](../reference/plugin-api.md#css-hooks) を参照してください。
+`app/.riebeckite/` のファイルは自動生成されるため、直接編集しないでください。
+
+Plugin の見た目を上書きするときは `rr-<feature>`、Riebeckite の UI Primitive を調整するときは `rb-*` の CSS hook を利用できます。
+
+詳しくは [CSS Hooks](../reference/plugin-api.md#css-hooks) を参照してください。
+
+## 迷ったときの目安
+
+「どこを変更すればいいか分からない」という場合は、次のように考えると簡単です。
+
+| やりたいこと | 変更する場所 |
+| --- | --- |
+| Header にリンクを追加したい | `riebeckite.config.ts` |
+| Header の見た目を変えたい | `app/components/site-header.tsx` |
+| サイト全体の外枠を変えたい | `app/routes/_renderer.tsx` |
+| 記事ページの構成を変えたい | `app/components/article.tsx` |
+| 独自ページを追加したい | `app/routes/` |
+| 独自 component を作りたい | `app/components/` |
+| 操作できる UI を作りたい | `app/islands/` |
+| 色や余白を変えたい | `app/style.css` |
+| Plugin の UI を配置したい | Plugin Component / Body Slot |
+
+Riebeckite が content と plugin を Site へ接続し、**最終的なページの見た目と構成は Site が決める**、というのが基本的な考え方です。
 
 ## 次に読むページ
 
-- [HonoX Integration](../framework/honox-integration.md) — Site application の contract と UI primitive
-- [プラグイン作成の詳細](../framework/plugin-system.md) — Plugin 作者向けの拡張ポイント
-- [Plugin API](../reference/plugin-api.md) — Body Slot、Page、Asset、CSS Hook の正確な contract
+- [HonoX Integration](../framework/honox-integration.md) — Riebeckite と HonoX の接続や UI Primitive
+- [プラグイン作成の詳細](../framework/plugin-system.md) — Plugin を作る場合の拡張ポイント
+- [Plugin API](../reference/plugin-api.md) — Body Slot、Page、Asset、CSS Hook の詳細

@@ -43,12 +43,169 @@ export default defineConfig({
 | Field | 用途 |
 | --- | --- |
 | `site` | Site の基本情報 |
+| `navigation` | Site 全体の header / footer navigation |
 | `content` | コンテンツの場所と公開条件 |
 | `markdown` | Markdown の処理設定 |
 | `theme` | Theme の設定 |
 | `plugins` | 使用する Plugin |
 
 Config は Content や Plugin の処理が始まる前に Integration によって解決されます。
+
+## Navigation の設定
+
+`navigation` では、サイトの **Header と Footer に表示するリンク**を設定します。
+
+```ts
+navigation: {
+  header: [
+    { label: "Guide", href: "/guide" },
+    {
+      label: "Notes",
+      href: "/notes/planning",
+      children: [
+        { label: "Planning", href: "/notes/planning" },
+        { label: "Writing", href: "/notes/writing" },
+      ],
+    },
+    {
+      label: "GitHub",
+      href: "https://github.com/example/site",
+      external: true,
+    },
+  ],
+  footer: [
+    { label: "Guide", href: "/guide" },
+  ],
+}
+```
+
+`header` と `footer` はどちらも省略できます。指定しなかった場合は空の配列として扱われます。
+
+### NavigationItem
+
+各リンクは `NavigationItem` として設定します。
+
+| Field | 型 | 説明 |
+| --- | --- | --- |
+| `label` | `string` | リンクに表示する名前 |
+| `href` | `string` | 遷移先の path または URL |
+| `children` | `NavigationItem[]` | 子項目。サブメニューとして表示されます |
+| `external` | `boolean` | `true` の場合は別タブで開きます |
+
+`label` と `href` は必須です。
+
+### Header と Footer
+
+`navigation.header` の項目は `SiteHeader`、`navigation.footer` の項目は `SiteFooter` に表示されます。
+
+```ts
+navigation: {
+  header: [
+    { label: "Guide", href: "/guide" },
+    { label: "About", href: "/about" },
+  ],
+  footer: [
+    { label: "About", href: "/about" },
+  ],
+}
+```
+
+配列が空の場合、その場所には Navigation を表示しません。
+
+Header では Site タイトルがすでに Home へのリンクになっているため、`href: "/"` の項目は表示されません。
+
+### サブメニューを作る
+
+`children` を使うと、Navigation を入れ子にできます。
+
+```ts
+{
+  label: "Notes",
+  href: "/notes/planning",
+  children: [
+    { label: "Planning", href: "/notes/planning" },
+    { label: "Writing", href: "/notes/writing" },
+  ],
+}
+```
+
+`children` はサブメニューとして表示されます。
+
+### 外部サイトへリンクする
+
+外部サイトへのリンクには `external: true` を指定できます。
+
+```ts
+{
+  label: "GitHub",
+  href: "https://github.com/example/site",
+  external: true,
+}
+```
+
+この場合は別タブで開き、リンクに `rel="noreferrer"` が付きます。
+
+### 現在のページを示す
+
+Header では、現在表示しているページに対応するリンクが自動的に active になります。
+
+たとえば、
+
+```ts
+{ label: "Guide", href: "/guide" }
+```
+
+という項目がある場合、次のようなページで active になります。
+
+```text
+/guide
+/guide/getting-started
+/en/guide
+/en/guide/getting-started
+```
+
+末尾の `/` や先頭の locale は判定時に調整されるため、`/guide/` と `/en/guide` のような違いを意識する必要はありません。
+
+active なリンクには `aria-current="page"` が付きます。
+
+外部 URL など `/` から始まらない `href` と、`external: true` の項目は active 判定の対象になりません。
+
+### モバイルでの表示
+
+画面が狭い場合、Header の Navigation は `Menu` から開閉できる表示になります。
+
+Navigation の内容や HTML 構造が別のものになるわけではなく、画面幅に応じて CSS で表示方法が変わります。
+
+### 設定の検証
+
+`navigation` は Config の読み込み時に検証されます。
+
+主な条件は次のとおりです。
+
+- `label` は空でない文字列
+- `href` は空でない文字列
+- `external` を指定する場合は `boolean`
+- `children` に祖先の項目を含めることはできない
+
+不正な設定は Config の解決時にエラーになります。
+
+### Plugin のページは自動追加されない
+
+`navigation` が管理するのは、**Site が Header / Footer に表示するリンクだけ**です。
+
+たとえば、Plugin が提供する次のようなものは自動的には Navigation に追加されません。
+
+- Search
+- Tag / Folder 一覧
+- Taxonomy のページ
+- Plugin の Page Type
+- Breadcrumbs
+- Backlinks
+- Related Posts
+
+Plugin が作るページを Header や Footer に表示したい場合は、そのページへのリンクを `navigation` に追加してください。
+
+Navigation と Plugin の役割の違いについては、[サイトのカスタマイズ](../guides/customizing-your-site.md#navigation-を変える) を参照してください。
 
 ## Content の設定
 

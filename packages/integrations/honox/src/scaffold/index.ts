@@ -133,6 +133,7 @@ function templateVariables(
     description: options.description ?? "",
     baseUrl: options.baseUrl ?? "",
     locale: options.locale ?? "en",
+    externalContent: options.contentRepository !== undefined,
   };
 }
 

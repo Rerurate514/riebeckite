@@ -32,6 +32,7 @@ export type SiteTemplateVariables = {
   readonly description: string;
   readonly baseUrl: string;
   readonly locale: string;
+  readonly externalContent?: boolean;
 };
 
 export type SiteTemplateOptions = {
@@ -552,6 +553,9 @@ function readmeEn(
       "",
     );
   }
+  if (variables.externalContent === true) {
+    lines.push(...deploymentSecretLines("en"));
+  }
   if (preset.readme === "rich") {
     lines.push(...demoPagesLines(preset, variables, words, "en"));
     lines.push(...copyPasteDemoLines(preset, words, "en"));
@@ -618,6 +622,9 @@ function readmeJa(
       "",
     );
   }
+  if (variables.externalContent === true) {
+    lines.push(...deploymentSecretLines("ja"));
+  }
   if (preset.readme === "rich") {
     lines.push(...demoPagesLines(preset, variables, words, "ja"));
     lines.push(...copyPasteDemoLines(preset, words, "ja"));
@@ -632,6 +639,35 @@ function readmeJa(
     );
   }
   return lines.join("\n");
+}
+
+function deploymentSecretLines(language: "en" | "ja"): readonly string[] {
+  if (language === "ja") {
+    return [
+      "## デプロイ用 Secret",
+      "",
+      "GitHub Actions のデプロイは content repository を読み、Cloudflare へ配信します。初回実行の前に、次の repository secret を登録してください。",
+      "",
+      "- `RIEBECKITE_CONTENT_READ_TOKEN` — **この Site Repository** に登録します。content repository が private / internal のときだけ必要です。content repository に限定した fine-grained token を作成し、**Contents: read** を付与します。",
+      "- `SITE_DISPATCH_TOKEN` — **content repository** に登録します。content repository の `notify-site.yml` からこの Site へ更新を通知するために使います。この Site Repository に限定した fine-grained token を作成し、**Contents: read and write** を付与します。",
+      "- `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` — **この Site Repository** に登録し、Cloudflare へのデプロイに使います。",
+      "",
+      `workflow はこれらの secret 名を参照するだけで、値は含みません。値は絶対に commit しないでください。全体の手順は [別 Content Repository のガイド](${REPO}/blob/main/docs/ja/docs/guides/deployment/separate-content-repository.md) を参照してください。`,
+      "",
+    ];
+  }
+  return [
+    "## Deployment secrets",
+    "",
+    "The GitHub Actions deployment reads the content repository and deploys to Cloudflare. Add these repository secrets before the first run:",
+    "",
+    "- `RIEBECKITE_CONTENT_READ_TOKEN` — in **this site repository**. Required only when the content repository is private or internal. Use a fine-grained token scoped to the content repository with **Contents: read**.",
+    "- `SITE_DISPATCH_TOKEN` — in the **content repository**. Lets its `notify-site.yml` dispatch updates to this site. Use a fine-grained token scoped to this site repository with **Contents: read and write**.",
+    "- `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` — in **this site repository** for the Cloudflare deploy.",
+    "",
+    `The workflows reference these secret names and never contain their values. Never commit the values. See the [separate content repository guide](${REPO}/blob/main/docs/en/docs/guides/deployment/separate-content-repository.md) for the full setup.`,
+    "",
+  ];
 }
 
 function languagesLabel(

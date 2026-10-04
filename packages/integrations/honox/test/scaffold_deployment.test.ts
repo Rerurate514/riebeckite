@@ -72,6 +72,10 @@ test("every scaffold preset supports external content and content-push dispatch"
         path.join(targetDirectory, "github/notify-site.yml"),
         "utf8",
       );
+      const readme = await fs.readFile(
+        path.join(targetDirectory, "README.md"),
+        "utf8",
+      );
       assertWorkflowContract(workflow);
       assert.match(workflow, /Check out the external content repository/);
       assert.match(workflow, /repository: octo-org\/notes/);
@@ -81,6 +85,10 @@ test("every scaffold preset supports external content and content-push dispatch"
       assert.match(notify, /repo: "site"/);
       assert.match(notify, /SITE_DISPATCH_TOKEN/);
       assert.match(notify, /event_type: "content-updated"/);
+      assert.match(readme, /## Deployment secrets/);
+      assert.match(readme, /RIEBECKITE_CONTENT_READ_TOKEN/);
+      assert.match(readme, /SITE_DISPATCH_TOKEN/);
+      assert.match(readme, /CLOUDFLARE_API_TOKEN/);
     }
   });
 });

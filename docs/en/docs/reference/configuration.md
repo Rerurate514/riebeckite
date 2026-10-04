@@ -1,6 +1,6 @@
 # Configuration
 
-Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `markdown`, `theme`, and `plugins`.
+Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `navigation`, `content`, `markdown`, `theme`, and `plugins`.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -17,6 +17,162 @@ export default defineConfig({
   plugins: [],
 });
 ```
+
+## Navigation
+
+`navigation` sets the links shown in the site's **Header and Footer**.
+
+```ts
+navigation: {
+  header: [
+    { label: "Guide", href: "/guide" },
+    {
+      label: "Notes",
+      href: "/notes/planning",
+      children: [
+        { label: "Planning", href: "/notes/planning" },
+        { label: "Writing", href: "/notes/writing" },
+      ],
+    },
+    {
+      label: "GitHub",
+      href: "https://github.com/example/site",
+      external: true,
+    },
+  ],
+  footer: [
+    { label: "Guide", href: "/guide" },
+  ],
+}
+```
+
+Both `header` and `footer` are optional. When omitted, they are treated as an empty array.
+
+### NavigationItem
+
+Each link is a `NavigationItem`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `label` | `string` | Text shown for the link |
+| `href` | `string` | Destination path or URL |
+| `children` | `NavigationItem[]` | Child items, shown as a submenu |
+| `external` | `boolean` | When `true`, opens in a new tab |
+
+`label` and `href` are required.
+
+### Header and Footer
+
+`navigation.header` items render in `SiteHeader`, and `navigation.footer` items render in `SiteFooter`.
+
+```ts
+navigation: {
+  header: [
+    { label: "Guide", href: "/guide" },
+    { label: "About", href: "/about" },
+  ],
+  footer: [
+    { label: "About", href: "/about" },
+  ],
+}
+```
+
+When an array is empty, no navigation is shown in that region.
+
+In the header, the site title is already a link home, so an item with `href: "/"` is not shown.
+
+### Building submenus
+
+Use `children` to nest navigation.
+
+```ts
+{
+  label: "Notes",
+  href: "/notes/planning",
+  children: [
+    { label: "Planning", href: "/notes/planning" },
+    { label: "Writing", href: "/notes/writing" },
+  ],
+}
+```
+
+`children` render as a submenu.
+
+### Linking to external sites
+
+Add `external: true` for links to other sites.
+
+```ts
+{
+  label: "GitHub",
+  href: "https://github.com/example/site",
+  external: true,
+}
+```
+
+The link opens in a new tab and gets `rel="noreferrer"`.
+
+### Marking the current page
+
+In the header, the link for the page currently being viewed becomes active automatically.
+
+For example, with:
+
+```ts
+{ label: "Guide", href: "/guide" }
+```
+
+the item is active on pages such as:
+
+```text
+/guide
+/guide/getting-started
+/en/guide
+/en/guide/getting-started
+```
+
+Trailing slashes and a leading locale are normalized during matching, so you do not need to worry about differences such as `/guide/` and `/en/guide`.
+
+An active link gets `aria-current="page"`.
+
+An `href` that does not start with `/` (such as an external URL) and items with `external: true` are never treated as active.
+
+### On mobile
+
+On narrow viewports, the header navigation collapses into a `Menu` disclosure.
+
+The content and HTML structure do not change; only the CSS presentation changes with viewport width.
+
+### Validation
+
+`navigation` is validated while the config is loaded.
+
+The main rules are:
+
+- `label` is a non-empty string
+- `href` is a non-empty string
+- `external`, when present, is a boolean
+- `children` must not contain an ancestor item
+
+Invalid configuration fails while the config is resolved.
+
+### Plugin pages are not added automatically
+
+`navigation` manages only **the links the site shows in its Header and Footer**.
+
+For example, the following are not added to navigation automatically:
+
+- Search
+- Tag / Folder indexes
+- Taxonomy pages
+- Plugin page types
+- Breadcrumbs
+- Backlinks
+- Related Posts
+
+To show a page a plugin provides in the Header or Footer, add a link to that page in `navigation`.
+
+For the division of responsibility between navigation and plugins, see [Customizing your site](../guides/customizing-your-site.md#navigation).
 
 ## Content selection
 

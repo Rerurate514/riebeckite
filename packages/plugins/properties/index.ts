@@ -1,4 +1,5 @@
 import {
+  appendContentBodySlot,
   type ContentManifest,
   createStyleAsset,
   type Diagnostic,
@@ -88,10 +89,9 @@ function applyPropertiesPanels(
     if (!panel) continue;
 
     if (resolved.render === "slot") {
-      // The Site owns the body layout: publish the panel as a named slot
-      // fragment instead of mutating the note HTML. Merge so other plugins'
-      // slots are preserved.
-      entry.bodySlots = { ...(entry.bodySlots ?? {}), properties: panel };
+      if (!entry.bodySlots?.properties?.includes(panel)) {
+        appendContentBodySlot(entry, "properties", panel);
+      }
       continue;
     }
 

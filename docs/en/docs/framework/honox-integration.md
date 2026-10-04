@@ -28,8 +28,9 @@ imported relative to `configRoot`; `content.directory` is resolved relative to
 resolved config, so CLI and Vite use the same model. `workspaceRoot` is only for
 source-package aliases during monorepo development; installed npm consumers use
 their own `node_modules` without it. The integration creates generated import
-entries below `app/.riebeckite/` and exposes the required client module.
-Generated files are integration output: do not edit them as application source.
+entries below `app/.riebeckite/`, and exposes the required client module as a
+virtual module rather than writing it into that directory. Generated files are
+integration output: do not edit them as application source.
 
 The lower-level pieces remain exported for callers that need full control:
 `riebeckite` (the Vite plugin), `riebeckiteSsg` (static generation),
@@ -76,6 +77,11 @@ The corresponding `*Props` types are public. These stable styling hooks are
 the only classes supplied by the contract: `rb-article`, `rb-article-layout`,
 `rb-article-header`, `rb-article-body`, `rb-article-meta`,
 `rb-article-footer`, and `rb-sidebar`, in the component order above.
+For backward compatibility, the primitives also emit the earlier
+`article-shell`, `article-shell__layout`, `article-shell__lead`,
+`article-frontmatter`, and `article-shell__body` class names. Those are
+compatibility hooks kept for existing CSS, not part of the stable styling
+contract; build new CSS on the `rb-*` hooks.
 Primitives provide semantic HTML, those hooks, and `class`/`className`
 composition only. They do not own article copy, metadata formatting,
 navigation, cards, page layouts, islands, or CSS. Those belong to the site
@@ -110,7 +116,8 @@ import files below `@riebeckite/honox/src/` or rely on any unlisted component.
 A Riebeckite site is a normal HonoX application. The integration supplies
 content and build wiring; the application owns every user-facing decision.
 Keep the following source directories in the site, rather than in an
-integration, theme, or plugin:
+integration, theme, or plugin. For a walkthrough of editing them with ordinary
+HonoX, see [Customizing Your Site](../guides/customizing-your-site.md).
 
 | Directory | Site-owned responsibility |
 | --- | --- |
@@ -154,17 +161,26 @@ color, supplies `theme-color` through this contract.
 When a plugin contributes HTML that belongs inside the note body, the site still
 owns where it is rendered. A plugin only writes an HTML fragment into
 `ContentManifestEntry.bodySlots` under a slot name; it never changes a route,
-the shell, or the render order. A site route reads a value such as
-`entry.bodySlots?.properties` and decides whether and where in its component
-tree to render it.
+the shell, or the render order. A site route passes the slot object to its
+article component, which decides whether and where to render each slot.
 
 ```tsx
 // app/routes/[slug{.+}].tsx
 <Article
   content={post}
-  propertiesHtml={route.entry.bodySlots?.properties}
+  bodySlots={route.entry.bodySlots}
 />;
 ```
+
+The `Article` here is the site's own article component, not the
+`@riebeckite/honox/ui` primitive of the same name. The scaffolded starter
+renders the standard slots at fixed positions: `article.aside`,
+`article.after-header`, `article.after-meta`, `article.before-content`,
+`article.after-content`, and `article.footer`. A plugin author picks one of
+those, or asks the site to render a custom name; a custom slot renders nothing
+until the site chooses to render it. The slot renderer itself is site-owned,
+and the `ContentSlot` helper in `apps/web` is a site-local component, not part
+of the public API.
 
 For example, `@riebeckite/plugin-properties` publishes its property panel on
 the `properties` slot when configured with `render: "slot"`. The default

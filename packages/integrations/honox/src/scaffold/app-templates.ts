@@ -433,25 +433,13 @@ import { Article, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
 
 export function SiteArticle({
   post,
-  propertiesHtml,
-  afterHeaderHtml,
-  afterMetaHtml,
-  beforeContentHtml,
-  afterContentHtml,
-  asideHtml,
-  footerHtml,
+  bodySlots,
   asideContent,
   afterContent,
   footerContent,
 }: {
   post: PostContent;
-  propertiesHtml?: string;
-  afterHeaderHtml?: string;
-  afterMetaHtml?: string;
-  beforeContentHtml?: string;
-  afterContentHtml?: string;
-  asideHtml?: string;
-  footerHtml?: string;
+  bodySlots?: Readonly<Record<string, string>>;
   asideContent?: unknown;
   afterContent?: unknown;
   footerContent?: unknown;
@@ -460,50 +448,50 @@ export function SiteArticle({
     <Article class="site-article">
       <ArticleLayout>
         {asideContent}
-        {asideHtml ? (
+        {bodySlots?.["article.aside"] ? (
           <div
             class="site-article__aside"
-            dangerouslySetInnerHTML={{ __html: asideHtml }}
+            dangerouslySetInnerHTML={{ __html: bodySlots["article.aside"] }}
           />
         ) : null}
         <ArticleContent>
-          {afterHeaderHtml ? (
+          {bodySlots?.["article.after-header"] ? (
             <div
               class="site-article__after-header"
-              dangerouslySetInnerHTML={{ __html: afterHeaderHtml }}
+              dangerouslySetInnerHTML={{ __html: bodySlots["article.after-header"] }}
             />
           ) : null}
-          {propertiesHtml ? (
+          {bodySlots?.properties ? (
             <div
               class="article-properties"
-              dangerouslySetInnerHTML={{ __html: propertiesHtml }}
+              dangerouslySetInnerHTML={{ __html: bodySlots.properties }}
             />
           ) : null}
-          {afterMetaHtml ? (
+          {bodySlots?.["article.after-meta"] ? (
             <div
               class="site-article__after-meta"
-              dangerouslySetInnerHTML={{ __html: afterMetaHtml }}
+              dangerouslySetInnerHTML={{ __html: bodySlots["article.after-meta"] }}
             />
           ) : null}
-          {beforeContentHtml ? (
+          {bodySlots?.["article.before-content"] ? (
             <div
               class="site-article__before-content"
-              dangerouslySetInnerHTML={{ __html: beforeContentHtml }}
+              dangerouslySetInnerHTML={{ __html: bodySlots["article.before-content"] }}
             />
           ) : null}
           <div dangerouslySetInnerHTML={{ __html: post.html ?? "" }} />
           {afterContent}
-          {afterContentHtml ? (
+          {bodySlots?.["article.after-content"] ? (
             <div
               class="site-article__after-content"
-              dangerouslySetInnerHTML={{ __html: afterContentHtml }}
+              dangerouslySetInnerHTML={{ __html: bodySlots["article.after-content"] }}
             />
           ) : null}
         </ArticleContent>
-        {footerHtml || footerContent ? (
+        {bodySlots?.["article.footer"] || footerContent ? (
           <div class="site-article__footer">
-            {footerHtml ? (
-              <div dangerouslySetInnerHTML={{ __html: footerHtml }} />
+            {bodySlots?.["article.footer"] ? (
+              <div dangerouslySetInnerHTML={{ __html: bodySlots["article.footer"] }} />
             ) : null}
             {footerContent}
           </div>
@@ -661,15 +649,7 @@ export function indexRoute(preset: ScaffoldPreset): string {
     );
   }
 
-  const propLines: string[] = [
-    "        propertiesHtml={indexEntry?.bodySlots?.properties}",
-    '        afterHeaderHtml={indexEntry?.bodySlots?.["article.after-header"]}',
-    '        afterMetaHtml={indexEntry?.bodySlots?.["article.after-meta"]}',
-    '        beforeContentHtml={indexEntry?.bodySlots?.["article.before-content"]}',
-    '        afterContentHtml={indexEntry?.bodySlots?.["article.after-content"]}',
-    '        asideHtml={indexEntry?.bodySlots?.["article.aside"]}',
-    '        footerHtml={indexEntry?.bodySlots?.["article.footer"]}',
-  ];
+  const propLines: string[] = ["        bodySlots={indexEntry?.bodySlots}"];
   if (hasToc) {
     propLines.push(
       '        asideContent={<TableOfContents className="table-of-contents--desktop" items={tableOfContents} />}',
@@ -751,15 +731,7 @@ export function slugRoute(preset: ScaffoldPreset): string {
     );
   }
 
-  const propLines: string[] = [
-    "        propertiesHtml={route.entry.bodySlots?.properties}",
-    '        afterHeaderHtml={route.entry.bodySlots?.["article.after-header"]}',
-    '        afterMetaHtml={route.entry.bodySlots?.["article.after-meta"]}',
-    '        beforeContentHtml={route.entry.bodySlots?.["article.before-content"]}',
-    '        afterContentHtml={route.entry.bodySlots?.["article.after-content"]}',
-    '        asideHtml={route.entry.bodySlots?.["article.aside"]}',
-    '        footerHtml={route.entry.bodySlots?.["article.footer"]}',
-  ];
+  const propLines: string[] = ["        bodySlots={route.entry.bodySlots}"];
   if (hasToc) {
     propLines.push(
       '        asideContent={<TableOfContents className="table-of-contents--desktop" items={tableOfContents} />}',

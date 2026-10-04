@@ -9,12 +9,12 @@ import {
 
 type Props = {
   post: PostContent;
-  propertiesHtml?: string;
+  bodySlots?: Readonly<Record<string, string>>;
 };
 
-export function FixtureArticle({ post, propertiesHtml }: Props) {
+export function FixtureArticle({ post, bodySlots }: Props) {
   const { lead, rest } = splitAfterFirstHeading(post.html ?? "");
-  const panel = propertiesHtml ?? "";
+  const panel = bodySlots?.properties ?? "";
 
   return (
     <Article class="fixture-article">

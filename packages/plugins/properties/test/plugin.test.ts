@@ -82,10 +82,16 @@ test("position end appends the panel", async () => {
 test("render slot publishes the panel instead of mutating the note html", async () => {
   const entries = [entry("a", { title: "A" }, "<p>A</p>")];
 
-  await runHook(properties({ render: "slot" }), entries);
+  const plugin = properties({ render: "slot" });
+  await runHook(plugin, entries);
+  await runHook(plugin, entries);
 
   assert.equal(entries[0]?.html, "<p>A</p>");
   assert.ok(entries[0]?.bodySlots?.properties?.startsWith("<section"));
+  assert.equal(
+    entries[0]?.bodySlots?.properties?.match(/data-properties/g)?.length,
+    1,
+  );
 });
 
 test("the manifest hook is idempotent and skips empty panels", async () => {

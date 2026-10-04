@@ -59,14 +59,20 @@ properties({
 
 ### body slot として描画する
 
-`render: "slot"` では、パネルを `ContentManifestEntry.bodySlots.properties` に書き込み、Site の route が好きな位置で描画します。`include` と `order` を組み合わせると、表示するキーと並び順をサイト設定で決められます。
+`render: "slot"` では、パネルを `ContentManifestEntry.bodySlots.properties` に書き込みます。Site の route は `bodySlots` を article component へ渡し、component が任意の位置で描画します。`include` と `order` を組み合わせると、表示するキーと並び順をサイト設定で決められます。
 
 ```tsx
 // app/components/article.tsx（Site 側）
-<div
-  class="article-properties"
-  dangerouslySetInnerHTML={{ __html: propertiesHtml }}
-/>;
+function SiteArticle({ bodySlots }: { bodySlots?: Readonly<Record<string, string>> }) {
+  const propertiesHtml = bodySlots?.properties;
+
+  return propertiesHtml ? (
+    <div
+      class="article-properties"
+      dangerouslySetInnerHTML={{ __html: propertiesHtml }}
+    />
+  ) : null;
+}
 ```
 
 ```ts
@@ -90,4 +96,3 @@ Site への受け渡しは [`ContentManifestEntry.bodySlots`](../../../docs/ja/d
 ## 関連資料
 
 - [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
-

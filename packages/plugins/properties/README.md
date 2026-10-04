@@ -68,16 +68,22 @@ properties({
 ### Rendering into a body slot
 
 With `render: "slot"`, the plugin writes the panel to
-`ContentManifestEntry.bodySlots.properties` and the Site route chooses where to
-render it. Combine `include` and `order` to decide which keys are shown and in
-what order:
+`ContentManifestEntry.bodySlots.properties`. The Site route passes `bodySlots`
+to its article component, which chooses where to render it. Combine `include`
+and `order` to decide which keys are shown and in what order:
 
 ```tsx
 // app/components/article.tsx (site side)
-<div
-  class="article-properties"
-  dangerouslySetInnerHTML={{ __html: propertiesHtml }}
-/>;
+function SiteArticle({ bodySlots }: { bodySlots?: Readonly<Record<string, string>> }) {
+  const propertiesHtml = bodySlots?.properties;
+
+  return propertiesHtml ? (
+    <div
+      class="article-properties"
+      dangerouslySetInnerHTML={{ __html: propertiesHtml }}
+    />
+  ) : null;
+}
 ```
 
 ```ts
@@ -103,4 +109,3 @@ contract. A plugin never owns routes or the shell.
 ## See also
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
-

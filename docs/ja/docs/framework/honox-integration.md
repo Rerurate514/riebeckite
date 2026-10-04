@@ -297,6 +297,8 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
+また、後方互換のため、以前の `article-shell`、`article-shell__layout`、`article-shell__lead`、`article-frontmatter`、`article-shell__body` という class も出力します。これらは既存 CSS のための互換 hook であり、stable styling hook の contract には含まれません。新しい CSS は `rb-*` hook を対象にしてください。
+
 Primitive が担当するのは主に、
 
 - semantic HTML
@@ -357,7 +359,7 @@ Primitive は composition point として使用し、見た目は Site 側で定
 
 Riebeckite Site は、最終的には通常の HonoX application です。
 
-`@riebeckite/honox` は content と build を接続しますが、実際にユーザーが見る UI の設計は Site が管理します。
+`@riebeckite/honox` は content と build を接続しますが、実際にユーザーが見る UI の設計は Site が管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../guides/customizing-your-site.md) を参照してください。
 
 ```mermaid
 flowchart TD
@@ -496,16 +498,18 @@ Plugin は slot 名と HTML fragment を提供します。
 properties
 ```
 
-という slot があれば、Site は、
+という slot があれば、Route は slot object を article component へ渡し、Site は、
 
 ```tsx
 <Article
   content={post}
-  propertiesHtml={route.entry.bodySlots?.properties}
+  bodySlots={route.entry.bodySlots}
 />
 ```
 
-のように任意の位置へ配置できます。
+のように article component 内の任意の位置へ配置できます。
+
+ここでの `Article` は Site 自身の article component であり、同名の `@riebeckite/honox/ui` primitive ではありません。scaffold の starter は標準 slot を決まった位置へ描画します(`article.aside`、`article.after-header`、`article.after-meta`、`article.before-content`、`article.after-content`、`article.footer`)。plugin 作者はこれらから選ぶか、Site に独自名の描画を依頼します。独自 slot は Site が描画を選ぶまで何も表示しません。slot renderer 自体は Site が所有し、`apps/web` の `ContentSlot` は Site-local な component であって公開 API ではありません。
 
 Plugin が route や shell の構造を書き換える必要はありません。
 

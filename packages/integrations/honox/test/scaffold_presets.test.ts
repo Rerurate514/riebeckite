@@ -164,17 +164,7 @@ test("starter and showcase scaffolds render the standard body slots", async () =
         path.join(targetDirectory, "app/components/article.tsx"),
         "utf8",
       );
-      for (const prop of [
-        "propertiesHtml?: string",
-        "afterHeaderHtml?: string",
-        "afterMetaHtml?: string",
-        "beforeContentHtml?: string",
-        "afterContentHtml?: string",
-        "asideHtml?: string",
-        "footerHtml?: string",
-      ]) {
-        assert.ok(article.includes(prop), `article must accept ${prop}`);
-      }
+      assert.match(article, /bodySlots\?: Readonly<Record<string, string>>/);
       for (const className of [
         'class="article-properties"',
         'class="site-article__after-header"',
@@ -189,25 +179,44 @@ test("starter and showcase scaffolds render the standard body slots", async () =
           `article must render ${className}`,
         );
       }
+      for (const slot of [
+        "article.after-header",
+        "properties",
+        "article.after-meta",
+        "article.aside",
+        "article.before-content",
+        "article.after-content",
+        "article.footer",
+      ]) {
+        assert.match(article, new RegExp(`bodySlots.*${slot}`));
+      }
+      const slotClassOrder = [
+        'class="site-article__aside"',
+        'class="site-article__after-header"',
+        'class="article-properties"',
+        'class="site-article__after-meta"',
+        'class="site-article__before-content"',
+        'post.html ?? ""',
+        'class="site-article__after-content"',
+        'class="site-article__footer"',
+      ];
+      for (let index = 1; index < slotClassOrder.length; index += 1) {
+        assert.ok(
+          article.indexOf(slotClassOrder[index - 1] ?? "") <
+            article.indexOf(slotClassOrder[index] ?? ""),
+          "article slot order must remain unchanged",
+        );
+      }
       for (const route of ["index.tsx", "[slug{.+}].tsx"]) {
         const source = await fs.readFile(
           path.join(targetDirectory, `app/routes/${route}`),
           "utf8",
         );
-        for (const slot of [
-          "properties",
-          "article.after-header",
-          "article.after-meta",
-          "article.before-content",
-          "article.after-content",
-          "article.aside",
-          "article.footer",
-        ]) {
-          assert.ok(
-            source.includes(slot),
-            `${preset} ${route} must pass the ${slot} slot`,
-          );
-        }
+        assert.match(
+          source,
+          /bodySlots=\{(?:indexEntry\?|route.entry)\.bodySlots\}/,
+        );
+        assert.doesNotMatch(source, /properties|article\./);
       }
     }
   });
@@ -224,16 +233,10 @@ test("starter scaffold renders article footer slots for plugin UI", async () => 
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(renderer, /<SearchBar \/>/);
     assert.match(index, /<TableOfContents/);
-    assert.match(
-      index,
-      /footerHtml={indexEntry\?\.bodySlots\?\.\["article.footer"\]}/,
-    );
+    assert.match(index, /bodySlots={indexEntry\?\.bodySlots}/);
     assert.match(index, /<RecentPosts /);
     assert.match(slug, /<TableOfContents/);
-    assert.match(
-      slug,
-      /footerHtml={route.entry.bodySlots\?\.\["article.footer"\]}/,
-    );
+    assert.match(slug, /bodySlots={route.entry.bodySlots}/);
   });
 });
 
@@ -246,10 +249,7 @@ test("showcase scaffold renders article footer slots and daily-notes", async () 
     const index = await read("app/routes/index.tsx");
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(index, /<DailyNotes /);
-    assert.match(
-      slug,
-      /footerHtml={route.entry.bodySlots\?\.\["article.footer"\]}/,
-    );
+    assert.match(slug, /bodySlots={route.entry.bodySlots}/);
   });
 });
 

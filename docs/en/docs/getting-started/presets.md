@@ -30,7 +30,7 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 
 | Preset | Theme | Languages | Contents | Representative features |
 | --- | --- | --- | --- | --- |
-| `starter` | `default` | 7 | index, guide, examples, connected notes | Markdown publishing, search, backlinks, related and recent posts, taxonomy, series |
+| `starter` | `default` | 7 | index, guide, examples, connected notes | Markdown publishing, search, breadcrumbs, backlinks, related and recent posts, taxonomy, series |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
 | `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
@@ -39,7 +39,7 @@ The seven languages are English, Japanese, Simplified Chinese, Spanish, German, 
 
 ### `starter`
 
-The practical default. It includes Obsidian Markdown, color mode, l10n, SEO, table of contents, properties and aliases, code enhancement, search and discovery, responsive images and lightbox, series, and taxonomy. Its connected sample notes exercise backlinks, related posts, search, recent posts, series, and tags without adding niche integrations.
+The practical default. It includes Obsidian Markdown, color mode, l10n, SEO, table of contents, properties and aliases, code enhancement, search and discovery, breadcrumbs, responsive images and lightbox, series, and taxonomy. Its connected sample notes exercise backlinks, related posts, search, recent posts, series, and tags without adding niche integrations.
 
 ### `minimal`
 

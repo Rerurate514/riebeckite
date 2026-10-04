@@ -228,6 +228,7 @@ const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {
 /** Discovery, media, and reading polish. */
 const search = np("@riebeckite/plugin-search", "searchPlugin");
 const backlinks = np("@riebeckite/plugin-backlinks", "backlinksPlugin");
+const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbsPlugin");
 const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts", {
   limit: { depth: 2, value: "5" },
   useTags: { depth: 2, value: "true" },
@@ -327,6 +328,7 @@ const taxonomy = np("@riebeckite/plugin-taxonomy", "taxonomy", {
   feeds: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
   relatedLimit: { depth: 3, value: "8" },
 });
+const folderPages = np("@riebeckite/plugin-folder-pages", "folderPagesPlugin");
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
   "autoCardLinkPlugin",
@@ -602,6 +604,7 @@ export const starter: ScaffoldPreset = {
     codeEnhance,
     search,
     backlinks,
+    breadcrumbs,
     relatedPosts,
     recentPosts,
     responsiveImage,
@@ -631,6 +634,7 @@ export const showcase: ScaffoldPreset = {
     codeEnhance,
     search,
     backlinks,
+    breadcrumbs,
     relatedPosts,
     share,
     changelog,
@@ -647,6 +651,7 @@ export const showcase: ScaffoldPreset = {
     shortcodes,
     series,
     taxonomy,
+    folderPages,
     autoCardLink,
     richEmbed,
     gallery,

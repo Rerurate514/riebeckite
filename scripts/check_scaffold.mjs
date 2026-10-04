@@ -198,6 +198,14 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
       "starter: search must be registered",
     );
     expect(
+      config.includes("breadcrumbsPlugin()"),
+      "starter: breadcrumbs must be registered",
+    );
+    expect(
+      !config.includes("@riebeckite/plugin-folder-pages"),
+      "starter: folder-pages must stay out of the starter preset",
+    );
+    expect(
       !config.includes("mermaid("),
       "starter: niche diagram plugins must be excluded",
     );
@@ -297,6 +305,14 @@ async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
     expect(
       config.includes("reportUnusedAssets: true"),
       "showcase: diagnostics must show its options",
+    );
+    expect(
+      config.includes("breadcrumbsPlugin()"),
+      "showcase: breadcrumbs must be registered",
+    );
+    expect(
+      config.includes("folderPagesPlugin()"),
+      "showcase: folder-pages must be registered",
     );
     expectHoverPreviewSelector(config, "showcase");
   }

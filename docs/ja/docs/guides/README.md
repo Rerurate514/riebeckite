@@ -117,6 +117,7 @@ Riebeckite の Package を新しい Version へ更新するときの手順と、
 | Analytics を導入する | [Analytics](./analytics.md) |
 | サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.md) |
 | Site の UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.md) |
+| Homepage と発見導線を作る | [発見導線のレシピ](./discovery-recipes.md) |
 | デプロイ方法を選ぶ | [Deployment](./deployment/README.md) |
 | Cloudflare Workers に公開する | [Cloudflare Workers](./deployment/cloudflare-workers.md) |
 | GitHub Actions で自動デプロイする | [GitHub Actions](./deployment/github-actions.md) |

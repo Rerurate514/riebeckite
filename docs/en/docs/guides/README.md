@@ -14,6 +14,7 @@ Guides start from a task: "I want to publish an Obsidian vault", "I want a multi
 | --- | --- |
 | Write and organize articles | [Writing content](./writing-content.md) |
 | Customize the site UI with HonoX | [Customizing your site](./customizing-your-site.md) |
+| Build a homepage and browse routes | [Discovery recipes](./discovery-recipes.md) |
 | Publish an Obsidian vault | [Obsidian](./obsidian.md) |
 | Keep content and the site in separate repositories | [Content repositories](./content-repositories.md) |
 | Build a multilingual site | [Localization](./localization.md) |

@@ -89,11 +89,15 @@ test("each preset generates its intended self-contained composition", async () =
           ),
         );
         assert.ok(config.includes("@riebeckite/plugin-mermaid"));
+        assert.ok(config.includes("@riebeckite/plugin-breadcrumbs"));
+        assert.ok(config.includes("@riebeckite/plugin-folder-pages"));
       }
       if (preset === "starter") {
         assert.match(config, /navigation: \{/);
         assert.match(config, /label: "Notes"/);
         assert.ok(config.includes("@riebeckite/plugin-search"));
+        assert.ok(config.includes("@riebeckite/plugin-breadcrumbs"));
+        assert.ok(!config.includes("@riebeckite/plugin-folder-pages"));
         assert.ok(
           await exists(path.join(targetDirectory, "content/notes/planning.md")),
         );

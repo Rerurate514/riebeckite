@@ -30,7 +30,7 @@ npx create-riebeckite --list-presets
 
 | Preset | Theme | 言語 | コンテンツ | 主な機能 |
 | --- | --- | --- | --- | --- |
-| `starter` | `default` | 7言語 | index、guide、examples、相互リンクしたノート | Markdown 公開、検索、バックリンク、関連記事・最新記事、taxonomy、series |
+| `starter` | `default` | 7言語 | index、guide、examples、相互リンクしたノート | Markdown 公開、検索、パンくず、バックリンク、関連記事・最新記事、taxonomy、series |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、Plugin/Theme reference、ローカル fixture | 全 Plugin カタログ、図表、チャート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | — | なし | 空のアプリケーションシェル |
@@ -39,7 +39,7 @@ npx create-riebeckite --list-presets
 
 ### `starter`
 
-実用サイト向けの既定構成です。Obsidian Markdown、カラーモード、l10n、SEO、目次、properties・alias、コード表示、検索・発見、画像の最適表示と lightbox、series、taxonomy を含みます。相互リンクしたノートにより、バックリンク、関連記事、検索、最新記事、series、タグを試せます。ニッチな統合は含めません。
+実用サイト向けの既定構成です。Obsidian Markdown、カラーモード、l10n、SEO、目次、properties・alias、コード表示、検索・発見、パンくず、画像の最適表示と lightbox、series、taxonomy を含みます。相互リンクしたノートにより、バックリンク、関連記事、検索、最新記事、series、タグを試せます。ニッチな統合は含めません。
 
 ### `minimal`
 

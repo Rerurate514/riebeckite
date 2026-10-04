@@ -145,7 +145,21 @@
     }
 
     .rb-nav__mobile {
+      position: relative;
       display: block;
+    }
+
+    .rb-nav__mobile > .rb-nav {
+      position: absolute;
+      z-index: 10;
+      top: calc(100% + var(--rb-space-2));
+      right: 0;
+      min-width: 12rem;
+      padding: var(--rb-space-3);
+      background: var(--rb-color-surface);
+      border: 1px solid var(--rb-color-border);
+      box-shadow: 0 4px 12px
+        color-mix(in oklab, var(--rb-color-ink) 14%, transparent);
     }
 
     .rb-nav__mobile .rb-nav__list,
@@ -157,7 +171,7 @@
     }
 
     .rb-nav__mobile .rb-nav__list {
-      padding-top: var(--rb-space-3);
+      padding: 0;
     }
 
     .rb-nav__mobile .rb-nav__children {

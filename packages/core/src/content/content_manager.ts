@@ -94,9 +94,16 @@ export class ContentManager {
     exclude: string[] = [],
     private pipelineOptions: PipelineOptions = {},
   ) {
+    const config = pipelineOptions.config
+      ? {
+          ...pipelineOptions.config,
+          plugins: pipelineOptions.plugins ?? pipelineOptions.config.plugins,
+        }
+      : undefined;
     this.pipelineOptions = {
       ...pipelineOptions,
-      plugins: pipelineOptions.plugins ?? pipelineOptions.config?.plugins,
+      config,
+      plugins: pipelineOptions.plugins ?? config?.plugins,
       isRoutable: (slug) => this.isRoutable(slug),
     };
     this.publishingBuildTime = resolvePublishingBuildTime(

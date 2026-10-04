@@ -249,6 +249,101 @@ test("does not duplicate generated l10n fragments when entries are reused from c
   );
 });
 
+test("keeps translation membership changes equivalent to a cold build", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-l10n-membership-"),
+  );
+  const files: Record<string, string> = {
+    "source.ja.md":
+      "---\ntranslation: source\n---\n[Target](/en/target#section)",
+    "target.en.md": "---\ntranslation: target\n---\n# English",
+  };
+
+  const initial = await manager(files, {}, [], directory).build({
+    incremental: true,
+  });
+  assert.match(
+    initial.bySlug.get("source.ja")?.html ?? "",
+    /href="\/en\/target#section"/,
+  );
+
+  files["target.ja.md"] = "---\ntranslation: target\n---\n# Japanese";
+  const incremental = await manager(files, {}, [], directory).build({
+    incremental: true,
+  });
+  const cold = await manager(files).build({ incremental: false });
+
+  assert.equal(
+    incremental.bySlug.get("source.ja")?.html,
+    cold.bySlug.get("source.ja")?.html,
+  );
+  assert.match(
+    incremental.bySlug.get("source.ja")?.html ?? "",
+    /href="\/target#section"/,
+  );
+});
+
+test("keeps removed, relabeled, regrouped, and moved translations equivalent to a cold build", async () => {
+  const source = "---\ntranslation: source\n---\n[Target](/en/target#section)";
+  const targetEn = "---\ntranslation: target\n---\n# English";
+  const targetJa = "---\ntranslation: target\n---\n# Japanese";
+  const cases = [
+    {
+      name: "removed",
+      next: {
+        "source.ja.md": source,
+        "target.en.md": targetEn,
+      },
+    },
+    {
+      name: "frontmatter language changed",
+      next: {
+        "source.ja.md": source,
+        "target.en.md": targetEn,
+        "target.ja.md": "---\nlang: en\ntranslation: target\n---\n# Japanese",
+      },
+    },
+    {
+      name: "translation group changed",
+      next: {
+        "source.ja.md": source,
+        "target.en.md": targetEn,
+        "target.ja.md": "---\ntranslation: another\n---\n# Japanese",
+      },
+    },
+    {
+      name: "path changed",
+      next: {
+        "source.ja.md": source,
+        "target.en.md": targetEn,
+        "translated.ja.md": targetJa,
+      },
+    },
+  ] as const;
+
+  for (const scenario of cases) {
+    const directory = await fs.mkdtemp(
+      path.join(os.tmpdir(), `riebeckite-l10n-${scenario.name}-`),
+    );
+    const initial = {
+      "source.ja.md": source,
+      "target.en.md": targetEn,
+      "target.ja.md": targetJa,
+    };
+    await manager(initial, {}, [], directory).build({ incremental: true });
+    const incremental = await manager(scenario.next, {}, [], directory).build({
+      incremental: true,
+    });
+    const cold = await manager(scenario.next).build({ incremental: false });
+
+    assert.equal(
+      incremental.bySlug.get("source.ja")?.html,
+      cold.bySlug.get("source.ja")?.html,
+      scenario.name,
+    );
+  }
+});
+
 test("allows the switcher to be disabled, moved, or replaced", async () => {
   const files = {
     "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",

@@ -39,28 +39,24 @@ export default function Article(props: Props) {
       <ArticleLayout>
         {props.asideContent}
         <ContentSlot
-          class="article-shell__aside"
+          class="rb-article-aside"
           html={props.bodySlots?.["article.aside"]}
         />
         <ArticleContent>
+          <ContentSlot html={props.bodySlots?.["article.header"]} />
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
-          <ContentSlot html={props.bodySlots?.["article.after-header"]} />
-          <ContentSlot
-            class="article-properties"
-            html={props.bodySlots?.properties}
-          />
+          <ContentSlot html={props.bodySlots?.["article.metadata"]} />
           <ArticleFrontmatter
             frontmatter={props.content.frontmatter}
             readingTimeMinutes={readingTimeMinutes}
           />
-          <ContentSlot html={props.bodySlots?.["article.after-meta"]} />
           <ContentSlot html={props.bodySlots?.["article.before-content"]} />
           <div dangerouslySetInnerHTML={{ __html: articleHtml.rest }} />
           {props.afterContent}
           <ContentSlot html={props.bodySlots?.["article.after-content"]} />
         </ArticleContent>
         {(props.bodySlots?.["article.footer"] || props.footerContent) && (
-          <div class="article-shell__outro">
+          <div class="rb-article-outro">
             <ContentSlot html={props.bodySlots?.["article.footer"]} />
             {props.footerContent}
           </div>

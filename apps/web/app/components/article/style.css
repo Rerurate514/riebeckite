@@ -1,52 +1,52 @@
-.article-shell {
+.rb-article {
   max-width: none;
   width: min(100%, var(--rb-layout-page-max));
 }
 
 @layer components {
-  .article-shell__layout {
+  .rb-article-layout {
     display: grid;
     grid-template-columns: minmax(0, var(--rb-layout-article-max));
     justify-content: center;
     gap: var(--rb-layout-gap);
   }
 
-  .article-shell__body {
+  .rb-article-body {
     min-width: 0;
     padding-inline: var(--rb-space-2);
   }
 
-  :is(:root, .rb-theme-root)[data-article-layout="full-width"] .article-shell {
+  :is(:root, .rb-theme-root)[data-article-layout="full-width"] .rb-article {
     width: 100%;
     max-width: none;
   }
 
   :is(:root, .rb-theme-root)[data-article-layout="full-width"]
-    .article-shell__layout {
+    .rb-article-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
   :is(:root, .rb-theme-root)[data-article-layout="full-width"]
-    .article-shell__body {
+    .rb-article-body {
     max-width: none;
   }
 
   @media (min-width: 88rem) {
     :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
-      .article-shell__layout {
+      .rb-article-layout {
       grid-template-columns:
         minmax(0, var(--rb-layout-article-max))
         var(--rb-layout-sidebar);
     }
 
-    .article-shell__body {
+    .rb-article-body {
       grid-column: 1;
       grid-row: 1;
     }
   }
 }
 
-.article-shell__outro {
+.rb-article-outro {
   min-width: 0;
   padding-inline: var(--rb-space-2);
   padding-block-end: var(--rb-space-6);
@@ -57,30 +57,26 @@
    the readable column left. These rules are unlayered so they beat the plugin
    styles imported later via `.riebeckite/plugin-styles.css`. */
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"]
-    .article-shell__layout {
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-layout {
     position: relative;
   }
 
-  :is(:root, .rb-theme-root)[data-article-layout="article"]
-    .article-shell__body {
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body {
     grid-column: 1;
     grid-row: 1;
   }
 
-  :is(:root, .rb-theme-root)[data-article-layout="article"]
-    .article-shell__outro {
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-outro {
     grid-column: 1;
   }
 }
 
-.article-shell__aside {
+.rb-article-aside {
   display: none;
 }
 
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"]
-    .article-shell__aside {
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-aside {
     display: block;
     grid-column: 1;
     grid-row: 1;

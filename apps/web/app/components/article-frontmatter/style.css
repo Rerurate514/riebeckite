@@ -1,5 +1,5 @@
 @layer components {
-  .article-frontmatter {
+  .site-article-frontmatter {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -11,21 +11,21 @@
     line-height: 1.4;
   }
 
-  .article-frontmatter__date {
+  .site-article-frontmatter__date {
     display: inline-flex;
     align-items: baseline;
     gap: 0.5rem;
     color: color-mix(in srgb, currentColor 72%, transparent);
   }
 
-  .article-frontmatter__label {
+  .site-article-frontmatter__label {
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     color: color-mix(in srgb, currentColor 48%, transparent);
   }
 
-  .article-frontmatter__tags {
+  .site-article-frontmatter__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0rem 3rem;
@@ -34,25 +34,24 @@
     list-style: none;
   }
 
-  .article-frontmatter__tag-item {
+  .site-article-frontmatter__tag-item {
     margin: 0;
     padding: 0;
   }
 
-  .article-frontmatter__tag {
+  .site-article-frontmatter__tag {
     color: inherit;
     text-decoration: none;
     transition: color 160ms ease;
   }
 
-  .article-frontmatter__tag:hover,
-  .article-frontmatter__tag:focus-visible {
+  .site-article-frontmatter__tag:hover,
+  .site-article-frontmatter__tag:focus-visible {
     color: var(--rb-color-accent);
   }
 
-  /* Narrow screens: give tag links a taller hit target for touch. */
   @media (max-width: 48rem) {
-    .article-frontmatter__tag {
+    .site-article-frontmatter__tag {
       padding-block: 0.5rem;
     }
   }

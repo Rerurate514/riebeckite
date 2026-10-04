@@ -166,9 +166,8 @@ test("starter and showcase scaffolds render the standard body slots", async () =
       );
       assert.match(article, /bodySlots\?: Readonly<Record<string, string>>/);
       for (const className of [
-        'class="article-properties"',
-        'class="site-article__after-header"',
-        'class="site-article__after-meta"',
+        'class="site-article__header"',
+        'class="site-article__metadata"',
         'class="site-article__before-content"',
         'class="site-article__after-content"',
         'class="site-article__aside"',
@@ -180,9 +179,8 @@ test("starter and showcase scaffolds render the standard body slots", async () =
         );
       }
       for (const slot of [
-        "article.after-header",
-        "properties",
-        "article.after-meta",
+        "article.header",
+        "article.metadata",
         "article.aside",
         "article.before-content",
         "article.after-content",
@@ -192,9 +190,8 @@ test("starter and showcase scaffolds render the standard body slots", async () =
       }
       const slotClassOrder = [
         'class="site-article__aside"',
-        'class="site-article__after-header"',
-        'class="article-properties"',
-        'class="site-article__after-meta"',
+        'class="site-article__header"',
+        'class="site-article__metadata"',
         'class="site-article__before-content"',
         'post.html ?? ""',
         'class="site-article__after-content"',

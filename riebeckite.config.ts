@@ -109,7 +109,6 @@ export default defineConfig({
   plugins: [
     obsidianMarkdown(),
     properties({
-      render: "slot",
       include: [
         "created",
         "modified",

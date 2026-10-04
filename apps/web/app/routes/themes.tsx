@@ -275,12 +275,12 @@ function SampleArticle(props: { title: string; id: string }) {
             </tr>
           </tbody>
         </table>
-        <div class="rr-callout callout callout-note" data-callout="note">
-          <div class="callout-title">
-            <div class="callout-icon" />
-            <div class="callout-title-inner">Note</div>
+        <div class="rr-callout rr-callout--note" data-callout="note">
+          <div class="rr-callout__title">
+            <div class="rr-callout__icon" />
+            <div class="rr-callout__title-inner">Note</div>
           </div>
-          <div class="callout-content">
+          <div class="rr-callout__content">
             <p>
               コールアウトは <code>.rr-callout</code> フックでスタイルされます。
             </p>

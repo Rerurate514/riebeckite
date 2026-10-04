@@ -28,35 +28,35 @@ export default function ArticleFrontmatter(props: Props) {
     <ArticleMeta>
       {createdDate && (
         <time
-          class="article-frontmatter__date"
+          class="site-article-frontmatter__date"
           dateTime={createdDate.isoDate}
           title={createdDate.fullDate}
         >
-          <span class="article-frontmatter__label">PUBLISHED</span>
+          <span class="site-article-frontmatter__label">PUBLISHED</span>
           <span>{createdDate.displayDate}</span>
         </time>
       )}
       {updatedDate && (
         <time
-          class="article-frontmatter__date"
+          class="site-article-frontmatter__date"
           dateTime={updatedDate.isoDate}
           title={updatedDate.fullDate}
         >
-          <span class="article-frontmatter__label">UPDATED</span>
+          <span class="site-article-frontmatter__label">UPDATED</span>
           <span>{updatedDate.displayDate}</span>
         </time>
       )}
       {props.readingTimeMinutes && (
-        <span class="article-frontmatter__date">
-          <span class="article-frontmatter__label">READ</span>
+        <span class="site-article-frontmatter__date">
+          <span class="site-article-frontmatter__label">READ</span>
           <span>{props.readingTimeMinutes} min</span>
         </span>
       )}
       {tags.length > 0 && (
-        <ul class="article-frontmatter__tags" aria-label="Tags">
+        <ul class="site-article-frontmatter__tags" aria-label="Tags">
           {tags.map((tag) => (
-            <li class="article-frontmatter__tag-item" key={tag}>
-              <a class="article-frontmatter__tag" href={buildTagHref(tag)}>
+            <li class="site-article-frontmatter__tag-item" key={tag}>
+              <a class="site-article-frontmatter__tag" href={buildTagHref(tag)}>
                 #{tag}
               </a>
             </li>

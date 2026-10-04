@@ -1,8 +1,5 @@
-/* Callouts adapt to the active theme and colour mode. Each type only declares a
-   tone (hue); the surface, left rule, body text and title are mixed from that
-   tone and the theme tokens, so callouts stay legible in light and dark. */
 @layer components {
-  .callout {
+  .rr-callout {
     --callout-tone: var(--rb-color-muted);
     padding: 1rem;
     margin: 1.5rem 0;
@@ -19,7 +16,7 @@
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
   }
 
-  .callout-title {
+  .rr-callout__title {
     display: block;
     font-weight: 600;
     margin-bottom: 0.5rem;
@@ -29,63 +26,73 @@
     color: color-mix(in srgb, var(--callout-tone) 70%, var(--rb-color-ink));
   }
 
-  .callout-note,
-  .callout-abstract,
-  .callout-summary,
-  .callout-tldr {
+  .rr-callout:is(
+    [data-callout="note"],
+    [data-callout="abstract"],
+    [data-callout="summary"],
+    [data-callout="tldr"]
+  ) {
     --callout-tone: #64748b;
   }
 
-  .callout-quote,
-  .callout-cite {
+  .rr-callout:is([data-callout="quote"], [data-callout="cite"]) {
     --callout-tone: #94a3b8;
   }
 
-  .callout-info {
+  .rr-callout[data-callout="info"] {
     --callout-tone: #0ea5e9;
   }
 
-  .callout-todo {
+  .rr-callout[data-callout="todo"] {
     --callout-tone: #0284c7;
   }
 
-  .callout-question,
-  .callout-help,
-  .callout-faq {
+  .rr-callout:is(
+    [data-callout="question"],
+    [data-callout="help"],
+    [data-callout="faq"]
+  ) {
     --callout-tone: #6366f1;
   }
 
-  .callout-success,
-  .callout-check,
-  .callout-done {
+  .rr-callout:is(
+    [data-callout="success"],
+    [data-callout="check"],
+    [data-callout="done"]
+  ) {
     --callout-tone: #10b981;
   }
 
-  .callout-tip,
-  .callout-hint {
+  .rr-callout:is([data-callout="tip"], [data-callout="hint"]) {
     --callout-tone: #f97316;
   }
 
-  .callout-example {
+  .rr-callout[data-callout="example"] {
     --callout-tone: #a855f7;
   }
 
-  .callout-important,
-  .callout-warning,
-  .callout-caution,
-  .callout-attention {
+  .rr-callout:is(
+    [data-callout="important"],
+    [data-callout="warning"],
+    [data-callout="caution"],
+    [data-callout="attention"]
+  ) {
     --callout-tone: #f59e0b;
   }
 
-  .callout-failure,
-  .callout-fail,
-  .callout-missing {
+  .rr-callout:is(
+    [data-callout="failure"],
+    [data-callout="fail"],
+    [data-callout="missing"]
+  ) {
     --callout-tone: #ef4444;
   }
 
-  .callout-danger,
-  .callout-error,
-  .callout-bug {
+  .rr-callout:is(
+    [data-callout="danger"],
+    [data-callout="error"],
+    [data-callout="bug"]
+  ) {
     --callout-tone: #f43f5e;
   }
 }

@@ -471,7 +471,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rr-callout
-  .callout-title {
+  .rr-callout__title {
   color: var(--rb-color-muted);
   font-family: var(--rb-font-body);
   font-size: 0.8125rem;
@@ -482,7 +482,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rr-callout
-  .callout-icon {
+  .rr-callout__icon {
   color: var(--rb-color-muted);
 }
 

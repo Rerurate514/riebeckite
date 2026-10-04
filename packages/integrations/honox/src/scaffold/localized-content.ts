@@ -76,7 +76,7 @@ const PLUGIN_MARKDOWN_GUIDES: Readonly<
   },
   "@riebeckite/plugin-properties": {
     summary:
-      'Renders selected frontmatter properties near the article when configured with `render: "slot"`.',
+      "Renders selected frontmatter properties in the article metadata slot.",
     markdown: [
       "---",
       "created: 2026-09-30",

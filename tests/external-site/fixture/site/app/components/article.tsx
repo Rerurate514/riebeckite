@@ -25,30 +25,24 @@ export function FixtureArticle({ post, bodySlots }: Props) {
           />
         ) : null}
         <ArticleContent>
-          <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
-          {bodySlots?.["article.after-header"] ? (
+          {bodySlots?.["article.header"] ? (
             <div
-              class="fixture-article__after-header"
+              class="fixture-article__header"
               dangerouslySetInnerHTML={{
-                __html: bodySlots["article.after-header"],
+                __html: bodySlots["article.header"],
               }}
             />
           ) : null}
-          {bodySlots?.properties ? (
+          <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
+          {bodySlots?.["article.metadata"] ? (
             <div
-              class="article-properties"
-              dangerouslySetInnerHTML={{ __html: bodySlots.properties }}
+              class="fixture-article__metadata"
+              dangerouslySetInnerHTML={{
+                __html: bodySlots["article.metadata"],
+              }}
             />
           ) : null}
           <ArticleMeta />
-          {bodySlots?.["article.after-meta"] ? (
-            <div
-              class="fixture-article__after-meta"
-              dangerouslySetInnerHTML={{
-                __html: bodySlots["article.after-meta"],
-              }}
-            />
-          ) : null}
           {bodySlots?.["article.before-content"] ? (
             <div
               class="fixture-article__before-content"

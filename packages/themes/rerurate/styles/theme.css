@@ -732,7 +732,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
   .rr-callout
-  .callout-title {
+  .rr-callout__title {
   font-family: var(--rb-font-heading);
   font-size: 0.72rem;
   font-weight: 600;
@@ -743,7 +743,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
   .rr-callout
-  .callout-icon {
+  .rr-callout__icon {
   color: var(--rb-color-accent);
 }
 

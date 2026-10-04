@@ -54,11 +54,7 @@ export type ArticleFooterProps = PrimitiveProps;
 export function Article(props: ArticleProps) {
   return (
     <article
-      class={joinClassNames(
-        "article-shell rb-article",
-        props.class,
-        props.className,
-      )}
+      class={joinClassNames("rb-article", props.class, props.className)}
       data-slot={props["data-slot"] ?? "article"}
     >
       {props.children}
@@ -69,11 +65,7 @@ export function Article(props: ArticleProps) {
 export function ArticleLayout(props: ArticleLayoutProps) {
   return (
     <div
-      class={joinClassNames(
-        "article-shell__layout rb-article-layout",
-        props.class,
-        props.className,
-      )}
+      class={joinClassNames("rb-article-layout", props.class, props.className)}
     >
       {props.children}
       {props.aside}
@@ -83,7 +75,7 @@ export function ArticleLayout(props: ArticleLayoutProps) {
 
 export function ArticleHeader(props: ArticleHeaderProps) {
   const className = joinClassNames(
-    "article-shell__lead rb-article-header",
+    "rb-article-header",
     props.class,
     props.className,
   );
@@ -103,11 +95,7 @@ export function ArticleHeader(props: ArticleHeaderProps) {
 export function ArticleMeta(props: ArticleMetaProps) {
   return (
     <aside
-      class={joinClassNames(
-        "article-frontmatter rb-article-meta",
-        props.class,
-        props.className,
-      )}
+      class={joinClassNames("rb-article-meta", props.class, props.className)}
       aria-label={props.label ?? "Article metadata"}
     >
       {props.children}
@@ -117,7 +105,7 @@ export function ArticleMeta(props: ArticleMetaProps) {
 
 export function ArticleContent(props: ArticleContentProps) {
   const className = joinClassNames(
-    "article-shell__body rb-article-body",
+    "rb-article-body",
     props.class,
     props.className,
   );

@@ -123,7 +123,7 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes(SITE_ISLAND_MARKER)) {
     fail(`generated HTML is missing the site island (${SITE_ISLAND_MARKER})`);
   }
-  if (!combined.includes('class="article-shell rb-article fixture-article"')) {
+  if (!combined.includes('class="rb-article rb-article fixture-article"')) {
     fail("site component did not compose the public Article primitive");
   }
   if (!combined.includes("rr-query__table")) {
@@ -204,7 +204,9 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   const propertiesArticle = propertiesPage.html;
   const headingIndex = propertiesArticle.indexOf("<h1");
   const panelIndex = propertiesArticle.indexOf("rb-properties");
-  const frontmatterIndex = propertiesArticle.indexOf("article-frontmatter");
+  const frontmatterIndex = propertiesArticle.indexOf(
+    "site-article-frontmatter",
+  );
   if (headingIndex === -1) {
     fail("the properties demo page has no <h1> heading");
   }
@@ -212,11 +214,11 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
     fail("the properties demo page has no rendered properties panel");
   }
   if (frontmatterIndex === -1) {
-    fail("the properties demo page has no article-frontmatter element");
+    fail("the properties demo page has no site article frontmatter element");
   }
   if (!(headingIndex < panelIndex && panelIndex < frontmatterIndex)) {
     fail(
-      "the properties panel must render after the first <h1> and before article-frontmatter",
+      "the properties panel must render after the first <h1> and before site article frontmatter",
     );
   }
   if (!combined.includes("data-related-posts")) {

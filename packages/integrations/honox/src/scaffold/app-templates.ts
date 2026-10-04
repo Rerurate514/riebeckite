@@ -260,7 +260,7 @@ export function style(preset: ScaffoldPreset): string {
       "  margin: 0 auto;",
       "}",
       "",
-      ".article-shell__layout {",
+      ".rb-article-layout {",
       "  display: grid;",
       "  grid-template-columns: minmax(0, 1fr);",
       "  justify-content: center;",
@@ -276,12 +276,12 @@ export function style(preset: ScaffoldPreset): string {
       "}",
       "",
       "@media (min-width: 88rem) {",
-      '  :is(:root, .rb-theme-root)[data-article-layout="article"] .article-shell__layout {',
+      '  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-layout {',
       "    grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));",
       "    position: relative;",
       "  }",
       "",
-      '  :is(:root, .rb-theme-root)[data-article-layout="article"] .article-shell__body {',
+      '  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body {',
       "    grid-column: 1;",
       "    grid-row: 1;",
       "  }",
@@ -455,22 +455,16 @@ export function SiteArticle({
           />
         ) : null}
         <ArticleContent>
-          {bodySlots?.["article.after-header"] ? (
+          {bodySlots?.["article.header"] ? (
             <div
-              class="site-article__after-header"
-              dangerouslySetInnerHTML={{ __html: bodySlots["article.after-header"] }}
+              class="site-article__header"
+              dangerouslySetInnerHTML={{ __html: bodySlots["article.header"] }}
             />
           ) : null}
-          {bodySlots?.properties ? (
+          {bodySlots?.["article.metadata"] ? (
             <div
-              class="article-properties"
-              dangerouslySetInnerHTML={{ __html: bodySlots.properties }}
-            />
-          ) : null}
-          {bodySlots?.["article.after-meta"] ? (
-            <div
-              class="site-article__after-meta"
-              dangerouslySetInnerHTML={{ __html: bodySlots["article.after-meta"] }}
+              class="site-article__metadata"
+              dangerouslySetInnerHTML={{ __html: bodySlots["article.metadata"] }}
             />
           ) : null}
           {bodySlots?.["article.before-content"] ? (

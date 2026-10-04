@@ -25,11 +25,42 @@ export function SiteHeader({ path }: { path: string }) {
 }
 
 export function SiteFooter({ path }: { path: string }) {
-  if (config.navigation.footer.length === 0) return null;
-
   return (
     <footer class="site-footer rb-site-footer">
-      <SiteNavigation items={config.navigation.footer} path={path} />
+      <div class="site-footer__main">
+        <div class="site-footer__identity">
+          <a href="/" class="site-footer__project">
+            Riebeckite
+          </a>
+          <p class="site-footer__description">
+            An open-source framework for publishing Markdown sites.
+          </p>
+          <div class="site-footer__author">
+            <span>Author</span>
+            <a href="https://x.com/rerurate" target="_blank" rel="noreferrer">
+              X / Twitter
+            </a>
+            <a
+              href="https://github.com/Rerurate514"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
+        {config.navigation.footer.length > 0 ? (
+          <SiteNavigation
+            items={config.navigation.footer}
+            path={path}
+            label="Footer navigation"
+          />
+        ) : null}
+      </div>
+      <div class="site-footer__meta">
+        <span>Open source · Apache-2.0</span>
+        <span>Project code: Riebeckite</span>
+      </div>
     </footer>
   );
 }
@@ -37,12 +68,14 @@ export function SiteFooter({ path }: { path: string }) {
 function SiteNavigation({
   items,
   path,
+  label = "Site navigation",
 }: {
   items: readonly NavigationItem[];
   path: string;
+  label?: string;
 }) {
   return (
-    <nav class="site-navigation rb-nav" aria-label="Site navigation">
+    <nav class="site-navigation rb-nav" aria-label={label}>
       <NavigationItems items={items} path={path} />
     </nav>
   );

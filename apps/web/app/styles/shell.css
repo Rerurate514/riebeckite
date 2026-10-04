@@ -196,3 +196,169 @@
   box-shadow: 0 2px 12px
     color-mix(in oklab, var(--rb-color-ink) 18%, transparent);
 }
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer {
+  position: relative;
+  width: min(100% - 2rem, 80rem);
+  margin-top: 6rem;
+  padding: 0;
+  border: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer::before {
+  display: block;
+  width: 6rem;
+  height: 3px;
+  content: "";
+  background-image: var(--rr-svg-rule);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3rem;
+  padding: 2rem 0 1.5rem;
+  border-top: 1px solid var(--rb-color-ink);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__project {
+  display: inline-block;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.75rem, 1.3rem + 1.5vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .site-footer__project::first-letter {
+  color: var(--rb-color-accent);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .site-footer__description {
+  max-width: 22rem;
+  margin: 0.75rem 0 0;
+  color: var(--rb-color-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__author {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1.25rem;
+  font-family: var(--rb-font-heading);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .site-footer__author
+  span {
+  color: var(--rb-color-muted);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__author a {
+  color: var(--rb-color-ink);
+  text-decoration: none;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .site-footer__author
+  a:hover,
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .site-footer__author
+  a:focus-visible {
+  color: var(--rb-color-accent);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .site-footer__author
+  a:focus-visible {
+  outline: 2px solid var(--rb-color-accent);
+  outline-offset: 2px;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer .rb-nav {
+  align-self: end;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-site-footer
+  .rb-nav__list {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-site-footer
+  .rb-nav__link {
+  display: block;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  font-family: var(--rb-font-heading);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 2rem;
+  border-top: 1px solid var(--rb-color-border);
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-heading);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+@media (max-width: 48rem) {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer {
+    width: calc(100% - 2rem);
+    margin-top: 4rem;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__main {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+    .rb-site-footer
+    .rb-nav {
+    align-self: start;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+    .rb-site-footer
+    .rb-nav__list {
+    justify-content: flex-start;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+    .rb-site-footer
+    .rb-nav__link {
+    padding: 0.5rem 1.5rem 0.5rem 0;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__meta {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 1.5rem;
+  }
+}

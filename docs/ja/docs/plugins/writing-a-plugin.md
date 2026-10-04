@@ -138,6 +138,72 @@ npm exec riebeckite build              # 生成物に反映されるか確認
 
 `check` / `doctor` / `inspect` は読み取り専用です。解決されない場合は、まず `check` のメッセージで capability エラーや import エラーを確認してください。プラグインを作る前に「本当に Plugin が必要か（設定や App 実装で済まないか）」も確認してください。
 
+## UI の提供方法
+
+Plugin が UI を追加する方法はいくつかあります。最小のものを選んでください。優劣の順列ではなく、組み合わせてもかまいません。
+
+```text
+UI / output を提供したい
+│
+├─ Markdown / HTML 自体を変換する
+│    └─ remark / rehype pipeline
+│
+├─ 埋め込み content を描画する
+│    └─ renderers
+│
+├─ 独立ページを提供する
+│    └─ pageTypes
+│
+├─ 記事 layout へ自動配置する
+│    └─ HTML fragment + body Slot
+│
+├─ Site 作者に配置を任せる
+│    └─ Hono JSX component を export
+│
+└─ Browser 側で強化する
+     └─ clientEntries（必要なら Site 所有の Island）
+```
+
+### body Slot で自動配置する
+
+出力が標準の位置にあり、Plugin を有効化すればすぐ表示したい場合は body Slot を使います。HTML fragment を提供し、Site が slot を描画するかどうかと位置を決めます。
+
+```ts
+import { appendContentBodySlot } from "@riebeckite/core";
+
+appendContentBodySlot(entry, "article.footer", "<section>...</section>");
+```
+
+`article.footer` などの標準 slot を選ぶか、独自名を Site に描画してもらいます。独自 slot は Site が描画を選ぶまで何も表示しません。slot の一覧と順序は [Body Slots](../reference/plugin-api.md#body-slots) を参照してください。
+
+### Hono JSX component で手動配置する
+
+UI の配置を Site 作者に任せたい場合は、通常の Hono JSX component を export します。component registry や Plugin 固有の component API はありません。ほかの component と同じように import して組み合わせます。
+
+package の `exports` に `./components` subpath を宣言し、component module の default export を保ちます。必要なら同じ component を package root から名前付きでも再 export します。既存 Plugin はこの形です。
+
+```ts
+import { Backlinks } from "@riebeckite/plugin-backlinks";
+import { TableOfContents } from "@riebeckite/plugin-toc";
+import { SearchBar } from "@riebeckite/plugin-search";
+import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
+```
+
+`color-mode` は root のみの形です。`ColorModeScript` と `ColorModeToggle` を package root から公開し、`./components` subpath を持ちません。名前は各 package README に従ってください。
+
+### HTML fragment と component の使い分け
+
+判断基準は **誰が配置するか** です。
+
+- **HTML fragment + Slot**: Plugin が標準の位置へ書き、Site がその slot を描画するか決めます。
+- **Hono JSX component**: Site 作者が component tree の好きな場所へ配置します。
+
+新しいから優れている、という関係ではありません。Plugin がすでに HTML を生成している場合（HAST 変換など）は文字列が自然で、props と配置を Site が制御したい場合は component が自然です。`backlinks` と `local-graph` は両方を使い、component を export しつつ `onManifestCreated` で描画結果を `article.footer` へ追加します。よくある pattern であり、必須ではありません。
+
+### Browser 強化と Island
+
+Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island registry もありません。Browser 側の動作が必要な場合は、server-render 済み DOM を強化する `clientEntries` initializer を提供するか、component state が必要なら Site が Plugin component を自前の HonoX Island で包みます。`garden-explorer` は Page Type と client entry を組み合わせた特殊例であり、必須の pattern として一般化しないでください。詳しくは [Client Entries](../reference/plugin-api.md#client-entries) を参照してください。
+
 ## 関連資料
 
 - [プラグイン作成の詳細](../framework/plugin-system.md) — この入門の詳細編（拡張ポイント・capability・lifecycle・配布）

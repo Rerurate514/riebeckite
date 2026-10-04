@@ -191,6 +191,8 @@ Legacy / compatibility 用として `onBuildStart`、`onBuildEnd` もありま�
 
 すべてを実装する必要はありません。
 
+UI や output の拡張ポイントは複数あり、優劣の順列ではなく選択肢です。Markdown / HTML 変換、renderer、Page Type、body Slot、公開する Hono JSX component、client entry があります。どれを選ぶかは [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
+
 # 5. Plugin の依存関係
 
 Plugin 同士に実際の依存関係がある場合は Capability Contract を使用します。

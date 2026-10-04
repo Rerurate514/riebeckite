@@ -792,8 +792,8 @@ These Plugins do not appear in the body. Their results show up as generated file
 | webmention | webmentions.json and the send/receive endpoints |
 | [`alias`](./alias.md) | Redirects from alternative names |
 | series | Previous/next navigation from `series` frontmatter |
-| [`recent-posts`](./recent-posts.md) | A list of recent notes as a generated page or slot |
-| daily-notes | A page for each date |
+| [`recent-posts`](./recent-posts.md) | A list of recent notes, placed by the site |
+| [`daily-notes`](./daily-notes.md) | Short snippets from Daily Notes, placed by the site |
 | rename | Redirects from old paths |
 | [`deploy`](./deploy.md) | Deployment config files for each host |
 | [`diagnostics`](./diagnostics.md) | Diagnostics for orphan notes and unused assets |

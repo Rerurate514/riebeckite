@@ -62,6 +62,8 @@ plugins: [
 
 The current Core contract covers the following areas. **You do not implement all of them — use the smallest extension point your plugin needs.**
 
+UI and output have several extension points, and they are alternatives rather than a progression: Markdown/HTML transformation, renderers, Page Types, body slots, exported Hono JSX components, and client entries. To choose between them, see [Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
+
 | Area | API |
 | --- | --- |
 | Identity | `name`, `enabled`, `order`, `options` |

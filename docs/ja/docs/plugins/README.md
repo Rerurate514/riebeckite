@@ -63,6 +63,7 @@ export default defineConfig({
 - [Code Tabs](./code-tabs.md)
 - [color-mode](./color-mode.md)
 - [D2](./d2.md)
+- [Daily Notes](./daily-notes.md)
 - [Dataview](./dataview.md)
 - [Deploy](./deploy.md)
 - [Diagnostics](./diagnostics.md)

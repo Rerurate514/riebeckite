@@ -500,6 +500,8 @@ Site は `entry.bodySlots` を読み、各値を描画するかどうかと描�
 <ContentSlot html={props.bodySlots?.["article.after-content"]} />
 ```
 
+上の `ContentSlot` は参照アプリ内の Site-local な helper であり、公開 API ではありません。slot は Site 自身の renderer が描画を選んだときだけ描画され、独自 slot 名は Site が描画を選ぶまで何もしません。Plugin は代わりに Hono JSX component を export して Site に配置を任せることもできます。詳しくは [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
+
 参照アプリと scaffold の starter は標準 slot を消費します。Plugin は提供し、Site が描画します。Plugin が route、shell、描画順を変更することはありません。route レベルの contract は [Body Slots](../framework/honox-integration.md#body-slots) を参照してください。
 
 # Page Types
@@ -902,6 +904,7 @@ Site-local Plugin でも、
 ```text
 packages/plugins/example/
 ├─ index.ts
+├─ components/        # component を export する場合のみ
 ├─ client.ts          # 必要な場合のみ
 ├─ style.css          # 必要な場合のみ
 ├─ package.json

@@ -286,6 +286,12 @@ value:
 <ContentSlot html={props.bodySlots?.["article.after-content"]} />
 ```
 
+`ContentSlot` above is a site-local helper in the reference app, not part of
+the public API. A slot is rendered only because the Site's own renderer chooses
+to render it, and a custom slot name does nothing until the Site renders it. A
+plugin can alternatively export a Hono JSX component for the Site to place; see
+[Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
+
 The reference app and the scaffolded starter consume the standard slots. A
 plugin publishes; the Site renders. A plugin never changes a route, the shell,
 or the render order. See
@@ -479,6 +485,7 @@ timing/reporting system.
 ``` text
 packages/plugins/example/
 ├─ index.ts
+├─ components/        # only when you export components
 ├─ client.ts          # only when needed
 ├─ style.css          # only when needed
 ├─ package.json

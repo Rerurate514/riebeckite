@@ -792,8 +792,8 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 | webmention | webmentions.json と送受信のエンドポイント |
 | [`alias`](./alias.md) | 別名からのリダイレクト |
 | series | `series` frontmatter による前後ナビ |
-| [`recent-posts`](./recent-posts.md) | 最新記事の一覧（生成ページ・スロット） |
-| daily-notes | 日付ごとのノートページ |
+| [`recent-posts`](./recent-posts.md) | 最新記事の一覧（Site が配置） |
+| [`daily-notes`](./daily-notes.md) | デイリーノートの短いスニペット（Site が配置） |
 | rename | 旧パスからのリダイレクト |
 | [`deploy`](./deploy.md) | 各ホスト向けのデプロイ設定ファイル |
 | [`diagnostics`](./diagnostics.md) | 孤立ノートや未使用アセットの診断 |

@@ -12,7 +12,7 @@ Check the implementation and package README as the source of truth for the Plugi
 
 ## Example
 
-Use it on home or index pages to surface recently published or updated articles.
+Use it on home or index pages to surface recently published or updated articles. Render the `RecentPosts` component, with the list from `getRecentPosts`, inside the site's own component tree.
 
 ## When to use it
 

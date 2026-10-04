@@ -193,6 +193,15 @@ test("hasBreadcrumbHeadTag detects an existing BreadcrumbList script", () => {
     ]),
     true,
   );
+  assert.equal(
+    hasBreadcrumbHeadTag([
+      {
+        tag: "script",
+        children: '{\n  "@graph": [{ "@type": "BreadcrumbList" }]\n}',
+      },
+    ]),
+    true,
+  );
 });
 
 test("injectBreadcrumbNav places the nav in the right spot", () => {

@@ -59,7 +59,6 @@ export default createRoute(async (c) => {
     <Article
       content={post}
       title={post.frontmatter.title}
-      propertiesHtml={indexEntry.bodySlots?.properties}
       bodySlots={indexEntry.bodySlots}
       asideContent={
         <TableOfContents

@@ -221,3 +221,21 @@ test("buildWebsiteSeo omits its BreadcrumbList when headTags already provide one
   assert.equal(result.jsonLd?.length, 1);
   assert.equal(result.jsonLd?.[0]?.["@type"], "WebSite");
 });
+
+test("buildArticleSeo recognizes BreadcrumbList JSON-LD structurally", () => {
+  const result = buildArticleSeo(
+    config,
+    {},
+    "/posts/hello",
+    post({ title: "Hello" }, "<p>Body</p>"),
+    [
+      {
+        tag: "script",
+        attrs: { type: "application/ld+json" },
+        children: '{ "@graph": [{ "@type": "BreadcrumbList" }] }',
+      },
+    ],
+  );
+
+  assert.equal(result.jsonLd?.length, 1);
+});

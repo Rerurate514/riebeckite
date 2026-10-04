@@ -411,7 +411,14 @@ test("Contract 4: documented npm exec commands properly forward flags to Riebeck
 });
 
 test("Contract 4b: documentation uses npm exec -- for commands with flags", async () => {
-  const docsRoot = path.join(process.cwd(), "docs");
+  const docsRoot = path.resolve(
+    import.meta.dirname,
+    "..",
+    "..",
+    "..",
+    "..",
+    "docs",
+  );
   const markdownFiles = await collectMarkdownFiles(docsRoot);
   const offenders: string[] = [];
 

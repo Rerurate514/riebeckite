@@ -637,7 +637,7 @@ export function indexRoute(preset: ScaffoldPreset): string {
   const dataLines: string[] = [];
   if (hasRecentPosts) {
     dataLines.push(
-      "  const recentPosts = await getRecentPosts({ posts: manifest.discoverableEntries, config, getProcessedContent: (slug) => content.getProcessedContent(slug), resolveTitle: getArticleTitle });",
+      '  const recentPosts = await getRecentPosts({ posts: manifest.discoverableEntries, config, getProcessedContent: (slug) => content.getProcessedContent(slug), resolveTitle: (slug, title) => typeof title === "string" && title.trim() ? title : slug.split("/").at(-1) ?? slug });',
     );
   }
   if (hasDailyNotes) {

@@ -62,7 +62,6 @@ export default createRoute(
       <Article
         content={post}
         title={getArticleTitle(slug, post.frontmatter.title)}
-        propertiesHtml={route.entry.bodySlots?.properties}
         bodySlots={route.entry.bodySlots}
         asideContent={
           <TableOfContents

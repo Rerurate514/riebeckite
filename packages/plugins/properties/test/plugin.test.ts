@@ -94,6 +94,18 @@ test("render slot publishes the panel instead of mutating the note html", async 
   );
 });
 
+test("render slot does not mistake a partial panel match for an existing panel", async () => {
+  const entries = [entry("a", { title: "A" }, "<p>A</p>")];
+  entries[0].bodySlots = { properties: '<section class="rb-properties">' };
+
+  await runHook(properties({ render: "slot" }), entries);
+
+  assert.equal(
+    entries[0]?.bodySlots?.properties?.match(/data-properties/g)?.length,
+    1,
+  );
+});
+
 test("the manifest hook is idempotent and skips empty panels", async () => {
   const already = entry(
     "done",

@@ -19,7 +19,6 @@ type Props = {
    * header heading when the body has no leading `<h1>`.
    */
   title?: string;
-  propertiesHtml?: string;
   asideContent?: unknown;
   afterContent?: unknown;
   footerContent?: unknown;
@@ -30,7 +29,6 @@ export default function Article(props: Props) {
   const html = props.content.html ?? "";
   const articleHtml = splitAfterFirstHeading(html);
   const readingTimeMinutes = calculateReadingTime(html);
-  const propertiesHtml = props.propertiesHtml ?? "";
   // Notes often carry their title as a `title` property or filename rather
   // than a leading `#` heading. Without an h1 the extracted lead is empty, so
   // synthesize one from the resolved title to keep the article header intact.
@@ -47,12 +45,10 @@ export default function Article(props: Props) {
         <ArticleContent>
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
           <ContentSlot html={props.bodySlots?.["article.after-header"]} />
-          {propertiesHtml ? (
-            <div
-              class="article-properties"
-              dangerouslySetInnerHTML={{ __html: propertiesHtml }}
-            />
-          ) : null}
+          <ContentSlot
+            class="article-properties"
+            html={props.bodySlots?.properties}
+          />
           <ArticleFrontmatter
             frontmatter={props.content.frontmatter}
             readingTimeMinutes={readingTimeMinutes}

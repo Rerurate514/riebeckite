@@ -9,7 +9,6 @@ import {
   createLogger,
   type ExternalSiteE2EConfig,
   type ExternalSiteWorkspace,
-  extractScriptPayloads,
   formatBytes,
   run,
   runCli,
@@ -648,12 +647,21 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes("data-rb-hover-preview")) {
     fail("generated HTML is missing the hover preview payload script");
   }
-  const hoverPreviewPayload = extractScriptPayloads(
-    combined,
-    "data-rb-hover-preview",
+  const hoverPreviewIndexPath = path.join(
+    distDir,
+    "_riebeckite",
+    "hover-preview",
+    "index.json",
   );
-  if (!hoverPreviewPayload.includes(HOVER_PREVIEW_TITLE_MARKER)) {
-    fail("hover preview payload is missing the fixture note title");
+  if (!fs.existsSync(hoverPreviewIndexPath)) {
+    fail("hover preview shared index was not emitted");
+  }
+  if (
+    !fs
+      .readFileSync(hoverPreviewIndexPath, "utf8")
+      .includes(HOVER_PREVIEW_TITLE_MARKER)
+  ) {
+    fail("hover preview shared index is missing the fixture note title");
   }
 
   const scriptFiles = walkFiles(distDir, (full) => full.endsWith(".js"));

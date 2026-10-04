@@ -89,7 +89,7 @@ function applyPropertiesPanels(
     if (!panel) continue;
 
     if (resolved.render === "slot") {
-      if (!entry.bodySlots?.properties?.includes(panel)) {
+      if (!hasSlotPanel(entry.bodySlots?.properties, panel)) {
         appendContentBodySlot(entry, "properties", panel);
       }
       continue;
@@ -101,6 +101,16 @@ function applyPropertiesPanels(
         : `${panel}${entry.html}`;
     entry.html = html;
   }
+}
+
+function hasSlotPanel(slot: string | undefined, panel: string): boolean {
+  return (
+    slot === panel ||
+    slot?.startsWith(`${panel}\n`) ||
+    slot?.endsWith(`\n${panel}`) ||
+    slot?.includes(`\n${panel}\n`) ||
+    false
+  );
 }
 
 function createLinkResolver(manifest: ContentManifest): PropertiesLinkResolver {

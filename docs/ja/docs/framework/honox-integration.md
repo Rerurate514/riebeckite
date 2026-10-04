@@ -328,7 +328,7 @@ import {
   ArticleMeta,
 } from "@riebeckite/honox/ui";
 
-<Article class="prose">
+<Article class="site-article">
   <ArticleLayout aside={<nav>…</nav>}>
     <ArticleContent>
       <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />

@@ -14,6 +14,10 @@ to each note in the series. Links use the permalinks resolved by Core, so
 plugins such as `permalink` are respected. A single-note series renders no
 navigation block.
 
+The plugin also declares page types, so it exposes a list page at `/series`
+and one landing page per series at `/series/<name>`. Both are built from the
+discoverable manifest, so unlisted, draft, and scheduled notes never appear.
+
 The plugin is build-time only: it ships a stylesheet asset and no client
 runtime.
 
@@ -59,6 +63,7 @@ the numbered parts, using `date`/`created`/`published`, then `title`, then
 | `heading` | `boolean` | `true` | Render the series heading above the list. |
 | `className` | `string` | `"rb-series"` | Base CSS class for generated markup. |
 | `positionLabel` | `boolean` | `false` | Add a `Part N of M` label for the current note. |
+| `basePath` | `string` | `"/series"` | Base path for the generated pages. An empty string disables them. |
 
 ## Output
 
@@ -91,6 +96,20 @@ All text and attributes are escaped. The injected HTML is written back to both
 the manifest entry and the processed content object so the page route, feeds,
 and search see the same markup.
 
+## Page types
+
+The plugin registers two page types. Both derive their output from
+`manifest.discoverableEntries`, so non-public notes are excluded.
+
+| Page type | Path | Output |
+| --------- | ---- | ------ |
+| `series-list` | `<basePath>` (`/series`) | `<section class="rb-series rb-series--list">` listing each series with a link to its landing page. Generated only when at least one series exists. |
+| `series-index` | `<basePath>/<name>` (`/series/<name>`) | The `renderSeriesIndex()` section for one series, in the existing order. |
+
+The `<name>` segment is a lowercase, hyphenated slug; non-ASCII names fall back
+to percent-encoding. Set `basePath` to match a custom routing scheme, or pass
+`basePath: ""` to disable the pages and render them yourself.
+
 ## Exports
 
 - `series(options?)` / `seriesPlugin(options?)` — plugin factory
@@ -98,13 +117,22 @@ and search see the same markup.
   (`SeriesIndex | null`); useful for landing pages
 - `renderSeriesIndex(manifest, name, options?)` — standalone `<section>` block
   for a whole series
+- `renderSeriesList(manifest, options?, label?)` — standalone `<section>` block
+  listing every series; returns `""` when there are none
+- `seriesLandingPath(name, options?)` — landing path for a series, or `""` when
+  the pages are disabled
+- `seriesSlug(name)` — URL segment used by a series landing page
 - `renderSeriesNavigation(index, currentSlug, options?)` — a single navigation
   block
 - `collectSeriesIndexes(manifest, options?)` — every series in first-seen order
 - `resolveSeriesOptions(options?)` — options with defaults applied
+- `DEFAULT_SERIES_BASE_PATH` — default `basePath` (`"/series"`)
 - Types: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
 
 ### Series landing page
+
+The plugin generates these pages automatically. To render them yourself, or to
+reuse the markup elsewhere, combine the exported helpers:
 
 ```ts
 import { buildSeriesIndex, renderSeriesIndex } from "@riebeckite/plugin-series";
@@ -134,10 +162,12 @@ matched with `.rb-series__item a[aria-current="page"]`.
 ## Limitations
 
 - A note belongs to exactly one series.
-- A series of one note produces no navigation block.
+- A series of one note produces no navigation block on the note, but it still
+  gets a list entry and a landing page.
 - `series_order` must be a finite number; numeric strings are not coerced.
-- The plugin does not generate routes for series; combine
-  `renderSeriesIndex()` with your own page to build a series landing page.
+- Series names that slugify to the same segment share the first landing page.
+- Generated pages use `/series` by default; change `basePath` to avoid clashes
+  with existing routes.
 
 ## See also
 

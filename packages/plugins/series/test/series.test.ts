@@ -61,6 +61,7 @@ test("resolveSeriesOptions applies and overrides defaults", () => {
     heading: true,
     className: "rb-series",
     positionLabel: false,
+    basePath: "/series",
   });
   assert.equal(DEFAULT_CLASS_NAME, "rb-series");
   assert.deepEqual(resolveSeriesOptions({ heading: false, className: "sl" }), {
@@ -70,6 +71,16 @@ test("resolveSeriesOptions applies and overrides defaults", () => {
     heading: false,
     className: "sl",
     positionLabel: false,
+    basePath: "/series",
+  });
+  assert.deepEqual(resolveSeriesOptions({ basePath: "collections/" }), {
+    key: "series",
+    orderKey: "series_order",
+    titleKey: "series_title",
+    heading: true,
+    className: "rb-series",
+    positionLabel: false,
+    basePath: "/collections",
   });
 });
 

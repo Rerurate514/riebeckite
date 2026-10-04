@@ -8,6 +8,8 @@
 
 `series()` は frontmatter からシリーズ情報を読み取り、該当するノートをグループ化して並べ替えたうえで、各ノートの HTML に `<nav class="rb-series">` ブロックを追加します。リンクには Core が解決したパーマリンクを使うため、`permalink` プラグインなどとも併用できます。1 件だけのシリーズにはナビゲーションを出力しません。
 
+また page type を登録し、一覧ページを `/series`、シリーズごとのランディングページを `/series/<name>` に生成します。どちらも公開対象（discoverable）の manifest から組み立てるため、非公開・下書き・予約投稿のノートは現れません。
+
 このプラグインはビルド時のみ動作し、クライアント用のランタイムは持ちません（スタイルシートのみを登録します）。
 
 ## 設定する
@@ -50,6 +52,7 @@ series_order: 2
 | `heading` | `boolean` | `true` | リストの上に見出しを表示する。 |
 | `className` | `string` | `"rb-series"` | 生成する HTML の基準クラス名。 |
 | `positionLabel` | `boolean` | `false` | 現在の記事に「Part N of M」を付ける。 |
+| `basePath` | `string` | `"/series"` | 生成するページの基準パス。空文字にすると生成しない。 |
 
 ## 出力
 
@@ -79,17 +82,35 @@ series_order: 2
 
 テキストと属性はすべてエスケープします。生成した HTML は manifest の entry と処理済みコンテンツの両方へ書き戻すため、ページのルート表示・フィード・検索でも同じマークアップになります。
 
+## ページタイプ
+
+プラグインは 2 つの page type を登録します。どちらも `manifest.discoverableEntries` から組み立てるため、非公開のノートは含まれません。
+
+| page type | パス | 出力 |
+| --------- | ---- | ---- |
+| `series-list` | `<basePath>`（`/series`） | 各シリーズをランディングページへのリンク付きで並べた `<section class="rb-series rb-series--list">`。シリーズが 1 つ以上あるときだけ生成。 |
+| `series-index` | `<basePath>/<name>`（`/series/<name>`） | 1 つのシリーズの `renderSeriesIndex()` セクション。既存の並び順をそのまま使う。 |
+
+`<name>` は小文字化・ハイフン化したスラッグです。ASCII 以外の名前はパーセントエンコードにフォールバックします。`basePath` をカスタムルーティングに合わせて変更でき、`basePath: ""` で生成を止めて自前で描画できます。
+
 ## 公開 API
 
 - `series(options?)` / `seriesPlugin(options?)` — プラグインファクトリ
 - `buildSeriesIndex(manifest, name, options?)` — 1 つのシリーズの並び順付きメンバー（`SeriesIndex | null`）。ランディングページ向け
 - `renderSeriesIndex(manifest, name, options?)` — シリーズ全体の `<section>` ブロック
+- `renderSeriesList(manifest, options?, label?)` — 全シリーズを並べた `<section>` ブロック。無ければ `""`
+- `seriesLandingPath(name, options?)` — シリーズのランディングパス。生成無効時は `""`
+- `seriesSlug(name)` — ランディングページの URL セグメント
 - `renderSeriesNavigation(index, currentSlug, options?)` — ナビゲーション 1 つ分
 - `collectSeriesIndexes(manifest, options?)` — 全シリーズを出現順で取得
 - `resolveSeriesOptions(options?)` — 既定値を適用したオプション
+- `DEFAULT_SERIES_BASE_PATH` — 既定の `basePath`（`"/series"`）
 - 型: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
 
 ### シリーズのランディングページ
+
+これらのページはプラグインが自動生成します。自前で描画したい場合や別の場所で
+マークアップを再利用したい場合は、公開ヘルパーを組み合わせます。
 
 ```ts
 import { buildSeriesIndex, renderSeriesIndex } from "@riebeckite/plugin-series";
@@ -116,9 +137,10 @@ const html = renderSeriesIndex(manifest, "何かを作る");
 ## 制限
 
 - 1 つのノートが所属できるシリーズは 1 つだけです。
-- 1 件だけのシリーズにはナビゲーションを出力しません。
+- 1 件だけのシリーズにはナビゲーションを出力しませんが、一覧の項目とランディングページは生成します。
 - `series_order` は有限の数値である必要があります。数値文字列は変換しません。
-- シリーズ用のルートは生成しません。ランディングページを作る場合は `renderSeriesIndex()` を自前のページと組み合わせてください。
+- スラッグが同じになるシリーズ名は、最初のランディングページを共有します。
+- 生成ページは既定で `/series` を使います。既存ルートと衝突する場合は `basePath` を変更してください。
 
 ## 関連
 

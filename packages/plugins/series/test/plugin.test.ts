@@ -162,3 +162,99 @@ test("publishes navigation in the manifest footer slot without changing cached P
     /href="\/part-2"/,
   );
 });
+
+function pageConfig() {
+  return resolveConfig({
+    site: { title: "Test" },
+    content: { filters: { publishStrategy: "explicit" } },
+  });
+}
+
+const guideFiles = {
+  "part-1.md":
+    "---\npublish: true\ntitle: Part 1\nseries: Guide\nseries_order: 1\n---\n# Part 1",
+  "part-2.md":
+    "---\npublish: true\ntitle: Part 2\nseries: Guide\nseries_order: 2\n---\n# Part 2",
+  "solo.md":
+    "---\npublish: true\ntitle: Solo\nseries: Solo\nseries_order: 1\n---\n# Solo",
+};
+
+test("generates a series list page and per-series landing pages", async () => {
+  const content = new ContentManager(source(guideFiles), [], {
+    config: pageConfig(),
+    plugins: [series()],
+  });
+
+  assert.deepEqual(await content.getPagePaths(), [
+    "/series",
+    "/series/guide",
+    "/series/solo",
+  ]);
+
+  const list = await content.resolvePage("/series");
+  assert.equal(list?.type, "series-list");
+  assert.match(list?.body ?? "", /href="\/series\/guide"/);
+  assert.match(list?.body ?? "", /href="\/series\/solo"/);
+
+  const landing = await content.resolvePage("/series/guide");
+  assert.equal(landing?.type, "series-index");
+  assert.equal(landing?.title, "Guide");
+  assert.match(landing?.body ?? "", /data-series="Guide"/);
+  assert.match(landing?.body ?? "", /data-series-order="1"/);
+  assert.match(landing?.body ?? "", /data-series-order="2"/);
+  assert.doesNotMatch(landing?.body ?? "", /aria-current/);
+});
+
+test("series pages exclude entries that are not discoverable", async () => {
+  const content = new ContentManager(
+    source({
+      "shown.md":
+        "---\npublish: true\ntitle: Shown\nseries: Guide\nseries_order: 1\n---\n# Shown",
+      "hidden.md":
+        "---\ntitle: Hidden\nseries: Guide\nseries_order: 2\n---\n# Hidden",
+      "unlisted.md":
+        "---\npublish: true\nvisibility: unlisted\nseries: Secret Series\nseries_order: 1\n---\n# Unlisted",
+    }),
+    [],
+    { config: pageConfig(), plugins: [series()] },
+  );
+
+  assert.deepEqual(await content.getPagePaths(), ["/series", "/series/guide"]);
+
+  const landing = await content.resolvePage("/series/guide");
+  assert.match(landing?.body ?? "", /href="\/shown"/);
+  assert.doesNotMatch(landing?.body ?? "", /hidden/);
+  assert.equal(await content.resolvePage("/series/secret-series"), null);
+
+  const list = await content.resolvePage("/series");
+  assert.doesNotMatch(list?.body ?? "", /secret-series/);
+});
+
+test("series pages honor a custom base path", async () => {
+  const content = new ContentManager(source(guideFiles), [], {
+    config: pageConfig(),
+    plugins: [series({ basePath: "/collections" })],
+  });
+
+  assert.deepEqual(await content.getPagePaths(), [
+    "/collections",
+    "/collections/guide",
+    "/collections/solo",
+  ]);
+  assert.equal(await content.resolvePage("/series/guide"), null);
+
+  const landing = await content.resolvePage("/collections/guide");
+  assert.equal(landing?.type, "series-index");
+  assert.match(landing?.body ?? "", /data-series="Guide"/);
+});
+
+test("an empty base path disables the generated series pages", async () => {
+  const content = new ContentManager(source(guideFiles), [], {
+    config: pageConfig(),
+    plugins: [series({ basePath: "" })],
+  });
+
+  assert.deepEqual(await content.getPagePaths(), []);
+  assert.equal(await content.resolvePage("/series"), null);
+  assert.equal(await content.resolvePage("/series/guide"), null);
+});

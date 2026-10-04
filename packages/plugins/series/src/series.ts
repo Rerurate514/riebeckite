@@ -14,6 +14,7 @@ import type {
 
 /** Base class applied when `options.className` is not set. */
 export const DEFAULT_SERIES_CLASS_NAME = "rb-series";
+export const DEFAULT_SERIES_BASE_PATH = "/series";
 
 /** Applies defaults to the user-supplied options. */
 export function resolveSeriesOptions(
@@ -26,6 +27,7 @@ export function resolveSeriesOptions(
     heading: options.heading ?? true,
     className: options.className ?? DEFAULT_SERIES_CLASS_NAME,
     positionLabel: options.positionLabel ?? false,
+    basePath: normalizeBasePath(options.basePath ?? DEFAULT_SERIES_BASE_PATH),
   };
 }
 
@@ -78,6 +80,32 @@ export function buildSeriesIndex(
       (index) => index.name === name,
     ) ?? null
   );
+}
+
+export function seriesSlug(name: string): string {
+  return name
+    .split("/")
+    .map((segment) => {
+      const normalized = segment
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      return normalized === ""
+        ? encodeURIComponent(segment.trim())
+        : normalized;
+    })
+    .join("/");
+}
+
+export function seriesLandingPath(
+  name: string,
+  options: SeriesOptions = {},
+): string {
+  const resolved = resolveSeriesOptions(options);
+  if (resolved.basePath === "") return "";
+  const slug = seriesSlug(name);
+  return slug === "" ? "" : `${resolved.basePath}/${slug}`;
 }
 
 /**
@@ -207,6 +235,33 @@ export function renderSeriesIndex(
 
   parts.push("</ol></section>");
   return parts.join("");
+}
+
+export function renderSeriesList(
+  manifest: ContentManifest,
+  options: SeriesOptions = {},
+  label = "Series",
+): string {
+  const indexes = collectSeriesIndexes(manifest, options);
+  if (indexes.length === 0) return "";
+
+  const resolved = resolveSeriesOptions(options);
+  const cls = escapeHtmlAttribute(resolved.className);
+  const items = indexes
+    .map((index) => {
+      const path = seriesLandingPath(index.name, options);
+      const title = escapeHtml(index.title);
+      const link =
+        path === ""
+          ? `<span class="${cls}__link">${title}</span>`
+          : `<a class="${cls}__link" href="${escapeHtmlAttribute(path)}">${title}</a>`;
+      return `<li class="${cls}__item" data-series-count="${index.members.length}">${link}</li>`;
+    })
+    .join("");
+
+  return `<section class="${cls} ${cls}--list" data-series-list><h1 class="${cls}__title">${escapeHtml(
+    label,
+  )}</h1><ol class="${cls}__list">${items}</ol></section>`;
 }
 
 /**
@@ -355,4 +410,11 @@ function hasFrontmatterKey(entry: ContentManifestEntry, key: string): boolean {
 
 function formatPosition(position: number, total: number): string {
   return `Part ${position} of ${total}`;
+}
+
+function normalizeBasePath(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed === "") return "";
+  const prefixed = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return prefixed.length > 1 ? prefixed.replace(/\/+$/, "") : prefixed;
 }

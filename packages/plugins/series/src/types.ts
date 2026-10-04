@@ -12,6 +12,7 @@ export type SeriesOptions = {
   className?: string;
   /** Render a `Part N of M` label for the current note. Defaults to `false`. */
   positionLabel?: boolean;
+  basePath?: string;
 };
 
 /** Options after defaults have been applied. */
@@ -22,6 +23,7 @@ export type ResolvedSeriesOptions = {
   heading: boolean;
   className: string;
   positionLabel: boolean;
+  basePath: string;
 };
 
 /** A single note that belongs to a series. */

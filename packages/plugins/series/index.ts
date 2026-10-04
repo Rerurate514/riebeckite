@@ -1,22 +1,34 @@
 import {
   appendContentBodySlot,
   type ConfigValidationIssue,
+  type ContentManifest,
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
 import {
   collectSeriesDiagnostics,
   collectSeriesIndexes,
+  renderSeriesIndex,
+  renderSeriesList,
   renderSeriesNavigation,
   resolveSeriesOptions,
+  seriesLandingPath,
 } from "./src/series.js";
-import type { SeriesOptions } from "./src/types.js";
+import type {
+  ResolvedSeriesOptions,
+  SeriesIndex,
+  SeriesOptions,
+} from "./src/types.js";
 
 export {
   buildSeriesIndex,
   collectSeriesIndexes,
+  DEFAULT_SERIES_BASE_PATH,
   renderSeriesIndex,
+  renderSeriesList,
   renderSeriesNavigation,
+  seriesLandingPath,
+  seriesSlug,
 } from "./src/series.js";
 export type {
   ResolvedSeriesOptions,
@@ -24,6 +36,14 @@ export type {
   SeriesMember,
   SeriesOptions,
 } from "./src/types.js";
+
+type SeriesPageModel = {
+  resolved: ResolvedSeriesOptions;
+  view: ContentManifest;
+  listPath: string;
+  landingPaths: readonly string[];
+  byPath: Map<string, SeriesIndex>;
+};
 
 /**
  * Series (ordered multi-part posts) for Riebeckite.
@@ -35,6 +55,41 @@ export type {
  * fall back to `date`, then `title`, then `slug` for deterministic results.
  */
 export function series(options: SeriesOptions = {}) {
+  const models = new WeakMap<ContentManifest, SeriesPageModel>();
+  const modelFor = (manifest: ContentManifest): SeriesPageModel => {
+    const cached = models.get(manifest);
+    if (cached) return cached;
+
+    const resolved = resolveSeriesOptions(options);
+    const view: ContentManifest = {
+      ...manifest,
+      entries: manifest.discoverableEntries,
+    };
+    const byPath = new Map<string, SeriesIndex>();
+    const landingPaths: string[] = [];
+    if (resolved.basePath !== "") {
+      for (const index of collectSeriesIndexes(view, options)) {
+        const path = seriesLandingPath(index.name, options);
+        if (path === "" || byPath.has(path)) continue;
+        byPath.set(path, index);
+        landingPaths.push(path);
+      }
+    }
+
+    const model: SeriesPageModel = {
+      resolved,
+      view,
+      listPath:
+        resolved.basePath !== "" && landingPaths.length > 0
+          ? resolved.basePath
+          : "",
+      landingPaths,
+      byPath,
+    };
+    models.set(manifest, model);
+    return model;
+  };
+
   return definePlugin({
     name: "series",
     processedContentCache: {
@@ -68,6 +123,46 @@ export function series(options: SeriesOptions = {}) {
         }
       }
     },
+    pageTypes: [
+      {
+        id: "series-list",
+        paths: ({ manifest }) => {
+          const listPath = modelFor(manifest).listPath;
+          return listPath === "" ? [] : [listPath];
+        },
+        outputDependencies: [{ type: "global" }],
+        resolve: ({ manifest, pathname }) => {
+          const model = modelFor(manifest);
+          if (model.listPath === "" || pathname !== model.listPath) return null;
+          const body = renderSeriesList(model.view, options);
+          if (body === "") return null;
+          return {
+            type: "series-list",
+            pathname,
+            title: "Series",
+            body,
+          };
+        },
+      },
+      {
+        id: "series-index",
+        paths: ({ manifest }) => modelFor(manifest).landingPaths,
+        outputDependencies: [{ type: "global" }],
+        resolve: ({ manifest, pathname }) => {
+          const model = modelFor(manifest);
+          const index = model.byPath.get(pathname);
+          if (!index) return null;
+          const body = renderSeriesIndex(model.view, index.name, options);
+          if (body === "") return null;
+          return {
+            type: "series-index",
+            pathname,
+            title: index.title,
+            body,
+          };
+        },
+      },
+    ],
     assets: [createStyleAsset("series")],
   });
 }
@@ -90,7 +185,13 @@ function validateSeriesOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
-  for (const key of ["key", "orderKey", "titleKey", "className"] as const) {
+  for (const key of [
+    "key",
+    "orderKey",
+    "titleKey",
+    "className",
+    "basePath",
+  ] as const) {
     const value = options[key];
     if (
       value !== undefined &&

@@ -5,6 +5,10 @@
   background: var(--rb-color-surface, transparent);
 }
 
+.rr-code-tabs:has(+ :is(h1, h2)) {
+  margin-bottom: 1.5rem;
+}
+
 .rr-code-tabs__tablist {
   display: flex;
   gap: 0.25rem;

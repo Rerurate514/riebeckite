@@ -594,6 +594,12 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
   .rb-article-body
+  pre:not(:where(.rr-code *)):has(+ :is(h1, h2)) {
+  margin-bottom: 1.75rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-article-body
   pre:not(:where(.rr-code *))
   code {
   padding: 0;

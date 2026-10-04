@@ -302,6 +302,12 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rb-article-body
+  pre:not(:where(.rr-code *)):has(+ :is(h1, h2)) {
+  margin-bottom: 2rem;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+  .rb-article-body
   pre:not(:where(.rr-code *))
   code {
   padding: 0;

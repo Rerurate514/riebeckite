@@ -327,6 +327,12 @@
   overflow-x: auto;
 }
 
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)):has(+ :is(h1, h2)) {
+  margin-bottom: 1.75rem;
+}
+
 /* Code-enhance plugin: flat surface, hairline border, small radius. */
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rr-code {
   border: 1px solid var(--rb-color-border);

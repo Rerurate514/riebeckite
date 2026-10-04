@@ -433,6 +433,12 @@
     color-mix(in srgb, var(--rb-color-ink) 60%, transparent);
 }
 
+:is(:root, .rb-theme-root)[data-theme-name="sakura"]
+  .rb-article-body
+  pre:not(:where(.rr-code *)):has(+ :is(h1, h2)) {
+  margin-bottom: 1.75rem;
+}
+
 :is(:root, .rb-theme-root)[data-theme-name="sakura"] .rr-code {
   border: 1px solid var(--rb-color-border);
   border-radius: var(--rb-sakura-radius);

@@ -10,6 +10,10 @@
   color: var(--rr-code-ink);
 }
 
+.rr-code:has(+ :is(h1, h2)) {
+  margin-bottom: 2rem;
+}
+
 .rr-code[data-terminal="true"] {
   --rr-code-paper: var(--rb-color-ink, #000000);
   --rr-code-ink: var(--rb-color-paper, #ffffff);

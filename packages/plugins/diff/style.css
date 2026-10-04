@@ -298,6 +298,16 @@
   }
 
   .rr-diff-history__header {
-    align-items: flex-start;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .rr-diff-history__title {
+    min-width: 0;
+  }
+
+  .rr-diff-history__header-meta {
+    flex: none;
+    white-space: nowrap;
   }
 }

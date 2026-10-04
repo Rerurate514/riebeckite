@@ -139,7 +139,7 @@ test(
         "2024-01-02T00:00:00+00:00",
       );
 
-      const content = await new ContentManager(
+      const manifest = await new ContentManager(
         memorySource({
           "draft.md": "---\npublish: false\ntitle: Draft\n---\n# Draft",
           "hello.md": "---\npublish: true\ntitle: Hello\n---\n# Hello",
@@ -152,16 +152,18 @@ test(
             plugins: [diff({ ui: { maxRevisions: 5 } })],
           }),
         },
-      ).getProcessedContent("hello");
+      ).getManifest();
+      const footer =
+        manifest.bySlug.get("hello")?.bodySlots?.["article.footer"] ?? "";
 
-      assert.ok(content.html.includes("data-rr-diff-history"));
-      assert.ok(content.html.includes("extend hello"));
+      assert.ok(footer.includes("data-rr-diff-history"));
+      assert.ok(footer.includes("extend hello"));
       assert.match(
-        content.html,
+        footer,
         /data-rr-diff-history-data>\{"path":"\/_riebeckite\/diff\/[A-Za-z0-9_-]+\.json"\}<\/script>/,
       );
-      assert.equal(content.html.includes(HELLO_V2), false);
-      assert.equal(content.html.includes("No Git history is available"), false);
+      assert.equal(footer.includes(HELLO_V2), false);
+      assert.equal(footer.includes("No Git history is available"), false);
     } finally {
       repository.dispose();
     }

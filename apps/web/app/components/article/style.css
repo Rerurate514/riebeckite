@@ -49,6 +49,7 @@
 .article-shell__outro {
   min-width: 0;
   padding-inline: var(--rb-space-2);
+  padding-block-end: var(--rb-space-6);
 }
 
 /* App-level layout: keep the article rail centered on its own. The table of

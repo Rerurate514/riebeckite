@@ -1,11 +1,12 @@
 import {
+  appendContentBodySlot,
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
 import { resolveRelatedPostsOptions } from "./src/options.js";
 import { buildRelatedPosts, isEligibleRelatedEntry } from "./src/related.js";
-import { RELATED_POSTS_ATTRIBUTE, renderRelatedPosts } from "./src/render.js";
+import { renderRelatedPosts } from "./src/render.js";
 import type { RelatedPostsOptions } from "./src/types.js";
 
 export { resolveRelatedPostsOptions } from "./src/options.js";
@@ -27,19 +28,12 @@ export type {
 } from "./src/types.js";
 
 export const RELATED_POSTS_PLUGIN_NAME = "related-posts";
-
-/**
- * Build-time "related notes" navigation.
- *
- * For every published entry it ranks the other entries in the manifest, then
- * appends a `<nav>` section to the manifest entry HTML, which is the final
- * rendering source. No client runtime is required.
- */
 export function relatedPosts(options: RelatedPostsOptions = {}) {
   const resolved = resolveRelatedPostsOptions(options);
 
   return definePlugin({
     name: RELATED_POSTS_PLUGIN_NAME,
+    order: 100,
     processedContentCache: {
       version: "related-posts-v1",
       dependencyMode: "none",
@@ -50,7 +44,6 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
     onManifestCreated: (context) => {
       const { manifest } = context;
       for (const entry of manifest.discoverableEntries) {
-        if (entry.html.includes(RELATED_POSTS_ATTRIBUTE)) continue;
         if (!isEligibleRelatedEntry(entry, manifest, context.config)) continue;
 
         const related = buildRelatedPosts({
@@ -61,7 +54,11 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
         });
         if (related.length === 0) continue;
 
-        entry.html = `${entry.html}${renderRelatedPosts(related, resolved)}`;
+        appendContentBodySlot(
+          entry,
+          "article.footer",
+          renderRelatedPosts(related, resolved),
+        );
       }
     },
     assets: [createStyleAsset(RELATED_POSTS_PLUGIN_NAME)],

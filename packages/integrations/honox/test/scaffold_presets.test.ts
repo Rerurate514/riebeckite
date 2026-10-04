@@ -213,7 +213,7 @@ test("starter and showcase scaffolds render the standard body slots", async () =
   });
 });
 
-test("starter scaffold renders the plugin UI enabled by its preset", async () => {
+test("starter scaffold renders article footer slots for plugin UI", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "starter");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "starter" });
@@ -224,14 +224,20 @@ test("starter scaffold renders the plugin UI enabled by its preset", async () =>
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(renderer, /<SearchBar \/>/);
     assert.match(index, /<TableOfContents/);
-    assert.match(index, /<Backlinks /);
+    assert.match(
+      index,
+      /footerHtml={indexEntry\?\.bodySlots\?\.\["article.footer"\]}/,
+    );
     assert.match(index, /<RecentPosts /);
     assert.match(slug, /<TableOfContents/);
-    assert.match(slug, /<Backlinks /);
+    assert.match(
+      slug,
+      /footerHtml={route.entry.bodySlots\?\.\["article.footer"\]}/,
+    );
   });
 });
 
-test("showcase scaffold renders local-graph and daily-notes", async () => {
+test("showcase scaffold renders article footer slots and daily-notes", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "showcase");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "showcase" });
@@ -240,7 +246,10 @@ test("showcase scaffold renders local-graph and daily-notes", async () => {
     const index = await read("app/routes/index.tsx");
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(index, /<DailyNotes /);
-    assert.match(slug, /<LocalGraph /);
+    assert.match(
+      slug,
+      /footerHtml={route.entry.bodySlots\?\.\["article.footer"\]}/,
+    );
   });
 });
 

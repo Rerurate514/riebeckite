@@ -6,7 +6,10 @@ import {
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
-import { getLocalGraph } from "../index.ts";
+import { createElement, Fragment } from "hono/jsx";
+import { getLocalGraph, localGraphPlugin } from "../index.ts";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 const explicitConfig = resolveConfig({
   site: { title: "Test" },
@@ -85,6 +88,23 @@ test("builds a local graph with current, outgoing, backlink and both nodes", asy
       },
     ],
   });
+});
+
+test("publishes local graphs to article footers only when connected", async () => {
+  const manifest = await new ContentManager(source(FILES), [], {
+    config: explicitConfig,
+    plugins: [localGraphPlugin()],
+  }).getManifest();
+
+  assert.ok(
+    manifest.bySlug
+      .get("alpha")
+      ?.bodySlots?.["article.footer"]?.includes("local-graph"),
+  );
+  assert.equal(
+    manifest.bySlug.get("private")?.bodySlots?.["article.footer"],
+    undefined,
+  );
 });
 
 test("returns null for missing or unpublished notes", async () => {

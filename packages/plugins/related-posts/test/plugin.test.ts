@@ -42,38 +42,41 @@ function manager(options: RelatedPostsOptions = {}) {
   });
 }
 
-test("appends the navigation to eligible entries", async () => {
+test("publishes the navigation to eligible article footers", async () => {
   const content = manager();
   const manifest = await content.getManifest();
 
-  const sourceHtml = manifest.bySlug.get("source")?.html ?? "";
-  assert.ok(sourceHtml.includes(RELATED_POSTS_ATTRIBUTE));
-  assert.ok(sourceHtml.includes('href="/tagged"'));
-  assert.ok(sourceHtml.includes("data-related-score="));
+  const source = manifest.bySlug.get("source");
+  const footer = source?.bodySlots?.["article.footer"] ?? "";
+  assert.ok(footer.includes(RELATED_POSTS_ATTRIBUTE));
+  assert.ok(footer.includes('href="/tagged"'));
+  assert.ok(footer.includes("data-related-score="));
+  assert.ok(!source?.html.includes(RELATED_POSTS_ATTRIBUTE));
 });
 
-test("updates the cached PostContent html used by the content route", async () => {
+test("does not add navigation to processed content html", async () => {
   const content = manager();
   const manifest = await content.getManifest();
 
   const processed = await content.getProcessedContent("source");
   assert.equal(processed.html, manifest.bySlug.get("source")?.html);
-  assert.ok(processed.html.includes(RELATED_POSTS_ATTRIBUTE));
+  assert.ok(!processed.html.includes(RELATED_POSTS_ATTRIBUTE));
 });
 
 test("leaves entries with no related candidates untouched", async () => {
   const manifest = await manager().getManifest();
 
   assert.ok(
-    !(manifest.bySlug.get("isolated")?.html ?? "").includes(
-      RELATED_POSTS_ATTRIBUTE,
-    ),
+    !(
+      manifest.bySlug.get("isolated")?.bodySlots?.["article.footer"] ?? ""
+    ).includes(RELATED_POSTS_ATTRIBUTE),
   );
 });
 
 test("applies heading and limit options", async () => {
   const manifest = await manager({ heading: false, limit: 1 }).getManifest();
-  const html = manifest.bySlug.get("source")?.html ?? "";
+  const html =
+    manifest.bySlug.get("source")?.bodySlots?.["article.footer"] ?? "";
 
   assert.ok(html.includes(RELATED_POSTS_ATTRIBUTE));
   assert.ok(!html.includes("<h2"));

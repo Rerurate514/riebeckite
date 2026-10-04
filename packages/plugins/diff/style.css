@@ -1,5 +1,5 @@
 .rr-diff-history {
-  margin-block: 4rem 2rem;
+  margin-block-start: var(--rb-space-6, 3rem);
   border-block-start: 1px solid
     var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
   padding-block-start: 1.5rem;
@@ -275,15 +275,6 @@
 
 .rr-diff-history__line--context {
   background: color-mix(in srgb, currentColor 2%, transparent);
-}
-
-.rr-diff-history__empty {
-  margin: 0;
-  color: var(
-    --rb-color-muted,
-    color-mix(in srgb, currentColor 62%, transparent)
-  );
-  font-size: 0.9375rem;
 }
 
 @media (max-width: 720px) {

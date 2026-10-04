@@ -1,5 +1,4 @@
 import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
-import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
 import { DailyNotes, getDailyNotes } from "@riebeckite/plugin-daily-notes";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import {
@@ -41,20 +40,12 @@ export default createRoute(async (c) => {
   const indexEntry = route.entry;
   const indexSlug = indexEntry.slug;
   const post = await content.getProcessedContent(indexSlug);
-  const [backlinks, recentPosts] = await Promise.all([
-    getPublishedBacklinks({
-      manifest,
-      config,
-      slug: indexSlug,
-      resolveTitle: getArticleTitle,
-    }),
-    getRecentPosts({
-      posts: manifest.discoverableEntries,
-      config,
-      getProcessedContent: (slug) => content.getProcessedContent(slug),
-      resolveTitle: getArticleTitle,
-    }),
-  ]);
+  const recentPosts = await getRecentPosts({
+    posts: manifest.discoverableEntries,
+    config,
+    getProcessedContent: (slug) => content.getProcessedContent(slug),
+    resolveTitle: getArticleTitle,
+  });
   const dailyNotes = getDailyNotes({ manifest, config });
   const tableOfContents = extractTableOfContents(post.html ?? "");
   c.set("seo", buildIndexSeo(post));
@@ -79,7 +70,6 @@ export default createRoute(async (c) => {
           <DailyNotes notes={dailyNotes} />
         </>
       }
-      footerContent={<Backlinks backlinks={backlinks} />}
     />,
   );
 });

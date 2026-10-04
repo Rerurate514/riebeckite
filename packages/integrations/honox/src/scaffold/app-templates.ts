@@ -7,15 +7,6 @@ function hasScaffoldPlugin(
   return preset.plugins.some((plugin) => plugin.package === packageName);
 }
 
-function articleTitleHelper(): string {
-  return `
-function getArticleTitle(slug: string, title: unknown): string {
-  if (typeof title === "string" && title.trim().length > 0) return title;
-  return slug.split("/").at(-1) ?? slug;
-}
-`;
-}
-
 export function server(): string {
   return `import { mountRiebeckiteEndpoints } from "@riebeckite/honox/server";
 import { createApp } from "honox/server";
@@ -623,10 +614,6 @@ export function indexRoute(preset: ScaffoldPreset): string {
   if (!preset.appFiles.includes("article")) return staticIndexRoute();
 
   const hasToc = hasScaffoldPlugin(preset, "@riebeckite/plugin-toc");
-  const hasBacklinks = hasScaffoldPlugin(
-    preset,
-    "@riebeckite/plugin-backlinks",
-  );
   const hasRecentPosts = hasScaffoldPlugin(
     preset,
     "@riebeckite/plugin-recent-posts",
@@ -635,17 +622,11 @@ export function indexRoute(preset: ScaffoldPreset): string {
     preset,
     "@riebeckite/plugin-daily-notes",
   );
-  const needsTitle = hasBacklinks || hasRecentPosts;
-  const needsConfig = hasBacklinks || hasRecentPosts || hasDailyNotes;
+  const needsConfig = hasRecentPosts || hasDailyNotes;
 
   const importLines: string[] = [
     'import { createRoute } from "honox/factory";',
   ];
-  if (hasBacklinks) {
-    importLines.push(
-      'import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";',
-    );
-  }
   if (hasDailyNotes) {
     importLines.push(
       'import { DailyNotes, getDailyNotes } from "@riebeckite/plugin-daily-notes";',
@@ -666,11 +647,6 @@ export function indexRoute(preset: ScaffoldPreset): string {
   importLines.push('import { content } from "../content";');
 
   const dataLines: string[] = [];
-  if (hasBacklinks) {
-    dataLines.push(
-      '  const backlinks = getPublishedBacklinks({ manifest, config, slug: "index", resolveTitle: getArticleTitle });',
-    );
-  }
   if (hasRecentPosts) {
     dataLines.push(
       "  const recentPosts = await getRecentPosts({ posts: manifest.discoverableEntries, config, getProcessedContent: (slug) => content.getProcessedContent(slug), resolveTitle: getArticleTitle });",
@@ -705,13 +681,6 @@ export function indexRoute(preset: ScaffoldPreset): string {
   if (afterChildren.length > 0) {
     propLines.push(`        afterContent={<>${afterChildren.join("")}</>}`);
   }
-  if (hasBacklinks) {
-    propLines.push(
-      "        footerContent={<Backlinks backlinks={backlinks} />}",
-    );
-  }
-
-  const titleHelper = needsTitle ? articleTitleHelper() : "";
   const dataBlock = dataLines.length > 0 ? `\n${dataLines.join("\n")}\n` : "";
 
   return `${importLines.join("\n")}
@@ -739,7 +708,7 @@ ${dataBlock}
 ${propLines.join("\n")}
     />,
   );
-});${titleHelper}`;
+});`;
 }
 
 export function staticIndexRoute(): string {
@@ -759,18 +728,6 @@ export default createRoute((c) =>
 
 export function slugRoute(preset: ScaffoldPreset): string {
   const hasToc = hasScaffoldPlugin(preset, "@riebeckite/plugin-toc");
-  const hasBacklinks = hasScaffoldPlugin(
-    preset,
-    "@riebeckite/plugin-backlinks",
-  );
-  const hasLocalGraph = hasScaffoldPlugin(
-    preset,
-    "@riebeckite/plugin-local-graph",
-  );
-  const needsTitle = hasBacklinks || hasLocalGraph;
-  const needsConfig = hasBacklinks || hasLocalGraph;
-  const needsManifest = hasBacklinks || hasLocalGraph;
-
   const importLines: string[] = [
     "import {",
     "  contentRouteSsgParams,",
@@ -778,16 +735,6 @@ export function slugRoute(preset: ScaffoldPreset): string {
     "  resolveRiebeckiteRoute,",
     '} from "@riebeckite/honox/server";',
   ];
-  if (hasBacklinks) {
-    importLines.push(
-      'import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";',
-    );
-  }
-  if (hasLocalGraph) {
-    importLines.push(
-      'import { LocalGraph, getLocalGraph } from "@riebeckite/plugin-local-graph";',
-    );
-  }
   if (hasToc) {
     importLines.push(
       'import { extractTableOfContents, TableOfContents } from "@riebeckite/plugin-toc";',
@@ -795,23 +742,9 @@ export function slugRoute(preset: ScaffoldPreset): string {
   }
   importLines.push('import { createRoute } from "honox/factory";');
   importLines.push('import { SiteArticle } from "../components/article";');
-  if (needsConfig) importLines.push('import { config } from "../config";');
   importLines.push('import { content } from "../content";');
 
   const dataLines: string[] = [];
-  if (needsManifest) {
-    dataLines.push("    const manifest = await content.getManifest();");
-  }
-  if (hasBacklinks) {
-    dataLines.push(
-      "    const backlinks = getPublishedBacklinks({ manifest, config, slug: route.entry.slug, resolveTitle: getArticleTitle });",
-    );
-  }
-  if (hasLocalGraph) {
-    dataLines.push(
-      "    const localGraph = getLocalGraph({ manifest, config, slug: route.entry.slug, resolveTitle: getArticleTitle });",
-    );
-  }
   if (hasToc) {
     dataLines.push(
       '    const tableOfContents = extractTableOfContents(post.html ?? "");',
@@ -832,18 +765,6 @@ export function slugRoute(preset: ScaffoldPreset): string {
       '        asideContent={<TableOfContents className="table-of-contents--desktop" items={tableOfContents} />}',
     );
   }
-  const footerChildren: string[] = [];
-  if (hasLocalGraph) {
-    footerChildren.push("{localGraph && <LocalGraph graph={localGraph} />}");
-  }
-  if (hasBacklinks) {
-    footerChildren.push("<Backlinks backlinks={backlinks} />");
-  }
-  if (footerChildren.length > 0) {
-    propLines.push(`        footerContent={<>${footerChildren.join("")}</>}`);
-  }
-
-  const titleHelper = needsTitle ? articleTitleHelper() : "";
   const dataBlock = dataLines.length > 0 ? `\n${dataLines.join("\n")}\n` : "";
 
   return `${importLines.join("\n")}
@@ -884,5 +805,5 @@ ${propLines.join("\n")}
       />,
     );
   },
-);${titleHelper}`;
+);`;
 }

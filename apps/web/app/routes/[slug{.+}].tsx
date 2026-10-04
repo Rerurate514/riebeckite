@@ -4,16 +4,13 @@ import {
   riebeckiteSsgParams,
   ssgEnumerableHandler,
 } from "@riebeckite/honox/server";
-import { Backlinks, getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
 import { hasBreadcrumbHeadTag } from "@riebeckite/plugin-breadcrumbs";
-import { getLocalGraph, LocalGraph } from "@riebeckite/plugin-local-graph";
 import {
   extractTableOfContents,
   TableOfContents,
 } from "@riebeckite/plugin-toc";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
-import { config } from "../config";
 import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
 import { buildArticleSeo, buildWebsiteSeo, type SeoMetadata } from "../lib/seo";
@@ -48,22 +45,9 @@ export default createRoute(
         <div dangerouslySetInnerHTML={{ __html: route.page.body }} />,
       );
     }
-    const manifest = await content.getManifest();
     const slug = route.entry.slug;
 
     const post = await content.getProcessedContent(slug);
-    const backlinks = getPublishedBacklinks({
-      manifest,
-      config,
-      slug,
-      resolveTitle: getArticleTitle,
-    });
-    const localGraph = getLocalGraph({
-      manifest,
-      config,
-      slug,
-      resolveTitle: getArticleTitle,
-    });
     const tableOfContents = extractTableOfContents(post.html ?? "");
     const seo = buildArticleSeo(route.entry.permalink, post);
     // The breadcrumbs plugin contributes the hierarchical BreadcrumbList as a
@@ -87,12 +71,6 @@ export default createRoute(
             className="table-of-contents--desktop"
             items={tableOfContents}
           />
-        }
-        footerContent={
-          <>
-            {localGraph && <LocalGraph graph={localGraph} />}
-            <Backlinks backlinks={backlinks} />
-          </>
         }
       />,
     );

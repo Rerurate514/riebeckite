@@ -171,6 +171,10 @@ the `properties` slot when configured with `render: "slot"`. The default
 `render: "html"` keeps inserting the panel at the start or end of the note HTML.
 A plugin never owns routes or the shell.
 
+Article-end plugin sections share `article.footer`. Render that slot once in
+the article component; the resolved plugin `order` determines the fragment
+sequence, and an empty contribution does not create a DOM node.
+
 For example, an external site can compose an article with the stable primitive
 contract while retaining all presentation ownership:
 

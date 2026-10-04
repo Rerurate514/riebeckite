@@ -519,6 +519,8 @@ render: "slot"
 
 `render: "html"` は従来どおり、生成 HTML の先頭または末尾へ直接挿入します。
 
+記事末尾の Plugin section は `article.footer` に集約します。article component ではこの slot を一度だけ描画し、fragment の順序は解決済み Plugin の `order` で決めます。空の contribution は DOM node を生成しません。
+
 # 独自 Site を作る
 
 外部 Site でも、公開 primitive を使いながら自由に component を構成できます。

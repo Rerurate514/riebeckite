@@ -49,12 +49,10 @@ test("golden: renderDiffPanel renders the diff table markup", () => {
   );
 });
 
-test("renderDiffHistory falls back to an empty state", () => {
+test("renderDiffHistory omits empty history", () => {
   const html = renderDiffHistory({ revisions: [], selected: null });
 
-  assert.ok(html.includes("rr-diff-history__empty"));
-  assert.ok(html.includes("No Git history is available"));
-  assert.equal(html.includes("data-rr-diff-history-data"), false);
+  assert.equal(html, "");
 });
 
 test("formatDiffDate formats a valid ISO timestamp with a fixed English abbreviation", () => {

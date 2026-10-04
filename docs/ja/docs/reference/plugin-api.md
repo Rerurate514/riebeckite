@@ -491,6 +491,8 @@ appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
 
 空の fragment は無視され、fragment は解決済み Plugin 順に蓄積されます。先に処理された Plugin の contribution は保持され、新しい fragment が末尾へ追加されます。
 
+関連コンテンツ、履歴、ナビゲーション、backlinks など記事末尾の section には `article.footer` を使います。Plugin ごとに `order` を設定して順序を固定し、route や CSS で並べ替えません。
+
 Site は `entry.bodySlots` を読み、各値を描画するかどうかと描画位置を決めます。
 
 ```tsx

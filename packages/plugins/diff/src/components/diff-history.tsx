@@ -13,6 +13,7 @@ export function renderDiffHistory(input: DiffHistoryProps): string {
   const history = input.revisions;
   const selected = input.selected;
   const payloadPath = input.payloadPath;
+  if (history.length === 0 || !selected) return "";
 
   return `<section class="rr-diff-history" data-rr-diff-history>
   <details class="rr-diff-history__panel">
@@ -20,7 +21,7 @@ export function renderDiffHistory(input: DiffHistoryProps): string {
     <h2 class="rr-diff-history__title">History</h2>
     <span class="rr-diff-history__header-meta"><span class="rr-diff-history__count">${history.length} changes</span><span class="rr-diff-history__toggle-label rr-diff-history__toggle-label--open">Collapse</span><span class="rr-diff-history__toggle-label rr-diff-history__toggle-label--closed">Expand</span><span class="rr-diff-history__toggle" aria-hidden="true"><svg class="rr-diff-history__toggle-icon" viewBox="0 0 16 16" width="16" height="16" focusable="false"><path d="M5.2 3.4 10.8 8l-5.6 4.6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg></span></span>
   </summary>
-   ${history.length === 0 || !selected ? renderEmptyState() : renderContent(history, selected)}
+    ${renderContent(history, selected)}
   </details>
    ${payloadPath ? `<script type="application/json" data-rr-diff-history-data>${JSON.stringify({ path: payloadPath }).replace(/</g, "\\u003c")}</script>` : ""}
 </section>`;
@@ -36,10 +37,6 @@ function renderContent(
     </ol>
     ${renderDiffViewer({ history, selected })}
   </div>`;
-}
-
-function renderEmptyState(): string {
-  return `<p class="rr-diff-history__empty">No Git history is available for this article.</p>`;
 }
 
 function renderRevisionButton(

@@ -1,4 +1,5 @@
 import {
+  appendContentBodySlot,
   createClientEntry,
   createStyleAsset,
   definePlugin,
@@ -49,15 +50,13 @@ export type PostDiffApi = {
 
 export function diff(options: DiffPluginOptions = {}) {
   const ui = { enabled: true, maxRevisions: 20, ...options.ui };
-  // Created on the first post hook, where the build config is available: the
-  // content directory is what locates Git, and the process working directory
-  // is only a fallback for programmatic use.
   let api: PostDiffApi | undefined;
 
   return definePlugin({
     name: "diff",
+    order: 200,
     processedContentCache: {
-      version: "diff-v2",
+      version: "diff-v3",
       dependencyMode: "unsafe",
     },
     options,
@@ -66,35 +65,43 @@ export function diff(options: DiffPluginOptions = {}) {
       ui.enabled === false
         ? []
         : [createClientEntry("diff", "initDiffHistory")],
-    onPostProcessed: async (context) => {
+    onManifestCreated: async (context) => {
       if (ui.enabled === false) return;
 
       api ??= createPostDiffApi({
         ...options,
         cwd: options.cwd ?? context.config?.content.directory,
       });
-      const filePath = resolvePostFilePath(context);
-      const history = (await api.getHistory(filePath)).slice(
-        0,
-        ui.maxRevisions,
-      );
-      const revisions = await getMarkdownRevisions(api, filePath, history);
-      const selected = await api.getCurrentDiff(filePath);
-      const payloadPath =
-        revisions.length > 0 ? diffPayloadPath(context.slug) : undefined;
-      if (payloadPath) {
+      for (const entry of context.manifest.discoverableEntries) {
+        const filePath = resolvePostFilePath({
+          slug: entry.slug,
+          contentIndex: context.contentIndex,
+        });
+        const history = (await api.getHistory(filePath)).slice(
+          0,
+          ui.maxRevisions,
+        );
+        const revisions = await getMarkdownRevisions(api, filePath, history);
+        if (revisions.length === 0) continue;
+        const selected = await api.getCurrentDiff(filePath);
+        if (!selected) continue;
+
+        const payloadPath = diffPayloadPath(entry.slug);
         context.output.emit({
           path: payloadPath,
           content: JSON.stringify({ revisions }).replace(/</g, "\\u003c"),
-          dependencies: [{ type: "content", slug: context.slug }],
+          dependencies: [{ type: "content", slug: entry.slug }],
         });
+        appendContentBodySlot(
+          entry,
+          "article.footer",
+          renderDiffHistory({
+            revisions,
+            selected,
+            payloadPath: `/${payloadPath}`,
+          }),
+        );
       }
-
-      context.content.html += renderDiffHistory({
-        revisions,
-        selected,
-        payloadPath: payloadPath ? `/${payloadPath}` : undefined,
-      });
     },
   });
 }

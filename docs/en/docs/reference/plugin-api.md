@@ -274,6 +274,10 @@ Empty fragments are ignored, and fragments accumulate in resolved plugin
 order: contributions from earlier plugins are preserved and the new fragment
 is appended.
 
+Use `article.footer` for article-end sections such as related content,
+history, navigation, and backlinks. Set each plugin's `order` to establish a
+stable sequence; do not reorder these sections in routes or with CSS.
+
 The Site reads `entry.bodySlots` and chooses whether and where to render each
 value:
 

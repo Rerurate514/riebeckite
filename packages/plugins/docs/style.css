@@ -38,7 +38,7 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin-block-start: 2rem;
+  margin-block-start: var(--rb-space-6, 3rem);
 }
 
 .rb-docs-prev-next__link {

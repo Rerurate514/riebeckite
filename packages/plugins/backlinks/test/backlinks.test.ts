@@ -6,7 +6,10 @@ import {
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
+import { createElement, Fragment } from "hono/jsx";
 import { backlinksPlugin, getPublishedBacklinks } from "../index.ts";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -175,4 +178,25 @@ test("backlinksPlugin registers only its stylesheet", () => {
       moduleSpecifier: "@riebeckite/plugin-backlinks/style.css",
     },
   ]);
+});
+
+test("publishes backlinks to the article footer only when present", async () => {
+  const manifest = await new ContentManager(
+    source({
+      "alpha.md": "---\npublish: true\ntitle: Alpha\n---\n# Alpha",
+      "beta.md": "---\npublish: true\ntitle: Beta\n---\n[[alpha]]",
+    }),
+    [],
+    { config: explicitConfig, plugins: [backlinksPlugin()] },
+  ).getManifest();
+
+  assert.ok(
+    manifest.bySlug
+      .get("alpha")
+      ?.bodySlots?.["article.footer"]?.includes("article-backlinks"),
+  );
+  assert.equal(
+    manifest.bySlug.get("beta")?.bodySlots?.["article.footer"],
+    undefined,
+  );
 });

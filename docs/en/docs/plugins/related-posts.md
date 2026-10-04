@@ -13,6 +13,10 @@ Check the implementation and package README as the source of truth for the Plugi
 ## Example
 
 Use it to help readers continue to nearby or related material after reading an article.
+It contributes the navigation to `article.footer` automatically. You can also
+place the server-rendered Hono JSX Component yourself by importing
+`RelatedPosts` from `@riebeckite/plugin-related-posts/components`; see the
+package README for the required entries and resolved options.
 
 ## When to use it
 
@@ -23,4 +27,3 @@ When a rendered example is available, you can also see it in the [Plugin Showcas
 ## Detailed specification
 
 For configuration options, public APIs, constraints, and additional examples, see the [package README](../../../../packages/plugins/related-posts/README.md). For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.md).
-

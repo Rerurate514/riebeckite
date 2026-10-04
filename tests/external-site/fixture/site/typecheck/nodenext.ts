@@ -98,6 +98,7 @@ import { qrCode } from "@riebeckite/plugin-qr-code";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
+import RelatedPosts from "@riebeckite/plugin-related-posts/components";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
@@ -185,6 +186,7 @@ export const resolvedEntries = {
   recentPostsPlugin,
   RecentPosts,
   relatedPosts,
+  RelatedPosts,
   responsiveImage,
   searchPlugin,
   initSearch,

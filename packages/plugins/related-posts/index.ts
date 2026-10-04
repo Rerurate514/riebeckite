@@ -4,11 +4,13 @@ import {
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
+import { renderToString } from "hono/jsx/dom/server";
+import RelatedPosts from "./components/related-posts.js";
 import { resolveRelatedPostsOptions } from "./src/options.js";
 import { buildRelatedPosts, isEligibleRelatedEntry } from "./src/related.js";
-import { renderRelatedPosts } from "./src/render.js";
 import type { RelatedPostsOptions } from "./src/types.js";
 
+export { default as RelatedPosts } from "./components/related-posts.js";
 export { resolveRelatedPostsOptions } from "./src/options.js";
 export {
   buildRelatedPosts,
@@ -57,7 +59,7 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
         appendContentBodySlot(
           entry,
           "article.footer",
-          renderRelatedPosts(related, resolved),
+          renderToString(RelatedPosts({ entries: related, options: resolved })),
         );
       }
     },

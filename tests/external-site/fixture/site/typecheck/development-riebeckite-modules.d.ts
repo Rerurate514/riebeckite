@@ -169,6 +169,11 @@ declare module "@riebeckite/plugin-related-posts" {
   export const renderRelatedPosts: any;
 }
 
+declare module "@riebeckite/plugin-related-posts/components" {
+  const RelatedPosts: any;
+  export default RelatedPosts;
+}
+
 declare module "@riebeckite/plugin-responsive-image" {
   export const responsiveImage: any;
 }

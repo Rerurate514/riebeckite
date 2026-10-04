@@ -12,10 +12,17 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
+    "./components": {
+      "types": "./dist/components/related-posts.d.ts",
+      "import": "./dist/components/related-posts.js",
+      "source": "./components/related-posts.tsx",
+      "default": "./dist/components/related-posts.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

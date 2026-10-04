@@ -1,15 +1,20 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  appendContentBodySlot,
   ContentManager,
   type ContentSource,
+  definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
+import { createElement, Fragment } from "hono/jsx";
 import {
   RELATED_POSTS_ATTRIBUTE,
   type RelatedPostsOptions,
   relatedPosts,
 } from "../index.ts";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -52,6 +57,38 @@ test("publishes the navigation to eligible article footers", async () => {
   assert.ok(footer.includes('href="/tagged"'));
   assert.ok(footer.includes("data-related-score="));
   assert.ok(!source?.html.includes(RELATED_POSTS_ATTRIBUTE));
+});
+
+test("preserves article footer contribution ordering", async () => {
+  const before = definePlugin({
+    name: "before-related-posts",
+    order: 99,
+    onManifestCreated: ({ manifest }) => {
+      const entry = manifest.bySlug.get("source");
+      if (entry)
+        appendContentBodySlot(entry, "article.footer", "<p>before</p>");
+    },
+  });
+  const after = definePlugin({
+    name: "after-related-posts",
+    order: 101,
+    onManifestCreated: ({ manifest }) => {
+      const entry = manifest.bySlug.get("source");
+      if (entry) appendContentBodySlot(entry, "article.footer", "<p>after</p>");
+    },
+  });
+  const content = new ContentManager(source(files), [], {
+    config: explicitConfig,
+    plugins: [before, relatedPosts(), after],
+  });
+
+  const manifest = await content.getManifest();
+  const footer = manifest.bySlug.get("source")?.bodySlots?.["article.footer"];
+
+  assert.ok(footer);
+  assert.equal(footer.split("\n")[0], "<p>before</p>");
+  assert.ok(footer.split("\n")[1]?.includes(RELATED_POSTS_ATTRIBUTE));
+  assert.equal(footer.split("\n")[2], "<p>after</p>");
 });
 
 test("does not add navigation to processed content html", async () => {

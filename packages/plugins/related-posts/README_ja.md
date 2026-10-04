@@ -2,7 +2,7 @@
 
 ビルド時に「関連ノート」ナビゲーションを生成するプラグインです。公開対象の
 各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べ、
-関連ノートのセクションを HTML に追記します。クライアント側 JavaScript は
+関連ノートのセクションを `article.footer` Slot に追加します。クライアント側 JavaScript は
 不要です。
 
 [English](./README.md)
@@ -22,8 +22,8 @@
 `limit` 件に絞ります。`minScore` 未満の候補は除外します。条件を満たす候補が
 1 件もない場合、そのエントリの HTML は変更しません。
 
-マニフェストエントリの HTML にセクションを追記します。Core がその HTML を
-コンテンツルートの描画 HTML と同期するため、生成ページとフィードの両方に
+各マニフェストエントリの `article.footer` Slot にセクションを追加します。標準の
+記事フッターでこの Slot を描画している場合、生成ページとフィードの両方に
 セクションが反映されます。
 
 ## 使い方
@@ -37,6 +37,22 @@ export default defineConfig({
   plugins: [relatedPosts()],
 });
 ```
+
+## Component として使う
+
+自動の `article.footer` Slot への追加に加え、Site のレイアウト内で任意の位置に
+配置できる、サーバー描画の Hono JSX Component も公開しています。既存の helper
+で entries を計算し、解決済みの options を渡してください。
+
+```tsx
+import RelatedPosts from "@riebeckite/plugin-related-posts/components";
+
+<RelatedPosts entries={related} options={resolvedOptions} />;
+```
+
+`related` には `buildRelatedPosts()` の戻り値を、`resolvedOptions` には
+`resolveRelatedPostsOptions()` の戻り値を渡します。Plugin を登録しない場合は
+`style.css` も読み込んでください。
 
 ## オプション
 
@@ -86,6 +102,7 @@ import "@riebeckite/plugin-related-posts/style.css";
 - `resolveRelatedPostsOptions(options?)` — オプションの既定値を適用する
 - `buildRelatedPosts({ manifest, entry, options, config? })` — 関連エントリを採点・整列する
 - `renderRelatedPosts(entries, options)` — ナビゲーション HTML を生成する
+- `RelatedPosts` と `@riebeckite/plugin-related-posts/components` — Hono JSX Component
 - 型: `RelatedPostsOptions`, `ResolvedRelatedPostsOptions`, `RelatedPostsEntry`
 
 ## 制約

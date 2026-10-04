@@ -1,26 +1,38 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assertGolden } from "@riebeckite/test";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
 import {
+  RelatedPosts,
   type RelatedPostsEntry,
   renderRelatedPosts,
   resolveRelatedPostsOptions,
 } from "../index.ts";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 const entries: RelatedPostsEntry[] = [
   { slug: "a", permalink: "/a", title: "Alpha", score: 5 },
   { slug: "b", permalink: "/b", title: "Beta", score: 4 },
 ];
 
-test("returns an empty string when there are no entries", () => {
+test("RelatedPosts renders nothing when there are no entries", () => {
+  assert.equal(
+    RelatedPosts({ entries: [], options: resolveRelatedPostsOptions() }),
+    null,
+  );
   assert.equal(renderRelatedPosts([], resolveRelatedPostsOptions()), "");
 });
 
-test("renders the heading, list, and scored links by default", () => {
+test("RelatedPosts renders the heading, list, and scored links by default", () => {
+  const options = resolveRelatedPostsOptions();
+  const html = renderToString(RelatedPosts({ entries, options }));
+
   assert.equal(
-    renderRelatedPosts(entries, resolveRelatedPostsOptions()),
+    html,
     [
-      '<nav class="rb-related-posts" data-related-posts>',
+      '<nav class="rb-related-posts" data-related-posts="">',
       '<h2 class="rb-related-posts__heading">Related</h2>',
       "<ul>",
       '<li class="rb-related-posts__item"><a class="rb-related-posts__link" href="/a" data-related-score="5">Alpha</a></li>',
@@ -29,6 +41,7 @@ test("renders the heading, list, and scored links by default", () => {
       "</nav>",
     ].join(""),
   );
+  assert.equal(renderRelatedPosts(entries, options), html);
 });
 
 test("omits the heading when heading is false", () => {
@@ -39,7 +52,7 @@ test("omits the heading when heading is false", () => {
 
   assert.ok(!html.includes("<h2"));
   assert.ok(
-    html.startsWith('<nav class="rb-related-posts" data-related-posts>'),
+    html.startsWith('<nav class="rb-related-posts" data-related-posts="">'),
   );
   assert.ok(html.endsWith("</ul></nav>"));
 });
@@ -50,7 +63,7 @@ test("uses the custom class name on every element", () => {
     resolveRelatedPostsOptions({ className: "x" }),
   );
 
-  assert.ok(html.includes('<nav class="x" data-related-posts>'));
+  assert.ok(html.includes('<nav class="x" data-related-posts="">'));
   assert.ok(html.includes('<h2 class="x__heading">'));
   assert.ok(html.includes('<li class="x__item">'));
   assert.ok(html.includes('<a class="x__link"'));

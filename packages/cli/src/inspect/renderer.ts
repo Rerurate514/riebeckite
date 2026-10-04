@@ -34,7 +34,10 @@ export function renderApplicationInspection(
     "Build",
     field("State", inspection.build.status),
     ...(inspection.build.status === "valid"
-      ? [field("Entries", inspection.build.entryCount)]
+      ? [
+          field("Entries", inspection.build.entryCount),
+          field("Reusable", inspection.build.reusable ? "yes" : "no"),
+        ]
       : []),
     ...(inspection.build.status === "invalid"
       ? [
@@ -66,8 +69,19 @@ export function renderConfigInspection(inspection: ConfigInspection): string {
     "Content",
     field("Source", inspection.content.source),
     field("Directory", inspection.content.directory),
-    field("Exclude", `${inspection.content.excludeCount} patterns`),
+    field("Exclude", values(inspection.content.exclude)),
     field("Publishing", inspection.content.publishStrategy),
+    "",
+    "Cache",
+    field("Enabled", inspection.cache.enabled ? "yes" : "no"),
+    field("Directory", inspection.cache.directory || "(default)"),
+    field(
+      "Content",
+      inspection.cache.persistentCache.cacheable ? "cacheable" : "bypassed",
+    ),
+    ...(inspection.cache.persistentCache.reason !== undefined
+      ? [field("Reason", inspection.cache.persistentCache.reason)]
+      : []),
     "",
     "Theme",
     field("Name", inspection.theme.name),
@@ -108,6 +122,7 @@ export function renderContentInspection(
     "Source",
     field("Type", inspection.source),
     field("Entries", inspection.entryCount),
+    field("Excluded", inspection.excluded.length),
     "",
     "Extensions",
     ...inspection.extensions.map((entry) =>
@@ -120,6 +135,15 @@ export function renderContentInspection(
           ...inspection.paths.map(
             (entry) =>
               `  ${entry.path}  ${entry.id ?? "-"}  ${entry.idSource ?? "-"}  ${entry.permalink ?? "-"}`,
+          ),
+        ]
+      : []),
+    ...(options.list && inspection.excluded.length > 0
+      ? [
+          "",
+          "EXCLUDED PATH  PATTERN",
+          ...inspection.excluded.map(
+            (entry) => `  ${entry.path}  ${entry.pattern}`,
           ),
         ]
       : []),
@@ -153,6 +177,7 @@ export function renderBuildInspection(inspection: BuildInspection): string {
       ? [
           field("Version", inspection.version),
           field("Entries", inspection.entryCount),
+          field("Reusable", inspection.reusable ? "yes" : "no"),
         ]
       : []),
     ...(inspection.status === "invalid"

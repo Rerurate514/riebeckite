@@ -1,4 +1,7 @@
-import type { ContentBuildStateInvalidReason } from "@riebeckite/core";
+import type {
+  ContentBuildStateInvalidReason,
+  ContentSourceExclusion,
+} from "@riebeckite/core";
 
 export type ApplicationInspection = {
   readonly root: string;
@@ -23,8 +26,16 @@ export type ConfigInspection = {
   readonly content: {
     readonly source: string;
     readonly directory: string;
-    readonly excludeCount: number;
+    readonly exclude: readonly string[];
     readonly publishStrategy: string;
+  };
+  readonly cache: {
+    readonly enabled: boolean;
+    readonly directory: string;
+    readonly persistentCache: {
+      readonly cacheable: boolean;
+      readonly reason?: string;
+    };
   };
   readonly theme: {
     readonly name: string;
@@ -45,6 +56,7 @@ export type PluginInspection = {
 export type ContentInspection = {
   readonly source: string;
   readonly entryCount: number;
+  readonly excluded: readonly ContentSourceExclusion[];
   readonly extensions: readonly {
     readonly extension: string;
     readonly count: number;
@@ -72,6 +84,7 @@ export type BuildInspection =
       readonly status: "valid";
       readonly version: number;
       readonly entryCount: number;
+      readonly reusable: boolean;
     }
   | {
       readonly status: "invalid";

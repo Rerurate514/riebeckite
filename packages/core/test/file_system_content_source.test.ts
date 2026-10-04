@@ -6,6 +6,7 @@ import { test } from "node:test";
 import {
   FileSystemContentSource,
   isIgnoredContentPath,
+  matchContentExcludePattern,
 } from "../src/content/file_system_content_source.js";
 
 test("isIgnoredContentPath covers internal metadata and user excludes", () => {
@@ -77,6 +78,42 @@ test("file-system content source keeps vault content directories and user exclud
     "attachments/sample.png",
     "index.md",
   ]);
+});
+
+test("matchContentExcludePattern reports the matching pattern", () => {
+  assert.equal(
+    matchContentExcludePattern("drafts/secret.md", ["drafts/**"]),
+    "drafts/**",
+  );
+  assert.equal(
+    matchContentExcludePattern("private.md", ["private"]),
+    "private",
+  );
+  assert.equal(
+    matchContentExcludePattern("notes/keep.md", ["private"]),
+    undefined,
+  );
+  assert.equal(matchContentExcludePattern(".git/config", []), undefined);
+});
+
+test("file-system content source reports which entries user excludes removed", async () => {
+  const root = await makeTempContentDirectory();
+  await writeFile(root, "index.md", "---\npublish: true\n---\n\n# Home");
+  await writeFile(root, "drafts/hidden.md", "# Hidden");
+  await writeFile(root, "private/secret.md", "# Secret");
+  await writeFile(root, ".git/config", "private");
+
+  const source = new FileSystemContentSource(root, ["drafts/**", "private/**"]);
+  const { entries, exclusions } = await source.scanWithExclusions();
+
+  assert.deepEqual(entries.map((entry) => entry.path).sort(), ["index.md"]);
+  assert.deepEqual(
+    [...exclusions].sort((left, right) => left.path.localeCompare(right.path)),
+    [
+      { path: "drafts/hidden.md", pattern: "drafts/**" },
+      { path: "private/secret.md", pattern: "private/**" },
+    ],
+  );
 });
 
 async function makeTempContentDirectory(): Promise<string> {

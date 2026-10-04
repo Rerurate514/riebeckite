@@ -52,6 +52,10 @@ export type {
 } from "./src/content/content_manager.js";
 export { ContentManager } from "./src/content/content_manager.js";
 export { extractFrontmatterAliases } from "./src/content/content_metadata.js";
+export {
+  computePipelineFingerprint,
+  isPersistentlyCacheable,
+} from "./src/content/content_persistent_cache.js";
 export type {
   ContentQueryDateFilter,
   ContentQueryDateGranularity,
@@ -85,10 +89,15 @@ export {
   readContentSourceEntry,
 } from "./src/content/content_source.js";
 export { resolveContentStableId } from "./src/content/content_stable_id.js";
+export type {
+  ContentSourceExclusion,
+  ContentSourceScan,
+} from "./src/content/file_system_content_source.js";
 export {
   FileSystemContentSource,
   INTERNAL_CONTENT_IGNORE_PATTERNS,
   isIgnoredContentPath,
+  matchContentExcludePattern,
 } from "./src/content/file_system_content_source.js";
 export type {
   FolderEntryCandidate,

@@ -22,6 +22,16 @@ export const INTERNAL_CONTENT_IGNORE_PATTERNS = [
   "**/desktop.ini",
 ] as const;
 
+export type ContentSourceExclusion = {
+  readonly path: string;
+  readonly pattern: string;
+};
+
+export type ContentSourceScan = {
+  readonly entries: readonly ContentSourceEntry[];
+  readonly exclusions: readonly ContentSourceExclusion[];
+};
+
 export class FileSystemContentSource implements ContentSource {
   constructor(
     private contentDirectory: string,
@@ -29,8 +39,18 @@ export class FileSystemContentSource implements ContentSource {
   ) {}
 
   async scan(): Promise<readonly ContentSourceEntry[]> {
+    return (await this.scanWithExclusions()).entries;
+  }
+
+  async scanWithExclusions(): Promise<ContentSourceScan> {
+    const exclusions: ContentSourceExclusion[] = [];
     try {
-      return await this.scanDirectory(this.contentDirectory, "");
+      const entries = await this.scanDirectory(
+        this.contentDirectory,
+        "",
+        exclusions,
+      );
+      return { entries, exclusions };
     } catch (error) {
       if (isMissingDirectoryError(error, this.contentDirectory)) {
         throw missingContentDirectoryError(this.contentDirectory);
@@ -51,6 +71,7 @@ export class FileSystemContentSource implements ContentSource {
   private async scanDirectory(
     directory: string,
     parentPath: string,
+    exclusions: ContentSourceExclusion[],
   ): Promise<ContentSourceEntry[]> {
     const directoryEntries = await fs.readdir(directory, {
       withFileTypes: true,
@@ -67,10 +88,18 @@ export class FileSystemContentSource implements ContentSource {
       );
       const filePath = path.join(directory, directoryEntry.name);
 
-      if (this.isExcluded(logicalPath)) continue;
+      if (isExcluded(INTERNAL_CONTENT_IGNORE_PATTERNS, logicalPath)) continue;
+
+      const pattern = matchContentExcludePattern(logicalPath, this.exclude);
+      if (pattern !== undefined) {
+        exclusions.push({ path: logicalPath, pattern });
+        continue;
+      }
 
       if (directoryEntry.isDirectory()) {
-        entries.push(...(await this.scanDirectory(filePath, logicalPath)));
+        entries.push(
+          ...(await this.scanDirectory(filePath, logicalPath, exclusions)),
+        );
         continue;
       }
       if (!directoryEntry.isFile()) continue;
@@ -86,10 +115,6 @@ export class FileSystemContentSource implements ContentSource {
     }
 
     return entries;
-  }
-
-  private isExcluded(logicalPath: string): boolean {
-    return isIgnoredContentPath(logicalPath, this.exclude);
   }
 
   private resolveFilePath(logicalPath: string): string {
@@ -108,10 +133,18 @@ export function isIgnoredContentPath(
   exclude: readonly string[] = [],
 ): boolean {
   if (isExcluded(INTERNAL_CONTENT_IGNORE_PATTERNS, logicalPath)) return true;
-  if (isExcluded(exclude, logicalPath)) return true;
-  return (
-    logicalPath.endsWith(".md") && isExcluded(exclude, logicalPath.slice(0, -3))
-  );
+  return matchContentExcludePattern(logicalPath, exclude) !== undefined;
+}
+
+export function matchContentExcludePattern(
+  logicalPath: string,
+  exclude: readonly string[] = [],
+): string | undefined {
+  const direct = exclude.find((pattern) => isExcluded([pattern], logicalPath));
+  if (direct !== undefined) return direct;
+  if (!logicalPath.endsWith(".md")) return undefined;
+  const withoutExtension = logicalPath.slice(0, -3);
+  return exclude.find((pattern) => isExcluded([pattern], withoutExtension));
 }
 
 function normalizeLogicalPath(logicalPath: string): string {

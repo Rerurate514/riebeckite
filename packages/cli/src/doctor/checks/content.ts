@@ -1,7 +1,9 @@
 import path from "node:path";
 import {
   ContentManager,
+  type ContentSourceExclusion,
   type Diagnostic,
+  FileSystemContentSource,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../../application_root.js";
@@ -17,14 +19,15 @@ export async function checkContent(
   if (!config) return skippedContentCheck();
 
   try {
-    const content = new ContentManager(
-      resolveProjectContentSource(config, project),
-      config.content.exclude,
-      {
-        config,
-      },
-    );
-    const entries = await content.scan();
+    const source = resolveProjectContentSource(config, project);
+    const content = new ContentManager(source, config.content.exclude, {
+      config,
+    });
+    const scan =
+      source instanceof FileSystemContentSource
+        ? await source.scanWithExclusions()
+        : { entries: await content.scan(), exclusions: [] };
+    const entries = scan.entries;
     const invalidPaths = findInvalidPaths(entries);
     const duplicatePaths = findDuplicatePaths(entries);
     if (invalidPaths.length > 0) {
@@ -41,6 +44,7 @@ export async function checkContent(
     const diagnosticDetails = summarizeDiagnostics(inspection.diagnostics);
     const details = [
       `${inspection.entries.length} content entries scanned.`,
+      ...summarizeExclusions(scan.exclusions),
       ...duplicatePaths.map((entry) => `Duplicate logical path: ${entry}`),
       ...diagnosticDetails,
     ];
@@ -114,6 +118,21 @@ function combineStatus(
   }
   if (diagnostics.some((item) => item.severity === "warning")) return "warning";
   return "ok";
+}
+
+function summarizeExclusions(
+  exclusions: readonly ContentSourceExclusion[],
+): string[] {
+  if (exclusions.length === 0) return [];
+  const sorted = [...exclusions].sort((left, right) =>
+    left.path.localeCompare(right.path),
+  );
+  return [
+    `Excluded by content.exclude: ${sorted.length}`,
+    ...sorted
+      .slice(0, diagnosticSampleLimit)
+      .map((entry) => `${entry.path} (${entry.pattern})`),
+  ];
 }
 
 function summarizeDiagnostics(diagnostics: readonly Diagnostic[]): string[] {

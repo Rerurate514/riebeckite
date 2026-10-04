@@ -2,7 +2,11 @@ import path from "node:path";
 import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   ContentManager,
+  computePipelineFingerprint,
+  FileSystemContentSource,
   getResolvedPluginMetadata,
+  isPersistentlyCacheable,
+  loadContentBuildState,
   readContentBuildStateStatus,
   readOnlyContentGraph,
   resolveContentBuildStatePath,
@@ -58,8 +62,13 @@ export async function collectConfigInspection(
     content: {
       source: contentSourceName(config),
       directory: config.content.directory,
-      excludeCount: config.content.exclude.length,
+      exclude: [...config.content.exclude],
       publishStrategy: config.content.filters.publishStrategy,
+    },
+    cache: {
+      enabled: config.cache.enabled,
+      directory: config.cache.directory,
+      persistentCache: isPersistentlyCacheable("", config),
     },
     theme: { name: config.theme.name, colorMode: config.theme.colorMode },
     pluginCount: config.plugins.length,
@@ -84,9 +93,16 @@ export async function collectContentInspection(
   project: RiebeckiteProject,
 ): Promise<ContentInspection> {
   const source = resolveProjectContentSource(config, project);
-  const paths = (await source.scan())
+  const scan =
+    source instanceof FileSystemContentSource
+      ? await source.scanWithExclusions()
+      : { entries: await source.scan(), exclusions: [] };
+  const paths = scan.entries
     .map((entry) => entry.path)
     .toSorted((left, right) => left.localeCompare(right));
+  const excluded = scan.exclusions.toSorted((left, right) =>
+    left.path.localeCompare(right.path),
+  );
   const extensions = Object.entries(
     paths.reduce<Record<string, number>>((counts, entryPath) => {
       const extension = path.posix.extname(entryPath).toLowerCase() || "(none)";
@@ -100,6 +116,7 @@ export async function collectContentInspection(
   return {
     source: contentSourceName(config),
     entryCount: paths.length,
+    excluded,
     extensions,
     paths: await inspectPaths(config, source, paths),
   };
@@ -166,10 +183,15 @@ export async function collectBuildInspection(
   if (status.kind === "missing") return { status: "not created" };
   if (status.kind === "invalid")
     return { status: "invalid", reason: status.reason };
+  const state = await loadContentBuildState(status.path);
+  const reusable =
+    isPersistentlyCacheable("", config).cacheable &&
+    state?.pipelineFingerprint === computePipelineFingerprint(config);
   return {
     status: "valid",
     version: status.version,
     entryCount: status.entryCount,
+    reusable,
   };
 }
 

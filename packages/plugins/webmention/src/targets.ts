@@ -31,6 +31,7 @@ export function findTargetEntry(
 ): ContentManifestEntry | undefined {
   const key = urlComparisonKey(target);
   for (const entry of manifest.entries) {
+    if (!entry.publishing.routable) continue;
     const publicUrl = entryPublicUrl(entry, config);
     if (publicUrl !== null && urlComparisonKey(publicUrl) === key) return entry;
   }

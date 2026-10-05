@@ -31,6 +31,10 @@ export function createDataviewRuntime(
 
   return {
     resolve(manifest, diagnostics) {
+      const view: ContentManifest = {
+        ...manifest,
+        entries: manifest.discoverableEntries,
+      };
       for (const entry of manifest.entries) {
         if (
           !entry.html.includes(DATAVIEW_ATTRIBUTE) &&
@@ -39,12 +43,7 @@ export function createDataviewRuntime(
           continue;
         }
 
-        const html = replacePlaceholders(
-          entry,
-          manifest,
-          resolved,
-          diagnostics,
-        );
+        const html = replacePlaceholders(entry, view, resolved, diagnostics);
         if (html === entry.html) continue;
 
         entry.html = html;

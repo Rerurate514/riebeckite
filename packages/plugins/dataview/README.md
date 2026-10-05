@@ -20,8 +20,9 @@ LIMIT 10
 ```
 ````
 
-and renders them from the manifest (every note's frontmatter, tags, links, and
-permalink). DataviewJS (`dataviewjs`) is **not** supported: those blocks stay
+and renders them from the manifest using each public note's frontmatter, tags,
+links, and permalink. Unlisted, draft, and scheduled notes are excluded from
+queries. DataviewJS (`dataviewjs`) is **not** supported: those blocks stay
 code blocks and produce a diagnostic.
 
 ## Usage

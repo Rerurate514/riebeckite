@@ -122,9 +122,10 @@ export type ContentLocationInput = {
 export type ContentManifest = {
   entries: ContentManifestEntry[];
   /**
-   * Entries that pass the configured publish strategy. `entries` keeps every
-   * scanned note for backward compatibility; publishing plugins should read
-   * this view so unpublished notes never reach generated output.
+   * Entries that are routable and therefore get a generated page: `public`
+   * and `unlisted` notes. `entries` keeps every scanned note for backward
+   * compatibility; plugins that emit generated output should read this view
+   * so drafts and scheduled notes never reach generated output.
    */
   publicEntries: ContentManifestEntry[];
   /** Entries that may appear on discovery surfaces such as navigation, search, feeds, taxonomy, and public graphs. */

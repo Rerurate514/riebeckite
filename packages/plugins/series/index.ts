@@ -102,12 +102,13 @@ export function series(options: SeriesOptions = {}) {
     onManifestCreated: ({ manifest, diagnostics }) => {
       diagnostics.push(...collectSeriesDiagnostics(manifest, options));
 
+      const view = modelFor(manifest).view;
       const injected = new Set<string>();
-      for (const index of collectSeriesIndexes(manifest, options)) {
+      for (const index of collectSeriesIndexes(view, options)) {
         if (index.members.length < 2) continue;
         for (const member of index.members) {
           if (injected.has(member.slug)) continue;
-          const entry = manifest.bySlug.get(member.slug);
+          const entry = view.bySlug.get(member.slug);
           if (!entry) continue;
           injected.add(member.slug);
           const navigation = renderSeriesNavigation(

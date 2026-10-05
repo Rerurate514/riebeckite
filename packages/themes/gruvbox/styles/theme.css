@@ -239,7 +239,6 @@
   .rb-article-body
   :is(ul, ol) {
   margin: 1.1em 0;
-  padding-left: 1.4em;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body li {

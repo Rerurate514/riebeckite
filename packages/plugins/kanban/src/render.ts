@@ -25,7 +25,7 @@ export function createKanbanLinkResolver(
     const slug = manifest.contentIndex.get(label.toLowerCase());
     if (!slug) return null;
     const entry = manifest.bySlug.get(slug);
-    if (!entry) return null;
+    if (!entry?.publishing.routable) return null;
     return { href: entry.permalink, label };
   };
 }

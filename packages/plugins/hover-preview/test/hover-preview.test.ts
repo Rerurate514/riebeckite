@@ -43,9 +43,7 @@ const customLocation = definePlugin({
         entry.slug === "localized/target"
           ? "/ja/custom-target"
           : `/${entry.slug}`,
-      metadata: entry.slug.startsWith("localized/")
-        ? { "l10n.lang": "ja" }
-        : {},
+      language: entry.slug.startsWith("localized/") ? "ja" : undefined,
     })),
 });
 

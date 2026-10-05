@@ -1,3 +1,4 @@
+import { getEntryLanguage } from "@riebeckite/core";
 import {
   contentRouteSsgParams,
   resolveRiebeckiteRoute,
@@ -56,7 +57,7 @@ export default createRoute(
       buildArticleSeo(route.entry.permalink, post, route.entry.headTags),
     );
     c.set("headTags", route.entry.headTags ?? []);
-    c.set("htmlLanguage", route.entry.publicLocation.metadata?.["l10n.lang"]);
+    c.set("htmlLanguage", getEntryLanguage(route.entry));
 
     return c.render(
       <Article

@@ -69,12 +69,12 @@ test("detects configured filename conventions and leaves ordinary Markdown at th
   });
   const locations = await content.getContentLocations();
 
-  assert.equal(locations.get("README")?.metadata?.["l10n.lang"], "ja");
-  assert.equal(locations.get("README.en")?.metadata?.["l10n.lang"], "en");
-  assert.equal(locations.get("README-en")?.metadata?.["l10n.lang"], "en");
-  assert.equal(locations.get("README_en")?.metadata?.["l10n.lang"], "en");
-  assert.equal(locations.get("README.en-US")?.metadata?.["l10n.lang"], "en-US");
-  assert.equal(locations.get("README.zh-CN")?.metadata?.["l10n.lang"], "zh-CN");
+  assert.equal(locations.get("README")?.language, "ja");
+  assert.equal(locations.get("README.en")?.language, "en");
+  assert.equal(locations.get("README-en")?.language, "en");
+  assert.equal(locations.get("README_en")?.language, "en");
+  assert.equal(locations.get("README.en-US")?.language, "en-US");
+  assert.equal(locations.get("README.zh-CN")?.language, "zh-CN");
   assert.equal(
     locations.get("README.en")?.metadata?.["l10n.translationId"],
     "README",
@@ -146,7 +146,7 @@ test("frontmatter wins over filename and directory signals and exposes a conflic
     { languages: ["ja", "en", "fr"] },
   );
   const locations = await content.getContentLocations();
-  assert.equal(locations.get("en/README.ja")?.metadata?.["l10n.lang"], "fr");
+  assert.equal(locations.get("en/README.ja")?.language, "fr");
   const diagnostics = await content.getDiagnostics();
   assert.equal(diagnostics[0]?.code, "L10N_LANGUAGE_CONFLICT");
   assert.equal(diagnostics[0]?.severity, "warning");
@@ -415,7 +415,7 @@ test("accepts a custom detector for unsupported conventions", async () => {
     },
   );
   const locations = await content.getContentLocations();
-  assert.equal(locations.get("French/bonjour")?.metadata?.["l10n.lang"], "fr");
+  assert.equal(locations.get("French/bonjour")?.language, "fr");
   assert.equal(
     locations.get("French/bonjour")?.metadata?.["l10n.translationId"],
     "hello",

@@ -45,6 +45,10 @@ export type {
   ContentGraphNeighbors,
 } from "./src/content/content_graph.js";
 export { createContentGraph } from "./src/content/content_graph.js";
+export {
+  getEntryLanguage,
+  selectEntriesByLanguage,
+} from "./src/content/content_language.js";
 export { resolveDefaultContentLocation } from "./src/content/content_location.js";
 export type {
   ContentBuildOptions,

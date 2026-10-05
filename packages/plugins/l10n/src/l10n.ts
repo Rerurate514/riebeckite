@@ -14,7 +14,6 @@ import {
 import { parse } from "yaml";
 import { renderLanguageSwitcher } from "./language-switcher.js";
 
-const LANGUAGE_METADATA_KEY = "l10n.lang";
 const TRANSLATION_METADATA_KEY = "l10n.translationId";
 
 export type L10nContent = {
@@ -214,7 +213,7 @@ export function getLocalization(
 ): LocalizedContent | null {
   const entry = manifest.bySlug.get(slug);
   if (!entry) return null;
-  const lang = entry.publicLocation.metadata?.[LANGUAGE_METADATA_KEY];
+  const lang = entry.publicLocation.language;
   const translationId =
     entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY];
   if (!lang || !translationId) return null;
@@ -226,7 +225,7 @@ export function getLocalization(
   );
   const translations = Object.fromEntries(
     uniqueLanguageEntries(candidates).map((candidate) => [
-      candidate.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ?? "",
+      candidate.publicLocation.language ?? "",
       candidate.permalink,
     ]),
   );
@@ -252,8 +251,7 @@ export function getLocalizedContent(
   const candidates = manifest.publicEntries.filter(
     (entry) =>
       entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY] ===
-        localization.translationId &&
-      entry.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] === lang,
+        localization.translationId && entry.publicLocation.language === lang,
   );
   return candidates.length === 1 ? (candidates[0] ?? null) : null;
 }
@@ -265,7 +263,7 @@ export function getLanguageFromPath(
   const firstSegment = pathname.split("/").filter(Boolean)[0];
   if (!firstSegment) return undefined;
   return manifest.discoverableEntries
-    .map((entry) => entry.publicLocation.metadata?.[LANGUAGE_METADATA_KEY])
+    .map((entry) => entry.publicLocation.language)
     .find(
       (language) =>
         language?.toLocaleLowerCase() === firstSegment.toLocaleLowerCase(),
@@ -524,13 +522,13 @@ function withLocalization(
   return {
     ...location,
     permalink,
+    language: content.lang,
     redirects: location.redirects?.map((redirect) => ({
       ...redirect,
       path: localizePath(redirect.path, content, options),
     })),
     metadata: {
       ...location.metadata,
-      [LANGUAGE_METADATA_KEY]: content.lang,
       [TRANSLATION_METADATA_KEY]: content.translationId,
     },
   };
@@ -624,8 +622,7 @@ function addLocalizationHeadTags(
         tag: "link",
         attrs: {
           rel: "alternate",
-          hreflang:
-            translation.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] ?? "",
+          hreflang: translation.publicLocation.language ?? "",
           href: translation.permalink,
         },
       }),
@@ -669,13 +666,11 @@ function uniqueLanguageEntries(
   entries: readonly ContentManifestEntry[],
 ): readonly ContentManifestEntry[] {
   return entries.filter((entry) => {
-    const lang = entry.publicLocation.metadata?.[LANGUAGE_METADATA_KEY];
+    const lang = entry.publicLocation.language;
     return (
       lang !== undefined &&
-      entries.filter(
-        (other) =>
-          other.publicLocation.metadata?.[LANGUAGE_METADATA_KEY] === lang,
-      ).length === 1
+      entries.filter((other) => other.publicLocation.language === lang)
+        .length === 1
     );
   });
 }

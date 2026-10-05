@@ -36,12 +36,16 @@ export default defineConfig({
 
 Called with no arguments, the plugin derives `primary` links from the vault's **discoverable entries** (`manifest.discoverableEntries`: public and discoverable, excluding draft and non-routable content). It reuses existing Riebeckite information rather than a dedicated vault file:
 
-- folder structure
-- README / index resolution (an `index` or `README` note represents its folder)
-- page `title`
+- folder structure (a folder becomes a section, and nested folders become `children`)
+- README / index resolution (an `index` or `README` note represents its folder and supplies the folder `href`)
+- a folder without a README or index renders as a label with no link
+- a root README or index never appears in the navigation
+- page `title` (falling back to a formatted slug segment)
 - `permalink`
 
 It requires **no Riebeckite-specific vault file** (no `navigation.md`) and **no required frontmatter**.
+
+Derivation follows the language being rendered. Using the language metadata written by the `l10n` plugin, entries that share a translation collapse into a single item and only the current language's `href` is used, so a page under `/ja/guide/` never mixes in `/en/...`. Vaults that do not use `l10n` keep deriving from every entry.
 
 ### Manual and supplementary links
 
@@ -65,8 +69,6 @@ navigation({
   ],
 });
 ```
-
-> Localized vaults: zero-config derivation currently targets single-language vaults. Localized sites should author `items` manually.
 
 ### NavigationItem
 

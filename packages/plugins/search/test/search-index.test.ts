@@ -216,7 +216,7 @@ test("buildSearchItems uses manifest aliases and localization metadata", () => {
   localized.aliases = ["Provider replacement"];
   localized.publicLocation = {
     ...localized.publicLocation,
-    metadata: { "l10n.lang": "ja" },
+    language: "ja",
   };
 
   assert.deepEqual(

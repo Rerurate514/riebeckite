@@ -1,6 +1,7 @@
-import type {
-  ContentManifest,
-  ResolvedRiebeckiteConfig,
+import {
+  type ContentManifest,
+  getEntryLanguage,
+  type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { SearchItem } from "./search.js";
 
@@ -15,7 +16,7 @@ export function buildSearchItems(args: {
 }): SearchItem[] {
   const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
   const items = args.manifest.discoverableEntries.map((entry) => {
-    const language = entry.publicLocation.metadata?.["l10n.lang"];
+    const language = getEntryLanguage(entry);
     return {
       slug: entry.slug,
       permalink: entry.permalink,

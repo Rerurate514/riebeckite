@@ -137,7 +137,7 @@ flowchart LR
 
 追加前はリンク先を見つけられませんが、追加後は正しいページへリンクできるようになります。
 
-このように、コンテンツの追加や削除によってリンクの解決結果が変わった場合も、影響するページを再生成します。
+コンテンツの追加や削除によってリンクの解決結果が変わった場合も、影響するページを再生成します。
 
 初回 build や、前回の build 情報が存在しない場合は、すべてのコンテンツを処理します。
 
@@ -271,25 +271,25 @@ Plugin Cache がなくなっても、サイトを正しく build できる必要
 
 ## Build 関連のコマンド
 
-通常のプロジェクト build:
+通常のプロジェクトを build するコマンドは次のとおりです。
 
 ```sh
 pnpm build
 ```
 
-Riebeckite の build:
+Riebeckite の build は次のコマンドです。
 
 ```sh
 pnpm exec riebeckite build
 ```
 
-前回の build 情報を使わずに build:
+前回の build 情報を使わずに build するには `--full` を付けます。
 
 ```sh
 pnpm exec riebeckite build --full
 ```
 
-full build の処理時間を詳しく確認:
+full build の処理時間を詳しく確認するには、次のコマンドを実行します。
 
 ```sh
 pnpm exec riebeckite profile --full

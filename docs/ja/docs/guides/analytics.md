@@ -21,7 +21,7 @@ flowchart LR
     Worker --> Storage
 ```
 
-重要なのは、**Riebeckite Site 自体はこれまでどおり静的 Site のまま**という点です。
+**Riebeckite Site 自体はこれまでどおり静的 Site のまま**です。
 
 Analytics Worker は Site とは別にデプロイします。
 

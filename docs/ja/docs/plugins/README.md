@@ -46,7 +46,7 @@ export default defineConfig({
 });
 ```
 
-各 Plugin ページでは、package 名、import 名、よく使う設定を説明します。詳しい option は各 package README が正本です。
+各 Plugin ページでは、package 名、import 名、よく使う設定を説明します。詳しい option は各 package README を参照してください。
 
 ## 公式 Plugin
 

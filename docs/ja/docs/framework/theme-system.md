@@ -716,7 +716,7 @@ export function newspaperTheme(
 }
 ```
 
-重要なのは、この Option を Core の `ThemeConfig` に追加しないことです。
+この Option は Core の `ThemeConfig` に追加しません。
 
 ```text id="2cqt02"
 newspaper の density

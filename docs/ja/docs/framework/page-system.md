@@ -96,7 +96,7 @@ flowchart LR
     Theme --> Site
 ```
 
-重要なのは、**route と document frame は Site Application が所有する**という点です。
+**route と document frame は Site Application が所有します**。
 
 Plugin はページの内容を提供しますが、
 
@@ -363,7 +363,7 @@ flowchart TD
     Priority -->|No| Error["Conflict Error"]
 ```
 
-このように競合を明示的なエラーにすることで、Plugin の登録順などによって結果が変わることを防ぎます。
+競合を明示的なエラーにすることで、Plugin の登録順などによって結果が変わることを防ぎます。
 
 # HonoX Site へ接続する
 
@@ -498,7 +498,7 @@ flowchart LR
 
 # Page System の境界
 
-Page System で最も重要なのは、**Plugin はページを提供するが、Application を所有しない**ことです。
+Page System では、**Plugin はページを提供するが、Application を所有しない**ことが最も重要です。
 
 ```mermaid id="o60md4"
 flowchart LR
@@ -514,7 +514,7 @@ flowchart LR
     Theme --> Site
 ```
 
-責務をまとめると、
+責務は次のとおりです。
 
 ```text id="9w3k80"
 Plugin

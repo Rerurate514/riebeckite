@@ -571,7 +571,7 @@ my-site/
 
 という構成が使えます。
 
-重要なのは、**Vault の場所と公開範囲を分けて考えること**です。
+**Vault の場所と公開範囲は分けて考えます**。
 
 - `content.directory` → どの Vault を読むか
 - `exclude` → 何を Content として読まないか

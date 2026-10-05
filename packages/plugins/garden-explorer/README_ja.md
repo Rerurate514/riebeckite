@@ -42,7 +42,7 @@ export default defineConfig({
 });
 ```
 
-設定例:
+設定例は次のとおりです。
 
 ```ts
 plugins: [

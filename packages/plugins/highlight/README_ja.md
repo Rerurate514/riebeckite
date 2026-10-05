@@ -29,7 +29,7 @@ export default defineConfig({
 この文には ==ハイライトする語句== が含まれます。
 ```
 
-出力:
+出力は次のとおりです。
 
 ```html
 この文には <mark class="rb-highlight">ハイライトする語句</mark> が含まれます。

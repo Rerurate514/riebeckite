@@ -14,12 +14,12 @@
 npx create-riebeckite
 ```
 
-プロンプトに次のように答えます（推奨される回答）：
+プロンプトに次のように答えます（推奨される回答）。
 
-- **Project name** — 既定値の `my-site` のまま Enter を押します
-- **Preset** - 迷ったら `starter` のまま。[Presets](./presets.md) を参照
-- **Content source** - `This project` を選んで Markdown をサイトのフォルダ内に残します
-- **Deployment** - まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。push ごとの自動公開は `GitHub Actions`。[Deployment](./deployment.md) を参照
+- **Project name**：既定値の `my-site` のまま Enter を押します
+- **Preset**：迷ったら `starter` のまま。[Presets](./presets.md) を参照
+- **Content source**：`This project` を選んで Markdown をサイトのフォルダ内に残します
+- **Deployment**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。push ごとの自動公開は `GitHub Actions`。[Deployment](./deployment.md) を参照
 
 成功すると `Created a starter Riebeckite site in my-site`（入力した名前が入る）と、次に実行するコマンドの一覧が表示されます。既定値の `Not now` では、外部への公開も依存関係のインストールも行いません。フォルダへ移動して package を入れます。
 

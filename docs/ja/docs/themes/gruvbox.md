@@ -8,7 +8,7 @@ Gruvbox を基調とした暖かい配色の Theme です。
 npm install @riebeckite/theme-gruvbox
 ```
 
-Theme の factory 名と設定項目は、実装と package README を正本として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+Theme の factory 名と設定項目は、実装と package README を一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
 
 ## 詳細仕様
 

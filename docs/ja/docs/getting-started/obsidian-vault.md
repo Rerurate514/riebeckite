@@ -83,7 +83,7 @@ npm exec riebeckite dev
 
 以下は、Fresh `starter` サイトと小さなテスト Vault で実際に確認した例です。
 
-WikiLink:
+WikiLink は次のように書きます。
 
 ```md
 [[hello]]

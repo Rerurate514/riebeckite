@@ -47,8 +47,8 @@ buildRouteLock ──► 現在の RouteLock
 
 判定の優先順位は厳密で、あいまい一致は行いません。
 
-1. **明示的な同一性** — エントリの frontmatter `id` がロック内のルートの `id` と一致する。
-2. **内容ハッシュの完全一致** — `sha256(entry.html)` が新しいルートちょうど 1 件と一致する。
+1. **明示的な同一性**：エントリの frontmatter `id` がロック内のルートの `id` と一致する。
+2. **内容ハッシュの完全一致**：`sha256(entry.html)` が新しいルートちょうど 1 件と一致する。
 3. どちらも該当しない場合、そのルートは消失とみなす。
 
 候補が複数ある場合、または 1 件もない場合はリダイレクトを作りません。曖昧一致では `rename-ambiguous` 診断を、対応の取れない消失では `onUnexpectedRemoval` に従った重要度の診断を出力します。
@@ -77,7 +77,7 @@ buildRouteLock ──► 現在の RouteLock
 
 ## エクスポート
 
-関数:
+関数のシグネチャは次のとおりです。
 
 - `renamePlugin(options?)` / `rename(options?)`
 - `diffRoutes(previous, current, options?)`
@@ -86,7 +86,7 @@ buildRouteLock ──► 現在の RouteLock
 - `applyRouteRedirects(manifest, rules)`
 - `parseRouteLock(value)`、`emptyRouteLock()`、`hashContent(html)`
 
-型:
+型は次のとおりです。
 
 - `RenameOptions`
 - `RouteLock`、`RouteLockRoute`、`RouteLockRedirect`、`RedirectRule`

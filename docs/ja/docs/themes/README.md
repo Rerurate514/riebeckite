@@ -285,7 +285,7 @@ Riebeckite には複数の公式 Theme があります。
 | [Sakura](./sakura.md) | [`@riebeckite/theme-sakura`](../../../../packages/themes/sakura/README.md) | `sakuraTheme()` | 桜をモチーフにした配色 |
 | [Tokyo Night](./tokyonight.md) | [`@riebeckite/theme-tokyonight`](../../../../packages/themes/tokyonight/README.md) | `tokyonightTheme()` | Tokyo Night 風の暗色・Editor 風 Theme |
 
-各 Theme の正確な Export 名と Option は、Package README が正本です。
+各 Theme の正確な Export 名と Option は、Package README を参照してください。
 
 # Default
 

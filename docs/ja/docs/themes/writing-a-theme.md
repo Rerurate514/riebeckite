@@ -537,13 +537,13 @@ system
 }
 ```
 
-ここで重要なのは、
+System Mode では、
 
 ```html id="k8uz2d"
 data-theme=""
 ```
 
-ではなく、System Mode では **`data-theme` Attribute 自体が存在しない**ことです。
+ではなく、**`data-theme` Attribute 自体が存在しません**。
 
 そのため、
 
@@ -799,7 +799,7 @@ flowchart TD
 
 # 最小の完成形
 
-ここまでの内容をまとめると、最小の Site 内 Theme は2ファイルで作れます。
+最小の Site 内 Theme は2ファイルで作れます。
 
 ```text id="wub30o"
 extensions/
@@ -807,7 +807,7 @@ extensions/
 └─ theme.css
 ```
 
-`local-theme.ts`:
+`local-theme.ts` の中身は次のとおりです。
 
 ```ts id="f2e0yg"
 import { defineTheme } from "@riebeckite/core";
@@ -824,7 +824,7 @@ export function localTheme() {
 }
 ```
 
-`theme.css`:
+`theme.css` の中身は次のとおりです。
 
 ```css id="0nvzz5"
 :is(:root, .rb-theme-root)[data-theme-name="local"] .rb-site {
@@ -884,7 +884,7 @@ Theme Root Selector
 
 を利用します。
 
-そして最も重要なのは、**Theme が Page Type や内部 Component の構造を知りすぎないこと**です。
+そして、**Theme が Page Type や内部 Component の構造を知りすぎない**ことが最も重要です。
 
 ```text id="3p18me"
 Page Type

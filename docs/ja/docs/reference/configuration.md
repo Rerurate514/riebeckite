@@ -423,7 +423,7 @@ appRoot
 
 特殊な repository 構成で config を別の場所へ置く場合のみ変更します。
 
-重要なのは、**`configRoot` を変更しても `content.directory` の基準は変わらない**ことです。
+**`configRoot` を変更しても `content.directory` の基準は変わらない**点に注意してください。
 
 ## contentRoot
 
@@ -1010,7 +1010,7 @@ contentRoot
 
 ## まとめ
 
-Configuration で特に重要なのは、Site と Content の場所を混同しないことです。
+Configuration では、Site と Content の場所を混同しないことが重要です。
 
 ```mermaid id="zzmq0d"
 flowchart LR

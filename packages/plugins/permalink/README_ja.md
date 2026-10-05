@@ -192,7 +192,7 @@ redirect_from:
 
 として扱われます。
 
-設定:
+設定は次のとおりです。
 
 ```ts
 permalink({
@@ -370,7 +370,7 @@ path: {
 }
 ```
 
-結果:
+結果は次のとおりです。
 
 ```text
 /n/hello-world
@@ -393,7 +393,7 @@ path: {
 }
 ```
 
-例:
+例を示します。
 
 ```text
 notes/flutter/hello.md
@@ -437,7 +437,7 @@ index: {
 notes/flutter/index.md
 ```
 
-ID が `hello-world` の場合:
+ID が `hello-world` の場合、URL は次のとおりです。
 
 | 設定 | URL |
 | --- | --- |
@@ -494,7 +494,7 @@ canonical URL
 
 #### 例: frontmatter を組み合わせる
 
-例えばプロジェクト固有の frontmatter から ID を作る場合:
+例えば、プロジェクト固有の frontmatter から ID を作る場合は次のとおりです。
 
 ```md
 ---
@@ -527,7 +527,7 @@ permalink({
 });
 ```
 
-結果:
+結果は次のとおりです。
 
 ```text
 /articles/flutter-42
@@ -555,7 +555,7 @@ permalink({
 });
 ```
 
-結果:
+結果は次のとおりです。
 
 ```text
 /articles/hello-world
@@ -578,7 +578,7 @@ https://example.com NG
 
 両方を指定すると、ID 決定と URL 構築を完全にカスタマイズできます。
 
-例えば年別 URL を作る場合:
+例えば年別 URL を作る場合は次のとおりです。
 
 ```md
 ---
@@ -613,7 +613,7 @@ permalink({
 });
 ```
 
-結果:
+結果は次のとおりです。
 
 ```text
 /articles/2026/riebeckite-permalink
@@ -690,7 +690,7 @@ permalink({
 
 frontmatter に手動の permalink がある場合は、通常の ID 解決と path 構築より優先されます。
 
-例えば:
+例えば、次のようになります。
 
 ```md
 ---
@@ -827,14 +827,14 @@ Custom `resolvePath` の結果も同じ検証を受けます。
 
 Permalink Plugin はビルド時に衝突を検出します。
 
-対象:
+対象は次のとおりです。
 
 - ID ↔ ID
 - canonical URL ↔ canonical URL
 - canonical URL ↔ リダイレクト
 - リダイレクト ↔ リダイレクト
 
-例えば:
+例えば、次のようになります。
 
 ```text
 a.md
@@ -874,7 +874,7 @@ riebeckite inspect content --list
 
 Permalink Plugin が有効な場合、記事ごとの ID、ID の出典、permalink を確認できます。
 
-例えば:
+例えば、次のようになります。
 
 ```text
 PATH                 ID            ID SOURCE     PERMALINK

@@ -1,6 +1,6 @@
 # 最初の Theme を変える
 
-Theme は Riebeckite サイトの見た目を決めます — 色、タイポグラフィ、余白、レイアウト。このガイドでは **minimal** テーマに切り替えます。コンテンツファーストで清潔なデザインです。
+Theme は色、タイポグラフィ、余白、レイアウトなど、Riebeckite サイトの見た目を決めます。このガイドでは **minimal** テーマに切り替えます。コンテンツファーストで清潔なデザインです。
 
 > 機能を追加したい場合は [最初の Plugin を追加する](./first-plugin.md) を参照してください。
 
@@ -8,7 +8,7 @@ Theme は Riebeckite サイトの見た目を決めます — 色、タイポグ
 
 ## 1. インストール
 
-生成されたサイトのディレクトリで:
+生成されたサイトのディレクトリで次のコマンドを実行してください。
 
 ```sh
 npm install @riebeckite/theme-minimal
@@ -18,7 +18,7 @@ npm install @riebeckite/theme-minimal
 
 ## 2. インポート
 
-`riebeckite.config.ts` を開き、先頭にインポートを追加:
+`riebeckite.config.ts` を開き、先頭にインポートを追加してください。
 
 ```ts
 import { minimalTheme } from "@riebeckite/theme-minimal";
@@ -28,7 +28,7 @@ import { minimalTheme } from "@riebeckite/theme-minimal";
 
 ## 3. Theme を変更
 
-config の `theme` 行で `defaultTheme()` を `minimalTheme()` に置き換え:
+config の `theme` 行で `defaultTheme()` を `minimalTheme()` に置き換えてください。
 
 ```ts
 theme: minimalTheme(),
@@ -38,7 +38,7 @@ theme: minimalTheme(),
 
 ## 4. Riebeckite を起動
 
-開発サーバーを再起動して新しいテーマを確認:
+開発サーバーを再起動して新しいテーマを確認してください。
 
 ```sh
 npm exec riebeckite dev

@@ -8,7 +8,7 @@ Obsidian の Markdown 記法を Riebeckite で扱うための基盤となる Plu
 npm install @riebeckite/plugin-obsidian-markdown
 ```
 
-Plugin の export 名や設定項目は、実装と package README を正本として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
 
 ## 使用例
 

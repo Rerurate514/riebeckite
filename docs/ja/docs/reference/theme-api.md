@@ -583,7 +583,7 @@ export function newspaperTheme(
 }
 ```
 
-重要なのは、Theme 固有の概念を Core の `ThemeConfig` へ追加しないことです。
+Theme 固有の概念は Core の `ThemeConfig` へ追加しません。
 
 ```text id="1etjdh"
 newspaperTheme の density
@@ -967,7 +967,7 @@ Theme 固有 Option も、その Theme を選択したときだけ意味を持�
 
 # Theme System の基本
 
-Theme System 全体をまとめると、次のようになります。
+Theme System 全体は次のようになります。
 
 ```mermaid id="2hw1zc"
 flowchart LR

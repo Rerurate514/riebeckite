@@ -300,7 +300,7 @@ onManifestCreated
 
 があります。
 
-重要なのは、**必要な段階の Hook だけを使用すること**です。
+**必要な段階の Hook だけを使用します**。
 
 後段ですでに得られる情報を前段で独自に再構築しないでください。
 
@@ -1017,7 +1017,7 @@ Application 固有 Route / Layout
 
 # Plugin 設計の基本
 
-Plugin System 全体をまとめると、次のようになります。
+Plugin System 全体は次のようになります。
 
 ```mermaid
 flowchart LR

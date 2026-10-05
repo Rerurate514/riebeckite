@@ -28,7 +28,7 @@ export default defineConfig({
 
 ## 出力
 
-埋め込み（`![[report.pdf]]`）:
+埋め込みは `![[report.pdf]]` のように書きます。
 
 ```html
 <figure class="rr-pdf" data-pdf-path="..." style="--rr-pdf-height: 640px">

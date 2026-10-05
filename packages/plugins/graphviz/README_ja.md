@@ -67,7 +67,7 @@ digraph {
 | `fallback` | `boolean` | `true` | 元の DOT 記法を `<details>` に残す |
 | `className` | `string` | `"rb-graphviz"` | `<figure>` の基底クラス（子要素は `__canvas` / `__caption` / `__fallback`） |
 
-`render` の値:
+`render` には次の値を指定します。
 
 - `"build"` — ビルド時に描画。不正な図は診断を出し、`data-graphviz="error"` になります
 - `"client"` — ビルド時は描画せず、ブラウザ側でのみ描画します

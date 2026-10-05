@@ -2,7 +2,7 @@
 
 Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type、Markdown ブロック、`navigation` plugin の組み合わせで作ります。
 
-このガイドでは、よくある発見導線 — Featured、最新記事、全記事一覧、Tag、Folder、Series、Archive — のレシピを集め、それぞれが使う Plugin とオプションを対応づけます。どのレシピも公開されている Plugin API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
+このガイドでは、Featured、最新記事、全記事一覧、Tag、Folder、Series、Archive といったよくある発見導線のレシピを集め、それぞれが使う Plugin とオプションを対応づけます。どのレシピも公開されている Plugin API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
 
 ## 覚えておくこと
 

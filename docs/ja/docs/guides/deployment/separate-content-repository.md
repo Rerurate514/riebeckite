@@ -1,4 +1,4 @@
-# 記事とサイトのリポジトリ分離 — 詳細編
+# 記事とサイトのリポジトリ分離（詳細編）
 
 このページでは、Riebeckite で **Content と Site を分離して運用するときの詳しい仕組み**を説明します。
 
@@ -32,7 +32,7 @@ flowchart LR
     Output --> Deploy
 ```
 
-重要なのは、**Content の保存場所と、Riebeckite Application の場所は別にできる**ということです。
+**Content の保存場所と、Riebeckite Application の場所は別にできます**。
 
 ## 1. 外部 Vault が使える仕組み
 
@@ -54,11 +54,7 @@ content: {
 | `configRoot` | `riebeckite.config.ts` がある Directory | 通常は `appRoot` |
 | `contentRoot` | 実際に Content を読む Directory | `path.resolve(appRoot, content.directory)` |
 
-最も重要なのは、
-
-**相対 `content.directory` は `appRoot` を基準に解決される**
-
-という点です。
+**相対 `content.directory` は `appRoot` を基準に解決される**点が最も重要です。
 
 ```mermaid id="qeg4i1"
 flowchart TD
@@ -715,7 +711,7 @@ Classic PAT なら `repo` Scope、GitHub App Token なら `Contents: write` が�
 
 PAT は [GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) から作成し、作成した値をそれぞれの Repository の **Settings → Secrets and variables → Actions** に登録します。
 
-重要なのは、2つの Token の役割を混ぜないことです。
+2つの Token は役割を分けて使います。
 
 ```text id="zhft93"
 RIEBECKITE_CONTENT_READ_TOKEN
@@ -864,7 +860,7 @@ directory: "notes"
 
 です。
 
-重要なのは、どちらも **`appRoot` から Content Root への Path** になっていることです。
+どちらも **`appRoot` から Content Root への Path** です。
 
 可能なら、Local と CI の Layout を揃えておくと設定を単純にできます。
 
@@ -1269,7 +1265,7 @@ publishStrategy / exclude / Asset Copy
 
 を担当します。
 
-特に重要なのは、
+特に、
 
 ```text id="77cb3h"
 Content RepositoryをPrivateにする
@@ -1277,7 +1273,7 @@ Content RepositoryをPrivateにする
 自動的に公開境界が安全になる
 ```
 
-という点です。
+という関係に注意してください。
 
 Private Vault を利用する場合でも、`publishStrategy`、`exclude`、Asset Copy のすべてで Public Boundary を維持してください。
 

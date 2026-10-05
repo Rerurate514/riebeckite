@@ -211,7 +211,7 @@ Plugin はこの lifecycle を利用してコンテンツを拡張します。
 | `permalink` | Site 上の公開 URL | `/blog/hello-world/` |
 | content ID | コンテンツそのものを安定して識別する ID | `article-01` |
 
-特に重要なのは、**slug と公開 URL は同じものではない**という点です。
+特に、**slug と公開 URL は同じものではありません**。
 
 たとえば、
 
@@ -340,7 +340,7 @@ graph LR
     A["Article A"] --> B["Article B"]
 ```
 
-という関係を持つことができます。
+という関係が成り立ちます。
 
 この情報から backlink も扱えます。
 
@@ -388,7 +388,7 @@ queryContentPage
 groupContentEntries
 ```
 
-重要なのは、これらが**ファイルを検索する API ではない**という点です。
+これらは**ファイルを検索する API ではありません**。
 
 ```mermaid id="bf0k8w"
 flowchart LR
@@ -471,7 +471,7 @@ flowchart LR
 
 実際の URL 形式は Plugin や設定によって変わる場合があります。
 
-重要なのは、content root の外にある任意のファイルを公開 URL に変換しないことです。
+content root の外にある任意のファイルを公開 URL に変換しないことが重要です。
 
 Content System の公開境界を通して、安全に公開対象を決定します。
 
@@ -519,7 +519,7 @@ Content System を変更するときは、次の原則を維持してくださ�
 | Runtime は Build 済み index を利用する | Runtime から source filesystem を分離するため |
 | Site Build が最終的な公開状態を決める | Content Repository と Site の責務を分離するため |
 
-全体として重要なのは、
+全体として、
 
 ```mermaid id="gjgygr"
 flowchart LR
@@ -535,7 +535,7 @@ flowchart LR
     Index --> Consumer
 ```
 
-という境界を崩さないことです。
+という境界を崩さないことが重要です。
 
 **Source は読み込み方、ContentManager はコンテンツの解決、Public Location は公開先、Manifest / Graph は解決結果を表します。**
 

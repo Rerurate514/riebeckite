@@ -141,7 +141,7 @@ state が利用できない場合は、その理由も確認できます。
 
 といった状態です。
 
-重要なのは、Inspector がこれらを**修復しない**ことです。
+Inspector はこれらを**修復しません**。
 
 ```mermaid id="25a2uw"
 flowchart TD

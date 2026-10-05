@@ -30,7 +30,12 @@ const repositoryRoot = path.resolve(
   "..",
 );
 
-const ignoredSourceDirectories = new Set(["node_modules", "dist"]);
+const ignoredSourceDirectories = new Set([
+  "node_modules",
+  "dist",
+  "templates",
+  "__golden__",
+]);
 const testDirectoryPattern =
   /(^|[\\/])(test|tests|__tests__|spec|__spec__)([\\/]|$)/;
 

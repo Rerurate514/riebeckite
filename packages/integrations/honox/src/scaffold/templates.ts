@@ -1,15 +1,7 @@
-import fs from "node:fs";
-import { defaultSsrExternals } from "../vite_plugin.js";
 import {
-  appConfig,
-  appContent,
   article,
-  client,
-  globalDeclarations,
   indexRoute,
-  paths,
   renderer,
-  server,
   siteHeader,
   slugRoute,
   style,
@@ -23,6 +15,7 @@ import {
   type ScaffoldPreset,
   type ScaffoldPresetName,
 } from "./presets.js";
+import { copyTemplateTree } from "./template-loader.js";
 import { RIEBECKITE_VERSION } from "./version.js";
 import { WRANGLER_VERSION } from "./wrangler-defaults.js";
 
@@ -55,39 +48,14 @@ export function siteTemplateFiles(
       path: "riebeckite.config.ts",
       content: riebeckiteConfig(preset, variables),
     },
-    { path: "vite.config.ts", content: viteConfig() },
-    { path: "tsconfig.json", content: tsconfig() },
-    { path: ".gitignore", content: gitignore() },
+    ...copyTemplateTree("base"),
     { path: "README.md", content: readme(preset, variables) },
-    { path: "public/favicon.ico", content: readPackageAsset("favicon.ico") },
-    {
-      path: "public/riebeckite-logo.png",
-      content: readPackageAsset("riebeckite-logo.png"),
-    },
     ...localizedContentFiles(variables, preset),
     ...appFiles(preset),
   ];
 }
 
-function readPackageAsset(fileName: string): Uint8Array {
-  const candidates = [
-    new URL(`../../assets/${fileName}`, import.meta.url),
-    new URL(`../../../assets/${fileName}`, import.meta.url),
-    new URL(`../assets/${fileName}`, import.meta.url),
-  ];
-  for (const candidate of candidates) {
-    if (fs.existsSync(candidate)) return fs.readFileSync(candidate);
-  }
-  throw new Error(`Missing Riebeckite scaffold asset: ${fileName}`);
-}
-
 const APP_FILE_LABELS = [
-  "server",
-  "client",
-  "config",
-  "content",
-  "paths",
-  "global",
   "style",
   "renderer",
   "index",
@@ -98,12 +66,6 @@ const APP_FILE_LABELS = [
 
 function appFiles(preset: ScaffoldPreset): readonly SiteTemplateFile[] {
   const builders: Readonly<Record<string, () => string>> = {
-    server: () => server(),
-    client: () => client(),
-    config: () => appConfig(),
-    content: () => appContent(),
-    paths: () => paths(),
-    global: () => globalDeclarations(),
     style: () => style(preset),
     renderer: () => renderer(preset),
     index: () => indexRoute(preset),
@@ -120,24 +82,6 @@ function appFiles(preset: ScaffoldPreset): readonly SiteTemplateFile[] {
   const has = (key: string): boolean => generated.has(key);
   const get = (key: string): string => generated.get(key) as string;
   return [
-    ...(has("server")
-      ? [{ path: "app/server.ts", content: get("server") }]
-      : []),
-    ...(has("client")
-      ? [{ path: "app/client.ts", content: get("client") }]
-      : []),
-    ...(has("config")
-      ? [{ path: "app/config.ts", content: get("config") }]
-      : []),
-    ...(has("content")
-      ? [{ path: "app/content.ts", content: get("content") }]
-      : []),
-    ...(has("paths")
-      ? [{ path: "app/constants/paths.ts", content: get("paths") }]
-      : []),
-    ...(has("global")
-      ? [{ path: "app/global.d.ts", content: get("global") }]
-      : []),
     ...(has("style") ? [{ path: "app/style.css", content: get("style") }] : []),
     ...(has("renderer")
       ? [{ path: "app/routes/_renderer.tsx", content: get("renderer") }]
@@ -304,88 +248,6 @@ function pluginExpression(
   return options === null
     ? `${plugin.factory}()`
     : `${plugin.factory}(${options})`;
-}
-
-function viteConfig(): string {
-  const ssrExternals = [...defaultSsrExternals]
-    .map((name) => `          "${name}",`)
-    .join("\n");
-  return `import path from "node:path";
-import { fileURLToPath } from "node:url";
-import build from "@hono/vite-build/node";
-import {
-  riebeckite,
-  riebeckiteSsg,
-  riebeckiteSsgExtensionMap,
-} from "@riebeckite/honox";
-import honox from "honox/vite";
-import { defineConfig } from "vite";
-
-const appRoot = fileURLToPath(new URL(".", import.meta.url));
-
-export default defineConfig({
-  plugins: [
-    honox({
-      client: { input: ["/app/client.ts", "/app/style.css"] },
-    }),
-    riebeckite({ appRoot }),
-    build(),
-    riebeckiteSsg({
-      entry: path.join(appRoot, "app/server.ts"),
-      extensionMap: riebeckiteSsgExtensionMap(),
-    }),
-  ],
-  environments: {
-    ssr: {
-      resolve: {
-        external: [
-${ssrExternals}
-        ],
-      },
-    },
-  },
-});
-`;
-}
-
-function tsconfig(): string {
-  return `${JSON.stringify(
-    {
-      compilerOptions: {
-        target: "ES2022",
-        module: "ESNext",
-        moduleResolution: "Bundler",
-        lib: ["ES2022", "DOM", "DOM.Iterable"],
-        jsx: "react-jsx",
-        jsxImportSource: "hono/jsx",
-        types: ["node", "vite/client"],
-        strict: true,
-        noEmit: true,
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
-        resolveJsonModule: true,
-        skipLibCheck: true,
-      },
-      include: [
-        "app/**/*.ts",
-        "app/**/*.tsx",
-        "riebeckite.config.ts",
-        "vite.config.ts",
-      ],
-    },
-    null,
-    2,
-  )}\n`;
-}
-
-function gitignore(): string {
-  return [
-    "node_modules/",
-    "dist/",
-    ".riebeckite/",
-    "app/.riebeckite/",
-    "",
-  ].join("\n");
 }
 
 const REPO = "https://github.com/Rerurate514/riebeckite";

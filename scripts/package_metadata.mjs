@@ -537,7 +537,7 @@ export function expectedPackageMetadata(directory) {
   if (directory === "packages/integrations/honox") {
     return {
       ...publishingMetadata(directory, false),
-      files: ["LICENSE", "README.md", "README_ja.md", "assets", "dist"],
+      files: ["LICENSE", "README.md", "README_ja.md", "templates", "dist"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',

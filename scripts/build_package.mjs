@@ -93,6 +93,7 @@ await esbuild.build({
 const ignoredSourceDirectories = new Set([
   "node_modules",
   "dist",
+  "templates",
   "test",
   "tests",
   "__tests__",

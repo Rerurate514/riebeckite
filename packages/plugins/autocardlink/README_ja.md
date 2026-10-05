@@ -8,6 +8,15 @@
 
 `autoCardLinkPlugin()` は、タイトル、説明、ホスト名、favicon、任意の画像を含むリンクカードを生成します。スタイルはパッケージ内の `style.css` に含まれます。
 
+```cardlink
+url: https://example.com/post
+title: "Example post"
+description: "リンク先の短い説明"
+host: example.com
+favicon: https://example.com/favicon.ico
+image: https://example.com/og.png
+```
+
 ## 設定
 
 ```ts
@@ -59,4 +68,3 @@ image: https://example.com/og.png
 ## 関連資料
 
 - [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
-

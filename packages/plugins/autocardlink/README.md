@@ -10,6 +10,15 @@ Render `cardlink` code blocks as link preview cards.
 anchor-style link card (title, description, favicon, host, and an optional
 image). Styles ship in `style.css`.
 
+```cardlink
+url: https://example.com/post
+title: "Example post"
+description: "A short summary of the linked page."
+host: example.com
+favicon: https://example.com/favicon.ico
+image: https://example.com/og.png
+```
+
 ## Usage
 
 ```ts
@@ -69,4 +78,3 @@ noreferrer"`). The preview image and favicon are lazy-loaded and marked
 ## See also
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
-

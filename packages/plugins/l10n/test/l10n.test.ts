@@ -386,7 +386,14 @@ test("strict mode fails location validation for conflicting localization signals
     { "en/README.ja.md": "---\nlang: ja\n---\n# Hello" },
     { strict: true },
   );
-  await assert.rejects(content.getContentLocations(), /L10N_LANGUAGE_CONFLICT/);
+  await assert.rejects(content.getContentLocations(), (error: unknown) => {
+    assert.match(
+      (error as Error).message,
+      /Plugin "l10n" failed during "extendContentLocations"/,
+    );
+    assert.match(causeMessage(error), /L10N_LANGUAGE_CONFLICT/);
+    return true;
+  });
 });
 
 test("strict mode fails location validation for duplicate translations", async () => {
@@ -397,11 +404,20 @@ test("strict mode fails location validation for duplicate translations", async (
     },
     { strict: true },
   );
-  await assert.rejects(
-    content.getContentLocations(),
-    /L10N_DUPLICATE_TRANSLATION/,
-  );
+  await assert.rejects(content.getContentLocations(), (error: unknown) => {
+    assert.match(
+      (error as Error).message,
+      /Plugin "l10n" failed during "extendContentLocations"/,
+    );
+    assert.match(causeMessage(error), /L10N_DUPLICATE_TRANSLATION/);
+    return true;
+  });
 });
+
+function causeMessage(error: unknown): string {
+  const cause = (error as { cause?: unknown }).cause;
+  return cause instanceof Error ? cause.message : String(cause);
+}
 
 test("accepts a custom detector for unsupported conventions", async () => {
   const content = manager(

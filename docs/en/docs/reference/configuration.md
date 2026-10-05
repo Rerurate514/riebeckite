@@ -188,6 +188,55 @@ For the division of responsibility between navigation and plugins, see [Customiz
 
 `content.directory` selects the default filesystem location. Use `content.source` to provide a different `ContentSource`; do not configure two competing readers. `exclude` removes matching material before it becomes content. `filters.publishStrategy` controls the default publishing policy, and frontmatter can override the resolved publishing state.
 
+### Excluding files
+
+`exclude` takes glob patterns matched against logical paths. `*` matches within
+one path segment, `**` matches across segments, and `?` matches one character.
+
+```ts
+content: {
+  directory: "content",
+  exclude: ["drafts/**", "**/private/**", ".obsidian/**"],
+}
+```
+
+Excluded files never enter the content pipeline, so they are unavailable for
+links, graph analysis, and diagnostics. This differs from `draft` and `unlisted`,
+which stay in the content system but are hidden from routes or discovery.
+`exclude` runs before publishing is resolved:
+
+```mermaid
+flowchart LR
+    Files["Files"]
+    Exclude{"exclude ?"}
+    Content["Content"]
+    Publish{"Published ?"}
+    Public["Public Content"]
+    Private["Not Published"]
+
+    Files --> Exclude
+    Exclude -->|Yes| Skip["Not loaded"]
+    Exclude -->|No| Content
+    Content --> Publish
+    Publish -->|Yes| Public
+    Publish -->|No| Private
+```
+
+### ContentSource
+
+`content.directory` selects the default filesystem reader. Set `content.source`
+to replace that reader with another implementation, such as a remote store:
+
+```text
+content.directory  →  default filesystem ContentSource
+
+content.source     →  custom ContentSource
+```
+
+Use one or the other. `content.source` is not a second reader for the same
+content; it stands in for the filesystem reader. The `ContentSource` contract is
+listed in the [Configuration reference](./configuration-reference.md#contentsource).
+
 ### Publishing state
 
 Publishing is resolved once in Core and exposed to plugins as two manifest views:
@@ -444,3 +493,20 @@ The cache stores processed content and plugin results between builds. Disabling 
 Plugins accept plugin inputs, including `false`, `null`, and `undefined` for conditional configuration. Resolution discards disabled/falsy inputs, orders enabled plugins stably, and checks capabilities. Theme input can be a raw theme config or a declared theme. Keep framework-specific configuration at the integration/application boundary.
 
 Configuration errors are reported as `ConfigValidationError`; do not catch and hide them. Run `riebeckite check` after changes. Continue with [Plugin system](plugin-api.md) or [Theme system](theme-api.md) for their option contracts.
+
+## Summary
+
+Configuration keeps the site and its content separate:
+
+```text
+appRoot     = where the site application lives
+
+configRoot  = where riebeckite.config.* lives
+
+contentRoot = where the Markdown or vault lives
+```
+
+Relative `content.directory` values resolve against `appRoot`, never
+`configRoot` or `process.cwd()`. Most sites never need to think about the three
+boundaries. They matter only when you use an external vault, keep content in a
+separate repository, or work in an unusual monorepo layout.

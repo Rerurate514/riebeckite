@@ -659,7 +659,7 @@ flowchart LR
 
 Obsidian の attachment や media も `contentRoot` を基準に扱います。
 
-ここで attachment / media 指的是 **Markdown でも画像でもないファイル**です。Vault 内の画像（png、jpg、svg など）は content image として別の扱いになるため、混同しないよう次の節で分けて説明します。
+ここで attachment / media とは **Markdown でも画像でもないファイル**です。Vault 内の画像（png、jpg、svg など）は content image として別の扱いになるため、混同しないよう次の節で分けて説明します。
 
 たとえば Vault に、
 
@@ -827,7 +827,7 @@ flowchart TD
 
 **必要な asset だけを公開する**ことが重要です。
 
-Content image は build が公開対象を判断します。Attachment と Media の公開範囲は、publish boundary check が導入されるまでは Site Application 側の責務です。
+Content image は build が公開対象を判断します。Attachment と Media をどの範囲で公開するかは Site Application 側の責務です。
 
 ## Build cache
 

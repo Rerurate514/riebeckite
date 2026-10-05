@@ -26,6 +26,7 @@ Reference は最初から順番に読む必要はありません。設定項目�
 | 知りたいこと | ページ |
 | --- | --- |
 | `riebeckite.config.ts` の設定 | [Configuration](./configuration.md) |
+| `riebeckite.config.ts` の全フィールド | [Configuration リファレンス](./configuration-reference.md) |
 | CLI Command とその役割 | [CLI](./cli.md) |
 | Plugin の Public API | [Plugin API](./plugin-api.md) |
 | Theme の Public API | [Theme API](./theme-api.md) |

@@ -13,6 +13,7 @@ Reference is for factual lookup: configuration keys, CLI commands, public export
 | Page | Use it for |
 | --- | --- |
 | [Configuration](./configuration.md) | `riebeckite.config.ts`, roots, content, theme, plugins |
+| [Configuration reference](./configuration-reference.md) | Every `riebeckite.config.ts` field, its type, and its default |
 | [CLI](./cli.md) | `dev`, `check`, `doctor`, `build`, `profile`, `inspect` |
 | [Plugin API](./plugin-api.md) | `definePlugin`, lifecycle hooks, assets, endpoints, diagnostics |
 | [Theme API](./theme-api.md) | `defineTheme`, CSS contract, tokens, color mode, package shape |

@@ -382,13 +382,16 @@ function themeReadmeUrl(slug: string): string {
 }
 
 /**
- * Generates the content pages for a scaffold preset.
+ * Generates the catalog-derived content pages for a scaffold preset.
  *
- * Localized pages (`index`, `framework/plugins`, `framework/themes`) follow the
- * l10n plugin convention: the default-language page keeps the plain name
- * (`index.md`) while every other language uses the `<base>.<lang>.md` suffix.
- * Presets without l10n emit the index in the site's default language only.
- * Extra pages (`guide`, `examples`, `reference/*`) are English-only and are
+ * Authored pages (`index`, `guide`) and static fixtures/assets are real files
+ * under `templates/scaffold/presets/<preset>/content` and are copied by
+ * `presetContentFiles`. This function only builds pages assembled from catalog
+ * data: `framework/plugins`, `framework/themes`, `examples`, and `reference/*`.
+ *
+ * Localized pages follow the l10n plugin convention: the default-language page
+ * keeps the plain name (`framework/plugins.md`) while every other language uses
+ * the `<base>.<lang>.md` suffix. Reference pages are English-only and are
  * suffixed with `.en` when English is not the site's default language.
  */
 export function localizedContentFiles(
@@ -428,11 +431,7 @@ export function localizedContentFiles(
   };
 
   for (const page of preset.contentPages) {
-    if (page === "index") {
-      pushLocalized("index", (language) =>
-        indexContent(variables, preset, language),
-      );
-    } else if (page === "framework/plugins") {
+    if (page === "framework/plugins") {
       pushLocalized("framework/plugins", (language) =>
         pluginsContent(language),
       );
@@ -440,8 +439,6 @@ export function localizedContentFiles(
       pushLocalized("framework/themes", (language) =>
         themesContent(language, preset),
       );
-    } else if (page === "guide") {
-      pushEnglishOnly("guide", () => guideContent(preset));
     } else if (page === "examples") {
       pushLocalized("examples", (language) =>
         examplesContent(preset, language),
@@ -453,13 +450,6 @@ export function localizedContentFiles(
     } else if (page === "reference/themes") {
       pushEnglishOnly("reference/themes", () => referenceThemesContent(preset));
     }
-  }
-
-  if (preset.name === "starter" || preset.name === "showcase") {
-    files.push(...knowledgeFixtureFiles(preset));
-  }
-  if (preset.name === "showcase") {
-    files.push(...showcaseAssetFiles());
   }
 
   return files;
@@ -481,255 +471,6 @@ function heading(level: number, text: string): string {
 
 function codeBlock(language: string, code: string): string {
   return `\`\`\`${language}\n${code}\n\`\`\`\n`;
-}
-
-/** Small connected notes exercise the discovery plugins without duplicating demos. */
-function knowledgeFixtureFiles(
-  preset: ScaffoldPreset,
-): readonly SiteTemplateFile[] {
-  const prefix = preset.name === "showcase" ? "demo" : "notes";
-  return [
-    {
-      path: `content/${prefix}/planning.md`,
-      content: [
-        "---",
-        "title: Planning a Markdown site",
-        "description: A related note used by the generated discovery examples.",
-        "date: 2026-09-30",
-        "tags: [riebeckite, project]",
-        "status: active",
-        "aliases: [/start-here/]",
-        "series: publish-a-site",
-        "series_title: Publish a site",
-        "series_order: 1",
-        "publish: true",
-        "---",
-        "",
-        "# Planning a Markdown site",
-        "",
-        "Start with [[writing]] to see backlinks, related posts, tags, and the series navigation working together.",
-      ].join("\n"),
-    },
-    {
-      path: `content/${prefix}/writing.md`,
-      content: [
-        "---",
-        "title: Writing the first note",
-        "description: A second connected note for search and related-content examples.",
-        "date: 2026-10-01",
-        "tags: [riebeckite, project]",
-        "status: active",
-        "series: publish-a-site",
-        "series_title: Publish a site",
-        "series_order: 2",
-        "publish: true",
-        "---",
-        "",
-        "# Writing the first note",
-        "",
-        "This note links back to [[planning]]. Search for **Markdown site** or browse the generated tags.",
-      ].join("\n"),
-    },
-  ];
-}
-
-/** Text fixtures are intentionally local so a generated showcase has no monorepo dependency. */
-function showcaseAssetFiles(): readonly SiteTemplateFile[] {
-  return [
-    {
-      path: "content/images/demo.svg",
-      content:
-        '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"><rect width="640" height="360" fill="#315b8c"/><text x="320" y="180" fill="white" font-size="32" text-anchor="middle">Riebeckite showcase</text></svg>\n',
-    },
-    {
-      path: "content/attachments/project-brief.pdf",
-      content:
-        "%PDF-1.1\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 0/Kids[]>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n",
-    },
-    {
-      path: "content/drawings/Architecture.excalidraw",
-      content:
-        '{"type":"excalidraw","version":2,"elements":[],"appState":{"viewBackgroundColor":"#ffffff"},"files":{}}\n',
-    },
-    {
-      path: "content/drawings/site.canvas",
-      content:
-        '{"nodes":[{"id":"note","type":"text","text":"Note","x":0,"y":0,"width":200,"height":60}],"edges":[]}\n',
-    },
-  ];
-}
-
-// ----- Index ---------------------------------------------------------------
-
-const INDEX = {
-  lead: {
-    en: "Welcome to your Riebeckite site.",
-    ja: "あなたの Riebeckite サイトへようこそ。",
-    "zh-CN": "欢迎来到你的 Riebeckite 站点。",
-    es: "Bienvenido a tu sitio Riebeckite.",
-    de: "Willkommen auf deiner Riebeckite-Seite.",
-    fr: "Bienvenue sur votre site Riebeckite.",
-    ko: "Riebeckite 사이트에 오신 것을 환영합니다.",
-  },
-  translatedNote: {
-    en: "Every page of this starter is available in seven languages. Switch with the selector below the page title.",
-    ja: "このスターターのすべてのページは 7 言語で利用できます。ページタイトル下のセレクターで切り替えられます。",
-    "zh-CN":
-      "本模板的每个页面均提供七种语言版本，可用页面标题下方的选择器切换。",
-    es: "Cada página de este starter está disponible en siete idiomas. Cámbialos con el selector bajo el título.",
-    de: "Jede Seite dieses Starters ist in sieben Sprachen verfügbar. Wechsel mit dem Auswahlfeld unter dem Seitentitel.",
-    fr: "Chaque page de ce starter est disponible en sept langues. Changez avec le sélecteur sous le titre.",
-    ko: "이 스타터의 모든 페이지는 7개 언어로 제공됩니다. 페이지 제목 아래 선택기로 전환하세요.",
-  },
-  whatHeading: {
-    en: "What is Riebeckite?",
-    ja: "Riebeckite とは",
-    "zh-CN": "什么是 Riebeckite？",
-    es: "¿Qué es Riebeckite?",
-    de: "Was ist Riebeckite?",
-    fr: "Qu'est-ce que Riebeckite ?",
-    ko: "Riebeckite란?",
-  },
-  whatBody: {
-    en: "Riebeckite is an extensible, content-first framework that builds fast static sites from plain Markdown — the same notes you keep in Obsidian. The ecosystem includes 50+ plugins and six themes, and this site demos both.",
-    ja: "Riebeckite は、プレーンな Markdown（Obsidian で管理しているのと同じノート）から高速な静的サイトを生成する、拡張性のあるコンテンツファーストのフレームワークです。エコシステムには 50 以上のプラグインと 6 つのテーマがあり、このサイトはその両方をデモしています。",
-    "zh-CN":
-      "Riebeckite 是一个可扩展、内容优先的框架，可从纯 Markdown（即你在 Obsidian 中保存的笔记）构建快速的静态站点。生态包含 50+ 插件与六个主题，本站点同时演示两者。",
-    es: "Riebeckite es un framework extensible y orientado al contenido que construye sitios estáticos rápidos desde Markdown simple — las mismas notas que guardas en Obsidian. El ecosistema incluye más de 50 plugins y seis temas; este sitio demuestra ambos.",
-    de: "Riebeckite ist ein erweiterbares, inhaltsorientiertes Framework, das schnelle statische Seiten aus einfachem Markdown baut — denselben Notizen, die du in Obsidian führst. Das Ökosystem umfasst 50+ Plugins und sechs Themes; diese Seite demonstriert beides.",
-    fr: "Riebeckite est un framework extensible et centré sur le contenu qui construit des sites statiques rapides à partir de Markdown simple — les mêmes notes que vous gardez dans Obsidian. L'écosystème inclut plus de 50 plugins et six thèmes ; ce site en démontre les deux.",
-    ko: "Riebeckite는 일반 Markdown(Obsidian에서 관리하는 노트)에서 빠른 정적 사이트를 만드는 확장 가능한 콘텐츠 우선 프레임워크입니다. 생태계에는 50개 이상의 플러그인과 6개 테마가 있으며, 이 사이트가 그 두 가지를 보여줍니다.",
-  },
-  exploreHeading: {
-    en: "Explore",
-    ja: "さらに深く",
-    "zh-CN": "继续探索",
-    es: "Explorar",
-    de: "Weiter erkunden",
-    fr: "Explorer",
-    ko: "더 살펴보기",
-  },
-  explorePlugins: {
-    en: "Plugins — representative packages grouped by capability",
-    ja: "プラグイン — 機能別の代表的なパッケージ",
-    "zh-CN": "插件 — 按能力分组的代表性包",
-    es: "Plugins — paquetes representativos por capacidad",
-    de: "Plugins — repräsentative Pakete nach Fähigkeit",
-    fr: "Plugins — paquets représentatifs par capacité",
-    ko: "플러그인 — 기능별 대표 패키지",
-  },
-  exploreThemes: {
-    en: "Themes — built-in design packages and how to switch",
-    ja: "テーマ — 同梱のデザインパッケージと切り替え方",
-    "zh-CN": "主题 — 内置设计包与切换方法",
-    es: "Temas — paquetes de diseño incluidos y cómo cambiar",
-    de: "Themes — mitgelieferte Design-Pakete und wie man wechselt",
-    fr: "Thèmes — paquets de design inclus et comment changer",
-    ko: "테마 — 내장 디자인 패키지와 전환 방법",
-  },
-  editHeading: {
-    en: "Edit this site",
-    ja: "サイトの編集",
-    "zh-CN": "编辑本站点",
-    es: "Editar este sitio",
-    de: "Diese Seite bearbeiten",
-    fr: "Éditer ce site",
-    ko: "사이트 편집",
-  },
-  editLead: {
-    en: "Content lives in `content/` as plain Markdown. Add a file, give it `publish: true` in the frontmatter, and it appears in the built site.",
-    ja: "コンテンツは `content/` にプレーンな Markdown として置きます。ファイルを追加してフロントマターに `publish: true` を書けば、ビルドされたサイトに反映されます。",
-    "zh-CN":
-      "内容以纯 Markdown 存于 `content/`。新建文件并在 frontmatter 中写入 `publish: true`，它就会出现在构建后的站点中。",
-    es: "El contenido vive en `content/` como Markdown simple. Añade un archivo, pon `publish: true` en el frontmatter y aparecerá en el sitio compilado.",
-    de: "Inhalte liegen als einfaches Markdown in `content/`. Füge eine Datei hinzu, setze `publish: true` ins Frontmatter, und sie erscheint in der gebauten Seite.",
-    fr: "Le contenu vit dans `content/` en Markdown simple. Ajoutez un fichier, donnez-lui `publish: true` dans le frontmatter, et il apparaîtra dans le site construit.",
-    ko: "콘텐츠는 `content/`에 일반 Markdown으로 저장됩니다. 파일을 추가하고 프론트매터에 `publish: true`를 쓰면 빌드된 사이트에 나타납니다.",
-  },
-  editL10n: {
-    en: "Localized pages use the `<base>.<lang>.md` convention next to the default file — for example `about.ja.md`. The l10n plugin serves them under `/lang/` paths and links them automatically.",
-    ja: "翻訳ページは既定ファイルの隣に `<base>.<lang>.md` の命名規則で置きます（例：`about.ja.md`）。l10n プラグインが `/lang/` パスの配下で配信し、自動的にリンクします。",
-    "zh-CN":
-      "本地化页面采用默认文件旁的 `<base>.<lang>.md` 命名约定（例如 `about.ja.md`）。l10n 插件会在 `/lang/` 路径下提供服务并自动互链。",
-    es: "Las páginas localizadas usan la convención `<base>.<lang>.md` junto al archivo por defecto (p. ej. `about.ja.md`). El plugin l10n las sirve bajo rutas `/lang/` y las enlaza automáticamente.",
-    de: "Übersetzte Seiten folgen der Konvention `<base>.<lang>.md` neben der Standarddatei (z. B. `about.ja.md`). Das l10n-Plugin liefert sie unter `/lang/`-Pfaden und verlinkt sie automatisch.",
-    fr: "Les pages localisées suivent la convention `<base>.<lang>.md` à côté du fichier par défaut (ex. `about.ja.md`). Le plugin l10n les sert sous des chemins `/lang/` et les relie automatiquement.",
-    ko: "번역 페이지는 기본 파일 옆에 `<base>.<lang>.md` 규칙으로 둡니다(예: `about.ja.md`). l10n 플러그인이 `/lang/` 경로로 서빙하며 자동으로 링크합니다.",
-  },
-  editFileNote: {
-    en: "This page is `content/index.md`. Open that file, change it, and save — the browser updates while you write.",
-    ja: "このページは `content/index.md` です。ファイルを開いて書き換えると、書いている途中でもブラウザの表示が更新されます。",
-    "zh-CN":
-      "这个页面来自 `content/index.md`。打开这个文件修改并保存，浏览器会随你的输入更新。",
-    es: "Esta página viene de `content/index.md`. Abre ese archivo, edítalo y guarda: el navegador se actualiza mientras escribes.",
-    de: "Diese Seite stammt aus `content/index.md`. Öffne die Datei, ändere sie und speichere — der Browser aktualisiert sich beim Schreiben.",
-    fr: "Cette page provient de `content/index.md`. Ouvrez ce fichier, modifiez-le et enregistrez — le navigateur se met à jour pendant que vous écrivez.",
-    ko: "이 페이지는 `content/index.md`에서 만들어집니다. 그 파일을 열어 수정하고 저장하면 글을 쓰는 동안 브라우저가 갱신됩니다.",
-  },
-  linkLine: {
-    en: "Link pages with a WikiLink, for example `[[guide]]`.",
-    ja: "ページ同士は WikiLink でリンクできます（例：`[[guide]]`）。",
-    "zh-CN": "用 WikiLink 连接页面，例如 `[[guide]]`。",
-    es: "Enlaza páginas con un WikiLink, por ejemplo `[[guide]]`.",
-    de: "Verbinde Seiten mit einem WikiLink, zum Beispiel `[[guide]]`.",
-    fr: "Reliez les pages avec un WikiLink, par exemple `[[guide]]`.",
-    ko: "WikiLink로 페이지를 연결하세요. 예: `[[guide]]`.",
-  },
-} satisfies Record<string, LocalizedText>;
-
-function starterIndexContent(
-  title: string,
-  language: ScaffoldLanguage,
-): string {
-  return [
-    frontmatter(),
-    heading(1, title),
-    "",
-    read(INDEX.lead, language),
-    "",
-    read(INDEX.editFileNote, language),
-    "",
-    heading(2, read(INDEX.editHeading, language)),
-    read(INDEX.editLead, language),
-    "",
-    read(INDEX.linkLine, language),
-    "",
-    heading(2, read(INDEX.exploreHeading, language)),
-    "",
-    "- [Getting started](/guide)",
-    "- [[examples]]",
-    "",
-  ].join("\n");
-}
-
-function indexContent(
-  variables: SiteTemplateVariables,
-  preset: ScaffoldPreset,
-  language: ScaffoldLanguage,
-): string {
-  const title = variables.title;
-  if (preset.name === "starter") return starterIndexContent(title, language);
-  return [
-    frontmatter(),
-    heading(1, title),
-    read(INDEX.lead, language),
-    read(INDEX.translatedNote, language),
-    heading(2, read(INDEX.whatHeading, language)),
-    read(INDEX.whatBody, language),
-    ...(preset.name === "showcase"
-      ? [
-          heading(2, read(INDEX.exploreHeading, language)),
-          `- [${read(INDEX.explorePlugins, language)}](/framework/plugins)`,
-          `- [${read(INDEX.exploreThemes, language)}](/framework/themes)`,
-          "- [Working examples](/examples/)",
-          "- [Plugin reference](/reference/plugins/)",
-        ]
-      : []),
-    heading(2, read(INDEX.editHeading, language)),
-    read(INDEX.editLead, language),
-    read(INDEX.editL10n, language),
-    "",
-  ].join("\n");
 }
 
 // ----- Themes --------------------------------------------------------------
@@ -1605,113 +1346,6 @@ function pluginsContent(language: ScaffoldLanguage): string {
 
 // ----- English-only extra pages --------------------------------------------
 
-function starterGuideContent(): string {
-  return [
-    frontmatter(),
-    heading(1, "Getting started"),
-    "",
-    "This site was generated from a Riebeckite scaffold preset.",
-    "Everything below lives in this repository, ready to edit.",
-    "",
-    heading(2, "Run the site"),
-    "",
-    codeBlock("sh", ["npm install", "npm exec riebeckite dev"].join("\n")),
-    "",
-    "Open the URL printed in the terminal. The page reloads every time",
-    "you save a Markdown file.",
-    "",
-    heading(2, "Add a page"),
-    "",
-    "Create `content/hello.md`:",
-    "",
-    codeBlock(
-      "md",
-      [
-        "---",
-        "publish: true",
-        "---",
-        "",
-        "# Hello",
-        "",
-        "This is my second page.",
-      ].join("\n"),
-    ),
-    "",
-    "The dev server serves it at `/hello`.",
-    "",
-    heading(2, "Link the pages"),
-    "",
-    "Write `[[hello]]` anywhere and it becomes a link to that page.",
-    "",
-    heading(2, "Translate a page"),
-    "",
-    "Copy a file next to the original with the language suffix, for",
-    "example `hello.ja.md`. The language switcher picks it up.",
-    "",
-    heading(2, "Build"),
-    "",
-    codeBlock("sh", "npm exec riebeckite build"),
-    "",
-    "The static site is written to `dist/`.",
-    "",
-    heading(2, "Extend"),
-    "",
-    "Plugins and themes are registered in `riebeckite.config.ts`.",
-    "Install a package, import its factory, and add it to the `plugins`",
-    "array, or point `theme` at a new theme factory.",
-    "",
-  ].join("\n");
-}
-
-function guideContent(preset: ScaffoldPreset): string {
-  if (preset.name !== "showcase") return starterGuideContent();
-  return [
-    frontmatter(),
-    heading(1, "Getting started"),
-    "",
-    "This site was generated from a Riebeckite scaffold preset. Everything",
-    "you see lives in this repository, ready to edit.",
-    "",
-    heading(2, "Add a page"),
-    "",
-    "Drop a Markdown file into `content/` with `publish: true` in its",
-    "frontmatter and it appears in the built site:",
-    "",
-    codeBlock(
-      "md",
-      ["---", "publish: true", "---", "", "# Hello", "", "Body text..."].join(
-        "\n",
-      ),
-    ),
-    "",
-    heading(2, "Run the site"),
-    "",
-    codeBlock(
-      "sh",
-      [
-        "npm install",
-        "npm exec riebeckite dev",
-        "npm exec riebeckite build",
-      ].join("\n"),
-    ),
-    "",
-    heading(2, "Localize a page"),
-    "",
-    "Add a translated file next to the default one using the",
-    "`<base>.<lang>.md` convention (`about.ja.md`, `about.en.md`). With the",
-    "l10n plugin enabled, translations are served under `/lang/` paths and",
-    "linked by the language switcher.",
-    "",
-    heading(2, "Extend"),
-    "",
-    "Plugins and themes are registered in `riebeckite.config.ts`. Install a",
-    "package, import its factory, and add it to the `plugins` array or point",
-    "`theme` at a new theme factory.",
-    "",
-  ].join("\n");
-}
-
-/** A short two-language label falling back to English for other languages. */
 type SummaryText = { readonly en: string; readonly ja?: string };
 
 function readSummary(text: SummaryText, language: ScaffoldLanguage): string {

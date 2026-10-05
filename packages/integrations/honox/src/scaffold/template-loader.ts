@@ -65,25 +65,31 @@ function collectFiles(directory: string): string[] {
 export function copyTemplateTree(
   relativeDirectory: string,
   replacements: Readonly<Record<string, string>> = {},
+  include: (relativePath: string) => boolean = () => true,
 ): SiteTemplateFile[] {
   const root = path.join(resolveTemplateRoot(), relativeDirectory);
+  if (!fs.existsSync(root)) {
+    return [];
+  }
 
-  return collectFiles(root).map((filePath) => {
-    const relativePath = path
-      .relative(root, filePath)
-      .split(path.sep)
-      .join("/");
-    const contents = fs.readFileSync(filePath);
+  return collectFiles(root)
+    .map((filePath) => {
+      const relativePath = path
+        .relative(root, filePath)
+        .split(path.sep)
+        .join("/");
+      const contents = fs.readFileSync(filePath);
 
-    if (!isTextFile(relativePath)) {
-      return { path: relativePath, content: contents };
-    }
+      if (!isTextFile(relativePath)) {
+        return { path: relativePath, content: contents };
+      }
 
-    let text = contents.toString("utf8");
-    for (const [from, to] of Object.entries(replacements)) {
-      text = text.split(from).join(to);
-    }
+      let text = contents.toString("utf8");
+      for (const [from, to] of Object.entries(replacements)) {
+        text = text.split(from).join(to);
+      }
 
-    return { path: relativePath, content: text };
-  });
+      return { path: relativePath, content: text };
+    })
+    .filter((file) => include(file.path));
 }

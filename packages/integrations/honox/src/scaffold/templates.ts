@@ -1,6 +1,8 @@
 import { localizedContentFiles } from "./localized-content.js";
 import {
   defaultLanguageForLocale,
+  SCAFFOLD_LANGUAGES,
+  type ScaffoldLanguage,
   type ScaffoldOptionContext,
   type ScaffoldOptions,
   type ScaffoldOptionValue,
@@ -41,10 +43,42 @@ export function siteTemplateFiles(
       content: riebeckiteConfig(preset, variables),
     },
     ...copyTemplateTree("base"),
+    ...copyTemplateTree(
+      `presets/${preset.name}`,
+      {},
+      (filePath) => !filePath.startsWith("content/"),
+    ),
+    ...presetContentFiles(preset, variables),
     { path: "README.md", content: readme(preset, variables) },
     ...localizedContentFiles(variables, preset),
-    ...copyTemplateTree(`presets/${preset.name}`),
   ];
+}
+
+const CONTENT_LANGUAGE_PATTERN = /^(.*)\.([a-z]{2}(?:-[A-Z]{2})?)\.md$/;
+
+function presetContentFiles(
+  preset: ScaffoldPreset,
+  variables: SiteTemplateVariables,
+): readonly SiteTemplateFile[] {
+  const defaultLanguage = defaultLanguageForLocale(variables.locale);
+
+  return copyTemplateTree(`presets/${preset.name}/content`).map((file) => {
+    const match = CONTENT_LANGUAGE_PATTERN.exec(file.path);
+    let relativePath = file.path;
+
+    if (match && SCAFFOLD_LANGUAGES.includes(match[2] as ScaffoldLanguage)) {
+      const [, base, language] = match;
+      relativePath =
+        language === defaultLanguage ? `${base}.md` : `${base}.${language}.md`;
+    }
+
+    const content =
+      typeof file.content === "string"
+        ? file.content.split("{{title}}").join(variables.title)
+        : file.content;
+
+    return { path: `content/${relativePath}`, content };
+  });
 }
 
 function packageJson(

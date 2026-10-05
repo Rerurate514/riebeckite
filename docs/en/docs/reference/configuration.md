@@ -1,6 +1,6 @@
 # Configuration
 
-Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, and `plugins`.
+Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, `plugins`, and `cache`.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -427,6 +427,17 @@ Use the results in this order:
 If `riebeckite.config.ts` intentionally lives outside the Vite application,
 pass `configRoot` to `riebeckiteVite()`. Keep `appRoot` set to the site root and
 keep relative `content.directory` values relative to that root.
+
+## Build cache
+
+`cache` controls the persistent cache used during builds. It is optional; the integration supplies a suitable directory by default.
+
+| Field | Default | Meaning |
+| --- | --- | --- |
+| `cache.enabled` | `true` | Set to `false` to disable the persistent cache and rebuild everything. |
+| `cache.directory` | `<buildDirectory>/cache` | Overrides where cache entries are stored. Set it to relocate or share the cache; an unset value keeps the integration default. |
+
+The cache stores processed content and plugin results between builds. Disabling it or moving its directory only affects build performance, not the output; a cold build produces the same result.
 
 ## Plugins and themes
 

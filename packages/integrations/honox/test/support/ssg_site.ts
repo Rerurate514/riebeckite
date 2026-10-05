@@ -282,9 +282,6 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
   }
   lines.push(
     "export default defineConfig({",
-    ...(sources.buildDirectory
-      ? [`  buildDirectory: ${JSON.stringify(sources.buildDirectory)},`]
-      : []),
     `  site: { title: ${JSON.stringify(sources.title)} },`,
     "  content: {",
     `    directory: ${JSON.stringify(path.join(siteRoot, "vault"))},`,

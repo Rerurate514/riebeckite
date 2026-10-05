@@ -497,6 +497,11 @@
   border: 1px solid var(--rb-color-border);
   border-left: 3px solid var(--rb-color-accent);
   border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rr-code:not([data-terminal="true"]),
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rr-code-tabs {
   background: var(--rb-color-code-background);
 }
 
@@ -507,7 +512,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--rb-color-ink);
+  color: var(--rr-code-ink, var(--rb-color-ink));
   font-family: var(--rb-font-mono);
 }
 

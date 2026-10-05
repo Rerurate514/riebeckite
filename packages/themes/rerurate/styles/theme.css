@@ -672,7 +672,16 @@
   .rr-code:not([data-terminal="true"]) {
   --rr-code-paper: #1c1a17;
   --rr-code-ink: #f6efe2;
-  --rr-code-syntax: var(--shiki-dark, inherit);
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rr-code:not([data-terminal="true"])
+  .rr-code__code,
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rr-code:not([data-terminal="true"])
+  .rr-code__code
+  span {
+  color: var(--shiki-dark, inherit);
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"]

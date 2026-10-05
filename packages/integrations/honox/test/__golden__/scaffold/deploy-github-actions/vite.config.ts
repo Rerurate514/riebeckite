@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/node";
 import {
+  defaultSsrExternals,
   riebeckite,
   riebeckiteSsg,
   riebeckiteSsgExtensionMap,
@@ -26,16 +27,7 @@ export default defineConfig({
   environments: {
     ssr: {
       resolve: {
-        external: [
-          "extend",
-          "debug",
-          "node:fs/promises",
-          "node:path",
-          "parse-numeric-range",
-          "slugify",
-          "vfile-matter",
-          "yaml",
-        ],
+        external: [...defaultSsrExternals],
       },
     },
   },

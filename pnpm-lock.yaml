@@ -565,6 +565,10 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/changelog:
     dependencies:
@@ -677,6 +681,10 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/deploy:
     dependencies:
@@ -881,6 +889,10 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/l10n:
     dependencies:

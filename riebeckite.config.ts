@@ -64,8 +64,8 @@ export default defineConfig({
   site: {
     title: "Riebeckite Documentation",
     description: "Official documentation for the Riebeckite framework",
-    author: "Riebeckite Maintainers",
-    baseUrl: "https://docs.riebeckite.dev",
+    author: "Riebeckite Maintainers: Rerurate_514",
+    baseUrl: "https://riebeckite.dev",
     locale: "ja_JP",
     defaultOgImage: "/ogp.png",
     feed: {

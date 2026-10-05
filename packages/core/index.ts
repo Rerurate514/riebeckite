@@ -190,6 +190,10 @@ export {
   createPluginMemo,
   stableStringify,
 } from "./src/plugin/plugin_memo.js";
+export {
+  resolveBuildOutputDirectory,
+  resolveManagedStateRoot,
+} from "./src/project/project_layout.js";
 export type {
   ConfigValidationIssue,
   PluginOptionsValidator,

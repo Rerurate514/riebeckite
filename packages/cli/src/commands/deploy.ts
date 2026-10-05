@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { resolveBuildOutputDirectory } from "@riebeckite/core";
 import {
   buildDefaultWranglerConfig,
   workerNameFromDirectory,
@@ -56,7 +57,10 @@ export async function runDeploy(
 ): Promise<void> {
   const deployRoot = resolveDeployRoot(project);
   const configPath = await ensureWranglerConfig(deployRoot);
-  await assertBuildOutput(deployRoot);
+  await assertBuildOutput(
+    resolveBuildOutputDirectory(project.config) ??
+      path.join(deployRoot, "dist"),
+  );
   const wranglerEntry = await resolveWranglerEntry(deployRoot);
   if (!options.dryRun) {
     await ensureAuthenticated(wranglerEntry, deployRoot);
@@ -96,17 +100,16 @@ async function ensureWranglerConfig(root: string): Promise<string> {
   return configPath;
 }
 
-async function assertBuildOutput(root: string): Promise<void> {
-  const distDirectory = path.join(root, "dist");
+async function assertBuildOutput(outputDirectory: string): Promise<void> {
   let isDirectory = false;
   try {
-    isDirectory = (await fs.stat(distDirectory)).isDirectory();
+    isDirectory = (await fs.stat(outputDirectory)).isDirectory();
   } catch {
     isDirectory = false;
   }
   if (!isDirectory) {
     throw new MissingBuildOutputError(
-      `Could not find the build output at ${distDirectory}.`,
+      `Could not find the build output at ${outputDirectory}.`,
     );
   }
 }

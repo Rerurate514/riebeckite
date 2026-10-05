@@ -19,6 +19,7 @@ riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
+riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
 
@@ -38,6 +39,7 @@ riebeckite inspect build
 | `check` | 設定が正しいか検証する | 変更しない |
 | `doctor` | Project 全体の問題を診断する | 変更しない |
 | `build` | Site を Build する | 成功時のみ更新 |
+| `clean` | Riebeckite が管理する状態を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | 変更しない |
 | `deploy` | 生成物を Cloudflare Workers へ公開する。`--dry-run` は検証のみ、`setup` は GitHub Actions の継続デプロイを準備する、`domain` は Custom Domain を設定する | 変更しない |
 | `profile` | Build の性能を調査する | Build に依存 |
 | `inspect` | 現在の解決結果を見る | 変更しない |
@@ -55,6 +57,7 @@ flowchart TD
     Q -->|"設定が正しいか確認したい"| Check["check"]
     Q -->|"問題の原因を調べたい"| Doctor["doctor"]
     Q -->|"Siteを生成したい"| Build["build"]
+    Q -->|"生成物を消したい"| Clean["clean"]
     Q -->|"公開したい"| Deploy["deploy"]
     Q -->|"Buildが遅い"| Profile["profile"]
     Q -->|"現在の状態を見たい"| Inspect["inspect"]
@@ -332,6 +335,41 @@ Build の再現確認や incremental behavior の問題を切り分ける場合�
 
 詳しくは [Build System](../framework/build-system.md) を参照してください。
 
+## `clean`
+
+Riebeckite が生成・管理する再生成可能な状態を削除します。
+
+```sh id="cln001"
+npm exec riebeckite clean
+```
+
+option を指定しない場合は、application directory 配下の managed state root（`.riebeckite/`）を削除します。ここには Build State、Plugin Cache、persistent content cache、SSG output cache が含まれます。
+
+Build 出力だけを削除する場合は、
+
+```sh id="cln002"
+npm exec -- riebeckite clean --output
+```
+
+managed state と Build 出力の両方を削除する場合は、
+
+```sh id="cln003"
+npm exec -- riebeckite clean --all
+```
+
+を使用します。
+
+削除対象の配置は解決済みの Configuration から取得するため、Build 出力の場所を hard-code しません。対象が存在しない場合もエラーにせず、再実行しても成功します。Content、Config、Theme / Plugin の source、`public/` の asset、Git の metadata は削除しません。application root の外を指す path は削除せず、symlink / junction は link 先を辿らずに link 自体だけを削除します。`app/.riebeckite/` の generated source は、次の `dev` や `build` で再生成されるため残します。
+
+incremental state や persistent cache、以前の Build 出力に依存せずに Site を再現したい場合は、cold build として
+
+```sh id="cln004"
+npm exec -- riebeckite clean --all
+npm exec riebeckite build
+```
+
+を実行します。Build が遅い、または incremental reuse が疑わしいときの切り分けにも利用できます。既定の配置ではこれらの cache は `.riebeckite/` 配下にあります。別の場所に cache directory を設定している場合、その場所は `clean` の削除対象に含まれません。
+
 ## `deploy`
 
 Build 済みの生成物を Cloudflare Workers へ公開します。
@@ -533,7 +571,7 @@ flowchart TD
 
 迷った場合は、
 
-**作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、公開するなら `deploy`、速度を調べるなら `profile`**
+**作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、公開するなら `deploy`、速度を調べるなら `profile`、状態を消すなら `clean`**
 
 と覚えておくと、各 command の役割を区別しやすくなります。
 

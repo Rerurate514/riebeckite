@@ -114,8 +114,9 @@ tab.
 
 ## Limitations
 
-- Derivation targets single-language vaults. In a localized vault, author
-  `items` so the language prefix is explicit.
+- Derivation follows the rendered language when the `l10n` plugin writes
+  language metadata, so a localized vault's navigation never mixes languages.
+  In a vault without localization metadata, every discoverable entry is used.
 - Ordering is alphabetical by title. Frontmatter ordering is not read.
 - There is no `exclude`/`include`/`order` option yet; add one only when a real
   site needs it.

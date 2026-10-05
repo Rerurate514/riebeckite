@@ -450,6 +450,13 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
+    devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/integrations/webmention-cloudflare:
     dependencies:

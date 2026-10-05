@@ -1,3 +1,4 @@
+import { getEntryLanguage } from "@riebeckite/core";
 import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
 import { DailyNotes, getDailyNotes } from "@riebeckite/plugin-daily-notes";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -53,7 +54,7 @@ export default createRoute(async (c) => {
   const tableOfContents = extractTableOfContents(post.html ?? "");
   c.set("seo", buildIndexSeo(post, indexEntry.headTags));
   c.set("headTags", indexEntry.headTags ?? []);
-  c.set("htmlLanguage", indexEntry.publicLocation.metadata?.["l10n.lang"]);
+  c.set("htmlLanguage", getEntryLanguage(indexEntry));
 
   return c.render(
     <Article

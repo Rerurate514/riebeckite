@@ -5,6 +5,8 @@ import {
   type ContentManifestEntry,
   createStyleAsset,
   definePlugin,
+  getEntryLanguage,
+  selectEntriesByLanguage,
 } from "@riebeckite/core";
 import {
   buildDocsNavigation,
@@ -42,8 +44,9 @@ export function docs(options: DocsOptions) {
     onManifestCreated: ({ manifest }) => {
       const entries = getPublishedEntries(manifest);
       for (const entry of entries) {
-        const localizedEntries = entries.filter((candidate) =>
-          sameLanguage(entry, candidate),
+        const localizedEntries = selectEntriesByLanguage(
+          entries,
+          getEntryLanguage(entry),
         );
         const navigation = buildDocsNavigation(localizedEntries, resolved);
         const sequence = flattenDocsNavigation(navigation);
@@ -64,7 +67,7 @@ export function docs(options: DocsOptions) {
           renderDocsPrevNext(
             sequence,
             entry.permalink,
-            entry.publicLocation.metadata?.["l10n.lang"],
+            getEntryLanguage(entry),
           ),
         );
       }
@@ -78,17 +81,6 @@ function getPublishedEntries(
   manifest: ContentManifest,
 ): readonly ContentManifestEntry[] {
   return manifest.discoverableEntries;
-}
-
-function sameLanguage(
-  current: ContentManifestEntry,
-  candidate: ContentManifestEntry,
-): boolean {
-  const currentLanguage = current.publicLocation.metadata?.["l10n.lang"];
-  const candidateLanguage = candidate.publicLocation.metadata?.["l10n.lang"];
-  return currentLanguage
-    ? candidateLanguage === currentLanguage
-    : candidateLanguage === undefined;
 }
 
 function validateDocsOptions(

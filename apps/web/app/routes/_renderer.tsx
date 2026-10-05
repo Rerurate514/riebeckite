@@ -29,6 +29,7 @@ export default jsxRenderer(async ({ children }, c) => {
   const navigation = resolveSiteNavigation(
     config,
     await content.getManifest(),
+    c.get("htmlLanguage"),
   ) ?? {
     primary: [],
     secondary: [],

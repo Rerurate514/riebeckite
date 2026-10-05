@@ -4,6 +4,13 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import {
+  createLogger,
+  type PackageSpec,
+  type PackedPackages,
+  packPackages,
+  writeFileDependencies,
+} from "@riebeckite/test/e2e";
 import { build as buildWithEsbuild } from "esbuild";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import { SCAFFOLD_PRESET_NAMES } from "../src/scaffold/presets.js";
@@ -86,6 +93,119 @@ async function dirExists(root: string, relativePath: string): Promise<boolean> {
   }
 }
 
+const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..", "..");
+
+interface GeneratedManifest {
+  name?: string;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
+async function readGeneratedManifest(
+  siteDir: string,
+): Promise<GeneratedManifest> {
+  return JSON.parse(
+    await fs.readFile(path.join(siteDir, "package.json"), "utf8"),
+  ) as GeneratedManifest;
+}
+
+async function findWorkspacePackages(): Promise<Map<string, string>> {
+  const packages = new Map<string, string>();
+  const walk = async (relative: string): Promise<void> => {
+    const absolute = path.join(REPO_ROOT, relative);
+    const entries = await fs.readdir(absolute, { withFileTypes: true });
+    if (
+      entries.some((entry) => entry.isFile() && entry.name === "package.json")
+    ) {
+      const manifest = JSON.parse(
+        await fs.readFile(path.join(absolute, "package.json"), "utf8"),
+      ) as GeneratedManifest;
+      if (manifest.name) packages.set(manifest.name, relative);
+      return;
+    }
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (entry.name === "node_modules" || entry.name.startsWith(".")) continue;
+      await walk(path.join(relative, entry.name));
+    }
+  };
+  await walk("packages");
+  return packages;
+}
+
+async function collectStarterClosure(
+  siteDir: string,
+): Promise<readonly PackageSpec[]> {
+  const nameToDirectory = await findWorkspacePackages();
+  const siteManifest = await readGeneratedManifest(siteDir);
+  const seeds = [
+    ...Object.keys(siteManifest.dependencies ?? {}),
+    ...Object.keys(siteManifest.devDependencies ?? {}),
+  ].filter((name) => name.startsWith("@riebeckite/"));
+  const seen = new Set<string>();
+  const specs: PackageSpec[] = [];
+  while (seeds.length > 0) {
+    const name = seeds.shift();
+    if (name === undefined || seen.has(name)) continue;
+    seen.add(name);
+    const directory = nameToDirectory.get(name);
+    assert.ok(directory, `workspace package ${name} must exist`);
+    specs.push({ name, directory });
+    const manifest = JSON.parse(
+      await fs.readFile(
+        path.join(REPO_ROOT, directory, "package.json"),
+        "utf8",
+      ),
+    ) as GeneratedManifest;
+    for (const dependency of Object.keys(manifest.dependencies ?? {})) {
+      if (dependency.startsWith("@riebeckite/") && !seen.has(dependency)) {
+        seeds.push(dependency);
+      }
+    }
+  }
+  return specs;
+}
+
+let packedWorkspacePromise: Promise<PackedPackages> | undefined;
+
+async function packStarterWorkspace(siteDir: string): Promise<PackedPackages> {
+  const tarballDir = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-scaffold-packs-"),
+  );
+  const packages = await collectStarterClosure(siteDir);
+  return packPackages(tarballDir, {
+    repoRoot: REPO_ROOT,
+    packages,
+    concurrency: 1,
+    logger: createLogger("scaffold-contract"),
+  });
+}
+
+async function assertRegistryArtifacts(siteDir: string): Promise<void> {
+  const manifest = await readGeneratedManifest(siteDir);
+  const declared: Record<string, string> = {
+    ...manifest.dependencies,
+    ...manifest.devDependencies,
+  };
+  const { execSync } = await import("node:child_process");
+  for (const [name, range] of Object.entries(declared)) {
+    if (!name.startsWith("@riebeckite/")) continue;
+    execSync(`npm view ${name}@${range} version`, {
+      cwd: siteDir,
+      stdio: "pipe",
+    });
+  }
+}
+
+async function prepareGeneratedSiteInstall(siteDir: string): Promise<void> {
+  if (process.env.RIEBECKITE_REGISTRY_E2E === "1") {
+    await assertRegistryArtifacts(siteDir);
+    return;
+  }
+  packedWorkspacePromise ??= packStarterWorkspace(siteDir);
+  writeFileDependencies(siteDir, await packedWorkspacePromise);
+}
+
 // =============================================================================
 // CONTRACT 1: Scaffold can actually build
 // =============================================================================
@@ -108,6 +228,7 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
 
     // Run npm install
     const { execSync } = await import("node:child_process");
+    await prepareGeneratedSiteInstall(targetDir);
     execSync("npm install", { cwd: targetDir, stdio: "pipe" });
 
     // Verify lockfile was created
@@ -374,6 +495,7 @@ test("Contract 4: documented npm exec commands properly forward flags to Riebeck
     const { execSync } = await import("node:child_process");
 
     // Install dependencies first
+    await prepareGeneratedSiteInstall(targetDir);
     execSync("npm install", { cwd: targetDir, stdio: "pipe" });
 
     // Test that --list flag reaches Riebeckite CLI (not consumed by npm)
@@ -611,6 +733,7 @@ test("Contract 8: first content page builds to expected output path", async () =
     const { execSync } = await import("node:child_process");
 
     // Install and build
+    await prepareGeneratedSiteInstall(targetDir);
     execSync("npm install", { cwd: targetDir, stdio: "pipe" });
 
     // Create the first-post.md as documented in Getting Started
@@ -658,6 +781,7 @@ test("Contract 9: frontmatter title is metadata, not visible heading", async () 
 
     const { execSync } = await import("node:child_process");
 
+    await prepareGeneratedSiteInstall(targetDir);
     execSync("npm install", { cwd: targetDir, stdio: "pipe" });
 
     // Create article with frontmatter title but NO body heading
@@ -778,6 +902,55 @@ test("Contract 11: every preset's generated sources compile", async () => {
         logLevel: "silent",
       });
     }
+  });
+});
+
+// =============================================================================
+// CONTRACT 12: generated routes supply the current content language
+// =============================================================================
+
+test("Contract 12: generated routes derive htmlLanguage from the content entry", async () => {
+  await withTemporaryDirectory(async (tmpDir) => {
+    const targetDir = path.join(tmpDir, "test-site");
+    await generateStarterSite(targetDir);
+
+    const indexRoute = await readFile(targetDir, "app/routes/index.tsx");
+    assert.ok(
+      indexRoute?.includes(
+        'import { getEntryLanguage } from "@riebeckite/core";',
+      ),
+      "index route must import getEntryLanguage",
+    );
+    assert.ok(
+      indexRoute?.includes(
+        'c.set("htmlLanguage", getEntryLanguage(indexEntry));',
+      ),
+      "index route must derive htmlLanguage from the content entry",
+    );
+
+    const slugRoute = await readFile(targetDir, "app/routes/[slug{.+}].tsx");
+    assert.ok(
+      slugRoute?.includes(
+        'import { getEntryLanguage } from "@riebeckite/core";',
+      ),
+      "slug route must import getEntryLanguage",
+    );
+    assert.ok(
+      slugRoute?.includes(
+        'c.set("htmlLanguage", getEntryLanguage(route.entry));',
+      ),
+      "slug route must derive htmlLanguage from the content entry",
+    );
+
+    const slugSource = slugRoute ?? "";
+    const pageBranch = slugSource.slice(
+      slugSource.indexOf('if (route.kind === "page")'),
+      slugSource.indexOf("const post ="),
+    );
+    assert.ok(
+      !pageBranch.includes("htmlLanguage"),
+      "plugin page routes have no content language and must fall back to unfiltered navigation",
+    );
   });
 });
 

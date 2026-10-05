@@ -595,7 +595,7 @@ export const __importing_islands = true;
 
 export default jsxRenderer(async ({ children }, c) => {
   const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
-${hasHeader ? `  const navigation = resolveSiteNavigation(config, await content.getManifest()) ?? { primary: [], secondary: [] };\n` : ""}
+${hasHeader ? `  const navigation = resolveSiteNavigation(config, await content.getManifest(), c.get("htmlLanguage")) ?? { primary: [], secondary: [] };\n` : ""}
   return (
     <html
       lang={c.get("htmlLanguage") ?? config.site.locale}
@@ -674,6 +674,7 @@ export function indexRoute(preset: ScaffoldPreset): string {
   const needsConfig = hasRecentPosts || hasDailyNotes;
 
   const importLines: string[] = [
+    'import { getEntryLanguage } from "@riebeckite/core";',
     'import { createRoute } from "honox/factory";',
   ];
   if (hasDailyNotes) {
@@ -739,7 +740,7 @@ export default createRoute(async (c) => {
   }
 ${dataBlock}
   if (indexEntry) {
-    c.set("htmlLanguage", indexEntry.publicLocation.metadata?.["l10n.lang"]);
+    c.set("htmlLanguage", getEntryLanguage(indexEntry));
     c.set("headTags", indexEntry.headTags ?? []);
   }
 
@@ -770,6 +771,7 @@ export default createRoute((c) =>
 export function slugRoute(preset: ScaffoldPreset): string {
   const hasToc = hasScaffoldPlugin(preset, "@riebeckite/plugin-toc");
   const importLines: string[] = [
+    'import { getEntryLanguage } from "@riebeckite/core";',
     "import {",
     "  contentRouteSsgParams,",
     "  pluginPageSsgParams,",
@@ -828,7 +830,7 @@ export default createRoute(
 
     const post = await content.getProcessedContent(route.entry.slug);
 ${dataBlock}
-    c.set("htmlLanguage", route.entry.publicLocation.metadata?.["l10n.lang"]);
+    c.set("htmlLanguage", getEntryLanguage(route.entry));
     c.set("headTags", route.entry.headTags ?? []);
 
     return c.render(

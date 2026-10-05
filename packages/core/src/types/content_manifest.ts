@@ -99,6 +99,7 @@ export type ContentRedirect = {
 export type ContentPublicLocation = {
   slug: string;
   permalink: string;
+  language?: string;
   redirects?: readonly ContentRedirect[];
   metadata?: Readonly<Record<string, string>>;
 };

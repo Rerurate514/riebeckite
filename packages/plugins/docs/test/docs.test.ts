@@ -48,7 +48,7 @@ const localizedLocationPlugin = definePlugin({
       return {
         slug: entry.slug,
         permalink: `/${entry.slug}`,
-        metadata: { "l10n.lang": language },
+        language,
       };
     }),
 });

@@ -114,8 +114,9 @@ navigation({
 
 ## 制約
 
-- 導出は単一言語の Vault を対象とします。多言語 Vault では言語プレフィックスを
-  明示するため `items` を書いてください。
+- `l10n` Plugin が言語 metadata を付与している場合、導出は表示中の言語に追従し、
+  多言語 Vault の Navigation が言語を混在させることはありません。localization
+  metadata のない Vault では、discoverable な全 entry を使います。
 - 並び順はタイトルのアルファベット順です。frontmatter の順序は読みません。
 - `exclude` / `include` / `order` はまだありません。実際のサイトが必要とした
   ときにだけ追加します。

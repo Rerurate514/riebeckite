@@ -417,6 +417,7 @@ body
 title
 description
 headTags
+language
 ```
 
 などです。
@@ -431,11 +432,13 @@ flowchart LR
     Plugin --> Title["title"]
     Plugin --> Description["description"]
     Plugin --> Head["headTags"]
+    Plugin --> Language["language"]
 
     Body --> Site["Site Application"]
     Title --> Site
     Description --> Site
     Head --> Site
+    Language --> Site
 
     Site --> Document["Final Document"]
 ```

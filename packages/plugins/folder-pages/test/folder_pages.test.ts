@@ -141,6 +141,7 @@ test("generates a folder page that lists only direct children", async () => {
   const folder = await content.resolvePage("/folder/");
   assert.equal(folder?.type, "folder-page");
   assert.equal(folder?.title, "folder");
+  assert.equal(folder?.language, undefined);
   assert.match(folder?.body ?? "", /href="\/folder\/page"/);
   assert.match(
     folder?.body ?? "",
@@ -297,10 +298,12 @@ test("keeps locales separated and resolves redirects after localization", async 
   assert.ok(paths.includes("/en/docs/ref/"));
 
   const japanese = await content.resolvePage("/docs/ref/");
+  assert.equal(japanese?.language, "ja");
   assert.match(japanese?.body ?? "", /\/docs\/ref\/a/);
   assert.doesNotMatch(japanese?.body ?? "", /\/en\/docs\/ref\/b/);
 
   const english = await content.resolvePage("/en/docs/ref/");
+  assert.equal(english?.language, "en");
   assert.match(english?.body ?? "", /\/en\/docs\/ref\/b/);
   assert.doesNotMatch(english?.body ?? "", /\/docs\/ref\/a/);
 });

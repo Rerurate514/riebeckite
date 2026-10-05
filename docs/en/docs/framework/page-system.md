@@ -35,8 +35,8 @@ plugin page -> site document frame -> theme CSS and plugin client entries
 ```
 
 The route and frame remain site-owned. Plugins return a body fragment and
-optional `title`, `description`, and `headTags`; the site decides how those
-values are represented in the document.
+optional `title`, `description`, `headTags`, and `language`; the site decides how
+those values are represented in the document.
 
 ## Authoring a Page Type
 

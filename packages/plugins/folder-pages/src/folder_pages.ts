@@ -136,6 +136,18 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
   const generatedPath = (folder: string): string | null =>
     resolveGeneratedFolderLocation(manifest, folder);
 
+  const folderLanguage = (folder: string): string | undefined => {
+    let language: string | undefined;
+    for (const entry of manifest.discoverableEntries) {
+      if (!entry.slug.startsWith(`${folder}/`)) continue;
+      const value = entry.publicLocation.language;
+      if (value === undefined) return undefined;
+      if (language === undefined) language = value;
+      else if (language !== value) return undefined;
+    }
+    return language;
+  };
+
   const folderLink = (folder: string): FolderPageLink | null => {
     if (hasRoutableOwner(folder)) {
       const owner =
@@ -181,6 +193,7 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
     pages.push({
       folder,
       pathname,
+      language: folderLanguage(folder),
       title: lastSegment(folder),
       pages: sortedPages(folder).map(toLink),
       folders: folders_.map((sub) => sub.link),

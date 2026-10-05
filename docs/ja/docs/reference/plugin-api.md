@@ -570,6 +570,7 @@ Page は `body` のほか、
 title
 description
 headTags
+language
 ```
 
 も返せます。

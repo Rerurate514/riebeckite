@@ -36,6 +36,7 @@ export default createRoute(async (c) => {
       ),
     );
     c.set("headTags", route.page.headTags ?? []);
+    c.set("htmlLanguage", route.page.language);
     return c.render(
       <div dangerouslySetInnerHTML={{ __html: route.page.body }} />,
     );

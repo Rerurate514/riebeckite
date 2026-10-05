@@ -948,8 +948,8 @@ test("Contract 12: generated routes derive htmlLanguage from the content entry",
       slugSource.indexOf("const post ="),
     );
     assert.ok(
-      !pageBranch.includes("htmlLanguage"),
-      "plugin page routes have no content language and must fall back to unfiltered navigation",
+      pageBranch.includes('c.set("htmlLanguage", route.page.language);'),
+      "plugin page routes must surface the language resolved by the page type",
     );
   });
 });

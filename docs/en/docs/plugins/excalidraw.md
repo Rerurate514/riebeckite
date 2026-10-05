@@ -14,6 +14,8 @@ Check the implementation and package README as the source of truth for the Plugi
 
 Use it to publish Excalidraw notes and drawings, including Vaults that contain related embedded images.
 
+![[HW]]
+
 ## When to use it
 
 Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.

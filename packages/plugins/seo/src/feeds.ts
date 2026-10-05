@@ -3,7 +3,6 @@ import {
   getDescription,
   getEntryPublishedTime,
   getEntryUpdatedTime,
-  getHtmlLanguage,
   normalizeTags,
 } from "./content.js";
 import { removeUndefined } from "./schema.js";
@@ -74,8 +73,8 @@ function getResolvedFeedMetadata(config: ResolvedRiebeckiteConfig): {
   language: string;
 } {
   return {
-    title: config.site.feed.title ?? config.site.title,
-    description: config.site.feed.description ?? config.site.description,
-    language: config.site.feed.language ?? getHtmlLanguage(config),
+    title: config.site.feed.title,
+    description: config.site.feed.description,
+    language: config.site.feed.language,
   };
 }

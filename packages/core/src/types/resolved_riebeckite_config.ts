@@ -10,7 +10,13 @@ export type ResolvedRiebeckiteConfig = {
    * relative to their application root.
    */
   buildDirectory?: string;
-  site: Required<SiteConfig>;
+  site: Omit<Required<SiteConfig>, "feed"> & {
+    feed: {
+      title: string;
+      description: string;
+      language: string;
+    };
+  };
   content: {
     directory: string;
     source?: ContentSource;

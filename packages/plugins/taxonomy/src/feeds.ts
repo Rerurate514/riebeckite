@@ -152,8 +152,8 @@ function getResolvedFeedMetadata(config: ResolvedRiebeckiteConfig): {
   language: string;
 } {
   return {
-    description: config.site.feed.description ?? config.site.description,
-    language: config.site.feed.language ?? config.site.locale.replace("_", "-"),
+    description: config.site.feed.description,
+    language: config.site.feed.language,
   };
 }
 

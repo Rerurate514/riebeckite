@@ -29,7 +29,10 @@ export function createCanvasRuntime(): CanvasRuntime {
 function resolveNoteLinks(html: string, manifest: ContentManifest): string {
   return html.replace(NOTE_LINK_PATTERN, (_match, encoded: string) => {
     const slug = decodeSlug(encoded);
-    const permalink = slug ? manifest.bySlug.get(slug)?.permalink : undefined;
+    const target = slug ? manifest.bySlug.get(slug) : undefined;
+    const permalink = target?.publishing.routable
+      ? target.permalink
+      : undefined;
     return `href="${escapeHtmlAttribute(permalink ?? "#")}" data-canvas-note="${encoded}"`;
   });
 }

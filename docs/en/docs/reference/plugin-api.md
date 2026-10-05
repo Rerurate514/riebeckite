@@ -308,8 +308,8 @@ the route-level contract.
 type declares its stable ID, SSG paths, optional priority, and a resolver. The
 resolver receives the public manifest and a normalized request path, then
 returns HTML for the page body or `null`. The site still owns its document frame
-and theme. A page may also return `title`, `description`, and `headTags`; the
-document frame decides how to render that metadata.
+and theme. A page may also return `title`, `description`, `headTags`, and the
+`language` it resolved; the document frame decides how to render that metadata.
 
 ```ts
 definePlugin({

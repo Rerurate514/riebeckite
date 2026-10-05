@@ -15,6 +15,8 @@ export type PluginPage = {
   description?: string;
   /** Optional document metadata rendered by the site's document frame. */
   headTags?: readonly PluginHeadTag[];
+  /** Language of the page when the page type resolved one. */
+  language?: string;
 };
 
 export type PluginPageContext = PluginContext & {

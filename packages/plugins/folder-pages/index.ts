@@ -75,6 +75,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
             pathname: page.pathname,
             title: rendered.title,
             body: rendered.html,
+            language: page.language,
           };
         },
       },

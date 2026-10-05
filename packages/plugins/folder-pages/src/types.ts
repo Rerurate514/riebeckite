@@ -20,6 +20,7 @@ export type FolderPageLink = {
 export type FolderPage = {
   folder: string;
   pathname: string;
+  language?: string;
   title: string;
   pages: FolderPageLink[];
   folders: FolderPageLink[];

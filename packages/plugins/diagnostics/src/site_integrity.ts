@@ -26,7 +26,7 @@ export type SiteIntegrityOptions = {
 type RouteOwner = {
   readonly path: string;
   readonly slug: string;
-  readonly kind: "content" | "redirect" | "page" | "output";
+  readonly kind: "content" | "redirect" | "page";
   readonly producer?: string;
 };
 
@@ -93,14 +93,6 @@ function buildRouteOwners(
       });
     }
   }
-  for (const output of manifest.generatedOutputs ?? []) {
-    reserveRoute(owners, diagnostics, options, {
-      path: normalizeRoutePath(output.path),
-      slug: "(generated-output)",
-      kind: "output",
-    });
-  }
-
   return owners;
 }
 
@@ -127,8 +119,7 @@ function reserveRoute(
       slug: next.slug.startsWith("(") ? undefined : next.slug,
       target: next.path,
       message: `Public path "${next.path}" is claimed by both ${describeOwner(previous)} and ${describeOwner(next)}.`,
-      suggestion:
-        "Change one permalink, alias, redirect, page path, or generated output path.",
+      suggestion: "Change one permalink, alias, redirect, or page path.",
       meta: { previous, next },
     }),
   );
@@ -328,8 +319,6 @@ function buildAssetPaths(manifest: ContentManifest): Set<string> {
   }
   for (const asset of manifest.assets ?? [])
     paths.add(asset.path.replace(/^\/+/, ""));
-  for (const output of manifest.generatedOutputs ?? [])
-    paths.add(output.path.replace(/^\/+/, ""));
   return paths;
 }
 

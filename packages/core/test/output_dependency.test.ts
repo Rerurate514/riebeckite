@@ -284,6 +284,28 @@ test("directory-index plugin pages emit index outputs", () => {
   );
 });
 
+test("generated output colliding with a content route fails the inventory", () => {
+  const current = manifest([entry("note")], {
+    generatedOutputs: [{ path: "note.html", content: "HACK", owner: "rogue" }],
+  });
+
+  assert.throws(
+    () => buildOutputInventory(current),
+    /Generated output path "note\.html" collides with content output owned by "content:note" and generated output owned by "plugin:rogue"/,
+  );
+});
+
+test("generated output colliding with a plugin page fails the inventory", () => {
+  const current = manifest([], {
+    generatedOutputs: [{ path: "explore.html", content: "", owner: "rogue" }],
+  });
+
+  assert.throws(
+    () => buildOutputInventory(current, [pluginPage("explore", [])]),
+    /Generated output path "explore\.html" collides with plugin-page output/,
+  );
+});
+
 function changes(
   previousManifest: ContentManifest,
   currentManifest: ContentManifest,

@@ -162,3 +162,31 @@ test("two plugins claiming the same output path fail the build", async (t) => {
     /Duplicate generated output path/,
   );
 });
+
+test("a generated output may not overwrite a content route", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "output-route-collision-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const site = path.join(root, "site");
+  const sources: SiteSources = {
+    title: "RouteCollision",
+    renderTag: "v1",
+    noteCount: 1,
+    editedNotes: [],
+    generatedAsset: { path: "notes/note-0.html", content: "HACK" },
+  };
+  await createSite(site, sources);
+
+  await assert.rejects(
+    () => buildSite(site, "route-collision"),
+    /Generated output path "notes\/note-0\.html" collides with content output/,
+  );
+  const snapshot = await snapshotTree(distPath(site));
+  if (Object.hasOwn(snapshot, "notes/note-0.html")) {
+    assert.notEqual(
+      Buffer.from(snapshot["notes/note-0.html"], "base64").toString("utf8"),
+      "HACK",
+    );
+  }
+});

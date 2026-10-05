@@ -262,7 +262,26 @@ function addOutput(
   outputs: Map<string, OutputDescriptor>,
   output: OutputDescriptor,
 ): void {
+  const existing = outputs.get(output.path);
+  if (existing) {
+    assertNoGeneratedOutputCollision(existing, output);
+  }
   outputs.set(output.path, output);
+}
+
+function assertNoGeneratedOutputCollision(
+  existing: OutputDescriptor,
+  incoming: OutputDescriptor,
+): void {
+  if (existing.kind !== "generated" && incoming.kind !== "generated") return;
+  if (
+    existing.kind === incoming.kind &&
+    existing.producer === incoming.producer
+  )
+    return;
+  throw new Error(
+    `Generated output path "${incoming.path}" collides with ${existing.kind} output owned by "${existing.producer}" and ${incoming.kind} output owned by "${incoming.producer}".`,
+  );
 }
 
 function normalizePublicPath(pathname: string): string {

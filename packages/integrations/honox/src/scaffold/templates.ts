@@ -1,4 +1,4 @@
-import { localizedContentFiles } from "./localized-content.js";
+import { contentPageFiles } from "./content-pages.js";
 import {
   defaultLanguageForLocale,
   SCAFFOLD_LANGUAGES,
@@ -50,7 +50,7 @@ export function siteTemplateFiles(
     ),
     ...presetContentFiles(preset, variables),
     { path: "README.md", content: readme(preset, variables) },
-    ...localizedContentFiles(variables, preset),
+    ...contentPageFiles(variables, preset),
   ];
 }
 

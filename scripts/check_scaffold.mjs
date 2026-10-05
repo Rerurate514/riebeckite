@@ -69,7 +69,7 @@ const scaffoldSources = [
   path.join(scaffoldDir, "presets.ts"),
   path.join(scaffoldDir, "templates.ts"),
   path.join(scaffoldDir, "template-loader.ts"),
-  path.join(scaffoldDir, "localized-content.ts"),
+  path.join(scaffoldDir, "content-pages.ts"),
   path.join(scaffoldDir, "next-steps.ts"),
   path.join(scaffoldDir, "version.ts"),
   path.join(repositoryRoot, "scripts", "check_scaffold.mjs"),

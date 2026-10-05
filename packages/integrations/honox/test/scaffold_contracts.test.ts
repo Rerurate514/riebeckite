@@ -306,7 +306,7 @@ test("Contract 2: starter preset generates exact content files documented in Get
     }
 
     // Verify localized variants: index and examples get all languages, guide and notes do not
-    // This matches the scaffold's actual behavior (see localized-content.ts)
+    // This matches the scaffold's actual behavior (see content-pages.ts)
     const localizedFiles = [
       // index.md gets all languages
       "content/index.ja.md",

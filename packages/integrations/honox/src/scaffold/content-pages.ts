@@ -394,7 +394,7 @@ function themeReadmeUrl(slug: string): string {
  * the `<base>.<lang>.md` suffix. Reference pages are English-only and are
  * suffixed with `.en` when English is not the site's default language.
  */
-export function localizedContentFiles(
+export function contentPageFiles(
   variables: SiteTemplateVariables,
   preset: ScaffoldPreset,
 ): readonly SiteTemplateFile[] {

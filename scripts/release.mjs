@@ -415,8 +415,59 @@ function requiresInteractiveAuthentication(stdout, stderr) {
     output.includes("err_pnpm_otp_non_interactive") ||
     output.includes("requires additional authentication") ||
     output.includes("pnpm is not running in an interactive terminal") ||
-    output.includes("provide the --otp option")
+    output.includes("provide the --otp option") ||
+    output.includes("eneedauth") ||
+    output.includes("e401") ||
+    output.includes("e403")
   );
+}
+
+async function ensureAuthentication() {
+  const currentUser = await spawnBuffered("npm", ["whoami"], repositoryRoot, {
+    timeout: NPM_VIEW_TIMEOUT_MS,
+    label: "npm whoami",
+  });
+
+  if (currentUser.status === 0) {
+    const name = currentUser.stdout.trim();
+
+    console.log(
+      `\n[authentication] npm is signed in${name ? ` as ${name}` : ""}.`,
+    );
+
+    return;
+  }
+
+  console.log("\n[authentication] npm is not signed in for publishing.");
+
+  console.log("Starting npm login; finish the browser or terminal prompt.");
+
+  const login = await spawnInteractive("npm", ["login"], repositoryRoot, {
+    timeout: PUBLISH_TIMEOUT_MS,
+    label: "npm login",
+  });
+
+  if (login.status !== 0) {
+    throw new ReleaseError(
+      `npm login failed with exit code ${login.status}.`,
+      login.status,
+    );
+  }
+
+  const verifiedUser = await spawnBuffered("npm", ["whoami"], repositoryRoot, {
+    timeout: NPM_VIEW_TIMEOUT_MS,
+    label: "npm whoami",
+  });
+
+  if (verifiedUser.status !== 0) {
+    throw new ReleaseError(
+      "npm is still not signed in after npm login; aborting before publish.\n" +
+        verifiedUser.stderr.trim(),
+      verifiedUser.status,
+    );
+  }
+
+  console.log(`\n[authentication] signed in as ${verifiedUser.stdout.trim()}.`);
 }
 
 async function isPackageVersionPublished(packageName, version) {
@@ -599,6 +650,8 @@ async function retryAuthenticationFailures(
   version,
   publishedPackages,
 ) {
+  await ensureAuthentication();
+
   for (const failure of failures) {
     const { directory, error } = failure;
 
@@ -663,6 +716,8 @@ async function publishPackages(
   }
 
   if (!dryRun) {
+    await ensureAuthentication();
+
     const firstPending = findFirstPendingPackage(layers, publishedPackages);
 
     if (firstPending) {

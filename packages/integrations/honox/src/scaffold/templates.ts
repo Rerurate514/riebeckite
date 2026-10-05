@@ -1,11 +1,3 @@
-import {
-  article,
-  indexRoute,
-  renderer,
-  siteHeader,
-  slugRoute,
-  style,
-} from "./app-templates.js";
 import { localizedContentFiles } from "./localized-content.js";
 import {
   defaultLanguageForLocale,
@@ -51,53 +43,7 @@ export function siteTemplateFiles(
     ...copyTemplateTree("base"),
     { path: "README.md", content: readme(preset, variables) },
     ...localizedContentFiles(variables, preset),
-    ...appFiles(preset),
-  ];
-}
-
-const APP_FILE_LABELS = [
-  "style",
-  "renderer",
-  "index",
-  "slug",
-  "header",
-  "article",
-] as const satisfies readonly string[];
-
-function appFiles(preset: ScaffoldPreset): readonly SiteTemplateFile[] {
-  const builders: Readonly<Record<string, () => string>> = {
-    style: () => style(preset),
-    renderer: () => renderer(preset),
-    index: () => indexRoute(preset),
-    slug: () => slugRoute(preset),
-    header: () => siteHeader(),
-    article: () => article(),
-  };
-  const generated = new Map<string, string>();
-  for (const key of APP_FILE_LABELS) {
-    if (preset.appFiles.includes(key)) {
-      generated.set(key, builders[key]());
-    }
-  }
-  const has = (key: string): boolean => generated.has(key);
-  const get = (key: string): string => generated.get(key) as string;
-  return [
-    ...(has("style") ? [{ path: "app/style.css", content: get("style") }] : []),
-    ...(has("renderer")
-      ? [{ path: "app/routes/_renderer.tsx", content: get("renderer") }]
-      : []),
-    ...(has("index")
-      ? [{ path: "app/routes/index.tsx", content: get("index") }]
-      : []),
-    ...(has("slug")
-      ? [{ path: "app/routes/[slug{.+}].tsx", content: get("slug") }]
-      : []),
-    ...(has("header")
-      ? [{ path: "app/components/site-header.tsx", content: get("header") }]
-      : []),
-    ...(has("article")
-      ? [{ path: "app/components/article.tsx", content: get("article") }]
-      : []),
+    ...copyTemplateTree(`presets/${preset.name}`),
   ];
 }
 

@@ -68,7 +68,7 @@ function readSiteFile(root, name) {
 const scaffoldSources = [
   path.join(scaffoldDir, "presets.ts"),
   path.join(scaffoldDir, "templates.ts"),
-  path.join(scaffoldDir, "app-templates.ts"),
+  path.join(scaffoldDir, "template-loader.ts"),
   path.join(scaffoldDir, "localized-content.ts"),
   path.join(scaffoldDir, "next-steps.ts"),
   path.join(scaffoldDir, "version.ts"),

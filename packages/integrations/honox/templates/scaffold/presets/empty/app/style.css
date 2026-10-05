@@ -1,0 +1,17 @@
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.riebeckite-empty {
+  max-width: 48rem;
+  padding: 4rem 1rem;
+  margin: 0 auto;
+}

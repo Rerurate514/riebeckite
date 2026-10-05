@@ -369,6 +369,8 @@ definePlugin({
 
 これは Output Dependency とは別の契約です。`pageTypes[].outputDependencies` と `context.output.emit(..., { dependencies })` は、再生成が必要な page や生成 file を表します。ここでは `content`、`tag`、`folder`、`global`、`unknown` を使います。`unknown` は安全側として全 Output の再生成を要求します。
 
+Generated output の path は物理出力 path です。Generated output を Content、redirect、plugin page の route と衝突させないでください。衝突した場合は route を上書きせず、Core が build を失敗させます。
+
 # Public Location
 
 Plugin は `resolveContentLocations` を使って、コンテンツの公開先を変更できます。

@@ -200,6 +200,10 @@ or generated files require regeneration. Use `content`, `tag`, `folder`,
 `global`, or `unknown` there; `unknown` safely requests full output
 regeneration.
 
+Generated output paths are physical output paths. A generated output must not
+collide with a content, redirect, or plugin page route; Core fails the build
+instead of overwriting the route.
+
 ## Content Hooks
 
 Content hooks join named phases of content processing:

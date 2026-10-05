@@ -7,6 +7,7 @@ import {
 import { resolveRiebeckiteProject } from "./application_root.js";
 import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
+import { type CleanScope, runClean } from "./commands/clean.js";
 import { runDeploy } from "./commands/deploy.js";
 import { runDeployDomain } from "./commands/deploy_domain.js";
 import { runDeploySetup } from "./commands/deploy_setup.js";
@@ -42,6 +43,10 @@ export async function main(arguments_: readonly string[]): Promise<void> {
     }
     if (command.name === "build") {
       await runBuild(project, { full: command.full });
+      return;
+    }
+    if (command.name === "clean") {
+      await runClean(project, { scope: command.scope });
       return;
     }
     if (command.name === "deploy") {
@@ -82,6 +87,7 @@ export async function main(arguments_: readonly string[]): Promise<void> {
 type Command =
   | { name: "dev" }
   | { name: "build"; full: boolean }
+  | { name: "clean"; scope: CleanScope }
   | { name: "deploy"; dryRun: boolean }
   | { name: "deploy-setup" }
   | { name: "deploy-domain" }
@@ -97,7 +103,7 @@ type Command =
   | { name: "profile"; full: boolean }
   | { name: "inspect"; target?: InspectTarget; list: boolean };
 
-function parseCommand(arguments_: readonly string[]): Command {
+export function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
   if (name === "dev" && options.length === 0) return { name };
   if (name === "check" && options.length === 0) return { name };
@@ -107,6 +113,15 @@ function parseCommand(arguments_: readonly string[]): Command {
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
   ) {
     return { name, full: options[0] === "--full" };
+  }
+  if (name === "clean") {
+    if (options.length === 0) return { name, scope: "state" };
+    if (options.length === 1 && options[0] === "--output") {
+      return { name, scope: "output" };
+    }
+    if (options.length === 1 && options[0] === "--all") {
+      return { name, scope: "all" };
+    }
   }
   if (name === "deploy") {
     if (options.length === 0) return { name, dryRun: false };
@@ -130,7 +145,7 @@ function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 

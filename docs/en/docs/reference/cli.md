@@ -8,6 +8,7 @@ riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
+riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] | graph | build]
@@ -22,6 +23,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | diagnose environment, project discovery, configuration, plugins, content source readability, deprecated usage, and build state | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
+| `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
@@ -33,6 +35,8 @@ Broken WikiLinks, missing referenced assets, publish-boundary warnings, and othe
 Plugin option validation runs as part of `check`. Each plugin's `validateOptions` (the analytics plugin, for example, validates its provider and collector URL) contributes to configuration validity, so an invalid plugin setup fails `check` before any build starts.
 
 `init` scaffolds a self-contained site (configuration, Vite/HonoX application shell, routes, stylesheet, and starter content) in the target directory, which defaults to the current directory. It refuses to write into a directory that already contains generated files unless `--force` is passed. The composition is selected with `--preset <name>` (default: `starter`); run `--list-presets` to see the available presets and their descriptions. Install dependencies, then run `check` and `build` in the generated site. The `create-riebeckite` package runs the same generator through `npx create-riebeckite` and accepts the same `--preset` / `--list-presets` flags. In interactive mode it then asks for the deployment: `Not now` is the default and adds no deployment files, `Cloudflare Workers` adds the Wrangler dependency and `wrangler.jsonc` and offers `Deploy now?` after installing dependencies, and `GitHub Actions` generates the push-triggered workflow. Choosing `Yes` at `Deploy now?` runs the build and `riebeckite deploy` right after scaffolding.
+
+`clean` removes Riebeckite-managed artifacts instead of user content. With no options it removes the managed state root (`.riebeckite/` under the application directory), which holds the build state, plugin cache, persistent content cache, and SSG output cache. `clean --output` removes only the build output directory, and `clean --all` removes both. The output location is resolved from project configuration rather than hard-coded, so an integration-defined location is honored. Missing targets are not an error, so `clean` is safe to run repeatedly, including from CI and troubleshooting scripts. It never removes content, configuration, theme or plugin sources, `public/` assets, or Git metadata, and it refuses to delete anything outside the application directory. Generated source entries under `app/.riebeckite/` are left in place because the integration regenerates them on the next `dev` or `build`. Use `riebeckite clean --all` followed by `riebeckite build` to reproduce a cold build that does not rely on persistent caches, incremental state, or previous output. In the default layout those caches live under `.riebeckite/`; a cache directory configured elsewhere is not removed.
 
 `deploy` publishes the `dist/` produced by `build` to Cloudflare Workers by invoking Wrangler. It creates `wrangler.jsonc` from the site folder name when the file is missing, opens the Wrangler login on the first run, and forwards `--dry-run` for validation without uploading. It never rebuilds content, so run `npm exec riebeckite build` first. Because `npm` consumes a bare `--dry-run`, pass it as `npm exec -- riebeckite deploy --dry-run`. A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes the Wrangler dependency and `wrangler.jsonc`.
 

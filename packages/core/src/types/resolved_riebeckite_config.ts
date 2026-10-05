@@ -10,6 +10,11 @@ export type ResolvedRiebeckiteConfig = {
    * relative to their application root.
    */
   buildDirectory?: string;
+  /**
+   * Directory for the built site. Host integrations resolve this relative to
+   * their application root.
+   */
+  outputDirectory?: string;
   site: Omit<Required<SiteConfig>, "feed"> & {
     feed: {
       title: string;

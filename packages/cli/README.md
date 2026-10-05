@@ -11,7 +11,8 @@ the site.
 `@riebeckite/cli` provides the `riebeckite` binary. It resolves the application
 root from the current working directory and reports command failures safely with
 a non-zero exit code. `check`, `doctor`, `inspect`, and `profile` are read-only;
-only `build` and `dev` mutate output or start a server.
+`build` and `dev` write output or start a server, and `clean` removes
+Riebeckite-managed state and build output.
 
 ## Installation
 
@@ -35,6 +36,7 @@ riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
+riebeckite clean [--output | --all]
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] | graph | build]
 ```
@@ -47,6 +49,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `check` | Validate app configuration, plugins, and capability resolution | no |
 | `doctor` | Diagnose environment, configuration, plugins, content, diagnostics, and build state | no |
 | `build` | Run the build path; `--full` bypasses incremental reuse | yes, on success |
+| `clean` | Remove managed state (`.riebeckite/`); `--output` removes only the build output, `--all` removes both | no |
 | `profile` | Run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | Display factual resolved state (`config`, `plugins`, `content`, `graph`, `build`) | no |
 
@@ -54,6 +57,11 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 when health checks fail. `inspect` is deliberately read-only and never triggers
 a build or writes state. See [Diagnostics](../../docs/en/docs/framework/diagnostics.md) and
 [Framework Inspector](../../docs/en/docs/framework/inspector.md) for how to interpret output.
+
+`clean` deletes only Riebeckite-managed artifacts: with no options the managed
+state root (`.riebeckite/`), with `--output` the build output, and with `--all`
+both. Missing targets are not an error, so it is safe to run from scripts and CI.
+Run `clean --all` before `build` to force a cold build (a cache directory configured outside `.riebeckite/` is not removed).
 
 ## Typical workflow
 

@@ -106,6 +106,59 @@ test("manifest separates routable and discoverable publishing views", async () =
   ]);
 });
 
+test("visibility states map to routable and discoverable collections", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    content: { filters: { publishStrategy: "explicit" } },
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "public.md":
+        "---\ntitle: Public\npublish: true\nvisibility: public\n---\n\n# Public\n",
+      "unlisted.md":
+        "---\ntitle: Unlisted\npublish: true\nvisibility: unlisted\n---\n\n# Unlisted\n",
+      "draft.md":
+        "---\ntitle: Draft\npublish: true\nvisibility: draft\n---\n\n# Draft\n",
+      "scheduled.md":
+        "---\ntitle: Scheduled\npublish: true\npublishAt: 2999-01-01T00:00:00.000Z\n---\n\n# Scheduled\n",
+    }),
+    [],
+    { config },
+  );
+
+  const manifest = await manager.getManifest();
+
+  const expected = [
+    ["public", "public", true, true],
+    ["unlisted", "unlisted", true, false],
+    ["draft", "draft", false, false],
+    ["scheduled", "scheduled", false, false],
+  ] as const;
+
+  for (const [slug, visibility, routable, discoverable] of expected) {
+    const publishing = manifest.bySlug.get(slug)?.publishing;
+    assert.equal(publishing?.visibility, visibility, `${slug} visibility`);
+    assert.equal(publishing?.routable, routable, `${slug} routable`);
+    assert.equal(
+      publishing?.discoverable,
+      discoverable,
+      `${slug} discoverable`,
+    );
+  }
+
+  assert.deepEqual(manifest.publicEntries.map((entry) => entry.slug).sort(), [
+    "public",
+    "unlisted",
+  ]);
+  assert.deepEqual(
+    manifest.discoverableEntries.map((entry) => entry.slug),
+    ["public"],
+  );
+  assert.ok(manifest.byRoutablePermalink.has("/unlisted"));
+  assert.equal(manifest.byRoutablePermalink.has("/draft"), false);
+  assert.equal(manifest.byRoutablePermalink.has("/scheduled"), false);
+});
+
 test("scheduled publishing is resolved from deterministic build time", async () => {
   const config = resolveConfig({
     site: { title: "Test" },

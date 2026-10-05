@@ -1,6 +1,6 @@
 # Configuration
 
-Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `markdown`, `theme`, and `plugins`.
+Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, and `plugins`.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -12,7 +12,6 @@ export default defineConfig({
     exclude: ["drafts/**"],
     filters: { publishStrategy: "explicit" },
   },
-  markdown: { syntaxHighlight: { theme: "github-dark" } },
   theme: { colorMode: "system", articleLayout: "article" },
   plugins: [],
 });

@@ -252,7 +252,6 @@ export function computePipelineFingerprint(
   const fingerprintData = {
     compatibilityVersion: CONTENT_CACHE_COMPATIBILITY_VERSION,
     plugins: plugins.map((p) => pluginFingerprint(p)),
-    markdown: config.markdown as JsonValue,
     content: {
       filters: config.content.filters,
     } as JsonValue,

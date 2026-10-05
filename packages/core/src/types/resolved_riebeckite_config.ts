@@ -19,11 +19,6 @@ export type ResolvedRiebeckiteConfig = {
       publishStrategy: PublishStrategy;
     };
   };
-  markdown: {
-    syntaxHighlight: {
-      theme: string;
-    };
-  };
   theme: Required<Omit<ThemeConfig, "tokens">> & {
     tokens: NonNullable<ThemeConfig["tokens"]>;
     styles: ThemeStyle[];

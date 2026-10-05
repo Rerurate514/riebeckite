@@ -24,9 +24,8 @@ test("resolveConfig fills documented defaults", () => {
     defaultOgImage: "",
     feed: { title: "My Site", description: "", language: "en" },
   });
-  assert.equal(config.content.directory, "../../content");
+  assert.equal(config.content.directory, "content");
   assert.equal(config.content.filters.publishStrategy, "explicit");
-  assert.equal(config.markdown.syntaxHighlight.theme, "");
   assert.deepEqual(config.theme, {
     name: "riebeckite",
     colorMode: "system",
@@ -174,6 +173,24 @@ test("resolveConfig reports plugin name, duplicate, and option issues", () => {
       );
       assert.match(error.issues[2]?.message ?? "", /Validator failed: kaboom/);
       assert.match(error.message, /Invalid Riebeckite configuration:/);
+      return true;
+    },
+  );
+});
+
+test("resolveConfig rejects an invalid cache section", () => {
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        cache: { enabled: "yes", directory: 42 },
+      } as unknown as RiebeckiteConfig),
+    (error: unknown) => {
+      assert.ok(error instanceof ConfigValidationError);
+      assert.deepEqual(
+        error.issues.map((issue) => issue.path),
+        ["cache.enabled", "cache.directory"],
+      );
       return true;
     },
   );

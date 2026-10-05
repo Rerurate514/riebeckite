@@ -20,7 +20,6 @@ const config = {
     exclude: [],
     filters: { publishStrategy: "explicit" },
   },
-  markdown: { syntaxHighlight: { theme: "" } },
   theme: {
     name: "riebeckite",
     colorMode: "system",

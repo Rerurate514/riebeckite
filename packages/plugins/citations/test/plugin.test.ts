@@ -426,7 +426,6 @@ async function buildIncrementally(
       exclude: [],
       filters: { publishStrategy: "explicit" },
     },
-    markdown: { syntaxHighlight: { theme: "" } },
     theme: {
       name: "test",
       colorMode: "system",

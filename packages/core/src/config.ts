@@ -69,16 +69,11 @@ export function resolveConfig(
       },
     },
     content: {
-      directory: config.content?.directory ?? "../../content",
+      directory: config.content?.directory ?? "content",
       source: config.content?.source,
       exclude: config.content?.exclude ?? [],
       filters: {
         publishStrategy: config.content?.filters?.publishStrategy ?? "explicit",
-      },
-    },
-    markdown: {
-      syntaxHighlight: {
-        theme: config.markdown?.syntaxHighlight?.theme ?? "",
       },
     },
     theme,

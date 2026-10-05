@@ -21,12 +21,6 @@ export default defineConfig({
     },
   },
 
-  markdown: {
-    syntaxHighlight: {
-      theme: "github-dark",
-    },
-  },
-
   theme: {
     colorMode: "system",
     articleLayout: "article",
@@ -44,7 +38,6 @@ export default defineConfig({
 | --- | --- |
 | `site` | Site の基本情報 |
 | `content` | コンテンツの場所と公開条件 |
-| `markdown` | Markdown の処理設定 |
 | `theme` | Theme の設定 |
 | `plugins` | 使用する Plugin |
 

@@ -28,6 +28,7 @@ function validateConfigIssues(
 
   validateSite(value.site, issues);
   validateContent(value.content, issues);
+  validateCache(value.cache, issues);
   validateTheme(value.theme, issues);
   validatePlugins(value.plugins, issues);
   return issues;
@@ -122,6 +123,17 @@ function validatePublishStrategy(
       message: 'Expected "explicit" or "selective".',
     });
   }
+}
+
+function validateCache(value: unknown, issues: ConfigValidationIssue[]): void {
+  if (value === undefined) return;
+  if (!isRecord(value)) {
+    issues.push({ path: "cache", message: "Expected an object." });
+    return;
+  }
+
+  validateOptionalBoolean(value.enabled, "cache.enabled", issues);
+  validateOptionalString(value.directory, "cache.directory", issues);
 }
 
 function validateTheme(value: unknown, issues: ConfigValidationIssue[]): void {

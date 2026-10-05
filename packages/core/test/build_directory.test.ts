@@ -35,3 +35,19 @@ test("content-relative state locations remain the fallback", () => {
     path.resolve("site", "content", ".riebeckite", "content-state.json"),
   );
 });
+
+test("an explicit cache directory overrides the build directory", () => {
+  const config = {
+    buildDirectory: path.join("site", ".riebeckite"),
+    cache: {
+      enabled: true,
+      directory: path.join("shared", "cache"),
+    },
+    content: { directory: path.join("site", "content") },
+  } as ResolvedRiebeckiteConfig;
+
+  assert.equal(
+    resolvePluginCacheDirectory(config),
+    path.join("shared", "cache"),
+  );
+});

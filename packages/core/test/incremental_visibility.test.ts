@@ -37,7 +37,6 @@ function testConfig(directory: string): ResolvedRiebeckiteConfig {
       exclude: [],
       filters: { publishStrategy: "explicit" },
     },
-    markdown: { syntaxHighlight: { theme: "" } },
     theme: {
       name: "test",
       colorMode: "system",

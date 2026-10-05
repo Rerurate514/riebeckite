@@ -79,7 +79,6 @@ export default defineConfig({
       publishStrategy: "selective",
     },
   },
-  markdown: {},
   theme: rerurateTheme({
     colorMode: "system",
     motion: true,

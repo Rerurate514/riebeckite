@@ -14,11 +14,6 @@ export interface RiebeckiteConfig {
       publishStrategy?: PublishStrategy;
     };
   };
-  markdown?: {
-    syntaxHighlight?: {
-      theme?: string;
-    };
-  };
   theme?: ThemeInput;
   plugins?: PluginInput[];
   cache?: {

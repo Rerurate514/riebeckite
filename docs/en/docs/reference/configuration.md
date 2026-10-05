@@ -1,6 +1,6 @@
 # Configuration
 
-Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `navigation`, `content`, `markdown`, `theme`, and `plugins`.
+Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `markdown`, `theme`, and `plugins`.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -20,11 +20,36 @@ export default defineConfig({
 
 ## Navigation
 
-`navigation` sets the links shown in the site's **Header and Footer**.
+Navigation is provided by the **`@riebeckite/plugin-navigation`** plugin, not by a top-level config section. The plugin produces a semantic model `{ primary, secondary }`, and the **Site shell renders and places it**. `primary` and `secondary` express prominence, not placement; there is no `header` or `footer` key.
 
 ```ts
-navigation: {
-  header: [
+import { defineConfig } from "@riebeckite/core";
+import { navigation } from "@riebeckite/plugin-navigation";
+
+export default defineConfig({
+  site: { title: "My site", baseUrl: "https://example.com" },
+  plugins: [navigation()],
+});
+```
+
+### Zero-config derivation
+
+Called with no arguments, the plugin derives `primary` links from the vault's **discoverable entries** (`manifest.discoverableEntries`: public and discoverable, excluding draft and non-routable content). It reuses existing Riebeckite information rather than a dedicated vault file:
+
+- folder structure
+- README / index resolution (an `index` or `README` note represents its folder)
+- page `title`
+- `permalink`
+
+It requires **no Riebeckite-specific vault file** (no `navigation.md`) and **no required frontmatter**.
+
+### Manual and supplementary links
+
+Pass `items` to replace the derived `primary` links. Pass `secondary` for supplementary links the Site renders less prominently.
+
+```ts
+navigation({
+  items: [
     { label: "Guide", href: "/guide" },
     {
       label: "Notes",
@@ -34,19 +59,14 @@ navigation: {
         { label: "Writing", href: "/notes/writing" },
       ],
     },
-    {
-      label: "GitHub",
-      href: "https://github.com/example/site",
-      external: true,
-    },
   ],
-  footer: [
-    { label: "Guide", href: "/guide" },
+  secondary: [
+    { label: "GitHub", href: "https://github.com/example/site", external: true },
   ],
-}
+});
 ```
 
-Both `header` and `footer` are optional. When omitted, they are treated as an empty array.
+> Localized vaults: zero-config derivation currently targets single-language vaults. Localized sites should author `items` manually.
 
 ### NavigationItem
 
@@ -59,27 +79,11 @@ Each link is a `NavigationItem`.
 | `children` | `NavigationItem[]` | Child items, shown as a submenu |
 | `external` | `boolean` | When `true`, opens in a new tab |
 
-`label` and `href` are required.
+`label` and `href` are required on authored items. A derived folder group that has no index note renders as a label only, so `href` is optional in the derived model.
 
-### Header and Footer
+### Placement
 
-`navigation.header` items render in `SiteHeader`, and `navigation.footer` items render in `SiteFooter`.
-
-```ts
-navigation: {
-  header: [
-    { label: "Guide", href: "/guide" },
-    { label: "About", href: "/about" },
-  ],
-  footer: [
-    { label: "About", href: "/about" },
-  ],
-}
-```
-
-When an array is empty, no navigation is shown in that region.
-
-In the header, the site title is already a link home, so an item with `href: "/"` is not shown.
+The plugin does not decide placement; the Site shell does. In the reference Site, `primary` appears in the header and `secondary` in the footer. Some shells skip a `href: "/"` item because the site title already links home.
 
 ### Building submenus
 
@@ -114,7 +118,7 @@ The link opens in a new tab and gets `rel="noreferrer"`.
 
 ### Marking the current page
 
-In the header, the link for the page currently being viewed becomes active automatically.
+The link for the page currently being viewed becomes active automatically.
 
 For example, with:
 
@@ -139,13 +143,13 @@ An `href` that does not start with `/` (such as an external URL) and items with 
 
 ### On mobile
 
-On narrow viewports, the header navigation collapses into a `Menu` disclosure.
+On narrow viewports, the site navigation collapses into a `Menu` disclosure.
 
 The content and HTML structure do not change; only the CSS presentation changes with viewport width.
 
 ### Validation
 
-`navigation` is validated while the config is loaded.
+`navigation` options are validated while the plugin is loaded.
 
 The main rules are:
 
@@ -154,13 +158,13 @@ The main rules are:
 - `external`, when present, is a boolean
 - `children` must not contain an ancestor item
 
-Invalid configuration fails while the config is resolved.
+Invalid configuration fails while the plugin is loaded.
 
 ### Plugin pages are not added automatically
 
-`navigation` manages only **the links the site shows in its Header and Footer**.
+The plugin derives links from the vault's discoverable entries. It does not surface plugin-generated pages on its own.
 
-For example, the following are not added to navigation automatically:
+For example, the following are not added automatically:
 
 - Search
 - Tag / Folder indexes
@@ -169,10 +173,15 @@ For example, the following are not added to navigation automatically:
 - Breadcrumbs
 - Backlinks
 - Related Posts
+- Other content graph features
 
-To show a page a plugin provides in the Header or Footer, add a link to that page in `navigation`.
+To show a page a plugin provides, add a link to that page in `navigation({ items })`.
 
 For the division of responsibility between navigation and plugins, see [Customizing your site](../guides/customizing-your-site.md#navigation).
+
+### Exported helpers and types
+
+`@riebeckite/plugin-navigation` exports `navigation`, `buildNavigation`, `resolveSiteNavigation`, `NAVIGATION_PLUGIN_NAME`, and the types `NavigationItem`, `NavigationOptions`, and `SiteNavigation`.
 
 ## Content selection
 

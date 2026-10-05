@@ -229,6 +229,16 @@ const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {
 const search = np("@riebeckite/plugin-search", "searchPlugin");
 const backlinks = np("@riebeckite/plugin-backlinks", "backlinksPlugin");
 const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbsPlugin");
+const navigationStarter = np(
+  "@riebeckite/plugin-navigation",
+  "navigation",
+  `{ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Notes", href: "/notes/planning", children: [{ label: "Planning", href: "/notes/planning" }, { label: "Writing", href: "/notes/writing" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }`,
+);
+const navigationShowcase = np(
+  "@riebeckite/plugin-navigation",
+  "navigation",
+  `{ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework/plugins", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }`,
+);
 const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts", {
   limit: { depth: 2, value: "5" },
   useTags: { depth: 2, value: "true" },
@@ -605,6 +615,7 @@ export const starter: ScaffoldPreset = {
     search,
     backlinks,
     breadcrumbs,
+    navigationStarter,
     relatedPosts,
     recentPosts,
     responsiveImage,
@@ -635,6 +646,7 @@ export const showcase: ScaffoldPreset = {
     search,
     backlinks,
     breadcrumbs,
+    navigationShowcase,
     relatedPosts,
     share,
     changelog,

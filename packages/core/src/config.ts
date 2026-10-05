@@ -68,10 +68,6 @@ export function resolveConfig(
         language: config.site?.feed?.language ?? config.site?.locale ?? "en",
       },
     },
-    navigation: {
-      header: config.navigation?.header ?? [],
-      footer: config.navigation?.footer ?? [],
-    },
     content: {
       directory: config.content?.directory ?? "../../content",
       source: config.content?.source,

@@ -198,6 +198,9 @@ importers:
       '@riebeckite/plugin-mermaid':
         specifier: workspace:*
         version: link:../../packages/plugins/mermaid
+      '@riebeckite/plugin-navigation':
+        specifier: workspace:*
+        version: link:../../packages/plugins/navigation
       '@riebeckite/plugin-pdf':
         specifier: workspace:*
         version: link:../../packages/plugins/pdf
@@ -961,6 +964,19 @@ importers:
       puppeteer:
         specifier: ^25.11.0
         version: 25.11.0
+
+  packages/plugins/navigation:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/obsidian-markdown:
     dependencies:

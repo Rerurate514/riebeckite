@@ -3,11 +3,13 @@ import {
   ColorModeScript,
   ColorModeToggle,
 } from "@riebeckite/plugin-color-mode";
+import { resolveSiteNavigation } from "@riebeckite/plugin-navigation";
 import { SearchBar } from "@riebeckite/plugin-search";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import { SiteFooter, SiteHeader } from "../components/site-navigation";
 import { config } from "../config";
+import { content } from "../content";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {
   getPluginScripts,
@@ -21,9 +23,16 @@ import {
 // SSG output even when a page has no island component.
 export const __importing_islands = true;
 
-export default jsxRenderer(({ children }, c) => {
+export default jsxRenderer(async ({ children }, c) => {
   const { site } = config;
   const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
+  const navigation = resolveSiteNavigation(
+    config,
+    await content.getManifest(),
+  ) ?? {
+    primary: [],
+    secondary: [],
+  };
   const seo =
     c.get("seo") ??
     buildWebsiteSeo(
@@ -100,11 +109,11 @@ export default jsxRenderer(({ children }, c) => {
         <Script src="/app/client.ts" async />
       </head>
       <body class="riebeckite-page rb-site">
-        <SiteHeader path={c.req.path} />
+        <SiteHeader path={c.req.path} items={navigation.primary} />
         <ColorModeToggle />
         <SearchBar />
         {children}
-        <SiteFooter path={c.req.path} />
+        <SiteFooter path={c.req.path} items={navigation.secondary} />
       </body>
     </html>
   );

@@ -46,6 +46,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/marp",
   "packages/plugins/media",
   "packages/plugins/mermaid",
+  "packages/plugins/navigation",
   "packages/plugins/obsidian-markdown",
   "packages/plugins/pdf",
   "packages/plugins/permalink",
@@ -299,6 +300,11 @@ const packagePublishingMetadata = {
   "packages/plugins/mermaid": {
     description: "Mermaid diagram rendering for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "mermaid", "diagrams"],
+  },
+  "packages/plugins/navigation": {
+    description:
+      "Site navigation model for Riebeckite, derived from the vault or authored in config.",
+    keywords: ["riebeckite", "plugin", "navigation"],
   },
   "packages/plugins/obsidian-markdown": {
     description: "Obsidian-flavored Markdown support for Riebeckite.",
@@ -563,6 +569,7 @@ export function expectedPackageMetadata(directory) {
       "diagnostics",
       "discord-embed",
       "folder-pages",
+      "navigation",
       "obsidian-markdown",
       "permalink",
       "quality",
@@ -588,6 +595,7 @@ export function expectedPackageMetadata(directory) {
       "highlight",
       "l10n",
       "local-graph",
+      "navigation",
       "permalink",
       "properties",
       "quality",

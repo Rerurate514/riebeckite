@@ -228,7 +228,6 @@ function riebeckiteConfig(
   lines.push("  content: {");
   lines.push('    directory: "content",');
   lines.push("  },");
-  for (const line of navigationConfig(preset)) lines.push(line);
   if (preset.theme) {
     const theme = preset.theme;
     lines.push(
@@ -242,26 +241,6 @@ function riebeckiteConfig(
   lines.push("  ],");
   lines.push("});");
   return `${lines.join("\n")}\n`;
-}
-
-function navigationConfig(preset: ScaffoldPreset): readonly string[] {
-  if (preset.name === "starter") {
-    return [
-      "  navigation: {",
-      '    header: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Notes", href: "/notes/planning", children: [{ label: "Planning", href: "/notes/planning" }, { label: "Writing", href: "/notes/writing" }] }],',
-      '    footer: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }],',
-      "  },",
-    ];
-  }
-  if (preset.name === "showcase") {
-    return [
-      "  navigation: {",
-      '    header: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework/plugins", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }],',
-      '    footer: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }],',
-      "  },",
-    ];
-  }
-  return [];
 }
 
 /**

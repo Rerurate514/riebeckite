@@ -43,7 +43,6 @@ export default defineConfig({
 | Field | 用途 |
 | --- | --- |
 | `site` | Site の基本情報 |
-| `navigation` | Site 全体の header / footer navigation |
 | `content` | コンテンツの場所と公開条件 |
 | `markdown` | Markdown の処理設定 |
 | `theme` | Theme の設定 |
@@ -53,11 +52,36 @@ Config は Content や Plugin の処理が始まる前に Integration によっ�
 
 ## Navigation の設定
 
-`navigation` では、サイトの **Header と Footer に表示するリンク**を設定します。
+Navigation はトップレベルの Config 項目ではなく、**`@riebeckite/plugin-navigation`** Plugin が提供します。Plugin は `{ primary, secondary }` という意味的なモデルを返し、**Site の shell がそれを描画・配置**します。`primary` と `secondary` は目立たせ方の違いを表すもので、配置そのものではありません。Plugin API に `header` / `footer` というキーはありません。
 
 ```ts
-navigation: {
-  header: [
+import { defineConfig } from "@riebeckite/core";
+import { navigation } from "@riebeckite/plugin-navigation";
+
+export default defineConfig({
+  site: { title: "My site", baseUrl: "https://example.com" },
+  plugins: [navigation()],
+});
+```
+
+### 引数なしの導出
+
+引数なしで呼び出すと、Vault の **discoverable entries**（`manifest.discoverableEntries`。public かつ discoverable で、draft や非 routable な Content を除く）から `primary` を導出します。専用の Vault ファイルを要求せず、既存の Riebeckite の情報を再利用します。
+
+- folder 構造
+- README / index の解決（`index` または `README` のノートがその folder を表す）
+- ページの `title`
+- `permalink`
+
+**Riebeckite 専用の Vault ファイル（`navigation.md` など）も、必須の frontmatter も必要ありません。**
+
+### 手動リンクと補助リンク
+
+`items` を渡すと、導出された `primary` を置き換えます。`secondary` には、Site がより控えめに表示する補助リンクを渡します。
+
+```ts
+navigation({
+  items: [
     { label: "Guide", href: "/guide" },
     {
       label: "Notes",
@@ -67,19 +91,14 @@ navigation: {
         { label: "Writing", href: "/notes/writing" },
       ],
     },
-    {
-      label: "GitHub",
-      href: "https://github.com/example/site",
-      external: true,
-    },
   ],
-  footer: [
-    { label: "Guide", href: "/guide" },
+  secondary: [
+    { label: "GitHub", href: "https://github.com/example/site", external: true },
   ],
-}
+});
 ```
 
-`header` と `footer` はどちらも省略できます。指定しなかった場合は空の配列として扱われます。
+> 多言語 Vault: 引数なしの導出は現在 single-language Vault を対象としています。多言語 Site では `items` を手動で指定してください。
 
 ### NavigationItem
 
@@ -92,27 +111,11 @@ navigation: {
 | `children` | `NavigationItem[]` | 子項目。サブメニューとして表示されます |
 | `external` | `boolean` | `true` の場合は別タブで開きます |
 
-`label` と `href` は必須です。
+手動指定の item では `label` と `href` が必須です。index ノートを持たない導出 folder は label のみで描画されるため、導出モデルでは `href` は省略可能です。
 
-### Header と Footer
+### 配置
 
-`navigation.header` の項目は `SiteHeader`、`navigation.footer` の項目は `SiteFooter` に表示されます。
-
-```ts
-navigation: {
-  header: [
-    { label: "Guide", href: "/guide" },
-    { label: "About", href: "/about" },
-  ],
-  footer: [
-    { label: "About", href: "/about" },
-  ],
-}
-```
-
-配列が空の場合、その場所には Navigation を表示しません。
-
-Header では Site タイトルがすでに Home へのリンクになっているため、`href: "/"` の項目は表示されません。
+配置は Plugin ではなく Site の shell が決めます。Reference Site では `primary` を header、`secondary` を footer に表示します。Site タイトルがすでに Home へのリンクになっている shell では、`href: "/"` の item を表示しないことがあります。
 
 ### サブメニューを作る
 
@@ -147,7 +150,7 @@ Header では Site タイトルがすでに Home へのリンクになってい�
 
 ### 現在のページを示す
 
-Header では、現在表示しているページに対応するリンクが自動的に active になります。
+現在表示しているページに対応するリンクが自動的に active になります。
 
 たとえば、
 
@@ -172,13 +175,13 @@ active なリンクには `aria-current="page"` が付きます。
 
 ### モバイルでの表示
 
-画面が狭い場合、Header の Navigation は `Menu` から開閉できる表示になります。
+画面が狭い場合、Site の Navigation は `Menu` から開閉できる表示になります。
 
 Navigation の内容や HTML 構造が別のものになるわけではなく、画面幅に応じて CSS で表示方法が変わります。
 
 ### 設定の検証
 
-`navigation` は Config の読み込み時に検証されます。
+`navigation` の Option は Plugin の読み込み時に検証されます。
 
 主な条件は次のとおりです。
 
@@ -187,13 +190,13 @@ Navigation の内容や HTML 構造が別のものになるわけではなく、
 - `external` を指定する場合は `boolean`
 - `children` に祖先の項目を含めることはできない
 
-不正な設定は Config の解決時にエラーになります。
+不正な設定は Plugin の読み込み時にエラーになります。
 
 ### Plugin のページは自動追加されない
 
-`navigation` が管理するのは、**Site が Header / Footer に表示するリンクだけ**です。
+Plugin は Vault の discoverable entries からリンクを導出します。Plugin が生成するページを自動で surface することはありません。
 
-たとえば、Plugin が提供する次のようなものは自動的には Navigation に追加されません。
+たとえば、次のようなものは自動的には追加されません。
 
 - Search
 - Tag / Folder 一覧
@@ -202,10 +205,15 @@ Navigation の内容や HTML 構造が別のものになるわけではなく、
 - Breadcrumbs
 - Backlinks
 - Related Posts
+- その他の Content graph 機能
 
-Plugin が作るページを Header や Footer に表示したい場合は、そのページへのリンクを `navigation` に追加してください。
+Plugin が作るページを表示したい場合は、そのページへのリンクを `navigation({ items })` に追加してください。
 
 Navigation と Plugin の役割の違いについては、[サイトのカスタマイズ](../guides/customizing-your-site.md#navigation-を変える) を参照してください。
+
+### エクスポートされる helper と型
+
+`@riebeckite/plugin-navigation` は `navigation`、`buildNavigation`、`resolveSiteNavigation`、`NAVIGATION_PLUGIN_NAME` と、型 `NavigationItem`、`NavigationOptions`、`SiteNavigation` をエクスポートします。
 
 ## Content の設定
 

@@ -1,10 +1,14 @@
-import type { NavigationItem } from "@riebeckite/core";
+import type { NavigationItem } from "@riebeckite/plugin-navigation";
 import { config } from "../config";
 
-export function SiteHeader({ path }: { path: string }) {
-  const navigation = config.navigation.header.filter(
-    (item) => item.href !== "/",
-  );
+export function SiteHeader({
+  path,
+  items,
+}: {
+  path: string;
+  items: readonly NavigationItem[];
+}) {
+  const navigation = items.filter((item) => item.href !== "/");
 
   return (
     <header class="site-header rb-site-header">
@@ -24,7 +28,13 @@ export function SiteHeader({ path }: { path: string }) {
   );
 }
 
-export function SiteFooter({ path }: { path: string }) {
+export function SiteFooter({
+  path,
+  items,
+}: {
+  path: string;
+  items: readonly NavigationItem[];
+}) {
   return (
     <footer class="site-footer rb-site-footer">
       <div class="site-footer__main">
@@ -49,12 +59,8 @@ export function SiteFooter({ path }: { path: string }) {
             </a>
           </div>
         </div>
-        {config.navigation.footer.length > 0 ? (
-          <SiteNavigation
-            items={config.navigation.footer}
-            path={path}
-            label="Footer navigation"
-          />
+        {items.length > 0 ? (
+          <SiteNavigation items={items} path={path} label="Footer navigation" />
         ) : null}
       </div>
       <div class="site-footer__meta">
@@ -99,23 +105,29 @@ function NavigationItems({
       }
     >
       {items.map((item) => {
-        const active = isActive(item.href, path);
-        const href = localizeDocsHref(item.href, path);
+        const active = item.href ? isActive(item.href, path) : false;
+        const href = item.href ? localizeDocsHref(item.href, path) : undefined;
         return (
           <li class="site-navigation__item rb-nav__item">
-            <a
-              href={href}
-              class={
-                active
-                  ? "site-navigation__link rb-nav__link rb-nav__link--active is-active"
-                  : "site-navigation__link rb-nav__link"
-              }
-              aria-current={active ? "page" : undefined}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noreferrer" : undefined}
-            >
-              {item.label}
-            </a>
+            {href ? (
+              <a
+                href={href}
+                class={
+                  active
+                    ? "site-navigation__link rb-nav__link rb-nav__link--active is-active"
+                    : "site-navigation__link rb-nav__link"
+                }
+                aria-current={active ? "page" : undefined}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noreferrer" : undefined}
+              >
+                {item.label}
+              </a>
+            ) : (
+              <span class="site-navigation__label rb-nav__label">
+                {item.label}
+              </span>
+            )}
             {item.children && item.children.length > 0 ? (
               <NavigationItems items={item.children} path={path} isChildList />
             ) : null}

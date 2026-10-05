@@ -40,9 +40,14 @@
     position: relative;
   }
 
-  .rb-nav__link {
+  .rb-nav__link,
+  .rb-nav__label {
     color: var(--rb-color-ink);
     text-decoration: none;
+  }
+
+  .rb-nav__label {
+    opacity: 0.6;
   }
 
   .rb-nav__link:hover,
@@ -302,7 +307,10 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
   .rb-site-footer
-  .rb-nav__link {
+  .rb-nav__link,
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .rb-site-footer
+  .rb-nav__label {
   display: block;
   padding: 0.5rem 0 0.5rem 1.5rem;
   font-family: var(--rb-font-heading);

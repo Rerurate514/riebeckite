@@ -24,7 +24,7 @@ Riebeckite は主に、次の部分を担当します。
 | ボタンなどの UI | `app/components/` |
 | 操作できる UI | `app/islands/` |
 | 色・余白・文字・レイアウト | `app/style.css` や各 CSS |
-| Header / Footer のリンク | `riebeckite.config.ts` の `navigation` |
+| Header / Footer のリンク | `riebeckite.config.ts` の `navigation` plugin |
 
 基本的には **`app/` 以下を編集すればサイトの見た目や構成を変更できる** と考えてかまいません。
 
@@ -103,30 +103,34 @@ app/routes/_renderer.tsx
 
 ## Navigation を変える
 
-Header や Footer に表示するリンクは、`riebeckite.config.ts` の `navigation` で設定します。
+Header や Footer に表示するリンクは、`riebeckite.config.ts` に登録する
+[`@riebeckite/plugin-navigation`](../reference/configuration.md#navigation-の設定) Plugin が提供します。
 
 ```ts
-navigation: {
-  header: [
-    { label: "Guide", href: "/guide" },
-    {
-      label: "Notes",
-      href: "/notes/planning",
-      children: [
-        { label: "Planning", href: "/notes/planning" },
-        { label: "Writing", href: "/notes/writing" },
-      ],
-    },
-  ],
-  footer: [{ label: "Guide", href: "/guide" }],
-}
+plugins: [
+  navigation({
+    items: [
+      { label: "Guide", href: "/guide" },
+      {
+        label: "Notes",
+        href: "/notes/planning",
+        children: [
+          { label: "Planning", href: "/notes/planning" },
+          { label: "Writing", href: "/notes/writing" },
+        ],
+      },
+    ],
+    secondary: [{ label: "GitHub", href: "https://github.com/example/site" }],
+  }),
+]
 ```
 
-starter では `app/components/site-header.tsx` がこれを表示します。
+引数なしの `navigation()` は Vault からリンクを導出します。`items` を渡すと手動で選んだリンクに、`secondary` には補助リンクを指定できます。
 
-そのため、
+モデルを返すのは Plugin で、描画・配置は Site の shell が行います。starter では `app/components/site-header.tsx` が表示し、`app/routes/_renderer.tsx` がそれを渡します。そのため、
 
-- **リンクを追加・削除したい** → `navigation` を変更
+- **リンクを追加・削除したい** → `navigation({ items })` を変更
+- **Vault からリンクを導出したい** → 引数なしの `navigation()`
 - **Header の見た目や HTML を変えたい** → `site-header.tsx` を変更
 - **Header / Footer 自体の配置を変えたい** → `_renderer.tsx` を変更
 

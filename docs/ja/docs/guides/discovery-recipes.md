@@ -1,20 +1,20 @@
 # 発見導線のレシピ
 
-Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type、Markdown ブロック、`navigation` の組み合わせで作ります。
+Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type、Markdown ブロック、`navigation` plugin の組み合わせで作ります。
 
 このガイドでは、よくある発見導線 — Featured、最新記事、全記事一覧、Tag、Folder、Series、Archive — のレシピを集め、それぞれが使う Plugin とオプションを対応づけます。どのレシピも公開されている Plugin API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
 
 ## 覚えておくこと
 
-Plugin を有効にするとページは登録されますが、Header や Footer にリンクは追加されません。リンクは `navigation` に自分で追加します。
+Plugin を有効にするとページは登録されますが、Header や Footer にリンクは追加されません。リンクは `navigation({ items })` に自分で追加します。
 
 ```ts
-navigation: {
-  header: [
+navigation({
+  secondary: [
     { label: "Posts", href: "/posts" },
     { label: "Tags", href: "/tags" },
   ],
-}
+})
 ```
 
 Route は定数ではなく設定です。Tags の一覧、Series の一覧、Archive にはそれぞれ base path のオプションがあり、以下の例のパスは既定値であって固定値ではありません。Header / Footer の考え方は [サイトのカスタマイズ](./customizing-your-site.md) を参照してください。
@@ -109,7 +109,7 @@ LIMIT 3
 
 ## 全記事一覧
 
-全記事一覧は、フィルタの無い `query` です。専用のノートを用意し、たとえば `content/posts.md` に書いて `navigation` からリンクします。
+全記事一覧は、フィルタの無い `query` です。専用のノートを用意し、たとえば `content/posts.md` に書いて `navigation` plugin からリンクします。
 
 ````md
 ---
@@ -144,12 +144,10 @@ excludeSelf: true
 
 ## Tag
 
-`taxonomy` は `tagsBasePath`（既定 `/tags`）に Tag 一覧を、`tagsBasePath/<slug>` に各 Tag のページを生成します。`starter` ではすでに登録されています。読者がたどれるよう Header にリンクを追加します。
+`taxonomy` は `tagsBasePath`（既定 `/tags`）に Tag 一覧を、`tagsBasePath/<slug>` に各 Tag のページを生成します。`starter` ではすでに登録されています。読者がたどれるよう Navigation にリンクを追加します。
 
 ```ts
-navigation: {
-  header: [{ label: "Tags", href: "/tags" }],
-}
+navigation({ secondary: [{ label: "Tags", href: "/tags" }] })
 ```
 
 `/tags` が既存のコンテンツと衝突する場合は prefix を変更します。
@@ -167,12 +165,10 @@ Folder の形をした導線は2つあり、併用できます。
 - `taxonomy` は `foldersBasePath`（既定 `/folders`）に Folder ごとのノート一覧を生成し、Folder ごとのページを作ります。
 - `folder-pages` は各 Folder をその Folder のパス（たとえば `/notes/`）の landing ページにし、Folder 内の `README.md` や `index.md` をその landing ページへ集約します。
 
-Folder 一覧を使う場合は、taxonomy のパスへ Header リンクを追加します。
+Folder 一覧を使う場合は、taxonomy のパスを Navigation に追加します。
 
 ```ts
-navigation: {
-  header: [{ label: "Folders", href: "/folders" }],
-}
+navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 ```
 
 prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`folder-pages` は `README.md` と `index.md` の解決先を変えるため、Folder ごとの landing ページが欲しい場合だけ有効にします。`starter` には登録されていません。
@@ -189,12 +185,10 @@ series_order: 1
 ---
 ```
 
-一覧を `navigation` からリンクします。
+一覧を `navigation` plugin からリンクします。
 
 ```ts
-navigation: {
-  header: [{ label: "Series", href: "/series" }],
-}
+navigation({ secondary: [{ label: "Series", href: "/series" }] })
 ```
 
 prefix は `series({ basePath: "/guides" })` で変更できます。`basePath: ""` にすると生成ページを無効にし、export されている `buildSeriesIndex()` や `renderSeriesIndex()` で自分で描画できます。
@@ -210,9 +204,7 @@ plugins: [archive()],
 base path にリンクします。
 
 ```ts
-navigation: {
-  header: [{ label: "Archive", href: "/archive" }],
-}
+navigation({ secondary: [{ label: "Archive", href: "/archive" }] })
 ```
 
 `archive({ basePath: "/history", pageSize: 20 })` で prefix や 1 ページの件数を変更できます。`pageSize: 0` にすると月ごとに 1 ページのままになります。
@@ -224,13 +216,13 @@ navigation: {
 1. `content/index.md` の導入文。
 2. Featured ノートの `query` ブロック。
 3. 生成される Homepage route の `<RecentPosts />`。
-4. `/tags`、`/series`、`/archive` への Header リンク。
+4. `/tags`、`/series`、`/archive` への Navigation リンク。
 
 Docs 風のサイトは `folder-pages` を section の landing に、`series` を順序付きガイドに使います。ネストした Folder が少ない Vault なら Folder ページは使わなくてもかまいません。手持ちのコンテンツに合う部品を選んでください。
 
 ## このガイドで必要としないもの
 
-ここで挙げたレシピは、新しい抽象化を意図的に避けています。Homepage framework も Featured API も Core の Discovery registry もありません。Featured、全記事一覧、Archive はすべて既存 Plugin、Markdown ブロック、`navigation` の組み合わせです。
+ここで挙げたレシピは、新しい抽象化を意図的に避けています。Homepage framework も Featured API も Core の Discovery registry もありません。Featured、全記事一覧、Archive はすべて既存 Plugin、Markdown ブロック、`navigation` plugin の組み合わせです。
 
 ## 次に読むページ
 

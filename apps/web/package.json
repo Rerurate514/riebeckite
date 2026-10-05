@@ -53,6 +53,7 @@
     "@riebeckite/plugin-marp": "workspace:*",
     "@riebeckite/plugin-media": "workspace:*",
     "@riebeckite/plugin-mermaid": "workspace:*",
+    "@riebeckite/plugin-navigation": "workspace:*",
     "@riebeckite/plugin-pdf": "workspace:*",
     "@riebeckite/plugin-plantuml": "workspace:*",
     "@riebeckite/plugin-properties": "workspace:*",

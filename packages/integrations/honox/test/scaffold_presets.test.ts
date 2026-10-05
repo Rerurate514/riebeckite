@@ -65,7 +65,7 @@ test("each preset generates its intended self-contained composition", async () =
         assert.match(slugRoute, /pluginPageSsgParams/);
       }
       if (preset === "showcase") {
-        assert.match(config, /navigation: \{/);
+        assert.match(config, /navigation\(\{/);
         assert.match(config, /label: "Framework"/);
         assert.ok(
           await exists(path.join(targetDirectory, "content/examples.md")),
@@ -93,7 +93,7 @@ test("each preset generates its intended self-contained composition", async () =
         assert.ok(config.includes("@riebeckite/plugin-folder-pages"));
       }
       if (preset === "starter") {
-        assert.match(config, /navigation: \{/);
+        assert.match(config, /navigation\(\{/);
         assert.match(config, /label: "Notes"/);
         assert.ok(config.includes("@riebeckite/plugin-search"));
         assert.ok(config.includes("@riebeckite/plugin-breadcrumbs"));
@@ -143,8 +143,17 @@ test("starter and showcase scaffolds render authored navigation in the site shel
       assert.match(header, /aria-current/);
       assert.match(header, /target=\{item.external/);
       assert.match(header, /isChildList/);
-      assert.match(renderer, /<SiteHeader path=\{c.req.path\} \/>/);
-      assert.match(renderer, /<SiteFooter path=\{c.req.path\} \/>/);
+      assert.match(header, /from "@riebeckite\/plugin-navigation"/);
+      assert.match(header, /export function SiteHeader/);
+      assert.match(header, /export function SiteFooter/);
+      assert.match(
+        renderer,
+        /<SiteHeader path=\{c\.req\.path\} items=\{navigation\.primary\} \/>/,
+      );
+      assert.match(
+        renderer,
+        /<SiteFooter path=\{c\.req\.path\} items=\{navigation\.secondary\} \/>/,
+      );
       assert.match(renderer, /class="riebeckite-page rb-site"/);
       assert.match(
         await fs.readFile(
@@ -302,7 +311,10 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
       path.join(targetDirectory, "app/style.css"),
       "utf8",
     );
-    assert.match(style, /\*,\n\*::before,\n\*::after \{[\s\S]*?box-sizing: border-box/);
+    assert.match(
+      style,
+      /\*,\n\*::before,\n\*::after \{[\s\S]*?box-sizing: border-box/,
+    );
     assert.match(style, /\.riebeckite-page \{[\s\S]*?display: flex/);
     assert.match(
       style,
@@ -312,14 +324,8 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
       style,
       /\.site-header,\n\.rb-site-footer \{[\s\S]*?width: min\(100% - 2rem, var\(--rb-layout-article-max, 48rem\)\)/,
     );
-    assert.match(
-      style,
-      /\.site-header__home \{[\s\S]*?margin-right: auto/,
-    );
-    assert.match(
-      style,
-      /\.rb-nav__mobile \{[\s\S]*?position: relative/,
-    );
+    assert.match(style, /\.site-header__home \{[\s\S]*?margin-right: auto/);
+    assert.match(style, /\.rb-nav__mobile \{[\s\S]*?position: relative/);
     assert.match(
       style,
       /\.rb-nav__mobile > \.rb-nav \{[\s\S]*?position: absolute/,

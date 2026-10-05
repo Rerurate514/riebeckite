@@ -27,67 +27,10 @@ function validateConfigIssues(
   }
 
   validateSite(value.site, issues);
-  validateNavigation(value.navigation, issues);
   validateContent(value.content, issues);
   validateTheme(value.theme, issues);
   validatePlugins(value.plugins, issues);
   return issues;
-}
-
-function validateNavigation(
-  value: unknown,
-  issues: ConfigValidationIssue[],
-): void {
-  if (value === undefined) return;
-  if (!isRecord(value)) {
-    issues.push({ path: "navigation", message: "Expected an object." });
-    return;
-  }
-
-  validateNavigationItems(value.header, "navigation.header", issues, new Set());
-  validateNavigationItems(value.footer, "navigation.footer", issues, new Set());
-}
-
-function validateNavigationItems(
-  value: unknown,
-  path: string,
-  issues: ConfigValidationIssue[],
-  ancestors: Set<object>,
-): void {
-  if (value === undefined) return;
-  if (!Array.isArray(value)) {
-    issues.push({ path, message: "Expected an array." });
-    return;
-  }
-
-  for (const [index, item] of value.entries()) {
-    const itemPath = `${path}[${index}]`;
-    if (!isRecord(item)) {
-      issues.push({ path: itemPath, message: "Expected an object." });
-      continue;
-    }
-    if (ancestors.has(item)) {
-      issues.push({
-        path: itemPath,
-        message: "Navigation children must not be recursive.",
-      });
-      continue;
-    }
-
-    validateRequiredString(item.label, `${itemPath}.label`, issues);
-    validateRequiredString(item.href, `${itemPath}.href`, issues);
-    validateOptionalBoolean(item.external, `${itemPath}.external`, issues);
-    if (item.children !== undefined) {
-      const nextAncestors = new Set(ancestors);
-      nextAncestors.add(item);
-      validateNavigationItems(
-        item.children,
-        `${itemPath}.children`,
-        issues,
-        nextAncestors,
-      );
-    }
-  }
 }
 
 function validateSite(value: unknown, issues: ConfigValidationIssue[]): void {

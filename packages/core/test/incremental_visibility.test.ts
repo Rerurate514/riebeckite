@@ -32,7 +32,6 @@ function testConfig(directory: string): ResolvedRiebeckiteConfig {
       defaultOgImage: "",
       feed: { title: "", description: "", language: "en" },
     },
-    navigation: { header: [], footer: [] },
     content: {
       directory: "/test",
       exclude: [],

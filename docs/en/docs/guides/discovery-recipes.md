@@ -3,7 +3,7 @@
 Riebeckite does not have a separate "homepage framework". A homepage and the
 pages that help readers browse a site are built by combining the Plugins that
 already exist: their Page Types, their Markdown blocks, and the `navigation`
-config.
+plugin.
 
 This guide collects recipes for the common discovery routes — featured content,
 recent posts, an all-posts index, tags, folders, series, and archive — and names
@@ -13,15 +13,15 @@ API and Core config; none of them needs a new Core feature.
 ## One rule to remember
 
 Enabling a Plugin registers its pages, but it does **not** add a link to the
-Header or Footer. Add the link yourself in `navigation`:
+Header or Footer. Add the link yourself in `navigation({ items })`:
 
 ```ts
-navigation: {
-  header: [
+navigation({
+  secondary: [
     { label: "Posts", href: "/posts" },
     { label: "Tags", href: "/tags" },
   ],
-}
+})
 ```
 
 Routes are configuration, not constants. The tags index, series list, and
@@ -134,7 +134,7 @@ created for them.
 ## An all-posts index
 
 An all-posts page is a `query` with no filter. Give it its own note, for example
-`content/posts.md`, and link it from `navigation`:
+`content/posts.md`, and link it from the `navigation` plugin:
 
 ````md
 ---
@@ -173,12 +173,10 @@ below.
 
 `taxonomy` generates a tags index at `tagsBasePath` (default `/tags`) and one
 page per tag at `tagsBasePath/<slug>`. It is already registered in `starter`.
-Add a Header link so readers can find it:
+Add it to the navigation so readers can find it:
 
 ```ts
-navigation: {
-  header: [{ label: "Tags", href: "/tags" }],
-}
+navigation({ secondary: [{ label: "Tags", href: "/tags" }] })
 ```
 
 Change the prefix when `/tags` clashes with your content:
@@ -200,12 +198,10 @@ There are two folder-shaped routes, and they can be used together:
   (for example `/notes/`), and collapses a folder's `README.md` or `index.md`
   into that landing page.
 
-For a folder listing, add the Header link to the taxonomy path:
+For a folder listing, add the taxonomy path to the navigation:
 
 ```ts
-navigation: {
-  header: [{ label: "Folders", href: "/folders" }],
-}
+navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 ```
 
 Change the prefix with `taxonomy({ foldersBasePath: "/directories" })`. Because
@@ -227,12 +223,10 @@ series_order: 1
 ---
 ```
 
-Link the list from `navigation`:
+Link the list from the navigation plugin:
 
 ```ts
-navigation: {
-  header: [{ label: "Series", href: "/series" }],
-}
+navigation({ secondary: [{ label: "Series", href: "/series" }] })
 ```
 
 Change the prefix with `series({ basePath: "/guides" })`, or set `basePath: ""`
@@ -251,9 +245,7 @@ plugins: [archive()],
 Then link the base path:
 
 ```ts
-navigation: {
-  header: [{ label: "Archive", href: "/archive" }],
-}
+navigation({ secondary: [{ label: "Archive", href: "/archive" }] })
 ```
 
 Use `archive({ basePath: "/history", pageSize: 20 })` to change the prefix or
@@ -266,7 +258,7 @@ A blog-style homepage often combines a few of these:
 1. A lead paragraph in `content/index.md`.
 2. A `query` block for featured notes.
 3. `<RecentPosts />` from the generated homepage route.
-4. Header links to `/tags`, `/series`, and `/archive`.
+4. Navigation links to `/tags`, `/series`, and `/archive`.
 
 A docs-style site leans on `folder-pages` for section landings and on `series`
 for ordered guides. A vault with few nested folders may skip folder pages
@@ -277,7 +269,7 @@ entirely. Pick the pieces that match the content you have.
 These recipes deliberately avoid new abstractions. There is no homepage
 framework, no Featured API, and no Core discovery registry: featured content,
 all-posts indexes, and archive pages are all combinations of existing Plugins,
-Markdown blocks, and `navigation`.
+Markdown blocks, and the `navigation` plugin.
 
 ## Where to look next
 

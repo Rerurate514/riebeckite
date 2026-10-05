@@ -33,6 +33,7 @@ import { map } from "@riebeckite/plugin-map";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { marp } from "@riebeckite/plugin-marp";
 import { mermaid } from "@riebeckite/plugin-mermaid";
+import { navigation } from "@riebeckite/plugin-navigation";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
@@ -77,29 +78,6 @@ export default defineConfig({
     filters: {
       publishStrategy: "selective",
     },
-  },
-  navigation: {
-    header: [
-      { label: "Docs", href: "/docs/" },
-      { label: "Reference", href: "/docs/reference/" },
-      {
-        label: "Themes",
-        href: "/docs/themes/",
-        children: [
-          { label: "Default", href: "/docs/themes/default" },
-          { label: "Writing a theme", href: "/docs/themes/writing-a-theme" },
-        ],
-      },
-      { label: "Explore", href: "/explore/" },
-    ],
-    footer: [
-      { label: "Docs", href: "/docs/" },
-      {
-        label: "GitHub",
-        href: "https://github.com/Rerurate514/riebeckite",
-        external: true,
-      },
-    ],
   },
   markdown: {},
   theme: rerurateTheme({
@@ -211,6 +189,29 @@ export default defineConfig({
     localGraphPlugin(),
     l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
     folderPages(),
+    navigation({
+      items: [
+        { label: "Docs", href: "/docs/" },
+        { label: "Reference", href: "/docs/reference/" },
+        {
+          label: "Themes",
+          href: "/docs/themes/",
+          children: [
+            { label: "Default", href: "/docs/themes/default" },
+            { label: "Writing a theme", href: "/docs/themes/writing-a-theme" },
+          ],
+        },
+        { label: "Explore", href: "/explore/" },
+      ],
+      secondary: [
+        { label: "Docs", href: "/docs/" },
+        {
+          label: "GitHub",
+          href: "https://github.com/Rerurate514/riebeckite",
+          external: true,
+        },
+      ],
+    }),
     docs({
       root: "docs",
       sidebar: { auto: true, label: "Documentation" },

@@ -378,12 +378,18 @@ export function style(preset: ScaffoldPreset): string {
 }
 
 export function siteHeader(): string {
-  return `import type { NavigationItem } from "@riebeckite/core";
+  return `import type { NavigationItem } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { config } from "../config";
 
-export function SiteHeader({ path }: { path: string }) {
-  const navigation = (config.navigation?.header ?? []).filter((item) => item.href !== "/");
+export function SiteHeader({
+  path,
+  items,
+}: {
+  path: string;
+  items: readonly NavigationItem[];
+}) {
+  const navigation = items.filter((item) => item.href !== "/");
 
   return (
     <header class="site-header rb-site-header">
@@ -411,13 +417,18 @@ export function SiteHeader({ path }: { path: string }) {
   );
 }
 
-export function SiteFooter({ path }: { path: string }) {
-  const footerNavigation = config.navigation?.footer ?? [];
-  if (footerNavigation.length === 0) return null;
+export function SiteFooter({
+  path,
+  items,
+}: {
+  path: string;
+  items: readonly NavigationItem[];
+}) {
+  if (items.length === 0) return null;
 
   return (
     <footer class="site-footer rb-site-footer">
-      <SiteNavigation items={footerNavigation} path={path} />
+      <SiteNavigation items={items} path={path} />
     </footer>
   );
 }
@@ -448,18 +459,22 @@ function NavigationItems({
   return (
     <ul class={isChildList ? "site-navigation__list rb-nav__list rb-nav__children" : "site-navigation__list rb-nav__list"}>
       {items.map((item) => {
-        const active = isActive(item.href, path);
+        const active = item.href ? isActive(item.href, path) : false;
         return (
           <li class="site-navigation__item rb-nav__item">
-            <a
-              href={item.href}
-              class={active ? "site-navigation__link rb-nav__link rb-nav__link--active is-active" : "site-navigation__link rb-nav__link"}
-              aria-current={active ? "page" : undefined}
-              target={item.external ? "_blank" : undefined}
-              rel={item.external ? "noreferrer" : undefined}
-            >
-              {item.label}
-            </a>
+            {item.href ? (
+              <a
+                href={item.href}
+                class={active ? "site-navigation__link rb-nav__link rb-nav__link--active is-active" : "site-navigation__link rb-nav__link"}
+                aria-current={active ? "page" : undefined}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noreferrer" : undefined}
+              >
+                {item.label}
+              </a>
+            ) : (
+              <span class="site-navigation__label rb-nav__label">{item.label}</span>
+            )}
             {item.children && item.children.length > 0 ? (
               <NavigationItems items={item.children} path={path} isChildList />
             ) : null}
@@ -560,7 +575,7 @@ export function renderer(preset: ScaffoldPreset): string {
   return `import type { PluginHeadTag } from "@riebeckite/core";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
-${hasColorMode ? `import { ColorModeScript } from "@riebeckite/plugin-color-mode";\n` : ""}${hasSearch ? `import { SearchBar } from "@riebeckite/plugin-search";\n` : ""}${hasHeader ? `import { SiteFooter, SiteHeader } from "../components/site-header";\n` : ""}import { config } from "../config";
+${hasColorMode ? `import { ColorModeScript } from "@riebeckite/plugin-color-mode";\n` : ""}${hasSearch ? `import { SearchBar } from "@riebeckite/plugin-search";\n` : ""}${hasHeader ? `import { resolveSiteNavigation } from "@riebeckite/plugin-navigation";\n` : ""}${hasHeader ? `import { SiteFooter, SiteHeader } from "../components/site-header";\n` : ""}${hasHeader ? `import { content } from "../content";\n` : ""}import { config } from "../config";
 
 function themeAttributes() {
   const { theme } = config;
@@ -578,9 +593,9 @@ function themeAttributes() {
 // an island component.
 export const __importing_islands = true;
 
-export default jsxRenderer(({ children }, c) => {
+export default jsxRenderer(async ({ children }, c) => {
   const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
-
+${hasHeader ? `  const navigation = resolveSiteNavigation(config, await content.getManifest()) ?? { primary: [], secondary: [] };\n` : ""}
   return (
     <html
       lang={c.get("htmlLanguage") ?? config.site.locale}
@@ -596,8 +611,8 @@ ${hasColorMode ? `        <ColorModeScript />\n` : ""}        <Link href="/app/s
         <Script src="/app/client.ts" async />
       </head>
       <body class="riebeckite-page rb-site">
- ${hasHeader ? `        <SiteHeader path={c.req.path} />\n` : ""}${hasSearch ? `        <SearchBar />\n` : ""}        {children}
-${hasHeader ? `        <SiteFooter path={c.req.path} />\n` : ""}      </body>
+ ${hasHeader ? `        <SiteHeader path={c.req.path} items={navigation.primary} />\n` : ""}${hasSearch ? `        <SearchBar />\n` : ""}        {children}
+${hasHeader ? `        <SiteFooter path={c.req.path} items={navigation.secondary} />\n` : ""}      </body>
     </html>
   );
 });

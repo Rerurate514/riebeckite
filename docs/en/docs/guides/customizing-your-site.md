@@ -24,7 +24,7 @@ Start by finding the location that matches what you want to change.
 | Buttons and other UI | `app/components/` |
 | Interactive UI | `app/islands/` |
 | Color, spacing, type, and layout | `app/style.css` and local CSS |
-| Header / Footer links | `navigation` in `riebeckite.config.ts` |
+| Header / Footer links | the `navigation` plugin in `riebeckite.config.ts` |
 
 As a rule, **editing files under `app/` changes how the site looks and is
 structured**. The exception is `app/.riebeckite/`, which Riebeckite generates
@@ -103,30 +103,38 @@ See [Head tag handoff](../framework/honox-integration.md#head-tag-handoff).
 
 ## Navigation
 
-Set the links shown in the Header and Footer with `navigation` in
-`riebeckite.config.ts`.
+The links shown in the Header and Footer come from the
+[`@riebeckite/plugin-navigation`](../reference/configuration.md#navigation)
+plugin, which you register in `riebeckite.config.ts`.
 
 ```ts
-navigation: {
-  header: [
-    { label: "Guide", href: "/guide" },
-    {
-      label: "Notes",
-      href: "/notes/planning",
-      children: [
-        { label: "Planning", href: "/notes/planning" },
-        { label: "Writing", href: "/notes/writing" },
-      ],
-    },
-  ],
-  footer: [{ label: "Guide", href: "/guide" }],
-}
+plugins: [
+  navigation({
+    items: [
+      { label: "Guide", href: "/guide" },
+      {
+        label: "Notes",
+        href: "/notes/planning",
+        children: [
+          { label: "Planning", href: "/notes/planning" },
+          { label: "Writing", href: "/notes/writing" },
+        ],
+      },
+    ],
+    secondary: [{ label: "GitHub", href: "https://github.com/example/site" }],
+  }),
+]
 ```
 
-In the starter, `app/components/site-header.tsx` renders these items. So it
-helps to think in terms of:
+Called with no arguments, `navigation()` derives the links from the vault. Pass
+`items` to curate them yourself and `secondary` for supplementary links.
 
-- **Adding or removing a link** → change `navigation`
+The plugin produces the model; the site shell renders and places it. In the
+starter, `app/components/site-header.tsx` renders the items and
+`app/routes/_renderer.tsx` passes them in. So it helps to think in terms of:
+
+- **Adding or removing a link** → change `navigation({ items })`
+- **Deriving links from the vault** → call `navigation()` with no arguments
 - **Changing the Header look or HTML** → change `site-header.tsx`
 - **Changing where the Header / Footer sits** → change `_renderer.tsx`
 

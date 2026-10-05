@@ -1,5 +1,6 @@
 import {
   appendContentBodySlot,
+  attachErrorPath,
   type ContentBodySlot,
   type ContentLocationInput,
   type ContentManifest,
@@ -447,7 +448,12 @@ function parseFrontmatter(entry: ContentLocationInput): PostFrontmatter {
     /^(?:\uFEFF)?---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/,
   );
   if (!match) return {};
-  const value = parse(match[1] ?? "");
+  let value: unknown;
+  try {
+    value = parse(match[1] ?? "");
+  } catch (error) {
+    throw attachErrorPath(error, entry.path);
+  }
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`Invalid frontmatter object: ${entry.path}`);
   }

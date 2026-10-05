@@ -8,7 +8,7 @@ riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
-riebeckite deploy [--dry-run | setup]
+riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] | graph | build]
 ```
@@ -22,7 +22,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | diagnose environment, project discovery, configuration, plugins, content source readability, deprecated usage, and build state | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
-| `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment | no |
+| `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
 
@@ -37,6 +37,8 @@ Plugin option validation runs as part of `check`. Each plugin's `validateOptions
 `deploy` publishes the `dist/` produced by `build` to Cloudflare Workers by invoking Wrangler. It creates `wrangler.jsonc` from the site folder name when the file is missing, opens the Wrangler login on the first run, and forwards `--dry-run` for validation without uploading. It never rebuilds content, so run `npm exec riebeckite build` first. Because `npm` consumes a bare `--dry-run`, pass it as `npm exec -- riebeckite deploy --dry-run`. A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes the Wrangler dependency and `wrangler.jsonc`.
 
 `deploy setup` prepares continuous deployment to GitHub Actions for a project that is already a Git repository and published with Local-first. It detects the Git repository and the GitHub remote, checks the GitHub CLI (`gh`) and Wrangler logins, creates `.github/workflows/deploy.yml` from the same template used by `create-riebeckite`, reads the Cloudflare account from your Wrangler login (asking you to choose when there is more than one), and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt or from `CLOUDFLARE_API_TOKEN` in the environment and is sent to `gh secret set` through standard input; it is never passed as a command argument or written to disk. The command does not create a GitHub repository and does not push. An existing non-Riebeckite workflow is reported and left unchanged, and the command stops before registering any secrets. Wrangler must be installed in the site (Local-first sites already have it). Run it again any time: a matching workflow and existing secrets are detected and skipped, so only the remaining steps run.
+
+`deploy domain` configures a Cloudflare Workers Custom Domain for the Worker that `deploy` publishes. Run it after the first `deploy`, because it reads the existing Wrangler configuration (`wrangler.jsonc` or `wrangler.json`) in the site and adds a declarative `routes` entry with `custom_domain: true`. It takes no arguments: the command prompts for a hostname such as `docs.example.com`, shows the planned change, and asks for confirmation before writing. A `wrangler.toml` is left unchanged, and the command stops with a hint when no Wrangler configuration exists or the terminal is not interactive. After writing, it offers `Deploy now?` and otherwise prints the `npm exec riebeckite deploy` command. Running it again detects an already-configured domain and skips the write.
 
 Command failures are reported with the error name, message, and, when present, the error `code`, file path, and a remediation `hint`. Nested causes are printed as `Caused by:` lines.
 

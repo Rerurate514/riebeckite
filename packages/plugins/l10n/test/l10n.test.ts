@@ -544,3 +544,20 @@ test("leaves fragment-only, unknown, and asset links unchanged", async () => {
   assert.match(source?.html ?? "", /href="\/missing"/);
   assert.match(source?.html ?? "", /href="\/manual\.pdf"/);
 });
+
+test("a malformed frontmatter error identifies the failing content path", async () => {
+  const content = manager({
+    "notes/bad.md": '---\ntitle: "unterminated\n---\n\n# Bad\n',
+  });
+
+  await assert.rejects(
+    () => content.getContentLocations(),
+    (error: Error) => {
+      assert.equal((error as Error & { path?: string }).path, "notes/bad.md");
+      const cause = (error as { cause?: unknown }).cause as Error;
+      assert.equal(cause.name, "YAMLParseError");
+      assert.match(cause.message, /Missing closing "quote/);
+      return true;
+    },
+  );
+});

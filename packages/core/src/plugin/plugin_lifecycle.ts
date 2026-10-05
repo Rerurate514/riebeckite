@@ -8,9 +8,13 @@ import type {
 type LifecycleHookName = "setup" | "buildStart" | "buildEnd" | "dispose";
 
 export class PluginHookError extends Error {
+  readonly path?: string;
+
   constructor(pluginName: string, hookName: string, cause: unknown) {
     super(`Plugin "${pluginName}" failed during "${hookName}"`, { cause });
     this.name = "PluginHookError";
+    const path = (cause as { path?: unknown } | undefined)?.path;
+    if (typeof path === "string") this.path = path;
   }
 }
 

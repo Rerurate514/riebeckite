@@ -15,6 +15,7 @@ import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent, PostFrontmatter } from "../types/post_content.js";
 import type { PublishStrategy } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
+import { attachErrorPath } from "../utils/error.js";
 import {
   ContentBuildCoordinator,
   type ContentBuildPreparation,
@@ -208,51 +209,59 @@ export class ContentManager {
         contentPath: `${slug}.md`,
       },
       async () => {
-        const [contentIndex, rawPost] = await Promise.all([
-          this.getContentIndex(),
-          this.getPost(slug),
-        ]);
-
-        await this.pluginRuntime.startBuild(contentIndex);
-        await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
-
-        await this.ensureRoutableSlugs();
-        this.pipeline ??= new Pipeline(
-          contentIndex,
-          await this.locationResolver.getPermalinks(),
-          (postSlug) => this.getPost(postSlug),
-          this.pipelineOptions,
-          this.isBuildTime,
-        );
-        const content = await this.pipeline.execute(rawPost, {
-          sourceSlug: slug,
-        });
-        this.processedContentCount += 1;
-        if (this.processedContentCount % 100 === 0) {
-          this.observability().tracer.event("content.process.sample", {
-            processed: this.processedContentCount,
-          });
+        try {
+          return await this.processContent(slug);
+        } catch (error) {
+          throw attachErrorPath(error, `${slug}.md`);
         }
-
-        await this.pluginRuntime.runPostHook(
-          "onPostParsed",
-          slug,
-          rawPost,
-          content,
-          contentIndex,
-        );
-        await this.pluginRuntime.runPostHook(
-          "onPostProcessed",
-          slug,
-          rawPost,
-          content,
-          contentIndex,
-        );
-
-        this.contentCache.set(slug, content);
-        return content;
       },
     );
+  }
+
+  private async processContent(slug: string): Promise<PostContent> {
+    const [contentIndex, rawPost] = await Promise.all([
+      this.getContentIndex(),
+      this.getPost(slug),
+    ]);
+
+    await this.pluginRuntime.startBuild(contentIndex);
+    await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
+
+    await this.ensureRoutableSlugs();
+    this.pipeline ??= new Pipeline(
+      contentIndex,
+      await this.locationResolver.getPermalinks(),
+      (postSlug) => this.getPost(postSlug),
+      this.pipelineOptions,
+      this.isBuildTime,
+    );
+    const content = await this.pipeline.execute(rawPost, {
+      sourceSlug: slug,
+    });
+    this.processedContentCount += 1;
+    if (this.processedContentCount % 100 === 0) {
+      this.observability().tracer.event("content.process.sample", {
+        processed: this.processedContentCount,
+      });
+    }
+
+    await this.pluginRuntime.runPostHook(
+      "onPostParsed",
+      slug,
+      rawPost,
+      content,
+      contentIndex,
+    );
+    await this.pluginRuntime.runPostHook(
+      "onPostProcessed",
+      slug,
+      rawPost,
+      content,
+      contentIndex,
+    );
+
+    this.contentCache.set(slug, content);
+    return content;
   }
 
   async getManifest(options?: ContentBuildOptions): Promise<ContentManifest> {
@@ -626,7 +635,13 @@ export class ContentManager {
     const routableSlugs = new Set<string>();
     await mapConcurrent(posts, CONTENT_PROCESSING_CONCURRENCY, async (post) => {
       const markdown = await this.getPost(post.slug);
-      const publishing = resolvePublishingState(readFrontmatter(markdown), {
+      let frontmatter: PostFrontmatter;
+      try {
+        frontmatter = readFrontmatter(markdown);
+      } catch (error) {
+        throw attachErrorPath(error, `${post.slug}.md`);
+      }
+      const publishing = resolvePublishingState(frontmatter, {
         strategy,
         buildTime: this.publishingBuildTime,
       });

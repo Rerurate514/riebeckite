@@ -227,6 +227,20 @@ test("frontmatter edge cases: missing, BOM, invalid objects and non-strings", as
   );
 });
 
+test("a malformed frontmatter error identifies the failing content path", async () => {
+  await assert.rejects(
+    resolve([
+      input("notes/bad", '---\ntitle: "unterminated\n---\n', "notes/bad.md"),
+    ]),
+    (error: Error) => {
+      assert.equal(error.name, "YAMLParseError");
+      assert.match(error.message, /Missing closing "quote/);
+      assert.equal((error as Error & { path?: string }).path, "notes/bad.md");
+      return true;
+    },
+  );
+});
+
 test("invalid option values fail fast at plugin creation", () => {
   assert.throws(() => permalink({ id: { length: 5 } }), /from 6 through 43/);
   assert.throws(() => permalink({ id: { length: 44 } }), /from 6 through 43/);

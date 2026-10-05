@@ -6,8 +6,6 @@
 
 | ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
 |---|---|---|---|---|---|
-| DX2 | content 処理中の失敗（frontmatter parse / markdown pipeline）が対象 content の logical path を error に含めるようにする | 未着手 | Small | `ContentManager` は content 単位で `vfile-matter` の `matter()` を実行するが parse 失敗を wrap しない。frontmatter が壊れた note があると build 全体が `YAMLParseError: Missing closing "quote at line 1, column 21` のように file path も slug も含まない error で落ちる（再現済み）。大規模 Vault ではどのファイルを直すべきか特定できず、failure path の診断性が不足する。CLI の `renderCliError` は `path` / `file` / `hint` property があれば表示するが、この error には無い | content 処理中の parse / pipeline 失敗に、失敗した content の logical path（該当すれば plugin 名も）を付与し、`riebeckite build` と `content.build()` の error から対象を特定できるようにする。malformed frontmatter の note を含む Vault で error に対象 path が含まれる regression test を追加する。正常 Vault の build 結果は変えない |
-| DOC1 | `reference/cli.md`（en / ja）に `deploy domain` を追記する | 未着手 | Small | CLI は `deploy domain` を受け付ける（`packages/cli/src/cli.ts` の usage・`runDeployDomain`）が、`docs/en/docs/reference/cli.md` と `docs/ja/docs/reference/cli.md` の usage とコマンド表は `deploy [--dry-run \| setup]` のみで `domain` が欠落している。`getting-started/deployment.md` には `deploy domain` の記載があり、reference の方が実装から drift している | en / ja 両方の `reference/cli.md` の usage とコマンド表に `deploy domain` を、実装の `parseCommand` が受け付ける形式と一致する形で追加する |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

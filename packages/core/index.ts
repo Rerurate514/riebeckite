@@ -321,6 +321,7 @@ export type {
 } from "./src/types/theme_config.js";
 export { defineTheme } from "./src/types/theme_config.js";
 export { uniqueStrings } from "./src/utils/collections.js";
+export { attachErrorPath } from "./src/utils/error.js";
 export {
   escapeHtml,
   escapeHtmlAttribute,

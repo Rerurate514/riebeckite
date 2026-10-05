@@ -19,7 +19,7 @@ riebeckite dev
 riebeckite check
 riebeckite doctor
 riebeckite build [--full]
-riebeckite deploy [--dry-run | setup]
+riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
 
 riebeckite inspect config
@@ -38,7 +38,7 @@ riebeckite inspect build
 | `check` | 設定が正しいか検証する | 変更しない |
 | `doctor` | Project 全体の問題を診断する | 変更しない |
 | `build` | Site を Build する | 成功時のみ更新 |
-| `deploy` | 生成物を Cloudflare Workers へ公開する。`--dry-run` は検証のみ、`setup` は GitHub Actions の継続デプロイを準備する | 変更しない |
+| `deploy` | 生成物を Cloudflare Workers へ公開する。`--dry-run` は検証のみ、`setup` は GitHub Actions の継続デプロイを準備する、`domain` は Custom Domain を設定する | 変更しない |
 | `profile` | Build の性能を調査する | Build に依存 |
 | `inspect` | 現在の解決結果を見る | 変更しない |
 
@@ -369,6 +369,18 @@ Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLA
 GitHub Repository の作成と push は行いません。Riebeckite 以外の既存 workflow を検出した場合は、上書きせずそのまま報告し、secret の登録には進まずに停止します。再実行すると、一致する workflow と登録済みの secret は検出され、残りの手順だけを実行します。別の deployment workflow が既にある場合は、置き換えるか削除してから再実行してください。
 
 `deploy setup` は Wrangler のログインを使うため、Wrangler の依存が Site に install されている必要があります。`create-riebeckite` で `Cloudflare Workers` を選んだ Site には含まれています。
+
+### `deploy domain`
+
+`deploy` が公開する Worker に Cloudflare Workers の Custom Domain を設定します。
+
+```sh id="d0main"
+npm exec riebeckite deploy domain
+```
+
+`deploy domain` は Site の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み、`custom_domain: true` を持つ `routes` エントリを追加します。引数は取りません。`docs.example.com` のような hostname を対話的に入力し、変更内容を表示して確認したうえで書き込みます。
+
+初回の `deploy` の後で実行してください。Wrangler 設定が無い場合や terminal が interactive でない場合は、hint を表示して停止します。`wrangler.toml` は変更しません。書き込み後は `Deploy now?` を確認し、選ばなかった場合は `npm exec riebeckite deploy` を案内します。再実行すると設定済みの domain を検出し、書き込みを省略します。
 
 ## `profile`
 

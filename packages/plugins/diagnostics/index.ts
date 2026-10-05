@@ -62,7 +62,7 @@ export function diagnostics(options: DiagnosticsOptions = {}) {
     onManifestCreated: ({ manifest, diagnostics }) => {
       diagnostics.push(...checkSiteIntegrity(manifest, options));
     },
-    onBuildEnd: ({ manifest }) => {
+    buildEnd: ({ manifest }) => {
       if (!options.failOnError) return undefined;
       const errors = manifest.diagnostics.filter(
         (diagnostic) =>

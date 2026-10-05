@@ -187,8 +187,6 @@ flowchart TD
 | HTTP | `endpoints` |
 | SEO | `seo` |
 
-Legacy / compatibility 用として `onBuildStart`、`onBuildEnd` もあります。
-
 すべてを実装する必要はありません。
 
 UI や output の拡張ポイントは複数あり、優劣の順列ではなく選択肢です。Markdown / HTML 変換、renderer、Page Type、body Slot、公開する Hono JSX component、client entry があります。どれを選ぶかは [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
@@ -286,8 +284,10 @@ type PluginContext = {
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;
+  contentSource?: ContentSource;
 };
 ```
 
@@ -337,7 +337,7 @@ flowchart LR
 
 という流れになります。
 
-`dispose` は確保した Resource の解放に使用します。
+`setup`、`buildStart`、`onConfigResolved`、Content 処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は Diagnostics の収集後に完成した Manifest を受け取る唯一の終端 Hook です。`dispose` は確保した Resource の解放に使用し、解決済み Plugin の逆順で実行されます。
 
 Lifecycle の実行順は、解決済み Plugin Order に従います。
 
@@ -363,13 +363,15 @@ flowchart TD
     Graph["Content Graph"]
     Manifest["Manifest Created"]
 
-    Config --> Loaded
-    Loaded --> Location
-    Location --> Parsed
+    Config --> Location
+    Location --> Loaded
+    Loaded --> Parsed
     Parsed --> Processed
     Processed --> Graph
     Graph --> Manifest
 ```
+
+全体の順序は `setup` → `buildStart` → `onConfigResolved` → Public Location 解決 → `onContentLoaded` → Markdown / HTML Pipeline → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → Diagnostics → `buildEnd` です。
 
 代表的な Hook は、
 

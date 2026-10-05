@@ -47,7 +47,7 @@ export function deployPlugin(options: DeployOptions): RiebeckitePlugin {
   return definePlugin({
     name: PLUGIN_NAME,
     options,
-    onBuildEnd(context) {
+    buildEnd(context) {
       const redirects = resolvePublicRedirects(
         context.manifest,
         context.diagnostics,

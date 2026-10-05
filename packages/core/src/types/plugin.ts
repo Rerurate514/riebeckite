@@ -79,8 +79,6 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   onPostParsed?(context: PluginPostContext): void | Promise<void>;
   onPostProcessed?(context: PluginPostContext): void | Promise<void>;
   onManifestCreated?(context: PluginManifestContext): void | Promise<void>;
-  onBuildStart?(context: PluginContext): void | Promise<void>;
-  onBuildEnd?(context: PluginManifestContext): void | Promise<void>;
   extendMarkdownPipeline?(
     pipeline: MarkdownPipeline,
     context: MarkdownPipelineContext,

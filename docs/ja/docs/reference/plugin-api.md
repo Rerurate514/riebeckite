@@ -98,8 +98,6 @@ export function examplePlugin(
 | HTTP | `endpoints` |
 | SEO | `seo` |
 
-Legacy / compatibility 用として `onBuildStart`、`onBuildEnd` も存在します。
-
 Plugin はこの中から**必要なものだけ**を使用してください。
 
 # Plugin の有効化
@@ -225,8 +223,10 @@ type PluginContext = {
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;
+  contentSource?: ContentSource;
 };
 ```
 
@@ -247,7 +247,7 @@ Plugin 内で global singleton を作るより、Context から Framework Servic
 
 Plugin には Framework 全体の Lifecycle と、Content 処理の Lifecycle があります。
 
-Framework Lifecycle には、
+Framework Lifecycle は、
 
 ```text
 setup
@@ -260,9 +260,9 @@ dispose
 
 `dispose` は Plugin が確保した resource の解放に使用します。
 
-Lifecycle は解決済みの Plugin 順序に従って実行されます。
+`setup`、`buildStart`、`onConfigResolved`、Content 処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は Diagnostics の収集後に完成した Manifest を受け取る唯一の終端 Hook です。`dispose` は解決済み Plugin の逆順で実行されます。
 
-Plugin 内でエラーが発生した場合は、Plugin 名と Hook が分かる状態で上位へ伝播させます。
+名前付き Lifecycle / Content Hook でエラーが発生した場合は、Plugin 名と Hook が分かる状態で上位へ伝播させます。
 
 元の `cause` を失わないことも重要です。
 
@@ -280,13 +280,15 @@ flowchart TD
     Graph["Content Graph"]
     Manifest["Manifest Created"]
 
-    Config --> Loaded
-    Loaded --> Location
-    Location --> Parsed
+    Config --> Location
+    Location --> Loaded
+    Loaded --> Parsed
     Parsed --> Processed
     Processed --> Graph
     Graph --> Manifest
 ```
+
+全体の順序は `setup` → `buildStart` → `onConfigResolved` → Public Location 解決 → `onContentLoaded` → Markdown / HTML Pipeline → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → Diagnostics → `buildEnd` です。
 
 代表的な Hook として、
 

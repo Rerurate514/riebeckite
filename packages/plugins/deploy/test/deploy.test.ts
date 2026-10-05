@@ -290,7 +290,7 @@ async function runPlugin(
   const outputs: DeployOutput[] = [];
   const diagnostics: Diagnostic[] = [];
   const plugin = deployPlugin(options);
-  await plugin.onBuildEnd?.({
+  await plugin.buildEnd?.({
     manifest,
     output: { emit: (output) => outputs.push(output) },
     diagnostics,

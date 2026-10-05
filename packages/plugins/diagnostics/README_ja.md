@@ -24,6 +24,8 @@ export default defineConfig({
 });
 ```
 
+`failOnError: true` を指定すると、`buildEnd` で error レベルの Diagnostics が残っている場合に `DiagnosticsFailure` を送出します。
+
 ## 検出する問題
 
 | コード | 既定の重要度 | 内容 |
@@ -116,4 +118,3 @@ assertNoErrors(report);
 ## 関連資料
 
 - [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
-

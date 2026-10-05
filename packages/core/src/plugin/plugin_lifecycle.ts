@@ -7,10 +7,33 @@ import type {
 
 type LifecycleHookName = "setup" | "buildStart" | "buildEnd" | "dispose";
 
-export class PluginLifecycleError extends Error {
-  constructor(pluginName: string, hookName: LifecycleHookName, cause: unknown) {
+export class PluginHookError extends Error {
+  constructor(pluginName: string, hookName: string, cause: unknown) {
     super(`Plugin "${pluginName}" failed during "${hookName}"`, { cause });
-    this.name = "PluginLifecycleError";
+    this.name = "PluginHookError";
+  }
+}
+
+export async function runPluginHook<
+  TContext extends { tracer: Tracer },
+  TResult,
+>(
+  plugin: RiebeckitePlugin,
+  hookName: string,
+  context: TContext,
+  hook: (context: TContext) => TResult | Promise<TResult>,
+): Promise<TResult> {
+  try {
+    return await context.tracer.span(
+      `plugin.${hookName}`,
+      {
+        plugin: plugin.name,
+        hook: hookName,
+      },
+      () => hook(context),
+    );
+  } catch (error) {
+    throw new PluginHookError(plugin.name, hookName, error);
   }
 }
 
@@ -62,30 +85,18 @@ export async function runDispose(
   );
 }
 
-async function runLifecycleHook<TContext>(
+async function runLifecycleHook<TContext extends { tracer: Tracer }>(
   plugins: readonly RiebeckitePlugin[],
   hookName: LifecycleHookName,
   getHook: (
     plugin: RiebeckitePlugin,
   ) => ((context: TContext) => void | Promise<void>) | undefined,
-  createContext: (plugin: RiebeckitePlugin) => TContext & { tracer: Tracer },
+  createContext: (plugin: RiebeckitePlugin) => TContext,
 ): Promise<void> {
   for (const plugin of plugins) {
     const hook = getHook(plugin);
     if (!hook) continue;
 
-    try {
-      const context = createContext(plugin);
-      await context.tracer.span(
-        `plugin.${hookName}`,
-        {
-          plugin: plugin.name,
-          hook: hookName,
-        },
-        () => hook(context),
-      );
-    } catch (error) {
-      throw new PluginLifecycleError(plugin.name, hookName, error);
-    }
+    await runPluginHook(plugin, hookName, createContext(plugin), hook);
   }
 }

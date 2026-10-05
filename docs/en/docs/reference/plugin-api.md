@@ -100,8 +100,9 @@ mutate cache/state.
 
 ## Plugin Context
 
-The base context contains resolved config when available,
-`contentIndex`, diagnostics, plugin-scoped cache, Logger, and Tracer.
+The base context contains resolved config when available, `contentIndex`,
+diagnostics, plugin-scoped cache, generated-output sink, Logger, Tracer, and
+the content source when Core owns one.
 Specialized hooks add post, manifest, graph, location, or render data.
 
 ``` ts
@@ -110,8 +111,10 @@ type PluginContext = {
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;
+  contentSource?: ContentSource;
 };
 ```
 
@@ -119,12 +122,14 @@ Prefer injected context services over plugin-owned global singletons.
 
 ## Lifecycle
 
-Framework lifecycle hooks include `setup`, `buildStart`, `buildEnd`, and
-`dispose`. Content hooks cover config resolution, content loading,
-parsed/processed posts, graph extension, and manifest creation.
+Framework lifecycle hooks run once per `ContentManager` in this order:
+`setup`, `buildStart`, `onConfigResolved`, content processing, and `buildEnd`.
+`dispose` runs in reverse resolved order when the manager is disposed.
+`buildEnd` receives the completed manifest after diagnostics have been
+collected and is the only terminal build hook.
 
-Execution follows resolved plugin order. Errors should retain the
-plugin/hook identity and original cause.
+Named lifecycle and content hooks run in resolved plugin order. Core reports a
+hook failure with the plugin name, hook name, and original cause.
 
 ## Markdown and HTML pipelines
 
@@ -200,13 +205,9 @@ regeneration.
 Content hooks join named phases of content processing:
 
 ``` text
-config resolved
--> content loaded
--> public location resolved
--> post parsed
--> post processed
--> content graph
--> manifest created
+setup → buildStart → config resolved → public locations resolved
+→ content loaded → Markdown/HTML pipeline → post parsed → post processed
+→ content graph → manifest created → diagnostics → build end
 ```
 
 Use only the hooks a phase genuinely requires, and do not rebuild later-phase

@@ -73,7 +73,6 @@ UI and output have several extension points, and they are alternatives rather th
 | Lifecycle | `setup`, `buildStart`, `buildEnd`, `dispose` |
 | Content hooks | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
 | Public Location | `resolveContentLocations` |
-| Legacy/compat build hooks | `onBuildStart`, `onBuildEnd` |
 | Pipeline | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
 | Graph | `extendContentGraph` |
 | Diagnostics | `addDiagnostics` |
@@ -112,8 +111,10 @@ type PluginContext = {
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;
+  contentSource?: ContentSource;
 };
 ```
 
@@ -121,18 +122,14 @@ Depending on the hook, `slug`, `markdown`, `content`, `manifest`, `entries`, and
 
 ### 3-4. Lifecycle
 
-`setup`, `buildStart`, `buildEnd`, `dispose`, plus content-pipeline hooks. `dispose` frees acquired resources. Hook errors propagate in a way that identifies the plugin name and hook without losing the original cause. Execution follows the resolved plugin order.
+`setup`, `buildStart`, `onConfigResolved`, content processing, and `buildEnd` run once per `ContentManager`. `buildEnd` receives the completed manifest after diagnostics have been collected and is the only terminal build hook. `dispose` frees acquired resources and runs in reverse resolved order. Named lifecycle and content hook failures identify the plugin, hook, and original cause. Other hook families follow resolved plugin order.
 
 ### 3-5. Content pipeline stages
 
 ```text
-config resolved
-→ content loaded
-→ public location resolved
-→ post parsed
-→ post processed
-→ content graph
-→ manifest created
+setup → buildStart → config resolved → public locations resolved
+→ content loaded → Markdown/HTML pipeline → post parsed → post processed
+→ content graph → manifest created → diagnostics → build end
 ```
 
 Use only the hooks you actually need. Do not reconstruct later-stage information in earlier stages.
@@ -320,4 +317,3 @@ If a plugin does not resolve, start with `check` for capability or import errors
 - [Content System](./content-system.md) — Manifest / Graph / pipeline contracts
 - [Architecture](./architecture.md) — responsibilities of Core / Plugin / Integration / Theme / App
 - [Framework Reference](../reference/README.md) — public APIs like `definePlugin`
-

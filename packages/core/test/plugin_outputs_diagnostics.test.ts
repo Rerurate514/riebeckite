@@ -150,6 +150,51 @@ test("generated output paths are validated when emitted", async () => {
   });
 });
 
+test("buildEnd runs all terminal plugin work in resolved order", async () => {
+  const seen: string[] = [];
+  const first = definePlugin({
+    name: "first",
+    buildEnd: () => {
+      seen.push("first");
+    },
+  });
+  const second = definePlugin({
+    name: "second",
+    buildEnd: () => {
+      seen.push("second");
+    },
+  });
+  const manager = new ContentManager(memorySource(oneNote), [], {
+    plugins: [second, first],
+  });
+
+  await manager.getManifest();
+
+  assert.deepEqual(seen, ["second", "first"]);
+});
+
+test("manifest hook failures retain plugin and hook identity", async () => {
+  const broken = definePlugin({
+    name: "broken",
+    onManifestCreated: () => {
+      throw new Error("expected failure");
+    },
+  });
+  const manager = new ContentManager(memorySource(oneNote), [], {
+    plugins: [broken],
+  });
+
+  await assert.rejects(manager.getManifest(), (error: unknown) => {
+    assert.ok(error instanceof Error);
+    assert.match(
+      error.message,
+      /Plugin "broken" failed during "onManifestCreated"/,
+    );
+    assert.match(causeMessage(error), /expected failure/);
+    return true;
+  });
+});
+
 function causeMessage(error: unknown): string {
   const cause = (error as { cause?: unknown }).cause;
   return cause instanceof Error ? cause.message : String(cause);

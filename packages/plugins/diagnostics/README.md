@@ -32,7 +32,7 @@ export default defineConfig({
 
 - `addDiagnostics` — runs the analysis at build time; results go to
   `manifest.diagnostics`
-- `onBuildEnd` — with `failOnError: true`, throws `DiagnosticsFailure` when
+- `buildEnd` — with `failOnError: true`, throws `DiagnosticsFailure` when
   error-level diagnostics exist
 
 ## Checks
@@ -160,4 +160,3 @@ assertNoErrors(report);
 ## See also
 
 - [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
-

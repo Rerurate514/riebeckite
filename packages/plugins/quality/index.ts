@@ -71,7 +71,7 @@ export function qualityPlugin(options: QualityOptions = {}): RiebeckitePlugin {
       }
     },
     inspectGeneratedHtml: (page) => inspectGeneratedHtml(page, inspectOptions),
-    onBuildEnd: ({ manifest }) => {
+    buildEnd: ({ manifest }) => {
       if (resolved.failOn !== "error") return;
       const errors = manifest.diagnostics.filter(
         (diagnostic) =>

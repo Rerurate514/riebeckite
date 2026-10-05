@@ -41,6 +41,7 @@ import {
   runBuildEnd,
   runBuildStart,
   runDispose,
+  runPluginHook,
   runSetup,
 } from "./plugin_lifecycle.js";
 
@@ -60,7 +61,6 @@ export type PluginBuildStage =
   | "idle"
   | "setup"
   | "buildStart"
-  | "onBuildStart"
   | "onConfigResolved"
   | "started";
 
@@ -92,7 +92,7 @@ export class PluginRuntime {
    * Starts the plugin build lifecycle exactly once, regardless of which public
    * entry point (content processing or location resolution) reaches it first.
    * Concurrent callers await the same run, so the ordered hooks
-   * (`setup` → `buildStart` → `onBuildStart` → `onConfigResolved`) are never
+   * (`setup` → `buildStart` → `onConfigResolved`) are never
    * duplicated and no caller proceeds before the lifecycle completes.
    */
   startBuild(contentIndex: Map<string, string>): Promise<void> {
@@ -105,7 +105,7 @@ export class PluginRuntime {
     markdown: string,
     contentIndex: Map<string, string>,
   ) {
-    await this.runHook((plugin) => plugin.onContentLoaded, {
+    await this.runHook("onContentLoaded", (plugin) => plugin.onContentLoaded, {
       ...this.createContext(contentIndex),
       slug,
       markdown,
@@ -122,8 +122,12 @@ export class PluginRuntime {
       const resolver: PluginContentLocationResolver | undefined =
         plugin.resolveContentLocations;
       if (!resolver) continue;
-      const resolved = await resolver(
-        this.createPluginContext(plugin, context),
+      const pluginContext = this.createPluginContext(plugin, context);
+      const resolved = await runPluginHook(
+        plugin,
+        "resolveContentLocations",
+        pluginContext,
+        resolver,
       );
       locations.push(...resolved);
     }
@@ -135,11 +139,15 @@ export class PluginRuntime {
     locations: Map<string, ContentPublicLocation>,
     contentIndex: Map<string, string>,
   ) {
-    await this.runHook((plugin) => plugin.extendContentLocations, {
-      ...this.createContext(contentIndex),
-      entries,
-      locations,
-    });
+    await this.runHook(
+      "extendContentLocations",
+      (plugin) => plugin.extendContentLocations,
+      {
+        ...this.createContext(contentIndex),
+        entries,
+        locations,
+      },
+    );
   }
 
   async runPostHook(
@@ -149,7 +157,7 @@ export class PluginRuntime {
     content: PostContent,
     contentIndex: Map<string, string>,
   ) {
-    await this.runHook((plugin) => plugin[hookName], {
+    await this.runHook(hookName, (plugin) => plugin[hookName], {
       ...this.createContext(contentIndex),
       slug,
       markdown,
@@ -161,20 +169,28 @@ export class PluginRuntime {
     entries: ContentManifestEntry[],
     contentIndex: Map<string, string>,
   ) {
-    await this.runHook((plugin) => plugin.extendContentGraph, {
-      ...this.createContext(contentIndex),
-      entries,
-    });
+    await this.runHook(
+      "extendContentGraph",
+      (plugin) => plugin.extendContentGraph,
+      {
+        ...this.createContext(contentIndex),
+        entries,
+      },
+    );
   }
 
   async runManifestCreated(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ) {
-    await this.runHook((plugin) => plugin.onManifestCreated, {
-      ...this.createContext(contentIndex),
-      manifest,
-    });
+    await this.runHook(
+      "onManifestCreated",
+      (plugin) => plugin.onManifestCreated,
+      {
+        ...this.createContext(contentIndex),
+        manifest,
+      },
+    );
   }
 
   async runBuildEnd(
@@ -188,10 +204,6 @@ export class PluginRuntime {
     await runBuildEnd(this.plugins(), (plugin) =>
       this.createPluginContext(plugin, context),
     );
-    await this.runHook((plugin) => plugin.onBuildEnd, {
-      ...this.createContext(contentIndex),
-      manifest,
-    });
   }
 
   enableBuildTime(): void {
@@ -396,9 +408,15 @@ export class PluginRuntime {
       const results: Diagnostic[] = [];
       const context = this.createContext(contentIndex);
       for (const plugin of this.plugins()) {
-        const diagnostics = await plugin.addDiagnostics?.(
-          this.createPluginContext(plugin, context),
-        );
+        const hook = plugin.addDiagnostics;
+        const diagnostics = hook
+          ? await runPluginHook(
+              plugin,
+              "addDiagnostics",
+              this.createPluginContext(plugin, context),
+              hook,
+            )
+          : undefined;
         for (const diagnostic of diagnostics ?? []) {
           results.push({
             ...diagnostic,
@@ -435,12 +453,13 @@ export class PluginRuntime {
         run: () => runBuildStart(this.plugins(), createPluginContext),
       },
       {
-        stage: "onBuildStart",
-        run: () => this.runHook((plugin) => plugin.onBuildStart, context),
-      },
-      {
         stage: "onConfigResolved",
-        run: () => this.runHook((plugin) => plugin.onConfigResolved, context),
+        run: () =>
+          this.runHook(
+            "onConfigResolved",
+            (plugin) => plugin.onConfigResolved,
+            context,
+          ),
       },
     ];
 
@@ -500,6 +519,7 @@ export class PluginRuntime {
   }
 
   private async runHook<TContext extends PluginContextBase>(
+    hookName: string,
     hook: (
       plugin: NonNullable<PipelineOptions["plugins"]>[number],
     ) =>
@@ -511,13 +531,7 @@ export class PluginRuntime {
       const pluginHook = hook(plugin);
       if (!pluginHook) continue;
       const pluginContext = this.createPluginContext(plugin, context);
-      await pluginContext.tracer.span(
-        "plugin.hook",
-        {
-          plugin: plugin.name,
-        },
-        () => pluginHook(pluginContext),
-      );
+      await runPluginHook(plugin, hookName, pluginContext, pluginHook);
     }
   }
 

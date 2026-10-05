@@ -269,7 +269,7 @@ test("failOn error throws on error-severity diagnostics", () => {
   } as unknown as ContentManifest;
   assert.throws(
     () =>
-      plugin.onBuildEnd?.({
+      plugin.buildEnd?.({
         manifest,
         diagnostics: [],
       } as unknown as PluginManifestContext),
@@ -290,7 +290,7 @@ test("failOn defaults to never", () => {
     ],
   } as unknown as ContentManifest;
   assert.doesNotThrow(() =>
-    plugin.onBuildEnd?.({
+    plugin.buildEnd?.({
       manifest,
       diagnostics: [],
     } as unknown as PluginManifestContext),

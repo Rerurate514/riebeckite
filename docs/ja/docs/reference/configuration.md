@@ -68,12 +68,16 @@ export default defineConfig({
 
 引数なしで呼び出すと、Vault の **discoverable entries**（`manifest.discoverableEntries`。public かつ discoverable で、draft や非 routable な Content を除く）から `primary` を導出します。専用の Vault ファイルを要求せず、既存の Riebeckite の情報を再利用します。
 
-- folder 構造
-- README / index の解決（`index` または `README` のノートがその folder を表す）
-- ページの `title`
+- folder 構造（folder はセクションになり、ネストした folder は `children` になります）
+- README / index の解決（`index` または `README` のノートがその folder を表し、folder の `href` になります）
+- README / index を持たない folder は、リンクを持たない label になります
+- ルート直下の README / index は Navigation には現れません
+- ページの `title`（無い場合は slug のセグメントを整形）
 - `permalink`
 
 **Riebeckite 専用の Vault ファイル（`navigation.md` など）も、必須の frontmatter も必要ありません。**
+
+導出は表示中の言語に追従します。`l10n` Plugin が付与する言語 metadata をもとに同じ翻訳の entry をひとつの項目へ集約し、現在の言語の `href` だけを使います。`/ja/guide/` を表示しているときに `/en/...` が混ざることはありません。`l10n` を使っていない Vault では、これまでどおり全 entry が対象になります。
 
 ### 手動リンクと補助リンク
 
@@ -97,8 +101,6 @@ navigation({
   ],
 });
 ```
-
-> 多言語 Vault: 引数なしの導出は現在 single-language Vault を対象としています。多言語 Site では `items` を手動で指定してください。
 
 ### NavigationItem
 

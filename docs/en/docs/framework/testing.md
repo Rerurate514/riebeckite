@@ -19,6 +19,13 @@ repository-specific fixture, package list, and assertions stay in
 |`pnpm --filter @riebeckite/plugin-toc test`|Run one package's tests|
 |`pnpm test:update`|Rewrite every golden file with the current output|
 |`pnpm test:e2e:external`|Run the external-site integration suite|
+|`pnpm test:registry`|Run the scaffold install contracts against npm-published artifacts|
+
+The scaffold install contracts validate the generated site against **locally
+packed workspace artifacts** by default, so a branch that adds a new package can
+be verified before it is published. `pnpm test:registry` switches the same
+contracts to install from npm and assert the published artifacts resolve; run it
+after a release.
 
 For a single package you can also update only its golden files by setting
 `UPDATE_GOLDEN=1` before its test script. In PowerShell:

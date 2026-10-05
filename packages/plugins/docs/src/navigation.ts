@@ -90,7 +90,7 @@ function resolveRelativeDocsPath(
   if (entry.slug.startsWith(`${root}/`))
     return entry.slug.slice(root.length + 1);
 
-  const language = entry.publicLocation.metadata?.["l10n.lang"];
+  const language = entry.publicLocation.language;
   if (!language) return null;
   const localizedRoot = `${language}/${root}`;
   if (entry.slug === localizedRoot) return "index";

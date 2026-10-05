@@ -70,6 +70,9 @@ External Site E2E を動かす再利用可能な Engine は、
 | `pnpm --filter <package> test` | 特定の Package だけテスト |
 | `pnpm test:update` | すべての Golden File を現在の出力で更新 |
 | `pnpm test:e2e:external` | External Site E2E を実行 |
+| `pnpm test:registry` | Scaffold の install Contract を npm 公開 artifact に対して実行 |
+
+Scaffold の install Contract は、既定では **workspace を `pnpm pack` した artifact** を install して検証します。そのため、新しい Package を追加した branch でも publish 前に検証できます。`pnpm test:registry` は同じ Contract を npm からの install に切り替え、公開済み artifact が解決できることを確認します。Release 後に実行してください。
 
 通常は、変更した範囲に近いテストから実行してください。
 

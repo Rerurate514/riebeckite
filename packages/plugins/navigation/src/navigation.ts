@@ -1,7 +1,8 @@
-import type {
-  ConfigValidationIssue,
-  ContentManifest,
-  ContentManifestEntry,
+import {
+  type ConfigValidationIssue,
+  type ContentManifest,
+  type ContentManifestEntry,
+  selectEntriesByLanguage,
 } from "@riebeckite/core";
 import type {
   NavigationEntry,
@@ -13,12 +14,14 @@ import type {
 
 type TreeNode = {
   readonly segment: string;
-  index?: NavigationEntry;
+  readonly indexes: NavigationEntry[];
   page?: NavigationEntry;
   readonly children: Map<string, TreeNode>;
 };
 
 const ROOT_SEGMENT = "";
+
+const LOCALIZATION_TRANSLATION_KEY = "l10n.translationId";
 
 export const NAVIGATION_PLUGIN_NAME = "navigation";
 
@@ -35,6 +38,7 @@ export function buildNavigation(
 export function resolveSiteNavigation(
   source: NavigationSource,
   manifest: ContentManifest,
+  language?: string,
 ): SiteNavigation | null {
   const plugin = source.plugins?.find(
     (candidate) =>
@@ -42,7 +46,7 @@ export function resolveSiteNavigation(
   );
   if (!plugin) return null;
   return buildNavigation(
-    manifest.discoverableEntries,
+    selectEntriesByLanguage(manifest.discoverableEntries, language),
     (plugin.options as NavigationOptions | undefined) ?? {},
   );
 }
@@ -71,7 +75,9 @@ function deriveNavigation(
 function toNavigationEntry(
   entry: ContentManifestEntry,
 ): NavigationEntry | null {
-  const segments = entry.slug.split("/").filter(Boolean);
+  const path =
+    entry.publicLocation.metadata?.[LOCALIZATION_TRANSLATION_KEY] ?? entry.slug;
+  const segments = path.split("/").filter(Boolean);
   if (segments.length === 0) return null;
   const isIndex = ["index", "README"].includes(segments.at(-1) ?? "");
   return {
@@ -98,7 +104,7 @@ function addEntry(root: TreeNode, entry: NavigationEntry): void {
     node.children.set(segment, child);
     node = child;
   }
-  if (entry.isIndex) node.index = entry;
+  if (entry.isIndex) node.indexes.push(entry);
   else node.page = entry;
 }
 
@@ -107,9 +113,17 @@ function buildItems(node: TreeNode): readonly NavigationItem[] {
 }
 
 function nodeToItem(node: TreeNode): NavigationItem {
-  const primary = node.index ?? node.page;
+  const singleIndex = node.indexes.length === 1 ? node.indexes[0] : undefined;
+  const primary =
+    singleIndex ?? (node.indexes.length === 0 ? node.page : undefined);
+  const extra: NavigationEntry[] =
+    node.indexes.length <= 1
+      ? singleIndex && node.page
+        ? [node.page]
+        : []
+      : [...node.indexes, ...(node.page ? [node.page] : [])];
   const children: NavigationItem[] = [
-    ...(node.index && node.page ? [toItem(node.page)] : []),
+    ...extra.map((entry) => toItem(entry)),
     ...buildItems(node),
   ];
   if (primary) return toItem(primary, children);
@@ -131,8 +145,8 @@ function toItem(
 }
 
 function compareNodes(a: TreeNode, b: TreeNode): number {
-  const left = a.index ?? a.page;
-  const right = b.index ?? b.page;
+  const left = a.indexes[0] ?? a.page;
+  const right = b.indexes[0] ?? b.page;
   const leftTitle = left?.title ?? titleFromSegment(a.segment);
   const rightTitle = right?.title ?? titleFromSegment(b.segment);
   const title = leftTitle.localeCompare(rightTitle, "en", {
@@ -143,7 +157,7 @@ function compareNodes(a: TreeNode, b: TreeNode): number {
 }
 
 function createTreeNode(segment: string): TreeNode {
-  return { segment, children: new Map() };
+  return { segment, indexes: [], children: new Map() };
 }
 
 function titleFromSegment(segment: string): string {

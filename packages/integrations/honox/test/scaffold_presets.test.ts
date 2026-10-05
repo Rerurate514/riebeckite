@@ -294,6 +294,73 @@ test("generated scaffold code contains no un-interpolated template variables", a
   });
 });
 
+test("scaffolded app/style.css ships the shared shell layout and floating menu", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const targetDirectory = path.join(directory, "starter");
+    await scaffoldRiebeckiteSite({ targetDirectory, preset: "starter" });
+    const style = await fs.readFile(
+      path.join(targetDirectory, "app/style.css"),
+      "utf8",
+    );
+    assert.match(style, /\*,\n\*::before,\n\*::after \{[\s\S]*?box-sizing: border-box/);
+    assert.match(style, /\.riebeckite-page \{[\s\S]*?display: flex/);
+    assert.match(
+      style,
+      /\.riebeckite-page \{[\s\S]*?padding-block: var\(--rb-space-8, 4rem\)/,
+    );
+    assert.match(
+      style,
+      /\.site-header,\n\.rb-site-footer \{[\s\S]*?width: min\(100% - 2rem, var\(--rb-layout-article-max, 48rem\)\)/,
+    );
+    assert.match(
+      style,
+      /\.site-header__home \{[\s\S]*?margin-right: auto/,
+    );
+    assert.match(
+      style,
+      /\.rb-nav__mobile \{[\s\S]*?position: relative/,
+    );
+    assert.match(
+      style,
+      /\.rb-nav__mobile > \.rb-nav \{[\s\S]*?position: absolute/,
+    );
+    assert.match(style, /\.rb-nav__mobile > \.rb-nav \{[\s\S]*?box-shadow/);
+    assert.match(
+      style,
+      /\.site-article \{[\s\S]*?var\(--rb-layout-article-max, 48rem\)/,
+    );
+    assert.match(style, /\.rb-article-body \{[\s\S]*?min-width: 0/);
+  });
+});
+
+test("scaffolded app/style.css only lays out presets that render a shell", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const minimalDirectory = path.join(directory, "minimal");
+    await scaffoldRiebeckiteSite({
+      targetDirectory: minimalDirectory,
+      preset: "minimal",
+    });
+    const minimalStyle = await fs.readFile(
+      path.join(minimalDirectory, "app/style.css"),
+      "utf8",
+    );
+    assert.match(minimalStyle, /\.riebeckite-page \{/);
+    assert.doesNotMatch(minimalStyle, /\.site-header \{/);
+
+    const emptyDirectory = path.join(directory, "empty");
+    await scaffoldRiebeckiteSite({
+      targetDirectory: emptyDirectory,
+      preset: "empty",
+    });
+    const emptyStyle = await fs.readFile(
+      path.join(emptyDirectory, "app/style.css"),
+      "utf8",
+    );
+    assert.doesNotMatch(emptyStyle, /\.riebeckite-page \{/);
+    assert.match(emptyStyle, /\.riebeckite-empty \{/);
+  });
+});
+
 async function exists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);

@@ -23,8 +23,6 @@ export type PublicRedirect = {
 export type DeployOptions = {
   /** One or more deploy targets to prepare files for. */
   provider: DeployProvider | DeployProvider[];
-  /** Absolute site origin used when an absolute canonical URL is required. */
-  baseUrl?: string;
   /** Vercel `trailingSlash` preference. */
   trailingSlash?: "always" | "never";
   /** Additional hosting headers, rendered per provider when supported. */

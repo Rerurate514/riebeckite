@@ -106,8 +106,6 @@ export default defineConfig({
       ],
     }),
     seo({
-      siteName: "Riebeckite Documentation",
-      defaultImage: "/ogp.png",
       feed: {
         rss: true,
         atom: true,

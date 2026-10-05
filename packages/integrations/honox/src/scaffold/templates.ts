@@ -224,6 +224,7 @@ function riebeckiteConfig(
   lines.push(`    description: ${JSON.stringify(description)},`);
   lines.push(`    baseUrl: ${JSON.stringify(baseUrl)},`);
   lines.push(`    locale: ${JSON.stringify(locale)},`);
+  lines.push('    defaultOgImage: "/ogp.png",');
   lines.push("  },");
   lines.push("  content: {");
   lines.push('    directory: "content",');

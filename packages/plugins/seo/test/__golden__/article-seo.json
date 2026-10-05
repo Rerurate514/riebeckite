@@ -1,5 +1,5 @@
 {
-  "title": "Hello <World> | Custom Site",
+  "title": "Hello <World> | Riebeckite",
   "description": "A description",
   "canonicalUrl": "https://example.com/posts/hello",
   "imageUrl": "https://example.com/img/cover.png",
@@ -30,7 +30,7 @@
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Custom Site"
+        "name": "Riebeckite"
       },
       "keywords": "a, b",
       "timeRequired": "PT1M",
@@ -43,7 +43,7 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Custom Site",
+          "name": "Riebeckite",
           "item": "https://example.com/"
         },
         {

@@ -14,8 +14,6 @@ export default defineConfig({
   // ...
   plugins: [
     seo({
-      siteName: "Riebeckite Blog",
-      defaultImage: "/ogp.png",
       feed: { rss: true, atom: true, json: true, limit: 30 },
       sitemap: true,
       robots: true,
@@ -26,8 +24,6 @@ export default defineConfig({
 
 | 項目 | 説明 |
 | --- | --- |
-| `siteName` | ページタイトルに使うサイト名。省略時は `site.title` |
-| `defaultImage` | 既定の OGP 画像。省略時は `site.defaultOgImage` |
 | `feed` | RSS、Atom、JSON Feed の出力を個別に有効化する。`limit` は全形式共通の件数上限で、既定値は 30 件 |
 | `sitemap` | サイトマップを出力する |
 | `robots` | robots.txt を出力する |

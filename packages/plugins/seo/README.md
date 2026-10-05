@@ -20,8 +20,6 @@ export default defineConfig({
   // ...
   plugins: [
     seo({
-      siteName: "Riebeckite Blog",
-      defaultImage: "/ogp.png",
       feed: { rss: true, atom: true, json: true, limit: 30 },
       sitemap: true,
       robots: true,
@@ -34,8 +32,6 @@ export default defineConfig({
 
 | Option | Type | Description |
 | ------ | ---- | ----------- |
-| `siteName` | `string` | Site name used in page titles. Defaults to `site.title`. |
-| `defaultImage` | `string` | Default OG image. Falls back to `site.defaultOgImage`. |
 | `feed` | `{ rss?: boolean; atom?: boolean; json?: boolean; limit?: number }` | Feed output settings. `limit` defaults to 30 and applies to every format. |
 | `sitemap` | `boolean` | Sitemap output settings. |
 | `robots` | `boolean` | robots.txt output settings. |
@@ -44,12 +40,12 @@ export default defineConfig({
 
 ### Articles (`buildArticleSeo`)
 
-- `title`: `"{title} | {siteName}"`
+- `title`: `"{title} | {site.title}"`
 - `description`: `frontmatter.description`, otherwise the first 160 characters
   of the post text
 - `canonicalUrl`: `frontmatter.canonical`, otherwise the entry's resolved canonical permalink
 - `imageUrl`: `frontmatter.ogImage` / `frontmatter.image`, otherwise
-  `defaultImage` / `site.defaultOgImage`
+  `site.defaultOgImage`
 - `noindex`: `frontmatter.noindex === true`
 - `publishedTime`: `published` / `date` / `created`
 - `modifiedTime`: `updated`, falling back to the publish time

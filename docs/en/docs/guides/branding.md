@@ -44,7 +44,7 @@ site: {
 
 Put the file under `public/` (here `public/ogp.png`) so it is served at `/ogp.png`. A 1200×630 PNG or JPEG is the common size. Set `site.baseUrl` to the real public URL so the absolute image URL in generated metadata is correct.
 
-Individual pages can override the fallback. The [SEO plugin](../plugins/seo.md) reads `image` or `ogImage` from frontmatter, and its `defaultImage` option takes precedence over `site.defaultOgImage` when you prefer to configure the image there.
+Individual pages can override the fallback. The [SEO plugin](../plugins/seo.md) reads `image` or `ogImage` from frontmatter, falling back to `site.defaultOgImage`.
 
 ## Title and description
 

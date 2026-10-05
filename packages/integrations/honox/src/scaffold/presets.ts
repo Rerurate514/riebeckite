@@ -181,7 +181,7 @@ const np = (
  *
  * Factories that take no options (or are left deliberately bare, like the
  * color-mode toggle) stay as `factory()`. Options may reference the scaffold
- * context, so values like `seo.siteName` follow the user's site title.
+ * context so plugin defaults follow the user's answers.
  */
 
 /** The foundation plugin, shared by every non-empty preset. */
@@ -199,13 +199,8 @@ const l10n = np("@riebeckite/plugin-l10n", "l10n", (context) => {
 
 /** Core publishing and reading experience. */
 const seo = np("@riebeckite/plugin-seo", "seo", {
-  siteName: {
-    depth: 1,
-    value: (context) => JSON.stringify(context.variables.title),
-  },
   sitemap: { depth: 1, value: "true" },
   robots: { depth: 2, value: "true" },
-  defaultImage: { depth: 3, value: '"/ogp.png"' },
   feed: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
 });
 const toc = np("@riebeckite/plugin-toc", "tocPlugin");
@@ -531,8 +526,7 @@ const quality = np(
 const deploy = np(
   "@riebeckite/plugin-deploy",
   "deployPlugin",
-  (context) =>
-    `{ provider: "cloudflare-pages", baseUrl: ${JSON.stringify(context.variables.baseUrl)} }`,
+  `{ provider: "cloudflare-pages" }`,
 );
 const diagnostics = np(
   "@riebeckite/plugin-diagnostics",

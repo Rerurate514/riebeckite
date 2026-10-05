@@ -44,7 +44,7 @@ site: {
 
 ファイルは `public/` に置きます（この例では `public/ogp.png` が `/ogp.png` で配信されます）。1200×630 の PNG または JPEG が一般的なサイズです。`site.baseUrl` を実際の公開 URL に設定しておくと、生成されるメタデータの画像 URL が正しくなります。
 
-ページごとに画像を上書きすることもできます。[SEO Plugin](../plugins/seo.md) は frontmatter の `image` / `ogImage` を読み取り、`defaultImage` オプションは `site.defaultOgImage` より優先されます。
+ページごとに画像を上書きすることもできます。[SEO Plugin](../plugins/seo.md) は frontmatter の `image` / `ogImage` を読み取り、なければ `site.defaultOgImage` を使います。
 
 ## タイトルと説明
 

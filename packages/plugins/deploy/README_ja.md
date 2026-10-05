@@ -22,7 +22,6 @@ export default defineConfig({
   plugins: [
     deployPlugin({
       provider: ["cloudflare-pages", "github-pages"],
-      baseUrl: "https://example.com",
       cname: "example.com",
       headers: { "X-Frame-Options": "DENY" },
     }),

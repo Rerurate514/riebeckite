@@ -8,8 +8,6 @@ export type FeedOptions = {
 };
 
 export type SeoPluginOptions = {
-  siteName?: string;
-  defaultImage?: string;
   feed?: FeedOptions;
   sitemap?: boolean;
   robots?: boolean;

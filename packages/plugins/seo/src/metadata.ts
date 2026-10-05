@@ -8,17 +8,15 @@ import type {
 import { calculateReadingTime } from "@riebeckite/core";
 import { getDescription, getHtmlLanguage, normalizeTags } from "./content.js";
 import { buildBreadcrumbSchema, removeUndefined } from "./schema.js";
-import type { SeoPluginOptions } from "./types.js";
 import { buildAbsoluteUrl, buildPostUrl } from "./url.js";
 
 export function buildArticleSeo(
   config: ResolvedRiebeckiteConfig,
-  options: SeoPluginOptions,
   permalink: string,
   post: PostContent,
   headTags?: readonly PluginHeadTag[],
 ): SeoMetadata {
-  const siteName = getSiteName(config, options);
+  const siteName = config.site.title;
   const title = getArticleTitle(config, permalink, post.frontmatter.title);
   const canonicalUrl = buildCanonicalUrl(
     config,
@@ -28,7 +26,6 @@ export function buildArticleSeo(
   const description = getDescription(post) || config.site.description;
   const imageUrl = buildImageUrl(
     config,
-    options,
     post.frontmatter.ogImage ?? post.frontmatter.image,
   );
   const publishedTime = getIsoDate(
@@ -85,14 +82,13 @@ export function buildArticleSeo(
 
 export function buildWebsiteSeo(
   config: ResolvedRiebeckiteConfig,
-  options: SeoPluginOptions,
   input: WebsiteSeoInput,
   headTags?: readonly PluginHeadTag[],
 ): SeoMetadata {
-  const siteName = getSiteName(config, options);
+  const siteName = config.site.title;
   const canonicalUrl = buildAbsoluteUrl(config, input.path);
   const description = input.description || config.site.description;
-  const imageUrl = buildImageUrl(config, options);
+  const imageUrl = buildImageUrl(config);
   const title =
     input.kind === "tag" ? input.title : buildPageTitle(siteName, input.title);
   const jsonLd: Record<string, unknown>[] = [
@@ -140,18 +136,10 @@ function buildCanonicalUrl(
 
 function buildImageUrl(
   config: ResolvedRiebeckiteConfig,
-  options: SeoPluginOptions,
   value?: string,
 ): string {
-  const image = value || options.defaultImage || config.site.defaultOgImage;
+  const image = value || config.site.defaultOgImage;
   return image ? buildAbsoluteUrl(config, image) : "";
-}
-
-function getSiteName(
-  config: ResolvedRiebeckiteConfig,
-  options: SeoPluginOptions,
-): string {
-  return options.siteName || config.site.title;
 }
 
 function getArticleTitle(

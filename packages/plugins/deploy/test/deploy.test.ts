@@ -65,11 +65,11 @@ test("github-pages skips the root redirect", () => {
   );
 });
 
-test("github-pages stubs resolve baseUrl to an absolute canonical", () => {
+test("github-pages stubs resolve the site base URL to an absolute canonical", () => {
   const outputs = planDeployOutputs({
     provider: "github-pages",
     redirects: [{ from: "/old", to: "/new", status: 301 }],
-    options: { provider: "github-pages", baseUrl: "https://example.com" },
+    baseUrl: "https://example.com",
   });
   const stub = pathOf(outputs, "old/index.html");
   assert.match(

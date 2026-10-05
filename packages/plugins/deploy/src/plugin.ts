@@ -57,7 +57,12 @@ export function deployPlugin(options: DeployOptions): RiebeckitePlugin {
         : [options.provider];
       const outputs = mergePlannedOutputs(
         providers.map((provider) =>
-          planDeployOutputs({ provider, redirects, options }),
+          planDeployOutputs({
+            provider,
+            redirects,
+            options,
+            baseUrl: context.config?.site.baseUrl,
+          }),
         ),
       );
       for (const entry of outputs) {

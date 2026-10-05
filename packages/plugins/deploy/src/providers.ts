@@ -58,6 +58,7 @@ export function planDeployOutputs(args: {
   provider: DeployProvider;
   redirects: readonly PublicRedirect[];
   options?: DeployOptions;
+  baseUrl?: string;
 }): DeployOutput[] {
   const { provider, options } = args;
   const redirects = normalizeRedirects(args.redirects);
@@ -96,7 +97,7 @@ export function planDeployOutputs(args: {
       for (const redirect of redirects) {
         const path = redirectStubPath(redirect.from);
         if (path === null) continue;
-        add(path, renderRedirectStubFor(redirect, options?.baseUrl));
+        add(path, renderRedirectStubFor(redirect, args.baseUrl));
       }
       break;
     }

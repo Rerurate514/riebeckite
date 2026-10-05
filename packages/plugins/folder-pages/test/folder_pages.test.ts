@@ -327,8 +327,12 @@ test("aligns localized folder pages, breadcrumbs, and docs navigation", async ()
   assert.ok((await content.getPagePaths()).includes("/docs/guide/"));
   assert.ok((await content.getPagePaths()).includes("/en/docs/guide/"));
 
-  const japanese = manifest.bySlug.get("ja/docs/guide/page")?.html ?? "";
-  const english = manifest.bySlug.get("en/docs/guide/page")?.html ?? "";
+  const japanese = Object.values(
+    manifest.bySlug.get("ja/docs/guide/page")?.bodySlots ?? {},
+  ).join("\n");
+  const english = Object.values(
+    manifest.bySlug.get("en/docs/guide/page")?.bodySlots ?? {},
+  ).join("\n");
   assert.match(japanese, /href="\/docs\/"/);
   assert.match(japanese, /href="\/docs\/guide\/"/);
   assert.doesNotMatch(japanese, /href="\/ja\//);

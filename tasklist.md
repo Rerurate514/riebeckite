@@ -4,7 +4,11 @@
 
 ## 実装対象（優先度順）
 
-現在、実装対象はありません。
+| ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
+|---|---|---|---|---|---|
+| LINK1 | 重複する basename / alias / attachment 名の wikilink 解決を entry の反復順に依存しない決定的な結果にし、曖昧な target を diagnostic で報告する | 未着手 | Medium | `ContentIndexBuilder.addIndexEntry` は lowercased key を最初に書いた entry のみ保持するため、同名の note / alias / attachment が複数あると解決先が entry の反復順で決まる。`getManifest()`（preparation なし。dev の on-demand 解決と programmatic consumer が使う）は filesystem の readdir 順、`build({incremental:true})` は `fingerprintContentEntries` が path で sort するため、同じ Vault でも `riebeckite dev` と `riebeckite build` で `[[dup]]` / `[[shared]]`（alias）/ `![[photo.png]]` が別ファイルに解決されうる。再現済み（scan X,Y → `/x/dup`・`/x/note`・`/img/x/photo.png`、Y,X → `/y/dup`・`/y/note`・`/img/y/photo.png`）。誤ったリンク・画像が silent に公開され、site_integrity にも ambiguous-target の diagnostic が無い。correctness と Obsidian 互換の双方に影響する | 重複 basename / alias / attachment 名の解決規則を明文化し、entry の反復順や dev / build の経路に依存しない決定的な結果にする（完全 path 指定の優先など）。`getManifest()` と `build()` が同一 Vault で同一結果を返し、完全 path 指定 `[[x/dup]]` は従来どおり解決し、曖昧な bare name / alias を持つ公開 note に対して warning diagnostic が出ることを regression test で保証する。private / draft の target へは従来どおり解決しない（publication boundary 維持） |
+| DX2 | content 処理中の失敗（frontmatter parse / markdown pipeline）が対象 content の logical path を error に含めるようにする | 未着手 | Small | `ContentManager` は content 単位で `vfile-matter` の `matter()` を実行するが parse 失敗を wrap しない。frontmatter が壊れた note があると build 全体が `YAMLParseError: Missing closing "quote at line 1, column 21` のように file path も slug も含まない error で落ちる（再現済み）。大規模 Vault ではどのファイルを直すべきか特定できず、failure path の診断性が不足する。CLI の `renderCliError` は `path` / `file` / `hint` property があれば表示するが、この error には無い | content 処理中の parse / pipeline 失敗に、失敗した content の logical path（該当すれば plugin 名も）を付与し、`riebeckite build` と `content.build()` の error から対象を特定できるようにする。malformed frontmatter の note を含む Vault で error に対象 path が含まれる regression test を追加する。正常 Vault の build 結果は変えない |
+| DOC1 | `reference/cli.md`（en / ja）に `deploy domain` を追記する | 未着手 | Small | CLI は `deploy domain` を受け付ける（`packages/cli/src/cli.ts` の usage・`runDeployDomain`）が、`docs/en/docs/reference/cli.md` と `docs/ja/docs/reference/cli.md` の usage とコマンド表は `deploy [--dry-run \| setup]` のみで `domain` が欠落している。`getting-started/deployment.md` には `deploy domain` の記載があり、reference の方が実装から drift している | en / ja 両方の `reference/cli.md` の usage とコマンド表に `deploy domain` を、実装の `parseCommand` が受け付ける形式と一致する形で追加する |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

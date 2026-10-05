@@ -59,6 +59,7 @@ export class ManifestBuilder {
   build(
     entries: ContentManifestEntry[],
     contentIndex: Map<string, string>,
+    contentIndexAmbiguities: ReadonlyMap<string, readonly string[]> = new Map(),
   ): ContentManifest {
     const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));
     const byContentId = createContentIdIndex(entries);
@@ -105,6 +106,7 @@ export class ManifestBuilder {
       outgoingLinks,
       incomingLinks,
       contentIndex,
+      contentIndexAmbiguities,
       assets: [],
       clientEntries: [],
       diagnostics: [],

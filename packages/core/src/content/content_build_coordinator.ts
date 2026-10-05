@@ -38,6 +38,10 @@ export type ContentBuildPreparation = {
   readonly currentEntries: readonly FingerprintedContentEntry[];
   readonly currentContentAliases: ReadonlyMap<string, readonly string[]>;
   readonly currentContentIndex: Map<string, string>;
+  readonly currentContentIndexAmbiguities: ReadonlyMap<
+    string,
+    readonly string[]
+  >;
   readonly changeSet: ContentChangeSet;
   readonly affectedContent: ReturnType<typeof determineAffectedContent>;
 };
@@ -158,16 +162,18 @@ export class ContentBuildCoordinator {
       previousState,
       changeSet,
     );
-    const currentContentIndex =
-      await this.dependencies.observability.tracer.span(
-        "content.index",
-        {},
-        () =>
-          ContentIndexBuilder.buildFromAliases(
-            currentEntries.map(({ entry }) => entry),
-            currentContentAliases,
-          ),
-      );
+    const {
+      index: currentContentIndex,
+      ambiguities: currentContentIndexAmbiguities,
+    } = await this.dependencies.observability.tracer.span(
+      "content.index",
+      {},
+      () =>
+        ContentIndexBuilder.buildFromAliases(
+          currentEntries.map(({ entry }) => entry),
+          currentContentAliases,
+        ),
+    );
     const affected =
       !fullContentRegenerationRequired &&
       previousState?.pipelineFingerprint === pipelineFingerprint
@@ -202,6 +208,7 @@ export class ContentBuildCoordinator {
       currentEntries,
       currentContentAliases,
       currentContentIndex,
+      currentContentIndexAmbiguities,
       changeSet,
       affectedContent: affected,
     };

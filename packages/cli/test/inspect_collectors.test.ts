@@ -121,7 +121,7 @@ test("inspect build reports reuse when the pipeline fingerprint matches", async 
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 7,
+      version: 8,
       entries: {},
       contentIndex: {},
       pipelineFingerprint: computePipelineFingerprint(config),
@@ -145,7 +145,7 @@ test("inspect build reports reuse as unavailable when the cache is bypassed", as
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 7,
+      version: 8,
       entries: {},
       contentIndex: {},
       pipelineFingerprint: computePipelineFingerprint(config),

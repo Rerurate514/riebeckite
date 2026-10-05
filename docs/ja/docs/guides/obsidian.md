@@ -445,6 +445,24 @@ Vault の外にある File や、Build 後の Public Output に存在しない F
 
 添付ファイルを Site へ公開する構成では、公開対象の Asset が実際に Output へ含まれていることも確認してください。
 
+## 名前が重複したときのリンク解決
+
+Riebeckite は `[[リンク]]` を Note の Path、Alias、添付ファイル名から解決します。同じ名前の Note、Alias、添付ファイルが複数あると、名前だけの `[[note]]` では対象を1つに特定できません。
+
+このとき Riebeckite は推測せず、リンクを未解決のままにし、`doctor` が曖昧なリンクとして報告します。
+
+```text id="dup1aa"
+x/dup.md
+y/dup.md
+```
+
+```md id="dup2bb"
+[[dup]]        ← 曖昧
+[[x/dup]]      ← Path を指定しているので x/dup.md に解決
+```
+
+公開するリンクが必ず1つの対象を指すように、Folder を含む Path を書くか、どちらかのファイル名を変更してください。
+
 ## Site を確認する
 
 記事を書いたら、Riebeckite Site の Directory で Development Server を起動します。

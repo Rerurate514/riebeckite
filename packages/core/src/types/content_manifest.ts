@@ -149,6 +149,13 @@ export type ContentManifest = {
   outgoingLinks: Map<string, ContentLink[]>;
   incomingLinks: Map<string, string[]>;
   contentIndex: Map<string, string>;
+  /**
+   * Lookup keys that matched more than one candidate, mapped to their
+   * candidates (sorted). These keys are intentionally absent from
+   * `contentIndex` so links stay unresolved instead of picking a target by
+   * discovery order. Used to report actionable ambiguity diagnostics.
+   */
+  contentIndexAmbiguities?: ReadonlyMap<string, readonly string[]>;
   graph: ContentGraph;
   assets: ContentManifestPluginAsset[];
   /**

@@ -11,6 +11,7 @@ const PLUGIN_NAME = "diagnostics";
 const DEFAULT_SEVERITY: Record<string, DiagnosticSeverity> = {
   "content-integrity:broken-link": "warning",
   "content-integrity:unresolved-wikilink": "warning",
+  "content-integrity:ambiguous-wikilink": "warning",
   "content-integrity:broken-asset": "warning",
   "content-integrity:duplicate-public-location": "error",
   "content-integrity:redirect-target-missing": "warning",
@@ -41,9 +42,19 @@ export function checkSiteIntegrity(
   const routeOwners = buildRouteOwners(manifest, diagnostics, options);
   const publicRoutes = new Set(routeOwners.keys());
   const assetPaths = buildAssetPaths(manifest);
+  const noteSlugs = new Set(manifest.entries.map((entry) => entry.slug));
+  const ambiguities = manifest.contentIndexAmbiguities ?? new Map();
 
   for (const entry of manifest.publicEntries) {
-    checkResolvedLinks(entry, publicSlugs, assetPaths, diagnostics, options);
+    checkResolvedLinks(
+      entry,
+      publicSlugs,
+      assetPaths,
+      noteSlugs,
+      ambiguities,
+      diagnostics,
+      options,
+    );
     checkHtmlReferences(entry, publicRoutes, assetPaths, diagnostics, options);
   }
 
@@ -129,11 +140,28 @@ function checkResolvedLinks(
   entry: ContentManifestEntry,
   publicSlugs: ReadonlySet<string>,
   assetPaths: ReadonlySet<string>,
+  noteSlugs: ReadonlySet<string>,
+  ambiguities: ReadonlyMap<string, readonly string[]>,
   diagnostics: Diagnostic[],
   options: SiteIntegrityOptions,
 ): void {
   for (const link of entry.links) {
     if (link.kind === "unresolved") {
+      const ambiguity = ambiguities.get(link.raw.toLowerCase());
+      if (ambiguity && ambiguity.length > 0) {
+        diagnostics.push(
+          createAmbiguousWikilinkDiagnostic(
+            entry,
+            link.raw,
+            link.embed,
+            ambiguity,
+            noteSlugs,
+            publicSlugs,
+            options,
+          ),
+        );
+        continue;
+      }
       diagnostics.push(
         diagnostic(options, {
           code: "content-integrity:unresolved-wikilink",
@@ -187,6 +215,52 @@ function checkResolvedLinks(
       );
     }
   }
+}
+
+function createAmbiguousWikilinkDiagnostic(
+  entry: ContentManifestEntry,
+  raw: string,
+  embed: boolean,
+  candidates: readonly string[],
+  noteSlugs: ReadonlySet<string>,
+  publicSlugs: ReadonlySet<string>,
+  options: SiteIntegrityOptions,
+): Diagnostic {
+  const visible: string[] = [];
+  let unpublishedCount = 0;
+  for (const candidate of candidates) {
+    if (!noteSlugs.has(candidate)) {
+      visible.push(candidate);
+      continue;
+    }
+    if (publicSlugs.has(candidate)) visible.push(candidate);
+    else unpublishedCount += 1;
+  }
+
+  const described = [...visible];
+  if (unpublishedCount > 0)
+    described.push(`${unpublishedCount} unpublished candidate(s)`);
+  const first = visible[0];
+  const suggestion = first
+    ? `Use an explicit path such as [[${first}]].`
+    : "Rename one of the duplicate targets or reference it by a unique path.";
+
+  return diagnostic(options, {
+    code: "content-integrity:ambiguous-wikilink",
+    slug: entry.slug,
+    filePath: `${entry.slug}.md`,
+    target: raw,
+    message: `WikiLink target "${raw}" matches multiple candidates: ${described.join(", ")}.`,
+    suggestion,
+    meta: {
+      raw,
+      embed,
+      candidates: visible,
+      ...(unpublishedCount > 0
+        ? { unpublishedCandidateCount: unpublishedCount }
+        : {}),
+    },
+  });
 }
 
 function checkHtmlReferences(

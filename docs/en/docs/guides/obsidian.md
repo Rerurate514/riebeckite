@@ -95,6 +95,22 @@ Keep images and attachments inside the vault.
 
 If you use an Obsidian attachments folder, keep that folder inside the vault. Files outside the vault may not be found during the build.
 
+## Duplicate names and ambiguous links
+
+Riebeckite resolves `[[links]]` against note paths, aliases, and attachment names. When two notes, two aliases, or two attachments share the same name, a bare name cannot identify one target. Riebeckite never guesses: the link stays unresolved and `doctor` reports it as ambiguous.
+
+```text
+x/dup.md
+y/dup.md
+```
+
+```md
+[[dup]]     <- ambiguous
+[[x/dup]]   <- explicit, resolves to x/dup.md
+```
+
+Add the folder to the link, or rename one of the files, so every published link points at exactly one target.
+
 ## Keeping private notes private
 
 Do not add `publish: true` to private notes.

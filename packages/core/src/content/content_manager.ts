@@ -21,11 +21,13 @@ import {
 } from "./content_build_coordinator.js";
 import { CONTENT_BUILD_STATE_EXCLUDE } from "./content_build_state.js";
 import { resolveContentBuildStatePath } from "./content_build_state_store.js";
-import { hasContentChanges } from "./content_change_set.js";
 import type { CachedContentDependency } from "./content_dependency_tracker.js";
 import { ContentEntryReader } from "./content_entry_reader.js";
 import type { ContentGraph } from "./content_graph.js";
-import { ContentIndexBuilder } from "./content_index_builder.js";
+import {
+  type ContentIndexBuild,
+  ContentIndexBuilder,
+} from "./content_index_builder.js";
 import { ContentLocationResolver } from "./content_location_resolver.js";
 import {
   computePipelineFingerprint,
@@ -69,7 +71,9 @@ export class ContentManager {
   private manifestBuilder = new ManifestBuilder();
   private pluginRuntime: PluginRuntime;
   private contentIndex: Map<string, string> | null = null;
-  private contentIndexPromise: Promise<Map<string, string>> | null = null;
+  private contentIndexAmbiguities: ReadonlyMap<string, readonly string[]> =
+    new Map();
+  private contentIndexPromise: Promise<ContentIndexBuild> | null = null;
   private contentCache = new Map<string, PostContent>();
   private manifest: ContentManifest | null = null;
   private manifestPromise: Promise<ContentManifest> | null = null;
@@ -166,20 +170,11 @@ export class ContentManager {
   ): Promise<Map<string, string>> {
     if (this.contentIndex) return this.contentIndex;
     if (!preparation && this.contentIndexPromise)
-      return await this.contentIndexPromise;
-
-    if (
-      preparation?.previousState &&
-      !hasContentChanges(preparation.changeSet)
-    ) {
-      this.contentIndex = new Map(
-        Object.entries(preparation.previousState.contentIndex),
-      );
-      return this.contentIndex;
-    }
+      return (await this.contentIndexPromise).index;
 
     if (preparation) {
       this.contentIndex = preparation.currentContentIndex;
+      this.contentIndexAmbiguities = preparation.currentContentIndexAmbiguities;
       return this.contentIndex;
     }
 
@@ -194,7 +189,9 @@ export class ContentManager {
     );
     if (!preparation) this.contentIndexPromise = promise;
     try {
-      this.contentIndex = await promise;
+      const built = await promise;
+      this.contentIndex = built.index;
+      this.contentIndexAmbiguities = built.ambiguities;
       return this.contentIndex;
     } finally {
       if (!preparation) this.contentIndexPromise = null;
@@ -340,7 +337,12 @@ export class ContentManager {
         const manifest = await this.observability().tracer.span(
           "content.graph",
           {},
-          () => this.manifestBuilder.build(entries, contentIndex),
+          () =>
+            this.manifestBuilder.build(
+              entries,
+              contentIndex,
+              this.contentIndexAmbiguities,
+            ),
         );
         const cacheManifestEntries = structuredClone(manifest.entries);
         this.locationResolver.populateRedirects(manifest, locations);

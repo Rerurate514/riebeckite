@@ -114,6 +114,64 @@ test("site integrity reports ambiguous README and index folder owners", () => {
   });
 });
 
+test("site integrity reports ambiguous wikilinks without leaking private candidates", () => {
+  const manifest = manifestOf([
+    entry("notes/source", "/source", {
+      links: [{ raw: "dup", slug: null, kind: "unresolved", embed: false }],
+    }),
+    entry("x/dup", "/x/dup"),
+    entry("y/dup", "/y/dup", { published: false }),
+  ]);
+  manifest.contentIndexAmbiguities = new Map([["dup", ["x/dup", "y/dup"]]]);
+
+  const diagnostics = checkSiteIntegrity(manifest);
+  const diagnostic = diagnostics.find(
+    (item) => item.code === "content-integrity:ambiguous-wikilink",
+  );
+
+  assert.ok(diagnostic);
+  assert.equal(diagnostic.severity, "warning");
+  assert.equal(diagnostic.slug, "notes/source");
+  assert.equal(diagnostic.filePath, "notes/source.md");
+  assert.equal(diagnostic.target, "dup");
+  assert.deepEqual(diagnostic.meta?.candidates, ["x/dup"]);
+  assert.equal(diagnostic.meta?.unpublishedCandidateCount, 1);
+  assert.doesNotMatch(diagnostic.message, /y\/dup/);
+  assert.match(diagnostic.suggestion ?? "", /\[\[x\/dup\]\]/);
+  assert(
+    !diagnostics.some(
+      (item) => item.code === "content-integrity:unresolved-wikilink",
+    ),
+  );
+});
+
+test("site integrity lists visible candidates and suggests an explicit path", () => {
+  const manifest = manifestOf([
+    entry("notes/source", "/source", {
+      links: [
+        { raw: "photo.png", slug: null, kind: "unresolved", embed: true },
+      ],
+    }),
+    entry("img/x/photo.png", "/x"),
+    entry("img/y/photo.png", "/y"),
+  ]);
+  manifest.contentIndexAmbiguities = new Map([
+    ["photo.png", ["img/x/photo.png", "img/y/photo.png"]],
+  ]);
+
+  const diagnostic = checkSiteIntegrity(manifest).find(
+    (item) => item.code === "content-integrity:ambiguous-wikilink",
+  );
+
+  assert.ok(diagnostic);
+  assert.deepEqual(diagnostic.meta?.candidates, [
+    "img/x/photo.png",
+    "img/y/photo.png",
+  ]);
+  assert.match(diagnostic.message, /img\/x\/photo\.png/);
+  assert.match(diagnostic.suggestion ?? "", /\[\[img\/x\/photo\.png\]\]/);
+});
+
 function entry(
   slug: string,
   permalink: string,

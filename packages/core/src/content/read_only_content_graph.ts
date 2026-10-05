@@ -14,7 +14,8 @@ export async function readOnlyContentGraph(
   locations: ReadonlyMap<string, ContentPublicLocation>,
 ): Promise<ContentGraph> {
   const entries = await source.scan();
-  const contentIndex = await new ContentIndexBuilder(source).build(entries);
+  const { index: contentIndex, ambiguities: contentIndexAmbiguities } =
+    await new ContentIndexBuilder(source).build(entries);
   const markdownEntries = entries
     .filter((entry) => entry.path.endsWith(".md"))
     .toSorted((left, right) => left.path.localeCompare(right.path));
@@ -28,7 +29,11 @@ export async function readOnlyContentGraph(
     createGraphEntry(entry, markdown, contentIndex, locations),
   );
 
-  return new ManifestBuilder().build(graphEntries, contentIndex).graph;
+  return new ManifestBuilder().build(
+    graphEntries,
+    contentIndex,
+    contentIndexAmbiguities,
+  ).graph;
 }
 
 function createGraphEntry(

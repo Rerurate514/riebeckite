@@ -88,7 +88,7 @@ test("inspect content hides exclusion details outside list mode", () => {
 
 const validBuild: BuildInspection = {
   status: "valid",
-  version: 7,
+  version: 8,
   entryCount: 12,
   reusable: true,
 };

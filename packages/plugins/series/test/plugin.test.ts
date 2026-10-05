@@ -54,6 +54,7 @@ test("the manifest hook appends navigation only to multi-part series", async () 
   const manifest = {
     entries,
     publicEntries: entries,
+    discoverableEntries: entries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
   } as unknown as ContentManifest;
   const diagnostics: Diagnostic[] = [];
@@ -106,6 +107,7 @@ test("the manifest hook does not duplicate generated navigation", async () => {
   const manifest = {
     entries,
     publicEntries: entries,
+    discoverableEntries: entries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
   } as unknown as ContentManifest;
   const diagnostics: Diagnostic[] = [];
@@ -161,6 +163,37 @@ test("publishes navigation in the manifest footer slot without changing cached P
     manifest.bySlug.get("part-1")?.bodySlots?.["article.footer"] ?? "",
     /href="\/part-2"/,
   );
+});
+
+test("the manifest hook excludes non-discoverable series members from navigation", async () => {
+  const content = new ContentManager(
+    source({
+      "shown-a.md":
+        "---\npublish: true\ntitle: Shown A\nseries: Guide\nseries_order: 1\n---\n# Shown A",
+      "shown-b.md":
+        "---\npublish: true\ntitle: Shown B\nseries: Guide\nseries_order: 2\n---\n# Shown B",
+      "hidden.md":
+        "---\ntitle: SECRET_DRAFT_TITLE\nseries: Guide\nseries_order: 3\n---\n# Draft",
+      "scheduled.md":
+        "---\npublish: true\ntitle: SECRET_SCHEDULED_TITLE\nseries: Guide\nseries_order: 4\npublishAt: 2999-01-01T00:00:00.000Z\n---\n# Scheduled",
+      "unlisted.md":
+        "---\npublish: true\ntitle: SECRET_UNLISTED_TITLE\nseries: Guide\nseries_order: 5\nvisibility: unlisted\n---\n# Unlisted",
+    }),
+    [],
+    { config: pageConfig(), plugins: [series()] },
+  );
+
+  const manifest = await content.getManifest();
+  const footer =
+    manifest.bySlug.get("shown-a")?.bodySlots?.["article.footer"] ?? "";
+
+  assert.match(footer, /href="\/shown-b"/);
+  assert.doesNotMatch(footer, /SECRET_DRAFT_TITLE/);
+  assert.doesNotMatch(footer, /SECRET_SCHEDULED_TITLE/);
+  assert.doesNotMatch(footer, /SECRET_UNLISTED_TITLE/);
+  assert.doesNotMatch(footer, /href="\/hidden"/);
+  assert.doesNotMatch(footer, /href="\/scheduled"/);
+  assert.doesNotMatch(footer, /href="\/unlisted"/);
 });
 
 function pageConfig() {

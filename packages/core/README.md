@@ -32,7 +32,7 @@ import { defineConfig } from "@riebeckite/core";
 
 export default defineConfig({
   site: { title: "My notes", baseUrl: "https://example.com" },
-  content: { directory: "../../content" },
+  content: { directory: "content" },
 });
 ```
 

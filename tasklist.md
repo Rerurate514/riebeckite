@@ -4,10 +4,7 @@
 
 ## 実装対象（優先度順）
 
-| ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
-|---|---|---|---|---|---|
-| ARCH1 | Build Dependency / Cache Contract v2 を設計し、存在しない将来入力や集合依存を安全に表現できるようにする | 再監査で対象外（l10n は全件再生成を維持。依存収集の事前 phase が実在したら再開） | Large | 現在の dependency model は content / file / location 等の依存を扱える一方、l10n の「現在存在する翻訳集合」のような集合依存を表現できず、persistent per-content cache 全体を bypass している。incremental build と cache correctness の基盤となるため最優先 | 現行 dependency tracking / build state / persistent cache / l10n の実装を再監査し、Entry・File・Location・集合依存・Config・Plugin固有入力など必要な dependency kind を最小限の型付き contract として定義する。翻訳追加・削除を含む l10n の依存変化を正しく invalidation でき、l10n 有効時にも安全に persistent cache を利用できることを cold build equivalence test で保証する。既存の ad-hoc dependency 表現や不要になった bypass を削除し、build state version / migration 方針も整理する |
-| ARCH7 | vNext Architecture の最終簡素化監査を行い、旧contract・compatibility layer・特殊ケースを削除する | 未着手 | Medium〜Large | ARCH1〜ARCH6を個別に実施すると旧APIや一時adapterが残り、結果としてvNextの方が複雑になる可能性がある。破壊的変更の目的は機能追加ではなく総複雑性の削減である | ARCH1〜ARCH6完了後の最新mainをゼロベースで監査し、旧dependency表現、旧route resolver、旧publication collection、不要hook、compatibility adapter、deprecated config、重複validation、到達不能コードを特定して削除する。削除前後で公開機能・publication boundary・Fresh Vault・incremental/cold equivalence・scaffold・全official Pluginのcontractを検証し、vNextでコード量・特殊ケース・公開概念のいずれかが実際に減ったことを報告する |
+現在、実装対象はありません。
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

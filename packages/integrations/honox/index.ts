@@ -21,7 +21,6 @@ export {
   type ScaffoldNextStepsOptions,
 } from "./src/scaffold/next-steps.js";
 export type {
-  ScaffoldAppFileKey,
   ScaffoldPageKey,
   ScaffoldPluginSpec,
   ScaffoldPreset,

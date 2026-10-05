@@ -1,0 +1,227 @@
+@import "./.riebeckite/plugin-styles.css";
+@import "./.riebeckite/theme-styles.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.riebeckite-page {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  padding-block: var(--rb-space-8, 4rem);
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: var(--rb-space-3, 1.5rem);
+  padding-block: var(--rb-space-3, 1.5rem);
+  border-bottom: 1px solid var(--rb-color-border);
+}
+
+.site-header,
+.rb-site-footer {
+  width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+}
+
+.site-header__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+  color: var(--rb-color-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.rb-nav {
+  color: var(--rb-color-ink);
+}
+
+.rb-nav__list {
+  display: flex;
+  align-items: center;
+  gap: var(--rb-space-3, 1.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-nav__item {
+  position: relative;
+}
+
+.rb-nav__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rb-nav__link:hover,
+.rb-nav__link:focus-visible,
+.rb-nav__link--active {
+  color: var(--rb-color-accent);
+}
+
+.rb-nav__link:focus-visible,
+.rb-nav__toggle:focus-visible {
+  outline: 2px solid var(--rb-color-accent);
+  outline-offset: 2px;
+}
+
+.rb-nav__children {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: max-content;
+  padding: var(--rb-space-2, 1rem);
+  background: var(--rb-color-surface);
+  border: 1px solid var(--rb-color-border);
+}
+
+.rb-nav__item:hover > .rb-nav__children,
+.rb-nav__item:focus-within > .rb-nav__children {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.rb-nav__mobile {
+  display: none;
+}
+
+.rb-site-footer {
+  margin-top: 1rem;
+  padding-block: var(--rb-space-4, 2rem);
+  border-top: 1px solid var(--rb-color-border);
+}
+
+@media (max-width: 48rem) {
+  .riebeckite-page {
+    padding-block: var(--rb-space-3, 1.5rem);
+  }
+
+  .rb-site-header {
+    flex-wrap: wrap;
+  }
+
+  .rb-site-header > .rb-nav {
+    display: none;
+  }
+
+  .rb-nav__mobile {
+    position: relative;
+    display: block;
+  }
+
+  .rb-nav__mobile > .rb-nav {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + var(--rb-space-2, 1rem));
+    right: 0;
+    min-width: 12rem;
+    padding: var(--rb-space-3, 1.5rem);
+    background: var(--rb-color-surface);
+    border: 1px solid var(--rb-color-border);
+    box-shadow: 0 4px 12px
+      color-mix(in oklab, var(--rb-color-ink) 14%, transparent);
+  }
+
+  .rb-nav__mobile .rb-nav__list,
+  .rb-nav__mobile .rb-nav__children {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--rb-space-2, 1rem);
+  }
+
+  .rb-nav__mobile .rb-nav__list {
+    padding: 0;
+  }
+
+  .rb-nav__mobile .rb-nav__children {
+    position: static;
+    margin-top: var(--rb-space-2, 1rem);
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+}
+
+.site-header__logo {
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+}
+
+.site-article {
+  display: block;
+  width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  padding-block: 2rem;
+  margin: 0 auto;
+}
+
+.rb-article-layout {
+  display: grid;
+  grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
+  justify-content: center;
+  gap: var(--rb-layout-gap, 2rem);
+}
+
+.rb-article-body {
+  min-width: 0;
+  padding-inline: var(--rb-space-2, 1rem);
+}
+
+.site-article__aside {
+  display: none;
+}
+
+.site-article__footer {
+  min-width: 0;
+}
+
+@media (min-width: 88rem) {
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-layout {
+    grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
+    position: relative;
+  }
+
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__footer {
+    grid-column: 1;
+  }
+
+  :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__aside {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 4rem;
+    align-self: start;
+    width: var(--rb-layout-sidebar, 14rem);
+    max-height: calc(100dvh - 8rem);
+    margin-inline-start: calc(
+      -1 * var(--rb-layout-sidebar, 14rem) -
+      var(--rb-layout-gap, 2rem)
+    );
+    overflow: auto;
+    padding-inline-end: 1rem;
+    border-inline-end: 1px solid
+      color-mix(in oklab, currentColor 18%, transparent);
+  }
+}

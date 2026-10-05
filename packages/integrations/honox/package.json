@@ -49,7 +49,7 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
-    "assets",
+    "templates",
     "dist"
   ],
   "scripts": {

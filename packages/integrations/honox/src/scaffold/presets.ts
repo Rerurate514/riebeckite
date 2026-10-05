@@ -125,21 +125,6 @@ export type ScaffoldPageKey =
   | "reference/plugins"
   | "reference/themes";
 
-/** `app/` shell files the scaffold can emit. */
-export type ScaffoldAppFileKey =
-  | "server"
-  | "client"
-  | "config"
-  | "content"
-  | "paths"
-  | "global"
-  | "style"
-  | "renderer"
-  | "index"
-  | "slug"
-  | "header"
-  | "article";
-
 /** README verbosity. */
 export type ScaffoldReadmeLevel = "short" | "standard" | "rich";
 
@@ -152,12 +137,6 @@ export type ScaffoldPreset = {
   readonly theme: ScaffoldThemeSpec | null;
   readonly plugins: readonly ScaffoldPluginSpec[];
   readonly contentPages: readonly ScaffoldPageKey[];
-  /**
-   * Order-sensitive; the scaffolder writes `app/` files in this order.
-   * Structural files (`server`, `client`, `config`, `content`, `paths`,
-   * `global`, `style`, `renderer`) are always included.
-   */
-  readonly appFiles: readonly ScaffoldAppFileKey[];
   readonly readme: ScaffoldReadmeLevel;
 };
 
@@ -555,18 +534,6 @@ const minimalTheme = {
   factory: "minimalTheme",
 } satisfies ScaffoldThemeSpec;
 
-/** Structural `app/` files every preset shares. */
-const BASE_APP_FILES = [
-  "server",
-  "client",
-  "config",
-  "content",
-  "paths",
-  "global",
-  "style",
-  "renderer",
-] as const satisfies readonly ScaffoldAppFileKey[];
-
 export const empty: ScaffoldPreset = {
   name: "empty",
   description:
@@ -575,7 +542,6 @@ export const empty: ScaffoldPreset = {
   theme: null,
   plugins: [],
   contentPages: [],
-  appFiles: [...BASE_APP_FILES, "index"],
   readme: "short",
 };
 
@@ -587,7 +553,6 @@ export const minimal: ScaffoldPreset = {
   theme: minimalTheme,
   plugins: [obsidianMarkdown],
   contentPages: ["index"],
-  appFiles: [...BASE_APP_FILES, "index", "slug", "article"],
   readme: "short",
 };
 
@@ -618,7 +583,6 @@ export const starter: ScaffoldPreset = {
     taxonomy,
   ],
   contentPages: ["index", "guide", "examples"],
-  appFiles: [...BASE_APP_FILES, "index", "slug", "header", "article"],
   readme: "standard",
 };
 
@@ -701,7 +665,6 @@ export const showcase: ScaffoldPreset = {
     "reference/plugins",
     "reference/themes",
   ],
-  appFiles: [...BASE_APP_FILES, "index", "slug", "header", "article"],
   readme: "rich",
 };
 

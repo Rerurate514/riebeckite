@@ -9,8 +9,10 @@ import type { WebmentionMention } from "../index.js";
 import {
   createWebmentionFeedHandler,
   createWebmentionReceiveHandler,
+  findTargetEntry,
   findTargetLink,
   getWebmentionsForEntry,
+  groupMentionsBySlug,
   MemoryWebmentionProvider,
   parseWebmentionRequestBody,
   parseWebmentionSource,
@@ -82,6 +84,7 @@ function makeEntry(
     links: [],
     backlinks: [],
     assets: [],
+    publishing: { visibility: "public", routable: true, discoverable: true },
     publicLocation: { slug: "post", permalink: "/post" },
     ...overrides,
   } as ContentManifestEntry;
@@ -390,4 +393,43 @@ test("plugin declares receive and feed endpoints without client config", () => {
     ],
   );
   assert.equal(plugin.clientEntries, undefined);
+});
+
+test("findTargetEntry ignores entries that are not routable", () => {
+  const manifest = makeManifest([
+    makeEntry(),
+    makeEntry({
+      slug: "secret",
+      permalink: "/secret",
+      publicLocation: { slug: "secret", permalink: "/secret" },
+      publishing: { visibility: "draft", routable: false, discoverable: false },
+    }),
+  ]);
+  const config = makeConfig();
+
+  assert.ok(
+    findTargetEntry(manifest, config, "https://target.example/post"),
+    "expected the public target to resolve",
+  );
+  assert.equal(
+    findTargetEntry(manifest, config, "https://target.example/secret"),
+    undefined,
+  );
+});
+
+test("groupMentionsBySlug omits mentions targeting non-routable entries", () => {
+  const manifest = makeManifest([
+    makeEntry({
+      slug: "secret",
+      permalink: "/secret",
+      publicLocation: { slug: "secret", permalink: "/secret" },
+      publishing: { visibility: "draft", routable: false, discoverable: false },
+    }),
+  ]);
+
+  const grouped = groupMentionsBySlug(manifest, makeConfig(), [
+    makeMention({ target: "https://target.example/secret" }),
+  ]);
+
+  assert.equal(grouped.size, 0);
 });

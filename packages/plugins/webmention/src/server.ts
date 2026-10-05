@@ -52,6 +52,7 @@ export function groupMentionsBySlug(
 
   const grouped = new Map<string, WebmentionMention[]>();
   for (const entry of manifest.entries) {
+    if (!entry.publishing.routable) continue;
     const target = entryPublicUrl(entry, config);
     if (target === null) continue;
     const list = byTarget.get(urlComparisonKey(target));

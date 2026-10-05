@@ -12,5 +12,5 @@ Check the implementation and package README as the source of truth for the Theme
 
 ## Detailed specification
 
-For configuration options and Theme-specific behavior, see the [package README](../../../../packages/themes/tokyonight/README.md). For how Themes work, see [Theme System](../framework/theme-system.md). To create a Theme, see [Writing a Theme](./writing-a-theme.md).
+For configuration options and Theme-specific behavior, see the package README. For how Themes work, see [Theme System](../framework/theme-system.md). To create a Theme, see [Writing a Theme](./writing-a-theme.md).
 

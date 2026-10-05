@@ -262,7 +262,7 @@ Attachments and media are different. An embed such as:
 ![[attachments/report.pdf]]
 ```
 
-produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: [`apps/web/scripts/build_images.ts`](../../../../../apps/web/scripts/build_images.ts) (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
+produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `apps/web/scripts/build_images.ts` (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
 
 That implementation works like this:
 
@@ -342,5 +342,5 @@ Check the results in this order:
 - [Separating Content from the Site](../content-repositories.md) — a step-by-step introduction
 - [Configuration](../../reference/configuration.md) — root resolution and external vaults in detail
 - [Usage Guide](../README.md) — external vault examples and assets
-- [Cloudflare deploy template](../../../../../templates/cloudflare/README_en.md) — deployment workflow details
+- Cloudflare deploy template — deployment workflow details
 

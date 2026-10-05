@@ -278,12 +278,12 @@ Riebeckite には複数の公式 Theme があります。
 
 | Theme | Package | Factory | 特徴 |
 | --- | --- | --- | --- |
-| [Default](./default.md) | [`@riebeckite/theme-default`](../../../../packages/themes/default/README.md) | `defaultTheme()` | 標準の出発点。読みやすさと設定のしやすさを重視 |
-| [Minimal](./minimal.md) | [`@riebeckite/theme-minimal`](../../../../packages/themes/minimal/README.md) | `minimalTheme()` | 装飾を抑えた小さな Theme |
-| [Gruvbox](./gruvbox.md) | [`@riebeckite/theme-gruvbox`](../../../../packages/themes/gruvbox/README.md) | `gruvboxTheme()` | Gruvbox 風の暖かい高コントラスト配色 |
-| [Rerurate](./rerurate.md) | [`@riebeckite/theme-rerurate`](../../../../packages/themes/rerurate/README.md) | `rerurateTheme()` | Rerurate の視覚文法に基づく Theme |
-| [Sakura](./sakura.md) | [`@riebeckite/theme-sakura`](../../../../packages/themes/sakura/README.md) | `sakuraTheme()` | 桜をモチーフにした配色 |
-| [Tokyo Night](./tokyonight.md) | [`@riebeckite/theme-tokyonight`](../../../../packages/themes/tokyonight/README.md) | `tokyonightTheme()` | Tokyo Night 風の暗色・Editor 風 Theme |
+| [Default](./default.md) | `@riebeckite/theme-default` | `defaultTheme()` | 標準の出発点。読みやすさと設定のしやすさを重視 |
+| [Minimal](./minimal.md) | `@riebeckite/theme-minimal` | `minimalTheme()` | 装飾を抑えた小さな Theme |
+| [Gruvbox](./gruvbox.md) | `@riebeckite/theme-gruvbox` | `gruvboxTheme()` | Gruvbox 風の暖かい高コントラスト配色 |
+| [Rerurate](./rerurate.md) | `@riebeckite/theme-rerurate` | `rerurateTheme()` | Rerurate の視覚文法に基づく Theme |
+| [Sakura](./sakura.md) | `@riebeckite/theme-sakura` | `sakuraTheme()` | 桜をモチーフにした配色 |
+| [Tokyo Night](./tokyonight.md) | `@riebeckite/theme-tokyonight` | `tokyonightTheme()` | Tokyo Night 風の暗色・Editor 風 Theme |
 
 各 Theme の正確な Export 名と Option は、Package README を参照してください。
 

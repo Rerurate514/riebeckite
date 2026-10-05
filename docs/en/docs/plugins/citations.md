@@ -63,5 +63,5 @@ Inline code, fenced code blocks, HTML, frontmatter, normal Markdown links, and W
 
 ## Detailed specification
 
-For configuration options, public APIs, constraints, and additional examples, see the [package README](../../../../packages/plugins/citations/README.md). For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md).
+For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md).
 

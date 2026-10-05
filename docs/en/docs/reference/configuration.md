@@ -374,7 +374,7 @@ For attachments and media, generating a URL does **not** copy the binary file
 into the Vite public directory. The site application must copy only the assets
 it intends to publish to `public/assets/attachments/`, preserving their logical
 vault-relative paths. The reference application's
-[`build_images.ts`](../../../../apps/web/scripts/build_images.ts) shows an
+`build_images.ts` shows an
 incremental, referenced-attachment-only implementation.
 
 #### Static assets in `public/`

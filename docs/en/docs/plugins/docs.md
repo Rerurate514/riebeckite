@@ -36,5 +36,5 @@ sidebar:
 
 ## Detailed specification
 
-For options, frontmatter metadata, theme hooks, l10n behavior, and publishing boundaries, see the [package README](../../../../packages/plugins/docs/README.md). Plugin layout fragments are rendered through the standard article body slot mechanism described in [Plugin API](../reference/plugin-api.md).
+For options, frontmatter metadata, theme hooks, l10n behavior, and publishing boundaries, see the package README. Plugin layout fragments are rendered through the standard article body slot mechanism described in [Plugin API](../reference/plugin-api.md).
 

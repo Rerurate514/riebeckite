@@ -29,7 +29,7 @@ Build state (`.riebeckite/`, plugin caches) stays at build time and never reache
 
 ## See also
 
-- [Cloudflare deployment template](../../../../../templates/cloudflare/README_en.md) — the files this section documents
+- Cloudflare deployment template — the files this section documents
 - [Build system](../../framework/build-system.md) — what `riebeckite build` writes
 - [Analytics](../../guides/analytics.md) — the optional, separate page-view collector
 

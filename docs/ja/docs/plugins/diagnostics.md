@@ -38,5 +38,5 @@ Pluginやコンテンツ処理の問題を調査するときに、診断情報�
 
 ## 詳細仕様
 
-設定項目、公開 API、制約、追加の使用例は [package README](../../../../packages/plugins/diagnostics/README.md) を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
 

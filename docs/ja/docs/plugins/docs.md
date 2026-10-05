@@ -36,5 +36,5 @@ sidebar:
 
 ## 詳細仕様
 
-option、frontmatter metadata、Theme hook、l10n との関係、公開境界については [package README](../../../../packages/plugins/docs/README_ja.md) を参照してください。Plugin の layout fragment は [Plugin API](../reference/plugin-api.md) の標準 article body slot を通じて描画されます。
+option、frontmatter metadata、Theme hook、l10n との関係、公開境界については package README を参照してください。Plugin の layout fragment は [Plugin API](../reference/plugin-api.md) の標準 article body slot を通じて描画されます。
 

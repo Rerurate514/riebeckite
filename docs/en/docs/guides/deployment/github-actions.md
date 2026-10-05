@@ -1,6 +1,6 @@
 # GitHub Actions
 
-The deployment workflow checks, builds, and deploys a Riebeckite site on every push. You can let `create-riebeckite` generate it, or copy the [Cloudflare template](../../../../../templates/cloudflare/README_en.md).
+The deployment workflow checks, builds, and deploys a Riebeckite site on every push. You can let `create-riebeckite` generate it, or copy the Cloudflare template.
 
 ## Generate the workflow
 
@@ -106,6 +106,6 @@ npx wrangler deploy --dry-run
 
 - [Cloudflare Workers](./cloudflare-workers.md) — the manual deployment path
 - [Separate content repository](./separate-content-repository.md) — CI reading articles from another repository
-- [Cloudflare deployment template](../../../../../templates/cloudflare/README_en.md) — the source files
+- Cloudflare deployment template — the source files
 - [Build system](../../framework/build-system.md) — what the build writes
 

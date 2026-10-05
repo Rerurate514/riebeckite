@@ -31,4 +31,4 @@ When a rendered example is available, you can also see it in the [Plugin Showcas
 
 ## Detailed specification
 
-For configuration options, public APIs, constraints, and additional examples, see the [package README](../../../../packages/plugins/daily-notes/README.md). For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.md).
+For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.md).

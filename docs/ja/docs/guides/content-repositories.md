@@ -1081,5 +1081,5 @@ Repository を分離すること自体は、Riebeckite の公開判定を変更�
 - [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) — Root 解決、CI 認証、Assets、GitHub Actions、トラブル対応
 - [Configuration](../reference/configuration.md) — `appRoot` / `configRoot` / `contentRoot`
 - [Guides](./README.md) — その他の利用 Guide
-- [Cloudflare デプロイテンプレート](../../../../templates/cloudflare/README_ja.md) — Deploy Workflow
+- Cloudflare デプロイテンプレート — Deploy Workflow
 

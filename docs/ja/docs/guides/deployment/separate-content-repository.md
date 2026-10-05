@@ -1282,5 +1282,5 @@ Private Vault を利用する場合でも、`publishStrategy`、`exclude`、Asse
 - [記事とサイトのリポジトリ分離](../content-repositories.md) — 分離構成を最初から作る
 - [Configuration](../../reference/configuration.md) — Root Resolution と外部 Vault
 - [利用ガイド](../README.md) — Content / Asset の基本的な扱い
-- [Cloudflare デプロイテンプレート](../../../../../templates/cloudflare/README_ja.md) — Deployment Workflow
+- Cloudflare デプロイテンプレート — Deployment Workflow
 

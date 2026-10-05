@@ -55,7 +55,7 @@ Plugin、Theme、コンテンツ、コンポーネントを含まない空のア
 
 ## 生成される設定
 
-`starter` は実用的な Plugin の設定を出力し、`showcase` は設定リファレンスとして全オプションを出力します。`empty` と `minimal` の設定は意図的に小さくしています。詳細は [Configuration](../reference/configuration.md) と [`packages/plugins`](../../../../packages/plugins) の各 README を参照してください。
+`starter` は実用的な Plugin の設定を出力し、`showcase` は設定リファレンスとして全オプションを出力します。`empty` と `minimal` の設定は意図的に小さくしています。詳細は [Configuration](../reference/configuration.md) と `packages/plugins` の各 README を参照してください。
 
 ## 次に読むページ
 

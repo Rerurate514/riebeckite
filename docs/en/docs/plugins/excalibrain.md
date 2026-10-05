@@ -78,4 +78,4 @@ Add this Plugin only when you need its functionality. If it is already included 
 
 ## Detailed specification
 
-For configuration options, public APIs, constraints, and additional examples, see the [package README](../../../../packages/plugins/excalibrain/README.md). For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.md). A rendered example is also available on the [Plugin Showcase](./showcase.md).
+For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.md). A rendered example is also available on the [Plugin Showcase](./showcase.md).

@@ -249,7 +249,7 @@ query.
 contract: `ColorModeScript` (a before-paint inline script), `ColorModeToggle`
 (a control), and an `initColorMode` client entry that persists the choice in
 `localStorage`. See its
-[`README`](../../../../packages/plugins/color-mode/README.md).
+package README.
 
 ## Stable CSS hooks
 

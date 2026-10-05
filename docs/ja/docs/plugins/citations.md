@@ -63,5 +63,5 @@ inline code、code block、HTML、frontmatter、通常の Markdown リンク、W
 
 ## 詳細仕様
 
-設定項目、公開 API、制約、追加の使用例は [package README](../../../../packages/plugins/citations/README_ja.md) を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md) を参照してください。
+設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md) を参照してください。
 

@@ -287,7 +287,7 @@ Using `explicit` with a private vault is the safest arrangement: you may forget 
 - **Never put `publish: true` on private notes**, and exclude whole private folders with `content.exclude`.
 - **Put `.obsidian/` in `exclude`** so Obsidian settings and workspace state never mix into the site.
 - **Exclude template folders** (`Templates/**` and the like) so note templates are not published as articles.
-- **Know which asset kind you are copying.** Content images (png, jpg, svg, and similar) are published by the build as generated output, so they need no manual copy. Attachments and media (files that are neither Markdown nor images) get URLs but are not copied, so they need a prebuild step on the site side that copies only the files you publish (reference: call [`apps/web/scripts/build_images.ts`](../../../../apps/web/scripts/build_images.ts) from `prebuild`). See the assets section of the [in-depth companion](./deployment/separate-content-repository.md) for how it works.
+- **Know which asset kind you are copying.** Content images (png, jpg, svg, and similar) are published by the build as generated output, so they need no manual copy. Attachments and media (files that are neither Markdown nor images) get URLs but are not copied, so they need a prebuild step on the site side that copies only the files you publish (reference: call `apps/web/scripts/build_images.ts` from `prebuild`). See the assets section of the [in-depth companion](./deployment/separate-content-repository.md) for how it works.
 
 ## FAQ
 
@@ -330,4 +330,4 @@ For deeper diagnosis, see the troubleshooting section of the [in-depth companion
 - [Separating content and the site (in depth)](./deployment/separate-content-repository.md) — the in-depth companion (root resolution, CI auth, assets, troubleshooting)
 - [Configuration](../reference/configuration.md) — root resolution details
 - [Usage Guide](./README.md) — external vault examples and assets
-- [Cloudflare deploy template](../../../../templates/cloudflare/README_en.md) — deployment workflow details
+- Cloudflare deploy template — deployment workflow details

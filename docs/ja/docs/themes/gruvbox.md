@@ -12,5 +12,5 @@ Theme の factory 名と設定項目は、実装と package README を一次情�
 
 ## 詳細仕様
 
-設定項目や Theme 固有の仕様は [package README](../../../../packages/themes/gruvbox/README.md) を参照してください。Theme の仕組みは [Theme System](../framework/theme-system.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.md) を参照してください。
+設定項目や Theme 固有の仕様は package README を参照してください。Theme の仕組みは [Theme System](../framework/theme-system.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.md) を参照してください。
 

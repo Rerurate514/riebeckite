@@ -55,7 +55,7 @@ A blank application shell with no plugins, theme, content, or components. Choose
 
 ## Generated configuration
 
-`starter` writes practical plugin options. `showcase` writes the complete option surface as a configuration reference. `empty` and `minimal` deliberately keep configuration small. See [Configuration](../reference/configuration.md) and each package README under [`packages/plugins`](../../../../packages/plugins) for details.
+`starter` writes practical plugin options. `showcase` writes the complete option surface as a configuration reference. `empty` and `minimal` deliberately keep configuration small. See [Configuration](../reference/configuration.md) and each package README under `packages/plugins` for details.
 
 ## Next
 

@@ -93,7 +93,7 @@ The server emits `data-theme` on `<html>` unless the theme's `colorMode` is `"sy
 
 **Runtime switching contract**: set `document.documentElement.dataset.theme` to `"light"` or `"dark"`, or **remove the attribute** for `"system"`. Do not set `data-theme=""`; an empty attribute still matches `[data-theme]` and breaks the media query.
 
-`@riebeckite/plugin-color-mode` is the reference implementation ([README](../../../../packages/plugins/color-mode/README.md)) — an inline `ColorModeScript` that runs before render, a `ColorModeToggle` control, and an `initColorMode` client entry that saves the choice to `localStorage`.
+`@riebeckite/plugin-color-mode` is the reference implementation (see its package README) — an inline `ColorModeScript` that runs before render, a `ColorModeToggle` control, and an `initColorMode` client entry that saves the choice to `localStorage`.
 
 ### 3-2. typography
 

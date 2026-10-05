@@ -2,7 +2,7 @@
 
 Riebeckite localizes **content**. It can keep several language versions of the same note side by side, prefix non-default languages in the URL, add a language switcher, and emit `hreflang` links. It does not translate Riebeckite's own interface strings.
 
-Localization is provided by [`@riebeckite/plugin-l10n`](../../../../packages/plugins/l10n/README.md). The `starter` preset and above register it with seven languages; `minimal` does not.
+Localization is provided by `@riebeckite/plugin-l10n`. The `starter` preset and above register it with seven languages; `minimal` does not.
 
 ## Basic setup
 
@@ -103,7 +103,7 @@ Each translated entry receives one `<link rel="alternate" hreflang="…">` per e
 | `ui` | `false` to disable the switcher, or `{ slot, render }` to customize it |
 | `detect` | Custom detection: returns `{ lang, translationId }` or `undefined` |
 
-The full option list and implementation notes are in the [plugin README](../../../../packages/plugins/l10n/README.md).
+The full option list and implementation notes are in the plugin README.
 
 ## See also
 

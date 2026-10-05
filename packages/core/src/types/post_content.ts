@@ -9,8 +9,6 @@ export type PostFrontmatter = Record<string, unknown> & {
    * this value survives a rename or public-location change.
    */
   id?: string;
-  /** @deprecated Use `id`. Read only as a compatibility fallback. */
-  uid?: string;
   title?: string;
   description?: string;
   date?: string | Date;

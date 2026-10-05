@@ -30,7 +30,7 @@ export default {
 
 ## ブラウザでの動作
 
-Core の安定コンテンツ ID（frontmatter の `id`、互換用の `uid`）がある公開コンテンツにだけ識別子マーカーを出力します。汎用 `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
+Core の安定コンテンツ ID（frontmatter の `id`）がある公開コンテンツにだけ識別子マーカーを出力します。汎用 `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
 
 ```json
 {
@@ -44,7 +44,7 @@ Core の安定コンテンツ ID（frontmatter の `id`、互換用の `uid`）�
 
 `path` と `lang` は補助情報であり、ID ではありません。安定 ID のないコンテンツは誤って計測しません。ビルド時・SSR 時は何もせず、同じドキュメント内での初期化も冪等です。現行リポジトリは静的なドキュメント遷移のため SPA フックは追加しておらず、SPA 遷移は自動計測しません。
 
-コンテンツ ID は執筆側の責務です。公開ノート間での `id`/`uid` の重複・抵触は [`@riebeckite/plugin-diagnostics`](../diagnostics/README_ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
+コンテンツ ID は執筆側の責務です。公開ノート間での `id` の重複は [`@riebeckite/plugin-diagnostics`](../diagnostics/README_ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
 
 ## 診断
 

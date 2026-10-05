@@ -50,10 +50,9 @@ id: note-7f4e9b
 ---
 ```
 
-An existing `uid` field is accepted only as a compatibility fallback. If both
-fields are present, they must be identical. Values must be non-empty, trimmed
-strings, and each explicit ID must be unique within a manifest; invalid or
-duplicate IDs fail the manifest build rather than silently selecting an identity.
+Values must be non-empty, trimmed strings, and each explicit ID must be unique
+within a manifest; invalid or duplicate IDs fail the manifest build rather than
+silently selecting an identity.
 
 ## Manifest, graph, and runtime
 

@@ -15,8 +15,7 @@ deployment that never replaces the static site's `wrangler.jsonc` or main entry.
 ## How tracking works
 
 1. **Stable content IDs.** The browser initializer sends a page view only for
-   content that carries a source-authored stable `id` in its frontmatter (`uid`
-   is accepted as a compatibility fallback). See
+   content that carries a source-authored stable `id` in its frontmatter. See
    [Content System](../framework/content-system.md#stable-content-ids).
 2. **Marker.** During the build, the plugin appends a hidden
    `<span data-riebeckite-content-id="...">` marker to every published entry

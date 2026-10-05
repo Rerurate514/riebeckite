@@ -40,9 +40,9 @@ can expose a collector backed by its own private runtime configuration.
 
 ## Browser behavior
 
-For every published content entry with Core's source-authored stable `id` (or
-legacy `uid`), the plugin places a small content-ID marker in rendered HTML and
-registers `initAnalytics` with the generic public-config client mechanism.
+For every published content entry with Core's source-authored stable `id`, the
+plugin places a small content-ID marker in rendered HTML and registers
+`initAnalytics` with the generic public-config client mechanism.
 
 In a browser, the initializer sends exactly one event per document:
 
@@ -61,8 +61,8 @@ stable ID is not tracked. The initializer is a no-op during builds/SSR and is
 idempotent in a document. Riebeckite's current static document navigation needs
 no SPA route hooks; SPA navigation is not tracked automatically.
 
-Content IDs are an authoring responsibility. Duplicate or conflicting `id`/`uid`
-declarations across published notes are reported by
+Content IDs are an authoring responsibility. Duplicate `id` declarations across
+published notes are reported by
 [`@riebeckite/plugin-diagnostics`](../diagnostics/README.md)
 (`duplicate-content-id` / `invalid-content-id`) and validated by the plugin's own
 `validateAnalyticsOptions` at `check` time.

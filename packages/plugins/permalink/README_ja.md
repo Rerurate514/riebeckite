@@ -112,13 +112,13 @@ id: hello-world
 
 ```ts
 permalink({
-  frontmatter: "uid",
+  frontmatter: "permalink-id",
 });
 ```
 
 ```md
 ---
-uid: hello-world
+permalink-id: hello-world
 ---
 ```
 

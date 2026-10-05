@@ -48,8 +48,8 @@ export default defineConfig({
 | `publish-conflict` | `warning` | `publish: true` combined with `draft: true` / `private: true` |
 | `duplicate-title` | `warning` | Multiple published notes share a title within the same language |
 | `slug-collision` | `error` | Slugs collide case-insensitively |
-| `duplicate-content-id` | `error` | Published notes share a stable content ID (`id`/`uid`) |
-| `invalid-content-id` | `error` | `id`/`uid` frontmatter violates the stable content ID contract |
+| `duplicate-content-id` | `error` | Published notes share a stable content ID (`id`) |
+| `invalid-content-id` | `error` | `id` frontmatter violates the stable content ID contract |
 | `excluded-public` | `warning` | Excluded note is marked `publish: true` |
 | `publish-boundary` | `warning` | Published content links to or embeds non-published content |
 | `analytics-untracked` | `info` | Published note has no stable `id` and the analytics plugin will not track it (enabled with `reportAnalyticsCoverage`, or automatically when the config enables the analytics plugin) |

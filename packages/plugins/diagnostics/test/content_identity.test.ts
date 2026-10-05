@@ -58,7 +58,7 @@ test("unique content IDs produce no diagnostics", () => {
   const diagnostics = collect(
     note("a", { id: "one" }),
     note("b", { id: "two" }),
-    note("c", { uid: "legacy-id" }),
+    note("c", { id: "three" }),
   );
   assert.deepEqual(diagnostics, []);
 });
@@ -66,14 +66,6 @@ test("unique content IDs produce no diagnostics", () => {
 test("notes without a content ID are not reported", () => {
   const diagnostics = collect(note("a", {}), note("b", { title: "No id" }));
   assert.deepEqual(diagnostics, []);
-});
-
-test("conflicting id and uid frontmatter is reported as an invalid content id", () => {
-  const diagnostics = collect(note("a", { id: "one", uid: "two" }));
-  assert.equal(diagnostics.length, 1);
-  assert.equal(diagnostics[0]?.code, "invalid-content-id");
-  assert.equal(diagnostics[0]?.severity, "error");
-  assert.equal(diagnostics[0]?.slug, "a");
 });
 
 test("whitespace-padded content IDs are reported as invalid", () => {
@@ -91,6 +83,6 @@ test("duplicate IDs are ignored when a note is not published", () => {
 });
 
 test("invalid ID on a non-published note is ignored", () => {
-  const diagnostics = collect(note("a", { id: "one", uid: "two" }, false));
+  const diagnostics = collect(note("a", { id: " padded " }, false));
   assert.deepEqual(diagnostics, []);
 });

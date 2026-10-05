@@ -274,7 +274,7 @@ test("content IDs stay attached to the canonical entry across redirects", async 
     memorySource({
       "note.md":
         "---\nid: note-7f4e9b\naliases: [Previous note]\n---\n\n# Note\n",
-      "legacy.md": "---\nuid: legacy-42\n---\n\n# Legacy\n",
+      "legacy.md": "---\nid: legacy-42\n---\n\n# Legacy\n",
       "plain.md": "# Plain\n",
     }),
     [],
@@ -321,13 +321,6 @@ test("content IDs reject ambiguous or invalid frontmatter", async () => {
     }),
   );
   await assert.rejects(manager.getManifest(), /Duplicate content ID/);
-
-  const conflicting = new ContentManager(
-    memorySource({
-      "note.md": "---\nid: current\nuid: legacy\n---\n\n# Note\n",
-    }),
-  );
-  await assert.rejects(conflicting.getManifest(), /must have the same value/);
 
   const invalid = new ContentManager(
     memorySource({

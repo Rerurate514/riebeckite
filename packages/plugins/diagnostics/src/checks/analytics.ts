@@ -7,8 +7,8 @@ import { type NormalizedOptions, pushDiagnostic } from "./shared.js";
  * Reports published content that the analytics plugin will not track.
  *
  * The analytics browser initializer emits a page view only for entries that
- * carry Core's source-authored stable content ID (`id`, or the compatible
- * `uid`). Content without that ID builds and publishes normally but is silently
+ * carry Core's source-authored stable content ID (`id`). Content without that
+ * ID builds and publishes normally but is silently
  * absent from analytics. This check surfaces that gap as factual, read-only
  * `info` findings; the analytics plugin itself never autofixes content.
  */
@@ -33,5 +33,5 @@ export function checkAnalyticsCoverage(
 }
 
 function hasAnalyticsId(note: ScannedNote): boolean {
-  return hasField(note.fm.values, "id") || hasField(note.fm.values, "uid");
+  return hasField(note.fm.values, "id");
 }

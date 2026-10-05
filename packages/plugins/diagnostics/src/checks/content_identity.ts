@@ -7,9 +7,8 @@ import { type NormalizedOptions, pushDiagnostic } from "./shared.js";
  * Checks stable content ID integrity.
  *
  * Stable content IDs come from the optional source-authored `id` frontmatter
- * field (`uid` is accepted for legacy content). They are the identity key for
- * per-content consumers such as analytics page views, so duplicates silently
- * merge per-content metrics and conflicting declarations break the build.
+ * field. They are the identity key for per-content consumers such as analytics
+ * page views, so duplicates silently merge per-content metrics.
  * This check is intentionally generic: it validates the content-model invariant
  * without knowing which plugin consumes the ID.
  */
@@ -34,7 +33,7 @@ export function checkContentIdIntegrity(
         "invalid-content-id",
         `invalid content id frontmatter: ${toErrorMessage(error)}`,
         undefined,
-        'set a unique, trimmed "id" value and remove a conflicting "uid" value',
+        'set a unique, trimmed "id" value',
       );
       continue;
     }
@@ -56,7 +55,7 @@ export function checkContentIdIntegrity(
         "duplicate-content-id",
         `content id "${id}" is used by multiple published notes: ${slugs}`,
         id,
-        'give each note a unique "id" (or "uid") frontmatter value',
+        'give each note a unique "id" frontmatter value',
       );
     }
   }

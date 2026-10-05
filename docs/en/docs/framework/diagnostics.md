@@ -12,12 +12,12 @@ The doctor build-state check verifies that the incremental state is readable and
 
 ## Content ID integrity
 
-Stable content IDs come from the optional source-authored `id` frontmatter field (`uid` is accepted for legacy content) and are the identity key for per-content consumers such as the analytics plugin's page-view tracking. The diagnostics plugin reports two content-level invariants around them:
+Stable content IDs come from the optional source-authored `id` frontmatter field and are the identity key for per-content consumers such as the analytics plugin's page-view tracking. The diagnostics plugin reports two content-level invariants around them:
 
 | Code | Default severity | Condition |
 | --- | --- | --- |
 | `duplicate-content-id` | `error` | multiple published notes share a stable content ID, which would silently merge per-content metrics |
-| `invalid-content-id` | `error` | `id`/`uid` frontmatter violates the stable content ID contract (for example `id` and `uid` conflict), which breaks the build |
+| `invalid-content-id` | `error` | `id` frontmatter violates the stable content ID contract, which breaks the build |
 
 These checks are generic content diagnostics; the diagnostics plugin does not hardcode an analytics-specific requirement into its check abstraction.
 

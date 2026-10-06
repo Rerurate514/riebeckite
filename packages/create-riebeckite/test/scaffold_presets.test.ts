@@ -168,7 +168,7 @@ test("starter and showcase scaffolds render authored navigation in the site shel
   });
 });
 
-test("starter and showcase scaffolds render the standard body slots", async () => {
+test("starter and showcase scaffolds compose the standard body slots", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -177,20 +177,12 @@ test("starter and showcase scaffolds render the standard body slots", async () =
         path.join(targetDirectory, "app/components/article.tsx"),
         "utf8",
       );
-      assert.match(article, /bodySlots\?: Readonly<Record<string, string>>/);
-      for (const className of [
-        'class="site-article__header"',
-        'class="site-article__metadata"',
-        'class="site-article__before-content"',
-        'class="site-article__after-content"',
-        'class="site-article__aside"',
-        'class="site-article__footer"',
-      ]) {
-        assert.ok(
-          article.includes(className),
-          `article must render ${className}`,
-        );
-      }
+      assert.match(article, /bodySlots\?: ContentBodySlots/);
+      assert.match(article, /<ArticleBody html=\{post\.html \?\? ""\} \/>/);
+      assert.match(article, /<Article class="site-article">/);
+      assert.doesNotMatch(article, /\?\.\["article\./);
+      assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
+      assert.doesNotMatch(article, /class="rb-article-content"/);
       for (const slot of [
         "article.header",
         "article.metadata",
@@ -199,21 +191,30 @@ test("starter and showcase scaffolds render the standard body slots", async () =
         "article.after-content",
         "article.footer",
       ]) {
-        assert.match(article, new RegExp(`bodySlots.*${slot}`));
+        assert.match(article, new RegExp(`name="${slot}"`));
       }
-      const slotClassOrder = [
+      for (const className of [
         'class="site-article__aside"',
-        'class="site-article__header"',
-        'class="site-article__metadata"',
-        'class="site-article__before-content"',
-        'post.html ?? ""',
-        'class="site-article__after-content"',
         'class="site-article__footer"',
-      ];
-      for (let index = 1; index < slotClassOrder.length; index += 1) {
+      ]) {
         assert.ok(
-          article.indexOf(slotClassOrder[index - 1] ?? "") <
-            article.indexOf(slotClassOrder[index] ?? ""),
+          article.includes(className),
+          `article must render ${className}`,
+        );
+      }
+      const slotOrder = [
+        'name="article.aside"',
+        'name="article.header"',
+        'name="article.metadata"',
+        'name="article.before-content"',
+        '<ArticleBody html={post.html ?? ""} />',
+        'name="article.after-content"',
+        'name="article.footer"',
+      ];
+      for (let index = 1; index < slotOrder.length; index += 1) {
+        assert.ok(
+          article.indexOf(slotOrder[index - 1] ?? "") <
+            article.indexOf(slotOrder[index] ?? ""),
           "article slot order must remain unchanged",
         );
       }
@@ -229,6 +230,47 @@ test("starter and showcase scaffolds render the standard body slots", async () =
         assert.doesNotMatch(source, /properties|article\./);
       }
     }
+  });
+});
+
+test("starter and showcase scaffolds gate the footer region on slot or content", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of ["starter", "showcase"] as const) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const article = await fs.readFile(
+        path.join(targetDirectory, "app/components/article.tsx"),
+        "utf8",
+      );
+      assert.match(
+        article,
+        /hasSlot\(bodySlots, "article\.footer"\) \|\| footerContent/,
+      );
+      assert.match(article, /<ArticleFooter class="site-article__footer">/);
+      assert.match(
+        article,
+        /<ContentSlot slots=\{bodySlots\} name="article\.footer" \/>/,
+      );
+    }
+  });
+});
+
+test("minimal scaffold exposes a readable layout with the new primitives", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const targetDirectory = path.join(directory, "minimal");
+    await scaffoldRiebeckiteSite({ targetDirectory, preset: "minimal" });
+    const article = await fs.readFile(
+      path.join(targetDirectory, "app/components/article.tsx"),
+      "utf8",
+    );
+    assert.match(article, /bodySlots\?: ContentBodySlots/);
+    assert.match(article, /<ArticleBody html=\{post\.html \?\? ""\} \/>/);
+    assert.match(article, /<Article class="site-article">/);
+    assert.match(article, /<ContentSlot/);
+    assert.match(article, /class="site-article__aside"/);
+    assert.match(article, /class="site-article__footer"/);
+    assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
+    assert.doesNotMatch(article, /class="rb-article-content"/);
   });
 });
 

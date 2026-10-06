@@ -1,3 +1,5 @@
+import type { ContentBodySlot, ContentBodySlots } from "@riebeckite/core";
+
 export type PrimitiveChildren = unknown;
 
 export type PrimitiveProps = {
@@ -16,6 +18,9 @@ export type ArticleProps = PrimitiveProps & {
 };
 
 export type ArticleLayoutProps = PrimitiveProps & {
+  /**
+   * @deprecated Render aside content as children instead.
+   */
   aside?: PrimitiveChildren;
 };
 
@@ -31,6 +36,10 @@ export type ArticleHeaderProps =
 
 export type ArticleContentProps =
   | (PrimitiveClassProps & {
+      /**
+       * @deprecated Render Markdown HTML with `ArticleBody` inside an
+       * `ArticleContent` shell instead.
+       */
       html: string;
       children?: never;
       "data-slot"?: string;
@@ -125,6 +134,64 @@ export function ArticleContent(props: ArticleContentProps) {
     <div class={className} data-slot={dataSlot}>
       {props.children}
     </div>
+  );
+}
+
+export type ArticleBodyProps = PrimitiveClassProps & {
+  html: string;
+};
+
+export type ContentSlotProps = PrimitiveClassProps & {
+  slots?: ContentBodySlots;
+  name: ContentBodySlot;
+};
+
+/**
+ * Whether a body slot holds renderable content.
+ *
+ * A slot is absent when its source map is missing, the value is missing, or
+ * the value is whitespace-only. This is the same check `ContentSlot` uses.
+ */
+export function hasSlot(
+  slots: ContentBodySlots | undefined,
+  name: ContentBodySlot,
+): boolean {
+  return Boolean(slots?.[name]?.trim());
+}
+
+/**
+ * Renders a Plugin-provided body slot fragment at the position the Site chose.
+ *
+ * The Site owns placement; this primitive owns the lookup, empty handling, and
+ * HTML injection. It renders nothing when the slot is absent or blank.
+ */
+export function ContentSlot(props: ContentSlotProps) {
+  const html = props.slots?.[props.name];
+
+  if (!html?.trim()) {
+    return null;
+  }
+
+  return (
+    <div
+      data-slot={props.name}
+      class={joinClassNames(props.class, props.className) || undefined}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
+/**
+ * Renders Markdown-produced HTML as the canonical article body.
+ *
+ * Owns the `.rb-article-content` Stable Hook so Sites never hand-write it.
+ */
+export function ArticleBody(props: ArticleBodyProps) {
+  return (
+    <div
+      class={joinClassNames("rb-article-content", props.class, props.className)}
+      dangerouslySetInnerHTML={{ __html: props.html }}
+    />
   );
 }
 

@@ -497,14 +497,16 @@ appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
 
 関連コンテンツ、履歴、ナビゲーション、backlinks など記事末尾の section には `article.footer` を使います。Plugin ごとに `order` を設定して順序を固定し、route や CSS で並べ替えません。
 
-Site は `entry.bodySlots` を読み、各値を描画するかどうかと描画位置を決めます。
+Site は `entry.bodySlots` を読み、各値を描画するかどうかと描画位置を決めます。描画の仕組みは `@riebeckite/honox/ui` の公開 `ContentSlot` primitive に任せられます。
 
 ```tsx
 // app/components/article/article.tsx
-<ContentSlot html={props.bodySlots?.["article.after-content"]} />
+import { ContentSlot } from "@riebeckite/honox/ui";
+
+<ContentSlot slots={props.bodySlots} name="article.after-content" />
 ```
 
-上の `ContentSlot` は参照アプリ内の Site-local な helper であり、公開 API ではありません。slot は Site 自身の renderer が描画を選んだときだけ描画され、独自 slot 名は Site が描画を選ぶまで何もしません。Plugin は代わりに Hono JSX component を export して Site に配置を任せることもできます。詳しくは [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
+`ContentSlot` は slot lookup、存在しない slot や空 slot の扱い、HTML fragment の描画、`data-slot` の付与を担当する公開 API です。Site 固有 class は `class` / `className` で追加します。slot は Site 自身の renderer が描画を選んだときだけ描画され、独自 slot 名は Site が描画を選ぶまで何もしません。`slots` を直接読んだり、任意の要素で包んだり、同じ slot を複数回描画する escape hatch も残っています。Plugin は代わりに Hono JSX component を export して Site に配置を任せることもできます。詳しくは [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
 
 参照アプリと scaffold の starter は標準 slot を消費します。Plugin は提供し、Site が描画します。Plugin が route、shell、描画順を変更することはありません。route レベルの contract は [Body Slots](../framework/honox-integration.md#body-slots) を参照してください。
 

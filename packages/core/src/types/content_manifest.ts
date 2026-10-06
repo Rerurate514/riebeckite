@@ -24,19 +24,42 @@ export type ContentManifestPluginAsset = PluginAsset & {
 };
 
 /**
+ * The standard `article.*` positions the article consumer recognizes.
+ *
+ * These constants are a convenience for Sites that prefer named references;
+ * writing the slot string inline (for example `name="article.metadata"`) stays
+ * the recommended, most readable form in TSX layouts.
+ */
+export const ARTICLE_SLOT = {
+  header: "article.header",
+  metadata: "article.metadata",
+  aside: "article.aside",
+  beforeContent: "article.before-content",
+  afterContent: "article.after-content",
+  footer: "article.footer",
+} as const;
+
+/**
  * A semantic position in a Site-owned article layout.
  *
  * The standard article consumer recognizes the `article.*` positions below.
  * Other names remain valid so a custom Site can define its own layout slots.
  */
 export type ContentBodySlot =
-  | "article.header"
-  | "article.metadata"
-  | "article.aside"
-  | "article.before-content"
-  | "article.after-content"
-  | "article.footer"
+  | (typeof ARTICLE_SLOT)[keyof typeof ARTICLE_SLOT]
   | (string & {});
+
+/**
+ * A map of Plugin-provided HTML fragments keyed by slot name.
+ *
+ * The standard `article.*` names autocomplete while any custom slot name
+ * remains valid, so custom Plugins keep working. A slot is considered empty
+ * when its value is missing or whitespace-only.
+ */
+export type ContentBodySlots = Partial<
+  Record<(typeof ARTICLE_SLOT)[keyof typeof ARTICLE_SLOT], string>
+> &
+  Readonly<Record<string, string | undefined>>;
 
 /** Client entries and their explicitly public configuration. */
 export type ContentManifestPluginClientEntry = PluginClientEntry;

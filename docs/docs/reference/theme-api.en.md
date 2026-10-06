@@ -304,6 +304,8 @@ stable hooks directly to give a site a visual character.
   a theme expresses appearance through `--rb-*` tokens and unlayered character
   rules rather than re-declaring the structure. `.rb-article-body` is the shell
   that contains it; plugin components keep their own headings wherever placed.
+  The public `ArticleBody` primitive is what emits the `.rb-article-content`
+  wrapper.
 - A theme may ship self-hosted webfonts (Latin subsets) inside its package
   under `styles/fonts/`, reference them with relative `url()`, and include the
   font license file. Japanese and other CJK text should fall back to system

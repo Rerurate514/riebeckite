@@ -26,7 +26,7 @@ External plugins and themes should depend on public packages and public exports 
 | --- | --- |
 | `@riebeckite/core` | `defineConfig`, `definePlugin`, `defineTheme`, content APIs, pipeline APIs, diagnostics, observability types |
 | `@riebeckite/cli` | `riebeckite` CLI binary |
-| `@riebeckite/honox` | HonoX integration and scaffolding support; the `server` subpath exports the route/SSG helpers (`resolveRiebeckiteRoute`, `pluginPageSsgParams`) |
+| `@riebeckite/honox` | HonoX integration and scaffolding support; the `server` subpath exports the route/SSG helpers (`resolveRiebeckiteRoute`, `pluginPageSsgParams`), and the `ui` subpath exports the article/site UI primitives (`Article`, `ArticleBody`, `ArticleContent`, `ContentSlot`, `hasSlot`, and their props) |
 | `@riebeckite/test` | Test helpers (`assertGolden`, `assertGoldenJson`); the `e2e` subpath exports the packed-tarball external-site engine |
 | `@riebeckite/plugin-*` | Plugin factory and documented subpath exports |
 | `@riebeckite/theme-*` | Theme factory and CSS exports |

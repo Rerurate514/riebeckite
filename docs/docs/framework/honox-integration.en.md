@@ -70,43 +70,56 @@ uses this contract, so plugin packages never need to add HonoX route files.
 component framework. Its complete public component surface is:
 
 - `Article`, `ArticleLayout`, `ArticleHeader`, `ArticleContent`,
-  `ArticleMeta`, and `ArticleFooter` for an article page;
+  `ArticleBody`, `ArticleMeta`, `ArticleFooter`, and `ContentSlot` for an
+  article page;
 - `Sidebar` for complementary content.
 
-The corresponding `*Props` types are public. These stable styling hooks are
-the only classes supplied by the contract: `rb-article`, `rb-article-layout`,
-`rb-article-header`, `rb-article-body`, `rb-article-meta`,
-`rb-article-footer`, and `rb-sidebar`, in the component order above.
-Primitives provide semantic HTML, those hooks, and `class`/`className`
-composition only. They do not own article copy, metadata formatting,
-navigation, cards, page layouts, islands, or CSS. Those belong to the site
-application. `ArticleHeader` and `ArticleContent` accept either children or
-their HTML input prop, never both. The rendered Markdown is wrapped by the site
-application in `.rb-article-content`; Markdown typography is scoped to that
-wrapper, so plugin components keep their own headings wherever they are placed.
+The corresponding `*Props` types are public. `ContentSlot` is paired with the
+pure `hasSlot(slots, name)` helper, and the `ARTICLE_SLOT` constant provides
+the standard slot names. These stable styling hooks are the only classes
+supplied by the contract: `rb-article`, `rb-article-layout`, `rb-article-header`,
+`rb-article-body`, `rb-article-content`, `rb-article-meta`, `rb-article-footer`,
+and `rb-sidebar`, in the component order above. Primitives provide semantic
+HTML, those hooks, and `class`/`className` composition only. They do not own
+article copy, metadata formatting, navigation, cards, page layouts, islands, or
+CSS. Those belong to the site application. `ArticleHeader` and `ArticleContent`
+accept either children or their HTML input prop, never both. `ArticleBody`
+renders rendered Markdown as `.rb-article-content`, and Markdown typography is
+scoped to that wrapper, so plugin components keep their own headings wherever
+they are placed. `ContentSlot` looks a slot up by name in the `slots` map and
+renders it with a `data-slot` attribute; a missing, empty, or whitespace-only
+slot renders nothing, and `class`/`className` add site classes. It never infers
+a semantic element from the slot name.
 
 ```tsx
 import {
   Article,
+  ArticleBody,
   ArticleContent,
-  ArticleHeader,
   ArticleLayout,
-  ArticleMeta,
+  ContentSlot,
 } from "@riebeckite/honox/ui";
 
-<Article>
-  <ArticleLayout aside={<nav>…</nav>}>
+<Article class="site-article">
+  <ArticleLayout>
+    <ContentSlot
+      slots={bodySlots}
+      name="article.aside"
+      class="site-article__aside"
+    />
     <ArticleContent>
-      <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
-      <ArticleMeta>…</ArticleMeta>
-      <div dangerouslySetInnerHTML={{ __html: body }} />
+      <ContentSlot slots={bodySlots} name="article.header" />
+      <ContentSlot slots={bodySlots} name="article.metadata" />
+      <ArticleBody html={post.html ?? ""} />
     </ArticleContent>
   </ArticleLayout>
 </Article>;
 ```
 
-Use the primitives as composition points, then style them from the site. Do not
-import files below `@riebeckite/honox/src/` or rely on any unlisted component.
+Use the primitives as composition points, then style them from the site. Pass
+rendered Markdown to `ArticleBody`; `ArticleContent html={...}` remains for
+backward compatibility but is deprecated. Do not import files below
+`@riebeckite/honox/src/` or rely on any unlisted component.
 
 ## Site application contract
 
@@ -175,9 +188,29 @@ renders the standard slots at fixed positions: `article.aside`,
 `article.header`, `article.metadata`, `article.before-content`,
 `article.after-content`, and `article.footer`. A plugin author picks one of
 those, or asks the site to render a custom name; a custom slot renders nothing
-until the site chooses to render it. The slot renderer itself is site-owned,
-and the `ContentSlot` helper in `apps/web` is a site-local component, not part
-of the public API.
+until the site chooses to render it.
+
+The site chooses which slot goes where and delegates the rendering mechanics to
+the public `ContentSlot` primitive.
+
+```tsx
+<ArticleContent>
+  <ContentSlot slots={bodySlots} name="article.header" />
+  <ContentSlot
+    slots={bodySlots}
+    name="article.metadata"
+    class="site-article__metadata"
+  />
+  <ArticleBody html={post.html ?? ""} />
+</ArticleContent>
+```
+
+`ContentSlot` owns the slot lookup, missing and empty handling, HTML fragment
+rendering, and the `data-slot` attribute, so the site never writes
+`dangerouslySetInnerHTML` for a standard slot. Order, visibility, site classes,
+and custom slot names still belong to the site. The escape hatches remain:
+read `slots` directly, wrap a slot in any element, and render the same slot more
+than once.
 
 For example, `@riebeckite/plugin-properties` publishes its property panel on
 the `properties` slot when configured with `render: "slot"`. The default
@@ -193,14 +226,30 @@ contract while retaining all presentation ownership:
 
 ```tsx
 // app/components/article.tsx
-import type { PostContent } from "@riebeckite/core";
-import { Article, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
+import type { ContentBodySlots, PostContent } from "@riebeckite/core";
+import {
+  Article,
+  ArticleBody,
+  ArticleContent,
+  ArticleLayout,
+  ContentSlot,
+} from "@riebeckite/honox/ui";
 
-export function SiteArticle({ post }: { post: PostContent }) {
+export function SiteArticle({
+  post,
+  bodySlots,
+}: {
+  post: PostContent;
+  bodySlots?: ContentBodySlots;
+}) {
   return (
     <Article class="site-article">
       <ArticleLayout>
-        <ArticleContent html={post.html ?? ""} />
+        <ArticleContent>
+          <ContentSlot slots={bodySlots} name="article.header" />
+          <ArticleBody html={post.html ?? ""} />
+          <ContentSlot slots={bodySlots} name="article.footer" />
+        </ArticleContent>
       </ArticleLayout>
     </Article>
   );

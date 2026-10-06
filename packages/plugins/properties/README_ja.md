@@ -60,15 +60,17 @@ properties({
 
 ```tsx
 // app/components/article.tsx（Site 側）
-function SiteArticle({ bodySlots }: { bodySlots?: Readonly<Record<string, string>> }) {
-  const propertiesHtml = bodySlots?.["article.metadata"];
+import type { ContentBodySlots } from "@riebeckite/core";
+import { ContentSlot } from "@riebeckite/honox/ui";
 
-  return propertiesHtml ? (
-    <div
+function SiteArticle({ bodySlots }: { bodySlots?: ContentBodySlots }) {
+  return (
+    <ContentSlot
+      slots={bodySlots}
+      name="article.metadata"
       class="site-article__metadata"
-      dangerouslySetInnerHTML={{ __html: propertiesHtml }}
     />
-  ) : null;
+  );
 }
 ```
 

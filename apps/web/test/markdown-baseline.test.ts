@@ -10,6 +10,9 @@ const styleCss = read("../app/style.css");
 const markdownCss = read("../app/styles/markdown.css");
 const wikilinksCss = read("../app/styles/wikilinks.css");
 const articleTsx = read("../app/components/article/article.tsx");
+const honoxPrimitivesTsx = read(
+  "../../../packages/integrations/honox/src/ui/primitives.tsx",
+);
 const themeCss = readdirSync(
   fileURLToPath(new URL("../../../packages/themes", import.meta.url)),
   { withFileTypes: true },
@@ -28,7 +31,8 @@ test("apps/web no longer depends on the typography plugin", () => {
 test("articles expose the rb-article-content markdown hook instead of prose", () => {
   assert.doesNotMatch(articleTsx, /class="prose"/);
   assert.doesNotMatch(wikilinksCss, /\.prose\b/);
-  assert.match(articleTsx, /class="rb-article-content"/);
+  assert.match(articleTsx, /<ArticleBody\b/);
+  assert.match(honoxPrimitivesTsx, /"rb-article-content"/);
 });
 
 test("markdown typography stays scoped to rendered markdown, not plugin slots", () => {

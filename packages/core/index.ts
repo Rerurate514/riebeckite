@@ -201,6 +201,7 @@ export type {
 export type {
   ContentAsset,
   ContentBodySlot,
+  ContentBodySlots,
   ContentLink,
   ContentLinkKind,
   ContentLocationInput,
@@ -212,7 +213,10 @@ export type {
   FolderLocation,
   PluginPageRoute,
 } from "./src/types/content_manifest.js";
-export { appendContentBodySlot } from "./src/types/content_manifest.js";
+export {
+  ARTICLE_SLOT,
+  appendContentBodySlot,
+} from "./src/types/content_manifest.js";
 export type {
   Diagnostic,
   DiagnosticCode,

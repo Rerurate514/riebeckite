@@ -283,17 +283,23 @@ history, navigation, and backlinks. Set each plugin's `order` to establish a
 stable sequence; do not reorder these sections in routes or with CSS.
 
 The Site reads `entry.bodySlots` and chooses whether and where to render each
-value:
+value. It can delegate the rendering mechanics to the public `ContentSlot`
+primitive from `@riebeckite/honox/ui`:
 
 ```tsx
 // app/components/article/article.tsx
-<ContentSlot html={props.bodySlots?.["article.after-content"]} />
+import { ContentSlot } from "@riebeckite/honox/ui";
+
+<ContentSlot slots={props.bodySlots} name="article.after-content" />
 ```
 
-`ContentSlot` above is a site-local helper in the reference app, not part of
-the public API. A slot is rendered only because the Site's own renderer chooses
-to render it, and a custom slot name does nothing until the Site renders it. A
-plugin can alternatively export a Hono JSX component for the Site to place; see
+`ContentSlot` is public API. It owns the slot lookup, missing and empty
+handling, HTML fragment rendering, and the `data-slot` attribute; site classes
+are added with `class`/`className`. A slot is rendered only because the Site's
+own renderer chooses to render it, and a custom slot name does nothing until the
+Site renders it. The escape hatches remain: read `slots` directly, wrap a slot
+in any element, and render the same slot more than once. A plugin can
+alternatively export a Hono JSX component for the Site to place; see
 [Providing UI or output](../plugins/writing-a-plugin.en.md#providing-ui-or-output).
 
 The reference app and the scaffolded starter consume the standard slots. A

@@ -237,11 +237,13 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 - `ArticleLayout`
 - `ArticleHeader`
 - `ArticleContent`
+- `ArticleBody`
 - `ArticleMeta`
 - `ArticleFooter`
+- `ContentSlot`
 - `Sidebar`
 
-対応する `*Props` 型も公開されています。
+対応する `*Props` 型も公開されています。`ContentSlot` には `hasSlot(slots, name)` という純粋 helper が対応し、`ARTICLE_SLOT` 定数が標準 slot 名を提供します。
 
 ## Stable Styling Hooks
 
@@ -253,11 +255,14 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 | `ArticleLayout` | `rb-article-layout` |
 | `ArticleHeader` | `rb-article-header` |
 | `ArticleContent` | `rb-article-body` |
+| `ArticleBody` | `rb-article-content` |
 | `ArticleMeta` | `rb-article-meta` |
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
-レンダリングされた Markdown 本文は site application が `.rb-article-content` で包み、Markdown typography はこの wrapper にのみ適用されます。plugin component の見出しは plugin 自身が所有します。
+`ArticleBody` はレンダリング済み Markdown 本文を `.rb-article-content` として描画し、Markdown typography はこの wrapper にのみ適用されます。plugin component の見出しは plugin 自身が所有します。
+
+`ContentSlot` は `slots` map から slot 名で HTML fragment を取り出し、`data-slot` を付けて描画します。存在しない slot、空文字、whitespace のみの slot は何も描画しません。`class` / `className` で Site 固有 class を追加できます。slot 名から semantic 要素を推測するような暗黙の mapping は行いません。
 
 Primitive が担当するのは主に、
 
@@ -284,24 +289,29 @@ Primitive が担当するのは主に、
 ```tsx
 import {
   Article,
+  ArticleBody,
   ArticleContent,
-  ArticleHeader,
   ArticleLayout,
-  ArticleMeta,
+  ContentSlot,
 } from "@riebeckite/honox/ui";
 
 <Article class="site-article">
-  <ArticleLayout aside={<nav>…</nav>}>
+  <ArticleLayout>
+    <ContentSlot
+      slots={bodySlots}
+      name="article.aside"
+      class="site-article__aside"
+    />
     <ArticleContent>
-      <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
-      <ArticleMeta>…</ArticleMeta>
-      <div dangerouslySetInnerHTML={{ __html: body }} />
+      <ContentSlot slots={bodySlots} name="article.header" />
+      <ContentSlot slots={bodySlots} name="article.metadata" />
+      <ArticleBody html={post.html ?? ""} />
     </ArticleContent>
   </ArticleLayout>
 </Article>;
 ```
 
-`ArticleHeader` と `ArticleContent` は、children と HTML input prop のどちらか一方だけを受け取ります。
+`ArticleHeader` と `ArticleContent` は、children と HTML input prop のどちらか一方だけを受け取ります。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。`ArticleContent html={...}` は後方互換のために残っていますが非推奨です。
 
 Primitive は composition point として使用し、見た目は Site 側で定義してください。
 
@@ -469,7 +479,23 @@ properties
 
 のように article component 内の任意の位置へ配置できます。
 
-ここでの `Article` は Site 自身の article component であり、同名の `@riebeckite/honox/ui` primitive ではありません。scaffold の starter は標準 slot を決まった位置へ描画します(`article.aside`、`article.header`、`article.metadata`、`article.before-content`、`article.after-content`、`article.footer`)。plugin 作者はこれらから選ぶか、Site に独自名の描画を依頼します。独自 slot は Site が描画を選ぶまで何も表示しません。slot renderer 自体は Site が所有し、`apps/web` の `ContentSlot` は Site-local な component であって公開 API ではありません。
+ここでの `Article` は Site 自身の article component であり、同名の `@riebeckite/honox/ui` primitive ではありません。scaffold の starter は標準 slot を決まった位置へ描画します(`article.aside`、`article.header`、`article.metadata`、`article.before-content`、`article.after-content`、`article.footer`)。plugin 作者はこれらから選ぶか、Site に独自名の描画を依頼します。独自 slot は Site が描画を選ぶまで何も表示しません。
+
+Site はどの slot をどこへ置くかを選び、描画の仕組みは公開 `ContentSlot` primitive に任せます。
+
+```tsx
+<ArticleContent>
+  <ContentSlot slots={bodySlots} name="article.header" />
+  <ContentSlot
+    slots={bodySlots}
+    name="article.metadata"
+    class="site-article__metadata"
+  />
+  <ArticleBody html={post.html ?? ""} />
+</ArticleContent>
+```
+
+`ContentSlot` は slot lookup、存在しない slot や空 slot の扱い、HTML fragment の描画、`data-slot` の付与を担当します。Site が `dangerouslySetInnerHTML` を直接書く必要はありません。順序、可視性、Site 固有 class、独自 slot 名は引き続き Site が所有します。`slots` を直接読んだり、任意の wrapper で包んだり、同じ slot を複数回描画する escape hatch も残っています。
 
 Plugin が route や shell の構造を書き換える必要はありません。
 
@@ -490,18 +516,30 @@ render: "slot"
 外部 Site でも、公開 primitive を使いながら自由に component を構成できます。
 
 ```tsx
-import type { PostContent } from "@riebeckite/core";
+import type { ContentBodySlots, PostContent } from "@riebeckite/core";
 import {
   Article,
+  ArticleBody,
   ArticleContent,
   ArticleLayout,
+  ContentSlot,
 } from "@riebeckite/honox/ui";
 
-export function SiteArticle({ post }: { post: PostContent }) {
+export function SiteArticle({
+  post,
+  bodySlots,
+}: {
+  post: PostContent;
+  bodySlots?: ContentBodySlots;
+}) {
   return (
     <Article class="site-article">
       <ArticleLayout>
-        <ArticleContent html={post.html ?? ""} />
+        <ArticleContent>
+          <ContentSlot slots={bodySlots} name="article.header" />
+          <ArticleBody html={post.html ?? ""} />
+          <ContentSlot slots={bodySlots} name="article.footer" />
+        </ArticleContent>
       </ArticleLayout>
     </Article>
   );

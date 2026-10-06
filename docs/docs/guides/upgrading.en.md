@@ -69,3 +69,7 @@ The standard article slots are `article.header`, `article.metadata`,
 `article.aside`, `article.before-content`, `article.after-content`, and
 `article.footer`. Plugins only publish fragments; HonoX routes and Site
 components choose their placement.
+
+Render them with the public `ContentSlot` and `ArticleBody` primitives from
+`@riebeckite/honox/ui`. Reading `bodySlots` directly and `ArticleContent
+html=...` still work, but prefer `ArticleBody` for rendered Markdown HTML.

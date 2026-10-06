@@ -1,15 +1,17 @@
-import type { PostContent } from "@riebeckite/core";
+import type { ContentBodySlots, PostContent } from "@riebeckite/core";
 import {
   Article,
+  ArticleBody,
   ArticleContent,
   ArticleHeader,
   ArticleLayout,
   ArticleMeta,
+  ContentSlot,
 } from "@riebeckite/honox/ui";
 
 type Props = {
   post: PostContent;
-  bodySlots?: Readonly<Record<string, string>>;
+  bodySlots?: ContentBodySlots;
 };
 
 export function FixtureArticle({ post, bodySlots }: Props) {
@@ -18,55 +20,41 @@ export function FixtureArticle({ post, bodySlots }: Props) {
   return (
     <Article class="fixture-article">
       <ArticleLayout>
-        {bodySlots?.["article.aside"] ? (
-          <div
-            class="fixture-article__aside"
-            dangerouslySetInnerHTML={{ __html: bodySlots["article.aside"] }}
-          />
-        ) : null}
+        <ContentSlot
+          slots={bodySlots}
+          name="article.aside"
+          class="fixture-article__aside"
+        />
         <ArticleContent>
-          {bodySlots?.["article.header"] ? (
-            <div
-              class="fixture-article__header"
-              dangerouslySetInnerHTML={{
-                __html: bodySlots["article.header"],
-              }}
-            />
-          ) : null}
-          <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
-          {bodySlots?.["article.metadata"] ? (
-            <div
-              class="fixture-article__metadata"
-              dangerouslySetInnerHTML={{
-                __html: bodySlots["article.metadata"],
-              }}
-            />
-          ) : null}
-          <ArticleMeta />
-          {bodySlots?.["article.before-content"] ? (
-            <div
-              class="fixture-article__before-content"
-              dangerouslySetInnerHTML={{
-                __html: bodySlots["article.before-content"],
-              }}
-            />
-          ) : null}
-          <div dangerouslySetInnerHTML={{ __html: rest }} />
-          {bodySlots?.["article.after-content"] ? (
-            <div
-              class="fixture-article__after-content"
-              dangerouslySetInnerHTML={{
-                __html: bodySlots["article.after-content"],
-              }}
-            />
-          ) : null}
-        </ArticleContent>
-        {bodySlots?.["article.footer"] ? (
-          <div
-            class="fixture-article__footer"
-            dangerouslySetInnerHTML={{ __html: bodySlots["article.footer"] }}
+          <ContentSlot
+            slots={bodySlots}
+            name="article.header"
+            class="fixture-article__header"
           />
-        ) : null}
+          <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
+          <ContentSlot
+            slots={bodySlots}
+            name="article.metadata"
+            class="fixture-article__metadata"
+          />
+          <ArticleMeta />
+          <ContentSlot
+            slots={bodySlots}
+            name="article.before-content"
+            class="fixture-article__before-content"
+          />
+          <ArticleBody html={rest} />
+          <ContentSlot
+            slots={bodySlots}
+            name="article.after-content"
+            class="fixture-article__after-content"
+          />
+        </ArticleContent>
+        <ContentSlot
+          slots={bodySlots}
+          name="article.footer"
+          class="fixture-article__footer"
+        />
       </ArticleLayout>
     </Article>
   );

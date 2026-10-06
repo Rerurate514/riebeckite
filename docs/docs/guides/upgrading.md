@@ -350,6 +350,8 @@ Siteを変更
 `article.before-content`、`article.after-content`、`article.footer` です。Plugin は
 fragment を提供するだけで、HonoX route と Site component が配置を決めます。
 
+描画には `@riebeckite/honox/ui` の公開 `ContentSlot` と `ArticleBody` を使えます。`bodySlots` の直読みや `ArticleContent html=...` も引き続き動作しますが、レンダリング済み Markdown 本文には `ArticleBody` を推奨します。
+
 ### Replacement がある場合
 
 Warning に直接 Replacement が示されている場合は、それを確認します。

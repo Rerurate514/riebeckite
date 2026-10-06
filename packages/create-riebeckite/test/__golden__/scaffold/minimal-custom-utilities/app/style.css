@@ -32,7 +32,7 @@ body {
   display: grid;
   grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
   justify-content: center;
-  gap: var(--rb-layout-gap, 2rem);
+  column-gap: var(--rb-layout-gap, 2rem);
 }
 
 .rb-article-body,

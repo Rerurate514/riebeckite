@@ -8,7 +8,7 @@
     display: grid;
     grid-template-columns: minmax(0, var(--rb-layout-article-max));
     justify-content: center;
-    gap: var(--rb-layout-gap);
+    column-gap: var(--rb-layout-gap);
   }
 
   .rb-article-body {

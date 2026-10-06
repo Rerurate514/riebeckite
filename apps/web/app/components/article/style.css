@@ -81,10 +81,10 @@
     grid-column: 1;
     grid-row: 1;
     position: sticky;
-    top: 0;
+    top: var(--rb-docs-sticky-top);
     align-self: start;
     width: var(--rb-layout-sidebar);
-    max-height: calc(100dvh - 8rem);
+    max-height: calc(100dvh - var(--rb-docs-sticky-top) - var(--rb-space-8));
     margin-block: 0;
     margin-inline-start: calc(
       -1 *
@@ -96,10 +96,5 @@
     padding-inline-end: 1rem;
     border-inline-end: 1px solid
       color-mix(in oklab, currentColor 18%, transparent);
-  }
-
-  :is(:root, .rb-theme-root)[data-article-layout="article"]
-    .table-of-contents--desktop {
-    top: 0;
   }
 }

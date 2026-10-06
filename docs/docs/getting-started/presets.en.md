@@ -57,6 +57,10 @@ A blank application shell with no plugins, theme, content, or components. Choose
 
 `starter` writes practical plugin options. `showcase` writes the complete option surface as a configuration reference. `empty` and `minimal` deliberately keep configuration small. See [Configuration](../reference/configuration.en.md) and each package README under `packages/plugins` for details.
 
+## Project files
+
+Presets do not control project files. `create-riebeckite` writes an independent set selected with `--utilities <names>`: `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`. The default is `editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode the `Extra project files` prompt lets you toggle each one. See the [CLI reference](../reference/cli.en.md) for the files each name writes.
+
 ## Next
 
 - [Deployment →](./deployment.en.md)

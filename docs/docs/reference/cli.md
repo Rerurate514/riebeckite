@@ -13,7 +13,7 @@ CLI は current working directory から application root を解決します。
 ## コマンド一覧
 
 ```text id="7uw50m"
-riebeckite init [directory] [--preset <name>] [--force] [--list-presets]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
 
 riebeckite dev
 riebeckite check
@@ -128,6 +128,26 @@ riebeckite init --list-presets
 ```
 
 で確認できます。
+
+### Project file を選ぶ
+
+preset とは別に、任意の project file を生成できます。
+
+```sh id="pf8k21"
+riebeckite init my-site --utilities editorconfig,npmrc,vscode
+```
+
+`--utilities` には `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。既定では `editorconfig,gitattributes,biome` を生成し、`npmrc` と `vscode` は生成しません。`none` を指定すると project file を生成しません。
+
+| 名前 | ファイル |
+| --- | --- |
+| `editorconfig` | `.editorconfig` |
+| `gitattributes` | `.gitattributes` |
+| `biome` | `biome.json` |
+| `npmrc` | `.npmrc` |
+| `vscode` | `.vscode/settings.json` |
+
+`create-riebeckite` の対話式では `Extra project files` の質問で個別に選択できます。
 
 ### 既存ファイルがある場合
 

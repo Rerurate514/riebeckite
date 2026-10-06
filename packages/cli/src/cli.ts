@@ -1,10 +1,13 @@
 import {
   isScaffoldPresetName,
+  parseScaffoldUtilities,
   SCAFFOLD_DEFAULT_PRESET,
+  SCAFFOLD_DEFAULT_UTILITIES,
   SCAFFOLD_PRESETS,
   type ScaffoldDeployment,
   type ScaffoldPresetName,
   ScaffoldSiteError,
+  type ScaffoldUtilityName,
   scaffoldDeploymentFromFlags,
 } from "create-riebeckite/scaffold";
 import { resolveRiebeckiteProject } from "./application_root.js";
@@ -34,6 +37,7 @@ export async function main(arguments_: readonly string[]): Promise<void> {
         directory: command.directory,
         force: command.force,
         preset: command.preset,
+        utilities: command.utilities,
         deployment: command.deployment,
       });
       return;
@@ -102,6 +106,7 @@ type Command =
       directory: string;
       force: boolean;
       preset: ScaffoldPresetName;
+      utilities: readonly ScaffoldUtilityName[];
       listPresets: boolean;
       deployment: ScaffoldDeployment;
     }
@@ -150,18 +155,19 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 
 const INIT_USAGE =
-  "Usage: riebeckite init [directory] [--preset <name>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]";
+  "Usage: riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]";
 
 function parseInitCommand(options: readonly string[]): Command {
   let directory: string | undefined;
   let force = false;
   let listPresets = false;
   let preset: ScaffoldPresetName | undefined;
+  let utilities: readonly ScaffoldUtilityName[] | undefined;
   let githubActions = false;
   let cloudflareWorkers = false;
   let contentRepository: string | undefined;
@@ -194,6 +200,23 @@ function parseInitCommand(options: readonly string[]): Command {
         );
       }
       preset = value;
+      index += 1;
+      continue;
+    }
+    if (option === "--utilities") {
+      const value = options[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new CliUsageError(
+          "--utilities requires a comma-separated list of utility names.",
+        );
+      }
+      try {
+        utilities = parseScaffoldUtilities(value);
+      } catch (error) {
+        throw new CliUsageError(
+          error instanceof Error ? error.message : String(error),
+        );
+      }
       index += 1;
       continue;
     }
@@ -241,6 +264,7 @@ function parseInitCommand(options: readonly string[]): Command {
     directory: directory ?? ".",
     force,
     preset: preset ?? SCAFFOLD_DEFAULT_PRESET,
+    utilities: utilities ?? SCAFFOLD_DEFAULT_UTILITIES,
     listPresets,
     deployment,
   };

@@ -1,10 +1,15 @@
-import { isCancel, log, select, text } from "@clack/prompts";
+import { isCancel, log, multiselect, select, text } from "@clack/prompts";
 import type { CreateRiebeckiteOptions } from "./arguments.js";
 import type { ScaffoldDeployment } from "./scaffold/options.js";
 import {
   SCAFFOLD_PRESETS,
   type ScaffoldPresetName,
 } from "./scaffold/presets.js";
+import {
+  SCAFFOLD_DEFAULT_UTILITIES,
+  SCAFFOLD_UTILITIES,
+  type ScaffoldUtilityName,
+} from "./scaffold/utilities.js";
 
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
 export const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";
@@ -17,12 +22,14 @@ export type InteractiveAnswers =
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
+      readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "local";
       readonly deployment: InteractiveDeployment;
     }
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
+      readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "external";
       readonly contentRepository: string;
       readonly siteRepository: string;
@@ -35,6 +42,7 @@ export function interactiveAnswersToOptions(
     directory: answers.directory,
     force: false,
     preset: answers.preset,
+    utilities: answers.utilities,
     listPresets: false,
     deployment: deploymentFromAnswers(answers),
   };
@@ -87,6 +95,18 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
   });
   if (isCancel(preset)) return null;
 
+  const utilities = await multiselect<ScaffoldUtilityName>({
+    message: "Extra project files",
+    options: SCAFFOLD_UTILITIES.map(({ name, label, description }) => ({
+      value: name,
+      label,
+      hint: description,
+    })),
+    initialValues: [...SCAFFOLD_DEFAULT_UTILITIES],
+    required: false,
+  });
+  if (isCancel(utilities)) return null;
+
   const contentSource = await select<InteractiveContentSource>({
     message: "Where will you write content?",
     initialValue: "local",
@@ -115,6 +135,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
     answers = {
       directory,
       preset,
+      utilities,
       contentSource,
       contentRepository: contentRepository.trim(),
       siteRepository: siteRepository.trim(),
@@ -138,7 +159,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
       ],
     });
     if (isCancel(deployment)) return null;
-    answers = { directory, preset, contentSource, deployment };
+    answers = { directory, preset, utilities, contentSource, deployment };
   }
 
   log.step("Creating Riebeckite site...");

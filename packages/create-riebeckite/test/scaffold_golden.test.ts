@@ -21,6 +21,17 @@ type GoldenScenario = {
 const SCENARIOS: readonly GoldenScenario[] = [
   { name: "empty", scaffold: { preset: "empty" } },
   { name: "minimal", scaffold: { preset: "minimal" } },
+  {
+    name: "minimal-custom-utilities",
+    scaffold: {
+      preset: "minimal",
+      utilities: ["editorconfig", "npmrc", "vscode"],
+    },
+  },
+  {
+    name: "empty-no-utilities",
+    scaffold: { preset: "empty", utilities: [] },
+  },
   { name: "starter", scaffold: { preset: "starter" } },
   { name: "showcase", scaffold: { preset: "showcase" } },
   {

@@ -8,7 +8,7 @@ CLI ツールです。
 ## 使い方
 
 対話モード（推奨）: 引数なしで実行すると、プロジェクト名・preset・
-コンテンツの格納場所・デプロイについて順に確認します。
+プロジェクトファイル・コンテンツの格納場所・デプロイについて順に確認します。
 
 ```sh
 npx create-riebeckite
@@ -31,6 +31,7 @@ npm exec riebeckite build
 | --- | --- | --- |
 | Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
 | Preset | `starter`、`minimal`、`showcase`、`empty` | 大半のサイトは `starter` |
+| Project files | `.editorconfig`、`.gitattributes`、`biome.json`、`.npmrc`、`.vscode/settings.json` | 推奨セットをあらかじめ選択 |
 | Content source | `This project`、`Separate GitHub repository` | 最初は `This project` |
 | デプロイ設定 | `GitHub Actions + Cloudflare Workers`、`Not now` | 手元で試すなら `Not now` |
 
@@ -42,6 +43,7 @@ npm exec riebeckite build
 | --- | --- |
 | `[directory]` | 生成先ディレクトリ（既定はカレントディレクトリ） |
 | `--preset <name>` | 使用するスターター構成（既定は `starter`） |
+| `--utilities <names>` | 生成するプロジェクトファイルをカンマ区切りで指定する（`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode`、または `none`。既定は `editorconfig,gitattributes,biome`） |
 | `--force` | 空でないディレクトリにも展開する |
 | `--list-presets` | 利用可能な preset と説明を一覧表示して終了する |
 | `--github-actions` | Cloudflare へのデプロイ workflow を生成する |
@@ -52,6 +54,28 @@ npm exec riebeckite build
 
 ```sh
 npx create-riebeckite my-site --preset showcase
+```
+
+## Project files
+
+preset とは別に、`create-riebeckite` は任意のプロジェクトファイルを生成します。
+対話モードでは `Extra project files` の質問で推奨セットがあらかじめ選択されて
+いるので、そこから個別に切り替えられます。非対話で実行する場合は、
+カンマ区切りの `--utilities` で選択します。
+
+| 名前 | ファイル | 既定 |
+| --- | --- | --- |
+| `editorconfig` | `.editorconfig` | 生成する |
+| `gitattributes` | `.gitattributes` | 生成する |
+| `biome` | `biome.json` | 生成する |
+| `npmrc` | `.npmrc` | 生成しない |
+| `vscode` | `.vscode/settings.json` | 生成しない |
+
+`none` を渡すとプロジェクトファイルを一切生成しません。個別に選ぶ場合は
+次のように指定します。
+
+```sh
+npx create-riebeckite my-site --utilities editorconfig,npmrc,vscode
 ```
 
 ## External content repository

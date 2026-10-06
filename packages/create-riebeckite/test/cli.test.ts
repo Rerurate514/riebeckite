@@ -14,6 +14,7 @@ test("interactive answers without deployment map to a plain scaffold", () => {
   const options = interactiveAnswersToOptions({
     directory: "my-site",
     preset: "starter",
+    utilities: ["editorconfig", "vscode"],
     contentSource: "local",
     deployment: "none",
   });
@@ -21,6 +22,7 @@ test("interactive answers without deployment map to a plain scaffold", () => {
     directory: "my-site",
     force: false,
     preset: "starter",
+    utilities: ["editorconfig", "vscode"],
     listPresets: false,
     deployment: { type: "none" },
   });
@@ -30,6 +32,7 @@ test("interactive answers with GitHub Actions enable the workflow", () => {
   const options = interactiveAnswersToOptions({
     directory: "my-site",
     preset: "starter",
+    utilities: ["editorconfig", "vscode"],
     contentSource: "local",
     deployment: "github-actions",
   });
@@ -37,6 +40,7 @@ test("interactive answers with GitHub Actions enable the workflow", () => {
     directory: "my-site",
     force: false,
     preset: "starter",
+    utilities: ["editorconfig", "vscode"],
     listPresets: false,
     deployment: { type: "github-actions", content: { type: "local" } },
   });
@@ -46,6 +50,7 @@ test("interactive answers with Cloudflare Workers select local-first deployment"
   const options = interactiveAnswersToOptions({
     directory: "my-site",
     preset: "starter",
+    utilities: ["editorconfig", "vscode"],
     contentSource: "local",
     deployment: "cloudflare",
   });
@@ -53,6 +58,7 @@ test("interactive answers with Cloudflare Workers select local-first deployment"
     directory: "my-site",
     force: false,
     preset: "starter",
+    utilities: ["editorconfig", "vscode"],
     listPresets: false,
     deployment: { type: "cloudflare-workers" },
   });
@@ -62,6 +68,7 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
   const options = interactiveAnswersToOptions({
     directory: "my-site",
     preset: "showcase",
+    utilities: ["editorconfig", "vscode"],
     contentSource: "external",
     contentRepository: "OWNER/notes",
     siteRepository: "OWNER/site",
@@ -70,6 +77,7 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
     directory: "my-site",
     force: false,
     preset: "showcase",
+    utilities: ["editorconfig", "vscode"],
     listPresets: false,
     deployment: {
       type: "github-actions",
@@ -88,6 +96,7 @@ test("non-interactive defaults are unchanged", () => {
     directory: ".",
     force: false,
     preset: "starter",
+    utilities: ["editorconfig", "gitattributes", "biome"],
     listPresets: false,
     deployment: { type: "none" },
   });
@@ -110,6 +119,7 @@ test("existing flags keep parsing", () => {
     directory: "my-site",
     force: true,
     preset: "showcase",
+    utilities: ["editorconfig", "gitattributes", "biome"],
     listPresets: true,
     deployment: {
       type: "github-actions",
@@ -120,6 +130,29 @@ test("existing flags keep parsing", () => {
       },
     },
   });
+});
+
+test("--utilities selects the generated project files", () => {
+  const options = parseArguments([
+    "my-site",
+    "--utilities",
+    "editorconfig,npmrc,vscode",
+  ]);
+  assert.deepEqual(options.utilities, ["editorconfig", "npmrc", "vscode"]);
+
+  assert.deepEqual(
+    parseArguments(["my-site", "--utilities", "none"]).utilities,
+    [],
+  );
+
+  assert.throws(
+    () => parseArguments(["my-site", "--utilities", "unknown"]),
+    /Unknown utility/,
+  );
+  assert.throws(
+    () => parseArguments(["my-site", "--utilities"]),
+    /requires a comma-separated list/,
+  );
 });
 
 test("existing argument errors keep throwing", () => {

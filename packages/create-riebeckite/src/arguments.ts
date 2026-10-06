@@ -6,11 +6,17 @@ import {
   SCAFFOLD_PRESETS,
   type ScaffoldPresetName,
 } from "./scaffold/presets.js";
+import {
+  parseScaffoldUtilities,
+  SCAFFOLD_DEFAULT_UTILITIES,
+  type ScaffoldUtilityName,
+} from "./scaffold/utilities.js";
 
 export type CreateRiebeckiteOptions = {
   readonly directory: string;
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;
+  readonly utilities: readonly ScaffoldUtilityName[];
   readonly listPresets: boolean;
   readonly deployment: ScaffoldDeployment;
 };
@@ -21,6 +27,7 @@ export function parseArguments(
   let directory: string | undefined;
   let force = false;
   let preset: ScaffoldPresetName | undefined;
+  let utilities: readonly ScaffoldUtilityName[] | undefined;
   let listPresets = false;
   let githubActions = false;
   let contentRepository: string | undefined;
@@ -65,12 +72,23 @@ export function parseArguments(
       index += 1;
       continue;
     }
+    if (argument === "--utilities") {
+      const value = arguments_[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new Error(
+          "--utilities requires a comma-separated list of utility names.",
+        );
+      }
+      utilities = parseScaffoldUtilities(value);
+      index += 1;
+      continue;
+    }
     if (argument.startsWith("-")) {
       throw new Error(`Unknown option: ${argument}`);
     }
     if (directory !== undefined) {
       throw new Error(
-        "Usage: create-riebeckite [directory] [--preset <name>] [--github-actions] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
+        "Usage: create-riebeckite [directory] [--preset <name>] [--utilities <names>] [--github-actions] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
       );
     }
     directory = argument;
@@ -80,6 +98,7 @@ export function parseArguments(
     directory: directory ?? ".",
     force,
     preset: preset ?? "starter",
+    utilities: utilities ?? SCAFFOLD_DEFAULT_UTILITIES,
     listPresets,
     deployment: scaffoldDeploymentFromFlags({
       githubActions,

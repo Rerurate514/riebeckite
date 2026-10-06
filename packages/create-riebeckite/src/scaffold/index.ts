@@ -40,6 +40,15 @@ export {
   type ScaffoldPresetSummary,
 } from "./presets.js";
 export {
+  isScaffoldUtilityName,
+  parseScaffoldUtilities,
+  SCAFFOLD_DEFAULT_UTILITIES,
+  SCAFFOLD_UTILITIES,
+  SCAFFOLD_UTILITY_NAMES,
+  type ScaffoldUtilityName,
+  type ScaffoldUtilitySummary,
+} from "./utilities.js";
+export {
   GITHUB_ACTIONS_SECRETS,
   wranglerConfigForDirectory,
 } from "./wrangler-defaults.js";
@@ -65,6 +74,7 @@ export async function scaffoldRiebeckiteSite(
   const files = [
     ...siteTemplateFiles(preset, templateVariables(options, targetDirectory), {
       cloudflareWorkers: deployment.type === "cloudflare-workers",
+      utilities: options.utilities,
     }),
     ...deploymentTemplateOrConfig(deployment, targetDirectory),
   ];

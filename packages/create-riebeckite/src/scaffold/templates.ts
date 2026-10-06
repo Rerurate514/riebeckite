@@ -10,6 +10,11 @@ import {
   type ScaffoldPresetName,
 } from "./presets.js";
 import { copyTemplateTree } from "./template-loader.js";
+import {
+  SCAFFOLD_DEFAULT_UTILITIES,
+  type ScaffoldUtilityName,
+  utilityTemplateFiles,
+} from "./utilities.js";
 import { RIEBECKITE_VERSION } from "./version.js";
 import {
   GITHUB_ACTIONS_SECRETS,
@@ -27,6 +32,7 @@ export type SiteTemplateVariables = {
 
 export type SiteTemplateOptions = {
   readonly cloudflareWorkers?: boolean;
+  readonly utilities?: readonly ScaffoldUtilityName[];
 };
 
 export type SiteTemplateFile = {
@@ -46,6 +52,7 @@ export function siteTemplateFiles(
       content: riebeckiteConfig(preset, variables),
     },
     ...copyTemplateTree("base"),
+    ...utilityTemplateFiles(options.utilities ?? SCAFFOLD_DEFAULT_UTILITIES),
     ...copyTemplateTree(
       `presets/${preset.name}`,
       {},

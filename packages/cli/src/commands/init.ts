@@ -3,6 +3,7 @@ import {
   formatScaffoldNextSteps,
   type ScaffoldDeployment,
   type ScaffoldPresetName,
+  type ScaffoldUtilityName,
   scaffoldRiebeckiteSite,
 } from "create-riebeckite/scaffold";
 
@@ -10,6 +11,7 @@ export type InitOptions = {
   readonly directory: string;
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;
+  readonly utilities: readonly ScaffoldUtilityName[];
   readonly deployment: ScaffoldDeployment;
 };
 
@@ -19,6 +21,7 @@ export async function runInit(options: InitOptions): Promise<void> {
     targetDirectory,
     overwrite: options.force,
     preset: options.preset,
+    utilities: options.utilities,
     deployment: options.deployment,
   });
 

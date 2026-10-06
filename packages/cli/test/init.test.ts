@@ -8,6 +8,7 @@ test("parseCommand defaults init to the starter preset without deployment", () =
     directory: ".",
     force: false,
     preset: "starter",
+    utilities: ["editorconfig", "gitattributes", "biome"],
     listPresets: false,
     deployment: { type: "none" },
   });
@@ -31,6 +32,7 @@ test("parseCommand reads the GitHub Actions deployment options", () => {
       directory: "site",
       force: false,
       preset: "minimal",
+      utilities: ["editorconfig", "gitattributes", "biome"],
       listPresets: false,
       deployment: {
         type: "github-actions",
@@ -41,6 +43,29 @@ test("parseCommand reads the GitHub Actions deployment options", () => {
         },
       },
     },
+  );
+});
+
+test("parseCommand reads the project file selection", () => {
+  const command = parseCommand([
+    "init",
+    "site",
+    "--utilities",
+    "editorconfig,npmrc,vscode",
+  ]);
+  assert.equal(command.name, "init");
+  assert.deepEqual(command.utilities, ["editorconfig", "npmrc", "vscode"]);
+
+  const noneCommand = parseCommand(["init", "--utilities", "none"]);
+  assert.equal(noneCommand.name, "init");
+  assert.deepEqual(noneCommand.utilities, []);
+  assert.throws(
+    () => parseCommand(["init", "--utilities", "unknown"]),
+    /Unknown utility/,
+  );
+  assert.throws(
+    () => parseCommand(["init", "--utilities"]),
+    /requires a comma-separated list/,
   );
 });
 

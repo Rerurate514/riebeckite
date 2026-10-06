@@ -5,6 +5,7 @@ import type {
   ScaffoldPresetName,
   ScaffoldSiteMetadata,
   ScaffoldSiteOptions,
+  ScaffoldUtilityName,
 } from "../src/scaffold/index.js";
 
 type Equal<A, B> =
@@ -32,6 +33,7 @@ export type ScaffoldSiteOptionsShapeIsPinned = Assert<
       readonly name?: string;
       readonly site?: ScaffoldSiteMetadata;
       readonly preset?: ScaffoldPresetName;
+      readonly utilities?: readonly ScaffoldUtilityName[];
       readonly deployment?: ScaffoldDeployment;
       readonly overwrite?: boolean;
     }

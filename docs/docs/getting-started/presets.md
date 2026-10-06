@@ -57,6 +57,10 @@ Plugin、Theme、コンテンツ、コンポーネントを含まない空のア
 
 `starter` は実用的な Plugin の設定を出力し、`showcase` は設定リファレンスとして全オプションを出力します。`empty` と `minimal` の設定は意図的に小さくしています。詳細は [Configuration](../reference/configuration.md) と `packages/plugins` の各 README を参照してください。
 
+## Project file
+
+preset は project file を制御しません。`create-riebeckite` は `--utilities <names>` で選んだ project file を別途生成します。指定できる名前は `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` で、既定は `editorconfig,gitattributes,biome` です。`none` を指定すると何も生成しません。対話式では `Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI Reference](../reference/cli.md) を参照してください。
+
 ## 次に読むページ
 
 - [Deployment →](./deployment.md)

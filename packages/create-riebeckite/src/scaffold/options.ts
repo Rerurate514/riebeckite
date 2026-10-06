@@ -1,4 +1,5 @@
 import type { ScaffoldPresetName } from "./presets.js";
+import type { ScaffoldUtilityName } from "./utilities.js";
 
 export type ScaffoldSiteMetadata = {
   readonly title?: string;
@@ -28,6 +29,7 @@ export type ScaffoldSiteOptions = {
   readonly name?: string;
   readonly site?: ScaffoldSiteMetadata;
   readonly preset?: ScaffoldPresetName;
+  readonly utilities?: readonly ScaffoldUtilityName[];
   readonly deployment?: ScaffoldDeployment;
   readonly overwrite?: boolean;
 };

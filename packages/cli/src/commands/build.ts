@@ -2,6 +2,10 @@ import type { Observability } from "@riebeckite/core";
 import { ConsoleLogger, ContentManager, NoopTracer } from "@riebeckite/core";
 import { buildHonoxApplication } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
+import {
+  clearBuildOutputMarker,
+  writeBuildOutputMarker,
+} from "../build_output.js";
 import { resolveProjectContentSource } from "../content_source.js";
 import { loadProjectConfig } from "../load_config.js";
 
@@ -41,9 +45,11 @@ export async function runBuild(
       persistentContentCache,
     );
 
+    await clearBuildOutputMarker(project);
     await buildHonoxApplication({
       root: project.appRoot,
       tracer: observability.tracer,
     });
+    await writeBuildOutputMarker(project);
   });
 }

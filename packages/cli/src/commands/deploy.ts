@@ -4,6 +4,7 @@ import path from "node:path";
 import { resolveBuildOutputDirectory } from "@riebeckite/core";
 import { wranglerConfigForDirectory } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
+import { readBuildOutputMarker } from "../build_output.js";
 
 const WRANGLER_CONFIG_FILES = [
   "wrangler.jsonc",
@@ -53,6 +54,7 @@ export async function runDeploy(
   const deployRoot = resolveDeployRoot(project);
   const configPath = await ensureWranglerConfig(deployRoot);
   await assertBuildOutput(
+    project,
     resolveBuildOutputDirectory(project.config) ??
       path.join(deployRoot, "dist"),
   );
@@ -93,7 +95,10 @@ async function ensureWranglerConfig(root: string): Promise<string> {
   return configPath;
 }
 
-async function assertBuildOutput(outputDirectory: string): Promise<void> {
+async function assertBuildOutput(
+  project: RiebeckiteProject,
+  outputDirectory: string,
+): Promise<void> {
   let isDirectory = false;
   try {
     isDirectory = (await fs.stat(outputDirectory)).isDirectory();
@@ -103,6 +108,15 @@ async function assertBuildOutput(outputDirectory: string): Promise<void> {
   if (!isDirectory) {
     throw new MissingBuildOutputError(
       `Could not find the build output at ${outputDirectory}.`,
+    );
+  }
+
+  const marker = await readBuildOutputMarker(project);
+  const enforceMarker =
+    resolveBuildOutputDirectory(project.config) !== undefined;
+  if (enforceMarker && !marker) {
+    throw new MissingBuildOutputError(
+      `The build output at ${outputDirectory} is not from a completed build.`,
     );
   }
 }

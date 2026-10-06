@@ -48,9 +48,16 @@ export class ContentEntryReader {
       .read(entry)
       .then((value) =>
         typeof value === "string" ? value : new TextDecoder().decode(value),
-      )
-      .finally(() => this.texts.delete(entry.path));
-    this.texts.set(entry.path, content);
-    return content;
+      );
+    const retain = entry.path.endsWith(".md");
+    const tracked = retain
+      ? content
+      : content.finally(() => this.texts.delete(entry.path));
+    this.texts.set(entry.path, tracked);
+    return tracked;
+  }
+
+  clearReadCache(): void {
+    this.texts.clear();
   }
 }

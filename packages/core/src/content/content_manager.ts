@@ -510,6 +510,7 @@ export class ContentManager {
   }
 
   async dispose(): Promise<void> {
+    this.entryReader.clearReadCache();
     if (!this.contentIndex) return;
     await this.pluginRuntime.dispose(this.contentIndex);
   }

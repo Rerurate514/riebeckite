@@ -153,7 +153,7 @@ test("no-change rebuild does not reread content for index aliases", async () => 
   reads = 0;
   const manifest = await buildOnce();
 
-  assert.equal(reads, 4);
+  assert.equal(reads, 2);
   assert.equal(manifest.contentIndex.get("alpha"), "a");
   assert.equal(manifest.contentIndex.get("beta"), "b");
 });

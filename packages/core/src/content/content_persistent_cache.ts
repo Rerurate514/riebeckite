@@ -135,7 +135,14 @@ export function createPersistentContentCache(
           );
           return undefined;
         }
-        throw error;
+        logger?.warn(
+          "Persistent content cache entry could not be read and will be ignored.",
+          {
+            key,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        );
+        return undefined;
       }
     },
 
@@ -150,8 +157,18 @@ export function createPersistentContentCache(
         );
       }
 
-      await writeAtomically(filePath, versionDir, serialized);
-      tracer?.event("persistentContentCache.write", { key });
+      try {
+        await writeAtomically(filePath, versionDir, serialized);
+        tracer?.event("persistentContentCache.write", { key });
+      } catch (error) {
+        logger?.warn(
+          "Persistent content cache entry could not be written and will be ignored.",
+          {
+            key,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        );
+      }
     },
 
     async clear(): Promise<void> {

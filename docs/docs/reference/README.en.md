@@ -26,7 +26,8 @@ External plugins and themes should depend on public packages and public exports 
 | --- | --- |
 | `@riebeckite/core` | `defineConfig`, `definePlugin`, `defineTheme`, content APIs, pipeline APIs, diagnostics, observability types |
 | `@riebeckite/cli` | `riebeckite` CLI binary |
-| `@riebeckite/honox` | HonoX integration and scaffolding support |
+| `@riebeckite/honox` | HonoX integration and scaffolding support; the `server` subpath exports the route/SSG helpers (`resolveRiebeckiteRoute`, `pluginPageSsgParams`) |
+| `@riebeckite/test` | Test helpers (`assertGolden`, `assertGoldenJson`); the `e2e` subpath exports the packed-tarball external-site engine |
 | `@riebeckite/plugin-*` | Plugin factory and documented subpath exports |
 | `@riebeckite/theme-*` | Theme factory and CSS exports |
 
@@ -36,7 +37,7 @@ Do not import from `@riebeckite/core/src/**` or from monorepo-internal paths in 
 
 - Config: `defineConfig`, `resolveConfig`, `resolveConfigModule`, `isPublished`, `isExcluded`
 - Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `ContentQuery`, `buildContentCollections`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
-- Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createPluginMemo`, `stableStringify`
+- Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createStyleAsset`, `createClientEntry`, `appendContentBodySlot`, `createPluginMemo`, `stableStringify`
 - Themes: `defineTheme`, `RiebeckiteTheme`, `ThemeDesignTokens`, `ThemeColorMode`, `ThemeTypographyPreset`, `ThemeArticleLayoutPreset`
 - Pipeline: `Pipeline`, `MarkdownPipeline`, `HtmlPipeline`
 - Utilities: `escapeHtml`, `escapeHtmlAttribute`, `normalizeTag`, `calculateReadingTime`, `stripHtml`

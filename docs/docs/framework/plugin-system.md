@@ -876,9 +876,10 @@ Site-local Plugin も Published Plugin と同じ、
 
 などの Contract を利用します。
 
-未公開 Plugin では `createStyleAsset()` が生成する package path は利用できません。
-
-Host Bundler が解決できる `moduleSpecifier` を直接指定してください。
+`createStyleAsset()` と `createClientEntry()` は
+`@riebeckite/plugin-<name>/...` の specifier しか組み立てないため、その名前で
+ない package（未公開 Plugin、別名の公開 package）は Host Bundler が解決できる
+`moduleSpecifier` を直接指定してください。
 
 # 23. Package として配布する
 
@@ -901,6 +902,14 @@ packages/plugins/example/
 ```
 
 Riebeckite repository 内では `packages/plugins/backlinks` が参考になります。
+
+公開 package では Build 済み ESM と型定義を publish し、`exports` をその成果物へ
+向け、`prepack` script で build します。Repository の build script は publish
+されないため、`esbuild`（`format: "esm"`、`packages: "external"`、
+`external: ["@riebeckite/*"]`）と `tsc --emitDeclarationOnly` による小さな build を
+用意してください。最小構成の `package.json` は
+[Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する)
+を参照してください。
 
 ただし、すべての Plugin に `client.ts`、`style.css`、`components/` が必要なわけではありません。
 

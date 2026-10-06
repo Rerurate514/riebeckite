@@ -26,7 +26,7 @@ For dependencies, lifecycle hooks, renderers, endpoints, and other extension poi
 
 ## 4. Add a standalone page when needed
 
-Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme.
+Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme. When a page lists entries, read `manifest.discoverableEntries`; reserve `manifest.publicEntries` (which includes `unlisted`) and `manifest.entries` (which includes `draft` and `scheduled`) for the cases that genuinely need them. See [Manifest collections and publication safety](../reference/plugin-api.en.md#manifest-collections-and-publication-safety).
 
 Do not add Plugin-specific HonoX routes. Content embeds such as Canvas, Bases, and Excalidraw remain `renderers`.
 
@@ -34,7 +34,7 @@ See [Page System](../framework/page-system.en.md) for ownership, path resolution
 
 ## 5. Package it when needed
 
-Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths.
+Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths. For the package shape and a build that ships ESM plus type declarations, see [Distributing a Plugin outside this repository](../reference/plugin-api.en.md#distributing-a-plugin-outside-this-repository). Because `createStyleAsset()` and `createClientEntry()` build `@riebeckite/plugin-<name>/...` specifiers, a package under any other name declares `assets` and `clientEntries` with explicit `moduleSpecifier` values.
 
 ## 6. Validate it
 

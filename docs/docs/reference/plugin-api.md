@@ -508,6 +508,26 @@ Site は `entry.bodySlots` を読み、各値を描画するかどうかと描�
 
 参照アプリと scaffold の starter は標準 slot を消費します。Plugin は提供し、Site が描画します。Plugin が route、shell、描画順を変更することはありません。route レベルの contract は [Body Slots](../framework/honox-integration.md#body-slots) を参照してください。
 
+# Manifest の collection と公開境界
+
+Manifest を受け取る Hook（`onManifestCreated`、page resolver、renderer）では、
+次の3つの entry collection を使い分けます。
+
+- `manifest.entries` — `draft` と `scheduled` を含む全 entry。公開ページや
+  discovery UI へ描画しないでください。
+- `manifest.publicEntries` — 到達可能な entry（`public` と `unlisted`）。
+  sitemap など、到達可能な全 URL を網羅する出力に使います。`unlisted` を
+  含む点に注意してください。
+- `manifest.discoverableEntries` — discovery surface に表示してよい entry
+  （`public` のみ）。関連記事、新着、tag ページ、検索 index など、読者が
+  一覧から辿る UI にはこれを使います。
+
+`frontmatter` から可視性を再判定したり、`publishAt` を再実装したりしないで
+ください。Hook が分岐を必要とする場合は、解決済みの `entry.publishing`
+（`visibility`、`routable`、`discoverable`）を読みます。それ以外は、判断を
+すでに含む collection を選んでください。公開方針は
+[Configuration](./configuration.md) で設定します。
+
 # Page Types
 
 `pageTypes` は Plugin が独立したページを提供するための仕組みです。
@@ -535,7 +555,7 @@ definePlugin({
           ? {
               type: "example.report",
               pathname,
-              body: `<p>${manifest.publicEntries.length}</p>`,
+              body: `<p>${manifest.discoverableEntries.length}</p>`,
             }
           : null,
     },
@@ -653,6 +673,12 @@ assets: [
 ```
 
 Plugin CSS を `apps/web` へコピーしたり、Browser から `/node_modules` を直接参照させたりしないでください。
+
+package 名が `@riebeckite/plugin-<name>` の場合は `createStyleAsset()` /
+`createClientEntry()` が `@riebeckite/plugin-<name>/style.css` と
+`@riebeckite/plugin-<name>/client` を組み立てます。それ以外の名前（site 内
+Plugin や任意名の第三者 package）では、自身の `exports` が公開する
+specifier を `assets` / `clientEntries` に明示してください。
 
 ```mermaid
 flowchart LR
@@ -900,7 +926,10 @@ Site-local Plugin でも、
 
 などは package Plugin と同じ contract を利用します。
 
-未公開 Plugin では `createStyleAsset()` が生成する package path を利用できないため、Host Bundler が解決できる `moduleSpecifier` を明示してください。
+`createStyleAsset()` と `createClientEntry()` は
+`@riebeckite/plugin-<name>/...` の specifier しか組み立てないため、その名前で
+ない package（site 内 Plugin、別名の第三者 package）は Host Bundler が解決
+できる `moduleSpecifier` を明示してください。
 
 # 推奨 Package 構成
 
@@ -959,6 +988,45 @@ import {
 また、Riebeckite monorepo 内にしか存在しない相対 path へ依存しないでください。
 
 公式 Plugin も可能な限り同じ Public API の consumer として実装します。
+
+## Package 構成
+
+公開 package では、Build 済み ESM と型定義を publish し、`exports` をその
+Build 成果物へ向けます。最小構成の `package.json` は次のとおりです。
+
+```json
+{
+  "name": "my-riebeckite-plugin",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "default": "./dist/client.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "files": ["dist", "style.css"],
+  "dependencies": { "@riebeckite/core": "^0.0.18" }
+}
+```
+
+`prepack` script で JavaScript の entry point を bundle し、型定義を emit して
+ください。`npm pack` / `npm publish` が常に最新の成果物を同梱できます。
+Repository の build script は publish されないため、`esbuild`
+（`format: "esm"`、`packages: "external"`、`external: ["@riebeckite/*"]`）と
+`tsc --emitDeclarationOnly` による小さな build で十分です。import する変換
+依存（`unist-util-visit`、`unified`、remark / rehype package など）は
+`dependencies` に宣言し、公開 package の `exports` を TypeScript の source へ
+向けないでください。
 
 # ESM
 

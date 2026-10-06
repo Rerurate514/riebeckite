@@ -302,6 +302,26 @@ or the render order. See
 [Body slot handoff](../framework/honox-integration.en.md#body-slot-handoff) for
 the route-level contract.
 
+## Manifest collections and publication safety
+
+Hooks that receive the manifest (`onManifestCreated`, page resolvers, renderers)
+choose between three entry collections:
+
+- `manifest.entries` — every entry, including `draft` and `scheduled`. Never
+  render these into a public page or a discovery UI.
+- `manifest.publicEntries` — routable entries: `public` and `unlisted`. Use for
+  output that must cover every reachable URL, such as a sitemap. It still
+  includes `unlisted` content.
+- `manifest.discoverableEntries` — entries allowed in discovery surfaces:
+  `public` only. Use this for related posts, recent lists, tag pages, search
+  indexes, and any list a reader browses.
+
+Do not re-derive visibility from `frontmatter` or reimplement `publishAt`. When a
+hook genuinely needs to branch, read the resolved `entry.publishing`
+(`visibility`, `routable`, `discoverable`); otherwise pick the collection that
+already encodes the decision. The publish strategy is configured in
+[Configuration](./configuration.en.md).
+
 ## Pages
 
 `pageTypes` supplies standalone pages without adding application routes. A page
@@ -318,7 +338,7 @@ definePlugin({
     id: "example.report",
     paths: ["/report"],
     resolve: ({ pathname, manifest }) => pathname === "/report"
-      ? { type: "example.report", pathname, body: `<p>${manifest.publicEntries.length}</p>` }
+      ? { type: "example.report", pathname, body: `<p>${manifest.discoverableEntries.length}</p>` }
       : null,
   }],
 });
@@ -401,6 +421,15 @@ export function examplePlugin() {
   });
 }
 ```
+
+The helpers build the specifier from the package name: `createStyleAsset("example")`
+produces `@riebeckite/plugin-example/style.css` and
+`createClientEntry("example", ...)` produces `@riebeckite/plugin-example/client`.
+They therefore fit only a package literally named `@riebeckite/plugin-<name>`. A
+package published under any other name — including a site-local plugin — must
+declare `assets` and `clientEntries` explicitly with specifiers its own `exports`
+map exposes. See
+[Distributing a Plugin outside this repository](#distributing-a-plugin-outside-this-repository).
 
 Omit `assets` or `clientEntries` when the plugin does not need them. The client
 entry's export name is optional and defaults to the module default export. Its
@@ -508,6 +537,44 @@ map. Do not import `@riebeckite/core/src/**` or reference monorepo paths. See
 [Public packages and import paths](./README.en.md#public-packages-and-import-paths)
 for the supported package surface and current constraints.
 
+### Package shape
+
+Publish built ESM plus type declarations and point `exports` at the built files.
+A minimal manifest:
+
+```json
+{
+  "name": "my-riebeckite-plugin",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "default": "./dist/client.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "files": ["dist", "style.css"],
+  "dependencies": { "@riebeckite/core": "^0.0.18" }
+}
+```
+
+Build the JavaScript entry points and emit declarations in a `prepack` script so
+`npm pack` / `npm publish` always ship fresh output. The repository's own build
+script is not published: a small `esbuild` bundle (`format: "esm"`,
+`packages: "external"`, `external: ["@riebeckite/*"]`) plus
+`tsc --emitDeclarationOnly` is enough. Declare each transform dependency you
+import (`unist-util-visit`, `unified`, remark/rehype packages) in
+`dependencies`, and never point a published `exports` entry at TypeScript source.
+
 ### Site-local plugins
 
 A plugin does not have to be published. Define it inside the site with
@@ -535,10 +602,11 @@ export function localPlugin() {
 }
 ```
 
-Because the plugin is not published, `createStyleAsset()` (which builds
-`@riebeckite/plugin-<name>/style.css`) cannot apply. Declare `assets` with a
-module specifier the host bundler can resolve instead — a package subpath or a
-path relative to the Vite root. The External Site Build E2E
+`createStyleAsset()` and `createClientEntry()` only build
+`@riebeckite/plugin-<name>/...` specifiers, so any package not named that way —
+a site-local plugin, or a third-party package under a different name — must
+declare `moduleSpecifier` explicitly: a package subpath or a path relative to
+the Vite root that the host bundler can resolve. The External Site Build E2E
 (`tests/external-site`) exercises a site-local plugin and theme alongside the
 published packages.
 

@@ -96,7 +96,7 @@ pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `
 
 ## 4. 独立ページを追加する（必要な場合）
 
-独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
+独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。ページで entry を一覧する場合は `manifest.discoverableEntries` を使ってください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft`・`scheduled` を含む）は、本当に必要な場合だけに限ります。詳しくは [Manifest の collection と公開境界](../reference/plugin-api.md#manifest-の-collection-と公開境界) を参照してください。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
 
 ```ts
 pageTypes: [{
@@ -125,7 +125,7 @@ packages/plugins/backlinks/
 └─ README.md
 ```
 
-外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。
+外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` は `@riebeckite/plugin-<name>/...` の specifier を組み立てるため、別名の package は `assets` / `clientEntries` に `moduleSpecifier` を明示します。
 
 ## 6. 検証する
 

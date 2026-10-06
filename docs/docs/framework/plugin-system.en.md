@@ -208,7 +208,7 @@ return definePlugin({
 });
 ```
 
-For unpublished plugins, `createStyleAsset()` (which generates `@riebeckite/plugin-<name>/style.css`) is not available. Explicitly provide a module specifier the host bundler can resolve.
+`createStyleAsset()` and `createClientEntry()` build `@riebeckite/plugin-<name>/...` specifiers, so they fit only a package literally named that way. An unpublished plugin, or a published package under any other name, must provide an explicit `moduleSpecifier` the host bundler can resolve.
 
 ### 3-11. CSS hooks
 
@@ -296,6 +296,8 @@ packages/plugins/example/
 ```
 
 A distributed plugin depends only on `@riebeckite/core` and declares its own subpaths (`./client`, `./components`, `./style.css`) in `exports`. Never import `@riebeckite/core/src/**` or reference monorepo paths. For the package surface and current constraints, see "Public packages and import paths" in [Framework Reference](../reference/README.en.md).
+
+Publish built ESM plus type declarations and point `exports` at the built files; build them in a `prepack` script so packing and publishing ship fresh output. The repository's build script is not published, so supply a small build: bundle the entry points with `esbuild` (`format: "esm"`, `packages: "external"`, `external: ["@riebeckite/*"]`) and emit declarations with `tsc --emitDeclarationOnly`. See [Distributing a Plugin outside this repository](../reference/plugin-api.en.md#distributing-a-plugin-outside-this-repository) for a minimal manifest.
 
 In NodeNext/ESM packages, keep imports resolvable by Node after the build. Do not rely on the development TypeScript loader accidentally resolving extensionless imports.
 

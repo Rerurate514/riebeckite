@@ -13,7 +13,7 @@ import { SCAFFOLD_PRESET_NAMES } from "../src/scaffold/presets.js";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  "../../../..",
+  "../../..",
 );
 
 test("every scaffold preset inherits the same-repository GitHub Actions workflow", async () => {

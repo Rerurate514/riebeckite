@@ -12,12 +12,6 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
-    "./scaffold": {
-      "types": "./dist/src/scaffold/presets.d.ts",
-      "import": "./dist/src/scaffold/presets.js",
-      "source": "./src/scaffold/presets.ts",
-      "default": "./dist/src/scaffold/presets.js"
-    },
     "./server": {
       "types": "./dist/server.d.ts",
       "import": "./dist/server.js",
@@ -49,7 +43,6 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
-    "templates",
     "dist"
   ],
   "scripts": {

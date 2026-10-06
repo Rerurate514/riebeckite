@@ -1,10 +1,10 @@
 import { isCancel, log, select, text } from "@clack/prompts";
+import type { CreateRiebeckiteOptions } from "./arguments.js";
 import {
   SCAFFOLD_PRESET_NAMES,
   type ScaffoldPresetName,
   scaffoldPresets,
-} from "@riebeckite/honox";
-import type { CreateRiebeckiteOptions } from "./arguments.js";
+} from "./scaffold/presets.js";
 
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
 export const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";

@@ -4,53 +4,6 @@ export {
 } from "./src/config_loader.js";
 export { replaceHonoxIslandDependencyPlugin } from "./src/honox_islands.js";
 export {
-  assertGitHubRepository,
-  deploymentTemplateFiles,
-  type ScaffoldDeploymentOptions,
-} from "./src/scaffold/deployment.js";
-export type {
-  ScaffoldSiteOptions,
-  ScaffoldSiteResult,
-} from "./src/scaffold/index.js";
-export {
-  ScaffoldSiteError,
-  scaffoldRiebeckiteSite,
-} from "./src/scaffold/index.js";
-export {
-  formatScaffoldNextSteps,
-  type ScaffoldNextStepsOptions,
-} from "./src/scaffold/next-steps.js";
-export type {
-  ScaffoldPageKey,
-  ScaffoldPluginSpec,
-  ScaffoldPreset,
-  ScaffoldPresetName,
-  ScaffoldReadmeLevel,
-  ScaffoldThemeSpec,
-} from "./src/scaffold/presets.js";
-export {
-  empty,
-  isScaffoldPresetName,
-  minimal,
-  resolveScaffoldPreset,
-  SCAFFOLD_DEFAULT_PRESET,
-  SCAFFOLD_PRESET_NAMES,
-  scaffoldPresets,
-  showcase,
-  starter,
-} from "./src/scaffold/presets.js";
-export {
-  buildDefaultWranglerConfig,
-  DEFAULT_WORKER_NAME,
-  GITHUB_ACTIONS_SECRETS,
-  PACKAGE_MANAGER,
-  WORKER_NAME_MAX_LENGTH,
-  WRANGLER_DEFAULTS,
-  WRANGLER_VERSION,
-  type WranglerDefaults,
-  workerNameFromDirectory,
-} from "./src/scaffold/wrangler-defaults.js";
-export {
   createRiebeckiteSsg,
   defaultSsgEntry,
   riebeckiteSsgExtensionMap,

@@ -12,7 +12,7 @@
  * Presets are cumulative in spirit but defined explicitly so each tier is
  * self-contained and can be imported and reused on its own:
  *
- *    import { showcase, starter } from "@riebeckite/honox/scaffold";
+ *    import { showcase, starter } from "create-riebeckite/scaffold";
  */
 
 export const SCAFFOLD_LANGUAGES = [

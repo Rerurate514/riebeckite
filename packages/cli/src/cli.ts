@@ -3,7 +3,7 @@ import {
   SCAFFOLD_PRESET_NAMES,
   type ScaffoldPresetName,
   scaffoldPresets,
-} from "@riebeckite/honox";
+} from "create-riebeckite/scaffold";
 import { resolveRiebeckiteProject } from "./application_root.js";
 import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";

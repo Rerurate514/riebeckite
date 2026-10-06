@@ -3,7 +3,7 @@ import {
   formatScaffoldNextSteps,
   type ScaffoldPresetName,
   scaffoldRiebeckiteSite,
-} from "@riebeckite/honox";
+} from "create-riebeckite/scaffold";
 
 export type InitOptions = {
   readonly directory: string;

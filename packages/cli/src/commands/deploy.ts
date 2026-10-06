@@ -5,7 +5,7 @@ import { resolveBuildOutputDirectory } from "@riebeckite/core";
 import {
   buildDefaultWranglerConfig,
   workerNameFromDirectory,
-} from "@riebeckite/honox";
+} from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
 
 export { buildDefaultWranglerConfig, workerNameFromDirectory };

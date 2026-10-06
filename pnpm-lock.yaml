@@ -346,6 +346,9 @@ importers:
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../integrations/honox
+      create-riebeckite:
+        specifier: workspace:*
+        version: link:../create-riebeckite
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
@@ -419,9 +422,13 @@ importers:
       '@clack/prompts':
         specifier: ^1.8.1
         version: 1.8.1
-      '@riebeckite/honox':
+    devDependencies:
+      '@riebeckite/test':
         specifier: workspace:*
-        version: link:../integrations/honox
+        version: link:../test
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
 
   packages/integrations/analytics-cloudflare:
     dependencies:

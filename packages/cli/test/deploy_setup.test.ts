@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { deploymentTemplateFiles } from "@riebeckite/honox";
+import { deploymentTemplateFiles } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import {
   CloudflareAccountError,

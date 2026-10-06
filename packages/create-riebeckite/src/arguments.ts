@@ -3,7 +3,7 @@ import {
   SCAFFOLD_PRESET_NAMES,
   type ScaffoldPresetName,
   scaffoldPresets,
-} from "@riebeckite/honox";
+} from "./scaffold/presets.js";
 
 export type CreateRiebeckiteOptions = {
   readonly directory: string;

@@ -50,7 +50,7 @@ function writeManifest(manifestPath, manifest) {
 // spec. Keep it in lockstep with the manifests so freshly created sites
 // install the released packages instead of a stale line.
 const scaffoldVersionRelative =
-  "packages/integrations/honox/src/scaffold/version.ts";
+  "packages/create-riebeckite/src/scaffold/version.ts";
 const scaffoldVersionPath = path.join(repositoryRoot, scaffoldVersionRelative);
 const SCAFFOLD_VERSION_PATTERN =
   /(export const RIEBECKITE_VERSION = "\^)([^"]*)(";)/;

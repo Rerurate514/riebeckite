@@ -18,6 +18,37 @@ import {
 } from "./templates.js";
 import { workerNameFromDirectory } from "./wrangler-defaults.js";
 
+export {
+  deploymentTemplateFiles,
+  type ScaffoldDeploymentOptions,
+} from "./deployment.js";
+export {
+  formatScaffoldNextSteps,
+  type ScaffoldNextStepsOptions,
+} from "./next-steps.js";
+export {
+  empty,
+  isScaffoldPresetName,
+  minimal,
+  resolveScaffoldPreset,
+  SCAFFOLD_DEFAULT_PRESET,
+  SCAFFOLD_PRESET_NAMES,
+  type ScaffoldPageKey,
+  type ScaffoldPluginSpec,
+  type ScaffoldPreset,
+  type ScaffoldPresetName,
+  type ScaffoldReadmeLevel,
+  type ScaffoldThemeSpec,
+  scaffoldPresets,
+  showcase,
+  starter,
+} from "./presets.js";
+export {
+  buildDefaultWranglerConfig,
+  GITHUB_ACTIONS_SECRETS,
+  workerNameFromDirectory,
+} from "./wrangler-defaults.js";
+
 export type ScaffoldSiteOptions = {
   readonly targetDirectory: string;
   readonly name?: string;

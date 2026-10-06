@@ -4,7 +4,7 @@ import path from "node:path";
 import {
   deploymentTemplateFiles,
   GITHUB_ACTIONS_SECRETS,
-} from "@riebeckite/honox";
+} from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
 import { type CommandRunner, createProcessRunner } from "../process_runner.js";
 import { createSetupPrompts, type SetupPrompts } from "../prompts.js";

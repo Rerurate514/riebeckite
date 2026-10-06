@@ -1,4 +1,4 @@
-import { PACKAGE_MANAGER } from "@riebeckite/honox";
+import { PACKAGE_MANAGER } from "./scaffold/wrangler-defaults.js";
 
 export type PackageManagerName = "npm" | "pnpm";
 

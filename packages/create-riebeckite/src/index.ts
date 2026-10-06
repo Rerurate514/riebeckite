@@ -1,11 +1,5 @@
 import path from "node:path";
 import {
-  formatScaffoldNextSteps,
-  ScaffoldSiteError,
-  type ScaffoldSiteResult,
-  scaffoldRiebeckiteSite,
-} from "@riebeckite/honox";
-import {
   type CreateRiebeckiteOptions,
   parseArguments,
   printPresets,
@@ -24,6 +18,12 @@ import {
   installDependencies,
 } from "./publish.js";
 import { spawnCommand } from "./run-commands.js";
+import {
+  formatScaffoldNextSteps,
+  ScaffoldSiteError,
+  type ScaffoldSiteResult,
+  scaffoldRiebeckiteSite,
+} from "./scaffold/index.js";
 
 export type { CreateRiebeckiteOptions } from "./arguments.js";
 

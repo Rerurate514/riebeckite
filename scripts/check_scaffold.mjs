@@ -8,24 +8,25 @@ const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const scaffoldDir = path.join(
   repositoryRoot,
   "packages",
-  "integrations",
-  "honox",
+  "create-riebeckite",
   "src",
   "scaffold",
 );
-const honoxPackageRoot = path.join(
+const createRiebeckitePackageRoot = path.join(
   repositoryRoot,
   "packages",
-  "integrations",
-  "honox",
+  "create-riebeckite",
 );
 
 // The scaffold pins every generated Riebeckite dependency to the workspace
 // release version. This is the value those pins must match.
-const honoxManifest = JSON.parse(
-  fs.readFileSync(path.join(honoxPackageRoot, "package.json"), "utf8"),
+const createRiebeckiteManifest = JSON.parse(
+  fs.readFileSync(
+    path.join(createRiebeckitePackageRoot, "package.json"),
+    "utf8",
+  ),
 );
-const expectedRiebeckiteSpec = `^${honoxManifest.version}`;
+const expectedRiebeckiteSpec = `^${createRiebeckiteManifest.version}`;
 
 const errors = [];
 
@@ -88,21 +89,27 @@ async function main() {
     errors.push("biome check reported issues in the scaffold sources");
   }
 
-  // 2. Build honox so the scaffolders reflect the current sources.
+  // 2. Build create-riebeckite so the scaffolders reflect the current sources.
   try {
-    execSync("node ../../../scripts/build_package.mjs", {
-      cwd: honoxPackageRoot,
+    execSync("node ../../scripts/build_package.mjs", {
+      cwd: createRiebeckitePackageRoot,
       stdio: "inherit",
     });
   } catch {
     errors.push(
-      "failed to build packages/integrations/honox before scaffolding",
+      "failed to build packages/create-riebeckite before scaffolding",
     );
     return;
   }
 
   const distUrl = pathToFileURL(
-    path.join(honoxPackageRoot, "dist", "index.js"),
+    path.join(
+      createRiebeckitePackageRoot,
+      "dist",
+      "src",
+      "scaffold",
+      "index.js",
+    ),
   ).href;
   const { scaffoldRiebeckiteSite } = await import(distUrl);
 

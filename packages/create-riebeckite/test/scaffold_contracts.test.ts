@@ -93,7 +93,7 @@ async function dirExists(root: string, relativePath: string): Promise<boolean> {
   }
 }
 
-const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..", "..");
+const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 
 interface GeneratedManifest {
   name?: string;
@@ -528,14 +528,7 @@ test("Contract 4: documented npm exec commands properly forward flags to Riebeck
 });
 
 test("Contract 4b: documentation uses npm exec -- for commands with flags", async () => {
-  const docsRoot = path.resolve(
-    import.meta.dirname,
-    "..",
-    "..",
-    "..",
-    "..",
-    "docs",
-  );
+  const docsRoot = path.resolve(import.meta.dirname, "..", "..", "..", "docs");
   const markdownFiles = await collectMarkdownFiles(docsRoot);
   const offenders: string[] = [];
 
@@ -599,8 +592,8 @@ test("Contract 5: generated wrangler.jsonc matches canonical defaults", async ()
 
 test("Contract 5b: template wrangler.jsonc matches canonical defaults", async () => {
   // Template is at repo root: templates/cloudflare/wrangler.jsonc
-  // Test runs from packages/integrations/honox/test, so go up 4 levels to repo root
-  const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..", "..");
+  // Test runs from packages/create-riebeckite/test, so go up 3 levels to repo root
+  const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
   const templatePath = path.join(
     repoRoot,
     "templates",
@@ -850,8 +843,8 @@ Body text.
 test("Contract 10: Getting Started documentation links are valid", () => {
   // This is verified by scripts/check_docs.mjs which runs in CI
   // We just ensure the key Getting Started files exist
-  // Test runs from packages/integrations/honox/test, so go up 4 levels to repo root
-  const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..", "..");
+  // Test runs from packages/create-riebeckite/test, so go up 3 levels to repo root
+  const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
   const gettingStartedFiles = [
     "docs/ja/docs/getting-started/README.md",
     "docs/ja/docs/getting-started/quick-start.md",

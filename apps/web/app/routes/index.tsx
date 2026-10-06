@@ -1,16 +1,12 @@
 import { getEntryLanguage } from "@riebeckite/core";
 import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
-import { DailyNotes, getDailyNotes } from "@riebeckite/plugin-daily-notes";
-import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import {
   extractTableOfContents,
   TableOfContents,
 } from "@riebeckite/plugin-toc";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
-import { config } from "../config";
 import { content } from "../content";
-import { getArticleTitle } from "../lib/article-title";
 import { buildIndexSeo, buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(async (c) => {
@@ -45,13 +41,6 @@ export default createRoute(async (c) => {
   const indexEntry = route.entry;
   const indexSlug = indexEntry.slug;
   const post = await content.getProcessedContent(indexSlug);
-  const recentPosts = await getRecentPosts({
-    posts: manifest.discoverableEntries,
-    config,
-    getProcessedContent: (slug) => content.getProcessedContent(slug),
-    resolveTitle: getArticleTitle,
-  });
-  const dailyNotes = getDailyNotes({ manifest, config });
   const tableOfContents = extractTableOfContents(post.html ?? "");
   c.set("seo", buildIndexSeo(post, indexEntry.headTags));
   c.set("headTags", indexEntry.headTags ?? []);
@@ -67,12 +56,6 @@ export default createRoute(async (c) => {
           className="table-of-contents--desktop"
           items={tableOfContents}
         />
-      }
-      afterContent={
-        <>
-          <RecentPosts posts={recentPosts} />
-          <DailyNotes notes={dailyNotes} />
-        </>
       }
     />,
   );

@@ -5,6 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import readline from "node:readline";
+import { pathToFileURL } from "node:url";
 import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
@@ -23,10 +24,12 @@ const NPM_VIEW_CONCURRENCY = 8;
 const PUBLISH_TIMEOUT_MS = 10 * 60_000;
 const NPM_VIEW_TIMEOUT_MS = 60_000;
 
+const APPROVAL_ABORT_WORDS = new Set(["abort", "q", "quit", "exit"]);
+
 const SEMVER_PATTERN =
   /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const usage = `Usage:
-  node scripts/release.mjs <version> [--dry-run] [--otp <code>]
+  node scripts/release.mjs <version> [--dry-run] [--otp <code>] [--cli-approval]
   node scripts/release.mjs <version> --stage-only
   node scripts/release.mjs --check-only
   node scripts/release.mjs --help
@@ -37,18 +40,28 @@ Release flow:
   -> checks
   -> inspect published and staged versions
   -> pnpm pack + npm stage publish (no 2FA)
-  -> npm stage approve (2FA)
+  -> human approval (npmjs.com by default, one-time password with --otp)
+  -> verify every version is live
   -> git commit + tag
 
 Options:
-  <version>     Next semantic version for all public packages.
-  --dry-run     Rehearse without staging, approving, or creating git objects.
-  --stage-only  Stage packages and stop before approval and git commit.
-  --otp <code>  One-time password used to approve staged packages.
-  --check-only  Run package checks only.
-  --help        Show this help.`;
+  <version>       Next semantic version for all public packages.
+  --dry-run       Rehearse without staging, approving, or creating git objects.
+  --stage-only    Stage and verify packages, print approval instructions, then
+                  stop before approval and before git commit.
+  --otp <code>    Approve staged packages with a one-time password (TOTP).
+  --cli-approval  Approve with a one-time password prompted in this terminal.
+  --check-only    Run package checks only.
+  --help          Show this help.
 
-class ReleaseError extends Error {
+Approval:
+  By default the release stops at a human approval boundary and asks you to
+  approve the staged packages on npmjs.com. That page supports security keys,
+  passkeys, and any other 2FA method configured on the npm account. Use --otp
+  or --cli-approval only when you prefer to approve with a TOTP one-time
+  password from this terminal.`;
+
+export class ReleaseError extends Error {
   constructor(message, status = 1) {
     super(message);
     this.name = "ReleaseError";
@@ -56,7 +69,7 @@ class ReleaseError extends Error {
   }
 }
 
-class PublishError extends ReleaseError {
+export class PublishError extends ReleaseError {
   constructor(
     message,
     {
@@ -124,12 +137,21 @@ function runStep(label, command, args, cwd = repositoryRoot, options = {}) {
   }
 }
 
+export const runtime = {
+  spawnBuffered: (...args) => spawnBuffered(...args),
+  spawnInteractive: (...args) => spawnInteractive(...args),
+  runStep: (...args) => runStep(...args),
+  spawnSync: (...args) => spawnSync(...args),
+  promptLine: (...args) => promptLine(...args),
+  isInteractive: () => Boolean(process.stdin.isTTY && process.stdout.isTTY),
+};
+
 function runChecks() {
-  runStep("check:packages", "pnpm", ["run", "check:packages"]);
+  runtime.runStep("check:packages", "pnpm", ["run", "check:packages"]);
 
-  runStep("check:dependencies", "pnpm", ["run", "check:dependencies"]);
+  runtime.runStep("check:dependencies", "pnpm", ["run", "check:dependencies"]);
 
-  runStep("check:docs", "pnpm", ["run", "check:docs"]);
+  runtime.runStep("check:docs", "pnpm", ["run", "check:docs"]);
 }
 
 function readPackageManifests() {
@@ -426,10 +448,15 @@ function requiresInteractiveAuthentication(stdout, stderr) {
 }
 
 async function ensureAuthentication() {
-  const currentUser = await spawnBuffered("npm", ["whoami"], repositoryRoot, {
-    timeout: NPM_VIEW_TIMEOUT_MS,
-    label: "npm whoami",
-  });
+  const currentUser = await runtime.spawnBuffered(
+    "npm",
+    ["whoami"],
+    repositoryRoot,
+    {
+      timeout: NPM_VIEW_TIMEOUT_MS,
+      label: "npm whoami",
+    },
+  );
 
   if (currentUser.status === 0) {
     const name = currentUser.stdout.trim();
@@ -445,10 +472,15 @@ async function ensureAuthentication() {
 
   console.log("Starting npm login; finish the browser or terminal prompt.");
 
-  const login = await spawnInteractive("npm", ["login"], repositoryRoot, {
-    timeout: PUBLISH_TIMEOUT_MS,
-    label: "npm login",
-  });
+  const login = await runtime.spawnInteractive(
+    "npm",
+    ["login"],
+    repositoryRoot,
+    {
+      timeout: PUBLISH_TIMEOUT_MS,
+      label: "npm login",
+    },
+  );
 
   if (login.status !== 0) {
     throw new ReleaseError(
@@ -457,10 +489,15 @@ async function ensureAuthentication() {
     );
   }
 
-  const verifiedUser = await spawnBuffered("npm", ["whoami"], repositoryRoot, {
-    timeout: NPM_VIEW_TIMEOUT_MS,
-    label: "npm whoami",
-  });
+  const verifiedUser = await runtime.spawnBuffered(
+    "npm",
+    ["whoami"],
+    repositoryRoot,
+    {
+      timeout: NPM_VIEW_TIMEOUT_MS,
+      label: "npm whoami",
+    },
+  );
 
   if (verifiedUser.status !== 0) {
     throw new ReleaseError(
@@ -476,7 +513,7 @@ async function ensureAuthentication() {
 async function isPackageVersionPublished(packageName, version) {
   const packageSpec = `${packageName}@${version}`;
 
-  const result = await spawnBuffered(
+  const result = await runtime.spawnBuffered(
     "npm",
     ["view", packageSpec, "version", "--json"],
     repositoryRoot,
@@ -509,7 +546,7 @@ async function isPackageVersionPublished(packageName, version) {
 }
 
 async function readStagedPackages() {
-  const result = await spawnBuffered(
+  const result = await runtime.spawnBuffered(
     "npm",
     ["stage", "list", "--json"],
     repositoryRoot,
@@ -620,6 +657,42 @@ async function inspectRegistryState(manifests, version, dryRun) {
   return { published, staged };
 }
 
+async function collectStagedState(published, manifests, version, stagedIds) {
+  const directoryByName = new Map();
+
+  for (const directory of PACKAGE_DIRECTORIES) {
+    directoryByName.set(manifests.get(directory).name, directory);
+  }
+
+  const staged = new Map();
+
+  for (const item of await readStagedPackages()) {
+    if (item.version !== version) {
+      continue;
+    }
+
+    const directory = directoryByName.get(item.packageName);
+
+    if (directory && !published.has(directory)) {
+      staged.set(directory, item);
+    }
+  }
+
+  for (const [directory, id] of stagedIds ?? []) {
+    if (!id || published.has(directory) || staged.has(directory)) {
+      continue;
+    }
+
+    staged.set(directory, {
+      id,
+      packageName: manifests.get(directory).name,
+      version,
+    });
+  }
+
+  return staged;
+}
+
 function findTarballPath(output) {
   const lines = output
     .split(/\r?\n/)
@@ -676,7 +749,7 @@ async function stagePackage(
 
   console.log(`[stage ${position}/${total}] packing ${packageSpec}`);
 
-  const packResult = await spawnBuffered(
+  const packResult = await runtime.spawnBuffered(
     "pnpm",
     ["pack", "--pack-destination", packDirectory],
     path.join(repositoryRoot, directory),
@@ -713,7 +786,7 @@ async function stagePackage(
     );
   }
 
-  const stageResult = await spawnBuffered(
+  const stageResult = await runtime.spawnBuffered(
     "npm",
     ["stage", "publish", tarball, "--json"],
     repositoryRoot,
@@ -861,15 +934,12 @@ async function stagePackages(
   return stagedIds;
 }
 
-function promptOtp(
-  message = "Enter the one-time password for staged approval",
-) {
+function promptLine(message) {
   return new Promise((resolve, reject) => {
     if (!process.stdin.isTTY || !process.stdout.isTTY) {
       reject(
         new ReleaseError(
-          "Approving staged packages requires a one-time password. " +
-            "Pass --otp <code> or run in an interactive terminal.",
+          "This step requires an interactive terminal to read input.",
         ),
       );
 
@@ -884,17 +954,30 @@ function promptOtp(
     rl.question(`\n${message}: `, (answer) => {
       rl.close();
 
-      const value = answer.trim();
-
-      if (value.length === 0) {
-        reject(new ReleaseError("No one-time password provided."));
-
-        return;
-      }
-
-      resolve(value);
+      resolve(answer);
     });
   });
+}
+
+async function promptOtp(
+  message = "Enter the one-time password for staged approval",
+) {
+  if (!runtime.isInteractive()) {
+    throw new ReleaseError(
+      "Approving staged packages with a one-time password requires an " +
+        "interactive terminal. Pass --otp <code>, or approve the staged " +
+        "packages on npmjs.com instead.",
+    );
+  }
+
+  const answer = await runtime.promptLine(message);
+  const value = String(answer).trim();
+
+  if (value.length === 0) {
+    throw new ReleaseError("No one-time password provided.");
+  }
+
+  return value;
 }
 
 async function approvePackage(directory, manifest, version, stageId, otp) {
@@ -906,7 +989,7 @@ async function approvePackage(directory, manifest, version, stageId, otp) {
     args.push("--otp", otp);
   }
 
-  const result = await spawnBuffered("npm", args, repositoryRoot, {
+  const result = await runtime.spawnBuffered("npm", args, repositoryRoot, {
     timeout: PUBLISH_TIMEOUT_MS,
     label: `npm stage approve ${packageSpec}`,
   });
@@ -944,7 +1027,8 @@ async function approvePackages(
   manifests,
   version,
   otpOption,
-  stagedIds,
+  allowRetry,
+  knownStaged,
 ) {
   const directoryByName = new Map();
 
@@ -952,11 +1036,9 @@ async function approvePackages(
     directoryByName.set(manifests.get(directory).name, directory);
   }
 
-  const stageIdByDirectory = new Map(stagedIds ?? []);
+  const stageIdByDirectory = new Map();
 
-  const stagedItems = await readStagedPackages();
-
-  for (const item of stagedItems) {
+  for (const item of await readStagedPackages()) {
     if (item.version !== version) {
       continue;
     }
@@ -964,6 +1046,12 @@ async function approvePackages(
     const directory = directoryByName.get(item.packageName);
 
     if (directory && !stageIdByDirectory.has(directory)) {
+      stageIdByDirectory.set(directory, item.id);
+    }
+  }
+
+  for (const [directory, item] of knownStaged ?? []) {
+    if (item?.id && !stageIdByDirectory.has(directory)) {
       stageIdByDirectory.set(directory, item.id);
     }
   }
@@ -1014,7 +1102,14 @@ async function approvePackages(
         ),
     );
 
-    if (results.some((result) => result.otpRequired) && process.stdin.isTTY) {
+    if (allowRetry && results.some((result) => result.otpRequired)) {
+      if (!runtime.isInteractive()) {
+        throw new ReleaseError(
+          "The one-time password was rejected and no interactive terminal is " +
+            "available to retry.",
+        );
+      }
+
       otp = await promptOtp(
         "The one-time password was rejected; enter the current one-time password",
       );
@@ -1066,8 +1161,129 @@ async function approvePackages(
   return approved;
 }
 
+function printWebApprovalInstructions(published, staged) {
+  console.log(
+    `\n${published.size + staged.size} package version(s) staged successfully.`,
+  );
+
+  console.log("\nApproval requires npm 2FA.");
+
+  console.log(
+    "\nApprove the staged packages on npmjs.com using your configured",
+  );
+
+  console.log("security key, passkey, or other supported 2FA method.");
+
+  console.log("\nOn npmjs.com, open the Staged Packages tab for your account.");
+}
+
+function assertStagedComplete(published, staged) {
+  const total = PACKAGE_DIRECTORIES.length;
+  const missing = total - published.size - staged.size;
+
+  if (missing > 0) {
+    throw new ReleaseError(
+      `Staged state is incomplete: ${published.size} published, ` +
+        `${staged.size} staged, ${missing} not staged. Refusing to continue.`,
+    );
+  }
+}
+
+function assertReleaseComplete(published, staged) {
+  const total = PACKAGE_DIRECTORIES.length;
+
+  if (published.size === total && staged.size === 0) {
+    console.log(`\n✓ ${published.size}/${total} package versions published.`);
+
+    return;
+  }
+
+  console.error(
+    `\n${published.size}/${total} package versions published` +
+      (staged.size > 0 ? `, ${staged.size} still awaiting approval.` : "."),
+  );
+
+  throw new ReleaseError(
+    "Release is not complete; refusing to create a commit or tag. " +
+      "Approve the remaining staged versions and run the release again.",
+  );
+}
+
+async function approveViaWeb(manifests, version, published, staged) {
+  const total = PACKAGE_DIRECTORIES.length;
+
+  printWebApprovalInstructions(published, staged);
+
+  console.log("\nAfter approval, press Enter to continue.");
+
+  if (!runtime.isInteractive()) {
+    throw new ReleaseError(
+      "Waiting for npmjs.com approval requires an interactive terminal. " +
+        "Run again with --stage-only to stop after staging, or approve with " +
+        "--otp <code> / --cli-approval instead.",
+    );
+  }
+
+  while (true) {
+    const answer = String(
+      await runtime.promptLine(
+        "Press Enter once you approved on npmjs.com (or type 'abort' to stop)",
+      ),
+    )
+      .trim()
+      .toLowerCase();
+
+    if (APPROVAL_ABORT_WORDS.has(answer)) {
+      throw new ReleaseError(
+        "Aborted before npm approval completed; no commit or tag was created.",
+      );
+    }
+
+    const state = await inspectRegistryState(manifests, version, false);
+
+    console.log(
+      `\n${state.published.size}/${total} package versions published.`,
+    );
+
+    if (state.published.size === total) {
+      return state;
+    }
+
+    const remaining = total - state.published.size;
+
+    console.log(
+      `\n${remaining} package version(s) are still awaiting approval.`,
+    );
+
+    console.log("Finish approving on npmjs.com, then press Enter to re-check.");
+  }
+}
+
+async function approveViaCli(
+  layers,
+  manifests,
+  version,
+  otpOption,
+  knownStaged,
+) {
+  const approved = await approvePackages(
+    layers,
+    manifests,
+    version,
+    otpOption,
+    otpOption === null,
+    knownStaged,
+  );
+
+  console.log(
+    `\nApproved ${approved} staged package version(s) with a one-time password.`,
+  );
+
+  return inspectRegistryState(manifests, version, false);
+}
+
 function ensureTagDoesNotExist(version) {
-  const result = spawnSync(
+  const result = runtime.spawnSync(
     "git",
     ["rev-parse", "-q", "--verify", `refs/tags/v${version}`],
     {
@@ -1088,7 +1304,7 @@ function ensureTagDoesNotExist(version) {
 }
 
 function hasStagedChanges(paths) {
-  const result = spawnSync(
+  const result = runtime.spawnSync(
     "git",
     ["diff", "--cached", "--quiet", "--", ...paths],
     {
@@ -1130,12 +1346,12 @@ function commitAndTag(version) {
 
   const releaseFiles = [...manifests, scaffoldVersionFile];
 
-  runStep("git add", "git", ["add", "--", ...releaseFiles]);
+  runtime.runStep("git add", "git", ["add", "--", ...releaseFiles]);
 
   const createdCommit = hasStagedChanges(releaseFiles);
 
   if (createdCommit) {
-    runStep("git commit", "git", [
+    runtime.runStep("git commit", "git", [
       "commit",
       "-m",
       `release ${tagName}`,
@@ -1148,7 +1364,7 @@ function commitAndTag(version) {
     console.log("No staged release changes; skipping commit.");
   }
 
-  runStep("git tag", "git", ["tag", tagName]);
+  runtime.runStep("git tag", "git", ["tag", tagName]);
 
   if (createdCommit) {
     console.log(`\nCommitted and tagged ${tagName} locally (tag not pushed).`);
@@ -1165,11 +1381,12 @@ function printPushInstructions(version) {
   console.log(`  git push origin v${version}`);
 }
 
-function parseArguments(rawArguments) {
+export function parseArguments(rawArguments) {
   const options = {
     dryRun: false,
     checkOnly: false,
     stageOnly: false,
+    cliApproval: false,
     help: false,
     otp: null,
     version: null,
@@ -1184,6 +1401,8 @@ function parseArguments(rawArguments) {
       options.checkOnly = true;
     } else if (argument === "--stage-only") {
       options.stageOnly = true;
+    } else if (argument === "--cli-approval") {
+      options.cliApproval = true;
     } else if (argument === "--help" || argument === "-h") {
       options.help = true;
     } else if (argument === "--otp") {
@@ -1194,9 +1413,17 @@ function parseArguments(rawArguments) {
       }
 
       options.otp = value;
+      options.cliApproval = true;
       index += 1;
     } else if (argument.startsWith("--otp=")) {
-      options.otp = argument.slice("--otp=".length);
+      const value = argument.slice("--otp=".length);
+
+      if (value.length === 0) {
+        throw new ReleaseError("--otp requires a value.");
+      }
+
+      options.otp = value;
+      options.cliApproval = true;
     } else if (argument.startsWith("-")) {
       throw new ReleaseError(`Unknown option: ${argument}`);
     } else if (options.version !== null) {
@@ -1209,11 +1436,12 @@ function parseArguments(rawArguments) {
   return options;
 }
 
-async function main() {
-  const options = parseArguments(process.argv.slice(2));
+export async function runRelease(rawArguments) {
+  const options = parseArguments(rawArguments);
 
   if (options.help) {
     console.log(usage);
+
     return;
   }
 
@@ -1255,9 +1483,9 @@ async function main() {
     bumpArgs.push("--dry-run");
   }
 
-  runStep("version bump", process.execPath, bumpArgs);
+  runtime.runStep("version bump", process.execPath, bumpArgs);
 
-  runStep("build:packages", "pnpm", ["run", "build:packages"]);
+  runtime.runStep("build:packages", "pnpm", ["run", "build:packages"]);
 
   runChecks();
 
@@ -1296,10 +1524,30 @@ async function main() {
 
     await ensureAuthentication();
 
-    const { published, staged } = await inspectRegistryState(
+    const inspected = await inspectRegistryState(manifests, version, false);
+
+    const published = inspected.published;
+
+    console.log(
+      `\n${published.size}/${PACKAGE_DIRECTORIES.length} package(s) already ` +
+        `published, ${inspected.staged.size} staged, as ${version}.`,
+    );
+
+    const stagedIds = await stagePackages(
+      publishLayers,
       manifests,
+      published,
+      inspected.staged,
       version,
       false,
+      packDirectory,
+    );
+
+    const staged = await collectStagedState(
+      published,
+      manifests,
+      version,
+      stagedIds,
     );
 
     console.log(
@@ -1307,35 +1555,52 @@ async function main() {
         `published, ${staged.size} staged, as ${version}.`,
     );
 
-    const stagedIds = await stagePackages(
-      publishLayers,
-      manifests,
-      published,
-      staged,
-      version,
-      false,
-      packDirectory,
-    );
-
     if (stageOnly) {
+      assertStagedComplete(published, staged);
+
+      printWebApprovalInstructions(published, staged);
+
       console.log(
-        `\nStaged release v${version}. Approval requires 2FA.\n` +
-          "Re-run without --stage-only to approve and finish the release, " +
-          "or approve the staged versions on npmjs.com.",
+        `\nStaged release v${version}; stopping before approval and git commit.`,
+      );
+
+      console.log(
+        `Re-run "pnpm release ${version}" (no --stage-only) to approve and ` +
+          "finish the release.",
       );
 
       return;
     }
 
-    const approved = await approvePackages(
-      publishLayers,
-      manifests,
-      version,
-      options.otp,
-      stagedIds,
-    );
+    let finalState;
 
-    console.log(`\nApproved and published ${approved} package version(s).`);
+    if (published.size === PACKAGE_DIRECTORIES.length && staged.size === 0) {
+      console.log(
+        `\nAll ${PACKAGE_DIRECTORIES.length} package versions are already ` +
+          "published.",
+      );
+
+      finalState = { published, staged };
+    } else if (options.cliApproval) {
+      finalState = await approveViaCli(
+        publishLayers,
+        manifests,
+        version,
+        options.otp,
+        staged,
+      );
+    } else {
+      if (staged.size === 0) {
+        throw new ReleaseError(
+          "No staged package versions were found and the release is not " +
+            "fully published. Staging did not complete; refusing to continue.",
+        );
+      }
+
+      finalState = await approveViaWeb(manifests, version, published, staged);
+    }
+
+    assertReleaseComplete(finalState.published, finalState.staged);
 
     commitAndTag(version);
 
@@ -1345,14 +1610,26 @@ async function main() {
   }
 }
 
-try {
-  await main();
-} catch (error) {
-  if (error instanceof ReleaseError) {
-    console.error(`\nrelease failed: ${error.message}`);
+function isMainModule() {
+  const entry = process.argv[1];
 
-    process.exitCode = error.status;
-  } else {
-    throw error;
+  if (!entry) {
+    return false;
+  }
+
+  return pathToFileURL(path.resolve(entry)).href === import.meta.url;
+}
+
+if (isMainModule()) {
+  try {
+    await runRelease(process.argv.slice(2));
+  } catch (error) {
+    if (error instanceof ReleaseError) {
+      console.error(`\nrelease failed: ${error.message}`);
+
+      process.exitCode = error.status;
+    } else {
+      throw error;
+    }
   }
 }

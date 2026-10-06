@@ -15,7 +15,7 @@ test("createDeprecationDiagnostic includes machine-readable metadata", () => {
     deprecatedSince: "0.0.13",
     replacement: "plugin.setup",
     action: "Move hook logic to setup().",
-    documentationUrl: "docs/en/guides/upgrading.md#plugin-old-hook",
+    documentationUrl: "docs/docs/guides/upgrading.en.md#plugin-old-hook",
     removedIn: "0.2.0",
   };
 
@@ -55,7 +55,7 @@ test("collectConfigDeprecationDiagnostics reports matching deprecated config fie
       deprecatedSince: "0.0.13",
       replacement: "site.title",
       action: "Move the value to site.title.",
-      documentationUrl: "docs/en/guides/upgrading.md#legacy-site-title",
+      documentationUrl: "docs/docs/guides/upgrading.en.md#legacy-site-title",
     },
     {
       kind: "config",
@@ -76,5 +76,8 @@ test("collectConfigDeprecationDiagnostics reports matching deprecated config fie
   assert.equal(diagnostics[0].code, "deprecated-config");
   assert.equal(diagnostics[0].target, "site.legacyTitle");
   assert.match(diagnostics[0].message, /Use: site\.title/);
-  assert.match(diagnostics[0].message, /See: docs\/en\/guides\/upgrading\.md/);
+  assert.match(
+    diagnostics[0].message,
+    /See: docs\/docs\/guides\/upgrading\.en\.md/,
+  );
 });

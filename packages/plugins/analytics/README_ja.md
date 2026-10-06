@@ -60,4 +60,4 @@ Core の安定コンテンツ ID（frontmatter の `id`）がある公開コン�
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)
+- [プラグイン API](../../../docs/docs/reference/plugin-api.md)

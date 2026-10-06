@@ -374,5 +374,5 @@ views:
 
 プラグインとテーマは `riebeckite.config.ts` で登録します。パッケージをインストールし、ファクトリを import して `plugins` 配列に追加するか、`theme` を別のテーマファクトリに変更します。全プラグイン・テーマの一覧は Riebeckite リポジトリを参照してください。
 
-- ドキュメント: [English](https://github.com/Rerurate514/riebeckite/blob/main/docs/en/README.md)
-  · [日本語](https://github.com/Rerurate514/riebeckite/blob/main/docs/ja/README.md)
+- ドキュメント: [English](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.en.md)
+  · [日本語](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md)

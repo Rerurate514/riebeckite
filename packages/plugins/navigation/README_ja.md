@@ -123,5 +123,5 @@ navigation({
 
 ## 関連リンク
 
-- [設定リファレンス](../../../docs/ja/docs/reference/configuration.md)
-- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)
+- [設定リファレンス](../../../docs/docs/reference/configuration.md)
+- [プラグイン API](../../../docs/docs/reference/plugin-api.md)

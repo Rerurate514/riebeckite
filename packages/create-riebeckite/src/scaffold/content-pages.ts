@@ -16,8 +16,8 @@ import {
 } from "./templates.js";
 
 const HELPERS = {
-  en: "https://github.com/Rerurate514/riebeckite/blob/main/docs/en/README.md",
-  ja: "https://github.com/Rerurate514/riebeckite/blob/main/docs/ja/README.md",
+  en: "https://github.com/Rerurate514/riebeckite/blob/main/docs/README.en.md",
+  ja: "https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md",
 };
 
 const PLUGIN_INDEX_URL =

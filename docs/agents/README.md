@@ -1,6 +1,6 @@
 # Riebeckite Agent Documentation
 
-This directory is the implementation guide for coding agents and automated maintainers. It is intentionally English-only, concise, and rule-oriented. Human-facing explanations, examples, and onboarding guidance live in [Japanese](../ja/README.md) and [English](../en/README.md).
+This directory is the implementation guide for coding agents and automated maintainers. It is intentionally English-only, concise, and rule-oriented. Human-facing explanations, examples, and onboarding guidance live in [Japanese](../README.md) and [English](../README.en.md).
 
 Read the documents that match the change before editing. These rules supplement, rather than replace, the repository's local instructions and existing code patterns.
 
@@ -68,14 +68,14 @@ Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugi
 
 |Subject|Reference|
 |---|---|
-|Content sources, manifest, graph, and publication|[Content System](../en/docs/framework/content-system.md)|
-|Plugin API and lifecycle|[Plugin System](../en/docs/reference/plugin-api.md)|
-|Theme contract and CSS cascade|[Theme System](../en/docs/reference/theme-api.md)|
-|Incremental Build and cache semantics|[Build System](../en/docs/framework/build-system.md)|
-|Commands and their user-facing behavior|[CLI](../en/docs/reference/cli.md)|
-|Diagnostics and inspection|[Diagnostics](../en/docs/framework/diagnostics.md) / [Framework Inspector](../en/docs/framework/inspector.md)|
-|Browser tracking and the analytics Worker|[Analytics](../en/docs/guides/analytics.md)|
-|Public framework surface|[Framework Reference](../en/docs/reference/README.md)|
+|Content sources, manifest, graph, and publication|[Content System](../docs/framework/content-system.en.md)|
+|Plugin API and lifecycle|[Plugin System](../docs/reference/plugin-api.en.md)|
+|Theme contract and CSS cascade|[Theme System](../docs/reference/theme-api.en.md)|
+|Incremental Build and cache semantics|[Build System](../docs/framework/build-system.en.md)|
+|Commands and their user-facing behavior|[CLI](../docs/reference/cli.en.md)|
+|Diagnostics and inspection|[Diagnostics](../docs/framework/diagnostics.en.md) / [Framework Inspector](../docs/framework/inspector.en.md)|
+|Browser tracking and the analytics Worker|[Analytics](../docs/guides/analytics.en.md)|
+|Public framework surface|[Framework Reference](../docs/reference/README.en.md)|
 
 Use the localized Japanese documentation when that is the target audience; the rules in this directory remain the implementation baseline.
 

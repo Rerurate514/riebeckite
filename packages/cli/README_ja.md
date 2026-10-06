@@ -46,7 +46,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `profile` | トレースに基づく性能レポートを実行する。`--full` は全体を対象にする | ビルドの実行による |
 | `inspect` | 解決済みの状態を事実として表示する（`config`、`plugins`、`content`、`graph`、`build`） | いいえ |
 
-`doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/ja/docs/framework/diagnostics.md) と [Framework Inspector](../../docs/ja/docs/framework/inspector.md) を参照してください。
+`doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/docs/framework/diagnostics.md) と [Framework Inspector](../../docs/docs/framework/inspector.md) を参照してください。
 
 `clean` は Riebeckite が管理する成果物だけを削除します。option なしでは managed state root（`.riebeckite/`）、`--output` では Build 出力、`--all` では両方を削除します。対象が存在しなくてもエラーにならないため、script や CI から安全に実行できます。cold build を行う場合は `clean --all` の後に `build` を実行します（cache directory を別の場所に設定している場合、その場所は削除対象に含まれません）。
 
@@ -61,7 +61,7 @@ pnpm exec riebeckite build
 
 ## 関連資料
 
-- [CLI Reference](../../docs/ja/docs/reference/cli.md)
-- [Build System](../../docs/ja/docs/framework/build-system.md)
-- [Diagnostics](../../docs/ja/docs/framework/diagnostics.md) / [Framework Inspector](../../docs/ja/docs/framework/inspector.md)
+- [CLI Reference](../../docs/docs/reference/cli.md)
+- [Build System](../../docs/docs/framework/build-system.md)
+- [Diagnostics](../../docs/docs/framework/diagnostics.md) / [Framework Inspector](../../docs/docs/framework/inspector.md)
 

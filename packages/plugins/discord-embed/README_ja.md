@@ -59,7 +59,7 @@ frontmatter の色が無効な場合は診断 `discord-embed-invalid-color`（wa
 
 このプラグインは `<head>` を所有しません。プラグインが提供するのは `ContentManifestEntry.headTags` であり、描画するかどうかは Site が決めます。
 Site の route が `c.set("headTags", entry.headTags ?? [])` を設定し、`app/routes/_renderer.tsx` がそれを `<meta>` / `<link>` / `<script>` に変換します。
-詳しくは [HonoX Integration](../../../docs/ja/docs/framework/honox-integration.md) の "Site Application の拡張 contract" を参照してください。
+詳しくは [HonoX Integration](../../../docs/docs/framework/honox-integration.md) の "Site Application の拡張 contract" を参照してください。
 
 ## 主なエクスポート
 
@@ -70,6 +70,6 @@ Site の route が `c.set("headTags", entry.headTags ?? [])` を設定し、`app
 
 ## 関連資料
 
-- [HonoX Integration](../../../docs/ja/docs/framework/honox-integration.md)
-- [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
+- [HonoX Integration](../../../docs/docs/framework/honox-integration.md)
+- [プラグインシステム](../../../docs/docs/reference/plugin-api.md)
 

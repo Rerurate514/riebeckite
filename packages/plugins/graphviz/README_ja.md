@@ -93,5 +93,5 @@ digraph {
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/ja/docs/reference/plugin-api.md)
+- [プラグインシステム](../../../docs/docs/reference/plugin-api.md)
 

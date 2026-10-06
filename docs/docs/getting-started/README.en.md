@@ -1,0 +1,79 @@
+---
+title: Getting Started
+sidebar:
+  label: Getting Started
+  order: 10
+---
+# Getting Started
+
+This section is the beginner path for publishing your first Riebeckite site. Follow it in order; advanced diagnostics, plugin development, and separate repositories are linked only when you need them.
+
+```text
+Quick Start
+    ↓
+Installation
+    ↓
+First Content
+    ↓
+Presets
+    ↓
+Deployment
+```
+
+## What is Riebeckite?
+
+Riebeckite turns Markdown, including Obsidian-style notes, into a fast static site. You write Markdown in `content/`, run a local preview, build the output into `dist/`, and deploy that folder.
+
+You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`](https://www.npmjs.com/package/create-riebeckite) generator creates a self-contained site for you.
+
+## Pages in this section
+
+| Page | What you do |
+| --- | --- |
+| [Quick Start](./quick-start.en.md) | Create, run, edit Markdown, preview, and build in one short path |
+| [Installation](./installation.en.md) | Check requirements and understand the generated files |
+| [First Content](./first-content.en.md) | Write or edit your first published Markdown page |
+| [Presets](./presets.en.md) | Compare `starter`, `minimal`, `showcase`, and `empty` |
+| [Deployment](./deployment.en.md) | Publish locally, then automate with GitHub Actions if needed |
+| [Use Your Obsidian Vault](./obsidian-vault.en.md) | Connect an existing Obsidian Vault and publish selected notes |
+| [Add Your First Plugin](./first-plugin.en.md) | Install a plugin and see `==highlight==` syntax work |
+| [Change Your Theme](./first-theme.en.md) | Swap the theme and see the design change |
+
+## The shortest path
+
+```sh
+npx create-riebeckite
+```
+
+The CLI asks for the project name, preset, content source, and deployment. Keep `starter`, `This project`, and `Not now` to start locally, then:
+
+```sh
+cd my-site
+npm install
+npm exec riebeckite dev
+```
+
+Open the local URL printed in the terminal. Edit Markdown in `content/`, make sure published pages have `publish: true`, then build:
+
+```sh
+npm exec riebeckite build
+```
+
+To publish the build output as-is, install Wrangler and run `npm exec riebeckite deploy`; login and `wrangler.jsonc` generation are automatic. See [Deployment](./deployment.en.md) for details.
+
+If you are unsure which preset to choose, use the `starter` preset.
+
+> **Developing Riebeckite itself?** Start with [Framework / Development](../framework/development.en.md) instead.
+
+## Customize Riebeckite
+
+| Goal | Guide |
+| --- | --- |
+| Already use Obsidian | [Use Your Obsidian Vault](./obsidian-vault.en.md) |
+| Add features (search, diagrams, embeds…) | [Add Your First Plugin](./first-plugin.en.md) |
+| Change appearance (colors, fonts, layout…) | [Change Your Theme](./first-theme.en.md) |
+| Replace the icon, logo, or link preview image | [Branding your site](../guides/branding.en.md) |
+
+## Next
+
+- [Quick Start →](./quick-start.en.md)

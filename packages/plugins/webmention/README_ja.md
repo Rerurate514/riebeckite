@@ -112,6 +112,6 @@ manifest 生成時、公開 entry に一致しないターゲットのメンシ�
 
 ## 関連
 
-- [プラグインガイド](../../../docs/ja/docs/reference/plugin-api.md)
+- [プラグインガイド](../../../docs/docs/reference/plugin-api.md)
 - [@riebeckite/webmention-cloudflare](../../integrations/webmention-cloudflare/README_ja.md)
 

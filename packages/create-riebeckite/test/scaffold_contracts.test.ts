@@ -832,15 +832,15 @@ test("Contract 10: Getting Started documentation links are valid", () => {
   // Test runs from packages/create-riebeckite/test, so go up 3 levels to repo root
   const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
   const gettingStartedFiles = [
-    "docs/ja/docs/getting-started/README.md",
-    "docs/ja/docs/getting-started/quick-start.md",
-    "docs/ja/docs/getting-started/installation.md",
-    "docs/ja/docs/getting-started/first-content.md",
-    "docs/ja/docs/getting-started/deployment.md",
-    "docs/ja/docs/getting-started/presets.md",
-    "docs/ja/docs/guides/deployment/cloudflare-workers.md",
-    "docs/ja/docs/guides/deployment/github-actions.md",
-    "docs/ja/docs/guides/deployment/separate-content-repository.md",
+    "docs/docs/getting-started/README.md",
+    "docs/docs/getting-started/quick-start.md",
+    "docs/docs/getting-started/installation.md",
+    "docs/docs/getting-started/first-content.md",
+    "docs/docs/getting-started/deployment.md",
+    "docs/docs/getting-started/presets.md",
+    "docs/docs/guides/deployment/cloudflare-workers.md",
+    "docs/docs/guides/deployment/github-actions.md",
+    "docs/docs/guides/deployment/separate-content-repository.md",
   ];
 
   for (const file of gettingStartedFiles) {

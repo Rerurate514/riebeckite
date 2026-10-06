@@ -125,4 +125,4 @@ import "@riebeckite/plugin-sidenotes/style.css";
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)
+- [プラグイン API](../../../docs/docs/reference/plugin-api.md)

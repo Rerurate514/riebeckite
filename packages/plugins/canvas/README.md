@@ -77,4 +77,4 @@ supports wheel zoom and drag pan (pan/zoom-lite).
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)

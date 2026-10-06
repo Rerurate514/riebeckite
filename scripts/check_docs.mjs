@@ -5,9 +5,10 @@
 //
 // Verifies the conventions the docs depend on:
 //   1. Every relative Markdown link resolves to an existing file (case-insensitive).
-//   2. docs/en and docs/ja contain the same relative document paths.
-//   3. Every document under docs/en and docs/ja is reachable from its language
-//      index through local Markdown links.
+//   2. Every translated document (X.en.md) has a default counterpart (X.md) and
+//      vice versa.
+//   3. Every document under docs is reachable from docs/README.md or
+//      docs/README.en.md through local Markdown links.
 //   4. Every package directory exposes exactly README.md + README_ja.md
 //      (extra README_en.md variants are rejected).
 //   5. README.md and README_ja.md link to each other where both exist.
@@ -27,8 +28,9 @@ const EXCLUDED_SEGMENTS = new Set([
 ]);
 
 const EXCLUDED_PREFIXES = [
-  path.join("tests", "external-site", "fixture"),
-  path.join("apps", "web", "content"),
+  "tests/external-site/fixture",
+  "apps/web/content",
+  "packages/create-riebeckite/test/__golden__",
 ];
 
 function isExcluded(relativePath) {
@@ -138,26 +140,37 @@ function checkLinks(markdownFiles, allFiles) {
   return errors;
 }
 
-// Rule 2: docs/en and docs/ja must be path-for-path parallel.
-function checkLanguageParity(documents) {
+const DOCS_ROOT = path.join(repositoryRoot, "docs");
+const DOCS_EXCLUDED_SEGMENTS = new Set([
+  "agents",
+  "assets",
+  ".obsidian",
+  ".riebeckite",
+]);
+
+function isDocsDocument(relative) {
+  if (!relative.startsWith("docs/")) return false;
+  const rest = relative.slice("docs/".length);
+  const first = rest.split("/")[0];
+  if (DOCS_EXCLUDED_SEGMENTS.has(first)) return false;
+  if (rest === "index.md") return false;
+  return true;
+}
+
+// Rule 2: default and translated documents must come in pairs.
+function checkTranslationParity(markdownFiles) {
   const errors = [];
-  const english = new Set(
-    documents.en.map((file) => file.relative.slice("docs/en/".length)),
+  const docsFiles = markdownFiles.filter((file) =>
+    isDocsDocument(file.relative),
   );
-  const japanese = new Set(
-    documents.ja.map((file) => file.relative.slice("docs/ja/".length)),
-  );
-  const enOnly = [...english]
-    .filter((relative) => !japanese.has(relative))
-    .sort();
-  const jaOnly = [...japanese]
-    .filter((relative) => !english.has(relative))
-    .sort();
-  for (const relative of enOnly) {
-    errors.push(`docs/en/${relative} has no docs/ja/${relative} counterpart`);
-  }
-  for (const relative of jaOnly) {
-    errors.push(`docs/ja/${relative} has no docs/en/${relative} counterpart`);
+  const known = new Set(docsFiles.map((file) => file.relative));
+  for (const file of docsFiles) {
+    const counterpart = file.relative.endsWith(".en.md")
+      ? file.relative.replace(/\.en\.md$/, ".md")
+      : file.relative.replace(/\.md$/, ".en.md");
+    if (!known.has(counterpart)) {
+      errors.push(`${file.relative} has no ${counterpart} counterpart`);
+    }
   }
   return errors;
 }
@@ -204,43 +217,36 @@ function linkedMarkdownTargets(file, docsRoot, knownDocuments) {
   return targets;
 }
 
-// Rule 3: every language document must be reachable from docs/<lang>/README.md.
-function checkReachability(documents) {
+// Rule 3: every document must be reachable from a documentation index.
+function checkReachability(markdownFiles) {
   const errors = [];
-  for (const language of ["en", "ja"]) {
-    const docsRoot = path.join(repositoryRoot, "docs", language);
-    const byRelative = new Map(
-      documents[language].map((file) => [
-        file.relative.slice(`docs/${language}/`.length),
-        file,
-      ]),
-    );
-    const index = documents[language].find(
-      (file) => file.relative === `docs/${language}/README.md`,
-    );
-    if (!index) {
-      errors.push(`docs/${language}/README.md is missing`);
-      continue;
-    }
-    const seen = new Set(["README.md"]);
-    const queue = ["README.md"];
-    while (queue.length > 0) {
-      const current = queue.shift();
-      const file = byRelative.get(current);
-      if (!file) continue;
-      for (const target of linkedMarkdownTargets(file, docsRoot, byRelative)) {
-        if (!seen.has(target)) {
-          seen.add(target);
-          queue.push(target);
-        }
+  const docsFiles = markdownFiles.filter((file) =>
+    isDocsDocument(file.relative),
+  );
+  const byRelative = new Map(
+    docsFiles.map((file) => [file.relative.slice("docs/".length), file]),
+  );
+  const roots = ["README.md", "README.en.md"].filter((root) =>
+    byRelative.has(root),
+  );
+  const seen = new Set(roots);
+  const queue = [...roots];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    const file = byRelative.get(current);
+    if (!file) continue;
+    for (const target of linkedMarkdownTargets(file, DOCS_ROOT, byRelative)) {
+      if (!seen.has(target)) {
+        seen.add(target);
+        queue.push(target);
       }
     }
-    for (const relative of [...byRelative.keys()].sort()) {
-      if (!seen.has(relative)) {
-        errors.push(
-          `docs/${language}/${relative} is not reachable from docs/${language}/README.md`,
-        );
-      }
+  }
+  for (const relative of [...byRelative.keys()].sort()) {
+    if (!seen.has(relative)) {
+      errors.push(
+        `docs/${relative} is not reachable from docs/README.md or docs/README.en.md`,
+      );
     }
   }
   return errors;
@@ -310,15 +316,10 @@ function checkMutualReadmeLinks(markdownFiles, allFiles) {
 
 const { markdownFiles, allFiles } = collectPaths();
 
-const documents = {
-  en: markdownFiles.filter((file) => file.relative.startsWith("docs/en/")),
-  ja: markdownFiles.filter((file) => file.relative.startsWith("docs/ja/")),
-};
-
 const errors = [
   ...checkLinks(markdownFiles, allFiles),
-  ...checkLanguageParity(documents),
-  ...checkReachability(documents),
+  ...checkTranslationParity(markdownFiles),
+  ...checkReachability(markdownFiles),
   ...checkPackageReadmes(markdownFiles),
   ...checkMutualReadmeLinks(markdownFiles, allFiles),
 ];
@@ -329,6 +330,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Documentation checked for ${markdownFiles.length} markdown files: links, language parity, index coverage, and README conventions are consistent.`,
+    `Documentation checked for ${markdownFiles.length} markdown files: links, translation parity, index coverage, and README conventions are consistent.`,
   );
 }

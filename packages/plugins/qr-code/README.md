@@ -100,5 +100,5 @@ The caption comes from the code-block `title` (code meta) or a leading
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 

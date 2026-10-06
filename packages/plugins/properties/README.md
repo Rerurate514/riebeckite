@@ -90,7 +90,7 @@ properties({
 ```
 
 The handoff follows the
-[`ContentManifestEntry.bodySlots`](../../../docs/en/docs/framework/honox-integration.md)
+[`ContentManifestEntry.bodySlots`](../../../docs/docs/framework/honox-integration.en.md)
 contract. A plugin never owns routes or the shell.
 
 ## Exports
@@ -103,4 +103,4 @@ contract. A plugin never owns routes or the shell.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)

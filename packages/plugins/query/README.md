@@ -119,5 +119,5 @@ emits a `content-query-invalid` error diagnostic. Unknown fields emit a
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 

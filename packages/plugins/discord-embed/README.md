@@ -65,7 +65,7 @@ This plugin does not own the `<head>`. It provides
 `ContentManifestEntry.headTags`; whether to render them is the site's decision.
 A site route sets `c.set("headTags", entry.headTags ?? [])`, and
 `app/routes/_renderer.tsx` maps them to `<meta>` / `<link>` / `<script>`.
-See [HonoX Integration](../../../docs/en/docs/framework/honox-integration.md), section
+See [HonoX Integration](../../../docs/docs/framework/honox-integration.en.md), section
 "Site application contract", for details.
 
 ## Exports
@@ -78,6 +78,6 @@ See [HonoX Integration](../../../docs/en/docs/framework/honox-integration.md), s
 
 ## See also
 
-- [HonoX Integration](../../../docs/en/docs/framework/honox-integration.md)
-- [Plugin system](../../../docs/en/docs/reference/plugin-api.md)
+- [HonoX Integration](../../../docs/docs/framework/honox-integration.en.md)
+- [Plugin system](../../../docs/docs/reference/plugin-api.en.md)
 

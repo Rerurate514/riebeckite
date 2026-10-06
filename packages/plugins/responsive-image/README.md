@@ -90,5 +90,5 @@ commit them next to the original image. Sites copy referenced vault assets into
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 

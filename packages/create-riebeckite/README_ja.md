@@ -34,7 +34,7 @@ npm exec riebeckite build
 | Content source | `This project`、`Separate GitHub repository` | 最初は `This project` |
 | デプロイ設定 | `GitHub Actions + Cloudflare Workers`、`Not now` | 手元で試すなら `Not now` |
 
-`Separate GitHub repository` を選ぶと content と site のリポジトリ名も入力し、GitHub Actions のデプロイ設定が自動で構成されます。この構成は[content repository ガイド](../../docs/ja/docs/guides/content-repositories.md)に、デプロイの追加方法は [Deployment](../../docs/ja/docs/getting-started/deployment.md) にあります。
+`Separate GitHub repository` を選ぶと content と site のリポジトリ名も入力し、GitHub Actions のデプロイ設定が自動で構成されます。この構成は[content repository ガイド](../../docs/docs/guides/content-repositories.md)に、デプロイの追加方法は [Deployment](../../docs/docs/getting-started/deployment.md) にあります。
 
 ## オプション
 
@@ -68,7 +68,7 @@ npx create-riebeckite my-site --github-actions \
 `content.directory` は `"content"` にし、必要な repository Secret を登録した後、
 `github/notify-site.yml` を記事リポジトリの
 `.github/workflows/notify-site.yml` にコピーします。詳細は[別記事リポジトリの
-デプロイガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/ja/docs/guides/deployment/separate-content-repository.md)を参照してください。
+デプロイガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/deployment/separate-content-repository.md)を参照してください。
 
 `--content-repository` を指定すると、外部 content の checkout、
 `content-updated` の repository dispatch receiver、`github/notify-site.yml` がまとめて構成されます。以前の通知用オプションは廃止しました。

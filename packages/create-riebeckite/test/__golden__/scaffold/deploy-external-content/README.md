@@ -25,4 +25,4 @@ The GitHub Actions deployment reads the content repository and deploys to Cloudf
 - `SITE_DISPATCH_TOKEN` — in the **content repository**. Lets its `notify-site.yml` dispatch updates to this site. Use a fine-grained token scoped to this site repository with **Contents: read and write**.
 - `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` — in **this site repository** for the Cloudflare deploy.
 
-The workflows reference these secret names and never contain their values. Never commit the values. See the [separate content repository guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/en/docs/guides/deployment/separate-content-repository.md) for the full setup.
+The workflows reference these secret names and never contain their values. Never commit the values. See the [separate content repository guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/deployment/separate-content-repository.en.md) for the full setup.

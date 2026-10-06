@@ -35,9 +35,9 @@ The prompts ask, in order:
 
 `Separate GitHub repository` also asks for the content and site repositories,
 and GitHub Actions deployment is then configured for you. That setup is covered
-in the [content repository guide](../../docs/en/docs/guides/content-repositories.md).
+in the [content repository guide](../../docs/docs/guides/content-repositories.en.md).
 Deployment can be added later, described in
-[Deployment](../../docs/en/docs/getting-started/deployment.md).
+[Deployment](../../docs/docs/getting-started/deployment.en.md).
 
 ## Options
 
@@ -71,7 +71,7 @@ npx create-riebeckite my-site --github-actions \
 Set `content.directory` to `"content"`, add the documented repository secrets,
 then copy `github/notify-site.yml` into the content repository as
 `.github/workflows/notify-site.yml`. See the [separate-content deployment
-guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/en/docs/guides/deployment/separate-content-repository.md).
+guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/deployment/separate-content-repository.en.md).
 
 `--content-repository` automatically configures the external checkout, the
 `content-updated` repository-dispatch receiver, and `github/notify-site.yml`.

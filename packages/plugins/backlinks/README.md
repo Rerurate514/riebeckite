@@ -69,6 +69,6 @@ an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README.md)

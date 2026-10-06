@@ -152,5 +152,5 @@ YAML として不正なブロック、未対応のフィルタ式やビュー形
 
 ## 関連
 
-- [プラグインガイド](../../../docs/ja/docs/reference/plugin-api.md)
+- [プラグインガイド](../../../docs/docs/reference/plugin-api.md)
 

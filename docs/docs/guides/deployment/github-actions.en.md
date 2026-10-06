@@ -1,0 +1,111 @@
+# GitHub Actions
+
+The deployment workflow checks, builds, and deploys a Riebeckite site on every push. You can let `create-riebeckite` generate it, or copy the Cloudflare template.
+
+## Generate the workflow
+
+The interactive CLI asks about deployment at the end of setup; choose `GitHub Actions` for continuous deployment. Choose `Cloudflare Workers` instead for a local first publish. From the command line:
+
+```sh
+npx create-riebeckite my-site --preset starter --github-actions
+```
+
+With `--github-actions`, the generator adds two things to the site:
+
+| File | Role |
+| --- | --- |
+| `wrangler.jsonc` | Worker name, compatibility settings, and the static-assets directory (`./dist`) |
+| `.github/workflows/deploy.yml` | Check, build, and deploy on push to `main`, manual dispatch, or a `content-updated` repository dispatch |
+
+Without `--github-actions`, these files are not generated. See [Cloudflare Workers](./cloudflare-workers.en.md) for the manual path.
+
+## Add it to an existing site
+
+If you already published with Local-first, you can add continuous deployment without recreating the site. Run this in the project:
+
+```sh
+npm exec riebeckite deploy setup
+```
+
+The command:
+
+1. Detects the Git repository and the GitHub remote.
+2. Checks that the GitHub CLI (`gh`) is installed and logged in.
+3. Creates `.github/workflows/deploy.yml` from the same template when it does not exist. An existing non-Riebeckite workflow is reported and never overwritten; the command then stops before registering secrets.
+4. Reads the Cloudflare account from your Wrangler login, asking you to choose when there is more than one.
+5. Registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt, or from `CLOUDFLARE_API_TOKEN` in the environment for non-interactive use.
+
+It does not create a GitHub repository and does not push. When it finishes, push to deploy:
+
+```sh
+git push
+```
+
+Run it again any time. A matching workflow and existing secrets are detected and skipped, so only the remaining steps run. If a different deployment workflow already exists, replace or remove it first, then run the command again.
+
+## Prerequisites
+
+- A site whose `build` script runs `riebeckite build` and writes `dist/`.
+- A **committed `package-lock.json`**, so CI can run `npm ci` reproducibly. Run `npm install` once locally and commit the lockfile.
+- A Cloudflare account with Workers enabled.
+- The GitHub CLI (`gh`) installed and logged in (`gh auth login`) to use `riebeckite deploy setup`.
+- Wrangler available in the project (`npm install -D wrangler`). Local-first sites already have it.
+
+## Add the secrets
+
+In the **site repository**, under Settings → Secrets and variables → Actions, add:
+
+- `CLOUDFLARE_API_TOKEN` — create it in Cloudflare with the **Workers Scripts: Edit** permission
+- `CLOUDFLARE_ACCOUNT_ID`
+
+Then push to `main`, or run the workflow manually from the Actions tab.
+
+`riebeckite deploy setup` performs these two registrations for a site that is already a Git repository, using the account from your Wrangler login and a token you paste into a hidden prompt. Follow the manual steps below when you prefer to add the secrets by hand or when the CLI is unavailable.
+
+## How the workflow works
+
+1. Checks out the site repository.
+2. (Only for a separate content repository) checks out the content repository into `content/`.
+3. Sets up Node.js and installs dependencies with `npm ci`.
+4. Restores `.riebeckite/cache` (processed content and plugin cache) and `.riebeckite/build/content-state.json` (incremental build state) with `actions/cache`, scoped by the runner OS and `package-lock.json` hash and saved under a per-run generation.
+5. Runs `npm exec riebeckite check` — the read-only configuration and plugin validation.
+6. Runs `npm exec riebeckite build` to generate `dist/`.
+7. Saves a new cache generation automatically and deploys with [`cloudflare/wrangler-action`](https://github.com/cloudflare/wrangler-action) using the repository secrets.
+
+The cached state is Riebeckite's processed-content, plugin, and incremental-build state, not `dist/`. Each run writes a new generation keyed by the run id and attempt, and `restore-keys` fall back to the newest compatible generation, so an existing entry is never overwritten in place. The lockfile hash is only a coarse compatibility boundary: Riebeckite's schema version, app/pipeline/content fingerprints, and plugin cache versions decide the actual reuse. The output cache (`.riebeckite/ssg-output-cache.json`) is deliberately not persisted because it is large and its build-time saving does not offset the transfer cost. A cache miss is safe and simply performs cold processing. Check the build's `Persistent content cache` line to distinguish a restored Actions cache from actual Riebeckite cache hits. Delete the Actions cache or remove the cache step to troubleshoot; output correctness is unchanged. GitHub evicts old cache generations automatically, so the cache list stays bounded.
+
+## Triggers
+
+The generated workflow starts on:
+
+- `push` to `main`
+- `workflow_dispatch` (the "Run workflow" button in the Actions tab)
+- `repository_dispatch` with the type `content-updated`
+
+The last one is the hook used by a separate content repository. A push to that repository does **not** start this workflow by itself — the content repository must send the dispatch. That setup is documented in [Separate content repository](./separate-content-repository.en.md).
+
+## Local verification
+
+Exercise the build and the configuration without deploying:
+
+```sh
+npm install
+npm exec riebeckite build
+npx wrangler deploy --dry-run
+```
+
+`wrangler deploy --dry-run` validates `wrangler.jsonc` and the asset directory without contacting Cloudflare. `npx wrangler dev` serves the same output locally.
+
+## Notes
+
+- **Static assets are enough.** Riebeckite pre-renders content routes and plugin endpoints, so `dist/` is served as static assets with no runtime `main` entry.
+- **Build state stays at build time.** `.riebeckite/` and plugin caches are not part of `dist/` and never reach the Worker runtime.
+- **Attachments are site-owned.** Copy only the files you intend to publish in a `prebuild` step before the build.
+
+## See also
+
+- [Cloudflare Workers](./cloudflare-workers.en.md) — the manual deployment path
+- [Separate content repository](./separate-content-repository.en.md) — CI reading articles from another repository
+- Cloudflare deployment template — the source files
+- [Build system](../../framework/build-system.en.md) — what the build writes
+

@@ -9,8 +9,8 @@ description: Official documentation for the Riebeckite framework.
 
 Choose your language:
 
-- [English documentation](./en/README.md)
-- [日本語ドキュメント](./ja/README.md)
+- [English documentation](./README.en.md)
+- [日本語ドキュメント](./README.md)
 
 This directory is the content source for the official Riebeckite documentation app.
 Agent-only notes under `docs/agents/` are kept in the repository for coding agents, but the official docs app excludes them from published content.

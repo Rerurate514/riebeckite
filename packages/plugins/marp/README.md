@@ -98,5 +98,5 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 

@@ -85,6 +85,6 @@ fenced code block is extracted and supports both `json` and lz-string
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 - [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README.md)

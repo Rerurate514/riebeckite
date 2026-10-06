@@ -8,6 +8,20 @@
     padding-block: var(--rb-space-8);
   }
 
+  @media (min-width: 88rem) {
+    .riebeckite-page {
+      --rb-site-header-height: calc(var(--rb-space-3) * 3);
+      --rb-docs-sticky-top: calc(
+        var(--rb-space-8) +
+        var(--rb-site-header-height)
+      );
+    }
+
+    .rb-site-header {
+      min-height: var(--rb-site-header-height);
+    }
+  }
+
   .rb-site-header,
   .rb-site-footer {
     width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));

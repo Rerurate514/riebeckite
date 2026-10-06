@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-series",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",

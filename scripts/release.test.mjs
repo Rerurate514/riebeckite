@@ -28,42 +28,92 @@ function ok(stdout = "") {
   return { status: 0, stdout, stderr: "" };
 }
 
+function readManifestName(directory) {
+  return JSON.parse(
+    fs.readFileSync(path.join(directory, "package.json"), "utf8"),
+  ).name;
+}
+
+function internalEdges() {
+  const names = new Set(ALL_PACKAGES);
+  const edges = [];
+
+  for (const directory of PACKAGE_DIRECTORIES) {
+    const manifest = JSON.parse(
+      fs.readFileSync(
+        path.join(repositoryRoot, directory, "package.json"),
+        "utf8",
+      ),
+    );
+
+    for (const section of [
+      "dependencies",
+      "devDependencies",
+      "peerDependencies",
+    ]) {
+      for (const dependencyName of Object.keys(manifest[section] ?? {})) {
+        if (names.has(dependencyName)) {
+          edges.push([dependencyName, manifest.name]);
+        }
+      }
+    }
+  }
+
+  return edges;
+}
+
 function createHarness({
   published = [],
-  staged = [],
   failView = [],
-  failApprove = false,
+  failPublish = [],
+  authFailPublish = [],
   tagExists = false,
   hasStagedChanges = true,
   interactive = true,
-  promptScript = [],
+  propagation = 0,
 } = {}) {
   const state = {
     version: VERSION,
     published: new Set(published),
-    staged: new Map(),
-    calls: [],
-    steps: [],
-    prompts: [],
+    registry: new Set(published),
     failView: new Set(failView),
-    failApprove,
+    failPublish: new Set(failPublish),
+    authFailPublish: new Set(authFailPublish),
     tagExists,
     hasStagedChanges,
     interactive,
-    promptScript: [...promptScript],
-    tarballInfo: new Map(),
-    stageCounter: 0,
+    propagation,
+    now: 0,
+    calls: [],
+    interactiveCalls: [],
+    steps: [],
+    publishOrder: [],
+    sleeps: [],
   };
 
-  for (const name of staged) {
-    state.staged.set(name, {
-      id: `preset-${name}`,
-      packageName: name,
-      version: VERSION,
-    });
-  }
+  const recordPublish = (name) => {
+    state.publishOrder.push(name);
 
-  let promptIndex = 0;
+    if (state.failPublish.has(name)) {
+      return { status: 1, stdout: "", stderr: "npm error code E500 broken" };
+    }
+
+    if (state.authFailPublish.has(name)) {
+      return {
+        status: 1,
+        stdout: "",
+        stderr: "npm error code ENEEDAUTH requires additional authentication",
+      };
+    }
+
+    state.published.add(name);
+
+    if (state.propagation === 0) {
+      state.registry.add(name);
+    }
+
+    return ok("");
+  };
 
   const spawnBuffered = async (command, args, cwd) => {
     state.calls.push({ command, args, cwd });
@@ -81,7 +131,7 @@ function createHarness({
         if (state.failView.has(name)) {
           return { status: 1, stdout: "", stderr: "npm error network timeout" };
         }
-        if (state.published.has(name)) {
+        if (state.registry.has(name)) {
           return ok(`${VERSION}\n`);
         }
         return {
@@ -90,52 +140,29 @@ function createHarness({
           stderr: "npm error 404 Not Found - GET https://registry.npmjs.org",
         };
       }
-      if (args[0] === "stage" && args[1] === "list") {
-        return ok(JSON.stringify([...state.staged.values()]));
-      }
-      if (args[0] === "stage" && args[1] === "publish") {
-        const info = state.tarballInfo.get(args[2]);
-        if (!info) {
-          return { status: 1, stdout: "", stderr: "unknown tarball" };
-        }
-        state.stageCounter += 1;
-        const id = `stage-${state.stageCounter}`;
-        state.staged.set(info.name, {
-          id,
-          packageName: info.name,
-          version: VERSION,
-        });
-        return ok(JSON.stringify({ stageId: id }));
-      }
-      if (args[0] === "stage" && args[1] === "approve") {
-        const entry = [...state.staged.values()].find(
-          (candidate) => candidate.id === args[2],
-        );
-        if (state.failApprove || !entry) {
-          return {
-            status: 1,
-            stdout: "",
-            stderr: "npm error code EOTP one-time password required",
-          };
-        }
-        state.published.add(entry.packageName);
-        state.staged.delete(entry.packageName);
-        return ok(JSON.stringify({ ok: true }));
-      }
     }
 
-    if (command === "pnpm" && args[0] === "pack") {
-      const manifest = JSON.parse(
-        fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
-      );
-      const destination = args[args.indexOf("--pack-destination") + 1];
-      const slug = manifest.name.replaceAll("@", "").replaceAll("/", "-");
-      const tarball = path.join(destination, `${slug}-${VERSION}.tgz`);
-      state.tarballInfo.set(tarball, { name: manifest.name });
-      return ok(`${tarball}\n`);
+    if (command === "pnpm" && args[0] === "publish") {
+      return recordPublish(readManifestName(cwd));
     }
 
     throw new Error(`unexpected command: ${command} ${args.join(" ")}`);
+  };
+
+  const spawnInteractive = async (command, args, cwd) => {
+    state.interactiveCalls.push({ command, args, cwd });
+
+    if (command === "npm" && args[0] === "login") {
+      return ok("");
+    }
+
+    if (command === "pnpm" && args[0] === "publish") {
+      return recordPublish(readManifestName(cwd));
+    }
+
+    throw new Error(
+      `unexpected interactive command: ${command} ${args.join(" ")}`,
+    );
   };
 
   const spawnSync = (command, args) => {
@@ -155,38 +182,29 @@ function createHarness({
     state.steps.push({ label, command, args });
   };
 
-  const promptLine = async (message) => {
-    state.prompts.push(message);
+  const sleep = async (milliseconds) => {
+    state.sleeps.push(milliseconds);
+    state.now += milliseconds;
 
-    if (promptIndex >= state.promptScript.length) {
-      throw new Error(`unexpected prompt: ${message}`);
-    }
+    if (state.propagation > 0 && Number.isFinite(state.propagation)) {
+      state.propagation -= 1;
 
-    const step = state.promptScript[promptIndex];
-    promptIndex += 1;
-
-    if (typeof step === "function") {
-      return String(step() ?? "");
-    }
-    if (step && typeof step === "object") {
-      if (step.effect) {
-        step.effect();
+      if (state.propagation === 0) {
+        state.registry = new Set(state.published);
       }
-      return String(step.answer ?? "");
     }
-
-    return String(step ?? "");
   };
 
   return {
     state,
     runtime: {
       spawnBuffered,
-      spawnInteractive: async () => ok(""),
+      spawnInteractive,
       runStep,
       spawnSync,
-      promptLine,
       isInteractive: () => state.interactive,
+      sleep,
+      now: () => state.now,
     },
   };
 }
@@ -197,8 +215,9 @@ async function withHarness(harness, run) {
     spawnInteractive: runtime.spawnInteractive,
     runStep: runtime.runStep,
     spawnSync: runtime.spawnSync,
-    promptLine: runtime.promptLine,
     isInteractive: runtime.isInteractive,
+    sleep: runtime.sleep,
+    now: runtime.now,
   };
 
   Object.assign(runtime, harness.runtime);
@@ -231,21 +250,15 @@ async function withHarness(harness, run) {
   }
 }
 
-function stagePublishCalls(state) {
+function publishCalls(state) {
   return state.calls.filter(
-    (call) =>
-      call.command === "npm" &&
-      call.args[0] === "stage" &&
-      call.args[1] === "publish",
+    (call) => call.command === "pnpm" && call.args[0] === "publish",
   );
 }
 
-function approveCalls(state) {
-  return state.calls.filter(
-    (call) =>
-      call.command === "npm" &&
-      call.args[0] === "stage" &&
-      call.args[1] === "approve",
+function interactivePublishCalls(state) {
+  return state.interactiveCalls.filter(
+    (call) => call.command === "pnpm" && call.args[0] === "publish",
   );
 }
 
@@ -253,50 +266,32 @@ function stepLabels(state) {
   return state.steps.map((step) => step.label);
 }
 
-function publishAll(staged, published) {
-  return () => {
-    for (const name of [...staged.keys()]) {
-      published.add(name);
-    }
-    staged.clear();
-  };
-}
-
-test("parseArguments preserves --otp compatibility and adds --cli-approval", () => {
-  const otpOptions = parseArguments(["1.2.3", "--otp", "123456"]);
-  assert.equal(otpOptions.otp, "123456");
-  assert.equal(otpOptions.cliApproval, true);
-
-  const cliOptions = parseArguments(["1.2.3", "--cli-approval"]);
-  assert.equal(cliOptions.cliApproval, true);
-  assert.equal(cliOptions.otp, null);
-
-  const webOptions = parseArguments(["1.2.3"]);
-  assert.equal(webOptions.cliApproval, false);
+test("parseArguments accepts only the direct-publish options", () => {
+  assert.equal(parseArguments(["1.2.3"]).version, "1.2.3");
+  assert.equal(parseArguments(["1.2.3", "--dry-run"]).dryRun, true);
+  assert.equal(parseArguments(["--check-only"]).checkOnly, true);
+  assert.equal(parseArguments(["--help"]).help, true);
 
   assert.throws(() => parseArguments(["1.2.3", "--nope"]), ReleaseError);
-  assert.throws(() => parseArguments(["1.2.3", "--otp"]), ReleaseError);
+  assert.throws(() => parseArguments(["1.2.3", "--stage-only"]), ReleaseError);
+  assert.throws(
+    () => parseArguments(["1.2.3", "--cli-approval"]),
+    ReleaseError,
+  );
+  assert.throws(
+    () => parseArguments(["1.2.3", "--otp", "123456"]),
+    ReleaseError,
+  );
 });
 
-test("fresh release stages, waits for web approval, verifies, then finalizes", async () => {
-  const harness = createHarness({
-    promptScript: [
-      {
-        effect: () => {
-          for (const name of [...harness.state.staged.keys()]) {
-            harness.state.published.add(name);
-          }
-          harness.state.staged.clear();
-        },
-        answer: "",
-      },
-    ],
-  });
+test("fresh release publishes directly, verifies 81/81, then commits and tags", async () => {
+  const harness = createHarness();
 
   const { output } = await withHarness(harness, () => runRelease([VERSION]));
 
-  assert.equal(stagePublishCalls(harness.state).length, ALL_PACKAGES.length);
-  assert.equal(approveCalls(harness.state).length, 0);
+  assert.equal(interactivePublishCalls(harness.state).length, 1);
+  assert.equal(publishCalls(harness.state).length, ALL_PACKAGES.length - 1);
+  assert.equal(harness.state.published.size, ALL_PACKAGES.length);
   assert.ok(stepLabels(harness.state).includes("git commit"));
   assert.ok(stepLabels(harness.state).includes("git tag"));
   assert.ok(
@@ -304,80 +299,64 @@ test("fresh release stages, waits for web approval, verifies, then finalizes", a
       line.includes(`✓ ${ALL_PACKAGES.length}/${ALL_PACKAGES.length}`),
     ),
   );
-  assert.ok(output.some((line) => line.includes("security key")));
-});
-
-test("stage-only stages, verifies, prints web instructions, and does not tag", async () => {
-  const harness = createHarness();
-
-  const { output } = await withHarness(harness, () =>
-    runRelease([VERSION, "--stage-only"]),
+  assert.ok(
+    output.some((line) => line.includes("Release publication verified")),
   );
-
-  assert.equal(stagePublishCalls(harness.state).length, ALL_PACKAGES.length);
-  assert.equal(approveCalls(harness.state).length, 0);
-  assert.equal(stepLabels(harness.state).includes("git commit"), false);
-  assert.equal(stepLabels(harness.state).includes("git tag"), false);
-  assert.ok(output.some((line) => line.includes("staged successfully")));
-  assert.ok(output.some((line) => line.includes("npmjs.com")));
 });
 
-test("resume after stage-only reuses existing stages without duplicate staging", async () => {
-  const harness = createHarness();
+test("already published packages are skipped", async () => {
+  const harness = createHarness({ published: ALL_PACKAGES });
 
-  await withHarness(harness, () => runRelease([VERSION, "--stage-only"]));
-  const stagedOnce = stagePublishCalls(harness.state).length;
-  assert.equal(stagedOnce, ALL_PACKAGES.length);
+  const { output } = await withHarness(harness, () => runRelease([VERSION]));
 
-  harness.state.promptScript = [
-    {
-      effect: publishAll(harness.state.staged, harness.state.published),
-      answer: "",
-    },
-  ];
+  assert.equal(publishCalls(harness.state).length, 0);
+  assert.equal(interactivePublishCalls(harness.state).length, 0);
+  assert.ok(stepLabels(harness.state).includes("git tag"));
+  assert.ok(
+    output.some((line) =>
+      line.includes(`${ALL_PACKAGES.length}/${ALL_PACKAGES.length}`),
+    ),
+  );
+});
 
-  await withHarness(harness, () => runRelease([VERSION]));
+test("partial release resumes from the already published packages", async () => {
+  const preset = ALL_PACKAGES.slice(0, 40);
+  const harness = createHarness({ published: preset });
 
-  assert.equal(stagePublishCalls(harness.state).length, stagedOnce);
+  const { output } = await withHarness(harness, () => runRelease([VERSION]));
+
+  assert.equal(interactivePublishCalls(harness.state).length, 1);
+  assert.equal(publishCalls(harness.state).length, ALL_PACKAGES.length - 41);
+  for (const name of preset) {
+    assert.equal(harness.state.publishOrder.includes(name), false);
+  }
+  assert.equal(harness.state.published.size, ALL_PACKAGES.length);
+  assert.ok(output.some((line) => line.includes("40/81 package(s) already")));
   assert.ok(stepLabels(harness.state).includes("git tag"));
 });
 
-test("interrupted staging resumes without re-staging already staged packages", async () => {
-  const stagedPreset = ALL_PACKAGES.slice(0, 5);
-  const harness = createHarness({ staged: stagedPreset });
-
-  harness.state.promptScript = [
-    {
-      effect: publishAll(harness.state.staged, harness.state.published),
-      answer: "",
-    },
-  ];
+test("dependency layers are published in dependency order", async () => {
+  const harness = createHarness();
 
   await withHarness(harness, () => runRelease([VERSION]));
 
-  assert.equal(
-    stagePublishCalls(harness.state).length,
-    ALL_PACKAGES.length - stagedPreset.length,
+  const index = new Map(
+    harness.state.publishOrder.map((name, position) => [name, position]),
   );
-  assert.ok(stepLabels(harness.state).includes("git tag"));
+
+  const edges = internalEdges();
+  assert.ok(edges.length > 0);
+
+  for (const [dependency, dependent] of edges) {
+    assert.ok(
+      index.get(dependency) < index.get(dependent),
+      `${dependency} must be published before ${dependent}`,
+    );
+  }
 });
 
-test("partial web approval does not finalize and fails closed", async () => {
-  const harness = createHarness({
-    promptScript: [
-      {
-        effect: () => {
-          const names = [...harness.state.staged.keys()];
-          for (const name of names.slice(0, Math.floor(names.length / 2))) {
-            harness.state.published.add(name);
-            harness.state.staged.delete(name);
-          }
-        },
-        answer: "",
-      },
-      "abort",
-    ],
-  });
+test("publish failure fails closed without commit or tag", async () => {
+  const harness = createHarness({ failPublish: [ALL_PACKAGES[0]] });
 
   await assert.rejects(
     () => withHarness(harness, () => runRelease([VERSION])),
@@ -386,56 +365,13 @@ test("partial web approval does not finalize and fails closed", async () => {
 
   assert.equal(stepLabels(harness.state).includes("git commit"), false);
   assert.equal(stepLabels(harness.state).includes("git tag"), false);
-  assert.equal(harness.state.published.size < ALL_PACKAGES.length, true);
 });
 
-test("already published packages are not staged or approved again", async () => {
-  const harness = createHarness({ published: ALL_PACKAGES });
-
-  await withHarness(harness, () => runRelease([VERSION]));
-
-  assert.equal(stagePublishCalls(harness.state).length, 0);
-  assert.equal(approveCalls(harness.state).length, 0);
-  assert.ok(stepLabels(harness.state).includes("git tag"));
-});
-
-test("CLI OTP approval publishes every staged package and does not leak the OTP", async () => {
-  const harness = createHarness();
-  const otp = "123456";
-
-  const { output } = await withHarness(harness, () =>
-    runRelease([VERSION, "--otp", otp]),
-  );
-
-  const approvals = approveCalls(harness.state);
-  assert.equal(approvals.length, ALL_PACKAGES.length);
-  for (const call of approvals) {
-    assert.deepEqual(call.args.slice(-2), ["--otp", otp]);
-  }
-  assert.equal(output.join("\n").includes(otp), false);
-  assert.ok(stepLabels(harness.state).includes("git tag"));
-});
-
-test("--cli-approval prompts for a one-time password and never logs it", async () => {
-  const harness = createHarness({
-    promptScript: ["654321"],
-  });
-  const otp = "654321";
-
-  const { output } = await withHarness(harness, () =>
-    runRelease([VERSION, "--cli-approval"]),
-  );
-
-  assert.equal(approveCalls(harness.state).length, ALL_PACKAGES.length);
-  assert.equal(output.join("\n").includes(otp), false);
-  assert.ok(stepLabels(harness.state).includes("git tag"));
-});
-
-test("approval failure is a release failure and creates no tag", async () => {
-  const harness = createHarness({ failApprove: true });
+test("authentication failure fails closed without commit or tag", async () => {
+  const harness = createHarness({ authFailPublish: [ALL_PACKAGES[10]] });
 
   await assert.rejects(
-    () => withHarness(harness, () => runRelease([VERSION, "--otp", "000000"])),
+    () => withHarness(harness, () => runRelease([VERSION])),
     ReleaseError,
   );
 
@@ -443,7 +379,7 @@ test("approval failure is a release failure and creates no tag", async () => {
   assert.equal(stepLabels(harness.state).includes("git tag"), false);
 });
 
-test("registry inspection failure fails closed before staging", async () => {
+test("registry inspection failure fails closed before publishing", async () => {
   const harness = createHarness({ failView: [ALL_PACKAGES[0]] });
 
   await assert.rejects(
@@ -451,11 +387,56 @@ test("registry inspection failure fails closed before staging", async () => {
     ReleaseError,
   );
 
-  assert.equal(stagePublishCalls(harness.state).length, 0);
+  assert.equal(publishCalls(harness.state).length, 0);
+  assert.equal(interactivePublishCalls(harness.state).length, 0);
   assert.equal(stepLabels(harness.state).includes("git tag"), false);
 });
 
-test("existing tag aborts before any staging", async () => {
+test("final verification partial does not create a commit or tag", async () => {
+  const harness = createHarness({ propagation: Number.POSITIVE_INFINITY });
+
+  await assert.rejects(
+    () => withHarness(harness, () => runRelease([VERSION])),
+    ReleaseError,
+  );
+
+  assert.equal(stepLabels(harness.state).includes("git commit"), false);
+  assert.equal(stepLabels(harness.state).includes("git tag"), false);
+});
+
+test("propagation lag is retried and eventually commits and tags", async () => {
+  const harness = createHarness({ propagation: 2 });
+
+  const { output } = await withHarness(harness, () => runRelease([VERSION]));
+
+  assert.ok(harness.state.sleeps.length >= 2);
+  assert.ok(stepLabels(harness.state).includes("git commit"));
+  assert.ok(stepLabels(harness.state).includes("git tag"));
+  assert.ok(
+    output.some((line) => line.includes("waiting for registry propagation")),
+  );
+});
+
+test("propagation timeout fails closed without commit or tag", async () => {
+  const harness = createHarness({ propagation: Number.POSITIVE_INFINITY });
+
+  const { output } = await withHarness(harness, () =>
+    runRelease([VERSION]).catch((error) => {
+      assert.ok(error instanceof ReleaseError);
+      assert.ok(error.message.includes("Final verification timed out"));
+      return error;
+    }),
+  );
+
+  assert.ok(harness.state.sleeps.length > 1);
+  assert.ok(
+    output.some((line) => line.includes("waiting for registry propagation")),
+  );
+  assert.equal(stepLabels(harness.state).includes("git commit"), false);
+  assert.equal(stepLabels(harness.state).includes("git tag"), false);
+});
+
+test("existing tag aborts before any publish", async () => {
   const harness = createHarness({ tagExists: true });
 
   await assert.rejects(
@@ -463,16 +444,58 @@ test("existing tag aborts before any staging", async () => {
     ReleaseError,
   );
 
-  assert.equal(stagePublishCalls(harness.state).length, 0);
+  assert.equal(publishCalls(harness.state).length, 0);
+  assert.equal(interactivePublishCalls(harness.state).length, 0);
+  assert.equal(harness.state.steps.length, 0);
 });
 
-test("non-interactive web approval fails closed instead of guessing", async () => {
-  const harness = createHarness({ interactive: false });
+test("no staged npm commands are invoked and none remain in the source", async () => {
+  const harness = createHarness();
 
-  await assert.rejects(
-    () => withHarness(harness, () => runRelease([VERSION])),
-    ReleaseError,
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  const invocations = [
+    ...harness.state.calls,
+    ...harness.state.interactiveCalls,
+  ];
+  assert.ok(invocations.length > 0);
+  assert.equal(
+    invocations.some((call) => JSON.stringify(call.args).includes("stage")),
+    false,
   );
 
-  assert.equal(stepLabels(harness.state).includes("git tag"), false);
+  const source = fs.readFileSync(
+    path.join(repositoryRoot, "scripts", "release.mjs"),
+    "utf8",
+  );
+  for (const needle of [
+    "npm stage",
+    "stage publish",
+    "stage approve",
+    "stage list",
+    "--stage-only",
+    "--cli-approval",
+    "promptOtp",
+  ]) {
+    assert.equal(source.includes(needle), false, `unexpected ${needle}`);
+  }
+});
+
+test("tests never spawn a real npm/pnpm process or mutate the registry", async () => {
+  const harness = createHarness();
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  for (const call of harness.state.calls) {
+    if (call.command === "npm") {
+      assert.ok(
+        ["view", "whoami"].includes(call.args[0]),
+        `unexpected npm command ${call.args[0]}`,
+      );
+    } else if (call.command === "pnpm") {
+      assert.equal(call.args[0], "publish");
+    } else {
+      assert.equal(call.command, "git");
+    }
+  }
 });

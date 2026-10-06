@@ -2,9 +2,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
-import os from "node:os";
 import path from "node:path";
-import readline from "node:readline";
 import { pathToFileURL } from "node:url";
 import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
 
@@ -24,42 +22,42 @@ const NPM_VIEW_CONCURRENCY = 8;
 const PUBLISH_TIMEOUT_MS = 10 * 60_000;
 const NPM_VIEW_TIMEOUT_MS = 60_000;
 
-const APPROVAL_ABORT_WORDS = new Set(["abort", "q", "quit", "exit"]);
+const VERIFY_TIMEOUT_MS = 60_000;
+const VERIFY_INTERVAL_MS = 5_000;
 
 const SEMVER_PATTERN =
   /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const usage = `Usage:
-  node scripts/release.mjs <version> [--dry-run] [--otp <code>] [--cli-approval]
-  node scripts/release.mjs <version> --stage-only
+  node scripts/release.mjs <version> [--dry-run]
   node scripts/release.mjs --check-only
   node scripts/release.mjs --help
 
 Release flow:
-  bump:version
+  version validation
+  -> ensure tag does not already exist
+  -> version bump
   -> build:packages
   -> checks
-  -> inspect published and staged versions
-  -> pnpm pack + npm stage publish (no 2FA)
-  -> human approval (npmjs.com by default, one-time password with --otp)
+  -> inspect published versions
+  -> compute dependency layers
+  -> interactive first publish
+  -> parallel dependency-layer publish
+  -> interactive retry for authentication failures
   -> verify every version is live
   -> git commit + tag
+  -> push instructions
 
 Options:
-  <version>       Next semantic version for all public packages.
-  --dry-run       Rehearse without staging, approving, or creating git objects.
-  --stage-only    Stage and verify packages, print approval instructions, then
-                  stop before approval and before git commit.
-  --otp <code>    Approve staged packages with a one-time password (TOTP).
-  --cli-approval  Approve with a one-time password prompted in this terminal.
-  --check-only    Run package checks only.
-  --help          Show this help.
+  <version>     Next semantic version for all public packages.
+  --dry-run     Rehearse without publishing or creating git objects.
+  --check-only  Run package checks only.
+  --help        Show this help.
 
-Approval:
-  By default the release stops at a human approval boundary and asks you to
-  approve the staged packages on npmjs.com. That page supports security keys,
-  passkeys, and any other 2FA method configured on the npm account. Use --otp
-  or --cli-approval only when you prefer to approve with a TOTP one-time
-  password from this terminal.`;
+Publishing:
+  Packages are published directly from this machine with pnpm. When the npm
+  CLI needs interactive authentication (security key, passkey, or one-time
+  password), it prompts in this terminal; this script never implements its own
+  authentication flow or its own one-time password prompt.`;
 
 export class ReleaseError extends Error {
   constructor(message, status = 1) {
@@ -142,8 +140,10 @@ export const runtime = {
   spawnInteractive: (...args) => spawnInteractive(...args),
   runStep: (...args) => runStep(...args),
   spawnSync: (...args) => spawnSync(...args),
-  promptLine: (...args) => promptLine(...args),
   isInteractive: () => Boolean(process.stdin.isTTY && process.stdout.isTTY),
+  sleep: (milliseconds) =>
+    new Promise((resolve) => setTimeout(resolve, milliseconds)),
+  now: () => Date.now(),
 };
 
 function runChecks() {
@@ -545,67 +545,17 @@ async function isPackageVersionPublished(packageName, version) {
   );
 }
 
-async function readStagedPackages() {
-  const result = await runtime.spawnBuffered(
-    "npm",
-    ["stage", "list", "--json"],
-    repositoryRoot,
-    {
-      timeout: NPM_VIEW_TIMEOUT_MS,
-      label: "npm stage list",
-    },
-  );
-
-  if (result.status !== 0) {
-    throw new ReleaseError(
-      `Could not list staged packages.\n${result.stderr.trim()}`,
-      result.status,
-    );
-  }
-
-  const start = result.stdout.indexOf("[");
-  const end = result.stdout.lastIndexOf("]");
-
-  if (start === -1 || end < start) {
-    throw new ReleaseError(
-      "Could not parse staged package list from npm stage list output.",
-    );
-  }
-
-  let items;
-
-  try {
-    items = JSON.parse(result.stdout.slice(start, end + 1));
-  } catch (error) {
-    throw new ReleaseError(
-      `Could not parse staged package list: ${error.message}`,
-    );
-  }
-
-  if (!Array.isArray(items)) {
-    throw new ReleaseError("Unexpected npm stage list response.");
-  }
-
-  return items.filter(
-    (item) =>
-      item &&
-      typeof item.id === "string" &&
-      typeof item.packageName === "string" &&
-      typeof item.version === "string",
-  );
-}
-
-async function inspectRegistryState(manifests, version, dryRun) {
-  const published = new Set();
-  const staged = new Map();
-
+async function inspectPublishedPackages(manifests, version, dryRun, quiet) {
   if (dryRun) {
-    return { published, staged };
+    return new Set();
   }
 
-  console.log(
-    `\n[step] inspecting registry state (concurrency ${NPM_VIEW_CONCURRENCY})`,
-  );
+  if (!quiet) {
+    console.log(
+      "\n[step] checking published versions " +
+        `(concurrency ${NPM_VIEW_CONCURRENCY})`,
+    );
+  }
 
   const checks = await mapWithConcurrency(
     PACKAGE_DIRECTORIES,
@@ -613,673 +563,402 @@ async function inspectRegistryState(manifests, version, dryRun) {
     async (directory) => {
       const manifest = manifests.get(directory);
 
+      const published = await isPackageVersionPublished(manifest.name, version);
+
+      if (!quiet) {
+        console.log(
+          `  ${
+            published ? "published  " : "unpublished"
+          } ${manifest.name}@${version}`,
+        );
+      }
+
       return {
         directory,
-        manifest,
-        published: await isPackageVersionPublished(manifest.name, version),
+        published,
       };
     },
   );
 
-  for (const check of checks) {
-    if (check.published) {
-      published.add(check.directory);
-    }
-  }
-
-  const stagedItems = await readStagedPackages();
-  const stagedBySpec = new Map();
-
-  for (const item of stagedItems) {
-    stagedBySpec.set(`${item.packageName}@${item.version}`, item);
-  }
-
-  for (const check of checks) {
-    const item = stagedBySpec.get(`${check.manifest.name}@${version}`);
-
-    if (item && !published.has(check.directory)) {
-      staged.set(check.directory, item);
-    }
-  }
-
-  for (const check of checks) {
-    let state = "pending  ";
-
-    if (published.has(check.directory)) {
-      state = "published";
-    } else if (staged.has(check.directory)) {
-      state = "staged   ";
-    }
-
-    console.log(`  ${state} ${check.manifest.name}@${version}`);
-  }
-
-  return { published, staged };
+  return new Set(
+    checks
+      .filter(({ published }) => published)
+      .map(({ directory }) => directory),
+  );
 }
 
-async function collectStagedState(published, manifests, version, stagedIds) {
-  const directoryByName = new Map();
-
-  for (const directory of PACKAGE_DIRECTORIES) {
-    directoryByName.set(manifests.get(directory).name, directory);
-  }
-
-  const staged = new Map();
-
-  for (const item of await readStagedPackages()) {
-    if (item.version !== version) {
-      continue;
-    }
-
-    const directory = directoryByName.get(item.packageName);
-
-    if (directory && !published.has(directory)) {
-      staged.set(directory, item);
-    }
-  }
-
-  for (const [directory, id] of stagedIds ?? []) {
-    if (!id || published.has(directory) || staged.has(directory)) {
-      continue;
-    }
-
-    staged.set(directory, {
-      id,
-      packageName: manifests.get(directory).name,
-      version,
-    });
-  }
-
-  return staged;
-}
-
-function findTarballPath(output) {
-  const lines = output
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-
-  for (let index = lines.length - 1; index >= 0; index -= 1) {
-    if (lines[index].toLowerCase().endsWith(".tgz")) {
-      return lines[index];
+function findFirstPendingPackage(layers, publishedPackages) {
+  for (const layer of layers) {
+    for (const directory of layer) {
+      if (!publishedPackages.has(directory)) {
+        return directory;
+      }
     }
   }
 
   return null;
 }
 
-function parseStageId(stdout) {
-  const start = stdout.indexOf("{");
-  const end = stdout.lastIndexOf("}");
+async function publishInteractive(directory, manifest, version, reason) {
+  const packageSpec = `${manifest.name}@${version}`;
 
-  if (start === -1 || end < start) {
-    return null;
+  console.log("\n[interactive publish]");
+
+  if (reason) {
+    console.log(reason);
   }
 
-  let parsed;
+  console.log(`Publishing ${packageSpec} interactively.`);
 
-  try {
-    parsed = JSON.parse(stdout.slice(start, end + 1));
-  } catch {
-    return null;
+  console.log("Complete npm authentication when prompted.");
+
+  const result = await runtime.spawnInteractive(
+    "pnpm",
+    ["publish", "--no-git-checks"],
+    path.join(repositoryRoot, directory),
+    {
+      timeout: PUBLISH_TIMEOUT_MS,
+      label: `interactive publish ${packageSpec}`,
+    },
+  );
+
+  if (result.status !== 0) {
+    throw new ReleaseError(
+      `Interactive publish ${packageSpec} failed with exit code ${result.status}.`,
+      result.status,
+    );
   }
 
-  return typeof parsed?.stageId === "string" ? parsed.stageId : null;
+  console.log(`[interactive publish] finished ${packageSpec}`);
 }
 
-function printCommandOutput(stdout, stderr) {
-  if (stdout.trim()) {
-    process.stdout.write(`${stdout.trimEnd()}\n`);
-  }
-
-  if (stderr.trim()) {
-    process.stderr.write(`${stderr.trimEnd()}\n`);
-  }
-}
-
-async function stagePackage(
+async function publishPackage(
   directory,
   manifest,
   version,
-  packDirectory,
+  dryRun,
   position,
   total,
 ) {
   const packageSpec = `${manifest.name}@${version}`;
 
-  console.log(`[stage ${position}/${total}] packing ${packageSpec}`);
+  console.log(`[publish ${position}/${total}] starting ${packageSpec}`);
 
-  const packResult = await runtime.spawnBuffered(
+  const args = ["publish", "--no-git-checks"];
+
+  if (dryRun) {
+    args.push("--dry-run");
+  }
+
+  const result = await runtime.spawnBuffered(
     "pnpm",
-    ["pack", "--pack-destination", packDirectory],
+    args,
     path.join(repositoryRoot, directory),
     {
       timeout: PUBLISH_TIMEOUT_MS,
-      label: `pnpm pack ${packageSpec}`,
+      label: `publish ${packageSpec}`,
     },
   );
 
-  if (packResult.status !== 0) {
-    console.error(`\n[stage ${position}/${total}] ${packageSpec}`);
-    printCommandOutput(packResult.stdout, packResult.stderr);
+  console.log(`\n[publish ${position}/${total}] ${packageSpec}`);
 
-    throw new PublishError(
-      `pnpm pack ${packageSpec} failed with exit code ${packResult.status}.`,
-      {
-        status: packResult.status,
-        stdout: packResult.stdout,
-        stderr: packResult.stderr,
-      },
-    );
+  if (result.stdout.trim()) {
+    process.stdout.write(`${result.stdout.trimEnd()}\n`);
   }
 
-  const tarball = findTarballPath(`${packResult.stdout}\n${packResult.stderr}`);
-
-  if (!tarball) {
-    throw new PublishError(
-      `Could not locate the packed tarball for ${packageSpec}.`,
-      {
-        status: 1,
-        stdout: packResult.stdout,
-        stderr: packResult.stderr,
-      },
-    );
+  if (result.stderr.trim()) {
+    process.stderr.write(`${result.stderr.trimEnd()}\n`);
   }
 
-  const stageResult = await runtime.spawnBuffered(
-    "npm",
-    ["stage", "publish", tarball, "--json"],
-    repositoryRoot,
-    {
-      timeout: PUBLISH_TIMEOUT_MS,
-      label: `npm stage publish ${packageSpec}`,
-    },
-  );
-
-  console.log(`\n[stage ${position}/${total}] ${packageSpec}`);
-
-  printCommandOutput(stageResult.stdout, stageResult.stderr);
-
-  if (stageResult.status !== 0) {
+  if (result.status !== 0) {
     throw new PublishError(
-      `npm stage publish ${packageSpec} failed with exit code ${stageResult.status}.`,
+      `publish ${packageSpec} failed with exit code ${result.status}.`,
       {
-        status: stageResult.status,
-        stdout: stageResult.stdout,
-        stderr: stageResult.stderr,
+        status: result.status,
+        stdout: result.stdout,
+        stderr: result.stderr,
         authenticationRequired: requiresInteractiveAuthentication(
-          stageResult.stdout,
-          stageResult.stderr,
+          result.stdout,
+          result.stderr,
         ),
       },
     );
   }
 
-  console.log(`[stage ${position}/${total}] staged ${packageSpec}`);
-
-  return parseStageId(stageResult.stdout);
+  console.log(`[publish ${position}/${total}] finished ${packageSpec}`);
 }
 
-async function stagePackages(
-  layers,
+async function retryAuthenticationFailures(
+  failures,
   manifests,
-  published,
-  staged,
   version,
-  dryRun,
-  packDirectory,
+  publishedPackages,
 ) {
-  const isPending = (directory) =>
-    !published.has(directory) && !staged.has(directory);
+  await ensureAuthentication();
 
-  if (dryRun) {
-    const pending = layers.flat().filter(isPending);
+  for (const failure of failures) {
+    const { directory } = failure;
+    const manifest = manifests.get(directory);
+    const packageSpec = `${manifest.name}@${version}`;
 
-    console.log(`\n[dry-run] would stage ${pending.length} package(s).`);
+    console.log(`\n[authentication required] ${packageSpec}`);
 
-    for (const directory of pending) {
-      console.log(`  - ${manifests.get(directory).name}@${version}`);
-    }
+    console.log("The parallel publish requested additional authentication.");
 
-    return new Map();
-  }
+    const alreadyPublished = await isPackageVersionPublished(
+      manifest.name,
+      version,
+    );
 
-  const total = layers.flat().filter(isPending).length;
+    if (alreadyPublished) {
+      console.log(
+        `${packageSpec} is already published; skipping interactive retry.`,
+      );
 
-  if (total === 0) {
-    console.log("\nAll packages are already published or staged.");
-
-    return new Map();
-  }
-
-  console.log(
-    `\nStaging ${total} package(s) with concurrency ${PUBLISH_CONCURRENCY}.`,
-  );
-
-  const stagedIds = new Map();
-  let position = 0;
-
-  for (let layerIndex = 0; layerIndex < layers.length; layerIndex += 1) {
-    const items = layers[layerIndex].filter(isPending).map((directory) => {
-      position += 1;
-
-      return { directory, position };
-    });
-
-    if (items.length === 0) {
+      publishedPackages.add(directory);
       continue;
     }
 
-    console.log(`\n[stage layer ${layerIndex + 1}/${layers.length}]`);
+    await publishInteractive(
+      directory,
+      manifest,
+      version,
+      "Retrying this package with an interactive terminal.",
+    );
+
+    publishedPackages.add(directory);
+
+    console.log("Authentication refreshed. Parallel publishing will resume.");
+  }
+}
+
+async function publishPackages(
+  layers,
+  manifests,
+  publishedPackages,
+  dryRun,
+  version,
+) {
+  console.log("\nPublish dependency layers:");
+
+  for (let index = 0; index < layers.length; index += 1) {
+    console.log(`  layer ${index + 1}:`);
+
+    for (const directory of layers[index]) {
+      const manifest = manifests.get(directory);
+
+      const suffix = publishedPackages.has(directory)
+        ? " (already published)"
+        : "";
+
+      console.log(`    - ${manifest.name}${suffix}`);
+    }
+  }
+
+  if (!dryRun) {
+    await ensureAuthentication();
+
+    const firstPending = findFirstPendingPackage(layers, publishedPackages);
+
+    if (firstPending) {
+      const manifest = manifests.get(firstPending);
+
+      await publishInteractive(
+        firstPending,
+        manifest,
+        version,
+        "Authenticating with the first pending package before parallel publishing.",
+      );
+
+      publishedPackages.add(firstPending);
+    }
+  }
+
+  const pendingCount = layers
+    .flat()
+    .filter((directory) => dryRun || !publishedPackages.has(directory)).length;
+
+  if (!dryRun && pendingCount === 0) {
+    console.log("\nAll packages are already published.");
+
+    return;
+  }
+
+  if (dryRun) {
+    console.log(`\n[dry-run] would publish ${pendingCount} package(s).`);
+  } else {
+    console.log(
+      `\nStarting remaining publishes with concurrency ${PUBLISH_CONCURRENCY}.`,
+    );
+  }
+
+  let publishPosition = 0;
+
+  for (let layerIndex = 0; layerIndex < layers.length; layerIndex += 1) {
+    const layer = layers[layerIndex];
+
+    console.log(`\n[publish layer ${layerIndex + 1}/${layers.length}]`);
+
+    const pending = [];
+
+    for (const directory of layer) {
+      const manifest = manifests.get(directory);
+
+      if (!dryRun && publishedPackages.has(directory)) {
+        console.log(`  skip ${manifest.name}@${version} (already published)`);
+
+        continue;
+      }
+
+      publishPosition += 1;
+
+      pending.push({
+        directory,
+        position: publishPosition,
+      });
+    }
+
+    if (pending.length === 0) {
+      console.log("  nothing to publish");
+
+      continue;
+    }
 
     const results = await mapWithConcurrency(
-      items,
+      pending,
       PUBLISH_CONCURRENCY,
-      async ({ directory, position: packagePosition }) => {
+      async ({ directory, position }) => {
         const manifest = manifests.get(directory);
 
         try {
-          const stageId = await stagePackage(
+          await publishPackage(
             directory,
             manifest,
             version,
-            packDirectory,
-            packagePosition,
-            total,
+            dryRun,
+            position,
+            pendingCount,
           );
 
           return {
             directory,
-            stageId,
             error: null,
           };
         } catch (error) {
           return {
             directory,
-            stageId: null,
             error,
           };
         }
       },
     );
 
-    const failures = results.filter(({ error }) => error !== null);
+    for (const { directory, error } of results) {
+      if (error === null) {
+        publishedPackages.add(directory);
+      }
+    }
 
-    if (failures.length > 0) {
-      console.error(`\nStaging layer ${layerIndex + 1} failed:`);
+    const authenticationFailures = results.filter(
+      ({ error }) =>
+        error instanceof PublishError && error.authenticationRequired,
+    );
 
-      for (const { directory, error } of failures) {
+    const otherFailures = results.filter(
+      ({ error }) =>
+        error !== null &&
+        !(error instanceof PublishError && error.authenticationRequired),
+    );
+
+    if (authenticationFailures.length > 0 && !dryRun) {
+      console.log(
+        `\n${authenticationFailures.length} package(s) require interactive authentication.`,
+      );
+
+      await retryAuthenticationFailures(
+        authenticationFailures,
+        manifests,
+        version,
+        publishedPackages,
+      );
+    }
+
+    if (otherFailures.length > 0) {
+      console.error(`\nPublish layer ${layerIndex + 1} failed:`);
+
+      for (const { directory, error } of otherFailures) {
         console.error(`  - ${manifests.get(directory).name}: ${error.message}`);
       }
 
-      const firstError = failures[0].error;
+      const firstError = otherFailures[0].error;
 
       throw new ReleaseError(
-        `${failures.length} package(s) failed to stage in layer ${
+        `${otherFailures.length} package(s) failed in publish layer ${
           layerIndex + 1
         }. Later layers were not started.`,
         firstError instanceof ReleaseError ? firstError.status : 1,
       );
     }
 
-    for (const { directory, stageId } of results) {
-      if (stageId) {
-        stagedIds.set(directory, stageId);
-      }
-    }
-
-    console.log(`\n[stage layer ${layerIndex + 1}] complete`);
+    console.log(`\n[publish layer ${layerIndex + 1}] complete`);
   }
-
-  return stagedIds;
 }
 
-function promptLine(message) {
-  return new Promise((resolve, reject) => {
-    if (!process.stdin.isTTY || !process.stdout.isTTY) {
-      reject(
-        new ReleaseError(
-          "This step requires an interactive terminal to read input.",
-        ),
-      );
-
-      return;
-    }
-
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    rl.question(`\n${message}: `, (answer) => {
-      rl.close();
-
-      resolve(answer);
-    });
-  });
-}
-
-async function promptOtp(
-  message = "Enter the one-time password for staged approval",
-) {
-  if (!runtime.isInteractive()) {
-    throw new ReleaseError(
-      "Approving staged packages with a one-time password requires an " +
-        "interactive terminal. Pass --otp <code>, or approve the staged " +
-        "packages on npmjs.com instead.",
-    );
-  }
-
-  const answer = await runtime.promptLine(message);
-  const value = String(answer).trim();
-
-  if (value.length === 0) {
-    throw new ReleaseError("No one-time password provided.");
-  }
-
-  return value;
-}
-
-async function approvePackage(directory, manifest, version, stageId, otp) {
-  const packageSpec = `${manifest.name}@${version}`;
-
-  const args = ["stage", "approve", stageId];
-
-  if (otp) {
-    args.push("--otp", otp);
-  }
-
-  const result = await runtime.spawnBuffered("npm", args, repositoryRoot, {
-    timeout: PUBLISH_TIMEOUT_MS,
-    label: `npm stage approve ${packageSpec}`,
-  });
-
-  if (result.status === 0) {
-    console.log(`[approve] published ${packageSpec}`);
-
-    return { directory, error: null, otpRequired: false };
-  }
-
-  const output = `${result.stdout}\n${result.stderr}`.toLowerCase();
-
-  const otpRequired =
-    output.includes("eotp") ||
-    output.includes("one-time pass") ||
-    output.includes("otp") ||
-    output.includes("e401");
-
-  return {
-    directory,
-    error: new PublishError(
-      `npm stage approve ${packageSpec} failed with exit code ${result.status}.`,
-      {
-        status: result.status,
-        stdout: result.stdout,
-        stderr: result.stderr,
-      },
-    ),
-    otpRequired,
-  };
-}
-
-async function approvePackages(
-  layers,
-  manifests,
-  version,
-  otpOption,
-  allowRetry,
-  knownStaged,
-) {
-  const directoryByName = new Map();
-
-  for (const directory of PACKAGE_DIRECTORIES) {
-    directoryByName.set(manifests.get(directory).name, directory);
-  }
-
-  const stageIdByDirectory = new Map();
-
-  for (const item of await readStagedPackages()) {
-    if (item.version !== version) {
-      continue;
-    }
-
-    const directory = directoryByName.get(item.packageName);
-
-    if (directory && !stageIdByDirectory.has(directory)) {
-      stageIdByDirectory.set(directory, item.id);
-    }
-  }
-
-  for (const [directory, item] of knownStaged ?? []) {
-    if (item?.id && !stageIdByDirectory.has(directory)) {
-      stageIdByDirectory.set(directory, item.id);
-    }
-  }
-
-  const targets = layers
-    .flat()
-    .filter((directory) => stageIdByDirectory.has(directory));
-
-  if (targets.length === 0) {
-    console.log("\nNo staged package versions require approval.");
-
-    return 0;
-  }
+async function verifyPublishedPackages(manifests, version) {
+  const total = PACKAGE_DIRECTORIES.length;
+  const deadline = runtime.now() + VERIFY_TIMEOUT_MS;
 
   console.log(
-    `\nApproving ${targets.length} staged package version(s) with 2FA.`,
+    `\n[step] verifying published packages (timeout ${Math.round(
+      VERIFY_TIMEOUT_MS / 1000,
+    )}s)`,
   );
 
-  let otp = otpOption;
-
-  if (!otp) {
-    otp = await promptOtp();
-  }
-
-  let approved = 0;
-
-  for (let layerIndex = 0; layerIndex < layers.length; layerIndex += 1) {
-    const layerTargets = layers[layerIndex].filter((directory) =>
-      stageIdByDirectory.has(directory),
+  while (true) {
+    const published = await inspectPublishedPackages(
+      manifests,
+      version,
+      false,
+      true,
     );
 
-    if (layerTargets.length === 0) {
-      continue;
+    if (published.size === total) {
+      console.log(`\n${published.size}/${total} published`);
+
+      console.log("✓ Release publication verified");
+
+      return published;
     }
 
-    console.log(`\n[approve layer ${layerIndex + 1}/${layers.length}]`);
-
-    let results = await mapWithConcurrency(
-      layerTargets,
-      PUBLISH_CONCURRENCY,
-      (directory) =>
-        approvePackage(
-          directory,
-          manifests.get(directory),
-          version,
-          stageIdByDirectory.get(directory),
-          otp,
-        ),
-    );
-
-    if (allowRetry && results.some((result) => result.otpRequired)) {
-      if (!runtime.isInteractive()) {
-        throw new ReleaseError(
-          "The one-time password was rejected and no interactive terminal is " +
-            "available to retry.",
-        );
-      }
-
-      otp = await promptOtp(
-        "The one-time password was rejected; enter the current one-time password",
-      );
-
-      const retryTargets = results
-        .filter((result) => result.otpRequired)
-        .map((result) => result.directory);
-
-      const retried = await mapWithConcurrency(
-        retryTargets,
-        PUBLISH_CONCURRENCY,
-        (directory) =>
-          approvePackage(
-            directory,
-            manifests.get(directory),
-            version,
-            stageIdByDirectory.get(directory),
-            otp,
-          ),
-      );
-
-      results = results.filter((result) => !result.otpRequired).concat(retried);
-    }
-
-    const failures = results.filter((result) => result.error !== null);
-
-    if (failures.length > 0) {
-      console.error(`\nApproval layer ${layerIndex + 1} failed:`);
-
-      for (const { directory, error } of failures) {
-        console.error(`  - ${manifests.get(directory).name}: ${error.message}`);
-      }
-
-      const firstError = failures[0].error;
-
+    if (runtime.now() >= deadline) {
       throw new ReleaseError(
-        `${failures.length} package(s) failed to approve in layer ${
-          layerIndex + 1
-        }.`,
-        firstError instanceof ReleaseError ? firstError.status : 1,
+        `Final verification timed out: ${published.size}/${total} published, ` +
+          `${total - published.size} missing. Refusing to commit or tag. ` +
+          "Re-run the release once the registry has propagated.",
       );
     }
 
-    approved += results.length;
-
-    console.log(`\n[approve layer ${layerIndex + 1}] complete`);
-  }
-
-  return approved;
-}
-
-function printWebApprovalInstructions(published, staged) {
-  console.log(
-    `\n${published.size + staged.size} package version(s) staged successfully.`,
-  );
-
-  console.log("\nApproval requires npm 2FA.");
-
-  console.log(
-    "\nApprove the staged packages on npmjs.com using your configured",
-  );
-
-  console.log("security key, passkey, or other supported 2FA method.");
-
-  console.log("\nOn npmjs.com, open the Staged Packages tab for your account.");
-}
-
-function assertStagedComplete(published, staged) {
-  const total = PACKAGE_DIRECTORIES.length;
-  const missing = total - published.size - staged.size;
-
-  if (missing > 0) {
-    throw new ReleaseError(
-      `Staged state is incomplete: ${published.size} published, ` +
-        `${staged.size} staged, ${missing} not staged. Refusing to continue.`,
+    console.log(
+      `\n${published.size}/${total} published; waiting for registry propagation...`,
     );
+
+    await runtime.sleep(VERIFY_INTERVAL_MS);
   }
 }
 
-function assertReleaseComplete(published, staged) {
+function assertReleaseComplete(published) {
   const total = PACKAGE_DIRECTORIES.length;
 
-  if (published.size === total && staged.size === 0) {
+  if (published.size === total) {
     console.log(`\n✓ ${published.size}/${total} package versions published.`);
 
     return;
   }
 
-  console.error(
-    `\n${published.size}/${total} package versions published` +
-      (staged.size > 0 ? `, ${staged.size} still awaiting approval.` : "."),
-  );
-
   throw new ReleaseError(
-    "Release is not complete; refusing to create a commit or tag. " +
-      "Approve the remaining staged versions and run the release again.",
+    `Release is not complete: ${published.size}/${total} package versions ` +
+      "published. Refusing to create a commit or tag.",
   );
-}
-
-async function approveViaWeb(manifests, version, published, staged) {
-  const total = PACKAGE_DIRECTORIES.length;
-
-  printWebApprovalInstructions(published, staged);
-
-  console.log("\nAfter approval, press Enter to continue.");
-
-  if (!runtime.isInteractive()) {
-    throw new ReleaseError(
-      "Waiting for npmjs.com approval requires an interactive terminal. " +
-        "Run again with --stage-only to stop after staging, or approve with " +
-        "--otp <code> / --cli-approval instead.",
-    );
-  }
-
-  while (true) {
-    const answer = String(
-      await runtime.promptLine(
-        "Press Enter once you approved on npmjs.com (or type 'abort' to stop)",
-      ),
-    )
-      .trim()
-      .toLowerCase();
-
-    if (APPROVAL_ABORT_WORDS.has(answer)) {
-      throw new ReleaseError(
-        "Aborted before npm approval completed; no commit or tag was created.",
-      );
-    }
-
-    const state = await inspectRegistryState(manifests, version, false);
-
-    console.log(
-      `\n${state.published.size}/${total} package versions published.`,
-    );
-
-    if (state.published.size === total) {
-      return state;
-    }
-
-    const remaining = total - state.published.size;
-
-    console.log(
-      `\n${remaining} package version(s) are still awaiting approval.`,
-    );
-
-    console.log("Finish approving on npmjs.com, then press Enter to re-check.");
-  }
-}
-
-async function approveViaCli(
-  layers,
-  manifests,
-  version,
-  otpOption,
-  knownStaged,
-) {
-  const approved = await approvePackages(
-    layers,
-    manifests,
-    version,
-    otpOption,
-    otpOption === null,
-    knownStaged,
-  );
-
-  console.log(
-    `\nApproved ${approved} staged package version(s) with a one-time password.`,
-  );
-
-  return inspectRegistryState(manifests, version, false);
 }
 
 function ensureTagDoesNotExist(version) {
@@ -1385,45 +1064,17 @@ export function parseArguments(rawArguments) {
   const options = {
     dryRun: false,
     checkOnly: false,
-    stageOnly: false,
-    cliApproval: false,
     help: false,
-    otp: null,
     version: null,
   };
 
-  for (let index = 0; index < rawArguments.length; index += 1) {
-    const argument = rawArguments[index];
-
+  for (const argument of rawArguments) {
     if (argument === "--dry-run") {
       options.dryRun = true;
     } else if (argument === "--check-only") {
       options.checkOnly = true;
-    } else if (argument === "--stage-only") {
-      options.stageOnly = true;
-    } else if (argument === "--cli-approval") {
-      options.cliApproval = true;
     } else if (argument === "--help" || argument === "-h") {
       options.help = true;
-    } else if (argument === "--otp") {
-      const value = rawArguments[index + 1];
-
-      if (!value) {
-        throw new ReleaseError("--otp requires a value.");
-      }
-
-      options.otp = value;
-      options.cliApproval = true;
-      index += 1;
-    } else if (argument.startsWith("--otp=")) {
-      const value = argument.slice("--otp=".length);
-
-      if (value.length === 0) {
-        throw new ReleaseError("--otp requires a value.");
-      }
-
-      options.otp = value;
-      options.cliApproval = true;
     } else if (argument.startsWith("-")) {
       throw new ReleaseError(`Unknown option: ${argument}`);
     } else if (options.version !== null) {
@@ -1453,7 +1104,7 @@ export async function runRelease(rawArguments) {
     return;
   }
 
-  const { dryRun, version, stageOnly } = options;
+  const { dryRun, version } = options;
 
   if (!version) {
     throw new ReleaseError(`Missing <version>.\n\n${usage}`);
@@ -1491,123 +1142,39 @@ export async function runRelease(rawArguments) {
 
   const manifests = readPackageManifests();
 
-  const publishLayers = computePublishLayers(manifests);
-
-  const packDirectory = fs.mkdtempSync(
-    path.join(os.tmpdir(), "riebeckite-release-"),
+  const published = await inspectPublishedPackages(
+    manifests,
+    version,
+    dryRun,
+    false,
   );
 
-  try {
-    if (dryRun) {
-      const { published, staged } = await inspectRegistryState(
-        manifests,
-        version,
-        true,
-      );
-
-      await stagePackages(
-        publishLayers,
-        manifests,
-        published,
-        staged,
-        version,
-        true,
-        packDirectory,
-      );
-
-      console.log(
-        "\nDry-run finished: no versions, tarballs, or git objects created.",
-      );
-
-      return;
-    }
-
-    await ensureAuthentication();
-
-    const inspected = await inspectRegistryState(manifests, version, false);
-
-    const published = inspected.published;
-
+  if (!dryRun) {
     console.log(
       `\n${published.size}/${PACKAGE_DIRECTORIES.length} package(s) already ` +
-        `published, ${inspected.staged.size} staged, as ${version}.`,
+        `published as ${version}.`,
     );
-
-    const stagedIds = await stagePackages(
-      publishLayers,
-      manifests,
-      published,
-      inspected.staged,
-      version,
-      false,
-      packDirectory,
-    );
-
-    const staged = await collectStagedState(
-      published,
-      manifests,
-      version,
-      stagedIds,
-    );
-
-    console.log(
-      `\n${published.size}/${PACKAGE_DIRECTORIES.length} package(s) already ` +
-        `published, ${staged.size} staged, as ${version}.`,
-    );
-
-    if (stageOnly) {
-      assertStagedComplete(published, staged);
-
-      printWebApprovalInstructions(published, staged);
-
-      console.log(
-        `\nStaged release v${version}; stopping before approval and git commit.`,
-      );
-
-      console.log(
-        `Re-run "pnpm release ${version}" (no --stage-only) to approve and ` +
-          "finish the release.",
-      );
-
-      return;
-    }
-
-    let finalState;
-
-    if (published.size === PACKAGE_DIRECTORIES.length && staged.size === 0) {
-      console.log(
-        `\nAll ${PACKAGE_DIRECTORIES.length} package versions are already ` +
-          "published.",
-      );
-
-      finalState = { published, staged };
-    } else if (options.cliApproval) {
-      finalState = await approveViaCli(
-        publishLayers,
-        manifests,
-        version,
-        options.otp,
-        staged,
-      );
-    } else {
-      if (staged.size === 0) {
-        throw new ReleaseError(
-          "No staged package versions were found and the release is not " +
-            "fully published. Staging did not complete; refusing to continue.",
-        );
-      }
-
-      finalState = await approveViaWeb(manifests, version, published, staged);
-    }
-
-    assertReleaseComplete(finalState.published, finalState.staged);
-
-    commitAndTag(version);
-
-    printPushInstructions(version);
-  } finally {
-    fs.rmSync(packDirectory, { recursive: true, force: true });
   }
+
+  const publishLayers = computePublishLayers(manifests);
+
+  await publishPackages(publishLayers, manifests, published, dryRun, version);
+
+  if (dryRun) {
+    console.log(
+      "\nDry-run finished: no versions, tarballs, or git objects created.",
+    );
+
+    return;
+  }
+
+  const verified = await verifyPublishedPackages(manifests, version);
+
+  assertReleaseComplete(verified);
+
+  commitAndTag(version);
+
+  printPushInstructions(version);
 }
 
 function isMainModule() {

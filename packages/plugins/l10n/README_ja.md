@@ -14,7 +14,7 @@ l10n({ defaultLang: "ja", languages: ["ja", "en", "zh-CN"] });
 
 ## ロケール検出と翻訳グループ
 
-ファイル名はこのリポジトリの慣例に合わせ、アンダースコアの `README_ja.md` 形式を推奨します。`README.ja.md`、`README-ja.md`、`README.en.md`、`README.en-US.md`、`README.zh-CN.md` も利用できます。設定済みの言語名に一致する先頭ディレクトリ（`en/README.md`）も検出します。
+ファイル名はこのリポジトリの慣例に合わせ、ドットの `README.ja.md` 形式を推奨します。`README-ja.md`、`README_ja.md`、`README.en-US.md`、`README.zh-CN.md` も利用できます。ディレクトリ名による検出は行いません。
 
 frontmatter も利用できます。
 
@@ -25,7 +25,7 @@ translation: getting-started
 ---
 ```
 
-組み合わせた場合の組み込み規則の優先順位は **frontmatter > ファイル名 > ディレクトリ > 既定言語** です。矛盾は `L10N_LANGUAGE_CONFLICT`、同一 `translation + lang` の重複は `L10N_DUPLICATE_TRANSLATION` として診断します。`strict: true` ではビルドを失敗させます。
+組み合わせた場合の組み込み規則の優先順位は **frontmatter > 独自検出 > ファイル名 > 既定言語** です。矛盾は `L10N_LANGUAGE_CONFLICT`、同一 `translation + lang` の重複は `L10N_DUPLICATE_TRANSLATION` として診断します。`strict: true` ではビルドを失敗させます。
 
 `translation` はロケール検出とは別です。異なるパス・ファイル名でも明示的な ID でグループ化できます。翻訳がない言語のページを複製・生成することはありません。
 
@@ -69,8 +69,8 @@ l10n({
 });
 ```
 
-独自検出の言語は frontmatter より弱く、ファイル名・ディレクトリより強く扱われます。`translationId` は明示的な翻訳グループ ID です。
+独自検出の言語は frontmatter より弱く、ファイル名より強く扱われます。`translationId` は明示的な翻訳グループ ID です。
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/ja/docs/reference/plugin-api.md)
+- [プラグイン API](../../../docs/docs/reference/plugin-api.md)

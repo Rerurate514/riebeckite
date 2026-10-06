@@ -39,14 +39,12 @@ test("missing-frontmatter is only reported when fields are required", async () =
 test("duplicate titles are scoped per configured language", async () => {
   const root = tempRoot();
   try {
-    fs.mkdirSync(path.join(root, "en"), { recursive: true });
-    fs.mkdirSync(path.join(root, "ja"), { recursive: true });
     fs.writeFileSync(
-      path.join(root, "en", "index.md"),
+      path.join(root, "index.md"),
       "---\ntitle: Home\npublish: true\n---\n# Home\n",
     );
     fs.writeFileSync(
-      path.join(root, "ja", "index.md"),
+      path.join(root, "index.en.md"),
       "---\ntitle: Home\npublish: true\n---\n# Home\n",
     );
 
@@ -87,13 +85,12 @@ test("duplicate titles are scoped per configured language", async () => {
 test("duplicate titles in the same language still collide", async () => {
   const root = tempRoot();
   try {
-    fs.mkdirSync(path.join(root, "en"), { recursive: true });
     fs.writeFileSync(
-      path.join(root, "en", "a.md"),
+      path.join(root, "a.en.md"),
       "---\ntitle: Same\npublish: true\n---\n# Same\n",
     );
     fs.writeFileSync(
-      path.join(root, "en", "b.md"),
+      path.join(root, "b.en.md"),
       "---\ntitle: Same\npublish: true\n---\n# Same\n",
     );
 
@@ -117,8 +114,8 @@ test("duplicate titles in the same language still collide", async () => {
     );
     assert.equal(collisions.length, 2);
     assert.deepEqual(collisions.map((diagnostic) => diagnostic.slug).sort(), [
-      "en/a",
-      "en/b",
+      "a.en",
+      "b.en",
     ]);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });

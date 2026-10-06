@@ -84,7 +84,11 @@ export async function scanVault(
       const note: ScannedNote = {
         relativePath: relative,
         slug,
-        language: resolveNoteLanguage(relative, config.languages),
+        language: resolveNoteLanguage(
+          relative,
+          fm.values.lang,
+          config.languages,
+        ),
         markdown,
         fm,
         headings: extractHeadings(markdown),
@@ -291,12 +295,29 @@ function normalizeMarkdown(markdown: string): string {
 
 function resolveNoteLanguage(
   relativePath: string,
+  frontmatterLang: unknown,
   languages: readonly string[] | undefined,
 ): string | undefined {
   if (!languages || languages.length === 0) return undefined;
-  const segment = relativePath.split("/")[0]?.toLowerCase();
-  if (!segment) return undefined;
-  return languages.find((language) => language.toLowerCase() === segment);
+  if (typeof frontmatterLang === "string" && frontmatterLang.trim()) {
+    const value = frontmatterLang.trim().toLowerCase();
+    const match = languages.find(
+      (language) => language.toLowerCase() === value,
+    );
+    if (match) return match;
+  }
+  const filename = relativePath.split("/").at(-1)?.replace(/\.md$/i, "") ?? "";
+  const lower = filename.toLowerCase();
+  for (const language of languages) {
+    const tag = language.toLowerCase();
+    if (
+      lower.endsWith(`.${tag}`) ||
+      lower.endsWith(`-${tag}`) ||
+      lower.endsWith(`_${tag}`)
+    )
+      return language;
+  }
+  return undefined;
 }
 
 export function getExtension(filePath: string): string {

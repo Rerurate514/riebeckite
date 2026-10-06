@@ -17,16 +17,9 @@ export default defineConfig({
 
 ## Locale detection
 
-Use `README_ja.md`-style filenames with an underscore as the recommended form, matching this repository's convention. The plugin also accepts `README.en.md`, `README-en.md`, and configured BCP 47-style tags such as `README.en-US.md` and `README.zh-CN.md`.
+Use `README.ja.md`-style filenames with a dot as the recommended form, matching this repository's convention. The plugin also accepts `README-ja.md`, `README_ja.md`, and configured BCP 47-style tags such as `README.en-US.md` and `README.zh-CN.md`.
 
-Directory detection is also supported:
-
-```text
-content/en/README.md
-content/ja/README.md
-```
-
-Only directories matching configured `languages` are treated as locales. Frontmatter works anywhere:
+Directory detection is not supported. Only filename suffixes and frontmatter are used to infer a language. Frontmatter works anywhere:
 
 ```md
 ---
@@ -35,7 +28,7 @@ translation: getting-started
 ---
 ```
 
-Conventions may be mixed. Built-in precedence is **frontmatter > filename > directory > default language**. Conflicts emit `L10N_LANGUAGE_CONFLICT`; use `strict: true` to fail the build instead. A duplicate `translation + lang` emits `L10N_DUPLICATE_TRANSLATION` (and also fails in strict mode).
+Conventions may be mixed. Built-in precedence is **frontmatter > custom detector > filename > default language**. Conflicts emit `L10N_LANGUAGE_CONFLICT`; use `strict: true` to fail the build instead. A duplicate `translation + lang` emits `L10N_DUPLICATE_TRANSLATION` (and also fails in strict mode).
 
 `translation` is independent of locale and filename. Use it to group files with unrelated paths or names:
 
@@ -73,7 +66,7 @@ Themes can override the default component through its `.l10n-switcher` CSS class
 
 ## Custom detector
 
-For another convention, provide `detect`. Its language is considered after frontmatter and before filename/directory; its `translationId` is explicit.
+For another convention, provide `detect`. Its language is considered after frontmatter and before filename; its `translationId` is explicit.
 
 ```ts
 l10n({
@@ -92,5 +85,5 @@ Each translated entry receives one `<link rel="alternate" hreflang="…">` per e
 
 ## See also
 
-- [Plugin guide](../../../docs/en/docs/reference/plugin-api.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 

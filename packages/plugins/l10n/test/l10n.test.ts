@@ -83,17 +83,22 @@ test("detects configured filename conventions and leaves ordinary Markdown at th
   assert.equal(locations.get("README")?.permalink, "/README");
 });
 
-test("detects configured directory names and removes them from the derived translation identity", async () => {
+test("does not treat a language-like directory name as a language signal", async () => {
   const content = manager({
     "en/README.md": "# English",
     "ja/README.md": "# Japanese",
   });
   const locations = await content.getContentLocations();
+  assert.equal(locations.get("en/README")?.language, "ja");
   assert.equal(locations.get("en/README")?.permalink, "/en/README");
-  assert.equal(locations.get("ja/README")?.permalink, "/README");
+  assert.equal(locations.get("ja/README")?.permalink, "/ja/README");
   assert.equal(
     locations.get("en/README")?.metadata?.["l10n.translationId"],
-    "README",
+    "en/README",
+  );
+  assert.notEqual(
+    locations.get("en/README")?.metadata?.["l10n.translationId"],
+    locations.get("ja/README")?.metadata?.["l10n.translationId"],
   );
 });
 
@@ -140,13 +145,13 @@ test("detects a requested language from discoverable localized content", async (
   assert.equal(getLanguageFromPath(manifest, "/guide"), undefined);
 });
 
-test("frontmatter wins over filename and directory signals and exposes a conflict diagnostic", async () => {
+test("frontmatter wins over the filename signal and exposes a conflict diagnostic", async () => {
   const content = manager(
-    { "en/README.ja.md": "---\nlang: fr\n---\n# Hello" },
+    { "README.ja.md": "---\nlang: fr\n---\n# Hello" },
     { languages: ["ja", "en", "fr"] },
   );
   const locations = await content.getContentLocations();
-  assert.equal(locations.get("en/README.ja")?.language, "fr");
+  assert.equal(locations.get("README.ja")?.language, "fr");
   const diagnostics = await content.getDiagnostics();
   assert.equal(diagnostics[0]?.code, "L10N_LANGUAGE_CONFLICT");
   assert.equal(diagnostics[0]?.severity, "warning");
@@ -383,7 +388,7 @@ test("reports duplicate translation identities without exposing an ambiguous tra
 
 test("strict mode fails location validation for conflicting localization signals", async () => {
   const content = manager(
-    { "en/README.ja.md": "---\nlang: ja\n---\n# Hello" },
+    { "README.ja.md": "---\nlang: en\n---\n# Hello" },
     { strict: true },
   );
   await assert.rejects(content.getContentLocations(), (error: unknown) => {

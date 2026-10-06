@@ -25,7 +25,6 @@ export type L10nContent = {
 
 export type L10nDetectorContext = L10nContent & {
   readonly filenameLanguage: string | undefined;
-  readonly directoryLanguage: string | undefined;
 };
 
 /** A detector may provide a language and/or an explicit translation identity. */
@@ -373,16 +372,11 @@ function detectContents(
       entry.path,
       options.languageByLowercase,
     );
-    const directoryLanguage = detectDirectoryLanguage(
-      entry.path,
-      options.languageByLowercase,
-    );
     const detectorContext: L10nDetectorContext = {
       path: entry.path,
       slug: entry.slug,
       frontmatter,
       filenameLanguage,
-      directoryLanguage,
     };
     const custom = options.detect?.(detectorContext);
     const frontmatterLanguage = configuredLanguage(
@@ -393,7 +387,6 @@ function detectContents(
       custom: configuredLanguage(custom?.lang, options.languageByLowercase),
       frontmatter: frontmatterLanguage,
       filename: filenameLanguage,
-      directory: directoryLanguage,
     });
     addUnknownLanguageDiagnostic(
       diagnostics,
@@ -417,11 +410,10 @@ function detectContents(
       signals.frontmatter ??
       signals.custom ??
       signals.filename ??
-      signals.directory ??
       options.defaultLang;
     const translationId =
       readTranslationId(custom?.translationId ?? frontmatter.translation) ??
-      deriveTranslationId(entry.path, filenameLanguage, directoryLanguage);
+      deriveTranslationId(entry.path, filenameLanguage);
     const content: DetectedContent = {
       path: entry.path,
       slug: entry.slug,
@@ -476,14 +468,6 @@ function detectFilenameLanguage(
   return undefined;
 }
 
-function detectDirectoryLanguage(
-  path: string,
-  languages: ReadonlyMap<string, string>,
-): string | undefined {
-  const first = path.split("/")[0]?.toLowerCase();
-  return first ? languages.get(first) : undefined;
-}
-
 function configuredLanguage(
   value: unknown,
   languages: ReadonlyMap<string, string>,
@@ -499,10 +483,8 @@ function configuredLanguage(
 function deriveTranslationId(
   path: string,
   filenameLanguage: string | undefined,
-  directoryLanguage: string | undefined,
 ): string {
   const parts = path.replace(/\.md$/i, "").split("/");
-  if (directoryLanguage) parts.shift();
   const last = parts.pop() ?? "";
   const language = filenameLanguage?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   parts.push(
@@ -560,13 +542,6 @@ function removeLocalePathSegments(
   if (filenameLanguage) {
     const suffix = new RegExp(`([._-])${escapeRegExp(filenameLanguage)}$`, "i");
     result = result.replace(suffix, "");
-  }
-  const directoryLanguage = content.signals.directory;
-  if (directoryLanguage) {
-    result = result.replace(
-      new RegExp(`^/${escapeRegExp(directoryLanguage)}(?=/|$)`, "i"),
-      "",
-    );
   }
   return result || "/";
 }
@@ -705,14 +680,10 @@ function conflictDiagnostic(
       .map(([source, language]) => `${source}: ${language}`)
       .join(
         ", ",
-      )}); resolved to ${signals.frontmatter ?? signals.custom ?? signals.filename ?? signals.directory}.`,
+      )}); resolved to ${signals.frontmatter ?? signals.custom ?? signals.filename}.`,
     meta: {
       detected: signals,
-      resolved:
-        signals.frontmatter ??
-        signals.custom ??
-        signals.filename ??
-        signals.directory,
+      resolved: signals.frontmatter ?? signals.custom ?? signals.filename,
     },
   };
 }

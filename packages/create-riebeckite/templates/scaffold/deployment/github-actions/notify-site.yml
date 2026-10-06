@@ -1,0 +1,31 @@
+name: Notify Riebeckite site
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate dispatch configuration
+        env:
+          SITE_DISPATCH_TOKEN: ${{ secrets.{{siteDispatchToken}} }}
+        run: |
+          if [ -z "$SITE_DISPATCH_TOKEN" ]; then
+            echo "::error::{{siteDispatchToken}} is not configured. Add a token that can dispatch to {{owner}}/{{repository}}."
+            exit 1
+          fi
+
+      - name: Notify the site repository
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.{{siteDispatchToken}} }}
+          script: |
+            await github.rest.repos.createDispatchEvent({
+              owner: "{{owner}}",
+              repo: "{{repository}}",
+              event_type: "content-updated",
+            });

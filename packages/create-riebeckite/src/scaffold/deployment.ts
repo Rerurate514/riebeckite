@@ -1,3 +1,4 @@
+import { readTemplate } from "./template-loader.js";
 import type { SiteTemplateFile } from "./templates.js";
 import {
   buildDefaultWranglerConfig,
@@ -5,18 +6,24 @@ import {
   WRANGLER_DEFAULTS,
 } from "./wrangler-defaults.js";
 
-export type ScaffoldDeploymentOptions = {
+export interface ScaffoldDeploymentOptions {
   readonly contentRepository?: string;
   readonly siteRepository?: string;
-};
+}
 
 const GITHUB_REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
-const BUILD_STATE_CACHE_KEY_PREFIX = "riebeckite-build-v1";
-const LEGACY_BUILD_CACHE_KEY_PREFIX = "riebeckite-content-v3";
-const BUILD_STATE_CACHE_PATHS = [
-  ".riebeckite/cache",
-  ".riebeckite/build/content-state.json",
-] as const;
+
+const DEPLOYMENT_TEMPLATE_ROOT = "deployment/github-actions";
+
+const SECRET_SUBSTITUTIONS: ReadonlyArray<readonly [string, string]> = [
+  ["{{cloudflareApiToken}}", GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN],
+  ["{{cloudflareAccountId}}", GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID],
+  [
+    "{{contentReadToken}}",
+    GITHUB_ACTIONS_SECRETS.RIEBECKITE_CONTENT_READ_TOKEN,
+  ],
+  ["{{siteDispatchToken}}", GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN],
+];
 
 export function assertGitHubRepository(value: string, option: string): void {
   if (!GITHUB_REPOSITORY_PATTERN.test(value)) {
@@ -26,37 +33,47 @@ export function assertGitHubRepository(value: string, option: string): void {
   }
 }
 
-export function deploymentTemplateFiles(
-  options: ScaffoldDeploymentOptions,
-): readonly SiteTemplateFile[] {
-  const contentRepository = options.contentRepository;
-  if (contentRepository !== undefined) {
-    assertGitHubRepository(contentRepository, "contentRepository");
-  }
-  if (options.siteRepository !== undefined) {
-    assertGitHubRepository(options.siteRepository, "siteRepository");
-  }
-  if (contentRepository !== undefined && options.siteRepository === undefined) {
-    throw new Error(
-      "siteRepository is required when contentRepository is provided.",
-    );
-  }
+function readDeploymentTemplate(relativePath: string): string {
+  return new TextDecoder().decode(
+    readTemplate(`${DEPLOYMENT_TEMPLATE_ROOT}/${relativePath}`),
+  );
+}
 
-  return [
-    { path: "wrangler.jsonc", content: wranglerConfig() },
-    {
-      path: ".github/workflows/deploy.yml",
-      content: deployWorkflow(contentRepository),
-    },
-    ...(contentRepository !== undefined && options.siteRepository !== undefined
-      ? [
-          {
-            path: "github/notify-site.yml",
-            content: notifySiteWorkflow(options.siteRepository),
-          },
-        ]
-      : []),
-  ];
+function substituteSecrets(content: string): string {
+  let result = content;
+  for (const [placeholder, secret] of SECRET_SUBSTITUTIONS) {
+    result = result.split(placeholder).join(secret);
+  }
+  return result;
+}
+
+function contentCheckoutStep(contentRepository: string): string {
+  const fragment = substituteSecrets(
+    readDeploymentTemplate("content-checkout.yml").replace(/\n$/, ""),
+  );
+  return `\n${fragment.split("{{contentRepository}}").join(contentRepository)}\n`;
+}
+
+function deployWorkflow(contentRepository?: string): string {
+  const contentCheckout =
+    contentRepository === undefined
+      ? ""
+      : contentCheckoutStep(contentRepository);
+  return substituteSecrets(readDeploymentTemplate("deploy.yml")).replace(
+    "{{contentCheckout}}",
+    contentCheckout,
+  );
+}
+
+function notifySiteWorkflow(siteRepository: string): string {
+  const separator = siteRepository.indexOf("/");
+  const owner = siteRepository.slice(0, separator);
+  const repository = siteRepository.slice(separator + 1);
+  return substituteSecrets(readDeploymentTemplate("notify-site.yml"))
+    .split("{{owner}}")
+    .join(owner)
+    .split("{{repository}}")
+    .join(repository);
 }
 
 export function wranglerJsoncFile(workerName: string): SiteTemplateFile {
@@ -66,103 +83,37 @@ export function wranglerJsoncFile(workerName: string): SiteTemplateFile {
   };
 }
 
-function wranglerConfig(): string {
-  return buildDefaultWranglerConfig(WRANGLER_DEFAULTS.name);
-}
+export function deploymentTemplateFiles(
+  options: ScaffoldDeploymentOptions,
+): readonly SiteTemplateFile[] {
+  const { contentRepository, siteRepository } = options;
 
-function deployWorkflow(contentRepository: string | undefined): string {
-  const contentCheckout =
-    contentRepository === undefined
-      ? ""
-      : `\n      - name: Check out the external content repository\n        uses: actions/checkout@v4\n        with:\n          repository: ${contentRepository}\n          token: \${{ secrets.RIEBECKITE_CONTENT_READ_TOKEN || github.token }}\n          path: content\n`;
-  return `name: Deploy to Cloudflare Workers
+  if (contentRepository !== undefined) {
+    assertGitHubRepository(contentRepository, "--content-repository");
+    if (siteRepository === undefined) {
+      throw new Error(
+        "--site-repository is required when --content-repository is used with --github-actions.",
+      );
+    }
+  }
+  if (siteRepository !== undefined) {
+    assertGitHubRepository(siteRepository, "--site-repository");
+  }
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-  repository_dispatch:
-    types: [content-updated]
+  const files: SiteTemplateFile[] = [
+    wranglerJsoncFile(WRANGLER_DEFAULTS.name),
+    {
+      path: ".github/workflows/deploy.yml",
+      content: deployWorkflow(contentRepository),
+    },
+  ];
 
-concurrency:
-  group: riebeckite-deploy
-  cancel-in-progress: true
+  if (contentRepository !== undefined && siteRepository !== undefined) {
+    files.push({
+      path: "github/notify-site.yml",
+      content: notifySiteWorkflow(siteRepository),
+    });
+  }
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Check out the site repository
-        uses: actions/checkout@v4
-${contentCheckout}
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Restore Riebeckite build state
-        uses: actions/cache@v4
-        with:
-          path: |
-${BUILD_STATE_CACHE_PATHS.map((entry) => `            ${entry}`).join("\n")}
-          key: ${BUILD_STATE_CACHE_KEY_PREFIX}-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}-\${{ github.run_id }}-\${{ github.run_attempt }}
-          restore-keys: |
-            ${BUILD_STATE_CACHE_KEY_PREFIX}-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}-
-            ${LEGACY_BUILD_CACHE_KEY_PREFIX}-\${{ runner.os }}-\${{ hashFiles('package-lock.json') }}
-
-      - name: Validate configuration and plugins
-        run: npm exec riebeckite check
-
-      - name: Build the site
-        run: npm exec riebeckite build
-
-      - name: Deploy the built assets
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: \${{ secrets.${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN} }}
-          accountId: \${{ secrets.${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID} }}
-          command: deploy
-`;
-}
-
-function notifySiteWorkflow(siteRepository: string): string {
-  const [owner, repo] = siteRepository.split("/");
-  return `name: Notify Riebeckite site
-
-on:
-  push:
-    branches: [main]
-
-permissions: {}
-
-jobs:
-  notify:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Validate dispatch configuration
-        env:
-          SITE_DISPATCH_TOKEN: \${{ secrets.${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN} }}
-        run: |
-          if [ -z "$SITE_DISPATCH_TOKEN" ]; then
-            echo "::error::SITE_DISPATCH_TOKEN is not configured. Add a token that can dispatch to ${siteRepository}."
-            exit 1
-          fi
-
-      - name: Notify the site repository
-        uses: actions/github-script@v7
-        with:
-          github-token: \${{ secrets.${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN} }}
-          script: |
-            await github.rest.repos.createDispatchEvent({
-              owner: ${JSON.stringify(owner)},
-              repo: ${JSON.stringify(repo)},
-              event_type: "content-updated",
-            });
-`;
+  return files;
 }

@@ -1,15 +1,5 @@
 /**
- * Single source of truth for Wrangler configuration defaults.
- *
- * This module is imported by:
- * - scaffold generator (deployment.ts)
- * - contract tests (to verify generated output)
- * - templates/cloudflare/wrangler.jsonc is the human-readable canonical form
- *
- * When updating these values, update all three places:
- * 1. This file (the programmatic source of truth)
- * 2. templates/cloudflare/wrangler.jsonc (the human-readable template)
- * 3. Contract tests will verify consistency automatically
+ * Semantic defaults for the Cloudflare Workers config that the scaffold generates.
  */
 
 export const WRANGLER_DEFAULTS = {

@@ -3,18 +3,14 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { fileURLToPath } from "node:url";
 import { deploymentTemplateFiles } from "../src/scaffold/deployment.js";
 import {
   ScaffoldSiteError,
   scaffoldRiebeckiteSite,
 } from "../src/scaffold/index.js";
 import { SCAFFOLD_PRESET_NAMES } from "../src/scaffold/presets.js";
-
-const repoRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../../..",
-);
+import { readTemplate } from "../src/scaffold/template-loader.js";
+import { GITHUB_ACTIONS_SECRETS } from "../src/scaffold/wrangler-defaults.js";
 
 test("every scaffold preset inherits the same-repository GitHub Actions workflow", async () => {
   await withTemporaryDirectory(async (directory) => {
@@ -138,33 +134,83 @@ test("scaffold validates external-content deployment options", async () => {
   );
 });
 
-test("the Cloudflare template matches the generated same-repository workflow", async () => {
+test("the generated workflow is rendered from the packaged deployment template", () => {
+  const template = new TextDecoder()
+    .decode(readTemplate("deployment/github-actions/deploy.yml"))
+    .replaceAll("\r\n", "\n");
   const files = deploymentTemplateFiles({});
   const workflow = files.find(
     (file) => file.path === ".github/workflows/deploy.yml",
   );
   assert.ok(workflow, "deploymentTemplateFiles must include deploy.yml");
-  const template = await fs.readFile(
-    path.join(
-      repoRoot,
-      "templates",
-      "cloudflare",
-      ".github",
-      "workflows",
-      "deploy.yml",
-    ),
-    "utf8",
-  );
   const generated = workflow.content;
   const generatedText =
     typeof generated === "string"
       ? generated
       : new TextDecoder().decode(generated);
+  const normalized = generatedText.replaceAll("\r\n", "\n");
+  const expected = template
+    .replace("{{contentCheckout}}", "")
+    .replaceAll(
+      "{{cloudflareApiToken}}",
+      GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN,
+    )
+    .replaceAll(
+      "{{cloudflareAccountId}}",
+      GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID,
+    );
   assert.equal(
-    generatedText.replaceAll("\r\n", "\n"),
-    template.replaceAll("\r\n", "\n"),
-    "templates/cloudflare must match the generated same-repository workflow",
+    normalized,
+    expected,
+    "the generated workflow must be the packaged template with placeholders resolved",
   );
+  for (const placeholder of [
+    "{{contentCheckout}}",
+    "{{cloudflareApiToken}}",
+    "{{cloudflareAccountId}}",
+  ]) {
+    assert.ok(
+      !normalized.includes(placeholder),
+      `the generated workflow must not leak ${placeholder}`,
+    );
+  }
+});
+
+test("the external-content workflow and notify template render without leaking placeholders", () => {
+  const files = deploymentTemplateFiles({
+    contentRepository: "octo-org/notes",
+    siteRepository: "octo-org/site",
+  });
+  const workflow = files.find(
+    (file) => file.path === ".github/workflows/deploy.yml",
+  );
+  const notify = files.find((file) => file.path === "github/notify-site.yml");
+  assert.ok(workflow, "deploymentTemplateFiles must include deploy.yml");
+  assert.ok(notify, "deploymentTemplateFiles must include notify-site.yml");
+  const workflowText =
+    typeof workflow.content === "string"
+      ? workflow.content
+      : new TextDecoder().decode(workflow.content);
+  const notifyText =
+    typeof notify.content === "string"
+      ? notify.content
+      : new TextDecoder().decode(notify.content);
+  assert.ok(workflowText.includes("repository: octo-org/notes"));
+  assert.ok(notifyText.includes('owner: "octo-org"'));
+  assert.ok(notifyText.includes('repo: "site"'));
+  for (const placeholder of [
+    "{{contentCheckout}}",
+    "{{contentRepository}}",
+    "{{contentReadToken}}",
+    "{{siteDispatchToken}}",
+    "{{owner}}",
+    "{{repository}}",
+  ]) {
+    assert.ok(
+      !workflowText.includes(placeholder) && !notifyText.includes(placeholder),
+      `the generated external-content files must not leak ${placeholder}`,
+    );
+  }
 });
 
 function assertWorkflowContract(workflow: string): void {

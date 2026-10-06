@@ -1,0 +1,6 @@
+      - name: Check out the external content repository
+        uses: actions/checkout@v4
+        with:
+          repository: {{contentRepository}}
+          token: ${{ secrets.{{contentReadToken}} || github.token }}
+          path: content

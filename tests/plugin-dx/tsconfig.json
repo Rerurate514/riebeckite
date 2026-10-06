@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@riebeckite/core": ["../../packages/core/index.ts"],
+      "@riebeckite/test": ["../../packages/test/index.ts"],
+      "@riebeckite/test/e2e": ["../../packages/test/e2e/index.ts"]
+    }
+  },
+  "include": [
+    "plugins/**/*.ts",
+    "plugins/**/*.tsx",
+    "dx/**/*.ts",
+    "external/run.ts"
+  ]
+}

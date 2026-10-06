@@ -1,0 +1,11 @@
+[data-plugin-demo] {
+  max-width: 40rem;
+}
+
+[data-plugin-demo] h1 {
+  font-size: 1.5rem;
+}
+
+[data-plugin-demo-item][hidden] {
+  display: none;
+}

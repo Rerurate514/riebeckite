@@ -1,0 +1,9 @@
+{
+  "name": "plugin-dx-external-site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

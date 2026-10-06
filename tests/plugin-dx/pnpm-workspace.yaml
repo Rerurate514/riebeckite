@@ -1,0 +1,6 @@
+packages:
+  - "plugins/*"
+allowBuilds:
+  esbuild: true
+overrides:
+  "@riebeckite/core": "link:../../packages/core"

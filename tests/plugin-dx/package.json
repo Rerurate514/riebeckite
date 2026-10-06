@@ -1,0 +1,17 @@
+{
+  "name": "plugin-dx-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --import tsx --test \"plugins/*/test/*.test.ts\" \"dx/*.test.ts\"",
+    "test:external": "node --import tsx external/run.ts",
+    "build": "node build-plugins.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "esbuild": "0.28.2",
+    "tsx": "^4.22.4",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@plugin-dx/markdown-highlight",
+  "version": "0.0.0",
+  "description": "Dogfood Markdown transform plugin for the Plugin Author DX audit.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "index.ts"
+  ],
+  "scripts": {
+    "build": "node ../../build-plugins.mjs .",
+    "prepack": "node ../../build-plugins.mjs .",
+    "test": "node --import tsx --test \"test/*.test.ts\""
+  },
+  "dependencies": {
+    "@riebeckite/core": "0.0.18",
+    "unist-util-visit": "5.1.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "4.0.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5"
+  }
+}

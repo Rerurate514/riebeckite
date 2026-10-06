@@ -1,0 +1,45 @@
+{
+  "name": "@plugin-dx/demo",
+  "version": "0.0.0",
+  "description": "Dogfood PageType/client/asset plugin for the Plugin Author DX audit.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "./style.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.ts",
+      "default": "./dist/client.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "files": [
+    "dist",
+    "index.ts",
+    "client.ts",
+    "style.css"
+  ],
+  "scripts": {
+    "build": "node ../../build-plugins.mjs .",
+    "prepack": "node ../../build-plugins.mjs .",
+    "test": "node --import tsx --test \"test/*.test.ts\""
+  },
+  "dependencies": {
+    "@riebeckite/core": "0.0.18"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4",
+    "typescript": "^5"
+  }
+}

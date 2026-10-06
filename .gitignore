@@ -6,6 +6,7 @@ apps/web/app/.riebeckite/
 apps/web/.riebeckite/
 packages/**/dist/
 packages/**/LICENSE
+tests/plugin-dx/**/dist/
 .riebeckite/
 
 .obsidian

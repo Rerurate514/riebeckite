@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://riebeckite.dev/benchmarks/results.schema.json",
+  "title": "Riebeckite core vault benchmark result",
+  "type": "object",
+  "required": ["generatedAt", "args", "rows"],
+  "properties": {
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "args": {
+      "type": "object",
+      "description": "Command-line arguments the run was invoked with.",
+      "additionalProperties": true
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["profile", "size", "scenario", "runs", "wallClockMs"],
+        "additionalProperties": true,
+        "properties": {
+          "profile": {
+            "type": "string",
+            "enum": [
+              "baseline",
+              "realistic",
+              "sparse",
+              "medium",
+              "dense",
+              "asset"
+            ]
+          },
+          "size": { "type": "integer", "minimum": 1 },
+          "scenario": {
+            "type": "string",
+            "enum": [
+              "cold",
+              "warm",
+              "single-edit",
+              "frontmatter-edit",
+              "hub-edit",
+              "rename",
+              "asset-edit",
+              "config-edit",
+              "plugin-edit"
+            ]
+          },
+          "runs": { "type": "integer", "minimum": 1 },
+          "wallClockMs": { "type": "integer", "minimum": 0 },
+          "wallClockMsMin": { "type": "integer", "minimum": 0 },
+          "wallClockMsMax": { "type": "integer", "minimum": 0 },
+          "peakRssMb": { "type": "number", "minimum": 0 },
+          "peakHeapUsedMb": { "type": "number", "minimum": 0 },
+          "processedContentCount": { "type": "integer", "minimum": 0 },
+          "reusedContentCount": { "type": "integer", "minimum": 0 },
+          "cacheHits": { "type": "integer", "minimum": 0 },
+          "cacheMisses": { "type": "integer", "minimum": 0 },
+          "cacheBypass": { "type": "integer", "minimum": 0 },
+          "invalidatedContentCount": { "type": "integer", "minimum": 0 },
+          "candidateOutputCount": { "type": "integer", "minimum": 0 },
+          "affectedOutputCount": { "type": "integer", "minimum": 0 },
+          "removedOutputCount": { "type": "integer", "minimum": 0 },
+          "unchangedOutputCount": { "type": "integer", "minimum": 0 },
+          "fullOutputRegenerationRequired": { "type": "boolean" },
+          "entries": { "type": "integer", "minimum": 0 },
+          "htmlBytes": { "type": "integer", "minimum": 0 },
+          "phaseDurationsMs": {
+            "type": "object",
+            "additionalProperties": { "type": "number", "minimum": 0 }
+          },
+          "memorySamples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": { "type": "string" },
+                "rssMb": { "type": "number" },
+                "heapUsedMb": { "type": "number" }
+              },
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

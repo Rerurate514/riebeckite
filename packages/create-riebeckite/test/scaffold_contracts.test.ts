@@ -141,7 +141,9 @@ async function collectStarterClosure(
   const seeds = [
     ...Object.keys(siteManifest.dependencies ?? {}),
     ...Object.keys(siteManifest.devDependencies ?? {}),
-  ].filter((name) => name.startsWith("@riebeckite/"));
+  ].filter(
+    (name) => name.startsWith("@riebeckite/") || name === "create-riebeckite",
+  );
   const seen = new Set<string>();
   const specs: PackageSpec[] = [];
   while (seeds.length > 0) {
@@ -158,7 +160,11 @@ async function collectStarterClosure(
       ),
     ) as GeneratedManifest;
     for (const dependency of Object.keys(manifest.dependencies ?? {})) {
-      if (dependency.startsWith("@riebeckite/") && !seen.has(dependency)) {
+      if (
+        (dependency.startsWith("@riebeckite/") ||
+          dependency === "create-riebeckite") &&
+        !seen.has(dependency)
+      ) {
         seeds.push(dependency);
       }
     }

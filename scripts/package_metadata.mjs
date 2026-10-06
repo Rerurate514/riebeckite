@@ -477,10 +477,10 @@ export function expectedPackageMetadata(directory) {
   if (directory === "packages/cli") {
     return {
       ...publishingMetadata(directory, false),
-      files: ["LICENSE", "README.md", "README_ja.md", "assets", "bin", "dist"],
+      files: ["LICENSE", "README.md", "README_ja.md", "bin", "dist"],
       scripts: {
         build:
-          "esbuild index.ts --bundle --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --alias:create-riebeckite/scaffold=../create-riebeckite/src/scaffold/index.ts --outfile=dist/cli.js",
+          "esbuild index.ts --bundle --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --outfile=dist/cli.js",
         prepack: "node ../../scripts/copy_license.mjs && pnpm run build",
       },
     };

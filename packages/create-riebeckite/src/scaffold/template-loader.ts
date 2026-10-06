@@ -1,13 +1,10 @@
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { SiteTemplateFile } from "./templates.js";
 
-const TEMPLATE_ROOT_CANDIDATES = [
-  "../../templates/scaffold",
-  "../../../templates/scaffold",
-  "../templates/scaffold",
-];
+const require = createRequire(import.meta.url);
+const TEMPLATE_ROOT = path.join("templates", "scaffold");
 
 const TEXT_EXTENSIONS = new Set([
   ".ts",
@@ -25,14 +22,26 @@ const TEXT_EXTENSIONS = new Set([
 ]);
 
 export function resolveTemplateRoot(): string {
-  for (const candidate of TEMPLATE_ROOT_CANDIDATES) {
-    const resolved = fileURLToPath(new URL(candidate, import.meta.url));
-    if (fs.existsSync(resolved)) {
-      return resolved;
-    }
+  let packageRoot: string;
+  try {
+    packageRoot = path.dirname(
+      require.resolve("create-riebeckite/package.json"),
+    );
+  } catch (cause) {
+    throw new Error(
+      "Riebeckite scaffold templates were not found: the create-riebeckite package could not be resolved from its own scaffold entry point.",
+      { cause },
+    );
   }
 
-  throw new Error("Riebeckite scaffold templates were not found.");
+  const templateRoot = path.join(packageRoot, TEMPLATE_ROOT);
+  if (!fs.existsSync(templateRoot)) {
+    throw new Error(
+      `Riebeckite scaffold templates were not found at ${templateRoot}.`,
+    );
+  }
+
+  return templateRoot;
 }
 
 export function readTemplate(relativePath: string): Uint8Array {

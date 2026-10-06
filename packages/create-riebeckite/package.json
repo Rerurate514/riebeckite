@@ -20,7 +20,8 @@
       "import": "./dist/src/scaffold/index.js",
       "source": "./src/scaffold/index.ts",
       "default": "./dist/src/scaffold/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "LICENSE",

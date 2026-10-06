@@ -73,6 +73,8 @@ if (entries.length === 0) {
 fs.rmSync(path.join(packageDirectory, "dist"), {
   recursive: true,
   force: true,
+  maxRetries: 10,
+  retryDelay: 100,
 });
 
 await esbuild.build({

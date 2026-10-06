@@ -13,7 +13,6 @@ export default function RecentPosts(props: Props) {
       aria-labelledby="recent-posts-title"
     >
       <div class="recent-posts__header">
-        <p class="recent-posts__eyebrow">RECENT POSTS</p>
         <h2 class="recent-posts__title" id="recent-posts-title">
           Recent Posts
         </h2>

@@ -596,37 +596,6 @@ test("Contract 5: generated wrangler.jsonc matches canonical defaults", async ()
   });
 });
 
-test("Contract 5b: template wrangler.jsonc matches canonical defaults", async () => {
-  // Template is at repo root: templates/cloudflare/wrangler.jsonc
-  // Test runs from packages/create-riebeckite/test, so go up 3 levels to repo root
-  const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
-  const templatePath = path.join(
-    repoRoot,
-    "templates",
-    "cloudflare",
-    "wrangler.jsonc",
-  );
-  const templateContent = await fs.readFile(templatePath, "utf8");
-
-  // Strip comments (JSONC) before parsing
-  const jsonContent = templateContent
-    .replace(/\/\/.*$/gm, "")
-    .replace(/\/\*[\s\S]*?\*\//g, "");
-  const template = JSON.parse(jsonContent);
-
-  // Template should match the same defaults (name may differ as placeholder)
-  assert.equal(template.$schema, WRANGLER_DEFAULTS.$schema);
-  assert.equal(
-    template.compatibility_date,
-    WRANGLER_DEFAULTS.compatibility_date,
-  );
-  assert.deepEqual(
-    template.compatibility_flags,
-    WRANGLER_DEFAULTS.compatibility_flags,
-  );
-  assert.deepEqual(template.assets, WRANGLER_DEFAULTS.assets);
-});
-
 // =============================================================================
 // CONTRACT 6: GitHub Actions scaffold secrets
 // =============================================================================

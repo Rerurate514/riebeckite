@@ -73,7 +73,7 @@ flowchart TD
 
     Apps --> Web["web<br/>Docs / Reference App"]
     Docs --> DocSource["Documentation Source"]
-    Templates --> Cloudflare["cloudflare<br/>Deployment Template"]
+    Templates --> Analytics["analytics-cloudflare<br/>Analytics Deployment Template"]
 ```
 
 | Path | 役割 |
@@ -86,7 +86,7 @@ flowchart TD
 | `packages/themes/*` | 公式 Theme |
 | `apps/web` | 公式ドキュメント Site兼、Framework 開発用の参照アプリ |
 | `docs/` | 公式ドキュメントの source |
-| `templates/cloudflare` | Deployment template |
+| `templates/analytics-cloudflare` | Analytics Worker の Deployment template |
 
 各 package の詳しい責務については [Architecture](./architecture.md) を参照してください。
 

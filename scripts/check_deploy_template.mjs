@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
-const templateRoot = path.join(repositoryRoot, "templates", "cloudflare");
 
 function stripJsonComments(text) {
   return text
@@ -134,137 +133,6 @@ expect(
   "packages/integrations/analytics-cloudflare/migrations/0001_analytics_page_views.sql is missing",
 );
 
-const configPath = path.join(templateRoot, "wrangler.jsonc");
-const workflowPath = path.join(
-  templateRoot,
-  ".github",
-  "workflows",
-  "deploy.yml",
-);
-const notifyWorkflowPath = path.join(templateRoot, "notify-site.yml");
-const referenceConfigPath = path.join(
-  repositoryRoot,
-  "apps",
-  "web",
-  "wrangler.jsonc",
-);
-
-expect(
-  fs.existsSync(configPath),
-  "templates/cloudflare/wrangler.jsonc is missing",
-);
-expect(
-  fs.existsSync(workflowPath),
-  "templates/cloudflare/.github/workflows/deploy.yml is missing",
-);
-expect(
-  fs.existsSync(notifyWorkflowPath),
-  "templates/cloudflare/notify-site.yml is missing",
-);
-expect(
-  fs.existsSync(referenceConfigPath),
-  "apps/web/wrangler.jsonc is missing (reference config)",
-);
-
-if (errors.length === 0) {
-  const config = readJsonc(configPath);
-  const reference = readJsonc(referenceConfigPath);
-
-  expect(
-    typeof config.name === "string" && config.name.length > 0,
-    "wrangler.jsonc must set a Worker name",
-  );
-  expect(
-    typeof config.compatibility_date === "string",
-    "wrangler.jsonc must set compatibility_date",
-  );
-  expect(
-    Array.isArray(config.compatibility_flags) &&
-      config.compatibility_flags.includes("nodejs_compat"),
-    'wrangler.jsonc must enable the "nodejs_compat" flag',
-  );
-  expect(
-    config.assets?.directory === "./dist",
-    'wrangler.jsonc assets.directory must be "./dist"',
-  );
-  expect(
-    config.main === undefined,
-    "wrangler.jsonc must not set main (static-assets deployment)",
-  );
-
-  const siteSpecificKeys = new Set(["routes"]);
-  const templateKeys = Object.keys(config)
-    .filter((key) => !siteSpecificKeys.has(key))
-    .sort();
-  const referenceKeys = Object.keys(reference)
-    .filter((key) => !siteSpecificKeys.has(key))
-    .sort();
-  expect(
-    JSON.stringify(templateKeys) === JSON.stringify(referenceKeys),
-    `wrangler.jsonc keys must match apps/web/wrangler.jsonc, ignoring site-specific keys (${JSON.stringify(
-      referenceKeys,
-    )}), received ${JSON.stringify(templateKeys)}`,
-  );
-
-  const workflow = fs.readFileSync(workflowPath, "utf8");
-  for (const needle of [
-    "cloudflare/wrangler-action@",
-    "secrets.CLOUDFLARE_API_TOKEN",
-    "secrets.CLOUDFLARE_ACCOUNT_ID",
-    "npm ci",
-    "npm exec riebeckite check",
-    "npm exec riebeckite build",
-    "workflow_dispatch",
-    "repository_dispatch",
-    "content-updated",
-  ]) {
-    expect(workflow.includes(needle), `deploy.yml must reference ${needle}`);
-  }
-  for (const cachePath of [
-    ".riebeckite/cache",
-    ".riebeckite/build/content-state.json",
-  ]) {
-    expect(
-      workflow.includes(cachePath),
-      `deploy.yml build-state cache must include ${cachePath}`,
-    );
-  }
-  expect(
-    !workflow.includes("ssg-output-cache.json"),
-    "deploy.yml must keep the output cache out of transfer-heavy caches",
-  );
-  expect(
-    workflow.includes("riebeckite-build-v1-"),
-    "deploy.yml cache key must use the versioned build-state prefix",
-  );
-  expect(
-    workflow.includes("github.run_id") &&
-      workflow.includes("github.run_attempt"),
-    "deploy.yml cache key must be unique per run and attempt",
-  );
-  expect(
-    workflow.includes("restore-keys:"),
-    "deploy.yml build-state cache must declare restore-keys",
-  );
-  expect(
-    workflow.includes("riebeckite-content-v3-"),
-    "deploy.yml restore-keys must fall back to the legacy content cache",
-  );
-  expect(!workflow.includes("path: dist"), "deploy.yml must never cache dist");
-  const notifyWorkflow = fs.readFileSync(notifyWorkflowPath, "utf8");
-  for (const needle of [
-    "SITE_DISPATCH_TOKEN",
-    "actions/github-script@v7",
-    'event_type: "content-updated"',
-    "permissions: {}",
-  ]) {
-    expect(
-      notifyWorkflow.includes(needle),
-      `notify-site.yml must reference ${needle}`,
-    );
-  }
-}
-
 if (errors.length > 0) {
   console.error(
     `Deploy template validation failed (${errors.length} error(s)):`,
@@ -272,7 +140,5 @@ if (errors.length > 0) {
   for (const error of errors) console.error(`- ${error}`);
   process.exitCode = 1;
 } else {
-  console.log(
-    "Cloudflare static-assets template validated against apps/web; analytics Worker templates validated.",
-  );
+  console.log("Analytics Cloudflare Worker templates validated.");
 }

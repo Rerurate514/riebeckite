@@ -33,7 +33,7 @@ wrangler is the official command-line tool for deploying to Cloudflare Workers.
 
 ## 3. Add wrangler.jsonc
 
-`npm exec riebeckite deploy` creates `wrangler.jsonc` from the site folder name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, copy `templates/cloudflare/wrangler.jsonc` from this repository into the site root, or copy the linked file contents into a new `wrangler.jsonc`.
+`npm exec riebeckite deploy` creates `wrangler.jsonc` from the site folder name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
 
 ```text
 my-site/
@@ -138,7 +138,7 @@ for the content repository. Copy that file to
 `.github/workflows/notify-site.yml` in the content repository. An external
 checkout alone does not start the site workflow on a content push.
 
-See the Cloudflare deployment template for the full workflow.
+See [GitHub Actions](./github-actions.md) for the full workflow.
 
 ## Next steps
 

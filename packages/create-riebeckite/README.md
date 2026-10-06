@@ -71,7 +71,7 @@ npx create-riebeckite my-site --github-actions \
 Set `content.directory` to `"content"`, add the documented repository secrets,
 then copy `github/notify-site.yml` into the content repository as
 `.github/workflows/notify-site.yml`. See the [separate-content deployment
-guide](../../templates/cloudflare/README_en.md).
+guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/en/docs/guides/deployment/separate-content-repository.md).
 
 `--content-repository` automatically configures the external checkout, the
 `content-updated` repository-dispatch receiver, and `github/notify-site.yml`.

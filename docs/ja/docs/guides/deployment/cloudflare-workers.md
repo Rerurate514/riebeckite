@@ -85,17 +85,14 @@ Cloudflare Workers へ何を Deploy するかを `wrangler.jsonc` で設定し�
 
 ```jsonc
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "my-riebeckite-site",
-  "compatibility_date": "2026-06-09",
-  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "directory": "./dist"
   }
 }
 ```
 
-`--github-actions` またはデプロイ設定で `Cloudflare Workers` を選んだ場合、このファイルは生成済みです。手動で公開する場合だけ作ります。`npm exec riebeckite deploy` は、このファイルが無ければ Site のフォルダ名から自動で作るため、内容を確認・編集したいときだけ手動で用意します。この内容は [templates/cloudflare/wrangler.jsonc](https://github.com/Rerurate514/riebeckite/blob/main/templates/cloudflare/wrangler.jsonc) と同じです。
+`--github-actions` またはデプロイ設定で `Cloudflare Workers` を選んだ場合、このファイルは生成済みです。手動で公開する場合だけ作ります。`npm exec riebeckite deploy` は、このファイルが無ければ Site のフォルダ名から自動で作るため、内容を確認・編集したいときだけ手動で用意します。
 
 `name` は、自分の Worker 名に変更します。
 

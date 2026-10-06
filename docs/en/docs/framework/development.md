@@ -41,7 +41,7 @@ Use targeted commands when possible:
 | `packages/themes/*` | official themes |
 | `apps/web` | official documentation app and framework-development reference application |
 | `docs/` | documentation source read by the official docs app |
-| `templates/cloudflare` | deployment templates |
+| `templates/analytics-cloudflare` | Analytics Worker deployment templates |
 
 ## Boundaries
 

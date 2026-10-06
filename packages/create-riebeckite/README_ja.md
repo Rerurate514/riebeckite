@@ -68,7 +68,7 @@ npx create-riebeckite my-site --github-actions \
 `content.directory` は `"content"` にし、必要な repository Secret を登録した後、
 `github/notify-site.yml` を記事リポジトリの
 `.github/workflows/notify-site.yml` にコピーします。詳細は[別記事リポジトリの
-デプロイガイド](../../templates/cloudflare/README_ja.md)を参照してください。
+デプロイガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/ja/docs/guides/deployment/separate-content-repository.md)を参照してください。
 
 `--content-repository` を指定すると、外部 content の checkout、
 `content-updated` の repository dispatch receiver、`github/notify-site.yml` がまとめて構成されます。以前の通知用オプションは廃止しました。

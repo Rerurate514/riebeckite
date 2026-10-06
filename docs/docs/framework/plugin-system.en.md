@@ -178,7 +178,7 @@ Semantic Markdown/HTML transformation belongs in the plugin; do not bring AST pr
 
 Use a Page Type for a page such as a taxonomy listing or explorer. Use a renderer for an article embed such as Canvas, Bases, or Excalidraw. Plugins do not add HonoX route files or own the document frame.
 
-Page Type IDs are validated at runtime and must be unique. If more than one type resolves a request, the greatest priority wins; a tie is an error. Use only the public manifest passed to the resolver. The application wires `resolveRiebeckiteRoute` and `pluginPageSsgParams` into its catch-all route; the scaffold does this already. See [Page System](./page-system.en.md) for the full rendering flow and [Plugin API](../reference/plugin-api.en.md#pages) for the contract.
+Page Type IDs are validated at runtime and must be unique. If more than one type resolves a request, the greatest priority wins; a tie is an error. Use the resolved manifest passed to the resolver, reading `manifest.publicEntries` or `manifest.discoverableEntries` rather than `manifest.entries`. The application wires `resolveRiebeckiteRoute` and `pluginPageSsgParams` into its catch-all route; the scaffold does this already. See [Page System](./page-system.en.md) for the full rendering flow and [Plugin API](../reference/plugin-api.en.md#pages) for the contract.
 
 ### 3-10. Assets
 

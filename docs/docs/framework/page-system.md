@@ -252,11 +252,11 @@ export function reportPlugin() {
 
 というページを Plugin が提供します。
 
-ページ本文には、公開されている記事数を表示しています。
+ページ本文には、到達可能な記事数を表示しています。
 
 Plugin が HonoX component や route file を作る必要はありません。
 
-# Public Manifest
+# Manifest と公開境界
 
 Page Type の `resolve` には `PluginPageContext` が渡されます。
 
@@ -266,15 +266,15 @@ Page Type の `resolve` には `PluginPageContext` が渡されます。
 PluginPageContext.manifest
 ```
 
-は **public manifest** です。
+は解決済みの Manifest です。`entries` には `draft` と `scheduled` も含まれるため、Page の出力には使いません。
 
-つまり Page Type が参照できるのは、最終的に公開対象となったコンテンツだけです。
+到達可能な URL を網羅する場合は `publicEntries`（`public` と `unlisted`）、読者へ一覧として見せる場合は `discoverableEntries`（`public` のみ）を使います。entry ごとに分岐が必要な場合だけ、解決済みの `entry.publishing` を読みます。
 
 ```mermaid id="s4t3xz"
 flowchart LR
     All["All Content"]
     Publish["Publish Boundary"]
-    Public["Public Manifest"]
+    Public["publicEntries / discoverableEntries"]
     Page["Plugin Page"]
 
     All --> Publish
@@ -323,7 +323,7 @@ paths: [
 ]
 ```
 
-動的ページを静的生成する場合は、SSG path を **public manifest から導出**します。
+動的ページを静的生成する場合は、SSG path を **`manifest.publicEntries` から導出**します。
 
 filesystem を独自に scan して path を作るのではなく、Content System が解決した公開状態を利用してください。
 

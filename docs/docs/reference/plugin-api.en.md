@@ -326,7 +326,7 @@ already encodes the decision. The publish strategy is configured in
 
 `pageTypes` supplies standalone pages without adding application routes. A page
 type declares its stable ID, SSG paths, optional priority, and a resolver. The
-resolver receives the public manifest and a normalized request path, then
+resolver receives the resolved manifest and a normalized request path, then
 returns HTML for the page body or `null`. The site still owns its document frame
 and theme. A page may also return `title`, `description`, `headTags`, and the
 `language` it resolved; the document frame decides how to render that metadata.

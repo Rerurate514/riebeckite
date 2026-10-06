@@ -20,7 +20,11 @@ export type PluginPage = {
 };
 
 export type PluginPageContext = PluginContext & {
-  /** The public manifest. Unpublished content is not exposed through pages. */
+  /**
+   * The resolved manifest. `manifest.entries` still contains `draft` and
+   * `scheduled` entries, so page output must read `publicEntries` (routable) or
+   * `discoverableEntries` (public only) instead of `entries`.
+   */
   manifest: ContentManifest;
   /** Request pathname, normalized to an absolute path. */
   pathname: string;

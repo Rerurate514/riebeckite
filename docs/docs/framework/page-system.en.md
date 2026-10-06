@@ -14,8 +14,9 @@ contract, not a second kind of plugin.
 | Site application | Catch-all route, document frame, metadata, and safe HTML rendering |
 | Theme | Tokens and stable hooks; no knowledge of a Page Type ID is required |
 
-`PluginPageContext.manifest` is the public manifest. A Page Type therefore sees
-only entries that may appear on the published site.
+`PluginPageContext.manifest` is the resolved manifest. Its `entries` still
+contains `draft` and `scheduled`, so a Page Type must read `publicEntries`
+(routable) or `discoverableEntries` (public only) for page output instead.
 
 ## Rendering pipeline
 
@@ -68,8 +69,8 @@ export function reportPlugin() {
 
 IDs are globally unique. A request with multiple matching Page Types selects
 the greatest `priority`; equal priorities are an explicit error. Declare
-`paths` for every static page and derive dynamic paths from the public manifest
-when SSG must emit them.
+`paths` for every static page and derive dynamic paths from
+`manifest.publicEntries` when SSG must emit them.
 
 ## HonoX application wiring
 

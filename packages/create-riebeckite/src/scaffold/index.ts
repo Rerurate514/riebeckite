@@ -3,101 +3,70 @@ import path from "node:path";
 import {
   assertGitHubRepository,
   deploymentTemplateFiles,
-  type ScaffoldDeploymentOptions,
-  wranglerJsoncFile,
 } from "./deployment.js";
 import {
-  resolveScaffoldPreset,
-  type ScaffoldPreset,
-  type ScaffoldPresetName,
-} from "./presets.js";
-import {
-  type SiteTemplateFile,
-  type SiteTemplateVariables,
-  siteTemplateFiles,
-} from "./templates.js";
-import { workerNameFromDirectory } from "./wrangler-defaults.js";
+  type ScaffoldContentSource,
+  type ScaffoldDeployment,
+  ScaffoldSiteError,
+  type ScaffoldSiteOptions,
+  type ScaffoldSiteResult,
+} from "./options.js";
+import { resolveScaffoldPreset } from "./presets.js";
+import { type SiteTemplateFile, siteTemplateFiles } from "./templates.js";
+import { wranglerConfigForDirectory } from "./wrangler-defaults.js";
 
 export {
-  deploymentTemplateFiles,
-  type ScaffoldDeploymentOptions,
+  deploymentWorkflow,
+  scaffoldDeploymentFromFlags,
 } from "./deployment.js";
 export {
   formatScaffoldNextSteps,
   type ScaffoldNextStepsOptions,
 } from "./next-steps.js";
 export {
-  empty,
+  type ScaffoldContentSource,
+  type ScaffoldDeployment,
+  type ScaffoldDeploymentFlags,
+  ScaffoldSiteError,
+  type ScaffoldSiteMetadata,
+  type ScaffoldSiteOptions,
+  type ScaffoldSiteResult,
+} from "./options.js";
+export {
   isScaffoldPresetName,
-  minimal,
-  resolveScaffoldPreset,
   SCAFFOLD_DEFAULT_PRESET,
-  SCAFFOLD_PRESET_NAMES,
-  type ScaffoldPageKey,
-  type ScaffoldPluginSpec,
-  type ScaffoldPreset,
+  SCAFFOLD_PRESETS,
   type ScaffoldPresetName,
-  type ScaffoldReadmeLevel,
-  type ScaffoldThemeSpec,
-  scaffoldPresets,
-  showcase,
-  starter,
+  type ScaffoldPresetSummary,
 } from "./presets.js";
 export {
-  buildDefaultWranglerConfig,
   GITHUB_ACTIONS_SECRETS,
-  workerNameFromDirectory,
+  wranglerConfigForDirectory,
 } from "./wrangler-defaults.js";
 
-export type ScaffoldSiteOptions = {
-  readonly targetDirectory: string;
-  readonly name?: string;
-  readonly siteTitle?: string;
-  readonly description?: string;
-  readonly baseUrl?: string;
-  readonly locale?: string;
-  readonly preset?: ScaffoldPresetName | ScaffoldPreset;
-  readonly overwrite?: boolean;
-  /** Generate the Cloudflare Workers GitHub Actions workflow. */
-  readonly githubActions?: boolean;
-  readonly cloudflareWorkers?: boolean;
-  /** Read content from this separate GitHub repository during deployment. */
-  readonly contentRepository?: string;
-  /** Site repository to notify from the generated content workflow. */
-  readonly siteRepository?: string;
-};
-
-export type ScaffoldSiteResult = {
-  readonly targetDirectory: string;
-  readonly files: readonly string[];
-};
-
-export class ScaffoldSiteError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ScaffoldSiteError";
-  }
-}
+const NO_DEPLOYMENT: ScaffoldDeployment = { type: "none" };
 
 export async function scaffoldRiebeckiteSite(
   options: ScaffoldSiteOptions,
 ): Promise<ScaffoldSiteResult> {
   const targetDirectory = path.resolve(options.targetDirectory);
   const preset = resolveScaffoldPreset(options.preset);
-  validateDeploymentOptions(options);
+  const deployment = options.deployment ?? NO_DEPLOYMENT;
+  const externalContent = externalContentSource(deployment);
+
+  if (externalContent !== undefined) {
+    assertGitHubRepository(
+      externalContent.contentRepository,
+      "contentRepository",
+    );
+    assertGitHubRepository(externalContent.siteRepository, "siteRepository");
+  }
+
   const files = [
     ...siteTemplateFiles(preset, templateVariables(options, targetDirectory), {
-      cloudflareWorkers: options.cloudflareWorkers,
+      cloudflareWorkers: deployment.type === "cloudflare-workers",
     }),
-    ...(options.githubActions
-      ? deploymentTemplateFiles(deploymentOptions(options))
-      : options.cloudflareWorkers
-        ? [
-            wranglerJsoncFile(
-              workerNameFromDirectory(path.basename(targetDirectory)),
-            ),
-          ]
-        : []),
+    ...deploymentTemplateOrConfig(deployment, targetDirectory),
   ];
   await assertTargetWritable(
     targetDirectory,
@@ -114,57 +83,59 @@ export async function scaffoldRiebeckiteSite(
   return { targetDirectory, files: files.map((file) => file.path) };
 }
 
-function deploymentOptions(
-  options: ScaffoldSiteOptions,
-): ScaffoldDeploymentOptions {
-  return {
-    contentRepository: options.contentRepository,
-    siteRepository: options.siteRepository,
-  };
+function externalContentSource(
+  deployment: ScaffoldDeployment,
+): Extract<ScaffoldContentSource, { type: "external" }> | undefined {
+  if (deployment.type !== "github-actions") return undefined;
+  return deployment.content.type === "external"
+    ? deployment.content
+    : undefined;
 }
 
-function validateDeploymentOptions(options: ScaffoldSiteOptions): void {
-  try {
-    if (options.contentRepository !== undefined) {
-      assertGitHubRepository(options.contentRepository, "contentRepository");
-    }
-    if (options.siteRepository !== undefined) {
-      assertGitHubRepository(options.siteRepository, "siteRepository");
-    }
-  } catch (error) {
-    throw new ScaffoldSiteError(
-      error instanceof Error ? error.message : String(error),
-    );
-  }
-  if (options.contentRepository !== undefined && !options.githubActions) {
-    throw new ScaffoldSiteError(
-      "--content-repository requires --github-actions.",
-    );
-  }
-  if (
-    options.contentRepository !== undefined &&
-    options.siteRepository === undefined
-  ) {
-    throw new ScaffoldSiteError(
-      "--site-repository is required when --content-repository is used with --github-actions.",
-    );
+function deploymentTemplateOrConfig(
+  deployment: ScaffoldDeployment,
+  targetDirectory: string,
+): readonly SiteTemplateFile[] {
+  switch (deployment.type) {
+    case "github-actions":
+      return deploymentTemplateFiles(deployment.content);
+    case "cloudflare-workers":
+      return [
+        {
+          path: "wrangler.jsonc",
+          content: wranglerConfigForDirectory(targetDirectory),
+        },
+      ];
+    default:
+      return [];
   }
 }
 
 function templateVariables(
   options: ScaffoldSiteOptions,
   targetDirectory: string,
-): SiteTemplateVariables {
+): {
+  name: string;
+  title: string;
+  description: string;
+  baseUrl: string;
+  locale: string;
+  externalContent: boolean;
+} {
   const name = normalizePackageName(
     options.name ?? path.basename(targetDirectory),
   );
+  const site = options.site ?? {};
+  const deployment = options.deployment ?? NO_DEPLOYMENT;
   return {
     name,
-    title: options.siteTitle ?? name,
-    description: options.description ?? "",
-    baseUrl: options.baseUrl ?? "",
-    locale: options.locale ?? "en",
-    externalContent: options.contentRepository !== undefined,
+    title: site.title ?? name,
+    description: site.description ?? "",
+    baseUrl: site.baseUrl ?? "",
+    locale: site.locale ?? "en",
+    externalContent:
+      deployment.type === "github-actions" &&
+      deployment.content.type === "external",
   };
 }
 

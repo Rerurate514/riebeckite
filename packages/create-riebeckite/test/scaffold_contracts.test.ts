@@ -13,15 +13,18 @@ import {
 } from "@riebeckite/test/e2e";
 import { build as buildWithEsbuild } from "esbuild";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
-import { SCAFFOLD_PRESET_NAMES } from "../src/scaffold/presets.js";
 import {
-  DEFAULT_PRESET,
+  SCAFFOLD_DEFAULT_PRESET,
+  SCAFFOLD_PRESET_NAMES,
+} from "../src/scaffold/presets.js";
+import {
+  CLOUDFLARE_WORKERS_DEFAULTS,
+  DEFAULT_WORKER_NAME,
   GITHUB_ACTIONS_SECRETS,
   GITIGNORE_FORBIDDEN,
   GITIGNORE_REQUIRED,
   LOCKFILE_NAME,
   STARTER_LANGUAGES,
-  WRANGLER_DEFAULTS,
 } from "../src/scaffold/wrangler-defaults.js";
 
 /**
@@ -45,9 +48,9 @@ async function withTemporaryDirectory(
 async function generateStarterSite(targetDirectory: string) {
   await scaffoldRiebeckiteSite({
     targetDirectory,
-    preset: DEFAULT_PRESET,
-    githubActions: true,
-    locale: "en", // Ensure default locale is en
+    preset: SCAFFOLD_DEFAULT_PRESET,
+    site: { locale: "en" },
+    deployment: { type: "github-actions", content: { type: "local" } },
   });
 }
 
@@ -445,7 +448,10 @@ test("Contract 3: generated site uses npm consistently across all touchpoints", 
 
     // Check GitHub Actions workflow uses npm
     const workflow = await readFile(targetDir, ".github/workflows/deploy.yml");
-    assert.ok(workflow, "deploy.yml must exist when githubActions: true");
+    assert.ok(
+      workflow,
+      "deploy.yml must exist for the github-actions deployment",
+    );
     assert.ok(workflow?.includes("cache: npm"), "workflow must use npm cache");
     assert.ok(workflow?.includes("npm ci"), "workflow must use npm ci");
     assert.ok(
@@ -582,17 +588,17 @@ test("Contract 5: generated wrangler.jsonc matches canonical defaults", async ()
     const wrangler = JSON.parse(wranglerContent);
 
     // Verify all canonical fields match
-    assert.equal(wrangler.$schema, WRANGLER_DEFAULTS.$schema);
-    assert.equal(wrangler.name, WRANGLER_DEFAULTS.name);
+    assert.equal(wrangler.$schema, CLOUDFLARE_WORKERS_DEFAULTS.$schema);
+    assert.equal(wrangler.name, DEFAULT_WORKER_NAME);
     assert.equal(
       wrangler.compatibility_date,
-      WRANGLER_DEFAULTS.compatibility_date,
+      CLOUDFLARE_WORKERS_DEFAULTS.compatibility_date,
     );
     assert.deepEqual(
       wrangler.compatibility_flags,
-      WRANGLER_DEFAULTS.compatibility_flags,
+      CLOUDFLARE_WORKERS_DEFAULTS.compatibility_flags,
     );
-    assert.deepEqual(wrangler.assets, WRANGLER_DEFAULTS.assets);
+    assert.deepEqual(wrangler.assets, CLOUDFLARE_WORKERS_DEFAULTS.assets);
   });
 });
 
@@ -635,10 +641,15 @@ test("Contract 6b: external content workflow includes additional secrets", async
     const targetDir = path.join(tmpDir, "test-site");
     await scaffoldRiebeckiteSite({
       targetDirectory: targetDir,
-      preset: DEFAULT_PRESET,
-      githubActions: true,
-      contentRepository: "octo-org/notes",
-      siteRepository: "octo-org/site",
+      preset: SCAFFOLD_DEFAULT_PRESET,
+      deployment: {
+        type: "github-actions",
+        content: {
+          type: "external",
+          contentRepository: "octo-org/notes",
+          siteRepository: "octo-org/site",
+        },
+      },
     });
 
     const workflow = await readFile(targetDir, ".github/workflows/deploy.yml");

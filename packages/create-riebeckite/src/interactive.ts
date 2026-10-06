@@ -1,9 +1,9 @@
 import { isCancel, log, select, text } from "@clack/prompts";
 import type { CreateRiebeckiteOptions } from "./arguments.js";
+import type { ScaffoldDeployment } from "./scaffold/options.js";
 import {
-  SCAFFOLD_PRESET_NAMES,
+  SCAFFOLD_PRESETS,
   type ScaffoldPresetName,
-  scaffoldPresets,
 } from "./scaffold/presets.js";
 
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
@@ -13,34 +13,53 @@ export type InteractiveContentSource = "local" | "external";
 
 export type InteractiveDeployment = "cloudflare" | "github-actions" | "none";
 
-export type InteractiveAnswers = {
-  readonly directory: string;
-  readonly preset: ScaffoldPresetName;
-  readonly contentSource: InteractiveContentSource;
-  readonly deployment: InteractiveDeployment;
-  readonly contentRepository?: string;
-  readonly siteRepository?: string;
-};
+export type InteractiveAnswers =
+  | {
+      readonly directory: string;
+      readonly preset: ScaffoldPresetName;
+      readonly contentSource: "local";
+      readonly deployment: InteractiveDeployment;
+    }
+  | {
+      readonly directory: string;
+      readonly preset: ScaffoldPresetName;
+      readonly contentSource: "external";
+      readonly contentRepository: string;
+      readonly siteRepository: string;
+    };
 
-/**
- * Map interactive answers onto the same options object the non-interactive
- * flags produce. A separate content repository always deploys through GitHub
- * Actions, so the answered deployment never wins in that combination.
- */
 export function interactiveAnswersToOptions(
   answers: InteractiveAnswers,
 ): CreateRiebeckiteOptions {
-  const external = answers.contentSource === "external";
   return {
     directory: answers.directory,
     force: false,
     preset: answers.preset,
     listPresets: false,
-    githubActions: external || answers.deployment === "github-actions",
-    cloudflareWorkers: !external && answers.deployment === "cloudflare",
-    contentRepository: external ? answers.contentRepository : undefined,
-    siteRepository: external ? answers.siteRepository : undefined,
+    deployment: deploymentFromAnswers(answers),
   };
+}
+
+function deploymentFromAnswers(
+  answers: InteractiveAnswers,
+): ScaffoldDeployment {
+  if (answers.contentSource === "external") {
+    return {
+      type: "github-actions",
+      content: {
+        type: "external",
+        contentRepository: answers.contentRepository,
+        siteRepository: answers.siteRepository,
+      },
+    };
+  }
+  if (answers.deployment === "cloudflare") {
+    return { type: "cloudflare-workers" };
+  }
+  if (answers.deployment === "github-actions") {
+    return { type: "github-actions", content: { type: "local" } };
+  }
+  return { type: "none" };
 }
 
 /**
@@ -60,10 +79,10 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
   const preset = await select<ScaffoldPresetName>({
     message: "Choose a preset",
     initialValue: "starter",
-    options: SCAFFOLD_PRESET_NAMES.map((name) => ({
+    options: SCAFFOLD_PRESETS.map(({ name, description }) => ({
       value: name,
       label: capitalize(name),
-      hint: scaffoldPresets[name].description,
+      hint: description,
     })),
   });
   if (isCancel(preset)) return null;
@@ -97,7 +116,6 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
       directory,
       preset,
       contentSource,
-      deployment: "github-actions",
       contentRepository: contentRepository.trim(),
       siteRepository: siteRepository.trim(),
     };

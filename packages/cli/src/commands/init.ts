@@ -1,6 +1,7 @@
 import path from "node:path";
 import {
   formatScaffoldNextSteps,
+  type ScaffoldDeployment,
   type ScaffoldPresetName,
   scaffoldRiebeckiteSite,
 } from "create-riebeckite/scaffold";
@@ -9,10 +10,7 @@ export type InitOptions = {
   readonly directory: string;
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;
-  readonly githubActions: boolean;
-  readonly cloudflareWorkers: boolean;
-  readonly contentRepository?: string;
-  readonly siteRepository?: string;
+  readonly deployment: ScaffoldDeployment;
 };
 
 export async function runInit(options: InitOptions): Promise<void> {
@@ -21,10 +19,7 @@ export async function runInit(options: InitOptions): Promise<void> {
     targetDirectory,
     overwrite: options.force,
     preset: options.preset,
-    githubActions: options.githubActions,
-    cloudflareWorkers: options.cloudflareWorkers,
-    contentRepository: options.contentRepository,
-    siteRepository: options.siteRepository,
+    deployment: options.deployment,
   });
 
   const relative = path.relative(process.cwd(), result.targetDirectory) || ".";
@@ -33,10 +28,8 @@ export async function runInit(options: InitOptions): Promise<void> {
   const editFile = result.files.includes("content/index.md")
     ? "content/index.md"
     : undefined;
-  console.log(
-    formatScaffoldNextSteps(relative, {
-      editFile,
-      externalContent: options.contentRepository !== undefined,
-    }),
-  );
+  const externalContent =
+    options.deployment.type === "github-actions" &&
+    options.deployment.content.type === "external";
+  console.log(formatScaffoldNextSteps(relative, { editFile, externalContent }));
 }

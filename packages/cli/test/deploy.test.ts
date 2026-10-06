@@ -1,11 +1,9 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import test from "node:test";
+import { wranglerConfigForDirectory } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../src/application_root.js";
-import {
-  buildDefaultWranglerConfig,
-  resolveDeployRoot,
-  workerNameFromDirectory,
-} from "../src/commands/deploy.js";
+import { resolveDeployRoot } from "../src/commands/deploy.js";
 
 test("resolveDeployRoot targets the app directory", () => {
   assert.equal(
@@ -17,27 +15,44 @@ test("resolveDeployRoot targets the app directory", () => {
   );
 });
 
-test("workerNameFromDirectory normalizes directory names into Worker names", () => {
-  assert.equal(workerNameFromDirectory("My Site"), "my-site");
-  assert.equal(workerNameFromDirectory("my_site"), "my-site");
-  assert.equal(workerNameFromDirectory("--My--Site--"), "my-site");
-  assert.equal(workerNameFromDirectory("my.site"), "my-site");
-  assert.equal(workerNameFromDirectory("MySite"), "mysite");
+test("wranglerConfigForDirectory normalizes directory names into Worker names", () => {
+  const workerName = (directoryName: string): string =>
+    (
+      JSON.parse(
+        wranglerConfigForDirectory(path.join("/tmp", directoryName)),
+      ) as { name: string }
+    ).name;
+
+  assert.equal(workerName("My Site"), "my-site");
+  assert.equal(workerName("my_site"), "my-site");
+  assert.equal(workerName("--My--Site--"), "my-site");
+  assert.equal(workerName("my.site"), "my-site");
+  assert.equal(workerName("MySite"), "mysite");
 });
 
-test("workerNameFromDirectory falls back when nothing usable remains", () => {
-  assert.equal(workerNameFromDirectory(""), "riebeckite-site");
-  assert.equal(workerNameFromDirectory("---"), "riebeckite-site");
+test("wranglerConfigForDirectory falls back when nothing usable remains", () => {
+  const workerName = (directoryName: string): string =>
+    (
+      JSON.parse(
+        wranglerConfigForDirectory(path.join("/tmp", directoryName)),
+      ) as { name: string }
+    ).name;
+
+  assert.equal(workerName("---"), "riebeckite-site");
+  assert.equal(workerName("..."), "riebeckite-site");
 });
 
-test("workerNameFromDirectory caps the name at 63 characters", () => {
-  const name = workerNameFromDirectory("a".repeat(80));
-  assert.equal(name.length, 63);
-  assert.equal(name, "a".repeat(63));
+test("wranglerConfigForDirectory caps the name at 63 characters", () => {
+  const name = "a".repeat(80);
+  const config = JSON.parse(
+    wranglerConfigForDirectory(path.join("/tmp", name)),
+  ) as { name: string };
+  assert.equal(config.name.length, 63);
+  assert.equal(config.name, "a".repeat(63));
 });
 
-test("buildDefaultWranglerConfig produces valid JSON with the Worker name", () => {
-  const content = buildDefaultWranglerConfig("my-site");
+test("wranglerConfigForDirectory produces valid JSON with the Worker name", () => {
+  const content = wranglerConfigForDirectory(path.join("/tmp", "my-site"));
   assert.ok(content.endsWith("\n"));
 
   const config = JSON.parse(content) as {

@@ -3,7 +3,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { deploymentTemplateFiles } from "../src/scaffold/deployment.js";
+import {
+  deploymentTemplateFiles,
+  scaffoldDeploymentFromFlags,
+} from "../src/scaffold/deployment.js";
 import {
   ScaffoldSiteError,
   scaffoldRiebeckiteSite,
@@ -19,7 +22,7 @@ test("every scaffold preset inherits the same-repository GitHub Actions workflow
       await scaffoldRiebeckiteSite({
         targetDirectory,
         preset,
-        githubActions: true,
+        deployment: { type: "github-actions", content: { type: "local" } },
       });
       const workflow = await fs.readFile(
         path.join(targetDirectory, ".github/workflows/deploy.yml"),
@@ -56,9 +59,14 @@ test("every scaffold preset supports external content and content-push dispatch"
       await scaffoldRiebeckiteSite({
         targetDirectory,
         preset,
-        githubActions: true,
-        contentRepository: "octo-org/notes",
-        siteRepository: "octo-org/site",
+        deployment: {
+          type: "github-actions",
+          content: {
+            type: "external",
+            contentRepository: "octo-org/notes",
+            siteRepository: "octo-org/site",
+          },
+        },
       });
       const workflow = await fs.readFile(
         path.join(targetDirectory, ".github/workflows/deploy.yml"),
@@ -89,27 +97,30 @@ test("every scaffold preset supports external content and content-push dispatch"
   });
 });
 
-test("scaffold validates external-content deployment options", async () => {
-  await assert.rejects(
+test("scaffoldDeploymentFromFlags rejects invalid flag combinations", () => {
+  assert.throws(
     () =>
-      scaffoldRiebeckiteSite({
-        targetDirectory: path.join(
-          os.tmpdir(),
-          "riebeckite-external-no-actions",
-        ),
-        contentRepository: "octo-org/notes",
+      scaffoldDeploymentFromFlags({
+        githubActions: true,
+        cloudflareWorkers: true,
       }),
+    /--github-actions and --cloudflare-workers are mutually exclusive/,
+  );
+  assert.throws(
+    () => scaffoldDeploymentFromFlags({ contentRepository: "octo-org/notes" }),
     /--content-repository requires --github-actions/,
   );
-  await assert.rejects(
+  assert.throws(
     () =>
-      scaffoldRiebeckiteSite({
-        targetDirectory: path.join(os.tmpdir(), "riebeckite-external-no-site"),
+      scaffoldDeploymentFromFlags({
         githubActions: true,
         contentRepository: "octo-org/notes",
       }),
     /--site-repository is required when --content-repository is used with --github-actions/,
   );
+});
+
+test("scaffold validates external repository format", async () => {
   await assert.rejects(
     () =>
       scaffoldRiebeckiteSite({
@@ -117,8 +128,14 @@ test("scaffold validates external-content deployment options", async () => {
           os.tmpdir(),
           "riebeckite-invalid-repository",
         ),
-        githubActions: true,
-        contentRepository: "not a repository",
+        deployment: {
+          type: "github-actions",
+          content: {
+            type: "external",
+            contentRepository: "not a repository",
+            siteRepository: "octo-org/site",
+          },
+        },
       }),
     ScaffoldSiteError,
   );
@@ -126,9 +143,14 @@ test("scaffold validates external-content deployment options", async () => {
     () =>
       scaffoldRiebeckiteSite({
         targetDirectory: path.join(os.tmpdir(), "riebeckite-invalid-site"),
-        githubActions: true,
-        contentRepository: "octo-org/notes",
-        siteRepository: "not a repository",
+        deployment: {
+          type: "github-actions",
+          content: {
+            type: "external",
+            contentRepository: "octo-org/notes",
+            siteRepository: "not a repository",
+          },
+        },
       }),
     ScaffoldSiteError,
   );
@@ -138,7 +160,7 @@ test("the generated workflow is rendered from the packaged deployment template",
   const template = new TextDecoder()
     .decode(readTemplate("deployment/github-actions/deploy.yml"))
     .replaceAll("\r\n", "\n");
-  const files = deploymentTemplateFiles({});
+  const files = deploymentTemplateFiles({ type: "local" });
   const workflow = files.find(
     (file) => file.path === ".github/workflows/deploy.yml",
   );
@@ -178,6 +200,7 @@ test("the generated workflow is rendered from the packaged deployment template",
 
 test("the external-content workflow and notify template render without leaking placeholders", () => {
   const files = deploymentTemplateFiles({
+    type: "external",
     contentRepository: "octo-org/notes",
     siteRepository: "octo-org/site",
   });

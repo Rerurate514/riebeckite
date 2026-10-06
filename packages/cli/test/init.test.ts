@@ -9,10 +9,7 @@ test("parseCommand defaults init to the starter preset without deployment", () =
     force: false,
     preset: "starter",
     listPresets: false,
-    githubActions: false,
-    cloudflareWorkers: false,
-    contentRepository: undefined,
-    siteRepository: undefined,
+    deployment: { type: "none" },
   });
 });
 
@@ -35,19 +32,22 @@ test("parseCommand reads the GitHub Actions deployment options", () => {
       force: false,
       preset: "minimal",
       listPresets: false,
-      githubActions: true,
-      cloudflareWorkers: false,
-      contentRepository: "octo-org/notes",
-      siteRepository: "octo-org/site",
+      deployment: {
+        type: "github-actions",
+        content: {
+          type: "external",
+          contentRepository: "octo-org/notes",
+          siteRepository: "octo-org/site",
+        },
+      },
     },
   );
 });
 
 test("parseCommand accepts the local Cloudflare Workers deployment", () => {
-  assert.equal(
-    parseCommand(["init", "--cloudflare-workers"]).cloudflareWorkers,
-    true,
-  );
+  const command = parseCommand(["init", "--cloudflare-workers"]);
+  assert.equal(command.name, "init");
+  assert.deepEqual(command.deployment, { type: "cloudflare-workers" });
 });
 
 test("parseCommand rejects conflicting or incomplete deployment options", () => {

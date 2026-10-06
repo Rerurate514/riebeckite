@@ -10,9 +10,11 @@
  * - which `app/` shell files are written
  *
  * Presets are cumulative in spirit but defined explicitly so each tier is
- * self-contained and can be imported and reused on its own:
+ * self-contained and can be selected by name:
  *
- *    import { showcase, starter } from "create-riebeckite/scaffold";
+ *    import { scaffoldRiebeckiteSite } from "create-riebeckite/scaffold";
+ *
+ *    await scaffoldRiebeckiteSite({ targetDirectory: "./site", preset: "showcase" });
  */
 
 export const SCAFFOLD_LANGUAGES = [
@@ -674,11 +676,21 @@ export const scaffoldPresets: Readonly<
 
 export const SCAFFOLD_DEFAULT_PRESET: ScaffoldPresetName = "starter";
 
+export type ScaffoldPresetSummary = {
+  readonly name: ScaffoldPresetName;
+  readonly description: string;
+};
+
+export const SCAFFOLD_PRESETS: readonly ScaffoldPresetSummary[] =
+  SCAFFOLD_PRESET_NAMES.map((name) => ({
+    name,
+    description: scaffoldPresets[name].description,
+  }));
+
 export function resolveScaffoldPreset(
-  value: ScaffoldPresetName | ScaffoldPreset | undefined,
+  value: ScaffoldPresetName | undefined,
 ): ScaffoldPreset {
   if (value === undefined) return scaffoldPresets[SCAFFOLD_DEFAULT_PRESET];
-  if (typeof value === "object") return value;
   const preset = scaffoldPresets[value];
   if (!preset) {
     throw new Error(

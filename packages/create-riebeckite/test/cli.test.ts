@@ -22,10 +22,7 @@ test("interactive answers without deployment map to a plain scaffold", () => {
     force: false,
     preset: "starter",
     listPresets: false,
-    githubActions: false,
-    cloudflareWorkers: false,
-    contentRepository: undefined,
-    siteRepository: undefined,
+    deployment: { type: "none" },
   });
 });
 
@@ -41,10 +38,7 @@ test("interactive answers with GitHub Actions enable the workflow", () => {
     force: false,
     preset: "starter",
     listPresets: false,
-    githubActions: true,
-    cloudflareWorkers: false,
-    contentRepository: undefined,
-    siteRepository: undefined,
+    deployment: { type: "github-actions", content: { type: "local" } },
   });
 });
 
@@ -60,10 +54,7 @@ test("interactive answers with Cloudflare Workers select local-first deployment"
     force: false,
     preset: "starter",
     listPresets: false,
-    githubActions: false,
-    cloudflareWorkers: true,
-    contentRepository: undefined,
-    siteRepository: undefined,
+    deployment: { type: "cloudflare-workers" },
   });
 });
 
@@ -72,7 +63,6 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
     directory: "my-site",
     preset: "showcase",
     contentSource: "external",
-    deployment: "none",
     contentRepository: "OWNER/notes",
     siteRepository: "OWNER/site",
   });
@@ -81,10 +71,14 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
     force: false,
     preset: "showcase",
     listPresets: false,
-    githubActions: true,
-    cloudflareWorkers: false,
-    contentRepository: "OWNER/notes",
-    siteRepository: "OWNER/site",
+    deployment: {
+      type: "github-actions",
+      content: {
+        type: "external",
+        contentRepository: "OWNER/notes",
+        siteRepository: "OWNER/site",
+      },
+    },
   });
 });
 
@@ -95,10 +89,7 @@ test("non-interactive defaults are unchanged", () => {
     force: false,
     preset: "starter",
     listPresets: false,
-    githubActions: false,
-    cloudflareWorkers: false,
-    contentRepository: undefined,
-    siteRepository: undefined,
+    deployment: { type: "none" },
   });
 });
 
@@ -120,10 +111,14 @@ test("existing flags keep parsing", () => {
     force: true,
     preset: "showcase",
     listPresets: true,
-    githubActions: true,
-    cloudflareWorkers: false,
-    contentRepository: "OWNER/notes",
-    siteRepository: "OWNER/site",
+    deployment: {
+      type: "github-actions",
+      content: {
+        type: "external",
+        contentRepository: "OWNER/notes",
+        siteRepository: "OWNER/site",
+      },
+    },
   });
 });
 
@@ -140,6 +135,10 @@ test("existing argument errors keep throwing", () => {
   assert.throws(
     () => parseArguments(["--site-repository", "--force"]),
     /requires an owner\/repository value\./,
+  );
+  assert.throws(
+    () => parseArguments(["--content-repository", "OWNER/notes"]),
+    /requires --github-actions/,
   );
   assert.throws(
     () => parseArguments(["one", "two"]),

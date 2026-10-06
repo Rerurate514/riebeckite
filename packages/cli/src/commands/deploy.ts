@@ -2,13 +2,8 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { resolveBuildOutputDirectory } from "@riebeckite/core";
-import {
-  buildDefaultWranglerConfig,
-  workerNameFromDirectory,
-} from "create-riebeckite/scaffold";
+import { wranglerConfigForDirectory } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
-
-export { buildDefaultWranglerConfig, workerNameFromDirectory };
 
 const WRANGLER_CONFIG_FILES = [
   "wrangler.jsonc",
@@ -92,9 +87,7 @@ async function ensureWranglerConfig(root: string): Promise<string> {
   if (existing !== undefined) return existing;
 
   const configPath = path.join(root, "wrangler.jsonc");
-  const content = buildDefaultWranglerConfig(
-    workerNameFromDirectory(path.basename(root)),
-  );
+  const content = wranglerConfigForDirectory(root);
   await fs.writeFile(configPath, content, "utf8");
   console.log(`Created ${path.basename(configPath)}.`);
   return configPath;

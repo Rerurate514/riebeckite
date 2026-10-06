@@ -171,9 +171,11 @@ function checkScaffoldVersion() {
 async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
   const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "starter", {
     preset: "starter",
-    siteTitle: "Starter Demo",
-    baseUrl: "https://starter.example.com",
-    locale: "en",
+    site: {
+      title: "Starter Demo",
+      baseUrl: "https://starter.example.com",
+      locale: "en",
+    },
   });
   const config = readSiteFile(root, "riebeckite.config.ts");
   expect(config !== null, "starter: riebeckite.config.ts is missing");
@@ -245,9 +247,11 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
 async function checkMinimal(scaffoldRiebeckiteSite, tmpRoot) {
   const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "minimal", {
     preset: "minimal",
-    siteTitle: "Minimal Blog",
-    baseUrl: "https://minimal.example.com",
-    locale: "en_US",
+    site: {
+      title: "Minimal Blog",
+      baseUrl: "https://minimal.example.com",
+      locale: "en_US",
+    },
   });
   const config = readSiteFile(root, "riebeckite.config.ts");
   expect(config !== null, "minimal: riebeckite.config.ts is missing");
@@ -274,9 +278,11 @@ async function checkMinimal(scaffoldRiebeckiteSite, tmpRoot) {
 async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
   const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "showcase", {
     preset: "showcase",
-    siteTitle: "私のブログ",
-    baseUrl: "https://showcase.example.com",
-    locale: "ja_JP",
+    site: {
+      title: "私のブログ",
+      baseUrl: "https://showcase.example.com",
+      locale: "ja_JP",
+    },
   });
   const config = readSiteFile(root, "riebeckite.config.ts");
   expect(config !== null, "showcase: riebeckite.config.ts is missing");
@@ -361,9 +367,11 @@ async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
 async function checkEmpty(scaffoldRiebeckiteSite, tmpRoot) {
   const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "empty", {
     preset: "empty",
-    siteTitle: "Empty Blog",
-    baseUrl: "https://empty.example.com",
-    locale: "en",
+    site: {
+      title: "Empty Blog",
+      baseUrl: "https://empty.example.com",
+      locale: "en",
+    },
   });
   const config = readSiteFile(root, "riebeckite.config.ts");
   expect(config !== null, "empty: riebeckite.config.ts is missing");

@@ -23,22 +23,33 @@ const SCENARIOS: readonly GoldenScenario[] = [
   { name: "minimal", scaffold: { preset: "minimal" } },
   { name: "starter", scaffold: { preset: "starter" } },
   { name: "showcase", scaffold: { preset: "showcase" } },
-  { name: "showcase-ja", scaffold: { preset: "showcase", locale: "ja_JP" } },
+  {
+    name: "showcase-ja",
+    scaffold: { preset: "showcase", site: { locale: "ja_JP" } },
+  },
   {
     name: "deploy-github-actions",
-    scaffold: { preset: "minimal", githubActions: true },
+    scaffold: {
+      preset: "minimal",
+      deployment: { type: "github-actions", content: { type: "local" } },
+    },
   },
   {
     name: "deploy-cloudflare-workers",
-    scaffold: { preset: "minimal", cloudflareWorkers: true },
+    scaffold: { preset: "minimal", deployment: { type: "cloudflare-workers" } },
   },
   {
     name: "deploy-external-content",
     scaffold: {
       preset: "minimal",
-      githubActions: true,
-      contentRepository: "octo-org/notes",
-      siteRepository: "octo-org/site",
+      deployment: {
+        type: "github-actions",
+        content: {
+          type: "external",
+          contentRepository: "octo-org/notes",
+          siteRepository: "octo-org/site",
+        },
+      },
     },
   },
 ];

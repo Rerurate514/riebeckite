@@ -1,15 +1,16 @@
+import {
+  type ScaffoldContentSource,
+  type ScaffoldDeployment,
+  type ScaffoldDeploymentFlags,
+  ScaffoldSiteError,
+} from "./options.js";
 import { readTemplate } from "./template-loader.js";
 import type { SiteTemplateFile } from "./templates.js";
 import {
-  buildDefaultWranglerConfig,
+  buildWranglerConfig,
+  DEFAULT_WORKER_NAME,
   GITHUB_ACTIONS_SECRETS,
-  WRANGLER_DEFAULTS,
 } from "./wrangler-defaults.js";
-
-export interface ScaffoldDeploymentOptions {
-  readonly contentRepository?: string;
-  readonly siteRepository?: string;
-}
 
 const GITHUB_REPOSITORY_PATTERN = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 
@@ -27,10 +28,43 @@ const SECRET_SUBSTITUTIONS: ReadonlyArray<readonly [string, string]> = [
 
 export function assertGitHubRepository(value: string, option: string): void {
   if (!GITHUB_REPOSITORY_PATTERN.test(value)) {
-    throw new Error(
+    throw new ScaffoldSiteError(
       `${option} must be a GitHub repository in owner/repository form.`,
     );
   }
+}
+
+export function scaffoldDeploymentFromFlags(
+  flags: ScaffoldDeploymentFlags,
+): ScaffoldDeployment {
+  const githubActions = flags.githubActions ?? false;
+  const cloudflareWorkers = flags.cloudflareWorkers ?? false;
+  const { contentRepository, siteRepository } = flags;
+
+  if (githubActions && cloudflareWorkers) {
+    throw new ScaffoldSiteError(
+      "--github-actions and --cloudflare-workers are mutually exclusive.",
+    );
+  }
+  if (contentRepository !== undefined && !githubActions) {
+    throw new ScaffoldSiteError(
+      "--content-repository requires --github-actions.",
+    );
+  }
+  if (cloudflareWorkers) return { type: "cloudflare-workers" };
+  if (!githubActions) return { type: "none" };
+  if (contentRepository === undefined) {
+    return { type: "github-actions", content: { type: "local" } };
+  }
+  if (siteRepository === undefined) {
+    throw new ScaffoldSiteError(
+      "--site-repository is required when --content-repository is used with --github-actions.",
+    );
+  }
+  return {
+    type: "github-actions",
+    content: { type: "external", contentRepository, siteRepository },
+  };
 }
 
 function readDeploymentTemplate(relativePath: string): string {
@@ -54,7 +88,7 @@ function contentCheckoutStep(contentRepository: string): string {
   return `\n${fragment.split("{{contentRepository}}").join(contentRepository)}\n`;
 }
 
-function deployWorkflow(contentRepository?: string): string {
+function renderDeployWorkflow(contentRepository?: string): string {
   const contentCheckout =
     contentRepository === undefined
       ? ""
@@ -63,6 +97,12 @@ function deployWorkflow(contentRepository?: string): string {
     "{{contentCheckout}}",
     contentCheckout,
   );
+}
+
+export function deploymentWorkflow(content?: ScaffoldContentSource): string {
+  const contentRepository =
+    content?.type === "external" ? content.contentRepository : undefined;
+  return renderDeployWorkflow(contentRepository);
 }
 
 function notifySiteWorkflow(siteRepository: string): string {
@@ -79,39 +119,30 @@ function notifySiteWorkflow(siteRepository: string): string {
 export function wranglerJsoncFile(workerName: string): SiteTemplateFile {
   return {
     path: "wrangler.jsonc",
-    content: buildDefaultWranglerConfig(workerName),
+    content: buildWranglerConfig(workerName),
   };
 }
 
 export function deploymentTemplateFiles(
-  options: ScaffoldDeploymentOptions,
+  content: ScaffoldContentSource,
 ): readonly SiteTemplateFile[] {
-  const { contentRepository, siteRepository } = options;
-
-  if (contentRepository !== undefined) {
-    assertGitHubRepository(contentRepository, "--content-repository");
-    if (siteRepository === undefined) {
-      throw new Error(
-        "--site-repository is required when --content-repository is used with --github-actions.",
-      );
-    }
-  }
-  if (siteRepository !== undefined) {
-    assertGitHubRepository(siteRepository, "--site-repository");
+  if (content.type === "external") {
+    assertGitHubRepository(content.contentRepository, "--content-repository");
+    assertGitHubRepository(content.siteRepository, "--site-repository");
   }
 
   const files: SiteTemplateFile[] = [
-    wranglerJsoncFile(WRANGLER_DEFAULTS.name),
+    wranglerJsoncFile(DEFAULT_WORKER_NAME),
     {
       path: ".github/workflows/deploy.yml",
-      content: deployWorkflow(contentRepository),
+      content: deploymentWorkflow(content),
     },
   ];
 
-  if (contentRepository !== undefined && siteRepository !== undefined) {
+  if (content.type === "external") {
     files.push({
       path: "github/notify-site.yml",
-      content: notifySiteWorkflow(siteRepository),
+      content: notifySiteWorkflow(content.siteRepository),
     });
   }
 

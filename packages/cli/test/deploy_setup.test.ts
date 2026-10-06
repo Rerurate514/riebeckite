@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { deploymentTemplateFiles } from "create-riebeckite/scaffold";
+import { deploymentWorkflow } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import {
   CloudflareAccountError,
@@ -212,13 +212,7 @@ async function setup(
 }
 
 function expectedWorkflow(): string {
-  const file = deploymentTemplateFiles({}).find(
-    (entry) => entry.path === WORKFLOW_RELATIVE_PATH,
-  );
-  if (file === undefined || typeof file.content !== "string") {
-    throw new Error("missing deployment workflow template");
-  }
-  return file.content;
+  return deploymentWorkflow();
 }
 
 async function writeWorkflow(

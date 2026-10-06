@@ -51,10 +51,7 @@ export async function runCreateRiebeckite(
       targetDirectory,
       overwrite: options.force,
       preset: options.preset,
-      githubActions: options.githubActions,
-      cloudflareWorkers: options.cloudflareWorkers,
-      contentRepository: options.contentRepository,
-      siteRepository: options.siteRepository,
+      deployment: options.deployment,
     });
   } catch (error) {
     if (error instanceof ScaffoldSiteError) {
@@ -69,7 +66,7 @@ export async function runCreateRiebeckite(
   console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
   console.log("");
 
-  if (interactive && options.cloudflareWorkers) {
+  if (interactive && options.deployment.type === "cloudflare-workers") {
     await publishCloudflareSite(targetDirectory, relative);
     return;
   }
@@ -103,12 +100,21 @@ function printScaffoldNextSteps(
   result: ScaffoldSiteResult,
   relative: string,
 ): void {
-  const externalContent = options.contentRepository !== undefined;
+  const externalContent = isExternalContent(options.deployment);
   const editFile =
     !externalContent && result.files.includes("content/index.md")
       ? "content/index.md"
       : undefined;
   console.log(formatScaffoldNextSteps(relative, { editFile, externalContent }));
+}
+
+function isExternalContent(
+  deployment: CreateRiebeckiteOptions["deployment"],
+): boolean {
+  return (
+    deployment.type === "github-actions" &&
+    deployment.content.type === "external"
+  );
 }
 
 async function publishCloudflareSite(

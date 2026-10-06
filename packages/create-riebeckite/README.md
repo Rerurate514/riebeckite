@@ -105,11 +105,11 @@ Presets are defined in `create-riebeckite/scaffold` and can be imported into
 your own tooling:
 
 ```ts
-import { scaffoldRiebeckiteSite, showcase } from "create-riebeckite/scaffold";
+import { scaffoldRiebeckiteSite } from "create-riebeckite/scaffold";
 
 await scaffoldRiebeckiteSite({
   targetDirectory: "./my-site",
-  preset: showcase,
+  preset: "showcase",
 });
 ```
 

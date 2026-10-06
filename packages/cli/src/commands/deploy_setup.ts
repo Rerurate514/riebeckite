@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
-  deploymentTemplateFiles,
+  deploymentWorkflow,
   GITHUB_ACTIONS_SECRETS,
 } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
@@ -485,15 +485,7 @@ async function ensureDeploymentWorkflow(
 }
 
 function expectedWorkflow(): string {
-  const file = deploymentTemplateFiles({}).find(
-    (entry) => entry.path === WORKFLOW_RELATIVE_PATH,
-  );
-  if (file === undefined || typeof file.content !== "string") {
-    throw new DeploySetupError(
-      "Could not load the deployment workflow template.",
-    );
-  }
-  return file.content;
+  return deploymentWorkflow();
 }
 
 async function selectCloudflareAccount(

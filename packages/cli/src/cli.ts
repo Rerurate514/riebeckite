@@ -1,8 +1,11 @@
 import {
   isScaffoldPresetName,
-  SCAFFOLD_PRESET_NAMES,
+  SCAFFOLD_DEFAULT_PRESET,
+  SCAFFOLD_PRESETS,
+  type ScaffoldDeployment,
   type ScaffoldPresetName,
-  scaffoldPresets,
+  ScaffoldSiteError,
+  scaffoldDeploymentFromFlags,
 } from "create-riebeckite/scaffold";
 import { resolveRiebeckiteProject } from "./application_root.js";
 import { runBuild } from "./commands/build.js";
@@ -31,10 +34,7 @@ export async function main(arguments_: readonly string[]): Promise<void> {
         directory: command.directory,
         force: command.force,
         preset: command.preset,
-        githubActions: command.githubActions,
-        cloudflareWorkers: command.cloudflareWorkers,
-        contentRepository: command.contentRepository,
-        siteRepository: command.siteRepository,
+        deployment: command.deployment,
       });
       return;
     }
@@ -103,10 +103,7 @@ type Command =
       force: boolean;
       preset: ScaffoldPresetName;
       listPresets: boolean;
-      githubActions: boolean;
-      cloudflareWorkers: boolean;
-      contentRepository?: string;
-      siteRepository?: string;
+      deployment: ScaffoldDeployment;
     }
   | { name: "profile"; full: boolean }
   | { name: "inspect"; target?: InspectTarget; list: boolean };
@@ -193,7 +190,7 @@ function parseInitCommand(options: readonly string[]): Command {
       if (value === undefined || !isScaffoldPresetName(value)) {
         throw new CliUsageError(
           `Unknown preset: ${value ?? "(missing)"}. ` +
-            `Available presets: ${SCAFFOLD_PRESET_NAMES.join(", ")}.`,
+            `Available presets: ${SCAFFOLD_PRESETS.map((entry) => entry.name).join(", ")}.`,
         );
       }
       preset = value;
@@ -224,33 +221,36 @@ function parseInitCommand(options: readonly string[]): Command {
     directory = option;
   }
 
-  if (githubActions && cloudflareWorkers) {
-    throw new CliUsageError(
-      "--github-actions and --cloudflare-workers are mutually exclusive.",
-    );
-  }
-  if (contentRepository !== undefined && !githubActions) {
-    throw new CliUsageError("--content-repository requires --github-actions.");
+  let deployment: ScaffoldDeployment;
+  try {
+    deployment = scaffoldDeploymentFromFlags({
+      githubActions,
+      cloudflareWorkers,
+      contentRepository,
+      siteRepository,
+    });
+  } catch (error) {
+    if (error instanceof ScaffoldSiteError) {
+      throw new CliUsageError(error.message);
+    }
+    throw error;
   }
 
   return {
     name: "init",
     directory: directory ?? ".",
     force,
-    preset: preset ?? "starter",
+    preset: preset ?? SCAFFOLD_DEFAULT_PRESET,
     listPresets,
-    githubActions,
-    cloudflareWorkers,
-    contentRepository,
-    siteRepository,
+    deployment,
   };
 }
 
 function printPresets(): void {
   console.log("Available presets:");
   console.log("");
-  for (const name of SCAFFOLD_PRESET_NAMES) {
-    console.log(`  ${name}: ${scaffoldPresets[name].description}`);
+  for (const { name, description } of SCAFFOLD_PRESETS) {
+    console.log(`  ${name}: ${description}`);
   }
 }
 

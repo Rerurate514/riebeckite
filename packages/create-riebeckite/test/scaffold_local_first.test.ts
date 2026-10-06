@@ -5,7 +5,8 @@ import path from "node:path";
 import { test } from "node:test";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import {
-  WRANGLER_DEFAULTS,
+  CLOUDFLARE_WORKERS_DEFAULTS,
+  DEFAULT_WORKER_NAME,
   WRANGLER_VERSION,
   workerNameFromDirectory,
 } from "../src/scaffold/wrangler-defaults.js";
@@ -41,7 +42,7 @@ test("local-first scaffold writes a Wrangler config named after the directory", 
     const targetDirectory = path.join(directory, "My Docs Site");
     await scaffoldRiebeckiteSite({
       targetDirectory,
-      cloudflareWorkers: true,
+      deployment: { type: "cloudflare-workers" },
     });
 
     const config = await readJson<Record<string, unknown>>(
@@ -50,16 +51,16 @@ test("local-first scaffold writes a Wrangler config named after the directory", 
     );
 
     assert.equal(config.name, workerNameFromDirectory("My Docs Site"));
-    assert.equal(config.$schema, WRANGLER_DEFAULTS.$schema);
+    assert.equal(config.$schema, CLOUDFLARE_WORKERS_DEFAULTS.$schema);
     assert.equal(
       config.compatibility_date,
-      WRANGLER_DEFAULTS.compatibility_date,
+      CLOUDFLARE_WORKERS_DEFAULTS.compatibility_date,
     );
     assert.deepEqual(
       config.compatibility_flags,
-      WRANGLER_DEFAULTS.compatibility_flags,
+      CLOUDFLARE_WORKERS_DEFAULTS.compatibility_flags,
     );
-    assert.deepEqual(config.assets, WRANGLER_DEFAULTS.assets);
+    assert.deepEqual(config.assets, CLOUDFLARE_WORKERS_DEFAULTS.assets);
   });
 });
 
@@ -68,7 +69,7 @@ test("local-first scaffold works without a custom domain", async () => {
     const targetDirectory = path.join(directory, "docs");
     await scaffoldRiebeckiteSite({
       targetDirectory,
-      cloudflareWorkers: true,
+      deployment: { type: "cloudflare-workers" },
     });
 
     const config = await readJson<Record<string, unknown>>(
@@ -86,7 +87,7 @@ test("local-first scaffold adds wrangler and no GitHub Actions workflow", async 
     const targetDirectory = path.join(directory, "docs");
     await scaffoldRiebeckiteSite({
       targetDirectory,
-      cloudflareWorkers: true,
+      deployment: { type: "cloudflare-workers" },
     });
 
     const manifest = await readJson<{
@@ -124,7 +125,7 @@ test("GitHub Actions scaffold keeps the shared Worker name and no local wrangler
     const targetDirectory = path.join(directory, "docs");
     await scaffoldRiebeckiteSite({
       targetDirectory,
-      githubActions: true,
+      deployment: { type: "github-actions", content: { type: "local" } },
     });
 
     const config = await readJson<Record<string, unknown>>(
@@ -135,7 +136,7 @@ test("GitHub Actions scaffold keeps the shared Worker name and no local wrangler
       devDependencies?: Record<string, string>;
     }>(targetDirectory, "package.json");
 
-    assert.equal(config.name, WRANGLER_DEFAULTS.name);
+    assert.equal(config.name, DEFAULT_WORKER_NAME);
     assert.equal(manifest.devDependencies?.wrangler, undefined);
   });
 });
@@ -146,7 +147,7 @@ test("the scaffold Worker name matches the deploy command for one directory", as
     const targetDirectory = path.join(directory, directoryName);
     await scaffoldRiebeckiteSite({
       targetDirectory,
-      cloudflareWorkers: true,
+      deployment: { type: "cloudflare-workers" },
     });
 
     const config = await readJson<Record<string, unknown>>(

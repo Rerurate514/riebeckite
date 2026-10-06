@@ -1,8 +1,10 @@
+import { scaffoldDeploymentFromFlags } from "./scaffold/deployment.js";
+import type { ScaffoldDeployment } from "./scaffold/options.js";
 import {
   isScaffoldPresetName,
   SCAFFOLD_PRESET_NAMES,
+  SCAFFOLD_PRESETS,
   type ScaffoldPresetName,
-  scaffoldPresets,
 } from "./scaffold/presets.js";
 
 export type CreateRiebeckiteOptions = {
@@ -10,10 +12,7 @@ export type CreateRiebeckiteOptions = {
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;
   readonly listPresets: boolean;
-  readonly githubActions: boolean;
-  readonly cloudflareWorkers: boolean;
-  readonly contentRepository?: string;
-  readonly siteRepository?: string;
+  readonly deployment: ScaffoldDeployment;
 };
 
 export function parseArguments(
@@ -82,17 +81,18 @@ export function parseArguments(
     force,
     preset: preset ?? "starter",
     listPresets,
-    githubActions,
-    cloudflareWorkers: false,
-    contentRepository,
-    siteRepository,
+    deployment: scaffoldDeploymentFromFlags({
+      githubActions,
+      contentRepository,
+      siteRepository,
+    }),
   };
 }
 
 export function printPresets(): void {
   console.log("Available presets:");
   console.log("");
-  for (const name of SCAFFOLD_PRESET_NAMES) {
-    console.log(`  ${name}: ${scaffoldPresets[name].description}`);
+  for (const { name, description } of SCAFFOLD_PRESETS) {
+    console.log(`  ${name}: ${description}`);
   }
 }

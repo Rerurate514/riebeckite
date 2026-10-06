@@ -1,12 +1,12 @@
+import path from "node:path";
+
 /**
- * Semantic defaults for the Cloudflare Workers config that the scaffold generates.
+ * Static defaults for the Cloudflare Workers config that the scaffold generates.
  */
 
-export const WRANGLER_DEFAULTS = {
+export const CLOUDFLARE_WORKERS_DEFAULTS = {
   /** JSON schema for IDE support and validation */
   $schema: "node_modules/wrangler/config-schema.json",
-  /** Worker name - becomes <name>.<account>.workers.dev */
-  name: "riebeckite-site",
   /** Compatibility date - update when Workers runtime changes require it */
   compatibility_date: "2026-06-09",
   /** Required for Node.js APIs used by Riebeckite */
@@ -16,7 +16,7 @@ export const WRANGLER_DEFAULTS = {
 } as const;
 
 /** Type for the wrangler config object */
-export type WranglerDefaults = typeof WRANGLER_DEFAULTS;
+export type CloudflareWorkersDefaults = typeof CLOUDFLARE_WORKERS_DEFAULTS;
 
 export const WRANGLER_VERSION = "^4.83.0";
 
@@ -35,8 +35,19 @@ export function workerNameFromDirectory(directoryName: string): string {
   return name.length > 0 ? name : DEFAULT_WORKER_NAME;
 }
 
-export function buildDefaultWranglerConfig(workerName: string): string {
-  return `${JSON.stringify({ ...WRANGLER_DEFAULTS, name: workerName }, null, 2)}\n`;
+export function buildWranglerConfig(workerName: string): string {
+  const config = {
+    $schema: CLOUDFLARE_WORKERS_DEFAULTS.$schema,
+    name: workerName,
+    compatibility_date: CLOUDFLARE_WORKERS_DEFAULTS.compatibility_date,
+    compatibility_flags: CLOUDFLARE_WORKERS_DEFAULTS.compatibility_flags,
+    assets: CLOUDFLARE_WORKERS_DEFAULTS.assets,
+  };
+  return `${JSON.stringify(config, null, 2)}\n`;
+}
+
+export function wranglerConfigForDirectory(directory: string): string {
+  return buildWranglerConfig(workerNameFromDirectory(path.basename(directory)));
 }
 
 /** Expected secret names in GitHub Actions workflow */
@@ -67,9 +78,6 @@ export const GITIGNORE_REQUIRED = [
 
 /** Files that must NOT be in .gitignore */
 export const GITIGNORE_FORBIDDEN = ["package-lock.json"] as const;
-
-/** Default preset name used by create-riebeckite */
-export const DEFAULT_PRESET = "starter" as const;
 
 /** Starter preset content pages (base names without language suffixes) */
 export const STARTER_CONTENT_PAGES = [

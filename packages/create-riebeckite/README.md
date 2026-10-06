@@ -101,11 +101,11 @@ Each preset has a one-line description, shown by `--list-presets`:
 - `showcase` — The complete plugin catalog with rendered examples, local fixtures, and reference pages.
 - `empty` — A blank application shell: no plugins, theme, content, or components.
 
-Presets are defined in `@riebeckite/honox` and can be imported into your own
-tooling:
+Presets are defined in `create-riebeckite/scaffold` and can be imported into
+your own tooling:
 
 ```ts
-import { scaffoldRiebeckiteSite, showcase } from "@riebeckite/honox";
+import { scaffoldRiebeckiteSite, showcase } from "create-riebeckite/scaffold";
 
 await scaffoldRiebeckiteSite({
   targetDirectory: "./my-site",

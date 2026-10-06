@@ -45,7 +45,7 @@ both helpers use. The SSG entry must re-export the resolved `config` and
 manifest to emit plugin-generated outputs and to run the per-page HTML
 inspections. Other exports are `loadRiebeckiteConfig`,
 `resolveHonoxApplication`, `resolveHonoxApplicationRoot`, `buildHonoxApplication`,
-and `startHonoxDevServer`. `scaffoldRiebeckiteSite({ targetDirectory, name?, siteTitle?, description?, baseUrl?, locale?, preset?, overwrite? })` writes a self-contained starter site and returns the generated file list. The `preset` option accepts `starter` (the default), `minimal`, `showcase`, or `empty`, or a preset object defined by you. `starter` is the practical default; `showcase` includes rendered examples, local fixtures, and complete references. It throws `ScaffoldSiteError` when the target already contains generated files and `overwrite` is not set. `riebeckite init` and `create-riebeckite` are thin command wrappers around it.
+and `startHonoxDevServer`.
 
 Catch-all routes need two small helpers so runtime routing and static
 generation agree. `contentRouteSsgParams(routePath, params)` is a drop-in

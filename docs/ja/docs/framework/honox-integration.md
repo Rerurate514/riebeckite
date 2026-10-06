@@ -129,46 +129,6 @@ flowchart LR
 
 通常の Site では `riebeckiteVite()` を利用し、独自の build integration が必要な場合のみ lower-level API を利用してください。
 
-## Site の Scaffold
-
-`scaffoldRiebeckiteSite()` を使うと、Riebeckite Site 一式を生成できます。
-
-```ts
-scaffoldRiebeckiteSite({
-  targetDirectory,
-  name,
-  siteTitle,
-  description,
-  baseUrl,
-  locale,
-  preset,
-  overwrite,
-});
-```
-
-生成されたファイルの一覧が戻り値として返されます。
-
-### Preset
-
-標準では次の preset を利用できます。
-
-| Preset | 用途 |
-| --- | --- |
-| `starter` | 通常の実用サイト向け |
-| `minimal` | 最小限の構成 |
-| `showcase` | 機能や描画例を確認するための構成 |
-| `empty` | ほぼ空の構成 |
-
-独自の preset オブジェクトを渡すこともできます。
-
-`starter` は実際の Site を作り始める場合の標準構成です。
-
-`showcase` は機能の確認を目的としており、描画例やローカル fixture、リファレンスコンテンツなどを含みます。
-
-生成先がすでに存在し、`overwrite` が指定されていない場合は `ScaffoldSiteError` が発生します。
-
-`riebeckite init` と `create-riebeckite` は、この scaffold API を利用する command wrapper です。
-
 ## Routing と SSG
 
 HonoX の runtime routing と静的生成では、同じ URL が同じページとして扱われる必要があります。

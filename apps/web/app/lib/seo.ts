@@ -24,8 +24,15 @@ export function buildArticleSeo(
   permalink: string,
   post: PostContent,
   headTags?: readonly PluginHeadTag[],
+  language?: string,
 ): SeoMetadata {
-  return seoProvider.buildArticleSeo(config, permalink, post, headTags);
+  return seoProvider.buildArticleSeo(
+    config,
+    permalink,
+    post,
+    headTags,
+    language,
+  );
 }
 
 export function buildIndexSeo(

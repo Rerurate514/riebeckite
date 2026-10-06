@@ -15,6 +15,7 @@ export function buildArticleSeo(
   permalink: string,
   post: PostContent,
   headTags?: readonly PluginHeadTag[],
+  language?: string,
 ): SeoMetadata {
   const siteName = config.site.title;
   const title = getArticleTitle(config, permalink, post.frontmatter.title);
@@ -52,7 +53,7 @@ export function buildArticleSeo(
       publisher: { "@type": "Organization", name: siteName },
       keywords: tags.length > 0 ? tags.join(", ") : undefined,
       timeRequired: readingTimeMinutes ? `PT${readingTimeMinutes}M` : undefined,
-      inLanguage: getHtmlLanguage(config),
+      inLanguage: resolveInLanguage(config, language),
     }),
   ];
 
@@ -120,6 +121,14 @@ export function buildWebsiteSeo(
     tags: [],
     jsonLd,
   };
+}
+
+function resolveInLanguage(
+  config: ResolvedRiebeckiteConfig,
+  language: string | undefined,
+): string {
+  const value = language?.trim();
+  return value ? value.replace("_", "-") : getHtmlLanguage(config);
 }
 
 function buildCanonicalUrl(

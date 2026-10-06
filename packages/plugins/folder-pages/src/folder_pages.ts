@@ -9,6 +9,8 @@ import type { FolderPage, FolderPageLink, FolderPagesModel } from "./types.js";
 
 const ENTRY_BASENAMES = ["README", "index"] as const;
 
+type Language = string | undefined;
+
 export function collapseFolderEntryLocations(
   locations: Map<string, ContentPublicLocation>,
 ): void {
@@ -19,22 +21,23 @@ export function collapseFolderEntryLocations(
     }
   }
 
-  const byFolder = new Map<string, string[]>();
-  for (const slug of locations.keys()) {
-    const basename = lastSegment(slug);
+  const byFolderLanguage = new Map<string, string[]>();
+  for (const [slug, location] of locations) {
+    const basename = entryBaseSegment(slug, location.language);
     if (!isEntryBasename(basename)) continue;
-    const folder = parentFolder(slug);
-    const slugs = byFolder.get(folder);
+    const key = languageKey(parentFolder(slug), location.language);
+    const slugs = byFolderLanguage.get(key);
     if (slugs) slugs.push(slug);
-    else byFolder.set(folder, [slug]);
+    else byFolderLanguage.set(key, [slug]);
   }
 
-  for (const slugs of byFolder.values()) {
+  for (const slugs of byFolderLanguage.values()) {
     if (slugs.length !== 1) continue;
     const slug = slugs[0];
+    if (slug === undefined) continue;
     const location = locations.get(slug);
     if (!location) continue;
-    const basename = lastSegment(slug);
+    const basename = entryBaseSegment(slug, location.language);
     if (!location.permalink.endsWith(`/${basename}`)) continue;
     const target = location.permalink.slice(
       0,
@@ -54,9 +57,6 @@ export function collapseFolderEntryLocations(
 }
 
 export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
-  const pagesByFolder = new Map<string, ContentManifestEntry[]>();
-  const subfoldersOf = new Map<string, Set<string>>();
-  const allFolders = new Set<string>();
   const routableBySlug = new Map<string, ContentManifestEntry>();
   const routablePermalinks = new Set<string>();
 
@@ -65,109 +65,152 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
     routablePermalinks.add(stripTrailingSlash(entry.permalink));
   }
 
-  const addSubfolder = (parent: string, child: string): void => {
-    const subs = subfoldersOf.get(parent);
-    if (subs) subs.add(child);
-    else subfoldersOf.set(parent, new Set([child]));
-    allFolders.add(parent);
-    allFolders.add(child);
+  const allFolders = new Set<string>();
+  const folderLanguages = new Map<string, Set<Language>>();
+  const pagesByFolderLanguage = new Map<
+    string,
+    Map<Language, ContentManifestEntry[]>
+  >();
+  const subfolders = new Map<string, Map<Language, Set<string>>>();
+
+  const addLanguage = (folder: string, language: Language): void => {
+    const set = folderLanguages.get(folder);
+    if (set) set.add(language);
+    else folderLanguages.set(folder, new Set([language]));
+  };
+
+  const addPage = (
+    folder: string,
+    language: Language,
+    entry: ContentManifestEntry,
+  ): void => {
+    let byLanguage = pagesByFolderLanguage.get(folder);
+    if (!byLanguage) {
+      byLanguage = new Map();
+      pagesByFolderLanguage.set(folder, byLanguage);
+    }
+    const entries = byLanguage.get(language);
+    if (entries) entries.push(entry);
+    else byLanguage.set(language, [entry]);
+  };
+
+  const addSubfolder = (
+    parent: string,
+    language: Language,
+    child: string,
+  ): void => {
+    let byLanguage = subfolders.get(parent);
+    if (!byLanguage) {
+      byLanguage = new Map();
+      subfolders.set(parent, byLanguage);
+    }
+    const set = byLanguage.get(language);
+    if (set) set.add(child);
+    else byLanguage.set(language, new Set([child]));
   };
 
   for (const entry of manifest.discoverableEntries) {
-    const slug = entry.slug;
-    const basename = lastSegment(slug);
-    const parent = parentFolder(slug);
-    allFolders.add(parent);
-    if (!isEntryBasename(basename)) {
-      const pages = pagesByFolder.get(parent);
-      if (pages) pages.push(entry);
-      else pagesByFolder.set(parent, [entry]);
-    }
-    let child = parent;
+    const language = entry.publicLocation.language;
+    const folder = parentFolder(entry.slug);
+    allFolders.add(folder);
+    let child = folder;
     while (child !== "") {
+      addLanguage(child, language);
       const grandparent = parentFolder(child);
-      addSubfolder(grandparent, child);
+      addSubfolder(grandparent, language, child);
       child = grandparent;
     }
+    if (isEntryBasename(entryBaseSegment(entry.slug, language))) continue;
+    if (folder !== "") addPage(folder, language, entry);
   }
 
-  const hasRoutableOwner = (folder: string): boolean =>
-    routableBySlug.has(`${folder}/README`) ||
-    routableBySlug.has(`${folder}/index`);
+  const owners = new Map<string, ContentManifestEntry>();
+  for (const entry of manifest.publicEntries) {
+    const language = entry.publicLocation.language;
+    const basename = entryBaseSegment(entry.slug, language);
+    if (!isEntryBasename(basename)) continue;
+    const folder = parentFolder(entry.slug);
+    if (folder === "") continue;
+    const key = languageKey(folder, language);
+    const existing = owners.get(key);
+    if (!existing || basename === "README") owners.set(key, entry);
+  }
 
-  const hasRoutablePage = (folder: string): boolean =>
-    routableBySlug.has(folder);
+  const hasOwner = (folder: string, language: Language): boolean =>
+    owners.has(languageKey(folder, language));
 
-  const sortedPages = (folder: string): ContentManifestEntry[] => {
-    const subfolders = subfoldersOf.get(folder);
-    const pages = (pagesByFolder.get(folder) ?? []).filter(
-      (entry) => !subfolders?.has(entry.slug),
-    );
+  const hasRoutablePage = (folder: string, language: Language): boolean => {
+    const entry = routableBySlug.get(folder);
+    return entry !== undefined && entry.publicLocation.language === language;
+  };
+
+  const generatedPath = (folder: string, language: Language): string | null =>
+    resolveGeneratedFolderLocation(manifest, folder, language);
+
+  const subfoldersFor = (folder: string, language: Language): Set<string> =>
+    subfolders.get(folder)?.get(language) ?? new Set();
+
+  const sortedPages = (
+    folder: string,
+    language: Language,
+  ): ContentManifestEntry[] => {
+    const subs = subfoldersFor(folder, language);
+    const pages = (
+      pagesByFolderLanguage.get(folder)?.get(language) ?? []
+    ).filter((entry) => !subs.has(entry.slug));
     pages.sort(compareEntries);
     return pages;
   };
 
   const navigableCache = new Map<string, boolean>();
-  const isNavigable = (folder: string): boolean => {
-    const cached = navigableCache.get(folder);
+  const isNavigable = (folder: string, language: Language): boolean => {
+    const key = languageKey(folder, language);
+    const cached = navigableCache.get(key);
     if (cached !== undefined) return cached;
-    navigableCache.set(folder, false);
+    navigableCache.set(key, false);
     let result =
-      sortedPages(folder).length > 0 ||
-      hasRoutableOwner(folder) ||
-      hasRoutablePage(folder);
+      sortedPages(folder, language).length > 0 ||
+      hasOwner(folder, language) ||
+      hasRoutablePage(folder, language);
     if (!result) {
-      for (const sub of subfoldersOf.get(folder) ?? []) {
-        if (isListed(sub)) {
+      for (const sub of subfoldersFor(folder, language)) {
+        if (isListed(sub, language)) {
           result = true;
           break;
         }
       }
     }
-    navigableCache.set(folder, result);
+    navigableCache.set(key, result);
     return result;
   };
 
-  const isListed = (folder: string): boolean =>
-    hasRoutableOwner(folder) ||
-    hasRoutablePage(folder) ||
-    (isNavigable(folder) && generatedPath(folder) !== null);
+  const isListed = (folder: string, language: Language): boolean =>
+    hasOwner(folder, language) ||
+    hasRoutablePage(folder, language) ||
+    (isNavigable(folder, language) && generatedPath(folder, language) !== null);
 
-  const generatedPath = (folder: string): string | null =>
-    resolveGeneratedFolderLocation(manifest, folder);
-
-  const folderLanguage = (folder: string): string | undefined => {
-    let language: string | undefined;
-    for (const entry of manifest.discoverableEntries) {
-      if (!entry.slug.startsWith(`${folder}/`)) continue;
-      const value = entry.publicLocation.language;
-      if (value === undefined) return undefined;
-      if (language === undefined) language = value;
-      else if (language !== value) return undefined;
-    }
-    return language;
-  };
-
-  const folderLink = (folder: string): FolderPageLink | null => {
-    if (hasRoutableOwner(folder)) {
-      const owner =
-        routableBySlug.get(`${folder}/README`) ??
-        routableBySlug.get(`${folder}/index`);
-      if (owner) return { title: owner.title, permalink: owner.permalink };
-    }
-    const page = routableBySlug.get(folder);
+  const folderLink = (
+    folder: string,
+    language: Language,
+  ): FolderPageLink | null => {
+    const owner = owners.get(languageKey(folder, language));
+    if (owner) return { title: owner.title, permalink: owner.permalink };
+    const page = hasRoutablePage(folder, language)
+      ? routableBySlug.get(folder)
+      : undefined;
     if (page) return { title: page.title, permalink: page.permalink };
-    const pathname = generatedPath(folder);
+    const pathname = generatedPath(folder, language);
     if (!pathname) return null;
     return { title: lastSegment(folder), permalink: pathname };
   };
 
   const sortedSubfolders = (
     folder: string,
+    language: Language,
   ): { folder: string; link: FolderPageLink }[] => {
-    const subs = [...(subfoldersOf.get(folder) ?? [])].flatMap((sub) => {
-      if (!isListed(sub)) return [];
-      const link = folderLink(sub);
+    const subs = [...subfoldersFor(folder, language)].flatMap((sub) => {
+      if (!isListed(sub, language)) return [];
+      const link = folderLink(sub, language);
       return link ? [{ folder: sub, link }] : [];
     });
     subs.sort((a, b) => compareLinks(a.link, b.link));
@@ -180,37 +223,62 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
   const pages: FolderPage[] = [];
   const takenPaths = new Set<string>();
   for (const folder of folders) {
-    if (!isNavigable(folder)) continue;
-    if (hasRoutableOwner(folder)) continue;
-    if (hasRoutablePage(folder)) continue;
-    const pathname = generatedPath(folder);
-    if (!pathname) continue;
-    if (pathname === "/") continue;
-    if (routablePermalinks.has(stripTrailingSlash(pathname))) continue;
-    if (takenPaths.has(pathname)) continue;
-    takenPaths.add(pathname);
-    const folders_ = sortedSubfolders(folder);
-    pages.push({
-      folder,
-      pathname,
-      language: folderLanguage(folder),
-      title: lastSegment(folder),
-      pages: sortedPages(folder).map(toLink),
-      folders: folders_.map((sub) => sub.link),
-      dependencies: [
-        { type: "folder", folder },
-        ...folders_.map<OutputDependency>((sub) => ({
-          type: "folder",
-          folder: sub.folder,
-        })),
-      ],
-    });
+    for (const language of sortedLanguages(folderLanguages.get(folder))) {
+      if (!isNavigable(folder, language)) continue;
+      if (hasOwner(folder, language)) continue;
+      if (hasRoutablePage(folder, language)) continue;
+      const pathname = generatedPath(folder, language);
+      if (!pathname) continue;
+      if (pathname === "/") continue;
+      if (routablePermalinks.has(stripTrailingSlash(pathname))) continue;
+      if (takenPaths.has(pathname)) continue;
+      takenPaths.add(pathname);
+      const folderLinks = sortedSubfolders(folder, language);
+      pages.push({
+        folder,
+        pathname,
+        language,
+        title: lastSegment(folder),
+        pages: sortedPages(folder, language).map(toLink),
+        folders: folderLinks.map((sub) => sub.link),
+        dependencies: [
+          { type: "folder", folder },
+          ...folderLinks.map<OutputDependency>((sub) => ({
+            type: "folder",
+            folder: sub.folder,
+          })),
+        ],
+      });
+    }
   }
 
   pages.sort((a, b) => compareStrings(a.pathname, b.pathname));
   const byPath = new Map<string, FolderPage>();
   for (const page of pages) byPath.set(page.pathname, page);
   return { paths: pages.map((page) => page.pathname), byPath };
+}
+
+function languageKey(folder: string, language: Language): string {
+  return `${folder}\u0000${language ?? ""}`;
+}
+
+function entryBaseSegment(slug: string, language: Language): string {
+  const segment = lastSegment(slug);
+  if (!language) return segment;
+  return segment.replace(
+    new RegExp(`[._-]${escapeRegExp(language)}$`, "i"),
+    "",
+  );
+}
+
+function sortedLanguages(languages: Set<Language> | undefined): Language[] {
+  return [...(languages ?? [])].sort((a, b) => {
+    const left = a ?? "";
+    const right = b ?? "";
+    if (left < right) return -1;
+    if (left > right) return 1;
+    return 0;
+  });
 }
 
 function isEntryBasename(basename: string): boolean {
@@ -234,6 +302,10 @@ function parentFolder(path: string): string {
 function stripTrailingSlash(url: string): string {
   if (url.length > 1 && url.endsWith("/")) return url.slice(0, -1);
   return url;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function compareEntries(

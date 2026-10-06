@@ -106,6 +106,8 @@ export type ContentPublicLocation = {
 
 export type FolderLocation = {
   pathname: string;
+  folder?: string;
+  language?: string;
 };
 
 export type PluginPageRoute = {

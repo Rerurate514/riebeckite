@@ -215,7 +215,10 @@ test("resolves a markdown folder owner without treating folder.md as an owner", 
 
 test("resolves registered generated locations and preserves ambiguous owners", () => {
   const generated = manifestOf(entry("docs/guide/page"));
-  generated.folderLocations.set(FOLDER, { pathname: "/handbook/" });
+  generated.folderLocations.set("/handbook/", {
+    pathname: "/handbook/",
+    folder: FOLDER,
+  });
   assert.deepEqual(resolveFolderLocation(generated, FOLDER), {
     type: "generated",
     pathname: "/handbook/",
@@ -237,19 +240,27 @@ test("derives a generated folder location only when public descendants agree", (
 
   const localized = manifestOf(
     {
-      ...entry("ja/docs/guide/a"),
-      permalink: "/docs/guide/a",
-      publicLocation: { slug: "ja/docs/guide/a", permalink: "/docs/guide/a" },
+      ...entry("docs/guide/a.en"),
+      permalink: "/en/docs/guide/a",
+      publicLocation: {
+        slug: "docs/guide/a.en",
+        permalink: "/en/docs/guide/a",
+        language: "en",
+      },
     },
     {
-      ...entry("ja/docs/guide/b"),
-      permalink: "/docs/guide/b",
-      publicLocation: { slug: "ja/docs/guide/b", permalink: "/docs/guide/b" },
+      ...entry("docs/guide/b.en"),
+      permalink: "/en/docs/guide/b",
+      publicLocation: {
+        slug: "docs/guide/b.en",
+        permalink: "/en/docs/guide/b",
+        language: "en",
+      },
     },
   );
   assert.equal(
-    resolveGeneratedFolderLocation(localized, "ja/docs/guide"),
-    "/docs/guide/",
+    resolveGeneratedFolderLocation(localized, "docs/guide", "en"),
+    "/en/docs/guide/",
   );
 
   const ambiguous = manifestOf(

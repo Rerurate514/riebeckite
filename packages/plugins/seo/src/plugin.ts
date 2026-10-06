@@ -17,8 +17,8 @@ export function seo(options: SeoPluginOptions = {}) {
     name: "seo",
     options,
     seo: {
-      buildArticleSeo: (config, permalink, post, headTags) =>
-        buildArticleSeo(config, permalink, post, headTags),
+      buildArticleSeo: (config, permalink, post, headTags, language) =>
+        buildArticleSeo(config, permalink, post, headTags, language),
       buildWebsiteSeo: (config, input, headTags) =>
         buildWebsiteSeo(config, input, headTags),
       buildAbsoluteUrl,

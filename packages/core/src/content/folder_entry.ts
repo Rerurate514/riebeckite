@@ -76,7 +76,12 @@ export function resolveFolderLocation(
   }
   if (candidates.length > 1) return { type: "ambiguous", candidates };
 
-  const location = manifest.folderLocations.get(normalizeFolder(folder));
+  const normalizedFolder = normalizeFolder(folder);
+  const direct = manifest.folderLocations.get(normalizedFolder);
+  if (direct) return { type: "generated", pathname: direct.pathname };
+  const location = [...manifest.folderLocations.values()].find(
+    (candidate) => candidate.folder === normalizedFolder,
+  );
   return location
     ? { type: "generated", pathname: location.pathname }
     : { type: "none" };
@@ -105,12 +110,16 @@ export function resolvePublicFolderLocation(
 export function resolveGeneratedFolderLocation(
   manifest: ContentManifest,
   folder: string,
+  language?: string,
 ): string | null {
   const normalizedFolder = normalizeFolder(folder);
   if (!normalizedFolder) return null;
   const candidates = new Set<string>();
   const prefix = `${normalizedFolder}/`;
   for (const entry of manifest.publicEntries) {
+    if (language !== undefined && entry.publicLocation.language !== language) {
+      continue;
+    }
     if (!entry.slug.startsWith(prefix)) continue;
     const remainder = entry.slug
       .slice(prefix.length)

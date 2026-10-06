@@ -263,33 +263,32 @@ test("does not create a folder page when nothing is discoverable", async () => {
 test("keeps locales separated and resolves redirects after localization", async () => {
   const content = manager(
     {
-      "ja/docs/plugins/README.md":
-        "---\ntitle: プラグイン\npublish: true\n---\n",
-      "en/docs/plugins/README.md": "---\ntitle: Plugins\npublish: true\n---\n",
-      "ja/docs/ref/a.md": "---\ntitle: A\npublish: true\n---\n",
-      "en/docs/ref/b.md": "---\ntitle: B\npublish: true\n---\n",
+      "docs/plugins/README.md": "---\ntitle: プラグイン\npublish: true\n---\n",
+      "docs/plugins/README.en.md": "---\ntitle: Plugins\npublish: true\n---\n",
+      "docs/ref/a.md": "---\ntitle: A\npublish: true\n---\n",
+      "docs/ref/b.en.md": "---\ntitle: B\npublish: true\n---\n",
     },
-    [folderPages(), l10n({ defaultLang: "ja", languages: ["ja", "en"] })],
+    [l10n({ defaultLang: "ja", languages: ["ja", "en"] }), folderPages()],
   );
 
   const locations = await content.getContentLocations();
   assert.equal(
-    locations.get("ja/docs/plugins/README")?.permalink,
+    locations.get("docs/plugins/README")?.permalink,
     "/docs/plugins/",
   );
   assert.equal(
-    locations.get("en/docs/plugins/README")?.permalink,
+    locations.get("docs/plugins/README.en")?.permalink,
     "/en/docs/plugins/",
   );
 
   const manifest = await content.getManifest();
   assert.equal(
     manifest.redirects.get("/docs/plugins/README")?.slug,
-    "ja/docs/plugins/README",
+    "docs/plugins/README",
   );
   assert.equal(
     manifest.redirects.get("/en/docs/plugins/README")?.slug,
-    "en/docs/plugins/README",
+    "docs/plugins/README.en",
   );
   assert.equal(manifest.redirects.has("/ja/docs/plugins/README"), false);
 
@@ -311,30 +310,30 @@ test("keeps locales separated and resolves redirects after localization", async 
 test("aligns localized folder pages, breadcrumbs, and docs navigation", async () => {
   const content = manager(
     {
-      "ja/docs/README.md": "---\ntitle: 日本語 docs\npublish: true\n---\n",
-      "ja/docs/guide/page.md": "---\ntitle: 日本語 page\npublish: true\n---\n",
-      "en/docs/README.md": "---\ntitle: English docs\npublish: true\n---\n",
-      "en/docs/guide/page.md": "---\ntitle: English page\npublish: true\n---\n",
+      "docs/README.md": "---\ntitle: 日本語 docs\npublish: true\n---\n",
+      "docs/guide/page.md": "---\ntitle: 日本語 page\npublish: true\n---\n",
+      "docs/README.en.md": "---\ntitle: English docs\npublish: true\n---\n",
+      "docs/guide/page.en.md": "---\ntitle: English page\npublish: true\n---\n",
     },
     [
-      folderPages(),
       l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+      folderPages(),
       breadcrumbs(),
       docs({ root: "docs" }),
     ],
   );
 
   const manifest = await content.getManifest();
-  assert.equal(manifest.bySlug.get("ja/docs/README")?.permalink, "/docs/");
-  assert.equal(manifest.bySlug.get("en/docs/README")?.permalink, "/en/docs/");
+  assert.equal(manifest.bySlug.get("docs/README")?.permalink, "/docs/");
+  assert.equal(manifest.bySlug.get("docs/README.en")?.permalink, "/en/docs/");
   assert.ok((await content.getPagePaths()).includes("/docs/guide/"));
   assert.ok((await content.getPagePaths()).includes("/en/docs/guide/"));
 
   const japanese = Object.values(
-    manifest.bySlug.get("ja/docs/guide/page")?.bodySlots ?? {},
+    manifest.bySlug.get("docs/guide/page")?.bodySlots ?? {},
   ).join("\n");
   const english = Object.values(
-    manifest.bySlug.get("en/docs/guide/page")?.bodySlots ?? {},
+    manifest.bySlug.get("docs/guide/page.en")?.bodySlots ?? {},
   ).join("\n");
   assert.match(japanese, /href="\/docs\/"/);
   assert.match(japanese, /href="\/docs\/guide\/"/);

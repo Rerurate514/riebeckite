@@ -55,7 +55,12 @@ export default createRoute(
     const tableOfContents = extractTableOfContents(post.html ?? "");
     c.set(
       "seo",
-      buildArticleSeo(route.entry.permalink, post, route.entry.headTags),
+      buildArticleSeo(
+        route.entry.permalink,
+        post,
+        route.entry.headTags,
+        getEntryLanguage(route.entry),
+      ),
     );
     c.set("headTags", route.entry.headTags ?? []);
     c.set("htmlLanguage", getEntryLanguage(route.entry));

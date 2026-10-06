@@ -99,6 +99,24 @@ test("buildArticleSeo falls back to slug, site description, and default image", 
   assert.equal(result.jsonLd?.[0]?.dateModified, undefined);
 });
 
+test("buildArticleSeo uses the entry language for JSON-LD inLanguage", () => {
+  const overridden = buildArticleSeo(
+    config,
+    "/ja/posts/hello",
+    post({ title: "こんにちは" }, ""),
+    undefined,
+    "ja",
+  );
+  assert.equal(overridden.jsonLd?.[0]?.inLanguage, "ja");
+
+  const fallback = buildArticleSeo(
+    config,
+    "/posts/hello",
+    post({ title: "Hello" }, ""),
+  );
+  assert.equal(fallback.jsonLd?.[0]?.inLanguage, "en-US");
+});
+
 test("buildArticleSeo uses the last permalink segment and treats a title equal to the site name specially", () => {
   assert.equal(
     buildArticleSeo(config, "/deep/nested/leaf", post({}, "")).title,

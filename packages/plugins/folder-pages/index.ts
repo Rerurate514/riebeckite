@@ -54,7 +54,11 @@ export function folderPages(options: FolderPagesOptions = {}) {
     },
     onManifestCreated: ({ manifest }) => {
       for (const page of modelFor(manifest).byPath.values()) {
-        manifest.folderLocations.set(page.folder, { pathname: page.pathname });
+        manifest.folderLocations.set(page.pathname, {
+          pathname: page.pathname,
+          folder: page.folder,
+          ...(page.language === undefined ? {} : { language: page.language }),
+        });
       }
     },
     pageTypes: [

@@ -34,6 +34,7 @@ export type PluginSeoExtension = {
     permalink: string,
     post: PostContent,
     headTags?: readonly PluginHeadTag[],
+    language?: string,
   ): SeoMetadata;
   buildWebsiteSeo(
     config: ResolvedRiebeckiteConfig,

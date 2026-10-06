@@ -44,11 +44,12 @@ const localizedLocationPlugin = definePlugin({
   name: "test-localized-location",
   resolveContentLocations: ({ entries }) =>
     entries.map((entry) => {
-      const language = entry.slug.startsWith("ja/") ? "ja" : "en";
+      const localized = entry.slug.endsWith(".ja");
+      const base = localized ? entry.slug.slice(0, -".ja".length) : entry.slug;
       return {
         slug: entry.slug,
-        permalink: `/${entry.slug}`,
-        language,
+        permalink: localized ? `/ja/${base}` : `/${base}`,
+        language: localized ? "ja" : "en",
       };
     }),
 });
@@ -213,9 +214,9 @@ test("keeps localized docs navigation within the current language", async () => 
     memorySource({
       "docs/index.md": "---\ntitle: English Home\npublish: true\n---\n# Home\n",
       "docs/install.md": "---\ntitle: Install\npublish: true\n---\n# Install\n",
-      "ja/docs/index.md":
+      "docs/index.ja.md":
         "---\ntitle: 日本語 Home\npublish: true\n---\n# Home\n",
-      "ja/docs/install.md":
+      "docs/install.ja.md":
         "---\ntitle: インストール\npublish: true\n---\n# Install\n",
     }),
     [],
@@ -226,7 +227,7 @@ test("keeps localized docs navigation within the current language", async () => 
   const english =
     manifest.bySlug.get("docs/index")?.bodySlots?.["article.aside"] ?? "";
   const japanese =
-    manifest.bySlug.get("ja/docs/index")?.bodySlots?.["article.aside"] ?? "";
+    manifest.bySlug.get("docs/index.ja")?.bodySlots?.["article.aside"] ?? "";
 
   assert.match(english, /English Home/);
   assert.match(english, /href="\/docs\/install"/);
@@ -249,11 +250,11 @@ test("localizes the previous and next labels by page language", async () => {
         "---\ntitle: Install\npublish: true\nsidebar:\n  order: 2\n---\n# Install\n",
       "docs/guide.md":
         "---\ntitle: Guide\npublish: true\nsidebar:\n  order: 3\n---\n# Guide\n",
-      "ja/docs/index.md":
+      "docs/index.ja.md":
         "---\ntitle: ホーム\npublish: true\nsidebar:\n  order: 1\n---\n# Home\n",
-      "ja/docs/install.md":
+      "docs/install.ja.md":
         "---\ntitle: インストール\npublish: true\nsidebar:\n  order: 2\n---\n# Install\n",
-      "ja/docs/guide.md":
+      "docs/guide.ja.md":
         "---\ntitle: ガイド\npublish: true\nsidebar:\n  order: 3\n---\n# Guide\n",
     }),
     [],
@@ -264,7 +265,7 @@ test("localizes the previous and next labels by page language", async () => {
   const english =
     manifest.bySlug.get("docs/install")?.bodySlots?.["article.footer"] ?? "";
   const japanese =
-    manifest.bySlug.get("ja/docs/install")?.bodySlots?.["article.footer"] ?? "";
+    manifest.bySlug.get("docs/install.ja")?.bodySlots?.["article.footer"] ?? "";
 
   assert.match(english, /aria-label="Previous and next docs pages"/);
   assert.match(english, />Previous</);

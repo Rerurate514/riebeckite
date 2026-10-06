@@ -87,17 +87,30 @@ function resolveRelativeDocsPath(
   root: string,
 ): string | null {
   if (entry.slug === root) return "index";
-  if (entry.slug.startsWith(`${root}/`))
-    return entry.slug.slice(root.length + 1);
+  if (!entry.slug.startsWith(`${root}/`)) return null;
+  return stripFilenameLanguage(
+    entry.slug.slice(root.length + 1),
+    entry.publicLocation.language,
+  );
+}
 
-  const language = entry.publicLocation.language;
-  if (!language) return null;
-  const localizedRoot = `${language}/${root}`;
-  if (entry.slug === localizedRoot) return "index";
-  if (entry.slug.startsWith(`${localizedRoot}/`)) {
-    return entry.slug.slice(localizedRoot.length + 1);
-  }
-  return null;
+function stripFilenameLanguage(
+  path: string,
+  language: string | undefined,
+): string {
+  if (!language) return path;
+  const segments = path.split("/");
+  const last = segments.at(-1);
+  if (last === undefined) return path;
+  segments[segments.length - 1] = last.replace(
+    new RegExp(`[._-]${escapeRegExp(language)}$`, "i"),
+    "",
+  );
+  return segments.join("/");
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function readSidebarFrontmatter(value: unknown): DocsSidebarFrontmatter {

@@ -12,6 +12,7 @@ import {
   writeFileDependencies,
 } from "@riebeckite/test/e2e";
 import { resolveTemplateRoot } from "../src/scaffold/template-loader.js";
+import { GITHUB_ACTIONS_SECRETS } from "../src/scaffold/wrangler-defaults.js";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 
@@ -98,6 +99,10 @@ test("the production template tree lives only in create-riebeckite", () => {
   assert.ok(
     !fs.existsSync(path.join(REPO_ROOT, "templates", "scaffold")),
     "the repository root must not own the scaffold template tree",
+  );
+  assert.ok(
+    !fs.existsSync(path.join(REPO_ROOT, "templates", "cloudflare")),
+    "the repository root must not own a duplicate Cloudflare deployment template",
   );
 });
 
@@ -205,6 +210,59 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
           ),
         ),
       "generated assets must come from the installed create-riebeckite templates",
+    );
+
+    const installedDeployTemplate = path.join(
+      installedTemplates,
+      "deployment",
+      "github-actions",
+      "deploy.yml",
+    );
+    assert.ok(
+      fs.existsSync(installedDeployTemplate),
+      "the installed create-riebeckite package must ship the deployment template",
+    );
+
+    const deployedSiteDir = path.join(base, "generated-deploy-site");
+    run(
+      process.execPath,
+      [
+        cliBin,
+        "init",
+        deployedSiteDir,
+        "--preset",
+        "minimal",
+        "--github-actions",
+      ],
+      { cwd: consumerDir },
+    );
+
+    assert.ok(
+      fs.existsSync(path.join(deployedSiteDir, "wrangler.jsonc")),
+      "deployment-enabled scaffold must generate wrangler.jsonc",
+    );
+    const generatedWorkflow = fs
+      .readFileSync(
+        path.join(deployedSiteDir, ".github", "workflows", "deploy.yml"),
+        "utf8",
+      )
+      .replaceAll("\r\n", "\n");
+    const renderedTemplate = fs
+      .readFileSync(installedDeployTemplate, "utf8")
+      .replaceAll("\r\n", "\n")
+      .replace("{{contentCheckout}}", "")
+      .replaceAll(
+        "{{cloudflareApiToken}}",
+        GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN,
+      )
+      .replaceAll(
+        "{{cloudflareAccountId}}",
+        GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID,
+      );
+    assert.equal(
+      generatedWorkflow,
+      renderedTemplate,
+      "the generated workflow must come from the installed package template",
     );
   } finally {
     await fsp.rm(base, { recursive: true, force: true });

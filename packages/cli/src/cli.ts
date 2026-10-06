@@ -31,6 +31,10 @@ export async function main(arguments_: readonly string[]): Promise<void> {
         directory: command.directory,
         force: command.force,
         preset: command.preset,
+        githubActions: command.githubActions,
+        cloudflareWorkers: command.cloudflareWorkers,
+        contentRepository: command.contentRepository,
+        siteRepository: command.siteRepository,
       });
       return;
     }
@@ -99,6 +103,10 @@ type Command =
       force: boolean;
       preset: ScaffoldPresetName;
       listPresets: boolean;
+      githubActions: boolean;
+      cloudflareWorkers: boolean;
+      contentRepository?: string;
+      siteRepository?: string;
     }
   | { name: "profile"; full: boolean }
   | { name: "inspect"; target?: InspectTarget; list: boolean };
@@ -145,15 +153,22 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <init [directory] [--preset <name>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
+
+const INIT_USAGE =
+  "Usage: riebeckite init [directory] [--preset <name>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]";
 
 function parseInitCommand(options: readonly string[]): Command {
   let directory: string | undefined;
   let force = false;
   let listPresets = false;
   let preset: ScaffoldPresetName | undefined;
+  let githubActions = false;
+  let cloudflareWorkers = false;
+  let contentRepository: string | undefined;
+  let siteRepository: string | undefined;
 
   for (let index = 0; index < options.length; index += 1) {
     const option = options[index];
@@ -163,6 +178,14 @@ function parseInitCommand(options: readonly string[]): Command {
     }
     if (option === "--list-presets") {
       listPresets = true;
+      continue;
+    }
+    if (option === "--github-actions") {
+      githubActions = true;
+      continue;
+    }
+    if (option === "--cloudflare-workers") {
+      cloudflareWorkers = true;
       continue;
     }
     if (option === "--preset") {
@@ -177,15 +200,37 @@ function parseInitCommand(options: readonly string[]): Command {
       index += 1;
       continue;
     }
+    if (option === "--content-repository" || option === "--site-repository") {
+      const value = options[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new CliUsageError(
+          `${option} requires an owner/repository value.`,
+        );
+      }
+      if (option === "--content-repository") {
+        contentRepository = value;
+      } else {
+        siteRepository = value;
+      }
+      index += 1;
+      continue;
+    }
     if (option.startsWith("-")) {
       throw new CliUsageError(`Unknown init option: ${option}`);
     }
     if (directory !== undefined) {
-      throw new CliUsageError(
-        "Usage: riebeckite init [directory] [--preset <name>] [--force]",
-      );
+      throw new CliUsageError(INIT_USAGE);
     }
     directory = option;
+  }
+
+  if (githubActions && cloudflareWorkers) {
+    throw new CliUsageError(
+      "--github-actions and --cloudflare-workers are mutually exclusive.",
+    );
+  }
+  if (contentRepository !== undefined && !githubActions) {
+    throw new CliUsageError("--content-repository requires --github-actions.");
   }
 
   return {
@@ -194,6 +239,10 @@ function parseInitCommand(options: readonly string[]): Command {
     force,
     preset: preset ?? "starter",
     listPresets,
+    githubActions,
+    cloudflareWorkers,
+    contentRepository,
+    siteRepository,
   };
 }
 

@@ -93,6 +93,33 @@ test("the built CLI scaffolds a project through the external create-riebeckite p
   }
 });
 
+test("the built CLI scaffolds a deployment-enabled project", () => {
+  const temporary = fs.mkdtempSync(
+    path.join(os.tmpdir(), "riebeckite-cli-deploy-"),
+  );
+  try {
+    const siteDir = path.join(temporary, "site");
+    const result = spawnSync(
+      process.execPath,
+      [cliBundle, "init", siteDir, "--preset", "minimal", "--github-actions"],
+      { cwd: temporary, encoding: "utf8" },
+    );
+    const output = `${result.stdout}${result.stderr}`;
+    assert.equal(result.status, 0, output);
+    assertNoUnresolvedImports(output);
+    assert.ok(
+      fs.existsSync(path.join(siteDir, "wrangler.jsonc")),
+      "wrangler.jsonc must be generated",
+    );
+    assert.ok(
+      fs.existsSync(path.join(siteDir, ".github", "workflows", "deploy.yml")),
+      "the deployment workflow must be generated",
+    );
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
 test("the built CLI bundle externalizes the scaffold instead of inlining templates", () => {
   const bundle = fs.readFileSync(cliBundle, "utf8");
   assert.match(bundle, /create-riebeckite\/scaffold/);

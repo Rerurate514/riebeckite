@@ -15,7 +15,6 @@ export const DEFAULT_QR_CODE_OPTIONS: ResolvedQrCodeOptions = {
   caption: true,
   className: "rb-qr",
   language: "qr",
-  fallback: true,
 };
 
 /**
@@ -48,7 +47,6 @@ export function resolveQrCodeOptions(
     caption: options.caption ?? DEFAULT_QR_CODE_OPTIONS.caption,
     className,
     language,
-    fallback: options.fallback ?? DEFAULT_QR_CODE_OPTIONS.fallback,
   };
 }
 

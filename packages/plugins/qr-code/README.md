@@ -46,20 +46,23 @@ code block untouched and reports a `@riebeckite/plugin-qr-code` diagnostic.
 Each block becomes:
 
 ```html
-<figure class="rb-qr" data-qr="rendered" data-qr-level="M" data-qr-margin="1">
-  <figcaption class="rb-qr__caption">…</figcaption>
-  <div class="rb-qr__canvas" role="img"><svg>…</svg></div>
-  <details class="rb-qr__fallback">
-    <summary>QR source</summary>
-    <pre><code>…</code></pre>
-  </details>
+<figure class="rb-qr" data-qr="rendered" data-qr-level="M" data-qr-margin="1" style="--rb-qr-size:160px">
+  <div class="rb-qr__canvas" role="img" aria-label="QR code"><svg>…</svg></div>
+  <figcaption class="rb-qr__caption">
+    <span class="rb-qr__caption-text">…</span>
+    <a class="rb-qr__source" href="…">…</a>
+  </figcaption>
 </figure>
 ```
 
 - `data-qr` is `"rendered"` on success and `"error"` when the encoder is
   unavailable or the block cannot be encoded.
-- The raw text stays available in `details.rb-qr__fallback` (unless `fallback`
-  is `false`), so an error never loses content.
+- The encoded payload is always rendered as plain text in
+  `figcaption.rb-qr__caption`, so the value stays readable and copyable even
+  without scanning the code. An `http:`, `https:`, `mailto:`, or `tel:` payload
+  becomes an `<a class="rb-qr__source">`; anything else stays a `<span>`.
+- The card width follows the `width` option instead of the payload, so a long
+  URL wraps rather than stretching the figure.
 - Errors and empty blocks report a snippet diagnostic with
   `source: "@riebeckite/plugin-qr-code"`.
 
@@ -84,7 +87,6 @@ virtual store.
 | `caption` | `boolean` | `true` | Show a caption from the title / `# caption:` line |
 | `className` | `string` | `"rb-qr"` | Figure CSS class |
 | `language` | `string` | `"qr"` | Fence language to intercept |
-| `fallback` | `boolean` | `true` | Keep the raw text in `<details>` |
 
 The caption comes from the code-block `title` (code meta) or a leading
 `# caption: …` line. A leading caption line is removed from the encoded body.

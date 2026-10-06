@@ -6,62 +6,65 @@
     --rb-color-border,
     color-mix(in srgb, var(--rb-qr-ink) 18%, transparent)
   );
+  --rb-qr-gutter: 1rem;
   box-sizing: border-box;
-  width: fit-content;
-  max-width: 100%;
+  inline-size: calc(var(--rb-qr-size, 160px) + 2 * var(--rb-qr-gutter));
+  max-inline-size: 100%;
   margin: 2rem auto;
   border: 1px solid var(--rb-qr-rule);
   background: var(--rb-qr-paper);
   color: var(--rb-qr-ink);
 }
 
+.rb-qr__canvas {
+  display: grid;
+  place-items: center;
+  padding: var(--rb-qr-gutter);
+}
+
+.rb-qr__canvas > svg {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  max-inline-size: var(--rb-qr-size, 160px);
+}
+
 .rb-qr__caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
   padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--rb-qr-rule);
+  border-top: 1px solid var(--rb-qr-rule);
   color: var(--rb-qr-muted);
   font-size: 0.8125rem;
   text-align: center;
 }
 
-.rb-qr__canvas {
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-}
-
-.rb-qr__canvas > svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-.rb-qr__fallback {
-  border-top: 1px solid var(--rb-qr-rule);
-  color: var(--rb-qr-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-qr__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rb-qr__fallback pre {
-  overflow: auto;
-  margin: 0 1rem 0.75rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rb-qr-rule);
+.rb-qr__caption-text {
   color: var(--rb-qr-ink);
-  background: color-mix(in srgb, var(--rb-qr-ink) 6%, transparent);
+  overflow-wrap: anywhere;
+}
+
+.rb-qr__source {
+  min-inline-size: 0;
+  color: var(--rb-qr-muted);
+  font-family: var(--rb-font-mono, monospace);
+  font-size: 0.75rem;
+  text-align: start;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+a.rb-qr__source {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .rb-qr[data-qr="error"] .rb-qr__canvas:empty::before {
   content: "QR code could not be rendered.";
-  color: var(--rb-qr-muted);
-}
-
-.rb-qr[data-qr="pending"] .rb-qr__canvas:empty::before {
-  content: "Rendering QR code…";
   color: var(--rb-qr-muted);
 }
 

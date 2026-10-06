@@ -77,30 +77,7 @@ function buildRenderedFigure(
   caption: string | null,
   options: ResolvedQrCodeOptions,
 ): ElementNode {
-  const labelId = `${figureId(source, options)}-caption`;
-  return element(
-    "figure",
-    {
-      className: options.className,
-      dataQr: "rendered",
-      dataQrLevel: options.level,
-      dataQrMargin: String(options.margin),
-    },
-    [
-      ...renderCaption(caption, options, labelId),
-      element(
-        "div",
-        {
-          className: qrElementClassName(options.className, "canvas"),
-          role: "img",
-          ariaLabelledby: caption ? labelId : undefined,
-          ariaLabel: caption ? undefined : "QR code",
-        },
-        [raw(svg)],
-      ),
-      ...renderFallback(source, options),
-    ],
-  );
+  return buildFigure(source, caption, options, "rendered", [raw(svg)]);
 }
 
 function buildErrorFigure(
@@ -111,17 +88,27 @@ function buildErrorFigure(
   file: unknown,
 ): ElementNode {
   reportDiagnostic(file, `QR code could not be rendered: ${message}`, "render");
+  return buildFigure(source, caption, options, "error", []);
+}
+
+function buildFigure(
+  source: string,
+  caption: string | null,
+  options: ResolvedQrCodeOptions,
+  state: "rendered" | "error",
+  canvasChildren: HastNode[],
+): ElementNode {
   const labelId = `${figureId(source, options)}-caption`;
   return element(
     "figure",
     {
       className: options.className,
-      dataQr: "error",
+      dataQr: state,
       dataQrLevel: options.level,
       dataQrMargin: String(options.margin),
+      style: `--rb-qr-size:${options.width}px`,
     },
     [
-      ...renderCaption(caption, options, labelId),
       element(
         "div",
         {
@@ -130,46 +117,59 @@ function buildErrorFigure(
           ariaLabelledby: caption ? labelId : undefined,
           ariaLabel: caption ? undefined : "QR code",
         },
-        [],
+        canvasChildren,
       ),
-      ...renderFallback(source, options),
+      renderCaption(source, caption, options, labelId),
     ],
   );
 }
 
 function renderCaption(
+  source: string,
   caption: string | null,
   options: ResolvedQrCodeOptions,
   labelId: string,
-): HastNode[] {
-  if (!caption) return [];
-  return [
-    element(
-      "figcaption",
-      {
-        id: labelId,
-        className: qrElementClassName(options.className, "caption"),
-      },
-      [text(caption)],
-    ),
-  ];
+): ElementNode {
+  const children: HastNode[] = [];
+  if (caption) {
+    children.push(
+      element(
+        "span",
+        {
+          id: labelId,
+          className: qrElementClassName(options.className, "caption-text"),
+        },
+        [text(caption)],
+      ),
+    );
+  }
+  children.push(renderSource(source, options));
+  return element(
+    "figcaption",
+    { className: qrElementClassName(options.className, "caption") },
+    children,
+  );
 }
 
-function renderFallback(
+function renderSource(
   source: string,
   options: ResolvedQrCodeOptions,
-): HastNode[] {
-  if (!options.fallback) return [];
-  return [
-    element(
-      "details",
-      { className: qrElementClassName(options.className, "fallback") },
-      [
-        element("summary", {}, [text("QR source")]),
-        element("pre", {}, [element("code", {}, [text(source)])]),
-      ],
-    ),
-  ];
+): HastNode {
+  const className = qrElementClassName(options.className, "source");
+  const href = navigableHref(source);
+  if (href) return element("a", { className, href }, [text(source)]);
+  return element("span", { className }, [text(source)]);
+}
+
+const NAVIGABLE_PROTOCOLS = new Set(["http:", "https:", "mailto:", "tel:"]);
+
+function navigableHref(source: string): string | null {
+  try {
+    const { protocol } = new URL(source);
+    return NAVIGABLE_PROTOCOLS.has(protocol) ? source : null;
+  } catch {
+    return null;
+  }
 }
 
 function extractCaption(

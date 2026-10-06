@@ -26,7 +26,7 @@ export function qrCode(options: QrCodeOptions = {}) {
     name: PLUGIN_NAME,
     order: -10,
     processedContentCache: {
-      version: "qr-code-v1",
+      version: "qr-code-v2",
       dependencyMode: "none",
     },
     options,
@@ -84,7 +84,7 @@ function validateQrCodeOptions(
     }
   }
 
-  for (const key of ["caption", "fallback"] as const) {
+  for (const key of ["caption"] as const) {
     if (options[key] !== undefined && typeof options[key] !== "boolean") {
       issues.push({ path: key, message: "Expected a boolean." });
     }

@@ -42,18 +42,18 @@ https://example.com/
 各ブロックは次の形になります。
 
 ```html
-<figure class="rb-qr" data-qr="rendered" data-qr-level="M" data-qr-margin="1">
-  <figcaption class="rb-qr__caption">…</figcaption>
-  <div class="rb-qr__canvas" role="img"><svg>…</svg></div>
-  <details class="rb-qr__fallback">
-    <summary>QR source</summary>
-    <pre><code>…</code></pre>
-  </details>
+<figure class="rb-qr" data-qr="rendered" data-qr-level="M" data-qr-margin="1" style="--rb-qr-size:160px">
+  <div class="rb-qr__canvas" role="img" aria-label="QR code"><svg>…</svg></div>
+  <figcaption class="rb-qr__caption">
+    <span class="rb-qr__caption-text">…</span>
+    <a class="rb-qr__source" href="…">…</a>
+  </figcaption>
 </figure>
 ```
 
 - `data-qr` は成功時に `"rendered"`、エンコーダを読み込めない場合やエンコードに失敗した場合に `"error"` になります。
-- 元のテキストは `details.rb-qr__fallback` に残ります（`fallback: false` の場合は除く）。エラー時も内容が失われることはありません。
+- エンコード対象の値は `figcaption.rb-qr__caption` に常にテキストとして表示されるため、コードを読み取らなくても内容を確認・コピーできます。`http:`・`https:`・`mailto:`・`tel:` の値は `<a class="rb-qr__source">` になり、それ以外は `<span>` のままです。
+- カードの幅はペイロードではなく `width` オプションに従うため、長い URL はカードを押し広げず折り返します。
 - エラーと空ブロックは `source: "@riebeckite/plugin-qr-code"` の診断として報告されます。
 
 ### エンコーダの読み込み
@@ -73,7 +73,6 @@ QR エンコーダ（`qrcode`）はビルド時に動的インポートするた
 | `caption` | `boolean` | `true` | タイトルまたは `# caption:` 行をキャプションとして表示する |
 | `className` | `string` | `"rb-qr"` | figure の CSS クラス |
 | `language` | `string` | `"qr"` | 対象とするフェンス言語 |
-| `fallback` | `boolean` | `true` | 元のテキストを `<details>` に残す |
 
 キャプションはコードブロックの `title`（コードメタ）または先頭の `# caption: …` 行から取得します。先頭のキャプション行はエンコード対象から取り除きます。
 

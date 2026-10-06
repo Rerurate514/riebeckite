@@ -20,8 +20,6 @@ export type QrCodeOptions = {
   className?: string;
   /** Fence language that selects the block. Defaults to `"qr"`. */
   language?: string;
-  /** Keep the raw source in a collapsible `<details>`. Defaults to `true`. */
-  fallback?: boolean;
 };
 
 /** `QrCodeOptions` with every field resolved to a concrete value. */
@@ -34,7 +32,6 @@ export type ResolvedQrCodeOptions = {
   caption: boolean;
   className: string;
   language: string;
-  fallback: boolean;
 };
 
 /**

@@ -257,6 +257,8 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
+レンダリングされた Markdown 本文は site application が `.rb-article-content` で包み、Markdown typography はこの wrapper にのみ適用されます。plugin component の見出しは plugin 自身が所有します。
+
 Primitive が担当するのは主に、
 
 - semantic HTML

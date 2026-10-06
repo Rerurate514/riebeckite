@@ -748,6 +748,7 @@ Framework が提供する代表的な Hook は、
 .rb-article-layout
 .rb-article-header
 .rb-article-body
+.rb-article-content
 .rb-article-meta
 .rb-article-footer
 .rb-sidebar
@@ -755,7 +756,7 @@ Framework が提供する代表的な Hook は、
 
 です。
 
-`.rb-article-body` は Markdown のセマンティックなベースライン（リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロック）を持つ場所です。このベースラインはレイヤー化されているため、テーマは構造を再宣言する必要はなく、`--rb-*` トークンとレイヤー外のキャラクター規則で見た目を表現します。
+レンダリングされた Markdown 本文は `.rb-article-content` に包まれ、Markdown のセマンティックなベースライン（リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロック）はこの wrapper が持ちます。`.rb-article-body` は header、metadata、本文、plugin slot を含む article body のシェルです。ベースラインはレイヤー化されているため、テーマは構造を再宣言する必要はなく、`--rb-*` トークンとレイヤー外のキャラクター規則で見た目を表現します。
 
 Plugin は、
 

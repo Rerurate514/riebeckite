@@ -206,22 +206,24 @@
 }
 
 /* ---- Body rhythm ---- */
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body {
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-content {
   font-family: var(--rb-font-body);
   line-height: 1.7;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body p {
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-content p {
   margin: 0.9em 0;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   :is(ul, ol) {
   margin: 1em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body li {
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-content
+  li {
   margin: 0.3em 0;
 }
 
@@ -242,7 +244,9 @@
   text-wrap: balance;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body h2 {
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-content
+  h2 {
   margin: 2em 0 0.75em;
   border-left: 3px solid var(--rb-color-accent);
   padding-left: 0.6em;
@@ -254,7 +258,9 @@
   text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body h3 {
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-content
+  h3 {
   margin: 1.6em 0 0.5em;
   border-left: 2px solid var(--rb-color-border-strong);
   padding-left: 0.5em;
@@ -266,7 +272,9 @@
   text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body h4 {
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-content
+  h4 {
   margin: 1.4em 0 0.4em;
   font-family: var(--rb-font-heading);
   font-size: 0.875rem;
@@ -277,7 +285,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   :is(h5, h6) {
   margin: 1.2em 0 0.4em;
   font-family: var(--rb-font-heading);
@@ -300,12 +308,12 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-heading="plain"]
-  :is(.rb-article-header h1, .rb-article-body h1, .rb-article-body h2),
+  :is(.rb-article-header h1, .rb-article-content h1, .rb-article-content h2),
 :is(
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-heading="plain"]
-  .rb-article-body
+  .rb-article-content
   :is(h3, h4, h5, h6) {
   border-left: 0;
   padding-left: 0;
@@ -319,7 +327,7 @@
 /* Accent text is mixed toward ink so it clears WCAG AA on the day paper
    (#2e7de9 alone is ~3.1:1) while staying an electric blue. */
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  :is(.rb-article-content, .rb-article-footer, .rb-article-meta)
   a {
   color: color-mix(in srgb, var(--rb-color-accent) 50%, var(--rb-color-ink));
   text-decoration: none;
@@ -328,14 +336,14 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  :is(.rb-article-content, .rb-article-footer, .rb-article-meta)
   a:hover {
   text-decoration: underline;
 }
 
 /* ---- Blockquote ---- */
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   blockquote {
   margin: 1.5em 0 0;
   border-left: 3px solid var(--rb-color-accent);
@@ -347,18 +355,20 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   blockquote
   p:first-of-type::before,
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   blockquote
   p:last-of-type::after {
   content: none;
 }
 
 /* ---- Rules ---- */
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-body hr {
+:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
+  .rb-article-content
+  hr {
   margin: 2.5em 0;
   border: 0;
   border-top: 1px solid var(--rb-color-accent);
@@ -366,7 +376,7 @@
 
 /* ---- Code ---- */
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   :not(pre)
   > code {
   border: 1px solid var(--rb-color-border);
@@ -378,7 +388,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   pre:not(:where(.rr-code *)) {
   margin: 1.5em 0;
   border: 1px solid var(--rb-color-border);
@@ -394,7 +404,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   pre
   code {
   border: 0;
@@ -405,7 +415,7 @@
 
 /* ---- Tables ---- */
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   table:not(:where(.rr-diff-history *)) {
   margin: 1.5em 0;
   border: 1px solid var(--rb-color-border);
@@ -414,13 +424,13 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   thead {
   background: color-mix(in srgb, var(--rb-color-accent) 8%, transparent);
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rb-article-body
+  .rb-article-content
   :is(th, td) {
   border: 1px solid var(--rb-color-border);
   padding: 0.5em 0.75em;
@@ -428,7 +438,12 @@
 
 /* ---- Media: square corners ---- */
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  :is(.rb-article-body img, .rb-article-body video, .rr-media, .rr-attachment) {
+  :is(
+    .rb-article-content img,
+    .rb-article-content video,
+    .rr-media,
+    .rr-attachment
+  ) {
   border-radius: 0;
 }
 
@@ -593,7 +608,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body {
+  .rb-article-content {
   line-height: 1.6;
 }
 
@@ -601,7 +616,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   p {
   margin: 0.65em 0;
 }
@@ -610,7 +625,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   :is(ul, ol) {
   margin: 0.75em 0;
 }
@@ -619,7 +634,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   li {
   margin: 0.2em 0;
 }
@@ -628,7 +643,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   h2 {
   margin: 1.4em 0 0.5em;
 }
@@ -637,7 +652,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   h3 {
   margin: 1.15em 0 0.4em;
 }
@@ -646,7 +661,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   :is(h4, h5, h6) {
   margin: 1em 0 0.35em;
 }
@@ -664,7 +679,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   :is(pre, blockquote, table) {
   margin: 1.1em 0;
 }
@@ -673,7 +688,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-density="compact"]
-  .rb-article-body
+  .rb-article-content
   hr {
   margin: 1.75em 0;
 }
@@ -683,7 +698,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
-  :is(.rb-article-header h1, .rb-article-body h2, .rb-article-body h3) {
+  :is(.rb-article-header h1, .rb-article-content h2, .rb-article-content h3) {
   text-shadow: 0 0 8px
     color-mix(in srgb, var(--rb-color-accent) 35%, transparent);
 }
@@ -692,7 +707,7 @@
     :root,
     .rb-theme-root
   )[data-theme-name="tokyonight"][data-tokyonight-neon="on"]
-  .rb-article-body
+  .rb-article-content
   a:hover {
   text-shadow: 0 0 6px
     color-mix(in srgb, var(--rb-color-accent) 55%, transparent);

@@ -209,82 +209,86 @@ function SampleArticle(props: { title: string; id: string }) {
       </header>
       <p class="rb-article-meta">テーマ見本 · 2026</p>
       <div class="rb-article-body">
-        <p>
-          この段落はテーマの本文組版を示します。インラインコードは
-          <code>const theme = "{props.title}"</code> のように表示され、
-          <a href={`#${demoId}`}>リンク</a>や<strong>強調</strong>、
-          <em>斜体</em>
-          も含みます。
-        </p>
-        <h2 id={demoId}>見出しレベル2</h2>
-        <p>
-          Riebeckite
-          のテーマは色だけでなく、余白・罫線・角丸・組版まで変えられます。
-          段落のリズムと見出しの階層に注目してください。
-        </p>
-        <h3>補足的な見出し</h3>
-        <p>h3 までの階層を用意し、見出しサイズの差も比較できます。</p>
-        <blockquote>
-          <p>引用はテーマごとに異なる表情を持ちます。</p>
-        </blockquote>
-        <h3 id={`${demoId}-toc`}>箇条書き</h3>
-        <ul>
-          <li>設計トークンで色を決める</li>
-          <li>安定したフックで構造を組む</li>
-          <li>テーマ固有のバリアントで個性を出す</li>
-        </ul>
-        <ol>
-          <li>トークン</li>
-          <li>キャラクター層</li>
-          <li>バリアント</li>
-        </ol>
-        <h3>コード</h3>
-        <div class="rr-code">
-          <div class="rr-code__body">
-            <pre class="rr-code__pre">
-              <code class="rr-code__code">
-                {codeLines.map((line) => (
-                  <span class="rr-code__line" key={line}>
-                    {line}
-                  </span>
-                ))}
-              </code>
-            </pre>
+        <div class="rb-article-content">
+          <p>
+            この段落はテーマの本文組版を示します。インラインコードは
+            <code>const theme = "{props.title}"</code> のように表示され、
+            <a href={`#${demoId}`}>リンク</a>や<strong>強調</strong>、
+            <em>斜体</em>
+            も含みます。
+          </p>
+          <h2 id={demoId}>見出しレベル2</h2>
+          <p>
+            Riebeckite
+            のテーマは色だけでなく、余白・罫線・角丸・組版まで変えられます。
+            段落のリズムと見出しの階層に注目してください。
+          </p>
+          <h3>補足的な見出し</h3>
+          <p>h3 までの階層を用意し、見出しサイズの差も比較できます。</p>
+          <blockquote>
+            <p>引用はテーマごとに異なる表情を持ちます。</p>
+          </blockquote>
+          <h3 id={`${demoId}-toc`}>箇条書き</h3>
+          <ul>
+            <li>設計トークンで色を決める</li>
+            <li>安定したフックで構造を組む</li>
+            <li>テーマ固有のバリアントで個性を出す</li>
+          </ul>
+          <ol>
+            <li>トークン</li>
+            <li>キャラクター層</li>
+            <li>バリアント</li>
+          </ol>
+          <h3>コード</h3>
+          <div class="rr-code">
+            <div class="rr-code__body">
+              <pre class="rr-code__pre">
+                <code class="rr-code__code">
+                  {codeLines.map((line) => (
+                    <span class="rr-code__line" key={line}>
+                      {line}
+                    </span>
+                  ))}
+                </code>
+              </pre>
+            </div>
           </div>
-        </div>
-        <h3>表</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Token</th>
-              <th>役割</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>paper</td>
-              <td>背景</td>
-            </tr>
-            <tr>
-              <td>ink</td>
-              <td>本文</td>
-            </tr>
-            <tr>
-              <td>accent</td>
-              <td>強調</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="rr-callout rr-callout--note" data-callout="note">
-          <div class="rr-callout__title">
-            <div class="rr-callout__icon" />
-            <div class="rr-callout__title-inner">Note</div>
+          <h3>表</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Token</th>
+                <th>役割</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>paper</td>
+                <td>背景</td>
+              </tr>
+              <tr>
+                <td>ink</td>
+                <td>本文</td>
+              </tr>
+              <tr>
+                <td>accent</td>
+                <td>強調</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="rr-callout rr-callout--note" data-callout="note">
+            <div class="rr-callout__title">
+              <div class="rr-callout__icon" />
+              <div class="rr-callout__title-inner">Note</div>
+            </div>
+            <div class="rr-callout__content">
+              <p>
+                コールアウトは <code>.rr-callout</code>{" "}
+                フックでスタイルされます。
+              </p>
+            </div>
           </div>
-          <div class="rr-callout__content">
-            <p>
-              コールアウトは <code>.rr-callout</code> フックでスタイルされます。
-            </p>
-          </div>
+          <hr />
         </div>
         <nav class="rr-table-of-contents">
           <p>目次</p>
@@ -305,7 +309,6 @@ function SampleArticle(props: { title: string; id: string }) {
             </li>
           </ul>
         </aside>
-        <hr />
       </div>
       <footer class="rb-article-footer">
         <p>記事フッター（.rb-article-footer）の見本です。</p>

@@ -51,7 +51,10 @@ export default function Article(props: Props) {
             readingTimeMinutes={readingTimeMinutes}
           />
           <ContentSlot html={props.bodySlots?.["article.before-content"]} />
-          <div dangerouslySetInnerHTML={{ __html: articleHtml.rest }} />
+          <div
+            class="rb-article-content"
+            dangerouslySetInnerHTML={{ __html: articleHtml.rest }}
+          />
           {props.afterContent}
           <ContentSlot html={props.bodySlots?.["article.after-content"]} />
         </ArticleContent>

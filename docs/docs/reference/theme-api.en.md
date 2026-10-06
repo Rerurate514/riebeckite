@@ -259,8 +259,9 @@ uses two class namespaces:
 - `rb-*` — framework structural hooks and semantic design tokens. Structural
   hooks include `.rb-theme-root` (the theme root container), `.rb-site`,
   `.rb-article`, `.rb-article-layout`, `.rb-article-header`,
-  `.rb-article-body`, `.rb-article-meta`, `.rb-article-footer`, and
-  `.rb-sidebar`. Navigation uses `.rb-site-header`, `.rb-nav`,
+  `.rb-article-body`, `.rb-article-content`, `.rb-article-meta`,
+  `.rb-article-footer`, and `.rb-sidebar`. Navigation uses `.rb-site-header`,
+  `.rb-nav`,
   `.rb-nav__list`, `.rb-nav__item`, `.rb-nav__link`,
   `.rb-nav__link--active`, `.rb-nav__children`, `.rb-nav__mobile`,
   `.rb-nav__toggle`, and `.rb-site-footer`.
@@ -293,15 +294,16 @@ stable hooks directly to give a site a visual character.
   unlayered, so unlayered theme rules win over them without `!important`.
   Never use `!important`.
 - Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
-  `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`,
-  `.rb-article-footer`, `.rb-sidebar`, and the `rr-*` plugin roots
-  listed under [Stable CSS hooks](#stable-css-hooks). Do not invent new
-  `rb-*` / `rr-*` class names; `.rr-*` BEM parts are internal.
-- `.rb-article-body` carries the Markdown semantic baseline (list markers and
+  `.rb-article-header`, `.rb-article-body`, `.rb-article-content`,
+  `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`, and the `rr-*`
+  plugin roots listed under [Stable CSS hooks](#stable-css-hooks). Do not
+  invent new `rb-*` / `rr-*` class names; `.rr-*` BEM parts are internal.
+- `.rb-article-content` carries the Markdown semantic baseline (list markers and
   indentation, headings, paragraph and block spacing, tables, figures,
   definitions, inline code, preformatted blocks). That baseline is layered, so
   a theme expresses appearance through `--rb-*` tokens and unlayered character
-  rules rather than re-declaring the structure.
+  rules rather than re-declaring the structure. `.rb-article-body` is the shell
+  that contains it; plugin components keep their own headings wherever placed.
 - A theme may ship self-hosted webfonts (Latin subsets) inside its package
   under `styles/fonts/`, reference them with relative `url()`, and include the
   font license file. Japanese and other CJK text should fall back to system

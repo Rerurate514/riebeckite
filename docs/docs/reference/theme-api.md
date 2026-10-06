@@ -615,6 +615,7 @@ Framework の代表的な Stable Hook は、
 .rb-article-layout
 .rb-article-header
 .rb-article-body
+.rb-article-content
 .rb-article-meta
 .rb-article-footer
 .rb-sidebar
@@ -632,7 +633,7 @@ Framework の代表的な Stable Hook は、
 
 です。
 
-`.rb-article-body` は Markdown のセマンティックなベースライン（リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロック）を持ちます。このベースラインはレイヤー化されているため、テーマが見た目を再宣言するのではなく、`--rb-*` トークンとレイヤー外のキャラクター規則で表現します。
+`.rb-article-content` はレンダリングされた Markdown 本文の wrapper で、Markdown のセマンティックなベースライン（リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロック）を持ちます。`.rb-article-body` はその wrapper を含む article body のシェルです。このベースラインはレイヤー化されているため、テーマが見た目を再宣言するのではなく、`--rb-*` トークンとレイヤー外のキャラクター規則で表現します。
 
 Plugin では、
 

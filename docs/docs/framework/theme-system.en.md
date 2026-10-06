@@ -246,7 +246,7 @@ The theme API is not designed to modify `class`, `style`, `id`, or `lang` freely
 
 Themes target documented stable hooks, not internal markup. There are two class namespaces.
 
-- **`rb-*`** — structural hooks and semantic design tokens provided by the framework. Structural hooks: `.rb-theme-root` (the theme root container), `.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`.
+- **`rb-*`** — structural hooks and semantic design tokens provided by the framework. Structural hooks: `.rb-theme-root` (the theme root container), `.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-content`, `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`.
 - **`rr-<feature>`** — the root hook on the outermost element rendered by a plugin or feature. Examples: `.rr-search`, `.rr-callout`, `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`, `.rr-code-tabs`, `.rr-lightbox`, `.rr-excalidraw`, `.rr-mermaid`, `.rr-query`, `.rr-cardlink`, `.rr-diff-history`, `.rr-attachment`, `.rr-media`, `.rr-recent-posts`, `.rr-garden-explorer`.
 
 A theme should style only these root hooks and the descendants a plugin documents. BEM elements (`__…`) and modifiers (`--…`) are internal implementation details. Generic helpers such as `.sr-only` are not plugin hooks. Plugins keep legacy classes for backward compatibility, so the same element can carry both `.rr-<feature>` and the old class; target `rr-*` from themes.
@@ -261,16 +261,20 @@ stable hooks directly to give a site a visual character.
   unlayered theme rules win over them without `!important`. Never use
   `!important`.
 - Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
-  `.rb-article-header`, `.rb-article-body`, `.rb-article-meta`,
-  `.rb-article-footer`, `.rb-sidebar`, and the `rr-*` plugin roots above. Do
-  not invent new `rb-*` / `rr-*` class names; `.rr-*` BEM parts are internal.
-- `.rb-article-body` is where the Markdown semantic baseline lives: the
+  `.rb-article-header`, `.rb-article-body`, `.rb-article-content`,
+  `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`, and the `rr-*` plugin
+  roots above. Do not invent new `rb-*` / `rr-*` class names; `.rr-*` BEM parts
+  are internal.
+- `.rb-article-content` is where the Markdown semantic baseline lives: the
   structural rules that keep Markdown readable after the CSS reset (list
   markers and indentation, headings, paragraph and block spacing, tables,
   figures, definitions, inline code, and preformatted blocks). A theme styles
   the appearance of that baseline through `--rb-*` tokens and character rules;
   it does not need to re-declare the structure. The baseline is layered, so a
   theme's unlayered character rules and utility classes both win over it.
+- `.rb-article-body` is the article body shell that hosts the header, metadata,
+  rendered Markdown, and plugin slots. It carries no Markdown typography itself,
+  so plugin components keep their own headings wherever they are placed.
 - A theme may ship self-hosted webfonts (Latin subsets) in its package under
   `styles/fonts/`, reference them with relative `url()`, and include the font
   license file. Japanese and other CJK text should fall back to system font

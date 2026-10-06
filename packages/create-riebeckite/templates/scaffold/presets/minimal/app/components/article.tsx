@@ -43,7 +43,10 @@ export function SiteArticle({
               dangerouslySetInnerHTML={{ __html: bodySlots["article.before-content"] }}
             />
           ) : null}
-          <div dangerouslySetInnerHTML={{ __html: post.html ?? "" }} />
+          <div
+            class="rb-article-content"
+            dangerouslySetInnerHTML={{ __html: post.html ?? "" }}
+          />
           {afterContent}
           {bodySlots?.["article.after-content"] ? (
             <div

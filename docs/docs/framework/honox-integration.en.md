@@ -81,7 +81,9 @@ Primitives provide semantic HTML, those hooks, and `class`/`className`
 composition only. They do not own article copy, metadata formatting,
 navigation, cards, page layouts, islands, or CSS. Those belong to the site
 application. `ArticleHeader` and `ArticleContent` accept either children or
-their HTML input prop, never both.
+their HTML input prop, never both. The rendered Markdown is wrapped by the site
+application in `.rb-article-content`; Markdown typography is scoped to that
+wrapper, so plugin components keep their own headings wherever they are placed.
 
 ```tsx
 import {

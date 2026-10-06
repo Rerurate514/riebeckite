@@ -225,28 +225,28 @@
 }
 
 /* ---- Long-form rhythm ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content {
   font-family: var(--rb-font-body);
   font-size: 1.0625rem;
   line-height: 1.75;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body p {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content p {
   margin: 1em 0;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   :is(ul, ol) {
   margin: 1.1em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body li {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content li {
   margin: 0.3em 0;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   li::marker {
   color: var(--rb-color-muted);
 }
@@ -268,14 +268,14 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   :is(h2, h3, h4, h5, h6) {
   color: var(--rb-color-ink);
   font-family: var(--rb-font-heading);
   line-height: 1.3;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body h2 {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content h2 {
   margin: 2.2em 0 0.7em;
   padding-bottom: 0.3em;
   border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
@@ -283,20 +283,20 @@
   font-weight: 700;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body h3 {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content h3 {
   margin: 1.8em 0 0.55em;
   font-size: 1.2rem;
   font-weight: 600;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body h4 {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content h4 {
   margin: 1.5em 0 0.45em;
   font-size: 1.02rem;
   font-weight: 600;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   :is(h5, h6) {
   margin: 1.3em 0 0.4em;
   color: var(--rb-color-muted);
@@ -307,7 +307,7 @@
 
 /* ---- Links: Gruvbox blue, underline on hover ---- */
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  :is(.rb-article-body, .rb-article-footer, .rb-article-meta, .rb-sidebar)
+  :is(.rb-article-content, .rb-article-footer, .rb-article-meta, .rb-sidebar)
   a {
   color: var(--rb-color-accent);
   text-decoration: none;
@@ -316,14 +316,14 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  :is(.rb-article-body, .rb-article-footer, .rb-article-meta, .rb-sidebar)
+  :is(.rb-article-content, .rb-article-footer, .rb-article-meta, .rb-sidebar)
   a:hover {
   text-decoration: underline;
 }
 
 /* ---- Blockquote: flat, gray left rule (Gruvbox markdownBlockquote) ---- */
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   blockquote {
   margin: 1.5em 0 0;
   border-left: 3px solid var(--rb-color-muted);
@@ -334,18 +334,18 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   blockquote
   p:first-of-type::before,
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   blockquote
   p:last-of-type::after {
   content: none;
 }
 
 /* ---- Rules ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-body hr {
+:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content hr {
   margin: 2.6em 0;
   border: 0;
   border-top: var(--rb-rule-width) solid var(--rb-color-border);
@@ -353,7 +353,7 @@
 
 /* ---- Inline code: chip on the Gruvbox code surface ---- */
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   :not(pre)
   > code {
   border: var(--rb-rule-width) solid var(--rb-color-border);
@@ -367,7 +367,7 @@
 
 /* ---- Bare fenced code (plugin code keeps its own frame/padding) ---- */
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   pre:not(:where(.rr-code *)) {
   margin: 1.5em 0;
   border: var(--rb-rule-width) solid var(--rb-color-border);
@@ -382,7 +382,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   pre:not(:where(.rr-code *))
   code {
   border: 0;
@@ -394,7 +394,7 @@
 
 /* ---- Tables: hairlines + a tinted header row ---- */
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   table:not(:where(.rr-diff-history *)) {
   margin: 1.6em 0;
   border: var(--rb-rule-width) solid var(--rb-color-border);
@@ -403,7 +403,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   :is(th, td) {
   border: var(--rb-rule-width) solid var(--rb-color-border);
   padding: 0.5em 0.75em;
@@ -411,7 +411,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rb-article-body
+  .rb-article-content
   thead
   th {
   background: color-mix(
@@ -426,8 +426,8 @@
 /* ---- Media ---- */
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
   :is(
-    .rb-article-body img,
-    .rb-article-body video,
+    .rb-article-content img,
+    .rb-article-content video,
     .rr-media,
     .rr-attachment,
     .rr-lightbox,

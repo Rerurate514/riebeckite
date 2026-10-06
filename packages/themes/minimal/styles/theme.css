@@ -124,38 +124,38 @@
 }
 
 /* ---- Body rhythm: open leading, generous paragraphs. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content {
   font-family: var(--rb-font-body);
   font-size: 1.0625rem;
   line-height: 1.85;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body p {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content p {
   margin: 1.2em 0;
   text-wrap: pretty;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   :is(ul, ol) {
   margin: 1.35em 0;
   padding-left: 1.5em;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   :is(ul, ol)
   :is(ul, ol) {
   margin: 0.5em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body li {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content li {
   margin: 0.5em 0;
   padding-left: 0.15em;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   li::marker {
   color: var(--rb-color-muted);
 }
@@ -174,7 +174,7 @@
   text-wrap: balance;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body h2 {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content h2 {
   margin: 3.25rem 0 1rem;
   padding-top: 1.75rem;
   border-top: 1px solid var(--rb-color-border);
@@ -186,7 +186,7 @@
   text-wrap: balance;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body h3 {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content h3 {
   margin: 2.25rem 0 0.75rem;
   font-family: var(--rb-font-heading);
   font-size: 1.125rem;
@@ -195,7 +195,7 @@
   letter-spacing: -0.005em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body h4 {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content h4 {
   margin: 1.9rem 0 0.6rem;
   font-family: var(--rb-font-heading);
   font-size: 1rem;
@@ -205,7 +205,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   :is(h5, h6) {
   margin: 1.6rem 0 0.5rem;
   font-family: var(--rb-font-heading);
@@ -218,7 +218,7 @@
 
 /* ---- Links: ink, with a quiet underline that firms up on hover. ---- */
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  :is(.rb-article-content, .rb-article-footer, .rb-article-meta)
   a {
   color: var(--rb-color-ink);
   text-decoration: underline;
@@ -232,14 +232,14 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  :is(.rb-article-body, .rb-article-footer, .rb-article-meta)
+  :is(.rb-article-content, .rb-article-footer, .rb-article-meta)
   a:hover {
   text-decoration-color: var(--rb-color-ink);
 }
 
 /* ---- Blockquote: a single hairline, muted ink, no fill. ---- */
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   blockquote {
   margin: 2rem 0 0;
   padding: 0.1rem 0 0.1rem 1.25rem;
@@ -251,18 +251,18 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   blockquote
   p:first-of-type::before,
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   blockquote
   p:last-of-type::after {
   content: none;
 }
 
 /* ---- Rules: a low-contrast hairline. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-body hr {
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content hr {
   width: 100%;
   height: 1px;
   margin: 3.5rem 0;
@@ -272,7 +272,7 @@
 
 /* ---- Inline code: a monochrome chip. ---- */
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   :not(pre)
   > code {
   padding: 0.1em 0.35em;
@@ -286,7 +286,7 @@
 
 /* ---- Bare code blocks: flat, hairline border, bare tint. ---- */
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   pre:not(:where(.rr-code *)) {
   margin: 2rem 0 0;
   padding: 1rem 1.1rem;
@@ -301,13 +301,13 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   pre:not(:where(.rr-code *)):has(+ :is(h1, h2)) {
   margin-bottom: 2rem;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   pre:not(:where(.rr-code *))
   code {
   padding: 0;
@@ -319,7 +319,7 @@
 
 /* ---- Tables: hairlines and a quiet, weighted header. ---- */
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   table:not(:where(.rr-diff-history *)) {
   margin: 2rem 0;
   border: 0;
@@ -327,7 +327,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   :is(th, td) {
   padding: 0.55em 0.85em;
   border-bottom: 1px solid var(--rb-color-border);
@@ -336,7 +336,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   thead
   th {
   border-bottom: 1px solid var(--rb-color-border-strong);
@@ -346,7 +346,7 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rb-article-body
+  .rb-article-content
   tbody
   tr:last-child
   :is(th, td) {
@@ -356,8 +356,8 @@
 /* ---- Media and embedded plugin frames: square corners. ---- */
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   :is(
-    .rb-article-body img,
-    .rb-article-body video,
+    .rb-article-content img,
+    .rb-article-content video,
     .rr-media,
     .rr-attachment,
     .rr-excalidraw,

@@ -178,17 +178,14 @@ body {
   gap: var(--rb-layout-gap, 2rem);
 }
 
-.rb-article-body {
+.rb-article-body,
+.site-article__footer {
   min-width: 0;
   padding-inline: var(--rb-space-2, 1rem);
 }
 
 .site-article__aside {
   display: none;
-}
-
-.site-article__footer {
-  min-width: 0;
 }
 
 @media (min-width: 88rem) {

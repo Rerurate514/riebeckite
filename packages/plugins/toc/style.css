@@ -61,7 +61,8 @@
 
   @media (min-width: 88rem) {
     .table-of-contents--desktop {
-      display: block;
+      display: flex;
+      flex-direction: column;
       grid-column: 1;
       grid-row: 1;
       position: sticky;
@@ -71,12 +72,18 @@
       max-height: calc(100dvh - 8rem);
       margin-block: 0;
       margin-inline-start: calc(100% + var(--rb-layout-gap));
-      overflow: auto;
+      overflow: hidden;
       border-block: 0;
       border-inline-start: 1px solid
         color-mix(in oklab, currentColor 18%, transparent);
       padding-block: 0;
       padding-inline-start: 1rem;
+    }
+
+    .table-of-contents--desktop .table-of-contents__list {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
     :root[data-article-layout="sidebar"] .table-of-contents--desktop {

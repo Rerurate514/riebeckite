@@ -1,16 +1,16 @@
 ---
-title: Riebeckite Documentation
-description: Official documentation for the Riebeckite framework.
+title: Riebeckite
+description: Markdown や Obsidian のノートから、高速で拡張できる Web サイトを作るオープンソースフレームワークです。
+translation: home
+homepage: true
 ---
-# Riebeckite Documentation
-![[riebeckite-logo-horizontal.png]]
 
-![[HW]]
+# Riebeckite
 
-Choose your language:
+Markdown や Obsidian のノートから、高速で拡張できる Web サイトを作るオープンソースフレームワークです。
 
-- [English documentation](./README.en.md)
-- [日本語ドキュメント](./README.md)
-
-This directory is the content source for the official Riebeckite documentation app.
-Agent-only notes under `docs/agents/` are kept in the repository for coding agents, but the official docs app excludes them from published content.
+- [はじめる](./docs/getting-started/README.md)
+- [ドキュメント](./docs/README.md)
+- [プラグイン](./docs/plugins/README.md)
+- [テーマ](./docs/themes/README.md)
+- [リファレンス](./docs/reference/README.md)

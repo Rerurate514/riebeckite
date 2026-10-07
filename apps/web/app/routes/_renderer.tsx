@@ -11,6 +11,7 @@ import { Link, Script } from "honox/server";
 import { SiteFooter, SiteHeader } from "../components/site-navigation";
 import { config } from "../config";
 import { content } from "../content";
+import { getHreflangAlternates, toOgLocale } from "../lib/locale";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {
   getPluginScripts,
@@ -26,6 +27,11 @@ export const __importing_islands = true;
 export default jsxRenderer(async ({ children }, c) => {
   const { site } = config;
   const headTags = c.get("headTags") ?? [];
+  const htmlLanguage = c.get("htmlLanguage") ?? getHtmlLanguage();
+  const ogLocale = toOgLocale(c.get("htmlLanguage") ?? site.locale);
+  const ogAlternates = getHreflangAlternates(headTags)
+    .map((language) => toOgLocale(language))
+    .filter((locale) => locale !== ogLocale);
   const navigation = resolveSiteNavigation(
     config,
     await content.getManifest(),
@@ -48,10 +54,7 @@ export default jsxRenderer(async ({ children }, c) => {
   const themeStyle = getThemeStyle();
 
   return (
-    <ThemeRoot
-      theme={config.theme}
-      lang={c.get("htmlLanguage") ?? getHtmlLanguage()}
-    >
+    <ThemeRoot theme={config.theme} lang={htmlLanguage}>
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -67,7 +70,10 @@ export default jsxRenderer(async ({ children }, c) => {
         <meta property="og:type" content={seo.type} />
         <meta property="og:url" content={seo.canonicalUrl} />
         <meta property="og:site_name" content={site.title} />
-        <meta property="og:locale" content={site.locale} />
+        <meta property="og:locale" content={ogLocale} />
+        {ogAlternates.map((locale) => (
+          <meta property="og:locale:alternate" content={locale} key={locale} />
+        ))}
         {seo.imageUrl && <meta property="og:image" content={seo.imageUrl} />}
         {seo.publishedTime && (
           <meta property="article:published_time" content={seo.publishedTime} />
@@ -113,7 +119,7 @@ export default jsxRenderer(async ({ children }, c) => {
         <SiteHeader
           path={c.req.path}
           items={navigation.primary}
-          language={c.get("htmlLanguage")}
+          language={htmlLanguage}
         />
         <ColorModeToggle />
         <SearchBar />
@@ -121,7 +127,7 @@ export default jsxRenderer(async ({ children }, c) => {
         <SiteFooter
           path={c.req.path}
           items={navigation.secondary}
-          language={c.get("htmlLanguage")}
+          language={htmlLanguage}
         />
       </body>
     </ThemeRoot>

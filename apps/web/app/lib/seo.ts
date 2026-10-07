@@ -6,6 +6,12 @@ import type {
 } from "@riebeckite/core";
 import { resolvePlugins } from "@riebeckite/core";
 import { config } from "../config";
+import {
+  buildSoftwareApplicationSchema,
+  getHomeCopy,
+  getHomePath,
+  type HomeLocale,
+} from "./home";
 import { buildArchiveDescription, buildTagDescription } from "./locale";
 
 const seoProvider = findSeoProvider();
@@ -86,6 +92,32 @@ export function buildWebsiteSeo(
   headTags?: readonly PluginHeadTag[],
 ): SeoMetadata {
   return seoProvider.buildWebsiteSeo(config, input, headTags);
+}
+
+export function buildHomeSeo(
+  locale: HomeLocale,
+  headTags?: readonly PluginHeadTag[],
+): SeoMetadata {
+  const copy = getHomeCopy(locale);
+  const website = buildWebsiteSeo(
+    {
+      title: copy.title,
+      description: copy.description,
+      path: getHomePath(locale),
+      kind: "index",
+    },
+    headTags,
+  );
+  const jsonLd = ((website.jsonLd ?? []) as Record<string, unknown>[])
+    .filter((schema) => schema["@type"] !== "BreadcrumbList")
+    .map((schema) =>
+      schema["@type"] === "WebSite"
+        ? { ...schema, inLanguage: locale === "ja" ? "ja-JP" : "en-US" }
+        : schema,
+    );
+  jsonLd.push(buildSoftwareApplicationSchema(locale, website.canonicalUrl));
+
+  return { ...website, title: copy.title, jsonLd };
 }
 
 export function buildAbsoluteUrl(pathOrUrl: string): string {

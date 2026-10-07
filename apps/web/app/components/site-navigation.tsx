@@ -58,7 +58,8 @@ export function SiteFooter({
             Riebeckite
           </a>
           <p class="site-footer__description">
-            An open-source framework for publishing Markdown sites.
+            An open-source framework for building websites from Markdown and
+            Obsidian.
           </p>
           <div class="site-footer__author">
             <span>Author</span>

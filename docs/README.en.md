@@ -1,26 +1,17 @@
-> English documentation · [日本語](./README.md) · [Agent documentation](./agents/README.md)
+---
+title: Riebeckite
+description: Riebeckite is an open-source framework for publishing Markdown and Obsidian notes as a website.
+translation: home
+homepage: true
+---
 
-![[riebeckite-logo-horizontal.png]]
+# Riebeckite
 
-# Riebeckite Documentation
+Riebeckite publishes Markdown and Obsidian-style notes as a fast static site. Write in `content/`, add plugins for search, diagrams, and localization, choose a theme, and build a static site you can deploy anywhere.
 
-Riebeckite publishes Markdown and Obsidian-style notes as a fast static site.
+New here? Start with **[Getting Started](./docs/getting-started/README.en.md)**. For every section in one place, see the [Documentation index](./docs/README.en.md).
 
-New here? Start with **[Getting Started](./docs/getting-started/README.en.md)**. It takes you from `create-riebeckite` to a running site, your first Markdown page, and a first deployment.
-
-For every section in one place, see the [Documentation index](./docs/README.en.md).
-
-```text
-Quick Start
-  ↓
-Installation
-  ↓
-First Content
-  ↓
-Presets
-  ↓
-Deployment
-```
+Getting a first site running goes: **Quick Start → Installation → First Content → Presets → Deployment**.
 
 ## What do you want to do?
 

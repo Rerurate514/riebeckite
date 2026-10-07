@@ -12,7 +12,7 @@ export function renderSitemap(
 ): string {
   const urls = [
     { loc: buildAbsoluteUrl(config, "/"), lastmod: undefined },
-    ...filterFeedEntries(config, entries)
+    ...filterFeedEntries(config, entries, entries.length)
       .filter((entry) => entry.permalink !== "/")
       .map((entry) => ({
         loc: buildPostUrl(config, entry.permalink),

@@ -62,8 +62,9 @@ import { rerurateTheme } from "@riebeckite/theme-rerurate";
 
 export default defineConfig({
   site: {
-    title: "Riebeckite Documentation",
-    description: "Official documentation for the Riebeckite framework",
+    title: "Riebeckite",
+    description:
+      "An open-source framework for building fast, extensible websites from Markdown and Obsidian notes.",
     author: "Riebeckite Maintainers: Rerurate_514",
     baseUrl: "https://riebeckite.dev",
     locale: "ja_JP",

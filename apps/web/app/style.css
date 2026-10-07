@@ -1,5 +1,6 @@
 @import "tailwindcss" source("../app");
 @import "./components/style.css";
+@import "./components/home/style.css";
 @import "./styles/shell.css";
 @import "./styles/callout.css";
 @import "./styles/markdown.css";

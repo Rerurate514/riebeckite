@@ -1,0 +1,299 @@
+.rb-home {
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+  display: flex;
+  flex-direction: column;
+  gap: var(--rb-space-8);
+}
+
+body:has(.rb-home) .rb-site-header {
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+}
+
+.rb-home__eyebrow {
+  margin: 0;
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.rb-home__title {
+  margin: var(--rb-space-2) 0 0;
+  font-family: var(--rb-font-heading);
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+.rb-home__tagline {
+  max-width: 40rem;
+  margin: var(--rb-space-3) 0 0;
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.3rem, 1rem + 1.6vw, 1.9rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.rb-home__lead {
+  max-width: 40rem;
+  margin: var(--rb-space-3) 0 0;
+  color: var(--rb-color-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.rb-home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rb-space-3);
+  margin-top: var(--rb-space-4);
+}
+
+.rb-home__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rb-home__cta--primary {
+  background: var(--rb-color-ink);
+  color: var(--rb-color-paper);
+}
+
+.rb-home__cta--secondary {
+  background: transparent;
+  color: var(--rb-color-ink);
+}
+
+.rb-home__cta:hover,
+.rb-home__cta:focus-visible {
+  background: var(--rb-color-accent);
+  border-color: var(--rb-color-accent);
+  color: #171717;
+}
+
+.rb-home__cta:focus-visible {
+  outline: 2px solid var(--rb-color-accent);
+  outline-offset: 3px;
+}
+
+.rb-home__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rb-space-2) var(--rb-space-4);
+  margin: var(--rb-space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-home__quick a {
+  color: var(--rb-color-ink);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-decoration-color: var(--rb-color-border-strong);
+  text-underline-offset: 0.25em;
+}
+
+.rb-home__quick a:hover,
+.rb-home__quick a:focus-visible {
+  color: var(--rb-color-accent);
+  text-decoration-color: currentColor;
+}
+
+.rb-home__quick a:focus-visible {
+  outline: 2px solid var(--rb-color-accent);
+  outline-offset: 2px;
+}
+
+.rb-home__section {
+  border-top: 1px solid var(--rb-color-border);
+  padding-top: var(--rb-space-6);
+}
+
+.rb-home__section h2 {
+  margin: 0;
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.rb-home__section p {
+  max-width: 46rem;
+  margin: var(--rb-space-2) 0 0;
+  line-height: 1.65;
+}
+
+.rb-home__section-intro {
+  color: var(--rb-color-muted);
+}
+
+.rb-home__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--rb-space-4);
+  margin: var(--rb-space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-home__card {
+  border-top: 1px solid var(--rb-color-border-strong);
+  padding-top: var(--rb-space-2);
+}
+
+.rb-home__card h3 {
+  margin: 0;
+  font-family: var(--rb-font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.rb-home__card h3 a {
+  color: var(--rb-color-ink);
+}
+
+.rb-home__card h3 a:hover,
+.rb-home__card h3 a:focus-visible {
+  color: var(--rb-color-accent);
+}
+
+.rb-home__card p {
+  margin: var(--rb-space-1) 0 0;
+  color: var(--rb-color-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.rb-home__split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rb-space-4);
+  margin-top: var(--rb-space-4);
+}
+
+.rb-home__panel {
+  border: 1px solid var(--rb-color-border);
+  background: var(--rb-color-surface);
+  padding: var(--rb-space-3);
+}
+
+.rb-home__panel h3 {
+  margin: 0;
+  font-family: var(--rb-font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.rb-home__panel p {
+  margin: var(--rb-space-2) 0;
+  color: var(--rb-color-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.rb-home__panel a {
+  color: var(--rb-color-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rb-color-border-strong);
+  text-underline-offset: 0.25em;
+}
+
+.rb-home__panel a:hover,
+.rb-home__panel a:focus-visible {
+  color: var(--rb-color-accent);
+  text-decoration-color: currentColor;
+}
+
+.rb-home__evidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rb-space-2);
+  margin: var(--rb-space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rb-home__evidence li {
+  border: 1px solid var(--rb-color-border);
+  padding: 0.3rem 0.65rem;
+  font-family: var(--rb-font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.rb-home__more a {
+  color: var(--rb-color-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rb-color-border-strong);
+  text-underline-offset: 0.25em;
+}
+
+.rb-home__more a:hover,
+.rb-home__more a:focus-visible {
+  color: var(--rb-color-accent);
+  text-decoration-color: currentColor;
+}
+
+.rb-home__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--rb-space-4);
+  margin: var(--rb-space-4) 0 var(--rb-space-4);
+  padding: 0;
+  list-style: none;
+}
+
+.rb-home__step {
+  border-top: 1px solid var(--rb-color-border-strong);
+  padding-top: var(--rb-space-2);
+}
+
+.rb-home__step h3 {
+  margin: 0;
+  font-family: var(--rb-font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.rb-home__step p {
+  margin: var(--rb-space-2) 0 0;
+  color: var(--rb-color-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.rb-home__step code {
+  display: inline-block;
+  background: var(--rb-color-code-background);
+  padding: 0.2rem 0.45rem;
+  font-family: var(--rb-font-mono);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.rb-home__step p code {
+  color: var(--rb-color-ink);
+}
+
+@media (max-width: 48rem) {
+  .rb-home {
+    gap: var(--rb-space-6);
+  }
+
+  .rb-home__split {
+    grid-template-columns: 1fr;
+  }
+}

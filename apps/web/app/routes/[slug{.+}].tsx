@@ -12,9 +12,11 @@ import {
 } from "@riebeckite/plugin-toc";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
+import HomePage from "../components/home/home";
 import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
-import { buildArticleSeo, buildWebsiteSeo } from "../lib/seo";
+import { resolveWebLocale } from "../lib/locale";
+import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
@@ -40,6 +42,12 @@ export default createRoute(
         ),
       );
       return c.render(<PageBody html={resolved.page.body} />);
+    }
+
+    if (resolved.post.frontmatter.homepage === true) {
+      const locale = resolveWebLocale(getEntryLanguage(resolved.entry));
+      c.set("seo", buildHomeSeo(locale, resolved.entry.headTags));
+      return c.render(<HomePage locale={locale} />);
     }
 
     const slug = resolved.entry.slug;

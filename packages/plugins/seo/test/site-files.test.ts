@@ -57,6 +57,19 @@ test("renderSitemap with no entries still emits the home page", () => {
   );
 });
 
+test("renderSitemap is not truncated by the feed limit", () => {
+  const entries = Array.from({ length: 40 }, (_, index) =>
+    entry(`p${index}`, {
+      frontmatter: { publish: true, updated: "2024-01-01" },
+    }),
+  );
+
+  const xml = renderSitemap(config, entries);
+
+  assert.equal((xml.match(/<url>/g) ?? []).length, 41);
+  assert.match(xml, /<loc>https:\/\/example\.com\/p39<\/loc>/);
+});
+
 test("renderRobots emits a permissive policy and the sitemap URL", () => {
   assertGolden(
     renderRobots(config),

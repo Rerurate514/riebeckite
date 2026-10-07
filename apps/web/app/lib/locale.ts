@@ -51,3 +51,25 @@ export function buildArchiveDescription(
     ? `${siteTitle} の ${period} の記事一覧です。`
     : `Posts from ${period} on ${siteTitle}.`;
 }
+
+export function toOgLocale(lang: string | undefined): string {
+  return resolveWebLocale(lang) === "ja" ? "ja_JP" : "en_US";
+}
+
+export type HreflangHeadTag = {
+  tag?: string;
+  attrs?: Record<string, string>;
+};
+
+export function getHreflangAlternates(
+  headTags: readonly HreflangHeadTag[] | undefined,
+): WebLocale[] {
+  const languages = new Set<WebLocale>();
+  for (const tag of headTags ?? []) {
+    const hreflang = tag.attrs?.hreflang;
+    if (tag.tag === "link" && tag.attrs?.rel === "alternate" && hreflang) {
+      languages.add(resolveWebLocale(hreflang));
+    }
+  }
+  return [...languages];
+}

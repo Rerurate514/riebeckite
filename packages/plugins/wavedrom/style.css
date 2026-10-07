@@ -60,13 +60,13 @@
   color: var(--rb-wavedrom-muted);
 }
 
-html[data-theme="dark"] .rb-wavedrom {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-wavedrom {
   --rb-wavedrom-paper: var(--rb-color-ink, #000000);
   --rb-wavedrom-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-wavedrom {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-wavedrom {
     --rb-wavedrom-paper: var(--rb-color-ink, #000000);
     --rb-wavedrom-ink: var(--rb-color-paper, #ffffff);
   }

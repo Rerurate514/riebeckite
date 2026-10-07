@@ -88,13 +88,13 @@
   font-size: 0.8125rem;
 }
 
-html[data-theme="dark"] .rb-excalibrain {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-excalibrain {
   --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
   --rb-excalibrain-paper: var(--rb-color-ink, #000000);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-excalibrain {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-excalibrain {
     --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
     --rb-excalibrain-paper: var(--rb-color-ink, #000000);
   }

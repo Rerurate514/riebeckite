@@ -109,13 +109,13 @@
   font-size: 0.875rem;
 }
 
-html[data-theme="dark"] .rb-flashcards {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-flashcards {
   --rb-flashcards-ink: var(--rb-color-paper, #ffffff);
   --rb-flashcards-paper: var(--rb-color-ink, #000000);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-flashcards {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-flashcards {
     --rb-flashcards-ink: var(--rb-color-paper, #ffffff);
     --rb-flashcards-paper: var(--rb-color-ink, #000000);
   }

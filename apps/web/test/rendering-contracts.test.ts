@@ -78,20 +78,35 @@ test("A7: rendered plugins treat explicit dark and system dark identically", () 
       file: "../../../packages/plugins/wavedrom/style.css",
       selector: ".rb-wavedrom",
     },
+    {
+      file: "../../../packages/plugins/canvas/style.css",
+      selector: ".rb-canvas",
+    },
   ]) {
     const css = read(file);
     const name = escapeRegExp(selector);
+    const scope = escapeRegExp(":is(:root, .rb-theme-root)");
     const explicit = declarationsFor(
       css,
-      new RegExp(`html\\[data-theme="dark"\\] ${name}[^{]*\\{([^}]*)\\}`),
+      new RegExp(`${scope}\\[data-theme="dark"\\] ${name}[^{]*\\{([^}]*)\\}`),
     );
     const system = declarationsFor(
       css,
       new RegExp(
-        `@media \\(prefers-color-scheme: dark\\) \\{[\\s\\S]*?:root:not\\(\\[data-theme\\]\\) ${name}[^{]*\\{([^}]*)\\}`,
+        `@media \\(prefers-color-scheme: dark\\) \\{[\\s\\S]*?${scope}:not\\(\\[data-theme\\]\\) ${name}[^{]*\\{([^}]*)\\}`,
       ),
     );
 
+    assert.match(
+      css,
+      new RegExp(`${scope}\\[data-theme="dark"\\] ${name}`),
+      `${selector} explicit dark must be scoped to the theme root`,
+    );
+    assert.match(
+      css,
+      new RegExp(`${scope}:not\\(\\[data-theme\\]\\) ${name}`),
+      `${selector} system dark must be scoped to the theme root`,
+    );
     assert.equal(
       system,
       explicit,
@@ -119,7 +134,7 @@ test("A7: every plugin with explicit dark tokens also handles system dark", () =
     withDark.push(entry.name);
     assert.match(
       css,
-      /@media \(prefers-color-scheme: dark\)[\s\S]*?:root:not\(\[data-theme\]\)/,
+      /@media \(prefers-color-scheme: dark\)[\s\S]*?(?::is\(:root, \.rb-theme-root\)|:root):not\(\[data-theme\]\)/,
       `${entry.name}/style.css declares explicit dark but has no system-dark twin`,
     );
   }
@@ -299,4 +314,55 @@ test("A7: every theme resolves identical dark tokens in explicit and system dark
       `${name} must resolve the same dark tokens in explicit and system dark`,
     );
   }
+});
+
+const THEME_ROOT_SCOPE = ":is(:root, .rb-theme-root)";
+const PORTALED_DARK_PLUGINS = new Set(["hover-preview"]);
+
+test("P2-A2: plugin dark overrides are scoped to the theme root, not just the document root", () => {
+  const pluginsDir = new URL("../../../packages/plugins/", import.meta.url);
+  const documentRootOnly =
+    /^\s*(?:html|:root)(?:\[data-theme="dark"\]|:not\(\[data-theme\]\))/;
+  let scoped = 0;
+
+  for (const entry of readdirSync(pluginsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const relative = `../../../packages/plugins/${entry.name}/style.css`;
+    if (!existsSync(new URL(relative, import.meta.url))) continue;
+    const css = read(relative);
+
+    if (css.includes(`${THEME_ROOT_SCOPE}[data-theme="dark"]`)) scoped += 1;
+
+    if (PORTALED_DARK_PLUGINS.has(entry.name)) continue;
+    const offenders = css
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => documentRootOnly.test(line));
+    assert.deepEqual(
+      offenders,
+      [],
+      `${entry.name}/style.css must scope dark overrides to ${THEME_ROOT_SCOPE} so embedded theme roots resolve them`,
+    );
+  }
+
+  assert.ok(
+    scoped >= 19,
+    `expected at least 19 plugins with theme-root-scoped dark overrides, saw ${scoped}`,
+  );
+});
+
+test("P2-A2: the portaled hover preview keeps document-global dark behavior", () => {
+  const css = read("../../../packages/plugins/hover-preview/style.css");
+  assert.match(
+    css,
+    /html\[data-theme="dark"\] \.rb-hover-preview/,
+    "the hover preview popover is portaled to document.body, so its dark override stays document-global",
+  );
+});
+
+test("P2-A2: the theme gallery renders previews inside an embedded theme root", () => {
+  const gallery = read("../app/routes/themes.tsx");
+  assert.match(gallery, /class="rb-theme-root theme-gallery__preview"/);
+  assert.match(gallery, /data-theme-name=\{preview\.theme\}/);
+  assert.match(gallery, /data-theme=\{preview\.mode\}/);
 });

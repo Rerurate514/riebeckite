@@ -31,13 +31,13 @@
   padding: 1rem;
 }
 
-html[data-theme="dark"] .rb-chartjs {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-chartjs {
   --rb-chartjs-paper: var(--rb-color-ink, #000000);
   --rb-chartjs-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-chartjs {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-chartjs {
     --rb-chartjs-paper: var(--rb-color-ink, #000000);
     --rb-chartjs-ink: var(--rb-color-paper, #ffffff);
   }

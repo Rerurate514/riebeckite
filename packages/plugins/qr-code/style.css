@@ -68,13 +68,13 @@ a.rb-qr__source {
   color: var(--rb-qr-muted);
 }
 
-html[data-theme="dark"] .rb-qr {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-qr {
   --rb-qr-paper: var(--rb-color-ink, #000000);
   --rb-qr-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-qr {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-qr {
     --rb-qr-paper: var(--rb-color-ink, #000000);
     --rb-qr-ink: var(--rb-color-paper, #ffffff);
   }

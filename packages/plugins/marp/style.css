@@ -58,13 +58,13 @@
   background: color-mix(in srgb, var(--rr-marp-ink) 6%, transparent);
 }
 
-html[data-theme="dark"] .rb-marp {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-marp {
   --rr-marp-paper: var(--rb-color-ink, #000000);
   --rr-marp-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-marp {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-marp {
     --rr-marp-paper: var(--rb-color-ink, #000000);
     --rr-marp-ink: var(--rb-color-paper, #ffffff);
   }

@@ -43,13 +43,13 @@
   color: var(--rr-excalidraw-muted);
 }
 
-html[data-theme="dark"] .rr-excalidraw {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rr-excalidraw {
   --rr-excalidraw-paper: var(--rb-color-ink, #000000);
   --rr-excalidraw-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rr-excalidraw {
+  :is(:root, .rb-theme-root):not([data-theme]) .rr-excalidraw {
     --rr-excalidraw-paper: var(--rb-color-ink, #000000);
     --rr-excalidraw-ink: var(--rb-color-paper, #ffffff);
   }

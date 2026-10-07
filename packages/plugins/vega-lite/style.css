@@ -66,13 +66,13 @@
   color: var(--rb-vega-lite-muted);
 }
 
-html[data-theme="dark"] .rb-vega-lite {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-vega-lite {
   --rb-vega-lite-paper: var(--rb-color-ink, #000000);
   --rb-vega-lite-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-vega-lite {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-vega-lite {
     --rb-vega-lite-paper: var(--rb-color-ink, #000000);
     --rb-vega-lite-ink: var(--rb-color-paper, #ffffff);
   }

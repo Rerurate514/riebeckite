@@ -469,9 +469,13 @@ a theme restyles a feature without editing the plugin. See
 
 For dark mode, consume the semantic `--rb-*` tokens: they resolve correctly in
 light, explicit dark, and system dark. Only when a plugin must branch on the
-mode itself (for example to invert a build-time asset) should it match the two
-documented states—`html[data-theme="dark"]` and
-`@media (prefers-color-scheme: dark) { :root:not([data-theme]) ... }`. The
+mode itself (for example to invert a build-time asset) should it scope the
+override to the theme root so it works both at the document root and inside an
+embedded `.rb-theme-root`:
+`:is(:root, .rb-theme-root)[data-theme="dark"] <hook>` and, for system dark,
+`@media (prefers-color-scheme: dark) { :is(:root, .rb-theme-root):not([data-theme]) <hook> { ... } }`.
+Do not key a dark override on `html[data-theme="dark"]` or
+`:root:not([data-theme])` alone; those miss embedded theme roots. The
 framework never adds a `.dark` class, so do not depend on one.
 
 ## Endpoints and SEO

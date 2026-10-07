@@ -94,14 +94,14 @@
   color: var(--rr-code-syntax, var(--shiki-light, inherit));
 }
 
-:root[data-theme="dark"] .rr-code .rr-code__code,
-:root[data-theme="dark"] .rr-code .rr-code__code span {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rr-code .rr-code__code,
+:is(:root, .rb-theme-root)[data-theme="dark"] .rr-code .rr-code__code span {
   color: var(--rr-code-syntax, var(--shiki-dark, inherit));
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rr-code .rr-code__code,
-  :root:not([data-theme]) .rr-code .rr-code__code span {
+  :is(:root, .rb-theme-root):not([data-theme]) .rr-code .rr-code__code,
+  :is(:root, .rb-theme-root):not([data-theme]) .rr-code .rr-code__code span {
     color: var(--rr-code-syntax, var(--shiki-dark, inherit));
   }
 }
@@ -152,13 +152,13 @@
   white-space: pre-wrap;
 }
 
-:root[data-theme="dark"] .rr-code {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rr-code {
   --rr-code-paper: var(--rb-color-paper, #000000);
   --rr-code-ink: var(--rb-color-ink, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rr-code {
+  :is(:root, .rb-theme-root):not([data-theme]) .rr-code {
     --rr-code-paper: var(--rb-color-paper, #000000);
     --rr-code-ink: var(--rb-color-ink, #ffffff);
   }

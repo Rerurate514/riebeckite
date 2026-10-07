@@ -61,13 +61,13 @@
   color: var(--rb-graphviz-muted);
 }
 
-html[data-theme="dark"] .rb-graphviz {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-graphviz {
   --rb-graphviz-paper: var(--rb-color-ink, #000000);
   --rb-graphviz-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-graphviz {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-graphviz {
     --rb-graphviz-paper: var(--rb-color-ink, #000000);
     --rb-graphviz-ink: var(--rb-color-paper, #ffffff);
   }

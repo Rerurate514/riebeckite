@@ -60,13 +60,13 @@
   color: var(--rb-markmap-muted);
 }
 
-html[data-theme="dark"] .rb-markmap {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-markmap {
   --rb-markmap-paper: var(--rb-color-ink, #000000);
   --rb-markmap-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-markmap {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-markmap {
     --rb-markmap-paper: var(--rb-color-ink, #000000);
     --rb-markmap-ink: var(--rb-color-paper, #ffffff);
   }

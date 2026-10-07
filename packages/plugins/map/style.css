@@ -100,13 +100,13 @@
   color: var(--rr-map-muted);
 }
 
-html[data-theme="dark"] .rr-map {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rr-map {
   --rr-map-paper: var(--rb-color-ink, #000000);
   --rr-map-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rr-map {
+  :is(:root, .rb-theme-root):not([data-theme]) .rr-map {
     --rr-map-paper: var(--rb-color-ink, #000000);
     --rr-map-ink: var(--rb-color-paper, #ffffff);
   }

@@ -70,13 +70,13 @@
   font-size: 0.875rem;
 }
 
-html[data-theme="dark"] .rb-plantuml {
+:is(:root, .rb-theme-root)[data-theme="dark"] .rb-plantuml {
   --rb-plantuml-ink: var(--rb-color-paper, #ffffff);
   --rb-plantuml-paper: var(--rb-color-ink, #000000);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .rb-plantuml {
+  :is(:root, .rb-theme-root):not([data-theme]) .rb-plantuml {
     --rb-plantuml-ink: var(--rb-color-paper, #ffffff);
     --rb-plantuml-paper: var(--rb-color-ink, #000000);
   }

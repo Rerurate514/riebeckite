@@ -79,11 +79,34 @@ async function writeAtomically(
   }
 }
 
+export type PersistentContentCacheMissReason =
+  | "disabled"
+  | "no-entry"
+  | "corrupted"
+  | "unreadable"
+  | "schema-mismatch"
+  | "key-mismatch"
+  | "invalid-entry";
+
+export type PersistentContentCacheLookup =
+  | { status: "hit"; entry: PersistentContentCacheEntry }
+  | { status: "miss"; reason: PersistentContentCacheMissReason };
+
 export type PersistentContentCache = {
+  lookup(key: string): Promise<PersistentContentCacheLookup>;
   get(key: string): Promise<PersistentContentCacheEntry | undefined>;
   set(key: string, value: PersistentContentCacheEntry): Promise<void>;
   clear(): Promise<void>;
 };
+
+function isMissingFileError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "ENOENT"
+  );
+}
 
 export function createPersistentContentCache(
   options: PersistentContentCacheOptions,
@@ -92,48 +115,19 @@ export function createPersistentContentCache(
   const baseDir = cacheDirectory(config);
   const versionDir = versionDirectory(baseDir);
 
-  return {
-    async get(key: string): Promise<PersistentContentCacheEntry | undefined> {
-      if (!config.cache?.enabled) return undefined;
+  const cache: PersistentContentCache = {
+    async lookup(key: string): Promise<PersistentContentCacheLookup> {
+      if (!config.cache?.enabled) {
+        return { status: "miss", reason: "disabled" };
+      }
 
       const filePath = cacheFilePath(baseDir, key);
+      let raw: string;
       try {
-        const raw = await fs.readFile(filePath, "utf8");
-        const entry = JSON.parse(raw) as PersistentContentCacheEntry;
-
-        if (entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION) {
-          tracer?.event("persistentContentCache.schemaMismatch", { key });
-          return undefined;
-        }
-        if (entry.key !== key) {
-          tracer?.event("persistentContentCache.keyMismatch", { key });
-          return undefined;
-        }
-        if (!isValidCacheEntry(entry)) {
-          tracer?.event("persistentContentCache.invalidShape", { key });
-          return undefined;
-        }
-
-        tracer?.event("persistentContentCache.found", { key });
-        return entry;
+        raw = await fs.readFile(filePath, "utf8");
       } catch (error) {
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "code" in error &&
-          error.code === "ENOENT"
-        ) {
-          tracer?.event("persistentContentCache.miss", { key });
-          return undefined;
-        }
-        if (error instanceof SyntaxError) {
-          logger?.warn(
-            "Persistent content cache entry is corrupted and will be ignored.",
-            {
-              key,
-            },
-          );
-          return undefined;
+        if (isMissingFileError(error)) {
+          return { status: "miss", reason: "no-entry" };
         }
         logger?.warn(
           "Persistent content cache entry could not be read and will be ignored.",
@@ -142,8 +136,42 @@ export function createPersistentContentCache(
             error: error instanceof Error ? error.message : String(error),
           },
         );
-        return undefined;
+        return { status: "miss", reason: "unreadable" };
       }
+
+      let entry: PersistentContentCacheEntry;
+      try {
+        entry = JSON.parse(raw) as PersistentContentCacheEntry;
+      } catch (error) {
+        logger?.warn(
+          "Persistent content cache entry is corrupted and will be ignored.",
+          {
+            key,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        );
+        return { status: "miss", reason: "corrupted" };
+      }
+
+      if (typeof entry !== "object" || entry === null) {
+        return { status: "miss", reason: "invalid-entry" };
+      }
+      if (entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION) {
+        return { status: "miss", reason: "schema-mismatch" };
+      }
+      if (entry.key !== key) {
+        return { status: "miss", reason: "key-mismatch" };
+      }
+      if (!isValidCacheEntry(entry)) {
+        return { status: "miss", reason: "invalid-entry" };
+      }
+
+      return { status: "hit", entry };
+    },
+
+    async get(key: string): Promise<PersistentContentCacheEntry | undefined> {
+      const result = await cache.lookup(key);
+      return result.status === "hit" ? result.entry : undefined;
     },
 
     async set(key: string, value: PersistentContentCacheEntry): Promise<void> {
@@ -179,6 +207,8 @@ export function createPersistentContentCache(
       }
     },
   };
+
+  return cache;
 }
 
 function isValidCacheEntry(

@@ -182,6 +182,17 @@ Profiler の目的は、
 
 です。
 
+Profiler は Cache の状況も分けて表示します。
+
+- **Plugin cache** — プラグイン自身が保存した結果の hit / miss
+- **Content cache** — persistent content cache の hit / miss / bypass と、miss / bypass の理由
+
+これにより、
+
+> なぜ warm build なのにキャッシュが使われていないのか
+
+を、安全性のための bypass なのか、依存関係の変更による miss なのかまで区別して確認できます。
+
 # Diagnostics の計測
 
 Diagnostics も通常の Build phase と同じように計測されます。

@@ -27,6 +27,20 @@ export type ProfileCache = Readonly<{
   hitRate: number | undefined;
 }>;
 
+export type ProfileCacheReasonCount = Readonly<{
+  reason: string;
+  count: number;
+}>;
+
+export type ProfileContentCache = Readonly<{
+  hits: number;
+  misses: number;
+  bypasses: number;
+  hitRate: number | undefined;
+  missReasons: readonly ProfileCacheReasonCount[];
+  bypassReasons: readonly ProfileCacheReasonCount[];
+}>;
+
 export type ProfileSlowOperation = Readonly<{
   plugin: string;
   name: string;
@@ -50,6 +64,7 @@ export type ProfileReport = Readonly<{
   plugins: readonly ProfilePlugin[];
   incremental: ProfileIncremental | undefined;
   cache: ProfileCache | undefined;
+  contentCache: ProfileContentCache | undefined;
   diagnostics: ProfileDiagnostics | undefined;
   slowestOperations: readonly ProfileSlowOperation[];
 }>;
@@ -79,6 +94,12 @@ export class ProfileTraceSink implements TraceSink {
   private cacheHits = 0;
   private cacheMisses = 0;
   private hasCacheEvents = false;
+  private contentCacheHits = 0;
+  private contentCacheMisses = 0;
+  private contentCacheBypasses = 0;
+  private hasContentCacheEvents = false;
+  private readonly contentCacheMissReasons = new Map<string, number>();
+  private readonly contentCacheBypassReasons = new Map<string, number>();
 
   onSpan(span: TraceSpan): void {
     if (span.name === "build.total") this.totalDurationMs = span.durationMs;
@@ -126,6 +147,26 @@ export class ProfileTraceSink implements TraceSink {
       this.cacheMisses++;
       this.hasCacheEvents = true;
     }
+    if (event.name === "persistentContentCache.hit") {
+      this.contentCacheHits++;
+      this.hasContentCacheEvents = true;
+    }
+    if (event.name === "persistentContentCache.miss") {
+      this.contentCacheMisses++;
+      this.hasContentCacheEvents = true;
+      incrementReason(
+        this.contentCacheMissReasons,
+        stringAttribute(event.attributes, "reason"),
+      );
+    }
+    if (event.name === "persistentContentCache.bypass") {
+      this.contentCacheBypasses++;
+      this.hasContentCacheEvents = true;
+      incrementReason(
+        this.contentCacheBypassReasons,
+        stringAttribute(event.attributes, "reason"),
+      );
+    }
     if (event.name === "diagnostics.summary") {
       this.diagnosticCounts = {
         total: numberAttribute(event, "total"),
@@ -138,6 +179,8 @@ export class ProfileTraceSink implements TraceSink {
 
   createReport(): ProfileReport {
     const cacheRequests = this.cacheHits + this.cacheMisses;
+    const contentCacheRequests =
+      this.contentCacheHits + this.contentCacheMisses;
     const diagnosticsDuration = this.diagnosticsDuration.get("diagnostics.run");
     const diagnostics =
       diagnosticsDuration || this.diagnosticCounts
@@ -172,6 +215,19 @@ export class ProfileTraceSink implements TraceSink {
             misses: this.cacheMisses,
             hitRate:
               cacheRequests === 0 ? undefined : this.cacheHits / cacheRequests,
+          }
+        : undefined,
+      contentCache: this.hasContentCacheEvents
+        ? {
+            hits: this.contentCacheHits,
+            misses: this.contentCacheMisses,
+            bypasses: this.contentCacheBypasses,
+            hitRate:
+              contentCacheRequests === 0
+                ? undefined
+                : this.contentCacheHits / contentCacheRequests,
+            missReasons: sortReasonCounts(this.contentCacheMissReasons),
+            bypassReasons: sortReasonCounts(this.contentCacheBypassReasons),
           }
         : undefined,
       diagnostics,
@@ -227,6 +283,25 @@ function stringAttribute(
 function numberAttribute(event: TraceEvent, key: string): number {
   const value = event.attributes[key];
   return typeof value === "number" ? value : 0;
+}
+
+function incrementReason(
+  counts: Map<string, number>,
+  reason: string | undefined,
+): void {
+  const key = reason ?? "unspecified";
+  counts.set(key, (counts.get(key) ?? 0) + 1);
+}
+
+function sortReasonCounts(
+  counts: ReadonlyMap<string, number>,
+): ProfileCacheReasonCount[] {
+  return [...counts.entries()]
+    .map(([reason, count]) => ({ reason, count }))
+    .sort(
+      (left, right) =>
+        right.count - left.count || left.reason.localeCompare(right.reason),
+    );
 }
 
 function comparePlugins(left: ProfilePlugin, right: ProfilePlugin): number {

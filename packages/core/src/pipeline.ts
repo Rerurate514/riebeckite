@@ -137,44 +137,15 @@ export class Pipeline {
           pipelineFingerprint: this.pipelineFingerprint,
         });
 
-        const cachedEntry = await this.persistentCache.get(cacheKey);
-        if (cachedEntry) {
-          const validationTracker = createContentDependencyTracker(
-            this.options.contentSource,
+        const lookup = await this.persistentCache.lookup(cacheKey);
+        if (lookup.status === "hit") {
+          const invalidDependency = await this.findInvalidDependency(
+            lookup.entry.dependencies,
           );
-          let valid = true;
-          for (const dep of cachedEntry.dependencies) {
-            if (dep.kind === "content") {
-              const content = await validationTracker.readContent(
-                dep.id,
-                async () => (await this.getMarkdownBySlug?.(dep.id)) ?? "",
-              );
-              if (fingerprintContent(content) !== dep.fingerprint) {
-                valid = false;
-                break;
-              }
-            } else if (dep.kind === "file") {
-              const fileContent = await validationTracker.contentSource.read({
-                path: dep.id,
-              });
-              if (fingerprintContent(fileContent) !== dep.fingerprint) {
-                valid = false;
-                break;
-              }
-            } else if (dep.kind === "link") {
-              if (
-                fingerprintContent(this.resolveLinkDependency(dep.id)) !==
-                dep.fingerprint
-              ) {
-                valid = false;
-                break;
-              }
-            }
-          }
-          if (valid) {
+          if (!invalidDependency) {
             this.reportContentDependencies(
               sourceSlug,
-              cachedEntry.dependencies,
+              lookup.entry.dependencies,
             );
             this.options.observability?.tracer?.event(
               "persistentContentCache.hit",
@@ -182,16 +153,32 @@ export class Pipeline {
             );
             this.options.onPersistentContentCacheResult?.("hit");
             return {
-              frontmatter: cachedEntry.value.frontmatter,
-              html: cachedEntry.value.html,
+              frontmatter: lookup.entry.value.frontmatter,
+              html: lookup.entry.value.html,
             };
           }
+          this.options.observability?.tracer?.event(
+            "persistentContentCache.miss",
+            {
+              key: cacheKey,
+              slug: sourceSlug,
+              reason: "dependency-changed",
+              dependencyKind: invalidDependency.kind,
+              dependencyId: invalidDependency.id,
+            },
+          );
+          this.options.onPersistentContentCacheResult?.("miss");
+        } else {
+          this.options.observability?.tracer?.event(
+            "persistentContentCache.miss",
+            {
+              key: cacheKey,
+              slug: sourceSlug,
+              reason: lookup.reason,
+            },
+          );
+          this.options.onPersistentContentCacheResult?.("miss");
         }
-        this.options.observability?.tracer?.event(
-          "persistentContentCache.miss",
-          { key: cacheKey, slug: sourceSlug },
-        );
-        this.options.onPersistentContentCacheResult?.("miss");
       } else {
         this.options.observability?.tracer?.event(
           "persistentContentCache.bypass",
@@ -331,6 +318,36 @@ export class Pipeline {
     dependencies: readonly CachedContentDependency[],
   ): void {
     this.options.onContentDependencies?.(slug, dependencies);
+  }
+
+  private async findInvalidDependency(
+    dependencies: readonly CachedContentDependency[],
+  ): Promise<CachedContentDependency | null> {
+    const contentSource = this.options.contentSource;
+    if (!contentSource) return null;
+    const validationTracker = createContentDependencyTracker(contentSource);
+    for (const dep of dependencies) {
+      if (dep.kind === "content") {
+        const content = await validationTracker.readContent(
+          dep.id,
+          async () => (await this.getMarkdownBySlug?.(dep.id)) ?? "",
+        );
+        if (fingerprintContent(content) !== dep.fingerprint) return dep;
+      } else if (dep.kind === "file") {
+        const fileContent = await validationTracker.contentSource.read({
+          path: dep.id,
+        });
+        if (fingerprintContent(fileContent) !== dep.fingerprint) return dep;
+      } else if (dep.kind === "link") {
+        if (
+          fingerprintContent(this.resolveLinkDependency(dep.id)) !==
+          dep.fingerprint
+        ) {
+          return dep;
+        }
+      }
+    }
+    return null;
   }
 
   private getPermalink(slug: string): string {

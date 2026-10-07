@@ -391,6 +391,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           );
         }
         await writeSsgOutputMetrics(metrics);
+        this.info(
+          `SSG outputs: ${metrics.renderedOutputCount} rendered · ${metrics.reusedOutputCount} reused · ${metrics.deletedOutputCount} removed`,
+        );
         inspectGeneratedHtmlPages(module, generatedHtml, {
           warn: (message) => this.warn(message),
           info: (message) => this.info(message),

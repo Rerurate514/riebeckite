@@ -15,6 +15,12 @@ import {
   type ContentSource,
   readContentSourceEntry,
 } from "../src/content/content_source.js";
+import {
+  NoopLogger,
+  SinkTracer,
+  type TraceEvent,
+  type TraceSink,
+} from "../src/observability.js";
 import type { RiebeckitePlugin } from "../src/types/plugin.js";
 import { definePlugin } from "../src/types/plugin.js";
 import type { ResolvedRiebeckiteConfig } from "../src/types/resolved_riebeckite_config.js";
@@ -1232,4 +1238,154 @@ test("unrelated body-only change keeps the cached link resolution valid", async 
 
   assert.match(firstHtml, /href="\/b"/);
   assert.equal(secondHtml, firstHtml);
+});
+
+test("persistent cache lookup reports an explicit miss reason", async () => {
+  const config = createTestConfig([]);
+  config.cache.directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-cache-reasons-"),
+  );
+  try {
+    const cache = createPersistentContentCache({ config });
+    assert.deepEqual(await cache.lookup("missing"), {
+      status: "miss",
+      reason: "no-entry",
+    });
+
+    const key = "reason-key";
+    await cache.set(key, {
+      schemaVersion: CONTENT_CACHE_SCHEMA_VERSION,
+      key,
+      dependencies: [],
+      value: { frontmatter: {}, html: "<p>cached</p>" },
+    });
+    const hit = await cache.lookup(key);
+    assert.equal(hit.status, "hit");
+
+    const cacheDir = path.join(
+      config.cache.directory,
+      "content",
+      `v${CONTENT_CACHE_SCHEMA_VERSION}`,
+    );
+    const [fileName] = await fs.readdir(cacheDir);
+    if (!fileName) throw new Error("Expected a cache entry");
+    const filePath = path.join(cacheDir, fileName);
+    const value = { frontmatter: {}, html: "" };
+
+    await fs.writeFile(
+      filePath,
+      JSON.stringify({
+        schemaVersion: CONTENT_CACHE_SCHEMA_VERSION - 1,
+        key,
+        dependencies: [],
+        value,
+      }),
+      "utf8",
+    );
+    assert.deepEqual(await cache.lookup(key), {
+      status: "miss",
+      reason: "schema-mismatch",
+    });
+
+    await fs.writeFile(
+      filePath,
+      JSON.stringify({
+        schemaVersion: CONTENT_CACHE_SCHEMA_VERSION,
+        key: "other-key",
+        dependencies: [],
+        value,
+      }),
+      "utf8",
+    );
+    assert.deepEqual(await cache.lookup(key), {
+      status: "miss",
+      reason: "key-mismatch",
+    });
+
+    await fs.writeFile(
+      filePath,
+      JSON.stringify({
+        schemaVersion: CONTENT_CACHE_SCHEMA_VERSION,
+        key,
+        dependencies: "invalid",
+        value,
+      }),
+      "utf8",
+    );
+    assert.deepEqual(await cache.lookup(key), {
+      status: "miss",
+      reason: "invalid-entry",
+    });
+
+    await fs.writeFile(filePath, "not valid json", "utf8");
+    assert.deepEqual(await cache.lookup(key), {
+      status: "miss",
+      reason: "corrupted",
+    });
+  } finally {
+    await fs.rm(config.cache.directory, { recursive: true, force: true });
+  }
+});
+
+test("persistent cache lookup reports disabled when caching is off", async () => {
+  const config = createTestConfig([]);
+  config.cache.enabled = false;
+  const cache = createPersistentContentCache({ config });
+
+  assert.deepEqual(await cache.lookup("anything"), {
+    status: "miss",
+    reason: "disabled",
+  });
+});
+
+test("dependency invalidation reports a structured miss reason", async () => {
+  const cacheDirectory = path.join(TEST_CACHE_DIR, "dependency-reason");
+  await fs.rm(cacheDirectory, { recursive: true, force: true });
+
+  const decisions: TraceEvent[] = [];
+  const sink: TraceSink = {
+    onSpan() {},
+    onEvent(event) {
+      if (
+        event.name === "persistentContentCache.miss" &&
+        event.attributes.slug === "note"
+      ) {
+        decisions.push(event);
+      }
+    },
+  };
+  const counters = { pipelineExecutions: 0 };
+  const plugin = createTrackedFilePlugin(() => "dep.txt", counters);
+  const config = createTestConfig([plugin]);
+  config.cache.directory = cacheDirectory;
+  const base = {
+    "note.md": "---\ntitle: Note\npublish: true\n---\n\n# Note\n",
+  };
+
+  const build = async (dependencyValue: string) => {
+    const manager = new ContentManager(
+      memorySource({ ...base, "dep.txt": dependencyValue }),
+      [],
+      {
+        config,
+        plugins: config.plugins,
+        observability: {
+          logger: new NoopLogger(),
+          tracer: new SinkTracer(sink),
+        },
+      },
+    );
+    return await manager.getProcessedContent("note");
+  };
+
+  await build("dependency-v1");
+  assert.equal(decisions.length, 1);
+  assert.equal(decisions[0]?.attributes.reason, "no-entry");
+
+  decisions.length = 0;
+  await build("dependency-v2");
+  assert.equal(decisions.length, 1);
+  assert.equal(decisions[0]?.attributes.reason, "dependency-changed");
+  assert.equal(decisions[0]?.attributes.dependencyKind, "file");
+  assert.equal(decisions[0]?.attributes.dependencyId, "dep.txt");
 });

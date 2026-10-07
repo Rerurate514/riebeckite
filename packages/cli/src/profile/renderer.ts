@@ -21,7 +21,8 @@ export function renderProfile(report: ProfileReport, failed = false): string {
   appendIntegrations(lines, report);
   appendPlugins(lines, report);
   appendIncremental(lines, report);
-  appendCache(lines, report);
+  appendPluginCache(lines, report);
+  appendContentCache(lines, report);
   appendDiagnostics(lines, report);
   appendSlowOperations(lines, report);
   return lines.join("\n");
@@ -86,15 +87,41 @@ function appendIncremental(lines: string[], report: ProfileReport): void {
   lines.push(row("Affected", String(report.incremental.affected), 2));
 }
 
-function appendCache(lines: string[], report: ProfileReport): void {
+function appendPluginCache(lines: string[], report: ProfileReport): void {
   if (!report.cache) return;
-  lines.push("", "Cache");
+  lines.push("", "Plugin cache");
   lines.push(row("Hits", String(report.cache.hits), 2));
   lines.push(row("Misses", String(report.cache.misses), 2));
   if (report.cache.hitRate !== undefined) {
     lines.push(
       row("Hit rate", `${(report.cache.hitRate * 100).toFixed(1)}%`, 2),
     );
+  }
+}
+
+function appendContentCache(lines: string[], report: ProfileReport): void {
+  const cache = report.contentCache;
+  if (!cache) return;
+  lines.push("", "Content cache");
+  lines.push(row("Hits", String(cache.hits), 2));
+  lines.push(row("Misses", String(cache.misses), 2));
+  lines.push(row("Bypasses", String(cache.bypasses), 2));
+  if (cache.hitRate !== undefined) {
+    lines.push(row("Hit rate", `${(cache.hitRate * 100).toFixed(1)}%`, 2));
+  }
+  appendReasons(lines, "Miss reasons", cache.missReasons);
+  appendReasons(lines, "Bypass reasons", cache.bypassReasons);
+}
+
+function appendReasons(
+  lines: string[],
+  label: string,
+  reasons: readonly { reason: string; count: number }[],
+): void {
+  if (reasons.length === 0) return;
+  lines.push(row(label, "", 2));
+  for (const { reason, count } of reasons) {
+    lines.push(row(reason, String(count), 4));
   }
 }
 

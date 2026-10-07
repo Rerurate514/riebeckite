@@ -460,6 +460,8 @@ npm exec -- riebeckite profile --full
 
 `profile` は性能調査のための command であり、Configuration validity を確認するための command ではありません。
 
+report では Plugin cache と Content cache を分けて表示します。Content cache には miss / bypass の理由も含まれるため、なぜ再利用されなかったのかを確認できます。
+
 ## `inspect`
 
 Riebeckite が現在認識している状態を確認します。

@@ -1,4 +1,4 @@
-import type { Observability } from "@riebeckite/core";
+import type { ContentManifest, Observability } from "@riebeckite/core";
 import { ConsoleLogger, ContentManager, NoopTracer } from "@riebeckite/core";
 import { buildHonoxApplication } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
@@ -9,6 +9,11 @@ import {
 import { resolveProjectContentSource } from "../content_source.js";
 import { loadProjectConfig } from "../load_config.js";
 
+function formatDuration(durationMs: number): string {
+  if (durationMs < 1_000) return `${Math.round(durationMs)}ms`;
+  return `${(durationMs / 1_000).toFixed(2)}s`;
+}
+
 export async function runBuild(
   project: RiebeckiteProject,
   options: { full: boolean; observability?: Observability },
@@ -17,6 +22,7 @@ export async function runBuild(
     logger: new ConsoleLogger(),
     tracer: new NoopTracer(),
   };
+  const startedAt = performance.now();
   await observability.tracer.span("build.total", {}, async () => {
     const config = await loadProjectConfig(project);
     const persistentContentCache = { hits: 0, misses: 0, bypasses: 0 };
@@ -34,15 +40,18 @@ export async function runBuild(
       },
     );
 
+    let manifest: ContentManifest | null = null;
     try {
-      await content.build({ incremental: !options.full });
+      manifest = await content.build({ incremental: !options.full });
     } finally {
       await content.dispose();
     }
 
     observability.logger.info(
-      "Persistent content cache",
-      persistentContentCache,
+      `Content: ${manifest?.entries.length ?? 0} total · ${content.getProcessedContentCount()} processed · ${content.getReusedContentCount()} reused`,
+    );
+    observability.logger.info(
+      `Persistent content cache: ${persistentContentCache.hits} hits · ${persistentContentCache.misses} misses · ${persistentContentCache.bypasses} bypasses`,
     );
 
     await clearBuildOutputMarker(project);
@@ -52,4 +61,7 @@ export async function runBuild(
     });
     await writeBuildOutputMarker(project);
   });
+  observability.logger.info(
+    `Build complete in ${formatDuration(performance.now() - startedAt)}`,
+  );
 }

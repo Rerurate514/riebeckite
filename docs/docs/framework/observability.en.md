@@ -14,6 +14,8 @@ Create spans around meaningful build phases, plugin work, and I/O boundaries; cl
 
 For parallel work, the sum of child span durations is cumulative work, not elapsed wall-clock time. A profiler must label or otherwise preserve that distinction so concurrent activity is not misreported as a slow serial path.
 
+The profile report separates plugin-cache activity from persistent-content-cache activity. It reports content-cache hits, misses, and bypasses together with the reason for each miss (for example `no-entry` or `dependency-changed`) and each bypass (for example an l10n safe bypass), so a warm build that is not reusing entries can be explained without reading cache internals.
+
 ## Safety and scope
 
 Do not log secrets, raw credentials, or unnecessarily sensitive source content. Keep tracing optional and proportional: instrumentation must not alter build results. Runtime Workers must not depend on mutable build traces or local profiling files.

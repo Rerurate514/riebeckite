@@ -88,6 +88,7 @@ export class ContentManager {
   private routableSlugs: Set<string> | null = null;
   private routableSlugsPromise: Promise<Set<string>> | null = null;
   private processedContentCount = 0;
+  private reusedContentCount = 0;
   private outputChangeSet: OutputChangeSet | null = null;
   private trackedContentDependencies = new Map<
     string,
@@ -423,6 +424,14 @@ export class ContentManager {
     return await this.getManifest(options);
   }
 
+  getProcessedContentCount(): number {
+    return this.processedContentCount;
+  }
+
+  getReusedContentCount(): number {
+    return this.reusedContentCount;
+  }
+
   async getOutputChangeSet(
     options: ContentBuildOptions = {},
   ): Promise<OutputChangeSet> {
@@ -593,6 +602,7 @@ export class ContentManager {
 
     const entry = preparation.previousManifestEntriesBySlug.get(slug);
     if (!entry) return null;
+    this.reusedContentCount += 1;
     this.observability().tracer.event("content.reuse", { slug });
     return cloneManifestEntry(entry);
   }

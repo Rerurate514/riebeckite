@@ -1,26 +1,69 @@
+<!-- Generated from packages/plugins/deploy/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Deploy
 
-Extends publishing and deployment-related processing.
+Static hosting output helpers for Riebeckite. The plugin prepares the files a
+deploy target needs and emits them through the build's generated-output sink.
+It does not upload anything and never writes to the filesystem.
 
-## Installation
+[日本語](./deploy.md)
 
-```bash
-npm install @riebeckite/plugin-deploy
+## Overview
+
+`deployPlugin()` reads public redirects from the content manifest and plans the
+provider-specific files for Cloudflare Pages, Netlify, Vercel, or GitHub Pages.
+All planning is pure and deterministic: no timestamps, no randomness, and a
+stable path order.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { deployPlugin } from "@riebeckite/plugin-deploy";
+
+export default defineConfig({
+  plugins: [
+    deployPlugin({
+      provider: ["cloudflare-pages", "github-pages"],
+      cname: "example.com",
+      headers: { "X-Frame-Options": "DENY" },
+    }),
+  ],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+Redirects come only from `manifest.publicRedirects`, so unpublished notes never
+leak their old paths into deploy files. A redirect whose target slug is missing
+is skipped and reported with a `deploy-unresolved-redirect` diagnostic.
 
-## Example
+## Per-provider output
 
-Use it when deployment behavior should be integrated as a Riebeckite Plugin. Deployment steps vary by environment; also see the Deployment Guide.
+| Provider | Files |
+| --- | --- |
+| `cloudflare-pages`, `netlify` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
+| `vercel` | `vercel.json` |
+| `github-pages` | `.nojekyll`, `404.html`, `CNAME` (when configured), one `<from>/index.html` meta-refresh stub per redirect |
 
-## When to use it
+GitHub Pages has no `_redirects` syntax, so every redirect becomes an HTML stub
+with a meta refresh and a `<link rel="canonical">`. A redirect from `/` is
+skipped because the root cannot be stubbed.
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+## Public API
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+- `deployPlugin(options: DeployOptions): RiebeckitePlugin`
+- `planDeployOutputs({ provider, redirects, options }): DeployOutput[]`
+- `renderRedirectLines(redirects): string`
+- `renderVercelConfig({ redirects, options }): string`
+- `renderRedirectStub(redirect): string`
 
-## Detailed specification
+## Notes
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+- Multiple providers are unioned. Identical files collapse into one; the same
+  path with different content throws.
+- Redirect `from` values are resolved (`.` and `..` segments) before they become
+  output paths, and every planned path passes `normalizeGeneratedOutputPath`.
+- Uploading, cache invalidation, and provider authentication are out of scope.
 
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

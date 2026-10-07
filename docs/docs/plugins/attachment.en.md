@@ -1,31 +1,73 @@
+<!-- Generated from packages/plugins/attachment/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Attachment
 
-Handles attachments referenced from Markdown on the published site.
+Attachment link and embed card rendering for Obsidian wikilinks.
 
-## Installation
+[日本語](./attachment.md)
 
-```bash
-npm install @riebeckite/plugin-attachment
+## Overview
+
+`attachment()` provides the `renderAttachment` hook that
+`@riebeckite/plugin-obsidian-markdown` uses when a wikilink resolves to a
+non-image file (`[[report.pdf]]`, `![[report.pdf]]`, ...).
+
+Without this plugin, those wikilinks fall back to a plain download link.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), attachment()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+## Rendering
 
-## Example
+### Link (non-embed)
 
-Use it to link PDFs, ZIP files, and other attachments from notes and make them available on the published site.
-
-```markdown
-[[files/specification.pdf|Open the specification]]
-[[files/example.zip|Download the sample]]
+```html
+<a class="wikilink wikilink-attachment" href="..." download>label</a>
 ```
 
-## When to use it
+### Embed (`![[file]]`)
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+```html
+<aside class="attachment-card rr-attachment" data-attachment-path="...">
+  <div class="attachment-card__meta">
+    <span class="attachment-card__format">PDF</span>
+    <span class="attachment-card__size">1.2 MB</span>
+  </div>
+  <div class="attachment-card__name">report.pdf</div>
+  <a class="attachment-card__download" href="..." download>label</a>
+</aside>
+```
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+- Format is the uppercased file extension
+- Size is read from disk under `config.content.directory` (path-traversal
+  safe) and omitted when the file cannot be read
+- The embed card carries the stable `rr-attachment` root hook that themes
+  may target
 
-## Detailed specification
+Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+## Options
 
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `showSize` | `boolean` | `true` | Read the file size and show it in the embed card |
+
+## Exports
+
+- `attachment(options?)` / `attachmentPlugin` — plugin factory
+- Type: `AttachmentOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)
+- [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.en.md)

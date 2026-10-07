@@ -11,7 +11,7 @@
 
 ## 設定リファレンス
 
-`riebeckite.config.ts` には、以下の全プラグインがあらかじめ全オプション付きで登録されています。このファイル自体を設定リファレンスとして利用できます。各オプションの詳しい説明はプラグインパッケージの README を参照してください。
+`riebeckite.config.ts` には、以下の全プラグインが全オプション付きで登録されています。これは出発点として使い、設定の仕様は[設定リファレンス](https://riebeckite.dev/docs/reference/configuration-reference)と各プラグインパッケージの README を確認してください。
 
 - **テーマ**: `defaultTheme({ colorMode: "system", typography: "system", articleLayout: "article", userCss: [] })`
 
@@ -297,15 +297,15 @@ items:
   - title: Default
     description: A clean, typographic theme.
     meta: v0.0.5
-    href: https://example.com/themes/default/
+    href: https://riebeckite.dev/docs/themes/default
   - title: Minimal
     description: Stripped back to the essentials.
     meta: v0.0.5
-    href: https://example.com/themes/minimal/
+    href: https://riebeckite.dev/docs/themes/minimal
   - title: Gruvbox
     description: A warm, high-contrast palette.
     meta: v0.0.5
-    href: https://example.com/themes/gruvbox/
+    href: https://riebeckite.dev/docs/themes/gruvbox
 ```
 
 ### Dataview

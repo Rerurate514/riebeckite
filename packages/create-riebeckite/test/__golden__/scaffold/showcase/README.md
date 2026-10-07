@@ -11,7 +11,7 @@ Explore the complete Riebeckite ecosystem with rendered examples, reference page
 
 ## Configuration reference
 
-`riebeckite.config.ts` already registers every plugin below with its full option set — the file doubles as the settings reference. Every option is documented in the plugin's package README.
+`riebeckite.config.ts` registers every plugin below with its full option set. Treat it as a starting point; the documented options live in the [configuration reference](https://riebeckite.dev/docs/reference/configuration-reference) and each plugin's package README.
 
 - **Theme**: `defaultTheme({ colorMode: "system", typography: "system", articleLayout: "article", userCss: [] })`
 
@@ -297,15 +297,15 @@ items:
   - title: Default
     description: A clean, typographic theme.
     meta: v0.0.5
-    href: https://example.com/themes/default/
+    href: https://riebeckite.dev/docs/themes/default
   - title: Minimal
     description: Stripped back to the essentials.
     meta: v0.0.5
-    href: https://example.com/themes/minimal/
+    href: https://riebeckite.dev/docs/themes/minimal
   - title: Gruvbox
     description: A warm, high-contrast palette.
     meta: v0.0.5
-    href: https://example.com/themes/gruvbox/
+    href: https://riebeckite.dev/docs/themes/gruvbox
 ```
 
 ### Dataview

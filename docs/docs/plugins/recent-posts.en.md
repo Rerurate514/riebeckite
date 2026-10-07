@@ -1,26 +1,76 @@
+<!-- Generated from packages/plugins/recent-posts/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Recent Posts
 
-Displays a list of recent content.
+Recent posts list rendering: shows the latest published notes sorted by
+frontmatter date.
 
-## Installation
+[日本語](./recent-posts.md)
 
-```bash
-npm install @riebeckite/plugin-recent-posts
+## Overview
+
+`recentPosts()` provides a `RecentPosts` component that renders an ordered list
+of recently posted articles. `getRecentPosts()` reads
+`manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
+excluded. It derives a date from the frontmatter (`date` falling back to
+`created`), sorts newest first, and truncates to `limit` items. Notes without a
+parseable date are dropped. Whether and where to place the list is the site's
+decision.
+
+With no posts, the component renders nothing.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+
+export default defineConfig({
+  // ...
+  plugins: [recentPostsPlugin()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`recentPostsPlugin()` registers the plugin in the plugin list and bundles
+`style.css` into the app stylesheet.
 
-## Example
+### Render the component
 
-Use it on home or index pages to surface recently published or updated articles. Render the `RecentPosts` component, with the list from `getRecentPosts`, inside the site's own component tree.
+```tsx
+import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
+import { content } from "../content";
 
-## When to use it
+const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+// ...in your route
+return <Article afterContent={<RecentPosts posts={recentPosts} />} />;
+```
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+`getRecentPosts()` filters out the `index` note before collecting posts.
 
-## Detailed specification
+## Component
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+`RecentPosts({ posts })` renders a
+`<section class="recent-posts rr-recent-posts">` with a heading and an ordered
+list. Each item links to the post and shows its date formatted for the
+`en-US` locale. The `rr-recent-posts` root hook is the stable class themes may
+target.
 
+## Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `manifest` | `Pick<ContentManifest, "discoverableEntries">` | — | Source of candidate posts |
+| `limit` | `number` | `5` | Maximum number of posts to return |
+
+## Exports
+
+- `recentPostsPlugin()` — plugin factory
+- `RecentPosts` — list component (default export of `components/recent-posts.tsx`)
+- `getRecentPosts({ manifest, limit? })` — collects the latest discoverable
+  posts
+- Type: `RecentPost` (`{ slug, permalink, title, postedAt }`)
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

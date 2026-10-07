@@ -358,9 +358,9 @@ Factory: `shortcodes` · [README](https://github.com/Rerurate514/riebeckite/blob
 
 Expands built-in shortcode syntax inside Markdown.
 
-{{< youtube dQw4w9WgXcQ >}}
+::youtube[id=dQw4w9WgXcQ]
 
-{{< figure src="/images/demo.png" caption="Demo image" >}}
+::figure[Demo image]{src="/images/demo.png"}
 
 ### @riebeckite/plugin-series
 
@@ -429,15 +429,15 @@ items:
   - title: Default
     description: A clean, typographic theme.
     meta: v0.0.5
-    href: https://example.com/themes/default/
+    href: https://riebeckite.dev/docs/themes/default
   - title: Minimal
     description: Stripped back to the essentials.
     meta: v0.0.5
-    href: https://example.com/themes/minimal/
+    href: https://riebeckite.dev/docs/themes/minimal
   - title: Gruvbox
     description: A warm, high-contrast palette.
     meta: v0.0.5
-    href: https://example.com/themes/gruvbox/
+    href: https://riebeckite.dev/docs/themes/gruvbox
 ```
 
 ### @riebeckite/plugin-mermaid

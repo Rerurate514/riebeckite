@@ -1,29 +1,93 @@
+<!-- Generated from packages/plugins/highlight/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Highlight
 
-Renders text wrapped in `==double equals==` as a `<mark>` element.
+Inline `==highlight==` support. Text wrapped in double equals is rendered as a
+`<mark>` element at build time.
 
-## Installation
+[日本語](./highlight.md)
 
-```bash
-npm install @riebeckite/plugin-highlight
+## Overview
+
+`highlight()` registers a remark transformer that rewrites `==text==` in
+Markdown text nodes into raw HTML before the tree is converted to HTML. It
+complements `remark-gfm` (which only understands `~~strikethrough~~`).
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { highlight } from "@riebeckite/plugin-highlight";
+
+export default defineConfig({
+  // ...
+  plugins: [highlight()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+## Syntax
 
-## Example
-
-Use it to emphasize a phrase inside a sentence without turning it into a heading or bold text.
-
-```markdown
+```md
 This sentence has a ==highlighted phrase== inside it.
 ```
 
-## When to use it
+Output:
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+```html
+This sentence has a <mark class="rb-highlight">highlighted phrase</mark> inside it.
+```
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+Highlights are matched non-greedily, must stay on a single line, and are
+ignored when they are empty or contain only whitespace. Matches inside code
+blocks, inline code, raw HTML, and frontmatter are left untouched.
 
-## Detailed specification
+## Options
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `className` | `string` | `"rb-highlight"` | CSS class on each generated element |
+| `tag` | `string` | `"mark"` | HTML tag used for the highlight |
+
+```ts
+highlight({ className: "my-highlight", tag: "span" });
+```
+
+## Styling
+
+The package ships `style.css`, exposed as
+`@riebeckite/plugin-highlight/style.css`. The default rule styles
+`.rb-highlight` with a subtle accent background and falls back to the
+`--rb-color-accent` theme variable when available:
+
+```css
+.rb-highlight {
+  --rb-highlight-accent: var(--rb-color-accent, #f6d365);
+  padding: 0.05em 0.25em;
+  border-radius: 0.2em;
+  background: color-mix(in srgb, var(--rb-highlight-accent) 45%, transparent);
+  color: inherit;
+}
+```
+
+Because the plugin registers a style asset, the host site includes this
+stylesheet automatically; override the class or supply your own CSS to change
+the appearance.
+
+## Limitations
+
+- A highlight never spans multiple text nodes or lines, so `==` delimiters
+  cannot wrap other Markdown (links, emphasis, code) or line breaks.
+- Nested highlights are not supported; the innermost `==` pair wins.
+- The transformer emits raw HTML, so enable raw HTML output in the pipeline
+  (the default Riebeckite pipeline does).
+
+## Exports
+
+- `highlight(options?)` — plugin factory
+- `highlightPlugin` — alias of `highlight`
+- `remarkHighlight(options?)` — the underlying remark transformer
+- Type: `HighlightOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

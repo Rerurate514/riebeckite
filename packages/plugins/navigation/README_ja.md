@@ -56,8 +56,10 @@ const secondary = model?.secondary ?? [];
 
 `SiteNav` は解決済みのツリーを `<nav>` ランドマークとネストしたリストとして
 描画します。子の再帰描画、現在パスの判定、言語を考慮した正規化、外部リンクの
-扱い、`aria-current` といった描画の仕組みを担当し、ツリーをどこに置くかは
-Site が決めます。
+扱い、`aria-current` といった描画の仕組みを担当し、その `rb-nav` ツリーを
+成立させる構造 CSS を自身の `style.css` に同梱します（自動生成される plugin
+styles 経由で読み込まれます）。ツリーをどこに置くか、モバイルで `<details>` を
+使うかは Site が決めます。
 
 ```tsx
 import { SiteNav } from "@riebeckite/plugin-navigation";

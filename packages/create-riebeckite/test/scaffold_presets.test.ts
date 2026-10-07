@@ -43,7 +43,12 @@ test("each preset generates its intended self-contained composition", async () =
         path.join(targetDirectory, "app/routes/_renderer.tsx"),
         "utf8",
       );
-      assert.match(renderer, /rel="icon" href="\/favicon\.ico"/);
+      assert.match(
+        renderer,
+        preset === "empty"
+          ? /rel="icon" href="\/favicon\.ico"/
+          : /<RiebeckiteHead/,
+      );
       assert.match(renderer, /export const __importing_islands = true/);
       if (preset === "empty") {
         assert.ok(!config.includes("@riebeckite/plugin-"));

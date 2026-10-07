@@ -47,10 +47,11 @@ entry.
 
 ```tsx
 import { ColorModeScript, ColorModeToggle } from "@riebeckite/plugin-color-mode";
+import { ThemeRoot } from "@riebeckite/honox/ui";
 
 // ...in your renderer
 return (
-  <html {...themeAttributes()}>
+  <ThemeRoot theme={config.theme}>
     <head>
       <ColorModeScript />
       {/* stylesheets, ... */}
@@ -61,7 +62,7 @@ return (
       </header>
       {children}
     </body>
-  </html>
+  </ThemeRoot>
 );
 ```
 

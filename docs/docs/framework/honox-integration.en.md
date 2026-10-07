@@ -154,17 +154,82 @@ the `<head>` or the tag order.
 
 ```tsx
 // app/routes/_renderer.tsx
+import { PluginHeadTags } from "@riebeckite/honox/ui";
+
 const headTags = c.get("headTags") ?? [];
 
 <head>
-  {headTags.map((tag) =>
-    tag.tag === "meta" ? <meta {...tag.attrs} /> : null,
-  )}
+  <PluginHeadTags tags={headTags} />
 </head>;
 ```
 
 For example, `@riebeckite/plugin-discord-embed`, which aligns the Discord embed
 color, supplies `theme-color` through this contract.
+
+### RiebeckiteHead and PluginHeadTags
+
+`@riebeckite/honox/ui` provides two primitives that clarify the separation of
+responsibilities between the framework and the site for head composition.
+
+#### `RiebeckiteHead`
+
+```tsx
+import { RiebeckiteHead } from "@riebeckite/honox/ui";
+
+<RiebeckiteHead title="My Site" headTags={[]} />
+```
+
+The framework renders the standard head contents:
+
+- `<meta charset="utf-8">`
+- `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+- `<title>` (the value provided by the `title` prop)
+- `<link rel="icon" href="/favicon.ico">` (overridable via the `faviconHref` prop; pass `null` to omit)
+- `<ColorModeScript />` (controlled by the `colorModeScript` prop, default `true`)
+- stylesheet entries (via the `stylesheets` prop, default `["/app/style.css"]`)
+- client script entry (via the `clientSrc` prop, default `"/app/client.ts"`; `null` omits it)
+- conversion of `PluginHeadTag` values (via the `headTags` prop)
+- child elements (via the `children` prop) appended after the standard ones
+
+`RiebeckiteHead` does **not** render the `<head>` element itself. The site retains
+ownership of `<head>` and can add custom meta/link/script alongside it.
+
+#### `PluginHeadTags`
+
+```tsx
+import { PluginHeadTags } from "@riebeckite/honox/ui";
+
+<PluginHeadTags tags={headTagsFromManifest} />
+```
+
+Converts `PluginHeadTag` values (meta / link / script) into JSX elements. Use this
+when the site composes its own head and does not use `RiebeckiteHead`.
+
+For example, a site that keeps `<head>` ownership and uses `RiebeckiteHead`:
+
+```tsx
+import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
+
+export default jsxRenderer(({ children }, c) => (
+  <ThemeRoot
+    theme={config.theme}
+    lang={c.get("htmlLanguage") ?? config.site.locale}
+  >
+    <head>
+      <RiebeckiteHead
+        title={config.site.title}
+        headTags={c.get("headTags") ?? []}
+      />
+      <meta name="custom-site-value" content="..." />
+    </head>
+    <body class="riebeckite-page rb-site">{children}</body>
+  </ThemeRoot>
+));
+```
+
+The framework owns the standard head rendering mechanics (charset, viewport, default title, favicon wiring, color-mode bootstrap, stylesheet/client entry wiring, PluginHeadTag conversion) and theme-root attribute derivation. The site still owns `<head>`/`<body>` composition and can add custom meta/link/script. The favicon FILE (`/public/favicon.ico`) remains site-owned; only the default link wiring is framework-owned.
+
+Plugin-provided head tags continue to work through the existing `headTags` mechanism. `RiebeckiteHead` and `headTags` can be used together.
 
 ### Body slot handoff
 

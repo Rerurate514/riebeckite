@@ -3,18 +3,6 @@ import { config } from "../config";
 
 type CssVariable = [name: string, value: string | undefined];
 
-export function getThemeAttributes() {
-  const { theme } = config;
-
-  return {
-    ...theme.attributes,
-    "data-theme": theme.colorMode === "system" ? undefined : theme.colorMode,
-    "data-theme-name": theme.name,
-    "data-typography": theme.typography,
-    "data-article-layout": theme.articleLayout,
-  };
-}
-
 export function getThemeStyle(): string {
   const tokens = config.theme.tokens;
   const variables: CssVariable[] = [

@@ -38,10 +38,11 @@ export default defineConfig({
 
 ```tsx
 import { ColorModeScript, ColorModeToggle } from "@riebeckite/plugin-color-mode";
+import { ThemeRoot } from "@riebeckite/honox/ui";
 
 // ...レンダラー内
 return (
-  <html {...themeAttributes()}>
+  <ThemeRoot theme={config.theme}>
     <head>
       <ColorModeScript />
       {/* スタイルシート, ... */}
@@ -52,7 +53,7 @@ return (
       </header>
       {children}
     </body>
-  </html>
+  </ThemeRoot>
 );
 ```
 

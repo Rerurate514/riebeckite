@@ -1,4 +1,5 @@
-import { escapeScriptJson, type PluginHeadTag } from "@riebeckite/core";
+import { escapeScriptJson } from "@riebeckite/core";
+import { PluginHeadTags, ThemeRoot } from "@riebeckite/honox/ui";
 import {
   ColorModeScript,
   ColorModeToggle,
@@ -13,7 +14,6 @@ import { content } from "../content";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {
   getPluginScripts,
-  getThemeAttributes,
   getThemeStyle,
   getThemeStylesheets,
 } from "../lib/theme";
@@ -25,7 +25,7 @@ export const __importing_islands = true;
 
 export default jsxRenderer(async ({ children }, c) => {
   const { site } = config;
-  const headTags: readonly PluginHeadTag[] = c.get("headTags") ?? [];
+  const headTags = c.get("headTags") ?? [];
   const navigation = resolveSiteNavigation(
     config,
     await content.getManifest(),
@@ -48,14 +48,14 @@ export default jsxRenderer(async ({ children }, c) => {
   const themeStyle = getThemeStyle();
 
   return (
-    <html
+    <ThemeRoot
+      theme={config.theme}
       lang={c.get("htmlLanguage") ?? getHtmlLanguage()}
-      {...getThemeAttributes()}
     >
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {headTags.map(renderHeadTag)}
+        <PluginHeadTags tags={headTags} />
         <meta name="description" content={seo.description} />
         <meta name="author" content={site.author} />
         {seo.noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -116,25 +116,6 @@ export default jsxRenderer(async ({ children }, c) => {
         {children}
         <SiteFooter path={c.req.path} items={navigation.secondary} />
       </body>
-    </html>
+    </ThemeRoot>
   );
 });
-
-/**
- * Maps a plugin-provided head tag to JSX. The site owns the shell; this is
- * where `entry.headTags` from plugins become actual document elements.
- */
-function renderHeadTag(tag: PluginHeadTag, index: number) {
-  const key = `${tag.tag}-${index}`;
-  if (tag.tag === "meta") return <meta {...tag.attrs} key={key} />;
-  if (tag.tag === "link") return <link {...tag.attrs} key={key} />;
-  return (
-    <script
-      {...tag.attrs}
-      key={key}
-      dangerouslySetInnerHTML={
-        tag.children ? { __html: tag.children } : undefined
-      }
-    />
-  );
-}

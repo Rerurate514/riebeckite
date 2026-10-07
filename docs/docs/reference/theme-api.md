@@ -549,6 +549,58 @@ lang
 
 Framework が所有する Attribute と Theme 固有 Attribute の namespace を分離します。
 
+# Theme Root と themeRootAttributes
+
+Framework は `ThemeRoot` という UI primitive を提供し、`<html>` 要素への theme 属性の付与を担当します。
+
+```tsx
+import { ThemeRoot } from "@riebeckite/honox/ui";
+
+<ThemeRoot
+  theme={config.theme}
+  lang={c.get("htmlLanguage") ?? config.site.locale}
+>
+  {children}
+</ThemeRoot>
+```
+
+`ThemeRoot` は次の属性を持つ `<html>` 要素を描画します。
+
+```html
+<html
+  lang="ja"
+  data-theme-name="minimal"
+  data-theme="dark"
+  data-typography="system"
+  data-article-layout="article"
+>
+```
+
+Framework は `themeRootAttributes(theme)` を使い、theme 自身の `attributes` に加えて次の予約属性を出力します。
+
+- `data-theme`: Color Mode の状態（`"light"` / `"dark"` / `"system"` では省略）
+- `data-theme-name`: Theme の識別子
+- `data-typography`: Typography Preset の値
+- `data-article-layout`: Article Layout Preset の値
+
+独自の `<html>` 属性を追加したい場合は、`ThemeRoot` の代わりに `themeRootAttributes` を直接使えます。
+
+```tsx
+import { themeRootAttributes } from "@riebeckite/honox/ui";
+
+<html
+  lang={c.get("htmlLanguage") ?? config.site.locale}
+  {...themeRootAttributes(config.theme)}
+  data-custom-attr="..."
+>
+  ...
+</html>
+```
+
+ただし、予約済みの `data-theme`, `data-theme-name`, `data-typography`, `data-article-layout` は theme 側の `attributes` では上書きできません。
+
+plugin や theme が独自に `themeAttributes()` を実装していた場合は、Framework が提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。Framework が所有する namespace と theme 固有の namespace を明確に分離できます。
+
 # Theme 固有 Options
 
 Theme 固有の機能は Theme Factory の Option として定義します。

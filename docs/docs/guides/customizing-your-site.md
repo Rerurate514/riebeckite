@@ -150,7 +150,7 @@ plugins: [
 
 引数なしの `navigation()` は Vault からリンクを導出します。`items` を渡すと手動で選んだリンクに、`secondary` には補助リンクを指定できます。
 
-モデルを返すのは Plugin で、描画・配置は Site の shell が行います。starter では `app/components/site-header.tsx` が表示し、`app/routes/_renderer.tsx` がそれを渡します。そのため、
+モデルを返し、`SiteNav` でツリーを描画するのは Plugin です。描画したリストをどこに置くかは Site が決めます。starter では `app/components/site-header.tsx` が `SiteNav` を使い、`app/routes/_renderer.tsx` が解決済みモデルと現在パスを渡します。そのため、
 
 - **リンクを追加・削除したい** → `navigation({ items })` を変更
 - **Vault からリンクを導出したい** → 引数なしの `navigation()`
@@ -158,6 +158,8 @@ plugins: [
 - **Header / Footer 自体の配置を変えたい** → `_renderer.tsx` を変更
 
 と考えると分かりやすいです。
+
+子の再帰描画、現在パスの判定、言語を考慮した正規化、外部リンク、`aria-current` といった描画の仕組みは `SiteNav` にあるため、Site 側で再実装する必要はありません。
 
 設定できる項目については [Configuration リファレンス](../reference/configuration.md#navigation-の設定) を参照してください。
 

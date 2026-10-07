@@ -1,3 +1,4 @@
+import { SiteNav } from "@riebeckite/plugin-navigation";
 import type { NavigationItem } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { config } from "../config";
@@ -5,9 +6,11 @@ import { config } from "../config";
 export function SiteHeader({
   path,
   items,
+  language,
 }: {
   path: string;
   items: readonly NavigationItem[];
+  language?: string;
 }) {
   const navigation = items.filter((item) => item.href !== "/");
 
@@ -25,10 +28,10 @@ export function SiteHeader({
       </a>
       {navigation.length > 0 ? (
         <>
-          <SiteNavigation items={navigation} path={path} />
-          <details class="site-navigation__mobile rb-nav__mobile">
+          <SiteNav items={navigation} path={path} language={language} />
+          <details class="rb-nav__mobile">
             <summary class="rb-nav__toggle">Menu</summary>
-            <SiteNavigation items={navigation} path={path} />
+            <SiteNav items={navigation} path={path} language={language} />
           </details>
         </>
       ) : null}
@@ -40,74 +43,17 @@ export function SiteHeader({
 export function SiteFooter({
   path,
   items,
+  language,
 }: {
   path: string;
   items: readonly NavigationItem[];
+  language?: string;
 }) {
   if (items.length === 0) return null;
 
   return (
     <footer class="site-footer rb-site-footer">
-      <SiteNavigation items={items} path={path} />
+      <SiteNav items={items} path={path} language={language} />
     </footer>
   );
-}
-
-function SiteNavigation({
-  items,
-  path,
-}: {
-  items: readonly NavigationItem[];
-  path: string;
-}) {
-  return (
-    <nav class="site-navigation rb-nav" aria-label="Site navigation">
-      <NavigationItems items={items} path={path} />
-    </nav>
-  );
-}
-
-function NavigationItems({
-  items,
-  path,
-  isChildList = false,
-}: {
-  items: readonly NavigationItem[];
-  path: string;
-  isChildList?: boolean;
-}) {
-  return (
-    <ul class={isChildList ? "site-navigation__list rb-nav__list rb-nav__children" : "site-navigation__list rb-nav__list"}>
-      {items.map((item) => {
-        const active = item.href ? isActive(item.href, path) : false;
-        return (
-          <li class="site-navigation__item rb-nav__item">
-            {item.href ? (
-              <a
-                href={item.href}
-                class={active ? "site-navigation__link rb-nav__link rb-nav__link--active is-active" : "site-navigation__link rb-nav__link"}
-                aria-current={active ? "page" : undefined}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noreferrer" : undefined}
-              >
-                {item.label}
-              </a>
-            ) : (
-              <span class="site-navigation__label rb-nav__label">{item.label}</span>
-            )}
-            {item.children && item.children.length > 0 ? (
-              <NavigationItems items={item.children} path={path} isChildList />
-            ) : null}
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function isActive(href: string, path: string): boolean {
-  if (!href.startsWith("/")) return false;
-  const target = href.replace(/\/+$/, "") || "/";
-  const current = path.replace(/^\/[a-z]{2}(?:-[A-Z]{2})?(?=\/|$)/, "").replace(/\/+$/, "") || "/";
-  return target === "/" ? current === target : current === target || current.startsWith(`${target}/`);
 }

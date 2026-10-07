@@ -1,6 +1,6 @@
 # Navigation
 
-Provides the site navigation model that the site shell renders.
+Provides the site navigation model and the primitive that renders it.
 
 ## Installation
 
@@ -23,7 +23,7 @@ navigation({
 });
 ```
 
-The Plugin owns the model only. The site shell decides where each list is rendered. See the [Configuration reference](../reference/configuration.en.md) for the navigation model.
+The Plugin owns the navigation model and its rendering mechanics. `SiteNav` renders a resolved tree with the standard `rb-nav` structure, active-path detection, locale-aware normalization, and the `aria-current` contract; the site decides where each rendered list is placed. See the [Configuration reference](../reference/configuration.en.md) for the navigation model.
 
 ## When to use it
 

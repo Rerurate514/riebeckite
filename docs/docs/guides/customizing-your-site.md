@@ -19,6 +19,7 @@ Riebeckite は主に、次の部分を担当します。
 | 変更したいもの | 主な場所 |
 | --- | --- |
 | ページや URL | `app/routes/` |
+| 404（ページが見つからない） | `app/routes/_404.tsx` |
 | Header / Footer | `app/components/`、`app/routes/_renderer.tsx` |
 | 記事ページの構成 | `app/components/article.tsx` |
 | ボタンなどの UI | `app/components/` |
@@ -239,6 +240,40 @@ starter の catch-all route が、
 
 Plugin のページを Header や Footer に表示したい場合も、新しい route を作るのではなく `navigation` にリンクを追加します。
 
+## 404（ページが見つからない）
+
+存在しない URL は、HonoX 標準の `_404.tsx` route が処理します。Site 側の通常のファイルなので、これを編集すると「ページが見つからない」画面を変更できます。
+
+```tsx
+// app/routes/_404.tsx
+import type { NotFoundHandler } from "hono";
+
+const handler: NotFoundHandler = (c) => {
+  c.status(404);
+
+  return c.render(
+    <main class="not-found">
+      <h1>Page not found</h1>
+      <p>The page you requested does not exist or is not available.</p>
+      <a href="/">Back to home</a>
+    </main>,
+  );
+};
+
+export default handler;
+```
+
+「見つからない」と判断するのは Riebeckite ですが、描画は `_renderer.tsx` を通るため、404 画面でも Site の Theme、head、Header、Footer がそのまま使われます。押さえておくべき点は2つです。
+
+- status は必ず 404 のままにします。生成される preset は `c.status(404)` を呼びます。見た目を整えた画面を `200` で返してはいけません。
+- 見た目は Site のものです。markup、文言、リンク、CSS はすべて Site 側で決められます。Riebeckite が上書き対象となる「デフォルトの 404 component」を用意することはありません。
+
+404 画面に到達するのは「見つからない」リクエストだけです。draft、公開日が未来の content、非公開の content がここへ来ることはないため、404 から非公開 content の存在が漏れることはありません。
+
+### Runtime Error（任意）
+
+Hono の標準の error 処理が error をログに記録し、`500 Internal Server Error` を返すため、Site 側で何かを追加する必要はありません。visitor 向けの error 画面を Site のものとして用意したい場合は、HonoX の `app/routes/_error.tsx`（`ErrorHandler`）を利用できます。生成される preset はこれを追加していません。config、plugin、build の error は開発者向けであり、ページに偽装せずそのまま見えるべきだからです。
+
 ## Plugin の Component を使う
 
 Plugin によっては、Site から直接利用できる Hono JSX component を提供しています。
@@ -334,6 +369,7 @@ Plugin の見た目を上書きするときは `rr-<feature>`、Riebeckite の U
 | サイト全体の外枠を変えたい | `app/routes/_renderer.tsx` |
 | 記事ページの構成を変えたい | `app/components/article.tsx` |
 | 独自ページを追加したい | `app/routes/` |
+| 404 ページを変えたい | `app/routes/_404.tsx` |
 | 独自 component を作りたい | `app/components/` |
 | 操作できる UI を作りたい | `app/islands/` |
 | 色や余白を変えたい | `app/style.css` |

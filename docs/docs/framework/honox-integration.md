@@ -394,6 +394,26 @@ resolveRiebeckiteRoute(content, c.req.path)
 
 Riebeckite repository にある `apps/web` は実装例の1つであり、外部 Site が同じ layout を使う必要はありません。
 
+## Not-found と Error
+
+not-found の処理は HonoX 標準の `app/routes/_404.tsx` です。Riebeckite が「見つからない」と判断し、HonoX がその response を Site の `_renderer.tsx` を通して描画し直すため、status は `404` のまま、not-found 画面の見た目は Site が所有します。
+
+```tsx
+// app/routes/_404.tsx
+import type { NotFoundHandler } from "hono";
+
+const handler: NotFoundHandler = (c) => {
+  c.status(404);
+  return c.render(<main class="not-found">Page not found</main>);
+};
+
+export default handler;
+```
+
+route resolver（`resolveRiebeckiteContentRequest`、`resolveRiebeckiteHomeRequest`、Plugin Page の解決）と、asset-like な path を content route に入れない extension guard は `@riebeckite/honox` に残ります。Site がこれらを再実装することはありません。解決されるのは公開済みで routable な content だけなので、not-found response に draft・未来公開・非公開 content の metadata が載ることもありません。
+
+runtime error は Hono の error 処理を使います。`app/routes/_error.tsx` が無ければ、標準の handler が error をログに記録し、`500 Internal Server Error` を返します。visitor 向けの画面が必要な場合に限り、Site は `_error.tsx`（`ErrorHandler`）を追加できます。config、plugin、build の失敗は開発者向けであり、成功したページに変換してはいけません。
+
 # Plugin と Site の境界
 
 Plugin は Site に情報や UI fragment を提供できます。

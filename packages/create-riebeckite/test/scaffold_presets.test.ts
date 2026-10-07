@@ -170,6 +170,41 @@ test("each preset generates its intended self-contained composition", async () =
   });
 });
 
+test("each preset ships a site-owned 404 surface", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of SCAFFOLD_PRESET_NAMES) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const notFound = await fs.readFile(
+        path.join(targetDirectory, "app/routes/_404.tsx"),
+        "utf8",
+      );
+      assert.match(notFound, /import type \{ NotFoundHandler \} from "hono"/);
+      assert.match(notFound, /const handler: NotFoundHandler = \(c\) => \{/);
+      assert.match(notFound, /c\.status\(404\)/);
+      assert.match(notFound, /c\.render\(/);
+      assert.match(notFound, /export default handler/);
+      assert.doesNotMatch(notFound, /c\.set\(/);
+      assert.doesNotMatch(notFound, /@riebeckite\/plugin-/);
+      assert.doesNotMatch(notFound, /dangerouslySetInnerHTML/);
+      assert.doesNotMatch(notFound, /<PageBody/);
+      assert.doesNotMatch(notFound, /ContentSlot|bodySlots/);
+      assert.doesNotMatch(notFound, /virtual:riebeckite\/(?:config|content)/);
+      const style = await fs.readFile(
+        path.join(targetDirectory, "app/style.css"),
+        "utf8",
+      );
+      assert.match(style, /\.not-found \{/);
+      assert.match(style, /\.not-found__status \{/);
+      assert.equal(
+        await exists(path.join(targetDirectory, "app/routes/_error.tsx")),
+        false,
+        `${preset} must not generate a runtime error page`,
+      );
+    }
+  });
+});
+
 test("starter and showcase scaffolds render authored navigation in the site shell", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {

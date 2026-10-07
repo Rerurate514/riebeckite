@@ -914,6 +914,14 @@ function assertStarterOutput(siteDir: string): void {
     fail("starter build did not create a dist/ directory");
   }
 
+  const notFoundPath = path.join(siteDir, "app/routes/_404.tsx");
+  if (!fs.existsSync(notFoundPath)) {
+    fail("generated starter must ship a site-owned app/routes/_404.tsx");
+  }
+  if (!fs.readFileSync(notFoundPath, "utf8").includes("NotFoundHandler")) {
+    fail("generated starter 404 surface must use Hono's NotFoundHandler");
+  }
+
   const htmlFiles = walkFiles(distDir, (full) => full.endsWith(".html"));
   if (htmlFiles.length === 0) {
     fail("starter build did not emit any HTML files under dist/");

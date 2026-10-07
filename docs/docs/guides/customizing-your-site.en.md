@@ -19,6 +19,7 @@ Start by finding the location that matches what you want to change.
 | What you want to change | Main location |
 | --- | --- |
 | Pages and URLs | `app/routes/` |
+| 404 (page not found) | `app/routes/_404.tsx` |
 | Header / Footer | `app/components/` and `app/routes/_renderer.tsx` |
 | Article page structure | `app/components/article.tsx` |
 | Buttons and other UI | `app/components/` |
@@ -234,6 +235,52 @@ and plugin page types automatically.
 To show a plugin page in the Header or Footer, add a link to `navigation` rather
 than creating a new route.
 
+## 404 (page not found)
+
+Unknown URLs are handled by HonoX's standard `_404.tsx` route. It is an
+ordinary site file, so editing it changes the "page not found" screen:
+
+```tsx
+// app/routes/_404.tsx
+import type { NotFoundHandler } from "hono";
+
+const handler: NotFoundHandler = (c) => {
+  c.status(404);
+
+  return c.render(
+    <main class="not-found">
+      <h1>Page not found</h1>
+      <p>The page you requested does not exist or is not available.</p>
+      <a href="/">Back to home</a>
+    </main>,
+  );
+};
+
+export default handler;
+```
+
+Riebeckite decides that a request is not found, but the response is rendered
+through `_renderer.tsx`, so the 404 screen reuses the site's theme, head, Header,
+and Footer. Two rules matter:
+
+- Always keep the status at 404. The generated presets call `c.status(404)`;
+  a pretty screen served as `200` would be wrong.
+- Presentation is site-owned. The markup, copy, links, and CSS are all yours.
+  Riebeckite does not ship a default 404 component to override.
+
+The 404 screen only ever sees requests that are not found. Draft, future-dated,
+and otherwise unpublished content never reaches it, so a 404 cannot reveal that
+private content exists.
+
+### Runtime errors (optional)
+
+Hono's default error handling already logs the error and returns a plain
+`500 Internal Server Error`, so a site does not have to add anything.
+If you want a site-owned visitor-facing error screen, HonoX supports
+`app/routes/_error.tsx` (an `ErrorHandler`). The generated presets do not add
+it: configuration, plugin, and build errors are developer-facing and should
+stay visible instead of being disguised as a page.
+
 ## Using plugin components
 
 Some plugins provide Hono JSX components you can use directly from the site. For
@@ -322,6 +369,7 @@ If you are unsure where to make a change, this usually helps:
 | Change the site-wide shell | `app/routes/_renderer.tsx` |
 | Change the article page structure | `app/components/article.tsx` |
 | Add a custom page | `app/routes/` |
+| Change the 404 screen | `app/routes/_404.tsx` |
 | Create a custom component | `app/components/` |
 | Build interactive UI | `app/islands/` |
 | Change color or spacing | `app/style.css` |

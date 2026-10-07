@@ -227,9 +227,9 @@ components / body slots
 pages as usual. To create `/about`, for example, add it as a HonoX route.
 
 For Markdown content and pages a plugin provides, you generally do not add a
-route yourself. The starter's catch-all route uses `resolveRiebeckiteRoute`,
-`contentRouteSsgParams`, and `pluginPageSsgParams` to resolve content and plugin
-page types automatically.
+route yourself. The starter's catch-all route uses `contentRouteSsgParams`,
+`riebeniteSsgParams`, and `resolveRiebeckiteContentRequest` to resolve content
+and plugin page types automatically.
 
 To show a plugin page in the Header or Footer, add a link to `navigation` rather
 than creating a new route.

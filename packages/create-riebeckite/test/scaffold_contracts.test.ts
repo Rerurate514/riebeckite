@@ -909,26 +909,16 @@ test("Contract 12: generated routes derive htmlLanguage from the content entry",
 
     const slugRoute = await readFile(targetDir, "app/routes/[slug{.+}].tsx");
     assert.ok(
-      slugRoute?.includes(
-        'import { getEntryLanguage } from "@riebeckite/core";',
-      ),
-      "slug route must import getEntryLanguage",
+      slugRoute?.includes("resolveRiebeckiteContentRequest"),
+      "slug route must delegate page resolution to the framework",
     );
     assert.ok(
-      slugRoute?.includes(
-        'c.set("htmlLanguage", getEntryLanguage(route.entry));',
-      ),
-      "slug route must derive htmlLanguage from the content entry",
-    );
-
-    const slugSource = slugRoute ?? "";
-    const pageBranch = slugSource.slice(
-      slugSource.indexOf('if (route.kind === "page")'),
-      slugSource.indexOf("const post ="),
+      slugRoute?.includes("resolved.entry.bodySlots"),
+      "slug route must compose the resolved content entry",
     );
     assert.ok(
-      pageBranch.includes('c.set("htmlLanguage", route.page.language);'),
-      "plugin page routes must surface the language resolved by the page type",
+      !slugRoute?.includes("c.set("),
+      "slug route must not assign route context directly; the framework resolver owns it",
     );
   });
 });

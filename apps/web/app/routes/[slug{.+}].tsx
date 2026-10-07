@@ -1,10 +1,11 @@
 import { getEntryLanguage } from "@riebeckite/core";
 import {
   contentRouteSsgParams,
-  resolveRiebeckiteRoute,
+  resolveRiebeckiteContentRequest,
   riebeckiteSsgParams,
   ssgEnumerableHandler,
 } from "@riebeckite/honox/server";
+import { PageBody } from "@riebeckite/honox/ui";
 import {
   extractTableOfContents,
   TableOfContents,
@@ -18,58 +19,46 @@ import { buildArticleSeo, buildWebsiteSeo } from "../lib/seo";
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
   ssgEnumerableHandler(async (c, next) => {
-    const requestedSlug = c.req.param("slug");
     // Archive has a dedicated route; defer to it.
     if (c.req.path.startsWith("/archive/")) {
       return next();
     }
-    if (!requestedSlug) return c.notFound();
 
-    if (/\.[a-zA-Z0-9]+$/.test(requestedSlug)) return c.notFound();
+    const resolved = await resolveRiebeckiteContentRequest(c, content);
+    if (resolved.kind === "response") return resolved.response;
 
-    const route = await resolveRiebeckiteRoute(content, c.req.path);
-    if (!route) return c.notFound();
-    if (route.kind === "redirect")
-      return c.redirect(route.location, route.status);
-    if (route.kind === "page") {
+    if (resolved.kind === "page") {
       c.set(
         "seo",
         buildWebsiteSeo(
           {
-            title: route.page.title ?? "",
-            description: route.page.description ?? "",
-            path: route.page.pathname,
+            title: resolved.page.title ?? "",
+            description: resolved.page.description ?? "",
+            path: resolved.page.pathname,
           },
-          route.page.headTags,
+          resolved.page.headTags,
         ),
       );
-      c.set("headTags", route.page.headTags ?? []);
-      c.set("htmlLanguage", route.page.language);
-      return c.render(
-        <div dangerouslySetInnerHTML={{ __html: route.page.body }} />,
-      );
+      return c.render(<PageBody html={resolved.page.body} />);
     }
-    const slug = route.entry.slug;
 
-    const post = await content.getProcessedContent(slug);
-    const tableOfContents = extractTableOfContents(post.html ?? "");
+    const slug = resolved.entry.slug;
+    const tableOfContents = extractTableOfContents(resolved.post.html ?? "");
     c.set(
       "seo",
       buildArticleSeo(
-        route.entry.permalink,
-        post,
-        route.entry.headTags,
-        getEntryLanguage(route.entry),
+        resolved.entry.permalink,
+        resolved.post,
+        resolved.entry.headTags,
+        getEntryLanguage(resolved.entry),
       ),
     );
-    c.set("headTags", route.entry.headTags ?? []);
-    c.set("htmlLanguage", getEntryLanguage(route.entry));
 
     return c.render(
       <Article
-        content={post}
-        title={getArticleTitle(slug, post.frontmatter.title)}
-        bodySlots={route.entry.bodySlots}
+        content={resolved.post}
+        title={getArticleTitle(slug, resolved.post.frontmatter.title)}
+        bodySlots={resolved.entry.bodySlots}
         asideContent={
           <TableOfContents
             className="table-of-contents--desktop"

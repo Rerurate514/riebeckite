@@ -2,9 +2,10 @@ import type {
   ContentManager,
   ContentManifest,
   ContentManifestEntry,
+  PostContent,
   ResolvedPluginPage,
 } from "@riebeckite/core";
-import { htmlOutputPath } from "@riebeckite/core";
+import { getEntryLanguage, htmlOutputPath } from "@riebeckite/core";
 import type { Context, Handler, MiddlewareHandler } from "hono";
 
 export type ResolvedContentRoute =
@@ -29,6 +30,77 @@ export async function resolveRiebeckiteRoute(
   const page = await content.resolvePage(pathname);
   if (page) return { kind: "page", page };
   return resolveContentRoute(await content.getManifest(), pathname);
+}
+
+/**
+ * The resolved route request a Site consumes from a catch-all content route.
+ *
+ * `content` carries everything the Site composition needs; `page` and
+ * `response` are framework mechanics the Site forwards without interpreting.
+ */
+export type ResolvedContentRequest =
+  | { kind: "content"; entry: ContentManifestEntry; post: PostContent }
+  | { kind: "page"; page: ResolvedPluginPage }
+  | { kind: "response"; response: Response | Promise<Response> };
+
+/**
+ * Assigns the resolved route metadata to the request context.
+ *
+ * Plugins and primitives read `htmlLanguage` and `headTags` from the context,
+ * so the resolver owns their values instead of each route rebuilding them.
+ */
+export function applyRiebeckiteRouteContext(
+  c: Context,
+  route: Exclude<ResolvedRiebeckiteRoute, null>,
+): void {
+  if (route.kind === "page") {
+    c.set("headTags", route.page.headTags ?? []);
+    c.set("htmlLanguage", route.page.language);
+    return;
+  }
+  if (route.kind === "content") {
+    c.set("headTags", route.entry.headTags ?? []);
+    c.set("htmlLanguage", getEntryLanguage(route.entry));
+  }
+}
+
+const contentExtensionPattern = /\.[a-zA-Z0-9]+$/;
+
+/**
+ * Resolves a catch-all content request into what a Site should render.
+ *
+ * Owns the route mechanics a Site must not repeat: the wildcard and content
+ * extension guards, plugin page vs content resolution, redirect and not-found
+ * responses, context assignment, and loading the processed content.
+ */
+export async function resolveRiebeckiteContentRequest(
+  c: Context,
+  content: Pick<
+    ContentManager,
+    "resolvePage" | "getManifest" | "getProcessedContent"
+  >,
+  parameter = "slug",
+): Promise<ResolvedContentRequest> {
+  const requestedSlug = c.req.param(parameter);
+  if (!requestedSlug) return { kind: "response", response: c.notFound() };
+  if (contentExtensionPattern.test(requestedSlug)) {
+    return { kind: "response", response: c.notFound() };
+  }
+
+  const route = await resolveRiebeckiteRoute(content, c.req.path);
+  if (!route) return { kind: "response", response: c.notFound() };
+  if (route.kind === "redirect") {
+    return {
+      kind: "response",
+      response: c.redirect(route.location, route.status),
+    };
+  }
+
+  applyRiebeckiteRouteContext(c, route);
+  if (route.kind === "page") return { kind: "page", page: route.page };
+
+  const post = await content.getProcessedContent(route.entry.slug);
+  return { kind: "content", entry: route.entry, post };
 }
 
 /** Returns catch-all parameters for every plugin page registered for SSG. */

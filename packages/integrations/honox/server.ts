@@ -1,11 +1,14 @@
 export type {
+  ResolvedContentRequest,
   ResolvedContentRoute,
   ResolvedRiebeckiteRoute,
 } from "./src/content_route.js";
 export {
+  applyRiebeckiteRouteContext,
   contentRouteSsgParams,
   pluginPageSsgParams,
   resolveContentRoute,
+  resolveRiebeckiteContentRequest,
   resolveRiebeckiteRoute,
   riebeckiteSsgParams,
   ssgEnumerableHandler,

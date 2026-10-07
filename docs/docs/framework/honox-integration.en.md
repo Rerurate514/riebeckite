@@ -62,7 +62,10 @@ instead of `resolveContentRoute(manifest, path)` and merge
 returns a plugin page, then falls through to content and redirects. Its page
 body is intentionally a string: render it inside the site's existing document
 frame and pass `page.headTags` to that frame. The scaffolded catch-all route
-uses this contract, so plugin packages never need to add HonoX route files.
+wraps this in `resolveRiebeckiteContentRequest(c, content)`, which resolves
+content, plugin pages, redirects, and not-found and sets the `htmlLanguage` and
+`headTags` context, so the site only composes the returned result. Plugin
+packages never need to add HonoX route files.
 
 ## UI primitives
 
@@ -70,8 +73,8 @@ uses this contract, so plugin packages never need to add HonoX route files.
 component framework. Its complete public component surface is:
 
 - `Article`, `ArticleLayout`, `ArticleHeader`, `ArticleContent`,
-  `ArticleBody`, `ArticleMeta`, `ArticleFooter`, and `ContentSlot` for an
-  article page;
+  `ArticleBody`, `PageBody`, `ArticleMeta`, `ArticleFooter`, and `ContentSlot`
+  for an article page;
 - `Sidebar` for complementary content.
 
 The corresponding `*Props` types are public. `ContentSlot` is paired with the
@@ -137,11 +140,11 @@ HonoX, see [Customizing Your Site](../guides/customizing-your-site.en.md).
 | `app/style.css` and local CSS | Visual tokens, layout, typography, and imports of generated extension styles |
 
 `app/routes/_renderer.tsx` is the site shell. It owns the document head,
-navigation, page chrome, and the application client entry. A route obtains a
-post from `ContentManager`, resolves request URLs with
-`resolveRiebeckiteRoute(content, c.req.path)`, then chooses its own component
-tree. The reference application in `apps/web` is one implementation, not a
-required layout.
+navigation, page chrome, and the application client entry. A route resolves a
+request with `resolveRiebeckiteContentRequest(c, content)` — which also sets the
+`htmlLanguage` and `headTags` context — then chooses its own component tree.
+The reference application in `apps/web` is one implementation, not a required
+layout.
 
 ### Head tag handoff
 

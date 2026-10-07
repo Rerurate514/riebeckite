@@ -66,8 +66,9 @@ test("each preset generates its intended self-contained composition", async () =
           path.join(targetDirectory, "app/routes/[slug{.+}].tsx"),
           "utf8",
         );
-        assert.match(slugRoute, /resolveRiebeckiteRoute/);
-        assert.match(slugRoute, /pluginPageSsgParams/);
+        assert.match(slugRoute, /contentRouteSsgParams/);
+        assert.match(slugRoute, /resolveRiebeckiteContentRequest/);
+        assert.doesNotMatch(slugRoute, /publicEntries/);
       }
       if (preset === "showcase") {
         assert.match(config, /navigation\(\{/);
@@ -231,7 +232,7 @@ test("starter and showcase scaffolds compose the standard body slots", async () 
         );
         assert.match(
           source,
-          /bodySlots=\{(?:indexEntry\?|route.entry)\.bodySlots\}/,
+          /bodySlots=\{(?:indexEntry\?|resolved\.entry)\.bodySlots\}/,
         );
         assert.doesNotMatch(source, /properties|article\./);
       }
@@ -294,7 +295,7 @@ test("starter scaffold renders article footer slots for plugin UI", async () => 
     assert.match(index, /bodySlots={indexEntry\?\.bodySlots}/);
     assert.match(index, /<RecentPosts /);
     assert.match(slug, /<TableOfContents/);
-    assert.match(slug, /bodySlots={route.entry.bodySlots}/);
+    assert.match(slug, /bodySlots={resolved.entry.bodySlots}/);
   });
 });
 
@@ -307,7 +308,7 @@ test("showcase scaffold renders article footer slots and daily-notes", async () 
     const index = await read("app/routes/index.tsx");
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(index, /<DailyNotes /);
-    assert.match(slug, /bodySlots={route.entry.bodySlots}/);
+    assert.match(slug, /bodySlots={resolved.entry.bodySlots}/);
   });
 });
 

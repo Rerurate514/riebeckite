@@ -79,20 +79,27 @@ scaffolded site already includes it:
 
 ```tsx
 import {
-  pluginPageSsgParams,
-  resolveRiebeckiteRoute,
+  contentRouteSsgParams,
+  resolveRiebeckiteContentRequest,
+  riebeckiteSsgParams,
 } from "@riebeckite/honox/server";
+import { PageBody } from "@riebeckite/honox/ui";
+import { createRoute } from "honox/factory";
 
-export const ssgParams = async () => [
-  ...(await contentRouteSsgParams(content)),
-  ...(await pluginPageSsgParams(content)),
-];
+export default createRoute(
+  contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
+  async (c) => {
+    const resolved = await resolveRiebeckiteContentRequest(c, content);
 
-const route = await resolveRiebeckiteRoute(content, c.req.path);
-if (route?.kind === "page") {
-  c.set("headTags", route.page.headTags ?? []);
-  return c.render(<div dangerouslySetInnerHTML={{ __html: route.page.body }} />);
-}
+    if (resolved.kind === "response") return resolved.response;
+
+    if (resolved.kind === "page") {
+      return c.render(<PageBody html={resolved.page.body} />);
+    }
+
+    return c.render(/* site-specific article composition */);
+  },
+);
 ```
 
 Keep the frame's HTML policy at the application boundary. A plugin must only

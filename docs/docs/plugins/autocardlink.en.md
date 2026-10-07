@@ -13,12 +13,12 @@ anchor-style link card (title, description, favicon, host, and an optional
 image). Styles ship in `style.css`.
 
 ```cardlink
-url: https://example.com/post
-title: "Example post"
-description: "A short summary of the linked page."
-host: example.com
-favicon: https://example.com/favicon.ico
-image: https://example.com/og.png
+url: https://riebeckite.dev/en/
+title: "Riebeckite — Markdown & Obsidian Website Framework"
+description: "Riebeckite is an open-source framework for building extensible websites from Markdown and Obsidian notes. Keep your content, add plugins and themes, and publish the site you want."
+host: riebeckite.dev
+favicon: https://riebeckite.dev/favicon.ico
+image: https://riebeckite.dev/ogp.png
 ```
 
 ## Usage

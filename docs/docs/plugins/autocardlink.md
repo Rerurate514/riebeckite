@@ -23,6 +23,15 @@ host: example.com
 ```
 ````
 
+```cardlink
+url: https://riebeckite.dev/
+title: "Riebeckite — Markdown と Obsidian のサイトフレームワーク"
+description: "Markdown や Obsidian のノートから、拡張できる Web サイトを作るオープンソースフレームワークです。コンテンツはそのままに、Plugin と Theme でサイトを組み立てられます。"
+host: riebeckite.dev
+favicon: https://riebeckite.dev/favicon.ico
+image: https://riebeckite.dev/ogp.png
+```
+
 ## 使いどころ
 
 この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。

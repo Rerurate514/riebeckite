@@ -47,6 +47,8 @@ const analyticsTemplates = [
   },
 ];
 
+const TEMPLATE_GITIGNORE_ENTRIES = ["node_modules/", ".wrangler/", ".dev.vars"];
+
 function readWorkerSource(directory) {
   return fs.readFileSync(
     path.join(analyticsTemplateRoot, directory, "src", "worker.ts"),
@@ -66,8 +68,14 @@ for (const template of analyticsTemplates) {
     template.directory,
     "README.md",
   );
+  const gitignorePath = path.join(
+    analyticsTemplateRoot,
+    template.directory,
+    ".gitignore",
+  );
   expect(fs.existsSync(configPath), `${name}/wrangler.jsonc is missing`);
   expect(fs.existsSync(readmePath), `${name}/README.md is missing`);
+  expect(fs.existsSync(gitignorePath), `${name}/.gitignore is missing`);
   expect(
     fs.existsSync(
       path.join(analyticsTemplateRoot, template.directory, "src", "worker.ts"),
@@ -121,6 +129,15 @@ for (const template of analyticsTemplates) {
     readme.includes("separate") || readme.includes("独立"),
     `${name}/README.md must describe this as a separate Worker deployment`,
   );
+  if (fs.existsSync(gitignorePath)) {
+    const gitignore = fs.readFileSync(gitignorePath, "utf8");
+    for (const entry of TEMPLATE_GITIGNORE_ENTRIES) {
+      expect(
+        gitignore.includes(entry),
+        `${name}/.gitignore must ignore ${entry}`,
+      );
+    }
+  }
 }
 
 const migrationPath = path.join(

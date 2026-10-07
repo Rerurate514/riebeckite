@@ -108,7 +108,7 @@ Riebeckite の外部 Plugin / Theme / Site は、**公開 Package と公開 Expo
 | --- | --- |
 | `@riebeckite/core` | Config、Content、Plugin、Theme、Pipeline などの共通 API |
 | `@riebeckite/cli` | `riebeckite` CLI |
-| `@riebeckite/honox` | HonoX / Vite Integration と Scaffold。`server` subpath に route / SSG helper（`resolveRiebeckiteRoute`、`resolveRiebeckiteContentRequest`、`contentRouteSsgParams`、`riebeniteSsgParams`）、`ui` subpath に article / site の UI primitive（`Article`、`ArticleBody`、`PageBody`、`ArticleContent`、`ContentSlot`、`hasSlot` と各種 Props 型）を公開 |
+| `@riebeckite/honox` | HonoX / Vite Integration と Scaffold。`server` subpath に route / SSG helper（`resolveRiebeckiteRoute`、`resolveRiebeckiteContentRequest`、`resolveRiebeckiteHomeRequest`、`contentRouteSsgParams`、`riebeniteSsgParams`）、`ui` subpath に article / site の UI primitive（`Article`、`ArticleBody`、`PageBody`、`ArticleContent`、`ContentSlot`、`hasSlot` と各種 Props 型）を公開 |
 | `@riebeckite/test` | テスト helper（`assertGolden`、`assertGoldenJson`）。`e2e` subpath に packed tarball の外部 site engine |
 | `@riebeckite/plugin-*` | 各 Plugin |
 | `@riebeckite/theme-*` | 各 Theme |

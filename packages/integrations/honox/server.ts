@@ -9,6 +9,7 @@ export {
   pluginPageSsgParams,
   resolveContentRoute,
   resolveRiebeckiteContentRequest,
+  resolveRiebeckiteHomeRequest,
   resolveRiebeckiteRoute,
   riebeckiteSsgParams,
   ssgEnumerableHandler,

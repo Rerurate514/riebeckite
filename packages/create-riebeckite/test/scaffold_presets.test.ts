@@ -232,7 +232,7 @@ test("starter and showcase scaffolds compose the standard body slots", async () 
         );
         assert.match(
           source,
-          /bodySlots=\{(?:indexEntry\?|resolved\.entry)\.bodySlots\}/,
+          /bodySlots=\{(?:home\.entry|resolved\.entry)\.bodySlots\}/,
         );
         assert.doesNotMatch(source, /properties|article\./);
       }
@@ -292,7 +292,7 @@ test("starter scaffold renders article footer slots for plugin UI", async () => 
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(renderer, /<SearchBar \/>/);
     assert.match(index, /<TableOfContents/);
-    assert.match(index, /bodySlots={indexEntry\?\.bodySlots}/);
+    assert.match(index, /bodySlots=\{home\.entry\.bodySlots\}/);
     assert.match(index, /<RecentPosts /);
     assert.match(slug, /<TableOfContents/);
     assert.match(slug, /bodySlots={resolved.entry.bodySlots}/);

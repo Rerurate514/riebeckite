@@ -197,7 +197,7 @@ pluginPageSsgParams(content)
 
 を追加します。
 
-生成された Site の catch-all route は、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。この helper が content / Plugin Page / redirect / not-found を解決し、`htmlLanguage` と `headTags` を context へ設定するため、Site は返された結果を自身の composition に渡すだけで済みます。
+生成された Site の catch-all route は、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。この helper が content / Plugin Page / redirect / not-found を解決し、`htmlLanguage` と `headTags` を context へ設定するため、Site は返された結果を自身の composition に渡すだけで済みます。root `/` も同じ mechanics を共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
 
 Route resolver は次の順序で URL を解決します。
 
@@ -417,13 +417,7 @@ ContentManifestEntry.headTags
 
 Plugin 自身が `<head>` を描画するわけではありません。
 
-Site の route が、
-
-```ts
-c.set("headTags", entry.headTags ?? []);
-```
-
-として shell へ渡し、`_renderer.tsx` が描画します。
+`resolveRiebeckiteContentRequest` / `resolveRiebeckiteHomeRequest` が、解決した entry の `headTags` を route context へ設定します。`_renderer.tsx` がそれを読み取って描画します。
 
 ```tsx
 import { PluginHeadTags } from "@riebeckite/honox/ui";
@@ -440,8 +434,8 @@ const headTags = c.get("headTags") ?? [];
 ```text
 Plugin
   ↓ headTags を提供
-Route
-  ↓ shell へ渡す
+Framework resolver
+  ↓ context へ設定
 _renderer.tsx
   ↓
 <head> に描画

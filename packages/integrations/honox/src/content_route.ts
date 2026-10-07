@@ -66,27 +66,15 @@ export function applyRiebeckiteRouteContext(
 
 const contentExtensionPattern = /\.[a-zA-Z0-9]+$/;
 
-/**
- * Resolves a catch-all content request into what a Site should render.
- *
- * Owns the route mechanics a Site must not repeat: the wildcard and content
- * extension guards, plugin page vs content resolution, redirect and not-found
- * responses, context assignment, and loading the processed content.
- */
-export async function resolveRiebeckiteContentRequest(
-  c: Context,
-  content: Pick<
-    ContentManager,
-    "resolvePage" | "getManifest" | "getProcessedContent"
-  >,
-  parameter = "slug",
-): Promise<ResolvedContentRequest> {
-  const requestedSlug = c.req.param(parameter);
-  if (!requestedSlug) return { kind: "response", response: c.notFound() };
-  if (contentExtensionPattern.test(requestedSlug)) {
-    return { kind: "response", response: c.notFound() };
-  }
+type RouteContent = Pick<
+  ContentManager,
+  "resolvePage" | "getManifest" | "getProcessedContent"
+>;
 
+async function resolveRouteRequest(
+  c: Context,
+  content: RouteContent,
+): Promise<ResolvedContentRequest> {
   const route = await resolveRiebeckiteRoute(content, c.req.path);
   if (!route) return { kind: "response", response: c.notFound() };
   if (route.kind === "redirect") {
@@ -101,6 +89,50 @@ export async function resolveRiebeckiteContentRequest(
 
   const post = await content.getProcessedContent(route.entry.slug);
   return { kind: "content", entry: route.entry, post };
+}
+
+/**
+ * Resolves a catch-all content request into what a Site should render.
+ *
+ * Owns the route mechanics a Site must not repeat: the wildcard and content
+ * extension guards, plugin page vs content resolution, redirect and not-found
+ * responses, context assignment, and loading the processed content.
+ */
+export async function resolveRiebeckiteContentRequest(
+  c: Context,
+  content: RouteContent,
+  parameter = "slug",
+): Promise<ResolvedContentRequest> {
+  const requestedSlug = c.req.param(parameter);
+  if (!requestedSlug) return { kind: "response", response: c.notFound() };
+  if (contentExtensionPattern.test(requestedSlug)) {
+    return { kind: "response", response: c.notFound() };
+  }
+
+  return resolveRouteRequest(c, content);
+}
+
+/**
+ * Resolves the `/` Homepage request into what a Site should render.
+ *
+ * Shares every catch-all mechanic with `resolveRiebeckiteContentRequest` but
+ * has no wildcard parameter to guard. It additionally owns the configured-index
+ * redirect: when the `index` content is permalinked away from `/`, the root
+ * forwards there instead of resolving another route.
+ */
+export async function resolveRiebeckiteHomeRequest(
+  c: Context,
+  content: RouteContent,
+): Promise<ResolvedContentRequest> {
+  const indexEntry = (await content.getManifest()).bySlug.get("index");
+  if (indexEntry && indexEntry.permalink !== "/") {
+    return {
+      kind: "response",
+      response: c.redirect(indexEntry.permalink, 308),
+    };
+  }
+
+  return resolveRouteRequest(c, content);
 }
 
 /** Returns catch-all parameters for every plugin page registered for SSG. */

@@ -75,7 +75,8 @@ the greatest `priority`; equal priorities are an explicit error. Declare
 ## HonoX application wiring
 
 Every HonoX site that uses plugin pages needs the generic catch-all route. The
-scaffolded site already includes it:
+scaffolded site already includes it. The root `/` is resolved by
+`resolveRiebeckiteHomeRequest(c, content)`, which shares the same mechanics:
 
 ```tsx
 import {

@@ -36,18 +36,12 @@ Route は定数ではなく設定です。Tags の一覧、Series の一覧、Ar
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
-import { config } from "../config";
 import { content } from "../content";
 
-const recentPosts = await getRecentPosts({
-  posts: manifest.discoverableEntries,
-  config,
-  getProcessedContent: (slug) => content.getProcessedContent(slug),
-  resolveTitle: (slug, title) => title,
-});
+const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 ```
 
-`getRecentPosts()` は既定で 5 件を返し、非公開のノートと `index` ノートを除外して `date`（無ければ `created`）で並べます。件数や表示位置を変えたい場合は route を編集します。`limit` を渡すと既定値を上書きできます。日付を解釈できないノートは除外されます。`recent-posts` の Markdown ブロックはなく、Site が配置する component です。
+`getRecentPosts()` は既定で 5 件を返し、`manifest.discoverableEntries` を読みます。unlisted・draft・予約公開のノートと `index` ノートは対象外で、`date`（無ければ `created`）で並べます。件数や表示位置を変えたい場合は route を編集します。`limit` を渡すと既定値を上書きできます。日付を解釈できないノートは除外されます。`recent-posts` の Markdown ブロックはなく、Site が配置する component です。
 
 ## Featured
 

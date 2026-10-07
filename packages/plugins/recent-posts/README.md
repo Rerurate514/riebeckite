@@ -8,10 +8,12 @@ frontmatter date.
 ## Overview
 
 `recentPosts()` provides a `RecentPosts` component that renders an ordered list
-of recently posted articles. `getRecentPosts()` filters unpublished notes,
-derives a date from the frontmatter (`date` falling back to `created`), sorts
-newest first, and truncates to `limit` items. Notes without a parseable date
-are dropped.
+of recently posted articles. `getRecentPosts()` reads
+`manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
+excluded. It derives a date from the frontmatter (`date` falling back to
+`created`), sorts newest first, and truncates to `limit` items. Notes without a
+parseable date are dropped. Whether and where to place the list is the site's
+decision.
 
 With no posts, the component renders nothing.
 
@@ -34,18 +36,9 @@ export default defineConfig({
 
 ```tsx
 import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
-import { config } from "../config";
 import { content } from "../content";
-import { getArticleTitle } from "../lib/article-title";
 
-const posts = await content.getAllPosts();
-const recentPosts = await getRecentPosts({
-  posts,
-  config,
-  getProcessedContent: (slug) => content.getProcessedContent(slug),
-  resolveTitle: getArticleTitle,
-  limit: 5,
-});
+const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 
 // ...in your route
 return <Article afterContent={<RecentPosts posts={recentPosts} />} />;
@@ -65,14 +58,15 @@ target.
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
+| `manifest` | `Pick<ContentManifest, "discoverableEntries">` | — | Source of candidate posts |
 | `limit` | `number` | `5` | Maximum number of posts to return |
 
 ## Exports
 
 - `recentPostsPlugin()` — plugin factory
 - `RecentPosts` — list component (default export of `components/recent-posts.tsx`)
-- `getRecentPosts({ posts, config, getProcessedContent, resolveTitle, limit? })`
-  — collects the latest published posts
+- `getRecentPosts({ manifest, limit? })` — collects the latest discoverable
+  posts
 - Type: `RecentPost` (`{ slug, permalink, title, postedAt }`)
 
 ## See also

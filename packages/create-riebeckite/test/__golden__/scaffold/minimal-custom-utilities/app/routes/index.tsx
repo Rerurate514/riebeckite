@@ -1,29 +1,19 @@
-import { getEntryLanguage } from "@riebeckite/core";
+import { resolveRiebeckiteHomeRequest } from "@riebeckite/honox/server";
+import { PageBody } from "@riebeckite/honox/ui";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
 import { content } from "../content";
 
 export default createRoute(async (c) => {
-  const manifest = await content.getManifest();
-  const indexEntry = manifest.bySlug.get("index");
-  if (indexEntry && indexEntry.permalink !== "/") {
-    return c.redirect(indexEntry.permalink, 308);
-  }
+  const home = await resolveRiebeckiteHomeRequest(c, content);
 
-  const post = await content.getProcessedContent("index");
-  if (indexEntry?.publishing?.routable === false) {
-    return c.notFound();
-  }
+  if (home.kind === "response") return home.response;
 
-  if (indexEntry) {
-    c.set("htmlLanguage", getEntryLanguage(indexEntry));
-    c.set("headTags", indexEntry.headTags ?? []);
+  if (home.kind === "page") {
+    return c.render(<PageBody html={home.page.body} />);
   }
 
   return c.render(
-    <SiteArticle
-      post={post}
-        bodySlots={indexEntry?.bodySlots}
-    />,
+    <SiteArticle post={home.post} bodySlots={home.entry.bodySlots} />,
   );
 });

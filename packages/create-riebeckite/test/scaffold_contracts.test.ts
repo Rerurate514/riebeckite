@@ -888,23 +888,28 @@ test("Contract 11: every preset's generated sources compile", async () => {
 // CONTRACT 12: generated routes supply the current content language
 // =============================================================================
 
-test("Contract 12: generated routes derive htmlLanguage from the content entry", async () => {
+test("Contract 12: generated routes delegate homepage and content resolution to the framework", async () => {
   await withTemporaryDirectory(async (tmpDir) => {
     const targetDir = path.join(tmpDir, "test-site");
     await generateStarterSite(targetDir);
 
     const indexRoute = await readFile(targetDir, "app/routes/index.tsx");
     assert.ok(
-      indexRoute?.includes(
-        'import { getEntryLanguage } from "@riebeckite/core";',
-      ),
-      "index route must import getEntryLanguage",
+      indexRoute?.includes("resolveRiebeckiteHomeRequest"),
+      "index route must delegate homepage resolution to the framework",
     );
     assert.ok(
-      indexRoute?.includes(
-        'c.set("htmlLanguage", getEntryLanguage(indexEntry));',
-      ),
-      "index route must derive htmlLanguage from the content entry",
+      indexRoute?.includes("resolved.entry.bodySlots") ||
+        indexRoute?.includes("home.entry.bodySlots"),
+      "index route must compose the resolved content entry",
+    );
+    assert.ok(
+      !indexRoute?.includes("c.set("),
+      "index route must not assign route context directly; the framework resolver owns it",
+    );
+    assert.ok(
+      !indexRoute?.includes('bySlug.get("index")'),
+      "index route must not look the root entry up in the manifest",
     );
 
     const slugRoute = await readFile(targetDir, "app/routes/[slug{.+}].tsx");

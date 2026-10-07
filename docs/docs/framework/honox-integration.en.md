@@ -64,8 +64,9 @@ body is intentionally a string: render it inside the site's existing document
 frame and pass `page.headTags` to that frame. The scaffolded catch-all route
 wraps this in `resolveRiebeckiteContentRequest(c, content)`, which resolves
 content, plugin pages, redirects, and not-found and sets the `htmlLanguage` and
-`headTags` context, so the site only composes the returned result. Plugin
-packages never need to add HonoX route files.
+`headTags` context, so the site only composes the returned result. The root `/`
+is resolved by `resolveRiebeckiteHomeRequest(c, content)`, which shares the same
+mechanics. Plugin packages never need to add HonoX route files.
 
 ## UI primitives
 
@@ -150,10 +151,11 @@ layout.
 
 When a plugin provides document head tags, the shell still belongs to the
 site. A plugin only describes `meta` / `link` / `script` on
-`ContentManifestEntry.headTags`; it never renders them. A site route passes the
-value to the shell with `c.set("headTags", entry.headTags ?? [])`, and
-`app/routes/_renderer.tsx` decides whether to render it. A plugin does not own
-the `<head>` or the tag order.
+`ContentManifestEntry.headTags`; it never renders them.
+`resolveRiebeckiteContentRequest` / `resolveRiebeckiteHomeRequest` set the
+resolved entry's tags into the route context, and `app/routes/_renderer.tsx`
+decides whether to render them. A plugin does not own the `<head>` or the tag
+order.
 
 ```tsx
 // app/routes/_renderer.tsx

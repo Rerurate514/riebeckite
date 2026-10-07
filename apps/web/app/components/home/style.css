@@ -40,12 +40,14 @@ body:has(.rb-home) .rb-site-header {
   height: auto;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"] .rb-home__brand-logo {
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"]
+  .rb-home__brand-logo {
   filter: invert(1) hue-rotate(180deg);
 }
 
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme]) .rb-home__brand-logo {
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme])
+    .rb-home__brand-logo {
     filter: invert(1) hue-rotate(180deg);
   }
 }

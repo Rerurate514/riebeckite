@@ -197,6 +197,8 @@ pluginPageSsgParams(content)
 
 を追加します。
 
+生成された Site の catch-all route は、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。この helper が content / Plugin Page / redirect / not-found を解決し、`htmlLanguage` と `headTags` を context へ設定するため、Site は返された結果を自身の composition に渡すだけで済みます。
+
 Route resolver は次の順序で URL を解決します。
 
 ```mermaid
@@ -238,6 +240,7 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 - `ArticleHeader`
 - `ArticleContent`
 - `ArticleBody`
+- `PageBody`
 - `ArticleMeta`
 - `ArticleFooter`
 - `ContentSlot`

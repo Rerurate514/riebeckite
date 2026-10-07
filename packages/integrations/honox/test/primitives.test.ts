@@ -8,6 +8,7 @@ import {
   ArticleMeta,
   ContentSlot,
   hasSlot,
+  PageBody,
 } from "../src/ui/primitives.tsx";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
@@ -159,4 +160,18 @@ test("hasSlot shares the ContentSlot empty semantics", () => {
     hasSlot({ "custom.slot": "<p>Custom</p>" }, "custom.slot"),
     true,
   );
+});
+
+test("PageBody renders resolved page HTML in a bare wrapper", () => {
+  const html = renderToString(PageBody({ html: "<p>Page</p>" }));
+
+  assert.equal(html, "<div><p>Page</p></div>");
+});
+
+test("PageBody composes a Site class", () => {
+  const html = renderToString(
+    PageBody({ html: "<p>Page</p>", class: "site-page" }),
+  );
+
+  assert.equal(html, '<div class="site-page"><p>Page</p></div>');
 });

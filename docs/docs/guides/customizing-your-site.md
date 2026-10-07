@@ -231,9 +231,9 @@ Component / Body Slot
 
 starter の catch-all route が、
 
-- `resolveRiebeckiteRoute`
 - `contentRouteSsgParams`
-- `pluginPageSsgParams`
+- `riebeniteSsgParams`
+- `resolveRiebeckiteContentRequest`
 
 を利用して、content と plugin の Page Type を自動的に解決します。
 

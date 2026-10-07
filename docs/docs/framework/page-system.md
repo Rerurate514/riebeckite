@@ -375,31 +375,27 @@ Plugin Page を利用する HonoX Site には、共通の catch-all route が必
 
 ```tsx id="xxj9rm"
 import {
-  pluginPageSsgParams,
-  resolveRiebeckiteRoute,
+  contentRouteSsgParams,
+  resolveRiebeckiteContentRequest,
+  riebeckiteSsgParams,
 } from "@riebeckite/honox/server";
+import { PageBody } from "@riebeckite/honox/ui";
+import { createRoute } from "honox/factory";
 
-export const ssgParams = async () => [
-  ...(await contentRouteSsgParams(content)),
-  ...(await pluginPageSsgParams(content)),
-];
+export default createRoute(
+  contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
+  async (c) => {
+    const resolved = await resolveRiebeckiteContentRequest(c, content);
 
-const route = await resolveRiebeckiteRoute(
-  content,
-  c.req.path,
+    if (resolved.kind === "response") return resolved.response;
+
+    if (resolved.kind === "page") {
+      return c.render(<PageBody html={resolved.page.body} />);
+    }
+
+    return c.render(/* Site 固有の article composition */);
+  },
 );
-
-if (route?.kind === "page") {
-  c.set("headTags", route.page.headTags ?? []);
-
-  return c.render(
-    <div
-      dangerouslySetInnerHTML={{
-        __html: route.page.body,
-      }}
-    />,
-  );
-}
 ```
 
 通常の Site 利用者が Plugin ごとにこの route を追加する必要はありません。

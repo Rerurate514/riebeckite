@@ -202,6 +202,25 @@ export function ArticleBody(props: ArticleBodyProps) {
   );
 }
 
+export type PageBodyProps = PrimitiveClassProps & {
+  html: string;
+};
+
+/**
+ * Renders framework-resolved Plugin Page HTML.
+ *
+ * Owns the raw injection of a `PluginPageType` body so Sites never hand-write
+ * `dangerouslySetInnerHTML` for a resolved page.
+ */
+export function PageBody(props: PageBodyProps) {
+  return (
+    <div
+      class={joinClassNames(props.class, props.className) || undefined}
+      dangerouslySetInnerHTML={{ __html: props.html }}
+    />
+  );
+}
+
 export function ArticleFooter(props: ArticleFooterProps) {
   return (
     <footer

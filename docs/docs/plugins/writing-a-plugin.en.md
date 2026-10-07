@@ -24,6 +24,138 @@ Semantic Markdown transformation belongs to Plugins. Simple remark Plugins can b
 
 For dependencies, lifecycle hooks, renderers, endpoints, and other extension points, see [Plugin API](../reference/plugin-api.en.md).
 
+## Build a directive Plugin end to end
+
+This walkthrough builds a site-local Plugin that turns a `:::tip[Title]` container directive into an `<aside>`, adds a stylesheet, and tests the result. It uses only public APIs: `definePlugin` and the Markdown pipeline from `@riebeckite/core`, `unist-util-visit`, and the `remark-directive` nodes the pipeline already produces.
+
+### Step 1: Create the Plugin
+
+Create `extensions/tip-plugin.ts`:
+
+```ts
+import { definePlugin } from "@riebeckite/core";
+import type { Parent, Root } from "mdast";
+import { visit } from "unist-util-visit";
+
+type ContainerDirective = {
+  type: "containerDirective";
+  name: string;
+  children: Parent["children"];
+  data?: Record<string, unknown>;
+};
+
+function remarkTip() {
+  return (tree: Root) => {
+    visit(tree, "containerDirective", (node, index, parent) => {
+      const directive = node as unknown as ContainerDirective;
+      if (directive.name !== "tip") return;
+      if (parent === undefined || index === undefined) return;
+
+      const [first, ...rest] = directive.children;
+      const hasLabel =
+        first?.type === "paragraph" &&
+        (first as { data?: { directiveLabel?: boolean } }).data
+          ?.directiveLabel === true;
+      const titleChildren = hasLabel ? (first as Parent).children : [];
+      const bodyChildren = hasLabel ? rest : directive.children;
+
+      directive.data = {
+        ...directive.data,
+        hName: "aside",
+        hProperties: { className: ["rr-tip"] },
+      };
+      directive.children = [
+        {
+          type: "paragraph",
+          data: {
+            hName: "p",
+            hProperties: { className: ["rr-tip__title"] },
+          },
+          children: titleChildren,
+        },
+        ...bodyChildren,
+      ];
+    });
+  };
+}
+
+export function tipPlugin() {
+  return definePlugin({
+    name: "tip",
+    extendMarkdownPipeline: (pipeline) => {
+      pipeline.use(remarkTip);
+    },
+    assets: [
+      {
+        pluginName: "tip",
+        kind: "style",
+        moduleSpecifier: "/extensions/plugin.css",
+      },
+    ],
+  });
+}
+```
+
+The Markdown pipeline runs `remark-directive` before Plugin transformers, so `:::tip` arrives as a `containerDirective` node. Setting `data.hName` and `data.hProperties` makes the HTML step emit `<aside class="rr-tip">` instead of a generic wrapper, and the directive label becomes the title paragraph.
+
+### Step 2: Add the stylesheet
+
+Create `extensions/plugin.css`:
+
+```css
+.rr-tip {
+  border-left: 2px solid var(--rb-color-accent);
+  padding: 0.75rem 1rem;
+}
+
+.rr-tip__title {
+  margin-block: 0 0.25rem;
+  font-weight: 600;
+}
+```
+
+`rr-tip` is the stable root hook a Theme can target. Use the `--rb-*` tokens rather than hard-coded colors so Theme switching keeps working.
+
+### Step 3: Register the Plugin
+
+```ts
+// riebeckite.config.ts
+import { defineConfig } from "@riebeckite/core";
+import { tipPlugin } from "./extensions/tip-plugin";
+
+export default defineConfig({
+  plugins: [tipPlugin()],
+});
+```
+
+### Step 4: Test the output
+
+Run the Markdown pipeline directly, without building the site:
+
+```ts
+// extensions/tip-plugin.test.ts
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { Pipeline } from "@riebeckite/core";
+import { tipPlugin } from "./tip-plugin.ts";
+
+test("renders :::tip as an aside with a title", async () => {
+  const pipeline = new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [tipPlugin()],
+  });
+
+  const { html } = await pipeline.execute(
+    ":::tip[Heads up]\nSave often.\n:::",
+  );
+
+  assert.match(html, /<aside class="rr-tip">/);
+  assert.match(html, /<p class="rr-tip__title">Heads up<\/p>/);
+  assert.match(html, /Save often\./);
+});
+```
+
+Run it with `node --test`. Because the Plugin only extends the Markdown pipeline, the test needs no filesystem access and no site build.
+
 ## 4. Add a standalone page when needed
 
 Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme. When a page lists entries, read `manifest.discoverableEntries`; reserve `manifest.publicEntries` (which includes `unlisted`) and `manifest.entries` (which includes `draft` and `scheduled`) for the cases that genuinely need them. See [Manifest collections and publication safety](../reference/plugin-api.en.md#manifest-collections-and-publication-safety).

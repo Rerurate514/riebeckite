@@ -1,30 +1,80 @@
+<!-- Generated from packages/plugins/lightbox/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Lightbox
 
-Adds lightbox-style enlargement for images.
+Click-to-zoom lightbox for images.
 
-## Installation
+[日本語](./lightbox.md)
 
-```bash
-npm install @riebeckite/plugin-lightbox
+## Overview
+
+Two parts:
+
+- **Build (rehype):** wraps each rendered `<img>` in a trigger anchor
+- **Client:** opens an accessible dialog on click
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+
+export default defineConfig({
+  // ...
+  plugins: [lightboxPlugin()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+The plugin registers `style.css` and a client entry (`initLightbox`), which
+the app calls on page initialization.
 
-## Example
+## Behavior
 
-Use ordinary Markdown images and allow readers to open them in a larger view on the published site.
+### Build (`rehypeLightbox`)
 
-```markdown
-![[images/architecture.png]]
-```
+- Wraps every `<img src>` in
+  `<a class="rr-lightbox-trigger">` with `data-lightbox-src`,
+  `data-lightbox-alt`, and an `aria-label`
+- Adds `rr-lightbox-image` to the image
+- Skips images that have `data-lightbox-ignore="true"`, and images already
+  inside an `<a>`, `<button>`, existing trigger, or the dialog
+- Uses `expandLabel` (default `"Expand image"`) for the trigger and dialog
+  accessible labels
 
-## When to use it
+### Client (`initLightbox`)
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+- Optionally wraps remaining `img[src]` that were not converted at build time
+  (`autoWrapImages`, default on; images inside links/buttons are skipped)
+- Creates a `role="dialog"` overlay with the image, `alt` caption, and close
+  button
+- Closes on `Escape`, backdrop click, or the close button
+- Restores focus to the previously focused element
+- Sets `html[data-lightbox-open="true"]` while open (locks scrolling via CSS)
+- Returns a cleanup function that removes listeners, the dialog, and any
+  wrapped images
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+## Options
 
-## Detailed specification
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `selectorClass` | `string` | `"rr-lightbox-trigger"` | Trigger class (build and client) |
+| `expandLabel` | `string` | `"Expand image"` | Accessible label for triggers and the dialog |
+| `closeLabel` | `string` | `"Close"` | Accessible label for the dialog close button |
+| `autoWrapImages` | `boolean` | `true` | Client-only: wrap unhandled images on init |
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+`LightboxOptions` = `{ selectorClass?, expandLabel?, closeLabel? }` (build),
+`LightboxInitOptions` = `LightboxOptions & { autoWrapImages? }` (client).
 
+## Exports
+
+- `lightboxPlugin(options?)` — plugin factory
+- `rehypeLightbox(options?)` — rehype transform
+- `initLightbox(root?, options?)` — client initializer, returns a cleanup
+  function
+- `initLightboxFromOptions(options?)` — option-first browser entry the plugin's
+  client script calls; wraps `initLightbox`
+- Types: `LightboxOptions`, `LightboxInitOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

@@ -1,32 +1,92 @@
+<!-- Generated from packages/plugins/code-enhance/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Code Enhance
 
-Adds presentation features such as line numbers, filenames, line highlighting, and copy actions to code blocks.
+Enhanced code blocks: Shiki highlighting plus a header with copy, wrap, and
+collapse controls.
 
-## Installation
+[日本語](./code-enhance.md)
 
-```bash
-npm install @riebeckite/plugin-code-enhance
+## Overview
+
+`codeEnhance()` wraps [rehype-pretty-code](https://github.com/rehype-pretty-code/rehype-pretty-code)
+(Shiki) and post-processes each figure into `.rr-code` with a header and
+action buttons. The client entry wires up the buttons.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { codeEnhance } from "@riebeckite/plugin-code-enhance";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    codeEnhance({
+      theme: { light: "github-light", dark: "github-dark" },
+      lineNumbers: true,
+      copyButton: true,
+      filename: true,
+      lineHighlight: true,
+      diffHighlight: true,
+      wrapToggle: true,
+    }),
+  ],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+## Features
 
-## Example
+- Syntax highlighting via Shiki (rehype-pretty-code)
+- Header with the file name (code block title, falling back to the language)
+  and action buttons
+- Copy button with "Copied" feedback (client)
+- Wrap toggle (client)
+- Collapse / expand button (opt-in, client)
+- Line numbers (`data-line-number` gutter)
+- Line and character highlighting from pretty-code meta (`{1,3}`, `[/re/]`)
+- Diff coloring for lines starting with `+` / `-`
+- Terminal styling for `bash`, `console`, `sh`, `shell`, `terminal`, `zsh`
+  (inverted palette) with a `$` prompt prefix on non-empty lines
+- Focusable `<pre>` (`tabindex="0"`) for keyboard scrolling
 
-Use it in technical articles where fenced code blocks should be easier to read and operate.
+## Options
 
-````markdown
-```
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `theme` | `string \| { light: string; dark: string }` | `{ light: "github-light", dark: "github-dark" }` | Shiki theme |
+| `lineNumbers` | `boolean` | `false` | Show line numbers |
+| `copyButton` | `boolean` | `true` | Show the copy button |
+| `filename` | `boolean` | `true` | Show the file name in the header |
+| `lineHighlight` | `boolean` | `true` | Apply meta-based line/char highlights |
+| `diffHighlight` | `boolean` | `true` | Color `+` / `-` lines |
+| `collapsible` | `boolean` | `false` | Add the collapse button |
+| `terminal` | `boolean` | `true` | Terminal styling for shell languages |
+| `commandPrompt` | `boolean` | `true` | `$` prompt prefix on terminal lines |
+| `wrapToggle` | `boolean` | `true` | Show the wrap toggle button |
+| `defaultCollapsed` | `boolean` | `false` | Start collapsed (requires `collapsible`) |
+| `copyLabel` | `string` | `"Copy"` | Copy button label forwarded to the client |
+| `copiedLabel` | `string` | `"Copied"` | Label after copying, forwarded to the client |
 
-```
-````
+## Client
 
-## When to use it
+`codeEnhance()` forwards `copyLabel` / `copiedLabel` to the client entry.
+`initCodeEnhance(options?)` installs a document-level click handler for copy,
+wrap, and collapse buttons.
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `copyLabel` | `string` | `"Copy"` | Copy button label |
+| `copiedLabel` | `string` | `"Copied"` | Label after copying |
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+## Exports
 
-## Detailed specification
+- `codeEnhance(options?)` — plugin factory
+- `rehypeCodeEnhance(options?)` — rehype transform
+- `initCodeEnhance(options?)` — client initializer
+- `DEFAULT_COPY_LABEL`, `DEFAULT_COPIED_LABEL` — default copy labels
+- Types: `CodeEnhanceOptions`, `CodeEnhanceClientOptions`, `CodeEnhanceTheme`
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+## See also
 
+- [Plugin guide](../reference/plugin-api.en.md)

@@ -94,9 +94,9 @@ Without this plugin, Riebeckite still resolves every URL through the Core defaul
 
 ---
 
-# Frontmatter
+## Frontmatter
 
-## ID
+### ID
 
 By default, the plugin reads the `id` field:
 
@@ -122,7 +122,7 @@ permalink-id: hello-world
 
 `frontmatter` refers to a top-level frontmatter field.
 
-## Permalink override
+### Permalink override
 
 A specific entry can override its public URL entirely:
 
@@ -155,7 +155,7 @@ permalink({
 });
 ```
 
-## Redirects
+### Redirects
 
 Legacy URLs can be declared in frontmatter:
 
@@ -201,7 +201,7 @@ permalink({
 
 ---
 
-# Options
+## Options
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -220,9 +220,9 @@ permalink({
 
 ---
 
-# ID strategies
+## ID strategies
 
-## `frontmatter`
+### `frontmatter`
 
 Uses the configured frontmatter field as the ID.
 
@@ -249,7 +249,7 @@ With `flat` mode, renaming or moving the source file does not change the ID or p
 
 ---
 
-## `hash`
+### `hash`
 
 Ignores the frontmatter ID and derives the ID from the source file path.
 
@@ -292,7 +292,7 @@ Because the source path is the input, renaming or moving the file changes the ID
 
 ---
 
-## `frontmatter-or-hash`
+### `frontmatter-or-hash`
 
 This is the default strategy.
 
@@ -321,7 +321,7 @@ This is useful for existing Obsidian vaults: content works without modification,
 
 ---
 
-# ID metadata
+## ID metadata
 
 The source of a resolved ID is exposed through metadata.
 
@@ -335,7 +335,7 @@ A manual `permalink` override changes the URL without removing identity. When th
 
 ---
 
-# URL path modes
+## URL path modes
 
 ID resolution and URL composition are separate concerns.
 
@@ -349,7 +349,7 @@ ID:
 hello-world
 ```
 
-## `flat`
+### `flat`
 
 ```ts
 path: {
@@ -370,7 +370,7 @@ This mode is useful for opaque, location-independent URLs.
 
 ---
 
-## `preserve`
+### `preserve`
 
 Preserves the source directory structure while placing the ID into the resulting URL.
 
@@ -393,7 +393,7 @@ notes/flutter/hello.md
 
 ---
 
-## `append`
+### `append`
 
 `append` is also available:
 
@@ -409,7 +409,7 @@ The mode exists separately so it can represent different composition semantics i
 
 ---
 
-# Index files
+## Index files
 
 `index.collapse` controls how `index.md` is represented.
 
@@ -437,13 +437,13 @@ with ID `hello-world`:
 
 ---
 
-# Advanced: Custom resolvers
+## Advanced: Custom resolvers
 
 For URL schemes that cannot be expressed with the built-in strategies, `resolveId` and `resolvePath` provide escape hatches.
 
 Prefer the built-in options when they are sufficient. Custom resolvers are intended for project-specific identity and URL schemes.
 
-## `resolveId`
+### `resolveId`
 
 `resolveId` lets you compute the content ID yourself.
 
@@ -478,7 +478,7 @@ Values returned by `resolveId` still pass through the same ID validation as buil
 
 A custom resolver therefore does not bypass the plugin's normal validation.
 
-### Example: derive an ID from custom frontmatter
+#### Example: derive an ID from custom frontmatter
 
 Suppose your content uses:
 
@@ -525,7 +525,7 @@ Validation of project-specific frontmatter values inside a custom resolver is th
 
 ---
 
-# Advanced: `resolvePath`
+## Advanced: `resolvePath`
 
 `resolvePath` gives full control over how a resolved ID becomes a public URL.
 
@@ -562,7 +562,7 @@ The result still passes through the plugin's normal URL normalization, validatio
 
 ---
 
-# Combining `resolveId` and `resolvePath`
+## Combining `resolveId` and `resolvePath`
 
 Both resolvers can be used together when both identity and URL structure are project-specific.
 
@@ -611,7 +611,7 @@ Riebeckite still treats only the final resolved URL as the canonical public loca
 
 ---
 
-# Choosing between built-in and custom resolution
+## Choosing between built-in and custom resolution
 
 A useful rule is:
 
@@ -652,7 +652,7 @@ This is preferable because the intent is clearer and the configuration remains d
 
 ---
 
-# Guarantees with custom resolvers
+## Guarantees with custom resolvers
 
 Using a custom resolver does not bypass the rest of the Permalink Plugin pipeline.
 
@@ -671,7 +671,7 @@ Custom resolvers change how the ID or path is produced, not how the resulting pu
 
 ---
 
-# Manual permalink precedence
+## Manual permalink precedence
 
 A manual permalink override takes precedence over normal ID and path resolution.
 
@@ -700,7 +700,7 @@ This makes it possible to use a general URL strategy while giving a few special 
 
 ---
 
-# Stateless builds
+## Stateless builds
 
 The Permalink Plugin does not maintain a persistent ID registry.
 
@@ -729,7 +729,7 @@ Use explicit frontmatter IDs for content whose URL must survive source-file move
 
 ---
 
-# Rename and move behavior
+## Rename and move behavior
 
 URL stability depends on both the ID strategy and path mode.
 
@@ -770,9 +770,9 @@ is usually more convenient.
 
 ---
 
-# Validation
+## Validation
 
-## IDs
+### IDs
 
 An ID must represent a single URL path segment.
 
@@ -787,7 +787,7 @@ The following are rejected:
 
 Values returned by `resolveId` are subject to the same rules.
 
-## Permalinks
+### Permalinks
 
 Permalinks and redirects must be site-local absolute paths.
 
@@ -804,7 +804,7 @@ Values returned by `resolvePath` are subject to the same rules.
 
 ---
 
-# Collision detection
+## Collision detection
 
 The plugin detects conflicting public locations during the build.
 
@@ -843,7 +843,7 @@ This prevents public URLs from changing based on build or content ordering.
 
 ---
 
-# Inspecting resolved URLs
+## Inspecting resolved URLs
 
 Resolved values can be inspected through Riebeckite's existing content inspection command:
 
@@ -865,16 +865,16 @@ The exact output format may vary between CLI versions.
 
 ---
 
-# Exports
+## Exports
 
-## Functions
+### Functions
 
 - `permalink(options?)`
 - `permalinkPlugin(options?)`
 
 Both create the Permalink Plugin.
 
-## Types
+### Types
 
 - `PermalinkOptions`
 - `PermalinkIdStrategy`
@@ -885,9 +885,9 @@ Use the exported types when building type-safe project-specific resolver configu
 
 ---
 
-# Configuration examples
+## Configuration examples
 
-## Existing Obsidian vault
+### Existing Obsidian vault
 
 Hide the filesystem layout without requiring frontmatter changes across the vault:
 
@@ -907,7 +907,7 @@ permalink({
 });
 ```
 
-## Explicit permanent IDs
+### Explicit permanent IDs
 
 Require every entry to define its identity explicitly:
 
@@ -926,7 +926,7 @@ permalink({
 });
 ```
 
-## Preserve directory structure
+### Preserve directory structure
 
 ```ts
 permalink({
@@ -941,7 +941,7 @@ permalink({
 });
 ```
 
-## Fully custom URL scheme
+### Fully custom URL scheme
 
 ```ts
 permalink({
@@ -959,7 +959,7 @@ permalink({
 
 ---
 
-# See also
+## See also
 
 - [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
 - [Content system](../../../docs/docs/framework/content-system.en.md)

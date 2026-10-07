@@ -104,6 +104,13 @@ setting `infer: false` disables it. Link targets are resolved against the
 content manifest; unresolved targets become virtual nodes labelled with the
 raw link text (`data-node-virtual="true"`).
 
+## Publication boundary
+
+Nodes are resolved against the content manifest. A target whose
+`publishing.routable` flag is false is dropped from the map, so notes excluded
+from publication never appear as nodes or links and their titles and permalinks
+are not leaked.
+
 ## Rendering
 
 The `render` option selects where the map is produced:
@@ -158,6 +165,15 @@ Each region is a `g.rb-excalibrain__region[data-region]`; each node is a
 `g.rb-excalibrain__node[data-node-role][data-node-slug][data-relation-type]`
 wrapping an `<a href>` around its `<rect>` and `<text>`. Links are
 `path.rb-excalibrain__link[data-link-role][data-relation-type]`.
+
+## Limitations
+
+- The map is read-only. The client layer only builds the SVG; there is no drag,
+  zoom, or expand/collapse interaction.
+- `maxPerRegion` truncates each region, so a note with more relations than the
+  limit shows only the first nodes.
+- Rendering is limited to the ontology roles above; there is no per-node
+  styling or per-region configuration beyond the options listed below.
 
 ## Exports
 

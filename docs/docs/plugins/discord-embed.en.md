@@ -1,25 +1,84 @@
+<!-- Generated from packages/plugins/discord-embed/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Discord Embed
 
-Completes the page head with the tags Discord uses for link previews.
+Completes each page's `<head>` for Discord link previews.
 
-## Installation
+Discord's `Discordbot` reads the shared page's `<head>` metadata to build its
+preview card. The `seo` plugin already emits the shared `og:*` and `twitter:*`
+tags, so this plugin adds only the Discord-specific pieces that are missing:
 
-```bash
-npm install @riebeckite/plugin-discord-embed
+- `<meta name="theme-color">`, which Discord uses for the embed's left border
+  color;
+- `og:image:alt` (and optionally `og:image:width` / `og:image:height`).
+
+[日本語](./discord-embed.md)
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
+
+export default defineConfig({
+  // ...
+  plugins: [discordEmbed()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+## Options
 
-## Example
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `themeColor` | `string` | `"#5865F2"` | Embed accent color. Discord blurple |
+| `imageAlt` | `boolean` | `true` | Emit `og:image:alt` when the entry has an image |
+| `imageDimensions` | `boolean` | `true` | Emit `og:image:width` / `og:image:height` when the entry's image dimensions are known |
 
-Use it when a shared note link should show a Discord embed with the site's accent color and image metadata. On top of the `og:*` and `twitter:*` tags the SEO plugin already emits, it adds `theme-color`, `og:image:alt`, and the image dimensions.
+`themeColor` accepts `#rgb`, `#rgba`, `#rrggbb`, or `#rrggbbaa`.
 
-## When to use it
+## Frontmatter
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+| Field | Use |
+| ----- | --- |
+| `theme_color` / `themeColor` / `discord_color` | Override the embed color for one entry |
+| `ogImage` / `image` | Mark that the entry has an image, enabling the image tags |
+| `ogImageWidth` / `imageWidth` | Image width |
+| `ogImageHeight` / `imageHeight` | Image height |
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+The color resolves from the frontmatter override first, then the `themeColor`
+option. An invalid frontmatter color records a
+`discord-embed-invalid-color` diagnostic (warning) and falls back to the option
+default.
 
-## Detailed specification
+## Emitted tags
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+The `onManifestCreated` hook assigns `entry.headTags` for every entry:
+
+```html
+<meta name="theme-color" content="#1ABC9C" />
+<meta property="og:image:alt" content="Article title" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+```
+
+## The site shell renders `headTags`
+
+This plugin does not own the `<head>`. It provides
+`ContentManifestEntry.headTags`; whether to render them is the site's decision.
+A site route sets `c.set("headTags", entry.headTags ?? [])`, and
+`app/routes/_renderer.tsx` maps them to `<meta>` / `<link>` / `<script>`.
+See [HonoX Integration](../framework/honox-integration.en.md), section
+"Site application contract", for details.
+
+## Exports
+
+- `discordEmbed(options?)` / `discordEmbedPlugin(options?)` — plugin factory
+- `buildDiscordHeadTags(entry, options, diagnostics)` — build one entry's head
+  tags
+- `resolveDiscordEmbedOptions(options?)` — resolve defaults
+- Types: `DiscordEmbedOptions`, `ResolvedDiscordEmbedOptions`
+
+## See also
+
+- [HonoX Integration](../framework/honox-integration.en.md)
+- [Plugin system](../reference/plugin-api.en.md)

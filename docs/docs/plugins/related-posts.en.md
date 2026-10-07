@@ -1,29 +1,117 @@
+<!-- Generated from packages/plugins/related-posts/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Related Posts
 
-Suggests content related to the current article.
+Build-time "related notes" navigation. For every published entry, the plugin
+ranks the other entries in the content manifest and contributes a related-posts
+section to the `article.footer` Slot. No client-side JavaScript is required.
 
-## Installation
+[日本語](./related-posts.md)
 
-```bash
-npm install @riebeckite/plugin-related-posts
+## Overview
+
+`relatedPosts()` reads the manifest's content graph and scores every other
+published entry against the current one:
+
+| Signal | Weight | Meaning |
+| ------ | ------ | ------- |
+| Direct link | 3 | The entry links to the candidate, or the candidate links to the entry |
+| Shared tag | 2 per common tag | The entry and the candidate share a tag |
+| Co-citation | 1 per common target | Both entries link to the same note |
+
+Candidates are sorted by score (descending), then by title, then by slug, and
+clamped to `limit`. Entries that score below `minScore` are dropped. When no
+candidate qualifies, the entry's HTML is left untouched.
+
+The plugin contributes the section to each manifest entry's `article.footer`
+Slot. The Site decides where to render that Slot, so the section appears on
+generated pages and in feeds when the standard article footer is used.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { relatedPosts } from "@riebeckite/plugin-related-posts";
+
+export default defineConfig({
+  // ...
+  plugins: [relatedPosts()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+## Component
 
-## Example
+In addition to the automatic `article.footer` Slot contribution, the navigation
+is available as a server-rendered Hono JSX Component for placement in a Site
+layout. Build the entries with the existing helper and pass resolved options:
 
-Use it to help readers continue to nearby or related material after reading an article.
-It contributes the navigation to `article.footer` automatically. You can also
-place the server-rendered Hono JSX Component yourself by importing
-`RelatedPosts` from `@riebeckite/plugin-related-posts/components`; see the
-package README for the required entries and resolved options.
+```tsx
+import RelatedPosts from "@riebeckite/plugin-related-posts/components";
 
-## When to use it
+<RelatedPosts entries={related} options={resolvedOptions} />;
+```
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+`related` is the result of `buildRelatedPosts()` and `resolvedOptions` is the
+result of `resolveRelatedPostsOptions()`. Import `style.css` when the Plugin is
+not registered.
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+## Options
 
-## Detailed specification
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `limit` | `number` | `5` | Maximum number of related entries |
+| `minScore` | `number` | `1` | Minimum score required to be listed |
+| `heading` | `boolean` | `true` | Render the `<h2>` heading |
+| `headingText` | `string` | `"Related"` | Heading text |
+| `className` | `string` | `"rb-related-posts"` | Root CSS class |
+| `useTags` | `boolean` | `true` | Include the shared-tag signal |
+| `useBacklinks` | `boolean` | `true` | Include the direct-link signal |
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+```ts
+relatedPosts({
+  limit: 8,
+  minScore: 2,
+  headingText: "Related notes",
+});
+```
+
+## Output
+
+```html
+<nav class="rb-related-posts" data-related-posts>
+  <h2 class="rb-related-posts__heading">Related</h2>
+  <ul>
+    <li class="rb-related-posts__item">
+      <a class="rb-related-posts__link" href="/notes/example" data-related-score="5">Example Note</a>
+    </li>
+  </ul>
+</nav>
+```
+
+## Style
+
+The package ships `style.css`. Register it like any other plugin stylesheet:
+
+```ts
+import "@riebeckite/plugin-related-posts/style.css";
+```
+
+## Exports
+
+- `relatedPosts(options?)` — plugin factory
+- `relatedPostsPlugin` — alias of `relatedPosts`
+- `resolveRelatedPostsOptions(options?)` — apply option defaults
+- `buildRelatedPosts({ manifest, entry, options, config? })` — rank related entries
+- `renderRelatedPosts(entries, options)` — render the navigation HTML
+- `RelatedPosts` and `@riebeckite/plugin-related-posts/components` — Hono JSX Component
+- Types: `RelatedPostsOptions`, `ResolvedRelatedPostsOptions`, `RelatedPostsEntry`
+
+## Limitations
+
+- Ranking is fixed at build time. A full rebuild always recomputes correctly.
+- Only tags, direct links, and co-citations are considered. Reading time,
+  recency, and folders are intentionally ignored to keep ranking deterministic.
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

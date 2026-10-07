@@ -94,6 +94,138 @@ export function localPlugin() {
 
 pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `extendHtmlPipeline` を使います。その他の拡張ポイント（依存関係・lifecycle・renderer・endpoint など）は [Plugin System](../reference/plugin-api.md) を参照してください。
 
+## 実践: directive プラグインを最後まで作る
+
+ここでは `:::tip[見出し]` を `<aside>` に変換する site 内プラグインを作ります。stylesheet を足し、最後に test を書きます。使うのは `@riebeckite/core` の `definePlugin` と Markdown pipeline、`unist-util-visit`、そして pipeline がすでに生成している `remark-directive` の node だけです。
+
+### Step 1: プラグインを作る
+
+`extensions/tip-plugin.ts` を作成します。
+
+```ts
+import { definePlugin } from "@riebeckite/core";
+import type { Parent, Root } from "mdast";
+import { visit } from "unist-util-visit";
+
+type ContainerDirective = {
+  type: "containerDirective";
+  name: string;
+  children: Parent["children"];
+  data?: Record<string, unknown>;
+};
+
+function remarkTip() {
+  return (tree: Root) => {
+    visit(tree, "containerDirective", (node, index, parent) => {
+      const directive = node as unknown as ContainerDirective;
+      if (directive.name !== "tip") return;
+      if (parent === undefined || index === undefined) return;
+
+      const [first, ...rest] = directive.children;
+      const hasLabel =
+        first?.type === "paragraph" &&
+        (first as { data?: { directiveLabel?: boolean } }).data
+          ?.directiveLabel === true;
+      const titleChildren = hasLabel ? (first as Parent).children : [];
+      const bodyChildren = hasLabel ? rest : directive.children;
+
+      directive.data = {
+        ...directive.data,
+        hName: "aside",
+        hProperties: { className: ["rr-tip"] },
+      };
+      directive.children = [
+        {
+          type: "paragraph",
+          data: {
+            hName: "p",
+            hProperties: { className: ["rr-tip__title"] },
+          },
+          children: titleChildren,
+        },
+        ...bodyChildren,
+      ];
+    });
+  };
+}
+
+export function tipPlugin() {
+  return definePlugin({
+    name: "tip",
+    extendMarkdownPipeline: (pipeline) => {
+      pipeline.use(remarkTip);
+    },
+    assets: [
+      {
+        pluginName: "tip",
+        kind: "style",
+        moduleSpecifier: "/extensions/plugin.css",
+      },
+    ],
+  });
+}
+```
+
+Markdown pipeline は Plugin の変換より先に `remark-directive` を実行するため、`:::tip` は `containerDirective` node として届きます。`data.hName` と `data.hProperties` を設定すると、HTML 生成時に汎用の wrapper ではなく `<aside class="rr-tip">` を出力し、directive の label は title の段落になります。
+
+### Step 2: stylesheet を足す
+
+`extensions/plugin.css` を作成します。
+
+```css
+.rr-tip {
+  border-left: 2px solid var(--rb-color-accent);
+  padding: 0.75rem 1rem;
+}
+
+.rr-tip__title {
+  margin-block: 0 0.25rem;
+  font-weight: 600;
+}
+```
+
+`rr-tip` は安定した root hook で、theme が対象にできます。色をハードコードせず `--rb-*` token を使うと、theme の切り替えに追従します。
+
+### Step 3: プラグインを登録する
+
+```ts
+// riebeckite.config.ts
+import { defineConfig } from "@riebeckite/core";
+import { tipPlugin } from "./extensions/tip-plugin";
+
+export default defineConfig({
+  plugins: [tipPlugin()],
+});
+```
+
+### Step 4: 出力を test する
+
+site を build せず、Markdown pipeline を直接実行します。
+
+```ts
+// extensions/tip-plugin.test.ts
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { Pipeline } from "@riebeckite/core";
+import { tipPlugin } from "./tip-plugin.ts";
+
+test("renders :::tip as an aside with a title", async () => {
+  const pipeline = new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [tipPlugin()],
+  });
+
+  const { html } = await pipeline.execute(
+    ":::tip[Heads up]\nSave often.\n:::",
+  );
+
+  assert.match(html, /<aside class="rr-tip">/);
+  assert.match(html, /<p class="rr-tip__title">Heads up<\/p>/);
+  assert.match(html, /Save often\./);
+});
+```
+
+`node --test` で実行します。Plugin は Markdown pipeline だけを拡張するため、test に filesystem も site build も必要ありません。
+
 ## 4. 独立ページを追加する（必要な場合）
 
 独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。ページで entry を一覧する場合は `manifest.discoverableEntries` を使ってください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft`・`scheduled` を含む）は、本当に必要な場合だけに限ります。詳しくは [Manifest の collection と公開境界](../reference/plugin-api.md#manifest-の-collection-と公開境界) を参照してください。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。

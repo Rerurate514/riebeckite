@@ -1,25 +1,76 @@
+<!-- Generated from packages/plugins/text-fragment/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Text Fragment
 
-Copies a Text Fragment deep link or a Markdown quote for selected article text.
+Copy a Text Fragment deep link (`#:~:text=`) or a Markdown quote for the text
+you select in an article.
 
-## Installation
+[日本語](./text-fragment.md)
 
-```bash
-npm install @riebeckite/plugin-text-fragment
+## Overview
+
+Client-only plugin. On page load it installs one selection popover with two
+actions:
+
+- **Copy link** — builds a URL with a
+  [Text Fragment directive](https://wicg.github.io/scroll-to-text-fragment/)
+  that highlights the selected text.
+- **Copy quote** — builds a Markdown block quote with a link back to the page.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+
+export default defineConfig({
+  // ...
+  plugins: [textFragmentPlugin()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`textFragmentPlugin()` registers `style.css` and the `initTextFragmentShare`
+client entry, which the app calls during page initialization. Pass
+`textFragmentPlugin({ labels })` to override individual UI labels.
 
-## Example
+## Behavior
 
-Use it when readers should be able to point at a specific passage. Selecting text inside an article shows a popover with two actions: **Copy link** builds a `#:~:text=` URL that highlights the selection, and **Copy quote** builds a Markdown block quote with a link back to the page.
+- A non-empty selection inside the article body shows the popover near the
+  selection. Selections inside `pre`, `code`, `a[href]`, or `[data-no-share]`
+  are ignored.
+- Both actions write to the clipboard through `navigator.clipboard.writeText`
+  and fall back to a hidden textarea with `document.execCommand("copy")`.
+- Failures are announced in a visible `aria-live="polite"` status region.
+- `Escape` or a click outside closes the popover. The buttons are real
+  `<button>` elements, so they are reachable with the keyboard.
+- The popover is installed once per page and does nothing when there is no
+  `document` (SSR-safe).
 
-## When to use it
+### URL rules
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+The fragment follows `#:~:text=[prefix-,]start[,end][,-suffix]`:
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+- `,`, `-` and `&` are percent-encoded (`%2C`, `%2D`, `%26`).
+- Other characters are encoded per UTF-8 (newlines become `%0A`).
+- An existing hash on the page URL is dropped before the directive is appended.
+- Selections longer than ~200 characters or containing a newline are reduced to
+  a `start,end` range built from the first and last token.
+- An empty or whitespace-only selection produces `""`.
 
-## Detailed specification
+## API
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+- `textFragmentPlugin(options?)` — plugin factory; `options.labels` overrides
+  the UI labels
+- `initTextFragmentShare(labels?)` — client initializer (also via
+  `@riebeckite/plugin-text-fragment/client`)
+- `encodeTextFragment(text)` — percent-encodes one text fragment term
+- `buildTextFragmentUrl(pageUrl, selection, options?)` — builds the deep link;
+  `options` is `{ prefix?, suffix? }`
+- `buildQuoteMarkdown({ url, title, selection })` — builds the Markdown quote
+- `DEFAULT_TEXT_FRAGMENT_LABELS` — the default English UI labels
+- Types: `TextFragmentOptions`, `TextFragmentLabels`,
+  `TextFragmentPluginOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

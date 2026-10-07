@@ -528,13 +528,13 @@ columns: 3
 items:
   - title: Default
     description: A clean, typographic theme.
-    href: https://example.com/themes/default/
+    href: https://riebeckite.dev/docs/themes/default
   - title: Minimal
     description: Stripped back to the essentials.
-    href: https://example.com/themes/minimal/
+    href: https://riebeckite.dev/docs/themes/minimal
   - title: Gruvbox
     description: A warm, high-contrast palette.
-    href: https://example.com/themes/gruvbox/
+    href: https://riebeckite.dev/docs/themes/gruvbox
 ```
 ````
 
@@ -545,13 +545,13 @@ columns: 3
 items:
   - title: Default
     description: A clean, typographic theme.
-    href: https://example.com/themes/default/
+    href: https://riebeckite.dev/docs/themes/default
   - title: Minimal
     description: Stripped back to the essentials.
-    href: https://example.com/themes/minimal/
+    href: https://riebeckite.dev/docs/themes/minimal
   - title: Gruvbox
     description: A warm, high-contrast palette.
-    href: https://example.com/themes/gruvbox/
+    href: https://riebeckite.dev/docs/themes/gruvbox
 ```
 
 ### Excalidraw — [`excalidraw`](./excalidraw.md)

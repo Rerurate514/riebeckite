@@ -1,26 +1,73 @@
+<!-- Generated from packages/plugins/toc/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Table of Contents
 
-Provides a table of contents for article headings.
+Table of contents rendering with scroll-spy: extracts headings from article
+HTML and highlights the section currently in view.
 
-## Installation
+[日本語](./toc.md)
 
-```bash
-npm install @riebeckite/plugin-toc
+## Overview
+
+`toc()` provides a `TableOfContents` component that renders the article's
+`h2`–`h4` headings (that carry an `id`) as a nested list. `initTableOfContents`
+is the client entry: it tracks scrolling and marks links as read plus sets
+`aria-current` on the active heading's link.
+
+The component renders nothing when fewer than 2 items are extracted.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { tocPlugin } from "@riebeckite/plugin-toc";
+
+export default defineConfig({
+  // ...
+  plugins: [tocPlugin()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`tocPlugin()` registers the plugin, bundles `style.css`, and declares
+`initTableOfContents` as a client entry.
 
-## Example
+### Render the component
 
-Use it on long articles so readers can see their current position and jump between sections.
+```tsx
+import TableOfContents, {
+  extractTableOfContents,
+} from "@riebeckite/plugin-toc";
 
-## When to use it
+const items = extractTableOfContents(post.html ?? "");
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+// ...in your route
+return (
+  <Article
+    asideContent={
+      <TableOfContents className="table-of-contents--desktop" items={items} />
+    }
+  />
+);
+```
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+The client entry finds elements by the `data-toc-target` attribute emitted on
+each link, so it works when multiple ToCs (desktop/mobile) are rendered.
 
-## Detailed specification
+## API
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+- `extractTableOfContents(html)` — extracts `h2`–`h4` headings with an `id`
+  as `TableOfContentsItem[]`, decoded and stripped of inline HTML
 
+## Exports
+
+- `tocPlugin()` — plugin factory
+- `TableOfContents` — list component (default export of
+  `components/table-of-contents.tsx`)
+- `extractTableOfContents(html)` — heading extractor
+- `initTableOfContents` — browser scroll-spy init (also via
+  `@riebeckite/plugin-toc/client`)
+- Type: `TableOfContentsItem` (`{ id, level, title }`)
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

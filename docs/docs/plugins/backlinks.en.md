@@ -1,26 +1,76 @@
+<!-- Generated from packages/plugins/backlinks/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Backlinks
 
-Displays other pages that reference the current page.
+Backlink list rendering for articles: shows which published notes link to the
+current note.
 
-## Installation
+[日本語](./backlinks.md)
 
-```bash
-npm install @riebeckite/plugin-backlinks
+## Overview
+
+`backlinksPlugin()` appends a footer list of incoming links to the
+`article.footer` body slot. `getPublishedBacklinks()` resolves the incoming
+links of a note from the content manifest, keeps only publicly discoverable
+notes, and returns them sorted in manifest order.
+
+Without incoming links (or when none of them are published), the component
+renders nothing.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+
+export default defineConfig({
+  // ...
+  plugins: [backlinksPlugin()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`backlinksPlugin()` adds backlinks for every public entry with published
+incoming links and bundles `style.css` into the app stylesheet. Render the
+`article.footer` body slot in the article layout to display the list.
 
-## Example
+### Custom placement
 
-Use it in a Digital Garden when readers should be able to discover pages that link to the current page. For example, if `A.md` links to `[[B]]`, page B can expose A as a backlink.
+```tsx
+import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
+import { config } from "../config";
+import { content } from "../content";
+import { getArticleTitle } from "../lib/article-title";
 
-## When to use it
+const manifest = await content.getManifest();
+const backlinks = getPublishedBacklinks({
+  manifest,
+  config,
+  slug,
+  resolveTitle: getArticleTitle,
+});
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+return (
+  <Article
+    footerContent={<Backlinks backlinks={backlinks} />}
+  />
+);
+```
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+## Component
 
-## Detailed specification
+`Backlinks({ backlinks })` renders a `<footer class="article-backlinks rr-backlinks">` with
+an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+## Exports
 
+- `backlinksPlugin()` — plugin factory
+- `Backlinks` — list component (default export of `components/backlinks.tsx`)
+- `getPublishedBacklinks({ manifest, config, slug, resolveTitle })` — resolves
+  published backlinks for a slug
+- Type: `ArticleBacklink` (`{ slug, permalink, title }`)
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)
+- [`@riebeckite/plugin-local-graph`](./local-graph.en.md)
+- [`@riebeckite/plugin-garden-explorer`](./garden-explorer.en.md)

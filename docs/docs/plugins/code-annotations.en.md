@@ -1,20 +1,35 @@
+<!-- Generated from packages/plugins/code-annotations/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Code Annotations
 
-Adds line highlighting, focus, and diff markers to code blocks.
+VitePress/Docusaurus-style code block annotations: line highlighting, focus,
+and diff markers that work on plain `<pre><code>` blocks and on the line
+wrappers produced by `@riebeckite/plugin-code-enhance`.
+
+[日本語](./code-annotations.md)
 
 ## Installation
 
-```bash
-npm install @riebeckite/plugin-code-annotations
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
+
+export default defineConfig({
+  // ...
+  plugins: [codeAnnotations()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+The plugin registers its own `style.css`. It adds no client entry and no
+runtime JavaScript.
 
-## Example
+## Syntax
 
-Use it in technical articles where specific lines should stand out. A brace range after the language highlights lines, and inline marker comments add, remove, or focus lines.
+### Line highlighting (fence meta)
 
-````markdown
+Add a brace range after the language, exactly like Docusaurus and VitePress.
+
+````md
 ```js {2,4-5}
 const a = 1;
 const b = 2;
@@ -24,14 +39,101 @@ const e = 5;
 ```
 ````
 
-The Plugin works on plain `<pre><code>` blocks and on the line wrappers produced by [Code Enhance](./code-enhance.en.md), so the two can be combined.
+Lines `2`, `4`, and `5` receive `rb-code__line--highlighted`.
 
-## When to use it
+### Focus
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+Use the `focus` meta group, or an inline `[!code focus]` marker. An optional
+count focuses the current line and the following lines.
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+````md
+```js focus:{2}
+const a = 1;
+const b = 2;
+```
+````
 
-## Detailed specification
+````md
+```js
+const a = 1; // [!code focus]
+const b = 2;
+```
+````
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+`.rb-code__line--focused` is applied. `[!code focus:3]` focuses three lines
+starting at the marker.
+
+### Diff
+
+````md
+```js
+const kept = true;
+const added = true;    // [!code ++]
+const removed = false; // [!code --]
+```
+````
+
+The marker comment is removed from the rendered text, and the line receives
+`rb-code__line--added` or `rb-code__line--removed`.
+
+### Explicit highlight marker
+
+````md
+```js
+const value = 1; // [!code highlight]
+```
+````
+
+Marker comments are recognized with the `//`, `#`, `--`, and `<!-- -->`
+comment prefixes, so the same syntax works for JavaScript, shell, SQL, Lua,
+HTML, and other languages.
+
+## Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `className` | `string` | `"rb-code"` | Class on the block root (`<pre>` or `rehype-pretty-code` `<figure>`) |
+| `lineClassName` | `string` | `"rb-code__line"` | Class on generated line wrappers |
+| `highlightClassName` | `string` | `"rb-code__line--highlighted"` | Class for highlighted lines |
+| `addedClassName` | `string` | `"rb-code__line--added"` | Class for `[!code ++]` lines |
+| `removedClassName` | `string` | `"rb-code__line--removed"` | Class for `[!code --]` lines |
+| `focusClassName` | `string` | `"rb-code__line--focused"` | Class for focused lines |
+| `language` | `string` | unset | Only annotate blocks of this language |
+
+```ts
+codeAnnotations({ highlightClassName: "is-highlighted" });
+```
+
+## Using with code-enhance
+
+`@riebeckite/plugin-code-annotations` does not import or depend on
+`@riebeckite/plugin-code-enhance`. It detects both raw `<pre><code>` text and
+the `.line` wrappers emitted by `rehype-pretty-code`:
+
+- If line wrappers already exist, their classes are extended in place and the
+  existing `data-line` attribute is kept.
+- Otherwise the plugin wraps the raw code text into
+  `<span class="rb-code__line" data-line="N">` elements.
+
+Because `rehype-pretty-code` substitutes the `<code>` element, the plan is also
+mirrored into the preserved fence meta, so annotations still apply after
+code-enhance runs. Place `codeAnnotations()` after `codeEnhance()` in the
+plugins array; the plugin uses `order: 10` to run after code-enhance's
+highlighting regardless.
+
+## Exports
+
+- `codeAnnotations(options?)` / `codeAnnotationsPlugin(options?)` — plugin factory
+- `remarkCodeAnnotations(options?)` — remark transform
+- `rehypeCodeAnnotations(options?)` — rehype transform
+- `parseCodeAnnotations(meta)` — parse fence meta into a plan
+- `parseLineRanges(spec)` — parse `1,3-5` into line numbers
+- `collectCodeAnnotations(meta, code)` — parse meta plus inline markers
+- `resolveCodeAnnotationsOptions(options?)` — fill in defaults
+- Types: `CodeAnnotationsOptions`, `ResolvedCodeAnnotationsOptions`,
+  `CodeAnnotationPlan`, `CodeAnnotationKind`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)
+- [`@riebeckite/plugin-code-enhance`](./code-enhance.en.md)

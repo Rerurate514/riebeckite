@@ -1,26 +1,88 @@
+<!-- Generated from packages/plugins/local-graph/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Local Graph
 
-Displays a graph of content relationships centered on the current page.
+Local (nearby notes) graph rendering: a compact radial graph of a note's
+outgoing links and backlinks.
 
-## Installation
+[日本語](./local-graph.md)
 
-```bash
-npm install @riebeckite/plugin-local-graph
+## Overview
+
+`localGraph()` provides a `LocalGraph` component that renders the current note
+plus its direct links as an SVG radial graph. `getLocalGraph()` collects the
+note's note-type outgoing links and backlinks from the manifest, keeps only
+published neighbors, and caps each direction at `MAX_NEIGHBORS_PER_DIRECTION`
+(10) notes.
+
+Relations are tagged per node:
+
+- `current` — the selected note (center)
+- `outgoing` — linked from the current note
+- `backlink` — links to the current note
+- `both` — linked in both directions
+
+The component renders nothing when there is no published neighbor.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+
+export default defineConfig({
+  // ...
+  plugins: [localGraphPlugin()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`localGraphPlugin()` registers the plugin in the plugin list and bundles
+`style.css` into the app stylesheet.
 
-## Example
+### Render the component
 
-Use it in knowledge bases with many WikiLinks so readers can inspect nearby relationships around the page they are reading.
+```tsx
+import LocalGraph, { getLocalGraph } from "@riebeckite/plugin-local-graph";
+import { config } from "../config";
+import { content } from "../content";
+import { getArticleTitle } from "../lib/article-title";
 
-## When to use it
+const manifest = await content.getManifest();
+const graph = getLocalGraph({
+  manifest,
+  config,
+  slug,
+  resolveTitle: getArticleTitle,
+});
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+// ...in your route
+return (
+  <Article
+    footerContent={graph && <LocalGraph graph={graph} />}
+  />
+);
+```
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+## Graph layout
 
-## Detailed specification
+Node positions come from `layoutRadialGraph()`: the center node sits at the
+middle, neighbors are arranged around it by link count; node radius grows with
+the number of links. Edges are computed by `buildGraphEdges()`. Node links use
+each node's resolved `permalink`; the header opens the full explorer through the
+internal selection key `/explore?note=<slug>`.
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+## Exports
 
+- `localGraphPlugin()` — plugin factory
+- `LocalGraph` — SVG graph component (default export of `components/local-graph.tsx`)
+- `getLocalGraph({ manifest, config, slug, resolveTitle })` — builds nearby-note
+  data for a slug (`null` when the note is absent or unpublished)
+- `buildGraphEdges(nodes, visibleSlugs?)` — pure edge builder
+- `layoutRadialGraph(nodes, options)` — pure radial layout
+- Types: `LocalGraphData`, `LocalGraphNode`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)
+- [`@riebeckite/plugin-backlinks`](./backlinks.en.md)
+- [`@riebeckite/plugin-garden-explorer`](./garden-explorer.en.md)

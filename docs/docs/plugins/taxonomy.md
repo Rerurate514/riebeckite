@@ -1,36 +1,194 @@
+<!-- Generated from packages/plugins/taxonomy/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Taxonomy
 
-タグやフォルダなどの分類情報から一覧ページを提供する Plugin です。
+Build-time tag and folder taxonomy for Riebeckite: listing data, per-term
+RSS / Atom / JSON feeds, related-tag navigation, and SEO metadata. No
+client-side JavaScript is required.
 
-## 導入
+[日本語](./taxonomy.ja.md)
 
-```bash
-npm install @riebeckite/plugin-taxonomy
+## Overview
+
+`taxonomy()` reads the manifest's public entries and produces two sets of
+listing terms with the Core collection contract (`buildContentCollections`):
+
+- **Tag terms** group by `tags` under `/tags/<slug>`.
+- **Folder terms** group by folder under `/folders/<path>`.
+
+Entries always link through their resolved `permalink`; the plugin never
+reconstructs a URL from a slug.
+
+The plugin owns data, feeds, SEO, and the `/tags/<tag>` and `/folders/<path>`
+page types. Per-term feeds are written as static files through the build's
+generated-output sink. A site renders the page types through its generic
+Riebeckite catch-all route; no taxonomy-specific application route is needed.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { taxonomy } from "@riebeckite/plugin-taxonomy";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    taxonomy({
+      tags: true,
+      folders: true,
+      related: true,
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Options
 
-## 使用例
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `tags` | `boolean` | `true` | Generate tag terms |
+| `folders` | `boolean` | `true` | Generate folder terms |
+| `tagsBasePath` | `string` | `"/tags"` | Tag listing prefix |
+| `foldersBasePath` | `string` | `"/folders"` | Folder listing prefix |
+| `folderDepth` | `number` | `0` | Folder grouping depth; `0` keeps the full path |
+| `minEntries` | `number` | `1` | Drop terms with fewer entries |
+| `related` | `boolean` | `true` | Compute related-tag navigation |
+| `relatedLimit` | `number` | `8` | Maximum related tags per tag |
+| `feeds` | `{ rss?, atom?, json? }` | all `true` | Per-term feed formats |
+| `feedLimit` | `number` | `50` | Maximum entries per feed |
+| `resolveTitle` | `(context) => string` | `#value` / path | Custom term title |
+| `className` | `string` | `"rr-taxonomy"` | Root CSS class of page fragments |
+| `dataEndpoint` | `string` | `"/taxonomy/index.json"` | JSON data endpoint path |
 
-frontmatter のタグなどを使ってコンテンツを分類し、同じ分類の記事をまとめて辿れるようにします。
+## Data endpoint
 
-```yaml
----
-tags:
-  - flutter
-  - architecture
----
+The plugin registers one JSON endpoint (the endpoint contract is mounted by the
+HonoX integration, so it never contains framework routing itself):
+
+```
+GET /taxonomy/index.json
 ```
 
-タグを持つノートは `/tags/<slug>/`、フォルダ配下は `/folders/<path>/` のページとして生成され、タグごとの RSS/Atom/JSON フィードも出力されます。
+```json
+{
+  "tags": [
+    {
+      "kind": "tag",
+      "value": "featured",
+      "title": "#featured",
+      "path": "/tags/featured",
+      "permalink": "/tags/featured",
+      "count": 1,
+      "entries": [{ "slug": "example", "permalink": "/notes/example", "title": "Example Note", "updated": null, "summary": "..." }],
+      "related": [],
+      "feeds": { "rss": "/tags/featured/feed.xml", "atom": "/tags/featured/atom.xml", "json": "/tags/featured/feed.json" }
+    }
+  ],
+  "folders": []
+}
+```
 
-## 使いどころ
+The payload is a deterministic, JSON-safe projection: it never includes rendered
+HTML, so it is safe to ship to an app route or a browser.
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Generated feeds
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+At build time the plugin emits one feed per term and format through
+`context.output.emit`:
 
-## 詳細仕様
+| Format | Path |
+| ------ | ---- |
+| RSS 2.0 | `/tags/<slug>/feed.xml` |
+| Atom | `/tags/<slug>/atom.xml` |
+| JSON Feed 1.1 | `/tags/<slug>/feed.json` |
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+Folder terms get the same files under `/folders/<path>/…`. Feed channels carry
+their own term title and self link, so a tag subscription is distinguishable
+from the site-wide feeds owned by `@riebeckite/plugin-seo`. Only published,
+non-`noindex` entries reach the manifest's public view and therefore the feeds.
+RSS and Atom term feeds expose entry summaries. JSON term feeds use the same
+summary as `content_text` and do not duplicate rendered article HTML.
 
+## Related tags
+
+When `related` is enabled, each tag term carries tags that co-occur on the same
+entries, ranked by shared-entry count then alphabetically, clamped to
+`relatedLimit`. Related navigation is rendered by `renderTaxonomyPage`:
+
+```html
+<nav class="rr-taxonomy__related" aria-label="Related tags" data-rr-taxonomy-related>
+  <ul>
+    <li class="rr-taxonomy__related-item">
+      <a class="rr-taxonomy__related-link" href="/tags/featured" data-rr-taxonomy-related-count="2">#featured</a>
+    </li>
+  </ul>
+</nav>
+```
+
+## SEO
+
+`buildTaxonomySeo(config, term)` returns `SeoMetadata` for a listing page. It
+delegates to the configured Core `seo` extension point (for example
+`@riebeckite/plugin-seo`) so titles, canonical URLs, and JSON-LD stay consistent
+with the rest of the site, and falls back to a minimal object when no SEO
+provider is registered.
+
+## Folder index notes
+
+Folder entry resolution is owned by
+[`@riebeckite/plugin-folder-pages`](./folder-pages.md), so taxonomy only
+generates tag and folder terms from the manifest's public view. Enable that
+plugin when a note at `<folder>/README.md` or `<folder>/index.md` should become
+the folder's landing page.
+
+## Page types
+
+`taxonomy()` registers two page types. `taxonomy-term` renders one tag or
+folder page and includes feed discovery `<link rel="alternate">` metadata.
+`taxonomy-index` renders the all-tags list at `tagsBasePath` and the
+all-folders list at `foldersBasePath`, linking to every term. Both derive
+their SSG paths and resolver from the public manifest, so unpublished entries
+never appear on a tag, folder, or index page.
+
+Use `pluginPageSsgParams(content)` and `resolveRiebeckiteRoute(content, path)`
+from `@riebeckite/honox/server` in the site's generic catch-all route. This is
+the same wiring used for every plugin page type.
+
+## Style
+
+The package ships `style.css` with the stable `rr-taxonomy` root hook and
+`--rr-taxonomy-*` tokens (falling back to `--rb-*`). Register it like any other
+plugin stylesheet:
+
+```ts
+import "@riebeckite/plugin-taxonomy/style.css";
+```
+
+## Exports
+
+- `taxonomy(options?)` — plugin factory
+- `taxonomyPlugin` — alias of `taxonomy`
+- `resolveTaxonomyOptions(options?)` — apply option defaults
+- `resolveTaxonomyOptionsFromConfig(config)` — read resolved options back from a config
+- `buildTaxonomyIndex(entries, options)` — build tag and folder terms
+- `serializeTaxonomyIndex(index)` / `serializeTaxonomyTerm(term)` — JSON-safe projections
+- `renderTaxonomyPage(term, options)` / `renderRelatedTerms(term, options)` — page fragments
+- `renderTaxonomyIndexPage(kind, terms, options)` — all-tags/all-folders page fragment
+- `renderTermFeed(config, term, format, limit?)` / `buildFeedHeadTags(term)` — per-term feeds
+- `buildTaxonomySeo(config, term)` — listing-page SEO metadata
+- `slugifyTaxonomyValue(value)` — URL/file slug
+- `buildTaxonomyAbsoluteUrl(config, pathOrUrl)` — absolute URLs
+- Types: `TaxonomyOptions`, `ResolvedTaxonomyOptions`, `TaxonomyTerm`, `TaxonomyIndex`, `TaxonomyPage`, `TaxonomyTermData`, `TaxonomyIndexData`
+
+## Limitations
+
+- Taxonomy is fixed at build time. A full rebuild always recomputes correctly.
+- Per-term feeds are static build output; the fixed JSON data endpoint is the
+  only runtime surface. A dev server does not enumerate per-term feed files.
+- Terms only reflect the manifest's public view; unpublished or `noindex`
+  entries are excluded.
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [Content system](../framework/content-system.md)

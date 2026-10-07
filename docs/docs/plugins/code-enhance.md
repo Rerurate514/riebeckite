@@ -1,42 +1,92 @@
+<!-- Generated from packages/plugins/code-enhance/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Code Enhance
 
-コードブロックに行番号、ファイル名、行ハイライト、コピー操作などの表示機能を追加する Plugin です。
+Enhanced code blocks: Shiki highlighting plus a header with copy, wrap, and
+collapse controls.
 
-## 導入
+[日本語](./code-enhance.ja.md)
 
-```bash
-npm install @riebeckite/plugin-code-enhance
+## Overview
+
+`codeEnhance()` wraps [rehype-pretty-code](https://github.com/rehype-pretty-code/rehype-pretty-code)
+(Shiki) and post-processes each figure into `.rr-code` with a header and
+action buttons. The client entry wires up the buttons.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { codeEnhance } from "@riebeckite/plugin-code-enhance";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    codeEnhance({
+      theme: { light: "github-light", dark: "github-dark" },
+      lineNumbers: true,
+      copyButton: true,
+      filename: true,
+      lineHighlight: true,
+      diffHighlight: true,
+      wrapToggle: true,
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Features
 
-## 使用例
+- Syntax highlighting via Shiki (rehype-pretty-code)
+- Header with the file name (code block title, falling back to the language)
+  and action buttons
+- Copy button with "Copied" feedback (client)
+- Wrap toggle (client)
+- Collapse / expand button (opt-in, client)
+- Line numbers (`data-line-number` gutter)
+- Line and character highlighting from pretty-code meta (`{1,3}`, `[/re/]`)
+- Diff coloring for lines starting with `+` / `-`
+- Terminal styling for `bash`, `console`, `sh`, `shell`, `terminal`, `zsh`
+  (inverted palette) with a `$` prompt prefix on non-empty lines
+- Focusable `<pre>` (`tabindex="0"`) for keyboard scrolling
 
-コードブロックの可読性を高めたい技術記事で利用します。通常の fenced code block を書き、Plugin 側で表示を強化します。
+## Options
 
-### ソース
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `theme` | `string \| { light: string; dark: string }` | `{ light: "github-light", dark: "github-dark" }` | Shiki theme |
+| `lineNumbers` | `boolean` | `false` | Show line numbers |
+| `copyButton` | `boolean` | `true` | Show the copy button |
+| `filename` | `boolean` | `true` | Show the file name in the header |
+| `lineHighlight` | `boolean` | `true` | Apply meta-based line/char highlights |
+| `diffHighlight` | `boolean` | `true` | Color `+` / `-` lines |
+| `collapsible` | `boolean` | `false` | Add the collapse button |
+| `terminal` | `boolean` | `true` | Terminal styling for shell languages |
+| `commandPrompt` | `boolean` | `true` | `$` prompt prefix on terminal lines |
+| `wrapToggle` | `boolean` | `true` | Show the wrap toggle button |
+| `defaultCollapsed` | `boolean` | `false` | Start collapsed (requires `collapsible`) |
+| `copyLabel` | `string` | `"Copy"` | Copy button label forwarded to the client |
+| `copiedLabel` | `string` | `"Copied"` | Label after copying, forwarded to the client |
 
-````markdown
-```ts title="hello.ts"
-const message = "Hello, Riebeckite";
-console.log(message);
-```
-````
+## Client
 
-### 実行例
+`codeEnhance()` forwards `copyLabel` / `copiedLabel` to the client entry.
+`initCodeEnhance(options?)` installs a document-level click handler for copy,
+wrap, and collapse buttons.
 
-```ts title="hello.ts"
-const message = "Hello, Riebeckite";
-console.log(message);
-```
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `copyLabel` | `string` | `"Copy"` | Copy button label |
+| `copiedLabel` | `string` | `"Copied"` | Label after copying |
 
-## 使いどころ
+## Exports
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `codeEnhance(options?)` — plugin factory
+- `rehypeCodeEnhance(options?)` — rehype transform
+- `initCodeEnhance(options?)` — client initializer
+- `DEFAULT_COPY_LABEL`, `DEFAULT_COPIED_LABEL` — default copy labels
+- Types: `CodeEnhanceOptions`, `CodeEnhanceClientOptions`, `CodeEnhanceTheme`
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+## See also
 
-## 詳細仕様
-
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
-
+- [Plugin guide](../reference/plugin-api.md)

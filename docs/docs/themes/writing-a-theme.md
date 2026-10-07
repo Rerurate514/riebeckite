@@ -1,145 +1,95 @@
-# はじめてのテーマ作成
+# Your First Theme
 
-Riebeckite の Theme は、Site の**見た目を変更する仕組み**です。
+A theme changes how a site **looks** (colors, typography, layout). It cannot add features. For features, see [Your first plugin](../plugins/writing-a-plugin.md). A theme must also work for Page Types it does not know: style stable hooks and semantic tokens, not a list of route or Page Type IDs.
 
-たとえば、
-
-- 配色
-- フォント
-- 文字サイズ
-- 余白
-- 記事幅
-- Layout
-- Light / Dark Mode
-
-などを変更できます。
-
-一方で、Theme から新しい機能を追加することはできません。
-
-```mermaid id="kmfyjs"
+```mermaid
 flowchart TD
-    Want{"何を作りたい？"}
+    Want{"What do you want to build?"}
 
-    Want -->|"見た目を変える"| Theme["Theme"]
-    Want -->|"機能を追加する"| Plugin["Plugin"]
+    Want -->|"Change the look"| Theme["Theme"]
+    Want -->|"Add functionality"| Plugin["Plugin"]
 
     Theme --> Visual["Color / Font / Layout / Spacing"]
     Plugin --> Feature["Search / Mermaid / Analytics / Page"]
 ```
 
-検索、図表、Markdown の拡張などを追加したい場合は、[はじめてのプラグイン作成](../plugins/writing-a-plugin.md) を参照してください。
+This guide goes in this order:
 
-この Guide では、
-
-```text id="br3nd6"
-既存Themeを少し調整
+```text
+adjust a built-in theme
         ↓
-Site内にThemeを作る
+create a theme inside the site
         ↓
-CSSを書く
+write the CSS
         ↓
-Light / Darkに対応
+support light / dark
         ↓
-必要ならPackageとして配布
+package it for distribution if needed
 ```
 
-の順に進めます。
+## Do you need a theme?
 
-# まずは Theme を作る必要があるか確認する
+If you only want a small visual change, you do not need a new theme. A tweak such as the following can use the built-in theme's `userCss`:
 
-少しだけ見た目を変えたい場合は、新しい Theme を作る必要はありません。
-
-たとえば、
-
-```text id="b83ut7"
-記事幅を少し変えたい
-文字サイズを調整したい
-Site固有のCSSを追加したい
+```text
+change the article width slightly
+adjust the font size
+add site-specific CSS
 ```
 
-程度なら、既存 Theme の `userCss` を利用できます。
+Build a theme when you want to:
 
-一方、
-
-```text id="71uv2w"
-独自の配色を作りたい
-Typographyを一式設計したい
-複数Siteで再利用したい
-他の利用者へ配布したい
+```text
+create your own palette
+design a full typography system
+reuse the design across several sites
+distribute it to other users
 ```
 
-場合は Theme として作るのが向いています。
-
-```mermaid id="dq1mge"
+```mermaid
 flowchart TD
-    Change{"どの程度変更する？"}
+    Change{"How much do you want to change?"}
 
-    Change -->|"小さなSite固有調整"| UserCss["userCss"]
-    Change -->|"まとまったDesign"| Theme["独自Theme"]
-    Change -->|"機能も追加したい"| Plugin["Plugin"]
+    Change -->|"Small site-specific tweak"| UserCss["userCss"]
+    Change -->|"A whole design"| Theme["Your own theme"]
+    Change -->|"Also add functionality"| Plugin["Plugin"]
 ```
 
-# 1. 組み込み Theme を調整する
+## 1. Adjust a built-in theme (fastest)
 
-最も簡単なのは、既存 Theme に Option と `userCss` を指定する方法です。
+If you want to tweak an existing look, pass options and CSS to `defaultTheme()`:
 
-たとえば Default Theme を調整します。
-
-```ts id="ih0etb"
+```ts
 // riebeckite.config.ts
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
   theme: defaultTheme({
-    colorMode: "light",
-    typography: "system",
-    userCss: ["/extensions/custom.css"],
+    colorMode: "light",      // "light" | "dark" | "system"
+    typography: "system",    // "system" | "serif" | "sans"
+    userCss: ["/extensions/custom.css"], // loaded last, overrides everything
   }),
-
   // ...
 });
 ```
 
-ここでは、
+`userCss` loads after the theme CSS, so it is the right place for small site-specific overrides:
 
-```text id="14l98v"
-colorMode
-  → light
-
-typography
-  → system
-
-userCss
-  → /extensions/custom.css
-```
-
-を指定しています。
-
-`userCss` は Theme の CSS より後に読み込まれるため、Site 固有の小さな上書きに利用できます。
-
-たとえば、
-
-```css id="q11q8v"
+```css
 .rb-article {
   font-size: 1.05rem;
 }
 ```
 
-のような調整ができます。
+If that is enough to reach your goal, you do not need to create your own theme.
 
-これだけで目的を達成できるなら、独自 Theme を作る必要はありません。
+## 2. Create a minimal theme
 
-# 2. 最小の Theme を作る
+A custom theme is made with `defineTheme` (from `@riebeckite/core`). It does **not** need to be a published package — you can define it inside the site.
 
-独自 Theme は `defineTheme` で定義します。
+Start by placing it in the site:
 
-`defineTheme` は `@riebeckite/core` から Import します。
-
-最初から npm Package を作る必要はありません。
-
-まずは Site の中に、
-
-```text id="byvcr1"
+```text
 my-site/
 ├─ extensions/
 │  ├─ local-theme.ts
@@ -149,69 +99,45 @@ my-site/
 └─ package.json
 ```
 
-のように置いて作れます。
-
-## Theme を定義する
-
-`extensions/local-theme.ts` を作ります。
-
-```ts id="bs4dkd"
+```ts
 // extensions/local-theme.ts
 import { defineTheme } from "@riebeckite/core";
 
 export function localTheme() {
   return defineTheme({
     name: "local",
-    styles: [
-      {
-        moduleSpecifier: "/extensions/theme.css",
-      },
-    ],
+    styles: [{ moduleSpecifier: "/extensions/theme.css" }],
   });
 }
 ```
 
-最小構成では、
+The minimal configuration sets:
 
-```text id="dbwgoq"
+```text
 name
-  → Themeの識別子
+  → the theme identifier
 
 styles
-  → Themeが使うStylesheet
+  → the stylesheet the theme uses
 ```
 
-を指定します。
+`styles[].moduleSpecifier` must be a module specifier the host bundler can resolve. For an in-site theme, use something like `/extensions/theme.css`.
 
-`styles[].moduleSpecifier` には、Host Bundler が解決できる Module Specifier を指定します。
+Pass it to `theme` in `riebeckite.config.ts`.
 
-Site 内 Theme なら、
-
-```text id="42dg5e"
-/extensions/theme.css
-```
-
-のように指定できます。
-
-# 3. Site で Theme を使う
-
-作成した `localTheme` を `riebeckite.config.ts` から読み込みます。
-
-```ts id="91cdvs"
+```ts
 // riebeckite.config.ts
-import { defineConfig } from "@riebeckite/core";
 import { localTheme } from "./extensions/local-theme";
 
 export default defineConfig({
   theme: localTheme(),
-
   // ...
 });
 ```
 
-これで、
+The theme is resolved in this order:
 
-```text id="kpcf2q"
+```text
 local-theme.ts
       ↓
 localTheme()
@@ -223,28 +149,12 @@ riebeckite.config.ts
 Site
 ```
 
-という形で独自 Theme が利用されます。
+## 3. Write the CSS
 
-# 4. Theme の CSS を書く
+Do not hardcode colors. Use **semantic tokens (`--rb-*`) and stable hooks (`rb-*` / `rr-<feature>`)** so themes stay swappable, and scope every rule to the theme root selector. Replace `<name>` with the theme's identity name — here the theme is named `local`.
 
-次に、
-
-```text id="mx8gdm"
-extensions/theme.css
-```
-
-へ実際の Style を書きます。
-
-Theme の CSS では、Riebeckite が提供する、
-
-- Semantic Token
-- Stable CSS Hook
-
-を利用します。
-
-最小の例は次のようになります。
-
-```css id="j5jkvb"
+```css
+/* Example: adjust background, text color, and article width */
 :is(:root, .rb-theme-root)[data-theme-name="local"] .rb-site {
   background: var(--rb-color-paper);
   color: var(--rb-color-ink);
@@ -255,217 +165,132 @@ Theme の CSS では、Riebeckite が提供する、
 }
 ```
 
-最初は少し長く見えますが、それぞれに役割があります。
+The selector looks long, but each part has a role:
 
-```text id="ehn64e"
+```text
 [data-theme-name="local"]
-  → このThemeだけに適用する
+  → applies only to this theme
 
 .rb-site / .rb-article
-  → Riebeckiteの安定したCSS Hook
+  → Riebeckite's stable CSS hooks
 
 --rb-*
-  → RiebeckiteのSemantic Token
+  → Riebeckite's semantic tokens
 ```
 
-# Theme Root Selector
+### Theme root selector
 
-Theme の Style は、Theme Root の内側に限定します。
+Every theme rule is scoped inside the theme root. The basic form is:
 
-基本形は、
-
-```css id="5t9k0r"
+```css
 :is(:root, .rb-theme-root)[data-theme-name="<name>"]
 ```
 
-です。
+`<name>` is the `name` you passed to `defineTheme`. Here it is `local`, so the selector is:
 
-`<name>` には `defineTheme` で指定した `name` を入れます。
-
-今回なら、
-
-```ts id="2ukjvx"
-name: "local"
-```
-
-なので、
-
-```css id="u27p4e"
+```css
 :is(:root, .rb-theme-root)[data-theme-name="local"]
 ```
 
-となります。
+The theme root selector `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` matches the document root on a real site (the app sets `data-theme-name` on `<html>`) and any `class="rb-theme-root" data-theme-name="<name>"` container in a preview.
 
-## なぜ `:root` と `.rb-theme-root` の両方がある？
+#### Why both `:root` and `.rb-theme-root`?
 
-この Selector は、実際の Site と Theme Preview の両方で同じ CSS を利用するためのものです。
+The selector lets the same CSS style both a real site and a theme preview:
 
-```mermaid id="m0r13h"
+```mermaid
 flowchart TD
     CSS["Theme CSS"]
 
-    CSS --> Root[":root<br/>実際のSite"]
-    CSS --> Preview[".rb-theme-root<br/>Theme Preview"]
+    CSS --> Root[":root<br/>real site"]
+    CSS --> Preview[".rb-theme-root<br/>theme preview"]
 ```
 
-実際の Site では、Application が Document Root に、
+On a real site the application puts the theme information on the document root:
 
-```html id="tfjfs9"
+```html
 <html data-theme-name="local">
 ```
 
-のような Theme 情報を付けます。
+In a theme preview the theme renders inside any container:
 
-Theme Preview では、
-
-```html id="xwskmw"
+```html
 <div
   class="rb-theme-root"
   data-theme-name="local"
 >
 ```
 
-のような任意の Container 内で Theme を表示できます。
+So the theme CSS is written with `:is(:root, .rb-theme-root)[data-theme-name="local"]` as its root.
 
-そのため Theme CSS は、
+### Use semantic tokens
 
-```css id="7xf9zn"
-:is(:root, .rb-theme-root)[data-theme-name="local"]
-```
+Instead of scattering color and layout values through the CSS, use semantic tokens. Riebeckite's shared tokens are named `--rb-*`:
 
-を Root として書きます。
-
-# Semantic Token を使う
-
-Theme では、色や Layout の値を直接あちこちへ書くのではなく、Semantic Token を利用します。
-
-Riebeckite の共通 Token は、
-
-```text id="f0yh64"
---rb-*
-```
-
-という名前です。
-
-たとえば、
-
-```css id="m5h77c"
+```css
 color: var(--rb-color-ink);
 background: var(--rb-color-paper);
 ```
 
-のように利用します。
+They describe a **role**, not a concrete color:
 
-```text id="w2v0ss"
+```text
 paper
-  → 背景
+  → background
 
 ink
-  → 主な文字
+  → primary text
 
 accent
-  → 強調
+  → emphasis
 
 border
-  → 境界線
+  → borders
 ```
 
-のように、具体的な色ではなく**役割**を表す Token になっています。
+Because every theme shares the same meaning for a token, the design stays consistent instead of scattering values such as `#ffffff`, `#111111`, and `#888888` through every component. For the full list of tokens, see [Theme API](../reference/theme-api.md).
 
-これが Semantic Token です。
+### Use stable hooks
 
-Theme 全体で同じ意味の色を共有できるため、
+Riebeckite's shared UI exposes stable hooks named `rb-*`, for example `.rb-site` and `.rb-article`. UI provided by plugins uses hooks named `rr-<feature>`.
 
-```text id="bcv48d"
-#ffffff
-#111111
-#888888
-```
+A theme targets these stable hooks rather than a specific route or Page Type ID:
 
-のような値を各 Component に直接書き散らすより、Theme を管理しやすくなります。
+```text
+avoid
 
-Token の正確な一覧は [Theme API](../reference/theme-api.md) を参照してください。
-
-# Stable Hook を使う
-
-Riebeckite の共通 UI には、
-
-```text id="lq35s3"
-rb-*
-```
-
-という Stable Hook があります。
-
-たとえば、
-
-```css id="2jhw92"
-.rb-site
-.rb-article
-```
-
-などです。
-
-Plugin が提供する UI では、
-
-```text id="qg0kb3"
-rr-<feature>
-```
-
-形式の Stable Hook を利用します。
-
-Theme は、特定の Route や Page Type ID に依存するのではなく、こうした Stable Hook を対象に Style を書きます。
-
-```text id="v5o69k"
-避ける
-
-特定Route
-特定Page Type ID
-内部Component構造
+a specific route
+a specific Page Type ID
+internal component structure
 
         ↓
 
-使う
+use
 
-rb-* Stable Hook
-rr-<feature> Stable Hook
---rb-* Semantic Token
+rb-* stable hooks
+rr-<feature> stable hooks
+--rb-* semantic tokens
 ```
 
-これによって、Theme を作った時点では存在していなかった Page Type にも、共通の Design を適用しやすくなります。
+This makes it easy to apply a common design to Page Types that did not exist when the theme was written.
 
-# なぜ Page Type ごとに CSS を書かない？
+#### Why not write CSS per Page Type?
 
-Plugin は独自の Page Type を追加できます。
+Plugins can add their own Page Types. If a theme listed Page Types such as `home`, `article`, `explore`, or `tags`, every new plugin that adds a page would force a theme change. Instead, use this relationship:
 
-そのため Theme 側で、
-
-```text id="70qh6b"
-home
-article
-explore
-tags
-...
-```
-
-のように Page Type を列挙してしまうと、新しい Plugin が Page を追加するたびに Theme の変更が必要になります。
-
-代わりに、
-
-```text id="myo7di"
+```text
 Page Type
      ↓
-Framework / PluginのStable Hook
+Framework / plugin stable hooks
      ↓
 Theme
 ```
 
-という関係にします。
-
-```mermaid id="ox4v8a"
+```mermaid
 flowchart LR
-    A["既存Page"]
-    B["将来追加されたPage"]
-    Hooks["Stable Hooks<br/>rb-* / rr-*"]
+    A["Existing pages"]
+    B["Pages added later"]
+    Hooks["Stable hooks<br/>rb-* / rr-*"]
     Theme["Theme"]
 
     A --> Hooks
@@ -473,217 +298,159 @@ flowchart LR
     Hooks --> Theme
 ```
 
-Theme が Page の種類ではなく Semantic Hook を見ることで、新しい Page Type とも疎結合にできます。
+Because a theme looks at semantic hooks instead of page kinds, it stays loosely coupled to new Page Types.
 
-# 5. Light / Dark Mode に対応する
+Themes also own the visual accessibility contract. Keep visible focus styles, readable contrast in light and dark modes, recognizable links, scalable text, reduced-motion behavior, and non-color-only state cues. See [Accessibility](../accessibility.md).
 
-Color Mode に対応する場合は、3つの状態を考えます。
+## 4. Support Light / Dark mode
 
-```text id="k24wdk"
+To support color modes, handle three states:
+
+```text
 light
 dark
 system
 ```
 
-基本形は次のようになります。
-
-```css id="c9pm84"
-:is(:root, .rb-theme-root)[data-theme-name="local"] {
-  /* light */
-}
-
-:is(:root, .rb-theme-root)[data-theme-name="local"][data-theme="dark"] {
-  /* dark */
-}
-
+```css
+:is(:root, .rb-theme-root)[data-theme-name="local"] { /* light */ }
+:is(:root, .rb-theme-root)[data-theme-name="local"][data-theme="dark"] { /* dark */ }
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="local"]:not([data-theme]) {
-    /* system でOSがdark */
+  :is(:root, .rb-theme-root)[data-theme-name="local"]:not([data-theme]) { /* follows the OS (system) */ }
+}
+```
+
+- **Light** is the default:
+
+  ```css
+  :is(:root, .rb-theme-root)[data-theme-name="local"] {
+    /* light */
   }
-}
-```
+  ```
 
-## Light
+- **Dark** applies when dark mode is explicitly selected:
 
-通常の Light Mode です。
-
-```css id="6s0kr3"
-:is(:root, .rb-theme-root)[data-theme-name="local"] {
-  /* light */
-}
-```
-
-## Dark
-
-明示的に Dark Mode が選択されている場合は、
-
-```css id="khq4ec"
-:is(:root, .rb-theme-root)[data-theme-name="local"][data-theme="dark"] {
-  /* dark */
-}
-```
-
-で扱います。
-
-## System
-
-`system` では `data-theme` を付けず、OS / Browser の設定に従います。
-
-```css id="4nrvxb"
-@media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="local"]:not([data-theme]) {
-    /* system dark */
+  ```css
+  :is(:root, .rb-theme-root)[data-theme-name="local"][data-theme="dark"] {
+    /* dark */
   }
-}
-```
+  ```
 
-System Mode では、
+- **System** does not set `data-theme` at all and follows the OS / browser setting:
 
-```html id="k8uz2d"
-data-theme=""
-```
+  ```css
+  @media (prefers-color-scheme: dark) {
+    :is(:root, .rb-theme-root)[data-theme-name="local"]:not([data-theme]) {
+      /* system dark */
+    }
+  }
+  ```
 
-ではなく、**`data-theme` Attribute 自体が存在しません**。
+In system mode the attribute is not `data-theme=""`; **the `data-theme` attribute does not exist**. That is why the rule uses `:not([data-theme])`.
 
-そのため、
+CSS ordering is fixed: theme CSS loads before `userCss` (which is highest priority). See [Theme System](../reference/theme-api.md) for the token and hook lists and the cascade details.
 
-```css id="dh4axr"
-:not([data-theme])
-```
+## 5. Check accessibility
 
-で判定します。
+A theme changes appearance, so it also affects accessibility. Check in particular:
 
-# 6. アクセシビリティを確認する
+- Contrast between body text and background
+- Whether links are distinguishable from body text
+- Whether keyboard focus is visible
+- Whether the design is readable in both light and dark modes
+- Whether information depends on hover alone
 
-Theme は見た目を変更するため、アクセシビリティにも影響します。
+A theme must keep content readable, not merely look attractive. See [Accessibility](../accessibility.md) for details.
 
-特に、
+## 6. Understand the CSS load order
 
-- 本文と背景の Contrast
-- Link が本文と区別できるか
-- Keyboard 操作中の Focus が見えるか
-- Light Mode / Dark Mode の両方で読めるか
-- Hover だけに情報を依存していないか
+Riebeckite fixes the CSS load order. Theme CSS is applied before `userCss`:
 
-などを確認してください。
-
-Theme は単に「きれいに見える」だけではなく、Content を読みやすい状態に保つ必要があります。
-
-詳しくは [アクセシビリティ](../accessibility.md) を参照してください。
-
-# 7. CSS の読み込み順を理解する
-
-Riebeckite では CSS の読み込み順が決まっています。
-
-Theme CSS は `userCss` より前に適用されます。
-
-概念的には、
-
-```text id="tl3h0p"
+```text
 Framework / Application
         ↓
-Plugin Style
+Plugin style
         ↓
-Theme Style
+Theme style
         ↓
-ConfigによるToken
+Tokens from config
         ↓
 userCss
 ```
 
-という順になります。
+That gives a clear division of labor:
 
-そのため、
-
-```text id="8i6rvp"
+```text
 Theme
-  → 再利用できる基本Design
+  → reusable base design
 
 userCss
-  → Site固有の最終調整
+  → final site-specific adjustments
 ```
 
-という役割分担ができます。
+A theme does not need to carry site-specific overrides. For the exact cascade, see [Theme API](../reference/theme-api.md).
 
-Theme 側で Site 固有の上書きまで抱え込む必要はありません。
+## 7. Check in the browser
 
-正確な Cascade は [Theme API](../reference/theme-api.md) を参照してください。
+Start the development server:
 
-# 8. Browser で確認する
-
-Theme を作ったら Development Server を起動します。
-
-```sh id="p90emf"
+```sh
 npm exec riebeckite dev
 ```
 
-実際の記事を開いて、
+Open real articles and check:
 
-- 本文
-- 見出し
-- Link
-- Code Block
-- Table
-- List
-- Image
+- Body text
+- Headings
+- Links
+- Code blocks
+- Tables
+- Lists
+- Images
 - Plugin UI
-- Light Mode
-- Dark Mode
+- Light mode
+- Dark mode
 
-などを確認します。
+Check real articles, not only a demo page.
 
-特定の Demo Page だけではなく、実際の記事でも確認してください。
+## 8. Run Riebeckite's checks
 
-# 9. Riebeckite の検証を実行する
+Validate the configuration:
 
-設定に問題がないか確認します。
-
-```sh id="mbllje"
-npm exec riebeckite check
-npm exec riebeckite doctor
-npm exec riebeckite inspect config
-npm exec riebeckite build
+```sh
+npm exec riebeckite check             # validate config and plugin resolution
+npm exec riebeckite doctor            # check the whole site for problems
+npm exec riebeckite inspect config    # inspect the resolved theme
+npm exec riebeckite build             # check the generated output
 ```
 
-それぞれの役割は次のとおりです。
+Each command checks something different:
 
-| Command | 確認すること |
+| Command | What it checks |
 | --- | --- |
-| `check` | Config や Theme の解決が正しいか |
-| `doctor` | Site 全体に問題がないか |
-| `inspect config` | 解決済み Theme 設定 |
-| `build` | 実際に Site を生成できるか |
+| `check` | Whether the config and theme resolve correctly |
+| `doctor` | Whether the whole site has problems |
+| `inspect config` | The resolved theme settings |
+| `build` | Whether the site can actually be generated |
 
-`check` / `doctor` / `inspect` は読み取り専用です。
+`check` / `doctor` / `inspect` are read-only. They never edit theme files automatically. Fix what the diagnostics say.
 
-これらの Command が Theme File を自動で修正することはありません。
+## 9. Package it for distribution (optional)
 
-# 10. 配布用 Package にする
+Once it works in a site, you can distribute it. Use `packages/themes/minimal` as a template.
 
-Site 内 Theme として問題なく動作したら、必要に応じて Package として配布できます。
-
-Riebeckite Repository 内では、
-
-```text id="c7gzq8"
+```text
 packages/themes/minimal/
-```
-
-が構成例になります。
-
-```text id="5j0p0f"
-packages/themes/minimal/
-├─ src/
-│  └─ index.ts
-├─ styles/
-│  └─ theme.css
-├─ package.json
+├─ src/index.ts      ← factory that calls defineTheme
+├─ styles/theme.css  ← the theme stylesheet
+├─ package.json      ← exports ./style.css
 ├─ README_ja.md
 └─ README.md
 ```
 
-`src/index.ts` では Theme Factory を公開します。
+`src/index.ts` exposes the theme factory:
 
-```ts id="a6e4vn"
+```ts
 import { defineTheme } from "@riebeckite/core";
 
 export function myTheme() {
@@ -698,118 +465,84 @@ export function myTheme() {
 }
 ```
 
-Package では Stylesheet を、
+The package exposes its stylesheet as a public export such as `./style.css`.
 
-```text id="hhg9pd"
-./style.css
-```
+A distributed theme depends only on the public API of `@riebeckite/core`:
 
-のような Public Export として公開します。
-
-# 外部 Theme の依存関係
-
-配布する Theme は、
-
-```text id="n1cn77"
-@riebeckite/core
-```
-
-の Public API に依存します。
-
-Riebeckite Monorepo 内部の、
-
-```text id="ohs3aa"
-packages/...
-src/...
-../../...
-```
-
-のような Path に依存させないでください。
-
-```mermaid id="52m7im"
+```mermaid
 flowchart LR
-    Theme["External Theme"]
+    Theme["External theme"]
     Core["@riebeckite/core<br/>Public API"]
-    Internal["Riebeckite内部Path"]
+    Internal["Riebeckite internal paths"]
 
     Theme --> Core
-    Theme -.->|"依存しない"| Internal
+    Theme -.->|"does not depend on"| Internal
 ```
 
-外部利用者が npm から Theme をインストールした場合でも動作する構成にします。
+Never reference monorepo paths such as `packages/...`, `src/...`, or `../../...`. The theme must still work when a user installs it from npm.
 
-# Theme 独自 Option
+## Theme-specific options
 
-Theme 固有の設定が必要な場合は、その Theme の Factory Option として定義します。
+If a theme needs its own settings, define them as factory options:
 
-たとえば、
-
-```ts id="w8b3zk"
+```ts
 myTheme({
-  // Theme固有Option
+  // theme-specific option
 });
 ```
 
-のような形です。
+Avoid growing Core's shared config for a single theme's needs. Draw the boundary like this:
 
-Theme 固有の都合だけで Core の共通 Config を増やすのは避けます。
+```text
+Common to all of Riebeckite
+  → Core contract
 
-```text id="bwrfbx"
-Riebeckite全体で共通
-  → Core Contract
-
-そのThemeだけで必要
-  → Theme Factory Option
+Needed only by this theme
+  → theme factory option
 ```
 
-という境界で考えます。
+Resolve theme-specific options inside the theme; do not grow the Core `ThemeConfig`.
 
-# Theme がしてはいけないこと
+## What a theme must not do
 
-Theme の責任は Presentation です。
+A theme's responsibility is presentation. Do not put these in a theme:
 
-そのため、
-
-```text id="1txwn9"
-Routeを追加する
-Pageを追加する
-Pluginを追加・削除する
-JavaScriptの機能を追加する
-DOMを変換する
-Islandを追加する
-ContentManagerを操作する
-Filesystemを読む
+```text
+add routes
+add pages
+add or remove plugins
+add JavaScript behavior
+transform the DOM
+add islands
+operate the ContentManager
+read the filesystem
 ```
 
-といった処理は Theme に入れません。
+Choose the right place by responsibility:
 
-必要な責務に応じて、
-
-```mermaid id="sgcd92"
+```mermaid
 flowchart TD
-    Need{"何を変更する？"}
+    Need{"What do you want to change?"}
 
-    Need -->|"見た目"| Theme["Theme"]
-    Need -->|"再利用できる機能"| Plugin["Plugin"]
-    Need -->|"Site固有のPage / 構成"| App["Application"]
-    Need -->|"Framework共通Contract"| Core["Core"]
+    Need -->|"Appearance"| Theme["Theme"]
+    Need -->|"Reusable functionality"| Plugin["Plugin"]
+    Need -->|"Site-specific pages / structure"| App["Application"]
+    Need -->|"Framework-wide contract"| Core["Core"]
 ```
 
-と分けます。
+## Minimal complete form
 
-# 最小の完成形
+A minimal in-site theme needs two files:
 
-最小の Site 内 Theme は2ファイルで作れます。
-
-```text id="wub30o"
+```text
 extensions/
 ├─ local-theme.ts
 └─ theme.css
 ```
 
-`local-theme.ts` の中身は次のとおりです。
+`local-theme.ts`:
 
-```ts id="f2e0yg"
+```ts
 import { defineTheme } from "@riebeckite/core";
 
 export function localTheme() {
@@ -824,9 +557,9 @@ export function localTheme() {
 }
 ```
 
-`theme.css` の中身は次のとおりです。
+`theme.css`:
 
-```css id="0nvzz5"
+```css
 :is(:root, .rb-theme-root)[data-theme-name="local"] .rb-site {
   background: var(--rb-color-paper);
   color: var(--rb-color-ink);
@@ -837,9 +570,9 @@ export function localTheme() {
 }
 ```
 
-そして `riebeckite.config.ts` から、
+Then reference it from `riebeckite.config.ts`:
 
-```ts id="hcg2hm"
+```ts
 import { localTheme } from "./extensions/local-theme";
 
 export default defineConfig({
@@ -847,60 +580,54 @@ export default defineConfig({
 });
 ```
 
-と指定します。
+That is the minimal Riebeckite theme.
 
-これが Riebeckite Theme の最小構成です。
+## Summary
 
-# まとめ
+You do not need to package a theme from the start:
 
-Theme を作るときは、最初から Package 化する必要はありません。
-
-```text id="ypbhk"
-少しだけ変更
+```text
+small change
   → userCss
 
-独自Designを作る
-  → Site内Theme
+your own design
+  → in-site theme
 
-再利用・配布したい
-  → Theme Package
+reuse / distribution
+  → theme package
 ```
 
-Theme の CSS では、
+In theme CSS, use:
 
-```text id="doxcc6"
+```text
 --rb-*
-  → Semantic Token
+  → semantic token
 
 rb-*
-  → Framework Stable Hook
+  → framework stable hook
 
 rr-<feature>
-  → Plugin Stable Hook
+  → plugin stable hook
 
-Theme Root Selector
-  → ThemeのStyleを適用する範囲
+Theme root selector
+  → the range the theme styles apply to
 ```
 
-を利用します。
+Most importantly, **a theme must not know too much about Page Types or internal component structure**:
 
-そして、**Theme が Page Type や内部 Component の構造を知りすぎない**ことが最も重要です。
-
-```text id="3p18me"
+```text
 Page Type
      ↓
-Stable Hook / Semantic Token
+Stable hook / semantic token
      ↓
 Theme
 ```
 
-という境界を保つことで、新しい Plugin や Page Type が追加されても利用できる Theme を作れます。
+Keeping that boundary lets a theme keep working when new plugins or Page Types are added.
 
-## 関連資料
+## Further reading
 
-- [Theme](./README.md) — Theme の選択と利用方法
-- [テーマ作成の詳細](../framework/theme-system.md) — Option、Token、Hook、Cascade、配布を含む詳しい設計
-- [Theme API](../reference/theme-api.md) — `defineTheme` と Theme の公開 Contract
-- [はじめてのプラグイン作成](../plugins/writing-a-plugin.md) — 機能を追加する場合
-- [Plugin API](../reference/plugin-api.md) — Plugin の公開 Contract
-- [アクセシビリティ](../accessibility.md) — Theme 作成時のアクセシビリティ
+- [Themes in depth](../framework/theme-system.md) — the in-depth companion (options, tokens, hooks, cascade, packaging)
+- [Theme System](../reference/theme-api.md) — theme contract, tokens, hooks, cascade
+- [Plugin System](../reference/plugin-api.md) — the boundary with themes (features = plugins)
+- [Framework Reference](../reference/README.md) — public APIs like `defineTheme`

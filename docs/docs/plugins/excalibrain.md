@@ -1,81 +1,193 @@
+<!-- Generated from packages/plugins/excalibrain/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # ExcaliBrain
 
-ノートごとの関係を 7 つの領域に分けたマップとして表示する Plugin です。[ExcaliBrain](https://github.com/zsviczian/excalibrain) の考え方をモデルにしています。
+Structured relationship maps for notes, modelled on
+[ExcaliBrain](https://github.com/zsviczian/excalibrain) by Zsolt Viczián.
 
-| 領域 | 位置 | ロール |
-| --- | --- | --- |
-| Parents | 上 | `parent` |
-| Children | 下 | `child` |
-| Left friends | 左 | `leftFriend` |
-| Right friends | 右 | `rightFriend` |
-| Previous | 左端 | `previous` |
-| Next | 右端 | `next` |
-| Siblings | 周辺 | `sibling` |
+[日本語](./excalibrain.ja.md)
 
-## 導入
+## Overview
 
-```bash
-npm install @riebeckite/plugin-excalibrain
-```
+`excaliBrain()` renders each note in a planar layout with seven regions:
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+| Region | Direction | Role |
+| ------ | --------- | ---- |
+| Parents | top | `parent` |
+| Children | bottom | `child` |
+| Left friends | left | `leftFriend` |
+| Right friends | right | `rightFriend` |
+| Previous | far left | `previous` |
+| Next | far right | `next` |
+| Siblings | periphery | `sibling` |
 
-## 使用例
+Relationships come from ExcaliBrain's ontology: YAML frontmatter fields and
+dataview inline fields in the note body. When a relationship is not stated
+explicitly, it is inferred from the content graph.
 
-`excalibrain` フェンスを置くと、その位置にマップが差し込まれます。
-
-````md
-```excalibrain
-```
-````
-
-```excalibrain
-```
-
-フェンスの中身は読みません。フェンスは「ここに描画する」という位置だけを決めます。マップが描くのは、そのページ自身のリンク関係です。
-
-上のマップの `child` には [[plugins/README|Plugin catalog]] と [[showcase]] が並びます。この 2 つは、このページの本文に書いた WikiLink から推論されました。
-
-関係を明示したい場合は、YAML frontmatter か Dataview インラインフィールドで指定します。明示した関係は推論より優先されます。
-
-````md
----
-parent: "[[excalibrain-parent]]"
-children: ["[[excalibrain-child-a]]", "[[excalibrain-child-b]]"]
-friends: ["[[excalibrain-note-a]]"]
----
-
-children:: [[excalibrain-child]]
-
-related:: [[excalibrain-note-a]] と [[excalibrain-note-b]] は近い
-````
-
-末尾の例のように、リンク先となるノートが Vault に存在しない場合、そのリンクは仮想ノードとして描画されます。
-
-## 設定する
+## Usage
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 
 export default defineConfig({
+  // ...
   plugins: [
     excaliBrain({
-      auto: false,
       render: "build",
     }),
   ],
 });
 ```
 
-`auto` を有効にすると、`excalibrain` フェンスのないノートでも関係が存在する場合にマップを記事末尾へ追加します。マップを出すノートだけを決めている場合は `auto: false` にしてください。このドキュメントサイトでも `auto: false` にして、Plugin Showcase の 1 ページだけでマップを表示しています。
+The plugin runs with `order: -10`.
 
-## 使いどころ
+## Declaring relationships
 
-記事ごとに、その記事とつながるノートを一望できるマップを置きたい場合に使います。通常の Plugin は 1 つの Markdown 断片だけをどう描画するかを担当しますが、この Plugin はページ全体のリンク関係を扱います。
+Explicit relations win over inferred ones.
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+### YAML frontmatter
 
-## 詳細仕様
+```md
+---
+title: ExcaliBrain Center
+parent: "[[excalibrain-parent]]"
+children: ["[[excalibrain-child-a]]", "[[excalibrain-child-b]]"]
+---
+```
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。実際の描画例は [Plugin Showcase](./showcase.md) にもあります。
+### Dataview inline fields
+
+```md
+children:: [[excalibrain-child]]
+
+related:: [[note-a]] and [[note-b]] are similar
+```
+
+An inline field may appear on its own line or inside brackets
+(`[field:: [[target]]]`).
+
+### Ontology
+
+Field names are matched case-insensitively and spaces are normalized to
+hyphens. The default ontology is:
+
+| Role | Field names |
+| ---- | ----------- |
+| `parents` | `parent`, `parents`, `up`, `u`, `north`, `origin`, `inception`, `source`, `parent domain` |
+| `children` | `children`, `child`, `down`, `d`, `south`, `leads to`, `contributes to`, `nurtures` |
+| `leftFriends` | `friends`, `friend`, `jump`, `jumps`, `j`, `similar`, `supports`, `alternatives`, `advantages`, `pros` |
+| `rightFriends` | `opposes`, `disadvantages`, `missing`, `cons` |
+| `previous` | `previous`, `prev`, `west`, `w`, `before` |
+| `next` | `next`, `n`, `east`, `e`, `after` |
+| `hidden` | `hidden` |
+
+The `ontology` option extends the defaults: each role's field names are
+appended to that role's defaults rather than replacing them. An override can
+still add an existing field to another role, but earlier roles in the
+canonical order (`parents`, `children`, `leftFriends`, `rightFriends`,
+`previous`, `next`, `hidden`) win when a field is listed twice.
+
+`hidden` follows ExcaliBrain: it lists the targets to hide from this note's
+map; it never hides the note itself. `showHidden` reveals those targets.
+
+## Inference
+
+When `infer` is enabled (the default):
+
+- a forward link (this note → other) becomes a `child`;
+- a backlink (other → this note) becomes a `parent`;
+- a mutual link (this note ↔ other) becomes a `leftFriend`.
+
+With `siblings` enabled (the default), the other children of this note's
+parents become `sibling` nodes. Sibling inference also requires `infer`:
+setting `infer: false` disables it. Link targets are resolved against the
+content manifest; unresolved targets become virtual nodes labelled with the
+raw link text (`data-node-virtual="true"`).
+
+## Publication boundary
+
+Nodes are resolved against the content manifest. A target whose
+`publishing.routable` flag is false is dropped from the map, so notes excluded
+from publication never appear as nodes or links and their titles and permalinks
+are not leaked.
+
+## Rendering
+
+The `render` option selects where the map is produced:
+
+| Mode | Behavior |
+| ---- | -------- |
+| `"build"` (default) | The SVG is generated at build time and inlined into the article. |
+| `"client"` | A `div.rb-excalibrain__canvas` carries the escaped graph/layout payload; `initExcaliBrain()` builds the SVG in the browser. |
+| `"both"` | Inline SVG plus the client layer for progressive enhancement. |
+
+### Injection
+
+- A ` ```excalibrain ` fence is replaced by the map.
+- Otherwise, when `auto` is enabled and the note has at least one
+  relationship, the map section is appended to the article HTML (both the
+  manifest entry and the cached post content).
+
+`heading` / `headingText` control the optional `<h2>`.
+
+## Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `render` | `"build" \| "client" \| "both"` | `"build"` | Where the map is rendered |
+| `auto` | `boolean` | `true` | Append the map when a note has no fence |
+| `heading` | `boolean` | `true` | Show the heading |
+| `headingText` | `string` | `"ExcaliBrain"` | Heading text |
+| `className` | `string` | `"rb-excalibrain"` | Root CSS class |
+| `maxPerRegion` | `number` | `8` | Maximum nodes per region |
+| `infer` | `boolean` | `true` | Infer relations from links |
+| `siblings` | `boolean` | `true` | Infer siblings from parents (requires `infer`) |
+| `ontology` | object | — | Ontology field names appended per role |
+| `showHidden` | `boolean` | `false` | Include targets named by `hidden` fields |
+| `width` | `number` | `720` | SVG viewBox width |
+| `height` | `number` | `480` | SVG viewBox height |
+| `language` | `string` | `"excalibrain"` | Fence language |
+
+## Output
+
+```html
+<section class="rb-excalibrain" data-excalibrain
+         data-excalibrain-render="build"
+         data-excalibrain-center="notes/center">
+  <h2 class="rb-excalibrain__heading">ExcaliBrain</h2>
+  <div class="rb-excalibrain__canvas">
+    <svg class="rb-excalibrain__svg" viewBox="0 0 720 480" role="img">…</svg>
+  </div>
+</section>
+```
+
+Each region is a `g.rb-excalibrain__region[data-region]`; each node is a
+`g.rb-excalibrain__node[data-node-role][data-node-slug][data-relation-type]`
+wrapping an `<a href>` around its `<rect>` and `<text>`. Links are
+`path.rb-excalibrain__link[data-link-role][data-relation-type]`.
+
+## Limitations
+
+- The map is read-only. The client layer only builds the SVG; there is no drag,
+  zoom, or expand/collapse interaction.
+- `maxPerRegion` truncates each region, so a note with more relations than the
+  limit shows only the first nodes.
+- Rendering is limited to the ontology roles above; there is no per-node
+  styling or per-region configuration beyond the options listed below.
+
+## Exports
+
+- `excaliBrain(options?)` / `excaliBrainPlugin` — plugin factory
+- `resolveExcaliBrainOptions(options?)` — resolved defaults
+- `buildExcaliBrainGraph(input)` — pure graph builder
+- `layoutExcaliBrain(graph, options?)` — pure deterministic layout
+- `renderExcaliBrainSvg(graph, layout, options?)` — pure SVG renderer
+- Types: `ExcaliBrainOptions`, `ExcaliBrainGraph`, `ExcaliBrainNode`,
+  `ExcaliBrainLink`, `ExcaliBrainLayout`, `ExcaliBrainRole`,
+  `ExcaliBrainRenderMode`, …
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

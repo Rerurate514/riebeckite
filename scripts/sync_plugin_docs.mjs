@@ -136,7 +136,7 @@ export function rewriteTarget(
     path.dirname(absolute) === readmeDirectory &&
     path.basename(absolute) === "README_ja.md"
   ) {
-    return `./${slug}.md${anchor}`;
+    return `./${slug}.ja.md${anchor}`;
   }
 
   const docsRoot = path.join(repositoryRoot, "docs");
@@ -150,10 +150,10 @@ export function rewriteTarget(
   ) {
     const parts = path.relative(pluginsRoot, absolute).split(path.sep);
     if (parts.length === 2 && parts[1] === "README.md") {
-      return `./${parts[0]}.en.md${anchor}`;
+      return `./${parts[0]}.md${anchor}`;
     }
     if (parts.length === 2 && parts[1] === "README_ja.md") {
-      return `./${parts[0]}.md${anchor}`;
+      return `./${parts[0]}.ja.md${anchor}`;
     }
   }
 
@@ -218,7 +218,7 @@ export function buildDesiredPages() {
     const readmeText = fs.readFileSync(readmePath, "utf8");
     return {
       slug,
-      pagePath: path.join(docsPluginsRoot, `${slug}.en.md`),
+      pagePath: path.join(docsPluginsRoot, `${slug}.md`),
       content: renderPluginPage(slug, readmeText),
     };
   });
@@ -243,11 +243,11 @@ function readGeneratedPages() {
   if (!fs.existsSync(docsPluginsRoot)) return new Map();
   const onDisk = new Map();
   for (const name of fs.readdirSync(docsPluginsRoot)) {
-    if (!name.endsWith(".en.md")) continue;
+    if (!name.endsWith(".md") || name.endsWith(".ja.md")) continue;
     const absolute = path.join(docsPluginsRoot, name);
     const text = fs.readFileSync(absolute, "utf8");
     if (!text.startsWith(GENERATED_MARKER_PREFIX)) continue;
-    onDisk.set(name.slice(0, -".en.md".length), text);
+    onDisk.set(name.slice(0, -".md".length), text);
   }
   return onDisk;
 }
@@ -259,7 +259,7 @@ function runWrite(desiredPages, onDisk) {
     fs.writeFileSync(page.pagePath, page.content);
   }
   for (const slug of stale) {
-    fs.rmSync(path.join(docsPluginsRoot, `${slug}.en.md`));
+    fs.rmSync(path.join(docsPluginsRoot, `${slug}.md`));
   }
   console.log(
     `Plugin reference sync: ${writes.length} page(s) written, ${stale.length} stale page(s) removed.`,
@@ -275,13 +275,13 @@ function runCheck(desiredPages, onDisk) {
   for (const page of writes) {
     errors.push(
       onDisk.has(page.slug)
-        ? `docs/docs/plugins/${page.slug}.en.md is out of date`
-        : `docs/docs/plugins/${page.slug}.en.md is missing`,
+        ? `docs/docs/plugins/${page.slug}.md is out of date`
+        : `docs/docs/plugins/${page.slug}.md is missing`,
     );
   }
   for (const slug of stale) {
     errors.push(
-      `docs/docs/plugins/${slug}.en.md has no matching Plugin package`,
+      `docs/docs/plugins/${slug}.md has no matching Plugin package`,
     );
   }
   if (errors.length > 0) {

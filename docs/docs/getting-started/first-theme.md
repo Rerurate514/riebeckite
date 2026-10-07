@@ -1,14 +1,14 @@
-# 最初の Theme を変える
+# Change Your Theme
 
-Theme は色、タイポグラフィ、余白、レイアウトなど、Riebeckite サイトの見た目を決めます。このガイドでは **minimal** テーマに切り替えます。コンテンツファーストで清潔なデザインです。
+Themes control how your Riebeckite site looks — colors, typography, spacing, and layout. This guide walks through switching to the **minimal** theme, a clean, content-first design.
 
-> 機能を追加したい場合は [最初の Plugin を追加する](./first-plugin.md) を参照してください。
+> Want to add features instead? See [Add Your First Plugin](./first-plugin.md).
 
 ---
 
-## 1. インストール
+## 1. Install
 
-生成されたサイトのディレクトリで次のコマンドを実行してください。
+In your generated site directory:
 
 ```sh
 npm install @riebeckite/theme-minimal
@@ -16,9 +16,9 @@ npm install @riebeckite/theme-minimal
 
 ---
 
-## 2. インポート
+## 2. Import
 
-`riebeckite.config.ts` を開き、先頭にインポートを追加してください。
+Open `riebeckite.config.ts` and add the import at the top:
 
 ```ts
 import { minimalTheme } from "@riebeckite/theme-minimal";
@@ -26,9 +26,9 @@ import { minimalTheme } from "@riebeckite/theme-minimal";
 
 ---
 
-## 3. Theme を変更
+## 3. Change the Theme
 
-config の `theme` 行で `defaultTheme()` を `minimalTheme()` に置き換えてください。
+Find the `theme` line in your config and replace `defaultTheme()` with `minimalTheme()`:
 
 ```ts
 theme: minimalTheme(),
@@ -36,21 +36,21 @@ theme: minimalTheme(),
 
 ---
 
-## 4. Riebeckite を起動
+## 4. Start Riebeckite
 
-開発サーバーを再起動して新しいテーマを確認してください。
+Restart the dev server to see the new theme:
 
 ```sh
 npm exec riebeckite dev
 ```
 
-サイトを開くと、見た目が minimal テーマに変わっています。
+Open your site — the appearance has changed to the minimal theme.
 
 ---
 
-## 5. 次のステップ
+## 5. Next Steps
 
-- [Theme リファレンス](../themes/README.md) で他のテーマを探す
-- 暗くカラフルな `@riebeckite/theme-tokyonight` を試す
-- 軽やかな `@riebeckite/theme-sakura` を試す
-- [自作 Theme の書き方](../themes/writing-a-theme.md) を学ぶ
+- Browse other themes in the [Themes reference](../themes/README.md)
+- Try `@riebeckite/theme-tokyonight` for a dark, colorful theme
+- Try `@riebeckite/theme-sakura` for a light, elegant theme
+- Learn to [write your own theme](../themes/writing-a-theme.md)

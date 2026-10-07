@@ -126,5 +126,5 @@ copy if the deployment has no outbound network access.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 

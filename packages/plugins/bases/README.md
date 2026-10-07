@@ -177,5 +177,5 @@ This is an MVP subset of Obsidian Bases:
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 

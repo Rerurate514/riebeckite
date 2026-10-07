@@ -1,26 +1,103 @@
+<!-- Generated from packages/plugins/analytics/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Analytics
 
-アクセス解析サービスとの連携に必要な機能を追加する Plugin です。
+Storage-independent analytics primitives and browser page-view tracking for
+Riebeckite. It contains no Cloudflare, Worker, database, or vendor code.
 
-## 導入
+[日本語](./analytics.ja.md)
 
-```bash
-npm install @riebeckite/plugin-analytics
+## Design
+
+- `AnalyticsEvent` includes a typed `page_view` event and can be extended with
+  provider-specific event unions.
+- `AnalyticsProvider` declares discoverable capabilities and exposes `capture`
+  and `query`. Queries cover per-content page views and popular content, with
+  optional ISO-8601 time ranges.
+- `UnsupportedAnalyticsQueryError` makes unsupported query capabilities
+  explicit. `MemoryAnalyticsProvider` is included for tests and local examples.
+- Provider runtime configuration (credentials, storage, bindings) stays inside
+  the provider. The browser receives only `AnalyticsPublicConfig`.
+
+## Usage
+
+```ts
+import { analytics, MemoryAnalyticsProvider } from "@riebeckite/plugin-analytics";
+
+const provider = new MemoryAnalyticsProvider();
+
+export default {
+  plugins: [
+    analytics({
+      provider,
+      publicConfig: { collectorUrl: "/analytics/events" },
+    }),
+  ],
+};
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`collectorUrl` is intentionally public. It is a relative path or an HTTP(S)
+URL for a collector that accepts a JSON `POST` body. A future provider package
+can expose a collector backed by its own private runtime configuration.
 
-## 使用例
+## Browser behavior
 
-公開後のサイトでページ閲覧などを計測したい場合に利用します。利用する解析サービスに必要な設定を行い、Riebeckite側の統合点として使用します。具体的な設定キーは package README を参照してください。
+For every published content entry with Core's source-authored stable `id`, the
+plugin places a small content-ID marker in rendered HTML and registers
+`initAnalytics` with the generic public-config client mechanism.
 
-このページのビューは、設定した provider に送信されます。集計の確認は provider 側の画面や、`analytics-untracked` を含む診断レポートで行います。
+In a browser, the initializer sends exactly one event per document:
 
-## 使いどころ
+```json
+{
+  "type": "page_view",
+  "contentId": "guide-1",
+  "occurredAt": "2026-01-01T00:00:00.000Z",
+  "path": "/guide",
+  "lang": "en"
+}
+```
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+`path` and `lang` are contextual metadata, not identity. Content without a
+stable ID is not tracked. The initializer is a no-op during builds/SSR and is
+idempotent in a document. Riebeckite's current static document navigation needs
+no SPA route hooks; SPA navigation is not tracked automatically.
 
-## 詳細仕様
+Content IDs are an authoring responsibility. Duplicate `id` declarations across
+published notes are reported by
+[`@riebeckite/plugin-diagnostics`](./diagnostics.md)
+(`duplicate-content-id` / `invalid-content-id`) and validated by the plugin's own
+`validateAnalyticsOptions` at `check` time.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Provider contract
 
+```ts
+const result = await provider.query({
+  type: "popular_content",
+  limit: 10,
+  timeRange: { from: "2026-01-01T00:00:00.000Z" },
+});
+```
+
+Capabilities are `capture`, `content_page_views`, and `popular_content`. Call
+`assertAnalyticsQuerySupported(provider, query)` when implementing a provider
+that may not support all queries.
+
+## Diagnostics
+
+`@riebeckite/plugin-diagnostics` reports an `analytics-untracked` finding for
+published content without a stable content ID when the site enables this
+plugin, so tracking gaps are visible in `check`, `doctor`, and build
+diagnostics.
+
+## Exports
+
+- `analytics()` / `analyticsPlugin()`
+- `initAnalytics` (`@riebeckite/plugin-analytics/client`)
+- `MemoryAnalyticsProvider`
+- Event, query/result, provider/capability, and public-config types
+- `UnsupportedAnalyticsQueryError` and capability helpers
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

@@ -1,63 +1,27 @@
 # Diagnostics
 
-Diagnostics は、Riebeckite の設定やコンテンツ、プラグイン、実行環境に問題がないかを検査し、開発者に報告するための仕組みです。
+Diagnostics are structured findings emitted by Core, plugins, and tooling. They make invalid configuration, content issues, capability problems, and environmental health visible without turning every issue into an unstructured console string.
 
-単にエラーメッセージを `console.log` へ出すのではなく、
+Instead of printing a message to the console, a diagnostic describes:
 
-- 何が問題なのか
-- どこで問題が起きているのか
-- どの程度重要なのか
-- どう直せばよいのか
+- what the problem is
+- where it occurs
+- how important it is
+- how to fix it
 
-といった情報を、Riebeckite が扱える共通形式の診断情報（diagnostic）として表現します。
+Core and plugins express problems in this shared form so that `check` and `doctor` can report them together.
 
-これにより、Core や各プラグインが見つけた問題を `check` や `doctor` からまとめて確認できます。
+## Producers and consumers
 
-## Diagnostics の流れ
+Plugins can provide diagnostics through `addDiagnostics`; Core and integrations combine them for commands such as `check` and `doctor`. A plugin should name the actionable condition, identify the relevant content/configuration when available, and make severity proportionate to whether output can remain correct. Prefer a diagnostic that says which setting is invalid and how to change it over one that only reports "invalid configuration".
 
-プラグインは `addDiagnostics` を使って独自の診断を追加できます。
+Use `check` for configuration/plugin validity and `doctor` for broader health. Doctor checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully.
 
-追加された診断は Core や integration によって集約され、主に `check` や `doctor` から利用されます。
+The doctor build-state check verifies that the incremental state is readable and that its stored fingerprints still match the current content source. When entries were added, changed, or removed since the last build, it reports a warning with counts and samples; the next build refreshes the state.
 
-診断を追加するときは、可能な限り次の情報を明確にしてください。
+## Content ID integrity
 
-- 問題が発生する条件
-- 問題のあるコンテンツや設定
-- 問題の重要度（severity）
-- 修正方法（remediation）
-
-たとえば「設定が不正です」とだけ報告するのではなく、「どの設定が不正で、どのように変更すればよいか」まで分かる診断を推奨します。
-
-## `check` と `doctor`
-
-`check` と `doctor` は役割が少し異なります。
-
-`check` は主に設定やプラグインの構成が正しいかを検査します。
-
-`doctor` はそれに加えて、Riebeckite が正常に動作できる状態かをより広く検査します。
-
-Doctor では、1つの検査に失敗しても、可能な限り他の独立した検査を続行します。そのため、複数の問題がある場合でも一度の実行でまとめて確認できます。
-
-問題が見つかった場合、コマンドは non-zero exit code で終了します。
-
-### Build state の検査
-
-Doctor は incremental build で使用する build state も検査します。
-
-主に次の状態を確認します。
-
-- 保存されている state を正常に読み込めるか
-- 保存された fingerprint と現在のコンテンツが一致しているか
-
-前回の build 以降にコンテンツが追加・変更・削除されている場合は、変更件数と一部のサンプルを warning として報告します。
-
-これは state の破損を意味するものではありません。次回の build が完了すると、現在のコンテンツに合わせて state が更新されます。
-
-## コンテンツ ID の検査
-
-Riebeckite では、コンテンツを継続的に識別するための「安定コンテンツ ID」を設定できます。
-
-通常はフロントマターの `id` を使用します。
+Stable content IDs come from the optional source-authored `id` frontmatter field and are the identity key for per-content consumers such as the analytics plugin's page-view tracking.
 
 ```yaml
 ---
@@ -65,79 +29,52 @@ id: my-article
 ---
 ```
 
-この ID は、たとえば analytics プラグインがページごとの閲覧数を記録するときなど、URLとは別にコンテンツそのものを識別したい場合に利用されます。
+This ID identifies the content itself, separately from its URL. The diagnostics plugin reports two content-level invariants around them:
 
-Diagnostics プラグインは、コンテンツ ID について次の問題を検査します。
-
-| コード | 重要度 | 意味 |
+| Code | Default severity | Condition |
 | --- | --- | --- |
-| `duplicate-content-id` | error | 複数の公開コンテンツが同じ ID を使用している |
-| `invalid-content-id` | error | `id` がコンテンツ ID のルールを満たしていない |
+| `duplicate-content-id` | `error` | multiple published notes share a stable content ID, which would silently merge per-content metrics |
+| `invalid-content-id` | `error` | `id` frontmatter violates the stable content ID contract, which breaks the build |
 
-たとえば、2つの記事が同じ ID を持っていると、analytics などで別の記事のデータが同じコンテンツとして扱われる可能性があります。
+These checks are generic content diagnostics; the diagnostics plugin does not hardcode an analytics-specific requirement into its check abstraction. If two articles share the same ID, for example, analytics can treat their data as one piece of content. The check is a shared integrity rule for every feature that uses content IDs, not an analytics-only check.
 
-これらは analytics 専用の検査ではありません。コンテンツ ID を利用するすべての機能に共通する整合性チェックとして Diagnostics が担当します。
+## Site-wide content integrity
 
-## サイト全体のコンテンツ整合性
+The diagnostics plugin also reports manifest-level reference integrity for the published site. It checks resolved public entries and plugin-provided public routes rather than creating a parallel filesystem scanner. It detects problems such as:
 
-Diagnostics プラグインは、公開サイト内のリンクや参照が正しく解決できるかも検査します。
+- links to pages that do not exist
+- WikiLinks that cannot be resolved
+- references to images or attachments that do not exist
+- duplicate final public locations
+- redirects to a target that does not exist
+- redirect cycles
 
-たとえば、次のような問題を検出します。
+These are reported as `content-integrity:*` diagnostics.
 
-- 存在しないページへのリンク
-- 解決できない Wikiリンク
-- 存在しない画像や添付ファイルへの参照
-- 複数のコンテンツによる公開パスの重複
-- 存在しない転送先へのリダイレクト
-- 循環しているリダイレクト
+### Which information the checks use
 
-これらは `content-integrity:*` の診断として報告されます。
+Integrity checks use the public content and public paths that Riebeckite has already resolved. They do not parse the Markdown again or re-read content just for diagnostics. The checks are also based on the resolved result, so when permalinks, aliases, renames, localization, and publish/exclude settings change the final public location, the checks follow Riebeckite's resolution.
 
-### どの情報を使って検査するのか
+### Difference from HTML quality checks
 
-整合性検査では、Riebeckite がすでに解決した公開コンテンツや公開パスの情報を使用します。
+Diagnostics own site-wide reference and structure integrity. Per-page HTML quality, such as whether an image has an appropriate `alt` attribute, whether the heading structure is correct, or whether the generated HTML has problems, remains the responsibility of `@riebeckite/plugin-quality`.
 
-そのため、Diagnostics のためだけに Markdown をもう一度解析したり、コンテンツを最初から読み直したりすることはありません。
+## Publishing pages and assets from a plugin
 
-また、permalink、alias、rename、多言語化、公開・除外設定などによって最終的な公開先が変わっている場合も、Riebeckite が解決した結果を基準に検査します。
-
-### HTML の品質検査との違い
-
-Diagnostics が担当するのは、主にサイト全体の参照や構成の整合性です。
-
-一方で、
-
-- 画像に適切な `alt` があるか
-- 見出し構造が適切か
-- 生成された HTML に問題がないか
-
-といった個々のページの HTML 品質は `@riebeckite/plugin-quality` が担当します。
-
-## プラグインからページやアセットを公開する場合
-
-プラグインが独自のページ、生成ファイル、アセットなどを公開する場合は、Riebeckite が提供する対応する仕組みを使って登録してください。
-
-正しく登録された公開先は Diagnostics からも認識されます。
-
-そのため、たとえばプラグインが `/explore` というページを正式に公開していれば、
+When a plugin publishes its own pages, generated files, or assets, register them through the corresponding Riebeckite mechanism. Correctly registered public targets are recognized by diagnostics too. If a plugin officially publishes a page at `/explore`, for example, a link to
 
 ```text
 /explore
 ```
 
-へのリンクが「存在しないページ」として誤って報告されることはありません。
+is not reported as a missing page.
 
-## Diagnostics を実装するときのルール
+## Authoring rules
 
-Diagnostics を追加するときは、次の原則に従ってください。
+- Validate options with a pure validator; do not read files, mutate state, or start work while validating.
+- Report uncertainty rather than silently choosing unsafe output.
+- Do not leak internal stack traces, tokens, or absolute local details into user-facing messages.
+- Prefer stable identifiers and clear remediation over brittle text matching.
+- Keep diagnostics read-only; they must not auto-fix, build, or mutate cache/state.
 
-- option validation ではファイルの読み込みや状態変更を行わない
-- 安全な結果を判断できない場合は、推測して処理を続けず診断として報告する
-- stack trace、token、不要な絶対パスをユーザー向けメッセージへ含めない
-- メッセージ文字列ではなく、安定した diagnostic identifier を使って問題を識別する
-- 可能な限り具体的な修正方法を示す
-- diagnostic の生成中に auto-fix、build、cache 更新、state 更新を行わない
-
-Diagnostics は問題を**発見して説明する仕組み**です。問題を自動的に修正したり、ビルド状態を変更したりする仕組みではありません。
-
-現在の状態そのものを確認したい場合は [Inspector](inspector.md)、ログやトレースを確認したい場合は [Observability](observability.md) を参照してください。
+Diagnostics are a mechanism for **finding and explaining** problems, not for fixing them automatically or changing build state. Use [Inspector](./inspector.md) to inspect facts and [Observability](./observability.md) for logs and traces.

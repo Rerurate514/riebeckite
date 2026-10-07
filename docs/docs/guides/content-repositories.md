@@ -1,473 +1,144 @@
-# 記事とサイトのリポジトリ分離
+# Separating content from the site
 
-Riebeckite では、**記事とサイトを同じ Repository に置く必要はありません。**
+For **keeping articles (Markdown / an Obsidian vault) separate from the site (code, configuration, themes)** — in different locations or different repositories — this guide explains why you might split them and what the resulting layout looks like. The concrete GitHub Actions automation, including repository dispatch and external checkout, lives in the [in-depth companion](./deployment/separate-content-repository.md).
 
-たとえば、
+## Who this guide is for
 
-```text
-記事
-  → Markdown / Obsidian Vault
+- You write notes in Obsidian and want them managed separately from the site code
+- You want articles private and only the site public
+- You want one vault shared by several sites
+- You want article updates and site updates deployed independently
 
-サイト
-  → Application / Config / Theme / Plugin
-```
+If all you want is a small personal blog in a single repository, there is no need to split anything. Pattern A (one repository) is enough.
 
-を別々に管理できます。
+## Start with one repository
 
-この Guide では、
-
-- そもそも Repository を分けるべきか
-- どのような構成にするか
-- 外部 Vault を Site から読む方法
-- Private Repository の記事を CI から読む方法
-- 記事更新から Site を再デプロイする方法
-- 公開してよい Content をどう制御するか
-
-を説明します。
-
-`repository_dispatch`、外部 Checkout、`notify-site.yml` などの詳細な GitHub Actions 構成は [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) を参照してください。
-
-## この構成が向いている人
-
-Repository の分離は、特に次のような場合に便利です。
-
-- Obsidian Vault と Site Code を別々に管理したい
-- 記事 Repository は Private、Site Repository は Public にしたい
-- 1つの Vault を複数の Site から利用したい
-- 記事の更新と Site Code の更新を分けたい
-- 記事 Repository の Push から Site を自動デプロイしたい
-
-一方、小さな個人 Site を1つの Repository で管理するだけなら、無理に分離する必要はありません。
-
-## まずは1 Repository で始める
-
-通常の Riebeckite Site は、
+The beginner setup keeps content and site code together:
 
 ```text
-site/
+site repository
 ├─ content/
 ├─ app/
 ├─ riebeckite.config.ts
 └─ package.json
 ```
 
-という構成です。
-
-`create-riebeckite` で Site を作成した場合も、基本的にはこの形から始まります。
+This is what `npx create-riebeckite my-site` generates. Use it for your first site unless you already know you need a separate vault or repository.
 
 ```mermaid
 flowchart LR
-    Repo["Site Repository"]
+    Repo["Site repository"]
 
     Repo --> App["app/"]
     Repo --> Content["content/"]
     Repo --> Config["riebeckite.config.ts"]
 ```
 
-既存の Obsidian Vault を利用するなど、明確に分離する理由がなければ、最初はこの構成で十分です。
-
-## Repository を分けるとどうなる？
-
-分離すると、
+When the split is useful, the shape becomes:
 
 ```text
-site repository          content repository
+site repository           content repository
 ├─ app/                  ├─ article-a.md
 ├─ riebeckite.config.ts  ├─ article-b.md
-├─ package.json          ├─ attachments/
-└─ ...                   └─ ...
+└─ ...                   └─ attachments/
 ```
 
-のようになります。
-
-役割も明確に分かれます。
-
-| Repository | 主な内容 |
-| --- | --- |
-| Site | Application、Config、Theme、Plugin、Deploy |
-| Content | Markdown、Obsidian Vault、添付ファイル |
+The site repository owns the app, configuration, theme, plugins, and deployment. The content repository owns Markdown and attachments.
 
 ```mermaid
 flowchart LR
-    Content["Content Repository<br/>Markdown / Vault"]
-    Site["Site Repository<br/>Code / Config / Theme"]
-    Build["Riebeckite Build"]
-    Public["Public Site"]
+    Content["Content repository<br/>Markdown / Vault"]
+    Site["Site repository<br/>Code / Config / Theme"]
+    Build["Riebeckite build"]
+    Public["Public site"]
 
     Content --> Build
     Site --> Build
     Build --> Public
 ```
 
-Riebeckite Build が両方を組み合わせて、最終的な Site を生成します。
+Riebeckite build combines both to produce the final site.
 
-## どの構成を選ぶ？
+## The idea: articles can live outside the site
 
-大きく3つの構成があります。
-
-| パターン | 構成 | 公開範囲 | 向いているケース |
-| --- | --- | --- | --- |
-| A. 1 Repository | Site と `content/` を同じ Repository に置く | 同じ | 小さな個人 Site |
-| B. 同じ Repository 内で分離 | `site/` と `vault/` を並べる | 同じ | 履歴は共有しつつ場所を分けたい |
-| C. 別 Repository | Site と Content を別 Repository にする | 別々に設定可能 | Private Vault、独立した更新、複数 Site |
-
-迷った場合は、次のように選べます。
-
-```mermaid
-flowchart TD
-    Start{"Repositoryを分ける必要がある？"}
-
-    Start -->|"特にない"| A["A. 1 Repository"]
-    Start -->|"フォルダだけ分けたい"| B["B. 同Repository内"]
-    Start -->|"記事をPrivateにしたい"| C["C. 別Repository"]
-    Start -->|"更新を独立させたい"| C
-    Start -->|"Vaultを複数Siteで使いたい"| C
-```
-
-特に、
-
-**記事 Repository 自体を公開したくないなら C**
-
-が分かりやすい構成です。
-
-以下では C の構成を説明します。
-
-A と B でも Content の設定方法は基本的に同じですが、外部 Repository の Checkout や Repository Dispatch は必要ありません。
-
-## 記事は Site の外に置ける
-
-Riebeckite の `content.directory` は、Site Root からの相対 Path で外部 Directory を指定できます。
-
-たとえば、
-
-```text
-workspace/
-├─ vault/
-│  ├─ article-a.md
-│  └─ article-b.md
-│
-└─ site/
-   ├─ app/
-   ├─ riebeckite.config.ts
-   └─ package.json
-```
-
-なら、
+`content.directory` in `riebeckite.config.ts` is a **relative path from the site root (appRoot)** and can point at a folder outside it. Articles do not have to live inside the site.
 
 ```ts
 // site/riebeckite.config.ts
-
 export default defineConfig({
   content: {
-    directory: "../vault",
+    directory: "../vault", // the vault folder one level above the site
   },
-});
-```
-
-とできます。
-
-記事を Site Directory の内部へコピーする必要はありません。
-
-`content.directory` の基準は Site の `appRoot` です。
-
-詳しい Root の解決規則は [Configuration](../reference/configuration.md) の「Filesystem root と外部 Vault」を参照してください。
-
-## 何をどこへ置く？
-
-たとえば次のように分けられます。
-
-| 内容 | 置き場所 |
-| --- | --- |
-| Markdown | Vault |
-| 画像・添付ファイル | Vault の `attachments/` など |
-| Obsidian 設定 | Vault の `.obsidian/` |
-| Site Code | Site Repository |
-| Riebeckite Config | Site Repository |
-| Theme / Plugin 設定 | Site Repository |
-| Deploy 設定 | Site Repository |
-| 非公開 Note | Vault 内の `private/` など |
-
-Riebeckite が公開対象として扱う範囲は、後述する `publishStrategy` と `exclude` で制御します。
-
-## 別 Repository 構成を作る
-
-ここからは、
-
-```text
-notes
-  → Content Repository
-
-my-site
-  → Site Repository
-```
-
-として説明します。
-
-## 1. Content Repository を作る
-
-まず記事用の Repository を用意します。
-
-```sh
-mkdir notes
-cd notes
-git init
-```
-
-Obsidian を利用する場合は、この Directory を Vault として開きます。
-
-最初の記事を作ります。
-
-```md
----
-title: はじめまして
-publish: true
----
-
-最初のノートです。
-```
-
-既定の `explicit` Publish Strategy では、
-
-```yaml
-publish: true
-```
-
-が付いた Note だけが公開対象になります。
-
-## `.gitignore`
-
-OS の一時 File や Obsidian の Workspace State を Git 管理したくない場合は `.gitignore` に追加します。
-
-```gitignore
-.DS_Store
-Thumbs.db
-
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
-```
-
-`.obsidian/` 自体を Git 管理しても構いません。
-
-Site の Content として読みたくないものは、後で `exclude` から除外できます。
-
-## Private Repository にする
-
-記事そのものを公開したくない場合は、Content Repository を GitHub の Private Repository にします。
-
-```sh
-git add .
-git commit -m "最初のノート"
-
-git remote add origin \
-  git@github.com:<you>/notes.git
-
-git push -u origin main
-```
-
-これによって、
-
-```text
-Content Repository
-  → Private
-
-Site Repository
-  → Public
-```
-
-という構成にできます。
-
-## 2. Site を作る
-
-GitHub Actions を利用する場合は、Content Repository と Site Repository を指定して Site を生成できます。対話式の CLI では `Separate GitHub repository` を選び、Content repository と Site repository を入力するのと同じ構成になります（GitHub Actions のデプロイ設定は自動です）。
-
-```sh
-npx create-riebeckite my-site \
-  --github-actions \
-  --content-repository <you>/notes \
-  --site-repository <you>/my-site
-
-cd my-site
-npm install
-```
-
-Preset は必要に応じて `--preset` で変更できます。
-
-既定の `starter` から始めても問題ありません。
-
-この構成では、Deploy Workflow が Content Repository を Site の、
-
-```text
-content/
-```
-
-へ Checkout します。
-
-また、外部 Content Repository 用の、
-
-```text
-content-updated
-repository_dispatch
-github/notify-site.yml
-```
-
-も生成されます。
-
-## ローカルでの配置
-
-開発環境では、
-
-```text
-workspace/
-├─ notes/
-└─ my-site/
-```
-
-のように兄弟 Directory として配置すると扱いやすくなります。
-
-ただし、CI では Site Checkout 内の、
-
-```text
-my-site/
-└─ content/
-```
-
-へ Content Repository を Checkout します。
-
-ローカル配置と CI 配置が同じとは限らない点に注意してください。
-
-## 3. `content.directory` を設定する
-
-生成された Deploy Workflow に合わせる場合は、
-
-```ts
-export default defineConfig({
-  // ...
-
-  content: {
-    directory: "content",
-
-    exclude: [
-      ".obsidian/**",
-      "Templates/**",
-      "private/**",
-    ],
-  },
-
   // ...
 });
 ```
 
-とします。
+The base for a relative path is always the site root. So the same vault is read whether you run the CLI from `app/` inside the site or from a CI working directory. The precise definitions (appRoot / configRoot / contentRoot) are in [Configuration](../reference/configuration.md), "Filesystem root and an external vault".
 
-`directory: "content"` は CI が Content Repository を Checkout する場所です。
+With this, you can split things like:
 
-`exclude` には Site へ読み込ませたくないものを指定します。
-
-典型的には、
-
-```text
-.obsidian/**
-Templates/**
-private/**
-```
-
-などです。
-
-## `exclude` と `publish: true` は別物
-
-この2つは役割が異なります。
-
-```mermaid
-flowchart LR
-    Vault["Vault"]
-
-    Vault --> Exclude{"exclude に一致？"}
-    Exclude -->|"Yes"| Ignore["読み込まない"]
-    Exclude -->|"No"| Read["読み込む"]
-
-    Read --> Publish{"公開条件を満たす？"}
-    Publish -->|"Yes"| Public["公開"]
-    Publish -->|"No"| Hidden["非公開"]
-```
-
-`exclude` は、
-
-**そもそも Content として読み込ませない**
-
-ための設定です。
-
-`publish: true` は、
-
-**読み込んだ Content のうち何を公開するか**
-
-を決めます。
-
-Private Content を扱う場合は、両方を利用して公開境界を明確にしておくのがおすすめです。
-
-## 4. Content が読めているか確認する
-
-表示を確認する前に CLI で状態を確認できます。
-
-```sh
-npm exec riebeckite check
-npm exec riebeckite doctor
-npm exec riebeckite inspect config
-npm exec -- riebeckite inspect content --list
-```
-
-それぞれの役割は次のとおりです。
-
-| Command | 確認すること |
+| What to separate | Where it goes (example) |
 | --- | --- |
-| `check` | Config と Plugin Contract |
-| `doctor` | Content Source などの問題 |
-| `inspect config` | 解決済み Config |
-| `inspect content --list` | 実際に読み込まれた Content |
+| Article bodies (`.md`) | Any folder inside the vault |
+| Attachments and images | `attachments/` and similar inside the vault |
+| Obsidian settings | `.obsidian/` inside the vault |
+| Site code and configuration | `site/` |
+| Theme and plugin settings | The site repository |
+| Deployment settings | The site repository |
+| Notes you never publish | `private/` and similar inside the vault (excluded) |
 
-特に、
+## Choose a pattern
 
-```sh
-npm exec riebeckite inspect config
-```
+First decide at what granularity to split articles from the site.
 
-の `Directory` を確認してください。
+| Pattern | Layout | Article visibility | Choose it when |
+| --- | --- | --- | --- |
+| A. One repository | Site and articles in one Git repository (use `content/`) | Same visibility as the repository | You want a single repository for a personal blog |
+| B. Separate folders, one repository | `site/` and `vault/` side by side in one repository | Same visibility as the repository | You share history but want locations and settings apart |
+| C. Separate repositories | Articles private, site public | Independent for articles and site | You want articles private or updates decoupled |
 
-ここには解決済みの絶対 Path が表示されます。
+How to decide:
 
-```text
-期待する Vault
-       ↑
-Directory がここを指しているか確認
-```
-
-また、
-
-```sh
-npm exec -- riebeckite inspect content --list
-```
-
-では読み込まれた Note の `PATH` を確認できます。
-
-想定より多い・少ない場合は `exclude` を確認してください。
-
-記事が読み込まれているのに公開されない場合は、`publish: true` も確認します。
-
-## 5. CI を理解する
-
-別 Repository 構成では、特に重要な違いがあります。
-
-**「CI が Content Repository を読める」ことと、「Content の更新で Deploy が起動する」ことは別です。**
+- **You do not want articles public** → C. With a private repository, a forgotten `publish: true` cannot expose the content itself.
+- **Articles and site are both fine to publish** → A or B. One repository to manage.
+- **You want article updates decoupled from the site deploy** → C. Add a repository-dispatch notification if an articles push must start a deploy; an extra checkout alone only supplies files to a deploy that already started.
+- **You want one vault shared by several sites** → C, or a layout where the vault lives independently. Keep the vault in one place and have each site reference it read-only.
 
 ```mermaid
 flowchart TD
-    Push["Content Repository<br/>push"]
+    Start{"Do you need to separate repositories?"}
+
+    Start -->|"Not really"| A["A. One repository"]
+    Start -->|"Just separate folders"| B["B. Separate folders, one repository"]
+    Start -->|"Keep articles private"| C["C. Separate repositories"]
+    Start -->|"Decouple updates"| C
+    Start -->|"Share a vault across sites"| C
+```
+
+The steps below are for C. For A and B the configuration is the same; only **step 5 (fetching the articles repository in deployment) is unnecessary**.
+
+## Steps: separate repositories (pattern C)
+
+### How deployment is triggered (the whole flow)
+
+With separate repositories, letting CI **read** the articles and **starting** the deployment are two different things. The setup generated by `--github-actions --content-repository <owner/repo> --site-repository <owner/repo>` connects them in this order:
+
+1. You push to `main` in the articles repository.
+2. The articles repository's `notify-site.yml` sends `content-updated` to the site repository (`SITE_DISPATCH_TOKEN`).
+3. The site repository's deploy workflow starts via `repository_dispatch`.
+4. The workflow checks out the site, then checks out the articles repository into `content/` (with `RIEBECKITE_CONTENT_READ_TOKEN` when private).
+5. `riebeckite check` → `riebeckite build` → deploy to Cloudflare Workers.
+
+```mermaid
+flowchart TD
+    Push["Content repository<br/>push"]
 
     Notify["notify-site.yml"]
     Dispatch["repository_dispatch<br/>content-updated"]
 
-    Deploy["Site Deploy Workflow"]
-    CheckoutSite["Site Checkout"]
-    CheckoutContent["Content Checkout"]
+    Deploy["Site deploy workflow"]
+    CheckoutSite["Site checkout"]
+    CheckoutContent["Content checkout"]
 
     Build["riebeckite check<br/>riebeckite build"]
     Publish["Deploy"]
@@ -482,604 +153,381 @@ flowchart TD
     Build --> Publish
 ```
 
-外部 Checkout だけ設定しても、Content Repository の Push から Site Workflow は起動しません。
+Steps 2 and 3 are the point. The extra checkout only makes the articles **readable**; it does not make the site workflow observe pushes to the articles repository. GitHub Actions only picks up events in the repository that contains the workflow, so a push to another repository is connected by this notification (repository dispatch).
 
-外部 Checkout が解決するのは、
+### 0. Align on terms
+
+- **Vault**: the folder holding articles (`.md`) and attachments; the unit Obsidian opens.
+- **`publish: true`**: marks a note as published. Under the explicit strategy, only marked notes reach the site.
+- **`exclude`**: patterns the site does not read. A file may be in the articles repository and still be kept out of the build.
+
+### 1. Create the articles repository (the vault)
+
+Create a folder anywhere and initialize it as a Git repository. If you use Obsidian, open this folder as a vault.
+
+```sh
+mkdir notes
+cd notes
+git init
+```
+
+Add a first note. Leave `publish: true` off notes you want to keep private.
+
+```md
+---
+title: Hello
+publish: true
+---
+
+My first note.
+```
+
+If you do not want to track OS temp files or Obsidian workspace state, add a `.gitignore`. Committing `.obsidian/` itself is fine (the site side excludes it from reading later).
+
+```gitignore
+.DS_Store
+Thumbs.db
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+```
+
+Push to a **private** GitHub repository and the articles stay unpublished.
+
+```sh
+git add .
+git commit -m "first note"
+# After creating a private repository on GitHub:
+git remote add origin git@github.com:<you>/notes.git
+git push -u origin main
+```
+
+### 2. Generate the site
+
+Generate the site with the common GitHub Actions deployment assets. This works with every preset; a preset changes only the starter site. In the interactive CLI the same setup is choosing `Separate GitHub repository` and entering the content and site repository values; the GitHub Actions deployment is then configured automatically.
+
+```sh
+npx create-riebeckite my-site --github-actions \
+  --content-repository <you>/notes \
+  --site-repository <you>/my-site
+cd my-site
+npm install
+```
+
+The generated deployment checks out the vault into the site's `content/` directory. Because `--content-repository` is present, it also generates the `content-updated` dispatch receiver and `github/notify-site.yml`. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with. The site repository may still contain starter files under `content/`; use them only as local examples. In day-to-day work, edit and push the content repository.
 
 ```text
-Site CI が Content を読める
+workspace/
+├─ notes/     ← the articles from step 1 (the vault)
+└─ my-site/   ← the site from step 2
 ```
 
-という問題です。
+This side-by-side layout is useful locally, but CI uses `content/` inside the site checkout after the workflow checks out the content repository there. Keep your local preview aligned with CI by either copying/checking out the vault to `my-site/content` or by setting `content.directory` locally to the same files you intend CI to build.
 
-Repository Dispatch が解決するのは、
+### 3. Point content.directory at the vault
 
-```text
-Content が更新されたら
-Site CI を起動する
+In `my-site/riebeckite.config.ts`:
+
+```ts
+// my-site/riebeckite.config.ts
+export default defineConfig({
+  // ...
+  content: {
+    directory: "content",
+    exclude: [".obsidian/**", "Templates/**", "private/**"],
+  },
+  // ...
+});
 ```
 
-という問題です。
+- `directory: "content"` matches the path used by the deployment workflow.
+- `exclude` holds things you never publish: Obsidian settings (`.obsidian/**`), templates (`Templates/**`), and a private-notes folder (`private/**`).
 
-この2つを混同しないでください。
-
-## 6. Content Repository から Site へ通知する
-
-生成された、
-
-```text
-github/notify-site.yml
-```
-
-を Content Repository の、
-
-```text
-.github/workflows/notify-site.yml
-```
-
-へ配置します。
-
-Content Repository の `main` に Push されると、Site Repository へ、
-
-```text
-content-updated
-```
-
-を送信します。
-
-Site 側では、
-
-```yaml
-repository_dispatch:
-  types:
-    - content-updated
-```
-
-を受け取って Deploy Workflow を起動します。
-
-## `SITE_DISPATCH_TOKEN`
-
-Content Repository 側には、
-
-```text
-SITE_DISPATCH_TOKEN
-```
-
-を Secret として設定します。
-
-これは Content Repository から Site Repository へ Dispatch を送るための Token です。
-
-Fine-grained PAT を利用する場合は、
-
-```text
-対象
-  → Site Repository のみ
-
-権限
-  → Contents: read and write
-```
-
-が必要です。
-
-Classic PAT の `repo` Scope や、`Contents: write` を持つ GitHub App Installation Token も利用できます。
-
-Fine-grained PAT も Classic PAT も、[GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) から作成できます。作成した値は、この Content Repository の **Settings → Secrets and variables → Actions** に `SITE_DISPATCH_TOKEN` という名前で登録します。
-
-## `RIEBECKITE_CONTENT_READ_TOKEN`
-
-Content Repository が Private または Internal の場合は、Site Repository 側に、
-
-```text
-RIEBECKITE_CONTENT_READ_TOKEN
-```
-
-を登録します。
-
-これは Site CI が Content Repository を Checkout するための Token です。
-
-Fine-grained PAT の場合は、
-
-```text
-対象
-  → Content Repository のみ
-
-権限
-  → Contents: read
-```
-
-とします。
-
-Content Repository が Public なら、この Secret は不要です。
-
-Site Repository の通常の `GITHUB_TOKEN` では、別の Private / Internal Repository を読むことはできません。
-
-この Token は **Site Repository の Settings → Secrets and variables → Actions** に登録します。
-
-## 2つの Token の違い
-
-名前が似ていますが、役割はまったく異なります。
-
-| Secret | 置く場所 | 目的 |
-| --- | --- | --- |
-| `SITE_DISPATCH_TOKEN` | Content Repository | Site Workflow を起動する |
-| `RIEBECKITE_CONTENT_READ_TOKEN` | Site Repository | Private Content を Checkout する |
+`exclude` keeps things from being loaded; `publish: true` marks things to publish. Using both gives you two layers of protection (see [Publication rules](#publication-rules)).
 
 ```mermaid
 flowchart LR
-    Content["Content Repository"]
-    Site["Site Repository"]
+    Vault["Vault"]
 
-    Content -->|"SITE_DISPATCH_TOKEN<br/>Deployを起動"| Site
-    Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>Contentを読む"| Content
+    Vault --> Exclude{"Matches exclude?"}
+    Exclude -->|"Yes"| Ignore["Not loaded"]
+    Exclude -->|"No"| Read["Loaded"]
+
+    Read --> Publish{"Meets the publish condition?"}
+    Publish -->|"Yes"| Public["Published"]
+    Publish -->|"No"| Hidden["Not published"]
 ```
 
-この関係を覚えておくと CI の問題を切り分けやすくなります。
+### 4. Verify loading
 
-## 7. Deploy の流れ
-
-Repository Dispatch を利用した場合は、最終的に次の順番になります。
-
-```text
-1. Content Repository に push
-
-2. notify-site.yml が実行
-
-3. Site Repository へ
-   content-updated を送信
-
-4. Site Deploy Workflow が起動
-
-5. Site Repository を checkout
-
-6. Content Repository を
-   content/ へ checkout
-
-7. riebeckite check
-
-8. riebeckite build
-
-9. Deploy
-```
-
-処理は次の順番で進みます。
-
-```text
-通知
-  ↓
-起動
-  ↓
-Checkout
-  ↓
-Build
-```
-
-## 他の運用方法
-
-Repository Dispatch 以外の方法も利用できます。
-
-| 方法 | Content Push で Deploy | 特徴 |
-| --- | --- | --- |
-| 同じ Repository | される | 最も単純 |
-| 別 Repository + Dispatch | される | Content 更新を即時反映 |
-| 別 Repository + Schedule | 遅れて反映 | Dispatch Token 不要 |
-| Manual | されない | 必要なときだけ実行 |
-| Git Submodule | されない | Site 側で参照 Commit の更新が必要 |
-
-## Schedule
-
-Site Workflow に `schedule` を追加すれば、定期的に Content Repository の最新状態を取得できます。
-
-この場合、
-
-```text
-SITE_DISPATCH_TOKEN
-```
-
-は不要です。
-
-ただし Content 更新から Deploy まで遅延します。
-
-## Git Submodule
-
-Content Repository を Git Submodule として管理することもできます。
+Before checking the rendered site, verify loading with the CLI.
 
 ```sh
-git submodule add \
-  git@github.com:<you>/notes.git \
-  content
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect config
+npm exec -- riebeckite inspect content --list
 ```
 
-この場合、
+- `check` validates the configuration and plugin contracts.
+- `doctor` reports unreadable or invalid content sources.
+- `inspect config` prints the resolved **absolute** path under `Directory`. Confirm it points at the intended vault.
+- `inspect content --list` lists the `PATH` of every loaded note. Use it to confirm how `exclude` is taking effect and whether you are loading starter content or the real content repository.
 
-```text
-site/
-└─ content/
-   └─ → notes repository
-```
+A wrong path is usually the relative `directory`. If articles do not appear, check for `publish: true` (the explicit strategy).
 
-という関係になります。
+### 5. Set up checkout, trigger, and secrets
 
-CI では `actions/checkout` に、
+The generated deploy workflow checks out the site and then the configured content repository into `content/`. It runs for a site push, manual dispatch, or `content-updated` repository dispatch. The generated notification workflow supplies the cross-repository trigger; the content checkout itself does **not** observe pushes in another repository.
+
+Copy the generated `github/notify-site.yml` into the content repository as `.github/workflows/notify-site.yml`. Its `main` push sends `content-updated` to the site. Store `SITE_DISPATCH_TOKEN` only in the content repository. A fine-grained PAT restricted to the site repository needs **Contents: read and write**; alternatively use a classic PAT with `repo` scope or a GitHub App installation token with **Contents: write**.
 
 ```yaml
-submodules: recursive
+repository_dispatch:
+  types: [content-updated]
 ```
 
-を設定します。
+For a private or internal content repository, store `RIEBECKITE_CONTENT_READ_TOKEN` in the **site** repository. Restrict its fine-grained PAT or GitHub App token to the content repository with **Contents: read**. A public content repository needs no extra checkout token. The site repository's `GITHUB_TOKEN` cannot read a different private/internal repository. The unpinned checkout intentionally reads the content default branch's newest tip for each dispatch. The site repository also needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` for the deploy step.
 
-ただし Content を更新しただけでは Site の Submodule Reference は更新されません。
+| Deployment choice | Article push deploys | Setup |
+| --- | --- | --- |
+| Same repository | Yes | Keep `content/`; site `push` starts the workflow. |
+| Separate repositories + dispatch | Yes | External checkout plus the content notification workflow above. |
+| Separate repositories + schedule | Delayed | Add `schedule` to the site workflow; no dispatch token. |
+| Manual dispatch | No | Run `workflow_dispatch` in the Actions tab. |
+| Git submodule | No | Update the site-side submodule reference and push it. |
 
-Content 更新後に Site 側でも、
+### Do not confuse the two tokens
+
+The two tokens have similar names but opposite roles.
+
+| Secret | Where it lives | Purpose |
+| --- | --- | --- |
+| `SITE_DISPATCH_TOKEN` | Content repository | Start the site workflow |
+| `RIEBECKITE_CONTENT_READ_TOKEN` | Site repository | Check out private content |
+
+```mermaid
+flowchart LR
+    Content["Content repository"]
+    Site["Site repository"]
+
+    Content -->|"SITE_DISPATCH_TOKEN<br/>start deploy"| Site
+    Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>read content"| Content
+```
+
+Keeping this relationship in mind makes CI problems easier to isolate.
+
+**Submodule alternative**
 
 ```sh
-cd my-site
-cd content
-git pull
-cd ..
-
-git add content
-git commit -m "記事を更新"
-git push
+git submodule add git@github.com:<you>/notes.git content
 ```
 
-という操作が必要です。
+`content` becomes a link to the articles repository. Add `submodules: recursive` to `actions/checkout@v4` in the workflow so CI fetches the dependency. After updating articles, you must update the submodule reference on the site side and push (a two-step operation).
 
-そのため、記事 Push だけで自動 Deploy したい場合は Repository Dispatch の方が向いています。
+With either option, run `riebeckite build` from the site directory. That is why the workflow runs `npm ci` → `npm exec riebeckite check` → `npm exec riebeckite build`.
 
-## 日常の運用
+### 6. Day-to-day operation
 
-Repository Dispatch を設定した後は、記事側では通常どおり編集して Push します。
+Once configured, you mostly just write and push.
+
+**Updating articles (repository dispatch)**
 
 ```sh
 cd notes
-
-# Obsidianなどで編集
-
+# edit in Obsidian
 git add .
-git commit -m "記事を追加"
+git commit -m "add an article"
 git push
 ```
 
-その後、
+The content workflow dispatches the site workflow, which checks out the latest default-branch content, rebuilds, and deploys. A missing dispatch secret fails without printing its value; wrong token access, inaccessible content, build, and Cloudflare errors fail at their respective steps. Site-side changes live in the other repository: edit `my-site` and push as usual.
 
-```text
-Content Push
-     ↓
-notify-site
-     ↓
-repository_dispatch
-     ↓
-Site Build
-     ↓
-Deploy
-```
-
-が自動で実行されます。
-
-Site Code を変更するときは Site Repository を通常どおり編集して Push します。
-
-## 手元で確認する
-
-Site は Site Directory から実行します。
+**Updating articles (submodule alternative)**
 
 ```sh
 cd my-site
-
-npm run dev
-npm run check
-npm run doctor
+cd content && git pull && cd ..
+git add content
+git commit -m "update articles"
+git push
 ```
 
-`riebeckite build` も Site Directory で実行します。
+**Checking locally**
 
-Content Repository は入力であり、Riebeckite Application 自体を実行する場所ではありません。
-
-## 公開のルール
-
-Repository を分離しても、**Repository の公開範囲と Riebeckite の公開判定は別物**です。
-
-たとえば Private Repository に Note が存在していても、
-
-```yaml
-publish: true
+```sh
+cd my-site
+npm run dev      # local preview
+npm run check    # validate configuration
+npm run doctor   # diagnose loading problems
 ```
 
-が付けば、Build 後の Public Site に内容が出る可能性があります。
+## Publication rules
 
-逆に Public Repository に置いている Note は、Site に出さなくても Repository 自体から読むことができます。
+When articles and the site are separate, be explicit about where the publication boundary lies.
 
-この2つを分けて考えてください。
+### How publication is decided
+
+`content.filters.publishStrategy` decides which notes are published. The default is `explicit`.
+
+| Strategy | Published when | Choose it when |
+| --- | --- | --- |
+| `explicit` (default, recommended) | Only notes with `publish: true` | You want to opt articles in deliberately |
+| `selective` | Notes without `private: true` or `draft: true` | You publish almost everything and hide only exceptions |
+
+Using `explicit` with a private vault is the safest arrangement: you may forget to publish something, but you are unlikely to publish something by accident.
+
+Repository visibility and Riebeckite's publication decision are separate concerns:
 
 ```mermaid
 flowchart TD
-    Repo["Git Repository"]
+    Repo["Git repository"]
 
-    Repo --> RepoVisibility["Repository Visibility<br/>public / private"]
+    Repo --> RepoVisibility["Repository visibility<br/>public / private"]
 
     Repo --> Riebeckite["Riebeckite"]
 
     Riebeckite --> Exclude["exclude"]
     Exclude --> Strategy["publishStrategy"]
-    Strategy --> Site["Public Site"]
+    Strategy --> Site["Public site"]
 ```
 
-## `publishStrategy`
+### Rules to follow
 
-公開対象は、
+- **Never put `publish: true` on private notes**, and exclude whole private folders with `content.exclude`.
+- **Put `.obsidian/` in `exclude`** so Obsidian settings and workspace state never mix into the site.
+- **Exclude template folders** (`Templates/**` and the like) so note templates are not published as articles.
+- **Know which asset kind you are copying.** Content images (png, jpg, svg, and similar) are published by the build as generated output, so they need no manual copy. Attachments and media (files that are neither Markdown nor images) get URLs but are not copied, so they need a prebuild step on the site side that copies only the files you publish (reference: call `apps/web/scripts/build_images.ts` from `prebuild`). See the assets section of the [in-depth companion](./deployment/separate-content-repository.md) for how it works.
 
-```text
-content.filters.publishStrategy
-```
+### Attachments and media
 
-で決まります。
+Assets inside the vault are published differently depending on their kind:
 
-既定は `explicit` です。
-
-| Strategy | 公開条件 | 向いている用途 |
-| --- | --- | --- |
-| `explicit` | `publish: true` がある | 公開対象を明示的に選ぶ |
-| `selective` | `private: true` / `draft: true` がない | 基本すべて公開する |
-
-Private Vault を利用する場合は `explicit` が安全側の設定です。
-
-```text
-explicit
-
-公開し忘れる
-  → あり得る
-
-公開指定していないNoteが
-意図せずSiteに出る
-  → 起こりにくい
-```
-
-## 公開境界を二重にする
-
-Private Content を扱う場合は、
-
-```text
-exclude
-+
-publishStrategy: explicit
-```
-
-を組み合わせます。
-
-たとえば、
-
-```ts
-content: {
-  directory: "content",
-
-  exclude: [
-    ".obsidian/**",
-    "Templates/**",
-    "private/**",
-  ],
-
-  filters: {
-    publishStrategy: "explicit",
-  },
-},
-```
-
-とします。
-
-そして公開する Note だけに、
-
-```yaml
-publish: true
-```
-
-を付けます。
-
-## Obsidian で除外した方がよいもの
-
-一般的には、
-
-```text
-.obsidian/**
-Templates/**
-private/**
-```
-
-などを `exclude` に指定します。
-
-特に `.obsidian/` には Workspace State や Obsidian 固有の設定が含まれるため、Content として読み込ませないようにします。
-
-## 添付ファイルに注意する
-
-Vault 内の Asset は、content image と attachment / media で公開方法が異なります。
-
-| 種類 | 対象 | URL | 公開の担当 |
+| Kind | Target | URL | Published by |
 | --- | --- | --- | --- |
-| Content image | 画像（png、jpg、svg など） | `/<Vault からの相対 logical path>` | build 時に generated output として書き出される |
-| Attachment / Media | Markdown でも画像でもないファイル | `/assets/attachments/<Vault からの相対 logical path>` | Site 側の Prebuild |
+| Content image | Images (png, jpg, svg, and similar) | `/<logical path from the vault>` | Written as generated output by the build |
+| Attachment / media | Files that are neither Markdown nor images | `/assets/attachments/<logical path from the vault>` | A prebuild step on the site side |
 
-Content image は、公開ページから参照されているものだけが build の出力に含まれるため、手動で `public/` へコピーする必要はありません。
-
-一方の attachment / media について、
+A content image reaches the build output only when a published page references it, so you never copy it into `public/` by hand. An attachment or media file, by contrast, gets a URL but no file:
 
 ```md
 ![[attachments/report.pdf]]
 ```
 
-が URL に変換されても、実際の `report.pdf` が Public Output に存在しなければ Browser では `404` になります。
+If `report.pdf` is not present in the public output, the browser gets a `404`.
 
 ```mermaid
 flowchart LR
     Image["content image<br/>assets/logo.png"]
     Attach["![[attachments/report.pdf]]"]
 
-    Image -->|"build が書き出す"| Output["Public Output"]
-    Attach -->|"URL だけ生成"| Prebuild["Prebuild Copy"]
+    Image -->|"build writes it"| Output["Public output"]
+    Attach -->|"URL only"| Prebuild["Prebuild copy"]
     Prebuild --> Output
 ```
 
-公開する attachment / media だけをコピーする Prebuild 処理を Site 側に用意してください。
+Provide a prebuild step on the site side that copies only the attachments and media you publish.
 
-Riebeckite Repository 内では、
+## FAQ
 
-```text
-apps/web/scripts/build_images.ts
-```
+**Can I keep articles in the site's `content/` and make only some notes private?**
 
-が参照実装です。
+Yes. Leave `content.directory` at the default `content`, remove `publish: true` from private notes, and add folders to `exclude` as needed. Repository separation is a way to place the vault physically elsewhere; publication control itself belongs to `publishStrategy` and `exclude`.
 
-詳しい Asset の扱いは [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) を参照してください。
+**Articles vanished after I moved the vault.**
 
-## よくある質問
+`content.directory` is relative, so the distance from the site root changes when the vault moves. Check the resolved `Directory` with `inspect config` and fix the number of `../` levels. Absolute paths also work, but they drift between developer machines and CI, so relative paths are usually recommended.
 
-### Site 内の `content/` のまま一部だけ非公開にできる？
+**Articles render but assets 404.**
 
-できます。
+First identify the asset kind. If an image 404s, confirm a published page actually references it: content images reach the build output only through a reference from a published page. If an attachment or media file 404s, confirm the prebuild copy step runs before the build and targets `public/assets/attachments/`.
 
-Repository 分離は、公開・非公開を制御するために必須ではありません。
+**CI alone says the vault was not found.**
 
-```text
-Repositoryを物理的に分ける
-  → Repository構成の問題
+CI does not have the vault unless you add the additional checkout or submodule. Check the step 5 setup and confirm the relative `directory` matches the CI layout (for example `notes`).
 
-何をSiteに公開するか
-  → publishStrategy / exclude の問題
-```
+**Does this work the same on Windows?**
 
-同じ Repository の `content/` を使いながら、
+Yes. Write `exclude` patterns with `/` separators; they do not depend on the platform's path separator.
 
-- 非公開 Note に `publish: true` を付けない
-- Private Directory を `exclude` する
+## Isolating the problem
 
-という運用もできます。
-
-### Vault を移動したら記事が表示されなくなった
-
-`content.directory` を確認してください。
-
-相対 Path は Site Root を基準に解決されます。
-
-```sh
-npm exec riebeckite inspect config
-```
-
-で解決済み `Directory` を確認できます。
-
-絶対 Path も利用できますが、開発端末と CI で環境が異なりやすいため、通常は相対 Path の方が扱いやすくなります。
-
-### 記事は表示されるのに Asset だけ `404` になる
-
-まず、どの種類の Asset かを区別してください。
-
-画像が `404` になる場合は、その画像が公開ページから参照されているか確認します。content image は公開ページから参照されているものだけが build の出力に含まれるため、参照が漏れていないかを先に確認します。
-
-Attachment / Media が `404` になる場合は Copy 処理を確認してください。URL が生成されていても、実ファイルが、
-
-```text
-public/assets/attachments/
-```
-
-などの Public Directory に存在しなければ表示できません。
-
-### CI でだけ Vault が見つからない
-
-CI 上に Content Repository が存在するか確認してください。
-
-別 Repository の場合は、
-
-- 外部 Checkout
-- Submodule
-
-などで CI Workspace に Content を取得する必要があります。
-
-そのうえで `content.directory` が CI 上の配置と一致しているか確認します。
-
-### Windows でも同じ設定を使える？
-
-はい。
-
-`exclude` Pattern は `/` 区切りで記述します。
-
-実際の OS の Path Separator には依存しません。
-
-## トラブルシューティング
-
-| 症状 | 確認すること |
-| --- | --- |
-| 記事が表示されない | `publish: true`、`exclude`、`inspect content --list` |
-| `Directory` が違う | `inspect config` と `content.directory` |
-| CI で Vault が見つからない | 外部 Checkout / Submodule |
-| Content Push で Deploy されない | `notify-site.yml` / `SITE_DISPATCH_TOKEN` / `repository_dispatch` |
-| Private Content を Checkout できない | `RIEBECKITE_CONTENT_READ_TOKEN` |
-| 画像だけ `404` | 公開ページからの参照があるか、build の出力を確認 |
-| Attachment / Media だけ `404` | Prebuild の Asset Copy |
-| ローカルと CI で Path が違う | Site Root を基準にした相対 Path |
-| Submodule が更新されない | Site 側の Submodule Reference |
-
-## 問題を切り分ける
-
-問題が起きた場合は、次の順番で確認すると原因を絞りやすくなります。
+When something is not published, checking in this order narrows the cause quickly:
 
 ```mermaid
 flowchart TD
-    Start["記事が公開されない"]
+    Start["An article is not published"]
 
-    Start --> Source{"Contentを読めている？"}
+    Start --> Source{"Can the content be read?"}
 
-    Source -->|No| Directory["content.directory<br/>外部Checkoutを確認"]
-    Source -->|Yes| Exclude{"excludeされていない？"}
+    Source -->|No| Directory["content.directory<br/>external checkout"]
+    Source -->|Yes| Exclude{"Is it excluded?"}
 
-    Exclude -->|Yes| Config["excludeを確認"]
-    Exclude -->|No| Publish{"publish条件を満たす？"}
+    Exclude -->|Yes| Config["Check exclude"]
+    Exclude -->|No| Publish{"Does it meet the publish condition?"}
 
-    Publish -->|No| Frontmatter["publish: true を確認"]
-    Publish -->|Yes| Build{"Build成功？"}
+    Publish -->|No| Frontmatter["Check publish: true"]
+    Publish -->|Yes| Build{"Did the build succeed?"}
 
     Build -->|No| Diagnostics["check / doctor"]
-    Build -->|Yes| Deploy{"Deployされた？"}
+    Build -->|Yes| Deploy{"Was it deployed?"}
 
-    Deploy -->|No| CI["Dispatch / Workflowを確認"]
-    Deploy -->|Yes| Asset{"画像だけ問題？"}
+    Deploy -->|No| CI["Check dispatch / workflow"]
+    Deploy -->|Yes| Asset{"Only images affected?"}
 
-    Asset -->|Yes| Copy["Asset Copyを確認"]
+    Asset -->|Yes| Copy["Check the asset copy"]
 ```
 
-より詳しい CI 認証、Root 解決、Asset、GitHub Actions の問題については [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) を参照してください。
+## Troubleshooting
 
-## まとめ
+| Symptom | Fix |
+| --- | --- |
+| Articles do not appear | Check `publish: true`, `exclude` patterns, and `inspect content --list` |
+| `Directory` does not point at the intended vault | Check `inspect config` and revisit the relative `directory` |
+| CI build cannot find the vault | Add the extra checkout or submodule support |
+| Content push does not deploy | Check `notify-site.yml`, `SITE_DISPATCH_TOKEN`, and `repository_dispatch` |
+| Private content cannot be checked out | Check `RIEBECKITE_CONTENT_READ_TOKEN` |
+| Images 404 after deploy | Confirm a published page references the image and that it is in the build output |
+| Attachments or media 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
+| Works locally but the path differs in CI | Check the CI working directory and the base (site root). `../notes` vs `notes` is a common source of drift |
+| Submodule articles do not update | Update the `content` reference on the site side, commit, and push |
 
-最初から Repository を分離する必要はありません。
+For deeper diagnosis, see the troubleshooting section of the [in-depth companion](./deployment/separate-content-repository.md).
+
+## Summary
+
+You do not have to separate repositories from the start.
 
 ```text
-単純なSite
-  → Site + content を1 Repository
+simple site
+  → site + content in one repository
 
-既存Vaultを使う
-  → 外部Directoryも選択肢
+existing vault
+  → an external directory is also an option
 
-記事をPrivateにする
-  → Contentを別Private Repository
+keep articles private
+  → put content in a separate private repository
 
-Content Pushで自動Deploy
-  → Repository Dispatch
+auto-deploy on content push
+  → repository dispatch
 ```
 
-別 Repository にする場合は、特に次の4つを分けて考えることが重要です。
+When you do split repositories, keep these four concerns apart:
 
 ```mermaid
 flowchart LR
-    Read["1. Contentを読む<br/>Checkout"]
-    Trigger["2. Buildを起動<br/>Dispatch"]
-    Publish["3. 公開対象を選ぶ<br/>publishStrategy / exclude"]
-    Assets["4. Assetを公開<br/>Prebuild Copy"]
+    Read["1. Read content<br/>Checkout"]
+    Trigger["2. Start the build<br/>Dispatch"]
+    Publish["3. Choose what to publish<br/>publishStrategy / exclude"]
+    Assets["4. Publish assets<br/>Prebuild copy"]
 ```
 
-Repository を分離すること自体は、Riebeckite の公開判定を変更しません。
+Separating repositories does not itself change Riebeckite's publication decision.
 
-**Repository の境界、Content の読み込み、Deploy の起動、Site への公開は、それぞれ別の責務です。**
+**The repository boundary, reading content, starting a deploy, and publishing to the site are separate responsibilities.**
 
-### 関連資料
+## Further reading
 
-- [リポジトリ分離の詳細編](./deployment/separate-content-repository.md) — Root 解決、CI 認証、Assets、GitHub Actions、トラブル対応
-- [Configuration](../reference/configuration.md) — `appRoot` / `configRoot` / `contentRoot`
-- [Guides](./README.md) — その他の利用 Guide
-- Cloudflare デプロイテンプレート — Deploy Workflow
-
+- [Separating content and the site (in depth)](./deployment/separate-content-repository.md) — the in-depth companion (root resolution, CI auth, assets, troubleshooting)
+- [Configuration](../reference/configuration.md) — root resolution details
+- [Usage Guide](./README.md) — external vault examples and assets
+- Cloudflare deploy template — deployment workflow details

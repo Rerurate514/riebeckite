@@ -1,12 +1,13 @@
 # Observability
 
-Observability は、Riebeckite の実行中に **何が起きたのか、どこに時間がかかったのか** を調べるための仕組みです。
+Observability is how you find out **what happened and where the time went**
+while Riebeckite runs.
 
-Riebeckite では目的の異なる3つの仕組みを分けています。
+Riebeckite separates three mechanisms with different purposes:
 
-- **Logger** — 何が起きたかを知る
-- **Tracer** — どの処理にどれだけ時間がかかったかを記録する
-- **Profiler** — Trace をまとめて、Build のどこを調査すべきか確認する
+- **Logger** — know what happened.
+- **Tracer** — record which work took how long.
+- **Profiler** — aggregate traces to see where a build should be investigated.
 
 ```mermaid
 flowchart LR
@@ -15,29 +16,30 @@ flowchart LR
     R --> L["Logger"]
     R --> T["Tracer / TraceSink"]
 
-    L --> LO["何が起きた？"]
-    T --> SP["Timed Spans"]
+    L --> LO["What happened?"]
+    T --> SP["Timed spans"]
     SP --> P["Profiler"]
-    P --> PO["どこに時間がかかった？"]
+    P --> PO["Where did time go?"]
 ```
 
-## Logger / Tracer / Profiler の違い
+## Logger / Tracer / Profiler differences
 
-| 機能 | 答える問い | 主な用途 |
+| Signal | Answers | Contract |
 | --- | --- | --- |
-| Logger | 何が起きた・失敗したか | 実行状況やエラーの記録 |
-| Tracer / `TraceSink` | どこで、どれだけ処理したか | 処理時間を span として記録 |
-| Profiler | Build のどこを調査すべきか | Trace の集計と分析 |
+| Logger | What happened or failed? | structured, safe operational messages |
+| Tracer / `TraceSink` | Where did work occur and how long did it take? | nested timed spans |
+| Profiler | Where should build performance be investigated? | consumes trace data and reports it |
 
-たとえば Build が遅い場合、Logger に大量のメッセージを追加して原因を探すのではなく、Tracer で処理時間を記録し、Profiler でその結果を確認します。
+If a build is slow, do not add a flood of Logger messages to find the cause.
+Record durations with the Tracer and read the result in the Profiler.
 
-逆に「Plugin の読み込みに失敗した」のような出来事を伝えるのは Logger の役割です。
+Conversely, reporting an event such as "the plugin failed to load" is the
+Logger's job.
 
-# Trace
+## Trace
 
-Trace は、Build の処理を **span** という単位に分けて処理時間を記録します。
-
-たとえば Build が次のように実行されたとします。
+A trace divides build work into units called **spans** and records their
+duration. For example, a build might run like this:
 
 ```mermaid
 flowchart TD
@@ -51,33 +53,22 @@ flowchart TD
     P --> P2["plugin B"]
 ```
 
-`build` が親 span、その中で実行される処理が child span になります。
+`build` is the parent span, and the work inside it becomes child spans. This
+lets you investigate not just "the whole build is slow" but "a specific plugin
+inside `plugins.run` is slow".
 
-これにより、
+### Where to create spans
 
-> Build 全体が遅い
+You do not need a span in every function. Add them at boundaries where knowing
+the duration is meaningful:
 
-だけではなく、
+- major build phases
+- plugin work
+- I/O such as reading files
+- diagnostics
+- other work whose performance you want to check independently
 
-> `plugins.run` の中の特定 Plugin に時間がかかっている
-
-といったところまで調べられます。
-
-## Span を作る場所
-
-すべての関数に span を追加する必要はありません。
-
-主に次のような、処理時間を知る意味がある境界へ追加します。
-
-- 主要な Build phase
-- Plugin の処理
-- ファイル読み込みなどの I/O
-- Diagnostics
-- その他、独立して性能を確認したい処理
-
-span の名前には、Build 間で比較できる安定した名前を使用します。
-
-たとえば、
+Span names should be stable enough to compare between builds, such as:
 
 ```text
 content.load
@@ -86,44 +77,40 @@ diagnostics.run
 application.build
 ```
 
-のような名前です。
+Avoid designs where the span name itself changes every run because of an input
+file name.
 
-入力ファイル名などによって span 名そのものが毎回変化する設計は避けます。
+### Always close spans
 
-## Span は必ず閉じる
-
-処理が成功した場合だけでなく、失敗した場合も span を閉じます。
+Close a span on failure as well as success:
 
 ```mermaid
 flowchart TD
-    A["Span 開始"]
-    B["処理"]
-    C{"成功？"}
-    D["Span 終了"]
-    E["Span 終了"]
-    F["結果を返す"]
-    G["Error を伝播"]
+    A["Span starts"]
+    B["Work"]
+    C{"Succeeded?"}
+    D["Span ends"]
+    E["Span ends"]
+    F["Return the result"]
+    G["Propagate the error"]
 
     A --> B --> C
     C -->|Yes| D --> F
     C -->|No| E --> G
 ```
 
-Trace はエラー処理の代わりではありません。
+A trace is not a substitute for error handling. On failure, record the span and
+still propagate the error according to the normal caller contract. Do not
+swallow an error for the sake of a trace.
 
-処理が失敗した場合は Trace を記録したうえで、通常の caller contract に従って error を伝播します。
+## Parallel work and time
 
-Trace のためにエラーを握りつぶしてはいけません。
-
-# 並列処理と時間
-
-Trace を読むときは、**処理時間の合計と実際の経過時間は同じとは限らない**ことに注意してください。
-
-たとえば Plugin A と Plugin B が並列に実行されたとします。
+When reading a trace, remember that **the sum of durations is not necessarily
+the elapsed time**. For example, suppose plugin A and plugin B run in parallel:
 
 ```mermaid
 gantt
-    title Parallel Plugin Work
+    title Parallel plugin work
     dateFormat X
     axisFormat %L ms
 
@@ -132,87 +119,66 @@ gantt
     Plugin B :b, 0, 100
 ```
 
-それぞれが 100ms かかった場合、
+If each takes 100 ms, the cumulative work is 200 ms:
 
 ```text
 Plugin A = 100ms
 Plugin B = 100ms
 ```
 
-なので、処理量としては合計 200ms です。
-
-しかし2つは同時に実行されているため、実際の経過時間はおよそ 100ms です。
+But because the two run at the same time, the actual elapsed time is about
+100 ms.
 
 ```text
 Cumulative work = 200ms
-Wall-clock time = 約100ms
+Wall-clock time = about 100ms
 ```
 
-Profiler はこの違いを維持します。
+The Profiler preserves this distinction. Simply adding child span durations and
+reporting `plugins.run = 200ms` would make parallel work look like a slow serial
+path.
 
-child span の時間を単純に足して、
+## Profiler
 
-> plugins.run = 200ms
-
-のように表示すると、並列処理を直列処理のように見せてしまうためです。
-
-# Profiler
-
-Profiler は Trace を集計して、Build のどこに時間がかかっているかを確認するための機能です。
-
-CLI から実行できます。
+The Profiler aggregates traces so you can see where a build spends its time.
+Run it from the CLI:
 
 ```sh
 riebeckite profile
 ```
 
-incremental state を再利用せず計測する場合は、
+To measure without reusing incremental state:
 
 ```sh
 riebeckite profile --full
 ```
 
-を使用します。
+`--full` is useful when you want to investigate whole-build performance without
+the effect of the incremental build.
 
-`--full` は、incremental build の影響を避けて Build 全体の performance を調べたい場合に便利です。
+The goal of the Profiler is to narrow the next place to investigate, starting
+from the fact that something is "slow".
 
-Profiler の目的は、
+The profile report separates plugin-cache activity from persistent-content-cache activity. It reports content-cache hits, misses, and bypasses together with the reason for each miss (for example `no-entry` or `dependency-changed`) and each bypass (for example an l10n safe bypass), so a warm build that is not reusing entries can be explained without reading cache internals.
 
-**「遅い」という事実から、次にどこを調査すればよいかを絞り込むこと**
+## Measuring diagnostics
 
-です。
-
-Profiler は Cache の状況も分けて表示します。
-
-- **Plugin cache** — プラグイン自身が保存した結果の hit / miss
-- **Content cache** — persistent content cache の hit / miss / bypass と、miss / bypass の理由
-
-これにより、
-
-> なぜ warm build なのにキャッシュが使われていないのか
-
-を、安全性のための bypass なのか、依存関係の変更による miss なのかまで区別して確認できます。
-
-# Diagnostics の計測
-
-Diagnostics も通常の Build phase と同じように計測されます。
-
-Profiler には、
+Diagnostics are measured like any other build phase. The Profiler shows the
+duration of the:
 
 ```text
 diagnostics.run
 ```
 
-span の duration が表示されます。
-
-さらに Diagnostics が生成した finding の件数も確認できます。
+span, and also the number of findings diagnostics produced:
 
 - total
 - error
 - warning
 - info
 
-これにより、
+This lets you see how long diagnostics took and how many problems they reported
+at the same time:
 
 ```text
 diagnostics.run
@@ -223,43 +189,28 @@ diagnostics.run
 └─ info
 ```
 
-のように、**Diagnostics にどれだけ時間がかかり、どれだけの問題が報告されたのか**を同時に確認できます。
+If diagnostics account for most of the build time, that is a signal to
+investigate the phase further.
 
-たとえば Diagnostics が Build 時間の大部分を占めている場合、その phase をさらに調査する判断材料になります。
+## Investigating a problem
 
-# 安全性
-
-Observability は **Riebeckite の動作を観測するための仕組み**であり、Build の結果を変えてはいけません。
-
-Instrumentation を有効にしても無効にしても、生成される Site は同じである必要があります。
-
-また、Logger や Trace には次のような情報を記録しないでください。
-
-- secret
-- credential
-- token
-- 不要に機微なコンテンツ本文
-
-観測のために必要な情報だけを記録します。
-
-Trace や Profile の保存データも Build-time の情報です。
-
-Cloudflare Workers などの runtime が、書き換え可能な Trace / Profile file に依存する設計にはしません。
-
-# 問題を調査するとき
-
-問題の種類によって使う機能を分けます。
+Choose the mechanism by the kind of question you have:
 
 ```mermaid
 flowchart TD
-    Q{"何を調べたい？"}
+    Q{"What do you want to investigate?"}
 
-    Q -->|"何が起きた？"| L["Logger"]
-    Q -->|"どこに時間がかかった？"| P["Profiler"]
-    Q -->|"設定や構成に問題がある？"| D["Diagnostics"]
-    Q -->|"Build の状態を確認したい"| B["Build System / Inspector"]
+    Q -->|"What happened?"| L["Logger"]
+    Q -->|"Where did time go?"| P["Profiler"]
+    Q -->|"Is there a configuration problem?"| D["Diagnostics"]
+    Q -->|"What is the current build state?"| B["Build System / Inspector"]
 ```
 
-Build が失敗している場合は Logger や Diagnostics、Build が遅い場合は Trace / Profiler、incremental build の状態を確認したい場合は Inspector と組み合わせて調査します。
+When a build fails, use the Logger and Diagnostics; when a build is slow, use the
+Tracer and Profiler; when you want to check the incremental build state, combine
+them with the Inspector.
 
-Build の仕組みについては [Build System](build-system.md)、問題の報告については [Diagnostics](diagnostics.md)、現在の state を確認する場合は [Inspector](inspector.md) を参照してください。
+Run `riebeckite profile [--full]` for CLI-driven reporting. Pair it with
+[Build system](./build-system.md) and [Diagnostics](./diagnostics.md) when
+investigating a problem. See [Inspector](./inspector.md) to check the current
+state.

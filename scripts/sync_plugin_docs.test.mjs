@@ -22,34 +22,34 @@ const options = {
 };
 
 test("rewrites the Japanese README link to the local Japanese docs page", () => {
-  assert.equal(rewriteTarget("./README_ja.md", options), "./shortcodes.md");
+  assert.equal(rewriteTarget("./README_ja.md", options), "./shortcodes.ja.md");
 });
 
 test("keeps anchors when rewriting the Japanese README link", () => {
   assert.equal(
     rewriteTarget("./README_ja.md#options", options),
-    "./shortcodes.md#options",
+    "./shortcodes.ja.md#options",
   );
 });
 
 test("rewrites links into the docs tree as relative docs links", () => {
   assert.equal(
-    rewriteTarget("../../../docs/docs/reference/plugin-api.en.md", options),
-    "../reference/plugin-api.en.md",
+    rewriteTarget("../../../docs/docs/reference/plugin-api.md", options),
+    "../reference/plugin-api.md",
   );
 });
 
 test("rewrites a cross-plugin English README to the generated docs page", () => {
   assert.equal(
     rewriteTarget("../code-enhance/README.md", options),
-    "./code-enhance.en.md",
+    "./code-enhance.md",
   );
 });
 
 test("rewrites a cross-plugin Japanese README to the Japanese docs page", () => {
   assert.equal(
     rewriteTarget("../code-enhance/README_ja.md", options),
-    "./code-enhance.md",
+    "./code-enhance.ja.md",
   );
 });
 
@@ -84,7 +84,7 @@ test("renderPluginPage strips the README title and adds the marker and page titl
   assert.ok(page.includes(generatedMarker("shortcodes")));
   assert.ok(page.includes("# Shortcodes"));
   assert.ok(!page.includes("@riebeckite/plugin-shortcodes"));
-  assert.ok(page.includes("See [日本語](./shortcodes.md)."));
+  assert.ok(page.includes("See [日本語](./shortcodes.ja.md)."));
   assert.ok(page.endsWith("\n"));
 });
 
@@ -94,7 +94,7 @@ test("rewriteReadmeLinks does not rewrite links inside fenced code", () => {
   const rewritten = rewriteReadmeLinks(text, options);
   assert.equal(
     rewritten,
-    "See [日本語](./shortcodes.md).\n\n```md\n[日本語](./README_ja.md)\n```\n",
+    "See [日本語](./shortcodes.ja.md).\n\n```md\n[日本語](./README_ja.md)\n```\n",
   );
 });
 
@@ -102,12 +102,12 @@ test("planSync reports missing, outdated, and stale pages", () => {
   const desired = [
     {
       slug: "alpha",
-      pagePath: path.join(docsPluginsRoot, "alpha.en.md"),
+      pagePath: path.join(docsPluginsRoot, "alpha.md"),
       content: "a",
     },
     {
       slug: "beta",
-      pagePath: path.join(docsPluginsRoot, "beta.en.md"),
+      pagePath: path.join(docsPluginsRoot, "beta.md"),
       content: "b",
     },
   ];
@@ -127,7 +127,7 @@ test("planSync reports no work when pages already match", () => {
   const desired = [
     {
       slug: "alpha",
-      pagePath: path.join(docsPluginsRoot, "alpha.en.md"),
+      pagePath: path.join(docsPluginsRoot, "alpha.md"),
       content: "a",
     },
   ];
@@ -159,7 +159,7 @@ test("every generated Plugin page has exactly one top-level heading", () => {
     assert.equal(
       countTopLevelHeadings(page.content),
       1,
-      `${page.slug}.en.md should expose exactly one H1`,
+      `${page.slug}.md should expose exactly one H1`,
     );
   }
 });

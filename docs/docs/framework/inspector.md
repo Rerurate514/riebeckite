@@ -1,20 +1,19 @@
 # Inspector
 
-Inspector は、Riebeckite がすでに解決した設定やコンテンツ、Plugin、Build State を確認するための機能です。
+Inspector answers questions about already-resolved state. It is a read-only
+tool for seeing how Riebeckite currently understands your site.
 
-簡単に言えば、**「Riebeckite から今どう見えているか」を調べるための読み取り専用ツール**です。
+Use it through the CLI:
 
-たとえば、
+```sh
+riebeckite inspect config
+riebeckite inspect plugins
+riebeckite inspect content --list
+riebeckite inspect graph
+riebeckite inspect build
+```
 
-- 実際にどの設定が使われているか
-- どの Plugin が有効になっているか
-- 記事の最終的な URL は何か
-- コンテンツ同士がどうつながっているか
-- incremental build の state は正常か
-
-といった情報を確認できます。
-
-```mermaid id="qg9q71"
+```mermaid
 flowchart LR
     A["Config"]
     B["Plugins"]
@@ -28,198 +27,184 @@ flowchart LR
     D --> I
     E --> I
 
-    I --> F["情報を表示するだけ"]
+    I --> F["Display information only"]
 ```
 
-Inspector はこれらの情報を**確認するだけ**で、build や設定の変更は行いません。
+Inspector only reads this information. It does not build, and it does not
+change your configuration.
 
-## 基本的な使い方
+## Basic usage
 
-Inspector には、確認したい対象ごとにコマンドがあります。
+Inspector has a command for each target you want to inspect:
 
-| コマンド | 確認できるもの |
+| Command | What you can inspect |
 | --- | --- |
-| `riebeckite inspect config` | 解決済みの設定 |
-| `riebeckite inspect plugins` | 有効になっている Plugin |
-| `riebeckite inspect content --list` | 公開コンテンツと URL |
-| `riebeckite inspect graph` | コンテンツ同士の関係 |
-| `riebeckite inspect build` | incremental build の state |
+| `riebeckite inspect config` | Resolved configuration |
+| `riebeckite inspect plugins` | Enabled plugins |
+| `riebeckite inspect content --list` | Published content and URLs |
+| `riebeckite inspect graph` | Relationships between content |
+| `riebeckite inspect build` | Incremental build state |
 
-## Config を確認する
+## Inspecting the config
 
-```sh id="5zrcz3"
+```sh
 riebeckite inspect config
 ```
 
-Riebeckite が実際に使用する **解決済みの config** を確認します。
+This shows the **resolved config** that Riebeckite actually uses. It is not
+the raw values written in the config file; it is what Riebeckite ends up
+recognizing after defaults and other processing are applied.
 
-設定ファイルに書いた値そのものではなく、既定値なども適用された後の「Riebeckite が最終的に認識している設定」を確認したいときに使用します。
+Use it when something such as:
 
-たとえば、
+> I configured it, but it does not behave as expected.
 
-> 設定したはずなのに期待した動作にならない
+happens, to first check the effective configuration.
 
-という場合に、まず実際の設定値を確認できます。
+## Inspecting plugins
 
-## Plugin を確認する
-
-```sh id="4g0qba"
+```sh
 riebeckite inspect plugins
 ```
 
-現在有効になっている Plugin を確認します。
+This shows the plugins that are currently enabled. Use it to check whether a
+plugin you intended to add is really being loaded.
 
-「Plugin を追加したつもりだけれど、本当に読み込まれているのか」を調べるときなどに利用できます。
+## Inspecting content
 
-## Content を確認する
-
-```sh id="v20yqo"
+```sh
 riebeckite inspect content --list
 ```
 
-Riebeckite が認識しているコンテンツを一覧表示します。
+This lists the content Riebeckite recognizes. For each entry you can check the
+resolved **canonical permalink**.
 
-各 entry について、解決済みの **canonical permalink** を確認できます。
+For example, even if a file exists at:
 
-たとえば、
-
-```text id="iz0dn3"
+```text
 content/posts/hello.md
 ```
 
-というファイルがあっても、実際の公開 URL が
+and its real public URL is:
 
-```text id="ewds8n"
+```text
 /blog/hello/
 ```
 
-であれば、Inspector では最終的に解決された `/blog/hello/` を確認できます。
+Inspector shows the finally resolved `/blog/hello/`. In other words, this
+information is about the **URL actually used by the site**, not the filesystem
+location.
 
-つまり、filesystem 上の場所ではなく、**実際にサイトで使われる URL** を確認するための情報です。
+If a Public Location plugin provides identity metadata, it also shows the
+content ID and where that ID came from.
 
-Public Location Plugin が identity metadata を提供している場合は、コンテンツ ID とその ID がどこから取得されたかも表示します。
+## Inspecting the content graph
 
-## Content Graph を確認する
-
-```sh id="91iyz5"
+```sh
 riebeckite inspect graph
 ```
 
-コンテンツ同士の関係を確認します。
+This shows the relationships between content. For example, it lets you check
+how Riebeckite understands link relationships such as:
 
-たとえば、
-
-```mermaid id="0smvrp"
+```mermaid
 graph LR
     A["article-a"] --> B["article-b"]
     A --> C["article-c"]
     C --> B
 ```
 
-のようなリンク関係を、Riebeckite がどのように認識しているか調べるために利用します。
+It is also useful when developing a plugin that uses links, backlinks, or the
+graph.
 
-リンク、backlink、graph を利用する Plugin を開発するときの確認にも使えます。
+## Inspecting build state
 
-## Build State を確認する
-
-```sh id="i6hsvx"
+```sh
 riebeckite inspect build
 ```
 
-incremental build で利用する state の状態を確認します。
+This shows the state used by incremental builds. If a valid state exists, its
+information is displayed. If the state is unavailable, the reason is shown as
+well.
 
-正常な state が存在する場合は、その情報を表示します。
+For example:
 
-state が利用できない場合は、その理由も確認できます。
+- The state file does not exist
+- The JSON is malformed
+- The state version does not match the current Riebeckite
+- The state structure is unrecognized
 
-たとえば、
+Inspector does **not** repair any of these.
 
-- state file が存在しない
-- JSON が壊れている
-- state version が現在の Riebeckite に対応していない
-- state の構造を認識できない
-
-といった状態です。
-
-Inspector はこれらを**修復しません**。
-
-```mermaid id="25a2uw"
+```mermaid
 flowchart TD
     A["inspect build"]
-    B{"Build State は存在する？"}
+    B{"Does build state exist?"}
 
     A --> B
-    B -->|Yes| C{"State は有効？"}
-    B -->|No| D["State がないことを表示"]
+    B -->|Yes| C{"Is the state valid?"}
+    B -->|No| D["Report that no state exists"]
 
-    C -->|Yes| E["State の情報を表示"]
-    C -->|No| F["無効な理由を表示"]
+    C -->|Yes| E["Display the state information"]
+    C -->|No| F["Display the reason it is invalid"]
 
-    D --> G["終了"]
+    D --> G["Exit"]
     E --> G
     F --> G
 ```
 
-state が壊れていても、Inspector が新しい state を作ったり、既存 state を書き換えたりすることはありません。
+Even if the state is broken, Inspector never creates a new state or rewrites
+the existing one.
 
-# Read-only の保証
+## Read-only guarantee
 
-Inspector は **read-only** です。
+Inspection is factual and non-mutating. It must not run a build, write
+incremental state or plugin cache, emit assets, render special artifacts
+merely for display, invoke Vite/HonoX build work, or auto-fix configuration.
+If the requested information does not exist because no build has completed,
+report that condition plainly.
 
-Inspector の実行によってプロジェクトの状態が変わってはいけません。
+`inspect content --list` reports each entry's resolved canonical permalink.
+When a public-location plugin records identity metadata, it also shows the ID
+and the ID source.
 
-具体的には、次の処理を行いません。
+`inspect build` reports the incremental state status. When the state is
+invalid, it also reports the reason: malformed JSON, an unsupported state
+version, or an unrecognized structure.
 
-- build の開始
-- incremental state の書き込み
-- Plugin Cache の書き込み
-- asset の生成
-- artifact の生成
-- Vite / HonoX build
-- config の自動修正
+This property makes Inspector safe to use not only during development but also
+in CI.
 
-まだ一度も build しておらず、確認対象の情報が存在しない場合も、Inspector が勝手に生成することはありません。
+## inspect / check / doctor / build
 
-代わりに、
+Riebeckite has commands that look similar, but they have different roles:
 
-> 現在はその情報が存在しない
-
-ことを明確に表示します。
-
-この性質により、Inspector は開発中だけでなく CI でも安全に利用できます。
-
-# `inspect` / `check` / `doctor` / `build` の違い
-
-Riebeckite には似た目的に見えるコマンドがありますが、それぞれ役割が異なります。
-
-```mermaid id="mx8l24"
+```mermaid
 flowchart LR
-    Q{"何をしたい？"}
+    Q{"What do you want to do?"}
 
-    Q -->|"現在の状態を見たい"| I["inspect"]
-    Q -->|"設定が正しいか確認したい"| C["check"]
-    Q -->|"環境を含めて問題を調べたい"| D["doctor"]
-    Q -->|"サイトを生成・更新したい"| B["build"]
+    Q -->|"See the current state"| I["inspect"]
+    Q -->|"Validate the configuration"| C["check"]
+    Q -->|"Investigate environment problems"| D["doctor"]
+    Q -->|"Generate or update the site"| B["build"]
 
-    I --> IR["状態を変更しない"]
-    C --> CR["Config / Plugin を検証"]
-    D --> DR["Health を診断"]
-    B --> BR["Output / State を更新"]
+    I --> IR["Does not change state"]
+    C --> CR["Validates config / plugins"]
+    D --> DR["Diagnoses health"]
+    B --> BR["Updates output / state"]
 ```
 
-| やりたいこと | コマンド |
+| What you want to do | Command |
 | --- | --- |
-| 現在の解決結果を確認する | `inspect` |
-| Config / Plugin が正しいか検証する | `check` |
-| Environment を含めて問題を診断する | `doctor` |
-| Site や Build State を生成・更新する | `build` |
+| Check the current resolved result | `inspect` |
+| Validate config / plugins | `check` |
+| Diagnose problems including the environment | `doctor` |
+| Generate or update the site or build state | `build` |
 
-迷った場合は、
+If you are unsure, think: **"to just look, `inspect`; to validate, `check`; to
+investigate a problem, `doctor`; to generate, `build`."**
 
-**「見るだけなら `inspect`、検証なら `check`、問題調査なら `doctor`、生成するなら `build`」**
-
-と考えると分かりやすいです。
-
-この役割分担によって、状態を確認するだけのコマンドが cache や deployment output を意図せず変更することを防いでいます。
-
-各コマンドの詳細は [CLI](../reference/cli.md)、診断の仕組みについては [Diagnostics](diagnostics.md)、incremental state については [Build System](build-system.md) を参照してください。
+This division of roles prevents a command that only checks state from
+accidentally modifying cache or deployment output. See
+[CLI](../reference/cli.md), [Diagnostics](./diagnostics.md), and
+[Build System](./build-system.md) for details.

@@ -1,15 +1,16 @@
 # Analytics
 
-Riebeckite では、記事ごとの Page View を収集できます。
+Riebeckite collects a page view per article. Analytics is split into two
+packages with a deliberate boundary: a storage-independent plugin that registers
+browser page-view tracking, and an independent Cloudflare Worker that accepts,
+validates, and stores those events.
 
-Analytics は、次の2つに分かれています。
-
-| Package | 役割 |
+| Package | Role |
 | --- | --- |
-| `@riebeckite/plugin-analytics` | Site 側で Page View を送信する |
-| `@riebeckite/analytics-cloudflare` | Event を受け取り、Cloudflare 上で保存・集計する |
+| `@riebeckite/plugin-analytics` | Sends page views from the site. |
+| `@riebeckite/analytics-cloudflare` | Receives events and stores/aggregates them on Cloudflare. |
 
-```mermaid id="af8k2m"
+```mermaid
 flowchart LR
     Browser["Browser"]
     Site["Riebeckite Site<br/>Static"]
@@ -21,45 +22,35 @@ flowchart LR
     Worker --> Storage
 ```
 
-**Riebeckite Site 自体はこれまでどおり静的 Site のまま**です。
+The site itself stays a normal static build. The analytics Worker is a separate
+deployment that never replaces the static site's `wrangler.jsonc` or main entry.
 
-Analytics Worker は Site とは別にデプロイします。
-
-Site の `wrangler.jsonc` や `main` を Analytics Worker 用に置き換える必要はありません。
-
-## どの Package が何をする？
+## Which package does what?
 
 ### `@riebeckite/plugin-analytics`
 
-Riebeckite Site 側の Plugin です。
+The plugin on the Riebeckite site side. It provides, mainly:
 
-主に、
+- identification of the content to measure
+- sending `page_view` from the browser
+- the `AnalyticsProvider` contract
+- the analytics query contract
 
-- 計測対象 Content の識別
-- Browser からの `page_view` 送信
-- `AnalyticsProvider` Contract
-- Analytics Query Contract
-
-を提供します。
-
-Cloudflare、D1、KV、特定の Database には依存しません。
+It does not depend on Cloudflare, D1, KV, or any particular database.
 
 ### `@riebeckite/analytics-cloudflare`
 
-Cloudflare 上で Analytics Event を受け取るための独立した Worker Package です。
+A standalone Worker package for receiving analytics events on Cloudflare. It
+provides, mainly:
 
-主に、
-
-- Event の受信
-- Request Validation
+- receiving events
+- request validation
 - CORS
-- Rate Limit
-- D1 / KV への保存
-- Page View の読み取り API
+- rate limiting
+- storing to D1 / KV
+- read APIs for page views
 
-を提供します。
-
-```text id="w6zh3x"
+```text
 Riebeckite Site
   → @riebeckite/plugin-analytics
 
@@ -67,11 +58,11 @@ Analytics Worker
   → @riebeckite/analytics-cloudflare
 ```
 
-## 計測の仕組み
+## How tracking works
 
-Page View は、Content の **安定した Content ID** を基準に記録します。
+Page views are recorded against a content entry's **stable content ID**.
 
-```mermaid id="n45z2c"
+```mermaid
 sequenceDiagram
     participant C as Content
     participant B as Build
@@ -86,50 +77,49 @@ sequenceDiagram
     Browser->>W: POST /events
 ```
 
-大きく3段階あります。
+There are three broad stages.
 
 ### 1. Content ID
 
-計測対象の記事には、Frontmatter で安定した `id` を指定します。
+Content you want to measure gets a stable `id` in its frontmatter.
 
-```yaml id="5rmptb"
+```yaml
 ---
 id: guide-1
 ---
 ```
 
-この ID は記事を識別するための値です。
+This ID identifies the article. A URL can change while you still want the same
+content to be treated as one entry, so URLs like
 
-URL を変更しても同じ Content として扱いたい場合があるため、
-
-```text id="2mg98w"
+```text
 /old-guide
 /new-guide
 ```
 
-のような URL を Analytics の Identity として使用しません。
+are not used as the analytics identity. See
+[Content System](../framework/content-system.md#stable-content-ids) for details.
 
-詳しくは [Content System](../framework/content-system.md#安定-content-id) を参照してください。
+### 2. A marker is added at build time
 
-### 2. Build 時にマーカーを追加する
+During the build, a hidden element is added to every published entry that has a
+stable content ID.
 
-Build 時に、安定 Content ID を持つ公開 Entry へ隠し要素が追加されます。
-
-```html id="ly98ut"
+```html
 <span
+  hidden
   data-riebeckite-content-id="guide-1"
 ></span>
 ```
 
-Browser 側の Analytics はこのマーカーから Content ID を取得します。
+The browser-side analytics reads the content ID from this marker.
 
-### 3. Browser から Event を送る
+### 3. The browser sends the event
 
-`initAnalytics` は Document ごとに一度実行されます。
+`initAnalytics` runs once per document. It reads the content ID and sends a
+`page_view` event as JSON to the configured `collectorUrl`.
 
-Content ID を取得すると、設定された `collectorUrl` へ `page_view` Event を JSON で送信します。
-
-```json id="31i7h9"
+```json
 {
   "type": "page_view",
   "contentId": "guide-1",
@@ -139,25 +129,20 @@ Content ID を取得すると、設定された `collectorUrl` へ `page_view` E
 }
 ```
 
-このうち Identity として使われるのは、
+The identity used is
 
-```text id="kkkz5n"
+```text
 contentId
 ```
 
-です。
+`path` and `lang` are contextual metadata. Content without a stable ID is not
+measured.
 
-`path` と `lang` は補助情報です。
+## Page view unit
 
-安定 Content ID のない Content は計測されません。
+The current Riebeckite uses static document navigation, so the basic model is
 
-## Page View の単位
-
-現在の Riebeckite は静的な Document Navigation を使用します。
-
-そのため、
-
-```text id="bs64om"
+```text
 Page Load
    ↓
 initAnalytics
@@ -165,317 +150,214 @@ initAnalytics
 page_view × 1
 ```
 
-が基本です。
+One `page_view` is sent per page load. SPA route transitions are not tracked
+automatically.
 
-1回の Page Load につき1件の `page_view` を送ります。
+## Configuring the site
 
-SPA の Route Transition は自動計測しません。
-
-## Site 側を設定する
-
-Site では `@riebeckite/plugin-analytics` を設定します。
-
-```ts id="74prf7"
-import {
-  analytics,
-  MemoryAnalyticsProvider,
-} from "@riebeckite/plugin-analytics";
+```ts
+import { analytics, MemoryAnalyticsProvider } from "@riebeckite/plugin-analytics";
 
 export default defineConfig({
   // ...
-
   plugins: [
     analytics({
-      provider:
-        new MemoryAnalyticsProvider(),
-
-      publicConfig: {
-        collectorUrl:
-          "https://analytics.example.com/events",
-      },
+      provider: new MemoryAnalyticsProvider(),
+      publicConfig: { collectorUrl: "https://analytics.example.com/events" },
     }),
   ],
 });
 ```
 
-主な設定は、
+There are two main settings:
 
-```text id="3g0p8e"
+```text
 provider
 publicConfig.collectorUrl
 ```
 
-の2つです。
-
 ### `provider`
 
-`provider` は `AnalyticsProvider` Contract を実装した Runtime です。
+`provider` is the private runtime implementation of the `AnalyticsProvider`
+contract. A provider offers
 
-Provider は、
-
-```text id="9ht8ge"
+```text
 capabilities
 capture
 query
 ```
 
-を提供します。
-
-認証情報や Storage Binding のような非公開情報は Provider 内部に保持します。
-
-Browser へ渡してはいけません。
+Private information such as credentials and storage bindings stays inside the
+provider. It must never be passed to the browser.
 
 ### `publicConfig.collectorUrl`
 
-`collectorUrl` は Browser が Event を送信する URL です。
+`collectorUrl` is the URL the browser sends events to.
 
-```ts id="3xqf6f"
+```ts
 publicConfig: {
-  collectorUrl:
-    "https://analytics.example.com/events",
+  collectorUrl: "https://analytics.example.com/events",
 }
 ```
 
-指定できるのは、
-
-- Site-relative Path
-- JSON `POST` を受け付ける HTTP(S) URL
-
-です。
-
-`publicConfig` は名前のとおり Browser へ公開されます。
-
-秘密情報を含めないでください。
+It can be either a site-relative path or an HTTP(S) URL that accepts a JSON
+`POST` body. `publicConfig` is, as the name says, exposed to the browser — never
+put secrets in it.
 
 ### `MemoryAnalyticsProvider`
 
-`MemoryAnalyticsProvider` は、
+`MemoryAnalyticsProvider` is for tests and local experiments. It is not a
+persistent analytics store for production. Use a real collector such as the
+Cloudflare Worker in production.
 
-- Test
-- Local Experiment
+## Checking the configuration
 
-向けです。
+The analytics plugin's options go through the normal plugin validation. For
+example, a malformed `provider` or `collectorUrl` can be checked with
 
-本番環境の永続的な Analytics Storage として使用するものではありません。
-
-本番では Cloudflare Worker などの実際の Collector を使用します。
-
-## 設定を確認する
-
-Analytics Plugin の Option も通常の Plugin Validation の対象です。
-
-たとえば、
-
-- 不正な `provider`
-- 不正な `collectorUrl`
-
-などは、
-
-```sh id="h5myi0"
+```sh
 pnpm exec riebeckite check
 ```
 
-や、
+or
 
-```sh id="kkok81"
+```sh
 pnpm exec riebeckite doctor
 ```
 
-で確認できます。
-
 ## AnalyticsProvider
 
-`AnalyticsProvider` は、Provider がどの Analytics 機能に対応しているかを `capabilities` で宣言します。
+`AnalyticsProvider` declares which analytics features it supports through
+`capabilities`. The main capabilities are
 
-主な Capability は、
-
-```text id="31ig1c"
+```text
 capture
 content_page_views
 popular_content
 ```
 
-です。
+### Storing events
 
-### Event を保存する
-
-```ts id="6ey01d"
+```ts
 await provider.capture(event);
 ```
 
-`capture` は Page View Event を保存します。
+`capture` stores a page view event.
 
-### Content の Page View を取得する
+### Reading content page views
 
-```ts id="4gohio"
+```ts
 await provider.query({
   type: "content_page_views",
   contentId: "guide-1",
-
-  timeRange: {
-    from:
-      "2026-01-01T00:00:00.000Z",
-  },
+  timeRange: { from: "2026-01-01T00:00:00.000Z" },
 });
 ```
 
-特定 Content の合計 Page View を取得します。
+Returns the total page views for one content entry. The time range is optional.
 
-期間は任意です。
+### Reading popular content
 
-### 人気 Content を取得する
-
-```ts id="3n12mu"
-await provider.query({
-  type: "popular_content",
-  limit: 10,
-});
+```ts
+await provider.query({ type: "popular_content", limit: 10 });
 ```
 
-Page View をもとにしたランキングを取得します。
+Returns a ranking based on page views. `limit` and the time range are optional.
 
-`limit` と期間は任意です。
+### Unsupported queries
 
-### 対応していない Query
+A provider that cannot satisfy a query throws
 
-Provider が対応していない Query には、
-
-```text id="mld6b4"
+```text
 UnsupportedAnalyticsQueryError
 ```
 
-を投げます。
+When implementing your own provider, use
 
-独自 Provider を実装する場合は、
-
-```ts id="grm9c0"
-assertAnalyticsQuerySupported(
-  provider,
-  query,
-);
+```ts
+assertAnalyticsQuerySupported(provider, query);
 ```
 
-を利用してください。
+Capability and query helpers are exported from the package root.
 
-Capability / Query Helper は Package Root から Export されています。
+## Collecting events with a Cloudflare Worker
 
-## Cloudflare Worker を使う
+To collect events on Cloudflare, use `@riebeckite/analytics-cloudflare`. The
+package exposes
 
-Cloudflare で Event を収集する場合は、
-
-```text id="tfv0z6"
-@riebeckite/analytics-cloudflare
-```
-
-を使用します。
-
-この Package は、
-
-```text id="h5k4u6"
+```text
 createWorker(options)
 ```
 
-と Storage Adapter を提供します。
+and storage adapters. There is no default storage: **choose exactly one of D1 or
+KV explicitly.**
 
-Storage の既定値はありません。
+### D1 and KV
 
-**D1 または KV のどちらか1つを明示的に選択します。**
-
-## D1 と KV
-
-| Storage | Event 保存 | 合計 Page View | 人気ランキング | 期間指定 |
+| Storage | Event capture | Total page views | Popular ranking | Time range |
 | --- | --- | --- | --- | --- |
-| D1 | ○ | ○ | ○ | ○ |
-| KV | ○ | × | × | × |
+| D1 | Yes | Yes | Yes | Yes |
+| KV | Yes | No | No | No |
 
-### D1
+#### D1
 
-D1 では、
+For D1, use
 
-```text id="a6w8wh"
+```text
 D1AnalyticsStorage
 d1Storage(db)
 ```
 
-を使用します。
-
-D1 は UTC の日単位で集計します。
-
-SQLite の Atomic Upsert を利用し、**生の Page View Event は保存しません。**
-
-そのため、
+D1 aggregates per UTC day. It uses atomic SQLite upserts and **does not store raw
+page view events**. This makes the following available:
 
 - `capture`
 - `content_page_views`
 - `popular_content`
-- 日単位の期間 Query
+- day-based time-range queries
 
-を利用できます。
+Use this if you want to make real use of aggregated analytics.
 
-本格的に Analytics の集計結果を利用する場合はこちらを使用します。
+#### KV
 
-### KV
+For KV, use
 
-KV では、
-
-```text id="2dcd0g"
+```text
 KvAnalyticsStorage
 kvStorage(namespace)
 ```
 
-を使用します。
+KV supports `capture` only. Totals are best-effort, and concurrent writes can
+lose counts. It therefore does not support
 
-KV は `capture` のみ対応します。
-
-Best-effort の集計であり、同時書き込みによって Count が欠落する可能性があります。
-
-そのため、
-
-```text id="qefx4m"
+```text
 content_page_views
 popular_content
 ```
 
-には対応しません。
+Using those APIs returns HTTP `501`.
 
-これらの API を利用すると HTTP `501` を返します。
+### D1 Worker example
 
-## D1 Worker の例
+```ts
+import { createWorker, d1Storage } from "@riebeckite/analytics-cloudflare";
 
-```ts id="ak02xw"
-import {
-  createWorker,
-  d1Storage,
-} from "@riebeckite/analytics-cloudflare";
-
-export interface Env {
-  ANALYTICS_DB: D1Database;
-}
+export interface Env { ANALYTICS_DB: D1Database; }
 
 export default {
-  fetch(
-    request: Request,
-    env: Env,
-  ) {
+  fetch(request: Request, env: Env) {
     return createWorker({
-      storage:
-        d1Storage(env.ANALYTICS_DB),
-
-      cors: {
-        allowedOrigins: [
-          "https://www.example.com",
-        ],
-      },
+      storage: d1Storage(env.ANALYTICS_DB),
+      cors: { allowedOrigins: ["https://www.example.com"] },
     }).fetch(request);
   },
 };
 ```
 
-Cloudflare の `env` は `fetch` の実行時に渡されます。
+Cloudflare passes `env` at `fetch` execution time, so the storage binding is also
+constructed per request.
 
-そのため Storage Binding も Request ごとに構築します。
-
-```text id="6fak1j"
+```text
 Request
    ↓
 fetch(request, env)
@@ -485,248 +367,194 @@ d1Storage(env.ANALYTICS_DB)
 createWorker(...)
 ```
 
-Module Top-level で `env` を取得しようとしないでください。
+Do not try to read `env` at module top level.
 
-## Worker の Endpoint
+### Worker endpoints
 
-Analytics Worker は次の Endpoint を提供します。
+The analytics Worker provides the following endpoints.
 
-| Endpoint | 内容 |
+| Endpoint | Description |
 | --- | --- |
-| `POST /events` | `page_view` を受信 |
-| `GET /content/:contentId/page-views` | Content の Page View 合計 |
-| `GET /popular` | 人気 Content |
+| `POST /events` | Receives a `page_view`. |
+| `GET /content/:contentId/page-views` | Total page views for a content entry. |
+| `GET /popular` | Popular content. |
 
-### `POST /events`
+#### `POST /events`
 
-JSON の `page_view` Payload を受け付けます。
+Accepts a JSON `page_view` payload. The maximum body size is 8 KiB. On success it
+returns
 
-Body の最大 Size は 8 KiB です。
-
-成功すると、
-
-```text id="a3pzla"
+```text
 204 No Content
 ```
 
-を返します。
+Invalid requests are rejected.
 
-不正な Request は拒否されます。
-
-| 状態 | Response |
+| Condition | Response |
 | --- | --- |
-| 不正な JSON | `400` |
-| 未知・不正な Field | `400` |
-| JSON 以外の Content-Type | `415` |
-| 8 KiB を超える Body | `413` |
-| Rate Limit 超過 | `429` |
+| Invalid JSON | `400` |
+| Unknown or invalid field | `400` |
+| Non-JSON `Content-Type` | `415` |
+| Body larger than 8 KiB | `413` |
+| Rate limit exceeded | `429` |
 
-### Page View API
+#### Page view API
 
-```text id="lv9m44"
+```text
 GET /content/:contentId/page-views?from=&to=
 ```
 
-特定 Content の Page View 合計を取得します。
+Returns the total page views for one content entry.
 
-### Popular API
+#### Popular API
 
-```text id="ckwlsu"
+```text
 GET /popular?limit=&from=&to=
 ```
 
-人気 Content を取得します。
+Returns popular content.
 
-読み取り API は Storage Adapter が対応する Capability を宣言している場合だけ利用できます。
+Read APIs are available only when the storage adapter advertises the
+corresponding capability.
 
-## CORS
+### CORS
 
-Origin は既定で拒否されます。
+Origins are denied by default, so you normally name the site's origin explicitly.
 
-そのため、通常は Site の Origin を明示します。
-
-```ts id="esgw6e"
+```ts
 cors: {
-  allowedOrigins: [
-    "https://www.example.com",
-  ],
+  allowedOrigins: ["https://www.example.com"],
 }
 ```
 
-すべての Origin から利用可能にする場合は、
+To allow every origin, specify
 
-```text id="l9jd7z"
+```text
 "any"
 ```
 
-を指定できます。
+Use that only when you deliberately expose a public collector.
 
-これは意図的に Public Collector として公開する場合だけ使用してください。
+### CORS is not authentication
 
-## CORS は認証ではない
+Setting `allowedOrigins` does not make analytics events trustworthy. `Origin` is
+not authentication, so a third party can impersonate an allowed origin and send
 
-`allowedOrigins` を設定しても、Analytics Event が信頼できるようになるわけではありません。
-
-`Origin` は認証ではないため、第三者が許可された Origin を装って直接、
-
-```text id="k2uh06"
+```text
 POST /events
 ```
 
-を送信することは可能です。
+directly.
 
-```mermaid id="1d65qg"
+```mermaid
 flowchart LR
-    Site["正規Site"]
-    Fake["第三者"]
+    Site["Legitimate site"]
+    Fake["Third party"]
     Worker["Analytics Worker"]
 
     Site -->|"page_view"| Worker
-    Fake -->|"偽造可能"| Worker
+    Fake -->|"can forge"| Worker
 ```
 
-そのため、収集した Page View は**信頼できない計測データ**として扱います。
+Treat collected page views as **untrusted measurement data**.
 
-## Rate Limit
+### Rate limiting
 
-濫用を減らすため、任意で `rateLimit` を設定できます。
+To reduce abuse, you can optionally set `rateLimit`. It limits the number of
+requests per connecting IP in a fixed window. When the limit is exceeded it
+returns
 
-Rate Limit は接続元 IP ごとの固定時間窓で Request 数を制限します。
-
-上限を超えると、
-
-```text id="sjb59m"
+```text
 429 Too Many Requests
 ```
 
-を返します。
+#### D1 rate limiter
 
-### D1 Rate Limiter
+For production, use
 
-本番環境では、
-
-```text id="w2hvbq"
+```text
 D1AnalyticsRateLimiter
 d1RateLimiter(...)
 ```
 
-を利用できます。
-
-```ts id="24eqz6"
-d1RateLimiter(
-  db,
-  {
-    maxRequests: 100,
-    windowMs: 60_000,
-  },
-);
+```ts
+d1RateLimiter(db, { maxRequests: 100, windowMs: 60_000 });
 ```
 
-D1 上で Atomic Counter を管理するため、複数 Worker Isolate 間でも共有できます。
+Because it keeps an atomic counter on D1, it is shared across Worker isolates.
+If you use it, apply
 
-利用する場合は、
-
-```text id="nhoy4m"
+```text
 migrations/0002_analytics_rate_limits.sql
 ```
 
-をデプロイ前に適用してください。
+before deploying.
 
-### Memory Rate Limiter
+#### Memory rate limiter
 
-```text id="b8ct77"
-MemoryAnalyticsRateLimiter
-```
+`MemoryAnalyticsRateLimiter` is for tests and local development. It only holds
+process-local counters, so it is not shared across short-lived Worker isolates
+and is not suitable for limiting distributed production traffic.
 
-は Test / Local Development 用です。
+### Limits of rate limiting
 
-Process 内の Counter しか持たないため、短命な Worker Isolate 間では共有されません。
+Rate limiting is not authentication. It can mainly
 
-本番環境の分散した Request を制限する用途には適していません。
-
-## Rate Limit の限界
-
-Rate Limit は認証機能ではありません。
-
-できるのは主に、
-
-```text id="ggw3ba"
-単一Clientからの大量Request
+```text
+A large number of requests from a single client
         ↓
-一定量まで抑える
+Throttle down to a certain amount
 ```
 
-ことです。
+It cannot fully prevent events sent from many distributed clients, nor forged
+legitimate-looking page views. That is why it matters to
+**treat analytics data itself as untrusted even when CORS and rate limiting are
+configured.**
 
-複数の接続元から分散して Event を送信したり、正規の Page View を偽造したりすることを完全には防げません。
+### Privacy
 
-そのため、
+The analytics Worker does not read or store
 
-**CORS + Rate Limit を設定しても Analytics Data 自体を信頼済みデータとして扱わない**
-
-ことが重要です。
-
-## Privacy
-
-Analytics Worker は、
-
-```text id="hyx49s"
+```text
 Cookie
 User-Agent
 Fingerprint
 ```
 
-を読み取ったり保存したりしません。
+The `path` and `lang` in an event are also contextual metadata and are not stored
+in D1. Only when rate limiting is enabled does it read
 
-Event に含まれる、
-
-```text id="1mxpsk"
-path
-lang
-```
-
-も補助情報であり、D1 には保存されません。
-
-Rate Limit を有効にした場合だけ、
-
-```text id="l6fj21"
+```text
 CF-Connecting-IP
 ```
 
-を Rate Limit Key として読み取ります。
+as the rate-limit key. The D1 rate limiter stores that key only for the active
+rate-limit window.
 
-D1 Rate Limiter では、その Key を有効な Rate Limit Window の間だけ保存します。
+## Deploying
 
-## D1 を準備する
+The D1 schema is never created automatically during a request. Always apply the
+migrations before deploying:
 
-D1 Schema は Request 中に自動生成しません。
-
-必ずデプロイ前に Migration を適用します。
-
-```sh id="ez80bk"
-pnpm exec wrangler d1 execute ANALYTICS_DB \
-  --file node_modules/@riebeckite/analytics-cloudflare/migrations/0001_analytics_page_views.sql
-
-pnpm exec wrangler d1 execute ANALYTICS_DB \
-  --file node_modules/@riebeckite/analytics-cloudflare/migrations/0002_analytics_rate_limits.sql
+```sh
+pnpm exec wrangler d1 execute ANALYTICS_DB --file node_modules/@riebeckite/analytics-cloudflare/migrations/0001_analytics_page_views.sql
+pnpm exec wrangler d1 execute ANALYTICS_DB --file node_modules/@riebeckite/analytics-cloudflare/migrations/0002_analytics_rate_limits.sql
 ```
 
-1つ目は Analytics の集計用 Schema です。
+The first is the schema for analytics aggregation. The second is required if you
+use the D1 rate limiter.
 
-2つ目は D1 Rate Limit を利用する場合に必要です。
+Riebeckite ships analytics Worker templates:
 
-## Worker をデプロイする
-
-Riebeckite には Analytics Worker 用 Template があります。
-
-```text id="2ynl7a"
+```text
 templates/analytics-cloudflare/d1
 templates/analytics-cloudflare/kv
 ```
 
-利用する Storage に合わせて、Template を**独立した Worker Directory または Repository**へコピーします。
+Copy the template matching your storage into a **separate Worker directory or
+repository**.
 
-```text id="e2ag5w"
+```text
 my-site/
   └─ Static Riebeckite Site
 
@@ -734,39 +562,34 @@ my-analytics/
   └─ Analytics Worker
 ```
 
-Analytics Worker は専用の `main` を持ちます。
+The analytics Worker has its own `main`. Do not replace the static Riebeckite
+site's
 
-静的 Riebeckite Site の、
-
-```text id="c24u4u"
+```text
 wrangler.jsonc
 main
 ```
 
-を置き換えないでください。
+After applying the migrations, deploy the Worker:
 
-Migration を適用したら Worker をデプロイします。
-
-```sh id="n1m9do"
+```sh
 pnpm exec wrangler deploy
 ```
 
-デプロイ後、Site の `collectorUrl` に Worker の `/events` を設定します。
+Then point the site's `collectorUrl` at the Worker's `/events`:
 
-```ts id="y8ehx2"
+```ts
 analytics({
   // ...
-
   publicConfig: {
-    collectorUrl:
-      "https://analytics.example.com/events",
+    collectorUrl: "https://analytics.example.com/events",
   },
 });
 ```
 
-最終的な構成は次のようになります。
+The final arrangement looks like this:
 
-```mermaid id="l4oz7c"
+```mermaid
 flowchart LR
     Content["Markdown<br/>stable ID"]
     Build["Riebeckite Build"]
@@ -784,56 +607,44 @@ flowchart LR
 
 ## Diagnostics
 
-`@riebeckite/plugin-diagnostics` を利用している場合、Analytics Plugin が有効なのに安定 Content ID を持たない公開 Note を検出できます。
+`@riebeckite/plugin-diagnostics` reports an `analytics-untracked` finding (info
+severity) for each published note without a stable content ID when the config
+enables the analytics plugin.
 
-この場合、
-
-```text id="s53jzg"
-analytics-untracked
-```
-
-という `info` Diagnostic が報告されます。
-
-たとえば、
-
-```text id="j6n2dx"
-公開記事
+```text
+Published note
    ↓
-stable content ID がない
+No stable content ID
    ↓
 analytics-untracked
 ```
 
-となります。
+This makes tracking gaps visible directly in
 
-これによって Analytics の計測漏れを、
-
-```sh id="vl1o09"
+```sh
 pnpm exec riebeckite check
 pnpm exec riebeckite doctor
 pnpm exec riebeckite build
 ```
 
-などの Diagnostics から確認できます。
+It never modifies content. See
+[Diagnostics](../framework/diagnostics.md) for the check/doctor/inspect contract.
 
-Diagnostics は Content を自動変更しません。
+## Introduction flow
 
-詳しくは [Diagnostics](../framework/diagnostics.md) を参照してください。
+If you are adopting analytics for the first time, this order is the easiest to
+follow.
 
-## 導入の流れ
-
-初めて Analytics を導入する場合は、次の順番で進めると分かりやすくなります。
-
-```mermaid id="zhsgd5"
+```mermaid
 flowchart TD
-    ID["1. 計測するContentに<br/>stable IDを付ける"]
-    Worker["2. Analytics Workerを作る"]
-    Storage["3. D1またはKVを選ぶ"]
-    Migration["4. Migrationを適用"]
-    Deploy["5. WorkerをDeploy"]
-    Plugin["6. analytics Pluginを追加"]
-    URL["7. collectorUrlを設定"]
-    Check["8. check / doctorで確認"]
+    ID["1. Add a stable ID to<br/>content you want to measure"]
+    Worker["2. Create the Analytics Worker"]
+    Storage["3. Choose D1 or KV"]
+    Migration["4. Apply migrations"]
+    Deploy["5. Deploy the Worker"]
+    Plugin["6. Add the analytics plugin"]
+    URL["7. Set collectorUrl"]
+    Check["8. Verify with check / doctor"]
 
     ID --> Worker
     Worker --> Storage
@@ -844,32 +655,32 @@ flowchart TD
     URL --> Check
 ```
 
-本番環境で Page View の集計やランキングを利用する場合は D1 が必要です。
+D1 is required to use page-view aggregation and rankings in production. Limit KV
+to uses that need only `capture`.
 
-KV は `capture` のみを必要とする用途に限定してください。
+## Summary
 
-## まとめ
+Riebeckite analytics separates the static site from the analytics backend.
 
-Riebeckite Analytics は、静的 Site と Analytics Backend を分離しています。
-
-```text id="rnbq84"
+```text
 Static Riebeckite Site
   ↓
 @riebeckite/plugin-analytics
   ↓
 page_view
   ↓
-独立した Analytics Worker
+Standalone Analytics Worker
   ↓
 D1 / KV
 ```
 
-Site は静的なまま維持され、Analytics の Storage や Cloudflare 固有処理は Site や Core に入りません。
+The site stays static, and analytics storage or Cloudflare-specific processing
+never enters the site or the core.
 
-また、
+It also separates the following roles:
 
-```text id="d4ph7x"
-Content Identity
+```text
+Content identity
   → stable content ID
 
 Public metadata
@@ -879,17 +690,18 @@ Storage
   → D1 / KV
 
 Abuse mitigation
-  → CORS / Rate Limit
+  → CORS / rate limit
 ```
 
-という役割を分離しています。
+In particular, CORS and rate limiting are not authentication that guarantees the
+validity of analytics events. Treat collected page views as untrusted
+measurement data.
 
-特に、CORS や Rate Limit は Analytics Event の正当性を保証する認証機能ではありません。収集された Page View は信頼できない計測データとして扱ってください。
+## Reading list
 
-### 関連資料
-
-- [Content System](../framework/content-system.md#安定-content-id) — 安定 Content ID
-- [Diagnostics](../framework/diagnostics.md) — Structured Finding と `check` / `doctor`
-- [Reference](../reference/README.md) — 公開 Package と API
-- [HonoX Integration](../framework/honox-integration.md) — 静的 Site の Build
-- [Deployment](./deployment/README.md) — Site のデプロイ
+- [Content System](../framework/content-system.md#stable-content-ids) — stable content IDs
+- [Diagnostics](../framework/diagnostics.md) — structured findings, `check`, and `doctor`
+- [Framework Reference](../reference/README.md) — public package surface
+- [HonoX Integration](../framework/honox-integration.md) — the static site build this
+  Worker runs beside
+- [Usage Guide](./README.md) — deployment of the static site

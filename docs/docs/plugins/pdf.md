@@ -1,30 +1,99 @@
+<!-- Generated from packages/plugins/pdf/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # PDF
 
-PDF コンテンツや PDF 埋め込みを扱うための Plugin です。
+Inline PDF attachment viewing for Obsidian wikilinks.
 
-## 導入
+[日本語](./pdf.ja.md)
 
-```bash
-npm install @riebeckite/plugin-pdf
+## Overview
+
+`pdf()` renders embedded PDF attachments (`![[report.pdf]]`) with the
+browser-native PDF viewer instead of a download-only card. The renderer is
+SSR/build-time only; no client JavaScript is required.
+
+`@riebeckite/plugin-obsidian-markdown` resolves a non-image, non-Markdown
+wikilink target to the generic `attachment` render kind, so PDFs are detected
+by their `.pdf` extension. A literal `kind: "pdf"` target is also accepted, so
+the plugin keeps working if a producer reports a PDF-specific kind later.
+
+The renderer runs before `@riebeckite/plugin-attachment` and
+`@riebeckite/plugin-media` (plugin `order: -20`), so a PDF embed is never
+captured by the generic attachment card. Register `attachment()` alongside to
+keep download links for non-PDF files.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { pdf } from "@riebeckite/plugin-pdf";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), attachment(), pdf()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Rendering
 
-## 使用例
+Embed (`![[report.pdf]]`):
 
-記事から PDF を参照したときに、単なる外部リンクではなく閲覧しやすい形で扱いたい場合に利用します。
-
-```markdown
-[[documents/guide.pdf|資料]]
+```html
+<figure class="rr-pdf" data-pdf-path="..." style="--rr-pdf-height: 640px">
+  <object
+    class="rr-pdf__viewer"
+    data="/assets/attachments/report.pdf#page=1"
+    type="application/pdf"
+    aria-label="report.pdf"
+  >
+    <a class="rr-pdf__fallback" href="..." download>Download PDF</a>
+  </object>
+  <figcaption class="rr-pdf__meta">
+    <span class="rr-pdf__format">PDF</span>
+    <span class="rr-pdf__name">report.pdf</span>
+    <span class="rr-pdf__size">1.2 MB</span>
+    <a class="rr-pdf__download" href="..." download>Download PDF</a>
+  </figcaption>
+</figure>
 ```
 
-`![[report.pdf]]` はビルド時にページ内 PDF ビューアへ置き換わり、ダウンロード用リンクとファイル情報も併記されます。表示には PDF ファイルの配置が必要です。
+- The `<object>` uses the browser's built-in PDF viewer; its nested link is the
+  graceful fallback for clients without PDF support.
+- A visible download link and the format badge, file name, and size are always
+  available below the viewer. Size is read from `config.content.directory` and
+  omitted when the file cannot be read.
+- `initialPage` and `toolbar` are encoded as the viewer URL fragment
+  (`#page=2&toolbar=0`). This is the cross-browser convention; individual PDF
+  viewers may ignore parts of it.
+- The embed carries the stable `rr-pdf` root hook that themes may target.
 
-## 使いどころ
+Plain links (`[[report.pdf]]`) are left to `@riebeckite/plugin-attachment` (or
+the Markdown fallback), which renders the existing download link.
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Options
 
-## 詳細仕様
+| Option          | Type               | Default          | Description                                                       |
+| --------------- | ------------------ | ---------------- | ----------------------------------------------------------------- |
+| `height`        | `string \| number` | `"640px"`        | Viewer height. Numbers become pixels; strings are CSS lengths.    |
+| `initialPage`   | `number`           | `1`              | First page the native viewer opens.                               |
+| `toolbar`       | `boolean`          | `true`           | `false` appends `#toolbar=0` to hide the viewer toolbar.          |
+| `showMetadata`  | `boolean`          | `true`           | Show the format badge, file name, and size under the viewer.      |
+| `downloadLabel` | `string`           | `"Download PDF"` | Label for the download links.                                     |
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+Styles ship in `style.css`.
 
+## Exports
+
+- `pdf(options?)` / `pdfPlugin` — plugin factory
+- `buildPdfViewerUrl(url, options)` — viewer URL builder
+- `isPdfRenderTarget(context)` — PDF target predicate
+- `renderPdf(context, options)` — renderer implementation
+- Types: `PdfOptions`, `ResolvedPdfOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.md)
+- [`@riebeckite/plugin-attachment`](./attachment.md)

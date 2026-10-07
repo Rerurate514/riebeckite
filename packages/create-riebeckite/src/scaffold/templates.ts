@@ -396,8 +396,8 @@ function readmeEn(
     lines.push(`## ${words.extending}`, "");
     lines.push(words.extendingBody, "");
     lines.push(
-      `- Docs: [English](${REPO}/blob/main/docs/README.en.md)`,
-      `  · [日本語](${REPO}/blob/main/docs/README.md)`,
+      `- Docs: [English](${REPO}/blob/main/docs/README.md)`,
+      `  · [日本語](${REPO}/blob/main/docs/README.ja.md)`,
       "",
     );
   }
@@ -465,8 +465,8 @@ function readmeJa(
     lines.push(`## ${words.extending}`, "");
     lines.push(words.extendingBody, "");
     lines.push(
-      `- ドキュメント: [English](${REPO}/blob/main/docs/README.en.md)`,
-      `  · [日本語](${REPO}/blob/main/docs/README.md)`,
+      `- ドキュメント: [English](${REPO}/blob/main/docs/README.md)`,
+      `  · [日本語](${REPO}/blob/main/docs/README.ja.md)`,
       "",
     );
   }
@@ -497,7 +497,7 @@ function deploymentSecretLines(language: "en" | "ja"): readonly string[] {
     `- \`${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN}\` — in the **content repository**. Lets its \`notify-site.yml\` dispatch updates to this site. Use a fine-grained token scoped to this site repository with **Contents: read and write**.`,
     `- \`${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN}\` and \`${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID}\` — in **this site repository** for the Cloudflare deploy.`,
     "",
-    `The workflows reference these secret names and never contain their values. Never commit the values. See the [separate content repository guide](${REPO}/blob/main/docs/docs/guides/deployment/separate-content-repository.en.md) for the full setup.`,
+    `The workflows reference these secret names and never contain their values. Never commit the values. See the [separate content repository guide](${REPO}/blob/main/docs/docs/guides/deployment/separate-content-repository.md) for the full setup.`,
     "",
   ];
 }

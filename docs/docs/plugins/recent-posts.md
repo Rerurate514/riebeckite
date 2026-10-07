@@ -1,26 +1,76 @@
+<!-- Generated from packages/plugins/recent-posts/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Recent Posts
 
-最近のコンテンツを一覧表示するための Plugin です。
+Recent posts list rendering: shows the latest published notes sorted by
+frontmatter date.
 
-## 導入
+[日本語](./recent-posts.ja.md)
 
-```bash
-npm install @riebeckite/plugin-recent-posts
+## Overview
+
+`recentPosts()` provides a `RecentPosts` component that renders an ordered list
+of recently posted articles. `getRecentPosts()` reads
+`manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
+excluded. It derives a date from the frontmatter (`date` falling back to
+`created`), sorts newest first, and truncates to `limit` items. Notes without a
+parseable date are dropped. Whether and where to place the list is the site's
+decision.
+
+With no posts, the component renders nothing.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+
+export default defineConfig({
+  // ...
+  plugins: [recentPostsPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`recentPostsPlugin()` registers the plugin in the plugin list and bundles
+`style.css` into the app stylesheet.
 
-## 使用例
+### Render the component
 
-ホームや一覧ページで「最近更新・公開された記事」を見せたい場合に利用します。ブログや更新頻度の高い Digital Garden の入口に向いています。
+```tsx
+import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
+import { content } from "../content";
 
-ホームや一覧ページの article component 内で `RecentPosts`（`getRecentPosts` で取得した一覧）を描画します。記事が0件の場合は何も表示されません。
+const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 
-## 使いどころ
+// ...in your route
+return <Article afterContent={<RecentPosts posts={recentPosts} />} />;
+```
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+`getRecentPosts()` filters out the `index` note before collecting posts.
 
-## 詳細仕様
+## Component
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+`RecentPosts({ posts })` renders a
+`<section class="recent-posts rr-recent-posts">` with a heading and an ordered
+list. Each item links to the post and shows its date formatted for the
+`en-US` locale. The `rr-recent-posts` root hook is the stable class themes may
+target.
 
+## Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `manifest` | `Pick<ContentManifest, "discoverableEntries">` | — | Source of candidate posts |
+| `limit` | `number` | `5` | Maximum number of posts to return |
+
+## Exports
+
+- `recentPostsPlugin()` — plugin factory
+- `RecentPosts` — list component (default export of `components/recent-posts.tsx`)
+- `getRecentPosts({ manifest, limit? })` — collects the latest discoverable
+  posts
+- Type: `RecentPost` (`{ slug, permalink, title, postedAt }`)
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

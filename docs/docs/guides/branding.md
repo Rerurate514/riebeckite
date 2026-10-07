@@ -1,38 +1,38 @@
-# サイトのアイコンとロゴ
+# Branding your site
 
-Theme は、色・タイポグラフィ・余白・レイアウトなど、Riebeckite サイトの見た目を決めます。一方で、サイトをそのサイトらしくするアイコン・ヘッダーのロゴ・リンクプレビュー画像は Theme の外側にあります。このガイドでは、これらのアセットを差し替えます。サイト全体の見た目を変えたい場合は [最初の Theme を変える](../getting-started/first-theme.md) を参照してください。
+A theme controls how every Riebeckite site looks — colors, typography, spacing, and layout. The assets that make a site yours — its icon, header logo, and link preview image — live outside the theme. This guide replaces them. To change the look of the site itself, see [Change Your Theme](../getting-started/first-theme.md).
 
-## サイトアイコン
+## Site icon
 
-生成されたサイトには `public/favicon.ico` が含まれ、`app/routes/_renderer.tsx` から参照されています。
+Generated sites ship `public/favicon.ico` and reference it from `app/routes/_renderer.tsx`:
 
 ```tsx
 <link rel="icon" href="/favicon.ico" />
 ```
 
-この構成のまま使う場合は、`public/favicon.ico` を同じ名前の ICO ファイルで置き換えます。コードの変更は不要です。
+To keep this setup, replace `public/favicon.ico` with an ICO file of the same name. No code change is needed.
 
-PNG や SVG を使う場合は、ファイルを `public/` に置き、`href` を変更します。URL から形式が分からない場合は `type` も指定します。
+To use a PNG or SVG icon instead, put the file under `public/` and update the `href`. Add `type` when the URL does not make the format obvious:
 
 ```tsx
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 ```
 
-## ヘッダーのロゴ
+## Header logo
 
-`starter` と `showcase` の preset ではヘッダーが表示されます。`app/components/site-header.tsx` は、28×28 のロゴの隣にサイト名を表示します。
+The `starter` and `showcase` presets render a header. `app/components/site-header.tsx` shows the site title next to a 28×28 logo:
 
 ```tsx
 <img src="/riebeckite-logo.png" alt="" class="site-header__logo" width="28" height="28" />
 ```
 
-`public/riebeckite-logo.png` を自分の画像に置き換えます。正方形で背景が透明な PNG がレイアウトになじみます。ファイル名を変える場合は `src` も合わせて変更します。
+Replace `public/riebeckite-logo.png` with your own image. A square PNG with a transparent background fits the layout best. If you rename the file, update `src` to match.
 
-`empty` と `minimal` の preset にはヘッダーがないため、置き換えるロゴもありません。
+The `empty` and `minimal` presets have no header, so there is no logo to replace.
 
-## リンクプレビュー画像
+## Link preview image
 
-リンクプレビュー（Open Graph 画像）には、フォールバックとして `site.defaultOgImage` が使われます。`riebeckite.config.ts` の `site` に追加します。
+Link previews (Open Graph images) use `site.defaultOgImage` as their fallback. Add the field to the `site` block in `riebeckite.config.ts`:
 
 ```ts
 site: {
@@ -42,24 +42,24 @@ site: {
 },
 ```
 
-ファイルは `public/` に置きます（この例では `public/ogp.png` が `/ogp.png` で配信されます）。1200×630 の PNG または JPEG が一般的なサイズです。`site.baseUrl` を実際の公開 URL に設定しておくと、生成されるメタデータの画像 URL が正しくなります。
+Put the file under `public/` (here `public/ogp.png`) so it is served at `/ogp.png`. A 1200×630 PNG or JPEG is the common size. Set `site.baseUrl` to the real public URL so the absolute image URL in generated metadata is correct.
 
-ページごとに画像を上書きすることもできます。[SEO Plugin](../plugins/seo.md) は frontmatter の `image` / `ogImage` を読み取り、なければ `site.defaultOgImage` を使います。
+Individual pages can override the fallback. The [SEO plugin](../plugins/seo.md) reads `image` or `ogImage` from frontmatter, falling back to `site.defaultOgImage`.
 
-## タイトルと説明
+## Title and description
 
-`site.title` はサイト名、`site.description` は SEO や Feed で使われる説明です。[サイト設定を確認する](../getting-started/installation.md#サイト設定を確認する) で一度だけ設定します。`site` ブロックの全体は [Configuration](../reference/configuration.md) を参照してください。
+`site.title` is the site name and `site.description` is the summary used by SEO and feeds. Set them once when you [point the settings at your site](../getting-started/installation.md#point-the-settings-at-your-site). The full `site` block is documented in [Configuration](../reference/configuration.md).
 
-## 確認
+## Verify
 
-開発サーバーを起動し、ブラウザのタブとヘッダーを確認します。
+Run the development server and check the browser tab and the header:
 
-```bash
+```sh
 npm exec riebeckite dev
 ```
 
-続けてビルドし、アセットが `dist/` にコピーされることを確認します。
+Then build and confirm the assets are copied to `dist/`:
 
-```bash
+```sh
 npm exec riebeckite build
 ```

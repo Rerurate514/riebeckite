@@ -99,5 +99,5 @@ fenced 코드 블록을 다이어그램·차트·슬라이드로 전환.
 | [`@riebeckite/plugin-quality`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md) | 정적 품질·접근성 검사. |
 
 
-Riebeckite: [documentation](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.en.md) · [日本語ドキュメント](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md)
+Riebeckite: [documentation](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md) · [日本語ドキュメント](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.ja.md)
 

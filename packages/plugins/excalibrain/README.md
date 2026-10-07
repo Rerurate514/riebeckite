@@ -188,5 +188,5 @@ wrapping an `<a href>` around its `<rect>` and `<text>`. Links are
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 

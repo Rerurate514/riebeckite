@@ -1,26 +1,69 @@
+<!-- Generated from packages/plugins/deploy/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Deploy
 
-公開・デプロイに関係する処理を拡張するための Plugin です。
+Static hosting output helpers for Riebeckite. The plugin prepares the files a
+deploy target needs and emits them through the build's generated-output sink.
+It does not upload anything and never writes to the filesystem.
 
-## 導入
+[日本語](./deploy.ja.md)
 
-```bash
-npm install @riebeckite/plugin-deploy
+## Overview
+
+`deployPlugin()` reads public redirects from the content manifest and plans the
+provider-specific files for Cloudflare Pages, Netlify, Vercel, or GitHub Pages.
+All planning is pure and deterministic: no timestamps, no randomness, and a
+stable path order.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { deployPlugin } from "@riebeckite/plugin-deploy";
+
+export default defineConfig({
+  plugins: [
+    deployPlugin({
+      provider: ["cloudflare-pages", "github-pages"],
+      cname: "example.com",
+      headers: { "X-Frame-Options": "DENY" },
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+Redirects come only from `manifest.publicRedirects`, so unpublished notes never
+leak their old paths into deploy files. A redirect whose target slug is missing
+is skipped and reported with a `deploy-unresolved-redirect` diagnostic.
 
-## 使用例
+## Per-provider output
 
-Riebeckiteサイトをビルド後の公開先へ届ける処理をPluginとして組み込みたい場合に利用します。実際のデプロイ手順は環境ごとに異なるため、[Deployment Guide](../guides/deployment/README.md) と併せて確認してください。
+| Provider | Files |
+| --- | --- |
+| `cloudflare-pages`, `netlify` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
+| `vercel` | `vercel.json` |
+| `github-pages` | `.nojekyll`, `404.html`, `CNAME` (when configured), one `<from>/index.html` meta-refresh stub per redirect |
 
-ビルド出力に、対象プロバイダの設定ファイルが生成されます。Cloudflare Pages / Netlify 向けの `_redirects` と `_headers`、Vercel 向けの `vercel.json`、GitHub Pages 向けの `.nojekyll` と `CNAME` などです。
+GitHub Pages has no `_redirects` syntax, so every redirect becomes an HTML stub
+with a meta refresh and a `<link rel="canonical">`. A redirect from `/` is
+skipped because the root cannot be stubbed.
 
-## 使いどころ
+## Public API
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `deployPlugin(options: DeployOptions): RiebeckitePlugin`
+- `planDeployOutputs({ provider, redirects, options }): DeployOutput[]`
+- `renderRedirectLines(redirects): string`
+- `renderVercelConfig({ redirects, options }): string`
+- `renderRedirectStub(redirect): string`
 
-## 詳細仕様
+## Notes
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+- Multiple providers are unioned. Identical files collapse into one; the same
+  path with different content throws.
+- Redirect `from` values are resolved (`.` and `..` segments) before they become
+  output paths, and every planned path passes `normalizeGeneratedOutputPath`.
+- Uploading, cache invalidation, and provider authentication are out of scope.
 
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

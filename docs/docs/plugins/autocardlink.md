@@ -1,43 +1,102 @@
+<!-- Generated from packages/plugins/autocardlink/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # AutoCardLink
 
-`cardlink` コードブロックをリンクプレビューカードとして描画する Plugin です。
+Render `cardlink` code blocks as link preview cards.
 
-## 導入
+[日本語](./autocardlink.ja.md)
 
-```bash
-npm install @riebeckite/plugin-autocardlink
-```
+## Overview
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`autoCardLinkPlugin()` replaces fenced `cardlink` code blocks with an
+anchor-style link card (title, description, favicon, host, and an optional
+image). Styles ship in `style.css`.
 
-## 使用例
-
-URL だけでなく、タイトル・説明・favicon・プレビュー画像を添えたカードとしてリンクを表示したい場合に利用します。
-
-````markdown
 ```cardlink
 url: https://example.com/post
 title: "Example post"
 description: "A short summary of the linked page."
 host: example.com
+favicon: https://example.com/favicon.ico
+image: https://example.com/og.png
+```
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+
+export default defineConfig({
+  // ...
+  plugins: [autoCardLinkPlugin()],
+});
+```
+
+## Syntax
+
+````
+```cardlink
+url: https://example.com/post
+title: "Example post"
+description: "A short summary of the linked page."
+host: example.com
+favicon: https://example.com/favicon.ico
+image: https://example.com/og.png
 ```
 ````
 
-```cardlink
-url: https://riebeckite.dev/
-title: "Riebeckite — Markdown と Obsidian のサイトフレームワーク"
-description: "Markdown や Obsidian のノートから、拡張できる Web サイトを作るオープンソースフレームワークです。コンテンツはそのままに、Plugin と Theme でサイトを組み立てられます。"
-host: riebeckite.dev
-favicon: https://riebeckite.dev/favicon.ico
-image: https://riebeckite.dev/ogp.png
-```
+| Field | Description |
+| ----- | ----------- |
+| `url` | Link target. Required — blocks without `url` are left untouched |
+| `title` | Card title (double quotes optional). Falls back to `url` |
+| `description` | Card description (double quotes optional) |
+| `host` | Host label. Defaults to the `url` hostname; falls back to `url` when the hostname cannot be parsed |
+| `favicon` | Favicon image URL |
+| `image` | Preview image URL. Without it the card uses the no-image layout |
 
-## 使いどころ
+`title` and `description` may be wrapped in double quotes; escaped quotes
+(`\"`) inside them are unescaped. `url`, `image`, and `favicon` must use an
+`http(s)` or relative URL — unsafe schemes such as `javascript:` are rejected
+(the whole block is skipped for `url`, and the asset is dropped otherwise).
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+Rendered cards open in a new tab (`target="_blank" rel="noopener
+noreferrer"`). The preview image and favicon are lazy-loaded and marked
+`data-lightbox-ignore="true"` so they are skipped by
+`@riebeckite/plugin-lightbox`.
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+Each card is a `div.rr-cardlink` container holding the card link
+(`a.rr-cardlink__card`) and a copy button (`button.rr-cardlink__copy`) that
+copies the URL to the clipboard. The copy button appears on hover/focus on
+desktop and is always visible on touch devices. Cards respond to container
+queries: at narrow widths the description is hidden first, then the preview
+image.
 
-## 詳細仕様
+## Options
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `className` | `string` | `(none)` | Extra CSS class added to the card root. The `rr-cardlink` hook is always applied |
+
+## Exports
+
+- `autoCardLinkPlugin(options?)` — plugin factory
+- `remarkAutoCardLink(options?)` — remark transform usable on its own
+- Types: `AutoCardLink`, `AutoCardLinkOptions`
+
+## Not supported (yet)
+
+The card is built only from the fields written in the fenced block. It does not
+fetch the target page, so it never derives metadata on its own. In particular:
+
+- Local Obsidian image embeds such as `[[image.png]]` are not resolved; `image`
+  and `favicon` accept URLs only.
+- Wikilinks are not resolved inside `favicon` or `image`.
+- The Obsidian Auto Card Link `data-auto-card-link-depth` option is not
+  implemented.
+- Open Graph metadata is not fetched or cached; `title`, `description`, and
+  `image` must be authored explicitly.
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

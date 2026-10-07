@@ -1,0 +1,46 @@
+# QR Code
+
+コンテンツ内で QR コードを生成・表示する Plugin です。
+
+## 導入
+
+```bash
+npm install @riebeckite/plugin-qr-code
+```
+
+Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+
+## 使用例
+
+記事内のURLや文字列をQRコードとして提示したい場合に利用します。スマートフォンへURLを渡したい手順書やイベント資料などで利用できます。
+
+### ソース
+
+````md
+```qr
+# caption: Project page
+https://example.com/
+```
+````
+
+### 実行例
+
+```qr
+# caption: Project page
+https://example.com/
+```
+
+## 動作
+
+`qr` フェンスは、QR コード、任意のキャプション、元のペイロードの順に描画します。ペイロードは常にアクセシブルなテキストとして残し、`http`、`https`、`mailto`、`tel` のときだけリンクにします。それ以外の値はリンクにせずテキストのまま表示します。
+
+## 使いどころ
+
+この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+
+実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+
+## 詳細仕様
+
+設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+

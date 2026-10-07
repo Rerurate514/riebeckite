@@ -1,44 +1,86 @@
+<!-- Generated from packages/plugins/mermaid/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Mermaid
 
-Mermaid のコードブロックを図として表示する Plugin です。フローチャートなどを Markdown 内に記述できます。
+Mermaid diagram rendering for ` ```mermaid ` code blocks.
 
-## 導入
+[日本語](./mermaid.ja.md)
 
-```bash
-npm install @riebeckite/plugin-mermaid
+## Overview
+
+`mermaid()` replaces mermaid code blocks with a `<figure class="rr-mermaid">`
+that renders to SVG. Diagrams are rendered at build time with a headless browser by
+default, with an automatic client-side fallback. It runs with `order: -10`.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { mermaid } from "@riebeckite/plugin-mermaid";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    mermaid({
+      render: "build",
+      theme: { light: "default", dark: "dark" },
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Behavior
 
-## 使用例
+### Build
 
-記事内に Mermaid のコードブロックを書くと、その場で図として表示できます。
+- Replaces each ` ```mermaid ` `<pre>` with a `figure.rr-mermaid` containing:
+  - `figcaption.rr-mermaid__caption` — from the code block title or a
+    `%% caption: ...` line in the source
+  - `div.rr-mermaid__canvas` — the diagram (`role="img"`, labelled by the
+    caption when present)
+  - `details.rr-mermaid__fallback` — collapsible diagram source
+- Static SVG is rendered at build time when `render` is `"build"` or
+  `"both"` by running the Mermaid browser API in Puppeteer's headless Chromium.
+  Rendering uses Chromium's layout engine, not JSDOM polyfills or custom
+  `getBBox` / text-width estimation
+- Mermaid runs with `securityLevel: "strict"`, the selected theme, transparent
+  background, and a unique SVG id per diagram
+- Invalid diagrams report `ruleId: "invalid-diagram"`; Chromium renderer
+  failures report `ruleId: "renderer-error"`. When build SVG is unavailable,
+  the figure remains `data-mermaid="pending"` for client fallback
 
-### ソース
+### Client (`initMermaidDiagrams`)
 
-````markdown
-```mermaid
-graph LR
-  A[Markdown] --> B[Riebeckite]
-  B --> C[Web site]
-```
-````
+- Loads Mermaid from the CDN (jsDelivr, Mermaid 11) unless `globalThis.mermaid`
+  or an injected instance is provided
+- Renders every `[data-mermaid="pending"]` figure; failures set
+  `data-mermaid="error"` (placeholder message via CSS)
+- When `theme` is `{ light, dark }`, the theme is chosen from
+  `html[data-theme]` or `prefers-color-scheme`
 
-### 実行例
+## Options
 
-```mermaid
-graph LR
-  A[Markdown] --> B[Riebeckite]
-  B --> C[Web site]
-```
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `render` | `"build" \| "client" \| "both"` | `"build"` | When diagrams are rendered |
+| `theme` | `string \| { light: string; dark: string }` | `{ light: "default", dark: "dark" }` | Mermaid theme |
+| `caption` | `boolean` | `true` | Show title / `%% caption:` as `figcaption` |
+| `fallback` | `boolean` | `true` | Show the diagram source in `<details>` |
 
-## 使いどころ
+`render` modes:
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `"build"` — render SVG at build time; diagrams that fail fall back to client
+  rendering
+- `"client"` — skip build-time rendering, render in the browser only
+- `"both"` — compatibility alias. It currently behaves like `"build"`: build
+  first, then client fallback only when build rendering fails
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+## Exports
 
-## 詳細仕様
+- `mermaid(options?)` — plugin factory
+- Types: `MermaidOptions`, `MermaidClientOptions`, `MermaidRenderMode`,
+  `MermaidTheme`
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## See also
 
+- [Plugin guide](../reference/plugin-api.md)

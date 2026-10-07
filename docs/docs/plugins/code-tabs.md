@@ -1,48 +1,103 @@
+<!-- Generated from packages/plugins/code-tabs/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Code Tabs
 
-複数のコードブロックをタブとしてまとめて表示する Plugin です。
+Groups adjacent code blocks with `tab="..."` metadata into an accessible tab UI.
 
-## 導入
+[日本語](./code-tabs.ja.md)
 
-```bash
-npm install @riebeckite/plugin-code-tabs
+## Installation
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { codeTabs } from "@riebeckite/plugin-code-tabs";
+
+export default defineConfig({
+  // ...
+  plugins: [codeTabs()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+The plugin registers its own `style.css` and client entry (`initCodeTabs`).
 
-## 使用例
+## Config
 
-同じ処理を複数の言語やパッケージマネージャーで示すドキュメントに向いています。たとえば `npm` / `pnpm` / `bun` のコマンドを切り替えて提示できます。
+```ts
+codeTabs({
+  syncTabs: false,
+});
+```
 
-### ソース
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `syncTabs` | `boolean` | `false` | When enabled, selecting a label such as `TypeScript` also selects the same label in other code-tab groups on the page. |
 
-````markdown
+## Syntax
+
+````md
+```dart tab="Flutter"
+void main() {}
+```
+
 ```ts tab="React"
-const greeting = "Hello from React";
-```
-
-```js tab="Vanilla"
-console.log("Hello from JavaScript");
+console.log("Hello");
 ```
 ````
 
-### 実行例
+Regular code blocks without `tab="..."` are not changed.
 
-```ts tab="React"
-const greeting = "Hello from React";
+## Grouping rules
+
+Adjacent `tab="..."` code blocks become one group. Any other content ends the
+current group.
+
+````md
+```dart tab="Dart"
+```
+```ts tab="TypeScript"
+```
+````
+
+The two blocks above are one group.
+
+````md
+```dart tab="Dart"
 ```
 
-```js tab="Vanilla"
-console.log("Hello from JavaScript");
+Text between blocks.
+
+```ts tab="TypeScript"
 ```
+````
 
-## 使いどころ
+The paragraph separates them into different groups.
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Using with code-enhance
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+`@riebeckite/plugin-code-tabs` does not import or depend on
+`@riebeckite/plugin-code-enhance`. It detects both normal `<pre><code>` blocks
+and enhanced `rehype-pretty-code` figures, then wraps the whole rendered code
+block as a panel. Syntax highlighting, filename headers, copy buttons, wrap,
+collapse, line numbers, and diff/highlight markup are preserved as much as
+possible.
 
-## 詳細仕様
+Place `codeTabs()` after `codeEnhance()` if both plugins are enabled so tabs wrap
+the enhanced code block output.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Accessibility
 
+The generated HTML uses `role="tablist"`, `role="tab"`, and `role="tabpanel"`.
+The client supports click, `ArrowLeft`, `ArrowRight`, `Home`, `End`, `Enter`, and
+`Space`, and keeps `aria-selected` and `tabindex` in sync. Without JavaScript,
+all panels remain visible so every code block can still be read.
+
+## Exports
+
+- `codeTabs(options?)` — plugin factory
+- `rehypeCodeTabs(options?)` — rehype transform
+- `initCodeTabs(options?)` — client initializer
+- Types: `CodeTabsOptions`, `CodeTabsClientOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

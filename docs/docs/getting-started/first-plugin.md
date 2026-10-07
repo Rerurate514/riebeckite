@@ -1,14 +1,14 @@
-# 最初の Plugin を追加する
+# Add Your First Plugin
 
-Plugin は Riebeckite サイトに検索や図表、埋め込みなどの機能を追加します。このガイドでは **highlight** プラグインを追加し、`==二重イコール==` 構文でテキストをハイライトできるようにします。
+Plugins add features to your Riebeckite site — search, diagrams, embeds, and more. This guide walks through adding the **highlight** plugin, which lets you mark text with `==double equals==` syntax.
 
-> 見た目を変えたい場合は [最初の Theme を変える](./first-theme.md) を参照してください。
+> Want to change how the site looks instead? See [Change Your Theme](./first-theme.md).
 
 ---
 
-## 1. インストール
+## 1. Install
 
-生成されたサイトのディレクトリで次のコマンドを実行してください。
+In your generated site directory:
 
 ```sh
 npm install @riebeckite/plugin-highlight
@@ -16,9 +16,9 @@ npm install @riebeckite/plugin-highlight
 
 ---
 
-## 2. インポート
+## 2. Import
 
-`riebeckite.config.ts` を開き、先頭にインポートを追加してください。
+Open `riebeckite.config.ts` and add the import at the top:
 
 ```ts
 import { highlight } from "@riebeckite/plugin-highlight";
@@ -26,40 +26,40 @@ import { highlight } from "@riebeckite/plugin-highlight";
 
 ---
 
-## 3. Plugin を追加
+## 3. Add the Plugin
 
-`plugins` 配列に `highlight()` を追加してください。
+Find the `plugins` array in your config and add `highlight()`:
 
 ```ts
 plugins: [
-  // ... 既存の plugin
+  // ... existing plugins
   highlight(),
 ],
 ```
 
 ---
 
-## 4. 試す
+## 4. Try It
 
-開発サーバーを再起動 (または起動) してください。
+Restart the dev server (or start it if not running):
 
 ```sh
 npm exec riebeckite dev
 ```
 
-サイトを開き、Markdown ファイル (例: `content/index.md`) を編集してハイライトを書いてください。
+Open your site and edit a Markdown file (e.g., `content/index.md`). Add some highlighted text:
 
 ```md
-この文には ==ハイライトされる語句== が含まれています。
+This sentence has a ==highlighted phrase== inside it.
 ```
 
-保存してページを見ると、`==` で囲まれた部分がハイライトされています。
+Save and check the page — the text between `==` is now highlighted.
 
 ---
 
-## 5. 次のステップ
+## 5. Next Steps
 
-- [Plugin リファレンス](../plugins/README.md) で他の Plugin を探す
-- 図表用に `@riebeckite/plugin-mermaid` を試す
-- グラフ可視化用に `@riebeckite/plugin-graphviz` を試す
-- [自作 Plugin の書き方](../plugins/writing-a-plugin.md) を学ぶ
+- Explore more plugins in the [Plugins reference](../plugins/README.md)
+- Try `@riebeckite/plugin-mermaid` for diagrams
+- Try `@riebeckite/plugin-graphviz` for graph visualizations
+- Learn to [write your own plugin](../plugins/writing-a-plugin.md)

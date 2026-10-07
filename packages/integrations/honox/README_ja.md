@@ -90,8 +90,8 @@ Plugin は generated Site が import する bootstrap module も提供します�
 
 ## 関連資料
 
-- [HonoX Integration](../../../docs/docs/framework/honox-integration.md)
-- [CLI Reference](../../../docs/docs/reference/cli.md)
-- [Configuration](../../../docs/docs/reference/configuration.md)
-- [Plugin System](../../../docs/docs/reference/plugin-api.md) / [Theme System](../../../docs/docs/reference/theme-api.md)
+- [HonoX Integration](../../../docs/docs/framework/honox-integration.ja.md)
+- [CLI Reference](../../../docs/docs/reference/cli.ja.md)
+- [Configuration](../../../docs/docs/reference/configuration.ja.md)
+- [Plugin System](../../../docs/docs/reference/plugin-api.ja.md) / [Theme System](../../../docs/docs/reference/theme-api.ja.md)
 

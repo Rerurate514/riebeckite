@@ -1,26 +1,82 @@
+<!-- Generated from packages/plugins/canvas/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Canvas
 
-Obsidian Canvas の内容を公開ページ内で表示するための Plugin です。
+Render Obsidian `.canvas` files (JSON Canvas 1.0) as diagrams.
 
-## 導入
+[日本語](./canvas.ja.md)
 
-```bash
-npm install @riebeckite/plugin-canvas
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { canvas } from "@riebeckite/plugin-canvas";
+
+export default defineConfig({
+  // ...
+  plugins: [canvas({ render: "both" })],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+The plugin runs with `order: -15`, after `obsidian-markdown`.
 
-## 使用例
+## Accepted inputs
 
-Obsidian Canvas で作成した情報を、ノート本文だけでなく公開サイトでも参照・表示したい場合に利用します。Canvasファイルを含むVaultを公開するケースが代表例です。
+1. A ` ```canvas ` fence whose body is raw JSON Canvas
+2. A ` ```canvas ` fence whose body is `![[diagram.canvas]]` or
+   `[[diagram.canvas]]`, read through `contentSource`
+3. A direct `![[diagram.canvas]]` embed, resolved as an attachment
 
-canvas のコードブロックや `![[diagram.canvas]]` は、ビルド時にキャンバス表示へ置き換わります。`render` オプションで、静的 SVG・インタラクティブ・両方から描画方式を選べます。
+When a canvas is missing or cannot be parsed, the code block is kept and a
+message with `source: "@riebeckite/plugin-canvas"` is reported.
 
-## 使いどころ
+## Output
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+The plugin emits `div.rb-canvas` with `data-canvas` (the input), `data-canvas-nodes`,
+`data-canvas-edges`, and `data-canvas-render` (`static` / `client` / `both`, or
+`ready` after hydration). It contains:
 
-## 詳細仕様
+- `script[type="application/json"][data-canvas-payload]` — escaped JSON Canvas;
+  inert, never executed
+- `div.rb-canvas__static` — when `render` is `"static"` or `"both"`: a no-JS
+  layered fallback with absolutely positioned node cards and an SVG edge list
+- `div.rb-canvas__stage` — when `render` is `"client"` or `"both"`: an empty
+  stage filled by `initCanvas()`
+- `details.rb-canvas__fallback` — a node/edge list for accessibility and no-JS
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+`file` nodes resolve through `contentIndex`: notes link to their permalink and
+other files link to their attachment URL. Note links are finalised in
+`onManifestCreated` from the manifest, rewriting the manifest entry's HTML. Core
+synchronizes that HTML with the content the route renders. `text` nodes get
+minimal Markdown handling (wikilinks and escaping).
 
+## Client
+
+`initCanvas()` finds elements whose `data-canvas-render` is `client` / `both`,
+builds positioned nodes and SVG edges from the payload, then sets
+`data-canvas-render="ready"`; CSS hides the static fallback once ready. It also
+supports wheel zoom and drag pan (pan/zoom-lite).
+
+## Options
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `className` | `"rb-canvas"` | Wrapper class name |
+| `language` | `"canvas"` | Code fence language |
+| `render` | `"both"` | `"static"`, `"client"`, or `"both"` |
+| `height` | unset | Stage height (px number or CSS length) |
+| `maxNodes` | unset | Maximum number of nodes drawn |
+
+## Exports
+
+- `canvas(options?)` / `canvasPlugin` — plugin factory
+- `initCanvas()` — client initializer
+- `parseCanvas(json)` — pure JSON Canvas parser
+- `buildCanvasLayout(doc)` — pure coordinate/edge normaliser
+- `resolveCanvasOptions(options)` — apply defaults
+- Types: `CanvasOptions`, `CanvasRenderMode`, `CanvasDocument`, `CanvasNode`,
+  `CanvasEdge`, and more
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

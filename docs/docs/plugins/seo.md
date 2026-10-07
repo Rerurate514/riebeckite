@@ -1,25 +1,115 @@
+<!-- Generated from packages/plugins/seo/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # SEO
 
-公開ページの検索エンジン向けメタデータなど、SEO に関する処理を追加する Plugin です。
+SEO metadata, sitemap, robots.txt, and feed generation for Riebeckite.
 
-## 導入
+[日本語](./seo.ja.md)
 
-```bash
-npm install @riebeckite/plugin-seo
+## Overview
+
+`seo()` provides a `PluginSeoExtension` consumed by the Riebeckite app. It
+builds per-page SEO metadata and renders `/sitemap.xml`, `/robots.txt`, and
+RSS / Atom / JSON feeds.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { seo } from "@riebeckite/plugin-seo";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    seo({
+      feed: { rss: true, atom: true, json: true, limit: 30 },
+      sitemap: true,
+      robots: true,
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Options
 
-## 使用例
+| Option | Type | Description |
+| ------ | ---- | ----------- |
+| `feed` | `{ rss?: boolean; atom?: boolean; json?: boolean; limit?: number }` | Feed output settings. `limit` defaults to 30 and applies to every format. |
+| `sitemap` | `boolean` | Sitemap output settings. |
+| `robots` | `boolean` | robots.txt output settings. |
 
-公開記事のタイトル・説明・canonical情報などを検索エンジンやSNS向けに整える用途です。記事ごとの frontmatter と組み合わせて利用できます。RSS・Atom・JSON Feed は既定で最新 30 件を含み、`feed.limit` で共通の件数上限を変更できます。
+## Generated metadata
 
-ビルドすると、各ページの `<head>` に canonical・OGP・JSON-LD が挿入され、`sitemap.xml`・`robots.txt`・RSS/Atom/JSON Feed も出力されます。
+### Articles (`buildArticleSeo`)
 
-## 使いどころ
+- `title`: `"{title} | {site.title}"`
+- `description`: `frontmatter.description`, otherwise the first 160 characters
+  of the post text
+- `canonicalUrl`: `frontmatter.canonical`, otherwise the entry's resolved canonical permalink
+- `imageUrl`: `frontmatter.ogImage` / `frontmatter.image`, otherwise
+  `site.defaultOgImage`
+- `noindex`: `frontmatter.noindex === true`
+- `publishedTime`: `published` / `date` / `created`
+- `modifiedTime`: `updated`, falling back to the publish time
+- `tags`, `readingTimeMinutes`
+- JSON-LD: `BlogPosting` and `BreadcrumbList`
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+Pass the page's `headTags` when they already include a BreadcrumbList (for
+example contributed by the breadcrumbs plugin) and this plugin omits its own
+list, so the page keeps a single BreadcrumbList entity.
 
-## 詳細仕様
+### Websites (`buildWebsiteSeo`)
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+Title, description, canonical URL, default image, and JSON-LD `WebSite` +
+`BreadcrumbList` for index, tag, and other non-article pages. The
+BreadcrumbList is omitted under the same `headTags` condition as articles.
+
+## Feeds, sitemap, and robots
+
+| Function | Output |
+| -------- | ------ |
+| `renderSitemap` | `/sitemap.xml` — home page plus published, non-`noindex` entries |
+| `renderRobots` | `/robots.txt` — allow all plus sitemap link |
+| `renderRssFeed` | RSS 2.0 built from `config.site.feed` |
+| `renderAtomFeed` | Atom feed |
+| `renderJsonFeed` | JSON Feed 1.1 with `content_html` |
+
+Feed and sitemap entries are filtered with `isPublished`, exclude
+`noindex: true`, and are sorted by the most recent update first. Their URLs use
+each entry's resolved canonical `permalink` (`ContentManifestEntry.permalink`);
+they are never rebuilt from slugs.
+Feeds include the latest 30 entries by default. Set `feed.limit` to change the
+shared limit for RSS, Atom, and JSON Feed.
+
+## Reading time
+
+`calculateReadingTime` counts CJK characters (500/min) and Latin words
+(220/min), rounding up to at least 1 minute.
+
+## Frontmatter fields
+
+| Field | Use |
+| ----- | --- |
+| `title` | Article title (falls back to the last slug segment) |
+| `description` | Meta description |
+| `canonical` | Canonical URL |
+| `image` / `ogImage` | OG image |
+| `published` / `date` / `created` | Publish time |
+| `updated` | Modified time |
+| `tags` | Keywords / feed tags |
+| `noindex` | `noindex` meta, feed and sitemap exclusion |
+
+## Exports
+
+- `seo(options?)` — plugin factory
+- Types: `SeoPluginOptions`, `FeedOptions`, `SeoMetadata`, `WebsiteSeoInput`,
+  `RenderableFeedEntry`
+- Helpers: `buildArticleSeo`, `buildWebsiteSeo`, `buildAbsoluteUrl`,
+  `buildPostUrl`, `getDescription`, `filterFeedEntries`,
+  `getEntryPublishedTime`, `getEntryUpdatedTime`, `getHtmlLanguage`,
+  `calculateReadingTime`, `renderSitemap`, `renderRobots`, `renderRssFeed`,
+  `renderAtomFeed`, `renderJsonFeed`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

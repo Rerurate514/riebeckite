@@ -1,25 +1,75 @@
+<!-- Generated from packages/plugins/folder-pages/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Folder Pages
 
-フォルダの entry ノートをランディングページにし、entry のないフォルダには一覧ページを生成する Plugin です。
+[日本語](./folder-pages.ja.md)
 
-## 導入
+Folder Page support for Riebeckite. The plugin turns folder entry notes into the
+folder's landing page and generates a listing page for folders that have no
+entry note.
+
+## Installation
 
 ```bash
-npm install @riebeckite/plugin-folder-pages
+pnpm add @riebeckite/plugin-folder-pages
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Usage
 
-## 使用例
+```ts
+import { folderPages } from "@riebeckite/plugin-folder-pages";
 
-docs やノートの Vault で、フォルダごとにランディングページを持たせたい場合に利用します。`<folder>/README.md` または `<folder>/index.md` が `/folder/` のランディングページになり、元の `/folder/README` の URL はリダイレクトされます。entry ノートのないフォルダには、直下のページとサブフォルダを並べたページが自動生成されます。
+export default {
+  plugins: [folderPages()],
+};
+```
 
-## 使いどころ
+## Markdown-backed Folder Pages
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+A note at `<folder>/README.md` or `<folder>/index.md` becomes the folder's
+landing page. Its resolved permalink is collapsed from `/folder/README` or
+`/folder/index` to `/folder/`, and the old URL redirects to the new one.
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+The collapse never guesses a URL from the slug. It rewrites the permalink that
+the location resolver already produced, so localized and custom permalinks stay
+correct.
 
-## 詳細仕様
+Only `README` and `index` are treated as folder entries. A note at
+`<folder>.md` stays a normal content page.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+When a folder contains both `README.md` and `index.md`, neither is collapsed:
+the choice would be ambiguous, so the plugin leaves both notes at their default
+locations.
+
+## Generated Folder Pages
+
+Folders without a markdown entry note but with discoverable content get an
+automatically generated page at `/folder/`. The page lists only the folder's
+direct children:
+
+- **Pages**: direct public, discoverable notes.
+- **Folders**: direct subfolders that contain discoverable content.
+
+The listing is built from `manifest.discoverableEntries`, so unlisted, draft,
+and scheduled notes never appear. Notes reachable only by URL stay hidden from
+the navigation. The `folder.md` case is never confused with a folder entry.
+
+## Ordering
+
+Pages and folders are sorted by their resolved permalink, then by title, so the
+output is deterministic regardless of plugin order.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | `"rr-folder-page"` | Root CSS class for the rendered fragment. |
+| `pagesLabel` | `string` | `"Pages"` | Heading for the page list. |
+| `foldersLabel` | `string` | `"Folders"` | Heading for the folder list. |
+
+## Plugin dependencies
+
+The plugin declares an optional dependency on the `content.localization`
+capability. When `@riebeckite/plugin-l10n` is enabled, the folder page location
+rewrite runs after localization so the collapsed URLs and redirects use the
+final, localized permalinks. Without l10n, the plugin still works on its own.

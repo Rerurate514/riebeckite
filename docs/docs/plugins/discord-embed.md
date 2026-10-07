@@ -1,25 +1,84 @@
+<!-- Generated from packages/plugins/discord-embed/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Discord Embed
 
-Discord のリンクプレビューに使うタグをページの head に補う Plugin です。
+Completes each page's `<head>` for Discord link previews.
 
-## 導入
+Discord's `Discordbot` reads the shared page's `<head>` metadata to build its
+preview card. The `seo` plugin already emits the shared `og:*` and `twitter:*`
+tags, so this plugin adds only the Discord-specific pieces that are missing:
 
-```bash
-npm install @riebeckite/plugin-discord-embed
+- `<meta name="theme-color">`, which Discord uses for the embed's left border
+  color;
+- `og:image:alt` (and optionally `og:image:width` / `og:image:height`).
+
+[日本語](./discord-embed.ja.md)
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { discordEmbed } from "@riebeckite/plugin-discord-embed";
+
+export default defineConfig({
+  // ...
+  plugins: [discordEmbed()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Options
 
-## 使用例
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `themeColor` | `string` | `"#5865F2"` | Embed accent color. Discord blurple |
+| `imageAlt` | `boolean` | `true` | Emit `og:image:alt` when the entry has an image |
+| `imageDimensions` | `boolean` | `true` | Emit `og:image:width` / `og:image:height` when the entry's image dimensions are known |
 
-共有したノートのリンクを Discord で、サイトのアクセントカラーと画像情報つきの埋め込みとして表示したい場合に利用します。SEO Plugin が出力する `og:*` と `twitter:*` に加えて、`theme-color`、`og:image:alt`、画像の寸法を追加します。
+`themeColor` accepts `#rgb`, `#rgba`, `#rrggbb`, or `#rrggbbaa`.
 
-## 使いどころ
+## Frontmatter
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+| Field | Use |
+| ----- | --- |
+| `theme_color` / `themeColor` / `discord_color` | Override the embed color for one entry |
+| `ogImage` / `image` | Mark that the entry has an image, enabling the image tags |
+| `ogImageWidth` / `imageWidth` | Image width |
+| `ogImageHeight` / `imageHeight` | Image height |
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+The color resolves from the frontmatter override first, then the `themeColor`
+option. An invalid frontmatter color records a
+`discord-embed-invalid-color` diagnostic (warning) and falls back to the option
+default.
 
-## 詳細仕様
+## Emitted tags
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+The `onManifestCreated` hook assigns `entry.headTags` for every entry:
+
+```html
+<meta name="theme-color" content="#1ABC9C" />
+<meta property="og:image:alt" content="Article title" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+```
+
+## The site shell renders `headTags`
+
+This plugin does not own the `<head>`. It provides
+`ContentManifestEntry.headTags`; whether to render them is the site's decision.
+A site route sets `c.set("headTags", entry.headTags ?? [])`, and
+`app/routes/_renderer.tsx` maps them to `<meta>` / `<link>` / `<script>`.
+See [HonoX Integration](../framework/honox-integration.md), section
+"Site application contract", for details.
+
+## Exports
+
+- `discordEmbed(options?)` / `discordEmbedPlugin(options?)` — plugin factory
+- `buildDiscordHeadTags(entry, options, diagnostics)` — build one entry's head
+  tags
+- `resolveDiscordEmbedOptions(options?)` — resolve defaults
+- Types: `DiscordEmbedOptions`, `ResolvedDiscordEmbedOptions`
+
+## See also
+
+- [HonoX Integration](../framework/honox-integration.md)
+- [Plugin system](../reference/plugin-api.md)

@@ -119,5 +119,5 @@ container }` を受け取り、文字列を返します。独自レンダラー�
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.md)
+- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
 

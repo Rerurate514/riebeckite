@@ -1,347 +1,281 @@
 # Build System
 
-Riebeckite の Build System は、Markdown などのコンテンツと設定を読み込み、最終的な Web サイトを生成する仕組みです。
+Riebeckite's Build System reads content such as Markdown plus the configuration
+and generates the final web site.
 
-通常の build では、大きく次の処理を行います。
+A normal build roughly performs the following work:
 
-1. 設定とプラグインを読み込む
-2. Markdown などのコンテンツを読み込む
-3. プラグインによる変換を行う
-4. 公開するページやリンクを決定する
-5. サイト全体で必要な情報を整理する
-6. 画像などのアセットやブラウザ用のコードを生成する
-7. HonoX を使って Web サイトを build する
+1. Resolve the configuration and plugins
+2. Read content such as Markdown
+3. Run plugin transformations
+4. Decide which pages and links are published
+5. Collect the information the whole site needs
+6. Emit assets such as images and browser-side code
+7. Build the web site with HonoX
 
-Riebeckite は、前回の build 結果を利用して、変更された部分だけを処理する **incremental build** にも対応しています。
+Riebeckite also supports an **incremental build** that reuses the previous
+build result and processes only what changed.
 
-## Build の流れ
+## What a build owns
 
-build を実行すると、最初に Riebeckite が設定と使用するプラグインを読み込みます。
+An explicit build resolves configuration and plugins, reads content, runs content and plugin pipelines, creates the manifest and content graph, emits registered assets and client entries, and records successful incremental state. The HonoX integration then builds the application with the generated entries.
 
-次に、Content Source から Markdown などのコンテンツを読み込み、設定されたプラグインによる変換を行います。
+Build state is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. State is saved only after a successful build, so a failure retains the prior valid state.
 
-このとき、Markdown を HTML に変換するだけでなく、次のような情報も決定します。
+## The build flow
 
-- どのコンテンツを公開するか
-- 各ページをどの URL で公開するか
-- ページ同士がどのようにリンクしているか
-- どの画像やファイルが必要か
-- プラグインが追加するページやファイル
+When a build runs, Riebeckite first resolves the configuration and the plugins
+it will use.
 
-これらの情報をもとに、サイト全体のページ情報やリンク関係、必要なアセットなどを生成します。
+It then reads content such as Markdown from the ContentSource and runs the
+configured plugin transformations.
 
-最後に HonoX が、それまでに生成された情報を使って Web サイト全体を build します。
+At this point it decides not only how to convert Markdown to HTML but also:
 
-## Incremental Build
+- which content is published
+- which URL each page is published at
+- how pages link to each other
+- which images and files are required
+- which pages and files the plugins add
 
-毎回すべてのコンテンツを最初から処理すると、サイトが大きくなるほど build に時間がかかります。
+From this information it generates the site-wide page information, the link
+relationships, and the required assets.
 
-そこで Riebeckite は、前回の build から何が変更されたかを確認し、必要な部分だけを処理します。
+Finally HonoX uses the generated information to build the whole web site.
 
-前回の build 情報は、次のファイルに保存されます。
+## Incremental build
+
+Processing every piece of content from scratch on every run makes builds slower
+as the site grows.
+
+Riebeckite therefore checks what changed since the previous build and processes
+only what is needed.
+
+The previous build information is stored in:
 
 ```text
 .riebeckite/build/content-state.json
 ```
 
-この情報は build を高速化するためのものであり、サイトを正しく生成するために必須のものではありません。
+This information exists to speed up the build; it is not required to generate
+the site correctly.
 
-たとえば、
+For example, when:
 
-- 前回の情報が存在しない
-- 現在のバージョンでは利用できない
-- 安全に再利用できるか判断できない
+- the previous information does not exist
+- it cannot be used with the current version
+- it cannot be determined to be safe to reuse
 
-といった場合は、無理に再利用せず、必要な処理を最初から行います。
+Riebeckite does not force reuse and runs the necessary work from the beginning.
 
-つまり、**高速化のための情報がなくても、同じサイトを正しく生成できること**が前提です。
+In other words, the premise is that **the same site can be generated correctly
+even without the speed-up information**.
 
-### Full Build
+### Full build
 
-前回の build 情報を使わず、すべてを処理したい場合は `--full` を使用します。
+Use `--full` to process everything without using the previous build
+information.
 
 ```sh
 pnpm exec riebeckite build --full
 ```
 
-incremental build の結果に問題がありそうな場合の確認や、build 時間を比較したい場合などに利用できます。
+This is useful for checking when an incremental build result looks suspicious,
+or for comparing build times.
 
-### Build に失敗した場合
+### When a build fails
 
-前回の build 情報は、**build が正常に完了した場合だけ更新されます**。
+The previous build information is **updated only when the build completes
+successfully**.
 
 ```mermaid
 flowchart TD
-    A["前回成功した状態"] --> B["Build 開始"]
-    B --> C{"Build 成功？"}
+    A["Previous successful state"] --> B["Build starts"]
+    B --> C{"Build succeeded?"}
 
-    C -->|Yes| D["新しい状態を保存"]
-    C -->|No| E["新しい状態は保存しない"]
+    C -->|Yes| D["Save the new state"]
+    C -->|No| E["Do not save the new state"]
 
-    E --> F["前回成功した状態を維持"]
+    E --> F["Keep the previous successful state"]
 ```
 
-新しい build が途中で失敗しても、前回正常に完了した build の情報は残ります。
+Even if a new build fails partway through, the information from the previous
+successful build remains. A partial failure never overwrites a valid state.
 
-失敗途中の情報で、正常だった状態を上書きすることはありません。
+## When related pages change
 
-## 変更をどう検出するか
+Even if a file is not edited itself, it may need to be regenerated when a page
+it references changes.
 
-Riebeckite は、Content Source が提供するファイル情報を使って、コンテンツが変更されたかを判断します。
-
-たとえば、次のような情報を利用できます。
-
-- 更新日時
-- ファイルサイズ
-- ETag
-- ファイル内容から計算した hash
-
-利用できる情報は Content Source によって異なります。
-
-更新日時だけに頼るのではなく、利用可能な情報を組み合わせて、前回の結果を安全に再利用できるか判断します。
-
-## 関連するページが変更された場合
-
-ファイル自体を編集していなくても、そのファイルが参照しているページなどが変更されると、再生成が必要になることがあります。
-
-たとえば `a.md` が `b.md` にリンクしているとします。
+For example, suppose `a.md` links to `b.md`:
 
 ```mermaid
 flowchart LR
-    A["a.md"] -->|"リンク"| B["b.md"]
-    C["c.md"] -->|"リンク"| A
+    A["a.md"] -->|"link"| B["b.md"]
+    C["c.md"] -->|"link"| A
 
-    B -->|"URL が変更"| D["a.md を再生成"]
-    D -->|"影響を確認"| E["c.md も必要なら再生成"]
+    B -->|"URL changed"| D["Regenerate a.md"]
+    D -->|"Check impact"| E["Regenerate c.md too if needed"]
 ```
 
-`b.md` の URL が変更されると、`a.md` 自体を編集していなくても、`a.md` に書かれているリンクを更新する必要があります。
+If the URL of `b.md` changes, the link written in `a.md` must be updated even
+though `a.md` itself was not edited.
 
-そのため Riebeckite は、「ファイルが変更されたか」だけでなく、「そのファイルが何を参照しているか」も記録します。
+Riebeckite therefore records not only "was the file changed" but also "what
+does the file reference". For example, it tracks:
 
-たとえば、次のような関係を確認します。
+- linked pages
+- images and files in use
+- other information that affects a page's generated output
 
-- リンクしているページ
-- 使用している画像やファイル
-- ページの生成結果に影響するその他の情報
+When a referenced target changes, the affected pages are regenerated. If those
+pages are referenced by yet other pages, the affected range is regenerated as
+needed.
 
-参照先が変更された場合は、その影響を受けるページも再生成します。
+### Adding and removing content
 
-さらに、そのページを参照している別のページにも影響がある場合は、必要な範囲まで再生成します。
+Adding or removing content can have a wider effect than editing an existing
+file.
 
-### コンテンツの追加・削除
+For example, suppose a WikiLink points to a page that does not exist yet, and
+that page is then added. Before it is added the link cannot resolve; after it is
+added the link resolves to the correct page.
 
-コンテンツの追加や削除は、既存ファイルの編集より広い範囲に影響する場合があります。
+When adding or removing content changes how links resolve, the affected pages
+are regenerated as well.
 
-たとえば、存在しないページへの Wikiリンクがある状態で、新しくそのページが追加されたとします。
+On the first build, or when no previous build information exists, all content is
+processed.
 
-追加前はリンク先を見つけられませんが、追加後は正しいページへリンクできるようになります。
+## Incremental inputs
 
-コンテンツの追加や削除によってリンクの解決結果が変わった場合も、影響するページを再生成します。
+`ContentSource` metadata may contain mtime, size, ETag, or a hash. Treat mtime as a hint only: timestamp-only comparisons are not sufficient for correctness when metadata can be unreliable. Plugin cache is separate from build state, plugin-scoped, JSON-serializable, regenerable build-time data. Neither may be required at Workers request time.
 
-初回 build や、前回の build 情報が存在しない場合は、すべてのコンテンツを処理します。
+State tracks each entry's fingerprint together with its dependencies: the notes it links to (whose resolved permalink it may embed) and the assets it references (whose metadata, such as attachment size, it may render). A changed dependency invalidates the dependent entry and, transitively, its dependents. Added or removed entries change which link targets resolve, so entries that reference an affected target are invalidated as well. On the first build, or when no previous state is available, every note is processed. The `.riebeckite` state directory is build-time state, not content, and is never scanned.
 
-## コンテンツ処理のキャッシュ
+## Persistent per-content cache
 
-Riebeckite は、Markdown を HTML に変換した結果を次の場所に保存します。
+The processed Markdown result for each note is stored in `.riebeckite/cache/content/v3`. A build without an entry is a **cold build**. Restoring compatible entries before a later build makes it a **warm build**: unchanged notes can reuse their processed HTML and frontmatter while the normal build still generates `dist/`.
 
-```text
-.riebeckite/cache/content/v3
-```
+An entry key includes its Markdown source, parsed frontmatter, the cache schema, and the processing-pipeline fingerprint. The fingerprint includes content-filter configuration, plugin configuration and order, plugin `cacheVersion` and processed-content cache contracts, and the Core compatibility version. Cached content also records logical content, file, and link dependencies; changed or missing dependencies are misses. Unsafe plugins bypass this cache. Cache data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
 
-これにより、変更されていない Markdown を毎回最初から処理する必要がなくなります。
+This cache is an optimization, never a correctness dependency. Missing entries, incompatible versions, malformed metadata, fingerprint or dependency mismatches, and corrupted JSON are safe misses. Delete `.riebeckite/cache` to force cold processing; a filesystem access failure still fails the build because it requires attention. The build log reports one `Persistent content cache` line with `hits`, `misses`, and `bypasses`, plus a concise `Content` line (total, processed, and reused counts) and the total `Build complete` duration.
 
-初めて build する場合など、利用できるキャッシュがない build を **cold build**、前回の処理結果を再利用できる build を **warm build** と呼びます。
+### When the cache has problems
 
-warm build では、変更されていないページの HTML や frontmatter を再利用できます。
+This cache also exists to speed up the build; it does not determine whether the
+site is correct.
 
-ただし、前回の結果を無条件に再利用するわけではありません。
+In the following cases Riebeckite falls back to normal processing without using
+the cache:
 
-Riebeckite は、たとえば次のような変更がないか確認します。
+- the cache does not exist
+- the version does not match
+- the stored information is corrupted
+- it does not match the current content or configuration
 
-- Markdown の内容
-- frontmatter
-- Riebeckite のバージョン
-- プラグインの設定や実行順序
-- ページが参照しているコンテンツやファイル
-
-変更があった場合や、安全に再利用できるか判断できない場合は、そのページを通常どおり処理し直します。
-
-プラグインについても、処理結果を安全に再利用できることが確認できない場合はキャッシュを使用しません。
-
-### キャッシュに問題がある場合
-
-このキャッシュも build を高速化するためのものであり、サイトの正しさを左右するものではありません。
-
-次のような場合は、キャッシュを使わず通常の処理に戻ります。
-
-- キャッシュが存在しない
-- バージョンが合わない
-- 保存された情報が壊れている
-- 現在のコンテンツや設定と一致しない
-
-キャッシュを完全に作り直したい場合は、次のディレクトリを削除できます。
+To rebuild the cache completely, delete:
 
 ```text
 .riebeckite/cache
 ```
 
-build log の `Persistent content cache` では、キャッシュがどの程度利用されたか確認できます。
+The `Persistent content cache` line in the build log shows how much the cache
+was used:
 
-- `hits`: 再利用できた数
-- `misses`: 再処理した数
-- `bypasses`: 安全性のためキャッシュを使用しなかった数
+- `hits`: reused
+- `misses`: reprocessed
+- `bypasses`: not used because it was not safe to do so
 
-あわせて、build log には次の概要も表示されます。
+### Caching in GitHub Actions
 
-- `Content`: コンテンツの総数、実際に処理した数、再利用によって処理を省略した数
-- `Build complete`: Build 全体の所要時間
+For GitHub Actions, cache `.riebeckite/cache` and `.riebeckite/build/content-state.json`, not `dist/`. The output cache (`.riebeckite/ssg-output-cache.json`) stays local because its build-time saving does not offset the transfer cost. The generated Cloudflare workflow does this automatically; see [GitHub Actions](../guides/deployment/github-actions.md).
 
-### GitHub Actions でのキャッシュ
+## Output-level incremental SSG
 
-GitHub Actions では、生成されたサイトそのものではなく、次の build 用データをキャッシュします。
+Persistent per-content cache reuses Markdown and plugin processing. Output-level incremental SSG separately reuses final routes and generated files. After building the current manifest, Core compares its output descriptors with the previous successful state. HonoX renders only affected content and plugin-page routes, restores unchanged generated output from `.riebeckite/ssg-output-cache.json`, and removes outputs no longer owned by the site. The build log reports an `SSG outputs` line with the `rendered`, `reused`, and `removed` counts. For example, when only one Markdown file changes, Riebeckite generates only the pages affected by that change instead of regenerating every page in the site.
 
-```text
-.riebeckite/cache
-.riebeckite/build/content-state.json
-```
+The state and output cache are optimizations. A missing, incompatible, malformed, or incomplete output state, an application/configuration fingerprint change, or an `unknown` output dependency makes HonoX render every output. Delete `.riebeckite/build/content-state.json` and `.riebeckite/ssg-output-cache.json` to force that safe path. `dist/` is not a cache: Vite may recreate it, and unchanged site outputs are re-emitted from the output cache. This is a build optimization only; it does not change Wrangler's Cloudflare Workers deployment protocol.
 
-`dist/` はキャッシュしません。
+## Plugin cache
 
-また、最終的なページ生成に使用する `.riebeckite/ssg-output-cache.json` は、ファイルを転送する時間に対して得られる効果が小さいため、ローカルでのみ利用します。
+Plugin cache is a mechanism for a plugin itself to store intermediate results
+temporarily.
 
-Cloudflare 用の workflow については [GitHub Actions](../guides/deployment/github-actions.md) を参照してください。
+For example, when the same computation does not need to run on every build, a
+plugin can store the result and reuse it on the next build.
 
-## 最終ページの再利用
+Plugin cache has the following characteristics:
 
-Markdown の処理結果とは別に、Riebeckite は最終的に生成されるページやファイルについても、変更されていないものを再利用できます。
+- stored separately per plugin
+- handles data that can be stored as JSON
+- can be regenerated after deletion
+- used to speed up the build
 
-前回の build と比較して変更の影響を受けていないページは、再度生成する代わりに、次のファイルに保存された結果を利用します。
+A site must still build correctly even without the plugin cache.
 
-```text
-.riebeckite/ssg-output-cache.json
-```
+Plugin cache and incremental build information are used only at build time; they
+are not data that Workers read and write after publication.
 
-たとえば Markdown を 1 ファイルだけ変更した場合、サイト内のすべてのページを生成し直すのではなく、その変更によって影響を受けるページだけを生成できます。
+## The `.riebeckite` directory
 
-一方、以前は存在していたものの、現在はサイトから削除されたページやファイルは出力から削除されます。
+`.riebeckite` stores the data Riebeckite uses for builds, such as caches and the
+previous build information.
 
-build log の `SSG outputs` では、この結果を確認できます。
+This is not content created by the user. Riebeckite therefore does not scan the
+`.riebeckite` directory when it looks for content such as Markdown.
 
-- `rendered`: 今回新しく生成した数
-- `reused`: 前回の結果を再利用した数
-- `removed`: サイトから削除された数
-
-この仕組みについても、安全に再利用できるか判断できない場合はキャッシュを使用せず、すべてのページを生成します。
-
-たとえば次のような場合です。
-
-- 前回の情報が存在しない
-- バージョンが合わない
-- 保存された情報が壊れている
-- アプリケーションや設定が変更された
-- どのページに影響する変更なのか判断できない
-
-完全に作り直したい場合は、次のファイルを削除できます。
-
-```text
-.riebeckite/build/content-state.json
-.riebeckite/ssg-output-cache.json
-```
-
-なお、`dist/` はキャッシュではありません。
-
-`dist/` は最終的に生成された Web サイトの出力先です。
-
-この最適化は build の方法を高速化するだけであり、Cloudflare Workers への deploy 方法を変更するものではありません。
-
-## Plugin Cache
-
-Plugin Cache は、プラグイン自身が計算結果を一時的に保存するための仕組みです。
-
-たとえば、build のたびに同じ計算を行う必要がない場合に、その結果を保存して次回の build で再利用できます。
-
-Plugin Cache には次の特徴があります。
-
-- プラグインごとに分けて保存される
-- JSON として保存できるデータを扱う
-- 削除されても再生成できる
-- build を高速化する目的で使用する
-
-Plugin Cache がなくなっても、サイトを正しく build できる必要があります。
-
-また、Plugin Cache や incremental build の情報は build 時にだけ使用するものであり、公開後の Workers が読み書きするデータとしては使用しません。
-
-## `.riebeckite` ディレクトリ
-
-`.riebeckite` には、キャッシュや前回の build 情報など、Riebeckite が build のために使用するデータが保存されます。
-
-これらはユーザーが作成したコンテンツではありません。
-
-そのため、Riebeckite が Markdown などのコンテンツを探すとき、`.riebeckite` ディレクトリは対象外になります。
-
-## Build 関連のコマンド
-
-通常のプロジェクトを build するコマンドは次のとおりです。
+## Commands and lifecycle
 
 ```sh
-pnpm build
-```
-
-Riebeckite の build は次のコマンドです。
-
-```sh
-pnpm exec riebeckite build
-```
-
-前回の build 情報を使わずに build するには `--full` を付けます。
-
-```sh
+pnpm build                 # configured project build
+pnpm exec riebeckite build # content/application build
 pnpm exec riebeckite build --full
-```
-
-full build の処理時間を詳しく確認するには、次のコマンドを実行します。
-
-```sh
 pnpm exec riebeckite profile --full
 ```
 
-### Build とその他のコマンドの違い
+Use `check` for validation and `doctor` for health diagnostics; neither substitutes for a build. Use `inspect` to view existing state, never to manufacture it. See [CLI](../reference/cli.md), [Inspector](./inspector.md), and [Content system](./content-system.md).
 
-`check`、`doctor`、`inspect` は、それぞれ build とは異なる役割を持っています。
+### Build vs. other commands
 
-| コマンド | 主な役割 |
+`check`, `doctor`, and `inspect` each have a role distinct from `build`.
+
+| Command | Main role |
 | --- | --- |
-| `build` | Web サイトを生成する |
-| `build --full` | 前回の build 情報を使わずに Web サイトを生成する |
-| `profile` | build の処理時間を調べる |
-| `check` | 設定やプラグインの構成を確認する |
-| `doctor` | プロジェクトに問題がないか診断する |
-| `inspect` | 保存されている build 情報などを確認する |
+| `build` | Generate the web site |
+| `build --full` | Generate the web site without the previous build information |
+| `profile` | Measure build processing time |
+| `check` | Validate the configuration and plugin composition |
+| `doctor` | Diagnose whether the project has problems |
+| `inspect` | View stored build information |
 
-`check` や `doctor` が成功しても、実際の build が必ず成功することを保証するものではありません。
+A successful `check` or `doctor` does not guarantee that an actual build will
+succeed.
 
-また、`inspect` はすでに存在する情報を確認するためのコマンドです。build 情報を新しく作るためのコマンドではありません。
+Also, `inspect` is a command for viewing information that already exists. It is
+not a command for creating new build information.
 
-詳しいコマンドについては [CLI](../reference/cli.md)、build 情報の確認については [Inspector](inspector.md)、コンテンツの読み込みについては [Content system](content-system.md) を参照してください。
+## Safe changes
 
-## Build System を変更するときのルール
+When adding generated output, make its owner and cleanup behavior explicit. Do not silently write during validation or inspection. Cache keys must include every relevant version/input; raise a full-build fallback rather than reusing uncertain output. Keep failures observable and avoid deleting a previous successful state before replacement is known to be valid.
 
-Build System やプラグインから新しいファイルを生成する場合は、「どの仕組みがそのファイルを管理するのか」を明確にします。
+When the Build System or a plugin generates a new file, make explicit which
+mechanism owns that file. In particular:
 
-特に、次の点に注意してください。
+- make clear which mechanism generated the file
+- remove old files that are no longer needed
+- do not let validation commands such as `check` or `inspect` write files
+  unintentionally
+- reflect settings and version changes that affect the result in the cache
+- do not reuse data that cannot be confirmed as safe to reuse
+- still generate the correct result through a normal build even when reuse is
+  not possible
+- make a build failure observable
+- keep the previous successful information until a new build succeeds
 
-- どの仕組みが生成したファイルなのか明確にする
-- 不要になった古いファイルを適切に削除する
-- `check` や `inspect` などの確認用コマンドから、意図せずファイルを書き換えない
-- キャッシュには、結果に影響する設定やバージョンの変更を反映する
-- 安全に再利用できると確認できないデータは再利用しない
-- 再利用できない場合でも、通常の build で正しい結果を生成できるようにする
-- build が失敗した場合は、そのことが分かるようにする
-- 新しい build が成功するまで、前回成功した情報を残しておく
+The basic principle is to **prioritize the correctness of the generated site
+over build speed**.
 
-基本原則は、**build の速さよりも、生成されるサイトの正しさを優先すること**です。
-
-incremental build や各種キャッシュは build を高速化するための仕組みです。
-
-それらをすべて削除したとしても、同じ正しい Web サイトを生成できることが Riebeckite の Build System の前提です。
+Incremental build and the various caches exist to speed up the build. The
+premise of Riebeckite's Build System is that the same correct web site can be
+generated even if all of them are deleted.

@@ -6,74 +6,53 @@ sidebar:
 ---
 # Guides
 
-Guides は、**「Riebeckite で何をしたいか」から手順を探すための章**です。
+Guides start from a task: "I want to publish an Obsidian vault", "I want a multilingual site", "I want to deploy automatically". If you are new, finish [Getting Started](../getting-started/README.md) first.
 
-設定値や API の正確な仕様を確認したい場合は [Reference](../reference/README.md)、Riebeckite の内部構造を理解したい場合は [Framework](../framework/README.md) を参照してください。
-
-```mermaid id="d2p74f"
+```mermaid
 flowchart TD
-    Q{"何を知りたい？"}
+    Q{"What do you want to know?"}
 
-    Q -->|"具体的な作業手順"| Guides["Guides"]
-    Q -->|"設定・CLI・API"| Reference["Reference"]
-    Q -->|"内部の仕組み"| Framework["Framework"]
+    Q -->|"A concrete procedure"| Guides["Guides"]
+    Q -->|"Configuration, CLI, API"| Reference["Reference"]
+    Q -->|"Internal mechanics"| Framework["Framework"]
 ```
 
-初めて Riebeckite を使う場合は、Guides より先に [Getting Started](../getting-started/README.md) から始めるのがおすすめです。
+If you are new to Riebeckite, start with [Getting Started](../getting-started/README.md) before Guides.
 
-## コンテンツを作る
+## By task
 
-### 記事を書く
+| I want to… | Guide |
+| --- | --- |
+| Write and organize articles | [Writing content](./writing-content.md) |
+| Customize the site UI with HonoX | [Customizing your site](./customizing-your-site.md) |
+| Build a homepage and browse routes | [Discovery recipes](./discovery-recipes.md) |
+| Publish an Obsidian vault | [Obsidian](./obsidian.md) |
+| Keep content and the site in separate repositories | [Content repositories](./content-repositories.md) |
+| Build a multilingual site | [Localization](./localization.md) |
+| Collect page views | [Analytics](./analytics.md) |
+| Replace the icon, logo, or link preview image | [Branding your site](./branding.md) |
+| Deploy | [Deployment](./deployment/README.md) |
+| Upgrade Riebeckite or read migration notes | [Upgrading](./upgrading.md) |
 
-[Writing Content](./writing-content.md)
+## What each guide covers
 
-Markdown、Frontmatter など、Riebeckite で記事を書くための基本を説明します。
+- [Writing content](./writing-content.md) — the basics of writing articles in Riebeckite, including Markdown and frontmatter.
+- [Obsidian](./obsidian.md) — using an existing Obsidian vault as Riebeckite content.
+- [Content repositories](./content-repositories.md) — managing the site application and Markdown content in separate repositories.
+- [Localization](./localization.md) — multiple languages, URLs, and language switching.
+- [Analytics](./analytics.md) — adding analytics to a Riebeckite site.
+- [Branding your site](./branding.md) — replacing the site favicon, header logo, and link preview image.
+- [Customizing your site](./customizing-your-site.md) — editing routes, components, islands, and CSS in `app/` as a normal HonoX application.
+- [Discovery recipes](./discovery-recipes.md) — building a homepage and browse routes.
+- [Upgrading](./upgrading.md) — updating Riebeckite packages and reviewing changes.
 
-### Obsidian Vault を公開する
+## Deployment guides
 
-[Obsidian](./obsidian.md)
+Deployment has its own section because the choices multiply once automation is involved.
 
-既存の Obsidian Vault を Riebeckite の Content として利用する方法を説明します。
-
-## サイトを構成する
-
-### Content と Site を分ける
-
-[Content Repositories](./content-repositories.md)
-
-Site Application と Markdown Content を別の Repository で管理する構成について説明します。
-
-### 多言語サイトを作る
-
-[Localization](./localization.md)
-
-複数言語の Content、URL、言語切り替えなどを扱う方法を説明します。
-
-### Analytics を使う
-
-[Analytics](./analytics.md)
-
-Riebeckite Site に Analytics を導入する方法を説明します。
-
-### アイコンやロゴを差し替える
-
-[サイトのアイコンとロゴ](./branding.md)
-
-Site 固有の favicon、ヘッダーのロゴ、リンクプレビュー画像を差し替える方法を説明します。
-
-### Site の UI をカスタマイズする
-
-[サイトのカスタマイズ](./customizing-your-site.md)
-
-通常の HonoX application として `app/` の route、component、island、CSS を編集する方法を説明します。
-
-## デプロイする
-
-デプロイ方法を選ぶ場合は、まず [Deployment](./deployment/README.md) を参照してください。
-
-```mermaid id="kb66ux"
+```mermaid
 flowchart TD
-    Deploy["Siteを公開したい"]
+    Deploy["I want to publish a site"]
 
     Deploy --> Overview["Deployment"]
 
@@ -82,70 +61,40 @@ flowchart TD
     Overview --> Separate["Separate Content Repository"]
 ```
 
-### Cloudflare Workers
-
-[Cloudflare Workers](./deployment/cloudflare-workers.md)
-
-Riebeckite Site を Cloudflare Workers へデプロイする方法を説明します。
-
-### GitHub Actions
-
-[GitHub Actions](./deployment/github-actions.md)
-
-GitHub Actions を使って Build と Deployment を自動化する方法を説明します。
-
-### Separate Content Repository
-
-[Separate Content Repository](./deployment/separate-content-repository.md)
-
-Content と Site が別 Repository にある場合の自動デプロイ構成を説明します。
-
-## Riebeckite を更新する
-
-[Upgrading](./upgrading.md)
-
-Riebeckite の Package を新しい Version へ更新するときの手順と、変更点の確認方法を説明します。
-
-## 目的から探す
-
-| やりたいこと | ページ |
+| I want to… | Guide |
 | --- | --- |
-| Markdown で記事を書く | [Writing Content](./writing-content.md) |
-| Obsidian Vault を公開する | [Obsidian](./obsidian.md) |
-| Content と Site を別 Repository にする | [Content Repositories](./content-repositories.md) |
-| 多言語 Site にする | [Localization](./localization.md) |
-| Analytics を導入する | [Analytics](./analytics.md) |
-| サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.md) |
-| Site の UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.md) |
-| Homepage と発見導線を作る | [発見導線のレシピ](./discovery-recipes.md) |
-| デプロイ方法を選ぶ | [Deployment](./deployment/README.md) |
-| Cloudflare Workers に公開する | [Cloudflare Workers](./deployment/cloudflare-workers.md) |
-| GitHub Actions で自動デプロイする | [GitHub Actions](./deployment/github-actions.md) |
-| Separate Content Repository を自動デプロイする | [Separate Content Repository](./deployment/separate-content-repository.md) |
-| Riebeckite をアップグレードする | [Upgrading](./upgrading.md) |
+| Deploy to Cloudflare Workers | [Cloudflare Workers](./deployment/cloudflare-workers.md) |
+| Understand the generated GitHub Actions workflow | [GitHub Actions](./deployment/github-actions.md) |
+| Read articles from a separate repository in CI | [Separate content repository](./deployment/separate-content-repository.md) |
 
-## Guides と他の章の違い
+## Where to look next
 
-ドキュメントの役割は次のように分かれています。
+- The **exact** configuration fields, CLI commands, and API contracts live in [Reference](../reference/README.md).
+- How the content, plugin, and theme systems are built lives in [Framework](../framework/README.md).
 
-```text id="3m60t7"
-初めてSiteを作る
+## Guides and the other chapters
+
+The documentation is divided by role:
+
+```text
+Build a site for the first time
   → Getting Started
 
-やりたい作業の手順を知る
+Learn the procedure for a task
   → Guides
 
-Pluginを探す
+Find a plugin
   → Plugins
 
-Themeを探す
+Find a theme
   → Themes
 
-設定・CLI・APIを調べる
+Look up configuration, CLI, and APIs
   → Reference
 
-内部構造を理解する
+Understand the internal structure
   → Framework
 ```
 
-Guides では、内部実装を詳しく説明することよりも、**目的を達成するために何をすればよいか**を中心に説明します。
+Guides focus on **what you need to do to accomplish a goal**, rather than on internal implementation details.
+

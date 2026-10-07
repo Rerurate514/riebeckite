@@ -1,10 +1,14 @@
+---
+title: HonoX Integration
+sidebar:
+  label: HonoX Integration
+---
+
 # HonoX Integration
 
-`@riebeckite/honox` は、Riebeckite Core と HonoX / Vite を接続する integration です。
+`@riebeckite/honox` connects portable Core behavior to HonoX and Vite. It owns application-root/config resolution, Vite development and build integration, SSG extension mapping, generated plugin/theme style entries, and the HonoX application build workflow.
 
-Core はコンテンツやプラグインの処理を担当しますが、HonoX の route や Vite の build 方法については知りません。
-
-その間を接続するのが `@riebeckite/honox` です。
+Core handles content and plugin processing, but it does not know HonoX routes or how Vite builds. `@riebeckite/honox` connects the two:
 
 ```mermaid
 flowchart LR
@@ -16,20 +20,30 @@ flowchart LR
     B --> C
 ```
 
-主に次の処理を担当します。
+It mainly handles:
 
-- application root / config の解決
-- Vite の development / build
-- SSG の設定
-- plugin / theme の style entry 生成
-- client entry の生成
-- Riebeckite のコンテンツと HonoX application の接続
+- application root and config resolution
+- Vite development and build
+- SSG configuration
+- generating plugin and theme style entries
+- generating client entries
+- connecting Riebeckite content to the HonoX application
 
-これにより、通常の Site は Riebeckite 内部の Vite / HonoX 設定を毎回組み立てる必要がありません。
+As a result, a normal site does not have to assemble Riebeckite's internal Vite/HonoX configuration each time.
 
-## 基本的な使い方
+## How this page is organized
 
-通常は `vite.config.ts` で `riebeckiteVite()` を登録します。
+- [UI primitives](./honox-integration/ui.md)
+- [Site application contract](./honox-integration/site.md)
+
+## Basic usage
+
+Register the integration with `riebeckiteVite()` from `vite.config.ts`. It is
+the higher-level helper for a normal site: it appends the Riebeckite plugins,
+applies the SSG entry and extension-map defaults, and contributes the SSR
+externals the runtime needs, so the site does not restate Vite/HonoX internals.
+Combine it with the site's own plugins (the HonoX plugin, a deployment build
+plugin, Tailwind, and so on):
 
 ```ts
 import { riebeckiteVite } from "@riebeckite/honox";
@@ -40,35 +54,34 @@ export default defineConfig({
 });
 ```
 
-`riebeckiteVite()` は通常の Site 向けの higher-level helper です。
+`riebeckiteVite()` is the higher-level helper for a normal site. Besides adding
+the Riebeckite Vite plugin, it also:
 
-Riebeckite の Vite plugin を追加するだけでなく、次の設定もまとめて行います。
+- sets the SSG entry
+- configures the extension mapping
+- sets the SSR external dependencies
+- connects the generated plugin/theme entries
 
-- SSG entry の設定
-- extension mapping
-- SSR に必要な external dependency の設定
-- plugin / theme の生成 entry の接続
+It works alongside any Vite plugins the site needs, such as the HonoX plugin, a
+deployment build plugin, or Tailwind.
 
-HonoX plugin、deployment 用 build plugin、Tailwind など、Site 自身が必要とする Vite plugin と組み合わせて利用できます。
+## Root and Config
 
-## Root と Config
+`riebeckiteVite` accepts the same optional `configRoot`, `appRoot`, `configFile`,
+and monorepo-only `workspaceRoot` as the lower-level plugin:
 
-`riebeckiteVite()` では、必要に応じて次の場所を指定できます。
-
-| Option | 意味 |
+| Option | Meaning |
 | --- | --- |
-| `appRoot` | Site application の基準ディレクトリ |
-| `configRoot` | Riebeckite config を探す基準 |
-| `configFile` | 使用する config file |
-| `workspaceRoot` | monorepo 開発時の workspace root |
+| `appRoot` | Base directory of the site application |
+| `configRoot` | Base used to find the Riebeckite config |
+| `configFile` | The config file to use |
+| `workspaceRoot` | Workspace root during monorepo development |
 
-通常は指定する必要はありません。
+Normally you do not need to specify any of them.
 
-`appRoot` の既定値は Vite root、`configRoot` の既定値は `appRoot` です。
-
-Riebeckite config は `configRoot` を基準に読み込みます。
-
-一方、
+`appRoot` defaults to the Vite root, and `configRoot` defaults to `appRoot`. A
+config path is imported relative to `configRoot`; `content.directory` is
+resolved relative to `appRoot`.
 
 ```ts
 content: {
@@ -76,31 +89,21 @@ content: {
 }
 ```
 
-のような content directory は `appRoot` を基準に解決します。
-
-`resolveHonoxApplication()` は、これらの root と解決済み config をまとめて返します。
-
-CLI と Vite がこの共通モデルを利用することで、それぞれが異なる方法で application を解決しないようにしています。
+`resolveHonoxApplication` returns these roots together with the resolved config,
+so CLI and Vite use the same model instead of resolving the application in
+different ways.
 
 ### `workspaceRoot`
 
-`workspaceRoot` は、Riebeckite 自体を monorepo で開発するときに source package alias を利用するための設定です。
+`workspaceRoot` is only for source-package aliases during monorepo development;
+installed npm consumers use their own `node_modules` without it.
 
-npm から Riebeckite をインストールした通常の Site では必要ありません。
+## Generated files in `.riebeckite`
 
-その場合は Site 自身の `node_modules` から package が解決されます。
-
-## `.riebeckite` に生成されるファイル
-
-Integration は application 内の
-
-```text
-app/.riebeckite/
-```
-
-へ、plugin や theme を接続するためのファイルを生成します。
-
-たとえば plugin style や theme style です。client module は `.riebeckite` には生成されず、virtual module として提供されます。
+The integration creates generated import entries below `app/.riebeckite/` that
+connect plugins and themes, for example plugin and theme styles. The required
+client module is exposed as a virtual module rather than written into that
+directory.
 
 ```mermaid
 flowchart LR
@@ -114,34 +117,46 @@ flowchart LR
     C --> D
 ```
 
-`.riebeckite` は integration が管理する生成物です。
+`.riebeckite` is integration output. Do not edit it as application source.
 
-**Site の source code として直接編集しないでください。**
+## Bootstrap modules
 
-## Bootstrap module
+A generated site imports framework-owned bootstrap modules instead of keeping
+resolved config and content-manager code in the application: the resolved
+config is `virtual:riebeckite/config`, and the configured content runtime is
+`virtual:riebeckite/content`. This is why `app/config.ts`, `app/content.ts`, and
+`app/constants/paths.ts` are not generated. The SSG entry `app/server.ts`
+re-exports both, and `riebeckiteSsg` finds the manifest through them.
 
-generated Site は Framework 所有の bootstrap module を import します。解決済み config は `virtual:riebeckite/config`、構成済みの content runtime は `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG entry の `app/server.ts` はこの2つを re-export し、`riebeckiteSsg` はそこから manifest を見つけます。
-
-Vite の外で動く script（`tsx` で起動する Node script など）は `@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ config を解決できます。
+A script that runs outside Vite (for example a Node script started with `tsx`)
+can resolve the same config with `resolveHonoxConfig` from
+`@riebeckite/honox/runtime`.
 
 ## Lower-level API
 
-より細かく integration を制御したい場合は、lower-level API も利用できます。
+The lower-level pieces remain exported for callers that need full control:
+`riebeckite` (the Vite plugin), `riebeckiteSsg` (static generation),
+`riebeckiteSsgExtensionMap`, and `createRiebeckiteSsg` (the SSG wrapper that
+fills in Riebeckite's defaults). For a normal site use `riebeckiteVite()`; use
+the lower-level API only when you need a custom build integration.
 
-- `riebeckite`
-- `riebeckiteSsg`
-- `riebeckiteSsgExtensionMap`
-- `createRiebeckiteSsg`
+`riebeckiteSsg` starts its internal Vite server with the resolved application
+root and define values, so invoking `riebeckite build` from a subdirectory
+yields the same output as invoking it from the application root.
+`defaultSsgEntry` is the root-relative `./app/server.ts` entry, and
+`defaultSsrExternals` is the SSR externals list both helpers use. The SSG entry
+must re-export the resolved `config` and `content`
+(`export { config, content }`): that is how `riebeckiteSsg` finds the manifest to
+emit plugin-generated outputs and to run the per-page HTML inspections. Other
+exports are `loadRiebeckiteConfig`, `resolveHonoxApplication`,
+`resolveHonoxApplicationRoot`, `buildHonoxApplication`, and
+`startHonoxDevServer`.
 
-通常の Site では `riebeckiteVite()` を利用し、独自の build integration が必要な場合のみ lower-level API を利用してください。
+## Routing and SSG
 
-## Routing と SSG
-
-HonoX の runtime routing と静的生成では、同じ URL が同じページとして扱われる必要があります。
-
-特に catch-all route がある場合、SSG の route 列挙に注意が必要です。
-
-Riebeckite はこのために2つの helper を提供します。
+HonoX runtime routing and static generation must treat the same URL as the same
+page. This is especially important for catch-all routes, where SSG route
+enumeration needs care. Riebeckite provides two helpers for this.
 
 ### `contentRouteSsgParams`
 
@@ -149,23 +164,10 @@ Riebeckite はこのために2つの helper を提供します。
 contentRouteSsgParams(routePath, params)
 ```
 
-`hono/ssg` の `ssgParams` の代わりとして使用します。
-
-この helper は、その route 自身に属する params だけを返します。
-
-たとえば、
-
-```text
-/:slug{.+}
-```
-
-という catch-all route があっても、
-
-```text
-/tags/:slug{.+}
-```
-
-に属するページまで横取りしません。
+Use it as a drop-in replacement for `ssgParams` from `hono/ssg`. It emits params
+only for the route's own enumeration request, so a shallow catch-all such as
+`/:slug{.+}` does not capture the enumeration of a deeper sibling like
+`/tags/:slug{.+}`.
 
 ### `ssgEnumerableHandler`
 
@@ -173,39 +175,23 @@ contentRouteSsgParams(routePath, params)
 ssgEnumerableHandler(handler)
 ```
 
-`next()` を使って sibling route に処理を渡す handler を、SSG の列挙対象として残すための helper です。
-
-Hono は middleware 形式の handler を通常 SSG の列挙対象から外すため、この差を補います。
+It keeps a route handler visible to SSG enumeration while it still calls `next()`
+to defer to those siblings; Hono otherwise skips middleware-shaped handlers.
 
 ## Plugin Page
 
-Plugin は通常の content とは別に、独自のページを提供できます。
+When plugins provide Page Types, use `resolveRiebeckiteRoute(content, path)`
+instead of `resolveContentRoute(manifest, path)` and merge
+`pluginPageSsgParams(content)` with the content parameters. The resolver first
+returns a plugin page, then falls through to content and redirects.
 
-その場合は、
+The generated site's catch-all route wraps this in
+`resolveRiebeckiteContentRequest(c, content)`, which resolves content, plugin
+pages, redirects, and not-found and sets the `htmlLanguage` and `headTags`
+context, so the site only composes the returned result. The root `/` is resolved
+by `resolveRiebeckiteHomeRequest(c, content)`, which shares the same mechanics.
 
-```ts
-resolveContentRoute(manifest, path)
-```
-
-ではなく、
-
-```ts
-resolveRiebeckiteRoute(content, path)
-```
-
-を使用します。
-
-SSG params には、
-
-```ts
-pluginPageSsgParams(content)
-```
-
-を追加します。
-
-生成された Site の catch-all route は、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。この helper が content / Plugin Page / redirect / not-found を解決し、`htmlLanguage` と `headTags` を context へ設定するため、Site は返された結果を自身の composition に渡すだけで済みます。root `/` も同じ mechanics を共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
-
-Route resolver は次の順序で URL を解決します。
+The route resolver resolves URLs in this order:
 
 ```mermaid
 flowchart TD
@@ -227,484 +213,20 @@ flowchart TD
     F -->|No| H
 ```
 
-Plugin Page の body は意図的に文字列として扱います。
+Its page body is intentionally a string: render it inside the site's existing
+document frame and pass `page.headTags` to that frame. Plugin packages never
+need to add HonoX route files just to provide a page.
 
-Site が持つ既存の document frame 内へ描画し、`page.headTags` も Site の frame へ渡します。
+## Integration boundaries
 
-この仕組みにより、Plugin が独自ページを提供するためだけに HonoX の route file を追加する必要はありません。
+Article routing resolves a request against the manifest's already-resolved public
+locations (`byPermalink`, then `redirects`), never by inferring a URL from a
+filesystem path, directory layout, or slug. A slug remains an internal content
+lookup key; the public URL is the resolved `permalink`.
 
-# UI Primitive
+### Summary of responsibilities
 
-`@riebeckite/honox/ui` は UI framework ではありません。
-
-Site が独自のデザインを作りながら、Riebeckite と共通の HTML 構造を利用するための小さな primitive set です。
-
-公開されている主な component は次のとおりです。
-
-- `Article`
-- `ArticleLayout`
-- `ArticleHeader`
-- `ArticleContent`
-- `ArticleBody`
-- `PageBody`
-- `ArticleMeta`
-- `ArticleFooter`
-- `ContentSlot`
-- `Sidebar`
-
-対応する `*Props` 型も公開されています。`ContentSlot` には `hasSlot(slots, name)` という純粋 helper が対応し、`ARTICLE_SLOT` 定数が標準 slot 名を提供します。
-
-## Stable Styling Hooks
-
-各 primitive は次の class を stable styling hook として提供します。
-
-| Component | Class |
-| --- | --- |
-| `Article` | `rb-article` |
-| `ArticleLayout` | `rb-article-layout` |
-| `ArticleHeader` | `rb-article-header` |
-| `ArticleContent` | `rb-article-body` |
-| `ArticleBody` | `rb-article-content` |
-| `ArticleMeta` | `rb-article-meta` |
-| `ArticleFooter` | `rb-article-footer` |
-| `Sidebar` | `rb-sidebar` |
-
-`ArticleBody` はレンダリング済み Markdown 本文を `.rb-article-content` として描画し、Markdown typography はこの wrapper にのみ適用されます。plugin component の見出しは plugin 自身が所有します。
-
-`ContentSlot` は `slots` map から slot 名で HTML fragment を取り出し、`data-slot` を付けて描画します。存在しない slot、空文字、whitespace のみの slot は何も描画しません。`class` / `className` で Site 固有 class を追加できます。slot 名から semantic 要素を推測するような暗黙の mapping は行いません。
-
-Primitive が担当するのは主に、
-
-- semantic HTML
-- stable styling hook
-- `class` / `className` の合成
-- hook を成立させる構造 CSS
-
-です。`rb-*` hook を成立させる構造 CSS は `@riebeckite/honox/style.css` にあり、生成された `.riebeckite/framework-styles.css` 経由で Site に読み込まれます。
-
-一方、
-
-- 記事本文の見た目
-- metadata の表示形式
-- navigation の配置
-- card
-- page layout の composition
-- island
-- Site 固有の visual design と override
-
-は Site Application が管理します。
-
-## 使用例
-
-```tsx
-import {
-  Article,
-  ArticleBody,
-  ArticleContent,
-  ArticleLayout,
-  ContentSlot,
-} from "@riebeckite/honox/ui";
-
-<Article class="site-article">
-  <ArticleLayout>
-    <ContentSlot
-      slots={bodySlots}
-      name="article.aside"
-      class="site-article__aside"
-    />
-    <ArticleContent>
-      <ContentSlot slots={bodySlots} name="article.header" />
-      <ContentSlot slots={bodySlots} name="article.metadata" />
-      <ArticleBody html={post.html ?? ""} />
-    </ArticleContent>
-  </ArticleLayout>
-</Article>;
-```
-
-`ArticleHeader` と `ArticleContent` は、children と HTML input prop のどちらか一方だけを受け取ります。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。`ArticleContent html={...}` は後方互換のために残っていますが非推奨です。
-
-Primitive は composition point として使用し、構造は Framework の hook CSS が、見た目は Site 側が定義してください。
-
-また、
-
-```text
-@riebeckite/honox/src/
-```
-
-以下を直接 import しないでください。
-
-公開 API として記載されていない内部 component に依存することも避けてください。
-
-# Site Application の責務
-
-Riebeckite Site は、最終的には通常の HonoX application です。
-
-`@riebeckite/honox` は content と build を接続しますが、実際にユーザーが見る UI の設計は Site が管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../guides/customizing-your-site.md) を参照してください。
-
-```mermaid
-flowchart TD
-    A["Riebeckite Core<br/>content / manifest / plugin"]
-    B["@riebeckite/honox<br/>build / routing integration"]
-    C["Site Application"]
-
-    C --> D["app/routes/<br/>URL / page composition"]
-    C --> E["app/components/<br/>Site UI"]
-    C --> F["app/islands/<br/>Interactive UI"]
-    C --> G["app/style.css<br/>Visual Design"]
-
-    A --> B
-    B --> C
-```
-
-主なディレクトリの責務は次のとおりです。
-
-| ディレクトリ | Site が持つ責務 |
-| --- | --- |
-| `app/routes/` | URL処理、ページ構成、redirect、response metadata |
-| `app/components/` | Site 固有の UI |
-| `app/islands/` | 対話 UI と client-side state |
-| `app/style.css` | 色、layout、typography、extension style |
-
-## Site Shell
-
-```text
-app/routes/_renderer.tsx
-```
-
-は Site 全体の shell です。
-
-ここでは主に、
-
-- document head
-- navigation
-- page chrome
-- application client entry
-
-などを管理します。
-
-Route は `ContentManager` からコンテンツを取得し、
-
-```ts
-resolveRiebeckiteRoute(content, c.req.path)
-```
-
-で request URL を解決します。
-
-その結果をどの component tree で表示するかは Site が決定します。
-
-Riebeckite repository にある `apps/web` は実装例の1つであり、外部 Site が同じ layout を使う必要はありません。
-
-## Not-found と Error
-
-not-found の処理は HonoX 標準の `app/routes/_404.tsx` です。Riebeckite が「見つからない」と判断し、HonoX がその response を Site の `_renderer.tsx` を通して描画し直すため、status は `404` のまま、not-found 画面の見た目は Site が所有します。
-
-```tsx
-// app/routes/_404.tsx
-import type { NotFoundHandler } from "hono";
-
-const handler: NotFoundHandler = (c) => {
-  c.status(404);
-  return c.render(<main class="not-found">Page not found</main>);
-};
-
-export default handler;
-```
-
-route resolver（`resolveRiebeckiteContentRequest`、`resolveRiebeckiteHomeRequest`、Plugin Page の解決）と、asset-like な path を content route に入れない extension guard は `@riebeckite/honox` に残ります。Site がこれらを再実装することはありません。解決されるのは公開済みで routable な content だけなので、not-found response に draft・未来公開・非公開 content の metadata が載ることもありません。
-
-runtime error は Hono の error 処理を使います。`app/routes/_error.tsx` が無ければ、標準の handler が error をログに記録し、`500 Internal Server Error` を返します。visitor 向けの画面が必要な場合に限り、Site は `_error.tsx`（`ErrorHandler`）を追加できます。config、plugin、build の失敗は開発者向けであり、成功したページに変換してはいけません。
-
-# Plugin と Site の境界
-
-Plugin は Site に情報や UI fragment を提供できます。
-
-ただし、**最終的にどこへ描画するかは Site が決定します。**
-
-```mermaid
-flowchart LR
-    A["Plugin"]
-    B["Manifest"]
-    C["Site Route"]
-    D["Site Shell / Component"]
-
-    A -->|"headTags / bodySlots / page"| B
-    B --> C
-    C -->|"placement"| D
-```
-
-## Head Tags
-
-Plugin が document head に情報を追加したい場合は、
-
-```ts
-ContentManifestEntry.headTags
-```
-
-へ `meta` / `link` / `script` を記述します。
-
-Plugin 自身が `<head>` を描画するわけではありません。
-
-`resolveRiebeckiteContentRequest` / `resolveRiebeckiteHomeRequest` が、解決した entry の `headTags` を route context へ設定します。`_renderer.tsx` がそれを読み取って描画します。
-
-```tsx
-import { PluginHeadTags } from "@riebeckite/honox/ui";
-
-const headTags = c.get("headTags") ?? [];
-
-<head>
-  <PluginHeadTags tags={headTags} />
-</head>;
-```
-
-つまり、
-
-```text
-Plugin
-  ↓ headTags を提供
-Framework resolver
-  ↓ context へ設定
-_renderer.tsx
-  ↓
-<head> に描画
-```
-
-という関係です。
-
-たとえば `@riebeckite/plugin-discord-embed` は、この仕組みを使って `theme-color` を提供します。
-
-Plugin は `<head>` 自体や tag の並び順を所有しません。
-
-## RiebeckiteHead と PluginHeadTags
-
-`@riebeckite/honox/ui` より公開される 2 つの primitive は、head composition の責務分離を明確にします。
-
-### `RiebeckiteHead`
-
-```tsx
-import { RiebeckiteHead } from "@riebeckite/honox/ui";
-
-<RiebeckiteHead title="My Site" headTags={[]} />
-```
-
-Framework が次の標準的な head contents を描画します。
-
-- `<meta charset="utf-8">`
-- `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
-- `<title>`（title prop が提供する値）
-- `<link rel="icon" href="/favicon.ico">`（faviconHref プロップで上書き可能、null で省略可）
-- `<ColorModeScript />`（colorModeScript プロップで制御、default true）
-- stylesheet entries（stylesheets プロップ、default `["/app/style.css"]`）
-- client script entry（clientSrc プロップ、default `"/app/client.ts"`、null で省略可）
-- `PluginHeadTag` values の変換（headTags プロップ）
-- 子要素（children prop）は標準の後に追加
-
-`RiebeckiteHead` は `<head>` 要素自身を描画しません。Site は `<head>` の ownership を保持し、その中に `RiebeckiteHead` を配置できます。
-
-### `PluginHeadTags`
-
-```tsx
-import { PluginHeadTags } from "@riebeckite/honox/ui";
-
-<PluginHeadTags tags={headTagsFromManifest} />
-```
-
-`PluginHeadTag` values (meta / link / script) を JSX 要素に変換します。`RiebeckiteHead` を使わず、Site が自分で head を組み立てる際に使用します。
-
-### 使用例
-
-Site が `<head>` 所有権を維持しつつ標準 head をFrameworkに任せる場合：
-
-```tsx
-import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
-
-export default jsxRenderer(({ children }, c) => (
-  <ThemeRoot
-    theme={config.theme}
-    lang={c.get("htmlLanguage") ?? config.site.locale}
-  >
-    <head>
-      <RiebeckiteHead
-        title={config.site.title}
-        headTags={c.get("headTags") ?? []}
-      />
-      <meta name="custom-site-value" content="..." />
-    </head>
-    <body class="riebeckite-page rb-site">{children}</body>
-  </ThemeRoot>
-);
-```
-
-Frameworkは標準 head rendering メカニクス（charset、viewport、default title、favicon wiring、color-mode bootstrap、stylesheet/client entry wiring、PluginHeadTag 変換）と theme-root attribute 導出を担当し、Site は `<head>`/`<body>` 構成とカスタム meta/link/script の所有権を保持します。favicon FILE (`/public/favicon.ico`) は Site-owned のまま、default link wiring にのみ Framework が所有権を持ちます。
-
-Plugin が head tags を提供する場合は、既存の `headTags` メカニズムはそのまま機能します。`RiebeckiteHead` と `headTags` は併用可能です。
-
-## Body Slots
-
-本文の途中へ Plugin の HTML を表示したい場合は、
-
-```ts
-ContentManifestEntry.bodySlots
-```
-
-を使用します。
-
-Plugin は slot 名と HTML fragment を提供します。
-
-たとえば、
-
-```text
-properties
-```
-
-という slot があれば、Route は slot object を article component へ渡し、Site は、
-
-```tsx
-<Article
-  content={post}
-  bodySlots={route.entry.bodySlots}
-/>
-```
-
-のように article component 内の任意の位置へ配置できます。
-
-ここでの `Article` は Site 自身の article component であり、同名の `@riebeckite/honox/ui` primitive ではありません。scaffold の starter は標準 slot を決まった位置へ描画します(`article.aside`、`article.header`、`article.metadata`、`article.before-content`、`article.after-content`、`article.footer`)。plugin 作者はこれらから選ぶか、Site に独自名の描画を依頼します。独自 slot は Site が描画を選ぶまで何も表示しません。
-
-Site はどの slot をどこへ置くかを選び、描画の仕組みは公開 `ContentSlot` primitive に任せます。
-
-```tsx
-<ArticleContent>
-  <ContentSlot slots={bodySlots} name="article.header" />
-  <ContentSlot
-    slots={bodySlots}
-    name="article.metadata"
-    class="site-article__metadata"
-  />
-  <ArticleBody html={post.html ?? ""} />
-</ArticleContent>
-```
-
-`ContentSlot` は slot lookup、存在しない slot や空 slot の扱い、HTML fragment の描画、`data-slot` の付与を担当します。Site が `dangerouslySetInnerHTML` を直接書く必要はありません。順序、可視性、Site 固有 class、独自 slot 名は引き続き Site が所有します。`slots` を直接読んだり、任意の wrapper で包んだり、同じ slot を複数回描画する escape hatch も残っています。
-
-Plugin が route や shell の構造を書き換える必要はありません。
-
-`@riebeckite/plugin-properties` では、
-
-```ts
-render: "slot"
-```
-
-を指定すると `properties` slot を提供します。
-
-`render: "html"` は従来どおり、生成 HTML の先頭または末尾へ直接挿入します。
-
-記事末尾の Plugin section は `article.footer` に集約します。article component ではこの slot を一度だけ描画し、fragment の順序は解決済み Plugin の `order` で決めます。空の contribution は DOM node を生成しません。
-
-# 独自 Site を作る
-
-外部 Site でも、公開 primitive を使いながら自由に component を構成できます。
-
-```tsx
-import type { ContentBodySlots, PostContent } from "@riebeckite/core";
-import {
-  Article,
-  ArticleBody,
-  ArticleContent,
-  ArticleLayout,
-  ContentSlot,
-} from "@riebeckite/honox/ui";
-
-export function SiteArticle({
-  post,
-  bodySlots,
-}: {
-  post: PostContent;
-  bodySlots?: ContentBodySlots;
-}) {
-  return (
-    <Article class="site-article">
-      <ArticleLayout>
-        <ArticleContent>
-          <ContentSlot slots={bodySlots} name="article.header" />
-          <ArticleBody html={post.html ?? ""} />
-          <ContentSlot slots={bodySlots} name="article.footer" />
-        </ArticleContent>
-      </ArticleLayout>
-    </Article>
-  );
-}
-```
-
-見た目は Site の CSS で定義します。
-
-```css
-@import "./.riebeckite/framework-styles.css";
-@import "./.riebeckite/plugin-styles.css";
-@import "./.riebeckite/theme-styles.css";
-
-.site-article {
-  max-width: 48rem;
-  margin: 0 auto;
-}
-```
-
-`.riebeckite` 内の生成 CSS 自体を直接編集しないでください。
-
-## Islands
-
-Island も通常の Site module として管理します。
-
-```text
-app/islands/
-```
-
-へ HonoX island を配置し、それを利用する route または component から import します。
-
-hydration や client-side state は Site 内で管理します。
-
-`app/client.ts` では、
-
-```ts
-createClient();
-initRiebeckiteClient();
-```
-
-の両方を初期化します。
-
-`initRiebeckiteClient()` は、インストールされている Plugin や Theme が提供する browser entry を起動するために使用されます。
-
-Plugin は client entry を提供できますが、
-
-- Site route
-- shell
-- component
-- island
-- CSS design
-
-そのものを所有してはいけません。
-
-# Integration の境界
-
-Riebeckite の routing では、すでに解決された公開 URL を使用します。
-
-基本的には、
-
-```text
-byPermalink
-    ↓
-redirects
-```
-
-の順で request を解決します。
-
-filesystem path やディレクトリ構造から公開 URL を逆算しません。
-
-また、`slug` はコンテンツを内部で検索するためのキーです。
-
-実際に公開される URL は、解決済みの `permalink` です。
-
-## 責務のまとめ
-
-Riebeckite 全体では、次のように責務を分離します。
+Across Riebeckite, responsibilities are separated like this:
 
 ```mermaid
 flowchart LR
@@ -716,15 +238,16 @@ flowchart LR
     Core --> Integration
     Plugin --> Core
     Integration --> Site
-    Plugin -. "提供した情報を<br/>Site が配置" .-> Site
+    Plugin -. "provided information is<br/>placed by the Site" .-> Site
 ```
 
-HonoX / Vite / Cloudflare 固有の処理は integration または Site Application に閉じます。
+Keep HonoX, Vite, Cloudflare, and route APIs in this package or `apps/web`;
+Core remains portable. Core does not own HonoX routing. A plugin can expose
+assets, client entries, endpoints, and renderers, but Core does not become a
+HonoX router. The application decides concrete route composition and islands.
 
-Core は HonoX routing を所有しません。
+**Core handles content, the Integration connects to HonoX, plugins provide
+features, and the site decides the final presentation.**
 
-Plugin はページ、アセット、client entry などを提供できますが、Site 全体の route composition や UI 構造は所有しません。
-
-**Core はコンテンツを扱い、Integration は HonoX と接続し、Plugin は機能を提供し、Site が最終的な表示を決める**、という境界を維持してください。
-
-build state の扱いについては [Build system](build-system.md)、package ごとの責務については [Architecture](architecture.md) を参照してください。
+Use [Build system](build-system.md) for state behavior and
+[Architecture](architecture.md) for package ownership.

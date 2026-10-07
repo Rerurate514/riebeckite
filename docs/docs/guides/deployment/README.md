@@ -1,8 +1,6 @@
-# Deployment Guides
+# Deployment
 
-Riebeckite で作成した Site を Cloudflare Workers へ公開するための Guide です。
-
-基本的な流れは次のとおりです。
+A Riebeckite build produces static files in `dist/`. Deployment means serving that folder, and the choices are about *how* it gets there.
 
 ```mermaid
 flowchart LR
@@ -10,7 +8,7 @@ flowchart LR
     Build["riebeckite build"]
     Dist["dist/"]
     Workers["Cloudflare Workers"]
-    Site["Public Site"]
+    Site["Public site"]
 
     Source --> Build
     Build --> Dist
@@ -18,29 +16,28 @@ flowchart LR
     Workers --> Site
 ```
 
+Running
+
 ```sh
 npm exec riebeckite build
 ```
 
-を実行すると、公開用の Site が `dist/` に生成されます。
+generates the publishable site into `dist/`. For a normal static site, that `dist/` is served from Cloudflare Workers as Static Assets.
 
-通常の静的 Site では、この `dist/` を Cloudflare Workers の Static Assets として配信します。
-
-## どの Guide を読めばいい？
-
-| やりたいこと | Guide |
+| I want to… | Guide |
 | --- | --- |
-| 手元から Cloudflare Workers へ公開したい | [Cloudflare Workers](./cloudflare-workers.md) |
-| GitHub への Push から自動公開したい | [GitHub Actions](./github-actions.md) |
-| Content と Site を別 Repository で運用したい | [Separate Content Repository](./separate-content-repository.md) |
+| Deploy to Cloudflare Workers by hand | [Cloudflare Workers](./cloudflare-workers.md) |
+| Deploy automatically from GitHub | [GitHub Actions](./github-actions.md) |
+| Read articles from a separate repository in CI | [Separate content repository](./separate-content-repository.md) |
+| Just get a site online today | [Getting Started / Deployment](../../getting-started/deployment.md) |
 
-初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.md) を読むのがおすすめです。`create-riebeckite` で `Cloudflare Workers` を選ぶと Wrangler の依存と `wrangler.jsonc` が生成され、`npm exec riebeckite deploy` で手元から公開できます。`deploy` は build を行わないため、先に `npm exec riebeckite build` で `dist/` を作ります。すでに手元から公開している Site は、`npm exec riebeckite deploy setup` で GitHub Actions の継続デプロイを準備できます。
+Publishing locally is the quickest first step: generate a site with `create-riebeckite`'s `Cloudflare Workers` choice, then run `npm run build` and `npm exec riebeckite deploy`. `deploy` does not build; it creates `wrangler.jsonc` when it is missing, opens the Wrangler login on the first run, and uploads `dist/`. GitHub Actions and repository separation are options you can add later. If you already published locally, `npm exec riebeckite deploy setup` prepares GitHub Actions continuous deployment, including the two repository secrets.
 
 ```mermaid
 flowchart TD
-    Start["Siteを公開したい"]
-    Auto{"自動Deployする？"}
-    Separate{"Contentを<br/>別Repositoryにする？"}
+    Start["I want to publish a site"]
+    Auto{"Deploy automatically?"}
+    Separate{"Content in a<br/>separate repository?"}
 
     Start --> Auto
     Auto -->|"No"| Workers["Cloudflare Workers"]
@@ -49,36 +46,48 @@ flowchart TD
     Separate -->|"Yes"| Content["Separate Content Repository"]
 ```
 
-## Build と Deploy
+## Choosing a method
 
-Riebeckite では、Build と Deploy は別の処理です。
+| Method | Deploy on article push | Needs secrets |
+| --- | ---: | --- |
+| Same repository + `push` | Yes | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
+| Separate repository + `repository_dispatch` | Yes | Above + `SITE_DISPATCH_TOKEN` (content repo) and, if private, `RIEBECKITE_CONTENT_READ_TOKEN` (site repo) |
+| Separate repository + `schedule` | Delayed | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
+| Manual dispatch | No | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
+| Local, from your machine (`npm exec riebeckite deploy`) | No | None (Wrangler OAuth) |
+
+## What the build produces
+
+Riebeckite pre-renders content routes and plugin endpoints during the build. The generated `dist/` is therefore deployed as **static assets**, with no runtime `main` entry.
+
+Build state (`.riebeckite/`, plugin caches) stays at build time and never reaches the Worker runtime.
+
+In Riebeckite, Build and Deploy are separate steps:
 
 ```text
 Build
-  → Contentや設定から dist/ を生成する
+  → generate dist/ from content and configuration
 
 Deploy
-  → dist/ をCloudflare Workersから配信する
+  → serve dist/ from Cloudflare Workers
 ```
 
-公開対象は `dist/` です。
-
-`.riebeckite/` や Plugin Cache は Build 時に利用する状態であり、公開 Asset ではありません。
+The publish target is `dist/`:
 
 ```text
 dist/
-  → 公開する
+  → published
 
 .riebeckite/
-Plugin Cache
-  → 公開しない
+Plugin cache
+  → not published
 ```
 
-通常の静的 Site では Runtime の `main` も必要ありません。Riebeckite の Build 処理を Workers 上で実行するのではなく、Build 済みの `dist/` を配信します。
+A normal static site does not need a runtime `main` either. The Riebeckite build does not run on Workers; the built `dist/` is served.
 
-## 公開前の確認
+## Checking before you deploy
 
-Deploy 前には、次の順で確認できます。
+Before deploying, you can verify in this order:
 
 ```sh
 npm exec riebeckite check
@@ -86,33 +95,31 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-`build` が成功したら、生成された `dist/` を Deploy します。
+Once `build` succeeds, deploy the generated `dist/`.
 
-## Deployment Guides
+## Deployment guides
 
 ### Cloudflare Workers
 
 [Cloudflare Workers](./cloudflare-workers.md)
 
-`dist/` を Cloudflare Workers へ手元から公開する方法を説明します。`npm exec riebeckite deploy` がログインと `wrangler.jsonc` の生成を行います。
+Publishing `dist/` to Cloudflare Workers from your machine. `npm exec riebeckite deploy` handles the login and generates `wrangler.jsonc`.
 
 ### GitHub Actions
 
 [GitHub Actions](./github-actions.md)
 
-Site Repository への Push から、Build と Cloudflare Workers への Deploy を自動化します。
+Automating the build and the Cloudflare Workers deployment on a push to the site repository.
 
 ### Separate Content Repository
 
-[Separate Content Repository](./separate-content-repository.md)
+[Separate content repository](./separate-content-repository.md)
 
-Obsidian Vault などの Content と Site を別 Repository で管理する方法を説明します。
+Managing content such as an Obsidian vault and the site in separate repositories. This also covers authentication for a private content repository and starting the site deployment from a content update.
 
-Private Content Repository の認証や、Content 更新から Site の Deployment を起動する方法もこちらで扱います。
+## Summary
 
-## まとめ
-
-Riebeckite の Deployment は、
+Riebeckite deployment is enough to think of as:
 
 ```text
 Content
@@ -124,8 +131,15 @@ dist/
 Cloudflare Workers
 ```
 
-と考えれば十分です。
+- Publish manually → [Cloudflare Workers](./cloudflare-workers.md)
+- Publish automatically on push → [GitHub Actions](./github-actions.md)
+- Separate the content repository → [Separate content repository](./separate-content-repository.md)
 
-- 手動で公開する → [Cloudflare Workers](./cloudflare-workers.md)
-- Push から自動公開する → [GitHub Actions](./github-actions.md)
-- Content Repository を分離する → [Separate Content Repository](./separate-content-repository.md)
+## See also
+
+- Cloudflare deployment template — the files this section documents
+- [Build system](../../framework/build-system.md) — what `riebeckite build` writes
+- [Analytics](../analytics.md) — the optional, separate page-view collector
+
+
+

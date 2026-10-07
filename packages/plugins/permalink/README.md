@@ -961,6 +961,6 @@ permalink({
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
-- [Content system](../../../docs/docs/framework/content-system.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Content system](../../../docs/docs/framework/content-system.md)
 

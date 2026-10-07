@@ -81,7 +81,7 @@ properties({
 });
 ```
 
-Site への受け渡しは [`ContentManifestEntry.bodySlots`](../../../docs/docs/framework/honox-integration.md) の contract に従います。Plugin は route や shell を所有しません。
+Site への受け渡しは [`ContentManifestEntry.bodySlots`](../../../docs/docs/framework/honox-integration.ja.md) の contract に従います。Plugin は route や shell を所有しません。
 
 ## エクスポート
 
@@ -93,4 +93,4 @@ Site への受け渡しは [`ContentManifestEntry.bodySlots`](../../../docs/docs
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.md)
+- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)

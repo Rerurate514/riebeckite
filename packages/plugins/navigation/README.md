@@ -152,5 +152,5 @@ tab.
 
 ## See also
 
-- [Configuration reference](../../../docs/docs/reference/configuration.en.md)
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Configuration reference](../../../docs/docs/reference/configuration.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)

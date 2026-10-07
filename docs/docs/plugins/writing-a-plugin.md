@@ -1,152 +1,84 @@
-# はじめてのプラグイン作成
+# Writing Your First Plugin
 
-プラグインは**機能**（Markdown/HTML の変換、クライアント動作、独立ページ、SEO、診断など）を足す仕組みです。見た目を変えたいときはテーマ（[はじめてのテーマ作成](../themes/writing-a-theme.md)）を使います。Plugin の独立ページは Site の共通 route で表示します。Site 固有の画面だけを App（`app/`）の route に置いてください。
+Plugins add **functionality** to Riebeckite: Markdown or HTML transformation, client-side behavior, standalone pages, SEO, diagnostics, and more. Use a Theme when you only want to change appearance.
 
-プラグインが HTML や外部 URL を生成する場合は、表示する値や URL を安全に扱う必要があります。特に、外部から取得したデータやユーザー入力をそのまま HTML に埋め込まないでください。
-Riebeckite がどこまで安全性を保証し、プラグイン側で何を確認する必要があるかは、[セキュリティモデル](../security.md) を参照してください。
+Plugins are trusted application code. When a Plugin emits HTML, page bodies, head tags, client entries, endpoints, or generated files, it is responsible for escaping untrusted text and validating URLs for the exact context. Riebeckite preserves raw Markdown HTML and does not sanitize Plugin-generated HTML. See [Security model](../security.md).
 
-Plugin がボタンやメニューなどの UI を表示する場合は、キーボードでも操作できるようにしてください。
-基本的な考え方や注意点は、[アクセシビリティ](../accessibility.md) を参照してください。
+When a Plugin generates UI, follow the [accessibility contract](../accessibility.md): prefer semantic HTML, use real links and buttons, keep keyboard operation and focus management working, and synchronize ARIA state only when ARIA is needed.
 
-## 全体像
+A Plugin can live directly inside a site; it does not have to be published as a package.
 
-このページは、何もない状態から配布できる Plugin までを一続きで扱います。
+## The path
+
+This page follows one continuous path, from an empty folder to a distributable Plugin:
 
 ```text
-最小の Plugin を作る（1〜2）
+Create a minimal Plugin (1-2)
    ↓
-Markdown / HTML を変換する（3、実践）
+Transform Markdown or HTML (3, Hands-on)
    ↓
-出力をテストする（テストの進め方）
+Test the output (Testing a plugin)
    ↓
-配布用パッケージにする（5）
+Package it (5)
    ↓
-外部パッケージとして検証する（tests/plugin-dx / test:plugin-dx:external）
+Verify it as an external package (tests/plugin-dx / test:plugin-dx:external)
 ```
 
-site の中だけで使う場合は「配布用パッケージにする」より前で完結します。外部へ配布する場合だけ、package 化と外部検証まで進めます。各拡張ポイントの正確な契約は [Plugin System](../reference/plugin-api.md) を参照してください。
+If the Plugin only runs inside one site, you can stop before packaging. Only distributed Plugin packages need the packaging and external-verification steps. For the exact contract of each extension point, see the [Plugin API](../reference/plugin-api.md).
 
-## 1. 最小のプラグインを作る
+## 1. Create a minimal Plugin
 
-プラグインは `definePlugin`（`@riebeckite/core` から import）で作ります。**パッケージにする必要はなく、サイトの中に置けます**。
+Create Plugins with `definePlugin` from `@riebeckite/core`. A Plugin with only a `name` is the smallest valid form. Plugin factories can accept typed options when configuration is needed.
 
-```ts
-// extensions/local-plugin.ts
-import { definePlugin } from "@riebeckite/core";
+## 2. Add CSS
 
-export function localPlugin() {
-  return definePlugin({
-    name: "local",
-  });
-}
-```
+Declare Plugin-specific stylesheets through `assets`. Do not copy CSS into the site manually or reference `/node_modules` directly from the browser.
 
-`riebeckite.config.ts` の `plugins` 配列に追加します。
+Use a stable root hook such as `rr-<feature>` on rendered output. See [Plugin API](../reference/plugin-api.md) for the CSS contract.
 
-```ts
-// riebeckite.config.ts
-import { localPlugin } from "./extensions/local-plugin";
+## 3. Transform Markdown or HTML
 
-export default defineConfig({
-  plugins: [localPlugin()],
-  // ...
-});
-```
+Semantic Markdown transformation belongs to Plugins. Simple remark Plugins can be declared as an array. Use `extendMarkdownPipeline` / `extendHtmlPipeline` when you need finer control of the processing pipeline.
 
-`name` だけのプラグインは「何もしない」最小構成です。オプションを渡したい場合は factory に引数を付けて型を付けます。
+`remarkPlugins`, `rehypePlugins`, and `extendMarkdownPipeline` all join the same pipeline. Riebeckite runs `remark-parse`, `remark-directive`, `remark-gfm`, and the other base plugins before your Plugin, so directive syntax such as `:::tip` and GFM already arrive as AST nodes. You do not install or register those yourself.
 
-```ts
-type LocalOptions = { enabled?: boolean };
+For dependencies, lifecycle hooks, renderers, endpoints, and other extension points, see [Plugin API](../reference/plugin-api.md).
 
-export function localPlugin(options: LocalOptions = {}) {
-  return definePlugin({ name: "local", options });
-}
-```
+Plugins that participate in content transformation should also declare `processedContentCache`. Without it a plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `{ version: "1", dependencyMode: "none" }` for a standalone transform and `tracked` when the output depends on other plugins (reserve `unsafe` for what cannot be tracked accurately).
 
-## 2. CSS を足す
+## Hands-on: Build a directive plugin from start to finish
 
-Plugin 固有の stylesheet は `assets` で宣言します。サイトに CSS をコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
+In this section, you will build a small plugin that turns the following Markdown into a custom Tip block:
 
-```ts
-// extensions/local-plugin.ts
-import { definePlugin } from "@riebeckite/core";
-
-export function localPlugin() {
-  return definePlugin({
-    name: "local",
-    assets: [
-      {
-        pluginName: "local",
-        kind: "style",
-        moduleSpecifier: "/extensions/plugin.css",
-      },
-    ],
-  });
-}
-```
-
-- `moduleSpecifier` は host bundler が解決できるものを指定します。site 内プラグインでは `/extensions/plugin.css` の形です。
-- 描画する最外要素には安定した root hook（`rr-<feature>`）を付けます。CSS の規約は [Plugin System](../reference/plugin-api.md) を参照してください。
-
-## 3. Markdown / HTML を変換する
-
-マークダウンの意味変換は Plugin の責務です。簡単な remark プラグインは配列で宣言できます。
-
-```ts
-// extensions/local-plugin.ts
-import { definePlugin } from "@riebeckite/core";
-
-function remarkLocal() {
-  return (tree: unknown) => {
-    // tree（Markdown AST）を加工する
-    return tree;
-  };
-}
-
-export function localPlugin() {
-  return definePlugin({ name: "local", remarkPlugins: [remarkLocal] });
-}
-```
-
-pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `extendHtmlPipeline` を使います。その他の拡張ポイント（依存関係・lifecycle・renderer・endpoint など）は [Plugin System](../reference/plugin-api.md) を参照してください。
-
-`remarkPlugins` / `rehypePlugins` も `extendMarkdownPipeline` も同じ Pipeline に参加します。Riebeckite は Plugin より前に `remark-parse` や `remark-directive`、`remark-gfm` などを適用するため、`:::tip` のような directive や GFM 記法はすでに AST node として Plugin へ渡されます。これらを著者がインストールしたり登録したりする必要はありません。
-
-Content 変換に参加する Plugin は `processedContentCache` も宣言してください。宣言がない場合でも動作はしますが、その site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`、他 Plugin の出力に依存するなら `tracked` を指定します（正確に追跡できない場合のみ `unsafe`）。
-
-## 実践: directive プラグインを最後まで作る
-
-ここでは、次のような Markdown を独自の Tip 表示に変換するプラグインを作ります。
-
-```md
+```md id="bq0v5x"
 :::tip[Heads up]
 Save often.
 :::
 ```
 
-最終的には、次のような HTML が生成されます。
+The generated HTML will look like this:
 
-```html
+```html id="xmx7yi"
 <aside class="rr-tip">
   <p class="rr-tip__title">Heads up</p>
   <p>Save often.</p>
 </aside>
 ```
 
-作業は4段階です。
+We will build it in four steps:
 
-1. Markdown を変換するプラグインを作る
-2. 見た目を整える CSS を追加する
-3. `riebeckite.config.ts` に登録する
-4. 期待した HTML が生成されることを test する
+1. Create a plugin that transforms the Markdown
+2. Add CSS for the Tip block
+3. Register the plugin in `riebeckite.config.ts`
+4. Test the generated HTML
 
-### Step 1: プラグインを作る
+### Step 1: Create the plugin
 
-`extensions/tip-plugin.ts` を作成します。
+Create `extensions/tip-plugin.ts`.
 
-まず、このプラグインの入口を見てみましょう。
+First, let's look at the entry point of the plugin:
 
-```ts
+```ts id="szeg4x"
 import { definePlugin } from "@riebeckite/core";
 
 export function tipPlugin() {
@@ -168,18 +100,18 @@ export function tipPlugin() {
 }
 ```
 
-ここでやっていることは2つだけです。
+This plugin does two things:
 
-- `remarkTip` という Markdown 変換を追加する
-- `/extensions/plugin.css` を stylesheet として読み込む
+- adds a Markdown transformation called `remarkTip`
+- loads `/extensions/plugin.css` as a stylesheet
 
-`remarkTip` が、実際に `:::tip` を `<aside>` へ変換する部分です。
+`remarkTip` is the part that actually turns `:::tip` into an `<aside>` element.
 
-#### `:::tip` を見つける
+#### Find `:::tip`
 
-必要な import と、directive を扱うための型を追加します。
+Add the imports and a small type for the directive node:
 
-```ts
+```ts id="nv29am"
 import { definePlugin } from "@riebeckite/core";
 import type { Parent, Root } from "mdast";
 import { visit } from "unist-util-visit";
@@ -192,15 +124,15 @@ type ContainerDirective = {
 };
 ```
 
-この例では Markdown AST の型に `mdast`、node の走査に `unist-util-visit` を使います。どちらも通常の npm package として自分の package に追加してください（`@riebeckite/core` からは import しません）。
+This example uses the `mdast` types for AST nodes and `unist-util-visit` to walk the tree. Add them to your own package's dependencies (they are not imported from `@riebeckite/core`).
 
-Riebeckite の Markdown pipeline では、`:::tip` のような記法はあらかじめ `remark-directive` によって `containerDirective` node に変換されています。
+In Riebeckite's Markdown pipeline, syntax such as `:::tip` has already been parsed by `remark-directive` before your plugin runs.
 
-そのため、プラグイン側で Markdown の文字列を解析する必要はありません。
+That means your plugin does not need to parse the Markdown text itself. It receives a `containerDirective` node instead.
 
-`unist-util-visit` を使って、その node を探します。
+Use `unist-util-visit` to find those nodes:
 
-```ts
+```ts id="tvvs30"
 function remarkTip() {
   return (tree: Root) => {
     visit(tree, "containerDirective", (node) => {
@@ -208,27 +140,25 @@ function remarkTip() {
 
       if (directive.name !== "tip") return;
 
-      // ここで :::tip を変換する
+      // Transform :::tip here.
     });
   };
 }
 ```
 
-`containerDirective` には `tip` 以外の directive も含まれます。
+A `containerDirective` can represent directives other than `tip`, so:
 
-そのため、
-
-```ts
+```ts id="4svv7a"
 if (directive.name !== "tip") return;
 ```
 
-として、`:::tip` だけを処理しています。
+makes sure that this plugin only handles `:::tip`.
 
-#### `<aside>` に変換する
+#### Turn it into an `<aside>`
 
-見つけた `:::tip` に、生成したい HTML 要素を指定します。
+Next, tell the Markdown renderer which HTML element to generate:
 
-```ts
+```ts id="ap4hjz"
 directive.data = {
   ...directive.data,
   hName: "aside",
@@ -238,55 +168,51 @@ directive.data = {
 };
 ```
 
-ここで、
+Here:
 
-```ts
+```ts id="l7dbze"
 hName: "aside"
 ```
 
-が HTML 要素を、
+selects the HTML element, while:
 
-```ts
+```ts id="nupj0v"
 className: ["rr-tip"]
 ```
 
-が class を指定しています。
+adds its CSS class.
 
-つまり、
+As a result:
 
-```md
+```md id="nkrh1g"
 :::tip
 Save often.
 :::
 ```
 
-は最終的に、
+will produce HTML similar to:
 
-```html
+```html id="zvbjza"
 <aside class="rr-tip">
   <p>Save often.</p>
 </aside>
 ```
 
-のように出力されます。
+#### Turn `[Heads up]` into the title
 
-#### `[Heads up]` をタイトルにする
+Now let's handle the label in:
 
-次は、
-
-```md
+```md id="u0ykxd"
 :::tip[Heads up]
 Save often.
 :::
 ```
 
-の `[Heads up]` をタイトルとして扱います。
+`remark-directive` provides this label as the first child of the directive.
 
-`remark-directive` は、この label を directive の最初の子 node として渡します。
+First, check whether the first child is a directive label:
 
-そこで最初の子が label かどうかを確認します。
-
-```ts
+```ts id="3q5kbw"
 const [first, ...rest] = directive.children;
 
 const hasLabel =
@@ -295,14 +221,12 @@ const hasLabel =
     ?.directiveLabel === true;
 ```
 
-label があれば、
+If a label exists, split the directive into:
 
-- 最初の子 → タイトル
-- それ以降 → 本文
+- the first child → title
+- the remaining children → body
 
-として分けます。
-
-```ts
+```ts id="s5d3wu"
 const titleChildren = hasLabel
   ? (first as Parent).children
   : [];
@@ -312,15 +236,15 @@ const bodyChildren = hasLabel
   : directive.children;
 ```
 
-そしてタイトルを、
+Then add the title as:
 
-```html
+```html id="blz7w7"
 <p class="rr-tip__title">
 ```
 
-として追加します。
+by replacing the directive's children:
 
-```ts
+```ts id="uknv3s"
 directive.children = [
   {
     type: "paragraph",
@@ -336,30 +260,28 @@ directive.children = [
 ];
 ```
 
-これで、
+Now:
 
-```md
+```md id="ez1dfb"
 :::tip[Heads up]
 Save often.
 :::
 ```
 
-から、
+produces:
 
-```html
+```html id="4jgvpj"
 <aside class="rr-tip">
   <p class="rr-tip__title">Heads up</p>
   <p>Save often.</p>
 </aside>
 ```
 
-が生成されます。
+#### Complete plugin
 
-#### 完成したプラグイン
+Putting everything together, `extensions/tip-plugin.ts` looks like this:
 
-ここまでをまとめると、`extensions/tip-plugin.ts` は次のようになります。
-
-```ts
+```ts id="7q1nxh"
 import { definePlugin } from "@riebeckite/core";
 import type { Parent, Root } from "mdast";
 import { visit } from "unist-util-visit";
@@ -442,13 +364,13 @@ export function tipPlugin() {
 }
 ```
 
-> `extendMarkdownPipeline` は Markdown の AST を直接操作できる低レベルな拡張ポイントです。この例では directive の HTML 構造そのものを変更したいため使用しています。
+> `extendMarkdownPipeline` is a low-level extension point that gives you direct access to the Markdown AST. We use it here because the plugin needs to change the HTML structure generated for the directive.
 
-### Step 2: stylesheet を追加する
+### Step 2: Add the stylesheet
 
-次に `extensions/plugin.css` を作成します。
+Create `extensions/plugin.css`:
 
-```css
+```css id="nw1i6n"
 .rr-tip {
   border-left: 2px solid var(--rb-color-accent);
   padding: 0.75rem 1rem;
@@ -460,37 +382,35 @@ export function tipPlugin() {
 }
 ```
 
-先ほど生成した、
+These styles target the elements we generated earlier:
 
-```html
+```html id="0v5gb7"
 <aside class="rr-tip">
 ```
 
-と、
+and:
 
-```html
+```html id="3qnpq7"
 <p class="rr-tip__title">
 ```
 
-に対してスタイルを適用しています。
+The border color uses the Riebeckite theme token:
 
-色には固定値ではなく、
-
-```css
+```css id="r3pgla"
 var(--rb-color-accent)
 ```
 
-という Riebeckite の theme token を使っています。
+instead of a hard-coded color.
 
-こうしておくと、利用している theme が変わっても、その theme の accent color に追従できます。
+This allows the Tip block to follow the active theme's accent color automatically.
 
-これが Theme Extension Contract の基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されるため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.md) を参照してください。
+This is the Theme Extension Contract in practice. Put a stable root hook (`rr-<feature>`; here `rr-tip`) on the outermost element, and use `--rb-*` semantic tokens for color and spacing. `--rb-*` tokens resolve in light, explicit dark, and system dark, so you normally do not branch on `prefers-color-scheme` or `[data-theme]` yourself, and you must not depend on a `.dark` class. See the [Theme API](../reference/theme-api.md) for details, including how to scope a dark-only branch when one is genuinely necessary.
 
-### Step 3: プラグインを登録する
+### Step 3: Register the plugin
 
-作ったプラグインを `riebeckite.config.ts` に登録します。
+Register the plugin in `riebeckite.config.ts`:
 
-```ts
+```ts id="b49mge"
 import { defineConfig } from "@riebeckite/core";
 import { tipPlugin } from "./extensions/tip-plugin";
 
@@ -501,25 +421,25 @@ export default defineConfig({
 });
 ```
 
-これで Markdown に、
+You can now use:
 
-```md
+```md id="cpz5r3"
 :::tip[Heads up]
 Save often.
 :::
 ```
 
-と書けば、Tip が生成されるようになります。
+in your Markdown content.
 
-### Step 4: 出力を test する
+### Step 4: Test the output
 
-最後に、期待した HTML が生成されることを test します。
+Finally, let's verify that the plugin generates the expected HTML.
 
-このテストでは site 全体を build する必要はありません。`Pipeline` を直接実行して、Markdown の変換結果だけを確認できます。
+You do not need to build the entire site for this test. You can run the Markdown `Pipeline` directly and inspect its output.
 
-`extensions/tip-plugin.test.ts` を作成します。
+Create `extensions/tip-plugin.test.ts`:
 
-```ts
+```ts id="5rs1cq"
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
@@ -556,9 +476,9 @@ test("renders :::tip as an aside with a title", async () => {
 });
 ```
 
-この test では3つのことを確認しています。
+This test checks three things:
 
-```text
+```text id="6w7im3"
 :::tip
    ↓
 <aside class="rr-tip">
@@ -569,18 +489,18 @@ test("renders :::tip as an aside with a title", async () => {
 
 Save often.
    ↓
-本文として出力される
+Rendered as the body
 ```
 
-これで、Markdown の変換、stylesheet の追加、Plugin の登録、そして test までを含む小さな site 内プラグインが完成しました。
+At this point, you have a complete site-local plugin that transforms Markdown, loads its own stylesheet, can be registered through Riebeckite's configuration, and has a test for its generated output.
 
-### この例で覚えておくこと
+### What to remember from this example
 
-この例のすべての AST 操作を覚える必要はありません。
+You do not need to memorize every AST operation used in this example.
 
-重要なのは、Riebeckite Plugin では、
+The important part is that a Riebeckite plugin can group Markdown transformations and assets into a single plugin:
 
-```ts
+```ts id="d6q7mf"
 definePlugin({
   name: "...",
 
@@ -592,30 +512,28 @@ definePlugin({
 });
 ```
 
-という形で、Markdown の変換や stylesheet などをひとつの Plugin にまとめられることです。
+`extendMarkdownPipeline` is a low-level API for working directly with remark and mdast. Use it when you need custom Markdown syntax or more advanced transformations.
 
-`extendMarkdownPipeline` は remark / mdast を直接扱うための低レベルな API なので、独自の Markdown 構文や複雑な変換が必要な場合に使います。
+This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on other plugins (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's meaning changes; the plugin's `options` and transform function are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
 
-この例では、`processedContentCache` も宣言しています。宣言がない場合でも動作はしますが、site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `dependencyMode: "none"`、他 Plugin の出力に依存するなら `tracked` を指定します（正確に追跡できない場合のみ `unsafe`）。`version` は変換の意味を変えたときに上げてください。Plugin の `options` と変換関数の内容も pipeline fingerprint に含まれるため、Option の変更だけで `version` を上げる必要はありません。
+## Testing a plugin
 
-## テストの進め方
-
-Plugin のテストは、確認したい範囲に合わせて4段階に分けられます。すべてを行う必要はありません。小さい範囲から始めてください。
+A plugin can be tested at four levels. You do not need all of them; start from the smallest level that proves the behavior you changed.
 
 ```text
-Level 1  Pure logic          通常の test runner だけでよい（AST ヘルパー、文字列変換など）
-Level 2  Markdown / HTML     Pipeline に Plugin を渡して変換結果を検証する
-Level 3  Content / lifecycle ContentManager と In-memory ContentSource で manifest や hook を検証する
-Level 4  外部パッケージ境界   pack した package を隔離プロジェクトへ install して検証する
+Level 1  Pure logic               A normal test runner is enough (AST helpers, string transforms).
+Level 2  Markdown / HTML          Pass the plugin to a Pipeline and assert the transformed output.
+Level 3  Content / lifecycle      Use ContentManager with an in-memory ContentSource to assert manifests and hooks.
+Level 4  Public package boundary  Pack the package and install it into an isolated project.
 ```
 
-### Level 1: 純粋な処理
+### Level 1: Pure logic
 
-Option の解決、文字列や AST のヘルパーなど、Riebeckite に依存しない処理は `node:test` などの通常の test runner でそのままテストします。この段階では Riebeckite のテスト基盤は不要です。
+Option resolution and AST or string helpers that do not depend on Riebeckite can be tested with any runner such as `node:test`. No Riebeckite test infrastructure is needed at this level.
 
-### Level 2: Markdown / HTML の変換
+### Level 2: Markdown / HTML transformation
 
-`Pipeline` に Plugin を渡し、代表的な Markdown を `execute()` して意味のある出力を検証します。これが「実践」の Step 4 で行っているテストです。
+Pass the plugin to a `Pipeline`, run representative Markdown through `execute()`, and assert the semantic output. This is the test from Step 4 above.
 
 ```ts
 const pipeline = new Pipeline(new Map(), new Map(), undefined, {
@@ -627,11 +545,11 @@ const { html } = await pipeline.execute(
 );
 ```
 
-`Pipeline` の第1・第2引数は content index と permalink の解決に使う `Map` です。単一ファイルの変換を確認するだけなら空の `Map` で十分です。第3引数（`getMarkdownBySlug`）は embed など他の Content を参照する場合だけ必要です。
+The first two `Pipeline` arguments are the content index and permalink maps. Empty `Map`s are enough to transform a single document. The third argument (`getMarkdownBySlug`) is only needed when the plugin resolves embeds or other content.
 
 ### Level 3: Content / lifecycle
 
-Content の読み込み、hook、manifest、body slot、Page Type などを検証する場合は `ContentManager` を使います。実際の Filesystem を用意する代わりに、小さな In-memory `ContentSource` を渡します。
+To test content loading, hooks, manifests, body slots, or Page Types, use `ContentManager` with a small in-memory `ContentSource` instead of a filesystem fixture.
 
 ```ts
 const source = {
@@ -647,87 +565,59 @@ const manager = new ContentManager(source, [], { config });
 const manifest = await manager.getManifest();
 ```
 
-詳しい pattern は [テスト](../framework/testing.md) を参照してください。
+See [Testing](../framework/testing.md) for the deeper patterns.
 
-### Level 4: 外部パッケージ境界
+### Level 4: Public package boundary
 
-配布する Package は、pack した tarball を monorepo の外の隔離プロジェクトへ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落などを検出できます。Riebeckite repository では `tests/plugin-dx` がこの検証の実例で、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
+A package you distribute should be verified by packing its tarball and installing it into an isolated project outside the monorepo. This catches missing public exports, accidental `@riebeckite/core/src/**` imports, undeclared dependencies, and missing declarations. In this repository, `tests/plugin-dx` is the working example and runs with `pnpm test:plugin-dx` and `pnpm test:plugin-dx:external`.
 
-## 4. 独立ページを追加する（必要な場合）
+## 4. Add a standalone page when needed
 
-独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。ページで entry を一覧する場合は `manifest.discoverableEntries` を使ってください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft`・`scheduled` を含む）は、本当に必要な場合だけに限ります。詳しくは [Manifest の collection と公開境界](../reference/plugin-api.md#manifest-の-collection-と公開境界) を参照してください。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
+Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme. When a page lists entries, read `manifest.discoverableEntries`; reserve `manifest.publicEntries` (which includes `unlisted`) and `manifest.entries` (which includes `draft` and `scheduled`) for the cases that genuinely need them. See [Manifest collections and publication safety](../reference/plugin-api.md#manifest-collections-and-publication-safety).
 
-```ts
-pageTypes: [{
-  id: "local.report",
-  paths: ["/report"],
-  resolve: ({ pathname }) => pathname === "/report"
-    ? { type: "local.report", pathname, title: "Report", body: "<p>Ready</p>" }
-    : null,
-}],
-```
+Do not add Plugin-specific HonoX routes. Content embeds such as Canvas, Bases, and Excalidraw remain `renderers`.
 
-scaffold が生成する HonoX route はすでに `resolveRiebeckiteRoute` と `pluginPageSsgParams` を使います。ID は全体で一意にし、動的ページの SSG path は public manifest から導き、所有しない path では `null` を返してください。責務と接続全体は [Page System](../framework/page-system.md) を参照してください。
+See [Page System](../framework/page-system.md) for ownership, path resolution, and SSG behavior.
 
-## 5. 配布用パッケージにする（任意）
+## 5. Package it when needed
 
-site 内プラグインとして動けば、パッケージにできます。雛形は `packages/plugins/backlinks` です。
+Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths. For the package shape and a build that ships ESM plus type declarations, see [Distributing a Plugin outside this repository](../reference/plugin-api.md#distributing-a-plugin-outside-this-repository). Because `createStyleAsset()` and `createClientEntry()` build `@riebeckite/plugin-<name>/...` specifiers, a package under any other name declares `assets` and `clientEntries` with explicit `moduleSpecifier` values.
 
-```text
-packages/plugins/backlinks/
-├─ index.ts              ← definePlugin を呼ぶ factory、公開部品の再 export
-├─ components/           ← コンポーネント（必要なら）
-├─ src/                  ← 実装（型・ヘルパーなど）
-├─ styles/style.css      ← プラグインの CSS
-├─ package.json          ← "." / "./components" / "./style.css" を exports で公開
-├─ README_ja.md
-└─ README.md
-```
+For the directive plugin above, declare `@riebeckite/core` and `unist-util-visit` in `dependencies` and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api.md#distributing-a-plugin-outside-this-repository).
 
-外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` は `@riebeckite/plugin-<name>/...` の specifier を組み立てるため、別名の package は `assets` / `clientEntries` に `moduleSpecifier` を明示します。
+## 6. Validate it
 
-この directive プラグインを配布する場合、依存は `@riebeckite/core` と `unist-util-visit` を `dependencies` に、`mdast` の型（`@types/mdast`）を `devDependencies` に宣言します。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) にあります。
+Use the repository's checks and tests relevant to the Plugin. `check`, `doctor`, and `inspect` are read-only diagnostics. Before creating a Plugin, also confirm that the requirement cannot be handled more simply by configuration or app-level code.
 
-## 6. 検証する
+## Providing UI or output
 
-```sh
-npm exec riebeckite check              # 設定と Plugin の解決を検証
-npm exec riebeckite doctor             # 健全性診断
-npm exec riebeckite inspect plugins# 解決済みの Plugin 一覧を確認
-npm exec riebeckite build              # 生成物に反映されるか確認
-```
-
-`check` / `doctor` / `inspect` は読み取り専用です。解決されない場合は、まず `check` のメッセージで capability エラーや import エラーを確認してください。プラグインを作る前に「本当に Plugin が必要か（設定や App 実装で済まないか）」も確認してください。
-
-## UI の提供方法
-
-Plugin が UI を追加する方法はいくつかあります。最小のものを選んでください。優劣の順列ではなく、組み合わせてもかまいません。
+A Plugin can add UI in several ways. Pick the smallest one that fits; these are alternatives, not a progression, and a Plugin may combine them.
 
 ```text
-UI / output を提供したい
+Want to add UI or output?
 │
-├─ Markdown / HTML 自体を変換する
+├─ Change the Markdown or HTML itself
 │    └─ remark / rehype pipeline
 │
-├─ 埋め込み content を描画する
+├─ Render an embedded content target
 │    └─ renderers
 │
-├─ 独立ページを提供する
+├─ Add a standalone page
 │    └─ pageTypes
 │
-├─ 記事 layout へ自動配置する
+├─ Appear in the article layout automatically
 │    └─ HTML fragment + body Slot
 │
-├─ Site 作者に配置を任せる
-│    └─ Hono JSX component を export
+├─ Let the site author place it
+│    └─ Hono JSX component export
 │
-└─ Browser 側で強化する
-     └─ clientEntries（必要なら Site 所有の Island）
+└─ Enhance the page in the browser
+     └─ clientEntries (plus a site-owned Island when needed)
 ```
 
-### body Slot で自動配置する
+### Automatic placement with a body Slot
 
-出力が標準の位置にあり、Plugin を有効化すればすぐ表示したい場合は body Slot を使います。HTML fragment を提供し、Site が slot を描画するかどうかと位置を決めます。
+Use a body Slot when the output belongs at a standard position and should appear as soon as the Plugin is enabled. Publish an HTML fragment; the Site decides whether and where to render the slot.
 
 ```ts
 import { appendContentBodySlot } from "@riebeckite/core";
@@ -735,13 +625,13 @@ import { appendContentBodySlot } from "@riebeckite/core";
 appendContentBodySlot(entry, "article.footer", "<section>...</section>");
 ```
 
-`article.footer` などの標準 slot を選ぶか、独自名を Site に描画してもらいます。独自 slot は Site が描画を選ぶまで何も表示しません。slot の一覧と順序は [Body Slots](../reference/plugin-api.md#body-slots) を参照してください。
+A Plugin author picks a standard slot such as `article.footer`, or asks the Site to render a custom name. A custom slot renders nothing until the Site renders it. See [Body slots](../reference/plugin-api.md#body-slots) for the slot list and ordering.
 
-### Hono JSX component で手動配置する
+### Manual placement with a Hono JSX component
 
-UI の配置を Site 作者に任せたい場合は、通常の Hono JSX component を export します。component registry や Plugin 固有の component API はありません。ほかの component と同じように import して組み合わせます。
+Export an ordinary Hono JSX component when the Site author should choose where the UI goes. There is no component registry and no Plugin-specific component API: the component is imported and composed like any other.
 
-package の `exports` に `./components` subpath を宣言し、component module の default export を保ちます。必要なら同じ component を package root から名前付きでも再 export します。既存 Plugin はこの形です。
+Declare a `./components` subpath in the package `exports` and keep the component module's default export, then optionally re-export it by name from the package root. Existing Plugins follow this shape:
 
 ```ts
 import { Backlinks } from "@riebeckite/plugin-backlinks";
@@ -750,26 +640,27 @@ import { SearchBar } from "@riebeckite/plugin-search";
 import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 ```
 
-`color-mode` は root のみの形です。`ColorModeScript` と `ColorModeToggle` を package root から公開し、`./components` subpath を持ちません。名前は各 package README に従ってください。
+`color-mode` fits the root-only shape: it exports `ColorModeScript` and `ColorModeToggle` from the package root and has no `./components` subpath. Use the names each package README documents.
 
-### HTML fragment と component の使い分け
+### HTML fragment or component?
 
-判断基準は **誰が配置するか** です。
+The deciding question is **who places it**:
 
-- **HTML fragment + Slot**: Plugin が標準の位置へ書き、Site がその slot を描画するか決めます。
-- **Hono JSX component**: Site 作者が component tree の好きな場所へ配置します。
+- **HTML fragment + Slot** — the Plugin writes to a known standard position, and the Site opts into rendering that slot.
+- **Hono JSX component** — the Site author places it anywhere in the component tree.
 
-新しいから優れている、という関係ではありません。Plugin がすでに HTML を生成している場合（HAST 変換など）は文字列が自然で、props と配置を Site が制御したい場合は component が自然です。`backlinks` と `local-graph` は両方を使い、component を export しつつ `onManifestCreated` で描画結果を `article.footer` へ追加します。よくある pattern であり、必須ではありません。
+Neither is newer or better. A string is natural when the Plugin already produces HTML (for example from a HAST transform); a component is natural when the Site should control props and placement. `backlinks` and `local-graph` use both: they export a component and also append their rendered output to `article.footer` in `onManifestCreated`. That is a common pattern, not a requirement.
 
-### Browser 強化と Island
+### Browser enhancement and Islands
 
-Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island registry もありません。Browser 側の動作が必要な場合は、server-render 済み DOM を強化する `clientEntries` initializer を提供するか、component state が必要なら Site が Plugin component を自前の HonoX Island で包みます。`garden-explorer` は Page Type と client entry を組み合わせた特殊例であり、必須の pattern として一般化しないでください。詳しくは [Client Entries](../reference/plugin-api.md#client-entries) を参照してください。
+Plugins do not own `app/islands/`, and Riebeckite has no Plugin Island registry. For browser behavior, either contribute a `clientEntries` initializer that enhances the server-rendered DOM, or let the Site wrap the Plugin's component in its own HonoX Island when component state is needed. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Client entries](../reference/plugin-api.md#assets-and-client-entries).
 
-## 関連資料
+## Related
 
-- [プラグイン作成の詳細](../framework/plugin-system.md) — この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
-- [Plugin System](../reference/plugin-api.md) — すべての拡張ポイントの詳細
-- [テスト](../framework/testing.md) — Plugin のテスト戦略と External 検証
-- [Theme API](../reference/theme-api.md) — Theme Extension Contract と Semantic Token
-- [Architecture](../framework/architecture.md) — Core / Plugin / Integration / Theme / App の責務
-- [Framework Reference](../reference/README.md) — `definePlugin` などの公開 API
+- [Plugin API](../reference/plugin-api.md)
+- [Plugin System](../framework/plugin-system.md)
+- [Testing](../framework/testing.md)
+- [Theme API](../reference/theme-api.md)
+- [Customizing Your Site](../guides/customizing-your-site.md)
+- [Architecture](../framework/architecture.md)
+- [Writing Your First Theme](../themes/writing-a-theme.md)

@@ -7,36 +7,36 @@ sidebar:
 ---
 # Plugins
 
-Plugin は、Riebeckite のサイトに機能を追加する仕組みです。通常の Markdown だけでは足りないとき、Obsidian 記法、検索、図表、メディア、SEO、記事の発見、多言語対応、診断などを追加できます。
+Plugins add features to a Riebeckite site. Use them when you want more than plain Markdown: Obsidian syntax, search, diagrams, media, SEO, discovery widgets, localization, and diagnostics.
 
-## 何をしたいですか？
+## What do you want to do?
 
-| やりたいこと | Plugin |
+| Goal | Plugin |
 | --- | --- |
-| Obsidian の WikiLink や埋め込みを使いたい | [Obsidian Markdown](./obsidian-markdown.md) |
-| Mermaid を表示したい | [Mermaid](./mermaid.md) |
-| サイト内検索を追加したい | [Search](./search.md) |
-| タグや分類を使いたい | [Taxonomy](./taxonomy.md) |
-| Backlink を表示したい | [Backlinks](./backlinks.md) |
-| 画像を拡大表示したい | [Lightbox](./lightbox.md) |
-| Excalidraw を表示したい | [Excalidraw](./excalidraw.md) |
-| ノート間の関係図を表示したい | [ExcaliBrain](./excalibrain.md) |
-| Obsidian Canvas を表示したい | [Canvas](./canvas.md) |
-| BibTeX の引用を使いたい | [Citations](./citations.md) |
-| 多言語サイトにしたい | [Localization](./l10n.md) |
-| Docs 用の sidebar と previous/next を追加したい | [Docs](./docs.md) |
+| Use Obsidian WikiLinks and embeds | [Obsidian Markdown](./obsidian-markdown.md) |
+| Show Mermaid diagrams | [Mermaid](./mermaid.md) |
+| Add site search | [Search](./search.md) |
+| Use tags and classification pages | [Taxonomy](./taxonomy.md) |
+| Show backlinks | [Backlinks](./backlinks.md) |
+| Enlarge images in an overlay | [Lightbox](./lightbox.md) |
+| Show Excalidraw drawings | [Excalidraw](./excalidraw.md) |
+| Show how notes relate to each other | [ExcaliBrain](./excalibrain.md) |
+| Show Obsidian Canvas files | [Canvas](./canvas.md) |
+| Use BibTeX citations | [Citations](./citations.md) |
+| Build a multilingual site | [Localization](./l10n.md) |
+| Add docs sidebar and previous/next links | [Docs](./docs.md) |
 
-この表は、目的から探すための入口です。すべての Plugin は下の一覧から確認できます。
+This table is an entry point, not the full API reference. For all packages, see the list below.
 
-## Plugin を追加する
+## Add a Plugin
 
-package をインストールします。
+Install the package:
 
 ```bash
 npm install @riebeckite/plugin-search
 ```
 
-`riebeckite.config.ts` の `plugins` に登録します。
+Register it in the `plugins` array of `riebeckite.config.ts`:
 
 ```ts
 import { searchPlugin } from "@riebeckite/plugin-search";
@@ -46,121 +46,122 @@ export default defineConfig({
 });
 ```
 
-各 Plugin ページでは、package 名、import 名、よく使う設定を説明します。詳しい option は各 package README を参照してください。
+Each Plugin page shows the package name, import name, and common settings. The package README remains the source of truth for detailed options.
 
-## 公式 Plugin
+## Official Plugins
 
-各ページから Plugin のリファレンスへ移動できます。導入は `npm install @riebeckite/plugin-<slug>` で行い、`riebeckite.config.ts` に登録します。
+Each page links to the Plugin reference. Install any Plugin with
+`npm install @riebeckite/plugin-<slug>` and register it in `riebeckite.config.ts`.
 
-### Markdown とノート
+### Markdown and notes
 
-| Plugin | できること |
+| Plugin | What it does |
 | --- | --- |
-| [Obsidian Markdown](./obsidian-markdown.md) | WikiLink、埋め込み、callout など Obsidian 記法 |
-| [Shortcodes](./shortcodes.md) | 再利用できるインライン・ブロック・コンテナのディレクティブ |
-| [Highlight](./highlight.md) | Obsidian 風のインライン強調 |
-| [Alias](./alias.md) | Obsidian の alias によるリダイレクト |
-| [Properties](./properties.md) | frontmatter プロパティのパネル表示 |
-| [Bases](./bases.md) | Obsidian Bases のビルド時テーブル |
-| [Citations](./citations.md) | BibTeX・BibLaTeX の引用 |
-| [Sidenotes](./sidenotes.md) | モバイルのポップオーバー付きの傍注 |
-| [Text Fragment](./text-fragment.md) | Text Fragment リンクと引用 |
-| [Diff](./diff.md) | Git によるノートの差分と変更履歴 |
-| [Daily Notes](./daily-notes.md) | Daily Note のスニペット表示 |
-| [Flashcards](./flashcards.md) | コードブロックから作るフラッシュカード |
-| [Kanban](./kanban.md) | Obsidian Kanban のビルド時描画 |
-| [Hover Preview](./hover-preview.md) | 内部リンクのホバープレビュー |
+| [Obsidian Markdown](./obsidian-markdown.md) | WikiLinks, embeds, callouts, and Obsidian-flavored syntax |
+| [Shortcodes](./shortcodes.md) | Inline, block, and container directives for reusable snippets |
+| [Highlight](./highlight.md) | Obsidian-style inline highlighting |
+| [Alias](./alias.md) | Obsidian alias redirects for notes |
+| [Properties](./properties.md) | Frontmatter property panels |
+| [Bases](./bases.md) | Build-time Obsidian Bases tables |
+| [Citations](./citations.md) | BibTeX and BibLaTeX citations |
+| [Sidenotes](./sidenotes.md) | Tufte-style side notes with mobile popovers |
+| [Text Fragment](./text-fragment.md) | Text Fragment links and quotes |
+| [Diff](./diff.md) | Git-backed note diffs and revision history |
+| [Daily Notes](./daily-notes.md) | Daily Note snippet widgets |
+| [Flashcards](./flashcards.md) | Interactive flashcard decks from code blocks |
+| [Kanban](./kanban.md) | Build-time Obsidian Kanban boards |
+| [Hover Preview](./hover-preview.md) | Popover previews for internal links |
 
-### 図とプレゼンテーション
+### Diagrams and presentation
 
-| Plugin | できること |
+| Plugin | What it does |
 | --- | --- |
-| [Mermaid](./mermaid.md) | コードブロックからの Mermaid 図 |
-| [D2](./d2.md) | コードブロックからの D2 図 |
-| [Graphviz](./graphviz.md) | Graphviz の DOT グラフ |
-| [PlantUML](./plantuml.md) | コードブロックからの PlantUML 図 |
-| [Chart.js](./chartjs.md) | コードブロックからの Chart.js グラフ |
-| [Vega-Lite](./vega-lite.md) | コードブロックからの Vega-Lite 可視化 |
-| [WaveDrom](./wavedrom.md) | WaveDrom のタイミング図 |
-| [Markmap](./markmap.md) | Markmap による Markdown マインドマップ |
-| [Marp](./marp.md) | ビルド時の Marp スライド |
-| [Excalidraw](./excalidraw.md) | Excalidraw 添付の描画 |
-| [ExcaliBrain](./excalibrain.md) | ノートの関係マップ |
+| [Mermaid](./mermaid.md) | Mermaid diagrams from code blocks |
+| [D2](./d2.md) | D2 diagrams from code blocks |
+| [Graphviz](./graphviz.md) | Graphviz DOT graphs |
+| [PlantUML](./plantuml.md) | PlantUML diagrams from code blocks |
+| [Chart.js](./chartjs.md) | Chart.js charts from code blocks |
+| [Vega-Lite](./vega-lite.md) | Vega-Lite visualizations from code blocks |
+| [WaveDrom](./wavedrom.md) | WaveDrom timing diagrams |
+| [Markmap](./markmap.md) | Markdown mind maps with Markmap |
+| [Marp](./marp.md) | Build-time Marp slide decks |
+| [Excalidraw](./excalidraw.md) | Excalidraw attachment rendering |
+| [ExcaliBrain](./excalibrain.md) | Relationship maps for notes |
 
-### ビジュアルとメディア
+### Visuals and media
 
-| Plugin | できること |
+| Plugin | What it does |
 | --- | --- |
-| [Attachment](./attachment.md) | 添付ファイルのリンクと埋め込み |
-| [Media](./media.md) | タイムスタンプ指定付きの音声・動画埋め込み |
-| [Responsive Image](./responsive-image.md) | レスポンシブ画像と遅延読み込み |
-| [Gallery](./gallery.md) | Markdown で書くカードギャラリー |
-| [Lightbox](./lightbox.md) | クリックで拡大する画像表示 |
-| [PDF](./pdf.md) | PDF 添付のインライン表示 |
-| [QR Code](./qr-code.md) | コードブロックからのインライン SVG QR コード |
-| [Map](./map.md) | OpenStreetMap の対話的・静的な埋め込み |
-| [Rich Embed](./rich-embed.md) | ビルド時のリッチメディア埋め込み |
-| [AutoCardLink](./autocardlink.md) | `cardlink` ブロックからのリンクプレビューカード |
+| [Attachment](./attachment.md) | Attachment link and embed rendering |
+| [Media](./media.md) | Audio and video embeds with timestamp fragments |
+| [Responsive Image](./responsive-image.md) | Responsive image markup and lazy loading |
+| [Gallery](./gallery.md) | Markdown-driven card galleries |
+| [Lightbox](./lightbox.md) | Click-to-zoom image lightboxes |
+| [PDF](./pdf.md) | Inline PDF attachment viewing |
+| [QR Code](./qr-code.md) | Inline SVG QR codes from code blocks |
+| [Map](./map.md) | Interactive and static OpenStreetMap embeds |
+| [Rich Embed](./rich-embed.md) | Build-time rich media embeds |
+| [AutoCardLink](./autocardlink.md) | Link preview cards from `cardlink` blocks |
 
-### コードと読書体験
+### Code and reading experience
 
-| Plugin | できること |
+| Plugin | What it does |
 | --- | --- |
-| [Code Enhance](./code-enhance.md) | 拡張したシンタックスハイライト |
-| [Code Tabs](./code-tabs.md) | アクセシブルなタブ付きコードブロック |
-| [Code Annotations](./code-annotations.md) | コードの注釈・強調・差分マーカー |
-| [Table of Contents](./toc.md) | スクロールに追従する目次 |
-| [UX](./ux.md) | 読書体験の強化 |
-| [color-mode](./color-mode.md) | ライト・ダーク・システムの切り替え |
+| [Code Enhance](./code-enhance.md) | Enhanced syntax-highlighted code blocks |
+| [Code Tabs](./code-tabs.md) | Accessible tabbed code blocks |
+| [Code Annotations](./code-annotations.md) | Code annotations, highlights, and diff markers |
+| [Table of Contents](./toc.md) | Scroll-aware in-page table of contents |
+| [UX](./ux.md) | Reading experience enhancements |
+| [color-mode](./color-mode.md) | Light, dark, and system color-mode switching |
 
-### 検索とナビゲーション
+### Search and navigation
 
-| Plugin | できること |
+| Plugin | What it does |
 | --- | --- |
-| [Search](./search.md) | クライアントサイドの全文検索 |
-| [Navigation](./navigation.md) | vault 由来または設定で書くサイトナビゲーション |
-| [Backlinks](./backlinks.md) | 公開ノートの被リンク一覧 |
-| [Breadcrumbs](./breadcrumbs.md) | slug 階層のパンくず |
-| [Local Graph](./local-graph.md) | ローカルノートグラフ |
-| [Garden Explorer](./garden-explorer.md) | グラフと検索の探索 UI |
-| [Recent Posts](./recent-posts.md) | 最近の記事一覧 |
-| [Related Posts](./related-posts.md) | ビルド時の関連記事ナビゲーション |
-| [Series](./series.md) | 連載記事の順序付きナビゲーション |
-| [Taxonomy](./taxonomy.md) | タグとフォルダの分類、用語別フィード、SEO |
-| [Query](./query.md) | コードブロックからのビルド時クエリ |
-| [Dataview](./dataview.md) | ビルド時の Dataview クエリ |
-| [Folder Pages](./folder-pages.md) | フォルダの入口ページと一覧生成 |
-| [Archive](./archive.md) | 月別アーカイブ一覧 |
+| [Search](./search.md) | Client-side full-text search |
+| [Navigation](./navigation.md) | Site navigation derived from the vault or authored in config |
+| [Backlinks](./backlinks.md) | Backlink lists for published notes |
+| [Breadcrumbs](./breadcrumbs.md) | Slug-hierarchy breadcrumb navigation |
+| [Local Graph](./local-graph.md) | Local note graph visualizations |
+| [Garden Explorer](./garden-explorer.md) | Interactive graph and search explorer |
+| [Recent Posts](./recent-posts.md) | Recent posts lists |
+| [Related Posts](./related-posts.md) | Build-time related-post navigation |
+| [Series](./series.md) | Ordered multi-part post navigation |
+| [Taxonomy](./taxonomy.md) | Tag and folder taxonomy, per-term feeds, and SEO |
+| [Query](./query.md) | Build-time content queries from code blocks |
+| [Dataview](./dataview.md) | Build-time Dataview queries |
+| [Folder Pages](./folder-pages.md) | Folder entry pages and generated listings |
+| [Archive](./archive.md) | Monthly archive listing pages |
 
-### 公開と SEO
+### Publishing and SEO
 
-| Plugin | できること |
+| Plugin | What it does |
 | --- | --- |
-| [SEO](./seo.md) | メタデータ、サイトマップ、フィード、robots.txt |
-| [Deploy](./deploy.md) | 静的ホスティング向けの出力 |
-| [Permalink](./permalink.md) | 安定した設定可能なパーマリンク |
-| [Rename](./rename.md) | 公開ノートのリネーム・移動リダイレクト |
-| [Analytics](./analytics.md) | 保存先に依存しない解析の基盤 |
-| [Changelog](./changelog.md) | Git による変更履歴とチェンジログ |
-| [Webmention](./webmention.md) | 検証済み Webmention の受信と表示 |
-| [Share](./share.md) | 記事ごとの共有リンクとクリップボードコピー |
+| [SEO](./seo.md) | Metadata, sitemaps, feeds, and robots.txt |
+| [Deploy](./deploy.md) | Static hosting deployment output |
+| [Permalink](./permalink.md) | Stable, configurable content permalinks |
+| [Rename](./rename.md) | Rename and move redirects for published notes |
+| [Analytics](./analytics.md) | Storage-independent analytics foundation |
+| [Changelog](./changelog.md) | Git-backed change history and changelogs |
+| [Webmention](./webmention.md) | Verified Webmention receiving and rendering |
+| [Share](./share.md) | Per-article share links and copy-to-clipboard |
 
-### コンテンツと開発体験
+### Content and developer experience
 
-| Plugin | できること |
+| Plugin | What it does |
 | --- | --- |
-| [Localization](./l10n.md) | コンテンツの多言語化、ローカライズ URL、翻訳メタデータ |
-| [Quality](./quality.md) | HTML の品質とアクセシビリティの静的検査 |
-| [Diagnostics](./diagnostics.md) | Riebeckite と Obsidian vault のコンテンツ診断 |
-| [Docs](./docs.md) | Docs のサイドバーと previous/next |
-| [Canvas](./canvas.md) | Obsidian Canvas の描画 |
-| [Discord Embed](./discord-embed.md) | Discord のリンクプレビューメタデータ |
+| [Localization](./l10n.md) | Content localization, localized URLs, and translation metadata |
+| [Quality](./quality.md) | Static quality and accessibility inspection |
+| [Diagnostics](./diagnostics.md) | Content diagnostics for Riebeckite and Obsidian vaults |
+| [Docs](./docs.md) | Docs sidebar and previous/next navigation |
+| [Canvas](./canvas.md) | Obsidian Canvas diagram rendering |
+| [Discord Embed](./discord-embed.md) | Discord link preview metadata |
 
-## Plugin を作りたい場合
+## If you want to build a Plugin
 
-まず [Writing a Plugin](./writing-a-plugin.md) を読んでください。正確な contract は [Plugin API](../reference/plugin-api.md)、ページ生成の仕組みは [Framework / Page system](../framework/page-system.md) にあります。
+Start with [Writing a Plugin](./writing-a-plugin.md). Exact contracts live in [Plugin API](../reference/plugin-api.md), and the framework-level page model is described in [Framework / Page system](../framework/page-system.md).
 
-## 次に読むページ
+## Next
 
 - [Plugin Showcase](./showcase.md)
 - [Writing a Plugin](./writing-a-plugin.md)

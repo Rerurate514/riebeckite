@@ -55,8 +55,8 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 
 `doctor` continues independent checks where possible and exits unsuccessfully
 when health checks fail. `inspect` is deliberately read-only and never triggers
-a build or writes state. See [Diagnostics](../../docs/docs/framework/diagnostics.en.md) and
-[Framework Inspector](../../docs/docs/framework/inspector.en.md) for how to interpret output.
+a build or writes state. See [Diagnostics](../../docs/docs/framework/diagnostics.md) and
+[Framework Inspector](../../docs/docs/framework/inspector.md) for how to interpret output.
 
 `clean` deletes only Riebeckite-managed artifacts: with no options the managed
 state root (`.riebeckite/`), with `--output` the build output, and with `--all`
@@ -74,7 +74,7 @@ pnpm exec riebeckite build
 
 ## See also
 
-- [CLI Reference](../../docs/docs/reference/cli.en.md)
-- [Build System](../../docs/docs/framework/build-system.en.md)
-- [Diagnostics](../../docs/docs/framework/diagnostics.en.md) / [Framework Inspector](../../docs/docs/framework/inspector.en.md)
+- [CLI Reference](../../docs/docs/reference/cli.md)
+- [Build System](../../docs/docs/framework/build-system.md)
+- [Diagnostics](../../docs/docs/framework/diagnostics.md) / [Framework Inspector](../../docs/docs/framework/inspector.md)
 

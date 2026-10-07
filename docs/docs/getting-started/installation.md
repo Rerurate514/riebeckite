@@ -6,89 +6,80 @@ sidebar:
 ---
 # Installation
 
-Riebeckite でサイトを作るだけなら、この monorepo は clone しません。`create-riebeckite` がサイト用のファイルを生成します。
+This page takes you from an empty machine to a running site. It assumes nothing about Riebeckite, and it never asks you to clone the Riebeckite repository.
 
-## 必要なもの
+## Requirements
 
-| 項目 | 用途 |
-| --- | --- |
-| Node.js LTS | Riebeckite のコマンドを動かす |
-| npm | package のインストールに使う。Node.js に同梱されています |
-| ターミナル | コマンドを実行する |
-| Git | サイトをリポジトリとして管理するために使う |
-| GitHub アカウント | GitHub Actions で自動デプロイするときに使う |
-| Cloudflare アカウント | デプロイするときに使う |
+| Item | Why | Where |
+| --- | --- | --- |
+| Node.js (LTS) | Runs the Riebeckite commands | [nodejs.org](https://nodejs.org/) |
+| A terminal | Where you type commands | **PowerShell** on Windows, **Terminal** on macOS |
+| Git | Manages the site as a repository | [git-scm.com](https://git-scm.com/) |
+| A GitHub account | Used for automatic deployment with GitHub Actions | [github.com](https://github.com/) |
+| A Cloudflare account | Only for the deployment step | [cloudflare.com](https://www.cloudflare.com/) |
 
-確認します。
+`npm` ships with Node.js, so you do not install it separately. Git and a GitHub account are only needed for automatic deployment; if you publish to Cloudflare directly from your machine, you can add them later. They are used in [Deployment](./deployment.md).
 
-```bash
+Confirm the tools are available:
+
+```sh
 node -v
 npm -v
 git --version
 ```
 
-どれもバージョンが表示されれば準備できています。Git が入っていない場合は [git-scm.com](https://git-scm.com/) からインストールしてください。手元から Cloudflare へ直接公開するだけの場合、Git と GitHub アカウントは後からでも構いません。自動デプロイ（[Deployment](./deployment.md)）のところで使います。
+Each should print a version such as `v22.0.0`. If a command is not found, install that tool and reopen the terminal.
 
-## サイトを作る
+## Create a site
 
-サイトを作るフォルダで、次のコマンドを実行します。
+In the folder where you want the site, run the generator:
 
-```bash
+```sh
 npx create-riebeckite
 ```
 
-`npx` は `create-riebeckite` を一度だけ実行するため、グローバルには何も入れません。次の順に確認されます。
+`npx` downloads `create-riebeckite` and runs it once; nothing is installed globally. The CLI asks, in order:
 
-1. **Project name**：作るフォルダ名。例: `my-site`
-2. **Preset**：サイトの構成。迷ったら `starter` のまま。比較は [Presets](./presets.md)
-3. **Content source**：`This project` は `content/` をサイト内に置く最も簡単な形。`Separate GitHub repository` は既存 Vault 向けの高度な構成で、content と site のリポジトリ名を入力すると GitHub Actions のデプロイ設定が自動で構成されます。詳細は [Content Repositories](../guides/content-repositories.md)
-4. **デプロイ設定**：既定値は `Not now` です。まず手元で確認したい場合は、そのまま Enter を押します。`Cloudflare Workers` は依存関係をインストールしたあとに `Deploy now?` を確認し、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。詳細は [Deployment](./deployment.md)
+1. **Project name** — the folder to create, for example `my-site`
+2. **Preset** — the site's composition; keep `starter` when unsure. See [Presets](./presets.md)
+3. **Content source** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault: it asks for the content and site repositories and configures GitHub Actions deployment automatically. See [Content Repositories](../guides/content-repositories.md)
+4. **Deployment** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` installs dependencies and then asks `Deploy now?`, so you can publish your first version right away. `GitHub Actions` deploys on every push. `Not now` skips deployment setup; see [Deployment](./deployment.md)
 
-プロンプトの代わりにコマンドラインで同じ設定を渡すこともできます。
+To script the same setup instead of answering prompts, pass arguments, for example:
 
-```bash
+```sh
 npx create-riebeckite my-site --preset starter
 ```
 
-- 既存ディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
-- 利用可能な preset は `npx create-riebeckite --list-presets` で確認できます。
+- If the target folder already has files, the command stops instead of overwriting. Add `--force` only when you really want to overwrite.
+- List the available presets with `npx create-riebeckite --list-presets`.
 
-続けて、フォルダへ移動して package を入れます。
+Then move into the folder and install the packages:
 
-```bash
+```sh
 cd my-site
 npm install
 ```
 
-`@riebeckite/*` は npm から入るので、これだけで足ります。最初の install は少し時間がかかることがあります。
+The `@riebeckite/*` packages are published to npm, so this is all it takes. The first install can take a minute.
 
-## 生成される主なファイル
+## What gets generated
 
-| ファイルやフォルダ | 役割 |
+| File or folder | Role |
 | --- | --- |
-| `riebeckite.config.ts` | サイト名、URL、言語、Theme、Plugin の設定 |
-| `content/` | Markdown を置く場所 |
-| `app/` | 生成サイトのアプリ部分。通常は最初に触らなくてよい |
-| `public/` | favicon・ヘッダーのロゴ・リンクプレビュー画像などの静的ファイル。差し替えは [サイトのアイコンとロゴ](../guides/branding.md) |
-| `vite.config.ts` | ビルド設定。通常は変更しません |
-| `package.json` | 依存 package とコマンド |
-| `README.md` | 生成されたサイト向けの短い説明 |
+| `riebeckite.config.ts` | Site name, URL, language, theme, and plugins. The first file to edit |
+| `content/` | Where your Markdown pages live |
+| `app/` | The site's appearance and routing. `routes/` and `components/` do most of the work |
+| `public/` | Static assets copied as-is: the favicon, header logo, and link preview image. See [Branding your site](../guides/branding.md) |
+| `vite.config.ts` | Build settings. You normally leave this alone |
+| `package.json` | The packages and the `riebeckite` commands |
+| `README.md` | A short note specific to the generated site |
 
-通常の最初の構成は、site と content が同じリポジトリにある形です。
+The exact files depend on the preset: `empty` generates a bare application shell, `starter` generates a practical site with connected sample notes, and `showcase` adds references, rendered examples, and local fixtures. See [Presets](./presets.md).
 
-```text
-my-site/
-├─ content/
-├─ app/
-├─ riebeckite.config.ts
-└─ package.json
-```
+## Directory structure
 
-content を別リポジトリに分ける構成は、必要になってから [Content Repositories](../guides/content-repositories.md) を読めば十分です。
-
-## ディレクトリ構造
-
-生成されたサイトのフォルダ構成はこちらです。
+The generated site folder looks like this:
 
 ```text
 my-site/
@@ -103,40 +94,48 @@ my-site/
 └─ dist/                  Production build output (after build)
 ```
 
-## サイト設定を確認する
+## Point the settings at your site
 
-`riebeckite.config.ts` の `site` を確認します。
+Open `riebeckite.config.ts` and edit the `site` block:
 
 ```ts
 site: {
   title: "My Blog",
   description: "Notes from my days",
   baseUrl: "https://example.com",
-  locale: "ja",
+  locale: "en",
 },
 ```
 
-`baseUrl` は、公開 URL が決まったあとに実際の URL へ更新します。詳しい設定は [Configuration](../reference/configuration.md) を参照してください。
+| Field | Meaning |
+| --- | --- |
+| `title` | The site name |
+| `description` | The summary used by SEO and feeds |
+| `baseUrl` | The address the site will be published at. It ends up in the sitemap and feeds, so set the real URL after you deploy |
+| `locale` | The site language (`"ja"` for Japanese, `"en"` for English) |
 
-## 起動する
+The rest of the generated config (`content`, `theme`, `plugins`) already matches the preset. Full field documentation is in [Configuration](../reference/configuration.md).
 
-```bash
+## Start the development server
+
+```sh
 npm exec riebeckite dev
 ```
 
-ターミナルに表示されたローカル URL をブラウザで開きます。Riebeckite のサイトが表示されれば成功です。
+The terminal prints a URL such as `http://localhost:5173`. Open it in a browser; Markdown and application edits are picked up while the server runs. Press `Ctrl + C` to stop.
 
-## よく使うコマンド
+## Everyday commands
 
-最初の導線では、次の2つだけで進められます。
+Run these from inside the site folder:
 
-```bash
-npm exec riebeckite dev    # 開発サーバーを起動する
-npm exec riebeckite build  # 公開用ファイルを dist/ に出力する
+```sh
+npm exec riebeckite dev           # start the development server
+npm exec riebeckite build         # write the publishable files to dist/
+npm exec -- riebeckite build --full  # rebuild without incremental reuse
 ```
 
-うまくいかないときや、設定・content の状態を詳しく確認したいときは、読み取り専用の診断コマンドもあります。詳しくは [CLI reference](../reference/cli.md) を参照してください。
+For the first successful run, `dev` and `build` are enough. If something looks wrong later, the CLI also has read-only diagnostic commands such as `check`, `doctor`, and `inspect`; see the [CLI reference](../reference/cli.md).
 
-## 次に読むページ
+## Next
 
 - [First Content →](./first-content.md)

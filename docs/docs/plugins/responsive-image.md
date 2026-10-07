@@ -1,34 +1,95 @@
+<!-- Generated from packages/plugins/responsive-image/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Responsive Image
 
-画像を画面サイズに応じて扱いやすくするための Plugin です。
+Upgrades existing `<img>` elements with lazy loading and responsive
+`<picture>` / `srcset` markup, using only image variants that are already
+present in the content manifest.
 
-## 導入
+[日本語](./responsive-image.ja.md)
 
-```bash
-npm install @riebeckite/plugin-responsive-image
+## Overview
+
+`responsiveImage()` runs as a build-time HTML layer:
+
+1. It always adds `loading="lazy"` and `decoding="async"` to `<img>` elements
+   unless those attributes are already set.
+2. It adds a `sizes` attribute when one is missing.
+3. It looks for sibling variants that already exist in the manifest
+   (`photo.webp`, `photo.avif`, `photo-640.webp`, `photo-640.png`, …). When
+   variants are found the `<img>` becomes a `<picture>` element with grouped
+   `<source>` elements. When no variants are found the `<img>` is left in place
+   with just the added attributes.
+
+The plugin never fabricates URLs and never writes files. It only references
+assets that the manifest already knows about.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { responsiveImage } from "@riebeckite/plugin-responsive-image";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), attachment(), responsiveImage()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`responsiveImage()` uses `order: 100`, so it runs after the media and
+attachment renderers.
 
-## 使用例
+## Options
 
-大きな画像を多く含むサイトで、閲覧環境に合わせた画像配信を行いたい場合に利用します。記事側では通常どおり画像を参照し、Pluginに画像処理を任せる構成にできます。
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `lazy` | `boolean` | `true` | Adds `loading="lazy"` when absent |
+| `decoding` | `boolean` | `true` | Adds `decoding="async"` when absent |
+| `sizes` | `string` | `"100vw"` | Fallback `sizes` value added when absent |
+| `widths` | `number[]` | `[640, 1280, 1920]` | Width variants to look up |
+| `formats` | `string[]` | `["webp", "avif"]` | Format variants to look up |
+| `className` | `string` | `"rb-responsive-image"` | Class applied to `<picture>` |
+| `generate` | `boolean` | `false` | Reserved |
+| `outputDir` | `string` | unset | Reserved |
 
-### ソース
+## Variant discovery
 
-```markdown
-![[riebeckite-logo-horizontal.png]]
-```
+Variants are matched against the asset paths the manifest already contains:
 
-### 実行例
+- format variants: `photo.webp`, `photo.avif`
+- width variants: `photo-640.webp`, `photo-1280.avif`, `photo-1920.png`
+- width variants in the original format: `photo-640.png`
 
-![[riebeckite-logo-horizontal.png]]
+The plugin maps the original `<img src>` back to a manifest asset by trying the
+site asset URL (`/attachments/photo.png`) and the attachment URL
+(`/assets/attachments/photo.png`). If the source cannot be matched to a manifest
+asset, the `<img>` is left untouched.
 
-## 使いどころ
+## Limitation: no image encoding
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+This plugin is a deterministic discovery/HTML layer. It does **not** encode or
+generate new image files by default. `PluginAsset` only supports `style` and
+`script` module specifiers, so Core currently exposes no supported way for a
+plugin to emit arbitrary binary files into the build output.
 
-## 詳細仕様
+`generate` and `outputDir` are reserved for a future release and do nothing
+today. Adding real encoding requires a Core file-emission API; until then,
+pre-generate the variants yourself (for example with an external image tool) and
+commit them next to the original image. Sites copy referenced vault assets into
+`public/` through `apps/web/scripts/build_images.ts`.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Exports
 
+- `responsiveImage(options?)` / `responsiveImagePlugin` — plugin factory
+- `resolveResponsiveImageOptions(options?)` — resolve defaults
+- `buildResponsiveSrcset(existingPaths, src, options?)` — pure srcset planner
+- `applyResponsiveImages(html, existingPaths, options?)` — HTML transform
+- `collectKnownAssetPaths(manifest)` — manifest asset set helper
+- Types: `ResponsiveImageOptions`, `ResolvedResponsiveImageOptions`,
+  `ResponsiveImagePlan`, `ResponsiveImageSource`, `ResponsiveImageVariant`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

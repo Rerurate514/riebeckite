@@ -67,10 +67,10 @@ export default defineConfig({
       "An open-source framework for building extensible websites from Markdown and Obsidian notes.",
     author: "Riebeckite Maintainers: Rerurate_514",
     baseUrl: "https://riebeckite.dev",
-    locale: "ja_JP",
+    locale: "en_US",
     defaultOgImage: "/ogp.png",
     feed: {
-      language: "ja",
+      language: "en",
     },
   },
   content: {
@@ -185,7 +185,7 @@ export default defineConfig({
     webmention({ provider: new MemoryWebmentionProvider() }),
     responsiveImage(),
     localGraphPlugin(),
-    l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+    l10n({ defaultLang: "en", languages: ["en", "ja"] }),
     folderPages(),
     navigation({
       items: [

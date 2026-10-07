@@ -141,6 +141,6 @@ explorer/detail structure and links in semantic lists.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README.md)
 

@@ -1,34 +1,95 @@
+<!-- Generated from packages/plugins/diff/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Diff
 
-差分を読みやすい形でコンテンツ内に表示するための Plugin です。
+Git-backed diff and revision history for Markdown notes: read commit history,
+retrieve past revisions, and compute line-level diffs between them.
 
-## 導入
+[日本語](./diff.ja.md)
 
-```bash
-npm install @riebeckite/plugin-diff
+## Overview
+
+`createPostDiffApi()` wraps a local Git repository and exposes revision
+history plus line diffs for any Markdown file, even when the note was renamed
+or moved (`git log --follow`). `createLineDiff()` is the pure diff engine used
+by the API and is also exported for standalone use.
+
+The `diff()` plugin registers a `diff` entry in the plugin list; the
+programmatic API is the primary interface.
+
+## Usage (plugin)
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { diff } from "@riebeckite/plugin-diff";
+
+export default defineConfig({
+  // ...
+  plugins: [diff({ cwd: "./content" })],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`diff(options?)` accepts the same `GitHistoryReaderOptions` as the API.
+The revision panel renders the initial comparison during the build and computes
+other selected comparisons in the browser. It embeds each available revision
+once rather than every pairwise diff, keeping generated pages compact.
 
-## 使用例
+## Programmatic API
 
-変更前後を記事内で説明するときに、diff コードブロックをそのまま読みやすく表示できます。
+```ts
+import { createPostDiffApi } from "@riebeckite/plugin-diff";
 
-````markdown
-```diff
-- const enabled = false;
-+ const enabled = true;
+const api = createPostDiffApi({ cwd: "./content" });
+
+const history = await api.getHistory("notes/hello.md");
+const previous = await api.getRevisionMarkdown("notes/hello.md", history[1].hash);
+const current = await api.getCurrentDiff("notes/hello.md");
+const compare = await api.compareRevisions({
+  filePath: "notes/hello.md",
+  fromHash: history[1].hash,
+  toHash: history[0].hash,
+});
 ```
-````
 
-コンテンツディレクトリが Git ワーキングツリー内にあるビルドでは、記事末尾にリビジョンパネルが追加され、過去の変更を追いかけられます。履歴の検索は `content.directory` を基準に行うため、ビルドの作業ディレクトリがモノレポのアプリ側であっても動作します。初期表示の差分はビルド時に描画し、選択した比較はブラウザ上で計算します。ツリーの外にある場合はパネル自体を追加しません。
+- `getHistory(filePath)` — commit history for the file (newest first) as
+  `DiffRevision[]`
+- `getRevisionMarkdown(filePath, hash)` — Markdown source at a given revision,
+  or `null`
+- `getCurrentDiff(filePath)` — line diff between the latest revision and its
+  predecessor (or from an empty source when there is no predecessor)
+- `compareRevisions({ filePath, fromHash, toHash })` — line diff between two
+  revisions; `fromHash: null` diffs from an empty source
 
-## 使いどころ
+## Options
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+`createPostDiffApi(options?)` accepts `GitHistoryReaderOptions`:
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `cwd` | `string` | `config.content.directory`, else `process.cwd()` | Content root used to locate the Git work tree |
 
-## 詳細仕様
+When `cwd` is not inside a Git repository, API calls resolve to empty results
+(`[]` / `null`) instead of throwing.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Types
+
+| Type | Description |
+| ---- | ----------- |
+| `DiffRevision` | Commit metadata: `hash`, `shortHash`, `date`, `message`, `author` |
+| `MarkdownRevision` | `DiffRevision` with the Markdown source |
+| `PostDiff` | `from`, `to`, and `lines` |
+| `DiffLine` | A single diff line: `{ type, content }` |
+| `DiffLineType` | `"context" \| "added" \| "removed"` |
+| `RevisionComparisonInput` | `{ filePath, fromHash: string \| null, toHash }` |
+
+## Exports
+
+- `diff(options?)` — plugin factory
+- `createPostDiffApi(options?)` — programmatic API factory
+- `createLineDiff(from, to)` — LCS-based line diff
+- `GitMarkdownHistoryReader` — Git-backed history reader class
+- Types listed above
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

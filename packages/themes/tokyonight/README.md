@@ -97,7 +97,7 @@ back to the system font stack.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 

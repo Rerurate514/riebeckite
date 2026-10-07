@@ -137,5 +137,5 @@ point for that purpose.
 
 ## See also
 
-- [Plugin system](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin system](../../../docs/docs/reference/plugin-api.md)
 

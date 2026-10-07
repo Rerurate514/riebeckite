@@ -122,7 +122,7 @@ Red and Green also back the functional `danger` / `success` tokens.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)

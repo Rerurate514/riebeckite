@@ -1,26 +1,60 @@
+<!-- Generated from packages/plugins/media/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Media
 
-音声や動画などのメディアを公開コンテンツ内で扱うための Plugin です。
+Renders Obsidian audio / video attachment embeds with native HTML5 media players.
 
-## 導入
+[日本語](./media.ja.md)
 
-```bash
-npm install @riebeckite/plugin-media
+## Overview
+
+`media()` provides an attachment renderer for common Web media formats such as
+`![[music.mp3]]` and `![[movie.mp4]]`. Unsupported files return `null`, allowing
+later renderers or the default fallback to handle them.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { media } from "@riebeckite/plugin-media";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), media(), attachment()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`media()` uses `order: -10`, so it runs before the default attachment card.
 
-## 使用例
+## Supported formats
 
-画像だけでなく動画や音声などを含む記事を公開するときに利用します。たとえば解説記事とデモ動画を同じページにまとめる用途です。
+- audio: `mp3`, `m4a`, `aac`, `ogg`, `oga`, `opus`, `wav`, `flac`
+- video: `mp4`, `m4v`, `webm`, `ogv`, `mov`
 
-`![[music.mp3]]` のような埋め込みは、ビルド時に HTML5 のプレーヤー要素へ置き換わります。表示には該当する音声・動画ファイルの配置が必要です。
+## Options
 
-## 使いどころ
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `preload` | `"none" \| "metadata" \| "auto"` | `"none"` when `lazy: true`, otherwise `"metadata"` | `preload` for `<audio>` / `<video>` |
+| `lazy` | `boolean` | `true` | Uses `"none"` when `preload` is omitted to reduce eager loading |
+| `showCaption` | `boolean` | `true` | Shows a caption |
+| `showDownload` | `boolean` | `true` | Shows a download link |
+| `showOpenOriginal` | `boolean` | `true` | Shows an original file link |
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Timestamp fragments
 
-## 詳細仕様
+When a renderer receives fragments such as `#t=10` or `#10,20`, they are kept on
+the media source URL. The current Obsidian wikilink pipeline does not pass
+attachment fragments to renderers, so full `![[movie.mp4#t=10]]` support requires
+a future pipeline extension.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Exports
 
+- `media(options?)` / `mediaPlugin` — plugin factory
+- Types: `MediaOptions`, `MediaPreload`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

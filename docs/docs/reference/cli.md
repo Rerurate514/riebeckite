@@ -1,20 +1,15 @@
 # CLI Reference
 
-Riebeckite CLI は、Site の作成、開発、検証、診断、Build、公開などを行うためのコマンドです。
+Run commands from an application directory. The CLI resolves the application root from the current working directory and reports command errors safely with a non-zero exit code.
 
-基本的には **Riebeckite Site の application directory で実行します。**
-
-```sh id="vgst3p"
+```sh
 npm exec riebeckite <command>
 ```
 
-CLI は current working directory から application root を解決します。
+## Command list
 
-## コマンド一覧
-
-```text id="7uw50m"
+```text
 riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
-
 riebeckite dev
 riebeckite check
 riebeckite doctor
@@ -22,124 +17,97 @@ riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
-
-riebeckite inspect config
-riebeckite inspect plugins
-riebeckite inspect content [--list]
-riebeckite inspect graph
-riebeckite inspect build
+riebeckite inspect [config | plugins | content [--list] | graph | build]
 ```
 
-それぞれの役割は次のとおりです。
+## Command contracts
 
-| Command | 何をする？ | Build State |
+| Command | Purpose | Writes build state? |
 | --- | --- | --- |
-| `init` | 新しい Site を作る | 変更しない |
-| `dev` | 開発環境を起動する | Integration に依存 |
-| `check` | 設定が正しいか検証する | 変更しない |
-| `doctor` | Project 全体の問題を診断する | 変更しない |
-| `build` | Site を Build する | 成功時のみ更新 |
-| `clean` | Riebeckite が管理する状態を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | 変更しない |
-| `deploy` | 生成物を Cloudflare Workers へ公開する。`--dry-run` は検証のみ、`setup` は GitHub Actions の継続デプロイを準備する、`domain` は Custom Domain を設定する | 変更しない |
-| `profile` | Build の性能を調査する | Build に依存 |
-| `inspect` | 現在の解決結果を見る | 変更しない |
+| `init` | scaffold a self-contained site from a preset | no |
+| `dev` | start the integration development workflow | integration-dependent |
+| `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
+| `doctor` | diagnose environment, project discovery, configuration, plugins, content source readability, deprecated usage, and build state | no |
+| `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
+| `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
+| `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
+| `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
+| `inspect` | display factual resolved state | no |
 
-## どのコマンドを使う？
+## Which command should I use?
 
-目的から選ぶと分かりやすくなります。
+Choosing by goal makes the difference clearer.
 
-```mermaid id="ctqx7e"
+```mermaid
 flowchart TD
-    Q{"何をしたい？"}
+    Q{"What do you want to do?"}
 
-    Q -->|"Siteを作りたい"| Init["init"]
-    Q -->|"開発したい"| Dev["dev"]
-    Q -->|"設定が正しいか確認したい"| Check["check"]
-    Q -->|"問題の原因を調べたい"| Doctor["doctor"]
-    Q -->|"Siteを生成したい"| Build["build"]
-    Q -->|"生成物を消したい"| Clean["clean"]
-    Q -->|"公開したい"| Deploy["deploy"]
-    Q -->|"Buildが遅い"| Profile["profile"]
-    Q -->|"現在の状態を見たい"| Inspect["inspect"]
+    Q -->|"Create a site"| Init["init"]
+    Q -->|"Develop"| Dev["dev"]
+    Q -->|"Check the configuration"| Check["check"]
+    Q -->|"Investigate a problem"| Doctor["doctor"]
+    Q -->|"Generate the site"| Build["build"]
+    Q -->|"Remove generated output"| Clean["clean"]
+    Q -->|"Publish"| Deploy["deploy"]
+    Q -->|"The build is slow"| Profile["profile"]
+    Q -->|"See the current state"| Inspect["inspect"]
 ```
 
-特に混同しやすいのが `check`、`doctor`、`inspect`、`build` です。
+`check`, `doctor`, `inspect`, and `build` are especially easy to confuse. A simple split:
 
-簡単に分けると、
-
-```text id="1djofm"
+```text
 check
-  → 正しい？
+  → Is it correct?
 
 doctor
-  → 問題はない？
+  → Are there problems?
 
 inspect
-  → 今どうなっている？
+  → What is the current state?
 
 build
-  → 実際に生成する
+  → Actually generate the output
 ```
-
-と考えると分かりやすいです。
 
 ## `init`
 
-新しい Riebeckite Site を作成します。
+`init` scaffolds a self-contained site (configuration, Vite/HonoX application shell, routes, stylesheet, and starter content) in the target directory, which defaults to the current directory. The generated site is a self-contained application that does not depend on the Riebeckite monorepo.
 
-```sh id="18r7wl"
+```sh
 riebeckite init
 ```
 
-別のディレクトリへ作成する場合は、
+Pass a directory to create the site somewhere else:
 
-```sh id="81jmbp"
+```sh
 riebeckite init my-site
 ```
 
-のように指定します。
+Install dependencies, then run `check` and `build` in the generated site.
 
-生成される Site には、基本的な
+### Choosing a preset
 
-- Riebeckite config
-- Vite / HonoX application
-- route
-- stylesheet
-- 初期 content
+The composition is selected with `--preset <name>` (default: `starter`).
 
-が含まれます。
-
-生成された Site は Riebeckite monorepo に依存しない、自己完結した application です。
-
-### Preset を選ぶ
-
-```sh id="vt7gdb"
+```sh
 riebeckite init my-site --preset starter
 ```
 
-`--preset` で Site の初期構成を選択できます。
+Run `--list-presets` to see the available presets and their descriptions.
 
-既定値は `starter` です。
-
-利用できる preset は、
-
-```sh id="b0n6ph"
+```sh
 riebeckite init --list-presets
 ```
 
-で確認できます。
+### Choosing project files
 
-### Project file を選ぶ
+Project files are selected separately from the preset with `--utilities <names>`, a comma-separated list of `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`.
 
-preset とは別に、任意の project file を生成できます。
-
-```sh id="pf8k21"
+```sh
 riebeckite init my-site --utilities editorconfig,npmrc,vscode
 ```
 
-`--utilities` には `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。既定では `editorconfig,gitattributes,biome` を生成し、`npmrc` と `vscode` は生成しません。`none` を指定すると project file を生成しません。
-
-| 名前 | ファイル |
+| Name | File |
 | --- | --- |
 | `editorconfig` | `.editorconfig` |
 | `gitattributes` | `.gitattributes` |
@@ -147,88 +115,74 @@ riebeckite init my-site --utilities editorconfig,npmrc,vscode
 | `npmrc` | `.npmrc` |
 | `vscode` | `.vscode/settings.json` |
 
-`create-riebeckite` の対話式では `Extra project files` の質問で個別に選択できます。
+The default is `editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode the `Extra project files` prompt pre-selects the default set.
 
-### 既存ファイルがある場合
+### When files already exist
 
-`init` は、生成対象となるファイルがすでに存在する場合、そのまま上書きしません。
+`init` refuses to write into a directory that already contains generated files unless `--force` is passed.
 
-意図的に上書きする場合は、
-
-```sh id="l5kjod"
+```sh
 riebeckite init my-site --force
 ```
 
-を使用します。
-
-`--force` は既存ファイルへ影響するため、内容を確認してから使用してください。
+Because `--force` affects existing files, review their contents before using it.
 
 ### `create-riebeckite`
 
-同じ Site generator は `create-riebeckite` からも利用できます。
+The `create-riebeckite` package runs the same generator through `npx create-riebeckite` and accepts the same `--preset` / `--list-presets` flags.
 
-```sh id="kyw0rx"
+```sh
 npx create-riebeckite
 ```
 
-`--preset` や `--list-presets` も同様に利用できます。
+In interactive mode it asks for the content source and then for the deployment:
 
-対話式では、Content source に続いてデプロイ設定を尋ねられます。
-
-| 選択肢 | 生成されるもの |
+| Choice | What is generated |
 | --- | --- |
-| `Cloudflare Workers` | Wrangler の依存と `wrangler.jsonc`。依存関係のインストール後に `Deploy now?` を確認 |
-| `GitHub Actions` | `wrangler.jsonc` と `.github/workflows/deploy.yml` |
-| `Not now` | デプロイ設定を追加しない |
+| `Cloudflare Workers` | the Wrangler dependency and `wrangler.jsonc`; after installing dependencies it offers `Deploy now?` |
+| `GitHub Actions` | `wrangler.jsonc` and `.github/workflows/deploy.yml` |
+| `Not now` | no deployment files |
 
-`Cloudflare Workers` で `Deploy now?` に `Yes` と答えると、生成後に build と `riebeckite deploy` が続けて実行されます。`Later` の場合は生成だけを行い、次を実行して公開します。
+Choosing `Yes` at `Deploy now?` runs the build and `riebeckite deploy` right after scaffolding. Choosing `Later` only generates the site; publish it with:
 
 ```sh
 npm run build
 npm exec riebeckite deploy
 ```
 
-Site を生成した後は依存関係を install し、
+After generating the site, install dependencies and verify the setup:
 
-```sh id="gzg1my"
+```sh
 npm install
 npm exec riebeckite check
 npm exec riebeckite build
 ```
 
-で正常に構成されていることを確認できます。
-
 ## `dev`
 
-開発環境を起動します。
+`dev` starts the development environment.
 
-```sh id="ujiy7q"
+```sh
 npm exec riebeckite dev
 ```
 
-Riebeckite Integration の development workflow を利用して Site を起動します。
-
-実際の development server や Build State の扱いは、使用している Integration に依存します。
-
-通常の HonoX Site では、開発中のページ確認にこのコマンドを使用します。
+It starts the site through the Riebeckite integration's development workflow. The actual development server and how build state is handled depend on the integration in use. For an ordinary HonoX site, use this command to preview pages while developing.
 
 ## `check`
 
-Config、Plugin、Capability の設定が有効か検証します。
+`check` validates that the configuration, plugins, and capabilities are set up correctly.
 
-```sh id="5a2lrf"
+```sh
 npm exec riebeckite check
 ```
 
-たとえば、
+For example, it confirms:
 
-- config の形式が正しいか
-- Plugin の設定が正しいか
-- 必要な capability が成立しているか
+- the config format is valid
+- plugin configuration is valid
+- required capabilities are resolved
 
-などを確認します。
-
-```mermaid id="8ewhbp"
+```mermaid
 flowchart LR
     Config["Config"]
     Plugins["Plugins"]
@@ -241,44 +195,23 @@ flowchart LR
     Check --> Result{"Valid?"}
 ```
 
-`check` が成功したからといって、Site がすでに Build / Deploy されていることを意味するわけではありません。
+`check` establishes basic project validity, not that output has been built or deployed. What `check` guarantees is that the configuration is valid.
 
-`check` が保証するのは **Configuration が有効であること**です。
+### Plugin option validation
 
-### Plugin Option Validation
-
-Plugin の option validation も `check` の一部として実行されます。
-
-Plugin は `validateOptions` を使って、自身の設定を検証できます。
-
-たとえば Analytics Plugin なら、
-
-- provider
-- collector URL
-
-などの設定を検証できます。
-
-不正な Plugin 設定は、実際の Build より前に `check` で検出できます。
+Plugin option validation runs as part of `check`. Each plugin's `validateOptions` (the analytics plugin, for example, validates its provider and collector URL) contributes to configuration validity, so an invalid plugin setup fails `check` before any build starts.
 
 ## `doctor`
 
-Project の状態を広く診断します。
+`doctor` diagnoses the project broadly.
 
-```sh id="zruccx"
+```sh
 npm exec riebeckite doctor
 ```
 
-`doctor` は、
+It checks the environment, config, plugins, content, and build state.
 
-- environment
-- config
-- Plugin
-- content
-- Build State
-
-などを確認します。
-
-```mermaid id="f8k3hz"
+```mermaid
 flowchart LR
     Environment["Environment"]
     Config["Config"]
@@ -295,272 +228,228 @@ flowchart LR
     Doctor --> Diagnostics["Diagnostics"]
 ```
 
-1つの診断に失敗しても、安全に続行できる独立した診断は可能な限り継続します。
+`doctor` continues independent checks where possible and exits unsuccessfully when health checks fail.
 
-Health check が失敗した場合は non-zero status で終了します。
+### Deprecated usage
 
-### Deprecated Usage
+When old APIs or deprecated configuration are detected, they are reported as warnings under:
 
-古い API や非推奨の設定が検出された場合は、
-
-```text id="q0zh69"
+```text
 Deprecated usage
 ```
 
-として warning が表示されます。
-
-これは移行を促すための情報であり、それだけで `doctor` が失敗扱いになるわけではありません。
+This is guidance to migrate; on its own it does not make `doctor` fail.
 
 ## `build`
 
-Site を Build します。
+`build` builds the site.
 
-```sh id="iznhhd"
+```sh
 npm exec riebeckite build
 ```
 
-通常は incremental state を利用して、再利用可能な処理を省略します。
+Normally it reuses incremental state and skips work that can be reused.
 
-```mermaid id="l50vlh"
+```mermaid
 flowchart TD
     Build["riebeckite build"]
-    State{"再利用可能なState?"}
+    State{"Reusable state?"}
 
     Build --> State
-    State -->|Yes| Incremental["Incremental Build"]
-    State -->|No| Full["必要な処理を再実行"]
+    State -->|Yes| Incremental["Incremental build"]
+    State -->|No| Full["Re-run the required work"]
 
-    Incremental --> Success{"成功？"}
+    Incremental --> Success{"Success?"}
     Full --> Success
 
-    Success -->|Yes| Save["新しいStateを保存"]
-    Success -->|No| Keep["以前の有効なStateを維持"]
+    Success -->|Yes| Save["Save the new state"]
+    Success -->|No| Keep["Keep the previous valid state"]
 ```
 
-Build State は **Build が成功した場合だけ**更新されます。
+Build state is updated only when the build succeeds, so a failed build never corrupts the previous good state.
 
-失敗した Build が以前の正常な state を壊すことはありません。
+### Full build
 
-### Full Build
+To avoid reusing incremental state:
 
-incremental state の再利用を避けたい場合は、
-
-```sh id="wpr38p"
+```sh
 npm exec -- riebeckite build --full
 ```
 
-を使用します。
-
-Build の再現確認や incremental behavior の問題を切り分ける場合に利用できます。
-
-詳しくは [Build System](../framework/build-system.md) を参照してください。
+Use this to reproduce a build or to isolate problems with incremental behavior. See [Build system](../framework/build-system.md) for details.
 
 ## `clean`
 
-Riebeckite が生成・管理する再生成可能な状態を削除します。
+`clean` removes Riebeckite-managed artifacts instead of user content.
 
-```sh id="cln001"
+```sh
 npm exec riebeckite clean
 ```
 
-option を指定しない場合は、application directory 配下の managed state root（`.riebeckite/`）を削除します。ここには Build State、Plugin Cache、persistent content cache、SSG output cache が含まれます。
+With no options it removes the managed state root (`.riebeckite/` under the application directory), which holds the build state, plugin cache, persistent content cache, and SSG output cache.
 
-Build 出力だけを削除する場合は、
+To remove only the build output directory:
 
-```sh id="cln002"
+```sh
 npm exec -- riebeckite clean --output
 ```
 
-managed state と Build 出力の両方を削除する場合は、
+To remove both the managed state and the build output:
 
-```sh id="cln003"
+```sh
 npm exec -- riebeckite clean --all
 ```
 
-を使用します。
+The output location is resolved from project configuration rather than hard-coded, so an integration-defined location is honored. Missing targets are not an error, so `clean` is safe to run repeatedly, including from CI and troubleshooting scripts. It never removes content, configuration, theme or plugin sources, `public/` assets, or Git metadata. It refuses to delete anything outside the application directory, and symlinks or junctions are removed as links, so their targets are never deleted. Generated source entries under `app/.riebeckite/` are left in place because the integration regenerates them on the next `dev` or `build`.
 
-削除対象の配置は解決済みの Configuration から取得するため、Build 出力の場所を hard-code しません。対象が存在しない場合もエラーにせず、再実行しても成功します。Content、Config、Theme / Plugin の source、`public/` の asset、Git の metadata は削除しません。application root の外を指す path は削除せず、symlink / junction は link 先を辿らずに link 自体だけを削除します。`app/.riebeckite/` の generated source は、次の `dev` や `build` で再生成されるため残します。
+To reproduce a site without relying on incremental state, persistent caches, or previous output, run a cold build:
 
-incremental state や persistent cache、以前の Build 出力に依存せずに Site を再現したい場合は、cold build として
-
-```sh id="cln004"
+```sh
 npm exec -- riebeckite clean --all
 npm exec riebeckite build
 ```
 
-を実行します。Build が遅い、または incremental reuse が疑わしいときの切り分けにも利用できます。既定の配置ではこれらの cache は `.riebeckite/` 配下にあります。別の場所に cache directory を設定している場合、その場所は `clean` の削除対象に含まれません。
+This is also useful when the build is slow or incremental reuse is suspect. In the default layout those caches live under `.riebeckite/`; a cache directory configured elsewhere is not removed by `clean`.
 
 ## `deploy`
 
-Build 済みの生成物を Cloudflare Workers へ公開します。
+`deploy` publishes the `dist/` produced by `build` to Cloudflare Workers by invoking Wrangler. It creates `wrangler.jsonc` from the site folder name when the file is missing, opens the Wrangler login on the first run, and forwards `--dry-run` for validation without uploading.
 
-```sh id="k4n8we"
-npm exec riebeckite deploy
-```
+`deploy` never rebuilds content, so run `npm exec riebeckite build` first.
 
-`deploy` は Wrangler を呼び出して `dist/` を公開します。初回は Wrangler の OAuth で Cloudflare にログインし、`wrangler.jsonc` が無い場合はプロジェクト名から生成します。公開 URL は `https://<worker-name>.<account>.workers.dev` です。`create-riebeckite` で `Cloudflare Workers` を選ぶと、Wrangler の依存と `wrangler.jsonc` を含む、このコマンドを実行できるサイトが生成されます。
+To validate the configuration and assets without connecting to Cloudflare:
 
-`deploy` は Build を行いません。先に `npm exec riebeckite build` を実行してください。
-
-Cloudflare へ接続せずに設定とアセットを検証する場合は、
-
-```sh id="d9x2qb"
+```sh
 npm exec -- riebeckite deploy --dry-run
 ```
 
-を使用します。`npm exec` は `--dry-run` を自身の option として解釈する場合があるため、`--` で区切ってください。
+Because `npm` consumes a bare `--dry-run`, pass it as `npm exec -- riebeckite deploy --dry-run`. A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes the Wrangler dependency and `wrangler.jsonc`.
 
-push ごとに自動で deploy したい場合は GitHub Actions を利用できます。詳しくは [Deployment](../guides/deployment/README.md) を参照してください。
+To deploy automatically on every push, use GitHub Actions. See [Deployment](../guides/deployment/README.md).
 
 ### `deploy setup`
 
-すでに Local-first で公開している Site に、GitHub Actions による継続デプロイを追加します。
+`deploy setup` prepares continuous deployment to GitHub Actions for a project that is already a Git repository and published with Local-first.
 
-```sh id="k4n8ws"
+```sh
 npm exec riebeckite deploy setup
 ```
 
-`deploy setup` は、Git Repository と GitHub Remote を検出し、GitHub CLI（`gh`）と Wrangler のログインを確認し、`create-riebeckite` と同じテンプレートから `.github/workflows/deploy.yml` を作成します。Wrangler のログイン状態から Cloudflare Account を取得し、複数ある場合は選択します。最後に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。
-
-Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取り、standard input 経由で `gh secret set` へ渡します。command line の引数には載せず、ファイルにも書き込みません。
-
-GitHub Repository の作成と push は行いません。Riebeckite 以外の既存 workflow を検出した場合は、上書きせずそのまま報告し、secret の登録には進まずに停止します。再実行すると、一致する workflow と登録済みの secret は検出され、残りの手順だけを実行します。別の deployment workflow が既にある場合は、置き換えるか削除してから再実行してください。
-
-`deploy setup` は Wrangler のログインを使うため、Wrangler の依存が Site に install されている必要があります。`create-riebeckite` で `Cloudflare Workers` を選んだ Site には含まれています。
+It detects the Git repository and the GitHub remote, checks the GitHub CLI (`gh`) and Wrangler logins, creates `.github/workflows/deploy.yml` from the same template used by `create-riebeckite`, reads the Cloudflare account from your Wrangler login (asking you to choose when there is more than one), and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt or from `CLOUDFLARE_API_TOKEN` in the environment and is sent to `gh secret set` through standard input; it is never passed as a command argument or written to disk. The command does not create a GitHub repository and does not push. An existing non-Riebeckite workflow is reported and left unchanged, and the command stops before registering any secrets. Wrangler must be installed in the site (Local-first sites already have it). Run it again any time: a matching workflow and existing secrets are detected and skipped, so only the remaining steps run. If a different deployment workflow already exists, replace or remove it before running `deploy setup` again.
 
 ### `deploy domain`
 
-`deploy` が公開する Worker に Cloudflare Workers の Custom Domain を設定します。
+`deploy domain` configures a Cloudflare Workers Custom Domain for the Worker that `deploy` publishes.
 
-```sh id="d0main"
+```sh
 npm exec riebeckite deploy domain
 ```
 
-`deploy domain` は Site の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み、`custom_domain: true` を持つ `routes` エントリを追加します。引数は取りません。`docs.example.com` のような hostname を対話的に入力し、変更内容を表示して確認したうえで書き込みます。
-
-初回の `deploy` の後で実行してください。Wrangler 設定が無い場合や terminal が interactive でない場合は、hint を表示して停止します。`wrangler.toml` は変更しません。書き込み後は `Deploy now?` を確認し、選ばなかった場合は `npm exec riebeckite deploy` を案内します。再実行すると設定済みの domain を検出し、書き込みを省略します。
+Run it after the first `deploy`, because it reads the existing Wrangler configuration (`wrangler.jsonc` or `wrangler.json`) in the site and adds a declarative `routes` entry with `custom_domain: true`. It takes no arguments: the command prompts for a hostname such as `docs.example.com`, shows the planned change, and asks for confirmation before writing. A `wrangler.toml` is left unchanged, and the command stops with a hint when no Wrangler configuration exists or the terminal is not interactive. After writing, it offers `Deploy now?` and otherwise prints the `npm exec riebeckite deploy` command. Running it again detects an already-configured domain and skips the write.
 
 ## `profile`
 
-Build のどこに時間がかかっているか調査します。
+`profile` investigates where build time is spent.
 
-```sh id="5pvcmf"
+```sh
 npm exec riebeckite profile
 ```
 
-Trace を収集し、Build phase や Plugin 処理などの performance report を表示します。
+It collects traces and displays a performance report covering build phases and plugin processing. The report separates Plugin cache activity from Content cache activity; the Content cache part also includes the reason for each miss or bypass, so you can see why an entry was not reused.
 
-incremental reuse を避けて計測する場合は、
+To measure without incremental reuse:
 
-```sh id="mqr87f"
+```sh
 npm exec -- riebeckite profile --full
 ```
 
-を使用します。
-
-`profile` は性能調査のための command であり、Configuration validity を確認するための command ではありません。
-
-report では Plugin cache と Content cache を分けて表示します。Content cache には miss / bypass の理由も含まれるため、なぜ再利用されなかったのかを確認できます。
+`profile` is a performance-investigation command, not a way to check configuration validity.
 
 ## `inspect`
 
-Riebeckite が現在認識している状態を確認します。
+`inspect` shows the state Riebeckite currently recognizes.
 
-```sh id="enl4wg"
+```sh
 npm exec riebeckite inspect plugins
 ```
 
-Inspector は **read-only** です。
+The inspector is deliberately read-only: it must not trigger a build, write caches/assets/state, invoke Vite/HonoX builds, render special artifacts, or auto-fix problems. In particular, running it does not perform:
 
-実行しても、
-
-- Build
-- Build State の書き込み
-- Plugin Cache の書き込み
-- Asset emission
-- Vite / HonoX Build
-- Artifact render
-- Config の自動修正
-
-を行いません。
+- a build
+- build state writes
+- plugin cache writes
+- asset emission
+- Vite / HonoX builds
+- artifact rendering
+- automatic config fixes
 
 ### Config
 
-```sh id="c3x2ak"
+```sh
 npm exec riebeckite inspect config
 ```
 
-解決済みの Configuration を確認します。
+Shows the resolved configuration.
 
 ### Plugins
 
-```sh id="wnn5fz"
+```sh
 npm exec riebeckite inspect plugins
 ```
 
-現在有効な Plugin を確認します。
+Shows the currently active plugins.
 
 ### Content
 
-```sh id="qqht5s"
+```sh
 npm exec -- riebeckite inspect content --list
 ```
 
-現在の Content entry と解決済みの canonical permalink などを確認します。
-
-特定の記事がどの URL として認識されているか確認したい場合に便利です。
+Shows the current content entries and their resolved canonical permalinks. This is useful for confirming which URL a particular article is recognized as.
 
 ### Graph
 
-```sh id="s8q7lx"
+```sh
 npm exec riebeckite inspect graph
 ```
 
-Content Graph を確認します。
-
-WikiLink、backlink、graph extension などを調査するときに利用できます。
+Shows the content graph. Use it when investigating WikiLinks, backlinks, or graph extensions.
 
 ### Build
 
-```sh id="y2uc9f"
+```sh
 npm exec riebeckite inspect build
 ```
 
-現在の incremental Build State を確認します。
+Shows the current incremental build state. When the state is missing or broken, it does not create a new state; it reports that state and the reason.
 
-State が存在しない場合や壊れている場合も、新しい state を生成せず、その状態と理由を表示します。
+See [Inspector](../framework/inspector.md) for the inspector's design.
 
-Inspector の詳しい設計については [Inspector](../framework/inspector.md) を参照してください。
+## Error display
 
-## Error の表示
+Command failures are reported with the error name, message, and, when present, the error `code`, file path, and a remediation `hint`. Nested causes are printed as `Caused by:` lines.
 
-CLI command が失敗した場合は、可能な範囲で構造化されたエラー情報を表示します。
-
-主に、
-
-- Error 名
-- Message
-- Error code
-- File path
-- 修正方法の hint
-
-などです。
-
-原因となった error がネストしている場合は、
-
-```text id="bf6q65"
+```text
 Caused by:
 ```
 
-として表示されます。
+The goal is not merely to say "it failed" but to make clear what failed and where to look.
 
-単に「失敗した」と表示するのではなく、**何が失敗し、どこを確認すればよいか**が分かることを目標としています。
+## Common workflow
 
-## 通常の Workflow
+Broken WikiLinks, missing referenced assets, publish-boundary warnings, and other content-integrity findings come from the build path or from plugins such as `@riebeckite/plugin-diagnostics`. Use `inspect content --list` and `inspect graph` to confirm what Riebeckite loaded, then run `build` or the relevant plugin diagnostics for rendered-content problems.
 
-新しく Site を作る場合は、次のような流れになります。
+```sh
+pnpm exec riebeckite check
+pnpm exec riebeckite doctor
+pnpm exec riebeckite inspect plugins
+pnpm exec riebeckite build
+pnpm exec riebeckite deploy
+```
 
-```mermaid id="gr7mks"
+For a new site, the flow looks like this:
+
+```mermaid
 flowchart LR
     Init["init"]
     Install["npm install"]
@@ -576,25 +465,19 @@ flowchart LR
     Build --> Deploy
 ```
 
-`build` の後は `npm exec riebeckite deploy` で生成物を公開できます。
+After `build`, publish the output with `npm exec riebeckite deploy`.
 
-問題が発生した場合は、目的に応じて `doctor`、`inspect`、`profile` を使います。
+When a problem occurs, use `doctor`, `inspect`, or `profile` depending on the goal:
 
-```mermaid id="9g1nvs"
+```mermaid
 flowchart TD
-    Problem{"問題がある"}
+    Problem{"Something is wrong"}
 
-    Problem -->|"設定がおかしい？"| Check["check"]
-    Problem -->|"原因が分からない"| Doctor["doctor"]
-    Problem -->|"解決結果を確認したい"| Inspect["inspect"]
-    Problem -->|"Buildが遅い"| Profile["profile"]
-    Problem -->|"Incrementalを疑う"| Full["build --full"]
+    Problem -->|"Is the configuration wrong?"| Check["check"]
+    Problem -->|"Unknown cause"| Doctor["doctor"]
+    Problem -->|"Check the resolved state"| Inspect["inspect"]
+    Problem -->|"The build is slow"| Profile["profile"]
+    Problem -->|"Suspect incremental reuse"| Full["build --full"]
 ```
 
-迷った場合は、
-
-**作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、公開するなら `deploy`、速度を調べるなら `profile`、状態を消すなら `clean`**
-
-と覚えておくと、各 command の役割を区別しやすくなります。
-
-診断結果については [Diagnostics](../framework/diagnostics.md)、非推奨 API からの移行については [Upgrading](../guides/upgrading.md)、Build State については [Build System](../framework/build-system.md) を参照してください。
+Choose `inspect content --list` for item-level content output and `inspect graph` when investigating links or graph extensions. Use [Diagnostics](../framework/diagnostics.md) for interpretation, [Upgrading](../guides/upgrading.md) for deprecation and migration guidance, and [Build system](../framework/build-system.md) for state semantics.

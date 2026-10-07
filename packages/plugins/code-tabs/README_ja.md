@@ -51,6 +51,6 @@ console.log("Hello");
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.md)
+- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-code-enhance`](../code-enhance/README_ja.md)
 

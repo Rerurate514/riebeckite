@@ -144,5 +144,5 @@ const html = renderSeriesIndex(manifest, "何かを作る");
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.md)
+- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
 

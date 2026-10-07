@@ -10,7 +10,7 @@ needs no JavaScript in the theme itself.
 ## Overview
 
 Themes derive their palette from three CSS states (see
-[theme-system.md](../../../docs/docs/reference/theme-api.en.md)):
+[theme-system.md](../../../docs/docs/reference/theme-api.md)):
 
 - `:root` — light
 - `:root[data-theme="dark"]` — dark
@@ -163,5 +163,5 @@ diagrams) can follow mode changes in the future.
 
 ## See also
 
-- [Theme system](../../../docs/docs/reference/theme-api.en.md)
+- [Theme system](../../../docs/docs/reference/theme-api.md)
 - [`@riebeckite/plugin-ux`](../ux/README.md)

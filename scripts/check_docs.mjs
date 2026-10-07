@@ -5,10 +5,10 @@
 //
 // Verifies the conventions the docs depend on:
 //   1. Every relative Markdown link resolves to an existing file (case-insensitive).
-//   2. Every translated document (X.en.md) has a default counterpart (X.md) and
-//      vice versa.
+//   2. Every translated document (X.ja.md) has a canonical counterpart (X.md)
+//      and vice versa.
 //   3. Every document under docs is reachable from docs/README.md or
-//      docs/README.en.md through local Markdown links.
+//      docs/README.ja.md through local Markdown links.
 //   4. Every package directory exposes exactly README.md + README_ja.md
 //      (extra README_en.md variants are rejected).
 //   5. README.md and README_ja.md link to each other where both exist.
@@ -153,7 +153,7 @@ function isDocsDocument(relative) {
   const rest = relative.slice("docs/".length);
   const first = rest.split("/")[0];
   if (DOCS_EXCLUDED_SEGMENTS.has(first)) return false;
-  if (rest === "index.md") return false;
+  if (rest === "index.md" || rest === "index.ja.md") return false;
   return true;
 }
 
@@ -165,9 +165,9 @@ function checkTranslationParity(markdownFiles) {
   );
   const known = new Set(docsFiles.map((file) => file.relative));
   for (const file of docsFiles) {
-    const counterpart = file.relative.endsWith(".en.md")
-      ? file.relative.replace(/\.en\.md$/, ".md")
-      : file.relative.replace(/\.md$/, ".en.md");
+    const counterpart = file.relative.endsWith(".ja.md")
+      ? file.relative.replace(/\.ja\.md$/, ".md")
+      : file.relative.replace(/\.md$/, ".ja.md");
     if (!known.has(counterpart)) {
       errors.push(`${file.relative} has no ${counterpart} counterpart`);
     }
@@ -226,7 +226,7 @@ function checkReachability(markdownFiles) {
   const byRelative = new Map(
     docsFiles.map((file) => [file.relative.slice("docs/".length), file]),
   );
-  const roots = ["README.md", "README.en.md"].filter((root) =>
+  const roots = ["README.md", "README.ja.md"].filter((root) =>
     byRelative.has(root),
   );
   const seen = new Set(roots);
@@ -245,7 +245,7 @@ function checkReachability(markdownFiles) {
   for (const relative of [...byRelative.keys()].sort()) {
     if (!seen.has(relative)) {
       errors.push(
-        `docs/${relative} is not reachable from docs/README.md or docs/README.en.md`,
+        `docs/${relative} is not reachable from docs/README.md or docs/README.ja.md`,
       );
     }
   }

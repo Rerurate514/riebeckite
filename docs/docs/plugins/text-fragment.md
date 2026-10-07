@@ -1,25 +1,76 @@
+<!-- Generated from packages/plugins/text-fragment/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Text Fragment
 
-記事内で選択したテキストの Text Fragment リンクまたは Markdown 引用をコピーする Plugin です。
+Copy a Text Fragment deep link (`#:~:text=`) or a Markdown quote for the text
+you select in an article.
 
-## 導入
+[日本語](./text-fragment.ja.md)
 
-```bash
-npm install @riebeckite/plugin-text-fragment
+## Overview
+
+Client-only plugin. On page load it installs one selection popover with two
+actions:
+
+- **Copy link** — builds a URL with a
+  [Text Fragment directive](https://wicg.github.io/scroll-to-text-fragment/)
+  that highlights the selected text.
+- **Copy quote** — builds a Markdown block quote with a link back to the page.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+
+export default defineConfig({
+  // ...
+  plugins: [textFragmentPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`textFragmentPlugin()` registers `style.css` and the `initTextFragmentShare`
+client entry, which the app calls during page initialization. Pass
+`textFragmentPlugin({ labels })` to override individual UI labels.
 
-## 使用例
+## Behavior
 
-読者が特定の一節を指して共有できるようにしたい場合に利用します。記事内でテキストを選択すると、2 つの操作を持つポップオーバーが表示されます。**Copy link** は選択範囲をハイライトする `#:~:text=` URL を、**Copy quote** はページへのリンク付き Markdown 引用を生成します。
+- A non-empty selection inside the article body shows the popover near the
+  selection. Selections inside `pre`, `code`, `a[href]`, or `[data-no-share]`
+  are ignored.
+- Both actions write to the clipboard through `navigator.clipboard.writeText`
+  and fall back to a hidden textarea with `document.execCommand("copy")`.
+- Failures are announced in a visible `aria-live="polite"` status region.
+- `Escape` or a click outside closes the popover. The buttons are real
+  `<button>` elements, so they are reachable with the keyboard.
+- The popover is installed once per page and does nothing when there is no
+  `document` (SSR-safe).
 
-## 使いどころ
+### URL rules
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+The fragment follows `#:~:text=[prefix-,]start[,end][,-suffix]`:
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+- `,`, `-` and `&` are percent-encoded (`%2C`, `%2D`, `%26`).
+- Other characters are encoded per UTF-8 (newlines become `%0A`).
+- An existing hash on the page URL is dropped before the directive is appended.
+- Selections longer than ~200 characters or containing a newline are reduced to
+  a `start,end` range built from the first and last token.
+- An empty or whitespace-only selection produces `""`.
 
-## 詳細仕様
+## API
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+- `textFragmentPlugin(options?)` — plugin factory; `options.labels` overrides
+  the UI labels
+- `initTextFragmentShare(labels?)` — client initializer (also via
+  `@riebeckite/plugin-text-fragment/client`)
+- `encodeTextFragment(text)` — percent-encodes one text fragment term
+- `buildTextFragmentUrl(pageUrl, selection, options?)` — builds the deep link;
+  `options` is `{ prefix?, suffix? }`
+- `buildQuoteMarkdown({ url, title, selection })` — builds the Markdown quote
+- `DEFAULT_TEXT_FRAGMENT_LABELS` — the default English UI labels
+- Types: `TextFragmentOptions`, `TextFragmentLabels`,
+  `TextFragmentPluginOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

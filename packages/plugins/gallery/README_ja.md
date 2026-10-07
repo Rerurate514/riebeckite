@@ -134,5 +134,5 @@ import "@riebeckite/plugin-gallery/style.css";
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.md)
+- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
 

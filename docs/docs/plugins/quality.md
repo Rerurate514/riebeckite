@@ -1,26 +1,71 @@
+<!-- Generated from packages/plugins/quality/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Quality
 
-公開コンテンツの品質確認に関する処理を追加する Plugin です。
+Static quality and accessibility inspection for generated HTML in Riebeckite.
 
-## 導入
+[日本語](./quality.ja.md)
 
-```bash
-npm install @riebeckite/plugin-quality
+## Overview
+
+`qualityPlugin()` runs a small set of dependency-free, regex-based rules over
+the HTML produced by the build and reports the findings through the shared
+diagnostics channel. There is no DOM, no axe-core, and no headless browser.
+
+At the manifest stage the plugin inspects each public entry's rendered article
+HTML. Integrations that finish HTML generation can additionally call the
+exported `inspectGeneratedHtml` hook for final pages.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { qualityPlugin } from "@riebeckite/plugin-quality";
+
+export default defineConfig({
+  // ...
+  plugins: [qualityPlugin({ failOn: "error" })],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Options
 
-## 使用例
+| Option | Type | Description |
+| ------ | ---- | ----------- |
+| `ignoreRules` | `string[]` | Diagnostic codes to suppress (for example `"quality:empty-link-text"`). |
+| `a11y` | `{ enabled?: boolean }` | Accessibility inspection. Defaults to enabled; set `enabled: false` to disable every rule. |
+| `failOn` | `"error" \| "never"` | Throw on the first build with an error-severity diagnostic during the manifest stage. Defaults to `"never"`. |
 
-公開前にコンテンツの品質上の問題を検出したい場合に利用します。多数の記事を管理するサイトで、レビュー時のチェックを自動化する用途に向いています。
+## Rules
 
-生成済みの HTML に対するチェック結果が、manifest の diagnostic に流れます。例: `quality:img-alt-missing`、`duplicate-id`、`heading-order`、`empty-link-text`。`failOn` を指定すると、条件に当てはまる場合にビルドを失敗させられます。
+| Code | Severity | Description |
+| ---- | -------- | ----------- |
+| `quality:img-alt-missing` | warning | `<img>` without an `alt` attribute. `alt=""` is valid for decorative images. |
+| `quality:duplicate-id` | error | The same `id` value used more than once. |
+| `quality:broken-internal-anchor` | warning | `href="#foo"` with no matching `id="foo"` in the document. |
+| `quality:heading-order` | warning | Skipped heading levels (for example `h1` → `h3`) or headings without any `h1`. |
+| `quality:empty-link-text` | warning | `<a href>` with empty text and no `aria-label`, `title`, or non-empty `img[alt]`. |
+| `quality:html-lang-missing` | warning | `<html>` without a non-empty `lang` attribute (full documents only). |
+| `quality:table-no-header` | warning | `<table>` with data cells but no `<th>`, `scope`, or `headers`. |
 
-## 使いどころ
+## API
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `qualityPlugin(options?)` — plugin factory.
+- `inspectHtml(html, options?)` — pure function returning `Diagnostic[]`.
+- `inspectGeneratedHtml(page, options?)` — pure function that inspects a final
+  page and sets `filePath` to `page.path`.
+- `RULE_CODES` — the stable code identifiers.
+- Types: `QualityOptions`, `InspectOptions`.
 
-## 詳細仕様
+## Limitations
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+The scanner is regex-based, not a real DOM. It does not validate malformed
+markup, does not track nesting depth, and only handles well-formed, non-nested
+elements when pairing an open tag with its close tag. Comments and
+`<script>`/`<style>` contents are masked before scanning. Rules that depend on
+document structure (heading order, table headers) can therefore miss or
+misattribute findings in unusual markup.
 
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

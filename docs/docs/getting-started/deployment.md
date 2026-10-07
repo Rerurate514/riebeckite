@@ -1,69 +1,75 @@
+---
+title: Deployment
+sidebar:
+  label: Deployment
+  order: 50
+---
 # Deployment
 
-Riebeckite は静的サイトを作ります。`npm exec riebeckite build` を実行すると、公開用のファイルが `dist/` に作られます。デプロイでは、この `dist/` を配信します。標準的な公開先として、ここでは [Cloudflare Workers](https://workers.cloudflare.com/) を使います。
+Riebeckite builds a static site: `npm exec riebeckite build` writes the publishable files to `dist/`. Deployment means hosting that folder. The reference target is [Cloudflare Workers](https://workers.cloudflare.com/) with static assets.
 
-デプロイには次の3つの方法があります。排他的な選択ではなく、後から追加できます。
+There are three deployment methods, and they are options you add over time rather than mutually exclusive choices:
 
-| 方法 | 向いているケース |
+| Method | Choose it when |
 | --- | --- |
-| Local-first（手元から公開） | 最短で初回公開したい |
-| GitHub Actions | push ごとに自動公開したい |
-| Content Repository 分離 | Vault と Site を別リポジトリで管理したい |
+| Local-first (publish from your machine) | You want the fastest first publish |
+| GitHub Actions | You want to deploy on every push |
+| Content Repository split | You want the vault and site in separate repositories |
 
-Local-first は GitHub Actions の置き換えではありません。自動化が必要になったら GitHub Actions を追加します。
+Local-first does not replace GitHub Actions. Add GitHub Actions when you want automation.
 
 ```text
 Local-first
-  → 手元から Cloudflare Workers へ公開する
+  → publish to Cloudflare Workers from your machine
 
 GitHub Actions
-  → push 時に自動で公開する
+  → publish automatically on push
 
-Content Repository 分離
-  → site と content のリポジトリを分ける
+Content Repository split
+  → keep site and content repositories separate
 ```
 
-このページでは Local-first、GitHub Actions、Custom Domain の設定を扱います。リポジトリ分離が必要な場合は、[Content Repositories](../guides/content-repositories.md) と [Separate Content Repository](../guides/deployment/separate-content-repository.md) を参照してください。
+This beginner page covers Local-first, GitHub Actions, and adding a Custom Domain. If you want the split, see [Content Repositories](../guides/content-repositories.md) and [Separate Content Repository](../guides/deployment/separate-content-repository.md).
 
-## 1. 手元から初回デプロイする（Local-first）
+## 1. First deploy from your machine (Local-first)
 
-最短で初回公開する方法です。
+This is the fastest path to a public site.
 
-1. [Cloudflare アカウント](https://www.cloudflare.com/)を用意します。
+1. Create a [Cloudflare account](https://www.cloudflare.com/).
 
-2. デプロイ設定で `Cloudflare Workers` を選んでサイトを作ります。
+2. Scaffold a site with `Cloudflare Workers` as the deployment choice:
 
-   ```bash
+   ```sh
    npx create-riebeckite my-site
    ```
 
-   `Cloudflare Workers` を選ぶと、生成されるサイトに Wrangler の依存と `wrangler.jsonc` が含まれ、依存関係のインストール後に `Deploy now?` と確認されます。`Yes` ならその場で build と deploy まで実行されます。`Later` の場合は生成だけを終え、後から次を実行します。
+   Choosing `Cloudflare Workers` includes the Wrangler dependency and `wrangler.jsonc` in the generated site, then asks `Deploy now?` after installing dependencies. `Yes` builds and deploys right away; `Later` finishes the scaffold and you run these commands afterwards:
 
-   ```bash
+   ```sh
    npm run build
    npm exec riebeckite deploy
    ```
 
-3. `riebeckite deploy` は `dist/` を Cloudflare Workers へ公開します。初回は Wrangler のログインがブラウザで開きます。`deploy` は build を行わないため、先に `riebeckite build` で `dist/` を作ります。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存サイトでは、先に `npm install -D wrangler` を実行してください。
+3. `riebeckite deploy` publishes `dist/` to Cloudflare Workers and opens the Wrangler login in a browser on the first run. It does not build, so create `dist/` with `riebeckite build` first. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
 
-4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば初回デプロイは成功です。
+4. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 
-公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後もう一度ビルドとデプロイを実行すると、サイトマップなどに正しい URL が入ります。
+After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address.
 
-```bash
+```sh
 npm exec riebeckite build
 npm exec riebeckite deploy
 ```
 
-### Custom Domain を追加する
+### Add a Custom Domain
 
-最初の Worker デプロイが終わったら、site repository で次を実行します。
+After the first Worker deployment, run this from the site repository:
 
-```bash
+```sh
 npm exec riebeckite deploy domain
 ```
 
-`example.com` のような apex domain、または `docs.example.com` のような subdomain を入力します。この command は hostname だけを受け付け、変更内容を表示して確認を取ってから `wrangler.jsonc` または `wrangler.json` を更新します。追加される Wrangler 設定は次のとおりです。
+Enter the apex domain such as `example.com`, or a subdomain such as `docs.example.com`. The command accepts a hostname only, shows the planned change, and asks for confirmation before updating `wrangler.jsonc` or `wrangler.json`. It adds this declarative Wrangler configuration:
 
 ```jsonc
 {
@@ -73,9 +79,9 @@ npm exec riebeckite deploy domain
 }
 ```
 
-`Deploy now` を選ぶと、通常の `riebeckite deploy` の流れで公開します。後で公開する場合は `npm exec riebeckite deploy` を実行してください。Cloudflare Workers では、同じ Cloudflare account で active な zone にある Custom Domain の DNS record と TLS certificate を Cloudflare が作成します。Worker が site の origin になるこの構成では、既存 origin の前に置く Worker Route ではなく Custom Domain を使います。
+Choose **Deploy now** to use the normal `riebeckite deploy` flow. Otherwise, deploy later with `npm exec riebeckite deploy`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
 
-この command は `wrangler.toml` を変更しません。TOML を使っている場合は、次の設定を手動で追加してください。
+The command leaves `wrangler.toml` unchanged. Add the equivalent configuration manually when you use TOML:
 
 ```toml
 [[routes]]
@@ -83,50 +89,50 @@ pattern = "docs.example.com"
 custom_domain = true
 ```
 
-デプロイ前に、domain が同じ account の active な Cloudflare zone にあることを確認してください。既存の CNAME record、別 account の zone、同じ hostname にある Custom Domain ではない Worker Route は、先に解消が必要です。wildcard domain と URL path は Custom Domain に使えません。`workers.dev` URL も残したい場合は、必要に応じて TOML では `workers_dev = true`、JSON では `"workers_dev": true` を明示します。
+Before deploying, ensure the domain is in an active Cloudflare zone in the same account. A hostname with an existing CNAME record, a zone outside the account, or a non-Custom-Domain Worker Route for the hostname must be resolved first. Wildcard domains and URL paths are not Custom Domains. You can keep the `workers.dev` URL available by explicitly setting `workers_dev = true` (TOML) or `"workers_dev": true` (JSON) when your configuration needs it.
 
-Cloudflare で hostname が有効になったら、`site.baseUrl` を `https://docs.example.com` または apex domain の URL に変更し、もう一度 build と deploy を実行します。domain の設定は version control に残るため、GitHub Actions でも push ごとに同じ Worker 設定を deploy できます。
+After Cloudflare has activated the hostname, change `site.baseUrl` to `https://docs.example.com` (or your apex domain), build, and deploy again. The domain configuration stays in version control, so GitHub Actions deploys the same Worker configuration on every push.
 
-## 2. GitHub Actions で自動デプロイする
+## 2. Automatic deploy with GitHub Actions
 
-push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
+If you want deploys to run on every push, choose `GitHub Actions` when the CLI asks for the deployment. From the command line, the same choice is:
 
-```bash
+```sh
 npx create-riebeckite my-site --github-actions
 ```
 
-この option は次のファイルを追加します。
+This adds:
 
 - `wrangler.jsonc`
 - `.github/workflows/deploy.yml`
 
-生成された workflow は `npm ci` で依存 package を入れ、`npm exec riebeckite check`、`npm exec riebeckite build`、`cloudflare/wrangler-action@v3` によるデプロイを順に実行します。
+The generated workflow installs dependencies with `npm ci`, runs `npm exec riebeckite check`, builds with `npm exec riebeckite build`, and deploys with `cloudflare/wrangler-action@v3`.
 
-GitHub の Settings → Secrets and variables → Actions に、次の secret を追加します。
+Add these repository secrets in GitHub (Settings → Secrets and variables → Actions):
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
-`npm install` で作られた `package-lock.json` も commit してください。その後、`main` へ push するか、Actions タブから workflow を手動実行します。
+Commit the `package-lock.json` created by `npm install`, then push to `main` or run the workflow manually from the Actions tab.
 
-### 後から Local-first の Site へ追加する
+### Add it later to a Local-first site
 
-すでに手元から公開している Site は、作り直さずに継続デプロイへ移行できます。Site の Directory で次を実行します。
+If you already published from your machine, you do not need to recreate the site. Run this in the project:
 
-```bash
+```sh
 npm exec riebeckite deploy setup
 ```
 
-このコマンドは、Git Repository と GitHub Remote を検出し、GitHub CLI と Wrangler のログインを確認し、同じテンプレートから `.github/workflows/deploy.yml` を作成し、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。push の直前で止まるため、準備ができたら `git push` を実行します。再実行しても安全で、作成済みの workflow と登録済みの secret は検出され、そのまま維持されます。
+The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/deploy.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
 
-## 3. 高度な構成: content を別リポジトリに分ける
+## 3. Advanced: separate content repository
 
-site の実装と Markdown content を別リポジトリで管理したい場合があります。既存の Obsidian Vault を別 repo で管理している場合、編集者と開発者を分けたい場合、記事とサイト実装の更新サイクルを分けたい場合に有効です。
+Some teams keep the site implementation and Markdown content in separate repositories. That setup is useful for an existing Obsidian vault, separate editor/developer workflows, or different lifecycles for content and site code.
 
-最初のサイトでは必須ではありません。必要になったら、まず [Content Repositories](../guides/content-repositories.md) を読んでください。具体的な GitHub Actions 構成は [Separate Content Repository](../guides/deployment/separate-content-repository.md) にまとめています。
+You do not need this for your first site. When you do, start with [Content Repositories](../guides/content-repositories.md). The GitHub Actions automation details live in [Separate Content Repository](../guides/deployment/separate-content-repository.md).
 
-## 次に読むページ
+## Next
 
-- [Guides →](../guides/README.md) — content、Obsidian、多言語、デプロイの詳しいガイド
-- [Plugins →](../plugins/README.md) — やりたいことから機能を追加する
-- [Themes →](../themes/README.md) — サイトの見た目を変える
+- [Guides →](../guides/README.md) — writing content, Obsidian, localization, and deployment in depth
+- [Plugins →](../plugins/README.md) — add features by goal
+- [Themes →](../themes/README.md) — change the site's look

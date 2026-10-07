@@ -26,7 +26,7 @@ npm exec riebeckite dev
 npm exec riebeckite build
 ```
 
-最初に読むページ: [はじめに](./docs/docs/getting-started/README.md)
+最初に読むページ: [はじめに](./docs/docs/getting-started/README.ja.md)
 
 ## 主な機能
 
@@ -40,15 +40,15 @@ npm exec riebeckite build
 
 ## ドキュメント
 
-- [ドキュメントの入口](./docs/README.md)
-- [プリセット](./docs/docs/getting-started/presets.md)
-- [ガイド](./docs/docs/guides/README.md)
-- [プラグイン](./docs/docs/plugins/README.md)
-- [テーマ](./docs/docs/themes/README.md)
-- [リファレンス](./docs/docs/reference/README.md)
-- [フレームワーク開発](./docs/docs/framework/development.md)
+- [ドキュメントの入口](./docs/README.ja.md)
+- [プリセット](./docs/docs/getting-started/presets.ja.md)
+- [ガイド](./docs/docs/guides/README.ja.md)
+- [プラグイン](./docs/docs/plugins/README.ja.md)
+- [テーマ](./docs/docs/themes/README.ja.md)
+- [リファレンス](./docs/docs/reference/README.ja.md)
+- [フレームワーク開発](./docs/docs/framework/development.ja.md)
 - [English README](./README.md)
 
 ## Riebeckite 本体を開発する場合
 
-このモノレポをクローンするのは、Riebeckite 本体、インテグレーション、プラグイン、テーマ、参照アプリを開発するときだけです。セットアップとコマンドは [フレームワーク開発](./docs/docs/framework/development.md) を参照してください。
+このモノレポをクローンするのは、Riebeckite 本体、インテグレーション、プラグイン、テーマ、参照アプリを開発するときだけです。セットアップとコマンドは [フレームワーク開発](./docs/docs/framework/development.ja.md) を参照してください。

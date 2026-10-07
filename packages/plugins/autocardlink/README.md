@@ -97,4 +97,4 @@ fetch the target page, so it never derives metadata on its own. In particular:
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)

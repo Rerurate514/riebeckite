@@ -65,15 +65,15 @@ const ja: HomeCopy = {
   eyebrow: "オープンソース · Apache-2.0",
   tagline: "Markdown と Obsidian のノートから、拡張できる Web サイトを作る。",
   lead: "コンテンツの置き場所はそのままに、Plugin と Theme でサイトを組み立てられます。",
-  primaryCta: { label: "はじめる", href: "/docs/getting-started/" },
+  primaryCta: { label: "はじめる", href: "/ja/docs/getting-started/" },
   secondaryCta: { label: "GitHub", href: HOME_REPO_URL, external: true },
   quickLinks: [
-    { label: "ドキュメント", href: "/docs/" },
-    { label: "Plugin", href: "/docs/plugins/" },
-    { label: "Theme", href: "/docs/themes/" },
+    { label: "ドキュメント", href: "/ja/docs/" },
+    { label: "Plugin", href: "/ja/docs/plugins/" },
+    { label: "Theme", href: "/ja/docs/themes/" },
   ],
   menuLabel: "メニュー",
-  language: { label: "English", href: "/en/", hreflang: "en" },
+  language: { label: "English", href: "/", hreflang: "en" },
   what: {
     heading: "Riebeckite とは",
     paragraphs: [
@@ -119,22 +119,22 @@ const ja: HomeCopy = {
       {
         title: "Digital Garden",
         body: "ノート同士をリンクでつないで公開する。",
-        href: "/docs/guides/obsidian",
+        href: "/ja/docs/guides/obsidian",
       },
       {
         title: "Documentation",
         body: "サイドバーと検索を備えたドキュメント。",
-        href: "/docs/plugins/docs",
+        href: "/ja/docs/plugins/docs",
       },
       {
         title: "Blog",
         body: "記事を書き続け、タグやアーカイブで整理する。",
-        href: "/docs/guides/writing-content",
+        href: "/ja/docs/guides/writing-content",
       },
       {
         title: "Personal Website",
         body: "プロフィールや作品をまとめる個人サイト。",
-        href: "/docs/themes/",
+        href: "/ja/docs/themes/",
       },
     ],
   },
@@ -144,12 +144,12 @@ const ja: HomeCopy = {
     plugins: {
       heading: "Plugin",
       body: "公式の Plugin カタログから、Markdown の処理、図表、検索、ナビゲーション、公開と SEO などの機能を追加できます。",
-      link: { label: "Plugin を探す", href: "/docs/plugins/" },
+      link: { label: "Plugin を探す", href: "/ja/docs/plugins/" },
     },
     themes: {
       heading: "Theme",
       body: "Theme は見た目だけを担当します。複数の公式 Theme から選び、後から切り替えられます。",
-      link: { label: "Theme を見る", href: "/docs/themes/" },
+      link: { label: "Theme を見る", href: "/ja/docs/themes/" },
     },
   },
   builtWith: {
@@ -166,7 +166,7 @@ const ja: HomeCopy = {
       "Obsidian 記法",
       "Mermaid",
     ],
-    link: { label: "Plugin の使用例を見る", href: "/docs/plugins/showcase" },
+    link: { label: "Plugin の使用例を見る", href: "/ja/docs/plugins/showcase" },
   },
   start: {
     heading: "はじめかた",
@@ -188,15 +188,15 @@ const ja: HomeCopy = {
         command: true,
       },
     ],
-    cta: { label: "Getting Started を読む", href: "/docs/getting-started/" },
+    cta: { label: "Getting Started を読む", href: "/ja/docs/getting-started/" },
   },
   explore: {
     heading: "さらに詳しく",
     links: [
-      { label: "ドキュメント", href: "/docs/" },
-      { label: "Guides", href: "/docs/guides/" },
-      { label: "Reference", href: "/docs/reference/" },
-      { label: "Framework", href: "/docs/framework/" },
+      { label: "ドキュメント", href: "/ja/docs/" },
+      { label: "Guides", href: "/ja/docs/guides/" },
+      { label: "Reference", href: "/ja/docs/reference/" },
+      { label: "Framework", href: "/ja/docs/framework/" },
     ],
   },
 };
@@ -208,15 +208,15 @@ const en: HomeCopy = {
   eyebrow: "Open source · Apache-2.0",
   tagline: "Turn Markdown and Obsidian notes into an extensible website.",
   lead: "Keep your content where it is. Add plugins, choose a theme, and build the site you want.",
-  primaryCta: { label: "Get started", href: "/en/docs/getting-started/" },
+  primaryCta: { label: "Get started", href: "/docs/getting-started/" },
   secondaryCta: { label: "GitHub", href: HOME_REPO_URL, external: true },
   quickLinks: [
-    { label: "Documentation", href: "/en/docs/" },
-    { label: "Plugins", href: "/en/docs/plugins/" },
-    { label: "Themes", href: "/en/docs/themes/" },
+    { label: "Documentation", href: "/docs/" },
+    { label: "Plugins", href: "/docs/plugins/" },
+    { label: "Themes", href: "/docs/themes/" },
   ],
   menuLabel: "Menu",
-  language: { label: "日本語", href: "/", hreflang: "ja" },
+  language: { label: "日本語", href: "/ja/", hreflang: "ja" },
   what: {
     heading: "What is Riebeckite?",
     paragraphs: [
@@ -262,22 +262,22 @@ const en: HomeCopy = {
       {
         title: "Digital garden",
         body: "Publish notes connected by links.",
-        href: "/en/docs/guides/obsidian",
+        href: "/docs/guides/obsidian",
       },
       {
         title: "Documentation",
         body: "Docs with a sidebar and search.",
-        href: "/en/docs/plugins/docs",
+        href: "/docs/plugins/docs",
       },
       {
         title: "Blog",
         body: "Keep writing and organize posts with tags and archives.",
-        href: "/en/docs/guides/writing-content",
+        href: "/docs/guides/writing-content",
       },
       {
         title: "Personal website",
         body: "A personal site for a profile and work.",
-        href: "/en/docs/themes/",
+        href: "/docs/themes/",
       },
     ],
   },
@@ -287,12 +287,12 @@ const en: HomeCopy = {
     plugins: {
       heading: "Plugins",
       body: "Add Markdown processing, diagrams, search, navigation, publishing, and SEO features from the official plugin catalog.",
-      link: { label: "Browse plugins", href: "/en/docs/plugins/" },
+      link: { label: "Browse plugins", href: "/docs/plugins/" },
     },
     themes: {
       heading: "Themes",
       body: "Themes handle presentation only. Choose from the official themes and change it later.",
-      link: { label: "Explore themes", href: "/en/docs/themes/" },
+      link: { label: "Explore themes", href: "/docs/themes/" },
     },
   },
   builtWith: {
@@ -308,7 +308,7 @@ const en: HomeCopy = {
       "Obsidian syntax",
       "Mermaid",
     ],
-    link: { label: "See plugins in action", href: "/en/docs/plugins/showcase" },
+    link: { label: "See plugins in action", href: "/docs/plugins/showcase" },
   },
   start: {
     heading: "Get started",
@@ -330,15 +330,15 @@ const en: HomeCopy = {
         command: true,
       },
     ],
-    cta: { label: "Read Getting Started", href: "/en/docs/getting-started/" },
+    cta: { label: "Read Getting Started", href: "/docs/getting-started/" },
   },
   explore: {
     heading: "Go deeper",
     links: [
-      { label: "Documentation", href: "/en/docs/" },
-      { label: "Guides", href: "/en/docs/guides/" },
-      { label: "Reference", href: "/en/docs/reference/" },
-      { label: "Framework", href: "/en/docs/framework/" },
+      { label: "Documentation", href: "/docs/" },
+      { label: "Guides", href: "/docs/guides/" },
+      { label: "Reference", href: "/docs/reference/" },
+      { label: "Framework", href: "/docs/framework/" },
     ],
   },
 };
@@ -348,7 +348,7 @@ export function getHomeCopy(locale: HomeLocale): HomeCopy {
 }
 
 export function getHomePath(locale: HomeLocale): string {
-  return locale === "ja" ? "/" : "/en/";
+  return locale === "en" ? "/" : "/ja/";
 }
 
 export function buildSoftwareApplicationSchema(

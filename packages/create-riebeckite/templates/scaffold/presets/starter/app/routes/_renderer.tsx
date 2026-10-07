@@ -3,8 +3,8 @@ import { jsxRenderer } from "hono/jsx-renderer";
 import { resolveSiteNavigation } from "@riebeckite/plugin-navigation";
 import { SearchBar } from "@riebeckite/plugin-search";
 import { SiteFooter, SiteHeader } from "../components/site-header";
-import { content } from "../content";
-import { config } from "../config";
+import { content } from "virtual:riebeckite/content";
+import { config } from "virtual:riebeckite/config";
 
 // Riebeckite plugin client entries need the HonoX client bundle even without
 // an island component.

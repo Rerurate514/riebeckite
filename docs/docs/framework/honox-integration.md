@@ -118,6 +118,12 @@ flowchart LR
 
 **Site の source code として直接編集しないでください。**
 
+## Bootstrap module
+
+generated Site は Framework 所有の bootstrap module を import します。解決済み config は `virtual:riebeckite/config`、構成済みの content runtime は `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG entry の `app/server.ts` はこの2つを re-export し、`riebeckiteSsg` はそこから manifest を見つけます。
+
+Vite の外で動く script（`tsx` で起動する Node script など）は `@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ config を解決できます。
+
 ## Lower-level API
 
 より細かく integration を制御したい場合は、lower-level API も利用できます。

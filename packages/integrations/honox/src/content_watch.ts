@@ -6,6 +6,7 @@ import {
   normalizeContentPath,
 } from "@riebeckite/core";
 import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
+import { isRiebeckiteRuntimeModuleId } from "./runtime_modules.js";
 
 export type RiebeckiteContentWatchOptions = {
   appRoot: () => string;
@@ -103,13 +104,20 @@ export function invalidateApplicationRuntime(
   let invalidated = 0;
 
   for (const mod of moduleGraph.idToModuleMap.values()) {
-    const file = mod.file;
-    if (!file || !isPathInsideDirectory(appDirectory, file)) continue;
+    if (!isApplicationRuntimeModule(mod, appDirectory)) continue;
     moduleGraph.invalidateModule(mod, seen, timestamp);
     invalidated += 1;
   }
 
   return invalidated;
+}
+
+function isApplicationRuntimeModule(
+  mod: EnvironmentModuleNode,
+  appDirectory: string,
+): boolean {
+  if (mod.file && isPathInsideDirectory(appDirectory, mod.file)) return true;
+  return isRiebeckiteRuntimeModuleId(mod.id);
 }
 
 function suppressRestartOnContentEvents(

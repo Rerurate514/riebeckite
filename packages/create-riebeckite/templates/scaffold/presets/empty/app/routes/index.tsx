@@ -1,5 +1,5 @@
 import { createRoute } from "honox/factory";
-import { config } from "../config";
+import { config } from "virtual:riebeckite/config";
 
 export default createRoute((c) =>
   c.render(

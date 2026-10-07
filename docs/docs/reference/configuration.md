@@ -613,51 +613,27 @@ flowchart LR
 
 ## Application から ContentManager を使う
 
-通常、HonoX Integration が `contentRoot` を自動的に解決します。
-
-しかし Site の route などで直接 `ContentManager` を作る場合は、Integration と同じ絶対 path を使用する必要があります。
-
-たとえば、
+通常、HonoX Integration が `contentRoot` を自動的に解決します。解決済みの値は Framework 所有の module として公開されるため、Site が `riebeckite.config.ts` を読み直す必要はありません。
 
 ```ts id="veou0j"
-// site/app/config.ts
-
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { resolveConfigModule } from "@riebeckite/core";
-import * as rawConfigModule from "../riebeckite.config";
-
-const appRoot = fileURLToPath(
-  new URL("../", import.meta.url),
-);
-
-const rawConfig = resolveConfigModule(
-  rawConfigModule,
-);
-
-export const config = {
-  ...rawConfig,
-
-  content: {
-    ...rawConfig.content,
-
-    directory: path.resolve(
-      appRoot,
-      rawConfig.content.directory,
-    ),
-  },
-};
+import { config } from "virtual:riebeckite/config";
+import { content } from "virtual:riebeckite/content";
 ```
 
-この時点で、
+`config.content.directory` は絶対パスで、`content` はそれに結びついた `ContentManager` です。そのため、別の基準からもう一度 `path.resolve()` しないでください。この module は `riebeckiteVite()` が解決します。Vite の外で動く script（`tsx` で起動する Node script など）は `@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ値を解決できます。
 
 ```ts id="9pr6g1"
-config.content.directory
+import { fileURLToPath } from "node:url";
+import { resolveConfigModule } from "@riebeckite/core";
+import { resolveHonoxConfig } from "@riebeckite/honox/runtime";
+import * as rawConfigModule from "../riebeckite.config";
+
+const appRoot = fileURLToPath(new URL("../", import.meta.url));
+export const config = resolveHonoxConfig(
+  resolveConfigModule(rawConfigModule),
+  appRoot,
+);
 ```
-
-は絶対パスです。
-
-そのため、別の基準からもう一度 `path.resolve()` しないでください。
 
 ```mermaid id="54gq7n"
 flowchart LR

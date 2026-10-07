@@ -16,6 +16,7 @@ export type HonoxApplicationOptions = {
 export type ResolvedHonoxApplication = {
   config: ResolvedRiebeckiteConfig;
   configRoot: string;
+  configFile: string;
   appRoot: string;
   contentRoot: string;
 };
@@ -63,6 +64,10 @@ export async function resolveHonoxApplication(
     : await resolveHonoxApplicationRoot(configRoot, options.startDirectory);
   const workspaceRoot =
     options.workspaceRoot ?? (await findWorkspaceRoot(configRoot));
+  const configFile = path.resolve(
+    configRoot,
+    options.configFile ?? "riebeckite.config.ts",
+  );
   const rawConfig = await loadRiebeckiteConfig({
     configRoot,
     configFile: options.configFile,
@@ -73,6 +78,7 @@ export async function resolveHonoxApplication(
   return {
     config,
     configRoot,
+    configFile,
     appRoot,
     contentRoot: config.content.directory,
   };

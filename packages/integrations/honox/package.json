@@ -18,6 +18,12 @@
       "source": "./server.ts",
       "default": "./dist/server.js"
     },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js",
+      "source": "./runtime.ts",
+      "default": "./dist/runtime.js"
+    },
     "./ui": {
       "types": "./dist/src/ui/primitives.d.ts",
       "import": "./dist/src/ui/primitives.js",

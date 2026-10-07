@@ -1,3 +1,4 @@
+import { content } from "virtual:riebeckite/content";
 import { getEntryLanguage } from "@riebeckite/core";
 import {
   contentRouteSsgParams,
@@ -13,7 +14,6 @@ import {
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
 import HomePage from "../components/home/home";
-import { content } from "../content";
 import { getArticleTitle } from "../lib/article-title";
 import { resolveWebLocale } from "../lib/locale";
 import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";

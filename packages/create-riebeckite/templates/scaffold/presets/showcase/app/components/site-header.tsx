@@ -1,7 +1,7 @@
 import { SiteNav } from "@riebeckite/plugin-navigation";
 import type { NavigationItem } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
-import { config } from "../config";
+import { config } from "virtual:riebeckite/config";
 
 export function SiteHeader({
   path,

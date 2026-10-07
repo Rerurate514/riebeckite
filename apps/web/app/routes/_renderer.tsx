@@ -1,3 +1,5 @@
+import { config } from "virtual:riebeckite/config";
+import { content } from "virtual:riebeckite/content";
 import { escapeScriptJson } from "@riebeckite/core";
 import { PluginHeadTags, ThemeRoot } from "@riebeckite/honox/ui";
 import {
@@ -9,8 +11,6 @@ import { SearchBar } from "@riebeckite/plugin-search";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import { SiteFooter, SiteHeader } from "../components/site-navigation";
-import { config } from "../config";
-import { content } from "../content";
 import { getHreflangAlternates, toOgLocale } from "../lib/locale";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 import {

@@ -997,6 +997,88 @@ test("Contract 13: default project files are generated and can be selected", asy
   });
 });
 
+// =============================================================================
+// CONTRACT 14: bootstrap boilerplate ownership
+// =============================================================================
+
+test("Contract 14: generated sites omit retired bootstrap boilerplate and keep site-owned surfaces", async () => {
+  const retired = ["app/config.ts", "app/content.ts", "app/constants/paths.ts"];
+  const commonSiteOwned = [
+    "app/server.ts",
+    "app/global.d.ts",
+    "app/routes/index.tsx",
+    "app/routes/_renderer.tsx",
+    "app/style.css",
+    "vite.config.ts",
+    "tsconfig.json",
+    "riebeckite.config.ts",
+    "package.json",
+  ];
+  const presetSiteOwned: Record<string, string[]> = {
+    empty: [],
+    minimal: ["app/routes/[slug{.+}].tsx", "app/components/article.tsx"],
+    starter: [
+      "app/routes/[slug{.+}].tsx",
+      "app/components/article.tsx",
+      "app/components/site-header.tsx",
+    ],
+    showcase: [
+      "app/routes/[slug{.+}].tsx",
+      "app/components/article.tsx",
+      "app/components/site-header.tsx",
+    ],
+  };
+
+  await withTemporaryDirectory(async (tmpDir) => {
+    for (const preset of SCAFFOLD_PRESET_NAMES) {
+      const targetDir = path.join(tmpDir, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory: targetDir, preset });
+
+      for (const relative of retired) {
+        assert.ok(
+          !(await fileExists(targetDir, relative)),
+          `${relative} must not be generated for preset ${preset}`,
+        );
+      }
+      for (const relative of [
+        ...commonSiteOwned,
+        ...(presetSiteOwned[preset] ?? []),
+      ]) {
+        assert.ok(
+          await fileExists(targetDir, relative),
+          `${relative} must be generated for preset ${preset}`,
+        );
+      }
+
+      for (const source of await collectTypeScriptSources(
+        path.join(targetDir, "app"),
+      )) {
+        const text = await fs.readFile(source, "utf8");
+        assert.ok(
+          !/from "\.\.?\/(?:config|content)"|constants\/paths/.test(text),
+          `${path.relative(targetDir, source)} must not import retired bootstrap modules`,
+        );
+      }
+    }
+
+    const minimalDir = path.join(tmpDir, "minimal");
+    const minimalSources = await Promise.all(
+      (await collectTypeScriptSources(path.join(minimalDir, "app"))).map(
+        (source) => fs.readFile(source, "utf8"),
+      ),
+    );
+    const minimalText = minimalSources.join("\n");
+    assert.ok(
+      minimalText.includes("virtual:riebeckite/config"),
+      "generated routes must consume the framework-owned config module",
+    );
+    assert.ok(
+      minimalText.includes("virtual:riebeckite/content"),
+      "generated routes must consume the framework-owned content module",
+    );
+  });
+});
+
 async function collectTypeScriptSources(directory: string): Promise<string[]> {
   const sources: string[] = [];
   for (const entry of await fs.readdir(directory, { withFileTypes: true })) {

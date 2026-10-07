@@ -1,6 +1,6 @@
+import { content } from "virtual:riebeckite/content";
 import { resolveContentRoute } from "@riebeckite/honox/server";
 import { createRoute } from "honox/factory";
-import { content } from "../content";
 
 const ALIAS_PATH = "/alias-demo-legacy";
 

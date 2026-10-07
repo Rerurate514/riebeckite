@@ -1,3 +1,4 @@
+import { config } from "virtual:riebeckite/config";
 import type {
   PluginHeadTag,
   PluginSeoExtension,
@@ -5,7 +6,6 @@ import type {
   SeoMetadata,
 } from "@riebeckite/core";
 import { resolvePlugins } from "@riebeckite/core";
-import { config } from "../config";
 import {
   buildSoftwareApplicationSchema,
   getHomeCopy,

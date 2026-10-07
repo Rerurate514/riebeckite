@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { localizeDocsHref } from "../app/components/site-navigation";
+import { localizeDocsHref } from "../app/lib/navigation-link";
 
 test("localizeDocsHref prefixes docs links on localized pages", () => {
   assert.equal(localizeDocsHref("/docs/", "/en/docs/reference/"), "/en/docs/");

@@ -1,5 +1,5 @@
+import { content } from "virtual:riebeckite/content";
 import type { ContentManifestEntry } from "@riebeckite/core";
-import { content } from "../content";
 
 export async function getPublishedEntries(): Promise<ContentManifestEntry[]> {
   const manifest = await content.getManifest();

@@ -342,33 +342,34 @@ source data; Vite's application root must remain the site.
 
 ### Application-side content access
 
-The HonoX integration resolves the content root automatically. An application
-that constructs `ContentManager` for routes or islands must use the same
-resolved absolute directory instead of the raw relative config value:
+The HonoX integration resolves the content root automatically and exposes the
+resolved values as framework-owned modules. A site imports them instead of
+re-reading `riebeckite.config.ts`:
 
 ```ts
-// site/app/config.ts
-import path from "node:path";
+import { config } from "virtual:riebeckite/config";
+import { content } from "virtual:riebeckite/content";
+```
+
+`config.content.directory` is already absolute, and `content` is a ready
+`ContentManager` bound to it, so there is no second resolution step and no
+per-site config copy to keep in sync. The `riebeckiteVite()` plugin resolves
+these modules. A script that runs outside Vite (for example a Node script
+started with `tsx`) can resolve the same values with `resolveHonoxConfig` from
+`@riebeckite/honox/runtime`:
+
+```ts
 import { fileURLToPath } from "node:url";
 import { resolveConfigModule } from "@riebeckite/core";
+import { resolveHonoxConfig } from "@riebeckite/honox/runtime";
 import * as rawConfigModule from "../riebeckite.config";
 
 const appRoot = fileURLToPath(new URL("../", import.meta.url));
-const rawConfig = resolveConfigModule(rawConfigModule);
-
-export const config = {
-  ...rawConfig,
-  content: {
-    ...rawConfig.content,
-    directory: path.resolve(appRoot, rawConfig.content.directory),
-  },
-};
+export const config = resolveHonoxConfig(resolveConfigModule(rawConfigModule), appRoot);
 ```
 
-Construct `ContentManager` with `config.content.directory` after this step. It
-is already absolute, so resolving it against a second base is an error-prone
-duplicate transformation. If `content.source` is configured, it replaces the
-filesystem reader; do not use it as a second reader for the same vault.
+If `content.source` is configured, it replaces the filesystem reader; do not use
+it as a second reader for the same vault.
 
 ### Attachments and media
 

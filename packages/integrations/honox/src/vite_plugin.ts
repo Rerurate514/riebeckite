@@ -5,9 +5,13 @@ import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
 import { riebeckiteContentAssets } from "./content_assets.js";
 import { riebeckiteContentWatch } from "./content_watch.js";
+import { riebeckiteRuntimeModules } from "./runtime_modules.js";
 import { createRiebeckiteSsg } from "./ssg.js";
 import type { RiebeckiteSsgOptions } from "./ssg_plugin.js";
-import { resolveHonoxApplication } from "./vite_runner.js";
+import {
+  type ResolvedHonoxApplication,
+  resolveHonoxApplication,
+} from "./vite_runner.js";
 import { createWorkspacePackageAliases } from "./workspace_packages.js";
 
 export type RiebeckiteIntegrationOptions = {
@@ -44,7 +48,7 @@ export function riebeckite(
   options: RiebeckiteIntegrationOptions = {},
 ): Plugin[] {
   let resolvedConfig: ResolvedRiebeckiteConfig | undefined;
-  let contentWatchRoots: { appRoot: string; contentRoot: string } | undefined;
+  let application: ResolvedHonoxApplication | undefined;
   const getConfig = () => {
     if (!resolvedConfig) {
       throw new Error("Riebeckite config has not been loaded yet.");
@@ -60,14 +64,14 @@ export function riebeckite(
           ? path.resolve(userConfig.root)
           : process.cwd();
         const appRoot = options.appRoot ?? root;
-        const application = await resolveHonoxApplication({
+        const resolvedApplication = await resolveHonoxApplication({
           configRoot: options.configRoot ?? appRoot,
           configFile: options.configFile,
           appRoot,
           workspaceRoot: options.workspaceRoot,
         });
-        resolvedConfig = application.config;
-        contentWatchRoots = application;
+        resolvedConfig = resolvedApplication.config;
+        application = resolvedApplication;
         writeRiebeckiteAssetEntries(resolvedConfig, {
           frameworkStyles: path.join(
             appRoot,
@@ -95,27 +99,26 @@ export function riebeckite(
       },
     },
     riebeckiteClientModule(getConfig),
+    riebeckiteRuntimeModules(() => requireApplication(application)),
     riebeckiteContentAssets({
-      appRoot: () => requireContentWatchRoots(contentWatchRoots).appRoot,
-      contentRoot: () =>
-        requireContentWatchRoots(contentWatchRoots).contentRoot,
+      appRoot: () => requireApplication(application).appRoot,
+      contentRoot: () => requireApplication(application).contentRoot,
     }),
     riebeckiteContentWatch({
-      appRoot: () => requireContentWatchRoots(contentWatchRoots).appRoot,
-      contentRoot: () =>
-        requireContentWatchRoots(contentWatchRoots).contentRoot,
+      appRoot: () => requireApplication(application).appRoot,
+      contentRoot: () => requireApplication(application).contentRoot,
       exclude: () => getConfig().content.exclude ?? [],
     }),
   ];
 }
 
-function requireContentWatchRoots(
-  roots: { appRoot: string; contentRoot: string } | undefined,
-): { appRoot: string; contentRoot: string } {
-  if (!roots) {
+function requireApplication(
+  application: ResolvedHonoxApplication | undefined,
+): ResolvedHonoxApplication {
+  if (!application) {
     throw new Error("Riebeckite application has not been resolved yet.");
   }
-  return roots;
+  return application;
 }
 
 /**

@@ -72,6 +72,12 @@ const app = createApp({
 - `resolveHonoxApplication`、`resolveHonoxApplicationRoot`、`buildHonoxApplication`、`startHonoxDevServer`
 - 型: `RiebeckiteSsgOptions`、`ResolveHonoxApplicationOptions`、`ResolvedHonoxApplication`
 
+Plugin は generated Site が import する bootstrap module も提供します。`virtual:riebeckite/config`（解決済み config）と `virtual:riebeckite/content`（構成済み `ContentManager`）です。そのため Site が `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` を持つ必要はありません。
+
+### `@riebeckite/honox/runtime`
+
+- `resolveHonoxConfig(config, appRoot)` — 解決済み config に `appRoot` を適用します（build / output directory と絶対 `content.directory`）。Vite の外で動く script が Vite Plugin を読み込まずに同じ値を解決できる軽量な subpath です。
+
 ### `@riebeckite/honox/server`
 
 - `mountRiebeckiteEndpoints(app, { config, content })`

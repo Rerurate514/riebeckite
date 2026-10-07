@@ -1,7 +1,7 @@
 import { mountRiebeckiteEndpoints } from "@riebeckite/honox/server";
 import { createApp } from "honox/server";
-import { config } from "./config";
-import { content } from "./content";
+import { config } from "virtual:riebeckite/config";
+import { content } from "virtual:riebeckite/content";
 
 const app = createApp({
   init: (app) => {

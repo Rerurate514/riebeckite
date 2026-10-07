@@ -32,6 +32,19 @@ entries below `app/.riebeckite/`, and exposes the required client module as a
 virtual module rather than writing it into that directory. Generated files are
 integration output: do not edit them as application source.
 
+## Bootstrap modules
+
+A generated site imports framework-owned bootstrap modules instead of keeping
+resolved config and content-manager code in the application: the resolved
+config is `virtual:riebeckite/config`, and the configured content runtime is
+`virtual:riebeckite/content`. This is why `app/config.ts`, `app/content.ts`, and
+`app/constants/paths.ts` are not generated. The SSG entry `app/server.ts`
+re-exports both, and `riebeckiteSsg` finds the manifest through them.
+
+A script that runs outside Vite (for example a Node script started with `tsx`)
+can resolve the same config with `resolveHonoxConfig` from
+`@riebeckite/honox/runtime`.
+
 The lower-level pieces remain exported for callers that need full control:
 `riebeckite` (the Vite plugin), `riebeckiteSsg` (static generation),
 `riebeckiteSsgExtensionMap`, and `createRiebeckiteSsg` (the SSG wrapper that

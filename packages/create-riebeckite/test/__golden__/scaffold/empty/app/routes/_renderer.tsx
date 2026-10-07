@@ -1,6 +1,6 @@
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
-import { config } from "../config";
+import { config } from "virtual:riebeckite/config";
 
 // Riebeckite plugin client entries need the HonoX client bundle even without
 // an island component.

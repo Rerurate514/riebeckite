@@ -1,3 +1,4 @@
+import { content } from "virtual:riebeckite/content";
 import {
   buildContentCollections,
   type ContentCollection,
@@ -5,7 +6,6 @@ import {
   escapeHtml,
   type PostContent,
 } from "@riebeckite/core";
-import { content } from "../content";
 import {
   archivePaginationLabels,
   formatArchivePeriod,

@@ -5,8 +5,8 @@ import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { extractTableOfContents, TableOfContents } from "@riebeckite/plugin-toc";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
-import { config } from "../config";
-import { content } from "../content";
+import { config } from "virtual:riebeckite/config";
+import { content } from "virtual:riebeckite/content";
 
 export default createRoute(async (c) => {
   const home = await resolveRiebeckiteHomeRequest(c, content);

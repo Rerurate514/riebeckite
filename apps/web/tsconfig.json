@@ -11,6 +11,7 @@
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
       "@riebeckite/honox": ["packages/integrations/honox/index.ts"],
+      "@riebeckite/honox/runtime": ["packages/integrations/honox/runtime.ts"],
       "@riebeckite/honox/server": ["packages/integrations/honox/server.ts"],
       "@riebeckite/honox/ui": [
         "packages/integrations/honox/src/ui/primitives.tsx"

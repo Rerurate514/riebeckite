@@ -1,3 +1,5 @@
+import { config } from "virtual:riebeckite/config";
+import { content } from "virtual:riebeckite/content";
 import { getLanguageFromPath } from "@riebeckite/plugin-l10n";
 import {
   buildSearchItems,
@@ -5,8 +7,6 @@ import {
   searchQueryFromPath,
 } from "@riebeckite/plugin-search";
 import type { NotFoundHandler } from "hono";
-import { config } from "../config";
-import { content } from "../content";
 
 const handler: NotFoundHandler = async (c) => {
   c.status(404);

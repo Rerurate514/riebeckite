@@ -6,7 +6,7 @@ import {
 import { PageBody } from "@riebeckite/honox/ui";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
-import { content } from "../content";
+import { content } from "virtual:riebeckite/content";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),

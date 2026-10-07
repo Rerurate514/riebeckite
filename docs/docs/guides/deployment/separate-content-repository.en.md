@@ -41,28 +41,19 @@ In other words, "the same vault from anywhere" holds as long as **the config is 
 
 ### 1-2. Reading content from the application side
 
-When an application route or island creates its own `ContentManager`, use the same absolute path rather than the raw relative value.
+The integration exposes the resolved config and a ready `ContentManager` as
+framework-owned modules, so application code imports them rather than
+re-reading `riebeckite.config.ts`:
 
 ```ts
-// site/app/config.ts
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { resolveConfigModule } from "@riebeckite/core";
-import * as rawConfigModule from "../riebeckite.config";
-
-const appRoot = fileURLToPath(new URL("../", import.meta.url));
-const rawConfig = resolveConfigModule(rawConfigModule);
-
-export const config = {
-  ...rawConfig,
-  content: {
-    ...rawConfig.content,
-    directory: path.resolve(appRoot, rawConfig.content.directory),
-  },
-};
+import { config } from "virtual:riebeckite/config";
+import { content } from "virtual:riebeckite/content";
 ```
 
-Pass `config.content.directory` to the `ContentManager`. It is already absolute, so resolving it again against another base is a common source of errors.
+`config.content.directory` is already absolute, so resolving it again against
+another base is a common source of errors. A script that runs outside Vite can
+resolve the same values with `resolveHonoxConfig` from
+`@riebeckite/honox/runtime`.
 
 ### 1-3. What not to do
 

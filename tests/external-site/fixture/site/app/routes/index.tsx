@@ -1,8 +1,8 @@
+import { content } from "virtual:riebeckite/content";
 import { resolveRiebeckiteHomeRequest } from "@riebeckite/honox/server";
 import { PageBody } from "@riebeckite/honox/ui";
 import { createRoute } from "honox/factory";
 import { FixtureArticle } from "../components/article";
-import { content } from "../content";
 import BuildMarker from "../islands/build-marker";
 
 export default createRoute(async (c) => {

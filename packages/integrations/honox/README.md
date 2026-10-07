@@ -84,6 +84,18 @@ imported from. Installed npm consumers do not need `workspaceRoot`.
 - Types: `RiebeckiteSsgOptions`, `ResolveHonoxApplicationOptions`,
   `ResolvedHonoxApplication`
 
+The plugin also provides the bootstrap modules a generated site imports:
+`virtual:riebeckite/config` (the resolved config) and
+`virtual:riebeckite/content` (a configured `ContentManager`). Sites therefore no
+longer need `app/config.ts`, `app/content.ts`, or `app/constants/paths.ts`.
+
+### `@riebeckite/honox/runtime`
+
+- `resolveHonoxConfig(config, appRoot)` — applies `appRoot` to a resolved
+  config (build/output directories and absolute `content.directory`). It is a
+  lightweight subpath, so scripts outside the Vite pipeline can resolve the same
+  values without loading the Vite plugin.
+
 ### `@riebeckite/honox/server`
 
 - `mountRiebeckiteEndpoints(app, { config, content })`

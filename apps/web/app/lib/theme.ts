@@ -1,5 +1,5 @@
+import { config } from "virtual:riebeckite/config";
 import { uniqueStrings } from "@riebeckite/core";
-import { config } from "../config";
 
 type CssVariable = [name: string, value: string | undefined];
 

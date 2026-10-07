@@ -11,7 +11,7 @@ import {
   toLogicalPath,
 } from "../src/content_watch.js";
 
-type FakeModule = { file: string };
+type FakeModule = { file: string; id?: string };
 
 class FakeWatcher extends EventEmitter {
   watched: string[] = [];
@@ -39,6 +39,7 @@ function createServer(modules: FakeModule[]): FakeServer {
         mod.file,
         {
           file: mod.file,
+          id: mod.id ?? mod.file,
           ssrModule: {},
         } as unknown as EnvironmentModuleNode,
       ]),
@@ -149,6 +150,25 @@ describe("invalidateApplicationRuntime", () => {
     } as unknown as ViteDevServer;
     assert.equal(invalidateApplicationRuntime(withoutGraph, "/site"), 0);
     assert.equal(fake.invalidated.length, 0);
+  });
+
+  it("invalidates framework runtime virtual modules", () => {
+    const appRoot = path.resolve("/site");
+    const fake = createServer([
+      { file: path.join(appRoot, "app", "server.ts") },
+      {
+        file: "\0virtual:riebeckite/content",
+        id: "\0virtual:riebeckite/content",
+      },
+      {
+        file: "\0virtual:riebeckite/config",
+        id: "\0virtual:riebeckite/config",
+      },
+    ]);
+
+    const invalidated = invalidateApplicationRuntime(fake.server, appRoot);
+
+    assert.equal(invalidated, 3);
   });
 });
 

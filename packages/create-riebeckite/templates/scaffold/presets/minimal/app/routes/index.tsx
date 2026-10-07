@@ -2,7 +2,7 @@ import { resolveRiebeckiteHomeRequest } from "@riebeckite/honox/server";
 import { PageBody } from "@riebeckite/honox/ui";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
-import { content } from "../content";
+import { content } from "virtual:riebeckite/content";
 
 export default createRoute(async (c) => {
   const home = await resolveRiebeckiteHomeRequest(c, content);

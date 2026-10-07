@@ -7,9 +7,18 @@ import {
   IMAGE_EXTENSIONS,
   isAttachmentPath,
   normalizeContentPath,
+  resolveConfigModule,
 } from "@riebeckite/core";
-import { config } from "../app/config";
-import { ASSETS_ROOT, CONTENT_DIR } from "../app/constants/paths";
+import { resolveHonoxConfig } from "@riebeckite/honox/runtime";
+import * as rawConfigModule from "../../../riebeckite.config";
+
+const appRoot = fileURLToPath(new URL("../", import.meta.url));
+const config = resolveHonoxConfig(
+  resolveConfigModule(rawConfigModule),
+  appRoot,
+);
+const CONTENT_DIR = config.content.directory;
+const ASSETS_ROOT = "public/";
 
 const IMAGE_SOURCE_PATTERN = /\b(?:src|href)=["']([^"']+)["']/g;
 const ATTACHMENTS_PUBLIC_ROOT = ATTACHMENTS_BASE_PATH.replace(/^\/+/, "");

@@ -1,6 +1,7 @@
+import { config } from "virtual:riebeckite/config";
 import type { NavigationItem } from "@riebeckite/plugin-navigation";
 import { SiteNav } from "@riebeckite/plugin-navigation";
-import { config } from "../config";
+import { localizeDocsHref } from "../lib/navigation-link";
 
 export function SiteHeader({
   path,
@@ -91,10 +92,4 @@ export function SiteFooter({
       </div>
     </footer>
   );
-}
-
-export function localizeDocsHref(href: string, path: string): string {
-  const language = /^\/([a-z]{2}(?:-[A-Z]{2})?)(?=\/|$)/.exec(path)?.[1];
-  if (!language || !href.startsWith("/docs/")) return href;
-  return `/${language}${href}`;
 }

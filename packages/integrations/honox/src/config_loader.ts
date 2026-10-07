@@ -49,20 +49,7 @@ export async function loadRiebeckiteConfig(
   }
 }
 
-export function resolveHonoxConfig(
-  config: ResolvedRiebeckiteConfig,
-  appRoot: string,
-): ResolvedRiebeckiteConfig {
-  return {
-    ...config,
-    buildDirectory: path.join(appRoot, ".riebeckite"),
-    outputDirectory: path.join(appRoot, "dist"),
-    content: {
-      ...config.content,
-      directory: path.resolve(appRoot, config.content.directory),
-    },
-  };
-}
+export { resolveHonoxConfig } from "./resolved_config.js";
 
 function pathToFileUrl(filePath: string): string {
   return `file:///${filePath.replace(/\\/g, "/").replace(/^([A-Za-z]):/, "$1:")}`;

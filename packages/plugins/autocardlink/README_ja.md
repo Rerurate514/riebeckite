@@ -47,13 +47,15 @@ image: https://example.com/og.png
 | `url` | リンク先。必須で、省略したブロックは変換しない |
 | `title` | カードの見出し。省略時は `url` |
 | `description` | 補足説明 |
-| `host` | 表示するホスト名。省略時は `url` |
+| `host` | 表示するホスト名。省略時は `url` のホスト名（解析できない場合は `url` そのもの） |
 | `favicon` | favicon の URL |
 | `image` | プレビュー画像の URL |
 
 `title` と `description` は二重引用符で囲んでもよい（囲んだ場合は内部の `\"` をアンエスケープする）。`url`、`image`、`favicon` は `http(s)` または相対 URL のみ受け付ける。`javascript:` などの安全でないスキームは拒否し、`url` の場合はブロック全体を変換せず、`image`・`favicon` の場合はその要素を出力しない。
 
 カードは別タブで開きます。画像と favicon は遅延読み込みされ、`data-lightbox-ignore="true"` が付くため、Lightbox の対象にはなりません。
+
+カードは `div.rr-cardlink` コンテナとして出力され、カード本体のリンク（`a.rr-cardlink__card`）と、URL をクリップボードへコピーするボタン（`button.rr-cardlink__copy`）で構成されます。コピーボタンはデスクトップではホバー・フォーカス時のみ表示され、タッチデバイスでは常に表示されます。カードはコンテナクエリに対応しており、幅が狭い場合は説明文、続いてプレビュー画像が非表示になります。
 
 ## オプションと API
 

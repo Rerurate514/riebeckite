@@ -111,27 +111,49 @@ test("creates virtual nodes for unresolved relation targets", async () => {
   ]);
 });
 
-test("returns a bare center for hidden notes unless showHidden is set", async () => {
-  const manifest = await hubManifest();
-
-  const hidden = buildExcaliBrainGraph({
+test("hides targets listed in hidden fields unless showHidden is set", async () => {
+  const files = {
+    "hub.md":
+      '---\npublish: true\ntitle: Hub\nhidden: "[[secret]]"\n---\n\n[[secret]]',
+    "secret.md": "---\npublish: true\ntitle: Secret\n---\n\n# Secret",
+  };
+  const manifest = await new ContentManager(source(files), [], {
+    config: explicitConfig,
+  }).getManifest();
+  const input = {
     slug: "hub",
-    frontmatter: { title: "Hub", hidden: true },
-    markdown: HUB_MARKDOWN,
+    frontmatter: { publish: true, title: "Hub", hidden: "[[secret]]" },
+    markdown: "[[secret]]",
     manifest,
-  });
+  };
+
+  const hidden = buildExcaliBrainGraph(input);
   assert.equal(hidden.center.title, "Hub");
   assert.deepEqual(hidden.nodes, []);
   assert.deepEqual(hidden.links, []);
 
   const shown = buildExcaliBrainGraph({
+    ...input,
+    options: { showHidden: true },
+  });
+  assert.deepEqual(
+    shown.nodes.map((node) => node.slug),
+    ["secret"],
+  );
+});
+
+test("does not hide the note itself for a boolean hidden marker", async () => {
+  const manifest = await hubManifest();
+
+  const graph = buildExcaliBrainGraph({
     slug: "hub",
     frontmatter: { title: "Hub", hidden: true },
     markdown: HUB_MARKDOWN,
     manifest,
-    options: { showHidden: true },
   });
-  assert.ok(shown.nodes.length > 0);
+
+  assert.equal(graph.center.title, "Hub");
+  assert.ok(graph.nodes.length > 0);
 });
 
 test("skips inference and siblings when infer is disabled", async () => {

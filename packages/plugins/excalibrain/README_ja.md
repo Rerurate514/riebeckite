@@ -68,15 +68,17 @@ related:: [[note-a]] and [[note-b]] are similar
 
 | ロール | フィールド名 |
 | --- | --- |
-| `parents` | `parent`, `parents`, `up`, `u`, `north`, `origin`, `inception` |
-| `children` | `children`, `child`, `down`, `d`, `south`, `leads to`, `contributes to` |
-| `leftFriends` | `friends`, `friend`, `similar`, `supports`, `alternatives`, `advantages` |
+| `parents` | `parent`, `parents`, `up`, `u`, `north`, `origin`, `inception`, `source`, `parent domain` |
+| `children` | `children`, `child`, `down`, `d`, `south`, `leads to`, `contributes to`, `nurtures` |
+| `leftFriends` | `friends`, `friend`, `jump`, `jumps`, `j`, `similar`, `supports`, `alternatives`, `advantages`, `pros` |
 | `rightFriends` | `opposes`, `disadvantages`, `missing`, `cons` |
 | `previous` | `previous`, `prev`, `west`, `w`, `before` |
 | `next` | `next`, `n`, `east`, `e`, `after` |
 | `hidden` | `hidden` |
 
 `ontology` オプションは既定のオントロジーを拡張します。各ロールのフィールド名は、そのロールの既定値を置き換えるのではなく末尾に追加されます。既存のフィールドを別のロールに追加することもできますが、正規の順序（`parents`、`children`、`leftFriends`、`rightFriends`、`previous`、`next`、`hidden`）で先に現れるロールが優先されます。
+
+`hidden` は ExcaliBrain と同じく、このノートのマップから隠すターゲットを列挙するもので、ノート自体を隠すことはありません。`showHidden` を指定すると、これらのターゲットも表示します。
 
 ## 推論
 
@@ -118,7 +120,7 @@ related:: [[note-a]] and [[note-b]] are similar
 | `infer` | `boolean` | `true` | リンクから関係を推論する |
 | `siblings` | `boolean` | `true` | 親から兄弟を推論する（`infer` が必要） |
 | `ontology` | object | — | ロールごとに末尾追加するオントロジーのフィールド名 |
-| `showHidden` | `boolean` | `false` | `hidden` のノートも含める |
+| `showHidden` | `boolean` | `false` | `hidden` フィールドで指定したターゲットも含める |
 | `width` | `number` | `720` | SVG viewBox の幅 |
 | `height` | `number` | `480` | SVG viewBox の高さ |
 | `language` | `string` | `"excalibrain"` | 対象にするフェンス言語 |

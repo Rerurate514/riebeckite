@@ -5,6 +5,7 @@ import {
 } from "@riebeckite/core";
 import type { HastNode, MarpOptions } from "./src/types.js";
 
+export { isMarpDocument } from "./src/rehype.js";
 export type {
   MarpBuildRenderResult,
   MarpDeck,

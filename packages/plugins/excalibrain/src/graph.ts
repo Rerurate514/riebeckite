@@ -3,7 +3,7 @@ import type {
   ContentManifest,
   ContentManifestEntry,
 } from "@riebeckite/core";
-import { collectDefinedRelations, isNoteHidden } from "./ontology.js";
+import { collectDefinedRelations, collectHiddenTargets } from "./ontology.js";
 import { resolveExcaliBrainOptions } from "./options.js";
 import type {
   ExcaliBrainBuildInput,
@@ -42,16 +42,13 @@ export function buildExcaliBrainGraph(
     relationType: "defined",
   };
 
-  if (
-    !options.showHidden &&
-    isNoteHidden({
+  const hiddenTargets = new Set(
+    collectHiddenTargets({
       frontmatter: input.frontmatter,
       markdown: input.markdown,
       ontology: options.ontology,
-    })
-  ) {
-    return { center, nodes: [], links: [] };
-  }
+    }).map((target) => target.trim().toLowerCase()),
+  );
 
   const relations = new Map<string, Relation>();
 
@@ -61,6 +58,9 @@ export function buildExcaliBrainGraph(
     relationType: ExcaliBrainRelationType,
   ) => {
     if (role === "center") return;
+    if (!options.showHidden && hiddenTargets.has(target.trim().toLowerCase())) {
+      return;
+    }
     const node = resolveNode(target, slug, manifest, input.isRoutable);
     if (!node) return;
 

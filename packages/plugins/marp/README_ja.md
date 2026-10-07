@@ -1,6 +1,6 @@
 # @riebeckite/plugin-marp
 
-`marp` コードブロックを Marp のスライドデッキとしてビルド時に描画するプラグインです。
+Marp のスライドデッキをビルド時に描画するプラグインです。YAML frontmatter に `marp: true` を含むノートは文書全体をデッキとして描画し、`marp` コードブロックはインラインデッキとして描画します。
 
 [English](./README.md)
 
@@ -22,6 +22,30 @@ export default defineConfig({
   ],
 });
 ```
+
+## Obsidian Vault との互換性
+
+Obsidian プラグインの [Marp](https://github.com/jichoup/obsidian-marp-plugin) と [Marp Slides](https://github.com/samuele-cozzi/obsidian-marp-slides) はノート全体を Marp デッキとして扱い、`marp` コードフェンスを保存しません。Obsidian 側のアクティベーションはプラグイン単位です。スライドプレビューを開いたり、エクスポートしたりすると、アクティブなノートのファイル全体をデッキとして描画し、ノート単位のマーカーは読みません。Riebeckite では代わりに、文書単位で Marp CLI や VS Code 拡張と同じ canonical なフラグ（frontmatter の `marp: true`）によってデッキ化します。これらのプラグインで書いたノートは次のように検出されます。
+
+````markdown
+---
+marp: true
+theme: gaia
+paginate: true
+---
+
+# 1 枚目のスライド
+
+---
+
+# 2 枚目のスライド
+````
+
+文書全体（directive として `theme` や `paginate` を効かせるため frontmatter を含む）を、ページ本文を置き換える 1 つの `<figure class="rb-marp">` デッキとして描画します。スライドの区切りは Marp と同じく `---` / `===` です。フラグも `marp` コードブロックもないノートは変更しません。
+
+> **アクティベーションの契約.** Riebeckite は Obsidian プラグインと同じ方法ではアクティベートされません。Obsidian でスライドとして表示されていたノート（プレビューを開いたノート）も、frontmatter に `marp: true` がなければここではデッキとして描画されません。そのような Vault に必要な変更はこの 1 行の追加だけです。デッキの本体（セパレータ、`theme` / `paginate` などの directive、標準 Marp 構文）は保存された内容をそのまま使います。つまり、出力は Marp の意味論に従いますが、プラグインの設定不要なプラグインレベルでのアクティベーションは再現しません。完全なドロップイン互換ではなく「コンテンツ互換」として扱ってください。
+
+## インラインデッキ
 
 ノートでは、情報文字列に `marp` を付けたコードブロックを書きます。スライドの区切りは Marp と同じく `---` です。コードブロックの `title` を付けるとキャプションになります。
 

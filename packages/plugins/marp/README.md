@@ -1,6 +1,6 @@
 # @riebeckite/plugin-marp
 
-Render `marp` code blocks as Marp slide decks at build time.
+Render Marp slide decks at build time. A note whose YAML frontmatter contains `marp: true` is rendered as a whole-document deck, and `marp` fenced code blocks render as inline decks.
 
 [日本語](./README_ja.md)
 
@@ -22,6 +22,30 @@ export default defineConfig({
   ],
 });
 ```
+
+## Obsidian vault compatibility
+
+The Obsidian plugins [Marp](https://github.com/jichoup/obsidian-marp-plugin) and [Marp Slides](https://github.com/samuele-cozzi/obsidian-marp-slides) treat the entire note as a Marp deck and never store `marp` code fences. In Obsidian, activation is plugin-level: opening the slide preview or exporting renders the whole file of the active note, and neither plugin reads a per-note marker. Riebeckite instead activates per document using the canonical `marp: true` frontmatter flag — the same signal Marp CLI and the VS Code extension use — so notes written for those plugins are detected as:
+
+````markdown
+---
+marp: true
+theme: gaia
+paginate: true
+---
+
+# First slide
+
+---
+
+# Second slide
+````
+
+The whole document (frontmatter included, so directives such as `theme` and `paginate` apply) is rendered as one `<figure class="rb-marp">` deck that replaces the page body. Slide separators are `---` / `===`, exactly like Marp. Notes without the flag or any `marp` code block are left untouched.
+
+> **Activation contract.** Riebeckite is not activated the way the Obsidian plugins are. A note that showed as slides in Obsidian (because you opened the slide preview for it) will **not** render as a deck here unless `marp: true` is present in its frontmatter. Adding that one line is the only change such a vault needs — the deck body (separators, `theme` / `paginate` and other directives, standard Marp syntax) is used exactly as stored. In other words, the output follows Marp semantics, while the plugins' zero-config, plugin-level activation is not reproduced. Treat this as content-compatible, not fully drop-in.
+
+## Inline decks
 
 In a note, write a fenced code block whose info string is `marp`. Slides are separated by `---`, exactly like Marp. Setting the code block `title` renders a caption.
 
@@ -90,10 +114,12 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 - No client-side slide editing or paging UI; this only produces static HTML/CSS at build time.
 - Only themes registered in Marp Core are available; loading arbitrary theme CSS is not supported.
 - `inlineSVG: false` emits bare `<section>` elements without the SVG wrapper, and the generated CSS changes to match that structure.
+- Whole-document decks bypass the normal Markdown pipeline, so Obsidian `![[image]]` image embeds are not resolved inside slides. Use regular Markdown image syntax with paths that exist on the published site, mirroring how Marp Slides itself does not support wiki links.
 
 ## Exports
 
 - `marp(options?)` / `marpPlugin(options?)` — plugin factory
+- `isMarpDocument(matter?)` — frontmatter `marp: true` detection helper
 - Types: `MarpOptions`, `MarpDeck`, `MarpBuildRenderResult`
 
 ## See also

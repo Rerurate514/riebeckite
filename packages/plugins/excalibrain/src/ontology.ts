@@ -11,7 +11,17 @@ export type ExcaliBrainFieldRole =
 
 /** ExcaliBrain's default ontology field names. */
 export const DEFAULT_ONTOLOGY: Required<ExcaliBrainOntology> = {
-  parents: ["parent", "parents", "up", "u", "north", "origin", "inception"],
+  parents: [
+    "parent",
+    "parents",
+    "up",
+    "u",
+    "north",
+    "origin",
+    "inception",
+    "source",
+    "parent domain",
+  ],
   children: [
     "children",
     "child",
@@ -20,14 +30,19 @@ export const DEFAULT_ONTOLOGY: Required<ExcaliBrainOntology> = {
     "south",
     "leads to",
     "contributes to",
+    "nurtures",
   ],
   leftFriends: [
     "friends",
     "friend",
+    "jump",
+    "jumps",
+    "j",
     "similar",
     "supports",
     "alternatives",
     "advantages",
+    "pros",
   ],
   rightFriends: ["opposes", "disadvantages", "missing", "cons"],
   previous: ["previous", "prev", "west", "w", "before"],
@@ -142,18 +157,28 @@ export function collectDefinedRelations(input: {
   return relations;
 }
 
-export function isNoteHidden(input: {
+/**
+ * Collect the targets this note hides with its `hidden` fields. ExcaliBrain's
+ * `hidden` field lists the targets to hide from the note's map; it never
+ * hides the note itself.
+ */
+export function collectHiddenTargets(input: {
   frontmatter: Record<string, unknown>;
   markdown: string;
   ontology: ResolvedOntology;
-}): boolean {
-  for (const field of Object.keys(input.frontmatter)) {
-    if (fieldRoleOf(field, input.ontology) === "hidden") return true;
+}): string[] {
+  const targets: string[] = [];
+  const inlineFields = extractInlineFields(input.markdown);
+
+  for (const [field, value] of Object.entries(input.frontmatter)) {
+    if (fieldRoleOf(field, input.ontology) !== "hidden") continue;
+    targets.push(...extractTargets(value));
   }
-  for (const [field] of extractInlineFields(input.markdown)) {
-    if (fieldRoleOf(field, input.ontology) === "hidden") return true;
+  for (const [field, value] of inlineFields) {
+    if (fieldRoleOf(field, input.ontology) !== "hidden") continue;
+    targets.push(...extractTargets(value));
   }
-  return false;
+  return targets;
 }
 
 const WIKILINK_PATTERN = /\[\[([^\]|#^]+)(?:[#^][^\]|]+)?(?:\|[^\]]+)?\]\]/g;

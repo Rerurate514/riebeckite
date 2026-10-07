@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   collectDefinedRelations,
-  isNoteHidden,
+  collectHiddenTargets,
   normalizeFieldName,
   resolveOntology,
 } from "../index.ts";
@@ -30,6 +30,18 @@ test("resolves the default and overridden ontologies", () => {
   const merged = resolveOntology({ hidden: ["secret"] });
   assert.equal(merged.fieldRole.get("hidden"), "hidden");
   assert.equal(merged.fieldRole.get("secret"), "hidden");
+});
+
+test("maps the upstream ExcaliBrain ontology field names", () => {
+  const defaults = resolveOntology();
+
+  assert.equal(defaults.fieldRole.get("source"), "parents");
+  assert.equal(defaults.fieldRole.get("parent-domain"), "parents");
+  assert.equal(defaults.fieldRole.get("nurtures"), "children");
+  assert.equal(defaults.fieldRole.get("jump"), "leftFriends");
+  assert.equal(defaults.fieldRole.get("jumps"), "leftFriends");
+  assert.equal(defaults.fieldRole.get("j"), "leftFriends");
+  assert.equal(defaults.fieldRole.get("pros"), "leftFriends");
 });
 
 test("earlier ontology roles win when a field is listed twice", () => {
@@ -86,19 +98,27 @@ test("extracts wikilink targets without aliases or anchors", () => {
   );
 });
 
-test("detects hidden notes from frontmatter and inline fields", () => {
+test("collects hidden targets from frontmatter and inline fields", () => {
   const ontology = resolveOntology();
 
-  assert.equal(
-    isNoteHidden({ frontmatter: { hidden: true }, markdown: "", ontology }),
-    true,
+  assert.deepEqual(
+    collectHiddenTargets({
+      frontmatter: { hidden: "[[X]]" },
+      markdown: "hidden:: [[Y]]",
+      ontology,
+    }),
+    ["X", "Y"],
   );
-  assert.equal(
-    isNoteHidden({ frontmatter: {}, markdown: "hidden:: yes", ontology }),
-    true,
+  assert.deepEqual(
+    collectHiddenTargets({
+      frontmatter: { hidden: true },
+      markdown: "",
+      ontology,
+    }),
+    [],
   );
-  assert.equal(
-    isNoteHidden({ frontmatter: { title: "X" }, markdown: "plain", ontology }),
-    false,
+  assert.deepEqual(
+    collectHiddenTargets({ frontmatter: {}, markdown: "plain", ontology }),
+    [],
   );
 });

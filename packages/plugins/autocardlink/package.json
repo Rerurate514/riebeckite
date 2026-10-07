@@ -25,6 +25,9 @@
     "@types/mdast": "catalog:",
     "unist-util-visit": "catalog:"
   },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -37,7 +40,8 @@
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
-    "prepack": "pnpm run build"
+    "prepack": "pnpm run build",
+    "test": "node --import tsx --test \"test/*.test.ts\""
   },
   "repository": {
     "type": "git",

@@ -25,11 +25,39 @@ type MarpBlock = {
   pre: ElementNode;
 };
 
+type MarpFile = {
+  value?: string;
+  data?: {
+    matter?: Record<string, unknown>;
+  };
+};
+
+/**
+ * `marp: true` in YAML frontmatter is the detection signal used by the Marp
+ * ecosystem (Marp CLI and the VS Code extension) to treat a whole document as
+ * a Marp deck. The Obsidian Marp plugins (Marp by jichoup, Marp Slides by
+ * samuele-cozzi) render the entire note, so this flag and the code block below
+ * are the two supported entry points.
+ */
+export function isMarpDocument(
+  matter: Record<string, unknown> | undefined,
+): boolean {
+  if (!matter || typeof matter !== "object") return false;
+  const flag = matter.marp;
+  return flag === true || flag === "true";
+}
+
 export function rehypeMarp(options: MarpOptions = {}) {
   const className = normalizeClassName(options.className);
   const deckClassName = `${className}__deck`;
 
   return async (tree: HastNode, file: unknown) => {
+    const fileContext = file as MarpFile;
+    if (isMarpDocument(fileContext.data?.matter)) {
+      await renderWholeDocument(tree, file, fileContext.value ?? "", options);
+      return;
+    }
+
     const blocks: MarpBlock[] = [];
     visitElements(tree, (node, parent, index) => {
       if (!parent || index === undefined || !isMarpCodeBlock(node)) return;
@@ -89,6 +117,61 @@ export function rehypeMarp(options: MarpOptions = {}) {
       });
     }
   };
+}
+
+/**
+ * Renders the entire document (frontmatter included) as a Marp deck, matching
+ * how the Obsidian Marp plugins treat a note. The rendered figure replaces the
+ * whole document tree because Marp owns the full document once the `marp` flag
+ * is set.
+ */
+async function renderWholeDocument(
+  tree: HastNode,
+  file: unknown,
+  source: string,
+  options: MarpOptions,
+): Promise<void> {
+  const className = normalizeClassName(options.className);
+  const deckClassName = `${className}__deck`;
+  const trimmed = source.trim();
+  if (!trimmed) return;
+
+  const result = await renderMarpDeck(trimmed, {
+    theme: options.theme?.trim() || "default",
+    allowHtml: options.allowHtml !== false,
+    math: options.math !== false,
+    inlineSVG: options.inlineSVG,
+    deckClassName,
+  });
+
+  if (result.ok === false) {
+    reportDiagnostic(
+      file,
+      `Marp rendering failed: ${result.message}`,
+      "render-error",
+    );
+    console.warn(`[marp] rendering failed: ${result.message}`);
+    return;
+  }
+
+  if (result.warning) {
+    reportDiagnostic(file, result.warning, "theme-fallback");
+    console.warn(`[marp] ${result.warning}`);
+  }
+
+  const scopedCss = scopeMarpCss(result.deck.css, className, deckClassName);
+  const root = tree as ParentNode;
+  root.children = [
+    buildFigure({
+      className,
+      deckClassName,
+      caption: null,
+      source: trimmed,
+      slides: result.deck.slides,
+      deckHtml: result.deck.html,
+      scopedCss,
+    }),
+  ];
 }
 
 function buildFigure(input: {

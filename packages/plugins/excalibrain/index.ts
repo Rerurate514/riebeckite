@@ -27,8 +27,8 @@ export type {
 } from "./src/ontology.js";
 export {
   collectDefinedRelations,
+  collectHiddenTargets,
   DEFAULT_ONTOLOGY,
-  isNoteHidden,
   normalizeFieldName,
   resolveOntology,
 } from "./src/ontology.js";

@@ -68,6 +68,19 @@ function isDoubleQuoted(value: string): boolean {
   return value.length >= 2 && value.startsWith('"') && value.endsWith('"');
 }
 
+function resolveHostLabel(cardLink: AutoCardLink): string {
+  if (cardLink.host) return cardLink.host;
+
+  let hostname = "";
+  try {
+    hostname = new URL(cardLink.url).hostname;
+  } catch {
+    hostname = "";
+  }
+
+  return hostname || cardLink.url;
+}
+
 function hasSafeLinkScheme(url: string): boolean {
   const scheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.exec(url.trim())?.[0];
   if (!scheme) return true;
@@ -80,27 +93,40 @@ function renderAutoCardLink(
   extraClassName: string,
 ): Html {
   const title = cardLink.title || cardLink.url;
-  const label = cardLink.host || cardLink.url;
+  const label = resolveHostLabel(cardLink);
   const imageUrl = pickSafeUrl(cardLink.image);
   const faviconUrl = pickSafeUrl(cardLink.favicon);
   const rootClassName = buildRootClassName(imageUrl !== "", extraClassName);
 
   return {
     type: "html",
-    value: `<a href="${escapeHtmlAttribute(cardLink.url)}" class="${escapeHtmlAttribute(rootClassName)}" target="_blank" rel="noopener noreferrer">
-  <span class="${CARD_CLASS}__body">
-    ${renderImage(imageUrl, cardLink)}
-    <span class="${CARD_CLASS}__content">
-      <span class="${CARD_CLASS}__title">${escapeHtml(title)}</span>
-      ${renderDescription(cardLink.description)}
-      <span class="${CARD_CLASS}__meta">
-        ${renderFavicon(faviconUrl)}
-        <span class="${CARD_CLASS}__host">${escapeHtml(label)}</span>
+    value: `<div class="${escapeHtmlAttribute(rootClassName)}">
+  <a class="${CARD_CLASS}__card" href="${escapeHtmlAttribute(cardLink.url)}" target="_blank" rel="noopener noreferrer">
+    <span class="${CARD_CLASS}__body">
+      ${renderImage(imageUrl, cardLink)}
+      <span class="${CARD_CLASS}__content">
+        <span class="${CARD_CLASS}__title">${escapeHtml(title)}</span>
+        ${renderDescription(cardLink.description)}
+        <span class="${CARD_CLASS}__meta">
+          ${renderFavicon(faviconUrl)}
+          <span class="${CARD_CLASS}__host">${escapeHtml(label)}</span>
+        </span>
       </span>
     </span>
-  </span>
-</a>`,
+  </a>
+  ${renderCopyButton(cardLink.url)}
+</div>`,
   };
+}
+
+function renderCopyButton(url: string): string {
+  return `<button type="button" class="${CARD_CLASS}__copy" data-rr-cardlink-copy="${escapeHtmlAttribute(url)}" aria-label="Copy URL to clipboard">
+  <svg class="${CARD_CLASS}__copy-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+  </svg>
+  <span class="${CARD_CLASS}__copy-label">Copy URL</span>
+</button>`;
 }
 
 function buildRootClassName(hasImage: boolean, extraClassName: string): string {

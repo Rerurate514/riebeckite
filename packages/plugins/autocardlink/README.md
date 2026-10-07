@@ -49,7 +49,7 @@ image: https://example.com/og.png
 | `url` | Link target. Required — blocks without `url` are left untouched |
 | `title` | Card title (double quotes optional). Falls back to `url` |
 | `description` | Card description (double quotes optional) |
-| `host` | Host label. Falls back to `url` |
+| `host` | Host label. Defaults to the `url` hostname; falls back to `url` when the hostname cannot be parsed |
 | `favicon` | Favicon image URL |
 | `image` | Preview image URL. Without it the card uses the no-image layout |
 
@@ -62,6 +62,13 @@ Rendered cards open in a new tab (`target="_blank" rel="noopener
 noreferrer"`). The preview image and favicon are lazy-loaded and marked
 `data-lightbox-ignore="true"` so they are skipped by
 `@riebeckite/plugin-lightbox`.
+
+Each card is a `div.rr-cardlink` container holding the card link
+(`a.rr-cardlink__card`) and a copy button (`button.rr-cardlink__copy`) that
+copies the URL to the clipboard. The copy button appears on hover/focus on
+desktop and is always visible on touch devices. Cards respond to container
+queries: at narrow widths the description is hidden first, then the preview
+image.
 
 ## Options
 

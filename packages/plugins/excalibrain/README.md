@@ -73,9 +73,9 @@ hyphens. The default ontology is:
 
 | Role | Field names |
 | ---- | ----------- |
-| `parents` | `parent`, `parents`, `up`, `u`, `north`, `origin`, `inception` |
-| `children` | `children`, `child`, `down`, `d`, `south`, `leads to`, `contributes to` |
-| `leftFriends` | `friends`, `friend`, `similar`, `supports`, `alternatives`, `advantages` |
+| `parents` | `parent`, `parents`, `up`, `u`, `north`, `origin`, `inception`, `source`, `parent domain` |
+| `children` | `children`, `child`, `down`, `d`, `south`, `leads to`, `contributes to`, `nurtures` |
+| `leftFriends` | `friends`, `friend`, `jump`, `jumps`, `j`, `similar`, `supports`, `alternatives`, `advantages`, `pros` |
 | `rightFriends` | `opposes`, `disadvantages`, `missing`, `cons` |
 | `previous` | `previous`, `prev`, `west`, `w`, `before` |
 | `next` | `next`, `n`, `east`, `e`, `after` |
@@ -86,6 +86,9 @@ appended to that role's defaults rather than replacing them. An override can
 still add an existing field to another role, but earlier roles in the
 canonical order (`parents`, `children`, `leftFriends`, `rightFriends`,
 `previous`, `next`, `hidden`) win when a field is listed twice.
+
+`hidden` follows ExcaliBrain: it lists the targets to hide from this note's
+map; it never hides the note itself. `showHidden` reveals those targets.
 
 ## Inference
 
@@ -133,7 +136,7 @@ The `render` option selects where the map is produced:
 | `infer` | `boolean` | `true` | Infer relations from links |
 | `siblings` | `boolean` | `true` | Infer siblings from parents (requires `infer`) |
 | `ontology` | object | — | Ontology field names appended per role |
-| `showHidden` | `boolean` | `false` | Include notes marked hidden |
+| `showHidden` | `boolean` | `false` | Include targets named by `hidden` fields |
 | `width` | `number` | `720` | SVG viewBox width |
 | `height` | `number` | `480` | SVG viewBox height |
 | `language` | `string` | `"excalibrain"` | Fence language |

@@ -32,6 +32,7 @@ export type HomeCopy = {
   primaryCta: HomeLink;
   secondaryCta: HomeLink;
   quickLinks: HomeLink[];
+  menuLabel: string;
   language: HomeLink & { hreflang: HomeLocale };
   what: { heading: string; paragraphs: string[] };
   why: { heading: string; intro: string; features: HomeFeature[] };
@@ -72,6 +73,7 @@ const ja: HomeCopy = {
     { label: "Plugin", href: "/docs/plugins/" },
     { label: "Theme", href: "/docs/themes/" },
   ],
+  menuLabel: "メニュー",
   language: { label: "English", href: "/en/", hreflang: "en" },
   what: {
     heading: "Riebeckite とは",
@@ -214,6 +216,7 @@ const en: HomeCopy = {
     { label: "Plugins", href: "/en/docs/plugins/" },
     { label: "Themes", href: "/en/docs/themes/" },
   ],
+  menuLabel: "Menu",
   language: { label: "日本語", href: "/", hreflang: "ja" },
   what: {
     heading: "What is Riebeckite?",

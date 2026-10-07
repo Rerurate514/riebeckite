@@ -367,6 +367,38 @@ a local article component built from `@riebeckite/honox/ui`, a local island,
 and site CSS. It is built from packed npm artifacts, so it is the supported
 example for copying and overriding these boundaries.
 
+### Not-found and error surface
+
+Not-found handling is HonoX's standard `app/routes/_404.tsx`. Riebeckite decides
+that a request is not found; HonoX re-renders that response through the site's
+`_renderer.tsx`, so the status stays `404` while the not-found screen belongs to
+the site.
+
+```tsx
+// app/routes/_404.tsx
+import type { NotFoundHandler } from "hono";
+
+const handler: NotFoundHandler = (c) => {
+  c.status(404);
+  return c.render(<main class="not-found">Page not found</main>);
+};
+
+export default handler;
+```
+
+The route resolver (`resolveRiebeckiteContentRequest`,
+`resolveRiebeckiteHomeRequest`, and plugin page resolution) and the extension
+guard that keeps asset-like paths out of the content route stay in
+`@riebeckite/honox`; the site never reimplements them. Only public, routable
+content resolves, so a not-found response never carries draft, future-dated, or
+private metadata.
+
+Runtime errors use Hono's own error handling. Without an `app/routes/_error.tsx`
+the default handler logs the error and returns a plain `500 Internal Server
+Error`; a site may add `_error.tsx` (an `ErrorHandler`) when it wants a
+visitor-facing screen. Configuration, plugin, and build failures are
+developer-facing and must not be turned into a successful page.
+
 ## Boundary rules
 
 Article routing resolves a request against the manifest's already-resolved public locations (`byPermalink`, then `redirects`), never by inferring a URL from a filesystem path, directory layout, or slug. A slug remains an internal content lookup key; the public URL is the resolved `permalink`.

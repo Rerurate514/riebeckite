@@ -1008,6 +1008,7 @@ test("Contract 14: generated sites omit retired bootstrap boilerplate and keep s
     "app/global.d.ts",
     "app/routes/index.tsx",
     "app/routes/_renderer.tsx",
+    "app/routes/_404.tsx",
     "app/style.css",
     "vite.config.ts",
     "tsconfig.json",

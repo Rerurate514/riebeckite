@@ -11,6 +11,19 @@ reusable engine that drives it lives in `@riebeckite/test/e2e`, while the
 repository-specific fixture, package list, and assertions stay in
 `tests/external-site`.
 
+Third-party plugin authoring and packaging are exercised from an external
+package's perspective in `tests/plugin-dx` (its own pnpm workspace):
+
+```sh
+pnpm test:plugin-dx            # unit tests for plugins that use only public APIs
+pnpm test:plugin-dx:external   # pack tarballs, install into an isolated site, verify
+```
+
+`test:plugin-dx:external` packs `@riebeckite/core` and fixture plugins, installs
+them into a site outside this monorepo, and confirms the plugin works through
+published packages only. Use it as a regression check for a plugin you
+distribute.
+
 ## Running tests
 
 |Command|What it does|
@@ -19,6 +32,8 @@ repository-specific fixture, package list, and assertions stay in
 |`pnpm --filter @riebeckite/plugin-toc test`|Run one package's tests|
 |`pnpm test:update`|Rewrite every golden file with the current output|
 |`pnpm test:e2e:external`|Run the external-site integration suite|
+|`pnpm test:plugin-dx`|Run the external-package plugin fixtures|
+|`pnpm test:plugin-dx:external`|Pack tarballs, install into an isolated site, and verify plugins|
 |`pnpm test:registry`|Run the scaffold install contracts against npm-published artifacts|
 
 The scaffold install contracts validate the generated site against **locally
@@ -76,6 +91,51 @@ const config = resolveConfig({ content: { directory: "." } });
 const manager = new ContentManager(source, [], { config });
 const manifest = await manager.getManifest();
 ```
+
+## Testing a plugin
+
+A plugin can be tested at four levels. You do not need all of them; start from the smallest level that proves the behavior you changed.
+
+```text
+Level 1  Pure logic               A normal test runner is enough.
+Level 2  Markdown / HTML          Pass the plugin to a Pipeline and assert the transformed output.
+Level 3  Content / lifecycle      Use ContentManager with an in-memory ContentSource.
+Level 4  Public package boundary  Pack the tarball and install it into an isolated site.
+```
+
+### Level 1: Pure logic
+
+Option resolution, string transforms, and AST helpers that do not depend on Riebeckite run under any runner such as `node:test`. No `@riebeckite/test` or `ContentManager` is needed at this level.
+
+### Level 2: Markdown / HTML transformation
+
+Pass the plugin to the public `Pipeline`:
+
+```ts
+import { Pipeline } from "@riebeckite/core";
+import { tipPlugin } from "../src/index.ts";
+
+const pipeline = new Pipeline(new Map(), new Map(), undefined, {
+  plugins: [tipPlugin()],
+});
+
+const { html } = await pipeline.execute(":::tip\nSave often.\n:::");
+assert.match(html, /<aside class="rr-tip">/);
+```
+
+The first argument is the content index and the second is the permalink map; empty `Map`s are enough for a single document. The third argument is only needed when the plugin resolves embeds or other content. This is the level most plugin tests need.
+
+### Level 3: Content / lifecycle
+
+Use `ContentManager` with an in-memory `ContentSource` (the same shape shown above) to test content loading, hooks, manifests, body slots, or Page Types. `getProcessedContent()` returns the result of the pipeline plus content hooks; `getManifest()` returns the manifest including resolved plugins.
+
+### Level 4: Public package boundary
+
+For a package you distribute, `pnpm pack` it and install the tarball into an isolated site outside the monorepo. This catches missing public exports, accidental `@riebeckite/core/src/**` imports, undeclared dependencies, and missing declarations. `tests/plugin-dx` in this repository is the working example and runs with `pnpm test:plugin-dx` and `pnpm test:plugin-dx:external`.
+
+### The role of `@riebeckite/test`
+
+`@riebeckite/test` provides shared test helpers such as the golden-file assertions `assertGolden` and `assertGoldenJson`. It is **optional**: most Level 1-3 tests can be written with just `node:test` and the public core APIs (`Pipeline` / `ContentManager`). `@riebeckite/test/e2e` is the repository-oriented engine that builds an external site; third-party plugins do not normally need it.
 
 ## Golden files
 

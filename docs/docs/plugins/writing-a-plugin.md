@@ -8,7 +8,23 @@ Riebeckite がどこまで安全性を保証し、プラグイン側で何を確
 Plugin がボタンやメニューなどの UI を表示する場合は、キーボードでも操作できるようにしてください。
 基本的な考え方や注意点は、[アクセシビリティ](../accessibility.md) を参照してください。
 
-「最小のプラグインを作る」→「CSS を足す」→「Markdown を変換する」の順で進めます。
+## 全体像
+
+このページは、何もない状態から配布できる Plugin までを一続きで扱います。
+
+```text
+最小の Plugin を作る（1〜2）
+   ↓
+Markdown / HTML を変換する（3、実践）
+   ↓
+出力をテストする（テストの進め方）
+   ↓
+配布用パッケージにする（5）
+   ↓
+外部パッケージとして検証する（tests/plugin-dx / test:plugin-dx:external）
+```
+
+site の中だけで使う場合は「配布用パッケージにする」より前で完結します。外部へ配布する場合だけ、package 化と外部検証まで進めます。各拡張ポイントの正確な契約は [Plugin System](../reference/plugin-api.md) を参照してください。
 
 ## 1. 最小のプラグインを作る
 
@@ -94,6 +110,10 @@ export function localPlugin() {
 
 pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `extendHtmlPipeline` を使います。その他の拡張ポイント（依存関係・lifecycle・renderer・endpoint など）は [Plugin System](../reference/plugin-api.md) を参照してください。
 
+`remarkPlugins` / `rehypePlugins` も `extendMarkdownPipeline` も同じ Pipeline に参加します。Riebeckite は Plugin より前に `remark-parse` や `remark-directive`、`remark-gfm` などを適用するため、`:::tip` のような directive や GFM 記法はすでに AST node として Plugin へ渡されます。これらを著者がインストールしたり登録したりする必要はありません。
+
+Content 変換に参加する Plugin は `processedContentCache` も宣言してください。宣言がない場合でも動作はしますが、その site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`、他 Plugin の出力に依存するなら `tracked` を指定します（正確に追跡できない場合のみ `unsafe`）。
+
 ## 実践: directive プラグインを最後まで作る
 
 ここでは、次のような Markdown を独自の Tip 表示に変換するプラグインを作ります。
@@ -171,6 +191,8 @@ type ContainerDirective = {
   data?: Record<string, unknown>;
 };
 ```
+
+この例では Markdown AST の型に `mdast`、node の走査に `unist-util-visit` を使います。どちらも通常の npm package として自分の package に追加してください（`@riebeckite/core` からは import しません）。
 
 Riebeckite の Markdown pipeline では、`:::tip` のような記法はあらかじめ `remark-directive` によって `containerDirective` node に変換されています。
 
@@ -411,6 +433,11 @@ export function tipPlugin() {
         moduleSpecifier: "/extensions/plugin.css",
       },
     ],
+
+    processedContentCache: {
+      version: "1",
+      dependencyMode: "none",
+    },
   });
 }
 ```
@@ -456,6 +483,8 @@ var(--rb-color-accent)
 という Riebeckite の theme token を使っています。
 
 こうしておくと、利用している theme が変わっても、その theme の accent color に追従できます。
+
+これが Theme Extension Contract の基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されるため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.md) を参照してください。
 
 ### Step 3: プラグインを登録する
 
@@ -567,6 +596,63 @@ definePlugin({
 
 `extendMarkdownPipeline` は remark / mdast を直接扱うための低レベルな API なので、独自の Markdown 構文や複雑な変換が必要な場合に使います。
 
+この例では、`processedContentCache` も宣言しています。宣言がない場合でも動作はしますが、site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `dependencyMode: "none"`、他 Plugin の出力に依存するなら `tracked` を指定します（正確に追跡できない場合のみ `unsafe`）。`version` は変換の意味を変えたときに上げてください。Plugin の `options` と変換関数の内容も pipeline fingerprint に含まれるため、Option の変更だけで `version` を上げる必要はありません。
+
+## テストの進め方
+
+Plugin のテストは、確認したい範囲に合わせて4段階に分けられます。すべてを行う必要はありません。小さい範囲から始めてください。
+
+```text
+Level 1  Pure logic          通常の test runner だけでよい（AST ヘルパー、文字列変換など）
+Level 2  Markdown / HTML     Pipeline に Plugin を渡して変換結果を検証する
+Level 3  Content / lifecycle ContentManager と In-memory ContentSource で manifest や hook を検証する
+Level 4  外部パッケージ境界   pack した package を隔離プロジェクトへ install して検証する
+```
+
+### Level 1: 純粋な処理
+
+Option の解決、文字列や AST のヘルパーなど、Riebeckite に依存しない処理は `node:test` などの通常の test runner でそのままテストします。この段階では Riebeckite のテスト基盤は不要です。
+
+### Level 2: Markdown / HTML の変換
+
+`Pipeline` に Plugin を渡し、代表的な Markdown を `execute()` して意味のある出力を検証します。これが「実践」の Step 4 で行っているテストです。
+
+```ts
+const pipeline = new Pipeline(new Map(), new Map(), undefined, {
+  plugins: [tipPlugin()],
+});
+
+const { html } = await pipeline.execute(
+  ":::tip[Heads up]\nSave often.\n:::",
+);
+```
+
+`Pipeline` の第1・第2引数は content index と permalink の解決に使う `Map` です。単一ファイルの変換を確認するだけなら空の `Map` で十分です。第3引数（`getMarkdownBySlug`）は embed など他の Content を参照する場合だけ必要です。
+
+### Level 3: Content / lifecycle
+
+Content の読み込み、hook、manifest、body slot、Page Type などを検証する場合は `ContentManager` を使います。実際の Filesystem を用意する代わりに、小さな In-memory `ContentSource` を渡します。
+
+```ts
+const source = {
+  async scan() {
+    return [{ path: "notes/index.md" }];
+  },
+  async read(entry) {
+    return `# ${entry.path}`;
+  },
+};
+
+const manager = new ContentManager(source, [], { config });
+const manifest = await manager.getManifest();
+```
+
+詳しい pattern は [テスト](../framework/testing.md) を参照してください。
+
+### Level 4: 外部パッケージ境界
+
+配布する Package は、pack した tarball を monorepo の外の隔離プロジェクトへ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落などを検出できます。Riebeckite repository では `tests/plugin-dx` がこの検証の実例で、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
+
 ## 4. 独立ページを追加する（必要な場合）
 
 独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。ページで entry を一覧する場合は `manifest.discoverableEntries` を使ってください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft`・`scheduled` を含む）は、本当に必要な場合だけに限ります。詳しくは [Manifest の collection と公開境界](../reference/plugin-api.md#manifest-の-collection-と公開境界) を参照してください。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
@@ -599,6 +685,8 @@ packages/plugins/backlinks/
 ```
 
 外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` は `@riebeckite/plugin-<name>/...` の specifier を組み立てるため、別名の package は `assets` / `clientEntries` に `moduleSpecifier` を明示します。
+
+この directive プラグインを配布する場合、依存は `@riebeckite/core` と `unist-util-visit` を `dependencies` に、`mdast` の型（`@types/mdast`）を `devDependencies` に宣言します。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) にあります。
 
 ## 6. 検証する
 
@@ -681,5 +769,7 @@ Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island reg
 
 - [プラグイン作成の詳細](../framework/plugin-system.md) — この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
 - [Plugin System](../reference/plugin-api.md) — すべての拡張ポイントの詳細
+- [テスト](../framework/testing.md) — Plugin のテスト戦略と External 検証
+- [Theme API](../reference/theme-api.md) — Theme Extension Contract と Semantic Token
 - [Architecture](../framework/architecture.md) — Core / Plugin / Integration / Theme / App の責務
 - [Framework Reference](../reference/README.md) — `definePlugin` などの公開 API

@@ -8,6 +8,24 @@ When a Plugin generates UI, follow the [accessibility contract](../accessibility
 
 A Plugin can live directly inside a site; it does not have to be published as a package.
 
+## The path
+
+This page follows one continuous path, from an empty folder to a distributable Plugin:
+
+```text
+Create a minimal Plugin (1-2)
+   ↓
+Transform Markdown or HTML (3, Hands-on)
+   ↓
+Test the output (Testing a plugin)
+   ↓
+Package it (5)
+   ↓
+Verify it as an external package (tests/plugin-dx / test:plugin-dx:external)
+```
+
+If the Plugin only runs inside one site, you can stop before packaging. Only distributed Plugin packages need the packaging and external-verification steps. For the exact contract of each extension point, see the [Plugin API](../reference/plugin-api.en.md).
+
 ## 1. Create a minimal Plugin
 
 Create Plugins with `definePlugin` from `@riebeckite/core`. A Plugin with only a `name` is the smallest valid form. Plugin factories can accept typed options when configuration is needed.
@@ -22,7 +40,11 @@ Use a stable root hook such as `rr-<feature>` on rendered output. See [Plugin AP
 
 Semantic Markdown transformation belongs to Plugins. Simple remark Plugins can be declared as an array. Use `extendMarkdownPipeline` / `extendHtmlPipeline` when you need finer control of the processing pipeline.
 
+`remarkPlugins`, `rehypePlugins`, and `extendMarkdownPipeline` all join the same pipeline. Riebeckite runs `remark-parse`, `remark-directive`, `remark-gfm`, and the other base plugins before your Plugin, so directive syntax such as `:::tip` and GFM already arrive as AST nodes. You do not install or register those yourself.
+
 For dependencies, lifecycle hooks, renderers, endpoints, and other extension points, see [Plugin API](../reference/plugin-api.en.md).
+
+Plugins that participate in content transformation should also declare `processedContentCache`. Without it a plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `{ version: "1", dependencyMode: "none" }` for a standalone transform and `tracked` when the output depends on other plugins (reserve `unsafe` for what cannot be tracked accurately).
 
 ## Hands-on: Build a directive plugin from start to finish
 
@@ -101,6 +123,8 @@ type ContainerDirective = {
   data?: Record<string, unknown>;
 };
 ```
+
+This example uses the `mdast` types for AST nodes and `unist-util-visit` to walk the tree. Add them to your own package's dependencies (they are not imported from `@riebeckite/core`).
 
 In Riebeckite's Markdown pipeline, syntax such as `:::tip` has already been parsed by `remark-directive` before your plugin runs.
 
@@ -331,6 +355,11 @@ export function tipPlugin() {
         moduleSpecifier: "/extensions/plugin.css",
       },
     ],
+
+    processedContentCache: {
+      version: "1",
+      dependencyMode: "none",
+    },
   });
 }
 ```
@@ -374,6 +403,8 @@ var(--rb-color-accent)
 instead of a hard-coded color.
 
 This allows the Tip block to follow the active theme's accent color automatically.
+
+This is the Theme Extension Contract in practice. Put a stable root hook (`rr-<feature>`; here `rr-tip`) on the outermost element, and use `--rb-*` semantic tokens for color and spacing. `--rb-*` tokens resolve in light, explicit dark, and system dark, so you normally do not branch on `prefers-color-scheme` or `[data-theme]` yourself, and you must not depend on a `.dark` class. See the [Theme API](../reference/theme-api.en.md) for details, including how to scope a dark-only branch when one is genuinely necessary.
 
 ### Step 3: Register the plugin
 
@@ -483,6 +514,63 @@ definePlugin({
 
 `extendMarkdownPipeline` is a low-level API for working directly with remark and mdast. Use it when you need custom Markdown syntax or more advanced transformations.
 
+This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on other plugins (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's meaning changes; the plugin's `options` and transform function are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
+
+## Testing a plugin
+
+A plugin can be tested at four levels. You do not need all of them; start from the smallest level that proves the behavior you changed.
+
+```text
+Level 1  Pure logic               A normal test runner is enough (AST helpers, string transforms).
+Level 2  Markdown / HTML          Pass the plugin to a Pipeline and assert the transformed output.
+Level 3  Content / lifecycle      Use ContentManager with an in-memory ContentSource to assert manifests and hooks.
+Level 4  Public package boundary  Pack the package and install it into an isolated project.
+```
+
+### Level 1: Pure logic
+
+Option resolution and AST or string helpers that do not depend on Riebeckite can be tested with any runner such as `node:test`. No Riebeckite test infrastructure is needed at this level.
+
+### Level 2: Markdown / HTML transformation
+
+Pass the plugin to a `Pipeline`, run representative Markdown through `execute()`, and assert the semantic output. This is the test from Step 4 above.
+
+```ts
+const pipeline = new Pipeline(new Map(), new Map(), undefined, {
+  plugins: [tipPlugin()],
+});
+
+const { html } = await pipeline.execute(
+  ":::tip[Heads up]\nSave often.\n:::",
+);
+```
+
+The first two `Pipeline` arguments are the content index and permalink maps. Empty `Map`s are enough to transform a single document. The third argument (`getMarkdownBySlug`) is only needed when the plugin resolves embeds or other content.
+
+### Level 3: Content / lifecycle
+
+To test content loading, hooks, manifests, body slots, or Page Types, use `ContentManager` with a small in-memory `ContentSource` instead of a filesystem fixture.
+
+```ts
+const source = {
+  async scan() {
+    return [{ path: "notes/index.md" }];
+  },
+  async read(entry) {
+    return `# ${entry.path}`;
+  },
+};
+
+const manager = new ContentManager(source, [], { config });
+const manifest = await manager.getManifest();
+```
+
+See [Testing](../framework/testing.en.md) for the deeper patterns.
+
+### Level 4: Public package boundary
+
+A package you distribute should be verified by packing its tarball and installing it into an isolated project outside the monorepo. This catches missing public exports, accidental `@riebeckite/core/src/**` imports, undeclared dependencies, and missing declarations. In this repository, `tests/plugin-dx` is the working example and runs with `pnpm test:plugin-dx` and `pnpm test:plugin-dx:external`.
+
 ## 4. Add a standalone page when needed
 
 Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme. When a page lists entries, read `manifest.discoverableEntries`; reserve `manifest.publicEntries` (which includes `unlisted`) and `manifest.entries` (which includes `draft` and `scheduled`) for the cases that genuinely need them. See [Manifest collections and publication safety](../reference/plugin-api.en.md#manifest-collections-and-publication-safety).
@@ -494,6 +582,8 @@ See [Page System](../framework/page-system.en.md) for ownership, path resolution
 ## 5. Package it when needed
 
 Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths. For the package shape and a build that ships ESM plus type declarations, see [Distributing a Plugin outside this repository](../reference/plugin-api.en.md#distributing-a-plugin-outside-this-repository). Because `createStyleAsset()` and `createClientEntry()` build `@riebeckite/plugin-<name>/...` specifiers, a package under any other name declares `assets` and `clientEntries` with explicit `moduleSpecifier` values.
+
+For the directive plugin above, declare `@riebeckite/core` and `unist-util-visit` in `dependencies` and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api.en.md#distributing-a-plugin-outside-this-repository).
 
 ## 6. Validate it
 
@@ -569,6 +659,8 @@ Plugins do not own `app/islands/`, and Riebeckite has no Plugin Island registry.
 
 - [Plugin API](../reference/plugin-api.en.md)
 - [Plugin System](../framework/plugin-system.en.md)
+- [Testing](../framework/testing.en.md)
+- [Theme API](../reference/theme-api.en.md)
 - [Customizing Your Site](./../guides/customizing-your-site.en.md)
 - [Architecture](../framework/architecture.en.md)
 - [Writing Your First Theme](../themes/writing-a-theme.en.md)

@@ -176,6 +176,8 @@ flowchart LR
 - 同じ Capability を複数 Plugin が提供する
 - 依存関係が循環している
 
+Capability の解決に失敗した場合は `PluginDependencyError`（`@riebeckite/core` から import 可能）を投げます。`kind` と `pluginName` から原因を特定できます。
+
 依存関係のない Plugin については、入力順を可能な限り維持します。
 
 # Options Validation
@@ -262,9 +264,7 @@ dispose
 
 `setup`、`buildStart`、`onConfigResolved`、Content 処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は Diagnostics の収集後に完成した Manifest を受け取る唯一の終端 Hook です。`dispose` は解決済み Plugin の逆順で実行されます。
 
-名前付き Lifecycle / Content Hook でエラーが発生した場合は、Plugin 名と Hook が分かる状態で上位へ伝播させます。
-
-元の `cause` を失わないことも重要です。
+名前付き Lifecycle / Content Hook でエラーが発生した場合は `PluginHookError`（`@riebeckite/core` から import 可能）として上位へ伝播させます。`message` は `Plugin "<name>" failed during "<hook>"` 形式で、元の Error は `cause` に保持されます。Content Hook で発生した場合は、対象 file が `path`（例: `note.md`）として設定されます。
 
 # Content Lifecycle
 
@@ -1019,18 +1019,68 @@ Build 成果物へ向けます。最小構成の `package.json` は次のとお�
     "./style.css": "./style.css"
   },
   "files": ["dist", "style.css"],
-  "dependencies": { "@riebeckite/core": "^0.0.18" }
+  "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@riebeckite/core": "^0.0.19",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.0.0"
+  }
 }
 ```
 
-`prepack` script で JavaScript の entry point を bundle し、型定義を emit して
-ください。`npm pack` / `npm publish` が常に最新の成果物を同梱できます。
-Repository の build script は publish されないため、`esbuild`
-（`format: "esm"`、`packages: "external"`、`external: ["@riebeckite/*"]`）と
-`tsc --emitDeclarationOnly` による小さな build で十分です。import する変換
-依存（`unist-util-visit`、`unified`、remark / rehype package など）は
-`dependencies` に宣言し、公開 package の `exports` を TypeScript の source へ
-向けないでください。
+`client.ts` や `style.css` を持たない Plugin では、その subpath と `files` の entry を削除します。
+
+JavaScript の entry point は `esbuild` で bundle し、型定義は `tsc` で emit します。どちらも一般的なツールで、Riebeckite 固有の build script は必要ありません。
+
+`build.mjs`:
+
+```js
+import { build } from "esbuild";
+
+await build({
+  entryPoints: ["index.ts", "client.ts"],
+  outdir: "dist",
+  bundle: true,
+  format: "esm",
+  platform: "neutral",
+  packages: "external",
+  external: ["@riebeckite/*"],
+  logLevel: "warning",
+});
+```
+
+`entryPoints` には、その Package が持つ entry だけを列挙します（client を持たないなら `index.ts` だけ）。
+
+`tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["index.ts", "client.ts"]
+}
+```
+
+`prepack` で build するようにしておけば、`npm pack` / `npm publish` は常に最新の成果物を同梱します。`@riebeckite/core` は `dependencies` に置くのが最も簡単です（Site 側の instance を共有したい場合は `peerDependencies` でもかまいません）。import する変換依存（`unist-util-visit`、`unified`、remark / rehype package など）は `dependencies` に宣言し、公開 package の `exports` を TypeScript の source（`./index.ts`）へ向けないでください。
+
+配布する Package のテストは [テスト](../framework/testing.md#plugin-のテスト) を、CSS / Client entry の packaging は [Assets](#assets) と [Client Entries](#client-entries) を参照してください。
 
 # ESM
 
@@ -1133,6 +1183,7 @@ Plugin は再利用可能な機能を提供し、Core はそのための Contrac
 - [Architecture](../framework/architecture.md)
 - [Content System](../framework/content-system.md)
 - [Page System](../framework/page-system.md)
+- [Testing](../framework/testing.md)
 - [Observability](../framework/observability.md)
 - [Theme System](./theme-api.md)
 - [Framework Reference](./README.md)

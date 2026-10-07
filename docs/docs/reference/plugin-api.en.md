@@ -90,7 +90,9 @@ definePlugin({
 
 The resolver places providers before consumers and detects missing
 requirements, duplicate providers, and cycles while preserving unrelated
-input order where possible.
+input order where possible. Capability resolution failures throw
+`PluginDependencyError` (importable from `@riebeckite/core`); `kind` and
+`pluginName` identify the cause.
 
 ## Option validation
 
@@ -128,8 +130,10 @@ Framework lifecycle hooks run once per `ContentManager` in this order:
 `buildEnd` receives the completed manifest after diagnostics have been
 collected and is the only terminal build hook.
 
-Named lifecycle and content hooks run in resolved plugin order. Core reports a
-hook failure with the plugin name, hook name, and original cause.
+Named lifecycle and content hooks run in resolved plugin order. A hook failure
+is reported as `PluginHookError` (importable from `@riebeckite/core`); its
+`message` names the plugin and hook, `cause` holds the original error, and for
+content hooks `path` identifies the offending file (for example `note.md`).
 
 ## Markdown and HTML pipelines
 
@@ -557,7 +561,7 @@ for the supported package surface and current constraints.
 ### Package shape
 
 Publish built ESM plus type declarations and point `exports` at the built files.
-A minimal manifest:
+A complete, copyable manifest:
 
 ```json
 {
@@ -580,17 +584,78 @@ A minimal manifest:
     "./style.css": "./style.css"
   },
   "files": ["dist", "style.css"],
-  "dependencies": { "@riebeckite/core": "^0.0.18" }
+  "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@riebeckite/core": "^0.0.19",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.0.0"
+  }
 }
 ```
 
-Build the JavaScript entry points and emit declarations in a `prepack` script so
-`npm pack` / `npm publish` always ship fresh output. The repository's own build
-script is not published: a small `esbuild` bundle (`format: "esm"`,
-`packages: "external"`, `external: ["@riebeckite/*"]`) plus
-`tsc --emitDeclarationOnly` is enough. Declare each transform dependency you
-import (`unist-util-visit`, `unified`, remark/rehype packages) in
-`dependencies`, and never point a published `exports` entry at TypeScript source.
+A plugin without a `client.ts` or `style.css` drops those subpaths and `files`
+entries.
+
+Bundle the JavaScript entry points with `esbuild` and emit declarations with
+`tsc`. Both are ordinary ecosystem tools; no Riebeckite-specific build script is
+required.
+
+`build.mjs`:
+
+```js
+import { build } from "esbuild";
+
+await build({
+  entryPoints: ["index.ts", "client.ts"],
+  outdir: "dist",
+  bundle: true,
+  format: "esm",
+  platform: "neutral",
+  packages: "external",
+  external: ["@riebeckite/*"],
+  logLevel: "warning",
+});
+```
+
+List only the entry points your package actually has (drop `client.ts` when there
+is no client).
+
+`tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["index.ts", "client.ts"]
+}
+```
+
+Building in `prepack` keeps `npm pack` / `npm publish` shipping fresh output.
+Putting `@riebeckite/core` in `dependencies` is the simplest choice; use
+`peerDependencies` instead when the site should provide the module instance.
+Declare each transform dependency you import (`unist-util-visit`, `unified`,
+remark/rehype packages) in `dependencies`, and never point a published `exports`
+entry at TypeScript source (`./index.ts`).
+
+For testing a distributed package, see [Testing](../framework/testing.en.md#testing-a-plugin);
+for CSS and client packaging, see [Assets](#assets) and [Client entries](#client-entries).
 
 ### Site-local plugins
 
@@ -652,6 +717,7 @@ repairing runtime resolution.
 
 - [Architecture](../framework/architecture.en.md)
 - [Content System](../framework/content-system.en.md)
+- [Testing](../framework/testing.en.md)
 - [Observability](../framework/observability.en.md)
 - [Theme System](./theme-api.en.md)
 - [Framework Reference](./README.en.md)

@@ -35,6 +35,7 @@ export type ShortcodeOptions = {
   builtins?: boolean;
   /** Custom renderers, merged on top of the built-ins by name. */
   shortcodes?: Record<string, ShortcodeRenderer>;
+  inlineShortcodes?: readonly string[];
 };
 
 export type ResolvedShortcodeOptions = {
@@ -42,6 +43,7 @@ export type ResolvedShortcodeOptions = {
   language?: string;
   builtins: boolean;
   shortcodes: Record<string, ShortcodeRenderer>;
+  inlineShortcodes: ReadonlySet<string>;
 };
 
 /** Input accepted by {@link renderShortcode}. */
@@ -51,6 +53,7 @@ export type ShortcodeRenderRequest = {
   attributes?: ShortcodeAttributes;
   childrenHtml?: string;
   container?: boolean;
+  block?: boolean;
   context?: PluginRenderContext;
 };
 
@@ -64,7 +67,10 @@ export type RemarkShortcodesOptions = ShortcodeOptions & {
   contentSource?: ContentSource;
 };
 
-export type DirectiveName = "leafDirective" | "containerDirective";
+export type DirectiveName =
+  | "textDirective"
+  | "leafDirective"
+  | "containerDirective";
 
 export type DirectiveNode = Parent & {
   type: DirectiveName;

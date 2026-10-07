@@ -133,3 +133,10 @@ html.dark .rb-canvas {
   --rb-canvas-paper: var(--rb-color-ink, #000000);
   --rb-canvas-ink: var(--rb-color-paper, #ffffff);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-canvas {
+    --rb-canvas-paper: var(--rb-color-ink, #000000);
+    --rb-canvas-ink: var(--rb-color-paper, #ffffff);
+  }
+}

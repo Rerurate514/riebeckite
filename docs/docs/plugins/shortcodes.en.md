@@ -1,6 +1,6 @@
 # Shortcodes
 
-Renders `::name` and `:::name` directives through a registry of shortcode renderers.
+Renders `:name` (inline), `::name` (block), and `:::name` (block container) directives through a registry of shortcode renderers.
 
 ## Installation
 
@@ -12,10 +12,12 @@ Check the implementation and package README as the source of truth for the Plugi
 
 ## Example
 
-Use the built-in shortcodes for badges, keyboard keys, notes, and embeds, or register your own renderers.
+Use the built-in shortcodes for badges, keyboard keys, notes, and embeds, or register your own renderers. A single colon renders inline, a double colon renders as a block leaf, and a triple colon renders as a block container.
 
 ```markdown
-::kbd[Ctrl+S]
+The status is :badge[Stable]{variant=success} and the shortcut is :kbd[Ctrl+K].
+
+Block directives look like this:
 
 ::badge[Stable]{variant=success}
 

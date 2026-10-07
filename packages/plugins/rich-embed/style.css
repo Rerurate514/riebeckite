@@ -72,6 +72,13 @@ html.dark .rb-rich-embed {
   --rb-rich-embed-ink: var(--rb-color-paper, #ffffff);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-rich-embed {
+    --rb-rich-embed-paper: var(--rb-color-ink, #000000);
+    --rb-rich-embed-ink: var(--rb-color-paper, #ffffff);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rb-rich-embed__link {
     transition: none;

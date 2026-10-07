@@ -576,9 +576,11 @@
   font-size: 0.85em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .rb-article-content
-  pre:not(:where(.rr-code *)) {
+:where(
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+    .rb-article-content
+    pre:not(:where(.rr-code *))
+) {
   margin: 1.75rem 0 0;
   padding: 0.85rem 1rem;
   border: 1px solid var(--rb-color-border);
@@ -688,9 +690,11 @@
   color: var(--shiki-dark, inherit);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"]
-  .rb-article-content
-  pre:not(:where(.rr-code *)) {
+:where(
+  :is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"]
+    .rb-article-content
+    pre:not(:where(.rr-code *))
+) {
   background: var(--rb-color-code-background);
   color: var(--rb-color-ink);
 }
@@ -702,9 +706,11 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme])
-    .rb-article-content
-    pre:not(:where(.rr-code *)) {
+  :where(
+    :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme])
+      .rb-article-content
+      pre:not(:where(.rr-code *))
+  ) {
     background: var(--rb-color-code-background);
     color: var(--rb-color-ink);
   }
@@ -726,6 +732,11 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code-tabs {
   border-radius: 0;
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code-tabs .rr-code {
+  margin-block: 0;
+  border: 0;
 }
 
 /* Callouts: flat Paper/Ink, 1px rule, Orange left rule, ALL CAPS title. */

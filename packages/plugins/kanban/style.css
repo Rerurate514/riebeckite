@@ -147,3 +147,10 @@ html.dark .rb-kanban {
   --rb-kanban-ink: var(--rb-color-paper, #ffffff);
   --rb-kanban-paper: var(--rb-color-ink, #000000);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-kanban {
+    --rb-kanban-ink: var(--rb-color-paper, #ffffff);
+    --rb-kanban-paper: var(--rb-color-ink, #000000);
+  }
+}

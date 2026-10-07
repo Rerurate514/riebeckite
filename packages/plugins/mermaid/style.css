@@ -67,3 +67,10 @@ html.dark .rr-mermaid {
   --rr-mermaid-paper: var(--rb-color-ink, #000000);
   --rr-mermaid-ink: var(--rb-color-paper, #ffffff);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rr-mermaid {
+    --rr-mermaid-paper: var(--rb-color-ink, #000000);
+    --rr-mermaid-ink: var(--rb-color-paper, #ffffff);
+  }
+}

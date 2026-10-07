@@ -1,3 +1,4 @@
+import { scanMarkdownFenceLines } from "@riebeckite/core";
 import type { CodeAnnotationKind, CodeAnnotationPlan } from "./types.js";
 
 /** Prefix used to smuggle a plan through the preserved fence meta channel. */
@@ -114,8 +115,10 @@ export function collectCodeAnnotations(
   const plan = parseCodeAnnotations(meta);
   const strippedLines: string[] = [];
 
-  code.split("\n").forEach((rawLine, index) => {
-    const { line, annotation } = stripInlineCodeAnnotation(rawLine);
+  scanMarkdownFenceLines(code).forEach(({ value: rawLine, inFence }, index) => {
+    const { line, annotation } = inFence
+      ? { line: rawLine, annotation: null }
+      : stripInlineCodeAnnotation(rawLine);
     strippedLines.push(line);
     if (!annotation) return;
 

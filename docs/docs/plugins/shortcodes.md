@@ -1,6 +1,6 @@
 # Shortcodes
 
-`::name` と `:::name` ディレクティブを、shortcode レンダラーのレジストリを通して描画する Plugin です。
+`:name`（インライン）、`::name`（ブロック）、`:::name`（ブロックコンテナ）ディレクティブを、shortcode レンダラーのレジストリを通して描画する Plugin です。
 
 ## 導入
 
@@ -12,10 +12,12 @@ Plugin の export 名や設定項目は、実装と package README を一次情�
 
 ## 使用例
 
-バッジやキー表示、ノート、埋め込みなどの組み込み shortcode を使うか、独自のレンダラーを登録します。
+バッジやキー表示、ノート、埋め込みなどの組み込み shortcode を使うか、独自のレンダラーを登録します。`:` ひとつはインライン、`::` はブロック、`:::` はブロックコンテナとして描画されます。
 
 ```markdown
-::kbd[Ctrl+S]
+ステータスは :badge[Stable]{variant=success}、ショートカットは :kbd[Ctrl+K] です。
+
+ブロックでは次のように書きます。
 
 ::badge[Stable]{variant=success}
 

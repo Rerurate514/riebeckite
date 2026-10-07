@@ -3,6 +3,7 @@ import type { Content, Html, Parent, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import {
   createShortcodeRenderContext,
+  isInlineShortcode,
   renderShortcode,
   resolveShortcodeOptions,
   SHORTCODE_CHILDREN_MARKER,
@@ -17,6 +18,7 @@ import type {
 export const SHORTCODES_SOURCE = "@riebeckite/plugin-shortcodes";
 export const DIAGNOSTIC_UNKNOWN = "shortcodes-unknown";
 export const DIAGNOSTIC_INVALID = "shortcodes-invalid";
+export const DIAGNOSTIC_INLINE_UNSUPPORTED = "shortcodes-inline-unsupported";
 
 const ATTRIBUTE_NAME_PATTERN = /^[A-Za-z_][\w-]*$/;
 
@@ -44,7 +46,7 @@ export function remarkShortcodes(options: RemarkShortcodesOptions = {}) {
 
     visit(
       tree,
-      ["containerDirective", "leafDirective"],
+      ["containerDirective", "leafDirective", "textDirective"],
       (node, index, parent) => {
         if (parent === undefined || index === undefined) return;
         targets.push({ node: node as DirectiveNode, index, parent });
@@ -65,10 +67,40 @@ function transformDirective(
 ): void {
   const { node, index, parent } = target;
   const name = node.name;
+  const inline = node.type === "textDirective";
   const container = node.type === "containerDirective";
   const { label, children } = extractLabel(node);
   const attributes = normalizeAttributes(node, file);
   const childrenHtml = container ? SHORTCODE_CHILDREN_MARKER : undefined;
+
+  if (inline && !isInlineShortcode(name, resolved)) {
+    const known = Object.hasOwn(resolved.shortcodes, name);
+    report(
+      file,
+      known ? DIAGNOSTIC_INLINE_UNSUPPORTED : DIAGNOSTIC_UNKNOWN,
+      known
+        ? `Shortcode ":${name}" is block-only and cannot be used inline.`
+        : `Unknown shortcode ":${name}" was left as escaped text.`,
+      node,
+    );
+    parent.children.splice(
+      index,
+      1,
+      ...createFallback(
+        resolved.className,
+        name,
+        label,
+        attributes,
+        {
+          container: false,
+          block: false,
+          modifier: known ? "inline-unsupported" : "unknown",
+        },
+        children,
+      ),
+    );
+    return;
+  }
 
   const html = renderShortcode(
     {
@@ -77,6 +109,7 @@ function transformDirective(
       attributes,
       childrenHtml,
       container,
+      block: !inline,
       context: createShortcodeRenderContext({
         name,
         label,
@@ -104,7 +137,7 @@ function transformDirective(
         name,
         label,
         attributes,
-        container,
+        { container, block: !inline, modifier: "unknown" },
         children,
       ),
     );
@@ -203,14 +236,17 @@ function createFallback(
   name: string,
   label: string,
   attributes: ShortcodeAttributes,
-  container: boolean,
+  shape: { container: boolean; block: boolean; modifier: string },
   children: Content[],
 ): Content[] {
-  const classes = `${className} ${className}--unknown`;
+  const classes = `${className} ${className}--${shape.modifier}`;
   const dataName = ` data-shortcode-name="${escapeHtmlAttribute(name)}"`;
-  const directive = escapeHtml(sourceText(name, label, attributes, container));
+  const inline = !shape.container && !shape.block;
+  const directive = escapeHtml(
+    sourceText(name, label, attributes, shape.container, inline),
+  );
 
-  if (container) {
+  if (shape.container) {
     return [
       createHtml(
         `<div class="${escapeHtmlAttribute(classes)}"${dataName}>${directive}`,
@@ -220,9 +256,10 @@ function createFallback(
     ];
   }
 
+  const tag = shape.block ? "div" : "span";
   return [
     createHtml(
-      `<span class="${escapeHtmlAttribute(classes)}"${dataName}>${directive}</span>`,
+      `<${tag} class="${escapeHtmlAttribute(classes)}"${dataName}>${directive}</${tag}>`,
     ),
   ];
 }
@@ -232,8 +269,9 @@ function sourceText(
   label: string,
   attributes: ShortcodeAttributes,
   container: boolean,
+  inline: boolean,
 ): string {
-  const fence = container ? ":::" : "::";
+  const fence = container ? ":::" : inline ? ":" : "::";
   const labelPart = label ? `[${label}]` : "";
   return `${fence}${name}${labelPart}${attributesText(attributes)}`;
 }

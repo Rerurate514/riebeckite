@@ -63,3 +63,10 @@ html.dark .rb-d2 {
   --rb-d2-paper: var(--rb-color-ink, #000000);
   --rb-d2-ink: var(--rb-color-paper, #ffffff);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-d2 {
+    --rb-d2-paper: var(--rb-color-ink, #000000);
+    --rb-d2-ink: var(--rb-color-paper, #ffffff);
+  }
+}

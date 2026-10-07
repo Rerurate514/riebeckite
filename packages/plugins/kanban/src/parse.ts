@@ -1,3 +1,4 @@
+import { scanMarkdownFenceLines } from "@riebeckite/core";
 import type { ResolvedKanbanOptions } from "./types.js";
 
 export type KanbanCard = {
@@ -33,8 +34,14 @@ export function parseKanban(
 
   let current: KanbanColumn | null = null;
 
-  for (const rawLine of source.replace(/\r\n?/g, "\n").split("\n")) {
+  for (const { value: rawLine, inFence } of scanMarkdownFenceLines(
+    source.replace(/\r\n?/g, "\n"),
+  )) {
     const line = rawLine.replace(/\s+$/, "");
+    if (inFence) {
+      fallback.push(line);
+      continue;
+    }
     if (line.trim() === "") continue;
 
     const columnName = line.match(heading)?.[1]?.trim();

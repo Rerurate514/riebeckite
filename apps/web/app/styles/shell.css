@@ -79,6 +79,7 @@
   .rb-nav__children {
     display: none;
     position: absolute;
+    z-index: 50;
     top: 100%;
     left: 0;
     min-width: max-content;

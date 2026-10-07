@@ -242,6 +242,58 @@ return defineTheme({
 
 The theme API is not designed to modify `class`, `style`, `id`, or `lang` freely. It keeps the namespace of framework-owned attributes separate from theme-specific ones.
 
+## Theme Root and themeRootAttributes
+
+The framework provides `ThemeRoot`, a UI primitive that handles setting theme attributes on the `<html>` element.
+
+```tsx
+import { ThemeRoot } from "@riebeckite/honox/ui";
+
+<ThemeRoot
+  theme={config.theme}
+  lang={c.get("htmlLanguage") ?? config.site.locale}
+>
+  {children}
+</ThemeRoot>
+```
+
+`ThemeRoot` renders the `<html>` element with the following attributes:
+
+```html
+<html
+  lang="en"
+  data-theme-name="minimal"
+  data-theme="dark"
+  data-typography="system"
+  data-article-layout="article"
+>
+```
+
+The framework uses `themeRootAttributes(theme)` to emit the theme's own `attributes` plus reserved attributes:
+
+- `data-theme`: Color Mode state (`"light"` / `"dark"` / omitted for "system")
+- `data-theme-name`: Theme identity name
+- `data-typography`: Typography preset value
+- `data-article-layout`: Article layout preset value
+
+To add your own `<html>` attributes, use the `themeRootAttributes` helper directly instead of `ThemeRoot`:
+
+```tsx
+import { themeRootAttributes } from "@riebeckite/honox/ui";
+
+<html
+  lang={c.get("htmlLanguage") ?? config.site.locale}
+  {...themeRootAttributes(config.theme)}
+  data-custom-attr="..."
+>
+  ...
+</html>
+```
+
+However, the framework-reserved `data-theme`, `data-theme-name`, `data-typography`, and `data-article-layout` cannot be overwritten by the theme's `attributes`.
+
+If a plugin or theme previously implemented its own `themeAttributes()`, consider migrating to the framework-provided `ThemeRoot` / `themeRootAttributes()`. This clarifies the separation between framework-owned and theme-specific attribute namespaces.
+
 ## 5. Stable CSS hooks
 
 Themes target documented stable hooks, not internal markup. There are two class namespaces.

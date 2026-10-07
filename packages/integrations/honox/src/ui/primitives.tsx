@@ -1,4 +1,11 @@
-import type { ContentBodySlot, ContentBodySlots } from "@riebeckite/core";
+import type {
+  ContentBodySlot,
+  ContentBodySlots,
+  PluginHeadTag,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
+import { ColorModeScript } from "@riebeckite/plugin-color-mode";
+import { Link, Script } from "honox/server";
 
 export type PrimitiveChildren = unknown;
 
@@ -213,6 +220,122 @@ export function Sidebar(props: SidebarProps) {
     >
       {props.children}
     </aside>
+  );
+}
+
+export type ThemeRootProps = {
+  theme: ResolvedRiebeckiteConfig["theme"];
+  lang?: string;
+  children?: PrimitiveChildren;
+};
+
+/**
+ * Derives the `<html>` attributes from a resolved theme.
+ *
+ * Combines the theme's custom `data-*` attributes with the reserved
+ * color-mode, name, typography, and article-layout attributes.
+ */
+export function themeRootAttributes(
+  theme: ResolvedRiebeckiteConfig["theme"],
+): Record<string, string | undefined> {
+  return {
+    ...theme.attributes,
+    "data-theme": theme.colorMode === "system" ? undefined : theme.colorMode,
+    "data-theme-name": theme.name,
+    "data-typography": theme.typography,
+    "data-article-layout": theme.articleLayout,
+  };
+}
+
+/**
+ * Root `<html>` element carrying the resolved theme's attributes.
+ *
+ * The Site keeps ownership of the document composition by rendering its own
+ * `<head>` and `<body>` as children.
+ */
+export function ThemeRoot(props: ThemeRootProps) {
+  return (
+    <html lang={props.lang} {...themeRootAttributes(props.theme)}>
+      {props.children}
+    </html>
+  );
+}
+
+export type PluginHeadTagsProps = {
+  tags?: readonly PluginHeadTag[];
+};
+
+/**
+ * Renders Plugin-provided head tags as `meta` / `link` / `script` elements.
+ *
+ * The Site owns placement; this primitive owns the conversion and ordering.
+ */
+export function PluginHeadTags(props: PluginHeadTagsProps) {
+  return <>{props.tags?.map(renderPluginHeadTag)}</>;
+}
+
+function renderPluginHeadTag(tag: PluginHeadTag, index: number) {
+  const key = `${tag.tag}-${index}`;
+
+  if (tag.tag === "meta") {
+    return <meta {...tag.attrs} key={key} />;
+  }
+
+  if (tag.tag === "link") {
+    return <link {...tag.attrs} key={key} />;
+  }
+
+  return (
+    <script
+      {...tag.attrs}
+      key={key}
+      dangerouslySetInnerHTML={
+        tag.children ? { __html: tag.children } : undefined
+      }
+    />
+  );
+}
+
+export type RiebeckiteHeadProps = {
+  title: string;
+  headTags?: readonly PluginHeadTag[];
+  faviconHref?: string | null;
+  colorModeScript?: boolean;
+  stylesheets?: readonly string[];
+  clientSrc?: string | null;
+  prod?: boolean;
+  children?: PrimitiveChildren;
+};
+
+/**
+ * Renders the standard Riebeckite `<head>` contents.
+ *
+ * Owns the charset, viewport, default title, favicon, color-mode bootstrap,
+ * stylesheet and client entries, and Plugin head tags. The Site keeps the
+ * surrounding `<head>` so it can add its own elements next to this primitive.
+ */
+export function RiebeckiteHead(props: RiebeckiteHeadProps) {
+  const faviconHref =
+    props.faviconHref === undefined ? "/favicon.ico" : props.faviconHref;
+  const stylesheets = props.stylesheets ?? ["/app/style.css"];
+  const clientSrc =
+    props.clientSrc === undefined ? "/app/client.ts" : props.clientSrc;
+  const colorModeScript = props.colorModeScript ?? true;
+
+  return (
+    <>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>{props.title}</title>
+      {faviconHref ? <link rel="icon" href={faviconHref} /> : null}
+      {colorModeScript ? <ColorModeScript /> : null}
+      {stylesheets.map((href) => (
+        <Link href={href} rel="stylesheet" key={href} prod={props.prod} />
+      ))}
+      <PluginHeadTags tags={props.headTags} />
+      {clientSrc ? <Script src={clientSrc} async prod={props.prod} /> : null}
+      {props.children}
+    </>
   );
 }
 

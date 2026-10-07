@@ -96,8 +96,31 @@ app/routes/_renderer.tsx
 - Navigation
 - ページ全体の共通 UI
 - Riebeckite や plugin が生成した head tag / style
+- **`RiebeckiteHead` による標準 head contents の描画**
 
 サイト全体に共通する部分を変えたい場合は、こちらを編集します。
+
+標準的な head contents を Framework に任せつつ、カスタム head を追加する例：
+
+```tsx
+import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
+
+export default jsxRenderer(({ children }, c) => (
+  <ThemeRoot
+    theme={config.theme}
+    lang={c.get("htmlLanguage") ?? config.site.locale}
+  >
+    <head>
+      <RiebeckiteHead
+        title={config.site.title}
+        headTags={c.get("headTags") ?? []}
+      />
+      <meta name="custom-site-value" content="..." />
+    </head>
+    <body class="riebeckite-page rb-site">{children}</body>
+  </ThemeRoot>
+);
+```
 
 詳しくは [Head Tags](../framework/honox-integration.md#head-tags) を参照してください。
 

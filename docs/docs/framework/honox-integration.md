@@ -423,12 +423,12 @@ c.set("headTags", entry.headTags ?? []);
 として shell へ渡し、`_renderer.tsx` が描画します。
 
 ```tsx
+import { PluginHeadTags } from "@riebeckite/honox/ui";
+
 const headTags = c.get("headTags") ?? [];
 
 <head>
-  {headTags.map((tag) =>
-    tag.tag === "meta" ? <meta {...tag.attrs} /> : null,
-  )}
+  <PluginHeadTags tags={headTags} />
 </head>;
 ```
 
@@ -449,6 +449,70 @@ _renderer.tsx
 たとえば `@riebeckite/plugin-discord-embed` は、この仕組みを使って `theme-color` を提供します。
 
 Plugin は `<head>` 自体や tag の並び順を所有しません。
+
+## RiebeckiteHead と PluginHeadTags
+
+`@riebeckite/honox/ui` より公開される 2 つの primitive は、head composition の責務分離を明確にします。
+
+### `RiebeckiteHead`
+
+```tsx
+import { RiebeckiteHead } from "@riebeckite/honox/ui";
+
+<RiebeckiteHead title="My Site" headTags={[]} />
+```
+
+Framework が次の標準的な head contents を描画します。
+
+- `<meta charset="utf-8">`
+- `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+- `<title>`（title prop が提供する値）
+- `<link rel="icon" href="/favicon.ico">`（faviconHref プロップで上書き可能、null で省略可）
+- `<ColorModeScript />`（colorModeScript プロップで制御、default true）
+- stylesheet entries（stylesheets プロップ、default `["/app/style.css"]`）
+- client script entry（clientSrc プロップ、default `"/app/client.ts"`、null で省略可）
+- `PluginHeadTag` values の変換（headTags プロップ）
+- 子要素（children prop）は標準の後に追加
+
+`RiebeckiteHead` は `<head>` 要素自身を描画しません。Site は `<head>` の ownership を保持し、その中に `RiebeckiteHead` を配置できます。
+
+### `PluginHeadTags`
+
+```tsx
+import { PluginHeadTags } from "@riebeckite/honox/ui";
+
+<PluginHeadTags tags={headTagsFromManifest} />
+```
+
+`PluginHeadTag` values (meta / link / script) を JSX 要素に変換します。`RiebeckiteHead` を使わず、Site が自分で head を組み立てる際に使用します。
+
+### 使用例
+
+Site が `<head>` 所有権を維持しつつ標準 head をFrameworkに任せる場合：
+
+```tsx
+import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
+
+export default jsxRenderer(({ children }, c) => (
+  <ThemeRoot
+    theme={config.theme}
+    lang={c.get("htmlLanguage") ?? config.site.locale}
+  >
+    <head>
+      <RiebeckiteHead
+        title={config.site.title}
+        headTags={c.get("headTags") ?? []}
+      />
+      <meta name="custom-site-value" content="..." />
+    </head>
+    <body class="riebeckite-page rb-site">{children}</body>
+  </ThemeRoot>
+);
+```
+
+Frameworkは標準 head rendering メカニクス（charset、viewport、default title、favicon wiring、color-mode bootstrap、stylesheet/client entry wiring、PluginHeadTag 変換）と theme-root attribute 導出を担当し、Site は `<head>`/`<body>` 構成とカスタム meta/link/script の所有権を保持します。favicon FILE (`/public/favicon.ico`) は Site-owned のまま、default link wiring にのみ Framework が所有権を持ちます。
+
+Plugin が head tags を提供する場合は、既存の `headTags` メカニズムはそのまま機能します。`RiebeckiteHead` と `headTags` は併用可能です。
 
 ## Body Slots
 

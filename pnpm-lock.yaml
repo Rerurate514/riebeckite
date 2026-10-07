@@ -448,12 +448,18 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/plugin-color-mode':
+        specifier: workspace:*
+        version: link:../../plugins/color-mode
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
       hono:
         specifier: 'catalog:'
         version: 4.13.12
+      honox:
+        specifier: 0.1.56
+        version: 0.1.56(hono@4.13.12)(miniflare@4.20260617.1(@types/node@26.0.0))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@26.0.0))
       vite:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@26.0.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -5464,6 +5470,15 @@ snapshots:
       miniflare: 4.20260617.1(@types/node@24.13.6)
       wrangler: 4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6)
 
+  '@hono/vite-dev-server@0.25.3(hono@4.13.12)(miniflare@4.20260617.1(@types/node@26.0.0))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@26.0.0))':
+    dependencies:
+      '@hono/node-server': 1.19.17(hono@4.13.12)
+      hono: 4.13.12
+      minimatch: 9.0.9
+    optionalDependencies:
+      miniflare: 4.20260617.1(@types/node@26.0.0)
+      wrangler: 4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@26.0.0)
+
   '@iconify/types@2.0.0': {}
 
   '@iconify/utils@3.1.7':
@@ -7150,6 +7165,23 @@ snapshots:
       - supports-color
       - wrangler
 
+  honox@0.1.56(hono@4.13.12)(miniflare@4.20260617.1(@types/node@26.0.0))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@26.0.0)):
+    dependencies:
+      '@babel/generator': 7.29.1
+      '@babel/parser': 7.29.3
+      '@babel/traverse': 7.29.0
+      '@babel/types': 7.29.0
+      '@hono/vite-dev-server': 0.25.3(hono@4.13.12)(miniflare@4.20260617.1(@types/node@26.0.0))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@26.0.0))
+      hono: 4.13.12
+      jsonc-parser: 3.3.1
+      precinct: 12.2.0
+    optionalDependencies:
+      '@rollup/rollup-linux-x64-gnu': 4.62.2
+    transitivePeerDependencies:
+      - miniflare
+      - supports-color
+      - wrangler
+
   html-void-elements@3.0.0: {}
 
   html-whitespace-sensitive-tag-names@3.0.1: {}
@@ -7823,6 +7855,20 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  miniflare@4.20260617.1(@types/node@26.0.0):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      sharp: 0.35.5(@types/node@26.0.0)
+      undici: 7.29.1
+      workerd: 1.20260617.1
+      ws: 8.21.0
+      youch: 4.1.0-beta.10
+    transitivePeerDependencies:
+      - '@types/node'
+      - bufferutil
+      - utf-8-validate
+    optional: true
+
   minimatch@10.2.5:
     dependencies:
       brace-expansion: 5.0.12
@@ -8304,6 +8350,40 @@ snapshots:
       '@img/sharp-win32-ia32': 0.35.5
       '@img/sharp-win32-x64': 0.35.5
       '@types/node': 24.13.6
+
+  sharp@0.35.5(@types/node@26.0.0):
+    dependencies:
+      '@img/colour': 1.1.0
+      detect-libc: 2.1.2
+      semver: 7.8.5
+    optionalDependencies:
+      '@img/sharp-darwin-arm64': 0.35.5
+      '@img/sharp-darwin-x64': 0.35.5
+      '@img/sharp-freebsd-wasm32': 0.35.5
+      '@img/sharp-libvips-darwin-arm64': 1.3.4
+      '@img/sharp-libvips-darwin-x64': 1.3.4
+      '@img/sharp-libvips-linux-arm': 1.3.4
+      '@img/sharp-libvips-linux-arm64': 1.3.4
+      '@img/sharp-libvips-linux-ppc64': 1.3.4
+      '@img/sharp-libvips-linux-riscv64': 1.3.4
+      '@img/sharp-libvips-linux-s390x': 1.3.4
+      '@img/sharp-libvips-linux-x64': 1.3.4
+      '@img/sharp-libvips-linuxmusl-arm64': 1.3.4
+      '@img/sharp-libvips-linuxmusl-x64': 1.3.4
+      '@img/sharp-linux-arm': 0.35.5
+      '@img/sharp-linux-arm64': 0.35.5
+      '@img/sharp-linux-ppc64': 0.35.5
+      '@img/sharp-linux-riscv64': 0.35.5
+      '@img/sharp-linux-s390x': 0.35.5
+      '@img/sharp-linux-x64': 0.35.5
+      '@img/sharp-linuxmusl-arm64': 0.35.5
+      '@img/sharp-linuxmusl-x64': 0.35.5
+      '@img/sharp-webcontainers-wasm32': 0.35.5
+      '@img/sharp-win32-arm64': 0.35.5
+      '@img/sharp-win32-ia32': 0.35.5
+      '@img/sharp-win32-x64': 0.35.5
+      '@types/node': 26.0.0
+    optional: true
 
   shebang-command@2.0.0:
     dependencies:
@@ -8895,6 +8975,25 @@ snapshots:
       - '@types/node'
       - bufferutil
       - utf-8-validate
+
+  wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@26.0.0):
+    dependencies:
+      '@cloudflare/kv-asset-handler': 0.5.0
+      '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260617.1)
+      blake3-wasm: 2.1.5
+      esbuild: 0.28.1
+      miniflare: 4.20260617.1(@types/node@26.0.0)
+      path-to-regexp: 6.3.0
+      unenv: 2.0.0-rc.24
+      workerd: 1.20260617.1
+    optionalDependencies:
+      '@cloudflare/workers-types': 4.20260621.1
+      fsevents: 2.3.3
+    transitivePeerDependencies:
+      - '@types/node'
+      - bufferutil
+      - utf-8-validate
+    optional: true
 
   wrap-ansi@6.2.0:
     dependencies:

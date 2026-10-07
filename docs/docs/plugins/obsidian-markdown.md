@@ -1,42 +1,92 @@
+<!-- Generated from packages/plugins/obsidian-markdown/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Obsidian Markdown
 
-Obsidian の Markdown 記法を Riebeckite で扱うための基盤となる Plugin です。Callout、WikiLink、埋め込みなど、Obsidian 由来の記法を公開サイトへ持ち込みたい場合に使います。
+Obsidian-flavored Markdown support: wikilinks, callouts, inline tags, and
+block references.
 
-## 導入
+[日本語](./obsidian-markdown.ja.md)
 
-```bash
-npm install @riebeckite/plugin-obsidian-markdown
+## Overview
+
+`obsidianMarkdown()` registers remark transforms that convert Obsidian syntax
+during the build. It runs with `order: -20` so it processes content before
+other Markdown plugins.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Syntax
 
-## 使用例
+### Wikilinks
 
-Obsidian で普段使っている WikiLink や Callout を、そのまま公開用コンテンツに利用できます。
+- `[[Note]]` → link to the target's resolved canonical permalink
+  (`ContentManifestEntry.permalink`) with class `wikilink`, alias with
+  `[[Note|Alias]]`. The target is looked up by slug; the `href` is the resolved
+  permalink
+- Fragments: `[[Note#Heading]]` → `#heading-slug`,
+  `[[Note#^block-id]]` → `#block-id`
+- `![[Note]]` → note embed. The core pipeline renders the target note
+  recursively (max depth 3, cycle-safe). Unresolved embeds render a
+  placeholder link or text
+- `![[image.png]]` → `<img>` under `assetBase`
+- `[[image.png]]` → link to the asset URL
+- `[[file.pdf]]` / `![[file.pdf]]` → rendered by a plugin that provides
+  `renderAttachment` (see `@riebeckite/plugin-attachment`), otherwise a plain
+  download link
+- Unresolvable targets → link with class `wikilink wikilink-broken`
 
-### ソース
+### Callouts
 
-```markdown
-[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+```md
+> [!note] Optional title
+> Callout content.
 
-> [!NOTE]
-> このノートは Riebeckite で公開されています。
+> [!warning]- Collapsed by default
+> More content.
 ```
 
-### 実行例
+Output: `div.rr-callout.rr-callout--{type}` with `data-callout`, plus
+`rr-callout--collapsible` / `rr-callout--collapsed` for `+` / `-` markers. Titles fall back to
+built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
 
-[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+### Inline tags
 
-> [!NOTE]
-> このノートは Riebeckite で公開されています。
+- `#tag`, `#nested/tag` → link to `{tagBase}{slugified tag}` with class `tag`
+  and `data-tag`
+- Purely numeric tags are ignored; trailing `/` and `-` are stripped
+- Each tag also triggers the optional `onTag` callback
 
-## 使いどころ
+### Block references
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- A trailing `^block-id` on a block is removed from the text and applied to
+  the element as `id` and `data-block-id`
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+## Options
 
-## 詳細仕様
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `assetBase` | `string` | `"/"` | Base path for image wikilink URLs |
+| `callout.defaultTitles` | `Record<string, string>` | built-in map | Override default callout titles |
+| `tag.tagBase` | `string` | `"/tags/"` | Tag page base path |
+| `tag.onTag` | `(tag: string) => void` | — | Called for every tag found |
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Exports
 
+- `obsidianMarkdown(options?)` / `obsidianMarkdownPlugin` — plugin factory
+- Types: `ObsidianMarkdownOptions`, `CalloutOptions`, `TagOptions`,
+  `WikilinkOptions`, `WikilinkFragment`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [`@riebeckite/plugin-attachment`](./attachment.md)

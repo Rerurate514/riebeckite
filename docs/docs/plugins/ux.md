@@ -1,29 +1,121 @@
+<!-- Generated from packages/plugins/ux/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # UX
 
-読書中の進捗バー、トップへ戻るボタン、目次のスクロール連動、コードのコピーボタンを実行時に追加する Plugin です。
+Client-side progressive enhancements for reading. The plugin leaves the built
+article HTML untouched and adds a reading progress bar, a back-to-top button,
+table-of-contents scroll-spy, and code copy buttons at runtime.
 
-## 導入
+[日本語](./ux.ja.md)
 
-```bash
-npm install @riebeckite/plugin-ux
-```
+## Features
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+- **Reading progress bar** — a thin fixed bar (`.rb-ux__progress`) that follows
+  the scroll position through the article.
+- **Back-to-top button** — a real `button` (`.rb-ux__back-to-top`) with an
+  `aria-label` that appears after scrolling and smooth-scrolls to the top.
+- **TOC scroll-spy** — observes `a[href^="#"]` links inside the article table of
+  contents with `IntersectionObserver` and marks the active link with
+  `.rb-ux__toc-active`.
+- **Code copy buttons** — wraps each `pre > code` in `.rb-ux__code` and adds a
+  copy button (`.rb-ux__copy`) with a transient "copied" state.
 
-## 使用例
+Every feature is a no-op when the relevant DOM is absent, and `initUx()` is
+idempotent.
 
-ビルド済みの記事 HTML を変えずに読書体験を高めたい場合に利用します。対象の要素がないページでは、それぞれの機能は何もしません。
+## Usage
 
 ```ts
-ux({ progress: true, backToTop: true, tocScrollSpy: true, codeCopy: true });
+import { defineConfig } from "@riebeckite/core";
+import { uxPlugin } from "@riebeckite/plugin-ux";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    uxPlugin({
+      progress: true,
+      backToTop: true,
+      tocScrollSpy: true,
+      codeCopy: true,
+      backToTopLabel: "Back to top",
+      copyLabel: "Copy",
+      copiedLabel: "Copied",
+    }),
+  ],
+});
 ```
 
-## 使いどころ
+The factory is also exported as `ux`.
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Options
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `progress` | `boolean` | `true` | Show the reading progress bar |
+| `backToTop` | `boolean` | `true` | Show the back-to-top button |
+| `tocScrollSpy` | `boolean` | `true` | Highlight the active table-of-contents link |
+| `codeCopy` | `boolean` | `true` | Add a copy button to each code block |
+| `backToTopLabel` | `string` | `"Back to top"` | `aria-label` for the back-to-top button |
+| `copyLabel` | `string` | `"Copy"` | Label of the copy button |
+| `copiedLabel` | `string` | `"Copied"` | Transient label shown after copying |
 
-## 詳細仕様
+## How configuration reaches the client
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+Client initializers are bundled statically and cannot receive plugin options.
+At build time the plugin prepends an inert JSON element to each article HTML:
+
+```html
+<script type="application/json" id="rb-ux-config" data-rb-ux-config>{...}</script>
+```
+
+`initUx()` reads that element to restore the options; when it is missing, every
+feature falls back to its enabled default. Injection happens in
+`onPostProcessed` (the object `getProcessedContent()` caches and renders) and is
+mirrored onto remaining manifest entries in `onManifestCreated`. The
+`data-rb-ux-config` attribute doubles as the marker that keeps the element from
+being inserted twice per page.
+
+## Emitted HTML / CSS hooks
+
+| Class | Target |
+| --- | --- |
+| `rb-ux__progress` | Progress bar track (`role="progressbar"`) |
+| `rb-ux__progress-bar` | Bar scaled with `scaleX` |
+| `rb-ux__back-to-top` | Back-to-top button |
+| `rb-ux__back-to-top--visible` | Added while the button is visible |
+| `rb-ux__toc-active` | Active table-of-contents link |
+| `rb-ux__code` | Code block wrapper |
+| `rb-ux__copy` | Copy button |
+| `rb-ux__copy--copied` | Transient copied state |
+
+Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
+`--rb-color-*` tokens so they do not fight the existing theme.
+
+## Accessibility
+
+- The back-to-top control is a `button` with an `aria-label`.
+- The progress bar exposes `role="progressbar"` with `aria-valuemin`,
+  `aria-valuemax`, and `aria-valuenow`.
+- The active table-of-contents link receives `aria-current="true"`.
+- Under `prefers-reduced-motion: reduce`, progress and back-to-top transitions
+  are disabled and the back-to-top jump becomes an immediate scroll.
+- Progress bar, buttons, and copy buttons are hidden when printing.
+
+## Limitations
+
+- Client-only: without JavaScript nothing is added.
+- No SPA support; a full page load re-initializes the enhancements.
+- The TOC scroll-spy looks for `.rr-table-of-contents`, `.table-of-contents`,
+  or `[data-rb-toc]` as the table-of-contents container.
+- Copy buttons are skipped inside `.rr-code` blocks (managed by the
+  code-enhance plugin) to avoid duplicate copy UI.
+
+## Exports
+
+- `uxPlugin(options?)` / `ux(options?)` — plugin factory
+- `initUx` — browser initializer
+- Types: `UxOptions`, `UxResolvedConfig`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

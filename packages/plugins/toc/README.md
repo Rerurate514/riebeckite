@@ -68,4 +68,4 @@ each link, so it works when multiple ToCs (desktop/mobile) are rendered.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)

@@ -1,30 +1,22 @@
 # Localization
 
-Riebeckite では、`@riebeckite/plugin-l10n` を使って多言語 Site を構築できます。
-
-l10n Plugin は、Content ごとの言語を判定し、
-
-- 言語ごとの URL
-- 同じ Content の翻訳版
-- Site 内リンク
-- 言語切り替え
-- SEO と組み合わせた `hreflang`
-
-などを扱います。
+Riebeckite localizes **content**. With `@riebeckite/plugin-l10n` it can keep several language versions of the same note side by side, prefix non-default languages in the URL, add a language switcher, and emit `hreflang` links. It does not translate Riebeckite's own interface strings.
 
 ```mermaid
 flowchart LR
     Content["Markdown"]
     L10n["l10n Plugin"]
     EN["English"]
-    JA["日本語"]
+    JA["Japanese"]
 
     Content --> L10n
     L10n --> EN
     L10n --> JA
 ```
 
-`starter` 以上の Preset では、次の7言語が設定されます。
+The plugin handles per-content language detection, language-specific URLs, translations of the same content, in-site links, the language switcher, and `hreflang` for SEO.
+
+The `starter` preset and above register it with seven languages:
 
 ```text
 en
@@ -36,105 +28,82 @@ fr
 ko
 ```
 
-すべての言語の記事を用意する必要はありません。実際に利用する言語に合わせて設定できます。
+`minimal` does not. You do not need articles in every language; configure only the languages you actually use.
 
-## 基本設定
+## Basic setup
 
-`riebeckite.config.ts` に `l10n` Plugin を追加します。
+Add the `l10n` plugin to `riebeckite.config.ts`:
 
 ```ts
 import { l10n } from "@riebeckite/plugin-l10n";
 
 export default defineConfig({
-  plugins: [
-    l10n({
-      defaultLang: "en",
-      languages: ["en", "ja"],
-    }),
-  ],
+  plugins: [l10n({ defaultLang: "ja", languages: ["ja", "en", "zh-CN"] })],
 });
 ```
 
-この例では、
+`defaultLang` must appear in `languages`. In this example the default is `ja` and the recognized languages are `ja`, `en`, and `zh-CN`.
 
-```text
-defaultLang
-  → en
+`defaultLang` is also used when a content's language cannot be determined by any other method.
 
-利用する言語
-  → en / ja
-```
+## How a note's language is detected
 
-となります。
+The plugin looks for four signals, in this precedence order:
 
-`defaultLang` は、Content の言語を他の方法で判定できなかった場合にも使われます。
-
-## Content の言語を決める
-
-l10n Plugin は、それぞれの Content が何語なのかを判定します。
-
-判定には優先順位があります。
+1. **Frontmatter** — `lang:` anywhere in the file.
+2. **Custom detector** — if you provide `detect`.
+3. **Filename** — `note.ja.md` (recommended), and also `note-en.md` / `note_ja.md`, or BCP 47 tags such as `note.en-US.md`, `note.zh-CN.md`.
+4. **`defaultLang`** — used when nothing above matched.
 
 ```mermaid
 flowchart TD
     Start["Content"]
+    FM{"Language in<br/>frontmatter?"}
+    Detector{"Resolved by<br/>custom detector?"}
+    File{"Resolved by<br/>filename?"}
+    Default["defaultLang"]
 
-    Start --> FM{"frontmatterに<br/>言語がある？"}
-    FM -->|Yes| Result["言語を決定"]
-    FM -->|No| Detector{"custom detectorで<br/>判定できる？"}
-
+    Start --> FM
+    FM -->|Yes| Result["Language decided"]
+    FM -->|No| Detector
     Detector -->|Yes| Result
-    Detector -->|No| File{"ファイル名で<br/>判定できる？"}
-
+    Detector -->|No| File
     File -->|Yes| Result
-    File -->|No| Default["defaultLang"]
+    File -->|No| Default
 ```
 
-優先順位は次のとおりです。
+The first method that resolves the content decides its language.
 
-1. Frontmatter
-2. Custom Detector
-3. ファイル名
-4. `defaultLang`
+The filename suffix is the only implicit signal the plugin infers from the path; a language directory such as `content/en/note.md` is not treated as a locale. Signals can be mixed; a conflict emits `L10N_LANGUAGE_CONFLICT`, which becomes a build failure with `strict: true`.
 
-上の方法で判定できた時点で、その Content の言語が決まります。
+## Setting the language in frontmatter
 
-## Frontmatter で指定する
-
-最も明示的なのは Frontmatter の `lang` です。
+The most explicit signal is the frontmatter `lang`:
 
 ```md
 ---
-title: こんにちは
+title: Hello
 lang: ja
 publish: true
 ---
 
-日本語の記事です。
+This is a Japanese article.
 ```
 
-この Content は日本語として扱われます。
+This content is treated as Japanese. Use it when you want to state the language independently of the file's location or name.
 
-ファイルの場所や名前とは別に言語を明示したい場合に利用できます。
+## Splitting by filename
 
-## ファイル名で分ける
-
-同じ Directory に複数言語の記事を置く場合は、ファイル名の末尾で分けます。
-
-たとえば、
+When several languages live in the same directory, split them by filename suffix:
 
 ```text
 README.md
 README.ja.md
 ```
 
-のように配置します。
+The `.ja` in `README.ja.md` marks the content as Japanese. The `defaultLang` language does not get a suffix.
 
-`README.ja.md` の `.ja` から、その Content が日本語だと判定できます。`defaultLang` の言語には接尾辞を付けません。
-
-推奨は `.言語` ですが、`-言語` と `_言語` も同じ意味で扱われます。
-
-この方式なら、
+`.lang` is recommended, but `-lang` and `_lang` are treated the same way. This keeps the original and its translation close together:
 
 ```text
 docs/
@@ -144,19 +113,15 @@ docs/
 └─ installation.ja.md
 ```
 
-のように、元の記事と翻訳版を近くに置いて管理できます。
+## Directories are not used
 
-## Directory では分けない
+A layout that separates languages by directory (`en/note.md`, `ja/note.md`) is **not** used for language detection. Restricting the implicit rule to the filename suffix lets a WikiLink resolve uniquely even when the same-named article exists in several languages. Specify the language through the filename suffix or the frontmatter `lang`.
 
-言語ごとに Directory を分ける構成（`en/note.md`、`ja/note.md`）は、言語判定には使われません。
+## Grouping translations
 
-言語判定の暗黙ルールをファイル名の接尾辞だけに絞ることで、同じ名前の記事が複数言語で存在しても WikiLink が一意に解決されます。言語はファイル名の接尾辞か、Frontmatter の `lang` で指定してください。
+Translation identity is independent of the file's path or name. Give the same `translation` value to every language version.
 
-## 翻訳同士を対応付ける
-
-「この日本語記事と、この英語記事は同じ Content の翻訳版」という関係は、Frontmatter の `translation` で表します。
-
-たとえば日本語版を、
+For example, the Japanese version:
 
 ```md
 ---
@@ -169,9 +134,7 @@ translation: hello
 日本語の記事です。
 ```
 
-とします。
-
-対応する英語版にも同じ `translation` を指定します。
+And the matching English version:
 
 ```md
 ---
@@ -184,13 +147,13 @@ translation: hello
 This is the English version.
 ```
 
-両方に、
+Because both carry
 
 ```yaml
 translation: hello
 ```
 
-があるため、同じ Content の翻訳として扱われます。
+they are treated as translations of the same content.
 
 ```mermaid
 flowchart LR
@@ -202,111 +165,115 @@ flowchart LR
     JA --> Group
 ```
 
-## `lang` と `translation` の違い
+A duplicate `translation + lang` pair emits `L10N_DUPLICATE_TRANSLATION` (again a build failure under `strict: true`). Use `translation` when the files have unrelated paths or names.
 
-この2つは役割が異なります。
+For a convention the plugin does not know, supply `detect`. Its language is considered after frontmatter and before filename, and its `translationId` is explicit:
 
-| Field | 意味 |
+```ts
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en", "fr"],
+  detect: ({ path }) =>
+    path.startsWith("French/") ? { lang: "fr", translationId: "hello" } : undefined,
+});
+```
+
+## `lang` vs `translation`
+
+The two fields have different roles:
+
+| Field | Meaning |
 | --- | --- |
-| `lang` | このページが何語なのか |
-| `translation` | どのページ同士が翻訳関係なのか |
+| `lang` | What language this page is written in |
+| `translation` | Which pages are translations of one another |
 
-たとえば、
+For example,
 
 ```yaml
 lang: ja
 translation: getting-started
 ```
 
-なら、
+means:
 
 ```text
-このページの言語
-  → 日本語
+Language of this page
+  → Japanese
 
-翻訳グループ
+Translation group
   → getting-started
 ```
 
-という意味になります。
+`translation` is not itself a language name; pages that represent the same content share the same value.
 
-`translation` 自体は言語名ではありません。
+## When a translation is missing
 
-同じ内容を表すページ同士で共通の値を使います。
-
-## 翻訳が存在しない場合
-
-すべての Content にすべての言語版を用意する必要はありません。
-
-たとえば、
+You do not need every language version for every piece of content:
 
 ```text
-article-a.md       日本語
+article-a.md       Japanese
 article-a.en.md    English
-article-b.md       日本語
+article-b.md       Japanese
 ```
 
-のように、一部の言語版だけが存在しても構いません。
-
-`article-b` の英語版が存在しない場合、Riebeckite が英語ページを自動生成することはありません。
+is fine. When `article-b` has no English version, Riebeckite does not generate an English page for it automatically.
 
 ```mermaid
 flowchart LR
-    JA["日本語ページ"]
-    Check{"英語版が存在？"}
+    JA["Japanese page"]
+    Check{"English version<br/>exists?"}
 
     JA --> Check
-    Check -->|Yes| EN["英語ページ"]
-    Check -->|No| None["何も生成しない"]
+    Check -->|Yes| EN["English page"]
+    Check -->|No| None["Generate nothing"]
 ```
 
-l10n Plugin は既存の翻訳関係を扱いますが、Content 自体を翻訳する機能ではありません。
+The l10n plugin works with existing translation relationships; it is not a content translator.
 
-## URL
+## URLs
 
-l10n Plugin は Content の言語情報を使って Public URL を扱います。
-
-つまり、多言語化は単に画面へ言語名を表示するだけではなく、
+The l10n plugin uses each content's language to resolve its public URL. Localization is therefore not just a language label in the UI:
 
 ```text
 Content
   ↓
-言語判定
+Language detection
   ↓
 Public Location
   ↓
 URL
 ```
 
-まで含めて処理されます。
+The default language keeps Core's resolved URL (`/about`); other languages are prefixed (`/en/about`). The plugin augments the existing content-location resolver rather than adding a router, so it composes with URL plugins such as `@riebeckite/plugin-permalink`.
 
-Site 側でファイル名から独自に URL を組み立てるのではなく、Riebeckite が解決した Public Location を利用してください。
+Do not build a URL from the filename yourself on the site side; use the Public Location Riebeckite resolved. See [Content System](../framework/content-system.md) for how public locations work.
 
-Public Location の仕組みについては [Content System](../framework/content-system.md) を参照してください。
+No fallback pages are generated. If a translation is missing, the original target stays linked and internal helpers report the absence:
 
-## Site 内リンク
+- `getLocalization(manifest, slug)` returns `availableLanguages` and language-to-href `translations` only for notes that exist.
+- `getLocalizedContent(manifest, slug, lang)` returns `null` for a missing translation.
 
-多言語 Site では、本文中のリンクも言語を考慮して扱われます。
+## In-site links
 
-たとえば日本語の記事から別の記事へ移動するとき、対応する日本語版が存在する場合は、その言語に対応したリンクとして扱えます。
+On a multilingual site, links in the body text also take the language into account. When a Japanese article links to another article that has a Japanese version, the link can be resolved to that language:
 
 ```mermaid
 flowchart LR
-    JA1["日本語 Article A"]
+    JA1["Japanese Article A"]
     EN2["Article B / English"]
-    JA2["Article B / 日本語"]
+    JA2["Article B / Japanese"]
 
     JA1 -.-> EN2
-    JA1 -->|"対応する言語"| JA2
+    JA1 -->|"matching language"| JA2
 ```
 
-これによって、記事本文のリンクだけ別言語のページへ戻ってしまう、といった問題を避けられます。
+This avoids a link in an article body dropping the reader back into another language.
 
-## 言語切り替え
+Before the content graph is built, WikiLink targets are switched to the source note's language when that translation exists; otherwise the original target remains. The rendered article rewrites both Obsidian WikiLinks (after `@riebeckite/plugin-obsidian-markdown` resolves them) and Markdown links to an existing translation in the current page's language, preserving query strings and fragments. External, fragment-only, unknown, and asset URLs are left unchanged.
 
-同じ `translation` を持つ Content は、言語切り替えの候補になります。
+## Language switcher
 
-たとえば、
+Content that shares the same `translation` becomes a candidate for the language switcher. For content with
 
 ```text
 translation: hello
@@ -316,37 +283,48 @@ translation: hello
 └─ lang: de
 ```
 
-という Content が存在すれば、それぞれを同じ Content の別言語版として扱えます。
+each can be treated as another language version of the same content. **Only translations that actually exist are candidates.** No fallback page is generated for a language that is missing.
 
-**実際に存在する翻訳だけが候補になります**。
+`l10n(...)` publishes a built-in, styled `LanguageSwitcher` in the standard `article.metadata` layout slot. A standard site renders that slot, so no l10n-specific integration is needed. The switcher is omitted on a page with fewer than two real translations.
 
-存在しない言語版への Fallback Page は自動生成されません。
+```ts
+// Keep URLs and metadata but do not render UI.
+l10n({ defaultLang: "ja", languages: ["ja", "en"], ui: false });
+
+// Use another standard slot, or replace the component.
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  ui: {
+    slot: "article.footer",
+    render: ({ localization }) => `<p>${localization.lang}</p>`,
+  },
+});
+```
+
+Themes can restyle the default component through its `.l10n-switcher` classes. `ui.render` is framework-neutral HTML, so a custom site can supply its own server-rendered component.
 
 ## SEO
 
-SEO Plugin と組み合わせることで、翻訳関係を `hreflang` として出力できます。
-
-概念的には、
+Combined with the SEO plugin, translation relationships can be emitted as `hreflang`:
 
 ```text
 English page
    ↕
 translation relationship
    ↕
-日本語 page
+Japanese page
    ↓
 SEO
    ↓
 hreflang
 ```
 
-という関係です。
+This tells search engines that the pages are language versions of the same content. Each translated entry receives one `<link rel="alternate" hreflang="…">` per existing translation through Core's head-tag extension point. The site shell renders those tags and selects `<html lang>` for a request.
 
-これによって Search Engine に同じ Content の別言語版であることを伝えられます。
+## Recommended layout
 
-## おすすめの構成
-
-英語と日本語の2言語で運用する場合は、たとえば次のようにできます。
+For an English/Japanese site, a layout such as the following works well:
 
 ```text
 content/
@@ -357,9 +335,7 @@ content/
 └─ faq.ja.md
 ```
 
-そして翻訳関係を Frontmatter で明示します。
-
-英語版は次のとおりです。
+Then state the translation relationship in frontmatter. The English version:
 
 ```md
 ---
@@ -370,7 +346,7 @@ publish: true
 ---
 ```
 
-日本語版は次のとおりです。
+The Japanese version:
 
 ```md
 ---
@@ -381,21 +357,21 @@ publish: true
 ---
 ```
 
-翻訳がまだ存在しない `faq.ja.md` は、日本語だけで公開しても構いません。
+`faq.ja.md`, which has no translation yet, can be published in Japanese alone.
 
-## 導入の流れ
+## Introduction flow
 
-多言語 Site を作る場合は、次の順番で考えると分かりやすくなります。
+When building a multilingual site, it helps to decide things in this order:
 
 ```mermaid
 flowchart TD
-    Lang["1. 使用する言語を決める"]
-    Config["2. l10nを設定"]
-    Detection["3. 言語の判定方法を決める"]
-    Content["4. 各言語の記事を書く"]
-    Translation["5. translationで対応付ける"]
-    Link["6. URL・リンクを確認"]
-    SEO["7. 必要ならSEOと組み合わせる"]
+    Lang["1. Decide the languages you use"]
+    Config["2. Configure l10n"]
+    Detection["3. Decide how language is detected"]
+    Content["4. Write articles in each language"]
+    Translation["5. Pair them with translation"]
+    Link["6. Check URLs and links"]
+    SEO["7. Combine with SEO if needed"]
 
     Lang --> Config
     Config --> Detection
@@ -405,37 +381,49 @@ flowchart TD
     Link --> SEO
 ```
 
-## まとめ
+## Summary
 
-Riebeckite の多言語対応では、次の3つを分けて考えると分かりやすくなります。
+Riebeckite localization is easier to reason about when you separate three things:
 
 ```text
 lang
-  → このContentは何語か
+  → what language this content is in
 
 translation
-  → どのContentと翻訳関係にあるか
+  → which content is a translation of which
 
 Public Location
-  → その言語のContentをどのURLで公開するか
+  → at which URL that language's content is published
 ```
 
-言語は、
+The language is decided in this precedence order:
 
 ```text
 frontmatter
     ↓
 custom detector
     ↓
-ファイル名
-    ↓
-ディレクトリ名
+filename
     ↓
 defaultLang
 ```
 
-の優先順位で判定されます。
+Translation relationships are stated with `translation`, and only translations that actually exist are used. Riebeckite never generates a missing translation automatically.
 
-翻訳関係は `translation` で明示し、実際に存在する翻訳だけを利用します。存在しない翻訳を Riebeckite が自動生成することはありません。
+## Options reference
 
-詳しい Option や Public API は、`@riebeckite/plugin-l10n` の Package README と [Plugin API](../reference/plugin-api.md) を参照してください。
+| Option | Purpose |
+| --- | --- |
+| `defaultLang` | The language that keeps unprefixed URLs. Required |
+| `languages` | The recognized languages. Only these are treated as locales |
+| `strict` | Turn language conflicts and duplicate translations into build failures |
+| `ui` | `false` to disable the switcher, or `{ slot, render }` to customize it |
+| `detect` | Custom detection: returns `{ lang, translationId }` or `undefined` |
+
+The full option list and implementation notes are in the plugin README.
+
+## See also
+
+- [Configuration](../reference/configuration.md) — `plugins` and `content`
+- [Plugin API](../reference/plugin-api.md) — public-location resolution
+- [Content System](../framework/content-system.md) — how resolved locations reach pages

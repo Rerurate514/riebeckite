@@ -1,12 +1,19 @@
-# 発見導線のレシピ
+# Discovery Recipes
 
-Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type、Markdown ブロック、`navigation` plugin の組み合わせで作ります。
+Riebeckite does not have a separate "homepage framework". A homepage and the
+pages that help readers browse a site are built by combining the Plugins that
+already exist: their Page Types, their Markdown blocks, and the `navigation`
+plugin.
 
-このガイドでは、Featured、最新記事、全記事一覧、Tag、Folder、Series、Archive といったよくある発見導線のレシピを集め、それぞれが使う Plugin とオプションを対応づけます。どのレシピも公開されている Plugin API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
+This guide collects recipes for the common discovery routes — featured content,
+recent posts, an all-posts index, tags, folders, series, and archive — and names
+the Plugin and option each one uses. Every recipe works with the public Plugin
+API and Core config; none of them needs a new Core feature.
 
-## 覚えておくこと
+## One rule to remember
 
-Plugin を有効にするとページは登録されますが、Header や Footer にリンクは追加されません。リンクは `navigation({ items })` に自分で追加します。
+Enabling a Plugin registers its pages, but it does **not** add a link to the
+Header or Footer. Add the link yourself in `navigation({ items })`:
 
 ```ts
 navigation({
@@ -17,22 +24,29 @@ navigation({
 })
 ```
 
-Route は定数ではなく設定です。Tags の一覧、Series の一覧、Archive にはそれぞれ base path のオプションがあり、以下の例のパスは既定値であって固定値ではありません。Header / Footer の考え方は [サイトのカスタマイズ](./customizing-your-site.md) を参照してください。
+Routes are configuration, not constants. The tags index, series list, and
+archive each have a base path option, so the example paths below are defaults,
+not fixed values. See [Customizing your site](./customizing-your-site.md) for the
+Header/Footer model.
 
-## starter が最初から用意しているもの
+## What the starter already gives you
 
-`starter` preset は、多くのサイトが必要とする部品をすでに登録しています。
+The `starter` preset already registers the pieces most sites need:
 
-- 生成される Homepage の **最新記事**（`recent-posts`）
-- `taxonomy` による **Tag / Folder** の一覧ページ（既定は `/tags` と `/folders`）
-- `series` による **Series** の一覧と landing ページ（既定は `/series`）
-- 記事ヘッダーの **パンくず**（`breadcrumbs`）
+- **Recent posts** on the generated homepage (from `recent-posts`).
+- **Tags and folders** listing pages from `taxonomy` (`/tags` and `/folders` by
+  default).
+- **Series** list and landing pages from `series` (`/series` by default).
+- **Breadcrumbs** in the article header from `breadcrumbs`.
 
-`query`、`dataview`、`archive`、`folder-pages` は package としては利用できますが、`starter` には登録されていません。レシピで必要になった時点で追加します。各 preset の構成は [Presets](../getting-started/presets.md) を参照してください。
+`query`, `dataview`, `archive`, and `folder-pages` are available as packages but
+are not registered by `starter`. Add the Plugin when a recipe needs it; see
+[Presets](../getting-started/presets.md) for what each preset includes.
 
-## 最新記事
+## Recent posts
 
-これは既定で有効です。生成される `app/routes/index.tsx` が最新記事を集め、Homepage の本文の後に描画します。
+This one is on by default. The generated `app/routes/index.tsx` collects the
+latest posts and renders them after the homepage body:
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -41,11 +55,17 @@ import { content } from "../content";
 const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 ```
 
-`getRecentPosts()` は既定で 5 件を返し、`manifest.discoverableEntries` を読みます。unlisted・draft・予約公開のノートと `index` ノートは対象外で、`date`（無ければ `created`）で並べます。件数や表示位置を変えたい場合は route を編集します。`limit` を渡すと既定値を上書きできます。日付を解釈できないノートは除外されます。`recent-posts` の Markdown ブロックはなく、Site が配置する component です。
+`getRecentPosts()` defaults to 5 posts and reads `manifest.discoverableEntries`,
+so `unlisted`, `draft`, and scheduled notes are excluded along with the `index`
+note. It sorts by `date` (falling back to `created`). To change the number or
+where the list appears, edit the route; passing `limit` overrides the default.
+Notes without a parseable date are dropped. There is no `recent-posts` Markdown
+block — it is a component the site places.
 
-## Featured
+## Featured content
 
-「Featured」は Core の概念ではなく、frontmatter のフラグか Tag で表します。`featured: true` を付けたノートを用意します。
+"Featured" is not a Core concept: it is a frontmatter flag or a tag that you
+filter on. Add notes with `featured: true`:
 
 ```yaml
 ---
@@ -54,7 +74,8 @@ featured: true
 ---
 ```
 
-Homepage には `query` ブロックで描画します。まず `@riebeckite/plugin-query` を install して登録します（`starter` には含まれません）。
+Then render them on the homepage with a `query` block. Install and register
+`@riebeckite/plugin-query` first (it is not in `starter`):
 
 ```ts
 plugins: [queryPlugin()],
@@ -73,7 +94,8 @@ format: list
 ```
 ````
 
-Tag でも同じことができ、Obsidian からはこちらのほうが付けやすくなります。ノートに `featured` を付けて、Tag で絞り込みます。
+A tag works the same way and is easier to apply from Obsidian. Tag notes with
+`featured`, then filter on the tag:
 
 ````md
 ```query
@@ -88,7 +110,8 @@ format: list
 ```
 ````
 
-`@riebeckite/plugin-dataview` を使えば、同じ内容を Dataview の構文でも書けます。
+With `@riebeckite/plugin-dataview` you can express the same thing in Dataview
+syntax:
 
 ````md
 ```dataview
@@ -99,11 +122,14 @@ LIMIT 3
 ```
 ````
 
-`query` も `dataview` もビルド時に実行され、client JavaScript は追加しません。ただし、これらが生成するリンクは content graph には入らないため、backlinks は作られません。
+Both `query` and `dataview` run at build time and add no client JavaScript. Note
+that links they produce are not added to the content graph, so backlinks are not
+created for them.
 
-## 全記事一覧
+## An all-posts index
 
-全記事一覧は、フィルタの無い `query` です。専用のノートを用意し、たとえば `content/posts.md` に書いて `navigation` plugin からリンクします。
+An all-posts page is a `query` with no filter. Give it its own note, for example
+`content/posts.md`, and link it from the `navigation` plugin:
 
 ````md
 ---
@@ -121,7 +147,8 @@ excludeSelf: true
 ```
 ````
 
-`excludeSelf: true` は `posts` ノート自身を一覧から除きます。`format: table` と `columns` を使えば表にもできます。
+`excludeSelf: true` keeps the `posts` note out of its own list. Use
+`format: table` with `columns` to show a table instead:
 
 ````md
 ```query
@@ -134,42 +161,54 @@ excludeSelf: true
 ```
 ````
 
-平坦な一覧ではなく月ごとに見せたい場合は、後述の Archive のレシピを使います。
+If you prefer a monthly browse instead of a flat list, use the archive recipe
+below.
 
-## Tag
+## Tags
 
-`taxonomy` は `tagsBasePath`（既定 `/tags`）に Tag 一覧を、`tagsBasePath/<slug>` に各 Tag のページを生成します。`starter` ではすでに登録されています。読者がたどれるよう Navigation にリンクを追加します。
+`taxonomy` generates a tags index at `tagsBasePath` (default `/tags`) and one
+page per tag at `tagsBasePath/<slug>`. It is already registered in `starter`.
+Add it to the navigation so readers can find it:
 
 ```ts
 navigation({ secondary: [{ label: "Tags", href: "/tags" }] })
 ```
 
-`/tags` が既存のコンテンツと衝突する場合は prefix を変更します。
+Change the prefix when `/tags` clashes with your content:
 
 ```ts
 taxonomy({ tagsBasePath: "/topics" }),
 ```
 
-各 Tag のページには RSS、Atom、JSON の feed も一緒に出力されます。Tag だけが欲しい場合は `folders: false` を指定します。
+Per-tag RSS, Atom, and JSON feeds are emitted alongside each term page. Use
+`folders: false` if you only want tags.
 
-## Folder
+## Folders
 
-Folder の形をした導線は2つあり、併用できます。
+There are two folder-shaped routes, and they can be used together:
 
-- `taxonomy` は `foldersBasePath`（既定 `/folders`）に Folder ごとのノート一覧を生成し、Folder ごとのページを作ります。
-- `folder-pages` は各 Folder をその Folder のパス（たとえば `/notes/`）の landing ページにし、Folder 内の `README.md` や `index.md` をその landing ページへ集約します。
+- `taxonomy` lists notes grouped by folder at `foldersBasePath` (default
+  `/folders`), with one page per folder.
+- `folder-pages` turns each folder into a landing page at that folder's path
+  (for example `/notes/`), and collapses a folder's `README.md` or `index.md`
+  into that landing page.
 
-Folder 一覧を使う場合は、taxonomy のパスを Navigation に追加します。
+For a folder listing, add the taxonomy path to the navigation:
 
 ```ts
 navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 ```
 
-prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`folder-pages` は `README.md` と `index.md` の解決先を変えるため、Folder ごとの landing ページが欲しい場合だけ有効にします。`starter` には登録されていません。
+Change the prefix with `taxonomy({ foldersBasePath: "/directories" })`. Because
+`folder-pages` changes where `README.md` and `index.md` resolve, enable it only
+when you want a landing page per folder; it is not registered by `starter`.
 
 ## Series
 
-Series は `series` frontmatter キーを共有するノートの集まりです。`series` は `starter` に含まれ、各パートに前後ナビを追加します。さらに `basePath`（既定 `/series`）に一覧ページを、`basePath/<name>` に Series ごとの landing ページを生成します。
+A series is a set of notes that share a `series` frontmatter key. `series` is in
+`starter` and already appends previous/next navigation to each part. It also
+publishes a list page at `basePath` (default `/series`) and one landing page per
+series at `basePath/<name>`:
 
 ```yaml
 ---
@@ -179,48 +218,57 @@ series_order: 1
 ---
 ```
 
-一覧を `navigation` plugin からリンクします。
+Link the list from the navigation plugin:
 
 ```ts
 navigation({ secondary: [{ label: "Series", href: "/series" }] })
 ```
 
-prefix は `series({ basePath: "/guides" })` で変更できます。`basePath: ""` にすると生成ページを無効にし、export されている `buildSeriesIndex()` や `renderSeriesIndex()` で自分で描画できます。
+Change the prefix with `series({ basePath: "/guides" })`, or set `basePath: ""`
+to turn the generated pages off and render them yourself from the exported
+`buildSeriesIndex()` / `renderSeriesIndex()` helpers.
 
 ## Archive
 
-`archive` は `basePath/<yyyy>/<mm>`（既定 `/archive`）に月ごとの一覧ページを、ページネーション付きで生成します。Plugin を追加します。
+`archive` publishes one listing page per month at `basePath/<yyyy>/<mm>` (default
+`/archive`) with pagination. Add the Plugin:
 
 ```ts
 plugins: [archive()],
 ```
 
-base path にリンクします。
+Then link the base path:
 
 ```ts
 navigation({ secondary: [{ label: "Archive", href: "/archive" }] })
 ```
 
-`archive({ basePath: "/history", pageSize: 20 })` で prefix や 1 ページの件数を変更できます。`pageSize: 0` にすると月ごとに 1 ページのままになります。
+Use `archive({ basePath: "/history", pageSize: 20 })` to change the prefix or
+page size. `pageSize: 0` keeps a single page per month.
 
-## 組み合わせる
+## Putting it together
 
-ブログ風の Homepage は、これらをいくつか組み合わせます。
+A blog-style homepage often combines a few of these:
 
-1. `content/index.md` の導入文。
-2. Featured ノートの `query` ブロック。
-3. 生成される Homepage route の `<RecentPosts />`。
-4. `/tags`、`/series`、`/archive` への Navigation リンク。
+1. A lead paragraph in `content/index.md`.
+2. A `query` block for featured notes.
+3. `<RecentPosts />` from the generated homepage route.
+4. Navigation links to `/tags`, `/series`, and `/archive`.
 
-Docs 風のサイトは `folder-pages` を section の landing に、`series` を順序付きガイドに使います。ネストした Folder が少ない Vault なら Folder ページは使わなくてもかまいません。手持ちのコンテンツに合う部品を選んでください。
+A docs-style site leans on `folder-pages` for section landings and on `series`
+for ordered guides. A vault with few nested folders may skip folder pages
+entirely. Pick the pieces that match the content you have.
 
-## このガイドで必要としないもの
+## What this does not need
 
-ここで挙げたレシピは、新しい抽象化を意図的に避けています。Homepage framework も Featured API も Core の Discovery registry もありません。Featured、全記事一覧、Archive はすべて既存 Plugin、Markdown ブロック、`navigation` plugin の組み合わせです。
+These recipes deliberately avoid new abstractions. There is no homepage
+framework, no Featured API, and no Core discovery registry: featured content,
+all-posts indexes, and archive pages are all combinations of existing Plugins,
+Markdown blocks, and the `navigation` plugin.
 
-## 次に読むページ
+## Where to look next
 
-- [サイトのカスタマイズ](./customizing-your-site.md) — Header / Footer と Body Slot の考え方
-- [Presets](../getting-started/presets.md) — 各 preset が登録する Plugin
-- [Plugins](../plugins/README.md) — Plugin カタログ
-- [Plugin API](../reference/plugin-api.md) — Page Type、Body Slot、CSS Hook
+- [Customizing your site](./customizing-your-site.md) — the Header/Footer and body-slot model
+- [Presets](../getting-started/presets.md) — which Plugins each preset registers
+- [Plugins](../plugins/README.md) — the Plugin catalog
+- [Plugin API](../reference/plugin-api.md) — Page Types, body slots, and CSS hooks

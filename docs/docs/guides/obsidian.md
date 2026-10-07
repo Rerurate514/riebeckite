@@ -1,18 +1,18 @@
-# Obsidian のノートをサイトにする
+# Publishing Obsidian notes
 
-Riebeckite では、**普段使っている Obsidian Vault をそのまま記事の置き場所として利用できます。**
+Riebeckite can use your everyday Obsidian vault as the place where articles
+live. You do not have to rebuild an existing vault for Riebeckite, or convert
+your Markdown into another format.
 
-既存の Vault を Riebeckite 用に作り直したり、Markdown を別の形式へ変換したりする必要はありません。
+The basic flow is:
 
-基本的な流れは次のとおりです。
-
-```mermaid id="4iixgb"
+```mermaid
 flowchart LR
-    Obsidian["Obsidianで書く"]
+    Obsidian["Write in Obsidian"]
     Publish["publish: true"]
     Riebeckite["Riebeckite"]
-    Preview["ブラウザで確認"]
-    Site["公開Site"]
+    Preview["Preview in the browser"]
+    Site["Public site"]
 
     Obsidian --> Publish
     Publish --> Riebeckite
@@ -20,31 +20,47 @@ flowchart LR
     Preview --> Site
 ```
 
-Riebeckite に Vault の場所を指定し、**公開したいノートだけに `publish: true` を付ける**のが基本です。
+Point Riebeckite at the vault and add `publish: true` only to the notes you
+want to make public.
 
-## 既存の Vault はそのまま使える
+## The basic idea
 
-Obsidian Vault は Markdown ファイルが入ったフォルダです。
+Riebeckite turns Markdown files from a configured folder into a site. An Obsidian vault is also a Markdown folder, so you can point `content.directory` at the vault.
 
-Riebeckite も指定されたフォルダから Markdown を読み込むため、`content.directory` に Vault の場所を指定すれば Content として利用できます。
+You do not have to rebuild an existing vault for Riebeckite. Riebeckite reads Markdown from the configured folder; it does not rewrite your notes as part of normal `dev`, `check`, `doctor`, `inspect`, or `build` commands. Keep using Obsidian as your editor, and opt in only the notes you want to publish.
 
-たとえば、
+Each note decides whether it is published through frontmatter.
 
-```text id="ztw0m3"
-notes/
-├─ Welcome.md
-├─ Programming/
-│  └─ Flutter.md
-├─ private/
-│  └─ memo.md
-└─ .obsidian/
+```md
+---
+title: Published note
+publish: true
+---
 ```
 
-という既存 Vault を、そのまま Riebeckite から読み込めます。
+Notes without `publish: true` are not published by the default explicit publish strategy. This lets you keep private notes and public articles in the same vault.
 
-通常の、
+## Using an existing vault as-is
 
-```text id="52h4vi"
+An Obsidian vault is a folder full of Markdown files, and Riebeckite also reads
+Markdown from a specified folder, so pointing `content.directory` at the vault
+is enough to use it as content.
+
+For example, an existing vault such as:
+
+```text
+notes/
+|- Welcome.md
+|- Programming/
+|  `- Flutter.md
+|- private/
+|  `- memo.md
+`- .obsidian/
+```
+
+can be read by Riebeckite without changes. Running the usual:
+
+```text
 dev
 check
 doctor
@@ -52,245 +68,228 @@ inspect
 build
 ```
 
-を実行しても、Riebeckite が Vault の Markdown を整理したり、勝手に書き換えたりすることはありません。
+does not reorganize the vault or rewrite its Markdown on your behalf. You keep
+editing notes in Obsidian exactly as before.
 
-ノートの編集はこれまでどおり Obsidian で行います。
+## Choosing which notes to publish
 
-## 公開するノートを選ぶ
+The default publish rule makes a note public only when its frontmatter
+contains:
 
-既定の公開ルールでは、Frontmatter に、
-
-```yaml id="mm8gy2"
+```yaml
 publish: true
 ```
 
-があるノートだけを公開します。
+For example:
 
-たとえば、
-
-```md id="6kpm95"
+```md
 ---
-title: 公開する記事
+title: Published note
 publish: true
 ---
 
-この記事は公開されます。
+This note is published.
 ```
 
-とします。
+By contrast:
 
-一方、
-
-```md id="c04z4a"
+```md
 ---
-title: 個人的なメモ
+title: Private note
 ---
 
-これは個人的なメモです。
+This is a private note.
 ```
 
-には `publish: true` がないため、公開対象になりません。
+has no `publish: true`, so it is not published.
 
-```mermaid id="mr9bb1"
+```mermaid
 flowchart TD
-    Vault["Obsidian Vault"]
+    Vault["Obsidian vault"]
 
-    Vault --> A["公開記事<br/>publish: true"]
-    Vault --> B["下書き"]
-    Vault --> C["個人的なメモ"]
+    Vault --> A["Public article<br/>publish: true"]
+    Vault --> B["Draft"]
+    Vault --> C["Private note"]
 
-    A --> Site["Public Site"]
-    B -.->|"公開しない"| Site
-    C -.->|"公開しない"| Site
+    A --> Site["Public site"]
+    B -.->|"not published"| Site
+    C -.->|"not published"| Site
 ```
 
-そのため、
+This is why you can keep published articles and private notes in the same
+vault.
 
-**公開記事と個人的なノートを同じ Vault に置いたまま運用できます。**
+## Where to put the vault
 
-## Vault の置き方
+There are two broad ways to place the vault.
 
-Vault の配置方法は、大きく2つあります。
+### Pattern A: Make the site's `content/` the vault
 
-### パターンA：Site の `content/` を Vault にする
+This is the simplest setup. Open the generated site's `content/` folder as an Obsidian vault.
 
-最も簡単な方法です。
-
-Riebeckite Site の、
-
-```text id="bgatph"
-content/
-```
-
-をそのまま Obsidian Vault として開きます。
-
-```text id="f7zqjr"
+```text
 my-site/
-├─ content/              ← Obsidianで開く
-│  ├─ Welcome.md
-│  └─ Articles/
-│     └─ FirstArticle.md
-│
-├─ riebeckite.config.ts
-└─ package.json
+|- content/              <- open this folder in Obsidian
+|  |- Welcome.md
+|  `- Articles/
+|     `- FirstArticle.md
+|
+|- riebeckite.config.ts
+`- package.json
 ```
 
-この場合は標準設定のまま利用できます。
+The default configuration works for this pattern.
 
-```ts id="7o5xhd"
+```ts
 content: {
   directory: "content",
 },
 ```
 
-初めて Riebeckite と Obsidian を組み合わせるなら、この方法が最も単純です。
+If you are combining Riebeckite and Obsidian for the first time, this is the
+simplest approach.
 
-```text id="ohx0fd"
+```text
 my-site/content/
-       ↓
-Obsidian Vault
-       ↓
-Riebeckite Content
+       |
+Obsidian vault
+       |
+Riebeckite content
 ```
 
-同じフォルダが両方の役割を持ちます。
+The same folder plays both roles.
 
-## パターンB：既存 Vault を利用する
+Use this pattern first if you only want to try Riebeckite.
 
-すでに Obsidian Vault がある場合は、Site の外に置いたまま利用できます。
+### Pattern B: Keep the vault and site in separate folders
 
-たとえば、
+If you already have an Obsidian vault, place the site next to it.
 
-```text id="k06dgu"
+```text
 workspace/
-├─ notes/                ← 既存のObsidian Vault
-│  ├─ Welcome.md
-│  ├─ Programming/
-│  └─ .obsidian/
-│
-└─ my-site/              ← Riebeckite Site
-   ├─ app/
-   ├─ riebeckite.config.ts
-   └─ package.json
+|- notes/                <- existing Obsidian vault
+|  |- Welcome.md
+|  |- Programming/
+|  `- .obsidian/
+|
+`- my-site/              <- Riebeckite site
+   |- app/
+   |- riebeckite.config.ts
+   `- package.json
 ```
 
-という構成にします。
+In `my-site/riebeckite.config.ts`, point `content.directory` at the vault.
 
-`my-site/riebeckite.config.ts` から Vault を指定します。
-
-```ts id="czcujq"
+```ts
 content: {
   directory: "../notes",
 },
 ```
 
-これだけで `notes/` を Riebeckite の Content Directory として利用できます。
+`../notes` means "the `notes` folder one level above the site". For more advanced separation, see [Separating content from the site](./content-repositories.md).
 
-```mermaid id="yt9bfr"
+```mermaid
 flowchart LR
-    Vault["notes/<br/>Obsidian Vault"]
+    Vault["notes/<br/>Obsidian vault"]
     Site["my-site/<br/>Riebeckite"]
     Build["Build"]
-    Public["Public Site"]
+    Public["Public site"]
 
     Vault --> Build
     Site --> Build
     Build --> Public
 ```
 
-Vault を Site Directory へコピーする必要はありません。
+You do not need to copy the vault into the site directory.
 
-Repository 自体も分離したい場合は、[記事とサイトのリポジトリ分離](./content-repositories.md) を参照してください。
+This pattern is safe for an existing vault as long as you understand the publish rule: only notes with `publish: true` become public by default. Riebeckite reads the vault during preview and build; it does not reorganize the vault or edit Markdown files for you.
 
-## どちらを選ぶ？
+If you also want to separate the repositories themselves, see
+[Separating content from the site](./content-repositories.md).
 
-迷った場合は、次の基準で選べます。
+## Which pattern to choose?
 
-| 状況 | おすすめ |
+When unsure, use these criteria.
+
+| Situation | Recommendation |
 | --- | --- |
-| 初めて Riebeckite を使う | `content/` を Vault にする |
-| すでに Vault がある | 既存 Vault を指定する |
-| Vault と Site の Git 履歴を分けたい | Repository を分離する |
-| Vault を Private Repository にしたい | Repository を分離する |
+| New to Riebeckite | Make `content/` the vault |
+| You already have a vault | Point `content.directory` at the existing vault |
+| You want separate Git history for vault and site | Separate the repositories |
+| You want the vault in a private repository | Separate the repositories |
 
-既存 Vault があるなら、Riebeckite のためだけに移動する必要はありません。
+If you already have a vault, you do not need to move it just for Riebeckite.
 
-## Obsidian で記事を書く
+## Writing notes in Obsidian
 
-公開する記事には、最低限 `title` と `publish` を指定します。
+For a note you want to publish, add at least these frontmatter fields.
 
-```md id="9y29hw"
+```md
 ---
-title: 記事のタイトル
+title: Article title
 publish: true
 ---
 
-本文を書きます。
+Write the article body here.
 ```
 
-本文は通常の Markdown として書けます。
+Write the body as normal Markdown.
 
-```md id="wm76s7"
-# 見出し
+```md
+# Heading
 
-本文を書きます。
+Write the article body here.
 
-## 次の見出し
+## Next heading
 
-さらに本文を書きます。
+Write more of the article body here.
 ```
 
-Obsidian の WikiLink も利用できます。
+Obsidian WikiLinks also work.
 
-```md id="5d4bby"
-詳しくは [[別の記事]] を参照してください。
+```md
+See [[another note]] for details.
 ```
 
-対応する Plugin が、Riebeckite の Content 情報を使って公開先のリンクを解決します。
+The corresponding plugin resolves the public link using Riebeckite's content
+information.
 
-## ファイル名と URL
+### File names and URLs
 
-ファイル名は Content の識別や既定の Public Location を決める材料になります。
+The file name becomes part of the URL. For example, `content/my-note.md` becomes `/my-note`. Non-English file names can work, but short lowercase English names are easier to share as URLs.
 
-たとえば、
+A clear name such as:
 
-```text id="x1m3cc"
+```text
 getting-started.md
 ```
 
-のような分かりやすい名前にしておくと、Vault と Site の両方で管理しやすくなります。
+is easier to manage in both the vault and the site.
 
-ただし、Riebeckite では最終的な URL は解決済みの Public Location として扱われます。
+However, Riebeckite treats the final URL as a resolved public location, so do
+not assume:
 
-そのため、
-
-```text id="12x76m"
-ファイルの物理Path
+```text
+physical path of the file
 =
-常に公開URL
+public URL
 ```
 
-と考えないようにしてください。
+A plugin or configuration may change the public location. To learn how URLs
+work, see the [Content System](../framework/content-system.md).
 
-Plugin や設定によって Public Location が変更される場合があります。
+## Obsidian configuration files
 
-URL の仕組みを詳しく知りたい場合は [Content System](../framework/content-system.md) を参照してください。
+A vault normally contains:
 
-## Obsidian の設定ファイル
-
-Vault には通常、
-
-```text id="wm1hpc"
+```text
 .obsidian/
 ```
 
-があります。
+This is Obsidian's own configuration, not an article. You can exclude it from
+`content.exclude` when needed.
 
-これは Obsidian 自体の設定であり、記事ではありません。
-
-必要に応じて `content.exclude` から除外できます。
-
-```ts id="0vwyam"
+```ts
 content: {
   directory: "../notes",
 
@@ -300,9 +299,9 @@ content: {
 },
 ```
 
-Template や Private Directory も Content として読み込みたくない場合は、
+If you also do not want templates or a private directory read as content:
 
-```ts id="xemlcl"
+```ts
 content: {
   directory: "../notes",
 
@@ -314,126 +313,112 @@ content: {
 },
 ```
 
-のように指定できます。
+## `exclude` and `publish: true`
 
-## `exclude` と `publish: true`
+These two settings play different roles.
 
-この2つは役割が異なります。
-
-```mermaid id="0q16fr"
+```mermaid
 flowchart LR
     Vault["Vault"]
 
     Vault --> Exclude{"exclude?"}
-    Exclude -->|"Yes"| Ignore["読み込まない"]
-    Exclude -->|"No"| Read["Contentとして読む"]
+    Exclude -->|"Yes"| Ignore["Do not read"]
+    Exclude -->|"No"| Read["Read as content"]
 
     Read --> Publish{"publish: true?"}
-    Publish -->|"Yes"| Public["公開"]
-    Publish -->|"No"| Private["公開しない"]
+    Publish -->|"Yes"| Public["Publish"]
+    Publish -->|"No"| Private["Do not publish"]
 ```
 
-`exclude` は、
+`exclude` specifies **what Riebeckite should not read as content**.
 
-**Riebeckite に Content として読み込ませないもの**
+`publish: true` specifies **which of the content that was read should be
+published**.
 
-を指定します。
+For example, directories that the site clearly will not handle:
 
-`publish: true` は、
-
-**読み込んだ Content の中から公開するもの**
-
-を指定します。
-
-たとえば、
-
-```text id="z7yyqm"
+```text
 .obsidian/
 Templates/
 private/
 ```
 
-のように明らかに Site で扱わない Directory は `exclude` し、それ以外の Note は `publish: true` で公開を選ぶ、という使い方ができます。
+can be excluded, while the remaining notes opt into publication with
+`publish: true`.
 
-## 非公開メモを混ぜる
+## Keeping private notes private
 
-Private Note や下書きを同じ Vault に置く場合は、`publish: true` を付けません。
+Do not add `publish: true` to private notes.
 
-```md id="0n1eqs"
+```md
 ---
-title: 個人的なメモ
+title: Private note
 ---
 
-公開しない内容です。
+This content is not published.
 ```
 
-既定の公開ルールなら、この Note は Site に公開されません。
+Under the default publish rule, this note is not published to the site. A
+public article, on the other hand, is written as:
 
-一方、公開記事は、
-
-```md id="d8iz87"
+```md
 ---
-title: 公開記事
+title: Public article
 publish: true
 ---
 
-公開する内容です。
+This content is published.
 ```
 
-とします。
+When you work with a private vault, it is easier to manage if you **explicitly
+mark only the notes you want to publish**.
 
-Private Vault を扱う場合は、**公開するものだけを明示する**運用にすると管理しやすくなります。
+## Links from public articles to private notes
 
-## 公開記事から非公開ノートへのリンク
+A public article may accidentally link to a private note:
 
-公開記事から、
-
-```md id="tm0f93"
-[[個人的なメモ]]
+```md
+[[Private note]]
 ```
 
-のように非公開 Note へリンクしてしまうことがあります。
+Before publishing, check for problems with:
 
-公開前には、
-
-```sh id="4ehd60"
+```sh
 npm exec riebeckite doctor
 ```
 
-などで問題がないか確認してください。
+If you use a plugin that diagnoses the consistency of in-site links, it can
+also detect WikiLinks whose public destination does not exist.
 
-Site 内リンクの整合性を診断する Plugin を利用している場合は、公開先が存在しない WikiLink なども検出できます。
+The private note itself will not be published. Avoid linking from public articles to private notes, and run `doctor` before publishing.
 
-## 画像と添付ファイル
+## Images and attachments
 
-画像や添付ファイルも Vault 内で管理できます。
+Keep images and attachments inside the vault.
 
-たとえば、
-
-```text id="tyn3v3"
+```text
 notes/
-├─ article.md
-└─ images/
-   └─ photo.jpg
+|- article.md
+`- images/
+   `- photo.jpg
 ```
 
-のようにします。
+Reference them from Markdown:
 
-Markdown からは、
-
-```md id="mmg4ki"
-![写真](/images/photo.jpg)
+```md
+![Photo](/images/photo.jpg)
 ```
 
-のように参照できます。
+If you use an Obsidian attachments folder, keep that folder inside the vault. Files outside the vault may not be found during the build.
 
-ただし、ここでは **Markdown から画像を参照できること**と、**画像ファイル自体が公開 Site に存在すること**を分けて考える必要があります。
+Here it is important to separate two things: **being able to reference an image
+from Markdown** and **the image file itself existing in the public site**.
 
-```mermaid id="ih1u6m"
+```mermaid
 flowchart LR
     Note["Markdown"]
-    Link["画像への参照"]
-    Public["Public Asset"]
+    Link["Reference to the image"]
+    Public["Public asset"]
     Browser["Browser"]
 
     Note --> Link
@@ -441,164 +426,161 @@ flowchart LR
     Public --> Browser
 ```
 
-Vault の外にある File や、Build 後の Public Output に存在しない File は表示できません。
+Files outside the vault, or files that are not present in the build's public
+output, cannot be displayed. When you publish attachments to the site, also
+confirm that the published assets are actually included in the output.
 
-添付ファイルを Site へ公開する構成では、公開対象の Asset が実際に Output へ含まれていることも確認してください。
+## Duplicate names and ambiguous links
 
-## 名前が重複したときのリンク解決
+Riebeckite resolves `[[links]]` against note paths, aliases, and attachment names. When two notes, two aliases, or two attachments share the same name, a bare name cannot identify one target. Riebeckite never guesses: the link stays unresolved and `doctor` reports it as ambiguous.
 
-Riebeckite は `[[リンク]]` を Note の Path、Alias、添付ファイル名から解決します。同じ名前の Note、Alias、添付ファイルが複数あると、名前だけの `[[note]]` では対象を1つに特定できません。
-
-このとき Riebeckite は推測せず、リンクを未解決のままにし、`doctor` が曖昧なリンクとして報告します。
-
-```text id="dup1aa"
+```text
 x/dup.md
 y/dup.md
 ```
 
-```md id="dup2bb"
-[[dup]]        ← 曖昧
-[[x/dup]]      ← Path を指定しているので x/dup.md に解決
+```md
+[[dup]]     <- ambiguous
+[[x/dup]]   <- explicit, resolves to x/dup.md
 ```
 
-公開するリンクが必ず1つの対象を指すように、Folder を含む Path を書くか、どちらかのファイル名を変更してください。
+Add the folder to the link, or rename one of the files, so every published link points at exactly one target.
 
-## Site を確認する
+## Checking the site
 
-記事を書いたら、Riebeckite Site の Directory で Development Server を起動します。
+Once you have written an article, start the development server in the
+Riebeckite site directory.
 
-```sh id="uejsnw"
+```sh
 npm exec riebeckite dev
 ```
 
-Browser で公開対象の記事を確認します。
+Check the published article in the browser. To verify that there are no
+problems:
 
-問題がないか確認する場合は、
-
-```sh id="b4s9ol"
+```sh
 npm exec riebeckite check
 npm exec riebeckite doctor
 ```
 
-を実行できます。
+To see which content Riebeckite actually recognizes:
 
-実際に Riebeckite がどの Content を認識しているか確認したい場合は、
-
-```sh id="h7xl6g"
+```sh
 npm exec -- riebeckite inspect content --list
 ```
 
-を利用できます。
+## When an article does not appear
 
-## 記事が表示されないとき
+When an article does not appear, checking in the following order narrows down
+the cause.
 
-記事が表示されない場合は、次の順番で確認すると原因を絞りやすくなります。
-
-```mermaid id="b5j2z0"
+```mermaid
 flowchart TD
-    Start["記事が表示されない"]
+    Start["Article does not appear"]
 
-    Start --> Dir{"正しいVaultを<br/>読んでいる？"}
+    Start --> Dir{"Is the correct vault<br/>being read?"}
 
-    Dir -->|No| Config["content.directoryを確認"]
-    Dir -->|Yes| Excluded{"excludeされている？"}
+    Dir -->|No| Config["Check content.directory"]
+    Dir -->|Yes| Excluded{"Is it excluded?"}
 
-    Excluded -->|Yes| Exclude["content.excludeを確認"]
-    Excluded -->|No| Publish{"publish: true<br/>がある？"}
+    Excluded -->|Yes| Exclude["Check content.exclude"]
+    Excluded -->|No| Publish{"Is publish: true<br/>present?"}
 
-    Publish -->|No| Frontmatter["Frontmatterを追加"]
+    Publish -->|No| Frontmatter["Add frontmatter"]
     Publish -->|Yes| Diagnose["check / doctor"]
 ```
 
-解決済みの Content Directory は、
+The resolved content directory can be confirmed with:
 
-```sh id="99glhk"
+```sh
 npm exec riebeckite inspect config
 ```
 
-で確認できます。
+The content that was read can be confirmed with:
 
-読み込まれている Content は、
-
-```sh id="csgeqn"
+```sh
 npm exec -- riebeckite inspect content --list
 ```
 
-で確認できます。
+## Everyday use
 
-## 普段の使い方
+After setup, almost no special operation is needed.
 
-設定が終わった後は、特別な操作はほとんど必要ありません。
-
-```mermaid id="kav3eq"
+```mermaid
 flowchart TD
-    Write["Obsidianでノートを書く"]
-    Decide{"公開する？"}
+    Write["Write a note in Obsidian"]
+    Decide{"Publish it?"}
 
     Decide -->|Yes| Publish["publish: true"]
-    Decide -->|No| Private["そのまま"]
+    Decide -->|No| Private["Leave as is"]
 
     Write --> Decide
 
-    Publish --> Dev["Riebeckiteで確認"]
+    Publish --> Dev["Check in Riebeckite"]
     Private --> Write
 
     Dev --> Push["Commit / Deploy"]
 ```
 
-つまり、普段の執筆方法はこれまでとほぼ同じです。
+In other words, your everyday writing process stays almost the same. **Write in
+Obsidian and add `publish: true` only to the notes you want to publish.**
+Riebeckite uses that vault as the content source for the public site.
 
-**Obsidian で書き、公開したい Note にだけ `publish: true` を付けます。**
+## Check before publishing
 
-Riebeckite は、その Vault を公開 Site の Content Source として利用します。
+```sh
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite build
+```
 
-## まとめ
+`check` validates configuration, `doctor` inspects content and links, and `build` writes the publishable files.
 
-Obsidian と Riebeckite の関係はシンプルです。
+## Summary
 
-```text id="f1sfdm"
-Obsidian Vault
-      ↓
+The relationship between Obsidian and Riebeckite is simple.
+
+```text
+Obsidian vault
+      |
 Markdown
-      ↓
+      |
 Riebeckite
-      ↓
-publish: true のNote
-      ↓
-Public Site
+      |
+Notes with publish: true
+      |
+Public site
 ```
 
-既存 Vault を Riebeckite 用に作り直す必要はありません。
+You do not have to rebuild an existing vault for Riebeckite. If you are
+starting fresh, you can use:
 
-最初から始めるなら、
-
-```text id="7vtvgj"
+```text
 my-site/content/
-  → Obsidian Vault
+  -> Obsidian vault
 ```
 
-既存 Vault があるなら、
+If you already have a vault:
 
-```text id="7w2i31"
+```text
 notes/
-  → 既存Vault
+  -> existing vault
 
 my-site/
-  → Riebeckite Site
+  -> Riebeckite site
 ```
 
-という構成が使えます。
+**Keep the vault location and the publication scope separate.**
 
-**Vault の場所と公開範囲は分けて考えます**。
+- `content.directory` -> which vault to read
+- `exclude` -> what not to read as content
+- `publish: true` -> what to publish to the site
 
-- `content.directory` → どの Vault を読むか
-- `exclude` → 何を Content として読まないか
-- `publish: true` → 何を Site に公開するか
+By setting these three separately, you can keep private notes in your everyday
+Obsidian vault while publishing only the articles you want with Riebeckite.
 
-この3つを分けて設定すれば、普段の Obsidian Vault に非公開 Note を残したまま、必要な記事だけを Riebeckite で公開できます。
+### Next steps
 
-### 次に読むもの
-
-- [記事の書き方ガイド](./writing-content.md)
-- [記事とサイトのリポジトリ分離](./content-repositories.md)
+- [Writing content](./writing-content.md)
+- [Separating content from the site](./content-repositories.md)
 - [Content System](../framework/content-system.md)

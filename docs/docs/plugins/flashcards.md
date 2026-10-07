@@ -1,33 +1,122 @@
+<!-- Generated from packages/plugins/flashcards/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Flashcards
 
-`flashcards` コードブロックを操作できる学習デッキに変える Plugin です。
+Turn a `flashcards` code block into a study island: a small deck of cards that
+shows a question, reveals the answer, and can be navigated and shuffled in the
+browser. The build emits an accessible static list first, so the deck stays
+readable with no JavaScript at all.
 
-## 導入
+[日本語](./flashcards.ja.md)
 
-```bash
-npm install @riebeckite/plugin-flashcards
-```
+## Overview
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`flashcards()` recognises fenced blocks
 
-## 使用例
-
-学習ノートで、カードごとに問題を表示し、答えを開き、前後移動やシャッフルをしたい場合に利用します。ビルド時にはアクセシブルな静的リストも出力されるため、JavaScript がなくても内容を読めます。
-
-````markdown
+````md
 ```flashcards
-What is Riebeckite? :: A tool that builds a static site from Markdown
+What is the capital of France? :: Paris
 
-What is the unit of publishing? :: A note
+What is 2 + 2? :: 4
 ```
 ````
 
-## 使いどころ
+and replaces them with an interactive deck.
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Usage
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 
-## 詳細仕様
+export default defineConfig({
+  // ...
+  plugins: [flashcardsPlugin()],
+});
+```
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+The plugin adds `style.css` and a client entry. The script tag is emitted by the
+site layout; the plugin only declares it.
+
+## Block syntax
+
+A block holds one or more cards. Each card is a `Question :: Answer` pair. Cards
+are separated by a blank line or by a `---` line, and an answer may span
+multiple lines:
+
+````md
+```flashcards
+Which language is this plugin written in? :: TypeScript
+
+What does the client render? :: An interactive deck
+---
+Describe the fallback. :: A static ordered list.
+It stays readable without JavaScript.
+```
+````
+
+A block with no cards, a card without `::`, or a card with an empty side is
+reported as a diagnostic (`invalid-flashcards`) and left as a code block.
+
+## Output
+
+At build time the block becomes
+
+```html
+<div class="rb-flashcards" data-flashcards data-flashcards-count="2">
+  <script type="application/json" data-flashcards-payload>
+    {"cards":[{"front":"...","back":"..."}]}
+  </script>
+  <ol class="rb-flashcards__list" data-flashcards-fallback>
+    <li class="rb-flashcards__item">
+      <span class="rb-flashcards__front">...</span>
+      <span class="rb-flashcards__back">...</span>
+    </li>
+  </ol>
+</div>
+```
+
+The payload is inert and escaped, so card text containing `<`, `>`, or `&` can
+never close the script element. The ordered list is the no-JavaScript fallback.
+
+## Client behaviour
+
+`initFlashcards()` reads the payload of every `[data-flashcards]` element and
+adds an interactive deck above the fallback. It supports:
+
+- Reveal / hide the answer
+- Previous and next card with wrap-around
+- Shuffle
+- A live card counter
+- Keyboard control: `Space` reveals, `ArrowLeft` / `ArrowRight` navigate
+
+On success the root gets `data-flashcards="ready"` and the static list is
+hidden. If the payload is missing or invalid the client leaves the fallback
+untouched. No options are passed from the build to the client; the deck reads
+`data-flashcards-shuffle` when it is present.
+
+## Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `className` | `string` | `"rb-flashcards"` | Root CSS class for the deck |
+| `language` | `string` | `"flashcards"` | Fence language to target |
+| `shuffle` | `boolean` | `false` | Start the deck in a shuffled order |
+| `fallback` | `boolean` | `true` | Emit the static ordered list |
+
+## Exports
+
+- `flashcards(options?)` / `flashcardsPlugin(options?)` — plugin factory
+- `initFlashcards(root?)` — client initializer
+- `parseFlashcards(source)` — parse a block into cards
+- `splitFlashcardGroups(source)` — split a block into card groups
+- `remarkFlashcards(options?)` — the remark transform on its own
+- `renderFlashcards(cards, options)` / `renderFlashcardsPayload(cards)` /
+  `renderFlashcardsFallback(cards, className?)` — build-time rendering helpers
+- `resolveFlashcardsOptions(options?)`, `createFlashcardsRuntime(options?)`
+- Types: `FlashcardsOptions`, `FlashcardsCard`, `FlashcardsPayload`,
+  `ResolvedFlashcardsOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

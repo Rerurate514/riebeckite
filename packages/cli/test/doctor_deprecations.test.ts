@@ -43,7 +43,7 @@ test("doctor deprecation check renders warnings without making the result an err
       "Deprecated: site.legacyTitle",
       "Use: site.title",
       "Deprecated since: 0.0.13",
-      "See: docs/docs/guides/upgrading.en.md#legacy-site-title",
+      "See: docs/docs/guides/upgrading.md#legacy-site-title",
     ].join("\n"),
     suggestion: "Use site.title. Move the value to site.title.",
   };

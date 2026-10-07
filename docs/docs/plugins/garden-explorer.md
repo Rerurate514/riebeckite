@@ -1,50 +1,147 @@
+<!-- Generated from packages/plugins/garden-explorer/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Garden Explorer
 
-Digital Garden を探索するための独立ページを提供します。検索できるノート一覧、タグ・フォルダー絞り込み、Local / Global Graph、詳細パネルを一画面にまとめます。
+Interactive note garden explorer: a local/global content graph, search box,
+tag/folder filters, and note details in a single page.
 
-## 導入
+[日本語](./garden-explorer.ja.md)
 
-```bash
-npm install @riebeckite/plugin-garden-explorer
-```
+## Overview
 
-`riebeckite.config.ts` に登録します。
+`gardenExplorerPlugin()` provides an interactive `GardenExplorer` component with
+three panels:
+
+- **Explorer** — search box plus optional tag and folder filter chips (with
+  counts) and a filtered note list
+- **Graph** — an SVG graph of published notes and internal links with local and
+  global modes, force or radial layout, hover neighbor emphasis, node drag,
+  wheel/button zoom, canvas pan, reset, and click-to-open navigation
+- **Details** — the selected note's links, tags, excerpt, and related notes
+
+Selection state is mirrored to the URL query (`?note=`, `?tag=`, `?folder=`),
+so the view is shareable and the filter list adapts to the current selection.
+
+`getGardenExplorerData()` builds the note set from `manifest.discoverableEntries`
+and `manifest.graph`, including headings, a plain-text body (truncated to 4,000
+chars), tags, folders, outgoing links, and backlinks. The graph only contains
+published/discoverable notes and resolved note links, so unpublished, excluded,
+or missing pages do not appear as graph nodes.
+
+The note list in the Explorer panel shows the first 80 filtered notes for UI
+performance. The Global Graph uses all filtered notes. If a URL-selected note
+falls outside the first 80, it is preserved in the Global Graph.
+
+## Local and global graph
+
+- **Local graph** starts at the selected note and shows neighbors up to `depth`
+  hops. The default is `depth: 1`, matching the common Obsidian/Quartz model of
+  direct backlinks and outgoing links. Use `depth: 0` to show only the selected
+  note.
+- **Global graph** shows all currently filtered public notes and their published
+  internal links.
+
+This is intentionally close to Obsidian's exploration model, but it uses
+Riebeckite's Page System, public manifest, permalinks, and content graph instead
+of rescanning the vault in the browser.
+
+## Layouts
+
+- **Force layout** (`layout: "force"`, default) uses a small deterministic
+  built-in simulation: repulsion, link distance, centering, damping, and bounded
+  stabilization. It adds no large dependency. With large graphs (>300 nodes) the
+  force layout computation becomes noticeable; a warning is shown in the toolbar.
+  For large Global Graphs, consider using the radial layout. Above 500 nodes,
+  explicit user approval is required before the force layout runs.
+- **Radial layout** (`layout: "radial"`) keeps the existing Riebeckite radial
+  layout available for compact or deterministic presentations. It runs in
+  near-linear time and handles thousands of nodes instantly.
+
+## Usage
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 
 export default defineConfig({
-  plugins: [
-    gardenExplorerPlugin({
-      layout: "force",
-      depth: 1,
-      showTags: true,
-      showFolders: true,
-    }),
-  ],
+  // ...
+  plugins: [gardenExplorerPlugin()],
 });
 ```
 
-## 提供されるもの
+With configuration:
 
-- **Local Graph**: 選択中のページを起点に表示します。既定では `depth: 1` で直接の隣接ページを表示します。
-- **Global Graph**: 現在の検索・フィルター条件に合う公開ページ全体と内部リンクを表示します。
-- **Force layout**: 既定の対話的 layout です。小さな組み込み physics 実装で、重い依存は追加していません。
-- **Radial layout**: Riebeckite 既存の決定的な放射状 graph を `layout: "radial"` で使えます。
-- **探索操作**: hover で接続ノード・辺を強調し、無関係なノードを薄くします。ノード drag、canvas pan / zoom、クリックによるページ移動に対応します。
+```ts
+plugins: [
+  gardenExplorerPlugin({
+    layout: "force",
+    depth: 1,
+    showTags: true,
+    showFolders: false,
+    nodeSize: 1,
+    linkDistance: 84,
+    repulsion: 1800,
+    showLabels: true,
+  }),
+];
+```
 
-Graph は Riebeckite の Content Graph と public manifest を使います。ブラウザ側で Vault を再探索せず、存在しないページ・除外ページ・未公開ページはノードとして出しません。
+`gardenExplorerPlugin()` registers the `/explore` page type and bundles
+`style.css` and its client hydrator into the app. A catch-all route using
+`resolveRiebeckiteRoute()` and `pluginPageSsgParams()` renders and emits it;
+no plugin-specific application route is needed. The page is server-rendered
+first, then the registered client entry hydrates its graph, filters, and URL
+state after loading.
 
-## Obsidian との関係
+### Embed the component elsewhere
 
-公開 Digital Garden で Obsidian / Quartz ユーザーが期待する Local / Global Graph、depth 付き Local Graph、hover による隣接強調、クリック移動、drag、pan、zoom、tags、folders、backlinks、outgoing links を扱います。ただし Obsidian の見た目を完全コピーするのではなく、Riebeckite の permalink、Page System、l10n 対応 manifest、Plugin API の境界を維持します。
+```tsx
+import GardenExplorer, {
+  getGardenExplorerData,
+} from "@riebeckite/plugin-garden-explorer";
+import { config } from "../config";
+import { content } from "../content";
+import { getArticleTitle } from "../lib/article-title";
 
-## 使いどころ
+const manifest = await content.getManifest();
+const data = getGardenExplorerData({
+  manifest,
+  config,
+  resolveTitle: getArticleTitle,
+  options: { layout: "radial", depth: 2 },
+});
 
-サイト全体のノート同士のつながりを探索する入口を提供したい場合に利用します。個別記事から辿るだけでなく、Digital Garden 全体を俯瞰できます。
+// ...in a site-owned component
+return <GardenExplorer data={data} />;
+```
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+The component is client-side interactive and expects `window` to be available in
+the browser. The server-rendered fallback still exposes the surrounding
+explorer/detail structure and links in semantic lists.
 
-## 詳細仕様
+## Data
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+`getGardenExplorerData()` returns `GardenExplorerData`:
+
+- `notes` — published notes sorted by title, with searchable fields plus
+  `folder`, `outgoing`, and `backlinks`
+- `edges` — note-to-note graph edges between published notes
+- `tags` — tag counts, most frequent first
+- `folders` — folder counts, alphabetical; root-level notes are `"Root"`
+- `options` — resolved graph options used by the hydrated component
+
+## Exports
+
+- `gardenExplorerPlugin(options?)` — plugin factory
+- `GardenExplorer` — interactive explorer component (default export of
+  `components/garden-explorer.tsx`)
+- `getGardenExplorerData({ manifest, config, resolveTitle, options? })` — builds
+  the explorer dataset
+- Types: `GardenExplorerData`, `GardenExplorerEdge`, `GardenExplorerFolder`,
+  `GardenExplorerGraphLayout`, `GardenExplorerGraphMode`, `GardenExplorerNote`,
+  `GardenExplorerOptions`, `GardenExplorerPluginOptions`, `GardenExplorerTag`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [`@riebeckite/plugin-local-graph`](./local-graph.md)

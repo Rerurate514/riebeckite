@@ -1,16 +1,16 @@
 # Tokyo Night
 
-Tokyo Night を基調とした高コントラストな Theme です。
+A high-contrast Theme inspired by Tokyo Night.
 
-## 導入
+## Installation
 
 ```bash
 npm install @riebeckite/theme-tokyonight
 ```
 
-Theme の factory 名と設定項目は、実装と package README を一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+Check the implementation and package README as the source of truth for the Theme's factory name and configuration options. Use it by assigning it to `theme` in `riebeckite.config.ts`.
 
-## 詳細仕様
+## Detailed specification
 
-設定項目や Theme 固有の仕様は package README を参照してください。Theme の仕組みは [Theme System](../framework/theme-system.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.md) を参照してください。
+For configuration options and Theme-specific behavior, see the package README. For how Themes work, see [Theme System](../framework/theme-system.md). To create a Theme, see [Writing a Theme](./writing-a-theme.md).
 

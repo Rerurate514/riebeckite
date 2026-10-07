@@ -977,6 +977,6 @@ permalink({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.md)
-- [コンテンツシステム](../../../docs/docs/framework/content-system.md)
+- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [コンテンツシステム](../../../docs/docs/framework/content-system.ja.md)
 

@@ -1,31 +1,126 @@
+<!-- Generated from packages/plugins/sidenotes/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Sidenotes
 
-GFM の脚注を Tufte スタイルのサイドノートに変える Plugin です。
+Tufte-style side notes for Riebeckite. Authors keep writing ordinary GFM
+footnotes (`[^1]` and `[^1]: text`); the plugin rewrites the generated
+footnote markup into an inline reference plus a note that renders as a margin
+note on desktop and as a tap-open popover on mobile.
 
-## 導入
+[日本語](./sidenotes.ja.md)
 
-```bash
-npm install @riebeckite/plugin-sidenotes
+## Overview
+
+The plugin registers a rehype plugin that rewrites the footnote markup the
+core pipeline produces from `remark-gfm`:
+
+- Each footnote reference becomes a `sup` with a small reference link
+  (`[data-rr-sidenotes-ref]`) that keeps its `href="#fn-…"` target, so the
+  footnote stays reachable with plain browser navigation.
+- Each footnote definition becomes a `.rr-sidenotes__note` aside next to the
+  reference: a static **margin note** on desktop (`@media (min-width: 48rem)`)
+  and a **popover** on mobile (`@media (max-width: 48rem)`).
+- The trailing footnote definitions section is kept (it is the link target
+  on mobile and the no-JavaScript fallback) and hidden on desktop, where the
+  margin notes are always visible.
+
+A small client entry (`initSidenotes`) toggles the mobile popover: tap to
+open/close, `Escape` to close, and click outside to close. It ignores the page
+when `(min-width: 48rem)` matches — desktop margin notes need no JavaScript.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { sidenotes } from "@riebeckite/plugin-sidenotes";
+
+export default defineConfig({
+  // ...
+  plugins: [sidenotes()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+Write normal GFM footnotes:
 
-## 使用例
+```md
+Riebeckite renders margin notes at the side of the text.[^1]
 
-これまでどおり通常の脚注を書きます。デスクトップでは参照の横にマージンノートとして、モバイルではタップで開くポップオーバーとして表示されます。
-
-```markdown
-Riebeckite は本文の横にマージンノートを描画します。[^1]
-
-[^1]: デスクトップでは参照の横に、モバイルではポップオーバーに表示されます。
+[^1]: The note text appears beside the reference on desktop and in a popover on mobile.
 ```
 
-## 使いどころ
+## Options
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `className` | `string` | `""` | Extra CSS class on each sidenote root |
+| `ariaLabel` | `string` | `"Sidenote"` | Accessible name prefix for each note (`"Sidenote 1"`) |
+| `openLabel` | `string` | `"Footnote"` | Accessible label prefix for a closed reference (`"Footnote 1"`) |
+| `closeLabel` | `string` | `"Close sidenote"` | Accessible label prefix for an open reference (`"Close sidenote 1"`) |
+| `popoverAlignment` | `"bottom" \| "end"` | `"bottom"` | Where the mobile popover is anchored |
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+```ts
+sidenotes({
+  ariaLabel: "Note",
+  popoverAlignment: "end",
+});
+```
 
-## 詳細仕様
+## Output
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+```html
+<p>
+  Riebeckite renders margin notes here.<sup class="rr-sidenotes__ref">
+  <a href="#user-content-fn-1" id="user-content-fnref-1" class="rr-sidenotes__toggle"
+     data-rr-sidenotes-ref aria-expanded="false" aria-controls="rr-sidenotes-1"
+     aria-label="Footnote 1">1</a></sup>
+</p>
+<aside class="rr-sidenotes__note rr-sidenotes__note--popover-bottom" id="rr-sidenotes-1"
+       data-rr-sidenotes-note aria-label="Sidenote 1" tabindex="-1">
+  <span class="rr-sidenotes__index" aria-hidden="true">1</span>
+  <div class="rr-sidenotes__body"><p>The note text appears beside the reference.</p></div>
+</aside>
+```
+
+## Accessibility
+
+- The reference is a real link (`href="#user-content-fn-…"`) with `aria-expanded`
+  and `aria-controls`; the client toggles `aria-expanded` and swaps the label
+  between `openLabel` and `closeLabel`.
+- The popover is labelled with `aria-label` and receives focus (`tabindex="-1"`)
+  when opened via a script.
+- Without JavaScript, tapping the reference jumps to the footnote definitions
+  as in ordinary GFM output.
+
+## Style
+
+The package ships `style.css`. Register it like any other plugin stylesheet:
+
+```ts
+import "@riebeckite/plugin-sidenotes/style.css";
+```
+
+Stable hooks follow the `rr-sidenotes` convention: `rr-sidenotes__toggle`,
+`rr-sidenotes__note`, `rr-sidenotes__index`, `rr-sidenotes__body`,
+`rr-sidenotes__footnotes`, plus the `rr-sidenotes__note--open` modifier.
+
+## Exports
+
+- `sidenotes(options?)` — plugin factory
+- `sidenotesPlugin` — alias of `sidenotes`
+- `rehypeSidenotes(options?)` — the rehype transformer
+- `resolveSidenotesOptions(options?)` — apply option defaults
+- `renderSidenotesReference(input)` / `renderSidenotesNote(input)` — HTML builders
+- `initSidenotes(options?)` — client popover initializer
+- Types: `SidenotesOptions`, `ResolvedSidenotesOptions`, `SidenotesClientOptions`
+
+## Limitations
+
+- Footnotes that reuse the same definition share one margin note and popover.
+- The footnote definitions section is hidden on desktop; margins must have
+  room for the notes, and themes can restyle `.rr-sidenotes__note` freely.
+- Notes inside tables or deeply nested inline markup are placed after the
+  nearest block ancestor, so their vertical position is approximate.
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

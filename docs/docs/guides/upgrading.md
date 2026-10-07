@@ -1,13 +1,13 @@
-# Riebeckite をアップグレードする
+# Upgrading Riebeckite
 
-既存 Site を新しい Riebeckite へ更新するときの手順です。
+Use this guide when updating an existing site to a newer Riebeckite version.
 
-基本的には、
+The basic order is:
 
 ```text
-現在のVersionを確認
+Check the current version
         ↓
-Packageを更新
+Update packages
         ↓
 riebeckite check
         ↓
@@ -15,30 +15,29 @@ riebeckite doctor
         ↓
 riebeckite build
         ↓
-Deprecated Warningを確認
+Review deprecation warnings
 ```
 
-の順で進めます。
+Riebeckite is currently pre-1.0. When you upgrade, do not only bump the
+package version; check `doctor` for deprecated usage as well.
 
-Riebeckite は現在 pre-1.0 です。更新時には、Package の Version を上げるだけでなく、`doctor` で Deprecated Usage がないか確認してください。
+## 1. Check the current version
 
-## 1. 現在の Version を確認する
-
-まず、現在 Site で利用している Riebeckite Package を確認します。
+First, look at the Riebeckite packages the site currently uses:
 
 ```sh
 npm ls @riebeckite/core @riebeckite/cli @riebeckite/honox
 ```
 
-Plugin や Theme を利用している場合は、それらの Version も合わせて確認してください。
+If you use plugins or themes, check their versions too.
 
-更新前の状態を Commit しておくと、変更点を確認したり問題が起きた場合に戻したりしやすくなります。
+Committing the state before the upgrade makes it easier to review the changes
+and to roll back if something goes wrong.
 
-## 2. Riebeckite Package を更新する
+## 2. Update the Riebeckite packages
 
-Site で利用している Riebeckite Package をまとめて更新します。
-
-対象には、
+Update the Riebeckite packages the site uses together. The target packages
+include:
 
 ```text
 @riebeckite/core
@@ -48,13 +47,11 @@ Site で利用している Riebeckite Package をまとめて更新します。
 @riebeckite/theme-*
 ```
 
-などがあります。
+Check which packages the site actually uses and update the ones you need.
 
-Site が実際に利用している Package を確認し、必要なものを更新してください。
+## 3. Validate the site
 
-## 3. Site を検証する
-
-Package を更新したら、普段の検証を実行します。
+After updating the packages, run the normal validation commands for your site:
 
 ```sh
 npm exec riebeckite check
@@ -62,21 +59,21 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-それぞれ確認するものが異なります。
+Each command checks something different:
 
-| Command | 主に確認すること |
+| Command | What it mainly checks |
 | --- | --- |
-| `check` | Config や Plugin Contract が正しいか |
-| `doctor` | Deprecated Usage を含む Site の問題 |
-| `build` | 実際に Site を生成できるか |
+| `check` | Whether the config and plugin contract are correct |
+| `doctor` | Site problems, including deprecated usage |
+| `build` | Whether the site can actually be generated |
 
 ```mermaid
 flowchart LR
-    Update["Package更新"]
+    Update["Update packages"]
     Check["check"]
     Doctor["doctor"]
     Build["build"]
-    Done["Upgrade完了"]
+    Done["Upgrade complete"]
 
     Update --> Check
     Check --> Doctor
@@ -84,50 +81,47 @@ flowchart LR
     Build --> Done
 ```
 
-`check` が成功しただけで終わらせず、`doctor` と実際の `build` まで確認してください。
+Do not stop just because `check` succeeded; confirm `doctor` and an actual
+`build` as well.
 
-## Deprecated Warning を確認する
+## Reviewing deprecation warnings
 
-アップグレード後は、
+After upgrading, run:
 
 ```sh
 npm exec riebeckite doctor
 ```
 
-を実行します。
+If you use an old contract, the `Deprecated usage` check shows a warning.
 
-古い Contract を使用している場合は、`Deprecated usage` Check に Warning が表示されます。
+Deprecated means:
 
-Deprecated とは、
+**it still works for now, but it is no longer the preferred contract.**
 
-**現在は利用できるが、今後の推奨 Contract ではない**
-
-という意味です。
-
-Deprecated になっただけで、その Release から突然 Build が失敗するという意味ではありません。
+Being deprecated does not mean the build suddenly fails in that release.
 
 ```text
-現在
-  → まだ利用可能
-  → doctorでWarning
+Now
+  → still usable
+  → a warning in doctor
 
-将来
-  → 削除される可能性がある
-  → それまでにMigration
+Later
+  → may be removed
+  → migrate before then
 ```
 
-### Warning に表示される情報
+### Information shown in a warning
 
-Deprecated Warning には、原則として次の情報が含まれます。
+A deprecation warning normally includes the following information:
 
-- 何が Deprecated なのか
-- いつ Deprecated になったか
-- Replacement がある場合は何を使うか
-- 必要な Migration Action
-- 詳細 Documentation
-- 削除予定 Version が決まっている場合はその Version
+- what is deprecated;
+- when it became deprecated;
+- what to use instead, if there is a replacement;
+- what migration action to take;
+- where to read more;
+- the planned removal version, when one has been decided.
 
-たとえば考え方としては、
+For example, you judge the needed change from information such as:
 
 ```text
 Deprecated:
@@ -137,34 +131,28 @@ Replacement:
   newOption
 
 Action:
-  configをnewOptionへ変更
+  change the config to newOption
 
 Removal:
   0.x.x
 ```
 
-のような情報から、必要な変更を判断します。
+### When a deprecation warning appears
 
-## Deprecated Warning が出たら
-
-Warning に表示された対象を確認します。
-
-変更対象になる可能性があるものには、
+Review the target shown in the warning. Things that may need to change
+include:
 
 - Config
 - Plugin API
 - Theme API
-- CLI Option
-- Scaffold の生成物
-- Package Reference
+- CLI option
+- scaffold output
+- package reference
 
-などがあります。
+If a replacement is shown, change to the new contract. If migration
+documentation is shown, follow those steps.
 
-Replacement が示されている場合は、新しい Contract へ変更します。
-
-Migration Documentation が示されている場合は、その手順に従ってください。
-
-変更後、もう一度、
+After the change, run the commands again:
 
 ```sh
 npm exec riebeckite check
@@ -172,189 +160,148 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-を実行します。
-
 ```mermaid
 flowchart TD
     Doctor["riebeckite doctor"]
-    Warning{"Deprecated Warning?"}
+    Warning{"Deprecated warning?"}
 
     Doctor --> Warning
 
     Warning -->|"No"| Build["riebeckite build"]
-    Warning -->|"Yes"| Read["Warning / Migrationを読む"]
+    Warning -->|"Yes"| Read["Read the warning / migration"]
 
-    Read --> Change["Siteを変更"]
+    Read --> Change["Change the site"]
     Change --> Check["riebeckite check"]
     Check --> Doctor
 ```
 
-## Warning と Error の違い
+## Warning vs. error
 
-Deprecated Usage は基本的に Warning です。
+Deprecated usage is basically a warning. A `doctor` result that contains only
+deprecation warnings is treated as a success.
 
-そのため、Deprecated Warning だけが存在する `doctor` の結果は成功として扱われます。
-
-一方、Error は Site を正しく扱えない問題に使用されます。
-
-たとえば、
+Errors, on the other hand, are used for problems that prevent Riebeckite from
+handling the site correctly. For example:
 
 ```text
 invalid configuration
-dependency の欠落
-inspection を妨げる content 問題
-すでに削除された API
+missing dependency
+content problems that block inspection
+APIs that have already been removed
 ```
 
-などです。
-
-| 状態 | 意味 | 対応 |
+| State | Meaning | Action |
 | --- | --- | --- |
-| Warning | 現在は動くが確認が必要 | Migration を計画する |
-| Error | 現在の Site に問題がある | Upgrade 完了前に修正する |
+| Warning | It works now, but needs review | Plan the migration |
+| Error | The current site has a problem | Fix it before finishing the upgrade |
 
-Deprecated Warning があるからといって、すぐに Site が動かなくなるわけではありません。
+A deprecation warning does not mean the site stops working immediately. But if
+a planned removal version is shown, migrate before then.
 
-ただし削除予定 Version が示されている場合は、それまでに Migration してください。
+## Deprecation policy
 
-## Deprecation Policy
+Riebeckite distinguishes the state of API and config changes as follows:
 
-Riebeckite では、API や Config の変更状態を次のように区別します。
-
-| 用語 | 意味 |
+| Term | Meaning |
 | --- | --- |
-| Deprecated | 現在は Support されているが、将来変更・削除される Contract |
-| Removed | すでに Support されていない Contract |
-| Breaking Change | Site 側の変更が必要になる可能性がある変更 |
-| Migration | 古い Contract から新しい Contract へ移るための手順 |
+| Deprecated | Currently supported, but scheduled to change or be removed |
+| Removed | No longer supported |
+| Breaking Change | A change that may require updates on the site side |
+| Migration | The steps to move from the old contract to the new one |
 
 ### Deprecated
 
-Deprecated になった Contract は、当面利用できます。
-
-ただし、将来削除される可能性があるため、可能なタイミングで Migration してください。
+A deprecated contract can still be used for the time being. But it may be
+removed in the future, so migrate when practical.
 
 ```text
 Supported
    ↓
 Deprecated
    ↓
-Migration期間
+Migration window
    ↓
 Removed
 ```
 
 ### Removed
 
-Removed になった Contract は、すでに Support されていません。
+A removed contract is no longer supported. Continued usage may fail:
 
-そのまま利用すると、
+- validation
+- build
+- runtime checks
 
-- Validation
-- Build
-- Runtime Check
-
-などで失敗する可能性があります。
-
-Deprecated Warning が出ていた Contract を長期間そのままにすると、将来の Upgrade で Removed に到達する可能性があります。
+If a contract that showed a deprecation warning is left in place for a long
+time, a future upgrade may reach its removal.
 
 ### Breaking Change
 
-Breaking Change は、
+A breaking change is a change that may require updates to:
 
-- Site
-- Config
-- Plugin
-- Theme
-- Deployment
+- site
+- config
+- plugin
+- theme
+- deployment
 
-などの変更が必要になる可能性がある変更です。
+It is not always a simple API rename. If migration documentation exists, read
+it.
 
-必ずしも単純な API 名の置き換えとは限りません。
+## Pre-1.0 compatibility
 
-Migration Documentation がある場合は、その内容を確認してください。
-
-## Pre-1.0 の互換性
-
-Riebeckite は現在 pre-1.0 です。
-
-そのため、安定版 1.x と同じ SemVer の互換期間を保証するものではありません。
-
-ただし、Security や Correctness 上の理由がない限り、
+Riebeckite is currently pre-1.0, so the project does not promise the same
+compatibility window as a stable 1.x SemVer line. Even so, unless there is a
+security or correctness reason, the project does not:
 
 ```text
-Deprecatedにする
+mark something deprecated
       ↓
-同じReleaseですぐ削除
+remove it in the same release
 ```
 
-という変更は行いません。
-
-可能な限り、
+When possible, it takes these steps:
 
 ```mermaid
 flowchart LR
-    Old["既存Contract"]
-    Deprecated["Deprecated<br/>Warning"]
-    Migration["Replacement /<br/>Migrationを案内"]
-    Removed["後のReleaseで<br/>Removed"]
+    Old["Existing contract"]
+    Deprecated["Deprecated<br/>warning"]
+    Migration["Replacement /<br/>migration guidance"]
+    Removed["Removed in<br/>a later release"]
 
     Old --> Deprecated
     Deprecated --> Migration
     Migration --> Removed
 ```
 
-という段階を踏みます。
+In other words, the policy is to provide a window for users to move to the new
+contract.
 
-つまり、利用者が新しい Contract へ移行するための期間を設ける方針です。
+## Reading migration notes
 
-## Migration Note の読み方
-
-Upgrade で問題が出た場合は、まず `doctor` を確認してください。
+If an upgrade causes problems, check `doctor` first:
 
 ```sh
 npm exec riebeckite doctor
 ```
 
-`doctor` の Warning は、**現在の Site が実際に使用している古い要素**を直接示します。
-
-そのため、最初からすべての Migration Documentation を読むより、
+A `doctor` warning directly points at **the old element the current site
+actually uses**. So rather than reading all the migration documentation from
+the start, this order is more efficient:
 
 ```text
 doctor
    ↓
-Deprecated Warning
+deprecation warning
    ↓
-該当するMigration Documentation
+the matching migration documentation
    ↓
-Siteを変更
+change the site
 ```
 
-という順番で確認する方が効率的です。
+### When a replacement exists
 
-## UI アーキテクチャの整理
-
-この major release では、以前の記事 UI contract との互換性を削除しました。
-
-| 以前 | 現在 | 対応 |
-| --- | --- | --- |
-| `article.after-header` | `article.header` | Site の見出しより前に描画します。 |
-| `article.after-meta` | `article.metadata` | 記事 metadata として描画します。 |
-| `bodySlots.properties` | `bodySlots["article.metadata"]` | Site の properties 専用分岐を削除します。 |
-| `properties({ position, render })` | `properties({ ... })` | 両方の option を削除します。Plugin は常に metadata を提供します。 |
-| `injectBreadcrumbNav`、`injectShareControls` | manifest body slot | import を削除し、Site が標準 slot を描画します。 |
-| `article-shell*`、`article-frontmatter*`、`.prose` | `rb-*`、`site-article-frontmatter*`、`[data-slot="article-body"]` | Site CSS と client selector を更新します。 |
-| `callout*`、`is-collapsed` | `rr-callout*` | Theme CSS を `rr-callout__*`、`rr-callout--*`、`data-callout` に更新します。 |
-
-標準 article slot は `article.header`、`article.metadata`、`article.aside`、
-`article.before-content`、`article.after-content`、`article.footer` です。Plugin は
-fragment を提供するだけで、HonoX route と Site component が配置を決めます。
-
-描画には `@riebeckite/honox/ui` の公開 `ContentSlot` と `ArticleBody` を使えます。`bodySlots` の直読みや `ArticleContent html=...` も引き続き動作しますが、レンダリング済み Markdown 本文には `ArticleBody` を推奨します。
-
-### Replacement がある場合
-
-Warning に直接 Replacement が示されている場合は、それを確認します。
+If the warning shows a direct replacement, review it:
 
 ```text
 old contract
@@ -364,97 +311,89 @@ replacement
 new contract
 ```
 
-### Replacement がない場合
+### When no replacement exists
 
-すべての Breaking Change が、
+Not every breaking change is a one-to-one replacement like:
 
 ```text
 oldA → newA
 ```
 
-のような一対一の置き換えになるとは限りません。
-
-直接の Replacement がない場合は、無理に代替 API を探さず、Migration に記載された Action に従ってください。
-
-たとえば、
+If there is no direct replacement, do not force a substitute API; follow the
+action described in the migration. Migrations can include things such as:
 
 ```text
-古い設定を削除する
+remove an old setting
 
-設定方法そのものを変更する
+change the configuration method itself
 
-Plugin構成を変更する
+change the plugin structure
 
-生成されたFileを更新する
+update generated files
 ```
 
-といった Migration もあり得ます。
+## Migration is not automatic
 
-## Migration は自動ではない
-
-現時点の Riebeckite には、
+Riebeckite does not currently provide an automatic migration command such as:
 
 ```sh
 riebeckite migrate
 ```
 
-のような自動 Migration Command はありません。
-
-また、Site の Config や Code を自動で書き換える機能もありません。
-
-Migration は内容を確認して手動で適用します。
+It also does not automatically rewrite the site's config or code. Apply
+migrations manually after reviewing the content:
 
 ```text
-Warningを確認
+Review the warning
       ↓
-Migrationを読む
+Read the migration
       ↓
-手動で変更
+Change manually
       ↓
-Diffを確認
+Review the diff
       ↓
 check / doctor / build
       ↓
 Commit
 ```
 
-自動で書き換えないことで、Upgrade によって Site のどこが変わったのかを利用者自身が確認できます。
+Not rewriting automatically lets you confirm for yourself what changed in the
+site because of the upgrade.
 
-## 変更は分けて Commit する
+## Commit changes separately
 
-Migration を適用したら、その変更を Commit しておくと次回以降の Upgrade を確認しやすくなります。
-
-たとえば、
+After applying a migration, committing the change makes the next upgrade
+easier to review. For example, if you keep:
 
 ```text
-1. Upgrade前の状態
-2. Package Version更新
-3. Migration
+1. The state before the upgrade
+2. The package version update
+3. The migration
 ```
 
-を Git の履歴から追えるようにしておくと、問題が発生した場合の切り分けも容易になります。
+traceable in Git history, isolating problems becomes easier.
 
-## Upgrade で問題が起きたら
+## When an upgrade causes problems
 
-問題の種類によって確認する場所を変えます。
+Where you look depends on the kind of problem:
 
 ```mermaid
 flowchart TD
-    Problem["Upgrade後に問題"]
+    Problem["Problem after upgrade"]
 
-    Problem --> Check{"checkで失敗？"}
-    Check -->|"Yes"| Config["Config / Plugin Contract"]
+    Problem --> Check{"check fails?"}
+    Check -->|"Yes"| Config["Config / plugin contract"]
 
-    Check -->|"No"| Doctor{"doctorで問題？"}
-    Doctor -->|"Yes"| Migration["Diagnostics / Deprecated Usage"]
+    Check -->|"No"| Doctor{"problem in doctor?"}
+    Doctor -->|"Yes"| Migration["Diagnostics / deprecated usage"]
 
-    Doctor -->|"No"| Build{"buildで失敗？"}
-    Build -->|"Yes"| BuildIssue["Build / Integration"]
+    Doctor -->|"No"| Build{"build fails?"}
+    Build -->|"Yes"| BuildIssue["Build / integration"]
 
-    Build -->|"No"| Runtime["生成Siteを確認"]
+    Build -->|"No"| Runtime["Check the generated site"]
 ```
 
-まず、
+First, confirm where the problem occurs among:
 
 ```sh
 npm exec riebeckite check
@@ -462,64 +401,84 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-のどこで問題が発生しているかを確認してください。
+For a deprecation warning, migrate. For an error, resolve the problem indicated
+by that diagnostic first.
 
-Deprecated Warning なら Migration、Error ならその Diagnostic が示している問題を先に解決します。
+## Upgrade checklist
 
-## Upgrade Checklist
+When updating Riebeckite, check the following:
 
-Riebeckite を更新するときは、次の項目を確認します。
+- checked the current Riebeckite package versions
+- committed the changes before the upgrade
+- updated the Riebeckite packages in use
+- `riebeckite check` succeeded
+- checked `riebeckite doctor`
+- reviewed the deprecation warning contents
+- applied the needed migrations
+- `riebeckite build` succeeded
+- checked the generated site
+- committed the upgrade and migration changes
 
-- 現在の Riebeckite Package Version を確認した
-- Upgrade 前の変更を Commit した
-- 利用している Riebeckite Package を更新した
-- `riebeckite check` が成功した
-- `riebeckite doctor` を確認した
-- Deprecated Warning の内容を確認した
-- 必要な Migration を適用した
-- `riebeckite build` が成功した
-- 生成された Site を確認した
-- Upgrade と Migration の変更を Commit した
+## UI architecture cleanup
 
-## まとめ
+This major release removes compatibility for the former article UI contracts.
 
-Riebeckite の Upgrade は、Package Version を変更するだけで終わりではありません。
+| Old | New | Action |
+| --- | --- | --- |
+| `article.after-header` | `article.header` | Render it before the site heading. |
+| `article.after-meta` | `article.metadata` | Render it with article metadata. |
+| `bodySlots.properties` | `bodySlots["article.metadata"]` | Remove the custom properties branch from the Site. |
+| `properties({ position, render })` | `properties({ ... })` | Remove both options; the plugin always contributes metadata. |
+| `injectBreadcrumbNav` and `injectShareControls` | manifest body slots | Remove imports and let the Site render standard slots. |
+| `article-shell*`, `article-frontmatter*`, `.prose` | `rb-*`, `site-article-frontmatter*`, `[data-slot="article-body"]` | Update Site CSS and client selectors. |
+| `callout*` and `is-collapsed` | `rr-callout*` | Update Theme CSS to use `rr-callout__*`, `rr-callout--*`, and `data-callout`. |
+
+The standard article slots are `article.header`, `article.metadata`,
+`article.aside`, `article.before-content`, `article.after-content`, and
+`article.footer`. Plugins only publish fragments; HonoX routes and Site
+components choose their placement.
+
+Render them with the public `ContentSlot` and `ArticleBody` primitives from
+`@riebeckite/honox/ui`. Reading `bodySlots` directly and `ArticleContent
+html=...` still work, but prefer `ArticleBody` for rendered Markdown HTML.
+
+## Summary
+
+Upgrading Riebeckite does not end with changing the package version:
 
 ```text
-Packageを更新する
+Update packages
       ↓
 check
       ↓
 doctor
       ↓
-Deprecated Usageを確認
+Review deprecated usage
       ↓
-必要ならMigration
+Migrate if needed
       ↓
 build
       ↓
-Siteを確認
+Check the site
 ```
 
-という流れで確認します。
-
-特に覚えておくとよいのは、
+The distinctions worth remembering are:
 
 ```text
 Deprecated
-  → 今は使える
-  → 将来に備えてMigrationする
+  → usable now
+  → migrate in preparation for the future
 
 Removed
-  → もうSupportされていない
+  → no longer supported
 
 Warning
-  → 確認・Migration対象
+  → review / migrate
 
 Error
-  → Upgrade完了前に修正する
+  → fix before finishing the upgrade
 ```
 
-という違いです。
-
-Riebeckite は pre-1.0 のため Breaking Change が発生する可能性がありますが、Security や Correctness 上の理由がない限り、可能な範囲で **Deprecated → Warning / Migration → Removed** の段階を踏んで変更します。
+Riebeckite is pre-1.0, so breaking changes can occur, but unless there is a
+security or correctness reason, it takes the **Deprecated → Warning /
+Migration → Removed** steps as far as possible.

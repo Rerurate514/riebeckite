@@ -1,34 +1,99 @@
+<!-- Generated from packages/plugins/daily-notes/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Daily Notes
 
-デイリーノートから取り出した短いスニペットをサイトのウィジェットとして表示する Plugin です。
+Surfaces short snippets extracted from Daily Notes as a site widget.
 
-## 導入
+[日本語](./daily-notes.ja.md)
 
-```bash
-npm install @riebeckite/plugin-daily-notes
+## Overview
+
+A Daily Note is often one long, private journal file. This plugin reads the raw
+manifest, picks notes under a configured directory, and extracts exactly one
+short snippet per note using the first successful strategy:
+
+1. a frontmatter key (`daily-summary` by default),
+2. a section under a heading (`今日のひとこと` by default),
+3. a fenced code block (`daily-snippet` by default).
+
+When every strategy fails the note is skipped. The note body is never emitted
+wholesale, so a long private note only contributes the snippet that opted in.
+
+`sourceUrl` and `sourceTitle` are attached only when `isPublished` accepts the
+note. An unpublished note's permalink and title stay `null`, so private notes
+never leak their location.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
+
+export default defineConfig({
+  // ...
+  plugins: [dailyNotesPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
-
-## 使用例
-
-`getDailyNotes({ manifest, config })` でスニペットを取得し、`DailyNotes` component をウィジェットを表示したい場所へ描画します。
+### Render the widget
 
 ```tsx
 import DailyNotes, { getDailyNotes } from "@riebeckite/plugin-daily-notes";
 
 const notes = getDailyNotes({ manifest, config });
+
 return <DailyNotes notes={notes} />;
 ```
 
-ノートごとに、明示されたスニペット（frontmatter のキー、見出しの節、コードブロックのいずれか）を1つだけ取り出し、本文の残りは出力しません。そのため長い非公開ノートでも中身が漏れません。非公開ノートのパーマリンクとタイトルは `null` のままです。
+`getDailyNotes` reads `manifest.entries` (the raw view), sorts newest first,
+and applies the default limit of 5. Pass `options` to override the location or
+the extraction strategy:
 
-## 使いどころ
+```ts
+getDailyNotes({
+  manifest,
+  config,
+  options: {
+    source: {
+      directory: "Daily",
+      pathPattern: "Daily/{YYYY}-{MM}-{DD}",
+      dateFormat: "YYYY/MM/DD",
+    },
+    extract: { frontmatter: "daily-summary", section: "今日のひとこと" },
+    widget: { limit: 3 },
+    dateFormat: "iso",
+    locale: "en",
+  },
+});
+```
 
-デイリーノートを書き、その中から明示した短い抜粋だけを表示したい場合に追加します。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+Set a strategy to `false` to disable it. `pathPattern` supports `{YYYY}`,
+`{MM}`, `{DD}`, and `*` so a note filename can be matched precisely.
 
-描画例がある場合は [Plugin Showcase](./showcase.md) でも確認できます。
+`source.dateFormat` is the Obsidian/Moment date format used by the note
+filenames (default `YYYY-MM-DD`). Set it to match Obsidian's Daily Notes date
+format (for example `YYYY/MM/DD` or `YYYY.MM.DD`); the slug date is read with
+exactly that format, and an unsupported format resolves no date rather than
+guessing another one.
 
-## 詳細仕様
+`dateFormat` controls the widget date: `"iso"` (the default, `YYYY-MM-DD`),
+`"long"`, or `"short"`. `"long"` and `"short"` are rendered with `locale`
+(default `"en"`). The machine-readable `YYYY-MM-DD` value stays on the
+`<time datetime>` attribute regardless, and `DailyNote.date` keeps that ISO
+form while `DailyNote.dateDisplay` holds the formatted text.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Exports
+
+- `dailyNotesPlugin(options?)` — plugin factory (registers `style.css`)
+- `getDailyNotes({ manifest, config, options? })` — sorted `DailyNote[]`
+- `DailyNotes` — widget component (`{ notes, limit? }`)
+- `resolveDisplayOptions(options?)` — apply date-format defaults
+- `formatDailyNoteDate(dateIso, display)` — pure date formatter
+- Constants: `DEFAULT_DAILY_NOTES_DATE_FORMAT`, `DEFAULT_DAILY_NOTES_LOCALE`,
+  `DEFAULT_SLUG_DATE_FORMAT`
+- Types: `DailyNote`, `DailyNotesOptions`, `DailyNotesDateFormat`,
+  `ResolvedDailyNotesExtract`, `ResolvedDailyNotesDisplay`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

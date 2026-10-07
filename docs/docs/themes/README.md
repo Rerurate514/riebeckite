@@ -7,66 +7,60 @@ sidebar:
 ---
 # Themes
 
-Theme は、Riebeckite Site の**見た目を変更する仕組み**です。
+Themes change how a Riebeckite site looks: colors, typography, spacing, layout, and article presentation. They do not add Markdown syntax, search, diagrams, or other features; use a [Plugin](../plugins/README.md) for those.
 
-Theme を変更すると、
+Changing the theme lets you adjust:
 
-- 色
-- フォント
-- 文字サイズ
-- 余白
-- 記事幅
-- Sidebar の幅
-- Light / Dark Mode
-- 記事全体の視覚的な雰囲気
+- colors
+- fonts
+- text size
+- spacing
+- article width
+- sidebar width
+- light / dark mode
+- the overall visual mood of articles
 
-などを変更できます。
-
-```mermaid id="pj4qqs"
+```mermaid
 flowchart LR
     Content["Markdown"]
     Riebeckite["Riebeckite"]
     Theme["Theme"]
-    Site["表示されるSite"]
+    Site["Rendered site"]
 
     Content --> Riebeckite
     Riebeckite --> Site
     Theme --> Site
 ```
 
-Theme は Content の意味や Site の機能を変更するものではありません。
+A theme does not change the meaning of content or the functionality of the site. When you want to add features such as search, diagrams, WikiLinks, or analytics, use a [Plugin](../plugins/README.md).
 
-検索、図表、WikiLink、Analytics などの**機能を追加したい場合は [Plugins](../plugins/README.md)** を利用します。
+## Themes vs. plugins
 
-## Theme と Plugin の違い
+When in doubt, decide whether you want to change the look or add functionality.
 
-迷った場合は、「見た目を変えたいのか」「機能を追加したいのか」で考えます。
-
-| やりたいこと | 使うもの |
+| Goal | Use |
 | --- | --- |
-| 色を変える | Theme |
-| フォントを変える | Theme |
-| 記事幅を変える | Theme |
-| Dark Mode に対応する | Theme |
-| Site 全体のデザインを変える | Theme |
-| Mermaid を表示する | Plugin |
-| 検索を追加する | Plugin |
-| Analytics を追加する | Plugin |
-| Markdown の処理を拡張する | Plugin |
+| Change colors | Theme |
+| Change fonts | Theme |
+| Change article width | Theme |
+| Support dark mode | Theme |
+| Change the whole site design | Theme |
+| Show Mermaid diagrams | Plugin |
+| Add search | Plugin |
+| Add analytics | Plugin |
+| Extend Markdown processing | Plugin |
 
-```mermaid id="xkrf70"
+```mermaid
 flowchart TD
-    Want{"何を変えたい？"}
+    Want{"What do you want to change?"}
 
-    Want -->|"見た目"| Theme["Theme"]
-    Want -->|"機能"| Plugin["Plugin"]
+    Want -->|"Look"| Theme["Theme"]
+    Want -->|"Functionality"| Plugin["Plugin"]
 ```
 
-# 最初から Theme は設定されている
+## A theme is already configured
 
-`create-riebeckite` で生成した Site には、通常すでに Theme が設定されています。
-
-Preset によって既定の Theme が異なります。
+Sites generated with `create-riebeckite` usually already have a theme. The preset decides the default:
 
 | Preset | Theme |
 | --- | --- |
@@ -74,35 +68,31 @@ Preset によって既定の Theme が異なります。
 | `starter` | `@riebeckite/theme-default` |
 | `showcase` | `@riebeckite/theme-default` |
 
-そのため、最初から Theme を追加しなくても Site を利用できます。
+So you can use a generated site without adding a theme. When you want a different look, it is enough to switch to another theme.
 
-見た目を変更したくなったときに、別の Theme へ切り替えれば十分です。
+## Install a theme
 
-# Theme を変更する
+Most generated sites already include a theme. `minimal` uses `@riebeckite/theme-minimal`; `starter` and `showcase` use `@riebeckite/theme-default`.
 
-別の Theme を使う場合は、大きく2つの手順があります。
+To add another theme, install its package:
 
-```text id="2ktbhc"
-1. Theme Packageをインストール
-
-2. riebeckite.config.tsでThemeを指定
-```
-
-## 1. Theme をインストールする
-
-たとえば Minimal Theme を利用する場合は、
-
-```bash id="a50wvc"
+```sh
 npm install @riebeckite/theme-minimal
 ```
 
-を実行します。
+There are two broad steps to use a different theme:
 
-## 2. Theme を設定する
+```text
+1. Install the theme package
 
-Theme の Factory を Import し、`riebeckite.config.ts` の `theme` に指定します。
+2. Specify the theme in riebeckite.config.ts
+```
 
-```ts id="etjv95"
+## Configure the theme
+
+Import the theme factory and assign it to `theme` in `riebeckite.config.ts`:
+
+```ts
 import { defineConfig } from "@riebeckite/core";
 import { minimalTheme } from "@riebeckite/theme-minimal";
 
@@ -111,9 +101,9 @@ export default defineConfig({
 });
 ```
 
-これで Site 全体に Minimal Theme が適用されます。
+This applies the Minimal theme to the whole site:
 
-```text id="1eek1b"
+```text
 @riebeckite/theme-minimal
         ↓
 minimalTheme()
@@ -123,14 +113,9 @@ riebeckite.config.ts
 Site
 ```
 
-# Theme の Option
+Some themes accept options. For example:
 
-Theme によっては Option を指定できます。
-
-たとえば Default Theme では、次のように設定できます。
-
-```ts id="z6x59h"
-import { defineConfig } from "@riebeckite/core";
+```ts
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -143,91 +128,75 @@ export default defineConfig({
 });
 ```
 
-Theme ごとに利用できる Option は異なる場合があります。
+The options available depend on the theme. Check each package README for the exact factory name and options.
 
-正確な Factory 名と Option は、それぞれの Package README を確認してください。
+`userCss` is useful for small site-specific tweaks. If you want a reusable visual language, create a theme instead.
 
-# Color Mode
+## Color mode
 
-Theme は共通設定として Color Mode を扱えます。
+A theme can handle color mode as a common setting. For example:
 
-たとえば、
-
-```ts id="i6fj09"
+```ts
 defaultTheme({
   colorMode: "system",
 });
 ```
 
-のように指定します。
+The Riebeckite theme contract handles three color modes:
 
-Riebeckite の Theme Contract では、
-
-```text id="svx24i"
+```text
 light
 dark
 system
 ```
 
-の Color Mode を扱います。
+`system` follows the browser or operating system setting. See [Theme API](../reference/theme-api.md) for the detailed contract.
 
-`system` は Browser / OS 側の設定に合わせるための Mode です。
+## Typography
 
-Color Mode の詳しい Contract は [Theme API](../reference/theme-api.md) を参照してください。
+The feel of the text is part of the theme. For example:
 
-# Typography
-
-文字の雰囲気も Theme の一部です。
-
-たとえば、
-
-```ts id="02tw4s"
+```ts
 defaultTheme({
   typography: "system",
 });
 ```
 
-のように設定します。
+The theme contract handles these typography presets:
 
-Theme Contract では Typography Preset として、
-
-```text id="tsjddr"
+```text
 system
 serif
 sans
 ```
 
-を扱えます。
+The theme decides the actual fonts and the finer typography details.
 
-実際の Font や細かな Typography は Theme が決定します。
+## Article layout
 
-# Article Layout
+The layout of the article area can also be set from the theme:
 
-記事部分の Layout も Theme から設定できます。
-
-```ts id="7cczqi"
+```ts
 defaultTheme({
   articleLayout: "article",
 });
 ```
 
-Theme Contract では、
+The theme contract handles these layout presets:
 
-```text id="n1pwde"
+```text
 article
 sidebar
 full-width
 ```
 
-の Layout Preset を扱えます。
+Choose one to match the purpose of the site and the kind of articles.
 
-Site の用途や記事の種類に合わせて選択できます。
+## Small tweaks with `userCss`
 
-# 少しだけ見た目を変更する
+For small changes that are not worth building a whole theme, use `userCss`:
 
-Theme を丸ごと作るほどではない小さな変更には `userCss` を利用できます。
-
-```ts id="cmf9rk"
+```ts
 defaultTheme({
   userCss: [
     "/extensions/custom.css",
@@ -235,63 +204,59 @@ defaultTheme({
 });
 ```
 
-たとえば、
+For example, you can add a site-specific adjustment such as:
 
-```css id="z91hlo"
+```css
 .rb-article {
   font-size: 1.05rem;
 }
 ```
 
-のような Site 固有の調整を追加できます。
+`userCss` is applied after the theme styles, so it is well suited to site-specific adjustments.
 
-`userCss` は Theme の Style より後に適用されるため、Site 固有の調整に向いています。
+## Choosing between `userCss` and a theme
 
-# `userCss` と Theme の使い分け
+A rule of thumb:
 
-目安は次のとおりです。
-
-```mermaid id="11q6oz"
+```mermaid
 flowchart TD
-    Change{"どんな変更？"}
+    Change{"What kind of change?"}
 
-    Change -->|"このSiteだけの小さな調整"| CSS["userCss"]
-    Change -->|"再利用したいデザイン"| Theme["Theme"]
-    Change -->|"新しい機能"| Plugin["Plugin"]
+    Change -->|"A small tweak for this site"| CSS["userCss"]
+    Change -->|"A design you want to reuse"| Theme["Theme"]
+    Change -->|"A new feature"| Plugin["Plugin"]
 ```
 
-| 変更 | 向いている方法 |
+| Change | Better fit |
 | --- | --- |
-| 記事の余白を少し変える | `userCss` |
-| 特定要素の文字サイズを変える | `userCss` |
-| Site 固有の装飾を加える | `userCss` |
-| 色・文字・Layout を一式まとめる | Theme |
-| 複数 Site で同じ Design を使う | Theme |
-| 他の利用者へ配布する | Theme |
-| JavaScript の機能を追加する | Plugin |
+| Adjust article spacing slightly | `userCss` |
+| Change the text size of a specific element | `userCss` |
+| Add site-specific decoration | `userCss` |
+| Bundle colors, text, and layout together | Theme |
+| Use the same design across several sites | Theme |
+| Distribute to other users | Theme |
+| Add JavaScript functionality | Plugin |
 
-最初は `userCss` で調整し、変更が大きくなったら Theme として整理する方法もあります。
+You can start by adjusting with `userCss` and reorganize into a theme once the changes grow.
 
-# 公式 Theme
+## Official themes
 
-Riebeckite には複数の公式 Theme があります。
-
-| Theme | Package | Factory | 特徴 |
+| Theme | Package | Factory | Best for |
 | --- | --- | --- | --- |
-| [Default](./default.md) | `@riebeckite/theme-default` | `defaultTheme()` | 標準の出発点。読みやすさと設定のしやすさを重視 |
-| [Minimal](./minimal.md) | `@riebeckite/theme-minimal` | `minimalTheme()` | 装飾を抑えた小さな Theme |
-| [Gruvbox](./gruvbox.md) | `@riebeckite/theme-gruvbox` | `gruvboxTheme()` | Gruvbox 風の暖かい高コントラスト配色 |
-| [Rerurate](./rerurate.md) | `@riebeckite/theme-rerurate` | `rerurateTheme()` | Rerurate の視覚文法に基づく Theme |
-| [Sakura](./sakura.md) | `@riebeckite/theme-sakura` | `sakuraTheme()` | 桜をモチーフにした配色 |
-| [Tokyo Night](./tokyonight.md) | `@riebeckite/theme-tokyonight` | `tokyonightTheme()` | Tokyo Night 風の暗色・Editor 風 Theme |
+| [Default](./default.md) | `@riebeckite/theme-default` | `defaultTheme()` | The normal starting point: readable, configurable, and compatible with color mode |
+| [Minimal](./minimal.md) | `@riebeckite/theme-minimal` | `minimalTheme()` | A small baseline when you want little visual opinion |
+| [Gruvbox](./gruvbox.md) | `@riebeckite/theme-gruvbox` | `gruvboxTheme()` | A warm, high-contrast Gruvbox-inspired look |
+| [Rerurate](./rerurate.md) | `@riebeckite/theme-rerurate` | `rerurateTheme()` | Rerurate's visual grammar |
+| [Sakura](./sakura.md) | `@riebeckite/theme-sakura` | `sakuraTheme()` | A sakura-inspired palette |
+| [Tokyo Night](./tokyonight.md) | `@riebeckite/theme-tokyonight` | `tokyonightTheme()` | A Tokyo Night-inspired dark/editor-like look |
 
-各 Theme の正確な Export 名と Option は、Package README を参照してください。
+The package README is the source of truth for each theme's exported factory name and options.
 
-# Default
+### Default
 
-[Default](./default.md) は、Riebeckite の標準的な Theme です。
+[Default](./default.md) is the standard Riebeckite theme:
 
-```ts id="vms7th"
+```ts
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -299,15 +264,13 @@ export default defineConfig({
 });
 ```
 
-特定のデザインへ大きく寄せず、Riebeckite Site の出発点として利用できます。
+It does not lean heavily toward one design, so it works as a starting point for a Riebeckite site. The `starter` and `showcase` presets use the Default theme.
 
-`starter` と `showcase` Preset では Default Theme が利用されます。
+### Minimal
 
-# Minimal
+[Minimal](./minimal.md) is a theme with little decoration:
 
-[Minimal](./minimal.md) は、装飾を抑えた Theme です。
-
-```ts id="vdwwym"
+```ts
 import { minimalTheme } from "@riebeckite/theme-minimal";
 
 export default defineConfig({
@@ -315,13 +278,13 @@ export default defineConfig({
 });
 ```
 
-`minimal` Preset ではこの Theme が利用されます。
+The `minimal` preset uses this theme.
 
-# Gruvbox
+### Gruvbox
 
-[Gruvbox](./gruvbox.md) は、Gruvbox をもとにした暖色系の Theme です。
+[Gruvbox](./gruvbox.md) is a warm theme based on Gruvbox:
 
-```ts id="w7gdho"
+```ts
 import { gruvboxTheme } from "@riebeckite/theme-gruvbox";
 
 export default defineConfig({
@@ -329,13 +292,13 @@ export default defineConfig({
 });
 ```
 
-暖かい色と高いコントラストを持つ配色を利用します。
+It uses warm colors with high contrast.
 
-# Rerurate
+### Rerurate
 
-[Rerurate](./rerurate.md) は、Rerurate の視覚文法をもとにした Theme です。
+[Rerurate](./rerurate.md) is a theme based on Rerurate's visual grammar:
 
-```ts id="htrd9r"
+```ts
 import { rerurateTheme } from "@riebeckite/theme-rerurate";
 
 export default defineConfig({
@@ -343,11 +306,11 @@ export default defineConfig({
 });
 ```
 
-# Sakura
+### Sakura
 
-[Sakura](./sakura.md) は、桜をモチーフにした Theme です。
+[Sakura](./sakura.md) is a theme inspired by cherry blossoms:
 
-```ts id="czj6ks"
+```ts
 import { sakuraTheme } from "@riebeckite/theme-sakura";
 
 export default defineConfig({
@@ -355,11 +318,11 @@ export default defineConfig({
 });
 ```
 
-# Tokyo Night
+### Tokyo Night
 
-[Tokyo Night](./tokyonight.md) は、Tokyo Night をもとにした暗色系 Theme です。
+[Tokyo Night](./tokyonight.md) is a dark theme based on Tokyo Night:
 
-```ts id="suxi7w"
+```ts
 import { tokyonightTheme } from "@riebeckite/theme-tokyonight";
 
 export default defineConfig({
@@ -367,141 +330,126 @@ export default defineConfig({
 });
 ```
 
-Editor のような暗色系の見た目を利用できます。
+It gives the site an editor-like dark look.
 
-# Theme を切り替える
+## Switching themes
 
-Theme は `riebeckite.config.ts` の `theme` を変更することで切り替えられます。
+Switch themes by changing `theme` in `riebeckite.config.ts`. To go from the Default theme to the Minimal theme, change:
 
-たとえば Default Theme から Minimal Theme へ変更するなら、
-
-```ts id="ql7x6k"
+```ts
 // Before
 theme: defaultTheme(),
 ```
 
-を、
+to:
 
-```ts id="85hdqx"
+```ts
 // After
 theme: minimalTheme(),
 ```
 
-へ変更します。
+If the new theme package is not installed yet, install it first. After the change, check the actual display with:
 
-もちろん、新しい Theme Package がまだ入っていない場合は先にインストールしてください。
-
-変更後は、
-
-```sh id="3p2sgb"
+```sh
 npm exec riebeckite dev
 ```
 
-で実際の表示を確認します。
+## What a theme changes
 
-# Theme が変更するもの
+A theme's responsibility is **presentation**:
 
-Theme の責任範囲は **Presentation** です。
-
-```text id="33th07"
+```text
 Theme
 
 ├─ Color
 ├─ Typography
 ├─ Spacing
 ├─ Layout
-├─ Design Token
+├─ Design token
 └─ CSS
 ```
 
-一方で、
+On the other hand:
 
-```text id="8ocgkk"
-検索機能
-Markdown変換
-WikiLink
+```text
+Search
+Markdown conversion
+WikiLinks
 Analytics
-新しいPage
-Browser上のInteractiveな処理
+New pages
+Interactive browser behavior
 ```
 
-などは Theme の責任ではありません。
+are not the theme's responsibility. Use a plugin or the application for those.
 
-これらには Plugin や Application を利用します。
-
-```mermaid id="3yr4cd"
+```mermaid
 flowchart TD
-    Site["Riebeckite Site"]
+    Site["Riebeckite site"]
 
-    Site --> Theme["Theme<br/>見た目"]
-    Site --> Plugin["Plugin<br/>機能"]
-    Site --> App["Application<br/>Site構成"]
+    Site --> Theme["Theme<br/>look"]
+    Site --> Plugin["Plugin<br/>functionality"]
+    Site --> App["Application<br/>site structure"]
 
     Theme --> CSS["Color / Font / Layout"]
     Plugin --> Feature["Search / Mermaid / Analytics"]
     App --> Page["Route / Navigation / Composition"]
 ```
 
-# Theme を自作する
+## Create or extend a theme
 
-既存 Theme の `userCss` だけでは足りず、再利用できる Design としてまとめたい場合は、自分で Theme を作成できます。
+When `userCss` on an existing theme is not enough and you want to organize a reusable design, you can create your own theme. Start with [Writing a theme](./writing-a-theme.md).
 
-まず [Writing a Theme](./writing-a-theme.md) を参照してください。
+```text
+I want to use a theme
+  → this page
 
-```text id="8d9b1f"
-Themeを使いたい
-  → このページ
+I want to create a theme
+  → Writing a theme
 
-Themeを作りたい
-  → Writing a Theme
-
-正確なAPIを確認したい
+I want to check the exact API
   → Theme API
 
-内部の仕組みを知りたい
-  → Framework / Theme System
+I want to understand the internals
+  → Framework / Theme system
 ```
 
-Theme の公開 Contract を確認したい場合は [Theme API](../reference/theme-api.md)、Riebeckite 内部で Theme がどのように扱われるか知りたい場合は [Framework / Theme System](../framework/theme-system.md) を参照してください。
+For the public contract, see [Theme API](../reference/theme-api.md). To understand how Riebeckite handles themes internally, see [Framework / Theme system](../framework/theme-system.md).
 
-# まとめ
+## Summary
 
-Theme は Riebeckite Site の**見た目を担当する仕組み**です。
+A theme is the mechanism responsible for the **look** of a Riebeckite site.
 
-```text id="x4a0p4"
-見た目を変える
+```text
+Change the look
   → Theme
 
-小さなSite固有調整
+A small site-specific adjustment
   → userCss
 
-機能を追加する
+Add functionality
   → Plugin
 
-SiteのPageや構成を作る
+Build the site's pages and structure
   → Application
 ```
 
-既存 Theme を使う場合は、
+Using an existing theme is a flow of:
 
-```text id="4u2l5e"
-Packageをinstall
+```text
+Install the package
       ↓
-Factoryをimport
+Import the factory
       ↓
-config.themeに指定
+Set it in config.theme
       ↓
-devで確認
+Check with dev
 ```
 
-という流れになります。
+Check the package README for each theme's exact factory name and options.
 
-Theme ごとの正確な Factory 名と Option は Package README を確認してください。
+## Next
 
-## 次に読むページ
-
-- [Writing a Theme](./writing-a-theme.md) — Theme を自作する
-- [Theme API](../reference/theme-api.md) — Theme の公開 Contract
-- [Framework / Theme System](../framework/theme-system.md) — Theme の内部設計
-- [Plugins](../plugins/README.md) — Site に機能を追加する
-
+- [Writing a theme](./writing-a-theme.md) — create your own theme
+- [Theme API](../reference/theme-api.md) — the public theme contract
+- [Framework / Theme system](../framework/theme-system.md) — the internal design of themes
+- [Plugins](../plugins/README.md) — add functionality to your site

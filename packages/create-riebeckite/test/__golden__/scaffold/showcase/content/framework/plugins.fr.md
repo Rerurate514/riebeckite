@@ -99,5 +99,5 @@ Requêter, organiser et garder votre contenu sain.
 | [`@riebeckite/plugin-quality`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md) | Contrôle statique de qualité et d'accessibilité. |
 
 
-Riebeckite: [documentation](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.en.md) · [日本語ドキュメント](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md)
+Riebeckite: [documentation](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md) · [日本語ドキュメント](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.ja.md)
 

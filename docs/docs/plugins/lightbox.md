@@ -1,36 +1,80 @@
+<!-- Generated from packages/plugins/lightbox/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Lightbox
 
-記事内の画像を拡大表示できる Lightbox を追加する Plugin です。
+Click-to-zoom lightbox for images.
 
-## 導入
+[日本語](./lightbox.ja.md)
 
-```bash
-npm install @riebeckite/plugin-lightbox
+## Overview
+
+Two parts:
+
+- **Build (rehype):** wraps each rendered `<img>` in a trigger anchor
+- **Client:** opens an accessible dialog on click
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+
+export default defineConfig({
+  // ...
+  plugins: [lightboxPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+The plugin registers `style.css` and a client entry (`initLightbox`), which
+the app calls on page initialization.
 
-## 使用例
+## Behavior
 
-通常の Markdown 画像を記事に置き、公開サイトではクリックして拡大表示できるようにします。
+### Build (`rehypeLightbox`)
 
-### ソース
+- Wraps every `<img src>` in
+  `<a class="rr-lightbox-trigger">` with `data-lightbox-src`,
+  `data-lightbox-alt`, and an `aria-label`
+- Adds `rr-lightbox-image` to the image
+- Skips images that have `data-lightbox-ignore="true"`, and images already
+  inside an `<a>`, `<button>`, existing trigger, or the dialog
+- Uses `expandLabel` (default `"Expand image"`) for the trigger and dialog
+  accessible labels
 
-```markdown
-![[riebeckite-logo-horizontal.png]]
-```
+### Client (`initLightbox`)
 
-### 実行例
+- Optionally wraps remaining `img[src]` that were not converted at build time
+  (`autoWrapImages`, default on; images inside links/buttons are skipped)
+- Creates a `role="dialog"` overlay with the image, `alt` caption, and close
+  button
+- Closes on `Escape`, backdrop click, or the close button
+- Restores focus to the previously focused element
+- Sets `html[data-lightbox-open="true"]` while open (locks scrolling via CSS)
+- Returns a cleanup function that removes listeners, the dialog, and any
+  wrapped images
 
-![[riebeckite-logo-horizontal.png]]
+## Options
 
-## 使いどころ
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `selectorClass` | `string` | `"rr-lightbox-trigger"` | Trigger class (build and client) |
+| `expandLabel` | `string` | `"Expand image"` | Accessible label for triggers and the dialog |
+| `closeLabel` | `string` | `"Close"` | Accessible label for the dialog close button |
+| `autoWrapImages` | `boolean` | `true` | Client-only: wrap unhandled images on init |
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+`LightboxOptions` = `{ selectorClass?, expandLabel?, closeLabel? }` (build),
+`LightboxInitOptions` = `LightboxOptions & { autoWrapImages? }` (client).
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+## Exports
 
-## 詳細仕様
+- `lightboxPlugin(options?)` — plugin factory
+- `rehypeLightbox(options?)` — rehype transform
+- `initLightbox(root?, options?)` — client initializer, returns a cleanup
+  function
+- `initLightboxFromOptions(options?)` — option-first browser entry the plugin's
+  client script calls; wraps `initLightbox`
+- Types: `LightboxOptions`, `LightboxInitOptions`
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## See also
 
+- [Plugin guide](../reference/plugin-api.md)

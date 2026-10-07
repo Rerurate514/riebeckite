@@ -374,5 +374,5 @@ Content lives in `content/` as plain Markdown. Translations sit next to the defa
 
 Plugins and themes are registered in `riebeckite.config.ts`. Install a package, import its factory, and add it to the `plugins` array — or point `theme` at another theme factory. See the Riebeckite repository for the full plugin and theme index.
 
-- Docs: [English](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.en.md)
-  · [日本語](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md)
+- Docs: [English](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md)
+  · [日本語](https://github.com/Rerurate514/riebeckite/blob/main/docs/README.ja.md)

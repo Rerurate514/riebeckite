@@ -1,28 +1,76 @@
+<!-- Generated from packages/plugins/backlinks/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Backlinks
 
-現在の記事を参照している他の記事を表示する Plugin です。
+Backlink list rendering for articles: shows which published notes link to the
+current note.
 
-## 導入
+[日本語](./backlinks.ja.md)
 
-```bash
-npm install @riebeckite/plugin-backlinks
+## Overview
+
+`backlinksPlugin()` appends a footer list of incoming links to the
+`article.footer` body slot. `getPublishedBacklinks()` resolves the incoming
+links of a note from the content manifest, keeps only publicly discoverable
+notes, and returns them sorted in manifest order.
+
+Without incoming links (or when none of them are published), the component
+renders nothing.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+
+export default defineConfig({
+  // ...
+  plugins: [backlinksPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`backlinksPlugin()` adds backlinks for every public entry with published
+incoming links and bundles `style.css` into the app stylesheet. Render the
+`article.footer` body slot in the article layout to display the list.
 
-## 使用例
+### Custom placement
 
-ある記事を参照している別の記事を自動的に辿れるようにしたい Digital Garden で利用します。たとえば `A.md` から `[[B]]` を参照すると、B 側から A を発見できるようになります。
+```tsx
+import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
+import { config } from "../config";
+import { content } from "../content";
+import { getArticleTitle } from "../lib/article-title";
 
-このページをリンクしているノートがある場合、記事末尾に Backlinks として一覧が表示されます。リンクしているノートが1件もない場合は非表示です。
+const manifest = await content.getManifest();
+const backlinks = getPublishedBacklinks({
+  manifest,
+  config,
+  slug,
+  resolveTitle: getArticleTitle,
+});
 
-## 使いどころ
+return (
+  <Article
+    footerContent={<Backlinks backlinks={backlinks} />}
+  />
+);
+```
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Component
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+`Backlinks({ backlinks })` renders a `<footer class="article-backlinks rr-backlinks">` with
+an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
-## 詳細仕様
+## Exports
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+- `backlinksPlugin()` — plugin factory
+- `Backlinks` — list component (default export of `components/backlinks.tsx`)
+- `getPublishedBacklinks({ manifest, config, slug, resolveTitle })` — resolves
+  published backlinks for a slug
+- Type: `ArticleBacklink` (`{ slug, permalink, title }`)
 
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [`@riebeckite/plugin-local-graph`](./local-graph.md)
+- [`@riebeckite/plugin-garden-explorer`](./garden-explorer.md)

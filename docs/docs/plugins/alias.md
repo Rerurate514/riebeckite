@@ -1,34 +1,93 @@
+<!-- Generated from packages/plugins/alias/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Alias
 
-ノートに設定した別名をコンテンツの参照や表示に利用するための Plugin です。
+Turns Obsidian `aliases` / `alias` frontmatter into site-local redirect URLs, so a note can be reached through its alternate names without changing its canonical permalink.
 
-## 導入
+[Japanese](./alias.ja.md)
 
-```bash
-npm install @riebeckite/plugin-alias
-```
+## What it does
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+When a vault note has frontmatter like
 
-## 使用例
-
-同じ記事に別名を持たせ、Obsidian 側の呼び名と公開時の参照を扱いやすくしたい場合に利用します。
-
-```yaml
+```md
 ---
+title: Old Note
 aliases:
-  - Riebeckite入門
-  - Riebeckite Guide
+  - legacy-note
+  - "old notes"
 ---
 ```
 
-ビルドすると、エイリアスの URL から正規 URL への 308 リダイレクトが生成されます。URL の正規化も行い、クライアント側の JavaScript は必要ありません。
+the plugin registers redirects such as:
 
-## 使いどころ
+- `/legacy-note` → the note's canonical permalink
+- `/old%20notes` → the note's canonical permalink
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+Redirects are written into the build-time manifest and resolved by HonoX at request time. No client-side JavaScript is required.
 
-## 詳細仕様
+## Setup
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { aliasPlugin } from "@riebeckite/plugin-alias";
 
+export default defineConfig({
+  // ...
+  plugins: [aliasPlugin()],
+});
+```
+
+It composes with the `permalink` plugin. `alias` augments already-resolved public locations through `extendContentLocations`, so it never overrides or re-derives the canonical permalink, whatever decided it.
+
+```ts
+plugins: [permalinkPlugin(), aliasPlugin()],
+```
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `status` | `301 \| 302 \| 307 \| 308` | `308` | HTTP status used for generated redirects |
+
+## Alias normalization
+
+An alias is treated as an alternate note name and mapped to a path under the site root:
+
+- A leading `/` is ignored (`Old` and `/Old` both become `/Old`).
+- Path separators are allowed (`archive/Old` → `/archive/Old`).
+- Each segment is percent-encoded with the same rules as request paths, so non-ASCII and spaces work as-is.
+- An alias that cannot become a URL is skipped with a warning:
+  - empty, or only `.` / `..` segments
+  - containing `#`, `?`, or `\`
+  - containing `//` (an empty segment)
+  - containing malformed percent escapes
+
+## Diagnostics
+
+| Code | Severity | Meaning |
+| --- | --- | --- |
+| `alias-invalid` | warning | The alias cannot be converted into a URL path. |
+| `alias-collision` | warning | The alias path collides with another note's canonical permalink or an existing redirect. |
+
+A colliding alias is not registered; the existing path wins.
+
+## Limitations
+
+- Redirects are decided at build time; add or change aliases and rebuild the site.
+- SSG does not emit dedicated redirect HTML files. Redirects are resolved by the server (`resolveContentRoute` in HonoX).
+- Aliases are not part of the content graph (backlinks); only links written in the Markdown count.
+
+## Exports
+
+- `aliasPlugin(options?)` / `alias(options?)` — the plugin factory
+- `resolveAliasPath(alias)` — pure alias-to-path helper (returns `null` when invalid)
+- Types: `AliasOptions`, `AliasRedirectStatus`, `ResolvedAliasOptions`
+
+## Related
+
+- [Plugin system](../reference/plugin-api.md)
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

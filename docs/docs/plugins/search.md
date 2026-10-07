@@ -1,28 +1,94 @@
+<!-- Generated from packages/plugins/search/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Search
 
-公開サイト内のコンテンツを検索する機能を追加する Plugin です。
+Client-side full-text search: a weighted, fuzzy search engine plus a keyboard
+driven search modal — no external search service required.
 
-## 導入
+[日本語](./search.ja.md)
 
-```bash
-npm install @riebeckite/plugin-search
+## Overview
+
+`search()` adds a `SearchBar` component and a browser entry point that opens a
+modal search dialog (`Ctrl+K`/`Cmd+K` or `/`). The engine `searchItems()`
+matches on title, slug, tags, headings, and body with weighted scoring:
+
+| Field | Weight |
+| ----- | ------ |
+| `slug` | 64 |
+| `title` | 56 |
+| `tags` | 44 |
+| `headings` | 32 |
+| `body` | 10 |
+
+Exact matches score 3×, prefix matches 2×, and substrings 1×. When a query has
+2+ characters and no substring match, a fuzzy subsequence match is used. Query
+text is normalized (lowercase, NFKC, and katakana full-width → half-width)
+before searching.
+
+Each `SearchItem` also carries the resolved canonical `permalink`. It is not a
+scored field: `slug` remains the searchable identity key, while the modal
+navigates to `permalink`.
+
+`searchItems()` is pure and exported, so it can be used server-side too — for
+example to generate a `search-data.json` index the modal fetches at runtime.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { searchPlugin } from "@riebeckite/plugin-search";
+
+export default defineConfig({
+  // ...
+  plugins: [searchPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`searchPlugin()` registers the plugin, bundles `style.css`, and declares
+`initSearch` as a client entry that wires up the modal on page load.
 
-## 使用例
+### Render the component
 
-記事数が増えたサイトで、タイトルや本文から目的のページを探せる検索導線を提供します。たとえば Plugin 名や技術用語から関連ドキュメントを探す用途です。
+```tsx
+import { SearchBar } from "@riebeckite/plugin-search";
 
-このページでも、ヘッダーの検索バー、または `Ctrl+K`（macOS では `Cmd+K`、`/`）で検索モーダルを開けます。タイトルと本文を対象にしたあいまい検索で、最大8件まで表示されます。
+// ...in your layout / renderer
+return (
+  <>
+    <header>
+      <SearchBar />
+    </header>
+    {/* ... */}
+  </>
+);
+```
 
-## 使いどころ
+The modal fetches `/search-data.json` (an array of `SearchItem`) on first open
+and shows up to 8 results.
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## Search API
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+```ts
+import { searchItems, normalizeSearchQuery } from "@riebeckite/plugin-search";
 
-## 詳細仕様
+const results = searchItems(items, "#obsidian");
+```
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+- `searchItems(items, query)` — returns results sorted by score, then title
+- `normalizeSearchQuery(value)` — normalizes and strips a leading `#` so tag
+  searches match bare tag names
+- `normalizeSearchText(value)` — lowercase + NFKC + katakana fold
 
+## Exports
+
+- `searchPlugin()` — plugin factory
+- `SearchBar` — modal component (default export of `components/search-bar.tsx`)
+- `initSearch` — browser init (also via `@riebeckite/plugin-search/client`)
+- `searchItems`, `normalizeSearchQuery`, `normalizeSearchText` — search engine
+- Types: `SearchItem`, `SearchField`, `SearchMatch`, `SearchResult`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [`@riebeckite/plugin-garden-explorer`](./garden-explorer.md)

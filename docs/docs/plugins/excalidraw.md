@@ -1,24 +1,92 @@
+<!-- Generated from packages/plugins/excalidraw/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Excalidraw
 
-Obsidian Excalidraw の図を記事本文へ埋め込んで表示する Plugin です。
+Excalidraw drawing rendering for Obsidian wikilinks.
 
-## 導入
+[日本語](./excalidraw.ja.md)
 
-```bash
-npm install @riebeckite/plugin-excalidraw
+## Overview
+
+`excalidraw()` provides the `renderAttachment` hook that
+`@riebeckite/plugin-obsidian-markdown` uses when an embedded wikilink
+(`![[drawing.excalidraw]]`) resolves to an Excalidraw file. The plugin emits a
+placeholder figure carrying the drawing payload, and the client entry renders
+it to SVG.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { excalidraw } from "@riebeckite/plugin-excalidraw";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), excalidraw()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+The plugin registers `style.css` and a client entry (`initExcalidraw`) that
+the app calls on page initialization.
 
-## 使用例
+## Supported formats
 
-Obsidian Excalidraw で作成した図を記事と一緒に公開したい場合に利用します。Excalidrawノートや埋め込み画像を含むVaultを、その関係を保ったまま公開する用途です。
+### `*.excalidraw` — plain JSON scene
 
-`![[drawing.excalidraw]]` はビルド時にプレースホルダが生成され、ブラウザ側で SVG に置き換わって記事内に図が表示されます。`.excalidraw` ファイルの配置が必要です。
+A compact Excalidraw export with `elements`, optional `appState`, and
+`files`.
 
-![[HW]]
+### `*.excalidraw.md` — Obsidian Excalidraw drawing
 
-## 詳細仕様
+Obsidian "Excalidraw" plugin stores drawings in Markdown. The `## Drawing`
+fenced code block is extracted and supports both `json` and lz-string
+`compressed-json` variants.
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Behavior
 
+### Build (`renderAttachment`)
+
+- Only handles embedded wikilinks (`![[...]]`) to paths ending in
+  `.excalidraw` or `.excalidraw.md`; everything else returns `null` and falls
+  through to the attachment plugin
+- Reads the file under `config.content.directory` (path-traversal safe)
+- Parses the scene and emits
+
+  ```html
+  <figure class="rr-excalidraw" data-excalidraw="pending" data-excalidraw-lazy="true">
+    <div class="rr-excalidraw__canvas" role="img" aria-label="drawing.excalidraw"></div>
+    <script type="application/json" class="rr-excalidraw__payload">{"elements":[...],"appState":{...},"files":{...}}</script>
+  </figure>
+  ```
+
+- Wikilink aliases can set a size: `![[drawing.excalidraw|800]]` (width) or
+  `![[drawing.excalidraw|800x600]]` (width x height)
+- Missing files, invalid scenes, or out-of-directory paths render an error
+  placeholder and log to the console
+
+### Client (`initExcalidraw`)
+
+- Renders pending figures to SVG with `exportToSvg` from
+  `@excalidraw/excalidraw`
+- Figures marked `data-excalidraw-lazy="false"` render immediately; the rest
+  render when they scroll into view (`IntersectionObserver`, 200px margin)
+- Success → `data-excalidraw="ready"` (the SVG replaces the empty canvas)
+- Failure → `data-excalidraw="error"` plus a placeholder message
+
+## Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `lazy` | `boolean` | `true` | Render lazily in the browser (as the figure enters the viewport) instead of immediately |
+
+## Exports
+
+- `excalidraw(options?)` / `excalidrawPlugin` — plugin factory
+- Type: `ExcalidrawOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.md)
+- [`@riebeckite/plugin-attachment`](./attachment.md)

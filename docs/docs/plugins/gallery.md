@@ -1,60 +1,136 @@
+<!-- Generated from packages/plugins/gallery/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Gallery
 
-複数の画像やメディアをギャラリーとして表示する Plugin です。
+Markdown-driven card galleries. A fenced `gallery` code block with a small YAML
+body renders as a responsive card grid, which makes theme galleries, project
+showcases, and link collections easy to author without HTML.
 
-## 導入
+[日本語](./gallery.ja.md)
 
-```bash
-npm install @riebeckite/plugin-gallery
-```
-
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
-
-## 使用例
-
-複数の画像をまとめて紹介する記事で、画像一覧をギャラリーとして見せる用途に向いています。
-
-### ソース
+## Overview
 
 ````markdown
 ```gallery
 columns: 3
 items:
   - title: Default
-    description: A clean, typographic theme.
-    href: https://riebeckite.dev/docs/themes/default
-  - title: Minimal
-    description: Stripped back to the essentials.
-    href: https://riebeckite.dev/docs/themes/minimal
+    description: A calm, readable baseline theme.
+    image: /themes/default.png
+    href: /themes/default
+    meta: v0.1.0
   - title: Gruvbox
-    description: A warm, high-contrast palette.
-    href: https://riebeckite.dev/docs/themes/gruvbox
+    href: /themes/gruvbox
 ```
 ````
 
-### 実行例
+Each item becomes one card. When `href` is present the card is an `<a>`;
+otherwise it is a plain `<div>`. When `image` is absent the card is text-only.
+The grid is rendered at build time, so no client-side JavaScript is required.
 
-```gallery
-columns: 3
-items:
-  - title: Default
-    description: A clean, typographic theme.
-    href: https://riebeckite.dev/docs/themes/default
-  - title: Minimal
-    description: Stripped back to the essentials.
-    href: https://riebeckite.dev/docs/themes/minimal
-  - title: Gruvbox
-    description: A warm, high-contrast palette.
-    href: https://riebeckite.dev/docs/themes/gruvbox
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { gallery } from "@riebeckite/plugin-gallery";
+
+export default defineConfig({
+  // ...
+  plugins: [gallery()],
+});
 ```
 
-## 使いどころ
+## Options
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `language` | `string` | `"gallery"` | Fenced code block language |
+| `columns` | `number` | `3` | Default column count |
+| `aspect` | `string` | `"4/3"` | Default image aspect ratio |
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+```ts
+gallery({ columns: 4, aspect: "1/1" });
+```
 
-## 詳細仕様
+## Block fields
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `items` | `GalleryItem[]` | Required. The cards, in order |
+| `columns` | `number` | Column count. Overrides the plugin option |
+| `aspect` | `string` | Image aspect ratio. Overrides the plugin option |
 
+Each `GalleryItem` field is optional, but an item should set at least `title`
+or `image`:
+
+| Field | Description |
+| ----- | ----------- |
+| `image` | Image source URL |
+| `alt` | Alternative text. Falls back to `title`, then `""` |
+| `title` | Card heading |
+| `description` | Supporting copy |
+| `href` | Link target. Omitted renders a non-interactive card |
+| `meta` | Small trailing label, for example a version or a date |
+
+## Output
+
+```html
+<div class="rr-gallery" data-rr-gallery style="--rr-gallery-columns:3;--rr-gallery-aspect:4/3">
+  <ul class="rr-gallery__items">
+    <li class="rr-gallery__item">
+      <a class="rr-gallery__card" href="/themes/default">
+        <img class="rr-gallery__image" src="/themes/default.png" alt="Default" loading="lazy" decoding="async">
+        <span class="rr-gallery__body">
+          <span class="rr-gallery__title">Default</span>
+          <span class="rr-gallery__description">A calm, readable baseline theme.</span>
+          <span class="rr-gallery__meta">v0.1.0</span>
+        </span>
+      </a>
+    </li>
+  </ul>
+</div>
+```
+
+## Diagnostics
+
+| Code | Severity | Meaning |
+| ---- | -------- | ------- |
+| `gallery-invalid` | `error` | The body is not valid YAML, is not a mapping, or `items` / `columns` / `aspect` is malformed. The block is replaced by an error box |
+| `gallery-item-incomplete` | `warning` | An item has neither a `title` nor an `image` |
+
+`alt` is always emitted on generated images so the output passes
+`quality:img-alt-missing`. The plugin also composes with `responsive-image`
+(for `srcset`) and `lightbox` (for zoom).
+
+## Style
+
+The package ships `style.css`. Register it like any other plugin stylesheet:
+
+```ts
+import "@riebeckite/plugin-gallery/style.css";
+```
+
+The grid uses `container-type: inline-size` and collapses to two columns below
+`36rem` and one column below `22rem`.
+
+## Exports
+
+- `gallery(options?)` — plugin factory
+- `galleryPlugin` — alias of `gallery`
+- `parseGallery(source, options)` — parse a block body into a spec
+- `renderGallery(spec)` / `renderGalleryError(message)` — render the grid or an error box
+- `remarkGallery(options?)` — the remark transform
+- `resolveGalleryOptions(options?)` — apply option defaults
+- Constants: `GALLERY_PLUGIN_NAME`, `GALLERY_CLASS`, `GALLERY_ATTRIBUTE`, `DEFAULT_GALLERY_COLUMNS`, `DEFAULT_GALLERY_ASPECT`
+- Types: `GalleryOptions`, `GalleryItem`, `GallerySpec`, `GalleryParseResult`, `GalleryWarning`, `ResolvedGalleryOptions`
+
+## Limitations
+
+- Items are static data. Filtering or querying the content manifest is out of
+  scope; use the `query` plugin's table/cards output for that.
+- The container-query collapse targets the default multi-column layout. A block
+  that explicitly sets `columns: 1` is unaffected visually.
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

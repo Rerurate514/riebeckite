@@ -40,14 +40,14 @@ test("homepage copy avoids unsupported marketing claims", () => {
 test("site metadata and homepage sources avoid performance claims", () => {
   const forbidden = /\bfast\b|高速/i;
   assert.doesNotMatch(read("../../../riebeckite.config.ts"), forbidden);
-  for (const file of ["../../../docs/index.md", "../../../docs/README.en.md"]) {
+  for (const file of ["../../../docs/index.md", "../../../docs/index.ja.md"]) {
     assert.doesNotMatch(read(file), forbidden);
   }
 });
 
 test("homepage canonical paths follow locale routing", () => {
-  assert.equal(getHomePath("ja"), "/");
-  assert.equal(getHomePath("en"), "/en/");
+  assert.equal(getHomePath("ja"), "/ja/");
+  assert.equal(getHomePath("en"), "/");
 });
 
 test("homepage SEO copy is localized rather than translated verbatim", () => {
@@ -60,7 +60,7 @@ test("homepage SEO copy is localized rather than translated verbatim", () => {
 });
 
 test("software structured data is factual and localized", () => {
-  const en = buildSoftwareApplicationSchema("en", "https://riebeckite.dev/en/");
+  const en = buildSoftwareApplicationSchema("en", "https://riebeckite.dev/");
   assert.equal(en["@type"], "SoftwareApplication");
   assert.equal(en["@context"], "https://schema.org");
   assert.equal(en.name, "Riebeckite");
@@ -69,7 +69,7 @@ test("software structured data is factual and localized", () => {
   assert.equal(en.codeRepository, "https://github.com/Rerurate514/riebeckite");
   assert.equal(en.license, "https://www.apache.org/licenses/LICENSE-2.0");
   assert.equal(en.inLanguage, "en-US");
-  assert.equal(en.url, "https://riebeckite.dev/en/");
+  assert.equal(en.url, "https://riebeckite.dev/");
 
   for (const key of [
     "aggregateRating",
@@ -81,7 +81,7 @@ test("software structured data is factual and localized", () => {
     assert.equal(key in en, false, `unexpected key: ${key}`);
   }
 
-  const ja = buildSoftwareApplicationSchema("ja", "https://riebeckite.dev/");
+  const ja = buildSoftwareApplicationSchema("ja", "https://riebeckite.dev/ja/");
   assert.equal(ja.inLanguage, "ja-JP");
 });
 
@@ -92,12 +92,12 @@ test("og locale helpers derive from hreflang alternates", () => {
   assert.equal(toOgLocale(undefined), "en_US");
 
   const alternates = getHreflangAlternates([
-    { tag: "link", attrs: { rel: "alternate", hreflang: "ja", href: "/" } },
+    { tag: "link", attrs: { rel: "alternate", hreflang: "ja", href: "/ja/" } },
     {
       tag: "link",
-      attrs: { rel: "alternate", hreflang: "en", href: "/en/" },
+      attrs: { rel: "alternate", hreflang: "en", href: "/" },
     },
-    { tag: "link", attrs: { rel: "alternate", hreflang: "ja", href: "/" } },
+    { tag: "link", attrs: { rel: "alternate", hreflang: "ja", href: "/ja/" } },
     { tag: "meta", attrs: { rel: "alternate", hreflang: "fr" } },
   ]);
   assert.deepEqual(alternates.sort(), ["en", "ja"]);
@@ -132,7 +132,7 @@ for (const locale of locales) {
   test(`homepage (${locale}) links the journeys a first-time visitor needs`, () => {
     const html = renderToString(HomePage({ locale }));
     const copy = getHomeCopy(locale);
-    const docsPrefix = locale === "ja" ? "" : "/en";
+    const docsPrefix = locale === "en" ? "" : "/ja";
 
     for (const href of [
       copy.primaryCta.href,
@@ -151,7 +151,7 @@ for (const locale of locales) {
 }
 
 test("both homepage sources are paired for hreflang", () => {
-  for (const file of ["../../../docs/index.md", "../../../docs/README.en.md"]) {
+  for (const file of ["../../../docs/index.md", "../../../docs/index.ja.md"]) {
     const source = read(file);
     assert.match(source, /^translation: home$/m);
     assert.match(source, /^homepage: true$/m);

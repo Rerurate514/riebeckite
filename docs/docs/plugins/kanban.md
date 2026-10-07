@@ -1,52 +1,118 @@
+<!-- Generated from packages/plugins/kanban/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Kanban
 
-Kanban 形式のコンテンツを公開ページで表示するための Plugin です。
+Render Obsidian Kanban boards as static HTML at build time. No client-side
+JavaScript is required.
 
-## 導入
+[日本語](./kanban.ja.md)
 
-```bash
-npm install @riebeckite/plugin-kanban
+## Overview
+
+`kanban()` turns kanban markdown into a board. It accepts two kinds of input:
+
+- The body of a ` ```kanban ` fenced code block.
+- A whole note whose frontmatter contains `kanban-plugin` (enabled by
+  `autoDetect`, on by default).
+
+Columns are lines that start with `## ` (configurable with `columnMarker`).
+Every list item that follows becomes a card: `- [ ] text` (unchecked),
+`- [x] text` (checked), or a plain `- text` item.
+
+Card text supports inline `[[wikilinks]]` (resolved to real hrefs from the
+content manifest), `#tags`, and simple `**bold**` emphasis.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { kanban } from "@riebeckite/plugin-kanban";
+
+export default defineConfig({
+  // ...
+  plugins: [kanban()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Board syntax
 
-## 使用例
-
-Kanban形式で管理している情報を記事として公開したい場合に利用します。タスクやロードマップなど、列ごとに状態を整理したコンテンツに向いています。
-
-### ソース
-
-````markdown
+````md
 ## Backlog
 
 - [ ] Draft the release notes
-- [ ] Link to [[README]]
+- [ ] Link to [[index]]
+- [x] Review **metadata**
 
 ## Done
 
 - [x] Publish the fixture
 ````
 
-### 実行例
+A note that is itself a board looks the same, with the board written directly
+in the body and `kanban-plugin` set in the frontmatter:
 
-```kanban
-## Backlog
+```md
+---
+title: Roadmap
+kanban-plugin: board
+---
 
-- [ ] Draft the release notes
-- [ ] Link to [[README]]
+## Planned
 
-## Done
-
-- [x] Publish the fixture
+- [ ] Ship the plugin
 ```
 
-## 使いどころ
+## Output
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+```html
+<div class="rb-kanban" data-kanban data-kanban-plugin data-kanban-source="note">
+  <div class="rb-kanban__board" data-kanban-board>
+    <div class="rb-kanban__column" data-column="Backlog">
+      <header class="rb-kanban__column-title">Backlog</header>
+      <ul class="rb-kanban__cards">
+        <li class="rb-kanban__card" data-checked="false">
+          <span class="rb-kanban__checkbox" data-checked="false" aria-hidden="true"></span>
+          <span class="rb-kanban__card-text">Draft the release notes</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+```
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+`data-kanban-source` is `"block"` for a fenced block and `"note"` for an
+auto-detected note.
 
-## 詳細仕様
+## Options
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `className` | `string` | `"rb-kanban"` | Root CSS class; block names derive from it |
+| `language` | `string` | `"kanban"` | Fence language to target |
+| `columnMarker` | `string` | `"##"` | Prefix that starts a column |
+| `autoDetect` | `boolean` | `true` | Render notes with `kanban-plugin` frontmatter |
+| `fallback` | `boolean` | `true` | Keep unsupported lines in a `<details>` fallback |
 
+## Fallback and diagnostics
+
+Lines that are neither a column nor a list item are kept verbatim inside
+`details.rb-kanban__fallback` when `fallback` is enabled, so nothing is lost.
+
+Parse problems (for example a block with no columns) are attached to the
+document with a `@riebeckite/plugin-kanban` message.
+
+## Exports
+
+- `kanban(options?)` — plugin factory
+- `kanbanPlugin` — alias of `kanban`
+- `resolveKanbanOptions(options?)` — apply defaults
+- `remarkKanban(options?)` — remark transform used by the plugin
+- `parseKanban(source, options)`, `renderKanban(result, options, resolveLink, source)`
+- `stripFrontmatter(markdown)`, `isKanbanNote(frontmatter)`
+- `createKanbanLinkResolver(manifest)`, `createKanbanPlaceholder(source)`
+- Types: `KanbanOptions`, `ResolvedKanbanOptions`, `KanbanCard`, `KanbanColumn`,
+  `KanbanParseResult`, `KanbanLinkResolver`, `RemarkKanbanOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

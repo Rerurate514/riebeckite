@@ -1,67 +1,81 @@
+<!-- Generated from packages/plugins/citations/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Citations
 
-Citations は、Markdown / Obsidian ノートで BibTeX / BibLaTeX の文献情報を使えるようにする Plugin です。本文中の引用を番号に変換し、ページ末尾に参考文献リストを追加します。
+[日本語版](./citations.ja.md)
 
-## 導入
-
-```bash
-npm install @riebeckite/plugin-citations
-```
+Official Riebeckite plugin for BibTeX / BibLaTeX based citations in Markdown and Obsidian notes.
 
 ```ts
 import { citations } from "@riebeckite/plugin-citations";
 
-export default defineConfig({
-  plugins: [citations({ bibliography: "references.bib" })],
-});
+export default {
+  plugins: [
+    citations({ bibliography: "references.bib" }),
+  ],
+};
 ```
 
-ページごとに文献ファイルを変えたい場合は frontmatter に書けます。
+## Supported citation syntax
 
-```yaml
-bibliography: references.bib
-```
-
-frontmatter のパスは、まずページからの相対パス、次にコンテンツルートからの相対パスとして解決します。config 側のパスは常にコンテンツルート基準です。
-
-## 引用の書き方
-
-Pandoc の記法を参考にした、扱いやすい範囲をサポートします。
+The plugin implements a stable Pandoc-inspired subset:
 
 - `[@smith2024]`
-- `[@smith2024; @doe2025]`
+- `[@smith2024; @doe2025]` — multiple keys must be separated by `;`
 - `@smith2024 argues that ...`
-- `[-@smith2024]`（著者名を出さない形の入力）
+- `[-@smith2024]` — suppress-author input
+- `[@smith2024, p. 42]` and `[see @doe2025]` — prefix and suffix are kept, rendering as `[1, p. 42]` and `[see 2]`
 
-prefix / suffix は保持されます。`[@smith2024, p. 42]` は `[1, p. 42]`、`[see @doe2025]` は `[see 2]` として表示します。同じ文献を何度も引用した場合は、最初に割り当てた番号を再利用します。
+Repeated citations reuse the first number assigned to that key. Under numeric labels, `[-@smith2024]` renders the same label as `[@smith2024]`.
 
-本文中の `@key` は左に境界が必要です。テキストの先頭、空白、`(` のいずれかにしてください。`本文@smith2024` のように左がつながっている場合は `[@smith2024]` を書きます。
+Inline `@key` must be preceded by the start of the text, whitespace, or `(`. Text attached directly to `@key` on the left — for example `本文@smith2024` — is not recognized; write `[@smith2024]` instead.
 
-キーに使えるのは英字、数字、`-`、`_`、`:`、`.` です。Riebeckite の directive 構文が消費してしまう `:` はプラグインが組み直すため、`[@colon:2024]` も動きます。
+Riebeckite parses `:name` as a directive before this plugin runs. When that split breaks a citation key, the plugin reassembles it, so `[@colon:2024]` and `@colon:2024 argues` both work. Keys may contain letters, digits, `-`, `_`, `:`, and `.`.
 
-## 参考文献リスト
+Not transformed: inline code, fenced code blocks, HTML, frontmatter, normal Markdown links (at any nesting depth), and Obsidian WikiLinks.
 
-引用があるページでは、本文の末尾に `References` セクションを追加します。引用番号から、引用キーから作った安定したアンカーへ移動できます。
+## Bibliography files
 
-日本語サイトでは見出しを変えられます。
+- `citations({ bibliography })` paths are relative to the content root.
+- Frontmatter `bibliography` is resolved relative to the page first, then to the content root. Both `/` and `\` separators are accepted and `../` is normalized inside the string; every candidate still goes through the content source, so nothing outside the configured content root can be read.
+- The bibliography file is read at build time only. It is never copied into the output and absolute paths never appear in generated files.
+
+## Supported bibliography subset
+
+Curated entry types are `article`, `book`, `inproceedings`, and `misc`. Other entry types are still parsed and rendered with generic fields, and reported as `citation-unsupported-entry-type`.
+
+`@comment`, `@preamble`, and `@string` entries are accepted and skipped. Malformed entries report `citation-malformed-bibliography` and parsing resumes at the next `@`, so one broken entry does not discard the rest of the file.
+
+Supported syntax: multiline fields, quoted and braced values, nested braces, commas inside values, escaped characters, trailing commas, whitespace and CRLF.
+
+Reported through `citation-unsupported-bibliography-syntax` instead of failing silently:
+
+- `@string` macro references are rendered literally; they are not expanded.
+- `#` string concatenation keeps only the first part.
+
+## References section
+
+Pages with citations receive a `References` heading and an ordered list at the end of the Markdown body. Each entry carries an `id` of the form `ref-<sanitized key>`, where characters outside `[A-Za-z0-9_-]` are replaced by `-` and collisions get a deterministic numeric suffix. Citation labels link to that anchor.
+
+Use `referencesHeading` for localized headings:
 
 ```ts
 citations({ bibliography: "references.bib", referencesHeading: "参考文献" })
 ```
 
-## 対応する文献種別
+## Diagnostics
 
-重点的に扱うのは `article`、`book`、`inproceedings`、`misc` です。それ以外の種別も汎用フィールドとして読み込んで表示し、diagnostics に出します。`@comment`、`@preamble`、`@string` は受け付けて読み飛ばします。
+Reported through Riebeckite diagnostics:
 
-複数行フィールド、引用符と波括弧の値、ネストした波括弧、値の中のカンマ、エスケープ文字、末尾カンマ、CRLF に対応します。マクロ展開と `#` による文字列連結は対象外で、壊れたまま無視せず diagnostics に報告します。
+- `citation-unknown-key`
+- `citation-missing-bibliography`
+- `citation-malformed-bibliography`
+- `citation-duplicate-key`
+- `citation-unsupported-entry-type`
+- `citation-unsupported-bibliography-syntax`
 
-## diagnostics
+Citation numbering, reference ordering, generated HTML, and diagnostics are deterministic: identical input produces identical output.
 
-文献ファイルが見つからない、BibTeX が壊れている、引用キーが重複している、存在しない引用キーを使っている、未対応の文献種別や構文がある、といった問題を Riebeckite の diagnostics に出力します。
+## License
 
-inline code、code block、HTML、frontmatter、通常の Markdown リンク、WikiLink の中は変換しません。
-
-## 詳細仕様
-
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md) を参照してください。
-
+Apache-2.0

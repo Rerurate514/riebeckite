@@ -90,4 +90,4 @@ When `cwd` is not inside a Git repository, API calls resolve to empty results
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)

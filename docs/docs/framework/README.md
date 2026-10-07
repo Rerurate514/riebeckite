@@ -7,57 +7,53 @@ sidebar:
 ---
 # Framework
 
-この章では、**Riebeckite 自体がどのように動いているか**を説明します。
+Framework documentation is for people who want to understand or develop Riebeckite itself. If you only want to build a site, start with [Getting Started](../getting-started/README.md) and use [Reference](../reference/README.md) when you need exact fields or commands.
 
-対象となるのは、
+This chapter is for:
 
-- Riebeckite の内部構造を理解したい人
-- Plugin や Theme の仕組みを詳しく知りたい人
-- Riebeckite 本体を開発・変更したい人
+- People who want to understand Riebeckite's internal structure.
+- People who want to know how plugins and themes work in detail.
+- People who want to develop or change Riebeckite itself.
 
-です。
-
-Riebeckite を使って自分のサイトを作りたいだけなら、この章を最初から読む必要はありません。[Getting Started](../getting-started/README.md) から始めてください。
+If you only want to build your own site with Riebeckite, you do not need to read this chapter from the start. Begin with [Getting Started](../getting-started/README.md).
 
 ```mermaid
 flowchart LR
-    Start["Riebeckiteを使いたい"]
+    Start["I want to use Riebeckite"]
 
-    Start --> Q{"何をしたい？"}
+    Start --> Q{"What do you want to do?"}
 
-    Q -->|"サイトを作る"| GettingStarted["Getting Started"]
-    Q -->|"仕組みを理解する"| Framework["Framework"]
-    Q -->|"Riebeckite本体を開発する"| Framework
+    Q -->|"Build a site"| GettingStarted["Getting Started"]
+    Q -->|"Understand the mechanics"| Framework["Framework"]
+    Q -->|"Develop Riebeckite itself"| Framework
 
     Framework --> Architecture["Architecture"]
     Framework --> Development["Development"]
 ```
 
-## どこから読む？
+## Read by responsibility
 
-目的に合わせて、必要なページだけ読めます。
-
-| 知りたいこと | ページ |
+| I want to understand… | Page |
 | --- | --- |
-| Riebeckite 全体の構造 | [Architecture](./architecture.md) |
-| Markdown や Content がどう処理されるか | [Content System](./content-system.md) |
-| Plugin がどう動くか | [Plugin System](./plugin-system.md) |
-| Plugin が独立したページを提供する仕組み | [Page System](./page-system.md) |
-| Theme が見た目を変更する仕組み | [Theme System](./theme-system.md) |
-| Build と Incremental Build の仕組み | [Build System](./build-system.md) |
-| Plugin が build dependency を宣言する仕組み | [Build Dependency Contract](./build-dependency.md) |
-| Riebeckite と HonoX / Vite の接続 | [HonoX Integration](./honox-integration.md) |
-| 設定や Content の問題を調べる | [Diagnostics](./diagnostics.md) |
-| 解決済みの設定や状態を確認する | [Inspector](./inspector.md) |
-| Log / Trace / Performance を調べる | [Observability](./observability.md) |
-| Riebeckite のテストを書く・実行する | [Testing](./testing.md) |
-| Riebeckite 本体を開発する | [Development](./development.md) |
+| Package ownership and dependency direction | [Architecture](./architecture.md) |
+| How Markdown and assets become pages | [Content system](./content-system.md) |
+| How plugins are resolved and run | [Plugin system](./plugin-system.md) |
+| How plugins provide standalone pages | [Page system](./page-system.md) |
+| How themes interact with CSS and plugin output | [Theme system](./theme-system.md) |
+| Incremental builds, build state, and plugin cache | [Build system](./build-system.md) |
+| How plugins declare build dependencies | [Build dependency contract](./build-dependency.md) |
+| The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |
+| Diagnostics and Doctor | [Diagnostics](./diagnostics.md) |
+| Read-only inspection commands | [Inspector](./inspector.md) |
+| Logger, Tracer, and Profiler | [Observability](./observability.md) |
+| Test layout and golden files | [Testing](./testing.md) |
+| The monorepo development workflow | [Development](./development.md) |
 
-## 最初に内部構造を理解したい場合
+## Where to start
 
-まず [Architecture](./architecture.md) を読むのがおすすめです。
+If you want to understand the internal structure first, start with [Architecture](./architecture.md).
 
-Riebeckite は大きく、
+Riebeckite is broadly divided into these responsibilities:
 
 ```mermaid
 flowchart BT
@@ -73,49 +69,45 @@ flowchart BT
     Theme --> Core
 ```
 
-という責務に分かれています。
+After reading Architecture, move on to Content System, Plugin System, Theme System, and so on depending on the area you want to change.
 
-Architecture を読んだあと、変更したい領域に応じて Content System、Plugin System、Theme System などへ進むと理解しやすくなります。
+## Responsibility boundaries
 
-## Riebeckite 本体を開発する場合
+- **Core** owns content-processing contracts and orchestration. It does not depend on HonoX, Vite, a specific plugin, or a theme.
+- **Plugins** extend Markdown, HTML, metadata, assets, client behavior, endpoints, SEO, diagnostics, and graph behavior.
+- **Themes** own appearance: tokens, CSS, stable-hook styling, and safe theme attributes.
+- **Integrations** connect Core to a web framework and bundler. The current supported adapter is HonoX/Vite.
+- **Applications** hold site-specific routes, components, and islands.
+- **CLI** is build-time tooling. Runtime Cloudflare Workers code must not access build state or filesystem caches.
 
-Riebeckite repository を clone して Framework 自体を変更する場合は、[Development](./development.md) を参照してください。
+## For repository development
 
-Development では、
+The Riebeckite monorepo clone workflow is intentionally here, not in Getting Started. Use it only when you are changing Riebeckite itself: [Development](./development.md).
 
-- monorepo の clone
+Development covers, among other things:
+
+- cloning the monorepo
 - `pnpm install`
-- root の `pnpm` コマンド
-- `packages/*` の構成
+- the root `pnpm` commands
+- the layout of `packages/*`
 - `apps/web`
-- Package ごとのテスト
-- Scaffold / External Site の検証
-
-などを扱います。
+- per-package tests
+- scaffold and external-site verification
 
 ```text
-Riebeckite repository 自体を開発する
+Develop the Riebeckite repository itself
     → Framework / Development
 
-Riebeckite を使ってサイトを作る
+Build a site with Riebeckite
     → Getting Started
 ```
 
-`apps/web` は Riebeckite の Documentation / Reference Application です。
+`apps/web` is Riebeckite's documentation and reference application. General users do not need to copy `apps/web` or clone the Riebeckite monorepo to use Riebeckite.
 
-一般ユーザーが Riebeckite を使うために `apps/web` をコピーしたり、Riebeckite monorepo を clone したりする必要はありません。
+## The boundary of this chapter
 
-## この章の境界
+The Framework chapter covers Riebeckite's **internal design and framework development**. Normal usage — creating a site, adding content, configuring plugins and themes, and deploying — is described in [Getting Started](../getting-started/README.md) and Guides.
 
-Framework 章では、Riebeckite の**内部設計と Framework 開発**を扱います。
+Keeping this boundary separate lets people who only want to build a site with Riebeckite do so without learning the internals of the framework.
 
-一方、
 
-- Site の作成
-- Content の追加
-- Plugin / Theme の設定
-- Deploy
-
-といった通常の利用方法は [Getting Started](../getting-started/README.md) や Guides で説明します。
-
-この境界を分けることで、Riebeckite を使うだけの人が Framework 内部の知識を覚えなくてもサイトを作れるようにしています。

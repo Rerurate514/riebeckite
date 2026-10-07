@@ -1,26 +1,24 @@
-# 記事の書き方ガイド
+# Writing content
 
-Riebeckite で公開する記事の基本的な書き方を説明します。
+This guide covers the basics of writing articles for a Riebeckite site. It is aimed at users who are new to Markdown or static publishing.
 
-Markdown に慣れていなくても、
+Even if you are new to Markdown, the flow is:
 
 ```text
-記事ファイルを作る
+Create the article file
       ↓
-タイトルを書く
+Write the title
       ↓
-本文を書く
+Write the body
       ↓
-ブラウザで確認
+Preview in the browser
       ↓
-公開
+Publish
 ```
 
-まで進められる内容です。
+## Where articles live
 
-## 記事を置く場所
-
-標準では、記事を `content/` に置きます。
+By default, articles live in the `content/` folder.
 
 ```text
 my-site/
@@ -32,57 +30,42 @@ my-site/
 └─ package.json
 ```
 
-たとえば、
+`first-post.md` is shown at `/first-post`. `index.md` is a useful name for the top page.
 
-```text
-content/first-post.md
-```
+You can also use a folder other than `content/`. If you want to publish an existing Obsidian vault, see [Publishing Obsidian notes](./obsidian.md).
 
-を作れば、Riebeckite が記事として読み込みます。
+## The smallest article
 
-`content/` 以外のフォルダを使うこともできます。既存の Obsidian Vault などを使いたい場合は [Obsidian のノートをサイトにするガイド](./obsidian.md) を参照してください。
-
-## 最初の記事を書く
-
-まず、
-
-```text
-content/first-post.md
-```
-
-を作ります。
-
-内容は次のようにします。
+A published article starts with frontmatter.
 
 ```md
 ---
-title: 最初の記事
+title: First post
 publish: true
 ---
 
-# 最初の記事
+# First post
 
-はじめての記事です。
-
-Riebeckite で Markdown を公開してみます。
+Write the article body here.
 ```
 
-これだけで、公開できる最小の記事になります。
+- `title`: the article title used by the site
+- `publish: true`: marks the article as published
+
+Files without `publish: true` can be kept as drafts.
 
 ## Frontmatter
 
-記事の先頭にある、
+The block at the top of the file,
 
 ```md
 ---
-title: 最初の記事
+title: First post
 publish: true
 ---
 ```
 
-の部分を **Frontmatter** と呼びます。
-
-Frontmatter には、記事そのものではなく、記事についての情報を書きます。
+is called **frontmatter**. Frontmatter describes the article, not the article content itself.
 
 ```text
 Markdown File
@@ -91,116 +74,73 @@ Markdown File
 │    ├─ title
 │    └─ publish
 │
-└─ 本文
-     ├─ 見出し
-     ├─ 段落
-     ├─ リンク
-     └─ 画像
+└─ Body
+     ├─ Heading
+     ├─ Paragraph
+     ├─ Link
+     └─ Image
 ```
 
-最初は次の2つを覚えておけば十分です。
+To begin with, two fields are enough:
 
-| 項目 | 意味 |
+| Field | Meaning |
 | --- | --- |
-| `title` | 記事のタイトル |
-| `publish: true` | この記事を公開する |
+| `title` | The article title |
+| `publish: true` | Publish this article |
 
-たとえば、
+For example,
 
 ```md
 ---
-title: Flutter を始めた
+title: Getting started with Flutter
 publish: true
 ---
 ```
 
-なら、「Flutter を始めた」というタイトルの記事を公開します。
+publishes an article titled "Getting started with Flutter".
 
-## 記事を公開する
-
-既定の公開ルールでは、
-
-```yaml
-publish: true
-```
-
-がある記事だけが公開されます。
-
-公開する記事は、
+## Common Markdown
 
 ```md
----
-title: 公開する記事
-publish: true
----
+# Main heading
 
-この記事は公開します。
+## Section heading
+
+Body text. Use a blank line to start a new paragraph.
+
+- List item
+- Another item
+
+[External link](https://example.com)
+
+![Image description](/images/photo.jpg)
 ```
 
-とします。
+Heading levels are controlled by the number of `#` characters. Whether to repeat the article title as a top-level heading in the body depends on your site design.
 
-## 下書きにする
-
-まだ公開したくない記事には `publish: true` を付けません。
+### Headings
 
 ```md
----
-title: まだ出さない記事
----
+# Main heading
 
-書きかけの記事です。
+## Section heading
+
+### Subsection heading
 ```
 
-このファイルは Content として管理できますが、既定の公開ルールでは公開ページになりません。
+The number of `#` characters sets the heading level.
 
-```mermaid
-flowchart LR
-    Markdown["Markdown"]
+### Paragraphs
 
-    Markdown --> Publish{"publish: true?"}
-
-    Publish -->|"Yes"| Public["公開"]
-    Publish -->|"No"| Draft["公開しない"]
-```
-
-そのため、
-
-```text
-content/
-├─ published-post.md
-├─ draft-post.md
-└─ another-draft.md
-```
-
-のように、公開記事と下書きを同じ `content/` に置いておくこともできます。
-
-## Markdown の基本
-
-本文は通常の Markdown で書きます。
-
-### 見出し
+Ordinary sentences become a paragraph.
 
 ```md
-# 大見出し
+This is the first paragraph.
 
-## 中見出し
-
-### 小見出し
+A blank line starts the next paragraph.
 ```
 
-`#` の数によって見出しの階層が変わります。
-
-### 段落
-
-普通に文章を書けば段落になります。
-
-```md
-最初の段落です。
-
-空行を入れると、次の段落になります。
-```
-
-### 箇条書き
+### Lists
 
 ```md
 - Flutter
@@ -208,31 +148,31 @@ content/
 - HonoX
 ```
 
-番号付きのリストも書けます。
+Numbered lists also work.
 
 ```md
-1. 記事を書く
-2. ブラウザで確認する
-3. 公開する
+1. Write the article
+2. Check it in the browser
+3. Publish
 ```
 
-### 強調
+### Emphasis
 
 ```md
-**太字**
+**bold**
 
-*斜体*
+*italic*
 ```
 
-### コード
+### Code
 
-文章中のコードはバッククォートで囲みます。
+Inline code is wrapped in backticks.
 
 ```md
-`publish: true` を追加します。
+Add `publish: true`.
 ```
 
-複数行のコードはコードブロックにできます。
+Multi-line code goes in a code block.
 
 ````md
 ```ts
@@ -241,65 +181,21 @@ console.log(message);
 ```
 ````
 
-## リンクを書く
+## File names and URLs
 
-外部 Site へのリンクは通常の Markdown Link を使います。
+In the standard setup, the logical path of the content determines where it is published.
 
-```md
-[Example](https://example.com)
-```
+File names become URL paths.
 
-Site 内の記事へリンクする場合も Markdown Link を利用できます。
+|File|URL|
+|---|---|
+|`content/index.md`|`/`|
+|`content/about.md`|`/about`|
+|`content/posts/first.md`|`/posts/first`|
 
-```md
-[プロフィール](/about)
-```
+For readable URLs, use lowercase letters, numbers, and hyphens in file names.
 
-## WikiLink
-
-Obsidian 形式の WikiLink に対応した Plugin を利用している構成では、
-
-```md
-[[about]]
-```
-
-のようなリンクも利用できます。
-
-表示する文字を変更する場合は、
-
-```md
-[[about|プロフィール]]
-```
-
-と書けます。
-
-```text
-[[about]]
-      ↓
-対応するContentを解決
-      ↓
-公開先のURL
-```
-
-Riebeckite では、最終的な Site 内リンクは解決済みの Content 情報を使って扱われます。
-
-そのため、Plugin や多言語設定などによって公開 URL が変わる場合でも、対応する仕組みからリンクを解決できます。
-
-## ファイル名と URL
-
-標準的な構成では、Content の論理的な Path が公開先を決める基準になります。
-
-たとえば基本的な構成では、
-
-| ファイル | 公開先の例 |
-| --- | --- |
-| `content/index.md` | `/` |
-| `content/about.md` | `/about` |
-| `content/posts/first.md` | `/posts/first` |
-
-のようになります。
-
-そのため、ファイル名には、
+Names such as the following are easy to manage:
 
 ```text
 about.md
@@ -307,182 +203,226 @@ getting-started.md
 first-post.md
 ```
 
-のような分かりやすい名前を付けると管理しやすくなります。
-
-英小文字・数字・ハイフンを使った名前にしておくのも扱いやすい方法です。
-
-ただし、Riebeckite では、
+However, Riebeckite resolves the public location as:
 
 ```text
-ファイルPath
+File path
       ↓
 Content
       ↓
 Public Location
       ↓
-公開URL
+Public URL
 ```
 
-として公開先が解決されます。
+So **the physical file path is not always the URL as-is.** A plugin or configuration can change the public location. See [Content System](../framework/content-system.md) for the details.
 
-そのため、
+## Published articles and drafts
 
-**ファイルの物理 Path が常にそのまま URL になるわけではありません。**
+By default, only articles with
 
-Plugin や設定によって Public Location が変更されることがあります。
+```yaml
+publish: true
+```
 
-詳しい仕組みは [Content System](../framework/content-system.md) を参照してください。
+are published.
 
-## 画像を使う
-
-Markdown では次のように画像を書けます。
+Published article:
 
 ```md
-![画像の説明](/images/photo.jpg)
+---
+title: Published article
+publish: true
+---
 ```
 
-`[]` の中には、画像が表示できない場合にも内容が分かる説明を書いてください。
-
-たとえば、
+Draft:
 
 ```md
-![Riebeckite のロゴ](/images/riebeckite-logo.png)
+---
+title: Draft article
+---
 ```
 
-のようにします。
+Drafts are not emitted as public pages.
 
-## 画像ファイルについて
+```mermaid
+flowchart LR
+    Markdown["Markdown"]
 
-Markdown に画像へのリンクを書くだけでは、画像ファイルそのものが自動的に存在することにはなりません。
+    Markdown --> Publish{"publish: true?"}
+
+    Publish -->|"Yes"| Public["Published"]
+    Publish -->|"No"| Draft["Not published"]
+```
+
+Because of this, you can keep published articles and drafts together in the same `content/` folder:
+
+```text
+content/
+├─ published-post.md
+├─ draft-post.md
+└─ another-draft.md
+```
+
+## Internal links
+
+Normal Markdown links work.
+
+```md
+[Profile](/about)
+```
+
+Obsidian-style WikiLinks can also be used when the configured plugins support them.
+
+```md
+[[about]]
+[[about|Profile]]
+```
+
+```text
+[[about]]
+      ↓
+Resolve the matching content
+      ↓
+Public URL
+```
+
+Riebeckite resolves the final in-site link from the resolved content information, so links keep working even when a plugin or localization setting changes the public URL.
+
+## Images
+
+A nearby image folder is easy to manage.
+
+```text
+content/
+├─ first-post.md
+└─ images/
+   └─ photo.jpg
+```
+
+Reference the image from the article.
+
+```md
+![Photo](/images/photo.jpg)
+```
+
+Put a description inside `[]` so the meaning is clear even when the image cannot be displayed.
+
+```md
+![Riebeckite logo](/images/riebeckite-logo.png)
+```
+
+### About image files
+
+Writing an image link in Markdown does not by itself make the image file exist:
 
 ```text
 Markdown
    ↓
-画像URL
+Image URL
    ↓
-公開Siteに画像が存在
+Image exists in the published site
    ↓
-Browserで表示
+Displayed in the browser
 ```
 
-利用している Site 構成に合わせて、画像が公開 Output に含まれるようにしてください。
+Make sure the image is included in the public output according to your site setup. If you use attachments from an Obsidian vault, see [Publishing Obsidian notes](./obsidian.md).
 
-Obsidian Vault の添付ファイルを利用する場合は [Obsidian のノートをサイトにするガイド](./obsidian.md) も参照してください。
+## A complete example
 
-## 記事を書いてみる
-
-ここまでを組み合わせると、たとえば次のような記事を書けます。
+Combining everything so far, an article can look like this:
 
 ```md
 ---
-title: Riebeckite を使ってみた
+title: Trying Riebeckite
 publish: true
 ---
 
-# Riebeckite を使ってみた
+# Trying Riebeckite
 
-Riebeckite で最初のサイトを作ってみました。
+I built my first site with Riebeckite.
 
-## 使ったもの
+## What I used
 
 - Markdown
 - Riebeckite
 - HonoX
 
-## 関連記事
+## Related articles
 
-詳しい設定は [[configuration|設定についての記事]] にまとめています。
+The details are collected in [[configuration|the configuration article]].
 
-## 外部リンク
+## External links
 
-[Riebeckite の GitHub](https://github.com/Rerurate514/riebeckite)
+[Riebeckite on GitHub](https://github.com/Rerurate514/riebeckite)
 ```
 
-Frontmatter の後は、通常の Markdown として記事を書いていけば問題ありません。
+After the frontmatter, you can write the article as ordinary Markdown.
 
-## 公開前にブラウザで確認する
+## Check before publishing
 
-記事を書いたら Development Server を起動します。
-
-```sh
-npm exec riebeckite dev
-```
-
-Browser で記事を開き、
-
-- タイトル
-- 見出し
-- 本文
-- リンク
-- 画像
-- コードブロック
-
-などが想定どおり表示されているか確認します。
-
-## 問題がないか確認する
-
-公開前には、
+After adding articles, run these commands from the site folder.
 
 ```sh
 npm exec riebeckite check
 npm exec riebeckite doctor
+npm exec riebeckite dev
 ```
 
-を実行します。
+Use `dev` to preview the site in a browser and check the title, headings, body, links, images, and code blocks. When it looks good, build it.
 
-役割は次のように異なります。
+```sh
+npm exec riebeckite build
+```
 
-| Command | 主に確認すること |
+The roles differ:
+
+| Command | Main check |
 | --- | --- |
-| `check` | Config や Plugin の設定が正しいか |
-| `doctor` | Content や Site に問題がないか |
-| `dev` | Browser で実際の表示を確認する |
+| `check` | Whether the config and plugin settings are correct |
+| `doctor` | Whether the content and site have problems |
+| `dev` | Whether the actual rendering looks right in the browser |
 
-Site 内リンクの整合性を診断する Plugin を利用している場合は、存在しない内部リンクなども確認できます。
+If you use a plugin that diagnoses in-site links, it can also find internal links that point to pages that do not exist.
 
-## どの記事が認識されているか確認する
+## Checking which articles are recognized
 
-記事が表示されない場合は、
+If an article does not appear, use:
 
 ```sh
 npm exec -- riebeckite inspect content --list
 ```
 
-を利用できます。
-
-これによって、Riebeckite がどの Content を認識しているか確認できます。
-
-記事が見つからない場合は、
+This shows which content Riebeckite recognizes. When an article cannot be found, checking in this order makes the cause easier to isolate:
 
 ```text
 content.directory
       ↓
 exclude
       ↓
-Contentとして認識
+Recognized as content
       ↓
-publish条件
+publish condition
       ↓
-Public Site
+Public site
 ```
 
-の順番で確認すると原因を切り分けやすくなります。
+## Build the site
 
-## Site をビルドする
-
-Browser で確認して問題がなければ、Site をビルドします。
+Once the browser preview looks right, build the site.
 
 ```sh
 npm exec riebeckite build
 ```
 
-基本的な流れは、
+The basic flow is:
 
 ```mermaid
 flowchart LR
-    Write["Markdownを書く"]
+    Write["Write Markdown"]
     Publish["publish: true"]
-    Dev["devで確認"]
+    Dev["Check with dev"]
     Check["check / doctor"]
     Build["build"]
     Deploy["Deploy"]
@@ -494,73 +434,63 @@ flowchart LR
     Build --> Deploy
 ```
 
-となります。
+## What to learn first
 
-## 最初はこれだけ覚えればよい
-
-Riebeckite で記事を書くために、最初からすべての機能を覚える必要はありません。
-
-まずは、
+You do not need to learn every feature to write articles with Riebeckite. Start with:
 
 ```md
 ---
-title: 記事のタイトル
+title: Article title
 publish: true
 ---
 
-# 記事のタイトル
+# Article title
 
-本文を書きます。
+Write the body.
 ```
 
-という形だけ覚えておけば記事を公開できます。
-
-その後、必要に応じて、
+Then add Markdown, WikiLinks, images, frontmatter, plugins, and localization as needed:
 
 ```text
 Markdown
 WikiLink
-画像
+Images
 Frontmatter
-Plugin
-多言語対応
+Plugins
+Localization
 ```
 
-などを追加していけば十分です。
+## Summary
 
-## まとめ
-
-Riebeckite で記事を書く基本的な流れはシンプルです。
+The basic flow of writing content with Riebeckite is simple:
 
 ```text
-content/ に .md を作る
+Create a .md file in content/
         ↓
-title を付ける
+Add a title
         ↓
-publish: true を付ける
+Add publish: true
         ↓
-Markdown で本文を書く
+Write the body in Markdown
         ↓
-dev で確認
+Check with dev
         ↓
 check / doctor
         ↓
 build
 ```
 
-公開する記事と下書きを分けるために、まず覚えておきたいのは、
+To separate published articles from drafts, the first thing to remember is
 
 ```yaml
 publish: true
 ```
 
-です。
+The final public URL of an article is determined by the **Public Location** that Riebeckite resolves. While writing ordinary articles you do not need to think too much about how URLs are produced.
 
-そして、記事の公開 URL は最終的に Riebeckite が解決した **Public Location** で決まります。通常の記事を書く段階では URL の仕組みを意識しすぎる必要はありません。
+## Next steps
 
-### 次に読むもの
-
-- [サイト公開までの最短ガイド](../getting-started/deployment.md)
-- [Obsidian のノートをサイトにするガイド](./obsidian.md)
+- [Fast path to publishing a site](../getting-started/deployment.md)
+- [Publishing Obsidian notes](./obsidian.md)
 - [Localization](./localization.md)
 - [Configuration](../reference/configuration.md)

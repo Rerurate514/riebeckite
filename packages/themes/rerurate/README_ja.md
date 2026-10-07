@@ -62,7 +62,7 @@ export default defineConfig({
 
 ## 関連資料
 
-- [テーマシステム](../../../docs/docs/reference/theme-api.md)
+- [テーマシステム](../../../docs/docs/reference/theme-api.ja.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
 - [`@riebeckite/theme-sakura`](../sakura/README_ja.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README_ja.md)

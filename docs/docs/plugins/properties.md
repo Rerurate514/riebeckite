@@ -1,34 +1,110 @@
+<!-- Generated from packages/plugins/properties/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Properties
 
-ノートのプロパティや frontmatter に含まれる情報を公開ページで扱いやすくする Plugin です。
+Render each note's frontmatter as an Obsidian-style property panel at build
+time. No client-side JavaScript is required.
 
-## 導入
+[日本語](./properties.ja.md)
 
-```bash
-npm install @riebeckite/plugin-properties
+## Overview
+
+When the content manifest is created, `properties()` renders a
+`section.rb-properties[data-properties]` from every entry's frontmatter. The
+note HTML is left untouched and the panel is published on
+`ContentManifestEntry.bodySlots["article.metadata"]`, so the Site decides where
+to render it. The frontmatter stays the single source of truth — there is
+nothing to write in the Markdown body.
+
+Values are rendered by type:
+
+| Value | Output |
+| ----- | ------ |
+| Array | `ul.rb-properties__list` with one item per element |
+| Tag key (`tags` / `tag`) or a value starting with `#` | `a.rb-properties__tag` linking to the site tag route |
+| Boolean | `true` / `false` with `data-boolean` |
+| Number | The number with `data-number` |
+| ISO date string or `Date` | `<time datetime>` |
+| `[[wikilink]]` or URL inside a string | Resolved link (wikilinks use the content index) |
+| Nested object | A nested `<dl>` |
+
+Values that cannot be rendered as structured HTML are emitted as escaped text
+and reported as a `properties-unrenderable-value` warning.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { properties } from "@riebeckite/plugin-properties";
+
+export default defineConfig({
+  // ...
+  plugins: [properties()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Options
 
-## 使用例
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `title` | `string \| null` | `"Properties"` | Panel heading. `null` omits it |
+| `include` | `string[]` | unset | Render only these keys |
+| `exclude` | `string[]` | `["publish", "permalink", "aliases", "redirect_from"]` | Keys to hide |
+| `order` | `string[]` | unset | Display order for selected keys: listed keys first, then the rest in frontmatter order |
+| `hideEmpty` | `boolean` | `true` | Skip `null`, `""`, `[]`, and `{}` values |
+| `className` | `string` | `"rb-properties"` | Root CSS class |
+| `collapsed` | `boolean` | `false` | Render inside a `<details>` element |
 
-frontmatter に書いた記事の属性を、公開ページでも扱いたい場合に利用します。
-
-```yaml
----
-title: Riebeckite Guide
-author: Rerurate
-tags: [riebeckite, docs]
----
+```ts
+properties({
+  title: "メタデータ",
+  exclude: ["publish", "permalink", "aliases", "redirect_from", "draft"],
+  collapsed: true,
+});
 ```
 
-frontmatter の値は、記事の先頭（設定により末尾）にプロパティパネルとして表示されます。タグはリンク、日時は `<time>`、真偽値やネストした値も型に合わせて描画されます。
+### Rendering the metadata slot
 
-## 使いどころ
+The plugin writes the panel to `ContentManifestEntry.bodySlots["article.metadata"]`.
+The Site route passes `bodySlots` to its article component and chooses the
+metadata position in its layout. Combine `include` and `order` to decide which
+keys are shown and in what order:
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+```tsx
+// app/components/article.tsx (site side)
+import type { ContentBodySlots } from "@riebeckite/core";
+import { ContentSlot } from "@riebeckite/honox/ui";
 
-## 詳細仕様
+function SiteArticle({ bodySlots }: { bodySlots?: ContentBodySlots }) {
+  return (
+    <ContentSlot
+      slots={bodySlots}
+      name="article.metadata"
+      class="site-article__metadata"
+    />
+  );
+}
+```
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+```ts
+properties({
+  include: ["title", "created", "updated", "tags"],
+  order: ["title", "created", "updated", "tags"],
+});
+```
 
+The handoff follows the
+[`ContentManifestEntry.bodySlots`](../framework/honox-integration.md)
+contract. A plugin never owns routes or the shell.
+
+## Exports
+
+- `properties(options?)` / `propertiesPlugin(options?)` — plugin factory
+- `resolvePropertiesOptions(options?)` — default resolution
+- `renderPropertiesPanel(frontmatter, options?, context?)` — pure renderer
+- `buildTagHref(tag)` — tag route builder
+- Types: `PropertiesOptions`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`, `PropertiesLinkResolver`, `PropertiesMessage`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

@@ -124,5 +124,5 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 

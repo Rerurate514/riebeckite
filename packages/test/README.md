@@ -44,7 +44,7 @@ A missing or mismatched golden file fails the test. Regenerate the recorded
 files with `pnpm test:update` at the repository root (or `UPDATE_GOLDEN=1` for a
 single package) and review the resulting diff.
 
-See [Testing](../../docs/docs/framework/testing.en.md) for the full workflow.
+See [Testing](../../docs/docs/framework/testing.md) for the full workflow.
 
 ## External-site engine
 
@@ -85,5 +85,5 @@ through the `afterSiteChecks` callback.
 
 ## See also
 
-- [Testing](../../docs/docs/framework/testing.en.md)
+- [Testing](../../docs/docs/framework/testing.md)
 

@@ -6,62 +6,62 @@ sidebar:
 ---
 # Presets
 
-`create-riebeckite` は **preset** をもとに、Plugin、Theme、初期コンテンツ、HonoX アプリケーションのファイルを選んでサイト一式を生成します。既定値は `starter` です。
+`create-riebeckite` writes a complete site from a **preset**. A preset chooses the registered plugins, theme, generated content, and HonoX application files.
 
-対話式の CLI は、実行中に preset を選ぶよう確認してきます。迷ったら `starter` を選びます。コマンドラインから指定する場合は `--preset <name>` を使います（既定は `starter`）。
+The interactive CLI asks you to choose a preset while it runs; `starter` is the recommendation when you are unsure. To choose one from the command line instead, use `--preset <name>` (default `starter`).
 
 ```sh
 npx create-riebeckite my-site --preset starter
 npx create-riebeckite --list-presets
 ```
 
-## どれを選ぶか
+## Which preset should I choose?
 
-| 目的 | Preset |
+| Goal | Preset |
 | --- | --- |
-| アプリケーションを自分で組み立てたい | `empty` |
-| 公開できる最小の Markdown サイトがほしい | `minimal` |
-| 実用的なガーデンやブログを始めたい | `starter`（既定） |
-| Plugin 全体、描画例、リファレンスを確認したい | `showcase` |
+| I will assemble the application myself | `empty` |
+| I want the smallest publishable Markdown site | `minimal` |
+| I want the recommended starting point for a real garden or blog | `starter` (default) |
+| I want to explore the complete plugin catalog, rendered examples, and references | `showcase` |
 
-迷ったら `starter` を選びます。必要な Plugin は後から `riebeckite.config.ts` に追加できます。
+If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`.
 
-## 各 preset
+## The presets
 
-| Preset | Theme | 言語 | コンテンツ | 主な機能 |
+| Preset | Theme | Languages | Contents | Representative features |
 | --- | --- | --- | --- | --- |
-| `starter` | `default` | 7言語 | index、guide、examples、相互リンクしたノート | Markdown 公開、検索、パンくず、バックリンク、関連記事・最新記事、taxonomy、series |
-| `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
-| `showcase` | `default` | 7言語 | ツアー、guide、examples、Plugin/Theme reference、ローカル fixture | 全 Plugin カタログ、図表、チャート、ナレッジ機能、診断、デプロイ |
-| `empty` | なし | — | なし | 空のアプリケーションシェル |
+| `starter` | `default` | 7 | index, guide, examples, connected notes | Markdown publishing, search, breadcrumbs, backlinks, related and recent posts, taxonomy, series |
+| `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
+| `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, knowledge tools, diagnostics, deployment |
+| `empty` | none | — | none | Blank application shell |
 
-7言語は英語、日本語、簡体字中国語、スペイン語、ドイツ語、フランス語、韓国語です。`minimal` は l10n を登録せず、`empty` には Theme、Plugin、コンテンツがありません。
+The seven languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `minimal` does not register l10n; `empty` has no theme, plugins, or content.
 
 ### `starter`
 
-実用サイト向けの既定構成です。Obsidian Markdown、カラーモード、l10n、SEO、目次、properties・alias、コード表示、検索・発見、パンくず、画像の最適表示と lightbox、series、taxonomy を含みます。相互リンクしたノートにより、バックリンク、関連記事、検索、最新記事、series、タグを試せます。ニッチな統合は含めません。
+The practical default. It includes Obsidian Markdown, color mode, l10n, SEO, table of contents, properties and aliases, code enhancement, search and discovery, breadcrumbs, responsive images and lightbox, series, and taxonomy. Its connected sample notes exercise backlinks, related posts, search, recent posts, series, and tags without adding niche integrations.
 
 ### `minimal`
 
-Obsidian Markdown、`minimal` Theme、英語の1ページだけを含む構成です。小さなサイトや、意図的に小さく始めたい場合に向いています。
+Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a small site or a deliberately lean starting point.
 
 ### `showcase`
 
-自己完結したリファレンスサイトです。全 Plugin カタログを有効にし、図表・チャート・コードの描画例、Plugin と Theme のリファレンス、SVG・PDF・Excalidraw・Canvas のローカル fixture を含みます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
+The self-contained reference site. It enables the complete plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
 
 ### `empty`
 
-Plugin、Theme、コンテンツ、コンポーネントを含まない空のアプリケーションシェルです。サイト構成から自分で作り、必要な部品を一つずつ追加する場合に選びます。
+A blank application shell with no plugins, theme, content, or components. Choose it to establish the site structure and add each part yourself.
 
-## 生成される設定
+## Generated configuration
 
-`starter` は実用的な Plugin の設定を出力し、`showcase` は設定リファレンスとして全オプションを出力します。`empty` と `minimal` の設定は意図的に小さくしています。詳細は [Configuration](../reference/configuration.md) と `packages/plugins` の各 README を参照してください。
+`starter` writes practical plugin options. `showcase` writes the complete option surface as a configuration reference. `empty` and `minimal` deliberately keep configuration small. See [Configuration](../reference/configuration.md) and each package README under `packages/plugins` for details.
 
-## Project file
+## Project files
 
-preset は project file を制御しません。`create-riebeckite` は `--utilities <names>` で選んだ project file を別途生成します。指定できる名前は `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` で、既定は `editorconfig,gitattributes,biome` です。`none` を指定すると何も生成しません。対話式では `Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI Reference](../reference/cli.md) を参照してください。
+Presets do not control project files. `create-riebeckite` writes an independent set selected with `--utilities <names>`: `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`. The default is `editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode the `Extra project files` prompt lets you toggle each one. See the [CLI reference](../reference/cli.md) for the files each name writes.
 
-## 次に読むページ
+## Next
 
 - [Deployment →](./deployment.md)
 

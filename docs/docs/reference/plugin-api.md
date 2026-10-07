@@ -1,72 +1,59 @@
 # Plugin System
 
-Riebeckite Plugin は、Riebeckite の機能を Core や Site Application に直接組み込まず、再利用可能な形で追加するための仕組みです。
+Riebeckite Plugins extend content interpretation, transformation,
+rendering, diagnostics, build-time processing, browser behavior,
+endpoints, and SEO. This document describes the shared plugin contract
+rather than individual plugins.
 
-Plugin では、たとえば次のような機能を追加できます。
+## Start with the smallest contract
 
-- Markdown / HTML の変換
-- コンテンツの処理
-- 独自形式の埋め込み表示
-- 独立したページ
-- CSS
-- Browser 上の処理
-- HTTP Endpoint
-- SEO
-- Diagnostics
-- Content Graph の拡張
-
-Plugin は必要な機能だけを実装します。
-
-すべての API を使う必要はありません。
-
-# まず何を使うか決める
-
-Plugin を作るときは、最初に **目的に合った最小の Extension Point** を選びます。
+Choose a remark/rehype or pipeline extension for semantic source transforms;
+use a content hook only when a named content phase is required. Use assets for
+CSS, client entries only for necessary browser code, endpoints for reusable
+HTTP behavior, and renderers for a specific target. Do not use a plugin to add
+application routes or to hide framework-specific routing. Use `pageTypes` for
+a reusable, framework-independent page; the integration owns the one generic
+route that renders it.
 
 ```mermaid
 flowchart TD
-    Q{"何を追加したい？"}
+    Q{"What do you want to add?"}
 
-    Q -->|"Markdown / HTMLの意味変換"| Pipeline["remark / rehype<br/>Pipeline"]
-    Q -->|"Content処理の特定段階へ参加"| Hook["Content Hooks"]
-    Q -->|"特定形式を表示"| Renderer["renderers"]
-    Q -->|"独立したページ"| Page["pageTypes"]
+    Q -->|"Semantic Markdown / HTML transform"| Pipeline["remark / rehype pipeline"]
+    Q -->|"Join a content phase"| Hook["Content hooks"]
+    Q -->|"Render a specific format"| Renderer["renderers"]
+    Q -->|"A standalone page"| Page["pageTypes"]
     Q -->|"CSS"| Asset["assets"]
-    Q -->|"Browser処理"| Client["clientEntries"]
+    Q -->|"Browser behavior"| Client["clientEntries"]
     Q -->|"HTTP API"| Endpoint["endpoints"]
     Q -->|"SEO"| SEO["seo"]
-    Q -->|"Graph情報"| Graph["extendContentGraph"]
-    Q -->|"問題を報告"| Diagnostics["addDiagnostics"]
+    Q -->|"Graph information"| Graph["extendContentGraph"]
+    Q -->|"Report problems"| Diagnostics["addDiagnostics"]
 ```
 
-たとえば Canvas や Excalidraw を記事内へ表示するなら `renderers`、`/explore` のような独立したページを提供するなら `pageTypes` を使います。
+For example, use `renderers` to show Canvas or Excalidraw inside an article,
+and `pageTypes` to provide a standalone page such as `/explore`. Needing a
+standalone screen does not mean adding a plugin-specific HonoX route.
 
-独立画面が必要だからといって、Plugin 固有の HonoX route を追加するわけではありません。
+## Minimal plugin
 
-# 最小の Plugin
-
-最も小さい Plugin は次のように作れます。
-
-```ts
+``` ts
 import { definePlugin } from "@riebeckite/core";
 
 export function examplePlugin() {
-  return definePlugin({
-    name: "example",
-  });
+  return definePlugin({ name: "example" });
 }
 ```
 
-Plugin に設定を持たせる場合は、factory の引数として受け取ります。
+A plugin factory may expose typed options and retain the resolved
+options on the plugin object:
 
-```ts
+``` ts
 type ExampleOptions = {
   enabled?: boolean;
 };
 
-export function examplePlugin(
-  options: ExampleOptions = {},
-) {
+export function examplePlugin(options: ExampleOptions = {}) {
   return definePlugin({
     name: "example",
     options,
@@ -74,150 +61,91 @@ export function examplePlugin(
 }
 ```
 
-`definePlugin()` が Plugin の共通 contract を提供します。
+## Contract overview
 
-# Plugin が持てる機能
+  Area                  API
+  --------------------- ------------------------------------------------
+  Identity              `name`, `enabled`, `order`, `options`
+  Dependencies          `provides`, `requires`, `optional`
+  Validation            `validateOptions`
+  Cache                 `cacheVersion`, `context.cache`
+  Lifecycle             `setup`, `buildStart`, `buildEnd`, `dispose`
+  Content hooks         config/content/post/manifest hooks
+  Public location       `resolveContentLocations`
+  Pipeline              remark/rehype declarations and extension hooks
+  Graph                 `extendContentGraph`
+  Diagnostics           `addDiagnostics`
+   Rendering             `renderers`
+   Pages                 `pageTypes`
+  Browser integration   `assets`, `clientEntries`
+  HTTP integration      `endpoints`
+  SEO                   `seo`
 
-`RiebeckitePlugin` には、大きく次の Extension Point があります。
+Use only the extension points a plugin actually needs.
 
-| 分類 | 主な API |
-| --- | --- |
-| 基本情報 | `name`, `enabled`, `order`, `options` |
-| 依存関係 | `provides`, `requires`, `optional` |
-| 設定検証 | `validateOptions` |
-| Cache | `cacheVersion`, `context.cache` |
-| Lifecycle | `setup`, `buildStart`, `buildEnd`, `dispose` |
-| Content | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
-| 公開先 | `resolveContentLocations` |
-| Markdown / HTML | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
-| Graph | `extendContentGraph` |
-| Diagnostics | `addDiagnostics` |
-| 埋め込み表示 | `renderers` |
-| 独立ページ | `pageTypes` |
-| Browser | `assets`, `clientEntries` |
-| HTTP | `endpoints` |
-| SEO | `seo` |
+## Ordering and capabilities
 
-Plugin はこの中から**必要なものだけ**を使用してください。
+Disabled/false/null inputs are removed, and `enabled: false` is never
+executed. `order` provides a basic ordering before dependency resolution,
+while capability dependencies express real requirements:
 
-# Plugin の有効化
-
-Plugin は `riebeckite.config.ts` の `plugins` へ追加します。
-
-```ts
-plugins: [
-  myPlugin(),
-]
-```
-
-条件付きで有効化することもできます。
-
-```ts
+``` ts
 plugins: [
   condition && myPlugin(),
 ]
 ```
 
-`false`、`null`、`undefined` は Plugin の解決時に除外されます。
-
-また、
-
-```ts
-enabled: false
-```
-
-の Plugin も実行対象になりません。
-
-# Plugin の順序と依存関係
-
-単純な実行順は `order` で指定できます。
-
-ただし、Plugin 同士に実際の依存関係がある場合は `order` ではなく **Capability** を使用します。
-
-```ts
+``` ts
 definePlugin({
   name: "consumer",
-
-  provides: [
-    "example.output",
-  ],
-
-  requires: [
-    "content.graph",
-  ],
-
-  optional: [
-    "example.optional",
-  ],
+  provides: ["example.output"],
+  requires: ["content.graph"],
+  optional: ["example.optional"],
 });
 ```
 
-それぞれの意味は次のとおりです。
-
-| Field | 意味 |
-| --- | --- |
-| `provides` | この Plugin が提供する機能 |
-| `requires` | 必ず必要な機能 |
-| `optional` | あれば利用する機能 |
-
-Resolver は依存関係から Plugin の実行順を決定します。
-
 ```mermaid
 flowchart LR
-    Provider["Provider Plugin<br/>provides: content.graph"]
-    Consumer["Consumer Plugin<br/>requires: content.graph"]
+    Provider["Provider plugin<br/>provides: content.graph"]
+    Consumer["Consumer plugin<br/>requires: content.graph"]
 
     Provider --> Consumer
 ```
 
-次のような状態は Configuration Error になります。
+- `provides`: capabilities this plugin provides.
+- `requires`: capabilities that must exist.
+- `optional`: capabilities used when present.
 
-- 必須 Capability が存在しない
-- 同じ Capability を複数 Plugin が提供する
-- 依存関係が循環している
+The resolver places providers before consumers and detects missing
+requirements, duplicate providers, and cycles while preserving unrelated
+input order where possible.
 
-依存関係のない Plugin については、入力順を可能な限り維持します。
+## Option validation
 
-# Options Validation
-
-TypeScript の型だけでは、実行時に渡される設定値が必ず正しいとは保証できません。
-
-必要な Plugin は `validateOptions` を実装できます。
-
-Validation は、
+Runtime option validation complements TypeScript factory types.
 
 ```text
-Plugin Options
+Plugin options
       ↓
 validateOptions
       ↓
-Structured Issues
+Structured issues
       ↓
-Config Validation
+Config validation
 ```
 
-という流れで扱われます。
+Validators should be pure and must not scan content, build the site, or
+mutate cache/state. Return problems as structured issues so Riebeckite's config
+validation can report them together.
 
-Validator は **設定の検証だけ**を行ってください。
+## Plugin Context
 
-ここで、
+The base context contains resolved config when available, `contentIndex`,
+diagnostics, plugin-scoped cache, generated-output sink, Logger, Tracer, and
+the content source when Core owns one.
+Specialized hooks add post, manifest, graph, location, or render data.
 
-- filesystem scan
-- Build
-- Cache write
-- 外部状態の変更
-
-などを行わないでください。
-
-問題は structured issue として返し、Riebeckite の Config Validation がまとめて表示できるようにします。
-
-# Plugin Context
-
-Plugin は Framework の機能を `PluginContext` から受け取ります。
-
-基本的な Context は概念的に次のようなものです。
-
-```ts
+``` ts
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   contentIndex: Map<string, string>;
@@ -230,123 +158,52 @@ type PluginContext = {
 };
 ```
 
-Hook によって、
+Prefer injected context services over plugin-owned global singletons.
 
-- `slug`
-- `markdown`
-- `content`
-- `manifest`
-- `entries`
-- Public Location の入力
+## Lifecycle
 
-などが追加されます。
+Framework lifecycle hooks run once per `ContentManager` in this order:
+`setup`, `buildStart`, `onConfigResolved`, content processing, and `buildEnd`.
+`dispose` runs in reverse resolved order when the manager is disposed.
+`buildEnd` receives the completed manifest after diagnostics have been
+collected and is the only terminal build hook.
 
-Plugin 内で global singleton を作るより、Context から Framework Service を受け取ることを優先してください。
+Named lifecycle and content hooks run in resolved plugin order. Core reports a
+hook failure with the plugin name, hook name, and original cause.
 
-# Lifecycle
+## Markdown and HTML pipelines
 
-Plugin には Framework 全体の Lifecycle と、Content 処理の Lifecycle があります。
+Plugins can declare remark/rehype plugins directly:
 
-Framework Lifecycle は、
-
-```text
-setup
-buildStart
-buildEnd
-dispose
-```
-
-があります。
-
-`dispose` は Plugin が確保した resource の解放に使用します。
-
-`setup`、`buildStart`、`onConfigResolved`、Content 処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は Diagnostics の収集後に完成した Manifest を受け取る唯一の終端 Hook です。`dispose` は解決済み Plugin の逆順で実行されます。
-
-名前付き Lifecycle / Content Hook でエラーが発生した場合は、Plugin 名と Hook が分かる状態で上位へ伝播させます。
-
-元の `cause` を失わないことも重要です。
-
-# Content Lifecycle
-
-Content 処理は概念的に次の順番で進みます。
-
-```mermaid
-flowchart TD
-    Config["Config Resolved"]
-    Loaded["Content Loaded"]
-    Location["Public Location Resolved"]
-    Parsed["Post Parsed"]
-    Processed["Post Processed"]
-    Graph["Content Graph"]
-    Manifest["Manifest Created"]
-
-    Config --> Location
-    Location --> Loaded
-    Loaded --> Parsed
-    Parsed --> Processed
-    Processed --> Graph
-    Graph --> Manifest
-```
-
-全体の順序は `setup` → `buildStart` → `onConfigResolved` → Public Location 解決 → `onContentLoaded` → Markdown / HTML Pipeline → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → Diagnostics → `buildEnd` です。
-
-代表的な Hook として、
-
-```text
-onConfigResolved
-onContentLoaded
-onPostParsed
-onPostProcessed
-onManifestCreated
-```
-
-があります。
-
-**必要な段階の Hook だけを使用します**。
-
-後段ですでに得られる情報を前段で独自に再構築しないでください。
-
-# Markdown / HTML Pipeline
-
-Markdown や HTML の意味を変換する場合は Pipeline を使用します。
-
-簡単な remark / rehype Plugin なら直接宣言できます。
-
-```ts
+``` ts
 definePlugin({
   name: "example",
-
-  remarkPlugins: [
-    remarkExample,
-  ],
-
-  rehypePlugins: [
-    rehypeExample,
-  ],
+  remarkPlugins: [remarkExample],
+  rehypePlugins: [rehypeExample],
 });
 ```
 
-Pipeline 自体を構成する必要がある場合は Extension API を利用します。
+Or compose the framework pipelines themselves:
 
-```ts
+``` ts
 definePlugin({
   name: "example",
-
-  extendMarkdownPipeline(pipeline) {
+  extendMarkdownPipeline(pipeline, context) {
     pipeline.use(remarkExample);
   },
-
   extendHtmlPipeline(pipeline) {
     pipeline.use(rehypeExample);
   },
 });
 ```
 
-Markdown AST や HTML AST の処理を Application Component に持ち込まず、Plugin の Pipeline 処理として実装するのが基本です。
+Semantic Markdown/HTML transformation belongs here, not in application
+components.
 
-# 処理済み Content の Build Dependency
+## Processed-content build dependencies
 
-Incremental Build の無効化は Core の責務です。Plugin は独自に affected content を計算せず、`processedContentCache` で契約を宣言します。
+Core owns incremental invalidation. A plugin declares its cache contract with
+`processedContentCache`; it must not implement its own affected-content logic.
 
 ```ts
 definePlugin({
@@ -361,36 +218,94 @@ definePlugin({
 });
 ```
 
-- `none` は、処理結果が Content 本体、frontmatter、options、宣言した version だけに依存することを表します。
-- `tracked` は、Pipeline が他の Content や file を読む場合に使います。`context.contentSource` 経由で読めば、Core が dependency を記録し、利用側だけを再処理します。たとえば citations Plugin は `readContentSourceEntry(context.contentSource, path)` で BibTeX file を読みます。
-- `unsafe` は処理済み Content の永続的な再利用を無効にします。Content 処理を行う Plugin が契約を宣言しない場合も、同じ安全側の全 Content 再処理になります。
+- `none` means processing depends only on the content source, frontmatter,
+  options, and the declared version.
+- `tracked` means the pipeline reads other content or files. Read them through
+  `context.contentSource` so Core records the dependency and selectively
+  rebuilds its consumers. For example, a citations plugin reads its BibTeX file
+  with `readContentSourceEntry(context.contentSource, path)`.
+- `unsafe` opts out of persistent processed-content reuse. A content-affecting
+  plugin without a contract receives the same safe full-content fallback.
 
-`tracked` の dependency は Content 処理中に取得します。Core が content/file の identity を永続化し、逆引き index から次回 Build で affected content を決定します。この用途で vault を独自に走査したり、Plugin 固有の Incremental Build state を保存したりしないでください。Framework API 経由で dependency を追跡できない場合は `unsafe` を使います。広い再処理は許容されますが、古い結果の再利用は許容されません。
+Tracked dependencies are captured while processing content. Core persists their
+content/file identities, builds a reverse index, and computes affected content
+on the next incremental build. Do not scan the vault independently or persist a
+plugin-specific incremental state for this purpose. If a dependency cannot be
+observed through the framework API, use `unsafe`; a broad rebuild is correct,
+where a stale result is not.
 
-これは Output Dependency とは別の契約です。`pageTypes[].outputDependencies` と `context.output.emit(..., { dependencies })` は、再生成が必要な page や生成 file を表します。ここでは `content`、`tag`、`folder`、`global`、`unknown` を使います。`unknown` は安全側として全 Output の再生成を要求します。
+This is separate from output dependencies. `pageTypes[].outputDependencies`
+and `context.output.emit(..., { dependencies })` declare which rendered pages
+or generated files require regeneration. Use `content`, `tag`, `folder`,
+`global`, or `unknown` there; `unknown` safely requests full output
+regeneration.
 
-Generated output の path は物理出力 path です。Generated output を Content、redirect、plugin page の route と衝突させないでください。衝突した場合は route を上書きせず、Core が build を失敗させます。
+Generated output paths are physical output paths. A generated output must not
+collide with a content, redirect, or plugin page route; Core fails the build
+instead of overwriting the route.
 
-# Public Location
+## Content Hooks
 
-Plugin は `resolveContentLocations` を使って、コンテンツの公開先を変更できます。
+Content hooks join named phases of content processing:
 
-最初に Core が標準の公開先を計算します。
-
-```text
-index
-  → /
-
-その他
-  → /{slug}
+``` text
+setup → buildStart → config resolved → public locations resolved
+→ content loaded → Markdown/HTML pipeline → post parsed → post processed
+→ content graph → manifest created → diagnostics → build end
 ```
 
-その後、Plugin が順番に Public Location を解決します。
+```mermaid
+flowchart TD
+    Config["Config resolved"]
+    Location["Public location resolved"]
+    Loaded["Content loaded"]
+    Parsed["Post parsed"]
+    Processed["Post processed"]
+    Graph["Content graph"]
+    Manifest["Manifest created"]
+
+    Config --> Location
+    Location --> Loaded
+    Loaded --> Parsed
+    Parsed --> Processed
+    Processed --> Graph
+    Graph --> Manifest
+```
+
+Use only the hooks a phase genuinely requires, and do not rebuild later-phase
+information in an earlier hook.
+
+## Content Graph
+
+Use the existing Manifest/Content Graph contracts instead of rescanning
+the filesystem inside graph-oriented plugins.
+
+```mermaid
+flowchart LR
+    Manifest["Manifest entries"]
+    Graph["Content graph"]
+    Plugin["Plugin extension"]
+    Extended["Extended graph"]
+
+    Manifest --> Graph
+    Graph --> Plugin
+    Plugin --> Extended
+```
+
+Reuse the information the content system has already resolved.
+
+## Public location
+
+`resolveContentLocations` lets a plugin replace the public location of content
+entries. Core first applies its default resolver
+(`resolveDefaultContentLocation`: `index` -> `/`, otherwise `/{slug}`), then runs
+each plugin's hook in resolved plugin order and stores the results as
+`ContentPublicLocation` values on the manifest, graph, and Markdown pipeline.
 
 ```mermaid
 flowchart LR
     Content["Content"]
-    Default["Default Location"]
+    Default["Default location"]
     P1["Plugin A"]
     P2["Plugin B"]
     Result["ContentPublicLocation"]
@@ -401,91 +316,54 @@ flowchart LR
     P2 --> Result
 ```
 
-結果は `ContentPublicLocation` として Manifest、Content Graph、Markdown Pipeline などから利用されます。
+Plugins own their URL strategy: identity fields, hash or frontmatter IDs, path
+shapes, redirect rules, and their own validation. Core does not know any of
+that; it knows only `ContentLocationInput`, `ContentPublicLocation`,
+`resolveDefaultContentLocation`, and the `resolveContentLocations` hook.
+Consumers read the resolved `entry.permalink`, never branch on a specific plugin,
+and never rebuild a URL from a slug. An entry without a resolved location is an
+explicit error, not a slug fallback.
 
-URL strategy 自体は Plugin の責務です。
+## Renderers
 
-たとえば、
-
-- identity field
-- frontmatter ID
-- hash
-- URL path
-- redirect
-
-などの規則は Plugin が定義できます。
-
-Core は特定 Plugin の URL 規則を知りません。
-
-Consumer は最終的に解決された、
-
-```ts
-entry.permalink
-```
-
-を利用します。
-
-slug から URL を再構築したり、特定 Plugin が有効かどうかで URL を分岐したりしないでください。
-
-Public Location が解決できない場合も、slug へ暗黙的に fallback せず明示的なエラーとして扱います。
-
-# Renderers
-
-`renderers` は、特定の Content Target を Plugin 固有の HTML へ変換する仕組みです。
-
-たとえば、
-
-- Canvas
-- Excalidraw
-- Media
-- Attachment
-
-のような埋め込み表示に利用できます。
+Renderers receive a target (`kind`, `path`, `raw`, `label`, `url`,
+`embed`) plus normal plugin context. Return `null` when the renderer
+does not handle a target so another renderer can participate.
 
 ```mermaid
 flowchart LR
-    Target["Content Target"]
-    Renderer["Plugin Renderer"]
+    Target["Content target"]
+    Renderer["Plugin renderer"]
     HTML["HTML"]
 
     Target --> Renderer
-    Renderer -->|"対応する"| HTML
-    Renderer -->|"対応しない"| Next["次のRenderer"]
+    Renderer -->|"handles it"| HTML
+    Renderer -->|"does not handle it"| Next["Next renderer"]
 ```
 
-Renderer Context には、
+## Body slots
 
-```text
-kind
-path
-raw
-label
-url
-embed
-```
+A plugin can contribute an HTML fragment to a named position in the
+Site-owned article layout without adding a route or touching the document
+shell. Core defines the slot names as `ContentBodySlot`; the Site decides
+which slots to render and where.
 
-などと通常の `PluginContext` が含まれます。
+The standard article layout recognizes:
 
-対象でなければ `null` を返し、他の Renderer に処理を委ねられるようにします。
+  Slot                     Position
+  ------------------------ -----------------------------------------------
+  article.header     directly after the article header
+  article.metadata       after the title and meta block
+  article.aside            in the article aside
+  article.before-content   before the note body
+  article.after-content    after the note body
+  article.footer           in the article footer
 
-# Body Slots
+`ContentBodySlot` also accepts any other string, so a custom Site can define
+additional slot names.
 
-Plugin は、route を追加したり document shell を書き換えたりせずに、Site が所有する article layout の名前付き位置へ HTML fragment を提供できます。slot 名の contract は Core の `ContentBodySlot` が定義し、どの slot をどこに描画するかは Site が決めます。
-
-標準の article layout は次の slot を認識します。
-
-| Slot | 位置 |
-| --- | --- |
-| `article.header` | article header の直後 |
-| `article.metadata` | title / meta block の後 |
-| `article.aside` | article aside 内 |
-| `article.before-content` | 本文の前 |
-| `article.after-content` | 本文の後 |
-| `article.footer` | article footer 内 |
-
-`ContentBodySlot` は他の文字列も受け付けるため、独自 Site は追加の slot 名を定義できます。
-
-fragment は `@riebeckite/core` の `appendContentBodySlot` で提供します。通常は `onManifestCreated` などの manifest hook から呼び出します。
+Publish a fragment with `appendContentBodySlot` from `@riebeckite/core`,
+typically from a manifest hook such as `onManifestCreated`:
 
 ```ts
 import { appendContentBodySlot } from "@riebeckite/core";
@@ -493,11 +371,17 @@ import { appendContentBodySlot } from "@riebeckite/core";
 appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
 ```
 
-空の fragment は無視され、fragment は解決済み Plugin 順に蓄積されます。先に処理された Plugin の contribution は保持され、新しい fragment が末尾へ追加されます。
+Empty fragments are ignored, and fragments accumulate in resolved plugin
+order: contributions from earlier plugins are preserved and the new fragment
+is appended.
 
-関連コンテンツ、履歴、ナビゲーション、backlinks など記事末尾の section には `article.footer` を使います。Plugin ごとに `order` を設定して順序を固定し、route や CSS で並べ替えません。
+Use `article.footer` for article-end sections such as related content,
+history, navigation, and backlinks. Set each plugin's `order` to establish a
+stable sequence; do not reorder these sections in routes or with CSS.
 
-Site は `entry.bodySlots` を読み、各値を描画するかどうかと描画位置を決めます。描画の仕組みは `@riebeckite/honox/ui` の公開 `ContentSlot` primitive に任せられます。
+The Site reads `entry.bodySlots` and chooses whether and where to render each
+value. It can delegate the rendering mechanics to the public `ContentSlot`
+primitive from `@riebeckite/honox/ui`:
 
 ```tsx
 // app/components/article/article.tsx
@@ -506,106 +390,85 @@ import { ContentSlot } from "@riebeckite/honox/ui";
 <ContentSlot slots={props.bodySlots} name="article.after-content" />
 ```
 
-`ContentSlot` は slot lookup、存在しない slot や空 slot の扱い、HTML fragment の描画、`data-slot` の付与を担当する公開 API です。Site 固有 class は `class` / `className` で追加します。slot は Site 自身の renderer が描画を選んだときだけ描画され、独自 slot 名は Site が描画を選ぶまで何もしません。`slots` を直接読んだり、任意の要素で包んだり、同じ slot を複数回描画する escape hatch も残っています。Plugin は代わりに Hono JSX component を export して Site に配置を任せることもできます。詳しくは [UI の提供方法](../plugins/writing-a-plugin.md#ui-の提供方法) を参照してください。
+`ContentSlot` is public API. It owns the slot lookup, missing and empty
+handling, HTML fragment rendering, and the `data-slot` attribute; site classes
+are added with `class`/`className`. A slot is rendered only because the Site's
+own renderer chooses to render it, and a custom slot name does nothing until the
+Site renders it. The escape hatches remain: read `slots` directly, wrap a slot
+in any element, and render the same slot more than once. A plugin can
+alternatively export a Hono JSX component for the Site to place; see
+[Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
 
-参照アプリと scaffold の starter は標準 slot を消費します。Plugin は提供し、Site が描画します。Plugin が route、shell、描画順を変更することはありません。route レベルの contract は [Body Slots](../framework/honox-integration.md#body-slots) を参照してください。
+The reference app and the scaffolded starter consume the standard slots. A
+plugin publishes; the Site renders. A plugin never changes a route, the shell,
+or the render order. See
+[Body slot handoff](../framework/honox-integration/site.md#body-slot-handoff) for
+the route-level contract.
 
-# Manifest の collection と公開境界
+## Manifest collections and publication safety
 
-Manifest を受け取る Hook（`onManifestCreated`、page resolver、renderer）では、
-次の3つの entry collection を使い分けます。
+Hooks that receive the manifest (`onManifestCreated`, page resolvers, renderers)
+choose between three entry collections:
 
-- `manifest.entries` — `draft` と `scheduled` を含む全 entry。公開ページや
-  discovery UI へ描画しないでください。
-- `manifest.publicEntries` — 到達可能な entry（`public` と `unlisted`）。
-  sitemap など、到達可能な全 URL を網羅する出力に使います。`unlisted` を
-  含む点に注意してください。
-- `manifest.discoverableEntries` — discovery surface に表示してよい entry
-  （`public` のみ）。関連記事、新着、tag ページ、検索 index など、読者が
-  一覧から辿る UI にはこれを使います。
+- `manifest.entries` — every entry, including `draft` and `scheduled`. Never
+  render these into a public page or a discovery UI.
+- `manifest.publicEntries` — routable entries: `public` and `unlisted`. Use for
+  output that must cover every reachable URL, such as a sitemap. It still
+  includes `unlisted` content.
+- `manifest.discoverableEntries` — entries allowed in discovery surfaces:
+  `public` only. Use this for related posts, recent lists, tag pages, search
+  indexes, and any list a reader browses.
 
-`frontmatter` から可視性を再判定したり、`publishAt` を再実装したりしないで
-ください。Hook が分岐を必要とする場合は、解決済みの `entry.publishing`
-（`visibility`、`routable`、`discoverable`）を読みます。それ以外は、判断を
-すでに含む collection を選んでください。公開方針は
-[Configuration](./configuration.md) で設定します。
+Do not re-derive visibility from `frontmatter` or reimplement `publishAt`. When a
+hook genuinely needs to branch, read the resolved `entry.publishing`
+(`visibility`, `routable`, `discoverable`); otherwise pick the collection that
+already encodes the decision. The publish strategy is configured in
+[Configuration](./configuration.md).
 
-# Page Types
+## Pages
 
-`pageTypes` は Plugin が独立したページを提供するための仕組みです。
-
-たとえば、
-
-```text
-/explore
-/report
-```
-
-のようなページです。
-
-```ts
-definePlugin({
-  name: "example-pages",
-
-  pageTypes: [
-    {
-      id: "example.report",
-      paths: ["/report"],
-
-      resolve: ({ pathname, manifest }) =>
-        pathname === "/report"
-          ? {
-              type: "example.report",
-              pathname,
-              body: `<p>${manifest.discoverableEntries.length}</p>`,
-            }
-          : null,
-    },
-  ],
-});
-```
-
-Plugin が Application Route を直接追加する必要はありません。
+`pageTypes` supplies standalone pages without adding application routes. A page
+type declares its stable ID, SSG paths, optional priority, and a resolver. The
+resolver receives the resolved manifest and a normalized request path, then
+returns HTML for the page body or `null`. The site still owns its document frame
+and theme. A page may also return `title`, `description`, `headTags`, and the
+`language` it resolved; the document frame decides how to render that metadata.
 
 ```mermaid
 flowchart LR
-    Plugin["Plugin Page Type"]
-    Core["Core Resolver"]
-    Integration["HonoX Integration"]
-    Site["Site Document Frame"]
+    Plugin["Plugin page type"]
+    Core["Core resolver"]
+    Integration["HonoX integration"]
+    Site["Site document frame"]
 
     Plugin --> Core
     Core --> Integration
     Integration --> Site
 ```
 
-Page Type は、
-
-- 一意な ID
-- SSG path
-- resolver
-- 必要に応じた `priority`
-
-を宣言します。
-
-Page は `body` のほか、
-
-```text
-title
-description
-headTags
-language
+```ts
+definePlugin({
+  name: "example-pages",
+  pageTypes: [{
+    id: "example.report",
+    paths: ["/report"],
+    resolve: ({ pathname, manifest }) => pathname === "/report"
+      ? { type: "example.report", pathname, body: `<p>${manifest.discoverableEntries.length}</p>` }
+      : null,
+  }],
+});
 ```
 
-も返せます。
+Use `resolveRiebeckiteRoute(content, c.req.path)` and
+`pluginPageSsgParams(content)` from `@riebeckite/honox/server` in a catch-all
+route. Duplicate IDs fail at plugin resolution. When multiple types match, the
+highest `priority` wins; ties fail explicitly.
 
-ただし、それらを最終 HTML のどこへ描画するかは Site Application が決めます。
+## Build dependencies
 
-詳しくは [Page System](../framework/page-system.md) を参照してください。
-
-# Build Dependency
-
-`processedContentCache` は、Core が Plugin の処理済み Content を Build 間で再利用できるかを宣言する契約です。`cacheVersion` と `context.cache` とは別のものです。
+`processedContentCache` declares whether Core may reuse a plugin's processed
+content between builds. This is separate from `cacheVersion` and
+`context.cache`.
 
 ```ts
 processedContentCache: {
@@ -614,11 +477,20 @@ processedContentCache: {
 }
 ```
 
-- `none`: source Content、frontmatter、options、宣言した version だけに依存する変換です。
-- `tracked`: 他の Content や file を Core 経由で読む変換です。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、Core が `ContentDependencyTracker` により Content/file 読み取りを自動記録します。filesystem を直接読んではいけません。
-- `unsafe`: Git、network、時刻、process state など、Core が追跡できない入力です。処理済み Content の永続 Cache 再利用を安全側で無効にします。
+- `none` is for transforms that depend only on the source content, frontmatter,
+  options, and the declared version.
+- `tracked` is for transforms that read other content or files through Core.
+  Use `context.contentSource`, `readContentSourceEntry`, `renderContent`, or
+  `renderNoteEmbed`; Core owns `ContentDependencyTracker` and records those
+  content and file reads automatically. Do not read the filesystem directly.
+- `unsafe` is for inputs Core cannot track, such as Git, network, time, or
+  process state. It safely bypasses persistent processed-content reuse.
 
-Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の契約です。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `outputDependencies` を宣言すると各 Content Output に加算されます。
+Content dependencies decide which source content must be processed again.
+Output dependencies decide which emitted files must be written again. They are
+separate contracts. Page types declare `outputDependencies`; a plugin that
+updates existing manifest entry HTML in `onManifestCreated` declares root
+`outputDependencies`, which are added to those content outputs.
 
 ```ts
 outputDependencies: [{ type: "global" }]
@@ -631,60 +503,55 @@ pageTypes: [{
 }]
 ```
 
-対象を特定できる場合は `content`、`tag`、`folder` を使います。manifest 全体に依存する集合変換は `global` を使います。表現できない入力だけに `unknown` を使ってください。`unknown` は安全側で再生成し、全 Output の再生成を要求します。依存を宣言しない Generated Output も `unknown` です。
+Use `content`, `tag`, or `folder` when the exact scope is known; use `global`
+for a manifest-wide collection transform. Use `unknown` only when the input
+cannot be represented: it regenerates safely and requests full output
+regeneration. Generated outputs without declared dependencies are `unknown`.
 
-# Content Graph
+## Assets and client entries
 
-Content Graph を拡張する場合は、
+Plugin CSS remains in the plugin package and is declared through
+`assets`. Browser initialization is declared through `clientEntries`
+only when browser JavaScript is genuinely required. Do not copy plugin
+CSS into `apps/web` or expose `/node_modules` directly.
 
-```text
-extendContentGraph
+For a package named `@riebeckite/plugin-example`, use the Core helpers. They
+declare the package's conventional `./style.css` and `./client` exports while
+keeping the integration-facing values consistent:
+
+```ts
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
+
+export function examplePlugin() {
+  return definePlugin({
+    name: "example",
+    assets: [createStyleAsset("example")],
+    clientEntries: [
+      createClientEntry("example", "initExample", { selector: ".example" }),
+    ],
+  });
+}
 ```
 
-を使用します。
-
-たとえば Backlinks や Graph 系 Plugin が独自に filesystem を scan してリンク関係を再構築するのではなく、既存の Manifest / Content Graph を利用します。
-
-```mermaid
-flowchart LR
-    Manifest["Manifest Entries"]
-    Graph["Content Graph"]
-    Plugin["Plugin Extension"]
-    Extended["Extended Graph"]
-
-    Manifest --> Graph
-    Graph --> Plugin
-    Plugin --> Extended
-```
-
-Content System がすでに解決した情報を再利用することが重要です。
-
-# Assets
-
-Plugin 固有の CSS は Plugin package 内に置き、`assets` で公開します。
+The same declarations written out explicitly:
 
 ```ts
 assets: [
   {
     pluginName: "example",
     kind: "style",
-    moduleSpecifier:
-      "@riebeckite/plugin-example/style.css",
+    moduleSpecifier: "@riebeckite/plugin-example/style.css",
   },
 ]
 ```
 
-Plugin CSS を `apps/web` へコピーしたり、Browser から `/node_modules` を直接参照させたりしないでください。
-
-package 名が `@riebeckite/plugin-<name>` の場合は `createStyleAsset()` /
-`createClientEntry()` が `@riebeckite/plugin-<name>/style.css` と
-`@riebeckite/plugin-<name>/client` を組み立てます。それ以外の名前（site 内
-Plugin や任意名の第三者 package）では、自身の `exports` が公開する
-specifier を `assets` / `clientEntries` に明示してください。
-
 ```mermaid
 flowchart LR
-    Plugin["Plugin Package"]
+    Plugin["Plugin package"]
     CSS["style.css"]
     Asset["assets"]
     Integration["Integration"]
@@ -696,69 +563,32 @@ flowchart LR
     Integration --> Browser
 ```
 
-# CSS Hooks
+The helpers build the specifier from the package name: `createStyleAsset("example")`
+produces `@riebeckite/plugin-example/style.css` and
+`createClientEntry("example", ...)` produces `@riebeckite/plugin-example/client`.
+They therefore fit only a package literally named `@riebeckite/plugin-<name>`. A
+package published under any other name — including a site-local plugin — must
+declare `assets` and `clientEntries` explicitly with specifiers its own `exports`
+map exposes. See
+[Distributing a Plugin outside this repository](#distributing-a-plugin-outside-this-repository).
 
-再利用可能な Plugin UI には、最外要素へ stable な CSS Hook を付けます。
+Omit `assets` or `clientEntries` when the plugin does not need them. The client
+entry's export name is optional and defaults to the module default export. Its
+third argument is an optional JSON value passed to that initializer. It is the
+only plugin configuration exposed to browser code (and recorded in the
+manifest for static hosts); `options` are never copied to the client. Register
+only deliberately public values—never tokens, credentials, or private service
+URLs. An initializer without public config continues to receive no arguments.
 
-Plugin の Hook は、
-
-```text
-rr-<feature>
-```
-
-という名前を使います。
-
-たとえば、
-
-```text
-rr-search
-rr-callout
-rr-query
-rr-code
-```
-
-です。
-
-内部要素は BEM 形式を使用できます。
-
-```text
-rr-search
-rr-search__input
-rr-search__result
-rr-search--loading
-```
-
-Plugin 固有の出力を `rb-*` namespace に置かないでください。
-
-| Namespace | 用途 |
-| --- | --- |
-| `rb-*` | Framework の構造 Hook |
-| `--rb-*` | Framework の Semantic Design Token |
-| `rr-*` | Plugin / Feature Hook |
-| `--rr-*` | Plugin 固有 Token |
-
-既存の class がある場合、`rr-*` は置き換えではなく追加します。
-
-Theme に公開する必要がある Hook だけを stable contract として文書化してください。
-
-Plugin の default CSS は Theme CSS より先に読み込まれるため、Theme は Plugin package を変更せずに見た目を上書きできます。
-
-詳しくは [Theme System](./theme-api.md#stable-css-hooks) を参照してください。
-
-# Client Entries
-
-Browser 上で JavaScript を実行する必要がある場合だけ `clientEntries` を使用します。
+A client entry can also be declared explicitly:
 
 ```ts
 clientEntries: [
   {
     pluginName: "example",
-    moduleSpecifier:
-      "@riebeckite/plugin-example/client",
+    moduleSpecifier: "@riebeckite/plugin-example/client",
     exportName: "initExample",
-    publicConfig: {
-      selector: ".example",
-    },
+    publicConfig: { selector: ".example" },
   },
 ]
 ```
@@ -766,57 +596,88 @@ clientEntries: [
 ```mermaid
 flowchart LR
     Plugin["Plugin"]
-    Entry["Client Entry"]
+    Entry["Client entry"]
     Build["Integration"]
-    Browser["Browser Initializer"]
+    Browser["Browser initializer"]
 
     Plugin --> Entry
     Entry --> Build
     Build --> Browser
 ```
 
-SSR / Build-time だけで完結する Plugin に Client JavaScript を追加しないでください。
+Do not add client JavaScript to a plugin that completes entirely at SSR or
+build time.
 
-`publicConfig` は Browser へ渡される公開情報です。
+## CSS hooks
 
-そのため、
+Plugin CSS stays in the plugin package and reaches the browser through
+`assets`. When a plugin renders a distinct, reusable feature, put a stable
+root hook on its outermost element:
 
-- token
-- credential
-- private service URL
-- secret
+- Name plugin/feature hooks `rr-<feature>` (`rr-search`, `rr-callout`,
+  `rr-query`, `rr-code`, ...). Use BEM structure under the root:
+  `rr-<feature>`, `rr-<feature>__element`, `rr-<feature>--modifier`.
+- Keep the historical class on the same element when one already exists. The
+  `rr-` hook is additive, so existing selectors and site overrides keep
+  working; new plugin CSS should target the `rr-` hook.
+- Do not put plugin output in the `rb-` namespace. `rb-*` classes and
+  `--rb-*` tokens belong to framework structural hooks and semantic design
+  tokens. Plugin-local tokens use `--rr-*` and may fall back to `--rb-*`.
+- `rr-<feature>__*` and `rr-<feature>--*` are internal implementation
+  details. Document any descendant a theme is expected to target.
 
-などを含めてはいけません。
+| Namespace | Use |
+| --- | --- |
+| `rb-*` | Framework structural hooks |
+| `--rb-*` | Framework semantic design tokens |
+| `rr-*` | Plugin / feature hooks |
+| `--rr-*` | Plugin-local tokens |
 
-Plugin の `options` が自動的に Browser へ渡されることもありません。
+Themes target these root hooks. Plugin default CSS loads before theme CSS, so
+a theme restyles a feature without editing the plugin. See
+[Theme System](./theme-api.md#stable-css-hooks).
 
-# HTTP Endpoints
+## Endpoints and SEO
 
-Plugin が再利用可能な HTTP Endpoint を提供する場合は `endpoints` を使用します。
+`endpoints` lets an Integration connect reusable plugin HTTP behavior to
+the host router without embedding HonoX-specific routing in Core. `seo`
+lets plugins participate in metadata/feed-related behavior through the
+framework contract.
 
 ```mermaid
 flowchart LR
     Plugin["Plugin"]
-    Contract["Endpoint Contract"]
+    Contract["Endpoint contract"]
     Integration["Integration"]
-    Router["Host Router"]
+    Router["Host router"]
 
     Plugin --> Contract
     Contract --> Integration
     Integration --> Router
 ```
 
-HonoX など特定の Router 実装を Plugin 本体へ直接埋め込まず、Integration が Endpoint Contract を Host Router へ接続します。
+Do not embed a specific router implementation (such as HonoX) in the plugin
+itself; the integration connects the endpoint contract to the host router.
+Do not reimplement plugin-specific SEO logic in application routes.
 
-# SEO
+Use `defineEndpoint` to declare an endpoint. Pass `cacheControl` only when the
+response is safe to cache; the helper applies the header without duplicating
+response plumbing.
 
-Plugin が metadata や feed などの SEO 処理へ参加する場合は `seo` Extension Point を使用します。
+```ts
+import { defineEndpoint } from "@riebeckite/core";
 
-Plugin 固有の SEO logic を Application Route 側へ再実装しないでください。
+const searchEndpoint = defineEndpoint(
+  "/search-data.json",
+  ({ config, manifest }) => ({ json: buildSearchItems({ config, manifest }) }),
+  { cacheControl: "public, max-age=300" },
+);
+```
 
-# Diagnostics
+## Diagnostics
 
-Plugin 固有の問題を報告する場合は `addDiagnostics` を使用します。
+Return structured diagnostics rather than printing ad-hoc CLI messages.
+Use the injected Logger for operational logging.
 
 ```ts
 addDiagnostics(context) {
@@ -828,121 +689,56 @@ addDiagnostics(context) {
 }
 ```
 
-診断結果は可能な限り structured data として返します。
+Return diagnostics as structured data rather than calling `console.log(...)`
+for CLI messages; use diagnostics or the logger.
 
-Plugin が直接、
+## Plugin Cache
 
-```ts
-console.log(...)
-```
+`context.cache` is a plugin-scoped, regenerable **build-time** cache.
 
-で CLI 向けメッセージを出すのではなく、Diagnostics または Logger を利用してください。
-
-# Plugin Cache
-
-`context.cache` は Plugin ごとに分離された **Build-time Cache** です。
-
-Cache に保存する値は、
-
-- 再生成可能
-- JSON serializable
-- Plugin namespace 内で完結
-
-している必要があります。
-
-`cacheVersion` を使って Cache format の互換性を管理できます。
-
-壊れた Cache は安全に Cache Miss として扱える設計にしてください。
-
-Write は atomic に行います。
+- Store only regenerable, JSON-serializable values.
+- Reference only your own plugin namespace.
+- Use `cacheVersion` when compatibility changes.
+- Treat a corrupt cache as a safe miss.
+- Writes are atomic.
 
 ```mermaid
 flowchart TD
     Plugin["Plugin"]
-    Cache["Plugin Cache"]
-    Valid{"利用可能？"}
+    Cache["Plugin cache"]
+    Valid{"Usable?"}
 
     Plugin --> Cache
     Cache --> Valid
 
-    Valid -->|Yes| Reuse["再利用"]
-    Valid -->|No| Generate["再生成"]
+    Valid -->|"yes"| Reuse["Reuse"]
+    Valid -->|"no"| Generate["Regenerate"]
 ```
 
-これは Cloudflare Workers などの Runtime Database ではありません。
+It is not a database or Cloudflare Workers runtime storage.
 
-# Logger / Tracer
+## Observability (Logger / Tracer)
 
-Plugin から Framework の Observability を利用できます。
+Use `context.logger` and `context.tracer`:
 
-```ts
+``` ts
 context.logger.info("...");
-
-await context.tracer.span(
-  "plugin.example.work",
-  {
-    plugin: "example",
-  },
-  async () => {
-    // work
-  },
-);
-```
-
-Logger は「何が起きたか」、Tracer は「どこに時間がかかったか」を記録します。
-
-Profiler はこの structured trace を利用するため、Plugin が独自の stopwatch や profiling system を作る必要はありません。
-
-# Site 内だけで使う Plugin
-
-Plugin は npm package として公開する必要はありません。
-
-Site 内に Plugin を作ることもできます。
-
-```ts
-// site/extensions/local-plugin.ts
-
-return definePlugin({
-  name: "site-local",
-
-  assets: [
-    {
-      pluginName: "site-local",
-      kind: "style",
-      moduleSpecifier:
-        "/extensions/plugin.css",
-    },
-  ],
+await context.tracer.span("plugin.example.work", { plugin: "example" }, async () => {
+  // work
 });
 ```
 
-そして `riebeckite.config.ts` の `plugins` へ追加します。
+The Profiler consumes structured tracing, so plugins do not need their own
+timing/reporting system.
 
-Site-local Plugin でも、
+## Suggested package layout
 
-- Dependency Resolution
-- Pipeline Hooks
-- Diagnostics
-- Renderer
-- Endpoint
-
-などは package Plugin と同じ contract を利用します。
-
-`createStyleAsset()` と `createClientEntry()` は
-`@riebeckite/plugin-<name>/...` の specifier しか組み立てないため、その名前で
-ない package（site 内 Plugin、別名の第三者 package）は Host Bundler が解決
-できる `moduleSpecifier` を明示してください。
-
-# 推奨 Package 構成
-
-公開 Plugin は、たとえば次のように構成できます。
-
-```text
+``` text
 packages/plugins/example/
 ├─ index.ts
-├─ components/        # component を export する場合のみ
-├─ client.ts          # 必要な場合のみ
-├─ style.css          # 必要な場合のみ
+├─ components/        # only when you export components
+├─ client.ts          # only when needed
+├─ style.css          # only when needed
 ├─ package.json
 └─ src/
    ├─ remark.ts
@@ -951,50 +747,18 @@ packages/plugins/example/
    └─ types.ts
 ```
 
-すべての Plugin がこの構造を必要とするわけではありません。
+## Distributing a Plugin outside this repository
 
-Client JavaScript や CSS が不要なら、それらのファイルも不要です。
+An external Plugin package depends only on `@riebeckite/core` and declares the
+subpaths it owns (`./client`, `./components`, `./style.css`) in its own `exports`
+map. Do not import `@riebeckite/core/src/**` or reference monorepo paths. See
+[Public packages and import paths](./README.md#public-packages-and-import-paths)
+for the supported package surface and current constraints.
 
-# Repository 外で Plugin を配布する
+### Package shape
 
-外部 Plugin は Riebeckite monorepo の内部 path に依存しないようにします。
-
-基本的には、
-
-```text
-@riebeckite/core
-```
-
-の公開 API を利用します。
-
-Plugin 自身が提供する、
-
-```text
-./client
-./components
-./style.css
-```
-
-などは、自身の `package.json` の `exports` で公開します。
-
-次のような import は避けてください。
-
-```ts
-import {
-  something,
-} from "@riebeckite/core/src/...";
-```
-
-`src/**` は Public API ではありません。
-
-また、Riebeckite monorepo 内にしか存在しない相対 path へ依存しないでください。
-
-公式 Plugin も可能な限り同じ Public API の consumer として実装します。
-
-## Package 構成
-
-公開 package では、Build 済み ESM と型定義を publish し、`exports` をその
-Build 成果物へ向けます。最小構成の `package.json` は次のとおりです。
+Publish built ESM plus type declarations and point `exports` at the built files.
+A minimal manifest:
 
 ```json
 {
@@ -1021,94 +785,100 @@ Build 成果物へ向けます。最小構成の `package.json` は次のとお�
 }
 ```
 
-`prepack` script で JavaScript の entry point を bundle し、型定義を emit して
-ください。`npm pack` / `npm publish` が常に最新の成果物を同梱できます。
-Repository の build script は publish されないため、`esbuild`
-（`format: "esm"`、`packages: "external"`、`external: ["@riebeckite/*"]`）と
-`tsc --emitDeclarationOnly` による小さな build で十分です。import する変換
-依存（`unist-util-visit`、`unified`、remark / rehype package など）は
-`dependencies` に宣言し、公開 package の `exports` を TypeScript の source へ
-向けないでください。
+Build the JavaScript entry points and emit declarations in a `prepack` script so
+`npm pack` / `npm publish` always ship fresh output. The repository's own build
+script is not published: a small `esbuild` bundle (`format: "esm"`,
+`packages: "external"`, `external: ["@riebeckite/*"]`) plus
+`tsc --emitDeclarationOnly` is enough. Declare each transform dependency you
+import (`unist-util-visit`, `unified`, remark/rehype packages) in
+`dependencies`, and never point a published `exports` entry at TypeScript source.
 
-# ESM
+### Site-local plugins
 
-Riebeckite の package は NodeNext / ESM を前提とします。
+A plugin does not have to be published. Define it inside the site with
+`definePlugin` and pass it to `plugins` in `riebeckite.config.ts`; resolution,
+dependency handling, pipeline hooks, and diagnostics are the same contract as a
+packaged plugin.
 
-Build 後に Node.js が実際に解決できる import を維持してください。
+``` ts
+// site/extensions/local-plugin.ts
+import { definePlugin } from "@riebeckite/core";
 
-Development 時の TypeScript Loader が、
-
-```text
-extensionless import
+export function localPlugin() {
+  return definePlugin({
+    name: "site-local",
+    // Hooks (remarkPlugins, extendHtmlPipeline, endpoints, ...) are the same
+    // contract as a packaged plugin.
+    assets: [
+      {
+        pluginName: "site-local",
+        kind: "style",
+        moduleSpecifier: "/extensions/plugin.css",
+      },
+    ],
+  });
+}
 ```
 
-などを偶然解決できている状態へ依存しないことが重要です。
+`createStyleAsset()` and `createClientEntry()` only build
+`@riebeckite/plugin-<name>/...` specifiers, so any package not named that way —
+a site-local plugin, or a third-party package under a different name — must
+declare `moduleSpecifier` explicitly: a package subpath or a path relative to
+the Vite root that the host bundler can resolve. The External Site Build E2E
+(`tests/external-site`) exercises a site-local plugin and theme alongside the
+published packages.
 
-# Plugin に置くもの・置かないもの
+## Responsibility boundary
 
-Plugin に置くものは、**Riebeckite Site 間で再利用可能な機能**です。
+Decide by the nature of the feature:
 
 ```mermaid
 flowchart TD
-    Feature{"この機能は何？"}
+    Feature{"What is this feature?"}
 
-    Feature -->|"Framework共通のContent Model"| Core["Core"]
-    Feature -->|"再利用可能なContent機能"| Plugin["Plugin"]
-    Feature -->|"HonoX / Vite接続"| Integration["Integration"]
-    Feature -->|"Site固有Route / Layout"| App["Application"]
-    Feature -->|"見た目だけ"| Theme["Theme"]
+    Feature -->|"Framework-wide content model"| Core["Core"]
+    Feature -->|"Reusable content feature"| Plugin["Plugin"]
+    Feature -->|"HonoX / Vite connection"| Integration["Integration"]
+    Feature -->|"Site-specific route / layout"| App["Application"]
+    Feature -->|"Appearance only"| Theme["Theme"]
 ```
 
-Plugin に向いているものは、
+Put in a plugin:
 
-- Markdown / HTML の解釈
-- 再利用可能な Content Transformation
-- Plugin 固有 Renderer
-- 再利用可能な Browser Behavior
-- Plugin 固有 Diagnostics
-- Plugin 固有 Endpoint
-- SEO Extension
-- 独立した Plugin Page
+- Markdown/HTML interpretation and reusable content transformation.
+- Plugin-specific renderers, reusable browser behavior, and diagnostics.
+- Plugin-specific endpoint/SEO extensions.
 
-などです。
+Do not put in a plugin:
 
-一方、
+- Framework-wide content model — belongs in Core.
+- HonoX/Vite connections — belong in the Integration.
+- Application-specific routes/layouts — belong in the App.
+- Appearance-only changes — belong in Themes.
 
-```text
-Framework-wide Content Model
-  → Core
+## ESM
 
-HonoX / Vite 接続
-  → Integration
+For NodeNext/ESM packages, ensure built JavaScript uses import paths
+Node can actually resolve; do not depend on a TypeScript loader
+repairing runtime resolution.
 
-Application 固有 Route / Layout
-  → Site Application
-
-見た目だけの変更
-  → Theme
-```
-
-とします。
-
-# Plugin 設計の基本
-
-Plugin System 全体は次のようになります。
+## Plugin system overview
 
 ```mermaid
 flowchart LR
     Plugin["Plugin"]
 
-    Plugin --> Pipeline["Content Pipeline"]
+    Plugin --> Pipeline["Content pipeline"]
     Plugin --> Renderer["Renderer"]
-    Plugin --> Page["Page Type"]
-    Plugin --> Graph["Content Graph"]
+    Plugin --> Page["Page type"]
+    Plugin --> Graph["Content graph"]
     Plugin --> Diagnostics["Diagnostics"]
     Plugin --> Asset["Assets"]
-    Plugin --> Client["Client Entry"]
+    Plugin --> Client["Client entry"]
     Plugin --> Endpoint["Endpoint"]
     Plugin --> SEO["SEO"]
 
-    Pipeline --> Core["Core Contracts"]
+    Pipeline --> Core["Core contracts"]
     Renderer --> Core
     Page --> Core
     Graph --> Core
@@ -1119,18 +889,19 @@ flowchart LR
     SEO --> Core
 
     Core --> Integration["Integration"]
-    Integration --> Site["Site Application"]
+    Integration --> Site["Site application"]
 ```
 
-基本原則は、**必要な最小の Extension Point を使い、すでに Framework が解決した情報を Plugin 側で再構築しないこと**です。
+The basic principle: use the smallest extension point you need, and do not
+rebuild information the framework has already resolved. Plugins provide
+reusable functionality, Core provides the contracts, the Integration connects
+to the framework and platform, and the site application owns the final routes,
+document, and UI.
 
-Plugin は再利用可能な機能を提供し、Core はそのための Contract を提供します。Integration は Framework や Platform へ接続し、Site Application が最終的な Route、Document、UI を所有します。
-
-## 関連
+## Related
 
 - [Architecture](../framework/architecture.md)
 - [Content System](../framework/content-system.md)
-- [Page System](../framework/page-system.md)
 - [Observability](../framework/observability.md)
 - [Theme System](./theme-api.md)
 - [Framework Reference](./README.md)

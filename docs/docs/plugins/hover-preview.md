@@ -1,25 +1,81 @@
+<!-- Generated from packages/plugins/hover-preview/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Hover Preview
 
-内部リンクにホバーまたはフォーカスすると、プレビューのポップオーバーを表示する Plugin です。
+Quartz/Obsidian-Publish style popover previews for internal links. Hovering or
+focusing a note link shows its title and a short excerpt without leaving the
+page.
 
-## 導入
+[日本語](./hover-preview.ja.md)
 
-```bash
-npm install @riebeckite/plugin-hover-preview
+## Overview
+
+At build time `hoverPreviewPlugin()` builds a preview index from the content
+manifest (`permalink` → `{ title, excerpt, slug }`) and injects it once into
+every page that contains internal links as an inert
+`<script type="application/json" data-rb-hover-preview>` block. The client
+entry `initHoverPreview` reads that payload and attaches hover, focus, and touch
+handlers to the matching links.
+
+The excerpt is plain text extracted from the rendered HTML: tags are stripped,
+whitespace is collapsed, and the result is truncated to `excerptLength`
+characters. Pages without internal links are left untouched, and the payload is
+bounded by `maxEntries` when set.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+
+export default defineConfig({
+  // ...
+  plugins: [hoverPreviewPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`hoverPreviewPlugin()` registers the style asset, the client entry, and the
+build-time payload injection. `hoverPreview` is an alias of the same factory.
 
-## 使用例
+The client entry takes no arguments. Behavior is carried by data attributes on
+the payload script, so the plugin works even when the client initializer is
+called without options.
 
-Digital Garden で、リンク先のノートを開く前に内容を確認できるようにしたい場合に利用します。ポップオーバーにはリンク先のタイトルと、レンダリング済み HTML から取り出した短い抜粋を表示します。
+## Options
 
-## 使いどころ
+| Option          | Default        | Description                                            |
+| --------------- | -------------- | ------------------------------------------------------ |
+| `delay`         | `120`          | Milliseconds before the popover appears.               |
+| `excerptLength` | `160`          | Maximum excerpt length in characters.                  |
+| `maxEntries`    | unset          | Upper bound on entries stored in the page payload.     |
+| `selector`      | `a[href^="/"]` | Selector for internal links that receive a preview.    |
+| `className`     | `rb-hover-preview` | Base class of the popover element.                 |
+| `includeTitles` | `true`         | Whether the popover shows the target entry title.      |
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+```ts
+hoverPreviewPlugin({
+  delay: 200,
+  excerptLength: 120,
+  maxEntries: 200,
+  selector: 'a[href^="/notes/"]',
+});
+```
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.md) でも確認できます。
+## API
 
-## 詳細仕様
+- `hoverPreviewPlugin(options?)` — plugin factory
+- `hoverPreview` — alias of `hoverPreviewPlugin`
+- `resolveHoverPreviewOptions(options?)` — applies defaults and returns a
+  `ResolvedHoverPreviewOptions`
+- `buildPreviewIndex(entries, options)` — builds a `HoverPreviewIndex`
+  (`permalink` → `{ title, excerpt, slug }`)
+- `htmlToPlainText(html)` / `createExcerpt(html, length)` — excerpt helpers
+- `initHoverPreview()` — browser initializer (also via
+  `@riebeckite/plugin-hover-preview/client`)
+- Constants: `HOVER_PREVIEW_ATTRIBUTE`, `HOVER_PREVIEW_SCRIPT_ID`
+- Types: `HoverPreviewOptions`, `ResolvedHoverPreviewOptions`,
+  `HoverPreviewEntry`, `HoverPreviewIndex`
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)

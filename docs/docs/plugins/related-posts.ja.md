@@ -1,0 +1,30 @@
+# Related Posts
+
+現在の記事に関連するコンテンツを提示する Plugin です。
+
+## 導入
+
+```bash
+npm install @riebeckite/plugin-related-posts
+```
+
+Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+
+## 使用例
+
+記事を読み終えた読者に、内容や関係性の近い別の記事を提示する用途です。ナレッジベース内の回遊を増やしたい場合に利用できます。
+
+通常は `article.footer` に自動でナビゲーションを追加します。Site 側で任意の位置に
+配置する場合は、`@riebeckite/plugin-related-posts/components` からサーバー描画の
+Hono JSX Component `RelatedPosts` を import してください。必要な entries と
+解決済み options は package README を参照してください。
+
+このページに関連度の高いノートがある場合、記事末尾に「Related」としてスコア順のリンクが最大5件表示されます。
+
+## 使いどころ
+
+この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+
+## 詳細仕様
+
+設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。

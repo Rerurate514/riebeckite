@@ -1,31 +1,31 @@
-# Obsidian Vault を使う
+# Use Your Obsidian Vault
 
-すでに Obsidian Vault を持っている場合、Riebeckite はその Vault をサイトのコンテンツとして読むことができます。まずはローカルで 1 つのノートを公開し、リンクと画像を確認してから `dist/` をビルドします。
+Already have an Obsidian Vault? Riebeckite can read that Vault as the site's content directory. Start locally first, publish one note, check links and images, then build `dist/`.
 
-## 始める前に
+## Before you start
 
-必要なものは次の3つです。
+You need:
 
-- Node.js
-- 既存の Obsidian Vault
-- 公開してよいノート 1 つ
+- Node.js installed
+- An existing Obsidian Vault
+- At least one note you are comfortable publishing
 
-Riebeckite は Obsidian のワークスペース設定を必要としません。`.obsidian/` は自動的に無視されるため、Vault から削除する必要はありません。
+Riebeckite does not need your Obsidian workspace settings. `.obsidian/` is ignored automatically, so you do not need to delete it from your Vault.
 
-## 1. Riebeckite サイトを作る
+## 1. Create a Riebeckite site
 
-Vault の隣にサイトを作ります。
+Create a site next to your Vault:
 
 ```sh
 npx create-riebeckite my-site --preset starter
 cd my-site
 ```
 
-`starter` preset には、WikiLink、埋め込み、Callout、タグを扱う Obsidian Markdown plugin が最初から入っています。
+The `starter` preset already includes the Obsidian Markdown plugin used for WikiLinks, embeds, callouts, and tags.
 
-## 2. Vault を接続する
+## 2. Connect your Vault
 
-`riebeckite.config.ts` を開き、`content.directory` を Vault に向けます。
+Open `riebeckite.config.ts` and point `content.directory` at your Vault:
 
 ```ts
 content: {
@@ -33,13 +33,13 @@ content: {
 },
 ```
 
-`../my-vault` は、`my-site` から見た Vault への相対パスに置き換えてください。
+Change `../my-vault` to the relative path from `my-site` to your Vault.
 
-## 3. 公開するノートを選ぶ
+## 3. Choose what to publish
 
-Riebeckite は、既定では明示的に指定したノートだけを公開します。
+Riebeckite uses explicit publishing by default.
 
-公開したいノートに、次の frontmatter を追加します。
+Add this frontmatter to a note you want to publish:
 
 ```yaml
 ---
@@ -52,38 +52,38 @@ aliases:
 ---
 ```
 
-意味は次のとおりです。
+What this means:
 
-- `publish: true` のノートは公開ページとして生成されます。
-- `publish: false` のノートはビルド結果に含まれません。
-- `publish` がないノートは、既定の `starter` 構成では下書きとして扱われます。
+- `publish: true` makes the note routable and buildable.
+- `publish: false` keeps the note out of the built site.
+- Missing `publish` is treated as a draft in the default `starter` setup.
 
-公開ノートから未公開のノートへリンクすると、リンク先ページは生成されず、そのリンクも公開サイトで有効なリンクとしては公開されません（壊れたリンクと同じ表示になります）。`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` を実行すると、これらの参照が `publish-boundary` 警告として表示されます。
+If a published note links to an unpublished note, the target page is not generated, and links to unpublished notes are not published as working site links — they render like broken links. Run `riebeckite-diagnostics` (from `@riebeckite/plugin-diagnostics`) to see `publish-boundary` warnings for these references.
 
-## 4. Riebeckite を起動する
+## 4. Start Riebeckite
 
-依存関係を入れ、check を実行します。
+Install dependencies and run the check command:
 
 ```sh
 npm install
 npm exec riebeckite check
 ```
 
-続いてローカルプレビューを起動します。
+Then start the local preview:
 
 ```sh
 npm exec riebeckite dev
 ```
 
-ターミナルに表示されたローカル URL を開いてください。
+Open the local URL printed in the terminal.
 
-開発サーバーを起動したまま Obsidian でノートを保存すると、次のページ表示に内容が反映されます。公開設定の変更もそのまま反映されます。
+While the development server is running, saving a note in Obsidian is reflected on the next page view. Changing the `publish` setting is reflected the same way.
 
-## 5. WikiLink と画像を確認する
+## 5. Check WikiLinks and images
 
-以下は、Fresh `starter` サイトと小さなテスト Vault で実際に確認した例です。
+These examples were verified with a fresh `starter` site and a small test Vault.
 
-WikiLink は次のように書きます。
+WikiLinks:
 
 ```md
 [[hello]]
@@ -92,60 +92,60 @@ WikiLink は次のように書きます。
 [[Hello note]]
 ```
 
-Vault 内の画像は、Obsidian の埋め込み構文で参照できます。
+Images in your Vault can be embedded with Obsidian syntax:
 
 ```md
 ![[sample.png]]
 ```
 
-Riebeckite は Vault から画像を解決し、公開ノートから参照されている画像を build 時に `dist/` へコピーします。この基本ケースでは、Riebeckite 用に画像を別フォルダへ移動する必要はありません。
+Riebeckite resolves the image from the Vault and copies public referenced images into `dist/` during build. You do not need to move images to a Riebeckite-only folder for this basic case.
 
-公開ノートの埋め込みも使えます。
+Note embeds also work for published notes:
 
 ```md
 ![[embedded]]
 ```
 
-## 6. サイトをビルドする
+## 6. Build the site
 
-ローカル表示に問題がなければ、静的サイトをビルドします。
+When the local preview looks right, build the static site:
 
 ```sh
 npm exec riebeckite build
 ```
 
-出力先は `dist/` です。
+The output is written to `dist/`.
 
-## Obsidian の何が使えるか
+## What works from Obsidian?
 
-| Obsidian の機能 | Riebeckite での扱い |
+| Obsidian feature | Riebeckite |
 | --- | --- |
-| Markdown | 標準の Markdown として対応 |
-| WikiLinks | starter の Obsidian Markdown plugin で対応 |
-| WikiLink aliases | `[[note|label]]` に対応 |
-| Heading links | `[[note#Heading]]` に対応 |
-| Images | `![[sample.png]]` のような公開ノートから参照される画像に対応 |
-| Note embeds | 公開 Markdown ノートの埋め込みに対応 |
-| Callouts | `> [!NOTE]` に対応 |
-| Tags | Obsidian Markdown plugin でタグ化。tag ページは starter の taxonomy plugin が提供 |
-| Frontmatter | 対応 |
-| Obsidian aliases | `aliases:` を WikiLink 解決に利用 |
-| `publish` | 対応。`publish: true` が公開、下書きはビルドされない |
-| Canvas | `@riebeckite/plugin-canvas` が必要 |
-| Excalidraw | `@riebeckite/plugin-excalidraw` が必要 |
-| Bases | `@riebeckite/plugin-bases` が必要 |
-| Mermaid | 図として描画するには `@riebeckite/plugin-mermaid` が必要。未導入ならコードブロックとして扱われる |
-| `.obsidian/` | Riebeckite には不要。自動的に無視される |
+| Markdown | Supported as core Markdown |
+| WikiLinks | Supported by the starter Obsidian Markdown plugin |
+| WikiLink aliases | Supported, including `[[note|label]]` |
+| Heading links | Supported, for example `[[note#Heading]]` |
+| Images | Supported for public referenced images such as `![[sample.png]]` |
+| Note embeds | Supported for published Markdown notes |
+| Callouts | Supported, for example `> [!NOTE]` |
+| Tags | Supported by the Obsidian Markdown plugin; tag pages are provided by the starter taxonomy plugin |
+| Frontmatter | Supported |
+| Obsidian aliases | Supported for WikiLink resolution through `aliases:` |
+| `publish` | Supported; `publish: true` is public, drafts are not built |
+| Canvas | Requires `@riebeckite/plugin-canvas` |
+| Excalidraw | Requires `@riebeckite/plugin-excalidraw` |
+| Bases | Requires `@riebeckite/plugin-bases` |
+| Mermaid | Requires `@riebeckite/plugin-mermaid` for rendered diagrams; otherwise Mermaid fences are code blocks |
+| `.obsidian/` | Not required by Riebeckite; ignored automatically |
 
-## Vault を別リポジトリで管理する
+## Keep the Vault in another repository
 
-最短ルートは、ローカルの Vault フォルダを `content.directory` に指定する方法です。Vault とサイトを別々の GitHub リポジトリで管理したい場合は、Separate content repository の構成を使います。
+The shortest path is to point `content.directory` at a local Vault folder. If you want to keep your Vault and site in separate GitHub repositories, use the separate content repository workflow instead.
 
-GitHub Actions の設定は [Content Repositories](../guides/content-repositories.md) を参照してください。
+See [Content Repositories](../guides/content-repositories.md) for the GitHub Actions setup.
 
-## 次のステップ
+## Next steps
 
-- 必要なノートだけに `publish: true` を付ける
-- config を変更したら `npm exec riebeckite check` を実行する
-- 公開前に `npm exec riebeckite build` を実行する
-- 機能を追加したくなったら [最初の Plugin を追加する](./first-plugin.md) を読む
+- Edit more notes and add `publish: true` only where needed
+- Run `npm exec riebeckite check` after config changes
+- Run `npm exec riebeckite build` before deployment
+- Try [Add Your First Plugin](./first-plugin.md) when you want more features

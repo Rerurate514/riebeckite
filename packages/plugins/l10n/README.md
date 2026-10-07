@@ -85,5 +85,5 @@ Each translated entry receives one `<link rel="alternate" hreflang="…">` per e
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)
+- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
 

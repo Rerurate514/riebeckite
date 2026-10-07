@@ -1,61 +1,59 @@
 # Framework Development
 
-このページは、**Riebeckite 本体を開発する人向け**のガイドです。
+This page is for people developing Riebeckite itself: core, CLI, HonoX integration, official plugins, official themes, templates, or the reference app. It is intentionally separate from [Getting Started](../getting-started/README.md). Users who only want to publish a site should use `create-riebeckite` instead of cloning this monorepo.
 
-次のような変更を行う場合に、この monorepo を使用します。
+Use this monorepo when you are changing things such as:
 
-- Core の機能を追加・変更する
-- CLI を変更する
-- HonoX Integration を変更する
-- 公式 Plugin / Theme を開発する
-- Site scaffold や template を変更する
-- 公式ドキュメントや参照アプリを変更する
+- Core features
+- The CLI
+- The HonoX integration
+- Official plugins and themes
+- The site scaffold and templates
+- The official documentation or the reference application
 
-単に Riebeckite を使って自分の Site を作りたい場合は、**この repository を clone する必要はありません。**
+If you only want to build your own site with Riebeckite, **you do not need to clone this repository.** Start from [Getting Started](../getting-started/README.md) instead.
 
-[Getting Started](../getting-started/README.md) から Site を作成してください。
-
-```mermaid id="9tptx1"
+```mermaid
 flowchart TD
-    Q{"何をしたい？"}
+    Q{"What do you want to do?"}
 
-    Q -->|"RiebeckiteでSiteを作りたい"| User["Getting Started"]
-    Q -->|"Riebeckite本体を変更したい"| Dev["Framework Development"]
+    Q -->|"Build a site with Riebeckite"| User["Getting Started"]
+    Q -->|"Change Riebeckite itself"| Dev["Framework Development"]
 
-    User --> Site["自分のSite Repository"]
-    Dev --> Repo["Riebeckite Monorepo"]
+    User --> Site["Your own site repository"]
+    Dev --> Repo["Riebeckite monorepo"]
 ```
 
-# 開発を始める
+## Getting started
 
-Riebeckite 本体を開発する場合は、repository を clone して依存関係をインストールします。
+To develop Riebeckite itself, clone the repository and install the dependencies:
 
-```bash id="vmx4gu"
+```bash
 git clone https://github.com/rerurate/riebeckite.git
 cd riebeckite
 pnpm install
 pnpm build
 ```
 
-これで workspace 内の package を開発できる状態になります。
+You can now develop the packages in the workspace.
 
-## 開発サーバーを起動する
+### Start the development server
 
-```bash id="kueg3z"
+```bash
 pnpm dev
 ```
 
-`apps/web` の参照アプリを使って、Riebeckite の変更を実際の Site として確認できます。
+The reference app in `apps/web` lets you see Riebeckite changes as a real site.
 
-`apps/web` は単なるデモではなく、Framework 開発時に Core、Plugin、Theme、Integration が正しく組み合わさることを確認するための参照アプリでもあります。
+`apps/web` is not just a demo: it is also the reference application used during framework development to confirm that Core, plugins, themes, and the integration combine correctly.
 
-# Repository の構成
+## Repository layout
 
-Riebeckite は pnpm workspace を使った monorepo です。
+Riebeckite is a monorepo built on the pnpm workspace.
 
-大きく次のように分かれています。
+The top level is split roughly like this:
 
-```mermaid id="7xv9qn"
+```mermaid
 flowchart TD
     Repo["riebeckite/"]
 
@@ -64,101 +62,102 @@ flowchart TD
     Repo --> Docs["docs/"]
     Repo --> Templates["templates/"]
 
-    Packages --> Core["core<br/>共通基盤"]
+    Packages --> Core["core<br/>Shared foundation"]
     Packages --> CLI["cli<br/>CLI"]
-    Packages --> Integration["integrations/honox<br/>HonoX接続"]
-    Packages --> Create["create-riebeckite<br/>Site生成"]
-    Packages --> Plugins["plugins/*<br/>公式Plugin"]
-    Packages --> Themes["themes/*<br/>公式Theme"]
+    Packages --> Integration["integrations/honox<br/>HonoX connection"]
+    Packages --> Create["create-riebeckite<br/>Site generation"]
+    Packages --> Plugins["plugins/*<br/>Official plugins"]
+    Packages --> Themes["themes/*<br/>Official themes"]
 
-    Apps --> Web["web<br/>Docs / Reference App"]
-    Docs --> DocSource["Documentation Source"]
-    Templates --> Analytics["analytics-cloudflare<br/>Analytics Deployment Template"]
+    Apps --> Web["web<br/>Docs / reference app"]
+    Docs --> DocSource["Documentation source"]
+    Templates --> Analytics["analytics-cloudflare<br/>Analytics deployment template"]
 ```
 
-| Path | 役割 |
+| Path | Purpose |
 | --- | --- |
-| `packages/core` | config、content、pipeline、Plugin、Theme、Diagnostics、Observability などの共通基盤 |
-| `packages/cli` | `riebeckite` CLI |
-| `packages/integrations/honox` | HonoX / Vite Integration と scaffold generator |
-| `packages/create-riebeckite` | Site 作成用の公開 entrypoint |
-| `packages/plugins/*` | 公式 Plugin |
-| `packages/themes/*` | 公式 Theme |
-| `apps/web` | 公式ドキュメント Site兼、Framework 開発用の参照アプリ |
-| `docs/` | 公式ドキュメントの source |
-| `templates/analytics-cloudflare` | Analytics Worker の Deployment template |
+| `packages/core` | public config, content, pipeline, plugin, theme, diagnostics, observability APIs |
+| `packages/cli` | `riebeckite` command |
+| `packages/integrations/honox` | HonoX integration and scaffold generator |
+| `packages/create-riebeckite` | public site scaffolding entrypoint |
+| `packages/plugins/*` | official plugins |
+| `packages/themes/*` | official themes |
+| `apps/web` | official documentation app and framework-development reference application |
+| `docs/` | documentation source read by the official docs app |
+| `templates/analytics-cloudflare` | Analytics Worker deployment templates |
 
-各 package の詳しい責務については [Architecture](./architecture.md) を参照してください。
+For the detailed responsibilities of each package, see [Architecture](./architecture.md).
 
-# よく使うコマンド
+## Common commands
 
-Framework 開発でよく使用するコマンドは次のとおりです。
+The commands you use most often during framework development are:
 
-| コマンド | 用途 |
+| Command | Purpose |
 | --- | --- |
-| `pnpm dev` | 開発用 Site を起動する |
-| `pnpm build` | workspace を build する |
-| `pnpm check` | repository 全体を検査する |
-| `pnpm test` | test を実行する |
-| `pnpm typecheck` | TypeScript の型を検査する |
-| `pnpm check:docs` | Documentation を検査する |
-| `pnpm check:scaffold` | 生成される Site を検査する |
+| `pnpm dev` | Start the development site. |
+| `pnpm build` | Build the workspace. |
+| `pnpm check` | Check the whole repository. |
+| `pnpm test` | Run the tests. |
+| `pnpm typecheck` | Check TypeScript types. |
+| `pnpm check:docs` | Check the documentation. |
+| `pnpm check:scaffold` | Check the generated sites. |
 
-## Documentation を変更した場合
+Use targeted commands when possible:
 
-```bash id="2wm0wz"
+- `pnpm check:docs` validates Markdown links and docs structure.
+- `pnpm check:scaffold` validates generated scaffold output.
+- `pnpm typecheck` checks packages.
+- `pnpm --filter <package> test` runs a package test when available.
+
+### When you change the documentation
+
+```bash
 pnpm check:docs
 ```
 
-Markdown link や Documentation の構造を検査します。
+This validates Markdown links and the documentation structure. Run it whenever you add, move, or delete documentation.
 
-ドキュメントを追加・移動・削除した場合は実行してください。
+### When you change the scaffold
 
-## Scaffold を変更した場合
-
-```bash id="5xutky"
+```bash
 pnpm check:scaffold
 ```
 
-生成される Riebeckite Site が正しい構成になっているかを検査します。
+This validates that the generated Riebeckite site has the correct structure. It matters when you change things such as:
 
-たとえば、
+- the scaffold generator
+- a preset
+- a template
+- the generated `package.json`
+- the initial site structure
 
-- scaffold generator
-- preset
-- template
-- 生成される `package.json`
-- Site の初期構成
+### Check package types
 
-などを変更した場合に重要です。
-
-## Package の型を確認する
-
-```bash id="hlsudn"
+```bash
 pnpm typecheck
 ```
 
-TypeScript の型エラーを確認します。
+This reports TypeScript type errors.
 
-## 特定 Package の Test
+### Test a specific package
 
-変更した package だけを確認したい場合は `--filter` を使用できます。
+When you only want to check the package you changed, you can use `--filter`:
 
-```bash id="6s8dyj"
+```bash
 pnpm --filter <package> test
 ```
 
-たとえば特定の Plugin だけを変更した場合、最初から repository 全体の test を実行するのではなく、対象 package の test から確認できます。
+For example, if you only changed one plugin, you can start from that package's tests instead of running the entire repository test suite.
 
-# 変更するときの基本的な流れ
+## Basic change flow
 
-変更内容によって必要な検証は異なりますが、基本的には **小さい範囲から確認して、最後に広い範囲を確認する** 形を推奨します。
+The checks you need depend on the change, but the basic approach is to **verify a small scope first and widen it at the end**.
 
-```mermaid id="jyhjau"
+```mermaid
 flowchart TD
-    Change["コードを変更"]
-    Focus["対象PackageのTest / Typecheck"]
-    Related["関連するIntegration / Appを確認"]
+    Change["Change the code"]
+    Focus["Target package test / typecheck"]
+    Related["Check related integrations / apps"]
     Check["pnpm check"]
     Build["pnpm build"]
 
@@ -168,42 +167,38 @@ flowchart TD
     Check --> Build
 ```
 
-たとえば Plugin を変更した場合は、まずその Plugin の test を実行します。
+For example, if you change a plugin, run that plugin's tests first:
 
-```bash id="9dvfqe"
+```bash
 pnpm --filter <plugin-package> test
 ```
 
-問題がなければ、必要に応じて型検査や参照アプリを確認し、最後に repository 全体の検証を行います。
+If that passes, run type checking or check the reference app as needed, and finally run the repository-wide checks. You do not need to run the heaviest command from scratch on every change.
 
-変更のたびに最初から最も重い command を実行する必要はありません。
+## Where to make the change
 
-# どこを変更するか
+When adding a feature, first pick the package that matches the responsibility.
 
-機能を追加するときは、まず責務に合った package を選びます。
-
-```mermaid id="ud3gdo"
+```mermaid
 flowchart TD
-    Q{"何を変更する？"}
+    Q{"What are you changing?"}
 
-    Q -->|"共通のContent / Contract"| Core["packages/core"]
-    Q -->|"CLI Command"| CLI["packages/cli"]
-    Q -->|"再利用可能な機能"| Plugin["packages/plugins/*"]
-    Q -->|"HonoX / Viteとの接続"| Integration["packages/integrations/honox"]
-    Q -->|"見た目 / CSS"| Theme["packages/themes/*"]
-    Q -->|"Route / Island / Site UI"| App["apps/web"]
-    Q -->|"Site生成"| Scaffold["create-riebeckite / scaffold"]
+    Q -->|"Shared content / contract"| Core["packages/core"]
+    Q -->|"CLI command"| CLI["packages/cli"]
+    Q -->|"Reusable feature"| Plugin["packages/plugins/*"]
+    Q -->|"HonoX / Vite connection"| Integration["packages/integrations/honox"]
+    Q -->|"Appearance / CSS"| Theme["packages/themes/*"]
+    Q -->|"Route / island / site UI"| App["apps/web"]
+    Q -->|"Site generation"| Scaffold["create-riebeckite / scaffold"]
 ```
 
-判断に迷う場合は、[Architecture](./architecture.md) の責務分離を基準にしてください。
+If you are unsure, use the responsibility boundaries in [Architecture](./architecture.md) as the standard.
 
-# Package の境界
+## Package boundaries
 
-Framework を変更するときは package 間の依存方向を維持してください。
+When changing the framework, keep the dependency direction between packages intact. The rough dependency relationship is:
 
-大まかな依存関係は次のようになります。
-
-```mermaid id="osmqrm"
+```mermaid
 flowchart BT
     App["Application"]
     Integration["Integration"]
@@ -220,50 +215,38 @@ flowchart BT
     CLI --> Integration
 ```
 
-特に Core から外側への逆依存を作らないことが重要です。
+In particular, do not create a reverse dependency from Core to the outside. For example, Core must not depend on concrete implementations such as:
 
-たとえば Core から、
-
-```text id="7nxphg"
+```text
 apps/web
 packages/plugins/*
 HonoX
 Vite
 ```
 
-などの具体的な実装へ依存させてはいけません。
+Put framework-independent contracts in Core, and have integrations and plugins use those contracts.
 
-Framework に依存しない contract は Core に置き、その contract を Integration や Plugin が利用します。
+## Use the public API
 
-# Public API を使う
+APIs that external plugins and themes can also use should be referenced through public exports. Use a public entrypoint such as:
 
-外部 Plugin / Theme と同じ条件で利用できる API は、公開 export から参照してください。
-
-たとえば、
-
-```ts id="wj3a9t"
+```ts
 import { ... } from "@riebeckite/core";
 ```
 
-のような公開 entrypoint を使用します。
+Avoid depending directly on package internals like this:
 
-次のように package 内部へ直接依存することは避けてください。
-
-```ts id="njjmrh"
+```ts
 import { ... } from "@riebeckite/core/src/...";
 ```
 
-`src/**` は内部実装であり、安定した Public API ではありません。
+`src/**` is an internal implementation and is not a stable public API. Implementing official plugins and themes as consumers of the public API wherever possible confirms that the contract is actually usable from external packages.
 
-公式 Plugin や Theme も可能な限り Public API の consumer として実装することで、外部 package から実際に利用できる contract になっていることを確認できます。
+## Treat scaffolds as standalone sites
 
-# Scaffold は独立した Site として扱う
+A scaffold must not be structured to work only inside the Riebeckite monorepo. A generated site has to work without depending on the monorepo's internal sources:
 
-Scaffold は Riebeckite monorepo 内でしか動かない構成にしてはいけません。
-
-生成された Site は、
-
-```text id="o8ss84"
+```text
 create-riebeckite
        ↓
 Generated Site
@@ -273,42 +256,36 @@ npm packages
 build
 ```
 
-という形で、monorepo の内部 source に依存せず動作する必要があります。
+So when you change the scaffold, confirm not only that it works inside the workspace but also that it stands up as an external site. `check:scaffold` and the external-site E2E tests exist to verify this boundary.
 
-そのため scaffold を変更した場合は、workspace 内で動くだけではなく、外部 Site として成立することも確認してください。
+## Documentation boundaries
 
-`check:scaffold` や external-site E2E は、この境界を検証するためにあります。
+General-user documentation does not assume that you cloned the Riebeckite monorepo or set up the workspace.
 
-# Documentation の境界
-
-一般ユーザー向け Documentation では、Riebeckite monorepo の clone や workspace setup を前提にしません。
-
-```mermaid id="3iq2qx"
+```mermaid
 flowchart LR
-    User["Site User"]
+    User["Site user"]
     Getting["Getting Started"]
-    Site["Generated Site"]
+    Site["Generated site"]
 
-    Dev["Framework Developer"]
+    Dev["Framework developer"]
     Framework["Framework Development"]
-    Repo["Riebeckite Monorepo"]
+    Repo["Riebeckite monorepo"]
 
     User --> Getting --> Site
     Dev --> Framework --> Repo
 ```
 
-Site を作るユーザーと Framework を開発するユーザーでは、必要な環境が異なるためです。
+This is because people who build a site and people who develop the framework need different environments. Monorepo-specific commands, the internal package structure, and how to build the framework are covered in this Framework Development section.
 
-monorepo 固有の command、内部 package 構成、Framework の build 方法などは、この Framework Development セクションで扱います。
+## Boundaries to maintain
 
-# 開発時に守る境界
+Framework changes should especially preserve the following:
 
-Framework の変更では、特に次の点を維持してください。
+- Do not create a reverse dependency from Core to the application, plugin internals, or framework-specific implementations.
+- Keep a public API that lets external plugins and themes be implemented without importing `src/**`.
+- Do not require monorepo setup in general-user documentation.
+- Keep scaffolds working as sites that are independent of the monorepo.
+- Verify from the changed scope and widen to the whole repository as needed.
 
-- Core から Application、Plugin 内部、Framework 固有実装へ逆依存しない
-- 外部 Plugin / Theme が `src/**` を import しなくても実装できる Public API を維持する
-- 一般ユーザー向け Documentation に monorepo setup を要求しない
-- Scaffold を monorepo から独立して動作できる Site として維持する
-- 変更した範囲から検証し、必要に応じて repository 全体へ検証範囲を広げる
-
-Framework 全体の責務については [Architecture](./architecture.md)、テスト方針については [Testing](./testing.md)、CLI については [CLI](../reference/cli.md)、HonoX との接続については [HonoX Integration](./honox-integration.md) を参照してください。
+See [Architecture](./architecture.md), [Testing](./testing.md), [CLI](../reference/cli.md), and [HonoX Integration](./honox-integration.md).

@@ -1,83 +1,84 @@
 # Build Dependency Contract
 
-Incremental Buildの無効化はCoreの責務です。PluginはどのContentが影響を受けるかを計算せず、依存stateも自分では持ちません。契約を宣言すると、何を再利用するかはCoreが決めます。
+Core owns incremental invalidation. A plugin does not compute which content is affected, and it does not keep its own dependency state. It declares a contract and lets Core decide what to reuse.
 
-Pluginが関わる契約は、Content DependencyとOutput Dependencyの二つです。前者は`processedContentCache`で、Coreがどのsource Contentを処理し直すかを決めます。後者は`outputDependencies`と`context.output.emit`で、Coreがどの出力ファイルを書き直すかを決めます。両者は独立した契約です。
+A plugin takes part in two independent contracts:
+
+- **Content dependency** (`processedContentCache`) decides which source content Core processes again.
+- **Output dependency** (`outputDependencies` and `context.output.emit`) decides which emitted files Core writes again.
 
 ```mermaid
 flowchart LR
-    Change["Contentまたはfileの変更"] --> Content["Content Dependency"]
-    Content --> Reprocess["影響するContentの再処理"]
-    Reprocess --> Output["Output Dependency"]
-    Output --> Rewrite["影響するOutputの再書き込み"]
+    Change["Content or file change"] --> Content["Content dependency"]
+    Content --> Reprocess["Reprocess affected content"]
+    Reprocess --> Output["Output dependency"]
+    Output --> Rewrite["Rewrite affected outputs"]
 ```
 
-## Content Dependency
+## Content dependency
 
-`processedContentCache`は、Pluginの処理済みContentをBuild間でどう再利用してよいかを示す契約です。
+`processedContentCache` states how Core may reuse a plugin's processed content between builds.
 
-| `dependencyMode` | 意味 |
+| `dependencyMode` | Meaning |
 | --- | --- |
-| `none` | 処理結果がsource Content、frontmatter、Pluginのoptions、宣言したversionだけに依存する。 |
-| `tracked` | 他のContentやfileをCore経由で読む。Coreがその読み取りを記録し、利用側だけを再処理する。 |
-| `unsafe` | Git、network、時刻、process stateなど、Coreが観測できない入力に依存する。永続的な再利用は行わない。 |
+| `none` | Processing depends only on the source content, its frontmatter, the plugin options, and the declared version. |
+| `tracked` | Processing reads other content or files through Core. Core records those reads and reprocesses only the consumers. |
+| `unsafe` | Processing depends on inputs Core cannot observe, such as Git, network, time, or process state. Persistent reuse is disabled. |
 
-Contentを変化させるPluginが契約を宣言していない場合、そのPluginは`unsafe`として扱われます。
+A content-affecting plugin that declares no contract is treated as `unsafe`.
 
-`version`は契約の名前です。Coreは解決済みのPlugin設定もcache keyに含めます。そのため、options、hooks、versionのいずれかを変えると、cacheされたentryは無効です。
+`version` names the contract. Core also includes the resolved plugin configuration in the cache key, so a change to the options, hooks, or version invalidates the cached entries.
 
-### Coreが記録する入力
+### What Core records
 
-CoreのContent API経由の読み取りが、安定したidentityを持つdependencyになります。
+Reads made through Core's content APIs become dependencies with stable identities.
 
-| 種類 | 記録される場面 | identity |
+| Kind | Recorded when | Identity |
 | --- | --- | --- |
-| `content` | `readContent`、`renderContent`、`renderNoteEmbed` | Contentのslug |
-| `file` | `contentSource.read`と`readContentSourceEntry`などのhelper | file path |
-| `link` | link先がpermalinkに解決されたとき | link id |
+| `content` | `readContent`, `renderContent`, `renderNoteEmbed` | content slug |
+| `file` | `contentSource.read` and helpers such as `readContentSourceEntry` | file path |
+| `link` | A link target is resolved to a permalink | link id |
 
-`contentSource.scan()`はentryを列挙するだけでdependencyを作りません。filesystem、network、時計への直接アクセスはCoreから見えないため、それらの入力は`unsafe`です。
+`contentSource.scan()` lists entries but creates no dependency. Direct filesystem, network, or clock access is invisible to Core, so those inputs belong to `unsafe`.
 
-### 再利用と検証
+### Reuse and validation
 
-次のBuildでCoreは、cacheされた処理済みContentを取り出したあと、記録したcontent、file、linkのdependencyをすべて読み直し、fingerprintを比べます。一つでも変わっていれば、そのentryを捨てて処理し直します。
+On a later build, Core looks up the cached processed content, then re-reads every recorded content, file, and link dependency and compares fingerprints. If any fingerprint changed, Core discards the entry and processes it again.
 
-cacheが省略するのはMarkdownとHTMLの処理だけです。post処理のhooks（`onPostParsed`、`onPostProcessed`）とmanifestのhook（`onManifestCreated`）は、cacheの有無にかかわらず常に実行対象です。manifest段階の処理はそこに置いてください。
+The cache skips only Markdown and HTML processing. The post-processing hooks (`onPostParsed`, `onPostProcessed`) and the manifest hook (`onManifestCreated`) always run, so manifest-stage work belongs there.
 
-### 影響範囲の決定
+### Affected content
 
-Coreは各entryのdependency identityをbuild stateに永続化し、そこから逆引きindexを作ります。dependencyが変わると、依存するentryに印を付け、さらにその依存先へと無効化を伝播させます。Contentが追加または削除された場合も、変わったlink先を参照していたentryは無効です。初回Buildや前回のstateが無いときは、すべてのnoteを処理します。
+Core persists each entry's dependency identities in build state and builds a reverse index from them. When a dependency changes, Core marks the dependent entry and propagates the invalidation to its dependents transitively. When content is added or removed, entries that link to a changed target are invalidated as well. On the first build, or whenever no previous state is available, every note is processed.
 
-## Output Dependency
+## Output dependency
 
-Output DependencyはContent Dependencyとは別の契約です。種類ごとに、change setの異なる部分に反応します。
+Output dependencies are separate from content dependencies. Each type reacts to a different part of the change set.
 
-| 種類 | 影響を受ける条件 |
+| Type | Affected when |
 | --- | --- |
-| `content { slug }` | そのContentが変わったとき |
-| `tag { tag }` | そのtagを持つContentが変わったとき |
-| `folder { folder }` | そのfolderのContentが変わったとき |
-| `global` | いずれかのContentが変わったとき |
-| `unknown` | 常に。Coreは全Outputの再生成も要求する。 |
+| `content { slug }` | That content changed. |
+| `tag { tag }` | Content carrying that tag changed. |
+| `folder { folder }` | Content in that folder changed. |
+| `global` | Any content changed. |
+| `unknown` | Always. Core also requests full output regeneration. |
 
-宣言する場所は三つです。
+Declare them in the following places.
 
-| 対象 | 宣言場所 |
-| --- | --- |
-| Plugin page | `pageTypes[].outputDependencies` |
-| manifest entry HTMLを更新するPlugin | rootの`outputDependencies`。CoreがすべてのContent Outputに加算する。 |
-| 生成output | `context.output.emit(..., { dependencies })`。未宣言なら`unknown`。 |
+- `pageTypes[].outputDependencies` for a plugin page.
+- Root `outputDependencies` for a plugin that updates existing manifest entry HTML in `onManifestCreated`. Core adds them to every content output.
+- `context.output.emit(..., { dependencies })` for a generated output. Without declared dependencies, a generated output is `unknown`.
 
-対象が特定できる場合は`content`、`tag`、`folder`を使ってください。manifest全体に依存する集合変換は`global`です。表現できない入力だけに`unknown`を使います。
+Use `content`, `tag`, or `folder` when the scope is known, and `global` for a manifest-wide collection transform. Use `unknown` only when the input cannot be represented.
 
-`none`、`tracked`、`unsafe`は処理済みContentの再利用を示す契約であり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
+`none`, `tracked`, and `unsafe` describe processed-content reuse, not output reuse. A plugin can safely use `none` while declaring a `global` output dependency, or use `tracked` while a generated output has a narrow `content` dependency. An incorrect output declaration can preserve a stale file, so use `unknown` whenever the output scope cannot be stated completely. `unknown` deliberately trades incremental SSG for a full output render.
 
-## Plugin作者向けのルール
+## Rules for plugin authors
 
-- Contentを変化させるPluginはすべて`processedContentCache`を宣言します。
-- 他のContentやfileはCoreのAPI経由でのみ読み、dependencyとして記録させます。
-- Content mapを持ったり、vaultを再走査したり、Plugin固有のincremental stateを保存したりしません。
-- 観測できない入力がある場合は`unsafe`を使います。広い再処理は許容できますが、古い結果の再利用は許容できません。
-- manifest段階の変更と生成outputにはOutput Dependencyを宣言します。
+- Declare `processedContentCache` on every content-affecting plugin.
+- Read other content and files only through Core APIs so the reads are recorded.
+- Do not keep a content map, rescan the vault, or maintain plugin-specific incremental state.
+- Use `unsafe` when an input cannot be observed. A broad rebuild is acceptable; a stale result is not.
+- Declare output dependencies for manifest-stage mutations and generated outputs.
 
-正確なfieldは[Plugin API](../reference/plugin-api.md)、Build lifecycleは[Build System](./build-system.md)を参照してください。
+See [Plugin API](../reference/plugin-api.md) for the exact fields and [Build System](./build-system.md) for the build lifecycle.

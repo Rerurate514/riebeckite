@@ -1,16 +1,16 @@
 ---
-title: ドキュメント
+title: Documentation
 sidebar:
-  label: ドキュメント
+  label: Documentation
   order: 0
 ---
-# ドキュメント
+# Documentation
 
-Riebeckite でサイトを作成して公開するまでの流れは、[Getting Started](./getting-started/README.md) から確認できます。フレームワークの仕組み、Plugin による拡張、見た目の調整は、以下の各章を参照してください。
+Start with [Getting Started](./getting-started/README.md) to create and publish a Riebeckite site. Use the sections below to explore the framework, extend it with plugins, and customize its appearance.
 
 - [Getting Started](./getting-started/README.md)
-- [ガイド](./guides/README.md)
-- [フレームワーク](./framework/README.md)
-- [Plugin](./plugins/README.md)
-- [Theme](./themes/README.md)
-- [リファレンス](./reference/README.md)
+- [Guides](./guides/README.md)
+- [Framework](./framework/README.md)
+- [Plugins](./plugins/README.md)
+- [Themes](./themes/README.md)
+- [Reference](./reference/README.md)

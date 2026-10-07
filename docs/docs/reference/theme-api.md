@@ -1,31 +1,18 @@
 # Theme System
 
-Riebeckite Theme は、Site や Plugin の**見た目を変更するための仕組み**です。
+Riebeckite Themes are the presentation layer. They change appearance
+through shared design contracts rather than replacing application or
+plugin functionality.
 
-Theme は機能そのものを差し替えるものではありません。
+## Scope before styling
 
-たとえば Theme では、
+Theme code may change tokens, stylesheet rules, and theme-owned `data-*`
+attributes. It cannot change content meaning or application structure. Put
+interactive behavior in a plugin or application, and put a visual adjustment
+in a theme. This separation lets a site exchange themes without changing its
+routes, manifest, graph, or client behavior.
 
-- 色
-- フォント
-- 余白
-- レイアウトの見た目
-- Article や Sidebar の装飾
-- Plugin UI の見た目
-
-などを変更できます。
-
-一方で、
-
-- Content の意味
-- Route
-- Component の構造
-- Browser の動作
-- Plugin の機能
-
-は変更しません。
-
-```mermaid id="w4tgad"
+```mermaid
 flowchart LR
     Content["Content / Features"]
     Hooks["Stable Hooks<br/>Semantic Tokens"]
@@ -37,111 +24,161 @@ flowchart LR
     Hooks --> Result
 ```
 
-この境界によって、Application や Plugin の機能を変更せずに Theme を交換できます。
+## Theme vs Plugin
 
-# Theme と Plugin の違い
+When unsure, first decide whether you want to change functionality or
+appearance.
 
-迷った場合は、まず「機能を変えたいのか、見た目を変えたいのか」を考えます。
-
-```mermaid id="8e1m3z"
+```mermaid
 flowchart TD
-    Q{"何を変更したい？"}
+    Q{"What do you want to change?"}
 
-    Q -->|"見た目"| Theme["Theme"]
-    Q -->|"機能"| Plugin["Plugin"]
+    Q -->|"Appearance"| Theme["Theme"]
+    Q -->|"Functionality"| Plugin["Plugin"]
 
-    Theme --> T1["色"]
+    Theme --> T1["Color"]
     Theme --> T2["Font"]
     Theme --> T3["Spacing"]
-    Theme --> T4["Visual Layout"]
+    Theme --> T4["Visual layout"]
 
-    Plugin --> P1["Content変換"]
+    Plugin --> P1["Content transformation"]
     Plugin --> P2["Renderer"]
-    Plugin --> P3["Browser Behavior"]
+    Plugin --> P3["Browser behavior"]
     Plugin --> P4["Endpoint"]
 ```
 
-**見た目だけを変更するために Plugin を作らず、機能を追加するために Theme を拡張しません。**
+Do not create a plugin merely to change appearance, and do not extend a
+theme to add functionality.
 
-# 最小の Theme
+## Minimal theme
 
-Theme は `defineTheme()` で作成します。
-
-```ts id="z0z78e"
-import { defineTheme } from "@riebeckite/core";
-
-export function minimalTheme() {
+``` ts
+function minimalTheme() {
   return defineTheme({
     name: "minimal",
-
-    styles: [
-      {
-        moduleSpecifier:
-          "@riebeckite/theme-minimal/style.css",
-      },
-    ],
+    styles: [{ moduleSpecifier: "@riebeckite/theme-minimal/style.css" }],
   });
 }
 ```
 
-Site では `theme` に指定します。
+On the consuming side, hand it to the config:
 
-```ts id="ps7zv1"
+``` ts
 export default defineConfig({
   theme: minimalTheme(),
 });
 ```
 
-これだけで Theme の stylesheet が Site に組み込まれます。
+## Contract
 
-# Theme が扱えるもの
+A theme can provide identity, factory options, stylesheet module
+specifiers, common configuration, design tokens, user CSS, and safe
+`data-*` attributes.
 
-Theme の主な Contract は次のとおりです。
-
-| 分類 | 主な設定 |
+| Category | Main settings |
 | --- | --- |
 | Identity | `name` |
-| Theme 固有設定 | `options` |
+| Theme-specific options | `options` |
 | CSS | `styles[].moduleSpecifier` |
-| Color Mode | `colorMode` |
+| Color mode | `colorMode` |
 | Typography | `typography` |
-| Article Layout | `articleLayout` |
-| Design Token | `tokens` |
+| Article layout | `articleLayout` |
+| Design tokens | `tokens` |
 | User CSS | `userCss` |
-| Theme 固有属性 | `data-*` attributes |
+| Theme-specific attributes | `data-*` attributes |
 
-Theme はこれらを使って Presentation を変更します。
+Common presets include:
 
-# Design Tokens
+``` ts
+type ThemeColorMode = "light" | "dark" | "system";
+type ThemeTypographyPreset = "system" | "serif" | "sans";
+type ThemeArticleLayoutPreset = "article" | "sidebar" | "full-width";
+```
 
-Riebeckite では、Component や Plugin が特定 Theme の色を直接参照するのではなく、**Semantic Design Token** を利用します。
+## Typography
 
-たとえば、
+A typography preset is reflected in the semantic font tokens for body
+and heading text:
 
-```css id="vp9a0g"
+``` ts
+type ThemeTypographyPreset = "system" | "serif" | "sans";
+```
+
+## Article Layout
+
+A theme defines the presentation of each layout preset; it never replaces
+routes or the component tree:
+
+``` ts
+type ThemeArticleLayoutPreset = "article" | "sidebar" | "full-width";
+```
+
+```mermaid
+flowchart LR
+    App["Application<br/>Component structure"]
+    Hook["Stable layout hooks"]
+    Theme["Theme<br/>Layout presentation"]
+
+    App --> Hook
+    Theme --> Hook
+```
+
+## Design tokens
+
+`ThemeDesignTokens` groups semantic values for colors, typography, and
+layout. Themes expose these through shared `--rb-*` CSS custom
+properties.
+
+### Color
+
+`paper`, `ink`, `muted`, `accent`, `border`, `borderStrong`, `surface`,
+`surfaceHover`, `overlay`, `danger`, `success`, and `codeBackground`.
+
+### Typography
+
+`bodyFont`, `headingFont`, and `monoFont`.
+
+### Layout
+
+`pageMaxWidth`, `articleMaxWidth`, `sidebarWidth`, and `contentGap`.
+
+``` css
+@layer base {
+  /* <name> is the theme's identity name, for example "minimal". */
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+    --rb-color-paper: #fafafa;
+    --rb-color-ink: #202020;
+    --rb-color-accent: #555;
+    --rb-font-body: system-ui, sans-serif;
+    --rb-layout-article-max: 48rem;
+  }
+}
+```
+
+Components and plugins should consume semantic tokens instead of
+hard-coding a specific theme palette:
+
+``` css
+/* good */
 .rr-example {
   color: var(--rb-color-ink);
   background: var(--rb-color-surface);
 }
-```
 
-のように書きます。
-
-次のように Theme 固有の色を直接書くことは避けます。
-
-```css id="ucsgx9"
+/* avoid */
 .rr-example {
   color: #171717;
   background: #f6efe2;
 }
 ```
 
-Theme が変わったときに Plugin 側まで変更する必要が出てしまうためです。
+Plugin-specific semantics remain owned by the plugin and may fall back to
+`--rb-*` tokens.
 
-```mermaid id="n1td48"
+```mermaid
 flowchart LR
     Component["Component / Plugin"]
-    Token["Semantic Token<br/>--rb-color-ink"]
+    Token["Semantic token<br/>--rb-color-ink"]
     ThemeA["Theme A<br/>#202020"]
     ThemeB["Theme B<br/>#d8dee9"]
 
@@ -150,408 +187,110 @@ flowchart LR
     ThemeB --> Token
 ```
 
-Component は「文字色」という意味だけを参照し、実際の色は Theme が決めます。
+A component refers only to the meaning ("text color"); the actual color is
+decided by the theme.
 
-# Token の種類
+## Theme root selector
 
-Core の `ThemeDesignTokens` には、大きく3種類の Token があります。
+Built-in themes do not target the bare `:root` selector. Each theme scopes
+its rules to a *theme root* so the same stylesheet can style the real
+document and an embedded preview:
 
-## Color
-
-```text id="hwz8k3"
-paper
-ink
-muted
-accent
-border
-borderStrong
-surface
-surfaceHover
-overlay
-danger
-success
-codeBackground
+``` css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"]
 ```
 
-## Typography
+`<name>` is the theme's identity name: `riebeckite` for the default theme,
+otherwise `minimal`, `gruvbox`, `sakura`, `tokyonight`, or `rerurate`.
 
-```text id="8en3hl"
-bodyFont
-headingFont
-monoFont
-```
+- On a real site the application sets `data-theme-name` on `<html>`, so the
+  `:root` branch matches the document root.
+- In a preview (for example a theme gallery), the same stylesheet styles any
+  element that carries `class="rb-theme-root" data-theme-name="<name>"`.
+  Several themes can therefore render side by side in one document.
 
-## Layout
-
-```text id="pwn80n"
-pageMaxWidth
-articleMaxWidth
-sidebarWidth
-contentGap
-```
-
-CSS では `--rb-*` Custom Property として利用します。
-
-```css id="m3xggn"
-@layer base {
-  :is(:root, .rb-theme-root)
-    [data-theme-name="minimal"] {
-    --rb-color-paper: #fafafa;
-    --rb-color-ink: #202020;
-    --rb-color-accent: #555;
-
-    --rb-font-body:
-      system-ui, sans-serif;
-
-    --rb-layout-article-max: 48rem;
-  }
-}
-```
-
-`--rb-*` は Framework が提供する Semantic Token です。
-
-Plugin 固有の意味を持つ Token は `--rr-*` として Plugin 側が所有し、必要に応じて `--rb-*` を fallback として利用できます。
-
-# Color Mode
-
-Theme は3種類の Color Mode を扱えます。
-
-```ts id="csm5c6"
-type ThemeColorMode =
-  | "light"
-  | "dark"
-  | "system";
-```
-
-| Mode | 動作 |
-| --- | --- |
-| `light` | Light Theme を使用 |
-| `dark` | Dark Theme を使用 |
-| `system` | OS の設定に従う |
-
-Theme は `data-theme` と Semantic Token を使って配色を切り替えます。
-
-個別 Component に Light / Dark の色を直接 hardcode しないでください。
-
-# Color Mode の仕組み
-
-Light、Dark、System は CSS 上では次の状態として扱います。
-
-```css id="nw1xrv"
-/* Light */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"] {
-  /* ... */
-}
-
-/* Dark */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-[data-theme="dark"] {
-  /* ... */
-}
-
-/* System */
-@media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)
-  [data-theme-name="<name>"]
-  :not([data-theme]) {
-    /* ... */
-  }
-}
-```
-
-`system` の場合、`data-theme` を付けないことが重要です。
-
-```text id="em0o5z"
-light
-  → data-theme="light"
-
-dark
-  → data-theme="dark"
-
-system
-  → data-theme を削除
-```
-
-空文字を設定するのとは異なります。
-
-```html id="7jpx2k"
-<html data-theme="">
-```
-
-では `[data-theme]` に一致するため、System 用の Media Query が正しく機能しません。
-
-実行時に `system` へ戻す場合も、
-
-```ts id="0tw3aa"
-delete document.documentElement.dataset.theme;
-```
-
-のように属性そのものを削除します。
-
-`@riebeckite/plugin-color-mode` がこの Contract の参照実装です。
-
-# Typography
-
-Theme は Typography Preset を提供できます。
-
-```ts id="kyyomq"
-type ThemeTypographyPreset =
-  | "system"
-  | "serif"
-  | "sans";
-```
-
-Preset は、
-
-- Body
-- Heading
-- Code
-
-などの Semantic Font Token に反映されます。
-
-Theme は個々の Component に Font を直接設定するのではなく、可能な限り Semantic Token を通して Typography を統一します。
-
-# Article Layout
-
-Theme は Article Layout の Presentation を変更できます。
-
-```ts id="c69dlz"
-type ThemeArticleLayoutPreset =
-  | "article"
-  | "sidebar"
-  | "full-width";
-```
-
-ただし Theme が変更するのは**レイアウトの見た目**です。
-
-Route や Component Tree 自体を Theme が差し替えるわけではありません。
-
-```mermaid id="9k8dq8"
-flowchart LR
-    App["Application<br/>Component Structure"]
-    Hook["Stable Layout Hooks"]
-    Theme["Theme<br/>Layout Presentation"]
-
-    App --> Hook
-    Theme --> Hook
-```
-
-# Theme Root
-
-Theme の CSS は、Document 全体へ無条件に適用しません。
-
-各 Theme は **Theme Root** の内側だけを対象にします。
-
-基本 selector は次の形です。
-
-```css id="l84p42"
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-```
-
-`<name>` は Theme の `name` です。
-
-たとえば、
-
-```text id="09cf2y"
-riebeckite
-minimal
-gruvbox
-sakura
-tokyonight
-rerurate
-```
-
-などです。
-
-# なぜ Theme Root が必要なのか
-
-通常の Site では Application が `<html>` に Theme 名を設定します。
-
-```html id="4v4fpo"
-<html data-theme-name="minimal">
-```
-
-この場合は `:root` が一致します。
-
-一方、Theme Gallery のように1ページで複数 Theme を表示したい場合があります。
-
-```html id="5yyh67"
-<div
-  class="rb-theme-root"
-  data-theme-name="minimal"
->
-  ...
-</div>
-
-<div
-  class="rb-theme-root"
-  data-theme-name="gruvbox"
->
-  ...
-</div>
-```
-
-同じ stylesheet を Preview 内でも利用できます。
-
-```mermaid id="vmzpsr"
+```mermaid
 flowchart TD
-    CSS["Theme Stylesheet"]
+    CSS["Theme stylesheet"]
 
-    CSS --> Site["Real Site<br/>:root"]
+    CSS --> Site["Real site<br/>:root"]
     CSS --> PreviewA["Preview<br/>.rb-theme-root minimal"]
     CSS --> PreviewB["Preview<br/>.rb-theme-root gruvbox"]
 ```
 
-このため Theme CSS を裸の `:root` に書かないことが重要です。
+Every selector a theme declares carries the same prefix:
 
-# Theme Selector
+``` css
+/* light */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* ... */ }
 
-Theme が定義するルールは Theme Root の内側に限定します。
-
-```css id="33dppk"
-/* Light */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"] {
+/* dark */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] {
   /* ... */
 }
 
-/* Dark */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-[data-theme="dark"] {
+/* system */
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) {
+    /* ... */
+  }
+}
+
+/* typography preset */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-typography="serif"] {
   /* ... */
 }
 
-/* Typography */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-[data-typography="serif"] {
-  /* ... */
-}
-
-/* Theme option */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-[data-tokyonight-neon="on"] {
+/* theme option */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-tokyonight-neon="on"] {
   /* ... */
 }
 ```
 
-子要素や擬似要素も同じ Root に閉じ込めます。
+Element and pseudo-element rules use the same prefix so they stay inside the
+preview container:
 
-```css id="fepgnc"
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-:focus-visible {
-  /* ... */
-}
-
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-::selection {
-  /* ... */
-}
+``` css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] :focus-visible { /* ... */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] ::selection { /* ... */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] * { /* ... */ }
 ```
 
-これにより、Theme Preview の CSS がページの他の部分へ漏れることを防ぎます。
+The framework emits `data-theme-name`; a preview container only needs the
+`.rb-theme-root` hook and the matching name.
 
-# Styles
+## Styles
 
-Theme の stylesheet は Host Bundler が解決できる Module Specifier として宣言します。
+Theme styles are bundler-resolved module specifiers; this is not a
+contract for copying filesystem paths into the application:
 
-```ts id="kz2hpi"
+``` ts
 styles: [
-  {
-    moduleSpecifier:
-      "@riebeckite/theme-example/style.css",
-  },
+  { moduleSpecifier: "@riebeckite/theme-example/style.css" },
 ]
 ```
 
-これは「CSS ファイルを Application directory へコピーする」という Contract ではありません。
+## Attributes
 
-Integration が Module Specifier を解決し、Site の stylesheet として組み込みます。
+Theme-specific options can reach CSS through safe `data-*` attributes:
 
-# Site 内 Theme
-
-Theme は npm package として公開しなくても利用できます。
-
-Site 内だけで使う Theme も作れます。
-
-```ts id="pzvj0n"
-// site/extensions/local-theme.ts
-
-return defineTheme({
-  name: "site-local",
-
-  styles: [
-    {
-      moduleSpecifier:
-        "/extensions/theme.css",
-    },
-  ],
-
-  attributes: {
-    "data-site-local": "on",
-  },
-});
-```
-
-Site-local Theme でも、
-
-- `name`
-- `styles`
-- `attributes`
-- `tokens`
-
-は Published Theme と同じ `resolveThemeConfig` の仕組みで解決・sanitize・適用されます。
-
-# Theme Attributes
-
-Theme 固有の設定を CSS へ渡す場合は、安全な `data-*` Attribute を利用できます。
-
-```ts id="dhy9s4"
+``` ts
 return defineTheme({
   name: "newspaper",
-
   attributes: {
-    "data-newspaper-density":
-      "compact",
+    "data-newspaper-density": "compact",
   },
 });
 ```
 
-CSS では、
+Do not turn `class`, `style`, `id`, or `lang` into settable theme
+attributes, and keep the framework-owned attribute namespace separate
+from theme-specific ones.
 
-```css id="ym84dm"
-:is(:root, .rb-theme-root)
-[data-theme-name="newspaper"]
-[data-newspaper-density="compact"] {
-  /* ... */
-}
-```
+## Theme Root and themeRootAttributes
 
-のように利用できます。
-
-Theme API から、
-
-```text id="5vgpr4"
-class
-style
-id
-lang
-```
-
-などを任意に変更する設計にはしません。
-
-Framework が所有する Attribute と Theme 固有 Attribute の namespace を分離します。
-
-# Theme Root と themeRootAttributes
-
-Framework は `ThemeRoot` という UI primitive を提供し、`<html>` 要素への theme 属性の付与を担当します。
+The framework provides `ThemeRoot`, a UI primitive that handles setting theme
+attributes on the `<html>` element.
 
 ```tsx
 import { ThemeRoot } from "@riebeckite/honox/ui";
@@ -564,11 +303,11 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 </ThemeRoot>
 ```
 
-`ThemeRoot` は次の属性を持つ `<html>` 要素を描画します。
+`ThemeRoot` renders the `<html>` element with the following attributes:
 
 ```html
 <html
-  lang="ja"
+  lang="en"
   data-theme-name="minimal"
   data-theme="dark"
   data-typography="system"
@@ -576,14 +315,16 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 >
 ```
 
-Framework は `themeRootAttributes(theme)` を使い、theme 自身の `attributes` に加えて次の予約属性を出力します。
+The framework uses `themeRootAttributes(theme)` to emit the theme's own
+`attributes` plus reserved attributes:
 
-- `data-theme`: Color Mode の状態（`"light"` / `"dark"` / `"system"` では省略）
-- `data-theme-name`: Theme の識別子
-- `data-typography`: Typography Preset の値
-- `data-article-layout`: Article Layout Preset の値
+- `data-theme`: Color Mode state (`"light"` / `"dark"` / omitted for "system")
+- `data-theme-name`: Theme identity name
+- `data-typography`: Typography preset value
+- `data-article-layout`: Article layout preset value
 
-独自の `<html>` 属性を追加したい場合は、`ThemeRoot` の代わりに `themeRootAttributes` を直接使えます。
+To add your own `<html>` attributes, use the `themeRootAttributes` helper
+directly instead of `ThemeRoot`:
 
 ```tsx
 import { themeRootAttributes } from "@riebeckite/honox/ui";
@@ -597,242 +338,155 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 </html>
 ```
 
-ただし、予約済みの `data-theme`, `data-theme-name`, `data-typography`, `data-article-layout` は theme 側の `attributes` では上書きできません。
+However, the framework-reserved `data-theme`, `data-theme-name`,
+`data-typography`, and `data-article-layout` cannot be overwritten by the theme's
+`attributes`.
 
-plugin や theme が独自に `themeAttributes()` を実装していた場合は、Framework が提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。Framework が所有する namespace と theme 固有の namespace を明確に分離できます。
+If a plugin or theme previously implemented its own `themeAttributes()`, consider
+migrating to the framework-provided `ThemeRoot` / `themeRootAttributes()`. This
+clarifies the separation between framework-owned and theme-specific
+attribute namespaces.
 
-# Theme 固有 Options
+## Theme factory options
 
-Theme 固有の機能は Theme Factory の Option として定義します。
+Resolve theme-specific options inside the theme package:
 
-```ts id="i7yem2"
+``` ts
 type NewspaperOptions = {
-  density?:
-    | "compact"
-    | "comfortable";
+  density?: "compact" | "comfortable";
 };
 
-export function newspaperTheme(
-  options: NewspaperOptions = {},
-) {
+export function newspaperTheme(options: NewspaperOptions = {}) {
   return defineTheme({
     name: "newspaper",
-
     options,
-
     attributes: {
-      "data-newspaper-density":
-        options.density ?? "comfortable",
+      "data-newspaper-density": options.density ?? "comfortable",
     },
-
     styles: [
-      {
-        moduleSpecifier:
-          "@riebeckite/theme-newspaper/style.css",
-      },
+      { moduleSpecifier: "@riebeckite/theme-newspaper/style.css" },
     ],
   });
 }
 ```
 
-Theme 固有の概念は Core の `ThemeConfig` へ追加しません。
+Keep theme-specific concepts inside the theme package rather than
+expanding Core `ThemeConfig`.
 
-```text id="1etjdh"
-newspaperTheme の density
-  → newspaperTheme が所有
+## Color mode at runtime
 
-tokyonightTheme の neon
-  → tokyonightTheme が所有
-```
+Themes derive their palette from three CSS states:
 
-Core は個別 Theme の機能を知りません。
+- `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` — light
+- `:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"]` — dark
+- `@media (prefers-color-scheme: dark) { :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) }` — follow the OS ("system")
 
-# Stable CSS Hooks
+The server writes `data-theme` on `<html>` unless the theme's `colorMode` is
+`"system"`, in which case the attribute is omitted and the media query picks
+the palette. Runtime switching follows the same contract: set
+`document.documentElement.dataset.theme` to `"light"` or `"dark"`, or **remove**
+the attribute for `"system"`. An empty attribute is not equivalent — an empty
+`data-theme` still matches `[data-theme]` selectors and defeats the media
+query.
 
-Theme は Application や Plugin の内部 Markup に依存するのではなく、文書化された **Stable CSS Hook** を利用します。
+`@riebeckite/plugin-color-mode` is the reference implementation of this
+contract: `ColorModeScript` (a before-paint inline script), `ColorModeToggle`
+(a control), and an `initColorMode` client entry that persists the choice in
+`localStorage`. See its
+package README.
 
-Riebeckite では主に2つの namespace を使います。
+## Stable CSS hooks
 
-| Namespace | 所有者 | 用途 |
-| --- | --- | --- |
-| `rb-*` | Framework | Site の構造 |
-| `rr-*` | Plugin / Feature | Plugin UI |
+Themes target documented stable hooks instead of internal markup. Riebeckite
+uses two class namespaces:
 
-Framework の代表的な Stable Hook は、
+- `rb-*` — framework structural hooks and semantic design tokens. Structural
+  hooks include `.rb-theme-root` (the theme root container), `.rb-site`,
+  `.rb-article`, `.rb-article-layout`, `.rb-article-header`,
+  `.rb-article-body`, `.rb-article-content`, `.rb-article-meta`,
+  `.rb-article-footer`, and `.rb-sidebar`. Navigation uses `.rb-site-header`,
+  `.rb-nav`,
+  `.rb-nav__list`, `.rb-nav__item`, `.rb-nav__link`,
+  `.rb-nav__link--active`, `.rb-nav__children`, `.rb-nav__mobile`,
+  `.rb-nav__toggle`, and `.rb-site-footer`.
+- `rr-<feature>` — the root hook a plugin or feature emits on the outermost
+  element it renders, for example `.rr-search`, `.rr-callout`,
+  `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`,
+  `.rr-code-tabs`, `.rr-lightbox`, `.rr-excalidraw`, `.rr-mermaid`,
+  `.rr-query`, `.rr-cardlink`, `.rr-diff-history`, `.rr-attachment`,
+  `.rr-media`, `.rr-recent-posts`, and `.rr-garden-explorer`.
 
-```text id="fahf95"
-.rb-theme-root
-.rb-site
-.rb-article
-.rb-article-layout
-.rb-article-header
-.rb-article-body
-.rb-article-content
-.rb-article-meta
-.rb-article-footer
-.rb-sidebar
-.rb-site-header
-.rb-nav
-.rb-nav__list
-.rb-nav__item
-.rb-nav__link
-.rb-nav__link--active
-.rb-nav__children
-.rb-nav__mobile
-.rb-nav__toggle
-.rb-site-footer
-```
+The root hook is the supported styling surface: a theme restyles a feature by
+targeting `.rr-<feature>` and its documented descendants. BEM element
+(`__...`) and modifier (`--...`) classes remain internal implementation
+details unless a plugin documents them, and generic helper classes such as
+`.sr-only` are not plugin hooks. Plugins keep their historical classes for
+backward compatibility, so `.rr-<feature>` may appear alongside a legacy class
+on the same element; a theme should target the `rr-*` hook.
 
-です。
+Plugins may also expose plugin-owned custom properties under `--rr-*` and
+fall back to the semantic `--rb-*` tokens. See [Plugin System](./plugin-api.md#css-hooks)
+for the plugin-side rule.
 
-`.rb-article-content` はレンダリングされた Markdown 本文の wrapper で、Markdown のセマンティックなベースライン（リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロック）を持ちます。`.rb-article-body` はその wrapper を含む article body のシェルです。`.rb-article-content` を出力するのは公開 primitive の `ArticleBody` です。このベースラインはレイヤー化されているため、テーマが見た目を再宣言するのではなく、`--rb-*` トークンとレイヤー外のキャラクター規則で表現します。
-
-Plugin では、
-
-```text id="jvm00r"
-.rr-search
-.rr-callout
-.rr-table-of-contents
-.rr-backlinks
-.rr-local-graph
-.rr-code
-.rr-code-tabs
-.rr-lightbox
-.rr-excalidraw
-.rr-mermaid
-.rr-query
-.rr-cardlink
-.rr-diff-history
-.rr-attachment
-.rr-media
-.rr-recent-posts
-.rr-garden-explorer
-```
-
-などの Root Hook を提供できます。
-
-```mermaid id="k4vqej"
+```mermaid
 flowchart TD
     Theme["Theme CSS"]
 
-    Theme --> Framework["rb-*<br/>Framework Hooks"]
-    Theme --> Plugin["rr-*<br/>Plugin Hooks"]
+    Theme --> Framework["rb-*<br/>Framework hooks"]
+    Theme --> Plugin["rr-*<br/>Plugin hooks"]
 
-    Framework --> Site["Site Presentation"]
+    Framework --> Site["Site presentation"]
     Plugin --> Site
 ```
 
-Theme はこの Stable Hook を対象にします。
+## Character layer
 
-# Plugin 内部の Class
+A theme is not limited to tokens. Within the theme boundary it may style the
+stable hooks directly to give a site a visual character.
 
-Plugin が BEM を使って、
+- Put token definitions inside `@layer base`; put visual character rules
+  **unlayered**. The application's structural CSS and plugin CSS are
+  unlayered, so unlayered theme rules win over them without `!important`.
+  Never use `!important`.
+- Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
+  `.rb-article-header`, `.rb-article-body`, `.rb-article-content`,
+  `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`, and the `rr-*`
+  plugin roots listed under [Stable CSS hooks](#stable-css-hooks). Do not
+  invent new `rb-*` / `rr-*` class names; `.rr-*` BEM parts are internal.
+- `.rb-article-content` carries the Markdown semantic baseline (list markers and
+  indentation, headings, paragraph and block spacing, tables, figures,
+  definitions, inline code, preformatted blocks). That baseline is layered, so
+  a theme expresses appearance through `--rb-*` tokens and unlayered character
+  rules rather than re-declaring the structure. `.rb-article-body` is the shell
+  that contains it; plugin components keep their own headings wherever placed.
+  The public `ArticleBody` primitive is what emits the `.rb-article-content`
+  wrapper.
+- A theme may ship self-hosted webfonts (Latin subsets) inside its package
+  under `styles/fonts/`, reference them with relative `url()`, and include the
+  font license file. Japanese and other CJK text should fall back to system
+  font stacks instead of shipping large font files.
 
-```text id="cf1uz0"
-.rr-search
-.rr-search__input
-.rr-search__result
-.rr-search--loading
-```
-
-のような Class を持つ場合があります。
-
-基本的には、
-
-```text id="r2p6sm"
-.rr-search
-```
-
-が Theme 向けの Public Hook です。
-
-`__input` や `--loading` のような内部 Class は、Plugin が明示的に文書化していない限り Implementation Detail として扱います。
-
-`.sr-only` のような一般的な Helper Class も Plugin Hook ではありません。
-
-# Character Layer
-
-Theme は Token の値を変更するだけではありません。
-
-Stable Hook を利用して、Site に視覚的な個性を与えることもできます。
-
-たとえば、
-
-- Article の Border
-- Header の装飾
-- Sidebar の背景
-- Code Block の形
-- Plugin Card の見た目
-
-などです。
-
-```css id="0r1pvg"
-[data-theme-name="example"]
-.rb-article {
+```css
+[data-theme-name="example"] .rb-article {
   /* visual character */
 }
 
-[data-theme-name="example"]
-.rr-callout {
+[data-theme-name="example"] .rr-callout {
   /* visual character */
 }
 ```
 
-ただし対象にするのは Stable Hook だけです。
+Character rules are still presentation-only: they must not change content,
+structure, or behavior.
 
-新しい `rb-*` や `rr-*` Class を Theme 側で勝手に定義して、Framework Contract のように扱わないでください。
+## Cascade
 
-Character Layer も Presentation 専用です。
-
-Content、Structure、Behavior を変更するものではありません。
-
-# CSS Layer
-
-Token の定義は `@layer base` に置きます。
-
-```css id="yzyq6g"
-@layer base {
-  :is(:root, .rb-theme-root)
-  [data-theme-name="example"] {
-    --rb-color-paper: #fff;
-    --rb-color-ink: #111;
-  }
-}
-```
-
-一方、Stable Hook に対する Theme の Character Rule は **unlayered** にします。
-
-Application の Structural CSS や Plugin CSS も unlayered であるため、Theme CSS の読み込み順によって適切に上書きできます。
-
-通常は `!important` を使用しません。
-
-# Font
-
-Theme package は必要に応じて Self-hosted Web Font を含められます。
-
-たとえば、
-
-```text id="mtpf4x"
-theme/
-└─ styles/
-   └─ fonts/
-```
-
-のように Theme package 内へ配置し、CSS の相対 `url()` で参照できます。
-
-Font を同梱する場合は License File も含めてください。
-
-Latin subset のような比較的小さい Web Font は同梱できますが、日本語などの CJK Font はサイズが大きいため、基本的には System Font Stack へ fallback します。
-
-# CSS Cascade
-
-Riebeckite では CSS の読み込み順も Contract の一部です。
-
-```mermaid id="13bftb"
+```mermaid
 flowchart TD
     Base["Base / Application<br/>Structural CSS"]
-    Plugin["Plugin Default CSS"]
+    Plugin["Plugin default CSS"]
     Theme["Theme CSS"]
-    Tokens["Config Token<br/>Inline Style"]
+    Tokens["Config token<br/>Inline style"]
     User["userCss"]
 
     Base --> Plugin
@@ -841,91 +495,56 @@ flowchart TD
     Tokens --> User
 ```
 
-優先順は、
-
-```text id="qq3vby"
-Framework Structural CSS
-        ↓
-Base / Application CSS
-        ↓
-Plugin Default CSS
-        ↓
-Theme CSS
-        ↓
-Config Token Inline Style
-        ↓
-userCss
+``` text
+framework structural CSS
+→ base / app structural CSS
+→ Plugin default CSS
+→ Theme CSS
+→ config token inline style
+→ userCss
 ```
 
-です。
+The order is stable, not incidental. `@riebeckite/honox` generates
+`.riebeckite/framework-styles.css` (framework structural CSS),
+`.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order), and
+`.riebeckite/theme-styles.css` (theme styles). A site imports the framework
+stylesheet before the plugin stylesheet, and the plugin stylesheet before the
+theme stylesheet, so the theme CSS always wins the plugin/theme cascade while
+preserving `userCss` as the final user override.
+Do not reorder those imports, and do not edit the generated files by hand;
+each carries a header comment stating its position in the cascade. The
+cascade normally does not rely on `!important`.
 
-これは偶然の読み込み順ではなく、Presentation Extension の Contract です。
+## Theme vs Plugin
 
-`@riebeckite/honox` は、
+Themes own appearance, semantic tokens, stable-hook styling, and
+presentation attributes. Plugins own transformations, renderers, client
+behavior, endpoints, diagnostics, and SEO extensions.
 
-```text id="49ck0i"
-.riebeckite/framework-styles.css
-.riebeckite/plugin-styles.css
-.riebeckite/theme-styles.css
-```
+Themes must not replace components, inject JSX, add routes, add/remove
+plugins, execute client scripts, transform the DOM, register islands,
+access the filesystem, or use ContentManager.
 
-を生成します。
+Do not create a plugin merely to change appearance, and do not extend a
+theme to add functionality.
 
-Site は Framework Stylesheet を Plugin Stylesheet より先に、Plugin Stylesheet を Theme Stylesheet より先に読み込みます。
-
-そのため、
-
-```text id="qzwp1u"
-Plugin
-  → 標準の見た目
-
-Theme
-  → Plugin の見た目を変更
-
-userCss
-  → Site 利用者が最終調整
-```
-
-という関係になります。
-
-生成された stylesheet を直接編集したり、Import 順を入れ替えたりしないでください。
-
-通常は `!important` に依存せず、この Cascade で Override します。
-
-# Theme がしてはいけないこと
-
-Theme の責務は Presentation です。
-
-そのため、次の処理は Theme に置きません。
-
-- Component Replacement
-- JSX Injection
-- Route の追加
-- Plugin の追加・削除
-- Client Script の実行
-- DOM Transformation
-- Island の登録
-- Filesystem Access
-- ContentManager Access
-
-```mermaid id="qpcxoz"
+```mermaid
 flowchart TD
-    Feature{"Themeに置いてよい？"}
+    Feature{"Is this allowed in a theme?"}
 
-    Feature -->|"CSS / Token / Visual"| Yes["Theme"]
-    Feature -->|"Content処理"| Plugin["Plugin / Core"]
-    Feature -->|"Browser Behavior"| Client["Plugin / Application"]
-    Feature -->|"Route / Structure"| App["Application"]
-    Feature -->|"Filesystem / Content"| Core["Core / Content System"]
+    Feature -->|"CSS / token / visual"| Yes["Theme"]
+    Feature -->|"Content processing"| Plugin["Plugin / Core"]
+    Feature -->|"Browser behavior"| Client["Plugin / Application"]
+    Feature -->|"Route / structure"| App["Application"]
+    Feature -->|"Filesystem / content"| Core["Core / Content system"]
 ```
 
-見た目を実現するために JavaScript や DOM 操作が必要になった場合、その部分は Theme ではなく Plugin または Application の責務です。
+If achieving the appearance needs JavaScript or DOM manipulation, that part
+belongs to a plugin or the application, not the theme.
 
-# Theme Package の例
+## Suggested package layout
 
-公開 Theme は、たとえば次のように構成できます。
-
-```text id="4hx4zz"
+``` text
 packages/themes/example/
 ├─ index.ts
 ├─ package.json
@@ -934,9 +553,9 @@ packages/themes/example/
 └─ README.md
 ```
 
-Theme が Font などを持つ場合は必要に応じて追加します。
+A theme that ships fonts adds them as needed:
 
-```text id="hs5y9a"
+``` text
 packages/themes/example/
 ├─ index.ts
 ├─ package.json
@@ -947,44 +566,58 @@ packages/themes/example/
 └─ README.md
 ```
 
-# Repository 外で Theme を配布する
+## Distributing a Theme outside this repository
 
-外部 Theme は Riebeckite monorepo 内部へ依存させません。
+An external Theme package depends only on `@riebeckite/core`, uses `defineTheme`,
+and exposes its stylesheet through a `./style.css` export. Do not reference
+monorepo paths. See
+[Public packages and import paths](./README.md#public-packages-and-import-paths)
+for the supported package surface and current constraints.
 
-基本的には、
+Following the shared contract keeps themes replaceable without changing
+application logic.
 
-```text id="txlfzo"
-@riebeckite/core
+### Site-local themes
+
+A theme can also live in the site. Compose an existing theme or define one
+directly with `defineTheme`, then set it as `theme`:
+
+``` ts
+// site/extensions/local-theme.ts
+import { defineTheme } from "@riebeckite/core";
+import { defaultTheme } from "@riebeckite/theme-default";
+
+export function localTheme() {
+  const base = defaultTheme({ colorMode: "dark" });
+  return defineTheme({
+    name: "site-local",
+    styles: [
+      ...(base.styles ?? []),
+      { moduleSpecifier: "/extensions/theme.css" },
+    ],
+    config: { ...base.config, tokens: { color: { accent: "#c2410c" } } },
+    attributes: { "data-site-local": "on" },
+  });
+}
 ```
 
-の Public API だけに依存し、`defineTheme()` を使います。
+A site-local theme is resolved, sanitized, and applied through the same
+`resolveThemeConfig` path as a packaged theme, including its own stylesheet and
+`data-*` attributes.
 
-Stylesheet は Theme package 自身の Export として公開します。
+Following the shared contract keeps themes replaceable without changing
+application logic. A theme-specific option is meaningful only for that
+theme and never leaks into Core or another theme.
 
-たとえば、
+## Why themes are exchangeable
 
-```text id="uwoc8f"
-./style.css
-```
+The most important goal of the theme system is that you can exchange a theme
+without changing application logic.
 
-を `package.json` の `exports` へ定義します。
-
-monorepo 内部の path や、
-
-```text id="v9czqn"
-@riebeckite/core/src/**
-```
-
-のような Internal API を参照しないでください。
-
-# Theme を交換できる理由
-
-Theme System の最も重要な目的は、**Application Logic を変更せずに Theme を交換できること**です。
-
-```mermaid id="jfsn6x"
+```mermaid
 flowchart LR
     App["Application"]
-    Contract["Stable Hooks<br/>Semantic Tokens"]
+    Contract["Stable hooks<br/>Semantic tokens"]
 
     ThemeA["Minimal"]
     ThemeB["Gruvbox"]
@@ -997,65 +630,47 @@ flowchart LR
     ThemeC --> Contract
 ```
 
-Application と Plugin は、
+The application and plugins provide the shared contract (stable CSS hooks and
+semantic design tokens); a theme applies CSS against that contract. Because the
+contract does not change, a different theme still fits the same routes, content,
+plugins, and application logic.
 
-```text id="s1q47e"
-Stable CSS Hooks
-Semantic Design Tokens
-```
+## Theme system overview
 
-という共通 Contract を提供します。
+The whole theme system looks like this:
 
-Theme はその Contract に対して CSS を適用します。
-
-そのため Theme が変わっても、
-
-- Route
-- Content
-- Manifest
-- Content Graph
-- Plugin Behavior
-- Client Behavior
-
-を変更する必要はありません。
-
-Theme 固有 Option も、その Theme を選択したときだけ意味を持ち、Core や他の Theme には漏れません。
-
-# Theme System の基本
-
-Theme System 全体は次のようになります。
-
-```mermaid id="2hw1zc"
+```mermaid
 flowchart LR
     App["Application"]
     Plugins["Plugins"]
 
-    App --> Hooks["Stable Hooks"]
+    App --> Hooks["Stable hooks"]
     Plugins --> Hooks
 
-    Core["Core"] --> Tokens["Semantic Tokens"]
+    Core["Core"] --> Tokens["Semantic tokens"]
 
-    Hooks --> Presentation["Presentation Contract"]
+    Hooks --> Presentation["Presentation contract"]
     Tokens --> Presentation
 
     Theme["Theme"] --> Presentation
 
-    Presentation --> Site["Final Site"]
+    Presentation --> Site["Final site"]
 ```
 
-Theme は Site の機能を所有するのではなく、Framework と Plugin が公開した **Presentation Contract** に対して見た目を与えます。
+A theme does not own the site's functionality; it gives appearance to the
+**presentation contract** exposed by the framework and plugins. The basic
+principle is:
 
-基本原則は、
+**Functionality in a plugin or application, structure in the framework or
+application, appearance in a theme.**
 
-**機能は Plugin / Application、構造は Framework / Application、見た目は Theme**
+Maintaining this boundary lets you exchange themes freely while reusing the
+same content, plugins, routes, and application logic.
 
-です。
-
-この境界を維持することで、Theme を自由に交換しながら、同じ Content、Plugin、Route、Application Logic をそのまま利用できます。
-
-## 関連
+## Related
 
 - [Architecture](../framework/architecture.md)
 - [Plugin System](./plugin-api.md)
 - [Configuration](./configuration.md)
 - [Framework Reference](./README.md)
+

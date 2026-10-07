@@ -40,4 +40,4 @@ const current = await api.getCurrentDiff("notes/hello.md");
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.md)
+- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)

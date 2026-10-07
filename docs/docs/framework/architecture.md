@@ -1,19 +1,18 @@
 # Architecture
 
-Riebeckite は、Core を中心に Plugin、Integration、Theme、Application を分離した pnpm workspace です。
+Riebeckite is a pnpm workspace that separates Core from Plugin, Integration,
+Theme, and Application, with intentionally one-way dependencies.
 
-重要な原則は、**内側の package が外側の実装を知らないこと**です。
+The guiding principle is that **an inner package does not know the
+implementation of an outer one**. Core provides the content-processing
+machinery, but it does not know:
 
-たとえば Core はコンテンツ処理の仕組みを提供しますが、
+- how HonoX renders it,
+- how Vite builds it,
+- which plugins are installed, or
+- what UI the site has.
 
-- HonoX でどう表示するか
-- Vite でどう build するか
-- どの Plugin がインストールされているか
-- Site がどんな UI を持つか
-
-といったことは知りません。
-
-```mermaid id="p4fcge"
+```mermaid
 flowchart BT
     App["Application<br/>apps/web"]
     Integration["Integration<br/>packages/integrations/*"]
@@ -30,169 +29,151 @@ flowchart BT
     Theme --> Core
 ```
 
-矢印は依存方向です。
+Arrows point in the dependency direction. There is never a reverse dependency
+from Core to a plugin, integration, application, or theme.
 
-Core から Plugin、Integration、Application などへの逆向きの依存は作りません。
+## Package ownership
 
-# Package の責務
+| Area | Owns | Must not own |
+| --- | --- | --- |
+| `packages/core` | portable contracts, configuration, content orchestration, manifests, graphs, pipelines, plugin runtime, observability, and theme contracts | HonoX/Vite APIs, a named plugin, or application UI |
+| `packages/plugins/*` | reusable Markdown, HTML, metadata, asset, diagnostic, browser, and Page Type capabilities | application routes or framework-specific routing |
+| `packages/integrations/*` | framework, bundler, and platform adapters | reusable domain policy already represented by Core |
+| `packages/themes/*` | presentation configuration and CSS | components, routes, plugins, or content loading |
+| `apps/web` | the concrete routes, islands, application components, and Worker deployment | reusable framework contracts |
+| `packages/cli` | Node-oriented commands and build tooling | request-time application behavior |
 
-Riebeckite のコードは、責務ごとに package を分けています。
+```text
+Application -> Integration -> Core
+Plugin --------------------> Core contracts
+Theme ---------------------> Core theme contract
+CLI -----------------------> Core and integration APIs
+```
 
-| 場所 | 主な責務 |
-| --- | --- |
-| `packages/core` | Riebeckite の共通基盤 |
-| `packages/plugins/*` | 再利用可能な機能拡張 |
-| `packages/integrations/*` | Framework / Bundler / Platform との接続 |
-| `packages/themes/*` | Theme と CSS |
-| `packages/cli` | CLI と Node 上の Build Tooling |
-| `apps/web` | 実際の Site Application |
+Core must never gain a reverse dependency on HonoX, a theme, a plugin, or the application. Put a concern at the first layer that can own it without importing an outer layer.
 
 ## Core
 
-```text id="cxz98n"
+```text
 packages/core
 ```
 
-Core は、特定の Web framework に依存しない Riebeckite の基盤です。
-
-主に次の機能を所有します。
+Core is the Riebeckite foundation, independent of any specific web framework.
+It owns:
 
 - config
 - content orchestration
 - manifest
 - content graph
 - pipeline
-- Plugin runtime
+- plugin runtime
 - observability
-- Theme contract
-- 共通の型や lifecycle contract
+- the theme contract
+- shared types and lifecycle contracts
 
-Core は portable であることを重視します。
+Core is deliberately portable. It does not depend on:
 
-そのため、
-
-```text id="zpfh9w"
+```text
 HonoX
 Vite
 Cloudflare
-特定の Plugin
-Site 固有の UI
+a specific plugin
+site-specific UI
 ```
-
-などへ依存させません。
 
 ## Plugin
 
-```text id="56z84x"
+```text
 packages/plugins/*
 ```
 
-Plugin は、複数の Site で再利用できる機能を追加します。
+A plugin adds functionality that can be reused across multiple sites, for
+example:
 
-たとえば、
-
-- Markdown の変換
-- HTML の変換
-- metadata の追加
-- asset の生成
+- Markdown transformation
+- HTML transformation
+- adding metadata
+- generating assets
 - browser-side behavior
-- Page Type の提供
+- providing Page Types
 
-などです。
+A plugin extends functionality through the contracts Core publishes:
 
-Plugin は Core が公開している contract を利用して機能を拡張します。
-
-```mermaid id="79dvqt"
+```mermaid
 flowchart LR
     Plugin["Plugin"] --> Contract["Core Plugin Contract"]
     Contract --> Pipeline["Content Pipeline"]
 ```
 
-Plugin のために Core が特定 Plugin の実装を知るような依存関係にはしません。
+Core is never made to know the implementation of a specific plugin.
 
 ## Integration
 
-```text id="n94ykv"
+```text
 packages/integrations/*
 ```
 
-Integration は Riebeckite と外部技術を接続します。
+An integration connects Riebeckite to an external technology. For example,
+`@riebeckite/honox` connects:
 
-たとえば `@riebeckite/honox` は、
-
-```text id="ldd2oa"
+```text
 Riebeckite Core
       ↕
 HonoX / Vite
 ```
 
-を接続する役割を持ちます。
-
-Framework、Bundler、Platform 固有の処理は Core ではなく Integration に配置します。
-
-詳しくは [HonoX Integration](honox-integration.md) を参照してください。
+Framework, bundler, and platform-specific work belongs in an integration, not
+in Core. See [HonoX Integration](./honox-integration.md).
 
 ## Theme
 
-```text id="1as7cf"
+```text
 packages/themes/*
 ```
 
-Theme は Site の見た目を変更します。
-
-主に、
+A theme changes a site's appearance through:
 
 - CSS
-- semantic token
-- stable CSS hook
-- `data-*` attribute
-- CSS cascade
+- semantic tokens
+- stable CSS hooks
+- `data-*` attributes
+- the CSS cascade
 
-を利用します。
+A theme owns presentation, but not the site's structure. A theme never owns:
 
-Theme は presentation を担当しますが、Site の構造そのものは所有しません。
-
-そのため Theme が、
-
-- route
-- Page Type ID
-- application component
-- Site の page composition
-
-を所有することはありません。
+- routes
+- Page Type IDs
+- application components
+- the site's page composition
 
 ## Site Application
 
-```text id="9otuxo"
+```text
 apps/web
 ```
 
-`apps/web` は実際の Riebeckite Site Application です。
-
-主に、
+`apps/web` is the concrete Riebeckite site application. It owns:
 
 - routes
 - application components
 - islands
 - page composition
-- Site shell
-- Workers との接続
+- the site shell
+- the connection to Workers
 
-を所有します。
-
-Core や Integration が「どう表示するか」まで決めるのではなく、最終的な Site の構造は Application が決定します。
+Core and integrations do not decide how things are displayed; the final site
+structure is decided by the application.
 
 ## CLI
 
-```text id="k0pqbm"
+```text
 packages/cli
 ```
 
-CLI は Node.js 上で実行される command と build tooling を担当します。
+The CLI owns the commands and build tooling that run on Node.js, providing
+entry points such as:
 
-たとえば、
-
-```sh id="kt0j27"
+```sh
 riebeckite build
 riebeckite check
 riebeckite doctor
@@ -200,15 +181,14 @@ riebeckite inspect
 riebeckite profile
 ```
 
-などの入口を提供します。
+The CLI calls Core and integration functionality as needed.
 
-CLI は必要に応じて Core や Integration の機能を呼び出します。
+## Content and rendering flow
 
-# Content の流れ
+Content processing separates the responsibilities of `ContentSource` and
+`ContentManager`.
 
-コンテンツ処理では、大きく `ContentSource` と `ContentManager` の責務を分離しています。
-
-```mermaid id="8k9ikv"
+```mermaid
 flowchart LR
     Source["ContentSource"]
     Manager["ContentManager"]
@@ -226,11 +206,20 @@ flowchart LR
     Plugins["Plugins"] -->|"hooks"| Pipeline
 ```
 
-## ContentSource
+`ContentSource` discovers and reads source material and supplies source metadata. `ContentManager` interprets that material, resolves each entry's public location, runs the pipeline and plugin hooks, creates the manifest and graph, and coordinates content-related work. Public URLs come from the resolved location (`ContentManager.getContentLocations()`: the Core default resolver, then `resolveContentLocations` plugin hooks); consumers read the resolved `permalink` and never derive a URL from a slug or filesystem path. A feature that needs files should use the source contract rather than adding a second filesystem scanner.
 
-`ContentSource` は「コンテンツをどこから、どう読み込むか」を担当します。
+```text
+ContentSource -> ContentManager -> resolve public locations
+                                      |-> parse/process pipeline
+                                      |-> plugin hooks
+                                      |-> manifest and content graph
+                                      `-> integration/application rendering
+```
 
-主に、
+### ContentSource
+
+`ContentSource` is responsible for "where content comes from and how it is
+read". It supplies source information such as:
 
 - scan
 - read
@@ -240,52 +229,42 @@ flowchart LR
 - ETag
 - hash
 
-など、source に関する情報を提供します。
+A filesystem-backed content source reads files, but `ContentManager` itself
+does not walk the filesystem directly. New content sources are added through
+this contract.
 
-たとえば filesystem を使う Content Source ならファイルを読み込みますが、`ContentManager` 自身が filesystem を直接探索するわけではありません。
+### ContentManager
 
-新しい Content Source を追加するときも、この contract を通します。
+`ContentManager` processes the content that was read. It is responsible for:
 
-## ContentManager
-
-`ContentManager` は読み込まれたコンテンツを処理します。
-
-主に、
-
-- public location の解決
+- resolving the public location
 - parse
 - pipeline
-- Plugin hooks
+- plugin hooks
 - manifest
 - content graph
 
-を担当します。
+The division is:
 
-つまり、
-
-```text id="g1g93m"
+```text
 ContentSource
     ↓
-コンテンツを取得する
+obtain the content
 
 ContentManager
     ↓
-コンテンツを解決・処理する
+resolve and process the content
 ```
 
-という分担です。
+Rather than adding an ad-hoc filesystem scan to `ContentManager`, use the
+`ContentSource` contract.
 
-ContentManager に独自の filesystem scan を追加するのではなく、`ContentSource` の contract を利用してください。
+## Resolving public URLs
 
-# Public URL の解決
+A content URL is not guessed from a filesystem path or slug. Riebeckite
+explicitly resolves a **Public Location**. The basic flow is:
 
-コンテンツの URL は filesystem path や slug から推測しません。
-
-Riebeckite が明示的に **Public Location** を解決します。
-
-基本的な流れは次のようになります。
-
-```mermaid id="i6wxn4"
+```mermaid
 flowchart LR
     Content["Content"]
     Default["resolveDefaultContentLocation()"]
@@ -301,47 +280,39 @@ flowchart LR
     Permalink --> Consumer
 ```
 
-Consumer は、この処理によって確定した `permalink` を使用します。
+Consumers use the `permalink` that this process settles on. For example, even
+if a filesystem path is:
 
-たとえば、
-
-```text id="ez3dhv"
+```text
 content/posts/hello.md
 ```
 
-という filesystem path があっても、
+it does not necessarily become:
 
-```text id="qysr09"
+```text
 /posts/hello
 ```
 
-になるとは限りません。
+If a plugin or config resolves it to:
 
-Plugin や config によって、
-
-```text id="i4omv8"
+```text
 /blog/hello/
 ```
 
-へ解決されているなら、それが正式な公開 URL です。
+then that is the canonical public URL. Consumers must not recompute:
 
-そのため Consumer 側で、
-
-```text id="crklqd"
+```text
 filesystem path → slug → URL
 ```
 
-のような再計算をしないでください。
+**The resolved `permalink` is the source of truth for the public URL.**
 
-**解決済みの `permalink` が public URL の source of truth です。**
+## Page Types
 
-# Page Type
+A plugin can use a Page Type to provide a page that differs from ordinary
+Markdown content. A Page Type does not depend on a specific web framework.
 
-Plugin は Page Type を使って、通常の Markdown content とは異なるページを提供できます。
-
-ただし Page Type は特定の Web framework に依存しません。
-
-```mermaid id="cs3lxy"
+```mermaid
 flowchart LR
     Plugin["Plugin"]
     Page["Page Type<br/>path + body"]
@@ -353,22 +324,22 @@ flowchart LR
     Integration --> Frame
 ```
 
-Plugin が提供するのは、主に public path と page body です。
+A plugin mainly provides a public path and a page body. Turning that into an
+actual URL is the integration's job, and assembling the final HTML document is
+the application's job. A plugin does not need to own a HonoX route or the site
+shell. See [Page system](./page-system.md).
 
-それを実際の URL として処理するのは Integration、最終的な HTML document として組み立てるのは Application です。
+Plugins may extend the process through published contracts; they do not become a hidden second application layer. A Page Type contributes a framework-independent body and public paths, while the integration resolves it through a generic route and the application retains the document frame. Themes only style the rendered result through theme configuration, CSS tokens, stable hooks, and `data-*` attributes; they do not branch on Page Type IDs.
 
-Plugin が HonoX route や Site shell を所有する必要はありません。
+## Build-time and runtime boundary
 
-詳しくは [Page System](./page-system.md) を参照してください。
+Riebeckite separates what is only needed at build time from what the public
+site needs at runtime.
 
-# Build-time と Runtime
-
-Riebeckite では、Build 時にだけ必要なものと、公開 Site の Runtime で必要なものを分離します。
-
-```mermaid id="qdk05v"
+```mermaid
 flowchart LR
     subgraph Build["Build-time / Node.js"]
-        CLI["CLI"]
+        CLI2["CLI"]
         Doctor["Doctor"]
         Inspector["Inspector"]
         State["Incremental State"]
@@ -381,76 +352,74 @@ flowchart LR
     Output --> Runtime["Runtime<br/>Cloudflare Workers"]
 ```
 
-次のものは Build-time の情報です。
+The following belong to build time:
 
 - `.riebeckite/build/content-state.json`
-- Plugin Cache
+- plugin caches
 - CLI
 - Doctor
 - Inspector
-- Profile / Trace
+- profile / trace
 
-Cloudflare Workers の request runtime は、これらを読み書きしません。
+The Cloudflare Workers request runtime does not read or write these. Runtime
+code consumes generated application output and stable content data, not a
+writable `.riebeckite` directory.
 
-Runtime が利用するのは Build によって生成された application と、安定した content data です。
+The CLI, Inspector, Doctor, profiler traces, incremental state at `.riebeckite/build/content-state.json`, and filesystem plugin caches belong to Node/build time. They are not mutable dependencies of the Cloudflare Workers request runtime.
 
-これにより、Build の最適化用 state と公開 Site の動作を分離しています。
+This boundary keeps deployments reproducible: a failed build does not mutate the previous valid state, and a request cannot depend on local files that do not exist in a Worker.
 
-また Build が失敗した場合、新しい不完全な state で以前の正常な state を置き換えません。
+## Choosing a location
 
-# コードをどこに置くか
+When adding a feature, first decide which package should own it.
 
-新しい機能を追加するときは、まず「どの package がその責務を持つべきか」を考えます。
-
-```mermaid id="hdzg9c"
+```mermaid
 flowchart TD
-    Q{"何を追加する？"}
+    Q{"What are you adding?"}
 
-    Q -->|"共通の型・contract・lifecycle"| Core["Core"]
-    Q -->|"再利用可能なContent機能"| Plugin["Plugin"]
-    Q -->|"HonoX / Vite / Platform接続"| Integration["Integration"]
-    Q -->|"Route / Page / Island"| App["Site Application"]
-    Q -->|"見た目・CSS・Token"| Theme["Theme"]
+    Q -->|"Shared types / contracts / lifecycle"| Core["Core"]
+    Q -->|"Reusable content behavior"| Plugin["Plugin"]
+    Q -->|"HonoX / Vite / platform glue"| Integration["Integration"]
+    Q -->|"Route / page / island"| App["Site Application"]
+    Q -->|"Appearance / CSS / tokens"| Theme["Theme"]
 ```
 
-判断の目安は次のとおりです。
+The rule of thumb is:
 
-| 追加するもの | 配置先 |
+| What you are adding | Where it goes |
 | --- | --- |
-| 持ち運べる型や lifecycle contract | **Core** |
-| 再利用可能な content の振る舞い | **Plugin** |
-| Vite / HonoX / Platform との接続 | **Integration** |
-| Route / Page composition / Island | **Site Application** |
-| Visual token / CSS | **Theme** |
+| A portable type or lifecycle contract | **Core** |
+| Reusable content behavior | **Plugin** |
+| Vite / HonoX / platform glue | **Integration** |
+| A route, page composition, or island | **Site Application** |
+| Visual tokens and CSS | **Theme** |
 
-迷った場合は、**その機能を成立させるために必要な最も内側の package** に置きます。
+- Add a portable type or lifecycle contract to **Core**.
+- Add reusable content behavior to a **plugin**.
+- Add Vite, HonoX, or platform glue to an **integration**.
+- Add a route, page composition, or island to **`apps/web`**.
+- Add visual tokens and CSS only to a **theme**.
 
-ただし、内側の package から外側へ依存させてはいけません。
+If you are unsure, put the feature in **the innermost package that can support
+it** — but an inner package must never depend on an outer one. For example,
+"I want to display a Plugin Page with HonoX" does not justify adding HonoX code
+to Core. Instead, split the responsibilities:
 
-たとえば、
-
-```text id="mfpzfj"
-「Plugin Page を HonoX で表示したい」
-```
-
-からといって Core に HonoX のコードを追加するのではなく、
-
-```text id="qlfw3c"
+```text
 Core
-  → framework-independent な Page contract
+  → a framework-independent Page contract
 
 Plugin
-  → Page を提供
+  → provides the Page
 
 HonoX Integration
-  → Page を route と接続
+  → connects the Page to a route
 
 Site
-  → 最終的な document を描画
+  → renders the final document
 ```
 
-と責務を分割します。
+Keeping this boundary lets Core and plugins be reused without being tied to a
+specific site, framework, or platform.
 
-この境界を維持することで、Core や Plugin を特定の Site、Framework、Platform に固定せず再利用できます。
-
-関連する設計については [Content System](content-system.md)、[Plugin System](plugin-system.md)、[Theme System](theme-system.md)、[HonoX Integration](honox-integration.md) を参照してください。
+See [Content system](./content-system.md), [Plugin system](./plugin-system.md), [Theme system](./theme-system.md), and [HonoX integration](./honox-integration.md) before changing a boundary.

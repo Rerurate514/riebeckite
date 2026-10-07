@@ -1,83 +1,57 @@
 ---
-title: アクセシビリティ
+title: Accessibility
 sidebar:
   label: Accessibility
   order: 70
 ---
-# アクセシビリティ
+# Accessibility
 
-Riebeckiteでは、キーボード操作やスクリーンリーダー、文字の見やすさなど、さまざまな環境でサイトを利用できることを大切にしています。
+Riebeckite aims to follow WCAG 2.2 AA guidance, but it does not make a blanket compliance claim. The accessibility of a published site depends on Riebeckite, the selected Theme, enabled Plugins, author content, and custom code.
 
-WCAG 2.2 AAを参考にしていますが、最終的なサイトのアクセシビリティは、使用するThemeやPlugin、記事の内容、独自に追加したコードによっても変わります。
+## Framework contract
 
-## Riebeckiteが対応していること
+Riebeckite uses native HTML first and adds ARIA only when native HTML cannot express the needed behavior or state.
 
-Riebeckiteが生成する基本的なページでは、ブラウザや支援技術がページの構造や操作方法を正しく理解できるようにしています。
+- The generated HonoX document shell sets `lang`, viewport metadata, page title, and theme attributes.
+- Presets render normal landmarks such as `header`, `main`, `article`, `aside`, `footer`, and `nav` where those structures exist.
+- Framework-generated links use real `<a href>` elements, and actions use real `<button type="button">` elements.
+- Plugin page types are rendered inside the shared document shell so language, title, assets, and theme hooks apply consistently.
+- Framework-generated controls are operable with a keyboard alone.
+- Where the framework controls motion, it respects the user's reduced-motion preference.
+- Riebeckite does not invent image descriptions. Authors and Plugins must provide meaningful `alt` text or mark decorative images with empty `alt`.
 
-たとえば、
+## Plugin author contract
 
-- ページの言語やタイトルを正しく設定する
-- ヘッダー、本文、ナビゲーションなどを適切に区別する
-- ページ移動にはリンク、操作にはボタンを使う
-- キーボードでも操作できるようにする
-- 選択中や開閉状態などを支援技術にも伝える
-- アニメーションを減らす設定をできるだけ尊重する
+When a Plugin renders UI:
 
-といった対応を行っています。
+- Prefer semantic HTML before ARIA.
+- Use links for navigation and buttons for actions. Do not use clickable `div` or `span` elements.
+- Every interactive control needs visible text or another accessible name.
+- Keyboard users must be able to reach and operate the feature.
+- Dialog-like UI must move focus on open, keep Tab navigation meaningful while open, close on `Escape`, and restore focus to the opener.
+- Keep ARIA states such as `aria-expanded`, `aria-pressed`, `aria-current`, and `aria-selected` synchronized with the real state.
+- Respect `prefers-reduced-motion` for motion that could distract or block understanding.
+- Visualizations such as canvas, graphs, charts, maps, and diagrams should provide a useful text alternative, source representation, caption, or summary instead of a huge artificial ARIA tree.
 
-画像については、Riebeckiteが内容を推測して説明文を自動生成することはありません。意味のある画像には、記事やPlugin側で適切な説明を付けてください。
+## Theme author contract
 
-## Pluginを作る場合
+Themes are responsible for visual accessibility:
 
-ボタンやメニューなどのUIを持つPluginでは、マウス以外でも操作できるようにしてください。
+- Do not remove focus indicators unless you replace them with an equally visible `:focus-visible` style.
+- Keep body text, muted text, links, buttons, form controls, code, selected states, and focus rings readable in light and dark modes.
+- Links should be recognizable without depending on color alone.
+- Avoid color-only state. Combine color with text, shape, underline, icons, or semantic state.
+- Let text scale naturally. Avoid fixed heights that clip content at narrow viewports or high zoom.
+- Prefer reduced motion defaults or wrap non-essential animation in `prefers-reduced-motion` / `prefers-reduced-motion: no-preference`.
 
-基本的には、次の点を意識すれば十分です。
+## Content author checklist
 
-- ページ移動にはリンク、操作にはボタンを使う
-- クリックできる `div` や `span` はできるだけ使わない
-- アイコンだけのボタンには、何をするボタンなのか分かる名前を付ける
-- キーボードでも操作できるようにする
-- 開閉するUIでは、現在の状態が支援技術にも分かるようにする
-- ダイアログやLightboxは `Escape` でも閉じられるようにする
-- アニメーションを減らす設定を尊重する
+- Use one clear page title and a sensible heading order.
+- Write link text that explains the destination.
+- Provide `alt` text for meaningful images and empty `alt` for decorative images.
+- Add captions or nearby explanations for charts, diagrams, embeds, and media.
+- Check the site with keyboard navigation and at narrow widths before publishing.
 
-Graph、Chart、Mapなどの視覚的なコンテンツでは、複雑な図そのものを無理に読み上げ可能にするより、必要に応じて説明文やキャプション、元データなどの代替情報を用意してください。
+## Audited surface
 
-## Themeを作る場合
-
-Themeでは、特に「見やすさ」と「操作している場所の分かりやすさ」が重要です。
-
-次の点に注意してください。
-
-- キーボード操作中の選択位置が見えるようにする
-- 文字と背景の色を十分に見分けられるようにする
-- リンクを色だけで区別しない
-- 選択中やエラーなどの状態を色だけで表現しない
-- 文字を大きくしても内容が切れないようにする
-- Light/Darkの両方で読みやすさを確認する
-- 必要のない大きなアニメーションを避ける
-
-特に `outline: none` などでキーボード操作時の表示を消す場合は、代わりに現在位置が分かる表示を用意してください。
-
-## 記事を書くとき
-
-記事側でも、少し意識するだけで読みやすさを改善できます。
-
-- 内容が分かるページタイトルを付ける
-- 見出しを自然な順番で使う
-- リンク先が分かる文章にする
-- 意味のある画像には説明を付ける
-- 装飾だけの画像には説明を付けない
-- 図や動画などには、必要に応じて近くに説明を書く
-
-公開前に、マウスを使わず `Tab` キーだけでも主要な操作ができるか確認してみるのもおすすめです。
-
-## Riebeckiteでの確認
-
-Riebeckiteでは、標準のページ構造だけでなく、公式ThemeやUIを持つ公式Pluginについてもアクセシビリティを確認しています。
-
-Search、Color Mode、目次、Lightbox、Gallery、Graphなどの操作を伴う機能や、各Themeでの文字・リンク・フォーカス表示などが主な対象です。
-
-ただし、Riebeckiteを使っているだけで、すべてのサイトが自動的にアクセシブルになるわけではありません。
-
-使用するThemeやPlugin、記事の内容も含めて、サイト全体で使いやすさを考えることが大切です。
+The official audit covers Core/HonoX rendering, generated scaffolds and presets, official Themes (`default`, `minimal`, `gruvbox`, `tokyonight`, `sakura`, `rerurate`), and official UI-generating Plugins including search, color mode, UX helpers, table of contents, lightbox, gallery, local graph, garden explorer, code tabs, code enhance, share, properties, recent/related posts, taxonomy, query/dataview/bases, flashcards, kanban, media, and diagram/visual Plugins.

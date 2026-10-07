@@ -1,31 +1,73 @@
+<!-- Generated from packages/plugins/attachment/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Attachment
 
-Markdown から参照される添付ファイルを公開サイトで扱うための Plugin です。
+Attachment link and embed card rendering for Obsidian wikilinks.
 
-## 導入
+[日本語](./attachment.ja.md)
 
-```bash
-npm install @riebeckite/plugin-attachment
+## Overview
+
+`attachment()` provides the `renderAttachment` hook that
+`@riebeckite/plugin-obsidian-markdown` uses when a wikilink resolves to a
+non-image file (`[[report.pdf]]`, `![[report.pdf]]`, ...).
+
+Without this plugin, those wikilinks fall back to a plain download link.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), attachment()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Rendering
 
-## 使用例
+### Link (non-embed)
 
-ノートから PDF や ZIP などの添付ファイルへリンクし、公開サイトから参照できるようにする用途です。
-
-```markdown
-[[files/specification.pdf|仕様書を開く]]
-[[files/example.zip|サンプルを取得]]
+```html
+<a class="wikilink wikilink-attachment" href="..." download>label</a>
 ```
 
-`[[file]]` はダウンロードリンク、`![[file]]` はファイルサイズ付きの添付カードとして展開されます。
+### Embed (`![[file]]`)
 
-## 使いどころ
+```html
+<aside class="attachment-card rr-attachment" data-attachment-path="...">
+  <div class="attachment-card__meta">
+    <span class="attachment-card__format">PDF</span>
+    <span class="attachment-card__size">1.2 MB</span>
+  </div>
+  <div class="attachment-card__name">report.pdf</div>
+  <a class="attachment-card__download" href="..." download>label</a>
+</aside>
+```
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- Format is the uppercased file extension
+- Size is read from disk under `config.content.directory` (path-traversal
+  safe) and omitted when the file cannot be read
+- The embed card carries the stable `rr-attachment` root hook that themes
+  may target
 
-## 詳細仕様
+Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.md) を参照してください。
+## Options
 
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `showSize` | `boolean` | `true` | Read the file size and show it in the embed card |
+
+## Exports
+
+- `attachment(options?)` / `attachmentPlugin` — plugin factory
+- Type: `AttachmentOptions`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.md)
+- [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.md)

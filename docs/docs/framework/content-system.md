@@ -1,28 +1,25 @@
 # Content System
 
-Content System は、Markdown や画像などのファイルを、Riebeckite がサイトとして扱えるコンテンツへ変換する仕組みです。
+The Content System turns files such as Markdown and images into content that
+Riebeckite can treat as a site. It does more than convert Markdown to HTML. It
+answers questions such as:
 
-単に Markdown を HTML に変換するだけではありません。
+- What article is this file?
+- May it be published?
+- At which URL is it published?
+- How does it relate to other articles?
+- What did plugins add or change?
 
-Riebeckite が、
+It resolves these questions and makes the same information available across the
+whole site.
 
-- このファイルは何の記事なのか
-- 公開してよいのか
-- どの URL で公開するのか
-- 他の記事とどうつながっているのか
-- Plugin によって何が追加・変更されたのか
+## Overview
 
-を解決し、Site 全体から同じ情報を利用できる状態にします。
-
-# 全体の流れ
-
-Content System の大まかな流れは次のとおりです。
-
-```mermaid id="r6gvss"
+```mermaid
 flowchart TD
     Files["Markdown / Assets"]
-    Source["ContentSource<br/>コンテンツを読み込む"]
-    Manager["ContentManager<br/>コンテンツを解決・処理する"]
+    Source["ContentSource<br/>Reads content"]
+    Manager["ContentManager<br/>Resolves and processes content"]
     Plugin["Plugin Hooks"]
     Manifest["Manifest"]
     Graph["Content Graph"]
@@ -43,50 +40,25 @@ flowchart TD
     Location --> Site
 ```
 
-中心になるのが `ContentSource` と `ContentManager` です。
+`ContentSource` and `ContentManager` are the center of the system. In short:
 
-簡単に言えば、
-
-```text id="a4xsh7"
+```text
 ContentSource
-  = どこからコンテンツを読むか
+  = where content is read from
 
 ContentManager
-  = 読み込んだコンテンツをどう扱うか
+  = how the loaded content is handled
 ```
 
-という役割分担です。
+## Two explicit responsibilities
 
-# ContentSource
+`ContentSource` is the boundary for finding and reading source data. It owns scanning, reading, identity, and source metadata such as mtime, size, ETag, or hashes. `FileSystemContentSource` is the normal local implementation.
 
-`ContentSource` は、Markdown やアセットを**どこから、どう読み込むか**を抽象化した API です。
+Content does not have to live inside the site repository. Riebeckite can read
+from a site repository, an external repository, or an Obsidian vault, and all of
+them reach `ContentManager` through the same `ContentSource` interface.
 
-通常は、
-
-```text id="9u1ygf"
-content/
-```
-
-のような `content.directory` で指定されたディレクトリから読み込みます。
-
-しかし Content System 自体は、コンテンツが必ず Site repository 内に存在するとは考えません。
-
-たとえば、
-
-```text id="eynh5j"
-Site Repository
-└─ content/
-
-External Repository
-└─ notes/
-
-Obsidian Vault
-└─ notes/
-```
-
-のどこから取得した場合でも、最終的には `ContentSource` という同じ interface を通して ContentManager に渡します。
-
-```mermaid id="0xpl01"
+```mermaid
 flowchart LR
     Local["Site Repository"]
     External["External Repository"]
@@ -99,41 +71,26 @@ flowchart LR
     Source --> Manager["ContentManager"]
 ```
 
-これにより、コンテンツの保存場所が変わっても、それ以降の処理を同じ仕組みで扱えます。
+Because the storage location is abstracted this way, later processing stays the
+same even if content moves.
 
-## 3種類の「場所」
+`ContentManager` owns the meaning of that data: parsing, Markdown/HTML pipeline execution, post processing, plugin orchestration, manifest creation, and content-graph construction. It should not grow direct filesystem behavior that bypasses `ContentSource`.
 
-Content System を理解するときに重要なのが、次の3つを区別することです。
+### Three kinds of "location"
 
-| 種類 | 意味 |
+When working with the Content System, keep three things distinct:
+
+| Kind | Meaning |
 | --- | --- |
-| ファイルシステム上のパス | 実際にファイルが保存されている場所 |
-| 論理パス | content root から見たコンテンツの識別子 |
-| 公開先 | Web Site 上の URL |
+| Filesystem path | Where the file actually lives |
+| Logical path | The content identifier relative to the content root |
+| Public location | The URL on the web site |
 
-たとえば、
+A file such as `C:\projects\garden\content\posts\hello.md` is handled internally
+as the logical path `posts/hello.md`, and its public location might be
+`/blog/hello/`.
 
-```text id="dfblcr"
-C:\projects\garden\content\posts\hello.md
-```
-
-というファイルがあったとしても、Riebeckite 内部では、
-
-```text id="ej2j1k"
-posts/hello.md
-```
-
-という論理パスとして扱えます。
-
-さらに、実際の公開先は、
-
-```text id="dkv7ak"
-/blog/hello/
-```
-
-かもしれません。
-
-```mermaid id="qvyr9m"
+```mermaid
 flowchart LR
     FS["Filesystem Path<br/>C:/.../content/posts/hello.md"]
     Logical["Logical Path<br/>posts/hello.md"]
@@ -143,43 +100,41 @@ flowchart LR
     Logical --> Public
 ```
 
-この3つを分離することで、content repository を別の repository に移しても、Site 側の URL やコンテンツ処理を同じ規則で扱えます。
+Separating these three lets a content repository move to another repository
+while the site keeps the same URL and content-processing rules.
 
-# ContentManager
+## ContentManager
 
-`ContentManager` は `ContentSource` から受け取ったコンテンツを管理し、Site で利用できる状態へ変換します。
+`ContentManager` manages the content it receives from `ContentSource` and turns
+it into a state the site can use. Its main responsibilities are:
 
-主な役割は次のとおりです。
+- Read Markdown frontmatter and body
+- Decide whether content is published
+- Organize slug, permalink, and content ID
+- Run plugin hooks
+- Resolve public locations
+- Generate the manifest
+- Generate the content graph
+- Prepare query indexes
 
-- Markdown の frontmatter と本文を読み込む
-- コンテンツを公開するか判断する
-- slug、permalink、content ID を整理する
-- Plugin hooks を実行する
-- 公開先を解決する
-- Manifest を生成する
-- Content Graph を生成する
-- Query 用の index を用意する
+In other words, `ContentManager` is the orchestrator at the center of the
+Content System.
 
-つまり ContentManager は、Content System の中心となる orchestrator です。
+### Plugins join processing
 
-## Plugin が処理に参加する
+Plugins can hook into the `ContentManager` lifecycle. Representative hooks
+include:
 
-Plugin は ContentManager の lifecycle に hook できます。
-
-代表的な hook には、
-
-```text id="l0z0fr"
+```text
 onContentLoaded
 onPostParsed
 onPostProcessed
 onManifestCreated
 ```
 
-などがあります。
+Conceptually the flow is:
 
-概念的には次のような流れになります。
-
-```mermaid id="c1cjn0"
+```mermaid
 flowchart TD
     Load["Content Loaded"]
     H1["onContentLoaded"]
@@ -199,23 +154,38 @@ flowchart TD
     Manifest --> H4
 ```
 
-Plugin はこの lifecycle を利用してコンテンツを拡張します。
+Plugins use this lifecycle to extend content.
 
-# slug / permalink / content ID
+## Processing model
 
-この3つは似ていますが、役割が異なります。
+```text
+scan/read source
+  -> resolve public locations        (default resolver + plugin hooks)
+  -> parse post -> process post -> create manifest -> graph
+                        |
+                        `--- plugin lifecycle/content hooks ---'
+```
 
-| 名前 | 何を表す？ | 例 |
+Public locations are resolved before any content that needs a URL is processed, so a consumer never has to invent one. Plugin hooks observe or extend defined phases such as configuration resolution, content loaded, parsed/processed posts, manifest creation, and build start/end. Keep source I/O, semantic interpretation, and rendering distinct so a remote source can replace the filesystem source without changing Core policy.
+
+## Public location and URLs
+
+A content entry separates three notions of identity:
+
+- **slug** — the internal lookup key used by `contentIndex`, the manifest `bySlug` map, the content graph, and application-level selection keys such as `/explore?note=<slug>`.
+- **permalink** — the resolved canonical public URL used in article links, feeds, sitemaps, and metadata.
+- **content ID** — an optional, source-authored stable identity exposed as `ContentManifestEntry.contentId` and indexed by `ContentManifest.byContentId`. It is independent of both the slug and all public locations.
+
+| Name | What it represents | Example |
 | --- | --- | --- |
-| `slug` | コンテンツの短い名前 | `hello-world` |
-| `permalink` | Site 上の公開 URL | `/blog/hello-world/` |
-| content ID | コンテンツそのものを安定して識別する ID | `article-01` |
+| `slug` | A short name for the content | `hello-world` |
+| `permalink` | The public URL on the site | `/blog/hello-world/` |
+| content ID | A stable identifier for the content itself | `article-01` |
 
-特に、**slug と公開 URL は同じものではありません**。
+In particular, **a slug and a public URL are not the same thing**. Each has a
+different purpose:
 
-たとえば、
-
-```text id="73lmb5"
+```text
 slug
   hello-world
 
@@ -226,51 +196,47 @@ content ID
   019abc...
 ```
 
-のように、それぞれ別の目的を持ちます。
+They are distinct. A consumer that needs a public URL reads `ContentManifestEntry.permalink` (also available as `entry.publicLocation`); it must not build a URL from a slug or filesystem path. Turning a slug into a URL is the Core default resolver's job alone.
 
-## Default Public Location
+### Default public location
 
-標準では `resolveDefaultContentLocation` が公開先を解決します。
+By default, `resolveDefaultContentLocation` resolves public locations:
 
-基本的には、
-
-```text id="olpxjg"
+```text
 index
   ↓
 /
 
-その他
+everything else
   ↓
 /{slug}
 ```
 
-として扱います。
+This is the default resolver, not a compatibility fallback. Plugins can add or
+change public locations through the `resolveContentLocations` hook.
 
-ただし、これはあくまで default resolver です。
+Resolution is a single, stateless pipeline:
 
-Plugin は、
+1. Core seeds every entry with the official default resolver, `resolveDefaultContentLocation(content)`, where `content` is a `ContentLocationInput` (`slug`, `path`, `markdown`). The default policy is `index` -> `/` and every other entry -> `/{slug}`. This is the Core default public-location policy, not a compatibility fallback.
+2. Each enabled plugin may replace locations through the optional `resolveContentLocations` hook, which receives the `ContentLocationInput` list and returns `ContentPublicLocation` values. Plugin-specific URL strategies stay inside the plugin.
+3. `ContentManager.getContentLocations()` returns the resolved `ReadonlyMap<string, ContentPublicLocation>`. A `ContentPublicLocation` carries the canonical `permalink`, optional `redirects`, and optional opaque `metadata` that Core does not interpret.
 
-```text id="sc5pbi"
-resolveContentLocations
-```
+The manifest stores the resolved result: `ContentManifestEntry.permalink` and `.publicLocation`, plus the `byPermalink` index and the `redirects` map. The content graph and `readOnlyContentGraph(source, locations)` consume those resolved entries rather than deriving URLs. If a public location is not resolved for an entry, Core raises an explicit error instead of falling back to a slug-derived URL.
 
-hook を使って公開先を追加・変更できます。
+### ContentPublicLocation
 
-# ContentPublicLocation
+`ContentPublicLocation` represents **where content is published on the site**.
+Normally one article has one canonical public location:
 
-`ContentPublicLocation` は、コンテンツが **Site 上のどこで公開されるか** を表します。
-
-通常は1つの記事に1つの canonical な公開先があります。
-
-```text id="ul2l2c"
+```text
 Article
    ↓
 /blog/article/
 ```
 
-しかし Plugin によって、別名 URL や redirect が追加される場合があります。
+A plugin may add an alias URL or a redirect:
 
-```mermaid id="k15b5h"
+```mermaid
 flowchart LR
     Article["Article"]
 
@@ -279,34 +245,46 @@ flowchart LR
     Alias -->|"redirect"| Canonical
 ```
 
-公開先はページ生成だけで使う情報ではありません。
+Public locations are not used only for page generation. They are also referenced
+by:
 
-たとえば、
+- In-site links
+- Redirects
+- Sitemaps
+- Search indexes
+- The language switcher
+- The content graph
 
-- Site 内リンク
-- redirect
-- sitemap
-- search index
-- language switcher
-- Content Graph
+Riebeckite therefore manages URLs explicitly as `ContentPublicLocation` rather
+than letting each feature compute its own URL string.
 
-なども公開先を参照します。
+### Stable content IDs
 
-そのため Riebeckite では URL を単なる文字列として各機能が独自に計算するのではなく、`ContentPublicLocation` として明示的に管理します。
+Set the standard `id` frontmatter field when content needs an identity that
+survives a rename, permalink change, alias, or redirect. IDs are optional, so
+existing content without `id` has no generated substitute and keeps its current
+behavior. Core never uses a slug, path, permalink, alias, or redirect as a
+stable ID.
 
-# Manifest
+```yaml
+---
+id: note-7f4e9b
+---
+```
 
-Manifest は、**Build 時に確定したコンテンツの一覧**です。
+Values must be non-empty, trimmed strings, and each explicit ID must be unique
+within a manifest; invalid or duplicate IDs fail the manifest build rather than
+silently selecting an identity.
 
-各 entry には、たとえば次の情報が含まれます。
+## Manifest, graph, and runtime
 
-- 論理パス
-- metadata
-- 公開先
-- Plugin による処理結果
-- incremental build に必要な情報
+The manifest is the generated content representation used by the application. The content graph represents relationships and can be extended through the plugin graph contract. Reading a runtime manifest is not an explicit build. Incremental build state belongs only to the explicit build path and is never a mutable Worker runtime dependency.
 
-```mermaid id="s23io5"
+The manifest is the list of content finalized at build time. Each entry carries,
+for example, its logical path, metadata, public location, plugin results, and the
+information incremental build needs.
+
+```mermaid
 flowchart LR
     Manager["ContentManager"]
     Manifest["Manifest"]
@@ -319,32 +297,28 @@ flowchart LR
     Manifest --> Inspect["inspect content"]
 ```
 
-Manifest は、Content System が解決した結果を他の仕組みへ渡す重要な境界です。
+The manifest is the boundary that passes the Content System's resolved result to
+other parts of the system. Consumers read the resolved manifest instead of
+re-reading Markdown and recomputing the same information.
 
-各 consumer が Markdown を読み直して同じ情報を再計算するのではなく、解決済みの Manifest を利用します。
+### Content graph
 
-# Content Graph
+The content graph represents relationships between content. A WikiLink such as
 
-Content Graph は、コンテンツ同士の関係を表します。
-
-たとえば、
-
-```markdown id="9o2p6a"
+```markdown
 [[Article B]]
 ```
 
-という WikiLink があれば、
+creates the relationship:
 
-```mermaid id="pdu2pi"
+```mermaid
 graph LR
     A["Article A"] --> B["Article B"]
 ```
 
-という関係が成り立ちます。
+The graph also supports backlinks:
 
-この情報から backlink も扱えます。
-
-```mermaid id="8grb4h"
+```mermaid
 graph LR
     A["Article A"] --> B["Article B"]
     C["Article C"] --> B
@@ -353,44 +327,35 @@ graph LR
     B -. "backlinks" .-> C
 ```
 
-Content Graph は単なるグラフ表示用のデータではありません。
+The content graph is not only for graph displays. It is the basis for features
+such as:
 
-たとえば、
+- WikiLinks
+- Markdown links
+- Backlinks
+- Taxonomy
+- Series
+- Related posts
+- Local graph
+- Garden explorer
 
-- WikiLink
-- Markdown link
-- backlinks
-- taxonomy
-- series
-- related posts
-- local graph
-- garden explorer
+Plugins can add information to the graph through `extendContentGraph`.
 
-などの基盤として利用できます。
+## Content queries
 
-Plugin は、
+Core exposes a portable query layer over resolved manifest entries:
 
-```text id="g5uz6h"
-extendContentGraph
-```
+- `queryContentEntries(entries, spec)` filters by tags, folder, frontmatter, and date range, applies one or more sort keys, and slices the result with `limit`/`offset`.
+- `queryContentPage(entries, spec)` applies the same selection and returns the page slice together with `page` metadata (`page`, `pageCount`, `hasPrevious`, `hasNext`); `resolveContentQueryPagination(total, spec)` computes that metadata alone.
+- `groupContentEntries(entries, groupBy, options)` runs the same selection and groups the result by tags, folder, date granularity (`year`/`month`/`day`), or a frontmatter field.
 
-を使ってグラフへ情報を追加できます。
+Both functions operate on `ContentManifestEntry` values, so links use the resolved `permalink`; a query never builds a public content URL from a slug. Applications and plugins compose these functions to build listing pages and taxonomy views, while Core keeps ownership of manifest and graph construction rather than routing.
 
-# Content Queries
+The representative APIs are `queryContentEntries`, `queryContentPage`, and
+`groupContentEntries`. These are **not APIs that search files**. A query runs
+against the index already resolved at build time:
 
-Build 後のコンテンツを検索・整理するために、Query API が用意されています。
-
-代表的な API は次のとおりです。
-
-```text id="5yib25"
-queryContentEntries
-queryContentPage
-groupContentEntries
-```
-
-これらは**ファイルを検索する API ではありません**。
-
-```mermaid id="bf0k8w"
+```mermaid
 flowchart LR
     Files["Markdown Files"]
     Build["Build / ContentManager"]
@@ -404,31 +369,21 @@ flowchart LR
     Index --> Result
 ```
 
-Query は、Build 時にすでに解決された index に対して実行します。
+At runtime, plugins and applications should not re-read Markdown and rebuild
+their own state.
 
-Runtime や Plugin が Markdown を直接読み直して独自に状態を再構築することは避けます。
+## Content collections
 
-# Content Collections
+`buildContentCollections(entries, definitions)` turns the same query selection into listing collections. A definition declares a `kind`, a `groupBy` (tags, folder, date, or a frontmatter field), a site-local `basePath`, optional `filter`/`sort`/`order` values, and optional `resolveTitle`/`resolvePath` builders. Every generated `ContentCollection` carries the group `value`, the resolved `path`, a `title`, and its `entries` in query order.
 
-`buildContentCollections` は、複数のコンテンツを一覧として扱うための仕組みです。
+This is the shared mechanism behind taxonomy, folder, and archive listings. A `tag` definition groups by `tags` under `/tags`; an `archive` definition groups by date under `/archive`; both are produced by the same call. Routing stays in the application, while the collection contract and the query engine stay in Core. Listing entries still link through `ContentManifestEntry.permalink` and never construct a URL from a slug.
 
-たとえば、
+It can, for example, take all articles, sort them by date, classify them by tag,
+and split them into pages.
 
-```text id="63ph8a"
-すべての記事
-     ↓
-日付順に並べる
-     ↓
-タグごとに分類する
-     ↓
-ページ単位に分割する
-```
+A definition may set `pageSize` to split a collection across pages. Each page is emitted as its own `ContentCollection` whose `path` is the collection path plus `/page/<n>` for later pages, and its `page` metadata carries `current`, `count`, `size`, `total`, `previousPath`, and `nextPath` for building navigation.
 
-といった処理に利用できます。
-
-`pageSize` を指定すると pagination も扱えます。
-
-```mermaid id="is4p7e"
+```mermaid
 flowchart LR
     Entries["Published Entries"]
     Sort["Sort"]
@@ -442,24 +397,25 @@ flowchart LR
     Paginate --> Pages
 ```
 
-Plugin や Site Application は、この仕組みを使って記事一覧、タグ一覧などを作成できます。
+Plugins and site applications use this mechanism to build article lists, tag
+lists, and similar views.
 
-# Assets
+## Assets
 
-画像や添付ファイルは Markdown 本文とは別の entry として扱います。
+Images and attachments are handled as entries separate from the Markdown body.
+For example, with:
 
-たとえば、
-
-```text id="0yuczl"
+```text
 content/
 ├─ article.md
 └─ images/
    └─ example.png
 ```
 
-があった場合、Riebeckite はアセットの論理パスを保ちながら、Site 上で利用できる URL へ対応付けます。
+Riebeckite maps the asset to a URL that can be used on the site while preserving
+its logical path:
 
-```mermaid id="r3f54e"
+```mermaid
 flowchart LR
     Asset["Content Asset<br/>images/example.png"]
     Resolver["Asset Resolution"]
@@ -469,17 +425,16 @@ flowchart LR
     Resolver --> Public
 ```
 
-実際の URL 形式は Plugin や設定によって変わる場合があります。
+The exact URL form can depend on plugins and configuration. What matters is that
+arbitrary files outside the content root are not turned into public URLs. The
+Content System's publication boundary decides what is safe to publish.
 
-content root の外にある任意のファイルを公開 URL に変換しないことが重要です。
+## Separating the content repository
 
-Content System の公開境界を通して、安全に公開対象を決定します。
+Placing the site and the content in different repositories does not change the
+basic Content System flow:
 
-# Content Repository を分離する場合
-
-Site と Content を別 repository にしても、Content System の基本的な流れは変わりません。
-
-```mermaid id="48opm6"
+```mermaid
 flowchart LR
     ContentRepo["Content Repository"]
     Checkout["Checkout / Content Source"]
@@ -493,41 +448,41 @@ flowchart LR
     Build --> Site
 ```
 
-Content Repository はコンテンツを提供します。
+The content repository provides content. The site repository's build decides
+what is published, which plugins are used, at which URLs content is published,
+and which site is generated. Because of this, `ContentManager` and plugins do not
+need to special-case the filesystem layout even when the content repository is
+separate.
 
-最終的に、
+## Correctness rules
 
-- 何を公開するか
-- どの Plugin を使うか
-- どの URL で公開するか
-- どの Site を生成するか
+- Preserve canonical content identity across source, manifest, and graph.
+- Treat slug and permalink as separate concepts: obtain public URLs only from the resolved `ContentPublicLocation`.
+- Treat source metadata as change evidence, not universally reliable truth.
+- Make publication/exclusion policy visible in configuration.
+- Return diagnostics for recoverable user-facing problems; do not silently omit content.
+- Keep graph extensions deterministic for identical inputs.
 
-を決定するのは Site Repository 側の Build です。
+When changing the Content System, keep the following principles:
 
-このため、Content Repository が分離されていても ContentManager や Plugin が filesystem の配置を特別扱いする必要はありません。
-
-# Content System の境界
-
-Content System を変更するときは、次の原則を維持してください。
-
-| 原則 | 理由 |
+| Principle | Reason |
 | --- | --- |
-| `content.directory` は `appRoot` 基準で解決する | Site ごとに安定した基準を持つため |
-| Plugin は filesystem path に依存しない | Content Source を交換可能にするため |
-| 公開判定は `publishStrategy` と frontmatter に従う | 公開境界を一元化するため |
-| 公開先は `ContentPublicLocation` として登録する | URL を各機能が独自計算しないため |
-| Runtime は Build 済み index を利用する | Runtime から source filesystem を分離するため |
-| Site Build が最終的な公開状態を決める | Content Repository と Site の責務を分離するため |
+| Resolve `content.directory` against `appRoot` | Gives each site a stable base |
+| Plugins do not depend on filesystem paths | Keeps the content source exchangeable |
+| Publication follows `publishStrategy` and frontmatter | Centralizes the publication boundary |
+| Register public locations as `ContentPublicLocation` | Prevents each feature from computing its own URL |
+| Runtime uses the build-time index | Separates runtime from the source filesystem |
+| The site build decides the final published state | Separates the content repository from the site |
 
-全体として、
+Overall, keep this boundary intact:
 
-```mermaid id="gjgygr"
+```mermaid
 flowchart LR
-    Source["Source<br/>どこから読む？"]
-    Content["ContentManager<br/>何として扱う？"]
-    Public["Public Location<br/>どこで公開する？"]
-    Index["Manifest / Graph<br/>何が解決された？"]
-    Consumer["Site / Plugin<br/>どう利用する？"]
+    Source["Source<br/>Where is it read from?"]
+    Content["ContentManager<br/>What is it treated as?"]
+    Public["Public Location<br/>Where is it published?"]
+    Index["Manifest / Graph<br/>What was resolved?"]
+    Consumer["Site / Plugin<br/>How is it used?"]
 
     Source --> Content
     Content --> Public
@@ -535,15 +490,10 @@ flowchart LR
     Index --> Consumer
 ```
 
-という境界を崩さないことが重要です。
+**Source is how content is read, ContentManager is how content is resolved,
+Public Location is where it is published, and Manifest / Graph are the resolved
+result.** Features should not re-read the filesystem or Markdown on their own;
+sharing the same resolved result through the Content System is the basis of
+Riebeckite's content architecture.
 
-**Source は読み込み方、ContentManager はコンテンツの解決、Public Location は公開先、Manifest / Graph は解決結果を表します。**
-
-各機能が filesystem や Markdown を独自に読み直すのではなく、この Content System を通して同じ解決結果を共有することが、Riebeckite の Content Architecture の基本です。
-
-## 関連ページ
-
-- [Configuration](../reference/configuration.md)
-- [Plugin API](../reference/plugin-api.md)
-- [Content Repositories](../guides/content-repositories.md)
-- [Separate Content Repository](../guides/deployment/separate-content-repository.md)
+See [Configuration](../reference/configuration.md), [Build system](./build-system.md), and [Plugin system](./plugin-system.md).

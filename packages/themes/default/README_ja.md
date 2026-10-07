@@ -58,5 +58,5 @@ export default defineConfig({
 
 ## 関連資料
 
-- [テーマシステム](../../../docs/docs/reference/theme-api.md)
+- [テーマシステム](../../../docs/docs/reference/theme-api.ja.md)
 

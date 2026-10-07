@@ -1,19 +1,17 @@
-# Cloudflare Workers 公開ガイド
+# Cloudflare Workers deployment
 
-Riebeckite で作った Site を **Cloudflare Workers に公開する手順**を説明します。
+This guide focuses only on publishing a Riebeckite site to Cloudflare Workers.
 
-この Guide では、まず手元から直接 Deploy します。
-
-全体の流れは次のとおりです。
+The overall flow is:
 
 ```mermaid
 flowchart LR
-    Content["Riebeckite Site"]
+    Content["Riebeckite site"]
     Build["riebeckite build"]
     Dist["dist/"]
     Wrangler["Wrangler"]
     Workers["Cloudflare Workers"]
-    Public["公開Site"]
+    Public["Public site"]
 
     Content --> Build
     Build --> Dist
@@ -22,66 +20,61 @@ flowchart LR
     Workers --> Public
 ```
 
-Riebeckite の通常の静的 Site では、Build で生成された `dist/` を Cloudflare Workers の Static Assets として公開します。
+For a normal Riebeckite static site, the `dist/` produced by the build is published as Cloudflare Workers Static Assets.
 
-## 前提
+## Prerequisites
 
-Site の Directory で、依存 Package をインストールします。
+In the site folder, make sure these commands succeed.
 
 ```sh
 npm install
-```
-
-その後、Riebeckite を Build します。
-
-```sh
 npm exec riebeckite build
 ```
 
-Build に成功すると、
-
-```text
-dist/
-```
-
-が生成されます。
+A successful build creates `dist/`.
 
 ```text
 my-site/
 ├─ app/
 ├─ content/
-├─ dist/               ← 公開する
+├─ dist/               ← publish this
 ├─ riebeckite.config.ts
 └─ package.json
 ```
 
-Cloudflare Workers へ公開するのは、この `dist/` の内容です。
+Cloudflare Workers serves the files from `dist/`. Build-time state such as `.riebeckite/` and plugin caches is not published.
 
-`.riebeckite/` や Plugin Cache などの Build 時の状態は公開対象ではありません。
+Incremental processing happens during `riebeckite build` on your machine or GitHub Actions runner. Wrangler then uploads the newly generated `dist/` as Workers Static Assets; Workers do not perform incremental builds. The generated GitHub Actions workflow persists `.riebeckite/cache` and `.riebeckite/build/content-state.json` for this build step, never `dist/`.
 
-## 1. Cloudflare アカウントを作る
+## 1. Create a Cloudflare account
 
-まだ Cloudflare アカウントを持っていない場合は、[Cloudflare](https://www.cloudflare.com/) で作成します。
+Create an account at [cloudflare.com](https://www.cloudflare.com/). The free plan is enough to get started.
 
-最初は無料枠で始められます。
+## 2. Get wrangler
 
-アカウントを作成したら、次に Cloudflare Workers へ Deploy するための Wrangler を準備します。
+A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes the Wrangler dependency and `wrangler.jsonc`, so no extra install or setup is needed.
 
-## 2. Wrangler を用意する
-
-`create-riebeckite` で `Cloudflare Workers` を選んだ Site には、Wrangler の依存と `wrangler.jsonc` が生成済みです。追加のインストールは不要で、次のセクションの設定もすでに済んでいます。
-
-`Not now` で生成した Site や、手動で用意する場合は、Site の Directory で実行します。
+For a site generated with `Not now`, or when preparing one manually, run this in the site folder:
 
 ```sh
 npm install -D wrangler
 ```
 
-Wrangler は、Cloudflare Workers の開発や Deployment に利用する CLI です。インストールすると `npx wrangler` から実行できます。
+wrangler is the official command-line tool for deploying to Cloudflare Workers.
 
-## 3. `wrangler.jsonc` を作る
+## 3. Add wrangler.jsonc
 
-Cloudflare Workers へ何を Deploy するかを `wrangler.jsonc` で設定します。Site の Root に `wrangler.jsonc` を作り、次の内容を貼り付けてください。
+`npm exec riebeckite deploy` creates `wrangler.jsonc` from the site folder name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
+
+```text
+my-site/
+|- dist/
+|- package.json
+|- riebeckite.config.ts
+`- wrangler.jsonc
+```
+
+Change `name` first.
 
 ```jsonc
 {
@@ -92,65 +85,37 @@ Cloudflare Workers へ何を Deploy するかを `wrangler.jsonc` で設定し�
 }
 ```
 
-`--github-actions` またはデプロイ設定で `Cloudflare Workers` を選んだ場合、このファイルは生成済みです。手動で公開する場合だけ作ります。`npm exec riebeckite deploy` は、このファイルが無ければ Site のフォルダ名から自動で作るため、内容を確認・編集したいときだけ手動で用意します。
+`name` is the Worker name on Cloudflare. Choose a name that is unique to you. Keep `assets.directory` as `./dist`.
 
-`name` は、自分の Worker 名に変更します。
-
-```jsonc
-"name": "my-riebeckite-site"
-```
-
-`assets.directory` は、
-
-```jsonc
-"directory": "./dist"
-```
-
-のままにします。
-
-これは、
+This maps to:
 
 ```text
 Riebeckite
     ↓
-dist/ を生成
+generates dist/
     ↓
 Wrangler
     ↓
-dist/ を Static Assets として公開
+publishes dist/ as Static Assets
 ```
 
-という対応になっています。
+## 4. Log in to Cloudflare
 
-incremental processing は `riebeckite build` を実行するローカル環境または GitHub Actions runner 上で行います。その後、Wrangler が新しく生成された `dist/` を Workers Static Assets として upload します。Workers 自体が incremental build を実行するわけではありません。生成される GitHub Actions workflow が永続化するのは、この build 用の `.riebeckite/cache` と `.riebeckite/build/content-state.json` であり、`dist/` ではありません。
-
-## 4. Cloudflare にログインする
-
-`riebeckite deploy` は、初回の実行時に Browser を開いて Cloudflare へのログインを促します。先にログインしておきたい場合や、Wrangler を直接使う場合は次のコマンドでもログインできます。
+`riebeckite deploy` opens the browser and asks you to log in on the first run. To log in ahead of time, or if you run Wrangler directly, use:
 
 ```sh
 npx wrangler login
 ```
 
-Browser が開いたら、Cloudflare にログインして Wrangler からのアクセスを許可します。
+A browser window opens. Log in to Cloudflare and grant access.
 
-これで手元から Cloudflare Workers へ Deploy できるようになります。
-
-## 5. Site を公開する
-
-まず Riebeckite を Build します。
-
-```sh
-npm exec riebeckite build
-```
-
-続いて Deploy します。
+## 5. Deploy
 
 ```sh
 npm exec riebeckite deploy
 ```
 
-`riebeckite deploy` は Wrangler を呼び出して `dist/` を公開します。ログインが済んでいなければ先に Browser でログインし、`wrangler.jsonc` が無ければ自動で作ります。`create-riebeckite` で `Cloudflare Workers` を選び `Deploy now?` で `Yes` を選んだ場合は、この build と deploy が生成直後に自動で実行されます。Wrangler を直接使いたい場合は `npx wrangler deploy` でも同じです。
+`riebeckite deploy` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing. Choosing `Cloudflare Workers` in `create-riebeckite` and answering `Yes` to `Deploy now?` runs this build and deploy immediately after scaffolding. To run Wrangler directly instead, use `npx wrangler deploy`.
 
 ```mermaid
 flowchart TD
@@ -164,58 +129,37 @@ flowchart TD
     Deploy --> Workers
 ```
 
-Deploy が成功すると、Wrangler に公開先の URL が表示されます。
+The deploy prints a URL such as `https://<name>.<account>.workers.dev`. Open it in a browser. If the site loads, deployment worked.
 
-たとえば、
+## 6. Match baseUrl to the deployed URL
 
-```text
-https://<name>.<account>.workers.dev
-```
-
-のような URL です。
-
-表示された URL を Browser で開き、Site が表示されれば最初の Deployment は成功です。
-
-## 6. `baseUrl` を公開 URL に合わせる
-
-最初の Deployment で Site の URL が分かったら、`riebeckite.config.ts` の `baseUrl` を実際の公開 URL に変更します。
+After the first successful deploy, update `baseUrl` in `riebeckite.config.ts`.
 
 ```ts
-export default defineConfig({
-  site: {
-    baseUrl: "https://my-riebeckite-site.example.workers.dev",
-  },
-
-  // ...
-});
+site: {
+  baseUrl: "https://my-riebeckite-site.example.workers.dev",
+},
 ```
 
-`baseUrl` は Site の公開 URL を表します。
-
-そのため、実際に公開する URL と一致させてください。
-
-設定を変更したら、もう一度 Build します。
+Then build and deploy again.
 
 ```sh
 npm exec riebeckite build
-```
-
-そして再度 Deploy します。
-
-```sh
 npm exec riebeckite deploy
 ```
 
-つまり、最初の公開では次のような流れになります。
+This makes sitemap and feed URLs match the public site.
+
+In other words, the first publish follows this flow:
 
 ```mermaid
 flowchart TD
     FirstBuild["1. Build"]
-    FirstDeploy["2. 最初のDeploy"]
-    URL["3. 公開URLを確認"]
-    BaseUrl["4. baseUrlを設定"]
-    SecondBuild["5. 再Build"]
-    SecondDeploy["6. 再Deploy"]
+    FirstDeploy["2. First deploy"]
+    URL["3. Note the public URL"]
+    BaseUrl["4. Set baseUrl"]
+    SecondBuild["5. Rebuild"]
+    SecondDeploy["6. Redeploy"]
 
     FirstBuild --> FirstDeploy
     FirstDeploy --> URL
@@ -224,56 +168,40 @@ flowchart TD
     SecondBuild --> SecondDeploy
 ```
 
-## 7. 公開前に確認する
+## 7. Check before publishing
 
-実際に Deploy せず、Cloudflare Workers 向けの設定を確認することもできます。
+You can verify the Cloudflare Workers configuration without deploying.
 
-### Dry Run
+### Dry run
 
 ```sh
 npx wrangler deploy --dry-run
 ```
 
-実際には公開せず、Deployment の準備内容を確認します。
+This checks the deployment preparation without actually publishing. Use it when you do not want to go live yet but want to confirm the Wrangler configuration.
 
-「まだ本番へ出したくないが、Wrangler の設定に問題がないか確認したい」という場合に利用できます。
-
-### Wrangler Dev
+### Wrangler dev
 
 ```sh
 npx wrangler dev
 ```
 
-Cloudflare Workers での公開時に近い状態を手元で確認できます。
-
-通常の開発中は、
-
-```sh
-npm exec riebeckite dev
-```
-
-を利用し、Cloudflare Workers 側での配信状態を確認したいときに、
-
-```sh
-npx wrangler dev
-```
-
-を使う、と考えると分かりやすくなります。
+This serves a local version close to the deployed Worker. A simple way to think about it:
 
 ```text
-普段の記事・Site開発
+Day-to-day article and site development
   → riebeckite dev
 
-Cloudflareでの配信状態を確認
+Check the Cloudflare serving state
   → wrangler dev
 
-実際に公開
+Publish for real
   → riebeckite deploy
 ```
 
-## 8. 更新した Site を再公開する
+## 8. Redeploying an updated site
 
-一度公開した後に記事や設定を変更した場合も、手順は同じです。
+After a site is published, the steps to update articles or configuration are the same.
 
 ```sh
 npm exec riebeckite build
@@ -281,28 +209,20 @@ npm exec riebeckite deploy
 ```
 
 ```text
-Contentを変更
+Change content
      ↓
 Build
      ↓
-dist/を更新
+Update dist/
      ↓
 Deploy
 ```
 
-`riebeckite deploy` は Wrangler に `dist/` を公開させるだけなので、Riebeckite の Content を再 Build しません。
+`riebeckite deploy` only tells Wrangler to publish `dist/`; it does not rebuild Riebeckite content. If you changed anything on the Riebeckite side, run `npm exec riebeckite build` first.
 
-そのため、Riebeckite 側を変更した場合は先に、
+## 9. Pre-deploy checklist
 
-```sh
-npm exec riebeckite build
-```
-
-を実行します。
-
-## 9. 公開前の確認手順
-
-本番へ Deploy する前には、次の順で確認できます。
+Before deploying to production, you can verify in this order.
 
 ```sh
 npm exec riebeckite check
@@ -312,17 +232,17 @@ npm exec -- riebeckite deploy --dry-run
 npm exec riebeckite deploy
 ```
 
-それぞれの役割は次のとおりです。
+Each command has a role:
 
-| Command | 役割 |
+| Command | Role |
 | --- | --- |
-| `riebeckite check` | Config や Plugin を検証 |
-| `riebeckite doctor` | Site 全体の問題を診断 |
-| `riebeckite build` | `dist/` を生成 |
-| `riebeckite deploy --dry-run` | Deployment 内容を確認（内部で Wrangler を呼び出す） |
-| `riebeckite deploy` | Cloudflare Workers へ公開 |
+| `riebeckite check` | Validate config and plugins |
+| `riebeckite doctor` | Diagnose site-wide problems |
+| `riebeckite build` | Generate `dist/` |
+| `riebeckite deploy --dry-run` | Check what will be deployed (calls Wrangler internally) |
+| `riebeckite deploy` | Publish to Cloudflare Workers |
 
-問題が起きた場合は、どの段階で失敗しているかを分けて確認します。
+When something fails, separate which stage is failing.
 
 ```mermaid
 flowchart LR
@@ -338,50 +258,29 @@ flowchart LR
     Dry --> Deploy
 ```
 
-## Build と Deploy は別の処理
+## Build and deploy are separate
 
-Riebeckite の Build と Cloudflare の Deploy は別の処理です。
+Riebeckite's build and Cloudflare's deploy are separate operations.
 
 ```text
 Riebeckite
-  → Siteを生成する
+  → generates the site
 
 Wrangler
-  → 生成されたSiteをCloudflareへ公開する
+  → publishes the generated site to Cloudflare
 ```
 
-つまり、
+So if `npm exec riebeckite build` fails, look at the Riebeckite side; if `npm exec riebeckite deploy` fails, look at the Cloudflare / Wrangler side. Separating these boundaries makes deployment problems easier to investigate.
 
-```text
-npm exec riebeckite build
-```
+## Automated deployment with GitHub Actions
 
-が失敗する場合は Riebeckite 側を確認し、
-
-```text
-npm exec riebeckite deploy
-```
-
-が失敗する場合は Cloudflare / Wrangler 側を確認します。
-
-この境界を分けて考えると、Deployment の問題を調査しやすくなります。
-
-## GitHub Actions で自動公開する
-
-毎回、
-
-```sh
-npm exec riebeckite build
-npm exec riebeckite deploy
-```
-
-を手元で実行する代わりに、GitHub Actions から自動 Deploy することもできます。
+Instead of running `npm exec riebeckite deploy` manually, you can deploy when you push to GitHub.
 
 ```mermaid
 flowchart LR
-    Push["GitHubへpush"]
+    Push["git push"]
     Actions["GitHub Actions"]
-    Build["Riebeckite Build"]
+    Build["Riebeckite build"]
     Workers["Cloudflare Workers"]
 
     Push --> Actions
@@ -389,31 +288,27 @@ flowchart LR
     Build --> Workers
 ```
 
-詳しい仕組みと設定は [GitHub Actions](./github-actions.md) を参照してください。
-
-すでに手元から公開している Site は、Site の Directory で次を実行すると、継続デプロイへ移行できます。
+If the site is already published from your machine, promote it from the site folder:
 
 ```sh
 npm exec riebeckite deploy setup
 ```
 
-`.github/workflows/deploy.yml` を作成し、`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を Repository Secret として登録したうえで、push を待ちます。
+This creates `.github/workflows/deploy.yml` and registers `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then waits for you to push.
 
-## Site と Content が同じ Repository の場合
+### When the site and content are in the same repository
 
-GitHub Actions 付きで Site を生成します。
+For a same-repository site that is not published yet, generate the workflow with:
 
 ```sh
 npx create-riebeckite my-site --github-actions
 ```
 
-これによって、Cloudflare Workers 用の `wrangler.jsonc` と Deployment Workflow が生成されます。
+This generates the Cloudflare Workers `wrangler.jsonc` and the deployment workflow. After that, a push to `main` in the site repository builds and deploys automatically.
 
-その後は Site Repository の `main` への Push から、自動 Build・Deploy できます。
+### When content is in a separate repository
 
-## Content を別 Repository にする場合
-
-Content と Site を別 Repository にする場合は、
+For a separate content repository, generate both workflow files with:
 
 ```sh
 npx create-riebeckite my-site --github-actions \
@@ -421,59 +316,29 @@ npx create-riebeckite my-site --github-actions \
   --site-repository OWNER/my-site
 ```
 
-のように生成できます。
-
-この構成では、
+This separates:
 
 ```text
 OWNER/notes
-  → Content Repository
+  → content repository
 
 OWNER/my-site
-  → Site Repository
+  → site repository
 ```
 
-として分離します。
+The generated setup checks out `OWNER/notes` into `content/`, receives `content-updated` repository dispatch events, and writes `github/notify-site.yml` for the content repository. Copy that file to `.github/workflows/notify-site.yml` in the content repository.
 
-生成される構成では、
+### External content needs both checkout and notification
 
-- Content Repository を `content/` へ Checkout
-- `content-updated` の `repository_dispatch` を受け取る Site Workflow
-- Content Repository 用の `github/notify-site.yml`
-
-が用意されます。
-
-`github/notify-site.yml` は Content Repository の、
-
-```text
-.github/workflows/notify-site.yml
-```
-
-へコピーします。
-
-## 外部 Content では「取得」と「通知」が必要
-
-Content Repository を分離した場合は、
-
-```text
-Contentを取得する
-```
-
-ことと、
-
-```text
-Content更新時にSite Workflowを起動する
-```
-
-ことは別です。
+When the content repository is separate, checking out the content and starting the site workflow on a content update are two different things.
 
 ```mermaid
 flowchart LR
-    Content["Content Repository"]
+    Content["Content repository"]
     Notify["notify-site.yml"]
     Dispatch["repository_dispatch"]
-    Site["Site Workflow"]
-    Checkout["Contentをcheckout"]
+    Site["Site workflow"]
+    Checkout["Check out content"]
     Build["Build"]
     Deploy["Deploy"]
 
@@ -485,126 +350,74 @@ flowchart LR
     Build --> Deploy
 ```
 
-外部 Content Repository を Checkout する設定だけでは、Content Repository への Push から Site Workflow は起動しません。
+An external checkout alone does not start the site workflow on a content push.
 
-Repository を分離する場合の詳しい設定は [Separate Content Repository](./separate-content-repository.md) を参照してください。
+See [GitHub Actions](./github-actions.md) for the full workflow and [Separate Content Repository](./separate-content-repository.md) for the separate-repository setup.
 
-## よくある問題
+## Common problems
 
-### `dist/` がない
+### `dist/` is missing
 
-先に、
+Run `npm exec riebeckite build` first. Cloudflare Workers publishes the Static Assets generated in `dist/`.
 
-```sh
-npm exec riebeckite build
-```
+### The published content is stale after updating the site
 
-を実行してください。
+Run `npm exec riebeckite build` and `npm exec riebeckite deploy` again after the change. `riebeckite deploy` does not replace Riebeckite's build.
 
-Cloudflare Workers に公開する Static Assets は `dist/` に生成されます。
+### The URL is wrong after publishing
 
-### Site を更新したのに公開内容が古い
+Check that `site.baseUrl` in `riebeckite.config.ts` matches the actual published URL. If you change it, build and deploy again.
 
-変更後にもう一度、
+### Riebeckite's build fails
+
+Use `npm exec riebeckite check` and `npm exec riebeckite doctor` to check the Riebeckite-side config and content.
+
+### Wrangler fails
+
+If Riebeckite's `build` succeeded, use `npx wrangler deploy --dry-run` to check the Wrangler-side configuration. Also check `name` and `assets.directory` in `wrangler.jsonc`.
+
+## Summary
+
+The minimal steps to publish a Riebeckite site to Cloudflare Workers are:
 
 ```sh
 npm exec riebeckite build
 npm exec riebeckite deploy
 ```
 
-を実行します。
+A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes Wrangler, so `npm install -D wrangler` is not needed. For an existing site generated with `Not now`, run it first.
 
-`riebeckite deploy` は Riebeckite の Build の代わりにはなりません。
-
-### 公開後に URL が正しくない
-
-`riebeckite.config.ts` の、
-
-```ts
-site: {
-  baseUrl: "...",
-},
-```
-
-が実際の公開 URL と一致しているか確認します。
-
-変更した場合は再度 Build・Deploy してください。
-
-### Riebeckite の Build で失敗する
-
-```sh
-npm exec riebeckite check
-npm exec riebeckite doctor
-```
-
-で Riebeckite 側の Config や Content を確認します。
-
-### Wrangler で失敗する
-
-Riebeckite の `build` が成功しているなら、
-
-```sh
-npx wrangler deploy --dry-run
-```
-
-で Wrangler 側の設定を確認します。
-
-`wrangler.jsonc` の `name` と、
-
-```jsonc
-"assets": {
-  "directory": "./dist"
-}
-```
-
-も確認してください。
-
-## まとめ
-
-Riebeckite Site を Cloudflare Workers へ公開する最小手順は、
-
-```sh
-npm exec riebeckite build
-
-npm exec riebeckite deploy
-```
-
-です。`create-riebeckite` で `Cloudflare Workers` を選んだ Site は Wrangler を含んで生成されるため、`npm install -D wrangler` は不要です。`Not now` で生成した既存 Site では先に実行してください。
-
-最初の Deployment 後に公開 URL が分かったら、
+After the first deployment gives you the public URL:
 
 ```text
 riebeckite.config.ts
       ↓
-site.baseUrlを設定
+set site.baseUrl
       ↓
-再Build
+rebuild
       ↓
-再Deploy
+redeploy
 ```
 
-します。
-
-役割を整理すると、
+The roles are:
 
 ```text
 riebeckite build
-  → dist/を作る
+  → creates dist/
 
 wrangler dev
-  → Cloudflareでの配信を手元で確認する
+  → checks Cloudflare serving locally
 
 riebeckite deploy
-  → dist/をCloudflare Workersへ公開する
+  → publishes dist/ to Cloudflare Workers
 ```
 
-となります。
+When you need automated deployment, move that sequence to run from [GitHub Actions](./github-actions.md) rather than changing the manual deploy mechanism.
 
-自動 Deployment が必要になったら、手動 Deploy の仕組みを変えるのではなく、その一連の処理を [GitHub Actions](./github-actions.md) から実行する形に移行します。
+## Next steps
 
-### 次に読むもの
-
-- [サイト公開までの最短ガイド](../../getting-started/deployment.md) — 初回公開までの最短手順
-- [GitHub Actions](./github-actions.md) — GitHub への Push から自動公開する
-- [Separate Content Repository](./separate-content-repository.md) — Content と Site を別 Repository で運用する
-- [CLI](../../reference/cli.md) — `build`、`check`、`doctor` などの Command
+- [Fast path to publishing a site](../../getting-started/deployment.md)
+- [GitHub Actions](./github-actions.md)
+- [Separate Content Repository](./separate-content-repository.md)
+- [Usage Guide](../README.md)
+- [CLI](../../reference/cli.md)

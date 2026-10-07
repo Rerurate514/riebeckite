@@ -24,15 +24,240 @@ Semantic Markdown transformation belongs to Plugins. Simple remark Plugins can b
 
 For dependencies, lifecycle hooks, renderers, endpoints, and other extension points, see [Plugin API](../reference/plugin-api.en.md).
 
-## Build a directive Plugin end to end
+## Hands-on: Build a directive plugin from start to finish
 
-This walkthrough builds a site-local Plugin that turns a `:::tip[Title]` container directive into an `<aside>`, adds a stylesheet, and tests the result. It uses only public APIs: `definePlugin` and the Markdown pipeline from `@riebeckite/core`, `unist-util-visit`, and the `remark-directive` nodes the pipeline already produces.
+In this section, you will build a small plugin that turns the following Markdown into a custom Tip block:
 
-### Step 1: Create the Plugin
+```md id="bq0v5x"
+:::tip[Heads up]
+Save often.
+:::
+```
 
-Create `extensions/tip-plugin.ts`:
+The generated HTML will look like this:
 
-```ts
+```html id="xmx7yi"
+<aside class="rr-tip">
+  <p class="rr-tip__title">Heads up</p>
+  <p>Save often.</p>
+</aside>
+```
+
+We will build it in four steps:
+
+1. Create a plugin that transforms the Markdown
+2. Add CSS for the Tip block
+3. Register the plugin in `riebeckite.config.ts`
+4. Test the generated HTML
+
+### Step 1: Create the plugin
+
+Create `extensions/tip-plugin.ts`.
+
+First, let's look at the entry point of the plugin:
+
+```ts id="szeg4x"
+import { definePlugin } from "@riebeckite/core";
+
+export function tipPlugin() {
+  return definePlugin({
+    name: "tip",
+
+    extendMarkdownPipeline: (pipeline) => {
+      pipeline.use(remarkTip);
+    },
+
+    assets: [
+      {
+        pluginName: "tip",
+        kind: "style",
+        moduleSpecifier: "/extensions/plugin.css",
+      },
+    ],
+  });
+}
+```
+
+This plugin does two things:
+
+- adds a Markdown transformation called `remarkTip`
+- loads `/extensions/plugin.css` as a stylesheet
+
+`remarkTip` is the part that actually turns `:::tip` into an `<aside>` element.
+
+#### Find `:::tip`
+
+Add the imports and a small type for the directive node:
+
+```ts id="nv29am"
+import { definePlugin } from "@riebeckite/core";
+import type { Parent, Root } from "mdast";
+import { visit } from "unist-util-visit";
+
+type ContainerDirective = {
+  type: "containerDirective";
+  name: string;
+  children: Parent["children"];
+  data?: Record<string, unknown>;
+};
+```
+
+In Riebeckite's Markdown pipeline, syntax such as `:::tip` has already been parsed by `remark-directive` before your plugin runs.
+
+That means your plugin does not need to parse the Markdown text itself. It receives a `containerDirective` node instead.
+
+Use `unist-util-visit` to find those nodes:
+
+```ts id="tvvs30"
+function remarkTip() {
+  return (tree: Root) => {
+    visit(tree, "containerDirective", (node) => {
+      const directive = node as unknown as ContainerDirective;
+
+      if (directive.name !== "tip") return;
+
+      // Transform :::tip here.
+    });
+  };
+}
+```
+
+A `containerDirective` can represent directives other than `tip`, so:
+
+```ts id="4svv7a"
+if (directive.name !== "tip") return;
+```
+
+makes sure that this plugin only handles `:::tip`.
+
+#### Turn it into an `<aside>`
+
+Next, tell the Markdown renderer which HTML element to generate:
+
+```ts id="ap4hjz"
+directive.data = {
+  ...directive.data,
+  hName: "aside",
+  hProperties: {
+    className: ["rr-tip"],
+  },
+};
+```
+
+Here:
+
+```ts id="l7dbze"
+hName: "aside"
+```
+
+selects the HTML element, while:
+
+```ts id="nupj0v"
+className: ["rr-tip"]
+```
+
+adds its CSS class.
+
+As a result:
+
+```md id="nkrh1g"
+:::tip
+Save often.
+:::
+```
+
+will produce HTML similar to:
+
+```html id="zvbjza"
+<aside class="rr-tip">
+  <p>Save often.</p>
+</aside>
+```
+
+#### Turn `[Heads up]` into the title
+
+Now let's handle the label in:
+
+```md id="u0ykxd"
+:::tip[Heads up]
+Save often.
+:::
+```
+
+`remark-directive` provides this label as the first child of the directive.
+
+First, check whether the first child is a directive label:
+
+```ts id="3q5kbw"
+const [first, ...rest] = directive.children;
+
+const hasLabel =
+  first?.type === "paragraph" &&
+  (first as { data?: { directiveLabel?: boolean } }).data
+    ?.directiveLabel === true;
+```
+
+If a label exists, split the directive into:
+
+- the first child → title
+- the remaining children → body
+
+```ts id="s5d3wu"
+const titleChildren = hasLabel
+  ? (first as Parent).children
+  : [];
+
+const bodyChildren = hasLabel
+  ? rest
+  : directive.children;
+```
+
+Then add the title as:
+
+```html id="blz7w7"
+<p class="rr-tip__title">
+```
+
+by replacing the directive's children:
+
+```ts id="uknv3s"
+directive.children = [
+  {
+    type: "paragraph",
+    data: {
+      hName: "p",
+      hProperties: {
+        className: ["rr-tip__title"],
+      },
+    },
+    children: titleChildren,
+  },
+  ...bodyChildren,
+];
+```
+
+Now:
+
+```md id="ez1dfb"
+:::tip[Heads up]
+Save often.
+:::
+```
+
+produces:
+
+```html id="4jgvpj"
+<aside class="rr-tip">
+  <p class="rr-tip__title">Heads up</p>
+  <p>Save often.</p>
+</aside>
+```
+
+#### Complete plugin
+
+Putting everything together, `extensions/tip-plugin.ts` looks like this:
+
+```ts id="7q1nxh"
 import { definePlugin } from "@riebeckite/core";
 import type { Parent, Root } from "mdast";
 import { visit } from "unist-util-visit";
@@ -46,30 +271,42 @@ type ContainerDirective = {
 
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node, index, parent) => {
+    visit(tree, "containerDirective", (node) => {
       const directive = node as unknown as ContainerDirective;
+
       if (directive.name !== "tip") return;
-      if (parent === undefined || index === undefined) return;
 
       const [first, ...rest] = directive.children;
+
       const hasLabel =
         first?.type === "paragraph" &&
         (first as { data?: { directiveLabel?: boolean } }).data
           ?.directiveLabel === true;
-      const titleChildren = hasLabel ? (first as Parent).children : [];
-      const bodyChildren = hasLabel ? rest : directive.children;
+
+      const titleChildren = hasLabel
+        ? (first as Parent).children
+        : [];
+
+      const bodyChildren = hasLabel
+        ? rest
+        : directive.children;
 
       directive.data = {
         ...directive.data,
         hName: "aside",
-        hProperties: { className: ["rr-tip"] },
+        hProperties: {
+          className: ["rr-tip"],
+        },
       };
+
       directive.children = [
         {
           type: "paragraph",
           data: {
             hName: "p",
-            hProperties: { className: ["rr-tip__title"] },
+            hProperties: {
+              className: ["rr-tip__title"],
+            },
           },
           children: titleChildren,
         },
@@ -82,9 +319,11 @@ function remarkTip() {
 export function tipPlugin() {
   return definePlugin({
     name: "tip",
+
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkTip);
     },
+
     assets: [
       {
         pluginName: "tip",
@@ -96,13 +335,13 @@ export function tipPlugin() {
 }
 ```
 
-The Markdown pipeline runs `remark-directive` before Plugin transformers, so `:::tip` arrives as a `containerDirective` node. Setting `data.hName` and `data.hProperties` makes the HTML step emit `<aside class="rr-tip">` instead of a generic wrapper, and the directive label becomes the title paragraph.
+> `extendMarkdownPipeline` is a low-level extension point that gives you direct access to the Markdown AST. We use it here because the plugin needs to change the HTML structure generated for the directive.
 
 ### Step 2: Add the stylesheet
 
 Create `extensions/plugin.css`:
 
-```css
+```css id="nw1i6n"
 .rr-tip {
   border-left: 2px solid var(--rb-color-accent);
   padding: 0.75rem 1rem;
@@ -114,47 +353,135 @@ Create `extensions/plugin.css`:
 }
 ```
 
-`rr-tip` is the stable root hook a Theme can target. Use the `--rb-*` tokens rather than hard-coded colors so Theme switching keeps working.
+These styles target the elements we generated earlier:
 
-### Step 3: Register the Plugin
+```html id="0v5gb7"
+<aside class="rr-tip">
+```
 
-```ts
-// riebeckite.config.ts
+and:
+
+```html id="3qnpq7"
+<p class="rr-tip__title">
+```
+
+The border color uses the Riebeckite theme token:
+
+```css id="r3pgla"
+var(--rb-color-accent)
+```
+
+instead of a hard-coded color.
+
+This allows the Tip block to follow the active theme's accent color automatically.
+
+### Step 3: Register the plugin
+
+Register the plugin in `riebeckite.config.ts`:
+
+```ts id="b49mge"
 import { defineConfig } from "@riebeckite/core";
 import { tipPlugin } from "./extensions/tip-plugin";
 
 export default defineConfig({
-  plugins: [tipPlugin()],
+  plugins: [
+    tipPlugin(),
+  ],
 });
 ```
 
+You can now use:
+
+```md id="cpz5r3"
+:::tip[Heads up]
+Save often.
+:::
+```
+
+in your Markdown content.
+
 ### Step 4: Test the output
 
-Run the Markdown pipeline directly, without building the site:
+Finally, let's verify that the plugin generates the expected HTML.
 
-```ts
-// extensions/tip-plugin.test.ts
+You do not need to build the entire site for this test. You can run the Markdown `Pipeline` directly and inspect its output.
+
+Create `extensions/tip-plugin.test.ts`:
+
+```ts id="5rs1cq"
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
 import { tipPlugin } from "./tip-plugin.ts";
 
 test("renders :::tip as an aside with a title", async () => {
-  const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [tipPlugin()],
-  });
+  const pipeline = new Pipeline(
+    new Map(),
+    new Map(),
+    undefined,
+    {
+      plugins: [tipPlugin()],
+    },
+  );
 
   const { html } = await pipeline.execute(
     ":::tip[Heads up]\nSave often.\n:::",
   );
 
-  assert.match(html, /<aside class="rr-tip">/);
-  assert.match(html, /<p class="rr-tip__title">Heads up<\/p>/);
-  assert.match(html, /Save often\./);
+  assert.match(
+    html,
+    /<aside class="rr-tip">/,
+  );
+
+  assert.match(
+    html,
+    /<p class="rr-tip__title">Heads up<\/p>/,
+  );
+
+  assert.match(
+    html,
+    /Save often\./,
+  );
 });
 ```
 
-Run it with `node --test`. Because the Plugin only extends the Markdown pipeline, the test needs no filesystem access and no site build.
+This test checks three things:
+
+```text id="6w7im3"
+:::tip
+   ↓
+<aside class="rr-tip">
+
+[Heads up]
+   ↓
+<p class="rr-tip__title">Heads up</p>
+
+Save often.
+   ↓
+Rendered as the body
+```
+
+At this point, you have a complete site-local plugin that transforms Markdown, loads its own stylesheet, can be registered through Riebeckite's configuration, and has a test for its generated output.
+
+### What to remember from this example
+
+You do not need to memorize every AST operation used in this example.
+
+The important part is that a Riebeckite plugin can group Markdown transformations and assets into a single plugin:
+
+```ts id="d6q7mf"
+definePlugin({
+  name: "...",
+
+  extendMarkdownPipeline: (pipeline) => {
+    pipeline.use(...);
+  },
+
+  assets: [...],
+});
+```
+
+`extendMarkdownPipeline` is a low-level API for working directly with remark and mdast. Use it when you need custom Markdown syntax or more advanced transformations.
 
 ## 4. Add a standalone page when needed
 

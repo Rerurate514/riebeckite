@@ -96,11 +96,246 @@ pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `
 
 ## 実践: directive プラグインを最後まで作る
 
-ここでは `:::tip[見出し]` を `<aside>` に変換する site 内プラグインを作ります。stylesheet を足し、最後に test を書きます。使うのは `@riebeckite/core` の `definePlugin` と Markdown pipeline、`unist-util-visit`、そして pipeline がすでに生成している `remark-directive` の node だけです。
+ここでは、次のような Markdown を独自の Tip 表示に変換するプラグインを作ります。
+
+```md
+:::tip[Heads up]
+Save often.
+:::
+```
+
+最終的には、次のような HTML が生成されます。
+
+```html
+<aside class="rr-tip">
+  <p class="rr-tip__title">Heads up</p>
+  <p>Save often.</p>
+</aside>
+```
+
+作業は4段階です。
+
+1. Markdown を変換するプラグインを作る
+2. 見た目を整える CSS を追加する
+3. `riebeckite.config.ts` に登録する
+4. 期待した HTML が生成されることを test する
 
 ### Step 1: プラグインを作る
 
 `extensions/tip-plugin.ts` を作成します。
+
+まず、このプラグインの入口を見てみましょう。
+
+```ts
+import { definePlugin } from "@riebeckite/core";
+
+export function tipPlugin() {
+  return definePlugin({
+    name: "tip",
+
+    extendMarkdownPipeline: (pipeline) => {
+      pipeline.use(remarkTip);
+    },
+
+    assets: [
+      {
+        pluginName: "tip",
+        kind: "style",
+        moduleSpecifier: "/extensions/plugin.css",
+      },
+    ],
+  });
+}
+```
+
+ここでやっていることは2つだけです。
+
+- `remarkTip` という Markdown 変換を追加する
+- `/extensions/plugin.css` を stylesheet として読み込む
+
+`remarkTip` が、実際に `:::tip` を `<aside>` へ変換する部分です。
+
+#### `:::tip` を見つける
+
+必要な import と、directive を扱うための型を追加します。
+
+```ts
+import { definePlugin } from "@riebeckite/core";
+import type { Parent, Root } from "mdast";
+import { visit } from "unist-util-visit";
+
+type ContainerDirective = {
+  type: "containerDirective";
+  name: string;
+  children: Parent["children"];
+  data?: Record<string, unknown>;
+};
+```
+
+Riebeckite の Markdown pipeline では、`:::tip` のような記法はあらかじめ `remark-directive` によって `containerDirective` node に変換されています。
+
+そのため、プラグイン側で Markdown の文字列を解析する必要はありません。
+
+`unist-util-visit` を使って、その node を探します。
+
+```ts
+function remarkTip() {
+  return (tree: Root) => {
+    visit(tree, "containerDirective", (node) => {
+      const directive = node as unknown as ContainerDirective;
+
+      if (directive.name !== "tip") return;
+
+      // ここで :::tip を変換する
+    });
+  };
+}
+```
+
+`containerDirective` には `tip` 以外の directive も含まれます。
+
+そのため、
+
+```ts
+if (directive.name !== "tip") return;
+```
+
+として、`:::tip` だけを処理しています。
+
+#### `<aside>` に変換する
+
+見つけた `:::tip` に、生成したい HTML 要素を指定します。
+
+```ts
+directive.data = {
+  ...directive.data,
+  hName: "aside",
+  hProperties: {
+    className: ["rr-tip"],
+  },
+};
+```
+
+ここで、
+
+```ts
+hName: "aside"
+```
+
+が HTML 要素を、
+
+```ts
+className: ["rr-tip"]
+```
+
+が class を指定しています。
+
+つまり、
+
+```md
+:::tip
+Save often.
+:::
+```
+
+は最終的に、
+
+```html
+<aside class="rr-tip">
+  <p>Save often.</p>
+</aside>
+```
+
+のように出力されます。
+
+#### `[Heads up]` をタイトルにする
+
+次は、
+
+```md
+:::tip[Heads up]
+Save often.
+:::
+```
+
+の `[Heads up]` をタイトルとして扱います。
+
+`remark-directive` は、この label を directive の最初の子 node として渡します。
+
+そこで最初の子が label かどうかを確認します。
+
+```ts
+const [first, ...rest] = directive.children;
+
+const hasLabel =
+  first?.type === "paragraph" &&
+  (first as { data?: { directiveLabel?: boolean } }).data
+    ?.directiveLabel === true;
+```
+
+label があれば、
+
+- 最初の子 → タイトル
+- それ以降 → 本文
+
+として分けます。
+
+```ts
+const titleChildren = hasLabel
+  ? (first as Parent).children
+  : [];
+
+const bodyChildren = hasLabel
+  ? rest
+  : directive.children;
+```
+
+そしてタイトルを、
+
+```html
+<p class="rr-tip__title">
+```
+
+として追加します。
+
+```ts
+directive.children = [
+  {
+    type: "paragraph",
+    data: {
+      hName: "p",
+      hProperties: {
+        className: ["rr-tip__title"],
+      },
+    },
+    children: titleChildren,
+  },
+  ...bodyChildren,
+];
+```
+
+これで、
+
+```md
+:::tip[Heads up]
+Save often.
+:::
+```
+
+から、
+
+```html
+<aside class="rr-tip">
+  <p class="rr-tip__title">Heads up</p>
+  <p>Save often.</p>
+</aside>
+```
+
+が生成されます。
+
+#### 完成したプラグイン
+
+ここまでをまとめると、`extensions/tip-plugin.ts` は次のようになります。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
@@ -116,30 +351,42 @@ type ContainerDirective = {
 
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node, index, parent) => {
+    visit(tree, "containerDirective", (node) => {
       const directive = node as unknown as ContainerDirective;
+
       if (directive.name !== "tip") return;
-      if (parent === undefined || index === undefined) return;
 
       const [first, ...rest] = directive.children;
+
       const hasLabel =
         first?.type === "paragraph" &&
         (first as { data?: { directiveLabel?: boolean } }).data
           ?.directiveLabel === true;
-      const titleChildren = hasLabel ? (first as Parent).children : [];
-      const bodyChildren = hasLabel ? rest : directive.children;
+
+      const titleChildren = hasLabel
+        ? (first as Parent).children
+        : [];
+
+      const bodyChildren = hasLabel
+        ? rest
+        : directive.children;
 
       directive.data = {
         ...directive.data,
         hName: "aside",
-        hProperties: { className: ["rr-tip"] },
+        hProperties: {
+          className: ["rr-tip"],
+        },
       };
+
       directive.children = [
         {
           type: "paragraph",
           data: {
             hName: "p",
-            hProperties: { className: ["rr-tip__title"] },
+            hProperties: {
+              className: ["rr-tip__title"],
+            },
           },
           children: titleChildren,
         },
@@ -152,9 +399,11 @@ function remarkTip() {
 export function tipPlugin() {
   return definePlugin({
     name: "tip",
+
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkTip);
     },
+
     assets: [
       {
         pluginName: "tip",
@@ -166,11 +415,11 @@ export function tipPlugin() {
 }
 ```
 
-Markdown pipeline は Plugin の変換より先に `remark-directive` を実行するため、`:::tip` は `containerDirective` node として届きます。`data.hName` と `data.hProperties` を設定すると、HTML 生成時に汎用の wrapper ではなく `<aside class="rr-tip">` を出力し、directive の label は title の段落になります。
+> `extendMarkdownPipeline` は Markdown の AST を直接操作できる低レベルな拡張ポイントです。この例では directive の HTML 構造そのものを変更したいため使用しています。
 
-### Step 2: stylesheet を足す
+### Step 2: stylesheet を追加する
 
-`extensions/plugin.css` を作成します。
+次に `extensions/plugin.css` を作成します。
 
 ```css
 .rr-tip {
@@ -184,47 +433,139 @@ Markdown pipeline は Plugin の変換より先に `remark-directive` を実行�
 }
 ```
 
-`rr-tip` は安定した root hook で、theme が対象にできます。色をハードコードせず `--rb-*` token を使うと、theme の切り替えに追従します。
+先ほど生成した、
+
+```html
+<aside class="rr-tip">
+```
+
+と、
+
+```html
+<p class="rr-tip__title">
+```
+
+に対してスタイルを適用しています。
+
+色には固定値ではなく、
+
+```css
+var(--rb-color-accent)
+```
+
+という Riebeckite の theme token を使っています。
+
+こうしておくと、利用している theme が変わっても、その theme の accent color に追従できます。
 
 ### Step 3: プラグインを登録する
 
+作ったプラグインを `riebeckite.config.ts` に登録します。
+
 ```ts
-// riebeckite.config.ts
 import { defineConfig } from "@riebeckite/core";
 import { tipPlugin } from "./extensions/tip-plugin";
 
 export default defineConfig({
-  plugins: [tipPlugin()],
+  plugins: [
+    tipPlugin(),
+  ],
 });
 ```
 
+これで Markdown に、
+
+```md
+:::tip[Heads up]
+Save often.
+:::
+```
+
+と書けば、Tip が生成されるようになります。
+
 ### Step 4: 出力を test する
 
-site を build せず、Markdown pipeline を直接実行します。
+最後に、期待した HTML が生成されることを test します。
+
+このテストでは site 全体を build する必要はありません。`Pipeline` を直接実行して、Markdown の変換結果だけを確認できます。
+
+`extensions/tip-plugin.test.ts` を作成します。
 
 ```ts
-// extensions/tip-plugin.test.ts
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
 import { tipPlugin } from "./tip-plugin.ts";
 
 test("renders :::tip as an aside with a title", async () => {
-  const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [tipPlugin()],
-  });
+  const pipeline = new Pipeline(
+    new Map(),
+    new Map(),
+    undefined,
+    {
+      plugins: [tipPlugin()],
+    },
+  );
 
   const { html } = await pipeline.execute(
     ":::tip[Heads up]\nSave often.\n:::",
   );
 
-  assert.match(html, /<aside class="rr-tip">/);
-  assert.match(html, /<p class="rr-tip__title">Heads up<\/p>/);
-  assert.match(html, /Save often\./);
+  assert.match(
+    html,
+    /<aside class="rr-tip">/,
+  );
+
+  assert.match(
+    html,
+    /<p class="rr-tip__title">Heads up<\/p>/,
+  );
+
+  assert.match(
+    html,
+    /Save often\./,
+  );
 });
 ```
 
-`node --test` で実行します。Plugin は Markdown pipeline だけを拡張するため、test に filesystem も site build も必要ありません。
+この test では3つのことを確認しています。
+
+```text
+:::tip
+   ↓
+<aside class="rr-tip">
+
+[Heads up]
+   ↓
+<p class="rr-tip__title">Heads up</p>
+
+Save often.
+   ↓
+本文として出力される
+```
+
+これで、Markdown の変換、stylesheet の追加、Plugin の登録、そして test までを含む小さな site 内プラグインが完成しました。
+
+### この例で覚えておくこと
+
+この例のすべての AST 操作を覚える必要はありません。
+
+重要なのは、Riebeckite Plugin では、
+
+```ts
+definePlugin({
+  name: "...",
+
+  extendMarkdownPipeline: (pipeline) => {
+    pipeline.use(...);
+  },
+
+  assets: [...],
+});
+```
+
+という形で、Markdown の変換や stylesheet などをひとつの Plugin にまとめられることです。
+
+`extendMarkdownPipeline` は remark / mdast を直接扱うための低レベルな API なので、独自の Markdown 構文や複雑な変換が必要な場合に使います。
 
 ## 4. 独立ページを追加する（必要な場合）
 

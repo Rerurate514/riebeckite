@@ -1,33 +1,92 @@
+<!-- Generated from packages/plugins/obsidian-markdown/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Obsidian Markdown
 
-Provides the foundation for handling Obsidian Markdown syntax in Riebeckite, including Callouts, WikiLinks, and embeds.
+Obsidian-flavored Markdown support: wikilinks, callouts, inline tags, and
+block references.
 
-## Installation
+[日本語](./obsidian-markdown.md)
 
-```bash
-npm install @riebeckite/plugin-obsidian-markdown
+## Overview
+
+`obsidianMarkdown()` registers remark transforms that convert Obsidian syntax
+during the build. It runs with `order: -20` so it processes content before
+other Markdown plugins.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+## Syntax
 
-## Example
+### Wikilinks
 
-Use the Obsidian syntax you already write in your Vault as published content.
+- `[[Note]]` → link to the target's resolved canonical permalink
+  (`ContentManifestEntry.permalink`) with class `wikilink`, alias with
+  `[[Note|Alias]]`. The target is looked up by slug; the `href` is the resolved
+  permalink
+- Fragments: `[[Note#Heading]]` → `#heading-slug`,
+  `[[Note#^block-id]]` → `#block-id`
+- `![[Note]]` → note embed. The core pipeline renders the target note
+  recursively (max depth 3, cycle-safe). Unresolved embeds render a
+  placeholder link or text
+- `![[image.png]]` → `<img>` under `assetBase`
+- `[[image.png]]` → link to the asset URL
+- `[[file.pdf]]` / `![[file.pdf]]` → rendered by a plugin that provides
+  `renderAttachment` (see `@riebeckite/plugin-attachment`), otherwise a plain
+  download link
+- Unresolvable targets → link with class `wikilink wikilink-broken`
 
-```markdown
-[[getting-started|Getting Started]]
+### Callouts
 
-> [!NOTE]
-> このノートは Riebeckite で公開されています。
+```md
+> [!note] Optional title
+> Callout content.
+
+> [!warning]- Collapsed by default
+> More content.
 ```
 
-## When to use it
+Output: `div.rr-callout.rr-callout--{type}` with `data-callout`, plus
+`rr-callout--collapsible` / `rr-callout--collapsed` for `+` / `-` markers. Titles fall back to
+built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+### Inline tags
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+- `#tag`, `#nested/tag` → link to `{tagBase}{slugified tag}` with class `tag`
+  and `data-tag`
+- Purely numeric tags are ignored; trailing `/` and `-` are stripped
+- Each tag also triggers the optional `onTag` callback
 
-## Detailed specification
+### Block references
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+- A trailing `^block-id` on a block is removed from the text and applied to
+  the element as `id` and `data-block-id`
 
+## Options
+
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `assetBase` | `string` | `"/"` | Base path for image wikilink URLs |
+| `callout.defaultTitles` | `Record<string, string>` | built-in map | Override default callout titles |
+| `tag.tagBase` | `string` | `"/tags/"` | Tag page base path |
+| `tag.onTag` | `(tag: string) => void` | — | Called for every tag found |
+
+## Exports
+
+- `obsidianMarkdown(options?)` / `obsidianMarkdownPlugin` — plugin factory
+- Types: `ObsidianMarkdownOptions`, `CalloutOptions`, `TagOptions`,
+  `WikilinkOptions`, `WikilinkFragment`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)
+- [`@riebeckite/plugin-attachment`](./attachment.en.md)

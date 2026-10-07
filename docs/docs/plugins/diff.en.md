@@ -1,33 +1,95 @@
+<!-- Generated from packages/plugins/diff/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Diff
 
-Displays diffs in a readable form inside content.
+Git-backed diff and revision history for Markdown notes: read commit history,
+retrieve past revisions, and compute line-level diffs between them.
 
-## Installation
+[日本語](./diff.md)
 
-```bash
-npm install @riebeckite/plugin-diff
+## Overview
+
+`createPostDiffApi()` wraps a local Git repository and exposes revision
+history plus line diffs for any Markdown file, even when the note was renamed
+or moved (`git log --follow`). `createLineDiff()` is the pure diff engine used
+by the API and is also exported for standalone use.
+
+The `diff()` plugin registers a `diff` entry in the plugin list; the
+programmatic API is the primary interface.
+
+## Usage (plugin)
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { diff } from "@riebeckite/plugin-diff";
+
+export default defineConfig({
+  // ...
+  plugins: [diff({ cwd: "./content" })],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`diff(options?)` accepts the same `GitHistoryReaderOptions` as the API.
+The revision panel renders the initial comparison during the build and computes
+other selected comparisons in the browser. It embeds each available revision
+once rather than every pairwise diff, keeping generated pages compact.
 
-## Example
+## Programmatic API
 
-Use it when explaining before-and-after changes in an article with diff code blocks.
+```ts
+import { createPostDiffApi } from "@riebeckite/plugin-diff";
 
-````markdown
+const api = createPostDiffApi({ cwd: "./content" });
+
+const history = await api.getHistory("notes/hello.md");
+const previous = await api.getRevisionMarkdown("notes/hello.md", history[1].hash);
+const current = await api.getCurrentDiff("notes/hello.md");
+const compare = await api.compareRevisions({
+  filePath: "notes/hello.md",
+  fromHash: history[1].hash,
+  toHash: history[0].hash,
+});
 ```
 
-```
-````
+- `getHistory(filePath)` — commit history for the file (newest first) as
+  `DiffRevision[]`
+- `getRevisionMarkdown(filePath, hash)` — Markdown source at a given revision,
+  or `null`
+- `getCurrentDiff(filePath)` — line diff between the latest revision and its
+  predecessor (or from an empty source when there is no predecessor)
+- `compareRevisions({ filePath, fromHash, toHash })` — line diff between two
+  revisions; `fromHash: null` diffs from an empty source
 
-When the content directory is inside a Git working tree, a revision panel is appended to the end of the note so past changes can be followed. History is resolved from `content.directory`, so it still works when the build's working directory is an app folder inside a monorepo. The initial comparison is rendered during the build, and further selected comparisons are calculated in the browser. Outside a working tree no panel is added.
+## Options
 
-## When to use it
+`createPostDiffApi(options?)` accepts `GitHistoryReaderOptions`:
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `cwd` | `string` | `config.content.directory`, else `process.cwd()` | Content root used to locate the Git work tree |
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+When `cwd` is not inside a Git repository, API calls resolve to empty results
+(`[]` / `null`) instead of throwing.
 
-## Detailed specification
+## Types
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+| Type | Description |
+| ---- | ----------- |
+| `DiffRevision` | Commit metadata: `hash`, `shortHash`, `date`, `message`, `author` |
+| `MarkdownRevision` | `DiffRevision` with the Markdown source |
+| `PostDiff` | `from`, `to`, and `lines` |
+| `DiffLine` | A single diff line: `{ type, content }` |
+| `DiffLineType` | `"context" \| "added" \| "removed"` |
+| `RevisionComparisonInput` | `{ filePath, fromHash: string \| null, toHash }` |
+
+## Exports
+
+- `diff(options?)` — plugin factory
+- `createPostDiffApi(options?)` — programmatic API factory
+- `createLineDiff(from, to)` — LCS-based line diff
+- `GitMarkdownHistoryReader` — Git-backed history reader class
+- Types listed above
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

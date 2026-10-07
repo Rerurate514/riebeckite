@@ -1,25 +1,115 @@
+<!-- Generated from packages/plugins/seo/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # SEO
 
-Adds SEO-related processing for published pages.
+SEO metadata, sitemap, robots.txt, and feed generation for Riebeckite.
 
-## Installation
+[日本語](./seo.md)
 
-```bash
-npm install @riebeckite/plugin-seo
+## Overview
+
+`seo()` provides a `PluginSeoExtension` consumed by the Riebeckite app. It
+builds per-page SEO metadata and renders `/sitemap.xml`, `/robots.txt`, and
+RSS / Atom / JSON feeds.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { seo } from "@riebeckite/plugin-seo";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    seo({
+      feed: { rss: true, atom: true, json: true, limit: 30 },
+      sitemap: true,
+      robots: true,
+    }),
+  ],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+## Options
 
-## Example
+| Option | Type | Description |
+| ------ | ---- | ----------- |
+| `feed` | `{ rss?: boolean; atom?: boolean; json?: boolean; limit?: number }` | Feed output settings. `limit` defaults to 30 and applies to every format. |
+| `sitemap` | `boolean` | Sitemap output settings. |
+| `robots` | `boolean` | robots.txt output settings. |
 
-Use it to prepare titles, descriptions, canonical information, and related metadata for search engines and social platforms. RSS, Atom, and JSON Feed include the latest 30 entries by default; configure `feed.limit` to use a shared different limit.
+## Generated metadata
 
-## When to use it
+### Articles (`buildArticleSeo`)
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+- `title`: `"{title} | {site.title}"`
+- `description`: `frontmatter.description`, otherwise the first 160 characters
+  of the post text
+- `canonicalUrl`: `frontmatter.canonical`, otherwise the entry's resolved canonical permalink
+- `imageUrl`: `frontmatter.ogImage` / `frontmatter.image`, otherwise
+  `site.defaultOgImage`
+- `noindex`: `frontmatter.noindex === true`
+- `publishedTime`: `published` / `date` / `created`
+- `modifiedTime`: `updated`, falling back to the publish time
+- `tags`, `readingTimeMinutes`
+- JSON-LD: `BlogPosting` and `BreadcrumbList`
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+Pass the page's `headTags` when they already include a BreadcrumbList (for
+example contributed by the breadcrumbs plugin) and this plugin omits its own
+list, so the page keeps a single BreadcrumbList entity.
 
-## Detailed specification
+### Websites (`buildWebsiteSeo`)
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+Title, description, canonical URL, default image, and JSON-LD `WebSite` +
+`BreadcrumbList` for index, tag, and other non-article pages. The
+BreadcrumbList is omitted under the same `headTags` condition as articles.
+
+## Feeds, sitemap, and robots
+
+| Function | Output |
+| -------- | ------ |
+| `renderSitemap` | `/sitemap.xml` — home page plus published, non-`noindex` entries |
+| `renderRobots` | `/robots.txt` — allow all plus sitemap link |
+| `renderRssFeed` | RSS 2.0 built from `config.site.feed` |
+| `renderAtomFeed` | Atom feed |
+| `renderJsonFeed` | JSON Feed 1.1 with `content_html` |
+
+Feed and sitemap entries are filtered with `isPublished`, exclude
+`noindex: true`, and are sorted by the most recent update first. Their URLs use
+each entry's resolved canonical `permalink` (`ContentManifestEntry.permalink`);
+they are never rebuilt from slugs.
+Feeds include the latest 30 entries by default. Set `feed.limit` to change the
+shared limit for RSS, Atom, and JSON Feed.
+
+## Reading time
+
+`calculateReadingTime` counts CJK characters (500/min) and Latin words
+(220/min), rounding up to at least 1 minute.
+
+## Frontmatter fields
+
+| Field | Use |
+| ----- | --- |
+| `title` | Article title (falls back to the last slug segment) |
+| `description` | Meta description |
+| `canonical` | Canonical URL |
+| `image` / `ogImage` | OG image |
+| `published` / `date` / `created` | Publish time |
+| `updated` | Modified time |
+| `tags` | Keywords / feed tags |
+| `noindex` | `noindex` meta, feed and sitemap exclusion |
+
+## Exports
+
+- `seo(options?)` — plugin factory
+- Types: `SeoPluginOptions`, `FeedOptions`, `SeoMetadata`, `WebsiteSeoInput`,
+  `RenderableFeedEntry`
+- Helpers: `buildArticleSeo`, `buildWebsiteSeo`, `buildAbsoluteUrl`,
+  `buildPostUrl`, `getDescription`, `filterFeedEntries`,
+  `getEntryPublishedTime`, `getEntryUpdatedTime`, `getHtmlLanguage`,
+  `calculateReadingTime`, `renderSitemap`, `renderRobots`, `renderRssFeed`,
+  `renderAtomFeed`, `renderJsonFeed`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

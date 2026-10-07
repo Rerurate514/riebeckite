@@ -203,7 +203,7 @@ const PLUGIN_MARKDOWN_GUIDES: Readonly<
   "@riebeckite/plugin-shortcodes": {
     summary: "Expands built-in shortcode syntax inside Markdown.",
     markdown:
-      '{{< youtube dQw4w9WgXcQ >}}\n\n{{< figure src="/images/demo.png" caption="Demo image" >}}',
+      '::youtube[id=dQw4w9WgXcQ]\n\n::figure[Demo image]{src="/images/demo.png"}',
   },
   "@riebeckite/plugin-series": {
     summary: "Groups Markdown pages into a reading series using frontmatter.",

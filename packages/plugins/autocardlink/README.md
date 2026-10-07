@@ -82,6 +82,19 @@ image.
 - `remarkAutoCardLink(options?)` — remark transform usable on its own
 - Types: `AutoCardLink`, `AutoCardLinkOptions`
 
+## Not supported (yet)
+
+The card is built only from the fields written in the fenced block. It does not
+fetch the target page, so it never derives metadata on its own. In particular:
+
+- Local Obsidian image embeds such as `[[image.png]]` are not resolved; `image`
+  and `favicon` accept URLs only.
+- Wikilinks are not resolved inside `favicon` or `image`.
+- The Obsidian Auto Card Link `data-auto-card-link-depth` option is not
+  implemented.
+- Open Graph metadata is not fetched or cached; `title`, `description`, and
+  `image` must be authored explicitly.
+
 ## See also
 
 - [Plugin guide](../../../docs/docs/reference/plugin-api.en.md)

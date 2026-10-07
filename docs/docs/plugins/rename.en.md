@@ -1,29 +1,126 @@
+<!-- Generated from packages/plugins/rename/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Rename
 
-Turns detected renames and moves into permanent redirects.
+Reduces broken URLs after notes are renamed or moved by turning detected
+renames into permanent redirects on the existing Riebeckite redirect
+machinery.
 
-## Installation
+[日本語](./rename.md)
 
-```bash
-npm install @riebeckite/plugin-rename
-```
-
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
-
-## Example
-
-Use it so old URLs keep working after a note is moved or renamed. Detection matches the frontmatter `id` first, then an exact content hash against the route lock from the previous build, and records a redirect for each match on the existing redirect machinery.
+## Basic usage
 
 ```ts
-renamePlugin({ status: 308, onUnexpectedRemoval: "warning" });
+import { defineConfig } from "@riebeckite/core";
+import { renamePlugin } from "@riebeckite/plugin-rename";
+
+export default defineConfig({
+  plugins: [
+    renamePlugin({
+      status: 308,
+      onUnexpectedRemoval: "warning",
+    }),
+  ],
+});
 ```
 
-## When to use it
+When a note moves, the plugin compares the current routes with the route lock
+saved during the previous build. If it can identify the same note, it records a
+redirect from the old permalink to the new one in `manifest.redirects`, which
+Core already consumes for redirect pages and deploy files.
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+## How it works
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+```text
+current entries (published only)
+        │
+        ▼
+buildRouteLock ──► current RouteLock
+        │                    │
+        │                    ▼
+        └──────────► diffRoutes(previous, current)
+                             │
+              ┌──────────────┴───────────────┐
+              ▼                              ▼
+        rename redirects                diagnostics
+        (merged + chain-collapsed)      (ambiguous / removed)
+              │
+              ▼
+     manifest.redirects  ◄── never overwrites an existing key
+              │
+              ▼
+     context.cache "routes.lock"
+```
 
-## Detailed specification
+Detection precedence is strict and never fuzzy:
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+1. **Explicit identity** — the entry's frontmatter `id` matches a lock route's
+   `id`.
+2. **Exact content hash** — `sha256(entry.html)` matches exactly one new route.
+3. Otherwise the route is treated as removed.
+
+Multiple matching candidates (or none) produce no redirect. Ambiguous matches
+emit a `rename-ambiguous` diagnostic; unmatched removals emit a diagnostic whose
+severity follows `onUnexpectedRemoval`.
+
+## State
+
+The plugin never writes files directly. The only cross-build state is the route
+lock, stored through `context.cache` under the key `routes.lock`. The cache is
+created under the resolved plugin cache directory (`.riebeckite/cache` in the
+standard HonoX setup) and is gitignored, so the lock is machine-local and is
+regenerated from scratch when missing or corrupt.
+
+Because the lock is machine-local, the first build on a fresh machine has no
+history and cannot detect a rename that happened before the lock existed.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `true` | Enables rename detection |
+| `status` | `301 \| 302 \| 307 \| 308` | `308` | HTTP status for new rename redirects |
+| `onUnexpectedRemoval` | `"info" \| "warning" \| "error"` | `"warning"` | Severity when a route disappears without rename evidence |
+
+## Rules and guarantees
+
+- Only entries passing `isPublished` are considered. Private or unpublished
+  notes never enter the lock and never produce redirects.
+- Existing `manifest.redirects` keys are never overwritten, so Permalink's
+  `redirect_from` always wins.
+- Permanent redirect chains are collapsed transitively (`A → B`, `B → C`
+  becomes `A → C`).
+- The lock is deterministic: route keys and redirects are sorted, with no
+  timestamps or randomness.
+- Redirects are replayed on every build, so the CLI build and the SSG build
+  reproduce the same redirects.
+
+## Exports
+
+Functions:
+
+- `renamePlugin(options?)` / `rename(options?)`
+- `diffRoutes(previous, current, options?)`
+- `buildRouteLock(entries, isPublished)`
+- `collapseRedirects(rules)`
+- `applyRouteRedirects(manifest, rules)`
+- `parseRouteLock(value)`, `emptyRouteLock()`, `hashContent(html)`
+
+Types:
+
+- `RenameOptions`
+- `RouteLock`, `RouteLockRoute`, `RouteLockRedirect`, `RedirectRule`
+- `DiffRoutesOptions`, `DiffRoutesResult`, `RenameDiagnostic`
+
+## Limitations
+
+- Git-based rename detection is not implemented. It would require filesystem or
+  repository access, which plugin code intentionally avoids. Rename detection
+  relies on frontmatter `id` and on exact content hashes only.
+- A rename in which both the `id` is absent and the HTML body changes cannot be
+  detected and is reported as an unexpected removal.
+
+## See also
+
+- [Permalink plugin](./permalink.en.md) — stable URLs and `redirect_from`
+- [Plugin guide](../reference/plugin-api.en.md)

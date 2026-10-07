@@ -1,47 +1,61 @@
+<!-- Generated from packages/plugins/citations/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Citations
 
-Citations adds BibTeX / BibLaTeX based references to Markdown and Obsidian notes.
+[日本語版](./citations.md)
 
-## Installation
-
-```bash
-npm install @riebeckite/plugin-citations
-```
+Official Riebeckite plugin for BibTeX / BibLaTeX based citations in Markdown and Obsidian notes.
 
 ```ts
 import { citations } from "@riebeckite/plugin-citations";
 
-export default defineConfig({
-  plugins: [citations({ bibliography: "references.bib" })],
-});
+export default {
+  plugins: [
+    citations({ bibliography: "references.bib" }),
+  ],
+};
 ```
 
-You can also choose a bibliography per page with frontmatter:
+## Supported citation syntax
 
-```yaml
-bibliography: references.bib
-```
-
-A frontmatter path is resolved relative to the page first, then to the content root. A config path is always relative to the content root.
-
-## Citation syntax
-
-Riebeckite supports a stable Pandoc-inspired subset:
+The plugin implements a stable Pandoc-inspired subset:
 
 - `[@smith2024]`
-- `[@smith2024; @doe2025]`
+- `[@smith2024; @doe2025]` — multiple keys must be separated by `;`
 - `@smith2024 argues that ...`
-- `[-@smith2024]` for suppress-author style input
+- `[-@smith2024]` — suppress-author input
+- `[@smith2024, p. 42]` and `[see @doe2025]` — prefix and suffix are kept, rendering as `[1, p. 42]` and `[see 2]`
 
-Prefix and suffix are kept: `[@smith2024, p. 42]` renders as `[1, p. 42]`, and `[see @doe2025]` renders as `[see 2]`. Repeated citations reuse their first number.
+Repeated citations reuse the first number assigned to that key. Under numeric labels, `[-@smith2024]` renders the same label as `[@smith2024]`.
 
-Inline `@key` needs a boundary on the left — the start of the text, whitespace, or `(`. If the left side is attached text such as `本文@smith2024`, write `[@smith2024]` instead.
+Inline `@key` must be preceded by the start of the text, whitespace, or `(`. Text attached directly to `@key` on the left — for example `本文@smith2024` — is not recognized; write `[@smith2024]` instead.
 
-Keys may contain letters, digits, `-`, `_`, `:`, and `.`. A `:` that Riebeckite's directive syntax would otherwise consume is reassembled by the plugin, so `[@colon:2024]` works.
+Riebeckite parses `:name` as a directive before this plugin runs. When that split breaks a citation key, the plugin reassembles it, so `[@colon:2024]` and `@colon:2024 argues` both work. Keys may contain letters, digits, `-`, `_`, `:`, and `.`.
 
-## References
+Not transformed: inline code, fenced code blocks, HTML, frontmatter, normal Markdown links (at any nesting depth), and Obsidian WikiLinks.
 
-Pages that contain citations receive a References section at the end of the Markdown body. Citation labels link to a stable anchor built from the citation key.
+## Bibliography files
+
+- `citations({ bibliography })` paths are relative to the content root.
+- Frontmatter `bibliography` is resolved relative to the page first, then to the content root. Both `/` and `\` separators are accepted and `../` is normalized inside the string; every candidate still goes through the content source, so nothing outside the configured content root can be read.
+- The bibliography file is read at build time only. It is never copied into the output and absolute paths never appear in generated files.
+
+## Supported bibliography subset
+
+Curated entry types are `article`, `book`, `inproceedings`, and `misc`. Other entry types are still parsed and rendered with generic fields, and reported as `citation-unsupported-entry-type`.
+
+`@comment`, `@preamble`, and `@string` entries are accepted and skipped. Malformed entries report `citation-malformed-bibliography` and parsing resumes at the next `@`, so one broken entry does not discard the rest of the file.
+
+Supported syntax: multiline fields, quoted and braced values, nested braces, commas inside values, escaped characters, trailing commas, whitespace and CRLF.
+
+Reported through `citation-unsupported-bibliography-syntax` instead of failing silently:
+
+- `@string` macro references are rendered literally; they are not expanded.
+- `#` string concatenation keeps only the first part.
+
+## References section
+
+Pages with citations receive a `References` heading and an ordered list at the end of the Markdown body. Each entry carries an `id` of the form `ref-<sanitized key>`, where characters outside `[A-Za-z0-9_-]` are replaced by `-` and collisions get a deterministic numeric suffix. Citation labels link to that anchor.
 
 Use `referencesHeading` for localized headings:
 
@@ -49,19 +63,19 @@ Use `referencesHeading` for localized headings:
 citations({ bibliography: "references.bib", referencesHeading: "参考文献" })
 ```
 
-## Supported bibliography entries
-
-The curated set is `article`, `book`, `inproceedings`, and `misc`. Other entry types are still read with generic fields and reported as diagnostics. `@comment`, `@preamble`, and `@string` are accepted and skipped.
-
-Multiline fields, quoted and braced values, nested braces, commas inside values, escaped characters, trailing commas, and CRLF line endings are supported. Macro expansion and `#` string concatenation are not; both are reported through diagnostics instead of failing silently.
-
 ## Diagnostics
 
-The plugin reports missing bibliography files, malformed bibliography input, duplicate keys, unsupported entry types, unknown citation keys, and unsupported BibTeX syntax through Riebeckite diagnostics.
+Reported through Riebeckite diagnostics:
 
-Inline code, fenced code blocks, HTML, frontmatter, normal Markdown links, and WikiLinks are not transformed.
+- `citation-unknown-key`
+- `citation-missing-bibliography`
+- `citation-malformed-bibliography`
+- `citation-duplicate-key`
+- `citation-unsupported-entry-type`
+- `citation-unsupported-bibliography-syntax`
 
-## Detailed specification
+Citation numbering, reference ordering, generated HTML, and diagnostics are deterministic: identical input produces identical output.
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md).
+## License
 
+Apache-2.0

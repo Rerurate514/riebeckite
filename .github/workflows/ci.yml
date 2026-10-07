@@ -29,6 +29,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec biome check .
       - run: pnpm check:docs
+      - run: pnpm check:plugin-docs
+      - run: pnpm test:docs
       - run: pnpm check:packages
       - run: pnpm check:dependencies
       - run: pnpm check:templates

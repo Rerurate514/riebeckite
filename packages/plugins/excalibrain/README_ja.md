@@ -90,6 +90,10 @@ related:: [[note-a]] and [[note-b]] are similar
 
 `siblings` が有効な場合（既定）、親ノートの他の子ノートを `sibling` として追加します。兄弟の推論には `infer` も必要で、`infer: false` にすると無効になります。リンク先はコンテンツマニフェストから解決し、解決できない場合は元のリンクテキストをラベルにした仮想ノード（`data-node-virtual="true"`）にします。
 
+## 公開範囲
+
+ノードはコンテンツマニフェストから解決します。`publishing.routable` が false のターゲットはマップから除外するため、公開対象外のノートがノードやリンクとして現れることはなく、タイトルやパーマリンクも漏れません。
+
 ## 描画
 
 `render` で描画する場所を選びます。
@@ -139,6 +143,12 @@ related:: [[note-a]] and [[note-b]] are similar
 ```
 
 領域は `g.rb-excalibrain__region[data-region]`、ノードは `g.rb-excalibrain__node[data-node-role][data-node-slug][data-relation-type]` で、`<a href>` が `<rect>` と `<text>` を包みます。リンクは `path.rb-excalibrain__link[data-link-role][data-relation-type]` です。
+
+## 制約
+
+- マップは閲覧専用です。クライアント側の処理は SVG を生成するだけで、ドラッグ、ズーム、展開・折りたたみの操作はありません。
+- `maxPerRegion` は領域ごとのノード数を打ち切るため、関係が多いノートでは先頭のノードだけを表示します。
+- 描画できるのは上記のオントロジーのロールだけで、ノード単位のスタイルや領域単位の設定は下記のオプション以外にありません。
 
 ## 主なエクスポート
 

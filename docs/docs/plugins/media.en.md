@@ -1,26 +1,60 @@
+<!-- Generated from packages/plugins/media/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Media
 
-Handles media such as audio and video in published content.
+Renders Obsidian audio / video attachment embeds with native HTML5 media players.
 
-## Installation
+[日本語](./media.md)
 
-```bash
-npm install @riebeckite/plugin-media
+## Overview
+
+`media()` provides an attachment renderer for common Web media formats such as
+`![[music.mp3]]` and `![[movie.mp4]]`. Unsupported files return `null`, allowing
+later renderers or the default fallback to handle them.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { media } from "@riebeckite/plugin-media";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), media(), attachment()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`media()` uses `order: -10`, so it runs before the default attachment card.
 
-## Example
+## Supported formats
 
-Use it for articles that include audio, video, or other media in addition to images.
+- audio: `mp3`, `m4a`, `aac`, `ogg`, `oga`, `opus`, `wav`, `flac`
+- video: `mp4`, `m4v`, `webm`, `ogv`, `mov`
 
-## When to use it
+## Options
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
+| `preload` | `"none" \| "metadata" \| "auto"` | `"none"` when `lazy: true`, otherwise `"metadata"` | `preload` for `<audio>` / `<video>` |
+| `lazy` | `boolean` | `true` | Uses `"none"` when `preload` is omitted to reduce eager loading |
+| `showCaption` | `boolean` | `true` | Shows a caption |
+| `showDownload` | `boolean` | `true` | Shows a download link |
+| `showOpenOriginal` | `boolean` | `true` | Shows an original file link |
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+## Timestamp fragments
 
-## Detailed specification
+When a renderer receives fragments such as `#t=10` or `#10,20`, they are kept on
+the media source URL. The current Obsidian wikilink pipeline does not pass
+attachment fragments to renderers, so full `![[movie.mp4#t=10]]` support requires
+a future pipeline extension.
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+## Exports
 
+- `media(options?)` / `mediaPlugin` — plugin factory
+- Types: `MediaOptions`, `MediaPreload`
+
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

@@ -1,25 +1,81 @@
+<!-- Generated from packages/plugins/hover-preview/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Hover Preview
 
-Shows a popover preview of internal links on hover or focus.
+Quartz/Obsidian-Publish style popover previews for internal links. Hovering or
+focusing a note link shows its title and a short excerpt without leaving the
+page.
 
-## Installation
+[日本語](./hover-preview.md)
 
-```bash
-npm install @riebeckite/plugin-hover-preview
+## Overview
+
+At build time `hoverPreviewPlugin()` builds a preview index from the content
+manifest (`permalink` → `{ title, excerpt, slug }`) and injects it once into
+every page that contains internal links as an inert
+`<script type="application/json" data-rb-hover-preview>` block. The client
+entry `initHoverPreview` reads that payload and attaches hover, focus, and touch
+handlers to the matching links.
+
+The excerpt is plain text extracted from the rendered HTML: tags are stripped,
+whitespace is collapsed, and the result is truncated to `excerptLength`
+characters. Pages without internal links are left untouched, and the payload is
+bounded by `maxEntries` when set.
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+
+export default defineConfig({
+  // ...
+  plugins: [hoverPreviewPlugin()],
+});
 ```
 
-Check the implementation and package README as the source of truth for the Plugin's export names and configuration options. Riebeckite Plugins are registered in the `plugins` array of `riebeckite.config.ts`.
+`hoverPreviewPlugin()` registers the style asset, the client entry, and the
+build-time payload injection. `hoverPreview` is an alias of the same factory.
 
-## Example
+The client entry takes no arguments. Behavior is carried by data attributes on
+the payload script, so the plugin works even when the client initializer is
+called without options.
 
-Use it for a Digital Garden where readers preview a linked note before opening it. The popover shows the target's title and a short excerpt drawn from its rendered HTML.
+## Options
 
-## When to use it
+| Option          | Default        | Description                                            |
+| --------------- | -------------- | ------------------------------------------------------ |
+| `delay`         | `120`          | Milliseconds before the popover appears.               |
+| `excerptLength` | `160`          | Maximum excerpt length in characters.                  |
+| `maxEntries`    | unset          | Upper bound on entries stored in the page payload.     |
+| `selector`      | `a[href^="/"]` | Selector for internal links that receive a preview.    |
+| `className`     | `rb-hover-preview` | Base class of the popover element.                 |
+| `includeTitles` | `true`         | Whether the popover shows the target entry title.      |
 
-Add this Plugin only when you need its functionality. If it is already included by your Preset, you do not need to register the same Plugin again.
+```ts
+hoverPreviewPlugin({
+  delay: 200,
+  excerptLength: 120,
+  maxEntries: 200,
+  selector: 'a[href^="/notes/"]',
+});
+```
 
-When a rendered example is available, you can also see it in the [Plugin Showcase](./showcase.en.md).
+## API
 
-## Detailed specification
+- `hoverPreviewPlugin(options?)` — plugin factory
+- `hoverPreview` — alias of `hoverPreviewPlugin`
+- `resolveHoverPreviewOptions(options?)` — applies defaults and returns a
+  `ResolvedHoverPreviewOptions`
+- `buildPreviewIndex(entries, options)` — builds a `HoverPreviewIndex`
+  (`permalink` → `{ title, excerpt, slug }`)
+- `htmlToPlainText(html)` / `createExcerpt(html, length)` — excerpt helpers
+- `initHoverPreview()` — browser initializer (also via
+  `@riebeckite/plugin-hover-preview/client`)
+- Constants: `HOVER_PREVIEW_ATTRIBUTE`, `HOVER_PREVIEW_SCRIPT_ID`
+- Types: `HoverPreviewOptions`, `ResolvedHoverPreviewOptions`,
+  `HoverPreviewEntry`, `HoverPreviewIndex`
 
-For configuration options, public APIs, constraints, and additional examples, see the package README. For the overall Plugin architecture, see [Plugin System](../framework/plugin-system.en.md). To create a Plugin, see [Writing a Plugin](./writing-a-plugin.en.md).
+## See also
+
+- [Plugin guide](../reference/plugin-api.en.md)

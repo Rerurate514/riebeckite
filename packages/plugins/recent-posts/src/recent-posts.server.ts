@@ -1,39 +1,39 @@
-import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import type { ContentManifest } from "@riebeckite/core";
 import type { RecentPost } from "./recent-posts.js";
 
-type PostRef = { slug: string; permalink: string };
-type ProcessedPost = { frontmatter: Record<string, unknown> };
-type TitleResolver = (slug: string, title: unknown) => string;
+export const DEFAULT_RECENT_POSTS_LIMIT = 5;
 
-export async function getRecentPosts(args: {
-  posts: PostRef[];
-  config: ResolvedRiebeckiteConfig;
-  getProcessedContent: (slug: string) => Promise<ProcessedPost>;
-  resolveTitle: TitleResolver;
+/**
+ * Builds the recent-posts list from the manifest.
+ *
+ * Reads `manifest.discoverableEntries` on purpose: discovery UI must never
+ * surface `unlisted`, `draft`, or future-`publishAt` notes that are not
+ * discoverable, even though some of them are routable. The plugin owns the
+ * entry selection, the frontmatter date extraction, the sort, and the default
+ * title so a Site only decides whether and where to render the list.
+ */
+export function getRecentPosts(args: {
+  manifest: Pick<ContentManifest, "discoverableEntries">;
   limit?: number;
-}): Promise<RecentPost[]> {
-  const limit = args.limit ?? 5;
-  const recentPosts = await Promise.all(
-    args.posts
-      .filter((post) => post.slug !== "index")
-      .map(async (post) => {
-        const processed = await args.getProcessedContent(post.slug);
-        const postedAt = parseFrontmatterDate(
-          processed.frontmatter.date ?? processed.frontmatter.created,
-        );
-        if (!postedAt) return null;
+}): RecentPost[] {
+  const limit = Math.max(0, args.limit ?? DEFAULT_RECENT_POSTS_LIMIT);
+  return args.manifest.discoverableEntries
+    .filter((entry) => entry.slug !== "index")
+    .flatMap((entry) => {
+      const postedAt = parseFrontmatterDate(
+        entry.frontmatter.date ?? entry.frontmatter.created,
+      );
+      if (!postedAt) return [];
 
-        return {
-          slug: post.slug,
-          permalink: post.permalink,
-          title: args.resolveTitle(post.slug, processed.frontmatter.title),
+      return [
+        {
+          slug: entry.slug,
+          permalink: entry.permalink,
+          title: entry.title,
           postedAt,
-        };
-      }),
-  );
-
-  return recentPosts
-    .filter((post): post is RecentPost => post !== null)
+        },
+      ];
+    })
     .toSorted((a, b) => b.postedAt.getTime() - a.postedAt.getTime())
     .slice(0, limit);
 }

@@ -50,19 +50,14 @@ latest posts and renders them after the homepage body:
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
-import { config } from "../config";
 import { content } from "../content";
 
-const recentPosts = await getRecentPosts({
-  posts: manifest.discoverableEntries,
-  config,
-  getProcessedContent: (slug) => content.getProcessedContent(slug),
-  resolveTitle: (slug, title) => title,
-});
+const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 ```
 
-`getRecentPosts()` defaults to 5 posts, drops unpublished notes and the `index`
-note, and sorts by `date` (falling back to `created`). To change the number or
+`getRecentPosts()` defaults to 5 posts and reads `manifest.discoverableEntries`,
+so `unlisted`, `draft`, and scheduled notes are excluded along with the `index`
+note. It sorts by `date` (falling back to `created`). To change the number or
 where the list appears, edit the route; passing `limit` overrides the default.
 Notes without a parseable date are dropped. There is no `recent-posts` Markdown
 block — it is a component the site places.

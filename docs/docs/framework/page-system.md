@@ -400,7 +400,7 @@ export default createRoute(
 
 通常の Site 利用者が Plugin ごとにこの route を追加する必要はありません。
 
-共通 route が Plugin Page をまとめて解決します。
+共通 route が Plugin Page をまとめて解決します。root `/` も同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` が解決します。
 
 # Page が返せるもの
 

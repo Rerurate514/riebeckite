@@ -11,6 +11,7 @@ import {
   applyRiebeckiteRouteContext,
   resolveContentRoute,
   resolveRiebeckiteContentRequest,
+  resolveRiebeckiteHomeRequest,
   riebeckiteSsgParams,
 } from "../server.ts";
 
@@ -191,6 +192,93 @@ test("resolveRiebeckiteContentRequest returns not found for unknown, missing and
     if (resolved.kind !== "response") continue;
     assert.equal((await resolved.response).status, 404);
   }
+});
+
+test("resolveRiebeckiteHomeRequest resolves the index content and assigns context", async () => {
+  const indexEntry = entry("index", "/", true);
+  indexEntry.publicLocation.language = "ja";
+  indexEntry.headTags = [
+    { tag: "meta", attrs: { name: "description", content: "home" } },
+  ] as PluginHeadTag[];
+  const manifest = manifestOf([indexEntry, entry("post", "/post", true)]);
+  const { context, variables } = requestContext({ path: "/" });
+
+  const resolved = await resolveRiebeckiteHomeRequest(
+    context,
+    contentStub({ manifest }),
+  );
+
+  assert.equal(resolved.kind, "content");
+  if (resolved.kind !== "content") return;
+  assert.equal(resolved.entry.slug, "index");
+  assert.equal(resolved.post.html, "<p>index</p>");
+  assert.equal(variables.get("htmlLanguage"), "ja");
+  assert.deepEqual(variables.get("headTags"), indexEntry.headTags);
+});
+
+test("resolveRiebeckiteHomeRequest forwards a configured index permalink", async () => {
+  const manifest = manifestOf([entry("index", "/home", true)]);
+  const { context } = requestContext({ path: "/" });
+
+  const resolved = await resolveRiebeckiteHomeRequest(
+    context,
+    contentStub({ manifest }),
+  );
+
+  assert.equal(resolved.kind, "response");
+  if (resolved.kind !== "response") return;
+  const response = await resolved.response;
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "/home");
+});
+
+test("resolveRiebeckiteHomeRequest resolves a plugin page before content", async () => {
+  const page = pluginPage({ pathname: "/", language: "ja" });
+  const { context, variables } = requestContext({ path: "/" });
+
+  const resolved = await resolveRiebeckiteHomeRequest(
+    context,
+    contentStub({ manifest: manifestOf([entry("index", "/", true)]), page }),
+  );
+
+  assert.equal(resolved.kind, "page");
+  if (resolved.kind !== "page") return;
+  assert.equal(resolved.page.pathname, "/");
+  assert.equal(variables.get("htmlLanguage"), "ja");
+});
+
+test("resolveRiebeckiteHomeRequest returns a root redirect response", async () => {
+  const manifest = manifestOf([entry("public", "/new", true)]);
+  manifest.publicRedirects.set("/", {
+    path: "/",
+    status: 302,
+    slug: "public",
+  });
+  const { context } = requestContext({ path: "/" });
+
+  const resolved = await resolveRiebeckiteHomeRequest(
+    context,
+    contentStub({ manifest }),
+  );
+
+  assert.equal(resolved.kind, "response");
+  if (resolved.kind !== "response") return;
+  const response = await resolved.response;
+  assert.equal(response.status, 302);
+  assert.equal(response.headers.get("location"), "/new");
+});
+
+test("resolveRiebeckiteHomeRequest returns not found without a root route", async () => {
+  const { context } = requestContext({ path: "/" });
+
+  const resolved = await resolveRiebeckiteHomeRequest(
+    context,
+    contentStub({ manifest: manifestOf([]) }),
+  );
+
+  assert.equal(resolved.kind, "response");
+  if (resolved.kind !== "response") return;
+  assert.equal((await resolved.response).status, 404);
 });
 
 test("riebeniteSsgParams enumerates public content, redirects and plugin pages", async () => {

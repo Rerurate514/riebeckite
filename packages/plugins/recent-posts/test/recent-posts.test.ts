@@ -7,8 +7,6 @@ import {
   determineOutputChanges,
   type OutputDependency,
   type OutputDescriptor,
-  type ResolvedRiebeckiteConfig,
-  resolveConfig,
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
@@ -16,48 +14,18 @@ import { getRecentPosts, RecentPosts, recentPostsPlugin } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
-const config: ResolvedRiebeckiteConfig = resolveConfig({
-  site: { title: "Test" },
-  content: { filters: { publishStrategy: "explicit" } },
-});
-
-type Processed = { frontmatter: Record<string, unknown> };
-
-function harness(
-  posts: Array<{ slug: string; permalink: string }>,
-  processed: Record<string, Processed>,
-) {
-  const calls: string[] = [];
-  return {
-    calls,
-    args: {
-      posts,
-      config,
-      getProcessedContent: async (slug: string) => {
-        calls.push(slug);
-        return processed[slug] ?? { frontmatter: {} };
-      },
-      resolveTitle: (slug: string, title: unknown) =>
-        typeof title === "string" ? title : slug,
-    },
-  };
-}
-
-function published(date: string | Date): Processed {
-  return { frontmatter: { publish: true, date } };
-}
-
-test("getRecentPosts sorts newest first and applies the default limit of five", async () => {
+test("getRecentPosts sorts newest first and applies the default limit of five", () => {
   const slugs = ["a", "b", "c", "d", "e", "f", "g"];
-  const posts = slugs.map((slug) => ({ slug, permalink: `/${slug}` }));
-  const processed = Object.fromEntries(
-    slugs.map((slug, index) => [
-      slug,
-      published(`2024-01-${String(index + 1).padStart(2, "0")}`),
-    ]),
+  const entries = slugs.map((slug, index) =>
+    entry(slug, {
+      frontmatter: {
+        publish: true,
+        date: `2024-01-${String(index + 1).padStart(2, "0")}`,
+      },
+    }),
   );
 
-  const result = await getRecentPosts(harness(posts, processed).args);
+  const result = getRecentPosts({ manifest: manifest(entries, entries) });
 
   assert.equal(result.length, 5);
   assert.deepEqual(
@@ -67,100 +35,135 @@ test("getRecentPosts sorts newest first and applies the default limit of five", 
   assert.equal(result[0]?.permalink, "/g");
 });
 
-test("getRecentPosts honors an explicit limit", async () => {
-  const harnessed = harness(
-    [
-      { slug: "a", permalink: "/a" },
-      { slug: "b", permalink: "/b" },
-    ],
-    { a: published("2024-01-01"), b: published("2024-01-02") },
-  );
+test("getRecentPosts honors an explicit limit", () => {
+  const entries = [
+    entry("a", { frontmatter: { date: "2024-01-01" } }),
+    entry("b", { frontmatter: { date: "2024-01-02" } }),
+  ];
 
-  const result = await getRecentPosts({ ...harnessed.args, limit: 1 });
+  const result = getRecentPosts({
+    manifest: manifest(entries, entries),
+    limit: 1,
+  });
   assert.deepEqual(
     result.map((post) => post.slug),
     ["b"],
   );
 
-  assert.deepEqual(await getRecentPosts({ ...harnessed.args, limit: 0 }), []);
+  assert.deepEqual(
+    getRecentPosts({ manifest: manifest(entries, entries), limit: 0 }),
+    [],
+  );
 });
 
-test("getRecentPosts skips the index slug without reading it", async () => {
-  const harnessed = harness(
-    [
-      { slug: "index", permalink: "/" },
-      { slug: "post", permalink: "/post" },
-    ],
-    { post: published("2024-01-01") },
-  );
+test("getRecentPosts skips the index slug", () => {
+  const entries = [
+    entry("index", { permalink: "/", frontmatter: { date: "2024-01-02" } }),
+    entry("post", { frontmatter: { date: "2024-01-01" } }),
+  ];
 
-  const result = await getRecentPosts(harnessed.args);
+  const result = getRecentPosts({ manifest: manifest(entries, entries) });
   assert.deepEqual(
     result.map((post) => post.slug),
     ["post"],
   );
-  assert.deepEqual(harnessed.calls, ["post"]);
 });
 
-test("getRecentPosts drops notes with unusable dates", async () => {
-  const harnessed = harness(
-    [
-      { slug: "bad", permalink: "/bad" },
-      { slug: "undated", permalink: "/undated" },
-      { slug: "good", permalink: "/good" },
-    ],
-    {
-      bad: { frontmatter: { publish: true, date: "not-a-date" } },
-      undated: { frontmatter: { publish: true } },
-      good: published("2024-01-01"),
-    },
-  );
+test("getRecentPosts drops entries with unusable dates", () => {
+  const entries = [
+    entry("bad", { frontmatter: { date: "not-a-date" } }),
+    entry("undated", { frontmatter: { publish: true } }),
+    entry("good", { frontmatter: { date: "2024-01-01" } }),
+  ];
 
-  const result = await getRecentPosts(harnessed.args);
+  const result = getRecentPosts({ manifest: manifest(entries, entries) });
   assert.deepEqual(
     result.map((post) => post.slug),
     ["good"],
   );
 });
 
-test("getRecentPosts falls back to created and preserves Date instances", async () => {
+test("getRecentPosts falls back to created and preserves Date instances", () => {
   const explicit = new Date("2024-06-06T00:00:00.000Z");
-  const harnessed = harness(
-    [
-      { slug: "created", permalink: "/created" },
-      { slug: "date-object", permalink: "/date-object" },
-    ],
-    {
-      created: { frontmatter: { publish: true, created: "2024-05-05" } },
-      "date-object": { frontmatter: { publish: true, date: explicit } },
-    },
-  );
+  const entries = [
+    entry("created", { frontmatter: { created: "2024-05-05" } }),
+    entry("date-object", { frontmatter: { date: explicit } }),
+  ];
 
-  const result = await getRecentPosts(harnessed.args);
+  const result = getRecentPosts({ manifest: manifest(entries, entries) });
   assert.equal(result[0]?.slug, "date-object");
   assert.equal(result[0]?.postedAt, explicit);
   assert.equal(result[1]?.postedAt.toISOString(), "2024-05-05T00:00:00.000Z");
 });
 
-test("getRecentPosts passes slug and frontmatter title to the resolver", async () => {
-  const harnessed = harness([{ slug: "post", permalink: "/post" }], {
-    post: { frontmatter: { publish: true, date: "2024-01-01", title: "Hi" } },
-  });
-  harnessed.args.resolveTitle = (slug, title) => `[${slug}] ${String(title)}`;
+test("getRecentPosts uses the manifest entry title", () => {
+  const entries = [
+    entry("post", { title: "Hello", frontmatter: { date: "2024-01-01" } }),
+  ];
 
-  const result = await getRecentPosts(harnessed.args);
-  assert.deepEqual(result, [
+  assert.deepEqual(getRecentPosts({ manifest: manifest(entries, entries) }), [
     {
       slug: "post",
       permalink: "/post",
-      title: "[post] Hi",
+      title: "Hello",
       postedAt: new Date("2024-01-01"),
     },
   ]);
 });
 
-test("getRecentPosts returns an empty list for no posts", async () => {
-  assert.deepEqual(await getRecentPosts(harness([], {}).args), []);
+test("getRecentPosts excludes entries that are not discoverable", () => {
+  const discoverable = entry("public", {
+    frontmatter: { date: "2024-01-01" },
+  });
+  const unlisted = entry("unlisted", {
+    routable: true,
+    discoverable: false,
+    frontmatter: { date: "2024-01-02" },
+  });
+  const draft = entry("draft", {
+    routable: false,
+    discoverable: false,
+    frontmatter: { date: "2024-01-03" },
+  });
+  const future = entry("future", {
+    routable: false,
+    discoverable: false,
+    frontmatter: { date: "2999-01-01" },
+  });
+
+  const all = [discoverable, unlisted, draft, future];
+  const discovery = [discoverable];
+
+  assert.deepEqual(
+    getRecentPosts({ manifest: manifest(all, discovery) }).map(
+      (post) => post.slug,
+    ),
+    ["public"],
+  );
+});
+
+test("getRecentPosts keeps localized permalinks and titles", () => {
+  const entries = [
+    entry("post", { title: "English", frontmatter: { date: "2024-01-01" } }),
+    entry("post.ja", {
+      permalink: "/ja/post",
+      title: "日本語",
+      frontmatter: { date: "2024-01-02" },
+    }),
+  ];
+
+  const result = getRecentPosts({ manifest: manifest(entries, entries) });
+  assert.deepEqual(
+    result.map((post) => [post.permalink, post.title]),
+    [
+      ["/ja/post", "日本語"],
+      ["/post", "English"],
+    ],
+  );
+});
+
+test("getRecentPosts returns an empty list for no entries", () => {
+  assert.deepEqual(getRecentPosts({ manifest: manifest([], []) }), []);
 });
 
 test("recentPostsPlugin registers its stylesheet", () => {
@@ -184,15 +187,15 @@ test("a post date change regenerates the index with only the plugin dependency",
   assert.ok(dependencies);
   const previousEntries = [
     entry("index"),
-    entry("post", { date: "2024-01-01" }),
+    entry("post", { frontmatter: { date: "2024-01-01" } }),
   ];
   const currentEntries = [
     entry("index"),
-    entry("post", { date: "2024-02-01" }),
+    entry("post", { frontmatter: { date: "2024-02-01" } }),
   ];
 
   const result = determineOutputChanges({
-    manifest: manifest(currentEntries),
+    manifest: manifest(currentEntries, currentEntries),
     previousState: previousOutputState(previousEntries, dependencies),
     changeSet: {
       added: [],
@@ -230,10 +233,45 @@ test("RecentPosts renders English labels and dates", () => {
   assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });
 
-function manifest(entries: ContentManifestEntry[]): ContentManifest {
+type EntryOptions = {
+  permalink?: string;
+  title?: string;
+  frontmatter?: Record<string, unknown>;
+  routable?: boolean;
+  discoverable?: boolean;
+};
+
+function entry(slug: string, options: EntryOptions = {}): ContentManifestEntry {
+  const permalink = options.permalink ?? (slug === "index" ? "/" : `/${slug}`);
+  const routable = options.routable ?? true;
+  const discoverable = options.discoverable ?? routable;
+  return {
+    slug,
+    permalink,
+    publicLocation: { slug, permalink },
+    title: options.title ?? slug,
+    frontmatter: options.frontmatter ?? {},
+    publishing: {
+      visibility: discoverable ? "public" : routable ? "unlisted" : "draft",
+      routable,
+      discoverable,
+    },
+    html: "",
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+  };
+}
+
+function manifest(
+  entries: ContentManifestEntry[],
+  discoverable: ContentManifestEntry[] = entries,
+): ContentManifest {
   return {
     entries,
-    publicEntries: entries,
+    publicEntries: entries.filter((entry) => entry.publishing.routable),
+    discoverableEntries: discoverable,
     publicRedirects: new Map(),
     generatedOutputs: [],
   } as unknown as ContentManifest;
@@ -249,26 +287,6 @@ function previousOutputState(
     contentIndex: {},
     manifestEntries: entries,
     outputs: buildOutputInventory(manifest(entries), [], dependencies),
-  };
-}
-
-function entry(
-  slug: string,
-  frontmatter: Record<string, unknown> = {},
-): ContentManifestEntry {
-  const permalink = slug === "index" ? "/" : `/${slug}`;
-  return {
-    slug,
-    permalink,
-    publicLocation: { slug, permalink },
-    title: slug,
-    frontmatter,
-    publishing: { visibility: "public", routable: true, discoverable: true },
-    html: "",
-    tags: [],
-    links: [],
-    backlinks: [],
-    assets: [],
   };
 }
 

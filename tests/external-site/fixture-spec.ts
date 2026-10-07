@@ -35,6 +35,10 @@ export const PACKAGES: PackageSpec[] = [
   },
   { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
   {
+    directory: "packages/plugins/navigation",
+    name: "@riebeckite/plugin-navigation",
+  },
+  {
     directory: "packages/plugins/backlinks",
     name: "@riebeckite/plugin-backlinks",
   },

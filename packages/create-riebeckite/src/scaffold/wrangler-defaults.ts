@@ -74,6 +74,8 @@ export const GITIGNORE_REQUIRED = [
   "dist/",
   ".riebeckite/",
   "app/.riebeckite/",
+  ".wrangler/",
+  ".dev.vars",
 ] as const;
 
 /** Files that must NOT be in .gitignore */

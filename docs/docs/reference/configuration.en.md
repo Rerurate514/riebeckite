@@ -19,7 +19,7 @@ export default defineConfig({
 
 ## Navigation
 
-Navigation is provided by the **`@riebeckite/plugin-navigation`** plugin, not by a top-level config section. The plugin produces a semantic model `{ primary, secondary }`, and the **Site shell renders and places it**. `primary` and `secondary` express prominence, not placement; there is no `header` or `footer` key.
+Navigation is provided by the **`@riebeckite/plugin-navigation`** plugin, not by a top-level config section. The plugin produces a semantic model `{ primary, secondary }` and owns the rendering mechanics through `SiteNav`; the **Site decides where each rendered list is placed**. `primary` and `secondary` express prominence, not placement; there is no `header` or `footer` key.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -30,6 +30,22 @@ export default defineConfig({
   plugins: [navigation()],
 });
 ```
+
+### Rendering
+
+`SiteNav` from `@riebeckite/plugin-navigation` renders a resolved tree with the standard `rb-nav` structure, active-path detection, locale-aware normalization, and the `aria-current` contract. The Site decides where the tree is placed:
+
+```tsx
+import { SiteNav } from "@riebeckite/plugin-navigation";
+
+<SiteNav
+  items={model.primary}
+  path={c.req.path}
+  language={c.get("htmlLanguage")}
+/>;
+```
+
+Pass `localizeHref` to rewrite hrefs (for example to localize docs links), `label` to change the landmark label, and `class`/`className` to extend the `<nav>` classes.
 
 ### Zero-config derivation
 
@@ -182,7 +198,7 @@ For the division of responsibility between navigation and plugins, see [Customiz
 
 ### Exported helpers and types
 
-`@riebeckite/plugin-navigation` exports `navigation`, `buildNavigation`, `resolveSiteNavigation`, `NAVIGATION_PLUGIN_NAME`, and the types `NavigationItem`, `NavigationOptions`, and `SiteNavigation`.
+`@riebeckite/plugin-navigation` exports `navigation`, `buildNavigation`, `resolveSiteNavigation`, `NAVIGATION_PLUGIN_NAME`, the `SiteNav` rendering primitive, and the types `NavigationItem`, `NavigationOptions`, `SiteNavigation`, and `SiteNavProps`.
 
 ## Content selection
 

@@ -3,8 +3,8 @@
 サイトナビゲーションを提供する Riebeckite プラグインです。`navigation()` は
 Vault にすでにあるノートから主要ナビゲーションを導出します。Riebeckite 専用の
 ファイルも必須 frontmatter も不要なので、既存の Obsidian Vault をそのまま
-公開できます。ナビゲーションの「モデル」はプラグインが持ち、描画と配置は
-Site シェルが担当します。
+公開できます。ナビゲーションの「モデル」と描画の仕組みはプラグインが持ち、
+配置は Site が担当します。
 
 [English](./README.md)
 
@@ -51,6 +51,33 @@ const secondary = model?.secondary ?? [];
 
 プラグインが登録されていない場合、`resolveSiteNavigation` は `null` を返すため、
 ナビゲーションのないサイトもそのまま動作します。
+
+### 描画
+
+`SiteNav` は解決済みのツリーを `<nav>` ランドマークとネストしたリストとして
+描画します。子の再帰描画、現在パスの判定、言語を考慮した正規化、外部リンクの
+扱い、`aria-current` といった描画の仕組みを担当し、ツリーをどこに置くかは
+Site が決めます。
+
+```tsx
+import { SiteNav } from "@riebeckite/plugin-navigation";
+
+<header class="site-header rb-site-header">
+  <a href="/" class="site-header__home rb-site-header__home">My Site</a>
+  <SiteNav
+    items={primary}
+    path={c.req.path}
+    language={c.get("htmlLanguage")}
+  />
+</header>;
+```
+
+`path` は現在のリクエストパスです。`language` は現在のコンテンツ言語で、指定すると
+`SiteNav` は `/language` プレフィックスを取り除いてから現在のアイテムを判定します。
+そのため、言語プレフィックスのない手書き href でもローカライズされたページに
+一致します。`localizeHref` を渡すと現在の言語に合わせて href を書き換えられます。
+`label` でランドマークのラベルを、`class` / `className` で `<nav>` のクラスを
+拡張できます。
 
 ## 手書きナビゲーション
 
@@ -109,8 +136,9 @@ navigation({
 - `resolveSiteNavigation(config, manifest)` — 有効なプラグインを見つけてモデルを
   構築する。なければ `null`
 - `validateNavigationOptions(options)` — オプションの検証
+- `SiteNav` — 解決済みツリーを標準の `rb-nav` 構造で描画する
 - 型: `NavigationItem`, `NavigationOptions`, `NavigationSource`,
-  `SiteNavigation`
+  `SiteNavigation`, `SiteNavProps`
 
 ## 制約
 

@@ -30,10 +30,18 @@ export default jsxRenderer(async ({ children }, c) => {
         />
       </head>
       <body class="riebeckite-page rb-site">
-        <SiteHeader path={c.req.path} items={navigation.primary} />
+        <SiteHeader
+          path={c.req.path}
+          items={navigation.primary}
+          language={c.get("htmlLanguage")}
+        />
         <SearchBar />
         {children}
-        <SiteFooter path={c.req.path} items={navigation.secondary} />
+        <SiteFooter
+          path={c.req.path}
+          items={navigation.secondary}
+          language={c.get("htmlLanguage")}
+        />
       </body>
     </ThemeRoot>
   );

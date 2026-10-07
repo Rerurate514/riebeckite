@@ -14,7 +14,8 @@
     }
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

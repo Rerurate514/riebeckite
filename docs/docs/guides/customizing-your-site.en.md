@@ -154,14 +154,20 @@ plugins: [
 Called with no arguments, `navigation()` derives the links from the vault. Pass
 `items` to curate them yourself and `secondary` for supplementary links.
 
-The plugin produces the model; the site shell renders and places it. In the
-starter, `app/components/site-header.tsx` renders the items and
-`app/routes/_renderer.tsx` passes them in. So it helps to think in terms of:
+The plugin produces the model and renders each tree through `SiteNav`; the site
+decides where the rendered list is placed. In the starter,
+`app/components/site-header.tsx` uses `SiteNav`, and `app/routes/_renderer.tsx`
+passes the resolved model and the current path in. So it helps to think in terms
+of:
 
 - **Adding or removing a link** → change `navigation({ items })`
 - **Deriving links from the vault** → call `navigation()` with no arguments
 - **Changing the Header look or HTML** → change `site-header.tsx`
 - **Changing where the Header / Footer sits** → change `_renderer.tsx`
+
+Rendering mechanics — recursive children, active-path detection, locale-aware
+normalization, external links, and `aria-current` — live in `SiteNav`, so the
+site never has to reimplement them.
 
 See the [configuration reference](../reference/configuration.en.md#navigation) for
 the fields you can set.

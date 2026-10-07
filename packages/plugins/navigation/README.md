@@ -3,8 +3,8 @@
 Site navigation as a Riebeckite plugin. `navigation()` derives the primary
 navigation from the notes already in the vault, so an existing Obsidian vault
 becomes navigable with no Riebeckite-specific file and no required frontmatter.
-The plugin owns the navigation *model*; the Site shell owns rendering and
-placement.
+The plugin owns the navigation *model* and the *rendering mechanics*; the Site
+owns placement — where each rendered list appears.
 
 [日本語](./README_ja.md)
 
@@ -51,6 +51,32 @@ const secondary = model?.secondary ?? [];
 
 `resolveSiteNavigation` returns `null` when the plugin is not registered, so a
 site without navigation keeps working.
+
+### Rendering
+
+`SiteNav` renders a resolved tree as a `<nav>` landmark with nested lists. It
+owns the rendering mechanics — recursive children, active-path detection,
+locale-aware normalization, external-link handling, and `aria-current` — while
+the Site decides where the tree is placed:
+
+```tsx
+import { SiteNav } from "@riebeckite/plugin-navigation";
+
+<header class="site-header rb-site-header">
+  <a href="/" class="site-header__home rb-site-header__home">My Site</a>
+  <SiteNav
+    items={primary}
+    path={c.req.path}
+    language={c.get("htmlLanguage")}
+  />
+</header>;
+```
+
+`path` is the current request path. `language` is the current content language;
+when set, `SiteNav` strips a matching `/language` prefix before resolving the
+active item, so unlocalized authored hrefs still match localized pages. Pass
+`localizeHref` to rewrite hrefs for the current language, `label` to change the
+landmark label, and `class`/`className` to extend the `<nav>` classes.
 
 ## Authored navigation
 
@@ -109,8 +135,9 @@ tab.
 - `resolveSiteNavigation(config, manifest)` — find the enabled plugin and build
   the model, or `null`
 - `validateNavigationOptions(options)` — option validation
+- `SiteNav` — render a resolved tree with the standard `rb-nav` structure
 - Types: `NavigationItem`, `NavigationOptions`, `NavigationSource`,
-  `SiteNavigation`
+  `SiteNavigation`, `SiteNavProps`
 
 ## Limitations
 

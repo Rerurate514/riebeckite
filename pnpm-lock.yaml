@@ -1002,6 +1002,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*

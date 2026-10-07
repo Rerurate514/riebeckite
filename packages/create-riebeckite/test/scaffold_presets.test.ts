@@ -141,23 +141,24 @@ test("starter and showcase scaffolds render authored navigation in the site shel
         path.join(targetDirectory, "app/routes/_renderer.tsx"),
         "utf8",
       );
-      assert.match(header, /site-navigation__mobile/);
       assert.match(header, /rb-site-header/);
-      assert.match(header, /rb-nav__link--active/);
+      assert.match(header, /rb-nav__mobile/);
       assert.match(header, /rb-site-footer/);
-      assert.match(header, /aria-current/);
-      assert.match(header, /target=\{item.external/);
-      assert.match(header, /isChildList/);
       assert.match(header, /from "@riebeckite\/plugin-navigation"/);
+      assert.match(header, /<SiteNav/);
       assert.match(header, /export function SiteHeader/);
       assert.match(header, /export function SiteFooter/);
+      assert.doesNotMatch(header, /isActive/);
+      assert.doesNotMatch(header, /NavigationItems/);
+      assert.doesNotMatch(header, /rb-nav__link--active/);
+      assert.doesNotMatch(header, /aria-current/);
       assert.match(
         renderer,
-        /<SiteHeader path=\{c\.req\.path\} items=\{navigation\.primary\} \/>/,
+        /<SiteHeader\s+path=\{c\.req\.path\}\s+items=\{navigation\.primary\}\s+language=\{c\.get\("htmlLanguage"\)\}\s*\/>/,
       );
       assert.match(
         renderer,
-        /<SiteFooter path=\{c\.req\.path\} items=\{navigation\.secondary\} \/>/,
+        /<SiteFooter\s+path=\{c\.req\.path\}\s+items=\{navigation\.secondary\}\s+language=\{c\.get\("htmlLanguage"\)\}\s*\/>/,
       );
       assert.match(renderer, /class="riebeckite-page rb-site"/);
       assert.match(

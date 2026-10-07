@@ -46,7 +46,7 @@ Config は Content や Plugin の処理が始まる前に Integration によっ�
 
 ## Navigation の設定
 
-Navigation はトップレベルの Config 項目ではなく、**`@riebeckite/plugin-navigation`** Plugin が提供します。Plugin は `{ primary, secondary }` という意味的なモデルを返し、**Site の shell がそれを描画・配置**します。`primary` と `secondary` は目立たせ方の違いを表すもので、配置そのものではありません。Plugin API に `header` / `footer` というキーはありません。
+Navigation はトップレベルの Config 項目ではなく、**`@riebeckite/plugin-navigation`** Plugin が提供します。Plugin は `{ primary, secondary }` という意味的なモデルを返し、`SiteNav` を通じて描画の仕組みを持ちます。**Site がそれぞれのリストをどこに配置するか**を決めます。`primary` と `secondary` は目立たせ方の違いを表すもので、配置そのものではありません。Plugin API に `header` / `footer` というキーはありません。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -57,6 +57,22 @@ export default defineConfig({
   plugins: [navigation()],
 });
 ```
+
+### 描画
+
+`@riebeckite/plugin-navigation` の `SiteNav` は、解決済みのツリーを標準の `rb-nav` 構造で描画し、現在パスの判定、言語を考慮した正規化、`aria-current` を提供します。ツリーをどこに置くかは Site が決めます。
+
+```tsx
+import { SiteNav } from "@riebeckite/plugin-navigation";
+
+<SiteNav
+  items={model.primary}
+  path={c.req.path}
+  language={c.get("htmlLanguage")}
+/>;
+```
+
+`localizeHref` を渡すと href を書き換えられます（たとえば docs リンクのローカライズ）。`label` でランドマークのラベルを、`class` / `className` で `<nav>` のクラスを拡張できます。
 
 ### 引数なしの導出
 
@@ -209,7 +225,7 @@ Navigation と Plugin の役割の違いについては、[サイトのカスタ
 
 ### エクスポートされる helper と型
 
-`@riebeckite/plugin-navigation` は `navigation`、`buildNavigation`、`resolveSiteNavigation`、`NAVIGATION_PLUGIN_NAME` と、型 `NavigationItem`、`NavigationOptions`、`SiteNavigation` をエクスポートします。
+`@riebeckite/plugin-navigation` は `navigation`、`buildNavigation`、`resolveSiteNavigation`、`NAVIGATION_PLUGIN_NAME`、描画 primitive の `SiteNav` と、型 `NavigationItem`、`NavigationOptions`、`SiteNavigation`、`SiteNavProps` をエクスポートします。
 
 ## Content の設定
 

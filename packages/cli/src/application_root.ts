@@ -37,6 +37,7 @@ export async function resolveRiebeckiteProject(
   const application = await resolveHonoxApplication({
     configRoot,
     configFile: configPath,
+    startDirectory: invocationCwd,
   });
   return {
     invocationCwd,

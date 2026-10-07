@@ -22,6 +22,7 @@ export type ResolvedHonoxApplication = {
 
 export type ResolveHonoxApplicationOptions = RiebeckiteConfigLoaderOptions & {
   appRoot?: string;
+  startDirectory?: string;
 };
 
 const viteConfigFileNames = [
@@ -32,8 +33,9 @@ const viteConfigFileNames = [
 
 export async function resolveHonoxApplicationRoot(
   configRoot: string,
+  startDirectory?: string,
 ): Promise<string> {
-  const roots = await findViteApplicationRoots(configRoot);
+  const roots = await findViteApplicationRoots(configRoot, startDirectory);
   if (roots.length === 1) return roots[0] as string;
   if (roots.length === 0) {
     throw new HonoxApplicationRootError(
@@ -58,7 +60,7 @@ export async function resolveHonoxApplication(
   const configRoot = path.resolve(options.configRoot);
   const appRoot = options.appRoot
     ? path.resolve(options.appRoot)
-    : await resolveHonoxApplicationRoot(configRoot);
+    : await resolveHonoxApplicationRoot(configRoot, options.startDirectory);
   const workspaceRoot =
     options.workspaceRoot ?? (await findWorkspaceRoot(configRoot));
   const rawConfig = await loadRiebeckiteConfig({
@@ -147,7 +149,15 @@ async function waitForShutdown(
   });
 }
 
-async function findViteApplicationRoots(root: string): Promise<string[]> {
+async function findViteApplicationRoots(
+  root: string,
+  startDirectory?: string,
+): Promise<string[]> {
+  const applicationRoot = startDirectory
+    ? await findViteApplicationRootFrom(startDirectory, root)
+    : undefined;
+  if (applicationRoot) return [applicationRoot];
+
   const directories = [root];
   const applicationRoots: string[] = [];
 
@@ -171,6 +181,28 @@ async function findViteApplicationRoots(root: string): Promise<string[]> {
   }
 
   return applicationRoots;
+}
+
+async function findViteApplicationRootFrom(
+  startDirectory: string,
+  configRoot: string,
+): Promise<string | undefined> {
+  let directory = path.resolve(startDirectory);
+  while (isWithin(configRoot, directory)) {
+    if (await hasViteConfig(directory)) return directory;
+    const parent = path.dirname(directory);
+    if (parent === directory) return undefined;
+    directory = parent;
+  }
+  return undefined;
+}
+
+function isWithin(parent: string, target: string): boolean {
+  const relative = path.relative(parent, target);
+  return (
+    relative === "" ||
+    (!relative.startsWith("..") && !path.isAbsolute(relative))
+  );
 }
 
 async function hasViteConfig(directory: string): Promise<boolean> {

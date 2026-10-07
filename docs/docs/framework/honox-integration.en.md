@@ -84,9 +84,12 @@ the standard slot names. These stable styling hooks are the only classes
 supplied by the contract: `rb-article`, `rb-article-layout`, `rb-article-header`,
 `rb-article-body`, `rb-article-content`, `rb-article-meta`, `rb-article-footer`,
 and `rb-sidebar`, in the component order above. Primitives provide semantic
-HTML, those hooks, and `class`/`className` composition only. They do not own
-article copy, metadata formatting, navigation, cards, page layouts, islands, or
-CSS. Those belong to the site application. `ArticleHeader` and `ArticleContent`
+HTML, those hooks, `class`/`className` composition, and the structural CSS that
+makes the hooks work. That structural CSS ships in `@riebeckite/honox/style.css`
+and reaches the site through the generated `.riebeckite/framework-styles.css`.
+Primitives do not own article copy, metadata formatting, navigation placement,
+cards, page-layout composition, islands, or site visual design and overrides.
+Those belong to the site application. `ArticleHeader` and `ArticleContent`
 accept either children or their HTML input prop, never both. `ArticleBody`
 renders rendered Markdown as `.rb-article-content`, and Markdown typography is
 scoped to that wrapper, so plugin components keep their own headings wherever
@@ -331,6 +334,7 @@ the generated files themselves:
 
 ```css
 /* app/style.css */
+@import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 

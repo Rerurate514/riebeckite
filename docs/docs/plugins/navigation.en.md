@@ -58,8 +58,10 @@ site without navigation keeps working.
 
 `SiteNav` renders a resolved tree as a `<nav>` landmark with nested lists. It
 owns the rendering mechanics — recursive children, active-path detection,
-locale-aware normalization, external-link handling, and `aria-current` — while
-the Site decides where the tree is placed:
+locale-aware normalization, external-link handling, and `aria-current` — and
+ships the structural CSS for that `rb-nav` tree in its own `style.css`, loaded
+through the generated plugin styles. The Site decides where the tree is placed
+and whether to wrap it in a `<details>` element on small screens:
 
 ```tsx
 import { SiteNav } from "@riebeckite/plugin-navigation";

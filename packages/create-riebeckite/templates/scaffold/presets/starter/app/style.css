@@ -1,3 +1,4 @@
+@import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 
@@ -48,17 +49,10 @@ body {
   color: var(--rb-color-ink);
 }
 
-.rb-nav__list {
+.rb-nav > .rb-nav__list {
   display: flex;
   align-items: center;
   gap: var(--rb-space-3, 1.5rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.rb-nav__item {
-  position: relative;
 }
 
 .rb-nav__link {
@@ -79,21 +73,9 @@ body {
 }
 
 .rb-nav__children {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: max-content;
   padding: var(--rb-space-2, 1rem);
   background: var(--rb-color-surface);
   border: 1px solid var(--rb-color-border);
-}
-
-.rb-nav__item:hover > .rb-nav__children,
-.rb-nav__item:focus-within > .rb-nav__children {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
 }
 
 .rb-nav__mobile {
@@ -171,13 +153,6 @@ body {
   margin: 0 auto;
 }
 
-.rb-article-layout {
-  display: grid;
-  grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
-  justify-content: center;
-  column-gap: var(--rb-layout-gap, 2rem);
-}
-
 .rb-article-body,
 .site-article__footer {
   min-width: 0;
@@ -189,16 +164,6 @@ body {
 }
 
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-layout {
-    grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
-    position: relative;
-  }
-
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
   :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__footer {
     grid-column: 1;
   }

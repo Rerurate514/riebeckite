@@ -377,7 +377,8 @@ structure, or behavior.
 ## Cascade
 
 ``` text
-base / app structural CSS
+framework structural CSS
+→ base / app structural CSS
 → Plugin default CSS
 → Theme CSS
 → config token inline style
@@ -385,10 +386,12 @@ base / app structural CSS
 ```
 
 The order is stable, not incidental. `@riebeckite/honox` generates
-`.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order) and
-`.riebeckite/theme-styles.css` (theme styles). A site imports the plugin
-stylesheet before the theme stylesheet, so the theme CSS always wins the
-plugin/theme cascade while preserving `userCss` as the final user override.
+`.riebeckite/framework-styles.css` (framework structural CSS),
+`.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order), and
+`.riebeckite/theme-styles.css` (theme styles). A site imports the framework
+stylesheet before the plugin stylesheet, and the plugin stylesheet before the
+theme stylesheet, so the theme CSS always wins the plugin/theme cascade while
+preserving `userCss` as the final user override.
 Do not reorder those imports, and do not edit the generated files by hand;
 each carries a header comment stating its position in the cascade. The
 cascade normally does not rely on `!important`.

@@ -301,6 +301,7 @@ CSS:
 
 ```css
 /* app/style.css */
+@import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 ```

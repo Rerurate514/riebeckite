@@ -1,0 +1,29 @@
+@layer components {
+  .rb-nav > .rb-nav__list,
+  .rb-nav__children {
+    margin: 0;
+    list-style: none;
+  }
+
+  .rb-nav > .rb-nav__list {
+    padding: 0;
+  }
+
+  .rb-nav__item {
+    position: relative;
+  }
+
+  .rb-nav__children {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: max-content;
+  }
+
+  .rb-nav__item:hover > .rb-nav__children,
+  .rb-nav__item:focus-within > .rb-nav__children {
+    display: flex;
+    flex-direction: column;
+  }
+}

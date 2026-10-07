@@ -272,18 +272,19 @@ Primitive が担当するのは主に、
 - semantic HTML
 - stable styling hook
 - `class` / `className` の合成
+- hook を成立させる構造 CSS
 
-です。
+です。`rb-*` hook を成立させる構造 CSS は `@riebeckite/honox/style.css` にあり、生成された `.riebeckite/framework-styles.css` 経由で Site に読み込まれます。
 
 一方、
 
-- 記事本文の見せ方
+- 記事本文の見た目
 - metadata の表示形式
-- navigation
+- navigation の配置
 - card
-- page layout
+- page layout の composition
 - island
-- CSS
+- Site 固有の visual design と override
 
 は Site Application が管理します。
 
@@ -316,7 +317,7 @@ import {
 
 `ArticleHeader` と `ArticleContent` は、children と HTML input prop のどちらか一方だけを受け取ります。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。`ArticleContent html={...}` は後方互換のために残っていますが非推奨です。
 
-Primitive は composition point として使用し、見た目は Site 側で定義してください。
+Primitive は composition point として使用し、構造は Framework の hook CSS が、見た目は Site 側が定義してください。
 
 また、
 
@@ -610,6 +611,7 @@ export function SiteArticle({
 見た目は Site の CSS で定義します。
 
 ```css
+@import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 

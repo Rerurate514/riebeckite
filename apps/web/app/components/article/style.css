@@ -4,15 +4,7 @@
 }
 
 @layer components {
-  .rb-article-layout {
-    display: grid;
-    grid-template-columns: minmax(0, var(--rb-layout-article-max));
-    justify-content: center;
-    column-gap: var(--rb-layout-gap);
-  }
-
   .rb-article-body {
-    min-width: 0;
     padding-inline: var(--rb-space-2);
   }
 
@@ -22,27 +14,8 @@
   }
 
   :is(:root, .rb-theme-root)[data-article-layout="full-width"]
-    .rb-article-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  :is(:root, .rb-theme-root)[data-article-layout="full-width"]
     .rb-article-body {
     max-width: none;
-  }
-
-  @media (min-width: 88rem) {
-    :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
-      .rb-article-layout {
-      grid-template-columns:
-        minmax(0, var(--rb-layout-article-max))
-        var(--rb-layout-sidebar);
-    }
-
-    .rb-article-body {
-      grid-column: 1;
-      grid-row: 1;
-    }
   }
 }
 
@@ -57,15 +30,6 @@
    the readable column left. These rules are unlayered so they beat the plugin
    styles imported later via `.riebeckite/plugin-styles.css`. */
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-layout {
-    position: relative;
-  }
-
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
   :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-outro {
     grid-column: 1;
   }

@@ -360,6 +360,9 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
       path.join(targetDirectory, "app/style.css"),
       "utf8",
     );
+    assert.match(style, /@import "\.\/\.riebeckite\/framework-styles\.css";/);
+    assert.match(style, /@import "\.\/\.riebeckite\/plugin-styles\.css";/);
+    assert.match(style, /@import "\.\/\.riebeckite\/theme-styles\.css";/);
     assert.match(
       style,
       /\*,\n\*::before,\n\*::after \{[\s\S]*?box-sizing: border-box/,
@@ -392,6 +395,9 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
       style,
       /\.site-article__footer \{[\s\S]*?padding-inline: var\(--rb-space-2, 1rem\)/,
     );
+    assert.doesNotMatch(style, /\.rb-article-layout \{/);
+    assert.doesNotMatch(style, /\.rb-nav__item \{/);
+    assert.doesNotMatch(style, /position: absolute;\n {2}top: 100%;/);
   });
 });
 

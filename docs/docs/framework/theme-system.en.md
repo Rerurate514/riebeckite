@@ -361,14 +361,15 @@ structure, or behavior.
 Load order is a key contract for presentation extensions.
 
 ```text
-base / app structural CSS
+framework structural CSS
+→ base / app structural CSS
 → Plugin default CSS
 → Theme CSS
 → config token inline style
 → userCss
 ```
 
-This order is guaranteed, not incidental. `@riebeckite/honox` generates `.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order) and `.riebeckite/theme-styles.css` (theme styles). The site imports plugin stylesheets before theme stylesheets, so theme CSS always overrides plugin defaults and `userCss` is the final override.
+This order is guaranteed, not incidental. `@riebeckite/honox` generates `.riebeckite/framework-styles.css` (framework structural CSS), `.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order), and `.riebeckite/theme-styles.css` (theme styles). The site imports the framework stylesheet before the plugin stylesheet, and the plugin stylesheet before the theme stylesheet, so theme CSS always overrides plugin defaults and `userCss` is the final override.
 
 Do not reorder these imports or edit the generated files. Each generated file notes its cascade position in a header comment. The cascade usually does not depend on `!important`.
 

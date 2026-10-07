@@ -66,8 +66,7 @@
   color: var(--rb-vega-lite-muted);
 }
 
-html[data-theme="dark"] .rb-vega-lite,
-html.dark .rb-vega-lite {
+html[data-theme="dark"] .rb-vega-lite {
   --rb-vega-lite-paper: var(--rb-color-ink, #000000);
   --rb-vega-lite-ink: var(--rb-color-paper, #ffffff);
 }

@@ -70,8 +70,7 @@
   font-size: 0.875rem;
 }
 
-html[data-theme="dark"] .rb-plantuml,
-html.dark .rb-plantuml {
+html[data-theme="dark"] .rb-plantuml {
   --rb-plantuml-ink: var(--rb-color-paper, #ffffff);
   --rb-plantuml-paper: var(--rb-color-ink, #000000);
 }

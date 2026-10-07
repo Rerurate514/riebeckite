@@ -60,8 +60,7 @@
   color: var(--rb-markmap-muted);
 }
 
-html[data-theme="dark"] .rb-markmap,
-html.dark .rb-markmap {
+html[data-theme="dark"] .rb-markmap {
   --rb-markmap-paper: var(--rb-color-ink, #000000);
   --rb-markmap-ink: var(--rb-color-paper, #ffffff);
 }

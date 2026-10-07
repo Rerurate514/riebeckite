@@ -68,8 +68,7 @@ a.rb-qr__source {
   color: var(--rb-qr-muted);
 }
 
-html[data-theme="dark"] .rb-qr,
-html.dark .rb-qr {
+html[data-theme="dark"] .rb-qr {
   --rb-qr-paper: var(--rb-color-ink, #000000);
   --rb-qr-ink: var(--rb-color-paper, #ffffff);
 }

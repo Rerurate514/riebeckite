@@ -58,8 +58,7 @@
   color: var(--rb-d2-muted);
 }
 
-html[data-theme="dark"] .rb-d2,
-html.dark .rb-d2 {
+html[data-theme="dark"] .rb-d2 {
   --rb-d2-paper: var(--rb-color-ink, #000000);
   --rb-d2-ink: var(--rb-color-paper, #ffffff);
 }

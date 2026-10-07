@@ -100,8 +100,7 @@
   color: var(--rr-map-muted);
 }
 
-html[data-theme="dark"] .rr-map,
-html.dark .rr-map {
+html[data-theme="dark"] .rr-map {
   --rr-map-paper: var(--rb-color-ink, #000000);
   --rr-map-ink: var(--rb-color-paper, #ffffff);
 }

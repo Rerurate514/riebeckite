@@ -109,8 +109,7 @@
   font-size: 0.875rem;
 }
 
-html[data-theme="dark"] .rb-flashcards,
-html.dark .rb-flashcards {
+html[data-theme="dark"] .rb-flashcards {
   --rb-flashcards-ink: var(--rb-color-paper, #ffffff);
   --rb-flashcards-paper: var(--rb-color-ink, #000000);
 }

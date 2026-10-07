@@ -292,6 +292,8 @@ frontmatter の `visibility` と `publishAt` は、この設定より優先さ�
 
 詳しい対応関係は [Design tokens](./theme-api.md#design-tokens) を参照してください。
 
+`theme.tokens` は Theme の stylesheet より後に、layer に属さない `:root { --rb-* }` として出力されるため、ここで設定した値は Light、明示 Dark、System Dark のいずれでも Theme の値を上書きします。Theme の CSS をコピーするのではなく、アクセントや surface はここで調整してください。
+
 ```ts
 theme: {
   colorMode: "system",

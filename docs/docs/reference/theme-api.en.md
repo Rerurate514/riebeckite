@@ -305,6 +305,14 @@ the attribute for `"system"`. An empty attribute is not equivalent — an empty
 `data-theme` still matches `[data-theme]` selectors and defeats the media
 query.
 
+Only these two mechanisms produce a dark palette: the explicit
+`[data-theme="dark"]` on the theme root, and the `prefers-color-scheme: dark`
+media query while `data-theme` is absent. The framework never adds a `.dark`
+class, so a `.dark` selector is outside the contract. Both states resolve the
+same `--rb-*` semantic tokens, so a component that consumes only those tokens
+renders the same under explicit and system dark and does not need to detect
+which one is active.
+
 `@riebeckite/plugin-color-mode` is the reference implementation of this
 contract: `ColorModeScript` (a before-paint inline script), `ColorModeToggle`
 (a control), and an `initColorMode` client entry that persists the choice in

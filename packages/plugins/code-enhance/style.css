@@ -152,8 +152,7 @@
   white-space: pre-wrap;
 }
 
-:root[data-theme="dark"] .rr-code,
-html.dark .rr-code {
+:root[data-theme="dark"] .rr-code {
   --rr-code-paper: var(--rb-color-paper, #000000);
   --rr-code-ink: var(--rb-color-ink, #ffffff);
 }

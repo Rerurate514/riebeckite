@@ -58,8 +58,7 @@
   background: color-mix(in srgb, var(--rr-marp-ink) 6%, transparent);
 }
 
-html[data-theme="dark"] .rb-marp,
-html.dark .rb-marp {
+html[data-theme="dark"] .rb-marp {
   --rr-marp-paper: var(--rb-color-ink, #000000);
   --rr-marp-ink: var(--rb-color-paper, #ffffff);
 }

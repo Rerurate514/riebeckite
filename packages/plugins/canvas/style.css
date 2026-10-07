@@ -128,8 +128,7 @@
   display: none;
 }
 
-html[data-theme="dark"] .rb-canvas,
-html.dark .rb-canvas {
+html[data-theme="dark"] .rb-canvas {
   --rb-canvas-paper: var(--rb-color-ink, #000000);
   --rb-canvas-ink: var(--rb-color-paper, #ffffff);
 }

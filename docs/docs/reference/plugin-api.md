@@ -743,6 +743,8 @@ Theme に公開する必要がある Hook だけを stable contract として文
 
 Plugin の default CSS は Theme CSS より先に読み込まれるため、Theme は Plugin package を変更せずに見た目を上書きできます。
 
+Plugin の Dark 対応は `--rb-*` Semantic Token を参照するのが基本です。Semantic Token は Light、明示 Dark、System Dark のいずれでも正しく解決されます。Build 済み資産の反転など、状態そのもので分岐する必要がある場合だけ、`html[data-theme="dark"]` と、`data-theme` が無いときの `@media (prefers-color-scheme: dark) { :root:not([data-theme]) ... }` の 2 状態に合わせてください。Framework は `.dark` class を付与しないため、`.dark` を前提にしないでください。
+
 詳しくは [Theme System](./theme-api.md#stable-css-hooks) を参照してください。
 
 # Client Entries

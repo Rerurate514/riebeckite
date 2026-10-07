@@ -66,8 +66,7 @@
   text-decoration: none;
 }
 
-html[data-theme="dark"] .rb-rich-embed,
-html.dark .rb-rich-embed {
+html[data-theme="dark"] .rb-rich-embed {
   --rb-rich-embed-paper: var(--rb-color-ink, #000000);
   --rb-rich-embed-ink: var(--rb-color-paper, #ffffff);
 }

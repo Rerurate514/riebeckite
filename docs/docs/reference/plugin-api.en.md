@@ -467,6 +467,13 @@ Themes target these root hooks. Plugin default CSS loads before theme CSS, so
 a theme restyles a feature without editing the plugin. See
 [Theme System](./theme-api.en.md#stable-css-hooks).
 
+For dark mode, consume the semantic `--rb-*` tokens: they resolve correctly in
+light, explicit dark, and system dark. Only when a plugin must branch on the
+mode itself (for example to invert a build-time asset) should it match the two
+documented states—`html[data-theme="dark"]` and
+`@media (prefers-color-scheme: dark) { :root:not([data-theme]) ... }`. The
+framework never adds a `.dark` class, so do not depend on one.
+
 ## Endpoints and SEO
 
 `endpoints` lets an Integration connect reusable plugin HTTP behavior to

@@ -142,8 +142,7 @@
   white-space: pre-wrap;
 }
 
-html[data-theme="dark"] .rb-kanban,
-html.dark .rb-kanban {
+html[data-theme="dark"] .rb-kanban {
   --rb-kanban-ink: var(--rb-color-paper, #ffffff);
   --rb-kanban-paper: var(--rb-color-ink, #000000);
 }

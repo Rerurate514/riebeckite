@@ -181,6 +181,11 @@ stylesheet is used. A declared theme supplies its own stylesheets.
 Each token maps to a `--rb-*` custom property. See
 [Design tokens](./theme-api.en.md#design-tokens) for the full mapping.
 
+`theme.tokens` is emitted as an unlayered `:root { --rb-* }` rule after the
+theme stylesheet, so a value set here overrides the theme's value in every mode
+(light, explicit dark, and system dark). Adjust accents and surfaces here
+instead of copying theme CSS.
+
 ```ts
 theme: {
   colorMode: "system",

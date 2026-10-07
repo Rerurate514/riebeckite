@@ -62,8 +62,7 @@
   color: var(--rr-mermaid-muted);
 }
 
-html[data-theme="dark"] .rr-mermaid,
-html.dark .rr-mermaid {
+html[data-theme="dark"] .rr-mermaid {
   --rr-mermaid-paper: var(--rb-color-ink, #000000);
   --rr-mermaid-ink: var(--rb-color-paper, #ffffff);
 }

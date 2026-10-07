@@ -43,8 +43,7 @@
   line-height: 1.5;
 }
 
-html[data-theme="dark"] .rb-hover-preview,
-html.dark .rb-hover-preview {
+html[data-theme="dark"] .rb-hover-preview {
   --rb-hover-preview-paper: var(--rb-color-ink, #14110d);
   --rb-hover-preview-ink: var(--rb-color-paper, #f8f5ef);
   --rb-hover-preview-muted: color-mix(

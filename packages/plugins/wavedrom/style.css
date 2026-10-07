@@ -60,8 +60,7 @@
   color: var(--rb-wavedrom-muted);
 }
 
-html[data-theme="dark"] .rb-wavedrom,
-html.dark .rb-wavedrom {
+html[data-theme="dark"] .rb-wavedrom {
   --rb-wavedrom-paper: var(--rb-color-ink, #000000);
   --rb-wavedrom-ink: var(--rb-color-paper, #ffffff);
 }

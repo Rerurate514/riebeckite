@@ -292,6 +292,8 @@ delete document.documentElement.dataset.theme;
 
 `@riebeckite/plugin-color-mode` がこの Contract の参照実装です。
 
+Dark を表す CSS 機構はこの 2 つだけです。Theme Root 上の明示的な Dark である `[data-theme="dark"]` と、`data-theme` が無いときの `@media (prefers-color-scheme: dark)`（System）です。Framework は `.dark` class を付与しないため、`.dark` に依存した selector は Contract 外です。どちらの状態でも同じ `--rb-*` Semantic Token が解決されるため、Semantic Token だけを参照する Component は明示 Dark と System Dark を区別する必要がありません。
+
 # Typography
 
 Theme は Typography Preset を提供できます。

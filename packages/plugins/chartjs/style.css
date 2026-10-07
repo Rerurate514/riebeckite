@@ -31,8 +31,7 @@
   padding: 1rem;
 }
 
-html[data-theme="dark"] .rb-chartjs,
-html.dark .rb-chartjs {
+html[data-theme="dark"] .rb-chartjs {
   --rb-chartjs-paper: var(--rb-color-ink, #000000);
   --rb-chartjs-ink: var(--rb-color-paper, #ffffff);
 }

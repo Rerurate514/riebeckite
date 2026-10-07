@@ -88,8 +88,7 @@
   font-size: 0.8125rem;
 }
 
-html[data-theme="dark"] .rb-excalibrain,
-html.dark .rb-excalibrain {
+html[data-theme="dark"] .rb-excalibrain {
   --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
   --rb-excalibrain-paper: var(--rb-color-ink, #000000);
 }

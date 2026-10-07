@@ -5,6 +5,7 @@ import {
   type ContentSource,
   definePlugin,
   PluginDependencyError,
+  PluginHookError,
   type RiebeckitePlugin,
   resolveConfig,
   resolvePlugins,
@@ -80,18 +81,42 @@ test("empty capability is rejected", () => {
 });
 
 test("a throwing lifecycle hook names the plugin and hook", async () => {
-  await assert.rejects(
-    () =>
-      manager([
-        definePlugin({
-          name: "boom",
-          setup() {
-            throw new Error("kaboom");
-          },
-        }),
-      ]).getManifest(),
-    /Plugin "boom" failed during "setup"/,
-  );
+  try {
+    await manager([
+      definePlugin({
+        name: "boom",
+        setup() {
+          throw new Error("kaboom");
+        },
+      }),
+    ]).getManifest();
+    assert.fail("expected a PluginHookError");
+  } catch (error) {
+    assert.ok(error instanceof PluginHookError);
+    assert.equal(error.message, 'Plugin "boom" failed during "setup"');
+  }
+});
+
+test("a throwing content hook carries the plugin, hook, and file", async () => {
+  const m = manager([
+    definePlugin({
+      name: "boom-content",
+      onContentLoaded() {
+        throw new Error("kaboom");
+      },
+    }),
+  ]);
+  try {
+    await m.getProcessedContent("index");
+    assert.fail("expected a PluginHookError");
+  } catch (error) {
+    assert.ok(error instanceof PluginHookError);
+    assert.equal(
+      error.message,
+      'Plugin "boom-content" failed during "onContentLoaded"',
+    );
+    assert.equal(error.path, "index.md");
+  }
 });
 
 test("duplicate page type id is rejected with both plugin names", async () => {

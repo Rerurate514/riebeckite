@@ -60,6 +60,15 @@ External Site E2E を動かす再利用可能な Engine は、
 
 は `tests/external-site` に置きます。
 
+第三者 Plugin を外部 Package の立場で検証する Fixture は `tests/plugin-dx` にあります（独立した pnpm workspace）。
+
+```sh
+pnpm test:plugin-dx            # Public API だけで書いた Plugin の Unit Test
+pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install して検証
+```
+
+`test:plugin-dx:external` は `@riebeckite/core` と fixture Plugin を `pnpm pack` し、monorepo の外の隔離 Site に install して、公開 Package だけで Plugin が動作することを確認します。外部配布する Plugin の回帰検知に利用できます。
+
 # テストを実行する
 
 よく使うコマンドは次のとおりです。
@@ -70,6 +79,8 @@ External Site E2E を動かす再利用可能な Engine は、
 | `pnpm --filter <package> test` | 特定の Package だけテスト |
 | `pnpm test:update` | すべての Golden File を現在の出力で更新 |
 | `pnpm test:e2e:external` | External Site E2E を実行 |
+| `pnpm test:plugin-dx` | 外部 Package 視点の Plugin Fixture をテスト |
+| `pnpm test:plugin-dx:external` | packed tarball を隔離 Site へ install して Plugin を検証 |
 | `pnpm test:registry` | Scaffold の install Contract を npm 公開 artifact に対して実行 |
 
 Scaffold の install Contract は、既定では **workspace を `pnpm pack` した artifact** を install して検証します。そのため、新しい Package を追加した branch でも publish 前に検証できます。`pnpm test:registry` は同じ Contract を npm からの install に切り替え、公開済み artifact が解決できることを確認します。Release 後に実行してください。
@@ -174,6 +185,55 @@ import {
 のように Public API から利用します。
 
 テスト専用の共通処理を各 Plugin にコピーしないでください。
+
+# Plugin のテスト
+
+Plugin のテストは、確認したい範囲に合わせて次の4段階に分けられます。すべてを行う必要はありません。小さい範囲から始めてください。
+
+```text
+Level 1  Pure logic            通常の test runner でよい
+Level 2  Markdown / HTML       Pipeline に Plugin を渡して変換結果を検証
+Level 3  Content / lifecycle   ContentManager + In-memory ContentSource
+Level 4  外部パッケージ境界     packed tarball を隔離 Site へ install
+```
+
+## Level 1: Pure Logic
+
+Option の解決、文字列変換、AST ヘルパーなど、Riebeckite に依存しない処理は `node:test` などの通常の test runner でテストします。この段階では `@riebeckite/test` も `ContentManager` も不要です。
+
+## Level 2: Markdown / HTML Transformation
+
+Markdown / HTML の変換は、公開されている `Pipeline` に Plugin を渡して検証できます。
+
+```ts
+import { Pipeline } from "@riebeckite/core";
+import { tipPlugin } from "../src/index.ts";
+
+const pipeline = new Pipeline(new Map(), new Map(), undefined, {
+  plugins: [tipPlugin()],
+});
+
+const { html } = await pipeline.execute(":::tip\nSave often.\n:::");
+assert.match(html, /<aside class="rr-tip">/);
+```
+
+`Pipeline` の第1引数は content index、第2引数は permalink の `Map` です。単一 Document の変換なら空で構いません。第3引数は embed など他 Content を参照する場合だけ必要です。
+
+`ContentManager` を使わずに変換だけを確認できるため、Plugin のテストで最もよく使う段階です。
+
+## Level 3: Content / lifecycle
+
+Content の読み込み、hook、manifest、body slot、Page Type を検証する場合は `ContentManager` を使います。後述の「Content を扱うテスト」と同じ In-memory `ContentSource` の形で、`getProcessedContent()` は Pipeline と Content hook を通した結果を、`getManifest()` は解決済み Plugin を含む manifest を返します。
+
+## Level 4: 外部パッケージ境界
+
+配布する Package は、`pnpm pack` した tarball を monorepo の外の隔離 Site へ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落を検出できます。
+
+Repository の `tests/plugin-dx` がこの検証の実例で、前述のとおり `pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
+
+## `@riebeckite/test` の役割
+
+`@riebeckite/test` は、Golden File の比較（`assertGolden` / `assertGoldenJson`）など、複数 Package で共有するテスト Helper を提供します。**必須ではありません**。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部 Site を生成して検証する Repository 向けの Engine で、第三者 Plugin が通常使うものではありません。
 
 # 基本的なテストの書き方
 

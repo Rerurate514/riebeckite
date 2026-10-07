@@ -142,6 +142,27 @@ test("A7: the theme resolves dark tokens in both explicit and system dark", () =
   );
 });
 
+test("A7: the code root paints an opaque surface, not a page-relative tint", () => {
+  assert.match(themeCss, /--rb-color-code-surface:\s*#1c1a17/);
+  assert.match(
+    themeCss,
+    /\[data-theme="dark"\][\s\S]*?--rb-color-code-surface:\s*color-mix\([\s\S]*?var\(--rb-color-paper\)/,
+  );
+  assert.match(
+    themeCss,
+    /@media \(prefers-color-scheme: dark\)[\s\S]*?:not\(\[data-theme\]\)[\s\S]*?--rb-color-code-surface:\s*color-mix\([\s\S]*?var\(--rb-color-paper\)/,
+  );
+  assert.match(
+    themeCss,
+    /\.rr-code:not\(\[data-terminal="true"\]\)\s*\{[^}]*--rr-code-paper:\s*var\(--rb-color-code-surface\)/,
+  );
+  assert.doesNotMatch(
+    themeCss,
+    /--rr-code-paper:\s*var\(--rb-color-code-background\)/,
+  );
+  assert.match(themeCss, /--rb-color-code-background:\s*color-mix\(/);
+});
+
 test("A5: the search modal is a sibling of the fixed search trigger", () => {
   const component = read(
     "../../../packages/plugins/search/components/search-bar.tsx",

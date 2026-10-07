@@ -54,6 +54,18 @@ html.dark .rb-hover-preview {
   );
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-hover-preview {
+    --rb-hover-preview-paper: var(--rb-color-ink, #14110d);
+    --rb-hover-preview-ink: var(--rb-color-paper, #f8f5ef);
+    --rb-hover-preview-muted: color-mix(
+      in srgb,
+      var(--rb-hover-preview-ink) 72%,
+      transparent
+    );
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .rb-hover-preview {
     animation: rb-hover-preview-in 120ms ease-out;

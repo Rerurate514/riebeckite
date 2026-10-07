@@ -145,6 +145,39 @@ test("collectCodeAnnotations leaves an unannotated block unchanged", () => {
   assert.deepEqual(collected.plan, createEmptyPlan());
 });
 
+test("collectCodeAnnotations ignores markers inside nested fences", () => {
+  const collected = collectCodeAnnotations(
+    null,
+    [
+      "```js",
+      "const a = 1; // [!code ++]",
+      "```",
+      "const b = 2; // [!code --]",
+    ].join("\n"),
+  );
+
+  assert.equal(collected.hasAnnotations, true);
+  assert.equal(
+    collected.code,
+    ["```js", "const a = 1; // [!code ++]", "```", "const b = 2;"].join("\n"),
+  );
+  assert.deepEqual(collected.plan, {
+    highlight: [],
+    added: [],
+    removed: [4],
+    focus: [],
+  });
+});
+
+test("collectCodeAnnotations treats a source example as unannotated", () => {
+  const code = ["```js", "const a = 1; // [!code ++]", "```"].join("\n");
+  const collected = collectCodeAnnotations(null, code);
+
+  assert.equal(collected.hasAnnotations, false);
+  assert.equal(collected.code, code);
+  assert.deepEqual(collected.plan, createEmptyPlan());
+});
+
 test("annotation plans serialize, coerce, and round-trip", () => {
   const plan = {
     highlight: [3, 1],

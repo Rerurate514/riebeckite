@@ -9,7 +9,7 @@ import {
   NoopLogger,
   NoopTracer,
 } from "@riebeckite/core";
-import { builtinShortcodes } from "./builtins.js";
+import { builtinInlineShortcodes, builtinShortcodes } from "./builtins.js";
 import type {
   ResolvedShortcodeOptions,
   ShortcodeOptions,
@@ -45,13 +45,28 @@ export function resolveShortcodeOptions(
     ? { ...builtinShortcodes, ...custom }
     : { ...custom };
 
+  const inlineShortcodes = new Set<string>(
+    builtins ? builtinInlineShortcodes : [],
+  );
+  for (const name of options.inlineShortcodes ?? []) {
+    inlineShortcodes.add(name);
+  }
+
   const resolved: ResolvedShortcodeOptions = {
     className: options.className ?? DEFAULT_SHORTCODE_CLASS_NAME,
     builtins,
     shortcodes,
+    inlineShortcodes,
   };
   if (options.language !== undefined) resolved.language = options.language;
   return resolved;
+}
+
+export function isInlineShortcode(
+  name: string,
+  options: ResolvedShortcodeOptions,
+): boolean {
+  return options.inlineShortcodes.has(name);
 }
 
 export function createShortcodeRenderContext(input: {
@@ -96,6 +111,7 @@ export function renderShortcode(
       url: firstUrl(attributes),
     });
   const container = request.container ?? false;
+  const block = request.block ?? container;
 
   const input: ShortcodeRenderInput = {
     name: request.name,
@@ -109,16 +125,16 @@ export function renderShortcode(
   }
 
   const body = renderer(input);
-  return wrapShortcode(body, request.name, container, options);
+  return wrapShortcode(body, request.name, block, options);
 }
 
 function wrapShortcode(
   body: string,
   name: string,
-  container: boolean,
+  block: boolean,
   options: ResolvedShortcodeOptions,
 ): string {
-  const tag = container ? "div" : "span";
+  const tag = block ? "div" : "span";
   const classes = `${options.className} ${options.className}--${name}`;
   const languageAttribute =
     options.language === undefined

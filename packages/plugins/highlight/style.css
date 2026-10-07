@@ -11,3 +11,10 @@ html.dark .rb-highlight {
   --rb-highlight-accent: var(--rb-color-accent, #ffd166);
   background: color-mix(in srgb, var(--rb-highlight-accent) 32%, transparent);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-highlight {
+    --rb-highlight-accent: var(--rb-color-accent, #ffd166);
+    background: color-mix(in srgb, var(--rb-highlight-accent) 32%, transparent);
+  }
+}

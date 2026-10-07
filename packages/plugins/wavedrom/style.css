@@ -65,3 +65,10 @@ html.dark .rb-wavedrom {
   --rb-wavedrom-paper: var(--rb-color-ink, #000000);
   --rb-wavedrom-ink: var(--rb-color-paper, #ffffff);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-wavedrom {
+    --rb-wavedrom-paper: var(--rb-color-ink, #000000);
+    --rb-wavedrom-ink: var(--rb-color-paper, #ffffff);
+  }
+}

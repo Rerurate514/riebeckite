@@ -93,3 +93,10 @@ html.dark .rb-excalibrain {
   --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
   --rb-excalibrain-paper: var(--rb-color-ink, #000000);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rb-excalibrain {
+    --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
+    --rb-excalibrain-paper: var(--rb-color-ink, #000000);
+  }
+}

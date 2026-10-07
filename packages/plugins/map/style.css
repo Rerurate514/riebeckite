@@ -105,3 +105,10 @@ html.dark .rr-map {
   --rr-map-paper: var(--rb-color-ink, #000000);
   --rr-map-ink: var(--rb-color-paper, #ffffff);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rr-map {
+    --rr-map-paper: var(--rb-color-ink, #000000);
+    --rr-map-ink: var(--rb-color-paper, #ffffff);
+  }
+}

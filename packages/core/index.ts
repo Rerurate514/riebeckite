@@ -335,5 +335,7 @@ export {
   escapeHtmlAttribute,
   escapeScriptJson,
 } from "./src/utils/html.js";
+export type { MarkdownFenceLine } from "./src/utils/markdown.js";
+export { scanMarkdownFenceLines } from "./src/utils/markdown.js";
 export { normalizeTag } from "./src/utils/tags.js";
 export { calculateReadingTime, stripHtml } from "./src/utils/text.js";

@@ -1,6 +1,11 @@
 import { createStyleAsset, definePlugin } from "@riebeckite/core";
-import { builtinShortcodeNames, builtinShortcodes } from "./src/builtins.js";
 import {
+  builtinInlineShortcodes,
+  builtinShortcodeNames,
+  builtinShortcodes,
+} from "./src/builtins.js";
+import {
+  DIAGNOSTIC_INLINE_UNSUPPORTED,
   DIAGNOSTIC_INVALID,
   DIAGNOSTIC_UNKNOWN,
   remarkShortcodes,
@@ -9,6 +14,7 @@ import {
 import {
   createShortcodeRenderContext,
   DEFAULT_SHORTCODE_CLASS_NAME,
+  isInlineShortcode,
   renderShortcode,
   resolveShortcodeOptions,
   SHORTCODE_CHILDREN_MARKER,
@@ -26,12 +32,15 @@ export type {
   ShortcodeRenderRequest,
 } from "./src/types.js";
 export {
+  builtinInlineShortcodes,
   builtinShortcodeNames,
   builtinShortcodes,
   createShortcodeRenderContext,
   DEFAULT_SHORTCODE_CLASS_NAME,
+  DIAGNOSTIC_INLINE_UNSUPPORTED,
   DIAGNOSTIC_INVALID,
   DIAGNOSTIC_UNKNOWN,
+  isInlineShortcode,
   remarkShortcodes,
   renderShortcode,
   resolveShortcodeOptions,

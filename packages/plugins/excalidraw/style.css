@@ -48,3 +48,10 @@ html.dark .rr-excalidraw {
   --rr-excalidraw-paper: var(--rb-color-ink, #000000);
   --rr-excalidraw-ink: var(--rb-color-paper, #ffffff);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .rr-excalidraw {
+    --rr-excalidraw-paper: var(--rb-color-ink, #000000);
+    --rr-excalidraw-ink: var(--rb-color-paper, #ffffff);
+  }
+}

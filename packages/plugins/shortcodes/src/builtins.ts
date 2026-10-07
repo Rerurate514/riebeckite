@@ -286,5 +286,12 @@ export const builtinShortcodes: Record<
   file: renderFile,
 };
 
+export const builtinInlineShortcodes: readonly string[] = [
+  "badge",
+  "kbd",
+  "link-card",
+  "file",
+];
+
 export const builtinShortcodeNames: readonly string[] =
   Object.keys(builtinShortcodes);

@@ -7,7 +7,7 @@ homepage: true
 
 # Riebeckite
 
-Riebeckite publishes Markdown and Obsidian-style notes as a fast static site. Write in `content/`, add plugins for search, diagrams, and localization, choose a theme, and build a static site you can deploy anywhere.
+Riebeckite publishes Markdown and Obsidian-style notes as a static site. Write in `content/`, add plugins for search, diagrams, and localization, choose a theme, and build a static site you can deploy anywhere.
 
 New here? Start with **[Getting Started](./docs/getting-started/README.en.md)**. For every section in one place, see the [Documentation index](./docs/README.en.md).
 

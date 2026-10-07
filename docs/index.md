@@ -1,13 +1,13 @@
 ---
 title: Riebeckite
-description: Markdown や Obsidian のノートから、高速で拡張できる Web サイトを作るオープンソースフレームワークです。
+description: Markdown や Obsidian のノートから、拡張できる Web サイトを作るオープンソースフレームワークです。
 translation: home
 homepage: true
 ---
 
 # Riebeckite
 
-Markdown や Obsidian のノートから、高速で拡張できる Web サイトを作るオープンソースフレームワークです。
+Markdown や Obsidian のノートから、拡張できる Web サイトを作るオープンソースフレームワークです。
 
 - [はじめる](./docs/getting-started/README.md)
 - [ドキュメント](./docs/README.md)

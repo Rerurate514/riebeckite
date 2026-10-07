@@ -176,6 +176,24 @@ test("buildWebsiteSeo breadcrumbs contain only the site root", () => {
   });
 });
 
+test("buildWebsiteSeo uses the provided language for JSON-LD inLanguage", () => {
+  const localized = buildWebsiteSeo(
+    config,
+    { kind: "index", title: "Riebeckite", path: "/ja/" },
+    undefined,
+    "ja",
+  );
+  assert.equal(localized.jsonLd?.[0]?.["@type"], "WebSite");
+  assert.equal(localized.jsonLd?.[0]?.inLanguage, "ja");
+
+  const fallback = buildWebsiteSeo(config, {
+    kind: "index",
+    title: "Riebeckite",
+    path: "/",
+  });
+  assert.equal(fallback.jsonLd?.[0]?.inLanguage, "en-US");
+});
+
 function breadcrumbHeadTag(): PluginHeadTag {
   return {
     tag: "script",

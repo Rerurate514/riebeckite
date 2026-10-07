@@ -30,10 +30,18 @@ test("homepage titles name the software and its content sources", () => {
 
 test("homepage copy avoids unsupported marketing claims", () => {
   const forbidden =
-    /revolutionary|next-generation|blazing|seamless|effortless|enterprise-grade|10x|anything you can imagine|100% obsidian/i;
+    /revolutionary|next-generation|blazing|seamless|effortless|enterprise-grade|10x|anything you can imagine|100% obsidian|\bfast\b|高速/i;
   for (const locale of locales) {
     const copy = JSON.stringify(getHomeCopy(locale));
     assert.doesNotMatch(copy, forbidden);
+  }
+});
+
+test("site metadata and homepage sources avoid performance claims", () => {
+  const forbidden = /\bfast\b|高速/i;
+  assert.doesNotMatch(read("../../../riebeckite.config.ts"), forbidden);
+  for (const file of ["../../../docs/index.md", "../../../docs/README.en.md"]) {
+    assert.doesNotMatch(read(file), forbidden);
   }
 });
 
@@ -57,7 +65,7 @@ test("software structured data is factual and localized", () => {
   assert.equal(en["@context"], "https://schema.org");
   assert.equal(en.name, "Riebeckite");
   assert.equal(en.applicationCategory, "DeveloperApplication");
-  assert.equal(en.operatingSystem, "Web");
+  assert.equal("operatingSystem" in en, false);
   assert.equal(en.codeRepository, "https://github.com/Rerurate514/riebeckite");
   assert.equal(en.license, "https://www.apache.org/licenses/LICENSE-2.0");
   assert.equal(en.inLanguage, "en-US");

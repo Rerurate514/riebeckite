@@ -85,6 +85,7 @@ export function buildWebsiteSeo(
   config: ResolvedRiebeckiteConfig,
   input: WebsiteSeoInput,
   headTags?: readonly PluginHeadTag[],
+  language?: string,
 ): SeoMetadata {
   const siteName = config.site.title;
   const canonicalUrl = buildAbsoluteUrl(config, input.path);
@@ -99,7 +100,7 @@ export function buildWebsiteSeo(
       name: siteName,
       description,
       url: canonicalUrl,
-      inLanguage: getHtmlLanguage(config),
+      inLanguage: resolveInLanguage(config, language),
     }),
   ];
 

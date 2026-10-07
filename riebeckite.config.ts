@@ -64,7 +64,7 @@ export default defineConfig({
   site: {
     title: "Riebeckite",
     description:
-      "An open-source framework for building fast, extensible websites from Markdown and Obsidian notes.",
+      "An open-source framework for building extensible websites from Markdown and Obsidian notes.",
     author: "Riebeckite Maintainers: Rerurate_514",
     baseUrl: "https://riebeckite.dev",
     locale: "ja_JP",

@@ -40,6 +40,7 @@ export type PluginSeoExtension = {
     config: ResolvedRiebeckiteConfig,
     input: WebsiteSeoInput,
     headTags?: readonly PluginHeadTag[],
+    language?: string,
   ): SeoMetadata;
   buildAbsoluteUrl(config: ResolvedRiebeckiteConfig, pathOrUrl: string): string;
   buildPostUrl(config: ResolvedRiebeckiteConfig, permalink: string): string;

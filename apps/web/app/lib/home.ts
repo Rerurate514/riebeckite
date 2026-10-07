@@ -60,10 +60,9 @@ export type HomeCopy = {
 const ja: HomeCopy = {
   title: "Riebeckite — Markdown と Obsidian のサイトフレームワーク",
   description:
-    "Markdown や Obsidian のノートから、高速で拡張できる Web サイトを作るオープンソースフレームワークです。コンテンツはそのままに、Plugin と Theme でサイトを組み立てられます。",
+    "Markdown や Obsidian のノートから、拡張できる Web サイトを作るオープンソースフレームワークです。コンテンツはそのままに、Plugin と Theme でサイトを組み立てられます。",
   eyebrow: "オープンソース · Apache-2.0",
-  tagline:
-    "Markdown と Obsidian のノートから、高速で拡張できる Web サイトを作る。",
+  tagline: "Markdown と Obsidian のノートから、拡張できる Web サイトを作る。",
   lead: "コンテンツの置き場所はそのままに、Plugin と Theme でサイトを組み立てられます。",
   primaryCta: { label: "はじめる", href: "/docs/getting-started/" },
   secondaryCta: { label: "GitHub", href: HOME_REPO_URL, external: true },
@@ -203,9 +202,9 @@ const ja: HomeCopy = {
 const en: HomeCopy = {
   title: "Riebeckite — Markdown & Obsidian Website Framework",
   description:
-    "Riebeckite is an open-source framework for building fast, extensible websites from Markdown and Obsidian notes. Keep your content, add plugins and themes, and publish the site you want.",
+    "Riebeckite is an open-source framework for building extensible websites from Markdown and Obsidian notes. Keep your content, add plugins and themes, and publish the site you want.",
   eyebrow: "Open source · Apache-2.0",
-  tagline: "Turn Markdown and Obsidian notes into a fast, extensible website.",
+  tagline: "Turn Markdown and Obsidian notes into an extensible website.",
   lead: "Keep your content where it is. Add plugins, choose a theme, and build the site you want.",
   primaryCta: { label: "Get started", href: "/en/docs/getting-started/" },
   secondaryCta: { label: "GitHub", href: HOME_REPO_URL, external: true },
@@ -361,7 +360,6 @@ export function buildSoftwareApplicationSchema(
     description: copy.description,
     url,
     applicationCategory: "DeveloperApplication",
-    operatingSystem: "Web",
     codeRepository: HOME_REPO_URL,
     license: "https://www.apache.org/licenses/LICENSE-2.0",
     isAccessibleForFree: true,

@@ -61,12 +61,16 @@ export function buildTagSeo(
   path: string,
   lang: string,
 ): SeoMetadata {
-  return buildWebsiteSeo({
-    title: `#${tag} | ${config.site.title}`,
-    description: buildTagDescription(config.site.title, tag, lang),
-    path,
-    kind: "tag",
-  });
+  return buildWebsiteSeo(
+    {
+      title: `#${tag} | ${config.site.title}`,
+      description: buildTagDescription(config.site.title, tag, lang),
+      path,
+      kind: "tag",
+    },
+    undefined,
+    lang,
+  );
 }
 
 export function buildArchiveSeo(
@@ -74,12 +78,16 @@ export function buildArchiveSeo(
   path: string,
   lang: string,
 ): SeoMetadata {
-  return buildWebsiteSeo({
-    title: period,
-    description: buildArchiveDescription(config.site.title, period, lang),
-    path,
-    kind: "website",
-  });
+  return buildWebsiteSeo(
+    {
+      title: period,
+      description: buildArchiveDescription(config.site.title, period, lang),
+      path,
+      kind: "website",
+    },
+    undefined,
+    lang,
+  );
 }
 
 export function buildWebsiteSeo(
@@ -90,8 +98,9 @@ export function buildWebsiteSeo(
     kind?: "index" | "tag" | "website";
   },
   headTags?: readonly PluginHeadTag[],
+  language?: string,
 ): SeoMetadata {
-  return seoProvider.buildWebsiteSeo(config, input, headTags);
+  return seoProvider.buildWebsiteSeo(config, input, headTags, language);
 }
 
 export function buildHomeSeo(
@@ -107,14 +116,11 @@ export function buildHomeSeo(
       kind: "index",
     },
     headTags,
+    locale === "ja" ? "ja-JP" : "en-US",
   );
-  const jsonLd = ((website.jsonLd ?? []) as Record<string, unknown>[])
-    .filter((schema) => schema["@type"] !== "BreadcrumbList")
-    .map((schema) =>
-      schema["@type"] === "WebSite"
-        ? { ...schema, inLanguage: locale === "ja" ? "ja-JP" : "en-US" }
-        : schema,
-    );
+  const jsonLd = ((website.jsonLd ?? []) as Record<string, unknown>[]).filter(
+    (schema) => schema["@type"] !== "BreadcrumbList",
+  );
   jsonLd.push(buildSoftwareApplicationSchema(locale, website.canonicalUrl));
 
   return { ...website, title: copy.title, jsonLd };

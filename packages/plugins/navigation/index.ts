@@ -1,4 +1,4 @@
-import { definePlugin } from "@riebeckite/core";
+import { createStyleAsset, definePlugin } from "@riebeckite/core";
 import {
   NAVIGATION_PLUGIN_NAME,
   validateNavigationOptions,
@@ -23,6 +23,7 @@ export function navigation(options: NavigationOptions = {}) {
   return definePlugin({
     name: NAVIGATION_PLUGIN_NAME,
     options,
+    assets: [createStyleAsset("navigation")],
     validateOptions: validateNavigationOptions,
     outputDependencies: [{ type: "global" }],
   });

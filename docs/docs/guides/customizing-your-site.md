@@ -312,6 +312,7 @@ Riebeckite が Plugin や Theme から生成した CSS は、Site の CSS から
 
 ```css
 /* app/style.css */
+@import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 ```

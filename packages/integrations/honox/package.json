@@ -23,7 +23,8 @@
       "import": "./dist/src/ui/primitives.js",
       "source": "./src/ui/primitives.tsx",
       "default": "./dist/src/ui/primitives.js"
-    }
+    },
+    "./style.css": "./style.css"
   },
   "dependencies": {
     "@babel/parser": "^7.29.3",
@@ -45,7 +46,8 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
-    "dist"
+    "dist",
+    "style.css"
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
@@ -71,5 +73,7 @@
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "./style.css"
+  ]
 }

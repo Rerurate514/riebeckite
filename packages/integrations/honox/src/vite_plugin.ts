@@ -69,6 +69,10 @@ export function riebeckite(
         resolvedConfig = application.config;
         contentWatchRoots = application;
         writeRiebeckiteAssetEntries(resolvedConfig, {
+          frameworkStyles: path.join(
+            appRoot,
+            "app/.riebeckite/framework-styles.css",
+          ),
           pluginStyles: path.join(appRoot, "app/.riebeckite/plugin-styles.css"),
           themeStyles: path.join(appRoot, "app/.riebeckite/theme-styles.css"),
         });

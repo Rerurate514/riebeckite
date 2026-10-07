@@ -1,3 +1,4 @@
+@import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 
@@ -28,13 +29,6 @@ body {
   margin: 0 auto;
 }
 
-.rb-article-layout {
-  display: grid;
-  grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
-  justify-content: center;
-  column-gap: var(--rb-layout-gap, 2rem);
-}
-
 .rb-article-body,
 .site-article__footer {
   min-width: 0;
@@ -46,16 +40,6 @@ body {
 }
 
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-layout {
-    grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
-    position: relative;
-  }
-
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
   :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__footer {
     grid-column: 1;
   }

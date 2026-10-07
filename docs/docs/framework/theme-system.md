@@ -1008,6 +1008,8 @@ flowchart TD
 順番は、
 
 ```text id="jz92ku"
+Framework Structural CSS
+        ↓
 Base / Application CSS
         ↓
 Plugin Default CSS
@@ -1026,13 +1028,14 @@ userCss
 `@riebeckite/honox` は、
 
 ```text id="i2y97j"
+.riebeckite/framework-styles.css
 .riebeckite/plugin-styles.css
 .riebeckite/theme-styles.css
 ```
 
 を生成します。
 
-Site は Plugin Stylesheet を Theme Stylesheet より先に読み込みます。
+Site は Framework Stylesheet を Plugin Stylesheet より先に、Plugin Stylesheet を Theme Stylesheet より先に読み込みます。
 
 そのため、
 

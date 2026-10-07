@@ -23,7 +23,7 @@ navigation({
 });
 ```
 
-The Plugin owns the navigation model and its rendering mechanics. `SiteNav` renders a resolved tree with the standard `rb-nav` structure, active-path detection, locale-aware normalization, and the `aria-current` contract; the site decides where each rendered list is placed. See the [Configuration reference](../reference/configuration.en.md) for the navigation model.
+The Plugin owns the navigation model and its rendering mechanics. `SiteNav` renders a resolved tree with the standard `rb-nav` structure, active-path detection, locale-aware normalization, and the `aria-current` contract; the Plugin's own `style.css` ships the structural CSS for that tree and is loaded through the generated plugin styles. The site decides where each rendered list is placed and whether to wrap it in a `<details>` element on small screens. See the [Configuration reference](../reference/configuration.en.md) for the navigation model.
 
 ## When to use it
 

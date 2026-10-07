@@ -4,6 +4,7 @@
 @import "./styles/callout.css";
 @import "./styles/markdown.css";
 @import "./styles/wikilinks.css";
+@import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 @import "./styles/theme-gallery.css";

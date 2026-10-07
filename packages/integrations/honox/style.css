@@ -1,0 +1,37 @@
+@layer components {
+  .rb-article-layout {
+    display: grid;
+    grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem));
+    justify-content: center;
+    column-gap: var(--rb-layout-gap, 2rem);
+  }
+
+  .rb-article-body {
+    min-width: 0;
+  }
+
+  :is(:root, .rb-theme-root)[data-article-layout="full-width"]
+    .rb-article-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 88rem) {
+    :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
+      .rb-article-layout {
+      grid-template-columns:
+        minmax(0, var(--rb-layout-article-max, 48rem))
+        var(--rb-layout-sidebar, 14rem);
+    }
+
+    :is(:root, .rb-theme-root)[data-article-layout="article"]
+      .rb-article-layout {
+      position: relative;
+    }
+
+    :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body,
+    :is(:root, .rb-theme-root)[data-article-layout="sidebar"] .rb-article-body {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+}

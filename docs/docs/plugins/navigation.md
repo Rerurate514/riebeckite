@@ -23,7 +23,7 @@ navigation({
 });
 ```
 
-この Plugin はナビゲーションのモデルと描画の仕組みを持ちます。`SiteNav` は解決済みツリーを標準の `rb-nav` 構造で描画し、現在パスの判定、言語を考慮した正規化、`aria-current` を提供します。それぞれのリストをどこに置くかはサイトが決めます。ナビゲーションのモデルは [Configuration リファレンス](../reference/configuration.md) も参照してください。
+この Plugin はナビゲーションのモデルと描画の仕組みを持ちます。`SiteNav` は解決済みツリーを標準の `rb-nav` 構造で描画し、現在パスの判定、言語を考慮した正規化、`aria-current` を提供します。`rb-nav` ツリーを成立させる構造 CSS は Plugin の `style.css` が同梱し、自動生成される plugin styles 経由で読み込まれます。それぞれのリストをどこに置くか、モバイルで `<details>` を使うかはサイトが決めます。ナビゲーションのモデルは [Configuration リファレンス](../reference/configuration.md) も参照してください。
 
 ## 使いどころ
 

@@ -539,7 +539,7 @@ const minimalTheme = {
 export const empty: ScaffoldPreset = {
   name: "empty",
   description:
-    "A blank application shell: no plugins, no theme, no content, no components.",
+    "A blank canvas with only the Riebeckite wiring. Add the theme, plugins, and content yourself.",
   languages: [],
   theme: null,
   plugins: [],
@@ -550,7 +550,7 @@ export const empty: ScaffoldPreset = {
 export const minimal: ScaffoldPreset = {
   name: "minimal",
   description:
-    "The smallest useful site: Obsidian Markdown, the minimal theme, and one page.",
+    "The smallest readable site, for learning how a Riebeckite site is assembled.",
   languages: ["en"],
   theme: minimalTheme,
   plugins: [obsidianMarkdown],
@@ -561,7 +561,7 @@ export const minimal: ScaffoldPreset = {
 export const starter: ScaffoldPreset = {
   name: "starter",
   description:
-    "Recommended for most sites: a practical Markdown garden with search, discovery, and reading essentials.",
+    "Recommended default: a practical Markdown garden with search, navigation, and reading essentials.",
   languages: [...SCAFFOLD_LANGUAGES],
   theme: defaultTheme,
   plugins: [
@@ -591,7 +591,7 @@ export const starter: ScaffoldPreset = {
 export const showcase: ScaffoldPreset = {
   name: "showcase",
   description:
-    "Explore the complete Riebeckite ecosystem with rendered examples, reference pages, and local fixtures.",
+    "A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples and references.",
   languages: [...SCAFFOLD_LANGUAGES],
   theme: showCaseTheme,
   plugins: [

@@ -32,7 +32,7 @@ npx create-riebeckite --list-presets
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | 7言語 | index、guide、examples、相互リンクしたノート | Markdown 公開、検索、パンくず、バックリンク、関連記事・最新記事、taxonomy、series |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
-| `showcase` | `default` | 7言語 | ツアー、guide、examples、Plugin/Theme reference、ローカル fixture | 全 Plugin カタログ、図表、チャート、ナレッジ機能、診断、デプロイ |
+| `showcase` | `default` | 7言語 | ツアー、guide、examples、Plugin/Theme reference、ローカル fixture | 全 Plugin カタログ、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | — | なし | 空のアプリケーションシェル |
 
 7言語は英語、日本語、簡体字中国語、スペイン語、ドイツ語、フランス語、韓国語です。`minimal` は l10n を登録せず、`empty` には Theme、Plugin、コンテンツがありません。
@@ -47,7 +47,7 @@ Obsidian Markdown、`minimal` Theme、英語の1ページだけを含む構成�
 
 ### `showcase`
 
-自己完結したリファレンスサイトです。全 Plugin カタログを有効にし、図表・チャート・コードの描画例、Plugin と Theme のリファレンス、SVG・PDF・Excalidraw・Canvas のローカル fixture を含みます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
+自己完結したリファレンスサイトです。全 Plugin カタログを有効にし、図表・チャート・コードの描画例、Plugin と Theme のリファレンス、SVG・PDF・Excalidraw・Canvas のローカル fixture を含みます。`content/Daily/` のサンプルノートはホームページの Daily Notes ウィジェットに表示されます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
 
 ### `empty`
 

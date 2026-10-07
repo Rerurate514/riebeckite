@@ -25,6 +25,22 @@ test("the public scaffold presets have the documented order and default", () => 
   }
 });
 
+test("preset descriptions state distinct roles and keep starter the recommendation", () => {
+  const descriptions = SCAFFOLD_PRESET_NAMES.map(
+    (name) => scaffoldPresets[name].description,
+  );
+  for (const description of descriptions) {
+    assert.ok(description.trim().length > 0);
+  }
+  assert.equal(
+    new Set(descriptions).size,
+    descriptions.length,
+    "each preset must describe a distinct role",
+  );
+  assert.match(scaffoldPresets.starter.description, /Recommended default/);
+  assert.match(scaffoldPresets.showcase.description, /demonstrat/i);
+});
+
 test("each preset generates its intended self-contained composition", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of SCAFFOLD_PRESET_NAMES) {
@@ -97,6 +113,27 @@ test("each preset generates its intended self-contained composition", async () =
         assert.ok(config.includes("@riebeckite/plugin-mermaid"));
         assert.ok(config.includes("@riebeckite/plugin-breadcrumbs"));
         assert.ok(config.includes("@riebeckite/plugin-folder-pages"));
+        assert.ok(config.includes("@riebeckite/plugin-daily-notes"));
+        assert.ok(config.includes("@riebeckite/plugin-gallery"));
+        assert.ok(
+          await exists(
+            path.join(targetDirectory, "content/Daily/2026-10-02.md"),
+          ),
+        );
+        assert.ok(
+          !(await exists(
+            path.join(targetDirectory, "content/notes/planning.md"),
+          )),
+        );
+      }
+      if (preset === "minimal") {
+        assert.ok(config.includes("@riebeckite/plugin-obsidian-markdown"));
+        assert.ok(!config.includes("@riebeckite/plugin-search"));
+        assert.ok(!config.includes("@riebeckite/plugin-l10n"));
+        assert.ok(await exists(path.join(targetDirectory, "content/index.md")));
+        assert.ok(
+          !(await exists(path.join(targetDirectory, "content/guide.md"))),
+        );
       }
       if (preset === "starter") {
         assert.match(config, /navigation\(\{/);
@@ -104,6 +141,10 @@ test("each preset generates its intended self-contained composition", async () =
         assert.ok(config.includes("@riebeckite/plugin-search"));
         assert.ok(config.includes("@riebeckite/plugin-breadcrumbs"));
         assert.ok(!config.includes("@riebeckite/plugin-folder-pages"));
+        assert.ok(!config.includes("@riebeckite/plugin-daily-notes"));
+        assert.ok(
+          !(await exists(path.join(targetDirectory, "content/reference"))),
+        );
         assert.ok(
           await exists(path.join(targetDirectory, "content/notes/planning.md")),
         );

@@ -32,7 +32,7 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | 7 | index, guide, examples, connected notes | Markdown publishing, search, breadcrumbs, backlinks, related and recent posts, taxonomy, series |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
-| `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, knowledge tools, diagnostics, deployment |
+| `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
 
 The seven languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `minimal` does not register l10n; `empty` has no theme, plugins, or content.
@@ -47,7 +47,7 @@ Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a sm
 
 ### `showcase`
 
-The self-contained reference site. It enables the complete plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
+The self-contained reference site. It enables the complete plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. Its `content/Daily/` notes feed a Daily Notes widget on the home page. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
 
 ### `empty`
 

@@ -1,6 +1,6 @@
 # showcase
 
-Explore the complete Riebeckite ecosystem with rendered examples, reference pages, and local fixtures.
+A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples, reference pages, and local fixtures.
 
 ## What's included
 

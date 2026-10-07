@@ -3,10 +3,20 @@ publish: true
 ---
 
 # deploy-github-actions
-Welcome to your Riebeckite site.
-Every page of this starter is available in seven languages. Switch with the selector below the page title.
-## What is Riebeckite?
-Riebeckite is an extensible, content-first framework that builds fast static sites from plain Markdown — the same notes you keep in Obsidian. The ecosystem includes 50+ plugins and six themes, and this site demos both.
+
+Welcome to your Riebeckite site. This is the smallest useful preset: one page, one plugin, and the `minimal` theme.
+
+## How this site is built
+
+- `app/routes/_renderer.tsx` wraps every page in the shared HTML shell.
+- `app/routes/index.tsx` renders this page, and `app/routes/[slug{.+}].tsx` renders every other page.
+- `app/components/article.tsx` lays out an article.
+- `riebeckite.config.ts` registers the plugin and the theme.
+
 ## Edit this site
-Content lives in `content/` as plain Markdown. Add a file, give it `publish: true` in the frontmatter, and it appears in the built site.
-Localized pages use the `<base>.<lang>.md` convention next to the default file — for example `about.ja.md`. The l10n plugin serves them under `/lang/` paths and links them automatically.
+
+Content lives in `content/` as plain Markdown. Change this file and the browser updates while you write. Add another `.md` file with `publish: true` in its frontmatter and it becomes a page.
+
+## Add a feature
+
+Install a plugin package and register its factory in `riebeckite.config.ts`. The `starter` preset shows a practical plugin set, and `showcase` demonstrates the complete ecosystem.

@@ -250,16 +250,16 @@ const README_INTRO: Readonly<
     ja: "空の Riebeckite アプリケーションシェルです。テーマもプラグインもコンポーネントもコンテンツもなく、すべてを自由に追加できます。",
   },
   minimal: {
-    en: "The smallest useful Riebeckite site: Obsidian Markdown, the minimal theme, and a single page.",
-    ja: "最小限で実用的な Riebeckite サイトです。Obsidian マークダウン・minimal テーマ・1 ページ構成。",
+    en: "The smallest readable Riebeckite site: Obsidian Markdown, the minimal theme, and a single page you can read end to end.",
+    ja: "最小で読みやすい Riebeckite サイトです。Obsidian マークダウン・minimal テーマ・1 ページだけで、サイトの組み立て方を学べます。",
   },
   starter: {
-    en: "Recommended for most sites: a practical Markdown garden with search, discovery, and reading essentials.",
-    ja: "大半のサイトにおすすめの構成です。検索・発見・閲覧に必要な機能を備えた実用的な Markdown サイトを作れます。",
+    en: "Recommended default: a practical Markdown garden with search, navigation, and reading essentials.",
+    ja: "大半のサイトにおすすめの既定構成です。検索・ナビゲーション・閲覧に必要な機能を備えた実用的な Markdown サイトを作れます。",
   },
   showcase: {
-    en: "Explore the complete Riebeckite ecosystem with rendered examples, reference pages, and local fixtures.",
-    ja: "描画例・リファレンスページ・ローカルのフィクスチャで、Riebeckite のエコシステム全体を確認できる構成です。",
+    en: "A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples, reference pages, and local fixtures.",
+    ja: "Riebeckite の Plugin エコシステムを実際に確認できる機能紹介用の構成です。描画例・リファレンスページ・ローカルのフィクスチャを含みます。",
   },
 };
 

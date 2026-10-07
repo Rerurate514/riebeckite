@@ -1,6 +1,6 @@
 # starter
 
-Recommended for most sites: a practical Markdown garden with search, discovery, and reading essentials.
+Recommended default: a practical Markdown garden with search, navigation, and reading essentials.
 
 ## What's included
 

@@ -1,6 +1,6 @@
 # minimal
 
-The smallest useful Riebeckite site: Obsidian Markdown, the minimal theme, and a single page.
+The smallest readable Riebeckite site: Obsidian Markdown, the minimal theme, and a single page you can read end to end.
 
 ## Commands
 

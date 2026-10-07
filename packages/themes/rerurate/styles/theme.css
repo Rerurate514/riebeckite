@@ -38,6 +38,7 @@
       var(--rb-color-ink) 8%,
       transparent
     );
+    --rb-color-code-surface: #1c1a17;
     --rb-color-overlay: rgb(0 0 0 / 0.4);
     --rb-font-body:
       Futura, "Futura PT", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans",
@@ -74,6 +75,11 @@
       var(--rb-color-ink) 12%,
       transparent
     );
+    --rb-color-code-surface: color-mix(
+      in srgb,
+      var(--rb-color-ink) 12%,
+      var(--rb-color-paper)
+    );
     --rb-color-overlay: rgb(0 0 0 / 0.6);
   }
 
@@ -92,6 +98,11 @@
         in srgb,
         var(--rb-color-ink) 12%,
         transparent
+      );
+      --rb-color-code-surface: color-mix(
+        in srgb,
+        var(--rb-color-ink) 12%,
+        var(--rb-color-paper)
       );
       --rb-color-overlay: rgb(0 0 0 / 0.6);
     }
@@ -676,7 +687,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
   .rr-code:not([data-terminal="true"]) {
-  --rr-code-paper: #1c1a17;
+  --rr-code-paper: var(--rb-color-code-surface);
   --rr-code-ink: #f6efe2;
 }
 
@@ -701,7 +712,6 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"]
   .rr-code:not([data-terminal="true"]) {
-  --rr-code-paper: var(--rb-color-code-background);
   --rr-code-ink: var(--rb-color-ink);
 }
 
@@ -717,7 +727,6 @@
 
   :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme])
     .rr-code:not([data-terminal="true"]) {
-    --rr-code-paper: var(--rb-color-code-background);
     --rr-code-ink: var(--rb-color-ink);
   }
 }

@@ -59,6 +59,7 @@ export default defineConfig({
 | [Obsidian Markdown](./obsidian-markdown.ja.md) | WikiLink、埋め込み、callout など Obsidian 記法 |
 | [Shortcodes](./shortcodes.ja.md) | 再利用できるインライン・ブロック・コンテナのディレクティブ |
 | [Highlight](./highlight.ja.md) | Obsidian 風のインライン強調 |
+| [Hard Breaks](./hard-breaks.ja.md) | 通常の改行を `<br>` として出力 |
 | [Alias](./alias.ja.md) | Obsidian の alias によるリダイレクト |
 | [Properties](./properties.ja.md) | frontmatter プロパティのパネル表示 |
 | [Bases](./bases.ja.md) | Obsidian Bases のビルド時テーブル |

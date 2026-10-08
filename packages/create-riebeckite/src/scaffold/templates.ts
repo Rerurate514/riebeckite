@@ -71,8 +71,40 @@ function presetContentFiles(
   variables: SiteTemplateVariables,
 ): readonly SiteTemplateFile[] {
   const defaultLanguage = defaultLanguageForLocale(variables.locale);
+  const files = copyTemplateTree(`presets/${preset.name}/content`);
 
-  return copyTemplateTree(`presets/${preset.name}/content`).map((file) => {
+  if (preset.languages.length <= 1) {
+    const selected = new Map<
+      string,
+      { readonly file: SiteTemplateFile; readonly score: number }
+    >();
+
+    for (const file of files) {
+      const match = CONTENT_LANGUAGE_PATTERN.exec(file.path);
+      if (
+        !match ||
+        !SCAFFOLD_LANGUAGES.includes(match[2] as ScaffoldLanguage)
+      ) {
+        selected.set(file.path, { file, score: 0 });
+        continue;
+      }
+
+      const [, base, language] = match;
+      const score =
+        language === defaultLanguage ? 2 : language === "en" ? 1 : 0;
+      const current = selected.get(base);
+      if (!current || score > current.score) {
+        selected.set(base, { file, score });
+      }
+    }
+
+    return [...selected.entries()].map(([relativePath, { file }]) => ({
+      path: `content/${relativePath.endsWith(".md") ? relativePath : `${relativePath}.md`}`,
+      content: replaceTitle(file.content, variables.title),
+    }));
+  }
+
+  return files.map((file) => {
     const match = CONTENT_LANGUAGE_PATTERN.exec(file.path);
     let relativePath = file.path;
 
@@ -82,13 +114,20 @@ function presetContentFiles(
         language === defaultLanguage ? `${base}.md` : `${base}.${language}.md`;
     }
 
-    const content =
-      typeof file.content === "string"
-        ? file.content.split("{{title}}").join(variables.title)
-        : file.content;
-
-    return { path: `content/${relativePath}`, content };
+    return {
+      path: `content/${relativePath}`,
+      content: replaceTitle(file.content, variables.title),
+    };
   });
+}
+
+function replaceTitle(
+  content: string | Uint8Array,
+  title: string,
+): string | Uint8Array {
+  return typeof content === "string"
+    ? content.split("{{title}}").join(title)
+    : content;
 }
 
 function packageJson(
@@ -348,7 +387,9 @@ function readmeEn(
   ];
   if (preset.readme !== "short") {
     lines.push(`## ${words.included}`, "");
-    lines.push(`- **${words.languages}**: ${languagesLabel(preset, words)}`);
+    lines.push(
+      `- **${words.languages}**: ${languagesLabel(preset, variables, words)}`,
+    );
     lines.push(
       `- **${words.theme}**: ${preset.theme ? `\`${preset.theme.package}\`` : words.none}`,
     );
@@ -417,7 +458,9 @@ function readmeJa(
   ];
   if (preset.readme !== "short") {
     lines.push(`## ${words.included}`, "");
-    lines.push(`- **${words.languages}**: ${languagesLabel(preset, words)}`);
+    lines.push(
+      `- **${words.languages}**: ${languagesLabel(preset, variables, words)}`,
+    );
     lines.push(
       `- **${words.theme}**: ${preset.theme ? `\`${preset.theme.package}\`` : words.none}`,
     );
@@ -504,11 +547,17 @@ function deploymentSecretLines(language: "en" | "ja"): readonly string[] {
 
 function languagesLabel(
   preset: ScaffoldPreset,
+  variables: SiteTemplateVariables,
   words: Record<string, string>,
 ): string {
   if (preset.languages.length === 0) return words.none;
-  if (preset.languages.length === 1)
-    return `${preset.languages[0]} (${words.single})`;
+  if (preset.languages.length === 1) {
+    const language =
+      preset.name === "starter"
+        ? defaultLanguageForLocale(variables.locale)
+        : preset.languages[0];
+    return `${language} (${words.single})`;
+  }
   return preset.languages.join(", ");
 }
 

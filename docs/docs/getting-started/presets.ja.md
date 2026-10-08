@@ -30,16 +30,16 @@ npx create-riebeckite --list-presets
 
 | Preset | Theme | 言語 | コンテンツ | 主な機能 |
 | --- | --- | --- | --- | --- |
-| `starter` | `default` | 7言語 | index、guide、examples、相互リンクしたノート | Markdown 公開、検索、パンくず、バックリンク、関連記事・最新記事、taxonomy、series |
+| `starter` | `default` | Site locale に応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown 公開、検索、コンテンツから導く Navigation、パンくず、バックリンク、関連記事・最新記事、taxonomy、Folder landing、リンク preview |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、Plugin/Theme reference、ローカル fixture | 全 Plugin カタログ、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | — | なし | 空のアプリケーションシェル |
 
-7言語は英語、日本語、簡体字中国語、スペイン語、ドイツ語、フランス語、韓国語です。`minimal` は l10n を登録せず、`empty` には Theme、Plugin、コンテンツがありません。
+7言語は showcase 用で、英語、日本語、簡体字中国語、スペイン語、ドイツ語、フランス語、韓国語です。`starter` は Site locale に応じて1言語のページを生成します。翻訳済みの Route が必要になったら l10n を追加してください。`minimal` は英語のみで、`empty` には Theme、Plugin、コンテンツがありません。
 
 ### `starter`
 
-実用サイト向けの既定構成です。Obsidian Markdown、カラーモード、l10n、SEO、目次、properties・alias、コード表示、検索・発見、パンくず、画像の最適表示と lightbox、series、taxonomy を含みます。相互リンクしたノートにより、バックリンク、関連記事、検索、最新記事、series、タグを試せます。ニッチな統合は含めません。
+実用サイト向けの既定構成です。Obsidian Markdown、カラーモード、SEO、目次、properties・alias、コード表示、検索・発見、パンくず、画像の最適表示と lightbox、taxonomy、Folder landing page、リンク preview を含みます。Navigation はサンプル用の固定 URL ではなく、公開済みコンテンツから組み立てます。相互リンクしたノートにより、バックリンク、関連記事、検索、最新記事、Tag を試せます。ニッチな統合は含めません。
 
 ### `minimal`
 

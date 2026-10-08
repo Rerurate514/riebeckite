@@ -17,7 +17,6 @@
     "honox": "0.1.56",
     "@riebeckite/plugin-obsidian-markdown": "^0.0.21",
     "@riebeckite/plugin-color-mode": "^0.0.21",
-    "@riebeckite/plugin-l10n": "^0.0.21",
     "@riebeckite/plugin-seo": "^0.0.21",
     "@riebeckite/plugin-toc": "^0.0.21",
     "@riebeckite/plugin-properties": "^0.0.21",
@@ -31,8 +30,9 @@
     "@riebeckite/plugin-recent-posts": "^0.0.21",
     "@riebeckite/plugin-responsive-image": "^0.0.21",
     "@riebeckite/plugin-lightbox": "^0.0.21",
-    "@riebeckite/plugin-series": "^0.0.21",
     "@riebeckite/plugin-taxonomy": "^0.0.21",
+    "@riebeckite/plugin-folder-pages": "^0.0.21",
+    "@riebeckite/plugin-hover-preview": "^0.0.21",
     "@riebeckite/theme-default": "^0.0.21"
   },
   "devDependencies": {

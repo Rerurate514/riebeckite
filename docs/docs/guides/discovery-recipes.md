@@ -36,11 +36,13 @@ The `starter` preset already registers the pieces most sites need:
 - **Recent posts** on the generated homepage (from `recent-posts`).
 - **Tags and folders** listing pages from `taxonomy` (`/tags` and `/folders` by
   default).
-- **Series** list and landing pages from `series` (`/series` by default).
+- **Folder landing pages** from `folder-pages`, including `README.md` and
+  `index.md` landing content.
 - **Breadcrumbs** in the article header from `breadcrumbs`.
+- **Link previews** for public internal links from `hover-preview`.
 
-`query`, `dataview`, `archive`, and `folder-pages` are available as packages but
-are not registered by `starter`. Add the Plugin when a recipe needs it; see
+`query`, `dataview`, `archive`, and `series` are available as packages but are
+not registered by `starter`. Add the Plugin when a recipe needs it; see
 [Presets](../getting-started/presets.md) for what each preset includes.
 
 ## Recent posts
@@ -199,16 +201,24 @@ For a folder listing, add the taxonomy path to the navigation:
 navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 ```
 
-Change the prefix with `taxonomy({ foldersBasePath: "/directories" })`. Because
-`folder-pages` changes where `README.md` and `index.md` resolve, enable it only
-when you want a landing page per folder; it is not registered by `starter`.
+Change the prefix with `taxonomy({ foldersBasePath: "/directories" })`. The
+starter also enables `folder-pages`, so each non-empty public folder gets a
+landing page and a folder's `README.md` or `index.md` becomes its landing
+content. Add a navigation item for `/folders` when readers need the taxonomy
+index; content-derived navigation follows published notes and folder owners.
 
 ## Series
 
-A series is a set of notes that share a `series` frontmatter key. `series` is in
-`starter` and already appends previous/next navigation to each part. It also
-publishes a list page at `basePath` (default `/series`) and one landing page per
-series at `basePath/<name>`:
+A series is a set of notes that share a `series` frontmatter key. Install and
+register `@riebeckite/plugin-series` to append previous/next navigation to each
+part and publish a list page at `basePath` (default `/series`) with one landing
+page per series at `basePath/<name>`:
+
+```ts
+import { series } from "@riebeckite/plugin-series";
+
+plugins: [series()]
+```
 
 ```yaml
 ---
@@ -253,11 +263,12 @@ A blog-style homepage often combines a few of these:
 1. A lead paragraph in `content/index.md`.
 2. A `query` block for featured notes.
 3. `<RecentPosts />` from the generated homepage route.
-4. Navigation links to `/tags`, `/series`, and `/archive`.
+4. Navigation links to the discovery routes that the site enables, such as
+   `/tags` and `/archive`.
 
-A docs-style site leans on `folder-pages` for section landings and on `series`
-for ordered guides. A vault with few nested folders may skip folder pages
-entirely. Pick the pieces that match the content you have.
+A docs-style site can use the starter's `folder-pages` for section landings and
+add `series` for ordered guides. A vault with few nested folders may remove
+folder pages. Pick the pieces that match the content you have.
 
 ## What this does not need
 

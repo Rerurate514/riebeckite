@@ -27,7 +27,14 @@ translation: getting-started
 
 組み合わせた場合の組み込み規則の優先順位は **frontmatter > 独自検出 > ファイル名 > 既定言語** です。矛盾は `L10N_LANGUAGE_CONFLICT`、同一 `translation + lang` の重複は `L10N_DUPLICATE_TRANSLATION` として診断します。`strict: true` ではビルドを失敗させます。
 
-`translation` はロケール検出とは別です。異なるパス・ファイル名でも明示的な ID でグループ化できます。翻訳がない言語のページを複製・生成することはありません。
+`translation` はロケール検出とは別です。異なるパス・ファイル名でも明示的な ID でグループ化できます。
+
+```text
+日本語/はじめに.md        lang: ja, translation: getting-started
+English/getting-started.md lang: en, translation: getting-started
+```
+
+翻訳がない言語のページを複製・生成することはありません。`getLocalization(manifest, slug)` は存在する翻訳だけを `availableLanguages` と言語ごとの `translations` に含め、`getLocalizedContent(manifest, slug, lang)` は見つからなければ `null` を返します。
 
 ## URL・テーマ・SEO
 
@@ -56,7 +63,7 @@ l10n({
 
 Theme は `.l10n-switcher` の CSS class を上書きできます。`ui.render` はフレームワーク非依存の HTML renderer なので、カスタム Site は任意のサーバー描画コンポーネントへ置き換えられます。
 
-各ページには実在する翻訳だけを対象に `hreflang` の alternate link を追加します。WikiLink の Content Graph は同言語の翻訳を優先し、なければ元のリンク先を使います。本文では Obsidian WikiLink を `@riebeckite/plugin-obsidian-markdown` が解決した後、WikiLink と Markdown の内部リンクを同じ規則で処理します。現在のページと同じ言語の翻訳があればその URL に切り替え、なければ original/default のリンク先を維持します。クエリ文字列とフラグメントは維持し、外部 URL、フラグメントのみのリンク、不明な URL、asset などコンテンツ以外の URL は変更しません。Content Graph と本文リンクは同じ解決ポリシーを使います。
+各ページには Core の `headTags` 拡張を通じ、実在する翻訳だけを対象に `hreflang` の alternate link を追加します。サイトシェルはこれらのタグの描画と、リクエストに応じた `<html lang>` の選択を担当します。WikiLink の Content Graph は同言語の翻訳を優先し、なければ元のリンク先を使います。本文では Obsidian WikiLink を `@riebeckite/plugin-obsidian-markdown` が解決した後、WikiLink と Markdown の内部リンクを同じ規則で処理します。現在のページと同じ言語の翻訳があればその URL に切り替え、なければ original/default のリンク先を維持します。クエリ文字列とフラグメントは維持し、外部 URL、フラグメントのみのリンク、不明な URL、asset などコンテンツ以外の URL は変更しません。Content Graph と本文リンクは同じ解決ポリシーを使います。
 
 ## 独自検出
 

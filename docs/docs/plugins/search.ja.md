@@ -1,28 +1,78 @@
+<!-- Generated from packages/plugins/search/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Search
 
-公開サイト内のコンテンツを検索する機能を追加する Plugin です。
+外部サービスなしで全文検索を提供するプラグインです。検索モーダルと検索バーを追加し、タイトルや本文を重み付きであいまいに検索します。
 
-## 導入
+[English](./search.md)
 
-```bash
-npm install @riebeckite/plugin-search
+## 設定する
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { searchPlugin } from "@riebeckite/plugin-search";
+
+export default defineConfig({
+  // ...
+  plugins: [searchPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`searchPlugin()` はスタイルとクライアント初期化処理を登録します。検索ダイアログは `Ctrl+K`、`Cmd+K`、または `/` で開けます。
 
-## 使用例
+## 検索バーを置く
 
-記事数が増えたサイトで、タイトルや本文から目的のページを探せる検索導線を提供します。たとえば Plugin 名や技術用語から関連ドキュメントを探す用途です。
+レイアウトなど、検索を開く導線を出したい場所で `SearchBar` を描画します。
 
-このページでも、ヘッダーの検索バー、または `Ctrl+K`（macOS では `Cmd+K`、`/`）で検索モーダルを開けます。タイトルと本文を対象にしたあいまい検索で、最大8件まで表示されます。
+```tsx
+import { SearchBar } from "@riebeckite/plugin-search";
 
-## 使いどころ
+return (
+  <header>
+    <SearchBar />
+  </header>
+);
+```
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+モーダルは初めて開かれたときに `/search-data.json` を取得し、結果を最大 8 件表示します。検索用データを事前に配信できる構成で使ってください。
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+## 検索の対象と順位
 
-## 詳細仕様
+`searchItems()` は次の項目を検索し、重みの高い項目を優先します。
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+| 項目 | 重み |
+| --- | ---: |
+| `slug` | 64 |
+| `title` | 56 |
+| `tags` | 44 |
+| `headings` | 32 |
+| `body` | 10 |
 
+完全一致は 3 倍、前方一致は 2 倍、部分一致は 1 倍として採点します。2 文字以上の問い合わせで部分一致が見つからない場合は、文字が順に現れる候補も探します。入力は小文字化、NFKC 正規化、カタカナの表記ゆれ吸収を経て比較されます。
+
+各 `SearchItem` は解決済みの canonical `permalink` も持ちます。これはスコア対象ではありません。`slug` は検索用の identity で、モーダルの遷移先は `permalink` です。
+
+## 検索エンジンだけを使う
+
+検索関数は副作用のない関数として公開されています。独自の検索ページやサーバー側のインデックス生成にも利用できます。
+
+```ts
+import { searchItems, normalizeSearchQuery } from "@riebeckite/plugin-search";
+
+const results = searchItems(items, "#obsidian");
+```
+
+`normalizeSearchQuery()` は先頭の `#` を外すため、タグ名だけを指定する検索に使えます。
+
+## 主なエクスポート
+
+- `searchPlugin()`: プラグインを作成する
+- `SearchBar`: 検索モーダルの導線となるコンポーネント
+- `initSearch`: ブラウザ側の初期化。`@riebeckite/plugin-search/client` からも読み込める
+- `searchItems`、`normalizeSearchQuery`、`normalizeSearchText`: 検索エンジン
+- 型: `SearchItem`、`SearchField`、`SearchMatch`、`SearchResult`
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-garden-explorer`](./garden-explorer.ja.md)

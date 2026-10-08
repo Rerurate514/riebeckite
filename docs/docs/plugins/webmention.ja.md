@@ -1,29 +1,118 @@
+<!-- Generated from packages/plugins/webmention/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Webmention
 
-公開ノートへの Webmention を受け取り、検証して表示する Plugin です。
+Webmention を受信し、送信元ドキュメントが本当にターゲットへリンクしているかを検証し、
+プラガブルな provider 経由で保存して、検証済みのメンションを記事の近くに表示します。
+コアプラグインには **Cloudflare・Worker・データベース・ベンダー固有のコードは一切なく**、
+依存は `@riebeckite/core` だけです。
 
-## 導入
+[English](./webmention.md)
 
-```bash
-npm install @riebeckite/plugin-webmention
-```
+## 設計
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+- `WebmentionProvider` が storage / runtime の境界です。`store` / `query` の
+  capability を公開し、`store(mention)` と `query(query)` を持ちます。認証情報・
+  データベースハンドル・実行時バインディングは adapter 内に留まり、プラグインの
+  options や生成物へ漏れません。
+- `MemoryWebmentionProvider` はテスト・ローカルプレビューで使う provider の例として
+  同梱されています。プロセス／isolate をまたいで永続化はしません。
+- プラグインは `endpoints` を宣言します。`POST {endpoint}` が Webmention を受信し、
+  `GET {endpoint}` が検証済みメンションのフィードを返します。ルートフレームワークの
+  詳細はこのパッケージへ入りません。HonoX 連携（`mountRiebeckiteEndpoints`）が
+  エンドポイントをホストルーターへマウントします。
+- 検証は注入可能な `WebmentionSourceFetcher` を通じて送信元を取得し、ターゲットへの
+  発リンクを確認したうえで、軽量な引用メタデータ（title・excerpt・author・公開日・
+  `rel` 由来の種別）を記録します。既定の fetcher は loopback とプライベートネット
+  ワーク宛てを拒否し、本文サイズを制限し、タイムアウトします。
 
-## 使用例
-
-サイトで Webmention を受け付け、対象の記事の近くに表示したい場合に利用します。provider を指定しない場合はメモリ上に保存され、ローカルプレビュー向きです。本番では永続化アダプタを指定します。
+## 使い方
 
 ```ts
-webmention({ provider: d1Storage(env.WEBMENTION_DB) });
+import { webmention } from "@riebeckite/plugin-webmention";
+import { d1Storage } from "@riebeckite/webmention-cloudflare";
+
+export default {
+  plugins: [
+    webmention({ provider: d1Storage(env.WEBMENTION_DB) }),
+  ],
+};
 ```
 
-## 使いどころ
+provider を省略するとインメモリ provider が使われます。ローカルプレビューには
+十分ですが、プロセスをまたぐとメンションは失われます。本番では永続 adapter
+（[`@riebeckite/webmention-cloudflare`](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md) を参照）
+を指定してください。
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## エンドポイント
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+| Method | Path                       | 動作 |
+| ------ | -------------------------- | ---- |
+| `POST` | `/webmentions`（既定）      | `source` と `target` を含む `application/x-www-form-urlencoded` または `application/json` を受け付けます。受理時は `202`、拒否時は `error` コード付きの `400`、ストレージ不能時は `503` を返します。 |
+| `GET`  | `/webmentions`（既定）      | 検証済みメンションのフィードを JSON（`{ version, generatedAt, count, mentions }`）で返します。`?target=`・`?limit=`・`?since=` に対応。query 不能な provider では `501` を返します。 |
 
-## 詳細仕様
+拒否コード: `invalid_request`、`missing_source_or_target`、`target_not_found`、
+`invalid_source`、`invalid_target`、`source_unreachable`、`no_link_found`。
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+## 表示
+
+`onManifestCreated` で provider を一度 query し、検証済みメンションをターゲット別に
+グループ化して、対応する entry の HTML へセクションを追記します。Core がその HTML を
+コンテンツルートの描画 HTML と同期します。フックは安定した `rr-webmention` 名です。
+
+```html
+<section class="rr-webmention" data-webmention data-webmention-count="2">
+  <h2 class="rr-webmention__heading">Mentions</h2>
+  <ul class="rr-webmention__list">
+    <li class="rr-webmention__item rr-webmention__item--like"
+        data-webmention-type="like">…</li>
+  </ul>
+</section>
+```
+
+`render: false` でビルド時の追記を無効化できます。リクエスト時に描画する
+アプリケーションは `getWebmentionsForEntry({ manifest, config, provider, slug })` と
+`renderWebmentionSection(mentions, options)` を直接呼ぶか、JSON フィードを利用します。
+
+## オプション
+
+| オプション | 既定値 | 説明 |
+| ---------- | ------ | ---- |
+| `provider` | インメモリ | `WebmentionProvider` を実装するストレージ adapter。 |
+| `endpoint` | `"/webmentions"` | 受信（POST）とフィード（GET）のパス。 |
+| `render` | `true` | manifest 生成時に対応 entry へメンションを追記します。 |
+| `headingText` | `"Mentions"` | 表示セクションの見出し。 |
+| `limit` | `20` | 記事ごとに表示する最大メンション数。 |
+| `className` | `"rr-webmention"` | 表示セクションのルート CSS クラス。 |
+| `allowedTargets` | `[]` | 公開 entry 以外で受理する絶対ターゲット URL。 |
+| `fetchSource` | グローバル `fetch` | 送信元 fetcher の差し替え（テスト・独自 runtime）。 |
+| `timeoutMs` | `10000` | 送信元取得のタイムアウト。 |
+| `maxBytes` | `1000000` | 受理する送信元ドキュメントの最大サイズ。 |
+| `userAgent` | プラグイン既定 | 検証時の `User-Agent`。 |
+| `allowPrivateHosts` | `false` | プライベートネットワーク宛ての取得を許可します。 |
+| `nofollow` | `true` | 表示する送信元リンクへ `rel="nofollow ugc"` を付与します。 |
+
+ブラウザへ渡るのは JSON 安全な値だけです。このプラグインは client entry も
+`publicConfig` も登録せず、provider の認証情報は options に入りません。
+
+## 診断
+
+`addDiagnostics` は provider の capability 不足
+（`webmention-render-requires-query`、`webmention-receive-requires-store`）を報告します。
+manifest 生成時、公開 entry に一致しないターゲットのメンションは
+`webmention-unmatched-target` として報告されます。
+
+## エクスポート
+
+- `webmention()` / `webmentionPlugin()`
+- `MemoryWebmentionProvider`、provider / capability の型とエラー
+- `parseWebmentionSource`、`findTargetLink`、`verifyWebmention`、
+  `createWebmentionSourceFetcher`
+- `renderWebmentionSection`、`getWebmentionsForEntry`、`groupMentionsBySlug`、
+  `buildFeed`
+- `resolveWebmentionOptions`、`validateWebmentionOptions`
+
+## 関連
+
+- [プラグインガイド](../reference/plugin-api.ja.md)
+- [@riebeckite/webmention-cloudflare](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md)

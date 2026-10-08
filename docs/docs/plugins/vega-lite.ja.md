@@ -1,26 +1,45 @@
+<!-- Generated from packages/plugins/vega-lite/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Vega-Lite
 
-Vega-Lite の仕様を使ってデータ可視化を埋め込む Plugin です。
+` ```vega-lite ` コードブロックを Vega-Lite のチャートとして表示するプラグインです。チャートはブラウザ側で描画し、Vega ランタイムは必要になったときだけ動的に読み込みます。
 
-## 導入
+[English](./vega-lite.md)
 
-```bash
-npm install @riebeckite/plugin-vega-lite
+## 設定する
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { vegaLite } from "@riebeckite/plugin-vega-lite";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    vegaLite({
+      caption: true,
+      theme: "light",
+      renderer: "canvas",
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+このプラグインは `order: -10` で実行されます。
 
-## 使用例
+## 記法
 
-データを宣言的な仕様からグラフとして可視化したい記事で利用します。数値データを解説するレポートや分析記事に向いています。
-
-### ソース
+コードブロックの本文に Vega-Lite の仕様を JSON で書きます。`vega-lite` に加えて `vega` も受け付けます。
 
 ````markdown
 ```vega-lite
 {
-  "title": "Revenue",
-  "data": { "values": [{ "category": "A", "value": 28 }, { "category": "B", "value": 55 }] },
+  "title": "売上高",
+  "data": {
+    "values": [
+      { "category": "A", "value": 28 },
+      { "category": "B", "value": 55 }
+    ]
+  },
   "mark": "bar",
   "encoding": {
     "x": { "field": "category", "type": "nominal" },
@@ -30,27 +49,62 @@ Plugin の export 名や設定項目は、実装と package README を一次情�
 ```
 ````
 
-### 実行例
+キャプションにはコードブロックの `title`、なければ仕様の `title` を使います。
 
-```vega-lite
-{
-  "title": "Revenue",
-  "data": { "values": [{ "category": "A", "value": 28 }, { "category": "B", "value": 55 }] },
-  "mark": "bar",
-  "encoding": {
-    "x": { "field": "category", "type": "nominal" },
-    "y": { "field": "value", "type": "quantitative" }
-  }
-}
-```
+## どのように描画されるか
 
-## 使いどころ
+` ```vega-lite ` のコードブロックは `figure.rb-vega-lite` に置き換わります。
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `figure.rb-vega-lite`: `data-vega-lite="pending"` と `data-vega-lite-spec`（JSON をエスケープしたもの）を持ちます
+- `div.rb-vega-lite__canvas`: チャートを描画する領域（`role="img"`）
+- `figcaption.rb-vega-lite__caption`: キャプション（既定で有効）
+- `details.rb-vega-lite__fallback`: 元の仕様を折りたたんで表示
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+`initVegaLite` は `[data-vega-lite]` を探し、`data-vega-lite-spec` を `JSON.parse` してから `vega`、`vega-lite`、`vega-embed` を動的インポートして `vega-embed` で描画します。描画に成功すると `data-vega-lite="rendered"` になります。
 
-## 詳細仕様
+`vega-embed` の読み込み、仕様の `JSON.parse`、描画のいずれかが失敗した場合は例外を投げず、その figure の `details` を開いて元の仕様を見せます（`data-vega-lite="error"`）。
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+JSON を解析できないコードブロックは置き換えず、通常のコードブロックのまま残し、`@riebeckite/plugin-vega-lite` を `source` に持つ診断を出します。
 
+## オプション
+
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `caption` | `true` | `title` をキャプションとして表示する |
+| `actions` | `null` | `vega-embed` の操作メニューを表示する（`true` / `false` / `null`） |
+| `theme` | `"light"` | 配色（`"light"`、`"dark"`、`"none"`） |
+| `renderer` | `"canvas"` | Vega のレンダラー（`"canvas"` または `"svg"`） |
+| `className` | `"rb-vega-lite"` | figure に付ける基準クラス |
+
+`actions` が `null` のときは `vega-embed` の既定（操作メニューあり）に従います。`theme` が `"light"` または `"none"` のときは Vega 既定の明るい配色を使い、`"dark"` のときだけ `vega-embed` の `dark` テーマを適用します。
+
+## クライアント側の描画
+
+クライアントの初期化コードは静的なので、プラグインのオプションは受け取りません。`actions`、`theme`、`renderer` は figure の `data-vega-lite-*` 属性に埋め込まれ、`initVegaLite` がそこから読み取ります。
+
+Vega ランタイムは `import()` で動的に読み込むため、JavaScript を無効にしていてもページは表示され、仕様はフォールバックの `details` から読めます。
+
+## 出力のフック
+
+- `figure[data-vega-lite]`: 状態（`pending` / `rendered` / `error`）
+- `figure[data-vega-lite-spec]`: エスケープ済みの仕様 JSON
+- `figure[data-vega-lite-theme]`、`figure[data-vega-lite-renderer]`、`figure[data-vega-lite-actions]`
+- `[data-vega-lite-canvas]`: 描画先の要素
+- `details.rb-vega-lite__fallback`: 元の仕様
+
+## 主なエクスポート
+
+- `vegaLite(options?)`: プラグインを作成する（`vegaLitePlugin` は別名）
+- `initVegaLite`: クライアント側の描画を初期化する
+- 型: `VegaLiteOptions`、`VegaLiteSpec`、`VegaLiteTheme`、`VegaLiteRenderer`
+
+## 制限
+
+- 描画はクライアント側のみです。ビルド時に SVG などは生成しないため、JavaScript が無効な環境ではチャートは表示されません（仕様の `details` は残ります）
+- チャートごとに `vega`、`vega-lite`、`vega-embed` を読み込むため、多数のチャートを含むページでは転送量と描画コストが増えます
+- Vega-Lite のすべての機能を検証しているわけではありません。複雑な仕様はブラウザ側のエラーとして扱われ、フォールバックが開きます
+- `vega`、`vega-lite`、`vega-embed` は BSD-3-Clause ライセンスです
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)

@@ -1,25 +1,60 @@
+<!-- Generated from packages/plugins/text-fragment/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Text Fragment
 
-記事内で選択したテキストの Text Fragment リンクまたは Markdown 引用をコピーする Plugin です。
+記事内で選択したテキストから、Text Fragment のディープリンク（`#:~:text=`）と Markdown の引用を作るプラグインです。
 
-## 導入
+[English](./text-fragment.md)
 
-```bash
-npm install @riebeckite/plugin-text-fragment
+## できること
+
+クライアント専用のプラグインです。ページ表示時に、選択範囲のそばへ小さなポップオーバーを出し、次の二つをコピーできます。
+
+- **Copy link**: 選択したテキストをハイライトする [Text Fragment](https://wicg.github.io/scroll-to-text-fragment/) 付き URL を作ります。
+- **Copy quote**: ページへのリンク付きで Markdown の引用ブロックを作ります。
+
+## 設定する
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+
+export default defineConfig({
+  // ...
+  plugins: [textFragmentPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`textFragmentPlugin()` はスタイルと `initTextFragmentShare` を登録します。初期化処理はアプリのページ初期化時に呼ばれます。`textFragmentPlugin({ labels })` で UI ラベルだけを差し替えられます。
 
-## 使用例
+## 挙動
 
-読者が特定の一節を指して共有できるようにしたい場合に利用します。記事内でテキストを選択すると、2 つの操作を持つポップオーバーが表示されます。**Copy link** は選択範囲をハイライトする `#:~:text=` URL を、**Copy quote** はページへのリンク付き Markdown 引用を生成します。
+- 記事本文内でテキストを選択すると、そのそばにポップオーバーが出ます。`pre`、`code`、`a[href]`、`[data-no-share]` の中の選択は対象外です。
+- コピーは `navigator.clipboard.writeText` を使い、失敗時は隠し textarea と `document.execCommand("copy")` に切り替えます。
+- コピーに失敗したときは `aria-live="polite"` の領域にメッセージを表示します。
+- `Escape` またはポップオーバーの外側をクリックすると閉じます。ボタンは実体の `<button>` なのでキーボードでも操作できます。
+- 初期化はページごとに一度だけで、`document` が無い環境では何もしません。
 
-## 使いどころ
+### URL の規則
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+フラグメントは `#:~:text=[prefix-,]start[,end][,-suffix]` に従います。
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+- `,`、`-`、`&` はパーセントエンコードします（`%2C`、`%2D`、`%26`）。
+- それ以外は UTF-8 単位でエンコードします（改行は `%0A`）。
+- ページ URL に既存のハッシュがあるときは、それを外してからディレクティブを付けます。
+- 200 文字前後より長い選択、または改行を含む選択は、先頭と末尾のトークンによる `start,end` に短縮します。
+- 空または空白だけの選択は `""` を返します。
 
-## 詳細仕様
+## 公開 API
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+- `textFragmentPlugin(options?)` — プラグインファクトリ。`options.labels` で UI ラベルを上書きする
+- `initTextFragmentShare(labels?)` — ブラウザ初期化関数（`@riebeckite/plugin-text-fragment/client` からも読み込める）
+- `encodeTextFragment(text)` — テキスト片をパーセントエンコードする
+- `buildTextFragmentUrl(pageUrl, selection, options?)` — ディープリンクを作る。`options` は `{ prefix?, suffix? }`
+- `buildQuoteMarkdown({ url, title, selection })` — 引用ブロックを作る
+- `DEFAULT_TEXT_FRAGMENT_LABELS` — 既定の英語 UI ラベル
+- `TextFragmentOptions`、`TextFragmentLabels`、`TextFragmentPluginOptions` — 型
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)

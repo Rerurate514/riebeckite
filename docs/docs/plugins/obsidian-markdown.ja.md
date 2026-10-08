@@ -1,42 +1,51 @@
+<!-- Generated from packages/plugins/obsidian-markdown/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Obsidian Markdown
 
-Obsidian の Markdown 記法を Riebeckite で扱うための基盤となる Plugin です。Callout、WikiLink、埋め込みなど、Obsidian 由来の記法を公開サイトへ持ち込みたい場合に使います。
+ウィキリンク、コールアウト、インラインタグ、ブロック参照など、Obsidian の Markdown 記法を変換するプラグインです。
 
-## 導入
+[English](./obsidian-markdown.md)
 
-```bash
-npm install @riebeckite/plugin-obsidian-markdown
+## 設定
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+この変換は `order: -20` で動くため、ほかの Markdown プラグインより先に Obsidian 記法を解釈します。
 
-## 使用例
+## 主な記法
 
-Obsidian で普段使っている WikiLink や Callout を、そのまま公開用コンテンツに利用できます。
+- `[[Note]]`、`[[Note|別名]]` — 対象の解決済み canonical permalink へのリンク（class `wikilink`）。見出し・ブロック ID のフラグメントも扱う。lookup は slug で行い、`href` は解決済み permalink
+- `![[Note]]` — 最大 3 階層まで安全に再帰描画するノート埋め込み
+- `![[image.png]]` — `assetBase` 配下の画像、`[[file.pdf]]` — 添付ファイル用レンダラーまたはダウンロードリンク
+- `> [!note]` — コールアウト。`+` と `-` で折りたたみ状態を指定できる
+- `#tag`、`#nested/tag` — タグページへのリンク
+- 段落末尾の `^block-id` — 要素の `id` と `data-block-id`
 
-### ソース
+解決できないウィキリンクは `wikilink-broken` クラスを付けたリンクになります。添付カードやメディア表示が必要なら、別途対応する添付プラグインを登録してください。
 
-```markdown
-[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+## オプション
 
-> [!NOTE]
-> このノートは Riebeckite で公開されています。
-```
+| オプション | 既定値 | 内容 |
+| --- | --- | --- |
+| `assetBase` | `"/"` | 画像ウィキリンクの URL の基点 |
+| `callout.defaultTitles` | 組み込みの対応表 | コールアウトの既定見出し |
+| `tag.tagBase` | `"/tags/"` | タグページの基点 |
+| `tag.onTag` | なし | 見つけたタグごとに呼ぶ関数 |
 
-### 実行例
+## 公開 API
 
-[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+- `obsidianMarkdown(options?)` / `obsidianMarkdownPlugin` — プラグインファクトリ
+- `ObsidianMarkdownOptions`、`CalloutOptions`、`TagOptions`、`WikilinkOptions`、`WikilinkFragment` — 型
 
-> [!NOTE]
-> このノートは Riebeckite で公開されています。
+## 関連資料
 
-## 使いどころ
-
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
-
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
-
-## 詳細仕様
-
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
-
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-attachment`](./attachment.ja.md)

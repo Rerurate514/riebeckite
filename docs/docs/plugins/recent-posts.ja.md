@@ -1,26 +1,46 @@
+<!-- Generated from packages/plugins/recent-posts/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Recent Posts
 
-最近のコンテンツを一覧表示するための Plugin です。
+公開済みノートを日付順に並べ、最新の記事一覧として表示するプラグインです。
 
-## 導入
+[English](./recent-posts.md)
 
-```bash
-npm install @riebeckite/plugin-recent-posts
+## できること
+
+`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。一覧を置くかどうか、どこへ置くかは Site 側で決めます。
+
+## 設定と配置
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+
+export default defineConfig({ plugins: [recentPostsPlugin()] });
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+一覧を置く場所はアプリ側で決めます。
 
-## 使用例
+```tsx
+import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
+import { content } from "../content";
 
-ホームや一覧ページで「最近更新・公開された記事」を見せたい場合に利用します。ブログや更新頻度の高い Digital Garden の入口に向いています。
+const posts = getRecentPosts({ manifest: await content.getManifest() });
+return <Article afterContent={<RecentPosts posts={posts} />} />;
+```
 
-ホームや一覧ページの article component 内で `RecentPosts`（`getRecentPosts` で取得した一覧）を描画します。記事が0件の場合は何も表示されません。
+| オプション | 既定値 | 内容 |
+| --- | --- | --- |
+| `manifest` | 必須 | 候補ノートの取得元（`discoverableEntries`） |
+| `limit` | `5` | 返す記事数の上限 |
 
-## 使いどころ
+## 公開 API
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `recentPostsPlugin()` — プラグインファクトリ
+- `RecentPosts` — 最新記事一覧コンポーネント
+- `getRecentPosts({ manifest, limit? })`
+- `RecentPost` — `{ slug, permalink, title, postedAt }` の型
 
-## 詳細仕様
+## 関連資料
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
-
+- [プラグインシステム](../reference/plugin-api.ja.md)

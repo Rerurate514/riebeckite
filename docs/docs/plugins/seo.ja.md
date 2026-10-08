@@ -1,25 +1,67 @@
+<!-- Generated from packages/plugins/seo/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # SEO
 
-公開ページの検索エンジン向けメタデータなど、SEO に関する処理を追加する Plugin です。
+記事のメタデータ、サイトマップ、robots.txt、RSS・Atom・JSON Feed をまとめて生成するプラグインです。アプリケーションはプラグインが提供する SEO 拡張を受け取り、各ページの出力に利用します。
 
-## 導入
+[English](./seo.md)
 
-```bash
-npm install @riebeckite/plugin-seo
+## 設定する
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { seo } from "@riebeckite/plugin-seo";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    seo({
+      feed: { rss: true, atom: true, json: true, limit: 30 },
+      sitemap: true,
+      robots: true,
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+| 項目 | 説明 |
+| --- | --- |
+| `feed` | RSS、Atom、JSON Feed の出力を個別に有効化する。`limit` は全形式共通の件数上限で、既定値は 30 件 |
+| `sitemap` | サイトマップを出力する |
+| `robots` | robots.txt を出力する |
 
-## 使用例
+## 記事の frontmatter が出力を決める
 
-公開記事のタイトル・説明・canonical情報などを検索エンジンやSNS向けに整える用途です。記事ごとの frontmatter と組み合わせて利用できます。RSS・Atom・JSON Feed は既定で最新 30 件を含み、`feed.limit` で共通の件数上限を変更できます。
+`buildArticleSeo()` は記事タイトル、説明、canonical URL、OGP 画像、公開・更新日時、タグ、読了時間を組み立て、`BlogPosting` と `BreadcrumbList` の JSON-LD を作ります。呼び出し側がページの `headTags` を渡し、そこに BreadcrumbList（breadcrumbs プラグインが提供するものなど）が既にある場合、重複を避けるためこのプラグイン側の BreadcrumbList は省略します。値は次の順で補完されます。
 
-ビルドすると、各ページの `<head>` に canonical・OGP・JSON-LD が挿入され、`sitemap.xml`・`robots.txt`・RSS/Atom/JSON Feed も出力されます。
+| フィールド | 用途 |
+| --- | --- |
+| `title` | 記事タイトル。なければ slug の末尾 |
+| `description` | meta description。なければ本文の先頭 160 文字 |
+| `canonical` | 正規 URL。なければ解決済みの canonical permalink |
+| `image` / `ogImage` | OGP 画像。なければ設定上の既定画像 |
+| `published` / `date` / `created` | 公開日時 |
+| `updated` | 更新日時。なければ公開日時 |
+| `tags` | キーワードとフィードのタグ |
+| `noindex` | 検索エンジン向けの noindex と、サイトマップ・フィードからの除外 |
 
-## 使いどころ
+記事以外には `buildWebsiteSeo()` を使えます。トップやタグ一覧向けに `WebSite` と `BreadcrumbList` の構造化データを作ります。
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## 公開物に含まれる記事
 
-## 詳細仕様
+サイトマップとフィードは、公開済みで `noindex: true` ではないエントリーだけを対象にし、更新日時の新しい順に並べます。フィードは既定で最新 30 件を含み、`feed.limit` で RSS・Atom・JSON Feed 共通の件数上限を変更できます。URL には各エントリーの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+読了時間は CJK 文字を毎分 500 文字、ラテン文字の単語を毎分 220 語として数え、最低 1 分に切り上げます。
+
+## 主なエクスポート
+
+- `seo(options?)`: プラグインを作成する
+- `buildArticleSeo`、`buildWebsiteSeo`: ページの SEO 情報を構築する
+- `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed`: 公開用ファイルを描画する
+- `calculateReadingTime`: 読了時間を計算する
+- URL・本文・フィードの補助: `buildAbsoluteUrl`、`buildPostUrl`、`getDescription`、`filterFeedEntries`、`getEntryPublishedTime`、`getEntryUpdatedTime`、`getHtmlLanguage`
+- 型: `SeoPluginOptions`、`FeedOptions`、`SeoMetadata`、`WebsiteSeoInput`、`RenderableFeedEntry`
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)

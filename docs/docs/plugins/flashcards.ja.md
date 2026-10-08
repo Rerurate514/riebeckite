@@ -1,33 +1,95 @@
+<!-- Generated from packages/plugins/flashcards/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Flashcards
 
-`flashcards` コードブロックを操作できる学習デッキに変える Plugin です。
+`flashcards` コードブロックを学習用のカードデッキに変えるプラグインです。質問を表示して答えをめくり、前後の移動とシャッフルができます。ビルド時には静的なリストを先に出力するため、JavaScript がなくても内容を読めます。
 
-## 導入
+[English](./flashcards.md)
 
-```bash
-npm install @riebeckite/plugin-flashcards
+## 設定する
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+
+export default defineConfig({
+  // ...
+  plugins: [flashcardsPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+このプラグインは `style.css` とクライアントエントリを追加します。script タグの出力はサイトのレイアウト側が行い、プラグインは宣言だけを担います。
 
-## 使用例
+## ブロックの書き方
 
-学習ノートで、カードごとに問題を表示し、答えを開き、前後移動やシャッフルをしたい場合に利用します。ビルド時にはアクセシブルな静的リストも出力されるため、JavaScript がなくても内容を読めます。
+ブロックには 1 枚以上のカードを書きます。カードは `質問 :: 答え` の組です。カード同士は空行または `---` の行で区切り、答えは複数行にまたがってもかまいません。
 
-````markdown
+````md
 ```flashcards
-What is Riebeckite? :: A tool that builds a static site from Markdown
+Which language is this plugin written in? :: TypeScript
 
-What is the unit of publishing? :: A note
+What does the client render? :: An interactive deck
+---
+Describe the fallback. :: A static ordered list.
+It stays readable without JavaScript.
 ```
 ````
 
-## 使いどころ
+カードが 1 枚もない、`::` のないカードがある、どちらかの側が空である、といった場合は `invalid-flashcards` の診断を出し、コードブロックのまま残します。
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## 出力
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+ビルド時に、ブロックは次の要素に置き換わります。
 
-## 詳細仕様
+```html
+<div class="rb-flashcards" data-flashcards data-flashcards-count="2">
+  <script type="application/json" data-flashcards-payload>
+    {"cards":[{"front":"...","back":"..."}]}
+  </script>
+  <ol class="rb-flashcards__list" data-flashcards-fallback>
+    <li class="rb-flashcards__item">
+      <span class="rb-flashcards__front">...</span>
+      <span class="rb-flashcards__back">...</span>
+    </li>
+  </ol>
+</div>
+```
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+payload は実行されない JSON で、`<` `>` `&` はエスケープ済みです。カードの文言にこれらの文字が含まれていても script 要素を閉じることはできません。順序付きリストは JavaScript がない場合の代替表示です。
+
+## クライアントの動作
+
+`initFlashcards()` は各 `[data-flashcards]` 要素の payload を読み、代替リストの上に操作できるデッキを組み立てます。対応している操作は次のとおりです。
+
+- 答えの表示・非表示
+- 前後のカードへの移動（端で折り返す）
+- シャッフル
+- カード位置の表示
+- キーボード操作: `Space` で答えを表示、`ArrowLeft` / `ArrowRight` で移動
+
+成功するとルートに `data-flashcards="ready"` が付き、静的なリストは非表示になります。payload がない、または壊れている場合は代替表示をそのまま残します。ビルドからクライアントへオプションは渡しません。シャッフルの初期状態は `data-flashcards-shuffle` 属性で伝えます。
+
+## オプション
+
+| 項目 | 型 | 既定値 | 説明 |
+| --- | --- | --- | --- |
+| `className` | `string` | `"rb-flashcards"` | デッキのルート CSS クラス |
+| `language` | `string` | `"flashcards"` | 対象にするフェンス言語 |
+| `shuffle` | `boolean` | `false` | 最初からシャッフルした順で表示する |
+| `fallback` | `boolean` | `true` | 静的な順序付きリストを出力する |
+
+## 主なエクスポート
+
+- `flashcards(options?)` / `flashcardsPlugin(options?)`: プラグインを作成する
+- `initFlashcards(root?)`: クライアント側を初期化する
+- `parseFlashcards(source)`: ブロックをカードに分解する
+- `splitFlashcardGroups(source)`: ブロックをカードのまとまりに分割する
+- `remarkFlashcards(options?)`: remark 変換を単体で使う
+- `renderFlashcards(cards, options)` / `renderFlashcardsPayload(cards)` /
+  `renderFlashcardsFallback(cards, className?)`: ビルド時の描画ヘルパー
+- `resolveFlashcardsOptions(options?)`、`createFlashcardsRuntime(options?)`
+- 型: `FlashcardsOptions`、`FlashcardsCard`、`FlashcardsPayload`、`ResolvedFlashcardsOptions`
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)

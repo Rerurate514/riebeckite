@@ -46,7 +46,7 @@ export default defineConfig({
 });
 ```
 
-Each Plugin page shows the package name, import name, and common settings. The package README remains the source of truth for detailed options.
+Each Plugin page is generated from its package README: `README.md` for English and `README_ja.md` for Japanese. Edit the package README and run `pnpm docs:sync`; do not edit generated Plugin pages directly. The checks verify file pairs, generated output, links, and documented identifiers, but human review is still required for translation quality and semantic accuracy.
 
 ## Official Plugins
 

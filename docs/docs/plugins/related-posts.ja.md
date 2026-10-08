@@ -1,30 +1,118 @@
+<!-- Generated from packages/plugins/related-posts/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Related Posts
 
-現在の記事に関連するコンテンツを提示する Plugin です。
+ビルド時に「関連ノート」ナビゲーションを生成するプラグインです。公開対象の
+各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べ、
+関連ノートのセクションを `article.footer` Slot に追加します。クライアント側 JavaScript は
+不要です。
 
-## 導入
+[English](./related-posts.md)
 
-```bash
-npm install @riebeckite/plugin-related-posts
+## 仕組み
+
+`relatedPosts()` はマニフェストのコンテンツグラフを読み、現在のエントリと
+他の公開エントリを次のシグナルで採点します。
+
+| シグナル | 重み | 意味 |
+| -------- | ---- | ---- |
+| 直接リンク | 3 | 現在のエントリが候補へ、または候補が現在のエントリへリンクしている |
+| タグの共有 | 共通タグ 1 件につき 2 | 現在のエントリと候補が同じタグを持つ |
+| 共引用 | 共通リンク先 1 件につき 1 | 両方のエントリが同じノートへリンクしている |
+
+候補はスコアの降順、同点ならタイトル、さらに同点ならスラッグの順に並べ、
+`limit` 件に絞ります。`minScore` 未満の候補は除外します。条件を満たす候補が
+1 件もない場合、そのエントリの HTML は変更しません。
+
+各マニフェストエントリの `article.footer` Slot にセクションを追加します。標準の
+記事フッターでこの Slot を描画している場合、生成ページとフィードの両方に
+セクションが反映されます。
+
+## 使い方
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { relatedPosts } from "@riebeckite/plugin-related-posts";
+
+export default defineConfig({
+  // ...
+  plugins: [relatedPosts()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## Component として使う
 
-## 使用例
+自動の `article.footer` Slot への追加に加え、Site のレイアウト内で任意の位置に
+配置できる、サーバー描画の Hono JSX Component も公開しています。既存の helper
+で entries を計算し、解決済みの options を渡してください。
 
-記事を読み終えた読者に、内容や関係性の近い別の記事を提示する用途です。ナレッジベース内の回遊を増やしたい場合に利用できます。
+```tsx
+import RelatedPosts from "@riebeckite/plugin-related-posts/components";
 
-通常は `article.footer` に自動でナビゲーションを追加します。Site 側で任意の位置に
-配置する場合は、`@riebeckite/plugin-related-posts/components` からサーバー描画の
-Hono JSX Component `RelatedPosts` を import してください。必要な entries と
-解決済み options は package README を参照してください。
+<RelatedPosts entries={related} options={resolvedOptions} />;
+```
 
-このページに関連度の高いノートがある場合、記事末尾に「Related」としてスコア順のリンクが最大5件表示されます。
+`related` には `buildRelatedPosts()` の戻り値を、`resolvedOptions` には
+`resolveRelatedPostsOptions()` の戻り値を渡します。Plugin を登録しない場合は
+`style.css` も読み込んでください。
 
-## 使いどころ
+## オプション
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+| オプション | 型 | 既定値 | 説明 |
+| ---------- | -- | ------ | ---- |
+| `limit` | `number` | `5` | 表示する関連エントリの最大件数 |
+| `minScore` | `number` | `1` | 表示に必要な最小スコア |
+| `heading` | `boolean` | `true` | `<h2>` 見出しを出力する |
+| `headingText` | `string` | `"Related"` | 見出しの文言 |
+| `className` | `string` | `"rb-related-posts"` | ルート要素の CSS クラス |
+| `useTags` | `boolean` | `true` | タグ共有のシグナルを使う |
+| `useBacklinks` | `boolean` | `true` | 直接リンクのシグナルを使う |
 
-## 詳細仕様
+```ts
+relatedPosts({
+  limit: 8,
+  minScore: 2,
+  headingText: "関連ノート",
+});
+```
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+## 出力
+
+```html
+<nav class="rb-related-posts" data-related-posts>
+  <h2 class="rb-related-posts__heading">Related</h2>
+  <ul>
+    <li class="rb-related-posts__item">
+      <a class="rb-related-posts__link" href="/notes/example" data-related-score="5">Example Note</a>
+    </li>
+  </ul>
+</nav>
+```
+
+## スタイル
+
+パッケージに `style.css` が含まれます。他のプラグインと同じように読み込みます。
+
+```ts
+import "@riebeckite/plugin-related-posts/style.css";
+```
+
+## エクスポート
+
+- `relatedPosts(options?)` — プラグインファクトリ
+- `relatedPostsPlugin` — `relatedPosts` のエイリアス
+- `resolveRelatedPostsOptions(options?)` — オプションの既定値を適用する
+- `buildRelatedPosts({ manifest, entry, options, config? })` — 関連エントリを採点・整列する
+- `renderRelatedPosts(entries, options)` — ナビゲーション HTML を生成する
+- `RelatedPosts` と `@riebeckite/plugin-related-posts/components` — Hono JSX Component
+- 型: `RelatedPostsOptions`, `ResolvedRelatedPostsOptions`, `RelatedPostsEntry`
+
+## 制約
+
+- 並び順はビルド時に確定します。再ビルドすれば常に正しく再計算されます。
+- 判定材料はタグ・直接リンク・共引用のみです。読了時間や新しさ、フォルダは
+  順位を決定的に保つため意図的に使いません。
+
+## 関連リンク
+
+- [プラグイン API](../reference/plugin-api.ja.md)

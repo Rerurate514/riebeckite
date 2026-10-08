@@ -1,26 +1,68 @@
+<!-- Generated from packages/plugins/deploy/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Deploy
 
-公開・デプロイに関係する処理を拡張するための Plugin です。
+Riebeckite の静的ホスティング向け出力ヘルパーです。デプロイ先が必要とする
+ファイルを組み立て、ビルドの generated-output シンク経由で出力します。
+アップロードは行わず、ファイルシステムにも書き込みません。
 
-## 導入
+[English](./deploy.md)
 
-```bash
-npm install @riebeckite/plugin-deploy
+## 概要
+
+`deployPlugin()` はコンテンツマニフェストの公開リダイレクトを読み、
+Cloudflare Pages / Netlify / Vercel / GitHub Pages 向けのファイルを計画します。
+計画は純粋かつ決定的です。タイムスタンプや乱数は使わず、パスの順序も安定します。
+
+## 使い方
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { deployPlugin } from "@riebeckite/plugin-deploy";
+
+export default defineConfig({
+  plugins: [
+    deployPlugin({
+      provider: ["cloudflare-pages", "github-pages"],
+      cname: "example.com",
+      headers: { "X-Frame-Options": "DENY" },
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+リダイレクトは `manifest.publicRedirects` からのみ読み取ります。非公開ノートの
+旧パスがデプロイファイルに漏れることはありません。遷移先の slug が見つからない
+リダイレクトはスキップし、`deploy-unresolved-redirect` の診断を出します。
 
-## 使用例
+## プロバイダごとの出力
 
-Riebeckiteサイトをビルド後の公開先へ届ける処理をPluginとして組み込みたい場合に利用します。実際のデプロイ手順は環境ごとに異なるため、[Deployment Guide](../guides/deployment/README.ja.md) と併せて確認してください。
+| プロバイダ | ファイル |
+| --- | --- |
+| `cloudflare-pages`, `netlify` | `_redirects`（リダイレクトがある場合）、`_headers`（ヘッダー設定時） |
+| `vercel` | `vercel.json` |
+| `github-pages` | `.nojekyll`、`404.html`、`CNAME`（設定時）、リダイレクトごとの `<from>/index.html` メタリフレッシュ |
 
-ビルド出力に、対象プロバイダの設定ファイルが生成されます。Cloudflare Pages / Netlify 向けの `_redirects` と `_headers`、Vercel 向けの `vercel.json`、GitHub Pages 向けの `.nojekyll` と `CNAME` などです。
+GitHub Pages には `_redirects` 構文がないため、各リダイレクトはメタリフレッシュと
+`<link rel="canonical">` を持つ HTML スタブになります。`/` からのリダイレクトは
+ルートをスタブ化できないためスキップします。
 
-## 使いどころ
+## 公開 API
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `deployPlugin(options: DeployOptions): RiebeckitePlugin`
+- `planDeployOutputs({ provider, redirects, options }): DeployOutput[]`
+- `renderRedirectLines(redirects): string`
+- `renderVercelConfig({ redirects, options }): string`
+- `renderRedirectStub(redirect): string`
 
-## 詳細仕様
+## 注意点
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+- 複数プロバイダの出力は統合されます。同一ファイルは 1 つにまとまり、同じパスに
+  異なる内容が来た場合はエラーになります。
+- リダイレクトの `from` は出力パスにする前に `.` と `..` を解決し、すべてのパスが
+  `normalizeGeneratedOutputPath` を通ります。
+- アップロード、キャッシュ無効化、プロバイダ認証は対象外です。
 
+## 関連リンク
+
+- [プラグイン API](../reference/plugin-api.ja.md)

@@ -52,7 +52,7 @@ client -> server: request
 - `div.rb-d2__canvas`: 図本体（`role="img"`、キャプションがある場合はそれをラベルに使用）
 - `details.rb-d2__fallback`: 元の D2 記法を折りたたんで表示
 
-`render: "build"` または `"both"` では、D2.js の WebAssembly 版（`@d2lang/d2`）を Node 上で直接実行して静的な SVG を生成します。ブラウザ、ネットワーク接続、D2 本体のインストールはいずれも不要です。
+`render: "build"` では、D2.js の WebAssembly 版（`@d2lang/d2`）を Node 上で直接実行して静的な SVG を生成します。ブラウザ、ネットワーク接続、D2 本体のインストールはいずれも不要です。
 
 生成される figure には常に `data-d2`、`data-d2-source`、`data-d2-layout` が付きます。`data-d2` は静的 SVG があれば `rendered`、クライアント側の描画に委ねる場合は `pending` になります。
 
@@ -68,14 +68,14 @@ client -> server: request
 
 | 項目 | 既定値 | 説明 |
 | --- | --- | --- |
-| `render` | `"build"` | `"build"`、`"client"`、`"both"` のいずれで描画するか |
+| `render` | `"build"` | `"build"` または `"client"` のいずれで描画するか |
 | `theme` | `{ light: 0, dark: 1 }` | D2 のテーマ ID、または明暗別のテーマ ID |
 | `layout` | `"dagre"` | D2 のレイアウトエンジン（`"dagre"` または `"elk"`） |
 | `caption` | `true` | タイトルまたは `# caption:` をキャプションとして表示する |
 | `fallback` | `true` | 元の D2 記法を `<details>` に残す |
 | `className` | `"rb-d2"` | figure に付ける基準クラス |
 
-`"client"` はビルド時の描画を行いません。`"both"` は後方互換の値で、現在は `"build"` と同じくビルドを優先し、失敗時だけクライアント側へ切り替えます。
+`"client"` はビルド時の描画を行いません。
 
 ## オフラインでの利用
 
@@ -97,9 +97,8 @@ client -> server: request
 - 図ごとに新しい D2 ワーカーを起動するため、大量の図を含むビルドでは WASM の起動コストが繰り返し発生します
 - `layout: "elk"` は D2 の ELK エンジンを使うため `dagre` より遅くなります
 - マルチボードやアニメーション付きの出力はこのプラグインでは設定できません
-- レンダラーには `@d2lang/d2`（MPL-2.0）を使用しています。`@terrastruct/d2` はその後方互換パッケージです
+- レンダラーには D2.js の WebAssembly ビルドを提供する `@d2lang/d2`（MPL-2.0）を使用しています
 
 ## 関連資料
 
 - [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-

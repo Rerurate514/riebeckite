@@ -27,7 +27,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `init` | scaffold a self-contained site from a preset | no |
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
-| `doctor` | diagnose environment, project discovery, configuration, plugins, content source readability, deprecated usage, and build state | no |
+| `doctor` | diagnose environment, project discovery, configuration, plugins, content source readability, and build state | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
@@ -229,16 +229,6 @@ flowchart LR
 ```
 
 `doctor` continues independent checks where possible and exits unsuccessfully when health checks fail.
-
-### Deprecated usage
-
-When old APIs or deprecated configuration are detected, they are reported as warnings under:
-
-```text
-Deprecated usage
-```
-
-This is guidance to migrate; on its own it does not make `doctor` fail.
 
 ## `build`
 

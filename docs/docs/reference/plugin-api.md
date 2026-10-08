@@ -414,8 +414,9 @@ the route-level contract.
 Hooks that receive the manifest (`onManifestCreated`, page resolvers, renderers)
 choose between three entry collections:
 
-- `manifest.entries` — every entry, including `draft` and `scheduled`. Never
-  render these into a public page or a discovery UI.
+- `manifest.entries` — the raw collection for every scanned source, including
+  `draft`, `scheduled`, private, and other nonpublic entries. It is not a
+  publication view; never render it into a public page or discovery UI.
 - `manifest.publicEntries` — routable entries: `public` and `unlisted`. Use for
   output that must cover every reachable URL, such as a sitemap. It still
   includes `unlisted` content.
@@ -621,9 +622,8 @@ root hook on its outermost element:
 - Name plugin/feature hooks `rr-<feature>` (`rr-search`, `rr-callout`,
   `rr-query`, `rr-code`, ...). Use BEM structure under the root:
   `rr-<feature>`, `rr-<feature>__element`, `rr-<feature>--modifier`.
-- Keep the historical class on the same element when one already exists. The
-  `rr-` hook is additive, so existing selectors and site overrides keep
-  working; new plugin CSS should target the `rr-` hook.
+- Emit `rr-*` hooks only. Do not retain historical class names in plugin output;
+  plugin CSS and site themes should target the `rr-` hook.
 - Do not put plugin output in the `rb-` namespace. `rb-*` classes and
   `--rb-*` tokens belong to framework structural hooks and semantic design
   tokens. Plugin-local tokens use `--rr-*` and may fall back to `--rb-*`.

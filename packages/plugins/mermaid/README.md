@@ -37,8 +37,8 @@ export default defineConfig({
   - `div.rr-mermaid__canvas` — the diagram (`role="img"`, labelled by the
     caption when present)
   - `details.rr-mermaid__fallback` — collapsible diagram source
-- Static SVG is rendered at build time when `render` is `"build"` or
-  `"both"` by running the Mermaid browser API in Puppeteer's headless Chromium.
+- Static SVG is rendered at build time when `render` is `"build"` by running the
+  Mermaid browser API in Puppeteer's headless Chromium.
   Rendering uses Chromium's layout engine, not JSDOM polyfills or custom
   `getBBox` / text-width estimation
 - Mermaid runs with `securityLevel: "strict"`, the selected theme, transparent
@@ -60,7 +60,7 @@ export default defineConfig({
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `render` | `"build" \| "client" \| "both"` | `"build"` | When diagrams are rendered |
+| `render` | `"build" \| "client"` | `"build"` | When diagrams are rendered |
 | `theme` | `string \| { light: string; dark: string }` | `{ light: "default", dark: "dark" }` | Mermaid theme |
 | `caption` | `boolean` | `true` | Show title / `%% caption:` as `figcaption` |
 | `fallback` | `boolean` | `true` | Show the diagram source in `<details>` |
@@ -70,8 +70,6 @@ export default defineConfig({
 - `"build"` — render SVG at build time; diagrams that fail fall back to client
   rendering
 - `"client"` — skip build-time rendering, render in the browser only
-- `"both"` — compatibility alias. It currently behaves like `"build"`: build
-  first, then client fallback only when build rendering fails
 
 ## Exports
 
@@ -82,4 +80,3 @@ export default defineConfig({
 ## See also
 
 - [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-

@@ -96,7 +96,7 @@ __result
 
 `.sr-only` のような一般的な Helper Class も Plugin Hook ではありません。
 
-後方互換性のため旧 Class と `.rr-*` が同じ要素に存在する場合でも、Theme は `.rr-*` を利用してください。
+Plugin の出力は `.rr-*` hook のみを使います。Theme は `.rr-*` を利用し、旧 Class 名に依存しないでください。
 
 
 ## 22. Character Layer

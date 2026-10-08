@@ -81,7 +81,6 @@ virtual store.
 | `level` | `"L" \| "M" \| "Q" \| "H"` | `"M"` | Error-correction level |
 | `margin` | `number` | `1` | Quiet-zone size in modules |
 | `width` | `number` | `160` | Rendered size in pixels |
-| `size` | `number` | — | Alias of `width` |
 | `dark` | `string` | `"#000000"` | Dark-module colour |
 | `light` | `string` | `"#ffffff"` | Light-module colour |
 | `caption` | `boolean` | `true` | Show a caption from the title / `# caption:` line |
@@ -103,4 +102,3 @@ The caption comes from the code-block `title` (code meta) or a leading
 ## See also
 
 - [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-

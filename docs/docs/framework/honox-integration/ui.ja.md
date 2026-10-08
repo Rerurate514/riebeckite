@@ -92,7 +92,7 @@ import {
 </Article>;
 ```
 
-`ArticleHeader` と `ArticleContent` は、children と HTML input prop のどちらか一方だけを受け取ります。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。`ArticleContent html={...}` は後方互換のために残っていますが非推奨です。
+`ArticleHeader` は children または HTML input prop を受け取ります。`ArticleContent` は children を受け取ります。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。
 
 Primitive は composition point として使用し、構造は Framework の hook CSS が、見た目は Site 側が定義してください。
 

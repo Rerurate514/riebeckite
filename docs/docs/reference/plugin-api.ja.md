@@ -515,7 +515,8 @@ import { ContentSlot } from "@riebeckite/honox/ui";
 Manifest を受け取る Hook（`onManifestCreated`、page resolver、renderer）では、
 次の3つの entry collection を使い分けます。
 
-- `manifest.entries` — `draft` と `scheduled` を含む全 entry。公開ページや
+- `manifest.entries` — `draft`、`scheduled`、private など非公開のものを含む、
+  scan した source の raw collection。公開用の view ではないため、公開ページや
   discovery UI へ描画しないでください。
 - `manifest.publicEntries` — 到達可能な entry（`public` と `unlisted`）。
   sitemap など、到達可能な全 URL を網羅する出力に使います。`unlisted` を

@@ -83,7 +83,6 @@ virtual store.
 | `level` | `"L" \| "M" \| "Q" \| "H"` | `"M"` | Error-correction level |
 | `margin` | `number` | `1` | Quiet-zone size in modules |
 | `width` | `number` | `160` | Rendered size in pixels |
-| `size` | `number` | — | Alias of `width` |
 | `dark` | `string` | `"#000000"` | Dark-module colour |
 | `light` | `string` | `"#ffffff"` | Light-module colour |
 | `caption` | `boolean` | `true` | Show a caption from the title / `# caption:` line |

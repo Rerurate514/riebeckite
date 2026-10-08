@@ -58,7 +58,7 @@ client -> server: request
   - `div.rb-d2__canvas` — the diagram (`role="img"`, labelled by the caption
     when present)
   - `details.rb-d2__fallback` — collapsible diagram source
-- Static SVG is rendered at build time when `render` is `"build"` or `"both"`
+- Static SVG is rendered at build time when `render` is `"build"`
   by running the D2.js WebAssembly engine (`@d2lang/d2`) directly in Node. No
   browser, network access, or system D2 binary is required.
 - The generated figure always carries `data-d2`, `data-d2-source`, and
@@ -81,7 +81,7 @@ client -> server: request
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `render` | `"build" \| "client" \| "both"` | `"build"` | When diagrams are rendered |
+| `render` | `"build" \| "client"` | `"build"` | When diagrams are rendered |
 | `theme` | `number \| { light: number; dark: number }` | `{ light: 0, dark: 1 }` | D2 theme id(s) |
 | `layout` | `"dagre" \| "elk"` | `"dagre"` | D2 layout engine |
 | `caption` | `boolean` | `true` | Show title / `# caption:` as `figcaption` |
@@ -93,8 +93,6 @@ client -> server: request
 - `"build"` — render SVG at build time; diagrams that fail fall back to client
   rendering
 - `"client"` — skip build-time rendering, render in the browser only
-- `"both"` — compatibility alias. It currently behaves like `"build"`: build
-  first, then client fallback only when build rendering fails
 
 ## Offline requirements
 
@@ -121,10 +119,8 @@ copy if the deployment has no outbound network access.
   the WASM startup cost repeatedly.
 - `layout: "elk"` uses D2's ELK engine, which is slower than `dagre`.
 - Multi-board and animated D2 output are not configured by this plugin.
-- The renderer is `@d2lang/d2` (MPL-2.0), the current package for the D2.js WASM
-  build; `@terrastruct/d2` is its compatibility alias.
+- The renderer is `@d2lang/d2` (MPL-2.0), which provides the D2.js WASM build.
 
 ## See also
 
 - [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-

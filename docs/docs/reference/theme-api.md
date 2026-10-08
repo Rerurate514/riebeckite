@@ -427,10 +427,9 @@ uses two class namespaces:
 The root hook is the supported styling surface: a theme restyles a feature by
 targeting `.rr-<feature>` and its documented descendants. BEM element
 (`__...`) and modifier (`--...`) classes remain internal implementation
-details unless a plugin documents them, and generic helper classes such as
-`.sr-only` are not plugin hooks. Plugins keep their historical classes for
-backward compatibility, so `.rr-<feature>` may appear alongside a legacy class
-on the same element; a theme should target the `rr-*` hook.
+ details unless a plugin documents them, and generic helper classes such as
+ `.sr-only` are not plugin hooks. Public output contains only `.rr-<feature>`
+ hooks; themes must not depend on legacy class names.
 
 Plugins may also expose plugin-owned custom properties under `--rr-*` and
 fall back to the semantic `--rb-*` tokens. See [Plugin System](./plugin-api.md#css-hooks)

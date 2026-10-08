@@ -35,7 +35,7 @@ A theme should style only these root hooks and the descendants a plugin document
 .rr-search--loading
 ```
 
-The public hook is `.rr-search`; `__input`, `__result`, and `--loading` are treated as internal implementation unless the plugin explicitly documents them as public hooks. Generic helpers such as `.sr-only` are not plugin hooks. Plugins keep legacy classes for backward compatibility, so the same element can carry both `.rr-<feature>` and the old class; target `rr-*` from themes.
+The public hook is `.rr-search`; `__input`, `__result`, and `--loading` are treated as internal implementation unless the plugin explicitly documents them as public hooks. Generic helpers such as `.sr-only` are not plugin hooks. Plugin output uses `rr-*` hooks only; target those hooks from themes.
 
 ### 5-1. Character layer
 

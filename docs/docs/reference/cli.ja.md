@@ -299,18 +299,6 @@ flowchart LR
 
 Health check が失敗した場合は non-zero status で終了します。
 
-### Deprecated Usage
-
-古い API や非推奨の設定が検出された場合は、
-
-```text id="q0zh69"
-Deprecated usage
-```
-
-として warning が表示されます。
-
-これは移行を促すための情報であり、それだけで `doctor` が失敗扱いになるわけではありません。
-
 ## `build`
 
 Site を Build します。

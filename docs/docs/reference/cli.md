@@ -90,13 +90,13 @@ Install dependencies, then run `check` and `build` in the generated site.
 The composition is selected with `--preset <name>` (default: `starter`).
 
 ```sh
-npm exec riebeckite init my-site --preset starter
+npm exec -- riebeckite init my-site --preset starter
 ```
 
 Run `--list-presets` to see the available presets and their descriptions.
 
 ```sh
-npm exec riebeckite init --list-presets
+npm exec -- riebeckite init --list-presets
 ```
 
 ### Choosing project files
@@ -104,7 +104,7 @@ npm exec riebeckite init --list-presets
 Project files are selected separately from the preset with `--utilities <names>`, a comma-separated list of `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`.
 
 ```sh
-npm exec riebeckite init my-site --utilities editorconfig,npmrc,vscode
+npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 ```
 
 | Name | File |
@@ -122,7 +122,7 @@ The default is `editorconfig,gitattributes,biome`, and `none` writes none. In in
 `init` refuses to write into a directory that already contains generated files unless `--force` is passed.
 
 ```sh
-npm exec riebeckite init my-site --force
+npm exec -- riebeckite init my-site --force
 ```
 
 Because `--force` affects existing files, review their contents before using it.

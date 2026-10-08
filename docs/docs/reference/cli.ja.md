@@ -114,7 +114,7 @@ npm exec riebeckite init my-site
 ### Preset を選ぶ
 
 ```sh id="vt7gdb"
-npm exec riebeckite init my-site --preset starter
+npm exec -- riebeckite init my-site --preset starter
 ```
 
 `--preset` で Site の初期構成を選択できます。
@@ -124,7 +124,7 @@ npm exec riebeckite init my-site --preset starter
 利用できる preset は、
 
 ```sh id="b0n6ph"
-npm exec riebeckite init --list-presets
+npm exec -- riebeckite init --list-presets
 ```
 
 で確認できます。
@@ -134,7 +134,7 @@ npm exec riebeckite init --list-presets
 preset とは別に、任意の project file を生成できます。
 
 ```sh id="pf8k21"
-npm exec riebeckite init my-site --utilities editorconfig,npmrc,vscode
+npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 ```
 
 `--utilities` には `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。既定では `editorconfig,gitattributes,biome` を生成し、`npmrc` と `vscode` は生成しません。`none` を指定すると project file を生成しません。
@@ -156,7 +156,7 @@ npm exec riebeckite init my-site --utilities editorconfig,npmrc,vscode
 意図的に上書きする場合は、
 
 ```sh id="l5kjod"
-npm exec riebeckite init my-site --force
+npm exec -- riebeckite init my-site --force
 ```
 
 を使用します。

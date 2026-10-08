@@ -7,8 +7,8 @@ frontmatter date.
 
 ## Overview
 
-`recentPosts()` provides a `RecentPosts` component that renders an ordered list
-of recently posted articles. `getRecentPosts()` reads
+`RecentPosts` renders an ordered list of recently posted articles.
+`getRecentPosts()` reads
 `manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
 excluded. It derives a date from the frontmatter (`date` falling back to
 `created`), sorts newest first, and truncates to `limit` items. Notes without a
@@ -36,7 +36,7 @@ export default defineConfig({
 ### Custom placement
 
 ```tsx
-import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
+import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
 import { content } from "virtual:riebeckite/content";
 
 const recentPosts = getRecentPosts({ manifest: await content.getManifest() });

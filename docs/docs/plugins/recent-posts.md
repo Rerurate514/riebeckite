@@ -9,8 +9,8 @@ frontmatter date.
 
 ## Overview
 
-`recentPosts()` provides a `RecentPosts` component that renders an ordered list
-of recently posted articles. `getRecentPosts()` reads
+`RecentPosts` renders an ordered list of recently posted articles.
+`getRecentPosts()` reads
 `manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
 excluded. It derives a date from the frontmatter (`date` falling back to
 `created`), sorts newest first, and truncates to `limit` items. Notes without a
@@ -38,7 +38,7 @@ export default defineConfig({
 ### Custom placement
 
 ```tsx
-import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
+import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
 import { content } from "virtual:riebeckite/content";
 
 const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
@@ -66,62 +66,6 @@ target.
 | ------ | ---- | ------- | ----------- |
 | `manifest` | `Pick<ContentManifest, "discoverableEntries">` | — | Source of candidate posts |
 | `limit` | `number` | `5` | Maximum number of posts to return |
-
-## Example of Using the Starter Preset
-
-First, write the following in `[slug{.+}].tsx`. Add `post` as an argument to `SiteArticle`.
-```tsx title="[slug{.+}].tsx"
-const posts = getRecentPosts({ manifest: await content.getManifest() });
-
-return c.render(
-      <SiteArticle
-        posts={posts}
-        post={resolved.post}
-        bodySlots={resolved.entry.bodySlots}
-        asideContent={<TableOfContents className="rr-table-of-contents--desktop" items={tableOfContents} />}
-      />,
-    );
-```
-
-Add `posts` as an argument to `SiteArticle`.
-```tsx title="article.tsx"
-export function SiteArticle({
-+  posts,
-  post,
-  bodySlots,
-  asideContent,
-  afterContent,
-  footerContent,
-}: {
-+  posts: RecentPost[];
-  post: PostContent;
-  bodySlots?: ContentBodySlots;
-  asideContent?: unknown;
-  afterContent?: unknown;
-  footerContent?: unknown;
-}) {
-```
-
-Next, add `RecentPosts`.
-```tsx title="article.tsx"
-{hasSlot(bodySlots, “article.footer”) || footerContent ? (
-          <ArticleFooter class="site-article__footer">
-+            <RecentPosts posts={posts}></RecentPosts>
-            <ContentSlot slots={bodySlots} name="article.footer" />
-            {footerContent}
-          </ArticleFooter>
-        ) : null}
-```
-
-Run `npm exec riebeckite dev` to start the server. When you view the actual page, you’ll see “RECENT POSTS” displayed at the bottom of the site.
-
-## Exports
-
-- `recentPostsPlugin()` — plugin factory
-- `RecentPosts` — list component (default export of `components/recent-posts.tsx`)
-- `getRecentPosts({ manifest, limit? })` — collects the latest discoverable
-  posts
-- Type: `RecentPost` (`{ slug, permalink, title, postedAt }`)
 
 ## Exports
 

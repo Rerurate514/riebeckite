@@ -8,10 +8,14 @@ import {
   resolveConfig,
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
 import {
+  buildRelatedPosts,
   RELATED_POSTS_ATTRIBUTE,
+  RelatedPosts,
   type RelatedPostsOptions,
   relatedPosts,
+  resolveRelatedPostsOptions,
 } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
@@ -110,13 +114,30 @@ test("leaves entries with no related candidates untouched", async () => {
   );
 });
 
-test("does not append a footer when automatic rendering is disabled", async () => {
+test("keeps related entries available for a single manual placement", async () => {
   const manifest = await manager({ render: false }).getManifest();
 
   assert.equal(
     manifest.bySlug.get("source")?.bodySlots?.["article.footer"],
     undefined,
   );
+
+  const entry = manifest.bySlug.get("source");
+  assert.ok(entry);
+  const options = resolveRelatedPostsOptions({ render: false });
+  const manualHtml = renderToString(
+    RelatedPosts({
+      entries: buildRelatedPosts({
+        manifest,
+        entry,
+        options,
+        config: explicitConfig,
+      }),
+      options,
+    }),
+  );
+  assert.equal((manualHtml.match(/data-related-posts/g) ?? []).length, 1);
+  assert.ok(manualHtml.includes('href="/tagged"'));
 });
 
 test("applies heading and limit options", async () => {

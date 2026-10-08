@@ -175,21 +175,6 @@ body {
 }
 
 @media (min-width: 88rem) {
-  .site-article {
-    --site-toc-sticky-top: var(--rb-space-8, 4rem);
-  }
-
-  .site-article > .rb-article-layout > .rr-table-of-contents--desktop {
-    position: sticky;
-    top: var(--site-toc-sticky-top);
-    align-self: start;
-    max-height: calc(
-      100dvh - var(--site-toc-sticky-top) - var(--rb-space-4, 2rem)
-    );
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-
   :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__footer {
     grid-column: 1;
   }

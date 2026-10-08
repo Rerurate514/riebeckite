@@ -32,8 +32,11 @@ export default defineConfig({
 `initTableOfContents` as a client entry.
 
 It does not place UI. The Site extracts headings and renders the component,
-normally in an article aside. The official Starter uses this placement; its
-desktop ToC scrolls with the document and is not sticky.
+normally in an article aside. On wide screens, the plugin keeps a desktop ToC
+sticky with a bounded vertical scroll area. The client captures the ToC's
+initial viewport position, so it remains there after a normal-flow header has
+scrolled away. Without the client script, the offset defaults to
+`var(--rb-space-4, 2rem)`.
 
 ### Render the component
 
@@ -55,10 +58,10 @@ return (
 ```
 
 The client entry finds elements by the `data-toc-target` attribute emitted on
-each link, so it works when multiple ToCs (desktop/mobile) are rendered.
-The supplied desktop class scrolls with the document rather than sticking to
-the viewport. Long labels wrap inside the ToC instead of creating horizontal
-scrolling.
+each link, so it works when multiple ToCs (desktop/mobile) are rendered. The
+plugin supplies the sticky behavior, including a bounded vertical scroll area.
+Starter and Showcase inherit it without additional Site CSS. Labels wrap
+instead of creating horizontal scrolling.
 
 ## API
 

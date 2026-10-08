@@ -73,6 +73,15 @@
       margin-block: 0;
       margin-inline-start: calc(100% + var(--rb-layout-gap));
       overflow-x: hidden;
+      position: sticky;
+      top: var(--rr-toc-sticky-top, var(--rb-space-4, 2rem));
+      max-height: calc(
+        100dvh -
+        var(--rr-toc-sticky-top, var(--rb-space-4, 2rem)) -
+        var(--rb-space-4, 2rem)
+      );
+      overflow-y: auto;
+      overscroll-behavior: contain;
       border-block: 0;
       border-inline-start: 1px solid
         color-mix(in oklab, currentColor 18%, transparent);

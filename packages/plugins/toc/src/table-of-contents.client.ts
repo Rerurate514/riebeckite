@@ -22,6 +22,21 @@ export function initTableOfContents() {
     .map((id) => document.getElementById(id))
     .filter((heading): heading is HTMLElement => heading !== null);
 
+  const desktopTocs = Array.from(
+    document.querySelectorAll<HTMLElement>(".rr-table-of-contents--desktop"),
+  );
+
+  const setStickyTop = () => {
+    for (const toc of desktopTocs) {
+      toc.style.setProperty(
+        "--rr-toc-sticky-top",
+        `${Math.max(toc.getBoundingClientRect().top, 0)}px`,
+      );
+    }
+  };
+
+  setStickyTop();
+
   const updateViewedLinks = (activeHeadingId: string) => {
     const activeHeadingIndex = headings.findIndex(
       (heading) => heading.id === activeHeadingId,
@@ -65,6 +80,9 @@ export function initTableOfContents() {
   };
 
   window.addEventListener("scroll", scheduleUpdate, { passive: true });
-  window.addEventListener("resize", scheduleUpdate);
+  window.addEventListener("resize", () => {
+    if (window.scrollY === 0) setStickyTop();
+    scheduleUpdate();
+  });
   updateByScrollPosition();
 }

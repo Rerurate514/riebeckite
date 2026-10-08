@@ -530,24 +530,13 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     );
     assert.doesNotMatch(style, /\.rb-article-layout \{/);
     assert.doesNotMatch(style, /\.rb-nav__item \{/);
-    assert.match(
-      style,
-      /\.site-article > \.rb-article-layout > \.rr-table-of-contents--desktop \{[\s\S]*?position: sticky/,
-    );
-    assert.match(style, /--site-toc-sticky-top: var\(--rb-space-8, 4rem\)/);
-    assert.match(
-      style,
-      /\.rr-table-of-contents--desktop \{[\s\S]*?top: var\(--site-toc-sticky-top\)/,
-    );
-    assert.match(
-      style,
-      /\.rr-table-of-contents--desktop \{[\s\S]*?max-height: calc\([\s\S]*?100dvh[\s\S]*?overflow-y: auto[\s\S]*?overscroll-behavior: contain/,
-    );
+    assert.doesNotMatch(style, /--site-toc-sticky-top/);
+    assert.doesNotMatch(style, /\.rr-table-of-contents--desktop \{/);
     assert.doesNotMatch(style, /position: absolute;\n {2}top: 100%;/);
   });
 });
 
-test("starter and showcase own the same desktop TOC sticky contract", async () => {
+test("starter and showcase defer desktop TOC sticky behavior to the plugin", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -556,10 +545,8 @@ test("starter and showcase own the same desktop TOC sticky contract", async () =
         path.join(targetDirectory, "app/style.css"),
         "utf8",
       );
-      assert.match(
-        style,
-        /\.site-article > \.rb-article-layout > \.rr-table-of-contents--desktop \{[\s\S]*?position: sticky;[\s\S]*?top: var\(--site-toc-sticky-top\)/,
-      );
+      assert.doesNotMatch(style, /--site-toc-sticky-top/);
+      assert.doesNotMatch(style, /\.rr-table-of-contents--desktop \{/);
     }
   });
 });

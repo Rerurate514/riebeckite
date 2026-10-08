@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { tocPlugin } from "../index.ts";
+
+const style = readFileSync(new URL("../style.css", import.meta.url), "utf8");
 
 test("tocPlugin registers the style asset and the scroll-spy client entry", () => {
   const plugin = tocPlugin();
@@ -20,4 +23,11 @@ test("tocPlugin registers the style asset and the scroll-spy client entry", () =
       exportName: "initTableOfContents",
     },
   ]);
+});
+
+test("desktop ToC is sticky with a bounded scroll area", () => {
+  assert.match(
+    style,
+    /\.rr-table-of-contents--desktop \{[\s\S]*?position: sticky;[\s\S]*?top: var\(--rr-toc-sticky-top, var\(--rb-space-4, 2rem\)\);[\s\S]*?max-height: calc\([\s\S]*?100dvh[\s\S]*?overflow-y: auto;[\s\S]*?overscroll-behavior: contain;/,
+  );
 });

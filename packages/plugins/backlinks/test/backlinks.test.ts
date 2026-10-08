@@ -7,7 +7,9 @@ import {
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
 import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
 import {
+  Backlinks,
   type BacklinksOptions,
   backlinksPlugin,
   getPublishedBacklinks,
@@ -236,4 +238,20 @@ test("keeps backlink data available when automatic rendering is disabled", async
     }),
     [{ slug: "beta", permalink: "/beta", title: "Beta" }],
   );
+
+  const manualHtml = renderToString(
+    Backlinks({
+      backlinks: getPublishedBacklinks({
+        manifest,
+        config: explicitConfig,
+        slug: "alpha",
+        resolveTitle,
+      }),
+    }),
+  );
+  assert.equal(
+    (manualHtml.match(/<footer class="rr-backlinks">/g) ?? []).length,
+    1,
+  );
+  assert.ok(manualHtml.includes('href="/beta"'));
 });

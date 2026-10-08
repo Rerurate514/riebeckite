@@ -7,7 +7,8 @@ import {
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
 import { createElement, Fragment } from "hono/jsx";
-import { getLocalGraph, localGraphPlugin } from "../index.ts";
+import { renderToString } from "hono/jsx/dom/server";
+import { getLocalGraph, LocalGraph, localGraphPlugin } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -117,14 +118,20 @@ test("keeps graph data available when automatic rendering is disabled", async ()
     manifest.bySlug.get("alpha")?.bodySlots?.["article.footer"],
     undefined,
   );
-  assert.ok(
-    getLocalGraph({
-      manifest,
-      config: explicitConfig,
-      slug: "alpha",
-      resolveTitle,
-    }),
+  const graph = getLocalGraph({
+    manifest,
+    config: explicitConfig,
+    slug: "alpha",
+    resolveTitle,
+  });
+  assert.ok(graph);
+
+  const manualHtml = renderToString(LocalGraph({ graph }));
+  assert.equal(
+    (manualHtml.match(/<section[^>]*class="rr-local-graph /g) ?? []).length,
+    1,
   );
+  assert.ok(manualHtml.includes('href="/beta"'));
 });
 
 test("returns null for missing or unpublished notes", async () => {

@@ -1,39 +1,39 @@
 export default function SearchBar() {
   return (
     <>
-      <div class="search-bar rr-search" data-search-root>
+      <div class="rr-search-bar rr-search" data-search-root>
         <button
           type="button"
-          class="search-bar__trigger"
+          class="rr-search-bar__trigger"
           data-search-open
           aria-haspopup="dialog"
           aria-controls="search-dialog"
           aria-expanded="false"
         >
-          <span class="search-bar__icon" aria-hidden="true">
+          <span class="rr-search-bar__icon" aria-hidden="true">
             ⌕
           </span>
-          <span class="search-bar__label">Search</span>
-          <kbd class="search-bar__key">Ctrl K</kbd>
+          <span class="rr-search-bar__label">Search</span>
+          <kbd class="rr-search-bar__key">Ctrl K</kbd>
         </button>
       </div>
 
-      <div class="search-modal rr-search" data-search-modal hidden>
-        <div class="search-modal__backdrop" data-search-close />
+      <div class="rr-search-modal rr-search" data-rr-search-modal hidden>
+        <div class="rr-search-modal__backdrop" data-search-close />
         <section
           id="search-dialog"
-          class="search-modal__panel"
+          class="rr-search-modal__panel"
           role="dialog"
           aria-modal="true"
           aria-labelledby="search-title"
         >
-          <div class="search-modal__header">
-            <h2 id="search-title" class="search-modal__title">
+          <div class="rr-search-modal__header">
+            <h2 id="search-title" class="rr-search-modal__title">
               Search notes
             </h2>
             <button
               type="button"
-              class="search-modal__close"
+              class="rr-search-modal__close"
               data-search-close
               aria-label="Close search"
             >
@@ -41,10 +41,10 @@ export default function SearchBar() {
             </button>
           </div>
 
-          <label class="search-modal__input-wrap">
+          <label class="rr-search-modal__input-wrap">
             <span class="sr-only">Search query</span>
             <input
-              class="search-modal__input"
+              class="rr-search-modal__input"
               data-search-input
               type="search"
               placeholder="Search notes or use tag:, lang:, path:..."
@@ -53,10 +53,10 @@ export default function SearchBar() {
             />
           </label>
 
-          <div class="search-modal__status" data-search-status>
+          <div class="rr-search-modal__status" data-search-status>
             Filter with tag:, lang:, or path:.
           </div>
-          <div class="search-modal__results" data-search-results />
+          <div class="rr-search-modal__results" data-search-results />
         </section>
       </div>
     </>

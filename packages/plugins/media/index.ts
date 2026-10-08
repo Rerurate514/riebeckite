@@ -95,7 +95,7 @@ function renderMedia(
           context.label || fileName,
         );
 
-  return `<figure class="media-embed rr-media media-embed--${format.kind}" data-media-path="${escapeHtmlAttribute(context.path)}">
+  return `<figure class="rr-media rr-media--${format.kind}" data-media-path="${escapeHtmlAttribute(context.path)}">
   ${mediaElement}
   ${caption}
   ${actions}
@@ -118,7 +118,7 @@ function renderAudio(
   mimeType: string,
   options: MediaOptions,
 ): string {
-  return `<audio class="media-embed__player" controls preload="${escapeHtmlAttribute(getPreload(options))}">
+  return `<audio class="rr-media__player" controls preload="${escapeHtmlAttribute(getPreload(options))}">
     <source src="${escapeHtmlAttribute(sourceUrl)}" type="${escapeHtmlAttribute(mimeType)}" />
   </audio>`;
 }
@@ -129,7 +129,7 @@ function renderVideo(
   options: MediaOptions,
   title: string,
 ): string {
-  return `<video class="media-embed__player" controls preload="${escapeHtmlAttribute(getPreload(options))}" aria-label="${escapeHtmlAttribute(title)}">
+  return `<video class="rr-media__player" controls preload="${escapeHtmlAttribute(getPreload(options))}" aria-label="${escapeHtmlAttribute(title)}">
     <source src="${escapeHtmlAttribute(sourceUrl)}" type="${escapeHtmlAttribute(mimeType)}" />
   </video>`;
 }
@@ -142,7 +142,7 @@ function getPreload(options: MediaOptions): MediaPreload {
 function renderCaption(context: PluginRenderContext, fileName: string): string {
   const label = context.label.trim();
   const caption = label && label !== context.raw ? label : fileName;
-  return `<figcaption class="media-embed__caption">${escapeHtml(caption)}</figcaption>`;
+  return `<figcaption class="rr-media__caption">${escapeHtml(caption)}</figcaption>`;
 }
 
 function renderActions(
@@ -154,18 +154,18 @@ function renderActions(
 
   if (options.showOpenOriginal !== false) {
     actions.push(
-      `<a class="media-embed__action" href="${escapeHtmlAttribute(sourceUrl)}">Open original</a>`,
+      `<a class="rr-media__action" href="${escapeHtmlAttribute(sourceUrl)}">Open original</a>`,
     );
   }
 
   if (options.showDownload !== false) {
     actions.push(
-      `<a class="media-embed__action" href="${escapeHtmlAttribute(sourceUrl)}" download>Download</a>`,
+      `<a class="rr-media__action" href="${escapeHtmlAttribute(sourceUrl)}" download>Download</a>`,
     );
   }
 
   if (actions.length === 0) return "";
-  return `<div class="media-embed__actions">${actions.join("")}</div>`;
+  return `<div class="rr-media__actions">${actions.join("")}</div>`;
 }
 
 function buildMediaSourceUrl(context: PluginRenderContext): string {

@@ -192,7 +192,7 @@ test("publishes backlinks to the article footer only when present", async () => 
   ).getManifest();
 
   const footer = manifest.bySlug.get("alpha")?.bodySlots?.["article.footer"];
-  assert.ok(footer?.includes("article-backlinks rr-backlinks"));
+  assert.ok(footer?.includes("rr-backlinks"));
   assert.ok(footer?.includes('href="/beta"'));
   assert.ok(footer?.includes(">Beta</a>"));
   assert.equal(

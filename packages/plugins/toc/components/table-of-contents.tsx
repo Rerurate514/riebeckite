@@ -10,18 +10,18 @@ export default function TableOfContents(props: Props) {
 
   return (
     <aside
-      class={`table-of-contents rr-table-of-contents ${props.className}`}
+      class={`rr-table-of-contents ${props.className}`}
       aria-label="Contents"
     >
-      <p class="table-of-contents__eyebrow">CONTENTS</p>
-      <ol class="table-of-contents__list">
+      <p class="rr-table-of-contents__eyebrow">CONTENTS</p>
+      <ol class="rr-table-of-contents__list">
         {props.items.map((item) => (
           <li
-            class={`table-of-contents__item table-of-contents__item--level-${item.level}`}
+            class={`rr-table-of-contents__item rr-table-of-contents__item--level-${item.level}`}
             key={item.id}
           >
             <a
-              class="table-of-contents__link"
+              class="rr-table-of-contents__link"
               href={`#${item.id}`}
               data-toc-target={item.id}
               data-toc-viewed="false"

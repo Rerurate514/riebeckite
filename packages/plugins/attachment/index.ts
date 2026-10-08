@@ -55,16 +55,16 @@ async function renderAttachment(
   }
 
   const sizeHtml = size
-    ? `<span class="attachment-card__size">${escapeHtml(size)}</span>`
+    ? `<span class="rr-attachment__size">${escapeHtml(size)}</span>`
     : "";
 
-  return `<aside class="attachment-card rr-attachment" data-attachment-path="${escapeHtmlAttribute(context.path)}">
-  <div class="attachment-card__meta">
-    <span class="attachment-card__format">${escapeHtml(extension)}</span>
+  return `<aside class="rr-attachment" data-attachment-path="${escapeHtmlAttribute(context.path)}">
+  <div class="rr-attachment__meta">
+    <span class="rr-attachment__format">${escapeHtml(extension)}</span>
     ${sizeHtml}
   </div>
-  <div class="attachment-card__name">${escapeHtml(fileName)}</div>
-  <a class="attachment-card__download" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(context.label || "Download")}</a>
+  <div class="rr-attachment__name">${escapeHtml(fileName)}</div>
+  <a class="rr-attachment__download" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(context.label || "Download")}</a>
 </aside>`;
 }
 

@@ -7,13 +7,13 @@ export function FilterList(props: {
   onSelect: (key: string) => void;
 }) {
   return (
-    <div class="garden-explorer__section">
-      <p class="garden-explorer__eyebrow">{props.title}</p>
-      <div class="garden-explorer__chips">
+    <div class="rr-garden-explorer__section">
+      <p class="rr-garden-explorer__eyebrow">{props.title}</p>
+      <div class="rr-garden-explorer__chips">
         {props.items.slice(0, 28).map((item) => (
           <button
             type="button"
-            class="garden-explorer__chip"
+            class="rr-garden-explorer__chip"
             aria-pressed={props.selectedKey === item.key}
             onClick={() => props.onSelect(item.key)}
             key={item.key}
@@ -33,7 +33,7 @@ export function NoteList(props: {
   onSelect: (slug: string) => void;
 }) {
   return (
-    <ul class="garden-explorer__note-list">
+    <ul class="rr-garden-explorer__note-list">
       {props.notes.map((note) => (
         <li key={note.slug}>
           <button
@@ -57,14 +57,14 @@ export function NoteDetails(props: {
   onSelect: (slug: string) => void;
 }) {
   return (
-    <div class="garden-explorer__details">
-      <p class="garden-explorer__eyebrow">Selected Note</p>
+    <div class="rr-garden-explorer__details">
+      <p class="rr-garden-explorer__eyebrow">Selected Note</p>
       <h2>
         <a href={props.note.permalink}>{props.note.title}</a>
       </h2>
-      <p class="garden-explorer__path">{props.note.slug}</p>
+      <p class="rr-garden-explorer__path">{props.note.slug}</p>
       {props.note.excerpt && <p>{props.note.excerpt}</p>}
-      <div class="garden-explorer__tag-row">
+      <div class="rr-garden-explorer__tag-row">
         {props.note.tags.map((tag) => (
           <span key={tag}>#{tag}</span>
         ))}
@@ -81,8 +81,8 @@ export function NoteDetails(props: {
         noteBySlug={props.noteBySlug}
         onSelect={props.onSelect}
       />
-      <div class="garden-explorer__section garden-explorer__section--flush">
-        <p class="garden-explorer__eyebrow">Related Notes</p>
+      <div class="rr-garden-explorer__section rr-garden-explorer__section--flush">
+        <p class="rr-garden-explorer__eyebrow">Related Notes</p>
         <NoteList
           notes={props.relatedNotes}
           selectedSlug={props.note.slug}
@@ -104,12 +104,12 @@ function LinkedNoteSection(props: {
     .filter((note): note is GardenExplorerNote => note !== undefined);
 
   return (
-    <div class="garden-explorer__section garden-explorer__section--flush">
-      <p class="garden-explorer__eyebrow">{props.title}</p>
+    <div class="rr-garden-explorer__section rr-garden-explorer__section--flush">
+      <p class="rr-garden-explorer__eyebrow">{props.title}</p>
       {notes.length > 0 ? (
         <NoteList notes={notes} selectedSlug="" onSelect={props.onSelect} />
       ) : (
-        <p class="garden-explorer__empty">No notes.</p>
+        <p class="rr-garden-explorer__empty">No notes.</p>
       )}
     </div>
   );

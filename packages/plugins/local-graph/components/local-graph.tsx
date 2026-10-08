@@ -23,16 +23,16 @@ export default function LocalGraph(props: Props) {
 
   return (
     <section
-      class="local-graph rr-local-graph max-w-4xl mx-auto px-4"
+      class="rr-local-graph max-w-4xl mx-auto px-4"
       aria-labelledby="local-graph-title"
     >
-      <div class="local-graph__header">
+      <div class="rr-local-graph__header">
         <div>
-          <p class="local-graph__eyebrow">Local Graph</p>
+          <p class="rr-local-graph__eyebrow">Local Graph</p>
           <h2 id="local-graph-title">Nearby Notes</h2>
         </div>
         <a
-          class="local-graph__explorer-link"
+          class="rr-local-graph__explorer-link"
           href={`/explore?note=${encodeURIComponent(props.graph.currentSlug)}`}
         >
           Open in Explorer →
@@ -40,7 +40,7 @@ export default function LocalGraph(props: Props) {
       </div>
 
       <svg
-        class="local-graph__canvas"
+        class="rr-local-graph__canvas"
         viewBox={`0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}`}
         role="img"
         aria-label="Local graph of outgoing links and backlinks"
@@ -52,7 +52,7 @@ export default function LocalGraph(props: Props) {
 
           return (
             <line
-              class="local-graph__edge"
+              class="rr-local-graph__edge"
               data-direction={
                 edge.source === props.graph.currentSlug
                   ? "outgoing"
@@ -73,7 +73,7 @@ export default function LocalGraph(props: Props) {
 
           return (
             <g
-              class="local-graph__node"
+              class="rr-local-graph__node"
               data-relation={node.relation}
               key={node.slug}
             >
@@ -104,7 +104,7 @@ export default function LocalGraph(props: Props) {
         })}
       </svg>
 
-      <div class="local-graph__legend">
+      <div class="rr-local-graph__legend">
         <span>
           <i data-kind="current" />
           Current

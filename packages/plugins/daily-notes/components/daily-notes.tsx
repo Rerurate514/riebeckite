@@ -15,31 +15,31 @@ export default function DailyNotes(props: Props) {
 
   return (
     <section
-      class="daily-notes rr-daily-notes"
+      class="rr-daily-notes"
       aria-labelledby="daily-notes-title"
     >
-      <div class="daily-notes__header">
-        <p class="daily-notes__eyebrow">DAILY NOTES</p>
-        <h2 class="daily-notes__title" id="daily-notes-title">
+      <div class="rr-daily-notes__header">
+        <p class="rr-daily-notes__eyebrow">DAILY NOTES</p>
+        <h2 class="rr-daily-notes__title" id="daily-notes-title">
           Recent Daily Notes
         </h2>
       </div>
-      <ul class="daily-notes__list">
+      <ul class="rr-daily-notes__list">
         {notes.map((note) => (
-          <li class="daily-notes__item" key={note.slug}>
-            <div class="daily-notes__meta">
+          <li class="rr-daily-notes__item" key={note.slug}>
+            <div class="rr-daily-notes__meta">
               {note.date.length > 0 ? (
-                <time class="daily-notes__date" dateTime={note.date}>
+                <time class="rr-daily-notes__date" dateTime={note.date}>
                   {note.dateDisplay}
                 </time>
               ) : null}
               {note.sourceUrl !== null ? (
-                <a class="daily-notes__source" href={note.sourceUrl}>
+                <a class="rr-daily-notes__source" href={note.sourceUrl}>
                   {resolveSourceLabel(note)}
                 </a>
               ) : null}
             </div>
-            <p class="daily-notes__snippet">{note.snippet}</p>
+            <p class="rr-daily-notes__snippet">{note.snippet}</p>
           </li>
         ))}
       </ul>

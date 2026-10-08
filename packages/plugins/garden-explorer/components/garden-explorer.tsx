@@ -264,13 +264,13 @@ export default function GardenExplorer(props: Props) {
   };
 
   return (
-    <div class="garden-explorer rr-garden-explorer" data-garden-explorer>
-      <fieldset class="garden-explorer__mobile-tabs">
+    <div class="rr-garden-explorer" data-garden-explorer>
+      <fieldset class="rr-garden-explorer__mobile-tabs">
         <legend class="sr-only">Explorer panels</legend>
         {(["graph", "explorer", "details"] as const).map((panel) => (
           <button
             type="button"
-            class="garden-explorer__mobile-tab"
+            class="rr-garden-explorer__mobile-tab"
             aria-pressed={mobilePanel === panel}
             onClick={() => setMobilePanel(panel)}
           >
@@ -280,9 +280,9 @@ export default function GardenExplorer(props: Props) {
       </fieldset>
 
       <aside class={panelClass("explorer", mobilePanel)}>
-        <div class="garden-explorer__section">
-          <p class="garden-explorer__eyebrow">Explorer</p>
-          <label class="garden-explorer__search">
+        <div class="rr-garden-explorer__section">
+          <p class="rr-garden-explorer__eyebrow">Explorer</p>
+          <label class="rr-garden-explorer__search">
             <span class="sr-only">Search notes</span>
             <input
               type="search"
@@ -295,7 +295,7 @@ export default function GardenExplorer(props: Props) {
           </label>
           <button
             type="button"
-            class="garden-explorer__text-button"
+            class="rr-garden-explorer__text-button"
             onClick={clearFilters}
           >
             Clear filters
@@ -329,11 +329,11 @@ export default function GardenExplorer(props: Props) {
           />
         ) : null}
 
-        <div class="garden-explorer__section">
-          <p class="garden-explorer__eyebrow">
+        <div class="rr-garden-explorer__section">
+          <p class="rr-garden-explorer__eyebrow">
             Notes
             {filteredNotes.length > listNotes.length && (
-              <span class="garden-explorer__count-badge">
+              <span class="rr-garden-explorer__count-badge">
                 showing {listNotes.length} of {filteredNotes.length}
               </span>
             )}
@@ -347,7 +347,7 @@ export default function GardenExplorer(props: Props) {
       </aside>
 
       <section class={panelClass("graph", mobilePanel)} aria-label="Note graph">
-        <div class="garden-explorer__graph-toolbar">
+        <div class="rr-garden-explorer__graph-toolbar">
           <span>
             {graphMode === "local" ? "Local" : "Global"} graph ·{" "}
             {graphNotes.length} notes
@@ -360,18 +360,18 @@ export default function GardenExplorer(props: Props) {
                 </>
               )}
             {shouldGuard && (
-              <span class="garden-explorer__perf-warning" aria-live="polite">
+              <span class="rr-garden-explorer__perf-warning" aria-live="polite">
                 ⚠ Force layout may freeze this page ({graphNotes.length} nodes)
               </span>
             )}
             {shouldGuard && !forceLayoutApproved && (
               <>
-                <span class="garden-explorer__perf-warning">
+                <span class="rr-garden-explorer__perf-warning">
                   Force layout not run automatically.
                 </span>
                 <button
                   type="button"
-                  class="garden-explorer__force-approve"
+                  class="rr-garden-explorer__force-approve"
                   onClick={approveForceLayout}
                 >
                   Run force layout anyway
@@ -547,7 +547,7 @@ export default function GardenExplorer(props: Props) {
             onSelect={selectNote}
           />
         ) : (
-          <p class="garden-explorer__empty">Select a note to inspect links.</p>
+          <p class="rr-garden-explorer__empty">Select a note to inspect links.</p>
         )}
       </aside>
     </div>
@@ -631,8 +631,8 @@ function getRelatedSlugSet(
 }
 
 function panelClass(panel: MobilePanel, activePanel: MobilePanel): string {
-  return `garden-explorer__panel garden-explorer__panel--${panel}${
-    panel === activePanel ? " garden-explorer__panel--active" : ""
+  return `rr-garden-explorer__panel rr-garden-explorer__panel--${panel}${
+    panel === activePanel ? " rr-garden-explorer__panel--active" : ""
   }`;
 }
 

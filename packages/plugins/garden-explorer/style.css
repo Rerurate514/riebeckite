@@ -1,18 +1,18 @@
 @layer components {
-  .garden-explorer-page {
+  .rr-garden-explorer-page {
     width: min(100%, 96rem);
     padding-inline: var(--rb-space-2);
   }
 
-  .garden-explorer-page__header {
+  .rr-garden-explorer-page__header {
     display: grid;
     gap: var(--rb-space-1);
     border-block: var(--rb-rule-width) solid var(--rb-color-border);
     padding-block: var(--rb-space-3);
   }
 
-  .garden-explorer-page__eyebrow,
-  .garden-explorer__eyebrow {
+  .rr-garden-explorer-page__eyebrow,
+  .rr-garden-explorer__eyebrow {
     margin: 0;
     color: var(--rb-color-muted);
     font-size: 0.72rem;
@@ -21,7 +21,7 @@
     text-transform: uppercase;
   }
 
-  .garden-explorer-page__title {
+  .rr-garden-explorer-page__title {
     margin: 0;
     font-family: var(--rb-font-heading);
     font-size: clamp(2.5rem, 8vw, 5.5rem);
@@ -29,13 +29,13 @@
     letter-spacing: -0.06em;
   }
 
-  .garden-explorer-page__description {
+  .rr-garden-explorer-page__description {
     max-width: 42rem;
     margin: 0;
     color: var(--rb-color-muted);
   }
 
-  .garden-explorer {
+  .rr-garden-explorer {
     display: grid;
     grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr) minmax(
         16rem,
@@ -46,38 +46,38 @@
     border: var(--rb-rule-width) solid var(--rb-color-border);
   }
 
-  .garden-explorer__panel {
+  .rr-garden-explorer__panel {
     min-width: 0;
     border-color: var(--rb-color-border);
   }
 
-  .garden-explorer__panel--explorer,
-  .garden-explorer__panel--details {
+  .rr-garden-explorer__panel--explorer,
+  .rr-garden-explorer__panel--details {
     overflow: auto;
     max-height: 46rem;
     padding: var(--rb-space-2);
   }
 
-  .garden-explorer__panel--explorer {
+  .rr-garden-explorer__panel--explorer {
     border-right: var(--rb-rule-width) solid var(--rb-color-border);
   }
 
-  .garden-explorer__panel--details {
+  .rr-garden-explorer__panel--details {
     border-left: var(--rb-rule-width) solid var(--rb-color-border);
   }
 
-  .garden-explorer__section {
+  .rr-garden-explorer__section {
     display: grid;
     gap: var(--rb-space-1);
     padding-block: var(--rb-space-2);
     border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
   }
 
-  .garden-explorer__section--flush {
+  .rr-garden-explorer__section--flush {
     padding-bottom: 0;
   }
 
-  .garden-explorer__search input {
+  .rr-garden-explorer__search input {
     width: 100%;
     border: var(--rb-rule-width) solid var(--rb-color-border);
     background: var(--rb-color-paper);
@@ -85,18 +85,18 @@
     padding: 0.7rem 0.75rem;
   }
 
-  .garden-explorer__search input:focus,
-  .garden-explorer button:focus-visible,
+  .rr-garden-explorer__search input:focus,
+  .rr-garden-explorer button:focus-visible,
   .garden-graph a:focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
 
-  .garden-explorer__text-button,
-  .garden-explorer__chip,
-  .garden-explorer__note-list button,
-  .garden-explorer__graph-toolbar button,
-  .garden-explorer__mobile-tab {
+  .rr-garden-explorer__text-button,
+  .rr-garden-explorer__chip,
+  .rr-garden-explorer__note-list button,
+  .rr-garden-explorer__graph-toolbar button,
+  .rr-garden-explorer__mobile-tab {
     cursor: pointer;
     border: var(--rb-rule-width) solid var(--rb-color-border);
     background: var(--rb-color-paper);
@@ -104,7 +104,7 @@
     font: inherit;
   }
 
-  .garden-explorer__text-button {
+  .rr-garden-explorer__text-button {
     justify-self: start;
     border: 0;
     border-bottom: var(--rb-rule-width) solid currentColor;
@@ -112,13 +112,13 @@
     color: var(--rb-color-muted);
   }
 
-  .garden-explorer__chips {
+  .rr-garden-explorer__chips {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
   }
 
-  .garden-explorer__chip {
+  .rr-garden-explorer__chip {
     display: inline-flex;
     gap: 0.45rem;
     align-items: center;
@@ -126,15 +126,15 @@
     font-size: 0.85rem;
   }
 
-  .garden-explorer__chip[aria-pressed="true"],
-  .garden-explorer__note-list button[aria-pressed="true"],
-  .garden-explorer__graph-toolbar button[aria-pressed="true"],
-  .garden-explorer__mobile-tab[aria-pressed="true"] {
+  .rr-garden-explorer__chip[aria-pressed="true"],
+  .rr-garden-explorer__note-list button[aria-pressed="true"],
+  .rr-garden-explorer__graph-toolbar button[aria-pressed="true"],
+  .rr-garden-explorer__mobile-tab[aria-pressed="true"] {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
   }
 
-  .garden-explorer__note-list {
+  .rr-garden-explorer__note-list {
     display: grid;
     gap: 0.35rem;
     padding: 0;
@@ -142,7 +142,7 @@
     list-style: none;
   }
 
-  .garden-explorer__note-list button {
+  .rr-garden-explorer__note-list button {
     display: grid;
     width: 100%;
     gap: 0.2rem;
@@ -150,13 +150,13 @@
     text-align: left;
   }
 
-  .garden-explorer__note-list small,
-  .garden-explorer__path,
-  .garden-explorer__empty {
+  .rr-garden-explorer__note-list small,
+  .rr-garden-explorer__path,
+  .rr-garden-explorer__empty {
     color: var(--rb-color-muted);
   }
 
-  .garden-explorer__count-badge {
+  .rr-garden-explorer__count-badge {
     margin-inline-start: var(--rb-space-1);
     font-size: 0.72rem;
     font-weight: 400;
@@ -165,7 +165,7 @@
     color: var(--rb-color-muted);
   }
 
-  .garden-explorer__perf-warning {
+  .rr-garden-explorer__perf-warning {
     margin-inline-start: var(--rb-space-2);
     font-size: 0.72rem;
     font-weight: 400;
@@ -174,7 +174,7 @@
     color: var(--rb-color-error);
   }
 
-  .garden-explorer__force-approve {
+  .rr-garden-explorer__force-approve {
     margin-inline-start: var(--rb-space-1);
     padding: 0.2rem 0.5rem;
     font-size: 0.72rem;
@@ -187,12 +187,12 @@
     cursor: pointer;
   }
 
-  .garden-explorer__force-approve:hover {
+  .rr-garden-explorer__force-approve:hover {
     background: var(--rb-color-error);
     color: var(--rb-color-paper);
   }
 
-  .garden-explorer__graph-toolbar {
+  .rr-garden-explorer__graph-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -203,12 +203,12 @@
     color: var(--rb-color-muted);
   }
 
-  .garden-explorer__graph-toolbar div {
+  .rr-garden-explorer__graph-toolbar div {
     display: flex;
     gap: 0.35rem;
   }
 
-  .garden-explorer__graph-toolbar button {
+  .rr-garden-explorer__graph-toolbar button {
     min-width: 2rem;
     padding: 0.35rem 0.55rem;
   }
@@ -278,33 +278,33 @@
     cursor: grabbing;
   }
 
-  .garden-explorer__details h2 {
+  .rr-garden-explorer__details h2 {
     margin-block: var(--rb-space-1);
     font-size: 1.6rem;
     line-height: 1.1;
   }
 
-  .garden-explorer__details a {
+  .rr-garden-explorer__details a {
     color: inherit;
     text-decoration: none;
   }
 
-  .garden-explorer__details a:hover {
+  .rr-garden-explorer__details a:hover {
     color: var(--rb-color-accent);
   }
 
-  .garden-explorer__tag-row {
+  .rr-garden-explorer__tag-row {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
   }
 
-  .garden-explorer__tag-row span {
+  .rr-garden-explorer__tag-row span {
     border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
     color: var(--rb-color-muted);
   }
 
-  .garden-explorer__mobile-tabs {
+  .rr-garden-explorer__mobile-tabs {
     display: none;
   }
 
@@ -316,34 +316,34 @@
   }
 
   @media (max-width: 58rem) {
-    .garden-explorer {
+    .rr-garden-explorer {
       display: block;
       border: 0;
     }
 
-    .garden-explorer__mobile-tabs {
+    .rr-garden-explorer__mobile-tabs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 0.35rem;
       margin-bottom: var(--rb-space-1);
     }
 
-    .garden-explorer__mobile-tab {
+    .rr-garden-explorer__mobile-tab {
       padding: 0.6rem 0.4rem;
       text-transform: capitalize;
     }
 
-    .garden-explorer__panel {
+    .rr-garden-explorer__panel {
       display: none;
       border: var(--rb-rule-width) solid var(--rb-color-border);
     }
 
-    .garden-explorer__panel--active {
+    .rr-garden-explorer__panel--active {
       display: block;
     }
 
-    .garden-explorer__panel--explorer,
-    .garden-explorer__panel--details {
+    .rr-garden-explorer__panel--explorer,
+    .rr-garden-explorer__panel--details {
       max-height: none;
       border: var(--rb-rule-width) solid var(--rb-color-border);
     }

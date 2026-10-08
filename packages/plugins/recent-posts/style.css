@@ -1,35 +1,35 @@
 @layer components {
-  .recent-posts {
+  .rr-recent-posts {
     margin-top: 4rem;
     padding-top: 1.5rem;
     border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
   }
 
-  .recent-posts__header {
+  .rr-recent-posts__header {
     margin-bottom: 1.25rem;
   }
 
-  .recent-posts__title {
+  .rr-recent-posts__title {
     margin: 0;
     font-size: clamp(1.5rem, 4vw, 2rem);
     line-height: 1.2;
     letter-spacing: -0.02em;
   }
 
-  .recent-posts__list {
+  .rr-recent-posts__list {
     display: grid;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .recent-posts__item {
+  .rr-recent-posts__item {
     margin: 0;
     padding: 0;
     border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent);
   }
 
-  .recent-posts__link {
+  .rr-recent-posts__link {
     display: grid;
     gap: 0.375rem;
     padding: 1rem 0;
@@ -40,30 +40,30 @@
       padding-inline 160ms ease;
   }
 
-  .recent-posts__link:hover,
-  .recent-posts__link:focus-visible {
+  .rr-recent-posts__link:hover,
+  .rr-recent-posts__link:focus-visible {
     color: var(--rb-color-accent);
   }
 
-  .recent-posts__link:focus-visible {
+  .rr-recent-posts__link:focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 4px;
   }
 
-  .recent-posts__date {
+  .rr-recent-posts__date {
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     color: color-mix(in srgb, currentColor 62%, transparent);
   }
 
-  .recent-posts__post-title {
+  .rr-recent-posts__post-title {
     font-size: 1rem;
     line-height: 1.5;
   }
 
   @media (min-width: 40rem) {
-    .recent-posts__link {
+    .rr-recent-posts__link {
       grid-template-columns: 8rem minmax(0, 1fr);
       align-items: baseline;
       gap: 1.5rem;

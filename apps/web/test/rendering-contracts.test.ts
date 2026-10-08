@@ -51,8 +51,8 @@ test("A3: the theme resets the code root rhythm inside CodeTabs only", () => {
 
 test("A5: the nav dropdown sits above the search trigger and below the search modal", () => {
   const navDropdown = zIndexAt(shellCss, /\.rb-nav__children\s*\{[^}]*\}/);
-  const searchTrigger = zIndexAt(searchCss, /\.search-bar\s*\{[^}]*\}/);
-  const searchModal = zIndexAt(searchCss, /\.search-modal\s*\{[^}]*\}/);
+  const searchTrigger = zIndexAt(searchCss, /\.rr-search-bar\s*\{[^}]*\}/);
+  const searchModal = zIndexAt(searchCss, /\.rr-search-modal\s*\{[^}]*\}/);
 
   assert.ok(
     searchTrigger < navDropdown,
@@ -183,10 +183,10 @@ test("A5: the search modal is a sibling of the fixed search trigger", () => {
     "../../../packages/plugins/search/components/search-bar.tsx",
   );
 
-  assert.match(component, /class="search-bar rr-search" data-search-root/);
+  assert.match(component, /class="rr-search-bar rr-search" data-search-root/);
   assert.match(
     component,
-    /<\/div>\s*<div class="search-modal rr-search" data-search-modal hidden>/,
+    /<\/div>\s*<div class="rr-search-modal rr-search" data-search-modal hidden>/,
   );
 });
 

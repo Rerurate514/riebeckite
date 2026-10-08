@@ -153,7 +153,7 @@ function setupBackToTop(config: UxResolvedConfig): void {
 /** Highlights the table-of-contents link for the heading in view. */
 function setupTocScrollSpy(): void {
   const container = document.querySelector<HTMLElement>(
-    ".rr-table-of-contents, .table-of-contents, [data-rb-toc]",
+    ".rr-table-of-contents, [data-rb-toc]",
   );
   if (!container || container.dataset.rbUxToc === "true") return;
 

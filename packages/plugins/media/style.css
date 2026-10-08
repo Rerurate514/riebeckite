@@ -1,34 +1,34 @@
-.media-embed {
+.rr-media {
   display: grid;
   gap: 0.5rem;
   margin: 1.25rem 0;
 }
 
-.media-embed__player {
+.rr-media__player {
   width: 100%;
   max-width: 100%;
 }
 
-.media-embed--audio .media-embed__player {
+.rr-media--audio .rr-media__player {
   min-height: 2.5rem;
 }
 
-.media-embed--video .media-embed__player {
+.rr-media--video .rr-media__player {
   background: var(--rb-color-ink, #000000);
 }
 
-.media-embed__caption {
+.rr-media__caption {
   font-size: 0.875rem;
   opacity: 0.72;
 }
 
-.media-embed__actions {
+.rr-media__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.875rem;
 }
 
-.media-embed__action {
+.rr-media__action {
   width: fit-content;
 }

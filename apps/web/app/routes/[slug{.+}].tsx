@@ -69,7 +69,7 @@ export default createRoute(
         bodySlots={resolved.entry.bodySlots}
         asideContent={
           <TableOfContents
-            className="table-of-contents--desktop"
+            className="rr-table-of-contents--desktop"
             items={tableOfContents}
           />
         }

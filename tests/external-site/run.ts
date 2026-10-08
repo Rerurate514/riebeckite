@@ -445,21 +445,21 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   ) {
     fail("attachment plugin did not resolve a file from the external vault");
   }
-  if (!combined.includes('class="attachment-card rr-attachment"')) {
+  if (!combined.includes('class="rr-attachment"')) {
     fail("attachment plugin did not expose its stable rr-attachment hook");
   }
   const attachmentSize = formatBytes(
     fs.statSync(path.join(vaultDir, "attachments", "external-guide.pdf")).size,
   );
-  if (!combined.includes(`attachment-card__size">${attachmentSize}</span>`)) {
+  if (!combined.includes(`rr-attachment__size">${attachmentSize}</span>`)) {
     fail(
       `attachment plugin did not read the external vault file size (expected ${attachmentSize})`,
     );
   }
-  if (!combined.includes('class="media-embed rr-media media-embed--audio"')) {
+  if (!combined.includes('class="rr-media rr-media--audio"')) {
     fail("media plugin did not render an external vault media embed");
   }
-  if (!combined.includes('class="search-bar rr-search"')) {
+  if (!combined.includes('class="rr-search-bar rr-search"')) {
     fail("search plugin did not expose its stable rr-search hook");
   }
   if (!combined.includes("/assets/attachments/media/external-audio.mp3")) {

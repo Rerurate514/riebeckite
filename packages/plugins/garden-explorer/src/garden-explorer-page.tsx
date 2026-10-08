@@ -8,11 +8,11 @@ export function renderGardenExplorerPage(
   siteTitle: string,
 ): string {
   return renderToString(
-    <main class="garden-explorer-page">
-      <header class="garden-explorer-page__header">
-        <p class="garden-explorer-page__eyebrow">{siteTitle}</p>
-        <h1 class="garden-explorer-page__title">Garden Explorer</h1>
-        <p class="garden-explorer-page__description">
+    <main class="rr-garden-explorer-page">
+      <header class="rr-garden-explorer-page__header">
+        <p class="rr-garden-explorer-page__eyebrow">{siteTitle}</p>
+        <h1 class="rr-garden-explorer-page__title">Garden Explorer</h1>
+        <p class="rr-garden-explorer-page__description">
           Explore your digital garden across graph, search, tags, folders,
           backlinks, and related notes.
         </p>

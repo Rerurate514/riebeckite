@@ -9,29 +9,29 @@ export default function RecentPosts(props: Props) {
 
   return (
     <section
-      class="recent-posts rr-recent-posts"
+      class="rr-recent-posts"
       aria-labelledby="recent-posts-title"
     >
-      <div class="recent-posts__header">
-        <h2 class="recent-posts__title" id="recent-posts-title">
+      <div class="rr-recent-posts__header">
+        <h2 class="rr-recent-posts__title" id="recent-posts-title">
           Recent Posts
         </h2>
       </div>
-      <ol class="recent-posts__list">
+      <ol class="rr-recent-posts__list">
         {props.posts.map((post) => {
           const formattedDate = formatPostedDate(post.postedAt);
 
           return (
-            <li class="recent-posts__item" key={post.slug}>
-              <a class="recent-posts__link" href={post.permalink}>
+            <li class="rr-recent-posts__item" key={post.slug}>
+              <a class="rr-recent-posts__link" href={post.permalink}>
                 <time
-                  class="recent-posts__date"
+                  class="rr-recent-posts__date"
                   dateTime={formattedDate.isoDate}
                   title={formattedDate.fullDate}
                 >
                   {formattedDate.displayDate}
                 </time>
-                <span class="recent-posts__post-title">{post.title}</span>
+                <span class="rr-recent-posts__post-title">{post.title}</span>
               </a>
             </li>
           );

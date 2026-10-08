@@ -212,6 +212,8 @@ test("a post date change regenerates the index with only the plugin dependency",
 
 test("RecentPosts renders nothing without posts", () => {
   assert.equal(RecentPosts({ posts: [] }), null);
+  assert.equal(RecentPosts({}), null);
+  assert.equal(RecentPosts({ posts: undefined }), null);
 });
 
 test("RecentPosts renders English labels and dates", () => {

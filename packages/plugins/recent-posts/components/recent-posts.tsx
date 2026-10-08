@@ -1,11 +1,12 @@
 import type { RecentPost } from "../src/recent-posts.js";
 
 type Props = {
-  posts: RecentPost[];
+  posts?: RecentPost[];
 };
 
 export default function RecentPosts(props: Props) {
-  if (props.posts.length === 0) return null;
+  const posts = props.posts ?? [];
+  if (posts.length === 0) return null;
 
   return (
     <section class="rr-recent-posts" aria-labelledby="recent-posts-title">
@@ -15,7 +16,7 @@ export default function RecentPosts(props: Props) {
         </h2>
       </div>
       <ol class="rr-recent-posts__list">
-        {props.posts.map((post) => {
+        {posts.map((post) => {
           const formattedDate = formatPostedDate(post.postedAt);
 
           return (

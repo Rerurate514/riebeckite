@@ -101,7 +101,7 @@ npm exec -- riebeckite init --list-presets
 
 ### Choosing project files
 
-Project files are selected separately from the preset with `--utilities <names>`, a comma-separated list of `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`.
+Project files are selected separately from the preset with `--utilities <names>`, a comma-separated list of `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`.
 
 ```sh
 npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
@@ -109,13 +109,14 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 
 | Name | File |
 | --- | --- |
+| `gitignore` | `.gitignore` |
 | `editorconfig` | `.editorconfig` |
 | `gitattributes` | `.gitattributes` |
 | `biome` | `biome.json` |
 | `npmrc` | `.npmrc` |
 | `vscode` | `.vscode/settings.json` |
 
-The default is `editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode the `Extra project files` prompt pre-selects the default set.
+The default is `gitignore,editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode the `Extra project files` prompt pre-selects the default set.
 
 ### When files already exist
 

@@ -995,7 +995,12 @@ test("Contract 13: default project files are generated and can be selected", asy
       preset: "minimal",
     });
 
-    for (const relative of [".editorconfig", ".gitattributes", "biome.json"]) {
+    for (const relative of [
+      ".gitignore",
+      ".editorconfig",
+      ".gitattributes",
+      "biome.json",
+    ]) {
       assert.ok(
         await fileExists(targetDir, relative),
         `default project file ${relative} must be generated`,
@@ -1012,10 +1017,11 @@ test("Contract 13: default project files are generated and can be selected", asy
     await scaffoldRiebeckiteSite({
       targetDirectory: customDir,
       preset: "minimal",
-      utilities: ["editorconfig", "npmrc", "vscode"],
+      utilities: ["gitignore", "editorconfig", "npmrc", "vscode"],
     });
     for (const relative of [
       ".editorconfig",
+      ".gitignore",
       ".npmrc",
       ".vscode/settings.json",
     ]) {
@@ -1039,6 +1045,7 @@ test("Contract 13: default project files are generated and can be selected", asy
     });
     for (const relative of [
       ".editorconfig",
+      ".gitignore",
       ".gitattributes",
       "biome.json",
       ".npmrc",

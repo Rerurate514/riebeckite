@@ -59,9 +59,8 @@ Plugin、Theme、コンテンツ、コンポーネントを含まない空のア
 
 ## Project file
 
-preset は project file を制御しません。`create-riebeckite` は `--utilities <names>` で選んだ project file を別途生成します。指定できる名前は `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` で、既定は `editorconfig,gitattributes,biome` です。`none` を指定すると何も生成しません。対話式では `Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI Reference](../reference/cli.ja.md) を参照してください。
+preset は project file を制御しません。`create-riebeckite` は `--utilities <names>` で選んだ project file を別途生成します。指定できる名前は `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` で、既定は `gitignore,editorconfig,gitattributes,biome` です。`none` を指定すると project file を生成しません。対話式では `Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI Reference](../reference/cli.ja.md) を参照してください。
 
 ## 次に読むページ
 
 - [Deployment →](./deployment.ja.md)
-

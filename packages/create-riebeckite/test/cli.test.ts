@@ -96,7 +96,7 @@ test("non-interactive defaults are unchanged", () => {
     directory: ".",
     force: false,
     preset: "starter",
-    utilities: ["editorconfig", "gitattributes", "biome"],
+    utilities: ["gitignore", "editorconfig", "gitattributes", "biome"],
     listPresets: false,
     deployment: { type: "none" },
   });
@@ -119,7 +119,7 @@ test("existing flags keep parsing", () => {
     directory: "my-site",
     force: true,
     preset: "showcase",
-    utilities: ["editorconfig", "gitattributes", "biome"],
+    utilities: ["gitignore", "editorconfig", "gitattributes", "biome"],
     listPresets: true,
     deployment: {
       type: "github-actions",
@@ -136,9 +136,14 @@ test("--utilities selects the generated project files", () => {
   const options = parseArguments([
     "my-site",
     "--utilities",
-    "editorconfig,npmrc,vscode",
+    "gitignore,editorconfig,npmrc,vscode",
   ]);
-  assert.deepEqual(options.utilities, ["editorconfig", "npmrc", "vscode"]);
+  assert.deepEqual(options.utilities, [
+    "gitignore",
+    "editorconfig",
+    "npmrc",
+    "vscode",
+  ]);
 
   assert.deepEqual(
     parseArguments(["my-site", "--utilities", "none"]).utilities,

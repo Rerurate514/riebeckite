@@ -1,6 +1,0 @@
-node_modules/
-dist/
-.riebeckite/
-app/.riebeckite/
-.wrangler/
-.dev.vars

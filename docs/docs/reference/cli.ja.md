@@ -137,10 +137,11 @@ preset とは別に、任意の project file を生成できます。
 npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 ```
 
-`--utilities` には `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。既定では `editorconfig,gitattributes,biome` を生成し、`npmrc` と `vscode` は生成しません。`none` を指定すると project file を生成しません。
+`--utilities` には `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。既定では `gitignore,editorconfig,gitattributes,biome` を生成し、`npmrc` と `vscode` は生成しません。`none` を指定すると project file を生成しません。
 
 | 名前 | ファイル |
 | --- | --- |
+| `gitignore` | `.gitignore` |
 | `editorconfig` | `.editorconfig` |
 | `gitattributes` | `.gitattributes` |
 | `biome` | `biome.json` |

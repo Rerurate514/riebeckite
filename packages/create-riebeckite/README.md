@@ -30,7 +30,7 @@ The prompts ask, in order:
 | --- | --- | --- |
 | Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
 | Preset | `starter`, `minimal`, `showcase`, `empty` | `starter` for most sites |
-| Project files | `.editorconfig`, `.gitattributes`, `biome.json`, `.npmrc`, `.vscode/settings.json` | the recommended set is pre-selected |
+| Project files | `.gitignore`, `.editorconfig`, `.gitattributes`, `biome.json`, `.npmrc`, `.vscode/settings.json` | the recommended set is pre-selected |
 | Content source | `This project`, `Separate GitHub repository` | `This project` to start |
 | Deployment | `GitHub Actions + Cloudflare Workers`, `Not now` | `Not now` for local development |
 
@@ -46,7 +46,7 @@ Deployment can be added later, described in
 | --- | --- |
 | `[directory]` | Directory to scaffold into (default: the current directory) |
 | `--preset <name>` | Starter composition, e.g. `showcase` (default: `starter`) |
-| `--utilities <names>` | Comma-separated project files to generate: `editorconfig`, `gitattributes`, `biome`, `npmrc`, `vscode`, or `none` (default: `editorconfig,gitattributes,biome`) |
+| `--utilities <names>` | Comma-separated project files to generate: `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, `vscode`, or `none` (default: `gitignore,editorconfig,gitattributes,biome`) |
 | `--force` | Scaffold even when the target directory is not empty |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
 | `--github-actions` | Generate the Cloudflare deployment workflow |

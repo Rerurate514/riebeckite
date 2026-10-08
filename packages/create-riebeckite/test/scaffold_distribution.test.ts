@@ -163,6 +163,12 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
       "the installed create-riebeckite package must ship templates/scaffold",
     );
     assert.ok(
+      fs.existsSync(
+        path.join(installedTemplates, "utilities", "gitignore", "gitignore"),
+      ),
+      "the installed create-riebeckite package must ship the gitignore template",
+    );
+    assert.ok(
       !fs.existsSync(
         path.join(
           consumerDir,
@@ -194,6 +200,7 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
       "app/server.ts",
       "content/index.md",
       "public/favicon.ico",
+      ".gitignore",
     ]) {
       assert.ok(
         fs.existsSync(path.join(siteDir, relative)),

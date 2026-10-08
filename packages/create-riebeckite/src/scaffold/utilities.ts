@@ -2,6 +2,7 @@ import { copyTemplateTree } from "./template-loader.js";
 import type { SiteTemplateFile } from "./templates.js";
 
 export const SCAFFOLD_UTILITY_NAMES = [
+  "gitignore",
   "editorconfig",
   "gitattributes",
   "biome",
@@ -18,6 +19,12 @@ export type ScaffoldUtilitySummary = {
 };
 
 export const SCAFFOLD_UTILITIES: readonly ScaffoldUtilitySummary[] = [
+  {
+    name: "gitignore",
+    label: ".gitignore",
+    description:
+      "Git exclusions for dependencies, build output, and local files.",
+  },
   {
     name: "editorconfig",
     label: ".editorconfig",
@@ -46,6 +53,7 @@ export const SCAFFOLD_UTILITIES: readonly ScaffoldUtilitySummary[] = [
 ];
 
 export const SCAFFOLD_DEFAULT_UTILITIES: readonly ScaffoldUtilityName[] = [
+  "gitignore",
   "editorconfig",
   "gitattributes",
   "biome",
@@ -101,9 +109,10 @@ export function utilityTemplateFiles(
   const files: SiteTemplateFile[] = [];
   for (const name of utilities) {
     for (const file of copyTemplateTree(`utilities/${name}`)) {
-      if (seen.has(file.path)) continue;
-      seen.add(file.path);
-      files.push(file);
+      const path = name === "gitignore" ? ".gitignore" : file.path;
+      if (seen.has(path)) continue;
+      seen.add(path);
+      files.push({ ...file, path });
     }
   }
   return files;

@@ -31,7 +31,7 @@ npm exec riebeckite build
 | --- | --- | --- |
 | Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
 | Preset | `starter`、`minimal`、`showcase`、`empty` | 大半のサイトは `starter` |
-| Project files | `.editorconfig`、`.gitattributes`、`biome.json`、`.npmrc`、`.vscode/settings.json` | 推奨セットをあらかじめ選択 |
+| Project files | `.gitignore`、`.editorconfig`、`.gitattributes`、`biome.json`、`.npmrc`、`.vscode/settings.json` | 推奨セットをあらかじめ選択 |
 | Content source | `This project`、`Separate GitHub repository` | 最初は `This project` |
 | デプロイ設定 | `GitHub Actions + Cloudflare Workers`、`Not now` | 手元で試すなら `Not now` |
 
@@ -43,7 +43,7 @@ npm exec riebeckite build
 | --- | --- |
 | `[directory]` | 生成先ディレクトリ（既定はカレントディレクトリ） |
 | `--preset <name>` | 使用するスターター構成（既定は `starter`） |
-| `--utilities <names>` | 生成するプロジェクトファイルをカンマ区切りで指定する（`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode`、または `none`。既定は `editorconfig,gitattributes,biome`） |
+| `--utilities <names>` | 生成するプロジェクトファイルをカンマ区切りで指定する（`gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode`、または `none`。既定は `gitignore,editorconfig,gitattributes,biome`） |
 | `--force` | 空でないディレクトリにも展開する |
 | `--list-presets` | 利用可能な preset と説明を一覧表示して終了する |
 | `--github-actions` | Cloudflare へのデプロイ workflow を生成する |

@@ -11,16 +11,16 @@
     "inspect": "riebeckite inspect"
   },
   "dependencies": {
-    "@riebeckite/core": "^0.0.20",
-    "@riebeckite/honox": "^0.0.20",
+    "@riebeckite/core": "^0.0.21",
+    "@riebeckite/honox": "^0.0.21",
     "hono": "^4.12.25",
     "honox": "0.1.56",
-    "@riebeckite/plugin-obsidian-markdown": "^0.0.20",
-    "@riebeckite/theme-minimal": "^0.0.20"
+    "@riebeckite/plugin-obsidian-markdown": "^0.0.21",
+    "@riebeckite/theme-minimal": "^0.0.21"
   },
   "devDependencies": {
     "@hono/vite-build": "^1.11.1",
-    "@riebeckite/cli": "^0.0.20",
+    "@riebeckite/cli": "^0.0.21",
     "@types/node": "^24.5.2",
     "typescript": "^5.0.0",
     "vite": "^8.0.9"

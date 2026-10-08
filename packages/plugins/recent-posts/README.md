@@ -13,7 +13,7 @@ of recently posted articles. `getRecentPosts()` reads
 excluded. It derives a date from the frontmatter (`date` falling back to
 `created`), sorts newest first, and truncates to `limit` items. Notes without a
 parseable date are dropped. Official `starter` and `showcase` sites place the
-list automatically on their homepage after the page content.
+list explicitly in their homepage route after the page content.
 
 With no posts, the component renders nothing.
 
@@ -30,19 +30,19 @@ export default defineConfig({
 ```
 
 `recentPostsPlugin()` registers the plugin in the plugin list and bundles
-`style.css` into the app stylesheet. Generated `starter` and `showcase` sites
-need no additional route or layout wiring.
+`style.css` into the app stylesheet; it never renders UI itself. The generated
+`starter` and `showcase` demonstrate the recommended homepage placement.
 
 ### Custom placement
 
 ```tsx
 import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
-import { content } from "../content";
+import { content } from "virtual:riebeckite/content";
 
 const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 
-// ...in a custom route or layout
-return <Article afterContent={<RecentPosts posts={recentPosts} />} />;
+// ...in a homepage route or site-owned layout
+return <RecentPosts posts={recentPosts} />;
 ```
 
 `getRecentPosts()` filters out the `index` note before collecting posts.

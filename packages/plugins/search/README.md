@@ -46,6 +46,10 @@ export default defineConfig({
 `searchPlugin()` registers the plugin, bundles `style.css`, and declares
 `initSearch` as a client entry that wires up the modal on page load.
 
+Search functionality and `SearchBar` placement are separate: registration does
+not add a visible trigger. Render one `SearchBar` in the global Site shell,
+normally the header, and move or remove that element to change the UI.
+
 ### Render the component
 
 ```tsx

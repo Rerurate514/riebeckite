@@ -7,7 +7,7 @@
 
 [English](./README.md)
 
-## 仕組み
+## 推奨配置
 
 `relatedPosts()` はマニフェストのコンテンツグラフを読み、現在のエントリと
 他の公開エントリを次のシグナルで採点します。
@@ -26,7 +26,7 @@
 記事フッターでこの Slot を描画している場合、生成ページとフィードの両方に
 セクションが反映されます。
 
-## 使い方
+## クイックスタート
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -38,26 +38,25 @@ export default defineConfig({
 });
 ```
 
-## Component として使う
+## 高度なカスタマイズ
 
-自動の `article.footer` Slot への追加に加え、Site のレイアウト内で任意の位置に
-配置できる、サーバー描画の Hono JSX Component も公開しています。既存の helper
-で entries を計算し、解決済みの options を渡してください。
+Site のレイアウト内で任意の位置に配置できるサーバー描画の Hono JSX Component を公開しています。`render: false` で自動の `article.footer` Slot 追加を止め、既存の helper で entries を計算して解決済み options を渡してください。採点と公開境界のフィルタリングは維持されます。
 
 ```tsx
-import RelatedPosts from "@riebeckite/plugin-related-posts/components";
+import { buildRelatedPosts, RelatedPosts, resolveRelatedPostsOptions } from "@riebeckite/plugin-related-posts";
 
-<RelatedPosts entries={related} options={resolvedOptions} />;
+const options = resolveRelatedPostsOptions({ render: false });
+const entries = buildRelatedPosts({ manifest, entry, options, config });
+return <aside><RelatedPosts entries={entries} options={options} /></aside>;
 ```
 
-`related` には `buildRelatedPosts()` の戻り値を、`resolvedOptions` には
-`resolveRelatedPostsOptions()` の戻り値を渡します。Plugin を登録しない場合は
-`style.css` も読み込んでください。
+公式 Starter は `article.footer` を一度描画します。手動配置を消すにはコンポーネントを消します。自動描画を有効にしたまま同じ記事へ手動描画しないでください。
 
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |
 | ---------- | -- | ------ | ---- |
+| `render` | `boolean` | `true` | `article.footer` への自動追加。手動配置では `false` |
 | `limit` | `number` | `5` | 表示する関連エントリの最大件数 |
 | `minScore` | `number` | `1` | 表示に必要な最小スコア |
 | `heading` | `boolean` | `true` | `<h2>` 見出しを出力する |

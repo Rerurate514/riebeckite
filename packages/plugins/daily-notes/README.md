@@ -4,7 +4,7 @@ Surfaces short snippets extracted from Daily Notes as a site widget.
 
 [日本語](./README_ja.md)
 
-## Overview
+## Recommended placement
 
 A Daily Note is often one long, private journal file. This plugin reads the raw
 manifest, picks notes under a configured directory, and extracts exactly one
@@ -21,7 +21,10 @@ wholesale, so a long private note only contributes the snippet that opted in.
 note. An unpublished note's permalink and title stay `null`, so private notes
 never leak their location.
 
-## Usage
+`dailyNotesPlugin()` registers data and styles but does not render the widget.
+The Site owns placement; a homepage section is the recommended location.
+
+## Quick Start
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -33,7 +36,7 @@ export default defineConfig({
 });
 ```
 
-### Render the widget
+Render the widget explicitly in a homepage route or site-owned homepage section:
 
 ```tsx
 import DailyNotes, { getDailyNotes } from "@riebeckite/plugin-daily-notes";
@@ -80,6 +83,9 @@ guessing another one.
 `<time datetime>` attribute regardless, and `DailyNote.date` keeps that ISO
 form while `DailyNote.dateDisplay` holds the formatted text.
 
+Move or remove the `DailyNotes` element to reposition or remove the widget. No
+official Starter renders Daily Notes by default.
+
 ## Exports
 
 - `dailyNotesPlugin(options?)` — plugin factory (registers `style.css`)
@@ -95,4 +101,3 @@ form while `DailyNote.dateDisplay` holds the formatted text.
 ## See also
 
 - [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-

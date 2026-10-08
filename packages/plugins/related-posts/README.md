@@ -6,7 +6,7 @@ section to the `article.footer` Slot. No client-side JavaScript is required.
 
 [日本語](./README_ja.md)
 
-## Overview
+## Recommended placement
 
 `relatedPosts()` reads the manifest's content graph and scores every other
 published entry against the current one:
@@ -25,7 +25,7 @@ The plugin contributes the section to each manifest entry's `article.footer`
 Slot. The Site decides where to render that Slot, so the section appears on
 generated pages and in feeds when the standard article footer is used.
 
-## Usage
+## Quick Start
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -37,26 +37,34 @@ export default defineConfig({
 });
 ```
 
-## Component
+## Advanced customization
 
-In addition to the automatic `article.footer` Slot contribution, the navigation
-is available as a server-rendered Hono JSX Component for placement in a Site
-layout. Build the entries with the existing helper and pass resolved options:
+The Site can place the public server-rendered component anywhere. Set
+`render: false` first to prevent the automatic `article.footer` contribution;
+ranking and publication filtering remain available through the public helpers.
 
 ```tsx
-import RelatedPosts from "@riebeckite/plugin-related-posts/components";
+import {
+  buildRelatedPosts,
+  RelatedPosts,
+  resolveRelatedPostsOptions,
+} from "@riebeckite/plugin-related-posts";
 
-<RelatedPosts entries={related} options={resolvedOptions} />;
+const options = resolveRelatedPostsOptions({ render: false });
+const entries = buildRelatedPosts({ manifest, entry, options, config });
+
+return <aside><RelatedPosts entries={entries} options={options} /></aside>;
 ```
 
-`related` is the result of `buildRelatedPosts()` and `resolvedOptions` is the
-result of `resolveRelatedPostsOptions()`. Import `style.css` when the Plugin is
-not registered.
+The official Starter already renders `article.footer` once. Remove the manual
+component to remove a manual placement. Do not use it alongside automatic
+rendering for the same article.
 
 ## Options
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
+| `render` | `boolean` | `true` | Append generated navigation to `article.footer`; set `false` for manual placement |
 | `limit` | `number` | `5` | Maximum number of related entries |
 | `minScore` | `number` | `1` | Minimum score required to be listed |
 | `heading` | `boolean` | `true` | Render the `<h2>` heading |

@@ -5,17 +5,19 @@ current note.
 
 [日本語](./README_ja.md)
 
-## Overview
+## Recommended placement
 
-`backlinksPlugin()` appends a footer list of incoming links to the
-`article.footer` body slot. `getPublishedBacklinks()` resolves the incoming
-links of a note from the content manifest, keeps only publicly discoverable
-notes, and returns them sorted in manifest order.
+`backlinksPlugin()` automatically appends a footer list of incoming links to
+the `article.footer` semantic body slot. The Site owns physical placement: it
+displays the list only where it renders that slot, normally once after article
+content. `getPublishedBacklinks()` resolves the incoming links of a note from
+the content manifest, keeps only publicly discoverable notes, and returns them
+sorted in manifest order.
 
 Without incoming links (or when none of them are published), the component
 renders nothing.
 
-## Usage
+## Quick Start
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -28,15 +30,20 @@ export default defineConfig({
 ```
 
 `backlinksPlugin()` adds backlinks for every public entry with published
-incoming links and bundles `style.css` into the app stylesheet. Render the
-`article.footer` body slot in the article layout to display the list.
+incoming links and bundles `style.css` into the app stylesheet. Render
+`<ContentSlot slots={bodySlots} name="article.footer" />` once in the article
+layout to display it. The official Starter already renders this slot.
 
-### Custom placement
+## Advanced customization
+
+To choose a different location, prevent the automatic slot contribution with
+`render: false`; this does not change backlink data or its publication
+filtering. Resolve the data in the Site route and render the public component
+exactly once:
 
 ```tsx
 import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
-import { config } from "../config";
-import { content } from "../content";
+import { content } from "virtual:riebeckite/content";
 import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();
@@ -48,11 +55,23 @@ const backlinks = getPublishedBacklinks({
 });
 
 return (
-  <Article
-    footerContent={<Backlinks backlinks={backlinks} />}
-  />
+  <aside><Backlinks backlinks={backlinks} /></aside>
 );
 ```
+
+```ts
+plugins: [backlinksPlugin({ render: false })];
+```
+
+Remove the component to remove manually placed UI. Do not render both this
+component and `article.footer` with automatic rendering enabled, or it will
+appear twice.
+
+## Configuration
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `boolean` | `true` | Append the generated list to `article.footer`. Set `false` for manual placement. |
 
 ## Component
 

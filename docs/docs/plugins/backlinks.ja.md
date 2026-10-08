@@ -6,11 +6,11 @@
 
 [English](./backlinks.md)
 
-## できること
+## 推奨配置
 
-`backlinksPlugin()` はコンテンツマニフェストから被リンクを集め、公開対象のノートだけをマニフェスト順で `article.footer` body slot に追加します。`Backlinks` コンポーネントはその結果をフッターのリンク一覧として描画します。表示対象がなければ何も出力しません。
+`backlinksPlugin()` はコンテンツマニフェストから被リンクを集め、公開対象のノートだけをマニフェスト順で `article.footer` body slot に自動追加します。物理的な配置は Site が所有し、通常は記事本文の後でこの slot を一度描画します。`Backlinks` コンポーネントはその結果をリンク一覧として描画します。表示対象がなければ何も出力しません。
 
-## 設定と配置
+## クイックスタート
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -22,11 +22,11 @@ export default defineConfig({
 });
 ```
 
-プラグインは公開済みの被リンクがある記事へ自動的に出力を追加します。記事レイアウトで `article.footer` body slot を描画してください。
+プラグインは公開済みの被リンクがある記事へ自動的に出力を追加します。記事レイアウトで `<ContentSlot slots={bodySlots} name="article.footer" />` を一度描画してください。公式 Starter はこの slot をすでに描画しています。
 
-### 独自の配置
+## 高度なカスタマイズ
 
-Plugin が追加する footer ではなく、アプリ側で表示位置を決める場合は、記事ルートなどでマニフェストを取得し、現在の `slug` に対する被リンクを渡してください。
+アプリ側で表示位置を決める場合は、`render: false` で自動 slot 追加を止めます。データの生成と公開境界のフィルタリングは維持されます。記事ルートなどでマニフェストを取得し、現在の `slug` に対する被リンクを渡してください。
 
 ```tsx
 import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
@@ -36,6 +36,18 @@ const items = getPublishedBacklinks({ manifest, config, slug, resolveTitle });
 
 return <Article footerContent={<Backlinks backlinks={items} />} />;
 ```
+
+```ts
+plugins: [backlinksPlugin({ render: false })];
+```
+
+手動配置を消すにはコンポーネントを消します。自動描画を有効にしたまま同じコンポーネントを描画すると重複します。
+
+## 設定
+
+| オプション | 型 | 既定値 | 説明 |
+| --- | --- | --- | --- |
+| `render` | `boolean` | `true` | `article.footer` への自動追加。手動配置では `false`。 |
 
 ## 公開 API
 

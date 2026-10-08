@@ -105,3 +105,5 @@ Primitive は composition point として使用し、構造は Framework の hoo
 以下を直接 import しないでください。
 
 公開 API として記載されていない内部 component に依存することも避けてください。
+
+`hasSlot(bodySlots, "article.footer")` は空でない slot のときだけ wrapper を出す場合に使えます。`PageBody` は生成された plugin page 用の primitive で、渡された HTML を描画します。article slot を描画するものではありません。plugin の登録はデータ、asset、client entry、page、slot fragment を提供するだけで、`ContentSlot` が UI を登録・配置することはありません。

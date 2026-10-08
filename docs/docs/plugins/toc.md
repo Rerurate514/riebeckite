@@ -31,6 +31,10 @@ export default defineConfig({
 `tocPlugin()` registers the plugin, bundles `style.css`, and declares
 `initTableOfContents` as a client entry.
 
+It does not place UI. The Site extracts headings and renders the component,
+normally in an article aside. The official Starter uses this placement; its
+desktop ToC scrolls with the document and is not sticky.
+
 ### Render the component
 
 ```tsx

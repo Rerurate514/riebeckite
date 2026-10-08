@@ -20,6 +20,8 @@ export default defineConfig({
 
 `searchPlugin()` はスタイルとクライアント初期化処理を登録します。検索ダイアログは `Ctrl+K`、`Cmd+K`、または `/` で開けます。
 
+検索機能の登録と `SearchBar` の配置は別です。登録だけでは表示されないため、global Site shell（通常は header）に `SearchBar` を一つ描画します。位置を変える・消すときはその要素を移動・削除します。
+
 ## 検索バーを置く
 
 レイアウトなど、検索を開く導線を出したい場所で `SearchBar` を描画します。

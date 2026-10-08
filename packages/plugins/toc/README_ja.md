@@ -18,6 +18,8 @@ export default defineConfig({
 
 `tocPlugin()` はスタイルと `initTableOfContents` を登録します。初期化処理はスクロール位置を追跡し、読んだ節と現在の節を目次に反映します。
 
+UI は自動配置されません。Site が見出しを抽出してコンポーネントを描画し、通常は記事の aside に置きます。公式 Starter もこの配置を使い、デスクトップ用 ToC は sticky ではなく文書と一緒にスクロールします。
+
 ## 目次を置く
 
 記事 HTML から項目を取り出し、`TableOfContents` に渡します。

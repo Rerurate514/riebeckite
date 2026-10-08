@@ -7,7 +7,7 @@ outgoing links and backlinks.
 
 [日本語](./local-graph.ja.md)
 
-## Overview
+## Recommended placement
 
 `localGraph()` provides a `LocalGraph` component that renders the current note
 plus its direct links as an SVG radial graph. `getLocalGraph()` collects the
@@ -24,7 +24,11 @@ Relations are tagged per node:
 
 The component renders nothing when there is no published neighbor.
 
-## Usage
+`localGraphPlugin()` automatically contributes this component to
+`article.footer`. The Site decides where that semantic slot is rendered; the
+official Starter renders it after article content.
+
+## Quick Start
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -36,15 +40,19 @@ export default defineConfig({
 });
 ```
 
-`localGraphPlugin()` registers the plugin in the plugin list and bundles
-`style.css` into the app stylesheet.
+`localGraphPlugin()` registers the plugin and bundles `style.css` into the app
+stylesheet. Render `<ContentSlot slots={bodySlots} name="article.footer" />`
+once in the article layout to show automatic output.
 
-### Render the component
+## Advanced customization
+
+Set `render: false` to use the public data resolver and component in a
+Site-owned location without duplicating the automatic footer. This leaves graph
+generation and published-neighbor filtering intact.
 
 ```tsx
 import LocalGraph, { getLocalGraph } from "@riebeckite/plugin-local-graph";
-import { config } from "../config";
-import { content } from "../content";
+import { content } from "virtual:riebeckite/content";
 import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();
@@ -57,11 +65,21 @@ const graph = getLocalGraph({
 
 // ...in your route
 return (
-  <Article
-    footerContent={graph && <LocalGraph graph={graph} />}
-  />
+  <aside>{graph && <LocalGraph graph={graph} />}</aside>
 );
 ```
+
+```ts
+plugins: [localGraphPlugin({ render: false })];
+```
+
+Remove the component to remove manually placed UI.
+
+## Configuration
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `render` | `boolean` | `true` | Append the graph to `article.footer`. Set `false` for manual placement. |
 
 ## Graph layout
 

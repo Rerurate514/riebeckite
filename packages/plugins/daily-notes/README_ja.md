@@ -4,7 +4,7 @@
 
 [English](./README.md)
 
-## 概要
+## 推奨配置
 
 デイリーノートは、長い非公開の日記を 1 ファイルにまとめることが少なくありません。このプラグインは生のマニフェストを読み、指定ディレクトリ配下のノートを対象に、次の順番で最初に成功した方法からスニペットを 1 つだけ取り出します。
 
@@ -16,7 +16,9 @@
 
 `sourceUrl` と `sourceTitle` は `isPublished` が公開と判定したときだけ付きます。非公開ノートのパーマリンクとタイトルは `null` のままなので、置き場所が漏れることはありません。
 
-## 使い方
+`dailyNotesPlugin()` はデータとスタイルを登録しますが、ウィジェットを自動描画しません。配置は Site が所有し、ホームページのセクションが推奨位置です。
+
+## クイックスタート
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -28,7 +30,7 @@ export default defineConfig({
 });
 ```
 
-### ウィジェットを置く
+ホームページ route または Site が所有するホームページセクションで明示的に描画します。
 
 ```tsx
 import DailyNotes, { getDailyNotes } from "@riebeckite/plugin-daily-notes";
@@ -64,6 +66,8 @@ getDailyNotes({
 
 `dateFormat` はウィジェットの日付表示を決めます。既定は `"iso"`（`YYYY-MM-DD`）で、ほかに `"long"` と `"short"` があります。`"long"` と `"short"` は `locale`（既定 `"en"`）で整形します。機械可読な `YYYY-MM-DD` は常に `<time datetime>` 属性に残り、`DailyNote.date` はその ISO 形式のまま、`DailyNote.dateDisplay` に整形後の文字列が入ります。
 
+位置を変える・消すときは `DailyNotes` 要素を移動・削除します。公式 Starter は Daily Notes を既定で描画しません。
+
 ## 主なエクスポート
 
 - `dailyNotesPlugin(options?)`: プラグインを作る（`style.css` を登録する）
@@ -77,4 +81,3 @@ getDailyNotes({
 ## 関連資料
 
 - [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-

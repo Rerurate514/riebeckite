@@ -78,3 +78,9 @@ import {
 Use the primitives as composition points, then style them from the site. Pass
 rendered Markdown to `ArticleBody`. Do not import files below
 `@riebeckite/honox/src/` or rely on any unlisted component.
+
+`hasSlot(bodySlots, "article.footer")` is useful when a Site needs a wrapper
+only for non-empty slot content. `PageBody` is the corresponding primitive for
+generated plugin pages: it renders that page's supplied HTML, not article slots.
+Registering a plugin only supplies data, assets, client entries, pages, or slot
+fragments; it never causes `ContentSlot` to register or place UI.

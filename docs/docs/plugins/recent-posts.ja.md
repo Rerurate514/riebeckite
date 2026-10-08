@@ -8,7 +8,7 @@
 
 ## できること
 
-`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` と `showcase` では、一覧をホームページ本文の後に自動配置します。
+`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` と `showcase` は、ホームページ route で一覧を本文の後に明示的に配置します。
 
 ## 設定と配置
 
@@ -19,14 +19,14 @@ import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 export default defineConfig({ plugins: [recentPostsPlugin()] });
 ```
 
-生成された `starter` と `showcase` では、route や layout を追加で編集しなくても一覧が表示されます。独自の配置では、アプリ側で表示位置を決めます。
+`recentPostsPlugin()` は UI を自動描画しません。生成された `starter` と `showcase` は推奨するホームページ配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
 
 ```tsx
 import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
-import { content } from "../content";
+import { content } from "virtual:riebeckite/content";
 
 const posts = getRecentPosts({ manifest: await content.getManifest() });
-return <Article afterContent={<RecentPosts posts={posts} />} />;
+return <RecentPosts posts={posts} />;
 ```
 
 生成されたホームページの一覧を無効にするには、`RecentPosts` の import と `afterContent` prop を削除します。位置を変える場合は、同じ要素を既存の route または layout の目的の slot へ移動します。
@@ -35,6 +35,53 @@ return <Article afterContent={<RecentPosts posts={posts} />} />;
 | --- | --- | --- |
 | `manifest` | 必須 | 候補ノートの取得元（`discoverableEntries`） |
 | `limit` | `5` | 返す記事数の上限 |
+
+## Starter presetからの使用する例
+まず、`[slug{.+}].tsx`で以下を記述します。`SiteArticle`の引数として、`post`を追加します。
+```tsx title="[slug{.+}].tsx"
+const posts = getRecentPosts({ manifest: await content.getManifest() });
+
+return c.render(
+      <SiteArticle
+        posts={posts}
+        post={resolved.post}
+        bodySlots={resolved.entry.bodySlots}
+        asideContent={<TableOfContents className="rr-table-of-contents--desktop" items={tableOfContents} />}
+      />,
+    );
+```
+
+`SiteArticle`の引数に`posts`を追加します。
+```tsx title="article.tsx"
+export function SiteArticle({
++  posts,
+  post,
+  bodySlots,
+  asideContent,
+  afterContent,
+  footerContent,
+}: {
++  posts: RecentPost[];
+  post: PostContent;
+  bodySlots?: ContentBodySlots;
+  asideContent?: unknown;
+  afterContent?: unknown;
+  footerContent?: unknown;
+}) {
+```
+
+そして、`RecentPosts`を追加します。
+```tsx title="article.tsx"
+{hasSlot(bodySlots, "article.footer") || footerContent ? (
+          <ArticleFooter class="site-article__footer">
++            <RecentPosts posts={posts}></RecentPosts>
+            <ContentSlot slots={bodySlots} name="article.footer" />
+            {footerContent}
+          </ArticleFooter>
+        ) : null}
+```
+
+`npm exec riebeckite dev`でサーバーを起動して、実際の画面を見てみると、サイト下部にRECENT POSTSが表示されます。
 
 ## 公開 API
 

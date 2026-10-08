@@ -136,11 +136,14 @@ test("each preset generates its intended self-contained composition", async () =
         );
       }
       if (preset === "starter") {
-        assert.match(config, /navigation\(\{/);
-        assert.match(config, /label: "Notes"/);
+        assert.match(config, /navigation\(\)/);
+        assert.doesNotMatch(config, /label: "Notes"/);
         assert.ok(config.includes("@riebeckite/plugin-search"));
         assert.ok(config.includes("@riebeckite/plugin-breadcrumbs"));
-        assert.ok(!config.includes("@riebeckite/plugin-folder-pages"));
+        assert.ok(config.includes("@riebeckite/plugin-folder-pages"));
+        assert.ok(config.includes("@riebeckite/plugin-hover-preview"));
+        assert.ok(!config.includes("@riebeckite/plugin-l10n"));
+        assert.ok(!config.includes("@riebeckite/plugin-series"));
         assert.ok(!config.includes("@riebeckite/plugin-daily-notes"));
         assert.ok(
           !(await exists(path.join(targetDirectory, "content/reference"))),
@@ -205,7 +208,7 @@ test("each preset ships a site-owned 404 surface", async () => {
   });
 });
 
-test("starter and showcase scaffolds render authored navigation in the site shell", async () => {
+test("starter and showcase scaffolds render navigation in the site shell", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -244,7 +247,7 @@ test("starter and showcase scaffolds render authored navigation in the site shel
           "utf8",
         ),
         preset === "starter"
-          ? /label: "Notes", href: "\/notes\/planning"/
+          ? /navigation\(\)/
           : /label: "Framework", href: "\/framework\/plugins"/,
       );
     }

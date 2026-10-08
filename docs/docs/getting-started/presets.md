@@ -30,16 +30,16 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 
 | Preset | Theme | Languages | Contents | Representative features |
 | --- | --- | --- | --- | --- |
-| `starter` | `default` | 7 | index, guide, examples, connected notes | Markdown publishing, search, breadcrumbs, backlinks, related and recent posts, taxonomy, series |
+| `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
 | `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
 
-The seven languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `minimal` does not register l10n; `empty` has no theme, plugins, or content.
+The seven showcase languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `starter` uses one page language selected from the site locale; add l10n when the site needs translated routes. `minimal` is English-only, and `empty` has no theme, plugins, or content.
 
 ### `starter`
 
-The practical default. It includes Obsidian Markdown, color mode, l10n, SEO, table of contents, properties and aliases, code enhancement, search and discovery, breadcrumbs, responsive images and lightbox, series, and taxonomy. Its connected sample notes exercise backlinks, related posts, search, recent posts, series, and tags without adding niche integrations.
+The practical default. It includes Obsidian Markdown, color mode, SEO, table of contents, properties and aliases, code enhancement, search and discovery, breadcrumbs, responsive images and lightbox, taxonomy, folder landing pages, and link previews. Navigation is derived from published content rather than sample URLs. Its connected sample notes exercise backlinks, related posts, search, recent posts, and tags without adding niche integrations.
 
 ### `minimal`
 

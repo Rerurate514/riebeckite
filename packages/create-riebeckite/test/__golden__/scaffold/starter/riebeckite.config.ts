@@ -1,7 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { colorModePlugin } from "@riebeckite/plugin-color-mode";
-import { l10n } from "@riebeckite/plugin-l10n";
 import { seo } from "@riebeckite/plugin-seo";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { properties } from "@riebeckite/plugin-properties";
@@ -15,8 +14,9 @@ import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
-import { series } from "@riebeckite/plugin-series";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
+import { folderPagesPlugin } from "@riebeckite/plugin-folder-pages";
+import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
 import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
@@ -34,7 +34,6 @@ export default defineConfig({
   plugins: [
     obsidianMarkdown(),
     colorModePlugin(),
-    l10n({ defaultLang: "en", languages: ["en","ja","zh-CN","es","de","fr","ko"] }),
     seo({ sitemap: true, robots: true }),
     tocPlugin(),
     properties({ render: "slot", include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }),
@@ -43,12 +42,13 @@ export default defineConfig({
     searchPlugin(),
     backlinksPlugin(),
     breadcrumbsPlugin(),
-    navigation({ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Notes", href: "/notes/planning", children: [{ label: "Planning", href: "/notes/planning" }, { label: "Writing", href: "/notes/writing" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }),
+    navigation(),
     relatedPosts({ limit: 5, useTags: true, useBacklinks: true }),
     recentPostsPlugin(),
     responsiveImage({ lazy: true, decoding: true, sizes: "100vw", widths: [640, 1280, 1920] }),
     lightboxPlugin({ selectorClass: "rr-lightbox-trigger" }),
-    series({ key: "series", orderKey: "series_order", titleKey: "series_title", positionLabel: false }),
     taxonomy({ tags: true, folders: true, related: true }),
+    folderPagesPlugin(),
+    hoverPreviewPlugin({ delay: 120, excerptLength: 160, selector: 'a[href^="/"]' }),
   ],
 });

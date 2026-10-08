@@ -268,9 +268,6 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
     // Run build command
     execSync("npm exec riebeckite build", { cwd: targetDir, stdio: "pipe" });
 
-    // Verify critical build outputs exist
-    // Default locale (en) content is at root (e.g., dist/examples.html, dist/guide.html)
-    // Other locales have their own folders (dist/ja/index.html, etc.)
     assert.ok(
       await fileExists(targetDir, "dist/examples.html"),
       "dist/examples.html must exist (default locale content)",
@@ -287,10 +284,9 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
       await dirExists(targetDir, "dist/assets"),
       "dist/assets directory must exist after build",
     );
-    // Verify at least one localized index exists
     assert.ok(
-      await fileExists(targetDir, "dist/ja/index.html"),
-      "dist/ja/index.html must exist (localized content)",
+      await fileExists(targetDir, "dist/index.html"),
+      "dist/index.html must exist",
     );
 
     const guideHtml = await readFile(targetDir, "dist/guide.html");
@@ -369,49 +365,19 @@ test("Contract 2: starter preset generates exact content files documented in Get
       );
     }
 
-    // Verify localized variants: index and examples get all languages, guide and notes do not
-    // This matches the scaffold's actual behavior (see content-pages.ts)
-    const localizedFiles = [
-      // index.md gets all languages
-      "content/index.ja.md",
-      "content/index.zh-CN.md",
-      "content/index.es.md",
-      "content/index.de.md",
-      "content/index.fr.md",
-      "content/index.ko.md",
-      // examples.md gets all languages
-      "content/examples.ja.md",
-      "content/examples.zh-CN.md",
-      "content/examples.es.md",
-      "content/examples.de.md",
-      "content/examples.fr.md",
-      "content/examples.ko.md",
-    ];
-    for (const file of localizedFiles) {
-      assert.ok(
-        await fileExists(targetDir, file),
-        `Localized content file ${file} must exist`,
-      );
-    }
-
-    // Verify guide.md does NOT have localized variants (current scaffold behavior)
     for (const lang of STARTER_LANGUAGES) {
       if (lang === "en") continue;
-      const localizedFile = `content/guide.${lang}.md`;
-      assert.ok(
-        !(await fileExists(targetDir, localizedFile)),
-        `guide.md must not have ${localizedFile} (current behavior)`,
-      );
-    }
-
-    // Verify notes/* do NOT have localized variants (current scaffold behavior)
-    for (const note of ["planning", "writing"]) {
-      for (const lang of STARTER_LANGUAGES) {
-        if (lang === "en") continue;
-        const localizedFile = `content/notes/${note}.${lang}.md`;
+      for (const base of [
+        "index",
+        "guide",
+        "examples",
+        "notes/planning",
+        "notes/writing",
+      ]) {
+        const localizedFile = `content/${base}.${lang}.md`;
         assert.ok(
           !(await fileExists(targetDir, localizedFile)),
-          `notes/${note}.md must not have ${localizedFile} (current behavior)`,
+          `Starter must not generate ${localizedFile}`,
         );
       }
     }
@@ -446,8 +412,8 @@ test("Contract 2b: Getting Started first-post example matches actual generated s
       "content/index.md (base) must exist",
     );
     assert.ok(
-      await fileExists(targetDir, "content/index.ja.md"),
-      "content/index.ja.md must exist",
+      !(await fileExists(targetDir, "content/index.ja.md")),
+      "starter must not generate localized variants without l10n",
     );
     assert.ok(
       await fileExists(targetDir, "content/guide.md"),

@@ -205,11 +205,7 @@ const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {
 const search = np("@riebeckite/plugin-search", "searchPlugin");
 const backlinks = np("@riebeckite/plugin-backlinks", "backlinksPlugin");
 const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbsPlugin");
-const navigationStarter = np(
-  "@riebeckite/plugin-navigation",
-  "navigation",
-  `{ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Notes", href: "/notes/planning", children: [{ label: "Planning", href: "/notes/planning" }, { label: "Writing", href: "/notes/writing" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }`,
-);
+const navigationStarter = np("@riebeckite/plugin-navigation", "navigation");
 const navigationShowcase = np(
   "@riebeckite/plugin-navigation",
   "navigation",
@@ -562,12 +558,11 @@ export const starter: ScaffoldPreset = {
   name: "starter",
   description:
     "Recommended default: a practical Markdown garden with search, navigation, and reading essentials.",
-  languages: [...SCAFFOLD_LANGUAGES],
+  languages: ["en"],
   theme: defaultTheme,
   plugins: [
     obsidianMarkdown,
     colorMode,
-    l10n,
     seo,
     toc,
     properties,
@@ -581,8 +576,9 @@ export const starter: ScaffoldPreset = {
     recentPosts,
     responsiveImage,
     lightbox,
-    series,
     taxonomy,
+    folderPages,
+    hoverPreview,
   ],
   contentPages: ["index", "guide", "examples"],
   readme: "standard",

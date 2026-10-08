@@ -180,9 +180,10 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
   const config = readSiteFile(root, "riebeckite.config.ts");
   expect(config !== null, "starter: riebeckite.config.ts is missing");
   if (config) {
+    expect(config.includes("navigation()"), "starter: navigation must be bare");
     expect(
-      config.includes('label: "Notes", href: "/notes/planning"'),
-      "starter: navigation parent must target an existing page",
+      !config.includes('label: "Notes"'),
+      "starter: navigation must not hard-code sample pages",
     );
     expect(
       config.includes("obsidianMarkdown()"),
@@ -193,8 +194,8 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
       "starter: colorModePlugin must be bare",
     );
     expect(
-      config.includes('l10n({ defaultLang: "en", languages: ['),
-      "starter: l10n must be resolved dynamically",
+      !config.includes("@riebeckite/plugin-l10n"),
+      "starter: l10n must not be registered",
     );
     expect(
       config.includes("seo({ sitemap: true, robots: true })"),
@@ -209,9 +210,14 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
       "starter: breadcrumbs must be registered",
     );
     expect(
-      !config.includes("@riebeckite/plugin-folder-pages"),
-      "starter: folder-pages must stay out of the starter preset",
+      config.includes("@riebeckite/plugin-folder-pages"),
+      "starter: folder-pages must be registered",
     );
+    expect(
+      config.includes("@riebeckite/plugin-hover-preview"),
+      "starter: hover-preview must be registered",
+    );
+    expectHoverPreviewSelector(config, "starter");
     expect(
       !config.includes("mermaid("),
       "starter: niche diagram plugins must be excluded",

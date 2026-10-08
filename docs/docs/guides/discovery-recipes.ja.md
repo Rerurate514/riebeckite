@@ -25,10 +25,11 @@ Route は定数ではなく設定です。Tags の一覧、Series の一覧、Ar
 
 - 生成される Homepage の **最新記事**（`recent-posts`）
 - `taxonomy` による **Tag / Folder** の一覧ページ（既定は `/tags` と `/folders`）
-- `series` による **Series** の一覧と landing ページ（既定は `/series`）
+- `folder-pages` による **Folder landing page** と `README.md` / `index.md` の本文
 - 記事ヘッダーの **パンくず**（`breadcrumbs`）
+- `hover-preview` による公開済み内部リンクの **リンク preview**
 
-`query`、`dataview`、`archive`、`folder-pages` は package としては利用できますが、`starter` には登録されていません。レシピで必要になった時点で追加します。各 preset の構成は [Presets](../getting-started/presets.ja.md) を参照してください。
+`query`、`dataview`、`archive`、`series` は package としては利用できますが、`starter` には登録されていません。レシピで必要になった時点で追加します。各 preset の構成は [Presets](../getting-started/presets.ja.md) を参照してください。
 
 ## 最新記事
 
@@ -165,11 +166,17 @@ Folder 一覧を使う場合は、taxonomy のパスを Navigation に追加し�
 navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 ```
 
-prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`folder-pages` は `README.md` と `index.md` の解決先を変えるため、Folder ごとの landing ページが欲しい場合だけ有効にします。`starter` には登録されていません。
+prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`starter` では `folder-pages` も有効なため、公開対象を含む Folder ごとに landing page が作られ、Folder 内の `README.md` や `index.md` はその本文になります。taxonomy の一覧を読者に見せる場合は `/folders` を Navigation に追加します。コンテンツから組み立てる Navigation は公開済みノートと Folder owner をたどります。
 
 ## Series
 
-Series は `series` frontmatter キーを共有するノートの集まりです。`series` は `starter` に含まれ、各パートに前後ナビを追加します。さらに `basePath`（既定 `/series`）に一覧ページを、`basePath/<name>` に Series ごとの landing ページを生成します。
+Series は `series` frontmatter キーを共有するノートの集まりです。各パートの前後ナビと `basePath`（既定 `/series`）の一覧、`basePath/<name>` の Series ごとの landing ページが必要な場合は、`@riebeckite/plugin-series` を install して登録します。
+
+```ts
+import { series } from "@riebeckite/plugin-series";
+
+plugins: [series()]
+```
 
 ```yaml
 ---
@@ -210,9 +217,9 @@ navigation({ secondary: [{ label: "Archive", href: "/archive" }] })
 1. `content/index.md` の導入文。
 2. Featured ノートの `query` ブロック。
 3. 生成される Homepage route の `<RecentPosts />`。
-4. `/tags`、`/series`、`/archive` への Navigation リンク。
+4. `/tags` や `/archive` など、有効にした発見導線への Navigation リンク。
 
-Docs 風のサイトは `folder-pages` を section の landing に、`series` を順序付きガイドに使います。ネストした Folder が少ない Vault なら Folder ページは使わなくてもかまいません。手持ちのコンテンツに合う部品を選んでください。
+Docs 風のサイトでは、starter に含まれる `folder-pages` を section の landing に使い、順序付きガイドには `series` を追加できます。ネストした Folder が少ない Vault なら Folder ページを外してもかまいません。手持ちのコンテンツに合う部品を選んでください。
 
 ## このガイドで必要としないもの
 

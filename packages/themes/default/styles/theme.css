@@ -24,6 +24,9 @@
     --rb-color-border-strong: color-mix(in srgb, currentColor 28%, transparent);
     --rb-color-danger: #b42318;
     --rb-color-success: #047857;
+    --rb-color-info: #2563eb;
+    --rb-color-warning: #b45309;
+    --rb-color-callout-special: #7c3aed;
     --rb-color-code-background: #eeeeee;
     --rb-color-overlay: rgb(0 0 0 / 0.4);
     --rb-font-body: ui-sans-serif, system-ui, sans-serif;
@@ -54,6 +57,9 @@
     --rb-color-accent: #a3a3a3;
     --rb-color-danger: #e5484d;
     --rb-color-success: #30a46c;
+    --rb-color-info: #70b8ff;
+    --rb-color-warning: #f5a524;
+    --rb-color-callout-special: #c4a7e7;
     --rb-color-code-background: #242428;
     --rb-color-overlay: rgb(0 0 0 / 0.6);
   }
@@ -69,6 +75,9 @@
       --rb-color-accent: #a3a3a3;
       --rb-color-danger: #e5484d;
       --rb-color-success: #30a46c;
+      --rb-color-info: #70b8ff;
+      --rb-color-warning: #f5a524;
+      --rb-color-callout-special: #c4a7e7;
       --rb-color-code-background: #242428;
       --rb-color-overlay: rgb(0 0 0 / 0.6);
     }
@@ -429,13 +438,13 @@
   border-inline-start: 2px solid
     color-mix(
       in srgb,
-      var(--callout-tone, var(--rb-color-muted)) 60%,
+      var(--rr-callout-tone, var(--rb-color-muted)) 60%,
       var(--rb-color-border-strong)
     );
   border-radius: var(--rb-default-radius-sm);
   background: color-mix(
     in srgb,
-    var(--callout-tone, var(--rb-color-muted)) 4%,
+    var(--rr-callout-tone, var(--rb-color-muted)) 4%,
     var(--rb-color-surface)
   );
   color: var(--rb-color-ink);

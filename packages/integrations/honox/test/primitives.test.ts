@@ -175,10 +175,10 @@ test("hasSlot shares the ContentSlot empty semantics", () => {
   );
 });
 
-test("PageBody renders resolved page HTML in a bare wrapper", () => {
+test("PageBody owns the rb-page-body hook", () => {
   const html = renderToString(PageBody({ html: "<p>Page</p>" }));
 
-  assert.equal(html, "<div><p>Page</p></div>");
+  assert.equal(html, '<div class="rb-page-body"><p>Page</p></div>');
 });
 
 test("PageBody composes a Site class", () => {
@@ -186,5 +186,5 @@ test("PageBody composes a Site class", () => {
     PageBody({ html: "<p>Page</p>", class: "site-page" }),
   );
 
-  assert.equal(html, '<div class="site-page"><p>Page</p></div>');
+  assert.equal(html, '<div class="rb-page-body site-page"><p>Page</p></div>');
 });

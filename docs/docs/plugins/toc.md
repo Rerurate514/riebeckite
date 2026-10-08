@@ -52,6 +52,9 @@ return (
 
 The client entry finds elements by the `data-toc-target` attribute emitted on
 each link, so it works when multiple ToCs (desktop/mobile) are rendered.
+The supplied desktop class scrolls with the document rather than sticking to
+the viewport. Long labels wrap inside the ToC instead of creating horizontal
+scrolling.
 
 ## API
 

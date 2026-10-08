@@ -19,7 +19,8 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
-    "dist"
+    "dist",
+    "style.css"
   ],
   "exports": {
     ".": {
@@ -27,7 +28,8 @@
       "import": "./dist/index.js",
       "source": "./index.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./style.css": "./style.css"
   },
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
@@ -53,5 +55,7 @@
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "./style.css"
+  ]
 }

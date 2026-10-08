@@ -188,7 +188,7 @@ export type PageBodyProps = PrimitiveClassProps & {
 export function PageBody(props: PageBodyProps) {
   return (
     <div
-      class={joinClassNames(props.class, props.className) || undefined}
+      class={joinClassNames("rb-page-body", props.class, props.className)}
       dangerouslySetInnerHTML={{ __html: props.html }}
     />
   );

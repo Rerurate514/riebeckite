@@ -28,6 +28,9 @@
     --rb-color-border-strong: color-mix(in srgb, currentColor 28%, transparent);
     --rb-color-danger: #b42318;
     --rb-color-success: #047857;
+    --rb-color-info: #2563eb;
+    --rb-color-warning: #b45309;
+    --rb-color-callout-special: #7c3aed;
     --rb-color-code-background: #f2f2f2;
     --rb-color-overlay: rgb(0 0 0 / 0.4);
     --rb-font-body: ui-sans-serif, system-ui, sans-serif;
@@ -56,6 +59,9 @@
     --rb-color-accent: #e5e5e5;
     --rb-color-danger: #e5484d;
     --rb-color-success: #30a46c;
+    --rb-color-info: #70b8ff;
+    --rb-color-warning: #f5a524;
+    --rb-color-callout-special: #c4a7e7;
     --rb-color-code-background: #262626;
     --rb-color-overlay: rgb(0 0 0 / 0.6);
   }
@@ -71,6 +77,9 @@
       --rb-color-accent: #e5e5e5;
       --rb-color-danger: #e5484d;
       --rb-color-success: #30a46c;
+      --rb-color-info: #70b8ff;
+      --rb-color-warning: #f5a524;
+      --rb-color-callout-special: #c4a7e7;
       --rb-color-code-background: #262626;
       --rb-color-overlay: rgb(0 0 0 / 0.6);
     }
@@ -461,10 +470,15 @@
 :is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout {
   margin: 2rem 0;
   padding: 1rem 1.25rem;
-  border: 1px solid var(--rb-color-border);
-  border-left: 1px solid var(--rb-color-border-strong);
+  border: 1px solid
+    color-mix(in srgb, var(--rr-callout-tone) 32%, var(--rb-color-border));
+  border-left: 2px solid var(--rr-callout-tone);
   border-radius: 0;
-  background: none;
+  background: color-mix(
+    in srgb,
+    var(--rr-callout-tone) 4%,
+    var(--rb-color-surface)
+  );
   box-shadow: none;
   color: var(--rb-color-ink);
 }
@@ -472,7 +486,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rr-callout
   .rr-callout__title {
-  color: var(--rb-color-muted);
+  color: var(--rr-callout-tone);
   font-family: var(--rb-font-body);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -483,7 +497,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rr-callout
   .rr-callout__icon {
-  color: var(--rb-color-muted);
+  color: var(--rr-callout-tone);
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout p:last-child {

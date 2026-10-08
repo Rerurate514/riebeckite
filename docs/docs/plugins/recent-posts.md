@@ -14,8 +14,8 @@ of recently posted articles. `getRecentPosts()` reads
 `manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
 excluded. It derives a date from the frontmatter (`date` falling back to
 `created`), sorts newest first, and truncates to `limit` items. Notes without a
-parseable date are dropped. Whether and where to place the list is the site's
-decision.
+parseable date are dropped. Official `starter` and `showcase` sites place the
+list automatically on their homepage after the page content.
 
 With no posts, the component renders nothing.
 
@@ -32,9 +32,10 @@ export default defineConfig({
 ```
 
 `recentPostsPlugin()` registers the plugin in the plugin list and bundles
-`style.css` into the app stylesheet.
+`style.css` into the app stylesheet. Generated `starter` and `showcase` sites
+need no additional route or layout wiring.
 
-### Render the component
+### Custom placement
 
 ```tsx
 import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -42,11 +43,14 @@ import { content } from "../content";
 
 const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 
-// ...in your route
+// ...in a custom route or layout
 return <Article afterContent={<RecentPosts posts={recentPosts} />} />;
 ```
 
 `getRecentPosts()` filters out the `index` note before collecting posts.
+To disable the generated homepage list, remove its `RecentPosts` import and
+`afterContent` prop. To reposition it, move that same element to the desired
+existing route or layout slot.
 
 ## Component
 
@@ -62,54 +66,6 @@ target.
 | ------ | ---- | ------- | ----------- |
 | `manifest` | `Pick<ContentManifest, "discoverableEntries">` | — | Source of candidate posts |
 | `limit` | `number` | `5` | Maximum number of posts to return |
-
-## Example of Using the Starter Preset
-
-First, write the following in `[slug{.+}].tsx`. Add `post` as an argument to `SiteArticle`.
-```tsx title="[slug{.+}].tsx"
-const posts = getRecentPosts({ manifest: await content.getManifest() });
-
-return c.render(
-      <SiteArticle
-        posts={posts}
-        post={resolved.post}
-        bodySlots={resolved.entry.bodySlots}
-        asideContent={<TableOfContents className="rr-table-of-contents--desktop" items={tableOfContents} />}
-      />,
-    );
-```
-
-Add `posts` as an argument to `SiteArticle`.
-```tsx title="article.tsx"
-export function SiteArticle({
-+  posts,
-  post,
-  bodySlots,
-  asideContent,
-  afterContent,
-  footerContent,
-}: {
-+  posts: RecentPost[];
-  post: PostContent;
-  bodySlots?: ContentBodySlots;
-  asideContent?: unknown;
-  afterContent?: unknown;
-  footerContent?: unknown;
-}) {
-```
-
-Next, add `RecentPosts`.
-```tsx title="article.tsx"
-{hasSlot(bodySlots, “article.footer”) || footerContent ? (
-          <ArticleFooter class="site-article__footer">
-+            <RecentPosts posts={posts}></RecentPosts>
-            <ContentSlot slots={bodySlots} name="article.footer" />
-            {footerContent}
-          </ArticleFooter>
-        ) : null}
-```
-
-Run `npm exec riebeckite dev` to start the server. When you view the actual page, you’ll see “RECENT POSTS” displayed at the bottom of the site.
 
 ## Exports
 

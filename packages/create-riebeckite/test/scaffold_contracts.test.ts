@@ -96,6 +96,22 @@ async function dirExists(root: string, relativePath: string): Promise<boolean> {
   }
 }
 
+async function collectHtmlFiles(root: string): Promise<string[]> {
+  const files: string[] = [];
+  const walk = async (directory: string): Promise<void> => {
+    for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        await walk(absolute);
+      } else if (entry.name.endsWith(".html")) {
+        files.push(absolute);
+      }
+    }
+  };
+  await walk(root);
+  return files.sort();
+}
+
 const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..");
 
 interface GeneratedManifest {
@@ -287,6 +303,45 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
       guideHtml?.includes("rr-table-of-contents"),
       "generated site must render the table of contents",
     );
+
+    // Accessibility: every generated page must expose exactly one main landmark
+    // with a stable skip target, and the skip link must precede the header.
+    const htmlFiles = await collectHtmlFiles(path.join(targetDir, "dist"));
+    assert.ok(htmlFiles.length > 0, "build must emit HTML pages");
+    for (const file of htmlFiles) {
+      const relative = path.relative(targetDir, file).split(path.sep).join("/");
+      const html = await fs.readFile(file, "utf8");
+      assert.equal(
+        (html.match(/<main\b/g) ?? []).length,
+        1,
+        `${relative} must contain exactly one main landmark`,
+      );
+      assert.equal(
+        (html.match(/id="main-content"/g) ?? []).length,
+        1,
+        `${relative} must expose a single main-content id`,
+      );
+      const main = html.match(
+        /<main\b[^>]*id="main-content"[^>]*>([\s\S]*?)<\/main>/,
+      );
+      assert.ok(main, `${relative} must expose a main-content landmark`);
+      assert.ok(
+        (main?.[1] ?? "").trim().length > 0,
+        `${relative} main landmark must contain page content`,
+      );
+      assert.ok(
+        !(main?.[1] ?? "").includes("rb-site-header"),
+        `${relative} main landmark must not contain the repeated header`,
+      );
+      assert.ok(
+        html.includes('href="#main-content"'),
+        `${relative} must contain the skip link`,
+      );
+      assert.ok(
+        html.indexOf('href="#main-content"') < html.indexOf("<header"),
+        `${relative} skip link must precede the repeated header`,
+      );
+    }
   });
 });
 

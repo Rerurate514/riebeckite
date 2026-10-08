@@ -297,4 +297,10 @@ test("garden explorer page renders an English description", () => {
   assert.ok(html.includes("Explore your digital garden across"), html);
   assert.ok(html.includes("My Garden"), html);
   assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
+  assert.doesNotMatch(
+    html,
+    /<main\b/,
+    "the plugin page body must not own a main landmark; the site shell does",
+  );
+  assert.match(html, /<div class="garden-explorer-page">/);
 });

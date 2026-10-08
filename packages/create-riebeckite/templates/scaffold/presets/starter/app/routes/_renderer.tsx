@@ -30,13 +30,16 @@ export default jsxRenderer(async ({ children }, c) => {
         />
       </head>
       <body class="riebeckite-page rb-site">
+        <a class="rb-skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader
           path={c.req.path}
           items={navigation.primary}
           language={c.get("htmlLanguage")}
         />
         <SearchBar />
-        {children}
+        <main id="main-content" tabindex="-1" class="riebeckite-main">
+          {children}
+        </main>
         <SiteFooter
           path={c.req.path}
           items={navigation.secondary}

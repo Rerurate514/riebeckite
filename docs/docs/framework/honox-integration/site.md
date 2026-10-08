@@ -287,7 +287,7 @@ import type { NotFoundHandler } from "hono";
 
 const handler: NotFoundHandler = (c) => {
   c.status(404);
-  return c.render(<main class="not-found">Page not found</main>);
+  return c.render(<div class="not-found">Page not found</div>);
 };
 
 export default handler;

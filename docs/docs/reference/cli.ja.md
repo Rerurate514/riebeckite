@@ -88,13 +88,13 @@ build
 新しい Riebeckite Site を作成します。
 
 ```sh id="18r7wl"
-riebeckite init
+npm exec riebeckite init
 ```
 
 別のディレクトリへ作成する場合は、
 
 ```sh id="81jmbp"
-riebeckite init my-site
+npm exec riebeckite init my-site
 ```
 
 のように指定します。
@@ -114,7 +114,7 @@ riebeckite init my-site
 ### Preset を選ぶ
 
 ```sh id="vt7gdb"
-riebeckite init my-site --preset starter
+npm exec riebeckite init my-site --preset starter
 ```
 
 `--preset` で Site の初期構成を選択できます。
@@ -124,7 +124,7 @@ riebeckite init my-site --preset starter
 利用できる preset は、
 
 ```sh id="b0n6ph"
-riebeckite init --list-presets
+npm exec riebeckite init --list-presets
 ```
 
 で確認できます。
@@ -134,7 +134,7 @@ riebeckite init --list-presets
 preset とは別に、任意の project file を生成できます。
 
 ```sh id="pf8k21"
-riebeckite init my-site --utilities editorconfig,npmrc,vscode
+npm exec riebeckite init my-site --utilities editorconfig,npmrc,vscode
 ```
 
 `--utilities` には `editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。既定では `editorconfig,gitattributes,biome` を生成し、`npmrc` と `vscode` は生成しません。`none` を指定すると project file を生成しません。
@@ -156,7 +156,7 @@ riebeckite init my-site --utilities editorconfig,npmrc,vscode
 意図的に上書きする場合は、
 
 ```sh id="l5kjod"
-riebeckite init my-site --force
+npm exec riebeckite init my-site --force
 ```
 
 を使用します。

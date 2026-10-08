@@ -31,6 +31,8 @@
     "hono": "catalog:"
   },
   "devDependencies": {
+    "esbuild": "catalog:",
+    "puppeteer": "^25.11.0",
     "tsx": "^4.22.4"
   },
   "publishConfig": {
@@ -46,6 +48,7 @@
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
     "test": "node --import tsx --test \"test/*.test.ts\"",
+    "test:browser": "node --import tsx --test \"test/browser/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {

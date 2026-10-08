@@ -8,9 +8,14 @@ import {
 
 const MAX_RESULTS = 8;
 
+const FOCUSABLE_SELECTOR =
+  'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
 export function initSearch() {
   const root = document.querySelector<HTMLElement>("[data-search-root]");
-  const modal = document.querySelector<HTMLElement>("[data-search-modal]");
+  const modal = document.querySelector<HTMLDialogElement>(
+    "[data-search-modal]",
+  );
   const input = document.querySelector<HTMLInputElement>("[data-search-input]");
   const status = document.querySelector<HTMLElement>("[data-search-status]");
   const results = document.querySelector<HTMLElement>("[data-search-results]");
@@ -28,21 +33,25 @@ export function initSearch() {
   let currentResults: SearchResult[] = [];
   let previouslyFocused: HTMLElement | null = null;
 
+  const getFocusable = () =>
+    Array.from(modal.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+      (element) => element.getClientRects().length > 0,
+    );
+
   const openSearch = async () => {
+    if (modal.open) return;
+
     previouslyFocused = document.activeElement as HTMLElement | null;
-    modal.hidden = false;
+    modal.showModal();
     setOpenButtonState(openButtons, true);
     input.focus();
     await loadSearchItems();
-    renderResults(input.value);
+
+    if (modal.open) renderResults(input.value);
   };
 
   const closeSearch = () => {
-    modal.hidden = true;
-    setOpenButtonState(openButtons, false);
-    input.blur();
-    previouslyFocused?.focus();
-    previouslyFocused = null;
+    if (modal.open) modal.close();
   };
 
   const loadSearchItems = async () => {
@@ -117,6 +126,42 @@ export function initSearch() {
     button.addEventListener("click", closeSearch);
   });
 
+  modal.addEventListener("close", () => {
+    setOpenButtonState(openButtons, false);
+
+    const target = previouslyFocused;
+    previouslyFocused = null;
+    if (target?.isConnected) target.focus();
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) closeSearch();
+  });
+
+  modal.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeSearch();
+      return;
+    }
+
+    if (event.key !== "Tab") return;
+
+    const focusable = getFocusable();
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
   const initialQuery = new URLSearchParams(window.location.search).get(
     "search",
   );
@@ -132,13 +177,7 @@ export function initSearch() {
       return;
     }
 
-    if (modal.hidden) return;
-
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeSearch();
-      return;
-    }
+    if (!modal.open) return;
 
     if (event.key === "ArrowDown") {
       event.preventDefault();

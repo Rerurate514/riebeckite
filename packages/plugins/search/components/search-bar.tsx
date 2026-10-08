@@ -18,15 +18,13 @@ export default function SearchBar() {
         </button>
       </div>
 
-      <div class="rr-search-modal rr-search" data-search-modal hidden>
-        <div class="rr-search-modal__backdrop" data-search-close />
-        <section
-          id="search-dialog"
-          class="rr-search-modal__panel"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="search-title"
-        >
+      <dialog
+        id="search-dialog"
+        class="rr-search-modal rr-search"
+        data-search-modal
+        aria-labelledby="search-title"
+      >
+        <section class="rr-search-modal__panel">
           <div class="rr-search-modal__header">
             <h2 id="search-title" class="rr-search-modal__title">
               Search notes
@@ -53,12 +51,17 @@ export default function SearchBar() {
             />
           </label>
 
-          <div class="rr-search-modal__status" data-search-status>
+          <div class="rr-search-modal__status" data-search-status role="status">
             Filter with tag:, lang:, or path:.
           </div>
-          <div class="rr-search-modal__results" data-search-results />
+          <div
+            class="rr-search-modal__results"
+            data-search-results
+            role="listbox"
+            aria-label="Search results"
+          />
         </section>
-      </div>
+      </dialog>
     </>
   );
 }

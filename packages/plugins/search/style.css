@@ -68,24 +68,30 @@
     border-radius: 0.35rem;
   }
 
-  .rr-search-modal[hidden] {
-    display: none;
-  }
-
   .rr-search-modal {
     position: fixed;
     inset: 0;
-    z-index: 60;
     display: grid;
     place-items: start center;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
     padding: 12vh 1rem 1rem;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    overflow: hidden;
     overscroll-behavior: contain;
   }
 
-  .rr-search-modal__backdrop {
-    position: fixed;
-    inset: 0;
-    background: var(--rr-search-overlay);
+  .rr-search-modal:not([open]) {
+    display: none;
+  }
+
+  .rr-search-modal::backdrop {
+    background: var(--rr-search-overlay, var(--rb-color-overlay));
   }
 
   .rr-search-modal__panel {

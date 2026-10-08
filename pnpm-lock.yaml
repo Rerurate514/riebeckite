@@ -1193,6 +1193,12 @@ importers:
         specifier: 'catalog:'
         version: 4.13.12
     devDependencies:
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
+      puppeteer:
+        specifier: ^25.11.0
+        version: 25.11.0
       tsx:
         specifier: ^4.22.4
         version: 4.22.4

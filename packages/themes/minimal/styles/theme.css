@@ -508,7 +508,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"]
   .rr-search
-  [role="dialog"] {
+  .rr-search-modal__panel {
   border-radius: 0;
   box-shadow: none;
 }

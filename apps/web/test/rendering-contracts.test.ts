@@ -49,19 +49,22 @@ test("A3: the theme resets the code root rhythm inside CodeTabs only", () => {
   assert.match(themeCss, /\.rr-code-tabs\s*\{[^}]*border-radius:\s*0/);
 });
 
-test("A5: the nav dropdown sits above the search trigger and below the search modal", () => {
+test("A5: the nav dropdown sits above the search trigger and below the modal top layer", () => {
   const navDropdown = zIndexAt(shellCss, /\.rb-nav__children\s*\{[^}]*\}/);
   const searchTrigger = zIndexAt(searchCss, /\.rr-search-bar\s*\{[^}]*\}/);
-  const searchModal = zIndexAt(searchCss, /\.rr-search-modal\s*\{[^}]*\}/);
+  const component = read(
+    "../../../packages/plugins/search/components/search-bar.tsx",
+  );
+  const client = read(
+    "../../../packages/plugins/search/src/search-bar.client.ts",
+  );
 
   assert.ok(
     searchTrigger < navDropdown,
     `search trigger (${searchTrigger}) must sit below the nav dropdown (${navDropdown})`,
   );
-  assert.ok(
-    navDropdown < searchModal,
-    `nav dropdown (${navDropdown}) must sit below the search modal (${searchModal})`,
-  );
+  assert.match(component, /<dialog/);
+  assert.match(client, /\.showModal\(\)/);
 });
 
 test("A7: rendered plugins treat explicit dark and system dark identically", () => {
@@ -186,7 +189,7 @@ test("A5: the search modal is a sibling of the fixed search trigger", () => {
   assert.match(component, /class="rr-search-bar rr-search" data-search-root/);
   assert.match(
     component,
-    /<\/div>\s*<div class="rr-search-modal rr-search" data-search-modal hidden>/,
+    /<\/div>\s*<dialog[\s\S]*?class="rr-search-modal rr-search"[\s\S]*?data-search-modal/,
   );
 });
 

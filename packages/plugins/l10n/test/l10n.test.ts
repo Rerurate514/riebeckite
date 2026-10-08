@@ -7,6 +7,7 @@ import {
   ContentManager,
   type ContentSource,
   definePlugin,
+  FileSystemContentSource,
   type RiebeckitePlugin,
   resolveConfig,
 } from "@riebeckite/core";
@@ -564,5 +565,45 @@ test("a malformed frontmatter error identifies the failing content path", async 
       assert.match(cause.message, /Missing closing "quote/);
       return true;
     },
+  );
+});
+
+test("excludes configured Templater templates before localized content is parsed", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-l10n-"));
+  await fs.mkdir(
+    path.join(root, ".obsidian", "plugins", "templater-obsidian"),
+    { recursive: true },
+  );
+  await fs.writeFile(
+    path.join(root, ".obsidian", "plugins", "templater-obsidian", "data.json"),
+    JSON.stringify({ templates_folder: "Templates" }),
+  );
+  await fs.mkdir(path.join(root, "Templates"), { recursive: true });
+  await fs.writeFile(
+    path.join(root, "Templates", "log.md"),
+    "---\ntags: <%* tp.file.tags %>\n---\n",
+  );
+  await fs.mkdir(path.join(root, "notes"), { recursive: true });
+  await fs.writeFile(
+    path.join(root, "notes", "article.en.md"),
+    "---\npublish: true\n---\n\n`<% tp.file.title %>`\n",
+  );
+
+  const content = new ContentManager(new FileSystemContentSource(root), [], {
+    config: resolveConfig({
+      site: { title: "Test" },
+      content: { filters: { publishStrategy: "selective" } },
+    }),
+    plugins: [l10n({ defaultLang: "ja", languages: ["ja", "en"] })],
+  });
+  const manifest = await content.getManifest();
+
+  assert.deepEqual(
+    manifest.entries.map((entry) => entry.slug),
+    ["notes/article.en"],
+  );
+  assert.equal(
+    (await content.getContentLocations()).get("notes/article.en")?.language,
+    "en",
   );
 });

@@ -93,7 +93,7 @@ test("doctor content reports why entries were excluded", async () => {
   assert.equal(result.status, "ok");
   assert.match(result.message ?? "", /1 content entries scanned/);
   assert.deepEqual(result.details, [
-    "Excluded by content.exclude: 1",
+    "Excluded from content: 1",
     "drafts/hidden.md (drafts/**)",
   ]);
 });

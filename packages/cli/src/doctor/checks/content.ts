@@ -128,7 +128,7 @@ function summarizeExclusions(
     left.path.localeCompare(right.path),
   );
   return [
-    `Excluded by content.exclude: ${sorted.length}`,
+    `Excluded from content: ${sorted.length}`,
     ...sorted
       .slice(0, diagnosticSampleLimit)
       .map((entry) => `${entry.path} (${entry.pattern})`),

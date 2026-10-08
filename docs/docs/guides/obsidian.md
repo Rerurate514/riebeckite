@@ -71,6 +71,18 @@ build
 does not reorganize the vault or rewrite its Markdown on your behalf. You keep
 editing notes in Obsidian exactly as before.
 
+## Templater templates
+
+When the vault has the Obsidian Templater plugin configured, Riebeckite reads
+`.obsidian/plugins/templater-obsidian/data.json` and excludes the configured
+`templates_folder` before scanning Markdown or parsing frontmatter. Templates
+therefore do not enter the content manifest, SSG, or the development server.
+
+Riebeckite does not execute Templater code. A Templater expression in an
+ordinary note remains ordinary Markdown and does not exclude that note. If the
+Templater setting or its template folder is unavailable, no automatic exclusion
+is applied; use `content.exclude` when you want to exclude a folder explicitly.
+
 ## Choosing which notes to publish
 
 The default publish rule makes a note public only when its frontmatter

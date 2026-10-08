@@ -56,6 +56,18 @@ build
 
 ノートの編集はこれまでどおり Obsidian で行います。
 
+## Templater のテンプレート
+
+Vault で Obsidian Templater プラグインを設定している場合、Riebeckite は
+`.obsidian/plugins/templater-obsidian/data.json` を読み、設定された
+`templates_folder` を Markdown の走査や Frontmatter の解析より前に除外します。
+そのため、テンプレートは Content manifest、SSG、開発サーバーに入りません。
+
+Riebeckite は Templater のコードを実行しません。通常のノートに Templater の式が
+含まれていても、そのノートを除外することはありません。Templater の設定または
+テンプレートフォルダを取得できない場合は自動除外しません。フォルダを明示的に
+除外したい場合は `content.exclude` を使います。
+
 ## 公開するノートを選ぶ
 
 既定の公開ルールでは、Frontmatter に、

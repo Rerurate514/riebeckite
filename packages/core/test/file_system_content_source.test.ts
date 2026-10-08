@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { ContentManager } from "../src/content/content_manager.js";
 import {
   FileSystemContentSource,
   isIgnoredContentPath,
@@ -113,6 +114,66 @@ test("file-system content source reports which entries user excludes removed", a
       { path: "drafts/hidden.md", pattern: "drafts/**" },
       { path: "private/secret.md", pattern: "private/**" },
     ],
+  );
+});
+
+test("file-system content source excludes the configured Obsidian Templater folder", async () => {
+  const root = await makeTempContentDirectory();
+  await writeFile(
+    root,
+    ".obsidian/plugins/templater-obsidian/data.json",
+    JSON.stringify({ templates_folder: "Config/Templates" }),
+  );
+  await writeFile(
+    root,
+    "Config/Templates/LogTemplate.md",
+    "---\ntags: <%* tp.file.tags %>\n---\n",
+  );
+  await writeFile(
+    root,
+    "notes/example.md",
+    "---\npublish: true\n---\n\n`<% tp.file.title %>`\n",
+  );
+
+  const source = new FileSystemContentSource(root);
+  const scan = await source.scanWithExclusions();
+
+  assert.deepEqual(
+    scan.entries.map((entry) => entry.path),
+    ["notes/example.md"],
+  );
+  assert.deepEqual(scan.exclusions, [
+    {
+      path: "Config/Templates",
+      pattern: "Obsidian Templater templates_folder: Config/Templates",
+    },
+  ]);
+
+  const cold = await new ContentManager(root).build();
+  const warm = await new ContentManager(root).build();
+  assert.deepEqual(
+    cold.entries.map((entry) => entry.slug),
+    ["notes/example"],
+  );
+  assert.deepEqual(
+    warm.entries.map((entry) => entry.slug),
+    cold.entries.map((entry) => entry.slug),
+  );
+});
+
+test("file-system content source does not infer a Templater folder without its setting", async () => {
+  const root = await makeTempContentDirectory();
+  await writeFile(
+    root,
+    "Config/Templates/LogTemplate.md",
+    "---\ntags: <%* tp.file.tags %>\n---\n",
+  );
+
+  const source = new FileSystemContentSource(root);
+
+  assert.deepEqual(
+    (await source.scan()).map((entry) => entry.path),
+    ["Config/Templates/LogTemplate.md"],
   );
 });
 

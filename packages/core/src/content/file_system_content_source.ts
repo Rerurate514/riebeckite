@@ -45,10 +45,13 @@ export class FileSystemContentSource implements ContentSource {
   async scanWithExclusions(): Promise<ContentSourceScan> {
     const exclusions: ContentSourceExclusion[] = [];
     try {
+      const templaterTemplateFolder =
+        await this.resolveTemplaterTemplateFolder();
       const entries = await this.scanDirectory(
         this.contentDirectory,
         "",
         exclusions,
+        templaterTemplateFolder,
       );
       return { entries, exclusions };
     } catch (error) {
@@ -72,6 +75,7 @@ export class FileSystemContentSource implements ContentSource {
     directory: string,
     parentPath: string,
     exclusions: ContentSourceExclusion[],
+    templaterTemplateFolder: string | undefined,
   ): Promise<ContentSourceEntry[]> {
     const directoryEntries = await fs.readdir(directory, {
       withFileTypes: true,
@@ -96,9 +100,25 @@ export class FileSystemContentSource implements ContentSource {
         continue;
       }
 
+      if (
+        templaterTemplateFolder &&
+        isTemplaterTemplatePath(logicalPath, templaterTemplateFolder)
+      ) {
+        exclusions.push({
+          path: logicalPath,
+          pattern: `Obsidian Templater templates_folder: ${templaterTemplateFolder}`,
+        });
+        continue;
+      }
+
       if (directoryEntry.isDirectory()) {
         entries.push(
-          ...(await this.scanDirectory(filePath, logicalPath, exclusions)),
+          ...(await this.scanDirectory(
+            filePath,
+            logicalPath,
+            exclusions,
+            templaterTemplateFolder,
+          )),
         );
         continue;
       }
@@ -126,6 +146,30 @@ export class FileSystemContentSource implements ContentSource {
     }
     return filePath;
   }
+
+  private async resolveTemplaterTemplateFolder(): Promise<string | undefined> {
+    const settingsPath = path.join(
+      this.contentDirectory,
+      ".obsidian",
+      "plugins",
+      "templater-obsidian",
+      "data.json",
+    );
+    let raw: string;
+    try {
+      raw = await fs.readFile(settingsPath, "utf8");
+    } catch (error) {
+      if (isFileNotFoundError(error)) return undefined;
+      throw error;
+    }
+
+    try {
+      const settings = JSON.parse(raw) as { templates_folder?: unknown };
+      return normalizeTemplaterTemplateFolder(settings.templates_folder);
+    } catch {
+      return undefined;
+    }
+  }
 }
 
 export function isIgnoredContentPath(
@@ -145,6 +189,31 @@ export function matchContentExcludePattern(
   if (!logicalPath.endsWith(".md")) return undefined;
   const withoutExtension = logicalPath.slice(0, -3);
   return exclude.find((pattern) => isExcluded([pattern], withoutExtension));
+}
+
+function isTemplaterTemplatePath(
+  logicalPath: string,
+  templateFolder: string,
+): boolean {
+  return (
+    logicalPath === templateFolder ||
+    logicalPath.startsWith(`${templateFolder}/`)
+  );
+}
+
+function normalizeTemplaterTemplateFolder(value: unknown): string | undefined {
+  if (typeof value !== "string" || value.trim().length === 0) return undefined;
+  const normalized = normalizeContentPath(value.trim()).replace(/\/+$/, "");
+  if (
+    normalized.length === 0 ||
+    normalized.startsWith("/") ||
+    path.isAbsolute(normalized) ||
+    path.win32.isAbsolute(normalized) ||
+    normalized.split("/").some((segment) => segment === "..")
+  ) {
+    return undefined;
+  }
+  return normalized;
 }
 
 function normalizeLogicalPath(logicalPath: string): string {
@@ -172,6 +241,10 @@ function isMissingDirectoryError(
     "path" in error &&
     error.path === directory
   );
+}
+
+function isFileNotFoundError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && "code" in error && error.code === "ENOENT";
 }
 
 function missingContentDirectoryError(directory: string): Error {

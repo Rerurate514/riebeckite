@@ -1,5 +1,5 @@
-import { test } from "node:test";
 import assert from "node:assert/strict";
+import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
 import { hardBreaks, hardBreaksPlugin } from "../index.ts";
@@ -31,14 +31,18 @@ test("every soft break in a multi-line paragraph is converted", async () => {
 
 test("a blank line still splits paragraphs", async () => {
   assert.equal(
-    await renderWithPlugin("first para\nstill first\n\nsecond para\nstill second"),
+    await renderWithPlugin(
+      "first para\nstill first\n\nsecond para\nstill second",
+    ),
     "<p>first para<br>still first</p>\n<p>second para<br>still second</p>",
   );
 });
 
 test("fenced code blocks are unchanged", async () => {
   assert.equal(
-    await renderWithPlugin("text before\n\n```js\nconst a = 1;\nconst b = 2;\n```\n\ntext after"),
+    await renderWithPlugin(
+      "text before\n\n```js\nconst a = 1;\nconst b = 2;\n```\n\ntext after",
+    ),
     '<p>text before</p>\n<pre><code class="language-js">const a = 1;\nconst b = 2;\n</code></pre>\n<p>text after</p>',
   );
 });

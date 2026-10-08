@@ -31,7 +31,8 @@ export default defineConfig({
 
 It does not place UI. The Site extracts headings and renders the component,
 normally in an article aside. The official Starter uses this placement; its
-desktop ToC scrolls with the document and is not sticky.
+desktop ToC is sticky on wide screens. The Site owns its placement and sticky
+offset; the Theme only supplies visual tokens.
 
 ### Render the component
 
@@ -54,9 +55,11 @@ return (
 
 The client entry finds elements by the `data-toc-target` attribute emitted on
 each link, so it works when multiple ToCs (desktop/mobile) are rendered.
-The supplied desktop class scrolls with the document rather than sticking to
-the viewport. Long labels wrap inside the ToC instead of creating horizontal
-scrolling.
+The plugin supplies the component and visual styles, but does not choose a
+sticky offset. Starter and Showcase apply one constant desktop offset in their
+Site CSS, so the ToC remains at the same viewport position after it becomes
+sticky even as the normal-flow header scrolls away. Long ToCs use a bounded
+vertical scroll area; labels wrap instead of creating horizontal scrolling.
 
 ## API
 

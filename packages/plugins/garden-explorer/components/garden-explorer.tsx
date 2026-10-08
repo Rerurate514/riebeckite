@@ -547,7 +547,9 @@ export default function GardenExplorer(props: Props) {
             onSelect={selectNote}
           />
         ) : (
-          <p class="rr-garden-explorer__empty">Select a note to inspect links.</p>
+          <p class="rr-garden-explorer__empty">
+            Select a note to inspect links.
+          </p>
         )}
       </aside>
     </div>

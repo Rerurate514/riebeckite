@@ -14,10 +14,7 @@ export default function DailyNotes(props: Props) {
   if (notes.length === 0) return null;
 
   return (
-    <section
-      class="rr-daily-notes"
-      aria-labelledby="daily-notes-title"
-    >
+    <section class="rr-daily-notes" aria-labelledby="daily-notes-title">
       <div class="rr-daily-notes__header">
         <p class="rr-daily-notes__eyebrow">DAILY NOTES</p>
         <h2 class="rr-daily-notes__title" id="daily-notes-title">

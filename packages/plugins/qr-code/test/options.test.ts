@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { qrCode } from "../index.js";
 import {
   DEFAULT_QR_CODE_OPTIONS,
   qrElementClassName,
   resolveQrCodeOptions,
 } from "../src/options.js";
-import { qrCode } from "../index.js";
 
 test("resolves documented defaults", () => {
   assert.deepEqual(resolveQrCodeOptions(), {

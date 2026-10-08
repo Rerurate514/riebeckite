@@ -22,7 +22,7 @@ export default defineConfig({ plugins: [recentPostsPlugin()] });
 `recentPostsPlugin()` は UI を自動描画しません。生成された `starter` と `showcase` は推奨するホームページ配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
 
 ```tsx
-import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
+import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
 import { content } from "virtual:riebeckite/content";
 
 const posts = getRecentPosts({ manifest: await content.getManifest() });

@@ -198,7 +198,7 @@ test("every generated Plugin page has exactly one top-level heading", () => {
 test("builds one generated page for each README language", () => {
   const { pages, errors } = buildDesiredPages();
   assert.deepEqual(errors, []);
-  assert.equal(pages.length, 138);
+  assert.equal(pages.length, 140);
   assert.ok(pages.some((page) => page.pageName === "diff.md"));
   const japanese = pages.find((page) => page.pageName === "diff.ja.md");
   assert.ok(japanese);

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/pdf/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # PDF
 
 Obsidian 形式の PDF 添付ファイルをインライン表示するプラグインです。

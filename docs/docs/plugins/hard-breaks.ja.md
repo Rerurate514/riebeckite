@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/hard-breaks/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Hard Breaks
 
 Markdown の通常の改行を `<br>` 要素として出力するプラグインです。Obsidian の

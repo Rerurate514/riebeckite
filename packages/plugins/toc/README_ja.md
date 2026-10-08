@@ -1,5 +1,7 @@
 # @riebeckite/plugin-toc
 
+<!-- Generated from docs/docs/plugins/toc.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 記事の見出しから目次を作り、現在読んでいる節を強調表示するプラグインです。長い記事のサイドバーやモバイル用の折りたたみ目次に使えます。
 
 [English](./README.md)
@@ -56,4 +58,4 @@ return (
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

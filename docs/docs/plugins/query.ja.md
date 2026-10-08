@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/query/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Query
 
 `query` コードブロックを、コンテンツの一覧（表またはリスト）に変換するプラグインです。絞り込み・並べ替え・件数制限を frontmatter とタグに対して行い、ビルド時に HTML を生成します。クライアント側の JavaScript は不要です。

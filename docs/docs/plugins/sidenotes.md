@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/sidenotes/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Sidenotes
 
 Tufte-style side notes for Riebeckite. Authors keep writing ordinary GFM

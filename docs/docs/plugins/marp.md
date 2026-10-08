@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/marp/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Marp
 
 Render Marp slide decks at build time. A note whose YAML frontmatter contains `marp: true` is rendered as a whole-document deck, and `marp` fenced code blocks render as inline decks.

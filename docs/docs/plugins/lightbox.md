@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/lightbox/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Lightbox
 
 Click-to-zoom lightbox for images.

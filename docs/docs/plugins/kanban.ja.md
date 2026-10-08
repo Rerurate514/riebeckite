@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/kanban/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Kanban
 
 Obsidian の Kanban ボードを、ビルド時に静的 HTML へ変換するプラグインです。クライアント側の JavaScript は不要です。

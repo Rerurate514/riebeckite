@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/code-enhance/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Code Enhance
 
 Shiki によるシンタックスハイライトへ、コピー、折り返し、折りたたみなどの操作を加えるプラグインです。

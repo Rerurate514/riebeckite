@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/excalidraw/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Excalidraw
 
 Excalidraw drawing rendering for Obsidian wikilinks.

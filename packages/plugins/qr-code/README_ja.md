@@ -1,5 +1,7 @@
 # @riebeckite/plugin-qr-code
 
+<!-- Generated from docs/docs/plugins/qr-code.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ` ```qr ` コードブロックを、ビルド時にインライン SVG の QR コードへ変換するプラグインです。
 
 [English](./README.md)
@@ -85,4 +87,4 @@ QR エンコーダ（`qrcode`）はビルド時に動的インポートするた
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

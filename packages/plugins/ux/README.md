@@ -1,5 +1,7 @@
 # @riebeckite/plugin-ux
 
+<!-- Generated from docs/docs/plugins/ux.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Client-side progressive enhancements for reading. The plugin leaves the built
 article HTML untouched and adds a reading progress bar, a back-to-top button,
 table-of-contents scroll-spy, and code copy buttons at runtime.
@@ -116,4 +118,4 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

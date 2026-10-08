@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/text-fragment/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Text Fragment
 
 記事内で選択したテキストから、Text Fragment のディープリンク（`#:~:text=`）と Markdown の引用を作るプラグインです。

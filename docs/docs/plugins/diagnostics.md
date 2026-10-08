@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/diagnostics/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Diagnostics
 
 Content diagnostics for Obsidian vaults / Riebeckite content: site-wide

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/highlight/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Highlight
 
 `==ハイライト==` を `<mark>` 要素として表示するプラグインです。Markdown の

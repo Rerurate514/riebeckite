@@ -1,5 +1,7 @@
 # @riebeckite/plugin-flashcards
 
+<!-- Generated from docs/docs/plugins/flashcards.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Turn a `flashcards` code block into a study island: a small deck of cards that
 shows a question, reveals the answer, and can be navigated and shuffled in the
 browser. The build emits an accessible static list first, so the deck stays
@@ -117,5 +119,4 @@ untouched. No options are passed from the build to the client; the deck reads
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

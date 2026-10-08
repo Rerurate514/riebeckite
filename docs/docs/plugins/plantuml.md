@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/plantuml/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # PlantUML
 
 PlantUML diagram rendering for ` ```plantuml ` code blocks. Diagrams are turned into

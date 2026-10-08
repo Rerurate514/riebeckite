@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/markmap/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Markmap
 
 ` ```markmap ` コードブロックを、Markdown の見出しから組み立てるマインドマップとして表示するプラグインです。マインドマップはブラウザ側で `markmap-lib` と `markmap-view` により描画し、これらのライブラリは図があるときだけ CDN から読み込みます。

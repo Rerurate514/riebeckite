@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/share/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Share
 
 Per-article share controls built at build time. For every published entry the

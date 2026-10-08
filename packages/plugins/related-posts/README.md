@@ -1,5 +1,7 @@
 # @riebeckite/plugin-related-posts
 
+<!-- Generated from docs/docs/plugins/related-posts.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Build-time "related notes" navigation. For every published entry, the plugin
 ranks the other entries in the content manifest and contributes a related-posts
 section to the `article.footer` Slot. No client-side JavaScript is required.
@@ -120,4 +122,4 @@ import "@riebeckite/plugin-related-posts/style.css";
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

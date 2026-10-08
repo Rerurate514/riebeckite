@@ -1,5 +1,7 @@
 # @riebeckite/plugin-docs
 
+<!-- Generated from docs/docs/plugins/docs.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite の Markdown コンテンツから、Docs 用のサイドバーと前後ページリンクを
 ビルド時に生成するプラグインです。Docs 専用の router は追加せず、公開 URL も
 ファイルシステムのパスから再計算しません。

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-garden-explorer
 
+<!-- Generated from docs/docs/plugins/garden-explorer.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ノート一覧、検索、タグ・フォルダーによる絞り込み、Local / Global Graph、詳細パネルを一画面にまとめる探索 UI です。公開済みのノートだけを対象にするため、そのまま公開サイトの `/explore` などに置けます。
 
 [English](./README.md)
@@ -102,6 +104,5 @@ return <GardenExplorer data={data} />;
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README_ja.md)
-

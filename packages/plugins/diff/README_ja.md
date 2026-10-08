@@ -1,5 +1,7 @@
 # @riebeckite/plugin-diff
 
+<!-- Generated from docs/docs/plugins/diff.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ローカル Git リポジトリから、Markdown ノートの履歴と行単位の差分を取得するプラグインです。
 
 [English](./README.md)
@@ -53,4 +55,4 @@ const current = await api.getCurrentDiff("notes/hello.md");
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

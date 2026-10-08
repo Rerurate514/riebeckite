@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/changelog/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Changelog
 
 ローカル Git の履歴からビルド時に変更履歴を生成するプラグインです。公開ノートごとにコミット日・件名・作成者を並べた「変更履歴」セクションを追加し、サイト全体の変更履歴データセットも組み立てられます。クライアント JavaScript は不要です。

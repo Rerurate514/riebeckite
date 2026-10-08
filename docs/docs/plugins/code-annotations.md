@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/code-annotations/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Code Annotations
 
 VitePress/Docusaurus-style code block annotations: line highlighting, focus,

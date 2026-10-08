@@ -1,12 +1,14 @@
 # @riebeckite/plugin-color-mode
 
+<!-- Generated from docs/docs/plugins/color-mode.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite サイト向けのライト / ダーク / システム連動のカラーモード切替プラグインです。実行時に `<html>` の `data-theme` 属性へ書き込みます。これはテーマが配色を選ぶのに使う属性そのものなので、組み込みの全テーマで動作し、テーマ側に JavaScript は一切必要ありません。
 
 [English](./README.md)
 
 ## 概要
 
-[theme-system.md](../../../docs/docs/reference/theme-api.ja.md) テーマの配色は、次の 3 つの CSS 状態で決まります。
+[theme-system.md](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md) テーマの配色は、次の 3 つの CSS 状態で決まります。
 
 - `:root` — ライト
 - `:root[data-theme="dark"]` — ダーク
@@ -133,5 +135,5 @@ document.addEventListener("riebeckite:color-mode", (event) => {
 
 ## 関連
 
-- [テーマシステム](../../../docs/docs/reference/theme-api.ja.md)
+- [テーマシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md)
 - [`@riebeckite/plugin-ux`](../ux/README_ja.md)

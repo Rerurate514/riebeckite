@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/map/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Map
 
 Turns a ` ```map ` fenced code block and/or frontmatter coordinates into an

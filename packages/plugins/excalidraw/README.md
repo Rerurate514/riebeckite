@@ -1,5 +1,7 @@
 # @riebeckite/plugin-excalidraw
 
+<!-- Generated from docs/docs/plugins/excalidraw.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Excalidraw drawing rendering for Obsidian wikilinks.
 
 [日本語](./README_ja.md)
@@ -85,6 +87,6 @@ fenced code block is extracted and supports both `json` and lz-string
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README.md)

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/gallery/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Gallery
 
 Markdown-driven card galleries. A fenced `gallery` code block with a small YAML

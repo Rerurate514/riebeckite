@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/pdf/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # PDF
 
 Inline PDF attachment viewing for Obsidian wikilinks.

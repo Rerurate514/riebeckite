@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/rename/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Rename
 
 ノートのリネームや移動で発生するリンク切れを減らすプラグインです。検出したリネームを、Riebeckite が既に持つリダイレクト機構（`manifest.redirects`）に恒久的なリダイレクトとして登録します。

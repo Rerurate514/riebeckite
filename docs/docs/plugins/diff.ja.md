@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/diff/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Diff
 
 ローカル Git リポジトリから、Markdown ノートの履歴と行単位の差分を取得するプラグインです。

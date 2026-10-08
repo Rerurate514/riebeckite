@@ -1,5 +1,7 @@
 # @riebeckite/plugin-webmention
 
+<!-- Generated from docs/docs/plugins/webmention.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Receive Webmentions, verify that the source document really links to the
 target, store them through a pluggable provider, and render verified mentions
 near articles. The core plugin contains **no Cloudflare, Worker, database, or
@@ -40,7 +42,7 @@ export default {
 
 Without a provider the plugin uses an in-memory provider, which is fine for
 local previews but loses mentions between processes. Supply a durable adapter
-(see [`@riebeckite/webmention-cloudflare`](../../integrations/webmention-cloudflare/README.md))
+(see [`@riebeckite/webmention-cloudflare`](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README.md))
 for production.
 
 ## Endpoints
@@ -115,6 +117,5 @@ manifest time, mentions whose target is not a published entry are reported as
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-- [@riebeckite/webmention-cloudflare](../../integrations/webmention-cloudflare/README.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
+- [@riebeckite/webmention-cloudflare](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README.md)

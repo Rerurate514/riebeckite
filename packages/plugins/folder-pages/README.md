@@ -1,5 +1,7 @@
 # @riebeckite/plugin-folder-pages
 
+<!-- Generated from docs/docs/plugins/folder-pages.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 [日本語](./README_ja.md)
 
 Folder Page support for Riebeckite. The plugin turns folder entry notes into the

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-responsive-image
 
+<!-- Generated from docs/docs/plugins/responsive-image.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Upgrades existing `<img>` elements with lazy loading and responsive
 `<picture>` / `srcset` markup, using only image variants that are already
 present in the content manifest.
@@ -90,5 +92,4 @@ commit them next to the original image. Sites copy referenced vault assets into
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

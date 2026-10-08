@@ -1,5 +1,7 @@
 # @riebeckite/plugin-markmap
 
+<!-- Generated from docs/docs/plugins/markmap.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Renders ` ```markmap ` code blocks as Markdown-heading mindmaps. The mindmap is
 drawn in the browser by `markmap-lib` + `markmap-view`, which are imported from
 the CDN only when a figure is present.
@@ -137,5 +139,4 @@ point for that purpose.
 
 ## See also
 
-- [Plugin system](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

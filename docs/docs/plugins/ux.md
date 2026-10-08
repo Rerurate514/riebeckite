@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/ux/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # UX
 
 Client-side progressive enhancements for reading. The plugin leaves the built

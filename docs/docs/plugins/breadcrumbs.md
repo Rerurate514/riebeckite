@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/breadcrumbs/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Breadcrumbs
 
 Build-time breadcrumb navigation derived from the note's slug hierarchy. For

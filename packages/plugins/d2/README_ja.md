@@ -1,5 +1,7 @@
 # @riebeckite/plugin-d2
 
+<!-- Generated from docs/docs/plugins/d2.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ` ```d2 ` コードブロックを SVG の図として表示するプラグインです。既定ではビルド時に描画し、描画できなかった図だけをブラウザ側で再試行します。
 
 [English](./README.md)
@@ -101,4 +103,4 @@ client -> server: request
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

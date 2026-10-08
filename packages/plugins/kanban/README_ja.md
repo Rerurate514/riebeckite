@@ -1,5 +1,7 @@
 # @riebeckite/plugin-kanban
 
+<!-- Generated from docs/docs/plugins/kanban.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Obsidian の Kanban ボードを、ビルド時に静的 HTML へ変換するプラグインです。クライアント側の JavaScript は不要です。
 
 [English](./README.md)
@@ -103,5 +105,4 @@ kanban-plugin: board
 
 ## 関連資料
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

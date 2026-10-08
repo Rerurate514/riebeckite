@@ -1,5 +1,7 @@
 # @riebeckite/plugin-analytics
 
+<!-- Generated from docs/docs/plugins/analytics.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Storage-independent analytics primitives and browser page-view tracking for
 Riebeckite. It contains no Cloudflare, Worker, database, or vendor code.
 
@@ -98,5 +100,4 @@ diagnostics.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

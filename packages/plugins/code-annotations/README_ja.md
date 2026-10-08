@@ -1,5 +1,7 @@
 # @riebeckite/plugin-code-annotations
 
+<!-- Generated from docs/docs/plugins/code-annotations.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 VitePress / Docusaurus 風のコードブロック装飾を加えるプラグインです。フェンスの
 メタ情報による行の強調と、`[!code ...]` のインラインマーカーによるフォーカス・
 差分表示に対応します。素の `<pre><code>` と
@@ -132,6 +134,5 @@ codeAnnotations({ highlightClassName: "is-highlighted" });
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-code-enhance`](../code-enhance/README_ja.md)
-

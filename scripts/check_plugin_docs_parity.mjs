@@ -7,7 +7,7 @@ const repositoryRoot = path.resolve(scriptDirectory, "..");
 const pluginsRoot = path.join(repositoryRoot, "packages", "plugins");
 const docsPluginsRoot = path.join(repositoryRoot, "docs", "docs", "plugins");
 
-const GENERATED_MARKER_PREFIX = "<!-- Generated from packages/plugins/";
+const LEGACY_MARKER_PREFIX = "<!-- Generated from packages/plugins/";
 
 const OPTION_TABLE_HEADER =
   /(option|field|config|setting|設定|項目|オプション|フィールド|設定項目|パラメータ|プロパティ|引数)/i;
@@ -114,6 +114,28 @@ function missingFrom(text, identifiers) {
   return [...identifiers].filter((identifier) => !text.includes(identifier));
 }
 
+function countTopLevelHeadings(text) {
+  let openFence = null;
+  let count = 0;
+  for (const line of text.split(/\r?\n/)) {
+    const fence = /^\s*(`{3,}|~{3,})/.exec(line);
+    if (fence) {
+      const character = fence[1][0];
+      const length = fence[1].length;
+      if (openFence === null) openFence = { character, length };
+      else if (
+        openFence.character === character &&
+        length >= openFence.length
+      ) {
+        openFence = null;
+      }
+      continue;
+    }
+    if (openFence === null && /^#\s+\S/.test(line)) count += 1;
+  }
+  return count;
+}
+
 export function checkReadmePair(slug, readmeDirectory) {
   const issues = [];
   const englishPath = path.join(readmeDirectory, "README.md");
@@ -179,17 +201,29 @@ export function checkWebsitePages(slug, root = docsPluginsRoot) {
   const japanesePath = path.join(root, `${slug}.ja.md`);
   if (!fs.existsSync(englishPath)) {
     issues.push(`docs/docs/plugins/${slug}.md is missing`);
-  } else if (
-    !fs.readFileSync(englishPath, "utf8").startsWith(GENERATED_MARKER_PREFIX)
-  ) {
-    issues.push(`docs/docs/plugins/${slug}.md is not a generated page`);
+  } else {
+    const english = fs.readFileSync(englishPath, "utf8");
+    if (english.startsWith(LEGACY_MARKER_PREFIX)) {
+      issues.push(
+        `docs/docs/plugins/${slug}.md has an obsolete generated marker`,
+      );
+    }
+    if (countTopLevelHeadings(english) !== 1) {
+      issues.push(`docs/docs/plugins/${slug}.md must have exactly one H1`);
+    }
   }
   if (!fs.existsSync(japanesePath)) {
     issues.push(`docs/docs/plugins/${slug}.ja.md is missing`);
-  } else if (
-    !fs.readFileSync(japanesePath, "utf8").startsWith(GENERATED_MARKER_PREFIX)
-  ) {
-    issues.push(`docs/docs/plugins/${slug}.ja.md is not a generated page`);
+  } else {
+    const japanese = fs.readFileSync(japanesePath, "utf8");
+    if (japanese.startsWith(LEGACY_MARKER_PREFIX)) {
+      issues.push(
+        `docs/docs/plugins/${slug}.ja.md has an obsolete generated marker`,
+      );
+    }
+    if (countTopLevelHeadings(japanese) !== 1) {
+      issues.push(`docs/docs/plugins/${slug}.ja.md must have exactly one H1`);
+    }
   }
   return issues;
 }
@@ -219,6 +253,36 @@ export function runCheck() {
   for (const slug of slugs) {
     issues.push(...checkReadmePair(slug, path.join(pluginsRoot, slug)));
     issues.push(...checkWebsitePages(slug));
+    const english = path.join(docsPluginsRoot, `${slug}.md`);
+    const japanese = path.join(docsPluginsRoot, `${slug}.ja.md`);
+    if (fs.existsSync(english) && fs.existsSync(japanese)) {
+      const englishText = fs.readFileSync(english, "utf8");
+      const japaneseText = fs.readFileSync(japanese, "utf8");
+      const englishOptions = collectOptionIdentifiers(englishText);
+      const japaneseOptions = collectOptionIdentifiers(japaneseText);
+      for (const identifier of missingFrom(japaneseText, englishOptions)) {
+        issues.push(
+          `${slug}: option \`${identifier}\` is documented in ${slug}.md but missing from ${slug}.ja.md`,
+        );
+      }
+      for (const identifier of missingFrom(englishText, japaneseOptions)) {
+        issues.push(
+          `${slug}: option \`${identifier}\` is documented in ${slug}.ja.md but missing from ${slug}.md`,
+        );
+      }
+      const englishExports = collectExportIdentifiers(englishText);
+      const japaneseExports = collectExportIdentifiers(japaneseText);
+      for (const identifier of missingFrom(japaneseText, englishExports)) {
+        issues.push(
+          `${slug}: export \`${identifier}\` is documented in ${slug}.md but missing from ${slug}.ja.md`,
+        );
+      }
+      for (const identifier of missingFrom(englishText, japaneseExports)) {
+        issues.push(
+          `${slug}: export \`${identifier}\` is documented in ${slug}.ja.md but missing from ${slug}.md`,
+        );
+      }
+    }
   }
   for (const legacy of collectLegacyFiles(path.join(repositoryRoot, "docs"))) {
     issues.push(`${legacy} uses the legacy .en.md convention`);

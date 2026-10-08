@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/properties/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Properties
 
 ノートの frontmatter を、Obsidian 風のプロパティパネルとしてビルド時に描画するプラグインです。クライアント側の JavaScript は不要です。

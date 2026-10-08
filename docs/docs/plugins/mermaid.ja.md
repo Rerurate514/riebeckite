@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/mermaid/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Mermaid
 
 `mermaid` コードブロックを SVG の図として表示するプラグインです。既定ではビルド時に描画し、描画できなかった図だけをブラウザ側で再試行します。

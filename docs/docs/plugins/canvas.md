@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/canvas/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Canvas
 
 Render Obsidian `.canvas` files (JSON Canvas 1.0) as diagrams.

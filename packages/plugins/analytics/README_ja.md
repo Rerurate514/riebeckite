@@ -1,5 +1,7 @@
 # @riebeckite/plugin-analytics
 
+<!-- Generated from docs/docs/plugins/analytics.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite 向けの、ストレージや実行環境に依存しないアクセス解析の基盤です。Cloudflare、Worker、データベース、特定ベンダーの実装は含みません。
 
 [English](./README.md)
@@ -72,4 +74,4 @@ const result = await provider.query({
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

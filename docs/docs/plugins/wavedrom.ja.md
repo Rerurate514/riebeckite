@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/wavedrom/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # WaveDrom
 
 ` ```wavedrom ` コードブロックを [WaveDrom](https://wavedrom.com/) のタイミング図として表示するプラグインです。

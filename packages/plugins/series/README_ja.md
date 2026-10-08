@@ -1,5 +1,7 @@
 # @riebeckite/plugin-series
 
+<!-- Generated from docs/docs/plugins/series.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 連載記事（シリーズ）を順番どおりに並べ、各記事へ共通のナビゲーションを差し込むプラグインです。ビルド時に、同じシリーズ名を持つノートをまとめて、目次・現在位置・前後の記事リンクを生成します。
 
 [English](./README.md)
@@ -144,5 +146,4 @@ const html = renderSeriesIndex(manifest, "何かを作る");
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

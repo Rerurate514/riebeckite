@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/autocardlink/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # AutoCardLink
 
 Render `cardlink` code blocks as link preview cards.

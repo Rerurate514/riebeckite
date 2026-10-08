@@ -1,5 +1,7 @@
 # @riebeckite/plugin-obsidian-markdown
 
+<!-- Generated from docs/docs/plugins/obsidian-markdown.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Obsidian-flavored Markdown support: wikilinks, callouts, inline tags, and
 block references.
 
@@ -86,5 +88,5 @@ built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README.md)

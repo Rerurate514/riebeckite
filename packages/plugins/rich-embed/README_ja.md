@@ -1,5 +1,7 @@
 # @riebeckite/plugin-rich-embed
 
+<!-- Generated from docs/docs/plugins/rich-embed.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ` ```embed ` コードブロックを、ビルド時に外部メディアの埋め込みへ変換するプラグインです。
 
 [English](./README.md)
@@ -129,5 +131,4 @@ Gist の場合は iframe の代わりに
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

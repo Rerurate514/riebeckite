@@ -1,5 +1,7 @@
 # @riebeckite/plugin-gallery
 
+<!-- Generated from docs/docs/plugins/gallery.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Markdown からカードギャラリーを生成するプラグインです。YAML を本文に持つ
 `gallery` フェンスコードブロックが、レスポンシブなカードグリッドとして描画
 されます。テーマギャラリーやプロジェクト紹介、リンク集を HTML を書かずに
@@ -134,5 +136,4 @@ import "@riebeckite/plugin-gallery/style.css";
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

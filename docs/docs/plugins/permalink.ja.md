@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/permalink/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Permalink
 
 Riebeckite の記事に対して、公開 URL（permalink）を決定するプラグインです。

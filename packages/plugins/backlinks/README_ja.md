@@ -1,5 +1,7 @@
 # @riebeckite/plugin-backlinks
 
+<!-- Generated from docs/docs/plugins/backlinks.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 現在の記事を参照している公開済みノートを、記事末尾に表示するためのプラグインです。
 
 [English](./README.md)
@@ -56,6 +58,6 @@ plugins: [backlinksPlugin({ render: false })];
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README_ja.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)

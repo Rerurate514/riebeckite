@@ -1,5 +1,7 @@
 # @riebeckite/plugin-chartjs
 
+<!-- Generated from docs/docs/plugins/chartjs.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ` ```chart ` コードブロックを、レスポンシブな [Chart.js](https://www.chartjs.org/) のグラフとして表示するプラグインです。
 
 [English](./README.md)
@@ -121,5 +123,4 @@ Chart.js はビルド時にはバンドルされません。サイトのクラ�
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

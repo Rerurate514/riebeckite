@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/related-posts/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Related Posts
 
 Build-time "related notes" navigation. For every published entry, the plugin

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-vega-lite
 
+<!-- Generated from docs/docs/plugins/vega-lite.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Renders ` ```vega-lite ` code blocks as Vega-Lite charts. Charts are drawn in the
 browser, and the Vega runtime is imported dynamically only when it is needed.
 
@@ -125,5 +127,4 @@ JavaScript is disabled and the spec stays readable in the fallback `details`.
 
 ## See also
 
-- [Plugin system](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

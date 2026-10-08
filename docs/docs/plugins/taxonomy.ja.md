@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/taxonomy/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Taxonomy
 
 Riebeckite のビルド時タクソノミー（タグ・フォルダ）プラグインです。一覧用データ、

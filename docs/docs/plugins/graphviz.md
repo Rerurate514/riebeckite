@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/graphviz/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Graphviz
 
 Graphviz (DOT) diagram rendering for ` ```dot ` and ` ```graphviz ` code blocks.

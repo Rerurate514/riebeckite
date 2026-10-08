@@ -1,5 +1,7 @@
 # @riebeckite/plugin-webmention
 
+<!-- Generated from docs/docs/plugins/webmention.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Webmention を受信し、送信元ドキュメントが本当にターゲットへリンクしているかを検証し、
 プラガブルな provider 経由で保存して、検証済みのメンションを記事の近くに表示します。
 コアプラグインには **Cloudflare・Worker・データベース・ベンダー固有のコードは一切なく**、
@@ -39,7 +41,7 @@ export default {
 
 provider を省略するとインメモリ provider が使われます。ローカルプレビューには
 十分ですが、プロセスをまたぐとメンションは失われます。本番では永続 adapter
-（[`@riebeckite/webmention-cloudflare`](../../integrations/webmention-cloudflare/README_ja.md) を参照）
+（[`@riebeckite/webmention-cloudflare`](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md) を参照）
 を指定してください。
 
 ## エンドポイント
@@ -112,6 +114,5 @@ manifest 生成時、公開 entry に一致しないターゲットのメンシ�
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-- [@riebeckite/webmention-cloudflare](../../integrations/webmention-cloudflare/README_ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
+- [@riebeckite/webmention-cloudflare](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md)

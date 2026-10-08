@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/citations/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Citations
 
 [日本語版](./citations.ja.md)

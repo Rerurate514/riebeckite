@@ -100,6 +100,8 @@ The commands you use most often during framework development are:
 | `pnpm test` | Run the tests. |
 | `pnpm typecheck` | Check TypeScript types. |
 | `pnpm check:docs` | Check the documentation. |
+| `pnpm docs:sync` | Generate Plugin package READMEs from canonical docs. |
+| `pnpm check:plugin-docs` | Verify Plugin docs and generated READMEs are synchronized. |
 | `pnpm check:scaffold` | Check the generated sites. |
 
 Use targeted commands when possible:
@@ -116,6 +118,27 @@ pnpm check:docs
 ```
 
 This validates Markdown links and the documentation structure. Run it whenever you add, move, or delete documentation.
+
+### When you change Plugin documentation
+
+Plugin documentation ownership is:
+
+```text
+Canonical source:
+  docs/docs/plugins/<slug>.md
+  docs/docs/plugins/<slug>.ja.md
+
+Generated outputs:
+  packages/plugins/<slug>/README.md
+  packages/plugins/<slug>/README_ja.md
+```
+
+Edit canonical docs only. Never manually edit generated Plugin READMEs. After a change, run:
+
+```bash
+pnpm docs:sync
+pnpm check:plugin-docs
+```
 
 ### When you change the scaffold
 

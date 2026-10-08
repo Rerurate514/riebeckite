@@ -1,5 +1,7 @@
 # @riebeckite/plugin-graphviz
 
+<!-- Generated from docs/docs/plugins/graphviz.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 `dot` / `graphviz` コードブロックを Graphviz の SVG 図として表示するプラグインです。既定ではビルド時に描画します。
 
 [English](./README.md)
@@ -93,5 +95,4 @@ digraph {
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

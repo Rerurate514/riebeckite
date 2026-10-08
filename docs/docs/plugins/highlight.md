@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/highlight/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Highlight
 
 Inline `==highlight==` support. Text wrapped in double equals is rendered as a

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/kanban/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Kanban
 
 Render Obsidian Kanban boards as static HTML at build time. No client-side

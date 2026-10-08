@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/diff/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Diff
 
 Git-backed diff and revision history for Markdown notes: read commit history,

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-query
 
+<!-- Generated from docs/docs/plugins/query.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Turn `query` code blocks into lists or tables of content. Filtering, sorting,
 and pagination run against frontmatter and tags at build time, so no client-side
 JavaScript is required.
@@ -119,5 +121,4 @@ emits a `content-query-invalid` error diagnostic. Unknown fields emit a
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-quality
 
+<!-- Generated from docs/docs/plugins/quality.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Static quality and accessibility inspection for generated HTML in Riebeckite.
 
 [日本語](./README_ja.md)
@@ -66,5 +68,4 @@ misattribute findings in unusual markup.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

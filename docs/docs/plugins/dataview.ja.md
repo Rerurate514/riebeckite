@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/dataview/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Dataview
 
 宣言的な `dataview` コードブロックをビルド時にコンテンツマニフェストへ照合し、リスト・表・タスク一覧・カレンダーとして描画するプラグインです。クライアント側の JavaScript は不要です。

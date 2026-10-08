@@ -1,5 +1,7 @@
 # @riebeckite/plugin-highlight
 
+<!-- Generated from docs/docs/plugins/highlight.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Inline `==highlight==` support. Text wrapped in double equals is rendered as a
 `<mark>` element at build time.
 
@@ -88,5 +90,4 @@ the appearance.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

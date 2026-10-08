@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/chartjs/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Chart.js
 
 Render ` ```chart ` code blocks as responsive [Chart.js](https://www.chartjs.org/)

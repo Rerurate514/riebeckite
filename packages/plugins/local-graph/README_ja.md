@@ -1,5 +1,7 @@
 # @riebeckite/plugin-local-graph
 
+<!-- Generated from docs/docs/plugins/local-graph.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 現在のノートと、その前後につながるノートを小さな放射状グラフで表示するプラグインです。
 
 [English](./README.md)
@@ -55,6 +57,6 @@ plugins: [localGraphPlugin({ render: false })];
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-backlinks`](../backlinks/README_ja.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)

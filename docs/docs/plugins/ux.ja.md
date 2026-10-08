@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/ux/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # UX
 
 記事の読みやすさを高めるクライアント側のプログレッシブ・エンハンスメントをまとめたプラグインです。ビルド後の記事 HTML はそのままに、読み進捗バー・トップへ戻るボタン・目次のスクロール連動ハイライト・コードのコピーボタンを追加します。

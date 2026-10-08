@@ -1,5 +1,7 @@
 # @riebeckite/plugin-code-enhance
 
+<!-- Generated from docs/docs/plugins/code-enhance.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Enhanced code blocks: Shiki highlighting plus a header with copy, wrap, and
 collapse controls.
 
@@ -87,5 +89,4 @@ wrap, and collapse buttons.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-share
 
+<!-- Generated from docs/docs/plugins/share.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Per-article share controls built at build time. For every published entry the
 plugin builds share URLs for the configured services and injects the controls
 into the rendered HTML. The links are ordinary anchors and work without
@@ -138,4 +140,4 @@ optional `className` is added to the root without replacing them.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

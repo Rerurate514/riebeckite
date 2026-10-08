@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/taxonomy/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Taxonomy
 
 Build-time tag and folder taxonomy for Riebeckite: listing data, per-term

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-bases
 
+<!-- Generated from docs/docs/plugins/bases.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 フェンスコードブロック `base` に書いた Obsidian Bases 定義を HTML にレンダリングします。フィルタ・ソート・ビューの組み立てはビルド時にコンテンツマニフェストに対して行われるため、クライアントサイド JavaScript は不要です。
 
 [English](./README.md)
@@ -152,5 +154,4 @@ YAML として不正なブロック、未対応のフィルタ式やビュー形
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

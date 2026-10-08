@@ -1,5 +1,7 @@
 # @riebeckite/plugin-canvas
 
+<!-- Generated from docs/docs/plugins/canvas.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Render Obsidian `.canvas` files (JSON Canvas 1.0) as diagrams.
 
 [日本語](./README_ja.md)
@@ -77,4 +79,4 @@ supports wheel zoom and drag pan (pan/zoom-lite).
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

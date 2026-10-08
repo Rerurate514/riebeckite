@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/webmention/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Webmention
 
 Webmention を受信し、送信元ドキュメントが本当にターゲットへリンクしているかを検証し、

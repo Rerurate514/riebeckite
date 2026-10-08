@@ -1,5 +1,7 @@
 # @riebeckite/plugin-kanban
 
+<!-- Generated from docs/docs/plugins/kanban.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Render Obsidian Kanban boards as static HTML at build time. No client-side
 JavaScript is required.
 
@@ -113,5 +115,4 @@ document with a `@riebeckite/plugin-kanban` message.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

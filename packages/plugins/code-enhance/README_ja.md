@@ -1,5 +1,7 @@
 # @riebeckite/plugin-code-enhance
 
+<!-- Generated from docs/docs/plugins/code-enhance.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Shiki によるシンタックスハイライトへ、コピー、折り返し、折りたたみなどの操作を加えるプラグインです。
 
 [English](./README.md)
@@ -58,4 +60,4 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-garden-explorer
 
+<!-- Generated from docs/docs/plugins/garden-explorer.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Interactive note garden explorer: a local/global content graph, search box,
 tag/folder filters, and note details in a single page.
 
@@ -141,6 +143,5 @@ explorer/detail structure and links in semantic lists.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README.md)
-

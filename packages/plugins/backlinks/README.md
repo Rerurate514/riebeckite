@@ -1,5 +1,7 @@
 # @riebeckite/plugin-backlinks
 
+<!-- Generated from docs/docs/plugins/backlinks.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Backlink list rendering for articles: shows which published notes link to the
 current note.
 
@@ -88,6 +90,6 @@ an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-local-graph`](../local-graph/README.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README.md)

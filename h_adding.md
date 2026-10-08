@@ -5,7 +5,7 @@
 ## 前提・編集ルール
 
 - 画像置き場は `docs/assets/`（現状はロゴ4点と `HW.md` のみ）。
-- プラグインページ `docs/docs/plugins/*.md` は `packages/plugins/<name>/README.md` から生成される。画像を足す場合は**パッケージ側 README を編集 → `pnpm docs:sync`**。
+- プラグインページ `docs/docs/plugins/*.md` は正本。画像を足す場合は**docs 側を編集 → `pnpm docs:sync`**で package README を生成する。
 - テーマページ `docs/docs/themes/*.md` は手書き。
 - 各ページの `.ja.md` ミラーを同期する。
 - ドキュメントサイトをビルドすれば `showcase` 等で実物を確認できるが、GitHub / ソース表示ではレンダリングされない。そのため静的画像・フィクスチャが必要。

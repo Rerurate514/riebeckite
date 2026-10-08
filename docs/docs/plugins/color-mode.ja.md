@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/color-mode/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # color-mode
 
 Riebeckite サイト向けのライト / ダーク / システム連動のカラーモード切替プラグインです。実行時に `<html>` の `data-theme` 属性へ書き込みます。これはテーマが配色を選ぶのに使う属性そのものなので、組み込みの全テーマで動作し、テーマ側に JavaScript は一切必要ありません。

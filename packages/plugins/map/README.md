@@ -1,5 +1,7 @@
 # @riebeckite/plugin-map
 
+<!-- Generated from docs/docs/plugins/map.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Turns a ` ```map ` fenced code block and/or frontmatter coordinates into an
 embedded map. The page is rendered with a static fallback first (coordinates,
 place name, OpenStreetMap links, and an optional static image), and upgraded to
@@ -173,5 +175,4 @@ to inject a fake Leaflet).
 
 ## See also
 
-- [Plugin system](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

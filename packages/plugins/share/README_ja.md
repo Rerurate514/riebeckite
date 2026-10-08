@@ -1,5 +1,7 @@
 # @riebeckite/plugin-share
 
+<!-- Generated from docs/docs/plugins/share.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 記事ごとの共有ボタンをビルド時に生成するプラグインです。公開対象の各エントリ
 について、設定したサービス向けの共有 URL を組み立て、本文の近くにコントロール
 を挿入します。共有リンクは通常の `<a>` なので JavaScript なしでも動作し、コピー
@@ -138,4 +140,4 @@ import "@riebeckite/plugin-share/style.css";
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

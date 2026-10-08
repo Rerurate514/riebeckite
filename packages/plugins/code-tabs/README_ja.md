@@ -1,5 +1,7 @@
 # @riebeckite/plugin-code-tabs
 
+<!-- Generated from docs/docs/plugins/code-tabs.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 連続するコードブロックを、`tab="..."` の名前ごとにタブへまとめるプラグインです。
 
 [English](./README.md)
@@ -51,6 +53,5 @@ console.log("Hello");
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-code-enhance`](../code-enhance/README_ja.md)
-

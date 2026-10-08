@@ -1,5 +1,7 @@
 # @riebeckite/plugin-pdf
 
+<!-- Generated from docs/docs/plugins/pdf.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Inline PDF attachment viewing for Obsidian wikilinks.
 
 [日本語](./README_ja.md)
@@ -92,7 +94,6 @@ Styles ship in `style.css`.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README.md)
-

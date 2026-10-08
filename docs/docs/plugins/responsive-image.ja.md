@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/responsive-image/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Responsive Image
 
 既存の `<img>` に遅延読み込みと、レスポンシブな `<picture>` / `srcset` を付与するプラグインです。参照するのは、すでにコンテンツマニフェストに存在する画像バリアントだけです。

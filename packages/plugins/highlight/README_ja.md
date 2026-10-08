@@ -1,5 +1,7 @@
 # @riebeckite/plugin-highlight
 
+<!-- Generated from docs/docs/plugins/highlight.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 `==ハイライト==` を `<mark>` 要素として表示するプラグインです。Markdown の
 テキストノードをビルド時に書き換えます。
 
@@ -88,5 +90,4 @@ highlight({ className: "my-highlight", tag: "span" });
 
 ## 関連資料
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

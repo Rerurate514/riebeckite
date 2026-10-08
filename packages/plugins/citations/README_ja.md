@@ -1,5 +1,7 @@
 # @riebeckite/plugin-citations
 
+<!-- Generated from docs/docs/plugins/citations.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 [English](./README.md)
 
 Markdown / Obsidian ノートで BibTeX / BibLaTeX の文献情報を使って引用を表示する、Riebeckite 公式プラグインです。

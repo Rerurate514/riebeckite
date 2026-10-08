@@ -1,5 +1,7 @@
 # @riebeckite/plugin-lightbox
 
+<!-- Generated from docs/docs/plugins/lightbox.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 記事内の画像をクリックすると、拡大表示用のダイアログを開くプラグインです。
 
 [English](./README.md)
@@ -46,5 +48,4 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

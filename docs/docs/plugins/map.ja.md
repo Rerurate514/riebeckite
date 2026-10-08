@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/map/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Map
 
 ` ```map ` コードブロックや frontmatter の座標を、埋め込み地図に変換するプラグインです。まず静的フォールバック（座標・場所名・OpenStreetMap リンク・任意の静的画像）を描画し、地図があるページだけブラウザ側で Leaflet によるインタラクティブ地図に拡張します。

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/permalink/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Permalink
 
 Stable, configurable public URLs (permalinks) for Riebeckite content.

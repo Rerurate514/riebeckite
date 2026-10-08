@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/bases/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Bases
 
 Render Obsidian Bases definitions from fenced `base` code blocks. Filtering,

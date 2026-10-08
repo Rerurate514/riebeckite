@@ -1,5 +1,7 @@
 # @riebeckite/plugin-hard-breaks
 
+<!-- Generated from docs/docs/plugins/hard-breaks.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Markdown の通常の改行を `<br>` 要素として出力するプラグインです。Obsidian の
 「厳密な改行」をオフにしたときの挙動に合わせます。
 
@@ -95,4 +97,4 @@ Obsidian には「厳密な改行」という設定があります。これを�
 
 ## 関連資料
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

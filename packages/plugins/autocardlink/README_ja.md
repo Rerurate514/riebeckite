@@ -1,5 +1,7 @@
 # @riebeckite/plugin-autocardlink
 
+<!-- Generated from docs/docs/plugins/autocardlink.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 `cardlink` コードブロックを、外部ページへのプレビューカードに変換するプラグインです。
 
 [English](./README.md)
@@ -78,4 +80,4 @@ image: https://example.com/og.png
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

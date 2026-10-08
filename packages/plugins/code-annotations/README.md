@@ -1,5 +1,7 @@
 # @riebeckite/plugin-code-annotations
 
+<!-- Generated from docs/docs/plugins/code-annotations.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 VitePress/Docusaurus-style code block annotations: line highlighting, focus,
 and diff markers that work on plain `<pre><code>` blocks and on the line
 wrappers produced by `@riebeckite/plugin-code-enhance`.
@@ -133,6 +135,5 @@ highlighting regardless.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-code-enhance`](../code-enhance/README.md)
-

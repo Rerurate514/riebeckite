@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/webmention/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Webmention
 
 Receive Webmentions, verify that the source document really links to the

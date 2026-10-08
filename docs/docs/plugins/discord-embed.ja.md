@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/discord-embed/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Discord Embed
 
 Discord のリンクプレビュー向けに、各ページの `<head>` を補完するプラグインです。

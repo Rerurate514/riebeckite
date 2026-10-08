@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/archive/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Archive
 
 [日本語](./archive.ja.md)

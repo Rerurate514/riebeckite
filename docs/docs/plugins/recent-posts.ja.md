@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/recent-posts/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Recent Posts
 
 公開済みノートを日付順に並べ、最新の記事一覧として表示するプラグインです。

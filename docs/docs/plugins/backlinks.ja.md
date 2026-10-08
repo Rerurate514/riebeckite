@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/backlinks/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Backlinks
 
 現在の記事を参照している公開済みノートを、記事末尾に表示するためのプラグインです。

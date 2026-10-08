@@ -1,5 +1,7 @@
 # @riebeckite/plugin-sidenotes
 
+<!-- Generated from docs/docs/plugins/sidenotes.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite 用の Tufte スタイルのサイドノート・プラグインです。執筆者は通常の
 GFM 脚注（`[^1]` と `[^1]: 本文`）をそのまま書き続けます。プラグインが生成
 された脚注マークアップを、インラインの参照リンクと、デスクトップではマージン
@@ -125,4 +127,4 @@ import "@riebeckite/plugin-sidenotes/style.css";
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

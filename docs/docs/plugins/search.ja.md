@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/search/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Search
 
 外部サービスなしで全文検索を提供するプラグインです。検索モーダルと検索バーを追加し、タイトルや本文を重み付きであいまいに検索します。

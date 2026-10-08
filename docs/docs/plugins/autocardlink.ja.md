@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/autocardlink/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # AutoCardLink
 
 `cardlink` コードブロックを、外部ページへのプレビューカードに変換するプラグインです。

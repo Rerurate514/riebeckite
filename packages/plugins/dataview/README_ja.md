@@ -1,5 +1,7 @@
 # @riebeckite/plugin-dataview
 
+<!-- Generated from docs/docs/plugins/dataview.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 宣言的な `dataview` コードブロックをビルド時にコンテンツマニフェストへ照合し、リスト・表・タスク一覧・カレンダーとして描画するプラグインです。クライアント側の JavaScript は不要です。
 
 [English](./README.md)
@@ -188,5 +190,4 @@ SORT priority desc, file.name asc
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

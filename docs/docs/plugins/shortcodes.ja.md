@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/shortcodes/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Shortcodes
 
 `remark-directive` を使う汎用ショートコード機能です。

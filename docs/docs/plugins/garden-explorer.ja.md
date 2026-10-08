@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/garden-explorer/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Garden Explorer
 
 ノート一覧、検索、タグ・フォルダーによる絞り込み、Local / Global Graph、詳細パネルを一画面にまとめる探索 UI です。公開済みのノートだけを対象にするため、そのまま公開サイトの `/explore` などに置けます。

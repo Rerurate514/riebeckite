@@ -1,5 +1,7 @@
 # @riebeckite/plugin-map
 
+<!-- Generated from docs/docs/plugins/map.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ` ```map ` コードブロックや frontmatter の座標を、埋め込み地図に変換するプラグインです。まず静的フォールバック（座標・場所名・OpenStreetMap リンク・任意の静的画像）を描画し、地図があるページだけブラウザ側で Leaflet によるインタラクティブ地図に拡張します。
 
 [English](./README.md)
@@ -139,5 +141,4 @@ Leaflet（`leaflet.js` と `leaflet.css`）は、`[data-rr-map="pending"]` の f
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

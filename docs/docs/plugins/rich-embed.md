@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/rich-embed/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Rich Embed
 
 Build-time media embeds for ` ```embed ` code blocks.

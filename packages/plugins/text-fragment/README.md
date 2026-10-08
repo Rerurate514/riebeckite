@@ -1,5 +1,7 @@
 # @riebeckite/plugin-text-fragment
 
+<!-- Generated from docs/docs/plugins/text-fragment.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Copy a Text Fragment deep link (`#:~:text=`) or a Markdown quote for the text
 you select in an article.
 
@@ -71,5 +73,4 @@ The fragment follows `#:~:text=[prefix-,]start[,end][,-suffix]`:
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

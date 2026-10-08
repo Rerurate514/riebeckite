@@ -1,5 +1,7 @@
 # @riebeckite/plugin-archive
 
+<!-- Generated from docs/docs/plugins/archive.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 [English](./README.md)
 
 Riebeckite の月別アーカイブ一覧ページです。Core の collection 機構

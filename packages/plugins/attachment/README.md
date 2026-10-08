@@ -1,5 +1,7 @@
 # @riebeckite/plugin-attachment
 
+<!-- Generated from docs/docs/plugins/attachment.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Attachment link and embed card rendering for Obsidian wikilinks.
 
 [日本語](./README_ja.md)
@@ -67,5 +69,5 @@ Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README.md)

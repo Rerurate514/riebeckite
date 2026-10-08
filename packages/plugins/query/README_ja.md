@@ -1,5 +1,7 @@
 # @riebeckite/plugin-query
 
+<!-- Generated from docs/docs/plugins/query.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 `query` コードブロックを、コンテンツの一覧（表またはリスト）に変換するプラグインです。絞り込み・並べ替え・件数制限を frontmatter とタグに対して行い、ビルド時に HTML を生成します。クライアント側の JavaScript は不要です。
 
 [English](./README.md)
@@ -111,5 +113,4 @@ format: list
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-local-graph
 
+<!-- Generated from docs/docs/plugins/local-graph.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Local (nearby notes) graph rendering: a compact radial graph of a note's
 outgoing links and backlinks.
 
@@ -99,6 +101,6 @@ internal selection key `/explore?note=<slug>`.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-backlinks`](../backlinks/README.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README.md)

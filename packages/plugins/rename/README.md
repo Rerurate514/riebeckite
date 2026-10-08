@@ -1,5 +1,7 @@
 # @riebeckite/plugin-rename
 
+<!-- Generated from docs/docs/plugins/rename.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Reduces broken URLs after notes are renamed or moved by turning detected
 renames into permanent redirects on the existing Riebeckite redirect
 machinery.
@@ -121,5 +123,4 @@ Types:
 ## See also
 
 - [Permalink plugin](../permalink/README.md) — stable URLs and `redirect_from`
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

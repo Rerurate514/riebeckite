@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/properties/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Properties
 
 Render each note's frontmatter as an Obsidian-style property panel at build

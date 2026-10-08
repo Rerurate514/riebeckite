@@ -1,5 +1,7 @@
 # @riebeckite/plugin-daily-notes
 
+<!-- Generated from docs/docs/plugins/daily-notes.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Surfaces short snippets extracted from Daily Notes as a site widget.
 
 [日本語](./README_ja.md)
@@ -100,4 +102,4 @@ official Starter renders Daily Notes by default.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

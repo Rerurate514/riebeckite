@@ -1,5 +1,7 @@
 # @riebeckite/plugin-docs
 
+<!-- Generated from docs/docs/plugins/docs.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Build-time docs navigation for Riebeckite. The plugin creates a sidebar and
 previous/next links from a published Markdown subtree without adding a docs
 router or recalculating public URLs from filesystem paths.

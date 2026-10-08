@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/gallery/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Gallery
 
 Markdown からカードギャラリーを生成するプラグインです。YAML を本文に持つ

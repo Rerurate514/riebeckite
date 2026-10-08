@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/hover-preview/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Hover Preview
 
 Quartz/Obsidian-Publish style popover previews for internal links. Hovering or

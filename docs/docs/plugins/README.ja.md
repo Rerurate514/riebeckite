@@ -46,7 +46,7 @@ export default defineConfig({
 });
 ```
 
-各 Plugin ページは package README から生成します。英語は `README.md`、日本語は `README_ja.md` が一次情報です。生成後の Plugin ページを直接編集せず、package README を編集して `pnpm docs:sync` を実行してください。自動検査ではファイルの組、生成結果、リンク、記載した識別子を確認しますが、翻訳の自然さや説明の意味が正しいかどうかは人がレビューします。
+Plugin のドキュメントはこのディレクトリで管理します。英語は `<slug>.md`、日本語は `<slug>.ja.md` が正本です。Obsidian またはエディタで正本ページを編集し、package README を直接編集しないでください。変更後は `pnpm docs:sync` を実行して `packages/plugins/<slug>/README.md` と `README_ja.md` を生成し、`pnpm check:plugin-docs` を実行します。自動検査ではファイルの組、生成結果、リンク、記載した識別子を確認しますが、翻訳の自然さや説明の意味が正しいかどうかは人がレビューします。
 
 ## 公式 Plugin
 

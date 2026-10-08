@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/discord-embed/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Discord Embed
 
 Completes each page's `<head>` for Discord link previews.

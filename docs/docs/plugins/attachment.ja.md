@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/attachment/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Attachment
 
 Obsidian 形式の添付ファイルリンクを、ダウンロードリンクや添付カードとして表示するプラグインです。

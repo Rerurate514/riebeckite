@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/color-mode/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # color-mode
 
 Light / dark / system color-mode switching for Riebeckite sites. The control

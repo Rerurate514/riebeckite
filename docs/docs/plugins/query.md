@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/query/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Query
 
 Turn `query` code blocks into lists or tables of content. Filtering, sorting,

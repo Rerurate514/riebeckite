@@ -1,5 +1,7 @@
 # @riebeckite/plugin-alias
 
+<!-- Generated from docs/docs/plugins/alias.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Turns Obsidian `aliases` / `alias` frontmatter into site-local redirect URLs, so a note can be reached through its alternate names without changing its canonical permalink.
 
 [Japanese](./README_ja.md)
@@ -84,9 +86,8 @@ A colliding alias is not registered; the existing path wins.
 
 ## Related
 
-- [Plugin system](../../../docs/docs/reference/plugin-api.md)
+- [Plugin system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

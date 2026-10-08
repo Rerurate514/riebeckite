@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/excalibrain/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # ExcaliBrain
 
 ノートの関係を構造化して表示するプラグインです。[ExcaliBrain](https://github.com/zsviczian/excalibrain)（Zsolt Viczián）の考え方をモデルにしています。

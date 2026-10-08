@@ -1,5 +1,7 @@
 # @riebeckite/plugin-l10n
 
+<!-- Generated from docs/docs/plugins/l10n.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite の Markdown コンテンツをローカライズするプラグインです。UI 文言の翻訳は担当しませんが、標準の言語切替 UI を提供します。
 
 [English](./README.md)
@@ -80,4 +82,4 @@ l10n({
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

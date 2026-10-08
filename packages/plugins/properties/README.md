@@ -1,5 +1,7 @@
 # @riebeckite/plugin-properties
 
+<!-- Generated from docs/docs/plugins/properties.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Render each note's frontmatter as an Obsidian-style property panel at build
 time. No client-side JavaScript is required.
 
@@ -92,7 +94,7 @@ properties({
 ```
 
 The handoff follows the
-[`ContentManifestEntry.bodySlots`](../../../docs/docs/framework/honox-integration.md)
+[`ContentManifestEntry.bodySlots`](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/honox-integration.md)
 contract. A plugin never owns routes or the shell.
 
 ## Exports
@@ -105,4 +107,4 @@ contract. A plugin never owns routes or the shell.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

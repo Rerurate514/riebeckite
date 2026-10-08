@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/daily-notes/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Daily Notes
 
 Surfaces short snippets extracted from Daily Notes as a site widget.

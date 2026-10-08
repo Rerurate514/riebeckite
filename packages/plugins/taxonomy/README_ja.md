@@ -1,5 +1,7 @@
 # @riebeckite/plugin-taxonomy
 
+<!-- Generated from docs/docs/plugins/taxonomy.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite のビルド時タクソノミー（タグ・フォルダ）プラグインです。一覧用データ、
 語ごとの RSS / Atom / JSON フィード、関連タグナビゲーション、SEO メタデータを
 生成します。クライアント JavaScript は不要です。
@@ -188,5 +190,5 @@ import "@riebeckite/plugin-taxonomy/style.css";
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-- [コンテンツシステム](../../../docs/docs/framework/content-system.ja.md)
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
+- [コンテンツシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/content-system.ja.md)

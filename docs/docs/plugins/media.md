@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/media/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Media
 
 Renders Obsidian audio / video attachment embeds with native HTML5 media players.

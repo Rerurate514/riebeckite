@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/canvas/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Canvas
 
 Obsidian の `.canvas`（JSON Canvas 1.0）を図として表示するプラグインです。

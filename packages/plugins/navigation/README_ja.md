@@ -1,5 +1,7 @@
 # @riebeckite/plugin-navigation
 
+<!-- Generated from docs/docs/plugins/navigation.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 サイトナビゲーションを提供する Riebeckite プラグインです。`navigation()` は
 Vault にすでにあるノートから主要ナビゲーションを導出します。Riebeckite 専用の
 ファイルも必須 frontmatter も不要なので、既存の Obsidian Vault をそのまま
@@ -153,5 +155,5 @@ navigation({
 
 ## 関連リンク
 
-- [設定リファレンス](../../../docs/docs/reference/configuration.ja.md)
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [設定リファレンス](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/configuration.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

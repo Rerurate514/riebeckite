@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/wavedrom/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # WaveDrom
 
 Renders ` ```wavedrom ` code blocks as [WaveDrom](https://wavedrom.com/) timing diagrams.

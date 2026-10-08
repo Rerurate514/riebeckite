@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/code-tabs/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Code Tabs
 
 Groups adjacent code blocks with `tab="..."` metadata into an accessible tab UI.

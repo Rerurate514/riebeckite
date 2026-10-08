@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/text-fragment/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Text Fragment
 
 Copy a Text Fragment deep link (`#:~:text=`) or a Markdown quote for the text

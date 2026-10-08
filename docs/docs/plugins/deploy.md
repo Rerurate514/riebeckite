@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/deploy/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Deploy
 
 Static hosting output helpers for Riebeckite. The plugin prepares the files a

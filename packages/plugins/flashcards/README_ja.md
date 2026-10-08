@@ -1,5 +1,7 @@
 # @riebeckite/plugin-flashcards
 
+<!-- Generated from docs/docs/plugins/flashcards.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 `flashcards` コードブロックを学習用のカードデッキに変えるプラグインです。質問を表示して答えをめくり、前後の移動とシャッフルができます。ビルド時には静的なリストを先に出力するため、JavaScript がなくても内容を読めます。
 
 [English](./README.md)
@@ -90,5 +92,4 @@ payload は実行されない JSON で、`<` `>` `&` はエスケープ済みで
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

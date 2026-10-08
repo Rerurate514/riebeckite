@@ -1,5 +1,7 @@
 # @riebeckite/plugin-media
 
+<!-- Generated from docs/docs/plugins/media.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Obsidian の音声・動画埋め込みを、ブラウザ標準の HTML5 プレーヤーで表示するプラグインです。
 
 [English](./README.md)
@@ -50,4 +52,4 @@ export default defineConfig({
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

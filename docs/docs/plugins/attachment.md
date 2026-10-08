@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/attachment/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Attachment
 
 Attachment link and embed card rendering for Obsidian wikilinks.

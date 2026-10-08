@@ -1,5 +1,7 @@
 # @riebeckite/plugin-pdf
 
+<!-- Generated from docs/docs/plugins/pdf.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Obsidian 形式の PDF 添付ファイルをインライン表示するプラグインです。
 
 [English](./README.md)
@@ -78,7 +80,6 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README_ja.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README_ja.md)
-

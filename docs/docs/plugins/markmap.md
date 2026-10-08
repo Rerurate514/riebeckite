@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/markmap/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Markmap
 
 Renders ` ```markmap ` code blocks as Markdown-heading mindmaps. The mindmap is

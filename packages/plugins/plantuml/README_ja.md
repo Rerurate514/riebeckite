@@ -1,5 +1,7 @@
 # @riebeckite/plugin-plantuml
 
+<!-- Generated from docs/docs/plugins/plantuml.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 `plantuml` コードブロックを PlantUML の図として表示するプラグインです。ビルド時に PlantUML サーバーの画像 URL を組み立てるだけで、ビルド中にネットワークへアクセスしません。クライアント用の JavaScript も配布しません。
 
 [English](./README.md)
@@ -78,5 +80,4 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

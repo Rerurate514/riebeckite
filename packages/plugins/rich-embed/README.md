@@ -1,5 +1,7 @@
 # @riebeckite/plugin-rich-embed
 
+<!-- Generated from docs/docs/plugins/rich-embed.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Build-time media embeds for ` ```embed ` code blocks.
 
 [日本語](./README_ja.md)
@@ -139,5 +141,4 @@ warning through the vfile message channel:
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

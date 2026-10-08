@@ -1,5 +1,7 @@
 # @riebeckite/plugin-breadcrumbs
 
+<!-- Generated from docs/docs/plugins/breadcrumbs.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ノートのスラッグ階層からパンくずナビゲーションをビルド時に生成する
 プラグインです。公開対象の各エントリについて、記事上部に `<nav>` を挿入し、
 階層構造を反映した BreadcrumbList の JSON-LD も出力します。クライアント側
@@ -113,4 +115,4 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

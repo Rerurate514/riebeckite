@@ -1,5 +1,7 @@
 # @riebeckite/plugin-marp
 
+<!-- Generated from docs/docs/plugins/marp.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Render Marp slide decks at build time. A note whose YAML frontmatter contains `marp: true` is rendered as a whole-document deck, and `marp` fenced code blocks render as inline decks.
 
 [日本語](./README_ja.md)
@@ -124,5 +126,4 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/recent-posts/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Recent Posts
 
 Recent posts list rendering: shows the latest published notes sorted by

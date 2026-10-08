@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/vega-lite/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Vega-Lite
 
 ` ```vega-lite ` コードブロックを Vega-Lite のチャートとして表示するプラグインです。チャートはブラウザ側で描画し、Vega ランタイムは必要になったときだけ動的に読み込みます。

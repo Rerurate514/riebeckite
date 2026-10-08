@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/docs/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Docs
 
 Riebeckite の Markdown コンテンツから、Docs 用のサイドバーと前後ページリンクを

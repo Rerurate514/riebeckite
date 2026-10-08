@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/toc/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Table of Contents
 
 記事の見出しから目次を作り、現在読んでいる節を強調表示するプラグインです。長い記事のサイドバーやモバイル用の折りたたみ目次に使えます。

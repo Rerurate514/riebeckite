@@ -1,5 +1,7 @@
 # @riebeckite/plugin-excalibrain
 
+<!-- Generated from docs/docs/plugins/excalibrain.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ノートの関係を構造化して表示するプラグインです。[ExcaliBrain](https://github.com/zsviczian/excalibrain)（Zsolt Viczián）の考え方をモデルにしています。
 
 [English](./README.md)
@@ -161,5 +163,4 @@ related:: [[note-a]] and [[note-b]] are similar
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

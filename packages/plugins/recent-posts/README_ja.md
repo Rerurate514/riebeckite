@@ -1,5 +1,7 @@
 # @riebeckite/plugin-recent-posts
 
+<!-- Generated from docs/docs/plugins/recent-posts.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 公開済みノートを日付順に並べ、最新の記事一覧として表示するプラグインです。
 
 [English](./README.md)
@@ -43,4 +45,4 @@ return <RecentPosts posts={posts} />;
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

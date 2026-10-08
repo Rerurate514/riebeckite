@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/marp/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Marp
 
 Marp のスライドデッキをビルド時に描画するプラグインです。YAML frontmatter に `marp: true` を含むノートは文書全体をデッキとして描画し、`marp` コードブロックはインラインデッキとして描画します。

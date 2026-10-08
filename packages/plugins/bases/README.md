@@ -1,5 +1,7 @@
 # @riebeckite/plugin-bases
 
+<!-- Generated from docs/docs/plugins/bases.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Render Obsidian Bases definitions from fenced `base` code blocks. Filtering,
 sorting, and view composition run against the content manifest at build time, so
 no client-side JavaScript is required.
@@ -177,5 +179,4 @@ This is an MVP subset of Obsidian Bases:
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

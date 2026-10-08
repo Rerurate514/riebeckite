@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/alias/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Alias
 
 Turns Obsidian `aliases` / `alias` frontmatter into site-local redirect URLs, so a note can be reached through its alternate names without changing its canonical permalink.

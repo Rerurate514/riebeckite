@@ -1,5 +1,7 @@
 # @riebeckite/plugin-plantuml
 
+<!-- Generated from docs/docs/plugins/plantuml.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 PlantUML diagram rendering for ` ```plantuml ` code blocks. Diagrams are turned into
 a PlantUML server image URL at build time; the build itself never talks to the
 network and no client JavaScript is shipped.
@@ -97,5 +99,4 @@ Encoding failures are reported with `file.message(...)`. Diagnostics use
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

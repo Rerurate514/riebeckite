@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/graphviz/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Graphviz
 
 `dot` / `graphviz` コードブロックを Graphviz の SVG 図として表示するプラグインです。既定ではビルド時に描画します。

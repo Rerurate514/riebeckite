@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/analytics/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Analytics
 
 Storage-independent analytics primitives and browser page-view tracking for

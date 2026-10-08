@@ -1,5 +1,7 @@
 # @riebeckite/plugin-responsive-image
 
+<!-- Generated from docs/docs/plugins/responsive-image.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 既存の `<img>` に遅延読み込みと、レスポンシブな `<picture>` / `srcset` を付与するプラグインです。参照するのは、すでにコンテンツマニフェストに存在する画像バリアントだけです。
 
 [English](./README.md)
@@ -70,4 +72,4 @@ export default defineConfig({
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

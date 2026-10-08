@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/dataview/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Dataview
 
 Evaluate declarative `dataview` code blocks against the content manifest at

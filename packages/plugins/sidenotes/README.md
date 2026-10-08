@@ -1,5 +1,7 @@
 # @riebeckite/plugin-sidenotes
 
+<!-- Generated from docs/docs/plugins/sidenotes.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Tufte-style side notes for Riebeckite. Authors keep writing ordinary GFM
 footnotes (`[^1]` and `[^1]: text`); the plugin rewrites the generated
 footnote markup into an inline reference plus a note that renders as a margin
@@ -121,5 +123,4 @@ Stable hooks follow the `rr-sidenotes` convention: `rr-sidenotes__toggle`,
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/folder-pages/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Folder Pages
 
 [日本語](./folder-pages.ja.md)

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/local-graph/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Local Graph
 
 Local (nearby notes) graph rendering: a compact radial graph of a note's

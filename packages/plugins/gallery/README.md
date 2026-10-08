@@ -1,5 +1,7 @@
 # @riebeckite/plugin-gallery
 
+<!-- Generated from docs/docs/plugins/gallery.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Markdown-driven card galleries. A fenced `gallery` code block with a small YAML
 body renders as a responsive card grid, which makes theme galleries, project
 showcases, and link collections easy to author without HTML.
@@ -131,5 +133,4 @@ The grid uses `container-type: inline-size` and collapses to two columns below
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-search
 
+<!-- Generated from docs/docs/plugins/search.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 外部サービスなしで全文検索を提供するプラグインです。検索モーダルと検索バーを追加し、タイトルや本文を重み付きであいまいに検索します。
 
 [English](./README.md)
@@ -74,5 +76,5 @@ const results = searchItems(items, "#obsidian");
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)

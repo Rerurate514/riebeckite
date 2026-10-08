@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/shortcodes/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Shortcodes
 
 A generic shortcode system for Markdown, built on `remark-directive`.

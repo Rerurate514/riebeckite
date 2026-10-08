@@ -1,5 +1,7 @@
 # @riebeckite/plugin-graphviz
 
+<!-- Generated from docs/docs/plugins/graphviz.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Graphviz (DOT) diagram rendering for ` ```dot ` and ` ```graphviz ` code blocks.
 
 [日本語](./README_ja.md)
@@ -124,5 +126,4 @@ a lingering worker.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

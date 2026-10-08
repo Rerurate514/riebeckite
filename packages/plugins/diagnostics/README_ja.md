@@ -1,5 +1,7 @@
 # @riebeckite/plugin-diagnostics
 
+<!-- Generated from docs/docs/plugins/diagnostics.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 サイト全体の参照整合性、公開設定の矛盾、frontmatter の不足などを検出するプラグインです。ビルド時の診断だけでなく、CLI とプログラムからの実行にも対応します。
 
 [English](./README.md)
@@ -134,4 +136,4 @@ assertNoErrors(report);
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

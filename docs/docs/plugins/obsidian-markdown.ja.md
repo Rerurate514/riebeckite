@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/obsidian-markdown/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Obsidian Markdown
 
 ウィキリンク、コールアウト、インラインタグ、ブロック参照など、Obsidian の Markdown 記法を変換するプラグインです。

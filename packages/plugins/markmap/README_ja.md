@@ -1,5 +1,7 @@
 # @riebeckite/plugin-markmap
 
+<!-- Generated from docs/docs/plugins/markmap.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ` ```markmap ` コードブロックを、Markdown の見出しから組み立てるマインドマップとして表示するプラグインです。マインドマップはブラウザ側で `markmap-lib` と `markmap-view` により描画し、これらのライブラリは図があるときだけ CDN から読み込みます。
 
 [English](./README.md)
@@ -110,5 +112,4 @@ parseMarkmapSource(source: string): MarkmapNode | null
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

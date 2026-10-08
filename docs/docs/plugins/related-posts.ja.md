@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/related-posts/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Related Posts
 
 ビルド時に「関連ノート」ナビゲーションを生成するプラグインです。公開対象の

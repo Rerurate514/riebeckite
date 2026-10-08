@@ -1,5 +1,7 @@
 # @riebeckite/plugin-diagnostics
 
+<!-- Generated from docs/docs/plugins/diagnostics.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Content diagnostics for Obsidian vaults / Riebeckite content: site-wide
 reference integrity, frontmatter issues, orphan notes, unused assets, and more.
 Usable as a build plugin, a programmatic API, and a CLI.
@@ -159,4 +161,4 @@ assertNoErrors(report);
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

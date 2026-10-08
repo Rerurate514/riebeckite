@@ -1,5 +1,7 @@
 # @riebeckite/plugin-hover-preview
 
+<!-- Generated from docs/docs/plugins/hover-preview.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Quartz/Obsidian-Publish style popover previews for internal links. Hovering or
 focusing a note link shows its title and a short excerpt without leaving the
 page.
@@ -76,5 +78,4 @@ hoverPreviewPlugin({
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

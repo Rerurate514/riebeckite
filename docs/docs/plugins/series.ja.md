@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/series/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Series
 
 連載記事（シリーズ）を順番どおりに並べ、各記事へ共通のナビゲーションを差し込むプラグインです。ビルド時に、同じシリーズ名を持つノートをまとめて、目次・現在位置・前後の記事リンクを生成します。

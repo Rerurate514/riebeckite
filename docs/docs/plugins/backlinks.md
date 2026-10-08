@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/backlinks/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Backlinks
 
 Backlink list rendering for articles: shows which published notes link to the

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/lightbox/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Lightbox
 
 記事内の画像をクリックすると、拡大表示用のダイアログを開くプラグインです。

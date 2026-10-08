@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/code-tabs/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Code Tabs
 
 連続するコードブロックを、`tab="..."` の名前ごとにタブへまとめるプラグインです。

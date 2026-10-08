@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/breadcrumbs/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Breadcrumbs
 
 ノートのスラッグ階層からパンくずナビゲーションをビルド時に生成する

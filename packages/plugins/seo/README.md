@@ -1,5 +1,7 @@
 # @riebeckite/plugin-seo
 
+<!-- Generated from docs/docs/plugins/seo.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 SEO metadata, sitemap, robots.txt, and feed generation for Riebeckite.
 
 [日本語](./README_ja.md)
@@ -110,4 +112,4 @@ shared limit for RSS, Atom, and JSON Feed.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

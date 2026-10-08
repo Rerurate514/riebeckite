@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/docs/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Docs
 
 Build-time docs navigation for Riebeckite. The plugin creates a sidebar and

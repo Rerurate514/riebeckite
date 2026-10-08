@@ -1,5 +1,7 @@
 # @riebeckite/plugin-changelog
 
+<!-- Generated from docs/docs/plugins/changelog.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ローカル Git の履歴からビルド時に変更履歴を生成するプラグインです。公開ノートごとにコミット日・件名・作成者を並べた「変更履歴」セクションを追加し、サイト全体の変更履歴データセットも組み立てられます。クライアント JavaScript は不要です。
 
 [English](./README.md)
@@ -122,5 +124,4 @@ import "@riebeckite/plugin-changelog/style.css";
 ## 関連資料
 
 - [plugin-diff](../diff/README_ja.md) — リビジョン履歴と行差分
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

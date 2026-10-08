@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/seo/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # SEO
 
 記事のメタデータ、サイトマップ、robots.txt、RSS・Atom・JSON Feed をまとめて生成するプラグインです。アプリケーションはプラグインが提供する SEO 拡張を受け取り、各ページの出力に利用します。

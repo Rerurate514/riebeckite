@@ -1,5 +1,7 @@
 # @riebeckite/plugin-diff
 
+<!-- Generated from docs/docs/plugins/diff.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Git-backed diff and revision history for Markdown notes: read commit history,
 retrieve past revisions, and compute line-level diffs between them.
 
@@ -90,4 +92,4 @@ When `cwd` is not inside a Git repository, API calls resolve to empty results
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

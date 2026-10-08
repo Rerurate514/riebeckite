@@ -1,5 +1,7 @@
 # @riebeckite/plugin-navigation
 
+<!-- Generated from docs/docs/plugins/navigation.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Site navigation as a Riebeckite plugin. `navigation()` derives the primary
 navigation from the notes already in the vault, so an existing Obsidian vault
 becomes navigable with no Riebeckite-specific file and no required frontmatter.
@@ -152,5 +154,5 @@ tab.
 
 ## See also
 
-- [Configuration reference](../../../docs/docs/reference/configuration.md)
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Configuration reference](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/configuration.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

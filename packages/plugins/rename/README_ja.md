@@ -1,5 +1,7 @@
 # @riebeckite/plugin-rename
 
+<!-- Generated from docs/docs/plugins/rename.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ノートのリネームや移動で発生するリンク切れを減らすプラグインです。検出したリネームを、Riebeckite が既に持つリダイレクト機構（`manifest.redirects`）に恒久的なリダイレクトとして登録します。
 
 [English](./README.md)
@@ -100,5 +102,4 @@ buildRouteLock ──► 現在の RouteLock
 ## 関連
 
 - [Permalink プラグイン](../permalink/README_ja.md) — 安定した URL と `redirect_from`
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

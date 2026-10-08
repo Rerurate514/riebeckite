@@ -1,5 +1,7 @@
 # @riebeckite/plugin-breadcrumbs
 
+<!-- Generated from docs/docs/plugins/breadcrumbs.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Build-time breadcrumb navigation derived from the note's slug hierarchy. For
 every published entry the plugin inserts a `<nav>` at the top of the rendered
 HTML and enriches the page with a hierarchical BreadcrumbList JSON-LD schema.
@@ -114,4 +116,4 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

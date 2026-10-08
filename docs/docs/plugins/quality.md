@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/quality/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Quality
 
 Static quality and accessibility inspection for generated HTML in Riebeckite.

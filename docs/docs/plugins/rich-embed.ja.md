@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/rich-embed/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Rich Embed
 
 ` ```embed ` コードブロックを、ビルド時に外部メディアの埋め込みへ変換するプラグインです。

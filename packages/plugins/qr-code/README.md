@@ -1,5 +1,7 @@
 # @riebeckite/plugin-qr-code
 
+<!-- Generated from docs/docs/plugins/qr-code.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Renders ` ```qr ` fenced code blocks into inline SVG QR codes at build time.
 
 [日本語](./README_ja.md)
@@ -101,4 +103,4 @@ The caption comes from the code-block `title` (code meta) or a leading
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

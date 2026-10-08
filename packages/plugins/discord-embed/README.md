@@ -1,5 +1,7 @@
 # @riebeckite/plugin-discord-embed
 
+<!-- Generated from docs/docs/plugins/discord-embed.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Completes each page's `<head>` for Discord link previews.
 
 Discord's `Discordbot` reads the shared page's `<head>` metadata to build its
@@ -65,7 +67,7 @@ This plugin does not own the `<head>`. It provides
 `ContentManifestEntry.headTags`; whether to render them is the site's decision.
 A site route sets `c.set("headTags", entry.headTags ?? [])`, and
 `app/routes/_renderer.tsx` maps them to `<meta>` / `<link>` / `<script>`.
-See [HonoX Integration](../../../docs/docs/framework/honox-integration.md), section
+See [HonoX Integration](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/honox-integration.md), section
 "Site application contract", for details.
 
 ## Exports
@@ -78,6 +80,5 @@ See [HonoX Integration](../../../docs/docs/framework/honox-integration.md), sect
 
 ## See also
 
-- [HonoX Integration](../../../docs/docs/framework/honox-integration.md)
-- [Plugin system](../../../docs/docs/reference/plugin-api.md)
-
+- [HonoX Integration](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/honox-integration.md)
+- [Plugin system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

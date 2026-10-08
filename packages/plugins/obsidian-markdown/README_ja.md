@@ -1,5 +1,7 @@
 # @riebeckite/plugin-obsidian-markdown
 
+<!-- Generated from docs/docs/plugins/obsidian-markdown.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ウィキリンク、コールアウト、インラインタグ、ブロック参照など、Obsidian の Markdown 記法を変換するプラグインです。
 
 [English](./README.md)
@@ -45,6 +47,5 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-attachment`](../attachment/README_ja.md)
-

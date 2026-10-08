@@ -1,5 +1,7 @@
 # @riebeckite/plugin-properties
 
+<!-- Generated from docs/docs/plugins/properties.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ノートの frontmatter を、Obsidian 風のプロパティパネルとしてビルド時に描画するプラグインです。クライアント側の JavaScript は不要です。
 
 [English](./README.md)
@@ -81,7 +83,7 @@ properties({
 });
 ```
 
-Site への受け渡しは [`ContentManifestEntry.bodySlots`](../../../docs/docs/framework/honox-integration.ja.md) の contract に従います。Plugin は route や shell を所有しません。
+Site への受け渡しは [`ContentManifestEntry.bodySlots`](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/honox-integration.ja.md) の contract に従います。Plugin は route や shell を所有しません。
 
 ## エクスポート
 
@@ -93,4 +95,4 @@ Site への受け渡しは [`ContentManifestEntry.bodySlots`](../../../docs/docs
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

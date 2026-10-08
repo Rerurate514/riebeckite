@@ -1,5 +1,7 @@
 # @riebeckite/plugin-hover-preview
 
+<!-- Generated from docs/docs/plugins/hover-preview.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 内部リンクにカーソルを合わせると、リンク先のタイトルと抜粋をポップオーバーで表示するプラグインです。Quartz や Obsidian Publish のプレビューに近い挙動で、ページを離れずにリンク先の内容を確認できます。
 
 [English](./README.md)
@@ -59,5 +61,4 @@ hoverPreviewPlugin({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/responsive-image/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Responsive Image
 
 Upgrades existing `<img>` elements with lazy loading and responsive

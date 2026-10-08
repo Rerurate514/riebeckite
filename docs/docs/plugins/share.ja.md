@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/share/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Share
 
 記事ごとの共有ボタンをビルド時に生成するプラグインです。公開対象の各エントリ

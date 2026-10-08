@@ -1,5 +1,7 @@
 # @riebeckite/plugin-daily-notes
 
+<!-- Generated from docs/docs/plugins/daily-notes.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 デイリーノートから短いスニペットを取り出してサイトのウィジェットとして表示するプラグインです。
 
 [English](./README.md)
@@ -80,4 +82,4 @@ getDailyNotes({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-wavedrom
 
+<!-- Generated from docs/docs/plugins/wavedrom.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Renders ` ```wavedrom ` code blocks as [WaveDrom](https://wavedrom.com/) timing diagrams.
 
 [日本語](./README_ja.md)
@@ -121,5 +123,4 @@ If the body is not valid JSON, is not an object, or has no `signal` / `assign` /
 
 ## See also
 
-- [Plugin system](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

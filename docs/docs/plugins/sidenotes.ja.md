@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/sidenotes/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Sidenotes
 
 Riebeckite 用の Tufte スタイルのサイドノート・プラグインです。執筆者は通常の

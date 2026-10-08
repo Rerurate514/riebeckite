@@ -1,5 +1,7 @@
 # @riebeckite/plugin-discord-embed
 
+<!-- Generated from docs/docs/plugins/discord-embed.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Discord のリンクプレビュー向けに、各ページの `<head>` を補完するプラグインです。
 
 Discord の `Discordbot` は共有されたページの `<head>` メタデータを読んでプレビューカードを組み立てます。
@@ -59,7 +61,7 @@ frontmatter の色が無効な場合は診断 `discord-embed-invalid-color`（wa
 
 このプラグインは `<head>` を所有しません。プラグインが提供するのは `ContentManifestEntry.headTags` であり、描画するかどうかは Site が決めます。
 Site の route が `c.set("headTags", entry.headTags ?? [])` を設定し、`app/routes/_renderer.tsx` がそれを `<meta>` / `<link>` / `<script>` に変換します。
-詳しくは [HonoX Integration](../../../docs/docs/framework/honox-integration.ja.md) の "Site Application の拡張 contract" を参照してください。
+詳しくは [HonoX Integration](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/honox-integration.ja.md) の "Site Application の拡張 contract" を参照してください。
 
 ## 主なエクスポート
 
@@ -70,6 +72,5 @@ Site の route が `c.set("headTags", entry.headTags ?? [])` を設定し、`app
 
 ## 関連資料
 
-- [HonoX Integration](../../../docs/docs/framework/honox-integration.ja.md)
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [HonoX Integration](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/honox-integration.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

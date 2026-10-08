@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/hard-breaks/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Hard Breaks
 
 Render ordinary Markdown line breaks as `<br>` elements, matching Obsidian's

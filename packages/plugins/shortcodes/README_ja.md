@@ -1,5 +1,7 @@
 # @riebeckite/plugin-shortcodes
 
+<!-- Generated from docs/docs/plugins/shortcodes.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 `remark-directive` を使う汎用ショートコード機能です。
 
 [English](./README.md)
@@ -291,4 +293,4 @@ container }` を受け取り、文字列を返します。独自レンダラー�
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

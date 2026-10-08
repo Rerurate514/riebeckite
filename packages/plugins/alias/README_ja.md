@@ -1,5 +1,7 @@
 # @riebeckite/plugin-alias
 
+<!-- Generated from docs/docs/plugins/alias.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Obsidian の frontmatter `aliases`（`alias` も可）を、サイト内のリダイレクト URL に変換するプラグインです。ノートの別名でアクセスできるようにしつつ、正規のパーマリンクは変更しません。
 
 [English](./README.md)
@@ -84,5 +86,4 @@ plugins: [permalinkPlugin(), aliasPlugin()],
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

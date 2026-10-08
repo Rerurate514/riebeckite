@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/deploy/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Deploy
 
 Riebeckite の静的ホスティング向け出力ヘルパーです。デプロイ先が必要とする

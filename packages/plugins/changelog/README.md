@@ -1,5 +1,7 @@
 # @riebeckite/plugin-changelog
 
+<!-- Generated from docs/docs/plugins/changelog.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Build-time change history derived from local Git history. For every published
 note the plugin adds a "change history" section with commit dates, subjects,
 and authors, and it can build a site-wide changelog dataset from the notes'
@@ -152,5 +154,4 @@ import "@riebeckite/plugin-changelog/style.css";
 ## See also
 
 - [plugin-diff](../diff/README.md) — revision history and line diffs
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

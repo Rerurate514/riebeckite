@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/obsidian-markdown/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Obsidian Markdown
 
 Obsidian-flavored Markdown support: wikilinks, callouts, inline tags, and

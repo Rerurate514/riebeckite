@@ -1,5 +1,7 @@
 # @riebeckite/plugin-seo
 
+<!-- Generated from docs/docs/plugins/seo.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 記事のメタデータ、サイトマップ、robots.txt、RSS・Atom・JSON Feed をまとめて生成するプラグインです。アプリケーションはプラグインが提供する SEO 拡張を受け取り、各ページの出力に利用します。
 
 [English](./README.md)
@@ -62,4 +64,4 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

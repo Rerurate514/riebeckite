@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/code-annotations/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Code Annotations
 
 VitePress / Docusaurus 風のコードブロック装飾を加えるプラグインです。フェンスの

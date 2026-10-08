@@ -1,5 +1,7 @@
 # @riebeckite/plugin-vega-lite
 
+<!-- Generated from docs/docs/plugins/vega-lite.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ` ```vega-lite ` コードブロックを Vega-Lite のチャートとして表示するプラグインです。チャートはブラウザ側で描画し、Vega ランタイムは必要になったときだけ動的に読み込みます。
 
 [English](./README.md)
@@ -105,5 +107,4 @@ Vega ランタイムは `import()` で動的に読み込むため、JavaScript �
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

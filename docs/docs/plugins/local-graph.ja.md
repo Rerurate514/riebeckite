@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/local-graph/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Local Graph
 
 現在のノートと、その前後につながるノートを小さな放射状グラフで表示するプラグインです。

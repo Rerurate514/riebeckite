@@ -102,6 +102,8 @@ Framework 開発でよく使用するコマンドは次のとおりです。
 | `pnpm test` | test を実行する |
 | `pnpm typecheck` | TypeScript の型を検査する |
 | `pnpm check:docs` | Documentation を検査する |
+| `pnpm docs:sync` | 正本の Plugin Documentation から package README を生成する |
+| `pnpm check:plugin-docs` | Plugin Documentation と生成した README の同期を検査する |
 | `pnpm check:scaffold` | 生成される Site を検査する |
 
 ## Documentation を変更した場合
@@ -113,6 +115,27 @@ pnpm check:docs
 Markdown link や Documentation の構造を検査します。
 
 ドキュメントを追加・移動・削除した場合は実行してください。
+
+## Plugin Documentation を変更した場合
+
+Plugin Documentation の所有権は次のとおりです。
+
+```text
+正本:
+  docs/docs/plugins/<slug>.md
+  docs/docs/plugins/<slug>.ja.md
+
+生成物:
+  packages/plugins/<slug>/README.md
+  packages/plugins/<slug>/README_ja.md
+```
+
+正本の Documentation だけを編集し、生成された Plugin README を手動で編集しないでください。変更後は次を実行します。
+
+```bash
+pnpm docs:sync
+pnpm check:plugin-docs
+```
 
 ## Scaffold を変更した場合
 

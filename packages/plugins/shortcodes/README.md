@@ -1,5 +1,7 @@
 # @riebeckite/plugin-shortcodes
 
+<!-- Generated from docs/docs/plugins/shortcodes.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 A generic shortcode system for Markdown, built on `remark-directive`.
 
 [日本語](./README_ja.md)
@@ -292,4 +294,4 @@ input themselves — `escapeHtml` and `escapeHtmlAttribute` are re-exported from
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/garden-explorer/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Garden Explorer
 
 Interactive note garden explorer: a local/global content graph, search box,

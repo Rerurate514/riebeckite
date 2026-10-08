@@ -1,5 +1,7 @@
 # @riebeckite/plugin-recent-posts
 
+<!-- Generated from docs/docs/plugins/recent-posts.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Recent posts list rendering: shows the latest published notes sorted by
 frontmatter date.
 
@@ -75,4 +77,4 @@ target.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

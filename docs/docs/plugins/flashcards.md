@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/flashcards/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Flashcards
 
 Turn a `flashcards` code block into a study island: a small deck of cards that

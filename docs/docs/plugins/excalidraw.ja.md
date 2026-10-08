@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/excalidraw/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Excalidraw
 
 Obsidian の Excalidraw 埋め込みを SVG として表示するプラグインです。

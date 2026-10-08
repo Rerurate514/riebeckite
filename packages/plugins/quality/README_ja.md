@@ -1,5 +1,7 @@
 # @riebeckite/plugin-quality
 
+<!-- Generated from docs/docs/plugins/quality.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite が生成する HTML を静的に検査し、品質とアクセシビリティの問題を報告するプラグインです。
 
 [English](./README.md)
@@ -56,5 +58,4 @@ export default defineConfig({
 
 ## 関連
 
-- [プラグインガイド](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

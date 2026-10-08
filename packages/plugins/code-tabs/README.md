@@ -1,5 +1,7 @@
 # @riebeckite/plugin-code-tabs
 
+<!-- Generated from docs/docs/plugins/code-tabs.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Groups adjacent code blocks with `tab="..."` metadata into an accessible tab UI.
 
 [日本語](./README_ja.md)
@@ -98,5 +100,4 @@ all panels remain visible so every code block can still be read.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

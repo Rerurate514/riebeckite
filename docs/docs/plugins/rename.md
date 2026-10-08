@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/rename/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Rename
 
 Reduces broken URLs after notes are renamed or moved by turning detected

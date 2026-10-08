@@ -1,5 +1,7 @@
 # @riebeckite/plugin-deploy
 
+<!-- Generated from docs/docs/plugins/deploy.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite の静的ホスティング向け出力ヘルパーです。デプロイ先が必要とする
 ファイルを組み立て、ビルドの generated-output シンク経由で出力します。
 アップロードは行わず、ファイルシステムにも書き込みません。
@@ -63,4 +65,4 @@ GitHub Pages には `_redirects` 構文がないため、各リダイレクト�
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

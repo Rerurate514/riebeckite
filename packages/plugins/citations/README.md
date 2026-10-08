@@ -1,5 +1,7 @@
 # @riebeckite/plugin-citations
 
+<!-- Generated from docs/docs/plugins/citations.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 [日本語版](./README_ja.md)
 
 Official Riebeckite plugin for BibTeX / BibLaTeX based citations in Markdown and Obsidian notes.

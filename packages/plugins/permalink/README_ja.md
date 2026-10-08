@@ -1,5 +1,7 @@
 # @riebeckite/plugin-permalink
 
+<!-- Generated from docs/docs/plugins/permalink.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Riebeckite の記事に対して、公開 URL（permalink）を決定するプラグインです。
 
 ファイル構造をそのまま URL に使う代わりに、frontmatter の ID、ファイルパスから導出した ID、独自の resolver などを使って公開 URL を構築できます。
@@ -977,6 +979,5 @@ permalink({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-- [コンテンツシステム](../../../docs/docs/framework/content-system.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
+- [コンテンツシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/content-system.ja.md)

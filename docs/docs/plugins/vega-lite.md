@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/vega-lite/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Vega-Lite
 
 Renders ` ```vega-lite ` code blocks as Vega-Lite charts. Charts are drawn in the

@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/media/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Media
 
 Obsidian の音声・動画埋め込みを、ブラウザ標準の HTML5 プレーヤーで表示するプラグインです。

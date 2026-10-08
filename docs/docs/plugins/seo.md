@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/seo/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # SEO
 
 SEO metadata, sitemap, robots.txt, and feed generation for Riebeckite.

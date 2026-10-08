@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/changelog/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Changelog
 
 Build-time change history derived from local Git history. For every published

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-autocardlink
 
+<!-- Generated from docs/docs/plugins/autocardlink.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Render `cardlink` code blocks as link preview cards.
 
 [日本語](./README_ja.md)
@@ -97,4 +99,4 @@ fetch the target page, so it never derives metadata on its own. In particular:
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

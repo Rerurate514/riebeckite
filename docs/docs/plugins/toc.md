@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/toc/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Table of Contents
 
 Table of contents rendering with scroll-spy: extracts headings from article

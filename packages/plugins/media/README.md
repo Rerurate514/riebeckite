@@ -1,5 +1,7 @@
 # @riebeckite/plugin-media
 
+<!-- Generated from docs/docs/plugins/media.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Renders Obsidian audio / video attachment embeds with native HTML5 media players.
 
 [日本語](./README_ja.md)
@@ -55,5 +57,4 @@ a future pipeline extension.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

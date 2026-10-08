@@ -1,5 +1,7 @@
 # @riebeckite/plugin-excalibrain
 
+<!-- Generated from docs/docs/plugins/excalibrain.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Structured relationship maps for notes, modelled on
 [ExcaliBrain](https://github.com/zsviczian/excalibrain) by Zsolt Viczián.
 
@@ -188,5 +190,4 @@ wrapping an `<a href>` around its `<rect>` and `<text>`. Links are
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

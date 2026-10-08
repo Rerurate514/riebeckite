@@ -1,5 +1,7 @@
 # @riebeckite/plugin-series
 
+<!-- Generated from docs/docs/plugins/series.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Ordered multi-part posts ("series") for Riebeckite. At build time, notes that
 share a series name get the same generated navigation listing every part in
 order, with the current part marked and previous/next links.
@@ -171,5 +173,4 @@ matched with `.rb-series__item a[aria-current="page"]`.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

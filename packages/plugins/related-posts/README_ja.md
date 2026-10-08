@@ -1,5 +1,7 @@
 # @riebeckite/plugin-related-posts
 
+<!-- Generated from docs/docs/plugins/related-posts.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 ビルド時に「関連ノート」ナビゲーションを生成するプラグインです。公開対象の
 各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べ、
 関連ノートのセクションを `article.footer` Slot に追加します。クライアント側 JavaScript は
@@ -112,4 +114,4 @@ import "@riebeckite/plugin-related-posts/style.css";
 
 ## 関連リンク
 
-- [プラグイン API](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

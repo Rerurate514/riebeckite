@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/plantuml/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # PlantUML
 
 `plantuml` コードブロックを PlantUML の図として表示するプラグインです。ビルド時に PlantUML サーバーの画像 URL を組み立てるだけで、ビルド中にネットワークへアクセスしません。クライアント用の JavaScript も配布しません。

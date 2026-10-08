@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/qr-code/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # QR Code
 
 Renders ` ```qr ` fenced code blocks into inline SVG QR codes at build time.

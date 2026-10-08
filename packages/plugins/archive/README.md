@@ -1,5 +1,7 @@
 # @riebeckite/plugin-archive
 
+<!-- Generated from docs/docs/plugins/archive.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 [日本語](./README_ja.md)
 
 Monthly archive listing pages for Riebeckite. The plugin builds its listings with

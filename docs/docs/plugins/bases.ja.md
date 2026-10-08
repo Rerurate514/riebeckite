@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/bases/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Bases
 
 フェンスコードブロック `base` に書いた Obsidian Bases 定義を HTML にレンダリングします。フィルタ・ソート・ビューの組み立てはビルド時にコンテンツマニフェストに対して行われるため、クライアントサイド JavaScript は不要です。

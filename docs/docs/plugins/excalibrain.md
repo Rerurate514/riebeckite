@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/excalibrain/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # ExcaliBrain
 
 Structured relationship maps for notes, modelled on

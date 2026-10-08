@@ -1,5 +1,7 @@
 # @riebeckite/plugin-taxonomy
 
+<!-- Generated from docs/docs/plugins/taxonomy.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Build-time tag and folder taxonomy for Riebeckite: listing data, per-term
 RSS / Atom / JSON feeds, related-tag navigation, and SEO metadata. No
 client-side JavaScript is required.
@@ -188,5 +190,5 @@ import "@riebeckite/plugin-taxonomy/style.css";
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-- [Content system](../../../docs/docs/framework/content-system.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
+- [Content system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/content-system.md)

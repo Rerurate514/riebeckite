@@ -1,5 +1,7 @@
 # @riebeckite/plugin-toc
 
+<!-- Generated from docs/docs/plugins/toc.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Table of contents rendering with scroll-spy: extracts headings from article
 HTML and highlights the section currently in view.
 
@@ -75,4 +77,4 @@ scrolling.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

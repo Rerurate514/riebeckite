@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/chartjs/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Chart.js
 
 ` ```chart ` コードブロックを、レスポンシブな [Chart.js](https://www.chartjs.org/) のグラフとして表示するプラグインです。

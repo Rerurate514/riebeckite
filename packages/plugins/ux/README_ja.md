@@ -1,5 +1,7 @@
 # @riebeckite/plugin-ux
 
+<!-- Generated from docs/docs/plugins/ux.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 記事の読みやすさを高めるクライアント側のプログレッシブ・エンハンスメントをまとめたプラグインです。ビルド後の記事 HTML はそのままに、読み進捗バー・トップへ戻るボタン・目次のスクロール連動ハイライト・コードのコピーボタンを追加します。
 
 [English](./README.md)
@@ -97,4 +99,4 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

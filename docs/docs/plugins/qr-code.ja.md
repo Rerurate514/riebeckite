@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/qr-code/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # QR Code
 
 ` ```qr ` コードブロックを、ビルド時にインライン SVG の QR コードへ変換するプラグインです。

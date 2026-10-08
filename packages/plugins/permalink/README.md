@@ -1,5 +1,7 @@
 # @riebeckite/plugin-permalink
 
+<!-- Generated from docs/docs/plugins/permalink.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Stable, configurable public URLs (permalinks) for Riebeckite content.
 
 Instead of coupling public URLs directly to the filesystem layout, this plugin can build URLs from frontmatter IDs, deterministic path-derived IDs, or custom resolvers. Legacy URLs can also be registered as redirects in the same configuration.
@@ -961,6 +963,5 @@ permalink({
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-- [Content system](../../../docs/docs/framework/content-system.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
+- [Content system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/content-system.md)

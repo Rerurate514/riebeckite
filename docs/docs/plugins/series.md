@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/series/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Series
 
 Ordered multi-part posts ("series") for Riebeckite. At build time, notes that

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-deploy
 
+<!-- Generated from docs/docs/plugins/deploy.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Static hosting output helpers for Riebeckite. The plugin prepares the files a
 deploy target needs and emits them through the build's generated-output sink.
 It does not upload anything and never writes to the filesystem.
@@ -64,5 +66,4 @@ skipped because the root cannot be stubbed.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

@@ -1,5 +1,7 @@
 # @riebeckite/plugin-text-fragment
 
+<!-- Generated from docs/docs/plugins/text-fragment.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 記事内で選択したテキストから、Text Fragment のディープリンク（`#:~:text=`）と Markdown の引用を作るプラグインです。
 
 [English](./README.md)
@@ -55,5 +57,4 @@ export default defineConfig({
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

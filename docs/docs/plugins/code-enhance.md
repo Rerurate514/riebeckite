@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/code-enhance/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Code Enhance
 
 Enhanced code blocks: Shiki highlighting plus a header with copy, wrap, and

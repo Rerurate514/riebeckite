@@ -1,5 +1,7 @@
 # @riebeckite/plugin-color-mode
 
+<!-- Generated from docs/docs/plugins/color-mode.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Light / dark / system color-mode switching for Riebeckite sites. The control
 writes to `data-theme` on `<html>` at runtime, exactly the attribute the
 themes' CSS uses to pick a palette — so it works with every built-in theme and
@@ -10,7 +12,7 @@ needs no JavaScript in the theme itself.
 ## Overview
 
 Themes derive their palette from three CSS states (see
-[theme-system.md](../../../docs/docs/reference/theme-api.md)):
+[theme-system.md](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md)):
 
 - `:root` — light
 - `:root[data-theme="dark"]` — dark
@@ -163,5 +165,5 @@ diagrams) can follow mode changes in the future.
 
 ## See also
 
-- [Theme system](../../../docs/docs/reference/theme-api.md)
+- [Theme system](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md)
 - [`@riebeckite/plugin-ux`](../ux/README.md)

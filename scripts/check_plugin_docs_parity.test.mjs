@@ -120,17 +120,14 @@ test("detects a title that does not match package.json", () => {
   assert.equal(issues.length, 2);
 });
 
-test("detects missing and manually maintained generated pages", () => {
+test("detects missing pages, obsolete markers, and invalid H1 counts", () => {
   const root = makeTempDirectory();
+  fs.writeFileSync(path.join(root, "sample.md"), "# Sample\n");
+  fs.writeFileSync(path.join(root, "sample.ja.md"), "# Sample\n");
   fs.writeFileSync(
-    path.join(root, "sample.md"),
-    "<!-- Generated from packages/plugins/sample/README.md. -->\n",
+    path.join(root, "other.ja.md"),
+    "<!-- Generated from packages/plugins/other/README_ja.md. -->\n\n# Other\n",
   );
-  fs.writeFileSync(
-    path.join(root, "sample.ja.md"),
-    "<!-- Generated from packages/plugins/sample/README_ja.md. -->\n",
-  );
-  fs.writeFileSync(path.join(root, "other.ja.md"), "# Other\n\n日本語の概要\n");
   const missingBoth = checkWebsitePages("absent", root).sort();
   assert.deepEqual(missingBoth, [
     "docs/docs/plugins/absent.ja.md is missing",
@@ -139,7 +136,7 @@ test("detects missing and manually maintained generated pages", () => {
   assert.deepEqual(checkWebsitePages("sample", root), []);
   assert.ok(
     checkWebsitePages("other", root).some((issue) =>
-      issue.includes("is not a generated page"),
+      issue.includes("obsolete generated marker"),
     ),
   );
 });

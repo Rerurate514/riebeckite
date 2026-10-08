@@ -1,5 +1,7 @@
 # @riebeckite/plugin-search
 
+<!-- Generated from docs/docs/plugins/search.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Client-side full-text search: a weighted, fuzzy search engine plus a keyboard
 driven search modal — no external search service required.
 
@@ -92,5 +94,5 @@ const results = searchItems(items, "#obsidian");
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README.md)

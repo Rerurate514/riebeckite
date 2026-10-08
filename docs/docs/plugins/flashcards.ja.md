@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/flashcards/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Flashcards
 
 `flashcards` コードブロックを学習用のカードデッキに変えるプラグインです。質問を表示して答えをめくり、前後の移動とシャッフルができます。ビルド時には静的なリストを先に出力するため、JavaScript がなくても内容を読めます。

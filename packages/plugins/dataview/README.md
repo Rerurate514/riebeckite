@@ -1,5 +1,7 @@
 # @riebeckite/plugin-dataview
 
+<!-- Generated from docs/docs/plugins/dataview.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Evaluate declarative `dataview` code blocks against the content manifest at
 build time and render them as lists, tables, task lists, or calendars. No
 client-side JavaScript is required.
@@ -225,5 +227,4 @@ with `hideFallback`.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

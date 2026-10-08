@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/navigation/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Navigation
 
 Site navigation as a Riebeckite plugin. `navigation()` derives the primary

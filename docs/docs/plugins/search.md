@@ -1,5 +1,3 @@
-<!-- Generated from packages/plugins/search/README.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
-
 # Search
 
 Client-side full-text search: a weighted, fuzzy search engine plus a keyboard

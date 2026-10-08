@@ -1,5 +1,7 @@
 # @riebeckite/plugin-marp
 
+<!-- Generated from docs/docs/plugins/marp.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Marp のスライドデッキをビルド時に描画するプラグインです。YAML frontmatter に `marp: true` を含むノートは文書全体をデッキとして描画し、`marp` コードブロックはインラインデッキとして描画します。
 
 [English](./README.md)
@@ -123,5 +125,4 @@ paginate: true
 
 ## 関連資料
 
-- [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-
+- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

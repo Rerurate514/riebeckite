@@ -1,5 +1,7 @@
 # @riebeckite/plugin-l10n
 
+<!-- Generated from docs/docs/plugins/l10n.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
 Content localization for Riebeckite Markdown. It detects a locale and a separate translation identity for every note, prefixes non-default URLs, contributes a standard language switcher, and adds `hreflang` links. It does not translate Riebeckite UI strings.
 
 [日本語](./README_ja.md)
@@ -85,5 +87,4 @@ Each translated entry receives one `<link rel="alternate" hreflang="…">` per e
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
-
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)

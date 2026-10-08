@@ -1,29 +1,118 @@
+<!-- Generated from packages/plugins/breadcrumbs/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Breadcrumbs
 
-ノートの slug 階層からパンくずリストを生成する Plugin です。
+ノートのスラッグ階層からパンくずナビゲーションをビルド時に生成する
+プラグインです。公開対象の各エントリについて、記事上部に `<nav>` を挿入し、
+階層構造を反映した BreadcrumbList の JSON-LD も出力します。クライアント側
+JavaScript は不要です。
 
-## 導入
+[English](./breadcrumbs.md)
 
-```bash
-npm install @riebeckite/plugin-breadcrumbs
-```
+## 仕組み
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`breadcrumbs()` はエントリのスラッグを「/」で区切り、必ずサイトのホームから
+始まるパンくず列を作ります。
 
-## 使用例
+- `folder/sub-folder/note` の場合: `ホーム / folder / sub-folder / note`
+- サイト直下のノートの場合: `ホーム / note`
 
-ノートがフォルダ階層のどこにあるかを読者に示し、親へ移動できるようにしたい場合に利用します。パンくずはサイトのホームから現在のノートまでをたどります。途中のセグメントには、フォルダの index ノートがあればそのタイトルを、なければタイトルケースにしたセグメントを使います。
+途中のフォルダはマニフェストと突き合わせて解決します。フォルダ自身に
+インデックスノート（フォルダと同名のスラッグを持つノート）があればその
+タイトルを使い、なければセグメントをタイトルケース（先頭大文字）にして
+代用します。最後のパンくずはそのノート自身で、パーマリンクへリンクします。
+
+マニフェストエントリの HTML にナビゲーションを挿入します。Core がその HTML を
+コンテンツルートの描画 HTML と同期するため、生成ページとフィードの両方に
+ナビゲーションが反映されます。
+
+## JSON-LD
+
+`breadcrumbs()` は階層的な BreadcrumbList を `entry.headTags` の
+`<script type="application/ld+json">` として提供します。Site シェルがこれを
+文書の `<head>` に描画します（リファレンスアプリの `_renderer.tsx` は
+`entry.headTags` を描画します）。アイテムの URL は設定の `baseUrl` に基づき
+絶対 URL に変換されます。
+
+`seo` プラグインも有効な場合、seo 側は独自の 2 階層の BreadcrumbList
+（`ホーム / ノート`）を記事 JSON-LD に含めようとします。ページの `headTags`
+を seo 拡張へ渡すと、本プラグインが提供した BreadcrumbList を検出して seo 側の
+暫定版を省略するため、Site 側で調整しなくても BreadcrumbList は 1 つだけに
+なります。本プラグインからの出力自体を止めたい場合は `jsonLd: false` を使います。
+
+## 使い方
 
 ```ts
-breadcrumbs({ homeLabel: "Blog", separator: "›" });
+import { defineConfig } from "@riebeckite/core";
+import { breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
+
+export default defineConfig({
+  // ...
+  plugins: [breadcrumbs()],
+});
 ```
 
-## 使いどころ
+## オプション
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+| オプション | 型 | 既定値 | 説明 |
+| ---------- | -- | ------ | ---- |
+| `homeLabel` | `string` | サイトタイトル | ホームのパンくずラベル |
+| `className` | `string` | `"rb-breadcrumbs"` | ルート要素の CSS クラス |
+| `ariaLabel` | `string` | `"Breadcrumbs"` | ナビゲーションのアクセシブル名 |
+| `separator` | `string` | `"/"` | パンくず間の文字 |
+| `jsonLd` | `boolean` | `true` | BreadcrumbList スクリプトを出力する |
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+```ts
+breadcrumbs({
+  homeLabel: "ブログ",
+  separator: "›",
+});
+```
 
-## 詳細仕様
+## 出力
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+```html
+<nav class="rb-breadcrumbs" data-breadcrumbs aria-label="Breadcrumbs">
+  <ol>
+    <li class="rb-breadcrumbs__item">
+      <a class="rb-breadcrumbs__link" href="/">ブログ</a>
+      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
+    </li>
+    <li class="rb-breadcrumbs__item">
+      <a class="rb-breadcrumbs__link" href="/folder">フォルダ</a>
+      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
+    </li>
+    <li class="rb-breadcrumbs__item">
+      <span class="rb-breadcrumbs__current" aria-current="page">ノート</span>
+    </li>
+  </ol>
+</nav>
+```
+
+## スタイル
+
+パッケージに `style.css` が含まれます。他のプラグインと同じように読み込みます。
+
+```ts
+import "@riebeckite/plugin-breadcrumbs/style.css";
+```
+
+## エクスポート
+
+- `breadcrumbs(options?)` — プラグインファクトリ
+- `breadcrumbsPlugin` — `breadcrumbs` のエイリアス
+- `resolveBreadcrumbsOptions(options?)` — オプションの既定値を適用する
+- `buildBreadcrumbItems({ manifest, entry, config, homeLabel })` — パンくず列を組み立てる
+- `renderBreadcrumbNav(items, options)` — ナビゲーション HTML を生成する
+- `buildBreadcrumbJsonLd(config, items)` — JSON-LD オブジェクトを生成する
+- 型: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`
+
+## 制約
+
+- パンくず列はビルド時に確定します。再ビルドすれば常に正しく再計算されます。
+- スラッグ階層のみを参照します。frontmatter の並び順や series プラグインの
+  順序は意図的に考慮しません。
+
+## 関連リンク
+
+- [プラグイン API](../reference/plugin-api.ja.md)

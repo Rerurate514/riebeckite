@@ -1,28 +1,127 @@
+<!-- Generated from packages/plugins/changelog/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Changelog
 
-変更履歴を公開コンテンツとして扱いやすくするための Plugin です。
+ローカル Git の履歴からビルド時に変更履歴を生成するプラグインです。公開ノートごとにコミット日・件名・作成者を並べた「変更履歴」セクションを追加し、サイト全体の変更履歴データセットも組み立てられます。クライアント JavaScript は不要です。
 
-## 導入
+[English](./changelog.md)
 
-```bash
-npm install @riebeckite/plugin-changelog
+## できること
+
+`changelog()` は [`@riebeckite/plugin-diff`](./diff.ja.md) と同じ方法でローカル Git を読み取ります（`execFile` で `git` を実行し、失敗時は安全に縮退）。独自のファイルシステム層は作りません。
+
+結果はマニフェストの `bodySlots` に出力します。公開エントリは `article.after-content` スロットに自分の履歴を受け取り、サイト側のレイアウトがそのスロットを描画するかどうかを決めます。プラグインは Plugin の境界を越えず、アプリケーションのルートも作りません。`siteWide` を有効にすると、`siteWideSlug` で指定したノートのスロットにサイト全体の変更履歴を書き込みます。そのノート（＝ルート）はアプリまたは作者が所有するもので、プラグインが作るものではありません。クライアントスクリプトは登録しません。
+
+## 使い方
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { changelog } from "@riebeckite/plugin-changelog";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    changelog({
+      // ノートのリポジトリ上のパスが見えるよう、コンテンツのルートを指定します。
+      cwd: "./content",
+      lookbackDays: 180,
+      dateFormat: "iso",
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## オプション
 
-## 使用例
+| オプション | 型 | 初期値 | 説明 |
+| --- | --- | --- | --- |
+| `cwd` | `string` | `config.content.directory`、無ければ `process.cwd()` | Git リポジトリを探すためのコンテンツルート |
+| `lookbackDays` | `number` | なし（全履歴） | 直近この日数以内のコミットだけを含める |
+| `dateFormat` | `"iso" \| "long" \| "short"` | `"iso"` | 日付の表示形式 |
+| `locale` | `string` | `"en"` | `"long"` / `"short"` のロケール |
+| `perNote` | `boolean` | `true` | 公開ノートごとに履歴セクションを追加する |
+| `siteWide` | `boolean` | `false` | サイト全体の変更履歴を生成して注入する |
+| `siteWideSlug` | `string` | `"changelog"` | サイト全体の変更履歴を受け取るノート |
+| `maxPerNote` | `number` | `10` | ノートごとに表示するコミット上限 |
+| `maxSiteWide` | `number` | `50` | サイト全体で表示するコミット上限 |
+| `showAuthor` | `boolean` | `true` | コミット作成者を表示する |
+| `heading` | `boolean` | `true` | `<h2>` 見出しを描画する |
+| `perNoteHeading` | `string` | `"Change history"` | ノートごとの見出し文言 |
+| `siteWideHeading` | `string` | `"Changelog"` | サイト全体の見出し文言 |
+| `className` | `string` | `"rr-changelog"` | ルート CSS クラス |
 
-更新履歴をコンテンツとして整理し、サイト上で変更内容を追いやすくしたい場合に利用します。Riebeckite自体やプロジェクトのリリースノートを公開する用途に向いています。
+## 出力
 
-コンテンツディレクトリが Git ワーキングツリー内にあるビルドでは、記事末尾に「Change history」としてコミット日・件名・作成者の一覧が追加されます。履歴の検索は `content.directory` を基準に行うため、ビルドの作業ディレクトリがモノレポのアプリ側であっても動作します。ツリーの外にある場合は `changelog-content-outside-repository` 警告診断を出し、何も追加しません。
+`article.after-content` スロットに次のような断片を追加します。
 
-## 使いどころ
+```html
+<section class="rr-changelog rr-changelog--note" data-changelog-note>
+  <h2 class="rr-changelog__heading">Change history</h2>
+  <ol class="rr-changelog__list">
+    <li class="rr-changelog__item">
+      <time class="rr-changelog__date" datetime="2026-09-30T09:00:00+09:00">2026-09-30</time>
+      <span class="rr-changelog__subject">Fix the sidebar offset</span>
+      <span class="rr-changelog__author">Author Name</span>
+      <code class="rr-changelog__hash" title="…完全なハッシュ…">abc1234</code>
+    </li>
+  </ol>
+</section>
+```
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+`data-changelog-note` と `data-changelog-site` は、2 種類の断片をスタイリングと重複防止のために識別する属性です。
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+## アプリ側の接続（サイト全体の変更履歴）
 
-## 詳細仕様
+サイト全体の一覧はページではなくデータです。ルートはアプリが所有します。プラグインは既存ノートの `article.after-content` スロットに書き込む（`siteWide: true` と `siteWideSlug`。その slug の公開ノートが必要）か、データセットを公開してアプリ自身に描画させます。
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+```ts
+import {
+  buildSiteChangelog,
+  GitChangelogReader,
+  renderSiteChangelog,
+  resolveChangelogOptions,
+} from "@riebeckite/plugin-changelog";
 
+const options = resolveChangelogOptions({ lookbackDays: 90 });
+const manifest = await content.getManifest();
+const reader = new GitChangelogReader({ cwd: "./content" });
+const commits = await reader.getRecentCommits();
+const dataset = buildSiteChangelog({
+  entries: manifest.publicEntries,
+  commits,
+  contentIndex: manifest.contentIndex,
+  options,
+});
+const html = renderSiteChangelog(dataset, options);
+```
+
+参照アプリはマニフェストの `bodySlots` を `apps/web/app/components/article/article.tsx` で描画します。専用ルートでは公開された HTML をそのまま描画できます。
+
+## 失敗時の挙動
+
+`git` を起動できない場合は `changelog-git-unavailable` 警告診断、コンテンツディレクトリが Git ワーキングツリーの外にある場合は `changelog-content-outside-repository` 警告診断を出し、どちらの場合もロガー警告を伴い、ビルド成果物には何も加えません。履歴が取得できないことを理由にビルドが失敗することはなく、空のリポジトリでも同じです。
+
+## スタイル
+
+パッケージは安定した `.rr-changelog` ルートフックを持つ `style.css` を同梱します。テーマはプラグインを編集せずに見た目を変更できます。
+
+```ts
+import "@riebeckite/plugin-changelog/style.css";
+```
+
+## 公開 API
+
+- `changelog(options?)` — プラグインファクトリ
+- `changelogPlugin` — `changelog` の別名
+- `resolveChangelogOptions(options?)` — 既定値を適用
+- `GitChangelogReader` — Git 履歴リーダー（`getFileHistory`、`getRecentCommits`、`isAvailable`）
+- `buildNoteChangeHistory(entry, commits, options)` — ノート単位のデータセット
+- `buildSiteChangelog({ entries, commits, contentIndex, options })` — サイト全体のデータセット
+- `renderNoteChangeHistory(history, options)` / `renderSiteChangelog(changelog, options)` — HTML レンダラ
+- `filterChangelogCommits(commits, options)` / `formatChangelogDate(date, options)` / `resolveLookbackSince(days, now?)` — 純粋な補助関数
+- 型: `ChangelogOptions`、`ResolvedChangelogOptions`、`ChangelogCommit`、`ChangelogRecord`、`NoteChangeHistory`、`SiteChangelog`、`SiteChangelogEntry`、`SiteChangelogNote`、`ChangelogDateFormat`、`GitChangelogReaderOptions`
+
+## 関連資料
+
+- [plugin-diff](./diff.ja.md) — リビジョン履歴と行差分
+- [プラグインシステム](../reference/plugin-api.ja.md)

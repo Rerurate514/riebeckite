@@ -46,7 +46,7 @@ export default defineConfig({
 });
 ```
 
-各 Plugin ページでは、package 名、import 名、よく使う設定を説明します。詳しい option は各 package README を参照してください。
+各 Plugin ページは package README から生成します。英語は `README.md`、日本語は `README_ja.md` が一次情報です。生成後の Plugin ページを直接編集せず、package README を編集して `pnpm docs:sync` を実行してください。自動検査ではファイルの組、生成結果、リンク、記載した識別子を確認しますが、翻訳の自然さや説明の意味が正しいかどうかは人がレビューします。
 
 ## 公式 Plugin
 

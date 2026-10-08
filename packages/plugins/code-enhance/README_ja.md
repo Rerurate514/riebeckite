@@ -26,21 +26,27 @@ export default defineConfig({
 - `bash`、`console`、`sh` などを端末風に表示し、必要に応じて `$` を付ける
 - キーボードで内容を確認できるよう、`<pre>` をフォーカス可能にする
 
-## 主なオプション
+## オプション
 
-| オプション | 既定値 | 内容 |
-| --- | --- | --- |
-| `theme` | GitHub の明暗テーマ | Shiki テーマ。文字列または `{ light, dark }` |
-| `lineNumbers` | `false` | 行番号を表示するか |
-| `copyButton` | `true` | コピーボタンを表示するか |
-| `filename` | `true` | 見出しにファイル名を表示するか |
-| `lineHighlight` / `diffHighlight` | `true` | 強調表示・差分表示を有効にするか |
-| `collapsible` / `defaultCollapsed` | `false` | 折りたたみと初期状態 |
-| `terminal` / `commandPrompt` | `true` | 端末風表示と `$` の付与 |
-| `wrapToggle` | `true` | 折り返し切替を表示するか |
-| `copyLabel` / `copiedLabel` | `"Copy"` / `"Copied"` | コピー前後のボタン文言（クライアントへ渡す） |
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `theme` | `string | { light: string; dark: string }` | `{ light: "github-light", dark: "github-dark" }` | Shiki テーマ |
+| `lineNumbers` | `boolean` | `false` | 行番号を表示する |
+| `copyButton` | `boolean` | `true` | コピーボタンを表示する |
+| `filename` | `boolean` | `true` | ヘッダーにファイル名を表示する |
+| `lineHighlight` | `boolean` | `true` | メタデータによる行・文字の強調を適用する |
+| `diffHighlight` | `boolean` | `true` | `+` / `-` で始まる行を色付けする |
+| `collapsible` | `boolean` | `false` | 折りたたみボタンを追加する |
+| `terminal` | `boolean` | `true` | シェル言語を端末風に表示する |
+| `commandPrompt` | `boolean` | `true` | 端末の各行に `$` を付ける |
+| `wrapToggle` | `boolean` | `true` | 折り返し切替ボタンを表示する |
+| `defaultCollapsed` | `boolean` | `false` | `collapsible` 有効時に折りたたんで開始する |
+| `copyLabel` | `string` | `"Copy"` | クライアントに渡すコピー前の文言 |
+| `copiedLabel` | `string` | `"Copied"` | コピー後に表示する文言 |
 
-`codeEnhance({ copyLabel, copiedLabel })` はコピー前後のボタン文言をクライアントへ渡します。`initCodeEnhance({ copyLabel, copiedLabel })` を直接呼ぶ場合も同じ文言を指定できます。
+## クライアント側の初期化
+
+`codeEnhance()` は `copyLabel` と `copiedLabel` をクライアントエントリーへ渡します。`initCodeEnhance(options?)` はコピー、折り返し、折りたたみボタンのために document 全体のクリックハンドラーを登録します。直接呼び出す場合も同じ二つの文言を指定できます。
 
 ## 公開 API
 
@@ -53,4 +59,3 @@ export default defineConfig({
 ## 関連資料
 
 - [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-

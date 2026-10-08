@@ -1,31 +1,49 @@
+<!-- Generated from packages/plugins/attachment/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Attachment
 
-Markdown から参照される添付ファイルを公開サイトで扱うための Plugin です。
+Obsidian 形式の添付ファイルリンクを、ダウンロードリンクや添付カードとして表示するプラグインです。
 
-## 導入
+[English](./attachment.md)
 
-```bash
-npm install @riebeckite/plugin-attachment
+## まず何を解決するか
+
+`[[report.pdf]]` や `![[report.pdf]]` のような画像以外のウィキリンクを扱います。`@riebeckite/plugin-obsidian-markdown` がリンク先を添付ファイルとして解決したとき、このプラグインが表示を引き受けます。未登録でも通常のダウンロードリンクにはなりますが、埋め込み用のカードは作られません。
+
+## 設定
+
+Obsidian Markdown プラグインとともに登録します。
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), attachment()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## リンクと埋め込みで表示を分ける
 
-## 使用例
+- `[[report.pdf]]` は、`download` 属性を持つ通常のリンクになります。
+- `![[report.pdf]]` は、拡張子、ファイル名、ダウンロードリンクを含む添付カードになります。
 
-ノートから PDF や ZIP などの添付ファイルへリンクし、公開サイトから参照できるようにする用途です。
+カードのファイルサイズは `config.content.directory` 配下から読み取ります。パスはコンテンツディレクトリの外へ出られないよう検査され、読めないファイルのサイズは表示しません。
 
-```markdown
-[[files/specification.pdf|仕様書を開く]]
-[[files/example.zip|サンプルを取得]]
-```
+## オプション
 
-`[[file]]` はダウンロードリンク、`![[file]]` はファイルサイズ付きの添付カードとして展開されます。
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `showSize` | `boolean` | `true` | 埋め込みカードにファイルサイズを表示するか |
 
-## 使いどころ
+## 公開 API
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `attachment(options?)` / `attachmentPlugin` — プラグインファクトリ
+- `AttachmentOptions` — オプションの型
 
-## 詳細仕様
+## 関連資料
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
-
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.ja.md)

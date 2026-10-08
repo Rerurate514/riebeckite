@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
@@ -6,6 +8,7 @@ import {
   GENERATED_MARKER_PREFIX,
   generatedMarker,
   planSync,
+  readGeneratedPages,
   renderPluginPage,
   rewriteReadmeLinks,
   rewriteTarget,
@@ -101,39 +104,65 @@ test("rewriteReadmeLinks does not rewrite links inside fenced code", () => {
 test("planSync reports missing, outdated, and stale pages", () => {
   const desired = [
     {
-      slug: "alpha",
+      pageName: "alpha.md",
       pagePath: path.join(docsPluginsRoot, "alpha.md"),
       content: "a",
     },
     {
-      slug: "beta",
-      pagePath: path.join(docsPluginsRoot, "beta.md"),
+      pageName: "beta.ja.md",
+      pagePath: path.join(docsPluginsRoot, "beta.ja.md"),
       content: "b",
     },
   ];
   const onDisk = new Map([
-    ["alpha", "old"],
-    ["gamma", "c"],
+    ["alpha.md", "old"],
+    ["gamma.md", "c"],
   ]);
-  const { writes, stale } = planSync(desired, onDisk);
-  assert.deepEqual(
-    writes.map((page) => page.slug),
-    ["alpha", "beta"],
+  const { writes, stale } = planSync(
+    desired,
+    onDisk,
+    new Set(["alpha.md", "beta.ja.md"]),
   );
-  assert.deepEqual(stale, ["gamma"]);
+  assert.deepEqual(
+    writes.map((page) => page.pageName),
+    ["alpha.md", "beta.ja.md"],
+  );
+  assert.deepEqual(stale, ["gamma.md"]);
 });
 
 test("planSync reports no work when pages already match", () => {
   const desired = [
     {
-      slug: "alpha",
+      pageName: "alpha.md",
       pagePath: path.join(docsPluginsRoot, "alpha.md"),
       content: "a",
     },
   ];
-  const { writes, stale } = planSync(desired, new Map([["alpha", "a"]]));
+  const { writes, stale } = planSync(
+    desired,
+    new Map([["alpha.md", "a"]]),
+    new Set(["alpha.md"]),
+  );
   assert.deepEqual(writes, []);
   assert.deepEqual(stale, []);
+});
+
+test("does not remove a generated page when its required source is missing", () => {
+  const onDisk = new Map([["alpha.ja.md", "generated"]]);
+  const { stale } = planSync([], onDisk, new Set(["alpha.md", "alpha.ja.md"]));
+  assert.deepEqual(stale, []);
+});
+
+test("ignores manually maintained pages when finding generated output", () => {
+  const root = fs.mkdtempSync(
+    path.join(os.tmpdir(), "riebeckite-plugin-docs-"),
+  );
+  fs.writeFileSync(path.join(root, "manual.md"), "# Manual\n");
+  fs.writeFileSync(
+    path.join(root, "generated.md"),
+    `${generatedMarker("generated")}\n`,
+  );
+  assert.deepEqual([...readGeneratedPages(root).keys()], ["generated.md"]);
 });
 
 function countTopLevelHeadings(markdown) {
@@ -155,11 +184,23 @@ function countTopLevelHeadings(markdown) {
 }
 
 test("every generated Plugin page has exactly one top-level heading", () => {
-  for (const page of buildDesiredPages()) {
+  const { pages, errors } = buildDesiredPages();
+  assert.deepEqual(errors, []);
+  for (const page of pages) {
     assert.equal(
       countTopLevelHeadings(page.content),
       1,
-      `${page.slug}.md should expose exactly one H1`,
+      `${page.pageName} should expose exactly one H1`,
     );
   }
+});
+
+test("builds one generated page for each README language", () => {
+  const { pages, errors } = buildDesiredPages();
+  assert.deepEqual(errors, []);
+  assert.equal(pages.length, 138);
+  assert.ok(pages.some((page) => page.pageName === "diff.md"));
+  const japanese = pages.find((page) => page.pageName === "diff.ja.md");
+  assert.ok(japanese);
+  assert.ok(japanese.content.includes(generatedMarker("diff", "README_ja.md")));
 });

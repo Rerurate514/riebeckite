@@ -93,8 +93,8 @@ function titleFromSlug(slug) {
   );
 }
 
-export function generatedMarker(slug) {
-  return `${GENERATED_MARKER_PREFIX}${slug}/README.md. Do not edit this page directly; edit the package README and run \`pnpm docs:sync\`. -->`;
+export function generatedMarker(slug, readmeName = "README.md") {
+  return `${GENERATED_MARKER_PREFIX}${slug}/${readmeName}. Do not edit this page directly; edit the package README and run \`pnpm docs:sync\`. -->`;
 }
 
 const EXTERNAL_PATTERN = /^(https?:|mailto:|tel:|data:)/i;
@@ -198,7 +198,7 @@ export function renderPluginPage(slug, readmeText, options = {}) {
     documentDirectory,
     slug,
   }).trim();
-  return `${generatedMarker(slug)}\n\n# ${titleFromSlug(slug)}\n\n${body}\n`;
+  return `${generatedMarker(slug, options.readmeName)}\n\n# ${titleFromSlug(slug)}\n\n${body}\n`;
 }
 
 function collectManifestSlugs() {
@@ -213,53 +213,65 @@ function collectManifestSlugs() {
 }
 
 export function buildDesiredPages() {
-  return collectManifestSlugs().map((slug) => {
-    const readmePath = path.join(pluginsRoot, slug, "README.md");
-    const readmeText = fs.readFileSync(readmePath, "utf8");
-    return {
-      slug,
-      pagePath: path.join(docsPluginsRoot, `${slug}.md`),
-      content: renderPluginPage(slug, readmeText),
-    };
-  });
+  const errors = [];
+  const pages = [];
+  for (const slug of collectManifestSlugs()) {
+    for (const readmeName of ["README.md", "README_ja.md"]) {
+      const readmePath = path.join(pluginsRoot, slug, readmeName);
+      const pageName = `${slug}${readmeName === "README.md" ? "" : ".ja"}.md`;
+      if (!fs.existsSync(readmePath)) {
+        errors.push(`packages/plugins/${slug}/${readmeName} is missing`);
+        continue;
+      }
+      pages.push({
+        pageName,
+        pagePath: path.join(docsPluginsRoot, pageName),
+        content: renderPluginPage(slug, fs.readFileSync(readmePath, "utf8"), {
+          readmeName,
+        }),
+      });
+    }
+  }
+  return { pages, errors };
 }
 
-export function planSync(desiredPages, onDisk) {
+export function planSync(desiredPages, onDisk, expectedPageNames) {
   const writes = [];
   for (const page of desiredPages) {
-    const current = onDisk.get(page.slug);
+    const current = onDisk.get(page.pageName);
     if (current === undefined || current !== page.content) {
       writes.push(page);
     }
   }
-  const knownSlugs = new Set(desiredPages.map((page) => page.slug));
+  const knownPageNames =
+    expectedPageNames ?? new Set(desiredPages.map((page) => page.pageName));
   const stale = [...onDisk.keys()]
-    .filter((slug) => !knownSlugs.has(slug))
+    .filter((pageName) => !knownPageNames.has(pageName))
     .sort();
   return { writes, stale };
 }
 
-function readGeneratedPages() {
-  if (!fs.existsSync(docsPluginsRoot)) return new Map();
+export function readGeneratedPages(root = docsPluginsRoot) {
+  if (!fs.existsSync(root)) return new Map();
   const onDisk = new Map();
-  for (const name of fs.readdirSync(docsPluginsRoot)) {
-    if (!name.endsWith(".md") || name.endsWith(".ja.md")) continue;
-    const absolute = path.join(docsPluginsRoot, name);
+  for (const name of fs.readdirSync(root)) {
+    if (!name.endsWith(".md")) continue;
+    const absolute = path.join(root, name);
     const text = fs.readFileSync(absolute, "utf8");
     if (!text.startsWith(GENERATED_MARKER_PREFIX)) continue;
-    onDisk.set(name.slice(0, -".md".length), text);
+    onDisk.set(name, text);
   }
   return onDisk;
 }
 
-function runWrite(desiredPages, onDisk) {
-  const { writes, stale } = planSync(desiredPages, onDisk);
+function runWrite(desiredPages, onDisk, expectedPageNames, sourceErrors) {
+  const { writes, stale } = planSync(desiredPages, onDisk, expectedPageNames);
   for (const page of writes) {
     fs.mkdirSync(path.dirname(page.pagePath), { recursive: true });
     fs.writeFileSync(page.pagePath, page.content);
   }
-  for (const slug of stale) {
-    fs.rmSync(path.join(docsPluginsRoot, `${slug}.md`));
+  for (const pageName of stale) {
+    fs.rmSync(path.join(docsPluginsRoot, pageName));
   }
   console.log(
     `Plugin reference sync: ${writes.length} page(s) written, ${stale.length} stale page(s) removed.`,
@@ -267,29 +279,29 @@ function runWrite(desiredPages, onDisk) {
   if (stale.length > 0) {
     console.log(`Removed: ${stale.join(", ")}`);
   }
+  for (const error of sourceErrors) console.error(`- ${error}`);
+  if (sourceErrors.length > 0) process.exitCode = 1;
 }
 
-function runCheck(desiredPages, onDisk) {
-  const { writes, stale } = planSync(desiredPages, onDisk);
-  const errors = [];
+function runCheck(desiredPages, onDisk, expectedPageNames, sourceErrors) {
+  const { writes, stale } = planSync(desiredPages, onDisk, expectedPageNames);
+  const errors = [...sourceErrors];
   for (const page of writes) {
     errors.push(
-      onDisk.has(page.slug)
-        ? `docs/docs/plugins/${page.slug}.md is out of date`
-        : `docs/docs/plugins/${page.slug}.md is missing`,
+      onDisk.has(page.pageName)
+        ? `docs/docs/plugins/${page.pageName} is out of date`
+        : `docs/docs/plugins/${page.pageName} is missing`,
     );
   }
-  for (const slug of stale) {
-    errors.push(
-      `docs/docs/plugins/${slug}.md has no matching Plugin package`,
-    );
+  for (const pageName of stale) {
+    errors.push(`docs/docs/plugins/${pageName} has no matching Plugin package`);
   }
   if (errors.length > 0) {
     console.error(
       `Plugin reference sync check failed (${errors.length} issue(s)):`,
     );
     for (const error of errors) console.error(`- ${error}`);
-    console.error("Run `pnpm docs:sync` to regenerate the English pages.");
+    console.error("Run `pnpm docs:sync` to regenerate the Plugin pages.");
     process.exitCode = 1;
     return;
   }
@@ -300,12 +312,15 @@ function runCheck(desiredPages, onDisk) {
 
 export function main(argv = process.argv.slice(2)) {
   const check = argv.includes("--check");
-  const desiredPages = buildDesiredPages();
+  const { pages: desiredPages, errors: sourceErrors } = buildDesiredPages();
   const onDisk = readGeneratedPages();
+  const expectedPageNames = new Set(
+    collectManifestSlugs().flatMap((slug) => [`${slug}.md`, `${slug}.ja.md`]),
+  );
   if (check) {
-    runCheck(desiredPages, onDisk);
+    runCheck(desiredPages, onDisk, expectedPageNames, sourceErrors);
   } else {
-    runWrite(desiredPages, onDisk);
+    runWrite(desiredPages, onDisk, expectedPageNames, sourceErrors);
   }
 }
 

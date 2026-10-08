@@ -1,24 +1,50 @@
+<!-- Generated from packages/plugins/excalidraw/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Excalidraw
 
-Obsidian Excalidraw の図を記事本文へ埋め込んで表示する Plugin です。
+Obsidian の Excalidraw 埋め込みを SVG として表示するプラグインです。
 
-## 導入
+[English](./excalidraw.md)
 
-```bash
-npm install @riebeckite/plugin-excalidraw
+## できること
+
+`![[drawing.excalidraw]]` のような埋め込みウィキリンクを検出し、図のデータを含むプレースホルダーを出力します。ブラウザ側の `initExcalidraw` が、そのプレースホルダーを SVG に置き換えます。通常のリンクや対象外のファイルは処理せず、添付ファイル用のレンダラーに任せます。
+
+## 設定
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { excalidraw } from "@riebeckite/plugin-excalidraw";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), excalidraw()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## 読み込めるファイル
 
-## 使用例
+- `*.excalidraw` — `elements`、任意の `appState` と `files` を持つ JSON シーン
+- `*.excalidraw.md` — Obsidian Excalidraw が保存する Markdown。`## Drawing` 内の `json` と `compressed-json` を読み取ります。
 
-Obsidian Excalidraw で作成した図を記事と一緒に公開したい場合に利用します。Excalidrawノートや埋め込み画像を含むVaultを、その関係を保ったまま公開する用途です。
+`![[drawing.excalidraw|800]]` なら幅を、`![[drawing.excalidraw|800x600]]` なら幅と高さを指定できます。ファイルがない、内容が不正、またはコンテンツディレクトリ外を指す場合は、エラー用プレースホルダーを表示します。
 
-`![[drawing.excalidraw]]` はビルド時にプレースホルダが生成され、ブラウザ側で SVG に置き換わって記事内に図が表示されます。`.excalidraw` ファイルの配置が必要です。
+## 描画のタイミング
 
-![[HW]]
+既定では、図が表示領域の近くに入ってから描画します。`IntersectionObserver` が使えない環境を含め、描画に失敗した要素は `data-excalidraw="error"` になり、エラー表示へ切り替わります。
 
-## 詳細仕様
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `lazy` | `boolean` | `true` | 表示領域に近づいてから SVG を描画するか |
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+## 公開 API
 
+- `excalidraw(options?)` / `excalidrawPlugin` — プラグインファクトリ
+- `ExcalidrawOptions` — オプションの型
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.ja.md)
+- [`@riebeckite/plugin-attachment`](./attachment.ja.md)

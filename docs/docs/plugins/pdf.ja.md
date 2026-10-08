@@ -1,30 +1,85 @@
+<!-- Generated from packages/plugins/pdf/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # PDF
 
-PDF コンテンツや PDF 埋め込みを扱うための Plugin です。
+Obsidian 形式の PDF 添付ファイルをインライン表示するプラグインです。
 
-## 導入
+[English](./pdf.md)
 
-```bash
-npm install @riebeckite/plugin-pdf
+## まず何を解決するか
+
+`pdf()` は、埋め込み形式の PDF 添付（`![[report.pdf]]`）をダウンロード専用のカードではなく、ブラウザ標準の PDF ビューアでインライン表示します。ビルド時（SSR）だけで完結し、クライアント JavaScript は不要です。
+
+`@riebeckite/plugin-obsidian-markdown` は画像でも Markdown でもないウィキリンクを汎用の `attachment` として解決するため、PDF は `.pdf` 拡張子で判定します。`kind: "pdf"` が直接渡された場合も処理するので、将来 PDF 専用の kind が導入されても動作します。
+
+このレンダラーは `@riebeckite/plugin-attachment` と `@riebeckite/plugin-media` より先（`order: -20`）に実行されるため、PDF の埋め込みが汎用の添付カードに奪われることはありません。PDF 以外のダウンロードリンクを保つには `attachment()` を併用してください。
+
+## 設定
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { pdf } from "@riebeckite/plugin-pdf";
+
+export default defineConfig({
+  // ...
+  plugins: [obsidianMarkdown(), attachment(), pdf()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## 出力
 
-## 使用例
+埋め込みは `![[report.pdf]]` のように書きます。
 
-記事から PDF を参照したときに、単なる外部リンクではなく閲覧しやすい形で扱いたい場合に利用します。
-
-```markdown
-[[documents/guide.pdf|資料]]
+```html
+<figure class="rr-pdf" data-pdf-path="..." style="--rr-pdf-height: 640px">
+  <object
+    class="rr-pdf__viewer"
+    data="/assets/attachments/report.pdf#page=1"
+    type="application/pdf"
+    aria-label="report.pdf"
+  >
+    <a class="rr-pdf__fallback" href="..." download>Download PDF</a>
+  </object>
+  <figcaption class="rr-pdf__meta">
+    <span class="rr-pdf__format">PDF</span>
+    <span class="rr-pdf__name">report.pdf</span>
+    <span class="rr-pdf__size">1.2 MB</span>
+    <a class="rr-pdf__download" href="..." download>Download PDF</a>
+  </figcaption>
+</figure>
 ```
 
-`![[report.pdf]]` はビルド時にページ内 PDF ビューアへ置き換わり、ダウンロード用リンクとファイル情報も併記されます。表示には PDF ファイルの配置が必要です。
+- `<object>` はブラウザ内蔵の PDF ビューアを使い、その中のリンクが PDF 表示に対応しない環境向けのフォールバックになります。
+- ビューアの下には常にダウンロードリンクと、形式バッジ・ファイル名・サイズを表示します。サイズは `config.content.directory` 配下から読み取り、読めない場合は表示しません。
+- `initialPage` と `toolbar` はビューア URL のフラグメント（`#page=2&toolbar=0`）として埋め込みます。これはブラウザ間で共通の慣習ですが、一部のビューアは解釈しないことがあります。
+- 埋め込みには Theme が対象にできる安定した `rr-pdf` ルートフックが付きます。
 
-## 使いどころ
+通常のリンク（`[[report.pdf]]`）は `@riebeckite/plugin-attachment`（または Markdown のフォールバック）に委ね、従来どおりのダウンロードリンクにします。
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## オプション
 
-## 詳細仕様
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `height` | `string \| number` | `"640px"` | ビューアの高さ。数値は px、文字列は CSS の長さとして扱います。 |
+| `initialPage` | `number` | `1` | 最初に開くページ番号。 |
+| `toolbar` | `boolean` | `true` | `false` で `#toolbar=0` を付けてビューアのツールバーを隠します。 |
+| `showMetadata` | `boolean` | `true` | ビューア下に形式バッジ・ファイル名・サイズを表示するか。 |
+| `downloadLabel` | `string` | `"Download PDF"` | ダウンロードリンクのラベル。 |
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+スタイルは `style.css` に同梱されます。
 
+## 公開 API
+
+- `pdf(options?)` / `pdfPlugin` — プラグインファクトリ
+- `buildPdfViewerUrl(url, options)` — ビューア URL の生成
+- `isPdfRenderTarget(context)` — PDF 判定
+- `renderPdf(context, options)` — レンダラー実装
+- 型: `PdfOptions`、`ResolvedPdfOptions`
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.ja.md)
+- [`@riebeckite/plugin-attachment`](./attachment.ja.md)

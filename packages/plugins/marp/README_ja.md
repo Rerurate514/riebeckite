@@ -118,6 +118,7 @@ paginate: true
 ## 主なエクスポート
 
 - `marp(options?)` / `marpPlugin(options?)`: プラグインを作成する
+- `isMarpDocument(matter?)`: frontmatter の `marp: true` を判定するヘルパー
 - 型: `MarpOptions`、`MarpDeck`、`MarpBuildRenderResult`
 
 ## 関連資料

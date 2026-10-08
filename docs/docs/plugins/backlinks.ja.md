@@ -1,28 +1,51 @@
+<!-- Generated from packages/plugins/backlinks/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Backlinks
 
-現在の記事を参照している他の記事を表示する Plugin です。
+現在の記事を参照している公開済みノートを、記事末尾に表示するためのプラグインです。
 
-## 導入
+[English](./backlinks.md)
 
-```bash
-npm install @riebeckite/plugin-backlinks
+## できること
+
+`backlinksPlugin()` はコンテンツマニフェストから被リンクを集め、公開対象のノートだけをマニフェスト順で `article.footer` body slot に追加します。`Backlinks` コンポーネントはその結果をフッターのリンク一覧として描画します。表示対象がなければ何も出力しません。
+
+## 設定と配置
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+
+export default defineConfig({
+  // ...
+  plugins: [backlinksPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+プラグインは公開済みの被リンクがある記事へ自動的に出力を追加します。記事レイアウトで `article.footer` body slot を描画してください。
 
-## 使用例
+### 独自の配置
 
-ある記事を参照している別の記事を自動的に辿れるようにしたい Digital Garden で利用します。たとえば `A.md` から `[[B]]` を参照すると、B 側から A を発見できるようになります。
+Plugin が追加する footer ではなく、アプリ側で表示位置を決める場合は、記事ルートなどでマニフェストを取得し、現在の `slug` に対する被リンクを渡してください。
 
-このページをリンクしているノートがある場合、記事末尾に Backlinks として一覧が表示されます。リンクしているノートが1件もない場合は非表示です。
+```tsx
+import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
 
-## 使いどころ
+const manifest = await content.getManifest();
+const items = getPublishedBacklinks({ manifest, config, slug, resolveTitle });
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+return <Article footerContent={<Backlinks backlinks={items} />} />;
+```
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+## 公開 API
 
-## 詳細仕様
+- `backlinksPlugin()` — プラグインファクトリ
+- `Backlinks` — 被リンク一覧コンポーネント
+- `getPublishedBacklinks({ manifest, config, slug, resolveTitle })` — 公開済みの被リンクを解決する関数
+- `ArticleBacklink` — `{ slug, permalink, title }` の型。`permalink` は解決済みの canonical URL
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+## 関連資料
 
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-local-graph`](./local-graph.ja.md)
+- [`@riebeckite/plugin-garden-explorer`](./garden-explorer.ja.md)

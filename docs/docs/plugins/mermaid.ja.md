@@ -1,44 +1,61 @@
+<!-- Generated from packages/plugins/mermaid/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Mermaid
 
-Mermaid のコードブロックを図として表示する Plugin です。フローチャートなどを Markdown 内に記述できます。
+`mermaid` コードブロックを SVG の図として表示するプラグインです。既定ではビルド時に描画し、描画できなかった図だけをブラウザ側で再試行します。
 
-## 導入
+[English](./mermaid.md)
 
-```bash
-npm install @riebeckite/plugin-mermaid
+## 設定する
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { mermaid } from "@riebeckite/plugin-mermaid";
+
+export default defineConfig({
+  // ...
+  plugins: [
+    mermaid({
+      render: "build",
+      theme: { light: "default", dark: "dark" },
+    }),
+  ],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+このプラグインは `order: -10` で実行されます。Mermaid のコードブロックを先に処理したい場合に適した順序です。
 
-## 使用例
+## どのように描画されるか
 
-記事内に Mermaid のコードブロックを書くと、その場で図として表示できます。
+` ```mermaid ` のコードブロックは `figure.rr-mermaid` に置き換わります。図のタイトルはコードブロックの title、またはソース内の `%% caption: ...` 行から取得します。図には代替テキスト相当の `role="img"` を付け、必要に応じて元の記法を折りたたみ表示します。
 
-### ソース
+`render: "build"` または `"both"` では、Puppeteer が起動するヘッドレス Chromium 上で Mermaid を実行し、静的な SVG を生成します。簡易な DOM 実装や寸法の推測には頼らないため、ブラウザと同じレイアウトエンジンで図を作れます。Mermaid は `securityLevel: "strict"` で実行されます。
 
-````markdown
-```mermaid
-graph LR
-  A[Markdown] --> B[Riebeckite]
-  B --> C[Web site]
-```
-````
+構文エラーは `invalid-diagram`、描画環境の問題は `renderer-error` として区別して診断します。ビルドで SVG を作れなかった図には `data-mermaid="pending"` が付き、クライアント側が描画を引き継ぎます。
 
-### 実行例
+## クライアント側の再試行
 
-```mermaid
-graph LR
-  A[Markdown] --> B[Riebeckite]
-  B --> C[Web site]
-```
+`initMermaidDiagrams` は保留中の図だけを描画します。Mermaid のインスタンスがなければ jsDelivr から Mermaid 11 を読み込みます。描画に失敗した場合は `data-mermaid="error"` となり、CSS のプレースホルダー表示に切り替わります。
 
-## 使いどころ
+明暗別のテーマを指定した場合は、`html[data-theme]` を優先し、なければ OS の配色設定に従います。
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## オプション
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `render` | `"build"` | `"build"`、`"client"`、`"both"` のいずれで描画するか |
+| `theme` | `{ light: "default", dark: "dark" }` | Mermaid のテーマ名、または明暗別のテーマ |
+| `caption` | `true` | タイトルまたは `%% caption:` をキャプションとして表示する |
+| `fallback` | `true` | 元の Mermaid 記法を `<details>` に残す |
 
-## 詳細仕様
+`"client"` はビルド時の描画を行いません。`"both"` は後方互換の値で、現在は `"build"` と同じくビルドを優先し、失敗時だけクライアント側へ切り替えます。
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+## 主なエクスポート
 
+- `mermaid(options?)`: プラグインを作成する
+- `initMermaidDiagrams`: クライアント側の描画を初期化する
+- 型: `MermaidOptions`、`MermaidClientOptions`、`MermaidRenderMode`、`MermaidTheme`
+
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)

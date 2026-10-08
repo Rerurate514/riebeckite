@@ -1,42 +1,63 @@
+<!-- Generated from packages/plugins/code-enhance/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Code Enhance
 
-コードブロックに行番号、ファイル名、行ハイライト、コピー操作などの表示機能を追加する Plugin です。
+Shiki によるシンタックスハイライトへ、コピー、折り返し、折りたたみなどの操作を加えるプラグインです。
 
-## 導入
+[English](./code-enhance.md)
 
-```bash
-npm install @riebeckite/plugin-code-enhance
+## 設定
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { codeEnhance } from "@riebeckite/plugin-code-enhance";
+
+export default defineConfig({
+  // ...
+  plugins: [codeEnhance({ lineNumbers: true, wrapToggle: true })],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`codeEnhance()` は `rehype-pretty-code` を使ってコードブロックを処理し、ファイル名と操作ボタンを持つ `.rr-code` 要素に整えます。ボタンの操作はクライアントエントリーが担当します。
 
-## 使用例
+## 表示と操作
 
-コードブロックの可読性を高めたい技術記事で利用します。通常の fenced code block を書き、Plugin 側で表示を強化します。
+- Shiki のテーマによる色付け、行番号、メタデータによる行・文字の強調
+- `+` と `-` で始まる行の差分表示
+- コピー、折り返し、任意の折りたたみ
+- `bash`、`console`、`sh` などを端末風に表示し、必要に応じて `$` を付ける
+- キーボードで内容を確認できるよう、`<pre>` をフォーカス可能にする
 
-### ソース
+## オプション
 
-````markdown
-```ts title="hello.ts"
-const message = "Hello, Riebeckite";
-console.log(message);
-```
-````
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `theme` | `string | { light: string; dark: string }` | `{ light: "github-light", dark: "github-dark" }` | Shiki テーマ |
+| `lineNumbers` | `boolean` | `false` | 行番号を表示する |
+| `copyButton` | `boolean` | `true` | コピーボタンを表示する |
+| `filename` | `boolean` | `true` | ヘッダーにファイル名を表示する |
+| `lineHighlight` | `boolean` | `true` | メタデータによる行・文字の強調を適用する |
+| `diffHighlight` | `boolean` | `true` | `+` / `-` で始まる行を色付けする |
+| `collapsible` | `boolean` | `false` | 折りたたみボタンを追加する |
+| `terminal` | `boolean` | `true` | シェル言語を端末風に表示する |
+| `commandPrompt` | `boolean` | `true` | 端末の各行に `$` を付ける |
+| `wrapToggle` | `boolean` | `true` | 折り返し切替ボタンを表示する |
+| `defaultCollapsed` | `boolean` | `false` | `collapsible` 有効時に折りたたんで開始する |
+| `copyLabel` | `string` | `"Copy"` | クライアントに渡すコピー前の文言 |
+| `copiedLabel` | `string` | `"Copied"` | コピー後に表示する文言 |
 
-### 実行例
+## クライアント側の初期化
 
-```ts title="hello.ts"
-const message = "Hello, Riebeckite";
-console.log(message);
-```
+`codeEnhance()` は `copyLabel` と `copiedLabel` をクライアントエントリーへ渡します。`initCodeEnhance(options?)` はコピー、折り返し、折りたたみボタンのために document 全体のクリックハンドラーを登録します。直接呼び出す場合も同じ二つの文言を指定できます。
 
-## 使いどころ
+## 公開 API
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+- `codeEnhance(options?)` — プラグインファクトリ
+- `rehypeCodeEnhance(options?)` — Rehype 変換
+- `initCodeEnhance(options?)` — ブラウザ初期化関数
+- `DEFAULT_COPY_LABEL`、`DEFAULT_COPIED_LABEL` — 既定のコピー文言
+- `CodeEnhanceOptions`、`CodeEnhanceClientOptions`、`CodeEnhanceTheme` — 型
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+## 関連資料
 
-## 詳細仕様
-
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
-
+- [プラグインシステム](../reference/plugin-api.ja.md)

@@ -1,26 +1,44 @@
+<!-- Generated from packages/plugins/local-graph/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Local Graph
 
-現在の記事を中心としたコンテンツ間のつながりをグラフとして表示する Plugin です。
+現在のノートと、その前後につながるノートを小さな放射状グラフで表示するプラグインです。
 
-## 導入
+[English](./local-graph.md)
 
-```bash
-npm install @riebeckite/plugin-local-graph
+## できること
+
+`getLocalGraph()` はマニフェストからリンク先と被リンク元を集め、公開済みノートだけを残します。各方向は最大 10 件です。`LocalGraph` はそのデータを SVG として描画し、周辺ノートがなければ何も表示しません。
+
+ノードには `current`、`outgoing`、`backlink`、`both` の関係が付きます。中央が現在のノート、周囲が直接つながるノートです。
+
+## 設定と配置
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+
+export default defineConfig({ plugins: [localGraphPlugin()] });
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+```tsx
+import LocalGraph, { getLocalGraph } from "@riebeckite/plugin-local-graph";
 
-## 使用例
+const graph = getLocalGraph({ manifest: await content.getManifest(), config, slug, resolveTitle });
+return <Article footerContent={graph && <LocalGraph graph={graph} />} />;
+```
 
-現在読んでいる記事と、その周辺の記事のつながりを局所的なグラフとして確認したい場合に利用します。WikiLink を多用するナレッジベースと特に相性があります。
+グラフのノード位置は `layoutRadialGraph()`、辺は `buildGraphEdges()` が計算します。各ノードのリンクは解決済みの `permalink` を使い、見出しは internal selection key `/explore?note=<slug>` で Explorer を開きます。
 
-このページとリンク関係のあるノートがある場合、記事末尾に Local Graph として放射状のグラフが表示されます。接続が1本もない場合は非表示です。
+## 公開 API
 
-## 使いどころ
+- `localGraphPlugin()`、`LocalGraph`
+- `getLocalGraph({ manifest, config, slug, resolveTitle })`
+- `buildGraphEdges(nodes, visibleSlugs?)`、`layoutRadialGraph(nodes, options)`
+- `LocalGraphData`、`LocalGraphNode`
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+## 関連資料
 
-## 詳細仕様
-
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
-
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-backlinks`](./backlinks.ja.md)
+- [`@riebeckite/plugin-garden-explorer`](./garden-explorer.ja.md)

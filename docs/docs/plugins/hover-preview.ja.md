@@ -1,25 +1,64 @@
+<!-- Generated from packages/plugins/hover-preview/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Hover Preview
 
-内部リンクにホバーまたはフォーカスすると、プレビューのポップオーバーを表示する Plugin です。
+内部リンクにカーソルを合わせると、リンク先のタイトルと抜粋をポップオーバーで表示するプラグインです。Quartz や Obsidian Publish のプレビューに近い挙動で、ページを離れずにリンク先の内容を確認できます。
 
-## 導入
+[English](./hover-preview.md)
 
-```bash
-npm install @riebeckite/plugin-hover-preview
+## 概要
+
+ビルド時に `hoverPreviewPlugin()` がコンテンツマニフェストからプレビュー索引（`permalink` → `{ title, excerpt, slug }`）を作り、内部リンクを含むページへ一度だけ `<script type="application/json" data-rb-hover-preview>` として埋め込みます。クライアント側の `initHoverPreview` がこのデータを読み、対象リンクにホバー・フォーカス・タップの処理を付けます。
+
+抜粋は描画済み HTML からタグを除いたプレーンテキストで、空白をまとめたうえで `excerptLength` 文字に切り詰めます。内部リンクのないページには何も挿入しません。`maxEntries` を指定するとページごとのデータ量を抑えられます。
+
+## 設定する
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+
+export default defineConfig({
+  // ...
+  plugins: [hoverPreviewPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+`hoverPreviewPlugin()` がスタイル、クライアントエントリ、ビルド時のデータ注入をまとめて登録します。`hoverPreview` は同じファクトリの別名です。
 
-## 使用例
+クライアントエントリは引数を取りません。表示に関する設定はデータ用スクリプトの data 属性に載るため、初期化処理をオプションなしで呼んでも動作します。
 
-Digital Garden で、リンク先のノートを開く前に内容を確認できるようにしたい場合に利用します。ポップオーバーにはリンク先のタイトルと、レンダリング済み HTML から取り出した短い抜粋を表示します。
+## オプション
 
-## 使いどころ
+| オプション      | 既定値         | 説明                                       |
+| --------------- | -------------- | ------------------------------------------ |
+| `delay`         | `120`          | ポップオーバーが出るまでの待ち時間（ミリ秒） |
+| `excerptLength` | `160`          | 抜粋の最大文字数                           |
+| `maxEntries`    | 未指定         | ページに埋め込む項目数の上限               |
+| `selector`      | `a[href^="/"]` | プレビュー対象にする内部リンクのセレクタ   |
+| `className`     | `rb-hover-preview` | ポップオーバーの基準クラス名           |
+| `includeTitles` | `true`         | ポップオーバーにタイトルを表示するか       |
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+```ts
+hoverPreviewPlugin({
+  delay: 200,
+  excerptLength: 120,
+  maxEntries: 200,
+  selector: 'a[href^="/notes/"]',
+});
+```
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+## 主なエクスポート
 
-## 詳細仕様
+- `hoverPreviewPlugin(options?)`: プラグインを作成する
+- `hoverPreview`: `hoverPreviewPlugin` の別名
+- `resolveHoverPreviewOptions(options?)`: 既定値を適用して `ResolvedHoverPreviewOptions` を返す
+- `buildPreviewIndex(entries, options)`: `HoverPreviewIndex`（`permalink` → `{ title, excerpt, slug }`）を作る
+- `htmlToPlainText(html)` / `createExcerpt(html, length)`: 抜粋を作る補助関数
+- `initHoverPreview()`: ブラウザ側の初期化処理。`@riebeckite/plugin-hover-preview/client` からも読み込める
+- 定数: `HOVER_PREVIEW_ATTRIBUTE`, `HOVER_PREVIEW_SCRIPT_ID`
+- 型: `HoverPreviewOptions`, `ResolvedHoverPreviewOptions`, `HoverPreviewEntry`, `HoverPreviewIndex`
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+## 関連資料
+
+- [プラグインシステム](../reference/plugin-api.ja.md)

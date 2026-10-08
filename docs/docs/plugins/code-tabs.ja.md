@@ -1,48 +1,57 @@
+<!-- Generated from packages/plugins/code-tabs/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Code Tabs
 
-複数のコードブロックをタブとしてまとめて表示する Plugin です。
+連続するコードブロックを、`tab="..."` の名前ごとにタブへまとめるプラグインです。
 
-## 導入
+[English](./code-tabs.md)
 
-```bash
-npm install @riebeckite/plugin-code-tabs
+## 設定
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { codeTabs } from "@riebeckite/plugin-code-tabs";
+
+export default defineConfig({
+  // ...
+  plugins: [codeTabs()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+スタイルと `initCodeTabs` はプラグイン自身が登録します。
 
-## 使用例
+## コードブロックにタブ名を付ける
 
-同じ処理を複数の言語やパッケージマネージャーで示すドキュメントに向いています。たとえば `npm` / `pnpm` / `bun` のコマンドを切り替えて提示できます。
+````md
+```dart tab="Flutter"
+void main() {}
+```
 
-### ソース
-
-````markdown
 ```ts tab="React"
-const greeting = "Hello from React";
-```
-
-```js tab="Vanilla"
-console.log("Hello from JavaScript");
+console.log("Hello");
 ```
 ````
 
-### 実行例
+`tab` を持つコードブロックが連続している間だけ、一つのタブグループになります。段落、見出し、画像などが間に入ると別のグループです。`tab` のないコードブロックは変更しません。
 
-```ts tab="React"
-const greeting = "Hello from React";
-```
+## オプションとアクセシビリティ
 
-```js tab="Vanilla"
-console.log("Hello from JavaScript");
-```
+| オプション | 既定値 | 内容 |
+| --- | --- | --- |
+| `syncTabs` | `false` | あるタブを選ぶと、同じページの同名タブも切り替えるか |
 
-## 使いどころ
+生成する要素には `tablist`、`tab`、`tabpanel` のロールを設定します。矢印キー、`Home`、`End`、`Enter`、`Space` で操作でき、JavaScript が動かない場合は全パネルをそのまま読めます。
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
+`@riebeckite/plugin-code-enhance` と併用する場合は、強調表示後の出力をまとめられるよう `codeEnhance()` の後に `codeTabs()` を置いてください。
 
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
+## 公開 API
 
-## 詳細仕様
+- `codeTabs(options?)` — プラグインファクトリ
+- `rehypeCodeTabs(options?)` — Rehype 変換
+- `initCodeTabs(options?)` — ブラウザ初期化関数
+- `CodeTabsOptions`、`CodeTabsClientOptions` — 型
 
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
+## 関連資料
 
+- [プラグインシステム](../reference/plugin-api.ja.md)
+- [`@riebeckite/plugin-code-enhance`](./code-enhance.ja.md)

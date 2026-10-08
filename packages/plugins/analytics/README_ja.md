@@ -46,6 +46,18 @@ Core の安定コンテンツ ID（frontmatter の `id`）がある公開コン�
 
 コンテンツ ID は執筆側の責務です。公開ノート間での `id` の重複は [`@riebeckite/plugin-diagnostics`](../diagnostics/README_ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
 
+## プロバイダ契約
+
+```ts
+const result = await provider.query({
+  type: "popular_content",
+  limit: 10,
+  timeRange: { from: "2026-01-01T00:00:00.000Z" },
+});
+```
+
+機能（capability）は `capture`、`content_page_views`、`popular_content` です。すべてのクエリに対応しないプロバイダを実装する場合は、`assertAnalyticsQuerySupported(provider, query)` を呼び出してください。
+
 ## 診断
 
 `@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定 content ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けを `check` / `doctor` / build の診断で確認できます。

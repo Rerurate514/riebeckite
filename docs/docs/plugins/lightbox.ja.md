@@ -1,36 +1,51 @@
+<!-- Generated from packages/plugins/lightbox/README_ja.md. Do not edit this page directly; edit the package README and run `pnpm docs:sync`. -->
+
 # Lightbox
 
-記事内の画像を拡大表示できる Lightbox を追加する Plugin です。
+記事内の画像をクリックすると、拡大表示用のダイアログを開くプラグインです。
 
-## 導入
+[English](./lightbox.md)
 
-```bash
-npm install @riebeckite/plugin-lightbox
+## 仕組み
+
+ビルド時の Rehype 変換と、ブラウザ側の初期化処理で動きます。変換では画像をトリガーリンクで囲み、初期化処理ではアクセシブルなダイアログを用意します。
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+
+export default defineConfig({
+  // ...
+  plugins: [lightboxPlugin()],
+});
 ```
 
-Plugin の export 名や設定項目は、実装と package README を一次情報として確認してください。Riebeckite の Plugin は `riebeckite.config.ts` の `plugins` に登録して利用します。
+## 利用時の挙動
 
-## 使用例
+- `rehypeLightbox` は各 `<img>` を `.rr-lightbox-trigger` で囲みます。
+- `data-lightbox-ignore="true"` の画像、リンク・ボタン・既存トリガー・ダイアログ内の画像は変換しません。
+- `initLightbox` は `Escape`、背景クリック、閉じるボタンでダイアログを閉じ、開く前のフォーカスを戻します。
+- 開いている間は `html[data-lightbox-open="true"]` を設定するため、CSS でスクロールを止められます。
 
-通常の Markdown 画像を記事に置き、公開サイトではクリックして拡大表示できるようにします。
+## オプション
 
-### ソース
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `selectorClass` | `string` | `"rr-lightbox-trigger"` | トリガーに使う CSS クラス |
+| `expandLabel` | `string` | `"Expand image"` | トリガーとダイアログのアクセシブルラベル |
+| `closeLabel` | `string` | `"Close"` | 閉じるボタンのアクセシブルラベル |
+| `autoWrapImages` | `boolean` | `true` | 初期化時に未処理の画像も囲むか。クライアント側だけの設定 |
 
-```markdown
-![[riebeckite-logo-horizontal.png]]
-```
+`initLightbox()` はイベントリスナー、ダイアログ、追加したトリガーを解除する cleanup 関数を返します。
 
-### 実行例
+## 公開 API
 
-![[riebeckite-logo-horizontal.png]]
+- `lightboxPlugin(options?)` — プラグインファクトリ
+- `rehypeLightbox(options?)` — Rehype 変換
+- `initLightbox(root?, options?)` — ブラウザ初期化関数
+- `initLightboxFromOptions(options?)` — プラグインのクライアントスクリプトが呼ぶ、オプションを先に取る初期化関数
+- `LightboxOptions`、`LightboxInitOptions` — 型
 
-## 使いどころ
+## 関連資料
 
-この Plugin が必要な場合だけ追加してください。Preset に含まれている場合は、同じ Plugin を重複して登録する必要はありません。
-
-実際の表示例が用意されている場合は、[Plugin Showcase](./showcase.ja.md) でも確認できます。
-
-## 詳細仕様
-
-設定項目、公開 API、制約、追加の使用例は package README を参照してください。Plugin 全体の仕組みは [Plugin System](../framework/plugin-system.ja.md)、Plugin を作る場合は [Writing a Plugin](./writing-a-plugin.ja.md) を参照してください。
-
+- [プラグインシステム](../reference/plugin-api.ja.md)

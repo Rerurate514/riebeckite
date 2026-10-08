@@ -21,16 +21,29 @@ const history = await api.getHistory("notes/hello.md");
 const current = await api.getCurrentDiff("notes/hello.md");
 ```
 
+`diff(options?)` は API と同じ `GitHistoryReaderOptions` を受け取ります。プラグイン一覧には `diff` として登録されますが、履歴を取得する中心的な入口はプログラムから呼ぶ API です。リビジョンパネルは最初の比較だけをビルド時に描画し、選択した比較はブラウザで計算します。各リビジョンを一度だけ埋め込むため、全組み合わせの差分を出力しません。
+
 | API | 返す内容 |
 | --- | --- |
 | `getHistory(filePath)` | 新しい順の `DiffRevision[]` |
 | `getRevisionMarkdown(filePath, hash)` | その時点の Markdown。なければ `null` |
 | `getCurrentDiff(filePath)` | 最新と一つ前のリビジョンの差分 |
-| `compareRevisions(input)` | 指定した二つのリビジョンの差分 |
+| `compareRevisions({ filePath, fromHash, toHash })` | 指定した二つのリビジョンの差分。`fromHash: null` なら空の本文との差分 |
 
 `cwd` は Git リポジトリを探すためのコンテンツルートで、既定値はビルド内の `config.content.directory`、それ以外では `process.cwd()` です。相対パスは `process.cwd()` 基準で解決されます。Git リポジトリ外を指定しても例外は投げず、空の結果を返します。
 
-リビジョンパネルは初期表示の差分だけをビルド時に描画し、利用者が選んだ比較はブラウザ上で計算します。各リビジョンは一度だけ埋め込むため、全組み合わせの差分を出力する場合より生成ページを小さく保てます。
+## オプションと型
+
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `cwd` | `string` | `config.content.directory`、なければ `process.cwd()` | Git ワークツリーを探すコンテンツルート |
+
+- `DiffRevision`: `hash`、`shortHash`、`date`、`message`、`author` を持つコミット情報
+- `MarkdownRevision`: `DiffRevision` とその時点の Markdown 本文
+- `PostDiff`: `from`、`to`、`lines` を持つ差分
+- `DiffLine`: `{ type, content }` 形式の 1 行
+- `DiffLineType`: `"context" | "added" | "removed"`
+- `RevisionComparisonInput`: `{ filePath, fromHash: string | null, toHash }`
 
 ## 公開 API
 

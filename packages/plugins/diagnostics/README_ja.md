@@ -87,6 +87,22 @@ riebeckite-diagnostics --content ./content --report-orphans
 
 `--format json` は機械処理用、`--exit-on warning` は警告以上を CI の失敗条件にしたい場合に使います。終了コードは、問題なしが `0`、指定したしきい値以上の診断があれば `1`、引数の誤りは `2` です。`--config` 使用時は設定内のオプションを既定値にし、CLI で明示した値を優先します。
 
+| オプション | 内容 |
+| --- | --- |
+| `--config <path>` | `riebeckite.config.ts` のパス（tsx で読み込む） |
+| `--content <dir>` | 解析するコンテンツディレクトリ（既定: `.`） |
+| `--exclude <glob>` | 追加の除外 glob（複数指定可） |
+| `--publish-strategy <mode>` | `explicit` \| `selective`（既定: `selective`） |
+| `--report-unused-assets` | 未参照の画像を報告する |
+| `--report-orphans` | 被リンクのない公開ノートを報告する |
+| `--report-analytics-coverage` | 安定コンテンツ ID のない公開ノートを報告する（`--config` 使用時に設定で analytics プラグインが有効なら自動で有効化） |
+| `--required-frontmatter <f>` | 必須 frontmatter フィールド（カンマ区切り） |
+| `--fail-on-error` | error があれば終了コード 1 で終了する（既定） |
+| `--exit-on <severity>` | 指定した重要度以上で終了コード 1（`info` \| `warning` \| `error`） |
+| `--format <text\|json>` | 出力形式（既定: `text`） |
+| `--no-color` | ANSI カラーを無効化する |
+| `-h`, `--help` | ヘルプを表示する |
+
 ## アプリケーションから実行する
 
 エディタ連携や独自のレポートには `runDiagnostics()` を使えます。
@@ -111,8 +127,9 @@ assertNoErrors(report);
 - `runDiagnostics(target, options?)`: 診断と集計を実行する
 - `analyzeContent(config, options?)`: 生の `Diagnostic[]` を取得する
 - `hasEnabledAnalyticsPlugin(config?)`: 解決済み設定で analytics プラグインが有効かを判定する
-- `formatDiagnostics`、`summarize`、`groupByCode`、`assertNoErrors`: レポート処理用の補助関数
+- `formatDiagnostics`、`buildReport`、`summarize`、`groupByCode`、`assertNoErrors`: レポート処理用の補助関数
 - `DiagnosticsFailure`: `failOnError` または `assertNoErrors` が送出するエラー
+- 型: `DiagnosticsOptions`、`DiagnosticsReport`、`DiagnosticsSummary`、`AnalyzerContentConfig`
 - `riebeckite-diagnostics`: CLI
 
 ## 関連資料

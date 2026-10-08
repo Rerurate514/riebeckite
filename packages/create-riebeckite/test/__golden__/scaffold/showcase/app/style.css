@@ -43,7 +43,7 @@ body {
 
 .site-header,
 .rb-site-footer {
-  width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
 }
 
 .site-header__home {
@@ -183,16 +183,12 @@ body {
     display: block;
     grid-column: 1;
     grid-row: 1;
-    position: sticky;
-    top: 4rem;
     align-self: start;
     width: var(--rb-layout-sidebar, 14rem);
-    max-height: calc(100dvh - 8rem);
     margin-inline-start: calc(
       -1 * var(--rb-layout-sidebar, 14rem) -
       var(--rb-layout-gap, 2rem)
     );
-    overflow: auto;
     padding-inline-end: 1rem;
     border-inline-end: 1px solid
       color-mix(in oklab, currentColor 18%, transparent);

@@ -11,14 +11,14 @@
     "inspect": "riebeckite inspect"
   },
   "dependencies": {
-    "@riebeckite/core": "^0.0.19",
-    "@riebeckite/honox": "^0.0.19",
+    "@riebeckite/core": "^0.0.20",
+    "@riebeckite/honox": "^0.0.20",
     "hono": "^4.12.25",
     "honox": "0.1.56"
   },
   "devDependencies": {
     "@hono/vite-build": "^1.11.1",
-    "@riebeckite/cli": "^0.0.19",
+    "@riebeckite/cli": "^0.0.20",
     "@types/node": "^24.5.2",
     "typescript": "^5.0.0",
     "vite": "^8.0.9"

@@ -6,7 +6,7 @@
 
 ## できること
 
-`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。一覧を置くかどうか、どこへ置くかは Site 側で決めます。
+`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` と `showcase` では、一覧をホームページ本文の後に自動配置します。
 
 ## 設定と配置
 
@@ -17,7 +17,7 @@ import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 export default defineConfig({ plugins: [recentPostsPlugin()] });
 ```
 
-一覧を置く場所はアプリ側で決めます。
+生成された `starter` と `showcase` では、route や layout を追加で編集しなくても一覧が表示されます。独自の配置では、アプリ側で表示位置を決めます。
 
 ```tsx
 import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -26,6 +26,8 @@ import { content } from "../content";
 const posts = getRecentPosts({ manifest: await content.getManifest() });
 return <Article afterContent={<RecentPosts posts={posts} />} />;
 ```
+
+生成されたホームページの一覧を無効にするには、`RecentPosts` の import と `afterContent` prop を削除します。位置を変える場合は、同じ要素を既存の route または layout の目的の slot へ移動します。
 
 | オプション | 既定値 | 内容 |
 | --- | --- | --- |
@@ -42,4 +44,3 @@ return <Article afterContent={<RecentPosts posts={posts} />} />;
 ## 関連資料
 
 - [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-

@@ -1,4 +1,5 @@
 import {
+  createStyleAsset,
   definePlugin,
   isImagePath,
   normalizeContentPath,
@@ -41,6 +42,7 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
       dependencyMode: "tracked",
     },
     options,
+    assets: [createStyleAsset(PLUGIN_NAME)],
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkObsidianBlockReference);
       pipeline.use(remarkObsidianWikilink, {

@@ -10,6 +10,19 @@
     min-width: 0;
   }
 
+  .rb-page-body {
+    width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+    min-width: 0;
+    margin-block: var(--rb-space-4, 2rem);
+    padding-inline: var(--rb-space-2, 1rem);
+  }
+
+  .rb-article-content :is(img, picture > img, figure img) {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
   :is(:root, .rb-theme-root)[data-article-layout="full-width"]
     .rb-article-layout {
     grid-template-columns: minmax(0, 1fr);

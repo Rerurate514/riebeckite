@@ -12,8 +12,8 @@ of recently posted articles. `getRecentPosts()` reads
 `manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
 excluded. It derives a date from the frontmatter (`date` falling back to
 `created`), sorts newest first, and truncates to `limit` items. Notes without a
-parseable date are dropped. Whether and where to place the list is the site's
-decision.
+parseable date are dropped. Official `starter` and `showcase` sites place the
+list automatically on their homepage after the page content.
 
 With no posts, the component renders nothing.
 
@@ -30,9 +30,10 @@ export default defineConfig({
 ```
 
 `recentPostsPlugin()` registers the plugin in the plugin list and bundles
-`style.css` into the app stylesheet.
+`style.css` into the app stylesheet. Generated `starter` and `showcase` sites
+need no additional route or layout wiring.
 
-### Render the component
+### Custom placement
 
 ```tsx
 import RecentPosts, { getRecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -40,11 +41,14 @@ import { content } from "../content";
 
 const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 
-// ...in your route
+// ...in a custom route or layout
 return <Article afterContent={<RecentPosts posts={recentPosts} />} />;
 ```
 
 `getRecentPosts()` filters out the `index` note before collecting posts.
+To disable the generated homepage list, remove its `RecentPosts` import and
+`afterContent` prop. To reposition it, move that same element to the desired
+existing route or layout slot.
 
 ## Component
 

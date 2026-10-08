@@ -1,0 +1,64 @@
+.rr-callout {
+  --rr-callout-tone: var(--rb-color-info, var(--rb-color-accent));
+  margin-block: 1.5rem;
+  padding: 1rem 1.125rem;
+  border: 1px solid
+    color-mix(in srgb, var(--rr-callout-tone) 32%, var(--rb-color-border));
+  border-inline-start: 3px solid var(--rr-callout-tone);
+  background: color-mix(
+    in srgb,
+    var(--rr-callout-tone) 8%,
+    var(--rb-color-surface)
+  );
+  color: var(--rb-color-ink);
+}
+
+.rr-callout[data-callout="note"],
+.rr-callout[data-callout="info"],
+.rr-callout[data-callout="abstract"],
+.rr-callout[data-callout="summary"],
+.rr-callout[data-callout="tldr"] {
+  --rr-callout-tone: var(--rb-color-info, var(--rb-color-accent));
+}
+
+.rr-callout[data-callout="tip"],
+.rr-callout[data-callout="hint"],
+.rr-callout[data-callout="success"],
+.rr-callout[data-callout="check"],
+.rr-callout[data-callout="done"] {
+  --rr-callout-tone: var(--rb-color-success);
+}
+
+.rr-callout[data-callout="warning"],
+.rr-callout[data-callout="caution"],
+.rr-callout[data-callout="attention"] {
+  --rr-callout-tone: var(--rb-color-warning, var(--rb-color-accent));
+}
+
+.rr-callout[data-callout="danger"],
+.rr-callout[data-callout="error"],
+.rr-callout[data-callout="failure"],
+.rr-callout[data-callout="fail"],
+.rr-callout[data-callout="missing"],
+.rr-callout[data-callout="bug"] {
+  --rr-callout-tone: var(--rb-color-danger);
+}
+
+.rr-callout[data-callout="example"],
+.rr-callout[data-callout="question"],
+.rr-callout[data-callout="help"],
+.rr-callout[data-callout="faq"] {
+  --rr-callout-tone: var(--rb-color-callout-special, var(--rb-color-accent));
+}
+
+.rr-callout__title {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--rr-callout-tone);
+  font-weight: 700;
+}
+
+.rr-callout__content > :last-child {
+  margin-bottom: 0;
+}

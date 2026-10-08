@@ -406,7 +406,7 @@ test("minimal scaffold exposes a readable layout with the new primitives", async
   });
 });
 
-test("starter scaffold renders article footer slots for plugin UI", async () => {
+test("starter scaffold renders article footer slots and Recent Posts once on the homepage", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "starter");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "starter" });
@@ -419,12 +419,14 @@ test("starter scaffold renders article footer slots for plugin UI", async () => 
     assert.match(index, /<TableOfContents/);
     assert.match(index, /bodySlots=\{home\.entry\.bodySlots\}/);
     assert.match(index, /<RecentPosts /);
+    assert.equal((index.match(/<RecentPosts /g) ?? []).length, 1);
+    assert.doesNotMatch(slug, /<RecentPosts /);
     assert.match(slug, /<TableOfContents/);
     assert.match(slug, /bodySlots={resolved.entry.bodySlots}/);
   });
 });
 
-test("showcase scaffold renders article footer slots and daily-notes", async () => {
+test("showcase scaffold renders article footer slots, daily notes, and Recent Posts once", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "showcase");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "showcase" });
@@ -433,6 +435,9 @@ test("showcase scaffold renders article footer slots and daily-notes", async () 
     const index = await read("app/routes/index.tsx");
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(index, /<DailyNotes /);
+    assert.match(index, /<RecentPosts /);
+    assert.equal((index.match(/<RecentPosts /g) ?? []).length, 1);
+    assert.doesNotMatch(slug, /<RecentPosts /);
     assert.match(slug, /bodySlots={resolved.entry.bodySlots}/);
   });
 });
@@ -499,7 +504,7 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     );
     assert.match(
       style,
-      /\.site-header,\n\.rb-site-footer \{[\s\S]*?width: min\(100% - 2rem, var\(--rb-layout-article-max, 48rem\)\)/,
+      /\.site-header,\n\.rb-site-footer \{[\s\S]*?width: min\(100% - 2rem, var\(--rb-layout-page-max, 80rem\)\)/,
     );
     assert.match(style, /\.site-header__home \{[\s\S]*?margin-right: auto/);
     assert.match(style, /\.rb-nav__mobile \{[\s\S]*?position: relative/);
@@ -522,6 +527,10 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     );
     assert.doesNotMatch(style, /\.rb-article-layout \{/);
     assert.doesNotMatch(style, /\.rb-nav__item \{/);
+    assert.doesNotMatch(
+      style,
+      /\.site-article__aside \{[\s\S]*?position: sticky/,
+    );
     assert.doesNotMatch(style, /position: absolute;\n {2}top: 100%;/);
   });
 });

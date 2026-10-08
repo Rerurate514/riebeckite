@@ -3,6 +3,16 @@ import { test } from "node:test";
 import { ContentManager, type ContentSource } from "@riebeckite/core";
 import { obsidianMarkdown } from "../index.js";
 
+test("obsidianMarkdown registers its stylesheet", () => {
+  assert.deepEqual(obsidianMarkdown().assets, [
+    {
+      pluginName: "obsidian-markdown",
+      kind: "style",
+      moduleSpecifier: "@riebeckite/plugin-obsidian-markdown/style.css",
+    },
+  ]);
+});
+
 function memorySource(
   files: Record<string, string | Uint8Array>,
 ): ContentSource {

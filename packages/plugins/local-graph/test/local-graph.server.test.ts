@@ -107,6 +107,26 @@ test("publishes local graphs to article footers only when connected", async () =
   );
 });
 
+test("keeps graph data available when automatic rendering is disabled", async () => {
+  const manifest = await new ContentManager(source(FILES), [], {
+    config: explicitConfig,
+    plugins: [localGraphPlugin({ render: false })],
+  }).getManifest();
+
+  assert.equal(
+    manifest.bySlug.get("alpha")?.bodySlots?.["article.footer"],
+    undefined,
+  );
+  assert.ok(
+    getLocalGraph({
+      manifest,
+      config: explicitConfig,
+      slug: "alpha",
+      resolveTitle,
+    }),
+  );
+});
+
 test("returns null for missing or unpublished notes", async () => {
   const manifest = await new ContentManager(source(FILES), [], {
     config: explicitConfig,

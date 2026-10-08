@@ -1,4 +1,8 @@
-import { appendContentBodySlot, definePlugin } from "@riebeckite/core";
+import {
+  appendContentBodySlot,
+  type ConfigValidationIssue,
+  definePlugin,
+} from "@riebeckite/core";
 import { renderToString } from "hono/jsx/dom/server";
 import Backlinks from "./components/backlinks.js";
 import { getPublishedBacklinks } from "./src/backlinks.server.js";
@@ -7,11 +11,18 @@ export { default as Backlinks } from "./components/backlinks.js";
 export type { ArticleBacklink } from "./src/backlinks.js";
 export { getPublishedBacklinks } from "./src/backlinks.server.js";
 
-export function backlinksPlugin() {
+export type BacklinksOptions = {
+  render?: boolean;
+};
+
+export function backlinksPlugin(options: BacklinksOptions = {}) {
   return definePlugin({
     name: "backlinks",
     order: 500,
+    options,
+    validateOptions: validateBacklinksOptions,
     onManifestCreated: ({ config, manifest }) => {
+      if (options.render === false) return;
       if (!config) return;
       for (const entry of manifest.discoverableEntries) {
         const backlinks = getPublishedBacklinks({
@@ -36,6 +47,19 @@ export function backlinksPlugin() {
       },
     ],
   });
+}
+
+function validateBacklinksOptions(
+  options: BacklinksOptions | undefined,
+): readonly ConfigValidationIssue[] {
+  if (
+    !options ||
+    options.render === undefined ||
+    typeof options.render === "boolean"
+  ) {
+    return [];
+  }
+  return [{ path: "render", message: "Expected a boolean." }];
 }
 
 function resolveTitle(slug: string, title: unknown): string {

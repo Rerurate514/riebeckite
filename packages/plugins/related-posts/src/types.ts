@@ -1,5 +1,6 @@
 /** Options accepted by `relatedPosts()`. */
 export type RelatedPostsOptions = {
+  render?: boolean;
   /** Maximum number of related entries to render. Defaults to `5`. */
   limit?: number;
   /** Minimum score a candidate must reach to be listed. Defaults to `1`. */

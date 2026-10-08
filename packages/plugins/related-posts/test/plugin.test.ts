@@ -110,6 +110,15 @@ test("leaves entries with no related candidates untouched", async () => {
   );
 });
 
+test("does not append a footer when automatic rendering is disabled", async () => {
+  const manifest = await manager({ render: false }).getManifest();
+
+  assert.equal(
+    manifest.bySlug.get("source")?.bodySlots?.["article.footer"],
+    undefined,
+  );
+});
+
 test("applies heading and limit options", async () => {
   const manifest = await manager({ heading: false, limit: 1 }).getManifest();
   const html =
@@ -142,6 +151,7 @@ test("validates option shapes", () => {
     className: "",
     useTags: "no",
     useBacklinks: "no",
+    render: "no",
   } as unknown as RelatedPostsOptions;
 
   const plugin = relatedPosts(invalid);
@@ -155,6 +165,7 @@ test("validates option shapes", () => {
     "headingText",
     "limit",
     "minScore",
+    "render",
     "useBacklinks",
     "useTags",
   ]);

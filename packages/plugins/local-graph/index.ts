@@ -1,6 +1,7 @@
 import {
   appendContentBodySlot,
   buildGraphEdges,
+  type ConfigValidationIssue,
   definePlugin,
   layoutRadialGraph,
 } from "@riebeckite/core";
@@ -17,11 +18,18 @@ export type {
 export { getLocalGraph } from "./src/local-graph.server.js";
 export { buildGraphEdges, layoutRadialGraph };
 
-export function localGraphPlugin() {
+export type LocalGraphOptions = {
+  render?: boolean;
+};
+
+export function localGraphPlugin(options: LocalGraphOptions = {}) {
   return definePlugin({
     name: "local-graph",
     order: 400,
+    options,
+    validateOptions: validateLocalGraphOptions,
     onManifestCreated: ({ config, manifest }) => {
+      if (options.render === false) return;
       if (!config) return;
       for (const entry of manifest.discoverableEntries) {
         const graph = getLocalGraph({
@@ -46,6 +54,19 @@ export function localGraphPlugin() {
       },
     ],
   });
+}
+
+function validateLocalGraphOptions(
+  options: LocalGraphOptions | undefined,
+): readonly ConfigValidationIssue[] {
+  if (
+    !options ||
+    options.render === undefined ||
+    typeof options.render === "boolean"
+  ) {
+    return [];
+  }
+  return [{ path: "render", message: "Expected a boolean." }];
 }
 
 function resolveTitle(slug: string, title: unknown): string {

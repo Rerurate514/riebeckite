@@ -7,7 +7,11 @@ import {
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
 import { createElement, Fragment } from "hono/jsx";
-import { backlinksPlugin, getPublishedBacklinks } from "../index.ts";
+import {
+  type BacklinksOptions,
+  backlinksPlugin,
+  getPublishedBacklinks,
+} from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -181,6 +185,16 @@ test("backlinksPlugin registers its stylesheet and manifest hook", () => {
   ]);
 });
 
+test("accepts a rendering opt-out", () => {
+  const plugin = backlinksPlugin({ render: false });
+
+  assert.deepEqual(plugin.validateOptions?.(plugin.options), []);
+  assert.deepEqual(
+    plugin.validateOptions?.({ render: "no" } as unknown as BacklinksOptions),
+    [{ path: "render", message: "Expected a boolean." }],
+  );
+});
+
 test("publishes backlinks to the article footer only when present", async () => {
   const manifest = await new ContentManager(
     source({
@@ -198,5 +212,28 @@ test("publishes backlinks to the article footer only when present", async () => 
   assert.equal(
     manifest.bySlug.get("beta")?.bodySlots?.["article.footer"],
     undefined,
+  );
+});
+
+test("keeps backlink data available when automatic rendering is disabled", async () => {
+  const manifest = await new ContentManager(
+    source({
+      "alpha.md": "---\npublish: true\ntitle: Alpha\n---\n# Alpha",
+      "beta.md": "---\npublish: true\ntitle: Beta\n---\n[[alpha]]",
+    }),
+    [],
+    { config: explicitConfig, plugins: [backlinksPlugin({ render: false })] },
+  ).getManifest();
+
+  const alpha = manifest.bySlug.get("alpha");
+  assert.equal(alpha?.bodySlots?.["article.footer"], undefined);
+  assert.deepEqual(
+    getPublishedBacklinks({
+      manifest,
+      config: explicitConfig,
+      slug: "alpha",
+      resolveTitle,
+    }),
+    [{ slug: "beta", permalink: "/beta", title: "Beta" }],
   );
 });

@@ -44,6 +44,7 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
     options,
     validateOptions: validateRelatedPostsOptions,
     onManifestCreated: (context) => {
+      if (options.render === false) return;
       const { manifest } = context;
       for (const entry of manifest.discoverableEntries) {
         if (!isEligibleRelatedEntry(entry, manifest, context.config)) continue;
@@ -76,6 +77,9 @@ function validateRelatedPostsOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
+  if (options.render !== undefined && typeof options.render !== "boolean") {
+    issues.push({ path: "render", message: "Expected a boolean." });
+  }
   if (
     options.limit !== undefined &&
     (!Number.isInteger(options.limit) || options.limit < 0)

@@ -34,7 +34,7 @@ const items = extractTableOfContents(post.html ?? "");
 return (
   <Article
     asideContent={
-      <TableOfContents className="table-of-contents--desktop" items={items} />
+      <TableOfContents className="rr-table-of-contents--desktop" items={items} />
     }
   />
 );

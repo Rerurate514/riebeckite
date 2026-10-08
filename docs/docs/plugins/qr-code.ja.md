@@ -69,7 +69,6 @@ QR エンコーダ（`qrcode`）はビルド時に動的インポートするた
 | `level` | `"L" \| "M" \| "Q" \| "H"` | `"M"` | 誤り訂正レベル |
 | `margin` | `number` | `1` | 余白（モジュール数） |
 | `width` | `number` | `160` | 表示サイズ（px） |
-| `size` | `number` | — | `width` の別名 |
 | `dark` | `string` | `"#000000"` | 暗モジュールの色 |
 | `light` | `string` | `"#ffffff"` | 明モジュールの色 |
 | `caption` | `boolean` | `true` | タイトルまたは `# caption:` 行をキャプションとして表示する |

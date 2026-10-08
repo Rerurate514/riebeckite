@@ -18,7 +18,7 @@ export default function SearchBar() {
         </button>
       </div>
 
-      <div class="rr-search-modal rr-search" data-rr-search-modal hidden>
+      <div class="rr-search-modal rr-search" data-search-modal hidden>
         <div class="rr-search-modal__backdrop" data-search-close />
         <section
           id="search-dialog"

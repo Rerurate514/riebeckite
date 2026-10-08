@@ -22,7 +22,7 @@ export default createRoute(async (c) => {
     <SiteArticle
       post={home.post}
       bodySlots={home.entry.bodySlots}
-      asideContent={<TableOfContents className="table-of-contents--desktop" items={tableOfContents} />}
+      asideContent={<TableOfContents className="rr-table-of-contents--desktop" items={tableOfContents} />}
       afterContent={<><RecentPosts posts={recentPosts} /></>}
     />,
   );

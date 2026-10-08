@@ -26,7 +26,7 @@ export default createRoute(
       <SiteArticle
         post={resolved.post}
         bodySlots={resolved.entry.bodySlots}
-        asideContent={<TableOfContents className="table-of-contents--desktop" items={tableOfContents} />}
+        asideContent={<TableOfContents className="rr-table-of-contents--desktop" items={tableOfContents} />}
       />,
     );
   },

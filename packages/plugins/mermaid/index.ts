@@ -55,12 +55,11 @@ function validateMermaidOptions(
   if (
     options.render !== undefined &&
     options.render !== "build" &&
-    options.render !== "client" &&
-    options.render !== "both"
+    options.render !== "client"
   ) {
     issues.push({
       path: "render",
-      message: 'Expected "build", "client", or "both".',
+      message: 'Expected "build" or "client".',
     });
   }
   if (!isMermaidTheme(options.theme)) {

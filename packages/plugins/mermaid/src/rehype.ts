@@ -208,7 +208,7 @@ function extractCaption(
 }
 
 function shouldRenderAtBuild(render: MermaidOptions["render"]): boolean {
-  return render === "build" || render === "both" || render === undefined;
+  return render === "build" || render === undefined;
 }
 
 function shouldRenderAtClient(render: MermaidOptions["render"]): boolean {

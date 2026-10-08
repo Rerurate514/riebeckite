@@ -1,4 +1,4 @@
-export type MermaidRenderMode = "build" | "client" | "both";
+export type MermaidRenderMode = "build" | "client";
 
 export type MermaidTheme =
   | string

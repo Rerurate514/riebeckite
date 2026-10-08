@@ -2,7 +2,6 @@ import type { RiebeckiteProject } from "../application_root.js";
 import { checkBuildState } from "./checks/build_state.js";
 import { checkConfiguration } from "./checks/configuration.js";
 import { checkContent } from "./checks/content.js";
-import { checkDeprecations } from "./checks/deprecations.js";
 import { checkEnvironment, checkStateDirectory } from "./checks/environment.js";
 import { checkPlugins } from "./checks/plugins.js";
 import type { DoctorCheckResult } from "./types.js";
@@ -32,7 +31,6 @@ export async function runDoctor(
   return [
     ...environment,
     configuration.result,
-    checkDeprecations(configuration.config),
     plugins,
     content,
     buildState.result,

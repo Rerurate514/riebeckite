@@ -1,4 +1,4 @@
-export type D2RenderMode = "build" | "client" | "both";
+export type D2RenderMode = "build" | "client";
 
 export type D2Layout = "dagre" | "elk";
 

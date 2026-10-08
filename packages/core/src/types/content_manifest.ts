@@ -146,15 +146,17 @@ export type ContentLocationInput = {
 };
 
 export type ContentManifest = {
+  /**
+   * Raw entries for every scanned content source, including drafts, scheduled,
+   * private, and otherwise nonpublic entries. This is not a publication view.
+   */
   entries: ContentManifestEntry[];
   /**
-   * Entries that are routable and therefore get a generated page: `public`
-   * and `unlisted` notes. `entries` keeps every scanned note for backward
-   * compatibility; plugins that emit generated output should read this view
-   * so drafts and scheduled notes never reach generated output.
+   * Routable entries for generated pages: `public` and `unlisted` notes.
+   * Plugins that emit public output must use this view rather than `entries`.
    */
   publicEntries: ContentManifestEntry[];
-  /** Entries that may appear on discovery surfaces such as navigation, search, feeds, taxonomy, and public graphs. */
+  /** Public entries allowed on discovery surfaces such as navigation, search, feeds, taxonomy, and public graphs. */
   discoverableEntries: ContentManifestEntry[];
   bySlug: Map<string, ContentManifestEntry>;
   /** Contains only entries with an explicit source-authored content ID. */

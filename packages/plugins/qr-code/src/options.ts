@@ -26,7 +26,7 @@ export function resolveQrCodeOptions(
   options: QrCodeOptions = {},
 ): ResolvedQrCodeOptions {
   const width = normalizePositiveInteger(
-    options.width ?? options.size,
+    options.width,
     DEFAULT_QR_CODE_OPTIONS.width,
   );
   const margin = normalizeNonNegativeInteger(

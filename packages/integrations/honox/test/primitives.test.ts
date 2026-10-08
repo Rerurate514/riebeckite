@@ -5,6 +5,8 @@ import { renderToString } from "hono/jsx/dom/server";
 import {
   Article,
   ArticleBody,
+  ArticleContent,
+  ArticleLayout,
   ArticleMeta,
   ContentSlot,
   hasSlot,
@@ -42,6 +44,17 @@ test("ArticleMeta owns the rb-article-meta hook", () => {
   const html = renderToString(ArticleMeta({ children: "Meta" }));
 
   assert.match(html, /^<aside class="rb-article-meta" /);
+});
+
+test("ArticleLayout and ArticleContent render their children", () => {
+  const html = renderToString(
+    ArticleLayout({ children: ArticleContent({ children: "Body" }) }),
+  );
+
+  assert.equal(
+    html,
+    '<div class="rb-article-layout"><div class="rb-article-body" data-slot="article-body">Body</div></div>',
+  );
 });
 
 test("ArticleBody owns the rb-article-content markdown hook", () => {

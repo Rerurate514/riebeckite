@@ -8,8 +8,6 @@ export type QrCodeOptions = {
   margin?: number;
   /** Rendered width/height in pixels. Defaults to `160`. */
   width?: number;
-  /** Alias of `width`; `width` wins when both are present. */
-  size?: number;
   /** Dark-module colour. Defaults to `"#000000"`. */
   dark?: string;
   /** Light-module colour. Defaults to `"#ffffff"`. */

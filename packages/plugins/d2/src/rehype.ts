@@ -222,7 +222,7 @@ function extractCaption(
 }
 
 function shouldRenderAtBuild(render: D2RenderMode): boolean {
-  return render === "build" || render === "both";
+  return render === "build";
 }
 
 function shouldRenderAtClient(render: D2RenderMode): boolean {

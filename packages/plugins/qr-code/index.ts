@@ -46,6 +46,10 @@ function validateQrCodeOptions(
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
 
+  if (Object.hasOwn(options, "size")) {
+    issues.push({ path: "size", message: 'Unknown option. Use "width".' });
+  }
+
   if (
     options.level !== undefined &&
     !(QR_CODE_LEVELS as readonly string[]).includes(options.level)
@@ -56,7 +60,7 @@ function validateQrCodeOptions(
     });
   }
 
-  for (const key of ["margin", "width", "size"] as const) {
+  for (const key of ["margin", "width"] as const) {
     const value = options[key];
     if (value === undefined) continue;
     if (

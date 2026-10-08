@@ -5,6 +5,7 @@ import {
   qrElementClassName,
   resolveQrCodeOptions,
 } from "../src/options.js";
+import { qrCode } from "../index.js";
 
 test("resolves documented defaults", () => {
   assert.deepEqual(resolveQrCodeOptions(), {
@@ -20,9 +21,18 @@ test("resolves documented defaults", () => {
   assert.equal("fallback" in DEFAULT_QR_CODE_OPTIONS, false);
 });
 
-test("width wins over the deprecated size alias", () => {
-  assert.equal(resolveQrCodeOptions({ size: 200 }).width, 200);
-  assert.equal(resolveQrCodeOptions({ size: 200, width: 240 }).width, 240);
+test("uses width", () => {
+  assert.equal(resolveQrCodeOptions({ width: 240 }).width, 240);
+});
+
+test("rejects the removed size option in plugin configuration", () => {
+  const issues = qrCode({ size: 200 } as never).validateOptions?.({
+    size: 200,
+  } as never);
+
+  assert.deepEqual(issues, [
+    { path: "size", message: 'Unknown option. Use "width".' },
+  ]);
 });
 
 test("falls back on invalid values instead of throwing", () => {

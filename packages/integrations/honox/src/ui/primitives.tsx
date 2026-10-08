@@ -24,12 +24,7 @@ export type ArticleProps = PrimitiveProps & {
   "data-slot"?: string;
 };
 
-export type ArticleLayoutProps = PrimitiveProps & {
-  /**
-   * @deprecated Render aside content as children instead.
-   */
-  aside?: PrimitiveChildren;
-};
+export type ArticleLayoutProps = PrimitiveProps;
 
 export type ArticleHeaderProps =
   | (PrimitiveClassProps & {
@@ -41,21 +36,10 @@ export type ArticleHeaderProps =
       children?: PrimitiveChildren;
     });
 
-export type ArticleContentProps =
-  | (PrimitiveClassProps & {
-      /**
-       * @deprecated Render Markdown HTML with `ArticleBody` inside an
-       * `ArticleContent` shell instead.
-       */
-      html: string;
-      children?: never;
-      "data-slot"?: string;
-    })
-  | (PrimitiveClassProps & {
-      html?: never;
-      children?: PrimitiveChildren;
-      "data-slot"?: string;
-    });
+export type ArticleContentProps = PrimitiveClassProps & {
+  children?: PrimitiveChildren;
+  "data-slot"?: string;
+};
 
 export type ArticleMetaProps = PrimitiveProps & {
   label?: string;
@@ -84,7 +68,6 @@ export function ArticleLayout(props: ArticleLayoutProps) {
       class={joinClassNames("rb-article-layout", props.class, props.className)}
     >
       {props.children}
-      {props.aside}
     </div>
   );
 }
@@ -126,16 +109,6 @@ export function ArticleContent(props: ArticleContentProps) {
     props.className,
   );
   const dataSlot = props["data-slot"] ?? "article-body";
-
-  if (props.html !== undefined) {
-    return (
-      <div
-        class={className}
-        data-slot={dataSlot}
-        dangerouslySetInnerHTML={{ __html: props.html }}
-      />
-    );
-  }
 
   return (
     <div class={className} data-slot={dataSlot}>

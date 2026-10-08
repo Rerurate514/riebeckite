@@ -181,6 +181,37 @@ test("A7: the code root paints an opaque surface, not a page-relative tint", () 
   assert.match(themeCss, /--rb-color-code-background:\s*color-mix\(/);
 });
 
+test("A7: every plugin fallback code surface owns its own foreground", () => {
+  const pluginsDir = new URL("../../../packages/plugins/", import.meta.url);
+  const rule = /([^{}]+)\{([^{}]*)\}/g;
+  let checked = 0;
+
+  for (const entry of readdirSync(pluginsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const relative = `../../../packages/plugins/${entry.name}/style.css`;
+    if (!existsSync(new URL(relative, import.meta.url))) continue;
+    const css = read(relative);
+
+    for (const match of css.matchAll(rule)) {
+      const selector = match[1].trim();
+      const body = match[2];
+      if (!/__fallback[^{}]*(?:pre|code)\b/i.test(selector)) continue;
+      if (!/background\s*:/.test(body)) continue;
+      checked += 1;
+      assert.match(
+        body,
+        /(?:^|[;{\s])color\s*:/,
+        `${relative} "${selector}" paints its own background but relies on the theme's bare-pre foreground`,
+      );
+    }
+  }
+
+  assert.ok(
+    checked >= 2,
+    `expected plugin fallback code rules to scan, saw ${checked}`,
+  );
+});
+
 test("A5: the search modal is a sibling of the fixed search trigger", () => {
   const component = read(
     "../../../packages/plugins/search/components/search-bar.tsx",

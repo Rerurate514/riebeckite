@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
@@ -82,6 +85,8 @@ export const PACKAGE_DIRECTORIES = [
   "packages/themes/sakura",
   "packages/themes/tokyonight",
 ];
+
+const repositoryRoot = path.resolve(import.meta.dirname, "..");
 
 export const repositoryUrl = "https://github.com/Rerurate514/riebeckite.git";
 
@@ -573,21 +578,9 @@ export function expectedPackageMetadata(directory) {
 
   if (directory.startsWith("packages/plugins/")) {
     const pluginName = directory.slice("packages/plugins/".length);
-    const hasStyle = ![
-      "alias",
-      "analytics",
-      "archive",
-      "citations",
-      "deploy",
-      "diagnostics",
-      "discord-embed",
-      "folder-pages",
-      "hard-breaks",
-      "permalink",
-      "quality",
-      "rename",
-      "seo",
-    ].includes(pluginName);
+    const hasStyle = fs.existsSync(
+      path.join(repositoryRoot, directory, "style.css"),
+    );
     const hasTests = [
       "alias",
       "analytics",

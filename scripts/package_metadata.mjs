@@ -583,7 +583,6 @@ export function expectedPackageMetadata(directory) {
       "discord-embed",
       "folder-pages",
       "hard-breaks",
-      "obsidian-markdown",
       "permalink",
       "quality",
       "rename",

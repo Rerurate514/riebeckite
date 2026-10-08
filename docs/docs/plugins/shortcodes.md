@@ -75,6 +75,178 @@ diagnostic, and malformed attributes emit `shortcodes-invalid` and are ignored.
 | `link-card` | leaf | yes | `url`/`href`, `title`, `description`, `image`/`icon` | Link preview card |
 | `file` | leaf | yes | `url`/`src`/`path`, `name`/`label`, `size` | Download link |
 
+## Actual Rendering
+
+The following examples demonstrate all 12 built-in shortcodes. Each example shows the Markdown syntax followed by the shortcode itself, allowing you to see how it renders when the Shortcodes plugin is enabled.
+
+### Badge
+
+Display status indicators or labels inline with text.
+
+```md
+This feature is :badge[New]{variant=success}.
+
+Current status: :badge[Beta]{variant=warning}
+```
+
+This feature is :badge[New]{variant=success}.
+
+Current status: :badge[Beta]{variant=warning}
+
+### Keyboard (kbd)
+
+Display keyboard shortcuts using semantic `<kbd>` elements.
+
+```md
+Press :kbd[Ctrl+S] to save your changes.
+
+Use :kbd[Ctrl+K] to open search.
+```
+
+Press :kbd[Ctrl+S] to save your changes.
+
+Use :kbd[Ctrl+K] to open search.
+
+### Note
+
+Highlight useful information, tips, and other supplementary content.
+
+```md
+:::note[Tip]{type=info}
+You can use **Markdown** inside this container.
+
+- Lists
+- **Bold text**
+- [Links](https://example.com)
+:::
+```
+
+:::note[Tip]{type=info}
+You can use **Markdown** inside this container.
+
+- Lists
+- **Bold text**
+- [Links](https://example.com)
+:::
+
+### Callout
+
+Display important notices or warnings. `callout` is an alias of `note` with a different CSS class.
+
+```md
+:::callout[Warning]{type=warning}
+Remember to rebuild your site after changing the configuration file.
+:::
+```
+
+:::callout[Warning]{type=warning}
+Remember to rebuild your site after changing the configuration file.
+:::
+
+### Details
+
+Create collapsible sections that users can expand to reveal additional content.
+
+```md
+:::details[Show details]
+This content is hidden until the section is expanded.
+
+You can include **Markdown** and lists:
+
+- Item A
+- Item B
+:::
+```
+
+:::details[Show details]
+This content is hidden until the section is expanded.
+
+You can include **Markdown** and lists:
+
+- Item A
+- Item B
+:::
+
+### Spoiler
+
+Hide content behind an expandable section. `spoiler` works like `details` but uses a different CSS class.
+
+```md
+:::spoiler[Reveal spoiler]
+The hidden content appears when the user expands this section.
+
+**Markdown** is supported here too.
+:::
+```
+
+:::spoiler[Reveal spoiler]
+The hidden content appears when the user expands this section.
+
+**Markdown** is supported here too.
+:::
+
+### Figure
+
+Display images with optional captions and dimensions using semantic `<figure>` markup.
+
+```md
+::figure[Sample image]{src="https://placehold.co/800x400/png" alt="Sample placeholder image" caption="Figure 1: Example image"}
+```
+
+::figure[Sample image]{src="https://placehold.co/800x400/png" alt="Sample placeholder image" caption="Figure 1: Example image"}
+
+### YouTube
+
+Embed YouTube videos using the privacy-enhanced `youtube-nocookie.com` domain.
+
+```md
+::youtube[id=dQw4w9WgXcQ]
+```
+
+::youtube[id=dQw4w9WgXcQ]
+
+### Vimeo
+
+Embed Vimeo videos with the `dnt=1` privacy parameter.
+
+```md
+::vimeo[id=76979871]
+```
+
+::vimeo[id=76979871]
+
+### GitHub Gist
+
+Embed GitHub Gist code snippets directly into a page. A fallback link is provided for environments where JavaScript is disabled.
+
+```md
+::gist{user=octocat id=aa5a315d61ae9438b18d}
+```
+
+::gist{user=octocat id=aa5a315d61ae9438b18d}
+
+### Link Card
+
+Display external links as preview cards with titles and descriptions.
+
+```md
+::link-card[GitHub]{url="https://github.com" title="GitHub" description="A platform for hosting code and collaborating on software projects"}
+```
+
+::link-card[GitHub]{url="https://github.com" title="GitHub" description="A platform for hosting code and collaborating on software projects"}
+
+### File
+
+Create downloadable file links with optional filenames and file sizes.
+
+```md
+::file[Sample PDF]{url="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" name="sample.pdf" size="13 KB"}
+```
+
+::file[Sample PDF]{url="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" name="sample.pdf" size="13 KB"}
+
+The code blocks above show the original Markdown syntax. The shortcode expressions immediately below them serve as live rendering examples when processed by Riebeckite with the Shortcodes plugin enabled.
+
 ## Options
 
 | Option | Type | Default | Description |

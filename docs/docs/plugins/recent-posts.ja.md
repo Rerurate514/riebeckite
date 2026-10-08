@@ -34,6 +34,53 @@ return <Article afterContent={<RecentPosts posts={posts} />} />;
 | `manifest` | 必須 | 候補ノートの取得元（`discoverableEntries`） |
 | `limit` | `5` | 返す記事数の上限 |
 
+## Starter presetからの使用する例
+まず、`[slug{.+}].tsx`で以下を記述します。`SiteArticle`の引数として、`post`を追加します。
+```tsx title="[slug{.+}].tsx"
+const posts = getRecentPosts({ manifest: await content.getManifest() });
+
+return c.render(
+      <SiteArticle
+        posts={posts}
+        post={resolved.post}
+        bodySlots={resolved.entry.bodySlots}
+        asideContent={<TableOfContents className="rr-table-of-contents--desktop" items={tableOfContents} />}
+      />,
+    );
+```
+
+`SiteArticle`の引数に`posts`を追加します。
+```tsx title="article.tsx"
+export function SiteArticle({
++  posts,
+  post,
+  bodySlots,
+  asideContent,
+  afterContent,
+  footerContent,
+}: {
++  posts: RecentPost[];
+  post: PostContent;
+  bodySlots?: ContentBodySlots;
+  asideContent?: unknown;
+  afterContent?: unknown;
+  footerContent?: unknown;
+}) {
+```
+
+そして、`RecentPosts`を追加します。
+```tsx title="article.tsx"
+{hasSlot(bodySlots, "article.footer") || footerContent ? (
+          <ArticleFooter class="site-article__footer">
++            <RecentPosts posts={posts}></RecentPosts>
+            <ContentSlot slots={bodySlots} name="article.footer" />
+            {footerContent}
+          </ArticleFooter>
+        ) : null}
+```
+
+`npm exec riebeckite dev`でサーバーを起動して、実際の画面を見てみると、サイト下部にRECENT POSTSが表示されます。
+
 ## 公開 API
 
 - `recentPostsPlugin()` — プラグインファクトリ

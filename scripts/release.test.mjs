@@ -64,7 +64,9 @@ function internalEdges() {
 
 function createHarness({
   published = [],
+  publishedAfterInitialInspection = [],
   failView = [],
+  invalidView = [],
   failPublish = [],
   authFailPublish = [],
   tagExists = false,
@@ -76,7 +78,9 @@ function createHarness({
     version: VERSION,
     published: new Set(published),
     registry: new Set(published),
+    publishedAfterInitialInspection: new Set(publishedAfterInitialInspection),
     failView: new Set(failView),
+    invalidView: new Set(invalidView),
     failPublish: new Set(failPublish),
     authFailPublish: new Set(authFailPublish),
     tagExists,
@@ -89,6 +93,8 @@ function createHarness({
     steps: [],
     publishOrder: [],
     sleeps: [],
+    initialInspectionComplete: false,
+    viewCount: 0,
   };
 
   const recordPublish = (name) => {
@@ -128,17 +134,31 @@ function createHarness({
       if (args[0] === "view") {
         const spec = args[1];
         const name = spec.slice(0, spec.lastIndexOf("@"));
+        const isInitialInspection = !state.initialInspectionComplete;
+        if (isInitialInspection) {
+          state.viewCount += 1;
+        }
         if (state.failView.has(name)) {
           return { status: 1, stdout: "", stderr: "npm error network timeout" };
         }
-        if (state.registry.has(name)) {
-          return ok(`${VERSION}\n`);
+        if (state.invalidView.has(name)) {
+          return ok("not json");
         }
-        return {
-          status: 1,
-          stdout: "",
-          stderr: "npm error 404 Not Found - GET https://registry.npmjs.org",
-        };
+        const result = state.registry.has(name)
+          ? ok(`${JSON.stringify(VERSION)}\n`)
+          : {
+              status: 1,
+              stdout: "",
+              stderr:
+                "npm error 404 Not Found - GET https://registry.npmjs.org",
+            };
+        if (isInitialInspection && state.viewCount === ALL_PACKAGES.length) {
+          state.initialInspectionComplete = true;
+          for (const publishedName of state.publishedAfterInitialInspection) {
+            state.registry.add(publishedName);
+          }
+        }
+        return result;
       }
     }
 
@@ -319,6 +339,27 @@ test("already published packages are skipped", async () => {
   );
 });
 
+test("versions published after inspection are skipped before interactive and parallel publish", async () => {
+  const targets = ALL_PACKAGES.slice(0, 2);
+  const harness = createHarness({
+    published: ALL_PACKAGES.filter((name) => !targets.includes(name)),
+    publishedAfterInitialInspection: targets,
+  });
+
+  const { output } = await withHarness(harness, () => runRelease([VERSION]));
+
+  assert.equal(interactivePublishCalls(harness.state).length, 0);
+  assert.equal(publishCalls(harness.state).length, 0);
+  assert.deepEqual(harness.state.publishOrder, []);
+  for (const name of targets) {
+    assert.ok(
+      output.some((line) => line.includes(`skip ${name}@${VERSION}`)),
+      `${name} should be skipped after its publish-time registry check`,
+    );
+  }
+  assert.ok(stepLabels(harness.state).includes("git tag"));
+});
+
 test("partial release resumes from the already published packages", async () => {
   const preset = ALL_PACKAGES.slice(0, 40);
   const harness = createHarness({ published: preset });
@@ -381,6 +422,19 @@ test("authentication failure fails closed without commit or tag", async () => {
 
 test("registry inspection failure fails closed before publishing", async () => {
   const harness = createHarness({ failView: [ALL_PACKAGES[0]] });
+
+  await assert.rejects(
+    () => withHarness(harness, () => runRelease([VERSION])),
+    ReleaseError,
+  );
+
+  assert.equal(publishCalls(harness.state).length, 0);
+  assert.equal(interactivePublishCalls(harness.state).length, 0);
+  assert.equal(stepLabels(harness.state).includes("git tag"), false);
+});
+
+test("inconclusive successful registry response fails closed before publishing", async () => {
+  const harness = createHarness({ invalidView: [ALL_PACKAGES[0]] });
 
   await assert.rejects(
     () => withHarness(harness, () => runRelease([VERSION])),

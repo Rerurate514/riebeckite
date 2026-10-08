@@ -524,7 +524,27 @@ async function isPackageVersionPublished(packageName, version) {
   );
 
   if (result.status === 0) {
-    return true;
+    let publishedVersion;
+
+    try {
+      publishedVersion = JSON.parse(result.stdout);
+    } catch {
+      throw new ReleaseError(
+        `Could not determine whether ${packageSpec} is published: ` +
+          "npm view returned invalid JSON.",
+        result.status,
+      );
+    }
+
+    if (publishedVersion === version) {
+      return true;
+    }
+
+    throw new ReleaseError(
+      `Could not determine whether ${packageSpec} is published: ` +
+        `npm view returned ${JSON.stringify(publishedVersion)}.`,
+      result.status,
+    );
   }
 
   const output = `${result.stdout}\n${result.stderr}`.toLowerCase();
@@ -602,6 +622,12 @@ function findFirstPendingPackage(layers, publishedPackages) {
 async function publishInteractive(directory, manifest, version, reason) {
   const packageSpec = `${manifest.name}@${version}`;
 
+  if (await isPackageVersionPublished(manifest.name, version)) {
+    console.log(`\n[publish] skip ${packageSpec} (already published)`);
+
+    return;
+  }
+
   console.log("\n[interactive publish]");
 
   if (reason) {
@@ -641,6 +667,14 @@ async function publishPackage(
   total,
 ) {
   const packageSpec = `${manifest.name}@${version}`;
+
+  if (await isPackageVersionPublished(manifest.name, version)) {
+    console.log(
+      `[publish ${position}/${total}] skip ${packageSpec} (already published)`,
+    );
+
+    return;
+  }
 
   console.log(`[publish ${position}/${total}] starting ${packageSpec}`);
 

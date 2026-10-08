@@ -252,11 +252,11 @@ const handler: NotFoundHandler = (c) => {
   c.status(404);
 
   return c.render(
-    <main class="not-found">
+    <div class="not-found">
       <h1>Page not found</h1>
       <p>The page you requested does not exist or is not available.</p>
       <a href="/">Back to home</a>
-    </main>,
+    </div>,
   );
 };
 

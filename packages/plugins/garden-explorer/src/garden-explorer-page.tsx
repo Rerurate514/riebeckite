@@ -8,7 +8,7 @@ export function renderGardenExplorerPage(
   siteTitle: string,
 ): string {
   return renderToString(
-    <main class="garden-explorer-page">
+    <div class="garden-explorer-page">
       <header class="garden-explorer-page__header">
         <p class="garden-explorer-page__eyebrow">{siteTitle}</p>
         <h1 class="garden-explorer-page__title">Garden Explorer</h1>
@@ -27,6 +27,6 @@ export function renderGardenExplorerPage(
           __html: escapeScriptJson(JSON.stringify(data)),
         }}
       />
-    </main>,
+    </div>,
   );
 }

@@ -251,6 +251,55 @@ test("starter and showcase scaffolds render authored navigation in the site shel
   });
 });
 
+test("starter and showcase scaffolds expose a single main landmark and skip link", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of ["starter", "showcase"] as const) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const renderer = await fs.readFile(
+        path.join(targetDirectory, "app/routes/_renderer.tsx"),
+        "utf8",
+      );
+      assert.match(
+        renderer,
+        /<a class="rb-skip-link" href="#main-content">Skip to main content<\/a>/,
+      );
+      assert.ok(
+        renderer.indexOf('class="rb-skip-link"') <
+          renderer.indexOf("<SiteHeader"),
+        "the skip link must precede the repeated site header",
+      );
+      assert.equal(
+        (renderer.match(/<main\b/g) ?? []).length,
+        1,
+        "the renderer must own exactly one main landmark",
+      );
+      assert.match(
+        renderer,
+        /<main id="main-content" tabindex="-1" class="riebeckite-main">/,
+      );
+      assert.ok(
+        renderer.indexOf("<main ") < renderer.indexOf("<SiteFooter"),
+        "the main landmark must close before the footer",
+      );
+
+      const notFound = await fs.readFile(
+        path.join(targetDirectory, "app/routes/_404.tsx"),
+        "utf8",
+      );
+      assert.doesNotMatch(notFound, /<main\b/);
+      assert.match(notFound, /<div class="not-found">/);
+
+      const style = await fs.readFile(
+        path.join(targetDirectory, "app/style.css"),
+        "utf8",
+      );
+      assert.match(style, /\.riebeckite-main \{/);
+      assert.match(style, /\.riebeckite-main:has\(> \.not-found\) \{/);
+    }
+  });
+});
+
 test("starter and showcase scaffolds compose the standard body slots", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {

@@ -14,6 +14,7 @@ Riebeckite uses native HTML first and adds ARIA only when native HTML cannot exp
 
 - The generated HonoX document shell sets `lang`, viewport metadata, page title, and theme attributes.
 - Presets render normal landmarks such as `header`, `main`, `article`, `aside`, `footer`, and `nav` where those structures exist.
+- The Starter and Showcase shells render one `<main id="main-content">` landmark and a "Skip to main content" link that appears on keyboard focus, so keyboard users can bypass the repeated header and navigation.
 - Framework-generated links use real `<a href>` elements, and actions use real `<button type="button">` elements.
 - Plugin page types are rendered inside the shared document shell so language, title, assets, and theme hooks apply consistently.
 - Framework-generated controls are operable with a keyboard alone.

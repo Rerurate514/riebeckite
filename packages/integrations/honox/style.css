@@ -34,4 +34,22 @@
       grid-row: 1;
     }
   }
+
+  .rb-skip-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: var(--rb-space-2, 1rem) var(--rb-space-3, 1.5rem);
+    border: var(--rb-rule-width, 1px) solid var(--rb-color-border-strong);
+    border-radius: var(--rb-default-radius-sm, 0.25rem);
+    background: var(--rb-color-surface);
+    color: var(--rb-color-ink);
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+
+  .rb-skip-link:focus {
+    transform: translateY(0);
+  }
 }

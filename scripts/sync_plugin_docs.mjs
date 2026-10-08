@@ -43,6 +43,7 @@ export const PLUGIN_PAGE_TITLES = {
   gallery: "Gallery",
   "garden-explorer": "Garden Explorer",
   graphviz: "Graphviz",
+  "hard-breaks": "Hard Breaks",
   highlight: "Highlight",
   "hover-preview": "Hover Preview",
   kanban: "Kanban",

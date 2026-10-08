@@ -60,6 +60,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Obsidian Markdown](./obsidian-markdown.md) | WikiLinks, embeds, callouts, and Obsidian-flavored syntax |
 | [Shortcodes](./shortcodes.md) | Inline, block, and container directives for reusable snippets |
 | [Highlight](./highlight.md) | Obsidian-style inline highlighting |
+| [Hard Breaks](./hard-breaks.md) | Render ordinary line breaks as `<br>` |
 | [Alias](./alias.md) | Obsidian alias redirects for notes |
 | [Properties](./properties.md) | Frontmatter property panels |
 | [Bases](./bases.md) | Build-time Obsidian Bases tables |

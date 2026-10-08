@@ -35,6 +35,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/gallery",
   "packages/plugins/garden-explorer",
   "packages/plugins/graphviz",
+  "packages/plugins/hard-breaks",
   "packages/plugins/highlight",
   "packages/plugins/hover-preview",
   "packages/plugins/kanban",
@@ -255,6 +256,11 @@ const packagePublishingMetadata = {
   "packages/plugins/graphviz": {
     description: "Graphviz DOT diagram rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "graphviz", "diagrams"],
+  },
+  "packages/plugins/hard-breaks": {
+    description:
+      "Render ordinary Markdown line breaks as <br> elements for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "markdown", "line-breaks", "obsidian"],
   },
   "packages/plugins/highlight": {
     description: "Obsidian-style inline text highlighting for Riebeckite.",
@@ -576,6 +582,7 @@ export function expectedPackageMetadata(directory) {
       "diagnostics",
       "discord-embed",
       "folder-pages",
+      "hard-breaks",
       "obsidian-markdown",
       "permalink",
       "quality",
@@ -598,6 +605,7 @@ export function expectedPackageMetadata(directory) {
       "excalibrain",
       "folder-pages",
       "gallery",
+      "hard-breaks",
       "highlight",
       "l10n",
       "local-graph",

@@ -302,5 +302,5 @@ test("garden explorer page renders an English description", () => {
     /<main\b/,
     "the plugin page body must not own a main landmark; the site shell does",
   );
-  assert.match(html, /<div class="garden-explorer-page">/);
+  assert.match(html, /<div class="rr-garden-explorer-page">/);
 });

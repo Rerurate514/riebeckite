@@ -105,8 +105,8 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 
 - Client-only: without JavaScript nothing is added.
 - No SPA support; a full page load re-initializes the enhancements.
-- The TOC scroll-spy looks for `.rr-table-of-contents`, `.table-of-contents`,
-  or `[data-rb-toc]` as the table-of-contents container.
+- The TOC scroll-spy looks for `.rr-table-of-contents` or `[data-rb-toc]` as
+  the table-of-contents container.
 - Copy buttons are skipped inside `.rr-code` blocks (managed by the
   code-enhance plugin) to avoid duplicate copy UI.
 

@@ -56,7 +56,7 @@ return (
 
 ## Component
 
-`Backlinks({ backlinks })` renders a `<footer class="article-backlinks rr-backlinks">` with
+`Backlinks({ backlinks })` renders a `<footer class="rr-backlinks">` with
 an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
 ## Exports

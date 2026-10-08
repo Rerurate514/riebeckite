@@ -86,7 +86,7 @@ export default defineConfig({
 
 - クライアント専用です。JavaScript が無効な環境では何も追加されません。
 - SPA ナビゲーションには対応しません。ページ遷移後は再読み込み時に初期化されます。
-- 目次のスクロール連動は `.rr-table-of-contents`、`.table-of-contents`、`[data-rb-toc]` のいずれかを目次コンテナとして探します。
+- 目次のスクロール連動は `.rr-table-of-contents` または `[data-rb-toc]` を目次コンテナとして探します。
 - コードのコピーボタンは `.rr-code`（code-enhance プラグインが管理するブロック）には追加しません。二重のコピー UI を避けるためです。
 
 ## 主なエクスポート
@@ -98,4 +98,3 @@ export default defineConfig({
 ## 関連資料
 
 - [プラグインシステム](../../../docs/docs/reference/plugin-api.ja.md)
-

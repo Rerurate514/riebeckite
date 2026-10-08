@@ -38,13 +38,13 @@ export default defineConfig({
 ### Embed (`![[file]]`)
 
 ```html
-<aside class="attachment-card rr-attachment" data-attachment-path="...">
-  <div class="attachment-card__meta">
-    <span class="attachment-card__format">PDF</span>
-    <span class="attachment-card__size">1.2 MB</span>
+<aside class="rr-attachment" data-attachment-path="...">
+  <div class="rr-attachment__meta">
+    <span class="rr-attachment__format">PDF</span>
+    <span class="rr-attachment__size">1.2 MB</span>
   </div>
-  <div class="attachment-card__name">report.pdf</div>
-  <a class="attachment-card__download" href="..." download>label</a>
+  <div class="rr-attachment__name">report.pdf</div>
+  <a class="rr-attachment__download" href="..." download>label</a>
 </aside>
 ```
 

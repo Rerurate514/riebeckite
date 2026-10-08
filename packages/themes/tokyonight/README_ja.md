@@ -1,5 +1,7 @@
 # @riebeckite/theme-tokyonight
 
+<!-- Generated from docs/docs/themes/tokyonight.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
+
 Tokyo Night の濃い藍色と鮮やかな青を、開発ツールらしい見た目に寄せたテーマです。等幅の見出し、詰まった行間、角を立てた 1px 罫線の面、青いアクセント、任意のネオン発光で構成します。昼向けの明るい配色と、定番の深い夜向け配色を切り替えられます。
 
 [English](./README.md)
@@ -63,7 +65,22 @@ JetBrains Mono のラテン文字サブセットを同梱しているため、�
 
 ## 関連資料
 
-- [テーマシステム](../../../docs/docs/reference/theme-api.ja.md)
+- [テーマシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
 - [`@riebeckite/theme-sakura`](../sakura/README_ja.md)
 
+## Documentation site
+
+Tokyo Night を基調とした高コントラストな Theme です。
+
+## 導入
+
+```bash
+npm install @riebeckite/theme-tokyonight
+```
+
+Theme の factory 名と設定項目は、実装とこの正本ページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+
+## 詳細仕様
+
+設定項目や Theme 固有の仕様は この正本ページを参照してください。Theme の仕組みは [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.ja.md) を参照してください。

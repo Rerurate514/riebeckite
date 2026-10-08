@@ -1,5 +1,7 @@
 # @riebeckite/theme-gruvbox
 
+<!-- Generated from docs/docs/themes/gruvbox.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
+
 A warm, retro-groove Gruvbox theme for Riebeckite: buttery-cream paper with
 warm-charcoal ink in light mode, rich charcoal with `#ebdbb2` ink in dark mode,
 and the classic Gruvbox blue as the interactive accent.
@@ -136,8 +138,23 @@ project, and is distributed here under the license stated in the package
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)
 
+## Documentation site
+
+A Theme with a warm color palette inspired by Gruvbox.
+
+## Installation
+
+```bash
+npm install @riebeckite/theme-gruvbox
+```
+
+Check the implementation and this canonical page as the source of truth for the Theme's factory name and configuration options. Use it by assigning it to `theme` in `riebeckite.config.ts`.
+
+## Detailed specification
+
+For configuration options and Theme-specific behavior, see this canonical page. For how Themes work, see [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.md). To create a Theme, see [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

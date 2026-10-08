@@ -1,5 +1,7 @@
 # @riebeckite/theme-minimal
 
+<!-- Generated from docs/docs/themes/minimal.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
+
 A content-first, near-chromeless typographic theme for Riebeckite: "nothing but
 type and space". Monochrome paper/ink, system fonts only, no bundled fonts and
 no JavaScript.
@@ -134,10 +136,25 @@ is distributed here under the license stated in the package `LICENSE` file.
 
 ## See also
 
-- [Theme authoring contract](../../../docs/docs/reference/theme-api.md)
+- [Theme authoring contract](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)
 - [`@riebeckite/theme-gruvbox`](../gruvbox/README.md)
 - [`@riebeckite/theme-rerurate`](../rerurate/README.md)
 
+## Documentation site
+
+A Theme that keeps decoration restrained so the content stays at the center.
+
+## Installation
+
+```bash
+npm install @riebeckite/theme-minimal
+```
+
+Check the implementation and this canonical page as the source of truth for the Theme's factory name and configuration options. Use it by assigning it to `theme` in `riebeckite.config.ts`.
+
+## Detailed specification
+
+For configuration options and Theme-specific behavior, see this canonical page. For how Themes work, see [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.md). To create a Theme, see [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

@@ -1,5 +1,7 @@
 # @riebeckite/theme-default
 
+<!-- Generated from docs/docs/themes/default.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
+
 The default Riebeckite theme: design tokens, light/dark color modes, typography
 presets, and article layout shipped as CSS.
 
@@ -81,4 +83,20 @@ mode; leave it unset to follow the OS with `colorMode: "system"`.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
+
+## Documentation site
+
+The standard Riebeckite Theme. It provides the baseline look for article reading and site UI.
+
+## Installation
+
+```bash
+npm install @riebeckite/theme-default
+```
+
+Check the implementation and this canonical page as the source of truth for the Theme's factory name and configuration options. Use it by assigning it to `theme` in `riebeckite.config.ts`.
+
+## Detailed specification
+
+For configuration options and Theme-specific behavior, see this canonical page. For how Themes work, see [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.md). To create a Theme, see [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

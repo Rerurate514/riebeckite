@@ -1,5 +1,7 @@
 # @riebeckite/theme-rerurate
 
+<!-- Generated from docs/docs/themes/rerurate.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
+
 Paper、Ink、Orange を軸にした Rerurate のテーマです。フラットな面、1px の罫線、8px を基準にした余白で、情報の境界をはっきり見せます。
 
 [English](./README.md)
@@ -62,9 +64,24 @@ export default defineConfig({
 
 ## 関連資料
 
-- [テーマシステム](../../../docs/docs/reference/theme-api.ja.md)
+- [テーマシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
 - [`@riebeckite/theme-sakura`](../sakura/README_ja.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README_ja.md)
 - [`@riebeckite/theme-gruvbox`](../gruvbox/README_ja.md)
 
+## Documentation site
+
+Rerurate の視覚表現をもとにした Theme です。
+
+## 導入
+
+```bash
+npm install @riebeckite/theme-rerurate
+```
+
+Theme の factory 名と設定項目は、実装とこの正本ページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+
+## 詳細仕様
+
+設定項目や Theme 固有の仕様は この正本ページを参照してください。Theme の仕組みは [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.ja.md) を参照してください。

@@ -1,5 +1,7 @@
 # @riebeckite/theme-sakura
 
+<!-- Generated from docs/docs/themes/sakura.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
+
 A cherry-blossom (sakura) theme for Riebeckite: soft pink paper, plum ink, a
 sakura-pink accent, and a warm serif editorial voice.
 
@@ -105,6 +107,21 @@ full token list — the token contract is identical.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 
+## Documentation site
+
+An editorial Theme inspired by cherry blossoms.
+
+## Installation
+
+```bash
+npm install @riebeckite/theme-sakura
+```
+
+Check the implementation and this canonical page as the source of truth for the Theme's factory name and configuration options. Use it by assigning it to `theme` in `riebeckite.config.ts`.
+
+## Detailed specification
+
+For configuration options and Theme-specific behavior, see this canonical page. For how Themes work, see [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.md). To create a Theme, see [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

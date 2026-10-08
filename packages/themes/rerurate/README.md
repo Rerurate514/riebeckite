@@ -1,5 +1,7 @@
 # @riebeckite/theme-rerurate
 
+<!-- Generated from docs/docs/themes/rerurate.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
+
 A Rerurate theme for Riebeckite, built on the Rerurate Visual Grammar: warm
 Paper / Ink flat surfaces, a signature Orange accent, 1px rules, and an 8px
 grid.
@@ -122,8 +124,24 @@ Red and Green also back the functional `danger` / `success` tokens.
 
 ## See also
 
-- [Plugin guide](../../../docs/docs/reference/plugin-api.md)
+- [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
 - [`@riebeckite/theme-default`](../default/README.md)
 - [`@riebeckite/theme-sakura`](../sakura/README.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README.md)
 - [`@riebeckite/theme-gruvbox`](../gruvbox/README.md)
+
+## Documentation site
+
+A Theme based on Rerurate's visual language.
+
+## Installation
+
+```bash
+npm install @riebeckite/theme-rerurate
+```
+
+Check the implementation and this canonical page as the source of truth for the Theme's factory name and configuration options. Use it by assigning it to `theme` in `riebeckite.config.ts`.
+
+## Detailed specification
+
+For configuration options and Theme-specific behavior, see this canonical page. For how Themes work, see [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.md). To create a Theme, see [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

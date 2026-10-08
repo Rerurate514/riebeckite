@@ -250,7 +250,7 @@ You can start by adjusting with `userCss` and reorganize into a theme once the c
 | [Sakura](./sakura.md) | `@riebeckite/theme-sakura` | `sakuraTheme()` | A sakura-inspired palette |
 | [Tokyo Night](./tokyonight.md) | `@riebeckite/theme-tokyonight` | `tokyonightTheme()` | A Tokyo Night-inspired dark/editor-like look |
 
-The package README is the source of truth for each theme's exported factory name and options.
+Each theme's canonical page is the source of truth for its exported factory name and options. Package READMEs are generated from these pages.
 
 ### Default
 
@@ -445,7 +445,7 @@ Set it in config.theme
 Check with dev
 ```
 
-Check the package README for each theme's exact factory name and options.
+Check each theme's canonical page for its exact factory name and options.
 
 ## Next
 

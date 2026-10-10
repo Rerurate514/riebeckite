@@ -99,7 +99,14 @@ body {
   border-top: 1px solid var(--rb-color-border);
 }
 
-@media (max-width: 48rem) {
+@media (min-width: 30.001rem) and (max-width: 48rem) {
+  .rb-site-header,
+  .rb-nav > .rb-nav__list {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 30rem) {
   .riebeckite-page {
     padding-block: var(--rb-space-3, 1.5rem);
   }
@@ -172,6 +179,14 @@ body {
 
 .site-article__aside {
   display: none;
+}
+
+@media (min-width: 48rem) {
+  .site-article__aside {
+    display: block;
+    min-width: 0;
+    margin-block: var(--rb-space-4, 2rem);
+  }
 }
 
 @media (min-width: 88rem) {

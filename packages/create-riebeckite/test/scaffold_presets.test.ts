@@ -50,6 +50,13 @@ test("each preset generates its intended self-contained composition", async () =
         path.join(targetDirectory, "riebeckite.config.ts"),
         "utf8",
       );
+      const packageJson = JSON.parse(
+        await fs.readFile(path.join(targetDirectory, "package.json"), "utf8"),
+      ) as { devDependencies?: Record<string, string> };
+      assert.equal(
+        packageJson.devDependencies?.["@hono/node-server"],
+        "^1.19.17",
+      );
       assert.ok(await exists(path.join(targetDirectory, "README.md")));
       assert.ok(await exists(path.join(targetDirectory, "public/favicon.ico")));
       assert.ok(

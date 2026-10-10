@@ -39,6 +39,14 @@ body {
   display: none;
 }
 
+@media (min-width: 48rem) {
+  .site-article__aside {
+    display: block;
+    min-width: 0;
+    margin-block: var(--rb-space-4, 2rem);
+  }
+}
+
 @media (min-width: 88rem) {
   :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__footer {
     grid-column: 1;

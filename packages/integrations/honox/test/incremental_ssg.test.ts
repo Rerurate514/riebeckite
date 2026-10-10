@@ -253,3 +253,60 @@ test("incremental SSG matches a clean cold build", async (t) => {
   assert.ok(Object.hasOwn(finalSnapshot, "explore.html"));
   assert.ok(Object.hasOwn(finalSnapshot, "custom.json"));
 });
+
+test("SSG emits standard Markdown images and tracks their file changes", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "markdown-image-ssg-test-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  await createSite(root, {
+    title: "Markdown image",
+    renderTag: "v1",
+    noteCount: 1,
+    editedNotes: [],
+  });
+  await writeFile(
+    notePath(root, 0),
+    [
+      "---",
+      "title: Image note",
+      "visibility: public",
+      "---",
+      "",
+      "![Sample](./images/sample.png)",
+      "",
+    ].join("\\n"),
+  );
+  const imagePath = path.join(root, "vault", "notes", "images", "sample.png");
+  await mkdir(path.dirname(imagePath), { recursive: true });
+  await writeFile(imagePath, "IMAGE-A", "utf8");
+
+  await buildSite(root, "initial-image", leanBuildOptions);
+  assert.equal(
+    await readFile(
+      path.join(distPath(root), "notes", "images", "sample.png"),
+      "utf8",
+    ),
+    "IMAGE-A",
+  );
+  assert.match(
+    await readFile(path.join(distPath(root), "notes", "note-0.html"), "utf8"),
+    /src="\/notes\/images\/sample\.png"/,
+  );
+
+  await writeFile(imagePath, "IMAGE-B", "utf8");
+  await incrementalBuild(root, "updated-image", leanBuildOptions);
+  assert.equal(
+    await readFile(
+      path.join(distPath(root), "notes", "images", "sample.png"),
+      "utf8",
+    ),
+    "IMAGE-B",
+  );
+
+  await rm(imagePath);
+  await incrementalBuild(root, "removed-image", leanBuildOptions);
+  await assert.rejects(
+    readFile(path.join(distPath(root), "notes", "images", "sample.png")),
+  );
+});

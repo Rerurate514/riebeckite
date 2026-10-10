@@ -164,6 +164,7 @@ function packageJson(
       dependencies,
       devDependencies: {
         "@hono/vite-build": "^1.11.1",
+        "@hono/node-server": "^1.19.17",
         "@riebeckite/cli": RIEBECKITE_VERSION,
         "@types/node": "^24.5.2",
         typescript: "^5.0.0",

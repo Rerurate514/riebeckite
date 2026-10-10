@@ -15,6 +15,7 @@ import {
   normalizeFrontmatterTags,
 } from "./content_metadata.js";
 import { resolveContentStableId } from "./content_stable_id.js";
+import { extractMarkdownImages } from "./markdown_image.js";
 import type { ResolvedPublishingState } from "./publishing.js";
 
 export class ManifestBuilder {
@@ -27,13 +28,18 @@ export class ManifestBuilder {
     publishing: ResolvedPublishingState,
   ): ContentManifestEntry {
     const links = extractContentLinks(markdown, contentIndex);
-    const assets = links
-      .filter(
-        (link): link is ContentLink & { slug: string } =>
-          (link.kind === "image" || link.kind === "attachment") &&
-          link.slug !== null,
-      )
-      .map((link) => ({ path: link.slug }));
+    const assets = [
+      ...links
+        .filter(
+          (link): link is ContentLink & { slug: string } =>
+            (link.kind === "image" || link.kind === "attachment") &&
+            link.slug !== null,
+        )
+        .map((link) => ({ path: link.slug })),
+      ...extractMarkdownImages(markdown, slug).map((image) => ({
+        path: image.path,
+      })),
+    ];
 
     const contentId = resolveContentStableId(processed.frontmatter);
     return {

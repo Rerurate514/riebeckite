@@ -190,3 +190,32 @@ async function writeFile(
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, content);
 }
+
+test("file-system content source does not emit images through symlinks", async (t) => {
+  const root = await makeTempContentDirectory();
+  const outside = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-outside-"),
+  );
+  const target = path.join(outside, "secret.png");
+  await fs.writeFile(target, "SECRET");
+  await writeFile(
+    root,
+    "index.md",
+    "---\\npublish: true\\n---\\n![secret](linked.png)",
+  );
+  try {
+    await fs.symlink(target, path.join(root, "linked.png"), "file");
+  } catch (error) {
+    t.diagnostic(`Skipping symlink test: ${String(error)}`);
+    return;
+  }
+
+  const manager = new ContentManager(root);
+  const manifest = await manager.getManifest();
+
+  assert.deepEqual(
+    (await new FileSystemContentSource(root).scan()).map((entry) => entry.path),
+    ["index.md"],
+  );
+  assert.deepEqual(manifest.generatedOutputs, []);
+});

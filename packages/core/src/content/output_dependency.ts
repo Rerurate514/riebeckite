@@ -46,6 +46,11 @@ export function determineOutputChanges(input: {
     (input.previousState?.outputs ?? []).map((output) => [output.path, output]),
   );
   const changedContent = collectChangedContent(input);
+  const changedFiles = new Set([
+    ...input.changeSet.added,
+    ...input.changeSet.changed,
+    ...input.changeSet.removed,
+  ]);
   const changedTags = collectChangedTags(
     input.previousState,
     input.manifest,
@@ -60,7 +65,15 @@ export function determineOutputChanges(input: {
   const unchanged: OutputDescriptor[] = [];
 
   for (const output of current) {
-    if (isOutputAffected(output, changedContent, changedTags, changedFolders)) {
+    if (
+      isOutputAffected(
+        output,
+        changedContent,
+        changedTags,
+        changedFolders,
+        changedFiles,
+      )
+    ) {
       affected.set(output.path, output);
     } else {
       unchanged.push(output);
@@ -154,6 +167,7 @@ function isOutputAffected(
   changedContent: ReadonlySet<string>,
   changedTags: ReadonlySet<string>,
   changedFolders: ReadonlySet<string>,
+  changedFiles: ReadonlySet<string>,
 ): boolean {
   for (const dependency of output.dependencies) {
     if (dependency.type === "unknown") return true;
@@ -164,6 +178,9 @@ function isOutputAffected(
     if (dependency.type === "tag" && changedTags.has(dependency.tag))
       return true;
     if (dependency.type === "folder" && changedFolders.has(dependency.folder)) {
+      return true;
+    }
+    if (dependency.type === "file" && changedFiles.has(dependency.path)) {
       return true;
     }
   }

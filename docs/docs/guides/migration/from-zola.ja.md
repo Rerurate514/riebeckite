@@ -71,9 +71,9 @@ export default defineConfig({
 
 ## URL と SEO の維持
 
-Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の URL にします。旧 URL を維持するページには `@riebeckite/plugin-permalink` を設定し、`permalink` と `redirect_from` Frontmatter を使います。ホストがリダイレクトを追加すると仮定せず、デプロイ後の出力を確認してください。
+Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の URL にします。`@riebeckite/plugin-permalink` を有効にすると既定の canonical URL は `/n/<id>` に変わるため、URL 維持だけを目的に無設定で有効化しないでください。ページ単位の旧 URL には `permalink` と `redirect_from` Frontmatter を使い、サイト全体の URL 方針には `path` または `resolvePath` を明示設定します。ホストがリダイレクトを追加すると仮定せず、デプロイ後の出力を確認してください。
 
-`@riebeckite/plugin-seo` は canonical metadata、sitemap、`robots.txt`、RSS/Atom/JSON feed を生成します。`canonical` と解決済み permalink を使用します。実際の翻訳があるときだけ `@riebeckite/plugin-l10n` を使ってください。既存の翻訳に `hreflang` を出力しますが、フォールバックページは生成しません。画像は設定した asset/content の配置にコピーし、相対パスとルート相対パスをすべて検証します。404 は移行先ホストまたはアプリで用意してください。自動的に同等になるとは限りません。
+`@riebeckite/plugin-seo` は canonical metadata、sitemap、`robots.txt`、RSS/Atom/JSON feed を生成します。`canonical` と解決済み permalink を使用します。実際の翻訳があるときだけ `@riebeckite/plugin-l10n` を使ってください。既存の翻訳に `hreflang` を出力しますが、フォールバックページは生成しません。`content/` 配下のローカル Markdown 画像は、公開ページから参照されたものだけがコピーされます。相対パスとルート相対パスはサイトルート URL に正規化されるため、参照先は content root 内に置き、すべて検証してください。404 は移行先ホストまたはアプリで用意してください。自動的に同等になるとは限りません。
 
 ## よくある問題
 

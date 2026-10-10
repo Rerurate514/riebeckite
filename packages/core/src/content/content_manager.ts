@@ -16,6 +16,7 @@ import type { PostContent, PostFrontmatter } from "../types/post_content.js";
 import type { PublishStrategy } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import { attachErrorPath } from "../utils/error.js";
+import { isImagePath, normalizeContentPath } from "./attachment.js";
 import {
   ContentBuildCoordinator,
   type ContentBuildPreparation,
@@ -373,6 +374,7 @@ export class ContentManager {
         ];
 
         await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
+        await this.emitPublicImageAssets(manifest);
         manifest.generatedOutputs =
           this.pluginRuntime.collectGeneratedOutputs();
         const pluginPageOutputs = await this.pluginRuntime.getPageOutputs(
@@ -664,6 +666,26 @@ export class ContentManager {
   private enableBuildTime(): void {
     this.isBuildTime = true;
     this.pluginRuntime.enableBuildTime();
+  }
+
+  private async emitPublicImageAssets(
+    manifest: ContentManifest,
+  ): Promise<void> {
+    const imagePaths = new Set(
+      manifest.publicEntries.flatMap((entry) =>
+        entry.assets
+          .map((asset) => normalizeContentPath(asset.path))
+          .filter(isImagePath),
+      ),
+    );
+    const entriesByPath = new Map(
+      (await this.source.scan()).map((entry) => [entry.path, entry]),
+    );
+    for (const path of imagePaths) {
+      const entry = entriesByPath.get(path);
+      if (entry)
+        this.pluginRuntime.emitCoreAsset(path, await this.source.read(entry));
+    }
   }
 
   private observability(): Observability {

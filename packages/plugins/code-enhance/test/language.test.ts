@@ -52,6 +52,12 @@ test("lowercase fence languages keep their highlighting", async () => {
   assert.ok(html.includes("--shiki-light"));
 });
 
+test("unknown fence languages render without failing the pipeline", async () => {
+  const html = await render(fenced("not-a-real-language", "const value = 1"));
+
+  assert.match(html, /const value = 1/);
+});
+
 test("uses a fence title for the code header", async () => {
   const html = await render(
     '```ts title="hello.ts"\nconst hello = "world"\n```',

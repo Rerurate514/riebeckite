@@ -86,46 +86,24 @@ console.log("Hello from JavaScript");
 
 ### Code annotations
 
-フェンスのメタ情報とインラインコメントで、行のハイライト、追加・削除、フォーカスを表現します。
+`diff` フェンスに対象言語を指定して、追加行と削除行を表示します。
 
 #### ソース
 
 ````md
-```js {2}
-const first = 1;
-const second = 2;
-const third = 3;
-```
-
-```js
+```diff js
 const kept = true;
-const added = "new line"; // [!code ++]
-const removed = false; // [!code --]
-```
-
-```js
-const focused = 1; // [!code focus]
-const plain = 2;
++ const added = "new line";
+- const removed = false;
 ```
 ````
 
 #### 実行例
 
-```js {2}
-const first = 1;
-const second = 2;
-const third = 3;
-```
-
-```js
+```diff js
 const kept = true;
-const added = "new line"; // [!code ++]
-const removed = false; // [!code --]
-```
-
-```js
-const focused = 1; // [!code focus]
-const plain = 2;
++ const added = "new line";
+- const removed = false;
 ```
 
 ## インライン表現

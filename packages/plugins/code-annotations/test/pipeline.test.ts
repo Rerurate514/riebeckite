@@ -1,48 +1,62 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
-import { assertGolden } from "@riebeckite/test";
 import { codeAnnotationsPlugin } from "../index.ts";
 
-test("golden: annotated code renders through the markdown pipeline", async () => {
-  const fence = "```";
-  const markdown = [
-    `${fence}ts {1,3-4} focus:{2}`,
-    "const a = 1; // [!code ++]",
-    "const b = 2; // [!code --]",
-    "const c = 3; // [!code focus]",
-    "const d = 4;",
-    fence,
-  ].join("\n");
-
+async function render(markdown: string): Promise<string> {
   const pipeline = new Pipeline(new Map(), new Map(), undefined, {
     plugins: [codeAnnotationsPlugin()],
   });
-  const { html } = await pipeline.execute(markdown);
+  return (await pipeline.execute(markdown)).html;
+}
 
-  assertGolden(
-    html,
-    new URL("./__golden__/annotated_code.html", import.meta.url),
+test("diff fences render markers and target-language code", async () => {
+  const html = await render(
+    [
+      "```diff ts",
+      '+ const message = "Hello";',
+      '- const message = "World";',
+      "const unchanged = true;",
+      "```",
+    ].join("\n"),
   );
+
+  assert.match(html, /language-ts/);
+  assert.match(html, /rr-code__line--add/);
+  assert.match(html, /rr-code__line--remove/);
+  assert.match(html, />\+<\/span> const message/);
+  assert.match(html, />-<\/span> const message/);
 });
 
-test("source code fences keep nested annotation markers as text", async () => {
-  const markdown = [
-    "````md",
-    "```js",
-    "const a = 1; // [!code ++]",
-    "const b = 2; // [!code --]",
-    "```",
-    "````",
-  ].join("\n");
+test("diff fences accept JavaScript and Python target languages", async () => {
+  for (const language of ["js", "python"]) {
+    const html = await render(
+      [`\`\`\`diff ${language}`, "+ value = 1", "- value = 0", "```"].join(
+        "\n",
+      ),
+    );
 
-  const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [codeAnnotationsPlugin()],
-  });
-  const { html } = await pipeline.execute(markdown);
+    assert.match(html, new RegExp(`language-${language}`));
+    assert.match(html, /rr-code__line--add/);
+    assert.match(html, /rr-code__line--remove/);
+  }
+});
 
-  assert.match(html, /language-md/);
-  assert.match(html, /!code \+\+/);
-  assert.match(html, /!code --/);
-  assert.doesNotMatch(html, /rb-code__line/);
+test("ordinary code fences and invalid diff fences remain unchanged", async () => {
+  const html = await render(
+    [
+      "```js",
+      'const marker = "+";',
+      "```",
+      "",
+      "```diff",
+      "+ text",
+      "```",
+    ].join("\n"),
+  );
+
+  assert.match(html, /language-js/);
+  assert.match(html, /const marker/);
+  assert.match(html, /language-diff/);
+  assert.doesNotMatch(html, /rr-code__line--add/);
 });

@@ -63,7 +63,7 @@ import { canvas } from "@riebeckite/plugin-canvas";
 import { initCanvas } from "@riebeckite/plugin-canvas/client";
 import {
   codeAnnotations,
-  parseCodeAnnotations,
+  collectCodeDiff,
 } from "@riebeckite/plugin-code-annotations";
 import { d2 } from "@riebeckite/plugin-d2";
 import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
@@ -165,7 +165,7 @@ export const resolvedEntries = {
   flashcardsPlugin,
   initFlashcards,
   codeAnnotations,
-  parseCodeAnnotations,
+  collectCodeDiff,
   canvas,
   initCanvas,
   highlight,

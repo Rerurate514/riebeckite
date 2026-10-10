@@ -192,10 +192,12 @@ const PLUGIN_MARKDOWN_GUIDES: Readonly<
       "This sentence contains ==highlighted text== inside normal Markdown.",
   },
   "@riebeckite/plugin-code-annotations": {
-    summary: "Adds callouts/annotations to code fences.",
+    summary:
+      "Renders code diffs with syntax highlighting for the target language.",
     markdown: [
-      "```ts",
-      "const answer = 42 // [!code focus]",
+      "```diff ts",
+      "+ const answer = 42",
+      "- const answer = 0",
       "console.log(answer)",
       "```",
     ].join("\n"),

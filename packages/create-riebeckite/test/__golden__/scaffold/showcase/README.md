@@ -41,7 +41,7 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | `@riebeckite/plugin-lightbox` | `lightboxPlugin` | `{ selectorClass: "rr-lightbox-trigger" }` |
 | `@riebeckite/plugin-highlight` | `highlight` | `{ tag: "mark", className: "rb-mark" }` |
 | `@riebeckite/plugin-code-tabs` | `codeTabs` | `{ syncTabs: true }` |
-| `@riebeckite/plugin-code-annotations` | `codeAnnotations` | `{ className: "rb-code" }` |
+| `@riebeckite/plugin-code-annotations` | `codeAnnotations` | — |
 | `@riebeckite/plugin-shortcodes` | `shortcodes` | `{ builtins: true }` |
 | `@riebeckite/plugin-series` | `series` | `{ key: "series", orderKey: "series_order", titleKey: "series_title", positionLabel: false, heading: true, className: "rb-series" }` |
 | `@riebeckite/plugin-taxonomy` | `taxonomy` | `{ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true }, relatedLimit: 8 }` |

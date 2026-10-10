@@ -103,9 +103,7 @@ declare module "@riebeckite/plugin-kanban" {
 declare module "@riebeckite/plugin-code-annotations" {
   export const codeAnnotations: any;
   export const codeAnnotationsPlugin: any;
-  export const parseCodeAnnotations: any;
-  export const parseLineRanges: any;
-  export const resolveCodeAnnotationsOptions: any;
+  export const collectCodeDiff: any;
 }
 
 declare module "@riebeckite/plugin-canvas" {

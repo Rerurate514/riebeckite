@@ -34,7 +34,7 @@ README.
 | [`@riebeckite/plugin-lightbox`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/lightbox/README.md) | `lightboxPlugin` | `{ selectorClass: "rr-lightbox-trigger" }` |
 | [`@riebeckite/plugin-highlight`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/highlight/README.md) | `highlight` | `{ tag: "mark", className: "rb-mark" }` |
 | [`@riebeckite/plugin-code-tabs`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/code-tabs/README.md) | `codeTabs` | `{ syncTabs: true }` |
-| [`@riebeckite/plugin-code-annotations`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/code-annotations/README.md) | `codeAnnotations` | `{ className: "rb-code" }` |
+| [`@riebeckite/plugin-code-annotations`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/code-annotations/README.md) | `codeAnnotations` | — |
 | [`@riebeckite/plugin-shortcodes`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/shortcodes/README.md) | `shortcodes` | `{ builtins: true }` |
 | [`@riebeckite/plugin-series`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/series/README.md) | `series` | `{ key: "series", orderKey: "series_order", titleKey: "series_title", positionLabel: false, heading: true, className: "rb-series" }` |
 | [`@riebeckite/plugin-taxonomy`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/taxonomy/README.md) | `taxonomy` | `{ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true }, relatedLimit: 8 }` |
@@ -345,10 +345,11 @@ console.log("Hello from JavaScript");
 
 Factory: `codeAnnotations` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/code-annotations/README.md)
 
-Adds callouts/annotations to code fences.
+Renders code diffs with syntax highlighting for the target language.
 
-```ts
-const answer = 42 // [!code focus]
+```diff ts
++ const answer = 42
+- const answer = 0
 console.log(answer)
 ```
 

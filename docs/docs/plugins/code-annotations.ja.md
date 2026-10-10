@@ -1,9 +1,6 @@
 # Code Annotations
 
-VitePress / Docusaurus 風のコードブロック装飾を加えるプラグインです。フェンスの
-メタ情報による行の強調と、`[!code ...]` のインラインマーカーによるフォーカス・
-差分表示に対応します。素の `<pre><code>` と
-`@riebeckite/plugin-code-enhance` の行ラッパーの両方で動作します。
+差分のコードブロックを、対象言語のシンタックスハイライトとRiebeckiteのコードブロックUIで表示します。
 
 [English](./code-annotations.md)
 
@@ -14,121 +11,47 @@ import { defineConfig } from "@riebeckite/core";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 
 export default defineConfig({
-  // ...
   plugins: [codeAnnotations()],
 });
 ```
 
-プラグインは `style.css` のみを登録します。クライアントエントリーはなく、
-実行時 JavaScript は追加しません。
+シンタックスハイライト、行番号、言語ラベル、コピー操作を使う場合は、
+`@riebeckite/plugin-code-enhance` と併用してください。
 
 ## 書き方
 
-### フェンスメタによる行の強調
-
-言語の後ろに波括弧で行範囲を書きます。Docusaurus や VitePress と同じ記法です。
+コードフェンスの言語に `diff` を指定し、その後に対象言語を書きます。`+` で始まる行は追加、
+`-` で始まる行は削除、それ以外は変更のない行として扱います。
 
 ````md
-```js {2,4-5}
-const a = 1;
-const b = 2;
-const c = 3;
-const d = 4;
-const e = 5;
+```diff js
++ const message = "Hello";
+- const message = "World";
+const unchanged = true;
 ```
 ````
 
-2、4、5 行目に `rb-code__line--highlighted` が付きます。
+`+` と `-` はコード本体とは別に描画されます。そのためJavaScript、TypeScript、Python、JSON
+などのシンタックスハイライトを妨げません。コピー操作では、表示された差分と同じくマーカーも含めてコピーします。
 
-### フォーカス
+対象言語が空、形式が不正、または指定されていないフェンスは、通常の `diff` コードブロックとして扱います。
+シンタックスハイライトが対応していない言語を指定しても、ハイライトなしで表示され、ビルドは失敗しません。
 
-`focus` メタ、またはインラインの `[!code focus]` を使います。行数を指定すると
-その行から続く行までをまとめてフォーカスします。
+## 連携
 
-````md
-```js focus:{2}
-const a = 1;
-const b = 2;
-```
-````
+このプラグインはremark段階で差分マーカーをコード本体から分離し、フェンスメタ情報に記録します。rehype段階では、
+マーカーと既存の `rr-code__line--add` / `rr-code__line--remove` クラスを戻します。行ラッパーやコードブロックUIは
+`code-enhance` が提供します。両パッケージはimportで依存していないため、個別に設定できます。
 
-````md
-```js
-const a = 1; // [!code focus]
-const b = 2;
-```
-````
+## 公開API
 
-`rb-code__line--focused` が付きます。`[!code focus:3]` なら 3 行分です。
-
-### 差分
-
-````md
-```js
-const kept = true;
-const added = true;    // [!code ++]
-const removed = false; // [!code --]
-```
-````
-
-マーカーのコメントは表示テキストから取り除かれ、行には
-`rb-code__line--added` または `rb-code__line--removed` が付きます。
-
-### 明示的な強調マーカー
-
-````md
-```js
-const value = 1; // [!code highlight]
-```
-````
-
-マーカーは `//`、`#`、`--`、`<!-- -->` のコメント記法に対応します。JavaScript、
-シェル、SQL、Lua、HTML などで同じ書き方が使えます。
-
-## オプション
-
-| オプション | 既定値 | 内容 |
-| --- | --- | --- |
-| `className` | `"rb-code"` | ブロック直下（`<pre>` または `rehype-pretty-code` の `<figure>`）に付くクラス |
-| `lineClassName` | `"rb-code__line"` | 生成する行ラッパーのクラス |
-| `highlightClassName` | `"rb-code__line--highlighted"` | 強調行のクラス |
-| `addedClassName` | `"rb-code__line--added"` | `[!code ++]` 行のクラス |
-| `removedClassName` | `"rb-code__line--removed"` | `[!code --]` 行のクラス |
-| `focusClassName` | `"rb-code__line--focused"` | フォーカス行のクラス |
-| `language` | 未設定 | 指定した言語のブロックだけを対象にする |
-
-```ts
-codeAnnotations({ highlightClassName: "is-highlighted" });
-```
-
-## code-enhance との併用
-
-`@riebeckite/plugin-code-annotations` は
-`@riebeckite/plugin-code-enhance` を import せず、依存もしません。素の
-`<pre><code>` のテキストと、`rehype-pretty-code` が出力する `.line` ラッパーの
-両方を検出します。
-
-- 行ラッパーがすでにある場合は、既存のクラスに追記し、既存の `data-line` を
-  そのまま使います。
-- ない場合は、コード本文を
-  `<span class="rb-code__line" data-line="N">` に分割します。
-
-`rehype-pretty-code` は `<code>` 要素を差し替えるため、注釈プランは保持される
-フェンスメタにも複製します。これにより code-enhance の後でも注釈が適用されます。
-プラグイン配列では `codeEnhance()` の後に `codeAnnotations()` を置いてください。
-`order: 10` により、順序に関わらず強調処理の後に実行されます。
-
-## 公開 API
-
-- `codeAnnotations(options?)` / `codeAnnotationsPlugin(options?)` — プラグインファクトリ
-- `remarkCodeAnnotations(options?)` — remark 変換
-- `rehypeCodeAnnotations(options?)` — rehype 変換
-- `parseCodeAnnotations(meta)` — フェンスメタをプランに変換
-- `parseLineRanges(spec)` — `1,3-5` を行番号に変換
-- `collectCodeAnnotations(meta, code)` — メタとインラインマーカーをまとめて解析
-- `resolveCodeAnnotationsOptions(options?)` — 既定値を補完
-- 型: `CodeAnnotationsOptions`、`ResolvedCodeAnnotationsOptions`、
-  `CodeAnnotationPlan`、`CodeAnnotationKind`
+- `codeAnnotations()` / `codeAnnotationsPlugin()` — プラグインファクトリ
+- `remarkCodeAnnotations()` — Markdown変換
+- `rehypeCodeAnnotations()` — HTML変換
+- `collectCodeDiff(code)` — 差分マーカーとコード本体を分離
+- `serializeCodeDiff(plan)` / `deserializeCodeDiff(value)` — 行情報の変換
+- `encodeCodeDiffMeta(plan)` / `extractCodeDiffMeta(meta)` — メタ情報の変換
+- 型: `CodeDiffPlan`、`DiffMarker`
 
 ## 関連資料
 

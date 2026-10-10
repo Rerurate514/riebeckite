@@ -86,46 +86,24 @@ console.log("Hello from JavaScript");
 
 ### Code annotations
 
-Fence metadata and inline comments express line highlighting, additions, removals, and focus.
+ Use a `diff` fence with the target language to render additions and removals.
 
 #### Source
 
 ````md
-```js {2}
-const first = 1;
-const second = 2;
-const third = 3;
-```
-
-```js
+```diff js
 const kept = true;
-const added = "new line"; // [!code ++]
-const removed = false; // [!code --]
-```
-
-```js
-const focused = 1; // [!code focus]
-const plain = 2;
++ const added = "new line";
+- const removed = false;
 ```
 ````
 
 #### Rendered
 
-```js {2}
-const first = 1;
-const second = 2;
-const third = 3;
-```
-
-```js
+```diff js
 const kept = true;
-const added = "new line"; // [!code ++]
-const removed = false; // [!code --]
-```
-
-```js
-const focused = 1; // [!code focus]
-const plain = 2;
++ const added = "new line";
+- const removed = false;
 ```
 
 ## Inline

@@ -6,26 +6,11 @@ publish: true
 
 # Code Annotations Demo
 
-The block below highlights its second line from the fence meta.
+The block below exercises the diff fence and retains its markers in the
+rendered and copied text.
 
-```js {2}
-const first = 1;
-const second = 2;
-const third = 3;
-```
-
-The block below exercises the diff markers. The removed marker is stripped from
-the rendered text.
-
-```js
+```diff ts
 const kept = true;
-const added = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER"; // [!code ++]
-const removed = false; // [!code --]
-```
-
-The block below focuses a line with an inline marker.
-
-```js
-const focused = 1; // [!code focus]
-const plain = 2;
++ const added = "RIEBECKITE_EXTERNAL_CODE_ANNOTATIONS_MARKER";
+- const removed = false;
 ```

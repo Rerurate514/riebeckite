@@ -100,7 +100,7 @@ export default defineConfig({
     lightboxPlugin({ selectorClass: "rr-lightbox-trigger" }),
     highlight({ tag: "mark", className: "rb-mark" }),
     codeTabs({ syncTabs: true }),
-    codeAnnotations({ className: "rb-code" }),
+    codeAnnotations(),
     shortcodes({ builtins: true }),
     series({ key: "series", orderKey: "series_order", titleKey: "series_title", positionLabel: false, heading: true, className: "rb-series" }),
     taxonomy({ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true }, relatedLimit: 8 }),

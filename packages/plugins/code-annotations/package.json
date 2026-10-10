@@ -11,8 +11,7 @@
       "import": "./dist/index.js",
       "source": "./index.ts",
       "default": "./dist/index.js"
-    },
-    "./style.css": "./style.css"
+    }
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*"
@@ -28,8 +27,7 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
-    "dist",
-    "style.css"
+    "dist"
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
@@ -45,7 +43,7 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Code block annotations, highlights, and diff markers for Riebeckite.",
+  "description": "Syntax-highlighted diff code fences for Riebeckite.",
   "keywords": [
     "riebeckite",
     "plugin",

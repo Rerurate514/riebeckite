@@ -582,27 +582,22 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
       `generated HTML is missing the kanban block marker (${KANBAN_BLOCK_MARKER})`,
     );
   }
-  if (!combined.includes("rb-code__line--highlighted")) {
-    fail("code-annotations did not highlight a line from fence meta");
+  if (!combined.includes("rr-code__line--add")) {
+    fail("code-annotations did not mark an added diff line");
   }
-  if (!combined.includes("rb-code__line--added")) {
-    fail("code-annotations did not mark a [!code ++] line as added");
-  }
-  if (!combined.includes("rb-code__line--removed")) {
-    fail("code-annotations did not mark a [!code --] line as removed");
+  if (!combined.includes("rr-code__line--remove")) {
+    fail("code-annotations did not mark a removed diff line");
   }
   if (!combined.includes('data-line="2"')) {
-    fail(
-      "code-annotations did not materialize per-line wrappers with data-line",
-    );
+    fail("code-enhance did not preserve the diff line wrappers");
   }
   if (!combined.includes(CODE_ANNOTATIONS_MARKER)) {
     fail(
       `generated HTML is missing the fixture code marker (${CODE_ANNOTATIONS_MARKER})`,
     );
   }
-  if (combined.includes("[!code ")) {
-    fail("code-annotations did not strip the inline marker comments");
+  if (!combined.includes("rr-code__diff-marker")) {
+    fail("code-annotations did not retain the added diff marker");
   }
   if (!combined.includes("rb-shortcode--youtube")) {
     fail("shortcodes plugin did not render the youtube built-in");

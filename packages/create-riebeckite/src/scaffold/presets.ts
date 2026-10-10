@@ -288,7 +288,6 @@ const codeTabs = np(
 const codeAnnotations = np(
   "@riebeckite/plugin-code-annotations",
   "codeAnnotations",
-  `{ className: "rb-code" }`,
 );
 const shortcodes = np(
   "@riebeckite/plugin-shortcodes",

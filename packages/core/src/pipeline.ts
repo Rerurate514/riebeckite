@@ -32,6 +32,7 @@ import {
   type PersistentContentCache,
 } from "./content/content_persistent_cache.js";
 import type { ContentSource } from "./content/content_source.js";
+import { normalizeMarkdownImages } from "./content/markdown_image.js";
 import type { Observability } from "./observability.js";
 import { noopObservability } from "./observability.js";
 import type { PluginCache } from "./plugin/plugin_cache.js";
@@ -239,6 +240,9 @@ export class Pipeline {
             dependencyTracker.recordLinkResolution(id, value)
         : undefined,
     });
+    if (context.sourceSlug) {
+      this.use(processor, normalizeMarkdownImages(context.sourceSlug));
+    }
 
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
     this.use(processor, rehypeRaw);

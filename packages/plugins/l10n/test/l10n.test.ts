@@ -607,3 +607,23 @@ test("excludes configured Templater templates before localized content is parsed
     "en",
   );
 });
+
+test("keeps localized private Markdown images out of generated outputs", async () => {
+  const content = manager({
+    "guide.en.md": "---\npublish: true\n---\n![public](guide.png)",
+    "private.en.md": "---\nvisibility: draft\n---\n![private](private.png)",
+    "guide.png": "PUBLIC",
+    "private.png": "PRIVATE",
+  });
+
+  const manifest = await content.getManifest();
+
+  assert.deepEqual(
+    manifest.publicEntries.map((entry) => entry.slug),
+    ["guide.en"],
+  );
+  assert.deepEqual(
+    manifest.generatedOutputs.map((output) => [output.path, output.content]),
+    [["guide.png", "PUBLIC"]],
+  );
+});

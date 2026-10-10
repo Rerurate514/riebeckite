@@ -36,6 +36,32 @@ test("independent content edit affects own page and global outputs only", () => 
   assert.equal(result.fullRegenerationRequired, false);
 });
 
+test("file-dependent generated output changes only with its source asset", () => {
+  const previous = manifest([entry("a")], {
+    generatedOutputs: [
+      {
+        path: "images/logo.png",
+        content: "",
+        owner: "core",
+        dependencies: [{ type: "file", path: "images/logo.png" }],
+      },
+    ],
+  });
+  const current = manifest([entry("a")], {
+    generatedOutputs: [
+      {
+        path: "images/logo.png",
+        content: "updated",
+        owner: "core",
+        dependencies: [{ type: "file", path: "images/logo.png" }],
+      },
+    ],
+  });
+
+  const result = changes(previous, current, { changed: ["images/logo.png"] });
+  assert.deepEqual(paths(result.affected), ["images/logo.png"]);
+});
+
 test("manifest plugin global dependencies affect every content output", () => {
   const previous = manifest([entry("a"), entry("b")]);
   const current = manifest([entry("a", { title: "A2" }), entry("b")]);

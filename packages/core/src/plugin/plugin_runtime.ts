@@ -12,6 +12,7 @@ import type {
 import type { Diagnostic } from "../types/diagnostic.js";
 import type {
   GeneratedOutput,
+  GeneratedOutputContent,
   GeneratedOutputSink,
 } from "../types/generated_output.js";
 import type { OutputDependency } from "../types/output_dependency.js";
@@ -249,6 +250,14 @@ export class PluginRuntime {
   /** Returns registered outputs sorted by path for a deterministic build. */
   collectGeneratedOutputs(): GeneratedOutput[] {
     return this.generatedOutputs.all();
+  }
+
+  emitCoreAsset(path: string, content: GeneratedOutputContent): void {
+    this.generatedOutputs.sinkFor("core").emitAsset({
+      path,
+      content,
+      dependencies: [{ type: "file", path }],
+    });
   }
 
   async resolvePage(

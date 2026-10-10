@@ -68,7 +68,7 @@ test("emits content images under the assets namespace and renders their URL", as
     ["assets/riebeckite-logo.png"],
   );
   assert.deepEqual(manifest.generatedOutputs[0].content, logo);
-  assert.equal(manifest.generatedOutputs[0].owner, "obsidian-markdown");
+  assert.equal(manifest.generatedOutputs[0].owner, "core");
 
   const entry = manifest.publicEntries.find(
     (candidate) => candidate.permalink === "/",

@@ -111,17 +111,7 @@ summary as `content_text` and do not duplicate rendered article HTML.
 
 When `related` is enabled, each tag term carries tags that co-occur on the same
 entries, ranked by shared-entry count then alphabetically, clamped to
-`relatedLimit`. Related navigation is rendered by `renderTaxonomyPage`:
-
-```html
-<nav class="rr-taxonomy__related" aria-label="Related tags" data-rr-taxonomy-related>
-  <ul>
-    <li class="rr-taxonomy__related-item">
-      <a class="rr-taxonomy__related-link" href="/tags/featured" data-rr-taxonomy-related-count="2">#featured</a>
-    </li>
-  </ul>
-</nav>
-```
+`relatedLimit`. Related navigation is rendered by `renderTaxonomyPage` on each taxonomy term page. Visit a tag page with co-occurring tags to see the live navigation.
 
 ## SEO
 

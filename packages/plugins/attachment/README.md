@@ -27,32 +27,29 @@ export default defineConfig({
 });
 ```
 
-## Rendering
+## Live example
 
-### Link (non-embed)
+The following source is rendered on this page. A plain wikilink becomes a download link, and an embedded wikilink becomes an attachment card.
 
-```html
-<a class="wikilink wikilink-attachment" href="..." download>label</a>
-```
+#### Source
 
-### Embed (`![[file]]`)
+````md
+[[attachment-example.txt]]
 
-```html
-<aside class="rr-attachment" data-attachment-path="...">
-  <div class="rr-attachment__meta">
-    <span class="rr-attachment__format">PDF</span>
-    <span class="rr-attachment__size">1.2 MB</span>
-  </div>
-  <div class="rr-attachment__name">report.pdf</div>
-  <a class="rr-attachment__download" href="..." download>label</a>
-</aside>
-```
+![[attachment-example.txt]]
+````
 
-- Format is the uppercased file extension
-- Size is read from disk under `config.content.directory` (path-traversal
-  safe) and omitted when the file cannot be read
-- The embed card carries the stable `rr-attachment` root hook that themes
-  may target
+#### Rendered
+
+[[attachment-example.txt]]
+
+![[attachment-example.txt]]
+
+- Format is the uppercased file extension.
+- Size is read from disk under `config.content.directory` (path-traversal safe)
+  and omitted when the file cannot be read.
+- The embed card carries the stable `rr-attachment` root hook that themes may
+  target.
 
 Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 

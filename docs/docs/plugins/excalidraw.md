@@ -49,19 +49,21 @@ fenced code block is extracted and supports both `json` and lz-string
   `.excalidraw` or `.excalidraw.md`; everything else returns `null` and falls
   through to the attachment plugin
 - Reads the file under `config.content.directory` (path-traversal safe)
-- Parses the scene and emits
-
-  ```html
-  <figure class="rr-excalidraw" data-excalidraw="pending" data-excalidraw-lazy="true">
-    <div class="rr-excalidraw__canvas" role="img" aria-label="drawing.excalidraw"></div>
-    <script type="application/json" class="rr-excalidraw__payload">{"elements":[...],"appState":{...},"files":{...}}</script>
-  </figure>
-  ```
-
+- Parses the scene before rendering it.
 - Wikilink aliases can set a size: `![[drawing.excalidraw|800]]` (width) or
   `![[drawing.excalidraw|800x600]]` (width x height)
 - Missing files, invalid scenes, or out-of-directory paths render an error
   placeholder and log to the console
+
+#### Live example
+
+The following source is rendered as an SVG drawing on this page.
+
+````md
+![[HW]]
+````
+
+![[HW]]
 
 ### Client (`initExcalidraw`)
 

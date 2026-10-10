@@ -20,29 +20,35 @@ export default defineConfig({
 
 `plantuml` is also exported under the alias `plantumlPlugin`.
 
-## Behavior
+## Live example
 
-Each ` ```plantuml ` code block is replaced with a `figure.rb-plantuml` whose
-diagram is an `<img>` pointing at the PlantUML server.
+Each ` ```plantuml ` code block is rendered as a diagram on this page.
 
-```html
-<figure class="rb-plantuml" data-plantuml data-plantuml-marker="..." data-plantuml-source="...">
-  <div class="rb-plantuml__frame">
-    <img class="rb-plantuml__image" src="https://www.plantuml.com/plantuml/svg/..." alt="..." loading="lazy" />
-  </div>
-  <details class="rb-plantuml__fallback">
-    <summary>Diagram source</summary>
-    <pre><code>...</code></pre>
-  </details>
-  <figcaption class="rb-plantuml__caption">...</figcaption>
-</figure>
+#### Source
+
+````md
+```plantuml
+@startuml
+Alice -> Bob: Hello
+Bob --> Alice: Hi
+@enduml
+```
+````
+
+#### Rendered
+
+```plantuml
+@startuml
+Alice -> Bob: Hello
+Bob --> Alice: Hi
+@enduml
 ```
 
-The caption comes from the code block `title` or from a `%% caption: ...` line in
-the source. Because `%%` is not PlantUML comment syntax, the `%% caption:` line is
-removed from the diagram source before it is encoded. When there is no caption,
-the `<img>` alternative text is `PlantUML diagram`. With `fallback` enabled the
-original PlantUML source is kept in a collapsible `<details>` element.
+The caption comes from the code block `title` or from a `%% caption: ...` line
+in the source. Because `%%` is not PlantUML comment syntax, the `%% caption:`
+line is removed from the diagram source before it is encoded. When there is no
+caption, the image alternative text is `PlantUML diagram`. With `fallback`
+enabled the original PlantUML source is kept in a collapsible details element.
 
 ## URL encoding
 

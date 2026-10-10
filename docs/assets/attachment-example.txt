@@ -1,0 +1,1 @@
+This text file is used by the Attachment plugin documentation.

@@ -68,25 +68,9 @@ breadcrumbs({
 });
 ```
 
-## Output
+## Display
 
-```html
-<nav class="rb-breadcrumbs" data-breadcrumbs aria-label="Breadcrumbs">
-  <ol>
-    <li class="rb-breadcrumbs__item">
-      <a class="rb-breadcrumbs__link" href="/">Blog</a>
-      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
-    </li>
-    <li class="rb-breadcrumbs__item">
-      <a class="rb-breadcrumbs__link" href="/folder">Folder</a>
-      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
-    </li>
-    <li class="rb-breadcrumbs__item">
-      <span class="rb-breadcrumbs__current" aria-current="page">Note</span>
-    </li>
-  </ol>
-</nav>
-```
+Breadcrumbs are rendered above the article on every eligible page. This page shows the live navigation for its own path.
 
 ## Style
 

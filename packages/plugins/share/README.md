@@ -70,26 +70,9 @@ share({
 `share` throws a configuration error at `riebeckite check` time when
 `services` includes `"mastodon"` but `mastodonInstance` is missing.
 
-## Output
+## Display
 
-```html
-<div class="rr-share" data-rr-share data-rr-share-placement="bottom"
-     role="group" aria-label="Share">
-  <ul class="rr-share__list">
-    <li class="rr-share__item">
-      <a class="rr-share__link rr-share__link--x"
-         href="https://twitter.com/intent/tweet?url=…&amp;text=…"
-         target="_blank" rel="noopener noreferrer" data-share-service="x">X</a>
-    </li>
-    <li class="rr-share__item">
-      <button type="button" class="rr-share__button rr-share__copy"
-              data-rr-share-copy data-share-url="https://example.com/posts/hello"
-              data-rr-share-copied="Copied" hidden>Copy link</button>
-    </li>
-  </ul>
-  <p class="rr-share__status" role="status" aria-live="polite"></p>
-</div>
-```
+Share controls are rendered at the configured position on each public article. On this site they appear as live controls on the page, including the progressively enhanced copy-link action.
 
 ## Progressive enhancement
 

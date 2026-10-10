@@ -52,14 +52,7 @@ default.
 
 ## Emitted tags
 
-The `onManifestCreated` hook assigns `entry.headTags` for every entry:
-
-```html
-<meta name="theme-color" content="#1ABC9C" />
-<meta property="og:image:alt" content="Article title" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-```
+The `onManifestCreated` hook assigns `entry.headTags` for every entry. The site shell renders those tags in the document head, so they are available to Discord and other crawlers rather than appearing in article content.
 
 ## The site shell renders `headTags`
 

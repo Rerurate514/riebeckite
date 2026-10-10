@@ -73,18 +73,9 @@ relatedPosts({
 });
 ```
 
-## 出力
+## 表示
 
-```html
-<nav class="rb-related-posts" data-related-posts>
-  <h2 class="rb-related-posts__heading">Related</h2>
-  <ul>
-    <li class="rb-related-posts__item">
-      <a class="rb-related-posts__link" href="/notes/example" data-related-score="5">Example Note</a>
-    </li>
-  </ul>
-</nav>
-```
+関連エントリは対象ページの `article.footer` スロットに描画されます。このサイトでは、条件に合う公開エントリがあれば記事下に実際のナビゲーションを表示します。
 
 ## スタイル
 

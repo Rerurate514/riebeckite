@@ -59,23 +59,9 @@ export default defineConfig({
 | `siteWideHeading` | `string` | `"Changelog"` | Site-wide heading text |
 | `className` | `string` | `"rr-changelog"` | Root CSS class |
 
-## Output
+## Display
 
-The plugin appends a fragment like this to the `article.after-content` slot:
-
-```html
-<section class="rr-changelog rr-changelog--note" data-changelog-note>
-  <h2 class="rr-changelog__heading">Change history</h2>
-  <ol class="rr-changelog__list">
-    <li class="rr-changelog__item">
-      <time class="rr-changelog__date" datetime="2026-09-30T09:00:00+09:00">2026-09-30</time>
-      <span class="rr-changelog__subject">Fix the sidebar offset</span>
-      <span class="rr-changelog__author">Author Name</span>
-      <code class="rr-changelog__hash" title="…full hash…">abc1234</code>
-    </li>
-  </ol>
-</section>
-```
+The plugin appends each note's change history to the `article.after-content` slot. When enabled, it is rendered after the article on eligible pages.
 
 `data-changelog-note` and `data-changelog-site` mark the two fragments for
 styling and idempotency checks.

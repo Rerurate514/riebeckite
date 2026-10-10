@@ -56,31 +56,9 @@ series_order: 2
 | `positionLabel` | `boolean` | `false` | 現在の記事に「Part N of M」を付ける。 |
 | `basePath` | `string` | `"/series"` | 生成するページの基準パス。空文字にすると生成しない。 |
 
-## 出力
+## 表示
 
-2 件以上あるシリーズの各ノートには、次のブロックが HTML の末尾に追加されます。
-
-```html
-<nav class="rb-series" data-series="何かを作る"
-     aria-label="Series navigation">
-  <p class="rb-series__title">
-    <a class="rb-series__link" href="/part-1">何かを作る</a>
-  </p>
-  <ol class="rb-series__list">
-    <li class="rb-series__item">
-      <a class="rb-series__link" href="/part-1" data-series-order="1">導入編</a>
-    </li>
-    <li class="rb-series__item">
-      <a class="rb-series__link" href="/part-2" data-series-order="2"
-         aria-current="page">実装編</a>
-    </li>
-  </ol>
-  <div class="rb-series__nav">
-    <a class="rb-series__prev" rel="prev" href="/part-1">&larr; 導入編</a>
-    <a class="rb-series__next" rel="next" href="/part-3">仕上げ編 &rarr;</a>
-  </div>
-</nav>
-```
+2 件以上あるシリーズの各ノートには、記事の下にシリーズナビゲーションが実際に描画されます。リンクと現在位置は、上の frontmatter から計算します。
 
 テキストと属性はすべてエスケープします。生成した HTML は manifest の entry と処理済みコンテンツの両方へ書き戻すため、ページのルート表示・フィード・検索でも同じマークアップになります。
 

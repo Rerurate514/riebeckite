@@ -46,14 +46,7 @@ frontmatter の色が無効な場合は診断 `discord-embed-invalid-color`（wa
 
 ## 出力するタグ
 
-`onManifestCreated` フックで、すべてのエントリーに `entry.headTags` を設定します。
-
-```html
-<meta name="theme-color" content="#1ABC9C" />
-<meta property="og:image:alt" content="記事タイトル" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-```
+`onManifestCreated` フックで、すべてのエントリーに `entry.headTags` を設定します。Site shell はこれらを文書の head に描画するため、記事本文には表示せず Discord などのクローラーが利用します。
 
 ## Site shell が headTags を描画する
 

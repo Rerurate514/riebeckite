@@ -26,35 +26,30 @@ export default defineConfig({
 });
 ```
 
-## 出力
+## 実行例
 
-埋め込みは `![[report.pdf]]` のように書きます。
+以下のソースは、このページ上でブラウザ標準の PDF ビューアとして実際に描画されます。
 
-```html
-<figure class="rr-pdf" data-pdf-path="..." style="--rr-pdf-height: 640px">
-  <object
-    class="rr-pdf__viewer"
-    data="/assets/attachments/report.pdf#page=1"
-    type="application/pdf"
-    aria-label="report.pdf"
-  >
-    <a class="rr-pdf__fallback" href="..." download>Download PDF</a>
-  </object>
-  <figcaption class="rr-pdf__meta">
-    <span class="rr-pdf__format">PDF</span>
-    <span class="rr-pdf__name">report.pdf</span>
-    <span class="rr-pdf__size">1.2 MB</span>
-    <a class="rr-pdf__download" href="..." download>Download PDF</a>
-  </figcaption>
-</figure>
-```
+#### ソース
 
-- `<object>` はブラウザ内蔵の PDF ビューアを使い、その中のリンクが PDF 表示に対応しない環境向けのフォールバックになります。
-- ビューアの下には常にダウンロードリンクと、形式バッジ・ファイル名・サイズを表示します。サイズは `config.content.directory` 配下から読み取り、読めない場合は表示しません。
-- `initialPage` と `toolbar` はビューア URL のフラグメント（`#page=2&toolbar=0`）として埋め込みます。これはブラウザ間で共通の慣習ですが、一部のビューアは解釈しないことがあります。
-- 埋め込みには Theme が対象にできる安定した `rr-pdf` ルートフックが付きます。
+````md
+![[pdf-example.pdf]]
+````
 
-通常のリンク（`[[report.pdf]]`）は `@riebeckite/plugin-attachment`（または Markdown のフォールバック）に委ね、従来どおりのダウンロードリンクにします。
+#### 実行例
+
+![[pdf-example.pdf]]
+
+`<object>` はブラウザ内蔵の PDF ビューアを使い、その中のダウンロードリンクが PDF
+表示に対応しない環境向けのフォールバックになります。ビューアの下にはダウンロード
+リンクと、形式バッジ・ファイル名・サイズを表示します。サイズは
+`config.content.directory` 配下から読み取り、読めない場合は表示しません。埋め込みには
+Theme が対象にできる安定した `rr-pdf` ルートフックが付きます。
+
+`initialPage` と `toolbar` はビューア URL のフラグメント（`#page=2&toolbar=0`）として
+埋め込みます。これはブラウザ間で共通の慣習ですが、一部のビューアは解釈しないことが
+あります。通常のリンク（`[[report.pdf]]`）は `@riebeckite/plugin-attachment`（または
+Markdown のフォールバック）に委ねます。
 
 ## オプション
 

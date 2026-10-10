@@ -65,32 +65,9 @@ the numbered parts, using `date`/`created`/`published`, then `title`, then
 | `positionLabel` | `boolean` | `false` | Add a `Part N of M` label for the current note. |
 | `basePath` | `string` | `"/series"` | Base path for the generated pages. An empty string disables them. |
 
-## Output
+## Display
 
-Each note in a series of two or more parts gets the following block appended to
-its HTML:
-
-```html
-<nav class="rb-series" data-series="Build a thing"
-     aria-label="Series navigation">
-  <p class="rb-series__title">
-    <a class="rb-series__link" href="/build-a-thing">Build a thing</a>
-  </p>
-  <ol class="rb-series__list">
-    <li class="rb-series__item">
-      <a class="rb-series__link" href="/part-1" data-series-order="1">Part 1</a>
-    </li>
-    <li class="rb-series__item">
-      <a class="rb-series__link" href="/part-2" data-series-order="2"
-         aria-current="page">Part 2</a>
-    </li>
-  </ol>
-  <div class="rb-series__nav">
-    <a class="rb-series__prev" rel="prev" href="/part-1">&larr; Part 1</a>
-    <a class="rb-series__next" rel="next" href="/part-3">Part 3 &rarr;</a>
-  </div>
-</nav>
-```
+Each note in a series of two or more parts receives live series navigation after its article. The links and current position are calculated from the frontmatter shown above.
 
 All text and attributes are escaped. The injected HTML is written back to both
 the manifest entry and the processed content object so the page route, feeds,

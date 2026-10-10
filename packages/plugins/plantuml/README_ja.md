@@ -20,24 +20,35 @@ export default defineConfig({
 
 `plantuml` は `plantumlPlugin` という別名でもエクスポートしています。
 
-## どのように描画されるか
+## 実行例
 
-` ```plantuml ` のコードブロックは `figure.rb-plantuml` に置き換わります。図そのものは `<img>` で、PlantUML サーバーが返す画像を指します。
+` ```plantuml ` のコードブロックは、このページ上で図として実際に描画されます。
 
-```html
-<figure class="rb-plantuml" data-plantuml data-plantuml-marker="..." data-plantuml-source="...">
-  <div class="rb-plantuml__frame">
-    <img class="rb-plantuml__image" src="https://www.plantuml.com/plantuml/svg/..." alt="..." loading="lazy" />
-  </div>
-  <details class="rb-plantuml__fallback">
-    <summary>Diagram source</summary>
-    <pre><code>...</code></pre>
-  </details>
-  <figcaption class="rb-plantuml__caption">...</figcaption>
-</figure>
+#### ソース
+
+````md
+```plantuml
+@startuml
+Alice -> Bob: Hello
+Bob --> Alice: Hi
+@enduml
+```
+````
+
+#### 実行例
+
+```plantuml
+@startuml
+Alice -> Bob: Hello
+Bob --> Alice: Hi
+@enduml
 ```
 
-キャプションはコードブロックの `title`、またはソース中の `%% caption: ...` 行から取得します。`%%` は PlantUML のコメント記法ではないため、`%% caption:` 行は図のソースから取り除いてからエンコードします。キャプションがない場合、`<img>` の代替テキストは `PlantUML diagram` になります。`fallback` を有効にすると、元の PlantUML ソースを折りたたみ表示で残します。
+キャプションはコードブロックの `title`、またはソース中の `%% caption: ...` 行から取得
+します。`%%` は PlantUML のコメント記法ではないため、`%% caption:` 行は図のソースから
+取り除いてからエンコードします。キャプションがない場合、画像の代替テキストは
+`PlantUML diagram` になります。`fallback` を有効にすると、元の PlantUML ソースを
+折りたたみ表示で残します。
 
 ## URL のエンコード
 

@@ -70,7 +70,7 @@ async function seedOutput(root: string): Promise<void> {
 }
 
 test("the build output marker lives under managed state", () => {
-  const root = "C:/site";
+  const root = path.resolve("site");
   assert.equal(
     resolveBuildOutputMarkerPath(makeProject(root)),
     path.join(root, ".riebeckite", "build-output.json"),

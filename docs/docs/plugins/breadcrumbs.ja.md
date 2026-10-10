@@ -67,25 +67,9 @@ breadcrumbs({
 });
 ```
 
-## 出力
+## 表示
 
-```html
-<nav class="rb-breadcrumbs" data-breadcrumbs aria-label="Breadcrumbs">
-  <ol>
-    <li class="rb-breadcrumbs__item">
-      <a class="rb-breadcrumbs__link" href="/">ブログ</a>
-      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
-    </li>
-    <li class="rb-breadcrumbs__item">
-      <a class="rb-breadcrumbs__link" href="/folder">フォルダ</a>
-      <span class="rb-breadcrumbs__separator" aria-hidden="true">/</span>
-    </li>
-    <li class="rb-breadcrumbs__item">
-      <span class="rb-breadcrumbs__current" aria-current="page">ノート</span>
-    </li>
-  </ol>
-</nav>
-```
+パンくずは対象ページの記事上部に描画されます。このページでも、自身のパスに対応するナビゲーションを確認できます。
 
 ## スタイル
 

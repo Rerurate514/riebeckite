@@ -62,11 +62,7 @@ The factory is also exported as `ux`.
 ## How configuration reaches the client
 
 Client initializers are bundled statically and cannot receive plugin options.
-At build time the plugin prepends an inert JSON element to each article HTML:
-
-```html
-<script type="application/json" id="rb-ux-config" data-rb-ux-config>{...}</script>
-```
+At build time the plugin prepends an inert JSON configuration element to each article HTML. It is implementation data and is not displayed in article content.
 
 `initUx()` reads that element to restore the options; when it is missing, every
 feature falls back to its enabled default. Injection happens in

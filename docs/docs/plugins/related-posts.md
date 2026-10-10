@@ -81,18 +81,9 @@ relatedPosts({
 });
 ```
 
-## Output
+## Display
 
-```html
-<nav class="rb-related-posts" data-related-posts>
-  <h2 class="rb-related-posts__heading">Related</h2>
-  <ul>
-    <li class="rb-related-posts__item">
-      <a class="rb-related-posts__link" href="/notes/example" data-related-score="5">Example Note</a>
-    </li>
-  </ul>
-</nav>
-```
+Related entries are rendered in the `article.footer` slot on eligible pages. This site renders the live navigation below the article when matching public entries exist.
 
 ## Style
 

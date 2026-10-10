@@ -54,19 +54,7 @@ provider を省略するとインメモリ provider が使われます。ロー�
 
 ## 表示
 
-`onManifestCreated` で provider を一度 query し、検証済みメンションをターゲット別に
-グループ化して、対応する entry の HTML へセクションを追記します。Core がその HTML を
-コンテンツルートの描画 HTML と同期します。フックは安定した `rr-webmention` 名です。
-
-```html
-<section class="rr-webmention" data-webmention data-webmention-count="2">
-  <h2 class="rr-webmention__heading">Mentions</h2>
-  <ul class="rr-webmention__list">
-    <li class="rr-webmention__item rr-webmention__item--like"
-        data-webmention-type="like">…</li>
-  </ul>
-</section>
-```
+`onManifestCreated` で provider を一度 query し、検証済みメンションをターゲット別にグループ化して、対応する entry へ実際の表示セクションを追記します。Core はこれをコンテンツルートの描画内容と同期します。
 
 `render: false` でビルド時の追記を無効化できます。リクエスト時に描画する
 アプリケーションは `getWebmentionsForEntry({ manifest, config, provider, slug })` と

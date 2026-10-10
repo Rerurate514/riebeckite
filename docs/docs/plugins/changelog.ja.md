@@ -48,23 +48,9 @@ export default defineConfig({
 | `siteWideHeading` | `string` | `"Changelog"` | サイト全体の見出し文言 |
 | `className` | `string` | `"rr-changelog"` | ルート CSS クラス |
 
-## 出力
+## 表示
 
-`article.after-content` スロットに次のような断片を追加します。
-
-```html
-<section class="rr-changelog rr-changelog--note" data-changelog-note>
-  <h2 class="rr-changelog__heading">Change history</h2>
-  <ol class="rr-changelog__list">
-    <li class="rr-changelog__item">
-      <time class="rr-changelog__date" datetime="2026-09-30T09:00:00+09:00">2026-09-30</time>
-      <span class="rr-changelog__subject">Fix the sidebar offset</span>
-      <span class="rr-changelog__author">Author Name</span>
-      <code class="rr-changelog__hash" title="…完全なハッシュ…">abc1234</code>
-    </li>
-  </ol>
-</section>
-```
+ノートごとの変更履歴は `article.after-content` スロットへ追加され、有効にした対象ページの記事下で実際に描画されます。
 
 `data-changelog-note` と `data-changelog-site` は、2 種類の断片をスタイリングと重複防止のために識別する属性です。
 

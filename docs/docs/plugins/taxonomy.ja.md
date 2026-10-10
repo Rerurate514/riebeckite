@@ -111,17 +111,7 @@ GET /taxonomy/index.json
 
 `related` が有効なとき、各タグ語は同じエントリに共起するタグを保持します。共起
 エントリ数で降順、同数ならアルファベット順に並べ、`relatedLimit` で打ち切ります。
-ナビゲーションは `renderTaxonomyPage` が描画します。
-
-```html
-<nav class="rr-taxonomy__related" aria-label="Related tags" data-rr-taxonomy-related>
-  <ul>
-    <li class="rr-taxonomy__related-item">
-      <a class="rr-taxonomy__related-link" href="/tags/featured" data-rr-taxonomy-related-count="2">#featured</a>
-    </li>
-  </ul>
-</nav>
-```
+ナビゲーションは `renderTaxonomyPage` が各 taxonomy term ページで実際に描画します。共起するタグがあるタグページで確認できます。
 
 ## SEO
 

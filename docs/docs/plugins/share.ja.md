@@ -67,26 +67,9 @@ share({
 `services` に `"mastodon"` を含めたのに `mastodonInstance` が未設定の場合、
 `riebeckite check` の時点で設定エラーになります。
 
-## 出力
+## 表示
 
-```html
-<div class="rr-share" data-rr-share data-rr-share-placement="bottom"
-     role="group" aria-label="Share">
-  <ul class="rr-share__list">
-    <li class="rr-share__item">
-      <a class="rr-share__link rr-share__link--x"
-         href="https://twitter.com/intent/tweet?url=…&amp;text=…"
-         target="_blank" rel="noopener noreferrer" data-share-service="x">X</a>
-    </li>
-    <li class="rr-share__item">
-      <button type="button" class="rr-share__button rr-share__copy"
-              data-rr-share-copy data-share-url="https://example.com/posts/hello"
-              data-rr-share-copied="Copied" hidden>Copy link</button>
-    </li>
-  </ul>
-  <p class="rr-share__status" role="status" aria-live="polite"></p>
-</div>
-```
+共有コントロールは、公開記事ごとに設定した位置へ実際に描画されます。このサイトでは、プログレッシブ・エンハンスメントされたリンクコピー操作を含むコントロールとして表示します。
 
 ## プログレッシブ・エンハンスメント
 

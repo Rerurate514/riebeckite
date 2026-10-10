@@ -27,10 +27,31 @@ export default defineConfig({
 
 ## リンクと埋め込みで表示を分ける
 
-- `[[report.pdf]]` は、`download` 属性を持つ通常のリンクになります。
-- `![[report.pdf]]` は、拡張子、ファイル名、ダウンロードリンクを含む添付カードになります。
+- `[[attachment-example.txt]]` は、`download` 属性を持つ通常のリンクになります。
+- `![[attachment-example.txt]]` は、拡張子、ファイル名、ダウンロードリンクを含む添付カードになります。
 
-カードのファイルサイズは `config.content.directory` 配下から読み取ります。パスはコンテンツディレクトリの外へ出られないよう検査され、読めないファイルのサイズは表示しません。
+以下のソースは、このページ上で実際に描画されます。
+
+#### ソース
+
+````md
+[[attachment-example.txt]]
+
+![[attachment-example.txt]]
+````
+
+#### 実行例
+
+[[attachment-example.txt]]
+
+![[attachment-example.txt]]
+
+- 形式は大文字にした拡張子です。
+- カードのファイルサイズは `config.content.directory` 配下から読み取ります。パスは
+  コンテンツディレクトリの外へ出られないよう検査され、読めないファイルのサイズは表示しません。
+- 埋め込みカードには、Theme が対象にできる安定した `rr-attachment` ルートフックが付きます。
+
+スタイルは `style.css` に同梱されます（インラインの添付リンクには `↓` 接尾辞も付きます）。
 
 ## オプション
 

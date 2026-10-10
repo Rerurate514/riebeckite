@@ -188,8 +188,7 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "plugin", "citations", "bibtex", "markdown"],
   },
   "packages/plugins/code-annotations": {
-    description:
-      "Code block annotations, highlights, and diff markers for Riebeckite.",
+    description: "Syntax-highlighted diff code fences for Riebeckite.",
     keywords: ["riebeckite", "plugin", "code-blocks", "syntax-highlighting"],
   },
   "packages/plugins/code-enhance": {

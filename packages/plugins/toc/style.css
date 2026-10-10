@@ -62,10 +62,16 @@
     outline-offset: 2px;
   }
 
-  @media (min-width: 88rem) {
+  @media (min-width: 48rem) {
     .rr-table-of-contents--desktop {
       display: flex;
       flex-direction: column;
+      min-width: 0;
+    }
+  }
+
+  @media (min-width: 88rem) {
+    .rr-table-of-contents--desktop {
       grid-column: 1;
       grid-row: 1;
       align-self: start;
@@ -74,10 +80,10 @@
       margin-inline-start: calc(100% + var(--rb-layout-gap));
       overflow-x: hidden;
       position: sticky;
-      top: var(--rr-toc-sticky-top, var(--rb-space-4, 2rem));
+      top: var(--rr-toc-sticky-top, var(--rb-docs-sticky-top, 4rem));
       max-height: calc(
         100dvh -
-        var(--rr-toc-sticky-top, var(--rb-space-4, 2rem)) -
+        var(--rr-toc-sticky-top, var(--rb-docs-sticky-top, 4rem)) -
         var(--rb-space-4, 2rem)
       );
       overflow-y: auto;

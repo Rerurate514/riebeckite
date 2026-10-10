@@ -87,41 +87,34 @@
   }
 }
 
-/* Desktop: static margin notes beside their paragraph anchor. */
 @media (min-width: 48rem) {
-  :is(
-    p,
-    li,
-    dd,
-    dt,
-    td,
-    th,
-    figcaption,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    blockquote
-  ):has(.rr-sidenotes__ref) {
-    position: relative;
-  }
-
   .rr-sidenotes__note {
-    position: absolute;
-    top: 0;
-    left: 100%;
-    width: var(--rr-sidenotes-width, 16rem);
-    max-width: calc(100vw - 100% - 1rem);
-    margin-left: var(--rb-space-3, 1.5rem);
-    padding-left: var(--rb-space-2, 1rem);
-    border-left: calc(var(--rb-rule-width, 1px) * 2) solid
+    max-inline-size: 100%;
+    margin-block: var(--rb-space-3, 1.5rem);
+    padding-inline-start: var(--rb-space-2, 1rem);
+    border-inline-start: calc(var(--rb-rule-width, 1px) * 2) solid
       var(--rr-sidenotes-rule);
   }
 
-  /* Margin notes are always visible, so the trailing definitions are hidden. */
   .rr-sidenotes__footnotes {
     display: none;
+  }
+}
+
+@media (min-width: 88rem) {
+  .rr-sidenotes__note {
+    position: sticky;
+    top: var(--rr-sidenotes-sticky-top, var(--rb-space-4, 2rem));
+    width: min(
+      var(--rr-sidenotes-width, 16rem),
+      calc(
+        (100vw - var(--rb-layout-article-max, 48rem)) /
+        2 -
+        var(--rb-space-3, 1.5rem)
+      )
+    );
+    max-inline-size: none;
+    margin-block: 0;
+    margin-inline-start: calc(100% + var(--rb-space-3, 1.5rem));
   }
 }

@@ -39,6 +39,14 @@
   display: none;
 }
 
+@media (min-width: 48rem) {
+  .rb-article-aside {
+    display: block;
+    min-width: 0;
+    margin-block: var(--rb-space-4);
+  }
+}
+
 @media (min-width: 88rem) {
   :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-aside {
     display: block;

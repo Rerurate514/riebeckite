@@ -32,11 +32,12 @@ export default defineConfig({
 `initTableOfContents` as a client entry.
 
 It does not place UI. The Site extracts headings and renders the component,
-normally in an article aside. On wide screens, the plugin keeps a desktop ToC
-sticky with a bounded vertical scroll area. The client captures the ToC's
-initial viewport position, so it remains there after a normal-flow header has
-scrolled away. Without the client script, the offset defaults to
-`var(--rb-space-4, 2rem)`.
+normally in an article aside. From tablet width, the desktop ToC remains
+visible in the article flow; once a separate article rail fits, the plugin
+moves it to that rail and keeps it sticky with a bounded vertical scroll area.
+The client captures the ToC's initial viewport position, so it remains there
+after a normal-flow header has scrolled away. Without the client script, the
+offset defaults to `var(--rb-space-4, 2rem)`.
 
 ### Render the component
 

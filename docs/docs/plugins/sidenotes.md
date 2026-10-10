@@ -16,11 +16,13 @@ core pipeline produces from `remark-gfm`:
   (`[data-rr-sidenotes-ref]`) that keeps its `href="#fn-…"` target, so the
   footnote stays reachable with plain browser navigation.
 - Each footnote definition becomes a `.rr-sidenotes__note` aside next to the
-  reference: a static **margin note** on desktop (`@media (min-width: 48rem)`)
-  and a **popover** on mobile (`@media (max-width: 48rem)`).
-- The trailing footnote definitions section is kept (it is the link target
-  on mobile and the no-JavaScript fallback) and hidden on desktop, where the
-  margin notes are always visible.
+  reference: an inline note from tablet width (`@media (min-width: 48rem)`), a
+  sticky **margin note** when there is room for an article rail
+  (`@media (min-width: 88rem)`), and a **popover** on mobile
+  (`@media (max-width: 48rem)`).
+- The trailing footnote definitions section is kept (it is the link target on
+  mobile and the no-JavaScript fallback) and hidden from tablet width up, where
+  the inline or margin notes are always visible.
 
 A small client entry (`initSidenotes`) toggles the mobile popover: tap to
 open/close, `Escape` to close, and click outside to close. It ignores the page
@@ -114,8 +116,9 @@ Stable hooks follow the `rr-sidenotes` convention: `rr-sidenotes__toggle`,
 ## Limitations
 
 - Footnotes that reuse the same definition share one margin note and popover.
-- The footnote definitions section is hidden on desktop; margins must have
-  room for the notes, and themes can restyle `.rr-sidenotes__note` freely.
+- The footnote definitions section is hidden from tablet width up. On widths
+  that cannot fit an article rail, notes remain in the article flow; themes can
+  restyle `.rr-sidenotes__note` freely.
 - Notes inside tables or deeply nested inline markup are placed after the
   nearest block ancestor, so their vertical position is approximate.
 

@@ -122,7 +122,14 @@
     margin-top: var(--rb-space-6);
   }
 
-  @media (max-width: 48rem) {
+  @media (min-width: 30.001rem) and (max-width: 48rem) {
+    .rb-site-header,
+    .rb-nav > .rb-nav__list {
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 30rem) {
     .riebeckite-page {
       /* The fixed 4rem padding feels oversized on phones, where the shell
          already stacks the chrome (search bar) above the article. Keep a

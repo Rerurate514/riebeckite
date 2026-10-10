@@ -1,6 +1,5 @@
 .rb-flashcards {
   --rb-flashcards-ink: var(--rb-color-ink, #000000);
-  --rb-flashcards-paper: var(--rb-color-paper, #ffffff);
   --rb-flashcards-muted: var(--rb-color-muted, #69645c);
   --rb-flashcards-accent: var(--rb-color-accent, #686868);
   --rb-flashcards-rule: var(
@@ -107,16 +106,4 @@
   padding: 0.75rem 1rem;
   border: 1px solid var(--rb-flashcards-ink);
   font-size: 0.875rem;
-}
-
-:is(:root, .rb-theme-root)[data-theme="dark"] .rb-flashcards {
-  --rb-flashcards-ink: var(--rb-color-paper, #ffffff);
-  --rb-flashcards-paper: var(--rb-color-ink, #000000);
-}
-
-@media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root):not([data-theme]) .rb-flashcards {
-    --rb-flashcards-ink: var(--rb-color-paper, #ffffff);
-    --rb-flashcards-paper: var(--rb-color-ink, #000000);
-  }
 }

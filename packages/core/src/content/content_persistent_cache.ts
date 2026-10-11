@@ -6,6 +6,7 @@ import { VFile } from "vfile";
 import { matter } from "vfile-matter";
 import type { Logger, Tracer } from "../observability.js";
 import { stableStringify } from "../plugin/plugin_memo.js";
+import type { ContentPublicLocation } from "../types/content_manifest.js";
 import type { JsonValue } from "../types/json_value.js";
 import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
@@ -29,7 +30,7 @@ export type PersistentContentCacheOptions = {
 
 const CONTENT_CACHE_NAMESPACE = "content";
 export const CONTENT_CACHE_SCHEMA_VERSION = 3;
-export const CONTENT_CACHE_COMPATIBILITY_VERSION = 1;
+export const CONTENT_CACHE_COMPATIBILITY_VERSION = 2;
 
 function hash(value: string): string {
   return createHash("sha256").update(value).digest("hex");
@@ -293,6 +294,7 @@ function normalizeFrontmatterForCache(
 
 export function computePipelineFingerprint(
   config: ResolvedRiebeckiteConfig,
+  contentScopeFingerprint?: string,
 ): string {
   const plugins = config.plugins;
 
@@ -302,9 +304,34 @@ export function computePipelineFingerprint(
     content: {
       filters: config.content.filters,
     } as JsonValue,
+    contentScopeFingerprint,
   };
 
   return hash(stableStringify(fingerprintData as JsonValue));
+}
+
+export function computeContentScopeFingerprint(
+  locations: ReadonlyMap<string, ContentPublicLocation>,
+): string {
+  return hash(
+    stableStringify(
+      [...locations.entries()]
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([slug, location]) => ({
+          slug,
+          permalink: location.permalink,
+          ...(location.language ? { language: location.language } : {}),
+          ...(location.redirects
+            ? {
+                redirects: location.redirects.map((redirect) => ({
+                  ...redirect,
+                })),
+              }
+            : {}),
+          ...(location.metadata ? { metadata: { ...location.metadata } } : {}),
+        })) as unknown as JsonValue,
+    ),
+  );
 }
 
 const pluginFingerprints = new WeakMap<object, JsonValue>();
@@ -353,20 +380,13 @@ export function isPersistentlyCacheable(
   _slug: string,
   config: ResolvedRiebeckiteConfig,
 ): { cacheable: boolean; reason?: string } {
-  // Phase 1: l10n enabled -> bypass persistent cache (uses global content metadata)
-  const hasL10n = config.plugins.some(
-    (p) => p.name === "l10n" && p.enabled !== false,
-  );
-  if (hasL10n) {
-    return { cacheable: false, reason: "l10n plugin is enabled" };
-  }
-
   const unsafePlugin = config.plugins.find((plugin) => {
     if (plugin.enabled === false) return false;
     if (!canAffectProcessedContent(plugin)) return false;
     return (
       plugin.processedContentCache?.dependencyMode !== "none" &&
-      plugin.processedContentCache?.dependencyMode !== "tracked"
+      plugin.processedContentCache?.dependencyMode !== "tracked" &&
+      plugin.processedContentCache?.dependencyMode !== "global"
     );
   });
 
@@ -385,6 +405,17 @@ export function isPersistentlyCacheable(
   }
 
   return { cacheable: true };
+}
+
+export function hasGlobalContentDependency(
+  config: ResolvedRiebeckiteConfig,
+): boolean {
+  return config.plugins.some(
+    (plugin) =>
+      plugin.enabled !== false &&
+      canAffectProcessedContent(plugin) &&
+      plugin.processedContentCache?.dependencyMode === "global",
+  );
 }
 
 function canAffectProcessedContent(

@@ -20,11 +20,14 @@ flowchart LR
 | --- | --- |
 | `none` | 処理結果がsource Content、frontmatter、Pluginのoptions、宣言したversionだけに依存する。 |
 | `tracked` | 他のContentやfileをCore経由で読む。Coreがその読み取りを記録し、利用側だけを再処理する。 |
+| `global` | 解決済みのContent Location集合に依存する。Locationが変わると、すべての処理済みentryを無効にする。 |
 | `unsafe` | Git、network、時刻、process stateなど、Coreが観測できない入力に依存する。永続的な再利用は行わない。 |
 
 Contentを変化させるPluginが契約を宣言していない場合、そのPluginは`unsafe`として扱われます。
 
 `version`は契約の名前です。Coreは解決済みのPlugin設定もcache keyに含めます。そのため、options、hooks、versionのいずれかを変えると、cacheされたentryは無効です。
+
+`global`は、Content変換がvault全体のLocation metadataに依存するときだけ使います。Coreはslug、permalink、redirect、language、metadataを含む解決済みLocationをfingerprintします。manifest専用hookにはこのmodeは不要です。hookは毎Buildで現在のmanifestに対して実行され、処理済みContentを無効化しません。
 
 ### Coreが記録する入力
 
@@ -70,7 +73,7 @@ Output DependencyはContent Dependencyとは別の契約です。種類ごとに
 
 対象が特定できる場合は`content`、`tag`、`folder`を使ってください。manifest全体に依存する集合変換は`global`です。表現できない入力だけに`unknown`を使います。
 
-`none`、`tracked`、`unsafe`は処理済みContentの再利用を示す契約であり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
+`none`、`tracked`、`global`、`unsafe`は処理済みContentの再利用を示す契約であり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
 
 ## Plugin作者向けのルール
 

@@ -32,7 +32,9 @@ import {
 } from "./content_index_builder.js";
 import { ContentLocationResolver } from "./content_location_resolver.js";
 import {
+  computeContentScopeFingerprint,
   computePipelineFingerprint,
+  hasGlobalContentDependency,
   isPersistentlyCacheable,
 } from "./content_persistent_cache.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
@@ -230,11 +232,23 @@ export class ContentManager {
     await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
 
     await this.ensureRoutableSlugs();
+    const locations = await this.getContentLocations();
+    if (this.pipelineOptions.config) {
+      this.pipelineFingerprint = this.computePipelineFingerprint(locations);
+    }
     this.pipeline ??= new Pipeline(
       contentIndex,
-      await this.locationResolver.getPermalinks(),
+      new Map(
+        [...locations.entries()].map(([locationSlug, location]) => [
+          locationSlug,
+          location.permalink,
+        ]),
+      ),
       (postSlug) => this.getPost(postSlug),
-      this.pipelineOptions,
+      {
+        ...this.pipelineOptions,
+        contentScopeFingerprint: this.pipelineFingerprint ?? undefined,
+      },
       this.isBuildTime,
     );
     const content = await this.pipeline.execute(rawPost, {
@@ -291,6 +305,11 @@ export class ContentManager {
     // coordinator still runs only when build options are supplied.
     this.enableBuildTime();
 
+    const locations = await this.getContentLocations();
+    if (this.pipelineOptions.config) {
+      this.pipelineFingerprint = this.computePipelineFingerprint(locations);
+    }
+
     const preparation = options
       ? await this.buildCoordinator.getPreparation(
           options.incremental,
@@ -302,10 +321,9 @@ export class ContentManager {
       "content.manifest",
       {},
       async () => {
-        const [posts, contentIndex, locations] = await Promise.all([
+        const [posts, contentIndex] = await Promise.all([
           this.getAllPosts(),
           this.getContentIndex(preparation),
-          this.getContentLocations(),
         ]);
         const entries = await this.observability().tracer.span(
           "content.manifest.entries",
@@ -611,10 +629,20 @@ export class ContentManager {
 
   private getPipelineFingerprint(): string | undefined {
     if (!this.pipelineOptions.config) return undefined;
-    this.pipelineFingerprint ??= computePipelineFingerprint(
-      this.pipelineOptions.config,
-    );
+    this.pipelineFingerprint ??= this.computePipelineFingerprint();
     return this.pipelineFingerprint;
+  }
+
+  private computePipelineFingerprint(
+    locations?: ReadonlyMap<string, ContentPublicLocation>,
+  ): string {
+    const config = this.pipelineOptions.config;
+    if (!config) return "";
+    const contentScopeFingerprint =
+      locations && hasGlobalContentDependency(config)
+        ? computeContentScopeFingerprint(locations)
+        : undefined;
+    return computePipelineFingerprint(config, contentScopeFingerprint);
   }
 
   private requiresFullContentRegeneration(): boolean {

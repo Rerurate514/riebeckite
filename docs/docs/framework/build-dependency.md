@@ -23,11 +23,14 @@ flowchart LR
 | --- | --- |
 | `none` | Processing depends only on the source content, its frontmatter, the plugin options, and the declared version. |
 | `tracked` | Processing reads other content or files through Core. Core records those reads and reprocesses only the consumers. |
+| `global` | Processing depends on the resolved content-location set. A location change invalidates every processed entry. |
 | `unsafe` | Processing depends on inputs Core cannot observe, such as Git, network, time, or process state. Persistent reuse is disabled. |
 
 A content-affecting plugin that declares no contract is treated as `unsafe`.
 
 `version` names the contract. Core also includes the resolved plugin configuration in the cache key, so a change to the options, hooks, or version invalidates the cached entries.
+
+Use `global` only when a content transform depends on location metadata for the whole vault. Core fingerprints the resolved locations, including slugs, permalinks, redirects, languages, and metadata. Manifest-only hooks do not require this mode: they run on every build over the current manifest without invalidating processed content.
 
 ### What Core records
 
@@ -71,7 +74,7 @@ Declare them in the following places.
 
 Use `content`, `tag`, or `folder` when the scope is known, and `global` for a manifest-wide collection transform. Use `unknown` only when the input cannot be represented.
 
-`none`, `tracked`, and `unsafe` describe processed-content reuse, not output reuse. A plugin can safely use `none` while declaring a `global` output dependency, or use `tracked` while a generated output has a narrow `content` dependency. An incorrect output declaration can preserve a stale file, so use `unknown` whenever the output scope cannot be stated completely. `unknown` deliberately trades incremental SSG for a full output render.
+`none`, `tracked`, `global`, and `unsafe` describe processed-content reuse, not output reuse. A plugin can safely use `none` while declaring a `global` output dependency, or use `tracked` while a generated output has a narrow `content` dependency. An incorrect output declaration can preserve a stale file, so use `unknown` whenever the output scope cannot be stated completely. `unknown` deliberately trades incremental SSG for a full output render.
 
 ## Rules for plugin authors
 

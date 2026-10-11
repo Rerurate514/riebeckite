@@ -7,6 +7,7 @@ import { ContentManager } from "../src/content/content_manager.js";
 import {
   CONTENT_CACHE_SCHEMA_VERSION,
   computeContentCacheKey,
+  computeContentScopeFingerprint,
   computePipelineFingerprint,
   createPersistentContentCache,
   isPersistentlyCacheable,
@@ -398,6 +399,27 @@ test("computePipelineFingerprint changes with plugin cacheVersion", () => {
   );
 });
 
+test("computeContentScopeFingerprint is stable and changes with locations", () => {
+  const first = new Map([
+    ["b", { slug: "b", permalink: "/b/" }],
+    ["a", { slug: "a", permalink: "/a/" }],
+  ]);
+  const reordered = new Map([...first.entries()].reverse());
+  const changed = new Map([
+    ["a", { slug: "a", permalink: "/renamed/" }],
+    ["b", { slug: "b", permalink: "/b/" }],
+  ]);
+
+  assert.equal(
+    computeContentScopeFingerprint(first),
+    computeContentScopeFingerprint(reordered),
+  );
+  assert.notEqual(
+    computeContentScopeFingerprint(first),
+    computeContentScopeFingerprint(changed),
+  );
+});
+
 test("extractFrontmatter parses YAML frontmatter", () => {
   // Test indirectly via cache key computation which uses extractFrontmatter internally
   const markdown1 =
@@ -444,16 +466,17 @@ test("extractFrontmatter returns empty object for no frontmatter", () => {
   assert.equal(key1, key2);
 });
 
-test("isPersistentlyCacheable returns false when l10n is enabled", () => {
-  const config = createTestConfig([{ name: "l10n", enabled: true }]);
-  const result = isPersistentlyCacheable("test", config);
-
-  assert.equal(result.cacheable, false);
-  assert.equal(result.reason, "l10n plugin is enabled");
-});
-
-test("isPersistentlyCacheable returns true when l10n is disabled", () => {
-  const config = createTestConfig([{ name: "other-plugin", enabled: true }]);
+test("isPersistentlyCacheable allows transform functions with global processed content cache contract", () => {
+  const config = createTestConfig([
+    {
+      name: "global-transformer",
+      processedContentCache: {
+        version: "global-transform-v1",
+        dependencyMode: "global",
+      },
+      extendMarkdownPipeline: () => undefined,
+    },
+  ]);
   const result = isPersistentlyCacheable("test", config);
 
   assert.equal(result.cacheable, true);
@@ -583,6 +606,21 @@ test("computePipelineFingerprint changes when processedContentCache contract ver
   assert.notEqual(
     computePipelineFingerprint(config1),
     computePipelineFingerprint(config2),
+  );
+});
+
+test("computePipelineFingerprint changes with a global content scope", () => {
+  const config = createTestConfig([
+    {
+      name: "global-transformer",
+      processedContentCache: { version: "v1", dependencyMode: "global" },
+      extendMarkdownPipeline: () => undefined,
+    },
+  ]);
+
+  assert.notEqual(
+    computePipelineFingerprint(config, "scope-a"),
+    computePipelineFingerprint(config, "scope-b"),
   );
 });
 

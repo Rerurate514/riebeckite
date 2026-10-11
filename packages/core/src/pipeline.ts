@@ -62,6 +62,7 @@ export interface PipelineOptions {
     dependencies: readonly CachedContentDependency[],
   ): void;
   onPersistentContentCacheResult?(result: "hit" | "miss" | "bypass"): void;
+  contentScopeFingerprint?: string;
 }
 
 export class Pipeline {
@@ -85,6 +86,7 @@ export class Pipeline {
       });
       this.pipelineFingerprint = computePipelineFingerprint(
         this.options.config,
+        this.options.contentScopeFingerprint,
       );
     }
   }

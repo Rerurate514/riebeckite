@@ -488,6 +488,9 @@ processedContentCache: {
   Use `context.contentSource`, `readContentSourceEntry`, `renderContent`, or
   `renderNoteEmbed`; Core owns `ContentDependencyTracker` and records those
   content and file reads automatically. Do not read the filesystem directly.
+- `global` is for transforms that depend on resolved locations across the
+  vault. Core fingerprints that location set and reprocesses every entry when
+  it changes.
 - `unsafe` is for inputs Core cannot track, such as Git, network, time, or
   process state. It safely bypasses persistent processed-content reuse.
 

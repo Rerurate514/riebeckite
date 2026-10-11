@@ -57,11 +57,12 @@ export type RiebeckitePlugin<TOptions = unknown> = {
    *   frontmatter, plugin options, and this contract version.
    * - `tracked`: external content/file inputs are read only through
    *   framework-owned APIs that record dependency fingerprints.
+   * - `global`: processed HTML depends on the resolved content-location set.
    * - `unsafe`: persistent processed-content cache must bypass this plugin.
    */
   processedContentCache?: {
     version: string;
-    dependencyMode: "none" | "tracked" | "unsafe";
+    dependencyMode: "none" | "tracked" | "global" | "unsafe";
   };
   validateOptions?: PluginOptionsValidator<TOptions>;
   remarkPlugins?: PipelinePlugin[];

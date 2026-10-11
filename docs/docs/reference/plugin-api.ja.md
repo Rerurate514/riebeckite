@@ -617,6 +617,7 @@ processedContentCache: {
 
 - `none`: source Content、frontmatter、options、宣言した version だけに依存する変換です。
 - `tracked`: 他の Content や file を Core 経由で読む変換です。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、Core が `ContentDependencyTracker` により Content/file 読み取りを自動記録します。filesystem を直接読んではいけません。
+- `global`: vault全体で解決したLocationに依存する変換です。CoreはLocation集合をfingerprintし、変わったときはすべてのentryを再処理します。
 - `unsafe`: Git、network、時刻、process state など、Core が追跡できない入力です。処理済み Content の永続 Cache 再利用を安全側で無効にします。
 
 Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の契約です。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `outputDependencies` を宣言すると各 Content Output に加算されます。

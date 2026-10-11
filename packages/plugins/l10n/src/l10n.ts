@@ -95,6 +95,10 @@ export function l10n(options: L10nOptions) {
 
   return definePlugin({
     name: "l10n",
+    processedContentCache: {
+      version: "l10n-global-content-locations-v1",
+      dependencyMode: "global",
+    },
     provides: ["content.localization"],
     outputDependencies: [{ type: "global" }],
     options,

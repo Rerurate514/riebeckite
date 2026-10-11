@@ -99,6 +99,48 @@ async function build(
   };
 }
 
+async function buildWithGlobalContentDependency(
+  files: Record<string, string>,
+  directory: string,
+) {
+  const events: { name: string; attributes?: Record<string, unknown> }[] = [];
+  const spans: { name: string }[] = [];
+  const tracer = new SinkTracer({
+    onEvent: (event) => events.push(event),
+    onSpan: (span) => spans.push(span),
+  });
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "global-content-dependency",
+      processedContentCache: {
+        version: "global-content-dependency-v1",
+        dependencyMode: "global",
+      },
+      extendContentLocations: ({ entries, locations }) => {
+        const entry = entries.find(({ slug }) => slug === "a");
+        if (entry?.markdown.includes("renamed-location")) {
+          locations.set("a", { slug: "a", permalink: "/renamed/" });
+        }
+      },
+      extendMarkdownPipeline: () => undefined,
+    }),
+  ];
+  const manager = new ContentManager(memorySource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+    observability: { logger: new NoopLogger(), tracer },
+  });
+  const manifest = await manager.build({ incremental: true });
+  await manager.dispose();
+  return {
+    manifest,
+    processed: spans.filter((span) => span.name === "content.process").length,
+    reused: events.filter((event) => event.name === "content.reuse").length,
+  };
+}
+
 async function tempDirectory(name: string): Promise<string> {
   return await fs.mkdtemp(path.join(os.tmpdir(), `riebeckite-${name}-`));
 }
@@ -116,6 +158,26 @@ test("no-change rebuild reuses every manifest entry without processing content",
   assert.equal(second.affected, 0);
   assert.equal(second.processed, 0);
   assert.equal(second.reused, 2);
+});
+
+test("a global content dependency invalidates all processed entries when locations change", async () => {
+  const directory = await tempDirectory(
+    "incremental-global-content-dependency",
+  );
+  const files = {
+    "a.md": "# A",
+    "b.md": "# B",
+  };
+
+  await buildWithGlobalContentDependency(files, directory);
+  const warm = await buildWithGlobalContentDependency(files, directory);
+  files["a.md"] = "# A\n\nrenamed-location";
+  const changed = await buildWithGlobalContentDependency(files, directory);
+
+  assert.equal(warm.processed, 0);
+  assert.equal(warm.reused, 2);
+  assert.equal(changed.processed, 2);
+  assert.equal(changed.reused, 0);
 });
 
 test("no-change rebuild does not reread content for index aliases", async () => {

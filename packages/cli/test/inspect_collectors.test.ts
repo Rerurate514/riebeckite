@@ -133,12 +133,17 @@ test("inspect build reports reuse when the pipeline fingerprint matches", async 
   assert.equal(inspection.status === "valid" && inspection.reusable, true);
 });
 
-test("inspect build reports reuse as unavailable when the cache is bypassed", async () => {
+test("inspect build reports reuse as unavailable when a content transform bypasses the cache", async () => {
   const root = await makeContentRoot();
   const config: ResolvedRiebeckiteConfig = {
     ...baseConfig,
     content: { ...baseConfig.content, directory: root },
-    plugins: [{ name: "l10n" }],
+    plugins: [
+      {
+        name: "unsafe-transformer",
+        extendMarkdownPipeline: () => undefined,
+      },
+    ],
   };
   const statePath = resolveContentBuildStatePath(config, undefined);
   await fs.mkdir(path.dirname(statePath), { recursive: true });

@@ -72,6 +72,43 @@ test("SSG enumerates affected public redirect routes", async () => {
   assert.deepEqual(params, [{ slug: "old/" }]);
 });
 
+test("SSG does not enumerate an affected root content route", async () => {
+  const manifest = manifestOf([
+    entry("home", "/", true),
+    entry("public", "/post", true),
+  ]);
+
+  const params = await riebeckiteSsgParams({
+    getManifest: async () => manifest,
+    getOutputChangeSet: async () => ({
+      fullRegenerationRequired: false,
+      affected: [
+        {
+          kind: "content" as const,
+          path: "index.html",
+          producer: "content:public",
+          dependencies: [],
+        },
+        {
+          kind: "content" as const,
+          path: "post.html",
+          producer: "content:public",
+          dependencies: [],
+        },
+      ],
+      removed: [],
+      unchanged: [],
+      candidateOutputCount: 2,
+      affectedOutputCount: 2,
+      removedOutputCount: 0,
+      unchangedOutputCount: 0,
+    }),
+    getPagePaths: async () => [],
+  });
+
+  assert.deepEqual(params, [{ slug: "post" }]);
+});
+
 test("resolveContentRoute keeps the trailing-slash contract", () => {
   const manifest = manifestOf([
     entry("page", "/page", true),

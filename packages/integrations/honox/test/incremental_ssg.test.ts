@@ -28,6 +28,30 @@ import {
 
 const leanBuildOptions = { adapter: false } as const;
 
+test("SSG adapter output is deterministic with a populated dist", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "adapter-ssg-test-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const site = path.join(root, "site");
+  await createSite(site, {
+    title: "Adapter",
+    renderTag: "v1",
+    noteCount: 1,
+    editedNotes: [],
+  });
+
+  await buildSite(site, "cold");
+  const coldSnapshot = await snapshotTree(distPath(site));
+  await buildSite(site, "no-change");
+
+  assert.deepEqual(
+    diffSnapshotKeys(coldSnapshot, await snapshotTree(distPath(site))),
+    [],
+    "an existing dist must not become adapter static-route input",
+  );
+});
+
 test("incremental SSG matches a clean cold build", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "incremental-ssg-test-"));

@@ -10,7 +10,7 @@ import {
 } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { performance } from "node:perf_hooks";
-import { defaultExtensionMap, toSSG } from "hono/ssg";
+import { defaultExtensionMap, redirectPlugin, toSSG } from "hono/ssg";
 import {
   type ConfigEnv,
   createServer,
@@ -51,6 +51,8 @@ type SsgModule = {
         content: string | Uint8Array;
       }[];
     }>;
+    getProcessedContentCount(): number;
+    getReusedContentCount(): number;
     getOutputChangeSet(): Promise<{
       affected: readonly { kind: string; path: string }[];
       removed: readonly { kind: string; path: string }[];
@@ -75,6 +77,8 @@ type SsgOutputChangeSet =
     : never;
 
 type SsgOutputMetrics = {
+  processedContentCount: number;
+  reusedContentCount: number;
   candidateOutputCount: number;
   affectedOutputCount: number;
   removedOutputCount: number;
@@ -99,10 +103,11 @@ type SsgOutputMetrics = {
 type OutputCacheEntry = {
   source: string;
   encoding: "utf8" | "base64";
+  checksum: string;
 };
 
 type OutputCacheState = {
-  version: 1;
+  version: 2;
   appFingerprint?: string;
   outputs: Record<string, OutputCacheEntry>;
 };
@@ -137,6 +142,21 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
     },
     configResolved(config) {
       resolvedConfig = config;
+    },
+    async buildStart() {
+      const config = resolvedConfig;
+      if (!config) return;
+      if (
+        !config.plugins.some((plugin) =>
+          plugin.name.startsWith("@hono/vite-build/"),
+        )
+      ) {
+        return;
+      }
+      await rm(resolve(config.root, config.build.outDir), {
+        recursive: true,
+        force: true,
+      });
     },
     resolveId(id) {
       return id === virtualId ? resolvedVirtualId : undefined;
@@ -235,11 +255,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           : 0;
         const generatedHtml: { path: string; html: string }[] = [];
         const nextOutputCache: OutputCacheState = {
-          version: 1,
+          version: 2,
           appFingerprint,
           outputs: {},
         };
         const metrics: SsgOutputMetrics = {
+          processedContentCount: 0,
+          reusedContentCount: 0,
           candidateOutputCount: outputChangeSet?.candidateOutputCount ?? 0,
           affectedOutputCount: outputChangeSet?.affectedOutputCount ?? 0,
           removedOutputCount: outputChangeSet?.removedOutputCount ?? 0,
@@ -265,6 +287,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental
           ? ""
           : "1";
+        process.env.RIEBECKITE_SSG_SKIP_UNCHANGED = canUseIncremental
+          ? "1"
+          : "";
         const outDir = resolve(config.root, config.build.outDir);
         const result = await measure(timingsMs, "toSSG", () =>
           toSSG(
@@ -290,11 +315,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 } else {
                   metrics.assetOutputCount += 1;
                 }
-                this.emitFile({
-                  type: "asset",
-                  fileName,
-                  source: data,
-                });
+                measureSync(timingsMs, "outputWrite", () =>
+                  this.emitFile({
+                    type: "asset",
+                    fileName,
+                    source: data,
+                  }),
+                );
                 metrics.emittedOutputCount += 1;
                 nextOutputCache.outputs[fileName] = encodeOutput(data);
               },
@@ -302,14 +329,19 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             },
             {
               dir: outDir,
-              plugins: [...(options.plugins ?? [])],
+              plugins: [redirectPlugin(), ...(options.plugins ?? [])],
               extensionMap: options.extensionMap ?? defaultExtensionMap,
             },
           ),
         );
         delete process.env.RIEBECKITE_SSG_FULL_REGENERATION;
+        delete process.env.RIEBECKITE_SSG_SKIP_UNCHANGED;
         metrics.renderedRouteCount = result.files.length;
         if (!result.success) throw result.error;
+        metrics.processedContentCount =
+          module.content?.getProcessedContentCount() ?? 0;
+        metrics.reusedContentCount =
+          module.content?.getReusedContentCount() ?? 0;
 
         const emittedGeneratedOutputCount = await measure(
           timingsMs,
@@ -318,7 +350,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             emitGeneratedOutputs(
               module,
               (asset) => {
-                this.emitFile(asset);
+                measureSync(timingsMs, "outputWrite", () =>
+                  this.emitFile(asset),
+                );
                 metrics.emittedOutputCount += 1;
                 nextOutputCache.outputs[asset.fileName] = encodeOutput(
                   asset.source,
@@ -348,11 +382,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               }
               const cached = previousOutputCache.outputs[path];
               if (!cached) continue;
-              this.emitFile({
-                type: "asset",
-                fileName: path,
-                source: decodeOutput(cached),
-              });
+              measureSync(timingsMs, "outputWrite", () =>
+                this.emitFile({
+                  type: "asset",
+                  fileName: path,
+                  source: decodeOutput(cached),
+                }),
+              );
               metrics.emittedOutputCount += 1;
               metrics.reusedOutputCount += 1;
               nextOutputCache.outputs[path] = cached;
@@ -486,6 +522,7 @@ async function emitGeneratedOutputs(
 ): Promise<number> {
   const content = module.content;
   if (!content) return 0;
+  if (affectedPaths?.size === 0) return 0;
 
   const manifest = await content.getManifest();
   let count = 0;
@@ -615,7 +652,7 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
     outputs?: unknown;
   };
   return (
-    candidate.version === 1 &&
+    candidate.version === 2 &&
     (candidate.appFingerprint === undefined ||
       typeof candidate.appFingerprint === "string") &&
     isOutputCacheEntries(candidate.outputs)
@@ -633,8 +670,11 @@ function isOutputCacheEntries(
       typeof entry === "object" &&
       entry !== null &&
       typeof (entry as OutputCacheEntry).source === "string" &&
+      typeof (entry as OutputCacheEntry).checksum === "string" &&
       ((entry as OutputCacheEntry).encoding === "utf8" ||
-        (entry as OutputCacheEntry).encoding === "base64"),
+        (entry as OutputCacheEntry).encoding === "base64") &&
+      (entry as OutputCacheEntry).checksum ===
+        checksumOutput(entry as OutputCacheEntry),
   );
 }
 
@@ -696,9 +736,24 @@ function isNotFoundError(error: unknown): boolean {
 }
 
 function encodeOutput(source: string | Uint8Array): OutputCacheEntry {
-  return typeof source === "string"
-    ? { source, encoding: "utf8" }
-    : { source: Buffer.from(source).toString("base64"), encoding: "base64" };
+  const entry =
+    typeof source === "string"
+      ? { source, encoding: "utf8" as const }
+      : {
+          source: Buffer.from(source).toString("base64"),
+          encoding: "base64" as const,
+        };
+  return { ...entry, checksum: checksumOutput(entry) };
+}
+
+function checksumOutput(
+  entry: Pick<OutputCacheEntry, "source" | "encoding">,
+): string {
+  return createHash("sha256")
+    .update(entry.encoding)
+    .update("\0")
+    .update(entry.source)
+    .digest("hex");
 }
 
 function decodeOutput(entry: OutputCacheEntry): string | Uint8Array {

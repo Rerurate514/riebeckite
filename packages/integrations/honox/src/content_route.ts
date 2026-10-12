@@ -153,10 +153,15 @@ export async function riebeckiteSsgParams(
   >,
   parameter = "slug",
 ): Promise<Record<string, string>[]> {
-  const [manifest, changeSet] = await Promise.all([
-    content.getManifest({ incremental: true }),
-    content.getOutputChangeSet({ incremental: true }),
-  ]);
+  const changeSet = await content.getOutputChangeSet({ incremental: true });
+  if (
+    process.env.RIEBECKITE_SSG_SKIP_UNCHANGED === "1" &&
+    !changeSet.fullRegenerationRequired &&
+    changeSet.affected.length === 0
+  ) {
+    return [];
+  }
+  const manifest = await content.getManifest({ incremental: true });
   if (
     changeSet.fullRegenerationRequired ||
     process.env.RIEBECKITE_SSG_FULL_REGENERATION === "1"
@@ -179,6 +184,7 @@ export async function riebeckiteSsgParams(
   );
   const contentParams = manifest.publicEntries
     .filter((entry) => affected.has(routeOutputPath(entry.permalink)))
+    .filter((entry) => entry.permalink !== "/")
     .map((entry) => ({ [parameter]: entry.permalink.replace(/^\/+/, "") }));
   const redirectParams = [...manifest.publicRedirects.keys()]
     .filter((path) => affected.has(routeOutputPath(path)))

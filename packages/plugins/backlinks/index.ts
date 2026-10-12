@@ -20,6 +20,7 @@ export function backlinksPlugin(options: BacklinksOptions = {}) {
     name: "backlinks",
     order: 500,
     options,
+    outputDependencies: [{ type: "global" }],
     validateOptions: validateBacklinksOptions,
     onManifestCreated: ({ config, manifest }) => {
       if (options.render === false) return;

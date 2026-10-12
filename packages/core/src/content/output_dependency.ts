@@ -129,7 +129,11 @@ export function buildOutputInventory(
     });
   }
   for (const output of pluginPageOutputs) {
-    addOutput(outputs, { ...output, path: htmlOutputPath(output.path) });
+    addOutput(outputs, {
+      ...output,
+      path: htmlOutputPath(output.path),
+      dependencies: [...output.dependencies, ...contentOutputDependencies],
+    });
   }
   for (const output of manifest.generatedOutputs) {
     addOutput(outputs, {

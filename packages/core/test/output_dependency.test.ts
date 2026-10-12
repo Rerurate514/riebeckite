@@ -120,6 +120,20 @@ test("wikilink changes affect old and new backlink target pages", () => {
   ]);
 });
 
+test("a linked source title change affects its backlink target page", () => {
+  const previous = manifest([
+    entry("source", { links: ["target"] }),
+    entry("target"),
+  ]);
+  const current = manifest([
+    entry("source", { title: "Renamed source", links: ["target"] }),
+    entry("target"),
+  ]);
+  const result = changes(previous, current, { changed: ["source.md"] });
+
+  assert.deepEqual(paths(result.affected), ["source.html", "target.html"]);
+});
+
 test("embed dependency changes affect embedding page", () => {
   const previous = manifest([
     entry("source", { links: ["embed"] }),
@@ -163,6 +177,24 @@ test("add affects new page and collection or global outputs", () => {
 
   assert.deepEqual(paths(result.affected), [
     "feed.html",
+    "folder.html",
+    "folder/b.html",
+  ]);
+});
+
+test("plugin pages inherit dependencies from plugins that affect content output", () => {
+  const previous = manifest([entry("a")]);
+  const current = manifest([entry("a"), entry("folder/b")]);
+  const result = changes(
+    previous,
+    current,
+    { added: ["folder/b.md"] },
+    [pluginPage("folder", [{ type: "folder", folder: "folder" }])],
+    [{ type: "global" }],
+  );
+
+  assert.deepEqual(paths(result.affected), [
+    "a.html",
     "folder.html",
     "folder/b.html",
   ]);

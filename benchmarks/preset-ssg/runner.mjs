@@ -1,0 +1,373 @@
+import { execFile } from "node:child_process";
+import fs from "node:fs/promises";
+import { createRequire } from "node:module";
+import os from "node:os";
+import path from "node:path";
+import { performance } from "node:perf_hooks";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { promisify } from "node:util";
+import {
+  applyScenario,
+  compareSnapshots,
+  createBenchmarkContent,
+  removeSafeTemporaryDirectory,
+  scenarioNames,
+  snapshotTree,
+} from "./lib.mjs";
+
+const root = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../..",
+);
+const appRoot = path.join(root, "apps", "web");
+const appRequire = createRequire(path.join(appRoot, "package.json"));
+const execFileAsync = promisify(execFile);
+const args = parseArgs(process.argv.slice(2));
+const presets = listArg(args.presets) ?? ["starter", "showcase"];
+const sizes = (listArg(args.sizes) ?? ["100", "1000"]).map(Number);
+const scenarios = listArg(args.scenarios) ?? scenarioNames;
+const workRoot = path.resolve(
+  args.workRoot ?? path.join(appRoot, ".riebeckite", "preset-ssg-benchmark"),
+);
+const resultsDirectory = path.resolve(
+  args.out ?? path.join(root, "benchmarks", "results"),
+);
+const stamp = new Date()
+  .toISOString()
+  .replaceAll(":", "-")
+  .replaceAll(".", "-");
+const jsonPath = args.resume
+  ? path.resolve(args.resume)
+  : path.join(resultsDirectory, `${stamp}-preset-ssg.json`);
+const markdownPath = jsonPath.replace(/\.json$/u, ".md");
+
+if (args.buildOnce) {
+  process.stdout.write(
+    `${JSON.stringify(await buildOnce(JSON.parse(args.buildOnce)))}\n`,
+  );
+  process.exit(0);
+}
+
+const { scaffoldRiebeckiteSite } = await import(
+  pathToFileURL(
+    path.join(root, "packages/create-riebeckite/src/scaffold/index.ts"),
+  )
+);
+const { scaffoldPresets } = await import(
+  pathToFileURL(
+    path.join(root, "packages/create-riebeckite/src/scaffold/presets.ts"),
+  )
+);
+const rows = args.resume
+  ? JSON.parse(await fs.readFile(jsonPath, "utf8")).rows
+  : [];
+if (!Array.isArray(rows))
+  throw new Error(`Invalid benchmark report: ${jsonPath}`);
+await fs.mkdir(resultsDirectory, { recursive: true });
+for (const preset of presets) {
+  if (!(preset in scaffoldPresets))
+    throw new Error(`Unknown official preset: ${preset}`);
+  for (const size of sizes) {
+    for (const scenario of scenarios) {
+      if (!scenarioNames.includes(scenario))
+        throw new Error(`Unknown scenario: ${scenario}`);
+      if (
+        rows.some(
+          (row) =>
+            row.preset === preset &&
+            row.size === size &&
+            row.scenario === scenario,
+        )
+      ) {
+        process.stdout.write(
+          `Skipping completed ${preset}/${size}/${scenario}\n`,
+        );
+        continue;
+      }
+      const result = await runScenario({ preset, size, scenario });
+      rows.push(result);
+      await writeReport(rows);
+      process.stdout.write(`${JSON.stringify(result)}\n`);
+    }
+  }
+}
+process.stdout.write(`Saved ${jsonPath}\nSaved ${markdownPath}\n`);
+
+async function writeReport(rows) {
+  const report = {
+    generatedAt: new Date().toISOString(),
+    measurement: "single sample per preset, size, and scenario",
+    environment: environment(),
+    presets: Object.fromEntries(
+      presets.map((name) => [
+        name,
+        presetRecord(
+          name,
+          scaffoldPresets[name],
+          rows.find((row) => row.preset === name)?.generatedConfigPluginOrder ??
+            [],
+        ),
+      ]),
+    ),
+    rows,
+  };
+  await fs.writeFile(jsonPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  await fs.writeFile(markdownPath, markdownReport(report), "utf8");
+}
+
+async function runScenario({ preset, size, scenario }) {
+  const runDirectory = path.join(workRoot, preset, String(size), scenario);
+  await removeSafeTemporaryDirectory(runDirectory, workRoot);
+  const incrementalSite = path.join(runDirectory, "incremental");
+  const generatedConfigPluginOrder = await createSite(
+    incrementalSite,
+    preset,
+    size,
+  );
+  if (scenario !== "cold") await invokeBuild(incrementalSite, "baseline");
+  await applyScenario({
+    contentDirectory: path.join(incrementalSite, "content"),
+    count: size,
+    scenario,
+  });
+  const incremental = await invokeBuild(incrementalSite, "incremental");
+  const incrementalOutput = await snapshotTree(
+    path.join(incrementalSite, "dist"),
+  );
+  await fs.rm(path.join(incrementalSite, ".riebeckite"), {
+    recursive: true,
+    force: true,
+  });
+  await fs.rm(path.join(incrementalSite, "dist"), {
+    recursive: true,
+    force: true,
+  });
+  const clean = await invokeBuild(incrementalSite, "clean");
+  const comparison = compareSnapshots(
+    incrementalOutput,
+    await snapshotTree(path.join(incrementalSite, "dist")),
+  );
+  return {
+    preset,
+    size,
+    scenario,
+    generatedConfigPluginOrder,
+    ...incremental,
+    cleanWallTimeMs: clean.wallTimeMs,
+    equivalence: comparison,
+    nondeterminism: comparison.equivalent
+      ? null
+      : "Output content differs; see differences. No paths are excluded.",
+  };
+}
+
+async function createSite(siteRoot, preset, count) {
+  await scaffoldRiebeckiteSite({
+    targetDirectory: siteRoot,
+    name: `benchmark-${preset}-${count}`,
+    preset,
+    site: {
+      title: `Benchmark ${preset}`,
+      baseUrl: "https://benchmark.example.test",
+    },
+  });
+  await fs.mkdir(path.join(siteRoot, "node_modules", "@riebeckite"), {
+    recursive: true,
+  });
+  await fs.symlink(
+    path.join(root, "packages", "plugins", "obsidian-markdown"),
+    path.join(
+      siteRoot,
+      "node_modules",
+      "@riebeckite",
+      "plugin-obsidian-markdown",
+    ),
+    "junction",
+  );
+  await createBenchmarkContent({
+    contentDirectory: path.join(siteRoot, "content"),
+    count,
+    preset,
+  });
+  return generatedPluginOrder(
+    await fs.readFile(path.join(siteRoot, "riebeckite.config.ts"), "utf8"),
+  );
+}
+
+async function invokeBuild(siteRoot, label) {
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    [
+      "--import",
+      "tsx",
+      fileURLToPath(import.meta.url),
+      "--buildOnce",
+      JSON.stringify({ siteRoot, label }),
+    ],
+    { cwd: root, maxBuffer: 1024 * 1024 * 8 },
+  );
+  return JSON.parse(stdout.trim().split(/\r?\n/).at(-1));
+}
+
+async function buildOnce({ siteRoot, label }) {
+  const { build, defineConfig } = await import(
+    pathToFileURL(appRequire.resolve("vite")).href
+  );
+  const { default: honox } = await import(
+    pathToFileURL(appRequire.resolve("honox/vite")).href
+  );
+  const { default: viteBuild } = await import(
+    pathToFileURL(
+      path.join(
+        appRoot,
+        "node_modules/@hono/vite-build/dist/adapter/node/index.mjs",
+      ),
+    ).href
+  );
+  const { riebeckiteVite } = await import(
+    pathToFileURL(path.join(root, "packages/integrations/honox/index.ts")).href
+  );
+  const metricsDirectory = path.join(siteRoot, ".riebeckite", "benchmark");
+  const metricsPath = path.join(metricsDirectory, `${label}.json`);
+  await fs.mkdir(metricsDirectory, { recursive: true });
+  const samples = [process.memoryUsage().rss];
+  const sampler = setInterval(
+    () => samples.push(process.memoryUsage().rss),
+    25,
+  );
+  const started = performance.now();
+  process.env.RIEBECKITE_SSG_METRICS_FILE = metricsPath;
+  try {
+    await build(
+      defineConfig({
+        root: siteRoot,
+        configFile: false,
+        resolve: {
+          alias: [
+            {
+              find: /^@riebeckite\/core$/,
+              replacement: path.join(root, "packages/core/index.ts"),
+            },
+            {
+              find: /^@riebeckite\/honox\/server$/,
+              replacement: path.join(
+                root,
+                "packages/integrations/honox/server.ts",
+              ),
+            },
+            {
+              find: /^@riebeckite\/honox$/,
+              replacement: path.join(
+                root,
+                "packages/integrations/honox/index.ts",
+              ),
+            },
+          ],
+        },
+        plugins: [
+          honox({ client: { input: ["/app/client.ts"] } }),
+          ...riebeckiteVite(),
+          viteBuild(),
+        ],
+        logLevel: "silent",
+      }),
+    );
+  } finally {
+    clearInterval(sampler);
+    delete process.env.RIEBECKITE_SSG_METRICS_FILE;
+  }
+  samples.push(process.memoryUsage().rss);
+  const metrics = JSON.parse(await fs.readFile(metricsPath, "utf8"));
+  return {
+    wallTimeMs: Math.round(performance.now() - started),
+    peakRssMb: Math.round(Math.max(...samples) / 1024 / 1024),
+    contentProcessed: metricNumber(metrics, "processedContentCount"),
+    contentReused: metricNumber(metrics, "reusedContentCount"),
+    outputRendered: metricNumber(metrics, "renderedOutputCount"),
+    outputReused: metricNumber(metrics, "reusedOutputCount"),
+    ssrRouteCount: metricNumber(metrics, "renderedRouteCount"),
+    outputCacheHit: metricNumber(metrics, "cacheEntriesRead"),
+    outputCacheMiss: Math.max(
+      0,
+      metricNumber(metrics, "candidateOutputCount") -
+        metricNumber(metrics, "cacheEntriesRead"),
+    ),
+    fastPathApplied:
+      metricNumber(metrics, "renderedRouteCount") === 0 &&
+      !metrics.fullRegenerationRequired,
+    fullRegenerationRequired: Boolean(metrics.fullRegenerationRequired),
+    globalOrUnknownDependency: Boolean(metrics.fullRegenerationRequired),
+    outputWriteTimeMs: Math.round(metrics.timingsMs?.outputWrite ?? 0),
+    rawMetrics: metrics,
+  };
+}
+
+function metricNumber(metrics, key) {
+  return Number(metrics[key] ?? 0);
+}
+function presetRecord(name, preset, generatedConfigPluginOrder) {
+  return {
+    name,
+    plugins: preset.plugins.map((plugin) => ({
+      package: plugin.package,
+      factory: plugin.factory,
+    })),
+    pluginOrder: preset.plugins.map((plugin) => plugin.package),
+    generatedConfigPluginOrder,
+  };
+}
+function environment() {
+  return {
+    node: process.version,
+    platform: process.platform,
+    arch: process.arch,
+    cpu: os.cpus()[0]?.model ?? "unknown",
+    cpuCount: os.cpus().length,
+    memoryMb: Math.round(os.totalmem() / 1024 / 1024),
+  };
+}
+function parseArgs(values) {
+  const parsed = {};
+  for (let index = 0; index < values.length; index += 1) {
+    const token = values[index];
+    if (!token.startsWith("--")) continue;
+    const key = token.slice(2);
+    parsed[key] =
+      values[index + 1] && !values[index + 1].startsWith("--")
+        ? values[++index]
+        : "true";
+  }
+  return parsed;
+}
+function listArg(value) {
+  return value && value !== "true"
+    ? value.split(/[\s,]+/).filter(Boolean)
+    : undefined;
+}
+function generatedPluginOrder(config) {
+  return [...config.matchAll(/^\s{4}(\w+)\(/gm)].map((match) => match[1]);
+}
+function markdownReport(report) {
+  const lines = [
+    "# Official Preset SSG benchmark",
+    "",
+    `Measured at: ${report.generatedAt}`,
+    "",
+    "Single sample per row.",
+    "",
+    "| Preset | Size | Scenario | Wall ms | RSS MB | Processed / Reused | Rendered / Reused | SSR routes | Cache hit / miss | Fast path | Full regeneration | Global / unknown | Write ms | Equivalent |",
+    "| --- | ---: | --- | ---: | ---: | --- | --- | ---: | --- | --- | --- | --- | ---: | --- |",
+  ];
+  for (const row of report.rows)
+    lines.push(
+      `| ${row.preset} | ${row.size} | ${row.scenario} | ${row.wallTimeMs} | ${row.peakRssMb} | ${row.contentProcessed} / ${row.contentReused} | ${row.outputRendered} / ${row.outputReused} | ${row.ssrRouteCount} | ${row.outputCacheHit} / ${row.outputCacheMiss} | ${row.fastPathApplied} | ${row.fullRegenerationRequired} | ${row.globalOrUnknownDependency} | ${row.outputWriteTimeMs} | ${row.equivalence.equivalent} |`,
+    );
+  lines.push("", "## Plugin order");
+  for (const [name, preset] of Object.entries(report.presets))
+    lines.push(`- ${name} packages: ${preset.pluginOrder.join(", ")}`);
+  for (const [name, preset] of Object.entries(report.presets))
+    lines.push(
+      `- ${name} generated config: ${preset.generatedConfigPluginOrder.join(", ")}`,
+    );
+  return `${lines.join("\n")}\n`;
+}

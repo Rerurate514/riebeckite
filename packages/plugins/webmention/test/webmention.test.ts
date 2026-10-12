@@ -7,6 +7,7 @@ import {
 } from "@riebeckite/core";
 import type { WebmentionMention } from "../index.js";
 import {
+  buildFeed,
   createWebmentionFeedHandler,
   createWebmentionReceiveHandler,
   findTargetEntry,
@@ -292,6 +293,21 @@ test("feed handler returns mentions with entry summaries", async () => {
   };
   assert.equal(feed.count, 1);
   assert.equal(feed.mentions[0]?.entry?.permalink, "/post");
+});
+
+test("feed generation time is the latest verified mention time", () => {
+  const feed = buildFeed(makeManifest([makeEntry()]), makeConfig(), [
+    makeMention({ verifiedAt: "2026-01-01T00:00:00.000Z" }),
+    makeMention({
+      source: "https://source.example/newer",
+      verifiedAt: "2026-03-01T00:00:00.000Z",
+    }),
+  ]);
+  assert.equal(feed.generatedAt, "2026-03-01T00:00:00.000Z");
+  assert.equal(
+    buildFeed(makeManifest([]), makeConfig(), []).generatedAt,
+    "1970-01-01T00:00:00.000Z",
+  );
 });
 
 test("feed handler rejects providers without query support", async () => {

@@ -29,6 +29,22 @@ const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
+const formatHost = {
+  getCanonicalFileName: (fileName) => fileName,
+  getCurrentDirectory: () => repositoryRoot,
+  getNewLine: () => "\n",
+};
+const workspaceConfigPath = path.join(repositoryRoot, "tsconfig.json");
+const workspaceConfig = ts.getParsedCommandLineOfConfigFile(
+  workspaceConfigPath,
+  {},
+  {
+    ...ts.sys,
+    onUnRecoverableConfigFileDiagnostic: (diagnostic) => {
+      console.log(ts.formatDiagnostics([diagnostic], formatHost));
+    },
+  },
+);
 
 const ignoredSourceDirectories = new Set([
   "node_modules",
@@ -75,6 +91,8 @@ const baseOptions = {
   allowSyntheticDefaultImports: true,
   resolveJsonModule: true,
   types: ["node"],
+  baseUrl: workspaceConfig?.options.baseUrl,
+  paths: workspaceConfig?.options.paths,
 };
 
 const testOptions = {
@@ -82,12 +100,6 @@ const testOptions = {
   noImplicitAny: false,
   strictNullChecks: false,
   noUncheckedIndexedAccess: false,
-};
-
-const formatHost = {
-  getCanonicalFileName: (fileName) => fileName,
-  getCurrentDirectory: () => repositoryRoot,
-  getNewLine: () => "\n",
 };
 
 function reportErrors(label, program) {

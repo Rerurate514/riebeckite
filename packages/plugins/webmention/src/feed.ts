@@ -92,13 +92,23 @@ export function buildFeed(
 ): WebmentionFeed {
   return {
     version: "1",
-    generatedAt: new Date().toISOString(),
+    generatedAt: latestVerificationTime(mentions),
     count: mentions.length,
     mentions: mentions.map((mention) => ({
       ...mention,
       entry: summarizeEntry(manifest, config, mention.target),
     })),
   };
+}
+
+function latestVerificationTime(
+  mentions: readonly WebmentionMention[],
+): string {
+  return mentions.reduce(
+    (latest, mention) =>
+      mention.verifiedAt > latest ? mention.verifiedAt : latest,
+    "1970-01-01T00:00:00.000Z",
+  );
 }
 
 export function summarizeEntry(

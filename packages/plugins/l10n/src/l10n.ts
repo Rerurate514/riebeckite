@@ -84,9 +84,14 @@ type DetectedContent = L10nContent & {
 
 type L10nState = {
   readonly contents: ReadonlyMap<string, DetectedContent>;
+  readonly contentsByTranslationAndLanguage: ReadonlyMap<
+    string,
+    DetectedContent
+  >;
   readonly diagnostics: Diagnostic[];
   readonly conflictedGroups: ReadonlySet<string>;
   readonly locations: ReadonlyMap<string, ContentPublicLocation> | null;
+  readonly slugsByPermalink: ReadonlyMap<string, string>;
 };
 
 export function l10n(options: L10nOptions) {
@@ -106,7 +111,11 @@ export function l10n(options: L10nOptions) {
     validateOptions: () =>
       validateOptions(options).map((message) => ({ path: "l10n", message })),
     extendContentLocations: ({ entries, locations }) => {
-      state = { ...detectContents(entries, resolved), locations };
+      state = {
+        ...detectContents(entries, resolved),
+        locations,
+        slugsByPermalink: new Map(),
+      };
       throwForStrictDiagnostics(state.diagnostics, resolved.strict);
 
       for (const content of state.contents.values()) {
@@ -117,6 +126,12 @@ export function l10n(options: L10nOptions) {
           withLocalization(location, content, resolved),
         );
       }
+      state = {
+        ...state,
+        slugsByPermalink: new Map(
+          [...locations].map(([slug, location]) => [location.permalink, slug]),
+        ),
+      };
     },
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkLocalizedLinks, {
@@ -165,13 +180,7 @@ function remarkLocalizedLinks(options: LocalizedLinkOptions) {
       : undefined;
     if (!source || !options.state.locations) return;
 
-    const slugsByPermalink = new Map(
-      [...options.state.locations].map(([slug, location]) => [
-        location.permalink,
-        slug,
-      ]),
-    );
-    localizeLinks(tree, source, options, slugsByPermalink);
+    localizeLinks(tree, source, options, options.state.slugsByPermalink);
   };
 }
 
@@ -366,6 +375,7 @@ function detectContents(
   options: ReturnType<typeof resolveOptions>,
 ): L10nState {
   const contents = new Map<string, DetectedContent>();
+  const contentsByTranslationAndLanguage = new Map<string, DetectedContent>();
   const diagnostics: Diagnostic[] = [];
   const owners = new Map<string, DetectedContent>();
   const conflictedGroups = new Set<string>();
@@ -434,9 +444,17 @@ function detectContents(
       diagnostics.push(duplicateDiagnostic(previous, content, options.strict));
     } else {
       owners.set(key, content);
+      contentsByTranslationAndLanguage.set(key, content);
     }
   }
-  return { contents, diagnostics, conflictedGroups, locations: null };
+  return {
+    contents,
+    contentsByTranslationAndLanguage,
+    diagnostics,
+    conflictedGroups,
+    locations: null,
+    slugsByPermalink: new Map(),
+  };
 }
 
 function parseFrontmatter(entry: ContentLocationInput): PostFrontmatter {
@@ -566,12 +584,7 @@ function findTranslation(
 ): DetectedContent | null {
   const key = `${translationId}\u0000${lang}`;
   if (state.conflictedGroups.has(key)) return null;
-  return (
-    [...state.contents.values()].find(
-      (content) =>
-        content.translationId === translationId && content.lang === lang,
-    ) ?? null
-  );
+  return state.contentsByTranslationAndLanguage.get(key) ?? null;
 }
 
 /**
@@ -592,16 +605,11 @@ function addLocalizationHeadTags(
   manifest: ContentManifest,
   state: L10nState,
 ): void {
+  const translationsById = collectDiscoverableTranslations(manifest);
   for (const entry of manifest.discoverableEntries) {
     const content = state.contents.get(entry.slug);
     if (!content) continue;
-    const translations = uniqueLanguageEntries(
-      manifest.discoverableEntries.filter(
-        (candidate) =>
-          candidate.publicLocation.metadata?.[TRANSLATION_METADATA_KEY] ===
-          content.translationId,
-      ),
-    );
+    const translations = translationsById.get(content.translationId) ?? [];
     const headTags = translations.map(
       (translation): PluginHeadTag => ({
         tag: "link",
@@ -626,14 +634,66 @@ function addLanguageSwitchers(
   ui: ResolvedUiOptions,
 ): void {
   if (ui === false) return;
+  const translationsById = collectDiscoverableTranslations(manifest);
   for (const entry of manifest.discoverableEntries) {
-    const localization = getLocalization(manifest, entry.slug);
+    const translationId =
+      entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY];
+    const localization = translationId
+      ? localizationForEntry(
+          entry,
+          translationId,
+          translationsById.get(translationId) ?? [],
+        )
+      : null;
     if (!localization) continue;
     const html = ui.render({ localization });
     if (html && !entry.bodySlots?.[ui.slot]?.includes(html)) {
       appendContentBodySlot(entry, ui.slot, html);
     }
   }
+}
+
+function collectDiscoverableTranslations(
+  manifest: ContentManifest,
+): ReadonlyMap<string, readonly ContentManifestEntry[]> {
+  const candidatesById = new Map<string, ContentManifestEntry[]>();
+  for (const entry of manifest.discoverableEntries) {
+    const translationId =
+      entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY];
+    if (!translationId) continue;
+    const candidates = candidatesById.get(translationId) ?? [];
+    candidates.push(entry);
+    candidatesById.set(translationId, candidates);
+  }
+  return new Map(
+    [...candidatesById].map(([translationId, candidates]) => [
+      translationId,
+      uniqueLanguageEntries(candidates),
+    ]),
+  );
+}
+
+function localizationForEntry(
+  entry: ContentManifestEntry,
+  translationId: string,
+  translations: readonly ContentManifestEntry[],
+): LocalizedContent | null {
+  const lang = entry.publicLocation.language;
+  if (!lang) return null;
+  const translationMap = Object.fromEntries(
+    translations.map((translation) => [
+      translation.publicLocation.language ?? "",
+      translation.permalink,
+    ]),
+  );
+  return {
+    slug: entry.slug,
+    permalink: entry.permalink,
+    lang,
+    translationId,
+    availableLanguages: Object.keys(translationMap).sort(),
+    translations: translationMap,
+  };
 }
 
 function sameHeadTag(left: PluginHeadTag, right: PluginHeadTag): boolean {
@@ -650,14 +710,17 @@ export { renderLanguageSwitcher } from "./language-switcher.js";
 function uniqueLanguageEntries(
   entries: readonly ContentManifestEntry[],
 ): readonly ContentManifestEntry[] {
-  return entries.filter((entry) => {
-    const lang = entry.publicLocation.language;
-    return (
-      lang !== undefined &&
-      entries.filter((other) => other.publicLocation.language === lang)
-        .length === 1
-    );
-  });
+  const entriesByLanguage = new Map<string, ContentManifestEntry[]>();
+  for (const entry of entries) {
+    const language = entry.publicLocation.language;
+    if (!language) continue;
+    const candidates = entriesByLanguage.get(language) ?? [];
+    candidates.push(entry);
+    entriesByLanguage.set(language, candidates);
+  }
+  return [...entriesByLanguage.values()]
+    .filter((candidates) => candidates.length === 1)
+    .flatMap((candidates) => (candidates[0] ? [candidates[0]] : []));
 }
 
 function compactSignals(
@@ -755,8 +818,10 @@ function throwForStrictDiagnostics(
 function emptyState(): L10nState {
   return {
     contents: new Map(),
+    contentsByTranslationAndLanguage: new Map(),
     diagnostics: [],
     conflictedGroups: new Set(),
     locations: null,
+    slugsByPermalink: new Map(),
   };
 }

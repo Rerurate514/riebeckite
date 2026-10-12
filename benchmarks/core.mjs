@@ -4,7 +4,10 @@ import path from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
+  addNote,
   appendParagraph,
+  appendWikilink,
+  deleteNote,
   editAsset,
   editFrontmatter,
   generateVault,
@@ -26,7 +29,12 @@ const scenarios = listArg(args.scenarios) ?? [
   "cold",
   "warm",
   "single-edit",
+  "link-edit",
+  "title-edit",
+  "add",
+  "delete",
   "frontmatter-edit",
+  "public-draft",
   "hub-edit",
   "rename",
   "asset-edit",
@@ -34,6 +42,10 @@ const scenarios = listArg(args.scenarios) ?? [
   "plugin-edit",
 ];
 const repeats = Number(args.repeats ?? 3);
+const operation = args.operation ?? "build";
+if (!["build", "output-change-set"].includes(operation)) {
+  throw new Error(`Unknown operation: ${operation}`);
+}
 const baseDir = path.join(os.tmpdir(), "riebeckite-vault-benchmark");
 const resultsDir = args.out
   ? path.resolve(args.out)
@@ -55,6 +67,28 @@ const SCENARIO_DEFINITIONS = {
     prepare: ({ directory, config, size }) =>
       appendParagraph(directory, config.depth, size - 1, "Single edit."),
   },
+  "link-edit": {
+    name: "link-edit",
+    prepare: ({ directory, config, size }) =>
+      appendWikilink(directory, config.depth, size - 1, 0),
+  },
+  "title-edit": {
+    name: "title-edit",
+    prepare: ({ directory, config, size }) =>
+      editFrontmatter(directory, config.depth, size - 1, (yaml) =>
+        yaml.replace(/^title:.*/m, "title: Edited title"),
+      ),
+  },
+  add: {
+    name: "add",
+    prepare: ({ directory, config, size }) =>
+      addNote(directory, config.depth, size),
+  },
+  delete: {
+    name: "delete",
+    prepare: ({ directory, config, size }) =>
+      deleteNote(directory, config.depth, size - 1),
+  },
   "frontmatter-edit": {
     name: "frontmatter-edit",
     prepare: ({ directory, config }) =>
@@ -62,6 +96,13 @@ const SCENARIO_DEFINITIONS = {
         yaml.includes("tags:")
           ? yaml.replace(/tags:.*/, 'tags: ["edited-tag"]')
           : `${yaml}\ntags: ["edited-tag"]`,
+      ),
+  },
+  "public-draft": {
+    name: "public-draft",
+    prepare: ({ directory, config }) =>
+      editFrontmatter(directory, config.depth, 0, (yaml) =>
+        yaml.replace(/^visibility:.*/m, "visibility: draft"),
       ),
   },
   "hub-edit": {
@@ -113,6 +154,7 @@ for (const profile of profiles) {
           size,
           profile,
           seed: 1234 + runIndex,
+          l10n: Boolean(l10nPlugin),
         });
         let baseline = null;
         if (definition.warm !== false && definition.name !== "cold") {
@@ -173,7 +215,19 @@ async function writeResults() {
   await fs.writeFile(
     outFile,
     JSON.stringify(
-      { generatedAt: new Date().toISOString(), args, rows: allRows },
+      {
+        generatedAt: new Date().toISOString(),
+        environment: environment(),
+        conditions: {
+          cache: "enabled",
+          incremental: true,
+          operation,
+          fixtureDirectory: "OS temporary directory",
+          seed: "1234 + repeat index",
+        },
+        args,
+        rows: allRows,
+      },
       null,
       2,
     ),
@@ -217,11 +271,15 @@ async function measure(input) {
     observability: { logger: new NoopLogger(), tracer },
   });
   const peak = startPeakSampler(memorySamples);
-  const manifest = await manager.build({ incremental: true });
+  const manifest =
+    operation === "build" ? await manager.build({ incremental: true }) : null;
+  const outputChanges =
+    operation === "output-change-set"
+      ? await manager.getOutputChangeSet({ incremental: true })
+      : null;
   if (globalThis.gc) globalThis.gc();
   const endWallClockMs = performance.now() - start;
   peak.stop();
-  const snapshot = input.snapshot ? takeSnapshot(manifest) : null;
   await manager.dispose();
   const endMemory = process.memoryUsage().rss;
   const peakMemory = summarizePeakMemory(memorySamples);
@@ -257,29 +315,46 @@ async function measure(input) {
     ).length,
     invalidatedContentCount: Number(
       events.find((event) => event.name === "build.incremental")?.attributes
-        ?.affected ?? manifest.entries.length,
+        ?.affected ?? 0,
     ),
     candidateOutputCount:
       toMetricNumber(outputMetrics?.candidateOutputCount) ??
-      manifest.publicEntries.length +
-        manifest.pagePaths.length +
-        manifest.generatedOutputs.length,
-    affectedOutputCount: toMetricNumber(outputMetrics?.affectedOutputCount),
-    removedOutputCount: toMetricNumber(outputMetrics?.removedOutputCount),
-    unchangedOutputCount: toMetricNumber(outputMetrics?.unchangedOutputCount),
+      outputChanges?.candidateOutputCount ??
+      (manifest
+        ? manifest.publicEntries.length +
+          manifest.pagePaths.length +
+          manifest.generatedOutputs.length
+        : 0),
+    affectedOutputCount:
+      toMetricNumber(outputMetrics?.affectedOutputCount) ??
+      outputChanges?.affectedOutputCount ??
+      0,
+    removedOutputCount:
+      toMetricNumber(outputMetrics?.removedOutputCount) ??
+      outputChanges?.removedOutputCount ??
+      0,
+    unchangedOutputCount:
+      toMetricNumber(outputMetrics?.unchangedOutputCount) ??
+      outputChanges?.unchangedOutputCount ??
+      0,
     fullOutputRegenerationRequired:
-      outputMetrics?.fullRegenerationRequired ?? null,
+      outputMetrics?.fullRegenerationRequired ??
+      outputChanges?.fullRegenerationRequired ??
+      null,
     peakRssMb:
       peakMemory.rssMb ??
       Math.round(Math.max(startMemory, endMemory) / 1024 / 1024),
     peakHeapUsedMb: peakMemory.heapUsedMb,
-    entries: manifest.entries.length,
-    htmlBytes: manifest.entries.reduce(
-      (total, entry) => total + Buffer.byteLength(entry.html ?? "", "utf8"),
-      0,
-    ),
+    entries: manifest?.entries.length ?? 0,
+    htmlBytes:
+      manifest?.entries.reduce(
+        (total, entry) => total + Buffer.byteLength(entry.html ?? "", "utf8"),
+        0,
+      ) ?? 0,
     phaseDurationsMs: summarizePhaseDurations(spans),
-    snapshot,
+    phaseMetrics: summarizePhaseMetrics(spans, events),
+    pluginTimings: summarizePluginTimings(spans),
+    snapshot: manifest && input.snapshot ? takeSnapshot(manifest) : null,
     memorySamples,
   };
 }
@@ -331,6 +406,8 @@ function isMemorySpan(name) {
   return [
     "content.discovery",
     "content.fingerprint",
+    "content.read",
+    "content.markdown",
     "content.index",
     "content.locations",
     "content.manifest.entries",
@@ -373,12 +450,25 @@ function toMetricNumber(value) {
 function summarizePhaseDurations(spans) {
   const phases = {
     discovery: ["content.discovery"],
+    scan: ["content.scan"],
+    read: ["content.read"],
     fingerprint: ["content.fingerprint"],
     index: ["content.index"],
     locations: ["content.locations"],
     processing: ["content.process"],
+    markdown: ["content.markdown"],
     manifestEntries: ["content.manifest.entries"],
     graph: ["content.graph"],
+    buildStateLoad: ["content.build-state.load"],
+    changeSet: ["content.change-set"],
+    aliases: ["content.aliases"],
+    affected: ["content.affected"],
+    persistentCacheLookup: ["persistentContentCache.lookup"],
+    persistentCacheValidation: ["persistentContentCache.validation"],
+    outputDependencyReuse: ["output.dependencies.reuse"],
+    outputDependencyManifest: ["output.dependencies.manifest"],
+    outputDependencyPlugin: ["output.dependencies.plugin"],
+    outputDependencyResolve: ["output.dependencies.resolve"],
   };
   return Object.fromEntries(
     Object.entries(phases).map(([phase, names]) => [
@@ -390,6 +480,66 @@ function summarizePhaseDurations(spans) {
       ),
     ]),
   );
+}
+
+function summarizePhaseMetrics(spans, events) {
+  const metrics = new Map();
+  for (const span of spans) {
+    const metric = metrics.get(span.name) ?? {
+      calls: 0,
+      aggregateDurationMs: 0,
+      errors: 0,
+    };
+    metric.calls += 1;
+    metric.aggregateDurationMs += span.durationMs;
+    if (span.status === "error") metric.errors += 1;
+    metrics.set(span.name, metric);
+  }
+  for (const event of events) {
+    if (event.name !== "content.read.bytes") continue;
+    const metric = metrics.get("content.read") ?? {
+      calls: 0,
+      aggregateDurationMs: 0,
+      errors: 0,
+    };
+    metric.bytes = (metric.bytes ?? 0) + Number(event.attributes.bytes ?? 0);
+    metrics.set("content.read", metric);
+  }
+  return Object.fromEntries(
+    [...metrics.entries()]
+      .map(([name, metric]) => [
+        name,
+        {
+          ...metric,
+          aggregateDurationMs: Math.round(metric.aggregateDurationMs),
+        },
+      ])
+      .sort(([left], [right]) => left.localeCompare(right)),
+  );
+}
+
+function summarizePluginTimings(spans) {
+  const timings = new Map();
+  for (const span of spans) {
+    if (!span.name.startsWith("plugin.")) continue;
+    const plugin = String(span.attributes.plugin ?? "unknown");
+    const hook = String(
+      span.attributes.hook ?? span.name.slice("plugin.".length),
+    );
+    const key = `${plugin}:${hook}`;
+    const timing = timings.get(key) ?? {
+      plugin,
+      hook,
+      calls: 0,
+      durationMs: 0,
+    };
+    timing.calls += 1;
+    timing.durationMs += span.durationMs;
+    timings.set(key, timing);
+  }
+  return [...timings.values()]
+    .map((timing) => ({ ...timing, durationMs: Math.round(timing.durationMs) }))
+    .sort((left, right) => right.durationMs - left.durationMs);
 }
 
 function summarize(scenario, samples) {
@@ -407,6 +557,7 @@ function summarize(scenario, samples) {
       summary[key] = median(values);
       summary[`${key}Min`] = Math.min(...values);
       summary[`${key}Max`] = Math.max(...values);
+      summary[`${key}Variance`] = variance(values);
       continue;
     }
     summary[key] = values.at(-1);
@@ -424,12 +575,37 @@ function median(values) {
   return sorted[Math.floor(sorted.length / 2)];
 }
 
+function variance(values) {
+  const average =
+    values.reduce((total, value) => total + value, 0) / values.length;
+  return Math.round(
+    values.reduce((total, value) => total + (value - average) ** 2, 0) /
+      values.length,
+  );
+}
+
+function environment() {
+  return {
+    node: process.version,
+    platform: process.platform,
+    release: os.release(),
+    arch: process.arch,
+    cpu: os.cpus()[0]?.model ?? "unknown",
+    cpuCount: os.cpus().length,
+    memoryMb: Math.round(os.totalmem() / 1024 / 1024),
+  };
+}
+
 function parseArgs(raw) {
   const parsed = {};
   for (let index = 0; index < raw.length; index++) {
     const token = raw[index];
     if (!token.startsWith("--")) continue;
-    const key = token.slice(2);
+    const [key, inlineValue] = token.slice(2).split(/=(.*)/s, 2);
+    if (inlineValue !== undefined) {
+      parsed[key] = inlineValue;
+      continue;
+    }
     const value = raw[index + 1];
     if (value === undefined || value.startsWith("--")) {
       parsed[key] = "true";
@@ -444,7 +620,7 @@ function parseArgs(raw) {
 function listArg(value) {
   if (!value || value === "true") return undefined;
   return value
-    .split(",")
+    .split(/[\s,]+/)
     .map((part) => part.trim())
     .filter(Boolean);
 }
@@ -454,9 +630,15 @@ function timestamp() {
 }
 
 function printTable(rows, scenarioNames) {
-  const wanted = ["cold", "warm", "single-edit", "asset-edit"].filter((name) =>
-    scenarioNames.includes(name),
-  );
+  const wanted = [
+    "cold",
+    "warm",
+    "single-edit",
+    "title-edit",
+    "add",
+    "delete",
+    "asset-edit",
+  ].filter((name) => scenarioNames.includes(name));
   const byKey = new Map();
   for (const row of rows) {
     const key = `${row.profile}\t${row.size}`;

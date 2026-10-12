@@ -150,18 +150,28 @@ export class ContentBuildCoordinator {
           this.dependencies.readEntry(entry),
         ),
     );
-    const previousState =
-      incremental === false
-        ? undefined
-        : await loadContentBuildState(this.dependencies.buildStatePath);
-    const changeSet = previousState
-      ? diffContentEntries(previousState, currentEntries)
-      : allContentChanged(currentEntries);
-    const currentContentAliases = await this.getContentAliases(
-      currentEntries,
-      previousState,
-      changeSet,
+    const previousState = await this.dependencies.observability.tracer.span(
+      "content.build-state.load",
+      { incremental: incremental !== false },
+      async () =>
+        incremental === false
+          ? undefined
+          : await loadContentBuildState(this.dependencies.buildStatePath),
     );
+    const changeSet = await this.dependencies.observability.tracer.span(
+      "content.change-set",
+      {},
+      () =>
+        previousState
+          ? diffContentEntries(previousState, currentEntries)
+          : allContentChanged(currentEntries),
+    );
+    const currentContentAliases =
+      await this.dependencies.observability.tracer.span(
+        "content.aliases",
+        {},
+        () => this.getContentAliases(currentEntries, previousState, changeSet),
+      );
     const {
       index: currentContentIndex,
       ambiguities: currentContentIndexAmbiguities,
@@ -174,21 +184,25 @@ export class ContentBuildCoordinator {
           currentContentAliases,
         ),
     );
-    const affected =
-      !fullContentRegenerationRequired &&
-      previousState?.pipelineFingerprint === pipelineFingerprint
-        ? determineAffectedContent(
-            changeSet,
-            previousState,
-            currentEntries.map(({ entry }) => entry.path),
-            currentContentIndex,
-          )
-        : determineAffectedContent(
-            allContentChanged(currentEntries),
-            undefined,
-            currentEntries.map(({ entry }) => entry.path),
-            currentContentIndex,
-          );
+    const affected = await this.dependencies.observability.tracer.span(
+      "content.affected",
+      { fullContentRegenerationRequired },
+      () =>
+        !fullContentRegenerationRequired &&
+        previousState?.pipelineFingerprint === pipelineFingerprint
+          ? determineAffectedContent(
+              changeSet,
+              previousState,
+              currentEntries.map(({ entry }) => entry.path),
+              currentContentIndex,
+            )
+          : determineAffectedContent(
+              allContentChanged(currentEntries),
+              undefined,
+              currentEntries.map(({ entry }) => entry.path),
+              currentContentIndex,
+            ),
+    );
     this.dependencies.observability.tracer.event("build.incremental", {
       incremental: incremental !== false,
       added: changeSet.added.length,

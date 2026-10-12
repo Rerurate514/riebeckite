@@ -125,7 +125,13 @@ function pickVisibility(rng, weights) {
 }
 
 export async function generateVault(baseDir, options) {
-  const { size, profile = "baseline", seed = 1234, assetPool } = options;
+  const {
+    size,
+    profile = "baseline",
+    seed = 1234,
+    assetPool,
+    l10n = false,
+  } = options;
   const config = profileConfig(profile);
   const rng = createRng(seed);
   await fs.mkdir(baseDir, { recursive: true });
@@ -144,7 +150,11 @@ export async function generateVault(baseDir, options) {
       assets: assetCount,
       visibility: states[index].visibility,
       permalink: roll(rng, config.permalinkRatio),
-      lang: roll(rng, config.l10nRatio) ? "ja" : undefined,
+      l10n: l10n
+        ? { lang: index % 2 === 0 ? "en" : "ja", translation: index >> 1 }
+        : roll(rng, config.l10nRatio)
+          ? { lang: "ja", translation: index }
+          : undefined,
     });
   }
   return { slug: (index) => noteSlug(index, config.depth), size, states };
@@ -223,8 +233,10 @@ export async function writeNote(
     frontmatter.push(`publishAt: "2999-01-01T00:00:00.000Z"`);
   if (aliases.length > 0) frontmatter.push(`aliases: ["${aliases[0]}"]`);
   frontmatter.push(`tags: [${tags.map((tag) => `"${tag}"`).join(", ")}]`);
-  if (options.lang) frontmatter.push(`lang: ${options.lang}`);
-  if (options.lang) frontmatter.push(`translation: note-${pad(index)}`);
+  if (options.l10n) {
+    frontmatter.push(`lang: ${options.l10n.lang}`);
+    frontmatter.push(`translation: note-${pad(options.l10n.translation)}`);
+  }
   if (options.permalink)
     frontmatter.push(`permalink: /custom/note-${pad(index)}`);
   frontmatter.push("---");
@@ -238,6 +250,11 @@ export async function appendParagraph(baseDir, depth, index, text) {
   await fs.appendFile(file, `\n${text}\n`, "utf8");
 }
 
+export async function appendWikilink(baseDir, depth, index, target) {
+  const file = path.join(baseDir, `${noteSlug(index, depth)}.md`);
+  await fs.appendFile(file, `\n[[note-${pad(target)}]]\n`, "utf8");
+}
+
 export async function editFrontmatter(baseDir, depth, index, mutate) {
   const file = path.join(baseDir, `${noteSlug(index, depth)}.md`);
   const source = await fs.readFile(file, "utf8");
@@ -246,6 +263,31 @@ export async function editFrontmatter(baseDir, depth, index, mutate) {
   const updated = mutate(match[1]);
   const next = source.replace(match[0], `---\n${updated}\n---`);
   await fs.writeFile(file, next, "utf8");
+}
+
+export async function addNote(baseDir, depth, index) {
+  const file = path.join(baseDir, `${noteSlug(index, depth)}.md`);
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  await fs.writeFile(
+    file,
+    [
+      "---",
+      `title: Added note ${index}`,
+      "visibility: public",
+      'tags: ["added"]',
+      "---",
+      "",
+      `# Added note ${index}`,
+      "",
+      "A deterministic note added after the baseline build.",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+}
+
+export async function deleteNote(baseDir, depth, index) {
+  await fs.rm(path.join(baseDir, `${noteSlug(index, depth)}.md`));
 }
 
 export async function moveNote(baseDir, depth, index, destination) {

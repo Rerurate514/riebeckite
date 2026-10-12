@@ -127,6 +127,7 @@ export class Pipeline {
       this.options.contentSource &&
       this.options.config
     ) {
+      const persistentCache = this.persistentCache;
       const cacheable = isPersistentlyCacheable(
         sourceSlug,
         this.options.config,
@@ -140,10 +141,18 @@ export class Pipeline {
           pipelineFingerprint: this.pipelineFingerprint,
         });
 
-        const lookup = await this.persistentCache.lookup(cacheKey);
+        const lookup = await (
+          this.options.observability ?? noopObservability
+        ).tracer.span("persistentContentCache.lookup", {}, () =>
+          persistentCache.lookup(cacheKey),
+        );
         if (lookup.status === "hit") {
-          const invalidDependency = await this.findInvalidDependency(
-            lookup.entry.dependencies,
+          const invalidDependency = await (
+            this.options.observability ?? noopObservability
+          ).tracer.span(
+            "persistentContentCache.validation",
+            { dependencyCount: lookup.entry.dependencies.length },
+            () => this.findInvalidDependency(lookup.entry.dependencies),
           );
           if (!invalidDependency) {
             this.reportContentDependencies(
@@ -266,7 +275,13 @@ export class Pipeline {
 
     this.use(processor, rehypeStringify, { allowDangerousHtml: true });
 
-    const file = await processor.process(markDownContent.trim());
+    const file = await (
+      this.options.observability ?? noopObservability
+    ).tracer.span(
+      "content.markdown",
+      { embedded: embedDepth > 0 },
+      async () => await processor.process(markDownContent.trim()),
+    );
 
     const result = {
       frontmatter: (file.data.matter || {}) as PostFrontmatter,

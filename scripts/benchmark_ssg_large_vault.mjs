@@ -90,8 +90,18 @@ for (const size of sizes) {
       );
       samples.push(await measure(siteRoot, "single-edit"));
     }
+    if (shouldRun("link-edit")) {
+      await measure(siteRoot, "link-edit baseline");
+      await applyCacheStateMode(siteRoot);
+      await fs.appendFile(
+        path.join(siteRoot, "vault", notePath(size - 1)),
+        `\n[[${slugPath(0)}]]\n`,
+        "utf8",
+      );
+      samples.push(await measure(siteRoot, "link-edit"));
+    }
   }
-  for (const scenario of ["cold", "no-change", "single-edit"]) {
+  for (const scenario of ["cold", "no-change", "single-edit", "link-edit"]) {
     const scenarioSamples = samples.filter(
       (sample) => sample.scenario === scenario,
     );

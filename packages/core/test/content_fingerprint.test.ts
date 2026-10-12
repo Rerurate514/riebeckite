@@ -32,3 +32,15 @@ test("fingerprinting keeps read concurrency bounded and returns sorted entries",
       .sort((left, right) => left.localeCompare(right)),
   );
 });
+
+test("fingerprinting detects equal-size content changes with unchanged metadata", async () => {
+  const entry: ContentSourceEntry = {
+    path: "note.md",
+    metadata: { modifiedAt: 1, size: 5 },
+  };
+  const fingerprint = async (content: string) =>
+    (await fingerprintContentEntries([entry], async () => content))[0]
+      ?.fingerprint;
+
+  assert.notEqual(await fingerprint("# One"), await fingerprint("# Two"));
+});

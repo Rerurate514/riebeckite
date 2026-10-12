@@ -4,7 +4,10 @@ import path from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
+  addNote,
   appendParagraph,
+  appendWikilink,
+  deleteNote,
   editAsset,
   editFrontmatter,
   generateVault,
@@ -20,18 +23,45 @@ const args = parseArgs(process.argv.slice(2));
 const size = Number(args.size ?? 500);
 const profile = args.profile ?? "realistic";
 const scenarioNames = (
-  args.scenarios ?? "single-edit,frontmatter-edit,hub-edit,rename"
+  args.scenarios ??
+  "single-edit,title-edit,add,delete,frontmatter-edit,public-draft,hub-edit,rename"
 )
-  .split(",")
+  .split(/[\s,]+/)
   .map((part) => part.trim())
   .filter(Boolean);
 const baseDir = path.join(os.tmpdir(), "riebeckite-vault-equivalence");
+const l10nPlugin = args.l10n
+  ? (
+      await import(
+        pathToFileURL(path.join(root, "packages/plugins/l10n/index.ts"))
+      )
+    ).l10n({ defaultLang: "en", languages: ["en", "ja"] })
+  : null;
 
 const SCENARIOS = {
   "single-edit": ({ directory, config, size }) => {
     const depth = config.depth;
     return () =>
       appendParagraph(directory, depth, size - 1, "Equivalence edit.");
+  },
+  "link-edit": ({ directory, config, size }) => {
+    const depth = config.depth;
+    return () => appendWikilink(directory, depth, size - 1, 0);
+  },
+  "title-edit": ({ directory, config, size }) => {
+    const depth = config.depth;
+    return () =>
+      editFrontmatter(directory, depth, size - 1, (yaml) =>
+        yaml.replace(/^title:.*/m, "title: Edited title"),
+      );
+  },
+  add: ({ directory, config, size }) => {
+    const depth = config.depth;
+    return () => addNote(directory, depth, size);
+  },
+  delete: ({ directory, config, size }) => {
+    const depth = config.depth;
+    return () => deleteNote(directory, depth, size - 1);
   },
   "frontmatter-edit": ({ directory, config }) => {
     const depth = config.depth;
@@ -40,6 +70,13 @@ const SCENARIOS = {
         yaml.includes("tags:")
           ? yaml.replace(/tags:.*/, 'tags: ["edited-tag"]')
           : `${yaml}\ntags: ["edited-tag"]`,
+      );
+  },
+  "public-draft": ({ directory, config }) => {
+    const depth = config.depth;
+    return () =>
+      editFrontmatter(directory, depth, 0, (yaml) =>
+        yaml.replace(/^visibility:.*/m, "visibility: draft"),
       );
   },
   "hub-edit": ({ directory, config, size }) => {
@@ -65,7 +102,12 @@ for (const scenarioName of scenarioNames) {
   await fs.rm(runDir, { recursive: true, force: true });
   const directory = path.join(runDir, "vault");
   const config = profileConfig(profile);
-  await generateVault(directory, { size, profile, seed: 4242 });
+  await generateVault(directory, {
+    size,
+    profile,
+    seed: 4242,
+    l10n: Boolean(l10nPlugin),
+  });
 
   const pluginVersionFor = (name) => (name === "plugin-edit" ? "v2" : "v1");
 
@@ -156,7 +198,10 @@ async function buildOnce(input) {
         filters: { publishStrategy: "selective" },
       },
       cache: { enabled: true, directory: input.cacheDirectory },
-      plugins: [plugin(input.pluginVersion)],
+      plugins: [
+        plugin(input.pluginVersion),
+        ...(l10nPlugin ? [l10nPlugin] : []),
+      ],
     }),
   );
   const start = performance.now();
@@ -277,7 +322,11 @@ function parseArgs(raw) {
   for (let index = 0; index < raw.length; index++) {
     const token = raw[index];
     if (!token.startsWith("--")) continue;
-    const key = token.slice(2);
+    const [key, inlineValue] = token.slice(2).split(/=(.*)/s, 2);
+    if (inlineValue !== undefined) {
+      parsed[key] = inlineValue;
+      continue;
+    }
     const value = raw[index + 1];
     if (value === undefined || value.startsWith("--")) {
       parsed[key] = "true";

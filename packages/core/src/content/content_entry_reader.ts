@@ -1,6 +1,8 @@
 import type { Observability } from "../observability.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 
+const textDecoder = new TextDecoder();
+
 export class ContentEntryReader {
   private entries: readonly ContentSourceEntry[] | null = null;
   private entriesPromise: Promise<readonly ContentSourceEntry[]> | null = null;
@@ -44,11 +46,20 @@ export class ContentEntryReader {
     const cached = this.texts.get(entry.path);
     if (cached) return cached;
 
-    const content = this.source
-      .read(entry)
-      .then((value) =>
-        typeof value === "string" ? value : new TextDecoder().decode(value),
-      );
+    const content = this.observability.tracer.span(
+      "content.read",
+      { extension: entry.path.endsWith(".md") ? "markdown" : "asset" },
+      async () => {
+        const value = await this.source.read(entry);
+        const text =
+          typeof value === "string" ? value : textDecoder.decode(value);
+        this.observability.tracer.event("content.read.bytes", {
+          bytes: Buffer.byteLength(text, "utf8"),
+          extension: entry.path.endsWith(".md") ? "markdown" : "asset",
+        });
+        return text;
+      },
+    );
     const retain = entry.path.endsWith(".md");
     const tracked = retain
       ? content

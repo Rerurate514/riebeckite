@@ -67,6 +67,7 @@ test("valid output state remains reusable", async (t) => {
           { type: "content", slug: "a" },
           { type: "tag", tag: "tag" },
           { type: "folder", folder: "folder" },
+          { type: "file", path: "assets/logo.png" },
           { type: "global" },
           { type: "unknown" },
         ],

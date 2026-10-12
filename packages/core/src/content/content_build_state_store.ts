@@ -178,7 +178,8 @@ function isOutputDependency(value: unknown): value is OutputDependency {
   return (
     (value.type === "content" && typeof value.slug === "string") ||
     (value.type === "tag" && typeof value.tag === "string") ||
-    (value.type === "folder" && typeof value.folder === "string")
+    (value.type === "folder" && typeof value.folder === "string") ||
+    (value.type === "file" && typeof value.path === "string")
   );
 }
 

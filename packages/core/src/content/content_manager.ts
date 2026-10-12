@@ -305,25 +305,36 @@ export class ContentManager {
     // coordinator still runs only when build options are supplied.
     this.enableBuildTime();
 
+    const config = this.pipelineOptions.config;
+    const preparation =
+      options && !(config && hasGlobalContentDependency(config))
+        ? await this.buildCoordinator.getPreparation(
+            options.incremental,
+            this.getPipelineFingerprint(),
+            this.requiresFullContentRegeneration(),
+          )
+        : undefined;
     const locations = await this.getContentLocations();
-    if (this.pipelineOptions.config) {
+    if (config) {
       this.pipelineFingerprint = this.computePipelineFingerprint(locations);
     }
 
-    const preparation = options
-      ? await this.buildCoordinator.getPreparation(
-          options.incremental,
-          this.getPipelineFingerprint(),
-          this.requiresFullContentRegeneration(),
-        )
-      : undefined;
+    const resolvedPreparation =
+      preparation ??
+      (options
+        ? await this.buildCoordinator.getPreparation(
+            options.incremental,
+            this.getPipelineFingerprint(),
+            this.requiresFullContentRegeneration(),
+          )
+        : undefined);
     return await this.observability().tracer.span(
       "content.manifest",
       {},
       async () => {
         const [posts, contentIndex] = await Promise.all([
           this.getAllPosts(),
-          this.getContentIndex(preparation),
+          this.getContentIndex(resolvedPreparation),
         ]);
         const entries = await this.observability().tracer.span(
           "content.manifest.entries",
@@ -333,7 +344,10 @@ export class ContentManager {
               posts,
               CONTENT_PROCESSING_CONCURRENCY,
               async (post) => {
-                const reused = this.reuseManifestEntry(post.slug, preparation);
+                const reused = this.reuseManifestEntry(
+                  post.slug,
+                  resolvedPreparation,
+                );
                 if (reused) return reused;
 
                 const [rawPost, processed] = await Promise.all([
@@ -395,20 +409,26 @@ export class ContentManager {
         await this.emitPublicImageAssets(manifest);
         manifest.generatedOutputs =
           this.pluginRuntime.collectGeneratedOutputs();
-        const pluginPageOutputs = await this.pluginRuntime.getPageOutputs(
-          manifest,
-          contentIndex,
+        const pluginPageOutputs = await this.observability().tracer.span(
+          "output.dependencies.plugin",
+          {},
+          () => this.pluginRuntime.getPageOutputs(manifest, contentIndex),
         );
-        this.outputChangeSet = preparation
-          ? determineOutputChanges({
-              manifest,
-              previousState: preparation.previousState,
-              changeSet: preparation.changeSet,
-              affectedContent: preparation.affectedContent,
-              pluginPageOutputs,
-              contentOutputDependencies:
-                this.pluginRuntime.getContentOutputDependencies(),
-            })
+        this.outputChangeSet = resolvedPreparation
+          ? await this.observability().tracer.span(
+              "output.dependencies.resolve",
+              {},
+              () =>
+                determineOutputChanges({
+                  manifest,
+                  previousState: resolvedPreparation.previousState,
+                  changeSet: resolvedPreparation.changeSet,
+                  affectedContent: resolvedPreparation.affectedContent,
+                  pluginPageOutputs,
+                  contentOutputDependencies:
+                    this.pluginRuntime.getContentOutputDependencies(),
+                }),
+            )
           : null;
         if (this.outputChangeSet) {
           this.observability().tracer.event("build.incremental.outputs", {
@@ -420,9 +440,9 @@ export class ContentManager {
               this.outputChangeSet.fullRegenerationRequired,
           });
         }
-        if (preparation)
+        if (resolvedPreparation)
           await this.buildCoordinator.commit(
-            preparation,
+            resolvedPreparation,
             manifest,
             this.getPipelineFingerprint(),
             this.outputChangeSet
@@ -455,31 +475,61 @@ export class ContentManager {
   async getOutputChangeSet(
     options: ContentBuildOptions = {},
   ): Promise<OutputChangeSet> {
-    await this.getManifest(options);
+    if (this.outputChangeSet) return this.outputChangeSet;
+
+    const preparation = await this.buildCoordinator.getPreparation(
+      options.incremental,
+      this.getPipelineFingerprint(),
+      this.requiresFullContentRegeneration(),
+    );
+    const reusableOutputs = getReusableOutputs(
+      preparation,
+      this.getPipelineFingerprint(),
+    );
+    if (reusableOutputs) {
+      this.outputChangeSet = await this.observability().tracer.span(
+        "output.dependencies.reuse",
+        { outputCount: reusableOutputs.length },
+        async () => reuseOutputChangeSet(reusableOutputs),
+      );
+      return this.outputChangeSet;
+    }
+
+    await this.observability().tracer.span(
+      "output.dependencies.manifest",
+      {},
+      () => this.getManifest(options),
+    );
     if (!this.outputChangeSet) {
       const manifest = await this.getManifest();
       const contentIndex = await this.getContentIndex();
-      const pluginPageOutputs = await this.pluginRuntime.getPageOutputs(
-        manifest,
-        contentIndex,
+      const pluginPageOutputs = await this.observability().tracer.span(
+        "output.dependencies.plugin",
+        {},
+        () => this.pluginRuntime.getPageOutputs(manifest, contentIndex),
       );
-      return determineOutputChanges({
-        manifest,
-        previousState: undefined,
-        changeSet: {
-          added: manifest.entries.map((entry) => `${entry.slug}.md`),
-          changed: [],
-          removed: [],
-          unchanged: [],
-        },
-        affectedContent: {
-          direct: new Set(manifest.entries.map((entry) => entry.slug)),
-          dependent: new Set(),
-        },
-        pluginPageOutputs,
-        contentOutputDependencies:
-          this.pluginRuntime.getContentOutputDependencies(),
-      });
+      return await this.observability().tracer.span(
+        "output.dependencies.resolve",
+        {},
+        () =>
+          determineOutputChanges({
+            manifest,
+            previousState: undefined,
+            changeSet: {
+              added: manifest.entries.map((entry) => `${entry.slug}.md`),
+              changed: [],
+              removed: [],
+              unchanged: [],
+            },
+            affectedContent: {
+              direct: new Set(manifest.entries.map((entry) => entry.slug)),
+              dependent: new Set(),
+            },
+            pluginPageOutputs,
+            contentOutputDependencies:
+              this.pluginRuntime.getContentOutputDependencies(),
+          }),
+      );
     }
     return this.outputChangeSet;
   }
@@ -746,6 +796,43 @@ function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
     assets: entry.assets.map((asset) => ({ ...asset })),
     ...(entry.headTags ? { headTags: [...entry.headTags] } : {}),
     ...(entry.bodySlots ? { bodySlots: { ...entry.bodySlots } } : {}),
+  };
+}
+
+function getReusableOutputs(
+  preparation: ContentBuildPreparation,
+  pipelineFingerprint: string | undefined,
+): readonly import("./output_dependency.js").OutputDescriptor[] | null {
+  const outputs = preparation.previousState?.outputs;
+  if (
+    preparation.previousState?.pipelineFingerprint !== pipelineFingerprint ||
+    !outputs ||
+    preparation.changeSet.added.length !== 0 ||
+    preparation.changeSet.changed.length !== 0 ||
+    preparation.changeSet.removed.length !== 0
+  ) {
+    return null;
+  }
+  return outputs;
+}
+
+function reuseOutputChangeSet(
+  outputs: readonly import("./output_dependency.js").OutputDescriptor[],
+): OutputChangeSet {
+  const unchanged = [...outputs].sort((left, right) =>
+    left.path.localeCompare(right.path),
+  );
+  return {
+    affected: [],
+    removed: [],
+    unchanged,
+    fullRegenerationRequired: unchanged.some((output) =>
+      output.dependencies.some((dependency) => dependency.type === "unknown"),
+    ),
+    candidateOutputCount: unchanged.length,
+    affectedOutputCount: 0,
+    removedOutputCount: 0,
+    unchangedOutputCount: unchanged.length,
   };
 }
 

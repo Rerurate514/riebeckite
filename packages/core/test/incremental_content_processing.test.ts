@@ -139,6 +139,36 @@ test("no-change rebuild reuses every manifest entry without processing content",
   assert.equal(second.reused, 2);
 });
 
+test("no-change output resolution reuses the persisted output inventory", async () => {
+  const directory = await tempDirectory("incremental-output-no-change");
+  const files = {
+    "a.md": "---\ntitle: A\nvisibility: public\n---\n\n# A",
+    "b.md": "---\ntitle: B\nvisibility: public\n---\n\n# B",
+  };
+  await build(files, directory);
+
+  const spans: { name: string }[] = [];
+  const config = testConfig(directory);
+  const manager = new ContentManager(memoryContentSource(files), [], {
+    config,
+    plugins: config.plugins,
+    observability: {
+      logger: new NoopLogger(),
+      tracer: new SinkTracer({
+        onEvent() {},
+        onSpan: (span) => spans.push(span),
+      }),
+    },
+  });
+  const changes = await manager.getOutputChangeSet({ incremental: true });
+  await manager.dispose();
+
+  assert.equal(changes.affected.length, 0);
+  assert.equal(changes.unchanged.length, 2);
+  assert.ok(spans.some((span) => span.name === "output.dependencies.reuse"));
+  assert.ok(!spans.some((span) => span.name === "content.manifest"));
+});
+
 test("a global content dependency invalidates all processed entries when locations change", async () => {
   const directory = await tempDirectory(
     "incremental-global-content-dependency",

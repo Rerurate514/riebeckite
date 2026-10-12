@@ -4,6 +4,10 @@ import type {
   ContentManifestEntry,
 } from "../types/content_manifest.js";
 import { determineAffectedContent } from "./affected_content.js";
+import type {
+  ContentBuildPlan,
+  FullRegenerationReason,
+} from "./content_build_plan.js";
 import {
   CONTENT_BUILD_STATE_VERSION,
   type ContentBuildDependency,
@@ -29,23 +33,6 @@ import { extractFrontmatterAliases } from "./content_metadata.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
-export type ContentBuildPreparation = {
-  readonly previousState: ContentBuildState | undefined;
-  readonly previousManifestEntriesBySlug: ReadonlyMap<
-    string,
-    ContentManifestEntry
-  >;
-  readonly currentEntries: readonly FingerprintedContentEntry[];
-  readonly currentContentAliases: ReadonlyMap<string, readonly string[]>;
-  readonly currentContentIndex: Map<string, string>;
-  readonly currentContentIndexAmbiguities: ReadonlyMap<
-    string,
-    readonly string[]
-  >;
-  readonly changeSet: ContentChangeSet;
-  readonly affectedContent: ReturnType<typeof determineAffectedContent>;
-};
-
 type ContentBuildCoordinatorDependencies = {
   readonly buildStatePath: string;
   readonly getEntries: () => Promise<readonly ContentSourceEntry[]>;
@@ -54,27 +41,27 @@ type ContentBuildCoordinatorDependencies = {
 };
 
 export class ContentBuildCoordinator {
-  private preparation: Promise<ContentBuildPreparation> | null = null;
+  private plan: Promise<ContentBuildPlan> | null = null;
 
   constructor(
     private readonly dependencies: ContentBuildCoordinatorDependencies,
   ) {}
 
-  getPreparation(
-    incremental: boolean | undefined,
+  getPlan(
+    incremental: boolean,
     pipelineFingerprint: string | undefined,
     fullContentRegenerationRequired = false,
-  ): Promise<ContentBuildPreparation> {
-    this.preparation ??= this.prepare(
+  ): Promise<ContentBuildPlan> {
+    this.plan ??= this.prepare(
       incremental,
       pipelineFingerprint,
       fullContentRegenerationRequired,
     );
-    return this.preparation;
+    return this.plan;
   }
 
   async commit(
-    preparation: ContentBuildPreparation,
+    plan: ContentBuildPlan,
     manifest: ContentManifest,
     pipelineFingerprint: string | undefined,
     outputs: readonly OutputDescriptor[] = [],
@@ -90,18 +77,17 @@ export class ContentBuildCoordinator {
     const state: ContentBuildState = {
       version: CONTENT_BUILD_STATE_VERSION,
       entries: Object.fromEntries(
-        preparation.currentEntries.map(({ entry, fingerprint }) => {
+        plan.currentEntries.map(({ entry, fingerprint }) => {
           const manifestEntry = entriesBySlug.get(toSlug(entry.path));
           return [
             entry.path,
             {
               fingerprint,
-              aliases: preparation.currentContentAliases.get(entry.path) ?? [],
+              aliases: plan.currentContentAliases.get(entry.path) ?? [],
               dependencies: collectDependencies(
                 manifestEntry,
                 trackedDependencies.get(toSlug(entry.path)) ??
-                  preparation.previousState?.entries[entry.path]
-                    ?.dependencies ??
+                  plan.previousState?.entries[entry.path]?.dependencies ??
                   [],
               ),
               linkTargets: collectLinkTargets(manifestEntry),
@@ -133,10 +119,10 @@ export class ContentBuildCoordinator {
   }
 
   private async prepare(
-    incremental: boolean | undefined,
+    incremental: boolean,
     pipelineFingerprint: string | undefined,
     fullContentRegenerationRequired: boolean,
-  ): Promise<ContentBuildPreparation> {
+  ): Promise<ContentBuildPlan> {
     const entries = await this.dependencies.observability.tracer.span(
       "content.discovery",
       {},
@@ -152,11 +138,11 @@ export class ContentBuildCoordinator {
     );
     const previousState = await this.dependencies.observability.tracer.span(
       "content.build-state.load",
-      { incremental: incremental !== false },
+      { incremental },
       async () =>
-        incremental === false
-          ? undefined
-          : await loadContentBuildState(this.dependencies.buildStatePath),
+        incremental
+          ? await loadContentBuildState(this.dependencies.buildStatePath)
+          : undefined,
     );
     const changeSet = await this.dependencies.observability.tracer.span(
       "content.change-set",
@@ -203,15 +189,37 @@ export class ContentBuildCoordinator {
               currentContentIndex,
             ),
     );
+    const fullRegenerationReasons: FullRegenerationReason[] = [];
+    if (!incremental) fullRegenerationReasons.push("incremental-disabled");
+    else if (!previousState)
+      fullRegenerationReasons.push("cache-missing-or-invalid");
+    if (
+      previousState &&
+      previousState.pipelineFingerprint !== pipelineFingerprint
+    )
+      fullRegenerationReasons.push("pipeline-fingerprint-changed");
+    if (fullContentRegenerationRequired)
+      fullRegenerationReasons.push("content-plugin-uncacheable");
     this.dependencies.observability.tracer.event("build.incremental", {
-      incremental: incremental !== false,
+      incremental,
+      cacheValid: previousState !== undefined,
+      fullRegenerationReasons: fullRegenerationReasons.join(","),
       added: changeSet.added.length,
       changed: changeSet.changed.length,
       removed: changeSet.removed.length,
       unchanged: changeSet.unchanged.length,
       affected: affected.direct.size + affected.dependent.size,
     });
+    const reusableOutputs =
+      incremental &&
+      previousState?.pipelineFingerprint === pipelineFingerprint &&
+      changeSet.added.length === 0 &&
+      changeSet.changed.length === 0 &&
+      changeSet.removed.length === 0
+        ? previousState?.outputs
+        : undefined;
     return {
+      incremental,
       previousState,
       previousManifestEntriesBySlug: new Map(
         (previousState?.manifestEntries ?? []).map((entry) => [
@@ -225,6 +233,9 @@ export class ContentBuildCoordinator {
       currentContentIndexAmbiguities,
       changeSet,
       affectedContent: affected,
+      cacheValid: previousState !== undefined,
+      fullRegenerationReasons,
+      reusableOutputs,
     };
   }
 

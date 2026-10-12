@@ -9,6 +9,8 @@ import type {
 } from "./content_source.js";
 
 export const INTERNAL_CONTENT_IGNORE_PATTERNS = [
+  ".riebeckite",
+  ".riebeckite/**",
   ".git",
   ".git/**",
   ".github",

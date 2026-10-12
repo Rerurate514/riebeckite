@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import {
   CLOUDFLARE_WORKERS_DEFAULTS,
@@ -10,19 +10,6 @@ import {
   WRANGLER_VERSION,
   workerNameFromDirectory,
 } from "../src/scaffold/wrangler-defaults.js";
-
-async function withTemporaryDirectory(
-  callback: (directory: string) => Promise<void>,
-): Promise<void> {
-  const directory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-local-first-"),
-  );
-  try {
-    await callback(directory);
-  } finally {
-    await fs.rm(directory, { recursive: true, force: true });
-  }
-}
 
 async function readJson<T>(root: string, name: string): Promise<T> {
   return JSON.parse(await fs.readFile(path.join(root, name), "utf8")) as T;
@@ -38,7 +25,7 @@ async function fileExists(root: string, name: string): Promise<boolean> {
 }
 
 test("local-first scaffold writes a Wrangler config named after the directory", async () => {
-  await withTemporaryDirectory(async (directory) => {
+  await withTemporaryDirectory("riebeckite-local-first-", async (directory) => {
     const targetDirectory = path.join(directory, "My Docs Site");
     await scaffoldRiebeckiteSite({
       targetDirectory,

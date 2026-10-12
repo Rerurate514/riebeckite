@@ -17,6 +17,12 @@
       "import": "./dist/e2e/index.js",
       "source": "./e2e/index.ts",
       "default": "./dist/e2e/index.js"
+    },
+    "./fixtures": {
+      "types": "./dist/fixtures.d.ts",
+      "import": "./dist/fixtures.js",
+      "source": "./fixtures.ts",
+      "default": "./dist/fixtures.js"
     }
   },
   "files": [

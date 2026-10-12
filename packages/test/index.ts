@@ -8,6 +8,12 @@
  * `@riebeckite/test/e2e` entry point because it orchestrates processes, the
  * filesystem, and published tarballs.
  */
+
+export {
+  type Frontmatter,
+  markdown,
+  withTemporaryDirectory,
+} from "./fixtures.js";
 export {
   assertGolden,
   assertGoldenJson,

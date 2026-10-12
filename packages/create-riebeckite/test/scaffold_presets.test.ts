@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import {
   isScaffoldPresetName,
@@ -592,16 +592,5 @@ async function exists(filePath: string): Promise<boolean> {
     return true;
   } catch {
     return false;
-  }
-}
-
-async function withTemporaryDirectory(
-  callback: (directory: string) => Promise<void>,
-): Promise<void> {
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-"));
-  try {
-    await callback(directory);
-  } finally {
-    await fs.rm(directory, { recursive: true, force: true });
   }
 }

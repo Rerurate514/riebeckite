@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { test } from "node:test";
+import { after, test } from "node:test";
 import { ContentIndexBuilder } from "../src/content/content_index_builder.js";
 import { ContentManager } from "../src/content/content_manager.js";
 import { extractFrontmatterAliases } from "../src/content/content_metadata.js";
@@ -12,59 +12,24 @@ import type { ContentManifestEntry } from "../src/types/content_manifest.js";
 import { definePlugin } from "../src/types/plugin.js";
 import type { PostContent } from "../src/types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../src/types/resolved_riebeckite_config.js";
+import {
+  contentTestConfig,
+  memoryContentSource,
+} from "./support/content_fixture.js";
 
-function memorySource(files: Record<string, string>): ContentSource {
+function testConfig(directory: string, pluginVersion = "v1") {
+  const config = contentTestConfig(directory, [
+    definePlugin({
+      name: "incremental-test-plugin",
+      cacheVersion: pluginVersion,
+      processedContentCache: {
+        version: pluginVersion,
+        dependencyMode: "tracked",
+      },
+    }),
+  ]);
   return {
-    async scan() {
-      return Object.keys(files).map((filePath) => ({ path: filePath }));
-    },
-    async read(entry) {
-      return files[entry.path] ?? "";
-    },
-  };
-}
-
-function testConfig(
-  directory: string,
-  pluginVersion = "v1",
-): ResolvedRiebeckiteConfig {
-  return {
-    buildDirectory: directory,
-    site: {
-      title: "Test",
-      description: "",
-      author: "",
-      baseUrl: "http://test",
-      locale: "en",
-      twitterSite: "",
-      defaultOgImage: "",
-      feed: { title: "", description: "", language: "en" },
-    },
-    content: {
-      directory: "/test",
-      exclude: [],
-      filters: { publishStrategy: "explicit" },
-    },
-    theme: {
-      name: "test",
-      colorMode: "system",
-      typography: "system",
-      articleLayout: "article",
-      tokens: {},
-      attributes: {},
-      userCss: [],
-      styles: [],
-    },
-    plugins: [
-      definePlugin({
-        name: "incremental-test-plugin",
-        cacheVersion: pluginVersion,
-        processedContentCache: {
-          version: pluginVersion,
-          dependencyMode: "tracked",
-        },
-      }),
-    ],
+    ...config,
     cache: { enabled: true, directory: path.join(directory, "cache") },
   };
 }
@@ -81,7 +46,7 @@ async function build(
     onSpan: (span) => spans.push(span),
   });
   const config = testConfig(directory, pluginVersion);
-  const manager = new ContentManager(memorySource(files), [], {
+  const manager = new ContentManager(memoryContentSource(files), [], {
     config,
     plugins: config.plugins,
     observability: { logger: new NoopLogger(), tracer },
@@ -127,7 +92,7 @@ async function buildWithGlobalContentDependency(
       extendMarkdownPipeline: () => undefined,
     }),
   ];
-  const manager = new ContentManager(memorySource(files), [], {
+  const manager = new ContentManager(memoryContentSource(files), [], {
     config: { ...config, plugins },
     plugins,
     observability: { logger: new NoopLogger(), tracer },
@@ -141,8 +106,22 @@ async function buildWithGlobalContentDependency(
   };
 }
 
+const temporaryDirectories: string[] = [];
+
+after(async () => {
+  await Promise.all(
+    temporaryDirectories.map((directory) =>
+      fs.rm(directory, { recursive: true, force: true }),
+    ),
+  );
+});
+
 async function tempDirectory(name: string): Promise<string> {
-  return await fs.mkdtemp(path.join(os.tmpdir(), `riebeckite-${name}-`));
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), `riebeckite-${name}-`),
+  );
+  temporaryDirectories.push(directory);
+  return directory;
 }
 
 test("no-change rebuild reuses every manifest entry without processing content", async () => {
@@ -226,7 +205,7 @@ test("alias-backed index matches the content-reading index", async () => {
     "folder/b.md": "# B",
     "folder/image.png": "image",
   };
-  const source = memorySource(files);
+  const source = memoryContentSource(files);
   const entries = await source.scan();
   const aliases = new Map(
     entries.map((entry) => [
@@ -306,7 +285,7 @@ test("an uncacheable content plugin safely reprocesses every note", async () => 
   const buildOnce = async () => {
     const config = { ...testConfig(directory), plugins: [plugin] };
     const spans: { name: string }[] = [];
-    const manager = new ContentManager(memorySource(files), [], {
+    const manager = new ContentManager(memoryContentSource(files), [], {
       config,
       plugins: config.plugins,
       observability: {
@@ -649,7 +628,7 @@ async function buildWithDecorator(
     onSpan: () => {},
   });
   const config = lifecycleConfig(directory, marker, decorator);
-  const manager = new ContentManager(memorySource(files), [], {
+  const manager = new ContentManager(memoryContentSource(files), [], {
     config,
     plugins: config.plugins,
     observability: { logger: new NoopLogger(), tracer },
@@ -763,7 +742,7 @@ test("cacheVersion change invalidates reused manifest entries", async () => {
       ),
     };
     const tracer = new SinkTracer({ onEvent: () => {}, onSpan: () => {} });
-    const manager = new ContentManager(memorySource(files), [], {
+    const manager = new ContentManager(memoryContentSource(files), [], {
       config: versioned,
       plugins: versioned.plugins,
       observability: { logger: new NoopLogger(), tracer },
@@ -794,7 +773,7 @@ test("dependency change still invalidates only affected content with a decoratin
     onSpan: () => {},
   });
   const config = lifecycleConfig(directory, "marker");
-  const manager = new ContentManager(memorySource(files), [], {
+  const manager = new ContentManager(memoryContentSource(files), [], {
     config,
     plugins: config.plugins,
     observability: { logger: new NoopLogger(), tracer },
@@ -842,7 +821,7 @@ test("a manifest hook writeback reaches the content route after an incremental e
   const buildOnce = async () => {
     const config = testConfig(directory);
     const plugins = [...config.plugins, writebackDecorator("WRITEBACK")];
-    const manager = new ContentManager(memorySource(files), [], {
+    const manager = new ContentManager(memoryContentSource(files), [], {
       config: { ...config, plugins },
       plugins,
     });
@@ -896,7 +875,7 @@ async function buildWithManifestOnly(
   });
   const config = testConfig(directory);
   const plugins = [...config.plugins, manifestOnlyDecorator(marker)];
-  const manager = new ContentManager(memorySource(files), [], {
+  const manager = new ContentManager(memoryContentSource(files), [], {
     config: { ...config, plugins },
     plugins,
     observability: { logger: new NoopLogger(), tracer },

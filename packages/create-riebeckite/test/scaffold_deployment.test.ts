@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import {
   deploymentTemplateFiles,
   scaffoldDeploymentFromFlags,
@@ -320,15 +321,4 @@ function assertBuildStateCacheContract(workflow: string): void {
 
 async function assertFileIsAbsent(filePath: string): Promise<void> {
   await assert.rejects(fs.access(filePath));
-}
-
-async function withTemporaryDirectory(
-  callback: (directory: string) => Promise<void>,
-): Promise<void> {
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-"));
-  try {
-    await callback(directory);
-  } finally {
-    await fs.rm(directory, { recursive: true, force: true });
-  }
 }

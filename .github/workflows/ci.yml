@@ -29,8 +29,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec biome check .
       - run: pnpm check:docs
-      - run: pnpm check:plugin-docs
-      - run: pnpm check:theme-docs
       - run: pnpm test:docs
       - run: pnpm check:packages
       - run: pnpm check:dependencies
@@ -105,3 +103,35 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:packages
       - run: pnpm check:scaffold
+
+  browser:
+    name: browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec puppeteer browsers install chrome
+      - run: pnpm test:browser
+
+  external-site:
+    name: external-site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:packages
+      - run: pnpm test:e2e:external

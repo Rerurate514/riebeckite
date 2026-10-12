@@ -4,7 +4,8 @@ import { createServer, type Server } from "node:http";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
-import puppeteer, { type Browser, type Page } from "puppeteer";
+import type { Browser, Page } from "puppeteer";
+import { launchBrowser } from "./support.js";
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -50,25 +51,6 @@ function findByRole(node: AxNode | null, role: string): AxNode | undefined {
     if (found) return found;
   }
   return undefined;
-}
-
-async function launchBrowser(): Promise<Browser | null> {
-  const attempts: Array<Parameters<typeof puppeteer.launch>[0]> = [
-    {
-      headless: "shell",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    },
-    {
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    },
-  ];
-  for (const options of attempts) {
-    try {
-      return await puppeteer.launch(options);
-    } catch {}
-  }
-  return null;
 }
 
 let server: Server;

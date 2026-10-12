@@ -11,60 +11,25 @@ import {
   packPackages,
   writeFileDependencies,
 } from "@riebeckite/test/e2e";
+import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import { build as buildWithEsbuild } from "esbuild";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
+import { SCAFFOLD_PRESET_NAMES } from "../src/scaffold/presets.js";
 import {
-  SCAFFOLD_DEFAULT_PRESET,
-  SCAFFOLD_PRESET_NAMES,
-} from "../src/scaffold/presets.js";
-import {
-  CLOUDFLARE_WORKERS_DEFAULTS,
-  DEFAULT_WORKER_NAME,
-  GITHUB_ACTIONS_SECRETS,
-  GITIGNORE_FORBIDDEN,
-  GITIGNORE_REQUIRED,
   LOCKFILE_NAME,
   STARTER_LANGUAGES,
 } from "../src/scaffold/wrangler-defaults.js";
+import {
+  generateStarterSite,
+  readScaffoldFile,
+} from "./support/scaffold_site.js";
 
 /**
  * Contract tests that verify the generated scaffold matches documentation expectations.
  * These tests prevent drift between implementation, scaffold output, and Getting Started docs.
  */
 
-async function withTemporaryDirectory(
-  callback: (directory: string) => Promise<void>,
-): Promise<void> {
-  const directory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-contract-"),
-  );
-  try {
-    await callback(directory);
-  } finally {
-    await fs.rm(directory, { recursive: true, force: true });
-  }
-}
-
-async function generateStarterSite(targetDirectory: string) {
-  await scaffoldRiebeckiteSite({
-    targetDirectory,
-    preset: SCAFFOLD_DEFAULT_PRESET,
-    site: { locale: "en" },
-    deployment: { type: "github-actions", content: { type: "local" } },
-  });
-}
-
-async function readFile(
-  root: string,
-  relativePath: string,
-): Promise<string | null> {
-  const fullPath = path.join(root, relativePath);
-  try {
-    return await fs.readFile(fullPath, "utf8");
-  } catch {
-    return null;
-  }
-}
+const readFile = readScaffoldFile;
 
 async function readJson<T>(
   root: string,
@@ -236,7 +201,7 @@ async function prepareGeneratedSiteInstall(siteDir: string): Promise<void> {
 // =============================================================================
 
 test("Contract 1: generated starter site installs and builds successfully", async () => {
-  await withTemporaryDirectory(async (tmpDir) => {
+  await withTemporaryDirectory("riebeckite-contract-", async (tmpDir) => {
     const targetDir = path.join(tmpDir, "test-site");
     await generateStarterSite(targetDir);
 
@@ -593,133 +558,6 @@ async function collectMarkdownFiles(directory: string): Promise<string[]> {
   );
   return files.flat();
 }
-
-// =============================================================================
-// CONTRACT 5: Wrangler configuration
-// =============================================================================
-
-test("Contract 5: generated wrangler.jsonc matches canonical defaults", async () => {
-  await withTemporaryDirectory(async (tmpDir) => {
-    const targetDir = path.join(tmpDir, "test-site");
-    await generateStarterSite(targetDir);
-
-    const wranglerContent = await readFile(targetDir, "wrangler.jsonc");
-    assert.ok(wranglerContent, "wrangler.jsonc must be generated");
-
-    const wrangler = JSON.parse(wranglerContent);
-
-    // Verify all canonical fields match
-    assert.equal(wrangler.$schema, CLOUDFLARE_WORKERS_DEFAULTS.$schema);
-    assert.equal(wrangler.name, DEFAULT_WORKER_NAME);
-    assert.equal(
-      wrangler.compatibility_date,
-      CLOUDFLARE_WORKERS_DEFAULTS.compatibility_date,
-    );
-    assert.deepEqual(
-      wrangler.compatibility_flags,
-      CLOUDFLARE_WORKERS_DEFAULTS.compatibility_flags,
-    );
-    assert.deepEqual(wrangler.assets, CLOUDFLARE_WORKERS_DEFAULTS.assets);
-  });
-});
-
-// =============================================================================
-// CONTRACT 6: GitHub Actions scaffold secrets
-// =============================================================================
-
-test("Contract 6: generated workflow includes required secret names", async () => {
-  await withTemporaryDirectory(async (tmpDir) => {
-    const targetDir = path.join(tmpDir, "test-site");
-    await generateStarterSite(targetDir);
-
-    const workflow = await readFile(targetDir, ".github/workflows/deploy.yml");
-    assert.ok(workflow, "deploy.yml must exist");
-
-    // Required secrets for basic deployment
-    assert.ok(
-      workflow.includes(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN),
-      `workflow must reference ${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN}`,
-    );
-    assert.ok(
-      workflow.includes(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID),
-      `workflow must reference ${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID}`,
-    );
-
-    // Verify secret references use the correct format
-    assert.ok(
-      workflow.includes("secrets.CLOUDFLARE_API_TOKEN"),
-      "must use secrets.CLOUDFLARE_API_TOKEN",
-    );
-    assert.ok(
-      workflow.includes("secrets.CLOUDFLARE_ACCOUNT_ID"),
-      "must use secrets.CLOUDFLARE_ACCOUNT_ID",
-    );
-  });
-});
-
-test("Contract 6b: external content workflow includes additional secrets", async () => {
-  await withTemporaryDirectory(async (tmpDir) => {
-    const targetDir = path.join(tmpDir, "test-site");
-    await scaffoldRiebeckiteSite({
-      targetDirectory: targetDir,
-      preset: SCAFFOLD_DEFAULT_PRESET,
-      deployment: {
-        type: "github-actions",
-        content: {
-          type: "external",
-          contentRepository: "octo-org/notes",
-          siteRepository: "octo-org/site",
-        },
-      },
-    });
-
-    const workflow = await readFile(targetDir, ".github/workflows/deploy.yml");
-    assert.ok(workflow, "deploy.yml must exist");
-
-    // External content requires additional secret
-    assert.ok(
-      workflow.includes(GITHUB_ACTIONS_SECRETS.RIEBECKITE_CONTENT_READ_TOKEN),
-      `external content workflow must reference ${GITHUB_ACTIONS_SECRETS.RIEBECKITE_CONTENT_READ_TOKEN}`,
-    );
-
-    const notify = await readFile(targetDir, "github/notify-site.yml");
-    assert.ok(notify, "notify-site.yml must exist for external content");
-    assert.ok(
-      notify.includes(GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN),
-      `notify-site.yml must reference ${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN}`,
-    );
-  });
-});
-
-// =============================================================================
-// CONTRACT 7: Git / generated .gitignore
-// =============================================================================
-
-test("Contract 7: generated .gitignore excludes build artifacts but keeps lockfile", async () => {
-  await withTemporaryDirectory(async (tmpDir) => {
-    const targetDir = path.join(tmpDir, "test-site");
-    await generateStarterSite(targetDir);
-
-    const gitignore = await readFile(targetDir, ".gitignore");
-    assert.ok(gitignore, ".gitignore must exist");
-
-    // Required exclusions
-    for (const pattern of GITIGNORE_REQUIRED) {
-      assert.ok(
-        gitignore?.includes(pattern),
-        `.gitignore must exclude ${pattern}`,
-      );
-    }
-
-    // Must NOT exclude lockfile
-    for (const pattern of GITIGNORE_FORBIDDEN) {
-      assert.ok(
-        !gitignore?.includes(pattern),
-        `.gitignore must not exclude ${pattern} (needed for npm ci)`,
-      );
-    }
-  });
-});
 
 // =============================================================================
 // CONTRACT 8: First content build

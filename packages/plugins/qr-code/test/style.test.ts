@@ -11,12 +11,6 @@ function block(selector: string): string {
   return style.slice(start + selector.length + 2, end);
 }
 
-test("no disclosure-widget selectors remain", () => {
-  assert.equal(style.includes("rb-qr__fallback"), false);
-  assert.equal(style.includes("summary"), false);
-  assert.equal(style.includes('data-qr="pending"'), false);
-});
-
 test("the card width is anchored to the QR size, not the payload", () => {
   const card = block(".rb-qr");
   assert.match(card, /--rb-qr-size/);

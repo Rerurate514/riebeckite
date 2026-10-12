@@ -31,6 +31,20 @@ export interface PackPackagesOptions {
   logger: Logger;
 }
 
+function assertPackArtifacts(packageDir: string, pkg: PackageSpec): void {
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
+  ) as { files?: readonly string[] };
+  if (
+    manifest.files?.includes("dist") &&
+    !fs.existsSync(path.join(packageDir, "dist"))
+  ) {
+    throw new Error(
+      `Cannot pack ${pkg.name}: dist/ is missing. Build workspace packages before running isolated package tests.`,
+    );
+  }
+}
+
 interface PackedResult {
   pkg: PackageSpec;
   version: string;
@@ -101,13 +115,21 @@ export async function packPackages(
     if (!fs.existsSync(packageDir)) {
       logger.fail(`Package directory is missing: ${pkg.directory}`);
     }
+    assertPackArtifacts(packageDir, pkg);
     const manifest = JSON.parse(
       fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
     ) as { version: string };
 
-    await runAsync("pnpm", ["pack", "--pack-destination", tarballDir], {
-      cwd: packageDir,
-    });
+    await runAsync(
+      "pnpm",
+      [
+        "--config.ignore-scripts=true",
+        "pack",
+        "--pack-destination",
+        tarballDir,
+      ],
+      { cwd: packageDir },
+    );
 
     const sanitized = pkg.name.replace(/^@/, "").replace(/\//g, "-");
     const tarball = path.join(

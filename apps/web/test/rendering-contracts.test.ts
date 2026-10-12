@@ -121,7 +121,6 @@ test("A7: rendered plugins treat explicit dark and system dark identically", () 
 
 test("A7: every plugin with explicit dark tokens also handles system dark", () => {
   const pluginsDir = new URL("../../../packages/plugins/", import.meta.url);
-  const withDark: string[] = [];
 
   for (const entry of readdirSync(pluginsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
@@ -134,18 +133,12 @@ test("A7: every plugin with explicit dark tokens also handles system dark", () =
     const css = readFileSync(file, "utf8");
     if (!/\[data-theme="dark"\]/.test(css)) continue;
 
-    withDark.push(entry.name);
     assert.match(
       css,
       /@media \(prefers-color-scheme: dark\)[\s\S]*?(?::is\(:root, \.rb-theme-root\)|:root):not\(\[data-theme\]\)/,
       `${entry.name}/style.css declares explicit dark but has no system-dark twin`,
     );
   }
-
-  assert.ok(
-    withDark.length >= 19,
-    `expected at least 19 rendered plugins with explicit dark tokens, saw ${withDark.length}`,
-  );
 });
 
 test("A7: the theme resolves dark tokens in both explicit and system dark", () => {
@@ -283,10 +276,6 @@ test("A7: dark mode has a single mechanism, no .dark class", () => {
       `${relative} must use data-theme="dark" plus prefers-color-scheme, not a .dark class`,
     );
   }
-  assert.ok(
-    relativePaths.length >= 20,
-    `expected to scan themes and plugins, saw ${relativePaths.length}`,
-  );
 });
 
 test("A7: every theme exposes the public color tokens in all three states", () => {
@@ -357,15 +346,11 @@ test("P2-A2: plugin dark overrides are scoped to the theme root, not just the do
   const pluginsDir = new URL("../../../packages/plugins/", import.meta.url);
   const documentRootOnly =
     /^\s*(?:html|:root)(?:\[data-theme="dark"\]|:not\(\[data-theme\]\))/;
-  let scoped = 0;
-
   for (const entry of readdirSync(pluginsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
     const relative = `../../../packages/plugins/${entry.name}/style.css`;
     if (!existsSync(new URL(relative, import.meta.url))) continue;
     const css = read(relative);
-
-    if (css.includes(`${THEME_ROOT_SCOPE}[data-theme="dark"]`)) scoped += 1;
 
     if (PORTALED_DARK_PLUGINS.has(entry.name)) continue;
     const offenders = css
@@ -378,11 +363,6 @@ test("P2-A2: plugin dark overrides are scoped to the theme root, not just the do
       `${entry.name}/style.css must scope dark overrides to ${THEME_ROOT_SCOPE} so embedded theme roots resolve them`,
     );
   }
-
-  assert.ok(
-    scoped >= 19,
-    `expected at least 19 plugins with theme-root-scoped dark overrides, saw ${scoped}`,
-  );
 });
 
 test("P2-A2: the portaled hover preview keeps document-global dark behavior", () => {

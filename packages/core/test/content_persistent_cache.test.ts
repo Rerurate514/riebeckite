@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
+import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { test } from "node:test";
+import { after, test } from "node:test";
+import { markdown } from "@riebeckite/test/fixtures";
 import { ContentManager } from "../src/content/content_manager.js";
 import {
   CONTENT_CACHE_SCHEMA_VERSION,
@@ -12,10 +14,7 @@ import {
   createPersistentContentCache,
   isPersistentlyCacheable,
 } from "../src/content/content_persistent_cache.js";
-import {
-  type ContentSource,
-  readContentSourceEntry,
-} from "../src/content/content_source.js";
+import { readContentSourceEntry } from "../src/content/content_source.js";
 import {
   NoopLogger,
   SinkTracer,
@@ -24,55 +23,18 @@ import {
 } from "../src/observability.js";
 import type { RiebeckitePlugin } from "../src/types/plugin.js";
 import { definePlugin } from "../src/types/plugin.js";
-import type { ResolvedRiebeckiteConfig } from "../src/types/resolved_riebeckite_config.js";
+import {
+  contentTestConfig,
+  memoryContentSource,
+} from "./support/content_fixture.js";
 
-const TEST_CACHE_DIR = path.join(os.tmpdir(), "riebeckite-content-cache-tests");
+const TEST_CACHE_DIR = fsSync.mkdtempSync(
+  path.join(os.tmpdir(), "riebeckite-content-cache-tests-"),
+);
 
-function memorySource(files: Record<string, string>): ContentSource {
-  return {
-    async scan() {
-      return Object.keys(files).map((path) => ({ path }));
-    },
-    async read(entry) {
-      return files[entry.path] ?? "";
-    },
-  };
-}
-
-function createTestConfig(
-  plugins: ResolvedRiebeckiteConfig["plugins"] = [],
-): ResolvedRiebeckiteConfig {
-  return {
-    buildDirectory: TEST_CACHE_DIR,
-    site: {
-      title: "Test",
-      description: "",
-      author: "",
-      baseUrl: "http://test",
-      locale: "en",
-      twitterSite: "",
-      defaultOgImage: "",
-      feed: { title: "", description: "", language: "en" },
-    },
-    content: {
-      directory: "/test",
-      exclude: [],
-      filters: { publishStrategy: "explicit" },
-    },
-    theme: {
-      name: "test",
-      colorMode: "system",
-      typography: "system",
-      articleLayout: "article",
-      tokens: {},
-      attributes: {},
-      userCss: [],
-      styles: [],
-    },
-    plugins,
-    cache: { enabled: true, directory: TEST_CACHE_DIR },
-  };
-}
+after(async () => {
+  await fs.rm(TEST_CACHE_DIR, { recursive: true, force: true });
+});
 
 function createTrackedFilePlugin(
   dependencyPath: (slug: string) => string,
@@ -255,9 +217,9 @@ async function processedHtml(
   slug: string,
   plugin: RiebeckitePlugin,
 ): Promise<string> {
-  const config = createTestConfig([plugin]);
+  const config = contentTestConfig(TEST_CACHE_DIR, [plugin]);
   config.cache.directory = cacheDirectory;
-  const manager = new ContentManager(memorySource(files), [], {
+  const manager = new ContentManager(memoryContentSource(files), [], {
     config,
     plugins: config.plugins,
   });
@@ -267,7 +229,7 @@ async function processedHtml(
 test("computeContentCacheKey produces stable keys", () => {
   const inputs = {
     slug: "test-note",
-    source: "---\ntitle: Test\n---\n\n# Test",
+    source: markdown("# Test", { title: "Test" }),
     frontmatter: { title: "Test", publish: true },
     pipelineFingerprint: "abc123",
   };
@@ -353,7 +315,7 @@ test("normalizeFrontmatterForCache converts Dates to ISO strings", () => {
 });
 
 test("computePipelineFingerprint is stable", () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   const fp1 = computePipelineFingerprint(config);
   const fp2 = computePipelineFingerprint(config);
 
@@ -362,8 +324,8 @@ test("computePipelineFingerprint is stable", () => {
 });
 
 test("computePipelineFingerprint changes with plugin config", () => {
-  const config1 = createTestConfig([]);
-  const config2 = createTestConfig([
+  const config1 = contentTestConfig(TEST_CACHE_DIR, []);
+  const config2 = contentTestConfig(TEST_CACHE_DIR, [
     { name: "test-plugin", options: { foo: "bar" } },
   ]);
 
@@ -374,11 +336,11 @@ test("computePipelineFingerprint changes with plugin config", () => {
 });
 
 test("computePipelineFingerprint changes with plugin ordering", () => {
-  const first = createTestConfig([
+  const first = contentTestConfig(TEST_CACHE_DIR, [
     { name: "first-plugin" },
     { name: "second-plugin" },
   ]);
-  const second = createTestConfig([
+  const second = contentTestConfig(TEST_CACHE_DIR, [
     { name: "second-plugin" },
     { name: "first-plugin" },
   ]);
@@ -390,8 +352,12 @@ test("computePipelineFingerprint changes with plugin ordering", () => {
 });
 
 test("computePipelineFingerprint changes with plugin cacheVersion", () => {
-  const first = createTestConfig([{ name: "plugin", cacheVersion: "v1" }]);
-  const second = createTestConfig([{ name: "plugin", cacheVersion: "v2" }]);
+  const first = contentTestConfig(TEST_CACHE_DIR, [
+    { name: "plugin", cacheVersion: "v1" },
+  ]);
+  const second = contentTestConfig(TEST_CACHE_DIR, [
+    { name: "plugin", cacheVersion: "v2" },
+  ]);
 
   assert.notEqual(
     computePipelineFingerprint(first),
@@ -467,7 +433,7 @@ test("extractFrontmatter returns empty object for no frontmatter", () => {
 });
 
 test("isPersistentlyCacheable allows transform functions with global processed content cache contract", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "global-transformer",
       processedContentCache: {
@@ -483,7 +449,7 @@ test("isPersistentlyCacheable allows transform functions with global processed c
 });
 
 test("isPersistentlyCacheable bypasses transform functions without processedContentCache contract", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "custom-transformer",
       extendMarkdownPipeline: () => undefined,
@@ -496,7 +462,7 @@ test("isPersistentlyCacheable bypasses transform functions without processedCont
 });
 
 test("isPersistentlyCacheable does not treat cacheVersion as a processed content cache contract", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "versioned-transformer",
       cacheVersion: "content-transform-v1",
@@ -510,7 +476,7 @@ test("isPersistentlyCacheable does not treat cacheVersion as a processed content
 });
 
 test("isPersistentlyCacheable allows transform functions with tracked processed content cache contract", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "tracked-transformer",
       processedContentCache: {
@@ -526,7 +492,7 @@ test("isPersistentlyCacheable allows transform functions with tracked processed 
 });
 
 test("isPersistentlyCacheable allows transform functions with none processed content cache contract", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "source-only-transformer",
       processedContentCache: {
@@ -542,7 +508,7 @@ test("isPersistentlyCacheable allows transform functions with none processed con
 });
 
 test("isPersistentlyCacheable bypasses transform functions explicitly marked unsafe", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "unsafe-transformer",
       processedContentCache: {
@@ -559,7 +525,7 @@ test("isPersistentlyCacheable bypasses transform functions explicitly marked uns
 });
 
 test("isPersistentlyCacheable treats renderers as processed content transformers", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "custom-renderer",
       renderers: [{ name: "custom", render: () => null }],
@@ -572,7 +538,7 @@ test("isPersistentlyCacheable treats renderers as processed content transformers
 });
 
 test("isPersistentlyCacheable allows renderer plugins with none processed content cache contract", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "source-only-renderer",
       processedContentCache: {
@@ -588,14 +554,14 @@ test("isPersistentlyCacheable allows renderer plugins with none processed conten
 });
 
 test("computePipelineFingerprint changes when processedContentCache contract version changes", () => {
-  const config1 = createTestConfig([
+  const config1 = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "contracted-transformer",
       processedContentCache: { version: "v1", dependencyMode: "none" },
       extendMarkdownPipeline: () => undefined,
     },
   ]);
-  const config2 = createTestConfig([
+  const config2 = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "contracted-transformer",
       processedContentCache: { version: "v2", dependencyMode: "none" },
@@ -610,7 +576,7 @@ test("computePipelineFingerprint changes when processedContentCache contract ver
 });
 
 test("computePipelineFingerprint changes with a global content scope", () => {
-  const config = createTestConfig([
+  const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "global-transformer",
       processedContentCache: { version: "v1", dependencyMode: "global" },
@@ -625,7 +591,7 @@ test("computePipelineFingerprint changes with a global content scope", () => {
 });
 
 test("createPersistentContentCache writes and reads entries", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   const cache = createPersistentContentCache({ config });
 
   const key = "test-key";
@@ -643,7 +609,7 @@ test("createPersistentContentCache writes and reads entries", async () => {
 });
 
 test("createPersistentContentCache returns undefined for missing key", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   const cache = createPersistentContentCache({ config });
 
   const result = await cache.get("non-existent-key");
@@ -651,7 +617,7 @@ test("createPersistentContentCache returns undefined for missing key", async () 
 });
 
 test("createPersistentContentCache returns undefined when cache disabled", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   config.cache.enabled = false;
   const cache = createPersistentContentCache({ config });
 
@@ -670,7 +636,7 @@ test("createPersistentContentCache returns undefined when cache disabled", async
 });
 
 test("persistent cache ignores corrupted entries", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   config.cache.directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-corrupted-cache-"),
   );
@@ -699,7 +665,7 @@ test("persistent cache ignores corrupted entries", async () => {
 });
 
 test("persistent cache ignores incompatible entry versions", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   config.cache.directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-incompatible-cache-"),
   );
@@ -740,9 +706,9 @@ test("persistent cache is portable between workspaces", async () => {
     path.join(os.tmpdir(), "riebeckite-cache-workspace-b-"),
   );
   try {
-    const firstConfig = createTestConfig([]);
+    const firstConfig = contentTestConfig(TEST_CACHE_DIR, []);
     firstConfig.cache.directory = path.join(workspaceA, "cache");
-    const first = new ContentManager(memorySource(source), [], {
+    const first = new ContentManager(memoryContentSource(source), [], {
       config: firstConfig,
       plugins: firstConfig.plugins,
     });
@@ -752,9 +718,9 @@ test("persistent cache is portable between workspaces", async () => {
       recursive: true,
     });
     const results: string[] = [];
-    const secondConfig = createTestConfig([]);
+    const secondConfig = contentTestConfig(TEST_CACHE_DIR, []);
     secondConfig.cache.directory = path.join(workspaceB, "cache");
-    const second = new ContentManager(memorySource(source), [], {
+    const second = new ContentManager(memoryContentSource(source), [], {
       config: secondConfig,
       plugins: secondConfig.plugins,
       onPersistentContentCacheResult: (result) => results.push(result),
@@ -770,7 +736,7 @@ test("persistent cache is portable between workspaces", async () => {
 });
 
 test("persistent cache atomic write does not leave partial files", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   const cache = createPersistentContentCache({ config });
 
   const key = "atomic-test";
@@ -795,7 +761,7 @@ test("persistent cache atomic write does not leave partial files", async () => {
 });
 
 test("persistent cache mutation safety - returned object is independent", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   const cache = createPersistentContentCache({ config });
 
   const key = "mutation-test";
@@ -841,14 +807,14 @@ test("unversioned dependency-bearing post hook is bypassed to avoid stale HTML",
       _context.content.html += `<p>${dependencyValue}</p>`;
     },
   });
-  const config = createTestConfig([plugin]);
+  const config = contentTestConfig(TEST_CACHE_DIR, [plugin]);
   config.cache.directory = cacheDirectory;
 
   const files = {
     "note.md": "---\ntitle: Note\npublish: true\n---\n\n# Note\n",
   };
 
-  const first = new ContentManager(memorySource(files), [], {
+  const first = new ContentManager(memoryContentSource(files), [], {
     config,
     plugins: config.plugins,
   });
@@ -856,7 +822,7 @@ test("unversioned dependency-bearing post hook is bypassed to avoid stale HTML",
   assert.match(firstContent.html, /v1/);
 
   dependencyValue = "v2";
-  const second = new ContentManager(memorySource(files), [], {
+  const second = new ContentManager(memoryContentSource(files), [], {
     config,
     plugins: config.plugins,
   });
@@ -979,7 +945,7 @@ test("tracked dependencies are isolated across parallel content processing", asy
 
   const counters = { pipelineExecutions: 0 };
   const plugin = createTrackedFilePlugin((slug) => `${slug}.txt`, counters);
-  const config = createTestConfig([plugin]);
+  const config = contentTestConfig(TEST_CACHE_DIR, [plugin]);
   config.cache.directory = cacheDirectory;
 
   const firstFiles = {
@@ -988,7 +954,7 @@ test("tracked dependencies are isolated across parallel content processing", asy
     "a.txt": "A1",
     "b.txt": "B1",
   };
-  const first = new ContentManager(memorySource(firstFiles), [], {
+  const first = new ContentManager(memoryContentSource(firstFiles), [], {
     config,
     plugins: config.plugins,
   });
@@ -998,7 +964,7 @@ test("tracked dependencies are isolated across parallel content processing", asy
   ]);
 
   const secondFiles = { ...firstFiles, "a.txt": "A2" };
-  const second = new ContentManager(memorySource(secondFiles), [], {
+  const second = new ContentManager(memoryContentSource(secondFiles), [], {
     config,
     plugins: config.plugins,
   });
@@ -1279,7 +1245,7 @@ test("unrelated body-only change keeps the cached link resolution valid", async 
 });
 
 test("persistent cache lookup reports an explicit miss reason", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   config.cache.directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-cache-reasons-"),
   );
@@ -1366,7 +1332,7 @@ test("persistent cache lookup reports an explicit miss reason", async () => {
 });
 
 test("persistent cache lookup reports disabled when caching is off", async () => {
-  const config = createTestConfig([]);
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
   config.cache.enabled = false;
   const cache = createPersistentContentCache({ config });
 
@@ -1394,7 +1360,7 @@ test("dependency invalidation reports a structured miss reason", async () => {
   };
   const counters = { pipelineExecutions: 0 };
   const plugin = createTrackedFilePlugin(() => "dep.txt", counters);
-  const config = createTestConfig([plugin]);
+  const config = contentTestConfig(TEST_CACHE_DIR, [plugin]);
   config.cache.directory = cacheDirectory;
   const base = {
     "note.md": "---\ntitle: Note\npublish: true\n---\n\n# Note\n",
@@ -1402,7 +1368,7 @@ test("dependency invalidation reports a structured miss reason", async () => {
 
   const build = async (dependencyValue: string) => {
     const manager = new ContentManager(
-      memorySource({ ...base, "dep.txt": dependencyValue }),
+      memoryContentSource({ ...base, "dep.txt": dependencyValue }),
       [],
       {
         config,

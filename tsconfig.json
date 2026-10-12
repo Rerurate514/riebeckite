@@ -16,6 +16,7 @@
       ],
       "@riebeckite/test/e2e": ["packages/test/e2e/index.ts"],
       "@riebeckite/test": ["packages/test/index.ts"],
+      "@riebeckite/test/fixtures": ["packages/test/fixtures.ts"],
       "@riebeckite/plugin-*": ["packages/plugins/*/index.ts"],
       "@riebeckite/plugin-*/client": ["packages/plugins/*/client.ts"],
       "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]

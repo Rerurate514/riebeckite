@@ -49,6 +49,7 @@
     "build": "node ../../../scripts/build_package.mjs",
     "test": "node --import tsx --test \"test/*.test.ts\"",
     "test:browser": "node --import tsx --test \"test/browser/*.test.ts\"",
+    "test:browser:required": "node test/browser/run-required.mjs",
     "prepack": "pnpm run build"
   },
   "repository": {

@@ -1,8 +1,7 @@
-import fs from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
+import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import {
   type ScaffoldSiteOptions,
   scaffoldRiebeckiteSite,
@@ -67,7 +66,7 @@ const SCENARIOS: readonly GoldenScenario[] = [
 
 for (const scenario of SCENARIOS) {
   test(`scaffold golden: ${scenario.name}`, async () => {
-    await withTemporaryDirectory(async (root) => {
+    await withTemporaryDirectory("riebeckite-golden-", async (root) => {
       const targetDirectory = path.join(root, scenario.name);
       await scaffoldRiebeckiteSite({ targetDirectory, ...scenario.scaffold });
       assertGoldenDirectory(
@@ -77,17 +76,4 @@ for (const scenario of SCENARIOS) {
       );
     });
   });
-}
-
-async function withTemporaryDirectory(
-  callback: (directory: string) => Promise<void>,
-): Promise<void> {
-  const directory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-golden-"),
-  );
-  try {
-    await callback(directory);
-  } finally {
-    await fs.rm(directory, { recursive: true, force: true });
-  }
 }

@@ -1,3 +1,6 @@
+---
+title: Highlight
+---
 # Highlight
 
 Inline `==highlight==` support. Text wrapped in double equals is rendered as a

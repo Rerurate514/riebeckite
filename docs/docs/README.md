@@ -14,3 +14,4 @@ Start with [Getting Started](./getting-started/README.md) to create and publish 
 - [Plugins](./plugins/README.md)
 - [Themes](./themes/README.md)
 - [Reference](./reference/README.md)
+- [Glossary](./glossary/README.md)

@@ -1,3 +1,6 @@
+---
+title: Archive
+---
 # Archive
 
 [English](./archive.md)

@@ -1,3 +1,6 @@
+---
+title: Breadcrumbs
+---
 # Breadcrumbs
 
 Build-time breadcrumb navigation derived from the note's slug hierarchy. For

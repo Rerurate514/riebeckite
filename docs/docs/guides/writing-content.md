@@ -1,3 +1,6 @@
+---
+title: Writing content
+---
 # Writing content
 
 This guide covers the basics of writing articles for a Riebeckite site. It is aimed at users who are new to Markdown or static publishing.
@@ -183,7 +186,7 @@ console.log(message);
 
 ## File names and URLs
 
-In the standard setup, the logical path of the content determines where it is published.
+In the standard setup, the [[logical-path|logical path]] of the content determines where it is published.
 
 File names become URL paths.
 

@@ -1,3 +1,6 @@
+---
+title: Highlight
+---
 # Highlight
 
 `==ハイライト==` を `<mark>` 要素として表示するプラグインです。Markdown の

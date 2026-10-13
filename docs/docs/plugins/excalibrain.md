@@ -1,3 +1,6 @@
+---
+title: ExcaliBrain
+---
 # ExcaliBrain
 
 Structured relationship maps for notes, modelled on

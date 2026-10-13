@@ -1,3 +1,6 @@
+---
+title: Hard Breaks
+---
 # Hard Breaks
 
 Render ordinary Markdown line breaks as `<br>` elements, matching Obsidian's

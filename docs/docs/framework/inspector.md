@@ -1,3 +1,6 @@
+---
+title: Inspector
+---
 # Inspector
 
 Inspector answers questions about already-resolved state. It is a read-only

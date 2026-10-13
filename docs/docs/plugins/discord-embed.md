@@ -1,3 +1,6 @@
+---
+title: Discord Embed
+---
 # Discord Embed
 
 Completes each page's `<head>` for Discord link previews.

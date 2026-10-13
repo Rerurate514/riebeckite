@@ -1,3 +1,6 @@
+---
+title: Lightbox
+---
 # Lightbox
 
 Click-to-zoom lightbox for images.

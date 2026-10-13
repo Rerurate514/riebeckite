@@ -1,3 +1,6 @@
+---
+title: Alias
+---
 # Alias
 
 Obsidian の frontmatter `aliases`（`alias` も可）を、サイト内のリダイレクト URL に変換するプラグインです。ノートの別名でアクセスできるようにしつつ、正規のパーマリンクは変更しません。

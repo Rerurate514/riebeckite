@@ -1,3 +1,6 @@
+---
+title: Build Dependency Contract
+---
 # Build Dependency Contract
 
 Incremental Buildの無効化はCoreの責務です。PluginはどのContentが影響を受けるかを計算せず、依存stateも自分では持ちません。契約を宣言すると、何を再利用するかはCoreが決めます。

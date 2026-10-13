@@ -1,3 +1,6 @@
+---
+title: Chart.js
+---
 # Chart.js
 
 Render ` ```chart ` code blocks as responsive [Chart.js](https://www.chartjs.org/)

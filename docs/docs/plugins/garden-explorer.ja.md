@@ -1,3 +1,6 @@
+---
+title: Garden Explorer
+---
 # Garden Explorer
 
 ノート一覧、検索、タグ・フォルダーによる絞り込み、Local / Global Graph、詳細パネルを一画面にまとめる探索 UI です。公開済みのノートだけを対象にするため、そのまま公開サイトの `/explore` などに置けます。

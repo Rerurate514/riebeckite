@@ -1,3 +1,6 @@
+---
+title: Kanban
+---
 # Kanban
 
 Render Obsidian Kanban boards as static HTML at build time. No client-side

@@ -1,3 +1,6 @@
+---
+title: Webmention
+---
 # Webmention
 
 Webmention を受信し、送信元ドキュメントが本当にターゲットへリンクしているかを検証し、

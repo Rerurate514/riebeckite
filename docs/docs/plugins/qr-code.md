@@ -1,3 +1,6 @@
+---
+title: QR Code
+---
 # QR Code
 
 Renders ` ```qr ` fenced code blocks into inline SVG QR codes at build time.

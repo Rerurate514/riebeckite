@@ -1,3 +1,6 @@
+---
+title: Quality
+---
 # Quality
 
 Riebeckite が生成する HTML を静的に検査し、品質とアクセシビリティの問題を報告するプラグインです。

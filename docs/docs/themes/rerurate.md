@@ -1,3 +1,6 @@
+---
+title: Rerurate
+---
 # Rerurate
 
 A Rerurate theme for Riebeckite, built on the Rerurate Visual Grammar: warm

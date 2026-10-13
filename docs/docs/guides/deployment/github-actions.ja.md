@@ -1,3 +1,6 @@
+---
+title: GitHub Actions
+---
 # GitHub Actions
 
 Riebeckite では、GitHub Actions を使って **GitHub への Push から Cloudflare Workers への Deployment を自動化**できます。

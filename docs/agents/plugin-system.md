@@ -1,3 +1,6 @@
+---
+title: Plugin System Rules for Agents
+---
 # Plugin System Rules for Agents
 
 Source of truth: `packages/core/src/types/plugin.ts` and

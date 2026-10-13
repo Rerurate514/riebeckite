@@ -1,3 +1,6 @@
+---
+title: Build and CLI Rules for Agents
+---
 # Build and CLI Rules for Agents
 
 Use the CLI from the application directory:

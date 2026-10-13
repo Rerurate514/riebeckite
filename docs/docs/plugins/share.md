@@ -1,3 +1,6 @@
+---
+title: Share
+---
 # Share
 
 Per-article share controls built at build time. For every published entry the

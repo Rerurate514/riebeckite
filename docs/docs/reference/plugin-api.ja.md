@@ -1,6 +1,9 @@
+---
+title: Plugin System
+---
 # Plugin System
 
-Riebeckite Plugin は、Riebeckite の機能を Core や Site Application に直接組み込まず、再利用可能な形で追加するための仕組みです。
+Riebeckite [[plugin|Plugin]] は、Riebeckite の機能を Core や Site Application に直接組み込まず、再利用可能な形で追加するための仕組みです。
 
 Plugin では、たとえば次のような機能を追加できます。
 
@@ -172,7 +175,7 @@ flowchart LR
 
 次のような状態は Configuration Error になります。
 
-- 必須 Capability が存在しない
+- 必須 [[capability|Capability]] が存在しない
 - 同じ Capability を複数 Plugin が提供する
 - 依存関係が循環している
 

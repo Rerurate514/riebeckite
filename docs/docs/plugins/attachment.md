@@ -1,3 +1,6 @@
+---
+title: Attachment
+---
 # Attachment
 
 Attachment link and embed card rendering for Obsidian wikilinks.

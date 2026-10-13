@@ -1,3 +1,6 @@
+---
+title: Page System
+---
 # Page System
 
 The Page System lets a plugin provide a standalone page without taking over an

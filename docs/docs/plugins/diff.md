@@ -1,3 +1,6 @@
+---
+title: Diff
+---
 # Diff
 
 Git-backed diff and revision history for Markdown notes: read commit history,

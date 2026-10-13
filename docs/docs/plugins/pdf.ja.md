@@ -1,3 +1,6 @@
+---
+title: PDF
+---
 # PDF
 
 Obsidian 形式の PDF 添付ファイルをインライン表示するプラグインです。

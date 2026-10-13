@@ -1,3 +1,6 @@
+---
+title: Responsive Image
+---
 # Responsive Image
 
 既存の `<img>` に遅延読み込みと、レスポンシブな `<picture>` / `srcset` を付与するプラグインです。参照するのは、すでにコンテンツマニフェストに存在する画像バリアントだけです。

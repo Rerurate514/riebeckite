@@ -1,3 +1,6 @@
+---
+title: Folder Pages
+---
 # Folder Pages
 
 [日本語](./folder-pages.ja.md)

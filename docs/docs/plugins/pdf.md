@@ -1,3 +1,6 @@
+---
+title: PDF
+---
 # PDF
 
 Inline PDF attachment viewing for Obsidian wikilinks.

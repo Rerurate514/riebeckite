@@ -1,3 +1,6 @@
+---
+title: Attachment
+---
 # Attachment
 
 Obsidian 形式の添付ファイルリンクを、ダウンロードリンクや添付カードとして表示するプラグインです。

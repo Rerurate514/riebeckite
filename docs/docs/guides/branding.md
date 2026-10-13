@@ -1,3 +1,6 @@
+---
+title: Branding your site
+---
 # Branding your site
 
 A theme controls how every Riebeckite site looks — colors, typography, spacing, and layout. The assets that make a site yours — its icon, header logo, and link preview image — live outside the theme. This guide replaces them. To change the look of the site itself, see [Change Your Theme](../getting-started/first-theme.md).

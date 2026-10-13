@@ -1,3 +1,6 @@
+---
+title: Mermaid
+---
 # Mermaid
 
 Mermaid diagram rendering for ` ```mermaid ` code blocks.

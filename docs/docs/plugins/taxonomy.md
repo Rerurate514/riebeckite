@@ -1,3 +1,6 @@
+---
+title: Taxonomy
+---
 # Taxonomy
 
 Build-time tag and folder taxonomy for Riebeckite: listing data, per-term

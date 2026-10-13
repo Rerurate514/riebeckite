@@ -1,3 +1,6 @@
+---
+title: Tokyo Night
+---
 # Tokyo Night
 
 An assertive Tokyo Night theme for Riebeckite: high-contrast twilight day mode

@@ -1,3 +1,6 @@
+---
+title: Table of Contents
+---
 # Table of Contents
 
 Table of contents rendering with scroll-spy: extracts headings from article

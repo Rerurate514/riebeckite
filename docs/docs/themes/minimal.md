@@ -1,3 +1,6 @@
+---
+title: Minimal
+---
 # Minimal
 
 A content-first, near-chromeless typographic theme for Riebeckite: "nothing but

@@ -1,3 +1,6 @@
+---
+title: Deploy
+---
 # Deploy
 
 Riebeckite の静的ホスティング向け出力ヘルパーです。デプロイ先が必要とする

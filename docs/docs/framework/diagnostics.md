@@ -1,3 +1,6 @@
+---
+title: Diagnostics
+---
 # Diagnostics
 
 Diagnostics are structured findings emitted by Core, plugins, and tooling. They make invalid configuration, content issues, capability problems, and environmental health visible without turning every issue into an unstructured console string.

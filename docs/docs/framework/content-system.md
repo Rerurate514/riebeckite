@@ -1,3 +1,6 @@
+---
+title: Content System
+---
 # Content System
 
 The Content System turns files such as Markdown and images into content that
@@ -74,7 +77,7 @@ flowchart LR
 Because the storage location is abstracted this way, later processing stays the
 same even if content moves.
 
-`ContentManager` owns the meaning of that data: parsing, Markdown/HTML pipeline execution, post processing, plugin orchestration, manifest creation, and content-graph construction. It should not grow direct filesystem behavior that bypasses `ContentSource`.
+`ContentManager` owns the meaning of that data: parsing, Markdown/HTML pipeline execution, post processing, plugin orchestration, [[manifest|manifest]] creation, and [[content-graph|content-graph]] construction. It should not grow direct filesystem behavior that bypasses `ContentSource`.
 
 ### Three kinds of "location"
 

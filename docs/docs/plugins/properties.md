@@ -1,3 +1,6 @@
+---
+title: Properties
+---
 # Properties
 
 Render each note's frontmatter as an Obsidian-style property panel at build

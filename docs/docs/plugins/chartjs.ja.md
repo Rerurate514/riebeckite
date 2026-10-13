@@ -1,3 +1,6 @@
+---
+title: Chart.js
+---
 # Chart.js
 
 ` ```chart ` コードブロックを、レスポンシブな [Chart.js](https://www.chartjs.org/) のグラフとして表示するプラグインです。

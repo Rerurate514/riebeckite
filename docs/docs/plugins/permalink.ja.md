@@ -1,3 +1,6 @@
+---
+title: Permalink
+---
 # Permalink
 
 Riebeckite の記事に対して、公開 URL（permalink）を決定するプラグインです。

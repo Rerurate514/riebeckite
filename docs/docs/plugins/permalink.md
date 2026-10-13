@@ -1,3 +1,6 @@
+---
+title: Permalink
+---
 # Permalink
 
 Stable, configurable public URLs (permalinks) for Riebeckite content.

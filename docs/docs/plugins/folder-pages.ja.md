@@ -1,3 +1,6 @@
+---
+title: Folder Pages
+---
 # Folder Pages
 
 [English](./folder-pages.md)

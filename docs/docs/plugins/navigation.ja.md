@@ -1,3 +1,6 @@
+---
+title: Navigation
+---
 # Navigation
 
 サイトナビゲーションを提供する Riebeckite プラグインです。`navigation()` は

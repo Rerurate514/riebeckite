@@ -1,3 +1,6 @@
+---
+title: Change Your Theme
+---
 # Change Your Theme
 
 Themes control how your Riebeckite site looks — colors, typography, spacing, and layout. This guide walks through switching to the **minimal** theme, a clean, content-first design.

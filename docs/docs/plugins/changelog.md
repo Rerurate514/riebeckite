@@ -1,3 +1,6 @@
+---
+title: Changelog
+---
 # Changelog
 
 Build-time change history derived from local Git history. For every published

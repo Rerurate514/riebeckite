@@ -1,3 +1,6 @@
+---
+title: ExcaliBrain
+---
 # ExcaliBrain
 
 ノートの関係を構造化して表示するプラグインです。[ExcaliBrain](https://github.com/zsviczian/excalibrain)（Zsolt Viczián）の考え方をモデルにしています。

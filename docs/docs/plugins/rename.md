@@ -1,3 +1,6 @@
+---
+title: Rename
+---
 # Rename
 
 Reduces broken URLs after notes are renamed or moved by turning detected

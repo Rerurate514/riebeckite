@@ -1,3 +1,6 @@
+---
+title: Observability
+---
 # Observability
 
 Observability is how you find out **what happened and where the time went**

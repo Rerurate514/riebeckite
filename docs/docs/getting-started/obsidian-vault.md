@@ -1,3 +1,6 @@
+---
+title: Use Your Obsidian Vault
+---
 # Use Your Obsidian Vault
 
 Already have an Obsidian Vault? Riebeckite can read that Vault as the site's content directory. Start locally first, publish one note, check links and images, then build `dist/`.

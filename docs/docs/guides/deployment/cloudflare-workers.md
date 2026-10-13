@@ -1,3 +1,6 @@
+---
+title: Cloudflare Workers deployment
+---
 # Cloudflare Workers deployment
 
 This guide focuses only on publishing a Riebeckite site to Cloudflare Workers.

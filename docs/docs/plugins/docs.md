@@ -1,3 +1,6 @@
+---
+title: Docs
+---
 # Docs
 
 Build-time docs navigation for Riebeckite. The plugin creates a sidebar and

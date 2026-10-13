@@ -1,3 +1,6 @@
+---
+title: Backlinks
+---
 # Backlinks
 
 Backlink list rendering for articles: shows which published notes link to the

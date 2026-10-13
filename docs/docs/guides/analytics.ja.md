@@ -1,3 +1,6 @@
+---
+title: Analytics
+---
 # Analytics
 
 Riebeckite では、記事ごとの Page View を収集できます。

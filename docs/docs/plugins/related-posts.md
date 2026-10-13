@@ -1,3 +1,6 @@
+---
+title: Related Posts
+---
 # Related Posts
 
 Build-time "related notes" navigation. For every published entry, the plugin

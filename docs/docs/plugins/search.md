@@ -1,3 +1,6 @@
+---
+title: Search
+---
 # Search
 
 Client-side full-text search: a weighted, fuzzy search engine plus a keyboard

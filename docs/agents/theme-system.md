@@ -1,3 +1,6 @@
+---
+title: Theme Rules for Agents
+---
 # Theme Rules for Agents
 
 Themes are presentation-only packages. They may declare a name, options, styles, theme config, and `data-*` attributes; attribute names must begin with `data-`. Use the semantic color, typography, and layout tokens from the Core theme contract rather than application-specific selectors as the public API.

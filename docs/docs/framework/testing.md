@@ -1,3 +1,6 @@
+---
+title: Testing
+---
 # Testing
 
 Riebeckite tests run on the Node.js built-in test runner (`node:test`) with

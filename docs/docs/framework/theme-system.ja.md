@@ -38,7 +38,7 @@ sidebar:
 
 ## 1. Theme にするべき変更
 
-Theme は **Presentation Layer** です。
+[[glossary/theme|Theme]] は **Presentation Layer** です。
 
 Site の機能や Content の意味は変更せず、見た目だけを変更します。
 

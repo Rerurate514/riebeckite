@@ -1,3 +1,6 @@
+---
+title: Text Fragment
+---
 # Text Fragment
 
 Copy a Text Fragment deep link (`#:~:text=`) or a Markdown quote for the text

@@ -1,3 +1,6 @@
+---
+title: Docs
+---
 # Docs
 
 Riebeckite の Markdown コンテンツから、Docs 用のサイドバーと前後ページリンクを

@@ -1,3 +1,6 @@
+---
+title: Theme System
+---
 # Theme System
 
 Riebeckite Themes are the presentation layer. They change appearance

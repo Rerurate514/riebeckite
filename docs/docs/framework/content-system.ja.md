@@ -1,3 +1,6 @@
+---
+title: Content System
+---
 # Content System
 
 Content System は、Markdown や画像などのファイルを、Riebeckite がサイトとして扱えるコンテンツへ変換する仕組みです。
@@ -325,7 +328,7 @@ Manifest は、Content System が解決した結果を他の仕組みへ渡す�
 
 # Content Graph
 
-Content Graph は、コンテンツ同士の関係を表します。
+[[content-graph|Content Graph]] は、コンテンツ同士の関係を表します。
 
 たとえば、
 

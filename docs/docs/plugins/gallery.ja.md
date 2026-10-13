@@ -1,3 +1,6 @@
+---
+title: Gallery
+---
 # Gallery
 
 Markdown からカードギャラリーを生成するプラグインです。YAML を本文に持つ

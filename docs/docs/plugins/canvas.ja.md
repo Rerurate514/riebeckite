@@ -1,3 +1,6 @@
+---
+title: Canvas
+---
 # Canvas
 
 Obsidian の `.canvas`（JSON Canvas 1.0）を図として表示するプラグインです。

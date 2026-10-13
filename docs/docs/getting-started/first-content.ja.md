@@ -1,3 +1,6 @@
+---
+title: First Content
+---
 # First Content
 
 Markdown をサイトに表示する方法を確認します。`starter` preset が生成したサンプルを編集しても、新しいファイルを作っても構いません。

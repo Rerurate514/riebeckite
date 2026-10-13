@@ -1,3 +1,6 @@
+---
+title: Theme System
+---
 # Theme System
 
 Riebeckite Theme は、Site や Plugin の**見た目を変更するための仕組み**です。

@@ -1,3 +1,6 @@
+---
+title: PlantUML
+---
 # PlantUML
 
 PlantUML diagram rendering for ` ```plantuml ` code blocks. Diagrams are turned into

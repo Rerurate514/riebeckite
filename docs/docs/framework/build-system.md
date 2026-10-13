@@ -1,3 +1,6 @@
+---
+title: Build System
+---
 # Build System
 
 Riebeckite's Build System reads content such as Markdown plus the configuration
@@ -13,7 +16,7 @@ A normal build roughly performs the following work:
 6. Emit assets such as images and browser-side code
 7. Build the web site with HonoX
 
-Riebeckite also supports an **incremental build** that reuses the previous
+Riebeckite also supports an [[incremental-build|incremental build]] that reuses the previous
 build result and processes only what changed.
 
 ## What a build owns

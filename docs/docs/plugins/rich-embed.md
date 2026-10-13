@@ -1,3 +1,6 @@
+---
+title: Rich Embed
+---
 # Rich Embed
 
 Build-time media embeds for ` ```embed ` code blocks.

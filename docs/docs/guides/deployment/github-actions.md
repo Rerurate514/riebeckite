@@ -1,3 +1,6 @@
+---
+title: GitHub Actions
+---
 # GitHub Actions
 
 Riebeckite can automate **deployment to Cloudflare Workers from a push to GitHub** with GitHub Actions.

@@ -14,3 +14,4 @@ Riebeckite でサイトを作成して公開するまでの流れは、[Getting 
 - [Plugin](./plugins/README.ja.md)
 - [Theme](./themes/README.ja.md)
 - [リファレンス](./reference/README.ja.md)
+- [用語集](./glossary/README.ja.md)

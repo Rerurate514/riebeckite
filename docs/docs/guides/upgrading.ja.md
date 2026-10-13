@@ -1,4 +1,7 @@
-﻿# Riebeckite をアップグレードする
+---
+title: Riebeckite をアップグレードする
+---
+# Riebeckite をアップグレードする
 
 既存の Site を新しい Riebeckite へ更新するときの手順です。
 

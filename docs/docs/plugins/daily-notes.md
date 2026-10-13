@@ -1,3 +1,6 @@
+---
+title: Daily Notes
+---
 # Daily Notes
 
 Surfaces short snippets extracted from Daily Notes as a site widget.

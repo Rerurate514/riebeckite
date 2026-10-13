@@ -1,3 +1,6 @@
+---
+title: Sidenotes
+---
 # Sidenotes
 
 Riebeckite 用の Tufte スタイルのサイドノート・プラグインです。執筆者は通常の

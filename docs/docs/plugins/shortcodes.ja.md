@@ -1,3 +1,6 @@
+---
+title: Shortcodes
+---
 # Shortcodes
 
 `remark-directive` を使う汎用ショートコード機能です。

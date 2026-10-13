@@ -1,6 +1,9 @@
+---
+title: Plugin System
+---
 # Plugin System
 
-Riebeckite Plugins extend content interpretation, transformation,
+Riebeckite [[plugin|Plugins]] extend content interpretation, transformation,
 rendering, diagnostics, build-time processing, browser behavior,
 endpoints, and SEO. This document describes the shared plugin contract
 rather than individual plugins.
@@ -87,7 +90,7 @@ Use only the extension points a plugin actually needs.
 
 Disabled/false/null inputs are removed, and `enabled: false` is never
 executed. `order` provides a basic ordering before dependency resolution,
-while capability dependencies express real requirements:
+while [[capability|capability]] dependencies express real requirements:
 
 ``` ts
 plugins: [

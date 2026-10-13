@@ -1,3 +1,6 @@
+---
+title: Writing Your First Plugin
+---
 # Writing Your First Plugin
 
 Plugins add **functionality** to Riebeckite: Markdown or HTML transformation, client-side behavior, standalone pages, SEO, diagnostics, and more. Use a Theme when you only want to change appearance.

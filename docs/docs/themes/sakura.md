@@ -1,3 +1,6 @@
+---
+title: Sakura
+---
 # Sakura
 
 A cherry-blossom (sakura) theme for Riebeckite: soft pink paper, plum ink, a

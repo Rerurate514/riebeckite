@@ -1,3 +1,6 @@
+---
+title: WaveDrom
+---
 # WaveDrom
 
 ` ```wavedrom ` コードブロックを [WaveDrom](https://wavedrom.com/) のタイミング図として表示するプラグインです。

@@ -3,6 +3,10 @@ import type {
   ContentManifest,
   ContentManifestEntry,
 } from "../types/content_manifest.js";
+import type {
+  ExternalDependencyFailure,
+  ExternalDependencySnapshot,
+} from "../types/external_dependency.js";
 import { determineAffectedContent } from "./affected_content.js";
 import type {
   ContentBuildPlan,
@@ -13,6 +17,7 @@ import {
   type ContentBuildDependency,
   type ContentBuildState,
   type FingerprintedContentEntry,
+  type PersistedExternalDependency,
 } from "./content_build_state.js";
 import {
   loadContentBuildState,
@@ -51,11 +56,15 @@ export class ContentBuildCoordinator {
     incremental: boolean,
     pipelineFingerprint: string | undefined,
     fullContentRegenerationRequired = false,
+    externalDependencies: readonly ExternalDependencySnapshot[] = [],
+    externalDependencyFailures: readonly ExternalDependencyFailure[] = [],
   ): Promise<ContentBuildPlan> {
     this.plan ??= this.prepare(
       incremental,
       pipelineFingerprint,
       fullContentRegenerationRequired,
+      externalDependencies,
+      externalDependencyFailures,
     );
     return this.plan;
   }
@@ -70,6 +79,7 @@ export class ContentBuildCoordinator {
       string,
       readonly CachedContentDependency[]
     > = new Map(),
+    externalDependencies: readonly ExternalDependencySnapshot[] = [],
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -103,6 +113,14 @@ export class ContentBuildCoordinator {
       pipelineFingerprint,
       manifestEntries,
       outputs,
+      externalDependencies: externalDependencies.map(
+        ({ id, fingerprint, scope, expiresAt }) => ({
+          id,
+          fingerprint,
+          scope,
+          ...(expiresAt === undefined ? {} : { expiresAt }),
+        }),
+      ),
     };
 
     try {
@@ -122,6 +140,8 @@ export class ContentBuildCoordinator {
     incremental: boolean,
     pipelineFingerprint: string | undefined,
     fullContentRegenerationRequired: boolean,
+    externalDependencies: readonly ExternalDependencySnapshot[],
+    externalDependencyFailures: readonly ExternalDependencyFailure[],
   ): Promise<ContentBuildPlan> {
     const entries = await this.dependencies.observability.tracer.span(
       "content.discovery",
@@ -200,10 +220,13 @@ export class ContentBuildCoordinator {
       fullRegenerationReasons.push("pipeline-fingerprint-changed");
     if (fullContentRegenerationRequired)
       fullRegenerationReasons.push("content-plugin-uncacheable");
+    if (externalDependencyFailures.length > 0)
+      fullRegenerationReasons.push("external-dependency-unavailable");
     this.dependencies.observability.tracer.event("build.incremental", {
       incremental,
       cacheValid: previousState !== undefined,
       fullRegenerationReasons: fullRegenerationReasons.join(","),
+      externalDependencyFailures: externalDependencyFailures.length,
       added: changeSet.added.length,
       changed: changeSet.changed.length,
       removed: changeSet.removed.length,
@@ -213,6 +236,11 @@ export class ContentBuildCoordinator {
     const reusableOutputs =
       incremental &&
       previousState?.pipelineFingerprint === pipelineFingerprint &&
+      externalDependencyFailures.length === 0 &&
+      externalDependenciesEqual(
+        previousState?.externalDependencies ?? [],
+        externalDependencies,
+      ) &&
       changeSet.added.length === 0 &&
       changeSet.changed.length === 0 &&
       changeSet.removed.length === 0
@@ -236,6 +264,8 @@ export class ContentBuildCoordinator {
       cacheValid: previousState !== undefined,
       fullRegenerationReasons,
       reusableOutputs,
+      externalDependencies,
+      externalDependencyFailures,
     };
   }
 
@@ -264,6 +294,29 @@ export class ContentBuildCoordinator {
 
     return aliases;
   }
+}
+
+function externalDependenciesEqual(
+  previous: readonly PersistedExternalDependency[],
+  current: readonly ExternalDependencySnapshot[],
+): boolean {
+  if (previous.length !== current.length) return false;
+  const currentById = new Map(
+    current.map((dependency) => [dependency.id, dependency]),
+  );
+  return previous.every((dependency) => {
+    const candidate = currentById.get(dependency.id);
+    return (
+      candidate !== undefined &&
+      candidate.fingerprint === dependency.fingerprint &&
+      candidate.expiresAt === dependency.expiresAt &&
+      !isExpired(candidate.expiresAt)
+    );
+  });
+}
+
+function isExpired(expiresAt: string | undefined): boolean {
+  return expiresAt !== undefined && Date.parse(expiresAt) <= Date.now();
 }
 
 function readText(content: string | Uint8Array): string {

@@ -1,4 +1,8 @@
 import type { ContentManifestEntry } from "../types/content_manifest.js";
+import type {
+  ExternalDependencyFailure,
+  ExternalDependencySnapshot,
+} from "../types/external_dependency.js";
 import type { determineAffectedContent } from "./affected_content.js";
 import type {
   ContentBuildState,
@@ -11,7 +15,8 @@ export type FullRegenerationReason =
   | "incremental-disabled"
   | "cache-missing-or-invalid"
   | "pipeline-fingerprint-changed"
-  | "content-plugin-uncacheable";
+  | "content-plugin-uncacheable"
+  | "external-dependency-unavailable";
 
 export type ContentBuildPlan = {
   readonly incremental: boolean;
@@ -32,6 +37,8 @@ export type ContentBuildPlan = {
   readonly cacheValid: boolean;
   readonly fullRegenerationReasons: readonly FullRegenerationReason[];
   readonly reusableOutputs: readonly OutputDescriptor[] | undefined;
+  readonly externalDependencies: readonly ExternalDependencySnapshot[];
+  readonly externalDependencyFailures: readonly ExternalDependencyFailure[];
 };
 
 export function reusableOutputChangeSet(

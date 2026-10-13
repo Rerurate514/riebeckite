@@ -100,21 +100,125 @@ test("manifest plugin unknown dependencies require safe full regeneration", () =
   assert.equal(result.fullRegenerationRequired, true);
 });
 
-test("external dependencies require safe full regeneration", () => {
+test("changed external fingerprints affect only dependent outputs", () => {
   const current = manifest([entry("a"), entry("b")], {
     generatedOutputs: [
       {
         path: "history.json",
         content: "",
         owner: "changelog",
-        dependencies: [{ type: "external", key: "git-history" }],
+        dependencies: [{ type: "external", id: "git-history" }],
       },
     ],
   });
-  const result = changes(current, current, { changed: ["a.md"] });
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {},
+      contentIndex: {},
+      outputs: [
+        {
+          kind: "content",
+          path: "a.html",
+          producer: "content:a",
+          dependencies: [{ type: "content", slug: "a" }],
+        },
+        {
+          kind: "content",
+          path: "b.html",
+          producer: "content:b",
+          dependencies: [{ type: "content", slug: "b" }],
+        },
+        {
+          kind: "generated",
+          path: "history.json",
+          producer: "plugin:changelog",
+          dependencies: [{ type: "external", id: "git-history" }],
+        },
+      ],
+      externalDependencies: [
+        {
+          id: "git-history",
+          fingerprint: "before",
+          scope: { type: "output", paths: ["history.json"] },
+        },
+      ],
+    },
+    changeSet: {
+      added: [],
+      changed: [],
+      removed: [],
+      unchanged: ["a.md", "b.md"],
+    },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    externalDependencies: [
+      {
+        id: "git-history",
+        fingerprint: "after",
+        scope: { type: "output", paths: ["history.json"] },
+        value: null,
+      },
+    ],
+  });
 
-  assert.deepEqual(paths(result.affected), ["a.html", "history.json"]);
+  assert.deepEqual(paths(result.affected), ["history.json"]);
+  assert.equal(result.fullRegenerationRequired, false);
+});
+
+test("unavailable external dependencies require safe full regeneration", () => {
+  const current = manifest([entry("a")]);
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: undefined,
+    changeSet: { added: [], changed: [], removed: [], unchanged: ["a.md"] },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    externalDependencyFailures: [{ id: "provider", reason: "timeout" }],
+  });
   assert.equal(result.fullRegenerationRequired, true);
+});
+
+test("expired external snapshots affect their declared outputs", () => {
+  const result = determineOutputChanges({
+    manifest: manifest([entry("a")]),
+    previousState: {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {},
+      contentIndex: {},
+      outputs: [
+        {
+          kind: "content",
+          path: "a.html",
+          producer: "content:a",
+          dependencies: [
+            { type: "content", slug: "a" },
+            { type: "external", id: "provider" },
+          ],
+        },
+      ],
+      externalDependencies: [
+        {
+          id: "provider",
+          fingerprint: "same",
+          scope: { type: "output", paths: ["a.html"] },
+          expiresAt: "2000-01-01T00:00:00.000Z",
+        },
+      ],
+    },
+    changeSet: { added: [], changed: [], removed: [], unchanged: ["a.md"] },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    externalDependencies: [
+      {
+        id: "provider",
+        fingerprint: "same",
+        scope: { type: "output", paths: ["a.html"] },
+        expiresAt: "2000-01-01T00:00:00.000Z",
+        value: null,
+      },
+    ],
+  });
+
+  assert.deepEqual(paths(result.affected), ["a.html"]);
 });
 
 test("wikilink changes affect old and new backlink target pages", () => {

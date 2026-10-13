@@ -11,6 +11,6 @@ export type OutputDependency =
         | "taxonomy-tags"
         | "taxonomy-folders";
     }
-  | { readonly type: "external"; readonly key: string }
+  | { readonly type: "external"; readonly id: string }
   | { readonly type: "global" }
   | { readonly type: "unknown" };

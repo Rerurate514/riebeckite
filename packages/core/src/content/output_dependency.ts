@@ -2,6 +2,11 @@ import type {
   ContentManifest,
   ContentManifestEntry,
 } from "../types/content_manifest.js";
+import type {
+  ExternalDependencyFailure,
+  ExternalDependencyScope,
+  ExternalDependencySnapshot,
+} from "../types/external_dependency.js";
 import type { OutputDependency } from "../types/output_dependency.js";
 import type { ContentBuildState } from "./content_build_state.js";
 import type { ContentChangeSet } from "./content_change_set.js";
@@ -36,6 +41,8 @@ export function determineOutputChanges(input: {
   };
   readonly pluginPageOutputs?: readonly OutputDescriptor[];
   readonly contentOutputDependencies?: readonly OutputDependency[];
+  readonly externalDependencies?: readonly ExternalDependencySnapshot[];
+  readonly externalDependencyFailures?: readonly ExternalDependencyFailure[];
 }): OutputChangeSet {
   const current = buildOutputInventory(
     input.manifest,
@@ -61,6 +68,8 @@ export function determineOutputChanges(input: {
     input.manifest,
     changedContent,
   );
+  const changedExternal = changedExternalDependencies(input);
+  const changedExternalScopes = changedExternalDependencyScopes(input);
   const affected = new Map<string, OutputDescriptor>();
   const unchanged: OutputDescriptor[] = [];
 
@@ -72,6 +81,8 @@ export function determineOutputChanges(input: {
         changedTags,
         changedFolders,
         changedFiles,
+        changedExternal,
+        changedExternalScopes,
       )
     ) {
       affected.set(output.path, output);
@@ -91,12 +102,11 @@ export function determineOutputChanges(input: {
   const removed = [...previous.values()].filter(
     (output) => !currentPaths.has(output.path),
   );
-  const fullRegenerationRequired = current.some((output) =>
-    output.dependencies.some(
-      (dependency) =>
-        dependency.type === "unknown" || dependency.type === "external",
-    ),
-  );
+  const fullRegenerationRequired =
+    (input.externalDependencyFailures?.length ?? 0) > 0 ||
+    current.some((output) =>
+      output.dependencies.some((dependency) => dependency.type === "unknown"),
+    );
   const affectedValues = [...affected.values()].sort(compareOutput);
   const unchangedValues = unchanged
     .filter((output) => !affected.has(output.path))
@@ -174,10 +184,14 @@ function isOutputAffected(
   changedTags: ReadonlySet<string>,
   changedFolders: ReadonlySet<string>,
   changedFiles: ReadonlySet<string>,
+  changedExternal: ReadonlySet<string>,
+  changedExternalScopes: ReadonlyMap<string, ExternalDependencyScope>,
 ): boolean {
+  if (isAffectedByExternalScope(output, changedExternalScopes)) return true;
   for (const dependency of output.dependencies) {
     if (dependency.type === "unknown") return true;
-    if (dependency.type === "external") return true;
+    if (dependency.type === "external" && changedExternal.has(dependency.id))
+      return true;
     if (dependency.type === "global") return changedContent.size > 0;
     if (
       dependency.type === "projection" &&
@@ -213,6 +227,74 @@ function isOutputAffected(
   return false;
 }
 
+function isAffectedByExternalScope(
+  output: OutputDescriptor,
+  changedExternalScopes: ReadonlyMap<string, ExternalDependencyScope>,
+): boolean {
+  for (const scope of changedExternalScopes.values()) {
+    if (scope.type === "all") return true;
+    if (scope.type === "content" && output.kind === "content") return true;
+    if (scope.type === "output" && scope.paths.includes(output.path))
+      return true;
+  }
+  return false;
+}
+
+function changedExternalDependencies(input: {
+  readonly previousState: ContentBuildState | undefined;
+  readonly externalDependencies?: readonly ExternalDependencySnapshot[];
+}): Set<string> {
+  const previous = new Map(
+    (input.previousState?.externalDependencies ?? []).map((dependency) => [
+      dependency.id,
+      dependency,
+    ]),
+  );
+  const changed = new Set<string>();
+  for (const dependency of input.externalDependencies ?? []) {
+    const prior = previous.get(dependency.id);
+    if (
+      !prior ||
+      prior.fingerprint !== dependency.fingerprint ||
+      prior.expiresAt !== dependency.expiresAt ||
+      isExpired(dependency.expiresAt)
+    )
+      changed.add(dependency.id);
+    previous.delete(dependency.id);
+  }
+  for (const id of previous.keys()) changed.add(id);
+  return changed;
+}
+
+function changedExternalDependencyScopes(input: {
+  readonly previousState: ContentBuildState | undefined;
+  readonly externalDependencies?: readonly ExternalDependencySnapshot[];
+}): ReadonlyMap<string, ExternalDependencyScope> {
+  const previous = new Map(
+    (input.previousState?.externalDependencies ?? []).map((dependency) => [
+      dependency.id,
+      dependency,
+    ]),
+  );
+  const changed = new Map<string, ExternalDependencyScope>();
+  for (const dependency of input.externalDependencies ?? []) {
+    const prior = previous.get(dependency.id);
+    if (
+      !prior ||
+      prior.fingerprint !== dependency.fingerprint ||
+      prior.expiresAt !== dependency.expiresAt ||
+      isExpired(dependency.expiresAt)
+    ) {
+      changed.set(dependency.id, dependency.scope);
+    }
+    previous.delete(dependency.id);
+  }
+  for (const dependency of previous.values()) {
+    changed.set(dependency.id, dependency.scope);
+  }
+  return changed;
+}
+
 function collectChangedContent(input: {
   readonly manifest: ContentManifest;
   readonly previousState: ContentBuildState | undefined;
@@ -242,6 +324,10 @@ function collectChangedContent(input: {
       changed.add(target);
   }
   return changed;
+}
+
+function isExpired(expiresAt: string | undefined): boolean {
+  return expiresAt !== undefined && Date.parse(expiresAt) <= Date.now();
 }
 
 function collectChangedTags(

@@ -406,6 +406,8 @@ export class ContentManager {
               pluginPageOutputs,
               contentOutputDependencies:
                 this.pluginRuntime.getContentOutputDependencies(),
+              externalDependencies: plan.externalDependencies,
+              externalDependencyFailures: plan.externalDependencyFailures,
             }),
         );
         if (this.outputChangeSet) {
@@ -490,6 +492,8 @@ export class ContentManager {
             pluginPageOutputs,
             contentOutputDependencies:
               this.pluginRuntime.getContentOutputDependencies(),
+            externalDependencies: plan.externalDependencies,
+            externalDependencyFailures: plan.externalDependencyFailures,
           }),
       );
     }
@@ -666,6 +670,7 @@ export class ContentManager {
       [...this.outputChangeSet.affected, ...this.outputChangeSet.unchanged],
       this.cacheManifestEntries,
       this.trackedContentDependencies,
+      plan.externalDependencies,
     );
     this.buildStateCommitted = true;
   }
@@ -686,10 +691,18 @@ export class ContentManager {
         await this.getContentLocations(),
       );
     }
+    const contentIndex = await this.getContentIndex();
+    const external = await this.observability().tracer.span(
+      "external.dependencies.resolve",
+      {},
+      () => this.pluginRuntime.resolveExternalDependencies(contentIndex),
+    );
     return this.buildCoordinator.getPlan(
       options?.incremental !== false,
       this.getPipelineFingerprint(),
       this.requiresFullContentRegeneration(),
+      external.snapshots,
+      external.failures,
     );
   }
 

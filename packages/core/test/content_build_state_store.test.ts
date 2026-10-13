@@ -58,6 +58,7 @@ test("valid output state remains reusable", async (t) => {
     version: CONTENT_BUILD_STATE_VERSION,
     entries: {},
     contentIndex: {},
+    externalDependencies: [],
     outputs: [
       {
         kind: "content",
@@ -109,7 +110,7 @@ test("valid output state remains reusable", async (t) => {
   assert.deepEqual(await loadContentBuildState(statePath), state);
 });
 
-test("a state without output state remains compatible", async (t) => {
+test("a state without output inventory remains valid", async (t) => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-content-state-"),
   );
@@ -121,6 +122,7 @@ test("a state without output state remains compatible", async (t) => {
       version: CONTENT_BUILD_STATE_VERSION,
       entries: {},
       contentIndex: {},
+      externalDependencies: [],
     }),
     "utf8",
   );
@@ -129,6 +131,7 @@ test("a state without output state remains compatible", async (t) => {
     version: CONTENT_BUILD_STATE_VERSION,
     entries: {},
     contentIndex: {},
+    externalDependencies: [],
   });
 });
 

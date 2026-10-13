@@ -1,6 +1,10 @@
 import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
 import type { PluginOptionsValidator } from "./config_validation.js";
 import type { Diagnostic } from "./diagnostic.js";
+import type {
+  ExternalDependencyContext,
+  ExternalDependencyResolution,
+} from "./external_dependency.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
@@ -64,6 +68,9 @@ export type RiebeckitePlugin<TOptions = unknown> = {
     version: string;
     dependencyMode: "none" | "tracked" | "global" | "unsafe";
   };
+  resolveExternalDependencies?(
+    context: ExternalDependencyContext,
+  ): Promise<readonly ExternalDependencyResolution[]>;
   validateOptions?: PluginOptionsValidator<TOptions>;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];

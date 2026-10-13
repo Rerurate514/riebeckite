@@ -112,6 +112,7 @@ function isContentBuildStateShape(
   if (
     !isRecord(value.entries) ||
     !isRecord(value.contentIndex) ||
+    !isExternalDependencies(value.externalDependencies) ||
     (value.outputs !== undefined && !isOutputDescriptors(value.outputs))
   ) {
     return false;
@@ -180,12 +181,40 @@ function isOutputDependency(value: unknown): value is OutputDependency {
     (value.type === "tag" && typeof value.tag === "string") ||
     (value.type === "folder" && typeof value.folder === "string") ||
     (value.type === "file" && typeof value.path === "string") ||
-    (value.type === "external" && typeof value.key === "string") ||
+    (value.type === "external" && typeof value.id === "string") ||
     (value.type === "projection" &&
       (value.projection === "navigation" ||
         value.projection === "recent-posts" ||
         value.projection === "taxonomy-tags" ||
         value.projection === "taxonomy-folders"))
+  );
+}
+
+function isExternalDependencies(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (dependency) =>
+        isRecord(dependency) &&
+        typeof dependency.id === "string" &&
+        dependency.id.length > 0 &&
+        typeof dependency.fingerprint === "string" &&
+        dependency.fingerprint.length > 0 &&
+        isExternalScope(dependency.scope) &&
+        (dependency.expiresAt === undefined ||
+          (typeof dependency.expiresAt === "string" &&
+            !Number.isNaN(Date.parse(dependency.expiresAt)))),
+    )
+  );
+}
+
+function isExternalScope(value: unknown): boolean {
+  if (!isRecord(value) || typeof value.type !== "string") return false;
+  if (value.type === "content" || value.type === "all") return true;
+  return (
+    value.type === "output" &&
+    Array.isArray(value.paths) &&
+    value.paths.every((path) => isOutputPath(path))
   );
 }
 

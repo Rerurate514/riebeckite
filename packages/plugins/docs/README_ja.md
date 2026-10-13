@@ -54,6 +54,12 @@ sidebar:
 - `hidden`: サイドバーと前後ページリンクから除外します。
 - `collapsed`: Theme やクライアント側の拡張のために `data-docs-collapsed` として出力します。
 
+これらのフィールドはすべて任意です。`sidebar` frontmatter のないページも
+ナビゲーションに表示されます。階層はフォルダ構造に従い、ラベルは `title`、
+並び順はタイトル順になります。`sidebar` は Riebeckite 独自の拡張であり、サイト
+設定ではなくコンテンツ側に置きます。上書きしたいフィールドだけを指定し、それ
+以外は Vault に手を入れないでください。
+
 ## Theme との統合
 
 Plugin は既存の汎用 article body slot に HTML フラグメントを提供します。

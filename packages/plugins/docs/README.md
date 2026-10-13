@@ -57,6 +57,12 @@ Supported sidebar metadata:
 - `collapsed` — exposes collapsed state through `data-docs-collapsed` for theme
   or client enhancement.
 
+All fields are optional. A page without `sidebar` frontmatter still appears in
+the navigation: the hierarchy follows the folder structure, the label falls back
+to `title`, and the order is title-based. `sidebar` is a Riebeckite extension, so
+it lives with the content rather than in the site configuration. Add only the
+fields you want to override and leave the rest of the vault untouched.
+
 ## Output and theme integration
 
 The plugin publishes semantic HTML fragments through standard article body

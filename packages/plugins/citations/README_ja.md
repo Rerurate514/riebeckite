@@ -63,6 +63,35 @@ Riebeckite はこのプラグインより先に `:name` を directive として�
 citations({ bibliography: "references.bib", referencesHeading: "参考文献" })
 ```
 
+## 参考文献ページ
+
+`pagePath` を設定すると、参考文献の一覧ページを生成します。既定では無効で、指定しないかぎり生成しません。
+
+```ts
+citations({ bibliography: "references.bib", pagePath: "/bibliography" })
+```
+
+ページタイプ（`citations-bibliography`）は、次の2か所から文献を集めます。
+
+- プラグインの `bibliography` オプション（コンテンツルートからの相対パス）
+- 公開（discoverable）ページの frontmatter `bibliography`
+
+frontmatter の `bibliography` を取り込むのは `manifest.discoverableEntries` だけです。下書き・unlisted・公開予定など、discoverable でないページは無視するため、それらの文献がページへ漏れることはありません。
+
+各ファイルの文献は決定的な順序で統合します。内容まで同じ重複は黙って1件にまとめ、同じキーで内容が異なる場合は先に見つかった定義を採用し、`citation-duplicate-key` として報告します。ファイルが見つからない場合は `citation-missing-bibliography`、解析できない場合は `citation-malformed-bibliography` を報告します。文献が1件も集まらないときはページを生成しません。同じパスを Markdown ページやリダイレクトが既に持っている場合は Markdown を優先し、`citations-page-conflict` を報告してページを生成しません。
+
+ページ本文には専用の `<main>` と `<h1>` を持たせ、文献のテキストはすべてエスケープします。`url` と `doi` は安全な `http(s)` のときだけリンクにします。文献はキー順に並べます。既存の本文中の引用と `References` セクションは変更しません。
+
+参考文献ページは `global` の output dependency を宣言します。文献ファイル、frontmatter の `bibliography`、ページの公開状態、`pagePath` の変更で、影響する出力を無効化します。
+
+## オプション
+
+| 項目 | 既定値 | 説明 |
+| --- | --- | --- |
+| `bibliography` | 未設定 | コンテンツルートからの相対パスで指定する BibTeX / BibLaTeX ファイル |
+| `referencesHeading` | `"References"` | 生成する参考文献の見出し |
+| `pagePath` | 未設定 | 参考文献一覧ページのパス。指定しないときは生成しない |
+
 ## diagnostics
 
 以下を Riebeckite の diagnostics に出力します。

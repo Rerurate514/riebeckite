@@ -26,6 +26,16 @@ export type RenderCanvasInput = {
   resolver: CanvasResolver;
 };
 
+export function renderCanvasPage(input: {
+  title: string;
+  canvas: string;
+}): string {
+  const heading = input.title
+    ? `<h1 class="rb-canvas-page__title">${escapeHtml(input.title)}</h1>`
+    : "";
+  return `<main class="rb-canvas-page">${heading}${input.canvas}</main>`;
+}
+
 export function renderCanvas(input: RenderCanvasInput): string {
   const { document, source, options, resolver } = input;
   const layout = buildCanvasLayout({

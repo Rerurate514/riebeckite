@@ -1,9 +1,14 @@
 import {
   type ConfigValidationIssue,
+  createStyleAsset,
   type Diagnostic,
   definePlugin,
   readContentSourceEntry,
 } from "@riebeckite/core";
+import {
+  listBibliographyPagePaths,
+  resolveBibliographyPage,
+} from "./src/page.js";
 import { remarkCitations } from "./src/remark.js";
 import { createCitationState } from "./src/state.js";
 import type { CitationsOptions } from "./src/types.js";
@@ -56,6 +61,36 @@ export function citations(options: CitationsOptions = {}) {
         cache: state.bibliographies,
       });
     },
+    pageTypes: [
+      {
+        id: "citations-bibliography",
+        paths: (context) =>
+          options.pagePath === undefined
+            ? []
+            : listBibliographyPagePaths(
+                {
+                  manifest: context.manifest,
+                  contentSource: context.contentSource,
+                  diagnostics: context.diagnostics,
+                },
+                options,
+              ),
+        outputDependencies: [{ type: "global" }],
+        resolve: (context) =>
+          options.pagePath === undefined
+            ? null
+            : resolveBibliographyPage(
+                {
+                  manifest: context.manifest,
+                  contentSource: context.contentSource,
+                  diagnostics: context.diagnostics,
+                  pathname: context.pathname,
+                },
+                options,
+              ),
+      },
+    ],
+    assets: [createStyleAsset(PLUGIN_NAME)],
     addDiagnostics: (): Diagnostic[] => state.diagnostics,
   });
 }
@@ -84,6 +119,9 @@ function validateCitationsOptions(
     typeof options.referencesHeading !== "string"
   ) {
     issues.push({ path: "referencesHeading", message: "Expected a string." });
+  }
+  if (options.pagePath !== undefined && typeof options.pagePath !== "string") {
+    issues.push({ path: "pagePath", message: "Expected a string." });
   }
   return issues;
 }

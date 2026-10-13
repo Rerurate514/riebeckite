@@ -5,6 +5,7 @@ export type CitationsOptions = {
   bibliography?: string | readonly string[];
   /** Heading inserted above generated references. Defaults to "References". */
   referencesHeading?: string;
+  pagePath?: string;
 };
 
 export type BibliographyEntry = {

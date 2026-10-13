@@ -23,6 +23,7 @@ export type CanvasOptions = {
    * Maximum number of nodes drawn in the static stage. Unset renders all.
    */
   maxNodes?: number;
+  documentPages?: boolean;
 };
 
 export type ResolvedCanvasOptions = {

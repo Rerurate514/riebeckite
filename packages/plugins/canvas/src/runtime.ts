@@ -17,13 +17,21 @@ export function createCanvasRuntime(): CanvasRuntime {
         if (typeof entry.html !== "string") continue;
         if (!entry.html.includes(CANVAS_NOTE_HREF)) continue;
 
-        const html = resolveNoteLinks(entry.html, manifest);
+        const html = finalizeCanvasNoteLinks(entry.html, manifest);
         if (html === entry.html) continue;
 
         entry.html = html;
       }
     },
   };
+}
+
+export function finalizeCanvasNoteLinks(
+  html: string,
+  manifest: ContentManifest,
+): string {
+  if (!html.includes(CANVAS_NOTE_HREF)) return html;
+  return resolveNoteLinks(html, manifest);
 }
 
 function resolveNoteLinks(html: string, manifest: ContentManifest): string {

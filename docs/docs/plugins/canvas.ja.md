@@ -41,6 +41,23 @@ export default defineConfig({
 
 `initCanvas()` は `data-canvas-render` が `client` / `both` の要素を探し、ペイロードからノードとエッジを組み立て、`data-canvas-render="ready"` を設定します。ready になると静的フォールバックは CSS で隠れます。ホイールで拡大縮小、ドラッグで移動できます（pan/zoom-lite）。
 
+## 独立ページ
+
+公開ルーティングされたノートから参照されている `.canvas` は、それ自身のページとしても配信できます。既定では無効で、明示的に有効化します。
+
+```ts
+canvas({ documentPages: true })
+```
+
+- `drawings/Architecture.canvas` → `/drawings/Architecture`
+- `diagrams/System.canvas` → `/diagrams/System`
+
+ページタイプ（`canvas-document`）は、公開エントリが埋め込んでいる Canvas を列挙し、URL を作るときに `.canvas` 拡張子を外します。埋め込み時と同じ `renderCanvas` の出力と `initCanvas` クライアントを再利用します。ページ本文には専用の `<main>` と `<h1>` を持たせます。
+
+公開されるのは、公開ルーティングされたエントリからたどれる Canvas だけです。下書き・公開予定・その他非公開のノートからしか参照されていない Canvas は公開しません。Canvas 内のノートリンクが非公開ノートを指す場合は `#` に置き換えます。同じ URL を Markdown ページやリダイレクトが既に持っている場合は Markdown を優先し、Canvas ページは `canvas-page-conflict` を報告して生成しません。
+
+独立ページは `global` の output dependency を宣言します。Canvas の追加・改名・編集・削除や、参照するノートの変更で、影響する出力を無効化します。
+
 ## オプション
 
 | 項目 | 既定値 | 説明 |
@@ -50,6 +67,7 @@ export default defineConfig({
 | `render` | `"both"` | `"static"`、`"client"`、`"both"` のいずれで描画するか |
 | `height` | 未設定 | ステージの高さ（px 数値または CSS 長さ） |
 | `maxNodes` | 未設定 | 描画するノード数の上限 |
+| `documentPages` | `false` | 参照されている Canvas を独立ページとして配信する |
 
 ## 主なエクスポート
 

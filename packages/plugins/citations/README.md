@@ -63,6 +63,49 @@ Use `referencesHeading` for localized headings:
 citations({ bibliography: "references.bib", referencesHeading: "参考文献" })
 ```
 
+## Bibliography page
+
+Setting `pagePath` generates a standalone bibliography page. It is opt-in and
+disabled when omitted:
+
+```ts
+citations({ bibliography: "references.bib", pagePath: "/bibliography" })
+```
+
+The page type (`citations-bibliography`) collects references from two sources:
+
+- the plugin's `bibliography` option, resolved from the content root
+- the frontmatter `bibliography` of every discoverable (public) page
+
+Only `manifest.discoverableEntries` contribute frontmatter bibliographies. Pages
+that are draft, unlisted, scheduled, or otherwise non-discoverable are ignored,
+so their bibliographies are never leaked into the page.
+
+Entries from all files are merged in a deterministic order. Identical duplicates
+are dropped silently; when the same key appears with different content, the first
+definition wins and the conflict is reported as `citation-duplicate-key`. Missing
+files and malformed files are reported as `citation-missing-bibliography` and
+`citation-malformed-bibliography`. When no entry is collected, no page is
+generated. If a Markdown page or redirect already owns the path, Markdown wins
+and the page is skipped with a `citations-page-conflict` diagnostic.
+
+The page body provides its own `<main>` and `<h1>`, escapes all entry text, and
+lists entries sorted by key. A `url` or `doi` field becomes a link only when it
+resolves to a safe `http(s)` target. Existing in-page citations and the
+`References` section are unchanged.
+
+Bibliography pages declare a `global` output dependency, so changes to a
+bibliography file, a frontmatter `bibliography`, page visibility, or `pagePath`
+invalidate the affected output.
+
+## Options
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `bibliography` | unset | Vault-relative BibTeX/BibLaTeX file path or paths |
+| `referencesHeading` | `"References"` | Heading inserted above generated references |
+| `pagePath` | unset | Path of the standalone bibliography page; disabled when omitted |
+
 ## Diagnostics
 
 Reported through Riebeckite diagnostics:

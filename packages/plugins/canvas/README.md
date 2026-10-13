@@ -57,6 +57,34 @@ builds positioned nodes and SVG edges from the payload, then sets
 `data-canvas-render="ready"`; CSS hides the static fallback once ready. It also
 supports wheel zoom and drag pan (pan/zoom-lite).
 
+## Standalone pages
+
+A `.canvas` file referenced by a publicly routable note can also be served as its
+own page. This is opt-in and disabled by default:
+
+```ts
+canvas({ documentPages: true })
+```
+
+- `drawings/Architecture.canvas` → `/drawings/Architecture`
+- `diagrams/System.canvas` → `/diagrams/System`
+
+The page type (`canvas-document`) lists the canvases that public entries embed,
+drops the `.canvas` extension to build the URL, and reuses the same
+`renderCanvas` output and `initCanvas` client as embedded canvases. The page body
+provides its own `<main>` and `<h1>`.
+
+Only canvases reachable from a publicly routable entry are published. A canvas
+referenced only by a draft, scheduled, or otherwise non-public note is not
+published, and note links inside a canvas that point at non-public notes are
+neutralized to `#`. When a Markdown page or redirect already owns the same URL,
+Markdown wins and the canvas page is skipped with a `canvas-page-conflict`
+diagnostic.
+
+Standalone pages declare a `global` output dependency, so adding, renaming,
+editing, or deleting a canvas — or changing the notes that reference it —
+invalidates the affected outputs.
+
 ## Options
 
 | Option | Default | Description |
@@ -66,6 +94,7 @@ supports wheel zoom and drag pan (pan/zoom-lite).
 | `render` | `"both"` | `"static"`, `"client"`, or `"both"` |
 | `height` | unset | Stage height (px number or CSS length) |
 | `maxNodes` | unset | Maximum number of nodes drawn |
+| `documentPages` | `false` | Serve referenced canvases as standalone pages |
 
 ## Exports
 

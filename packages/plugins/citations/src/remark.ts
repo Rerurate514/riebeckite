@@ -10,6 +10,11 @@ import type {
 } from "mdast";
 import { visit } from "unist-util-visit";
 import { parseBibliography } from "./bibliography.js";
+import {
+  pageRelativeCandidates,
+  pathList,
+  pushUniqueDiagnostics,
+} from "./paths.js";
 import type {
   BibliographyEntry,
   CachedBibliography,
@@ -157,55 +162,6 @@ function bibliographyPathGroups(
     );
   }
   return pathList(options.bibliography).map((path) => [path]);
-}
-
-function pathList(value: unknown): readonly string[] {
-  if (typeof value === "string") return [value];
-  if (Array.isArray(value)) {
-    return value.filter((item): item is string => typeof item === "string");
-  }
-  return [];
-}
-
-/**
- * Frontmatter paths are document-relative first, then content-root relative.
- * Every candidate still goes through `ContentSource.scan()`, so no candidate can
- * escape the configured content root.
- */
-function pageRelativeCandidates(
-  path: string,
-  sourceSlug: string | undefined,
-): readonly string[] {
-  const normalized = normalizeLogicalPath(path);
-  if (!sourceSlug || isAbsoluteLikePath(normalized)) return [normalized];
-
-  const directory = normalizeLogicalPath(sourceSlug)
-    .split("/")
-    .slice(0, -1)
-    .join("/");
-  if (!directory) return [normalized];
-
-  const relative = normalizeLogicalPath(`${directory}/${normalized}`);
-  return relative === normalized ? [normalized] : [relative, normalized];
-}
-
-function isAbsoluteLikePath(path: string): boolean {
-  return path.startsWith("/") || /^[A-Za-z]:\//.test(path);
-}
-
-function normalizeLogicalPath(path: string): string {
-  const parts: string[] = [];
-  for (const segment of path.replace(/\\/g, "/").split("/")) {
-    if (!segment || segment === ".") continue;
-    if (segment === "..") {
-      if (parts.length > 0 && parts.at(-1) !== "..") parts.pop();
-      else parts.push(segment);
-      continue;
-    }
-    parts.push(segment);
-  }
-  const prefix = path.startsWith("/") ? "/" : "";
-  return `${prefix}${parts.join("/")}`;
 }
 
 async function loadBibliographies(
@@ -582,22 +538,4 @@ function renderBibliographyEntry(
   return [author, year ? `(${year})` : undefined, title, container]
     .filter(Boolean)
     .join(". ");
-}
-
-function pushUniqueDiagnostics(
-  target: Diagnostic[],
-  diagnostics: readonly Diagnostic[],
-  slug: string | undefined,
-): void {
-  for (const diagnostic of diagnostics) {
-    const next = diagnostic.slug ? diagnostic : { ...diagnostic, slug };
-    const signature = diagnosticSignature(next);
-    if (target.some((item) => diagnosticSignature(item) === signature))
-      continue;
-    target.push(next);
-  }
-}
-
-function diagnosticSignature(diagnostic: Diagnostic): string {
-  return `${diagnostic.code}:${diagnostic.slug ?? ""}:${diagnostic.filePath ?? ""}:${diagnostic.target ?? ""}:${diagnostic.message}`;
 }

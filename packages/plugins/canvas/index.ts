@@ -6,6 +6,7 @@ import {
   getExtension,
   readContentSourceEntry,
 } from "@riebeckite/core";
+import { listCanvasDocumentPaths, resolveCanvasDocument } from "./src/page.js";
 import { parseCanvas, resolveCanvasOptions } from "./src/parse.js";
 import { remarkCanvas } from "./src/remark.js";
 import { renderCanvas } from "./src/render.js";
@@ -98,6 +99,25 @@ export function canvas(options: CanvasOptions = {}) {
         },
       },
     ],
+    pageTypes: [
+      {
+        id: "canvas-document",
+        paths: ({ manifest, contentIndex, contentSource, diagnostics }) =>
+          options.documentPages === true
+            ? listCanvasDocumentPaths({
+                manifest,
+                contentIndex,
+                contentSource,
+                diagnostics,
+              })
+            : [],
+        outputDependencies: [{ type: "global" }],
+        resolve: (context) =>
+          options.documentPages === true
+            ? resolveCanvasDocument(context, resolved)
+            : null,
+      },
+    ],
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest);
     },
@@ -143,6 +163,12 @@ function validateCanvasOptions(
     (!Number.isInteger(options.maxNodes) || options.maxNodes <= 0)
   ) {
     issues.push({ path: "maxNodes", message: "Expected a positive integer." });
+  }
+  if (
+    options.documentPages !== undefined &&
+    typeof options.documentPages !== "boolean"
+  ) {
+    issues.push({ path: "documentPages", message: "Expected a boolean." });
   }
   return issues;
 }

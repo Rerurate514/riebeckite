@@ -1,3 +1,6 @@
+---
+title: Separating Content and the Site (In Depth)
+---
 # Separating Content and the Site (In Depth)
 
 [Separating Content from the Site](../content-repositories.md) explains separate-repository operation as a walkthrough. This page is its "in depth" companion: it explains **why the configuration works this way** and covers the cases you dig into later — root resolution, copying assets, authenticating CI, and running submodules.

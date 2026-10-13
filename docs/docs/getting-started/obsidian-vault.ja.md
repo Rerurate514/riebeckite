@@ -1,3 +1,6 @@
+---
+title: Obsidian Vault を使う
+---
 # Obsidian Vault を使う
 
 すでに Obsidian Vault を持っている場合、Riebeckite はその Vault をサイトのコンテンツとして読むことができます。まずはローカルで 1 つのノートを公開し、リンクと画像を確認してから `dist/` をビルドします。

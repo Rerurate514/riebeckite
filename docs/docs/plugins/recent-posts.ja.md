@@ -1,3 +1,6 @@
+---
+title: Recent Posts
+---
 # Recent Posts
 
 公開済みノートを日付順に並べ、最新の記事一覧として表示するプラグインです。

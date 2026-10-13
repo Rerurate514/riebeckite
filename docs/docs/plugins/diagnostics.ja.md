@@ -1,3 +1,6 @@
+---
+title: Diagnostics
+---
 # Diagnostics
 
 サイト全体の参照整合性、公開設定の矛盾、frontmatter の不足などを検出するプラグインです。ビルド時の診断だけでなく、CLI とプログラムからの実行にも対応します。

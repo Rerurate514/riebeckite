@@ -1,3 +1,6 @@
+---
+title: SEO
+---
 # SEO
 
 SEO metadata, sitemap, robots.txt, and feed generation for Riebeckite.

@@ -1,4 +1,7 @@
-﻿# Upgrading Riebeckite
+---
+title: Upgrading Riebeckite
+---
+# Upgrading Riebeckite
 
 Use this guide when updating an existing site to a newer Riebeckite version.
 

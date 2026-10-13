@@ -1,3 +1,6 @@
+---
+title: Markmap
+---
 # Markmap
 
 ` ```markmap ` コードブロックを、Markdown の見出しから組み立てるマインドマップとして表示するプラグインです。マインドマップはブラウザ側で `markmap-lib` と `markmap-view` により描画し、これらのライブラリは図があるときだけ CDN から読み込みます。

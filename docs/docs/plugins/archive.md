@@ -1,3 +1,6 @@
+---
+title: Archive
+---
 # Archive
 
 [日本語](./archive.ja.md)

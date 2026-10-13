@@ -1,3 +1,6 @@
+---
+title: Discord Embed
+---
 # Discord Embed
 
 Discord のリンクプレビュー向けに、各ページの `<head>` を補完するプラグインです。

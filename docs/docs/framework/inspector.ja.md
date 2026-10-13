@@ -1,3 +1,6 @@
+---
+title: Inspector
+---
 # Inspector
 
 Inspector は、Riebeckite がすでに解決した設定やコンテンツ、Plugin、Build State を確認するための機能です。

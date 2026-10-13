@@ -1,3 +1,6 @@
+---
+title: Quality
+---
 # Quality
 
 Static quality and accessibility inspection for generated HTML in Riebeckite.

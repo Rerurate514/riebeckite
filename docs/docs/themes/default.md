@@ -1,3 +1,6 @@
+---
+title: Default
+---
 # Default
 
 The default Riebeckite theme: design tokens, light/dark color modes, typography

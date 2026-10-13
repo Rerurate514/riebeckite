@@ -1,3 +1,6 @@
+---
+title: Properties
+---
 # Properties
 
 ノートの frontmatter を、Obsidian 風のプロパティパネルとしてビルド時に描画するプラグインです。クライアント側の JavaScript は不要です。

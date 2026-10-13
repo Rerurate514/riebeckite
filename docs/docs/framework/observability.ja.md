@@ -1,3 +1,6 @@
+---
+title: Observability
+---
 # Observability
 
 Observability は、Riebeckite の実行中に **何が起きたのか、どこに時間がかかったのか** を調べるための仕組みです。

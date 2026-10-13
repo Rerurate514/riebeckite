@@ -1,3 +1,6 @@
+---
+title: Local Graph
+---
 # Local Graph
 
 Local (nearby notes) graph rendering: a compact radial graph of a note's

@@ -1,3 +1,6 @@
+---
+title: Architecture Rules for Agents
+---
 # Architecture Rules for Agents
 
 ## Ownership and direction

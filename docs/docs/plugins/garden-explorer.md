@@ -1,3 +1,6 @@
+---
+title: Garden Explorer
+---
 # Garden Explorer
 
 Interactive note garden explorer: a local/global content graph, search box,

@@ -1,3 +1,6 @@
+---
+title: Architecture
+---
 # Architecture
 
 Riebeckite is a pnpm workspace that separates Core from Plugin, Integration,

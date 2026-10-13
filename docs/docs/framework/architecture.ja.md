@@ -1,3 +1,6 @@
+---
+title: Architecture
+---
 # Architecture
 
 Riebeckite は、Core を中心に Plugin、Integration、Theme、Application を分離した pnpm workspace です。

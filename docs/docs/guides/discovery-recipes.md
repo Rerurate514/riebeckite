@@ -1,3 +1,6 @@
+---
+title: Discovery Recipes
+---
 # Discovery Recipes
 
 Riebeckite does not have a separate "homepage framework". A homepage and the

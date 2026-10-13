@@ -1,3 +1,6 @@
+---
+title: Code Enhance
+---
 # Code Enhance
 
 Shiki によるシンタックスハイライトへ、コピー、折り返し、折りたたみなどの操作を加えるプラグインです。

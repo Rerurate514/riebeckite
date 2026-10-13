@@ -1,3 +1,6 @@
+---
+title: Plugin Showcase
+---
 # Plugin Showcase
 
 Plugin catalog は [Plugins](./README.ja.md) にあります。このページでは、Plugin が実際に何を生成するかを確認できます。各項目では Markdown のソースと、Riebeckite 上での実行例を並べています。

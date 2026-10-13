@@ -1,3 +1,6 @@
+---
+title: Recent Posts
+---
 # Recent Posts
 
 Recent posts list rendering: shows the latest published notes sorted by

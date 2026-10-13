@@ -1,3 +1,6 @@
+---
+title: Diagnostics
+---
 # Diagnostics
 
 Diagnostics は、Riebeckite の設定やコンテンツ、プラグイン、実行環境に問題がないかを検査し、開発者に報告するための仕組みです。

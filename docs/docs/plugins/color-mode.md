@@ -1,3 +1,6 @@
+---
+title: color-mode
+---
 # color-mode
 
 Light / dark / system color-mode switching for Riebeckite sites. The control

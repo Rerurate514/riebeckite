@@ -1,3 +1,6 @@
+---
+title: Navigation
+---
 # Navigation
 
 Site navigation as a Riebeckite plugin. `navigation()` derives the primary

@@ -1,3 +1,6 @@
+---
+title: Configuration リファレンス
+---
 # Configuration リファレンス
 
 このページでは、`riebeckite.config.ts` で指定できる設定をまとめています。

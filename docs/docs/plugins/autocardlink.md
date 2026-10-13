@@ -1,3 +1,6 @@
+---
+title: AutoCardLink
+---
 # AutoCardLink
 
 Render `cardlink` code blocks as link preview cards.

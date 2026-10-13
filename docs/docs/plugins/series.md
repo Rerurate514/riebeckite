@@ -1,3 +1,6 @@
+---
+title: Series
+---
 # Series
 
 Ordered multi-part posts ("series") for Riebeckite. At build time, notes that

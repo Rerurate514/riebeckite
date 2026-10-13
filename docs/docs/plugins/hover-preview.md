@@ -1,3 +1,6 @@
+---
+title: Hover Preview
+---
 # Hover Preview
 
 Quartz/Obsidian-Publish style popover previews for internal links. Hovering or

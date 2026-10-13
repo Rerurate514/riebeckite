@@ -1,3 +1,6 @@
+---
+title: Diagnostics
+---
 # Diagnostics
 
 Content diagnostics for Obsidian vaults / Riebeckite content: site-wide

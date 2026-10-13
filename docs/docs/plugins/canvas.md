@@ -1,3 +1,6 @@
+---
+title: Canvas
+---
 # Canvas
 
 Render Obsidian `.canvas` files (JSON Canvas 1.0) as diagrams.

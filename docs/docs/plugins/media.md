@@ -1,3 +1,6 @@
+---
+title: Media
+---
 # Media
 
 Renders Obsidian audio / video attachment embeds with native HTML5 media players.

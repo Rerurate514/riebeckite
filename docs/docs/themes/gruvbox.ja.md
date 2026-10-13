@@ -1,3 +1,6 @@
+---
+title: Gruvbox
+---
 # Gruvbox
 
 Gruvbox の温かい配色を Riebeckite のテーマにしたものです。明るい配色ではクリーム色の紙に焦げ茶の文字、暗い配色ではチャコールの背景に `#ebdbb2` の文字を載せ、リンクや操作要素には Gruvbox の青を使います。

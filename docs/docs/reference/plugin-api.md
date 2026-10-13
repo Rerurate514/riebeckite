@@ -1,3 +1,6 @@
+---
+title: Plugin System
+---
 # Plugin System
 
 Riebeckite Plugins extend content interpretation, transformation,

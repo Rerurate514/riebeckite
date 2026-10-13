@@ -1,3 +1,6 @@
+---
+title: Map
+---
 # Map
 
 Turns a ` ```map ` fenced code block and/or frontmatter coordinates into an

@@ -1,3 +1,6 @@
+---
+title: Localization
+---
 # Localization
 
 Riebeckite では、`@riebeckite/plugin-l10n` を使って多言語 Site を構築できます。

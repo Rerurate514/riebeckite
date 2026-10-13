@@ -1,3 +1,6 @@
+---
+title: Content System
+---
 # Content System
 
 The Content System turns files such as Markdown and images into content that

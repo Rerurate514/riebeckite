@@ -1,3 +1,6 @@
+---
+title: Code Annotations
+---
 # Code Annotations
 
 Renders code diffs with the language syntax highlighter and Riebeckite's code

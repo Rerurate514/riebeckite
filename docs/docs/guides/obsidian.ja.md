@@ -1,3 +1,6 @@
+---
+title: Obsidian のノートをサイトにする
+---
 # Obsidian のノートをサイトにする
 
 Riebeckite では、**普段使っている Obsidian Vault をそのまま記事の置き場所として利用できます。**

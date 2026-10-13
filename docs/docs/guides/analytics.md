@@ -1,3 +1,6 @@
+---
+title: Analytics
+---
 # Analytics
 
 Riebeckite collects a page view per article. Analytics is split into two

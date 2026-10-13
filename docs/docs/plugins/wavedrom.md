@@ -1,3 +1,6 @@
+---
+title: WaveDrom
+---
 # WaveDrom
 
 Renders ` ```wavedrom ` code blocks as [WaveDrom](https://wavedrom.com/) timing diagrams.

@@ -1,3 +1,6 @@
+---
+title: Riebeckite documentation
+---
 # Riebeckite documentation
 
 ![[riebeckite-logo-horizontal.png]]

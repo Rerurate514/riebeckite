@@ -1,3 +1,6 @@
+---
+title: CLI Reference
+---
 # CLI Reference
 
 Riebeckite CLI は、Site の作成、開発、検証、診断、Build、公開などを行うためのコマンドです。

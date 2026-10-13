@@ -1,3 +1,6 @@
+---
+title: Taxonomy
+---
 # Taxonomy
 
 Riebeckite のビルド時タクソノミー（タグ・フォルダ）プラグインです。一覧用データ、

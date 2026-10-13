@@ -1,3 +1,6 @@
+---
+title: Analytics
+---
 # Analytics
 
 Storage-independent analytics primitives and browser page-view tracking for

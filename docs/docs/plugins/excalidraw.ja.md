@@ -1,3 +1,6 @@
+---
+title: Excalidraw
+---
 # Excalidraw
 
 Obsidian の Excalidraw 埋め込みを SVG として表示するプラグインです。

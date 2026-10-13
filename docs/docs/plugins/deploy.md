@@ -1,3 +1,6 @@
+---
+title: Deploy
+---
 # Deploy
 
 Static hosting output helpers for Riebeckite. The plugin prepares the files a

@@ -1,3 +1,6 @@
+---
+title: Publishing Obsidian notes
+---
 # Publishing Obsidian notes
 
 Riebeckite can use your everyday Obsidian vault as the place where articles

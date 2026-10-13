@@ -1,3 +1,6 @@
+---
+title: Writing content
+---
 # Writing content
 
 This guide covers the basics of writing articles for a Riebeckite site. It is aimed at users who are new to Markdown or static publishing.

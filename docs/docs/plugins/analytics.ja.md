@@ -1,3 +1,6 @@
+---
+title: Analytics
+---
 # Analytics
 
 Riebeckite 向けの、ストレージや実行環境に依存しないアクセス解析の基盤です。Cloudflare、Worker、データベース、特定ベンダーの実装は含みません。

@@ -1,3 +1,6 @@
+---
+title: Vega-Lite
+---
 # Vega-Lite
 
 Renders ` ```vega-lite ` code blocks as Vega-Lite charts. Charts are drawn in the

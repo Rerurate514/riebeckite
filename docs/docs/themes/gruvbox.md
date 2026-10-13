@@ -1,3 +1,6 @@
+---
+title: Gruvbox
+---
 # Gruvbox
 
 A warm, retro-groove Gruvbox theme for Riebeckite: buttery-cream paper with

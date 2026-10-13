@@ -1,3 +1,6 @@
+---
+title: Hard Breaks
+---
 # Hard Breaks
 
 Markdown の通常の改行を `<br>` 要素として出力するプラグインです。Obsidian の

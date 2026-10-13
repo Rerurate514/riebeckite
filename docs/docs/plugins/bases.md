@@ -1,3 +1,6 @@
+---
+title: Bases
+---
 # Bases
 
 Render Obsidian Bases definitions from fenced `base` code blocks. Filtering,

@@ -1,3 +1,6 @@
+---
+title: Dataview
+---
 # Dataview
 
 Evaluate declarative `dataview` code blocks against the content manifest at

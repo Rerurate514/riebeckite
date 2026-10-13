@@ -1,3 +1,6 @@
+---
+title: Add Your First Plugin
+---
 # Add Your First Plugin
 
 Plugins add features to your Riebeckite site — search, diagrams, embeds, and more. This guide walks through adding the **highlight** plugin, which lets you mark text with `==double equals==` syntax.

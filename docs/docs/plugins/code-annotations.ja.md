@@ -1,3 +1,6 @@
+---
+title: Code Annotations
+---
 # Code Annotations
 
 差分のコードブロックを、対象言語のシンタックスハイライトとRiebeckiteのコードブロックUIで表示します。

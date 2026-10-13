@@ -1,3 +1,6 @@
+---
+title: Code Enhance
+---
 # Code Enhance
 
 Enhanced code blocks: Shiki highlighting plus a header with copy, wrap, and

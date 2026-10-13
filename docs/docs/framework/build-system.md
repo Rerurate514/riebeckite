@@ -1,3 +1,6 @@
+---
+title: Build System
+---
 # Build System
 
 Riebeckite's Build System reads content such as Markdown plus the configuration

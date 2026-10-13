@@ -1,3 +1,6 @@
+---
+title: Graphviz
+---
 # Graphviz
 
 Graphviz (DOT) diagram rendering for ` ```dot ` and ` ```graphviz ` code blocks.

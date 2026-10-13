@@ -1,3 +1,6 @@
+---
+title: Breadcrumbs
+---
 # Breadcrumbs
 
 ノートのスラッグ階層からパンくずナビゲーションをビルド時に生成する

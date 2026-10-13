@@ -1,3 +1,6 @@
+---
+title: Citations
+---
 # Citations
 
 [日本語版](./citations.ja.md)

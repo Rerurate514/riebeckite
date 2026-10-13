@@ -1,3 +1,6 @@
+---
+title: Kanban
+---
 # Kanban
 
 Obsidian の Kanban ボードを、ビルド時に静的 HTML へ変換するプラグインです。クライアント側の JavaScript は不要です。

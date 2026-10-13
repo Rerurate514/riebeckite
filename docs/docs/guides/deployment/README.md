@@ -1,3 +1,6 @@
+---
+title: Deployment
+---
 # Deployment
 
 A Riebeckite build produces static files in `dist/`. Deployment means serving that folder, and the choices are about *how* it gets there.

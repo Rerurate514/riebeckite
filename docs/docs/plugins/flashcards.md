@@ -1,3 +1,6 @@
+---
+title: Flashcards
+---
 # Flashcards
 
 Turn a `flashcards` code block into a study island: a small deck of cards that

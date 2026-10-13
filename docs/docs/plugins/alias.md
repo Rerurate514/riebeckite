@@ -1,3 +1,6 @@
+---
+title: Alias
+---
 # Alias
 
 Turns Obsidian `aliases` / `alias` frontmatter into site-local redirect URLs, so a note can be reached through its alternate names without changing its canonical permalink.

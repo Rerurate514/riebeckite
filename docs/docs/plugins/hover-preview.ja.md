@@ -1,3 +1,6 @@
+---
+title: Hover Preview
+---
 # Hover Preview
 
 内部リンクにカーソルを合わせると、リンク先のタイトルと抜粋をポップオーバーで表示するプラグインです。Quartz や Obsidian Publish のプレビューに近い挙動で、ページを離れずにリンク先の内容を確認できます。

@@ -1,3 +1,6 @@
+---
+title: Plugin System
+---
 # Plugin System
 
 Riebeckite Plugin は、Riebeckite の機能を Core や Site Application に直接組み込まず、再利用可能な形で追加するための仕組みです。

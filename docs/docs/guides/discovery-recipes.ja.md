@@ -1,3 +1,6 @@
+---
+title: 発見導線のレシピ
+---
 # 発見導線のレシピ
 
 Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type、Markdown ブロック、`navigation` plugin の組み合わせで作ります。

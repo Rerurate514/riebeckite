@@ -1,3 +1,6 @@
+---
+title: Shortcodes
+---
 # Shortcodes
 
 A generic shortcode system for Markdown, built on `remark-directive`.

@@ -1,3 +1,6 @@
+---
+title: Gallery
+---
 # Gallery
 
 Markdown-driven card galleries. A fenced `gallery` code block with a small YAML

@@ -1,3 +1,6 @@
+---
+title: Responsive Image
+---
 # Responsive Image
 
 Upgrades existing `<img>` elements with lazy loading and responsive

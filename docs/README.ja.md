@@ -1,3 +1,6 @@
+---
+title: Riebeckite ドキュメント
+---
 # Riebeckite ドキュメント
 
 ![[riebeckite-logo-horizontal.png]]

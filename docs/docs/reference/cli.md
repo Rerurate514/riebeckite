@@ -1,3 +1,6 @@
+---
+title: CLI Reference
+---
 # CLI Reference
 
 Run commands from an application directory. The CLI resolves the application root from the current working directory and reports command errors safely with a non-zero exit code.

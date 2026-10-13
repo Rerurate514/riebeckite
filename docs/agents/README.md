@@ -1,3 +1,6 @@
+---
+title: Riebeckite Agent Documentation
+---
 # Riebeckite Agent Documentation
 
 This directory is the implementation guide for coding agents and automated maintainers. It is intentionally English-only, concise, and rule-oriented. Human-facing explanations, examples, and onboarding guidance live in [Japanese](../README.ja.md) and [English](../index.md).

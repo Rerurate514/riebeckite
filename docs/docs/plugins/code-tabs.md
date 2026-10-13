@@ -1,3 +1,6 @@
+---
+title: Code Tabs
+---
 # Code Tabs
 
 Groups adjacent code blocks with `tab="..."` metadata into an accessible tab UI.

@@ -1,3 +1,6 @@
+---
+title: Markmap
+---
 # Markmap
 
 Renders ` ```markmap ` code blocks as Markdown-heading mindmaps. The mindmap is

@@ -1,3 +1,6 @@
+---
+title: Query
+---
 # Query
 
 Turn `query` code blocks into lists or tables of content. Filtering, sorting,

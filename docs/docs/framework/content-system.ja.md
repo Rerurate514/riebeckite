@@ -1,3 +1,6 @@
+---
+title: Content System
+---
 # Content System
 
 Content System は、Markdown や画像などのファイルを、Riebeckite がサイトとして扱えるコンテンツへ変換する仕組みです。

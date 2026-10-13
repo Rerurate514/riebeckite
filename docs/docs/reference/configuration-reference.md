@@ -1,3 +1,6 @@
+---
+title: Configuration reference
+---
 # Configuration reference
 
 This page lists every field in `riebeckite.config.ts`. For how the configuration

@@ -1,3 +1,6 @@
+---
+title: Build System
+---
 # Build System
 
 Riebeckite の Build System は、Markdown などのコンテンツと設定を読み込み、最終的な Web サイトを生成する仕組みです。

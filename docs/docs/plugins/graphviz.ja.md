@@ -1,3 +1,6 @@
+---
+title: Graphviz
+---
 # Graphviz
 
 `dot` / `graphviz` コードブロックを Graphviz の SVG 図として表示するプラグインです。既定ではビルド時に描画します。

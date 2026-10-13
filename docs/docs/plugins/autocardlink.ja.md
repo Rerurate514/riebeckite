@@ -1,3 +1,6 @@
+---
+title: AutoCardLink
+---
 # AutoCardLink
 
 `cardlink` コードブロックを、外部ページへのプレビューカードに変換するプラグインです。

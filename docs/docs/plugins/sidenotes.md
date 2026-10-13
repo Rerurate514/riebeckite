@@ -1,3 +1,6 @@
+---
+title: Sidenotes
+---
 # Sidenotes
 
 Tufte-style side notes for Riebeckite. Authors keep writing ordinary GFM

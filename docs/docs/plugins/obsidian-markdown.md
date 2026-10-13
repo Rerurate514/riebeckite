@@ -1,3 +1,6 @@
+---
+title: Obsidian Markdown
+---
 # Obsidian Markdown
 
 Obsidian-flavored Markdown support: wikilinks, callouts, inline tags, and

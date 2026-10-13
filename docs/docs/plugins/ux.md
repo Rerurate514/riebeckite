@@ -1,3 +1,6 @@
+---
+title: UX
+---
 # UX
 
 Client-side progressive enhancements for reading. The plugin leaves the built

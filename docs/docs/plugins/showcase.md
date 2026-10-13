@@ -1,3 +1,6 @@
+---
+title: Plugin Showcase
+---
 # Plugin Showcase
 
 The Plugin catalog lives in [Plugins](./README.md). This page shows what each Plugin actually produces. Each entry pairs the Markdown source with the result rendered by Riebeckite.

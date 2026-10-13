@@ -1,3 +1,6 @@
+---
+title: Framework Development
+---
 # Framework Development
 
 This page is for people developing Riebeckite itself: core, CLI, HonoX integration, official plugins, official themes, templates, or the reference app. It is intentionally separate from [Getting Started](../getting-started/README.md). Users who only want to publish a site should use `create-riebeckite` instead of cloning this monorepo.

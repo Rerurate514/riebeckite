@@ -1,3 +1,6 @@
+---
+title: Build Dependency Contract
+---
 # Build Dependency Contract
 
 Core owns incremental invalidation. A plugin does not compute which content is affected, and it does not keep its own dependency state. It declares a contract and lets Core decide what to reuse.

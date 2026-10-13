@@ -1,3 +1,6 @@
+---
+title: Page System
+---
 # Page System
 
 Page System は、Plugin が **Site の route を直接追加せずに独立したページを提供する**ための仕組みです。

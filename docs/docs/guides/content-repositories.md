@@ -1,3 +1,6 @@
+---
+title: Separating content from the site
+---
 # Separating content from the site
 
 For **keeping articles (Markdown / an Obsidian vault) separate from the site (code, configuration, themes)** — in different locations or different repositories — this guide explains why you might split them and what the resulting layout looks like. The concrete GitHub Actions automation, including repository dispatch and external checkout, lives in the [in-depth companion](./deployment/separate-content-repository.md).

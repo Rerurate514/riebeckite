@@ -1,3 +1,6 @@
+---
+title: Related Posts
+---
 # Related Posts
 
 ビルド時に「関連ノート」ナビゲーションを生成するプラグインです。公開対象の

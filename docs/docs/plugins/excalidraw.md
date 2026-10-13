@@ -1,3 +1,6 @@
+---
+title: Excalidraw
+---
 # Excalidraw
 
 Excalidraw drawing rendering for Obsidian wikilinks.

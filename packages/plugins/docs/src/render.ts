@@ -6,7 +6,8 @@ export function renderDocsSidebar(context: {
   readonly label: string;
 }): string {
   if (context.items.length === 0) return "";
-  return `<nav class="rb-docs-sidebar" aria-label="${escapeAttribute(context.label)}" data-docs-sidebar>${renderItems(context.items, context.currentPermalink, 1)}</nav>`;
+  const label = escapeAttribute(context.label);
+  return `<details class="rb-docs-sidebar-details" data-docs-sidebar-details open><summary class="rb-docs-sidebar-summary">${label}</summary><nav class="rb-docs-sidebar" aria-label="${label}" data-docs-sidebar>${renderItems(context.items, context.currentPermalink, 1)}</nav></details>`;
 }
 
 export function renderDocsPrevNext(

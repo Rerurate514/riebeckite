@@ -65,8 +65,17 @@ Plugin は既存の汎用 article body slot に HTML フラグメントを提供
 - `article.aside`: Docs のサイドバー
 - `article.footer`: 前後ページリンクのナビゲーション
 
+サイドバーは `<details>` 要素で包み、`<summary>` にサイドバーのラベルを表示します。
+summary が見える幅ではナビゲーションを畳め、デスクトップのレールでは開いたまま
+表示されます。マークアップは常に開いた状態で出力し、登録されるクライアント
+エントリ `initDocsSidebar` が `--rb-docs-sidebar-collapsible` が `1` の間だけ
+畳みます。Plugin は `88rem` 以上でこのプロパティを `0` にして summary を
+非表示にするため、デスクトップのレールは従来どおりの見た目を保ちます。
+プロパティとブレークポイントは Theme 側で上書きできます。
+
 CSS は最小限の構造だけです。Theme 側では `rb-docs-sidebar`、
-`aria-current="page"`、`data-docs-level`、`data-docs-collapsed`、
+`rb-docs-sidebar-details`、`rb-docs-sidebar-summary`、`aria-current="page"`、
+`data-docs-level`、`data-docs-collapsed`、`data-docs-sidebar-details`、
 `data-docs-previous`、`data-docs-next` などをフックとして使えます。
 
 ## l10n と公開の境界
@@ -84,4 +93,5 @@ permalink / alias / rename / l10n の責務を壊しません。
 - `buildDocsNavigation(entries, options)`: フレームワークに依存しないナビゲーションモデル
 - `flattenDocsNavigation(items)`: 前後ページリンク用の並び
 - `renderDocsSidebar(...)` / `renderDocsPrevNext(...)`: サーバー側の HTML レンダラー
+- `initDocsSidebar()`: 畳めるサイドバーのブラウザ側初期化（`@riebeckite/plugin-docs/client` からも読み込める）
 - 型: `DocsOptions`、`ResolvedDocsOptions`、`DocsNavigationItem`

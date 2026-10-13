@@ -3,6 +3,7 @@ import {
   type ConfigValidationIssue,
   type ContentManifest,
   type ContentManifestEntry,
+  createClientEntry,
   createStyleAsset,
   definePlugin,
   getEntryLanguage,
@@ -16,6 +17,7 @@ import {
 import { renderDocsPrevNext, renderDocsSidebar } from "./src/render.js";
 import type { DocsOptions } from "./src/types.js";
 
+export { initDocsSidebar } from "./src/docs-sidebar.client.js";
 export {
   buildDocsNavigation,
   flattenDocsNavigation,
@@ -41,6 +43,7 @@ export function docs(options: DocsOptions) {
     options,
     validateOptions: validateDocsOptions,
     assets: [createStyleAsset(DOCS_PLUGIN_NAME)],
+    clientEntries: [createClientEntry(DOCS_PLUGIN_NAME, "initDocsSidebar")],
     onManifestCreated: ({ manifest }) => {
       const entries = getPublishedEntries(manifest);
       for (const entry of entries) {

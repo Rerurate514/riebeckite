@@ -1,3 +1,22 @@
+.rb-docs-sidebar-details {
+  --rb-docs-sidebar-collapsible: 1;
+}
+
+.rb-docs-sidebar-details > .rb-docs-sidebar-summary {
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+@media (min-width: 88rem) {
+  .rb-docs-sidebar-details {
+    --rb-docs-sidebar-collapsible: 0;
+  }
+
+  .rb-docs-sidebar-details > .rb-docs-sidebar-summary {
+    display: none;
+  }
+}
+
 .rb-docs-sidebar {
   font-size: 0.95rem;
 }

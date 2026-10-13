@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import {
   ContentManager,
@@ -13,6 +14,8 @@ import {
   flattenDocsNavigation,
   resolveDocsOptions,
 } from "../src/navigation.js";
+
+const style = readFileSync(new URL("../style.css", import.meta.url), "utf8");
 
 function memorySource(files: Record<string, string>): ContentSource {
   const entries: ContentSourceEntry[] = Object.keys(files).map((path) => ({
@@ -292,6 +295,14 @@ test("renders accessible navigation semantics", async () => {
     html,
     /<nav class="rb-docs-sidebar" aria-label="Docs navigation"/,
   );
+  assert.match(
+    html,
+    /<details class="rb-docs-sidebar-details" data-docs-sidebar-details open>/,
+  );
+  assert.match(
+    html,
+    /<summary class="rb-docs-sidebar-summary">Docs navigation<\/summary>/,
+  );
   assert.match(html, /aria-current="page"/);
   assert.match(
     html,
@@ -320,6 +331,33 @@ test("keeps the current branch expanded when a section is collapsed", async () =
   assert.match(
     search?.bodySlots?.["article.aside"] ?? "",
     /data-docs-collapsed="false"/,
+  );
+});
+
+test("registers the style asset and the collapsible sidebar client entry", () => {
+  const plugin = docs({ root: "docs" });
+
+  assert.deepEqual(plugin.assets, [
+    {
+      pluginName: "docs",
+      kind: "style",
+      moduleSpecifier: "@riebeckite/plugin-docs/style.css",
+    },
+  ]);
+  assert.deepEqual(plugin.clientEntries, [
+    {
+      pluginName: "docs",
+      moduleSpecifier: "@riebeckite/plugin-docs/client",
+      exportName: "initDocsSidebar",
+    },
+  ]);
+});
+
+test("collapses the sidebar below the desktop rail breakpoint", () => {
+  assert.match(style, /--rb-docs-sidebar-collapsible: 1;/);
+  assert.match(
+    style,
+    /@media \(min-width: 88rem\) \{[\s\S]*?--rb-docs-sidebar-collapsible: 0;[\s\S]*?\.rb-docs-sidebar-summary \{[\s\S]*?display: none;/,
   );
 });
 

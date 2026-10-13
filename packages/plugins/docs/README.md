@@ -71,9 +71,18 @@ slots:
 - `article.aside` — docs sidebar
 - `article.footer` — previous/next navigation
 
+The sidebar is wrapped in a native `<details>` element whose `<summary>` uses the
+sidebar label, so the navigation folds where the summary is visible and stays
+expanded on the desktop rail. The markup always ships open; the registered client
+entry `initDocsSidebar` closes it while `--rb-docs-sidebar-collapsible` is `1`.
+The plugin sets that property to `0` and hides the summary from `88rem` up, so the
+desktop rail keeps its previous appearance. Themes can override the property and
+the breakpoint.
+
 It ships a small `style.css` with structural defaults only. Themes can target
-classes and data attributes such as `rb-docs-sidebar`, `aria-current="page"`,
-`data-docs-level`, `data-docs-collapsed`, `data-docs-previous`, and
+classes and data attributes such as `rb-docs-sidebar`, `rb-docs-sidebar-details`,
+`rb-docs-sidebar-summary`, `aria-current="page"`, `data-docs-level`,
+`data-docs-collapsed`, `data-docs-sidebar-details`, `data-docs-previous`, and
 `data-docs-next`.
 
 ## l10n and publishing
@@ -92,4 +101,6 @@ outside-root content does not appear in the sidebar or previous/next sequence.
 - `buildDocsNavigation(entries, options)` — build the framework-independent model
 - `flattenDocsNavigation(items)` — derive the previous/next sequence
 - `renderDocsSidebar(...)` and `renderDocsPrevNext(...)` — server HTML renderers
+- `initDocsSidebar()` — browser init for the collapsible sidebar (also via
+  `@riebeckite/plugin-docs/client`)
 - Types: `DocsOptions`, `ResolvedDocsOptions`, `DocsNavigationItem`

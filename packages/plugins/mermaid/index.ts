@@ -14,6 +14,7 @@ import type {
 export type {
   MermaidClientOptions,
   MermaidOptions,
+  MermaidRenderFailureMode,
   MermaidRenderMode,
   MermaidRenderSession,
   MermaidTheme,
@@ -27,8 +28,10 @@ export function mermaid(options: MermaidOptions = {}) {
     name: "mermaid",
     order: -10,
     processedContentCache: {
-      version: "mermaid-v2",
+      version: "mermaid-v3",
       dependencyMode: "unsafe",
+      appliesToContent: ({ source }) =>
+        containsMermaidFence(source) ? "applies" : "does-not-apply",
     },
     options,
     validateOptions: validateMermaidOptions,
@@ -46,6 +49,10 @@ export function mermaid(options: MermaidOptions = {}) {
   });
 }
 
+function containsMermaidFence(source: string): boolean {
+  return /^\s*(?:`{3,}|~{3,})[^\n`~]*\bmermaid\b[^\n`~]*$/im.test(source);
+}
+
 function validateMermaidOptions(
   options: MermaidOptions | undefined,
 ): readonly ConfigValidationIssue[] {
@@ -60,6 +67,16 @@ function validateMermaidOptions(
     issues.push({
       path: "render",
       message: 'Expected "build" or "client".',
+    });
+  }
+  if (
+    options.onRenderError !== undefined &&
+    options.onRenderError !== "error" &&
+    options.onRenderError !== "client"
+  ) {
+    issues.push({
+      path: "onRenderError",
+      message: 'Expected "error" or "client".',
     });
   }
   if (!isMermaidTheme(options.theme)) {

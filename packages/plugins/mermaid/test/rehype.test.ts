@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { rehypeMermaid } from "../src/rehype.js";
+import { mermaid } from "../index.js";
+import { MermaidBuildRenderError, rehypeMermaid } from "../src/rehype.js";
 import type {
   ElementNode,
   HastNode,
@@ -45,6 +46,31 @@ function createSession(
 function firstChild(tree: HastNode) {
   return (tree as { children: HastNode[] }).children[0] as ElementNode;
 }
+
+test("processed-content cache scope bypasses only Mermaid fences", async () => {
+  const plugin = mermaid({ render: "client" });
+  const appliesToContent = plugin.processedContentCache?.appliesToContent;
+
+  assert.equal(plugin.processedContentCache?.dependencyMode, "unsafe");
+  assert.equal(
+    appliesToContent?.({
+      slug: "diagram",
+      source: "```mermaid\ngraph TD\n```",
+    }),
+    "applies",
+  );
+  assert.equal(
+    appliesToContent?.({
+      slug: "diagram",
+      source: "~~~mermaid\ngraph TD\n~~~",
+    }),
+    "applies",
+  );
+  assert.equal(
+    appliesToContent?.({ slug: "note", source: "# Note" }),
+    "does-not-apply",
+  );
+});
 
 test("build-rendered diagrams keep static svg and omit client source data", async () => {
   const tree = createTree("graph TD;A-->B");
@@ -99,7 +125,7 @@ test("client-rendered diagrams keep source data for runtime rendering", async ()
   assert.equal(calls.length, 0);
 });
 
-test("build render failures keep source data for client fallback", async () => {
+test("build render failures fail the build by default", async () => {
   const tree = createTree("INVALID");
   const { session } = createSession({
     ok: false,
@@ -107,7 +133,24 @@ test("build render failures keep source data for client fallback", async () => {
     message: "Parse error",
   });
 
-  await rehypeMermaid({ render: "build" }, session)(tree, {});
+  await assert.rejects(
+    () => rehypeMermaid({ render: "build" }, session)(tree, {}),
+    MermaidBuildRenderError,
+  );
+});
+
+test("explicit client fallback keeps source data after a build failure", async () => {
+  const tree = createTree("INVALID");
+  const { session } = createSession({
+    ok: false,
+    kind: "invalid-diagram",
+    message: "Parse error",
+  });
+
+  await rehypeMermaid({ render: "build", onRenderError: "client" }, session)(
+    tree,
+    {},
+  );
 
   const figure = firstChild(tree);
 

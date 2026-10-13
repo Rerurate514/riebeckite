@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { test } from "node:test";
+import { promisify } from "node:util";
 import type { Browser } from "puppeteer";
 import { createMermaidRenderSession } from "../src/render-static.js";
 
 type EvaluateCall = { id: string; source: string; theme: string };
+const execFileAsync = promisify(execFile);
 
 type FakeBrowser = {
   browser: Browser;
@@ -79,12 +82,13 @@ function createFakeBrowser(): FakeBrowser {
   };
 }
 
-function createSession(fake: FakeBrowser) {
+function createSession(fake: FakeBrowser, timeoutMs?: number) {
   return createMermaidRenderSession({
     launch: async () => {
       fake.counts.launch += 1;
       return fake.browser;
     },
+    timeoutMs,
   });
 }
 
@@ -225,6 +229,38 @@ test("launch failure is reported without retry", async () => {
   await session.dispose();
 });
 
+test("renderer timeout closes the browser and reports a renderer error", async () => {
+  const fake = createFakeBrowser();
+  const session = createSession(fake, 10);
+  fake.setBehavior(() => new Promise(() => {}));
+
+  const result = await session.render("rr-1", "graph TD;A", "default");
+  assert.equal(result.ok, false);
+  if (result.ok === false) {
+    assert.equal(result.kind, "renderer-error");
+    assert.equal(result.message, "Mermaid rendering timed out.");
+  }
+  assert.equal(fake.counts.launch, 2);
+  assert.equal(fake.counts.browserClose, 2);
+});
+
+test("invalid SVG results are renderer errors", async () => {
+  const fake = createFakeBrowser();
+  const session = createSession(fake);
+  fake.setBehavior(() => ({ ok: true, svg: "not svg" }));
+
+  const result = await session.render("rr-1", "graph TD;A", "default");
+  assert.equal(result.ok, false);
+  if (result.ok === false) {
+    assert.equal(result.kind, "renderer-error");
+    assert.equal(
+      result.message,
+      "Mermaid renderer returned an invalid result.",
+    );
+  }
+  await session.dispose();
+});
+
 test("sessions are independent resources", async () => {
   const first = createFakeBrowser();
   const second = createFakeBrowser();
@@ -274,3 +310,35 @@ test("dispose waits for a pending render", async () => {
   await disposing;
   assert.equal(fake.counts.browserClose, 1);
 });
+
+test("identical diagrams produce identical SVGs in separate processes", {
+  timeout: 120_000,
+}, async () => {
+  const first = await renderInSeparateProcess();
+  const second = await renderInSeparateProcess();
+
+  assert.equal(first, second);
+  assert.match(first, /id="rr-mermaid-determinism"/);
+  assert.match(first, /marker-end="url\(#rr-mermaid-determinism_/);
+});
+
+async function renderInSeparateProcess(): Promise<string> {
+  const rendererUrl = new URL("../src/render-static.ts", import.meta.url).href;
+  const script = `
+    const { createMermaidRenderSession } = await import(${JSON.stringify(rendererUrl)});
+    const session = createMermaidRenderSession();
+    const result = await session.render("rr-mermaid-determinism", "graph TD;A-->B", "default");
+    const repeated = await session.render("rr-mermaid-determinism", "graph TD;A-->B", "default");
+    await session.dispose();
+    if (!result.ok) throw new Error(result.message);
+    if (!repeated.ok) throw new Error(repeated.message);
+    if (result.svg !== repeated.svg) throw new Error("Repeated SVG output differs.");
+    process.stdout.write(Buffer.from(result.svg).toString("base64"));
+  `;
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    ["--import", "tsx", "--input-type=module", "--eval", script],
+    { cwd: process.cwd(), timeout: 110_000 },
+  );
+  return Buffer.from(stdout, "base64").toString("utf8");
+}

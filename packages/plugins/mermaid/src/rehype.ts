@@ -12,12 +12,23 @@ import type {
   MermaidBuildRenderErrorKind,
   MermaidBuildRenderResult,
   MermaidOptions,
+  MermaidRenderFailureMode,
   MermaidRenderSession,
   ParentNode,
 } from "./types.js";
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
 const CAPTION_PATTERN = /^%%\s*caption\s*:\s*(.+)$/im;
+
+export class MermaidBuildRenderError extends Error {
+  readonly kind: MermaidBuildRenderErrorKind;
+
+  constructor(result: Extract<MermaidBuildRenderResult, { ok: false }>) {
+    super(`Mermaid build rendering failed: ${result.message}`);
+    this.name = "MermaidBuildRenderError";
+    this.kind = result.kind;
+  }
+}
 
 export function rehypeMermaid(
   options: MermaidOptions = {},
@@ -36,6 +47,7 @@ export function rehypeMermaid(
           theme,
           caption: options.caption !== false,
           fallback: options.fallback !== false,
+          onRenderError: options.onRenderError ?? "error",
           session,
         }),
       );
@@ -51,6 +63,7 @@ async function replaceMermaidBlock(
   file: unknown,
   options: Required<MermaidOptions> & {
     theme: NonNullable<MermaidOptions["theme"]>;
+    onRenderError: MermaidRenderFailureMode;
     session: MermaidRenderSession;
   },
 ) {
@@ -63,6 +76,9 @@ async function replaceMermaidBlock(
   const renderResult = shouldRenderAtBuild(options.render)
     ? await renderStaticSvg(id, source, options.theme, file, options.session)
     : null;
+  if (renderResult?.ok === false && options.onRenderError === "error") {
+    throw new MermaidBuildRenderError(renderResult);
+  }
   const staticSvg = renderResult?.ok ? renderResult.svg : null;
 
   parent.children = parent.children ?? [];
@@ -73,7 +89,8 @@ async function replaceMermaidBlock(
     staticSvg,
     fallback: options.fallback,
     clientFallback:
-      shouldRenderAtClient(options.render) || renderResult?.ok === false,
+      shouldRenderAtClient(options.render) ||
+      (renderResult?.ok === false && options.onRenderError === "client"),
   });
 }
 
@@ -142,17 +159,11 @@ async function renderStaticSvg(
     );
     if (result.ok === false) {
       reportMermaidDiagnostic(file, result.message, result.kind);
-      const label =
-        result.kind === "invalid-diagram"
-          ? "invalid diagram"
-          : "renderer failed";
-      console.warn(`[mermaid] ${label}: ${result.message}`);
     }
     return result;
   } catch (error) {
     const message = formatError(error);
     reportMermaidDiagnostic(file, message, "renderer-error");
-    console.warn(`[mermaid] renderer failed: ${message}`);
     return { ok: false, kind: "renderer-error", message };
   }
 }

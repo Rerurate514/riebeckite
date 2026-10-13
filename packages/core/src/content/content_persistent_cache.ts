@@ -8,6 +8,10 @@ import type { Logger, Tracer } from "../observability.js";
 import { stableStringify } from "../plugin/plugin_memo.js";
 import type { ContentPublicLocation } from "../types/content_manifest.js";
 import type { JsonValue } from "../types/json_value.js";
+import type {
+  ProcessedContentCacheApplicability,
+  ProcessedContentCacheContext,
+} from "../types/plugin.js";
 import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import type { CachedContentDependency } from "./content_dependency_tracker.js";
@@ -29,8 +33,8 @@ export type PersistentContentCacheOptions = {
 };
 
 const CONTENT_CACHE_NAMESPACE = "content";
-export const CONTENT_CACHE_SCHEMA_VERSION = 3;
-export const CONTENT_CACHE_COMPATIBILITY_VERSION = 2;
+export const CONTENT_CACHE_SCHEMA_VERSION = 4;
+export const CONTENT_CACHE_COMPATIBILITY_VERSION = 3;
 
 function hash(value: string): string {
   return createHash("sha256").update(value).digest("hex");
@@ -377,24 +381,29 @@ function sanitizeForFingerprint(value: unknown): unknown {
 }
 
 export function isPersistentlyCacheable(
-  _slug: string,
+  slug: string,
   config: ResolvedRiebeckiteConfig,
+  source?: string,
 ): { cacheable: boolean; reason?: string } {
+  const context = source === undefined ? undefined : { slug, source };
   const unsafePlugin = config.plugins.find((plugin) => {
     if (plugin.enabled === false) return false;
     if (!canAffectProcessedContent(plugin)) return false;
-    return (
-      plugin.processedContentCache?.dependencyMode !== "none" &&
-      plugin.processedContentCache?.dependencyMode !== "tracked" &&
-      plugin.processedContentCache?.dependencyMode !== "global"
-    );
+    const contract = plugin.processedContentCache;
+    if (!contract) return true;
+    if (!context) return contract.dependencyMode === "unsafe";
+    const applicability = getApplicability(contract.appliesToContent, context);
+    if (applicability === "does-not-apply") return false;
+    if (applicability === "unknown") return true;
+    if (contract.dependencyMode === "unsafe") return true;
+    return getContractDependencyFingerprint(contract, context) === undefined;
   });
 
   if (unsafePlugin) {
     if (unsafePlugin.processedContentCache?.dependencyMode === "unsafe") {
       return {
         cacheable: false,
-        reason: `plugin ${unsafePlugin.name} explicitly marks processed content cache as unsafe`,
+        reason: `plugin ${unsafePlugin.name} explicitly marks processed content cache as unsafe and cannot prove safety for this content`,
       };
     }
 
@@ -407,6 +416,82 @@ export function isPersistentlyCacheable(
   return { cacheable: true };
 }
 
+export function computeContentCacheFingerprint(
+  slug: string,
+  source: string,
+  config: ResolvedRiebeckiteConfig,
+): string {
+  const context = { slug, source };
+  const plugins = config.plugins
+    .filter(
+      (plugin) => plugin.enabled !== false && canAffectProcessedContent(plugin),
+    )
+    .map((plugin) => {
+      const contract = plugin.processedContentCache;
+      if (!contract) return { name: plugin.name, applicability: "unknown" };
+      const applicability = getApplicability(
+        contract.appliesToContent,
+        context,
+      );
+      return {
+        name: plugin.name,
+        applicability,
+        dependencyFingerprint:
+          applicability === "applies"
+            ? getContractDependencyFingerprint(contract, context)
+            : undefined,
+      };
+    });
+  return hash(stableStringify(plugins as JsonValue));
+}
+
+function getApplicability(
+  appliesToContent:
+    | ((
+        context: ProcessedContentCacheContext,
+      ) => ProcessedContentCacheApplicability)
+    | undefined,
+  context: ProcessedContentCacheContext | undefined,
+): ProcessedContentCacheApplicability {
+  if (!context) return "unknown";
+  if (!appliesToContent) return "applies";
+  try {
+    const applicability = appliesToContent(context);
+    return applicability === "applies" ||
+      applicability === "does-not-apply" ||
+      applicability === "unknown"
+      ? applicability
+      : "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+function getContractDependencyFingerprint(
+  contract: NonNullable<
+    ResolvedRiebeckiteConfig["plugins"][number]["processedContentCache"]
+  >,
+  context: ProcessedContentCacheContext | undefined,
+): string | undefined {
+  if (!context) return undefined;
+  try {
+    const content = contract.contentDependencyFingerprint?.(context);
+    if (contract.contentDependencyFingerprint && content === undefined)
+      return undefined;
+    const environment = contract.environmentFingerprint?.();
+    if (contract.environmentFingerprint && environment === undefined)
+      return undefined;
+    return hash(
+      stableStringify({
+        content: content ?? null,
+        environment: environment ?? null,
+      }),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
 export function hasGlobalContentDependency(
   config: ResolvedRiebeckiteConfig,
 ): boolean {
@@ -416,6 +501,21 @@ export function hasGlobalContentDependency(
       canAffectProcessedContent(plugin) &&
       plugin.processedContentCache?.dependencyMode === "global",
   );
+}
+
+export function requiresFullContentRegeneration(
+  config: ResolvedRiebeckiteConfig,
+): boolean {
+  return config.plugins.some((plugin) => {
+    if (plugin.enabled === false || !canAffectProcessedContent(plugin)) {
+      return false;
+    }
+    const contract = plugin.processedContentCache;
+    return (
+      !contract ||
+      (contract.dependencyMode === "unsafe" && !contract.appliesToContent)
+    );
+  });
 }
 
 function canAffectProcessedContent(

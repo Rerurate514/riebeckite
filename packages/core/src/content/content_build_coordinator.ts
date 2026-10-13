@@ -59,14 +59,20 @@ export class ContentBuildCoordinator {
     externalDependencies: readonly ExternalDependencySnapshot[] = [],
     externalDependencyFailures: readonly ExternalDependencyFailure[] = [],
   ): Promise<ContentBuildPlan> {
-    this.plan ??= this.prepare(
+    if (this.plan) return this.plan;
+
+    const plan = this.prepare(
       incremental,
       pipelineFingerprint,
       fullContentRegenerationRequired,
       externalDependencies,
       externalDependencyFailures,
     );
-    return this.plan;
+    this.plan = plan;
+    void plan.catch(() => {
+      if (this.plan === plan) this.plan = null;
+    });
+    return plan;
   }
 
   async commit(
@@ -80,6 +86,10 @@ export class ContentBuildCoordinator {
       readonly CachedContentDependency[]
     > = new Map(),
     externalDependencies: readonly ExternalDependencySnapshot[] = [],
+    processedContentCacheFingerprints: ReadonlyMap<
+      string,
+      string | undefined
+    > = new Map(),
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -101,6 +111,12 @@ export class ContentBuildCoordinator {
                   [],
               ),
               linkTargets: collectLinkTargets(manifestEntry),
+              ...(processedContentCacheFingerprints.get(toSlug(entry.path))
+                ? {
+                    processedContentCacheFingerprint:
+                      processedContentCacheFingerprints.get(toSlug(entry.path)),
+                  }
+                : {}),
             },
           ];
         }),

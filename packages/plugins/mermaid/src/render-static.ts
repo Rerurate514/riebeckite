@@ -1,6 +1,7 @@
 import { access } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import type { Browser, Page } from "puppeteer";
 import type {
   MermaidBuildRenderErrorKind,
@@ -10,6 +11,7 @@ import type {
 
 const RENDER_TIMEOUT_MS = 30_000;
 const MERMAID_SCRIPT_SUBPATH = "mermaid/dist/mermaid.min.js";
+const PUPPETEER_PACKAGE = "puppeteer";
 
 export type MermaidSessionDependencies = {
   /**
@@ -17,6 +19,7 @@ export type MermaidSessionDependencies = {
    * lifecycle can be asserted without launching Chrome.
    */
   launch?: () => Promise<Browser>;
+  timeoutMs?: number;
 };
 
 type SessionState = {
@@ -38,6 +41,7 @@ export function createMermaidRenderSession(
   dependencies: MermaidSessionDependencies = {},
 ): MermaidRenderSession {
   const launchBrowser = dependencies.launch ?? defaultLaunchBrowser;
+  const timeoutMs = dependencies.timeoutMs ?? RENDER_TIMEOUT_MS;
   let state: SessionState | null = null;
   let queue: Promise<unknown> = Promise.resolve();
   let exitListenerAttached = false;
@@ -74,7 +78,7 @@ export function createMermaidRenderSession(
     attachExitListener();
     try {
       const page = await browser.newPage();
-      page.setDefaultTimeout(RENDER_TIMEOUT_MS);
+      page.setDefaultTimeout(timeoutMs);
       await page.setContent("<!doctype html><html><body></body></html>");
       await page.addScriptTag({ path: await resolveMermaidScriptPath() });
       state = { browser, page };
@@ -108,11 +112,10 @@ export function createMermaidRenderSession(
     source: string,
     theme: string,
   ): Promise<MermaidBuildRenderResult> {
-    const result = await session.page.evaluate(
-      renderMermaidInPage,
-      id,
-      source,
-      theme,
+    const result = await withTimeout(
+      session.page.evaluate(renderMermaidInPage, id, source, theme),
+      timeoutMs,
+      "Mermaid rendering timed out.",
     );
     return normalizeRenderResult(result);
   }
@@ -202,6 +205,8 @@ async function renderMermaidInPage(
       startOnLoad: false,
       securityLevel: "strict",
       theme,
+      deterministicIds: true,
+      deterministicIDSeed: id,
     });
     const { svg } = await mermaid.render(id, source);
     return { ok: true, svg };
@@ -229,7 +234,22 @@ async function importPuppeteer(): Promise<typeof import("puppeteer")> {
     "return import(specifier)",
   ) as (specifier: string) => Promise<typeof import("puppeteer")>;
 
-  return importModule("puppeteer");
+  try {
+    return await importModule(PUPPETEER_PACKAGE);
+  } catch (error) {
+    const fallback = resolvePuppeteerFromWorkingDirectory();
+    if (!fallback) throw error;
+    return importModule(fallback);
+  }
+}
+
+function resolvePuppeteerFromWorkingDirectory(): string | null {
+  try {
+    const require = createRequire(join(process.cwd(), "package.json"));
+    return pathToFileURL(require.resolve(PUPPETEER_PACKAGE)).href;
+  } catch {
+    return null;
+  }
 }
 
 async function resolveMermaidScriptPath(): Promise<string> {
@@ -286,7 +306,11 @@ function normalizeRenderResult(value: unknown): MermaidBuildRenderResult {
   }
 
   const result = value as Partial<MermaidBuildRenderResult>;
-  if (result.ok === true && typeof result.svg === "string") {
+  if (
+    result.ok === true &&
+    typeof result.svg === "string" &&
+    result.svg.trimStart().startsWith("<svg")
+  ) {
     return { ok: true, svg: result.svg };
   }
 
@@ -306,6 +330,20 @@ function normalizeRenderResult(value: unknown): MermaidBuildRenderResult {
     kind: "renderer-error",
     message: "Mermaid renderer returned an invalid result.",
   };
+}
+
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  message: string,
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timer !== undefined) clearTimeout(timer);
+  });
 }
 
 function normalizeErrorKind(value: unknown): MermaidBuildRenderErrorKind {

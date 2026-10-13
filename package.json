@@ -31,7 +31,7 @@
     "test:plugin-dx:external": "pnpm --dir tests/plugin-dx run test:external",
     "benchmark:vault": "node --import tsx --expose-gc benchmarks/core.mjs",
     "benchmark:equivalence": "node --import tsx benchmarks/equivalence.mjs",
-    "benchmark:presets": "pnpm build:packages && node --import tsx benchmarks/preset-ssg/runner.mjs",
+    "benchmark:presets": "node --import tsx benchmarks/preset-ssg/runner.mjs",
     "test:benchmark:presets": "node --import tsx --test benchmarks/preset-ssg/runner.test.mjs",
     "lint": "biome lint .",
     "format": "biome format --write ."

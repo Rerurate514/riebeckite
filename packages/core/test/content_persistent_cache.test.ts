@@ -8,6 +8,7 @@ import { markdown } from "@riebeckite/test/fixtures";
 import { ContentManager } from "../src/content/content_manager.js";
 import {
   CONTENT_CACHE_SCHEMA_VERSION,
+  computeContentCacheFingerprint,
   computeContentCacheKey,
   computeContentScopeFingerprint,
   computePipelineFingerprint,
@@ -522,6 +523,70 @@ test("isPersistentlyCacheable bypasses transform functions explicitly marked uns
 
   assert.equal(result.cacheable, false);
   assert.match(result.reason ?? "", /explicitly marks/);
+});
+
+test("a scoped unsafe plugin permits content it proves it cannot affect", () => {
+  const config = contentTestConfig(TEST_CACHE_DIR, [
+    {
+      name: "scoped-unsafe-transformer",
+      processedContentCache: {
+        version: "v1",
+        dependencyMode: "unsafe",
+        appliesToContent: ({ source }) =>
+          source.includes(":::unsafe") ? "applies" : "does-not-apply",
+      },
+      extendMarkdownPipeline: () => undefined,
+    },
+  ]);
+
+  assert.equal(
+    isPersistentlyCacheable("safe", config, "# Safe").cacheable,
+    true,
+  );
+  assert.equal(
+    isPersistentlyCacheable("unsafe", config, ":::unsafe").cacheable,
+    false,
+  );
+});
+
+test("an invalid content applicability safely bypasses the cache", () => {
+  const config = contentTestConfig(TEST_CACHE_DIR, [
+    {
+      name: "invalid-applicability-transformer",
+      processedContentCache: {
+        version: "v1",
+        dependencyMode: "unsafe",
+        appliesToContent: () => "unrecognized" as never,
+      },
+      extendMarkdownPipeline: () => undefined,
+    },
+  ]);
+
+  assert.equal(
+    isPersistentlyCacheable("note", config, "# Note").cacheable,
+    false,
+  );
+});
+
+test("content cache fingerprints include declared content and environment inputs", () => {
+  let environment = "renderer-v1";
+  const config = contentTestConfig(TEST_CACHE_DIR, [
+    {
+      name: "fingerprinted-transformer",
+      processedContentCache: {
+        version: "v1",
+        dependencyMode: "none",
+        contentDependencyFingerprint: ({ source }) =>
+          source.includes("a") ? "a" : "b",
+        environmentFingerprint: () => environment,
+      },
+      extendMarkdownPipeline: () => undefined,
+    },
+  ]);
+  const first = computeContentCacheFingerprint("note", "# a", config);
+  environment = "renderer-v2";
+
+  assert.notEqual(first, computeContentCacheFingerprint("note", "# a", config));
 });
 
 test("isPersistentlyCacheable treats renderers as processed content transformers", () => {

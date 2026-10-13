@@ -74,6 +74,23 @@ The following source is rendered as an SVG drawing on this page.
 - Success → `data-excalidraw="ready"` (the SVG replaces the empty canvas)
 - Failure → `data-excalidraw="error"` plus a placeholder message
 
+## Standalone pages
+
+An Excalidraw drawing stored as Markdown is also served as a standalone page
+instead of a plain Markdown page. The plugin registers a page type
+(`excalidraw-document`) that claims the entry's permalink with a trailing
+`.excalidraw` removed.
+
+- Detection: the slug ends in `.excalidraw` (for `*.excalidraw.md`), or the
+  frontmatter contains `excalidraw-plugin: parsed`
+- `drawing.excalidraw.md` (permalink `/drawing.excalidraw`) is served at
+  `/drawing`
+- The page body provides its own `<main>` and `<h1>`, and reuses the same
+  placeholder figure and `initExcalidraw` client as embedded wikilinks
+
+The page type resolves before normal content routing, so no extra app route is
+required. Only public entries are listed.
+
 ## Options
 
 | Option | Type | Default | Description |

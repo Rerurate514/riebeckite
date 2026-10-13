@@ -48,6 +48,16 @@ export default defineConfig({
 | --- | --- | --- | --- |
 | `lazy` | `boolean` | `true` | 表示領域に近づいてから SVG を描画するか |
 
+## 単体ページとしての表示
+
+Excalidraw の描画である Markdown エントリは、通常の Markdown ページではなく専用ページとして表示されます。プラグインはページ型（`excalidraw-document`）を登録し、パーマリンク末尾の `.excalidraw` を除いたパスを引き受けます。
+
+- 判定: slug が `.excalidraw` で終わる（`*.excalidraw.md`）、または frontmatter に `excalidraw-plugin: parsed` がある
+- `drawing.excalidraw.md`（パーマリンク `/drawing.excalidraw`）は `/drawing` で表示される
+- ページ本文は自前の `<main>` と `<h1>` を持ち、埋め込みウィキリンクと同じプレースホルダーと `initExcalidraw` を再利用する
+
+ページ型は通常のコンテンツルーティングより先に解決されるため、アプリ側のルート追加は不要です。対象は公開エントリのみです。
+
 ## 公開 API
 
 - `excalidraw(options?)` / `excalidrawPlugin` — プラグインファクトリ

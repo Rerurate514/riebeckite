@@ -1,4 +1,11 @@
-import type { ContentSource, PluginRenderContext } from "@riebeckite/core";
+import type {
+  ContentManifest,
+  ContentManifestEntry,
+  ContentSource,
+  PluginPage,
+  PluginPageContext,
+  PluginRenderContext,
+} from "@riebeckite/core";
 import {
   createClientEntry,
   createStyleAsset,
@@ -12,7 +19,10 @@ import {
   isObsidianExcalidrawMarkdown,
   parseExcalidrawScene,
 } from "./src/parse.js";
-import { renderExcalidrawPlaceholder } from "./src/render.js";
+import {
+  renderExcalidrawPage,
+  renderExcalidrawPlaceholder,
+} from "./src/render.js";
 import type {
   ExcalidrawOptions,
   ExcalidrawScene,
@@ -43,6 +53,14 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
       {
         name: "excalidraw-embed",
         render: async (context) => renderAttachment(context, options),
+      },
+    ],
+    pageTypes: [
+      {
+        id: "excalidraw-document",
+        paths: ({ manifest }) => listExcalidrawDocumentPaths(manifest),
+        outputDependencies: [{ type: "global" }],
+        resolve: (context) => resolveExcalidrawDocument(context, options),
       },
     ],
     assets: [createStyleAsset(PLUGIN_NAME)],
@@ -111,6 +129,117 @@ function isExcalidrawDocument(filePath: string, raw: string): boolean {
   if (lowerPath.endsWith(".excalidraw")) return true;
   if (lowerPath.endsWith(".excalidraw.md")) return true;
   return lowerPath.endsWith(".md") && isObsidianExcalidrawMarkdown(raw);
+}
+
+function listExcalidrawDocumentPaths(manifest: ContentManifest): string[] {
+  const paths = new Set<string>();
+  for (const entry of manifest.publicEntries) {
+    const path = getExcalidrawPagePath(entry);
+    if (path) paths.add(path);
+  }
+  return [...paths];
+}
+
+function isExcalidrawEntry(entry: ContentManifestEntry): boolean {
+  if (entry.slug.toLowerCase().endsWith(".excalidraw")) return true;
+  return entry.frontmatter["excalidraw-plugin"] === "parsed";
+}
+
+function getExcalidrawPagePath(entry: ContentManifestEntry): string | null {
+  if (!isExcalidrawEntry(entry)) return null;
+
+  const path = normalizePath(entry.permalink).replace(/\.excalidraw$/i, "");
+  if (!path || path === "/") return null;
+  if (/\.[a-zA-Z0-9]+$/.test(path.slice(1))) return null;
+  return path;
+}
+
+function findExcalidrawEntry(
+  manifest: ContentManifest,
+  pathname: string,
+): ContentManifestEntry | null {
+  for (const entry of manifest.publicEntries) {
+    if (getExcalidrawPagePath(entry) === pathname) return entry;
+  }
+  return null;
+}
+
+async function resolveExcalidrawDocument(
+  context: PluginPageContext,
+  options: ExcalidrawOptions,
+): Promise<PluginPage | null> {
+  const entry = findExcalidrawEntry(context.manifest, context.pathname);
+  if (!entry) return null;
+
+  const title = resolveEntryTitle(entry);
+  const description =
+    typeof entry.frontmatter.description === "string"
+      ? entry.frontmatter.description
+      : undefined;
+  const lazy = options.lazy !== false;
+
+  if (!context.contentSource) {
+    return {
+      type: "excalidraw-document",
+      pathname: context.pathname,
+      title,
+      description,
+      body: renderExcalidrawPage({
+        title,
+        lazy,
+        error: "Content source is not available.",
+      }),
+    };
+  }
+
+  const sourcePath = `${entry.slug}.md`;
+  try {
+    const raw = await readText(context.contentSource, sourcePath);
+    if (raw === null) return null;
+
+    const parsed = parseExcalidrawScene(raw, sourcePath);
+    const scene = await mergeEmbeddedFiles({
+      scene: parsed.scene,
+      embeddedFiles: parsed.embeddedFiles,
+      contentSource: context.contentSource,
+      contentIndex: context.contentIndex,
+    });
+
+    return {
+      type: "excalidraw-document",
+      pathname: context.pathname,
+      title,
+      description,
+      body: renderExcalidrawPage({ title, scene, lazy }),
+    };
+  } catch (error) {
+    console.error("[plugin-excalidraw] Failed to render Excalidraw page", {
+      path: sourcePath,
+      error,
+    });
+    return {
+      type: "excalidraw-document",
+      pathname: context.pathname,
+      title,
+      description,
+      body: renderExcalidrawPage({
+        title,
+        lazy,
+        error: "Excalidraw could not be rendered.",
+      }),
+    };
+  }
+}
+
+function resolveEntryTitle(entry: ContentManifestEntry): string {
+  const trimmed = entry.title.trim().replace(/\.excalidraw$/i, "");
+  if (trimmed) return trimmed;
+  return getFileName(entry.slug).replace(/\.excalidraw$/i, "");
+}
+
+function normalizePath(pathname: string): string {
+  const collapsed = `/${pathname.split("/").filter(Boolean).join("/")}`;
+  return collapsed === "/" ? "/" : collapsed.replace(/\/+$/, "");
 }
 
 function parseSize(

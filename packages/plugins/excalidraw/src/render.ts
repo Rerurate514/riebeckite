@@ -5,6 +5,25 @@ import {
 } from "@riebeckite/core";
 import type { ExcalidrawPayload, ExcalidrawScene } from "./types.js";
 
+export function renderExcalidrawPage(input: {
+  title: string;
+  scene?: ExcalidrawScene;
+  lazy?: boolean;
+  error?: string;
+}): string {
+  const heading = input.title
+    ? `<h1 class="rr-excalidraw-page__title">${escapeHtml(input.title)}</h1>`
+    : "";
+  return `<main class="rr-excalidraw-page">${heading}${renderExcalidrawPlaceholder(
+    {
+      title: input.title,
+      scene: input.scene,
+      lazy: input.lazy,
+      error: input.error,
+    },
+  )}</main>`;
+}
+
 export function renderExcalidrawPlaceholder(input: {
   title: string;
   scene?: ExcalidrawScene;

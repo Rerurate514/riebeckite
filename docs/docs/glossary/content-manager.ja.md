@@ -6,20 +6,19 @@ sidebar:
 
 # Content Manager
 
-走査済みの entry を完成した manifest に変えるコンポーネントです。公開位置を解決し、Markdown と Plugin のパイプラインを実行してから、content graph と query 用の index を作ります。
+走査済みの entry を完成した manifest に変えるコンポーネントです。公開位置を解決し、Markdown と Plugin のパイプラインを実行してから、content graph と検索用の index を作ります。
 
-## 役割
+## 責務
 
-- 処理全体を調整し、結果を manifest に記録します。
-- 公開位置の解決と manifest の構築を担い、ファイルの読み取りは行いません。
+- 各 entry の公開位置を解決します。
+- 各 entry に Markdown と Plugin のパイプラインを実行します。
+- content graph と content index を作ります。
+- manifest を組み立て、diagnostic を集めます。
 
-## 関連用語
+## 処理の順序
 
-- [[content-source|Content Source]]
-- [[manifest|Manifest]]
-- [[content-graph|Content Graph]]
-- [[slug|Slug]]
+公開位置の解決を先に行うため、後続の hook とページは安定した permalink を前提にできます。その後で処理、graph の順に進み、最後に manifest を確定します。
 
-## さらに詳しく
+## 行わないこと
 
-- [Content System](../framework/content-system.ja.md)
+Content Manager はファイルを読みません。読み取りは Content Source の役割です。

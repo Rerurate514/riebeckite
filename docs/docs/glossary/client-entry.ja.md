@@ -1,17 +1,29 @@
 ---
-title: Client Entry
+title: Client entry
 sidebar:
   hidden: true
 ---
 
-# Client Entry
+# Client entry
 
-Plugin がクライアント側の挙動のために登録するブラウザの入口です。Client entry はフレームワークに依存せず、HonoX や特定の UI フレームワークに縛られません。
+Client entry は本当に runtime で必要なブラウザ JavaScript の初期化を宣言します; 各エントリは plugin name、module specifier、オプションの export name、public config を持ちます。
 
-## 役割
+## 宣言
 
-- Plugin の機能にブラウザ側のコードを加えます。
-- Integration のフレームワークから独立しています。
+```ts
+clientEntries: [
+  {
+    pluginName: "example",
+    moduleSpecifier: "@riebeckite/plugin-example/client",
+    exportName: "initExample",
+    publicConfig: { selector: ".example" },
+  },
+]
+```
+
+## 使用時
+
+browser initialization が本当に必要な場合だけ client entries を追加してください。 SSR またはビルド時のみで完結するプラグインには client JavaScript を追加しないでください。 `publicConfig` は client initializer に渡され、static host 用に manifest に記録されます。
 
 ## 関連用語
 

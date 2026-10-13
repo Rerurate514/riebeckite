@@ -6,21 +6,27 @@ sidebar:
 
 # Build Dependency
 
-A declared input that affects a piece of content or output, such as another note, a file, a tag, or a folder. Recording dependencies lets Core invalidate only what a change can affect.
+The contract between Core and plugins that declares how processed content and emitted files depend on inputs between builds.
 
-## Role
+## Content dependency
 
-- Declares what a transform depends on.
-- Drives targeted invalidation during builds.
+Plugin declares `dependencyMode` (none, tracked, global, unsafe) on `processedContentCache`.
+Core records reads made through Core's content APIs as dependencies with stable identities.
+Content, file, and link dependencies are recorded and compared on later builds.
+
+## Output dependency
+
+Output dependencies are separate from content dependencies.
+Types include `content`, `tag`, `folder`, `global`, and `unknown`.
+Used to decide which emitted files Core writes again after a change.
 
 ## Related terms
 
-- [[fingerprint|Fingerprint]]
 - [[cache-invalidation|Cache Invalidation]]
-- [[incremental-build|Incremental Build]]
-- [[output-inventory|Output Inventory]]
+- [[output-dependency|Output Dependency]]
+- [[fingerprint|Fingerprint]]
+- [[plugin-dependency|Plugin dependency]]
 
 ## Learn more
 
-- [Build Dependency Contract](../framework/build-dependency.md)
-- [Build System](../framework/build-system.md)
+- [Build Dependency](../framework/build-dependency.md)

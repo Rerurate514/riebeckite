@@ -8,18 +8,12 @@ sidebar:
 
 Plugin が独自の公開パスと本文を添えて提供するページの種類で、通常の Markdown ではないページに使います。Integration が route を解決し、Application が最終的な HTML を組み立てます。
 
-## 役割
+## page type が提供するもの
 
-- Plugin が Markdown 以外のページを提供できるようにします。
-- incremental build 用に自身の output dependency を宣言します。
+- ページの公開パス。
+- Integration が描画できる本文。
+- incremental build 用の output dependency。
 
-## 関連用語
+## 境界
 
-- [[page|Page]]
-- [[plugin|Plugin]]
-- [[endpoint|Endpoint]]
-- [[output-inventory|Output Inventory]]
-
-## さらに詳しく
-
-- [Page System](../framework/page-system.ja.md)
+page type は HonoX の route やサイトの枠組みを所有しません。ページを宣言し、配置するのは Integration と Application です。

@@ -6,21 +6,27 @@ sidebar:
 
 # Inspector
 
-A read-only view of content entries and their resolved state, including locations, publishing state, the content graph, and diagnostics. It helps debug how content was processed and published.
+A read-only CLI command for viewing already-resolved state, including config, plugins, content, graph, and build state.
 
-## Role
+## Read-only guarantee
 
-- Shows resolved content state for debugging.
-- Exposes locations, publishing state, and diagnostics.
+Must not run a build, write caches/assets/state, emit assets, render special artifacts, or auto-fix configuration.
+If the requested information does not exist, report that condition plainly.
+
+## Commands
+
+`riebeckite inspect config` — resolved configuration.
+`riebeckite inspect plugins` — enabled plugins.
+`riebeckite inspect content --list` — published content and URLs.
+`riebeckite inspect graph` — content graph relationships.
+`riebeckite inspect build` — incremental build state.
 
 ## Related terms
 
-- [[glossary/diagnostics|Diagnostics]]
 - [[check|Check]]
 - [[doctor|Doctor]]
-- [[manifest|Manifest]]
+- [[build|Build]]
 
 ## Learn more
 
 - [Inspector](../framework/inspector.md)
-- [CLI](../reference/cli.md)

@@ -6,20 +6,33 @@ sidebar:
 
 # Theme Root
 
-The root element that a theme styles and scopes its tokens to. Data attributes for color mode and typography are applied at the theme root so the cascade reaches the whole page.
+The theme root selector (`[data-theme-root]` or `<html>`) that scopes token and attribute rules to the whole page. Color mode and typography attributes are applied here so the cascade reaches all elements.
 
-## Role
+## Selector
 
-- Scopes theme tokens and attributes to the page.
-- Carries the color mode and typography attributes.
+Every theme rule is scoped to the theme's identity name:
+
+```css
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
+```
+
+## Data attributes
+
+ThemeRoot emits the following attributes on `<html>`:
+
+- `data-theme-name`: Theme identity name (e.g. "riebeckite", "minimal")
+- `data-theme`: Color mode state ("light" / "dark" / omitted for "system")
+- `data-typography`: Typography preset value
+- `data-article-layout`: Article layout preset value
 
 ## Related terms
 
 - [[glossary/theme|Theme]]
 - [[design-token|Design Token]]
 - [[glossary/color-mode|Color Mode]]
+- [[glossary/typography|Typography]]
 
 ## Learn more
 
 - [Theme Root](../framework/theme-system/theme-root.md)
-- [Theme System](../framework/theme-system.md)

@@ -8,18 +8,14 @@ sidebar:
 
 manifest の中で slug により識別される、解決済みのコンテンツ 1 件です。permalink、公開位置、frontmatter、公開状態、HTML、Plugin が付与したデータを持ちます。
 
-## 役割
+## entry が持つもの
 
-- ページや Plugin が参照する 1 ノート分のレコードです。
-- 内部の slug と解決済みの公開位置の両方を持ちます。
+- `slug` — 内部のキーです。
+- `publicLocation` — 解決済みの permalink、redirect、メタデータです。
+- `frontmatter` — 解析済みのメタデータです。
+- `html` — 描画済みの本文です。
+- body slot や head tag など、Plugin が付与したデータです。
 
-## 関連用語
+## slug と permalink の違い
 
-- [[glossary/content|Content]]
-- [[manifest|Manifest]]
-- [[slug|Slug]]
-- [[glossary/permalink|Permalink]]
-
-## さらに詳しく
-
-- [Content System](../framework/content-system.ja.md)
+slug は Build の内部で entry を識別し、permalink は公開 URL です。entry へリンクする側は slug ではなく、entry の permalink を読みます。

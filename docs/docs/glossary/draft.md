@@ -8,17 +8,14 @@ sidebar:
 
 Content that is kept out of the published site by the publish decision. Drafts can still be processed, but they are excluded from the routable and discoverable views until they are published.
 
-## Role
+## Setting it
 
-- Represents content not yet ready to publish.
-- Stays out of routing and listings until published.
+```yaml
+---
+published: false
+---
+```
 
-## Related terms
+## What still happens
 
-- [[publish|Publish]]
-- [[publication-boundary|Publication Boundary]]
-- [[routable|Routable]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+A draft can still be parsed and linked internally, so you can preview and cross-reference it. It produces no public output until it is [published](./publish.md).

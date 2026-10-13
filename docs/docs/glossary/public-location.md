@@ -8,18 +8,17 @@ sidebar:
 
 Where a note is published, combining the internal slug and the canonical permalink with optional redirects and metadata. It is the resolved result that the manifest exposes for each entry.
 
-## Role
+## Shape
 
-- Pairs a slug with its permalink and any redirects.
-- Lets plugins add alias URLs alongside the canonical location.
+```ts
+{
+  slug: "notes/hello",
+  permalink: "/docs/notes/hello/",
+  redirects: ["/docs/hello/"],
+  metadata: { /* optional */ },
+}
+```
 
-## Related terms
+## Redirects and metadata
 
-- [[slug|Slug]]
-- [[glossary/permalink|Permalink]]
-- [[manifest|Manifest]]
-- [[translation|Translation]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+A plugin can attach alias URLs or [redirects](./redirect.md) next to the canonical location. The permalink stays canonical; redirects point older URLs at it.

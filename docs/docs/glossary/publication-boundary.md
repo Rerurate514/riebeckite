@@ -8,18 +8,14 @@ sidebar:
 
 The rule that decides which content is safe to publish. Riebeckite applies the publish strategy and frontmatter and centralizes the decision rather than scattering publish checks.
 
-## Role
+## Strategy and frontmatter
 
-- Separates published content from drafts and excluded files.
-- Applied through the publish strategy and frontmatter.
+| Source | Example | Effect |
+| --- | --- | --- |
+| Publish strategy | `selective` | Only content marked for publishing is public |
+| Frontmatter | `published: false` | Keeps a note out of the public set |
+| Frontmatter | `visibility: unlisted` | Serves the note without listing it |
 
-## Related terms
+## One decision point
 
-- [[publish|Publish]]
-- [[draft|Draft]]
-- [[routable|Routable]]
-- [[discoverable|Discoverable]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+Because the decision is centralized, every consumer sees the same public set. Pages, [feeds](./feed.md), and sitemaps do not re-check publishing on their own.

@@ -8,18 +8,18 @@ sidebar:
 
 The lowercase name-to-note map used to resolve wikilinks and embeds. A name that matches more than one note is left out and reported as a diagnostic instead of resolving to the wrong target.
 
-## Role
+## Keys and suffixes
 
-- Resolves WikiLink targets by basename, path suffix, or alias.
-- Keeps ambiguous names out of the map for diagnostics.
+For a note at `guides/localization.md`, the index registers every path suffix: `localization`, `guides/localization`, and the full path. A bare `[[localization]]` therefore resolves, and so does `[[guides/localization]]`.
 
-## Related terms
+Frontmatter aliases are registered as additional keys.
 
-- [[wikilink|WikiLink]]
-- [[embed|Embed]]
-- [[slug|Slug]]
-- [[content-graph|Content Graph]]
+## Ambiguity
 
-## Learn more
+If two notes register the same key, the key is removed from the index and reported. The link stays unresolved rather than pointing at the wrong note.
 
-- [Content System](../framework/content-system.md)
+To link an ambiguous name on purpose, use the explicit path form:
+
+```md
+[[glossary/theme|theme]]
+```

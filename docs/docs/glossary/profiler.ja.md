@@ -6,20 +6,24 @@ sidebar:
 
 # Profiler
 
-コンテンツ処理から Plugin の hook、出力生成まで、どこに時間がかかるかを計測する Build 時の仕組みです。trace span を読み、Build の所要時間を報告します。
+ content processing から plugin hooks および output generation に至るまで、 Build のどこに時間がかかるかを計測するビルド時間測定です。 trace span を読み取ってビルドのタイミングをレポートする。
 
 ## 役割
 
-- Build の各段階の所要時間を計測します。
-- 記録した span から時間を報告します。
+ Build phase でかかった時間を計測する。
+ 記録された span からタイミングをレポートする。
+
+## CLI 使用法
+
+ `riebeckite profile` を実行して trace を収集し、performance report を表示する。
+ incremental reuse なしで計測する `riebeckite profile --full` を実行する。
 
 ## 関連用語
 
-- [[trace-span|Trace Span]]
+- [[trace-span|トレーススパン]]
 - [[logger|Logger]]
-- [[build|Build]]
+- [[build|ビルド]]
 
 ## さらに詳しく
 
 - [Observability](../framework/observability.ja.md)
-- [CLI](../reference/cli.ja.md)

@@ -8,19 +8,14 @@ sidebar:
 
 別のノートの内容を現在のページに取り込む記法で、ノートの埋め込みや block の埋め込みがあります。リンクと同様に解決し、content dependency として追跡します。
 
-## 役割
+## 記法
 
-- 別のノートの内容を現在のページで再利用します。
-- 依存として数え、変更を伝播させます。
+```md
+![[note]]            # ノート全体を埋め込む
+![[note#Heading]]    # セクションを埋め込む
+![[note#^block-id]]  # block を埋め込む
+```
 
-## 関連用語
+## 解決と依存
 
-- [[wikilink|WikiLink]]
-- [[content-index|Content Index]]
-- [[content-graph|Content Graph]]
-- [[glossary/attachment|Attachment]]
-
-## さらに詳しく
-
-- [Obsidian Markdown](../plugins/obsidian-markdown.ja.md)
-- [Content System](../framework/content-system.ja.md)
+embed は WikiLink と同じく content index から解決し、content dependency になります。参照元のノートを編集すると、埋め込むページが無効化されます。

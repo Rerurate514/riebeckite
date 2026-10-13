@@ -6,20 +6,17 @@ sidebar:
 
 # Content
 
-A content item after Markdown parsing and plugin processing, with frontmatter, rendered HTML, and a resolved public location. Riebeckite manages content through the content system instead of treating files as raw Markdown.
+A content item after Markdown parsing and plugin processing. It carries frontmatter, rendered HTML, and a resolved public location, so Riebeckite works with the processed item rather than the raw file.
 
-## Role
+## The processed item, not the file
 
-- The unit the Content Manager processes and the manifest records.
-- Addressed by slug internally and reached by permalink publicly.
+Riebeckite reads a file, parses it, runs it through the plugin pipeline, and resolves where it will live on the site. Everything after that point is content: the [entry](./content-entry.md), its location, and its relationships.
 
-## Related terms
+Code that queries content reads the [manifest](./manifest.md), not the filesystem.
 
-- [[content-entry|Content Entry]]
-- [[content-manager|Content Manager]]
-- [[manifest|Manifest]]
-- [[slug|Slug]]
+## Life of a content item
 
-## Learn more
-
-- [Content System](../framework/content-system.md)
+1. A [Content Source](./content-source.md) discovers and reads the file.
+2. The [Content Manager](./content-manager.md) parses it and runs the pipeline.
+3. Location resolution assigns a [permalink](./permalink.md).
+4. The item is recorded as a [Content Entry](./content-entry.md) in the manifest.

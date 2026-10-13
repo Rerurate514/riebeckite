@@ -1,23 +1,31 @@
 ---
-title: Slot
+title: Body slot
 sidebar:
   hidden: true
 ---
 
-# Slot
+# Body slot
 
-A named position in a page layout where plugins can contribute HTML. The site owns the layout slots and decides where each is rendered, while a plugin only supplies a fragment for a slot name.
+A plugin can contribute an HTML fragment to a named position in the site-owned article layout via `appendContentBodySlot`; slots accumulate in resolved plugin order and the site chooses where and whether to render each.
 
-## Role
+## Standard slots
 
-- Lets plugins inject HTML into a page layout.
-- Is owned and placed by the site, not the plugin.
+Core defines slot names as `ContentBodySlot`: `article.header`, `article.metadata`, `article.aside`, `article.before-content`, `article.after-content`, `article.footer`. Custom slot names are also accepted.
+
+```ts
+appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
+```
+
+## Rendering
+
+The site reads `entry.bodySlots` and renders chosen slots. Slots can be rendered using the `ContentSlot` primitive from `@riebeckite/honox/ui`.
 
 ## Related terms
 
 - [[plugin|Plugin]]
-- [[glossary/theme|Theme]]
-- [[content-entry|Content Entry]]
+- [[island|Island]]
+- [[content-hook|Content hook]]
+- [[glossary/diagnostics|Diagnostics]]
 
 ## Learn more
 

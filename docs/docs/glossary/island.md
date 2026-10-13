@@ -6,18 +6,22 @@ sidebar:
 
 # Island
 
-An interactive component that is hydrated on the client while the rest of the page stays static. The integration connects islands to routes and the application decides what to hydrate.
+Islands are client-hydratable components embedded within server-rendered content; they enable interactive UI sections without hydrating the entire page. Island components are defined by the site application, not plugins.
 
-## Role
+## Island pattern
 
-- Adds interactivity to a static page.
-- Is hydrated on the client by the integration.
+Islands allow interactive components (e.g., widgets, charts) to be rendered on the server and hydrated only on the client where needed. This reduces JavaScript payload and improves time-to-interactive.
+
+## Site responsibility
+
+The site application owns island placement, routing, and hydration. Plugins may contribute rendered HTML fragments via body slots, but island logic resides in the app layer.
 
 ## Related terms
 
-- [[client-entry|Client Entry]]
-- [[endpoint|Endpoint]]
-- [[glossary/theme|Theme]]
+- [[plugin|Plugin]]
+- [[renderer|Renderer]]
+- [[slot|Body slot]]
+- [[page-type|Page Type]]
 
 ## Learn more
 

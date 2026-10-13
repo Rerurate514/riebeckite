@@ -1,24 +1,28 @@
 ---
-title: Content Hook
+title: Content hook
 sidebar:
   hidden: true
 ---
 
-# Content Hook
+# Content hook
 
-onContentLoaded、onPostParsed、onPostProcessed、onManifestCreated など、コンテンツ処理の段階を観察または拡張する Plugin の hook です。post と manifest の hook は content cache がヒットしても実行されます。
+コンテンツフックはコンテンツ処理の命名されたフェーズに参加します: config resolved から content loaded、post parsed、post processed、content graph、manifest 作成、そして diagnostics まで。
 
-## 役割
+## 処理フェーズ
 
-- Plugin がコンテンツ処理を観察・調整できるようにします。
-- manifest の段階では毎 Build 実行されます。
+コンテンツ処理パイプラインの hook の順序は: `setup → buildStart → config resolved → public locations resolved → content loaded → Markdown/HTML pipeline → post parsed → post processed → content graph → manifest created → diagnostics → build end`。
+
+## フックの使用
+
+本当に必要なフェーズのみ hook を使用してください。例えば `onContentLoaded` 内で manifest 情報を再構築するなど、後のフェーズの情報を earlier で再構築しないでください。
 
 ## 関連用語
 
 - [[plugin|Plugin]]
-- [[lifecycle-hook|Lifecycle Hook]]
+- [[lifecycle-hook|Lifecycle hook]]
+- [[hook-context|Hook context]]
 - [[renderer|Renderer]]
-- [[glossary/build-dependency|Build Dependency]]
+- [[glossary/diagnostics|Diagnostics]]
 
 ## さらに詳しく
 

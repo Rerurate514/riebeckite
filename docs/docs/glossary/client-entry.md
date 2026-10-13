@@ -1,17 +1,29 @@
 ---
-title: Client Entry
+title: Client entry
 sidebar:
   hidden: true
 ---
 
-# Client Entry
+# Client entry
 
-A browser entry point that a plugin registers for client-side behavior. Client entries are framework-independent, so they do not depend on HonoX or a specific UI framework.
+Client entries declare browser JavaScript initialization that is genuinely required at runtime; each entry has a plugin name, module specifier, optional export name, and public config passed to the initializer.
 
-## Role
+## Declaration
 
-- Adds browser-side code to a plugin's feature.
-- Stays independent of the integration framework.
+```ts
+clientEntries: [
+  {
+    pluginName: "example",
+    moduleSpecifier: "@riebeckite/plugin-example/client",
+    exportName: "initExample",
+    publicConfig: { selector: ".example" },
+  },
+]
+```
+
+## When to use
+
+Only add client entries when browser initialization is required. Do not add client JavaScript to plugins that complete entirely at SSR or build time. `publicConfig` is passed to the client initializer and recorded in the manifest for static hosts.
 
 ## Related terms
 

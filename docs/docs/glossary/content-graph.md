@@ -8,18 +8,18 @@ sidebar:
 
 The network of relationships between content entries, built from resolved wikilinks and Markdown links. It answers which notes link to which and supports backlink and neighborhood queries.
 
-## Role
+## Edges
 
-- Holds outgoing, incoming, and neighbor relations between entries.
-- Can be extended by plugins for custom relationships.
+A resolved [WikiLink](./wikilink.md) or Markdown link creates a directed edge from the source entry to the target. An [embed](./embed.md) creates an edge too, and is tracked as a dependency.
 
-## Related terms
+## Queries
 
-- [[wikilink|WikiLink]]
-- [[embed|Embed]]
-- [[glossary/diagnostics|Diagnostics]]
-- [[manifest|Manifest]]
+```ts
+graph.outgoing(slug);   // entries this note links to
+graph.incoming(slug);   // backlinks
+graph.neighbors(slug);  // both directions
+```
 
-## Learn more
+## Extending it
 
-- [Content System](../framework/content-system.md)
+Plugins can add relationships of their own, so a plugin can expose custom connections without changing Core.

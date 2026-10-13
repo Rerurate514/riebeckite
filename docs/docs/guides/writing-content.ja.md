@@ -290,7 +290,7 @@ Riebeckite では、最終的な Site 内リンクは解決済みの Content 情
 
 ## ファイル名と URL
 
-標準的な構成では、Content の論理的な Path が公開先を決める基準になります。
+標準的な構成では、Content の[[logical-path|論理的な Path]]が公開先を決める基準になります。
 
 たとえば基本的な構成では、
 

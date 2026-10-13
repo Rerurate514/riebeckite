@@ -8,19 +8,15 @@ sidebar:
 
 同じコンテンツの言語違いを結び付ける対応で、frontmatter で設定します。翻訳の対応があることで、リンクと graph が読み手の言語に従えます。
 
-## 役割
+## 設定
 
-- 1 つのノートの各言語版をまとめます。
-- リンクを読み手の言語へ解決させます。
+```yaml
+---
+translation: getting-started
+lang: ja
+---
+```
 
-## 関連用語
+## リンクの書き換え
 
-- [[glossary/localization|Localization]]
-- [[hreflang|Hreflang]]
-- [[wikilink|WikiLink]]
-- [[public-location|Public Location]]
-
-## さらに詳しく
-
-- [Localization guide](../guides/localization.ja.md)
-- [Localization](../plugins/l10n.ja.md)
+読み手の言語の翻訳がある場合、そのノートへのリンクと WikiLink はその版へ解決します。翻訳が無ければ、元の対象のままです。

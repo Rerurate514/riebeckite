@@ -1,24 +1,46 @@
 ---
-title: Plugin Dependency
+title: Plugin dependency
 sidebar:
   hidden: true
 ---
 
-# Plugin Dependency
+# Plugin dependency
 
-A capability-based relationship between plugins. Each plugin declares provides, requires, and optional capabilities, and Core resolves the order by topological sort, failing when a required capability is missing.
+Plugins declare capability requirements via `requires`; the resolver places providers before consumers and reports missing capabilities as `PluginDependencyError` with `kind` and `pluginName` diagnostics.
 
-## Role
+## Capability fields
 
-- Orders plugins and reports missing capabilities.
-- Uses declared capabilities rather than import order.
+`provides`: capabilities this plugin offers to others.
+`requires`: mandatory capabilities that must be resolved before this plugin executes.
+`optional`: capabilities used when present but not required.
+
+## Resolution order
+
+The resolver orders plugins by `order` first, then enforces capability dependencies. A missing required capability throws `PluginDependencyError`. Duplicate providers or cycles are configuration errors.
+
+## Example
+
+```ts
+definePlugin({
+  name: "consumer",
+  requires: ["content.graph"],
+});
+```
+
+```mermaid
+flowchart LR
+  Provider["Provider<br/>provides: content.graph"]
+  Consumer["Consumer<br/>requires: content.graph"]
+  Provider --> Consumer
+```
 
 ## Related terms
 
 - [[plugin|Plugin]]
-- [[lifecycle-hook|Lifecycle Hook]]
-- [[content-hook|Content Hook]]
-- [[glossary/diagnostics|Diagnostics]]
+- [[capability|Capability]]
+- [[lifecycle-hook|Lifecycle hook]]
+- [[content-hook|Content hook]]
+- [[endpoint|Endpoint]]
 
 ## Learn more
 

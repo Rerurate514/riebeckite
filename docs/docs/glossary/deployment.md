@@ -8,18 +8,12 @@ sidebar:
 
 The step that places the built site on a hosting target. The build produces the manifest and generated outputs, and the integration connects them to a platform such as Cloudflare Workers.
 
-## Role
+## What the build hands over
 
-- Publishes the built output to a host.
-- Is handled by the integration for a target platform.
+- The [manifest](./manifest.md).
+- The [generated outputs](./generated-output.md).
+- The build state used for the next [incremental build](./incremental-build.md).
 
-## Related terms
+## Targets
 
-- [[ssg|SSG]]
-- [[build|Build]]
-- [[doctor|Doctor]]
-
-## Learn more
-
-- [Deployment](../getting-started/deployment.md)
-- [HonoX Integration](../framework/honox-integration.md)
+The [integration](./integration.md) connects the output to a platform. Static hosting serves the files directly; a worker or edge target serves them through a runtime.

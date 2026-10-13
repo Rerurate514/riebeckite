@@ -1,24 +1,28 @@
 ---
-title: Content Hook
+title: Content hook
 sidebar:
   hidden: true
 ---
 
-# Content Hook
+# Content hook
 
-A plugin hook that observes or extends a content processing phase, such as onContentLoaded, onPostParsed, onPostProcessed, or onManifestCreated. Post and manifest hooks run even when the content cache hits.
+Content hooks join named phases of content processing: from config resolved through content loaded, post-parsed, post-processed, content graph, to manifest creation and diagnostics.
 
-## Role
+## Processing phases
 
-- Lets plugins observe or adjust content processing.
-- Runs for every build at the manifest stage.
+The content processing pipeline orders hooks as: `setup → buildStart → config resolved → public locations resolved → content loaded → Markdown/HTML pipeline → post parsed → post processed → content graph → manifest created → diagnostics → build end`.
+
+## Hook usage
+
+Only use hooks for phases you genuinely need. Avoid reconstructing later-stage information in earlier hooks; for example, do not rebuild manifest information inside `onContentLoaded`.
 
 ## Related terms
 
 - [[plugin|Plugin]]
-- [[lifecycle-hook|Lifecycle Hook]]
+- [[lifecycle-hook|Lifecycle hook]]
+- [[hook-context|Hook context]]
 - [[renderer|Renderer]]
-- [[glossary/build-dependency|Build Dependency]]
+- [[glossary/diagnostics|Diagnostics]]
 
 ## Learn more
 

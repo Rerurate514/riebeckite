@@ -1,24 +1,46 @@
 ---
-title: Plugin Dependency
+title: Plugin dependency
 sidebar:
   hidden: true
 ---
 
-# Plugin Dependency
+# Plugin dependency
 
-capability を基にした Plugin 間の関係です。各 Plugin が provides、requires、optional の capability を宣言し、Core がトポロジカルソートで順序を解決し、必須の capability が無ければ失敗します。
+プラグインは `requires` でキャビリティの要求を宣言します; resolver は provider を consumer より前に配置し、欠落時は `PluginDependencyError` でエラー報告します ( `kind` と `pluginName` で特定)。
 
-## 役割
+## キャビリティ fields
 
-- Plugin を順序付け、欠けた capability を報告します。
-- import の順序ではなく宣言した capability を使います。
+`provides`: このプラグインが他に提供するキャビリティ。
+`requires`: 必須のキャビリティ (このプラグイン実行前に解決されなければなりません)。
+`optional`: 存在時に使用されるが必須ではないキャビリティ。
+
+## 解決順
+
+resolver はまず `order` で並べ替え、次にキャビリティ依存関係を強制します。必須キャビリティが欠落すると `PluginDependencyError` がthrow されます。duplicate provider や cycle は設定エラーです。
+
+## 例
+
+```ts
+definePlugin({
+  name: "consumer",
+  requires: ["content.graph"],
+});
+```
+
+```mermaid
+flowchart LR
+  Provider["Provider<br/>provides: content.graph"]
+  Consumer["Consumer<br/>requires: content.graph"]
+  Provider --> Consumer
+```
 
 ## 関連用語
 
 - [[plugin|Plugin]]
-- [[lifecycle-hook|Lifecycle Hook]]
-- [[content-hook|Content Hook]]
-- [[glossary/diagnostics|Diagnostics]]
+- [[capability|Capability]]
+- [[lifecycle-hook|Lifecycle hook]]
+- [[content-hook|Content hook]]
+- [[endpoint|Endpoint]]
 
 ## さらに詳しく
 

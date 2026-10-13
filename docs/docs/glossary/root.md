@@ -8,18 +8,13 @@ sidebar:
 
 A base directory that Riebeckite resolves other paths against, such as the application root and the content root. Resolving against a stable root keeps paths portable across machines.
 
-## Role
+## Roots
 
-- Gives paths a stable base to resolve against.
-- Covers the application and content roots.
+| Root | Meaning |
+| --- | --- |
+| Application root | The directory the site is built from |
+| Content root | The directory content is read from |
 
-## Related terms
+## Portable paths
 
-- [[config|Config]]
-- [[content-source|Content Source]]
-- [[content-entry|Content Entry]]
-
-## Learn more
-
-- [Roots](../reference/configuration/roots.md)
-- [Configuration](../reference/configuration.md)
+Relative paths in the config are resolved against the application root, so the same config works on another machine. The content root is what the [Content Source](./content-source.md) scans.

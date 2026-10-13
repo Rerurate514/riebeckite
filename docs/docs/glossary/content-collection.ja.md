@@ -6,20 +6,24 @@ sidebar:
 
 # Content Collection
 
-query 用に作られるコンテンツ entry のまとまりです。tag、folder、date、frontmatter の field などの kind で定義します。Taxonomy ページや archive、series の一覧は collection から作られます。
+query 用に作られるコンテンツ entry のまとまりです。tag、folder、date、frontmatter の field などの kind で定義し、Taxonomy ページや archive、series の一覧は collection から作られます。
 
-## 役割
+## kind の種類
 
-- manifest から一覧ページや query の結果を供給します。
-- kind に加えて filter、sort、order を指定して選びます。
+collection は1つの軸で entry を選びます。
 
-## 関連用語
+- `tags` — 同じ tag を持つ entry。
+- `folder` — あるディレクトリ配下の entry。
+- `date` — 年・月・日でまとめた entry。
+- frontmatter の field — 同じ値を持つ entry。series でも使います。
 
-- [[glossary/taxonomy|Taxonomy]]
-- [[glossary/series|Series]]
-- [[content-index|Content Index]]
-- [[manifest|Manifest]]
+## entry の選び方
 
-## さらに詳しく
-
-- [Content System](../framework/content-system.ja.md)
+```ts
+{
+  kind: "tags",
+  filter: (entry) => entry.frontmatter.published !== false,
+  sort: "date",
+  order: "desc",
+}
+```

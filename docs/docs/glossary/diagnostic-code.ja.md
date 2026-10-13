@@ -1,17 +1,24 @@
 ---
-title: Diagnostic Code
+title: Diagnostic code
 sidebar:
   hidden: true
 ---
 
-# Diagnostic Code
+# Diagnostic code
 
-diagnostic に付く安定した識別子で、ツールが問題を絞り込み、まとめ、表示するために使います。コードがあれば、メッセージの文面に頼らず特定の問題を照合できます。
+Diagnostic code は問題のカテゴリを識別する安定した識別子で、`duplicate-content-id`、`invalid-content-id`、`content-integrity-*` など core と plugin が共有するセットがあり、`check` と `doctor` で一貫したレポートに使用されます。
 
-## 役割
+## 一般的なコード
 
-- diagnostic の種類を識別します。
-- メッセージを解析せずに問題を照合できます。
+| コード | デフォルト severity | 条件 |
+| -- | -- | -- |
+| `duplicate-content-id` | `error` | 公開された注記が安定した content ID を共有 |
+| `invalid-content-id` | `error` | `id` frontmatter が安定した content ID 契約に違反 |
+| `content-integrity-missing-page` | `warn` | link target が存在しない |
+
+## 使用方法
+
+アドホックなメッセージではなくコードを報告することで、`check` と `doctor` が調査結果を一貫してカテゴリ分け・集計できるようにします。
 
 ## 関連用語
 

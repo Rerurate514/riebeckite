@@ -8,18 +8,17 @@ sidebar:
 
 The build-time record of all content, with entries, public views, lookup maps, the content graph, and diagnostics. Pages, runtime queries, incremental builds, and inspection all read from the manifest.
 
-## Role
+## What the manifest holds
 
-- The boundary passed from content processing to page generation.
-- Provides bySlug, byPermalink, and related lookup maps.
+| Field | Contents |
+| --- | --- |
+| `entries` | Every processed [Content Entry](./content-entry.md) |
+| `publicEntries` | Entries safe to publish |
+| `discoverableEntries` | Entries allowed in listings and feeds |
+| `bySlug`, `byPermalink`, `byAlias` | Lookup maps |
+| `graph` | The [content graph](./content-graph.md) |
+| `diagnostics` | Collected warnings and errors |
 
-## Related terms
+## The boundary between stages
 
-- [[content-entry|Content Entry]]
-- [[content-graph|Content Graph]]
-- [[content-index|Content Index]]
-- [[public-location|Public Location]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+Content processing produces the manifest; page generation, runtime queries, [incremental builds](./incremental-build.md), and inspection consume it. Nothing downstream needs to touch the filesystem.

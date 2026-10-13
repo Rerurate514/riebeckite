@@ -8,18 +8,18 @@ sidebar:
 
 解決済みの WikiLink と Markdown リンクから作られる、コンテンツ entry 間の関係の網です。どのノートがどれを参照しているかを答え、backlink や近傍の問い合わせに使います。
 
-## 役割
+## 辺
 
-- entry 間の outgoing、incoming、neighbor の関係を持ちます。
-- Plugin が独自の関係を追加して拡張できます。
+解決した WikiLink や Markdown リンクは、参照元の entry から参照先への有向の辺を作ります。embed も辺を作り、依存として追跡します。
 
-## 関連用語
+## 問い合わせ
 
-- [[wikilink|WikiLink]]
-- [[embed|Embed]]
-- [[glossary/diagnostics|Diagnostics]]
-- [[manifest|Manifest]]
+```ts
+graph.outgoing(slug);   // このノートが参照する entry
+graph.incoming(slug);   // backlink
+graph.neighbors(slug);  // 両方向
+```
 
-## さらに詳しく
+## 拡張
 
-- [Content System](../framework/content-system.ja.md)
+Plugin は独自の関係を追加できるため、Core を変えずに custom のつながりを公開できます。

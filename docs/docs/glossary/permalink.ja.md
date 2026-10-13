@@ -8,18 +8,12 @@ sidebar:
 
 ノートの公開 URL として解決済みの正準値です。リンク、feed、sitemap、メタデータの唯一の出所であり、slug から再計算せず、公開位置の解決から得ます。
 
-## 役割
+## 解決の順序
 
-- サイト全体で使う正準 URL を提供します。
-- slug ではなく解決済みの公開位置から取得します。
+1. Core が logical path から既定の位置を解決します。
+2. Plugin の location hook が、folder の接頭辞や locale の付与などで調整します。
+3. 結果が entry の permalink として保存されます。
 
-## 関連用語
+## 読み取るだけで再計算しない
 
-- [[slug|Slug]]
-- [[public-location|Public Location]]
-- [[manifest|Manifest]]
-- [[feed|Feed]]
-
-## さらに詳しく
-
-- [Content System](../framework/content-system.ja.md)
+リンク、feed、sitemap、メタデータは permalink を読みます。slug やファイルのパスから URL を組み直すと redirect や localization を飛ばし、404 を生むことがあります。

@@ -8,18 +8,13 @@ sidebar:
 
 あるページの言語違いの URL を検索エンジンに伝える link メタデータです。Riebeckite はノートに存在する翻訳からこれを生成します。
 
-## 役割
+## 出力
 
-- 言語の代替 URL を検索エンジンに宣言します。
-- ノートの翻訳から生成します。
+```html
+<link rel='alternate' hreflang='en' href='https://example.com/docs/hello/'>
+<link rel='alternate' hreflang='ja' href='https://example.com/ja/docs/hello/'>
+```
 
-## 関連用語
+## 翻訳から生成
 
-- [[glossary/localization|Localization]]
-- [[translation|Translation]]
-- [[feed|Feed]]
-
-## さらに詳しく
-
-- [SEO](../plugins/seo.ja.md)
-- [Localization guide](../guides/localization.ja.md)
+リンクはノートの translation から作るため、言語版を追加すればその代替リンクも自動で加わります。

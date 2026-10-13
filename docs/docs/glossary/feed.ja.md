@@ -8,18 +8,16 @@ sidebar:
 
 公開されたコンテンツを機械可読に並べたもので、RSS、Atom、JSON Feed などがあります。Feed は discoverable な entry から作り、各 entry の permalink を使います。
 
-## 役割
+## feed が使うもの
 
-- 最近のコンテンツを読者やツールへ配信します。
-- discoverable な entry と permalink を使います。
+- discoverable な entry。unlisted のページは含めません。
+- 各 entry の permalink。slug から組み直した URL は使いません。
+- frontmatter の title、date、description。
 
-## 関連用語
+## 形式
 
-- [[glossary/permalink|Permalink]]
-- [[discoverable|Discoverable]]
-- [[hreflang|Hreflang]]
-
-## さらに詳しく
-
-- [SEO](../plugins/seo.ja.md)
-- [Content System](../framework/content-system.ja.md)
+| 形式 | 主な用途 |
+| --- | --- |
+| RSS | 最も広く対応 |
+| Atom | 厳密で仕様が明確 |
+| JSON Feed | プログラムからの利用 |

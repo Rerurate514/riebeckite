@@ -8,18 +8,18 @@ sidebar:
 
 WikiLink や embed を解決するための、小文字化した名前からノートへの対応表です。複数のノートに一致する名前は載せず、誤った解決を避けて diagnostic として報告します。
 
-## 役割
+## キーとパスの後方一致
 
-- WikiLink の対象を basename、パスの後方一致、alias で解決します。
-- 曖昧な名前は対応表から外し、diagnostic で知らせます。
+`guides/localization.md` のノートは、`localization`、`guides/localization`、フルパスの各キーで登録されます。そのため `[[localization]]` も `[[guides/localization]]` も解決します。
 
-## 関連用語
+frontmatter の alias も追加のキーとして登録します。
 
-- [[wikilink|WikiLink]]
-- [[embed|Embed]]
-- [[slug|Slug]]
-- [[content-graph|Content Graph]]
+## 曖昧さ
 
-## さらに詳しく
+2つのノートが同じキーを登録すると、そのキーは対応表から外し、報告します。リンクは誤ったノートを指さず、未解決のまま残ります。
 
-- [Content System](../framework/content-system.ja.md)
+曖昧な名前へ意図的にリンクする場合は、明示的なパス形式を使います。
+
+```md
+[[glossary/theme|theme]]
+```

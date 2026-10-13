@@ -6,18 +6,29 @@ sidebar:
 
 # Endpoint
 
-Plugin がブラウザや外部サービスへ公開する route です。Integration は Plugin の endpoint を汎用の route に通して解決し、Application が文書の枠組みを保ちます。
+Endpoint はプラグインのための再利用可能な HTTP 動作を宣言します; integration は plugin ごとのフレームワーク固有の routing を組み込むことなく、endpoint contract を host router に接続します。
 
-## 役割
+## エンドポイントの定義
 
-- Plugin が実行時の応答を返せるようにします。
-- Integration の route を通して解決し、Plugin が所有はしません。
+```ts
+import { defineEndpoint } from "@riebeckite/core";
+
+const searchEndpoint = defineEndpoint(
+  "/search-data.json",
+  ({ config, manifest }) => ({ json: buildSearchItems({ config, manifest }) }),
+  { cacheControl: "public, max-age=300" },
+);
+```
+
+## integration 接続
+
+integration は endpoint contract を host router に接続します。plugin 自身で特定の router 実装 (HonoX など) を組み込まないでください。
 
 ## 関連用語
 
 - [[plugin|Plugin]]
 - [[island|Island]]
-- [[client-entry|Client Entry]]
+- [[client-entry|Client entry]]
 
 ## さらに詳しく
 

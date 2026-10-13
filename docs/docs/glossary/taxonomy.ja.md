@@ -8,19 +8,12 @@ sidebar:
 
 /tags/ のような一覧ページへ、tag、folder、date でコンテンツをまとめる仕組みです。Taxonomy ページは content collection から作られ、リンクには permalink を使います。
 
-## 役割
+## 軸
 
-- コンテンツをたどれる軸で整理します。
-- collection から一覧ページを生成します。
+- `tags` — frontmatter の `tags` field から。
+- `folder` — ディレクトリ構造から。
+- `date` — 年・月・日で。
 
-## 関連用語
+## ページ
 
-- [[content-collection|Content Collection]]
-- [[glossary/series|Series]]
-- [[frontmatter|Frontmatter]]
-- [[manifest|Manifest]]
-
-## さらに詳しく
-
-- [Taxonomy](../plugins/taxonomy.ja.md)
-- [Content System](../framework/content-system.ja.md)
+Taxonomy ページは content collection をページとして描画したものです。リンクには各 entry の permalink を使うため、名前を変えても URL は正しく保たれます。

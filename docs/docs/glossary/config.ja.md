@@ -8,19 +8,16 @@ sidebar:
 
 コンテンツ、公開、Plugin、Theme、cache の挙動を制御する Riebeckite の設定オブジェクトです。Build が使う前に検証し、解決します。
 
-## 役割
+## 制御するもの
 
-- サイトをどう Build し公開するかを宣言します。
-- 使用前に検証し、解決します。
+| 設定 | 目的 |
+| --- | --- |
+| `content.directory` | コンテンツを読み取る場所 |
+| `content.filters.publishStrategy` | 既定の publish strategy |
+| `plugins` | 実行する Plugin とその option |
+| `theme` | Theme とその option |
+| `cache.enabled` | Build で cache を使うか |
 
-## 関連用語
+## 検証してから解決
 
-- [[preset|Preset]]
-- [[root|Root]]
-- [[glossary/localization|Localization]]
-- [[feed|Feed]]
-
-## さらに詳しく
-
-- [Configuration](../reference/configuration.ja.md)
-- [Configuration Reference](../reference/configuration-reference.ja.md)
+生の config を検証し、Build が使う形に解決します。失敗はコンテンツを処理する前に報告するため、設定の誤りが出力を壊すことはありません。

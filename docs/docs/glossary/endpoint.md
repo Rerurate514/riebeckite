@@ -6,18 +6,29 @@ sidebar:
 
 # Endpoint
 
-A route that a plugin exposes to the browser or an external service. The integration resolves plugin endpoints through generic routes while the application keeps control of the document framing.
+Endpoints declare reusable HTTP behavior for plugins; the integration connects the endpoint contract to the host router without embedding framework-specific routing in the plugin itself.
 
-## Role
+## Define an endpoint
 
-- Lets plugins serve runtime responses.
-- Is resolved through integration routes, not owned by the plugin.
+```ts
+import { defineEndpoint } from "@riebeckite/core";
+
+const searchEndpoint = defineEndpoint(
+  "/search-data.json",
+  ({ config, manifest }) => ({ json: buildSearchItems({ config, manifest }) }),
+  { cacheControl: "public, max-age=300" },
+);
+```
+
+## Integration connection
+
+The integration connects the endpoint contract to the host router. Do not embed a specific router implementation (such as HonoX) in the plugin itself.
 
 ## Related terms
 
 - [[plugin|Plugin]]
 - [[island|Island]]
-- [[client-entry|Client Entry]]
+- [[client-entry|Client entry]]
 
 ## Learn more
 

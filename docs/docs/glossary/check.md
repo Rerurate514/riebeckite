@@ -6,20 +6,25 @@ sidebar:
 
 # Check
 
-A CLI command that validates the site configuration and content for problems that would break a build, such as plugin dependency cycles and duplicate permalinks.
+The CLI command that validates the configuration, plugins, and capabilities are set up correctly before a build.
 
-## Role
+## What it validates
 
-- Validates configuration and content before a build.
-- Reports problems that would fail the build.
+Config format is valid.
+Plugin configuration is valid.
+Required capabilities are resolved.
+
+## Purpose
+
+Establishes basic project validity, not that output has been built or deployed.
+Guarantees that the configuration is valid.
 
 ## Related terms
 
 - [[doctor|Doctor]]
 - [[glossary/inspector|Inspector]]
-- [[glossary/diagnostics|Diagnostics]]
-- [[config|Config]]
+- [[build|Build]]
 
 ## Learn more
 
-- [CLI](../reference/cli.md)
+- [Check](../reference/cli.md)

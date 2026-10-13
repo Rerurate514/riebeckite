@@ -340,7 +340,7 @@ Theme Preview では、
 
 # Semantic Token を使う
 
-Theme では、色や Layout の値を直接あちこちへ書くのではなく、Semantic Token を利用します。
+Theme では、色や Layout の値を直接あちこちへ書くのではなく、[[semantic-token|Semantic Token]] を利用します。
 
 Riebeckite の共通 Token は、
 

@@ -6,12 +6,17 @@ sidebar:
 
 # Trace Span
 
-A named, timed interval in the build observability system, tagged with context such as a plugin hook or a cache lookup. Spans feed the profiler and observability events.
+A timed unit of build work. Traces divide build work into spans and record their duration. Span names should be stable (e.g., `content.load`, `plugins.run`, `diagnostics.run`, `application.build`).
 
-## Role
+## Structure
 
-- Names a timed interval for measurement.
-- Carries context tags such as plugin or cache.
+A trace has a parent span (e.g., `build`) and child spans for each unit of work.
+Always close spans on both success and failure.
+
+## Naming conventions
+
+Use stable span names that can be compared between builds.
+Avoid names that change every run due to input file names.
 
 ## Related terms
 

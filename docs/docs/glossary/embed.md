@@ -8,19 +8,14 @@ sidebar:
 
 Syntax that pulls the content of another note into the current page, for example a note embed or a block embed. Embeds are resolved like links and are tracked as content dependencies.
 
-## Role
+## Syntax
 
-- Reuses another note's content inside the current page.
-- Counts as a dependency so changes propagate.
+```md
+![[note]]            # embed a whole note
+![[note#Heading]]    # embed a section
+![[note#^block-id]]  # embed a block
+```
 
-## Related terms
+## Resolution and dependencies
 
-- [[wikilink|WikiLink]]
-- [[content-index|Content Index]]
-- [[content-graph|Content Graph]]
-- [[glossary/attachment|Attachment]]
-
-## Learn more
-
-- [Obsidian Markdown](../plugins/obsidian-markdown.md)
-- [Content System](../framework/content-system.md)
+An embed is resolved through the [content index](./content-index.md) like a [WikiLink](./wikilink.md), and it becomes a [content dependency](./content-dependency.md). Editing the source note invalidates the pages that embed it.

@@ -8,18 +8,10 @@ sidebar:
 
 A page that represents a folder rather than a single file, handled by the folder-pages plugin. It gives a directory an entry and a public URL while its children keep their own paths.
 
-## Role
+## What it does
 
-- Gives a folder a page of its own.
-- Keeps child pages addressable under the folder.
+A folder with an index note becomes a page at the folder's URL, and its children remain addressable under that folder. This is how a directory can act as a landing page.
 
-## Related terms
+## URLs
 
-- [[page|Page]]
-- [[glossary/permalink|Permalink]]
-- [[content-entry|Content Entry]]
-- [[plugin|Plugin]]
-
-## Learn more
-
-- [Folder Pages](../plugins/folder-pages.md)
+The folder page gets its own [permalink](./permalink.md). Its children keep theirs, so the folder does not flatten the tree.

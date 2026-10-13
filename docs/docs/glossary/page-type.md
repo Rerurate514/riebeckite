@@ -8,18 +8,12 @@ sidebar:
 
 A kind of page that a plugin provides with its own public path and body, used for pages that are not ordinary Markdown. The integration resolves the route and the application assembles the final HTML.
 
-## Role
+## What a page type provides
 
-- Lets plugins contribute non-Markdown pages.
-- Declares its own output dependencies for incremental builds.
+- A public path for the page.
+- A body the integration can render.
+- Output dependencies for [incremental builds](./incremental-build.md).
 
-## Related terms
+## Boundaries
 
-- [[page|Page]]
-- [[plugin|Plugin]]
-- [[endpoint|Endpoint]]
-- [[output-inventory|Output Inventory]]
-
-## Learn more
-
-- [Page System](../framework/page-system.md)
+A page type does not own HonoX routes or the site shell. It declares a page; the integration and application place it.

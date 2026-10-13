@@ -8,18 +8,10 @@ sidebar:
 
 content ツリー内でコンテンツ entry ではなく asset として配信されるファイルです。Attachment は論理パスを保ったまま公開 URL に対応し、何を公開して安全かは publication boundary が決めます。
 
-## 役割
+## attachment と URL
 
-- コンテンツから参照される Markdown 以外のファイルを配信します。
-- 論理パスを公開 URL に対応させます。
+画像、PDF、その他の Markdown 以外のファイルは logical path を保ち、公開 URL に対応します。通常の Markdown リンクや embed で参照します。
 
-## 関連用語
+## 境界
 
-- [[content-entry|Content Entry]]
-- [[output-inventory|Output Inventory]]
-- [[public-location|Public Location]]
-
-## さらに詳しく
-
-- [Attachment](../plugins/attachment.ja.md)
-- [Content System](../framework/content-system.ja.md)
+公開 URL になるのは content ツリー内のファイルだけです。何を公開して安全かは publication boundary が決めるため、root の外にある任意のファイルは公開されません。

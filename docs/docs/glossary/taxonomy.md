@@ -8,19 +8,12 @@ sidebar:
 
 Grouping of content by tags, folders, or date into listing pages such as /tags/. Taxonomy pages are built from content collections and use permalinks for their links.
 
-## Role
+## Dimensions
 
-- Organizes content into browsable dimensions.
-- Generates listing pages from collections.
+- `tags` — from the `tags` frontmatter field.
+- `folder` — from the directory structure.
+- `date` — by year, month, or day.
 
-## Related terms
+## Pages
 
-- [[content-collection|Content Collection]]
-- [[glossary/series|Series]]
-- [[frontmatter|Frontmatter]]
-- [[manifest|Manifest]]
-
-## Learn more
-
-- [Taxonomy](../plugins/taxonomy.md)
-- [Content System](../framework/content-system.md)
+A taxonomy page is a [content collection](./content-collection.md) rendered as a page. Its links use each entry's [permalink](./permalink.md), so URLs stay correct after a rename.

@@ -1,24 +1,46 @@
 ---
-title: Plugin Cache
+title: Plugin cache
 sidebar:
   hidden: true
 ---
 
-# Plugin Cache
+# Plugin cache
 
-Plugin-local storage for processed content, versioned by cacheVersion. A plugin opts in through its processed-content cache contract so entries can be reused across builds when their declared dependencies are unchanged.
+Each plugin gets a per-plugin, regenerable build-time cache via `context.cache`; store only JSON-serializable values scoped to the plugin namespace.
 
-## Role
+## Purpose and scope
 
-- Reuses processed content across builds.
-- Versioned and tied to declared dependencies.
+The plugin cache is isolated per plugin and exists only for the duration of a build. It is not a persistent database or Cloudflare Workers storage.
+
+```ts
+context.cache.set("key", value)
+const value = await context.cache.get("key")
+```
+
+## Cache invalidation
+
+Treat a corrupt cache as a safe miss; writes are atomic. Switch compatibility with `cacheVersion` when the contract changes.
+
+```mermaid
+flowchart TD
+  Work["Plugin work"]
+  Cache{"Valid cache?
+  Cache -->|Yes| Reuse["Reuse"]
+  Cache -->|No| Regenerate["Regenerate"]
+```
+
+## Configuration
+
+Cache behavior is controlled by `cacheVersion` on the plugin definition. Persistent processed-content cache uses `processedContentCache` with dependency modes `none`, `tracked`, `global`, or `unsafe`.
 
 ## Related terms
 
 - [[plugin|Plugin]]
-- [[fingerprint|Fingerprint]]
+- [[plugin-dependency|Plugin dependency]]
+- [[lifecycle-hook|Lifecycle hook]]
+- [[glossary/diagnostics|Diagnostics]]
 - [[cache-invalidation|Cache Invalidation]]
-- [[glossary/build-dependency|Build Dependency]]
+- [[cache-version|Cache Version]]
 
 ## Learn more
 

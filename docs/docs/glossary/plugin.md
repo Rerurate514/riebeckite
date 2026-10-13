@@ -6,19 +6,52 @@ sidebar:
 
 # Plugin
 
-A reusable extension that adds features through Core's plugin contracts. Plugins extend the Markdown and HTML pipelines, contribute page types, diagnostics, assets, and client entries, and are ordered by declared capabilities.
+A Riebeckite plugin extends content interpretation, transformation, rendering, diagnostics, build-time processing, endpoints, and browser behavior through a defined contract.
 
-## Role
+## Extension points
 
-- Adds features without changing Core.
-- Declares provides and requires capabilities for ordering.
+Plugins declare capabilities via `provides`, `requires`, and `optional` to opt into the dependency-resolved pipeline.
+
+```ts
+definePlugin({
+  name: "example
+  provides: ["content.graph"],
+  requires: ["cache"],
+  optional: ["example.optional"],
+});
+```
+
+Core extension points include: remark/rehype pipelines, content hooks, renderers, page types, assets, client entries, endpoints, and diagnostics.
+
+## Lifecycle
+
+Hooks run in resolved plugin order: `setup`, `buildStart`, content processing, `buildEnd`, and `dispose` (reverse order).
+
+Named hooks (`onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated`) participate in content phases.
+
+## Assets and client entries
+
+CSS is declared through `assets`; browser JavaScript through `clientEntries`. Only declare when genuinely needed.
+
+```ts
+assets: [createStyleAsset("example")],
+clientEntries: [createClientEntry("example", "init", { selector: ".example" })],
+```
 
 ## Related terms
 
-- [[plugin-dependency|Plugin Dependency]]
-- [[lifecycle-hook|Lifecycle Hook]]
+- [[plugin-cache|Plugin cache]]
+- [[plugin-dependency|Plugin dependency]]
+- [[lifecycle-hook|Lifecycle hook]]
+- [[content-hook|Content hook]]
 - [[renderer|Renderer]]
-- [[plugin-cache|Plugin Cache]]
+- [[endpoint|Endpoint]]
+- [[client-entry|Client entry]]
+- [[island|Island]]
+- [[slot|Body slot]]
+- [[asset|Asset]]
+- [[glossary/diagnostics|Diagnostics]]
+- [[diagnostic-code|Diagnostic code]]
 
 ## Learn more
 

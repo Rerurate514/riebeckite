@@ -8,18 +8,17 @@ sidebar:
 
 The component that turns scanned entries into a finished manifest. It resolves public locations, runs the Markdown and plugin pipeline, and builds the content graph and query indexes.
 
-## Role
+## Responsibilities
 
-- Coordinates processing and records the result in the manifest.
-- Owns location resolution and manifest construction, not file reading.
+- Resolve the public location of each entry.
+- Run the Markdown and plugin pipeline over each entry.
+- Build the [content graph](./content-graph.md) and [content index](./content-index.md).
+- Assemble the [manifest](./manifest.md) and collect diagnostics.
 
-## Related terms
+## Order of work
 
-- [[content-source|Content Source]]
-- [[manifest|Manifest]]
-- [[content-graph|Content Graph]]
-- [[slug|Slug]]
+Location resolution runs first so later hooks and pages can rely on a stable [permalink](./permalink.md). Processing follows, then the graph, then the manifest is finalized.
 
-## Learn more
+## What it does not do
 
-- [Content System](../framework/content-system.md)
+The Content Manager does not read files. That belongs to the [Content Source](./content-source.md).

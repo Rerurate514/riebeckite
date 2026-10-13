@@ -8,18 +8,13 @@ sidebar:
 
 Riebeckite が他のパスを解決する基準となるディレクトリで、Application root や content root があります。安定した root を基準に解決することで、パスをマシン間で持ち運べます。
 
-## 役割
+## root の種類
 
-- パスを解決する安定した基準を与えます。
-- Application と content の root を含みます。
+| root | 意味 |
+| --- | --- |
+| Application root | サイトを Build するディレクトリ |
+| Content root | コンテンツを読み取るディレクトリ |
 
-## 関連用語
+## パスの持ち運び
 
-- [[config|Config]]
-- [[content-source|Content Source]]
-- [[content-entry|Content Entry]]
-
-## さらに詳しく
-
-- [Roots](../reference/configuration/roots.ja.md)
-- [Configuration](../reference/configuration.ja.md)
+config の相対パスは application root を基準に解決するため、同じ config が別のマシンでも動きます。content root は Content Source が走査する対象です。

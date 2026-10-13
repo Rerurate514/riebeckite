@@ -10,8 +10,13 @@ The build-time measurement of where time goes, from content processing to plugin
 
 ## Role
 
-- Measures time spent in build phases.
-- Reports timings from recorded spans.
+Measures time spent in build phases.
+Reports timings from recorded spans.
+
+## CLI usage
+
+Run `riebeckite profile` to collect traces and display a performance report.
+`riebeckite profile --full` to measure without incremental reuse.
 
 ## Related terms
 
@@ -22,4 +27,3 @@ The build-time measurement of where time goes, from content processing to plugin
 ## Learn more
 
 - [Observability](../framework/observability.md)
-- [CLI](../reference/cli.md)

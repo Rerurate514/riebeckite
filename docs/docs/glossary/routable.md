@@ -8,18 +8,10 @@ sidebar:
 
 A publishing view that lists the entries the site serves at a URL, including unlisted ones. Routing and output generation use this view rather than the discoverable one.
 
-## Role
+## What the view contains
 
-- Collects entries that receive a URL and an output.
-- Keeps unlisted pages available by direct URL.
+Every entry that receives a URL and an output. An [unlisted](./unlisted.md) page is routable: it is served at its URL even though it is kept out of listings.
 
-## Related terms
+## Used by
 
-- [[discoverable|Discoverable]]
-- [[publication-boundary|Publication Boundary]]
-- [[manifest|Manifest]]
-- [[public-location|Public Location]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+Routing and [output generation](./output-inventory.md) read this view. A page that is not routable produces no output.

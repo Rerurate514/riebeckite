@@ -8,18 +8,22 @@ sidebar:
 
 A grouping of content entries produced for queries, defined by a kind such as tags, folder, date, or a frontmatter field. Taxonomy pages, archives, and series lists are built from collections.
 
-## Role
+## Kinds
 
-- Feeds listing pages and query results from the manifest.
-- Selected by kind with optional filter, sort, and order.
+A collection selects entries by one dimension:
 
-## Related terms
+- `tags` — entries sharing a tag.
+- `folder` — entries under a directory.
+- `date` — entries grouped by year, month, or day.
+- a frontmatter field — entries sharing a value, as used by [series](./series.md).
 
-- [[glossary/taxonomy|Taxonomy]]
-- [[glossary/series|Series]]
-- [[content-index|Content Index]]
-- [[manifest|Manifest]]
+## Selecting entries
 
-## Learn more
-
-- [Content System](../framework/content-system.md)
+```ts
+{
+  kind: "tags",
+  filter: (entry) => entry.frontmatter.published !== false,
+  sort: "date",
+  order: "desc",
+}
+```

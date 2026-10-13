@@ -1,24 +1,40 @@
 ---
-title: Lifecycle Hook
+title: Lifecycle hook
 sidebar:
   hidden: true
 ---
 
-# Lifecycle Hook
+# Lifecycle hook
 
-setup、buildStart、buildEnd、dispose といった Build の段階で実行される Plugin の hook です。依存の順序で実行され、setup と dispose は逆順で実行されます。
+プラグインのライフサイクルフックは ContentManager 一回あたり、この順序で実行されます: `setup`, `buildStart`, コンテンツ処理、`buildEnd`, そして reverse resolved order の `dispose`。名前付きコンテンツフックは resolved plugin order で参加します。
 
-## 役割
+## ビルドライフサイクル
 
-- 定義された Build の段階で Plugin のコードを実行します。
-- Build の前後で依存の順序に従って実行します。
+フレームワークのライフサイクルは `setup`, `buildStart`, `onConfigResolved`, コンテンツ処理、そして `buildEnd` を ContentManager 一回あたり実行します。`buildEnd` は診断収集後に完成した manifest を受け取り、terminal hook です。
+
+```mermaid
+flowchart LR
+  Setup["setup"]
+  Start["buildStart"]
+  Work["Build / Content Processing"]
+  End["buildEnd"]
+  Dispose["dispose"]
+  Setup --> Start
+  Start --> Work
+  Work --> End
+  End --> Dispose
+```
+
+## 名前付きコンテンツフック
+
+コンテンツフック (`onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated`) は resolved plugin order で実行されます。フックの失敗は `PluginHookError` でプラグイン、フック名、原因を特定して報告されます。
 
 ## 関連用語
 
 - [[plugin|Plugin]]
-- [[content-hook|Content Hook]]
-- [[plugin-dependency|Plugin Dependency]]
-- [[build|Build]]
+- [[plugin-cache|Plugin cache]]
+- [[content-hook|Content hook]]
+- [[glossary/diagnostics|Diagnostics]]
 
 ## さらに詳しく
 

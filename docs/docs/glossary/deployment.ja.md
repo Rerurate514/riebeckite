@@ -8,18 +8,12 @@ sidebar:
 
 Build 済みのサイトを配信先へ配置する段階です。Build が manifest と生成物を用意し、Integration がそれを Cloudflare Workers などの platform につなぎます。
 
-## 役割
+## Build が渡すもの
 
-- Build した出力を配信先へ公開します。
-- 対象 platform 向けに Integration が担います。
+- manifest。
+- generated output。
+- 次の incremental build で使う build state。
 
-## 関連用語
+## 配信先
 
-- [[ssg|SSG]]
-- [[build|Build]]
-- [[doctor|Doctor]]
-
-## さらに詳しく
-
-- [Deployment](../getting-started/deployment.ja.md)
-- [HonoX Integration](../framework/honox-integration.ja.md)
+integration が出力を platform につなぎます。静的ホスティングはファイルを直接配信し、worker や edge の配信先は runtime を通して配信します。

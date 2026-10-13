@@ -90,7 +90,7 @@ Use only the extension points a plugin actually needs.
 
 Disabled/false/null inputs are removed, and `enabled: false` is never
 executed. `order` provides a basic ordering before dependency resolution,
-while capability dependencies express real requirements:
+while [[capability|capability]] dependencies express real requirements:
 
 ``` ts
 plugins: [

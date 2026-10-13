@@ -6,21 +6,24 @@ sidebar:
 
 # SSG
 
-サイトを事前にファイルへ描画する Riebeckite の静的サイト生成です。Core がコンテンツと公開位置を担い、Integration が HonoX と Vite につないで route を描画し、出力を書き出します。
+ Riebeckite での静的サイト生成で、ビルド前にサイトをファイルにレンダリングする。Core がコンテンツと場所を処理し、integration が HonoX と Vite に接続してルートを描画し、出力を書き込む。
 
 ## 役割
 
-- デプロイ前にサイトを静的ファイルへ描画します。
-- output cache を使い、未変更の route を再利用します。
+ デプロイ前にサイトを静的ファイルにレンダリングする。
+ unchanged ルートを再利用するために output cache を使用する。
+
+## Integration
+
+Core がコンテンツと場所を処理し、integration が HonoX と Vite に接続してルートを描画し、出力を書き込む。
 
 ## 関連用語
 
-- [[build|Build]]
-- [[output-inventory|Output Inventory]]
+- [[build|ビルド]]
+- [[output-inventory|出力インベントリ]]
 - [[glossary/deployment|Deployment]]
-- [[incremental-build|Incremental Build]]
+- [[incremental-build|インクリメンタルビルド]]
 
 ## さらに詳しく
 
 - [HonoX Integration](../framework/honox-integration.ja.md)
-- [Build System](../framework/build-system.ja.md)

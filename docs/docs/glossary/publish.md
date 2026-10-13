@@ -8,18 +8,12 @@ sidebar:
 
 The decision to include content in the published site, controlled by the publish strategy and frontmatter such as published and visibility. Published content enters the publication boundary views.
 
-## Role
+## Inputs to the decision
 
-- Decides whether content appears on the site.
-- Combines the publish strategy with frontmatter fields.
+- The configured publish strategy.
+- The `published` frontmatter field.
+- The `visibility` frontmatter field.
 
-## Related terms
+## Result
 
-- [[draft|Draft]]
-- [[publication-boundary|Publication Boundary]]
-- [[routable|Routable]]
-- [[discoverable|Discoverable]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+Content that passes enters the [routable](./routable.md) and [discoverable](./discoverable.md) views. Content that fails is a [draft](./draft.md) and is excluded from the published set.

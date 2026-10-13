@@ -8,17 +8,14 @@ sidebar:
 
 公開の判定によって公開サイトから外されるコンテンツです。処理自体は続けられますが、公開されるまで routable と discoverable のビューから除外されます。
 
-## 役割
+## 設定
 
-- まだ公開できないコンテンツを表します。
-- 公開されるまでルーティングと一覧から外れます。
+```yaml
+---
+published: false
+---
+```
 
-## 関連用語
+## それでも起きること
 
-- [[publish|Publish]]
-- [[publication-boundary|Publication Boundary]]
-- [[routable|Routable]]
-
-## さらに詳しく
-
-- [Content System](../framework/content-system.ja.md)
+draft も解析と内部リンクの対象になるため、プレビューや相互参照ができます。publish されるまで公開の出力は作りません。

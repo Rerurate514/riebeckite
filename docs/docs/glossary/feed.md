@@ -8,18 +8,16 @@ sidebar:
 
 A machine-readable list of published content, such as RSS, Atom, or JSON Feed. Feeds draw from the discoverable entries and use each entry's permalink.
 
-## Role
+## What feeds use
 
-- Publishes recent content for readers and tools.
-- Uses discoverable entries and permalinks.
+- The [discoverable](./discoverable.md) entries, so unlisted pages stay out.
+- Each entry's [permalink](./permalink.md), never a URL rebuilt from the slug.
+- Title, date, and description from frontmatter.
 
-## Related terms
+## Formats
 
-- [[glossary/permalink|Permalink]]
-- [[discoverable|Discoverable]]
-- [[hreflang|Hreflang]]
-
-## Learn more
-
-- [SEO](../plugins/seo.md)
-- [Content System](../framework/content-system.md)
+| Format | Typical use |
+| --- | --- |
+| RSS | Widest reader support |
+| Atom | Stricter, well-defined |
+| JSON Feed | Feeds for programmatic use |

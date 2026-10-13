@@ -8,18 +8,14 @@ sidebar:
 
 順序を持ってまとまるコンテンツの集合で、frontmatter の series field で設定します。series の一覧は、同じ series 値を持つ content collection から作られます。
 
-## 役割
+## 設定
 
-- 関連するノートを順序付きの集合にまとめます。
-- series field を対象にした collection から作られます。
+```yaml
+---
+series: Building a Theme
+---
+```
 
-## 関連用語
+## 順序と一覧
 
-- [[content-collection|Content Collection]]
-- [[glossary/taxonomy|Taxonomy]]
-- [[frontmatter|Frontmatter]]
-
-## さらに詳しく
-
-- [Series](../plugins/series.ja.md)
-- [Content System](../framework/content-system.ja.md)
+同じ series 値を持つ entry をまとめ、通常は日付か明示した order で並べます。一覧は series field を対象にした content collection です。

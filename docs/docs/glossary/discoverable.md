@@ -8,18 +8,13 @@ sidebar:
 
 A publishing view that lists the entries allowed to appear in listings, feeds, and navigation. A routable but unlisted page is served at its URL yet kept out of this view.
 
-## Role
+## Discoverable versus routable
 
-- Feeds listings, feeds, and discovery widgets.
-- Excludes unlisted entries that are still routable.
+| View | Includes |
+| --- | --- |
+| routable | Every entry with a URL and an output |
+| discoverable | Only entries allowed in listings and feeds |
 
-## Related terms
+## Used by
 
-- [[routable|Routable]]
-- [[publication-boundary|Publication Boundary]]
-- [[manifest|Manifest]]
-- [[feed|Feed]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+Listings, [feeds](./feed.md), and discovery widgets read this view, so an unlisted page never appears in them.

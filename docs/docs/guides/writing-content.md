@@ -186,7 +186,7 @@ console.log(message);
 
 ## File names and URLs
 
-In the standard setup, the logical path of the content determines where it is published.
+In the standard setup, the [[logical-path|logical path]] of the content determines where it is published.
 
 File names become URL paths.
 

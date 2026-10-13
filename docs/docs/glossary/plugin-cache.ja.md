@@ -1,24 +1,46 @@
 ---
-title: Plugin Cache
+title: Plugin cache
 sidebar:
   hidden: true
 ---
 
-# Plugin Cache
+# Plugin cache
 
-処理済みコンテンツをためる Plugin ローカルの保管で、cacheVersion で版管理します。Plugin は processed-content cache 契約で参加し、宣言した依存が変わらない限り entry を Build 間で再利用できます。
+各プラグインは `context.cache` を通じてビルド時専用のプラグイン固有キャッシュを持ち、JSON シリアライザブルな値だけを保存しプラグイン名空間にスコープを限定します。
 
-## 役割
+## 目的とスコープ
 
-- 処理済みコンテンツを Build 間で再利用します。
-- 版管理され、宣言した依存と結び付きます。
+plugin cache は各プラグイン毎に隔離され、ビルド期間のみ有効です。永続データベースや Cloudflare Workers ストレージではありません。
+
+```ts
+context.cache.set("key", value)
+const value = await context.cache.get("key")
+```
+
+## キャッシュ無効化
+
+破損した cache は安全な miss として扱います。書き込みは atomic です。`cacheVersion` で互換性変更時に切り替えます。
+
+```mermaid
+flowchart TD
+  Work["Plugin work"]
+  Cache{"Valid cache?
+  Cache -->|Yes| Reuse["Reuse"]
+  Cache -->|No| Regenerate["Regenerate"]
+```
+
+## 設定
+
+cache の動作はプラグイン定義の `cacheVersion` で制御します。処理済みコンテンツキャッシュは依存モード `none`/`tracked`/`global`/`unsafe` で制御されます。
 
 ## 関連用語
 
 - [[plugin|Plugin]]
-- [[fingerprint|Fingerprint]]
-- [[cache-invalidation|Cache Invalidation]]
-- [[glossary/build-dependency|Build Dependency]]
+- [[plugin-dependency|Plugin dependency]]
+- [[lifecycle-hook|Lifecycle hook]]
+- [[glossary/diagnostics|Diagnostics]]
+- [[cache-invalidation|キャッシュ無効化]]
+- [[cache-version|Cache バージョン]]
 
 ## さらに詳しく
 

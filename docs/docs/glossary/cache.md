@@ -6,16 +6,32 @@ sidebar:
 
 # Cache
 
-Reusable build data that can be stored and shared, configured under the cache settings. The cache is an optimization, so a missing or invalid entry is a safe miss rather than an error.
+Reusable build data that Riebeckite stores under `.riebeckite/` to avoid repeating expensive work. A cache is always an optimization: removing it changes build speed, never the published output.
 
-## Role
+## Where caches live
 
-- Reuses processed content between builds.
-- Is safe to delete because it is only an optimization.
+- `.riebeckite/cache` — processed content, including per-plugin caches.
+- `.riebeckite/build/content-state.json` — the state of the previous build.
+- `.riebeckite/ssg-output-cache.json` — rendered output; local only.
+The first two are safe to persist between CI runs. The output cache is local and is not meant to be shared.
+
+## A cache is not a source of truth
+
+A missing, incompatible, or unsafe cache entry causes a full build path, not an error. State is written only after a successful build, so a failed build keeps the previous valid state.
+
+## Configuration
+
+Caching is controlled by the `cache` settings:
+
+```ts
+cache: {
+  enabled: true,
+}
+```
 
 ## Related terms
 
-- [[plugin-cache|Plugin Cache]]
+- [[plugin-cache|Plugin cache]]
 - [[cache-invalidation|Cache Invalidation]]
 - [[build-state|Build State]]
 - [[incremental-build|Incremental Build]]
@@ -23,4 +39,3 @@ Reusable build data that can be stored and shared, configured under the cache se
 ## Learn more
 
 - [Cache](../reference/configuration/cache.md)
-- [Build System](../framework/build-system.md)

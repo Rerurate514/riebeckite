@@ -10,15 +10,19 @@ The observability channel used across the build to emit structured events and sp
 
 ## Role
 
-- Emits structured build events.
-- Feeds the CLI, profiler, and integration.
+Emits structured build events.
+Feeds the CLI, profiler, and integration.
+
+## Signals
+
+Structured, safe operational messages.
+Not a flood of messages to find performance causes — use the profiler for that.
 
 ## Related terms
 
-- [[profiler|Profiler]]
 - [[trace-span|Trace Span]]
+- [[profiler|Profiler]]
 - [[glossary/diagnostics|Diagnostics]]
-- [[build|Build]]
 
 ## Learn more
 

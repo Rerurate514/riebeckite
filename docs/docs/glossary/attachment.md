@@ -8,18 +8,10 @@ sidebar:
 
 A file in the content tree that is served as an asset rather than a content entry. Attachments map to public URLs while keeping their logical path, and the publication boundary decides what is safe to expose.
 
-## Role
+## Attachments and URLs
 
-- Serves non-Markdown files referenced by content.
-- Keeps a logical path that maps to a public URL.
+An image, PDF, or other non-Markdown file keeps its [logical path](./logical-path.md) and maps to a public URL. It is referenced with a normal Markdown link or an [embed](./embed.md).
 
-## Related terms
+## Boundary
 
-- [[content-entry|Content Entry]]
-- [[output-inventory|Output Inventory]]
-- [[public-location|Public Location]]
-
-## Learn more
-
-- [Attachment](../plugins/attachment.md)
-- [Content System](../framework/content-system.md)
+Only files inside the content tree become public URLs. The [publication boundary](./publication-boundary.md) decides what is safe to expose, so arbitrary files outside the root are not published.

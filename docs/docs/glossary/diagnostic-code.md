@@ -1,17 +1,24 @@
 ---
-title: Diagnostic Code
+title: Diagnostic code
 sidebar:
   hidden: true
 ---
 
-# Diagnostic Code
+# Diagnostic code
 
-A stable identifier attached to a diagnostic so tools can filter, group, and display issues. Codes let automation match specific problems without relying on message text.
+Diagnostic codes are stable identifiers for categories of problems; core and plugins share a set of codes such as `duplicate-content-id`, `invalid-content-id`, and `content-integrity-*` for consistent reporting across `check` and `doctor`.
 
-## Role
+## Common codes
 
-- Identifies a specific kind of diagnostic.
-- Lets tools match issues without parsing messages.
+| Code | Default severity | Condition |
+| ---- | -- | -- |
+| `duplicate-content-id` | `error` | multiple published notes share a stable content ID |
+| `invalid-content-id` | `error` | `id` frontmatter violates the stable content ID contract |
+| `content-integrity-missing-page` | `warn` | link target does not exist |
+
+## Usage
+
+Report codes rather than ad-hoc messages so `check` and `doctor` can categorize and aggregate findings consistently.
 
 ## Related terms
 

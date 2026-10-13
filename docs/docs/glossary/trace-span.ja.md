@@ -1,23 +1,28 @@
 ---
-title: Trace Span
+title: トレーススパン
 sidebar:
   hidden: true
 ---
 
-# Trace Span
+# トレーススパン
 
-Build の observability における名前付きの計測区間で、Plugin の hook や cache の参照などの文脈の tag を持ちます。Span は profiler と observability のイベントに使われます。
+ build work の timed unit。traces は build work を span に分割し、その duration を記録する。span 名は安定しているべき (例: `content.load`, `plugins.run`, `diagnostics.run`, `application.build`) 。
 
-## 役割
+## 構造
 
-- 計測のため区間に名前を付けます。
-- Plugin や cache などの文脈 tag を持ちます。
+ trace には親 span (例: `build`) と、各ユニットの work 用の child span がある。
+ 成功でも失敗でも常に span を閉じる。
+
+## 命名規約
+
+ build 間で比較できる安定した span 名を使用する。
+ 入力ファイル名によって毎回変わる名前は避ける。
 
 ## 関連用語
 
 - [[profiler|Profiler]]
 - [[logger|Logger]]
-- [[build|Build]]
+- [[build|ビルド]]
 
 ## さらに詳しく
 

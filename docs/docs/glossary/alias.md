@@ -8,18 +8,14 @@ sidebar:
 
 An alternative name for a note, recorded in the manifest as an extra lookup key. Aliases resolve wikilinks to the same note without changing its slug or permalink, and a name used twice becomes ambiguous.
 
-## Role
+## Setting aliases
 
-- Adds extra lookup keys for a note.
-- Resolves to the same slug and permalink as the note.
+```yaml
+---
+aliases: [Getting Started, Quick Start]
+---
+```
 
-## Related terms
+## Resolution and ambiguity
 
-- [[slug|Slug]]
-- [[glossary/permalink|Permalink]]
-- [[wikilink|WikiLink]]
-- [[frontmatter|Frontmatter]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+Each alias is registered in the [content index](./content-index.md) as a key that resolves to this note. If two notes claim the same alias, the key becomes ambiguous and links using it are reported.

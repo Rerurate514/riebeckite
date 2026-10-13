@@ -8,18 +8,12 @@ sidebar:
 
 よくある構成をまかなうため、config に適用する準備済みの option の組です。Preset はよく使う Plugin、Theme、設定をまとめ、わずかな設定で採用できるようにします。
 
-## 役割
+## preset がまとめるもの
 
-- 出発点となる用意済みの設定を提供します。
-- よく使う Plugin、Theme、option をまとめます。
+- blog や docs など用途別の Plugin の組。
+- 既定の Theme。
+- よく使う設定。サイト側は必要な分だけ上書きします。
 
-## 関連用語
+## 使い方
 
-- [[config|Config]]
-- [[plugin|Plugin]]
-- [[glossary/deployment|Deployment]]
-
-## さらに詳しく
-
-- [Presets](../getting-started/presets.ja.md)
-- [Configuration](../reference/configuration.ja.md)
+preset は config に展開して使います。サイト自身の option を後から適用するため、最終的な設定はサイト側が決めます。

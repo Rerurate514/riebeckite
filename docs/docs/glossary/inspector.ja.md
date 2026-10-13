@@ -6,21 +6,27 @@ sidebar:
 
 # Inspector
 
-コンテンツ entry とその解決済みの状態を読み取り専用で示す仕組みで、公開位置、公開状態、content graph、diagnostic を含みます。コンテンツがどう処理され公開されたかの調査に役立ちます。
+ already-resolved state（ config、 plugins、 content、 graph、 build state など）を閲覧する read-only CLI コマンドです。
 
-## 役割
+## read-only 保証
 
-- 調査のため解決済みのコンテンツ状態を示します。
-- 公開位置、公開状態、diagnostic を表示します。
+ Build を実行したり、cache/assets/state を書き込んだり、asset をエミットしたり、特別なアーティファクトを描画したり、configuration を自動修正したりしてはならない。
+ リクエストされた情報が存在しない場合は、その条件を Plainly レポートする。
+
+## コマンド
+
+`riebeckite inspect config` — 解決された設定。
+`riebeckite inspect plugins` — 有効なプラグイン。
+`riebeckite inspect content --list` — 公開されたコンテンツと URL。
+`riebeckite inspect graph` — コンテンツグラフの関係。
+`riebeckite inspect build` — incremental build state。
 
 ## 関連用語
 
-- [[glossary/diagnostics|Diagnostics]]
 - [[check|Check]]
 - [[doctor|Doctor]]
-- [[manifest|Manifest]]
+- [[build|ビルド]]
 
 ## さらに詳しく
 
 - [Inspector](../framework/inspector.ja.md)
-- [CLI](../reference/cli.ja.md)

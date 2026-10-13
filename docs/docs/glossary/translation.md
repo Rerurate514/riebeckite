@@ -8,19 +8,15 @@ sidebar:
 
 The link between versions of the same content in different languages, set through frontmatter. Translations let links and the graph follow the reader's language.
 
-## Role
+## Setting it
 
-- Groups the language versions of one note.
-- Lets links resolve to the reader's language.
+```yaml
+---
+translation: getting-started
+lang: ja
+---
+```
 
-## Related terms
+## Link rewriting
 
-- [[glossary/localization|Localization]]
-- [[hreflang|Hreflang]]
-- [[wikilink|WikiLink]]
-- [[public-location|Public Location]]
-
-## Learn more
-
-- [Localization guide](../guides/localization.md)
-- [Localization](../plugins/l10n.md)
+When a note has a translation in the reader's language, links and [WikiLinks](./wikilink.md) to it resolve to that version. Without a translation, the original target stays.

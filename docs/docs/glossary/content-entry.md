@@ -8,18 +8,14 @@ sidebar:
 
 One resolved content item in the manifest, identified by slug. It carries the permalink, public location, frontmatter, publishing state, HTML, and plugin-contributed data.
 
-## Role
+## What an entry carries
 
-- The per-note record that pages and plugins read.
-- Holds both the internal slug and the resolved public location.
+- `slug` — the internal key.
+- `publicLocation` — the resolved [permalink](./permalink.md), redirects, and metadata.
+- `frontmatter` — parsed metadata.
+- `html` — the rendered body.
+- Plugin-contributed data such as body slots and head tags.
 
-## Related terms
+## Slug versus permalink
 
-- [[glossary/content|Content]]
-- [[manifest|Manifest]]
-- [[slug|Slug]]
-- [[glossary/permalink|Permalink]]
-
-## Learn more
-
-- [Content System](../framework/content-system.md)
+The slug identifies the entry inside the build; the permalink is the public URL. Consumers that link to the entry read the permalink from the entry, not the slug.

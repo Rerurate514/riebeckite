@@ -175,7 +175,7 @@ flowchart LR
 
 次のような状態は Configuration Error になります。
 
-- 必須 Capability が存在しない
+- 必須 [[capability|Capability]] が存在しない
 - 同じ Capability を複数 Plugin が提供する
 - 依存関係が循環している
 

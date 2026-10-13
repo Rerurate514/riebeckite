@@ -8,18 +8,10 @@ sidebar:
 
 A routable piece of content that the site serves at a URL. A page is produced either from Markdown or by a plugin page type, and the integration renders it through a route.
 
-## Role
+## Markdown pages and plugin pages
 
-- The output unit that receives a URL and is rendered.
-- Comes from Markdown content or from a plugin page type.
+Most pages come from Markdown. A [page type](./page-type.md) lets a plugin contribute a page that is not ordinary Markdown, such as an index or a generated listing.
 
-## Related terms
+## Rendering
 
-- [[page-type|Page Type]]
-- [[glossary/permalink|Permalink]]
-- [[plugin|Plugin]]
-- [[content-entry|Content Entry]]
-
-## Learn more
-
-- [Page System](../framework/page-system.md)
+The integration resolves a route for the page and the application assembles the final HTML. The plugin supplies the body, not the site shell.

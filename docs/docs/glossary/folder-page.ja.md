@@ -8,18 +8,10 @@ sidebar:
 
 単一のファイルではなくフォルダを代表するページで、folder-pages Plugin が扱います。ディレクトリに entry と公開 URL を与えつつ、配下のページはそれぞれのパスを保ちます。
 
-## 役割
+## 何をするか
 
-- フォルダ自身にページを与えます。
-- 配下のページはフォルダの下で参照可能に保ちます。
+index ノートを持つフォルダは、そのフォルダの URL のページになります。配下のページはそのフォルダの下で参照可能なままです。これによりディレクトリをランディングページとして使えます。
 
-## 関連用語
+## URL
 
-- [[page|Page]]
-- [[glossary/permalink|Permalink]]
-- [[content-entry|Content Entry]]
-- [[plugin|Plugin]]
-
-## さらに詳しく
-
-- [Folder Pages](../plugins/folder-pages.ja.md)
+フォルダページは自身の permalink を持ちます。配下のページもそれぞれの permalink を保つため、フォルダがツリーを平坦化することはありません。

@@ -6,9 +6,9 @@ sidebar:
 
 # Hook context
 
-hook に渡される plugin context には `config`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer` が含まれ、optional の `contentSource` もあります。グローバルシングルTon よりフレームワークサービスを優先します。
+hookに渡されるplugin contextには`config`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれ、任意で`contentSource`も渡されます。グローバルなSingletonではなく、フレームワークのサービスを使います。
 
-## PluginContext の形
+## PluginContextの形
 
 ```ts
 type PluginContext = {
@@ -23,9 +23,9 @@ type PluginContext = {
 };
 ```
 
-## hook ごとの追加
+## hookごとの追加
 
-hook によっては `slug`、`markdown`、`content`、`manifest`、`entries` および location input などの追加フィールドが付きます。常にコンテキストからフレームワークサービスを優先してください。
+hookによっては`slug`、`markdown`、`content`、`manifest`、`entries`、locationの入力などのfieldが追加されます。必要なサービスは常にcontextから受け取ります。
 
 ## 関連用語
 

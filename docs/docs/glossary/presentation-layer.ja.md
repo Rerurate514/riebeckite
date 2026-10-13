@@ -1,35 +1,35 @@
 ---
-title: プレゼンテーション層
+title: Presentation Layer
 sidebar:
   hidden: true
 ---
 
-# プレゼンテーション層
+# Presentation Layer
 
-プレゼンテーション層はテーマの責任範囲 — 色、フォント、間隔、レイアウト、記事のスタイルです。コンテンツの意味論、ルート、マニフェスト、プラグインの動作、クライアントスクリプトは含まれません。
+Presentation LayerはThemeの担当範囲で、色、フォント、余白、レイアウト、記事のスタイルを指します。コンテンツの意味、route、manifest、Pluginの動作、クライアントスクリプトは含みません。
 
-## テーマができること
+## Themeができること
 
-トークンの上書きまたは追加
-スタイルシート規則の定義
-theme-specific data 属性の宣言
-色調モード / タイポグラフィ / レイアウトプリセットの提供
-`userCss` による上書き (カスケードで最後に読み込まれる)
+- Tokenを上書きまたは追加する
+- スタイルシートの規則を定義する
+- Theme固有のdata属性を宣言する
+- Color Mode、Typography、レイアウトのプリセットを提供する
+- `userCss`で上書きする（カスケードで最後に読み込まれます）
 
-## テーマができないこと
+## Themeができないこと
 
-コンポーネントの置き換え
-JSX への注入
-ルートの追加
-プラグインの追加または削除
-クライアントスクリプトの実行
-DOM 変換、アイランド登録、ファイルシステムアクセス、ContentManager アクセス
+- コンポーネントを置き換える
+- JSXへ注入する
+- routeを追加する
+- Pluginを追加または削除する
+- クライアントスクリプトを実行する
+- DOMの変換、islandの登録、ファイルシステムへのアクセス、ContentManagerへのアクセス
 
 ## 関連用語
 
 - [[glossary/theme|Theme]]
-- [[glossary/color-mode|色調モード]]
-- [[article-layout|記事レイアウト]]
+- [[glossary/color-mode|Color Mode]]
+- [[article-layout|Article Layout]]
 - [[user-css|userCss]]
 
 ## さらに詳しく

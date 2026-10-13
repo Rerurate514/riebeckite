@@ -6,13 +6,13 @@ sidebar:
 
 # Content Index
 
-WikiLink や embed を解決するための、小文字化した名前からノートへの対応表です。複数のノートに一致する名前は載せず、誤った解決を避けて diagnostic として報告します。
+WikiLinkやembedを解決するための、小文字化した名前からノートへの対応表です。複数のノートに一致する名前は載せず、誤った解決を避けてdiagnosticとして報告します。
 
 ## キーとパスの後方一致
 
-`guides/localization.md` のノートは、`localization`、`guides/localization`、フルパスの各キーで登録されます。そのため `[[localization]]` も `[[guides/localization]]` も解決します。
+`guides/localization.md`のノートは、`localization`、`guides/localization`、フルパスの各キーで登録されます。そのため`[[localization]]`も`[[guides/localization]]`も解決します。
 
-frontmatter の alias も追加のキーとして登録します。
+frontmatterのaliasも追加のキーとして登録します。
 
 ## 曖昧さ
 

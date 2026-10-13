@@ -6,15 +6,15 @@ sidebar:
 
 # Renderer
 
-Renderer はコンテンツターゲットをプラグイン固有の HTML に変換します; ターゲットを処理しない場合は `null` を返して次の renderer が参加できるようにします。Canvas、Excalidraw、attachment の描画が例です。
+Rendererはコンテンツの対象をPlugin固有のHTMLに変換します。対象を処理しない場合は`null`を返し、次のRendererに処理を渡します。Canvas、Excalidraw、attachmentの描画が例です。
 
-## Renderer 契約
+## Rendererの契約
 
-Renderer は `kind`、`path`、`raw`、`label`、`url`、`embed` を含むターゲットと標準の `PluginContext` を受け取ります。ターゲットを処理しない場合は `null` を返して次の renderer が試せるようにします。
+Rendererは`kind`、`path`、`raw`、`label`、`url`、`embed`を含む対象と、標準の`PluginContext`を受け取ります。対象を処理しない場合は`null`を返し、次のRendererが試せるようにします。
 
 ## 例
 
-組み込みの renderer には: canvas (Excalidraw)、attachment、media があります。カスタム renderer はプラグインで Bases やサードパーティの図書館形式のために定義できます。
+組み込みのRendererにはcanvas（Excalidraw）、attachment、mediaがあります。カスタムRendererはPluginで定義でき、Basesやサードパーティの図形式にも対応できます。
 
 ## 関連用語
 

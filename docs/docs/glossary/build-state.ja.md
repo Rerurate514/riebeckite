@@ -1,31 +1,27 @@
 ---
-title: ビルド状態
+title: Build State
 sidebar:
   hidden: true
 ---
 
-# ビルド状態
+# Build State
 
-前回の Build が記録されたもので、 entries、 fingerprints、 dependencies、 output changes を含みます。
+前回のBuildの記録で、entry、fingerprint、依存関係、出力の変更を含みます。
 
-## 場所と内容
+## 保存される内容
 
- `.riebeckite/build/content-state.json` に保存される。
- entries、 fingerprints、 dependencies、 pipeline fingerprint、 manifest entries、 outputs、 external dependencies を含む。
- 次の Build が incremental change set を計算するために読み込む。
+`.riebeckite/build/content-state.json`に保存されます。entry、fingerprint、依存関係、pipelineのfingerprint、manifestのentry、出力、外部依存を含みます。次のBuildはこれを読み、Incremental Buildの差分を計算します。
 
 ## バージョンと妥当性
 
-バージョンは `CONTENT_BUILD_STATE_VERSION` (現在は 12) である。
-欠落・非互換・不正な状態の場合は full build パスが取られる。
- 状態は Build 成功後にのみ更新され、失敗しても以前の有効な状態が壊されない。
+バージョンは`CONTENT_BUILD_STATE_VERSION`（現在は12）です。欠落、非互換、不正な状態ではFull Buildの経路が選ばれます。状態はBuildが成功したあとにだけ更新されるため、失敗しても以前の有効な状態は壊れません。
 
 ## 関連用語
 
-- [[build|ビルド]]
-- [[incremental-build|インクリメンタルビルド]]
-- [[fingerprint|フィンガープリント]]
-- [[output-inventory|出力インベントリ]]
+- [[build|Build]]
+- [[incremental-build|Incremental Build]]
+- [[fingerprint|Fingerprint]]
+- [[output-inventory|Output Inventory]]
 
 ## さらに詳しく
 

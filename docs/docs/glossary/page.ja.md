@@ -6,12 +6,12 @@ sidebar:
 
 # Page
 
-サイトが URL で提供する、ルーティング可能なコンテンツです。Markdown から作られる場合と、Plugin の page type から作られる場合があり、Integration が route を通して描画します。
+サイトがURLで提供する、ルーティング可能なコンテンツです。Markdownから作られる場合と、Pluginのpage typeから作られる場合があり、Integrationがrouteを通して描画します。
 
-## Markdown のページと Plugin のページ
+## MarkdownのページとPluginのページ
 
-ほとんどのページは Markdown から作られます。page type を使うと、Plugin が index や生成した一覧など、通常の Markdown ではないページを提供できます。
+ほとんどのページはMarkdownから作られます。page typeを使うと、Pluginがindexや生成した一覧など、通常のMarkdownではないページを提供できます。
 
 ## 描画
 
-Integration がページの route を解決し、Application が最終的な HTML を組み立てます。Plugin が渡すのは本文で、サイトの枠組みではありません。
+Integrationがページのrouteを解決し、Applicationが最終的なHTMLを組み立てます。Pluginが渡すのは本文で、サイトの枠組みではありません。

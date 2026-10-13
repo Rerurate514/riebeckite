@@ -6,32 +6,32 @@ sidebar:
 
 # Theme Root
 
-Theme Root セレクタ ([data-theme-root] または <html>) はトークンと属性ルールを全ページにスコープし、色調モードとタイポグラフィ属性がここに適用されるとカスケードがすべての要素に届きます。
+Theme Rootのセレクタ（`[data-theme-root]`または`<html>`）は、Tokenと属性のルールをページ全体に適用します。Color ModeとTypographyの属性をここへ付けると、カスケードがすべての要素に届きます。
 
 ## セレクタ
 
-すべてのテーマルールはテーマの識別名にスコープされます:
+すべてのThemeのルールは、Themeの識別名にスコープされます。
 
 ```css
 :is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
 :is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
 ```
 
-## data 属性
+## data属性
 
-ThemeRoot は `<html>` に次の属性をエミットします:
+Theme Rootは`<html>`に次の属性を付けます。
 
-- `data-theme-name`: テーマ識別子名 (例: "riebeckite", "minimal")
-- `data-theme`: 色調モードの状態 ("light" / "dark" / "system" の場合は省略)
-- `data-typography`: タイポグラフィ プレセット値
-- `data-article-layout`: 記事レイアウト プレセット値
+- `data-theme-name`: Themeの識別名（例: "riebeckite"、"minimal"）
+- `data-theme`: Color Modeの状態（"light" / "dark"。`system`の場合は省略）
+- `data-typography`: Typographyのプリセット値
+- `data-article-layout`: Article Layoutのプリセット値
 
 ## 関連用語
 
 - [[glossary/theme|Theme]]
 - [[design-token|Design Token]]
-- [[glossary/color-mode|色調モード]]
-- [[glossary/typography|タイポグラフィ]]
+- [[glossary/color-mode|Color Mode]]
+- [[glossary/typography|Typography]]
 
 ## さらに詳しく
 

@@ -6,7 +6,7 @@ sidebar:
 
 # Embed
 
-別のノートの内容を現在のページに取り込む記法で、ノートの埋め込みや block の埋め込みがあります。リンクと同様に解決し、content dependency として追跡します。
+別のノートの内容を現在のページに取り込む記法で、ノートの埋め込みやblockの埋め込みがあります。リンクと同様に解決し、content dependencyとして追跡します。
 
 ## 記法
 
@@ -18,4 +18,4 @@ sidebar:
 
 ## 解決と依存
 
-embed は WikiLink と同じく content index から解決し、content dependency になります。参照元のノートを編集すると、埋め込むページが無効化されます。
+embedはWikiLinkと同じくcontent indexから解決し、content dependencyになります。参照元のノートを編集すると、埋め込むページが無効化されます。

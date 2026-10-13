@@ -6,24 +6,17 @@ sidebar:
 
 # Check
 
- Build 前に config、 plugins、 capabilities が正しく設定されているか検証する CLI コマンドです。
+Plugin依存の循環やpermalinkの重複など、Buildを壊す問題がないか、サイトの設定とコンテンツを検証するCLIコマンドです。
 
-## 検証内容
+## 検証する内容
 
- config format が有効か。
- Plugin の設定 が有効か。
- 必要な capability が成立しているか。
-
-## 目的
-
- 出力がビルドされてDeploy されていることを保証するものではない。
- Configuration が有効であることを保証する。
+Pluginの依存関係の循環、提供capabilityの重複、permalinkの衝突、公開設定の誤りなどを調べます。Buildの前に実行し、失敗につながる問題を早く見つけます。
 
 ## 関連用語
 
 - [[doctor|Doctor]]
 - [[glossary/inspector|Inspector]]
-- [[build|ビルド]]
+- [[build|Build]]
 
 ## さらに詳しく
 

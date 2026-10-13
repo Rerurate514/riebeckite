@@ -39,7 +39,6 @@ Each primitive exposes one class as its stable styling hook:
 | `ArticleMeta` | `rb-article-meta` |
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
-```
 
 Structural CSS ships in `@riebeckite/honox/style.css` and reaches the site through `.riebeckite/framework-styles.css`.
 

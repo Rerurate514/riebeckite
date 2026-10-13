@@ -1,29 +1,25 @@
 ---
-title: 永続キャッシュ
+title: Persistent Cache
 sidebar:
   hidden: true
 ---
 
-# 永続キャッシュ
+# Persistent Cache
 
- `.riebeckite/cache/content/vN` 下に保存された、ビルド間で再利用される処理済み Markdown 結果です。cache hit があると warm build になり、miss があると再処理が強制される。
+`.riebeckite/cache/content/vN`に保存される、Build間で再利用する処理済みのMarkdownの結果です。cacheに当たればウォームビルドになり、外れれば再処理を強制します。
 
-## Cache  contents
+## Cacheの内容
 
- `.riebeckite/cache/content/v3` 下に保存されている。
- エントリのキーには Markdown source、 parsed frontmatter、 the cache schema、 および processing-pipeline fingerprint が含まれる。
- Cached content は workspace paths ではなく logical slugs と normalized source paths を記録するため、同じ OS の異なるランナーまたはワークスペースにコピーできる。
+`.riebeckite/cache/content/v3`に保存されます。entryのキーにはMarkdownのsource、解析済みのfrontmatter、cacheのスキーマ、処理パイプラインのfingerprintが含まれます。cacheしたcontentはワークスペースのパスではなくlogical slugと正規化したsourceのパスを記録するため、同じOSの別の実行環境やワークスペースへコピーできます。
 
-## Hits, misses, and bypasses
+## ヒットとミス
 
- build log は `Persistent content cache` ラインで `hits`, `misses`, `bypasses` を報告する。
- cache なしの cold build はすべてスクラッチから処理する。 warm build は互換性のあるエントリを再利用する。
- cold build を強制するには `.riebeckite/cache` を削除する。
+ビルドログは`Persistent content cache`の行で`hits`、`misses`、`bypasses`を報告します。cacheのないコールドビルドはすべてを最初から処理します。ウォームビルドは互換性のあるentryを再利用します。コールドビルドを強制するには`.riebeckite/cache`を削除します。
 
 ## 関連用語
 
 - [[glossary/cache|Cache]]
-- [[cache-invalidation|キャッシュ無効化]]
+- [[cache-invalidation|Cache Invalidation]]
 - [[plugin-cache|Plugin cache]]
 
 ## さらに詳しく

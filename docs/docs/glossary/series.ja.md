@@ -6,7 +6,7 @@ sidebar:
 
 # Series
 
-順序を持ってまとまるコンテンツの集合で、frontmatter の series field で設定します。series の一覧は、同じ series 値を持つ content collection から作られます。
+順序を持ってまとまるコンテンツの集合で、frontmatterのseries fieldで設定します。seriesの一覧は、同じseries値を持つcontent collectionから作られます。
 
 ## 設定
 
@@ -18,4 +18,4 @@ series: Building a Theme
 
 ## 順序と一覧
 
-同じ series 値を持つ entry をまとめ、通常は日付か明示した order で並べます。一覧は series field を対象にした content collection です。
+同じseries値を持つentryをまとめ、通常は日付か明示したorderで並べます。一覧はseries fieldを対象にしたcontent collectionです。

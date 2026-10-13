@@ -6,14 +6,14 @@ sidebar:
 
 # Taxonomy
 
-/tags/ のような一覧ページへ、tag、folder、date でコンテンツをまとめる仕組みです。Taxonomy ページは content collection から作られ、リンクには permalink を使います。
+/tags/ のような一覧ページへ、tag、folder、dateでコンテンツをまとめる仕組みです。Taxonomyページはcontent collectionから作られ、リンクにはpermalinkを使います。
 
 ## 軸
 
-- `tags` — frontmatter の `tags` field から。
+- `tags` — frontmatterの`tags` fieldから。
 - `folder` — ディレクトリ構造から。
 - `date` — 年・月・日で。
 
 ## ページ
 
-Taxonomy ページは content collection をページとして描画したものです。リンクには各 entry の permalink を使うため、名前を変えても URL は正しく保たれます。
+Taxonomyページはcontent collectionをページとして描画したものです。リンクには各entryのpermalinkを使うため、名前を変えてもURLは正しく保たれます。

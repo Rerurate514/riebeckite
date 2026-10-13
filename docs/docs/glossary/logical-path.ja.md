@@ -6,12 +6,12 @@ sidebar:
 
 # Logical Path
 
-content root を基準に表した、コンテンツファイルの位置です。Riebeckite は logical path を安定して保ち、公開パスへは別に対応させます。
+content rootを基準に表した、コンテンツファイルの位置です。Riebeckiteはlogical pathを安定して保ち、公開パスへは別に対応させます。
 
 ## logical path
 
-`content/notes/hello.md` の logical path は `notes/hello` です。content system が扱うのはこの logical path で、公開 URL と同じとは限りません。
+`content/notes/hello.md`のlogical pathは`notes/hello`です。content systemが扱うのはこのlogical pathで、公開URLと同じとは限りません。
 
 ## 公開パスへの対応
 
-公開位置の解決が logical path を public path に対応させます。folder page や permalink の規則を使えば、ファイルを移動せずに対応を変えられます。
+公開位置の解決がlogical pathをpublic pathに対応させます。folder pageやpermalinkの規則を使えば、ファイルを移動せずに対応を変えられます。

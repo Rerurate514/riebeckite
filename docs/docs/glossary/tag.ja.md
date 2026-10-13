@@ -6,25 +6,19 @@ sidebar:
 
 # Tag
 
-タグ は共通ラベルでコンテンツエントリをグループ化し、 `/tags/<slug>` でリストページを生成します。RSS/Atom/JSON フィードと関連タグナビゲーションも付帯します。
+Tagは共通のラベルでコンテンツをまとめ、`/tags/<slug>`に一覧ページを生成します。あわせてRSS・Atom・JSONのフィードと、関連タグのナビゲーションを提供します。
 
 ## タグの仕組み
 
- `taxonomy()` プラグイン はマニフェストの公開エントリを読み込み、`tags` frontmatter フィールドでグループ化します。
+`taxonomy()` Pluginはmanifestの公開entryを読み込み、frontmatterの`tags` fieldでまとめます。タグの値ごとに`/tags/<slug>`のページを生成します。
 
- 各ユニークなタグ値が `/tags/<slug>` に term ページを生成します。
-
- タグページ には: そのタグを共有するエントリのリスト、RSS/Atom/JSON フィード、関連タグナビゲーション (relatedLimit で絞り込まれたもの) が含まれます。
-
+タグページには、そのタグを共有するentryの一覧、RSS・Atom・JSONのフィード、関連タグのナビゲーション（`relatedLimit`で件数を絞る）が含まれます。
 
 ## タグページの構造
 
- タグページ は HonoX の catch-all ルートを使用してレンダリングされ、 `taxonomy-term` ページタイプを使用します。
+タグページはHonoXのcatch-all routeで描画し、`taxonomy-term`というpage typeを使います。ページには、そのタグを共有するentryの一覧が`permalink`を通したリンクとして並びます。
 
- ページ にはそのタグを共有するエントリのリストが含まれ、 `permalink` を通じたリンクが提供されます。
-
- 1 件の term フィード はビルドの generated-output シンク を通じて静的ファイルとして書き込まれます。
-
+タグごとのフィードは、Buildのgenerated outputとして静的ファイルに書き出されます。
 
 ## 設定
 
@@ -39,8 +33,7 @@ taxonomy({
 })
 ```
 
- `tags: false` でタグ生成を無効化できます。 `related` オプション は共起ベースのナビゲーションを有効にします。
-
+`tags: false`でタグの生成を止められます。`related` optionを有効にすると、共起をもとにしたナビゲーションを生成します。
 
 ## 関連用語
 

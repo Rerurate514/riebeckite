@@ -6,17 +6,17 @@ sidebar:
 
 # Diagnostic severity
 
-Severity レベル (error, warn, info) は output が正しく残せるかどうか proportionate に設定されます; error は output が正しく残せない場合、warn は注意が必要な潜在的な問題、info は contextual 情報で output の正しさに影響しません。
+Severityはerror、warn、infoの三段階で、正しい出力を保てるかどうかを基準に決めます。errorは正しい出力を妨げる問題、warnは注意が必要な潜在的な問題、infoは出力の正しさに影響しない補足情報です。
 
-## Severity 値
+## Severityの値
 
-`error`: output が正しく残せない場合; ビルドが失敗したり公開されたコンテンツが無効になったりします。
-`warn`: output がまだ正しく残せますが注意が必要です; 例: link target が変更された可能性があります。
-`info`: contextual 情報; output の正しさに影響しません。
+`error`: 正しい出力を保てない問題です。ビルドが失敗したり、公開するコンテンツが無効になったりします。
+`warn`: 出力はまだ正しいものの、注意が必要な状態です。たとえば、リンク先が変わった可能性があります。
+`info`: 補足情報です。出力の正しさには影響しません。
 
-##  proportion
+## Severityの選び方
 
-published output への影響に応じて severity を選択します。不明確な場合は安全側に倒して silently choosing unsafe output にはしないでください。
+公開する出力への影響に応じてseverityを選びます。判断に迷うときは、安全でない出力を黙って出すより、不確かさを報告する側に倒します。
 
 ## 関連用語
 

@@ -1,20 +1,20 @@
 ---
-title: 色調モード
+title: Color Mode
 sidebar:
   hidden: true
 ---
 
-# 色調モード
+# Color Mode
 
-light, dark, system の3つからなるアクティブな色調 scheme。theme の `colorMode` オプションと `<html>` の `data-theme` 属性で制御され、JavaScript を使ったランタイム切り替えが可能です。
+Color Modeは`light`、`dark`、`system`の3つの配色です。`colorMode`オプションと`<html>`の`data-theme`属性で制御し、JavaScriptで実行時に切り替えられます。
 
 ## モード
 
-`light` — ライト パレット
-`dark` — ダーク パレット
-`system` — OS の設定に従う (prefers-color-scheme メディアクエリ)
+- `light`：ライトパレット
+- `dark`：ダークパレット
+- `system`：OSの設定に従います（`prefers-color-scheme`メディアクエリ）
 
-サーバーは `light` または `dark` の場合、 `<html>` に `data-theme` を付与します。 `system` の場合は属性を付与しません。
+サーバーは`light`または`dark`のとき`<html>`に`data-theme`を付けます。`system`のときは属性を付けません。
 
 ```html
 <html data-theme-name="example" data-theme="dark">
@@ -23,26 +23,25 @@ light, dark, system の3つからなるアクティブな色調 scheme。theme �
 <html data-theme-name="example">
 ```
 
-ランタイムでは: `document.documentElement.dataset.theme = "dark"` でダークを強制し、属性を削除して system にすると OS のメディアクエリが有効になります。
+実行時は`document.documentElement.dataset.theme = "dark"`でダークを強制できます。属性を削除すると`system`に戻り、OSのメディアクエリが有効になります。
 
 ## ランタイム切り替え
 
-`document.documentElement.dataset.theme = "light"` または `"dark"` でモードを切り替えます。
-`system` モードの場合は `data-theme` 属性を削除して OS メディアクエリが有効になるようにします。
+`document.documentElement.dataset.theme`に`"light"`または`"dark"`を設定してモードを切り替えます。`system`にするときは`data-theme`属性を削除し、OSのメディアクエリを有効にします。
 
 ```ts
 document.documentElement.dataset.theme = "dark";
 delete document.documentElement.dataset.theme;
 ```
 
-`data-theme=""` を設定しないでください — 空の属性は [data-theme] に一致し、system メディアクエリを壊します。
+`data-theme=""`は設定しないでください。空の属性は`[data-theme]`に一致し、`system`のメディアクエリを壊します。
 
 ## 関連用語
 
 - [[glossary/theme|Theme]]
 - [[design-token|Design Token]]
-- [[semantic-token|セマンティック トークン]]
-- [[presentation-layer|プレゼンテーション層]]
+- [[semantic-token|Semantic Token]]
+- [[presentation-layer|Presentation Layer]]
 
 ## さらに詳しく
 

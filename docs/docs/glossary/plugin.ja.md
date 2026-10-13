@@ -6,11 +6,11 @@ sidebar:
 
 # Plugin
 
-Riebeckite でプラグインは定義された契約を通じてコンテンツの解釈、変換、描画、診断、ビルド時処理、エンドポイント、ブラウザ動作を拡張します。
+RiebeckiteのPluginは、定義された契約を通してコンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
 
 ## 拡張ポイント
 
-プラグインは `provides`、`requires`、`optional` でキャビリティを宣言し、依存解決済みのパイプラインに参加します。
+Pluginは`provides`、`requires`、`optional`でCapabilityを宣言し、依存関係を解決したパイプラインに加わります。
 
 ```ts
 definePlugin({
@@ -21,17 +21,17 @@ definePlugin({
 });
 ```
 
-Core の拡張ポイントには remark/rehype パイプライン、コンテンツフック、renderers、page types、assets、client entries、endpoints、diagnostics があります。
+Coreの拡張ポイントにはremark/rehypeパイプライン、コンテンツhook、renderer、page type、asset、client entry、endpoint、diagnosticがあります。
 
 ## ライフサイクル
 
-hook は resolved plugin order で実行されます: `setup`, `buildStart`, コンテンツ処理、`buildEnd`, そして `dispose` (逆順)。
+hookは依存関係を解決したPluginの順序で実行されます。`setup`、`buildStart`、コンテンツ処理、`buildEnd`、そして`dispose`（逆順）です。
 
-名前付きフック (`onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated`) はコンテンツのフェーズに参加します。
+名前付きのhook（`onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated`）はコンテンツの各段階に加わります。
 
-## assets と client entries
+## Assetとclient entry
 
-CSS は `assets` で宣言、ブラウザの JavaScript は `clientEntries` で宣言。本当に必要な場合だけ宣言します。
+CSSは`assets`、ブラウザで動くJavaScriptは`clientEntries`で宣言します。宣言するのは本当に必要な場合だけにしてください。
 
 ```ts
 assets: [createStyleAsset("example")],

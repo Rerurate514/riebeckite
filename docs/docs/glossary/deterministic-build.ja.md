@@ -1,28 +1,25 @@
 ---
-title: 決定的ビルド
+title: Deterministic Build
 sidebar:
   hidden: true
 ---
 
-# 決定的ビルド
+# Deterministic Build
 
- 同じ入力が与えられた場合、一貫した fingerprints、 pipeline versioning、 および configuration snapshots が保証されるため、同じ出力を生成するビルドです。
+同じ入力に対して同じ出力を生成するBuildです。fingerprint、pipelineのバージョン管理、設定のスナップショットが一貫していることで保証されます。
 
 ## 決定性の確保
 
- 一貫したコンテンツのフィンガープリント (source、 frontmatter、 pipeline、 plugin cacheVersion)。
- pipeline fingerprint には plugin configuration と content-filter settings が含まれる。
- configuration snapshots は build state と external dependencies に記録される。
+コンテンツのfingerprint（source、frontmatter、pipeline、PluginのcacheVersion）が一貫します。pipelineのfingerprintにはPluginの設定とcontent filterの設定が含まれます。設定のスナップショットはBuild Stateと外部依存に記録されます。
 
 ## フォールバック
 
- determinism が確認できない場合 (unsafe plugin、global dependency などの場合)、 full build path が取られる。
- missing または incompatible cache または state entry も full build path を引き起こす。
+決定性を確認できない場合（安全でないPlugin、グローバルな依存など）はFull Buildの経路が選ばれます。cacheやstateのentryが欠落または非互換の場合も同じです。
 
 ## 関連用語
 
-- [[fingerprint|フィンガープリント]]
-- [[build|ビルド]]
+- [[fingerprint|Fingerprint]]
+- [[build|Build]]
 - [[check|Check]]
 
 ## さらに詳しく

@@ -6,19 +6,19 @@ sidebar:
 
 # Diagnostic code
 
-Diagnostic code は問題のカテゴリを識別する安定した識別子で、`duplicate-content-id`、`invalid-content-id`、`content-integrity-*` など core と plugin が共有するセットがあり、`check` と `doctor` で一貫したレポートに使用されます。
+Diagnostic codeは問題の種類を識別する安定した識別子です。`duplicate-content-id`、`invalid-content-id`、`content-integrity-*`などCoreとPluginが共有するものがあり、`check`と`doctor`で一貫したレポートに使います。
 
 ## 一般的なコード
 
-| コード | デフォルト severity | 条件 |
+| コード | 既定のseverity | 条件 |
 | -- | -- | -- |
-| `duplicate-content-id` | `error` | 公開された注記が安定した content ID を共有 |
-| `invalid-content-id` | `error` | `id` frontmatter が安定した content ID 契約に違反 |
-| `content-integrity-missing-page` | `warn` | link target が存在しない |
+| `duplicate-content-id` | `error` | 公開するノートが同じcontent IDを共有している |
+| `invalid-content-id` | `error` | `id` frontmatterがcontent IDの契約に反している |
+| `content-integrity-missing-page` | `warn` | リンク先が存在しない |
 
-## 使用方法
+## 使い方
 
-アドホックなメッセージではなくコードを報告することで、`check` と `doctor` が調査結果を一貫してカテゴリ分け・集計できるようにします。
+その場限りのメッセージではなくコードを報告すると、`check`と`doctor`が調査結果を一貫して分類・集計できます。
 
 ## 関連用語
 

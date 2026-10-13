@@ -6,7 +6,7 @@ sidebar:
 
 # Asset
 
-プラグインのアセットは stylesheet など static resources で、 `assets` 配列で宣言され、integration の stylesheet pipeline を通じてブラウザに届けられます; 直接 `apps/web` にコピーされません。
+Pluginのassetはstylesheetなどの静的ファイルです。`assets`配列で宣言し、Integrationのstylesheetパイプラインを通してブラウザに届きます。`apps/web`へ直接コピーされることはありません。
 
 ## アセット宣言
 
@@ -18,9 +18,9 @@ assets: [{
 }]
 ```
 
-## pipeline
+## パイプライン
 
-プラグインからの CSS は収集され、browser に届けられます。browser から直接 `/node_modules` を参照 never してください。
+Pluginが持つCSSは集められてブラウザに届きます。ブラウザから`/node_modules`を直接参照しないでください。
 
 ## 関連用語
 

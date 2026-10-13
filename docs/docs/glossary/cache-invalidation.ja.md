@@ -1,29 +1,22 @@
 ---
-title: キャッシュ無効化
+title: Cache Invalidation
 sidebar:
   hidden: true
 ---
 
-# キャッシュ無効化
+# Cache Invalidation
 
- recorded dependencies または fingerprints が変更されたキャッシュされたコンテンツをドロップするステップです。無効化されたエントリは再処理され、他のエントリにフィードチェンジが伝播します。
+記録した依存やfingerprintが変わったcacheのコンテンツを捨てる処理です。無効化したentryは再処理され、他のentryに影響する場合は変化が伝播します。
 
-## 役割
+## 伝播
 
- 入力が変更されたエントリを削除する。
- 変更は依存するコンテンツに伝播する。
-
-## 起きるタイミング
-
- content dependency の fingerprint が変更されたとき。
- plugin の processedContentCache 契約が違反されたとき。
- cache バージョン不一致または schema 不一致のとき。
+あるノートが変わると、それをembedするノートや、それを参照する一覧が無効化されます。依存の連鎖を通じて、影響する範囲だけが再処理されます。
 
 ## 関連用語
 
 - [[glossary/cache|Cache]]
-- [[fingerprint|フィンガープリント]]
-- [[glossary/build-dependency|Build 依存性]]
+- [[fingerprint|Fingerprint]]
+- [[glossary/build-dependency|Build Dependency]]
 - [[plugin-cache|Plugin cache]]
 
 ## さらに詳しく

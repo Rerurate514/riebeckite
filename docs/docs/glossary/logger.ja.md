@@ -6,21 +6,19 @@ sidebar:
 
 # Logger
 
- build 全体を通して emit される structured events と spans の observability チャンネルです。その出力は CLI、profiler、 および integration に消費される。
+Build全体で構造化されたイベントとspanを出すobservabilityの経路です。その出力はCLI、Profiler、Integrationが受け取ります。
 
 ## 役割
 
- structured build events を emit する。
- CLI、profiler、 および integration にフィードする。
+構造化されたBuildのイベントを出します。CLI、Profiler、Integrationに供給します。
 
-## 信号
+## 出す内容
 
- 構造化された safe な operational messages。
- performance の原因を探るための flood of messages は避け、profiler を使用すること。
+安全な運用に必要なメッセージを構造化して出します。性能の原因を調べるときは大量のメッセージを出さず、Profilerを使います。
 
 ## 関連用語
 
-- [[trace-span|トレーススパン]]
+- [[trace-span|Trace Span]]
 - [[profiler|Profiler]]
 - [[glossary/diagnostics|Diagnostics]]
 

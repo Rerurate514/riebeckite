@@ -6,26 +6,25 @@ sidebar:
 
 # Inspector
 
- already-resolved state（ config、 plugins、 content、 graph、 build state など）を閲覧する read-only CLI コマンドです。
+解決済みの状態（設定、Plugin、content、content graph、Build Stateなど）を閲覧する読み取り専用のCLIコマンドです。
 
-## read-only 保証
+## 読み取り専用の保証
 
- Build を実行したり、cache/assets/state を書き込んだり、asset をエミットしたり、特別なアーティファクトを描画したり、configuration を自動修正したりしてはならない。
- リクエストされた情報が存在しない場合は、その条件を Plainly レポートする。
+Buildの実行、cacheやasset、stateへの書き込み、assetの書き出し、特別な成果物の描画、設定の自動修正を行いません。求めた情報が存在しない場合は、その条件をそのまま報告します。
 
 ## コマンド
 
-`riebeckite inspect config` — 解決された設定。
-`riebeckite inspect plugins` — 有効なプラグイン。
-`riebeckite inspect content --list` — 公開されたコンテンツと URL。
-`riebeckite inspect graph` — コンテンツグラフの関係。
-`riebeckite inspect build` — incremental build state。
+- `riebeckite inspect config`は解決済みの設定を表示します。
+- `riebeckite inspect plugins`は有効なPluginを表示します。
+- `riebeckite inspect content --list`は公開されたcontentとURLを表示します。
+- `riebeckite inspect graph`はcontent graphの関係を表示します。
+- `riebeckite inspect build`はIncremental Buildの状態を表示します。
 
 ## 関連用語
 
 - [[check|Check]]
 - [[doctor|Doctor]]
-- [[build|ビルド]]
+- [[build|Build]]
 
 ## さらに詳しく
 

@@ -6,16 +6,16 @@ sidebar:
 
 # Slug
 
-ノートの内部的な検索キーで、content index、manifest、content graph が使います。公開 URL ではないため、公開側では解決済みの公開位置から permalink を読みます。
+ノートの内部的な検索キーで、content index、manifest、content graphが使います。公開URLではないため、公開側では解決済みの公開位置からpermalinkを読みます。
 
-## slug と permalink
+## slugとpermalink
 
 | | slug | permalink |
 | --- | --- | --- |
-| 対象 | Build の内部 | 公開 URL |
+| 対象 | Buildの内部 | 公開URL |
 | 由来 | ファイルのパス | 公開位置の解決 |
 | 例 | `graph.incoming(slug)` | `<a href={permalink}>` |
 
 ## 分けて扱う
 
-slug はファイルの移動で変わりますが、permalink は設定した URL の規則に従います。slug から URL を再計算すると redirect や localization を飛ばすため、permalink を読みます。
+slugはファイルの移動で変わりますが、permalinkは設定したURLの規則に従います。slugからURLを再計算するとredirectやlocalizationを飛ばすため、permalinkを読みます。

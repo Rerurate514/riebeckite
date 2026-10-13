@@ -6,23 +6,18 @@ sidebar:
 
 # SSG
 
- Riebeckite での静的サイト生成で、ビルド前にサイトをファイルにレンダリングする。Core がコンテンツと場所を処理し、integration が HonoX と Vite に接続してルートを描画し、出力を書き込む。
+サイトを事前にファイルへ描画するRiebeckiteの静的サイト生成です。Coreがコンテンツと公開位置を担い、IntegrationがHonoXとViteにつないでrouteを描画し、出力を書き出します。
 
-## 役割
+## 出力の再利用
 
- デプロイ前にサイトを静的ファイルにレンダリングする。
- unchanged ルートを再利用するために output cache を使用する。
-
-## Integration
-
-Core がコンテンツと場所を処理し、integration が HonoX と Vite に接続してルートを描画し、出力を書き込む。
+HonoXは影響するrouteだけを描画し、変わっていない出力はoutput cacheから復元します。どの出力を描画するかはoutput inventoryの比較で決まります。
 
 ## 関連用語
 
-- [[build|ビルド]]
-- [[output-inventory|出力インベントリ]]
+- [[build|Build]]
+- [[output-inventory|Output Inventory]]
 - [[glossary/deployment|Deployment]]
-- [[incremental-build|インクリメンタルビルド]]
+- [[incremental-build|Incremental Build]]
 
 ## さらに詳しく
 

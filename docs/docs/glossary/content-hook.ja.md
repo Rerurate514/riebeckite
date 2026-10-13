@@ -6,15 +6,17 @@ sidebar:
 
 # Content hook
 
-コンテンツフックはコンテンツ処理の命名されたフェーズに参加します: config resolved から content loaded、post parsed、post processed、content graph、manifest 作成、そして diagnostics まで。
+Content hookは、コンテンツ処理の各フェーズに参加します。configの解決からcontentの読み込み、post parsed、post processed、content graph、manifestの作成、diagnosticsまでが対象です。
 
 ## 処理フェーズ
 
-コンテンツ処理パイプラインの hook の順序は: `setup → buildStart → config resolved → public locations resolved → content loaded → Markdown/HTML pipeline → post parsed → post processed → content graph → manifest created → diagnostics → build end`。
+コンテンツ処理のパイプラインでhookが呼ばれる順序は次のとおりです。
 
-## フックの使用
+`setup → buildStart → config resolved → public locations resolved → content loaded → Markdown/HTML pipeline → post parsed → post processed → content graph → manifest created → diagnostics → build end`
 
-本当に必要なフェーズのみ hook を使用してください。例えば `onContentLoaded` 内で manifest 情報を再構築するなど、後のフェーズの情報を earlier で再構築しないでください。
+## hookの使い方
+
+hookは本当に必要なフェーズだけに使ってください。たとえば`onContentLoaded`の中でmanifestの情報を組み立て直すように、後のフェーズの情報を前のフェーズで作り直さないでください。
 
 ## 関連用語
 

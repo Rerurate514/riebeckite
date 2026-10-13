@@ -6,7 +6,7 @@ sidebar:
 
 # WikiLink
 
-ノート同士をつなぎ、content graph に関係を作る `[[link]]` 記法です。Riebeckite は content index を通して解決し、解決できないリンクは diagnostic として残します。
+ノート同士をつなぎ、content graphに関係を作る`[[link]]`記法です。Riebeckiteはcontent indexを通して解決し、解決できないリンクはdiagnosticとして残します。
 
 ## 記法
 
@@ -19,4 +19,4 @@ sidebar:
 
 ## 解決
 
-対象は小文字化したうえで content index から引きます。一致すれば graph の辺を作り、見つからなければ壊れたリンクとして描画し、diagnostic で報告します。
+対象は小文字化したうえでcontent indexから引きます。一致すればgraphの辺を作り、見つからなければ壊れたリンクとして描画し、diagnosticで報告します。

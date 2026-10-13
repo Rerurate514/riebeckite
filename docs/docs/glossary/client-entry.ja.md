@@ -6,7 +6,7 @@ sidebar:
 
 # Client entry
 
-Client entry は本当に runtime で必要なブラウザ JavaScript の初期化を宣言します; 各エントリは plugin name、module specifier、オプションの export name、public config を持ちます。
+Client entryは、実行時に本当に必要なブラウザJavaScriptの初期化を宣言します。各entryはPlugin名、module specifier、任意のexport名、公開configを持ちます。
 
 ## 宣言
 
@@ -21,9 +21,9 @@ clientEntries: [
 ]
 ```
 
-## 使用時
+## 使う場面
 
-browser initialization が本当に必要な場合だけ client entries を追加してください。 SSR またはビルド時のみで完結するプラグインには client JavaScript を追加しないでください。 `publicConfig` は client initializer に渡され、static host 用に manifest に記録されます。
+ブラウザでの初期化が本当に必要な場合だけClient entryを追加してください。SSRやビルド時だけで完結するPluginには、client用のJavaScriptを追加しないでください。`publicConfig`はclientの初期化処理に渡され、静的ホスト用にmanifestへ記録されます。
 
 ## 関連用語
 

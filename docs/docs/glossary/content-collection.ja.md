@@ -6,18 +6,18 @@ sidebar:
 
 # Content Collection
 
-query 用に作られるコンテンツ entry のまとまりです。tag、folder、date、frontmatter の field などの kind で定義し、Taxonomy ページや archive、series の一覧は collection から作られます。
+query用に作られるコンテンツentryのまとまりです。tag、folder、date、frontmatterのfieldなどのkindで定義し、Taxonomyページやarchive、seriesの一覧はcollectionから作られます。
 
-## kind の種類
+## kindの種類
 
-collection は1つの軸で entry を選びます。
+collectionは1つの軸でentryを選びます。
 
-- `tags` — 同じ tag を持つ entry。
-- `folder` — あるディレクトリ配下の entry。
-- `date` — 年・月・日でまとめた entry。
-- frontmatter の field — 同じ値を持つ entry。series でも使います。
+- `tags` — 同じtagを持つentry。
+- `folder` — あるディレクトリ配下のentry。
+- `date` — 年・月・日でまとめたentry。
+- frontmatterのfield — 同じ値を持つentry。seriesでも使います。
 
-## entry の選び方
+## entryの選び方
 
 ```ts
 {

@@ -1,26 +1,20 @@
 ---
-title: 未使用アセット
+title: Unused Asset
 sidebar:
   hidden: true
 ---
 
-# 未使用アセット
+# Unused Asset
 
- content の frontmatter や content で参照されていないアセット（画像、ファイルなど）です。出力サイズを削減するために安全に削除できる可能性がある。
+どのコンテンツからも参照されていないassetです。診断は既定でオフになっており、有効にすると未使用のassetを報告します。
 
-## 追跡
+## 検出
 
- assets は content の `assets` フィールドや link 参照を通じて追跡される。
- どこにも追跡されていないアセットは unused とみなされる。
-
-## cleanup
-
- unused asset は正しさに影響しないが、サイズ最適化のために削除できる。
- published site で参照されていないアセットを特定するには `doctor` または `inspect` を使用する。
+`diagnostics`の設定で未使用のassetの報告を有効にします。削除候補のassetを、Buildを止めずに知らせます。
 
 ## 関連用語
 
-- [[orphan|孤立したコンテンツ]]
+- [[orphan|Orphan]]
 - [[asset|Asset]]
 - [[glossary/content|Content]]
 

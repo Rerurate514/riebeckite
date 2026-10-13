@@ -6,11 +6,11 @@ sidebar:
 
 # Design Token
 
-デザイン トークンは色、間隔、フォントなどの名前付き値で、CSS カスタムプロパティ (--rb-*) として定義され、カスケードを通じてコンポーネントとテーマが安定した語彙を共有できるようにします。
+Design Tokenは色、余白、フォントなどの名前付きの値で、CSSカスタムプロパティ（`--rb-*`）として定義します。カスケードを通じて、コンポーネントとThemeが安定した語彙を共有できます。
 
-## トークングループ
+## Tokenのグループ
 
-Core's ThemeDesignTokens は色、タイポグラフィ、レイアウトの意味的グループを定義します:
+Coreの`ThemeDesignTokens`は、色、タイポグラフィ、レイアウトの意味のグループを定義します。
 
 | 色                | CSS variable          |
 | ---------------- | --------------------- |
@@ -40,17 +40,17 @@ Core's ThemeDesignTokens は色、タイポグラフィ、レイアウトの意�
 | `sidebarWidth`   | `--rb-layout-sidebar` |
 | `contentGap`     | `--rb-layout-gap`     |
 
-## 意味的目的
+## 意味に基づく参照
 
-コンポーネントとプラグインは特定のテーマ値を参照するのではなく、意味（本文の色、背景、アクセント、境界）を参照します。
-これにより、同じトークンがテーマごとに異なる値に解決されるため、コンポーネントコードを触らずにテーマの入れ替えが可能になります。
+コンポーネントとPluginは、特定のThemeの値ではなく、意味（本文の色、背景、アクセント、境界）を参照します。
+同じTokenがThemeごとに異なる値へ解決されるため、コンポーネントのコードを触らずにThemeを入れ替えられます。
 
 ## 関連用語
 
 - [[glossary/theme|Theme]]
-- [[semantic-token|セマンティック トークン]]
-- [[css-contract|CSS コントラクト]]
-- [[glossary/typography|タイポグラフィ]]
+- [[semantic-token|Semantic Token]]
+- [[css-contract|CSS Contract]]
+- [[glossary/typography|Typography]]
 
 ## さらに詳しく
 

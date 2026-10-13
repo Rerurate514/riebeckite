@@ -6,9 +6,9 @@ sidebar:
 
 # Callout
 
-コンテナ ショートコード構文 `:::callout[Title]{type=warning}` または `:::note[Title]{type=info}` を使用するコールアウトボックスです。CSS クラス `rr-callout rr-callout--{type}` でレンダリングされ、組み込みの既定のタイトルが使用されます。
+コンテナショートコードの`:::callout[Title]{type=warning}`または`:::note[Title]{type=info}`で作るコールアウトボックスです。`rr-callout rr-callout--{type}`クラスを持つ`div`として描画され、組み込みの既定タイトルを持ちます。
 
-## コールアウトの構文
+## Calloutの記法
 
 ```md
 :::callout[Warning]{type=warning}
@@ -22,13 +22,12 @@ This is a note callout.
 :::
 ```
 
-出力: `div.rr-callout.rr-callout--note` に `data-callout`。
-タイトルは組み込みのデフォルト (`note`, `tip`, `warning`, `danger`, `bug`, `quote`) にフォールバックします。
+出力は`div.rr-callout.rr-callout--note`で、`data-callout`を持ちます。
+タイトルは組み込みの既定値（`note`、`tip`、`warning`、`danger`、`bug`、`quote`）にフォールバックします。
 
+## Calloutの種類
 
-## コールアウトの種類
-
-組み込みのコールアウト タイプと既定のタイトル:
+組み込みのCalloutの種類と既定タイトルです。
 
 - `note` / `note` → 既定タイトル "Note"
 - `tip` → 既定タイトル "Tip"
@@ -37,12 +36,11 @@ This is a note callout.
 - `bug` → 既定タイトル "Bug"
 - `quote` → 既定タイトル "Quote"
 
-
 ## タイトルとスタイルのカスタマイズ
 
-短縮タイトルを指定します: `:::callout[My Title]{type=warning}`.
+ショートコードに任意のタイトルを渡せます。`:::callout[My Title]{type=warning}`と書きます。
 
-プラグイン登録時の `callout.defaultTitles` で既定のタイトルを上書きできます:
+Pluginの登録時に`callout.defaultTitles`オプションで既定タイトルを上書きできます。
 
 ```ts
 callout: {
@@ -51,7 +49,6 @@ callout: {
   },
 }
 ```
-
 
 ## 関連用語
 

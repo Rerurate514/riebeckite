@@ -6,9 +6,9 @@ sidebar:
 
 # Endpoint
 
-Endpoint はプラグインのための再利用可能な HTTP 動作を宣言します; integration は plugin ごとのフレームワーク固有の routing を組み込むことなく、endpoint contract を host router に接続します。
+Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの契約をホストのrouterに接続します。
 
-## エンドポイントの定義
+## Endpointの定義
 
 ```ts
 import { defineEndpoint } from "@riebeckite/core";
@@ -20,9 +20,9 @@ const searchEndpoint = defineEndpoint(
 );
 ```
 
-## integration 接続
+## Integrationへの接続
 
-integration は endpoint contract を host router に接続します。plugin 自身で特定の router 実装 (HonoX など) を組み込まないでください。
+IntegrationはEndpointの契約をホストのrouterに接続します。Plugin自身で特定のrouter実装（HonoXなど）を組み込まないでください。
 
 ## 関連用語
 

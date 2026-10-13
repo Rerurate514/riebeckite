@@ -6,17 +6,17 @@ sidebar:
 
 # Plugin dependency
 
-プラグインは `requires` でキャビリティの要求を宣言します; resolver は provider を consumer より前に配置し、欠落時は `PluginDependencyError` でエラー報告します ( `kind` と `pluginName` で特定)。
+Pluginは`requires`でCapabilityの要求を宣言します。依存解決は、Capabilityを提供するPluginを、それを利用するPluginより前に並べます。要求を満たせない場合は`PluginDependencyError`を報告し、`kind`と`pluginName`で原因を特定できます。
 
-## キャビリティ fields
+## Capabilityのfield
 
-`provides`: このプラグインが他に提供するキャビリティ。
-`requires`: 必須のキャビリティ (このプラグイン実行前に解決されなければなりません)。
-`optional`: 存在時に使用されるが必須ではないキャビリティ。
+`provides`: このPluginが他へ提供するCapability。
+`requires`: 必須のCapability。このPluginを実行する前に解決されている必要があります。
+`optional`: 存在すれば使いますが、必須ではないCapability。
 
-## 解決順
+## 解決の順序
 
-resolver はまず `order` で並べ替え、次にキャビリティ依存関係を強制します。必須キャビリティが欠落すると `PluginDependencyError` がthrow されます。duplicate provider や cycle は設定エラーです。
+依存解決はまず`order`で並べ替え、次にCapabilityの依存関係を満たします。必須のCapabilityが欠けていると`PluginDependencyError`になります。提供側の重複や依存の循環は設定エラーです。
 
 ## 例
 

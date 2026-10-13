@@ -1,30 +1,26 @@
 ---
-title: Build 依存性
+title: Build Dependency
 sidebar:
   hidden: true
 ---
 
-# Build 依存性
+# Build Dependency
 
-Core とプラグインの間の契約で、processed content と emitted files がビルド間で入力にどのように依存するかを宣言する。
+あるコンテンツや出力に影響する入力の宣言で、別のノート、ファイル、tag、folderなどがあります。依存を記録することで、Coreは変化が影響し得る分だけを無効化できます。
 
-## Content dependency
+## 依存の種類
 
-plugin は `processedContentCache` に `dependencyMode` (none, tracked, global, unsafe) を宣言する。
-Core は Core の content API 経由で行われた読み取りを依存関係として記録し、stable identities を持つ。
-content、 file、 link 依存関係が記録され、後のビルドで比較される。
+content（slug）、file（sourceのパス）、link（解決済みのリンク）、global（設定の変更）、projection（taxonomyやrecent-posts）、tag、folderを扱います。
 
-## Output dependency
+## 無効化
 
-Output dependency は Content dependency とは独立している。
-種類には `content`, `tag`, `folder`, `global`, `unknown` がある。
-変更後に Core が再度書き込むべき emitted files を決めるために使用される。
+宣言した入力が変わると、Coreは依存するコンテンツだけを無効化し、無関係な部分の再処理を避けます。
 
 ## 関連用語
 
-- [[cache-invalidation|キャッシュ無効化]]
-- [[output-dependency|出力依存性]]
-- [[fingerprint|フィンガープリント]]
+- [[cache-invalidation|Cache Invalidation]]
+- [[output-dependency|Output Dependency]]
+- [[fingerprint|Fingerprint]]
 - [[plugin-dependency|Plugin dependency]]
 
 ## さらに詳しく

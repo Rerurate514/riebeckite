@@ -6,37 +6,35 @@ sidebar:
 
 # Shortcode
 
- `remark-directive` 構文を使用する汎用ショートシステムです。インライン (`:name[label]{key=value}`)、ブロック (`::name[label]{key=value}`)、コンテナー (`:::name[label]{key=value}` … `:::` ) に対応し、組み込みレジストリを備えています。
+`remark-directive`の記法を使う汎用のショートコード機構です。インライン（`:name[label]{key=value}`）、ブロック（`::name[label]{key=value}`）、コンテナ（`:::name[label]{key=value}` … `:::`）のショートコードに対応し、組み込みのレジストリを持ちます。
 
-## 構文概要
+## 記法の概要
 
 ```md
 :badge[New]{variant=success}           // インラインショートコード
-::kbd[Ctrl+S]                            // ブロックショートコード
+::kbd[Ctrl+S]                            // ブロックの leaf ショートコード
 :::note[Tip]{type=info} … :::           // コンテナショートコード
 ```
 
-- インラインショートコード は周囲の段落内で `<span>` にレンダリングされます。
-- ブロックとコンテナショートコード は `rb-shortcode rb-shortcode--<name>` クラスを持つ `<div>` にレンダリングされます。
+- インラインのショートコードは、周囲の段落の中に`<span>`として描画されます。
+- ブロックとコンテナのショートコードは、`rb-shortcode rb-shortcode--<name>`クラスを持つ`<div>`として描画されます。
 
- `inlineShortcodes` にリストされている名前のみインラインで使用できます。組み込みは `badge`, `kbd`, `link-card`, `file` が opt-in されています。
-
+インラインで使えるのは`inlineShortcodes`に列挙した名前だけです。組み込みでは`badge`、`kbd`、`link-card`、`file`が使えます。
 
 ## 組み込みショートコード
 
-組み込みショートコード は一般的なパターンをカバーします:
+組み込みのショートコードは、よくある表現をまかないます。
 
 | 名前 | 種類 | インライン | 属性 | 出力 |
-|------|------|--------|------|-----|
-| `badge` | leaf | yes | label, variant/type/color, title | インラインバッジ |
-| `kbd` | leaf | yes | label or `keys` | `<kbd>` 要素 |
-| `note` / `callout` | leaf / container | – | label or `title`, `type`/`variant` | コールアウトボックス |
-| `details` | container | – | label or `summary` | `<details>` ディスクロージャ |
-| `youtube` | leaf | – | `id` or `url` | プライバシー対応の埋め込み |
-| `figure` | leaf / container | – | `src`/`url`, `alt`, `caption` | 画像付き `<figure>` |
+|------|------|--------|------------|--------|
+| `badge` | leaf | 可 | label, variant/type/color, title | インラインバッジ |
+| `kbd` | leaf | 可 | labelまたは`keys` | `<kbd>`要素 |
+| `note` / `callout` | leaf / container | – | labelまたは`title`、`type`/`variant` | Calloutボックス |
+| `details` | container | – | labelまたは`summary` | `<details>`の開閉表示 |
+| `youtube` | leaf | – | `id`または`url` | プライバシーに配慮した埋め込み |
+| `figure` | leaf / container | – | `src`/`url`、`alt`、`caption` | 画像付きの`<figure>` |
 
-
-## 使用方法
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -49,10 +47,9 @@ export default defineConfig({
 
 ```md
 :::callout[Warning]{type=warning}
-サイト設定を変更した後にサイトを再構築することを覚えておいてください。
+設定ファイルを変更したあとは、サイトを Build し直してください。
 :::
 ```
-
 
 ## 関連用語
 

@@ -1,29 +1,27 @@
 ---
-title: フィンガープリント
+title: Fingerprint
 sidebar:
   hidden: true
 ---
 
-# フィンガープリント
+# Fingerprint
 
- build が変更を検知し、キャッシュ／Build-state 比較を駆動する入力を識別するハッシュです。
+コンテンツやファイルの入力を識別し、変化を検出できるようにするハッシュです。保存した値と異なれば、依存するコンテンツを再処理します。
 
-## 役割
+## 何を識別するか
 
- 入力が変更されたかを検知する。
- fingerprint が保存されているものと異なれば、依存するコンテンツが再処理される。
+contentのfingerprintはsourceとfrontmatter、pipeline、PluginのcacheVersionから作られます。fileのfingerprintはsourceのファイルが変わったときに変わります。pipelineのfingerprintにはPluginの設定とcontent filterの設定が含まれます。
 
-## 種類
+## 使われ方
 
- コンテンツのフィンガープリント: source、 frontmatter、 pipeline fingerprint、 cache schema、 plugin cacheVersion を含む。
- pipeline fingerprint: plugin fingerprint、 content filter、 compatibility version を含む。
+永続的なcontent cacheとBuild Stateがfingerprintを比べ、再処理する範囲を決めます。
 
 ## 関連用語
 
-- [[glossary/build-dependency|Build 依存性]]
-- [[cache-invalidation|キャッシュ無効化]]
+- [[glossary/build-dependency|Build Dependency]]
+- [[cache-invalidation|Cache Invalidation]]
 - [[glossary/cache|Cache]]
-- [[persistent-cache|永続キャッシュ]]
+- [[persistent-cache|Persistent Cache]]
 
 ## さらに詳しく
 

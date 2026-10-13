@@ -1,27 +1,25 @@
 ---
-title: 出力キャッシュ
+title: Output Cache
 sidebar:
   hidden: true
 ---
 
-# 出力キャッシュ
+# Output Cache
 
- `.riebeckite/ssg-output-cache.json` に保存された、SSG の出力ルートとファイルを格納したキャッシュです。 incremental SSG の再利用のために local-only で、CI runner 間で共有することを目的としていない。
+`.riebeckite/ssg-output-cache.json`に保存される、SSGの出力ルートとファイルをためるcacheです。Incremental SSGで再利用するためのもので、ローカル専用であり、CIの実行環境間で共有することは想定していません。
 
 ## 目的
 
- 現在の manifest をビルドした後、Core は出力記述子を以前の成功した状態と比較する。
- HonoX は affected コンテンツと plugin-page ルートだけを描画し、 unchanged generated output から出力キャッシュから復元し、サイトが所有しなくなった出力を削除する。
+現在のmanifestをBuildしたあと、Coreは出力記述子を前回の成功した状態と比較します。HonoXは影響するcontentとPluginページのルートだけを描画し、変わっていないGenerated Outputは出力cacheから復元し、サイトが所有しなくなった出力は削除します。
 
-## local-only
+## ローカル専用
 
- output cache は転送コストがメリットを上回るため local に留められる。
- `.riebeckite/build/content-state.json` と `.riebeckite/ssg-output-cache.json` を削除して full output regeneration を強制する。
+出力cacheは転送のコストが利点を上回るため、ローカルに留めます。`.riebeckite/build/content-state.json`と`.riebeckite/ssg-output-cache.json`を削除すると、すべての出力の再生成を強制できます。
 
 ## 関連用語
 
 - [[ssg|SSG]]
-- [[output-inventory|出力インベントリ]]
+- [[output-inventory|Output Inventory]]
 - [[glossary/cache|Cache]]
 
 ## さらに詳しく

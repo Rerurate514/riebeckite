@@ -1,35 +1,23 @@
 ---
-title: インクリメンタルビルド
+title: Incremental Build
 sidebar:
   hidden: true
 ---
 
-# インクリメンタルビルド
+# Incremental Build
 
-コンテンツの依存関係と保存されたビルド状態を利用して、変更された部分のみを再生成するビルドモードです。
-
-## 役割
-
- unchanged コンテンツと出力の再処理を回避する。
-記録された依存関係とビルド状態に依存する。
+content dependencyと保存したBuild Stateを使って、変わった分だけを再生成するBuildです。宣言した入力が変わっていなければ、未変更のコンテンツと出力を再利用します。
 
 ## 仕組み
 
-前回のビルド以降に変更されたものだけを処理する。
-前回のビルド情報は `.riebeckite/build/content-state.json` に保存されている。
-以前の情報が存在しない、使用できない、あるいは安全でない場合は full build が実行される。
-
-## 状態の安全性
-
- incremental state がなくても同じサイトは正しく生成できる。
-欠落・非互換・不安全な状態の場合は full build パスが取られる。
+前回のBuild Stateとfingerprintを比べ、変わったentryを特定します。依存関係を通じて無効化を伝播させ、影響する出力だけを描画し直します。
 
 ## 関連用語
 
-- [[build|ビルド]]
-- [[build-state|ビルド状態]]
-- [[cache-invalidation|キャッシュ無効化]]
-- [[fingerprint|フィンガープリント]]
+- [[build|Build]]
+- [[build-state|Build State]]
+- [[cache-invalidation|Cache Invalidation]]
+- [[fingerprint|Fingerprint]]
 
 ## さらに詳しく
 

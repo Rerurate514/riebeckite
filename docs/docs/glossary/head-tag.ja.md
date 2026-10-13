@@ -6,15 +6,15 @@ sidebar:
 
 # Head tag
 
-ページの head タグとメタデータはプラグインシステムを通じて貢献され、integration と site application がタイトル、description、言語属性を結合して final `<head>` を compose します。
+ページのheadタグとメタデータはPluginシステムを通じて追加され、Integrationとサイトのapplicationがタイトル、description、言語属性をまとめて最終的な`<head>`を組み立てます。
 
-## Head の組み立て
+## Headの組み立て
 
-プラグインは page types と seo extensions を通じて head 関連データに貢献できます。final `<head>` は integration (`@riebeckite/honox`) と site application が core の default、plugin の貢献、custom metadata を結合して compose します。
+Pluginはpage typeとseo拡張を通じてhead関連のデータを追加できます。最終的な`<head>`は、Integration（`@riebeckite/honox`）とサイトのapplicationが、Coreの既定、Pluginの追加分、customなメタデータをまとめて組み立てます。
 
 ## SEO integration
 
- `seo` 拡張ポイントはプラグインがメタデータと feed 動作に参加できるようにします。head tag は直接のプラグインアセットではありません; integration 境界を通じて流れます。
+`seo`拡張ポイントは、Pluginがメタデータとfeedの動作に参加できるようにします。head tagはPluginの直接のassetではなく、Integrationの境界を通って流れます。
 
 ## 関連用語
 

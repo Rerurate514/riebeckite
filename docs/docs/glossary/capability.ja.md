@@ -6,17 +6,17 @@ sidebar:
 
 # Capability
 
-キャビリティとはプラグインが提供または要求できる名前付きの機能です; resolver はプラグインを順序付け、失敗は構造化された診断として表示されます。
+Capabilityは、Pluginが提供または要求できる名前付きの機能です。依存解決はPluginを順序付け、失敗は構造化された診断として表示されます。
 
-## プラグイン上のフィールド
+## Pluginが宣言するfield
 
-`provides`: このプラグインが公開するキャビリティ名のリスト。
-`requires`: このプラグインが利用可能である必要があるキャビリティ名のリスト。
-`optional`: プロバイダが存在する場合に使用されるキャビリティ名のリスト。
+`provides`: このPluginが公開するCapability名のリスト。
+`requires`: このPluginが利用できる必要があるCapability名のリスト。
+`optional`: 提供側が存在するときに使うCapability名のリスト。
 
 ## 解決
 
-resolver はすべての `requires` が他のプラグインの `provides` と一致することを検証します。重複プロバイダは失敗し、サイクルも失敗します。欠落した要求は `PluginDependencyError` をthrow します。
+依存解決は、すべての`requires`が他のPluginの`provides`と一致することを確かめます。提供側の重複は失敗し、循環も失敗します。要求が欠けている場合は`PluginDependencyError`になります。
 
 ## 関連用語
 

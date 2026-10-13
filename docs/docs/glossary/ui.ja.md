@@ -6,9 +6,9 @@ sidebar:
 
 # UI
 
-@riebeckite/honox/ui) が提供する UI プリミティブ はコンポーネントフレームワークではなく、小さな構造的契約です。 `Article`, `ArticleLayout`, `ArticleContent`, `ArticleBody`, `ArticleMeta`, `ArticleFooter`, `ContentSlot`, `Sidebar` を含み、安定した CSS フック (`rb-article`, `rb-article-layout` など) を持っています。
+`@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の契約であり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`、`ArticleMeta`、`ArticleFooter`、`ContentSlot`、`Sidebar`があり、安定したCSS hook（`rb-article`、`rb-article-layout`など）を持ちます。
 
-## Article プリミティブ
+## Articleプリミティブ
 
 ```tsx
 import { Article, ArticleBody, ArticleContent, ArticleLayout, ContentSlot } from "@riebeckite/honox/ui";
@@ -25,11 +25,11 @@ import { Article, ArticleBody, ArticleContent, ArticleLayout, ContentSlot } from
 </Article>
 ```
 
-## スタイルリングフック
+## 安定したstyling hook
 
- 各プリミティブ は 1 つのクラスを安定したスタイルフックとして公開します:
+各プリミティブは、安定したstyling hookとして1つのクラスを公開します。
 
-| コンポーネント | クラス |
+| Component | Class |
 |---|---|
 | `Article` | `rb-article` |
 | `ArticleLayout` | `rb-article-layout` |
@@ -39,13 +39,12 @@ import { Article, ArticleBody, ArticleContent, ArticleLayout, ContentSlot } from
 | `ArticleMeta` | `rb-article-meta` |
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
-```
 
- 安定したスタイル CSS は `@riebeckite/honox/style.css` で、 `.riebeckite/framework-styles.css` を通じてサイトに到達します。
+構造CSSは`@riebeckite/honox/style.css`に入っており、`.riebeckite/framework-styles.css`を通じてサイトに届きます。
 
-## サイトの所有権
+## Siteが持つもの
 
- プリミティブはセマンティック HTML、フック、class/composition、structural CSS を提供します。記事コピー、メタデータフォーマット、ナビゲーション配置、カード、ページレイアウト構成、islands、サイトビジュアルデザインはサイトアプリケーションに帰属します。
+プリミティブはセマンティックHTML、hook、classと構成、構造CSSを提供します。記事の本文、メタデータの整形、ナビゲーションの配置、カード、ページレイアウトの構成、island、サイトの視覚デザインはサイトのapplicationに属します。
 
 ## 関連用語
 

@@ -6,11 +6,11 @@ sidebar:
 
 # Obsidian Vault
 
-Riebeckite は既存の Obsidian ヴォールト をコンテンツディレクトリとして読み込み、選択したノートだけを公開できます。
+既存のObsidian vaultをコンテンツディレクトリとして読み込めるため、vaultを整理し直さずに、選んだノートだけを公開できます。
 
-## ヴォールトの接続
+## Vaultの接続
 
- `riebeckite.config.ts` で `content.directory` をヴォールトのパスに指定します:
+`riebeckite.config.ts`を開き、`content.directory`をvaultのパスに設定します。
 
 ```ts
 content: {
@@ -18,14 +18,13 @@ content: {
 }
 ```
 
-site から見たヴォールトまでの相対パスに変更してください。
+`../my-vault`は、サイトからvaultまでの相対パスに置き換えます。
 
- `starter` プリセット にはすでに WikiLinks、埋め込み、コールアウト、タグ に対応する Obsidian Markdown プラグイン が含まれています。
-
+`starter`プリセットには、WikiLink、埋め込み、Callout、タグに対応するObsidian Markdown Pluginがすでに含まれています。
 
 ## 明示的な公開
 
-公開したいノートの frontmatter に `publish: true` を追加します:
+公開するノートのfrontmatterに`publish: true`を追加します。
 
 ```md
 ---
@@ -38,21 +37,19 @@ aliases:
 ---
 ```
 
- `publish: true` がないノートは下書きとして扱われ、ビルドされません。
+`publish: true`のないノートは下書きとして扱われ、Buildされません。
 
- `riebeckite check` と `riebeckite doctor` でリンクとコンテンツ状態を検証します。
+`riebeckite check`と`riebeckite doctor`を実行し、リンクとコンテンツの状態を検証します。
 
+## WikiLinkと埋め込み
 
-## WikiLinks と埋め込み
+WikiLinkに対応しています。`[[note]]`、`[[note|label]]`、`[[note#Heading]]`を使えます。
 
-WikiLinks がサポートされています: `[[note]]`, `[[note|label]]`, `[[note#Heading]]`.
+画像の埋め込みも使えます。`![[sample.png]]`と書きます。
 
-画像の埋め込みもサポートされています: `![[sample.png]]`.
+Calloutにも対応しています。`> [!NOTE]`と書きます。
 
-コールアウト もサポートされています: `> [!NOTE]`.
-
-タグ もサポートされており、タグページはスターターテクストロジー プラグインによって提供されます。
-
+タグにも対応しており、タグページは`starter`のTaxonomy Pluginが提供します。
 
 ## 関連用語
 

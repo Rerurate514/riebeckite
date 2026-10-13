@@ -1,32 +1,31 @@
 ---
-title: 記事レイアウト
+title: Article Layout
 sidebar:
   hidden: true
 ---
 
-# 記事レイアウト
+# Article Layout
 
-記事レイアウトプリセット (`article`, `sidebar`, `full-width`) は `data-article-layout` 属性を通じて記事エリアの表示を決定します。幅とサイドバーの設定を制御しますが、ルートやコンポーネントツリーを変更しません。
+Article Layoutは、記事エリアの幅とサイドバーの構成を決めるプリセットです。`data-article-layout`属性で選び、`article`、`sidebar`、`full-width`の3つを用意します。
 
 ## プリセット
 
-`article` — 基本的な記事レイアウト（サイドエリア付き）
-`sidebar` — サイドバー重視のレイアウト
-`full-width` — サイドバーなしのフル幅記事
+- `article`：サイドエリア付きの標準的な記事レイアウト
+- `sidebar`：サイドバーを重視したレイアウト
+- `full-width`：サイドバーのないフル幅の記事
 
-プリセットはテーマルートの `data-article-layout` 属性で設定され、テーマ名でスコープされた CSS ルールで反映されます。
+プリセットはTheme Rootの`data-article-layout`属性で設定し、Theme名でスコープしたCSSルールで反映します。
 
 ## 境界
 
-Theme はレイアウト プリセントの表示を定義しますが、ルートやコンポーネント ツリーを置き換えません。
-アプリケーションがコンポーネント構造を提供し、Theme は data 属性と CSS を通じて表示を提供します。
+Themeはレイアウトプリセットの見た目を定義しますが、routeやコンポーネントツリーは置き換えません。コンポーネントの構造はアプリケーションが用意し、Themeはdata属性とCSSで見た目を提供します。
 
 ## 関連用語
 
 - [[glossary/theme|Theme]]
-- [[glossary/typography|タイポグラフィ]]
-- [[glossary/color-mode|色調モード]]
-- [[presentation-layer|プレゼンテーション層]]
+- [[glossary/typography|Typography]]
+- [[glossary/color-mode|Color Mode]]
+- [[presentation-layer|Presentation Layer]]
 
 ## さらに詳しく
 

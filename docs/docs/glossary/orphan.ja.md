@@ -1,27 +1,20 @@
 ---
-title: 孤立したコンテンツ
+title: Orphan
 sidebar:
   hidden: true
 ---
 
-# 孤立したコンテンツ
+# Orphan
 
- 公開されたページや他のコンテンツによって参照されていないコンテンツやアセットです。orphan は削除されたコンテンツがまだ存在していることを示している、あるいは cleanup するべきコンテンツであることを示す可能性がある。
+どのページからもリンクされていないコンテンツです。診断は既定でオフになっており、有効にすると孤立したentryを報告します。
 
-## 検知
+## 検出
 
- どのコンテンツからもリンクされておらず、manifest にもリストされていないコンテンツ。
- content の frontmatter や content で参照されていないアセット。
-
-## 処理
-
- orphan はビルド失敗を起こさないが、 stale content を示す可能性がある。
-  broader project health の診断には `check` または `doctor` を使用する。
- 必要なくなった orphaned content やアセットを削除する。
+`diagnostics`の設定で孤立したコンテンツの報告を有効にします。一覧やfeedからたどれないページを、Buildを止めずに知らせます。
 
 ## 関連用語
 
-- [[unused-asset|未使用アセット]]
+- [[unused-asset|Unused Asset]]
 - [[glossary/content|Content]]
 - [[glossary/diagnostics|Diagnostics]]
 

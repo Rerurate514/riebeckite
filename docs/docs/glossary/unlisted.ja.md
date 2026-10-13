@@ -6,7 +6,7 @@ sidebar:
 
 # Unlisted
 
-URL では提供しつつ、一覧や feed には載せない公開状態です。routable だが discoverable ではないため、共有用のリンクや下書きに近いページに向きます。
+URLでは提供しつつ、一覧やfeedには載せない公開状態です。routableだがdiscoverableではないため、共有用のリンクや下書きに近いページに向きます。
 
 ## 設定
 
@@ -18,4 +18,4 @@ visibility: unlisted
 
 ## 効果
 
-ページは routable のままで出力も作りますが、discoverable のビューから外れるため、一覧や feed には載りません。
+ページはroutableのままで出力も作りますが、discoverableのビューから外れるため、一覧やfeedには載りません。

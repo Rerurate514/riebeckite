@@ -6,16 +6,16 @@ sidebar:
 
 # Content Entry
 
-manifest の中で slug により識別される、解決済みのコンテンツ 1 件です。permalink、公開位置、frontmatter、公開状態、HTML、Plugin が付与したデータを持ちます。
+manifestの中でslugにより識別される、解決済みのコンテンツ1件です。permalink、公開位置、frontmatter、公開状態、HTML、Pluginが付与したデータを持ちます。
 
-## entry が持つもの
+## entryが持つもの
 
 - `slug` — 内部のキーです。
-- `publicLocation` — 解決済みの permalink、redirect、メタデータです。
+- `publicLocation` — 解決済みのpermalink、redirect、メタデータです。
 - `frontmatter` — 解析済みのメタデータです。
 - `html` — 描画済みの本文です。
-- body slot や head tag など、Plugin が付与したデータです。
+- body slotやhead tagなど、Pluginが付与したデータです。
 
-## slug と permalink の違い
+## slugとpermalinkの違い
 
-slug は Build の内部で entry を識別し、permalink は公開 URL です。entry へリンクする側は slug ではなく、entry の permalink を読みます。
+slugはBuildの内部でentryを識別し、permalinkは公開URLです。entryへリンクする側はslugではなく、entryのpermalinkを読みます。

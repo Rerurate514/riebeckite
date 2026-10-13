@@ -6,11 +6,11 @@ sidebar:
 
 # Lifecycle hook
 
-プラグインのライフサイクルフックは ContentManager 一回あたり、この順序で実行されます: `setup`, `buildStart`, コンテンツ処理、`buildEnd`, そして reverse resolved order の `dispose`。名前付きコンテンツフックは resolved plugin order で参加します。
+Pluginのlifecycle hookは、Content Managerが1回動く間に`setup`、`buildStart`、コンテンツ処理、`buildEnd`、そして逆順の`dispose`の順で実行されます。名前付きのcontent hookは、依存関係を解決したPluginの順序で加わります。
 
 ## ビルドライフサイクル
 
-フレームワークのライフサイクルは `setup`, `buildStart`, `onConfigResolved`, コンテンツ処理、そして `buildEnd` を ContentManager 一回あたり実行します。`buildEnd` は診断収集後に完成した manifest を受け取り、terminal hook です。
+フレームワークは1回のContent Managerにつき`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd`を実行します。`buildEnd`はdiagnosticを集めた後の完成したmanifestを受け取る最後のhookです。
 
 ```mermaid
 flowchart LR
@@ -27,7 +27,7 @@ flowchart LR
 
 ## 名前付きコンテンツフック
 
-コンテンツフック (`onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated`) は resolved plugin order で実行されます。フックの失敗は `PluginHookError` でプラグイン、フック名、原因を特定して報告されます。
+content hook（`onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated`）は、依存関係を解決したPluginの順序で実行されます。hookが失敗すると、`PluginHookError`がPlugin、hook名、原因を示して報告します。
 
 ## 関連用語
 

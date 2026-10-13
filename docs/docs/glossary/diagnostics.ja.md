@@ -6,11 +6,11 @@ sidebar:
 
 # Diagnostics
 
-Diagnostics は Core と plugin が emitting 構造化された調査結果で、問題が何か、どこで起きるか、どの程度重要か (severity)、そしてどう修正するかを説明します。プラグインは `addDiagnostics` で診断を報告し、Core は `check` と `doctor` コマンドでまとめます。
+DiagnosticsはCoreとPluginが出す構造化された調査結果で、何が問題か、どこで起きるか、どれくらい重要か（severity）、どう直すかを示します。Pluginは`addDiagnostics`で診断を報告し、Coreは`check`と`doctor`コマンドでまとめます。
 
 ## 診断の構造
 
-診断は: `what` 問題か、`where` 起きるか、`how important` か (severity)、そして `how to fix` 修正方法を説明します。`check` は設定/plugin の妥当性に、`doctor` はより広範な健全性のために使用します。
+診断は、何が問題か、どこで起きるか、どれくらい重要か（severity）、どう直すかを説明します。`check`は設定とPluginの妥当性に、`doctor`はより広い健全性に使います。
 
 ## 報告
 
@@ -31,7 +31,7 @@ addDiagnostics(context) {
 - [[diagnostic-code|Diagnostic code]]
 - [[plugin|Plugin]]
 - [[glossary/inspector|Inspector]]
-- [[build|ビルド]]
+- [[build|Build]]
 
 ## さらに詳しく
 

@@ -6,28 +6,28 @@ sidebar:
 
 # Site
 
-サイト アプリケーション がルート、ドキュメントフレーム、メタデータ、HTML セーフティを所有します。 @riebeckite/honox 統合 を通じて Riebeckite コアの動作を HonoX と Vite に接続し、 plugin の貢献が最終的なパブリック UI にどのように composition されるかを決定します。
+サイトのapplicationは、route、文書の枠組み、メタデータ、HTMLの安全性を持ちます。`@riebeckite/honox`のintegrationを通じてRiebeckiteのCoreの振る舞いをHonoXとViteにつなぎ、Pluginの提供物を最終的な公開UIにどう組み立てるかを決めます。
 
-## アプリケーション構成
+## Applicationの構成
 
-サイトにはこれらのソースディレクトリがあります (integration、theme、plugin ではありません):
+サイトは次のソースディレクトリを持ちます（integration、Theme、Pluginには含まれません）。
 
 ```text
-app/routes/       — URL ハンドリング、ページ構成、リダイレクト、レスポンスメタデータ
-app/components/ — パブリック UI プリミティブの構成再利用可能なサイトプレゼンテーション
-app/islands/      — オプションのインタラクティブ UI とそのクライアントサイドステート
-app/style.css     — ビジュアルトークン、レイアウト、タイポグラフィ、生成された拡張スタイルのインポート
+app/routes/       — URL の処理、ページの構成、redirect、レスポンスのメタデータ
+app/components/ — 公開 UI プリミティブの再利用可能な表示と構成
+app/islands/      — 任意の対話的 UI とそのクライアント側の状態
+app/style.css     — 視覚的なトークン、レイアウト、タイポグラフィ、生成された拡張スタイルの読み込み
 ```
 
-## ルート解決
+## Routeの解決
 
-ルートリゾルバ (`resolveRiebeckiteContentRequest`) は順にコンテンツ、plugin ページ、リダイレクト、not-found を解決します。
+routeのresolver（`resolveRiebeckiteContentRequest`）が、content、Pluginページ、redirect、not-foundを順に解決します。
 
- プラグインは情報と UI フラグメントを提供します; サイト はそれらがどこでレンダリングされるかを決定します。
+Pluginは情報とUIの断片を提供し、どこに描画するかはサイトが決めます。
 
-## head と slot のハンドオフ
+## Headとslotの受け渡し
 
- プラグインは `headTags` / `bodySlots` だけを記述します; サイト がレンダリングを所有します。
+Pluginは`headTags` / `bodySlots`を記述するだけです。描画はサイトが持ちます。
 
 ```tsx
 <PluginHeadTags tags={headTagsFromManifest} />

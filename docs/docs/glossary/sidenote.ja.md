@@ -6,39 +6,36 @@ sidebar:
 
 # Sidenote
 
-Tufte スタイルのサイドノートで、footnote マークダウンをインライン参照とマージンノート（デスクトップ）またはポップオーバー（モバイル）に書き換えます。モバイルポップオーバーの動作を切り替える小さなクライアントエントリ (`initSidenotes`) を使用します。
+脚注の記法を、インラインの参照と、デスクトップではマージンノート、モバイルではポップオーバーに置き換えるTufte風のサイドノートです。モバイルのポップオーバーの切り替えには、小さなclient entry（`initSidenotes`）を使います。
 
-## footnote 構文
+## 脚注の記法
 
-通常の GFM footnotes を書きます:
+通常のGFMの脚注を書きます。
 
 ```md
-Riebeckite は側面にマージンノートを描画します.[^1]
+Riebeckite renders margin notes at the side of the text.[^1]
 
-[^1]: リファレンスの横にノートテキストが表示され、モバイルではポップオーバーになります。
+[^1]: The note text appears beside the reference on desktop and in a popover on mobile.
 ```
 
+## Sidenoteの描画
 
-## サイドノートの描画
+- 各脚注の参照は、`href="#fn-…"`を保つ小さな参照リンク（`[data-rr-sidenotes-ref]`）を持つ`sup`になります。
 
-- 各 footnote リファレンス は `sup` で小さな参照リンク (`[data-rr-sidenotes-ref]`) になり、`href="#fn-…"` ターゲットを保持します。
+- 各脚注の定義は、参照の隣の`.rr-sidenotes__note`のasideになります。
+- タブレット幅（`@media (min-width: 48rem)`）ではインラインノート
+- 記事のレールを置ける幅（`@media (min-width: 88rem)`）ではスティッキーなマージンノート
+- モバイル（`@media (max-width: 48rem)`）ではポップオーバー
 
-- 各 footnote 定義は参照の横に `.rr-sidenotes__note` aside として表示されます:
-  - タブレット幅以上 (`@media (min-width: 48rem)`) でインラインノート
-  - article rail があればスティッキーマージンノート (`@media (min-width: 88rem)`)
-  - モバイル (`@media (max-width: 48rem)`) でポップオーバー
+## クライアントの初期化
 
+小さなclient entry（`initSidenotes`）がモバイルのポップオーバーを切り替えます。タップで開閉し、`Escape`で閉じ、外側のクリックでも閉じます。
 
-## クライアント初期化
-
-モバイルポップオーバーを切り替える小さなクライアントエントリ (`initSidenotes`) を使用します: tap で開閉、 `Escape` で閉じる、外クリックで閉じる。
-
- `(min-width: 48rem)` に一致するページは無視されます — デスクトップのマージンノートは JavaScript を必要としません。
+`(min-width: 48rem)`に一致するページでは処理しません。デスクトップのマージンノートにJavaScriptは不要です。
 
 ```ts
 import { initSidenotes } from "@riebeckite/plugin-sidenotes";
 ```
-
 
 ## 関連用語
 

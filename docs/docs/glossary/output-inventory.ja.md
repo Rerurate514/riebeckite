@@ -1,28 +1,26 @@
 ---
-title: 出力インベントリ
+title: Output Inventory
 sidebar:
   hidden: true
 ---
 
-# 出力インベントリ
+# Output Inventory
 
-public entries、 redirects、 plugin pages、 および generated outputs から作成されたパスキーのすべての生成された出力の記録です。Build はこれを以前の successful state と比較し、affected、 unchanged、 および removed outputs を見つける。
+公開entry、redirect、Pluginページ、Generated Outputから作られる、パスをキーにしたすべての生成物の記録です。Buildはこれを前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を求めます。
 
 ## 含まれるもの
 
- Build が所有するすべての出力リスト: content outputs、 redirect outputs、 plugin-page outputs、 および generated outputs。
- どの出力が描画、再利用、 削除されるかを駆動する。
+Buildが所有するすべての出力の一覧です。contentの出力、redirectの出力、Pluginページの出力、Generated Outputを含みます。
 
 ## 比較
 
-previous successful state と比較して affected、 unchanged、 および removed outputs を決定する。
- build log は `SSG outputs` ラインで `rendered`, `reused`, および `removed` カウントを報告する。
+前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を決めます。どの出力を描画し、再利用し、削除するかはこの比較で決まります。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
 
 ## 関連用語
 
-- [[build|ビルド]]
+- [[build|Build]]
 - [[ssg|SSG]]
-- [[glossary/build-dependency|Build 依存性]]
+- [[glossary/build-dependency|Build Dependency]]
 
 ## さらに詳しく
 

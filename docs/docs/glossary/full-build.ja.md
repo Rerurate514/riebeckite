@@ -1,28 +1,21 @@
 ---
-title: フルビルド
+title: Full Build
 sidebar:
   hidden: true
 ---
 
-# フルビルド
+# Full Build
 
-以前のインクリメンタルステートを再利用せず、すべてのコンテンツをスクラッチから処理するビルドです。
+以前のBuild情報を使わず、すべてのコンテンツを最初から処理するBuildです。Incremental Buildが使えないときの経路になります。
 
-## 使うべきタイミング
+## 使われる場面
 
-`--full` を使ってビルドを再現する、あるいは incremental ビヘイビアの問題を切り分ける場合に使用する。
-ビルド時間の比較や、 incremental ビルドの結果が疑わしいときに有用です。
-
-## コマンド
-
-`riebeckite build --full`
-あるいは
-`pnpm exec riebeckite build --full`
+Build Stateやcacheのentryが欠落、非互換、安全でない場合に選ばれます。`--full`を指定して明示的に実行することもできます。
 
 ## 関連用語
 
-- [[build|ビルド]]
-- [[incremental-build|インクリメンタルビルド]]
+- [[build|Build]]
+- [[incremental-build|Incremental Build]]
 - [[check|Check]]
 
 ## さらに詳しく

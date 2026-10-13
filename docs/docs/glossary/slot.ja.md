@@ -6,11 +6,11 @@ sidebar:
 
 # Body slot
 
-プラグインは `appendContentBodySlot` で記事レイアウトの名前付き位置に HTML フラグメントを寄せられます; slot は resolved plugin order で蓄積し、site は 各スロットを描画するかどうか、どこで描画するかを選択します。
+Pluginは`appendContentBodySlot`で、記事レイアウトの名前付きの位置にHTMLの断片を追加できます。slotは依存関係を解決したPluginの順序で積み上がり、どのslotをどこに描画するかはサイトが選びます。
 
 ## 標準スロット
 
-Core は slot names を `ContentBodySlot` として定義します: `article.header`、`article.metadata`、`article.aside`、`article.before-content`、`article.after-content`、`article.footer`. 独自の slot name も受け入れます。
+Coreは`article.header`、`article.metadata`、`article.aside`、`article.before-content`、`article.after-content`、`article.footer`を`ContentBodySlot`として定義します。独自のslot名も使えます。
 
 ```ts
 appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
@@ -18,7 +18,7 @@ appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
 
 ## 描画
 
-site は `entry.bodySlots` を読み、選択したスロットを描画します。slot は `@riebeckite/honox/ui` の `ContentSlot` プリミティブを使用して描画できます。
+サイトは`entry.bodySlots`を読み、選んだslotを描画します。slotは`@riebeckite/honox/ui`の`ContentSlot`プリミティブで描画できます。
 
 ## 関連用語
 

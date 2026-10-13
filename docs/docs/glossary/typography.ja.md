@@ -1,31 +1,27 @@
 ---
-title: タイポグラフィ
+title: Typography
 sidebar:
   hidden: true
 ---
 
-# タイポグラフィ
+# Typography
 
-サイトのタイポグラフィック設定 — フォントファミリ、サイズ、行高 — は `system`, `serif`, `sans` のテーマプリセットを通じて `data-typography` 属性でテーマルートに適用されます。
+Typographyは、フォントファミリ、サイズ、行間といったサイトの組版の設定です。`system`、`serif`、`sans`のプリセットを`data-typography`属性でTheme Rootに適用します。
 
 ## プリセット
 
-利用可能なタイポグラフィ プリセットは3つです: `system`, `serif`, `sans`。
-プリセットは意味的フォント トークン (--rb-font-body, --rb-font-heading, --rb-font-mono) に反映されます。
-プリセットを変更すると、CSS ルール `:root[data-typography=...]` でフォントファミリが変更されます。
+利用できるプリセットは`system`、`serif`、`sans`の3つです。プリセットはSemantic Token（`--rb-font-body`、`--rb-font-heading`、`--rb-font-mono`）に反映されます。プリセットを変えると、CSSルール`:root[data-typography=...]`でフォントファミリが変わります。
 
-## 記事レイアウト
+## Article Layout
 
-タイポグラフィと記事レイアウトはテキスト表示を制御するために連携します。
-`data-typography` 属性はテーマルート ([data-theme-root] または `<html>`) に適用されます。
-`data-article-layout` と組み合わせて、記事全体の表示が決定されます。
+TypographyとArticle Layoutは連携してテキストの表示を決めます。`data-typography`属性はTheme Root（`[data-theme-root]`または`<html>`）に適用します。`data-article-layout`と組み合わせて、記事全体の表示を決めます。
 
 ## 関連用語
 
 - [[glossary/theme|Theme]]
 - [[design-token|Design Token]]
-- [[semantic-token|セマンティック トークン]]
-- [[article-layout|記事レイアウト]]
+- [[semantic-token|Semantic Token]]
+- [[article-layout|Article Layout]]
 
 ## さらに詳しく
 

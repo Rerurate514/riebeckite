@@ -6,15 +6,15 @@ sidebar:
 
 # Island
 
-Island はサーバーサイドで描画され、必要な箇所でのみ client が hydrate するコンポーネントです; ページ全体を hydrate せずにインタラクティブな UI セクションを可能にします。Island コンポーネントはプラグインではなく site application で定義されます。
+Islandはサーバー側で描画され、必要な箇所だけクライアントでhydrationされるコンポーネントです。ページ全体をhydrationせずに、対話的なUIの一部だけを動かせます。IslandコンポーネントはPluginではなくサイトのapplicationで定義します。
 
-## Island パターン
+## Islandパターン
 
-Island では、インタラクティブなコンポーネント (widget、chart など) をサーバーで描画し、必要な箇所でのみ client で hydrate します。これにより JavaScript ペイロードを削減し、time-to-interactive を改善します。
+Islandでは、対話的なコンポーネント（widget、chartなど）をサーバーで描画し、必要な箇所だけクライアントでhydrationします。これによりJavaScriptのペイロードを減らし、操作できるまでの時間を短くします。
 
-## Site の責任
+## Siteの責任
 
-site application は island の配置、routing、hydration を所有します。plugin は body slots で描画された HTML フラグメントを寄せることはできますが、island logic は app 層に居ります。
+サイトのapplicationがislandの配置、routing、hydrationを担います。Pluginはbody slotに描画したHTMLの断片を渡せますが、islandのlogicはapp層にあります。
 
 ## 関連用語
 

@@ -1,16 +1,16 @@
 ---
-title: セマンティック トークン
+title: Semantic Token
 sidebar:
   hidden: true
 ---
 
-# セマンティック トークン
+# Semantic Token
 
-セマンティック トークンは、body color、accent、border などの意味で参照されるデザイン トークンで、コンポーネントの変更なしにテーマの入れ替えを可能にします。
+Semantic Tokenは、本文の色、アクセント、境界といった意味で参照するDesign Tokenです。コンポーネントを変えずにThemeを入れ替えられます。
 
-## トークン分類
+## Tokenの分類
 
-セマンティック トークンは色、タイポグラフィ、レイアウトのグループに整理されています。各グループには意味に基づく名前が含まれ、CSS カスタムプロパティにマップされます。
+Semantic Tokenは色、タイポグラフィ、レイアウトのグループに分かれます。各グループには意味に基づく名前があり、CSSカスタムプロパティに対応します。
 色グループ: paper, ink, muted, accent, border, borderStrong, surface, surfaceHover, overlay, danger, success, codeBackground。
 タイポグラフィグループ: bodyFont, headingFont, monoFont。
 レイアウトグループ: pageMaxWidth, articleMaxWidth, sidebarWidth, contentGap。
@@ -26,17 +26,17 @@ flowchart LR
   ThemeB --> Token
 ```
 
-## テーマ独立性
+## Themeからの独立
 
-コンポーネントがテーマ特有の色名を参照すると、テーマの入れ替えができなくなります。
-セマンティック トークンは、--rb-color-ink などのトークンがあらゆるテーマの ink 値に解決されるようにすることでこの問題を解決します。
-プラグイン固有の意味トークンは --rr- プレフィックスを使用し、--rb- が利用可能な場合はフォールバックします。
+コンポーネントがTheme固有の色名を参照すると、Themeを入れ替えられなくなります。
+Semantic Tokenは、`--rb-color-ink`のようなTokenがあらゆるThemeのinkの値へ解決されるようにして、この問題を解決します。
+Plugin固有の意味のTokenは`--rr-`プレフィックスを使い、`--rb-`が使える場合はフォールバックします。
 
 ## 関連用語
 
 - [[design-token|Design Token]]
-- [[glossary/color-mode|色調モード]]
-- [[glossary/typography|タイポグラフィ]]
+- [[glossary/color-mode|Color Mode]]
+- [[glossary/typography|Typography]]
 - [[glossary/theme|Theme]]
 
 ## さらに詳しく

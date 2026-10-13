@@ -6,7 +6,7 @@ sidebar:
 
 # Block ID
 
-段落や block に付ける短い識別子で、見出しなしでその block を直接リンク・埋め込みできるようにします。
+段落やblockに付ける短い識別子で、見出しなしでそのblockを直接リンク・埋め込みできるようにします。
 
 ## 記法
 
@@ -18,4 +18,4 @@ sidebar:
 
 ## 用途
 
-block id を使うと、embed や WikiLink がノート全体やセクションではなく、1つの block を対象にできます。
+block idを使うと、embedやWikiLinkがノート全体やセクションではなく、1つのblockを対象にできます。

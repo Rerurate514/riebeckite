@@ -1,29 +1,26 @@
 ---
-title: Cache バージョン
+title: Cache Version
 sidebar:
   hidden: true
 ---
 
-# Cache バージョン
+# Cache Version
 
- persistent content cache のスキーマバージョンで、キャッシュのスキーマ変更に伴う互換性とマイグレーションを制御する。
+永続的なcontent cacheのスキーマのバージョンで、スキーマの変更にともなう互換性と移行を制御します。
 
-## スキーマバージョン
+## スキーマのバージョン
 
- CONTENT_CACHE_SCHEMA_VERSION (現在は 4) はキャッシュ構造が変更されたときにインクリメントされる。
- CONTENT_CACHE_COMPATIBILITY_VERSION (現在は 3) は behavior や contract が変更されたときに変更される。
- スキーマバージョンが合致しないエントリは miss として扱われ、再処理される。
+`CONTENT_CACHE_SCHEMA_VERSION`（現在は4）は、cacheの構造が変わったときに上げます。`CONTENT_CACHE_COMPATIBILITY_VERSION`（現在は3）は、振る舞いや契約が変わったときに変えます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
 
-## マイグレーション
+## 移行
 
- スキーマバージョンが合わない場合は `.riebeckite/cache` を削除して cold build を強制する。
- build log は cache entry が互換性のないスキーマバージョンを持つとき `schema-miss` を報告する。
+スキーマのバージョンが合わないときは`.riebeckite/cache`を削除し、コールドビルドを強制します。ビルドログは、互換性のないスキーマのバージョンを持つcacheのentryがあると`schema-miss`を報告します。
 
 ## 関連用語
 
 - [[glossary/cache|Cache]]
-- [[persistent-cache|永続キャッシュ]]
-- [[fingerprint|フィンガープリント]]
+- [[persistent-cache|Persistent Cache]]
+- [[fingerprint|Fingerprint]]
 
 ## さらに詳しく
 

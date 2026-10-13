@@ -6,7 +6,7 @@ sidebar:
 
 # Public Location
 
-ノートをどこに公開するかを表し、内部の slug と正準の permalink に、任意の redirect とメタデータを組み合わせます。manifest が entry ごとに公開する解決済みの結果です。
+ノートをどこに公開するかを表し、内部のslugと正準のpermalinkに、任意のredirectとメタデータを組み合わせます。manifestがentryごとに公開する解決済みの結果です。
 
 ## 構造
 
@@ -19,6 +19,6 @@ sidebar:
 }
 ```
 
-## redirect とメタデータ
+## redirectとメタデータ
 
-Plugin は正準の位置に別名 URL や redirect を添えられます。permalink は正準のままで、redirect が古い URL をそこへ導きます。
+Pluginは正準の位置に別名URLやredirectを添えられます。permalinkは正準のままで、redirectが古いURLをそこへ導きます。

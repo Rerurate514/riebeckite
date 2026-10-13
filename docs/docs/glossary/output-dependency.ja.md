@@ -1,31 +1,26 @@
 ---
-title: 出力依存性
+title: Output Dependency
 sidebar:
   hidden: true
 ---
 
-# 出力依存性
+# Output Dependency
 
-出力依存性は、コンテンツの変更によってどのエミットされたファイルが影響を受け、再生成が必要かを決定する。
+出力が何に依存するかの宣言で、output inventoryを前回の状態と比べたときにどの出力を再生成するかを決めます。contentの出力は`content`型の依存を持ち、Generated Outputは任意の型を持てます。
 
-## 依存タイプ
+## 依存の宣言
 
-`content { slug}` — そのコンテンツが変更された。
-`tag { tag }` — そのタグを持つコンテンツが変更された。
-`folder { folder }` — そのフォルダにあるコンテンツが変更された。
-`global` — 任意のコンテンツが変更された。
-`unknown` — 常に全出力再生成をトリガーする。
+各出力は依存の型と対象を持ちます。依存を宣言しない出力は`unknown`として扱われ、すべての出力の再生成を引き起こします。
 
-## 宣言
+## 比較
 
-plugin page の `pageTypes[].outputDependencies`、root `outputDependencies`、あるいは `context.output.emit(..., { dependencies })` で宣言する。
-可能な限り狭い依存を使用し、スコープが述べられない場合のみ `unknown` を使用する。
+Buildはoutput inventoryを前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を求めます。依存の宣言がこの比較の精度を決めます。
 
 ## 関連用語
 
-- [[glossary/build-dependency|Build 依存性]]
-- [[fingerprint|フィンガープリント]]
-- [[output-inventory|出力インベントリ]]
+- [[glossary/build-dependency|Build Dependency]]
+- [[fingerprint|Fingerprint]]
+- [[output-inventory|Output Inventory]]
 - [[glossary/cache|Cache]]
 
 ## さらに詳しく

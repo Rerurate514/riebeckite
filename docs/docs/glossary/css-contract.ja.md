@@ -1,24 +1,25 @@
 ---
-title: CSS コントラクト
+title: CSS Contract
 sidebar:
   hidden: true
 ---
 
-# CSS コントラクト
+# CSS Contract
 
-コンポーネントが依存できる安定した CSS フックとカスケード順序です。テーマは documented hooks (rb-* と rr-*) を公開し、コンポーネントが特定のテーマをハードコードせずにスタイルを設定できるようにします。
+CSS Contractは、コンポーネントが依存できる安定したCSSのhookと、カスケードの順序です。Themeは`rb-*`と`rr-*`のhookを公開し、コンポーネントが特定のThemeを前提にせずスタイルを当てられるようにします。
 
 ## 安定したフック
 
-2つのクラスネームスペースが提供されます:
-- `rb-*` — フレームワークが提供する構造的フックと意味的デザイントークン ('.rb-theme-root', '.rb-site', '.rb-article', '.rb-article-body', 等)
-- `rr-<feature>` — プラグインがレンダリングする最外側の要素のルートフック ('.rr-search', '.rr-callout', 等)
+クラスの名前空間は2つあります。
+
+- `rb-*`：フレームワークが提供する構造のhookと意味的なDesign Token（`.rb-theme-root`、`.rb-site`、`.rb-article`、`.rb-article-body`など）
+- `rr-<feature>`：Pluginが描画する最も外側の要素に付くroot hook（`.rr-search`、`.rr-callout`など）
 
 ## カスケード順
 
-読み込み順はテーマ CSS がプラグインの上書きに勝ち、userCss が最終的な上書きになることを保証します:
+読み込み順は、ThemeのCSSがPluginの既定スタイルを上書きし、userCssが最後の上書きになるように決まります。
 
-framework structural CSS → base/app structural CSS → Plugin default CSS → Theme CSS → config token inline style → userCss
+frameworkの構造CSS → base/appの構造CSS → Pluginの既定CSS → ThemeのCSS → configのtokenインラインスタイル → userCss
 
 ```mermaid
 flowchart TD
@@ -33,14 +34,14 @@ flowchart TD
   Token --> User
 ```
 
-Theme は安定したフックと文書化された子孫要素のみにスタイルを当ててください。新しい rb-* / rr-* クラス名を発明しないでください。
+Themeは安定したhookと、文書化された子孫要素だけにスタイルを当ててください。新しい`rb-*` / `rr-*`のクラス名は増やさないでください。
 
 ## 関連用語
 
 - [[glossary/theme|Theme]]
 - [[design-token|Design Token]]
-- [[glossary/typography|タイポグラフィ]]
-- [[glossary/color-mode|色調モード]]
+- [[glossary/typography|Typography]]
+- [[glossary/color-mode|Color Mode]]
 
 ## さらに詳しく
 

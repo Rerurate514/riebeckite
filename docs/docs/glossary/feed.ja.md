@@ -6,13 +6,13 @@ sidebar:
 
 # Feed
 
-公開されたコンテンツを機械可読に並べたもので、RSS、Atom、JSON Feed などがあります。Feed は discoverable な entry から作り、各 entry の permalink を使います。
+公開されたコンテンツを機械可読に並べたもので、RSS、Atom、JSON Feedなどがあります。Feedはdiscoverableなentryから作り、各entryのpermalinkを使います。
 
-## feed が使うもの
+## feedが使うもの
 
-- discoverable な entry。unlisted のページは含めません。
-- 各 entry の permalink。slug から組み直した URL は使いません。
-- frontmatter の title、date、description。
+- discoverableなentry。unlistedのページは含めません。
+- 各entryのpermalink。slugから組み直したURLは使いません。
+- frontmatterのtitle、date、description。
 
 ## 形式
 

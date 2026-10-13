@@ -6,7 +6,7 @@ sidebar:
 
 # Plugin options
 
-プラグインのオプションはプラグインファクトリに渡される設定値で、side effects のない pure `validateOptions` 関数で検証され、解決されたオプションはプラグイン `options` プロパティで利用できます。
+PluginのオプションはPluginファクトリに渡す設定値です。副作用のない純粋な`validateOptions`関数で検証し、解決したオプションはPluginの`options`プロパティから参照できます。
 
 ## オプション検証
 
@@ -23,9 +23,9 @@ export function examplePlugin(options: ExampleOptions = {}) {
 }
 ```
 
-## Validator 契約
+## Validatorの契約
 
-validators は side effects を持っていてはならない — no filesystem scanning、no builds、no cache writes、external state への modification なし。問題を structured issues で返します。
+Validatorに副作用を持たせてはいけません。ファイルシステムの走査、ビルド、cacheへの書き込み、外部状態の変更は行いません。問題は構造化したissueとして返します。
 
 ## 関連用語
 

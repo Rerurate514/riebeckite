@@ -103,6 +103,40 @@ test("parses links and citation metadata from a source document", () => {
   assert.equal(webmentionTypeForRels(link.rels), "like");
 });
 
+test("uses one resolved mention snapshot for manifest rendering", async () => {
+  const mentions = [makeMention({ title: "Snapshot mention" })];
+  let queries = 0;
+  const plugin = webmention({
+    provider: {
+      capabilities: new Set(["store", "query"]),
+      store: async () => {},
+      query: async () => {
+        queries += 1;
+        return { type: "all_mentions", mentions };
+      },
+    },
+  });
+  const resolutions = await plugin.resolveExternalDependencies?.({} as never);
+  assert.equal(queries, 1);
+  assert.equal(resolutions?.length, 1);
+  const resolution = resolutions?.[0];
+  assert.equal(resolution?.kind, "resolved");
+  if (resolution?.kind !== "resolved") return;
+
+  const entry = makeEntry();
+  await plugin.onManifestCreated?.({
+    config: makeConfig(),
+    manifest: makeManifest([entry]),
+    diagnostics: [],
+    externalDependencies: new Map([
+      [resolution.snapshot.id, resolution.snapshot],
+    ]),
+  } as never);
+
+  assert.equal(queries, 1);
+  assert.match(entry.bodySlots?.["article.footer"] ?? "", /Snapshot mention/);
+});
+
 test("verifies a source that links to the target", async () => {
   const result = await verifyWebmention({
     source: SOURCE_URL,

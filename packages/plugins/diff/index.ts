@@ -3,6 +3,7 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
+  fingerprintExternalValue,
 } from "@riebeckite/core";
 
 export { renderDiffHistory } from "./src/components/diff-history.js";
@@ -59,6 +60,40 @@ export function diff(options: DiffPluginOptions = {}) {
       version: "diff-v3",
       dependencyMode: "unsafe",
     },
+    contentOutputDependencies:
+      ui.enabled === false
+        ? []
+        : [{ type: "external", id: "diff:git-history" }],
+    resolveExternalDependencies: async (context) => {
+      if (ui.enabled === false) return [];
+      const reader = new GitMarkdownHistoryReader({
+        ...options,
+        cwd: options.cwd ?? context.config?.content.directory,
+      });
+      const state = await reader.getStateFingerprint();
+      if (state === null) {
+        return [
+          {
+            kind: "unavailable",
+            failure: {
+              id: "diff:git-history",
+              reason: "Git history could not be fingerprinted.",
+            },
+          },
+        ];
+      }
+      return [
+        {
+          kind: "resolved",
+          snapshot: {
+            id: "diff:git-history",
+            fingerprint: fingerprintExternalValue(state),
+            scope: { type: "content" },
+            value: reader,
+          },
+        },
+      ];
+    },
     options,
     assets: ui.enabled === false ? [] : [createStyleAsset("diff")],
     clientEntries:
@@ -68,10 +103,11 @@ export function diff(options: DiffPluginOptions = {}) {
     onManifestCreated: async (context) => {
       if (ui.enabled === false) return;
 
-      api ??= createPostDiffApi({
-        ...options,
-        cwd: options.cwd ?? context.config?.content.directory,
-      });
+      const snapshot = context.externalDependencies?.get("diff:git-history");
+      if (!snapshot || !(snapshot.value instanceof GitMarkdownHistoryReader)) {
+        return;
+      }
+      api ??= createPostDiffApiFromReader(snapshot.value);
       for (const entry of context.manifest.discoverableEntries) {
         const filePath = resolvePostFilePath({
           slug: entry.slug,
@@ -90,7 +126,10 @@ export function diff(options: DiffPluginOptions = {}) {
         context.output.emit({
           path: payloadPath,
           content: JSON.stringify({ revisions }).replace(/</g, "\\u003c"),
-          dependencies: [{ type: "content", slug: entry.slug }],
+          dependencies: [
+            { type: "content", slug: entry.slug },
+            { type: "external", id: "diff:git-history" },
+          ],
         });
         appendContentBodySlot(
           entry,
@@ -113,8 +152,12 @@ function diffPayloadPath(slug: string): string {
 export function createPostDiffApi(
   options: GitHistoryReaderOptions = {},
 ): PostDiffApi {
-  const reader = new GitMarkdownHistoryReader(options);
+  return createPostDiffApiFromReader(new GitMarkdownHistoryReader(options));
+}
 
+function createPostDiffApiFromReader(
+  reader: GitMarkdownHistoryReader,
+): PostDiffApi {
   return {
     getHistory: (filePath) => reader.getHistory(filePath),
     getRevisionMarkdown: (filePath, hash) =>

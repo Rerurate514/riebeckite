@@ -337,13 +337,25 @@ async function runManifestHook(
   cache: PluginCache,
   diagnostics: unknown[] = [],
 ): Promise<unknown[]> {
+  const contentIndex = new Map<string, string>();
+  const resolutions = await plugin.resolveExternalDependencies?.({
+    config: fakeConfig(),
+    cache,
+    contentIndex,
+  });
+  const externalDependencies = new Map(
+    (resolutions ?? [])
+      .filter((resolution) => resolution.kind === "resolved")
+      .map((resolution) => [resolution.snapshot.id, resolution.snapshot]),
+  );
   const context = {
     manifest,
     config: fakeConfig(),
     cache,
     diagnostics,
     logger: noopLogger,
-    contentIndex: new Map<string, string>(),
+    contentIndex,
+    externalDependencies,
   } as unknown as PluginManifestContext;
   await plugin.onManifestCreated?.(context);
   return diagnostics;

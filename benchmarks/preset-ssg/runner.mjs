@@ -64,6 +64,7 @@ const rows = args.resume
 if (!Array.isArray(rows))
   throw new Error(`Invalid benchmark report: ${jsonPath}`);
 await fs.mkdir(resultsDirectory, { recursive: true });
+let workspaceBuilt = false;
 for (const preset of presets) {
   if (!(preset in scaffoldPresets))
     throw new Error(`Unknown official preset: ${preset}`);
@@ -83,6 +84,10 @@ for (const preset of presets) {
           `Skipping completed ${preset}/${size}/${scenario}\n`,
         );
         continue;
+      }
+      if (!workspaceBuilt) {
+        await buildWorkspacePackages();
+        workspaceBuilt = true;
       }
       const result = await runScenario({ preset, size, scenario });
       rows.push(result);
@@ -171,19 +176,7 @@ async function createSite(siteRoot, preset, count) {
       baseUrl: "https://benchmark.example.test",
     },
   });
-  await fs.mkdir(path.join(siteRoot, "node_modules", "@riebeckite"), {
-    recursive: true,
-  });
-  await fs.symlink(
-    path.join(root, "packages", "plugins", "obsidian-markdown"),
-    path.join(
-      siteRoot,
-      "node_modules",
-      "@riebeckite",
-      "plugin-obsidian-markdown",
-    ),
-    "junction",
-  );
+  await linkWorkspacePackages(siteRoot);
   await createBenchmarkContent({
     contentDirectory: path.join(siteRoot, "content"),
     count,
@@ -191,6 +184,111 @@ async function createSite(siteRoot, preset, count) {
   });
   return generatedPluginOrder(
     await fs.readFile(path.join(siteRoot, "riebeckite.config.ts"), "utf8"),
+  );
+}
+
+async function buildWorkspacePackages() {
+  await execFileAsync(
+    process.execPath,
+    [path.join(root, "scripts", "build_packages.mjs")],
+    {
+      cwd: root,
+      env: process.env,
+      maxBuffer: 1024 * 1024 * 8,
+    },
+  );
+}
+
+async function linkWorkspacePackages(siteRoot) {
+  const nodeModulesDirectory = path.join(siteRoot, "node_modules");
+  const namespaceDirectory = path.join(siteRoot, "node_modules", "@riebeckite");
+  await fs.mkdir(namespaceDirectory, { recursive: true });
+  const packageRoots = [
+    path.join(root, "packages"),
+    path.join(root, "packages", "integrations"),
+    path.join(root, "packages", "plugins"),
+    path.join(root, "packages", "themes"),
+  ];
+  const packageDirectories = (
+    await Promise.all(
+      packageRoots.map(async (packageRoot) =>
+        (
+          await fs.readdir(packageRoot, { withFileTypes: true })
+        )
+          .filter((entry) => entry.isDirectory())
+          .map((entry) => path.join(packageRoot, entry.name)),
+      ),
+    )
+  ).flat();
+  for (const directory of packageDirectories) {
+    const packagePath = path.join(directory, "package.json");
+    const packageJson = await fs
+      .readFile(packagePath, "utf8")
+      .then((source) => JSON.parse(source))
+      .catch(() => undefined);
+    if (
+      typeof packageJson?.name !== "string" ||
+      !packageJson.name.startsWith("@riebeckite/")
+    ) {
+      continue;
+    }
+    const destination = path.join(
+      namespaceDirectory,
+      packageJson.name.slice("@riebeckite/".length),
+    );
+    await fs.symlink(directory, destination, "junction");
+  }
+  const runtimeDependencies = await fs.readdir(
+    path.join(appRoot, "node_modules"),
+    {
+      withFileTypes: true,
+    },
+  );
+  for (const dependency of runtimeDependencies) {
+    if (
+      (!dependency.isDirectory() && !dependency.isSymbolicLink()) ||
+      dependency.name.startsWith(".")
+    )
+      continue;
+    if (dependency.name === "@riebeckite") continue;
+    const source = path.join(appRoot, "node_modules", dependency.name);
+    if (!dependency.name.startsWith("@")) {
+      await fs.symlink(
+        await fs.realpath(source),
+        path.join(nodeModulesDirectory, dependency.name),
+        "junction",
+      );
+      continue;
+    }
+    const scopeDirectory = path.join(nodeModulesDirectory, dependency.name);
+    await fs.mkdir(scopeDirectory, { recursive: true });
+    const scopedDependencies = await fs.readdir(source, {
+      withFileTypes: true,
+    });
+    for (const scopedDependency of scopedDependencies) {
+      if (!scopedDependency.isDirectory() && !scopedDependency.isSymbolicLink())
+        continue;
+      const scopedSource = path.join(source, scopedDependency.name);
+      await fs.symlink(
+        await fs.realpath(scopedSource),
+        path.join(scopeDirectory, scopedDependency.name),
+        "junction",
+      );
+    }
+  }
+  await fs.symlink(
+    await fs.realpath(
+      path.join(
+        root,
+        "packages",
+        "plugins",
+        "mermaid",
+        "node_modules",
+        "puppeteer",
+      ),
+    ),
+    path.join(nodeModulesDirectory, "puppeteer"),
+    "junction",
   );
 }
 

@@ -15,14 +15,14 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-test("preset benchmark builds workspace packages before loading scaffold plugins", async () => {
-  const packageJson = JSON.parse(
-    await fs.readFile(path.join(process.cwd(), "package.json"), "utf8"),
+test("preset benchmark prepares workspace packages and explicit package links", async () => {
+  const runner = await fs.readFile(
+    path.join(process.cwd(), "benchmarks", "preset-ssg", "runner.mjs"),
+    "utf8",
   );
-  assert.match(
-    packageJson.scripts["benchmark:presets"],
-    /^pnpm build:packages && /,
-  );
+  assert.match(runner, /await buildWorkspacePackages\(\)/);
+  assert.match(runner, /async function linkWorkspacePackages/);
+  assert.match(runner, /"mermaid",\s*"node_modules",\s*"puppeteer"/);
 });
 
 test("official starter and showcase scaffolds preserve their plugin order", async (t) => {
@@ -148,24 +148,13 @@ test("temporary removal refuses a root directory and removes a child", async (t)
 });
 
 test("runner executes the clean output comparison", {
-  timeout: 180_000,
+  timeout: 360_000,
 }, async (t) => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-preset-benchmark-result-"),
   );
-  const workRoot = path.join(
-    process.cwd(),
-    "apps",
-    "web",
-    ".riebeckite",
-    `preset-ssg-runner-test-${Date.now()}`,
-  );
-  t.after(() =>
-    Promise.all([
-      fs.rm(directory, { recursive: true, force: true }),
-      fs.rm(workRoot, { recursive: true, force: true }),
-    ]),
-  );
+  const workRoot = path.join(directory, `preset-ssg-runner-test-${Date.now()}`);
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
   await execFileAsync(
     process.execPath,
     [
@@ -183,7 +172,7 @@ test("runner executes the clean output comparison", {
       "--out",
       directory,
     ],
-    { cwd: process.cwd(), timeout: 170_000 },
+    { cwd: process.cwd(), timeout: 340_000 },
   );
   const resultFile = (await fs.readdir(directory)).find((file) =>
     file.endsWith(".json"),
@@ -197,24 +186,16 @@ test("runner executes the clean output comparison", {
 });
 
 test("runner resumes without repeating completed scenarios", {
-  timeout: 180_000,
+  timeout: 420_000,
 }, async (t) => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-preset-benchmark-resume-"),
   );
   const workRoot = path.join(
-    process.cwd(),
-    "apps",
-    "web",
-    ".riebeckite",
+    directory,
     `preset-ssg-runner-resume-test-${Date.now()}`,
   );
-  t.after(() =>
-    Promise.all([
-      fs.rm(directory, { recursive: true, force: true }),
-      fs.rm(workRoot, { recursive: true, force: true }),
-    ]),
-  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
   const runner = [
     "--import",
     "tsx",
@@ -232,7 +213,7 @@ test("runner resumes without repeating completed scenarios", {
   ];
   await execFileAsync(process.execPath, runner, {
     cwd: process.cwd(),
-    timeout: 170_000,
+    timeout: 340_000,
   });
   const resultPath = path.join(
     directory,
@@ -241,7 +222,7 @@ test("runner resumes without repeating completed scenarios", {
   const { stdout } = await execFileAsync(
     process.execPath,
     [...runner, "--resume", resultPath],
-    { cwd: process.cwd(), timeout: 170_000 },
+    { cwd: process.cwd(), timeout: 340_000 },
   );
   const result = JSON.parse(await fs.readFile(resultPath, "utf8"));
   assert.match(stdout, /Skipping completed starter\/1\/cold/);

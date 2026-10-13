@@ -12,9 +12,9 @@ query用に作られるコンテンツentryのまとまりです。tag、folder�
 
 collectionは1つの軸でentryを選びます。
 
-- `tags` — 同じtagを持つentry。
-- `folder` — あるディレクトリ配下のentry。
-- `date` — 年・月・日でまとめたentry。
+- `tags`は同じtagを持つentryです。
+- `folder`はあるディレクトリ配下のentryです。
+- `date`は年・月・日でまとめたentryです。
 - frontmatterのfield — 同じ値を持つentry。seriesでも使います。
 
 ## entryの選び方

@@ -29,6 +29,25 @@ Hooks run in resolved plugin order: `setup`, `buildStart`, content processing, `
 
 Named hooks (`onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated`) participate in content phases.
 
+## Capability system (`provides`/`requires`/`optional`)
+
+Plugins declare capabilities via `provides`, `requires`, and `optional` to opt into the dependency-resolved pipeline. The `resolvePlugins` function processes plugins in order of their `order` field, then resolves dependencies so that plugins providing a capability are ordered before plugins that require it. If no provider exists for a required capability, resolution fails with a diagnostic.
+
+```ts
+definePlugin({
+  name: "example",
+  provides: ["content.graph"],
+  requires: ["cache"],
+  optional: ["example.optional"],
+});
+```
+
+- **`provides`**: Capabilities this plugin offers to the pipeline. A capability must have exactly one enabled provider; duplicate providers fail resolution.
+- **`requires`**: Capabilities this plugin depends on. Resolution orders each provider before this plugin and fails with a diagnostic when none is available.
+- **`optional`**: Capabilities this plugin uses when available. A missing capability is ignored, while a present provider is still ordered before this plugin.
+
+The `getResolvedPluginMetadata` utility exposes each plugin's resolved provides/requires/optional as `ResolvedPluginMetadata`, which the pipeline uses for ordering and diagnostics.
+
 ## Assets and client entries
 
 CSS is declared through `assets`; browser JavaScript through `clientEntries`. Only declare when genuinely needed.

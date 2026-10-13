@@ -39,6 +39,15 @@ A theme does not change content meaning, routes, manifests, plugin behavior, or 
 Functionality belongs in plugins; appearance belongs in themes; site structure belongs in the application.
 Swapping themes must not affect content, routes, or plugin behavior.
 
+## Theme configuration resolution
+
+The theme configuration is resolved through `resolveThemeConfig` in `packages/core/src/config.ts`. The function handles two theme input forms:
+
+- **`RiebeckiteTheme`** (with `styles`, `config`, `attributes`): Extracts `name`, spreads `config` for `colorMode`, `typography`, `articleLayout`, `tokens`, and merges `attributes`. Styles are taken from the `styles` array.
+- **`ThemeConfig`** (plain object): Used as-is with defaults applied for missing fields. Defaults include `colorMode: "system"`, `typography: "system"`, `articleLayout: "article"`, `tokens: {}`, and `styles: [defaultThemeStyle]`.
+
+The resolved theme is stored in the resolved config under the `theme` key and includes `name`, `colorMode`, `typography`, `articleLayout`, `tokens`, `attributes` (sanitized to allow only `data-*` attributes not reserved), and `userCss`. This resolved theme is then consumed by the pipeline and CSS/HTML generators to produce the final presentation.
+
 ## Related terms
 
 - [[design-token|Design Token]]

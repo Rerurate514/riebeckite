@@ -19,7 +19,7 @@ CSS Contractは、コンポーネントが依存できる安定したCSSのhook�
 
 読み込み順は、ThemeのCSSがPluginの既定スタイルを上書きし、userCssが最後の上書きになるように決まります。
 
-frameworkの構造CSS → base/appの構造CSS → Pluginの既定CSS → ThemeのCSS → configのtokenインラインスタイル → userCss
+frameworkの構造CSS → base/appの構造CSS → Pluginの既定CSS → ThemeのCSS → configのtokenインラインスタイル→ userCss
 
 ```mermaid
 flowchart TD
@@ -34,7 +34,7 @@ flowchart TD
   Token --> User
 ```
 
-Themeは安定したhookと、文書化された子孫要素だけにスタイルを当ててください。新しい`rb-*` / `rr-*`のクラス名は増やさないでください。
+Themeは安定したhookと、文書化された子孫要素だけにスタイルを当ててください。新しい`rb-*`/ `rr-*`のクラス名は増やさないでください。
 
 ## 関連用語
 

@@ -10,7 +10,7 @@ Tagは共通のラベルでコンテンツをまとめ、`/tags/<slug>`に一覧
 
 ## タグの仕組み
 
-`taxonomy()` Pluginはmanifestの公開entryを読み込み、frontmatterの`tags` fieldでまとめます。タグの値ごとに`/tags/<slug>`のページを生成します。
+`taxonomy()`Pluginはmanifestの公開entryを読み込み、frontmatterの`tags`fieldでまとめます。タグの値ごとに`/tags/<slug>`のページを生成します。
 
 タグページには、そのタグを共有するentryの一覧、RSS・Atom・JSONのフィード、関連タグのナビゲーション（`relatedLimit`で件数を絞る）が含まれます。
 
@@ -33,7 +33,7 @@ taxonomy({
 })
 ```
 
-`tags: false`でタグの生成を止められます。`related` optionを有効にすると、共起をもとにしたナビゲーションを生成します。
+`tags: false`でタグの生成を止められます。`related`optionを有効にすると、共起をもとにしたナビゲーションを生成します。
 
 ## 関連用語
 

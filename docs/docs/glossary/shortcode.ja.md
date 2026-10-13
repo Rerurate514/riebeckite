@@ -6,7 +6,7 @@ sidebar:
 
 # Shortcode
 
-`remark-directive`の記法を使う汎用のショートコード機構です。インライン（`:name[label]{key=value}`）、ブロック（`::name[label]{key=value}`）、コンテナ（`:::name[label]{key=value}` … `:::`）のショートコードに対応し、組み込みのレジストリを持ちます。
+`remark-directive`の記法を使う汎用のショートコード機構です。インライン（`:name[label]{key=value}`）、ブロック（`::name[label]{key=value}`）、コンテナ（`:::name[label]{key=value}`… `:::`）のショートコードに対応し、組み込みのレジストリを持ちます。
 
 ## 記法の概要
 

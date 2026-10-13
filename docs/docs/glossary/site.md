@@ -36,6 +36,49 @@ Plugins only describe `headTags` / `bodySlots`; the site owns rendering.
 ```tsx
 <ContentSlot slots={bodySlots} name="article.header" />
 ```
+## SiteConfig Structure
+The full `SiteConfig` interface from `packages/core/src/types/site_config.ts` defines the site metadata:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `title` | `string` | Site title, used in `<title>` and headers |
+| `description` | `string \| undefined` | Site description meta tag |
+| `author` | `string \| undefined` | Author name, used in metadata |
+| `baseUrl` | `string \| undefined` | Base URL for the site (e.g., `https://example.com`) |
+| `locale` | `string \| undefined` | Locale code (e.g., `en`, `ja`) |
+| `twitterSite` | `string \| undefined` | Twitter `@` handle for card attribution |
+| `defaultOgImage` | `string \| undefined` | Default Open Graph image URL |
+| `feed` | `feed \| undefined` | RSS/Atom feed configuration (title, description, language) |
+
+Each field is used as follows:
+- **title**: Rendered in the document `<title>` and page headers
+- **description**: Added as a `<meta name="description">` tag
+- **author**: Added to author metadata and schema.org markup
+- **baseUrl**: Used for generating canonical URLs and sitemap
+- **locale**: Sets the `lang` attribute on `<html>` and affects formatting
+- **twitterSite**: Added to Twitter card metadata
+- **defaultOgImage**: Used as the default `og:image` when no per-page image is provided
+- **feed**: Used to generate the site's RSS/Atom feed
+
+```ts
+export interface SiteConfig {
+  title: string;
+  description?: string;
+  author?: string;
+  baseUrl?: string;
+  locale?: string;
+  twitterSite?: string;
+  defaultOgImage?: string;
+  feed?: {
+    title?: string;
+    description?: string;
+    language?: string;
+  };
+}
+```
+## Field Usage Across the Site
+The fields above flow through the `@riebeckite/honox` integration (`packages/core/src/`) to compose the final public UI. The `title` and `description` appear in `<head>`, `author` and `twitterSite` in social metadata, `baseUrl` in URL generation, and `locale` in the `lang` attribute.
+
 
 ## Related terms
 

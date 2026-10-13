@@ -7,12 +7,12 @@ sidebar:
 
 # 用語集
 
-Riebeckite が使う概念をカテゴリ別にまとめた用語集です。各項目は短い定義と用語ノートへのリンクで、詳しい説明は既存のドキュメントにあります。
+Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各項目は短い定義と用語ノートへのリンクで、詳しい説明は既存のドキュメントにあります。
 
 ## コンテンツと公開
 
-- [Content](./content.ja.md) — Markdownの解析とPluginの処理を経たコンテンツです。frontmatter、描画済みのHTML、解決済みの公開位置を持ちます。Riebeckiteは生のファイルではなく、処理を終えたこの単位を扱います。
-- [Content Source](./content-source.ja.md) — パイプラインの他の部分にコンテンツを供給する読み取りの抽象です。標準の実装はファイルシステムやObsidian vaultを読み取るため、Content Managerがファイルシステムを直接走査することはありません。
+- [Content](./content.ja.md) Markdownの解析とPluginの処理を経たコンテンツです。frontmatter、描画済みのHTML、解決済みの公開位置を持ちます。Riebeckiteは生のファイルではなく、処理を終えたこの単位を扱います。
+- [Content Source](./content-source.ja.md)パイプラインの他の部分にコンテンツを供給する読み取りの抽象です。標準の実装はファイルシステムやObsidian vaultを読み取るため、Content Managerがファイルシステムを直接走査することはありません。
 - [Content Manager](./content-manager.ja.md) — 走査済みのentryを完成したmanifestに変えるコンポーネントです。公開位置を解決し、MarkdownとPluginのパイプラインを実行してから、content graphと検索用のindexを作ります。
 - [Content Entry](./content-entry.ja.md) — manifestの中でslugにより識別される、解決済みのコンテンツ1件です。permalink、公開位置、frontmatter、公開状態、HTML、Pluginが付与したデータを持ちます。
 - [Content ID](./content-id.ja.md) — frontmatterに書く安定した識別子で、slugやpermalinkとは独立にノートを指します。ファイルの移動やURLの変更をまたいで残るため、外部から参照するときのキーになります。
@@ -36,6 +36,8 @@ Riebeckite が使う概念をカテゴリ別にまとめた用語集です。各
 - [Publish](./publish.ja.md) — コンテンツを公開サイトに含めるかどうかの判定で、publish strategyとpublishedやvisibilityといったfrontmatterで制御します。公開されたコンテンツはpublication boundaryのビューに入ります。
 - [Draft](./draft.ja.md) — 公開の判定によって公開サイトから外されるコンテンツです。処理自体は続けられますが、公開されるまでroutableとdiscoverableのビューから除外されます。
 - [Visibility](./visibility.ja.md) — 公開したページをどう見せるかを細かく決めるfrontmatterのfieldです。ページを下書きにせず、一覧に載せるかどうかを分けます。
+- [Pipeline](./pipeline.ja.md) — Markdownがmdastにパースされ、remarkプラグインが変換し、hastにブリッジされ、rehypeプラグインがHTMLを変換するMarkdownからHTMLへの処理パイプラインです。Coreが駆動し、プラグインが拡張します。
+- [Content Query](./content-query.ja.md) — タグ、フォルダ、日付、またはfrontmatterフィールドでコンテンツentryを選択・フィルタリングし、リスト表示やプラグインデータに使用されます。taxonomy、series、関連投稿で使用されます。
 - [WikiLink](./wikilink.ja.md) — ノート同士をつなぎ、content graphに関係を作る`[[link]]`記法です。Riebeckiteはcontent indexを通して解決し、解決できないリンクはdiagnosticとして残します。
 - [Embed](./embed.ja.md) — 別のノートの内容を現在のページに取り込む記法で、ノートの埋め込みやblockの埋め込みがあります。リンクと同様に解決し、content dependencyとして追跡します。
 - [Block ID](./block-id.ja.md) — 段落やblockに付ける短い識別子で、見出しなしでそのblockを直接リンク・埋め込みできるようにします。
@@ -46,7 +48,7 @@ Riebeckite が使う概念をカテゴリ別にまとめた用語集です。各
 - [Series](./series.ja.md) — 順序を持ってまとまるコンテンツの集合で、frontmatterのseries fieldで設定します。seriesの一覧は、同じseries値を持つcontent collectionから作られます。
 - [Folder Page](./folder-page.ja.md) — 単一のファイルではなくフォルダを代表するページで、folder-pages Pluginが扱います。ディレクトリにentryと公開URLを与えつつ、配下のページはそれぞれのパスを保ちます。
 
-## Plugin と拡張
+## Pluginと拡張
 
 - [Plugin](./plugin.ja.md) — RiebeckiteのPluginは、定義された契約を通してコンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
 - [Plugin cache](./plugin-cache.ja.md) — 各Pluginは`context.cache`を通じてビルド時だけ使えるPlugin固有のcacheを持ちます。保存できるのはJSONに変換できる値だけで、名前空間はPluginごとに分かれます。
@@ -122,12 +124,17 @@ Riebeckite が使う概念をカテゴリ別にまとめた用語集です。各
 - [Deployment](./deployment.ja.md) — Build済みのサイトを配信先へ配置する段階です。Buildがmanifestと生成物を用意し、IntegrationがそれをCloudflare Workersなどのplatformにつなぎます。
 - [Integration](./integration.ja.md) — Coreのコンテンツとページを、HonoXやViteといった描画・配信のスタックにつなぐパッケージです。コンテンツの論理を持たずに、routeを描画し出力を書き出します。
 - [Runtime](./runtime.ja.md) — Buildの後に、サイトがページを配信し問い合わせに答える段階です。Runtimeのコードは、コンテンツを再処理せずmanifestとページのデータを読みます。
+- [Site Config](./site-config.ja.md) — SiteConfigのフィールド（title、description、author、baseUrl、locale、twitterSite、defaultOgImage、feed）はサイトを記述し、SEOやfeed、localeを駆動します。
+- [Navigation](./navigation.ja.md) — サイトのナビゲーション設定と、解決されたmanifestからヘッダー/フッターのリンクを描画するナビゲーションプラグインです。
+- [Route](./route.ja.md) — Integrationがページを解決するURLパスで、ページのpublic pathからProducedされ、HonoXのフレームワークによって描画されます。
+- [Sitemap](./sitemap.ja.md) — manifestからビルドされた検索エンジン向けのsitemap/robotsリストで、discoverableなURLを提供します。
+- [Search](./search.ja.md) — manifestから作成されるbuild-timeの検索indexとプラグインで、読み手がコンテンツをクエリリングできるようにします。
 
 ## オーサリングと統合
 
 - [Obsidian Vault](./obsidian-vault.ja.md) — 既存のObsidian vaultをコンテンツディレクトリとして読み込めるため、vaultを整理し直さずに、選んだノートだけを公開できます。
 - [Tag](./tag.ja.md) — Tagは共通のラベルでコンテンツをまとめ、`/tags/<slug>`に一覧ページを生成します。あわせてRSS・Atom・JSONのフィードと、関連タグのナビゲーションを提供します。
-- [Shortcode](./shortcode.ja.md) — `remark-directive`の記法を使う汎用のショートコード機構です。インライン（`:name[label]{key=value}`）、ブロック（`::name[label]{key=value}`）、コンテナ（`:::name[label]{key=value}` … `:::`）のショートコードに対応し、組み込みのレジストリを持ちます。
+- [Shortcode](./shortcode.ja.md) — `remark-directive`の記法を使う汎用のショートコード機構です。インライン（`:name[label]{key=value}`）、ブロック（`::name[label]{key=value}`）、コンテナ（`:::name[label]{key=value}`… `:::`）のショートコードに対応し、組み込みのレジストリを持ちます。
 - [Callout](./callout.ja.md) — コンテナショートコードの`:::callout[Title]{type=warning}`または`:::note[Title]{type=info}`で作るコールアウトボックスです。`rr-callout rr-callout--{type}`クラスを持つ`div`として描画され、組み込みの既定タイトルを持ちます。
 - [Sidenote](./sidenote.ja.md) — 脚注の記法を、インラインの参照と、デスクトップではマージンノート、モバイルではポップオーバーに置き換えるTufte風のサイドノートです。モバイルのポップオーバーの切り替えには、小さなclient entry（`initSidenotes`）を使います。
 - [Backlink](./backlink.ja.md) — どの公開ノートが現在のノートにリンクしているかを示すバックリンクの一覧です。`getPublishedBacklinks()`でcontent manifestから被リンクを解決し、公開されて一覧に載るノートだけに絞り込み、manifestの順序で並べます。

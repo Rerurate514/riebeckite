@@ -20,3 +20,25 @@ Code that queries content reads the [manifest](./manifest.md), not the filesyste
 2. The [Content Manager](./content-manager.md) parses it and runs the pipeline.
 3. Location resolution assigns a [permalink](./permalink.md).
 4. The item is recorded as a [Content Entry](./content-entry.md) in the manifest.
+
+## Content processing modules
+
+Riebeckite's content pipeline is composed of distinct modules, each with a focused responsibility:
+
+- **`content_manager.ts`** (`packages/core/src/content/content_manager.ts`) — Orchestrates the full build flow: scanning content sources, building the content index, resolving locations, running the plugin pipeline via `Pipeline`, building the manifest and content graph, and committing incremental build state. It coordinates between the plugin runtime, content index builder, and build coordinator.
+
+- **`content_collection.ts`** (`packages/core/src/content/content_collection.ts`) — Defines `ContentCollectionDefinition`, `ContentCollection`, and the `buildContentCollections` function that groups manifest entries into taxonomy/date/folder-based listings with pagination, sort, and filter support.
+
+- **`content_graph.ts`** (`packages/core/src/content/content_graph.ts`) — Represents the content graph as a `ContentGraph` type with methods to query nodes, incoming/outgoing links, and neighbors. Built from the manifest's `outgoingLinks` and `incomingLinks` during `runGraphHook`.
+
+- **`content_index_builder.ts`** (`packages/core/src/content/content_index_builder.ts`) — Builds the content resolution index that maps slug variants (including case-insensitive and alias mappings) to their canonical slug. Uses `resolveContentIndex` to collapse candidates into a single resolution, flagging ambiguities for diagnostics.
+
+## Related terms
+
+- [[content-source|Content Source]]
+- [[content-entry|Content Entry]]
+- [[permalink|Permalink]]
+- [[manifest|Manifest]]
+- [[content-graph|Content Graph]]
+- [[taxonomy|Taxonomy]]
+- [[series|Series]]

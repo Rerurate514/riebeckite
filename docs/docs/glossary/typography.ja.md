@@ -16,6 +16,17 @@ Typographyは、フォントファミリ、サイズ、行間といったサイ�
 
 TypographyとArticle Layoutは連携してテキストの表示を決めます。`data-typography`属性はTheme Root（`[data-theme-root]`または`<html>`）に適用します。`data-article-layout`と組み合わせて、記事全体の表示を決めます。
 
+## プリセットタイポグラフィ
+利用できるプリセットは`system`、`serif`、`sans`の3つです。プリセットはSemantic Token（`--rb-font-body`、`--rb-font-heading`、`--rb-font-mono`）に反映されます。フォントファミリの選択はTheme config（`packages/core/src/types/theme_config.ts`の`ThemeTypographyPreset`型）で定義されます：
+
+- `system`：OS/システムのデフォルトフォントを使用
+- `serif`：セリフフォントファミリ（例：Georgia、Libre Baskerville）
+- `sans`：sans-serifフォントファミリ（例：system-ui、Inter）
+
+プリセットは`:root[data-typography=...]`CSSルールでフォントファミリを変更します。
+
+
+
 ## 関連用語
 
 - [[glossary/theme|Theme]]

@@ -10,7 +10,7 @@ sidebar:
 
 ## 言語の検出
 
-1. frontmatterの`lang` field。
+1. frontmatterの`lang`field。
 2. 設定したdetect関数。
 3. `.ja.md`のようなファイル名の接尾辞。
 4. 設定した既定言語。

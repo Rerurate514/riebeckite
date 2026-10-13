@@ -17,4 +17,4 @@ sidebar:
 
 ## ページごとの言語
 
-ページのlocaleはfrontmatterの`lang` fieldかファイル名の接尾辞から決まります。これがURLの接頭辞を決めます。
+ページのlocaleはfrontmatterの`lang`fieldかファイル名の接尾辞から決まります。これがURLの接頭辞を決めます。

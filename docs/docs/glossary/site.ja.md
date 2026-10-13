@@ -27,7 +27,7 @@ Pluginは情報とUIの断片を提供し、どこに描画するかはサイト
 
 ## Headとslotの受け渡し
 
-Pluginは`headTags` / `bodySlots`を記述するだけです。描画はサイトが持ちます。
+Pluginは`headTags`/ `bodySlots`を記述するだけです。描画はサイトが持ちます。
 
 ```tsx
 <PluginHeadTags tags={headTagsFromManifest} />

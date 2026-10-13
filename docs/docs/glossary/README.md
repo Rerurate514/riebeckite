@@ -36,6 +36,8 @@ A categorized glossary of the concepts Riebeckite uses. Each entry gives a short
 - [Publish](./publish.md) — The decision to include content in the published site, controlled by the publish strategy and frontmatter such as published and visibility. Published content enters the publication boundary views.
 - [Draft](./draft.md) — Content that is kept out of the published site by the publish decision. Drafts can still be processed, but they are excluded from the routable and discoverable views until they are published.
 - [Visibility](./visibility.md) — A frontmatter field that refines how a published page is exposed. It separates a listed page from an unlisted one without turning the page into a draft.
+- [Pipeline](./pipeline.md) — The Markdown-to-HTML processing pipeline where Markdown is parsed to an mdast, remark plugins transform it, it is bridged to hast, and rehype plugins transform the HTML; Core drives it and plugins extend it.
+- [Content Query](./content-query.md) — Selecting and filtering content entries by tag, folder, date, or a frontmatter field for listings and plugin data; used by taxonomy, series, and related posts.
 - [WikiLink](./wikilink.md) — The `[[link]]` syntax that connects notes and creates relationships in the content graph. Riebeckite resolves it through the content index, and an unresolved link stays as a diagnostic.
 - [Embed](./embed.md) — Syntax that pulls the content of another note into the current page, for example a note embed or a block embed. Embeds are resolved like links and are tracked as content dependencies.
 - [Block ID](./block-id.md) — A short identifier attached to a paragraph or block so it can be linked or embedded directly. It makes a single block addressable without a heading.
@@ -122,6 +124,11 @@ A categorized glossary of the concepts Riebeckite uses. Each entry gives a short
 - [Deployment](./deployment.md) — The step that places the built site on a hosting target. The build produces the manifest and generated outputs, and the integration connects them to a platform such as Cloudflare Workers.
 - [Integration](./integration.md) — The package that connects Core's content and pages to a rendering and deployment stack, such as HonoX and Vite. It renders routes and writes output without owning content logic.
 - [Runtime](./runtime.md) — The phase after the build where the site serves pages and answers queries. Runtime code reads the manifest and page data rather than reprocessing content.
+- [Site Config](./site-config.md) — The SiteConfig fields (title, description, author, baseUrl, locale, twitterSite, defaultOgImage, feed) that describe the site and drive SEO, feeds, and locale.
+- [Navigation](./navigation.md) — Site navigation configuration and the navigation plugin that renders header/footer links from the resolved manifest.
+- [Route](./route.md) — The URL path the integration resolves to a page; produced from the page's public path and rendered by the framework (HonoX).
+- [Sitemap](./sitemap.md) — A generated sitemap/robots listing discoverable URLs for search engines, built from the manifest.
+- [Search](./search.md) — The build-time search index and plugin that let readers query content, built from the manifest.
 
 ## Authoring and integration
 

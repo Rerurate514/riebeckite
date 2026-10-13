@@ -10,9 +10,9 @@ sidebar:
 
 ## 軸
 
-- `tags` — frontmatterの`tags` fieldから。
-- `folder` — ディレクトリ構造から。
-- `date` — 年・月・日で。
+- `tags`— frontmatterの`tags`fieldから。
+- `folder`— ディレクトリ構造から。
+- `date`— 年・月・日で。
 
 ## ページ
 

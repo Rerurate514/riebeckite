@@ -29,12 +29,12 @@ This is a note callout.
 
 組み込みのCalloutの種類と既定タイトルです。
 
-- `note` / `note` → 既定タイトル "Note"
-- `tip` → 既定タイトル "Tip"
-- `warning` → 既定タイトル "Warning"
-- `danger` → 既定タイトル "Danger"
-- `bug` → 既定タイトル "Bug"
-- `quote` → 既定タイトル "Quote"
+- `note`/ `note`→ 既定タイトル"Note"
+- `tip`→ 既定タイトル"Tip"
+- `warning`→ 既定タイトル"Warning"
+- `danger`→ 既定タイトル"Danger"
+- `bug`→ 既定タイトル"Bug"
+- `quote`→ 既定タイトル"Quote"
 
 ## タイトルとスタイルのカスタマイズ
 

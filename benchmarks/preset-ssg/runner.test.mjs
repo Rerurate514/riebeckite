@@ -15,6 +15,16 @@ import {
 
 const execFileAsync = promisify(execFile);
 
+test("preset benchmark builds workspace packages before loading scaffold plugins", async () => {
+  const packageJson = JSON.parse(
+    await fs.readFile(path.join(process.cwd(), "package.json"), "utf8"),
+  );
+  assert.match(
+    packageJson.scripts["benchmark:presets"],
+    /^pnpm build:packages && /,
+  );
+});
+
 test("official starter and showcase scaffolds preserve their plugin order", async (t) => {
   const { scaffoldRiebeckiteSite } = await import(
     "../../packages/create-riebeckite/src/scaffold/index.ts"

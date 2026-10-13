@@ -2,6 +2,7 @@ import {
   appendContentBodySlot,
   createStyleAsset,
   definePlugin,
+  fingerprintExternalValue,
 } from "@riebeckite/core";
 import {
   buildWebmentionDiagnostics,
@@ -143,9 +144,43 @@ export function webmention(options: WebmentionOptions = {}) {
       version: "webmention-v1",
       dependencyMode: "none",
     },
-    outputDependencies: [{ type: "unknown" }],
+    contentOutputDependencies: resolved.render
+      ? [{ type: "external", id: "webmention:all-mentions" }]
+      : [],
     options,
     validateOptions: validateWebmentionOptions,
+    resolveExternalDependencies: async () => {
+      if (
+        !resolved.render ||
+        !supportsWebmentionCapability(provider, "query")
+      ) {
+        return [];
+      }
+      try {
+        const result = await provider.query({ type: "all_mentions" });
+        return [
+          {
+            kind: "resolved" as const,
+            snapshot: {
+              id: "webmention:all-mentions",
+              fingerprint: fingerprintExternalValue(result.mentions),
+              scope: { type: "content" as const },
+              value: result.mentions,
+            },
+          },
+        ];
+      } catch (error) {
+        return [
+          {
+            kind: "unavailable" as const,
+            failure: {
+              id: "webmention:all-mentions",
+              reason: error instanceof Error ? error.message : String(error),
+            },
+          },
+        ];
+      }
+    },
     onManifestCreated: async (context) => {
       if (
         !resolved.render ||
@@ -154,11 +189,10 @@ export function webmention(options: WebmentionOptions = {}) {
         return;
       }
 
-      let mentions: readonly WebmentionMention[];
-      try {
-        const result = await provider.query({ type: "all_mentions" });
-        mentions = result.mentions;
-      } catch (error) {
+      const snapshot = context.externalDependencies?.get(
+        "webmention:all-mentions",
+      );
+      if (!snapshot) {
         context.diagnostics.push({
           code: "webmention-query-failed",
           severity: "warning",
@@ -166,11 +200,12 @@ export function webmention(options: WebmentionOptions = {}) {
           message:
             "The webmention provider could not be queried, so mentions were not rendered.",
           meta: {
-            cause: error instanceof Error ? error.message : String(error),
+            cause: "The external dependency snapshot was unavailable.",
           },
         });
         return;
       }
+      const mentions = snapshot.value as readonly WebmentionMention[];
 
       const grouped = groupMentionsBySlug(
         context.manifest,

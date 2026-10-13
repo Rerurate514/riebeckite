@@ -4,6 +4,7 @@ import {
   type ContentManifestEntry,
   createStyleAsset,
   definePlugin,
+  fingerprintExternalValue,
   type PluginManifestContext,
 } from "@riebeckite/core";
 import {
@@ -98,9 +99,41 @@ export function changelog(options: ChangelogOptions = {}) {
 
   return definePlugin({
     name: CHANGELOG_PLUGIN_NAME,
-    outputDependencies: [{ type: "unknown" }],
+    contentOutputDependencies:
+      resolved.perNote || resolved.siteWide
+        ? [{ type: "external", id: "changelog:git-history" }]
+        : [],
     options,
     validateOptions: validateChangelogOptions,
+    resolveExternalDependencies: async (context) => {
+      if (!resolved.perNote && !resolved.siteWide) return [];
+      const reader = new GitChangelogReader({
+        cwd: resolved.cwd ?? context.config?.content.directory,
+      });
+      const fingerprint = await reader.getStateFingerprint();
+      if (fingerprint === null) {
+        return [
+          {
+            kind: "unavailable" as const,
+            failure: {
+              id: "changelog:git-history",
+              reason: "Git state could not be read.",
+            },
+          },
+        ];
+      }
+      return [
+        {
+          kind: "resolved" as const,
+          snapshot: {
+            id: "changelog:git-history",
+            fingerprint: fingerprintExternalValue(fingerprint),
+            scope: { type: "content" as const },
+            value: reader,
+          },
+        },
+      ];
+    },
     onManifestCreated: (context) => applyChangelog(context, resolved),
     assets: [createStyleAsset(CHANGELOG_PLUGIN_NAME)],
   });
@@ -115,9 +148,19 @@ async function applyChangelog(
 ): Promise<void> {
   if (!options.perNote && !options.siteWide) return;
 
-  const reader = new GitChangelogReader({
-    cwd: resolveContentRoot(context, options),
-  });
+  const reader = context.externalDependencies?.get(
+    "changelog:git-history",
+  )?.value;
+  if (!(reader instanceof GitChangelogReader)) {
+    context.diagnostics.push({
+      code: "changelog-git-unavailable",
+      severity: "warning",
+      pluginName: CHANGELOG_PLUGIN_NAME,
+      message:
+        "changelog: Git state could not be read; change history was skipped.",
+    });
+    return;
+  }
   const resolution = await reader.resolveRepository();
   if (isRepositoryUnavailable(resolution)) {
     reportRepositoryUnavailable(context, resolution);
@@ -201,20 +244,6 @@ function resolveEntryFilePath(
 
 function hasSlot(entry: ContentManifestEntry, attribute: string): boolean {
   return entry.bodySlots?.[CHANGELOG_BODY_SLOT]?.includes(attribute) ?? false;
-}
-
-/**
- * Content root the plugin locates Git from.
- *
- * The configured content directory wins over the process working directory:
- * in a monorepo build the working directory is the app folder, which is not
- * the directory holding the notes.
- */
-function resolveContentRoot(
-  context: PluginManifestContext,
-  options: ResolvedChangelogOptions,
-): string {
-  return options.cwd ?? context.config?.content.directory ?? process.cwd();
 }
 
 function reportRepositoryUnavailable(

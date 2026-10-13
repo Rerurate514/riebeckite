@@ -3,12 +3,21 @@ import type {
   ContentManifest,
   ContentManifestEntry,
 } from "../types/content_manifest.js";
+import type {
+  ExternalDependencyFailure,
+  ExternalDependencySnapshot,
+} from "../types/external_dependency.js";
 import { determineAffectedContent } from "./affected_content.js";
+import type {
+  ContentBuildPlan,
+  FullRegenerationReason,
+} from "./content_build_plan.js";
 import {
   CONTENT_BUILD_STATE_VERSION,
   type ContentBuildDependency,
   type ContentBuildState,
   type FingerprintedContentEntry,
+  type PersistedExternalDependency,
 } from "./content_build_state.js";
 import {
   loadContentBuildState,
@@ -29,23 +38,6 @@ import { extractFrontmatterAliases } from "./content_metadata.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
-export type ContentBuildPreparation = {
-  readonly previousState: ContentBuildState | undefined;
-  readonly previousManifestEntriesBySlug: ReadonlyMap<
-    string,
-    ContentManifestEntry
-  >;
-  readonly currentEntries: readonly FingerprintedContentEntry[];
-  readonly currentContentAliases: ReadonlyMap<string, readonly string[]>;
-  readonly currentContentIndex: Map<string, string>;
-  readonly currentContentIndexAmbiguities: ReadonlyMap<
-    string,
-    readonly string[]
-  >;
-  readonly changeSet: ContentChangeSet;
-  readonly affectedContent: ReturnType<typeof determineAffectedContent>;
-};
-
 type ContentBuildCoordinatorDependencies = {
   readonly buildStatePath: string;
   readonly getEntries: () => Promise<readonly ContentSourceEntry[]>;
@@ -54,27 +46,31 @@ type ContentBuildCoordinatorDependencies = {
 };
 
 export class ContentBuildCoordinator {
-  private preparation: Promise<ContentBuildPreparation> | null = null;
+  private plan: Promise<ContentBuildPlan> | null = null;
 
   constructor(
     private readonly dependencies: ContentBuildCoordinatorDependencies,
   ) {}
 
-  getPreparation(
-    incremental: boolean | undefined,
+  getPlan(
+    incremental: boolean,
     pipelineFingerprint: string | undefined,
     fullContentRegenerationRequired = false,
-  ): Promise<ContentBuildPreparation> {
-    this.preparation ??= this.prepare(
+    externalDependencies: readonly ExternalDependencySnapshot[] = [],
+    externalDependencyFailures: readonly ExternalDependencyFailure[] = [],
+  ): Promise<ContentBuildPlan> {
+    this.plan ??= this.prepare(
       incremental,
       pipelineFingerprint,
       fullContentRegenerationRequired,
+      externalDependencies,
+      externalDependencyFailures,
     );
-    return this.preparation;
+    return this.plan;
   }
 
   async commit(
-    preparation: ContentBuildPreparation,
+    plan: ContentBuildPlan,
     manifest: ContentManifest,
     pipelineFingerprint: string | undefined,
     outputs: readonly OutputDescriptor[] = [],
@@ -83,6 +79,7 @@ export class ContentBuildCoordinator {
       string,
       readonly CachedContentDependency[]
     > = new Map(),
+    externalDependencies: readonly ExternalDependencySnapshot[] = [],
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -90,18 +87,17 @@ export class ContentBuildCoordinator {
     const state: ContentBuildState = {
       version: CONTENT_BUILD_STATE_VERSION,
       entries: Object.fromEntries(
-        preparation.currentEntries.map(({ entry, fingerprint }) => {
+        plan.currentEntries.map(({ entry, fingerprint }) => {
           const manifestEntry = entriesBySlug.get(toSlug(entry.path));
           return [
             entry.path,
             {
               fingerprint,
-              aliases: preparation.currentContentAliases.get(entry.path) ?? [],
+              aliases: plan.currentContentAliases.get(entry.path) ?? [],
               dependencies: collectDependencies(
                 manifestEntry,
                 trackedDependencies.get(toSlug(entry.path)) ??
-                  preparation.previousState?.entries[entry.path]
-                    ?.dependencies ??
+                  plan.previousState?.entries[entry.path]?.dependencies ??
                   [],
               ),
               linkTargets: collectLinkTargets(manifestEntry),
@@ -117,6 +113,14 @@ export class ContentBuildCoordinator {
       pipelineFingerprint,
       manifestEntries,
       outputs,
+      externalDependencies: externalDependencies.map(
+        ({ id, fingerprint, scope, expiresAt }) => ({
+          id,
+          fingerprint,
+          scope,
+          ...(expiresAt === undefined ? {} : { expiresAt }),
+        }),
+      ),
     };
 
     try {
@@ -133,10 +137,12 @@ export class ContentBuildCoordinator {
   }
 
   private async prepare(
-    incremental: boolean | undefined,
+    incremental: boolean,
     pipelineFingerprint: string | undefined,
     fullContentRegenerationRequired: boolean,
-  ): Promise<ContentBuildPreparation> {
+    externalDependencies: readonly ExternalDependencySnapshot[],
+    externalDependencyFailures: readonly ExternalDependencyFailure[],
+  ): Promise<ContentBuildPlan> {
     const entries = await this.dependencies.observability.tracer.span(
       "content.discovery",
       {},
@@ -152,11 +158,11 @@ export class ContentBuildCoordinator {
     );
     const previousState = await this.dependencies.observability.tracer.span(
       "content.build-state.load",
-      { incremental: incremental !== false },
+      { incremental },
       async () =>
-        incremental === false
-          ? undefined
-          : await loadContentBuildState(this.dependencies.buildStatePath),
+        incremental
+          ? await loadContentBuildState(this.dependencies.buildStatePath)
+          : undefined,
     );
     const changeSet = await this.dependencies.observability.tracer.span(
       "content.change-set",
@@ -203,15 +209,45 @@ export class ContentBuildCoordinator {
               currentContentIndex,
             ),
     );
+    const fullRegenerationReasons: FullRegenerationReason[] = [];
+    if (!incremental) fullRegenerationReasons.push("incremental-disabled");
+    else if (!previousState)
+      fullRegenerationReasons.push("cache-missing-or-invalid");
+    if (
+      previousState &&
+      previousState.pipelineFingerprint !== pipelineFingerprint
+    )
+      fullRegenerationReasons.push("pipeline-fingerprint-changed");
+    if (fullContentRegenerationRequired)
+      fullRegenerationReasons.push("content-plugin-uncacheable");
+    if (externalDependencyFailures.length > 0)
+      fullRegenerationReasons.push("external-dependency-unavailable");
     this.dependencies.observability.tracer.event("build.incremental", {
-      incremental: incremental !== false,
+      incremental,
+      cacheValid: previousState !== undefined,
+      fullRegenerationReasons: fullRegenerationReasons.join(","),
+      externalDependencyFailures: externalDependencyFailures.length,
       added: changeSet.added.length,
       changed: changeSet.changed.length,
       removed: changeSet.removed.length,
       unchanged: changeSet.unchanged.length,
       affected: affected.direct.size + affected.dependent.size,
     });
+    const reusableOutputs =
+      incremental &&
+      previousState?.pipelineFingerprint === pipelineFingerprint &&
+      externalDependencyFailures.length === 0 &&
+      externalDependenciesEqual(
+        previousState?.externalDependencies ?? [],
+        externalDependencies,
+      ) &&
+      changeSet.added.length === 0 &&
+      changeSet.changed.length === 0 &&
+      changeSet.removed.length === 0
+        ? previousState?.outputs
+        : undefined;
     return {
+      incremental,
       previousState,
       previousManifestEntriesBySlug: new Map(
         (previousState?.manifestEntries ?? []).map((entry) => [
@@ -225,6 +261,11 @@ export class ContentBuildCoordinator {
       currentContentIndexAmbiguities,
       changeSet,
       affectedContent: affected,
+      cacheValid: previousState !== undefined,
+      fullRegenerationReasons,
+      reusableOutputs,
+      externalDependencies,
+      externalDependencyFailures,
     };
   }
 
@@ -253,6 +294,29 @@ export class ContentBuildCoordinator {
 
     return aliases;
   }
+}
+
+function externalDependenciesEqual(
+  previous: readonly PersistedExternalDependency[],
+  current: readonly ExternalDependencySnapshot[],
+): boolean {
+  if (previous.length !== current.length) return false;
+  const currentById = new Map(
+    current.map((dependency) => [dependency.id, dependency]),
+  );
+  return previous.every((dependency) => {
+    const candidate = currentById.get(dependency.id);
+    return (
+      candidate !== undefined &&
+      candidate.fingerprint === dependency.fingerprint &&
+      candidate.expiresAt === dependency.expiresAt &&
+      !isExpired(candidate.expiresAt)
+    );
+  });
+}
+
+function isExpired(expiresAt: string | undefined): boolean {
+  return expiresAt !== undefined && Date.parse(expiresAt) <= Date.now();
 }
 
 function readText(content: string | Uint8Array): string {

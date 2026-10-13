@@ -50,7 +50,7 @@ export function canvas(options: CanvasOptions = {}) {
       version: "canvas-v2",
       dependencyMode: "tracked",
     },
-    outputDependencies: [{ type: "global" }],
+    contentOutputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateCanvasOptions,
     extendMarkdownPipeline: (pipeline, context) => {

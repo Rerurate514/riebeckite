@@ -550,27 +550,28 @@ test("DailyNotes renders English labels and ISO dates", () => {
 });
 
 test("dailyNotesPlugin declares a folder output dependency for the default directory", () => {
-  assert.deepEqual(dailyNotesPlugin().outputDependencies, [
+  assert.deepEqual(dailyNotesPlugin().contentOutputDependencies, [
     { type: "folder", folder: "Daily" },
   ]);
 });
 
 test("dailyNotesPlugin scopes its output dependency to a custom source directory", () => {
   assert.deepEqual(
-    dailyNotesPlugin({ source: { directory: "Journal" } }).outputDependencies,
+    dailyNotesPlugin({ source: { directory: "Journal" } })
+      .contentOutputDependencies,
     [{ type: "folder", folder: "Journal" }],
   );
 });
 
 test("dailyNotesPlugin falls back to a global dependency for an empty directory", () => {
   assert.deepEqual(
-    dailyNotesPlugin({ source: { directory: "" } }).outputDependencies,
+    dailyNotesPlugin({ source: { directory: "" } }).contentOutputDependencies,
     [{ type: "global" }],
   );
 });
 
 test("adding a nested daily note regenerates the index with only the plugin dependency", () => {
-  const dependencies = dailyNotesPlugin().outputDependencies;
+  const dependencies = dailyNotesPlugin().contentOutputDependencies;
   assert.ok(dependencies);
   const previousEntries = [
     makeEntry({ slug: "index" }),
@@ -611,7 +612,7 @@ test("adding a nested daily note regenerates the index with only the plugin depe
 });
 
 test("changing a daily note's frontmatter date regenerates the index", () => {
-  const dependencies = dailyNotesPlugin().outputDependencies;
+  const dependencies = dailyNotesPlugin().contentOutputDependencies;
   assert.ok(dependencies);
   const previousEntries = [
     makeEntry({ slug: "index" }),
@@ -651,7 +652,7 @@ test("changing a daily note's frontmatter date regenerates the index", () => {
 });
 
 test("a non-daily note change leaves the index unchanged", () => {
-  const dependencies = dailyNotesPlugin().outputDependencies;
+  const dependencies = dailyNotesPlugin().contentOutputDependencies;
   assert.ok(dependencies);
   const daily = makeEntry({
     slug: "Daily/2024-01-01",

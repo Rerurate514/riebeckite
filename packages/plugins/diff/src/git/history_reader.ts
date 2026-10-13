@@ -113,6 +113,27 @@ export class GitMarkdownHistoryReader {
     return result.ok ? result.stdout : null;
   }
 
+  async getStateFingerprint(): Promise<string | null> {
+    const repository = await this.#resolvePaths();
+    if (!repository) return null;
+    const results = await Promise.all([
+      runGit(["rev-parse", "HEAD"], repository.repositoryRoot),
+      runGit(
+        ["status", "--porcelain=v1", "--untracked-files=all"],
+        repository.repositoryRoot,
+      ),
+      runGit(
+        ["for-each-ref", "--format=%(refname):%(objectname)"],
+        repository.repositoryRoot,
+      ),
+    ]);
+    if (results.some((result) => !result.ok)) return null;
+    return results
+      .filter((result): result is { ok: true; stdout: string } => result.ok)
+      .map((result) => result.stdout)
+      .join("\u001e");
+  }
+
   /** `null` when the content directory has no readable work tree. */
   async #resolvePaths(): Promise<GitRepositoryPaths | null> {
     this.#repository ??= resolveRepositoryPaths(this.#contentRoot);

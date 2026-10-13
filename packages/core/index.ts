@@ -89,6 +89,7 @@ export {
   readContentSourceEntry,
 } from "./src/content/content_source.js";
 export { resolveContentStableId } from "./src/content/content_stable_id.js";
+export { fingerprintExternalValue } from "./src/content/external_fingerprint.js";
 export type {
   ContentSourceExclusion,
   ContentSourceScan,
@@ -213,6 +214,13 @@ export type {
   DiagnosticCode,
   DiagnosticSeverity,
 } from "./src/types/diagnostic.js";
+export type {
+  ExternalDependencyContext,
+  ExternalDependencyFailure,
+  ExternalDependencyResolution,
+  ExternalDependencyScope,
+  ExternalDependencySnapshot,
+} from "./src/types/external_dependency.js";
 export type {
   ContentAssetOutputInput,
   GeneratedOutput,

@@ -176,14 +176,14 @@ test("recentPostsPlugin registers its stylesheet", () => {
   ]);
 });
 
-test("recentPostsPlugin declares a global output dependency", () => {
-  assert.deepEqual(recentPostsPlugin().outputDependencies, [
-    { type: "global" },
+test("recentPostsPlugin declares a recent-posts projection", () => {
+  assert.deepEqual(recentPostsPlugin().contentOutputDependencies, [
+    { type: "projection", projection: "recent-posts" },
   ]);
 });
 
 test("a post date change regenerates the index with only the plugin dependency", () => {
-  const dependencies = recentPostsPlugin().outputDependencies;
+  const dependencies = recentPostsPlugin().contentOutputDependencies;
   assert.ok(dependencies);
   const previousEntries = [
     entry("index"),

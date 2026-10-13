@@ -40,7 +40,7 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
       version: "related-posts-v1",
       dependencyMode: "none",
     },
-    outputDependencies: [{ type: "global" }],
+    contentOutputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateRelatedPostsOptions,
     onManifestCreated: (context) => {

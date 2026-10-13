@@ -8,6 +8,7 @@ import type {
   ContentPublicLocation,
 } from "./content_manifest.js";
 import type { Diagnostic } from "./diagnostic.js";
+import type { ExternalDependencySnapshot } from "./external_dependency.js";
 import type { GeneratedOutputSink } from "./generated_output.js";
 import type { PostContent } from "./post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
@@ -26,6 +27,7 @@ export type PluginContext = {
   logger: Logger;
   tracer: Tracer;
   contentSource?: ContentSource;
+  externalDependencies?: ReadonlyMap<string, ExternalDependencySnapshot>;
 };
 
 export type PluginLifecycleContext = PluginContext;

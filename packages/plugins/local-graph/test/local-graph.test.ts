@@ -56,7 +56,7 @@ test("localGraphPlugin registers only its stylesheet", () => {
   const plugin = localGraphPlugin();
 
   assert.equal(plugin.name, "local-graph");
-  assert.equal(plugin.outputDependencies, undefined);
+  assert.equal(plugin.contentOutputDependencies, undefined);
   assert.deepEqual(plugin.assets, [
     {
       pluginName: "local-graph",

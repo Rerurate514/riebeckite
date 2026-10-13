@@ -96,7 +96,7 @@ export function series(options: SeriesOptions = {}) {
       version: "series-v1",
       dependencyMode: "none",
     },
-    outputDependencies: [{ type: "global" }],
+    contentOutputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateSeriesOptions,
     onManifestCreated: ({ manifest, diagnostics }) => {

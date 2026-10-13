@@ -17,10 +17,11 @@ import type { PublishStrategy } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import { attachErrorPath } from "../utils/error.js";
 import { isImagePath, normalizeContentPath } from "./attachment.js";
+import { ContentBuildCoordinator } from "./content_build_coordinator.js";
 import {
-  ContentBuildCoordinator,
-  type ContentBuildPreparation,
-} from "./content_build_coordinator.js";
+  type ContentBuildPlan,
+  reusableOutputChangeSet,
+} from "./content_build_plan.js";
 import { CONTENT_BUILD_STATE_EXCLUDE } from "./content_build_state.js";
 import { resolveContentBuildStatePath } from "./content_build_state_store.js";
 import type { CachedContentDependency } from "./content_dependency_tracker.js";
@@ -93,6 +94,10 @@ export class ContentManager {
   private processedContentCount = 0;
   private reusedContentCount = 0;
   private outputChangeSet: OutputChangeSet | null = null;
+  private buildPlan: Promise<ContentBuildPlan> | null = null;
+  private buildStateCommitRequested = false;
+  private buildStateCommitted = false;
+  private cacheManifestEntries: readonly ContentManifestEntry[] = [];
   private trackedContentDependencies = new Map<
     string,
     readonly CachedContentDependency[]
@@ -170,16 +175,14 @@ export class ContentManager {
     return await this.entryReader.readText(`${slug}.md`);
   }
 
-  async getContentIndex(
-    preparation?: ContentBuildPreparation,
-  ): Promise<Map<string, string>> {
+  async getContentIndex(plan?: ContentBuildPlan): Promise<Map<string, string>> {
     if (this.contentIndex) return this.contentIndex;
-    if (!preparation && this.contentIndexPromise)
+    if (!plan && this.contentIndexPromise)
       return (await this.contentIndexPromise).index;
 
-    if (preparation) {
-      this.contentIndex = preparation.currentContentIndex;
-      this.contentIndexAmbiguities = preparation.currentContentIndexAmbiguities;
+    if (plan) {
+      this.contentIndex = plan.currentContentIndex;
+      this.contentIndexAmbiguities = plan.currentContentIndexAmbiguities;
       return this.contentIndex;
     }
 
@@ -192,14 +195,14 @@ export class ContentManager {
           (entry) => this.entryReader.read(entry),
         ),
     );
-    if (!preparation) this.contentIndexPromise = promise;
+    if (!plan) this.contentIndexPromise = promise;
     try {
       const built = await promise;
       this.contentIndex = built.index;
       this.contentIndexAmbiguities = built.ambiguities;
       return this.contentIndex;
     } finally {
-      if (!preparation) this.contentIndexPromise = null;
+      if (!plan) this.contentIndexPromise = null;
     }
   }
 
@@ -281,6 +284,7 @@ export class ContentManager {
   }
 
   async getManifest(options?: ContentBuildOptions): Promise<ContentManifest> {
+    this.requestBuildStateCommit(options);
     if (this.manifest) return this.manifest;
     if (this.manifestPromise) return await this.manifestPromise;
 
@@ -298,43 +302,22 @@ export class ContentManager {
   ): Promise<ContentManifest> {
     if (this.manifest) return this.manifest;
 
-    // Plugin caches (and pipeline caches) must be usable whenever a manifest is
-    // built, not only for explicit incremental builds: the SSG pass builds its
-    // own ContentManager and relies on persisted plugin state (e.g. rename
-    // detection) without requesting an incremental build. The incremental
-    // coordinator still runs only when build options are supplied.
     this.enableBuildTime();
 
     const config = this.pipelineOptions.config;
-    const preparation =
-      options && !(config && hasGlobalContentDependency(config))
-        ? await this.buildCoordinator.getPreparation(
-            options.incremental,
-            this.getPipelineFingerprint(),
-            this.requiresFullContentRegeneration(),
-          )
-        : undefined;
+    const plan = await this.getBuildPlan(options);
     const locations = await this.getContentLocations();
     if (config) {
       this.pipelineFingerprint = this.computePipelineFingerprint(locations);
     }
 
-    const resolvedPreparation =
-      preparation ??
-      (options
-        ? await this.buildCoordinator.getPreparation(
-            options.incremental,
-            this.getPipelineFingerprint(),
-            this.requiresFullContentRegeneration(),
-          )
-        : undefined);
     return await this.observability().tracer.span(
       "content.manifest",
       {},
       async () => {
         const [posts, contentIndex] = await Promise.all([
           this.getAllPosts(),
-          this.getContentIndex(resolvedPreparation),
+          this.getContentIndex(plan),
         ]);
         const entries = await this.observability().tracer.span(
           "content.manifest.entries",
@@ -344,10 +327,7 @@ export class ContentManager {
               posts,
               CONTENT_PROCESSING_CONCURRENCY,
               async (post) => {
-                const reused = this.reuseManifestEntry(
-                  post.slug,
-                  resolvedPreparation,
-                );
+                const reused = this.reuseManifestEntry(post.slug, plan);
                 if (reused) return reused;
 
                 const [rawPost, processed] = await Promise.all([
@@ -414,22 +394,22 @@ export class ContentManager {
           {},
           () => this.pluginRuntime.getPageOutputs(manifest, contentIndex),
         );
-        this.outputChangeSet = resolvedPreparation
-          ? await this.observability().tracer.span(
-              "output.dependencies.resolve",
-              {},
-              () =>
-                determineOutputChanges({
-                  manifest,
-                  previousState: resolvedPreparation.previousState,
-                  changeSet: resolvedPreparation.changeSet,
-                  affectedContent: resolvedPreparation.affectedContent,
-                  pluginPageOutputs,
-                  contentOutputDependencies:
-                    this.pluginRuntime.getContentOutputDependencies(),
-                }),
-            )
-          : null;
+        this.outputChangeSet = await this.observability().tracer.span(
+          "output.dependencies.resolve",
+          {},
+          () =>
+            determineOutputChanges({
+              manifest,
+              previousState: plan.previousState,
+              changeSet: plan.changeSet,
+              affectedContent: plan.affectedContent,
+              pluginPageOutputs,
+              contentOutputDependencies:
+                this.pluginRuntime.getContentOutputDependencies(),
+              externalDependencies: plan.externalDependencies,
+              externalDependencyFailures: plan.externalDependencyFailures,
+            }),
+        );
         if (this.outputChangeSet) {
           this.observability().tracer.event("build.incremental.outputs", {
             candidateOutputCount: this.outputChangeSet.candidateOutputCount,
@@ -440,21 +420,9 @@ export class ContentManager {
               this.outputChangeSet.fullRegenerationRequired,
           });
         }
-        if (resolvedPreparation)
-          await this.buildCoordinator.commit(
-            resolvedPreparation,
-            manifest,
-            this.getPipelineFingerprint(),
-            this.outputChangeSet
-              ? [
-                  ...this.outputChangeSet.affected,
-                  ...this.outputChangeSet.unchanged,
-                ]
-              : [],
-            cacheManifestEntries,
-            this.trackedContentDependencies,
-          );
         this.manifest = manifest;
+        this.cacheManifestEntries = cacheManifestEntries;
+        await this.commitBuildState();
         return manifest;
       },
     );
@@ -475,22 +443,18 @@ export class ContentManager {
   async getOutputChangeSet(
     options: ContentBuildOptions = {},
   ): Promise<OutputChangeSet> {
-    if (this.outputChangeSet) return this.outputChangeSet;
+    this.requestBuildStateCommit(options);
+    if (this.outputChangeSet) {
+      await this.commitBuildState();
+      return this.outputChangeSet;
+    }
 
-    const preparation = await this.buildCoordinator.getPreparation(
-      options.incremental,
-      this.getPipelineFingerprint(),
-      this.requiresFullContentRegeneration(),
-    );
-    const reusableOutputs = getReusableOutputs(
-      preparation,
-      this.getPipelineFingerprint(),
-    );
-    if (reusableOutputs) {
+    const plan = await this.getBuildPlan(options);
+    if (plan.reusableOutputs) {
       this.outputChangeSet = await this.observability().tracer.span(
         "output.dependencies.reuse",
-        { outputCount: reusableOutputs.length },
-        async () => reuseOutputChangeSet(reusableOutputs),
+        { outputCount: plan.reusableOutputs.length },
+        async () => reusableOutputChangeSet(plan.reusableOutputs ?? []),
       );
       return this.outputChangeSet;
     }
@@ -528,6 +492,8 @@ export class ContentManager {
             pluginPageOutputs,
             contentOutputDependencies:
               this.pluginRuntime.getContentOutputDependencies(),
+            externalDependencies: plan.externalDependencies,
+            externalDependencyFailures: plan.externalDependencyFailures,
           }),
       );
     }
@@ -658,19 +624,18 @@ export class ContentManager {
 
   private reuseManifestEntry(
     slug: string,
-    preparation: ContentBuildPreparation | undefined,
+    plan: ContentBuildPlan,
   ): ContentManifestEntry | null {
-    if (!preparation?.previousState?.manifestEntries) return null;
+    if (!plan.previousState?.manifestEntries) return null;
     if (
-      preparation.previousState.pipelineFingerprint !==
-      this.getPipelineFingerprint()
+      plan.previousState.pipelineFingerprint !== this.getPipelineFingerprint()
     ) {
       return null;
     }
-    if (preparation.affectedContent.direct.has(slug)) return null;
-    if (preparation.affectedContent.dependent.has(slug)) return null;
+    if (plan.affectedContent.direct.has(slug)) return null;
+    if (plan.affectedContent.dependent.has(slug)) return null;
 
-    const entry = preparation.previousManifestEntriesBySlug.get(slug);
+    const entry = plan.previousManifestEntriesBySlug.get(slug);
     if (!entry) return null;
     this.reusedContentCount += 1;
     this.observability().tracer.event("content.reuse", { slug });
@@ -681,6 +646,64 @@ export class ContentManager {
     if (!this.pipelineOptions.config) return undefined;
     this.pipelineFingerprint ??= this.computePipelineFingerprint();
     return this.pipelineFingerprint;
+  }
+
+  private requestBuildStateCommit(options?: ContentBuildOptions): void {
+    if (options?.incremental === true) this.buildStateCommitRequested = true;
+  }
+
+  private async commitBuildState(): Promise<void> {
+    if (
+      this.buildStateCommitted ||
+      !this.buildStateCommitRequested ||
+      !this.manifest ||
+      !this.outputChangeSet
+    ) {
+      return;
+    }
+    const plan = await this.getBuildPlan();
+    if (!plan.incremental) return;
+    await this.buildCoordinator.commit(
+      plan,
+      this.manifest,
+      this.getPipelineFingerprint(),
+      [...this.outputChangeSet.affected, ...this.outputChangeSet.unchanged],
+      this.cacheManifestEntries,
+      this.trackedContentDependencies,
+      plan.externalDependencies,
+    );
+    this.buildStateCommitted = true;
+  }
+
+  private getBuildPlan(
+    options?: ContentBuildOptions,
+  ): Promise<ContentBuildPlan> {
+    this.buildPlan ??= this.createBuildPlan(options);
+    return this.buildPlan;
+  }
+
+  private async createBuildPlan(
+    options?: ContentBuildOptions,
+  ): Promise<ContentBuildPlan> {
+    const config = this.pipelineOptions.config;
+    if (config && hasGlobalContentDependency(config)) {
+      this.pipelineFingerprint = this.computePipelineFingerprint(
+        await this.getContentLocations(),
+      );
+    }
+    const contentIndex = await this.getContentIndex();
+    const external = await this.observability().tracer.span(
+      "external.dependencies.resolve",
+      {},
+      () => this.pluginRuntime.resolveExternalDependencies(contentIndex),
+    );
+    return this.buildCoordinator.getPlan(
+      options?.incremental !== false,
+      this.getPipelineFingerprint(),
+      this.requiresFullContentRegeneration(),
+      external.snapshots,
+      external.failures,
+    );
   }
 
   private computePipelineFingerprint(
@@ -796,43 +819,6 @@ function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
     assets: entry.assets.map((asset) => ({ ...asset })),
     ...(entry.headTags ? { headTags: [...entry.headTags] } : {}),
     ...(entry.bodySlots ? { bodySlots: { ...entry.bodySlots } } : {}),
-  };
-}
-
-function getReusableOutputs(
-  preparation: ContentBuildPreparation,
-  pipelineFingerprint: string | undefined,
-): readonly import("./output_dependency.js").OutputDescriptor[] | null {
-  const outputs = preparation.previousState?.outputs;
-  if (
-    preparation.previousState?.pipelineFingerprint !== pipelineFingerprint ||
-    !outputs ||
-    preparation.changeSet.added.length !== 0 ||
-    preparation.changeSet.changed.length !== 0 ||
-    preparation.changeSet.removed.length !== 0
-  ) {
-    return null;
-  }
-  return outputs;
-}
-
-function reuseOutputChangeSet(
-  outputs: readonly import("./output_dependency.js").OutputDescriptor[],
-): OutputChangeSet {
-  const unchanged = [...outputs].sort((left, right) =>
-    left.path.localeCompare(right.path),
-  );
-  return {
-    affected: [],
-    removed: [],
-    unchanged,
-    fullRegenerationRequired: unchanged.some((output) =>
-      output.dependencies.some((dependency) => dependency.type === "unknown"),
-    ),
-    candidateOutputCount: unchanged.length,
-    affectedOutputCount: 0,
-    removedOutputCount: 0,
-    unchangedOutputCount: unchanged.length,
   };
 }
 

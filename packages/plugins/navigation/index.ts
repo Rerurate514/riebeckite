@@ -25,7 +25,9 @@ export function navigation(options: NavigationOptions = {}) {
     options,
     assets: [createStyleAsset("navigation")],
     validateOptions: validateNavigationOptions,
-    outputDependencies: [{ type: "global" }],
+    contentOutputDependencies: [
+      { type: "projection", projection: "navigation" },
+    ],
   });
 }
 

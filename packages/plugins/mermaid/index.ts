@@ -27,8 +27,8 @@ export function mermaid(options: MermaidOptions = {}) {
     name: "mermaid",
     order: -10,
     processedContentCache: {
-      version: "mermaid-v1",
-      dependencyMode: "none",
+      version: "mermaid-v2",
+      dependencyMode: "unsafe",
     },
     options,
     validateOptions: validateMermaidOptions,

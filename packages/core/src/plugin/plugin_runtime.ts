@@ -11,6 +11,10 @@ import type {
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
 import type {
+  ExternalDependencyFailure,
+  ExternalDependencySnapshot,
+} from "../types/external_dependency.js";
+import type {
   GeneratedOutput,
   GeneratedOutputContent,
   GeneratedOutputSink,
@@ -78,6 +82,9 @@ export class PluginRuntime {
     ContentManifest,
     Promise<readonly DeclaredPluginPage[]>
   >();
+  private externalDependencies = new Map<string, ExternalDependencySnapshot>();
+  private externalDependencyFailures: ExternalDependencyFailure[] = [];
+  private externalDependenciesResolved = false;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
 
@@ -111,6 +118,49 @@ export class PluginRuntime {
       slug,
       markdown,
     });
+  }
+
+  async resolveExternalDependencies(
+    contentIndex: Map<string, string>,
+  ): Promise<{
+    readonly snapshots: readonly ExternalDependencySnapshot[];
+    readonly failures: readonly ExternalDependencyFailure[];
+  }> {
+    if (this.externalDependenciesResolved) {
+      return {
+        snapshots: [...this.externalDependencies.values()],
+        failures: this.externalDependencyFailures,
+      };
+    }
+    await this.startBuild(contentIndex);
+    const snapshots = new Map<string, ExternalDependencySnapshot>();
+    const failures: ExternalDependencyFailure[] = [];
+    for (const plugin of this.plugins()) {
+      const resolve = plugin.resolveExternalDependencies;
+      if (!resolve) continue;
+      const results = await resolve({
+        config: this.pipelineOptions.config,
+        contentIndex,
+        cache: this.cacheFor(plugin),
+      });
+      for (const result of results) {
+        if (result.kind === "unavailable") {
+          failures.push(result.failure);
+          continue;
+        }
+        const snapshot = result.snapshot;
+        if (snapshots.has(snapshot.id)) {
+          throw new Error(
+            `External dependency ID "${snapshot.id}" is declared more than once.`,
+          );
+        }
+        snapshots.set(snapshot.id, snapshot);
+      }
+    }
+    this.externalDependencies = snapshots;
+    this.externalDependencyFailures = failures;
+    this.externalDependenciesResolved = true;
+    return { snapshots: [...snapshots.values()], failures };
   }
 
   async resolveContentLocations(
@@ -406,7 +456,9 @@ export class PluginRuntime {
   }
 
   getContentOutputDependencies(): readonly OutputDependency[] {
-    return this.plugins().flatMap((plugin) => plugin.outputDependencies ?? []);
+    return this.plugins().flatMap(
+      (plugin) => plugin.contentOutputDependencies ?? [],
+    );
   }
 
   async collectDiagnostics(
@@ -485,6 +537,7 @@ export class PluginRuntime {
       contentIndex,
       contentSource: this.pipelineOptions.contentSource,
       diagnostics: this.diagnostics,
+      externalDependencies: this.externalDependencies,
     };
   }
 

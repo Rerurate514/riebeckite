@@ -139,6 +139,39 @@ test("no-change rebuild reuses every manifest entry without processing content",
   assert.equal(second.reused, 2);
 });
 
+test("incremental build diagnostics report cache validity and fallback reasons", async () => {
+  const directory = await tempDirectory("incremental-build-diagnostics");
+  const events: { name: string; attributes?: Record<string, unknown> }[] = [];
+  const config = testConfig(directory);
+  const manager = new ContentManager(
+    memoryContentSource({ "a.md": "# A" }),
+    [],
+    {
+      config,
+      plugins: config.plugins,
+      observability: {
+        logger: new NoopLogger(),
+        tracer: new SinkTracer({
+          onEvent: (event) => events.push(event),
+          onSpan() {},
+        }),
+      },
+    },
+  );
+
+  await manager.build({ incremental: true });
+  await manager.dispose();
+
+  const event = events.find(
+    (candidate) => candidate.name === "build.incremental",
+  );
+  assert.equal(event?.attributes?.cacheValid, false);
+  assert.equal(
+    event?.attributes?.fullRegenerationReasons,
+    "cache-missing-or-invalid",
+  );
+});
+
 test("no-change output resolution reuses the persisted output inventory", async () => {
   const directory = await tempDirectory("incremental-output-no-change");
   const files = {
@@ -167,6 +200,43 @@ test("no-change output resolution reuses the persisted output inventory", async 
   assert.equal(changes.unchanged.length, 2);
   assert.ok(spans.some((span) => span.name === "output.dependencies.reuse"));
   assert.ok(!spans.some((span) => span.name === "content.manifest"));
+});
+
+test("a manifest requested after output resolution reuses the same build plan", async () => {
+  const directory = await tempDirectory("incremental-output-then-manifest");
+  const files = {
+    "a.md": "---\ntitle: A\nvisibility: public\n---\n\n# A",
+    "b.md": "---\ntitle: B\nvisibility: public\n---\n\n# B",
+  };
+  await build(files, directory);
+
+  const events: { name: string }[] = [];
+  const spans: { name: string }[] = [];
+  const config = testConfig(directory);
+  const manager = new ContentManager(memoryContentSource(files), [], {
+    config,
+    plugins: config.plugins,
+    observability: {
+      logger: new NoopLogger(),
+      tracer: new SinkTracer({
+        onEvent: (event) => events.push(event),
+        onSpan: (span) => spans.push(span),
+      }),
+    },
+  });
+
+  await manager.getOutputChangeSet({ incremental: true });
+  await manager.getManifest();
+  await manager.dispose();
+
+  assert.equal(
+    spans.filter((span) => span.name === "content.process").length,
+    0,
+  );
+  assert.equal(
+    events.filter((event) => event.name === "content.reuse").length,
+    2,
+  );
 });
 
 test("a global content dependency invalidates all processed entries when locations change", async () => {

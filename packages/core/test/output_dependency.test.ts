@@ -100,6 +100,127 @@ test("manifest plugin unknown dependencies require safe full regeneration", () =
   assert.equal(result.fullRegenerationRequired, true);
 });
 
+test("changed external fingerprints affect only dependent outputs", () => {
+  const current = manifest([entry("a"), entry("b")], {
+    generatedOutputs: [
+      {
+        path: "history.json",
+        content: "",
+        owner: "changelog",
+        dependencies: [{ type: "external", id: "git-history" }],
+      },
+    ],
+  });
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {},
+      contentIndex: {},
+      outputs: [
+        {
+          kind: "content",
+          path: "a.html",
+          producer: "content:a",
+          dependencies: [{ type: "content", slug: "a" }],
+        },
+        {
+          kind: "content",
+          path: "b.html",
+          producer: "content:b",
+          dependencies: [{ type: "content", slug: "b" }],
+        },
+        {
+          kind: "generated",
+          path: "history.json",
+          producer: "plugin:changelog",
+          dependencies: [{ type: "external", id: "git-history" }],
+        },
+      ],
+      externalDependencies: [
+        {
+          id: "git-history",
+          fingerprint: "before",
+          scope: { type: "output", paths: ["history.json"] },
+        },
+      ],
+    },
+    changeSet: {
+      added: [],
+      changed: [],
+      removed: [],
+      unchanged: ["a.md", "b.md"],
+    },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    externalDependencies: [
+      {
+        id: "git-history",
+        fingerprint: "after",
+        scope: { type: "output", paths: ["history.json"] },
+        value: null,
+      },
+    ],
+  });
+
+  assert.deepEqual(paths(result.affected), ["history.json"]);
+  assert.equal(result.fullRegenerationRequired, false);
+});
+
+test("unavailable external dependencies require safe full regeneration", () => {
+  const current = manifest([entry("a")]);
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: undefined,
+    changeSet: { added: [], changed: [], removed: [], unchanged: ["a.md"] },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    externalDependencyFailures: [{ id: "provider", reason: "timeout" }],
+  });
+  assert.equal(result.fullRegenerationRequired, true);
+});
+
+test("expired external snapshots affect their declared outputs", () => {
+  const result = determineOutputChanges({
+    manifest: manifest([entry("a")]),
+    previousState: {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {},
+      contentIndex: {},
+      outputs: [
+        {
+          kind: "content",
+          path: "a.html",
+          producer: "content:a",
+          dependencies: [
+            { type: "content", slug: "a" },
+            { type: "external", id: "provider" },
+          ],
+        },
+      ],
+      externalDependencies: [
+        {
+          id: "provider",
+          fingerprint: "same",
+          scope: { type: "output", paths: ["a.html"] },
+          expiresAt: "2000-01-01T00:00:00.000Z",
+        },
+      ],
+    },
+    changeSet: { added: [], changed: [], removed: [], unchanged: ["a.md"] },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    externalDependencies: [
+      {
+        id: "provider",
+        fingerprint: "same",
+        scope: { type: "output", paths: ["a.html"] },
+        expiresAt: "2000-01-01T00:00:00.000Z",
+        value: null,
+      },
+    ],
+  });
+
+  assert.deepEqual(paths(result.affected), ["a.html"]);
+});
+
 test("wikilink changes affect old and new backlink target pages", () => {
   const previous = manifest([
     entry("source", { links: ["old"] }),
@@ -182,21 +303,37 @@ test("add affects new page and collection or global outputs", () => {
   ]);
 });
 
-test("plugin pages inherit dependencies from plugins that affect content output", () => {
+test("content output dependencies do not leak into plugin-owned pages", () => {
   const previous = manifest([entry("a")]);
   const current = manifest([entry("a"), entry("folder/b")]);
   const result = changes(
     previous,
     current,
     { added: ["folder/b.md"] },
-    [pluginPage("folder", [{ type: "folder", folder: "folder" }])],
+    [pluginPage("tag", [{ type: "tag", tag: "unchanged" }])],
     [{ type: "global" }],
   );
 
+  assert.deepEqual(paths(result.affected), ["a.html", "folder/b.html"]);
+});
+
+test("tag projection affects the taxonomy tag index", () => {
+  const previous = manifest([entry("a", { tags: ["one"] }), entry("b")]);
+  const current = manifest([
+    entry("a", { tags: ["one"] }),
+    entry("b", { tags: ["two"] }),
+  ]);
+  const result = changes(previous, current, { changed: ["b.md"] }, [
+    pluginPage("tags", [{ type: "projection", projection: "taxonomy-tags" }]),
+    pluginPage("folders", [
+      { type: "projection", projection: "taxonomy-folders" },
+    ]),
+  ]);
+
   assert.deepEqual(paths(result.affected), [
-    "a.html",
-    "folder.html",
-    "folder/b.html",
+    "b.html",
+    "folders.html",
+    "tags.html",
   ]);
 });
 

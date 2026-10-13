@@ -210,6 +210,7 @@ test(
       assert.equal(output.owner, "diff");
       assert.deepEqual(output.dependencies, [
         { type: "content", slug: "hello" },
+        { type: "external", id: "diff:git-history" },
       ]);
       const payload = JSON.parse(String(output.content)) as {
         revisions: MarkdownRevision[];

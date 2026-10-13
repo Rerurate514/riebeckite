@@ -300,7 +300,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                   "\\",
                   "/",
                 );
-                metrics.enumeratedRouteCount += 1;
                 if (siteOwnedOutputPaths.has(fileName)) {
                   shadowedOutputs.add(fileName);
                   return;
@@ -310,6 +309,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 }
                 if (fileName.endsWith(".html") && typeof data === "string") {
                   metrics.renderedOutputCount += 1;
+                  metrics.renderedRouteCount += 1;
                   metrics.htmlOutputCount += 1;
                   generatedHtml.push({ path: fileName, html: data });
                 } else {
@@ -336,7 +336,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         );
         delete process.env.RIEBECKITE_SSG_FULL_REGENERATION;
         delete process.env.RIEBECKITE_SSG_SKIP_UNCHANGED;
-        metrics.renderedRouteCount = result.files.length;
+        metrics.enumeratedRouteCount = result.files.length;
         if (!result.success) throw result.error;
         metrics.processedContentCount =
           module.content?.getProcessedContentCount() ?? 0;

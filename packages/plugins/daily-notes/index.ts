@@ -42,7 +42,7 @@ export function dailyNotesPlugin(
     name: DAILY_NOTES_PLUGIN_NAME,
     options,
     cacheVersion: "1",
-    outputDependencies: resolveOutputDependencies(options),
+    contentOutputDependencies: resolveOutputDependencies(options),
     assets: [createStyleAsset("daily-notes")],
   });
 }

@@ -105,7 +105,7 @@ export function l10n(options: L10nOptions) {
       dependencyMode: "global",
     },
     provides: ["content.localization"],
-    outputDependencies: [{ type: "global" }],
+    contentOutputDependencies: [{ type: "global" }],
     options,
     assets: [createStyleAsset("l10n")],
     validateOptions: () =>

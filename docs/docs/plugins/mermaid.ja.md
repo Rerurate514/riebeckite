@@ -3,7 +3,7 @@ title: Mermaid
 ---
 # Mermaid
 
-`mermaid` コードブロックを SVG の図として表示するプラグインです。既定ではビルド時に描画し、描画できなかった図だけをブラウザ側で再試行します。
+`mermaid` コードブロックを SVG の図として表示するプラグインです。既定ではビルド時に描画します。
 
 [English](./mermaid.md)
 
@@ -32,7 +32,7 @@ export default defineConfig({
 
 `render: "build"` では、Puppeteer が起動するヘッドレス Chromium 上で Mermaid を実行し、静的な SVG を生成します。簡易な DOM 実装や寸法の推測には頼らないため、ブラウザと同じレイアウトエンジンで図を作れます。Mermaid は `securityLevel: "strict"` で実行されます。
 
-構文エラーは `invalid-diagram`、描画環境の問題は `renderer-error` として区別して診断します。ビルドで SVG を作れなかった図には `data-mermaid="pending"` が付き、クライアント側が描画を引き継ぎます。
+構文エラーは `invalid-diagram`、描画環境の問題は `renderer-error` として区別して診断します。ビルド時の描画に失敗した場合、既定ではビルドを失敗させます。失敗した図を成功したコンテンツとして保存しません。SVG ID は図の ID をシードにして決定的に生成します。
 
 ## クライアント側の再試行
 
@@ -45,11 +45,12 @@ export default defineConfig({
 | 項目 | 既定値 | 説明 |
 | --- | --- | --- |
 | `render` | `"build"` | `"build"` または `"client"` のいずれで描画するか |
+| `onRenderError` | `"error"` | ビルド時の描画失敗時に `"error"` または `"client"` のどちらにするか |
 | `theme` | `{ light: "default", dark: "dark" }` | Mermaid のテーマ名、または明暗別のテーマ |
 | `caption` | `true` | タイトルまたは `%% caption:` をキャプションとして表示する |
 | `fallback` | `true` | 元の Mermaid 記法を `<details>` に残す |
 
-`"client"` はビルド時の描画を行いません。
+`"client"` はビルド時の描画を行いません。`render: "build"` で `onRenderError: "client"` を指定するときだけ、ビルド時の描画失敗をクライアント側へ明示的に委譲します。この設定では生成HTMLが描画環境の可用性に依存します。
 
 ## 主なエクスポート
 

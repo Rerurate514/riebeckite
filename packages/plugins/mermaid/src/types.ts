@@ -1,5 +1,7 @@
 export type MermaidRenderMode = "build" | "client";
 
+export type MermaidRenderFailureMode = "error" | "client";
+
 export type MermaidTheme =
   | string
   | {
@@ -9,6 +11,7 @@ export type MermaidTheme =
 
 export type MermaidOptions = {
   render?: MermaidRenderMode;
+  onRenderError?: MermaidRenderFailureMode;
   theme?: MermaidTheme;
   caption?: boolean;
   fallback?: boolean;

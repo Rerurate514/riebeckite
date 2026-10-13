@@ -11,7 +11,7 @@ Mermaid diagram rendering for ` ```mermaid ` code blocks.
 
 `mermaid()` replaces mermaid code blocks with a `<figure class="rr-mermaid">`
 that renders to SVG. Diagrams are rendered at build time with a headless browser by
-default, with an automatic client-side fallback. It runs with `order: -10`.
+default. It runs with `order: -10`.
 
 ## Usage
 
@@ -45,10 +45,11 @@ export default defineConfig({
   Rendering uses Chromium's layout engine, not JSDOM polyfills or custom
   `getBBox` / text-width estimation
 - Mermaid runs with `securityLevel: "strict"`, the selected theme, transparent
-  background, and a unique SVG id per diagram
+  background, deterministic IDs seeded by the diagram ID, and a unique SVG id per
+  diagram
 - Invalid diagrams report `ruleId: "invalid-diagram"`; Chromium renderer
-  failures report `ruleId: "renderer-error"`. When build SVG is unavailable,
-  the figure remains `data-mermaid="pending"` for client fallback
+  failures report `ruleId: "renderer-error"`. Build rendering failures stop the
+  build by default, so a failed render cannot be stored as successful content
 
 ### Client (`initMermaidDiagrams`)
 
@@ -64,15 +65,20 @@ export default defineConfig({
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `render` | `"build" \| "client"` | `"build"` | When diagrams are rendered |
+| `onRenderError` | `"error" \| "client"` | `"error"` | Behavior when build rendering fails |
 | `theme` | `string \| { light: string; dark: string }` | `{ light: "default", dark: "dark" }` | Mermaid theme |
 | `caption` | `boolean` | `true` | Show title / `%% caption:` as `figcaption` |
 | `fallback` | `boolean` | `true` | Show the diagram source in `<details>` |
 
 `render` modes:
 
-- `"build"` — render SVG at build time; diagrams that fail fall back to client
-  rendering
+- `"build"` — render SVG at build time; failures stop the build unless
+  `onRenderError` is `"client"`
 - `"client"` — skip build-time rendering, render in the browser only
+
+Set `onRenderError: "client"` only when client-side retry is an intentional
+availability trade-off. This makes the generated HTML depend on the renderer's
+availability.
 
 ## Exports
 

@@ -33,10 +33,12 @@ import {
 } from "./content_index_builder.js";
 import { ContentLocationResolver } from "./content_location_resolver.js";
 import {
+  computeContentCacheFingerprint,
   computeContentScopeFingerprint,
   computePipelineFingerprint,
   hasGlobalContentDependency,
   isPersistentlyCacheable,
+  requiresFullContentRegeneration as requiresFullContentRegenerationForConfig,
 } from "./content_persistent_cache.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
@@ -101,6 +103,10 @@ export class ContentManager {
   private trackedContentDependencies = new Map<
     string,
     readonly CachedContentDependency[]
+  >();
+  private processedContentCacheFingerprints = new Map<
+    string,
+    string | undefined
   >();
 
   constructor(
@@ -230,6 +236,7 @@ export class ContentManager {
       this.getContentIndex(),
       this.getPost(slug),
     ]);
+    this.getProcessedContentCacheFingerprint(slug, rawPost);
 
     await this.pluginRuntime.startBuild(contentIndex);
     await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
@@ -327,13 +334,15 @@ export class ContentManager {
               posts,
               CONTENT_PROCESSING_CONCURRENCY,
               async (post) => {
-                const reused = this.reuseManifestEntry(post.slug, plan);
+                const rawPost = await this.getPost(post.slug);
+                const reused = this.reuseManifestEntry(
+                  post.slug,
+                  rawPost,
+                  plan,
+                );
                 if (reused) return reused;
 
-                const [rawPost, processed] = await Promise.all([
-                  this.getPost(post.slug),
-                  this.getProcessedContent(post.slug),
-                ]);
+                const processed = await this.getProcessedContent(post.slug);
                 const location = locations.get(post.slug);
                 if (!location) {
                   throw new Error(
@@ -624,6 +633,7 @@ export class ContentManager {
 
   private reuseManifestEntry(
     slug: string,
+    source: string,
     plan: ContentBuildPlan,
   ): ContentManifestEntry | null {
     if (!plan.previousState?.manifestEntries) return null;
@@ -634,10 +644,22 @@ export class ContentManager {
     }
     if (plan.affectedContent.direct.has(slug)) return null;
     if (plan.affectedContent.dependent.has(slug)) return null;
+    const contentCacheFingerprint = this.getProcessedContentCacheFingerprint(
+      slug,
+      source,
+    );
+    if (!contentCacheFingerprint) return null;
+    if (
+      plan.previousState.entries[`${slug}.md`]
+        ?.processedContentCacheFingerprint !== contentCacheFingerprint
+    ) {
+      return null;
+    }
 
     const entry = plan.previousManifestEntriesBySlug.get(slug);
     if (!entry) return null;
     this.reusedContentCount += 1;
+    this.processedContentCacheFingerprints.set(slug, contentCacheFingerprint);
     this.observability().tracer.event("content.reuse", { slug });
     return cloneManifestEntry(entry);
   }
@@ -671,6 +693,7 @@ export class ContentManager {
       this.cacheManifestEntries,
       this.trackedContentDependencies,
       plan.externalDependencies,
+      this.processedContentCacheFingerprints,
     );
     this.buildStateCommitted = true;
   }
@@ -678,8 +701,14 @@ export class ContentManager {
   private getBuildPlan(
     options?: ContentBuildOptions,
   ): Promise<ContentBuildPlan> {
-    this.buildPlan ??= this.createBuildPlan(options);
-    return this.buildPlan;
+    if (this.buildPlan) return this.buildPlan;
+
+    const plan = this.createBuildPlan(options);
+    this.buildPlan = plan;
+    void plan.catch(() => {
+      if (this.buildPlan === plan) this.buildPlan = null;
+    });
+    return plan;
   }
 
   private async createBuildPlan(
@@ -720,7 +749,21 @@ export class ContentManager {
 
   private requiresFullContentRegeneration(): boolean {
     const config = this.pipelineOptions.config;
-    return config ? !isPersistentlyCacheable("", config).cacheable : false;
+    return config ? requiresFullContentRegenerationForConfig(config) : false;
+  }
+
+  private getProcessedContentCacheFingerprint(
+    slug: string,
+    source: string,
+  ): string | undefined {
+    const config = this.pipelineOptions.config;
+    if (!config || !isPersistentlyCacheable(slug, config, source).cacheable) {
+      this.processedContentCacheFingerprints.set(slug, undefined);
+      return undefined;
+    }
+    const fingerprint = computeContentCacheFingerprint(slug, source, config);
+    this.processedContentCacheFingerprints.set(slug, fingerprint);
+    return fingerprint;
   }
 
   private isRoutable(slug: string): boolean {

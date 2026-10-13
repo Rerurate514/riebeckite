@@ -44,7 +44,7 @@ const monthlyFiles = {
 test("archive() is re-exported as archivePlugin and declares no assets", () => {
   assert.equal(archivePlugin, archive);
   assert.equal(archive().assets, undefined);
-  assert.deepEqual(archive().outputDependencies, undefined);
+  assert.deepEqual(archive().contentOutputDependencies, undefined);
 });
 
 test("resolveArchiveOptions applies defaults and overrides", () => {

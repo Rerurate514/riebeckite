@@ -81,6 +81,18 @@ test("file-system content source keeps vault content directories and user exclud
   ]);
 });
 
+test("file-system content source returns entries in path order", async () => {
+  const root = await makeTempContentDirectory();
+  await writeFile(root, "zeta.md", "# Zeta");
+  await writeFile(root, "alpha.md", "# Alpha");
+  await writeFile(root, "notes/beta.md", "# Beta");
+
+  assert.deepEqual(
+    (await new FileSystemContentSource(root).scan()).map((entry) => entry.path),
+    ["alpha.md", "notes/beta.md", "zeta.md"],
+  );
+});
+
 test("matchContentExcludePattern reports the matching pattern", () => {
   assert.equal(
     matchContentExcludePattern("drafts/secret.md", ["drafts/**"]),

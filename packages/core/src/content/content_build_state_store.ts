@@ -179,7 +179,13 @@ function isOutputDependency(value: unknown): value is OutputDependency {
     (value.type === "content" && typeof value.slug === "string") ||
     (value.type === "tag" && typeof value.tag === "string") ||
     (value.type === "folder" && typeof value.folder === "string") ||
-    (value.type === "file" && typeof value.path === "string")
+    (value.type === "file" && typeof value.path === "string") ||
+    (value.type === "external" && typeof value.key === "string") ||
+    (value.type === "projection" &&
+      (value.projection === "navigation" ||
+        value.projection === "recent-posts" ||
+        value.projection === "taxonomy-tags" ||
+        value.projection === "taxonomy-folders"))
   );
 }
 

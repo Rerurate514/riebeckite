@@ -92,7 +92,10 @@ export function determineOutputChanges(input: {
     (output) => !currentPaths.has(output.path),
   );
   const fullRegenerationRequired = current.some((output) =>
-    output.dependencies.some((dependency) => dependency.type === "unknown"),
+    output.dependencies.some(
+      (dependency) =>
+        dependency.type === "unknown" || dependency.type === "external",
+    ),
   );
   const affectedValues = [...affected.values()].sort(compareOutput);
   const unchangedValues = unchanged
@@ -132,7 +135,6 @@ export function buildOutputInventory(
     addOutput(outputs, {
       ...output,
       path: htmlOutputPath(output.path),
-      dependencies: [...output.dependencies, ...contentOutputDependencies],
     });
   }
   for (const output of manifest.generatedOutputs) {
@@ -175,7 +177,27 @@ function isOutputAffected(
 ): boolean {
   for (const dependency of output.dependencies) {
     if (dependency.type === "unknown") return true;
+    if (dependency.type === "external") return true;
     if (dependency.type === "global") return changedContent.size > 0;
+    if (
+      dependency.type === "projection" &&
+      (dependency.projection === "navigation" ||
+        dependency.projection === "recent-posts")
+    ) {
+      return changedContent.size > 0;
+    }
+    if (
+      dependency.type === "projection" &&
+      dependency.projection === "taxonomy-tags"
+    ) {
+      return changedTags.size > 0;
+    }
+    if (
+      dependency.type === "projection" &&
+      dependency.projection === "taxonomy-folders"
+    ) {
+      return changedFolders.size > 0;
+    }
     if (dependency.type === "content" && changedContent.has(dependency.slug)) {
       return true;
     }

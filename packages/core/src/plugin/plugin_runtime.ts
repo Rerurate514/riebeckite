@@ -406,7 +406,9 @@ export class PluginRuntime {
   }
 
   getContentOutputDependencies(): readonly OutputDependency[] {
-    return this.plugins().flatMap((plugin) => plugin.outputDependencies ?? []);
+    return this.plugins().flatMap(
+      (plugin) => plugin.contentOutputDependencies ?? [],
+    );
   }
 
   async collectDiagnostics(

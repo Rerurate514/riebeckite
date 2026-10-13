@@ -98,7 +98,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   seo?: PluginSeoExtension;
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];
-  outputDependencies?: readonly OutputDependency[];
+  contentOutputDependencies?: readonly OutputDependency[];
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
 };

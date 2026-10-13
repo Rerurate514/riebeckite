@@ -79,9 +79,11 @@ export class FileSystemContentSource implements ContentSource {
     exclusions: ContentSourceExclusion[],
     templaterTemplateFolder: string | undefined,
   ): Promise<ContentSourceEntry[]> {
-    const directoryEntries = await fs.readdir(directory, {
-      withFileTypes: true,
-    });
+    const directoryEntries = (
+      await fs.readdir(directory, {
+        withFileTypes: true,
+      })
+    ).toSorted((left, right) => left.name.localeCompare(right.name, "en"));
     const entries: ContentSourceEntry[] = [];
 
     for (const directoryEntry of directoryEntries) {

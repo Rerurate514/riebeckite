@@ -143,7 +143,9 @@ export function webmention(options: WebmentionOptions = {}) {
       version: "webmention-v1",
       dependencyMode: "none",
     },
-    outputDependencies: [{ type: "unknown" }],
+    contentOutputDependencies: [
+      { type: "external", key: "webmention-provider" },
+    ],
     options,
     validateOptions: validateWebmentionOptions,
     onManifestCreated: async (context) => {

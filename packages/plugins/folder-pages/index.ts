@@ -66,10 +66,17 @@ export function folderPages(options: FolderPagesOptions = {}) {
         id: "folder-page",
         directoryIndex: true,
         paths: ({ manifest }) => modelFor(manifest).paths,
-        outputDependencies: ({ manifest, pathname }) =>
-          modelFor(manifest).byPath.get(pathname)?.dependencies ?? [
-            { type: "unknown" },
-          ],
+        outputDependencies: ({ manifest, pathname }) => {
+          const dependencies =
+            modelFor(manifest).byPath.get(pathname)?.dependencies;
+          return dependencies
+            ? [
+                ...dependencies,
+                { type: "projection" as const, projection: "navigation" },
+                { type: "projection" as const, projection: "recent-posts" },
+              ]
+            : [{ type: "unknown" }];
+        },
         resolve: ({ manifest, pathname }) => {
           const page = modelFor(manifest).byPath.get(pathname);
           if (!page) return null;

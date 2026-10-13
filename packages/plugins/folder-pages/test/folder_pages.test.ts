@@ -219,9 +219,13 @@ test("declares folder dependencies for generated page outputs", async () => {
   assert.deepEqual(pages[0].dependencies, [
     { type: "folder", folder: "folder" },
     { type: "folder", folder: "folder/sub" },
+    { type: "projection", projection: "navigation" },
+    { type: "projection", projection: "recent-posts" },
   ]);
   assert.deepEqual(pages[1].dependencies, [
     { type: "folder", folder: "folder/sub" },
+    { type: "projection", projection: "navigation" },
+    { type: "projection", projection: "recent-posts" },
   ]);
 });
 

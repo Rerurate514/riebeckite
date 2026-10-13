@@ -100,6 +100,23 @@ test("manifest plugin unknown dependencies require safe full regeneration", () =
   assert.equal(result.fullRegenerationRequired, true);
 });
 
+test("external dependencies require safe full regeneration", () => {
+  const current = manifest([entry("a"), entry("b")], {
+    generatedOutputs: [
+      {
+        path: "history.json",
+        content: "",
+        owner: "changelog",
+        dependencies: [{ type: "external", key: "git-history" }],
+      },
+    ],
+  });
+  const result = changes(current, current, { changed: ["a.md"] });
+
+  assert.deepEqual(paths(result.affected), ["a.html", "history.json"]);
+  assert.equal(result.fullRegenerationRequired, true);
+});
+
 test("wikilink changes affect old and new backlink target pages", () => {
   const previous = manifest([
     entry("source", { links: ["old"] }),
@@ -182,21 +199,37 @@ test("add affects new page and collection or global outputs", () => {
   ]);
 });
 
-test("plugin pages inherit dependencies from plugins that affect content output", () => {
+test("content output dependencies do not leak into plugin-owned pages", () => {
   const previous = manifest([entry("a")]);
   const current = manifest([entry("a"), entry("folder/b")]);
   const result = changes(
     previous,
     current,
     { added: ["folder/b.md"] },
-    [pluginPage("folder", [{ type: "folder", folder: "folder" }])],
+    [pluginPage("tag", [{ type: "tag", tag: "unchanged" }])],
     [{ type: "global" }],
   );
 
+  assert.deepEqual(paths(result.affected), ["a.html", "folder/b.html"]);
+});
+
+test("tag projection affects the taxonomy tag index", () => {
+  const previous = manifest([entry("a", { tags: ["one"] }), entry("b")]);
+  const current = manifest([
+    entry("a", { tags: ["one"] }),
+    entry("b", { tags: ["two"] }),
+  ]);
+  const result = changes(previous, current, { changed: ["b.md"] }, [
+    pluginPage("tags", [{ type: "projection", projection: "taxonomy-tags" }]),
+    pluginPage("folders", [
+      { type: "projection", projection: "taxonomy-folders" },
+    ]),
+  ]);
+
   assert.deepEqual(paths(result.affected), [
-    "a.html",
-    "folder.html",
-    "folder/b.html",
+    "b.html",
+    "folders.html",
+    "tags.html",
   ]);
 });
 

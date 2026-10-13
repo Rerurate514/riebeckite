@@ -178,7 +178,7 @@ test("backlinksPlugin registers its stylesheet and manifest hook", () => {
 
   assert.equal(plugin.name, "backlinks");
   assert.equal(typeof plugin.onManifestCreated, "function");
-  assert.deepEqual(plugin.outputDependencies, [{ type: "global" }]);
+  assert.equal(plugin.contentOutputDependencies, undefined);
   assert.deepEqual(plugin.assets, [
     {
       pluginName: "backlinks",

@@ -63,10 +63,22 @@ export type RiebeckitePlugin<TOptions = unknown> = {
    *   framework-owned APIs that record dependency fingerprints.
    * - `global`: processed HTML depends on the resolved content-location set.
    * - `unsafe`: persistent processed-content cache must bypass this plugin.
+   *
+   * `appliesToContent` may narrow an unsafe contract to raw Markdown sources
+   * it can affect. It must return `unknown` when it cannot prove the result;
+   * unknown falls back to bypassing the cache. Content and environment
+   * fingerprints must be stable whenever they are supplied.
    */
   processedContentCache?: {
     version: string;
     dependencyMode: "none" | "tracked" | "global" | "unsafe";
+    appliesToContent?: (
+      context: ProcessedContentCacheContext,
+    ) => ProcessedContentCacheApplicability;
+    contentDependencyFingerprint?: (
+      context: ProcessedContentCacheContext,
+    ) => string | undefined;
+    environmentFingerprint?: () => string | undefined;
   };
   resolveExternalDependencies?(
     context: ExternalDependencyContext,
@@ -109,6 +121,16 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
 };
+
+export type ProcessedContentCacheContext = {
+  readonly slug: string;
+  readonly source: string;
+};
+
+export type ProcessedContentCacheApplicability =
+  | "applies"
+  | "does-not-apply"
+  | "unknown";
 
 export type PluginInput = RiebeckitePlugin | false | null | undefined;
 

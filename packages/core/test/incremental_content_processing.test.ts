@@ -405,6 +405,66 @@ test("an uncacheable content plugin safely reprocesses every note", async () => 
   assert.equal(await buildOnce(), 2);
 });
 
+test("a scoped unsafe content plugin reuses only content outside its scope", async () => {
+  const directory = await tempDirectory("incremental-scoped-unsafe-plugin");
+  const files = {
+    "plain.md": "# Plain",
+    "diagram.md": "# Diagram\n\n```mermaid\ngraph TD\n```",
+  };
+  const plugin = definePlugin({
+    name: "scoped-unsafe-content-plugin",
+    processedContentCache: {
+      version: "v1",
+      dependencyMode: "unsafe",
+      appliesToContent: ({ source }) =>
+        source.includes("```mermaid") ? "applies" : "does-not-apply",
+    },
+    extendMarkdownPipeline: () => {},
+  });
+  const buildOnce = async () => {
+    const config = { ...testConfig(directory), plugins: [plugin] };
+    const spans: { name: string }[] = [];
+    const events: { name: string }[] = [];
+    const manager = new ContentManager(memoryContentSource(files), [], {
+      config,
+      plugins: config.plugins,
+      observability: {
+        logger: new NoopLogger(),
+        tracer: new SinkTracer({
+          onEvent: (event) => events.push(event),
+          onSpan: (span) => spans.push(span),
+        }),
+      },
+    });
+    await manager.build({ incremental: true });
+    await manager.dispose();
+    return {
+      processed: spans.filter((span) => span.name === "content.process").length,
+      reused: events.filter((event) => event.name === "content.reuse").length,
+    };
+  };
+
+  await buildOnce();
+  const warm = await buildOnce();
+
+  assert.equal(warm.processed, 1);
+  assert.equal(warm.reused, 1);
+
+  files["diagram.md"] = "# Diagram";
+  const removed = await buildOnce();
+  assert.equal(removed.processed, 1);
+  assert.equal(removed.reused, 1);
+
+  const afterRemoval = await buildOnce();
+  assert.equal(afterRemoval.processed, 0);
+  assert.equal(afterRemoval.reused, 2);
+
+  files["diagram.md"] = "# Diagram\n\n```mermaid\ngraph TD\n```";
+  const added = await buildOnce();
+  assert.equal(added.processed, 1);
+  assert.equal(added.reused, 1);
+});
+
 test("direct and transitive dependencies are processed when a dependency changes", async () => {
   const directory = await tempDirectory("incremental-dependencies");
   const files = {

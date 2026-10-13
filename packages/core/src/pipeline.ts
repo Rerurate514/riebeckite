@@ -24,6 +24,7 @@ import {
 import { extractContentLinks } from "./content/content_links.js";
 import {
   CONTENT_CACHE_SCHEMA_VERSION,
+  computeContentCacheFingerprint,
   computeContentCacheKey,
   computePipelineFingerprint,
   createPersistentContentCache,
@@ -131,6 +132,7 @@ export class Pipeline {
       const cacheable = isPersistentlyCacheable(
         sourceSlug,
         this.options.config,
+        markDownContent,
       );
       if (cacheable.cacheable) {
         const frontmatter = extractFrontmatter(markDownContent);
@@ -138,7 +140,10 @@ export class Pipeline {
           slug: sourceSlug,
           source: markDownContent,
           frontmatter,
-          pipelineFingerprint: this.pipelineFingerprint,
+          pipelineFingerprint: this.contentPipelineFingerprint(
+            sourceSlug,
+            markDownContent,
+          ),
         });
 
         const lookup = await (
@@ -310,6 +315,7 @@ export class Pipeline {
       const cacheable = isPersistentlyCacheable(
         sourceSlug,
         this.options.config,
+        markDownContent,
       );
       if (cacheable.cacheable) {
         const frontmatter = extractFrontmatter(markDownContent);
@@ -317,7 +323,10 @@ export class Pipeline {
           slug: sourceSlug,
           source: markDownContent,
           frontmatter,
-          pipelineFingerprint: this.pipelineFingerprint,
+          pipelineFingerprint: this.contentPipelineFingerprint(
+            sourceSlug,
+            markDownContent,
+          ),
         });
 
         const dependencies = dependencyTracker.dependencies();
@@ -339,6 +348,12 @@ export class Pipeline {
     dependencies: readonly CachedContentDependency[],
   ): void {
     this.options.onContentDependencies?.(slug, dependencies);
+  }
+
+  private contentPipelineFingerprint(slug: string, source: string): string {
+    const config = this.options.config;
+    if (!config || !this.pipelineFingerprint) return "";
+    return `${this.pipelineFingerprint}:${computeContentCacheFingerprint(slug, source, config)}`;
   }
 
   private async findInvalidDependency(

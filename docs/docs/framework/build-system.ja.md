@@ -15,7 +15,7 @@ Riebeckite の Build System は、Markdown などのコンテンツと設定を�
 6. 画像などのアセットやブラウザ用のコードを生成する
 7. HonoX を使って Web サイトを build する
 
-Riebeckite は、前回の build 結果を利用して、変更された部分だけを処理する **incremental build** にも対応しています。
+Riebeckite は、前回の build 結果を利用して、変更された部分だけを処理する [[incremental-build|incremental build]] にも対応しています。
 
 ## Build の流れ
 

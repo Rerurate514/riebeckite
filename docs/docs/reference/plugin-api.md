@@ -3,7 +3,7 @@ title: Plugin System
 ---
 # Plugin System
 
-Riebeckite Plugins extend content interpretation, transformation,
+Riebeckite [[plugin|Plugins]] extend content interpretation, transformation,
 rendering, diagnostics, build-time processing, browser behavior,
 endpoints, and SEO. This document describes the shared plugin contract
 rather than individual plugins.

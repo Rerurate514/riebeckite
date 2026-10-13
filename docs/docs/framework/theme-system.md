@@ -21,7 +21,7 @@ If you are new, read [your first theme](../themes/writing-a-theme.md) first, and
 
 ## 1. What a theme can and cannot do
 
-A theme is the **presentation layer**. It changes tokens, stylesheet rules, and theme-specific `data-*` attributes. It does not change content semantics or application structure.
+A [[glossary/theme|theme]] is the **presentation layer**. It changes tokens, stylesheet rules, and theme-specific `data-*` attributes. It does not change content semantics or application structure.
 
 | Can | Cannot |
 | --- | --- |

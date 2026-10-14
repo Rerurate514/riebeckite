@@ -823,6 +823,55 @@ test("warm rebuild reproduces the cold build when a plugin decorates entries", a
   assert.deepEqual(entryView(warm.manifest), entryView(cold.manifest));
 });
 
+test("a cacheable manifest hook permits the no-change fast path", async () => {
+  const directory = await tempDirectory("incremental-fast-path-manifest-hook");
+  const files = { "a.md": "# A" };
+
+  await buildWithDecorator(files, directory, "marker");
+
+  const config = lifecycleConfig(directory, "marker");
+  const manager = new ContentManager(memoryContentSource(files), [], {
+    config,
+    plugins: config.plugins,
+  });
+  await manager.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await manager.getNoChangeFastPathBlockReason({ incremental: true }),
+    undefined,
+  );
+  await manager.dispose();
+});
+
+test("a build-end hook blocks the no-change fast path", async () => {
+  const directory = await tempDirectory("incremental-fast-path-build-end");
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "fast-path-build-end",
+      buildEnd: () => {},
+    }),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    "plugin-build-end",
+  );
+  await second.dispose();
+});
+
 test("repeated warm rebuilds do not duplicate plugin output", async () => {
   const directory = await tempDirectory("incremental-decorator-repeat");
   const files = { "a.md": "# A", "b.md": "# B" };

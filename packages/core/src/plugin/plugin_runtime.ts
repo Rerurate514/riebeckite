@@ -141,6 +141,27 @@ export class PluginRuntime {
     };
   }
 
+  getNoChangeFastPathBlockReason(
+    previousCache: readonly ManifestHookCacheEntry[],
+    pipelineFingerprint: string | undefined,
+  ): string | undefined {
+    let cacheIndex = 0;
+    for (const plugin of this.plugins()) {
+      if (plugin.buildEnd) return "plugin-build-end";
+      if (!plugin.onManifestCreated) continue;
+
+      const cached = previousCache[cacheIndex];
+      cacheIndex += 1;
+      if (
+        cached?.pluginName !== plugin.name ||
+        !cached.cacheable ||
+        cached.pipelineFingerprint !== pipelineFingerprint
+      )
+        return "manifest-hook-cache-miss";
+    }
+    return undefined;
+  }
+
   getManifestHookCache(): readonly ManifestHookCacheEntry[] {
     return this.manifestHookCache;
   }

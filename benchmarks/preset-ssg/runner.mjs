@@ -308,9 +308,13 @@ async function linkJunctionIfAbsent(source, destination) {
   try {
     const existing = await fs.lstat(destination);
     if (!existing.isSymbolicLink())
-      throw new Error(`Refusing to replace non-link dependency: ${destination}`);
+      throw new Error(
+        `Refusing to replace non-link dependency: ${destination}`,
+      );
     if ((await fs.realpath(destination)) !== resolvedSource)
-      throw new Error(`Refusing to replace mismatched dependency link: ${destination}`);
+      throw new Error(
+        `Refusing to replace mismatched dependency link: ${destination}`,
+      );
     return;
   } catch (error) {
     if (error?.code !== "ENOENT") throw error;

@@ -23,6 +23,25 @@ const nav = buildNavigation(manifest.discoverableEntries, {
 });
 ```
 
+## ナビゲーションプラグイン
+`navigation`プラグイン(`packages/plugins/navigation/src/index.ts`)は、resolved manifestのdiscoverable entryからヘッダー/フッターのリンクを描画します。以下の方法で構造を構築します：
+
+- `manifest.discoverableEntries`を読み取ってすべてのdiscoverableコンテンツを取得
+- `navigation`configセクションでカスタマイズ可能。itemラベル、href、並び順を指定可能
+- ネストされたメニュー構造とアクティブルートハイライトをサポート
+
+プラグインはビルドされたnavigationをintegrationのページ描画に寄与します。サイトはnavigation UIを完全にカスタマイズでき、独自のroute描画を提供するか、`navigation`configセクションを修正することで可能です。
+
+```ts
+// Example: custom navigation config
+navigation: {
+  items: [
+    { label: "Home", href: "/" },
+    { label: "Blog", href: "/blog" },
+  ],
+},
+```
+
 ## 関連用語
 
 - [[glossary/site|Site]]

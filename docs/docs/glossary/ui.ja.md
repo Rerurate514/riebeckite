@@ -46,6 +46,21 @@ import { Article, ArticleBody, ArticleContent, ArticleLayout, ContentSlot } from
 
 プリミティブはセマンティックHTML、hook、classと構成、構造CSSを提供します。記事の本文、メタデータの整形、ナビゲーションの配置、カード、ページレイアウトの構成、island、サイトの視覚デザインはサイトのapplicationに属します。
 
+## ContentSlot
+`ContentSlot`はSiteが選んだ場所にプラグイン提供のbody slotを描画します。slotがabsentまたはblankの場合は何も描画しません。
+
+```tsx
+import { ContentSlot } from "@riebeckite/honox/ui";
+
+<ContentSlot slots={bodySlots} name="article.aside" />
+```
+
+`hasSlot`ユーティリティは、slotが描画可能な内容を持つか確認するために使用できます。
+
+```tsx
+{hasSlot(bodySlots, "article.aside") && <ContentSlot slots={bodySlots} name="article.aside" />}
+```
+
 ## 関連用語
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

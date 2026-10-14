@@ -40,6 +40,11 @@ export default defineConfig({
 });
 ```
 
+## resolved configでのSite config
+Site configフィールドはconfig解決時に`ResolvedRiebeckiteConfig`にマージされ、`packages/core/src/config.ts`で定義されています。解決済みのconfigには`site`が`title`、`description`、`author`、`baseUrl`、`locale`、`twitterSite`、`defaultOgImage`、`feed`を含みます。`feed`サブセクションには`title`、`description`、`language`（`locale`から導出）が含まれます。
+
+これらの解決された値は、BuildとRuntimeを通じてintegrationとプラグインによって使用されます。たとえば、`buildAbsoluteUrl`は`config.site.baseUrl`を使用し、SEOプラグインは`config.site.title`と`config.site.description`をメタデータに使用し、l10nプラグインは`config.site.locale`を言語検出の既定値として使用します。
+
 ## 関連用語
 
 - [[glossary/site|Site]]

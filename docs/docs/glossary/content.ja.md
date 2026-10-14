@@ -25,13 +25,48 @@ contentを問い合わせるコードは、ファイルシステムではなくm
 
 Riebeckiteのcontent pipelineは、それぞれ責任を持った明確なモジュールで構成されています：
 
-- **`content_manager.ts`** (`packages/core/src/content/content_manager.ts`) — 全体的なbuildフローをオーケストレーションします：コンテンツソースのスキャン、content indexの構築、場所の解決、`Pipeline`によるpluginパイプラインの実行、manifestとcontent graphの構築、incremental build stateのコミット。plugin runtime、content index builder、build coordinatorと調整します。
+- **`content_manager.ts`** (`packages/core/src/content/content_manager.ts`) ：全体的なbuildフローをオーケストレーションします：コンテンツソースのスキャン、content indexの構築、場所の解決、`Pipeline`によるpluginパイプラインの実行、manifestとcontent graphの構築、incremental build stateのコミット。plugin runtime、content index builder、build coordinatorと調整します。
 
-- **`content_collection.ts`** (`packages/core/src/content/content_collection.ts`) — `ContentCollectionDefinition`、`ContentCollection`を定義し、pagination、sort、filterをサポートし、manifestエントリをタグ/日付/フォルダベースのリストにグループ化する`buildContentCollections`関数を提供します。
+- **`content_collection.ts`** (`packages/core/src/content/content_collection.ts`) ：`ContentCollectionDefinition`、`ContentCollection`を定義し、pagination、sort、filterをサポートし、manifestエントリをタグ/日付/フォルダベースのリストにグループ化する`buildContentCollections`関数を提供します。
 
-- **`content_graph.ts`** (`packages/core/src/content/content_graph.ts`) — `ContentGraph`タイプとしてcontent graphを表現し、ノード、incoming/outgoingリンク、neighborsをクエリするメソッドを持ちます。manifestの`outgoingLinks`と`incomingLinks`から`runGraphHook`のदौरान構築されます。
+- **`content_graph.ts`** (`packages/core/src/content/content_graph.ts`) ：`ContentGraph`タイプとしてcontent graphを表現し、ノード、incoming/outgoingリンク、neighborsをクエリするメソッドを持ちます。manifestの`outgoingLinks`と`incomingLinks`から`runGraphHook`のदौरान構築されます。
 
-- **`content_index_builder.ts`** (`packages/core/src/content/content_index_builder.ts`) — スラッグバリアント（大文字小文字無視やaliasマッピング含む）をそのcanonical slugにマップするcontent resolution indexを構築します。`resolveContentIndex`を使用して候補を単一の解決に収束させ、診断用のambiguitiesをフラグ付けします。
+- **`content_index_builder.ts`** (`packages/core/src/content/content_index_builder.ts`) ：スラッグバリアント（大文字小文字無視やaliasマッピング含む）をそのcanonical slugにマップするcontent resolution indexを構築します。`resolveContentIndex`を使用して候補を単一の解決に収束させ、診断用のambiguitiesをフラグ付けします。
+
+## manifestのentry
+
+manifestに登録される各コンテンツentryは`ContentManifestEntry`(`packages/core/src/types/content_manifest.ts`)で型付けされています。主なフィールドは以下の通りです：
+
+- **`slug`** ：内部的な検索キー
+- **`permalink`** ：解決済みの正canonicalな公開URL
+- **`publicLocation`** ：slug、permalink、任意のredirects、メタデータを組み合わせたもの
+- **`contentId`** ：frontmatterに書かれた安定した著者による識別子で、slug/permalinkとは独立して生存します
+- **`frontmatter`** ：`PostFrontmatter`。`id`、`title`、`description`、`date`、`published`、`tags`ほかのメタデータを保持します
+- **`html`** ：処理後のMarkdown HTML本文
+- **`aliases`** ：ノートの別キー
+- **`bodySlots`** ：slot名でキーされるplugin提供のHTMLフラグメント
+- **`headTags`** ：head HTMLフラグメント
+- **`tags`** および**`links`** ：タクソノミーとwikilink/MMDリンク
+
+例）entryの構造:
+
+```ts
+{
+  slug: "notes/hello",
+  permalink: "/docs/notes/hello/",
+  contentId: "abc123",
+  frontmatter: {
+    id: "abc123",
+    title: "Hello World",
+    tags: ["intro"],
+  },
+  html: "<p>Hello world</p>",
+  tags: ["intro"],
+  links: [],
+  backlinks: [],
+  assets: [],
+}
+```
 
 ## 関連用語
 

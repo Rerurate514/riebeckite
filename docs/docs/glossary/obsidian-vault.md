@@ -51,6 +51,29 @@ Callouts are supported: `> [!NOTE]`
 
 Tags are supported and tag pages are provided by the starter taxonomy plugin.
 
+## Obsidian Markdown Plugin
+The `starter` preset includes the `@riebeckite/plugin-obsidian-markdown` plugin, which provides:
+- WikiLink resolution (`[[note]]`, `[[note|label]]`, `[[note#Heading]]`)
+- Image embeds (`![[sample.png]]`)
+- Callout parsing (`> [!WARNING]` etc.)
+- Tag `#hashtag` conversion to taxonomy tag links
+
+## Explicit publishing
+Add `publish: true` frontmatter to notes you want to make public:
+
+```md
+---
+title: Hello
+publish: true
+tags:
+  - example
+aliases:
+  - Hello note
+---
+```
+
+Notes without `publish: true` are treated as drafts and not built.
+
 ## Related terms
 
 - [[tag|Tag]]

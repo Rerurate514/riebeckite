@@ -20,7 +20,7 @@ content: {
 
 `../my-vault`は、サイトからvaultまでの相対パスに置き換えます。
 
-`starter`プリセットには、WikiLink、埋め込み、Callout、タグに対応するObsidian Markdown Pluginがすでに含まれています。
+`starter`プリセットには、WikiLink、埋め込み、Callout、タグに対するObsidian Markdown Pluginが既に含まれています。
 
 ## 明示的な公開
 
@@ -50,6 +50,29 @@ WikiLinkに対応しています。`[[note]]`、`[[note|label]]`、`[[note#Headi
 Calloutにも対応しています。`> [!NOTE]`と書きます。
 
 タグにも対応しており、タグページは`starter`のTaxonomy Pluginが提供します。
+
+## Obsidian Markdown（プラグイン）が扱うもの
+`starter`プリセットには`@riebeckite/plugin-obsidian-markdown`プラグインが含まれており、次の機能を提供します。
+- WikiLinkの解決(`[[note]]`、`[[note|label]]`、`[[note#Heading]]`)
+- 画像の埋め込み(`![[sample.png]]`)
+- コールアウトのパーサー (`> [!WARNING]`など)
+- タグ`#hashtag`をタグマップのリンクに変換
+
+## 明示的な公開
+公開するノートのfrontmatterに`publish: true`を追加します。
+
+```md
+---
+title: Hello
+publish: true
+tags:
+  - example
+aliases:
+  - Hello note
+---
+```
+
+`publish: true`のないノートは下書きとして扱われ、Buildされません。
 
 ## 関連用語
 

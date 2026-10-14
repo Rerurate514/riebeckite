@@ -50,6 +50,29 @@ plugins: [backlinksPlugin({ render: false })];
 
 手動で置いたUIを外すには、コンポーネントを取り除きます。このコンポーネントと、自動描画を有効にした`article.footer`の両方を描画すると、二重に表示されます。
 
+## バックリンクデータの解決
+`getPublishedBacklinks()`関数はcontent manifestから被リンクを解決します。以下のオプションを受け入れます。
+
+- **manifest**: content sinkからの`ContentManifest`
+- **config**: 解決されたRiebeckite設定
+- **slug**: 現在のノートのスラッグ
+- **resolveTitle**: エントリタイトルを解決する関数`(slug: string, title: unknown) => string`
+
+戻り値は`ArticleBacklink[]`で、各エントリには`slug`、`permalink`、`title`を含みます。リンクは公開されて検知可能なエントリのみにフィルタリングされ、manifestの順序で並べられます。
+
+```ts
+import { getPublishedBacklinks, content } from "@riebeckite/plugin-backlinks";
+import { getArticleTitle } from "../lib/article-title";
+
+const manifest = await content.getManifest();
+const backlinks = getPublishedBacklinks({
+  manifest,
+  config,
+  slug: "my-note",
+  resolveTitle: getArticleTitle,
+});
+```
+
 ## 関連用語
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

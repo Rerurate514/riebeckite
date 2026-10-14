@@ -16,9 +16,31 @@ The next build reads it to compute an incremental change set.
 
 ## Version and validity
 
-Version is `CONTENT_BUILD_STATE_VERSION` (currently 12).
-A missing, incompatible, or malformed state causes a full build path.
-State is updated only after a successful build; a failed build never corrupts the previous good state.
+Version is `CONTENT_BUILD_STATE_VERSION` (currently 12). A missing, incompatible, or malformed state causes a full build path. State is updated only after a successful build; a failed build never corrupts the previous good state.
+
+## Build State Structure
+
+`ContentBuildState` type at `packages/core/src/content/content_build_state.ts` contains:
+- `version`: number (currently 12)
+- `entries`: `Readonly<Record<string, ContentBuildEntry>>` — per-entry state including fingerprint, aliases, dependencies, link targets, and processed content cache fingerprint
+- `contentIndex`: `Readonly<Record<string, string>>` — content slug to path mapping
+- `pipelineFingerprint`: string | undefined — pipeline fingerprint for incremental validity checks
+- `manifestEntries`: `readonly ContentManifestEntry[]` — snapshot of manifest entries from the previous build
+- `outputs`: `readonly OutputDescriptor[]` — output descriptors from the previous build
+- `externalDependencies`: `readonly PersistedExternalDependency[]` — external dependency snapshots
+
+`ContentBuildEntry` (`packages/core/src/content/content_build_state.ts`) holds:
+- `fingerprint`: string — content fingerprint including source, frontmatter, pipeline, and plugin cache version
+- `aliases`: `readonly string[]` — entry aliases from frontmatter
+- `dependencies`: `readonly ContentBuildDependency[]` — content and file dependencies with stable identities
+- `linkTargets?: ` `readonly string[]` — resolved link target slugs
+- `processedContentCacheFingerprint?: ` `string` — fingerprint of the processed content cache contract
+
+`ContentBuildDependency` (`packages/core/src/content/content_build_state.ts`) records:
+- `kind`: `"content"` or `"file"`
+- `id`: string — content slug or file path
+
+On a later build, the previous state is read to compute an incremental change set. The pipeline fingerprint comparison (`previousState.pipelineFingerprint !== pipelineFingerprint`) triggers a full rebuild if the pipeline configuration has changed. State is saved only after a successful build; a failed build never corrupts the previous good state.
 
 ## Related terms
 

@@ -10,7 +10,14 @@ sidebar:
 
 ## 使われる場面
 
-Build Stateやcacheのentryが欠落、非互換、安全でない場合に選ばれます。`--full`を指定して明示的に実行することもできます。
+`--full`は以下のときに自動的に選択されます：
+- 前回のBuild状態がない（初回のBuild）
+- 前回のBuild状態のバージョンが現在のバージョンと互換性がない
+- pipeline fingerprintが変更され、以前の状態が再利用できない安全でない状態となっている
+- cache schemaのバージョン不一致により、有効なcache entryを参照できない
+- External dependencyの失敗によりIncremental処理が防げる
+
+`--full`が指定された場合でも、同じ正しいウェブサイトが生成されます。違いは、incremental stateを再利用せずすべてのコンテンツを最初から処理する点で、incrementalビルドの結果を比較したりincrementalビルドの問題を隔離したりするのに便利です。
 
 ## 関連用語
 

@@ -10,9 +10,13 @@ sidebar:
 
 ## 何を識別するか
 
-contentのfingerprintはsourceとfrontmatter、pipeline、PluginのcacheVersionから作られます。fileのfingerprintはsourceのファイルが変わったときに変わります。pipelineのfingerprintにはPluginの設定とcontent filterの設定が含まれます。
+contentのfingerprintは、source、frontmatter、pipeline、Pluginの`cacheVersion`から作られます。content fingerprintは、Markdownソース、解析したfrontmatter、cache schemaのバージョン（`CONTENT_CACHE_SCHEMA_VERSION`、現在は4）、pipeline fingerprintから計算します。pipeline fingerprintには、Pluginの構成、content filter、Pluginの`cacheVersion`の値を組み込みます。
 
-## 使われ方
+fileのfingerprintはsourceのファイルが変わったときに変わります。file fingerprintはsourceファイルが変わったときに変化します。
+
+pipelineのfingerprintにはPluginの設定とcontent filterの設定が含まれます。pipeline fingerprint（`packages/core/src/content/content_persistent_cache.ts`の`computePipelineFingerprint`）はplugin fingerprint、content filter、compatibility version（`CONTENT_CACHE_COMPATIBILITY_VERSION`、現在は3）を組み込みます。pipeline fingerprintが変場合、contentは再処理が必要です。
+
+## 関連用語
 
 永続的なcontent cacheとBuild Stateがfingerprintを比べ、再処理する範囲を決めます。
 

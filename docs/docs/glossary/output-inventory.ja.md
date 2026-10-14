@@ -3,7 +3,6 @@ title: Output Inventory
 sidebar:
   hidden: true
 ---
-
 # Output Inventory
 
 公開entry、redirect、Pluginページ、Generated Outputから作られる、パスをキーにしたすべての生成物の記録です。Buildはこれを前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を求めます。
@@ -12,9 +11,43 @@ sidebar:
 
 Buildが所有するすべての出力の一覧です。contentの出力、redirectの出力、Pluginページの出力、Generated Outputを含みます。
 
+## 包含する出力の詳細
+
+### contentの出力
+
+`manifest.publicEntries`から生成されます。各content outputは:
+- `kind`: `"content"`
+- `path`: permalinkから導かれたHTML出力パス
+- `producer`: `content:${slug}`
+- `dependencies`: `[{ type: "content", slug: "<entry-slug>" }]`ほか、pluginが宣言したoutput dependencies
+
+### リダイレクト出力
+
+`manifest.publicRedirects`から生成されます。各redirect outputは:
+- `kind`: `"redirect"`
+- `path`: リダイレクト先のHTMLパス
+- `producer`: `content:${redirect.slug}:redirect`
+- `dependencies`: `[{ type: "content", slug: redirect.slug }]`
+
+### Plugin Pageの出力
+
+Plugin Pageの定義（`pageTypes`）から生成されます。各Plugin Pageの出力は：
+- `kind`: `"plugin-page"`
+- `path`: HTML出力パス
+- `producer`: `plugin:${plugin.name}`
+- `dependencies`: `pageTypes[].outputDependencies`あるいは`context.output.emit(..., { dependencies })`で宣言
+
+### Generated Outputs
+
+Pluginが`manifest.generatedOutputs`を通じて生成します。各生成された出力は：
+- `kind`: `"generated"`
+- `path`: 出力パス
+- `producer`: `plugin:${output.owner}`
+- `dependencies`: `context.output.emit(..., { dependencies })`で宣言。`content`、`tag`、`folder`、`global`、`unknown`のtypeを含む
+
 ## 比較
 
-前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を決めます。どの出力を描画し、再利用し、削除するかはこの比較で決まります。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
+前回の成功した状態と比較、影響する出力、変わらない出力、削除された出力を決めます。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
 
 ## 関連用語
 

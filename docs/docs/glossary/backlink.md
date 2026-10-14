@@ -50,6 +50,29 @@ plugins: [backlinksPlugin({ render: false })];
 
 Remove the component to remove manually placed UI. Do not render both this component and `article.footer` with automatic rendering enabled, or it will appear twice.
 
+## Backlink data resolution
+The `getPublishedBacklinks()` function resolves incoming links from the content manifest. It accepts the following options:
+
+- **manifest**: `ContentManifest` from the content sink
+- **config**: `ResolvedRiebeckiteConfig`
+- **slug**: the current note's slug
+- **resolveTitle**: function to resolve entry titles `(slug: string, title: unknown) => string`
+
+It returns `ArticleBacklink[]` entries, each containing `slug`, `permalink`, and `title`. Links are filtered to publicly discoverable entries only, sorted in manifest order.
+
+```ts
+import { getPublishedBacklinks, content } from "@riebeckite/plugin-backlinks";
+import { getArticleTitle } from "../lib/article-title";
+
+const manifest = await content.getManifest();
+const backlinks = getPublishedBacklinks({
+  manifest,
+  config,
+  slug: "my-note",
+  resolveTitle: getArticleTitle,
+});
+```
+
 ## Related terms
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

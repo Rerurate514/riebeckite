@@ -22,3 +22,40 @@ sidebar:
 ## 行わないこと
 
 Content Managerはファイルを読みません。読み取りはContent Sourceの役割です。
+
+## ContentManagerの型
+
+`ContentManager`クラス(`packages/core/src/content/content_manager.ts`)は核心的なオーケストレータです。主なメソッドは以下の通りです：
+
+- **`getManifest()`** ：全ての場所解決、plugin pipelineの実行、content graphの構築を終えた`ContentManifest`を構築して返します
+- **`getContentLocations()`** ：各slugを解決済みの公開位置（slug, permalink, redirects, メタデータ）へマップする`ReadonlyMap<string, ContentPublicLocation>`を返します
+- **`getContentGraph()`** ：参照リンクのクエリ用の`ContentGraph`を返します
+- **`getBacklinks(targetSlug)`** ：与えられたentryへのbacklinkを返します
+- **`inspect()`** ：entries、content index、diagnosticsを持つ`ContentInspection`を返します
+- **`getPagePaths()`および`getPageRoutes()`** ：pluginページの宣言されたパスとルートを返します
+
+`getManifest()`で見えるmanifest entryの断片例:
+
+```ts
+{
+  slug: "notes/hello",
+  permalink: "/docs/notes/hello/",
+  contentId: "abc123",
+  frontmatter: { id: "abc123", title: "Hello", tags: [] },
+  publishing: { routable: true, discoverable: true, status: "published" },
+  html: "<p>Hello world</p>",
+  tags: [],
+  links: [],
+  backlinks: [],
+  assets: [],
+}
+```
+
+Content Managerは以下のコンポーネントを内部で調整します：
+
+- **`ContentIndexBuilder`** (`packages/core/src/content/content_index_builder.ts`) ：slugバリアントの解決と曖昧さの特定
+- **`ContentLocationResolver`** ：公開位置の解決、plugin調整パスの対応
+- **`PluginRuntime`** (`packages/core/src/plugin/plugin_runtime.ts`) ：onContentLoaded, extendContentGraph, onManifestCreatedなどのplugin hookの実行
+- **`ContentBuildCoordinator`** ：インクリメンタルビルド状態とoutput変更の検知管理
+
+## 関連用語

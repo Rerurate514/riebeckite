@@ -33,6 +33,41 @@ Riebeckite's content pipeline is composed of distinct modules, each with a focus
 
 - **`content_index_builder.ts`** (`packages/core/src/content/content_index_builder.ts`) — Builds the content resolution index that maps slug variants (including case-insensitive and alias mappings) to their canonical slug. Uses `resolveContentIndex` to collapse candidates into a single resolution, flagging ambiguities for diagnostics.
 
+## Content manifest entry
+
+Each content entry in the manifest is typed as `ContentManifestEntry` (`packages/core/src/types/content_manifest.ts`). Key fields include:
+
+- **`slug`** — the internal lookup key
+- **`permalink`** — the resolved canonical public URL
+- **`publicLocation`** — combines slug, permalink, optional redirects, and metadata
+- **`contentId`** — stable author‑written identifier in frontmatter, independent of slug/permalink
+- **`frontmatter`** — `PostFrontmatter` containing `id`, `title`, `description`, `date`, `published`, `tags`, and other metadata
+- **`html`** — the processed Markdown HTML body
+- **`aliases`** — alternative lookup keys for the note
+- **`bodySlots`** — plugin‑provided HTML fragments keyed by slot name
+- **`headTags`** — plugin‑provided head HTML fragments
+- **`tags`** and **`links`** — taxonomy and wikilink/MMD links collected during processing
+
+Example entry structure:
+
+```ts
+{
+  slug: "notes/hello",
+  permalink: "/docs/notes/hello/",
+  contentId: "abc123",
+  frontmatter: {
+    id: "abc123",
+    title: "Hello World",
+    tags: ["intro"],
+  },
+  html: "<p>Hello world</p>",
+  tags: ["intro"],
+  links: [],
+  backlinks: [],
+  assets: [],
+}
+```
+
 ## Related terms
 
 - [[content-source|Content Source]]

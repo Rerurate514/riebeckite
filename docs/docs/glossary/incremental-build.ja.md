@@ -24,10 +24,10 @@ incremental buildは`ContentBuildState`に保存されたbuild stateのfingerpri
 | フィールド | 説明 |
 | --- | --- |
 | `version` | build stateスキーマバージョン（現在は `12`）。 |
-| `entries` | `Record<string, ContentBuildEntry>` — per-entryのfingerprintと依存情報。 |
+| `entries` | `Record<string, ContentBuildEntry>` ： per-entryのfingerprintと依存情報。 |
 | `pipelineFingerprint` | content pipelineのハッシュ（プラグイン、フィルタなど）。 |
-| `outputs` | `OutputDescriptor[]` — 最後に生成されたoutput inventory。 |
-| `contentIndex` | `Record<string, string>` — slugからソースパスへのマッピング。 |
+| `outputs` | `OutputDescriptor[]` ： 最後に生成されたoutput inventory。 |
+| `contentIndex` | `Record<string, string>` ： slugからソースパスへのマッピング。 |
 
 stateファイルが欠落している、破損している、あるいはpipeline fingerprintが異なっている場合、full buildが実行されます。
 

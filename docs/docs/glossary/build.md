@@ -48,6 +48,16 @@ The build process processes content from reading to HTML emission through a seri
 
 7. **Output emission** — Assets (images, client entries) are collected. HTML is emitted via the SSG (HonoX) using the resolved theme. The previous build state at `.riebeckite/build/content-state.json` enables incremental builds by tracking changed content and reusable outputs.
 
+## Pipeline Execution
+
+The `Pipeline` class in `packages/core/src/pipeline.ts` processes each content entry through `execute()`. It first checks the persistent content cache (`packages/core/src/content/content_persistent_cache.ts`) using a cache key composed of slug, source, frontmatter, and pipeline fingerprint. On a cache hit with no invalid dependencies, the cached frontmatter and HTML are returned immediately. If the cache is a miss or bypass, the markdown is processed through the unified pipeline with Remark and Rehype plugins for parsing, frontmatter extraction, GFM, math, and custom transformations. Link resolution records dependencies through the content dependency tracker. After processing, the result is stored in the persistent content cache with its dependencies and fingerprint for future incremental builds.
+
+The pipeline fingerprint (`computePipelineFingerprint`) incorporates plugin configurations, content filters, and the compatibility version. Cacheability is determined by `isPersistentlyCacheable`, which checks each plugin's `processedContentCache` contract (dependencyMode: none/tracked/global/unsafe).
+
+## Content Cache Integration
+
+The persistent content cache at `.riebeckite/cache/content/v3` stores processed Markdown results per entry. A cache key is computed via `computeContentCacheKey` from `CacheKeyInputs` containing slug, source, normalized frontmatter, and pipeline fingerprint. Entries with mismatched schema versions (`CONTENT_CACHE_SCHEMA_VERSION`, currently 4) are treated as misses and reprocessed. The cache records logical content, file, and link dependencies (`CachedContentDependency`) that are checked on subsequent builds to determine invalidation. Cache data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
+
 ## Related terms
 
 - [[incremental-build|Incremental Build]]

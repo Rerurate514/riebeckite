@@ -35,7 +35,7 @@ context.extendContentGraph?.({
 
 ```
 
-その結果、`outgoing`、`incoming`、`neighbors`クエリにはCoreで解決されたエッジに加え、プラグインcontributionのエッジも含まれるようになります。
+その結果、`outgoing`、`incoming`、`neighbors`のクエリには、Coreが解決したエッジとPluginが追加したエッジの両方が含まれます。
 
 ## リンクベースのエッジ生成
 
@@ -62,4 +62,6 @@ context.extendContentGraph?.({
 
 ```
 
-その結果、`outgoing`、`incoming`、`neighbors`クエリにはCoreで解決されたエッジに加え、プラグインcontributionのエッジも含まれるようになります。
+その結果、`outgoing`、`incoming`、`neighbors`のクエリには、Coreが解決したエッジとPluginが追加したエッジの両方が含まれます。
+
+## content graphのAPI

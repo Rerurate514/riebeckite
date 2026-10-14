@@ -40,6 +40,13 @@ export default defineConfig({
 });
 ```
 
+## Site config in the resolved config
+The site config fields are resolved into the `ResolvedRiebeckiteConfig` during config resolution, defined in `packages/core/src/config.ts`. The resolved config includes `site` with `title`, `description`, `author`, `baseUrl`, `locale`, `twitterSite`, `defaultOgImage`, and `feed`. The `feed` sub-section includes `title`, `description`, and `language` (derived from `locale`).
+
+These resolved values are used by the integration and plugins throughout the build and runtime. For example, `buildAbsoluteUrl` uses `config.site.baseUrl`, the SEO plugin uses `config.site.title` and `config.site.description` for metadata, and the l10n plugin uses `config.site.locale` for language detection defaults.
+
+## Related terms
+
 ## Related terms
 
 - [[glossary/site|Site]]

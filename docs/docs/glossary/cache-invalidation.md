@@ -15,9 +15,14 @@ Propagates invalidation to dependent content transitively.
 
 ## When it happens
 
-When a content dependency's fingerprint changes.
-When a plugin's processedContentCache contract is violated.
-On cache version mismatch or schema mismatch.
+Cache invalidation is triggered in the following specific scenarios:
+
+- When a content dependency's fingerprint changes: The persistent content cache entry's dependencies are checked against current content. If any `CachedContentDependency` fingerprint has changed (e.g., via `findInvalidDependency` in `packages/core/src/pipeline.ts`), the entry is invalidated.
+- When a plugin's processedContentCache contract is violated: If a plugin's `dependencyMode` is `tracked` and it reads content or files through Core APIs that have changed since the last build, the processed content cache entry is invalidated.
+- On cache version mismatch or schema mismatch: If `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION` (currently 4) during cache lookup, the entry is treated as a `schema-miss` and reprocessed from scratch.
+- When external dependencies change: External dependency fingerprints or scopes that have changed cause corresponding cache entries to be invalidated.
+
+## Related terms
 
 ## Related terms
 

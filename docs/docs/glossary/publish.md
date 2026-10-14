@@ -18,6 +18,35 @@ The decision to include content in the published site, controlled by the publish
 
 Content that passes enters the [routable](./routable.md) and [discoverable](./discoverable.md) views. Content that fails is a [draft](./draft.md) and is excluded from the published set.
 
+## Publish resolution flow
+
+The publish decision is made by `resolvePublishingState` (`packages/core/src/content/publishing.ts`), which considers both the publish strategy and frontmatter fields. The function returns a `ResolvedPublishingState` with `visibility`, `routable`, and `discoverable` fields:
+
+- If explicit visibility is `"draft"` → draft state, not routable or discoverable
+- If `publishAt` is set and in the future → scheduled state, not routable or discoverable
+- If explicit visibility is `"unlisted"` → unlisted state, routable but not discoverable
+- If explicit visibility is `"public"` or `publishAt` is set → public state, routable and discoverable
+- Otherwise → `isPublishable` is called with the strategy; if true → public, if false → draft
+
+```ts
+// From packages/core/src/content/publishing.ts
+export function resolvePublishingState(
+  frontmatter: PostFrontmatter | undefined,
+  options: PublishingResolutionOptions,
+): ResolvedPublishingState {
+  // ... logic as above
+}
+```
+
+## Publish strategy configuration
+
+The publish strategy is configured per-site and defaults to `"selective"`. In `explicit` strategy mode, only notes with `publish: true` in frontmatter are public. In `selective` mode (the default), notes are public unless `private: true` or `draft: true` is set.
+
+```ts
+// From packages/core/src/types/publish_strategy.ts
+export type PublishStrategy = "explicit" | "selective";
+```
+
 ## Publish Frontmatter
 The decision is grounded in the `PublishFrontmatter` type from `packages/core/src/types/publish_strategy.ts`:
 ```ts

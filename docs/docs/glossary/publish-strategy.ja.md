@@ -41,3 +41,16 @@ export function isPublishable(
   return !(frontmatter?.private === true || frontmatter?.draft === true);
 }
 ```
+
+## 解決済みconfigでのpublish戦略
+publish戦略はconfig解決時に解決され、`config.content.filters.publishStrategy`に保存されます。@riebeckite/coreからの`isPublished`関数はこの戦略を使用して、各ノートがbuild出力に含まれるべきかどうかを決定します：
+
+```ts
+import { isPublished } from "@riebeckite/core";
+
+const published = isPublished(config, frontmatter, { buildTime: new Date() });
+```
+
+戦略が`"explicit"`の場合、frontmatterに`publish: true`があるノートのみが公開されます。`"selective"`の場合、frontmatterに`private: true`または`draft: true`があるノートを除いてすべてが公開されます。この関数はビルドパイプラインでコンテンツを出力前にフィルタリングするために呼び出されます。
+
+## 関連用語

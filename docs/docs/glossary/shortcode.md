@@ -51,6 +51,24 @@ Remember to rebuild your site after changing the configuration file.
 :::
 ```
 
+## Custom shortcodes
+Register custom shortcodes by passing a `shortcodes` option to the plugin:
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { shortcodes } from "@riebeckite/plugin-shortcodes";
+
+export default defineConfig({
+  plugins: [shortcodes({
+    shortcodes: {
+      ad: ({ attributes, label }) => `<div class="rb-shortcode ad">${label || "Ad"}</div>`,
+    },
+  })],
+});
+```
+
+Custom shortcodes are merged on top of built-ins by name. Names that conflict with built-ins override the built-in renderer.
+
 ## Related terms
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

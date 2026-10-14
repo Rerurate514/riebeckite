@@ -41,3 +41,16 @@ export function isPublishable(
   return !(frontmatter?.private === true || frontmatter?.draft === true);
 }
 ```
+
+## Publish strategy in the resolved config
+The publish strategy is resolved during config resolution and stored in `config.content.filters.publishStrategy`. The `isPublished` function from `@riebeckite/core` uses this strategy to determine whether each note should be included in the build output:
+
+```ts
+import { isPublished } from "@riebeckite/core";
+
+const published = isPublished(config, frontmatter, { buildTime: new Date() });
+```
+
+If `strategy` is `"explicit"`, only notes with `publish: true` in frontmatter are published. If `"selective"`, notes are published unless they have `private: true` or `draft: true` in frontmatter. This function is called during the build pipeline to filter content before output generation.
+
+## Related terms

@@ -25,6 +25,30 @@ import { searchItems } from "@riebeckite/plugins/search";
 const results = searchItems(entries, "tag:news");
 ```
 
+## Content query plugin runtime
+
+The `content-query` plugin uses a runtime (`packages/plugins/query/src/runtime.ts`) that resolves query blocks in entry HTML. The runtime:
+
+1. Finds query blocks marked with the `query` attribute in entry HTML
+2. Parses the YAML-encoded query spec
+3. Filters the manifest's `discoverableEntries` (or a provided pool) using `queryContentEntries`
+4. Replaces the block with the rendered result
+
+The `queryContentEntries` function (`packages/core/src/content/content_query.ts`) supports filtering by tags, folder, date, and frontmatter fields, and handles sorting, pagination, and grouping.
+
+## Grouping and pagination
+
+Content queries support grouping by tags, folder, date, or frontmatter fields, and pagination via `offset` and `limit` spec fields. The `groupContentEntries` function (`packages/core/src/content/content_query.ts`) returns `ContentQueryGroup[]` entries with group keys and member entries.
+
+```ts
+// From packages/core/src/content/content_query.ts
+export function groupContentEntries(
+  entries: readonly ContentManifestEntry[],
+  groupBy: ContentQueryGroupBy,
+  options: ContentQueryGroupOptions = {},
+): ContentQueryGroup[];
+```
+
 ## Related terms
 
 - [[content-collection|Content Collection]]

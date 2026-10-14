@@ -24,7 +24,7 @@ The page includes a list of entries sharing that tag, with links through their r
 
 Per-term feeds are written as static files through the build's generated-output sink.
 
-## Configuration
+## Related terms
 
 ```ts
 taxonomy({
@@ -38,6 +38,17 @@ taxonomy({
 ```
 
 Set `tags: false` to disable tag generation. The `related` option enables co-occurrence-based navigation.
+
+## Tag URL Structure
+Each unique tag value generates a term page at `/tags/<slug>`. The tag base path can be configured via the `tagsBasePath` option in `taxonomy()`:
+
+```ts
+taxonomy({
+  tagsBasePath: "/custom-tags",
+})
+```
+
+The default base path is `/tags`. Tag pages provide entry lists, RSS/Atom/JSON feeds, and related-tag navigation.
 
 ## Related terms
 

@@ -121,9 +121,10 @@ test("inspect build reports reuse when the pipeline fingerprint matches", async 
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 8,
+      version: 13,
       entries: {},
       contentIndex: {},
+      externalDependencies: [],
       pipelineFingerprint: computePipelineFingerprint(config),
     }),
   );
@@ -150,9 +151,10 @@ test("inspect build reports reuse as unavailable when a content transform bypass
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 8,
+      version: 13,
       entries: {},
       contentIndex: {},
+      externalDependencies: [],
       pipelineFingerprint: computePipelineFingerprint(config),
     }),
   );

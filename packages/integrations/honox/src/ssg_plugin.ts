@@ -53,6 +53,24 @@ type SsgModule = {
     }>;
     getProcessedContentCount(): number;
     getReusedContentCount(): number;
+    getManifestHookMetrics(): {
+      manifestHooksExecuted: number;
+      manifestHooksReused: number;
+      manifestHookCacheHit: number;
+      manifestHookCacheMiss: number;
+      manifestHookDurationMs: number;
+      byPlugin: Record<
+        string,
+        {
+          executed: number;
+          reused: number;
+          cacheHit: number;
+          cacheMiss: number;
+          durationMs: number;
+          reason: string;
+        }
+      >;
+    };
     getOutputChangeSet(): Promise<{
       affected: readonly { kind: string; path: string }[];
       removed: readonly { kind: string; path: string }[];
@@ -97,6 +115,12 @@ type SsgOutputMetrics = {
   enumeratedRouteCount: number;
   renderedRouteCount: number;
   skippedRouteCount: number;
+  manifestHooksExecuted: number;
+  manifestHooksReused: number;
+  manifestHookCacheHit: number;
+  manifestHookCacheMiss: number;
+  manifestHookDurationMs: number;
+  manifestHookPlugins: Record<string, unknown>;
   timingsMs: Record<string, number>;
 };
 
@@ -282,6 +306,12 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           enumeratedRouteCount: 0,
           renderedRouteCount: 0,
           skippedRouteCount,
+          manifestHooksExecuted: 0,
+          manifestHooksReused: 0,
+          manifestHookCacheHit: 0,
+          manifestHookCacheMiss: 0,
+          manifestHookDurationMs: 0,
+          manifestHookPlugins: {},
           timingsMs,
         };
         process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental
@@ -342,6 +372,18 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           module.content?.getProcessedContentCount() ?? 0;
         metrics.reusedContentCount =
           module.content?.getReusedContentCount() ?? 0;
+        const manifestHookMetrics = module.content?.getManifestHookMetrics();
+        metrics.manifestHooksExecuted =
+          manifestHookMetrics?.manifestHooksExecuted ?? 0;
+        metrics.manifestHooksReused =
+          manifestHookMetrics?.manifestHooksReused ?? 0;
+        metrics.manifestHookCacheHit =
+          manifestHookMetrics?.manifestHookCacheHit ?? 0;
+        metrics.manifestHookCacheMiss =
+          manifestHookMetrics?.manifestHookCacheMiss ?? 0;
+        metrics.manifestHookDurationMs =
+          manifestHookMetrics?.manifestHookDurationMs ?? 0;
+        metrics.manifestHookPlugins = manifestHookMetrics?.byPlugin ?? {};
 
         const emittedGeneratedOutputCount = await measure(
           timingsMs,

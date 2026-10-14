@@ -1,3 +1,11 @@
+import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
+import {
+  applyManifestHookSnapshot,
+  createManifestHookCacheEntry,
+  fingerprintManifestHookInput,
+  fingerprintManifestHookSideEffects,
+  fingerprintManifestHookSnapshot,
+} from "../content/manifest_hook_cache.js";
 import type { OutputDescriptor } from "../content/output_dependency.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
@@ -69,6 +77,24 @@ export type PluginBuildStage =
   | "onConfigResolved"
   | "started";
 
+export type ManifestHookMetrics = Readonly<{
+  manifestHooksExecuted: number;
+  manifestHooksReused: number;
+  manifestHookCacheHit: number;
+  manifestHookCacheMiss: number;
+  manifestHookDurationMs: number;
+  byPlugin: Readonly<Record<string, ManifestHookPluginMetrics>>;
+}>;
+
+export type ManifestHookPluginMetrics = Readonly<{
+  executed: number;
+  reused: number;
+  cacheHit: number;
+  cacheMiss: number;
+  durationMs: number;
+  reason: string;
+}>;
+
 export class PluginRuntime {
   private buildLifecycle: Promise<void> | null = null;
   private buildStage: PluginBuildStage = "idle";
@@ -85,6 +111,14 @@ export class PluginRuntime {
   private externalDependencies = new Map<string, ExternalDependencySnapshot>();
   private externalDependencyFailures: ExternalDependencyFailure[] = [];
   private externalDependenciesResolved = false;
+  private manifestHooksExecuted = 0;
+  private manifestHookDurationMs = 0;
+  private manifestHooksReused = 0;
+  private manifestHookCache: ManifestHookCacheEntry[] = [];
+  private manifestHookMetricsByPlugin = new Map<
+    string,
+    ManifestHookPluginMetrics
+  >();
 
   constructor(private pipelineOptions: PipelineOptions = {}) {}
 
@@ -94,6 +128,21 @@ export class PluginRuntime {
 
   getBuildStage(): PluginBuildStage {
     return this.buildStage;
+  }
+
+  getManifestHookMetrics(): ManifestHookMetrics {
+    return {
+      manifestHooksExecuted: this.manifestHooksExecuted,
+      manifestHooksReused: this.manifestHooksReused,
+      manifestHookCacheHit: this.manifestHooksReused,
+      manifestHookCacheMiss: this.manifestHooksExecuted,
+      manifestHookDurationMs: this.manifestHookDurationMs,
+      byPlugin: Object.fromEntries(this.manifestHookMetricsByPlugin),
+    };
+  }
+
+  getManifestHookCache(): readonly ManifestHookCacheEntry[] {
+    return this.manifestHookCache;
   }
 
   /**
@@ -233,15 +282,105 @@ export class PluginRuntime {
   async runManifestCreated(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
+    previousCache: readonly ManifestHookCacheEntry[] = [],
+    pipelineFingerprint: string | undefined,
   ) {
-    await this.runHook(
-      "onManifestCreated",
-      (plugin) => plugin.onManifestCreated,
-      {
-        ...this.createContext(contentIndex),
-        manifest,
-      },
-    );
+    const context = { ...this.createContext(contentIndex), manifest };
+    let cacheIndex = 0;
+    for (const plugin of this.plugins()) {
+      const hook = plugin.onManifestCreated;
+      if (!hook) continue;
+      const inputFingerprint = fingerprintManifestHookInput(manifest);
+      const cached = previousCache[cacheIndex];
+      cacheIndex += 1;
+      const reason = manifestHookCacheMissReason(
+        cached,
+        plugin.name,
+        pipelineFingerprint,
+        inputFingerprint,
+      );
+      const canRestore =
+        cached?.pluginName === plugin.name &&
+        cached.cacheable &&
+        cached.pipelineFingerprint === pipelineFingerprint &&
+        cached.inputFingerprint === inputFingerprint;
+      const manifestBeforeRestore = canRestore
+        ? { entries: structuredClone(manifest.entries) }
+        : undefined;
+      const restored =
+        canRestore && applyManifestHookSnapshot(manifest, cached.snapshot);
+      const cacheHit =
+        restored &&
+        fingerprintManifestHookSnapshot(cached.snapshot, manifest) ===
+          cached.outputFingerprint;
+      if (cacheHit) {
+        this.manifestHooksReused += 1;
+        this.manifestHookCache.push(cached);
+        this.recordManifestHookMetric(plugin.name, "reused", "cache-hit", 0);
+        continue;
+      }
+      if (restored && manifestBeforeRestore)
+        applyManifestHookSnapshot(manifest, manifestBeforeRestore);
+      const sideEffectsBefore = fingerprintManifestHookSideEffects(manifest);
+      const outputCountBefore = this.generatedOutputs.count();
+      const diagnosticCountBefore = this.diagnostics.length;
+      const started = performance.now();
+      this.manifestHooksExecuted += 1;
+      try {
+        await runPluginHook(
+          plugin,
+          "onManifestCreated",
+          this.createPluginContext(plugin, context),
+          hook,
+        );
+      } finally {
+        const durationMs = performance.now() - started;
+        this.manifestHookDurationMs += durationMs;
+        this.recordManifestHookMetric(
+          plugin.name,
+          "executed",
+          reason,
+          durationMs,
+        );
+      }
+      this.manifestHookCache.push(
+        createManifestHookCacheEntry(
+          plugin.name,
+          plugin.resolveExternalDependencies === undefined &&
+            sideEffectsBefore ===
+              fingerprintManifestHookSideEffects(manifest) &&
+            outputCountBefore === this.generatedOutputs.count() &&
+            diagnosticCountBefore === this.diagnostics.length,
+          pipelineFingerprint,
+          inputFingerprint,
+          manifest,
+        ),
+      );
+    }
+  }
+
+  private recordManifestHookMetric(
+    pluginName: string,
+    outcome: "executed" | "reused",
+    reason: string,
+    durationMs: number,
+  ): void {
+    const previous = this.manifestHookMetricsByPlugin.get(pluginName) ?? {
+      executed: 0,
+      reused: 0,
+      cacheHit: 0,
+      cacheMiss: 0,
+      durationMs: 0,
+      reason,
+    };
+    this.manifestHookMetricsByPlugin.set(pluginName, {
+      executed: previous.executed + (outcome === "executed" ? 1 : 0),
+      reused: previous.reused + (outcome === "reused" ? 1 : 0),
+      cacheHit: previous.cacheHit + (outcome === "reused" ? 1 : 0),
+      cacheMiss: previous.cacheMiss + (outcome === "executed" ? 1 : 0),
+      durationMs: previous.durationMs + durationMs,
+      reason,
+    });
   }
 
   async runBuildEnd(
@@ -702,6 +841,22 @@ function normalizePageTypePath(
 function normalizeDirectoryPagePath(pathname: string): string {
   const path = normalizePagePath(pathname);
   return path === "/" ? path : `${path}/`;
+}
+
+function manifestHookCacheMissReason(
+  cached: ManifestHookCacheEntry | undefined,
+  pluginName: string,
+  pipelineFingerprint: string | undefined,
+  inputFingerprint: string,
+): string {
+  if (!cached) return "cache-missing";
+  if (cached.pluginName !== pluginName) return "plugin-order-changed";
+  if (!cached.cacheable) return "uncacheable";
+  if (cached.pipelineFingerprint !== pipelineFingerprint)
+    return "pipeline-fingerprint-changed";
+  if (cached.inputFingerprint !== inputFingerprint)
+    return "manifest-input-changed";
+  return "snapshot-invalid";
 }
 
 function normalizePagePath(pathname: string): string {

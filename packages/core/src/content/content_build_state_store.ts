@@ -113,7 +113,9 @@ function isContentBuildStateShape(
     !isRecord(value.entries) ||
     !isRecord(value.contentIndex) ||
     !isExternalDependencies(value.externalDependencies) ||
-    (value.outputs !== undefined && !isOutputDescriptors(value.outputs))
+    (value.outputs !== undefined && !isOutputDescriptors(value.outputs)) ||
+    (value.manifestHookCache !== undefined &&
+      !isManifestHookCache(value.manifestHookCache))
   ) {
     return false;
   }
@@ -136,6 +138,24 @@ function isContentBuildStateShape(
     ) &&
     Object.values(value.contentIndex).every(
       (entry) => typeof entry === "string",
+    )
+  );
+}
+
+function isManifestHookCache(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (entry) =>
+        isRecord(entry) &&
+        typeof entry.pluginName === "string" &&
+        typeof entry.cacheable === "boolean" &&
+        (entry.pipelineFingerprint === undefined ||
+          typeof entry.pipelineFingerprint === "string") &&
+        typeof entry.inputFingerprint === "string" &&
+        typeof entry.outputFingerprint === "string" &&
+        isRecord(entry.snapshot) &&
+        Array.isArray(entry.snapshot.entries),
     )
   );
 }

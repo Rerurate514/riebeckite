@@ -17,6 +17,7 @@ import {
   type ContentBuildDependency,
   type ContentBuildState,
   type FingerprintedContentEntry,
+  type ManifestHookCacheEntry,
   type PersistedExternalDependency,
 } from "./content_build_state.js";
 import {
@@ -90,6 +91,7 @@ export class ContentBuildCoordinator {
       string,
       string | undefined
     > = new Map(),
+    manifestHookCache: readonly ManifestHookCacheEntry[] = [],
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -137,6 +139,7 @@ export class ContentBuildCoordinator {
           ...(expiresAt === undefined ? {} : { expiresAt }),
         }),
       ),
+      manifestHookCache,
     };
 
     try {

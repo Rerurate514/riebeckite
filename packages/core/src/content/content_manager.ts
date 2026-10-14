@@ -4,6 +4,7 @@ import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
 import { Pipeline } from "../pipeline.js";
+import type { ManifestHookMetrics } from "../plugin/plugin_runtime.js";
 import { PluginRuntime } from "../plugin/plugin_runtime.js";
 import type {
   ContentManifest,
@@ -385,7 +386,12 @@ export class ContentManager {
         manifest.pageRoutes = [
           ...(await this.pluginRuntime.getPageRoutes(manifest, contentIndex)),
         ];
-        await this.pluginRuntime.runManifestCreated(manifest, contentIndex);
+        await this.pluginRuntime.runManifestCreated(
+          manifest,
+          contentIndex,
+          plan.previousState?.manifestHookCache,
+          this.getPipelineFingerprint(),
+        );
         this.synchronizeManifestHtml(manifest, cacheManifestEntries);
         manifest.assets = this.pluginRuntime.collectAssets();
         manifest.clientEntries = this.pluginRuntime.collectClientEntries();
@@ -447,6 +453,10 @@ export class ContentManager {
 
   getReusedContentCount(): number {
     return this.reusedContentCount;
+  }
+
+  getManifestHookMetrics(): ManifestHookMetrics {
+    return this.pluginRuntime.getManifestHookMetrics();
   }
 
   async getOutputChangeSet(
@@ -694,6 +704,7 @@ export class ContentManager {
       this.trackedContentDependencies,
       plan.externalDependencies,
       this.processedContentCacheFingerprints,
+      this.pluginRuntime.getManifestHookCache(),
     );
     this.buildStateCommitted = true;
   }

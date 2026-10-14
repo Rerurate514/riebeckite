@@ -19,3 +19,9 @@ Syntax that pulls the content of another note into the current page, for example
 ## Resolution and dependencies
 
 An embed is resolved through the [content index](./content-index.md) like a [WikiLink](./wikilink.md), and it becomes a [content dependency](./content-dependency.md). Editing the source note invalidates the pages that embed it.
+
+## Content dependency tracking
+
+Embeds are tracked as content dependencies through the content index. When a note that is embedded in other pages is edited, the system invalidates those pages so they are regenerated on the next build. This is similar to how wikilinks create graph edges, but embeds have the additional behavior of marking the dependent pages as needing rebuild.
+
+The `content-dependency.md` glossary term describes this in more detail.

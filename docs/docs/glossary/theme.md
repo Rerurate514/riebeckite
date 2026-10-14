@@ -48,6 +48,12 @@ The theme configuration is resolved through `resolveThemeConfig` in `packages/co
 
 The resolved theme is stored in the resolved config under the `theme` key and includes `name`, `colorMode`, `typography`, `articleLayout`, `tokens`, `attributes` (sanitized to allow only `data-*` attributes not reserved), and `userCss`. This resolved theme is then consumed by the pipeline and CSS/HTML generators to produce the final presentation.
 
+## Theme Name and CSS Scoping
+The theme's `name` field propagates as the `data-theme-name` attribute on `<html>`, which CSS uses to scope rules via the selector `:is(:root, .rb-theme-root)[data-theme-name="<name>"]`. This enables multiple themes to render side by side in preview environments without style leakage.
+
+## Resolved Theme Structure
+The resolved theme object from `resolveThemeConfig` in `packages/core/src/config.ts` contains `name`, `colorMode`, `typography`, `articleLayout`, `tokens`, `attributes`, `userCss`, and `styles`. This resolved theme is stored under the `theme` key in the overall resolved config and consumed by the pipeline and CSS/HTML generators.
+
 ## Related terms
 
 - [[design-token|Design Token]]

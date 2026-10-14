@@ -51,6 +51,24 @@ export default defineConfig({
 :::
 ```
 
+## カスタムショートコード
+`shortcodes`オプションでカスタムショートコードを登録できます。
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { shortcodes } from "@riebeckite/plugin-shortcodes";
+
+export default defineConfig({
+  plugins: [shortcodes({
+    shortcodes: {
+      ad: ({ attributes, label }) => `<div class="rb-shortcode ad">${label || "Ad"}</div>`,
+    },
+  })],
+});
+```
+
+組み込みのショートコードと同様に名前でマージされ、同じ名前の場合は上書きされます。
+
 ## 関連用語
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

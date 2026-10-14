@@ -5,11 +5,9 @@ sidebar:
 ---
 
 # Callout
-
 コンテナショートコードの`:::callout[Title]{type=warning}`または`:::note[Title]{type=info}`で作るコールアウトボックスです。`rr-callout rr-callout--{type}`クラスを持つ`div`として描画され、組み込みの既定タイトルを持ちます。
 
 ## Calloutの記法
-
 ```md
 :::callout[Warning]{type=warning}
 More content.
@@ -21,12 +19,9 @@ More content.
 This is a note callout.
 :::
 ```
-
-出力は`div.rr-callout.rr-callout--note`で、`data-callout`を持ちます。
-タイトルは組み込みの既定値（`note`、`tip`、`warning`、`danger`、`bug`、`quote`）にフォールバックします。
+出力は`div.rr-callout.rr-callout--note`で、`data-callout`を持ちます。タイトルは組み込みの既定値（`note`、`tip`、`warning`、`danger`、`bug`、`quote`）にフォールバックします。
 
 ## Calloutの種類
-
 組み込みのCalloutの種類と既定タイトルです。
 
 - `note`/ `note`→ 既定タイトル"Note"
@@ -37,11 +32,9 @@ This is a note callout.
 - `quote`→ 既定タイトル"Quote"
 
 ## タイトルとスタイルのカスタマイズ
-
 ショートコードに任意のタイトルを渡せます。`:::callout[My Title]{type=warning}`と書きます。
 
 Pluginの登録時に`callout.defaultTitles`オプションで既定タイトルを上書きできます。
-
 ```ts
 callout: {
   defaultTitles: {
@@ -50,8 +43,10 @@ callout: {
 }
 ```
 
-## 関連用語
+## Obsidian MarkdownのCallout連携
+`@riebeckite/plugin-obsidian-markdown`プラグインもObsidianスタイルのコールアウトブロッククォート(`> [!NOTE]`, `> [!WARNING]`, など)を解析し、同じ`rr-callout`CSSクラスに変換します。短縮構文を使わずにObsidian Markdownで書かれたコールアウトがRiebeckiteでも同じように描画されます。
 
+## 関連用語
 - [[glossary/obsidian-vault|Obsidian Vault]]
 - [[tag|Tag]]
 - [[shortcode|Shortcode]]
@@ -61,5 +56,4 @@ callout: {
 - [[glossary/ui|UI]]
 
 ## さらに詳しく
-
 - [Obsidian Markdown](../plugins/obsidian-markdown.ja.md)

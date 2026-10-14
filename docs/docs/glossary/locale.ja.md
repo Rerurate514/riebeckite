@@ -18,3 +18,24 @@ sidebar:
 ## ページごとの言語
 
 ページのlocaleはfrontmatterの`lang`fieldかファイル名の接尾辞から決まります。これがURLの接頭辞を決めます。
+
+## LocaleとURL生成
+localeは各ページのURL接頭辞を決定します。既定言語（`l10n.defaultLang`で設定）は接頭辞なしのURLを維持します（`/about`など）。その他の言語は言語コードで接頭辞が付けられます（`/en/about`, `/ja/about`）。この接頭辞はファイル名を書き換えるのではなく、l10nプラグインがpublic location解決時に付加します。
+
+言語検出の優先順位（`packages/plugins/l10n/src/l10n.ts`で定義）は以下の通りです：
+
+1. **frontmatter** ：ファイルのfrontmatter anywhereにある`lang:`
+2. **custom detector** ：`detect`オプションが提供されている場合
+3. **filename suffix** ：`.ja.md`, `-en.md`, `_en-US.md`など
+4. **`defaultLang`** ：他の信号で言語が解決されない場合に使用
+
+```ts
+// Example: language detection precedence
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  detect: ({ path }) => path.startsWith("French/") ? { lang: "fr" } : undefined,
+});
+```
+
+解決されたlocaleはmanifestの`publicLocation.language`に格納され、integrationが正しい`<html lang>`属性とURL接頭辞を描画するために使用されます。

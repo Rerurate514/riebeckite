@@ -35,6 +35,17 @@ taxonomy({
 
 `tags: false`でタグの生成を止められます。`related`optionを有効にすると、共起をもとにしたナビゲーションを生成します。
 
+## タグのURL構造
+各ユニークなタグ値は`/tags/<slug>`のページで表示されます。タグのベースパスは`taxonomy()`オプションの`tagsBasePath`で変更できます。
+
+```ts
+taxonomy({
+  tagsBasePath: "/custom-tags",
+})
+```
+
+既定のベースパスは`/tags`です。タグページにはエントリの一覧に加え、RSS・Atom・JSONのフィードと関連タグのナビゲーションが提供されます。
+
 ## 関連用語
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

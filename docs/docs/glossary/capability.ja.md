@@ -18,6 +18,9 @@ Capabilityは、Pluginが提供または要求できる名前付きの機能で�
 
 依存解決は、すべての`requires`が他のPluginの`provides`と一致することを確かめます。提供側の重複は失敗し、循環も失敗します。要求が欠けている場合は`PluginDependencyError`になります。
 
+## 解決の詳細
+プラグインの依存解決器（`resolvePluginDependencies`、`packages/core/src/plugin/plugin_dependency.ts`）は、Capability名を検証し、提供側の重複を検出して失敗させ、トポロジカルソートで依存関係を解決します。必須のCapabilityが欠けている場合は、`PluginDependencyError`が`kind: "missing-capability"`で投げられます。自己依存は`kind: "self-dependency"`、循環は`kind: "cycle"`として投げられ、Capability名とPluginのチェーンが含まれます。`CapabilityDeclaration`型は`"provides" | "requires" | "optional"`で、名前の検証に使われます（`packages/core/src/plugin/plugin_dependency_error.ts`）。
+
 ## 関連用語
 
 - [[plugin|Plugin]]

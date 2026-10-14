@@ -23,3 +23,28 @@ To link an ambiguous name on purpose, use the explicit path form:
 ```md
 [[glossary/theme|theme]]
 ```
+
+## Content index structure
+
+The content index is of type `ContentIndexBuild` (`packages/core/src/content/content_index_builder.ts`), returned by `ContentIndexBuilder.build()` or `resolveContentIndex()`. It contains:
+
+- **`index`** — a `Map<string, string>` mapping lowercase slug suffixes to their canonical content path. A key that matches a single candidate resolves to it; keys matching multiple candidates are intentionally absent (ambiguous).
+- **`ambiguities`** — a `ReadonlyMap<string, readonly string[]>` mapping ambiguous keys to their sorted list of candidate entries.
+
+Example index build output:
+
+```ts
+{
+  index: new Map([
+    ["hello", "notes/hello"],
+    ["world", "notes/world"],
+  ]),
+  ambiguities: new Map([
+    ["tags", ["notes/tag1", "notes/tag2"]], // multiple notes with "tags" slug suffix
+  ]),
+}
+```
+
+The index is built by iterating all content entries, collecting lowercased path suffixes (including frontmatter aliases), and collapsing candidates via `resolveContentIndex`. If a key matches more than one note, it is removed from the index to prevent incorrect resolution.
+
+## Related terms

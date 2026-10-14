@@ -26,7 +26,37 @@ The cache versioning is controlled by two constants defined in `packages/core/sr
 - **CONTENT_CACHE_COMPATIBILITY_VERSION** (currently **3**): Changes when behavior or contracts change.
 
 ## Cache Lookup Compatibility Check
-During cache lookups, the `lookup` method in `createPersistentContentCache` checks `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`. If the versions differ, the entry is treated as a `schema-miss` and reprocessed from scratch. This ensures that any structural changes to the cache schema are always picked up on the next build.
+
+During cache lookups, the `lookup` method in `createPersistentContentCache` (`packages/core/src/content/content_persistent_cache.ts`) checks `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`. If the versions differ, the entry is treated as a `schema-miss` and reprocessed from scratch. This ensures that any structural changes to the cache schema are always picked up on the next build.
+
+## Cache Entry Structure
+
+The persistent content cache entry (`PersistentContentCacheEntry` type in `packages/core/src/content/content_persistent_cache.ts`) structure:
+
+```json
+{
+  "schemaVersion": 4,
+  "key": "<computed cache key>",
+  "dependencies": [
+    { "kind": "content", "id": "slug-name", "fingerprint": "sha256 hash" },
+    { "kind": "file", "id": "path/to/file", "fingerprint": "sha256 hash" },
+    { "kind": "link", "id": "link-target-slug", "fingerprint": "sha256 hash" }
+  ],
+  "value": {
+    "frontmatter": { "title": "Example", "date": "2024" },
+    "html": "<p>processed HTML</p>"
+  }
+}
+```
+
+The entry includes `schemaVersion` (currently 4), `key` (computed via `computeContentCacheKey` from slug, source, frontmatter, and pipeline fingerprint), `dependencies` (array of `CachedContentDependency` records), and `value` (frontmatter and HTML). If `entry.key !== key` during lookup, the entry is treated as a `key-miss`.
+
+## Schema Version Constants
+
+The cache versioning is controlled by two constants defined in `packages/core/src/content/content_persistent_cache.ts`:
+
+- **CONTENT_CACHE_SCHEMA_VERSION** (currently **4**): Increments when the cache structure changes. Entries with a mismatched schema version are treated as misses and reprocessed.
+- **CONTENT_CACHE_COMPATIBILITY_VERSION** (currently **3**): Changes when behavior or contracts change. If the versions differ, the entry is treated as a `schema-miss` and reprocessed from scratch. This ensures that any structural changes to the cache schema are always picked up on the next build.
 
 ## Related terms
 

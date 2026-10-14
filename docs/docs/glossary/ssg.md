@@ -17,6 +17,20 @@ Uses the output cache to reuse unchanged routes.
 
 Core handles content and locations; the integration connects to HonoX and Vite to render routes and write output.
 
+## Output Cache
+
+The output cache stores rendered route results keyed by route path and fingerprint. On subsequent builds, unchanged routes are restored from the cache rather than re-rendered. The cache key is derived from the output inventory comparison, which determines which routes have changed since the last build.
+
+### Example
+
+```sh
+# Output cache hit — unchanged routes are restored from cache
+riebeckite build
+
+# Output cache miss — changed routes are re-rendered
+riebeckite build --full
+```
+
 ## Related terms
 
 - [[build|Build]]

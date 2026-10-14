@@ -57,6 +57,24 @@ export type PublishFrontmatter = {
 };
 ```
 
+## Frontmatter parsing
+
+Frontmatter is parsed before the Markdown body, so hooks and location resolution can read metadata first. Unknown fields stay available for plugins. The parsed frontmatter is stored in `PostFrontmatter` type and becomes the `frontmatter` field of `ContentManifestEntry` (`packages/core/src/types/content_manifest.ts`). It is also used by `resolvePublishingState` to determine the publishing state.
+
+```ts
+// From packages/core/src/types/post_content.ts
+export type PostFrontmatter = {
+  title?: string;
+  date?: string | Date;
+  tags?: string[];
+  series?: string;
+  published?: boolean;
+  visibility?: "public" | "unlisted" | "draft" | "scheduled";
+  aliases?: string[];
+  id?: string;
+};
+```
+
 ## Related terms
 
 - [[glossary/page|Page]]

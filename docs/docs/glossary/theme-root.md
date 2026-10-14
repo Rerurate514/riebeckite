@@ -26,6 +26,32 @@ ThemeRoot emits the following attributes on `<html>`:
 - `data-typography`: Typography preset value
 - `data-article-layout`: Article layout preset value
 
+## Theme Root UI Component
+The framework provides `ThemeRoot`, a UI primitive from `@riebeckite/honox/ui` that handles setting theme attributes on the `<html>` element. Usage:
+```tsx
+import { ThemeRoot } from "@riebeckite/honox/ui";
+<ThemeRoot
+  theme={config.theme}
+  lang={c.get("htmlLanguage") ?? config.site.locale}
+>
+  {children}
+</ThemeRoot>
+```
+`ThemeRoot` renders the `<html>` element with the following attributes: `lang`, `data-theme-name`, `data-theme`, `data-typography`, and `data-article-layout`.
+
+## Reserved Attributes on `<html>`
+The framework-reserved attributes `data-theme`, `data-theme-name`, `data-typography`, and `data-article-layout` cannot be overwritten by the theme's `attributes`. To add custom `<html>` attributes, use the `themeRootAttributes` helper directly:
+```tsx
+import { themeRootAttributes } from "@riebeckite/honox/ui";
+<html
+  lang={c.get("htmlLanguage") ?? config.site.locale}
+  {...themeRootAttributes(config.theme)}
+  data-custom-attr="..."
+>
+  ...
+</html>
+```
+
 ## Related terms
 
 - [[glossary/theme|Theme]]

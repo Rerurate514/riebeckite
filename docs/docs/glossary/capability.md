@@ -18,6 +18,8 @@ A capability is a named feature that plugins can provide or require; resolution 
 
 The plugin resolver validates that all `requires` have a matching `provides` from another plugin. Duplicate providers fail. Cycles fail. Missing requirements throw `PluginDependencyError`.
 
+The plugin resolver (`resolvePluginDependencies` in `packages/core/src/plugin/plugin_dependency.ts`) validates capability names, collects providers (failing on duplicates), then resolves dependencies via topological sort. Missing required capabilities throw `PluginDependencyError` with `kind: "missing-capability"`. Self-dependencies throw with `kind: "self-dependency"`. Cycles throw with `kind: "cycle"` and include the capability name and plugin chain. The `CapabilityDeclaration` type is `"provides" | "requires" | "optional"` and is used during name validation in `packages/core/src/plugin/plugin_dependency_error.ts`.
+
 ## Related terms
 
 - [[plugin|Plugin]]

@@ -44,6 +44,16 @@ Buildプロセスは、`packages/core/src/pipeline.ts`で定義されたパイ�
 
 7. **出力の生成**：画像やClient Entryなどのassetを収集します。解決したThemeを使ってSSG（HonoX）でHTMLを出力します。`.riebeckite/build/content-state.json`の前回のBuild状態を使い、変更したコンテンツと再利用できる出力を追跡してIncremental Buildを行います。
 
+## パイプライン実行
+
+`packages/core/src/pipeline.ts`の`Pipeline`クラスは`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続的content cacheをスキャッシュキー（slug、source、frontmatter、pipeline fingerprint）でチェックします。cacheヒットで無効な依存がない場合は、キャッシュされたfrontmatterとHTMLが即座に返されます。cacheミスまたはバイパスの場合、RemarkとRehypeプラグインによる解析、frontmatter抽出、GFM、math、カスタム変換を経てmarkdownが処理されます。リンク解決はコンテンツ依存関係トラッカーを通じて依存を記録します。処理後、結果は将来のIncremental Build用にdependenciesとfingerprintとともにpersistent content cacheに保存されます。
+
+pipeline fingerprint（`computePipelineFingerprint`）はplugin構成、content filter、compatibility versionを組み込みます。cache可能性は`isPersistentlyCacheable`によって決定され、各pluginの`processedContentCache`契約（dependencyMode: none/tracked/global/unsafe）がチェックされます。
+
+## 永続的content cache統合
+
+`.riebeckite/cache/content/v3`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`CacheKeyInputs`に含まれるslug、source、正規化されたfrontmatter、pipeline fingerprintから`computeContentCacheKey`で計算されます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は4）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheはSubsequent buildsで依存無効化を判定するための論理的content、file、link dependencies（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
+
 ## 関連用語
 
 - [[incremental-build|Incremental Build]]

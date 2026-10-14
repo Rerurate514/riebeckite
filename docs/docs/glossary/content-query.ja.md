@@ -32,6 +32,30 @@ const results = searchItems(entries, "tag:news");
 - [[glossary/series|Series]]
 - [[manifest|Manifest]]
 
+## content-queryプラグインのランタイム
+
+content-queryプラグインはentry HTML内のqueryブロックを解決するランタイム（`packages/plugins/query/src/runtime.ts`）を使用します。このランタイムは以下の処理を行います：
+
+1. entry HTML内にマークされた`query`属性を持つqueryブロックを検索
+2. YAMLでエンコードされたquery specをパース
+3. `discoverableEntries`（または指定されたpool）を使用して`queryContentEntries`でフィルタリング
+4. ブロックをレンダリング結果で置換
+
+`queryContentEntries`関数（`packages/core/src/content/content_query.ts`）はタグ、フォルダ、日付、frontmatterフィールドによるフィルタリングをサポートし、ソート、ページネーション、グループ化を処理します。
+
+## グループ化とページネーション
+
+コンテンツクエリはタグ、フォルダ、日付、frontmatterフィールドによってグループ化をサポートし、`offset`と`limit`specフィールドによるページネーションもサポートします。`groupContentEntries`関数（`packages/core/src/content/content_query.ts`）はグループキーとmember entriesを持つ`ContentQueryGroup[]`エントリを返します。
+
+```ts
+// From packages/core/src/content/content_query.ts
+export function groupContentEntries(
+  entries: readonly ContentManifestEntry[],
+  groupBy: ContentQueryGroupBy,
+  options: ContentQueryGroupOptions = {},
+): ContentQueryGroup[];
+```
+
 ## さらに詳しく
 
 - [../plugins/query.ja.md]

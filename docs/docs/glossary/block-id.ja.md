@@ -19,3 +19,11 @@ sidebar:
 ## 用途
 
 block idを使うと、embedやWikiLinkがノート全体やセクションではなく、1つのblockを対象にできます。
+
+## block IDの解決
+
+`^intro`のようなblock IDは、embedとwikilinkの処理中にcontent indexによって解決されます。IDはソースノート内のアンカーとマッチングされ、`![[note#^intro]]`（embed）や`[[note#^intro]]`（wikilink）のパターンに従って解決されます。
+
+## block IDとcontent dependency
+
+block IDがembedで使用された場合`![[note#^intro]]`、埋め込みページはソースノートのcontent dependencyとなります。ソースノートのblockが編集されると、埋め込みページは無効化され、次回のビルドで再生成されます。

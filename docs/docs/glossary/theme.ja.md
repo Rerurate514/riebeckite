@@ -45,6 +45,12 @@ Themeを入れ替えても、コンテンツ、route、Pluginの動作に影響�
 
 解決されたテーマは、解決されたconfigの下に`theme`キーとしてマージされ、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`（`data-*`属性のみ許可されるようサニタイズされた）と`userCss`を含みます。その後、テーマはパイプラインとCSS/HTMLジェネレータによって最終的なプレゼンテーションを生成するために消費されます。
 
+## Theme名とCSSスコープ
+Themeの`name`フィールドが`<html>`の`data-theme-name`属性として伝播し、CSSは`:is(:root, .rb-theme-root)[data-theme-name="<name>"]`セレクターでルールをスコープします。これにより、プレビュー環境で複数のThemeがスタイル漏れなく横並びにレンダリングされます。
+
+## 解決済みThemeの構造
+`packages/core/src/config.ts`の`resolveThemeConfig`によって得られる解決されたThemeオブジェクトには、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`、`userCss`、`styles`が含まれます。この解決されたThemeは、解決されたconfigの下の`theme`キーに格納され、パイプラインとCSS/HTMLジェネレータによって消費されます。
+
 ## 関連用語
 
 - [[design-token|Design Token]]

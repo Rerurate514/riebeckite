@@ -29,6 +29,16 @@ flowchart LR
 
 Content hooks (`onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated`) run in resolved plugin order. A hook failure is reported as `PluginHookError` identifying the plugin, hook name, and cause.
 
+## Hook list and purposes
+- `onConfigResolved` — called after config is resolved; useful for reading final resolved options.
+- `onContentLoaded` — called after content is loaded from the source; avoid rebuilding manifest-level information here.
+- `onPostParsed` — called after Markdown/HTML parsing; good for transforming parsed content.
+- `onPostProcessed` — called after the full content pipeline; the last chance to modify generated HTML before the content graph.
+- `onManifestCreated` — called after the manifest is created; has access to the full manifest and can contribute body slots or other output.
+
+## Hook failure
+A hook failure throws `PluginHookError` (importable from `@riebeckite/core`) with `message` naming the plugin and hook, `cause` holding the original error, and for content hooks `path` identifying the offending file (e.g., `note.md`).
+
 ## Related terms
 
 - [[plugin|Plugin]]

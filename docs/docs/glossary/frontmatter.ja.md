@@ -57,6 +57,24 @@ export type PublishFrontmatter = {
 };
 ```
 
+## frontmatterの解析
+
+frontmatterは本文より先に解析されるため、hookと公開位置の解決はメタデータを先に読めます。未知のfieldはPlugin用にそのまま残ります。解析されたfrontmatterは`PostFrontmatter`型に格納され、`ContentManifestEntry`の`frontmatter`フィールド（`packages/core/src/types/content_manifest.ts`）になります。また`resolvePublishingState`によって公開状態を決定するために使用されます。
+
+```ts
+// From packages/core/src/types/post_content.ts
+export type PostFrontmatter = {
+  title?: string;
+  date?: string | Date;
+  tags?: string[];
+  series?: string;
+  published?: boolean;
+  visibility?: "public" | "unlisted" | "draft" | "scheduled";
+  aliases?: string[];
+  id?: string;
+};
+```
+
 ## 関連用語
 
 - [[glossary/page|Page]]

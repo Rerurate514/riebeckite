@@ -46,6 +46,21 @@ Structural CSS ships in `@riebeckite/honox/style.css` and reaches the site throu
 
 Primitives provide semantic HTML, hooks, class/composition, and structural CSS. Article copy, metadata formatting, navigation placement, cards, page-layout composition, islands, and site visual design belong to the site application.
 
+## ContentSlot
+`ContentSlot` renders a plugin-provided body slot at the position the Site chose. It owns the lookup, empty handling, and HTML injection. When the slot is absent or blank, it renders nothing.
+
+```tsx
+import { ContentSlot } from "@riebeckite/honox/ui";
+
+<ContentSlot slots={bodySlots} name="article.aside" />
+```
+
+The `hasSlot` utility can check whether a slot holds renderable content before rendering:
+
+```tsx
+{hasSlot(bodySlots, "article.aside") && <ContentSlot slots={bodySlots} name="article.aside" />}
+```
+
 ## Related terms
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

@@ -37,6 +37,22 @@ It ignores the page when `(min-width: 48rem)` matches — desktop margin notes n
 import { initSidenotes } from "@riebeckite/plugin-sidenotes";
 ```
 
+### Client options
+`initSidenotes` accepts configurable options:
+
+- **selector**: CSS selector for reference links. Defaults to `[data-rr-sidenotes-ref]`.
+- **openLabel**: Accessible label prefix when the popover is closed. Defaults to `"Footnote"`.
+- **closeLabel**: Accessible label prefix when the popover is open. Defaults to `"Close sidenote"`.
+
+```ts
+import { initSidenotes } from "@riebeckite/plugin-sidenotes";
+initSidenotes({
+  selector: ".custom-ref",
+  openLabel: "脚注",
+  closeLabel: "閉じる",
+});
+```
+
 ## Related terms
 
 - [[glossary/obsidian-vault|Obsidian Vault]]

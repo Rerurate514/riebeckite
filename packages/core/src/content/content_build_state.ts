@@ -2,7 +2,7 @@ import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 12;
+export const CONTENT_BUILD_STATE_VERSION = 13;
 
 /**
  * Build state lives under `<content directory>/.riebeckite`. That directory is
@@ -34,6 +34,20 @@ export type ContentBuildState = {
   readonly manifestEntries?: readonly ContentManifestEntry[];
   readonly outputs?: readonly OutputDescriptor[];
   readonly externalDependencies?: readonly PersistedExternalDependency[];
+  readonly manifestHookCache?: readonly ManifestHookCacheEntry[];
+};
+
+export type ManifestHookCacheEntry = {
+  readonly pluginName: string;
+  readonly cacheable: boolean;
+  readonly pipelineFingerprint: string | undefined;
+  readonly inputFingerprint: string;
+  readonly outputFingerprint: string;
+  readonly snapshot: ManifestHookSnapshot;
+};
+
+export type ManifestHookSnapshot = {
+  readonly entries: readonly ContentManifestEntry[];
 };
 
 export type PersistedExternalDependency = {

@@ -390,6 +390,13 @@ async function buildOnce({ siteRoot, label }) {
       metricNumber(metrics, "candidateOutputCount") -
         metricNumber(metrics, "cacheEntriesRead"),
     ),
+    manifestHooksExecuted: metricNumber(metrics, "manifestHooksExecuted"),
+    manifestHooksReused: metricNumber(metrics, "manifestHooksReused"),
+    manifestHookCacheHit: metricNumber(metrics, "manifestHookCacheHit"),
+    manifestHookCacheMiss: metricNumber(metrics, "manifestHookCacheMiss"),
+    manifestHookDurationMs: Math.round(
+      metricNumber(metrics, "manifestHookDurationMs"),
+    ),
     fastPathApplied:
       metricNumber(metrics, "renderedRouteCount") === 0 &&
       !metrics.fullRegenerationRequired,
@@ -453,12 +460,12 @@ function markdownReport(report) {
     "",
     "Single sample per row.",
     "",
-    "| Preset | Size | Scenario | Wall ms | RSS MB | Processed / Reused | Rendered / Reused | SSR routes | Cache hit / miss | Fast path | Full regeneration | Global / unknown | Write ms | Equivalent |",
-    "| --- | ---: | --- | ---: | ---: | --- | --- | ---: | --- | --- | --- | --- | ---: | --- |",
+    "| Preset | Size | Scenario | Wall ms | RSS MB | Processed / Reused | Rendered / Reused | Manifest hooks executed / reused | Manifest cache hit / miss | Manifest hook ms | SSR routes | Cache hit / miss | Fast path | Full regeneration | Global / unknown | Write ms | Equivalent |",
+    "| --- | ---: | --- | ---: | ---: | --- | --- | --- | --- | ---: | ---: | --- | --- | --- | --- | ---: | --- |",
   ];
   for (const row of report.rows)
     lines.push(
-      `| ${row.preset} | ${row.size} | ${row.scenario} | ${row.wallTimeMs} | ${row.peakRssMb} | ${row.contentProcessed} / ${row.contentReused} | ${row.outputRendered} / ${row.outputReused} | ${row.ssrRouteCount} | ${row.outputCacheHit} / ${row.outputCacheMiss} | ${row.fastPathApplied} | ${row.fullRegenerationRequired} | ${row.globalOrUnknownDependency} | ${row.outputWriteTimeMs} | ${row.equivalence.equivalent} |`,
+      `| ${row.preset} | ${row.size} | ${row.scenario} | ${row.wallTimeMs} | ${row.peakRssMb} | ${row.contentProcessed} / ${row.contentReused} | ${row.outputRendered} / ${row.outputReused} | ${row.manifestHooksExecuted} / ${row.manifestHooksReused} | ${row.manifestHookCacheHit} / ${row.manifestHookCacheMiss} | ${row.manifestHookDurationMs} | ${row.ssrRouteCount} | ${row.outputCacheHit} / ${row.outputCacheMiss} | ${row.fastPathApplied} | ${row.fullRegenerationRequired} | ${row.globalOrUnknownDependency} | ${row.outputWriteTimeMs} | ${row.equivalence.equivalent} |`,
     );
   lines.push("", "## Plugin order");
   for (const [name, preset] of Object.entries(report.presets))

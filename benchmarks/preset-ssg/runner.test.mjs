@@ -23,6 +23,8 @@ test("preset benchmark prepares workspace packages and explicit package links", 
   assert.match(runner, /await buildWorkspacePackages\(\)/);
   assert.match(runner, /async function linkWorkspacePackages/);
   assert.match(runner, /"mermaid",\s*"node_modules",\s*"puppeteer"/);
+  assert.match(runner, /manifestHooksExecuted/);
+  assert.match(runner, /manifestHookDurationMs/);
 });
 
 test("official starter and showcase scaffolds preserve their plugin order", async (t) => {

@@ -1027,6 +1027,7 @@ async function buildWithManifestOnly(
   files: Record<string, string>,
   directory: string,
   marker: string,
+  manifestPlugin = manifestOnlyDecorator(marker),
 ) {
   const events: { name: string }[] = [];
   const tracer = new SinkTracer({
@@ -1034,13 +1035,14 @@ async function buildWithManifestOnly(
     onSpan: () => {},
   });
   const config = testConfig(directory);
-  const plugins = [...config.plugins, manifestOnlyDecorator(marker)];
+  const plugins = [...config.plugins, manifestPlugin];
   const manager = new ContentManager(memoryContentSource(files), [], {
     config: { ...config, plugins },
     plugins,
     observability: { logger: new NoopLogger(), tracer },
   });
   const manifest = await manager.build({ incremental: true });
+  const manifestHookMetrics = manager.getManifestHookMetrics();
   const processed = new Map<string, string>();
   for (const entry of manifest.entries) {
     processed.set(
@@ -1053,6 +1055,7 @@ async function buildWithManifestOnly(
     manifest,
     processed,
     reused: events.filter((event) => event.name === "content.reuse").length,
+    manifestHookMetrics,
   };
 }
 
@@ -1102,6 +1105,144 @@ test("a manifest hook html mutation survives a no-change rebuild exactly once", 
     );
   }
 });
+
+test("manifest hook cache skips no-change hooks and reruns them when input changes", async () => {
+  const directory = await tempDirectory("manifest-hook-metrics");
+  const files = { "a.md": "# A", "b.md": "# B" };
+
+  const cold = await buildWithManifestOnly(
+    files,
+    directory,
+    "MANIFEST_METRICS",
+  );
+  const warm = await buildWithManifestOnly(
+    files,
+    directory,
+    "MANIFEST_METRICS",
+  );
+
+  assert.deepEqual(manifestHookCounts(cold), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 0,
+    reused: 1,
+    cacheHit: 1,
+    cacheMiss: 0,
+  });
+  files["a.md"] += "\nChanged.";
+  const changed = await buildWithManifestOnly(
+    files,
+    directory,
+    "MANIFEST_METRICS",
+  );
+  assert.deepEqual(manifestHookCounts(changed), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+  for (const result of [cold, warm, changed])
+    assert.ok(result.manifestHookMetrics.manifestHookDurationMs >= 0);
+});
+
+test("a corrupted manifest hook snapshot reruns the hook safely", async () => {
+  const directory = await tempDirectory("manifest-hook-cache-corruption");
+  const files = { "a.md": "# A" };
+  await buildWithManifestOnly(files, directory, "MANIFEST_CORRUPTION");
+  const statePath = path.join(directory, "build", "content-state.json");
+  const state = JSON.parse(await fs.readFile(statePath, "utf8"));
+  state.manifestHookCache[0].snapshot.entries = "corrupted";
+  await fs.writeFile(statePath, JSON.stringify(state), "utf8");
+
+  const recovered = await buildWithManifestOnly(
+    files,
+    directory,
+    "MANIFEST_CORRUPTION",
+  );
+  assert.deepEqual(manifestHookCounts(recovered), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+});
+
+test("a manifest hook with external dependencies always reruns", async () => {
+  const directory = await tempDirectory("manifest-hook-external");
+  const files = { "a.md": "# A" };
+  const plugin = definePlugin({
+    ...manifestOnlyDecorator("MANIFEST_EXTERNAL"),
+    resolveExternalDependencies: async () => [],
+  });
+
+  await buildWithManifestOnly(files, directory, "MANIFEST_EXTERNAL", plugin);
+  const warm = await buildWithManifestOnly(
+    files,
+    directory,
+    "MANIFEST_EXTERNAL",
+    plugin,
+  );
+
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+  assert.equal(
+    warm.manifestHookMetrics.byPlugin["manifest-only-decorator"]?.reason,
+    "uncacheable",
+  );
+});
+
+test("a manifest hook that adds diagnostics always reruns", async () => {
+  const directory = await tempDirectory("manifest-hook-diagnostics");
+  const files = { "a.md": "# A" };
+  const plugin = definePlugin({
+    ...manifestOnlyDecorator("MANIFEST_DIAGNOSTIC"),
+    onManifestCreated: ({ diagnostics, manifest }) => {
+      for (const entry of manifest.entries) {
+        if (!entry.html.includes("MANIFEST_DIAGNOSTIC"))
+          entry.html = `${entry.html}\n<p>MANIFEST_DIAGNOSTIC</p>`;
+      }
+      diagnostics.push({
+        code: "manifest-diagnostic",
+        severity: "warning",
+        message: "Manifest diagnostic",
+      });
+    },
+  });
+
+  await buildWithManifestOnly(files, directory, "MANIFEST_DIAGNOSTIC", plugin);
+  const warm = await buildWithManifestOnly(
+    files,
+    directory,
+    "MANIFEST_DIAGNOSTIC",
+    plugin,
+  );
+
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+});
+
+function manifestHookCounts(
+  result: Awaited<ReturnType<typeof buildWithManifestOnly>>,
+) {
+  return {
+    executed: result.manifestHookMetrics.manifestHooksExecuted,
+    reused: result.manifestHookMetrics.manifestHooksReused,
+    cacheHit: result.manifestHookMetrics.manifestHookCacheHit,
+    cacheMiss: result.manifestHookMetrics.manifestHookCacheMiss,
+  };
+}
 
 test("repeated manifest hook rebuilds do not duplicate output in processed content", async () => {
   const directory = await tempDirectory("manifest-only-repeat");
@@ -1161,10 +1302,7 @@ test("a manifest hook html mutation is not persisted in the content caches", asy
     const stat = await fs.stat(fullPath);
     if (!stat.isFile()) continue;
     const text = await fs.readFile(fullPath, "utf8");
-    assert.equal(
-      text.includes("MANIFEST_ONLY"),
-      false,
-      `${relative} must not contain a post-hook mutation`,
-    );
+    if (relative.includes("content-state.json")) continue;
+    assert.equal(text.includes("MANIFEST_ONLY"), false, `${relative} cache`);
   }
 });

@@ -48,4 +48,8 @@ export class GeneratedOutputRegistry {
       a.path < b.path ? -1 : a.path > b.path ? 1 : 0,
     );
   }
+
+  count(): number {
+    return this.outputs.length;
+  }
 }

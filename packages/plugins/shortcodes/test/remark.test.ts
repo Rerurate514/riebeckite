@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  containsShortcodeDirective,
   DIAGNOSTIC_INLINE_UNSUPPORTED,
   DIAGNOSTIC_INVALID,
   DIAGNOSTIC_UNKNOWN,
@@ -129,4 +130,33 @@ test("malformed attributes are dropped and diagnosed", () => {
   assert.ok(node.value.includes(">Hi<"));
   assert.ok(!node.value.includes("bad key"));
   assert.equal(file.messages[0]?.ruleId, DIAGNOSTIC_INVALID);
+});
+
+test("shortcode applicability ignores markdown regions remark-directive cannot parse", () => {
+  assert.equal(containsShortcodeDirective("# Note\n\nPlain markdown."), false);
+  assert.equal(
+    containsShortcodeDirective("```md\n::badge[Not a shortcode]\n```"),
+    false,
+  );
+  assert.equal(
+    containsShortcodeDirective("~~~md\n:badge[Not a shortcode]\n~~~"),
+    false,
+  );
+  assert.equal(
+    containsShortcodeDirective("Use `:badge[Not a shortcode]` literally."),
+    false,
+  );
+  assert.equal(containsShortcodeDirective("\\:badge[Escaped]"), false);
+  assert.equal(
+    containsShortcodeDirective("---\ntitle: :badge[Metadata]\n---\n# Note"),
+    false,
+  );
+});
+
+test("shortcode applicability treats directives and ambiguous directive-like text as unsafe", () => {
+  assert.equal(containsShortcodeDirective(":badge[Inline]"), true);
+  assert.equal(containsShortcodeDirective("::badge[Leaf]"), true);
+  assert.equal(containsShortcodeDirective(":::note\n:badge[Child]\n:::"), true);
+  assert.equal(containsShortcodeDirective("<div>:badge[HTML]</div>"), true);
+  assert.equal(containsShortcodeDirective(":::malformed"), true);
 });

@@ -22,6 +22,97 @@ export const DIAGNOSTIC_INLINE_UNSUPPORTED = "shortcodes-inline-unsupported";
 
 const ATTRIBUTE_NAME_PATTERN = /^[A-Za-z_][\w-]*$/;
 
+export function containsShortcodeDirective(source: string): boolean {
+  const lines = source.split(/\r?\n/);
+  const frontmatterEnd = findFrontmatterEnd(lines);
+  let fence: { character: "`" | "~"; length: number } | undefined;
+
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+    if (frontmatterEnd !== undefined && lineIndex <= frontmatterEnd) continue;
+    const line = lines[lineIndex] ?? "";
+    const fenceMarker = line.match(/^ {0,3}(`{3,}|~{3,})/);
+
+    if (fence) {
+      if (
+        fenceMarker?.[1]?.[0] === fence.character &&
+        fenceMarker[1].length >= fence.length
+      ) {
+        fence = undefined;
+      }
+      continue;
+    }
+
+    if (fenceMarker) {
+      const marker = fenceMarker[1];
+      if (marker) {
+        fence = {
+          character: marker[0] as "`" | "~",
+          length: marker.length,
+        };
+      }
+      continue;
+    }
+
+    if (lineContainsShortcodeDirective(line)) return true;
+  }
+
+  return false;
+}
+
+function findFrontmatterEnd(lines: readonly string[]): number | undefined {
+  const opening = lines[0]?.trim();
+  if (opening !== "---" && opening !== "+++") return undefined;
+
+  for (let index = 1; index < lines.length; index += 1) {
+    const line = lines[index]?.trim();
+    if (line === opening || (opening === "---" && line === "...")) return index;
+  }
+
+  return undefined;
+}
+
+function lineContainsShortcodeDirective(line: string): boolean {
+  for (let index = 0; index < line.length; index += 1) {
+    if (line[index] === "`") {
+      const ticks = countRun(line, index, "`");
+      const closing = line.indexOf("`".repeat(ticks), index + ticks);
+      if (closing >= 0) {
+        index = closing + ticks - 1;
+        continue;
+      }
+    }
+
+    if (line[index] !== ":" || isEscaped(line, index)) continue;
+    const colonCount = countRun(line, index, ":");
+    const nameStart = index + Math.min(colonCount, 3);
+    if (colonCount <= 3 && isDirectiveNameStart(line[nameStart])) return true;
+  }
+
+  return false;
+}
+
+function countRun(value: string, start: number, character: string): number {
+  let end = start;
+  while (value[end] === character) end += 1;
+  return end - start;
+}
+
+function isEscaped(value: string, index: number): boolean {
+  let escapes = 0;
+  for (
+    let cursor = index - 1;
+    cursor >= 0 && value[cursor] === "\\";
+    cursor -= 1
+  ) {
+    escapes += 1;
+  }
+  return escapes % 2 === 1;
+}
+
+function isDirectiveNameStart(value: string | undefined): boolean {
+  return value !== undefined && /[A-Za-z]/.test(value);
+}
+
 type DiagnosticOptions = {
   place?: unknown;
   ruleId?: string;

@@ -5,6 +5,7 @@ import {
   builtinShortcodes,
 } from "./src/builtins.js";
 import {
+  containsShortcodeDirective,
   DIAGNOSTIC_INLINE_UNSUPPORTED,
   DIAGNOSTIC_INVALID,
   DIAGNOSTIC_UNKNOWN,
@@ -35,6 +36,7 @@ export {
   builtinInlineShortcodes,
   builtinShortcodeNames,
   builtinShortcodes,
+  containsShortcodeDirective,
   createShortcodeRenderContext,
   DEFAULT_SHORTCODE_CLASS_NAME,
   DIAGNOSTIC_INLINE_UNSUPPORTED,
@@ -54,8 +56,10 @@ export function shortcodes(options: ShortcodeOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     processedContentCache: {
-      version: "shortcodes-v1",
+      version: "shortcodes-v2",
       dependencyMode: "unsafe",
+      appliesToContent: ({ source }) =>
+        containsShortcodeDirective(source) ? "applies" : "does-not-apply",
     },
     options,
     extendMarkdownPipeline: (pipeline, context) => {

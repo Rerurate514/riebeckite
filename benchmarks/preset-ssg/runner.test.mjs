@@ -23,6 +23,10 @@ test("preset benchmark prepares workspace packages and explicit package links", 
   assert.match(runner, /await buildWorkspacePackages\(\)/);
   assert.match(runner, /async function linkWorkspacePackages/);
   assert.match(runner, /"mermaid",\s*"node_modules",\s*"puppeteer"/);
+  assert.match(runner, /"excalidraw",\s*"node_modules",\s*"lz-string"/);
+  assert.match(runner, /async function linkJunctionIfAbsent/);
+  assert.match(runner, /Refusing to replace non-link dependency/);
+  assert.match(runner, /Refusing to replace mismatched dependency link/);
   assert.match(runner, /manifestHooksExecuted/);
   assert.match(runner, /manifestHookDurationMs/);
 });

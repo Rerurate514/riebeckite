@@ -141,8 +141,18 @@ export function topLevelHeadings(text) {
   return headings;
 }
 
+function documentWithoutFrontmatter(text) {
+  const frontmatter =
+    /^(?:\uFEFF)?---\r?\n[\s\S]*?\r?\n(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/.exec(
+      text,
+    );
+  return frontmatter === null ? text : text.slice(frontmatter[0].length);
+}
+
 function bodyWithoutTitle(text) {
-  return text.replace(/^#\s+[^\n]*\n+/, "").trim();
+  return documentWithoutFrontmatter(text)
+    .replace(/^#\s+[^\n]*\n+/, "")
+    .trim();
 }
 
 export function renderReadme(manifestName, documentText, options) {
@@ -211,8 +221,8 @@ export function buildDesiredReadmes({
         continue;
       }
       if (
-        topLevelHeadings(document).length !== 1 ||
-        !document.startsWith("# ")
+        topLevelHeadings(documentWithoutFrontmatter(document)).length !== 1 ||
+        !/^#\s+\S/.test(documentWithoutFrontmatter(document))
       ) {
         errors.push(
           `docs/docs/${settings.plural}/${pageName} must have exactly one leading H1`,

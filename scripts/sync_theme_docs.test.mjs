@@ -24,11 +24,11 @@ function makeFixture() {
   );
   fs.writeFileSync(
     path.join(docsThemesRoot, "sample.md"),
-    "# Sample\n\nEnglish source.\n\n[日本語](./sample.ja.md)\n",
+    "---\ntitle: Sample\n---\n# Sample\n\nEnglish source.\n\n[日本語](./sample.ja.md)\n",
   );
   fs.writeFileSync(
     path.join(docsThemesRoot, "sample.ja.md"),
-    "# Sample\n\n日本語の正本。\n\n[English](./sample.md)\n",
+    "---\ntitle: Sample\n---\n# Sample\n\n日本語の正本。\n\n[English](./sample.md)\n",
   );
   return { root, themesRoot, docsThemesRoot };
 }
@@ -52,14 +52,12 @@ test("preserves canonical theme docs and reflects edits in generated READMEs", (
   const before = fs.readFileSync(source, "utf8");
   sync(fixture);
   assert.equal(fs.readFileSync(source, "utf8"), before);
-  assert.ok(
-    fs
-      .readFileSync(
-        path.join(fixture.themesRoot, "sample", "README.md"),
-        "utf8",
-      )
-      .includes("Canonical addition."),
+  const readme = fs.readFileSync(
+    path.join(fixture.themesRoot, "sample", "README.md"),
+    "utf8",
   );
+  assert.ok(readme.includes("Canonical addition."));
+  assert.ok(!readme.includes("title: Sample"));
 });
 
 test("detects direct README edits and fails closed for missing canonical docs", () => {

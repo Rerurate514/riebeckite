@@ -24,7 +24,8 @@ Treat a corrupt cache as a safe miss; writes are atomic. Switch compatibility wi
 ```mermaid
 flowchart TD
   Work["Plugin work"]
-  Cache{"Valid cache?
+  Cache{"Valid cache?"}
+  Work --> Cache
   Cache -->|Yes| Reuse["Reuse"]
   Cache -->|No| Regenerate["Regenerate"]
 ```

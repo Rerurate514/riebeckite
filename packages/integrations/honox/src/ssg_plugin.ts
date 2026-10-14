@@ -131,9 +131,18 @@ type OutputCacheEntry = {
 };
 
 type OutputCacheState = {
-  version: 2;
+  version: 3;
   appFingerprint?: string;
   outputs: Record<string, OutputCacheEntry>;
+  finalOutputInventory?: Record<string, string>;
+  publicDirectory?: string;
+  publicFingerprint?: string;
+  configFile?: string;
+};
+
+export type NoChangeFastPathResult = {
+  readonly used: boolean;
+  readonly blockReason?: string;
 };
 
 export type RiebeckiteSsgOptions = {
@@ -150,6 +159,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
   const resolvedVirtualId = `\0${virtualId}`;
   const entry = options.entry ?? defaultEntry;
   let resolvedConfig: ResolvedConfig | undefined;
+  let pendingOutputCache:
+    | {
+        path: string;
+        state: OutputCacheState;
+        outDir: string;
+        publicDir: string | false | undefined;
+        configFile: string | undefined;
+      }
+    | undefined;
 
   return {
     name: "riebeckite-ssg",
@@ -279,9 +297,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           : 0;
         const generatedHtml: { path: string; html: string }[] = [];
         const nextOutputCache: OutputCacheState = {
-          version: 2,
+          version: 3,
           appFingerprint,
           outputs: {},
+          configFile: config.configFile,
         };
         const metrics: SsgOutputMetrics = {
           processedContentCount: 0,
@@ -459,15 +478,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         metrics.cacheEntriesSerialized = Object.keys(
           nextOutputCache.outputs,
         ).length;
-        try {
-          await saveOutputCache(outputCachePath, nextOutputCache, timingsMs);
-        } catch (error) {
-          this.warn(
-            `SSG output cache could not be saved; the next build regenerates every output. ${
-              error instanceof Error ? error.message : String(error)
-            }`,
-          );
-        }
+        pendingOutputCache = {
+          path: outputCachePath,
+          state: nextOutputCache,
+          outDir,
+          publicDir: config.publicDir,
+          configFile: config.configFile,
+        };
         await writeSsgOutputMetrics(metrics);
         this.info(
           `SSG outputs: ${metrics.renderedOutputCount} rendered · ${metrics.reusedOutputCount} reused · ${metrics.deletedOutputCount} removed`,
@@ -489,6 +506,30 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         this.warn(
           `Generated asset ${asset.path} is ${formatBytes(asset.size)}, exceeding Cloudflare Workers' ${formatBytes(cloudflareWorkerAssetLimit)} asset limit.`,
         );
+      }
+      if (!pendingOutputCache) return;
+      try {
+        pendingOutputCache.state.finalOutputInventory =
+          await fingerprintOutputDirectory(pendingOutputCache.outDir);
+        pendingOutputCache.state.publicDirectory = pendingOutputCache.publicDir
+          ? resolve(pendingOutputCache.publicDir)
+          : undefined;
+        pendingOutputCache.state.publicFingerprint =
+          pendingOutputCache.publicDir
+            ? await fingerprintDirectory(resolve(pendingOutputCache.publicDir))
+            : undefined;
+        await saveOutputCache(
+          pendingOutputCache.path,
+          pendingOutputCache.state,
+        );
+      } catch (error) {
+        this.warn(
+          `SSG output cache could not be saved; the next build regenerates every output. ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      } finally {
+        pendingOutputCache = undefined;
       }
     },
   };
@@ -626,6 +667,106 @@ async function computeAppFingerprint(
   return hash.digest("hex");
 }
 
+export async function verifyNoChangeFastPath(input: {
+  readonly root: string;
+  readonly outputDirectory: string;
+  readonly expectedOutputPaths: readonly string[];
+}): Promise<NoChangeFastPathResult> {
+  const cache = await loadOutputCache(
+    join(input.root, ".riebeckite", "ssg-output-cache.json"),
+  );
+  if (!cache)
+    return { used: false, blockReason: "output-cache-missing-or-invalid" };
+  if (!cache.finalOutputInventory || !cache.configFile) {
+    return { used: false, blockReason: "output-inventory-missing" };
+  }
+  if (
+    cache.appFingerprint !==
+    (await computeAppFingerprint(input.root, cache.configFile))
+  ) {
+    return { used: false, blockReason: "app-fingerprint-changed" };
+  }
+  if (
+    cache.publicDirectory &&
+    cache.publicFingerprint !==
+      (await fingerprintDirectory(cache.publicDirectory))
+  ) {
+    return { used: false, blockReason: "static-assets-changed" };
+  }
+  if (
+    input.expectedOutputPaths.some(
+      (output) =>
+        !cache.outputs[output] || !cache.finalOutputInventory?.[output],
+    )
+  ) {
+    return { used: false, blockReason: "output-cache-incomplete" };
+  }
+  const currentInventory = await fingerprintOutputDirectory(
+    input.outputDirectory,
+  );
+  if (!inventoriesEqual(cache.finalOutputInventory, currentInventory)) {
+    return { used: false, blockReason: "output-inventory-mismatch" };
+  }
+  return { used: true };
+}
+
+async function fingerprintDirectory(directory: string): Promise<string> {
+  const inventory = await fingerprintOutputDirectory(directory);
+  const hash = createHash("sha256");
+  for (const [path, checksum] of Object.entries(inventory).sort(
+    ([left], [right]) => left.localeCompare(right),
+  )) {
+    hash.update(path).update("\0").update(checksum).update("\0");
+  }
+  return hash.digest("hex");
+}
+
+async function fingerprintOutputDirectory(
+  directory: string,
+  relativeDirectory = "",
+): Promise<Record<string, string>> {
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    (error: unknown) => {
+      if (isMissingDirectoryError(error)) return undefined;
+      throw error;
+    },
+  );
+  if (!entries) return {};
+  const inventory: Record<string, string> = {};
+  for (const entry of entries) {
+    const file = join(directory, entry.name);
+    const relativePath = join(relativeDirectory, entry.name).replaceAll(
+      "\\",
+      "/",
+    );
+    if (entry.isDirectory()) {
+      Object.assign(
+        inventory,
+        await fingerprintOutputDirectory(file, relativePath),
+      );
+      continue;
+    }
+    if (entry.isFile()) {
+      inventory[relativePath] = createHash("sha256")
+        .update(await readFile(file))
+        .digest("hex");
+    }
+  }
+  return inventory;
+}
+
+function inventoriesEqual(
+  left: Record<string, string>,
+  right: Record<string, string>,
+): boolean {
+  const leftPaths = Object.keys(left);
+  const rightPaths = Object.keys(right);
+  return (
+    leftPaths.length === rightPaths.length &&
+    leftPaths.every((path) => left[path] === right[path])
+  );
+}
+
 async function collectAppFiles(
   directory: string,
   files: string[],
@@ -692,12 +833,33 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
     version?: unknown;
     appFingerprint?: unknown;
     outputs?: unknown;
+    finalOutputInventory?: unknown;
+    publicDirectory?: unknown;
+    publicFingerprint?: unknown;
+    configFile?: unknown;
   };
   return (
-    candidate.version === 2 &&
+    candidate.version === 3 &&
     (candidate.appFingerprint === undefined ||
       typeof candidate.appFingerprint === "string") &&
-    isOutputCacheEntries(candidate.outputs)
+    isOutputCacheEntries(candidate.outputs) &&
+    (candidate.finalOutputInventory === undefined ||
+      isOutputInventory(candidate.finalOutputInventory)) &&
+    (candidate.publicDirectory === undefined ||
+      typeof candidate.publicDirectory === "string") &&
+    (candidate.publicFingerprint === undefined ||
+      typeof candidate.publicFingerprint === "string") &&
+    (candidate.configFile === undefined ||
+      typeof candidate.configFile === "string")
+  );
+}
+
+function isOutputInventory(value: unknown): value is Record<string, string> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.values(value).every((checksum) => typeof checksum === "string")
   );
 }
 

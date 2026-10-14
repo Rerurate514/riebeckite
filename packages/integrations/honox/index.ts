@@ -8,8 +8,11 @@ export {
   defaultSsgEntry,
   riebeckiteSsgExtensionMap,
 } from "./src/ssg.js";
-export type { RiebeckiteSsgOptions } from "./src/ssg_plugin.js";
-export { riebeckiteSsg } from "./src/ssg_plugin.js";
+export type {
+  NoChangeFastPathResult,
+  RiebeckiteSsgOptions,
+} from "./src/ssg_plugin.js";
+export { riebeckiteSsg, verifyNoChangeFastPath } from "./src/ssg_plugin.js";
 export type {
   RiebeckiteIntegrationOptions,
   RiebeckiteViteOptions,

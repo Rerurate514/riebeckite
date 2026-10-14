@@ -9,6 +9,7 @@ import {
   loadOutputCache,
   saveOutputCache,
   shouldApplyRiebeckiteSsg,
+  verifyNoChangeFastPath,
 } from "../src/ssg_plugin.js";
 
 test("riebeckite SSG is disabled for the HonoX client build", () => {
@@ -60,15 +61,15 @@ test("malformed SSG output cache falls back instead of throwing", async () => {
 
   for (const body of [
     "not json",
-    JSON.stringify({ version: 2 }),
-    JSON.stringify({ version: 2, outputs: null }),
-    JSON.stringify({ version: 2, outputs: { "index.html": null } }),
+    JSON.stringify({ version: 3 }),
+    JSON.stringify({ version: 3, outputs: null }),
+    JSON.stringify({ version: 3, outputs: { "index.html": null } }),
     JSON.stringify({
-      version: 2,
+      version: 3,
       outputs: { "index.html": { source: 1, encoding: "utf8" } },
     }),
     JSON.stringify({
-      version: 2,
+      version: 3,
       outputs: { "index.html": { source: "", encoding: "raw" } },
     }),
   ]) {
@@ -92,7 +93,7 @@ test("valid SSG output cache round-trips string and binary outputs", async () =>
   };
 
   const state = {
-    version: 2 as const,
+    version: 3 as const,
     outputs: {
       "index.html": {
         source: original.outputs["index.html"],
@@ -126,7 +127,7 @@ test("SSG output cache rejects entries with an invalid checksum", async () => {
   await fs.writeFile(
     cachePath,
     JSON.stringify({
-      version: 2,
+      version: 3,
       outputs: {
         "index.html": {
           source: "corrupted",
@@ -139,4 +140,66 @@ test("SSG output cache rejects entries with an invalid checksum", async () => {
   );
 
   assert.equal(await loadOutputCache(cachePath), undefined);
+});
+
+test("no-change fast path verifies inputs and every final output", async () => {
+  const root = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-fast-path-"),
+  );
+  const app = path.join(root, "app");
+  const output = path.join(root, "dist");
+  const cache = path.join(root, ".riebeckite", "ssg-output-cache.json");
+  const config = path.join(root, "vite.config.ts");
+  await fs.mkdir(app, { recursive: true });
+  await fs.mkdir(output, { recursive: true });
+  await fs.mkdir(path.dirname(cache), { recursive: true });
+  await fs.writeFile(config, "export default {};\n");
+  await fs.writeFile(path.join(app, "index.tsx"), "export {};\n");
+  await fs.writeFile(path.join(output, "index.html"), "<main>ok</main>");
+
+  const outputSource = "<main>ok</main>";
+  const outputChecksum = createHash("sha256")
+    .update(outputSource)
+    .digest("hex");
+  const appFingerprint = createHash("sha256")
+    .update("app/index.tsx\0")
+    .update("export {};\n")
+    .update("\0")
+    .update("vite.config.ts\0")
+    .update("export default {};\n")
+    .update("\0")
+    .digest("hex");
+  await saveOutputCache(cache, {
+    version: 3,
+    appFingerprint,
+    configFile: config,
+    outputs: {
+      "index.html": {
+        source: outputSource,
+        encoding: "utf8",
+        checksum: createHash("sha256")
+          .update(`utf8\0${outputSource}`)
+          .digest("hex"),
+      },
+    },
+    finalOutputInventory: { "index.html": outputChecksum },
+  });
+
+  assert.deepEqual(
+    await verifyNoChangeFastPath({
+      root,
+      outputDirectory: output,
+      expectedOutputPaths: ["index.html"],
+    }),
+    { used: true },
+  );
+  await fs.writeFile(path.join(output, "index.html"), "corrupted");
+  assert.deepEqual(
+    await verifyNoChangeFastPath({
+      root,
+      outputDirectory: output,
+      expectedOutputPaths: ["index.html"],
+    }),
+    { used: false, blockReason: "output-inventory-mismatch" },
+  );
 });

@@ -1,6 +1,13 @@
-import type { ContentManifest, Observability } from "@riebeckite/core";
+import type {
+  ContentManifest,
+  Observability,
+  OutputChangeSet,
+} from "@riebeckite/core";
 import { ConsoleLogger, ContentManager, NoopTracer } from "@riebeckite/core";
-import { buildHonoxApplication } from "@riebeckite/honox";
+import {
+  buildHonoxApplication,
+  verifyNoChangeFastPath,
+} from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
 import {
   clearBuildOutputMarker,
@@ -41,8 +48,33 @@ export async function runBuild(
     );
 
     let manifest: ContentManifest | null = null;
+    let fastPathBlockReason: string | undefined;
+    const fastPathDecisionStartedAt = performance.now();
+    let fastPathUsed = false;
     try {
-      manifest = await content.build({ incremental: !options.full });
+      const outputChangeSet = options.full
+        ? undefined
+        : await content.getOutputChangeSet({ incremental: true });
+      const fastPath = await evaluateNoChangeFastPath(
+        project,
+        outputChangeSet,
+        options.full
+          ? undefined
+          : await content.getNoChangeFastPathBlockReason({ incremental: true }),
+      );
+      fastPathBlockReason = fastPath.blockReason;
+      fastPathUsed = fastPath.used;
+      observability.tracer.event("build.fast-path", {
+        fastPathEligible: fastPath.eligible,
+        fastPathUsed,
+        fastPathBlockReason: fastPathBlockReason ?? "",
+        fastPathDecisionDurationMs:
+          performance.now() - fastPathDecisionStartedAt,
+        viteStartupSkipped: fastPathUsed,
+        ssgSkipped: fastPathUsed,
+      });
+      if (!fastPathUsed)
+        manifest = await content.build({ incremental: !options.full });
     } finally {
       await content.dispose();
     }
@@ -54,14 +86,67 @@ export async function runBuild(
       `Persistent content cache: ${persistentContentCache.hits} hits · ${persistentContentCache.misses} misses · ${persistentContentCache.bypasses} bypasses`,
     );
 
-    await clearBuildOutputMarker(project);
-    await buildHonoxApplication({
-      root: project.appRoot,
-      tracer: observability.tracer,
-    });
-    await writeBuildOutputMarker(project);
+    if (fastPathUsed) {
+      observability.logger.info("No-change fast path: Vite and SSG skipped.");
+    } else {
+      await clearBuildOutputMarker(project);
+      await buildHonoxApplication({
+        root: project.appRoot,
+        tracer: observability.tracer,
+      });
+      await writeBuildOutputMarker(project);
+    }
   });
   observability.logger.info(
     `Build complete in ${formatDuration(performance.now() - startedAt)}`,
   );
+}
+
+async function evaluateNoChangeFastPath(
+  project: RiebeckiteProject,
+  outputChangeSet: OutputChangeSet | undefined,
+  pluginBlockReason: string | undefined,
+): Promise<{
+  readonly eligible: boolean;
+  readonly used: boolean;
+  readonly blockReason?: string;
+}> {
+  if (!outputChangeSet) {
+    return {
+      eligible: false,
+      used: false,
+      blockReason: "full-build-requested",
+    };
+  }
+  if (outputChangeSet.fullRegenerationRequired) {
+    return {
+      eligible: false,
+      used: false,
+      blockReason: "unsafe-output-dependency",
+    };
+  }
+  if (
+    outputChangeSet.affected.length > 0 ||
+    outputChangeSet.removed.length > 0
+  ) {
+    return {
+      eligible: false,
+      used: false,
+      blockReason: "content-or-output-changed",
+    };
+  }
+  if (pluginBlockReason) {
+    return { eligible: false, used: false, blockReason: pluginBlockReason };
+  }
+  const verification = await verifyNoChangeFastPath({
+    root: project.appRoot,
+    outputDirectory:
+      project.config.outputDirectory ?? `${project.appRoot}/dist`,
+    expectedOutputPaths: outputChangeSet.unchanged.map((output) => output.path),
+  });
+  return {
+    eligible: verification.used,
+    used: verification.used,
+    blockReason: verification.blockReason,
+  };
 }

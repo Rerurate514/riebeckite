@@ -459,6 +459,16 @@ export class ContentManager {
     return this.pluginRuntime.getManifestHookMetrics();
   }
 
+  async getNoChangeFastPathBlockReason(
+    options: ContentBuildOptions = {},
+  ): Promise<string | undefined> {
+    const plan = await this.getBuildPlan(options);
+    return this.pluginRuntime.getNoChangeFastPathBlockReason(
+      plan.previousState?.manifestHookCache ?? [],
+      this.getPipelineFingerprint(),
+    );
+  }
+
   async getOutputChangeSet(
     options: ContentBuildOptions = {},
   ): Promise<OutputChangeSet> {

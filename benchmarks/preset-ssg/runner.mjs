@@ -290,6 +290,32 @@ async function linkWorkspacePackages(siteRoot) {
     path.join(nodeModulesDirectory, "puppeteer"),
     "junction",
   );
+  await linkJunctionIfAbsent(
+    path.join(
+      root,
+      "packages",
+      "plugins",
+      "excalidraw",
+      "node_modules",
+      "lz-string",
+    ),
+    path.join(nodeModulesDirectory, "lz-string"),
+  );
+}
+
+async function linkJunctionIfAbsent(source, destination) {
+  const resolvedSource = await fs.realpath(source);
+  try {
+    const existing = await fs.lstat(destination);
+    if (!existing.isSymbolicLink())
+      throw new Error(`Refusing to replace non-link dependency: ${destination}`);
+    if ((await fs.realpath(destination)) !== resolvedSource)
+      throw new Error(`Refusing to replace mismatched dependency link: ${destination}`);
+    return;
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  await fs.symlink(resolvedSource, destination, "junction");
 }
 
 async function invokeBuild(siteRoot, label) {

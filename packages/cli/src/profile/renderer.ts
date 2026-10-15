@@ -23,6 +23,7 @@ export function renderProfile(report: ProfileReport, failed = false): string {
   appendIncremental(lines, report);
   appendPluginCache(lines, report);
   appendContentCache(lines, report);
+  appendFastPath(lines, report);
   appendDiagnostics(lines, report);
   appendSlowOperations(lines, report);
   return lines.join("\n");
@@ -125,6 +126,62 @@ function appendReasons(
   }
 }
 
+function appendFastPath(lines: string[], report: ProfileReport): void {
+  const fastPath = report.fastPath;
+  if (!fastPath) return;
+  lines.push("", "Fast path");
+  lines.push(row("Used", fastPath.used ? "yes" : "no", 2));
+  if (fastPath.blockReason) {
+    lines.push(row("Block reason", fastPath.blockReason, 2));
+  }
+  lines.push(
+    row("Decision", formatDuration(fastPath.fastPathDecisionDurationMs), 2),
+  );
+  lines.push(row("Plan", formatDuration(fastPath.contentPlanDurationMs), 2));
+  lines.push(
+    row(
+      "Build state read",
+      formatDuration(fastPath.buildStateReadDurationMs),
+      2,
+    ),
+  );
+  lines.push(
+    row(
+      "External dependencies",
+      formatDuration(fastPath.externalDependencyDurationMs),
+      2,
+    ),
+  );
+  lines.push(
+    row(
+      "Plugin checks",
+      formatDuration(fastPath.pluginValidationDurationMs),
+      2,
+    ),
+  );
+  lines.push(
+    row(
+      "Output inventory",
+      formatDuration(fastPath.outputInventoryValidationDurationMs),
+      2,
+    ),
+  );
+  lines.push(
+    row(
+      "Output hashing",
+      formatDuration(fastPath.outputHashValidationDurationMs),
+      2,
+    ),
+  );
+  lines.push(row("Output files hashed", String(fastPath.outputFilesHashed), 2));
+  lines.push(
+    row("Output bytes hashed", formatBytes(fastPath.outputBytesHashed), 2),
+  );
+  lines.push(row("RSS before", formatBytes(fastPath.rssBeforeBytes), 2));
+  lines.push(row("RSS after", formatBytes(fastPath.rssAfterBytes), 2));
+  lines.push(row("RSS peak", formatBytes(fastPath.peakRssBytes), 2));
+}
+
 function appendDiagnostics(lines: string[], report: ProfileReport): void {
   if (!report.diagnostics) return;
   lines.push("", "Diagnostics");
@@ -161,4 +218,10 @@ function formatDuration(durationMs: number): string {
   if (durationMs < 1_000)
     return `${durationMs.toFixed(durationMs < 10 ? 1 : 0)}ms`;
   return `${(durationMs / 1_000).toFixed(2)}s`;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1_024) return `${bytes} B`;
+  if (bytes < 1_024 * 1_024) return `${(bytes / 1_024).toFixed(1)} KiB`;
+  return `${(bytes / (1_024 * 1_024)).toFixed(1)} MiB`;
 }

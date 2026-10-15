@@ -57,6 +57,23 @@ export type ProfileDiagnostics = Readonly<{
   info: number;
 }>;
 
+export type ProfileFastPath = Readonly<{
+  used: boolean;
+  blockReason: string;
+  fastPathDecisionDurationMs: number;
+  buildStateReadDurationMs: number;
+  contentPlanDurationMs: number;
+  externalDependencyDurationMs: number;
+  pluginValidationDurationMs: number;
+  outputInventoryValidationDurationMs: number;
+  outputHashValidationDurationMs: number;
+  outputFilesHashed: number;
+  outputBytesHashed: number;
+  rssBeforeBytes: number;
+  rssAfterBytes: number;
+  peakRssBytes: number;
+}>;
+
 export type ProfileReport = Readonly<{
   totalDurationMs: number | undefined;
   content: ReadonlyMap<string, ProfileSpanAggregate>;
@@ -65,6 +82,7 @@ export type ProfileReport = Readonly<{
   incremental: ProfileIncremental | undefined;
   cache: ProfileCache | undefined;
   contentCache: ProfileContentCache | undefined;
+  fastPath: ProfileFastPath | undefined;
   diagnostics: ProfileDiagnostics | undefined;
   slowestOperations: readonly ProfileSlowOperation[];
 }>;
@@ -100,6 +118,7 @@ export class ProfileTraceSink implements TraceSink {
   private hasContentCacheEvents = false;
   private readonly contentCacheMissReasons = new Map<string, number>();
   private readonly contentCacheBypassReasons = new Map<string, number>();
+  private fastPath: ProfileFastPath | undefined;
 
   onSpan(span: TraceSpan): void {
     if (span.name === "build.total") this.totalDurationMs = span.durationMs;
@@ -175,6 +194,43 @@ export class ProfileTraceSink implements TraceSink {
         info: numberAttribute(event, "info"),
       };
     }
+    if (event.name === "build.fast-path") {
+      this.fastPath = {
+        used: booleanAttribute(event, "fastPathUsed"),
+        blockReason:
+          stringAttribute(event.attributes, "fastPathBlockReason") ?? "",
+        fastPathDecisionDurationMs: numberAttribute(
+          event,
+          "fastPathDecisionDurationMs",
+        ),
+        buildStateReadDurationMs: numberAttribute(
+          event,
+          "buildStateReadDurationMs",
+        ),
+        contentPlanDurationMs: numberAttribute(event, "contentPlanDurationMs"),
+        externalDependencyDurationMs: numberAttribute(
+          event,
+          "externalDependencyDurationMs",
+        ),
+        pluginValidationDurationMs: numberAttribute(
+          event,
+          "pluginValidationDurationMs",
+        ),
+        outputInventoryValidationDurationMs: numberAttribute(
+          event,
+          "outputInventoryValidationDurationMs",
+        ),
+        outputHashValidationDurationMs: numberAttribute(
+          event,
+          "outputHashValidationDurationMs",
+        ),
+        outputFilesHashed: numberAttribute(event, "outputFilesHashed"),
+        outputBytesHashed: numberAttribute(event, "outputBytesHashed"),
+        rssBeforeBytes: numberAttribute(event, "rssBeforeBytes"),
+        rssAfterBytes: numberAttribute(event, "rssAfterBytes"),
+        peakRssBytes: numberAttribute(event, "peakRssBytes"),
+      };
+    }
   }
 
   createReport(): ProfileReport {
@@ -231,6 +287,7 @@ export class ProfileTraceSink implements TraceSink {
           }
         : undefined,
       diagnostics,
+      fastPath: this.fastPath,
       slowestOperations: [...this.slowOperations],
     };
   }
@@ -283,6 +340,11 @@ function stringAttribute(
 function numberAttribute(event: TraceEvent, key: string): number {
   const value = event.attributes[key];
   return typeof value === "number" ? value : 0;
+}
+
+function booleanAttribute(event: TraceEvent, key: string): boolean {
+  const value = event.attributes[key];
+  return typeof value === "boolean" ? value : false;
 }
 
 function incrementReason(

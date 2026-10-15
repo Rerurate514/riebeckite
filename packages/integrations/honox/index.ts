@@ -9,10 +9,15 @@ export {
   riebeckiteSsgExtensionMap,
 } from "./src/ssg.js";
 export type {
+  NoChangeFastPathOutputMetrics,
   NoChangeFastPathResult,
   RiebeckiteSsgOptions,
 } from "./src/ssg_plugin.js";
-export { riebeckiteSsg, verifyNoChangeFastPath } from "./src/ssg_plugin.js";
+export {
+  createNoChangeFastPathOutputMetrics,
+  riebeckiteSsg,
+  verifyNoChangeFastPath,
+} from "./src/ssg_plugin.js";
 export type {
   RiebeckiteIntegrationOptions,
   RiebeckiteViteOptions,

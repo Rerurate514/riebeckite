@@ -152,6 +152,22 @@ export type NoChangeFastPathResult = {
   readonly blockReason?: string;
 };
 
+export type NoChangeFastPathOutputMetrics = {
+  outputInventoryValidationDurationMs: number;
+  outputHashValidationDurationMs: number;
+  outputFilesHashed: number;
+  outputBytesHashed: number;
+};
+
+export function createNoChangeFastPathOutputMetrics(): NoChangeFastPathOutputMetrics {
+  return {
+    outputInventoryValidationDurationMs: 0,
+    outputHashValidationDurationMs: 0,
+    outputFilesHashed: 0,
+    outputBytesHashed: 0,
+  };
+}
+
 export type RiebeckiteSsgOptions = {
   entry?: string;
   plugins?: ToSsgOptions["plugins"];
@@ -877,6 +893,7 @@ export async function verifyNoChangeFastPath(input: {
   readonly root: string;
   readonly outputDirectory: string;
   readonly expectedOutputPaths: readonly string[];
+  readonly metrics?: NoChangeFastPathOutputMetrics;
 }): Promise<NoChangeFastPathResult> {
   const cache = await loadOutputCache(
     join(input.root, ".riebeckite", "ssg-output-cache.json"),
@@ -907,9 +924,15 @@ export async function verifyNoChangeFastPath(input: {
   ) {
     return { used: false, blockReason: "output-cache-incomplete" };
   }
+  const inventoryStartedAt = performance.now();
   const currentInventory = await fingerprintOutputDirectory(
     input.outputDirectory,
+    "",
+    input.metrics,
   );
+  if (input.metrics)
+    input.metrics.outputInventoryValidationDurationMs +=
+      performance.now() - inventoryStartedAt;
   if (!inventoriesEqual(cache.finalOutputInventory, currentInventory)) {
     return { used: false, blockReason: "output-inventory-mismatch" };
   }
@@ -930,6 +953,7 @@ async function fingerprintDirectory(directory: string): Promise<string> {
 async function fingerprintOutputDirectory(
   directory: string,
   relativeDirectory = "",
+  metrics?: NoChangeFastPathOutputMetrics,
 ): Promise<Record<string, string>> {
   const entries = await readdir(directory, { withFileTypes: true }).catch(
     (error: unknown) => {
@@ -948,14 +972,21 @@ async function fingerprintOutputDirectory(
     if (entry.isDirectory()) {
       Object.assign(
         inventory,
-        await fingerprintOutputDirectory(file, relativePath),
+        await fingerprintOutputDirectory(file, relativePath, metrics),
       );
       continue;
     }
     if (entry.isFile()) {
+      const hashedAt = performance.now();
+      const content = await readFile(file);
       inventory[relativePath] = createHash("sha256")
-        .update(await readFile(file))
+        .update(content)
         .digest("hex");
+      if (metrics) {
+        metrics.outputHashValidationDurationMs += performance.now() - hashedAt;
+        metrics.outputFilesHashed += 1;
+        metrics.outputBytesHashed += content.length;
+      }
     }
   }
   return inventory;

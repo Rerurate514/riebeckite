@@ -62,3 +62,57 @@ test("profile omits the content cache section without content cache events", () 
   assert.equal(report.contentCache, undefined);
   assert.doesNotMatch(renderProfile(report), /Content cache/);
 });
+
+test("profile reports fast path metrics from the build.fast-path event", () => {
+  const sink = new ProfileTraceSink();
+  sink.onEvent(
+    event("build.fast-path", {
+      fastPathEligible: true,
+      fastPathUsed: true,
+      fastPathBlockReason: "",
+      fastPathDecisionDurationMs: 12,
+      buildStateReadDurationMs: 3,
+      contentPlanDurationMs: 9,
+      externalDependencyDurationMs: 2,
+      pluginValidationDurationMs: 1,
+      outputInventoryValidationDurationMs: 5,
+      outputHashValidationDurationMs: 4,
+      outputFilesHashed: 42,
+      outputBytesHashed: 2048,
+      rssBeforeBytes: 100_000_000,
+      rssAfterBytes: 100_500_000,
+      peakRssBytes: 100_500_000,
+    }),
+  );
+
+  const report = sink.createReport();
+  assert.equal(report.fastPath?.used, true);
+  assert.equal(report.fastPath?.blockReason, "");
+  assert.equal(report.fastPath?.fastPathDecisionDurationMs, 12);
+  assert.equal(report.fastPath?.buildStateReadDurationMs, 3);
+  assert.equal(report.fastPath?.contentPlanDurationMs, 9);
+  assert.equal(report.fastPath?.outputFilesHashed, 42);
+  assert.equal(report.fastPath?.outputBytesHashed, 2048);
+  assert.equal(report.fastPath?.peakRssBytes, 100_500_000);
+
+  const output = renderProfile(report);
+  assert.match(output, /Fast path/);
+  assert.match(output, /Output files hashed/);
+  assert.doesNotMatch(output, /Block reason/);
+});
+
+test("profile reports a fast path block reason on fallback", () => {
+  const sink = new ProfileTraceSink();
+  sink.onEvent(
+    event("build.fast-path", {
+      fastPathEligible: false,
+      fastPathUsed: false,
+      fastPathBlockReason: "output-inventory-mismatch",
+    }),
+  );
+
+  const report = sink.createReport();
+  assert.equal(report.fastPath?.used, false);
+  assert.equal(report.fastPath?.blockReason, "output-inventory-mismatch");
+  assert.match(renderProfile(report), /output-inventory-mismatch/);
+});

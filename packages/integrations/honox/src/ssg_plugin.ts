@@ -228,6 +228,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           },
           plugins: [],
           build: { ssr: true },
+          environments: {
+            ssr: { resolve: { noExternal: [/^honox(?:\/.*)?$/] } },
+          },
           mode: config.mode,
           server: { watch: null },
         }),

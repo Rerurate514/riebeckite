@@ -52,6 +52,32 @@ test("SSG adapter output is deterministic with a populated dist", async (t) => {
   );
 });
 
+test("SSG output links the manifest-resolved stylesheet", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "stylesheet-ssg-test-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const site = path.join(root, "site");
+  await createSite(site, {
+    title: "Stylesheet",
+    renderTag: "v1",
+    noteCount: 1,
+    editedNotes: [],
+    stylesheet: "body { color: red; }\n",
+  });
+
+  await buildSite(site, "cold", {
+    adapter: false,
+    emptyOutDir: false,
+    stylesheet: true,
+  });
+
+  const html = await readFile(path.join(distPath(site), "index.html"), "utf8");
+  const stylesheet = html.match(/<link[^>]+href="\/([^"\n]+\.css)"/u)?.[1];
+  assert.ok(stylesheet, html);
+  await readFile(path.join(distPath(site), stylesheet));
+});
+
 test("incremental SSG matches a clean cold build", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "incremental-ssg-test-"));

@@ -93,6 +93,7 @@ export type SiteSources = {
   };
   readonly publicFiles?: Readonly<Record<string, string>>;
   readonly duplicateGeneratedOutput?: boolean;
+  readonly stylesheet?: string;
 };
 
 export type Metrics = Record<string, number | boolean | null>;
@@ -152,8 +153,14 @@ export async function writeNote(
   await writeFile(file, lines.join("\n"), "utf8");
 }
 
-export function renderSource(renderTag: string): string {
+export function renderSource(renderTag: string, stylesheet = false): string {
   return [
+    ...(stylesheet
+      ? [
+          'import { renderToString } from "hono/jsx/dom/server";',
+          'import { Link } from "honox/server";',
+        ]
+      : []),
     "export function pageShell(",
     "  body: string,",
     "  config: { site: { title: string } },",
@@ -161,7 +168,11 @@ export function renderSource(renderTag: string): string {
     "  return (",
     "    '<!doctype html><html><head><title>' +",
     "    config.site.title +",
-    `    ' ${renderTag}</title></head><body>' +`,
+    `    ' ${renderTag}</title>${
+      stylesheet
+        ? `' + renderToString(Link({ href: "/app/style.css", rel: "stylesheet" })) + '</head><body>' +`
+        : "</head><body>' +"
+    }`,
     "    body +",
     "    '</body></html>'",
     "  );",
@@ -308,6 +319,12 @@ export async function createSite(
     JSON.stringify({ type: "module", private: true }),
   );
   await writeFile(path.join(siteRoot, "app", "client.ts"), "");
+  if (sources.stylesheet !== undefined) {
+    await writeFile(
+      path.join(siteRoot, "app", "style.css"),
+      sources.stylesheet,
+    );
+  }
   await writeFile(
     path.join(siteRoot, "riebeckite.config.ts"),
     configSource(siteRoot, sources),
@@ -343,7 +360,7 @@ export async function createSite(
   );
   await writeFile(
     path.join(siteRoot, "app", "render.ts"),
-    renderSource(sources.renderTag),
+    renderSource(sources.renderTag, sources.stylesheet !== undefined),
   );
   await writeFile(path.join(siteRoot, "app", "server.ts"), serverSource());
   await writeFile(
@@ -383,6 +400,7 @@ export async function buildSite(
     adapter?: boolean;
     emptyOutDir?: boolean;
     warnings?: string[];
+    stylesheet?: boolean;
   } = {},
 ): Promise<Metrics> {
   const metricsDirectory = path.join(siteRoot, ".riebeckite", "metrics");
@@ -405,28 +423,35 @@ export async function buildSite(
       },
     };
   }
-  await build(
-    defineConfig({
-      root: siteRoot,
-      resolve: { alias },
-      customLogger,
-      plugins: [
-        honox({
-          client: { input: ["/app/client.ts"] },
-          islandComponents: { reactApiImportSource: "hono/jsx" },
-        }),
-        ...riebeckiteVite(),
-        ...(options.adapter === false ? [] : [viteBuild()]),
-      ],
-      logLevel: "silent",
-      build: {
-        minify: false,
-        ...(options.emptyOutDir === undefined
-          ? {}
-          : { emptyOutDir: options.emptyOutDir }),
-      },
-    }),
-  );
+  const config = {
+    root: siteRoot,
+    resolve: { alias },
+    customLogger,
+    plugins: [
+      honox({
+        client: {
+          input: [
+            "/app/client.ts",
+            ...(options.stylesheet ? ["/app/style.css"] : []),
+          ],
+        },
+        islandComponents: { reactApiImportSource: "hono/jsx" },
+      }),
+      ...riebeckiteVite(),
+      ...(options.adapter === false ? [] : [viteBuild()]),
+    ],
+    logLevel: "silent",
+    build: {
+      minify: false,
+      ...(options.emptyOutDir === undefined
+        ? {}
+        : { emptyOutDir: options.emptyOutDir }),
+    },
+  };
+  if (options.stylesheet) {
+    await build(defineConfig({ ...config, mode: "client" }));
+  }
+  await build(defineConfig(config));
   return JSON.parse(await readFile(metricsFile, "utf8")) as Metrics;
 }
 

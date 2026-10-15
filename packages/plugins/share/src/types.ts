@@ -16,6 +16,7 @@ export type SharePlacement = "top" | "bottom";
 
 /** Options accepted by `share()`. */
 export type ShareOptions = {
+  render?: boolean;
   /**
    * Services to render, in order. Defaults to every service except
    * `mastodon`; add `"mastodon"` and set {@link ShareOptions.mastodonInstance}
@@ -48,6 +49,7 @@ export type ShareOptions = {
 
 /** `ShareOptions` with every default applied. */
 export type ResolvedShareOptions = {
+  render: boolean;
   services: readonly ShareService[];
   placement: SharePlacement;
   mastodonInstance: string;

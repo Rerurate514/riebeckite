@@ -29,43 +29,9 @@ body {
   margin: 0 auto;
 }
 
-.rb-article-body,
-.site-article__footer {
+.rb-article-body {
   min-width: 0;
   padding-inline: var(--rb-space-2, 1rem);
-}
-
-.site-article__aside {
-  display: none;
-}
-
-@media (min-width: 48rem) {
-  .site-article__aside {
-    display: block;
-    min-width: 0;
-    margin-block: var(--rb-space-4, 2rem);
-  }
-}
-
-@media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__footer {
-    grid-column: 1;
-  }
-
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .site-article__aside {
-    display: block;
-    grid-column: 1;
-    grid-row: 1;
-    align-self: start;
-    width: var(--rb-layout-sidebar, 14rem);
-    margin-inline-start: calc(
-      -1 * var(--rb-layout-sidebar, 14rem) -
-      var(--rb-layout-gap, 2rem)
-    );
-    padding-inline-end: 1rem;
-    border-inline-end: 1px solid
-      color-mix(in oklab, currentColor 18%, transparent);
-  }
 }
 
 .not-found {

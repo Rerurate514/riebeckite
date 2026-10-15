@@ -70,9 +70,11 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
         });
         if (items.length === 0) continue;
 
-        const nav = renderBreadcrumbNav(items, resolved);
-        if (!hasSlotFragment(entry.bodySlots?.["article.header"], nav)) {
-          appendContentBodySlot(entry, "article.header", nav);
+        if (resolved.render) {
+          const nav = renderBreadcrumbNav(items, resolved);
+          if (!hasSlotFragment(entry.bodySlots?.["article.header"], nav)) {
+            appendContentBodySlot(entry, "article.header", nav);
+          }
         }
         if (resolved.jsonLd) {
           const schema = buildBreadcrumbJsonLd(config, items);
@@ -121,8 +123,10 @@ function validateBreadcrumbsOptions(
   assertNonEmptyString("className");
   assertNonEmptyString("ariaLabel");
   assertNonEmptyString("separator");
-  if (options.jsonLd !== undefined && typeof options.jsonLd !== "boolean") {
-    issues.push({ path: "jsonLd", message: "Expected a boolean." });
+  for (const key of ["render", "jsonLd"] as const) {
+    if (options[key] !== undefined && typeof options[key] !== "boolean") {
+      issues.push({ path: key, message: "Expected a boolean." });
+    }
   }
   return issues;
 }

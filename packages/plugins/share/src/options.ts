@@ -41,6 +41,7 @@ export function resolveShareOptions(
   options: ShareOptions = {},
 ): ResolvedShareOptions {
   return {
+    render: options.render ?? true,
     services: normalizeServices(options.services),
     placement: options.placement === "top" ? "top" : DEFAULT_SHARE_PLACEMENT,
     mastodonInstance: normalizeMastodonInstance(options.mastodonInstance),
@@ -64,6 +65,9 @@ export function validateShareOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
+  if (options.render !== undefined && typeof options.render !== "boolean") {
+    issues.push({ path: "render", message: "Expected a boolean." });
+  }
   const mastodonEnabled =
     Array.isArray(options.services) &&
     (options.services as readonly string[]).includes("mastodon");

@@ -167,6 +167,17 @@ helper の可視性、空表示、client entry 登録、UI 配置以外の Facto
 
 ## 16. Cache と SSG の検証
 
+**Phase 3 の結果:** Minimal、Starter、Showcase preset は、article UI を Site
+TSX で直接 composition します。Starter と Showcase は Plugin component を
+`ArticleBody` の前後に配置し、responsive Grid と table of contents の sticky
+behaviour は Site CSS が所有します。既存 consumer のために legacy Slot API は
+Phase 4 まで残しますが、preset は Slot data を消費せず、factory の自動配置による
+direct component UI の重複も発生させません。asset、client entry、JSON-LD、route、
+endpoint など factory の capability は維持します。
+
+Phase 4 では、preset 以外のすべての Site consumer が同じ移行を完了してから
+legacy Slot contract を削除できます。
+
 基盤 API は cache schema、pipeline fingerprint、output dependency、Plugin fingerprint、Slot HTML を変更しません。`PublicContentView` は現在の manifest から導出し、persistent cache を持ちません。`HtmlFragment` の変更範囲は SSR HTML の描画だけです。既存の `computeAppFingerprint` は引き続き `app/` の TSX/CSS 変更で SSG output を invalidate します。Phase 1 では既存の小規模 fixture を使って cold、no-change、content、publication、layout-only、Plugin-data を確認し、10,000 件 benchmark は実行しません。
 
 **Phase 1 の結果:** Core と HonoX integration suite が成功しました。persistent-content / manifest-hook cache、publication state、output dependency、cold / no-change / content edit / app change、Plugin configuration を確認しています。この追加 API に cache schema または fingerprint の変更は不要です。

@@ -22,6 +22,7 @@ export function resolvePropertiesOptions(
   options: PropertiesOptions = {},
 ): ResolvedPropertiesOptions {
   return {
+    render: options.render ?? true,
     title:
       options.title === undefined ? DEFAULT_PROPERTIES_TITLE : options.title,
     include: options.include,
@@ -39,6 +40,10 @@ export function validatePropertiesOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
+
+  if (options.render !== undefined && typeof options.render !== "boolean") {
+    issues.push({ path: "render", message: "Expected a boolean." });
+  }
 
   if (
     options.title !== undefined &&

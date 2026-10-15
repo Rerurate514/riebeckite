@@ -310,7 +310,7 @@ test("starter and showcase scaffolds expose a single main landmark and skip link
   });
 });
 
-test("starter and showcase scaffolds compose the standard body slots", async () => {
+test("starter and showcase scaffolds compose plugin components directly", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -319,63 +319,34 @@ test("starter and showcase scaffolds compose the standard body slots", async () 
         path.join(targetDirectory, "app/components/article.tsx"),
         "utf8",
       );
-      assert.match(article, /bodySlots\?: ContentBodySlots/);
-      assert.match(article, /<ArticleBody html=\{post\.html \?\? ""\} \/>/);
+      assert.match(
+        article,
+        /<ArticleBody html=\{props\.post\.html \?\? ""\} \/>/,
+      );
       assert.match(article, /<Article class="site-article">/);
-      assert.doesNotMatch(article, /\?\.\["article\./);
+      assert.match(article, /<div class="site-article__layout">/);
+      assert.match(article, /class="site-article__aside"/);
+      assert.match(article, /class="site-article__footer"/);
+      assert.doesNotMatch(article, /Slot|bodySlots|article\./);
       assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
       assert.doesNotMatch(article, /class="rb-article-content"/);
-      for (const slot of [
-        "article.header",
-        "article.metadata",
-        "article.aside",
-        "article.before-content",
-        "article.after-content",
-        "article.footer",
-      ]) {
-        assert.match(article, new RegExp(`name="${slot}"`));
-      }
-      for (const className of [
-        'class="site-article__aside"',
-        'class="site-article__footer"',
-      ]) {
-        assert.ok(
-          article.includes(className),
-          `article must render ${className}`,
-        );
-      }
-      const slotOrder = [
-        'name="article.aside"',
-        'name="article.header"',
-        'name="article.metadata"',
-        'name="article.before-content"',
-        '<ArticleBody html={post.html ?? ""} />',
-        'name="article.after-content"',
-        'name="article.footer"',
-      ];
-      for (let index = 1; index < slotOrder.length; index += 1) {
-        assert.ok(
-          article.indexOf(slotOrder[index - 1] ?? "") <
-            article.indexOf(slotOrder[index] ?? ""),
-          "article slot order must remain unchanged",
-        );
-      }
       for (const route of ["index.tsx", "[slug{.+}].tsx"]) {
         const source = await fs.readFile(
           path.join(targetDirectory, `app/routes/${route}`),
           "utf8",
         );
-        assert.match(
-          source,
-          /bodySlots=\{(?:home\.entry|resolved\.entry)\.bodySlots\}/,
-        );
-        assert.doesNotMatch(source, /properties|article\./);
+        assert.match(source, /createPublicContentView/);
+        assert.match(source, /<Breadcrumbs /);
+        assert.match(source, /<Properties /);
+        assert.match(source, /<Backlinks /);
+        assert.match(source, /<RelatedPosts /);
+        assert.doesNotMatch(source, /bodySlots|asideContent/);
       }
     }
   });
 });
 
-test("starter and showcase scaffolds gate the footer region on slot or content", async () => {
+test("starter and showcase scaffolds gate the footer region on direct content", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -384,15 +355,8 @@ test("starter and showcase scaffolds gate the footer region on slot or content",
         path.join(targetDirectory, "app/components/article.tsx"),
         "utf8",
       );
-      assert.match(
-        article,
-        /hasSlot\(bodySlots, "article\.footer"\) \|\| footerContent/,
-      );
       assert.match(article, /<ArticleFooter class="site-article__footer">/);
-      assert.match(
-        article,
-        /<ContentSlot slots=\{bodySlots\} name="article\.footer" \/>/,
-      );
+      assert.match(article, /props\.footer \?/);
     }
   });
 });
@@ -405,18 +369,15 @@ test("minimal scaffold exposes a readable layout with the new primitives", async
       path.join(targetDirectory, "app/components/article.tsx"),
       "utf8",
     );
-    assert.match(article, /bodySlots\?: ContentBodySlots/);
     assert.match(article, /<ArticleBody html=\{post\.html \?\? ""\} \/>/);
     assert.match(article, /<Article class="site-article">/);
-    assert.match(article, /<ContentSlot/);
-    assert.match(article, /class="site-article__aside"/);
-    assert.match(article, /class="site-article__footer"/);
+    assert.doesNotMatch(article, /Slot|bodySlots/);
     assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
     assert.doesNotMatch(article, /class="rb-article-content"/);
   });
 });
 
-test("starter scaffold renders article footer slots and Recent Posts once on the homepage", async () => {
+test("starter scaffold renders direct article components and Recent Posts once on the homepage", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "starter");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "starter" });
@@ -427,16 +388,18 @@ test("starter scaffold renders article footer slots and Recent Posts once on the
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(renderer, /<SearchBar \/>/);
     assert.match(index, /<TableOfContents/);
-    assert.match(index, /bodySlots=\{home\.entry\.bodySlots\}/);
+    assert.match(index, /<Breadcrumbs /);
+    assert.match(index, /<Properties /);
+    assert.match(index, /<Backlinks /);
     assert.match(index, /<RecentPosts /);
     assert.equal((index.match(/<RecentPosts /g) ?? []).length, 1);
     assert.doesNotMatch(slug, /<RecentPosts /);
     assert.match(slug, /<TableOfContents/);
-    assert.match(slug, /bodySlots={resolved.entry.bodySlots}/);
+    assert.doesNotMatch(slug, /bodySlots/);
   });
 });
 
-test("showcase scaffold renders article footer slots, daily notes, and Recent Posts once", async () => {
+test("showcase scaffold renders direct article components, daily notes, and Recent Posts once", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "showcase");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "showcase" });
@@ -448,7 +411,8 @@ test("showcase scaffold renders article footer slots, daily notes, and Recent Po
     assert.match(index, /<RecentPosts /);
     assert.equal((index.match(/<RecentPosts /g) ?? []).length, 1);
     assert.doesNotMatch(slug, /<RecentPosts /);
-    assert.match(slug, /bodySlots={resolved.entry.bodySlots}/);
+    assert.match(slug, /<ShareControls /);
+    assert.doesNotMatch(slug, /bodySlots/);
   });
 });
 
@@ -537,13 +501,16 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     );
     assert.doesNotMatch(style, /\.rb-article-layout \{/);
     assert.doesNotMatch(style, /\.rb-nav__item \{/);
-    assert.doesNotMatch(style, /--site-toc-sticky-top/);
-    assert.doesNotMatch(style, /\.rr-table-of-contents--desktop \{/);
+    assert.match(style, /--site-toc-sticky-top/);
+    assert.match(
+      style,
+      /\.site-article__aside > \.rr-table-of-contents--desktop \{/,
+    );
     assert.doesNotMatch(style, /position: absolute;\n {2}top: 100%;/);
   });
 });
 
-test("starter and showcase defer desktop TOC sticky behavior to the plugin", async () => {
+test("starter and showcase own desktop TOC sticky behavior", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -552,8 +519,13 @@ test("starter and showcase defer desktop TOC sticky behavior to the plugin", asy
         path.join(targetDirectory, "app/style.css"),
         "utf8",
       );
-      assert.doesNotMatch(style, /--site-toc-sticky-top/);
-      assert.doesNotMatch(style, /\.rr-table-of-contents--desktop \{/);
+      assert.match(style, /--site-toc-sticky-top/);
+      assert.match(style, /position: sticky/);
+      assert.match(style, /overflow-y: auto/);
+      assert.match(
+        style,
+        /@media \(min-width: 64rem\) \{[\s\S]*?\.site-article__aside \{[\s\S]*?align-self: stretch/,
+      );
     }
   });
 });

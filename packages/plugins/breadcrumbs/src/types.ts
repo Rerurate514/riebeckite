@@ -5,6 +5,7 @@ export type BreadcrumbItem = {
 };
 
 export type BreadcrumbsOptions = {
+  render?: boolean;
   /**
    * Label for the site-wide home crumb. When omitted, the site title from the
    * resolved config (`site.title`) is used.
@@ -23,6 +24,7 @@ export type BreadcrumbsOptions = {
 };
 
 export type ResolvedBreadcrumbsOptions = {
+  render: boolean;
   homeLabel: string;
   className: string;
   ariaLabel: string;

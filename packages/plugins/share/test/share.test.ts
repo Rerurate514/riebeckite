@@ -189,6 +189,35 @@ test("share contributes controls to its configured article slot", () => {
   );
 });
 
+test("share keeps its assets and client entry when slot rendering is disabled", () => {
+  const plugin = share({ render: false, services: ["x"] });
+  const entry: ContentManifestEntry = {
+    slug: "hello",
+    permalink: "/hello",
+    publicLocation: { slug: "hello", permalink: "/hello" },
+    title: TITLE,
+    frontmatter: {},
+    html: "<p>Body</p>",
+    publishing: { visibility: "public", routable: true, discoverable: true },
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+  };
+  const context = {
+    manifest: manifestOf(entry),
+    config: resolveConfig({
+      site: { title: "Test", baseUrl: "https://example.com" },
+    }),
+  };
+
+  plugin.onManifestCreated?.(context as never);
+
+  assert.equal(entry.bodySlots, undefined);
+  assert.equal(plugin.assets?.length, 1);
+  assert.equal(plugin.clientEntries?.length, 1);
+});
+
 test("initShare is a no-op without a document", () => {
   assert.equal(typeof document, "undefined");
   assert.doesNotThrow(() => initShare());

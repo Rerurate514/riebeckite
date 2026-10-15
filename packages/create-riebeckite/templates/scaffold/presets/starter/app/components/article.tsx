@@ -1,57 +1,32 @@
-import type { ContentBodySlots, PostContent } from "@riebeckite/core";
-import {
-  Article,
-  ArticleBody,
-  ArticleContent,
-  ArticleFooter,
-  ArticleLayout,
-  ContentSlot,
-  hasSlot,
-} from "@riebeckite/honox/ui";
+import type { PostContent } from "@riebeckite/core";
+import { Article, ArticleBody, ArticleContent, ArticleFooter } from "@riebeckite/honox/ui";
 
-export function SiteArticle({
-  post,
-  bodySlots,
-  asideContent,
-  afterContent,
-  footerContent,
-}: {
+type SiteArticleProps = {
   post: PostContent;
-  bodySlots?: ContentBodySlots;
-  asideContent?: unknown;
+  header?: unknown;
+  metadata?: unknown;
+  aside?: unknown;
   afterContent?: unknown;
-  footerContent?: unknown;
-}) {
+  footer?: unknown;
+};
+
+export function SiteArticle(props: SiteArticleProps) {
   return (
     <Article class="site-article">
-      <ArticleLayout>
-        {asideContent}
-
-        <ContentSlot
-          slots={bodySlots}
-          name="article.aside"
-          class="site-article__aside"
-        />
-
+      <div class="site-article__layout">
         <ArticleContent>
-          <ContentSlot slots={bodySlots} name="article.header" />
-          <ContentSlot slots={bodySlots} name="article.metadata" />
-          <ContentSlot slots={bodySlots} name="article.before-content" />
-
-          <ArticleBody html={post.html ?? ""} />
-
-          {afterContent}
-
-          <ContentSlot slots={bodySlots} name="article.after-content" />
+          {props.header}
+          {props.metadata}
+          <ArticleBody html={props.post.html ?? ""} />
+          {props.afterContent}
+          {props.footer ? (
+            <ArticleFooter class="site-article__footer">
+              {props.footer}
+            </ArticleFooter>
+          ) : null}
         </ArticleContent>
-
-        {hasSlot(bodySlots, "article.footer") || footerContent ? (
-          <ArticleFooter class="site-article__footer">
-            <ContentSlot slots={bodySlots} name="article.footer" />
-            {footerContent}
-          </ArticleFooter>
-        ) : null}
-      </ArticleLayout>
+        {props.aside ? <aside class="site-article__aside">{props.aside}</aside> : null}
+      </div>
     </Article>
   );
 }

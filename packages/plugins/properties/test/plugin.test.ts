@@ -77,6 +77,15 @@ test("the manifest hook contributes the panel to article metadata", async () => 
   );
 });
 
+test("the manifest hook skips slot rendering when disabled", async () => {
+  const entries = [entry("a", { title: "A" }, "<p>A</p>")];
+
+  const diagnostics = await runHook(properties({ render: false }), entries);
+
+  assert.deepEqual(diagnostics, []);
+  assert.equal(entries[0]?.bodySlots?.["article.metadata"], undefined);
+});
+
 test("the manifest hook does not mistake a partial panel match for an existing panel", async () => {
   const entries = [entry("a", { title: "A" }, "<p>A</p>")];
   entries[0].bodySlots = {

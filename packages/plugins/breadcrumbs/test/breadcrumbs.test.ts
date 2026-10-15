@@ -264,6 +264,7 @@ test("titleCaseSegment only uppercases the first character", () => {
 
 test("resolveBreadcrumbsOptions applies defaults and trims strings", () => {
   assert.deepEqual(resolveBreadcrumbsOptions(undefined), {
+    render: true,
     homeLabel: "",
     className: "rb-breadcrumbs",
     ariaLabel: "Breadcrumbs",
@@ -280,6 +281,7 @@ test("resolveBreadcrumbsOptions applies defaults and trims strings", () => {
       jsonLd: false,
     }),
     {
+      render: true,
       homeLabel: "Home",
       className: "crumbs",
       ariaLabel: "You are here",
@@ -298,6 +300,7 @@ test("resolveBreadcrumbsOptions applies defaults and trims strings", () => {
   assert.equal(blank.className, "rb-breadcrumbs");
   assert.equal(blank.ariaLabel, "Breadcrumbs");
   assert.equal(blank.separator, "");
+  assert.equal(resolveBreadcrumbsOptions({ render: false }).render, false);
 });
 
 test("validateOptions reports invalid option values", () => {
@@ -316,10 +319,12 @@ test("validateOptions reports invalid option values", () => {
 
   const issues = plugin.validateOptions?.({
     className: 5,
+    render: "yes",
     jsonLd: "yes",
   } as never);
   assert.deepEqual(issues, [
     { path: "className", message: "Expected a non-empty string." },
+    { path: "render", message: "Expected a boolean." },
     { path: "jsonLd", message: "Expected a boolean." },
   ]);
 });

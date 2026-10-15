@@ -20,10 +20,7 @@ export default createRoute(
     }
 
     return c.render(
-      <SiteArticle
-        post={resolved.post}
-        bodySlots={resolved.entry.bodySlots}
-      />,
+      <SiteArticle post={resolved.post} />,
     );
   },
 );

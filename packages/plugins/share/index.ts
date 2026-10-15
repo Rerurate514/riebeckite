@@ -98,6 +98,7 @@ export function share(options: ShareOptions = {}) {
     onManifestCreated: (context) => {
       const { manifest, config } = context;
       if (!config) return;
+      if (!resolved.render) return;
 
       for (const entry of manifest.entries) {
         const block = renderShareControls(resolved, {

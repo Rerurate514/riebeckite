@@ -83,6 +83,8 @@ function applyPropertiesPanels(
   const { manifest, diagnostics } = context;
   const resolveLink = createLinkResolver(manifest);
 
+  if (!resolved.render) return;
+
   for (const entry of manifest.entries) {
     const panel = renderPropertiesPanel(entry.frontmatter, resolved, {
       resolveLink,

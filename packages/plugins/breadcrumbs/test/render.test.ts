@@ -270,6 +270,27 @@ test("onManifestCreated contributes the nav and a JSON-LD head tag", async () =>
   assert.equal(entry.headTags?.length, 1);
 });
 
+test("onManifestCreated retains JSON-LD when slot rendering is disabled", async () => {
+  const plugin = breadcrumbs({ homeLabel: "Home", render: false });
+  const entry = makeEntry({
+    slug: "docs/intro",
+    title: "Intro",
+    html: "<p>Body</p>",
+    permalink: "/docs/intro",
+  });
+  const context = {
+    manifest: makeManifest([entry]),
+    config,
+    diagnostics: [],
+  } as unknown as PluginManifestContext;
+
+  await plugin.onManifestCreated?.(context);
+
+  assert.equal(entry.bodySlots?.["article.header"], undefined);
+  assert.equal(entry.headTags?.length, 1);
+  assert.equal(entry.headTags?.[0]?.tag, "script");
+});
+
 test("onManifestCreated can skip the JSON-LD script", async () => {
   const plugin = breadcrumbs({ jsonLd: false });
   const entry = makeEntry({

@@ -276,6 +276,18 @@ API at a time without changing the capability decisions above.
 
 ## 16. Cache and SSG verification
 
+**Phase 3 result:** Minimal, Starter, and Showcase presets compose article UI
+directly in Site TSX. Starter and Showcase place plugin components around
+`ArticleBody` and own their responsive Grid and table-of-contents sticky
+behaviour in Site CSS. The legacy Slot API remains available for existing
+consumers until Phase 4, but presets neither consume Slot data nor duplicate
+their direct component UI through factory placement. Factory capability work,
+including assets, client entries, JSON-LD, routes, and endpoints, remains
+unchanged.
+
+Phase 4 may remove the legacy Slot contracts only after every non-preset Site
+consumer has completed the same migration.
+
 The foundation APIs do not alter cache schemas, pipeline fingerprints, output
 dependencies, plugin fingerprints, or Slot HTML. `PublicContentView` is derived
 from the current manifest and has no persistent cache. `HtmlFragment` changes

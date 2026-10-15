@@ -45,6 +45,9 @@ jobs:
       - name: Build the documentation site
         run: pnpm --filter @riebeckite/web build
 
+      - name: Production Asset Integrity Check
+        run: node scripts/check_production_asset_integrity.mjs apps/web
+
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@v3
         with:

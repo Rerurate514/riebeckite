@@ -18,10 +18,17 @@
       "source": "./client.ts",
       "default": "./dist/client.js"
     },
+    "./components": {
+      "types": "./dist/components/share-controls.d.ts",
+      "import": "./dist/components/share-controls.js",
+      "source": "./components/share-controls.tsx",
+      "default": "./dist/components/share-controls.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "tsx": "^4.22.4"

@@ -1,3 +1,5 @@
+export type { LanguageSwitcherProps } from "./components/language-switcher.js";
+export { default as LanguageSwitcher } from "./components/language-switcher.js";
 export {
   getLanguageFromPath,
   getLocalization,

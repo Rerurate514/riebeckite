@@ -2,6 +2,9 @@ import type {
   ContentLink,
   ContentManifest,
   ContentManifestEntry,
+  PluginDataHelper,
+  PublicContentEntry,
+  PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type {
@@ -86,6 +89,73 @@ export function buildRelatedPosts(
   candidates.sort(compareRelatedEntries);
   return candidates.slice(0, options.limit);
 }
+
+export const getRelatedPosts: PluginDataHelper<
+  {
+    view: PublicContentView;
+    entry: PublicContentEntry;
+    options?: ResolvedRelatedPostsOptions;
+  },
+  readonly RelatedPostsEntry[]
+> = ({ view, entry, options }) => {
+  const resolved = options ?? {
+    limit: 5,
+    minScore: 1,
+    useTags: true,
+    useBacklinks: true,
+    heading: true,
+    headingText: "Related posts",
+    className: "rr-related-posts",
+  };
+  const scores = new Map<string, number>();
+  const outgoing = new Set(
+    entry.links.flatMap((link) =>
+      link.kind === "note" && link.slug ? [link.slug] : [],
+    ),
+  );
+  if (resolved.useTags) {
+    for (const tag of entry.tags) {
+      for (const candidate of view.getDiscoverableEntriesByTag(tag)) {
+        if (candidate.slug !== entry.slug) {
+          addScore(scores, candidate.slug, SHARED_TAG_WEIGHT);
+        }
+      }
+    }
+  }
+  if (resolved.useBacklinks) {
+    for (const candidate of [
+      ...view.getDiscoverableOutgoing(entry.slug),
+      ...view.getDiscoverableIncoming(entry.slug),
+    ]) {
+      if (candidate.slug !== entry.slug) {
+        addScore(scores, candidate.slug, DIRECT_LINK_WEIGHT);
+      }
+    }
+  }
+  for (const target of outgoing) {
+    for (const candidate of view.getDiscoverableIncoming(target)) {
+      if (candidate.slug !== entry.slug) {
+        addScore(scores, candidate.slug, CO_CITATION_WEIGHT);
+      }
+    }
+  }
+  return [...scores]
+    .flatMap(([slug, score]) => {
+      const candidate = view.findDiscoverableBySlug(slug);
+      return candidate && score >= resolved.minScore
+        ? [
+            {
+              slug,
+              permalink: candidate.permalink,
+              title: candidate.title,
+              score,
+            },
+          ]
+        : [];
+    })
+    .sort(compareRelatedEntries)
+    .slice(0, resolved.limit);
+};
 
 /**
  * An entry may receive a related-posts section (and be offered as a related

@@ -4,8 +4,11 @@ import {
   createStyleAsset,
   definePlugin,
   fingerprintExternalValue,
+  type PluginDataHelper,
 } from "@riebeckite/core";
 
+export type { PostDiffProps } from "./components/post-diff.js";
+export { default as PostDiffView } from "./components/post-diff.js";
 export { renderDiffHistory } from "./src/components/diff-history.js";
 export { renderDiffLine } from "./src/components/diff-line.js";
 export {
@@ -48,6 +51,11 @@ export type PostDiffApi = {
   getCurrentDiff(filePath: string): Promise<PostDiff | null>;
   compareRevisions(input: RevisionComparisonInput): Promise<PostDiff | null>;
 };
+
+export const getPostDiff: PluginDataHelper<
+  { api: PostDiffApi; filePath: string },
+  Promise<PostDiff | null>
+> = ({ api, filePath }) => api.getCurrentDiff(filePath);
 
 export function diff(options: DiffPluginOptions = {}) {
   const ui = { enabled: true, maxRevisions: 20, ...options.ui };

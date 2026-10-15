@@ -11,6 +11,8 @@ import {
   definePlugin,
   type PluginHeadTag,
   type PostFrontmatter,
+  type PublicContentEntry,
+  type PublicContentView,
 } from "@riebeckite/core";
 import { parse } from "yaml";
 import { renderLanguageSwitcher } from "./language-switcher.js";
@@ -221,17 +223,17 @@ function splitLinkUrl(url: string): { permalink: string; suffix: string } {
 
 /** Returns one entry's language and available real translations. */
 export function getLocalization(
-  manifest: ContentManifest,
+  view: ContentManifest | PublicContentView,
   slug: string,
 ): LocalizedContent | null {
-  const entry = manifest.bySlug.get(slug);
+  const entry = findLocalizedEntry(view, slug);
   if (!entry) return null;
   const lang = entry.publicLocation.language;
   const translationId =
     entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY];
   if (!lang || !translationId) return null;
 
-  const candidates = manifest.discoverableEntries.filter(
+  const candidates = getLocalizedDiscoverableEntries(view).filter(
     (candidate) =>
       candidate.publicLocation.metadata?.[TRANSLATION_METADATA_KEY] ===
       translationId,
@@ -251,6 +253,21 @@ export function getLocalization(
     availableLanguages: Object.keys(translations).sort(),
     translations,
   };
+}
+
+function findLocalizedEntry(
+  view: ContentManifest | PublicContentView,
+  slug: string,
+): ContentManifestEntry | PublicContentEntry | undefined {
+  return "findRoutableBySlug" in view
+    ? view.findRoutableBySlug(slug)
+    : view.bySlug.get(slug);
+}
+
+function getLocalizedDiscoverableEntries(
+  view: ContentManifest | PublicContentView,
+): readonly (ContentManifestEntry | PublicContentEntry)[] {
+  return view.discoverableEntries;
 }
 
 /** Resolves an existing translation; missing translations return `null`. */
@@ -707,10 +724,10 @@ function sameHeadTag(left: PluginHeadTag, right: PluginHeadTag): boolean {
 
 export { renderLanguageSwitcher } from "./language-switcher.js";
 
-function uniqueLanguageEntries(
-  entries: readonly ContentManifestEntry[],
-): readonly ContentManifestEntry[] {
-  const entriesByLanguage = new Map<string, ContentManifestEntry[]>();
+function uniqueLanguageEntries<
+  Entry extends ContentManifestEntry | PublicContentEntry,
+>(entries: readonly Entry[]): readonly Entry[] {
+  const entriesByLanguage = new Map<string, Entry[]>();
   for (const entry of entries) {
     const language = entry.publicLocation.language;
     if (!language) continue;

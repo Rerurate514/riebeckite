@@ -14,7 +14,7 @@ export type ShareTarget = {
  * Already-absolute URLs are returned unchanged.
  */
 export function buildAbsoluteUrl(
-  config: ResolvedRiebeckiteConfig,
+  config: Pick<ResolvedRiebeckiteConfig, "site">,
   pathOrUrl: string,
 ): string {
   if (!pathOrUrl) return config.site.baseUrl;

@@ -21,6 +21,14 @@ import type {
   PropertiesOptions,
 } from "./src/types.js";
 
+export type { PropertiesProps } from "./components/properties.js";
+export { default as Properties } from "./components/properties.js";
+export type {
+  PropertiesData,
+  PropertiesValuePart,
+} from "./src/component-data.js";
+export { getProperties } from "./src/component-data.js";
+
 export type {
   PropertiesLinkResolver,
   PropertiesMessage,

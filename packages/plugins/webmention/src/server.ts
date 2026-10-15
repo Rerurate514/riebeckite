@@ -1,5 +1,6 @@
 import type {
   ContentManifest,
+  PublicContentEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { WebmentionMention } from "./mention.js";
@@ -12,13 +13,51 @@ import { urlComparisonKey } from "./url.js";
  * request/SSR time when they render mentions themselves instead of relying on
  * build-time injection.
  */
-export async function getWebmentionsForEntry(input: {
+type WebmentionSnapshotInput = {
+  readonly entry: PublicContentEntry;
+  readonly mentions: readonly WebmentionMention[];
+  readonly limit?: number;
+};
+
+type WebmentionQueryInput = {
   manifest: ContentManifest;
   config: ResolvedRiebeckiteConfig | undefined;
   provider: WebmentionProvider;
   slug: string;
   limit?: number;
-}): Promise<WebmentionMention[]> {
+};
+
+export function getWebmentionsForEntry(
+  input: Readonly<WebmentionSnapshotInput>,
+): readonly WebmentionMention[];
+export function getWebmentionsForEntry(
+  input: Readonly<WebmentionQueryInput>,
+): Promise<WebmentionMention[]>;
+export function getWebmentionsForEntry(
+  input: Readonly<WebmentionSnapshotInput | WebmentionQueryInput>,
+): readonly WebmentionMention[] | Promise<WebmentionMention[]> {
+  if ("mentions" in input) {
+    return input.mentions
+      .filter((mention) =>
+        hasEntryTarget(mention.target, input.entry.permalink),
+      )
+      .toSorted(compareMentions)
+      .slice(0, input.limit);
+  }
+  return queryWebmentionsForEntry(input);
+}
+
+function hasEntryTarget(target: string, permalink: string): boolean {
+  try {
+    return new URL(target).pathname === permalink;
+  } catch {
+    return false;
+  }
+}
+
+export async function queryWebmentionsForEntry(
+  input: WebmentionQueryInput,
+): Promise<WebmentionMention[]> {
   const entry = input.manifest.bySlug.get(input.slug);
   if (!entry) return [];
   const target = entryPublicUrl(entry, input.config);

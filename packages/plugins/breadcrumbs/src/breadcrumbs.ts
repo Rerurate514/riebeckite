@@ -1,6 +1,9 @@
 import type {
   ContentManifest,
   ContentManifestEntry,
+  PluginDataHelper,
+  PublicContentEntry,
+  PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { resolvePublicFolderLocation } from "@riebeckite/core";
@@ -48,6 +51,34 @@ export function buildBreadcrumbItems(
   });
   return items;
 }
+
+export const getBreadcrumbs: PluginDataHelper<
+  {
+    view: PublicContentView;
+    entry: PublicContentEntry;
+    homeLabel?: string;
+  },
+  readonly BreadcrumbItem[]
+> = ({ view, entry, homeLabel = "" }) => {
+  if (!view.findRoutableBySlug(entry.slug)) return [];
+  const segments = publicPathSegments(entry.permalink);
+  const items: BreadcrumbItem[] = [];
+  if (homeLabel) pushBreadcrumbItem(items, { name: homeLabel, url: "/" });
+
+  for (let index = 0; index < segments.length - 1; index += 1) {
+    const pathname = `/${segments.slice(0, index + 1).join("/")}`;
+    const target = view.discoverableEntries.find(
+      (candidate) => candidate.permalink === pathname,
+    );
+    pushBreadcrumbItem(items, {
+      name: target?.title || titleCaseSegment(segments[index]),
+      ...(target ? { url: target.permalink } : {}),
+    });
+  }
+
+  pushBreadcrumbItem(items, { name: entry.title, url: entry.permalink });
+  return items;
+};
 
 function pushBreadcrumbItem(items: BreadcrumbItem[], item: BreadcrumbItem) {
   const previous = items.at(-1);

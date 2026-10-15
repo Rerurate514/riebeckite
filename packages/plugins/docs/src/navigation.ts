@@ -1,5 +1,5 @@
-import type { ContentManifestEntry } from "@riebeckite/core";
 import type {
+  DocsContentEntry,
   DocsNavigationEntry,
   DocsNavigationItem,
   DocsNavigationLink,
@@ -29,7 +29,7 @@ export function resolveDocsOptions(options: DocsOptions): ResolvedDocsOptions {
 }
 
 export function buildDocsNavigation(
-  entries: readonly ContentManifestEntry[],
+  entries: readonly DocsContentEntry[],
   options: ResolvedDocsOptions,
 ): readonly DocsNavigationItem[] {
   if (!options.sidebar.auto) return [];
@@ -62,14 +62,16 @@ function normalizeRoot(root: string): string {
 }
 
 function toNavigationEntry(
-  entry: ContentManifestEntry,
+  entry: DocsContentEntry,
   root: string,
 ): DocsNavigationEntry | null {
   const relativePath = resolveRelativeDocsPath(entry, root);
   if (!relativePath) return null;
   const segments = relativePath.split("/").filter(Boolean);
   const isIndex = ["index", "README"].includes(segments.at(-1) ?? "");
-  const sidebar = readSidebarFrontmatter(entry.frontmatter.sidebar);
+  const sidebar = readSidebarFrontmatter(
+    "frontmatter" in entry ? entry.frontmatter.sidebar : undefined,
+  );
   return {
     entry,
     relativePath,
@@ -83,7 +85,7 @@ function toNavigationEntry(
 }
 
 function resolveRelativeDocsPath(
-  entry: ContentManifestEntry,
+  entry: DocsContentEntry,
   root: string,
 ): string | null {
   if (entry.slug === root) return "index";
@@ -131,7 +133,7 @@ function readSidebarFrontmatter(value: unknown): DocsSidebarFrontmatter {
 }
 
 function resolveTitle(
-  entry: ContentManifestEntry,
+  entry: DocsContentEntry,
   sidebar: DocsSidebarFrontmatter,
 ): string {
   if (sidebar.label) return sidebar.label;

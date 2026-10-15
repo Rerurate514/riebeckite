@@ -20,10 +20,13 @@ import type {
   SeriesOptions,
 } from "./src/types.js";
 
+export type { SeriesNavigationProps } from "./components/series-navigation.js";
+export { default as SeriesNavigation } from "./components/series-navigation.js";
 export {
   buildSeriesIndex,
   collectSeriesIndexes,
   DEFAULT_SERIES_BASE_PATH,
+  getSeriesNavigation,
   renderSeriesIndex,
   renderSeriesList,
   renderSeriesNavigation,

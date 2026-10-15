@@ -10,12 +10,14 @@ import { resolveRelatedPostsOptions } from "./src/options.js";
 import { buildRelatedPosts, isEligibleRelatedEntry } from "./src/related.js";
 import type { RelatedPostsOptions } from "./src/types.js";
 
+export type { RelatedPostsProps } from "./components/related-posts.js";
 export { default as RelatedPosts } from "./components/related-posts.js";
 export { resolveRelatedPostsOptions } from "./src/options.js";
 export {
   buildRelatedPosts,
   CO_CITATION_WEIGHT,
   DIRECT_LINK_WEIGHT,
+  getRelatedPosts,
   isEligibleRelatedEntry,
   SHARED_TAG_WEIGHT,
 } from "./src/related.js";

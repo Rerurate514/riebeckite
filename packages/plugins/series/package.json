@@ -12,10 +12,17 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
+    "./components": {
+      "types": "./dist/components/series-navigation.d.ts",
+      "import": "./dist/components/series-navigation.js",
+      "source": "./components/series-navigation.tsx",
+      "default": "./dist/components/series-navigation.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

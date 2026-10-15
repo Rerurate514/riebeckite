@@ -1,5 +1,7 @@
 import type {
   ContentManifest,
+  PluginDataHelper,
+  PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { LocalGraphData, LocalGraphNode } from "./local-graph.js";
@@ -8,7 +10,7 @@ const MAX_NEIGHBORS_PER_DIRECTION = 10;
 
 type TitleResolver = (slug: string, title: unknown) => string;
 
-export function getLocalGraph(args: {
+export function buildLocalGraph(args: {
   manifest: ContentManifest;
   config: ResolvedRiebeckiteConfig;
   slug: string;
@@ -79,6 +81,47 @@ export function getLocalGraph(args: {
     };
   }
 }
+
+export const getLocalGraph: PluginDataHelper<
+  { view: PublicContentView; slug: string },
+  LocalGraphData | null
+> = ({ view, slug }) => {
+  const current = view.findDiscoverableBySlug(slug);
+  if (!current) return null;
+  const outgoing = view
+    .getDiscoverableOutgoing(slug)
+    .slice(0, MAX_NEIGHBORS_PER_DIRECTION);
+  const incoming = view
+    .getDiscoverableIncoming(slug)
+    .slice(0, MAX_NEIGHBORS_PER_DIRECTION);
+  const outgoingSlugs = outgoing.map((entry) => entry.slug);
+  const incomingSlugs = incoming.map((entry) => entry.slug);
+  const entries = [current, ...outgoing, ...incoming].filter(
+    (entry, index, all) =>
+      all.findIndex((candidate) => candidate.slug === entry.slug) === index,
+  );
+  return {
+    currentSlug: slug,
+    nodes: entries.map((entry) => ({
+      slug: entry.slug,
+      permalink: entry.permalink,
+      title: entry.title || entry.slug,
+      relation: getRelation(entry.slug, slug, outgoingSlugs, incomingSlugs),
+      outgoing:
+        entry.slug === slug
+          ? outgoingSlugs
+          : incomingSlugs.includes(entry.slug)
+            ? [slug]
+            : [],
+      backlinks:
+        entry.slug === slug
+          ? incomingSlugs
+          : outgoingSlugs.includes(entry.slug)
+            ? [slug]
+            : [],
+    })),
+  };
+};
 
 function getRelation(
   slug: string,

@@ -12,10 +12,17 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
+    "./components": {
+      "types": "./dist/components/breadcrumbs.d.ts",
+      "import": "./dist/components/breadcrumbs.js",
+      "source": "./components/breadcrumbs.tsx",
+      "default": "./dist/components/breadcrumbs.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

@@ -19,6 +19,8 @@ import { renderWebmentionSection } from "./src/render.js";
 import { countUnmatchedMentions, groupMentionsBySlug } from "./src/server.js";
 import type { WebmentionOptions } from "./src/types.js";
 
+export type { WebmentionSectionProps } from "./components/webmention-section.js";
+export { default as WebmentionSection } from "./components/webmention-section.js";
 export { createWebmentionEndpoints } from "./src/endpoints.js";
 export type {
   WebmentionFeed,
@@ -87,6 +89,7 @@ export {
   countUnmatchedMentions,
   getWebmentionsForEntry,
   groupMentionsBySlug,
+  queryWebmentionsForEntry,
 } from "./src/server.js";
 export {
   entryPublicUrl,

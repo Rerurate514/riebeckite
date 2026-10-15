@@ -12,10 +12,17 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
+    "./components": {
+      "types": "./dist/components/webmention-section.d.ts",
+      "import": "./dist/components/webmention-section.js",
+      "source": "./components/webmention-section.tsx",
+      "default": "./dist/components/webmention-section.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "tsx": "^4.22.4"

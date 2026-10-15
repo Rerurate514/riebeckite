@@ -7,9 +7,10 @@ import { renderToString } from "hono/jsx/dom/server";
 import Backlinks from "./components/backlinks.js";
 import { getPublishedBacklinks } from "./src/backlinks.server.js";
 
+export type { BacklinksProps } from "./components/backlinks.js";
 export { default as Backlinks } from "./components/backlinks.js";
 export type { ArticleBacklink } from "./src/backlinks.js";
-export { getPublishedBacklinks } from "./src/backlinks.server.js";
+export { getBacklinks, getPublishedBacklinks } from "./src/backlinks.server.js";
 
 export type BacklinksOptions = {
   render?: boolean;

@@ -8,7 +8,7 @@ import {
 import { assertGoldenJson } from "@riebeckite/test";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-import { getLocalGraph, LocalGraph, localGraphPlugin } from "../index.ts";
+import { buildLocalGraph, LocalGraph, localGraphPlugin } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -45,7 +45,7 @@ test("builds a local graph with current, outgoing, backlink and both nodes", asy
     config: explicitConfig,
   }).getManifest();
 
-  const graph = getLocalGraph({
+  const graph = buildLocalGraph({
     manifest,
     config: explicitConfig,
     slug: "alpha",
@@ -118,7 +118,7 @@ test("keeps graph data available when automatic rendering is disabled", async ()
     manifest.bySlug.get("alpha")?.bodySlots?.["article.footer"],
     undefined,
   );
-  const graph = getLocalGraph({
+  const graph = buildLocalGraph({
     manifest,
     config: explicitConfig,
     slug: "alpha",
@@ -128,7 +128,7 @@ test("keeps graph data available when automatic rendering is disabled", async ()
 
   const manualHtml = renderToString(LocalGraph({ graph }));
   assert.equal(
-    (manualHtml.match(/<section[^>]*class="rr-local-graph /g) ?? []).length,
+    (manualHtml.match(/<section[^>]*class="rr-local-graph"/g) ?? []).length,
     1,
   );
   assert.ok(manualHtml.includes('href="/beta"'));
@@ -140,7 +140,7 @@ test("returns null for missing or unpublished notes", async () => {
   }).getManifest();
 
   assert.equal(
-    getLocalGraph({
+    buildLocalGraph({
       manifest,
       config: explicitConfig,
       slug: "missing",
@@ -149,7 +149,7 @@ test("returns null for missing or unpublished notes", async () => {
     null,
   );
   assert.equal(
-    getLocalGraph({
+    buildLocalGraph({
       manifest,
       config: explicitConfig,
       slug: "private",
@@ -175,7 +175,7 @@ test("caps visible neighbours at ten per direction", async () => {
     config: explicitConfig,
   }).getManifest();
 
-  const graph = getLocalGraph({
+  const graph = buildLocalGraph({
     manifest,
     config: explicitConfig,
     slug: "hub",
@@ -194,7 +194,7 @@ test("matches a structured local graph", async () => {
   }).getManifest();
 
   assertGoldenJson(
-    getLocalGraph({
+    buildLocalGraph({
       manifest,
       config: explicitConfig,
       slug: "beta",

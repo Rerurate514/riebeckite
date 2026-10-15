@@ -12,10 +12,17 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
+    "./components": {
+      "types": "./dist/components/changelog.d.ts",
+      "import": "./dist/components/changelog.js",
+      "source": "./components/changelog.tsx",
+      "default": "./dist/components/changelog.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

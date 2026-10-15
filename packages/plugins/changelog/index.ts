@@ -28,6 +28,8 @@ import type {
   ResolvedChangelogOptions,
 } from "./src/types.js";
 
+export type { ChangelogProps } from "./components/changelog.js";
+export { default as Changelog } from "./components/changelog.js";
 export {
   buildNoteChangeHistory,
   buildSiteChangelog,
@@ -36,6 +38,8 @@ export {
   resolveContentFilePath,
   resolveLookbackSince,
 } from "./src/changelog.js";
+export type { ChangelogHistoryLoader } from "./src/component-data.js";
+export { getChangelog } from "./src/component-data.js";
 export {
   GitChangelogReader,
   type GitLogWindow,

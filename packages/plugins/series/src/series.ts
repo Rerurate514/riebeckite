@@ -4,6 +4,9 @@ import {
   type Diagnostic,
   escapeHtml,
   escapeHtmlAttribute,
+  type PluginDataHelper,
+  type PublicContentEntry,
+  type PublicContentView,
 } from "@riebeckite/core";
 import type {
   ResolvedSeriesOptions,
@@ -81,6 +84,23 @@ export function buildSeriesIndex(
     ) ?? null
   );
 }
+
+export const getSeriesNavigation: PluginDataHelper<
+  {
+    view: PublicContentView;
+    entry: PublicContentEntry;
+    index: SeriesIndex | null;
+  },
+  SeriesIndex | null
+> = ({ view, entry, index }) => {
+  if (!index || !view.findDiscoverableBySlug(entry.slug)) return null;
+  const members = index.members.filter((member) =>
+    view.findDiscoverableBySlug(member.slug),
+  );
+  return members.some((member) => member.slug === entry.slug)
+    ? { ...index, members }
+    : null;
+};
 
 export function seriesSlug(name: string): string {
   return name

@@ -14,7 +14,12 @@ import {
 } from "./src/render.js";
 import type { BreadcrumbsOptions } from "./src/types.js";
 
-export { buildBreadcrumbItems } from "./src/breadcrumbs.js";
+export type { BreadcrumbsProps } from "./components/breadcrumbs.js";
+export { default as Breadcrumbs } from "./components/breadcrumbs.js";
+export {
+  buildBreadcrumbItems,
+  getBreadcrumbs,
+} from "./src/breadcrumbs.js";
 export { resolveBreadcrumbsOptions } from "./src/options.js";
 export {
   BREADCRUMBS_ATTRIBUTE,

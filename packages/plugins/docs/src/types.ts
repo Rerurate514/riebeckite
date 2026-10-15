@@ -1,4 +1,9 @@
-import type { ContentManifestEntry } from "@riebeckite/core";
+import type {
+  ContentManifestEntry,
+  PublicContentEntry,
+} from "@riebeckite/core";
+
+export type DocsContentEntry = ContentManifestEntry | PublicContentEntry;
 
 export type DocsOptions = {
   readonly root: string;
@@ -35,7 +40,7 @@ export type DocsNavigationItem = {
 };
 
 export type DocsNavigationEntry = {
-  readonly entry: ContentManifestEntry;
+  readonly entry: DocsContentEntry;
   readonly relativePath: string;
   readonly segments: readonly string[];
   readonly isIndex: boolean;

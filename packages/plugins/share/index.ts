@@ -3,11 +3,17 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
+  type PluginDataHelper,
+  type PublicContentEntry,
+  type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { resolveShareOptions, validateShareOptions } from "./src/options.js";
 import { renderShareControls } from "./src/render.js";
-import { buildAbsoluteUrl } from "./src/services.js";
+import { buildAbsoluteUrl, buildShareLinks } from "./src/services.js";
 import type { ShareOptions } from "./src/types.js";
+
+export type { ShareControlsProps } from "./components/share-controls.js";
+export { default as ShareControls } from "./components/share-controls.js";
 
 export { initShare } from "./src/client.js";
 export {
@@ -40,6 +46,33 @@ export type {
   ShareService,
 } from "./src/types.js";
 export { SHARE_SERVICES } from "./src/types.js";
+
+export type ShareLinksData = {
+  readonly links: readonly import("./src/types.js").ShareLink[];
+  readonly copyUrl?: string;
+  readonly ariaLabel: string;
+  readonly className: string;
+  readonly copyLabel: string;
+};
+
+export const getShareLinks: PluginDataHelper<
+  {
+    entry: PublicContentEntry;
+    site: Pick<ResolvedRiebeckiteConfig, "site">;
+    options?: ShareOptions;
+  },
+  ShareLinksData
+> = ({ entry, site, options }) => {
+  const resolved = resolveShareOptions(options);
+  const url = buildAbsoluteUrl(site, entry.permalink);
+  return {
+    links: buildShareLinks(resolved, { url, title: entry.title }),
+    ...(resolved.services.includes("copy") ? { copyUrl: url } : {}),
+    ariaLabel: resolved.ariaLabel,
+    className: resolved.className,
+    copyLabel: resolved.labels.copy,
+  };
+};
 
 export const SHARE_PLUGIN_NAME = "share";
 

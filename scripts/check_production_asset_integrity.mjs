@@ -13,11 +13,22 @@ export async function checkProductionAssetIntegrity({ siteRoot }) {
     throw new Error(`No SSG HTML files exist in ${assetsDirectory}.`);
   }
 
-  for (const htmlFile of htmlFiles) {
-    await checkHtmlAssets({ assetsDirectory, htmlFile });
-  }
+  const results = await Promise.all(
+    htmlFiles.map((htmlFile) => checkHtmlAssets({ assetsDirectory, htmlFile })),
+  );
 
-  return { assetsDirectory, htmlFileCount: htmlFiles.length };
+  return {
+    assetsDirectory,
+    htmlFileCount: htmlFiles.length,
+    stylesheetReferenceCount: results.reduce(
+      (count, result) => count + result.stylesheetReferenceCount,
+      0,
+    ),
+    scriptReferenceCount: results.reduce(
+      (count, result) => count + result.scriptReferenceCount,
+      0,
+    ),
+  };
 }
 
 async function resolveAssetsDirectory(siteRoot) {
@@ -75,6 +86,10 @@ async function checkHtmlAssets({ assetsDirectory, htmlFile }) {
       requireContent: false,
     });
   }
+  return {
+    stylesheetReferenceCount: stylesheets.length,
+    scriptReferenceCount: scripts.length,
+  };
 }
 
 function isStylesheet(tag) {
@@ -257,6 +272,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const siteRoot = process.argv[2] ?? path.join(repositoryRoot, "apps", "web");
   const result = await checkProductionAssetIntegrity({ siteRoot });
   console.log(
-    `Production asset integrity passed: ${result.htmlFileCount} HTML files in ${result.assetsDirectory}`,
+    `Production asset integrity passed: ${result.htmlFileCount} HTML files, ${result.stylesheetReferenceCount} CSS references, and ${result.scriptReferenceCount} JavaScript references in ${result.assetsDirectory}`,
   );
 }

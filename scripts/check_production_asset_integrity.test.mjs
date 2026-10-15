@@ -17,6 +17,49 @@ test("accepts hashed and relative CSS and JavaScript assets", async (t) => {
 
   const result = await checkProductionAssetIntegrity({ siteRoot: site });
   assert.equal(result.htmlFileCount, 1);
+  assert.equal(result.stylesheetReferenceCount, 1);
+  assert.equal(result.scriptReferenceCount, 1);
+});
+
+test("checks every public HTML file, including README-derived pages", async (t) => {
+  const site = await createSite(t, {
+    html: '<link rel="stylesheet" href="/static/style.css"><script src="/static/client.js"></script>',
+    assets: {
+      "static/style.css": "body {}",
+      "static/client.js": "ready",
+    },
+    page: "README.html",
+  });
+  await writePage(
+    site,
+    "guide/index.html",
+    '<link rel="stylesheet" href="/static/style.css"><script src="/static/client.js"></script>',
+  );
+
+  const result = await checkProductionAssetIntegrity({ siteRoot: site });
+  assert.equal(result.htmlFileCount, 2);
+  assert.equal(result.stylesheetReferenceCount, 2);
+  assert.equal(result.scriptReferenceCount, 2);
+});
+
+test("rejects one stylesheet-less page among otherwise valid public pages", async (t) => {
+  const site = await createSite(t, {
+    html: '<link rel="stylesheet" href="/static/style.css"><script src="/static/client.js"></script>',
+    assets: {
+      "static/style.css": "body {}",
+      "static/client.js": "ready",
+    },
+  });
+  await writePage(
+    site,
+    "README.html",
+    '<script src="/static/client.js"></script>',
+  );
+
+  await assert.rejects(
+    checkProductionAssetIntegrity({ siteRoot: site }),
+    /README\.html has no local stylesheet/u,
+  );
 });
 
 test("rejects HTML without a stylesheet", async (t) => {
@@ -83,15 +126,21 @@ async function createSite(t, options) {
   const page = options.page ?? "index.html";
   const pagePath = path.join(site, "published", page);
   await mkdir(path.dirname(pagePath), { recursive: true });
-  await writeFile(
-    pagePath,
-    `<!doctype html><html><head>${options.html}</head></html>`,
-    "utf8",
-  );
+  await writePage(site, page, options.html);
   for (const [assetPath, content] of Object.entries(options.assets)) {
     const target = path.join(site, "published", assetPath);
     await mkdir(path.dirname(target), { recursive: true });
     await writeFile(target, content, "utf8");
   }
   return site;
+}
+
+async function writePage(site, page, html) {
+  const pagePath = path.join(site, "published", page);
+  await mkdir(path.dirname(pagePath), { recursive: true });
+  await writeFile(
+    pagePath,
+    `<!doctype html><html><head>${html}</head></html>`,
+    "utf8",
+  );
 }

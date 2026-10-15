@@ -94,6 +94,7 @@ export type SiteSources = {
   readonly publicFiles?: Readonly<Record<string, string>>;
   readonly duplicateGeneratedOutput?: boolean;
   readonly stylesheet?: string;
+  readonly readme?: boolean;
 };
 
 export type Metrics = Record<string, number | boolean | null>;
@@ -390,6 +391,13 @@ export async function createSite(
   }
   for (let index = 0; index < sources.noteCount; index++) {
     await writeNote(siteRoot, index, sources.editedNotes.includes(index));
+  }
+  if (sources.readme) {
+    await writeFile(
+      path.join(siteRoot, "vault", "README.md"),
+      "---\ntitle: README\nvisibility: public\n---\n\n# README\n",
+      "utf8",
+    );
   }
 }
 

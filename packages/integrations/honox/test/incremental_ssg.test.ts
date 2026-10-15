@@ -52,7 +52,7 @@ test("SSG adapter output is deterministic with a populated dist", async (t) => {
   );
 });
 
-test("SSG output links the manifest-resolved stylesheet", async (t) => {
+test("SSG output links the manifest-resolved stylesheet on regular and README pages", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "stylesheet-ssg-test-"));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -64,6 +64,7 @@ test("SSG output links the manifest-resolved stylesheet", async (t) => {
     noteCount: 1,
     editedNotes: [],
     stylesheet: "body { color: red; }\n",
+    readme: true,
   });
 
   await buildSite(site, "cold", {
@@ -72,10 +73,12 @@ test("SSG output links the manifest-resolved stylesheet", async (t) => {
     stylesheet: true,
   });
 
-  const html = await readFile(path.join(distPath(site), "index.html"), "utf8");
-  const stylesheet = html.match(/<link[^>]+href="\/([^"\n]+\.css)"/u)?.[1];
-  assert.ok(stylesheet, html);
-  await readFile(path.join(distPath(site), stylesheet));
+  for (const output of ["index.html", "README.html", "notes/note-0.html"]) {
+    const html = await readFile(path.join(distPath(site), output), "utf8");
+    const stylesheet = html.match(/<link[^>]+href="\/([^"\n]+\.css)"/u)?.[1];
+    assert.ok(stylesheet, `${output}: ${html}`);
+    await readFile(path.join(distPath(site), stylesheet));
+  }
 });
 
 test("incremental SSG matches a clean cold build", async (t) => {

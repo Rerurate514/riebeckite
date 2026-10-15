@@ -6,6 +6,7 @@ import { riebeckiteClientModule } from "./client_module.js";
 import { riebeckiteContentAssets } from "./content_assets.js";
 import { riebeckiteContentWatch } from "./content_watch.js";
 import { riebeckiteRuntimeModules } from "./runtime_modules.js";
+import { siteRiebeckiteExternals } from "./site_externals.js";
 import { createRiebeckiteSsg } from "./ssg.js";
 import type { RiebeckiteSsgOptions } from "./ssg_plugin.js";
 import {
@@ -46,6 +47,7 @@ export type RiebeckiteViteOptions = RiebeckiteIntegrationOptions & {
 
 export function riebeckite(
   options: RiebeckiteIntegrationOptions = {},
+  onApplicationResolved?: (application: ResolvedHonoxApplication) => void,
 ): Plugin[] {
   let resolvedConfig: ResolvedRiebeckiteConfig | undefined;
   let application: ResolvedHonoxApplication | undefined;
@@ -72,6 +74,7 @@ export function riebeckite(
         });
         resolvedConfig = resolvedApplication.config;
         application = resolvedApplication;
+        onApplicationResolved?.(resolvedApplication);
         writeRiebeckiteAssetEntries(resolvedConfig, {
           frameworkStyles: path.join(
             appRoot,
@@ -132,14 +135,28 @@ function requireApplication(
  */
 export function riebeckiteVite(options: RiebeckiteViteOptions = {}): Plugin[] {
   const { ssg, ssrExternals, ...integration } = options;
+  const fallbackSiteRoot = integration.configRoot ?? integration.appRoot;
+  let resolvedSiteRoot: string | undefined;
   return [
-    ...riebeckite(integration),
-    riebeckiteSsrExternals([...defaultSsrExternals, ...(ssrExternals ?? [])]),
+    ...riebeckite(integration, (application) => {
+      resolvedSiteRoot = application.configRoot;
+    }),
+    riebeckiteSsrExternals(
+      [...defaultSsrExternals, ...(ssrExternals ?? [])],
+      () => {
+        if (integration.workspaceRoot) return [];
+        const siteRoot = resolvedSiteRoot ?? fallbackSiteRoot;
+        return siteRoot ? siteRiebeckiteExternals(siteRoot) : [];
+      },
+    ),
     createRiebeckiteSsg(ssg),
   ];
 }
 
-function riebeckiteSsrExternals(externals: readonly string[]): Plugin {
+function riebeckiteSsrExternals(
+  externals: readonly string[],
+  siteExternals: () => readonly string[] = () => [],
+): Plugin {
   return {
     name: "riebeckite-ssr-externals",
     config() {
@@ -147,7 +164,7 @@ function riebeckiteSsrExternals(externals: readonly string[]): Plugin {
         environments: {
           ssr: {
             resolve: {
-              external: [...externals],
+              external: [...externals, ...siteExternals()],
             },
           },
         },

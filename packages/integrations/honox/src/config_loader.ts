@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { build as buildWithEsbuild } from "esbuild";
+import { siteRiebeckiteExternals } from "./site_externals.js";
 import { workspacePackageResolver } from "./workspace_packages.js";
 
 export type RiebeckiteConfigLoaderOptions = {
@@ -34,6 +35,9 @@ export async function loadRiebeckiteConfig(
       bundle: true,
       platform: "node",
       format: "esm",
+      external: options.workspaceRoot
+        ? []
+        : ["@riebeckite/core", ...siteRiebeckiteExternals(options.configRoot)],
       banner: {
         js: 'import { createRequire as __riebeckiteCreateRequire } from "node:module"; const require = __riebeckiteCreateRequire(import.meta.url);',
       },

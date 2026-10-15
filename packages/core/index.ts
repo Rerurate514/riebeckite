@@ -137,6 +137,11 @@ export {
   determineOutputChanges,
   htmlOutputPath,
 } from "./src/content/output_dependency.js";
+export {
+  createPublicContentView,
+  type PublicContentEntry,
+  type PublicContentView,
+} from "./src/content/public_content_view.js";
 export type {
   PublishingResolutionOptions,
   PublishingVisibility,
@@ -255,6 +260,10 @@ export {
   createStyleAsset,
   serializePublicClientConfig,
 } from "./src/types/plugin_asset.js";
+export type {
+  PluginComponent,
+  PluginDataHelper,
+} from "./src/types/plugin_component.js";
 export type {
   PluginContentContext,
   PluginContentLocationAugmentContext,

@@ -9,6 +9,7 @@ import {
   ArticleLayout,
   ArticleMeta,
   ContentSlot,
+  HtmlFragment,
   hasSlot,
   PageBody,
 } from "../src/ui/primitives.tsx";
@@ -70,6 +71,14 @@ test("ArticleBody composes a Site class after the markdown hook", () => {
   );
 
   assert.match(html, /^<div class="rb-article-content site-article__body">/);
+});
+
+test("HtmlFragment renders trusted pipeline HTML without a wrapper", () => {
+  const html = renderToString(
+    HtmlFragment({ html: "<p>Fragment</p>", source: "markdown" }),
+  );
+
+  assert.equal(html, "<p>Fragment</p>");
 });
 
 test("ContentSlot renders nothing without a slots map", () => {

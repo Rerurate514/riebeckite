@@ -5,6 +5,7 @@ import type {
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { ColorModeScript } from "@riebeckite/plugin-color-mode";
+import { raw } from "hono/html";
 import { Link, Script } from "honox/server";
 
 export type PrimitiveChildren = unknown;
@@ -120,6 +121,17 @@ export function ArticleContent(props: ArticleContentProps) {
 export type ArticleBodyProps = PrimitiveClassProps & {
   html: string;
 };
+
+export type HtmlFragmentSource = "markdown" | "plugin-page";
+
+export type HtmlFragmentProps = {
+  html: string;
+  source: HtmlFragmentSource;
+};
+
+export function HtmlFragment(props: HtmlFragmentProps) {
+  return raw(props.html);
+}
 
 export type ContentSlotProps = PrimitiveClassProps & {
   slots?: ContentBodySlots;

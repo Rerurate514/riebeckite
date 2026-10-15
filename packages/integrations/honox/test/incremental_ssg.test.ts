@@ -68,8 +68,6 @@ test("SSG output links the manifest-resolved stylesheet on regular and README pa
   });
 
   await buildSite(site, "cold", {
-    adapter: false,
-    emptyOutDir: false,
     stylesheet: true,
   });
 
@@ -79,6 +77,24 @@ test("SSG output links the manifest-resolved stylesheet on regular and README pa
     assert.ok(stylesheet, `${output}: ${html}`);
     await readFile(path.join(distPath(site), stylesheet));
   }
+  await readFile(path.join(distPath(site), ".vite", "manifest.json"));
+
+  const noChangeMetrics = await incrementalBuild(site, "no-change", {
+    stylesheet: true,
+  });
+  assert.equal(noChangeMetrics.fullRegenerationRequired, false);
+  assert.ok(Number(noChangeMetrics.reusedOutputCount) > 0);
+
+  await appendFile(notePath(site, 0), "\nEdited stylesheet note.\n", "utf8");
+  const contentChangeMetrics = await incrementalBuild(site, "content-change", {
+    stylesheet: true,
+  });
+  assert.equal(contentChangeMetrics.fullRegenerationRequired, false);
+  assert.ok(Number(contentChangeMetrics.affectedOutputCount) > 0);
+  assert.match(
+    await readFile(path.join(distPath(site), "notes/note-0.html"), "utf8"),
+    /Edited stylesheet note/u,
+  );
 });
 
 test("incremental SSG matches a clean cold build", async (t) => {

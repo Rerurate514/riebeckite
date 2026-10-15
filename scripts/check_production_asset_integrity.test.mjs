@@ -42,6 +42,27 @@ test("checks every public HTML file, including README-derived pages", async (t) 
   assert.equal(result.scriptReferenceCount, 2);
 });
 
+test("checks README-derived redirect documents without treating them as pages", async (t) => {
+  const site = await createSite(t, {
+    html: '<link rel="stylesheet" href="/static/style.css"><script src="/static/client.js"></script>',
+    assets: {
+      "static/style.css": "body {}",
+      "static/client.js": "ready",
+    },
+  });
+  await writePage(
+    site,
+    "README.html",
+    '<meta http-equiv="refresh" content="0;url=/index.html">',
+  );
+
+  const result = await checkProductionAssetIntegrity({ siteRoot: site });
+  assert.equal(result.htmlFileCount, 2);
+  assert.equal(result.redirectDocumentCount, 1);
+  assert.deepEqual(result.pagesWithoutStylesheets, []);
+  assert.deepEqual(result.pagesWithoutScripts, []);
+});
+
 test("rejects one stylesheet-less page among otherwise valid public pages", async (t) => {
   const site = await createSite(t, {
     html: '<link rel="stylesheet" href="/static/style.css"><script src="/static/client.js"></script>',
@@ -132,6 +153,23 @@ async function createSite(t, options) {
     await mkdir(path.dirname(target), { recursive: true });
     await writeFile(target, content, "utf8");
   }
+  const assetPaths = Object.keys(options.assets);
+  const stylesheet =
+    assetPaths.find((assetPath) => assetPath.endsWith(".css")) ??
+    "static/style.css";
+  const client =
+    assetPaths.find((assetPath) => assetPath.endsWith(".js")) ??
+    "static/client.js";
+  const manifestPath = path.join(site, "published", ".vite", "manifest.json");
+  await mkdir(path.dirname(manifestPath), { recursive: true });
+  await writeFile(
+    manifestPath,
+    JSON.stringify({
+      "app/style.css": { file: stylesheet, src: "app/style.css" },
+      "app/client.ts": { file: client, src: "app/client.ts" },
+    }),
+    "utf8",
+  );
   return site;
 }
 

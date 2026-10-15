@@ -474,7 +474,11 @@ export function diffSnapshotKeys(
 export async function incrementalBuild(
   siteRoot: string,
   label: string,
-  options: { adapter?: boolean; emptyOutDir?: boolean } = {},
+  options: {
+    adapter?: boolean;
+    emptyOutDir?: boolean;
+    stylesheet?: boolean;
+  } = {},
 ): Promise<Metrics> {
   await rm(distPath(siteRoot), { recursive: true, force: true });
   return buildSite(siteRoot, label, options);

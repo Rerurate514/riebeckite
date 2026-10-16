@@ -48,6 +48,7 @@ export async function runBuild(
       {
         config,
         observability,
+        commitBuildState: false,
         onPersistentContentCacheResult: (result) => {
           if (result === "hit") persistentContentCache.hits += 1;
           else if (result === "miss") persistentContentCache.misses += 1;

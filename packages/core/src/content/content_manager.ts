@@ -700,6 +700,7 @@ export class ContentManager {
   }
 
   private requestBuildStateCommit(options?: ContentBuildOptions): void {
+    if (this.pipelineOptions.commitBuildState === false) return;
     if (options?.incremental === true) this.buildStateCommitRequested = true;
   }
 
@@ -873,6 +874,7 @@ declare module "../pipeline" {
   interface PipelineOptions {
     config?: ResolvedRiebeckiteConfig;
     publishingBuildTime?: Date | string;
+    commitBuildState?: boolean;
   }
 }
 

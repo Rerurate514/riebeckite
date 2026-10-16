@@ -5,6 +5,7 @@ import path from "node:path";
 import { test } from "node:test";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
+  CONTENT_BUILD_STATE_VERSION,
   computePipelineFingerprint,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
@@ -121,7 +122,7 @@ test("inspect build reports reuse when the pipeline fingerprint matches", async 
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 14,
+      version: CONTENT_BUILD_STATE_VERSION,
       entries: {},
       contentIndex: {},
       externalDependencies: [],
@@ -151,7 +152,7 @@ test("inspect build reports reuse as unavailable when a content transform bypass
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 14,
+      version: CONTENT_BUILD_STATE_VERSION,
       entries: {},
       contentIndex: {},
       externalDependencies: [],

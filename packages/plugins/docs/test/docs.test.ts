@@ -5,15 +5,17 @@ import {
   ContentManager,
   type ContentSource,
   type ContentSourceEntry,
+  createPublicContentView,
   definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
-import { docs } from "../index.js";
+import { docs, getDocsNavigation } from "../index.js";
 import {
   buildDocsNavigation,
   flattenDocsNavigation,
   resolveDocsOptions,
 } from "../src/navigation.js";
+import { renderDocsPrevNext, renderDocsSidebar } from "../src/render.js";
 
 const style = readFileSync(new URL("../style.css", import.meta.url), "utf8");
 
@@ -144,11 +146,21 @@ test("excludes hidden, unpublished, and outside-root entries", async () => {
 
   const manifest = await manager.getManifest();
   const home = manifest.bySlug.get("docs/index");
-  assert.ok(home?.bodySlots?.["article.aside"]?.includes("Home"));
-  assert.equal(home?.bodySlots?.["article.aside"]?.includes("Hidden"), false);
-  assert.equal(home?.bodySlots?.["article.aside"]?.includes("Draft"), false);
-  assert.equal(home?.bodySlots?.["article.aside"]?.includes("Note"), false);
-  assert.equal(manifest.bySlug.get("notes/public")?.bodySlots, undefined);
+
+  const navigation = buildDocsNavigation(
+    manifest.publicEntries,
+    resolveDocsOptions({ root: "docs" }),
+  );
+  const sidebarHtml = renderDocsSidebar({
+    items: navigation,
+    currentPermalink: home?.permalink ?? "",
+    label: "Docs navigation",
+  });
+
+  assert.match(sidebarHtml, /Home/);
+  assert.doesNotMatch(sidebarHtml, /Hidden/);
+  assert.doesNotMatch(sidebarHtml, /Draft/);
+  assert.doesNotMatch(sidebarHtml, /Note/);
 });
 
 test("uses resolved public URLs for sidebar and previous-next", async () => {
@@ -161,18 +173,23 @@ test("uses resolved public URLs for sidebar and previous-next", async () => {
   const manifest = await manager.getManifest();
   const install = manifest.bySlug.get("docs/guide/install");
 
-  assert.match(
-    install?.bodySlots?.["article.aside"] ?? "",
-    /href="\/manual\/install"/,
+  const navigation = buildDocsNavigation(
+    manifest.publicEntries,
+    resolveDocsOptions({ root: "docs" }),
   );
-  assert.match(
-    install?.bodySlots?.["article.aside"] ?? "",
-    /aria-current="page"/,
+  const sidebarHtml = renderDocsSidebar({
+    items: navigation,
+    currentPermalink: install?.permalink ?? "",
+    label: "Docs navigation",
+  });
+  const prevNextHtml = renderDocsPrevNext(
+    flattenDocsNavigation(navigation),
+    install?.permalink ?? "",
   );
-  assert.match(
-    install?.bodySlots?.["article.footer"] ?? "",
-    /href="\/docs\/index"/,
-  );
+
+  assert.match(sidebarHtml, /href="\/manual\/install"/);
+  assert.match(sidebarHtml, /aria-current="page"/);
+  assert.match(prevNextHtml, /href="\/docs\/index"/);
 });
 
 test("isolates multiple plugin instances", async () => {
@@ -194,18 +211,29 @@ test("isolates multiple plugin instances", async () => {
   );
 
   const manifest = await manager.getManifest();
-  assert.equal(
-    manifest.bySlug
-      .get("docs/a")
-      ?.bodySlots?.["article.aside"]?.includes("Guides B"),
-    false,
+
+  const docsNavigation = buildDocsNavigation(
+    manifest.publicEntries.filter((e) => e.slug?.startsWith("docs/")),
+    resolveDocsOptions({ root: "docs" }),
   );
-  assert.equal(
-    manifest.bySlug
-      .get("guides/b")
-      ?.bodySlots?.["article.aside"]?.includes("Docs A"),
-    false,
+  const guidesNavigation = buildDocsNavigation(
+    manifest.publicEntries.filter((e) => e.slug?.startsWith("guides/")),
+    resolveDocsOptions({ root: "guides" }),
   );
+
+  const docsASidebarHtml = renderDocsSidebar({
+    items: docsNavigation,
+    currentPermalink: manifest.bySlug.get("docs/a")?.permalink ?? "",
+    label: "Docs navigation",
+  });
+  assert.doesNotMatch(docsASidebarHtml, /Guides B/);
+
+  const guidesBSidebarHtml = renderDocsSidebar({
+    items: guidesNavigation,
+    currentPermalink: manifest.bySlug.get("guides/b")?.permalink ?? "",
+    label: "Docs navigation",
+  });
+  assert.doesNotMatch(guidesBSidebarHtml, /Docs A/);
 });
 
 test("keeps localized docs navigation within the current language", async () => {
@@ -227,17 +255,37 @@ test("keeps localized docs navigation within the current language", async () => 
   );
 
   const manifest = await manager.getManifest();
-  const english =
-    manifest.bySlug.get("docs/index")?.bodySlots?.["article.aside"] ?? "";
-  const japanese =
-    manifest.bySlug.get("docs/index.ja")?.bodySlots?.["article.aside"] ?? "";
+  const view = createPublicContentView(manifest);
+  const options = resolveDocsOptions({ root: "docs" });
 
-  assert.match(english, /English Home/);
-  assert.match(english, /href="\/docs\/install"/);
-  assert.doesNotMatch(english, /インストール/);
-  assert.match(japanese, /日本語 Home/);
-  assert.match(japanese, /href="\/ja\/docs\/install"/);
-  assert.doesNotMatch(japanese, /English Home/);
+  const englishNavigation = await getDocsNavigation({
+    view,
+    entrySlug: "docs/index",
+    options,
+  });
+  const japaneseNavigation = await getDocsNavigation({
+    view,
+    entrySlug: "docs/index.ja",
+    options,
+  });
+
+  const englishSidebar = renderDocsSidebar({
+    items: englishNavigation,
+    currentPermalink: manifest.bySlug.get("docs/index")?.permalink ?? "",
+    label: "Docs navigation",
+  });
+  const japaneseSidebar = renderDocsSidebar({
+    items: japaneseNavigation,
+    currentPermalink: manifest.bySlug.get("docs/index.ja")?.permalink ?? "",
+    label: "Docs navigation",
+  });
+
+  assert.match(englishSidebar, /English Home/);
+  assert.match(englishSidebar, /href="\/docs\/install"/);
+  assert.doesNotMatch(englishSidebar, /インストール/);
+  assert.match(japaneseSidebar, /日本語 Home/);
+  assert.match(japaneseSidebar, /href="\/ja\/docs\/install"/);
+  assert.doesNotMatch(japaneseSidebar, /English Home/);
 });
 
 test("localizes the previous and next labels by page language", async () => {
@@ -265,10 +313,27 @@ test("localizes the previous and next labels by page language", async () => {
   );
 
   const manifest = await manager.getManifest();
-  const english =
-    manifest.bySlug.get("docs/install")?.bodySlots?.["article.footer"] ?? "";
-  const japanese =
-    manifest.bySlug.get("docs/install.ja")?.bodySlots?.["article.footer"] ?? "";
+  const view = createPublicContentView(manifest);
+  const options = resolveDocsOptions({ root: "docs" });
+  const englishHistory = flattenDocsNavigation(
+    await getDocsNavigation({ view, entrySlug: "docs/index", options }),
+  );
+  const japaneseHistory = flattenDocsNavigation(
+    await getDocsNavigation({ view, entrySlug: "docs/index.ja", options }),
+  );
+  const currentEnglish = englishHistory[Math.floor(englishHistory.length / 2)];
+  const currentJapanese =
+    japaneseHistory[Math.floor(japaneseHistory.length / 2)];
+  const english = renderDocsPrevNext(
+    englishHistory,
+    currentEnglish?.href ?? "",
+    "en",
+  );
+  const japanese = renderDocsPrevNext(
+    japaneseHistory,
+    currentJapanese?.href ?? "",
+    "ja",
+  );
 
   assert.match(english, /aria-label="Previous and next docs pages"/);
   assert.match(english, />Previous</);
@@ -289,7 +354,21 @@ test("renders accessible navigation semantics", async () => {
 
   const manifest = await manager.getManifest();
   const home = manifest.bySlug.get("docs/index");
-  const html = `${home?.bodySlots?.["article.aside"] ?? ""}${home?.bodySlots?.["article.footer"] ?? ""}`;
+
+  const navigation = buildDocsNavigation(
+    manifest.publicEntries,
+    resolveDocsOptions({ root: "docs" }),
+  );
+  const sidebarHtml = renderDocsSidebar({
+    items: navigation,
+    currentPermalink: home?.permalink ?? "",
+    label: "Docs navigation",
+  });
+  const prevNextHtml = renderDocsPrevNext(
+    flattenDocsNavigation(navigation),
+    home?.permalink ?? "",
+  );
+  const html = `${sidebarHtml}${prevNextHtml}`;
 
   assert.match(
     html,
@@ -324,14 +403,23 @@ test("keeps the current branch expanded when a section is collapsed", async () =
   const home = manifest.bySlug.get("docs/index");
   const search = manifest.bySlug.get("docs/plugins/search");
 
-  assert.match(
-    home?.bodySlots?.["article.aside"] ?? "",
-    /data-docs-collapsed="true"/,
+  const navigation = buildDocsNavigation(
+    manifest.publicEntries,
+    resolveDocsOptions({ root: "docs" }),
   );
-  assert.match(
-    search?.bodySlots?.["article.aside"] ?? "",
-    /data-docs-collapsed="false"/,
-  );
+  const homeSidebarHtml = renderDocsSidebar({
+    items: navigation,
+    currentPermalink: home?.permalink ?? "",
+    label: "Docs navigation",
+  });
+  const searchSidebarHtml = renderDocsSidebar({
+    items: navigation,
+    currentPermalink: search?.permalink ?? "",
+    label: "Docs navigation",
+  });
+
+  assert.match(homeSidebarHtml, /data-docs-collapsed="true"/);
+  assert.match(searchSidebarHtml, /data-docs-collapsed="false"/);
 });
 
 test("registers the style asset and the collapsible sidebar client entry", () => {

@@ -29,7 +29,6 @@ export function renderShareControls(
   const ariaLabel = escapeHtmlAttribute(options.ariaLabel);
   return (
     `<div class="${escapeHtmlAttribute(rootClass)}" ${SHARE_ATTRIBUTE} ` +
-    `data-rr-share-placement="${escapeHtmlAttribute(options.placement)}" ` +
     `role="group" aria-label="${ariaLabel}">` +
     `<ul class="${SHARE_ROOT_CLASS}__list">${items}${copyItem}</ul>` +
     `<p class="${SHARE_ROOT_CLASS}__status" role="status" aria-live="polite"></p>` +

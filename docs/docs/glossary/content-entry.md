@@ -14,7 +14,7 @@ One resolved content item in the manifest, identified by slug. It carries the pe
 - `publicLocation` — the resolved [permalink](./permalink.md), redirects, and metadata.
 - `frontmatter` — parsed metadata.
 - `html` — the rendered body.
-- Plugin-contributed data such as body slots and head tags.
+- Plugin-contributed data such as data helpers and JSX components that the Site renders.
 
 ## Slug versus permalink
 
@@ -35,14 +35,12 @@ Each `ContentManifestEntry` carries the following fields, all of which are popul
 | `frontmatter` | `PostFrontmatter` | Parsed frontmatter metadata. |
 | `publishing` | `ResolvedPublishingState` | The publishing state (e.g. `published`, `unlisted`, `draft`, `scheduled`). |
 | `html` | `string` | The rendered HTML body. |
-| `headTags` | `readonly PluginHeadTag[] | undefined` | Plugin-provided head tags rendered in the site shell. |
-| `bodySlots` | `Readonly<Record<string, string>> | undefined` | Plugin-provided HTML fragments keyed by body slot name. |
 | `tags` | `string[]` | Tags associated with this entry. |
 | `links` | `ContentLink[]` | Resolved markdown/wikilink references within the content. |
 | `backlinks` | `string[]` | Auto-computed backlinks from the content graph. |
 | `assets` | `ContentAsset[]` | Assets declared by plugins for this entry. |
 
-Consumers typically access `permalink` for links, `frontmatter` for metadata, and `bodySlots`/`headTags` for layout composition.
+Consumers typically access `permalink` for links, `frontmatter` for metadata, and plugin-contributed data for layout composition.
 
 ---
 
@@ -52,7 +50,6 @@ Pages and templates access entry data through the manifest's lookup maps. The mo
 
 - **Permalink resolution**: Read `entry.permalink` directly, or use `byPermalink` map for slug-to-URL lookups.
 - **Frontmatter**: Access `entry.frontmatter` for page-level metadata (title, date, tags, etc.).
-- **Body slots**: Plugins contribute fragments via `appendContentBodySlot(entry, slot, html)`; the site layout decides which slots to render and where.
 - **Head tags**: Plugins provide `entry.headTags`; the site shell renders them in the `<head>`.
 - **Assets**: `entry.assets` contains `ContentAsset` entries declared by plugins; the site copies or references them during output.
 
@@ -64,6 +61,5 @@ if (entry) {
   const url = entry.permalink;
   const title = entry.title;
   const meta = entry.frontmatter;
-  const slotFrag = entry.bodySlots?.["article.header"];
-}
+  }
 ```

@@ -88,10 +88,19 @@ function formatString(
     const label = match[2]?.trim() || target;
     const start = match.index ?? position;
     if (start > position) parts.push({ text: value.slice(position, start) });
+    const [path, anchor] = target.split(/[#^]/, 2);
+    const key = path?.trim() ?? "";
     const entry =
-      view.findRoutableBySlug(target) ?? view.findRoutableByAlias(target)[0];
+      key === ""
+        ? undefined
+        : (view.findRoutableBySlug(key) ?? view.findRoutableByAlias(key)[0]);
     parts.push(
-      entry ? { text: label, href: entry.permalink } : { text: label },
+      entry
+        ? {
+            text: label,
+            href: anchor ? `${entry.permalink}#${anchor}` : entry.permalink,
+          }
+        : { text: label },
     );
     position = start + match[0].length;
   }

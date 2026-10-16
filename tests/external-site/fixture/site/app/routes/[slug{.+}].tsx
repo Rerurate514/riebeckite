@@ -19,11 +19,6 @@ export default createRoute(
       return c.render(<PageBody html={resolved.page.body} />);
     }
 
-    return c.render(
-      <FixtureArticle
-        post={resolved.post}
-        bodySlots={resolved.entry.bodySlots}
-      />,
-    );
+    return c.render(<FixtureArticle post={resolved.post} />);
   },
 );

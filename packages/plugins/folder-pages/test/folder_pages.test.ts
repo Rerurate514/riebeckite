@@ -14,7 +14,12 @@ import {
 } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
-import { breadcrumbs, buildBreadcrumbItems } from "../../breadcrumbs/index.ts";
+import {
+  breadcrumbs,
+  buildBreadcrumbItems,
+  renderBreadcrumbNav,
+  resolveBreadcrumbsOptions,
+} from "../../breadcrumbs/index.ts";
 import { docs } from "../../docs/index.ts";
 import { buildFolderPages, folderPages } from "../index.js";
 
@@ -312,6 +317,12 @@ test("keeps locales separated and resolves redirects after localization", async 
 });
 
 test("aligns localized folder pages, breadcrumbs, and docs navigation", async () => {
+  const plugins = [
+    l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+    folderPages(),
+    breadcrumbs(),
+    docs({ root: "docs" }),
+  ];
   const content = manager(
     {
       "docs/README.md": "---\ntitle: 日本語 docs\npublish: true\n---\n",
@@ -319,12 +330,7 @@ test("aligns localized folder pages, breadcrumbs, and docs navigation", async ()
       "docs/README.en.md": "---\ntitle: English docs\npublish: true\n---\n",
       "docs/guide/page.en.md": "---\ntitle: English page\npublish: true\n---\n",
     },
-    [
-      l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
-      folderPages(),
-      breadcrumbs(),
-      docs({ root: "docs" }),
-    ],
+    plugins,
   );
 
   const manifest = await content.getManifest();
@@ -333,18 +339,36 @@ test("aligns localized folder pages, breadcrumbs, and docs navigation", async ()
   assert.ok((await content.getPagePaths()).includes("/docs/guide/"));
   assert.ok((await content.getPagePaths()).includes("/en/docs/guide/"));
 
-  const japanese = Object.values(
-    manifest.bySlug.get("docs/guide/page")?.bodySlots ?? {},
-  ).join("\n");
-  const english = Object.values(
-    manifest.bySlug.get("docs/guide/page.en")?.bodySlots ?? {},
-  ).join("\n");
-  assert.match(japanese, /href="\/docs\/"/);
-  assert.match(japanese, /href="\/docs\/guide\/"/);
-  assert.doesNotMatch(japanese, /href="\/ja\//);
-  assert.match(english, /href="\/en\/docs\/"/);
-  assert.match(english, /href="\/en\/docs\/guide\/"/);
-  assert.doesNotMatch(english, /href="\/ja\//);
+  const japanese = manifest.bySlug.get("docs/guide/page");
+  const english = manifest.bySlug.get("docs/guide/page.en");
+  assert.ok(japanese);
+  assert.ok(english);
+
+  const japaneseBody = renderBreadcrumbNav(
+    buildBreadcrumbItems({
+      manifest,
+      entry: japanese,
+      config: config(plugins),
+      homeLabel: "Test",
+    }),
+    resolveBreadcrumbsOptions({}),
+  );
+  const englishBody = renderBreadcrumbNav(
+    buildBreadcrumbItems({
+      manifest,
+      entry: english,
+      config: config(plugins),
+      homeLabel: "Test",
+    }),
+    resolveBreadcrumbsOptions({}),
+  );
+
+  assert.match(japaneseBody, /href="\/docs\/"/);
+  assert.match(japaneseBody, /href="\/docs\/guide\/"/);
+  assert.doesNotMatch(japaneseBody, /href="\/ja\//);
+  assert.match(englishBody, /href="\/en\/docs\/"/);
+  assert.match(englishBody, /href="\/en\/docs\/guide\/"/);
+  assert.doesNotMatch(englishBody, /href="\/ja\//);
 });
 
 test("builds breadcrumbs from canonical landing page locations", async () => {

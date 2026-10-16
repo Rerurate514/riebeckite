@@ -1,5 +1,4 @@
 import {
-  appendContentBodySlot,
   createClientEntry,
   createStyleAsset,
   definePlugin,
@@ -16,7 +15,6 @@ export {
   renderDiffViewer,
 } from "./src/components/diff-viewer.js";
 
-import { renderDiffHistory } from "./src/components/diff-history.js";
 import { createLineDiff } from "./src/diff/line_diff.js";
 import { GitMarkdownHistoryReader } from "./src/git/history_reader.js";
 import type {
@@ -139,15 +137,6 @@ export function diff(options: DiffPluginOptions = {}) {
             { type: "external", id: "diff:git-history" },
           ],
         });
-        appendContentBodySlot(
-          entry,
-          "article.footer",
-          renderDiffHistory({
-            revisions,
-            selected,
-            payloadPath: `/${payloadPath}`,
-          }),
-        );
       }
     },
   });

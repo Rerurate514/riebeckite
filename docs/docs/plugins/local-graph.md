@@ -12,22 +12,12 @@ outgoing links and backlinks.
 
 `localGraph()` provides a `LocalGraph` component that renders the current note
 plus its direct links as an SVG radial graph. `getLocalGraph()` collects the
-note's note-type outgoing links and backlinks from the manifest, keeps only
-published neighbors, and caps each direction at `MAX_NEIGHBORS_PER_DIRECTION`
-(10) notes.
+note's outgoing links and backlinks from the manifest, keeps only published
+neighbors, and caps each direction at `MAX_NEIGHBORS_PER_DIRECTION` (10) notes.
 
-Relations are tagged per node:
-
-- `current` — the selected note (center)
-- `outgoing` — linked from the current note
-- `backlink` — links to the current note
-- `both` — linked in both directions
-
-The component renders nothing when there is no published neighbor.
-
-`localGraphPlugin()` automatically contributes this component to
-`article.footer`. The Site decides where that semantic slot is rendered; the
-official Starter renders it after article content.
+The Site places the `<LocalGraph />` component itself, normally once after
+article content. The component renders nothing when there is no published
+neighbor.
 
 ## Quick Start
 
@@ -42,13 +32,13 @@ export default defineConfig({
 ```
 
 `localGraphPlugin()` registers the plugin and bundles `style.css` into the app
-stylesheet. Render `<ContentSlot slots={bodySlots} name="article.footer" />`
-once in the article layout to show automatic output.
+stylesheet. The Site renders `<LocalGraph />` component itself, normally once
+after article content, to display the graph output.
 
 ## Advanced customization
 
-Set `render: false` to use the public data resolver and component in a
-Site-owned location without duplicating the automatic footer. This leaves graph
+Set `render: false` to use the public data resolver `<getLocalGraph>` in a
+Site-owned location without duplicating the automatic graph. This leaves graph
 generation and published-neighbor filtering intact.
 
 ```tsx
@@ -70,17 +60,12 @@ return (
 );
 ```
 
-```ts
-plugins: [localGraphPlugin({ render: false })];
-```
-
 Remove the component to remove manually placed UI.
 
 ## Configuration
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `render` | `boolean` | `true` | Append the graph to `article.footer`. Set `false` for manual placement. |
+There are no plugin options for `localGraphPlugin`. The `LocalGraph` component
+accepts `graph` as a required prop.
 
 ## Graph layout
 

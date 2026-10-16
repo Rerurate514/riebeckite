@@ -7,7 +7,6 @@ export function resolveBreadcrumbsOptions(
   options: BreadcrumbsOptions | undefined,
 ): ResolvedBreadcrumbsOptions {
   return {
-    render: options?.render ?? true,
     homeLabel: options?.homeLabel?.trim() || "",
     className: options?.className?.trim() || "rb-breadcrumbs",
     ariaLabel: options?.ariaLabel?.trim() || "Breadcrumbs",

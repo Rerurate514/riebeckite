@@ -5,7 +5,7 @@ title: UI コンポーネント移行
 
 ## 1. 状態と判断
 
-**Phase 1 の基盤 API の判断は READY です。** 本書は Slot UI を廃止するための設計基準です。Phase 0 では文書だけを変更し、実行時の挙動は変えません。後続の Phase では `ContentSlot`、`bodySlots`、`ARTICLE_SLOT`、`appendContentBodySlot` を別 API で温存せず、削除します。
+**Phase 4 complete: 遺留 Slot API (`ContentSlot`、`bodySlots`、`ARTICLE_SLOT`、`appendContentBodySlot`、`hasSlot`) は削除され、Plugin はデータヘルパーと Site に 의해 composition される JSX コンポーネントを公開します。** この文書は削除の設計基準です。Phase 0 では文書のみを変更し、実行時の挙動は変えません。後続の Phase では `ContentSlot`、`bodySlots`、`ARTICLE_SLOT`、`appendContentBodySlot` を別 API で温存せず、削除します。
 
 ## 2. 対象と対象外
 

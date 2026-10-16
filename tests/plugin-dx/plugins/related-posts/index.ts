@@ -1,26 +1,33 @@
 import {
-  appendContentBodySlot,
-  type ContentManifestEntry,
   definePlugin,
   escapeHtml,
+  type PluginDataHelper,
+  type PublicContentEntry,
+  type PublicContentView,
   type RiebeckitePlugin,
 } from "@riebeckite/core";
 
 export type RelatedPostsOptions = {
   max?: number;
-  slot?: string;
 };
 
-export function findRelatedPosts(
-  entry: ContentManifestEntry,
-  entries: readonly ContentManifestEntry[],
+type RelatedCandidate = {
+  slug: string;
+  permalink: string;
+  title: string;
+  tags: readonly string[];
+};
+
+export function findRelatedPosts<T extends RelatedCandidate>(
+  entry: RelatedCandidate,
+  candidates: readonly T[],
   max: number,
-): ContentManifestEntry[] {
+): T[] {
   const tags = new Set(entry.tags);
   if (tags.size === 0) {
     return [];
   }
-  return entries
+  return candidates
     .filter(
       (candidate) =>
         candidate.slug !== entry.slug &&
@@ -32,8 +39,11 @@ export function findRelatedPosts(
 }
 
 export function renderRelatedPosts(
-  related: readonly ContentManifestEntry[],
+  related: readonly RelatedCandidate[],
 ): string {
+  if (related.length === 0) {
+    return "";
+  }
   const items = related
     .map(
       (entry) =>
@@ -43,26 +53,28 @@ export function renderRelatedPosts(
   return `<section class="rr-related-posts"><h2>Related</h2><ul>${items}</ul></section>`;
 }
 
+export const getRelatedPosts: PluginDataHelper<
+  {
+    view: PublicContentView;
+    entry: PublicContentEntry;
+    options?: RelatedPostsOptions;
+  },
+  readonly PublicContentEntry[]
+> = ({ view, entry, options }) => {
+  const isDiscoverable = view.discoverableEntries.some(
+    (candidate) => candidate.slug === entry.slug,
+  );
+  if (!isDiscoverable) {
+    return [];
+  }
+  return findRelatedPosts(entry, view.discoverableEntries, options?.max ?? 3);
+};
+
 export function relatedPostsPlugin(
   options: RelatedPostsOptions = {},
 ): RiebeckitePlugin<RelatedPostsOptions> {
-  const max = options.max ?? 3;
-  const slot = options.slot ?? "article.footer";
   return definePlugin({
     name: "plugin-dx-related-posts",
     options,
-    onManifestCreated: ({ manifest }) => {
-      for (const entry of manifest.discoverableEntries) {
-        const related = findRelatedPosts(
-          entry,
-          manifest.discoverableEntries,
-          max,
-        );
-        if (related.length === 0) {
-          continue;
-        }
-        appendContentBodySlot(entry, slot, renderRelatedPosts(related));
-      }
-    },
   });
 }

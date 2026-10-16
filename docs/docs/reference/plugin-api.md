@@ -21,7 +21,6 @@ route that renders it.
 ```mermaid
 flowchart TD
     Q{"What do you want to add?"}
-
     Q -->|"Semantic Markdown / HTML transform"| Pipeline["remark / rehype pipeline"]
     Q -->|"Join a content phase"| Hook["Content hooks"]
     Q -->|"Render a specific format"| Renderer["renderers"]
@@ -107,14 +106,6 @@ definePlugin({
 });
 ```
 
-```mermaid
-flowchart LR
-    Provider["Provider plugin<br/>provides: content.graph"]
-    Consumer["Consumer plugin<br/>requires: content.graph"]
-
-    Provider --> Consumer
-```
-
 - `provides`: capabilities this plugin provides.
 - `requires`: capabilities that must exist.
 - `optional`: capabilities used when present.
@@ -148,6 +139,7 @@ validation can report them together.
 The base context contains resolved config when available, `contentIndex`,
 diagnostics, plugin-scoped cache, generated-output sink, Logger, Tracer, and
 the content source when Core owns one.
+
 Specialized hooks add post, manifest, graph, location, or render data.
 
 ``` ts
@@ -212,7 +204,7 @@ components.
 Core owns incremental invalidation. A plugin declares its cache contract with
 `processedContentCache`; it must not implement its own affected-content logic.
 
-```ts
+``` ts
 definePlugin({
   name: "citations",
   processedContentCache: {
@@ -251,86 +243,6 @@ Generated output paths are physical output paths. A generated output must not
 collide with a content, redirect, or plugin page route; Core fails the build
 instead of overwriting the route.
 
-## Content Hooks
-
-Content hooks join named phases of content processing:
-
-``` text
-setup → buildStart → config resolved → public locations resolved
-→ content loaded → Markdown/HTML pipeline → post parsed → post processed
-→ content graph → manifest created → diagnostics → build end
-```
-
-```mermaid
-flowchart TD
-    Config["Config resolved"]
-    Location["Public location resolved"]
-    Loaded["Content loaded"]
-    Parsed["Post parsed"]
-    Processed["Post processed"]
-    Graph["Content graph"]
-    Manifest["Manifest created"]
-
-    Config --> Location
-    Location --> Loaded
-    Loaded --> Parsed
-    Parsed --> Processed
-    Processed --> Graph
-    Graph --> Manifest
-```
-
-Use only the hooks a phase genuinely requires, and do not rebuild later-phase
-information in an earlier hook.
-
-## Content Graph
-
-Use the existing Manifest/Content Graph contracts instead of rescanning
-the filesystem inside graph-oriented plugins.
-
-```mermaid
-flowchart LR
-    Manifest["Manifest entries"]
-    Graph["Content graph"]
-    Plugin["Plugin extension"]
-    Extended["Extended graph"]
-
-    Manifest --> Graph
-    Graph --> Plugin
-    Plugin --> Extended
-```
-
-Reuse the information the content system has already resolved.
-
-## Public location
-
-`resolveContentLocations` lets a plugin replace the public location of content
-entries. Core first applies its default resolver
-(`resolveDefaultContentLocation`: `index` -> `/`, otherwise `/{slug}`), then runs
-each plugin's hook in resolved plugin order and stores the results as
-`ContentPublicLocation` values on the manifest, graph, and Markdown pipeline.
-
-```mermaid
-flowchart LR
-    Content["Content"]
-    Default["Default location"]
-    P1["Plugin A"]
-    P2["Plugin B"]
-    Result["ContentPublicLocation"]
-
-    Content --> Default
-    Default --> P1
-    P1 --> P2
-    P2 --> Result
-```
-
-Plugins own their URL strategy: identity fields, hash or frontmatter IDs, path
-shapes, redirect rules, and their own validation. Core does not know any of
-that; it knows only `ContentLocationInput`, `ContentPublicLocation`,
-`resolveDefaultContentLocation`, and the `resolveContentLocations` hook.
-Consumers read the resolved `entry.permalink`, never branch on a specific plugin,
-and never rebuild a URL from a slug. An entry without a resolved location is an
-explicit error, not a slug fallback.
-
 ## Renderers
 
 Renderers receive a target (`kind`, `path`, `raw`, `label`, `url`,
@@ -348,69 +260,64 @@ flowchart LR
     Renderer -->|"does not handle it"| Next["Next renderer"]
 ```
 
-## Body slots
+## UI components
 
-A plugin can contribute an HTML fragment to a named position in the
-Site-owned article layout without adding a route or touching the document
-shell. Core defines the slot names as `ContentBodySlot`; the Site decides
-which slots to render and where.
+Plugins may export a `PluginComponent<Props>` and a `PluginDataHelper<Input, Model>` in addition to their factory. Data helpers receive narrow inputs such as `PublicContentView` and return typed models; components accept readonly typed props and return no Slot HTML. The Site composes these components in its own TSX, choosing whether, where, and how often to render each one. This replaces the removed body-slot system: plugins no longer contribute HTML fragments to a `bodySlots` map on the manifest entry.
 
-The standard article layout recognizes:
-
-  Slot                     Position
-  ------------------------ -----------------------------------------------
-  article.header     directly after the article header
-  article.metadata       after the title and meta block
-  article.aside            in the article aside
-  article.before-content   before the note body
-  article.after-content    after the note body
-  article.footer           in the article footer
-
-`ContentBodySlot` also accepts any other string, so a custom Site can define
-additional slot names.
-
-Publish a fragment with `appendContentBodySlot` from `@riebeckite/core`,
-typically from a manifest hook such as `onManifestCreated`:
+Typical plugin export shape:
 
 ```ts
-import { appendContentBodySlot } from "@riebeckite/core";
-
-appendContentBodySlot(entry, "article.after-content", "<section>...</section>");
+// index.ts
+export function examplePlugin() {
+  return definePlugin({
+    name: "example",
+    // ... factory hooks, assets, clientEntries, etc.
+    // Export UI component and data helper
+    component: <MyComponent />,
+    dataHelper: getMyData,
+  });
+}
 ```
 
-Empty fragments are ignored, and fragments accumulate in resolved plugin
-order: contributions from earlier plugins are preserved and the new fragment
-is appended.
+Or more conventionally, a plugin may place its component and helper under `./components/`:
 
-Use `article.footer` for article-end sections such as related content,
-history, navigation, and backlinks. Set each plugin's `order` to establish a
-stable sequence; do not reorder these sections in routes or with CSS.
+```text
+packages/plugins/example/
+├─ index.ts
+├─ components/
+│  ├─ my-component.tsx   // exports <MyComponent /> and getMyData
+│  └─ types.ts
+├─ style.css
+└─ client.ts
+```
 
-The Site reads `entry.bodySlots` and chooses whether and where to render each
-value. It can delegate the rendering mechanics to the public `ContentSlot`
-primitive from `@riebeckite/honox/ui`:
+The Site then imports and renders:
 
 ```tsx
-// app/components/article/article.tsx
-import { ContentSlot } from "@riebeckite/honox/ui";
+import { getMyData } from "@riebeckite/plugin-example";
+import { MyComponent } from "@riebeckite/plugin-example/components";
 
-<ContentSlot slots={props.bodySlots} name="article.after-content" />
+const model = getMyData({ view, frontmatter: entry.frontmatter });
+<MyComponent model={model} />
 ```
 
-`ContentSlot` is public API. It owns the slot lookup, missing and empty
-handling, HTML fragment rendering, and the `data-slot` attribute; site classes
-are added with `class`/`className`. A slot is rendered only because the Site's
-own renderer chooses to render it, and a custom slot name does nothing until the
-Site renders it. The escape hatches remain: read `slots` directly, wrap a slot
-in any element, and render the same slot more than once. A plugin can
-alternatively export a Hono JSX component for the Site to place; see
-[Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
+Components may also optionally export internal CSS and a client entry, registered through the integration as usual. Existing asset and client-entry registration remains factory-owned; importing a component alone neither registers CSS/client runtime nor enables a plugin capability.
 
-The reference app and the scaffolded starter consume the standard slots. A
-plugin publishes; the Site renders. A plugin never changes a route, the shell,
-or the render order. See
-[Body slot handoff](../framework/honox-integration/site.md#body-slot-handoff) for
-the route-level contract.
+HonoX primitives such as `Article`, `ArticleHeader`, `ArticleContent`, `ArticleBody`, `ArticleFooter`, `Sidebar`, and `ThemeRoot` remain as semantic primitives for article structure and layout. They are kept after removing Slot APIs and placement attributes. Components belong in plugin packages and are exported from their public entry points with their model types and helpers. Site TSX belongs under the application's `app/`. HonoX owns rendering primitives only; it does not collect plugin components or select their order.
+
+```tsx
+// Minimal UI composition in a site route
+import { getBacklinks } from "@riebeckite/core";
+import { MyComponent } from "@riebeckite/plugin-example";
+
+const view = createPublicContentView(manifest);
+const entry = view.findRoutableBySlug(slug);
+const backlinks = await getBacklinks({ view, slug });
+<article>
+  <MyComponent backlinks={backlinks} />
+  <ArticleBody html={entry.html} />
+</article>
+```
 
 ## Manifest collections and publication safety
 
@@ -444,10 +351,10 @@ and theme. A page may also return `title`, `description`, `headTags`, and the
 
 ```mermaid
 flowchart LR
-    Plugin["Plugin page type"]
-    Core["Core resolver"]
-    Integration["HonoX integration"]
-    Site["Site document frame"]
+    Plugin["Plugin Page Type"]
+    Core["Core Resolver"]
+    Integration["HonoX Integration"]
+    Site["Site Document Frame"]
 
     Plugin --> Core
     Core --> Integration
@@ -478,7 +385,7 @@ highest `priority` wins; ties fail explicitly.
 content between builds. This is separate from `cacheVersion` and
 `context.cache`.
 
-```ts
+``` ts
 processedContentCache: {
   version: "example-v1",
   dependencyMode: "tracked",
@@ -503,7 +410,7 @@ separate contracts. Page types declare `outputDependencies`; a plugin that
 updates existing manifest entry HTML in `onManifestCreated` declares root
 `outputDependencies`, which are added to those content outputs.
 
-```ts
+``` ts
 outputDependencies: [{ type: "global" }]
 
 pageTypes: [{
@@ -530,7 +437,7 @@ For a package named `@riebeckite/plugin-example`, use the Core helpers. They
 declare the package's conventional `./style.css` and `./client` exports while
 keeping the integration-facing values consistent:
 
-```ts
+``` ts
 import {
   createClientEntry,
   createStyleAsset,
@@ -550,7 +457,7 @@ export function examplePlugin() {
 
 The same declarations written out explicitly:
 
-```ts
+``` ts
 assets: [
   {
     pluginName: "example",
@@ -593,7 +500,7 @@ URLs. An initializer without public config continues to receive no arguments.
 
 A client entry can also be declared explicitly:
 
-```ts
+``` ts
 clientEntries: [
   {
     pluginName: "example",
@@ -685,7 +592,7 @@ Use `defineEndpoint` to declare an endpoint. Pass `cacheControl` only when the
 response is safe to cache; the helper applies the header without duplicating
 response plumbing.
 
-```ts
+``` ts
 import { defineEndpoint } from "@riebeckite/core";
 
 const searchEndpoint = defineEndpoint(
@@ -700,7 +607,7 @@ const searchEndpoint = defineEndpoint(
 Return structured diagnostics rather than printing ad-hoc CLI messages.
 Use the injected Logger for operational logging.
 
-```ts
+``` ts
 addDiagnostics(context) {
   return [
     {
@@ -728,10 +635,8 @@ flowchart TD
     Plugin["Plugin"]
     Cache["Plugin cache"]
     Valid{"Usable?"}
-
     Plugin --> Cache
     Cache --> Valid
-
     Valid -->|"yes"| Reuse["Reuse"]
     Valid -->|"no"| Generate["Regenerate"]
 ```
@@ -744,7 +649,7 @@ Use `context.logger` and `context.tracer`:
 
 ``` ts
 context.logger.info("...");
-await context.tracer.span("plugin.example.work", { plugin: "example" }, async () => {
+await context.tracer.span("plugin.example.work", { plugin: "example }, async () => {
   // work
 });
 ```
@@ -768,7 +673,64 @@ packages/plugins/example/
    └─ types.ts
 ```
 
-## Distributing a Plugin outside this repository
+A plugin without a `client.ts` or `style.css` drops those subpaths and `files`
+entries.
+
+Bundle the JavaScript entry points with `esbuild` and emit declarations with
+`tsc`. Both are ordinary ecosystem tools; no Riebeckite-specific build script
+is required.
+
+`build.mjs`:
+
+```js
+import { build } from "esbuild";
+
+await build({
+  entryPoints: ["index.ts", "client.ts"],
+  outdir: "dist",
+  bundle: true,
+  format: "esm",
+  platform: "neutral",
+  packages: "external",
+  external: ["@riebeckite/*"],
+  logLevel: "warning",
+});
+```
+
+List only the entry points your package actually has (drop `client.ts` when
+there is no client).
+
+`tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["index.ts", "client.ts"]
+}
+```
+
+Building in `prepack` keeps `npm pack` / `npm publish` shipping fresh output.
+Puting `@riebeckite/core` in `dependencies` is the simplest choice; use
+`peerDependencies` instead when the site should provide the module instance.
+Declare each transform dependency you import (`unist-util-visit`, `unified`,
+remark/rehype packages) in `dependencies`, and never point a published `exports`
+entry at TypeScript source (`./index.ts`).
+
+For testing a distributed package, see [Testing](../framework/testing.md#testing-a-plugin);
+for CSS and client packaging, see [Assets](#assets) and [Client entries](#client-entries).
+
+### Distributing a Plugin outside this repository
 
 An external Plugin package depends only on `@riebeckite/core` and declares the
 subpaths it owns (`./client`, `./components`, `./style.css`) in its own `exports`
@@ -821,9 +783,9 @@ A complete, copyable manifest:
 A plugin without a `client.ts` or `style.css` drops those subpaths and `files`
 entries.
 
-Bundle the JavaScript entry points with `esbuild` and emit declarations with
-`tsc`. Both are ordinary ecosystem tools; no Riebeckite-specific build script is
-required.
+JavaScript of the entry point is bundled with `esbuild` and type declarations
+are emitted with `tsc`. Both are ordinary ecosystem tools; no Riebeckite-specific
+build script is required.
 
 `build.mjs`:
 
@@ -842,8 +804,8 @@ await build({
 });
 ```
 
-List only the entry points your package actually has (drop `client.ts` when there
-is no client).
+`entryPoints` includes only the entry points your package actually has (drop
+`client.ts` when there is no client).
 
 `tsconfig.json`:
 
@@ -865,50 +827,98 @@ is no client).
 }
 ```
 
-Building in `prepack` keeps `npm pack` / `npm publish` shipping fresh output.
-Putting `@riebeckite/core` in `dependencies` is the simplest choice; use
-`peerDependencies` instead when the site should provide the module instance.
-Declare each transform dependency you import (`unist-util-visit`, `unified`,
-remark/rehype packages) in `dependencies`, and never point a published `exports`
-entry at TypeScript source (`./index.ts`).
+`prepack`でbuildするようにしておけば、`npm pack` / `npm publish` は常に最新の成果物を同梱します。`@riebeckite/core` は `dependencies` に置くのが最も簡単です（Site側の instance を共有したい場合は `peerDependencies` でもかまいません）。import する変換依存（`unist-util-visit`、`unified`、remark/rehype package など）は `dependencies` に宣言し、公開 package の `exports` を TypeScript の source（`./index.ts`）へ向けないでください。
 
-For testing a distributed package, see [Testing](../framework/testing.md#testing-a-plugin);
-for CSS and client packaging, see [Assets](#assets) and [Client entries](#client-entries).
+配布する Package のテストは [Testing](../framework/testing.md#testing-a-plugin) を、CSS / Client entry の packaging は [Assets](#assets) と [Client Entries](#client-entries) を参照してください。
 
-### Site-local plugins
+### Package 構成
 
-A plugin does not have to be published. Define it inside the site with
-`definePlugin` and pass it to `plugins` in `riebeckite.config.ts`; resolution,
-dependency handling, pipeline hooks, and diagnostics are the same contract as a
-packaged plugin.
+公開 package では、Build 済み ESM と型定義を publish し、`exports` をその
+Build 成果物へ向けます。最小構成の `package.json` は次のとおりです。
 
-``` ts
-// site/extensions/local-plugin.ts
-import { definePlugin } from "@riebeckite/core";
-
-export function localPlugin() {
-  return definePlugin({
-    name: "site-local",
-    // Hooks (remarkPlugins, extendHtmlPipeline, endpoints, ...) are the same
-    // contract as a packaged plugin.
-    assets: [
-      {
-        pluginName: "site-local",
-        kind: "style",
-        moduleSpecifier: "/extensions/plugin.css",
-      },
-    ],
-  });
+```json
+{
+  "name": "my-riebeckite-plugin",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "default": "./dist/client.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "files": ["dist", "style.css"],
+  "scripts": {
+    "build": "node build.mjs && tsc -p tsconfig.json",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@riebeckite/core": "^0.0.19",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.0.0"
+  }
 }
 ```
 
-`createStyleAsset()` and `createClientEntry()` only build
-`@riebeckite/plugin-<name>/...` specifiers, so any package not named that way —
-a site-local plugin, or a third-party package under a different name — must
-declare `moduleSpecifier` explicitly: a package subpath or a path relative to
-the Vite root that the host bundler can resolve. The External Site Build E2E
-(`tests/external-site`) exercises a site-local plugin and theme alongside the
-published packages.
+`client.ts` や `style.css` を持たない Plugin では、その subpath と `files` の entry を削除します。
+
+JavaScript の entry point は `esbuild` で bundle し、型定義は `tsc` で emit します。どちらも一般的なツールで、Riebeckite 固有の build script は必要ありません。
+
+`build.mjs`:
+
+```js
+import { build } from "esbuild";
+
+await build({
+  entryPoints: ["index.ts", "client.ts"],
+  outdir: "dist",
+  bundle: true,
+  format: "esm",
+  platform: "neutral",
+  packages: "external",
+  external: ["@riebeckite/*"],
+  logLevel: "warning",
+});
+```
+
+`entryPoints` には、その Package が持つ entry だけを列挙します（client を持たないなら `index.ts` だけ）。
+
+`tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["index.ts", "client.ts"]
+}
+```
+
+`prepack` で build するようにしておけば、`npm pack` / `npm publish` は常に最新の成果物を同梱します。`@riebeckite/core` は `dependencies` に置くのが最も簡単です（Site 側の instance を共有したい場合は `peerDependencies` でもかまいません）。import する変換依存（`unist-util-visit`、`unified`、remark / rehype package など）は `dependencies` に宣言し、公開 package の `exports` を TypeScript の source（`./index.ts`）へ向けないでください。
+
+公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
 ## Responsibility boundary
 
@@ -917,7 +927,6 @@ Decide by the nature of the feature:
 ```mermaid
 flowchart TD
     Feature{"What is this feature?"}
-
     Feature -->|"Framework-wide content model"| Core["Core"]
     Feature -->|"Reusable content feature"| Plugin["Plugin"]
     Feature -->|"HonoX / Vite connection"| Integration["Integration"]
@@ -936,7 +945,7 @@ Do not put in a plugin:
 - Framework-wide content model — belongs in Core.
 - HonoX/Vite connections — belong in the Integration.
 - Application-specific routes/layouts — belong in the App.
-- Appearance-only changes — belong in Themes.
+- Appearance-only changes — belong in Theme.
 
 ## ESM
 
@@ -950,17 +959,17 @@ repairing runtime resolution.
 flowchart LR
     Plugin["Plugin"]
 
-    Plugin --> Pipeline["Content pipeline"]
+    Plugin --> Pipeline["Content Pipeline"]
     Plugin --> Renderer["Renderer"]
-    Plugin --> Page["Page type"]
-    Plugin --> Graph["Content graph"]
+    Plugin --> Page["Page Type"]
+    Plugin --> Graph["Content Graph"]
     Plugin --> Diagnostics["Diagnostics"]
     Plugin --> Asset["Assets"]
-    Plugin --> Client["Client entry"]
+    Plugin --> Client["Client Entry"]
     Plugin --> Endpoint["Endpoint"]
     Plugin --> SEO["SEO"]
 
-    Pipeline --> Core["Core contracts"]
+    Pipeline --> Core["Core Contracts"]
     Renderer --> Core
     Page --> Core
     Graph --> Core
@@ -971,7 +980,7 @@ flowchart LR
     SEO --> Core
 
     Core --> Integration["Integration"]
-    Integration --> Site["Site application"]
+    Integration --> Site["Site Application"]
 ```
 
 The basic principle: use the smallest extension point you need, and do not
@@ -987,4 +996,4 @@ document, and UI.
 - [Testing](../framework/testing.md)
 - [Observability](../framework/observability.md)
 - [Theme System](./theme-api.md)
-- [Framework Reference](./README.md)
+- [Framework Reference](./README.md]

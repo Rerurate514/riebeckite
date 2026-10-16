@@ -44,8 +44,6 @@ Each content entry in the manifest is typed as `ContentManifestEntry` (`packages
 - **`frontmatter`** — `PostFrontmatter` containing `id`, `title`, `description`, `date`, `published`, `tags`, and other metadata
 - **`html`** — the processed Markdown HTML body
 - **`aliases`** — alternative lookup keys for the note
-- **`bodySlots`** — plugin‑provided HTML fragments keyed by slot name
-- **`headTags`** — plugin‑provided head HTML fragments
 - **`tags`** and **`links`** — taxonomy and wikilink/MMD links collected during processing
 
 Example entry structure:

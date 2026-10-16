@@ -22,15 +22,15 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | `@riebeckite/plugin-l10n` | `l10n` | `{ defaultLang: "en", languages: ["en","ja","zh-CN","es","de","fr","ko"] }` |
 | `@riebeckite/plugin-seo` | `seo` | `{ sitemap: true, robots: true, feed: { rss: true, atom: true, json: true } }` |
 | `@riebeckite/plugin-toc` | `tocPlugin` | — |
-| `@riebeckite/plugin-properties` | `properties` | `{ render: false, include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }` |
+| `@riebeckite/plugin-properties` | `properties` | `{ include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }` |
 | `@riebeckite/plugin-alias` | `aliasPlugin` | `{ status: 308 }` |
 | `@riebeckite/plugin-code-enhance` | `codeEnhance` | `{ lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true, theme: { light: "github-light", dark: "github-dark" }, wrapToggle: true }` |
 | `@riebeckite/plugin-search` | `searchPlugin` | — |
 | `@riebeckite/plugin-backlinks` | `backlinksPlugin` | — |
-| `@riebeckite/plugin-breadcrumbs` | `breadcrumbsPlugin` | `{ render: false }` |
+| `@riebeckite/plugin-breadcrumbs` | `breadcrumbsPlugin` | — |
 | `@riebeckite/plugin-navigation` | `navigation` | `{ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework/plugins", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }` |
 | `@riebeckite/plugin-related-posts` | `relatedPosts` | `{ limit: 5, useTags: true, useBacklinks: true, minScore: 1, heading: true, headingText: "Related", className: "rb-related-posts" }` |
-| `@riebeckite/plugin-share` | `share` | `{ render: false, placement: "bottom", services: ["x", "bluesky", "mastodon", "facebook", "linkedin", "hatena", "copy"], mastodonInstance: "mastodon.social" }` |
+| `@riebeckite/plugin-share` | `share` | `{ services: ["x", "bluesky", "mastodon", "facebook", "linkedin", "hatena", "copy"], mastodonInstance: "mastodon.social" }` |
 | `@riebeckite/plugin-changelog` | `changelog` | `{ perNote: true, lookbackDays: 90, dateFormat: "iso", siteWide: false }` |
 | `@riebeckite/plugin-webmention` | `webmention` | `{ headingText: "Mentions", limit: 20 }` |
 | `@riebeckite/plugin-recent-posts` | `recentPostsPlugin` | — |

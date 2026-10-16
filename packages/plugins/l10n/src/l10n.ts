@@ -1,7 +1,5 @@
 import {
-  appendContentBodySlot,
   attachErrorPath,
-  type ContentBodySlot,
   type ContentLocationInput,
   type ContentManifest,
   type ContentManifestEntry,
@@ -15,7 +13,6 @@ import {
   type PublicContentView,
 } from "@riebeckite/core";
 import { parse } from "yaml";
-import { renderLanguageSwitcher } from "./language-switcher.js";
 
 const TRANSLATION_METADATA_KEY = "l10n.translationId";
 
@@ -40,21 +37,7 @@ export type L10nOptions = {
   languages: readonly string[];
   strict?: boolean;
   detect?: (content: L10nDetectorContext) => L10nDetectorResult | undefined;
-  /**
-   * Publishes the built-in switcher into a standard article layout slot.
-   * Pass `false` to keep localization metadata and URLs without UI.
-   */
-  ui?: L10nUiOptions;
 };
-
-export type L10nUiOptions =
-  | false
-  | {
-      /** Defaults to the standard `article.metadata` slot. */
-      slot?: ContentBodySlot;
-      /** Replaces the built-in server-rendered LanguageSwitcher. */
-      render?: (context: LanguageSwitcherRenderContext) => string | null;
-    };
 
 export type LocalizedContent = {
   readonly slug: string;
@@ -64,19 +47,6 @@ export type LocalizedContent = {
   readonly availableLanguages: readonly string[];
   readonly translations: Readonly<Record<string, string>>;
 };
-
-export type LanguageSwitcherRenderContext = {
-  readonly localization: LocalizedContent;
-};
-
-type ResolvedUiOptions =
-  | false
-  | {
-      readonly slot: ContentBodySlot;
-      readonly render: (
-        context: LanguageSwitcherRenderContext,
-      ) => string | null;
-    };
 
 type DetectedContent = L10nContent & {
   readonly lang: string;
@@ -155,7 +125,6 @@ export function l10n(options: L10nOptions) {
     },
     onManifestCreated: ({ manifest }) => {
       addLocalizationHeadTags(manifest, state);
-      addLanguageSwitchers(manifest, resolved.ui);
     },
     addDiagnostics: () => state.diagnostics,
   });
@@ -314,7 +283,6 @@ function resolveOptions(options: L10nOptions) {
     ),
     strict: options.strict ?? false,
     detect: options.detect,
-    ui: resolveUiOptions(options.ui),
   };
 }
 
@@ -350,30 +318,7 @@ function validateOptions(options: L10nOptions): string[] {
   if (options.detect !== undefined && typeof options.detect !== "function") {
     errors.push("l10n.detect must be a function.");
   }
-  if (options.ui !== undefined && options.ui !== false) {
-    if (typeof options.ui !== "object") {
-      errors.push("l10n.ui must be false or an object.");
-    } else if (
-      options.ui.slot !== undefined &&
-      (typeof options.ui.slot !== "string" || !options.ui.slot.trim())
-    ) {
-      errors.push("l10n.ui.slot must be a non-empty string.");
-    } else if (
-      options.ui.render !== undefined &&
-      typeof options.ui.render !== "function"
-    ) {
-      errors.push("l10n.ui.render must be a function.");
-    }
-  }
   return errors;
-}
-
-function resolveUiOptions(ui: L10nUiOptions | undefined): ResolvedUiOptions {
-  if (ui === false) return false;
-  return {
-    slot: ui?.slot ?? "article.metadata",
-    render: ui?.render ?? renderLanguageSwitcher,
-  };
 }
 
 function canonicalLanguage(value: string): string {
@@ -646,30 +591,6 @@ function addLocalizationHeadTags(
   }
 }
 
-function addLanguageSwitchers(
-  manifest: ContentManifest,
-  ui: ResolvedUiOptions,
-): void {
-  if (ui === false) return;
-  const translationsById = collectDiscoverableTranslations(manifest);
-  for (const entry of manifest.discoverableEntries) {
-    const translationId =
-      entry.publicLocation.metadata?.[TRANSLATION_METADATA_KEY];
-    const localization = translationId
-      ? localizationForEntry(
-          entry,
-          translationId,
-          translationsById.get(translationId) ?? [],
-        )
-      : null;
-    if (!localization) continue;
-    const html = ui.render({ localization });
-    if (html && !entry.bodySlots?.[ui.slot]?.includes(html)) {
-      appendContentBodySlot(entry, ui.slot, html);
-    }
-  }
-}
-
 function collectDiscoverableTranslations(
   manifest: ContentManifest,
 ): ReadonlyMap<string, readonly ContentManifestEntry[]> {
@@ -690,7 +611,7 @@ function collectDiscoverableTranslations(
   );
 }
 
-function localizationForEntry(
+function _localizationForEntry(
   entry: ContentManifestEntry,
   translationId: string,
   translations: readonly ContentManifestEntry[],
@@ -721,8 +642,6 @@ function sameHeadTag(left: PluginHeadTag, right: PluginHeadTag): boolean {
     left.attrs?.href === right.attrs?.href
   );
 }
-
-export { renderLanguageSwitcher } from "./language-switcher.js";
 
 function uniqueLanguageEntries<
   Entry extends ContentManifestEntry | PublicContentEntry,

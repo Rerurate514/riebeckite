@@ -3,7 +3,6 @@
  */
 
 export type PropertiesOptions = {
-  render?: boolean;
   /**
    * Heading text. Defaults to `"Properties"`. Pass `null` to omit the heading
    * entirely.
@@ -31,7 +30,6 @@ export type PropertiesOptions = {
 };
 
 export type ResolvedPropertiesOptions = {
-  render: boolean;
   title: string | null;
   include: readonly string[] | undefined;
   exclude: readonly string[];

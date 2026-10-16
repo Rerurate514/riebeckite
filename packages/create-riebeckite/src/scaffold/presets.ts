@@ -186,7 +186,6 @@ const seo = np("@riebeckite/plugin-seo", "seo", {
 });
 const toc = np("@riebeckite/plugin-toc", "tocPlugin");
 const properties = np("@riebeckite/plugin-properties", "properties", {
-  render: { depth: 1, value: "false" },
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
   order: { depth: 2, value: '["created", "modified", "tags", "status"]' },
 });
@@ -204,9 +203,7 @@ const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {
 /** Discovery, media, and reading polish. */
 const search = np("@riebeckite/plugin-search", "searchPlugin");
 const backlinks = np("@riebeckite/plugin-backlinks", "backlinksPlugin");
-const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbsPlugin", {
-  render: { depth: 1, value: "false" },
-});
+const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbsPlugin");
 const navigationStarter = np("@riebeckite/plugin-navigation", "navigation");
 const navigationShowcase = np(
   "@riebeckite/plugin-navigation",
@@ -223,8 +220,6 @@ const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts", {
   className: { depth: 3, value: '"rb-related-posts"' },
 });
 const share = np("@riebeckite/plugin-share", "share", {
-  render: { depth: 1, value: "false" },
-  placement: { depth: 2, value: '"bottom"' },
   services: {
     depth: 3,
     value:

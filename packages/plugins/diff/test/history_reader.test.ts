@@ -6,9 +6,11 @@ import {
   resolveConfig,
 } from "@riebeckite/core";
 import {
+  createPostDiffApi,
   diff,
   GitMarkdownHistoryReader,
   type MarkdownRevision,
+  renderDiffHistory,
 } from "../index.ts";
 import {
   createTestRepository,
@@ -139,7 +141,7 @@ test(
         "2024-01-02T00:00:00+00:00",
       );
 
-      const manifest = await new ContentManager(
+      const _manifest = await new ContentManager(
         memorySource({
           "draft.md": "---\npublish: false\ntitle: Draft\n---\n# Draft",
           "hello.md": "---\npublish: true\ntitle: Hello\n---\n# Hello",
@@ -153,17 +155,30 @@ test(
           }),
         },
       ).getManifest();
-      const footer =
-        manifest.bySlug.get("hello")?.bodySlots?.["article.footer"] ?? "";
 
-      assert.ok(footer.includes("data-rr-diff-history"));
-      assert.ok(footer.includes("extend hello"));
-      assert.match(
-        footer,
-        /data-rr-diff-history-data>\{"path":"\/_riebeckite\/diff\/[A-Za-z0-9_-]+\.json"\}<\/script>/,
-      );
-      assert.equal(footer.includes(HELLO_V2), false);
-      assert.equal(footer.includes("No Git history is available"), false);
+      // Read Git through the configured content directory, not process.cwd()
+      const reader = new GitMarkdownHistoryReader({
+        cwd: repository.contentRoot,
+      });
+      const filePath = "hello.md";
+      const history = await reader.getHistory(filePath);
+      const revisions: MarkdownRevision[] = [];
+      for (const revision of history) {
+        const markdown = await reader.getRevisionMarkdown(
+          filePath,
+          revision.hash,
+        );
+        if (markdown !== null) revisions.push({ ...revision, markdown });
+      }
+      const selected = await createPostDiffApi({
+        cwd: repository.contentRoot,
+      }).getCurrentDiff(filePath);
+
+      const rendered = renderDiffHistory({ revisions, selected });
+      assert.ok(rendered.includes("data-rr-diff-history"));
+      assert.ok(rendered.includes("extend hello"));
+      assert.ok(!rendered.includes(HELLO_V2));
+      assert.ok(!rendered.includes("No Git history is available"));
     } finally {
       repository.dispose();
     }

@@ -44,8 +44,6 @@ manifestに登録される各コンテンツentryは`ContentManifestEntry`(`pack
 - **`frontmatter`** ：`PostFrontmatter`。`id`、`title`、`description`、`date`、`published`、`tags`ほかのメタデータを保持します
 - **`html`** ：処理後のMarkdown HTML本文
 - **`aliases`** ：ノートの別キー
-- **`bodySlots`** ：slot名でキーされるplugin提供のHTMLフラグメント
-- **`headTags`** ：head HTMLフラグメント
 - **`tags`** および**`links`** ：タクソノミーとwikilink/MMDリンク
 
 例）entryの構造:

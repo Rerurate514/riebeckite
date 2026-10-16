@@ -5,7 +5,7 @@ export type LanguageSwitcherProps = {
   localization: LocalizedContent | null;
 };
 
-const LanguageSwitcher: PluginComponent<LanguageSwitcherProps> = (props) => {
+const LanguageSwitcher = ((props: Readonly<LanguageSwitcherProps>) => {
   const localization = props.localization;
   if (!localization || localization.availableLanguages.length < 2) return null;
   return (
@@ -32,6 +32,6 @@ const LanguageSwitcher: PluginComponent<LanguageSwitcherProps> = (props) => {
       </ul>
     </nav>
   );
-};
+}) satisfies PluginComponent<LanguageSwitcherProps>;
 
 export default LanguageSwitcher;

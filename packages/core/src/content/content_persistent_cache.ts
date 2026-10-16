@@ -33,7 +33,7 @@ export type PersistentContentCacheOptions = {
 };
 
 const CONTENT_CACHE_NAMESPACE = "content";
-export const CONTENT_CACHE_SCHEMA_VERSION = 4;
+export const CONTENT_CACHE_SCHEMA_VERSION = 5;
 export const CONTENT_CACHE_COMPATIBILITY_VERSION = 3;
 
 function hash(value: string): string {

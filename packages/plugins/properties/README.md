@@ -11,9 +11,8 @@ time. No client-side JavaScript is required.
 
 When the content manifest is created, `properties()` renders a
 `section.rb-properties[data-properties]` from every entry's frontmatter. The
-note HTML is left untouched and the panel is published on
-`ContentManifestEntry.bodySlots["article.metadata"]`, so the Site decides where
-to render it. The frontmatter stays the single source of truth — there is
+note HTML is left untouched and the panel is published as part of the entry's
+build-time output. The frontmatter stays the single source of truth — there is
 nothing to write in the Markdown body.
 
 Values are rendered by type:
@@ -43,6 +42,11 @@ export default defineConfig({
 });
 ```
 
+`properties()` provides a `getProperties({ view, frontmatter, options? })`
+helper that returns `PropertiesData`. The Site renders `<Properties data={data} />`
+itself. `PropertiesOptions` accepts `title`, `include`, `exclude`, `order`,
+`hideEmpty`, `className`, `collapsed` (no `render` option).
+
 ## Options
 
 | Option | Type | Default | Description |
@@ -63,44 +67,31 @@ properties({
 });
 ```
 
-### Rendering the metadata slot
+## Display
 
-The plugin writes the panel to `ContentManifestEntry.bodySlots["article.metadata"]`.
-The Site route passes `bodySlots` to its article component and chooses the
-metadata position in its layout. Combine `include` and `order` to decide which
-keys are shown and in what order:
+The plugin renders the properties panel at build time. The Site can render
+the exported component anywhere in its layout:
 
 ```tsx
-// app/components/article.tsx (site side)
-import type { ContentBodySlots } from "@riebeckite/core";
-import { ContentSlot } from "@riebeckite/honox/ui";
+import { getProperties, Properties } from "@riebeckite/plugin-properties";
+import { content } from "virtual:riebeckite/content";
 
-function SiteArticle({ bodySlots }: { bodySlots?: ContentBodySlots }) {
-  return (
-    <ContentSlot
-      slots={bodySlots}
-      name="article.metadata"
-      class="site-article__metadata"
-    />
-  );
-}
+const manifest = await content.getManifest();
+const entry = manifest.entries[slug];
+const data = getProperties({ view, frontmatter: entry.frontmatter, options });
+
+return <Properties data={data} />;
 ```
 
-```ts
-properties({
-  include: ["title", "created", "updated", "tags"],
-  order: ["title", "created", "updated", "tags"],
-});
-```
-
-The handoff follows the
-[`ContentManifestEntry.bodySlots`](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/honox-integration.md)
-contract. A plugin never owns routes or the shell.
+The Site owns layout: it calls `getProperties` and renders `<Properties>` where
+it wants the panel. A plugin never owns routes or the shell.
 
 ## Exports
 
 - `properties(options?)` / `propertiesPlugin(options?)` — plugin factory
 - `resolvePropertiesOptions(options?)` — default resolution
+- `getProperties({ view, frontmatter, options? })` — resolves properties data
+  for a given entry
 - `renderPropertiesPanel(frontmatter, options?, context?)` — pure renderer
 - `buildTagHref(tag)` — tag route builder
 - Types: `PropertiesOptions`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`, `PropertiesLinkResolver`, `PropertiesMessage`

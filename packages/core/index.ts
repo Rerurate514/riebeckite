@@ -197,8 +197,6 @@ export type {
 } from "./src/types/config_validation.js";
 export type {
   ContentAsset,
-  ContentBodySlot,
-  ContentBodySlots,
   ContentLink,
   ContentLinkKind,
   ContentLocationInput,
@@ -209,10 +207,6 @@ export type {
   ContentRedirect,
   FolderLocation,
   PluginPageRoute,
-} from "./src/types/content_manifest.js";
-export {
-  ARTICLE_SLOT,
-  appendContentBodySlot,
 } from "./src/types/content_manifest.js";
 export type {
   Diagnostic,

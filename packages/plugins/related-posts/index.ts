@@ -1,13 +1,8 @@
 import {
-  appendContentBodySlot,
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
-import { renderToString } from "hono/jsx/dom/server";
-import RelatedPosts from "./components/related-posts.js";
-import { resolveRelatedPostsOptions } from "./src/options.js";
-import { buildRelatedPosts, isEligibleRelatedEntry } from "./src/related.js";
 import type { RelatedPostsOptions } from "./src/types.js";
 
 export type { RelatedPostsProps } from "./components/related-posts.js";
@@ -33,8 +28,6 @@ export type {
 
 export const RELATED_POSTS_PLUGIN_NAME = "related-posts";
 export function relatedPosts(options: RelatedPostsOptions = {}) {
-  const resolved = resolveRelatedPostsOptions(options);
-
   return definePlugin({
     name: RELATED_POSTS_PLUGIN_NAME,
     order: 100,
@@ -45,27 +38,6 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
     contentOutputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateRelatedPostsOptions,
-    onManifestCreated: (context) => {
-      if (options.render === false) return;
-      const { manifest } = context;
-      for (const entry of manifest.discoverableEntries) {
-        if (!isEligibleRelatedEntry(entry, manifest, context.config)) continue;
-
-        const related = buildRelatedPosts({
-          manifest,
-          entry,
-          options: resolved,
-          config: context.config,
-        });
-        if (related.length === 0) continue;
-
-        appendContentBodySlot(
-          entry,
-          "article.footer",
-          renderToString(RelatedPosts({ entries: related, options: resolved })),
-        );
-      }
-    },
     assets: [createStyleAsset(RELATED_POSTS_PLUGIN_NAME)],
   });
 }
@@ -79,9 +51,6 @@ function validateRelatedPostsOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
-  if (options.render !== undefined && typeof options.render !== "boolean") {
-    issues.push({ path: "render", message: "Expected a boolean." });
-  }
   if (
     options.limit !== undefined &&
     (!Number.isInteger(options.limit) || options.limit < 0)

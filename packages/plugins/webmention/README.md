@@ -58,12 +58,14 @@ Rejection codes: `invalid_request`, `missing_source_or_target`,
 
 ## Rendering
 
-At `onManifestCreated` the plugin queries the provider once, groups verified mentions by target, and appends a live section to each matching entry. Core synchronizes it with the content the route renders.
+At request time, applications can call `getWebmentionsForEntry({ manifest,
+config, provider, slug })` and `renderWebmentionSection(mentions, options)`
+directly, or consume the JSON feed. The plugin no longer injects build-time
+manifest entries; the stored-mention provider is owned by the
+`webmention()` factory, and there is no build-time manifest injection anymore.
 
-Set `render: false` to skip build-time injection. Applications that render at
-request time can call `getWebmentionsForEntry({ manifest, config, provider,
-slug })` and `renderWebmentionSection(mentions, options)` directly, or consume
-the JSON feed.
+Set `render: false` to completely disable build-time rendering. The plugin
+no longer appends sections to matching entries at manifest time.
 
 ## Options
 
@@ -71,7 +73,6 @@ the JSON feed.
 | ------ | ------- | ----------- |
 | `provider` | in-memory | Storage adapter implementing `WebmentionProvider`. |
 | `endpoint` | `"/webmentions"` | Receive (POST) and feed (GET) path. |
-| `render` | `true` | Append stored mentions to matching entries at manifest time. |
 | `headingText` | `"Mentions"` | Heading for the rendered section. |
 | `limit` | `20` | Maximum mentions rendered per article. |
 | `className` | `"rr-webmention"` | Root CSS class of the rendered section. |

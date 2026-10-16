@@ -11,7 +11,6 @@ import {
 
 test("resolvePropertiesOptions applies documented defaults", () => {
   assert.deepEqual(resolvePropertiesOptions(), {
-    render: true,
     title: DEFAULT_PROPERTIES_TITLE,
     include: undefined,
     exclude: DEFAULT_PROPERTIES_EXCLUDE,
@@ -38,7 +37,6 @@ test("resolvePropertiesOptions keeps explicit overrides including null title", (
 
   assert.deepEqual(
     resolvePropertiesOptions({
-      render: false,
       title: null,
       include,
       exclude: ["x"],
@@ -48,7 +46,6 @@ test("resolvePropertiesOptions keeps explicit overrides including null title", (
       collapsed: true,
     }),
     {
-      render: false,
       title: null,
       include,
       exclude: ["x"],
@@ -65,7 +62,6 @@ test("validatePropertiesOptions accepts undefined and valid options", () => {
   assert.deepEqual(validatePropertiesOptions({}), []);
   assert.deepEqual(
     validatePropertiesOptions({
-      render: false,
       title: null,
       include: ["a"],
       exclude: ["b"],
@@ -80,7 +76,6 @@ test("validatePropertiesOptions accepts undefined and valid options", () => {
 
 test("validatePropertiesOptions reports every invalid field with its path", () => {
   const issues = validatePropertiesOptions({
-    render: "yes",
     title: 1,
     include: "x",
     exclude: [1],
@@ -93,7 +88,6 @@ test("validatePropertiesOptions reports every invalid field with its path", () =
   assert.deepEqual(
     issues.map((issue) => issue.path),
     [
-      "render",
       "title",
       "include",
       "exclude",
@@ -103,5 +97,5 @@ test("validatePropertiesOptions reports every invalid field with its path", () =
       "collapsed",
     ],
   );
-  assert.match(issues[0]?.message ?? "", /boolean/);
+  assert.match(issues[0]?.message ?? "", /string or null/);
 });

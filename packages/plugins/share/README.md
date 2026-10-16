@@ -3,19 +3,21 @@
 <!-- Generated from docs/docs/plugins/share.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
 Per-article share controls built at build time. For every published entry the
-plugin builds share URLs for the configured services and injects the controls
-into the rendered HTML. The links are ordinary anchors and work without
-JavaScript; only the copy-link action is a progressive enhancement.
+plugin builds share URLs for the configured services and provides the control
+data. The Site renders `<ShareControls />` itself, determining position in the
+layout. The links are ordinary anchors and work without JavaScript; only the
+copy-link action is a progressive enhancement.
 
 [日本語](./README_ja.md)
 
 ## Overview
 
 `share()` resolves each note's `permalink` to an absolute URL, composes the
-service URLs from the note title and URL, and inserts the controls near the
-article. The controls are inserted into the manifest entry's HTML, which Core
-synchronizes with the content the route renders, so they appear on generated
-pages and in feeds.
+service URLs from the note title and URL, and builds share link data. The data
+is available via `getShareLinks({ entry, site, options? })` and rendered by the
+Site using `<ShareControls links={...} />`. The controls are ordinary anchors
+and work without JavaScript; only the copy-link action is a progressive
+enhancement.
 
 Supported services:
 
@@ -29,7 +31,7 @@ Supported services:
 | `hatena` | `https://b.hatena.ne.jp/add?mode=confirm&url=…&title=…` |
 | `copy` | Copies the note URL (button, no JavaScript required for the links) |
 
-`mastodon` is opt-in: add `"mastodon"` to `services` and set
+Mastodon is opt-in: add `"mastodon"` to `services` and set
 `mastodonInstance`.
 
 ## Usage
@@ -44,22 +46,11 @@ export default defineConfig({
 });
 ```
 
-Enable Mastodon and change placement:
-
-```ts
-share({
-  services: ["x", "bluesky", "mastodon", "copy"],
-  mastodonInstance: "mastodon.social",
-  placement: "top",
-});
-```
-
 ## Options
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `services` | `ShareService[]` | every service except `mastodon` | Services to render, in order |
-| `placement` | `"top" \| "bottom"` | `"bottom"` | Where the controls appear |
 | `mastodonInstance` | `string` | none | Mastodon host; required when `services` includes `"mastodon"` |
 | `className` | `string` | none | Extra root class alongside the stable `rr-share` hook |
 | `ariaLabel` | `string` | `"Share"` | Accessible name for the control group |
@@ -72,16 +63,20 @@ share({
 
 ## Display
 
-Share controls are rendered at the configured position on each public article. On this site they appear as live controls on the page, including the progressively enhanced copy-link action.
+Share controls are rendered at the position determined by the Site, where
+`<ShareControls links={...} />` is placed in the layout. On this site they
+appear as live controls on the page, including the progressively enhanced
+copy-link action. The Site decides whether to render controls at the top or
+bottom of the article, or at some other position.
 
-## Progressive enhancement
+Progressive enhancement:
 
 The share links are plain anchors, so they work with JavaScript disabled. The
 copy-link button starts `hidden` and is revealed by `initShare()`, which the
 app calls during page initialization; a no-JS reader never sees a control that
 cannot work. Copying uses `navigator.clipboard.writeText` and falls back to a
-hidden textarea with `document.execCommand("copy")`. The result is announced in
-the `aria-live="polite"` status region.
+hidden textarea with `document.execCommand("copy")`. The result is announced
+in the `aria-live="polite"` status region.
 
 ## Style
 
@@ -93,8 +88,8 @@ import "@riebeckite/plugin-share/style.css";
 
 The stable classes are `rr-share` (root), `rr-share__list`, `rr-share__item`,
 `rr-share__link`, `rr-share__link--{service}`, `rr-share__button`,
-`rr-share__copy`, and `rr-share__status`. A theme can target these hooks; the
-optional `className` is added to the root without replacing them.
+`rr-share__copy`, and `rr-share__status`. A theme can target these hooks;
+the optional `className` is added to the root without replacing them.
 
 ## Exports
 
@@ -112,14 +107,12 @@ optional `className` is added to the root without replacing them.
 - Constants: `SHARE_SERVICES`, `SHARE_ATTRIBUTE`, `SHARE_ROOT_CLASS`,
   `DEFAULT_SHARE_SERVICES`, `DEFAULT_SHARE_LABELS`, `DEFAULT_SHARE_PLACEMENT`
 - Types: `ShareOptions`, `ResolvedShareOptions`, `ShareService`,
-  `SharePlacement`, `ShareLink`, `ShareTarget`
+  `ShareLink`, `ShareTarget`
 
 ## Limitations
 
 - Share URLs are fixed at build time. A full rebuild always recomputes them.
 - Mastodon cannot be enabled without a concrete instance.
-- The plugin contributes controls to `article.before-content` for `top` and
-  `article.footer` for `bottom`; a Site places those semantic slots in its layout.
 
 ## See also
 

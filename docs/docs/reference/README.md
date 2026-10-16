@@ -96,7 +96,7 @@ External plugins and themes should depend on public packages and public exports 
 | --- | --- |
 | `@riebeckite/core` | `defineConfig`, `definePlugin`, `defineTheme`, content APIs, pipeline APIs, diagnostics, observability types |
 | `@riebeckite/cli` | `riebeckite` CLI binary |
-| `@riebeckite/honox` | HonoX integration and scaffolding support; the `server` subpath exports the route/SSG helpers (`resolveRiebeckiteRoute`, `resolveRiebeckiteContentRequest`, `resolveRiebeckiteHomeRequest`, `contentRouteSsgParams`, `riebeniteSsgParams`), and the `ui` subpath exports the article/site UI primitives (`Article`, `ArticleBody`, `PageBody`, `ArticleContent`, `ContentSlot`, `hasSlot`, and their props) |
+| `@riebeckite/honox` | HonoX integration and scaffolding support; the `server` subpath exports the route/SSG helpers (`resolveRiebeckiteRoute`, `resolveRiebeckiteContentRequest`, `resolveRiebeckiteHomeRequest`, `contentRouteSsgParams`, `riebeniteSsgParams`), and the `ui` subpath exports the article/site UI primitives (`Article`, `ArticleBody`, `PageBody`, `ArticleContent`, and their props) |
 | `@riebeckite/test` | Test helpers (`assertGolden`, `assertGoldenJson`); the `e2e` subpath exports the packed-tarball external-site engine |
 | `@riebeckite/plugin-*` | Plugin factory and documented subpath exports |
 | `@riebeckite/theme-*` | Theme factory and CSS exports |
@@ -167,7 +167,7 @@ The public API is a contract intended for external use. `src/**` and monorepo-in
 
 - Config: `defineConfig`, `resolveConfig`, `resolveConfigModule`, `isPublished`, `isExcluded`
 - Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `ContentQuery`, `buildContentCollections`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
-- Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createStyleAsset`, `createClientEntry`, `appendContentBodySlot`, `createPluginMemo`, `stableStringify`
+- Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createStyleAsset`, `createClientEntry`, `createPluginMemo`, `stableStringify`
 - Themes: `defineTheme`, `RiebeckiteTheme`, `ThemeDesignTokens`, `ThemeColorMode`, `ThemeTypographyPreset`, `ThemeArticleLayoutPreset`
 - Pipeline: `Pipeline`, `MarkdownPipeline`, `HtmlPipeline`
 - Utilities: `escapeHtml`, `escapeHtmlAttribute`, `normalizeTag`, `calculateReadingTime`, `stripHtml`
@@ -207,7 +207,6 @@ resolvePlugins
 defineEndpoint
 createStyleAsset
 createClientEntry
-appendContentBodySlot
 createPluginMemo
 stableStringify
 ```

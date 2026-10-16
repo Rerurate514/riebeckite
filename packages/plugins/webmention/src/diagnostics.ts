@@ -3,26 +3,23 @@ import {
   supportsWebmentionCapability,
   type WebmentionProvider,
 } from "./provider.js";
-import type { ResolvedWebmentionOptions } from "./types.js";
 
 export const WEBMENTION_PLUGIN_NAME = "webmention";
 
-/** Structured health checks for the configured provider and rendering mode. */
+/** Structured health checks for the configured provider. */
 export function buildWebmentionDiagnostics(
   provider: WebmentionProvider,
-  options: ResolvedWebmentionOptions,
 ): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
 
-  if (options.render && !supportsWebmentionCapability(provider, "query")) {
+  if (!supportsWebmentionCapability(provider, "query")) {
     diagnostics.push({
-      code: "webmention-render-requires-query",
+      code: "webmention-query-unavailable",
       severity: "warning",
       pluginName: WEBMENTION_PLUGIN_NAME,
       message:
-        "The webmention provider cannot query, so stored mentions will not render near articles.",
-      suggestion:
-        'Use a provider that advertises the "query" capability or set render: false.',
+        "The webmention provider cannot query, so stored mentions are unavailable to the Site.",
+      suggestion: 'Use a provider that advertises the "query" capability.',
     });
   }
 

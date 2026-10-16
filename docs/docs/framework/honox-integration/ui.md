@@ -4,20 +4,18 @@ sidebar:
   label: UI primitives
   order: 10
 ---
-
 # UI primitives
 
 `@riebeckite/honox/ui` is deliberately a small structural contract, not a
 component framework. Its complete public component surface is:
 
 - `Article`, `ArticleLayout`, `ArticleHeader`, `ArticleContent`,
-  `ArticleBody`, `PageBody`, `ArticleMeta`, `ArticleFooter`, and `ContentSlot`
-  for an article page;
+  `ArticleBody`, `PageBody`, `ArticleMeta`, `ArticleFooter` for an article page;
 - `Sidebar` for complementary content.
 
-The corresponding `*Props` types are public. `ContentSlot` is paired with the
-pure `hasSlot(slots, name)` helper, and the `ARTICLE_SLOT` constant provides
-the standard slot names.
+The corresponding `*Props` types are public. The `ContentSlot` component and
+`hasSlot` utility have been removed. The `ARTICLE_SLOT` constant providing
+standard slot names has also been removed.
 
 ## Stable styling hooks
 
@@ -45,42 +43,49 @@ Those belong to the site application. `ArticleHeader` accepts children or its
 HTML input prop, while `ArticleContent` accepts children. `ArticleBody` renders
 rendered Markdown as `.rb-article-content`, and Markdown typography is
 scoped to that wrapper, so plugin components keep their own headings wherever
-they are placed. `ContentSlot` looks a slot up by name in the `slots` map and
-renders it with a `data-slot` attribute; a missing, empty, or whitespace-only
-slot renders nothing, and `class`/`className` add site classes. It never infers
-a semantic element from the slot name.
+they are placed.
+
+## Composing plugin UI
+
+Plugins expose data helpers and JSX components that the Site composes in its
+own TSX. Each plugin's data helper receives a `PublicContentView` (or similar
+filtered facade) and returns a typed model. The component is then rendered
+directly, giving the Site full control over placement, ordering, and
+conditional rendering. There is no `bodySlots` map or `ContentSlot` primitive.
+
+Instead:
+
+- A plugin exports a data helper (e.g., `getProperties`) that takes narrow
+  inputs and returns a model
+- The plugin exports a JSX component (e.g., `<Properties />`) that accepts
+  typed props
+- The Site imports and renders the component where needed, e.g:
+  `<Properties data={data} />`
+
+This replaces the removed body-slot system: the Site owns all rendering
+decisions, and plugins provide typed data + components rather than HTML
+fragments accumulated in a shared map.
 
 ```tsx
-import {
-  Article,
-  ArticleBody,
-  ArticleContent,
-  ArticleLayout,
-  ContentSlot,
-} from "@riebeckite/honox/ui";
+import { getProperties } from "@riebeckite/plugin-properties";
+import { Properties } from "@riebeckite/plugin-properties/components";
 
-<Article class="site-article">
-  <ArticleLayout>
-    <ContentSlot
-      slots={bodySlots}
-      name="article.aside"
-      class="site-article__aside"
-    />
-    <ArticleContent>
-      <ContentSlot slots={bodySlots} name="article.header" />
-      <ContentSlot slots={bodySlots} name="article.metadata" />
-      <ArticleBody html={post.html ?? ""} />
-    </ArticleContent>
-  </ArticleLayout>
-</Article>;
+const data = getProperties({ view, frontmatter: entry.frontmatter });
+<Properties data={data} />
 ```
 
-Use the primitives as composition points, then style them from the site. Pass
-rendered Markdown to `ArticleBody`. Do not import files below
-`@riebeckite/honox/src/` or rely on any unlisted component.
+## Site ownership
 
-`hasSlot(bodySlots, "article.footer")` is useful when a Site needs a wrapper
-only for non-empty slot content. `PageBody` is the corresponding primitive for
-generated plugin pages: it renders that page's supplied HTML, not article slots.
-Registering a plugin only supplies data, assets, client entries, pages, or slot
-fragments; it never causes `ContentSlot` to register or place UI.
+Primitives provide semantic HTML, hooks, class/composition, and structural CSS.
+Article copy, metadata formatting, navigation placement, cards, page-layout
+composition, islands, and site visual design belong to the site application.
+
+## Related terms
+
+- [[glossary/obsidian-vault|Obsidian Vault]]
+- [[tag|Tag]]
+- [[shortcode|Shortcode]]
+- [[callout|Callout]]
+- [[sidenote|Sidenote]]
+- [[backlink|Backlink]]
+- [[glossary/site|Site]]

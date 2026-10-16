@@ -62,23 +62,12 @@ sidebar:
 
 ## Theme との統合
 
-Plugin は既存の汎用 article body slot に HTML フラグメントを提供します。
+Plugin は React ライクな JSX コンポーネントをサイト統合に提供します。
 
-- `article.aside`: Docs のサイドバー
-- `article.footer`: 前後ページリンクのナビゲーション
+- `<DocsSidebar items={...} currentPermalink? label? />` は `nav.rr-docs-sidebar` を描画
+- `<DocsPrevNext previous? next? />` は `nav.rr-docs-prev-next` を描画
 
-サイドバーは `<details>` 要素で包み、`<summary>` にサイドバーのラベルを表示します。
-summary が見える幅ではナビゲーションを畳め、デスクトップのレールでは開いたまま
-表示されます。マークアップは常に開いた状態で出力し、登録されるクライアント
-エントリ `initDocsSidebar` が `--rb-docs-sidebar-collapsible` が `1` の間だけ
-畳みます。Plugin は `88rem` 以上でこのプロパティを `0` にして summary を
-非表示にするため、デスクトップのレールは従来どおりの見た目を保ちます。
-プロパティとブレークポイントは Theme 側で上書きできます。
-
-CSS は最小限の構造だけです。Theme 側では `rb-docs-sidebar`、
-`rb-docs-sidebar-details`、`rb-docs-sidebar-summary`、`aria-current="page"`、
-`data-docs-level`、`data-docs-collapsed`、`data-docs-sidebar-details`、
-`data-docs-previous`、`data-docs-next` などをフックとして使えます。
+クライアント `initDocsSidebar` はフッタリング可能なサイドバー動作のためにそのまま残ります。
 
 ## l10n と公開の境界
 

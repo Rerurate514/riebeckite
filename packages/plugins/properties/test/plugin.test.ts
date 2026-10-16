@@ -4,13 +4,19 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   Diagnostic,
-  PostFrontmatter,
 } from "@riebeckite/core";
+import { createPublicContentView } from "@riebeckite/core";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import Properties from "../components/properties.js";
 import { properties, propertiesPlugin } from "../index.ts";
+import { getProperties } from "../src/component-data.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function entry(
   slug: string,
-  frontmatter: PostFrontmatter = {},
+  frontmatter: Record<string, unknown> = {},
   html = "",
 ): ContentManifestEntry {
   const permalink = `/${slug}`;
@@ -59,63 +65,45 @@ test("properties() is re-exported as propertiesPlugin and registers its styleshe
   ]);
 });
 
-test("the manifest hook contributes the panel to article metadata", async () => {
+test("renders the properties panel data for the Site", async () => {
   const entries = [entry("a", { title: "A" }, "<p>A</p>")];
+  const manifest = manifestOf(entries);
+  const view = createPublicContentView(manifest);
+  const entry_ = manifest.entries[0];
+  const data = await getProperties({ view, frontmatter: entry_.frontmatter });
 
+  assert.equal(
+    renderToString(Properties({ data })).includes("data-properties"),
+    true,
+  );
+  assert.match(renderToString(Properties({ data })), /data-property-count="1"/);
+  await runHook(properties(), entries);
+});
+
+test("renders nothing when options produce no items", async () => {
+  const entries = [entry("a", { publish: true }, "<p>A</p>")];
   const diagnostics = await runHook(properties(), entries);
-
-  assert.equal(diagnostics.length, 0);
-  assert.equal(entries[0]?.html, "<p>A</p>");
-  assert.ok(
-    entries[0]?.bodySlots?.["article.metadata"]?.startsWith("<section"),
-  );
-  await runHook(properties(), entries);
-  assert.equal(
-    entries[0]?.bodySlots?.["article.metadata"]?.match(/data-properties/g)
-      ?.length,
-    1,
-  );
-});
-
-test("the manifest hook skips slot rendering when disabled", async () => {
-  const entries = [entry("a", { title: "A" }, "<p>A</p>")];
-
-  const diagnostics = await runHook(properties({ render: false }), entries);
-
   assert.deepEqual(diagnostics, []);
-  assert.equal(entries[0]?.bodySlots?.["article.metadata"], undefined);
-});
-
-test("the manifest hook does not mistake a partial panel match for an existing panel", async () => {
-  const entries = [entry("a", { title: "A" }, "<p>A</p>")];
-  entries[0].bodySlots = {
-    "article.metadata": '<section class="rb-properties">',
-  };
-
-  await runHook(properties(), entries);
-
-  assert.equal(
-    entries[0]?.bodySlots?.["article.metadata"]?.match(/data-properties/g)
-      ?.length,
-    1,
-  );
+  const data = await getProperties({
+    view: createPublicContentView(manifestOf(entries)),
+    frontmatter: entries[0].frontmatter,
+  });
+  assert.equal(renderToString(Properties({ data })), "");
 });
 
 test("the manifest hook is idempotent and skips empty panels", async () => {
   const already = entry("done", { title: "A" }, "<p>A</p>");
-  already.bodySlots = {
-    "article.metadata": "<section data-properties><p>A</p></section>",
-  };
   const nothing = entry("nothing", { publish: true }, "<p>B</p>");
-  const empty = entry("empty", { title: "C" }, "");
+  const empty = entry("empty", { publish: true }, "");
 
   await runHook(properties(), [already, nothing, empty]);
 
   assert.equal(already.html, "<p>A</p>");
-  assert.match(
-    already.bodySlots?.["article.metadata"] ?? "",
-    /data-properties/,
-  );
+  const emptyData = await getProperties({
+    view: createPublicContentView(manifestOf([empty])),
+    frontmatter: empty.frontmatter,
+  });
+  assert.equal(renderToString(Properties({ data: emptyData })), "");
   assert.equal(nothing.html, "<p>B</p>");
   assert.equal(empty.html, "");
 });
@@ -133,20 +121,18 @@ test("wikilink values resolve through the manifest content index", async () => {
   const diagnostics: Diagnostic[] = [];
   await properties().onManifestCreated?.({ manifest, diagnostics } as never);
 
-  assert.match(
-    linking.bodySlots?.["article.metadata"] ?? "",
-    /href="\/note#Section"/,
-  );
-  assert.doesNotMatch(
-    linking.bodySlots?.["article.metadata"] ?? "",
-    /\[\[note/,
-  );
+  const data = await getProperties({
+    view: createPublicContentView(manifest),
+    frontmatter: linking.frontmatter,
+  });
+  const html = renderToString(Properties({ data }));
+  assert.match(html, /href="\/note#Section"/);
+  assert.doesNotMatch(html, /\[\[note/);
   assert.deepEqual(diagnostics, []);
 });
 
 test("unrenderable values produce a tagged diagnostic", async () => {
   const entries = [entry("bad", { weird: Symbol("x") }, "<p>b</p>")];
-
   const diagnostics = await runHook(properties(), entries);
 
   assert.equal(diagnostics.length, 1);

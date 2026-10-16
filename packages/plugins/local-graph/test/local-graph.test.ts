@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
-import { type LocalGraphOptions, localGraphPlugin } from "../index.ts";
+import { localGraphPlugin } from "../index.ts";
 
 const NODES = [
   { slug: "a", outgoing: ["b", "b", "c"], backlinks: [] },
@@ -66,12 +66,9 @@ test("localGraphPlugin registers only its stylesheet", () => {
   ]);
 });
 
-test("accepts a rendering opt-out", () => {
-  const plugin = localGraphPlugin({ render: false });
+test("exposes no options or validation", () => {
+  const plugin = localGraphPlugin();
 
-  assert.deepEqual(plugin.validateOptions?.(plugin.options), []);
-  assert.deepEqual(
-    plugin.validateOptions?.({ render: "no" } as unknown as LocalGraphOptions),
-    [{ path: "render", message: "Expected a boolean." }],
-  );
+  assert.deepEqual(plugin.options, {});
+  assert.equal(plugin.validateOptions, undefined);
 });

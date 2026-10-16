@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ContentManager, resolveConfigModule } from "@riebeckite/core";
+import {
+  ContentManager,
+  createPublicContentView,
+  resolveConfigModule,
+} from "@riebeckite/core";
 import configModule from "./riebeckite.config.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -37,9 +41,22 @@ assert.ok(
   alpha.html,
 );
 
-const footer = alpha.bodySlots?.["article.footer"] ?? "";
-assert.ok(footer.includes(">Beta</a>"), footer);
-assert.ok(!footer.includes("Secret"), footer);
+// The related-posts plugin no longer injects HTML during manifest creation.
+// It exposes a data helper plus a renderer, and the Site composes them.
+const alphaEntry = manifest.bySlug.get("notes/alpha");
+const { getRelatedPosts, renderRelatedPosts } = await import(
+  "@plugin-dx/related-posts"
+);
+const view = createPublicContentView(manifest);
+const alphaRoutable = view.findRoutableBySlug("notes/alpha");
+const relatedEntries =
+  alphaEntry && alphaRoutable
+    ? await getRelatedPosts({ view, entry: alphaRoutable })
+    : [];
+
+const rrHtml = renderRelatedPosts(relatedEntries);
+assert.ok(rrHtml.includes(">Beta</a>"), rrHtml);
+assert.ok(!rrHtml.includes("Secret"), rrHtml);
 
 assert.deepEqual(manifest.pagePaths, ["/plugin-demo"]);
 const page = await manager.resolvePage("/plugin-demo");

@@ -61,7 +61,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Endpoint](./endpoint.ja.md) — Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの契約をホストのrouterに接続します。
 - [Client entry](./client-entry.ja.md) — Client entryは、実行時に本当に必要なブラウザJavaScriptの初期化を宣言します。各entryはPlugin名、module specifier、任意のexport名、公開configを持ちます。
 - [Island](./island.ja.md) — Islandはサーバー側で描画され、必要な箇所だけクライアントでhydrationされるコンポーネントです。ページ全体をhydrationせずに、対話的なUIの一部だけを動かせます。IslandコンポーネントはPluginではなくサイトのapplicationで定義します。
-- [Body slot](./slot.ja.md) — Pluginは`appendContentBodySlot`で、記事レイアウトの名前付きの位置にHTMLの断片を追加できます。slotは依存関係を解決したPluginの順序で積み上がり、どのslotをどこに描画するかはサイトが選びます。
+- [プラグイン UI コンポーネント](./plugin-component.ja.md) — Plugin は server-rendered Hono JSX コンポーネントとデータヘルパーを提供し、CSS と選択的な client runtime を含みます。Site はどこで描画するかを決めます。以前の body-slot システムはこのパターンの代わりに削除されました。
 - [Asset](./asset.ja.md) — Pluginのassetはstylesheetなどの静的ファイルです。`assets`配列で宣言し、Integrationのstylesheetパイプラインを通してブラウザに届きます。`apps/web`へ直接コピーされることはありません。
 - [Head tag](./head-tag.ja.md) — ページのheadタグとメタデータはPluginシステムを通じて追加され、Integrationとサイトのapplicationがタイトル、description、言語属性をまとめて最終的な`<head>`を組み立てます。
 - [Diagnostics](./diagnostics.ja.md) — DiagnosticsはCoreとPluginが出す構造化された調査結果で、何が問題か、どこで起きるか、どれくらい重要か（severity）、どう直すかを示します。Pluginは`addDiagnostics`で診断を報告し、Coreは`check`と`doctor`コマンドでまとめます。
@@ -117,7 +117,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Publish Strategy](./publish-strategy.ja.md) — コンテンツをどう公開するかを決める設定値で、すべて公開するか、公開指定のあるものだけを公開するかを選びます。Publication Boundaryの既定側を定めます。
 - [Localization](./localization.ja.md) — 1つのサイトで複数の言語のコンテンツを配信できるようにするl10n Pluginです。ノートの言語を検出し、翻訳をまとめ、言語切り替えを公開します。
 - [Translation](./translation.ja.md) — 同じコンテンツの言語違いを結び付ける対応で、frontmatterで設定します。翻訳の対応があることで、リンクとgraphが読み手の言語に従えます。
-- [Language Switcher](./language-switcher.ja.md) — 読み手がページの言語版を行き来できるようにする操作です。l10n Pluginが、翻訳があるときにarticle metadataのslotへ公開します。
+- [Language Switcher](./language-switcher.ja.md) — 読み手がページの言語版を行き来できるようにする操作です。l10n Pluginが提供し、翻訳があるときにSiteが描画します。
 - [Locale](./locale.ja.md) — サイトやページが書かれている言語と地域の識別子で、enやjaなどです。既定のlocaleは、URLに接頭辞を付けずに配信する言語を決めます。
 - [Hreflang](./hreflang.ja.md) — あるページの言語違いのURLを検索エンジンに伝えるlinkメタデータです。Riebeckiteはノートに存在する翻訳からこれを生成します。
 - [Feed](./feed.ja.md) — 公開されたコンテンツを機械可読に並べたもので、RSS、Atom、JSON Feedなどがあります。Feedはdiscoverableなentryから作り、各entryのpermalinkを使います。
@@ -139,4 +139,4 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Sidenote](./sidenote.ja.md) — 脚注の記法を、インラインの参照と、デスクトップではマージンノート、モバイルではポップオーバーに置き換えるTufte風のサイドノートです。モバイルのポップオーバーの切り替えには、小さなclient entry（`initSidenotes`）を使います。
 - [Backlink](./backlink.ja.md) — どの公開ノートが現在のノートにリンクしているかを示すバックリンクの一覧です。`getPublishedBacklinks()`でcontent manifestから被リンクを解決し、公開されて一覧に載るノートだけに絞り込み、manifestの順序で並べます。
 - [Site](./site.ja.md) — サイトのapplicationは、route、文書の枠組み、メタデータ、HTMLの安全性を持ちます。`@riebeckite/honox`のintegrationを通じてRiebeckiteのCoreの振る舞いをHonoXとViteにつなぎ、Pluginの提供物を最終的な公開UIにどう組み立てるかを決めます。
-- [UI](./ui.ja.md) — `@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の契約であり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`、`ArticleMeta`、`ArticleFooter`、`ContentSlot`、`Sidebar`があり、安定したCSS hook（`rb-article`、`rb-article-layout`など）を持ちます。
+- [UI](./ui.ja.md) — `@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の契約であり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`、`ArticleMeta`、`ArticleFooter`、`Sidebar`があり、安定したCSS hook（`rb-article`、`rb-article-layout`など）を持ちます。

@@ -1,5 +1,4 @@
 import {
-  type ContentBodySlots,
   calculateReadingTime,
   escapeHtml,
   type PostContent,
@@ -10,8 +9,6 @@ import {
   ArticleHeader,
   ArticleLayout,
   Article as ArticlePrimitive,
-  ContentSlot,
-  hasSlot,
 } from "@riebeckite/honox/ui";
 import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
 
@@ -22,10 +19,18 @@ type Props = {
    * header heading when the body has no leading `<h1>`.
    */
   title?: string;
+  /** Breadcrumb trail (and any other header furniture) above the title. */
+  headerContent?: unknown;
+  /** Reading metadata such as the properties panel, next to the title. */
+  metadataContent?: unknown;
+  /** Primary table of contents rail rendered in its own grid column. */
   asideContent?: unknown;
+  /** Secondary aside content, such as the docs sidebar, next to the article. */
+  articleAside?: unknown;
+  /** Content injected before the article body, such as share controls. */
+  beforeContent?: unknown;
   afterContent?: unknown;
   footerContent?: unknown;
-  bodySlots?: ContentBodySlots;
 };
 
 export default function Article(props: Props) {
@@ -41,30 +46,21 @@ export default function Article(props: Props) {
     <ArticlePrimitive>
       <ArticleLayout>
         {props.asideContent}
-        <ContentSlot
-          slots={props.bodySlots}
-          name="article.aside"
-          class="rb-article-aside"
-        />
+        {props.articleAside}
         <ArticleContent>
-          <ContentSlot slots={props.bodySlots} name="article.header" />
+          {props.headerContent}
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
-          <ContentSlot slots={props.bodySlots} name="article.metadata" />
+          {props.metadataContent}
           <ArticleFrontmatter
             frontmatter={props.content.frontmatter}
             readingTimeMinutes={readingTimeMinutes}
           />
-          <ContentSlot slots={props.bodySlots} name="article.before-content" />
+          {props.beforeContent}
           <ArticleBody html={articleHtml.rest} />
           {props.afterContent}
-          <ContentSlot slots={props.bodySlots} name="article.after-content" />
         </ArticleContent>
-        {(hasSlot(props.bodySlots, "article.footer") ||
-          props.footerContent) && (
-          <div class="rb-article-outro">
-            <ContentSlot slots={props.bodySlots} name="article.footer" />
-            {props.footerContent}
-          </div>
+        {props.footerContent && (
+          <div class="rb-article-outro">{props.footerContent}</div>
         )}
       </ArticleLayout>
     </ArticlePrimitive>

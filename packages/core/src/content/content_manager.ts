@@ -882,7 +882,6 @@ function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
     backlinks: [...entry.backlinks],
     assets: entry.assets.map((asset) => ({ ...asset })),
     ...(entry.headTags ? { headTags: [...entry.headTags] } : {}),
-    ...(entry.bodySlots ? { bodySlots: { ...entry.bodySlots } } : {}),
   };
 }
 

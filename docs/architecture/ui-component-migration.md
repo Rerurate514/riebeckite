@@ -5,11 +5,7 @@ title: UI Component Migration
 
 ## 1. Status and decision
 
-**Phase 1 foundation decision: READY.** This
-document is the design baseline for removing the Slot UI system. Phase 0 changes
-documentation only; it changes no runtime behaviour and provides no compatibility
-layer. Later phases must remove `ContentSlot`, `bodySlots`, `ARTICLE_SLOT`, and
-`appendContentBodySlot` rather than preserve them behind another API.
+**Phase 4 complete: the legacy Slot API (`ContentSlot`, `bodySlots`, `ARTICLE_SLOT`, `appendContentBodySlot`, `hasSlot`) has been removed and plugins expose data helpers + JSX components composed by the Site.** This document is the design baseline for the removal. Phase 0 changes documentation only; it changes no runtime behaviour and provides no compatibility layer. Later phases must remove `ContentSlot`, `bodySlots`, `ARTICLE_SLOT`, and `appendContentBodySlot` rather than preserve them behind another API.
 
 ## 2. Scope and non-goals
 

@@ -19,7 +19,6 @@ export function resolveWebmentionOptions(
   return {
     provider: options.provider ?? new MemoryWebmentionProvider(),
     endpoint: normalizeEndpoint(options.endpoint),
-    render: options.render ?? true,
     headingText: normalizeText(
       options.headingText,
       DEFAULT_WEBMENTION_HEADING_TEXT,
@@ -98,7 +97,7 @@ export function validateWebmentionOptions(
     });
   }
 
-  for (const key of ["render", "nofollow", "allowPrivateHosts"] as const) {
+  for (const key of ["nofollow", "allowPrivateHosts"] as const) {
     const value = options[key];
     if (value !== undefined && typeof value !== "boolean") {
       issues.push({ path: key, message: "Expected a boolean." });

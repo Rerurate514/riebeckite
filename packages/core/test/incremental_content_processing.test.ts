@@ -737,10 +737,6 @@ function manifestDecorator(marker: string) {
           ...(entry.headTags ?? []),
           { tag: "meta" as const, attrs: { name: "marker", content: marker } },
         ];
-        entry.bodySlots = {
-          ...(entry.bodySlots ?? {}),
-          footer: `<footer>${marker}</footer>`,
-        };
       }
     },
   });
@@ -756,10 +752,6 @@ function v2ManifestDecorator(marker: string) {
           ...(entry.headTags ?? []),
           { tag: "meta" as const, attrs: { name: "marker", content: marker } },
         ];
-        entry.bodySlots = {
-          ...(entry.bodySlots ?? {}),
-          footer: `<footer>${marker}</footer>`,
-        };
       }
     },
   });
@@ -806,7 +798,6 @@ function entryView(manifest: { entries: ContentManifestEntry[] }) {
     slug: entry.slug,
     html: entry.html,
     headTags: entry.headTags ?? [],
-    bodySlots: entry.bodySlots ?? {},
     links: entry.links,
     backlinks: entry.backlinks,
   }));
@@ -890,11 +881,6 @@ test("repeated warm rebuilds do not duplicate plugin output", async () => {
       entry.headTags?.filter((tag) => tag.attrs.name === "marker").length ?? 0,
       1,
       `${entry.slug} headTags`,
-    );
-    assert.equal(
-      entry.bodySlots?.footer,
-      "<footer>marker</footer>",
-      `${entry.slug} bodySlots`,
     );
   }
 });

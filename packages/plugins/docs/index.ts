@@ -1,22 +1,16 @@
 import {
-  appendContentBodySlot,
   type ConfigValidationIssue,
-  type ContentManifest,
-  type ContentManifestEntry,
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  getEntryLanguage,
   type PluginDataHelper,
   type PublicContentView,
-  selectEntriesByLanguage,
 } from "@riebeckite/core";
 import {
   buildDocsNavigation,
   flattenDocsNavigation,
   resolveDocsOptions,
 } from "./src/navigation.js";
-import { renderDocsPrevNext, renderDocsSidebar } from "./src/render.js";
 import type {
   DocsNavigationItem,
   DocsNavigationLink,
@@ -81,47 +75,10 @@ export function docs(options: DocsOptions) {
     validateOptions: validateDocsOptions,
     assets: [createStyleAsset(DOCS_PLUGIN_NAME)],
     clientEntries: [createClientEntry(DOCS_PLUGIN_NAME, "initDocsSidebar")],
-    onManifestCreated: ({ manifest }) => {
-      const entries = getPublishedEntries(manifest);
-      for (const entry of entries) {
-        const localizedEntries = selectEntriesByLanguage(
-          entries,
-          getEntryLanguage(entry),
-        );
-        const navigation = buildDocsNavigation(localizedEntries, resolved);
-        const sequence = flattenDocsNavigation(navigation);
-        if (!sequence.some((item) => item.slug === entry.slug)) continue;
-        appendContentBodySlot(
-          entry,
-          "article.aside",
-          renderDocsSidebar({
-            items: navigation,
-            currentPermalink: entry.permalink,
-            label: resolved.sidebar.label,
-          }),
-        );
-        if (!resolved.prevNext) continue;
-        appendContentBodySlot(
-          entry,
-          "article.footer",
-          renderDocsPrevNext(
-            sequence,
-            entry.permalink,
-            getEntryLanguage(entry),
-          ),
-        );
-      }
-    },
   });
 }
 
 export const docsPlugin = docs;
-
-function getPublishedEntries(
-  manifest: ContentManifest,
-): readonly ContentManifestEntry[] {
-  return manifest.discoverableEntries;
-}
 
 function validateDocsOptions(
   options: DocsOptions | undefined,

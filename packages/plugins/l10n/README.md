@@ -34,7 +34,7 @@ Conventions may be mixed. Built-in precedence is **frontmatter > custom detector
 
 `translation` is independent of locale and filename. Use it to group files with unrelated paths or names:
 
-```text
+```
 日本語/はじめに.md       lang: ja, translation: getting-started
 English/getting-started.md lang: en, translation: getting-started
 ```
@@ -45,26 +45,7 @@ The default language keeps Core's resolved URL (`/about`); other languages are p
 
 No fallback pages are generated. `getLocalization(manifest, slug)` returns `availableLanguages` and language-to-href `translations` only for notes that exist; `getLocalizedContent(manifest, slug, lang)` returns `null` for a missing translation.
 
-## Standard LanguageSwitcher
-
-`l10n(...)` publishes the built-in, styled LanguageSwitcher in the standard `article.metadata` layout slot. A standard Site consumer renders that slot, so no l10n-specific article integration is needed. It is omitted when a page has fewer than two real translations.
-
-```ts
-// Keep URLs and metadata but do not publish UI.
-l10n({ defaultLang: "ja", languages: ["ja", "en"], ui: false });
-
-// Use another standard slot, or replace the server-rendered component.
-l10n({
-  defaultLang: "ja",
-  languages: ["ja", "en"],
-  ui: {
-    slot: "article.footer",
-    render: ({ localization }) => `<p>${localization.lang}</p>`,
-  },
-});
-```
-
-Themes can override the default component through its `.l10n-switcher` CSS classes. `ui.render` is framework-neutral HTML so custom Sites can supply their own server-rendered component without coupling the plugin to a specific app.
+`l10n(...)` publishes the built-in, styled LanguageSwitcher in the standard article layout. A standard Site consumer renders that, so no l10n-specific article integration is needed. It is omitted when a page has fewer than two real translations.
 
 ## Custom detector
 

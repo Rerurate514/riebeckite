@@ -1,9 +1,4 @@
-import type {
-  ContentBodySlot,
-  ContentBodySlots,
-  PluginHeadTag,
-  ResolvedRiebeckiteConfig,
-} from "@riebeckite/core";
+import type { PluginHeadTag, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import { ColorModeScript } from "@riebeckite/plugin-color-mode";
 import { raw } from "hono/html";
 import { Link, Script } from "honox/server";
@@ -131,46 +126,6 @@ export type HtmlFragmentProps = {
 
 export function HtmlFragment(props: HtmlFragmentProps) {
   return raw(props.html);
-}
-
-export type ContentSlotProps = PrimitiveClassProps & {
-  slots?: ContentBodySlots;
-  name: ContentBodySlot;
-};
-
-/**
- * Whether a body slot holds renderable content.
- *
- * A slot is absent when its source map is missing, the value is missing, or
- * the value is whitespace-only. This is the same check `ContentSlot` uses.
- */
-export function hasSlot(
-  slots: ContentBodySlots | undefined,
-  name: ContentBodySlot,
-): boolean {
-  return Boolean(slots?.[name]?.trim());
-}
-
-/**
- * Renders a Plugin-provided body slot fragment at the position the Site chose.
- *
- * The Site owns placement; this primitive owns the lookup, empty handling, and
- * HTML injection. It renders nothing when the slot is absent or blank.
- */
-export function ContentSlot(props: ContentSlotProps) {
-  const html = props.slots?.[props.name];
-
-  if (!html?.trim()) {
-    return null;
-  }
-
-  return (
-    <div
-      data-slot={props.name}
-      class={joinClassNames(props.class, props.className) || undefined}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
 }
 
 /**

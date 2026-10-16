@@ -609,7 +609,7 @@ Want to add UI or output?
 │    └─ pageTypes
 │
 ├─ Appear in the article layout automatically
-│    └─ HTML fragment + body Slot
+│    └─ Data helper + JSX component
 │
 ├─ Let the site author place it
 │    └─ Hono JSX component export
@@ -618,17 +618,19 @@ Want to add UI or output?
      └─ clientEntries (plus a site-owned Island when needed)
 ```
 
-### Automatic placement with a body Slot
+### Appear in the article layout automatically
 
-Use a body Slot when the output belongs at a standard position and should appear as soon as the Plugin is enabled. Publish an HTML fragment; the Site decides whether and where to render the slot.
+Use a data helper + JSX component when the output belongs at a standard position and should appear as soon as the Plugin is enabled. The Plugin exports a data helper that returns a typed model and a JSX component that renders it; the Site calls the helper and places the component in its own layout.
 
 ```ts
-import { appendContentBodySlot } from "@riebeckite/core";
+import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
 
-appendContentBodySlot(entry, "article.footer", "<section>...</section>");
+const backlinks = await getBacklinks({ view, slug: entry.slug });
+// ...
+return <Backlinks backlinks={backlinks} />;
 ```
 
-A Plugin author picks a standard slot such as `article.footer`, or asks the Site to render a custom name. A custom slot renders nothing until the Site renders it. See [Body slots](../reference/plugin-api.md#body-slots) for the slot list and ordering.
+The helper reads a filtered `PublicContentView`, so a plugin can only surface content the publication boundary allows. The component returns `null` when there is nothing to show, so the Site can render it unconditionally. See [UI components](../reference/plugin-api.md#ui-components) for the helper and component contract.
 
 ### Manual placement with a Hono JSX component
 
@@ -645,14 +647,11 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 `color-mode` fits the root-only shape: it exports `ColorModeScript` and `ColorModeToggle` from the package root and has no `./components` subpath. Use the names each package README documents.
 
-### HTML fragment or component?
+### A component or plain HTML?
 
-The deciding question is **who places it**:
+The deciding question is **who places it**. A JSX component lets the Site choose props, order, and position in its component tree. When a plugin already produces HTML (for example from a HAST transform), it can instead export a small string renderer for the Site to call. Either way, the plugin never injects markup into the manifest entry; the Site decides what to render and where.
 
-- **HTML fragment + Slot** — the Plugin writes to a known standard position, and the Site opts into rendering that slot.
-- **Hono JSX component** — the Site author places it anywhere in the component tree.
-
-Neither is newer or better. A string is natural when the Plugin already produces HTML (for example from a HAST transform); a component is natural when the Site should control props and placement. `backlinks` and `local-graph` use both: they export a component and also append their rendered output to `article.footer` in `onManifestCreated`. That is a common pattern, not a requirement.
+`backlinks` and `local-graph` export both a component and a data helper, and the reference site composes them in its article layout. That is a common pattern, not a requirement.
 
 ### Browser enhancement and Islands
 

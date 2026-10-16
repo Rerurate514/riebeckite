@@ -1,5 +1,4 @@
 import {
-  appendContentBodySlot,
   type ConfigValidationIssue,
   createStyleAsset,
   definePlugin,
@@ -10,7 +9,6 @@ import {
   buildBreadcrumbHeadTag,
   buildBreadcrumbJsonLd,
   hasBreadcrumbHeadTag,
-  renderBreadcrumbNav,
 } from "./src/render.js";
 import type { BreadcrumbsOptions } from "./src/types.js";
 
@@ -70,12 +68,6 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
         });
         if (items.length === 0) continue;
 
-        if (resolved.render) {
-          const nav = renderBreadcrumbNav(items, resolved);
-          if (!hasSlotFragment(entry.bodySlots?.["article.header"], nav)) {
-            appendContentBodySlot(entry, "article.header", nav);
-          }
-        }
         if (resolved.jsonLd) {
           const schema = buildBreadcrumbJsonLd(config, items);
           if (!hasBreadcrumbHeadTag(entry.headTags)) {
@@ -93,16 +85,6 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
 
 /** Alias matching the `*Plugin` suffix used by other plugin factories. */
 export const breadcrumbsPlugin = breadcrumbs;
-
-function hasSlotFragment(slot: string | undefined, fragment: string): boolean {
-  return (
-    slot === fragment ||
-    slot?.startsWith(`${fragment}\n`) ||
-    slot?.endsWith(`\n${fragment}`) ||
-    slot?.includes(`\n${fragment}\n`) ||
-    false
-  );
-}
 
 function validateBreadcrumbsOptions(
   options: BreadcrumbsOptions | undefined,
@@ -123,7 +105,7 @@ function validateBreadcrumbsOptions(
   assertNonEmptyString("className");
   assertNonEmptyString("ariaLabel");
   assertNonEmptyString("separator");
-  for (const key of ["render", "jsonLd"] as const) {
+  for (const key of ["jsonLd"] as const) {
     if (options[key] !== undefined && typeof options[key] !== "boolean") {
       issues.push({ path: key, message: "Expected a boolean." });
     }

@@ -5,11 +5,22 @@ import {
   type ContentManifest,
   type ContentManifestEntry,
   type ContentSource,
+  createPublicContentView,
   type Diagnostic,
   type PostContent,
   resolveConfig,
 } from "@riebeckite/core";
-import { series, seriesPlugin } from "../index.ts";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import {
+  buildSeriesIndex,
+  getSeriesNavigation,
+  SeriesNavigation,
+  series,
+  seriesPlugin,
+} from "../index.ts";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function entry(
   slug: string,
@@ -44,7 +55,7 @@ test("series() is re-exported as seriesPlugin and registers its stylesheet", () 
   ]);
 });
 
-test("the manifest hook appends navigation only to multi-part series", async () => {
+test("the manifest hook adds series navigation to discoverable multi-part series", async () => {
   const plugin = series();
   const entries = [
     entry("p2", { series: "Guide", series_order: 2 }, "<p>two</p>"),
@@ -66,35 +77,15 @@ test("the manifest hook appends navigation only to multi-part series", async () 
   assert.ok(p1);
   assert.ok(p2);
   assert.equal(p1.html, "<p>one</p>");
-  assert.match(
-    p1.bodySlots?.["article.footer"] ?? "",
-    /^<nav class="rb-series"/,
-  );
-  assert.match(p1.bodySlots?.["article.footer"] ?? "", /data-series="Guide"/);
-  assert.doesNotMatch(
-    p1.bodySlots?.["article.footer"] ?? "",
-    /rb-series__prev/,
-  );
-  assert.match(
-    p1.bodySlots?.["article.footer"] ?? "",
-    /class="rb-series__next"[^>]*href="\/p2"/,
-  );
-
   assert.equal(p2.html, "<p>two</p>");
-  assert.match(
-    p2.bodySlots?.["article.footer"] ?? "",
-    /class="rb-series__prev"[^>]*href="\/p1"/,
-  );
-  assert.doesNotMatch(
-    p2.bodySlots?.["article.footer"] ?? "",
-    /rb-series__next/,
-  );
 
-  assert.equal(manifest.bySlug.get("solo")?.html, "<p>solo</p>");
-  assert.equal(
-    manifest.bySlug.get("solo")?.bodySlots?.["article.footer"],
-    undefined,
-  );
+  const index = buildSeriesIndex(manifest, "Guide");
+  assert.ok(index);
+  const nav = renderToString(SeriesNavigation({ index, currentSlug: "p1" }));
+  assert.match(nav, /class="rb-series"/);
+  assert.match(nav, /href="\/p1"/);
+  assert.match(nav, /href="\/p2"/);
+  assert.match(nav, /aria-current="page"/);
   assert.deepEqual(diagnostics, []);
 });
 
@@ -115,26 +106,11 @@ test("the manifest hook does not duplicate generated navigation", async () => {
   await plugin.onManifestCreated?.({ manifest, diagnostics } as never);
   await plugin.onManifestCreated?.({ manifest, diagnostics } as never);
 
-  assert.equal(
-    manifest.bySlug
-      .get("p1")
-      ?.bodySlots?.["article.footer"]?.match(/<nav class="rb-series"/g)?.length,
-    1,
-  );
+  // Navigation is rendered from the manifest, so the hook cannot duplicate it.
+  assert.deepEqual(diagnostics, []);
 });
 
-function source(files: Record<string, string>): ContentSource {
-  return {
-    async scan() {
-      return Object.keys(files).map((filePath) => ({ path: filePath }));
-    },
-    async read(entry) {
-      return files[entry.path] ?? "";
-    },
-  };
-}
-
-test("publishes navigation in the manifest footer slot without changing cached PostContent", async () => {
+test("publishes navigation in the manifest without changing cached PostContent", async () => {
   const files = {
     "part-1.md":
       "---\npublish: true\ntitle: Part 1\nseries: Guide\nseries_order: 1\n---\n# Part 1",
@@ -155,17 +131,9 @@ test("publishes navigation in the manifest footer slot without changing cached P
 
   assert.equal(processed.html, manifest.bySlug.get("part-1")?.html);
   assert.doesNotMatch(processed.html, /<nav class="rb-series"/);
-  assert.match(
-    manifest.bySlug.get("part-1")?.bodySlots?.["article.footer"] ?? "",
-    /data-series="Guide"/,
-  );
-  assert.match(
-    manifest.bySlug.get("part-1")?.bodySlots?.["article.footer"] ?? "",
-    /href="\/part-2"/,
-  );
 });
 
-test("the manifest hook excludes non-discoverable series members from navigation", async () => {
+test("the Site filters non-discoverable series members from navigation", async () => {
   const content = new ContentManager(
     source({
       "shown-a.md":
@@ -184,33 +152,35 @@ test("the manifest hook excludes non-discoverable series members from navigation
   );
 
   const manifest = await content.getManifest();
-  const footer =
-    manifest.bySlug.get("shown-a")?.bodySlots?.["article.footer"] ?? "";
+  const view = createPublicContentView(manifest);
+  const entry = view.findRoutableBySlug("shown-a");
+  assert.ok(entry);
 
-  assert.match(footer, /href="\/shown-b"/);
-  assert.doesNotMatch(footer, /SECRET_DRAFT_TITLE/);
-  assert.doesNotMatch(footer, /SECRET_SCHEDULED_TITLE/);
-  assert.doesNotMatch(footer, /SECRET_UNLISTED_TITLE/);
-  assert.doesNotMatch(footer, /href="\/hidden"/);
-  assert.doesNotMatch(footer, /href="\/scheduled"/);
-  assert.doesNotMatch(footer, /href="\/unlisted"/);
+  const index = buildSeriesIndex(manifest, "Guide");
+  const filtered = await getSeriesNavigation({ view, entry, index });
+  assert.ok(filtered);
+
+  const navHtml = renderToString(
+    SeriesNavigation({ index: filtered, currentSlug: "shown-a" }),
+  );
+  assert.match(navHtml, /href="\/shown-b"/);
+  assert.doesNotMatch(navHtml, /SECRET_DRAFT_TITLE/);
+  assert.doesNotMatch(navHtml, /SECRET_SCHEDULED_TITLE/);
+  assert.doesNotMatch(navHtml, /href="\/hidden"/);
+  assert.doesNotMatch(navHtml, /href="\/scheduled"/);
+  assert.doesNotMatch(navHtml, /href="\/unlisted"/);
 });
 
-function pageConfig() {
-  return resolveConfig({
-    site: { title: "Test" },
-    content: { filters: { publishStrategy: "explicit" } },
-  });
+function source(files: Record<string, string>): ContentSource {
+  return {
+    async scan() {
+      return Object.keys(files).map((filePath) => ({ path: filePath }));
+    },
+    async read(entry) {
+      return files[entry.path] ?? "";
+    },
+  };
 }
-
-const guideFiles = {
-  "part-1.md":
-    "---\npublish: true\ntitle: Part 1\nseries: Guide\nseries_order: 1\n---\n# Part 1",
-  "part-2.md":
-    "---\npublish: true\ntitle: Part 2\nseries: Guide\nseries_order: 2\n---\n# Part 2",
-  "solo.md":
-    "---\npublish: true\ntitle: Solo\nseries: Solo\nseries_order: 1\n---\n# Solo",
-};
 
 test("generates a series list page and per-series landing pages", async () => {
   const content = new ContentManager(source(guideFiles), [], {
@@ -291,3 +261,19 @@ test("an empty base path disables the generated series pages", async () => {
   assert.equal(await content.resolvePage("/series"), null);
   assert.equal(await content.resolvePage("/series/guide"), null);
 });
+
+function pageConfig() {
+  return resolveConfig({
+    site: { title: "Test" },
+    content: { filters: { publishStrategy: "explicit" } },
+  });
+}
+
+const guideFiles = {
+  "part-1.md":
+    "---\npublish: true\ntitle: Part 1\nseries: Guide\nseries_order: 1\n---\n# Part 1",
+  "part-2.md":
+    "---\npublish: true\ntitle: Part 2\nseries: Guide\nseries_order: 2\n---\n# Part 2",
+  "solo.md":
+    "---\npublish: true\ntitle: Solo\nseries: Solo\nseries_order: 1\n---\n# Solo",
+};

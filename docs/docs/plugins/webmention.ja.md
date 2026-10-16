@@ -41,7 +41,7 @@ export default {
 ```
 
 provider を省略するとインメモリ provider が使われます。ローカルプレビューには
-十分ですが、プロセスをまたぐとメンションは失われます。本番では永続 adapter
+十分ですが、プロセスをまたぐとメンションは失われます。本産では永続 adapter
 （[`@riebeckite/webmention-cloudflare`](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md) を参照）
 を指定してください。
 
@@ -57,11 +57,14 @@ provider を省略するとインメモリ provider が使われます。ロー�
 
 ## 表示
 
-`onManifestCreated` で provider を一度 query し、検証済みメンションをターゲット別にグループ化して、対応する entry へ実際の表示セクションを追記します。Core はこれをコンテンツルートの描画内容と同期します。
+リクエスト時、アプリケーションは `getWebmentionsForEntry({ manifest,
+config, provider, slug })` と `renderWebmentionSection(mentions, options)` を直接呼ぶか、
+JSON フィードを利用できます。プラグインはもはやビルド時のマニフェストエントリを
+追記しません。保存されたメンションプロバイダは `webmention()` ファクトリによって
+所有されており、ビルド時のマニフェスト注入はもはや行われません。
 
-`render: false` でビルド時の追記を無効化できます。リクエスト時に描画する
-アプリケーションは `getWebmentionsForEntry({ manifest, config, provider, slug })` と
-`renderWebmentionSection(mentions, options)` を直接呼ぶか、JSON フィードを利用します。
+`render: false` でビルド時の描画を完全に無効化できます。プラグインはもはや
+マニフェスト生成時に対応 entry へセクションを追記しません。
 
 ## オプション
 
@@ -69,7 +72,6 @@ provider を省略するとインメモリ provider が使われます。ロー�
 | ---------- | ------ | ---- |
 | `provider` | インメモリ | `WebmentionProvider` を実装するストレージ adapter。 |
 | `endpoint` | `"/webmentions"` | 受信（POST）とフィード（GET）のパス。 |
-| `render` | `true` | manifest 生成時に対応 entry へメンションを追記します。 |
 | `headingText` | `"Mentions"` | 表示セクションの見出し。 |
 | `limit` | `20` | 記事ごとに表示する最大メンション数。 |
 | `className` | `"rr-webmention"` | 表示セクションのルート CSS クラス。 |

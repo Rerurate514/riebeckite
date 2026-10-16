@@ -8,12 +8,7 @@ import {
 import { assertGoldenJson } from "@riebeckite/test";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-import {
-  Backlinks,
-  type BacklinksOptions,
-  backlinksPlugin,
-  getPublishedBacklinks,
-} from "../index.ts";
+import { Backlinks, backlinksPlugin, getPublishedBacklinks } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -173,11 +168,11 @@ test("matches a structured link graph", async () => {
   );
 });
 
-test("backlinksPlugin registers its stylesheet and manifest hook", () => {
+test("backlinksPlugin registers only its stylesheet", () => {
   const plugin = backlinksPlugin();
 
   assert.equal(plugin.name, "backlinks");
-  assert.equal(typeof plugin.onManifestCreated, "function");
+  assert.equal(plugin.onManifestCreated, undefined);
   assert.equal(plugin.contentOutputDependencies, undefined);
   assert.deepEqual(plugin.assets, [
     {
@@ -188,14 +183,11 @@ test("backlinksPlugin registers its stylesheet and manifest hook", () => {
   ]);
 });
 
-test("accepts a rendering opt-out", () => {
-  const plugin = backlinksPlugin({ render: false });
-
-  assert.deepEqual(plugin.validateOptions?.(plugin.options), []);
-  assert.deepEqual(
-    plugin.validateOptions?.({ render: "no" } as unknown as BacklinksOptions),
-    [{ path: "render", message: "Expected a boolean." }],
-  );
+test("exposes no options or validation", () => {
+  const plugin = backlinksPlugin();
+  assert.deepEqual(plugin.name, "backlinks");
+  assert.deepEqual(plugin.options, {});
+  assert.equal(plugin.validateOptions, undefined);
 });
 
 test("publishes backlinks to the article footer only when present", async () => {
@@ -208,28 +200,40 @@ test("publishes backlinks to the article footer only when present", async () => 
     { config: explicitConfig, plugins: [backlinksPlugin()] },
   ).getManifest();
 
-  const footer = manifest.bySlug.get("alpha")?.bodySlots?.["article.footer"];
-  assert.ok(footer?.includes("rr-backlinks"));
-  assert.ok(footer?.includes('href="/beta"'));
-  assert.ok(footer?.includes(">Beta</a>"));
-  assert.equal(
-    manifest.bySlug.get("beta")?.bodySlots?.["article.footer"],
-    undefined,
-  );
+  const backlinks = getPublishedBacklinks({
+    manifest,
+    config: explicitConfig,
+    slug: "alpha",
+    resolveTitle,
+  });
+  assert.deepEqual(backlinks, [
+    { slug: "beta", permalink: "/beta", title: "Beta" },
+  ]);
+
+  const html = renderToString(Backlinks({ backlinks }));
+  assert.ok(html.includes('<footer class="rr-backlinks">'));
+  assert.ok(html.includes('href="/beta"'));
+  assert.ok(html.includes(">Beta</a>"));
+
+  const betaBacklinks = getPublishedBacklinks({
+    manifest,
+    config: explicitConfig,
+    slug: "beta",
+    resolveTitle,
+  });
+  assert.deepEqual(betaBacklinks, []);
 });
 
-test("keeps backlink data available when automatic rendering is disabled", async () => {
+test("keeps backlink data available for the Site to render", async () => {
   const manifest = await new ContentManager(
     source({
       "alpha.md": "---\npublish: true\ntitle: Alpha\n---\n# Alpha",
       "beta.md": "---\npublish: true\ntitle: Beta\n---\n[[alpha]]",
     }),
     [],
-    { config: explicitConfig, plugins: [backlinksPlugin({ render: false })] },
+    { config: explicitConfig, plugins: [backlinksPlugin()] },
   ).getManifest();
 
-  const alpha = manifest.bySlug.get("alpha");
-  assert.equal(alpha?.bodySlots?.["article.footer"], undefined);
   assert.deepEqual(
     getPublishedBacklinks({
       manifest,

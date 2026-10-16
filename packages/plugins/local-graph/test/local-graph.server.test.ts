@@ -91,33 +91,38 @@ test("builds a local graph with current, outgoing, backlink and both nodes", asy
   });
 });
 
-test("publishes local graphs to article footers only when connected", async () => {
+test("builds local graphs for connected pages only", async () => {
   const manifest = await new ContentManager(source(FILES), [], {
     config: explicitConfig,
     plugins: [localGraphPlugin()],
   }).getManifest();
 
-  assert.ok(
-    manifest.bySlug
-      .get("alpha")
-      ?.bodySlots?.["article.footer"]?.includes("local-graph"),
-  );
-  assert.equal(
-    manifest.bySlug.get("private")?.bodySlots?.["article.footer"],
-    undefined,
-  );
+  // Graph data should be available for published pages with connections
+  const alphaGraph = buildLocalGraph({
+    manifest,
+    config: explicitConfig,
+    slug: "alpha",
+    resolveTitle,
+  });
+  assert.ok(alphaGraph);
+  assert.equal(alphaGraph.currentSlug, "alpha");
+
+  // Graph data should not be available for unpublished pages
+  const privateGraph = buildLocalGraph({
+    manifest,
+    config: explicitConfig,
+    slug: "private",
+    resolveTitle,
+  });
+  assert.equal(privateGraph, null);
 });
 
-test("keeps graph data available when automatic rendering is disabled", async () => {
+test("keeps graph data available for the Site to render", async () => {
   const manifest = await new ContentManager(source(FILES), [], {
     config: explicitConfig,
-    plugins: [localGraphPlugin({ render: false })],
+    plugins: [localGraphPlugin()],
   }).getManifest();
 
-  assert.equal(
-    manifest.bySlug.get("alpha")?.bodySlots?.["article.footer"],
-    undefined,
-  );
   const graph = buildLocalGraph({
     manifest,
     config: explicitConfig,

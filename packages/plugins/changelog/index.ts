@@ -1,32 +1,9 @@
 import {
-  appendContentBodySlot,
   type ConfigValidationIssue,
-  type ContentManifestEntry,
   createStyleAsset,
   definePlugin,
-  fingerprintExternalValue,
-  type PluginManifestContext,
 } from "@riebeckite/core";
-import {
-  buildNoteChangeHistory,
-  buildSiteChangelog,
-  resolveContentFilePath,
-  resolveLookbackSince,
-} from "./src/changelog.js";
-import { GitChangelogReader } from "./src/git/history_reader.js";
-import type { RepositoryPathsResolution } from "./src/git/repo_paths.js";
-import { isRepositoryUnavailable } from "./src/git/repo_paths.js";
-import { resolveChangelogOptions } from "./src/options.js";
-import {
-  CHANGELOG_NOTE_ATTRIBUTE,
-  CHANGELOG_SITE_ATTRIBUTE,
-  renderNoteChangeHistory,
-  renderSiteChangelog,
-} from "./src/render.js";
-import type {
-  ChangelogOptions,
-  ResolvedChangelogOptions,
-} from "./src/types.js";
+import type { ChangelogOptions } from "./src/types.js";
 
 export type { ChangelogProps } from "./components/changelog.js";
 export { default as Changelog } from "./components/changelog.js";
@@ -76,221 +53,32 @@ export type {
 
 export const CHANGELOG_PLUGIN_NAME = "changelog";
 
-/** Site layout slot the generated history is written to. */
-export const CHANGELOG_BODY_SLOT = "article.after-content";
-
-const PER_NOTE_CONCURRENCY = 4;
-
 /**
  * Git-backed change history for Riebeckite sites.
  *
- * At build time the plugin reads local Git history and publishes HTML
- * fragments through the manifest `bodySlots` mechanism:
+ * The plugin exposes data helpers and components the Site composes directly:
  *
- * - every public note gets its own "change history" section;
- * - optionally, a designated note gets the site-wide changelog.
+ * - `getChangelog` / `Changelog` render a note's own "change history" section;
+ * - `buildSiteChangelog` / `renderSiteChangelog` render the site-wide changelog
+ *   for a designated note.
  *
- * The plugin never creates a route. The Site owns the note and the layout; the
- * plugin only fills the `article.after-content` slot. The same dataset is also
- * exported (`buildSiteChangelog`, `renderSiteChangelog`) so a Site can render
- * it from its own route. No client JavaScript is required.
+ * The plugin never creates a route. The Site owns the note and the layout, and
+ * decides where the sections appear. No client JavaScript is required.
  *
  * When Git is unavailable the build is left untouched and a warning diagnostic
  * is reported instead of failing.
  */
 export function changelog(options: ChangelogOptions = {}) {
-  const resolved = resolveChangelogOptions(options);
-
   return definePlugin({
     name: CHANGELOG_PLUGIN_NAME,
-    contentOutputDependencies:
-      resolved.perNote || resolved.siteWide
-        ? [{ type: "external", id: "changelog:git-history" }]
-        : [],
     options,
     validateOptions: validateChangelogOptions,
-    resolveExternalDependencies: async (context) => {
-      if (!resolved.perNote && !resolved.siteWide) return [];
-      const reader = new GitChangelogReader({
-        cwd: resolved.cwd ?? context.config?.content.directory,
-      });
-      const fingerprint = await reader.getStateFingerprint();
-      if (fingerprint === null) {
-        return [
-          {
-            kind: "unavailable" as const,
-            failure: {
-              id: "changelog:git-history",
-              reason: "Git state could not be read.",
-            },
-          },
-        ];
-      }
-      return [
-        {
-          kind: "resolved" as const,
-          snapshot: {
-            id: "changelog:git-history",
-            fingerprint: fingerprintExternalValue(fingerprint),
-            scope: { type: "content" as const },
-            value: reader,
-          },
-        },
-      ];
-    },
-    onManifestCreated: (context) => applyChangelog(context, resolved),
     assets: [createStyleAsset(CHANGELOG_PLUGIN_NAME)],
   });
 }
 
 /** Alias matching the `*Plugin` suffix used by other plugin factories. */
 export const changelogPlugin = changelog;
-
-async function applyChangelog(
-  context: PluginManifestContext,
-  options: ResolvedChangelogOptions,
-): Promise<void> {
-  if (!options.perNote && !options.siteWide) return;
-
-  const reader = context.externalDependencies?.get(
-    "changelog:git-history",
-  )?.value;
-  if (!(reader instanceof GitChangelogReader)) {
-    context.diagnostics.push({
-      code: "changelog-git-unavailable",
-      severity: "warning",
-      pluginName: CHANGELOG_PLUGIN_NAME,
-      message:
-        "changelog: Git state could not be read; change history was skipped.",
-    });
-    return;
-  }
-  const resolution = await reader.resolveRepository();
-  if (isRepositoryUnavailable(resolution)) {
-    reportRepositoryUnavailable(context, resolution);
-    return;
-  }
-
-  const since = resolveLookbackSince(options.lookbackDays);
-
-  if (options.perNote) {
-    await forEachWithConcurrency(
-      context.manifest.publicEntries,
-      PER_NOTE_CONCURRENCY,
-      async (entry) => {
-        // The site-wide target is a changelog page, not a regular note.
-        if (options.siteWide && entry.slug === options.siteWideSlug) return;
-        await applyNoteHistory(context, options, reader, entry, since);
-      },
-    );
-  }
-
-  if (options.siteWide) {
-    await applySiteChangelog(context, options, reader, since);
-  }
-}
-
-async function applyNoteHistory(
-  context: PluginManifestContext,
-  options: ResolvedChangelogOptions,
-  reader: GitChangelogReader,
-  entry: ContentManifestEntry,
-  since: string | undefined,
-): Promise<void> {
-  if (hasSlot(entry, CHANGELOG_NOTE_ATTRIBUTE)) return;
-
-  const filePath = resolveEntryFilePath(entry, context.manifest.contentIndex);
-  const commits = await reader.getFileHistory(filePath, { since });
-  const history = buildNoteChangeHistory(entry, commits, options);
-  const html = renderNoteChangeHistory(history, options);
-  if (html) appendContentBodySlot(entry, CHANGELOG_BODY_SLOT, html);
-}
-
-async function applySiteChangelog(
-  context: PluginManifestContext,
-  options: ResolvedChangelogOptions,
-  reader: GitChangelogReader,
-  since: string | undefined,
-): Promise<void> {
-  const target = context.manifest.publicEntries.find(
-    (entry) => entry.slug === options.siteWideSlug,
-  );
-  if (!target) {
-    context.diagnostics.push({
-      code: "changelog-target-missing",
-      severity: "warning",
-      pluginName: CHANGELOG_PLUGIN_NAME,
-      message: `changelog: the site-wide target note "${options.siteWideSlug}" was not found; the site-wide changelog was skipped.`,
-      suggestion: `Create a public note with slug "${options.siteWideSlug}" or set siteWideSlug to an existing note.`,
-    });
-    return;
-  }
-
-  if (hasSlot(target, CHANGELOG_SITE_ATTRIBUTE)) return;
-
-  const commits = await reader.getRecentCommits({ since });
-  const changelog = buildSiteChangelog({
-    entries: context.manifest.publicEntries,
-    commits,
-    contentIndex: context.manifest.contentIndex,
-    options,
-  });
-  const html = renderSiteChangelog(changelog, options);
-  if (html) appendContentBodySlot(target, CHANGELOG_BODY_SLOT, html);
-}
-
-function resolveEntryFilePath(
-  entry: ContentManifestEntry,
-  contentIndex: Map<string, string>,
-): string {
-  return resolveContentFilePath(contentIndex, entry.slug) ?? `${entry.slug}.md`;
-}
-
-function hasSlot(entry: ContentManifestEntry, attribute: string): boolean {
-  return entry.bodySlots?.[CHANGELOG_BODY_SLOT]?.includes(attribute) ?? false;
-}
-
-function reportRepositoryUnavailable(
-  context: PluginManifestContext,
-  resolution: Exclude<RepositoryPathsResolution, { kind: "resolved" }>,
-): void {
-  const gitUnavailable = resolution.kind === "git-unavailable";
-  const message = gitUnavailable
-    ? `changelog: Git could not be started; change history was skipped. (${resolution.detail})`
-    : `changelog: the content directory is not inside a Git working tree; change history was skipped. (${resolution.detail})`;
-
-  context.diagnostics.push({
-    code: gitUnavailable
-      ? "changelog-git-unavailable"
-      : "changelog-content-outside-repository",
-    severity: "warning",
-    pluginName: CHANGELOG_PLUGIN_NAME,
-    message,
-    suggestion: gitUnavailable
-      ? "Install Git and make sure it is available on PATH."
-      : "Move the content directory inside a Git working tree, or set the plugin's cwd option to a path inside one.",
-  });
-  context.logger.warn(message);
-}
-
-async function forEachWithConcurrency<T>(
-  items: readonly T[],
-  limit: number,
-  work: (item: T) => Promise<void>,
-): Promise<void> {
-  let index = 0;
-  const workers = Array.from(
-    { length: Math.min(limit, items.length) },
-    async () => {
-      while (index < items.length) {
-        const current = items[index];
-        index += 1;
-        await work(current);
-      }
-    },
-  );
-  await Promise.all(workers);
-}
 
 function validateChangelogOptions(
   options: ChangelogOptions | undefined,

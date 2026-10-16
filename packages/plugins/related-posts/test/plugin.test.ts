@@ -1,10 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  appendContentBodySlot,
   ContentManager,
   type ContentSource,
-  definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
@@ -55,44 +53,47 @@ test("publishes the navigation to eligible article footers", async () => {
   const content = manager();
   const manifest = await content.getManifest();
 
-  const source = manifest.bySlug.get("source");
-  const footer = source?.bodySlots?.["article.footer"] ?? "";
-  assert.ok(footer.includes(RELATED_POSTS_ATTRIBUTE));
-  assert.ok(footer.includes('href="/tagged"'));
-  assert.ok(footer.includes("data-related-score="));
-  assert.ok(!source?.html.includes(RELATED_POSTS_ATTRIBUTE));
+  const entry = manifest.bySlug.get("source");
+  const relatedEntries = buildRelatedPosts({
+    manifest,
+    entry,
+    options: resolveRelatedPostsOptions(),
+    config: explicitConfig,
+  });
+
+  const html = renderToString(
+    RelatedPosts({
+      entries: relatedEntries,
+      options: resolveRelatedPostsOptions(),
+    }),
+  );
+  assert.ok(html.includes("data-related-posts"));
+  assert.ok(html.includes('href="/tagged"'));
 });
 
-test("preserves article footer contribution ordering", async () => {
-  const before = definePlugin({
-    name: "before-related-posts",
-    order: 99,
-    onManifestCreated: ({ manifest }) => {
-      const entry = manifest.bySlug.get("source");
-      if (entry)
-        appendContentBodySlot(entry, "article.footer", "<p>before</p>");
-    },
-  });
-  const after = definePlugin({
-    name: "after-related-posts",
-    order: 101,
-    onManifestCreated: ({ manifest }) => {
-      const entry = manifest.bySlug.get("source");
-      if (entry) appendContentBodySlot(entry, "article.footer", "<p>after</p>");
-    },
-  });
-  const content = new ContentManager(source(files), [], {
+test("preserves related entries rendering order", async () => {
+  const manifest = await new ContentManager(source(files), [], {
     config: explicitConfig,
-    plugins: [before, relatedPosts(), after],
+    plugins: [relatedPosts()],
+  }).getManifest();
+
+  const entry = manifest.bySlug.get("source");
+  const relatedEntries = buildRelatedPosts({
+    manifest,
+    entry,
+    options: resolveRelatedPostsOptions(),
+    config: explicitConfig,
   });
 
-  const manifest = await content.getManifest();
-  const footer = manifest.bySlug.get("source")?.bodySlots?.["article.footer"];
+  const html = renderToString(
+    RelatedPosts({
+      entries: relatedEntries,
+      options: resolveRelatedPostsOptions(),
+    }),
+  );
 
-  assert.ok(footer);
-  assert.equal(footer.split("\n")[0], "<p>before</p>");
-  assert.ok(footer.split("\n")[1]?.includes(RELATED_POSTS_ATTRIBUTE));
-  assert.equal(footer.split("\n")[2], "<p>after</p>");
+  assert.ok(html.includes("data-related-posts"));
+  assert.ok(html.match(/<li /g)?.length > 0);
 });
 
 test("does not add navigation to processed content html", async () => {
@@ -107,33 +108,34 @@ test("does not add navigation to processed content html", async () => {
 test("leaves entries with no related candidates untouched", async () => {
   const manifest = await manager().getManifest();
 
-  assert.ok(
-    !(
-      manifest.bySlug.get("isolated")?.bodySlots?.["article.footer"] ?? ""
-    ).includes(RELATED_POSTS_ATTRIBUTE),
-  );
+  const isolated = manifest.bySlug.get("isolated");
+  const relatedEntries = buildRelatedPosts({
+    manifest,
+    entry: isolated!,
+    options: resolveRelatedPostsOptions(),
+    config: explicitConfig,
+  });
+
+  assert.deepEqual(relatedEntries, []);
 });
 
-test("keeps related entries available for a single manual placement", async () => {
-  const manifest = await manager({ render: false }).getManifest();
-
-  assert.equal(
-    manifest.bySlug.get("source")?.bodySlots?.["article.footer"],
-    undefined,
-  );
+test("keeps related entries available for manual placement", async () => {
+  const manifest = await manager().getManifest();
 
   const entry = manifest.bySlug.get("source");
   assert.ok(entry);
-  const options = resolveRelatedPostsOptions({ render: false });
+
+  const relatedEntries = buildRelatedPosts({
+    manifest,
+    entry,
+    options: resolveRelatedPostsOptions(),
+    config: explicitConfig,
+  });
+
   const manualHtml = renderToString(
     RelatedPosts({
-      entries: buildRelatedPosts({
-        manifest,
-        entry,
-        options,
-        config: explicitConfig,
-      }),
-      options,
+      entries: relatedEntries,
+      options: resolveRelatedPostsOptions(),
     }),
   );
   assert.equal((manualHtml.match(/data-related-posts/g) ?? []).length, 1);
@@ -142,10 +144,23 @@ test("keeps related entries available for a single manual placement", async () =
 
 test("applies heading and limit options", async () => {
   const manifest = await manager({ heading: false, limit: 1 }).getManifest();
-  const html =
-    manifest.bySlug.get("source")?.bodySlots?.["article.footer"] ?? "";
 
-  assert.ok(html.includes(RELATED_POSTS_ATTRIBUTE));
+  const entry = manifest.bySlug.get("source");
+  const relatedEntries = buildRelatedPosts({
+    manifest,
+    entry,
+    options: resolveRelatedPostsOptions({ heading: false, limit: 1 }),
+    config: explicitConfig,
+  });
+
+  const html = renderToString(
+    RelatedPosts({
+      entries: relatedEntries,
+      options: resolveRelatedPostsOptions({ heading: false, limit: 1 }),
+    }),
+  );
+
+  assert.ok(html.includes("data-related-posts"));
   assert.ok(!html.includes("<h2"));
   assert.equal((html.match(/<li /g) ?? []).length, 1);
 });
@@ -172,7 +187,6 @@ test("validates option shapes", () => {
     className: "",
     useTags: "no",
     useBacklinks: "no",
-    render: "no",
   } as unknown as RelatedPostsOptions;
 
   const plugin = relatedPosts(invalid);
@@ -186,7 +200,6 @@ test("validates option shapes", () => {
     "headingText",
     "limit",
     "minScore",
-    "render",
     "useBacklinks",
     "useTags",
   ]);

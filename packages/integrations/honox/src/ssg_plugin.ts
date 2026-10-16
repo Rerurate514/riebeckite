@@ -188,6 +188,7 @@ export type RiebeckiteSsgOptions = {
 };
 
 const defaultEntry = "./src/index.tsx";
+const faultInjectionCounts = new Map<string, number>();
 const cloudflareWorkerAssetLimit = 25 * 1024 * 1024;
 
 export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
@@ -560,43 +561,52 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         clientBuildArtifacts = undefined;
       }
     },
-    async closeBundle() {
-      if (!resolvedConfig) return;
+    closeBundle: {
+      order: "post",
+      async handler() {
+        if (!resolvedConfig) return;
 
-      const outDir = resolve(resolvedConfig.root, resolvedConfig.build.outDir);
-      const oversizedAssets = await findOversizedAssets(outDir);
-      for (const asset of oversizedAssets) {
-        this.warn(
-          `Generated asset ${asset.path} is ${formatBytes(asset.size)}, exceeding Cloudflare Workers' ${formatBytes(cloudflareWorkerAssetLimit)} asset limit.`,
+        const outDir = resolve(
+          resolvedConfig.root,
+          resolvedConfig.build.outDir,
         );
-      }
-      if (!pendingOutputCache) return;
-      try {
-        pendingOutputCache.state.finalOutputInventory =
-          await fingerprintOutputDirectory(pendingOutputCache.outDir);
-        pendingOutputCache.state.publicDirectory = pendingOutputCache.publicDir
-          ? resolve(pendingOutputCache.publicDir)
-          : undefined;
-        pendingOutputCache.state.publicFingerprint =
-          pendingOutputCache.publicDir
-            ? await fingerprintDirectory(resolve(pendingOutputCache.publicDir))
-            : undefined;
-        await waitForFaultInjection("build-state-before");
-        await saveOutputCache(
-          pendingOutputCache.path,
-          pendingOutputCache.state,
-          pendingOutputCache.outDir,
-        );
-        await waitForFaultInjection("build-state-committed");
-      } catch (error) {
-        this.warn(
-          `SSG output cache could not be saved; the next build regenerates every output. ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-        );
-      } finally {
-        pendingOutputCache = undefined;
-      }
+        const oversizedAssets = await findOversizedAssets(outDir);
+        for (const asset of oversizedAssets) {
+          this.warn(
+            `Generated asset ${asset.path} is ${formatBytes(asset.size)}, exceeding Cloudflare Workers' ${formatBytes(cloudflareWorkerAssetLimit)} asset limit.`,
+          );
+        }
+        if (!pendingOutputCache) return;
+        try {
+          pendingOutputCache.state.finalOutputInventory =
+            await fingerprintOutputDirectory(pendingOutputCache.outDir);
+          pendingOutputCache.state.publicDirectory =
+            pendingOutputCache.publicDir
+              ? resolve(pendingOutputCache.publicDir)
+              : undefined;
+          pendingOutputCache.state.publicFingerprint =
+            pendingOutputCache.publicDir
+              ? await fingerprintDirectory(
+                  resolve(pendingOutputCache.publicDir),
+                )
+              : undefined;
+          await waitForFaultInjection("build-state-before");
+          await saveOutputCache(
+            pendingOutputCache.path,
+            pendingOutputCache.state,
+            pendingOutputCache.outDir,
+          );
+          await waitForFaultInjection("build-state-committed");
+        } catch (error) {
+          this.warn(
+            `SSG output cache could not be saved; the next build regenerates every output. ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          );
+        } finally {
+          pendingOutputCache = undefined;
+        }
+      },
     },
   };
 }
@@ -1577,6 +1587,18 @@ async function waitForFaultInjection(point: string): Promise<void> {
   ) {
     return;
   }
+  const occurrence = Number.parseInt(
+    process.env.RIEBECKITE_SSG_FAULT_OCCURRENCE ?? "1",
+    10,
+  );
+  const count = (faultInjectionCounts.get(point) ?? 0) + 1;
+  faultInjectionCounts.set(point, count);
+  if (
+    !Number.isSafeInteger(occurrence) ||
+    occurrence < 1 ||
+    count !== occurrence
+  )
+    return;
   const signalFile = process.env.RIEBECKITE_SSG_FAULT_SIGNAL_FILE;
   if (!signalFile) return;
   await writeFile(signalFile, `${point}\n`, "utf8");

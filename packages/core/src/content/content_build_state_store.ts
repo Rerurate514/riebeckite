@@ -74,12 +74,28 @@ export async function saveContentBuildState(
   await fs.mkdir(directory, { recursive: true });
 
   try {
+    await waitForFaultInjection("content-build-state-save-start");
     await fs.writeFile(temporaryPath, JSON.stringify(state), "utf8");
     await fs.rename(temporaryPath, statePath);
+    await waitForFaultInjection("content-build-state-committed");
   } catch (error) {
     await fs.rm(temporaryPath, { force: true }).catch(() => undefined);
     throw error;
   }
+}
+
+async function waitForFaultInjection(point: string): Promise<void> {
+  if (
+    process.env.NODE_ENV !== "test" ||
+    process.env.RIEBECKITE_SSG_FAULT_INJECTION !== "1" ||
+    process.env.RIEBECKITE_SSG_FAULT_POINT !== point
+  ) {
+    return;
+  }
+  const signalFile = process.env.RIEBECKITE_SSG_FAULT_SIGNAL_FILE;
+  if (!signalFile) return;
+  await fs.writeFile(signalFile, `${point}\n`, "utf8");
+  await new Promise<void>(() => {});
 }
 
 export function resolveContentBuildStatePath(

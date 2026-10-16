@@ -29,6 +29,7 @@
     "test:e2e:fingerprint": "node --import tsx tests/external-site/fingerprint.ts",
     "test:e2e:fast-path": "node --import tsx tests/external-site/fast-path.ts",
     "test:e2e:preset-fast-path": "node --import tsx tests/external-site/preset-fast-path.ts",
+    "test:e2e:fault-recovery": "node --import tsx tests/external-site/fault-recovery.ts",
     "test:browser": "pnpm --filter @riebeckite/plugin-search test:browser:required",
     "test:plugin-dx": "pnpm --dir tests/plugin-dx run test",
     "test:plugin-dx:external": "pnpm --dir tests/plugin-dx run test:external",

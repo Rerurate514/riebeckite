@@ -14,6 +14,6 @@ export default createRoute(async (c) => {
   }
 
   return c.render(
-    <SiteArticle post={home.post} bodySlots={home.entry.bodySlots} />,
+    <SiteArticle post={home.post} />,
   );
 });

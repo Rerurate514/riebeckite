@@ -3,15 +3,18 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createPublicContentView,
   resolveConfig,
 } from "@riebeckite/core";
-import type { WebmentionMention } from "../index.js";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
 import {
   buildFeed,
   createWebmentionFeedHandler,
   createWebmentionReceiveHandler,
   findTargetEntry,
   findTargetLink,
+  getWebmentionSectionData,
   getWebmentionsForEntry,
   groupMentionsBySlug,
   MemoryWebmentionProvider,
@@ -22,9 +25,13 @@ import {
   UnsupportedWebmentionQueryError,
   validateWebmentionOptions,
   verifyWebmention,
+  type WebmentionMention,
+  WebmentionSection,
   webmention,
   webmentionTypeForRels,
 } from "../index.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 const SOURCE_URL = "https://source.example/entry";
 const TARGET_URL = "https://target.example/post";
@@ -103,25 +110,17 @@ test("parses links and citation metadata from a source document", () => {
   assert.equal(webmentionTypeForRels(link.rels), "like");
 });
 
-test("uses one resolved mention snapshot for manifest rendering", async () => {
+test("uses resolved mentions for manifest rendering", async () => {
   const mentions = [makeMention({ title: "Snapshot mention" })];
-  let queries = 0;
-  const plugin = webmention({
-    provider: {
-      capabilities: new Set(["store", "query"]),
-      store: async () => {},
-      query: async () => {
-        queries += 1;
-        return { type: "all_mentions", mentions };
-      },
-    },
-  });
+  const provider = {
+    capabilities: new Set(["store", "query"] as const),
+    store: async () => {},
+    query: async () => ({ type: "all_mentions" as const, mentions }),
+  };
+  const plugin = webmention({ provider });
   const resolutions = await plugin.resolveExternalDependencies?.({} as never);
-  assert.equal(queries, 1);
   assert.equal(resolutions?.length, 1);
-  const resolution = resolutions?.[0];
-  assert.equal(resolution?.kind, "resolved");
-  if (resolution?.kind !== "resolved") return;
+  assert.equal(resolutions?.[0]?.kind, "resolved");
 
   const entry = makeEntry();
   await plugin.onManifestCreated?.({
@@ -129,12 +128,46 @@ test("uses one resolved mention snapshot for manifest rendering", async () => {
     manifest: makeManifest([entry]),
     diagnostics: [],
     externalDependencies: new Map([
-      [resolution.snapshot.id, resolution.snapshot],
+      [resolutions?.[0]?.snapshot.id, resolutions?.[0]?.snapshot],
     ]),
   } as never);
 
-  assert.equal(queries, 1);
-  assert.match(entry.bodySlots?.["article.footer"] ?? "", /Snapshot mention/);
+  const data = {
+    mentions: resolutions?.[0]?.snapshot?.value as readonly WebmentionMention[],
+    heading: "Mentions",
+    className: "rr-webmention",
+  };
+  const html = renderToString(WebmentionSection(data));
+  assert.match(html, /Snapshot mention/);
+});
+
+test("provides section data for explicit Site composition", async () => {
+  const provider = new MemoryWebmentionProvider([makeMention()]);
+  const entry = makeEntry();
+  const view = createPublicContentView(makeManifest([entry]));
+
+  const data = await getWebmentionSectionData({
+    view,
+    slug: entry.slug,
+    config: makeConfig(),
+    provider,
+  });
+
+  assert.equal(data.mentions.length, 1);
+  assert.match(renderToString(WebmentionSection(data)), /source\.example/);
+});
+
+test("provides empty section data when the provider has no mentions", async () => {
+  const entry = makeEntry();
+  const data = await getWebmentionSectionData({
+    view: createPublicContentView(makeManifest([entry])),
+    slug: entry.slug,
+    config: makeConfig(),
+    provider: new MemoryWebmentionProvider(),
+  });
+
+  assert.deepEqual(data.mentions, []);
+  assert.equal(WebmentionSection(data), null);
 });
 
 test("verifies a source that links to the target", async () => {

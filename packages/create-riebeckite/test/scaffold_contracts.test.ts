@@ -246,8 +246,8 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
       "dist/robots.txt must exist after build",
     );
     assert.ok(
-      await dirExists(targetDir, "dist/assets"),
-      "dist/assets directory must exist after build",
+      await dirExists(targetDir, "dist/static"),
+      "dist/static directory must exist after build",
     );
     assert.ok(
       await fileExists(targetDir, "dist/index.html"),
@@ -758,8 +758,8 @@ test("Contract 12: generated routes delegate homepage and content resolution to 
       "index route must delegate homepage resolution to the framework",
     );
     assert.ok(
-      indexRoute?.includes("resolved.entry.bodySlots") ||
-        indexRoute?.includes("home.entry.bodySlots"),
+      indexRoute?.includes("<SiteArticle") &&
+        indexRoute?.includes("post={home.post}"),
       "index route must compose the resolved content entry",
     );
     assert.ok(
@@ -777,7 +777,8 @@ test("Contract 12: generated routes delegate homepage and content resolution to 
       "slug route must delegate page resolution to the framework",
     );
     assert.ok(
-      slugRoute?.includes("resolved.entry.bodySlots"),
+      slugRoute?.includes("<SiteArticle") &&
+        slugRoute?.includes("post={resolved.post}"),
       "slug route must compose the resolved content entry",
     );
     assert.ok(

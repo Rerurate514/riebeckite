@@ -719,7 +719,7 @@ UI / output を提供したい
 │    └─ pageTypes
 │
 ├─ 記事 layout へ自動配置する
-│    └─ HTML fragment + body Slot
+│    └─ Data helper + JSX component
 │
 ├─ Site 作者に配置を任せる
 │    └─ Hono JSX component を export
@@ -728,17 +728,19 @@ UI / output を提供したい
      └─ clientEntries（必要なら Site 所有の Island）
 ```
 
-### body Slot で自動配置する
+### 記事 layout へ自動配置する
 
-出力が標準の位置にあり、Plugin を有効化すればすぐ表示したい場合は body Slot を使います。HTML fragment を提供し、Site が slot を描画するかどうかと位置を決めます。
+出力が標準の位置にあり、Plugin を有効化すればすぐ表示したい場合は、Data helper + JSX component を使います。Plugin は型付きモデルを返す data helper と、それを描画する JSX component を export し、Site が helper を呼んで自分の layout に component を配置します。
 
 ```ts
-import { appendContentBodySlot } from "@riebeckite/core";
+import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
 
-appendContentBodySlot(entry, "article.footer", "<section>...</section>");
+const backlinks = await getBacklinks({ view, slug: entry.slug });
+// ...
+return <Backlinks backlinks={backlinks} />;
 ```
 
-`article.footer` などの標準 slot を選ぶか、独自名を Site に描画してもらいます。独自 slot は Site が描画を選ぶまで何も表示しません。slot の一覧と順序は [Body Slots](../reference/plugin-api.ja.md#body-slots) を参照してください。
+helper は絞り込まれた `PublicContentView` を読むため、公開境界が許す content だけを表示できます。component は表示するものがないとき `null` を返すので、Site は無条件に描画できます。helper と component の契約は [UI components](../reference/plugin-api.ja.md#ui-components) を参照してください。
 
 ### Hono JSX component で手動配置する
 
@@ -755,14 +757,11 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 `color-mode` は root のみの形です。`ColorModeScript` と `ColorModeToggle` を package root から公開し、`./components` subpath を持ちません。名前は各 package README に従ってください。
 
-### HTML fragment と component の使い分け
+### component か素の HTML か
 
-判断基準は **誰が配置するか** です。
+判断基準は **誰が配置するか** です。JSX component なら、Site が props・順序・位置を自分の component tree で選べます。Plugin がすでに HTML を生成している場合（HAST 変換など）は、代わりに小さな文字列レンダラーを export して Site に呼ばせることもできます。どちらでも、Plugin が manifest entry へ markup を注入することはありません。何をどこに描画するかは Site が決めます。
 
-- **HTML fragment + Slot**: Plugin が標準の位置へ書き、Site がその slot を描画するか決めます。
-- **Hono JSX component**: Site 作者が component tree の好きな場所へ配置します。
-
-新しいから優れている、という関係ではありません。Plugin がすでに HTML を生成している場合（HAST 変換など）は文字列が自然で、props と配置を Site が制御したい場合は component が自然です。`backlinks` と `local-graph` は両方を使い、component を export しつつ `onManifestCreated` で描画結果を `article.footer` へ追加します。よくある pattern であり、必須ではありません。
+`backlinks` と `local-graph` は component と data helper の両方を export し、参照サイトは article layout でそれらを組み合わせています。よくある pattern であり、必須ではありません。
 
 ### Browser 強化と Island
 

@@ -1,5 +1,4 @@
 import {
-  appendContentBodySlot,
   createStyleAsset,
   definePlugin,
   fingerprintExternalValue,
@@ -15,10 +14,11 @@ import {
   validateWebmentionOptions,
 } from "./src/options.js";
 import { supportsWebmentionCapability } from "./src/provider.js";
-import { renderWebmentionSection } from "./src/render.js";
-import { countUnmatchedMentions, groupMentionsBySlug } from "./src/server.js";
+import { countUnmatchedMentions } from "./src/server.js";
 import type { WebmentionOptions } from "./src/types.js";
 
+export type { WebmentionSectionProps } from "./components/webmention-section.js";
+export { default as WebmentionSection } from "./components/webmention-section.js";
 export { createWebmentionEndpoints } from "./src/endpoints.js";
 export type {
   WebmentionFeed,
@@ -82,11 +82,17 @@ export {
   renderWebmentionSection,
   WEBMENTION_ATTRIBUTE,
 } from "./src/render.js";
+export type {
+  WebmentionSectionData,
+  WebmentionSectionDataInput,
+} from "./src/server.js";
 export {
   compareMentions,
   countUnmatchedMentions,
+  getWebmentionSectionData,
   getWebmentionsForEntry,
   groupMentionsBySlug,
+  queryWebmentionsForEntry,
 } from "./src/server.js";
 export {
   entryPublicUrl,
@@ -144,16 +150,13 @@ export function webmention(options: WebmentionOptions = {}) {
       version: "webmention-v1",
       dependencyMode: "none",
     },
-    contentOutputDependencies: resolved.render
-      ? [{ type: "external", id: "webmention:all-mentions" }]
-      : [],
+    contentOutputDependencies: [
+      { type: "external", id: "webmention:all-mentions" },
+    ],
     options,
     validateOptions: validateWebmentionOptions,
     resolveExternalDependencies: async () => {
-      if (
-        !resolved.render ||
-        !supportsWebmentionCapability(provider, "query")
-      ) {
+      if (!supportsWebmentionCapability(provider, "query")) {
         return [];
       }
       try {
@@ -182,10 +185,7 @@ export function webmention(options: WebmentionOptions = {}) {
       }
     },
     onManifestCreated: async (context) => {
-      if (
-        !resolved.render ||
-        !supportsWebmentionCapability(provider, "query")
-      ) {
+      if (!supportsWebmentionCapability(provider, "query")) {
         return;
       }
 
@@ -207,24 +207,6 @@ export function webmention(options: WebmentionOptions = {}) {
       }
       const mentions = snapshot.value as readonly WebmentionMention[];
 
-      const grouped = groupMentionsBySlug(
-        context.manifest,
-        context.config,
-        mentions,
-      );
-      for (const [slug, list] of grouped) {
-        const entry = context.manifest.bySlug.get(slug);
-        if (!entry) continue;
-        const section = renderWebmentionSection(
-          list.slice(0, resolved.limit),
-          resolved,
-        );
-        if (section === "") continue;
-        if (!hasSlotFragment(entry.bodySlots?.["article.footer"], section)) {
-          appendContentBodySlot(entry, "article.footer", section);
-        }
-      }
-
       const unmatched = countUnmatchedMentions(
         context.manifest,
         context.config,
@@ -241,18 +223,8 @@ export function webmention(options: WebmentionOptions = {}) {
     },
     endpoints: createWebmentionEndpoints(resolved),
     assets: [createStyleAsset(WEBMENTION_PLUGIN_NAME)],
-    addDiagnostics: () => buildWebmentionDiagnostics(provider, resolved),
+    addDiagnostics: () => buildWebmentionDiagnostics(provider),
   });
 }
 
 export { buildWebmentionDiagnostics };
-
-function hasSlotFragment(slot: string | undefined, fragment: string): boolean {
-  return (
-    slot === fragment ||
-    slot?.startsWith(`${fragment}\n`) ||
-    slot?.endsWith(`\n${fragment}`) ||
-    slot?.includes(`\n${fragment}\n`) ||
-    false
-  );
-}

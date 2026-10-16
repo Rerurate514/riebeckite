@@ -6,7 +6,7 @@ sidebar:
 
 # Content Entry
 
-manifestの中でslugにより識別される、解決済みのコンテンツ1件です。permalink、公開位置、frontmatter、公開状態、HTML、Pluginが付与したデータを持ちます。
+manifestの中でslugにより識別される、解決済みのコンテンツ1件です。permalink、公開位置、frontmatter、公開状態、HTML、Pluginが提供するデータヘルパーとJSXコンポーネントを持ちます。
 
 ## entryが持つもの
 
@@ -23,14 +23,12 @@ manifestの中でslugにより識別される、解決済みのコンテンツ1�
 | `frontmatter` | `PostFrontmatter` | 解析済みのfrontmatterメタデータです。 |
 | `publishing` | `ResolvedPublishingState` | 公開状態（`published`、`unlisted`、`draft`、`scheduled`など）。 |
 | `html` | `string` | 渲染済みのHTMLボディです。 |
-| `headTags` | `readonly PluginHeadTag[] | undefined` | Site shellがレンダリングするプラグイン提供のheadタグです。 |
-| `bodySlots` | `Readonly<Record<string, string>> | undefined` | プラグインが提供するbody slotフラグメント。サイトレイアウトはどのslotをレンダリングするか、どこに配置するかを決定します。 |
 | `tags` | `string[]` | このentryに関連付けられたタグです。 |
 | `links` | `ContentLink[]` | コンテンツ内のmarkdown/wikilink参照の解決済みリストです。 |
 | `backlinks` | `string[]` | content graphによって計算されたbacklinkリストです。 |
 | `assets` | `ContentAsset[]` | プラグインによって宣言されたassetsです。 |
 
-コンシューマーは通常、`permalink`をリンクに、`frontmatter`をメタデータに、`bodySlots`/`headTags`をレイアウト構成に使用します。
+コンシューマーは通常、`permalink`をリンクに、`frontmatter`をメタデータに、プラグイン提供のデータをレイアウト構成に使用します。
 
 ## slugとpermalinkの違い
 
@@ -42,7 +40,6 @@ slugはBuildのinternalでentryを識別し、permalinkは公開URLです。entr
 
 - **permalinkの解決**: `entry.permalink`を直接読む、あるいは`byPermalink`マップを使ってslugからURLへのlookupを行う。
 - **frontmatterの参照**: `entry.frontmatter`でページメタデータ（タイトル、日時、タグなど）にアクセスする。
-- **body slotの利用**: プラグインは`appendContentBodySlot(entry, slot, html)`でフラグメントを貢献し、サイトレイアウトはどのslotをレンダリングし、どこに配置するかを決定する。
 - **headタグのレンダリング**: プラグインが提供する`entry.headTags`はサイトシェルが`<head>`内でレンダリングする。
 - **assetsの参照**: `entry.assets`にはプラグインによって宣言された`ContentAsset`entriesが含まれる。サイトは出力時にコピーまたは参照する。
 
@@ -54,6 +51,5 @@ if (entry) {
   const url = entry.permalink;
   const title = entry.title;
   const meta = entry.frontmatter;
-  const slotFrag = entry.bodySlots?.["article.header"];
-}
+  }
 ```

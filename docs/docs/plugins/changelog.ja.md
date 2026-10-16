@@ -11,7 +11,7 @@ title: Changelog
 
 `changelog()` は [`@riebeckite/plugin-diff`](./diff.ja.md) と同じ方法でローカル Git を読み取ります（`execFile` で `git` を実行し、失敗時は安全に縮退）。独自のファイルシステム層は作りません。
 
-結果はマニフェストの `bodySlots` に出力します。公開エントリは `article.after-content` スロットに自分の履歴を受け取り、サイト側のレイアウトがそのスロットを描画するかどうかを決めます。プラグインは Plugin の境界を越えず、アプリケーションのルートも作りません。`siteWide` を有効にすると、`siteWideSlug` で指定したノートのスロットにサイト全体の変更履歴を書き込みます。そのノート（＝ルート）はアプリまたは作者が所有するもので、プラグインが作るものではありません。クライアントスクリプトは登録しません。
+結果はプラグインの組み込み HTML レンダラーを通じて公開されます。公開エントリはそれぞれ変更履歴セクションを受け取り、サイト側のレイアウトが描画するかどうかを決めます。`siteWide` を有効にすると、サイト全体の変更履歴データセットがビルドされ、アプリが自身で描画できます。プラグインは manifest entry に markup を注入しません。描画する変更履歴セクションは Site が選びます。クライアントスクリプトは登録しません。
 
 ## 使い方
 
@@ -53,36 +53,13 @@ export default defineConfig({
 
 ## 表示
 
-ノートごとの変更履歴は `article.after-content` スロットへ追加され、有効にした対象ページの記事下で実際に描画されます。
+各ノートの変更履歴セクションはビルド時の HTML として公開されます。`perNote` が有効な場合、記事の後に表示されます。サイト全体の変更履歴データセットはビルドされ、アプリが renderer を通じて描画できます。
 
 `data-changelog-note` と `data-changelog-site` は、2 種類の断片をスタイリングと重複防止のために識別する属性です。
 
 ## アプリ側の接続（サイト全体の変更履歴）
 
 サイト全体の一覧はページではなくデータです。ルートはアプリが所有します。プラグインは既存ノートの `article.after-content` スロットに書き込む（`siteWide: true` と `siteWideSlug`。その slug の公開ノートが必要）か、データセットを公開してアプリ自身に描画させます。
-
-```ts
-import {
-  buildSiteChangelog,
-  GitChangelogReader,
-  renderSiteChangelog,
-  resolveChangelogOptions,
-} from "@riebeckite/plugin-changelog";
-
-const options = resolveChangelogOptions({ lookbackDays: 90 });
-const manifest = await content.getManifest();
-const reader = new GitChangelogReader({ cwd: "./content" });
-const commits = await reader.getRecentCommits();
-const dataset = buildSiteChangelog({
-  entries: manifest.publicEntries,
-  commits,
-  contentIndex: manifest.contentIndex,
-  options,
-});
-const html = renderSiteChangelog(dataset, options);
-```
-
-参照アプリはマニフェストの `bodySlots` を `apps/web/app/components/article/article.tsx` で描画します。専用ルートでは公開された HTML をそのまま描画できます。
 
 ## 失敗時の挙動
 

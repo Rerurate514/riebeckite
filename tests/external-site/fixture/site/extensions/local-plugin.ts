@@ -45,7 +45,7 @@ export function localFixturePlugin() {
       {
         pluginName: "fixture-local",
         kind: "style",
-        moduleSpecifier: "/extensions/local-plugin.css",
+        moduleSpecifier: "../../extensions/local-plugin.css",
       },
     ],
     pageTypes: [

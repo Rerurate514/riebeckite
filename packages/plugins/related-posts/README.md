@@ -4,7 +4,9 @@
 
 Build-time "related notes" navigation. For every published entry, the plugin
 ranks the other entries in the content manifest and contributes a related-posts
-section to the `article.footer` Slot. No client-side JavaScript is required.
+section. The Site places the `<RelatedPosts />` component itself, normally once
+after article content, to display the navigation. No client-side JavaScript is
+required.
 
 [日本語](./README_ja.md)
 
@@ -23,9 +25,9 @@ Candidates are sorted by score (descending), then by title, then by slug, and
 clamped to `limit`. Entries that score below `minScore` are dropped. When no
 candidate qualifies, the entry's HTML is left untouched.
 
-The plugin contributes the section to each manifest entry's `article.footer`
-Slot. The Site decides where to render that Slot, so the section appears on
-generated pages and in feeds when the standard article footer is used.
+The Site places the `<RelatedPosts entries={...} options={...} />` component
+itself, normally once after article content. The component renders nothing when
+no related entries qualify.
 
 ## Quick Start
 
@@ -41,9 +43,10 @@ export default defineConfig({
 
 ## Advanced customization
 
-The Site can place the public server-rendered component anywhere. Set
-`render: false` first to prevent the automatic `article.footer` contribution;
-ranking and publication filtering remain available through the public helpers.
+The Site can place the public server-rendered `<RelatedPosts />` component
+anywhere. Set `render: false` first to prevent the automatic `article.footer`
+contribution; ranking and publication filtering remain available through the
+public helpers.
 
 ```tsx
 import {
@@ -52,10 +55,10 @@ import {
   resolveRelatedPostsOptions,
 } from "@riebeckite/plugin-related-posts";
 
-const options = resolveRelatedPostsOptions({ render: false });
+const options = resolveRelatedPostsOptions({});
 const entries = buildRelatedPosts({ manifest, entry, options, config });
 
-return <aside><RelatedPosts entries={entries} options={options} /></aside>;
+return <nav rb-related-posts><RelatedPosts entries={entries} options={options} /></nav>;
 ```
 
 The official Starter already renders `article.footer` once. Remove the manual
@@ -66,7 +69,6 @@ rendering for the same article.
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
-| `render` | `boolean` | `true` | Append generated navigation to `article.footer`; set `false` for manual placement |
 | `limit` | `number` | `5` | Maximum number of related entries |
 | `minScore` | `number` | `1` | Minimum score required to be listed |
 | `heading` | `boolean` | `true` | Render the `<h2>` heading |
@@ -85,7 +87,9 @@ relatedPosts({
 
 ## Display
 
-Related entries are rendered in the `article.footer` slot on eligible pages. This site renders the live navigation below the article when matching public entries exist.
+Related entries are rendered in the `article.footer` area on eligible pages.
+This site renders the live navigation below the article when matching public
+entries exist.
 
 ## Style
 

@@ -12,10 +12,17 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
+    "./components": {
+      "types": "./dist/components/language-switcher.d.ts",
+      "import": "./dist/components/language-switcher.js",
+      "source": "./components/language-switcher.tsx",
+      "default": "./dist/components/language-switcher.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "hono": "catalog:",
     "yaml": "^2.9.0"
   },
   "devDependencies": {

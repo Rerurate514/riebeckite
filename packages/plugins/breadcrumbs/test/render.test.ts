@@ -3,12 +3,15 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createPublicContentView,
   type PluginManifestContext,
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import Breadcrumbs from "../components/breadcrumbs.js";
 import {
-  BREADCRUMBS_ATTRIBUTE,
   breadcrumbs,
   breadcrumbsPlugin,
   buildBreadcrumbHeadTag,
@@ -17,6 +20,9 @@ import {
   renderBreadcrumbNav,
   resolveBreadcrumbsOptions,
 } from "../index.ts";
+import { getBreadcrumbs } from "../src/breadcrumbs.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function makeEntry(
   overrides: Omit<Partial<ContentManifestEntry>, "slug"> & { slug: string },
@@ -244,11 +250,14 @@ test("onManifestCreated contributes the nav and a JSON-LD head tag", async () =>
   await plugin.onManifestCreated?.(context);
 
   assert.equal(entry.html, "<p>Body</p>");
-  assert.ok(
-    entry.bodySlots?.["article.header"]?.startsWith(
-      '<nav class="rb-breadcrumbs"',
-    ),
-  );
+  const items = await getBreadcrumbs({
+    view: createPublicContentView(manifest),
+    entry,
+    homeLabel: "Home",
+  });
+  const html = renderToString(Breadcrumbs({ items, ariaLabel: "Breadcrumbs" }));
+  assert.ok(html.includes('<nav class="rb-breadcrumbs"'));
+  assert.ok(html.includes("data-breadcrumbs"));
   assert.equal(entry.headTags?.length, 1);
 
   const head = entry.headTags?.[0];
@@ -263,11 +272,27 @@ test("onManifestCreated contributes the nav and a JSON-LD head tag", async () =>
     ),
     ["Home", "Documentation", "Intro"],
   );
+});
 
-  const contributed = entry.bodySlots?.["article.header"];
+test("onManifestCreated retains JSON-LD", async () => {
+  const plugin = breadcrumbs({ homeLabel: "Home" });
+  const entry = makeEntry({
+    slug: "docs/intro",
+    title: "Intro",
+    html: "<p>Body</p>",
+    permalink: "/docs/intro",
+  });
+  const manifest = makeManifest([entry]);
+  const context = {
+    manifest,
+    config,
+    diagnostics: [],
+  } as unknown as PluginManifestContext;
+
   await plugin.onManifestCreated?.(context);
-  assert.equal(entry.bodySlots?.["article.header"], contributed);
+
   assert.equal(entry.headTags?.length, 1);
+  assert.equal(entry.headTags?.[0]?.tag, "script");
 });
 
 test("onManifestCreated can skip the JSON-LD script", async () => {
@@ -290,10 +315,16 @@ test("onManifestCreated can skip the JSON-LD script", async () => {
 
   await plugin.onManifestCreated?.(context);
 
-  assert.ok(
-    entry.bodySlots?.["article.header"]?.includes(BREADCRUMBS_ATTRIBUTE),
-  );
+  // When jsonLd is false, headTags should not include JSON-LD,
+  // but the breadcrumb nav is still rendered by the Site.
   assert.equal(entry.headTags, undefined);
+  const items = await getBreadcrumbs({
+    view: createPublicContentView(manifest),
+    entry,
+    homeLabel: "",
+  });
+  const html = renderToString(Breadcrumbs({ items, ariaLabel: "Breadcrumbs" }));
+  assert.ok(html.includes("data-breadcrumbs"));
 });
 
 test("onManifestCreated leaves an entry with no trail untouched", async () => {

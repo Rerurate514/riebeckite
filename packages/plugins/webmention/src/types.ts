@@ -14,8 +14,6 @@ export type WebmentionOptions = Readonly<{
   provider?: WebmentionProvider;
   /** Receive (POST) and feed (GET) path. Defaults to `/webmentions`. */
   endpoint?: string;
-  /** Render stored mentions near articles. Defaults to `true`. */
-  render?: boolean;
   /** Heading text for the rendered section. Defaults to `"Mentions"`. */
   headingText?: string;
   /** Maximum mentions rendered per article. Defaults to `20`. */
@@ -42,7 +40,6 @@ export type WebmentionOptions = Readonly<{
 export type ResolvedWebmentionOptions = Readonly<{
   provider: WebmentionProvider;
   endpoint: string;
-  render: boolean;
   headingText: string;
   limit: number;
   className: string;

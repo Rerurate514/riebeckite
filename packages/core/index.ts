@@ -138,6 +138,11 @@ export {
   determineOutputChanges,
   htmlOutputPath,
 } from "./src/content/output_dependency.js";
+export {
+  createPublicContentView,
+  type PublicContentEntry,
+  type PublicContentView,
+} from "./src/content/public_content_view.js";
 export type {
   PublishingResolutionOptions,
   PublishingVisibility,
@@ -193,8 +198,6 @@ export type {
 } from "./src/types/config_validation.js";
 export type {
   ContentAsset,
-  ContentBodySlot,
-  ContentBodySlots,
   ContentLink,
   ContentLinkKind,
   ContentLocationInput,
@@ -205,10 +208,6 @@ export type {
   ContentRedirect,
   FolderLocation,
   PluginPageRoute,
-} from "./src/types/content_manifest.js";
-export {
-  ARTICLE_SLOT,
-  appendContentBodySlot,
 } from "./src/types/content_manifest.js";
 export type {
   Diagnostic,
@@ -258,6 +257,10 @@ export {
   createStyleAsset,
   serializePublicClientConfig,
 } from "./src/types/plugin_asset.js";
+export type {
+  PluginComponent,
+  PluginDataHelper,
+} from "./src/types/plugin_component.js";
 export type {
   PluginContentContext,
   PluginContentLocationAugmentContext,

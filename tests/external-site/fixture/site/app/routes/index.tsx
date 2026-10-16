@@ -17,7 +17,7 @@ export default createRoute(async (c) => {
   return c.render(
     <>
       <BuildMarker />
-      <FixtureArticle post={home.post} bodySlots={home.entry.bodySlots} />
+      <FixtureArticle post={home.post} />
     </>,
   );
 });

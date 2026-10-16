@@ -25,18 +25,30 @@ The route resolver (`resolveRiebeckiteContentRequest`) resolves content, plugin 
 
 Plugins provide information and UI fragments; the site decides where they are rendered.
 
-## Head and slot handoff
+## Plugin UI composition
 
-Plugins only describe `headTags` / `bodySlots`; the site owns rendering.
+Plugins contribute `headTags` and expose data helpers + JSX components. The Site composes these components in its own TSX, choosing whether, where, and how often to render each one. Each plugin's data helper receives a `PublicContentView` (or similar filtered facade) and returns a typed model; the component is then rendered directly by the site's article layout or page template.
 
-```tsx
-<PluginHeadTags tags={headTagsFromManifest} />
-```
+There is no `bodySlots` field on `ContentManifestEntry`; instead, plugin UI is composed explicitly:
 
 ```tsx
-<ContentSlot slots={bodySlots} name="article.header" />
+const view = createPublicContentView(manifest);
+const entry = view.findRoutableBySlug(slug);
+const backlinks = await getBacklinks({ view, slug });
+<Backlinks items={backlinks} />
 ```
+
+and
+
+```tsx
+const data = await getProperties({ view, frontmatter: entry.frontmatter });
+<Properties data={data} />
+```
+
+The Site decides layout placement — there is no accumulated `bodySlots` map or `ContentSlot` primitive. Plugin components may also export optional CSS and client entries, registered through the integration.
+
 ## SiteConfig Structure
+
 The full `SiteConfig` interface from `packages/core/src/types/site_config.ts` defines the site metadata:
 
 | Field | Type | Description |
@@ -47,8 +59,7 @@ The full `SiteConfig` interface from `packages/core/src/types/site_config.ts` de
 | `baseUrl` | `string \| undefined` | Base URL for the site (e.g., `https://example.com`) |
 | `locale` | `string \| undefined` | Locale code (e.g., `en`, `ja`) |
 | `twitterSite` | `string \| undefined` | Twitter `@` handle for card attribution |
-| `defaultOgImage` | `string \| undefined` | Default Open Graph image URL |
-| `feed` | `feed \| undefined` | RSS/Atom feed configuration (title, description, language) |
+| `defaultOgImage` | `feed \| undefined` | RSS/Atom feed configuration (title, description, language) |
 
 Each field is used as follows:
 - **title**: Rendered in the document `<title>` and page headers
@@ -76,9 +87,10 @@ export interface SiteConfig {
   };
 }
 ```
-## Field Usage Across the Site
-The fields above flow through the `@riebeckite/honox` integration (`packages/core/src/`) to compose the final public UI. The `title` and `description` appear in `<head>`, `author` and `twitterSite` in social metadata, `baseUrl` in URL generation, and `locale` in the `lang` attribute.
 
+## Field Usage Across the Site
+
+The fields above flow through the `@riebeckite/honox` integration (`packages/core/src/`) to compose the final public UI. The `title` and `description` appear in `<head>`, `author` and `twitterSite` in social metadata, `baseUrl` in URL generation, and `locale` in the `lang` attribute.
 
 ## Related terms
 

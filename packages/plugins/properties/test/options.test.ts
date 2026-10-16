@@ -97,5 +97,5 @@ test("validatePropertiesOptions reports every invalid field with its path", () =
       "collapsed",
     ],
   );
-  assert.match(issues[4]?.message ?? "", /boolean/);
+  assert.match(issues[0]?.message ?? "", /string or null/);
 });

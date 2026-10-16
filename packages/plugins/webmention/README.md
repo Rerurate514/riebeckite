@@ -58,12 +58,26 @@ Rejection codes: `invalid_request`, `missing_source_or_target`,
 
 ## Rendering
 
-At `onManifestCreated` the plugin queries the provider once, groups verified mentions by target, and appends a live section to each matching entry. Core synchronizes it with the content the route renders.
+The Site owns JSX placement. Keep the Provider instance in Site composition,
+pass that same instance to `webmention()`, then obtain typed component props
+with `getWebmentionSectionData`. The helper accepts a `PublicContentView`, so
+draft and scheduled entries cannot be rendered.
 
-Set `render: false` to skip build-time injection. Applications that render at
-request time can call `getWebmentionsForEntry({ manifest, config, provider,
-slug })` and `renderWebmentionSection(mentions, options)` directly, or consume
-the JSON feed.
+```tsx
+const mentions = await getWebmentionSectionData({
+  view,
+  slug,
+  config,
+  provider: webmentionProvider,
+});
+
+<WebmentionSection {...mentions} />
+```
+
+An empty provider returns an empty model and `WebmentionSection` renders
+nothing. The plugin does not inject build-time manifest HTML. Applications can
+also call `getWebmentionsForEntry({ manifest, config, provider, slug })` or
+consume the JSON feed where a lower-level query is appropriate.
 
 ## Options
 
@@ -71,7 +85,6 @@ the JSON feed.
 | ------ | ------- | ----------- |
 | `provider` | in-memory | Storage adapter implementing `WebmentionProvider`. |
 | `endpoint` | `"/webmentions"` | Receive (POST) and feed (GET) path. |
-| `render` | `true` | Append stored mentions to matching entries at manifest time. |
 | `headingText` | `"Mentions"` | Heading for the rendered section. |
 | `limit` | `20` | Maximum mentions rendered per article. |
 | `className` | `"rr-webmention"` | Root CSS class of the rendered section. |
@@ -99,7 +112,7 @@ manifest time, mentions whose target is not a published entry are reported as
 - `MemoryWebmentionProvider`, provider/capability types and errors
 - `parseWebmentionSource`, `findTargetLink`, `verifyWebmention`,
   `createWebmentionSourceFetcher`
-- `renderWebmentionSection`, `getWebmentionsForEntry`,
+- `WebmentionSection`, `getWebmentionSectionData`, `getWebmentionsForEntry`,
   `groupMentionsBySlug`, `buildFeed`
 - `resolveWebmentionOptions`, `validateWebmentionOptions`
 

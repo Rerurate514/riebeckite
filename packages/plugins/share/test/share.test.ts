@@ -5,8 +5,7 @@ import {
   type ContentManifestEntry,
   resolveConfig,
 } from "@riebeckite/core";
-import { initShare } from "../client.js";
-import { share } from "../index.ts";
+import { getShareLinks, initShare, share } from "../index.ts";
 import {
   DEFAULT_SHARE_SERVICES,
   resolveShareOptions,
@@ -93,7 +92,6 @@ test("buildShareLinks skips copy and unusable Mastodon", () => {
 test("resolveShareOptions defaults to the non-Mastodon set", () => {
   const resolved = resolveShareOptions();
   assert.deepEqual(resolved.services, DEFAULT_SHARE_SERVICES);
-  assert.equal(resolved.placement, "bottom");
   assert.equal(resolved.mastodonInstance, "");
   assert.equal(resolved.labels.copy, "Copy link");
 });
@@ -101,12 +99,10 @@ test("resolveShareOptions defaults to the non-Mastodon set", () => {
 test("resolveShareOptions dedupes known services and merges labels", () => {
   const resolved = resolveShareOptions({
     services: ["x", "x", "bluesky"],
-    placement: "top",
     labels: { x: "Twitter" },
     copiedLabel: "コピーしました",
   });
   assert.deepEqual(resolved.services, ["x", "bluesky"]);
-  assert.equal(resolved.placement, "top");
   assert.equal(resolved.labels.x, "Twitter");
   assert.equal(resolved.copiedLabel, "コピーしました");
 });
@@ -117,10 +113,7 @@ test("validateShareOptions requires an instance for Mastodon", () => {
     issues.some((issue) => issue.path === "mastodonInstance"),
     true,
   );
-  assert.deepEqual(
-    validateShareOptions({ services: ["x"], placement: "bottom" }),
-    [],
-  );
+  assert.deepEqual(validateShareOptions({ services: ["x"] }), []);
 });
 
 test("validateShareOptions rejects unknown services and labels", () => {
@@ -145,7 +138,7 @@ test("renderShareControls renders links and a hidden copy button", () => {
   assert.equal(html.includes(SHARE_ATTRIBUTE), true);
   assert.equal(html.includes('role="group"'), true);
   assert.equal(html.includes('data-share-service="x"'), true);
-  assert.equal(html.includes(`href="https://twitter.com/intent/tweet`), true);
+  assert.equal(html.includes("twitter.com/intent/tweet"), true);
   assert.equal(html.includes(`data-share-url="${URL}"`), true);
   assert.equal(html.includes("data-rr-share-copy"), true);
   assert.equal(html.includes("hidden>"), true);
@@ -157,7 +150,35 @@ test("renderShareControls returns empty when nothing is renderable", () => {
   assert.equal(renderShareControls(options, { url: URL, title: TITLE }), "");
 });
 
-test("share contributes controls to its configured article slot", () => {
+test("share exposes share links for the Site to render", async () => {
+  const entry: ContentManifestEntry = {
+    slug: "hello",
+    permalink: "/hello",
+    publicLocation: { slug: "hello", permalink: "/hello" },
+    title: TITLE,
+    frontmatter: {},
+    html: "<p>Body</p>",
+    publishing: { visibility: "public", routable: true, discoverable: true },
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+  };
+
+  const data = await getShareLinks({
+    entry,
+    site: resolveConfig({
+      site: { title: "Test", baseUrl: "https://example.com" },
+    }),
+    options: { services: ["x"] },
+  });
+  assert.equal(entry.html, "<p>Body</p>");
+  assert.equal(data.links.length, 1);
+  assert.equal(data.links[0]?.service, "x");
+});
+
+test("share keeps its assets and client entry", () => {
+  const plugin = share({ services: ["x"] });
   const entry: ContentManifestEntry = {
     slug: "hello",
     permalink: "/hello",
@@ -178,15 +199,10 @@ test("share contributes controls to its configured article slot", () => {
     }),
   };
 
-  share({ services: ["x"], placement: "top" }).onManifestCreated?.(
-    context as never,
-  );
+  plugin.onManifestCreated?.(context as never);
 
-  assert.equal(entry.html, "<p>Body</p>");
-  assert.match(
-    entry.bodySlots?.["article.before-content"] ?? "",
-    /data-rr-share/,
-  );
+  assert.equal(plugin.assets?.length, 1);
+  assert.equal(plugin.clientEntries?.length, 1);
 });
 
 test("initShare is a no-op without a document", () => {

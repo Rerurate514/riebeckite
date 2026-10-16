@@ -18,10 +18,17 @@
       "source": "./client.ts",
       "default": "./dist/client.js"
     },
+    "./components": {
+      "types": "./dist/components/docs-sidebar.d.ts",
+      "import": "./dist/components/docs-sidebar.js",
+      "source": "./components/docs-sidebar.tsx",
+      "default": "./dist/components/docs-sidebar.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

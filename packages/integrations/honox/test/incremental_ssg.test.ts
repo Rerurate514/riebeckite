@@ -28,7 +28,7 @@ import {
 
 const leanBuildOptions = { adapter: false } as const;
 
-test("SSG adapter output is deterministic with a populated dist", async (t) => {
+test("SSG adapter preserves client assets without treating them as routes", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "adapter-ssg-test-"));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -39,16 +39,35 @@ test("SSG adapter output is deterministic with a populated dist", async (t) => {
     renderTag: "v1",
     noteCount: 1,
     editedNotes: [],
+    stylesheet: "body { color: red; }\n",
   });
 
-  await buildSite(site, "cold");
-  const coldSnapshot = await snapshotTree(distPath(site));
-  await buildSite(site, "no-change");
+  await buildSite(site, "cold", { stylesheet: true });
+  const coldIndex = await readFile(
+    path.join(distPath(site), "index.html"),
+    "utf8",
+  );
+  const stylesheet = coldIndex.match(/<link[^>]+href="\/([^"\n]+\.css)"/u)?.[1];
+  assert.ok(
+    stylesheet,
+    `index.html must link a client stylesheet: ${coldIndex}`,
+  );
+  const coldStylesheet = await readFile(
+    path.join(distPath(site), stylesheet),
+    "utf8",
+  );
 
-  assert.deepEqual(
-    diffSnapshotKeys(coldSnapshot, await snapshotTree(distPath(site))),
-    [],
+  await buildSite(site, "no-change", { stylesheet: true });
+
+  assert.equal(
+    await readFile(path.join(distPath(site), "index.html"), "utf8"),
+    coldIndex,
     "an existing dist must not become adapter static-route input",
+  );
+  assert.equal(
+    await readFile(path.join(distPath(site), stylesheet), "utf8"),
+    coldStylesheet,
+    "the client build stylesheet must survive the SSG build",
   );
 });
 

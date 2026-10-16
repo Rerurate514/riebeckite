@@ -1,5 +1,7 @@
 import type {
   ContentManifest,
+  PluginDataHelper,
+  PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { ArticleBacklink } from "./backlinks.js";
@@ -29,3 +31,13 @@ export function getPublishedBacklinks(args: {
     (backlink): backlink is ArticleBacklink => backlink !== null,
   );
 }
+
+export const getBacklinks: PluginDataHelper<
+  { view: PublicContentView; slug: string },
+  readonly ArticleBacklink[]
+> = ({ view, slug }) =>
+  view.getDiscoverableIncoming(slug).map((entry) => ({
+    slug: entry.slug,
+    permalink: entry.permalink,
+    title: entry.title || entry.slug,
+  }));

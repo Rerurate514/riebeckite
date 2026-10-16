@@ -1,14 +1,15 @@
+import type { PluginComponent } from "@riebeckite/core";
 import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
 import type { LocalGraphData } from "../src/local-graph.js";
 
-type Props = {
+export type LocalGraphProps = {
   graph: LocalGraphData;
 };
 
 const GRAPH_WIDTH = 640;
 const GRAPH_HEIGHT = 320;
 
-export default function LocalGraph(props: Props) {
+const LocalGraph = ((props: Readonly<LocalGraphProps>) => {
   if (props.graph.nodes.length <= 1) return null;
 
   const edges = buildGraphEdges(props.graph.nodes);
@@ -22,10 +23,7 @@ export default function LocalGraph(props: Props) {
   });
 
   return (
-    <section
-      class="rr-local-graph max-w-4xl mx-auto px-4"
-      aria-labelledby="local-graph-title"
-    >
+    <section class="rr-local-graph" aria-labelledby="local-graph-title">
       <div class="rr-local-graph__header">
         <div>
           <p class="rr-local-graph__eyebrow">Local Graph</p>
@@ -120,4 +118,6 @@ export default function LocalGraph(props: Props) {
       </div>
     </section>
   );
-}
+}) satisfies PluginComponent<LocalGraphProps>;
+
+export default LocalGraph;

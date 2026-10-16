@@ -30,37 +30,6 @@ export type ContentManifestPluginAsset = PluginAsset & {
  * writing the slot string inline (for example `name="article.metadata"`) stays
  * the recommended, most readable form in TSX layouts.
  */
-export const ARTICLE_SLOT = {
-  header: "article.header",
-  metadata: "article.metadata",
-  aside: "article.aside",
-  beforeContent: "article.before-content",
-  afterContent: "article.after-content",
-  footer: "article.footer",
-} as const;
-
-/**
- * A semantic position in a Site-owned article layout.
- *
- * The standard article consumer recognizes the `article.*` positions below.
- * Other names remain valid so a custom Site can define its own layout slots.
- */
-export type ContentBodySlot =
-  | (typeof ARTICLE_SLOT)[keyof typeof ARTICLE_SLOT]
-  | (string & {});
-
-/**
- * A map of Plugin-provided HTML fragments keyed by slot name.
- *
- * The standard `article.*` names autocomplete while any custom slot name
- * remains valid, so custom Plugins keep working. A slot is considered empty
- * when its value is missing or whitespace-only.
- */
-export type ContentBodySlots = Partial<
-  Record<(typeof ARTICLE_SLOT)[keyof typeof ARTICLE_SLOT], string>
-> &
-  Readonly<Record<string, string | undefined>>;
-
 /** Client entries and their explicitly public configuration. */
 export type ContentManifestPluginClientEntry = PluginClientEntry;
 
@@ -83,36 +52,11 @@ export type ContentManifestEntry = {
    * The Site owns the shell, so it decides whether to render them.
    */
   headTags?: readonly PluginHeadTag[];
-  /**
-   * Plugin-provided HTML fragments the Site renders in named body slots.
-   * The Site owns its layout, so it decides where (and whether) each slot is
-   * rendered; a plugin only supplies the fragment, keyed by slot name.
-   */
-  bodySlots?: Readonly<Record<string, string>>;
   tags: string[];
   links: ContentLink[];
   backlinks: string[];
   assets: ContentAsset[];
 };
-
-/**
- * Appends a Plugin-provided HTML fragment to a named Site layout slot.
- *
- * Plugins publish fragments; the Site chooses which slots to render and where.
- * Appending preserves contributions from earlier plugins in resolved order.
- */
-export function appendContentBodySlot(
-  entry: ContentManifestEntry,
-  slot: ContentBodySlot,
-  html: string,
-): void {
-  if (!html.trim()) return;
-  const previous = entry.bodySlots?.[slot];
-  entry.bodySlots = {
-    ...entry.bodySlots,
-    [slot]: previous ? `${previous}\n${html}` : html,
-  };
-}
 
 export type ContentRedirect = {
   path: string;

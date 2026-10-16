@@ -18,10 +18,17 @@
       "source": "./client.ts",
       "default": "./dist/client.js"
     },
+    "./components": {
+      "types": "./dist/components/post-diff.d.ts",
+      "import": "./dist/components/post-diff.js",
+      "source": "./components/post-diff.tsx",
+      "default": "./dist/components/post-diff.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

@@ -1,9 +1,15 @@
 import type {
   ContentManifest,
+  PluginDataHelper,
+  PublicContentEntry,
+  PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { WebmentionMention } from "./mention.js";
-import type { WebmentionProvider } from "./provider.js";
+import {
+  supportsWebmentionCapability,
+  type WebmentionProvider,
+} from "./provider.js";
 import { entryPublicUrl, findTargetEntry } from "./targets.js";
 import { urlComparisonKey } from "./url.js";
 
@@ -12,13 +18,99 @@ import { urlComparisonKey } from "./url.js";
  * request/SSR time when they render mentions themselves instead of relying on
  * build-time injection.
  */
-export async function getWebmentionsForEntry(input: {
+type WebmentionSnapshotInput = {
+  readonly entry: PublicContentEntry;
+  readonly mentions: readonly WebmentionMention[];
+  readonly limit?: number;
+};
+
+type WebmentionQueryInput = {
   manifest: ContentManifest;
   config: ResolvedRiebeckiteConfig | undefined;
   provider: WebmentionProvider;
   slug: string;
   limit?: number;
-}): Promise<WebmentionMention[]> {
+};
+
+export type WebmentionSectionData = {
+  readonly mentions: readonly WebmentionMention[];
+  readonly heading: string;
+  readonly className: string;
+};
+
+export type WebmentionSectionDataInput = {
+  readonly view: PublicContentView;
+  readonly slug: string;
+  readonly config: ResolvedRiebeckiteConfig | undefined;
+  readonly provider: WebmentionProvider;
+  readonly heading?: string;
+  readonly className?: string;
+  readonly limit?: number;
+};
+
+export const getWebmentionSectionData: PluginDataHelper<
+  WebmentionSectionDataInput,
+  WebmentionSectionData
+> = async ({
+  view,
+  slug,
+  config,
+  provider,
+  heading = "Mentions",
+  className = "rr-webmention",
+  limit,
+}) => {
+  const entry = view.findRoutableBySlug(slug);
+  if (!entry || !supportsWebmentionCapability(provider, "query")) {
+    return { mentions: [], heading, className };
+  }
+
+  const target = entryPublicUrl(entry, config);
+  if (target === null) return { mentions: [], heading, className };
+
+  const result = await provider.query({
+    type: "mentions_for_target",
+    target,
+    limit,
+  });
+  return {
+    mentions: [...result.mentions].sort(compareMentions),
+    heading,
+    className,
+  };
+};
+
+export function getWebmentionsForEntry(
+  input: Readonly<WebmentionSnapshotInput>,
+): readonly WebmentionMention[];
+export function getWebmentionsForEntry(
+  input: Readonly<WebmentionQueryInput>,
+): Promise<WebmentionMention[]>;
+export function getWebmentionsForEntry(
+  input: Readonly<WebmentionSnapshotInput | WebmentionQueryInput>,
+): readonly WebmentionMention[] | Promise<WebmentionMention[]> {
+  if ("mentions" in input) {
+    return input.mentions
+      .filter((mention) =>
+        hasEntryTarget(mention.target, input.entry.permalink),
+      )
+      .toSorted(compareMentions)
+      .slice(0, input.limit);
+  }
+  return queryWebmentionsForEntry(input);
+}
+
+function hasEntryTarget(target: string, permalink: string): boolean {
+  try {
+    return new URL(target).pathname === permalink;
+  } catch {
+    return false;
+  }
+}
+
+export async function queryWebmentionsForEntry(
+  input: WebmentionQueryInput,
+): Promise<WebmentionMention[]> {
   const entry = input.manifest.bySlug.get(input.slug);
   if (!entry) return [];
   const target = entryPublicUrl(entry, input.config);

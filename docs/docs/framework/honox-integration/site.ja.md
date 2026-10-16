@@ -8,7 +8,7 @@ sidebar:
 
 Riebeckite Site は、最終的には通常の HonoX application です。
 
-`@riebeckite/honox` は content と build を接続しますが、実際にユーザーが見る UI の設計は Site が管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../../guides/customizing-your-site.ja.md) を参照してください。
+`@riebeckite/honox` は content と build を接しますが、実際にユーザーが見る UI の設計は Site が管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../../guides/customizing-your-site.ja.md) を参照してください。
 
 ```mermaid
 flowchart TD
@@ -20,12 +20,11 @@ flowchart TD
     C --> E["app/components/<br/>Site UI"]
     C --> F["app/islands/<br/>Interactive UI"]
     C --> G["app/style.css<br/>Visual Design"]
-
     A --> B
     B --> C
 ```
 
-主なディレクトリの責務は次のとおりです。
+### ディレクトリの責務
 
 | ディレクトリ | Site が持つ責務 |
 | --- | --- |
@@ -34,13 +33,7 @@ flowchart TD
 | `app/islands/` | 対話 UI と client-side state |
 | `app/style.css` | 色、layout、typography、extension style |
 
-## Site Shell
-
-```text
-app/routes/_renderer.tsx
-```
-
-は Site 全体の shell です。
+`app/routes/_renderer.tsx` は Site 全体の shell です。
 
 ここでは主に、
 
@@ -49,7 +42,7 @@ app/routes/_renderer.tsx
 - page chrome
 - application client entry
 
-などを管理します。
+を管理します。
 
 Route は `ContentManager` からコンテンツを取得し、
 
@@ -63,25 +56,7 @@ resolveRiebeckiteRoute(content, c.req.path)
 
 Riebeckite repository にある `apps/web` は実装例の1つであり、外部 Site が同じ layout を使う必要はありません。
 
-## Plugin と Site の境界
-
-Plugin は Site に情報や UI fragment を提供できます。
-
-ただし、**最終的にどこへ描画するかは Site が決定します。**
-
-```mermaid
-flowchart LR
-    A["Plugin"]
-    B["Manifest"]
-    C["Site Route"]
-    D["Site Shell / Component"]
-
-    A -->|"headTags / bodySlots / page"| B
-    B --> C
-    C -->|"placement"| D
-```
-
-### Head Tags
+## Head Tags
 
 Plugin が document head に情報を追加したい場合は、
 
@@ -165,7 +140,6 @@ Site が `<head>` 所有権を維持しつつ標準 head をFrameworkに任せ�
 
 ```tsx
 import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
-
 export default jsxRenderer(({ children }, c) => (
   <ThemeRoot
     theme={config.theme}
@@ -180,153 +154,89 @@ export default jsxRenderer(({ children }, c) => (
     </head>
     <body class="riebeckite-page rb-site">{children}</body>
   </ThemeRoot>
-);
+));
 ```
 
 Frameworkは標準 head rendering メカニクス（charset、viewport、default title、favicon wiring、color-mode bootstrap、stylesheet/client entry wiring、PluginHeadTag 変換）と theme-root attribute 導出を担当し、Site は `<head>`/`<body>` 構成とカスタム meta/link/script の所有権を保持します。favicon FILE (`/public/favicon.ico`) は Site-owned のまま、default link wiring にのみ Framework が所有権を持ちます。
 
 Plugin が head tags を提供する場合は、既存の `headTags` メカニズムはそのまま機能します。`RiebeckiteHead` と `headTags` は併用可能です。
 
-### Body Slots
+## Plugin UI 組み立て
 
-本文の途中へ Plugin の HTML を表示したい場合は、
+Plugin は `headTags` を貢献し、データヘルパーと JSX コンポーネントを公開します。Site は自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を決めます。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component はサイトの記事レイアウトやページテンプレートで直接描画されます。
+
+`ContentManifestEntry` に `bodySlots` フィールドはありません。代わりに、Plugin UI は明示的に composition されます：
+
+```tsx
+const view = createPublicContentView(manifest);
+const entry = view.findRoutableBySlug(slug);
+const backlinks = await getBacklinks({ view, slug });
+<Backlinks items={backlinks} />
+```
+
+と
+
+```tsx
+const data = await getProperties({ view, frontmatter: entry.frontmatter });
+<Properties data={data} />
+```
+
+Site はレイアウトの配置を決定します — 累積された `bodySlots` map も `ContentSlot` プリミティブもありません。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
+
+以前、 "Body Slots" セクションは廃止された slot システムを文書化していました。このシステムは Phase 4 で完全に削除されました。すべての UI は現在、Site TSX で plugin データヘルパーと component を使用して明示的に composition されます。
+
+## SiteConfig 構造
+
+`packages/core/src/types/site_config.ts` から全 `SiteConfig` インターフェースはサイトのメタデータを定義します：
+
+| フィールド | タイプ | 説明 |
+| --- | --- | --- |
+| `title` | `string` | `<title>` と見出しで使用されます |
+| `description` | `string \| undefined` | site description meta tag |
+| `author` | `string \| undefined` | メタデータの著者名 |
+| `baseUrl` | `string \| undefined` | サイトの基本URL（例：`https://example.com`） |
+| `locale` | `string \| undefined` | ロケールコード（例：`en`、`ja`） |
+| `twitterSite` | `string \| undefined` | Twitter `@` ハンドル カード帰属 |
+| `defaultOgImage` | `string \| undefined` | ページごとの image が提供されない場合の `og:image` のデフォルト値 |
+| `feed` | `feed \| undefined` | RSS/Atom フィードの設定（title、description、language） |
+
+各フィールドは以下のように使用されます：
+- **title**: 文書 `<title>` とページ見出しでレンダリングされます
+- **description**: `<meta name="description">` タグとして追加されます
+- **author**: 著者メタデータと schema.org マークアップに追加されます
+- **baseUrl**: 正規URLとsitemapの生成に使用されます
+- **locale**: `<html>` の `lang` 属性を設定し、フォーマットに影響を与えます
+- **twitterSite**: Twitter card メタデータに追加されます
+- **defaultOgImage**: ページごとの image が提供されない場合の `og:image` のデフォルト値として使用されます
+- **feed**: サイトの RSS/Atom フィードを生成するために使用されます
 
 ```ts
-ContentManifestEntry.bodySlots
-```
-
-を使用します。
-
-Plugin は slot 名と HTML fragment を提供します。
-
-たとえば、
-
-```text
-properties
-```
-
-という slot があれば、Route は slot object を article component へ渡し、Site は、
-
-```tsx
-<Article
-  content={post}
-  bodySlots={route.entry.bodySlots}
-/>
-```
-
-のように article component 内の任意の位置へ配置できます。
-
-ここでの `Article` は Site 自身の article component であり、同名の `@riebeckite/honox/ui` primitive ではありません。scaffold の starter は標準 slot を決まった位置へ描画します(`article.aside`、`article.header`、`article.metadata`、`article.before-content`、`article.after-content`、`article.footer`)。plugin 作者はこれらから選ぶか、Site に独自名の描画を依頼します。独自 slot は Site が描画を選ぶまで何も表示しません。
-
-Site はどの slot をどこへ置くかを選び、描画の仕組みは公開 `ContentSlot` primitive に任せます。
-
-```tsx
-<ArticleContent>
-  <ContentSlot slots={bodySlots} name="article.header" />
-  <ContentSlot
-    slots={bodySlots}
-    name="article.metadata"
-    class="site-article__metadata"
-  />
-  <ArticleBody html={post.html ?? ""} />
-</ArticleContent>
-```
-
-`ContentSlot` は slot lookup、存在しない slot や空 slot の扱い、HTML fragment の描画、`data-slot` の付与を担当します。Site が `dangerouslySetInnerHTML` を直接書く必要はありません。順序、可視性、Site 固有 class、独自 slot 名は引き続き Site が所有します。`slots` を直接読んだり、任意の wrapper で包んだり、同じ slot を複数回描画する escape hatch も残っています。
-
-Plugin が route や shell の構造を書き換える必要はありません。
-
-`@riebeckite/plugin-properties` では、
-
-```ts
-render: "slot"
-```
-
-を指定すると `properties` slot を提供します。
-
-`render: "html"` は従来どおり、生成 HTML の先頭または末尾へ直接挿入します。
-
-記事末尾の Plugin section は `article.footer` に集約します。article component ではこの slot を一度だけ描画し、fragment の順序は解決済み Plugin の `order` で決めます。空の contribution は DOM node を生成しません。
-
-## 独自 Site を作る
-
-外部 Site でも、公開 primitive を使いながら自由に component を構成できます。
-
-```tsx
-import type { ContentBodySlots, PostContent } from "@riebeckite/core";
-import {
-  Article,
-  ArticleBody,
-  ArticleContent,
-  ArticleLayout,
-  ContentSlot,
-} from "@riebeckite/honox/ui";
-
-export function SiteArticle({
-  post,
-  bodySlots,
-}: {
-  post: PostContent;
-  bodySlots?: ContentBodySlots;
-}) {
-  return (
-    <Article class="site-article">
-      <ArticleLayout>
-        <ArticleContent>
-          <ContentSlot slots={bodySlots} name="article.header" />
-          <ArticleBody html={post.html ?? ""} />
-          <ContentSlot slots={bodySlots} name="article.footer" />
-        </ArticleContent>
-      </ArticleLayout>
-    </Article>
-  );
+export interface SiteConfig {
+  title: string;
+  description?: string;
+  author?: string;
+  baseUrl?: string;
+  locale?: string;
+  twitterSite?: string;
+  defaultOgImage?: string;
+  feed?: {
+    title?: string;
+    description?: string;
+    language?: string;
+  };
 }
 ```
 
-見た目は Site の CSS で定義します。
+## フィールドのサイト全体での使用
 
-```css
-@import "./.riebeckite/framework-styles.css";
-@import "./.riebeckite/plugin-styles.css";
-@import "./.riebeckite/theme-styles.css";
+上記のフィールドは、`@riebeckite/honox` integration (`packages/core/src/`) を通じて最終的な公開 UI を組み立てるために流れます。`title` と `description` は `<head>` に表示され、`author` と `twitterSite` はソーシャルメタデータに、`baseUrl` は URL 生成に、`locale` は `lang` 属性に影響を与えます。
 
-.site-article {
-  max-width: 48rem;
-  margin: 0 auto;
-}
-```
+## 関連用語
 
-`.riebeckite` 内の生成 CSS 自体を直接編集しないでください。
-
-### Islands
-
-Island も通常の Site module として管理します。
-
-```text
-app/islands/
-```
-
-へ HonoX island を配置し、それを利用する route または component から import します。
-
-hydration や client-side state は Site 内で管理します。
-
-`app/client.ts` では、
-
-```ts
-createClient();
-initRiebeckiteClient();
-```
-
-の両方を初期化します。
-
-`initRiebeckiteClient()` は、インストールされている Plugin や Theme が提供する browser entry を起動するために使用されます。
-
-Plugin は client entry を提供できますが、
-
-- Site route
-- shell
-- component
-- island
-- CSS design
-
-そのものを所有してはいけません。
+- [[glossary/obsidian-vault|Obsidian Vault]]
+- [[tag|Tag]]
+- [[shortcode|Shortcode]]
+- [[callout|Callout]]
+- [[sidenote|Sidenote]]
+- [[backlink|Backlink]]
+- [[glossary/ui|UI]]

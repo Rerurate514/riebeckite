@@ -42,6 +42,10 @@ export const PACKAGES: PackageSpec[] = [
     directory: "packages/plugins/backlinks",
     name: "@riebeckite/plugin-backlinks",
   },
+  {
+    directory: "packages/plugins/breadcrumbs",
+    name: "@riebeckite/plugin-breadcrumbs",
+  },
   { directory: "packages/plugins/bases", name: "@riebeckite/plugin-bases" },
   {
     directory: "packages/plugins/canvas",

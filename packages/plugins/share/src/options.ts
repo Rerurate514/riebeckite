@@ -4,7 +4,6 @@ import {
   type ResolvedShareOptions,
   SHARE_SERVICES,
   type ShareOptions,
-  type SharePlacement,
   type ShareService,
 } from "./types.js";
 
@@ -28,7 +27,6 @@ export const DEFAULT_SHARE_LABELS: Readonly<Record<ShareService, string>> = {
   copy: "Copy link",
 };
 
-export const DEFAULT_SHARE_PLACEMENT: SharePlacement = "bottom";
 export const DEFAULT_SHARE_ARIA_LABEL = "Share";
 export const DEFAULT_SHARE_COPIED_LABEL = "Copied";
 export const DEFAULT_SHARE_COPY_FAILED_LABEL = "Copy failed";
@@ -42,7 +40,6 @@ export function resolveShareOptions(
 ): ResolvedShareOptions {
   return {
     services: normalizeServices(options.services),
-    placement: options.placement === "top" ? "top" : DEFAULT_SHARE_PLACEMENT,
     mastodonInstance: normalizeMastodonInstance(options.mastodonInstance),
     className: normalizeNonEmpty(options.className, ""),
     ariaLabel: normalizeNonEmpty(options.ariaLabel, DEFAULT_SHARE_ARIA_LABEL),
@@ -101,17 +98,6 @@ export function validateShareOptions(
     issues.push({
       path: "mastodonInstance",
       message: "Expected a non-empty string.",
-    });
-  }
-
-  if (
-    options.placement !== undefined &&
-    options.placement !== "top" &&
-    options.placement !== "bottom"
-  ) {
-    issues.push({
-      path: "placement",
-      message: 'Expected "top" or "bottom".',
     });
   }
 

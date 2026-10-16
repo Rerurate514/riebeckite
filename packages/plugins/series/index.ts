@@ -1,5 +1,4 @@
 import {
-  appendContentBodySlot,
   type ConfigValidationIssue,
   type ContentManifest,
   createStyleAsset,
@@ -10,7 +9,6 @@ import {
   collectSeriesIndexes,
   renderSeriesIndex,
   renderSeriesList,
-  renderSeriesNavigation,
   resolveSeriesOptions,
   seriesLandingPath,
 } from "./src/series.js";
@@ -20,10 +18,13 @@ import type {
   SeriesOptions,
 } from "./src/types.js";
 
+export type { SeriesNavigationProps } from "./components/series-navigation.js";
+export { default as SeriesNavigation } from "./components/series-navigation.js";
 export {
   buildSeriesIndex,
   collectSeriesIndexes,
   DEFAULT_SERIES_BASE_PATH,
+  getSeriesNavigation,
   renderSeriesIndex,
   renderSeriesList,
   renderSeriesNavigation,
@@ -101,28 +102,6 @@ export function series(options: SeriesOptions = {}) {
     validateOptions: validateSeriesOptions,
     onManifestCreated: ({ manifest, diagnostics }) => {
       diagnostics.push(...collectSeriesDiagnostics(manifest, options));
-
-      const view = modelFor(manifest).view;
-      const injected = new Set<string>();
-      for (const index of collectSeriesIndexes(view, options)) {
-        if (index.members.length < 2) continue;
-        for (const member of index.members) {
-          if (injected.has(member.slug)) continue;
-          const entry = view.bySlug.get(member.slug);
-          if (!entry) continue;
-          injected.add(member.slug);
-          const navigation = renderSeriesNavigation(
-            index,
-            member.slug,
-            options,
-          );
-          if (
-            !hasSlotFragment(entry.bodySlots?.["article.footer"], navigation)
-          ) {
-            appendContentBodySlot(entry, "article.footer", navigation);
-          }
-        }
-      }
     },
     pageTypes: [
       {
@@ -169,16 +148,6 @@ export function series(options: SeriesOptions = {}) {
 }
 
 export const seriesPlugin = series;
-
-function hasSlotFragment(slot: string | undefined, fragment: string): boolean {
-  return (
-    slot === fragment ||
-    slot?.startsWith(`${fragment}\n`) ||
-    slot?.endsWith(`\n${fragment}`) ||
-    slot?.includes(`\n${fragment}\n`) ||
-    false
-  );
-}
 
 function validateSeriesOptions(
   options: SeriesOptions | undefined,

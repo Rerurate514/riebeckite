@@ -1,14 +1,15 @@
+import type { PluginComponent } from "@riebeckite/core";
 import type {
   RelatedPostsEntry,
   ResolvedRelatedPostsOptions,
 } from "../src/types.js";
 
-type Props = {
+export type RelatedPostsProps = {
   entries: readonly RelatedPostsEntry[];
   options: ResolvedRelatedPostsOptions;
 };
 
-export default function RelatedPosts(props: Props) {
+const RelatedPosts = ((props: Readonly<RelatedPostsProps>) => {
   if (props.entries.length === 0) return null;
 
   const { className, heading, headingText } = props.options;
@@ -31,4 +32,6 @@ export default function RelatedPosts(props: Props) {
       </ul>
     </nav>
   );
-}
+}) satisfies PluginComponent<RelatedPostsProps>;
+
+export default RelatedPosts;

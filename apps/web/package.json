@@ -35,6 +35,7 @@
     "@riebeckite/plugin-diagnostics": "workspace:*",
     "@riebeckite/plugin-diff": "workspace:*",
     "@riebeckite/plugin-discord-embed": "workspace:*",
+    "@riebeckite/plugin-docs": "workspace:*",
     "@riebeckite/plugin-excalibrain": "workspace:*",
     "@riebeckite/plugin-excalidraw": "workspace:*",
     "@riebeckite/plugin-flashcards": "workspace:*",

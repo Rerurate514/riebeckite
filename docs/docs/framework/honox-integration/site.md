@@ -4,7 +4,6 @@ sidebar:
   label: Site application contract
   order: 20
 ---
-
 # Site application contract
 
 A Riebeckite site is a normal HonoX application. The integration supplies
@@ -23,7 +22,6 @@ flowchart TD
     C --> E["app/components/<br/>Site UI"]
     C --> F["app/islands/<br/>Interactive UI"]
     C --> G["app/style.css<br/>Visual design"]
-
     A --> B
     B --> C
 ```
@@ -54,7 +52,7 @@ flowchart LR
     C["Site route"]
     D["Site shell / component"]
 
-    A -->|"headTags / bodySlots / page"| B
+    A -->|"headTags"| B
     B --> C
     C -->|"placement"| D
 ```
@@ -95,7 +93,7 @@ renders into <head>
 For example, `@riebeckite/plugin-discord-embed`, which aligns the Discord embed
 color, supplies `theme-color` through this contract.
 
-## RiebeckiteHead and PluginHeadTags
+### `RiebeckiteHead` and `PluginHeadTags`
 
 `@riebeckite/honox/ui` provides two primitives that clarify the separation of
 responsibilities between the framework and the site for head composition.
@@ -138,7 +136,6 @@ For example, a site that keeps `<head>` ownership and uses `RiebeckiteHead`:
 
 ```tsx
 import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
-
 export default jsxRenderer(({ children }, c) => (
   <ThemeRoot
     theme={config.theme}
@@ -160,148 +157,82 @@ The framework owns the standard head rendering mechanics (charset, viewport, def
 
 Plugin-provided head tags continue to work through the existing `headTags` mechanism. `RiebeckiteHead` and `headTags` can be used together.
 
-## Body slot handoff
+## Plugin UI composition
 
-When a plugin contributes HTML that belongs inside the note body, the site still
-owns where it is rendered. A plugin only writes an HTML fragment into
-`ContentManifestEntry.bodySlots` under a slot name; it never changes a route,
-the shell, or the render order. A site route passes the slot object to its
-article component, which decides whether and where to render each slot.
+Plugins contribute `headTags` and expose data helpers + JSX components. The Site composes these components in its own TSX, choosing whether, where, and how often to render each one. Each plugin's data helper receives a `PublicContentView` (or similar filtered facade) and returns a typed model; the component is then rendered directly by the site's article layout or page template.
+
+There is no `bodySlots` field on `ContentManifestEntry`; instead, plugin UI is composed explicitly:
 
 ```tsx
-// app/routes/[slug{.+}].tsx
-<Article
-  content={post}
-  bodySlots={route.entry.bodySlots}
-/>;
+const view = createPublicContentView(manifest);
+const entry = view.findRoutableBySlug(slug);
+const backlinks = await getBacklinks({ view, slug });
+<Backlinks items={backlinks} />
 ```
 
-The `Article` here is the site's own article component, not the
-`@riebeckite/honox/ui` primitive of the same name. The scaffolded starter
-renders the standard slots at fixed positions: `article.aside`,
-`article.header`, `article.metadata`, `article.before-content`,
-`article.after-content`, and `article.footer`. A plugin author picks one of
-those, or asks the site to render a custom name; a custom slot renders nothing
-until the site chooses to render it.
-
-The site chooses which slot goes where and delegates the rendering mechanics to
-the public `ContentSlot` primitive.
+and
 
 ```tsx
-<ArticleContent>
-  <ContentSlot slots={bodySlots} name="article.header" />
-  <ContentSlot
-    slots={bodySlots}
-    name="article.metadata"
-    class="site-article__metadata"
-  />
-  <ArticleBody html={post.html ?? ""} />
-</ArticleContent>
+const data = await getProperties({ view, frontmatter: entry.frontmatter });
+<Properties data={data} />
 ```
 
-`ContentSlot` owns the slot lookup, missing and empty handling, HTML fragment
-rendering, and the `data-slot` attribute, so the site never writes
-`dangerouslySetInnerHTML` for a standard slot. Order, visibility, site classes,
-and custom slot names still belong to the site. The escape hatches remain:
-read `slots` directly, wrap a slot in any element, and render the same slot more
-than once.
+The Site decides layout placement — there is no accumulated `bodySlots` map or `ContentSlot` primitive. Plugin components may also export optional CSS and client entries, registered through the integration.
 
-For example, `@riebeckite/plugin-properties` publishes its property panel on
-the `properties` slot when configured with `render: "slot"`. The default
-`render: "html"` keeps inserting the panel at the start or end of the note HTML.
-A plugin never owns routes or the shell.
+Previously, the "Body slot handoff" section documented the now-removed slot system. That system has been completely removed in Phase 4; all UI is now composed explicitly in Site TSX using plugin data helpers and components.
 
-Article-end plugin sections share `article.footer`. Render that slot once in
-the article component; the resolved plugin `order` determines the fragment
-sequence, and an empty contribution does not create a DOM node.
+## SiteConfig Structure
 
-For example, an external site can compose an article with the stable primitive
-contract while retaining all presentation ownership:
+The full `SiteConfig` interface from `packages/core/src/types/site_config.ts` defines the site metadata:
 
-```tsx
-// app/components/article.tsx
-import type { ContentBodySlots, PostContent } from "@riebeckite/core";
-import {
-  Article,
-  ArticleBody,
-  ArticleContent,
-  ArticleLayout,
-  ContentSlot,
-} from "@riebeckite/honox/ui";
+| Field | Type | Description |
+| --- | --- | --- |
+| `title` | `string` | Site title, used in `<title>` and headers |
+| `description` | `string \| undefined` | Site description meta tag |
+| `author` | `string \| undefined` | Author name, used in metadata |
+| `baseUrl` | `string \| undefined` | Base URL for the site (e.g., `https://example.com`) |
+| `locale` | `string \| undefined` | Locale code (e.g., `en`, `ja`) |
+| `twitterSite` | `string \| undefined` | Twitter `@` handle for card attribution |
+| `defaultOgImage` | `string \| undefined` | Default Open Graph image URL |
+| `feed` | `feed \| undefined` | RSS/Atom feed configuration (title, description, language) |
 
-export function SiteArticle({
-  post,
-  bodySlots,
-}: {
-  post: PostContent;
-  bodySlots?: ContentBodySlots;
-}) {
-  return (
-    <Article class="site-article">
-      <ArticleLayout>
-        <ArticleContent>
-          <ContentSlot slots={bodySlots} name="article.header" />
-          <ArticleBody html={post.html ?? ""} />
-          <ContentSlot slots={bodySlots} name="article.footer" />
-        </ArticleContent>
-      </ArticleLayout>
-    </Article>
-  );
+Each field is used as follows:
+- **title**: Rendered in the document `<title>` and page headers
+- **description**: Added as a `<meta name="description">` tag
+- **author**: Added to author metadata and schema.org markup
+- **baseUrl**: Used for generating canonical URLs and sitemap
+- **locale**: Sets the `lang` attribute on `<html>` and affects formatting
+- **twitterSite**: Added to Twitter card metadata
+- **defaultOgImage**: Used as the default `og:image` when no per-page image is provided
+- **feed**: Used to generate the site's RSS/Atom feed
+
+```ts
+export interface SiteConfig {
+  title: string;
+  description?: string;
+  author?: string;
+  baseUrl?: string;
+  locale?: string;
+  twitterSite?: string;
+  defaultOgImage?: string;
+  feed?: {
+    title?: string;
+    description?: string;
+    language?: string;
+  };
 }
 ```
 
-Import generated extension styles from the site's stylesheet, but never edit
-the generated files themselves:
+## Field Usage Across the Site
 
-```css
-/* app/style.css */
-@import "./.riebeckite/framework-styles.css";
-@import "./.riebeckite/plugin-styles.css";
-@import "./.riebeckite/theme-styles.css";
+The fields above flow through the `@riebeckite/honox` integration (`packages/core/src/`) to compose the final public UI. The `title` and `description` appear in `<head>`, `author` and `twitterSite` in social metadata, `baseUrl` in URL generation, and `locale` in the `lang` attribute.
 
-.site-article { max-width: 48rem; margin: 0 auto; }
-```
+## Related terms
 
-Islands are also ordinary application modules. Place a HonoX island under
-`app/islands/`, import it from the route or component that owns it, and keep
-its hydration and client state local to the site. `app/client.ts` must continue
-to initialize both `createClient()` and `initRiebeckiteClient()`; the latter
-starts browser entries contributed by installed plugins and themes. A plugin
-may contribute its own client entry, but it must not take ownership of a
-site's routes, shell, components, islands, or CSS decisions.
-
-The external-site E2E fixture contains this minimal arrangement: a site shell,
-a local article component built from `@riebeckite/honox/ui`, a local island,
-and site CSS. It is built from packed npm artifacts, so it is the supported
-example for copying and overriding these boundaries.
-### Not-found and error surface
-
-Not-found handling is HonoX's standard `app/routes/_404.tsx`. Riebeckite decides
-that a request is not found; HonoX re-renders that response through the site's
-`_renderer.tsx`, so the status stays `404` while the not-found screen belongs to
-the site.
-
-```tsx
-// app/routes/_404.tsx
-import type { NotFoundHandler } from "hono";
-
-const handler: NotFoundHandler = (c) => {
-  c.status(404);
-  return c.render(<div class="not-found">Page not found</div>);
-};
-
-export default handler;
-```
-
-The route resolver (`resolveRiebeckiteContentRequest`,
-`resolveRiebeckiteHomeRequest`, and plugin page resolution) and the extension
-guard that keeps asset-like paths out of the content route stay in
-`@riebeckite/honox`; the site never reimplements them. Only public, routable
-content resolves, so a not-found response never carries draft, future-dated, or
-private metadata.
-
-Runtime errors use Hono's own error handling. Without an `app/routes/_error.tsx`
-the default handler logs the error and returns a plain `500 Internal Server
-Error`; a site may add `_error.tsx` (an `ErrorHandler`) when it wants a
-visitor-facing screen. Configuration, plugin, and build failures are
-developer-facing and must not be turned into a successful page.
+- [[glossary/obsidian-vault|Obsidian Vault]]
+- [[tag|Tag]]
+- [[shortcode|Shortcode]]
+- [[callout|Callout]]
+- [[sidenote|Sidenote]]
+- [[backlink|Backlink]]
+- [[glossary/ui|UI]]

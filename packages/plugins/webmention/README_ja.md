@@ -40,7 +40,7 @@ export default {
 ```
 
 provider を省略するとインメモリ provider が使われます。ローカルプレビューには
-十分ですが、プロセスをまたぐとメンションは失われます。本番では永続 adapter
+十分ですが、プロセスをまたぐとメンションは失われます。本産では永続 adapter
 （[`@riebeckite/webmention-cloudflare`](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md) を参照）
 を指定してください。
 
@@ -56,11 +56,26 @@ provider を省略するとインメモリ provider が使われます。ロー�
 
 ## 表示
 
-`onManifestCreated` で provider を一度 query し、検証済みメンションをターゲット別にグループ化して、対応する entry へ実際の表示セクションを追記します。Core はこれをコンテンツルートの描画内容と同期します。
+Site が JSX の配置を所有します。Provider のインスタンスは Site の composition で保持し、
+同じインスタンスを `webmention()` へ渡してから、`getWebmentionSectionData` で
+コンポーネントの型付き props を取得します。helper は `PublicContentView` を受け取るため、
+draft と scheduled の entry は描画できません。
 
-`render: false` でビルド時の追記を無効化できます。リクエスト時に描画する
-アプリケーションは `getWebmentionsForEntry({ manifest, config, provider, slug })` と
-`renderWebmentionSection(mentions, options)` を直接呼ぶか、JSON フィードを利用します。
+```tsx
+const mentions = await getWebmentionSectionData({
+  view,
+  slug,
+  config,
+  provider: webmentionProvider,
+});
+
+<WebmentionSection {...mentions} />
+```
+
+空の Provider は空の model を返し、`WebmentionSection` は何も描画しません。Plugin は
+ビルド時に manifest HTML を注入しません。より低レベルな query が必要な場合は、
+`getWebmentionsForEntry({ manifest, config, provider, slug })` を直接呼ぶか、JSON フィードを
+利用できます。
 
 ## オプション
 
@@ -68,7 +83,6 @@ provider を省略するとインメモリ provider が使われます。ロー�
 | ---------- | ------ | ---- |
 | `provider` | インメモリ | `WebmentionProvider` を実装するストレージ adapter。 |
 | `endpoint` | `"/webmentions"` | 受信（POST）とフィード（GET）のパス。 |
-| `render` | `true` | manifest 生成時に対応 entry へメンションを追記します。 |
 | `headingText` | `"Mentions"` | 表示セクションの見出し。 |
 | `limit` | `20` | 記事ごとに表示する最大メンション数。 |
 | `className` | `"rr-webmention"` | 表示セクションのルート CSS クラス。 |
@@ -96,7 +110,8 @@ manifest 生成時、公開 entry に一致しないターゲットのメンシ�
 - `MemoryWebmentionProvider`、provider / capability の型とエラー
 - `parseWebmentionSource`、`findTargetLink`、`verifyWebmention`、
   `createWebmentionSourceFetcher`
-- `renderWebmentionSection`、`getWebmentionsForEntry`、`groupMentionsBySlug`、
+- `WebmentionSection`、`getWebmentionSectionData`、`getWebmentionsForEntry`、
+  `groupMentionsBySlug`、
   `buildFeed`
 - `resolveWebmentionOptions`、`validateWebmentionOptions`
 

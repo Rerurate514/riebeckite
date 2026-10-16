@@ -15,13 +15,12 @@ commits. No client-side JavaScript is required.
 `git` access as [`@riebeckite/plugin-diff`](../diff/README.md) (`execFile` with
 graceful failure). It never invents its own filesystem layer.
 
-Results are published through the manifest `bodySlots` mechanism. Each public
-entry receives its own history in the `article.after-content` slot. The site's
-layout decides whether and where to render that slot, so the plugin stays
-inside the Plugin boundary and does not create application routes. When
-`siteWide` is enabled, the site-wide changelog is written to the slot of the
-note named by `siteWideSlug`; that note (the route) is owned by the app or the
-author, not by this plugin. No client script is registered.
+Results are published through the plugin's built-in HTML renderers. Each public
+entry receives its own change history section, and the site's layout decides
+whether and where to render it. When `siteWide` is enabled, the site-wide
+changelog dataset is built and available for the app to render itself. The
+plugin contributes no markup to the manifest entry; the Site renders the
+changelog sections it wants. No client script is registered.
 
 ## Usage
 
@@ -63,17 +62,18 @@ export default defineConfig({
 
 ## Display
 
-The plugin appends each note's change history to the `article.after-content` slot. When enabled, it is rendered after the article on eligible pages.
+Each note's change history section is published as build-time HTML. When
+`perNote` is enabled, it appears after the article on eligible pages. The
+site-wide changelog dataset is built and available for the app to render
+itself via the exported renderers.
 
 `data-changelog-note` and `data-changelog-site` mark the two fragments for
 styling and idempotency checks.
 
 ## App wiring (site-wide changelog)
 
-The site-wide list is data, not a page. The app owns the route; the plugin
-either fills the `article.after-content` slot of an existing note
-(`siteWide: true` + `siteWideSlug`, which requires a public note at that slug)
-or exposes the dataset for the app to render itself:
+The site-wide list is data, not a page. The app owns the route. The plugin
+exposes the dataset for the app to render itself via the exported renderers:
 
 ```ts
 import {
@@ -95,10 +95,6 @@ const dataset = buildSiteChangelog({
 });
 const html = renderSiteChangelog(dataset, options);
 ```
-
-The reference app renders manifest `bodySlots` in
-`apps/web/app/components/article/article.tsx`; a dedicated route can render the
-exported HTML directly.
 
 ## Failure behavior
 

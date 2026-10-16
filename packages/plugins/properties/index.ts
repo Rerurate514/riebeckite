@@ -1,5 +1,4 @@
 import {
-  appendContentBodySlot,
   type ContentManifest,
   createStyleAsset,
   type Diagnostic,
@@ -20,6 +19,14 @@ import type {
   PropertiesMessage,
   PropertiesOptions,
 } from "./src/types.js";
+
+export type { PropertiesProps } from "./components/properties.js";
+export { default as Properties } from "./components/properties.js";
+export type {
+  PropertiesData,
+  PropertiesValuePart,
+} from "./src/component-data.js";
+export { getProperties } from "./src/component-data.js";
 
 export type {
   PropertiesLinkResolver,
@@ -43,9 +50,9 @@ const PLUGIN_NAME = "properties";
 const PACKAGE_NAME = "@riebeckite/plugin-properties";
 
 /**
- * Renders each note's frontmatter as an Obsidian-style property panel at build
- * time and contributes it to the article metadata slot. The Site decides where
- * that semantic slot appears in its layout.
+ * Reports frontmatter values that cannot be rendered as structured HTML. The
+ * panel itself is rendered by the Site from `getProperties()`; this manifest
+ * hook only emits build-time warnings.
  */
 export function properties(options: PropertiesOptions = {}) {
   const resolved = resolvePropertiesOptions(options);
@@ -61,14 +68,14 @@ export function properties(options: PropertiesOptions = {}) {
     validateOptions: validatePropertiesOptions,
     assets: [createStyleAsset(PLUGIN_NAME)],
     onManifestCreated: (context) => {
-      applyPropertiesPanels(context, resolved);
+      reportUnrenderableValues(context, resolved);
     },
   });
 }
 
 export const propertiesPlugin = properties;
 
-function applyPropertiesPanels(
+function reportUnrenderableValues(
   context: PluginManifestContext,
   resolved: ReturnType<typeof resolvePropertiesOptions>,
 ): void {
@@ -76,26 +83,11 @@ function applyPropertiesPanels(
   const resolveLink = createLinkResolver(manifest);
 
   for (const entry of manifest.entries) {
-    const panel = renderPropertiesPanel(entry.frontmatter, resolved, {
+    renderPropertiesPanel(entry.frontmatter, resolved, {
       resolveLink,
       onMessage: (message) => emitFileMessage(diagnostics, entry.slug, message),
     });
-    if (!panel) continue;
-
-    if (!hasSlotPanel(entry.bodySlots?.["article.metadata"], panel)) {
-      appendContentBodySlot(entry, "article.metadata", panel);
-    }
   }
-}
-
-function hasSlotPanel(slot: string | undefined, panel: string): boolean {
-  return (
-    slot === panel ||
-    slot?.startsWith(`${panel}\n`) ||
-    slot?.endsWith(`\n${panel}`) ||
-    slot?.includes(`\n${panel}\n`) ||
-    false
-  );
 }
 
 function createLinkResolver(manifest: ContentManifest): PropertiesLinkResolver {

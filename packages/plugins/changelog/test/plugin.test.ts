@@ -5,15 +5,25 @@ import {
   type ContentSource,
   resolveConfig,
 } from "@riebeckite/core";
-import { changelog } from "../index.ts";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import {
+  buildNoteChangeHistory,
+  buildSiteChangelog,
+  Changelog,
+  changelog,
+  GitChangelogReader,
+  renderSiteChangelog,
+  resolveChangelogOptions,
+} from "../index.ts";
 import {
   createTestRepository,
   gitAvailable,
 } from "./support/git_repository.ts";
 
-const options = { skip: !gitAvailable };
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
-const NOTE_SLOT = "article.after-content";
+const options = { skip: !gitAvailable };
 
 function memorySource(files: Record<string, string>): ContentSource {
   return {
@@ -66,12 +76,28 @@ test(
       const entry = manifest.publicEntries.find(
         (candidate) => candidate.slug === "hello",
       );
-      const slot = entry?.bodySlots?.[NOTE_SLOT];
 
-      assert.ok(slot, "expected a change history section on the note");
-      assert.ok(slot.includes("data-changelog-note"));
-      assert.ok(slot.includes("extend hello"));
-      assert.ok(slot.includes("add hello"));
+      // Use GitChangelogReader configured with the content directory (not process.cwd())
+      const reader = new GitChangelogReader({ cwd: repository.contentRoot });
+      const commits = await reader.getFileHistory("hello.md");
+
+      const history = buildNoteChangeHistory(
+        entry!,
+        commits,
+        resolveChangelogOptions(),
+      );
+
+      const component = renderToString(Changelog({ history }));
+
+      assert.ok(
+        component.includes("data-changelog-note"),
+        "expected data-changelog-note attribute",
+      );
+      assert.ok(
+        component.includes("extend hello"),
+        "expected extend hello link",
+      );
+      assert.ok(component.includes("add hello"), "expected add hello link");
     } finally {
       repository.dispose();
     }
@@ -106,18 +132,31 @@ test(
         }),
       }).getManifest();
 
-      const target = manifest.publicEntries.find(
-        (candidate) => candidate.slug === "changelog",
+      // Build the site-wide changelog from the configured content directory
+      const allCommits = await new GitChangelogReader({
+        cwd: repository.contentRoot,
+      }).getRecentCommits();
+      const siteChangelog = buildSiteChangelog({
+        entries: manifest.publicEntries,
+        commits: allCommits,
+        contentIndex: manifest.contentIndex,
+        options: resolveChangelogOptions({
+          siteWide: true,
+          siteWideSlug: "changelog",
+        }),
+      });
+      const html = renderSiteChangelog(
+        siteChangelog,
+        resolveChangelogOptions({ siteWide: true, siteWideSlug: "changelog" }),
       );
-      const slot = target?.bodySlots?.[NOTE_SLOT];
 
-      assert.ok(slot, "expected a site-wide changelog section");
-      assert.ok(slot.includes("data-changelog-site"));
-      assert.ok(slot.includes("extend hello"));
-      // The commit's changed paths are translated back to content-relative
-      // paths, which is what lets them be matched against the content index.
-      assert.ok(slot.includes("rr-changelog__note-link"));
-      assert.ok(slot.includes(">Hello<"));
+      assert.ok(
+        html.includes("data-changelog-site"),
+        "expected data-changelog-site attribute",
+      );
+      assert.ok(html.includes("extend hello"), "expected extend hello link");
+      assert.ok(html.includes("rr-changelog__note-link"), "expected note link");
+      assert.ok(html.includes(">Hello<"), "expected Hello title");
     } finally {
       repository.dispose();
     }

@@ -11,9 +11,6 @@ export const SHARE_SERVICES = [
 
 export type ShareService = (typeof SHARE_SERVICES)[number];
 
-/** Where the controls sit relative to the note body. */
-export type SharePlacement = "top" | "bottom";
-
 /** Options accepted by `share()`. */
 export type ShareOptions = {
   /**
@@ -22,8 +19,6 @@ export type ShareOptions = {
    * to enable it.
    */
   services?: readonly ShareService[];
-  /** Where the controls appear. Defaults to `"bottom"`. */
-  placement?: SharePlacement;
   /**
    * Instance host used by the `mastodon` service, for example
    * `"mastodon.social"`. Accepts a bare host or a full URL; the scheme and
@@ -49,7 +44,6 @@ export type ShareOptions = {
 /** `ShareOptions` with every default applied. */
 export type ResolvedShareOptions = {
   services: readonly ShareService[];
-  placement: SharePlacement;
   mastodonInstance: string;
   className: string;
   ariaLabel: string;

@@ -55,7 +55,7 @@ export function filterChangelogCommits(
 
 /** Builds the per-note history for one entry. */
 export function buildNoteChangeHistory(
-  entry: ContentManifestEntry,
+  entry: Pick<ContentManifestEntry, "slug" | "permalink" | "title">,
   commits: readonly ChangelogCommit[],
   options: ResolvedChangelogOptions,
 ): NoteChangeHistory {

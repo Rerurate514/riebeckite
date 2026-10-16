@@ -43,7 +43,7 @@ function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
     entries,
     publicEntries: entries,
     discoverableEntries: entries,
-    bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
+    bySlug: new Map(entries.map((item) => [item.slug, item])),
     folderLocations: new Map(),
   } as unknown as ContentManifest;
 }

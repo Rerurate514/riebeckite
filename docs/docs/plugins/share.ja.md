@@ -4,8 +4,9 @@ title: Share
 # Share
 
 記事ごとの共有ボタンをビルド時に生成するプラグインです。公開対象の各エントリ
-について、設定したサービス向けの共有 URL を組み立て、本文の近くにコントロール
-を挿入します。共有リンクは通常の `<a>` なので JavaScript なしでも動作し、コピー
+について、設定したサービス向けの共有 URL を組み立て、Share controls のデータ
+を提供します。Site が `<ShareControls links={...} />` を描画する位置をlayout で
+決定します。共有リンクは通常の `<a>` なので JavaScript なしでも動作し、コピー
 操作だけをプログレッシブ・エンハンスメントとして追加します。
 
 [English](./share.md)
@@ -13,9 +14,11 @@ title: Share
 ## 仕組み
 
 `share()` は各ノートの `permalink` を絶対 URL に解決し、ノートのタイトルと URL
-からサービスごとの共有 URL を組み立て、記事の近くにコントロールを挿入します。
-挿入先はマニフェストエントリの HTML で、Core がそれをコンテンツルートの描画
-HTML と同期するため、生成ページとフィードの両方に反映されます。
+からサービスごとの共有 URL を組み立て、Share control data を組み立てます。
+データは `getShareLinks({ entry, site, options? })` で利用可能で、Site が
+`<ShareControls links={...} />` で描画します。共有リンクは通常の `<a>` なので
+JavaScript なしでも動作し、コピー操作だけをプログレッシブ・エンハンスメント
+として追加します。
 
 対応サービスは次のとおりです。
 
@@ -29,7 +32,7 @@ HTML と同期するため、生成ページとフィードの両方に反映さ
 | `hatena` | `https://b.hatena.ne.jp/add?mode=confirm&url=…&title=…` |
 | `copy` | ノートの URL をコピーするボタン（リンクは JS 不要） |
 
-`mastodon` はオプトインです。`services` に `"mastodon"` を追加し、
+Mastodon はオプトインです。`services` に `"mastodon"` を追加し、
 `mastodonInstance` を設定してください。
 
 ## 使い方
@@ -44,22 +47,11 @@ export default defineConfig({
 });
 ```
 
-Mastodon を有効にし、表示位置を変える例です。
-
-```ts
-share({
-  services: ["x", "bluesky", "mastodon", "copy"],
-  mastodonInstance: "mastodon.social",
-  placement: "top",
-});
-```
-
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |
 | ---------- | -- | ------ | ---- |
 | `services` | `ShareService[]` | `mastodon` 以外のすべて | 表示するサービス（順序どおり） |
-| `placement` | `"top" \| "bottom"` | `"bottom"` | コントロールの表示位置 |
 | `mastodonInstance` | `string` | なし | Mastodon のホスト。`services` に `"mastodon"` を含めると必須 |
 | `className` | `string` | なし | 安定した `rr-share` フックに追加するルートクラス |
 | `ariaLabel` | `string` | `"Share"` | コントロールグループのアクセシブル名 |
@@ -72,7 +64,11 @@ share({
 
 ## 表示
 
-共有コントロールは、公開記事ごとに設定した位置へ実際に描画されます。このサイトでは、プログレッシブ・エンハンスメントされたリンクコピー操作を含むコントロールとして表示します。
+共有コントロールは、Site が layout で `<ShareControls links={...} />` を
+描画する位置に実際に描画されます。このサイトでは、プログレッシブ・エンハンス
+メントされたリンクコピー操作を含むコントロールとして表示します。Site は
+コントロールを記事のトップやボトム、またはその他の位置に描画するかどうかを
+決定します。
 
 ## プログレッシブ・エンハンスメント
 
@@ -113,14 +109,12 @@ import "@riebeckite/plugin-share/style.css";
 - 定数: `SHARE_SERVICES`, `SHARE_ATTRIBUTE`, `SHARE_ROOT_CLASS`,
   `DEFAULT_SHARE_SERVICES`, `DEFAULT_SHARE_LABELS`, `DEFAULT_SHARE_PLACEMENT`
 - 型: `ShareOptions`, `ResolvedShareOptions`, `ShareService`,
-  `SharePlacement`, `ShareLink`, `ShareTarget`
+  `ShareLink`, `ShareTarget`
 
 ## 制約
 
 - 共有 URL はビルド時に確定します。再ビルドすれば常に正しく再計算されます。
 - Mastodon は具体的なインスタンスなしには有効化できません。
-- `top` は `article.before-content`、`bottom` は `article.footer` にコントロールを
-  提供します。Site は layout でその semantic slot を配置します。
 
 ## 関連
 

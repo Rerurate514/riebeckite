@@ -146,6 +146,9 @@ importers:
       '@riebeckite/plugin-discord-embed':
         specifier: workspace:*
         version: link:../../packages/plugins/discord-embed
+      '@riebeckite/plugin-docs':
+        specifier: workspace:*
+        version: link:../../packages/plugins/docs
       '@riebeckite/plugin-excalibrain':
         specifier: workspace:*
         version: link:../../packages/plugins/excalibrain
@@ -578,6 +581,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -601,6 +607,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -752,6 +761,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -774,6 +786,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -944,6 +959,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
       yaml:
         specifier: ^2.9.0
         version: 2.9.0
@@ -1096,6 +1114,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -1240,6 +1261,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -1253,6 +1277,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       tsx:
         specifier: ^4.22.4
@@ -1315,6 +1342,9 @@ importers:
       '@riebeckite/test':
         specifier: workspace:*
         version: link:../../test
+      puppeteer:
+        specifier: ^25.11.0
+        version: 25.11.0
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -1354,6 +1384,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
     devDependencies:
       tsx:
         specifier: ^4.22.4

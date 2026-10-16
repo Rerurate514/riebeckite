@@ -12,13 +12,18 @@ import {
   resolveConfig,
 } from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
 import {
   getLanguageFromPath,
   getLocalization,
   getLocalizedContent,
   type L10nOptions,
+  LanguageSwitcher,
   l10n,
 } from "../index.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -210,16 +215,19 @@ test("does not invent missing translations and adds hreflang only for existing v
   assert.equal(manifest.byPermalink.has("/en/only"), false);
 });
 
-test("publishes the default LanguageSwitcher in a Site-owned article slot", async () => {
+test("publishes the default LanguageSwitcher", async () => {
   const content = manager({
     "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
     "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
   });
   const manifest = await content.getManifest();
-  const html = manifest.bySlug.get("guide.en")?.bodySlots?.["article.metadata"];
-  assert.match(html ?? "", /class="l10n-switcher"/);
-  assert.match(html ?? "", /href="\/guide"/);
-  assert.match(html ?? "", /href="\/en\/guide"/);
+  const localization = getLocalization(manifest, "guide.en")!;
+  const html = renderToString(LanguageSwitcher({ localization }));
+  assert.match(html, /class="l10n-switcher"/);
+  assert.match(html, /href="\/guide"/);
+  assert.match(html, /href="\/en\/guide"/);
+  assert.match(html, /hreflang="ja"/);
+  assert.match(html, /hreflang="en"/);
   assert.ok(
     manifest.assets.some(
       (asset) => asset.moduleSpecifier === "@riebeckite/plugin-l10n/style.css",
@@ -246,11 +254,6 @@ test("does not duplicate generated l10n fragments when entries are reused from c
     english?.headTags?.filter(
       (tag) => tag.attrs?.rel === "alternate" && tag.attrs?.hreflang === "en",
     ).length,
-    1,
-  );
-  assert.equal(
-    english?.bodySlots?.["article.metadata"]?.match(/class="l10n-switcher"/g)
-      ?.length,
     1,
   );
 });
@@ -350,25 +353,27 @@ test("keeps removed, relabeled, regrouped, and moved translations equivalent to 
   }
 });
 
-test("allows the switcher to be disabled, moved, or replaced", async () => {
-  const files = {
+test("language switcher visibility and content", async () => {
+  const content = manager({
     "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
     "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
-  };
-  const disabled = await manager(files, { ui: false }).getManifest();
-  assert.equal(disabled.bySlug.get("guide.en")?.bodySlots, undefined);
+  });
+  const manifest = await content.getManifest();
+  const localization = getLocalization(manifest, "guide.en")!;
+  const html = renderToString(LanguageSwitcher({ localization }));
+  assert.match(html, /class="l10n-switcher"/);
+  assert.match(html, /href="\/guide"/);
+  assert.match(html, /href="\/en\/guide"/);
 
-  const custom = await manager(files, {
-    ui: {
-      slot: "article.footer",
-      render: ({ localization }: { localization: { lang: string } }) =>
-        `<p data-language="${localization.lang}">Translations</p>`,
-    },
-  }).getManifest();
-  assert.equal(
-    custom.bySlug.get("guide.en")?.bodySlots?.["article.footer"],
-    '<p data-language="en">Translations</p>',
+  const content2 = manager({
+    "only.ja.md": "---\ntranslation: only\n---\n# 一つだけ",
+  });
+  const manifest2 = await content2.getManifest();
+  const localization2 = getLocalization(manifest2, "only.ja")!;
+  const html2 = renderToString(
+    LanguageSwitcher({ localization: localization2 }),
   );
+  assert.equal(html2, "");
 });
 
 test("reports duplicate translation identities without exposing an ambiguous translation", async () => {

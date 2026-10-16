@@ -8,7 +8,6 @@ const read = (relativePath: string) =>
 
 const shellCss = read("../app/styles/shell.css");
 const articleCss = read("../app/components/article/style.css");
-const tocCss = read("../../../packages/plugins/toc/style.css");
 
 test("docs layout derives header height and sticky top from one contract", () => {
   assert.match(
@@ -38,11 +37,11 @@ test("left docs sidebar sticks at the shared docs sticky top", () => {
 
 test("desktop table of contents sticks at the shared docs sticky top", () => {
   assert.match(
-    tocCss,
+    articleCss,
     /top:\s*var\(--rr-toc-sticky-top,\s*var\(--rb-docs-sticky-top,\s*4rem\)\)/,
   );
   assert.match(
-    tocCss,
+    articleCss,
     /max-height:\s*calc\(\s*100dvh\s*-\s*var\(--rr-toc-sticky-top,\s*var\(--rb-docs-sticky-top,\s*4rem\)\)\s*-\s*var\(--rb-space-4,\s*2rem\)\s*\)/,
   );
 });

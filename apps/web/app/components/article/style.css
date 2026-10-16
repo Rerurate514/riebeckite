@@ -70,3 +70,51 @@
       color-mix(in oklab, currentColor 18%, transparent);
   }
 }
+
+/* The table of contents is an anchored right rail in the article layout, so the
+   Site owns its sticky placement. These rules are unlayered so they beat the
+   plugin styles imported later via `.riebeckite/plugin-styles.css`. */
+@media (min-width: 88rem) {
+  .rb-article-layout > .rr-table-of-contents--desktop {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    width: var(--rb-layout-sidebar);
+    margin-block: 0;
+    margin-inline-start: calc(100% + var(--rb-layout-gap));
+    overflow-x: hidden;
+    position: sticky;
+    top: var(--rr-toc-sticky-top, var(--rb-docs-sticky-top, 4rem));
+    max-height: calc(
+      100dvh -
+      var(--rr-toc-sticky-top, var(--rb-docs-sticky-top, 4rem)) -
+      var(--rb-space-4, 2rem)
+    );
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-block: 0;
+    border-inline-start: 1px solid
+      color-mix(in oklab, currentColor 18%, transparent);
+    padding-block: 0;
+    padding-inline-start: 1rem;
+  }
+
+  .rb-article-layout
+    > .rr-table-of-contents--desktop
+    .rr-table-of-contents__list {
+    min-height: 0;
+    max-inline-size: 100%;
+  }
+
+  :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
+    .rb-article-layout
+    > .rr-table-of-contents--desktop {
+    grid-column: 2;
+    margin-inline-start: 0;
+  }
+
+  :is(:root, .rb-theme-root)[data-article-layout="full-width"]
+    .rr-table-of-contents--desktop {
+    display: none;
+  }
+}

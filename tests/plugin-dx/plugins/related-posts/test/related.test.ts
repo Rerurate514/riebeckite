@@ -4,9 +4,15 @@ import {
   ContentManager,
   type ContentManifest,
   type ContentSource,
+  createPublicContentView,
   resolveConfig,
 } from "@riebeckite/core";
-import { relatedPostsPlugin } from "../index.ts";
+import {
+  getRelatedPosts,
+  type RelatedPostsOptions,
+  relatedPostsPlugin,
+  renderRelatedPosts,
+} from "../index.ts";
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -40,26 +46,33 @@ const FILES: Record<string, string> = {
     '---\ntitle: Scheduled Secret\npublishAt: "2999-01-01T00:00:00.000Z"\ntags: [demo]\n---\n# Scheduled Secret',
 };
 
-async function manifest(): Promise<ContentManifest> {
+async function manifest(
+  options?: RelatedPostsOptions,
+): Promise<ContentManifest> {
   return await new ContentManager(source(FILES), [], {
     config,
-    plugins: [relatedPostsPlugin()],
+    plugins: [relatedPostsPlugin(options)],
   }).getManifest();
 }
 
-function footer(manifest: ContentManifest, slug: string): string {
-  return manifest.bySlug.get(slug)?.bodySlots?.["article.footer"] ?? "";
+async function renderFor(
+  slug: string,
+  options?: RelatedPostsOptions,
+): Promise<string> {
+  const view = createPublicContentView(await manifest(options));
+  const entry = view.findRoutableBySlug(slug);
+  if (!entry) return "";
+  const related = await getRelatedPosts({ view, entry, options });
+  return renderRelatedPosts(related);
 }
 
 test("lists discoverable entries that share a tag", async () => {
-  const result = await manifest();
-  const alpha = footer(result, "notes/alpha");
-  assert.ok(alpha.includes(">Beta</a>"), alpha);
-  assert.ok(!alpha.includes(">Alpha</a>"));
+  const alphaHtml = await renderFor("notes/alpha");
+  assert.ok(alphaHtml.includes(">Beta</a>"), alphaHtml);
+  assert.ok(!alphaHtml.includes(">Alpha</a>"));
 });
 
 test("never leaks draft, unlisted, or scheduled entries", async () => {
-  const result = await manifest();
   for (const slug of [
     "index",
     "notes/alpha",
@@ -69,7 +82,7 @@ test("never leaks draft, unlisted, or scheduled entries", async () => {
     "notes/draft",
     "notes/scheduled",
   ]) {
-    const html = footer(result, slug);
+    const html = await renderFor(slug);
     assert.ok(!html.includes("Draft Secret"), `${slug} leaked a draft`);
     assert.ok(
       !html.includes("Unlisted Secret"),
@@ -82,23 +95,13 @@ test("never leaks draft, unlisted, or scheduled entries", async () => {
   }
 });
 
-test("does not inject discovery UI into unlisted pages", async () => {
-  const result = await manifest();
-  assert.equal(footer(result, "notes/unlisted"), "");
-  assert.equal(footer(result, "notes/draft"), "");
-  assert.equal(footer(result, "notes/scheduled"), "");
+test("does not surface discovery UI for non-discoverable pages", async () => {
+  for (const slug of ["notes/unlisted", "notes/draft", "notes/scheduled"]) {
+    assert.equal(await renderFor(slug), "");
+  }
 });
 
-test("respects max and the slot option", async () => {
-  const result = await new ContentManager(source(FILES), [], {
-    config,
-    plugins: [relatedPostsPlugin({ max: 1, slot: "article.aside" })],
-  }).getManifest();
-  assert.equal(
-    result.bySlug.get("notes/alpha")?.bodySlots?.["article.footer"],
-    undefined,
-  );
-  const aside =
-    result.bySlug.get("notes/alpha")?.bodySlots?.["article.aside"] ?? "";
-  assert.equal((aside.match(/data-rr-related/g) ?? []).length, 1);
+test("respects max", async () => {
+  const alphaHtml = await renderFor("notes/alpha", { max: 1 });
+  assert.equal((alphaHtml.match(/data-rr-related/g) ?? []).length, 1);
 });

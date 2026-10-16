@@ -5,8 +5,7 @@ title: Related Posts
 
 ビルド時に「関連ノート」ナビゲーションを生成するプラグインです。公開対象の
 各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べ、
-関連ノートのセクションを `article.footer` Slot に追加します。クライアント側 JavaScript は
-不要です。
+関連セクションを表示します。クライアント側 JavaScript は不要です。
 
 [English](./related-posts.md)
 
@@ -25,9 +24,9 @@ title: Related Posts
 `limit` 件に絞ります。`minScore` 未満の候補は除外します。条件を満たす候補が
 1 件もない場合、そのエントリの HTML は変更しません。
 
-各マニフェストエントリの `article.footer` Slot にセクションを追加します。標準の
-記事フッターでこの Slot を描画している場合、生成ページとフィードの両方に
-セクションが反映されます。
+Site は `<RelatedPosts entries={...} options={...} />` コンポーネントを
+記事の後などに配置します。条件を満たす関連エントリがない場合、コンポーネントは
+何も描画しません。
 
 ## クイックスタート
 
@@ -43,14 +42,17 @@ export default defineConfig({
 
 ## 高度なカスタマイズ
 
-Site のレイアウト内で任意の位置に配置できるサーバー描画の Hono JSX Component を公開しています。`render: false` で自動の `article.footer` Slot 追加を止め、既存の helper で entries を計算して解決済み options を渡してください。採点と公開境界のフィルタリングは維持されます。
+Site のレイアウト内で任意の位置に配置できるサーバー描画の Hono JSX Component
+を公開しています。`render: false` で自動の `article.footer` Slot 追加を止め、
+既存の helper で entries を計算して解決済み options を渡してください。採点と公開境界のフィルタリングは維持されます。
 
 ```tsx
 import { buildRelatedPosts, RelatedPosts, resolveRelatedPostsOptions } from "@riebeckite/plugin-related-posts";
 
-const options = resolveRelatedPostsOptions({ render: false });
+const options = resolveRelatedPostsOptions({});
 const entries = buildRelatedPosts({ manifest, entry, options, config });
-return <aside><RelatedPosts entries={entries} options={options} /></aside>;
+
+<nav rb-related-posts><RelatedPosts entries={entries} options={options} /></nav>;
 ```
 
 公式 Starter は `article.footer` を一度描画します。手動配置を消すにはコンポーネントを消します。自動描画を有効にしたまま同じ記事へ手動描画しないでください。
@@ -59,7 +61,6 @@ return <aside><RelatedPosts entries={entries} options={options} /></aside>;
 
 | オプション | 型 | 既定値 | 説明 |
 | ---------- | -- | ------ | ---- |
-| `render` | `boolean` | `true` | `article.footer` への自動追加。手動配置では `false` |
 | `limit` | `number` | `5` | 表示する関連エントリの最大件数 |
 | `minScore` | `number` | `1` | 表示に必要な最小スコア |
 | `heading` | `boolean` | `true` | `<h2>` 見出しを出力する |
@@ -78,7 +79,9 @@ relatedPosts({
 
 ## 表示
 
-関連エントリは対象ページの `article.footer` スロットに描画されます。このサイトでは、条件に合う公開エントリがあれば記事下に実際のナビゲーションを表示します。
+関連エントリは対象ページの `article.footer`  area に描画されます。この
+サイトでは、条件に合う公開エントリがあれば記事下に実際のナビゲーションを
+表示します。
 
 ## スタイル
 

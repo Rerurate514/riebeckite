@@ -8,7 +8,7 @@ export function localFixtureTheme() {
     name: "fixture-local",
     styles: [
       ...(base.styles ?? []),
-      { moduleSpecifier: "/extensions/local-theme.css" },
+      { moduleSpecifier: "../../extensions/local-theme.css" },
     ],
     config: {
       ...base.config,

@@ -186,7 +186,6 @@ const seo = np("@riebeckite/plugin-seo", "seo", {
 });
 const toc = np("@riebeckite/plugin-toc", "tocPlugin");
 const properties = np("@riebeckite/plugin-properties", "properties", {
-  render: { depth: 1, value: '"slot"' },
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
   order: { depth: 2, value: '["created", "modified", "tags", "status"]' },
 });
@@ -221,7 +220,6 @@ const relatedPosts = np("@riebeckite/plugin-related-posts", "relatedPosts", {
   className: { depth: 3, value: '"rb-related-posts"' },
 });
 const share = np("@riebeckite/plugin-share", "share", {
-  placement: { depth: 2, value: '"bottom"' },
   services: {
     depth: 3,
     value:

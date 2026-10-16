@@ -1,11 +1,13 @@
 import {
-  appendContentBodySlot,
   createClientEntry,
   createStyleAsset,
   definePlugin,
   fingerprintExternalValue,
+  type PluginDataHelper,
 } from "@riebeckite/core";
 
+export type { PostDiffProps } from "./components/post-diff.js";
+export { default as PostDiffView } from "./components/post-diff.js";
 export { renderDiffHistory } from "./src/components/diff-history.js";
 export { renderDiffLine } from "./src/components/diff-line.js";
 export {
@@ -13,7 +15,6 @@ export {
   renderDiffViewer,
 } from "./src/components/diff-viewer.js";
 
-import { renderDiffHistory } from "./src/components/diff-history.js";
 import { createLineDiff } from "./src/diff/line_diff.js";
 import { GitMarkdownHistoryReader } from "./src/git/history_reader.js";
 import type {
@@ -48,6 +49,11 @@ export type PostDiffApi = {
   getCurrentDiff(filePath: string): Promise<PostDiff | null>;
   compareRevisions(input: RevisionComparisonInput): Promise<PostDiff | null>;
 };
+
+export const getPostDiff: PluginDataHelper<
+  { api: PostDiffApi; filePath: string },
+  Promise<PostDiff | null>
+> = ({ api, filePath }) => api.getCurrentDiff(filePath);
 
 export function diff(options: DiffPluginOptions = {}) {
   const ui = { enabled: true, maxRevisions: 20, ...options.ui };
@@ -131,15 +137,6 @@ export function diff(options: DiffPluginOptions = {}) {
             { type: "external", id: "diff:git-history" },
           ],
         });
-        appendContentBodySlot(
-          entry,
-          "article.footer",
-          renderDiffHistory({
-            revisions,
-            selected,
-            payloadPath: `/${payloadPath}`,
-          }),
-        );
       }
     },
   });

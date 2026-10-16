@@ -36,7 +36,7 @@ export default defineConfig({
     colorModePlugin(),
     seo({ sitemap: true, robots: true }),
     tocPlugin(),
-    properties({ render: "slot", include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }),
+    properties({ include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }),
     aliasPlugin({ status: 308 }),
     codeEnhance({ lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true }),
     searchPlugin(),

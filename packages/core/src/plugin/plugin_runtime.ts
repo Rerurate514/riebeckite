@@ -1,4 +1,7 @@
-import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
+import type {
+  ManifestHookCacheContract,
+  ManifestHookCacheEntry,
+} from "../content/content_build_state.js";
 import {
   applyManifestHookSnapshot,
   createManifestHookCacheEntry,
@@ -157,12 +160,19 @@ export class PluginRuntime {
         return "plugin-generated-output-plan-unsafe";
       if (!plugin.onManifestCreated) continue;
 
+      if (this.hasConflictingManifestHookCacheContract(plugin))
+        return "manifest-hook-cache-multiple-writers";
+
       const cached = previousCache[cacheIndex];
       cacheIndex += 1;
       if (
         cached?.pluginName !== plugin.name ||
         !cached.cacheable ||
-        cached.pipelineFingerprint !== pipelineFingerprint
+        cached.pipelineFingerprint !== pipelineFingerprint ||
+        !manifestHookCacheContractsEqual(
+          cached.contract,
+          manifestHookCacheContract(plugin),
+        )
       )
         return "manifest-hook-cache-miss";
     }
@@ -319,6 +329,7 @@ export class PluginRuntime {
       const hook = plugin.onManifestCreated;
       if (!hook) continue;
       const inputFingerprint = fingerprintManifestHookInput(manifest);
+      const contract = manifestHookCacheContract(plugin);
       const cached = previousCache[cacheIndex];
       cacheIndex += 1;
       const reason = manifestHookCacheMissReason(
@@ -326,14 +337,21 @@ export class PluginRuntime {
         plugin.name,
         pipelineFingerprint,
         inputFingerprint,
+        contract,
       );
       const canRestore =
         cached?.pluginName === plugin.name &&
         cached.cacheable &&
         cached.pipelineFingerprint === pipelineFingerprint &&
-        cached.inputFingerprint === inputFingerprint;
+        cached.inputFingerprint === inputFingerprint &&
+        manifestHookCacheContractsEqual(cached.contract, contract);
       const manifestBeforeRestore = canRestore
-        ? { entries: structuredClone(manifest.entries) }
+        ? {
+            entries: structuredClone(manifest.entries),
+            folderLocations: structuredClone([
+              ...manifest.folderLocations.values(),
+            ]),
+          }
         : undefined;
       const restored =
         canRestore && applyManifestHookSnapshot(manifest, cached.snapshot);
@@ -349,9 +367,13 @@ export class PluginRuntime {
       }
       if (restored && manifestBeforeRestore)
         applyManifestHookSnapshot(manifest, manifestBeforeRestore);
-      const sideEffectsBefore = fingerprintManifestHookSideEffects(manifest);
+      const sideEffectsBefore = fingerprintManifestHookSideEffects(
+        manifest,
+        contract ?? undefined,
+      );
       const outputCountBefore = this.generatedOutputs.count();
       const diagnosticCountBefore = this.diagnostics.length;
+      const manifestDiagnosticCountBefore = manifest.diagnostics.length;
       const started = performance.now();
       this.manifestHooksExecuted += 1;
       try {
@@ -374,14 +396,21 @@ export class PluginRuntime {
       this.manifestHookCache.push(
         createManifestHookCacheEntry(
           plugin.name,
-          plugin.resolveExternalDependencies === undefined &&
+          contract !== null &&
+            !this.hasConflictingManifestHookCacheContract(plugin) &&
+            plugin.resolveExternalDependencies === undefined &&
             sideEffectsBefore ===
-              fingerprintManifestHookSideEffects(manifest) &&
+              fingerprintManifestHookSideEffects(
+                manifest,
+                contract ?? undefined,
+              ) &&
             outputCountBefore === this.generatedOutputs.count() &&
-            diagnosticCountBefore === this.diagnostics.length,
+            diagnosticCountBefore === this.diagnostics.length &&
+            manifestDiagnosticCountBefore === manifest.diagnostics.length,
           pipelineFingerprint,
           inputFingerprint,
           manifest,
+          contract ?? undefined,
         ),
       );
     }
@@ -430,7 +459,10 @@ export class PluginRuntime {
       if (!hook) continue;
       const outputs = await hook(
         freezeGeneratedOutputPlanContext({
-          manifest: { discoverableEntries: manifest.discoverableEntries },
+          manifest: {
+            discoverableEntries: manifest.discoverableEntries,
+            routableEntries: manifest.publicEntries,
+          },
           site: this.pipelineOptions.config?.site,
         }),
       );
@@ -798,10 +830,27 @@ export class PluginRuntime {
     }
     return this.resolvedPlugins;
   }
+
+  private hasConflictingManifestHookCacheContract(
+    plugin: RiebeckitePlugin,
+  ): boolean {
+    const contract = manifestHookCacheContract(plugin);
+    if (!contract?.mutations.includes("folderLocations")) return false;
+    return (
+      this.plugins().filter((candidate) =>
+        manifestHookCacheContract(candidate)?.mutations.includes(
+          "folderLocations",
+        ),
+      ).length > 1
+    );
+  }
 }
 
 function freezeGeneratedOutputPlanContext(context: {
-  manifest: { discoverableEntries: readonly ContentManifestEntry[] };
+  manifest: {
+    discoverableEntries: readonly ContentManifestEntry[];
+    routableEntries: readonly ContentManifestEntry[];
+  };
   site: ResolvedRiebeckiteConfig["site"] | undefined;
 }) {
   return deepFreeze(structuredClone(context));
@@ -912,6 +961,7 @@ function manifestHookCacheMissReason(
   pluginName: string,
   pipelineFingerprint: string | undefined,
   inputFingerprint: string,
+  contract: ManifestHookCacheContract | null | undefined,
 ): string {
   if (!cached) return "cache-missing";
   if (cached.pluginName !== pluginName) return "plugin-order-changed";
@@ -920,7 +970,40 @@ function manifestHookCacheMissReason(
     return "pipeline-fingerprint-changed";
   if (cached.inputFingerprint !== inputFingerprint)
     return "manifest-input-changed";
+  if (!manifestHookCacheContractsEqual(cached.contract, contract))
+    return "manifest-hook-cache-contract-changed";
   return "snapshot-invalid";
+}
+
+function manifestHookCacheContract(
+  plugin: RiebeckitePlugin,
+): ManifestHookCacheContract | null | undefined {
+  const contract = plugin.manifestHookCache;
+  if (contract === undefined) return undefined;
+  if (
+    typeof contract.version !== "string" ||
+    contract.version.trim() === "" ||
+    !Array.isArray(contract.mutations) ||
+    contract.mutations.some((mutation) => mutation !== "folderLocations") ||
+    new Set(contract.mutations).size !== contract.mutations.length
+  )
+    return null;
+  return { version: contract.version, mutations: [...contract.mutations] };
+}
+
+function manifestHookCacheContractsEqual(
+  left: ManifestHookCacheContract | undefined,
+  right: ManifestHookCacheContract | null | undefined,
+): boolean {
+  if (left === undefined || right === undefined) return left === right;
+  if (right === null) return false;
+  return (
+    left.version === right.version &&
+    left.mutations.length === right.mutations.length &&
+    left.mutations.every(
+      (mutation, index) => mutation === right.mutations[index],
+    )
+  );
 }
 
 function normalizePagePath(pathname: string): string {

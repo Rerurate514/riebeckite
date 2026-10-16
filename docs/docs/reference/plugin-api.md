@@ -246,6 +246,10 @@ Generated output paths are physical output paths. A generated output must not
 collide with a content, redirect, or plugin page route; Core fails the build
 instead of overwriting the route.
 
+`planGeneratedOutputs` runs on each incremental build and therefore disables
+the no-change fast path. Core cannot prove that arbitrary planner code has no
+untracked inputs, so it regenerates the plan rather than reusing it.
+
 ## Renderers
 
 Renderers receive a target (`kind`, `path`, `raw`, `label`, `url`,

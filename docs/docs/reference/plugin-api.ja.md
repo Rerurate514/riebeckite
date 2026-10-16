@@ -355,6 +355,8 @@ definePlugin({
 
 Generated output の path は物理出力 path です。Generated output を Content、redirect、plugin page の route と衝突させないでください。衝突した場合は route を上書きせず、Core が build を失敗させます。
 
+`planGeneratedOutputs` は Incremental Build ごとに実行されるため、変更なし Fast Path は使用しません。任意の planner code に未追跡の入力がないことを Core は証明できないため、plan を再利用せずに再生成します。
+
 # UI components
 
 Plugin は `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` を factory  along with export することができます。Data helpers は `PublicContentView` のような狭い input を受け、型付き model を返します。components は readonly の型付き props を受け、Slot HTML を返しません。Site は自分の TSX でこれらのコンポーネントを composition し、それぞれの表示有無、位置、頻度を決定します。これは削除された body-slot システムを置き換えます。Plugin は manifest entry の `bodySlots` map に HTML フラグメントを提供しなくなりました。

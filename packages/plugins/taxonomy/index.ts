@@ -9,7 +9,6 @@ import {
   type ResolvedRiebeckiteConfig,
   resolvePlugins,
 } from "@riebeckite/core";
-import { registerTrustedGeneratedOutputPlanner } from "@riebeckite/core/internal/generated-output-planner-capability";
 import {
   buildTaxonomyIndex,
   serializeTaxonomyIndex,
@@ -80,115 +79,113 @@ export const TAXONOMY_PLUGIN_NAME = "taxonomy";
  */
 export function taxonomy(options: TaxonomyOptions = {}) {
   const resolved = resolveTaxonomyOptions(options);
-  return registerTrustedGeneratedOutputPlanner(
-    definePlugin({
-      name: TAXONOMY_PLUGIN_NAME,
-      options,
-      validateOptions: validateTaxonomyOptions,
-      endpoints: createTaxonomyEndpoints(resolved),
-      pageTypes: [
-        {
-          id: "taxonomy-term",
-          paths: ({ manifest }) =>
-            taxonomyPagePaths(manifest.discoverableEntries, resolved),
-          outputDependencies: ({ manifest, pathname }) => {
-            const term = findTaxonomyTerm(
-              manifest.discoverableEntries,
-              resolved,
-              pathname,
-            );
-            return term
-              ? taxonomyPageOutputDependencies(term, resolved.related)
-              : [{ type: "unknown" }];
-          },
-          resolve: ({ manifest, pathname }) => {
-            const term = findTaxonomyTerm(
-              manifest.discoverableEntries,
-              resolved,
-              pathname,
-            );
-            if (!term) return null;
-            const page = renderTaxonomyPage(term, resolved);
-            return {
-              type: "taxonomy-term",
-              pathname: term.path,
-              title: page.title,
-              body: page.html,
-              headTags: page.headTags,
-            };
-          },
+  return definePlugin({
+    name: TAXONOMY_PLUGIN_NAME,
+    options,
+    validateOptions: validateTaxonomyOptions,
+    endpoints: createTaxonomyEndpoints(resolved),
+    pageTypes: [
+      {
+        id: "taxonomy-term",
+        paths: ({ manifest }) =>
+          taxonomyPagePaths(manifest.discoverableEntries, resolved),
+        outputDependencies: ({ manifest, pathname }) => {
+          const term = findTaxonomyTerm(
+            manifest.discoverableEntries,
+            resolved,
+            pathname,
+          );
+          return term
+            ? taxonomyPageOutputDependencies(term, resolved.related)
+            : [{ type: "unknown" }];
         },
-        {
-          id: "taxonomy-index",
-          paths: () => taxonomyIndexPagePaths(resolved),
-          outputDependencies: ({ pathname }) => {
-            const kind = resolveTaxonomyIndexPath(pathname, resolved);
-            const dependency: OutputDependency | undefined =
-              kind === "tag"
-                ? { type: "projection" as const, projection: "taxonomy-tags" }
-                : kind === "folder"
-                  ? {
-                      type: "projection" as const,
-                      projection: "taxonomy-folders",
-                    }
-                  : undefined;
-            return dependency
-              ? [...pageProjectionDependencies, dependency]
-              : [{ type: "unknown" }];
-          },
-          resolve: ({ manifest, pathname }) => {
-            const kind = resolveTaxonomyIndexPath(pathname, resolved);
-            if (!kind) return null;
-            const index = buildTaxonomyIndex(
-              manifest.discoverableEntries,
-              resolved,
-            );
-            const page = renderTaxonomyIndexPage(
-              kind,
-              kind === "tag" ? index.tags : index.folders,
-              resolved,
-            );
-            return {
-              type: "taxonomy-index",
-              pathname,
-              title: page.title,
-              body: page.html,
-            };
-          },
+        resolve: ({ manifest, pathname }) => {
+          const term = findTaxonomyTerm(
+            manifest.discoverableEntries,
+            resolved,
+            pathname,
+          );
+          if (!term) return null;
+          const page = renderTaxonomyPage(term, resolved);
+          return {
+            type: "taxonomy-term",
+            pathname: term.path,
+            title: page.title,
+            body: page.html,
+            headTags: page.headTags,
+          };
         },
-      ],
-      planGeneratedOutputs(context) {
-        if (!context.site) return [];
-        const index = buildTaxonomyIndex(
-          context.manifest.discoverableEntries,
-          resolved,
-        );
-        const outputs: PlannedGeneratedOutput[] = [];
-        for (const term of [...index.tags, ...index.folders]) {
-          for (const format of enabledFormats(resolved)) {
-            const path = feedFilePath(term.path, format);
-            outputs.push({
-              path,
-              content: renderTermFeed(
-                { site: context.site },
-                term,
-                format,
-                resolved.feedLimit,
-              ),
-              dependencies: taxonomyOutputDependencies(term),
-            });
-          }
-        }
-        return outputs;
       },
-      assets: [
-        createStyleAsset(
-          TAXONOMY_PLUGIN_NAME,
-          "@riebeckite/plugin-taxonomy/style.css",
-        ),
-      ],
-    }),
-  );
+      {
+        id: "taxonomy-index",
+        paths: () => taxonomyIndexPagePaths(resolved),
+        outputDependencies: ({ pathname }) => {
+          const kind = resolveTaxonomyIndexPath(pathname, resolved);
+          const dependency: OutputDependency | undefined =
+            kind === "tag"
+              ? { type: "projection" as const, projection: "taxonomy-tags" }
+              : kind === "folder"
+                ? {
+                    type: "projection" as const,
+                    projection: "taxonomy-folders",
+                  }
+                : undefined;
+          return dependency
+            ? [...pageProjectionDependencies, dependency]
+            : [{ type: "unknown" }];
+        },
+        resolve: ({ manifest, pathname }) => {
+          const kind = resolveTaxonomyIndexPath(pathname, resolved);
+          if (!kind) return null;
+          const index = buildTaxonomyIndex(
+            manifest.discoverableEntries,
+            resolved,
+          );
+          const page = renderTaxonomyIndexPage(
+            kind,
+            kind === "tag" ? index.tags : index.folders,
+            resolved,
+          );
+          return {
+            type: "taxonomy-index",
+            pathname,
+            title: page.title,
+            body: page.html,
+          };
+        },
+      },
+    ],
+    planGeneratedOutputs(context) {
+      if (!context.site) return [];
+      const index = buildTaxonomyIndex(
+        context.manifest.discoverableEntries,
+        resolved,
+      );
+      const outputs: PlannedGeneratedOutput[] = [];
+      for (const term of [...index.tags, ...index.folders]) {
+        for (const format of enabledFormats(resolved)) {
+          const path = feedFilePath(term.path, format);
+          outputs.push({
+            path,
+            content: renderTermFeed(
+              { site: context.site },
+              term,
+              format,
+              resolved.feedLimit,
+            ),
+            dependencies: taxonomyOutputDependencies(term),
+          });
+        }
+      }
+      return outputs;
+    },
+    assets: [
+      createStyleAsset(
+        TAXONOMY_PLUGIN_NAME,
+        "@riebeckite/plugin-taxonomy/style.css",
+      ),
+    ],
+  });
 }
 
 /** Alias matching the `*Plugin` suffix used by other plugin factories. */

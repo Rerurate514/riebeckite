@@ -47,7 +47,6 @@ import type {
 } from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
-import { isTrustedGeneratedOutputPlanner } from "./generated_output_planner_capability.js";
 import { GeneratedOutputRegistry } from "./generated_output_registry.js";
 import type { PluginCache } from "./plugin_cache.js";
 import {
@@ -153,11 +152,7 @@ export class PluginRuntime {
     let cacheIndex = 0;
     for (const plugin of this.plugins()) {
       if (plugin.buildEnd) return "plugin-build-end";
-      if (
-        plugin.planGeneratedOutputs &&
-        !isTrustedGeneratedOutputPlanner(plugin)
-      )
-        return "plugin-generated-output-plan-unsafe";
+      if (plugin.planGeneratedOutputs) return "plugin-generated-output-plan";
       if (!plugin.onManifestCreated) continue;
 
       if (this.hasConflictingManifestHookCacheContract(plugin))

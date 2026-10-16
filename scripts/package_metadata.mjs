@@ -31,6 +31,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/diagnostics",
   "packages/plugins/diff",
   "packages/plugins/discord-embed",
+  "packages/plugins/docs",
   "packages/plugins/excalibrain",
   "packages/plugins/excalidraw",
   "packages/plugins/flashcards",
@@ -230,6 +231,11 @@ const packagePublishingMetadata = {
   "packages/plugins/discord-embed": {
     description: "Discord link preview metadata for Riebeckite pages.",
     keywords: ["riebeckite", "plugin", "discord", "embeds"],
+  },
+  "packages/plugins/docs": {
+    description:
+      "Build-time docs sidebar and previous/next navigation for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "docs", "navigation"],
   },
   "packages/plugins/excalibrain": {
     description:
@@ -593,6 +599,7 @@ export function expectedPackageMetadata(directory) {
       "deploy",
       "diagnostics",
       "diff",
+      "docs",
       "excalibrain",
       "folder-pages",
       "gallery",

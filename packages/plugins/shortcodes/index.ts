@@ -69,7 +69,9 @@ export function shortcodes(options: ShortcodeOptions = {}) {
         contentSource: context.contentSource,
       });
     },
-    assets: [createStyleAsset(PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-shortcodes/style.css"),
+    ],
   });
 }
 

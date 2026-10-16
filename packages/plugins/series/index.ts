@@ -143,7 +143,7 @@ export function series(options: SeriesOptions = {}) {
         },
       },
     ],
-    assets: [createStyleAsset("series")],
+    assets: [createStyleAsset("series", "@riebeckite/plugin-series/style.css")],
   });
 }
 

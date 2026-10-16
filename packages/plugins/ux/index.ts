@@ -27,8 +27,10 @@ export function uxPlugin(options: UxOptions = {}) {
     },
     options,
     validateOptions: validateUxOptions,
-    assets: [createStyleAsset("ux")],
-    clientEntries: [createClientEntry("ux", "initUx")],
+    assets: [createStyleAsset("ux", "@riebeckite/plugin-ux/style.css")],
+    clientEntries: [
+      createClientEntry("ux", "@riebeckite/plugin-ux/client", "initUx"),
+    ],
     onPostProcessed: (context) => {
       context.content.html = injectUxConfig(context.content.html, config);
     },

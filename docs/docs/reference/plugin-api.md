@@ -432,9 +432,9 @@ Plugin CSS remains in the plugin package and is declared through
 only when browser JavaScript is genuinely required. Do not copy plugin
 CSS into `apps/web` or expose `/node_modules` directly.
 
-For a package named `@riebeckite/plugin-example`, use the Core helpers. They
-declare the package's conventional `./style.css` and `./client` exports while
-keeping the integration-facing values consistent:
+Use the Core helpers to register the plugin name and the package exports
+together. The module specifier is explicit, so the same API works for official,
+third-party, and site-local packages:
 
 ``` ts
 import {
@@ -446,9 +446,14 @@ import {
 export function examplePlugin() {
   return definePlugin({
     name: "example",
-    assets: [createStyleAsset("example")],
+    assets: [createStyleAsset("example", "@riebeckite/plugin-example/style.css")],
     clientEntries: [
-      createClientEntry("example", "initExample", { selector: ".example" }),
+      createClientEntry(
+        "example",
+        "@riebeckite/plugin-example/client",
+        "initExample",
+        { selector: ".example" },
+      ),
     ],
   });
 }
@@ -480,13 +485,10 @@ flowchart LR
     Integration --> Browser
 ```
 
-The helpers build the specifier from the package name: `createStyleAsset("example")`
-produces `@riebeckite/plugin-example/style.css` and
-`createClientEntry("example", ...)` produces `@riebeckite/plugin-example/client`.
-They therefore fit only a package literally named `@riebeckite/plugin-<name>`. A
-package published under any other name — including a site-local plugin — must
-declare `assets` and `clientEntries` explicitly with specifiers its own `exports`
-map exposes. See
+The module specifier must be a subpath exposed by the plugin package's `exports`
+map. For example, a third-party package can use
+`createStyleAsset("example", "@example/plugin/style.css")` and
+`createClientEntry("example", "@example/plugin/client", ...)`. See
 [Distributing a Plugin outside this repository](#distributing-a-plugin-outside-this-repository).
 
 Omit `assets` or `clientEntries` when the plugin does not need them. The client

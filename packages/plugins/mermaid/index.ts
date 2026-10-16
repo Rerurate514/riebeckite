@@ -44,8 +44,16 @@ export function mermaid(options: MermaidOptions = {}) {
     dispose: async () => {
       await session.dispose();
     },
-    assets: [createStyleAsset("mermaid")],
-    clientEntries: [createClientEntry("mermaid", "initMermaidDiagrams")],
+    assets: [
+      createStyleAsset("mermaid", "@riebeckite/plugin-mermaid/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "mermaid",
+        "@riebeckite/plugin-mermaid/client",
+        "initMermaidDiagrams",
+      ),
+    ],
   });
 }
 

@@ -36,8 +36,16 @@ export function vegaLite(options: VegaLiteOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeVegaLite, options);
     },
-    assets: [createStyleAsset("vega-lite")],
-    clientEntries: [createClientEntry("vega-lite", "initVegaLite")],
+    assets: [
+      createStyleAsset("vega-lite", "@riebeckite/plugin-vega-lite/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "vega-lite",
+        "@riebeckite/plugin-vega-lite/client",
+        "initVegaLite",
+      ),
+    ],
   });
 }
 

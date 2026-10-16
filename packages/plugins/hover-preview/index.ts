@@ -55,8 +55,19 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
       },
       planGeneratedOutputs: ({ manifest }) =>
         runtime.plan(manifest.routableEntries),
-      assets: [createStyleAsset("hover-preview")],
-      clientEntries: [createClientEntry("hover-preview", "initHoverPreview")],
+      assets: [
+        createStyleAsset(
+          "hover-preview",
+          "@riebeckite/plugin-hover-preview/style.css",
+        ),
+      ],
+      clientEntries: [
+        createClientEntry(
+          "hover-preview",
+          "@riebeckite/plugin-hover-preview/client",
+          "initHoverPreview",
+        ),
+      ],
     }),
   );
 }

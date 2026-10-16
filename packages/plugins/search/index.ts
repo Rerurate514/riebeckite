@@ -14,8 +14,14 @@ export { buildSearchItems } from "./src/search-index.server.js";
 export function searchPlugin() {
   return definePlugin({
     name: "search",
-    assets: [createStyleAsset("search")],
-    clientEntries: [createClientEntry("search", "initSearch")],
+    assets: [createStyleAsset("search", "@riebeckite/plugin-search/style.css")],
+    clientEntries: [
+      createClientEntry(
+        "search",
+        "@riebeckite/plugin-search/client",
+        "initSearch",
+      ),
+    ],
     endpoints: [
       defineEndpoint(
         "/search-data.json",

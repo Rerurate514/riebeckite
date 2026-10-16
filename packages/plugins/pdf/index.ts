@@ -54,7 +54,9 @@ export function pdf(options: PdfOptions = {}) {
         render: (context) => renderPdf(context, resolved),
       },
     ],
-    assets: [createStyleAsset(PDF_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(PDF_PLUGIN_NAME, "@riebeckite/plugin-pdf/style.css"),
+    ],
   });
 }
 

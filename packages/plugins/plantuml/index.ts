@@ -25,7 +25,9 @@ export function plantuml(options: PlantumlOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypePlantumlLazy, options);
     },
-    assets: [createStyleAsset("plantuml")],
+    assets: [
+      createStyleAsset("plantuml", "@riebeckite/plugin-plantuml/style.css"),
+    ],
   });
 }
 

@@ -53,7 +53,7 @@ export function kanban(options: KanbanOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest);
     },
-    assets: [createStyleAsset("kanban")],
+    assets: [createStyleAsset("kanban", "@riebeckite/plugin-kanban/style.css")],
   });
 }
 

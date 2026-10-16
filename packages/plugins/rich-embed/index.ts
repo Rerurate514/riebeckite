@@ -21,7 +21,9 @@ export function richEmbed(options: RichEmbedOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeRichEmbed, options);
     },
-    assets: [createStyleAsset("rich-embed")],
+    assets: [
+      createStyleAsset("rich-embed", "@riebeckite/plugin-rich-embed/style.css"),
+    ],
   });
 }
 

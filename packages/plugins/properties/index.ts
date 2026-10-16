@@ -66,7 +66,9 @@ export function properties(options: PropertiesOptions = {}) {
     contentOutputDependencies: [{ type: "global" }],
     options,
     validateOptions: validatePropertiesOptions,
-    assets: [createStyleAsset(PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-properties/style.css"),
+    ],
     onManifestCreated: (context) => {
       reportUnrenderableValues(context, resolved);
     },

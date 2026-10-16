@@ -687,7 +687,7 @@ packages/plugins/backlinks/
 └─ README.md
 ```
 
-外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.ja.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` は `@riebeckite/plugin-<name>/...` の specifier を組み立てるため、別名の package は `assets` / `clientEntries` に `moduleSpecifier` を明示します。
+外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.ja.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` の subpath を明示して渡します。
 
 この directive プラグインを配布する場合、依存は `@riebeckite/core` と `unist-util-visit` を `dependencies` に、`mdast` の型（`@types/mdast`）を `devDependencies` に宣言します。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) にあります。
 

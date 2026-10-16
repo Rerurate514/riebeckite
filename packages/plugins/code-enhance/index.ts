@@ -33,12 +33,22 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeCodeEnhance, options);
     },
-    assets: [createStyleAsset("code-enhance")],
+    assets: [
+      createStyleAsset(
+        "code-enhance",
+        "@riebeckite/plugin-code-enhance/style.css",
+      ),
+    ],
     clientEntries: [
-      createClientEntry("code-enhance", "initCodeEnhance", {
-        copyLabel: options.copyLabel ?? DEFAULT_COPY_LABEL,
-        copiedLabel: options.copiedLabel ?? DEFAULT_COPIED_LABEL,
-      }),
+      createClientEntry(
+        "code-enhance",
+        "@riebeckite/plugin-code-enhance/client",
+        "initCodeEnhance",
+        {
+          copyLabel: options.copyLabel ?? DEFAULT_COPY_LABEL,
+          copiedLabel: options.copiedLabel ?? DEFAULT_COPIED_LABEL,
+        },
+      ),
     ],
   });
 }

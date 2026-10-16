@@ -43,12 +43,22 @@ export function sidenotes(options: SidenotesOptions = {}) {
     options,
     validateOptions: validateSidenotesOptions,
     rehypePlugins: [() => rehypeSidenotes(resolved)],
-    assets: [createStyleAsset(SIDENOTES_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        SIDENOTES_PLUGIN_NAME,
+        "@riebeckite/plugin-sidenotes/style.css",
+      ),
+    ],
     clientEntries: [
-      createClientEntry(SIDENOTES_PLUGIN_NAME, "initSidenotes", {
-        openLabel: resolved.openLabel,
-        closeLabel: resolved.closeLabel,
-      }),
+      createClientEntry(
+        SIDENOTES_PLUGIN_NAME,
+        "@riebeckite/plugin-sidenotes/client",
+        "initSidenotes",
+        {
+          openLabel: resolved.openLabel,
+          closeLabel: resolved.closeLabel,
+        },
+      ),
     ],
   });
 }

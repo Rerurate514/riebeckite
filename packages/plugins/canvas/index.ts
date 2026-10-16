@@ -121,8 +121,16 @@ export function canvas(options: CanvasOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest);
     },
-    assets: [createStyleAsset(PLUGIN_NAME)],
-    clientEntries: [createClientEntry(PLUGIN_NAME, "initCanvas")],
+    assets: [
+      createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-canvas/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        PLUGIN_NAME,
+        "@riebeckite/plugin-canvas/client",
+        "initCanvas",
+      ),
+    ],
   });
 }
 

@@ -543,11 +543,10 @@ assets: [
 
 Plugin CSS を `apps/web` へコピーしたり、Browser から `/node_modules` を直接参照させたりしないでください。
 
-package 名が `@riebeckite/plugin-<name>` の場合は `createStyleAsset()` /
-`createClientEntry()` が `@riebeckite/plugin-<name>/style.css` と
-`@riebeckite/plugin-<name>/client` を組み立てます。それ以外の名前（site 内
-Plugin や任意名の第三者 package）では、自身の `exports` が公開する
-specifier を `assets` / `clientEntries` に明示してください。
+`createStyleAsset()` / `createClientEntry()` には、Plugin 名と package が
+`exports` で公開する module specifier を明示します。したがって、
+`@riebeckite/plugin-<name>`、site 内 Plugin、任意名の第三者 package で同じ
+API を利用できます。
 
 ```mermaid
 flowchart LR
@@ -795,10 +794,9 @@ Site-local Plugin でも、
 
 などは package Plugin と同じ contract を利用します。
 
-`createStyleAsset()` と `createClientEntry()` は
-`@riebeckite/plugin-<name>/...` の specifier しか組み立てないため、その名前で
-ない package（site 内 Plugin、別名の第三者 package）は Host Bundler が解決
-できる `moduleSpecifier` を明示してください。
+`createStyleAsset()` と `createClientEntry()` には module specifier を明示して
+渡します。Site 内 Plugin と別名の第三者 package のいずれでも、Host Bundler が
+解決できる subpath を指定してください。
 
 # Repository 外で Plugin を配布する
 

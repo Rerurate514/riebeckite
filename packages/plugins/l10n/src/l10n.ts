@@ -79,7 +79,7 @@ export function l10n(options: L10nOptions) {
     provides: ["content.localization"],
     contentOutputDependencies: [{ type: "global" }],
     options,
-    assets: [createStyleAsset("l10n")],
+    assets: [createStyleAsset("l10n", "@riebeckite/plugin-l10n/style.css")],
     validateOptions: () =>
       validateOptions(options).map((message) => ({ path: "l10n", message })),
     extendContentLocations: ({ entries, locations }) => {

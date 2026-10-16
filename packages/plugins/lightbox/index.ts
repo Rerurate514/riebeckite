@@ -26,12 +26,19 @@ export function lightboxPlugin(options: LightboxOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeLightbox, options);
     },
-    assets: [createStyleAsset("lightbox")],
+    assets: [
+      createStyleAsset("lightbox", "@riebeckite/plugin-lightbox/style.css"),
+    ],
     clientEntries: [
-      createClientEntry("lightbox", "initLightboxFromOptions", {
-        expandLabel: options.expandLabel ?? DEFAULT_EXPAND_LABEL,
-        closeLabel: options.closeLabel ?? DEFAULT_CLOSE_LABEL,
-      }),
+      createClientEntry(
+        "lightbox",
+        "@riebeckite/plugin-lightbox/client",
+        "initLightboxFromOptions",
+        {
+          expandLabel: options.expandLabel ?? DEFAULT_EXPAND_LABEL,
+          closeLabel: options.closeLabel ?? DEFAULT_CLOSE_LABEL,
+        },
+      ),
     ],
   });
 }

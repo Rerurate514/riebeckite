@@ -22,7 +22,18 @@ export function autoCardLinkPlugin(options: AutoCardLinkOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkAutoCardLink, options);
     },
-    assets: [createStyleAsset("autocardlink")],
-    clientEntries: [createClientEntry("autocardlink", "initAutoCardLink")],
+    assets: [
+      createStyleAsset(
+        "autocardlink",
+        "@riebeckite/plugin-autocardlink/style.css",
+      ),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "autocardlink",
+        "@riebeckite/plugin-autocardlink/client",
+        "initAutoCardLink",
+      ),
+    ],
   });
 }

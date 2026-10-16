@@ -63,8 +63,16 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
         resolve: (context) => resolveExcalidrawDocument(context, options),
       },
     ],
-    assets: [createStyleAsset(PLUGIN_NAME)],
-    clientEntries: [createClientEntry(PLUGIN_NAME, "initExcalidraw")],
+    assets: [
+      createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-excalidraw/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        PLUGIN_NAME,
+        "@riebeckite/plugin-excalidraw/client",
+        "initExcalidraw",
+      ),
+    ],
   });
 }
 

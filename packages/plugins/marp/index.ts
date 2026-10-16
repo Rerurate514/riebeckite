@@ -33,7 +33,7 @@ export function marp(options: MarpOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeMarpLazy, options);
     },
-    assets: [createStyleAsset("marp")],
+    assets: [createStyleAsset("marp", "@riebeckite/plugin-marp/style.css")],
   });
 }
 

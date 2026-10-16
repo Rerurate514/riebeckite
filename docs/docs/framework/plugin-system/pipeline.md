@@ -145,7 +145,7 @@ return definePlugin({
 });
 ```
 
-`createStyleAsset()` and `createClientEntry()` build `@riebeckite/plugin-<name>/...` specifiers, so they fit only a package literally named that way. An unpublished plugin, or a published package under any other name, must provide an explicit `moduleSpecifier` the host bundler can resolve.
+`createStyleAsset()` and `createClientEntry()` take an explicit module specifier. Use a subpath the host bundler can resolve for both unpublished and published plugins.
 
 ## 3-11. CSS hooks
 

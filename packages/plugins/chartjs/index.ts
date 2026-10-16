@@ -32,8 +32,16 @@ export function chartjs(options: ChartJsOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeChartJs, options);
     },
-    assets: [createStyleAsset("chartjs")],
-    clientEntries: [createClientEntry("chartjs", "initChartJs")],
+    assets: [
+      createStyleAsset("chartjs", "@riebeckite/plugin-chartjs/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "chartjs",
+        "@riebeckite/plugin-chartjs/client",
+        "initChartJs",
+      ),
+    ],
   });
 }
 

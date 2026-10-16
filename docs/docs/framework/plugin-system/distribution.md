@@ -38,10 +38,9 @@ return definePlugin({
 
 A site-local plugin uses the same contracts as a published one — dependency
 resolution, pipeline, hooks, diagnostics, renderers, and Page Types.
-`createStyleAsset()` and `createClientEntry()` only build
-`@riebeckite/plugin-<name>/...` specifiers, so for a package that does not use
-that name (an unpublished plugin, or a published package under a different
-name) specify a `moduleSpecifier` the host bundler can resolve directly.
+`createStyleAsset()` and `createClientEntry()` accept the package subpath as an
+explicit argument. Use the subpath the host bundler can resolve, whether the
+plugin is site-local or published under any package name.
 
 To distribute a plugin as a reusable package, use `packages/plugins/backlinks`
 as a template. Recommended layout:

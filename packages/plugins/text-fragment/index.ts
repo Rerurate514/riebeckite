@@ -34,12 +34,22 @@ export function textFragmentPlugin(
 ): RiebeckitePlugin {
   return definePlugin({
     name: "text-fragment",
-    assets: [createStyleAsset("text-fragment")],
+    assets: [
+      createStyleAsset(
+        "text-fragment",
+        "@riebeckite/plugin-text-fragment/style.css",
+      ),
+    ],
     clientEntries: [
-      createClientEntry("text-fragment", "initTextFragmentShare", {
-        ...DEFAULT_TEXT_FRAGMENT_LABELS,
-        ...options.labels,
-      }),
+      createClientEntry(
+        "text-fragment",
+        "@riebeckite/plugin-text-fragment/client",
+        "initTextFragmentShare",
+        {
+          ...DEFAULT_TEXT_FRAGMENT_LABELS,
+          ...options.labels,
+        },
+      ),
     ],
   });
 }

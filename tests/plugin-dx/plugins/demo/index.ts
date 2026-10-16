@@ -1,4 +1,6 @@
 import {
+  createClientEntry,
+  createStyleAsset,
   definePlugin,
   escapeHtml,
   escapeHtmlAttribute,
@@ -49,19 +51,13 @@ export function pluginDemoPlugin(
   return definePlugin({
     name: "plugin-dx-demo",
     options,
-    assets: [
-      {
-        pluginName: "plugin-dx-demo",
-        kind: "style",
-        moduleSpecifier: "@plugin-dx/demo/style.css",
-      },
-    ],
+    assets: [createStyleAsset("plugin-dx-demo", "@plugin-dx/demo/style.css")],
     clientEntries: [
-      {
-        pluginName: "plugin-dx-demo",
-        moduleSpecifier: "@plugin-dx/demo/client",
-        exportName: "initPluginDemo",
-      },
+      createClientEntry(
+        "plugin-dx-demo",
+        "@plugin-dx/demo/client",
+        "initPluginDemo",
+      ),
     ],
     pageTypes: [
       {

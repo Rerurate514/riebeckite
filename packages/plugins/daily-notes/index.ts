@@ -43,7 +43,12 @@ export function dailyNotesPlugin(
     options,
     cacheVersion: "1",
     contentOutputDependencies: resolveOutputDependencies(options),
-    assets: [createStyleAsset("daily-notes")],
+    assets: [
+      createStyleAsset(
+        "daily-notes",
+        "@riebeckite/plugin-daily-notes/style.css",
+      ),
+    ],
   });
 }
 

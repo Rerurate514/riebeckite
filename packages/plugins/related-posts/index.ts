@@ -38,7 +38,12 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
     contentOutputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateRelatedPostsOptions,
-    assets: [createStyleAsset(RELATED_POSTS_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        RELATED_POSTS_PLUGIN_NAME,
+        "@riebeckite/plugin-related-posts/style.css",
+      ),
+    ],
   });
 }
 

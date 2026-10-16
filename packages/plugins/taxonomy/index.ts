@@ -181,7 +181,12 @@ export function taxonomy(options: TaxonomyOptions = {}) {
         }
         return outputs;
       },
-      assets: [createStyleAsset(TAXONOMY_PLUGIN_NAME)],
+      assets: [
+        createStyleAsset(
+          TAXONOMY_PLUGIN_NAME,
+          "@riebeckite/plugin-taxonomy/style.css",
+        ),
+      ],
     }),
   );
 }

@@ -1364,6 +1364,47 @@ test("manifest hook cache skips no-change hooks and reruns them when input chang
     assert.ok(result.manifestHookMetrics.manifestHookDurationMs >= 0);
 });
 
+test("a manifest hook that mutates non-entry state reruns on a warm build", async () => {
+  const directory = await tempDirectory("manifest-hook-folder-location");
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugin = definePlugin({
+    name: "folder-location",
+    onManifestCreated: ({ manifest }) => {
+      manifest.folderLocations.set("/guides/", {
+        pathname: "/guides/",
+        folder: "guides",
+      });
+    },
+  });
+  const plugins = [...config.plugins, plugin];
+
+  const build = async () => {
+    const manager = new ContentManager(memoryContentSource(files), [], {
+      config: { ...config, plugins },
+      plugins,
+    });
+    const manifest = await manager.build({ incremental: true });
+    const manifestHookMetrics = manager.getManifestHookMetrics();
+    await manager.dispose();
+    return { manifest, manifestHookMetrics };
+  };
+
+  const cold = await build();
+  const warm = await build();
+
+  assert.deepEqual(
+    [...warm.manifest.folderLocations],
+    [...cold.manifest.folderLocations],
+  );
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+});
+
 test("a corrupted manifest hook snapshot reruns the hook safely", async () => {
   const directory = await tempDirectory("manifest-hook-cache-corruption");
   const files = { "a.md": "# A" };
@@ -1448,9 +1489,11 @@ test("a manifest hook that adds diagnostics always reruns", async () => {
   });
 });
 
-function manifestHookCounts(
-  result: Awaited<ReturnType<typeof buildWithManifestOnly>>,
-) {
+function manifestHookCounts(result: {
+  readonly manifestHookMetrics: ReturnType<
+    ContentManager["getManifestHookMetrics"]
+  >;
+}) {
   return {
     executed: result.manifestHookMetrics.manifestHooksExecuted,
     reused: result.manifestHookMetrics.manifestHooksReused,

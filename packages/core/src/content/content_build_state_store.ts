@@ -157,27 +157,8 @@ function isManifestHookCache(value: unknown): boolean {
           typeof entry.pipelineFingerprint === "string") &&
         typeof entry.inputFingerprint === "string" &&
         typeof entry.outputFingerprint === "string" &&
-        (entry.contract === undefined ||
-          (isRecord(entry.contract) &&
-            typeof entry.contract.version === "string" &&
-            entry.contract.version.length > 0 &&
-            Array.isArray(entry.contract.mutations) &&
-            entry.contract.mutations.every(
-              (mutation) => mutation === "folderLocations",
-            ))) &&
         isRecord(entry.snapshot) &&
-        Array.isArray(entry.snapshot.entries) &&
-        (entry.snapshot.folderLocations === undefined ||
-          (Array.isArray(entry.snapshot.folderLocations) &&
-            entry.snapshot.folderLocations.every(
-              (location) =>
-                isRecord(location) &&
-                typeof location.pathname === "string" &&
-                (location.folder === undefined ||
-                  typeof location.folder === "string") &&
-                (location.language === undefined ||
-                  typeof location.language === "string"),
-            ))),
+        Array.isArray(entry.snapshot.entries),
     )
   );
 }

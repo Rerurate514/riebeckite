@@ -581,11 +581,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           pendingOutputCache.publicDir
             ? await fingerprintDirectory(resolve(pendingOutputCache.publicDir))
             : undefined;
+        await waitForFaultInjection("build-state-before");
         await saveOutputCache(
           pendingOutputCache.path,
           pendingOutputCache.state,
           pendingOutputCache.outDir,
         );
+        await waitForFaultInjection("build-state-committed");
       } catch (error) {
         this.warn(
           `SSG output cache could not be saved; the next build regenerates every output. ${
@@ -1048,6 +1050,13 @@ export async function loadOutputCache(
   timingsMs?: Record<string, number>,
   log: (message: string) => void = () => {},
 ): Promise<(OutputCacheState & { fileSizeBytes?: number }) | undefined> {
+  if (!(await isSafeOutputCacheDirectory(dirname(path)))) {
+    log("SSG output cache directory is unsafe and will be ignored.");
+    return undefined;
+  }
+  if (!(await isRegularFile(path))) {
+    return undefined;
+  }
   let raw: string;
   try {
     raw = await measure(timingsMs, "outputCacheRead", () =>
@@ -1161,10 +1170,17 @@ export async function saveOutputCache(
 ): Promise<string> {
   const directory = dirname(path);
   await mkdir(directory, { recursive: true });
+  if (!(await isSafeOutputCacheDirectory(directory))) {
+    throw new Error(`Unsafe SSG output cache directory: ${directory}`);
+  }
+  if (!(await isSafeCacheFileTarget(path))) {
+    throw new Error(`Unsafe SSG output cache file: ${path}`);
+  }
   const entriesPath = outputCacheEntriesPath(path);
   const temporaryPath = `${path}.${randomUUID()}.tmp`;
 
   try {
+    await waitForFaultInjection("metadata-save-start");
     const outputs = await measure(timingsMs, "outputCacheEntriesWrite", () =>
       saveOutputCacheEntries(
         entriesPath,
@@ -1184,6 +1200,7 @@ export async function saveOutputCache(
     await measure(timingsMs, "outputCacheRename", () =>
       replaceFile(temporaryPath, path),
     );
+    await waitForFaultInjection("metadata-committed");
     const checksum = createHash("sha256").update(serialized).digest("hex");
     if (state.finalOutputInventory && state.configFile) {
       await saveFastPathCache(
@@ -1230,6 +1247,7 @@ async function saveOutputCacheEntries(
     const source = resolveOutputCacheFile(outputDirectory, outputPath);
     const cachePath = outputCacheEntryName(outputPath);
     const destination = join(directory, cachePath);
+    await waitForFaultInjection("entry-create-start");
     await replaceOutputCacheEntry(source, destination);
     const checksum = finalOutputInventory?.[outputPath];
     if (!checksum) {
@@ -1299,10 +1317,18 @@ async function saveFastPathCache(
 ): Promise<void> {
   const directory = dirname(path);
   await mkdir(directory, { recursive: true });
+  if (!(await isSafeOutputCacheDirectory(directory))) {
+    throw new Error(`Unsafe SSG fast-path cache directory: ${directory}`);
+  }
+  if (!(await isSafeCacheFileTarget(path))) {
+    throw new Error(`Unsafe SSG fast-path cache file: ${path}`);
+  }
   const temporaryPath = `${path}.${randomUUID()}.tmp`;
   try {
+    await waitForFaultInjection("sidecar-save-start");
     await writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8");
     await replaceFile(temporaryPath, path);
+    await waitForFaultInjection("sidecar-committed");
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
     throw error;
@@ -1313,6 +1339,8 @@ async function loadFastPathCache(
   path: string,
 ): Promise<FastPathCacheState | undefined> {
   try {
+    if (!(await isSafeOutputCacheDirectory(dirname(path)))) return undefined;
+    if (!(await isRegularFile(path))) return undefined;
     const candidate: unknown = JSON.parse(await readFile(path, "utf8"));
     return isFastPathCacheState(candidate) ? candidate : undefined;
   } catch {
@@ -1462,15 +1490,27 @@ async function ensureOutputCacheEntriesDirectory(
   }
 }
 
-async function isSafeOutputCacheEntriesDirectory(
-  directory: string,
-): Promise<boolean> {
+async function isSafeOutputCacheDirectory(directory: string): Promise<boolean> {
   try {
     const info = await lstat(directory);
     return info.isDirectory() && !info.isSymbolicLink();
   } catch {
     return false;
   }
+}
+
+async function isSafeCacheFileTarget(path: string): Promise<boolean> {
+  try {
+    return !(await lstat(path)).isSymbolicLink();
+  } catch (error) {
+    return isNotFoundError(error);
+  }
+}
+
+async function isSafeOutputCacheEntriesDirectory(
+  directory: string,
+): Promise<boolean> {
+  return isSafeOutputCacheDirectory(directory);
 }
 
 async function isRegularFile(path: string): Promise<boolean> {
@@ -1491,8 +1531,12 @@ async function replaceOutputCacheEntry(
   }
   const temporaryPath = `${destination}.${randomUUID()}.tmp`;
   try {
+    await writeFile(temporaryPath, new Uint8Array());
+    await waitForFaultInjection("entry-body-write");
     await copyFile(source, temporaryPath);
+    await waitForFaultInjection("entry-rename-before");
     await replaceFile(temporaryPath, destination);
+    await waitForFaultInjection("entry-committed");
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
     throw error;
@@ -1505,6 +1549,7 @@ async function collectUnreferencedOutputCacheEntries(
 ): Promise<void> {
   try {
     if (!(await isSafeOutputCacheEntriesDirectory(directory))) return;
+    await waitForFaultInjection("gc-start");
     const referenced = new Set(
       Object.values(outputs).map((entry) => entry.cachePath),
     );
@@ -1514,11 +1559,28 @@ async function collectUnreferencedOutputCacheEntries(
         continue;
       }
       const path = join(directory, entry.name);
-      if (await isRegularFile(path)) await rm(path, { force: true });
+      if (await isRegularFile(path)) {
+        await waitForFaultInjection("gc-entry-delete");
+        await rm(path, { force: true });
+      }
     }
   } catch {
     return;
   }
+}
+
+async function waitForFaultInjection(point: string): Promise<void> {
+  if (
+    process.env.NODE_ENV !== "test" ||
+    process.env.RIEBECKITE_SSG_FAULT_INJECTION !== "1" ||
+    process.env.RIEBECKITE_SSG_FAULT_POINT !== point
+  ) {
+    return;
+  }
+  const signalFile = process.env.RIEBECKITE_SSG_FAULT_SIGNAL_FILE;
+  if (!signalFile) return;
+  await writeFile(signalFile, `${point}\n`, "utf8");
+  await new Promise<void>(() => {});
 }
 
 async function writeSsgOutputMetrics(metrics: SsgOutputMetrics): Promise<void> {

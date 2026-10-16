@@ -251,6 +251,122 @@ test("SSG output cache collects unreferenced entries after metadata commit", asy
   assert.ok(await loadOutputCache(cachePath));
 });
 
+test("SSG output cache refuses cache-root junctions without touching their target", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-ssg-link-"));
+  const protectedDirectory = path.join(root, "protected");
+  const cacheDirectory = path.join(root, ".riebeckite");
+  const cachePath = path.join(cacheDirectory, "ssg-output-cache.json");
+  const output = path.join(root, "dist");
+  const sentinel = path.join(protectedDirectory, "sentinel.txt");
+  await fs.mkdir(protectedDirectory);
+  await fs.mkdir(output);
+  await fs.writeFile(sentinel, "must remain private");
+  await fs.writeFile(path.join(output, "index.html"), "output");
+  const before = createHash("sha256")
+    .update(await fs.readFile(sentinel))
+    .digest("hex");
+  try {
+    await fs.symlink(protectedDirectory, cacheDirectory, "junction");
+  } catch (error) {
+    t.skip(`Junction could not be created: ${String(error)}`);
+    return;
+  }
+
+  await assert.rejects(
+    saveOutputCache(
+      cachePath,
+      {
+        version: 4,
+        outputs: { "index.html": { cachePath: "", checksum: "" } },
+      },
+      output,
+    ),
+  );
+  assert.equal(await loadOutputCache(cachePath), undefined);
+  const after = createHash("sha256")
+    .update(await fs.readFile(sentinel))
+    .digest("hex");
+  assert.equal(after, before);
+  assert.equal(
+    await fs
+      .readdir(protectedDirectory)
+      .then((entries) => entries.includes("ssg-output-cache.json")),
+    false,
+  );
+});
+
+test("SSG output cache refuses metadata, sidecar, and entry junction targets", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-ssg-link-"));
+  const cacheDirectory = path.join(root, ".riebeckite");
+  const cachePath = path.join(cacheDirectory, "ssg-output-cache.json");
+  const output = path.join(root, "dist");
+  const protectedDirectory = path.join(root, "protected");
+  const sentinel = path.join(protectedDirectory, "sentinel.txt");
+  await fs.mkdir(protectedDirectory);
+  await fs.mkdir(output);
+  await fs.writeFile(sentinel, "must remain private");
+  await fs.writeFile(path.join(output, "index.html"), "output");
+  await saveOutputCache(
+    cachePath,
+    { version: 4, outputs: { "index.html": { cachePath: "", checksum: "" } } },
+    output,
+  );
+  const before = createHash("sha256")
+    .update(await fs.readFile(sentinel))
+    .digest("hex");
+  const entriesDirectory = path.join(
+    cacheDirectory,
+    "ssg-output-cache.entries",
+  );
+  const entry = createHash("sha256").update("index.html").digest("hex");
+  await fs.rm(path.join(entriesDirectory, entry));
+  try {
+    await fs.symlink(sentinel, path.join(entriesDirectory, entry), "file");
+  } catch (error) {
+    t.skip(`File symbolic links could not be created: ${String(error)}`);
+    return;
+  }
+  assert.equal(await loadOutputCache(cachePath), undefined);
+
+  await fs.rm(cachePath);
+  await fs.symlink(sentinel, cachePath, "file");
+  assert.equal(await loadOutputCache(cachePath), undefined);
+  await assert.rejects(
+    saveOutputCache(
+      cachePath,
+      {
+        version: 4,
+        outputs: { "index.html": { cachePath: "", checksum: "" } },
+      },
+      output,
+    ),
+  );
+
+  await fs.rm(cachePath);
+  await fs.writeFile(cachePath, '{"version":4,"outputs":{}}\n');
+  await fs.rm(path.join(entriesDirectory, entry));
+  const sidecar = path.join(cacheDirectory, "ssg-output-cache.fast-path.json");
+  await fs.symlink(sentinel, sidecar, "file");
+  await assert.rejects(
+    saveOutputCache(
+      cachePath,
+      {
+        version: 4,
+        configFile: path.join(root, "vite.config.ts"),
+        finalOutputInventory: {
+          "index.html": createHash("sha256").update("output").digest("hex"),
+        },
+        outputs: { "index.html": { cachePath: "", checksum: "" } },
+      },
+      output,
+    ),
+  );
+  const after = createHash("sha256")
+    .update(await fs.readFile(sentinel))
+    .digest("hex");
+  assert.equal(after, before);
+});
+
 test("no-change fast path verifies inputs and every final output", async () => {
   const root = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-fast-path-"),

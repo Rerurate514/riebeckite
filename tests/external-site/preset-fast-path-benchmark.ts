@@ -3,7 +3,7 @@ import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
   createLogger,
@@ -22,6 +22,7 @@ const samplerPath = path.join(
   "external-site",
   "rss-sampler.mjs",
 );
+const samplerUrl = pathToFileURL(samplerPath).href;
 
 const ALL_PRESETS = ["empty", "minimal", "starter", "showcase"] as const;
 type PresetName = (typeof ALL_PRESETS)[number];
@@ -169,7 +170,7 @@ function measure(
   const start = performance.now();
   const result = run(
     process.execPath,
-    ["--import", samplerPath, installedCli, ...args],
+    ["--import", samplerUrl, installedCli, ...args],
     {
       cwd: siteDir,
       env: {

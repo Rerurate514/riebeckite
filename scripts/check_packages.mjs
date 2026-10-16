@@ -279,7 +279,10 @@ function checkPublicPackageCoverage() {
       const manifestPath = path.join(repositoryRoot, directory, "package.json");
       if (!fs.existsSync(manifestPath)) continue;
       const manifest = readJson(`${directory}/package.json`);
-      if (manifest.private === true || PACKAGE_DIRECTORIES.includes(directory)) {
+      if (
+        manifest.private === true ||
+        PACKAGE_DIRECTORIES.includes(directory)
+      ) {
         continue;
       }
       errors.push(

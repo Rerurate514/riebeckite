@@ -19,6 +19,7 @@ export type {
   ContentBuildState,
   FingerprintedContentEntry,
 } from "./src/content/content_build_state.js";
+export { CONTENT_BUILD_STATE_VERSION } from "./src/content/content_build_state.js";
 export type {
   ContentBuildStateInvalidReason,
   ContentBuildStateStatus,

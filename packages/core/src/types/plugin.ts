@@ -83,6 +83,10 @@ export type RiebeckitePlugin<TOptions = unknown> = {
     ) => string | undefined;
     environmentFingerprint?: () => string | undefined;
   };
+  manifestHookCache?: {
+    version: string;
+    mutations: readonly "folderLocations"[];
+  };
   resolveExternalDependencies?(
     context: ExternalDependencyContext,
   ): Promise<readonly ExternalDependencyResolution[]>;
@@ -139,6 +143,7 @@ export type PlannedGeneratedOutput = {
 export type PluginGeneratedOutputPlanContext = {
   readonly manifest: Readonly<{
     readonly discoverableEntries: readonly ContentManifestEntry[];
+    readonly routableEntries: readonly ContentManifestEntry[];
   }>;
   readonly site: Readonly<ResolvedRiebeckiteConfig["site"]> | undefined;
 };

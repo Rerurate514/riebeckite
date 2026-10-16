@@ -3,8 +3,10 @@ import { stableStringify } from "../plugin/plugin_memo.js";
 import type {
   ContentManifest,
   ContentManifestEntry,
+  FolderLocation,
 } from "../types/content_manifest.js";
 import type {
+  ManifestHookCacheContract,
   ManifestHookCacheEntry,
   ManifestHookSnapshot,
 } from "./content_build_state.js";
@@ -21,11 +23,15 @@ export function createManifestHookCacheEntry(
   pipelineFingerprint: string | undefined,
   inputFingerprint: string,
   manifest: ContentManifest,
+  contract: ManifestHookCacheContract | undefined,
 ): ManifestHookCacheEntry {
-  const snapshot = {
+  const snapshot: ManifestHookSnapshot = {
     entries: JSON.parse(
       JSON.stringify(manifest.entries),
     ) as ContentManifestEntry[],
+    ...(contract?.mutations.includes("folderLocations")
+      ? { folderLocations: snapshotFolderLocations(manifest) }
+      : {}),
   };
   return {
     pluginName,
@@ -33,16 +39,23 @@ export function createManifestHookCacheEntry(
     pipelineFingerprint,
     inputFingerprint,
     outputFingerprint: fingerprintManifestHookSnapshot(snapshot, manifest),
+    ...(contract === undefined ? {} : { contract }),
     snapshot,
   };
 }
 
 export function fingerprintManifestHookSideEffects(
   manifest: ContentManifest,
+  contract: ManifestHookCacheContract | undefined,
 ): string {
-  return fingerprintManifest(
-    manifestFingerprintValue({ ...manifest, entries: [] }),
-  );
+  const value = {
+    ...manifest,
+    entries: [],
+    ...(contract?.mutations.includes("folderLocations")
+      ? { folderLocations: new Map<string, FolderLocation>() }
+      : {}),
+  };
+  return fingerprintManifest(manifestFingerprintValue(value));
 }
 
 export function fingerprintManifestHookSnapshot(
@@ -50,7 +63,20 @@ export function fingerprintManifestHookSnapshot(
   manifest: ContentManifest,
 ): string {
   return fingerprintManifest(
-    manifestFingerprintValue({ ...manifest, entries: [...snapshot.entries] }),
+    manifestFingerprintValue({
+      ...manifest,
+      entries: [...snapshot.entries],
+      ...(snapshot.folderLocations === undefined
+        ? {}
+        : {
+            folderLocations: new Map(
+              snapshot.folderLocations.map((location) => [
+                location.pathname,
+                location,
+              ]),
+            ),
+          }),
+    }),
   );
 }
 
@@ -63,7 +89,15 @@ export function applyManifestHookSnapshot(
     if (!entries.every(isManifestEntry)) return false;
     const entriesBySlug = new Map(entries.map((entry) => [entry.slug, entry]));
     if (entriesBySlug.size !== entries.length) return false;
+    const folderLocations =
+      snapshot.folderLocations === undefined
+        ? undefined
+        : restoreFolderLocations(snapshot.folderLocations);
+    if (snapshot.folderLocations !== undefined && folderLocations === undefined)
+      return false;
     manifest.entries = entries;
+    if (folderLocations !== undefined)
+      manifest.folderLocations = folderLocations;
     manifest.publicEntries = manifest.publicEntries
       .map((entry) => entriesBySlug.get(entry.slug))
       .filter((entry): entry is ContentManifestEntry => entry !== undefined);
@@ -122,6 +156,35 @@ export function applyManifestHookSnapshot(
   } catch {
     return false;
   }
+}
+
+function snapshotFolderLocations(
+  manifest: ContentManifest,
+): readonly FolderLocation[] {
+  return [...manifest.folderLocations.values()]
+    .map(normalizeFolderLocation)
+    .sort((left, right) => left.pathname.localeCompare(right.pathname));
+}
+
+function restoreFolderLocations(
+  locations: readonly FolderLocation[],
+): Map<string, FolderLocation> | undefined {
+  const normalized = locations.map(normalizeFolderLocation);
+  if (
+    normalized.some((location) => location.pathname === "") ||
+    new Set(normalized.map((location) => location.pathname)).size !==
+      normalized.length
+  )
+    return undefined;
+  return new Map(normalized.map((location) => [location.pathname, location]));
+}
+
+function normalizeFolderLocation(location: FolderLocation): FolderLocation {
+  return {
+    pathname: location.pathname,
+    ...(location.folder === undefined ? {} : { folder: location.folder }),
+    ...(location.language === undefined ? {} : { language: location.language }),
+  };
 }
 
 function manifestFingerprintValue(manifest: ContentManifest) {

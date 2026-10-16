@@ -1,8 +1,11 @@
-import type { ContentManifestEntry } from "../types/content_manifest.js";
+import type {
+  ContentManifestEntry,
+  FolderLocation,
+} from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 14;
+export const CONTENT_BUILD_STATE_VERSION = 15;
 
 /**
  * Build state lives under `<content directory>/.riebeckite`. That directory is
@@ -44,11 +47,18 @@ export type ManifestHookCacheEntry = {
   readonly pipelineFingerprint: string | undefined;
   readonly inputFingerprint: string;
   readonly outputFingerprint: string;
+  readonly contract?: ManifestHookCacheContract;
   readonly snapshot: ManifestHookSnapshot;
+};
+
+export type ManifestHookCacheContract = {
+  readonly version: string;
+  readonly mutations: readonly "folderLocations"[];
 };
 
 export type ManifestHookSnapshot = {
   readonly entries: readonly ContentManifestEntry[];
+  readonly folderLocations?: readonly FolderLocation[];
 };
 
 export type PersistedExternalDependency = {

@@ -1,7 +1,7 @@
 import type {
   ContentManifest,
   ContentManifestEntry,
-  GeneratedOutputSink,
+  PlannedGeneratedOutput,
 } from "@riebeckite/core";
 import { buildPreviewIndex } from "./preview-index.js";
 import {
@@ -13,9 +13,11 @@ import {
 import type { ResolvedHoverPreviewOptions } from "./types.js";
 
 export type HoverPreviewRuntime = {
+  plan(
+    entries: readonly ContentManifestEntry[],
+  ): readonly PlannedGeneratedOutput[];
   inject(
     manifest: ContentManifest,
-    output: GeneratedOutputSink,
     shouldInclude?: (entry: ContentManifestEntry) => boolean,
   ): void;
 };
@@ -24,23 +26,27 @@ export function createHoverPreviewRuntime(
   options: ResolvedHoverPreviewOptions,
 ): HoverPreviewRuntime {
   return {
-    inject(manifest, output, shouldInclude) {
-      const entries = shouldInclude
-        ? manifest.entries.filter(shouldInclude)
-        : manifest.entries;
+    plan(entries) {
       const index = buildPreviewIndex(entries, {
         excerptLength: options.excerptLength,
         ...(options.maxEntries === undefined
           ? {}
           : { maxEntries: options.maxEntries }),
       });
-      if (Object.keys(index).length === 0) return;
-
-      output.emit({
-        path: HOVER_PREVIEW_INDEX_PATH,
-        content: JSON.stringify(index),
-        dependencies: [{ type: "global" }],
-      });
+      if (Object.keys(index).length === 0) return [];
+      return [
+        {
+          path: HOVER_PREVIEW_INDEX_PATH,
+          content: JSON.stringify(index),
+          dependencies: [{ type: "global" }],
+        },
+      ];
+    },
+    inject(manifest, shouldInclude) {
+      const entries = shouldInclude
+        ? manifest.entries.filter(shouldInclude)
+        : manifest.entries;
+      if (this.plan(entries).length === 0) return;
 
       const payload = renderHoverPreviewPayload(
         options,

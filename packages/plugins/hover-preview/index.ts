@@ -4,6 +4,7 @@ import {
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
+import { registerTrustedGeneratedOutputPlanner } from "@riebeckite/core/internal/generated-output-planner-capability";
 import { resolveHoverPreviewOptions } from "./src/options.js";
 import { createHoverPreviewRuntime } from "./src/runtime.js";
 import type { HoverPreviewOptions } from "./src/types.js";
@@ -38,24 +39,26 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
   const resolved = resolveHoverPreviewOptions(options);
   const runtime = createHoverPreviewRuntime(resolved);
 
-  return definePlugin({
-    name: "hover-preview",
-    processedContentCache: {
-      version: "hover-preview-v1",
-      dependencyMode: "none",
-    },
-    contentOutputDependencies: [{ type: "global" }],
-    options,
-    validateOptions: validateHoverPreviewOptions,
-    onManifestCreated: (context) => {
-      const publicEntries = new Set(context.manifest.publicEntries);
-      runtime.inject(context.manifest, context.output, (entry) =>
-        publicEntries.has(entry),
-      );
-    },
-    assets: [createStyleAsset("hover-preview")],
-    clientEntries: [createClientEntry("hover-preview", "initHoverPreview")],
-  });
+  return registerTrustedGeneratedOutputPlanner(
+    definePlugin({
+      name: "hover-preview",
+      processedContentCache: {
+        version: "hover-preview-v1",
+        dependencyMode: "none",
+      },
+      contentOutputDependencies: [{ type: "global" }],
+      options,
+      validateOptions: validateHoverPreviewOptions,
+      onManifestCreated: (context) => {
+        const publicEntries = new Set(context.manifest.publicEntries);
+        runtime.inject(context.manifest, (entry) => publicEntries.has(entry));
+      },
+      planGeneratedOutputs: ({ manifest }) =>
+        runtime.plan(manifest.routableEntries),
+      assets: [createStyleAsset("hover-preview")],
+      clientEntries: [createClientEntry("hover-preview", "initHoverPreview")],
+    }),
+  );
 }
 
 export const hoverPreview = hoverPreviewPlugin;

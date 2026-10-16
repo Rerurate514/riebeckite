@@ -34,6 +34,13 @@ const FAST_PATH_CAPABLE: Readonly<Record<PresetName, boolean>> = {
   showcase: false,
 };
 
+const RENDERS_CONTENT: Readonly<Record<PresetName, boolean>> = {
+  empty: false,
+  minimal: true,
+  starter: true,
+  showcase: true,
+};
+
 function parseList(value: string | undefined): string[] {
   return (value ?? "")
     .split(",")
@@ -66,6 +73,7 @@ interface Trial {
 
 function sizesFor(preset: PresetName): number[] {
   if (sizeOverride.length > 0) return sizeOverride;
+  if (!RENDERS_CONTENT[preset]) return [0];
   return FAST_PATH_CAPABLE[preset] ? [100, 1000] : [100];
 }
 
@@ -260,7 +268,7 @@ async function runPreset(
   const contentDir = path.join(siteDir, "content");
 
   for (const size of sizesFor(preset)) {
-    await writeBenchmarkContent(contentDir, size);
+    if (size > 0) await writeBenchmarkContent(contentDir, size);
     logger.step(`[${preset}] size ${size}`);
     for (let current = 1; current <= runs; current += 1) {
       resetSite(siteDir);

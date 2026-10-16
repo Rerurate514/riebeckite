@@ -48,6 +48,10 @@ export function folderPages(options: FolderPagesOptions = {}) {
     provides: ["content.folder-pages"],
     options,
     optional: ["content.localization"],
+    manifestHookCache: {
+      version: "folder-pages-v1",
+      mutations: ["folderLocations"],
+    },
     validateOptions: validateFolderPagesOptions,
     extendContentLocations: ({ locations }) => {
       collapseFolderEntryLocations(locations);

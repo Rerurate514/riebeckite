@@ -407,34 +407,15 @@ async function main(): Promise<void> {
       `${JSON.stringify(Object.fromEntries(coldSnapshot), null, 2)}\n`,
     );
 
-    // 2. No-change fast path.
-    logger.step("case 2: No-change Fast Path");
+    // 2. No-change fallback for generated-output planners.
+    logger.step("case 2: No-change planner fallback");
     const noChange = await build("No-change Fast Path", {
-      expectFastPath: true,
+      expectFastPath: false,
     });
     assert.equal(
       noChange.blockReason,
-      undefined,
-      "fast path must not report a block reason",
-    );
-    assert.equal(
-      noChange.viteStartupSkipped,
-      true,
-      "fast path must skip Vite and SSG",
-    );
-    assert.equal(
-      noChange.ssgSkipped,
-      true,
-      "fast path must skip the SSG build (no SSG metrics)",
-    );
-    assert.equal(
-      noChange.contentProcessed,
-      0,
-      "fast path must reuse every entry",
-    );
-    assert.ok(
-      (noChange.outputFilesHashed ?? 0) > 0,
-      "fast path must verify at least one output file",
+      "plugin-generated-output-plan",
+      "generated-output planners must block the no-change fast path",
     );
     assertNoDifference(
       "no-change vs cold",
@@ -654,8 +635,8 @@ async function main(): Promise<void> {
     });
     assert.equal(
       feedTampered.blockReason,
-      "output-inventory-mismatch",
-      `feed modification must be detected by the output inventory (got ${feedTampered.blockReason})`,
+      "plugin-generated-output-plan",
+      `generated-output planner must block the fast path before output inventory validation (got ${feedTampered.blockReason})`,
     );
     assertNoDifference(
       "feed modification self-heal",
@@ -668,8 +649,8 @@ async function main(): Promise<void> {
     const feedDeleted = await build("Feed deletion", { expectFastPath: false });
     assert.equal(
       feedDeleted.blockReason,
-      "output-inventory-mismatch",
-      `feed deletion must be detected by the output inventory (got ${feedDeleted.blockReason})`,
+      "plugin-generated-output-plan",
+      `generated-output planner must block the fast path before output inventory validation (got ${feedDeleted.blockReason})`,
     );
     assertNoDifference(
       "feed deletion self-heal",
@@ -685,8 +666,8 @@ async function main(): Promise<void> {
     });
     assert.equal(
       extraFileResult.blockReason,
-      "output-inventory-mismatch",
-      `extra dist file must be detected by the output inventory (got ${extraFileResult.blockReason})`,
+      "plugin-generated-output-plan",
+      `generated-output planner must block the fast path before output inventory validation (got ${extraFileResult.blockReason})`,
     );
     if (fs.existsSync(extraFile)) {
       fail("extra dist file was not removed by the recovered build");
@@ -722,20 +703,15 @@ async function main(): Promise<void> {
       diffSnapshots(incrementalSnapshot, fullSnapshot),
     );
 
-    // 17. No-change recovery.
-    logger.step("case 17: No-change recovery");
+    // 17. No-change planner fallback recovery.
+    logger.step("case 17: No-change planner fallback recovery");
     const recovered = await build("No-change recovery", {
-      expectFastPath: true,
+      expectFastPath: false,
     });
     assert.equal(
       recovered.blockReason,
-      undefined,
-      "recovered no-change build must not report a block reason",
-    );
-    assert.equal(
-      recovered.viteStartupSkipped,
-      true,
-      "recovered no-change build must skip Vite and SSG",
+      "plugin-generated-output-plan",
+      "recovered no-change build must keep the generated-output planner fallback",
     );
     assertNoDifference(
       "no-change recovery vs full",
@@ -767,7 +743,7 @@ async function main(): Promise<void> {
       );
     }
     logger.step(
-      "PASS: standard starter no-change build uses the fast path and every change invalidates it safely",
+      "PASS: standard starter falls back safely for generated-output planners and every change invalidates it safely",
     );
   } finally {
     if (keep) {

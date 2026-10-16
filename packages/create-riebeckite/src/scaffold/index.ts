@@ -89,8 +89,23 @@ export async function scaffoldRiebeckiteSite(
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, file.content);
   }
+  await ensureContentDirectory(targetDirectory, files);
 
   return { targetDirectory, files: files.map((file) => file.path) };
+}
+
+async function ensureContentDirectory(
+  targetDirectory: string,
+  files: readonly SiteTemplateFile[],
+): Promise<void> {
+  if (
+    files.some(
+      (file) => file.path === "content" || file.path.startsWith("content/"),
+    )
+  ) {
+    return;
+  }
+  await fs.mkdir(path.join(targetDirectory, "content"), { recursive: true });
 }
 
 function externalContentSource(

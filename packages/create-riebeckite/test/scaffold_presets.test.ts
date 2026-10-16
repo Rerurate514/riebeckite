@@ -75,6 +75,13 @@ test("each preset generates its intended self-contained composition", async () =
       assert.match(renderer, /export const __importing_islands = true/);
       if (preset === "empty") {
         assert.ok(!config.includes("@riebeckite/plugin-"));
+        const contentDirectory = await fs.stat(
+          path.join(targetDirectory, "content"),
+        );
+        assert.ok(
+          contentDirectory.isDirectory(),
+          "the empty preset must still create the configured content directory",
+        );
       } else {
         assert.ok(config.includes("@riebeckite/plugin-obsidian-markdown"));
         const headerPath = path.join(

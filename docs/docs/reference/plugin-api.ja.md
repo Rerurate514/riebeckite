@@ -128,9 +128,9 @@ enabled: false
 
 # Plugin の順序と依存関係
 
-単純な実行順は `order` で指定できます。
+`order` は、変換や renderer の優先順を決定的にするための基本順です。Plugin 間に Capability の提供・消費がなく、Pipeline 内の実行順だけが必要な場合に使用します。
 
-ただし、Plugin 同士に実際の依存関係がある場合は `order` ではなく **Capability** を使用します。
+一方、Plugin 同士に実際の提供・消費関係がある場合は `order` ではなく **Capability** を使用します。変換順を表すだけの Capability は作成しません。
 
 ```ts
 definePlugin({

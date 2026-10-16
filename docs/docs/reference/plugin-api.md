@@ -88,8 +88,11 @@ Use only the extension points a plugin actually needs.
 ## Ordering and capabilities
 
 Disabled/false/null inputs are removed, and `enabled: false` is never
-executed. `order` provides a basic ordering before dependency resolution,
-while [[capability|capability]] dependencies express real requirements:
+executed. `order` provides deterministic transform and renderer precedence
+before dependency resolution. Use it when plugins must run in a particular
+pipeline order but neither consumes a capability from the other. [[capability|Capability]]
+dependencies express real provider/consumer requirements; do not invent a
+capability merely to encode transform order.
 
 ``` ts
 plugins: [
@@ -111,8 +114,8 @@ definePlugin({
 - `optional`: capabilities used when present.
 
 The resolver places providers before consumers and detects missing
-requirements, duplicate providers, and cycles while preserving unrelated
-input order where possible. Capability resolution failures throw
+requirements, duplicate providers, and cycles while preserving the numeric
+precedence and unrelated input order where possible. Capability resolution failures throw
 `PluginDependencyError` (importable from `@riebeckite/core`); `kind` and
 `pluginName` identify the cause.
 

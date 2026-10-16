@@ -133,6 +133,7 @@ type OutputCacheEntry = {
 type OutputCacheState = {
   version: 3;
   appFingerprint?: string;
+  clientManifestFingerprint?: string;
   outputs: Record<string, OutputCacheEntry>;
   finalOutputInventory?: Record<string, string>;
   publicDirectory?: string;
@@ -140,10 +141,32 @@ type OutputCacheState = {
   configFile?: string;
 };
 
+type ClientBuildArtifacts = {
+  stagingDirectory: string;
+  paths: readonly string[];
+  manifestFingerprint: string;
+};
+
 export type NoChangeFastPathResult = {
   readonly used: boolean;
   readonly blockReason?: string;
 };
+
+export type NoChangeFastPathOutputMetrics = {
+  outputInventoryValidationDurationMs: number;
+  outputHashValidationDurationMs: number;
+  outputFilesHashed: number;
+  outputBytesHashed: number;
+};
+
+export function createNoChangeFastPathOutputMetrics(): NoChangeFastPathOutputMetrics {
+  return {
+    outputInventoryValidationDurationMs: 0,
+    outputHashValidationDurationMs: 0,
+    outputFilesHashed: 0,
+    outputBytesHashed: 0,
+  };
+}
 
 export type RiebeckiteSsgOptions = {
   entry?: string;
@@ -168,6 +191,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         configFile: string | undefined;
       }
     | undefined;
+  let clientBuildArtifacts: ClientBuildArtifacts | undefined;
 
   return {
     name: "riebeckite-ssg",
@@ -184,6 +208,27 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
     },
     configResolved(config) {
       resolvedConfig = config;
+    },
+    async buildStart() {
+      const config = resolvedConfig;
+      if (!config) return;
+      if (
+        !config.plugins.some((plugin) =>
+          plugin.name.startsWith("@hono/vite-build/"),
+        )
+      ) {
+        return;
+      }
+      const outDir = resolve(config.root, config.build.outDir);
+      clientBuildArtifacts = await preserveClientBuildArtifacts(outDir);
+      logSsgDiagnostics(
+        this,
+        `client manifest ${clientBuildArtifacts ? `preserved (${clientBuildArtifacts.paths.length} files)` : "not found"}`,
+      );
+      await rm(outDir, {
+        recursive: true,
+        force: true,
+      });
     },
     resolveId(id) {
       return id === virtualId ? resolvedVirtualId : undefined;
@@ -202,6 +247,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       }
 
       const timingsMs: Record<string, number> = {};
+      const outDir = resolve(config.root, config.build.outDir);
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
       const server = await measure(timingsMs, "ssgSetup", () =>
         createServer({
@@ -222,6 +268,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       );
 
       try {
+        await restoreClientBuildArtifacts(outDir, clientBuildArtifacts);
+        logSsgDiagnostics(
+          this,
+          `SSR noExternal=${formatSsrNoExternal()} · client manifest ${clientBuildArtifacts ? "restored" : "not found"}`,
+        );
         const module = (await measure(timingsMs, "ssrModuleLoad", () =>
           server.ssrLoadModule(entry),
         )) as SsgModule;
@@ -267,6 +318,8 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           !outputChangeSet.fullRegenerationRequired &&
           previousOutputCache &&
           previousOutputCache.appFingerprint === appFingerprint &&
+          previousOutputCache.clientManifestFingerprint ===
+            clientBuildArtifacts?.manifestFingerprint &&
           outputChangeSet.unchanged.every(
             (output) =>
               siteOwnedOutputPaths.has(output.path) ||
@@ -276,6 +329,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           canUseIncremental
             ? outputChangeSet.unchanged.map((output) => output.path)
             : [],
+        );
+        logSsgDiagnostics(
+          this,
+          `output cache ${canUseIncremental ? "hit" : "miss"} · ${reusablePaths.size} reusable outputs`,
         );
         const shadowedOutputs = new Set<string>();
         const skippedRouteCount = canUseIncremental
@@ -287,6 +344,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         const nextOutputCache: OutputCacheState = {
           version: 3,
           appFingerprint,
+          clientManifestFingerprint: clientBuildArtifacts?.manifestFingerprint,
           outputs: {},
           configFile: config.configFile,
         };
@@ -327,7 +385,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         process.env.RIEBECKITE_SSG_SKIP_UNCHANGED = canUseIncremental
           ? "1"
           : "";
-        const outDir = resolve(config.root, config.build.outDir);
         const result = await measure(timingsMs, "toSSG", () =>
           toSSG(
             app,
@@ -481,8 +538,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           warn: (message) => this.warn(message),
           info: (message) => this.info(message),
         });
+        logGeneratedHtmlAssetDiagnostics(this, generatedHtml);
       } finally {
         await server.close();
+        await discardClientBuildArtifacts(clientBuildArtifacts);
+        clientBuildArtifacts = undefined;
       }
     },
     async closeBundle() {
@@ -560,6 +620,180 @@ function isMissingDirectoryError(error: unknown): boolean {
 
 function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
+}
+
+async function preserveClientBuildArtifacts(
+  outDir: string,
+): Promise<ClientBuildArtifacts | undefined> {
+  const manifestPath = ".vite/manifest.json";
+  let manifestSource: string;
+  try {
+    manifestSource = await readFile(join(outDir, manifestPath), "utf8");
+  } catch (error) {
+    if (isNotFoundError(error)) return undefined;
+    throw error;
+  }
+
+  const paths = [manifestPath, ...collectClientAssetPaths(manifestSource)];
+  const stagingDirectory = join(
+    dirname(outDir),
+    ".riebeckite",
+    `client-build-${randomUUID()}`,
+  );
+  for (const relativePath of paths) {
+    const source = resolveBuildArtifactPath(outDir, relativePath);
+    const destination = resolveBuildArtifactPath(
+      stagingDirectory,
+      relativePath,
+    );
+    await mkdir(dirname(destination), { recursive: true });
+    await rename(source, destination);
+  }
+  return {
+    stagingDirectory,
+    paths,
+    manifestFingerprint: createHash("sha256")
+      .update(manifestSource)
+      .digest("hex"),
+  };
+}
+
+async function restoreClientBuildArtifacts(
+  outDir: string,
+  artifacts: ClientBuildArtifacts | undefined,
+): Promise<void> {
+  if (!artifacts) return;
+  for (const relativePath of artifacts.paths) {
+    const source = resolveBuildArtifactPath(
+      artifacts.stagingDirectory,
+      relativePath,
+    );
+    const destination = resolveBuildArtifactPath(outDir, relativePath);
+    await mkdir(dirname(destination), { recursive: true });
+    await rename(source, destination);
+  }
+}
+
+async function discardClientBuildArtifacts(
+  artifacts: ClientBuildArtifacts | undefined,
+): Promise<void> {
+  if (!artifacts) return;
+  await rm(artifacts.stagingDirectory, { recursive: true, force: true });
+}
+
+function collectClientAssetPaths(manifestSource: string): string[] {
+  let manifest: unknown;
+  try {
+    manifest = JSON.parse(manifestSource);
+  } catch (error) {
+    throw new Error(
+      `Vite client manifest could not be parsed: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+  if (
+    typeof manifest !== "object" ||
+    manifest === null ||
+    Array.isArray(manifest)
+  ) {
+    throw new Error("Vite client manifest must be an object.");
+  }
+
+  const paths = new Set<string>();
+  for (const entry of Object.values(manifest)) {
+    if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+      continue;
+    }
+    const assets = entry as Record<string, unknown>;
+    addClientAssetPath(paths, assets.file);
+    addClientAssetPaths(paths, assets.css);
+    addClientAssetPaths(paths, assets.assets);
+  }
+  return [...paths].sort();
+}
+
+function addClientAssetPath(paths: Set<string>, value: unknown): void {
+  if (typeof value === "string") paths.add(value);
+}
+
+function addClientAssetPaths(paths: Set<string>, value: unknown): void {
+  if (!Array.isArray(value)) return;
+  for (const path of value) addClientAssetPath(paths, path);
+}
+
+function resolveBuildArtifactPath(
+  directory: string,
+  relativePath: string,
+): string {
+  if (
+    !relativePath ||
+    relativePath.startsWith("/") ||
+    relativePath.includes("\0")
+  ) {
+    throw new Error(
+      `Vite client manifest has an invalid asset path: ${relativePath}`,
+    );
+  }
+  const file = resolve(directory, relativePath);
+  const relativePathFromDirectory = relative(directory, file);
+  if (
+    relativePathFromDirectory.startsWith("..") ||
+    relativePathFromDirectory === "" ||
+    isAbsolutePath(relativePathFromDirectory)
+  ) {
+    throw new Error(
+      `Vite client manifest has an unsafe asset path: ${relativePath}`,
+    );
+  }
+  return file;
+}
+
+function isAbsolutePath(path: string): boolean {
+  return /^([a-z]:)?[\\/]/iu.test(path);
+}
+
+function formatSsrNoExternal(): string {
+  return "/^honox(?:\\/.*)?$/";
+}
+
+function logSsgDiagnostics(
+  logger: { info(message: string): void },
+  message: string,
+): void {
+  if (process.env.RIEBECKITE_SSG_DIAGNOSTICS !== "1") return;
+  logger.info(`[riebeckite-ssg] ${message}`);
+}
+
+function logGeneratedHtmlAssetDiagnostics(
+  logger: { info(message: string): void },
+  pages: readonly { path: string; html: string }[],
+): void {
+  if (process.env.RIEBECKITE_SSG_DIAGNOSTICS !== "1") return;
+  const renderedPages = pages.filter(
+    (page) =>
+      !/<meta\b[^>]*\bhttp-equiv=["']refresh["'][^>]*\bcontent=["'][^"']*\burl=/iu.test(
+        page.html,
+      ),
+  );
+  const cssPages = renderedPages.filter((page) =>
+    /<link\b[^>]*\brel=["'][^"']*\bstylesheet\b[^"']*["']/iu.test(page.html),
+  );
+  const scriptPages = renderedPages.filter((page) =>
+    /<script\b[^>]*\bsrc=["'][^"']+["']/iu.test(page.html),
+  );
+  const missingCss = renderedPages
+    .filter((page) => !cssPages.includes(page))
+    .map((page) => page.path);
+  const missingScript = renderedPages
+    .filter((page) => !scriptPages.includes(page))
+    .map((page) => page.path);
+  logger.info(
+    `[riebeckite-ssg] rendered HTML assets: ${pages.length} documents (${renderedPages.length} pages, ${pages.length - renderedPages.length} redirects) · CSS ${cssPages.length} · JavaScript ${scriptPages.length} · missing CSS ${missingCss.length} · missing JavaScript ${missingScript.length}`,
+  );
+  if (missingCss.length > 0 || missingScript.length > 0) {
+    logger.info(
+      `[riebeckite-ssg] missing asset references: CSS ${missingCss.join(", ") || "none"} · JavaScript ${missingScript.join(", ") || "none"}`,
+    );
+  }
 }
 
 export function shouldApplyRiebeckiteSsg(
@@ -659,6 +893,7 @@ export async function verifyNoChangeFastPath(input: {
   readonly root: string;
   readonly outputDirectory: string;
   readonly expectedOutputPaths: readonly string[];
+  readonly metrics?: NoChangeFastPathOutputMetrics;
 }): Promise<NoChangeFastPathResult> {
   const cache = await loadOutputCache(
     join(input.root, ".riebeckite", "ssg-output-cache.json"),
@@ -689,9 +924,15 @@ export async function verifyNoChangeFastPath(input: {
   ) {
     return { used: false, blockReason: "output-cache-incomplete" };
   }
+  const inventoryStartedAt = performance.now();
   const currentInventory = await fingerprintOutputDirectory(
     input.outputDirectory,
+    "",
+    input.metrics,
   );
+  if (input.metrics)
+    input.metrics.outputInventoryValidationDurationMs +=
+      performance.now() - inventoryStartedAt;
   if (!inventoriesEqual(cache.finalOutputInventory, currentInventory)) {
     return { used: false, blockReason: "output-inventory-mismatch" };
   }
@@ -712,6 +953,7 @@ async function fingerprintDirectory(directory: string): Promise<string> {
 async function fingerprintOutputDirectory(
   directory: string,
   relativeDirectory = "",
+  metrics?: NoChangeFastPathOutputMetrics,
 ): Promise<Record<string, string>> {
   const entries = await readdir(directory, { withFileTypes: true }).catch(
     (error: unknown) => {
@@ -730,14 +972,21 @@ async function fingerprintOutputDirectory(
     if (entry.isDirectory()) {
       Object.assign(
         inventory,
-        await fingerprintOutputDirectory(file, relativePath),
+        await fingerprintOutputDirectory(file, relativePath, metrics),
       );
       continue;
     }
     if (entry.isFile()) {
+      const hashedAt = performance.now();
+      const content = await readFile(file);
       inventory[relativePath] = createHash("sha256")
-        .update(await readFile(file))
+        .update(content)
         .digest("hex");
+      if (metrics) {
+        metrics.outputHashValidationDurationMs += performance.now() - hashedAt;
+        metrics.outputFilesHashed += 1;
+        metrics.outputBytesHashed += content.length;
+      }
     }
   }
   return inventory;
@@ -820,6 +1069,7 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
   const candidate = value as {
     version?: unknown;
     appFingerprint?: unknown;
+    clientManifestFingerprint?: unknown;
     outputs?: unknown;
     finalOutputInventory?: unknown;
     publicDirectory?: unknown;
@@ -830,6 +1080,8 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
     candidate.version === 3 &&
     (candidate.appFingerprint === undefined ||
       typeof candidate.appFingerprint === "string") &&
+    (candidate.clientManifestFingerprint === undefined ||
+      typeof candidate.clientManifestFingerprint === "string") &&
     isOutputCacheEntries(candidate.outputs) &&
     (candidate.finalOutputInventory === undefined ||
       isOutputInventory(candidate.finalOutputInventory)) &&

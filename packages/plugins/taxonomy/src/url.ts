@@ -6,7 +6,7 @@ import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
  * rest of the site without depending on the SEO package.
  */
 export function buildTaxonomyAbsoluteUrl(
-  config: ResolvedRiebeckiteConfig,
+  config: Pick<ResolvedRiebeckiteConfig, "site">,
   pathOrUrl: string,
 ): string {
   if (!pathOrUrl) return config.site.baseUrl;

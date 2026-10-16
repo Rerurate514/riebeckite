@@ -16,19 +16,41 @@ export async function checkProductionAssetIntegrity({ siteRoot }) {
   const results = await Promise.all(
     htmlFiles.map((htmlFile) => checkHtmlAssets({ assetsDirectory, htmlFile })),
   );
-
-  return {
+  const manifest = await checkClientManifest(assetsDirectory);
+  const errors = [
+    ...results.flatMap((result) => result.errors),
+    ...manifest.errors,
+  ];
+  const result = {
     assetsDirectory,
     htmlFileCount: htmlFiles.length,
     stylesheetReferenceCount: results.reduce(
-      (count, result) => count + result.stylesheetReferenceCount,
+      (count, page) => count + page.stylesheets,
       0,
     ),
     scriptReferenceCount: results.reduce(
-      (count, result) => count + result.scriptReferenceCount,
+      (count, page) => count + page.scripts,
       0,
     ),
+    pagesWithStylesheets: results.filter((page) => page.stylesheets > 0).length,
+    pagesWithoutStylesheets: results
+      .filter((page) => page.stylesheets === 0 && !page.isRedirect)
+      .map((page) => page.documentName),
+    pagesWithScripts: results.filter((page) => page.scripts > 0).length,
+    pagesWithoutScripts: results
+      .filter((page) => page.scripts === 0 && !page.isRedirect)
+      .map((page) => page.documentName),
+    redirectDocumentCount: results.filter((page) => page.isRedirect).length,
+    targetHeads: await collectTargetHeads(assetsDirectory),
+    manifest,
+    errors,
   };
+  if (errors.length > 0) {
+    throw new Error(
+      `Production asset integrity failed:\n${errors.map((error) => `- ${error}`).join("\n")}`,
+    );
+  }
+  return result;
 }
 
 async function resolveAssetsDirectory(siteRoot) {
@@ -56,39 +78,51 @@ async function checkHtmlAssets({ assetsDirectory, htmlFile }) {
     (tag) =>
       isExecutableScript(tag) && !isExternalReference(tag.attributes.src),
   );
+  const isRedirect = tags.some(
+    (tag) =>
+      tag.name === "meta" &&
+      tag.attributes["http-equiv"]?.toLowerCase() === "refresh" &&
+      typeof tag.attributes.content === "string" &&
+      /\burl=/iu.test(tag.attributes.content),
+  );
 
-  if (stylesheets.length === 0) {
-    throw new Error(`${documentName} has no local stylesheet reference.`);
-  }
-  if (scripts.length === 0) {
-    throw new Error(`${documentName} has no local JavaScript reference.`);
-  }
-
+  const errors = [];
+  if (!isRedirect && stylesheets.length === 0)
+    errors.push(`${documentName} has no local stylesheet reference.`);
+  if (!isRedirect && scripts.length === 0)
+    errors.push(`${documentName} has no local JavaScript reference.`);
   for (const stylesheet of stylesheets) {
-    await verifyAssetReference({
-      assetsDirectory,
-      htmlFile,
-      documentName,
-      reference: stylesheet.attributes.href,
-      baseReference,
-      kind: "CSS",
-      requireContent: true,
-    });
+    errors.push(
+      ...(await verifyAssetReference({
+        assetsDirectory,
+        htmlFile,
+        documentName,
+        reference: stylesheet.attributes.href,
+        baseReference,
+        kind: "CSS",
+        requireContent: true,
+      })),
+    );
   }
   for (const script of scripts) {
-    await verifyAssetReference({
-      assetsDirectory,
-      htmlFile,
-      documentName,
-      reference: script.attributes.src,
-      baseReference,
-      kind: "JavaScript",
-      requireContent: false,
-    });
+    errors.push(
+      ...(await verifyAssetReference({
+        assetsDirectory,
+        htmlFile,
+        documentName,
+        reference: script.attributes.src,
+        baseReference,
+        kind: "JavaScript",
+        requireContent: false,
+      })),
+    );
   }
   return {
-    stylesheetReferenceCount: stylesheets.length,
-    scriptReferenceCount: scripts.length,
+    documentName,
+    stylesheets: stylesheets.length,
+    scripts: scripts.length,
+    isRedirect,
+    errors,
   };
 }
 
@@ -120,28 +154,158 @@ function findBaseReference(tags) {
 async function verifyAssetReference(input) {
   const assetPath = resolveAssetPath(input);
   if (!assetPath) {
-    throw new Error(
+    return [
       `${input.documentName} has an invalid ${input.kind} reference: ${input.reference}`,
-    );
+    ];
   }
   let assetInfo;
   try {
     assetInfo = await stat(assetPath);
   } catch {
-    throw new Error(
+    return [
       `${input.documentName} references missing ${input.kind} asset: ${input.reference}`,
-    );
+    ];
   }
   if (!assetInfo.isFile()) {
-    throw new Error(
+    return [
       `${input.documentName} references a non-file ${input.kind} asset: ${input.reference}`,
-    );
+    ];
   }
   if (input.requireContent && assetInfo.size === 0) {
-    throw new Error(
+    return [
       `${input.documentName} references an empty CSS asset: ${input.reference}`,
-    );
+    ];
   }
+  return [];
+}
+
+async function checkClientManifest(assetsDirectory) {
+  const manifestPath = path.join(assetsDirectory, ".vite", "manifest.json");
+  const errors = [];
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  } catch {
+    errors.push(
+      `Vite client manifest is unavailable: ${path.relative(assetsDirectory, manifestPath)}`,
+    );
+    return {
+      path: manifestPath,
+      exists: false,
+      cssEntryCount: 0,
+      entries: {},
+      errors,
+    };
+  }
+  if (
+    typeof manifest !== "object" ||
+    manifest === null ||
+    Array.isArray(manifest)
+  ) {
+    errors.push("Vite client manifest must be an object.");
+    return {
+      path: manifestPath,
+      exists: true,
+      cssEntryCount: 0,
+      entries: {},
+      errors,
+    };
+  }
+  const entries = manifest;
+  const diagnostics = Object.fromEntries(
+    ["app/style.css", "app/client.ts"].flatMap((key) => {
+      const entry = entries[key];
+      if (typeof entry !== "object" || entry === null) return [];
+      return [[key, entry.src ?? key]];
+    }),
+  );
+  const cssEntryCount = Object.values(entries).filter((entry) =>
+    hasCssAsset(entry),
+  ).length;
+  if (cssEntryCount === 0)
+    errors.push("Vite client manifest has no CSS asset entries.");
+  for (const key of ["app/style.css", "app/client.ts"]) {
+    if (!Object.hasOwn(entries, key))
+      errors.push(`Vite client manifest is missing ${key}.`);
+  }
+  for (const [key, entry] of Object.entries(entries)) {
+    if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+      errors.push(`Vite client manifest entry ${key} is invalid.`);
+      continue;
+    }
+    for (const asset of collectManifestAssets(entry)) {
+      errors.push(...(await verifyManifestAsset(assetsDirectory, key, asset)));
+    }
+  }
+  return {
+    path: manifestPath,
+    exists: true,
+    cssEntryCount,
+    entries: diagnostics,
+    errors,
+  };
+}
+
+function hasCssAsset(entry) {
+  return collectManifestAssets(entry).some((asset) => asset.endsWith(".css"));
+}
+
+function collectManifestAssets(entry) {
+  if (typeof entry !== "object" || entry === null || Array.isArray(entry))
+    return [];
+  const paths = [
+    entry.file,
+    ...(Array.isArray(entry.css) ? entry.css : []),
+    ...(Array.isArray(entry.assets) ? entry.assets : []),
+  ];
+  return paths.filter((asset) => typeof asset === "string");
+}
+
+async function verifyManifestAsset(assetsDirectory, key, asset) {
+  const assetPath = path.resolve(assetsDirectory, asset);
+  const relativePath = path.relative(assetsDirectory, assetPath);
+  if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+    return [`Vite client manifest entry ${key} has an invalid asset: ${asset}`];
+  }
+  try {
+    const info = await stat(assetPath);
+    if (!info.isFile())
+      return [
+        `Vite client manifest entry ${key} references a non-file asset: ${asset}`,
+      ];
+    if (asset.endsWith(".css") && info.size === 0)
+      return [
+        `Vite client manifest entry ${key} references an empty CSS asset: ${asset}`,
+      ];
+    return [];
+  } catch {
+    return [
+      `Vite client manifest entry ${key} references a missing asset: ${asset}`,
+    ];
+  }
+}
+
+async function collectTargetHeads(assetsDirectory) {
+  const result = {};
+  for (const name of ["index.html", "README.html"]) {
+    try {
+      const html = await readFile(path.join(assetsDirectory, name), "utf8");
+      const tags = parseHtmlTags(
+        html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/iu)?.[1] ?? "",
+      );
+      result[name] = {
+        stylesheets: tags
+          .filter(isStylesheet)
+          .map((tag) => tag.attributes.href),
+        scripts: tags
+          .filter(isExecutableScript)
+          .map((tag) => tag.attributes.src),
+      };
+    } catch {
+      result[name] = null;
+    }
+  }
+  return result;
 }
 
 function resolveAssetPath({
@@ -270,8 +434,22 @@ function stripJsonComments(source) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const siteRoot = process.argv[2] ?? path.join(repositoryRoot, "apps", "web");
-  const result = await checkProductionAssetIntegrity({ siteRoot });
-  console.log(
-    `Production asset integrity passed: ${result.htmlFileCount} HTML files, ${result.stylesheetReferenceCount} CSS references, and ${result.scriptReferenceCount} JavaScript references in ${result.assetsDirectory}`,
-  );
+  try {
+    const result = await checkProductionAssetIntegrity({ siteRoot });
+    console.log(
+      `Production asset integrity passed: ${result.htmlFileCount} HTML files; CSS ${result.stylesheetReferenceCount} (${result.pagesWithStylesheets} pages, missing ${result.pagesWithoutStylesheets.length}); JavaScript ${result.scriptReferenceCount} (${result.pagesWithScripts} pages, missing ${result.pagesWithoutScripts.length}); manifest CSS entries ${result.manifest.cssEntryCount}.`,
+    );
+    console.log(
+      `Manifest entries: ${Object.entries(result.manifest.entries)
+        .map(([key, moduleId]) => `${key} -> ${moduleId}`)
+        .join(", ")}`,
+    );
+    for (const [page, head] of Object.entries(result.targetHeads))
+      console.log(
+        `${page} head assets: ${head === null ? "not found" : JSON.stringify(head)}`,
+      );
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
 }

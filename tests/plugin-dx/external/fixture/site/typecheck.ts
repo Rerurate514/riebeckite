@@ -18,7 +18,7 @@ const related: RiebeckitePlugin = relatedPostsPlugin({ max: 2 });
 const demo: RiebeckitePlugin = pluginDemoPlugin();
 
 const highlightOptions: HighlightOptions = { className: "x" };
-const relatedOptions: RelatedPostsOptions = { max: 1, slot: "article.aside" };
+const relatedOptions: RelatedPostsOptions = { max: 1 };
 const demoOptions: PluginDemoOptions = { heading: "Demo" };
 
 initPluginDemo();

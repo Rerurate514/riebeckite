@@ -26,6 +26,7 @@
     "test:registry": "node scripts/run_registry_e2e.mjs",
     "test:update": "node scripts/run_tests.mjs --update",
     "test:e2e:external": "node --import tsx tests/external-site/run.ts",
+    "test:e2e:fingerprint": "node --import tsx tests/external-site/fingerprint.ts",
     "test:browser": "pnpm --filter @riebeckite/plugin-search test:browser:required",
     "test:plugin-dx": "pnpm --dir tests/plugin-dx run test",
     "test:plugin-dx:external": "pnpm --dir tests/plugin-dx run test:external",

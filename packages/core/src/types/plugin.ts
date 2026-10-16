@@ -1,10 +1,12 @@
 import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
 import type { PluginOptionsValidator } from "./config_validation.js";
+import type { ContentManifestEntry } from "./content_manifest.js";
 import type { Diagnostic } from "./diagnostic.js";
 import type {
   ExternalDependencyContext,
   ExternalDependencyResolution,
 } from "./external_dependency.js";
+import type { GeneratedOutputContent } from "./generated_output.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
@@ -28,6 +30,7 @@ import type {
   PipelinePlugin,
 } from "./plugin_pipeline.js";
 import type { PluginSeoExtension } from "./plugin_seo.js";
+import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
   name: string;
@@ -89,6 +92,11 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   setup?(context: PluginLifecycleContext): void | Promise<void>;
   buildStart?(context: PluginLifecycleContext): void | Promise<void>;
   buildEnd?(context: PluginManifestContext): void | Promise<void>;
+  planGeneratedOutputs?(
+    context: PluginGeneratedOutputPlanContext,
+  ):
+    | readonly PlannedGeneratedOutput[]
+    | Promise<readonly PlannedGeneratedOutput[]>;
   dispose?(context: PluginLifecycleContext): void | Promise<void>;
   onConfigResolved?(context: PluginContext): void | Promise<void>;
   onContentLoaded?(context: PluginContentContext): void | Promise<void>;
@@ -120,6 +128,19 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   contentOutputDependencies?: readonly OutputDependency[];
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
+};
+
+export type PlannedGeneratedOutput = {
+  readonly path: string;
+  readonly content: GeneratedOutputContent;
+  readonly dependencies: readonly OutputDependency[];
+};
+
+export type PluginGeneratedOutputPlanContext = {
+  readonly manifest: Readonly<{
+    readonly discoverableEntries: readonly ContentManifestEntry[];
+  }>;
+  readonly site: Readonly<ResolvedRiebeckiteConfig["site"]> | undefined;
 };
 
 export type ProcessedContentCacheContext = {

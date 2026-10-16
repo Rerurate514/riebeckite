@@ -43,6 +43,8 @@ import type {
   ResolvedPluginPage,
 } from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
+import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
+import { isTrustedGeneratedOutputPlanner } from "./generated_output_planner_capability.js";
 import { GeneratedOutputRegistry } from "./generated_output_registry.js";
 import type { PluginCache } from "./plugin_cache.js";
 import {
@@ -148,6 +150,11 @@ export class PluginRuntime {
     let cacheIndex = 0;
     for (const plugin of this.plugins()) {
       if (plugin.buildEnd) return "plugin-build-end";
+      if (
+        plugin.planGeneratedOutputs &&
+        !isTrustedGeneratedOutputPlanner(plugin)
+      )
+        return "plugin-generated-output-plan-unsafe";
       if (!plugin.onManifestCreated) continue;
 
       const cached = previousCache[cacheIndex];
@@ -415,6 +422,28 @@ export class PluginRuntime {
     await runBuildEnd(this.plugins(), (plugin) =>
       this.createPluginContext(plugin, context),
     );
+  }
+
+  async runGeneratedOutputPlans(manifest: ContentManifest): Promise<void> {
+    for (const plugin of this.plugins()) {
+      const hook = plugin.planGeneratedOutputs;
+      if (!hook) continue;
+      const outputs = await hook(
+        freezeGeneratedOutputPlanContext({
+          manifest: { discoverableEntries: manifest.discoverableEntries },
+          site: this.pipelineOptions.config?.site,
+        }),
+      );
+      const sink = this.generatedOutputs.sinkFor(plugin.name);
+      for (const output of outputs) {
+        if (output.dependencies.length === 0) {
+          throw new Error(
+            `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
+          );
+        }
+        sink.emit(output);
+      }
+    }
   }
 
   enableBuildTime(): void {
@@ -769,6 +798,20 @@ export class PluginRuntime {
     }
     return this.resolvedPlugins;
   }
+}
+
+function freezeGeneratedOutputPlanContext(context: {
+  manifest: { discoverableEntries: readonly ContentManifestEntry[] };
+  site: ResolvedRiebeckiteConfig["site"] | undefined;
+}) {
+  return deepFreeze(structuredClone(context));
+}
+
+function deepFreeze<T>(value: T): T {
+  if (value === null || typeof value !== "object") return value;
+  Object.freeze(value);
+  for (const property of Object.values(value)) deepFreeze(property);
+  return value;
 }
 
 function collectPageTypeOwners(plugins: readonly RiebeckitePlugin[]): void {

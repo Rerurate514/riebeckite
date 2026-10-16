@@ -246,8 +246,8 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
       "dist/robots.txt must exist after build",
     );
     assert.ok(
-      await dirExists(targetDir, "dist/assets"),
-      "dist/assets directory must exist after build",
+      await dirExists(targetDir, "dist/static"),
+      "dist/static directory must exist after build",
     );
     assert.ok(
       await fileExists(targetDir, "dist/index.html"),

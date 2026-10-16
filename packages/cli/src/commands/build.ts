@@ -4,8 +4,10 @@ import type {
   OutputChangeSet,
 } from "@riebeckite/core";
 import { ConsoleLogger, ContentManager, NoopTracer } from "@riebeckite/core";
+import type { NoChangeFastPathOutputMetrics } from "@riebeckite/honox";
 import {
   buildHonoxApplication,
+  createNoChangeFastPathOutputMetrics,
   verifyNoChangeFastPath,
 } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
@@ -15,6 +17,7 @@ import {
 } from "../build_output.js";
 import { resolveProjectContentSource } from "../content_source.js";
 import { loadProjectConfig } from "../load_config.js";
+import { FastPathSpanCollector } from "./fast_path_metrics.js";
 
 function formatDuration(durationMs: number): string {
   if (durationMs < 1_000) return `${Math.round(durationMs)}ms`;
@@ -25,10 +28,16 @@ export async function runBuild(
   project: RiebeckiteProject,
   options: { full: boolean; observability?: Observability },
 ): Promise<void> {
-  const observability = options.observability ?? {
+  const baseObservability = options.observability ?? {
     logger: new ConsoleLogger(),
     tracer: new NoopTracer(),
   };
+  const spanCollector = new FastPathSpanCollector(baseObservability.tracer);
+  const observability: Observability = {
+    logger: baseObservability.logger,
+    tracer: spanCollector,
+  };
+  const outputMetrics = createNoChangeFastPathOutputMetrics();
   const startedAt = performance.now();
   await observability.tracer.span("build.total", {}, async () => {
     const config = await loadProjectConfig(project);
@@ -49,21 +58,35 @@ export async function runBuild(
 
     let manifest: ContentManifest | null = null;
     let fastPathBlockReason: string | undefined;
+    const rssBeforeBytes = process.memoryUsage().rss;
     const fastPathDecisionStartedAt = performance.now();
     let fastPathUsed = false;
+    let pluginValidationDurationMs = 0;
     try {
       const outputChangeSet = options.full
         ? undefined
         : await content.getOutputChangeSet({ incremental: true });
+      let pluginBlockReason: string | undefined;
+      if (!options.full) {
+        const pluginValidationStartedAt = performance.now();
+        try {
+          pluginBlockReason = await content.getNoChangeFastPathBlockReason({
+            incremental: true,
+          });
+        } finally {
+          pluginValidationDurationMs =
+            performance.now() - pluginValidationStartedAt;
+        }
+      }
       const fastPath = await evaluateNoChangeFastPath(
         project,
         outputChangeSet,
-        options.full
-          ? undefined
-          : await content.getNoChangeFastPathBlockReason({ incremental: true }),
+        pluginBlockReason,
+        outputMetrics,
       );
       fastPathBlockReason = fastPath.blockReason;
       fastPathUsed = fastPath.used;
+      const rssAfterBytes = process.memoryUsage().rss;
       observability.tracer.event("build.fast-path", {
         fastPathEligible: fastPath.eligible,
         fastPathUsed,
@@ -72,6 +95,23 @@ export async function runBuild(
           performance.now() - fastPathDecisionStartedAt,
         viteStartupSkipped: fastPathUsed,
         ssgSkipped: fastPathUsed,
+        buildStateReadDurationMs: spanCollector.durationMs(
+          "content.build-state.load",
+        ),
+        contentPlanDurationMs: spanCollector.planDurationMs(),
+        externalDependencyDurationMs: spanCollector.durationMs(
+          "external.dependencies.resolve",
+        ),
+        pluginValidationDurationMs,
+        outputInventoryValidationDurationMs:
+          outputMetrics.outputInventoryValidationDurationMs,
+        outputHashValidationDurationMs:
+          outputMetrics.outputHashValidationDurationMs,
+        outputFilesHashed: outputMetrics.outputFilesHashed,
+        outputBytesHashed: outputMetrics.outputBytesHashed,
+        rssBeforeBytes,
+        rssAfterBytes,
+        peakRssBytes: Math.max(rssBeforeBytes, rssAfterBytes),
       });
       if (!fastPathUsed)
         manifest = await content.build({ incremental: !options.full });
@@ -106,6 +146,7 @@ async function evaluateNoChangeFastPath(
   project: RiebeckiteProject,
   outputChangeSet: OutputChangeSet | undefined,
   pluginBlockReason: string | undefined,
+  outputMetrics: NoChangeFastPathOutputMetrics,
 ): Promise<{
   readonly eligible: boolean;
   readonly used: boolean;
@@ -143,6 +184,7 @@ async function evaluateNoChangeFastPath(
     outputDirectory:
       project.config.outputDirectory ?? `${project.appRoot}/dist`,
     expectedOutputPaths: outputChangeSet.unchanged.map((output) => output.path),
+    metrics: outputMetrics,
   });
   return {
     eligible: verification.used,

@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import {
+  createNoChangeFastPathOutputMetrics,
   findBuildOutputSiteCollisions,
   loadOutputCache,
   saveOutputCache,
@@ -202,4 +203,72 @@ test("no-change fast path verifies inputs and every final output", async () => {
     }),
     { used: false, blockReason: "output-inventory-mismatch" },
   );
+});
+
+test("no-change fast path metrics count hashed output files and bytes", async () => {
+  const root = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-fast-path-metrics-"),
+  );
+  const app = path.join(root, "app");
+  const output = path.join(root, "dist");
+  const cache = path.join(root, ".riebeckite", "ssg-output-cache.json");
+  const config = path.join(root, "vite.config.ts");
+  await fs.mkdir(path.join(output, "assets"), { recursive: true });
+  await fs.mkdir(app, { recursive: true });
+  await fs.mkdir(path.dirname(cache), { recursive: true });
+  await fs.writeFile(config, "export default {};\n");
+  await fs.writeFile(path.join(app, "index.tsx"), "export {};\n");
+
+  const html = "<main>ok</main>";
+  const binary = Buffer.from([1, 2, 3, 4]);
+  await fs.writeFile(path.join(output, "index.html"), html);
+  await fs.writeFile(path.join(output, "assets", "a.bin"), binary);
+
+  const appFingerprint = createHash("sha256")
+    .update("app/index.tsx\0")
+    .update("export {};\n")
+    .update("\0")
+    .update("vite.config.ts\0")
+    .update("export default {};\n")
+    .update("\0")
+    .digest("hex");
+  const checksum = (source: string) =>
+    createHash("sha256").update(`utf8\0${source}`).digest("hex");
+  await saveOutputCache(cache, {
+    version: 3,
+    appFingerprint,
+    configFile: config,
+    outputs: {
+      "index.html": {
+        source: html,
+        encoding: "utf8",
+        checksum: checksum(html),
+      },
+      "assets/a.bin": {
+        source: binary.toString("base64"),
+        encoding: "base64",
+        checksum: createHash("sha256")
+          .update(`base64\0${binary.toString("base64")}`)
+          .digest("hex"),
+      },
+    },
+    finalOutputInventory: {
+      "index.html": createHash("sha256").update(html).digest("hex"),
+      "assets/a.bin": createHash("sha256").update(binary).digest("hex"),
+    },
+  });
+
+  const metrics = createNoChangeFastPathOutputMetrics();
+  const result = await verifyNoChangeFastPath({
+    root,
+    outputDirectory: output,
+    expectedOutputPaths: ["index.html", "assets/a.bin"],
+    metrics,
+  });
+
+  assert.deepEqual(result, { used: true });
+  assert.equal(metrics.outputFilesHashed, 2);
+  assert.equal(metrics.outputBytesHashed, html.length + binary.length);
+  assert.ok(metrics.outputInventoryValidationDurationMs >= 0);
+  assert.ok(metrics.outputHashValidationDurationMs >= 0);
 });

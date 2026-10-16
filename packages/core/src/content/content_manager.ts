@@ -400,6 +400,7 @@ export class ContentManager {
           ...(await this.pluginRuntime.collectDiagnostics(contentIndex)),
         ];
 
+        await this.pluginRuntime.runGeneratedOutputPlans(manifest);
         await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
         await this.emitPublicImageAssets(manifest);
         manifest.generatedOutputs =
@@ -463,6 +464,14 @@ export class ContentManager {
     options: ContentBuildOptions = {},
   ): Promise<string | undefined> {
     const plan = await this.getBuildPlan(options);
+    if (plan.fullRegenerationReasons.includes("publishing-state-expired"))
+      return "publishing-state-expired";
+    if (
+      plan.reusableOutputs?.some((output) =>
+        output.dependencies.some((dependency) => dependency.type === "unknown"),
+      )
+    )
+      return "output-dependency-unknown";
     return this.pluginRuntime.getNoChangeFastPathBlockReason(
       plan.previousState?.manifestHookCache ?? [],
       this.getPipelineFingerprint(),
@@ -715,6 +724,7 @@ export class ContentManager {
       plan.externalDependencies,
       this.processedContentCacheFingerprints,
       this.pluginRuntime.getManifestHookCache(),
+      this.publishingBuildTime,
     );
     this.buildStateCommitted = true;
   }
@@ -753,6 +763,7 @@ export class ContentManager {
       this.requiresFullContentRegeneration(),
       external.snapshots,
       external.failures,
+      this.publishingBuildTime,
     );
   }
 

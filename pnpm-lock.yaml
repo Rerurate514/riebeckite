@@ -146,6 +146,9 @@ importers:
       '@riebeckite/plugin-discord-embed':
         specifier: workspace:*
         version: link:../../packages/plugins/discord-embed
+      '@riebeckite/plugin-docs':
+        specifier: workspace:*
+        version: link:../../packages/plugins/docs
       '@riebeckite/plugin-excalibrain':
         specifier: workspace:*
         version: link:../../packages/plugins/excalibrain

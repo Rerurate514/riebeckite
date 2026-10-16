@@ -59,6 +59,7 @@ export class ContentBuildCoordinator {
     fullContentRegenerationRequired = false,
     externalDependencies: readonly ExternalDependencySnapshot[] = [],
     externalDependencyFailures: readonly ExternalDependencyFailure[] = [],
+    publishingBuildTime = new Date(),
   ): Promise<ContentBuildPlan> {
     if (this.plan) return this.plan;
 
@@ -68,6 +69,7 @@ export class ContentBuildCoordinator {
       fullContentRegenerationRequired,
       externalDependencies,
       externalDependencyFailures,
+      publishingBuildTime,
     );
     this.plan = plan;
     void plan.catch(() => {
@@ -92,10 +94,12 @@ export class ContentBuildCoordinator {
       string | undefined
     > = new Map(),
     manifestHookCache: readonly ManifestHookCacheEntry[] = [],
+    publishingBuildTime: Date,
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
     );
+    const nextChangeAt = nextPublishingChangeAt(manifest, publishingBuildTime);
     const state: ContentBuildState = {
       version: CONTENT_BUILD_STATE_VERSION,
       entries: Object.fromEntries(
@@ -140,6 +144,11 @@ export class ContentBuildCoordinator {
         }),
       ),
       manifestHookCache,
+      ...(nextChangeAt
+        ? {
+            nextPublishingChangeAt: nextChangeAt,
+          }
+        : {}),
     };
 
     try {
@@ -161,6 +170,7 @@ export class ContentBuildCoordinator {
     fullContentRegenerationRequired: boolean,
     externalDependencies: readonly ExternalDependencySnapshot[],
     externalDependencyFailures: readonly ExternalDependencyFailure[],
+    publishingBuildTime: Date,
   ): Promise<ContentBuildPlan> {
     const entries = await this.dependencies.observability.tracer.span(
       "content.discovery",
@@ -209,11 +219,16 @@ export class ContentBuildCoordinator {
           currentContentAliases,
         ),
     );
+    const publishingStateExpired = isPublishingStateExpired(
+      previousState,
+      publishingBuildTime,
+    );
     const affected = await this.dependencies.observability.tracer.span(
       "content.affected",
       { fullContentRegenerationRequired },
       () =>
         !fullContentRegenerationRequired &&
+        !publishingStateExpired &&
         previousState?.pipelineFingerprint === pipelineFingerprint
           ? determineAffectedContent(
               changeSet,
@@ -239,6 +254,8 @@ export class ContentBuildCoordinator {
       fullRegenerationReasons.push("pipeline-fingerprint-changed");
     if (fullContentRegenerationRequired)
       fullRegenerationReasons.push("content-plugin-uncacheable");
+    if (publishingStateExpired)
+      fullRegenerationReasons.push("publishing-state-expired");
     if (externalDependencyFailures.length > 0)
       fullRegenerationReasons.push("external-dependency-unavailable");
     this.dependencies.observability.tracer.event("build.incremental", {
@@ -256,6 +273,7 @@ export class ContentBuildCoordinator {
       incremental &&
       previousState?.pipelineFingerprint === pipelineFingerprint &&
       externalDependencyFailures.length === 0 &&
+      !publishingStateExpired &&
       externalDependenciesEqual(
         previousState?.externalDependencies ?? [],
         externalDependencies,
@@ -336,6 +354,35 @@ function externalDependenciesEqual(
 
 function isExpired(expiresAt: string | undefined): boolean {
   return expiresAt !== undefined && Date.parse(expiresAt) <= Date.now();
+}
+
+function isPublishingStateExpired(
+  state: ContentBuildState | undefined,
+  buildTime: Date,
+): boolean {
+  return (
+    state?.nextPublishingChangeAt !== undefined &&
+    Date.parse(state.nextPublishingChangeAt) <= buildTime.getTime()
+  );
+}
+
+function nextPublishingChangeAt(
+  manifest: ContentManifest,
+  buildTime: Date,
+): string | undefined {
+  const next = manifest.entries
+    .filter((entry) => entry.publishing.visibility === "scheduled")
+    .map((entry) => entry.publishing.publishAt?.getTime())
+    .filter(
+      (time): time is number =>
+        time !== undefined && time > buildTime.getTime(),
+    )
+    .reduce<number | undefined>(
+      (earliest, time) =>
+        earliest === undefined || time < earliest ? time : earliest,
+      undefined,
+    );
+  return next === undefined ? undefined : new Date(next).toISOString();
 }
 
 function readText(content: string | Uint8Array): string {

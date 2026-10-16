@@ -39,24 +39,36 @@ test("SSG adapter preserves client assets without treating them as routes", asyn
     renderTag: "v1",
     noteCount: 1,
     editedNotes: [],
+    stylesheet: "body { color: red; }\n",
   });
 
-  await buildSite(site, "cold");
+  await buildSite(site, "cold", { stylesheet: true });
   const coldIndex = await readFile(
     path.join(distPath(site), "index.html"),
     "utf8",
   );
-  const clientAsset = path.join(distPath(site), "static", "client.js");
-  await mkdir(path.dirname(clientAsset), { recursive: true });
-  await writeFile(clientAsset, "export {};\n", "utf8");
-  await buildSite(site, "no-change");
+  const stylesheet = coldIndex.match(/<link[^>]+href="\/([^"\n]+\.css)"/u)?.[1];
+  assert.ok(
+    stylesheet,
+    `index.html must link a client stylesheet: ${coldIndex}`,
+  );
+  const coldStylesheet = await readFile(
+    path.join(distPath(site), stylesheet),
+    "utf8",
+  );
+
+  await buildSite(site, "no-change", { stylesheet: true });
 
   assert.equal(
     await readFile(path.join(distPath(site), "index.html"), "utf8"),
     coldIndex,
     "an existing dist must not become adapter static-route input",
   );
-  assert.equal(await readFile(clientAsset, "utf8"), "export {};\n");
+  assert.equal(
+    await readFile(path.join(distPath(site), stylesheet), "utf8"),
+    coldStylesheet,
+    "the client build stylesheet must survive the SSG build",
+  );
 });
 
 test("SSG output links the manifest-resolved stylesheet on regular and README pages", async (t) => {
@@ -75,8 +87,6 @@ test("SSG output links the manifest-resolved stylesheet on regular and README pa
   });
 
   await buildSite(site, "cold", {
-    adapter: false,
-    emptyOutDir: false,
     stylesheet: true,
   });
 
@@ -86,6 +96,24 @@ test("SSG output links the manifest-resolved stylesheet on regular and README pa
     assert.ok(stylesheet, `${output}: ${html}`);
     await readFile(path.join(distPath(site), stylesheet));
   }
+  await readFile(path.join(distPath(site), ".vite", "manifest.json"));
+
+  const noChangeMetrics = await incrementalBuild(site, "no-change", {
+    stylesheet: true,
+  });
+  assert.equal(noChangeMetrics.fullRegenerationRequired, false);
+  assert.ok(Number(noChangeMetrics.reusedOutputCount) > 0);
+
+  await appendFile(notePath(site, 0), "\nEdited stylesheet note.\n", "utf8");
+  const contentChangeMetrics = await incrementalBuild(site, "content-change", {
+    stylesheet: true,
+  });
+  assert.equal(contentChangeMetrics.fullRegenerationRequired, false);
+  assert.ok(Number(contentChangeMetrics.affectedOutputCount) > 0);
+  assert.match(
+    await readFile(path.join(distPath(site), "notes/note-0.html"), "utf8"),
+    /Edited stylesheet note/u,
+  );
 });
 
 test("incremental SSG matches a clean cold build", async (t) => {

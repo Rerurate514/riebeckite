@@ -18,6 +18,12 @@
       "source": "./client.ts",
       "default": "./dist/client.js"
     },
+    "./internal/generated-output-planner-capability": {
+      "types": "./dist/src/plugin/generated_output_planner_capability.d.ts",
+      "import": "./dist/src/plugin/generated_output_planner_capability.js",
+      "source": "./src/plugin/generated_output_planner_capability.ts",
+      "default": "./dist/src/plugin/generated_output_planner_capability.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [

@@ -123,7 +123,15 @@ async function copyPersistentState(
   await copyPath(contentStatePath(from), contentStatePath(to));
   if (includeOutputCache) {
     await copyPath(cachePath(from), cachePath(to));
+    await copyPath(
+      outputCacheEntriesPath(cachePath(from)),
+      outputCacheEntriesPath(cachePath(to)),
+    );
   }
+}
+
+function outputCacheEntriesPath(cache: string): string {
+  return cache.replace(/\.json$/, ".entries");
 }
 
 async function pathExists(target: string): Promise<boolean> {

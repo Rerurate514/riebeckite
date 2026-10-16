@@ -73,6 +73,11 @@ test("malformed SSG output cache falls back instead of throwing", async () => {
       version: 3,
       outputs: { "index.html": { source: "", encoding: "raw" } },
     }),
+    JSON.stringify({ version: 4, outputs: { "index.html": null } }),
+    JSON.stringify({
+      version: 4,
+      outputs: { "index.html": { cachePath: "0", checksum: "a".repeat(64) } },
+    }),
   ]) {
     await fs.writeFile(cachePath, body, "utf8");
     assert.equal(await loadOutputCache(cachePath), undefined);
@@ -84,40 +89,40 @@ test("valid SSG output cache round-trips string and binary outputs", async () =>
     path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
   );
   const cachePath = path.join(directory, "ssg-output-cache.json");
-  const original = {
-    outputs: {
-      "index.html": "<h1>ok</h1>",
-      "assets/a.bin": {
-        source: Buffer.from([1, 2, 3]),
-      },
-    },
-  };
+  const output = path.join(directory, "dist");
+  const html = "<h1>ok</h1>";
+  const binary = Buffer.from([1, 2, 3]);
+  await fs.mkdir(path.join(output, "assets"), { recursive: true });
+  await fs.writeFile(path.join(output, "index.html"), html);
+  await fs.writeFile(path.join(output, "assets", "a.bin"), binary);
 
   const state = {
-    version: 3 as const,
+    version: 4 as const,
     outputs: {
       "index.html": {
-        source: original.outputs["index.html"],
-        encoding: "utf8" as const,
-        checksum: createHash("sha256")
-          .update("utf8\0<h1>ok</h1>")
-          .digest("hex"),
+        cachePath: "",
+        checksum: "",
       },
       "assets/a.bin": {
-        source: original.outputs["assets/a.bin"].source.toString("base64"),
-        encoding: "base64" as const,
-        checksum: createHash("sha256")
-          .update(
-            `base64\0${original.outputs["assets/a.bin"].source.toString("base64")}`,
-          )
-          .digest("hex"),
+        cachePath: "",
+        checksum: "",
       },
     },
   };
 
-  await saveOutputCache(cachePath, state);
+  await saveOutputCache(cachePath, state, output);
 
-  assert.deepEqual(await loadOutputCache(cachePath), state);
+  const loaded = await loadOutputCache(cachePath);
+  assert.deepEqual(loaded?.outputs, {
+    "index.html": {
+      cachePath: createHash("sha256").update("index.html").digest("hex"),
+      checksum: createHash("sha256").update(html).digest("hex"),
+    },
+    "assets/a.bin": {
+      cachePath: createHash("sha256").update("assets/a.bin").digest("hex"),
+      checksum: createHash("sha256").update(binary).digest("hex"),
+    },
+  });
 });
 
 test("SSG output cache rejects entries with an invalid checksum", async () => {
@@ -128,16 +133,48 @@ test("SSG output cache rejects entries with an invalid checksum", async () => {
   await fs.writeFile(
     cachePath,
     JSON.stringify({
-      version: 3,
+      version: 4,
       outputs: {
         "index.html": {
-          source: "corrupted",
-          encoding: "utf8",
+          cachePath: "0",
           checksum: "a".repeat(64),
         },
       },
     }),
     "utf8",
+  );
+
+  assert.equal(await loadOutputCache(cachePath), undefined);
+});
+
+test("SSG output cache falls back when a cached entry is corrupted", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
+  );
+  const cachePath = path.join(directory, "ssg-output-cache.json");
+  const output = path.join(directory, "dist");
+  await fs.mkdir(output, { recursive: true });
+  await fs.writeFile(path.join(output, "index.html"), "<h1>ok</h1>");
+  await saveOutputCache(
+    cachePath,
+    {
+      version: 4,
+      outputs: {
+        "index.html": { cachePath: "", checksum: "" },
+      },
+    },
+    output,
+  );
+
+  const cached = await loadOutputCache(cachePath);
+  assert.ok(cached);
+  await fs.writeFile(
+    path.join(
+      directory,
+      "ssg-output-cache.entries",
+      cached.outputs["index.html"].cachePath,
+    ),
+    "corrupted",
   );
 
   assert.equal(await loadOutputCache(cachePath), undefined);
@@ -170,21 +207,22 @@ test("no-change fast path verifies inputs and every final output", async () => {
     .update("export default {};\n")
     .update("\0")
     .digest("hex");
-  await saveOutputCache(cache, {
-    version: 3,
-    appFingerprint,
-    configFile: config,
-    outputs: {
-      "index.html": {
-        source: outputSource,
-        encoding: "utf8",
-        checksum: createHash("sha256")
-          .update(`utf8\0${outputSource}`)
-          .digest("hex"),
+  await saveOutputCache(
+    cache,
+    {
+      version: 4,
+      appFingerprint,
+      configFile: config,
+      outputs: {
+        "index.html": {
+          cachePath: "",
+          checksum: "",
+        },
       },
+      finalOutputInventory: { "index.html": outputChecksum },
     },
-    finalOutputInventory: { "index.html": outputChecksum },
-  });
+    output,
+  );
 
   assert.deepEqual(
     await verifyNoChangeFastPath({
@@ -241,31 +279,29 @@ test("no-change fast path metrics count hashed output files and bytes", async ()
     .update("export default {};\n")
     .update("\0")
     .digest("hex");
-  const checksum = (source: string) =>
-    createHash("sha256").update(`utf8\0${source}`).digest("hex");
-  await saveOutputCache(cache, {
-    version: 3,
-    appFingerprint,
-    configFile: config,
-    outputs: {
-      "index.html": {
-        source: html,
-        encoding: "utf8",
-        checksum: checksum(html),
+  await saveOutputCache(
+    cache,
+    {
+      version: 4,
+      appFingerprint,
+      configFile: config,
+      outputs: {
+        "index.html": {
+          cachePath: "",
+          checksum: "",
+        },
+        "assets/a.bin": {
+          cachePath: "",
+          checksum: "",
+        },
       },
-      "assets/a.bin": {
-        source: binary.toString("base64"),
-        encoding: "base64",
-        checksum: createHash("sha256")
-          .update(`base64\0${binary.toString("base64")}`)
-          .digest("hex"),
+      finalOutputInventory: {
+        "index.html": createHash("sha256").update(html).digest("hex"),
+        "assets/a.bin": createHash("sha256").update(binary).digest("hex"),
       },
     },
-    finalOutputInventory: {
-      "index.html": createHash("sha256").update(html).digest("hex"),
-      "assets/a.bin": createHash("sha256").update(binary).digest("hex"),
-    },
-  });
+    output,
+  );
 
   const metrics = createNoChangeFastPathOutputMetrics();
   const result = await verifyNoChangeFastPath({

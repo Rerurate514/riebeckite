@@ -1,6 +1,7 @@
 ﻿import { createHash, randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
 import {
+  copyFile,
   mkdir,
   readdir,
   readFile,
@@ -126,13 +127,12 @@ type SsgOutputMetrics = {
 };
 
 type OutputCacheEntry = {
-  source: string;
-  encoding: "utf8" | "base64";
+  cachePath: string;
   checksum: string;
 };
 
 type OutputCacheState = {
-  version: 3;
+  version: 4;
   appFingerprint?: string;
   clientManifestFingerprint?: string;
   outputs: Record<string, OutputCacheEntry>;
@@ -354,7 +354,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           : 0;
         const generatedHtml: { path: string; html: string }[] = [];
         const nextOutputCache: OutputCacheState = {
-          version: 3,
+          version: 4,
           appFingerprint,
           clientManifestFingerprint: clientBuildArtifacts?.manifestFingerprint,
           outputs: {},
@@ -429,7 +429,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                   }),
                 );
                 metrics.emittedOutputCount += 1;
-                nextOutputCache.outputs[fileName] = encodeOutput(data);
+                nextOutputCache.outputs[fileName] = {
+                  cachePath: "",
+                  checksum: "",
+                };
               },
               async mkdir() {},
             },
@@ -472,9 +475,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                   this.emitFile(asset),
                 );
                 metrics.emittedOutputCount += 1;
-                nextOutputCache.outputs[asset.fileName] = encodeOutput(
-                  asset.source,
-                );
+                nextOutputCache.outputs[asset.fileName] = {
+                  cachePath: "",
+                  checksum: "",
+                };
               },
               canUseIncremental
                 ? new Set(
@@ -500,13 +504,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               }
               const cached = previousOutputCache.outputs[path];
               if (!cached) continue;
-              measureSync(timingsMs, "outputWrite", () =>
-                this.emitFile({
-                  type: "asset",
-                  fileName: path,
-                  source: decodeOutput(cached),
-                }),
-              );
+              this.emitFile({
+                type: "asset",
+                fileName: path,
+                source: await decodeOutput(outputCachePath, cached),
+              });
               metrics.emittedOutputCount += 1;
               metrics.reusedOutputCount += 1;
               nextOutputCache.outputs[path] = cached;
@@ -581,6 +583,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         await saveOutputCache(
           pendingOutputCache.path,
           pendingOutputCache.state,
+          pendingOutputCache.outDir,
         );
       } catch (error) {
         this.warn(
@@ -1075,6 +1078,15 @@ export async function loadOutputCache(
     log("SSG output cache uses an unsupported format and will be rebuilt.");
     return undefined;
   }
+  const entriesAreValid = await measure(
+    timingsMs,
+    "outputCacheEntriesValidate",
+    () => validateOutputCacheEntries(path, parsed.outputs),
+  );
+  if (!entriesAreValid) {
+    log("SSG output cache entries are corrupted and will be rebuilt.");
+    return undefined;
+  }
   return timingsMs
     ? { ...parsed, fileSizeBytes: Buffer.byteLength(raw) }
     : parsed;
@@ -1093,7 +1105,7 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
     configFile?: unknown;
   };
   return (
-    candidate.version === 3 &&
+    candidate.version === 4 &&
     (candidate.appFingerprint === undefined ||
       typeof candidate.appFingerprint === "string") &&
     (candidate.clientManifestFingerprint === undefined ||
@@ -1129,30 +1141,37 @@ function isOutputCacheEntries(
     (entry) =>
       typeof entry === "object" &&
       entry !== null &&
-      typeof (entry as OutputCacheEntry).source === "string" &&
+      typeof (entry as OutputCacheEntry).cachePath === "string" &&
       typeof (entry as OutputCacheEntry).checksum === "string" &&
-      ((entry as OutputCacheEntry).encoding === "utf8" ||
-        (entry as OutputCacheEntry).encoding === "base64") &&
-      (entry as OutputCacheEntry).checksum ===
-        checksumOutput(entry as OutputCacheEntry),
+      (entry as OutputCacheEntry).cachePath.length > 0,
   );
 }
 
 export async function saveOutputCache(
   path: string,
   state: OutputCacheState,
+  outputDirectory: string,
   timingsMs?: Record<string, number>,
 ): Promise<string> {
   const directory = dirname(path);
   await mkdir(directory, { recursive: true });
+  const entriesPath = outputCacheEntriesPath(path);
   const temporaryPath = `${path}.${randomUUID()}.tmp`;
-  const serialized = measureSync(
-    timingsMs,
-    "outputCacheSerialize",
-    () => `${JSON.stringify(state)}\n`,
-  );
 
   try {
+    const outputs = await measure(timingsMs, "outputCacheEntriesWrite", () =>
+      saveOutputCacheEntries(
+        entriesPath,
+        outputDirectory,
+        state.outputs,
+        state.finalOutputInventory,
+      ),
+    );
+    const serialized = measureSync(
+      timingsMs,
+      "outputCacheSerialize",
+      () => `${JSON.stringify({ ...state, outputs })}\n`,
+    );
     await measure(timingsMs, "outputCacheWrite", () =>
       writeFile(temporaryPath, serialized, "utf8"),
     );
@@ -1170,6 +1189,60 @@ export async function saveOutputCache(
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
     throw error;
+  }
+}
+
+function outputCacheEntriesPath(outputCachePath: string): string {
+  return outputCachePath.replace(/\.json$/, ".entries");
+}
+
+async function saveOutputCacheEntries(
+  directory: string,
+  outputDirectory: string,
+  outputs: Readonly<Record<string, OutputCacheEntry>>,
+  finalOutputInventory: Readonly<Record<string, string>> | undefined,
+): Promise<Record<string, OutputCacheEntry>> {
+  await mkdir(directory, { recursive: true });
+  const entries: Record<string, OutputCacheEntry> = {};
+  for (const outputPath of Object.keys(outputs).sort()) {
+    const existing = outputs[outputPath];
+    if (existing.cachePath && existing.checksum) {
+      entries[outputPath] = existing;
+      continue;
+    }
+    const source = resolveOutputCacheFile(outputDirectory, outputPath);
+    const cachePath = createHash("sha256").update(outputPath).digest("hex");
+    const destination = join(directory, cachePath);
+    await copyFile(source, destination);
+    const checksum = finalOutputInventory?.[outputPath];
+    if (!checksum) {
+      const cachedChecksum = await checksumFile(destination);
+      if (!cachedChecksum) {
+        throw new Error(`Could not checksum cached output: ${outputPath}`);
+      }
+      entries[outputPath] = { cachePath, checksum: cachedChecksum };
+      continue;
+    }
+    entries[outputPath] = { cachePath, checksum };
+  }
+  return entries;
+}
+
+async function validateOutputCacheEntries(
+  outputCachePath: string,
+  entries: Readonly<Record<string, OutputCacheEntry>>,
+): Promise<boolean> {
+  try {
+    for (const entry of Object.values(entries)) {
+      const path = resolveOutputCacheFile(
+        outputCacheEntriesPath(outputCachePath),
+        entry.cachePath,
+      );
+      if ((await checksumFile(path)) !== entry.checksum) return false;
+    }
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -1282,31 +1355,39 @@ function isNotFoundError(error: unknown): boolean {
   );
 }
 
-function encodeOutput(source: string | Uint8Array): OutputCacheEntry {
-  const entry =
-    typeof source === "string"
-      ? { source, encoding: "utf8" as const }
-      : {
-          source: Buffer.from(source).toString("base64"),
-          encoding: "base64" as const,
-        };
-  return { ...entry, checksum: checksumOutput(entry) };
+async function decodeOutput(
+  outputCachePath: string,
+  entry: OutputCacheEntry,
+): Promise<Uint8Array> {
+  const file = resolveOutputCacheFile(
+    outputCacheEntriesPath(outputCachePath),
+    entry.cachePath,
+  );
+  const content = await readFile(file);
+  const checksum = createHash("sha256").update(content).digest("hex");
+  if (checksum !== entry.checksum) {
+    throw new Error("SSG output cache entry checksum mismatch.");
+  }
+  return content;
 }
 
-function checksumOutput(
-  entry: Pick<OutputCacheEntry, "source" | "encoding">,
+function resolveOutputCacheFile(
+  directory: string,
+  relativePath: string,
 ): string {
-  return createHash("sha256")
-    .update(entry.encoding)
-    .update("\0")
-    .update(entry.source)
-    .digest("hex");
-}
-
-function decodeOutput(entry: OutputCacheEntry): string | Uint8Array {
-  return entry.encoding === "utf8"
-    ? entry.source
-    : Buffer.from(entry.source, "base64");
+  if (!relativePath || relativePath.includes("\0")) {
+    throw new Error(`Invalid SSG output cache path: ${relativePath}`);
+  }
+  const file = resolve(directory, relativePath);
+  const relativePathFromDirectory = relative(directory, file);
+  if (
+    relativePathFromDirectory.startsWith("..") ||
+    relativePathFromDirectory === "" ||
+    isAbsolutePath(relativePathFromDirectory)
+  ) {
+    throw new Error(`Unsafe SSG output cache path: ${relativePath}`);
+  }
+  return file;
 }
 
 async function writeSsgOutputMetrics(metrics: SsgOutputMetrics): Promise<void> {

@@ -1,4 +1,5 @@
 ﻿import { createHash, randomUUID } from "node:crypto";
+import { createReadStream } from "node:fs";
 import {
   mkdir,
   readdir,
@@ -139,6 +140,17 @@ type OutputCacheState = {
   publicDirectory?: string;
   publicFingerprint?: string;
   configFile?: string;
+};
+
+type FastPathCacheState = {
+  version: 1;
+  outputCacheChecksum: string;
+  appFingerprint?: string;
+  finalOutputInventory: Record<string, string>;
+  publicDirectory?: string;
+  publicFingerprint?: string;
+  configFile: string;
+  outputPaths: readonly string[];
 };
 
 type ClientBuildArtifacts = {
@@ -895,13 +907,16 @@ export async function verifyNoChangeFastPath(input: {
   readonly expectedOutputPaths: readonly string[];
   readonly metrics?: NoChangeFastPathOutputMetrics;
 }): Promise<NoChangeFastPathResult> {
-  const cache = await loadOutputCache(
-    join(input.root, ".riebeckite", "ssg-output-cache.json"),
+  const outputCachePath = join(
+    input.root,
+    ".riebeckite",
+    "ssg-output-cache.json",
   );
+  const cache = await loadFastPathCache(fastPathCachePath(outputCachePath));
   if (!cache)
     return { used: false, blockReason: "output-cache-missing-or-invalid" };
-  if (!cache.finalOutputInventory || !cache.configFile) {
-    return { used: false, blockReason: "output-inventory-missing" };
+  if (cache.outputCacheChecksum !== (await checksumFile(outputCachePath))) {
+    return { used: false, blockReason: "output-cache-missing-or-invalid" };
   }
   if (
     cache.appFingerprint !==
@@ -919,7 +934,7 @@ export async function verifyNoChangeFastPath(input: {
   if (
     input.expectedOutputPaths.some(
       (output) =>
-        !cache.outputs[output] || !cache.finalOutputInventory?.[output],
+        !cache.outputPaths.includes(output) || !cache.finalOutputInventory[output],
     )
   ) {
     return { used: false, blockReason: "output-cache-incomplete" };
@@ -1126,7 +1141,7 @@ export async function saveOutputCache(
   path: string,
   state: OutputCacheState,
   timingsMs?: Record<string, number>,
-): Promise<void> {
+): Promise<string> {
   const directory = dirname(path);
   await mkdir(directory, { recursive: true });
   const temporaryPath = `${path}.${randomUUID()}.tmp`;
@@ -1143,9 +1158,96 @@ export async function saveOutputCache(
     await measure(timingsMs, "outputCacheRename", () =>
       replaceFile(temporaryPath, path),
     );
+    const checksum = createHash("sha256").update(serialized).digest("hex");
+    if (state.finalOutputInventory && state.configFile) {
+      await saveFastPathCache(
+        fastPathCachePath(path),
+        createFastPathCacheState(state, checksum),
+      );
+    }
+    return checksum;
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
     throw error;
+  }
+}
+
+function fastPathCachePath(outputCachePath: string): string {
+  return outputCachePath.replace(/\.json$/, ".fast-path.json");
+}
+
+function createFastPathCacheState(
+  state: OutputCacheState,
+  outputCacheChecksum: string,
+): FastPathCacheState {
+  if (!state.finalOutputInventory || !state.configFile) {
+    throw new Error("SSG output cache is missing fast-path validation data.");
+  }
+  return {
+    version: 1,
+    outputCacheChecksum,
+    appFingerprint: state.appFingerprint,
+    finalOutputInventory: state.finalOutputInventory,
+    publicDirectory: state.publicDirectory,
+    publicFingerprint: state.publicFingerprint,
+    configFile: state.configFile,
+    outputPaths: Object.keys(state.outputs).sort(),
+  };
+}
+
+async function saveFastPathCache(
+  path: string,
+  state: FastPathCacheState,
+): Promise<void> {
+  const directory = dirname(path);
+  await mkdir(directory, { recursive: true });
+  const temporaryPath = `${path}.${randomUUID()}.tmp`;
+  try {
+    await writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8");
+    await replaceFile(temporaryPath, path);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
+async function loadFastPathCache(
+  path: string,
+): Promise<FastPathCacheState | undefined> {
+  try {
+    const candidate: unknown = JSON.parse(await readFile(path, "utf8"));
+    return isFastPathCacheState(candidate) ? candidate : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function isFastPathCacheState(value: unknown): value is FastPathCacheState {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Partial<FastPathCacheState>;
+  return (
+    candidate.version === 1 &&
+    typeof candidate.outputCacheChecksum === "string" &&
+    (candidate.appFingerprint === undefined ||
+      typeof candidate.appFingerprint === "string") &&
+    isOutputInventory(candidate.finalOutputInventory) &&
+    (candidate.publicDirectory === undefined ||
+      typeof candidate.publicDirectory === "string") &&
+    (candidate.publicFingerprint === undefined ||
+      typeof candidate.publicFingerprint === "string") &&
+    typeof candidate.configFile === "string" &&
+    Array.isArray(candidate.outputPaths) &&
+    candidate.outputPaths.every((path) => typeof path === "string")
+  );
+}
+
+async function checksumFile(path: string): Promise<string | undefined> {
+  const hash = createHash("sha256");
+  try {
+    for await (const chunk of createReadStream(path)) hash.update(chunk);
+    return hash.digest("hex");
+  } catch {
+    return undefined;
   }
 }
 

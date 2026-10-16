@@ -203,6 +203,15 @@ test("no-change fast path verifies inputs and every final output", async () => {
     }),
     { used: false, blockReason: "output-inventory-mismatch" },
   );
+  await fs.writeFile(cache, "corrupted", "utf8");
+  assert.deepEqual(
+    await verifyNoChangeFastPath({
+      root,
+      outputDirectory: output,
+      expectedOutputPaths: ["index.html"],
+    }),
+    { used: false, blockReason: "output-cache-missing-or-invalid" },
+  );
 });
 
 test("no-change fast path metrics count hashed output files and bytes", async () => {

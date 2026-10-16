@@ -180,6 +180,77 @@ test("SSG output cache falls back when a cached entry is corrupted", async () =>
   assert.equal(await loadOutputCache(cachePath), undefined);
 });
 
+test("SSG output cache rejects unsafe logical paths and mismatched entry names", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
+  );
+  const cachePath = path.join(directory, "ssg-output-cache.json");
+  const checksum = "a".repeat(64);
+  for (const outputPath of [
+    "../outside.html",
+    "/outside.html",
+    "C:\\outside.html",
+  ]) {
+    await fs.writeFile(
+      cachePath,
+      JSON.stringify({
+        version: 4,
+        outputs: {
+          [outputPath]: {
+            cachePath: createHash("sha256").update(outputPath).digest("hex"),
+            checksum,
+          },
+        },
+      }),
+      "utf8",
+    );
+    assert.equal(await loadOutputCache(cachePath), undefined);
+  }
+  await fs.writeFile(
+    cachePath,
+    JSON.stringify({
+      version: 4,
+      outputs: {
+        "index.html": { cachePath: "b".repeat(64), checksum },
+      },
+    }),
+    "utf8",
+  );
+  assert.equal(await loadOutputCache(cachePath), undefined);
+});
+
+test("SSG output cache collects unreferenced entries after metadata commit", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
+  );
+  const cachePath = path.join(directory, "ssg-output-cache.json");
+  const output = path.join(directory, "dist");
+  await fs.mkdir(output, { recursive: true });
+  await fs.writeFile(path.join(output, "index.html"), "current");
+  const orphan = createHash("sha256").update("old.html").digest("hex");
+  const entriesDirectory = path.join(directory, "ssg-output-cache.entries");
+  await fs.mkdir(entriesDirectory, { recursive: true });
+  await fs.writeFile(path.join(entriesDirectory, orphan), "old");
+
+  await saveOutputCache(
+    cachePath,
+    {
+      version: 4,
+      outputs: { "index.html": { cachePath: "", checksum: "" } },
+    },
+    output,
+  );
+
+  assert.equal(
+    await fs.stat(path.join(entriesDirectory, orphan)).then(
+      () => true,
+      () => false,
+    ),
+    false,
+  );
+  assert.ok(await loadOutputCache(cachePath));
+});
+
 test("no-change fast path verifies inputs and every final output", async () => {
   const root = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-fast-path-"),

@@ -2,6 +2,7 @@
 import { createReadStream } from "node:fs";
 import {
   copyFile,
+  lstat,
   mkdir,
   readdir,
   readFile,
@@ -1127,7 +1128,10 @@ function isOutputInventory(value: unknown): value is Record<string, string> {
     typeof value === "object" &&
     value !== null &&
     !Array.isArray(value) &&
-    Object.values(value).every((checksum) => typeof checksum === "string")
+    Object.entries(value).every(
+      ([outputPath, checksum]) =>
+        isSafeLogicalOutputPath(outputPath) && isChecksum(checksum),
+    )
   );
 }
 
@@ -1137,13 +1141,15 @@ function isOutputCacheEntries(
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return false;
   }
-  return Object.values(value).every(
-    (entry) =>
+  return Object.entries(value).every(
+    ([outputPath, entry]) =>
+      isSafeLogicalOutputPath(outputPath) &&
       typeof entry === "object" &&
       entry !== null &&
       typeof (entry as OutputCacheEntry).cachePath === "string" &&
-      typeof (entry as OutputCacheEntry).checksum === "string" &&
-      (entry as OutputCacheEntry).cachePath.length > 0,
+      (entry as OutputCacheEntry).cachePath ===
+        outputCacheEntryName(outputPath) &&
+      isChecksum((entry as OutputCacheEntry).checksum),
   );
 }
 
@@ -1185,6 +1191,10 @@ export async function saveOutputCache(
         createFastPathCacheState(state, checksum),
       );
     }
+    await collectUnreferencedOutputCacheEntries(
+      outputCacheEntriesPath(path),
+      outputs,
+    );
     return checksum;
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
@@ -1202,18 +1212,25 @@ async function saveOutputCacheEntries(
   outputs: Readonly<Record<string, OutputCacheEntry>>,
   finalOutputInventory: Readonly<Record<string, string>> | undefined,
 ): Promise<Record<string, OutputCacheEntry>> {
-  await mkdir(directory, { recursive: true });
+  await ensureOutputCacheEntriesDirectory(directory);
   const entries: Record<string, OutputCacheEntry> = {};
   for (const outputPath of Object.keys(outputs).sort()) {
+    assertSafeLogicalOutputPath(outputPath);
     const existing = outputs[outputPath];
     if (existing.cachePath && existing.checksum) {
+      if (
+        existing.cachePath !== outputCacheEntryName(outputPath) ||
+        !isChecksum(existing.checksum)
+      ) {
+        throw new Error(`Invalid SSG output cache entry: ${outputPath}`);
+      }
       entries[outputPath] = existing;
       continue;
     }
     const source = resolveOutputCacheFile(outputDirectory, outputPath);
-    const cachePath = createHash("sha256").update(outputPath).digest("hex");
+    const cachePath = outputCacheEntryName(outputPath);
     const destination = join(directory, cachePath);
-    await copyFile(source, destination);
+    await replaceOutputCacheEntry(source, destination);
     const checksum = finalOutputInventory?.[outputPath];
     if (!checksum) {
       const cachedChecksum = await checksumFile(destination);
@@ -1233,11 +1250,18 @@ async function validateOutputCacheEntries(
   entries: Readonly<Record<string, OutputCacheEntry>>,
 ): Promise<boolean> {
   try {
-    for (const entry of Object.values(entries)) {
-      const path = resolveOutputCacheFile(
-        outputCacheEntriesPath(outputCachePath),
-        entry.cachePath,
-      );
+    const directory = outputCacheEntriesPath(outputCachePath);
+    if (!(await isSafeOutputCacheEntriesDirectory(directory))) return false;
+    for (const [outputPath, entry] of Object.entries(entries)) {
+      if (
+        !isSafeLogicalOutputPath(outputPath) ||
+        entry.cachePath !== outputCacheEntryName(outputPath) ||
+        !isChecksum(entry.checksum)
+      ) {
+        return false;
+      }
+      const path = resolveOutputCacheFile(directory, entry.cachePath);
+      if (!(await isRegularFile(path))) return false;
       if ((await checksumFile(path)) !== entry.checksum) return false;
     }
     return true;
@@ -1311,7 +1335,10 @@ function isFastPathCacheState(value: unknown): value is FastPathCacheState {
       typeof candidate.publicFingerprint === "string") &&
     typeof candidate.configFile === "string" &&
     Array.isArray(candidate.outputPaths) &&
-    candidate.outputPaths.every((path) => typeof path === "string")
+    candidate.outputPaths.every(isSafeLogicalOutputPath) &&
+    candidate.outputPaths.every(
+      (path, index, paths) => index === 0 || paths[index - 1] < path,
+    )
   );
 }
 
@@ -1375,7 +1402,11 @@ function resolveOutputCacheFile(
   directory: string,
   relativePath: string,
 ): string {
-  if (!relativePath || relativePath.includes("\0")) {
+  if (
+    !relativePath ||
+    relativePath.includes("\0") ||
+    isAbsolutePath(relativePath)
+  ) {
     throw new Error(`Invalid SSG output cache path: ${relativePath}`);
   }
   const file = resolve(directory, relativePath);
@@ -1388,6 +1419,106 @@ function resolveOutputCacheFile(
     throw new Error(`Unsafe SSG output cache path: ${relativePath}`);
   }
   return file;
+}
+
+function isSafeLogicalOutputPath(path: unknown): path is string {
+  if (
+    typeof path !== "string" ||
+    !path ||
+    path.includes("\\") ||
+    path.includes("\0") ||
+    isAbsolutePath(path)
+  ) {
+    return false;
+  }
+  try {
+    resolveOutputCacheFile("/riebeckite-output-root", path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function assertSafeLogicalOutputPath(path: string): void {
+  if (!isSafeLogicalOutputPath(path)) {
+    throw new Error(`Invalid SSG output path: ${path}`);
+  }
+}
+
+function outputCacheEntryName(outputPath: string): string {
+  return createHash("sha256").update(outputPath).digest("hex");
+}
+
+function isChecksum(value: unknown): value is string {
+  return typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
+}
+
+async function ensureOutputCacheEntriesDirectory(
+  directory: string,
+): Promise<void> {
+  await mkdir(directory, { recursive: true });
+  if (!(await isSafeOutputCacheEntriesDirectory(directory))) {
+    throw new Error(`Unsafe SSG output cache entries directory: ${directory}`);
+  }
+}
+
+async function isSafeOutputCacheEntriesDirectory(
+  directory: string,
+): Promise<boolean> {
+  try {
+    const info = await lstat(directory);
+    return info.isDirectory() && !info.isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
+async function isRegularFile(path: string): Promise<boolean> {
+  try {
+    const info = await lstat(path);
+    return info.isFile() && !info.isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
+async function replaceOutputCacheEntry(
+  source: string,
+  destination: string,
+): Promise<void> {
+  if ((await lstat(destination).catch(() => undefined))?.isSymbolicLink()) {
+    throw new Error(`Unsafe SSG output cache entry: ${destination}`);
+  }
+  const temporaryPath = `${destination}.${randomUUID()}.tmp`;
+  try {
+    await copyFile(source, temporaryPath);
+    await replaceFile(temporaryPath, destination);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
+async function collectUnreferencedOutputCacheEntries(
+  directory: string,
+  outputs: Readonly<Record<string, OutputCacheEntry>>,
+): Promise<void> {
+  try {
+    if (!(await isSafeOutputCacheEntriesDirectory(directory))) return;
+    const referenced = new Set(
+      Object.values(outputs).map((entry) => entry.cachePath),
+    );
+    const entries = await readdir(directory, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!/^[a-f0-9]{64}$/u.test(entry.name) || referenced.has(entry.name)) {
+        continue;
+      }
+      const path = join(directory, entry.name);
+      if (await isRegularFile(path)) await rm(path, { force: true });
+    }
+  } catch {
+    return;
+  }
 }
 
 async function writeSsgOutputMetrics(metrics: SsgOutputMetrics): Promise<void> {

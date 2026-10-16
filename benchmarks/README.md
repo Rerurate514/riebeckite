@@ -65,14 +65,41 @@ wall time, peak RSS, content/output reuse, SSG/output-cache counters, fast-path
 and full-regeneration status, output-write time, and a complete output-tree
 comparison. No output paths are excluded from equivalence checks.
 
-Showcase intentionally retains the official changelog and webmention plugins.
-Both declare unknown output dependencies, so no-change builds may require full
-regeneration; this is reported rather than bypassed. Output files are written
-as `benchmarks/results/<timestamp>-preset-ssg.{json,md}` and are single-sample
+Showcase intentionally retains the official changelog, webmention, and rename
+plugins. They declare `external` output dependencies (Git history, webmention
+provider, route lock), not `unknown` ones. When that external state cannot be
+read - for example, when the generated site is not a Git repository - the
+plugin reports an external dependency failure, so `fullRegenerationRequired`
+becomes true and no-change builds keep the normal build instead of the fast
+path. This is reported rather than bypassed. Output files are written as
+`benchmarks/results/<timestamp>-preset-ssg.{json,md}` and are single-sample
 measurements unless the harness is run repeatedly.
 Its disposable generated sites live under
 `apps/web/.riebeckite/preset-ssg-benchmark` by default so they resolve the
 workspace's built packages without changing a generated site's configuration.
+
+## Fast path CLI harness
+
+`test:e2e:preset-fast-path` (source: `tests/external-site/preset-fast-path.ts`)
+packs the workspace, installs the tarballs into a temporary site outside the
+repository, and drives the installed CLI as a separate process with
+`RIEBECKITE_BUILD_CONCURRENCY=1`. It runs the full cold, no-change, content,
+publication-boundary, output-integrity, full-build, and no-change-recovery
+matrix for every official preset (`empty`, `minimal`, `starter`, `showcase`),
+asserting the fast path for capable presets, a documented fallback block reason
+for the rest, output-inventory self-healing, and byte-identical incremental and
+full output trees. Results are written to
+`<os.tmpdir()>/riebeckite-preset-fast-path-results/preset-matrix.json`.
+
+`benchmark:preset-fast-path` (source:
+`tests/external-site/preset-fast-path-benchmark.ts`) reuses the same pack and
+install flow to measure `cold`, `no-change`, and `full` for the official
+presets at 100 notes (and 1000 notes for the fast-path-capable presets), three
+repetitions each. It resets `dist` and the build state before every cold build,
+runs the no-change build immediately after, and records the CLI wall time and
+the process-wide peak RSS (sampled in-process by
+`tests/external-site/rss-sampler.mjs`). Raw trials and medians are written to
+`<os.tmpdir()>/riebeckite-f5-benchmark-results` and are not committed.
 
 ## Vault profiles
 

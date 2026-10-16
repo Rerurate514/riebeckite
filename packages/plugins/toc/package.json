@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",
+    "puppeteer": "^25.11.0",
     "tsx": "^4.22.4"
   },
   "publishConfig": {
@@ -47,6 +48,7 @@
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
     "test": "node --import tsx --test \"test/*.test.ts\"",
+    "test:browser:required": "node test/browser/run-required.mjs",
     "prepack": "pnpm run build"
   },
   "repository": {

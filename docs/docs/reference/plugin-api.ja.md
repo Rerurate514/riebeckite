@@ -367,11 +367,10 @@ export function examplePlugin() {
   return definePlugin({
     name: "example",
     // ... factory hooks, assets, clientEntries, etc.
-    // UI component and data helper を export
-    component: <MyComponent />,
-    dataHelper: getMyData,
   });
 }
+
+export { MyComponent, getMyData };
 ```
 
 あるいはより規則的な形で、Plugin は `./components/` の下に置くことができます：

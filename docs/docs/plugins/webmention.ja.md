@@ -57,14 +57,26 @@ provider を省略するとインメモリ provider が使われます。ロー�
 
 ## 表示
 
-リクエスト時、アプリケーションは `getWebmentionsForEntry({ manifest,
-config, provider, slug })` と `renderWebmentionSection(mentions, options)` を直接呼ぶか、
-JSON フィードを利用できます。プラグインはもはやビルド時のマニフェストエントリを
-追記しません。保存されたメンションプロバイダは `webmention()` ファクトリによって
-所有されており、ビルド時のマニフェスト注入はもはや行われません。
+Site が JSX の配置を所有します。Provider のインスタンスは Site の composition で保持し、
+同じインスタンスを `webmention()` へ渡してから、`getWebmentionSectionData` で
+コンポーネントの型付き props を取得します。helper は `PublicContentView` を受け取るため、
+draft と scheduled の entry は描画できません。
 
-`render: false` でビルド時の描画を完全に無効化できます。プラグインはもはや
-マニフェスト生成時に対応 entry へセクションを追記しません。
+```tsx
+const mentions = await getWebmentionSectionData({
+  view,
+  slug,
+  config,
+  provider: webmentionProvider,
+});
+
+<WebmentionSection {...mentions} />
+```
+
+空の Provider は空の model を返し、`WebmentionSection` は何も描画しません。Plugin は
+ビルド時に manifest HTML を注入しません。より低レベルな query が必要な場合は、
+`getWebmentionsForEntry({ manifest, config, provider, slug })` を直接呼ぶか、JSON フィードを
+利用できます。
 
 ## オプション
 
@@ -99,7 +111,8 @@ manifest 生成時、公開 entry に一致しないターゲットのメンシ�
 - `MemoryWebmentionProvider`、provider / capability の型とエラー
 - `parseWebmentionSource`、`findTargetLink`、`verifyWebmention`、
   `createWebmentionSourceFetcher`
-- `renderWebmentionSection`、`getWebmentionsForEntry`、`groupMentionsBySlug`、
+- `WebmentionSection`、`getWebmentionSectionData`、`getWebmentionsForEntry`、
+  `groupMentionsBySlug`、
   `buildFeed`
 - `resolveWebmentionOptions`、`validateWebmentionOptions`
 

@@ -14,7 +14,7 @@ import {
  * base URL; without one, only an already-absolute permalink can be matched.
  */
 export function entryPublicUrl(
-  entry: ContentManifestEntry,
+  entry: Pick<ContentManifestEntry, "permalink">,
   config: ResolvedRiebeckiteConfig | undefined,
 ): string | null {
   if (config?.site.baseUrl) {

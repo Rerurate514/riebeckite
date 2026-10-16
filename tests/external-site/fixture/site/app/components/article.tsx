@@ -3,6 +3,7 @@ import {
   Article,
   ArticleBody,
   ArticleContent,
+  ArticleFooter,
   ArticleHeader,
   ArticleLayout,
   ArticleMeta,
@@ -10,9 +11,11 @@ import {
 
 type Props = {
   post: PostContent;
+  metadata?: unknown;
+  footer?: unknown;
 };
 
-export function FixtureArticle({ post }: Props) {
+export function FixtureArticle({ post, metadata, footer }: Props) {
   const { lead, rest } = splitAfterFirstHeading(post.html ?? "");
 
   return (
@@ -20,8 +23,10 @@ export function FixtureArticle({ post }: Props) {
       <ArticleLayout>
         <ArticleContent>
           <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />
+          {metadata}
           <ArticleMeta />
           <ArticleBody html={rest} />
+          {footer ? <ArticleFooter>{footer}</ArticleFooter> : null}
         </ArticleContent>
       </ArticleLayout>
     </Article>

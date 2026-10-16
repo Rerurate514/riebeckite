@@ -272,11 +272,10 @@ export function examplePlugin() {
   return definePlugin({
     name: "example",
     // ... factory hooks, assets, clientEntries, etc.
-    // Export UI component and data helper
-    component: <MyComponent />,
-    dataHelper: getMyData,
   });
 }
+
+export { MyComponent, getMyData };
 ```
 
 Or more conventionally, a plugin may place its component and helper under `./components/`:

@@ -82,9 +82,14 @@ export {
   renderWebmentionSection,
   WEBMENTION_ATTRIBUTE,
 } from "./src/render.js";
+export type {
+  WebmentionSectionData,
+  WebmentionSectionDataInput,
+} from "./src/server.js";
 export {
   compareMentions,
   countUnmatchedMentions,
+  getWebmentionSectionData,
   getWebmentionsForEntry,
   groupMentionsBySlug,
   queryWebmentionsForEntry,

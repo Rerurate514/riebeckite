@@ -54,11 +54,9 @@ import { tocPlugin } from "@riebeckite/plugin-toc";
 import { uxPlugin } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
-import {
-  MemoryWebmentionProvider,
-  webmention,
-} from "@riebeckite/plugin-webmention";
+import { webmention } from "@riebeckite/plugin-webmention";
 import { rerurateTheme } from "@riebeckite/theme-rerurate";
+import { webmentionProvider } from "./webmention";
 
 export default defineConfig({
   site: {
@@ -182,7 +180,7 @@ export default defineConfig({
     share(),
     relatedPosts(),
     diff({ ui: { maxRevisions: 10 } }),
-    webmention({ provider: new MemoryWebmentionProvider() }),
+    webmention({ provider: webmentionProvider }),
     responsiveImage(),
     localGraphPlugin(),
     l10n({ defaultLang: "en", languages: ["en", "ja"] }),

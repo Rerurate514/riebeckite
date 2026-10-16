@@ -1,10 +1,15 @@
 import type {
   ContentManifest,
+  PluginDataHelper,
   PublicContentEntry,
+  PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import type { WebmentionMention } from "./mention.js";
-import type { WebmentionProvider } from "./provider.js";
+import {
+  supportsWebmentionCapability,
+  type WebmentionProvider,
+} from "./provider.js";
 import { entryPublicUrl, findTargetEntry } from "./targets.js";
 import { urlComparisonKey } from "./url.js";
 
@@ -25,6 +30,54 @@ type WebmentionQueryInput = {
   provider: WebmentionProvider;
   slug: string;
   limit?: number;
+};
+
+export type WebmentionSectionData = {
+  readonly mentions: readonly WebmentionMention[];
+  readonly heading: string;
+  readonly className: string;
+};
+
+export type WebmentionSectionDataInput = {
+  readonly view: PublicContentView;
+  readonly slug: string;
+  readonly config: ResolvedRiebeckiteConfig | undefined;
+  readonly provider: WebmentionProvider;
+  readonly heading?: string;
+  readonly className?: string;
+  readonly limit?: number;
+};
+
+export const getWebmentionSectionData: PluginDataHelper<
+  WebmentionSectionDataInput,
+  WebmentionSectionData
+> = async ({
+  view,
+  slug,
+  config,
+  provider,
+  heading = "Mentions",
+  className = "rr-webmention",
+  limit,
+}) => {
+  const entry = view.findRoutableBySlug(slug);
+  if (!entry || !supportsWebmentionCapability(provider, "query")) {
+    return { mentions: [], heading, className };
+  }
+
+  const target = entryPublicUrl(entry, config);
+  if (target === null) return { mentions: [], heading, className };
+
+  const result = await provider.query({
+    type: "mentions_for_target",
+    target,
+    limit,
+  });
+  return {
+    mentions: [...result.mentions].sort(compareMentions),
+    heading,
+    className,
+  };
 };
 
 export function getWebmentionsForEntry(

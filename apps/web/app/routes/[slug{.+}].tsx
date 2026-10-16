@@ -46,7 +46,12 @@ import {
   extractTableOfContents,
   TableOfContents,
 } from "@riebeckite/plugin-toc";
+import {
+  getWebmentionSectionData,
+  WebmentionSection,
+} from "@riebeckite/plugin-webmention";
 import { createRoute } from "honox/factory";
+import { webmentionProvider } from "../../../../webmention";
 import Article from "../components/article/article";
 import HomePage from "../components/home/home";
 import { getArticleTitle } from "../lib/article-title";
@@ -135,6 +140,12 @@ export default createRoute(
       options: pluginOptions<ShareOptions>("share"),
     });
     const localGraph = await getLocalGraph({ view, slug });
+    const webmentions = await getWebmentionSectionData({
+      view,
+      slug,
+      config,
+      provider: webmentionProvider,
+    });
 
     const docsOptions = pluginOptions<DocsOptions>("docs");
     let docsNavigation: readonly DocsNavigationItem[] = [];
@@ -195,6 +206,7 @@ export default createRoute(
             <ShareControls {...shareLinks} />
             {localGraph ? <LocalGraph graph={localGraph} /> : null}
             <PostDiffView diff={postDiff} />
+            <WebmentionSection {...webmentions} />
           </>
         }
       />,

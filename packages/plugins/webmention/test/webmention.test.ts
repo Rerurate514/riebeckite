@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createPublicContentView,
   resolveConfig,
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
@@ -13,6 +14,7 @@ import {
   createWebmentionReceiveHandler,
   findTargetEntry,
   findTargetLink,
+  getWebmentionSectionData,
   getWebmentionsForEntry,
   groupMentionsBySlug,
   MemoryWebmentionProvider,
@@ -137,6 +139,35 @@ test("uses resolved mentions for manifest rendering", async () => {
   };
   const html = renderToString(WebmentionSection(data));
   assert.match(html, /Snapshot mention/);
+});
+
+test("provides section data for explicit Site composition", async () => {
+  const provider = new MemoryWebmentionProvider([makeMention()]);
+  const entry = makeEntry();
+  const view = createPublicContentView(makeManifest([entry]));
+
+  const data = await getWebmentionSectionData({
+    view,
+    slug: entry.slug,
+    config: makeConfig(),
+    provider,
+  });
+
+  assert.equal(data.mentions.length, 1);
+  assert.match(renderToString(WebmentionSection(data)), /source\.example/);
+});
+
+test("provides empty section data when the provider has no mentions", async () => {
+  const entry = makeEntry();
+  const data = await getWebmentionSectionData({
+    view: createPublicContentView(makeManifest([entry])),
+    slug: entry.slug,
+    config: makeConfig(),
+    provider: new MemoryWebmentionProvider(),
+  });
+
+  assert.deepEqual(data.mentions, []);
+  assert.equal(WebmentionSection(data), null);
 });
 
 test("verifies a source that links to the target", async () => {

@@ -59,14 +59,26 @@ Rejection codes: `invalid_request`, `missing_source_or_target`,
 
 ## Rendering
 
-At request time, applications can call `getWebmentionsForEntry({ manifest,
-config, provider, slug })` and `renderWebmentionSection(mentions, options)`
-directly, or consume the JSON feed. The plugin no longer injects build-time
-manifest entries; the stored-mention provider is owned by the
-`webmention()` factory, and there is no build-time manifest injection anymore.
+The Site owns JSX placement. Keep the Provider instance in Site composition,
+pass that same instance to `webmention()`, then obtain typed component props
+with `getWebmentionSectionData`. The helper accepts a `PublicContentView`, so
+draft and scheduled entries cannot be rendered.
 
-Set `render: false` to completely disable build-time rendering. The plugin
-no longer appends sections to matching entries at manifest time.
+```tsx
+const mentions = await getWebmentionSectionData({
+  view,
+  slug,
+  config,
+  provider: webmentionProvider,
+});
+
+<WebmentionSection {...mentions} />
+```
+
+An empty provider returns an empty model and `WebmentionSection` renders
+nothing. The plugin does not inject build-time manifest HTML. Applications can
+also call `getWebmentionsForEntry({ manifest, config, provider, slug })` or
+consume the JSON feed where a lower-level query is appropriate.
 
 ## Options
 
@@ -101,7 +113,7 @@ manifest time, mentions whose target is not a published entry are reported as
 - `MemoryWebmentionProvider`, provider/capability types and errors
 - `parseWebmentionSource`, `findTargetLink`, `verifyWebmention`,
   `createWebmentionSourceFetcher`
-- `renderWebmentionSection`, `getWebmentionsForEntry`,
+- `WebmentionSection`, `getWebmentionSectionData`, `getWebmentionsForEntry`,
   `groupMentionsBySlug`, `buildFeed`
 - `resolveWebmentionOptions`, `validateWebmentionOptions`
 

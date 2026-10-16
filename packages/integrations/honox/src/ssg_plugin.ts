@@ -185,21 +185,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
     configResolved(config) {
       resolvedConfig = config;
     },
-    async buildStart() {
-      const config = resolvedConfig;
-      if (!config) return;
-      if (
-        !config.plugins.some((plugin) =>
-          plugin.name.startsWith("@hono/vite-build/"),
-        )
-      ) {
-        return;
-      }
-      await rm(resolve(config.root, config.build.outDir), {
-        recursive: true,
-        force: true,
-      });
-    },
     resolveId(id) {
       return id === virtualId ? resolvedVirtualId : undefined;
     },

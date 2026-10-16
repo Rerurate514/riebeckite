@@ -28,7 +28,7 @@ import {
 
 const leanBuildOptions = { adapter: false } as const;
 
-test("SSG adapter output is deterministic with a populated dist", async (t) => {
+test("SSG adapter preserves client assets without treating them as routes", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "adapter-ssg-test-"));
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -42,14 +42,21 @@ test("SSG adapter output is deterministic with a populated dist", async (t) => {
   });
 
   await buildSite(site, "cold");
-  const coldSnapshot = await snapshotTree(distPath(site));
+  const coldIndex = await readFile(
+    path.join(distPath(site), "index.html"),
+    "utf8",
+  );
+  const clientAsset = path.join(distPath(site), "static", "client.js");
+  await mkdir(path.dirname(clientAsset), { recursive: true });
+  await writeFile(clientAsset, "export {};\n", "utf8");
   await buildSite(site, "no-change");
 
-  assert.deepEqual(
-    diffSnapshotKeys(coldSnapshot, await snapshotTree(distPath(site))),
-    [],
+  assert.equal(
+    await readFile(path.join(distPath(site), "index.html"), "utf8"),
+    coldIndex,
     "an existing dist must not become adapter static-route input",
   );
+  assert.equal(await readFile(clientAsset, "utf8"), "export {};\n");
 });
 
 test("SSG output links the manifest-resolved stylesheet on regular and README pages", async (t) => {

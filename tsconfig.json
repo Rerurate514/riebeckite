@@ -9,6 +9,9 @@
     "baseUrl": ".",
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
+      "@riebeckite/core/internal/generated-output-planner-capability": [
+        "packages/core/src/plugin/generated_output_planner_capability.ts"
+      ],
       "@riebeckite/honox": ["packages/integrations/honox/index.ts"],
       "@riebeckite/honox/server": ["packages/integrations/honox/server.ts"],
       "@riebeckite/honox/ui": [

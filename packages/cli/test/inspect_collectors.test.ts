@@ -121,7 +121,7 @@ test("inspect build reports reuse when the pipeline fingerprint matches", async 
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 13,
+      version: 14,
       entries: {},
       contentIndex: {},
       externalDependencies: [],
@@ -151,7 +151,7 @@ test("inspect build reports reuse as unavailable when a content transform bypass
   await fs.writeFile(
     statePath,
     JSON.stringify({
-      version: 13,
+      version: 14,
       entries: {},
       contentIndex: {},
       externalDependencies: [],

@@ -16,7 +16,7 @@ import { escapeTaxonomyXml } from "./xml.js";
  * `@riebeckite/plugin-seo` owns.
  */
 export function renderTermFeed(
-  config: ResolvedRiebeckiteConfig,
+  config: Pick<ResolvedRiebeckiteConfig, "site">,
   term: TaxonomyTerm,
   format: TaxonomyFeedFormat,
   limit = 0,
@@ -77,7 +77,7 @@ export function buildFeedHeadTags(term: TaxonomyTerm): TaxonomyHeadTag[] {
 }
 
 function renderRss(
-  config: ResolvedRiebeckiteConfig,
+  config: Pick<ResolvedRiebeckiteConfig, "site">,
   term: TaxonomyTerm,
   entries: readonly ContentManifestEntry[],
   title: string,
@@ -97,7 +97,7 @@ function renderRss(
 }
 
 function renderAtom(
-  config: ResolvedRiebeckiteConfig,
+  config: Pick<ResolvedRiebeckiteConfig, "site">,
   term: TaxonomyTerm,
   entries: readonly ContentManifestEntry[],
   title: string,
@@ -117,7 +117,7 @@ function renderAtom(
 }
 
 function renderJson(
-  config: ResolvedRiebeckiteConfig,
+  config: Pick<ResolvedRiebeckiteConfig, "site">,
   term: TaxonomyTerm,
   entries: readonly ContentManifestEntry[],
   title: string,
@@ -147,7 +147,9 @@ function renderJson(
   });
 }
 
-function getResolvedFeedMetadata(config: ResolvedRiebeckiteConfig): {
+function getResolvedFeedMetadata(
+  config: Pick<ResolvedRiebeckiteConfig, "site">,
+): {
   description: string;
   language: string;
 } {

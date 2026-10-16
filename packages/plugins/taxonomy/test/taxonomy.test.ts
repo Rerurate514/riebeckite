@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 import {
   ContentManager,
@@ -48,6 +51,29 @@ test("emits one feed per term and format into the manifest", async () => {
       "tags/featured/feed.xml",
     ],
   );
+});
+
+test("permits the no-change fast path after planning feeds", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-taxonomy-"),
+  );
+  const firstConfig = { ...config(), buildDirectory: directory };
+  const first = new ContentManager(source(taggedNotes), [], {
+    config: firstConfig,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(source(taggedNotes), [], {
+    config: firstConfig,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    undefined,
+  );
+  await second.dispose();
+  await fs.rm(directory, { recursive: true, force: true });
 });
 
 test("provides tag and folder listings as plugin page types", async () => {

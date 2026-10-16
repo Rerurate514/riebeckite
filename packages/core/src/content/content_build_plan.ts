@@ -16,7 +16,8 @@ export type FullRegenerationReason =
   | "cache-missing-or-invalid"
   | "pipeline-fingerprint-changed"
   | "content-plugin-uncacheable"
-  | "external-dependency-unavailable";
+  | "external-dependency-unavailable"
+  | "publishing-state-expired";
 
 export type ContentBuildPlan = {
   readonly incremental: boolean;

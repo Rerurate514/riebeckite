@@ -115,7 +115,10 @@ function isContentBuildStateShape(
     !isExternalDependencies(value.externalDependencies) ||
     (value.outputs !== undefined && !isOutputDescriptors(value.outputs)) ||
     (value.manifestHookCache !== undefined &&
-      !isManifestHookCache(value.manifestHookCache))
+      !isManifestHookCache(value.manifestHookCache)) ||
+    (value.nextPublishingChangeAt !== undefined &&
+      (typeof value.nextPublishingChangeAt !== "string" ||
+        Number.isNaN(Date.parse(value.nextPublishingChangeAt))))
   ) {
     return false;
   }

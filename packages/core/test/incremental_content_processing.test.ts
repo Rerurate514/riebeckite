@@ -8,6 +8,7 @@ import { ContentManager } from "../src/content/content_manager.js";
 import { extractFrontmatterAliases } from "../src/content/content_metadata.js";
 import type { ContentSource } from "../src/content/content_source.js";
 import { NoopLogger, SinkTracer } from "../src/observability.js";
+import { registerTrustedGeneratedOutputPlanner } from "../src/plugin/generated_output_planner_capability.js";
 import type { ContentManifestEntry } from "../src/types/content_manifest.js";
 import { definePlugin } from "../src/types/plugin.js";
 import type { PostContent } from "../src/types/post_content.js";
@@ -870,6 +871,261 @@ test("a build-end hook blocks the no-change fast path", async () => {
     "plugin-build-end",
   );
   await second.dispose();
+});
+
+test("a deterministic generated-output plan permits the no-change fast path", async () => {
+  const directory = await tempDirectory(
+    "incremental-fast-path-generated-output",
+  );
+  const files = { "a.md": "---\npublish: true\n---\n# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    registerTrustedGeneratedOutputPlanner(
+      definePlugin({
+        name: "taxonomy",
+        planGeneratedOutputs: ({ manifest }) => [
+          {
+            path: "tags/a/feed.xml",
+            content: String(manifest.discoverableEntries.length),
+            dependencies: [{ type: "tag", tag: "a" }],
+          },
+        ],
+      }),
+    ),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    undefined,
+  );
+  await second.dispose();
+});
+
+test("an unknown generated-output dependency blocks the no-change fast path", async () => {
+  const directory = await tempDirectory("incremental-fast-path-unknown-output");
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    registerTrustedGeneratedOutputPlanner(
+      definePlugin({
+        name: "taxonomy",
+        planGeneratedOutputs: () => [
+          {
+            path: "tags/a/feed.xml",
+            content: "feed",
+            dependencies: [{ type: "unknown" }],
+          },
+        ],
+      }),
+    ),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    "output-dependency-unknown",
+  );
+  await second.dispose();
+});
+
+test("an unverified generated-output planner blocks the no-change fast path", async () => {
+  const directory = await tempDirectory(
+    "incremental-fast-path-unverified-plan",
+  );
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "unverified-output-planner",
+      planGeneratedOutputs: () => [
+        {
+          path: "feed.xml",
+          content: "feed",
+          dependencies: [{ type: "global" }],
+        },
+      ],
+    }),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    "plugin-generated-output-plan-unsafe",
+  );
+  await second.dispose();
+});
+
+test("a planner that only impersonates the taxonomy name blocks the no-change fast path", async () => {
+  const directory = await tempDirectory(
+    "incremental-fast-path-impersonated-taxonomy",
+  );
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "taxonomy",
+      planGeneratedOutputs: () => [
+        {
+          path: "tags/a/feed.xml",
+          content: "feed",
+          dependencies: [{ type: "tag", tag: "a" }],
+        },
+      ],
+    }),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    "plugin-generated-output-plan-unsafe",
+  );
+  await second.dispose();
+});
+
+test("a trusted planner whose hook is replaced blocks the no-change fast path", async () => {
+  const directory = await tempDirectory("incremental-fast-path-replaced-plan");
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const planner = registerTrustedGeneratedOutputPlanner(
+    definePlugin({
+      name: "taxonomy",
+      planGeneratedOutputs: () => [],
+    }),
+  );
+  const plugins = [...config.plugins, planner];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  planner.planGeneratedOutputs = () => [];
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    "plugin-generated-output-plan-unsafe",
+  );
+  await second.dispose();
+});
+
+test("a generated-output planner cannot mutate its input snapshot", async () => {
+  const directory = await tempDirectory(
+    "incremental-generated-output-snapshot",
+  );
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    registerTrustedGeneratedOutputPlanner(
+      definePlugin({
+        name: "taxonomy",
+        planGeneratedOutputs: ({ manifest }) => {
+          (manifest.discoverableEntries as ContentManifestEntry[]).push(
+            {} as ContentManifestEntry,
+          );
+          return [];
+        },
+      }),
+    ),
+  ];
+  const manager = new ContentManager(
+    memoryContentSource({ "a.md": "# A" }),
+    [],
+    {
+      config: { ...config, plugins },
+      plugins,
+    },
+  );
+  await assert.rejects(manager.build({ incremental: true }));
+  await manager.dispose();
+  await assert.rejects(
+    fs.readFile(path.join(directory, "build", "content-state.json")),
+  );
+});
+
+test("a publishing transition blocks the no-change fast path at its boundary", async () => {
+  const directory = await tempDirectory("incremental-fast-path-publishing");
+  const files = {
+    "scheduled.md":
+      "---\npublishAt: 2024-01-02T00:00:00+09:00\n---\n# Scheduled",
+  };
+  const config = testConfig(directory);
+  const before = new ContentManager(memoryContentSource(files), [], {
+    config,
+    publishingBuildTime: "2024-01-01T14:59:59.000Z",
+  });
+  await before.build({ incremental: true });
+  await before.dispose();
+
+  const atBoundary = new ContentManager(memoryContentSource(files), [], {
+    config,
+    publishingBuildTime: "2024-01-01T15:00:00.000Z",
+  });
+  assert.equal(
+    await atBoundary.getNoChangeFastPathBlockReason({ incremental: true }),
+    "publishing-state-expired",
+  );
+  await atBoundary.build({ incremental: true });
+  await atBoundary.dispose();
+
+  const after = new ContentManager(memoryContentSource(files), [], {
+    config,
+    publishingBuildTime: "2024-01-01T15:00:01.000Z",
+  });
+  assert.equal(
+    await after.getNoChangeFastPathBlockReason({ incremental: true }),
+    undefined,
+  );
+  await after.dispose();
 });
 
 test("repeated warm rebuilds do not duplicate plugin output", async () => {

@@ -668,10 +668,8 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
       "client bundle is missing the hover preview runtime (rb-hover-preview)",
     );
   }
-  if (!scripts.includes("initHoverPreview")) {
-    fail(
-      "client bundle is missing the hover preview initializer (initHoverPreview)",
-    );
+  if (!scripts.includes("@riebeckite/plugin-hover-preview/client")) {
+    fail("client bundle is missing the hover preview client entry");
   }
 
   if (combined.includes(PRIVATE_MARKER)) {
@@ -747,12 +745,8 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
 
   const jsFiles = walkFiles(distDir, (full) => full.endsWith(".js"));
   const js = jsFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
-  // The analytics client initializer must be part of the emitted browser
-  // bundle. `initAnalytics` is the factory registered through the generic
-  // public-config mechanism; the attribute string and the event type are
-  // identifiers that only exist in the plugin's client source.
-  if (!js.includes("initAnalytics")) {
-    fail("the analytics client bundle is missing initAnalytics");
+  if (!js.includes("@riebeckite/plugin-analytics/client")) {
+    fail("the analytics client bundle is missing its client entry");
   }
   if (!js.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE)) {
     fail("the analytics client bundle is missing its content ID selector");
@@ -777,10 +771,8 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!js.includes("rb-canvas")) {
     fail("canvas styles/logic were not bundled into the dist JavaScript");
   }
-  if (!js.includes("initCanvas")) {
-    fail(
-      "the canvas client initializer was not bundled into the dist JavaScript",
-    );
+  if (!js.includes("@riebeckite/plugin-canvas/client")) {
+    fail("the canvas client bundle is missing its client entry");
   }
   // The ux plugin has no article HTML of its own, so its build-time
   // configuration element and its emitted client bundle are the observable
@@ -799,10 +791,8 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
       "the markmap plugin client bundle is missing its `rb-markmap` identifier",
     );
   }
-  if (!js.includes("initMarkmap")) {
-    fail(
-      "the markmap plugin client bundle is missing its `initMarkmap` initializer",
-    );
+  if (!js.includes("@riebeckite/plugin-markmap/client")) {
+    fail("the markmap plugin client bundle is missing its client entry");
   }
   if (!combined.includes('class="rr-color-mode"')) {
     fail("color-mode plugin did not render its rr-color-mode root hook");
@@ -813,8 +803,8 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes("riebeckite-color-mode")) {
     fail("color-mode plugin did not emit its storage key");
   }
-  if (!js.includes("initColorMode")) {
-    fail("color-mode plugin client bundle is missing initColorMode");
+  if (!js.includes("@riebeckite/plugin-color-mode/client")) {
+    fail("color-mode plugin client bundle is missing its client entry");
   }
   if (!css.includes("rr-color-mode")) {
     fail("color-mode plugin stylesheet is missing its rr-color-mode classes");

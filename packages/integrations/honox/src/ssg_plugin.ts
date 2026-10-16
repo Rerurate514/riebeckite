@@ -934,7 +934,8 @@ export async function verifyNoChangeFastPath(input: {
   if (
     input.expectedOutputPaths.some(
       (output) =>
-        !cache.outputPaths.includes(output) || !cache.finalOutputInventory[output],
+        !cache.outputPaths.includes(output) ||
+        !cache.finalOutputInventory[output],
     )
   ) {
     return { used: false, blockReason: "output-cache-incomplete" };

@@ -31,11 +31,13 @@ const presets: readonly PresetName[] =
     ? (presetFilter as readonly PresetName[])
     : ALL_PRESETS;
 
-const FAST_PATH_CAPABLE: Readonly<Record<PresetName, boolean>> = {
-  empty: true,
-  minimal: true,
-  starter: true,
-  showcase: false,
+const FAST_PATH_EXPECTATIONS: Readonly<
+  Record<PresetName, { capable: boolean; blockReason?: string }>
+> = {
+  empty: { capable: true },
+  minimal: { capable: true },
+  starter: { capable: false, blockReason: "plugin-generated-output-plan" },
+  showcase: { capable: false, blockReason: "unsafe-output-dependency" },
 };
 
 const RENDERS_ENTRY_TITLE: Readonly<Record<PresetName, boolean>> = {
@@ -492,7 +494,8 @@ async function runPreset(
       resultsDir,
       builds,
     );
-    const capable = FAST_PATH_CAPABLE[preset];
+    const { capable, blockReason: expectedBlockReason } =
+      FAST_PATH_EXPECTATIONS[preset];
     const routesContent = preset !== "empty";
 
     const cold = site.build("Cold Build");
@@ -557,6 +560,13 @@ async function runPreset(
           noChange.record.blockReason.length > 0,
         `block=${noChange.record.blockReason ?? "(none)"}`,
       );
+      if (expectedBlockReason) {
+        check(
+          "no-change fallback reports the expected block reason",
+          noChange.record.blockReason === expectedBlockReason,
+          `block=${noChange.record.blockReason ?? "(none)"}`,
+        );
+      }
     }
 
     if (routesContent) {

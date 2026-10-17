@@ -1,11 +1,16 @@
 import type { RecentPost } from "../src/recent-posts.js";
+import { useSiteContext } from "@riebeckite/ui";
+import { getRecentPosts } from "../src/recent-posts.server.js";
 
 type Props = {
   posts?: RecentPost[];
 };
 
-export default function RecentPosts(props: Props) {
-  const posts = props.posts ?? [];
+export default async function RecentPosts(props: Props) {
+  const site = useSiteContext();
+  const posts =
+    props.posts ??
+    (site ? await getRecentPosts({ manifest: site.manifest }) : []);
   if (posts.length === 0) return null;
 
   return (

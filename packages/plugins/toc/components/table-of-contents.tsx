@@ -1,21 +1,28 @@
 import type { TableOfContentsItem } from "../src/table-of-contents.js";
+import { useArticleContext } from "@riebeckite/ui";
+import { extractTableOfContents } from "../src/table-of-contents.js";
 
 type Props = {
-  className: string;
-  items: TableOfContentsItem[];
+  className?: string;
+  items?: TableOfContentsItem[];
 };
 
 export default function TableOfContents(props: Props) {
-  if (props.items.length < 2) return null;
+  const article = useArticleContext();
+  const items =
+    props.items ??
+    (article ? extractTableOfContents(article.post.html ?? "") : undefined);
+  if (!items || items.length < 2) return null;
+  const className = props.className ?? "";
 
   return (
     <aside
-      class={`rr-table-of-contents ${props.className}`}
+      class={`rr-table-of-contents ${className}`}
       aria-label="Contents"
     >
       <p class="rr-table-of-contents__eyebrow">CONTENTS</p>
       <ol class="rr-table-of-contents__list">
-        {props.items.map((item) => (
+        {items.map((item) => (
           <li
             class={`rr-table-of-contents__item rr-table-of-contents__item--level-${item.level}`}
             key={item.id}

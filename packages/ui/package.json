@@ -1,0 +1,31 @@
+{
+  "name": "@riebeckite/ui",
+  "version": "0.0.24",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.tsx",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "hono": "catalog:"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build_package.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "dist"
+  ],
+  "sideEffects": false
+}

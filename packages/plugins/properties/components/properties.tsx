@@ -1,9 +1,22 @@
 import type { PluginComponent } from "@riebeckite/core";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { getProperties } from "../src/component-data.js";
 import type { PropertiesData } from "../src/component-data.js";
 
-export type PropertiesProps = { data: PropertiesData };
+export type PropertiesProps = { data?: PropertiesData };
 
-const Properties = (({ data }: Readonly<PropertiesProps>) => {
+const Properties = (async ({ data: explicitData }: Readonly<PropertiesProps>) => {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const data =
+    explicitData ??
+    (site && article
+      ? await getProperties({
+          view: site.view,
+          frontmatter: article.post.frontmatter,
+        })
+      : undefined);
+  if (!data) return null;
   if (data.items.length === 0) return null;
   const cls = data.className;
   return (

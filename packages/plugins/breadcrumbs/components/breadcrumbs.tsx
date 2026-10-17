@@ -1,18 +1,32 @@
 import type { PluginComponent } from "@riebeckite/core";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { getBreadcrumbs } from "../src/breadcrumbs.js";
 import type { BreadcrumbItem } from "../src/types.js";
 
 export type BreadcrumbsProps = {
-  items: readonly BreadcrumbItem[];
+  items?: readonly BreadcrumbItem[];
   ariaLabel?: string;
   className?: string;
   separator?: string;
 };
-const Breadcrumbs = (({
-  items,
+const Breadcrumbs = (async ({
+  items: explicitItems,
   ariaLabel = "Breadcrumb",
   className = "rb-breadcrumbs",
   separator = "/",
 }: Readonly<BreadcrumbsProps>) => {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const items =
+    explicitItems ??
+    (site && article?.entry
+      ? await getBreadcrumbs({
+          view: site.view,
+          entry: article.entry,
+          homeLabel: site.config.site.title,
+        })
+      : undefined);
+  if (!items) return null;
   if (items.length === 0) return null;
   return (
     <nav class={className} data-breadcrumbs aria-label={ariaLabel}>

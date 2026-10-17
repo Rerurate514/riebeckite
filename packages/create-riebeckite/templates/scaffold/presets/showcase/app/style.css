@@ -14,6 +14,7 @@ body {
 }
 
 .riebeckite-page {
+  --site-toc-sticky-top: var(--rb-space-3, 1.5rem);
   display: flex;
   min-height: 100vh;
   width: 100%;
@@ -201,8 +202,8 @@ body {
 
   .site-article__aside > .rr-table-of-contents--desktop {
     position: sticky;
-    top: var(--site-toc-sticky-top, 1.5rem);
-    max-height: calc(100dvh - var(--site-toc-sticky-top, 1.5rem) - var(--rb-space-4, 2rem));
+    top: var(--site-toc-sticky-top);
+    max-height: calc(100dvh - var(--site-toc-sticky-top) - var(--rb-space-4, 2rem));
     overflow-y: auto;
     overscroll-behavior: contain;
     border-inline-start: 1px solid color-mix(in oklab, currentColor 18%, transparent);

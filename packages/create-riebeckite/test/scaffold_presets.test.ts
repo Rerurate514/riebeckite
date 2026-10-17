@@ -508,7 +508,10 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     );
     assert.doesNotMatch(style, /\.rb-article-layout \{/);
     assert.doesNotMatch(style, /\.rb-nav__item \{/);
-    assert.match(style, /--site-toc-sticky-top/);
+    assert.match(
+      style,
+      /\.riebeckite-page \{[\s\S]*?--site-toc-sticky-top:\s*var\(--rb-space-3, 1\.5rem\)/,
+    );
     assert.match(
       style,
       /\.site-article__aside > \.rr-table-of-contents--desktop \{/,
@@ -526,7 +529,10 @@ test("starter and showcase own desktop TOC sticky behavior", async () => {
         path.join(targetDirectory, "app/style.css"),
         "utf8",
       );
-      assert.match(style, /--site-toc-sticky-top/);
+      assert.match(
+        style,
+        /\.riebeckite-page \{[\s\S]*?--site-toc-sticky-top:\s*var\(--rb-space-3, 1\.5rem\)/,
+      );
       assert.match(style, /position: sticky/);
       assert.match(style, /overflow-y: auto/);
       assert.match(

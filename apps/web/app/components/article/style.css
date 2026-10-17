@@ -84,10 +84,10 @@
     margin-inline-start: calc(100% + var(--rb-layout-gap));
     overflow-x: hidden;
     position: sticky;
-    top: var(--rr-toc-sticky-top, var(--rb-docs-sticky-top, 4rem));
+    top: var(--rb-docs-sticky-top, 4rem);
     max-height: calc(
       100dvh -
-      var(--rr-toc-sticky-top, var(--rb-docs-sticky-top, 4rem)) -
+      var(--rb-docs-sticky-top, 4rem) -
       var(--rb-space-4, 2rem)
     );
     overflow-y: auto;

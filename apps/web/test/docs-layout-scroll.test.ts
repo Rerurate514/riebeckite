@@ -36,12 +36,10 @@ test("left docs sidebar sticks at the shared docs sticky top", () => {
 });
 
 test("desktop table of contents sticks at the shared docs sticky top", () => {
+  assert.match(articleCss, /top:\s*var\(--rb-docs-sticky-top,\s*4rem\)/);
   assert.match(
     articleCss,
-    /top:\s*var\(--rr-toc-sticky-top,\s*var\(--rb-docs-sticky-top,\s*4rem\)\)/,
+    /max-height:\s*calc\(\s*100dvh\s*-\s*var\(--rb-docs-sticky-top,\s*4rem\)\s*-\s*var\(--rb-space-4,\s*2rem\)\s*\)/,
   );
-  assert.match(
-    articleCss,
-    /max-height:\s*calc\(\s*100dvh\s*-\s*var\(--rr-toc-sticky-top,\s*var\(--rb-docs-sticky-top,\s*4rem\)\)\s*-\s*var\(--rb-space-4,\s*2rem\)\s*\)/,
-  );
+  assert.doesNotMatch(articleCss, /--rr-toc-sticky-top/);
 });

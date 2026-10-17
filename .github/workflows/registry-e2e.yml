@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 3 * * 1"
 
+permissions:
+  contents: read
+
 concurrency:
   group: registry-e2e-${{ github.ref }}
   cancel-in-progress: true

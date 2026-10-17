@@ -96,7 +96,6 @@ body {
 
 .rb-site-footer {
   margin-top: 1rem;
-  padding-block: var(--rb-space-4, 2rem);
   border-top: 1px solid var(--rb-color-border);
 }
 

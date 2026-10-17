@@ -324,6 +324,59 @@ test("fresh release publishes directly, verifies 81/81, then commits and tags", 
   );
 });
 
+test("release regenerates the scaffold golden snapshots before committing", async () => {
+  const harness = createHarness();
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  const goldenStep = harness.state.steps.find(
+    (step) => step.label === "scaffold golden update",
+  );
+  assert.ok(goldenStep, "scaffold golden update step must run");
+  assert.equal(goldenStep.command, "pnpm");
+  assert.deepEqual(goldenStep.args, [
+    "--filter",
+    "create-riebeckite",
+    "run",
+    "test:golden",
+  ]);
+
+  const goldenDirectory = path.join(
+    "packages",
+    "create-riebeckite",
+    "test",
+    "__golden__",
+    "scaffold",
+  );
+  const addStep = harness.state.steps.find((step) => step.label === "git add");
+  assert.ok(addStep, "git add step must run");
+  assert.ok(
+    addStep.args.includes(goldenDirectory),
+    "git add must stage the scaffold golden directory",
+  );
+  const commitStep = harness.state.steps.find(
+    (step) => step.label === "git commit",
+  );
+  assert.ok(commitStep, "git commit step must run");
+  assert.ok(
+    commitStep.args.includes(goldenDirectory),
+    "git commit must include the scaffold golden directory",
+  );
+});
+
+test("dry-run does not regenerate or stage the scaffold golden snapshots", async () => {
+  const harness = createHarness();
+
+  await withHarness(harness, () => runRelease([VERSION, "--dry-run"]));
+
+  assert.equal(
+    stepLabels(harness.state).includes("scaffold golden update"),
+    false,
+  );
+  assert.equal(stepLabels(harness.state).includes("git add"), false);
+  assert.equal(stepLabels(harness.state).includes("git commit"), false);
+});
+
 test("already published packages are skipped", async () => {
   const harness = createHarness({ published: ALL_PACKAGES });
 

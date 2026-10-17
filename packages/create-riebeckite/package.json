@@ -44,6 +44,7 @@
   "scripts": {
     "build": "node ../../scripts/build_package.mjs",
     "test": "node --import tsx --test \"test/*.test.ts\"",
+    "test:golden": "node --import tsx --test test/scaffold_golden.test.ts",
     "prepack": "pnpm run build"
   },
   "repository": {

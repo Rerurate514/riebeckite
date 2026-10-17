@@ -16,6 +16,14 @@ const scaffoldVersionFile = path.join(
   "version.ts",
 );
 
+const scaffoldGoldenDirectory = path.join(
+  "packages",
+  "create-riebeckite",
+  "test",
+  "__golden__",
+  "scaffold",
+);
+
 const PUBLISH_CONCURRENCY = 8;
 const NPM_VIEW_CONCURRENCY = 8;
 
@@ -37,6 +45,7 @@ Release flow:
   -> ensure tag does not already exist
   -> version bump
   -> build:packages
+  -> scaffold golden update
   -> checks
   -> inspect published versions
   -> compute dependency layers
@@ -96,11 +105,13 @@ function runCommand(command, args, cwd = repositoryRoot, options = {}) {
         stdio: "inherit",
         shell: true,
         timeout: options.timeout,
+        env: options.env,
       })
     : spawnSync(command, args, {
         cwd,
         stdio: "inherit",
         timeout: options.timeout,
+        env: options.env,
       });
 
   if (result.error) {
@@ -1057,7 +1068,11 @@ function commitAndTag(version) {
     path.join(directory, "package.json"),
   );
 
-  const releaseFiles = [...manifests, scaffoldVersionFile];
+  const releaseFiles = [
+    ...manifests,
+    scaffoldVersionFile,
+    scaffoldGoldenDirectory,
+  ];
 
   runtime.runStep("git add", "git", ["add", "--", ...releaseFiles]);
 
@@ -1171,6 +1186,16 @@ export async function runRelease(rawArguments) {
   runtime.runStep("version bump", process.execPath, bumpArgs);
 
   runtime.runStep("build:packages", "pnpm", ["run", "build:packages"]);
+
+  if (!dryRun) {
+    runtime.runStep(
+      "scaffold golden update",
+      "pnpm",
+      ["--filter", "create-riebeckite", "run", "test:golden"],
+      repositoryRoot,
+      { env: { ...process.env, UPDATE_GOLDEN: "1" } },
+    );
+  }
 
   runChecks();
 

@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-docs",
-  "version": "0.0.14",
+  "version": "0.0.23",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",

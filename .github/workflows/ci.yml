@@ -84,6 +84,7 @@ jobs:
           path: |
             packages/**/dist
             .ci-build-metadata.json
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
 

@@ -7,131 +7,227 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
+  NODE_VERSION: "24"
   PNPM_VERSION: 11.5.3
+  RIEBECKITE_BUILD_CONCURRENCY: "1"
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      pluginDx: ${{ steps.select.outputs.pluginDx }}
+      scaffold: ${{ steps.select.outputs.scaffold }}
+      browser: ${{ steps.select.outputs.browser }}
+      external: ${{ steps.select.outputs.external }}
+      fastPath: ${{ steps.select.outputs.fastPath }}
+      fingerprint: ${{ steps.select.outputs.fingerprint }}
+      presetFastPath: ${{ steps.select.outputs.presetFastPath }}
+      faultRecovery: ${{ steps.select.outputs.faultRecovery }}
+      productionAssets: ${{ steps.select.outputs.productionAssets }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: select
+        shell: bash
+        run: |
+          base="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -n "$base" ] && git cat-file -e "$base^{commit}" 2>/dev/null; then
+            files="$(git diff --name-only "$base" "$GITHUB_SHA" | paste -sd, -)"
+            node scripts/ci/select_checks.mjs --files "$files" >> "$GITHUB_OUTPUT"
+          else
+            node scripts/ci/select_checks.mjs >> "$GITHUB_OUTPUT"
+          fi
+
   check:
     name: check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec biome check .
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - run: pnpm check
       - run: pnpm check:docs
       - run: pnpm test:docs
       - run: pnpm check:packages
       - run: pnpm check:dependencies
       - run: pnpm check:templates
+      - run: pnpm check:ci-selection
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - run: pnpm build:packages
+      - run: pnpm ci:build-artifact write
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-dist-${{ github.sha }}
+          path: |
+            packages/**/dist
+            .ci-build-metadata.json
+          if-no-files-found: error
+          retention-days: 1
 
   typecheck:
     name: typecheck
+    needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      # Typechecking resolves workspace declarations from dist, so the packages
-      # must be built before the type projects are created.
-      - run: pnpm build:packages
+          name: package-dist-${{ github.sha }}
+          path: .
+      - run: pnpm ci:build-artifact verify
       - run: pnpm typecheck
 
   test:
     name: test
+    needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:packages
-      - run: pnpm -r test
+          name: package-dist-${{ github.sha }}
+          path: .
+      - run: pnpm ci:build-artifact verify
+      - run: pnpm -r --workspace-concurrency=1 test
+
+  integration-e2e:
+    name: integration-e2e
+    needs: [changes, build]
+    if: needs.changes.outputs.external == 'true' || needs.changes.outputs.fastPath == 'true' || needs.changes.outputs.fingerprint == 'true' || needs.changes.outputs.presetFastPath == 'true' || needs.changes.outputs.faultRecovery == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: package-dist-${{ github.sha }}
+          path: .
+      - run: pnpm ci:build-artifact verify
+      - if: needs.changes.outputs.external == 'true'
+        run: pnpm test:e2e:external
+      - if: needs.changes.outputs.fastPath == 'true'
+        run: pnpm test:e2e:fast-path
+      - if: needs.changes.outputs.fingerprint == 'true'
+        run: pnpm test:e2e:fingerprint
+      - if: needs.changes.outputs.presetFastPath == 'true'
+        run: pnpm test:e2e:preset-fast-path
+      - if: needs.changes.outputs.faultRecovery == 'true'
+        run: pnpm test:e2e:fault-recovery:smoke
 
   plugin-dx:
     name: plugin-dx
+    needs: [changes, build]
+    if: needs.changes.outputs.pluginDx == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:packages
-      # The DX fixture is its own pnpm workspace (excluded from the root one),
-      # so it installs separately and consumes the packed public packages.
+          name: package-dist-${{ github.sha }}
+          path: .
+      - run: pnpm ci:build-artifact verify
       - run: pnpm --dir tests/plugin-dx install --frozen-lockfile
       - run: pnpm test:plugin-dx
       - run: pnpm test:plugin-dx:external
 
   scaffold:
     name: scaffold
+    needs: [changes, build]
+    if: needs.changes.outputs.scaffold == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:packages
+          name: package-dist-${{ github.sha }}
+          path: .
+      - run: pnpm ci:build-artifact verify
       - run: pnpm check:scaffold
 
   browser:
     name: browser
+    needs: changes
+    if: needs.changes.outputs.browser == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PUPPETEER_CACHE_DIR: ~/.cache/puppeteer
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/cache@v4
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm exec puppeteer browsers install chrome
       - run: pnpm test:browser
 
-  external-site:
-    name: external-site
+  production-assets:
+    name: production-assets
+    needs: [changes, build]
+    if: needs.changes.outputs.productionAssets == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/download-artifact@v4
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:packages
-      - run: pnpm test:e2e:external
+          name: package-dist-${{ github.sha }}
+          path: .
+      - run: pnpm ci:build-artifact verify
+      - run: pnpm --filter @riebeckite/web build
+      - run: node scripts/check_production_asset_integrity.mjs apps/web

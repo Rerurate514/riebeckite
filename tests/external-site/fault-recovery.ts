@@ -34,6 +34,30 @@ const checkpoints = [
   "gc-entry-delete",
 ];
 
+const smokeCheckpoints = [
+  "content-build-state-committed",
+  "entry-committed",
+  "gc-entry-delete",
+];
+
+function selectedCheckpoints(): readonly string[] {
+  const configured = process.env.RIEBECKITE_FAULT_RECOVERY_CHECKPOINTS;
+  const requested = configured
+    ? configured.split(",").map((checkpoint) => checkpoint.trim())
+    : process.argv.includes("--smoke")
+      ? smokeCheckpoints
+      : checkpoints;
+  if (
+    requested.length === 0 ||
+    requested.some((checkpoint) => !checkpoints.includes(checkpoint))
+  ) {
+    throw new Error(
+      "RIEBECKITE_FAULT_RECOVERY_CHECKPOINTS contains an unknown checkpoint.",
+    );
+  }
+  return requested;
+}
+
 async function discoverPackages(): Promise<PackageSpec[]> {
   const roots = [
     "packages",
@@ -198,7 +222,7 @@ async function main(): Promise<void> {
       "riebeckite.mjs",
     );
     await build(cli, site);
-    for (const checkpoint of checkpoints) {
+    for (const checkpoint of selectedCheckpoints()) {
       await changeContent(site, checkpoints.indexOf(checkpoint));
       if (checkpoint === "gc-entry-delete") await addOrphans(site);
       await interruptBuild(

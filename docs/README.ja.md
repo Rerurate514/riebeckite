@@ -90,6 +90,7 @@ deploy
 | Riebeckite の内部構造を理解する | [フレームワーク](./docs/framework/README.ja.md) |
 | Riebeckite 本体を開発する | [フレームワーク開発](./docs/framework/development.ja.md) |
 | Slot から component への UI 移行計画を確認する | [UI コンポーネント移行](./architecture/ui-component-migration.ja.md) |
+| CI の検証契約を確認する | [CI検証契約](./architecture/ci.ja.md) |
 
 ## ドキュメントの構成
 

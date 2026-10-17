@@ -1,0 +1,46 @@
+name: Performance Benchmarks
+
+on:
+  schedule:
+    - cron: "0 4 * * 0"
+  workflow_dispatch:
+    inputs:
+      baseline-path:
+        description: Repository-relative baseline JSON path. Empty disables comparison.
+        required: false
+        type: string
+        default: ""
+
+concurrency:
+  group: performance-benchmarks-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+  PNPM_VERSION: 11.5.3
+  RIEBECKITE_BUILD_CONCURRENCY: "1"
+
+jobs:
+  preset-ssg:
+    name: preset-ssg
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - run: pnpm benchmark:presets -- --presets starter,showcase --sizes 1000,10000 --runs 3 --metrics --out benchmark-results/preset-ssg.json
+      - if: inputs.baseline-path != ''
+        run: node scripts/ci/compare_benchmark.mjs benchmark-results/preset-ssg.json "${{ inputs.baseline-path }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: preset-ssg-benchmark-${{ github.run_id }}
+          path: benchmark-results
+          if-no-files-found: warn
+          retention-days: 30

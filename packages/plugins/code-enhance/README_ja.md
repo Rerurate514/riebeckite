@@ -23,7 +23,7 @@ export default defineConfig({
 ## 表示と操作
 
 - Shiki のテーマによる色付け、行番号、メタデータによる行・文字の強調
-- `+` と `-` で始まる行の差分表示
+- `diff` コードブロックの `+` と `-` で始まる行の差分表示
 - コピー、折り返し、任意の折りたたみ
 - `bash`、`console`、`sh` などを端末風に表示し、必要に応じて `$` を付ける
 - キーボードで内容を確認できるよう、`<pre>` をフォーカス可能にする
@@ -37,7 +37,7 @@ export default defineConfig({
 | `copyButton` | `boolean` | `true` | コピーボタンを表示する |
 | `filename` | `boolean` | `true` | ヘッダーにファイル名を表示する |
 | `lineHighlight` | `boolean` | `true` | メタデータによる行・文字の強調を適用する |
-| `diffHighlight` | `boolean` | `true` | `+` / `-` で始まる行を色付けする |
+| `diffHighlight` | `boolean` | `true` | `diff` コードブロックの `+` / `-` で始まる行を色付けする |
 | `collapsible` | `boolean` | `false` | 折りたたみボタンを追加する |
 | `terminal` | `boolean` | `true` | シェル言語を端末風に表示する |
 | `commandPrompt` | `boolean` | `true` | 端末の各行に `$` を付ける |

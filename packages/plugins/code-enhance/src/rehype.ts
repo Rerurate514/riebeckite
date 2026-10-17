@@ -171,7 +171,8 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
         className: mergeClassName(code.properties?.className, "rr-code__code"),
       };
       if (options.lineNumbers) markLineNumbers(code);
-      if (options.diffHighlight !== false) markDiffLines(code);
+      if (options.diffHighlight !== false && isDiffLanguage(language))
+        markDiffLines(code);
       if (options.commandPrompt !== false && isTerminal)
         markCommandPrompts(code);
     }
@@ -355,4 +356,8 @@ function isTerminalLanguage(language: string): boolean {
   return ["bash", "console", "sh", "shell", "terminal", "zsh"].includes(
     language,
   );
+}
+
+function isDiffLanguage(language: string): boolean {
+  return ["diff"].includes(language.toLowerCase());
 }

@@ -45,7 +45,7 @@ export default defineConfig({
 - Collapse / expand button (opt-in, client)
 - Line numbers (`data-line-number` gutter)
 - Line and character highlighting from pretty-code meta (`{1,3}`, `[/re/]`)
-- Diff coloring for lines starting with `+` / `-`
+- Diff coloring for `+` / `-` lines in `diff` code blocks
 - Terminal styling for `bash`, `console`, `sh`, `shell`, `terminal`, `zsh`
   (inverted palette) with a `$` prompt prefix on non-empty lines
 - Focusable `<pre>` (`tabindex="0"`) for keyboard scrolling
@@ -59,7 +59,7 @@ export default defineConfig({
 | `copyButton` | `boolean` | `true` | Show the copy button |
 | `filename` | `boolean` | `true` | Show the file name in the header |
 | `lineHighlight` | `boolean` | `true` | Apply meta-based line/char highlights |
-| `diffHighlight` | `boolean` | `true` | Color `+` / `-` lines |
+| `diffHighlight` | `boolean` | `true` | Color `+` / `-` lines in `diff` blocks |
 | `collapsible` | `boolean` | `false` | Add the collapse button |
 | `terminal` | `boolean` | `true` | Terminal styling for shell languages |
 | `commandPrompt` | `boolean` | `true` | `$` prompt prefix on terminal lines |

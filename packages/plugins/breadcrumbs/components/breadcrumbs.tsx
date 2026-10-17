@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import { getBreadcrumbs } from "../src/breadcrumbs.js";
 import type { BreadcrumbItem } from "../src/types.js";
 
@@ -26,8 +27,8 @@ const Breadcrumbs = (async ({
           homeLabel: site.config.site.title,
         })
       : undefined);
-  if (!items) return [];
-  if (items.length === 0) return [];
+  if (!items) return html``;
+  if (items.length === 0) return html``;
   return (
     <nav class={className} data-breadcrumbs aria-label={ariaLabel}>
       <ol>

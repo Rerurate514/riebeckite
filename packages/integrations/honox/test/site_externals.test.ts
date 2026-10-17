@@ -22,12 +22,13 @@ async function withSite(
   }
 }
 
-test("site externals select only the config-facing @riebeckite packages", async () => {
+test("site externals select the shared Riebeckite runtime packages", async () => {
   await withSite(
     JSON.stringify({
       dependencies: {
         "@riebeckite/core": "^0.0.22",
         "@riebeckite/honox": "^0.0.22",
+        "@riebeckite/ui": "^0.0.22",
         "@riebeckite/plugin-seo": "^0.0.22",
         "@riebeckite/theme-default": "^0.0.22",
         hono: "^4.9.0",
@@ -40,6 +41,7 @@ test("site externals select only the config-facing @riebeckite packages", async 
     (siteRoot) => {
       assert.deepEqual(siteRiebeckiteExternals(siteRoot), [
         "@riebeckite/core",
+        "@riebeckite/ui",
         "@riebeckite/plugin-seo",
         "@riebeckite/theme-default",
       ]);

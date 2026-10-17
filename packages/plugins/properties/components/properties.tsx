@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import type { PropertiesData } from "../src/component-data.js";
 import { getProperties } from "../src/component-data.js";
 import type { PropertiesOptions } from "../src/types.js";
@@ -20,8 +21,8 @@ const Properties = (async ({
           options: findPropertiesOptions(site.config.plugins),
         })
       : undefined);
-  if (!data) return [];
-  if (data.items.length === 0) return [];
+  if (!data) return html``;
+  if (data.items.length === 0) return html``;
   const cls = data.className;
   return (
     <section

@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import { getDocsNavigation, getDocsPrevNext } from "../index.js";
 import type { DocsNavigationLink, DocsOptions } from "../src/types.js";
 
@@ -27,7 +28,7 @@ const DocsPrevNext = (async (props: Readonly<DocsPrevNextProps>) => {
   const previous = props.previous ?? resolved.previous;
   const next = props.next ?? resolved.next;
   const language = props.language ?? article?.entry?.publicLocation.language;
-  if (!previous && !next) return [];
+  if (!previous && !next) return html``;
   const labels =
     language === "ja"
       ? { nav: "前後のドキュメント", previous: "前へ", next: "次へ" }

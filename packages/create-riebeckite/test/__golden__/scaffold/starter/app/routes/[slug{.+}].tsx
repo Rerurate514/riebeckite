@@ -1,6 +1,7 @@
 import { createPublicContentView } from "@riebeckite/core";
 import { contentRouteSsgParams, resolveRiebeckiteContentRequest, riebeckiteSsgParams } from "@riebeckite/honox/server";
-import { PageBody, SiteProvider } from "@riebeckite/honox/ui";
+import { PageBody } from "@riebeckite/honox/ui";
+import { SiteProvider } from "@riebeckite/ui";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
 import { config } from "virtual:riebeckite/config";

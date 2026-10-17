@@ -210,15 +210,15 @@ test("a post date change regenerates the index with only the plugin dependency",
   assert.deepEqual(paths(result.affected), ["index.html", "post.html"]);
 });
 
-test("RecentPosts renders nothing without posts", () => {
-  assert.equal(RecentPosts({ posts: [] }), null);
-  assert.equal(RecentPosts({}), null);
-  assert.equal(RecentPosts({ posts: undefined }), null);
+test("RecentPosts renders nothing without posts", async () => {
+  assert.equal(renderToString(await RecentPosts({ posts: [] })), "");
+  assert.equal(renderToString(await RecentPosts({})), "");
+  assert.equal(renderToString(await RecentPosts({ posts: undefined })), "");
 });
 
-test("RecentPosts renders English labels and dates", () => {
+test("RecentPosts renders English labels and dates", async () => {
   const html = renderToString(
-    RecentPosts({
+    await RecentPosts({
       posts: [
         {
           slug: "post",

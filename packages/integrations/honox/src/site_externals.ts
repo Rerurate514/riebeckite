@@ -22,6 +22,7 @@ export function siteRiebeckiteExternals(siteRoot: string): string[] {
   return Object.keys(dependencies).filter(
     (name) =>
       name === "@riebeckite/core" ||
+      name === "@riebeckite/ui" ||
       name.startsWith("@riebeckite/plugin-") ||
       name.startsWith("@riebeckite/theme-"),
   );

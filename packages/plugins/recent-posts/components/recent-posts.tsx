@@ -1,5 +1,6 @@
-import type { RecentPost } from "../src/recent-posts.js";
 import { useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
+import type { RecentPost } from "../src/recent-posts.js";
 import { getRecentPosts } from "../src/recent-posts.server.js";
 
 type Props = {
@@ -11,7 +12,7 @@ export default async function RecentPosts(props: Props) {
   const posts =
     props.posts ??
     (site ? await getRecentPosts({ manifest: site.manifest }) : []);
-  if (posts.length === 0) return null;
+  if (posts.length === 0) return html``;
 
   return (
     <section class="rr-recent-posts" aria-labelledby="recent-posts-title">

@@ -5,6 +5,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
   "packages/create-riebeckite",
+  "packages/ui",
   "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
   "packages/integrations/webmention-cloudflare",
@@ -122,6 +123,11 @@ const packagePublishingMetadata = {
       "scaffold",
       "static-site-generator",
     ],
+  },
+  "packages/ui": {
+    description:
+      "Shared declarative UI context for Riebeckite integrations and plugins.",
+    keywords: ["riebeckite", "ui", "context", "hono", "jsx"],
   },
   "packages/integrations/honox": {
     description: "HonoX and Vite integration for building Riebeckite sites.",
@@ -528,6 +534,17 @@ export function expectedPackageMetadata(directory) {
       scripts: {
         build: "node ../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/ui") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
         prepack: "pnpm run build",
       },
     };

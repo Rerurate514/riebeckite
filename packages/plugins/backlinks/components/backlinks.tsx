@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import type { ArticleBacklink } from "../src/backlinks.js";
 import { getBacklinks } from "../src/backlinks.server.js";
 
@@ -15,7 +16,7 @@ const Backlinks = (async (props: Readonly<BacklinksProps>) => {
     (site && article?.entry
       ? await getBacklinks({ view: site.view, slug: article.entry.slug })
       : undefined);
-  if (!backlinks || backlinks.length === 0) return [];
+  if (!backlinks || backlinks.length === 0) return html``;
 
   return (
     <footer class="rr-backlinks">

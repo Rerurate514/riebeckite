@@ -317,7 +317,7 @@ test("starter and showcase scaffolds expose a single main landmark and skip link
   });
 });
 
-test("starter and showcase scaffolds compose plugin components directly", async () => {
+test("starter and showcase scaffolds compose contextual plugin components", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -328,32 +328,39 @@ test("starter and showcase scaffolds compose plugin components directly", async 
       );
       assert.match(
         article,
-        /<ArticleBody html=\{props\.post\.html \?\? ""\} \/>/,
+        /<Article class="site-article" post=\{props\.post\} entry=\{props\.entry\}>/,
       );
-      assert.match(article, /<Article class="site-article">/);
+      assert.match(article, /<ArticleBody \/>/);
       assert.match(article, /<div class="site-article__layout">/);
       assert.match(article, /class="site-article__aside"/);
       assert.match(article, /class="site-article__footer"/);
       assert.doesNotMatch(article, /Slot|bodySlots|article\./);
       assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
       assert.doesNotMatch(article, /class="rb-article-content"/);
+      assert.match(article, /<Breadcrumbs \/>/);
+      assert.match(article, /<Properties \/>/);
+      assert.match(article, /<Backlinks \/>/);
+      assert.match(article, /<RelatedPosts \/>/);
       for (const route of ["index.tsx", "[slug{.+}].tsx"]) {
         const source = await fs.readFile(
           path.join(targetDirectory, `app/routes/${route}`),
           "utf8",
         );
         assert.match(source, /createPublicContentView/);
-        assert.match(source, /<Breadcrumbs /);
-        assert.match(source, /<Properties /);
-        assert.match(source, /<Backlinks /);
-        assert.match(source, /<RelatedPosts /);
+        assert.match(source, /<SiteProvider /);
+        assert.match(source, /findRoutableBySlug/);
+        assert.match(source, /<SiteArticle post=/);
+        assert.doesNotMatch(
+          source,
+          /<Breadcrumbs |<Properties |<Backlinks |<RelatedPosts /,
+        );
         assert.doesNotMatch(source, /bodySlots|asideContent/);
       }
     }
   });
 });
 
-test("starter and showcase scaffolds gate the footer region on direct content", async () => {
+test("starter and showcase scaffolds render a contextual footer region", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of ["starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
@@ -363,7 +370,9 @@ test("starter and showcase scaffolds gate the footer region on direct content", 
         "utf8",
       );
       assert.match(article, /<ArticleFooter class="site-article__footer">/);
-      assert.match(article, /props\.footer \?/);
+      assert.match(article, /<Backlinks \/>/);
+      assert.match(article, /<RelatedPosts \/>/);
+      assert.doesNotMatch(article, /props\.footer \?/);
     }
   });
 });
@@ -376,49 +385,58 @@ test("minimal scaffold exposes a readable layout with the new primitives", async
       path.join(targetDirectory, "app/components/article.tsx"),
       "utf8",
     );
-    assert.match(article, /<ArticleBody html=\{post\.html \?\? ""\} \/>/);
-    assert.match(article, /<Article class="site-article">/);
+    assert.match(
+      article,
+      /<Article class="site-article" post=\{post\} entry=\{entry\}>/,
+    );
+    assert.match(article, /<ArticleBody \/>/);
     assert.doesNotMatch(article, /Slot|bodySlots/);
     assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
     assert.doesNotMatch(article, /class="rb-article-content"/);
   });
 });
 
-test("starter scaffold renders direct article components and Recent Posts once on the homepage", async () => {
+test("starter scaffold renders contextual article components and Recent Posts once", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "starter");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "starter" });
     const read = (relative: string) =>
       fs.readFile(path.join(targetDirectory, relative), "utf8");
     const renderer = await read("app/routes/_renderer.tsx");
+    const article = await read("app/components/article.tsx");
     const index = await read("app/routes/index.tsx");
     const slug = await read("app/routes/[slug{.+}].tsx");
     assert.match(renderer, /<SearchBar \/>/);
-    assert.match(index, /<TableOfContents/);
-    assert.match(index, /<Breadcrumbs /);
-    assert.match(index, /<Properties /);
-    assert.match(index, /<Backlinks /);
-    assert.match(index, /<RecentPosts /);
-    assert.equal((index.match(/<RecentPosts /g) ?? []).length, 1);
+    assert.match(article, /<TableOfContents/);
+    assert.match(article, /<Breadcrumbs \/>/);
+    assert.match(article, /<Properties \/>/);
+    assert.match(article, /<Backlinks \/>/);
+    assert.match(article, /<RecentPosts \/>/);
+    assert.equal((article.match(/<RecentPosts \/>/g) ?? []).length, 1);
+    assert.match(index, /<SiteProvider /);
+    assert.match(slug, /<SiteProvider /);
+    assert.doesNotMatch(index, /<RecentPosts /);
     assert.doesNotMatch(slug, /<RecentPosts /);
-    assert.match(slug, /<TableOfContents/);
     assert.doesNotMatch(slug, /bodySlots/);
   });
 });
 
-test("showcase scaffold renders direct article components, daily notes, and Recent Posts once", async () => {
+test("showcase scaffold renders contextual article components, daily notes, and Recent Posts once", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "showcase");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "showcase" });
     const read = (relative: string) =>
       fs.readFile(path.join(targetDirectory, relative), "utf8");
+    const article = await read("app/components/article.tsx");
     const index = await read("app/routes/index.tsx");
     const slug = await read("app/routes/[slug{.+}].tsx");
-    assert.match(index, /<DailyNotes /);
-    assert.match(index, /<RecentPosts /);
-    assert.equal((index.match(/<RecentPosts /g) ?? []).length, 1);
+    assert.match(article, /<DailyNotes \/>/);
+    assert.match(article, /<RecentPosts \/>/);
+    assert.equal((article.match(/<RecentPosts \/>/g) ?? []).length, 1);
+    assert.match(article, /<ShareControls \/>/);
+    assert.match(index, /<SiteProvider /);
+    assert.match(slug, /<SiteProvider /);
     assert.doesNotMatch(slug, /<RecentPosts /);
-    assert.match(slug, /<ShareControls /);
     assert.doesNotMatch(slug, /bodySlots/);
   });
 });

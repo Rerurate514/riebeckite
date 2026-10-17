@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { html as rawHtml } from "hono/html";
 import { createElement, Fragment } from "hono/jsx";
-import { renderToString } from "hono/jsx/dom/server";
+import { renderToReadableStream, renderToString } from "hono/jsx/dom/server";
+import TableOfContents from "../../../plugins/toc/components/table-of-contents.tsx";
 import {
   Article,
   ArticleBody,
@@ -55,6 +57,24 @@ test("ArticleBody owns the rb-article-content markdown hook", () => {
   const html = renderToString(ArticleBody({ html: "<p>Body</p>" }));
   assert.match(html, /^<div class="rb-article-content">/);
   assert.match(html, /<p>Body<\/p>/);
+});
+
+test("Article provides its post to contextual plugin components", async () => {
+  const Empty = async () => rawHtml``;
+  const element = createElement(
+    Article,
+    {
+      post: {
+        frontmatter: {},
+        html: '<h2 id="first">First</h2><h2 id="second">Second</h2>',
+      },
+    },
+    createElement(Empty, {}),
+    createElement(TableOfContents, {}),
+  );
+  const html = await new Response(await renderToReadableStream(element)).text();
+
+  assert.match(html, /rr-table-of-contents/);
 });
 
 test("ArticleBody composes a Site class after the markdown hook", () => {

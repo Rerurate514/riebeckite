@@ -28,6 +28,10 @@ export type RiebeckiteIntegrationOptions = {
  * restate the Vite `environments.ssr.resolve.external` list.
  */
 export const defaultSsrExternals = [
+  "hono",
+  "hono/html",
+  "hono/jsx",
+  "hono/jsx/jsx-runtime",
   "extend",
   "debug",
   "node:fs/promises",

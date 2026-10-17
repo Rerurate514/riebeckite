@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import { resolveRelatedPostsOptions } from "../src/options.js";
 import { getRelatedPosts } from "../src/related.js";
 import type {
@@ -35,7 +36,7 @@ export function renderRelatedPostsContent(
   entries: readonly RelatedPostsEntry[],
   options: ResolvedRelatedPostsOptions,
 ) {
-  if (entries.length === 0) return [];
+  if (entries.length === 0) return html``;
 
   const { className, heading, headingText } = options;
 

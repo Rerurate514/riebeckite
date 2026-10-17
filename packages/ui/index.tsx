@@ -5,8 +5,8 @@ import type {
   PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { createContext, useContext } from "hono/jsx";
 import type { Child } from "hono/jsx";
+import { createContext, useContext } from "hono/jsx";
 
 export type SiteContextValue = {
   config: ResolvedRiebeckiteConfig;
@@ -21,17 +21,21 @@ export type ArticleContextValue = {
 };
 
 const SiteContext = createContext<SiteContextValue | undefined>(undefined);
-const ArticleContext = createContext<ArticleContextValue | undefined>(undefined);
+const ArticleContext = createContext<ArticleContextValue | undefined>(
+  undefined,
+);
 
 export function SiteProvider(props: SiteContextValue & { children?: Child }) {
-  return <SiteContext.Provider value={props}>{props.children}</SiteContext.Provider>;
+  const { children, ...value } = props;
+  return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;
 }
 
 export function ArticleProvider(
   props: ArticleContextValue & { children?: Child },
 ) {
+  const { children, ...value } = props;
   return (
-    <ArticleContext.Provider value={props}>{props.children}</ArticleContext.Provider>
+    <ArticleContext.Provider value={value}>{children}</ArticleContext.Provider>
   );
 }
 

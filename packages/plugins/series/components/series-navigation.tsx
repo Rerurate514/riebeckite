@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import { collectSeriesIndexes, getSeriesNavigation } from "../src/series.js";
 import type {
   ResolvedSeriesOptions,
@@ -40,8 +41,8 @@ const SeriesNavigation = (async ({
           index: sourceIndex,
         })
       : sourceIndex;
-  if (!currentSlug) return [];
-  if (!index || index.members.length === 0) return [];
+  if (!currentSlug) return html``;
+  if (!index || index.members.length === 0) return html``;
   const position = index.members.findIndex(
     (member) => member.slug === currentSlug,
   );

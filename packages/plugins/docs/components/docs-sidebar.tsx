@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import { getDocsNavigation } from "../index.js";
 import type { DocsNavigationItem, DocsOptions } from "../src/types.js";
 
@@ -24,7 +25,7 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
       : []);
   const currentPermalink = props.currentPermalink ?? article?.entry?.permalink;
   const label = props.label ?? options?.sidebar?.label ?? "Docs navigation";
-  if (items.length === 0) return [];
+  if (items.length === 0) return html``;
   const permalink = currentPermalink ?? "";
   return (
     <details class="rb-docs-sidebar-details" data-docs-sidebar-details open>

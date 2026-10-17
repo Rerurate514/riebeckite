@@ -1,5 +1,6 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import { getShareLinks } from "../index.js";
 import type { ShareLink, ShareOptions } from "../src/types.js";
 
@@ -32,7 +33,7 @@ const ShareControls = (async (props: Readonly<ShareControlsProps>) => {
   const copiedLabel = props.copiedLabel ?? resolved?.copiedLabel ?? "Copied";
   const copyFailedLabel =
     props.copyFailedLabel ?? resolved?.copyFailedLabel ?? "Copy failed";
-  if (links.length === 0 && !copyUrl) return [];
+  if (links.length === 0 && !copyUrl) return html``;
   const rootClass =
     className === "rr-share" ? className : `rr-share ${className}`;
   return (

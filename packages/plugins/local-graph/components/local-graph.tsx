@@ -1,6 +1,7 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { html } from "hono/html";
 import type { LocalGraphData } from "../src/local-graph.js";
 import { getLocalGraph } from "../src/local-graph.server.js";
 
@@ -19,7 +20,7 @@ const LocalGraph = (async (props: Readonly<LocalGraphProps>) => {
     (site && article?.entry
       ? await getLocalGraph({ view: site.view, slug: article.entry.slug })
       : null);
-  if (!graph || graph.nodes.length <= 1) return [];
+  if (!graph || graph.nodes.length <= 1) return html``;
 
   const edges = buildGraphEdges(graph.nodes);
   const layout = layoutRadialGraph(graph.nodes, {

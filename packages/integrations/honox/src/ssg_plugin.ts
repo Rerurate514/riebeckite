@@ -241,10 +241,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         this,
         `client manifest ${clientBuildArtifacts ? `preserved (${clientBuildArtifacts.paths.length} files)` : "not found"}`,
       );
-      await rm(outDir, {
-        recursive: true,
-        force: true,
-      });
+      await emptyBuildOutputDirectory(outDir);
     },
     resolveId(id) {
       return id === virtualId ? resolvedVirtualId : undefined;
@@ -659,6 +656,18 @@ function isMissingDirectoryError(error: unknown): boolean {
 
 function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
+}
+
+export async function emptyBuildOutputDirectory(outDir: string): Promise<void> {
+  const entries = await readdir(outDir, { withFileTypes: true }).catch(
+    (error: unknown) => {
+      if (isMissingDirectoryError(error)) return [];
+      throw error;
+    },
+  );
+  for (const entry of entries) {
+    await rm(join(outDir, entry.name), { recursive: true, force: true });
+  }
 }
 
 async function preserveClientBuildArtifacts(

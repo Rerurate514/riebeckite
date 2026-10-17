@@ -6,6 +6,7 @@ import path from "node:path";
 import { test } from "node:test";
 import {
   createNoChangeFastPathOutputMetrics,
+  emptyBuildOutputDirectory,
   findBuildOutputSiteCollisions,
   loadOutputCache,
   saveOutputCache,
@@ -32,6 +33,22 @@ test("riebeckite SSG is disabled during dev server", () => {
     shouldApplyRiebeckiteSsg({}, { command: "serve", mode: "development" }),
     false,
   );
+});
+
+test("SSG output cleanup preserves the output directory", async (t) => {
+  const root = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-output-"),
+  );
+  const output = path.join(root, "dist");
+  await fs.mkdir(path.join(output, "assets"), { recursive: true });
+  await fs.writeFile(path.join(output, "index.html"), "stale");
+  await fs.writeFile(path.join(output, "assets", "app.js"), "stale");
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+
+  await emptyBuildOutputDirectory(output);
+
+  assert.equal((await fs.stat(output)).isDirectory(), true);
+  assert.deepEqual(await fs.readdir(output), []);
 });
 
 test("build outputs that collide with site public assets are reported", () => {

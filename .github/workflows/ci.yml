@@ -209,7 +209,7 @@ jobs:
         with:
           path: ~/.cache/puppeteer
           key: puppeteer-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
-      - run: pnpm exec puppeteer browsers install chrome
+      - run: pnpm --filter @riebeckite/plugin-search exec puppeteer browsers install chrome
       - run: pnpm test:browser
 
   production-assets:

@@ -11,7 +11,12 @@ import {
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-import { DocsPrevNext, docs, getDocsNavigation } from "../index.js";
+import {
+  DocsPrevNext,
+  DocsSidebar,
+  docs,
+  getDocsNavigation,
+} from "../index.js";
 import {
   buildDocsNavigation,
   flattenDocsNavigation,
@@ -413,6 +418,47 @@ test("component rendering uses the documented previous-next DOM contract", () =>
     style,
     /\.rb-docs-prev-next__link\s*\{[^}]*overflow-wrap:\s*anywhere/,
   );
+});
+
+test("component rendering uses the documented docs sidebar DOM contract", () => {
+  const html = renderToString(
+    createElement(DocsSidebar, {
+      items: [
+        {
+          title: "Guide",
+          href: "/docs/guide",
+          children: [
+            {
+              title: "Child",
+              href: "/docs/guide/child",
+              children: [],
+            },
+          ],
+        },
+        { title: "Section", children: [] },
+      ],
+      currentPermalink: "/docs/guide/child",
+      label: "Documentation",
+    }),
+  );
+
+  assert.match(
+    html,
+    /<details class="rb-docs-sidebar-details" data-docs-sidebar-details="true" open=""/,
+  );
+  assert.match(
+    html,
+    /<summary class="rb-docs-sidebar-summary">Documentation<\/summary>/,
+  );
+  assert.match(
+    html,
+    /<nav class="rb-docs-sidebar" aria-label="Documentation" data-docs-sidebar/,
+  );
+  assert.match(html, /rb-docs-sidebar__list--level-1/);
+  assert.match(html, /rb-docs-sidebar__list--level-2/);
+  assert.match(html, /rb-docs-sidebar__section/);
+  assert.match(html, /aria-current="page"/);
+  assert.match(html, /data-docs-collapsed="false"/);
 });
 
 test("keeps the current branch expanded when a section is collapsed", async () => {

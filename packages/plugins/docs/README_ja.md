@@ -64,10 +64,10 @@ sidebar:
 
 Plugin は React ライクな JSX コンポーネントをサイト統合に提供します。
 
-- `<DocsSidebar items={...} currentPermalink? label? />` は `nav.rr-docs-sidebar` を描画
-- `<DocsPrevNext previous? next? />` は `nav.rr-docs-prev-next` を描画
+- `<DocsSidebar items={...} currentPermalink? label? />` は `details.rb-docs-sidebar-details` と `nav.rb-docs-sidebar` を描画
+- `<DocsPrevNext previous? next? />` は `nav.rb-docs-prev-next` を描画
 
-クライアント `initDocsSidebar` はフッタリング可能なサイドバー動作のためにそのまま残ります。
+クライアント `initDocsSidebar` がサイドバーを畳めるようにします。
 
 ## l10n と公開の境界
 

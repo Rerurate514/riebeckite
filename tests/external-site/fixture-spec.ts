@@ -2,6 +2,7 @@ import type { PackageSpec } from "@riebeckite/test/e2e";
 
 export const PACKAGES: PackageSpec[] = [
   { directory: "packages/core", name: "@riebeckite/core" },
+  { directory: "packages/ui", name: "@riebeckite/ui" },
   { directory: "packages/cli", name: "@riebeckite/cli" },
   {
     directory: "packages/integrations/analytics-cloudflare",

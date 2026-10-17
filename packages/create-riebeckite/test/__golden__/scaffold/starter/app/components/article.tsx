@@ -1,4 +1,3 @@
-import type { PostContent, PublicContentEntry } from "@riebeckite/core";
 import { Article, ArticleBody, ArticleContent, ArticleFooter } from "@riebeckite/honox/ui";
 import { Backlinks } from "@riebeckite/plugin-backlinks";
 import { Breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
@@ -7,14 +6,9 @@ import { RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { RelatedPosts } from "@riebeckite/plugin-related-posts";
 import { TableOfContents } from "@riebeckite/plugin-toc";
 
-type SiteArticleProps = {
-  post: PostContent;
-  entry: PublicContentEntry;
-};
-
-export function SiteArticle(props: SiteArticleProps) {
+export function SiteArticle() {
   return (
-    <Article class="site-article" post={props.post} entry={props.entry}>
+    <Article class="site-article">
       <div class="site-article__layout">
         <ArticleContent>
           <Breadcrumbs />

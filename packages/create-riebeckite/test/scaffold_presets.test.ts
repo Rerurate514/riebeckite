@@ -96,8 +96,7 @@ test("each preset generates its intended self-contained composition", async () =
           path.join(targetDirectory, "app/routes/[slug{.+}].tsx"),
           "utf8",
         );
-        assert.match(slugRoute, /contentRouteSsgParams/);
-        assert.match(slugRoute, /resolveRiebeckiteContentRequest/);
+        assert.match(slugRoute, /createContentRoute/);
         assert.doesNotMatch(slugRoute, /publicEntries/);
       }
       if (preset === "showcase") {
@@ -317,39 +316,47 @@ test("starter and showcase scaffolds expose a single main landmark and skip link
   });
 });
 
-test("starter and showcase scaffolds compose contextual plugin components", async () => {
+test("content scaffolds delegate route composition to the HonoX helpers", async () => {
   await withTemporaryDirectory(async (directory) => {
-    for (const preset of ["starter", "showcase"] as const) {
+    for (const preset of ["minimal", "starter", "showcase"] as const) {
       const targetDirectory = path.join(directory, preset);
       await scaffoldRiebeckiteSite({ targetDirectory, preset });
       const article = await fs.readFile(
         path.join(targetDirectory, "app/components/article.tsx"),
         "utf8",
       );
-      assert.match(
+      assert.match(article, /<Article class="site-article">/);
+      assert.doesNotMatch(
         article,
-        /<Article class="site-article" post=\{props\.post\} entry=\{props\.entry\}>/,
+        /PostContent|PublicContentEntry|post=|entry=/,
       );
       assert.match(article, /<ArticleBody \/>/);
-      assert.match(article, /<div class="site-article__layout">/);
-      assert.match(article, /class="site-article__aside"/);
-      assert.match(article, /class="site-article__footer"/);
       assert.doesNotMatch(article, /Slot|bodySlots|article\./);
       assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
       assert.doesNotMatch(article, /class="rb-article-content"/);
-      assert.match(article, /<Breadcrumbs \/>/);
-      assert.match(article, /<Properties \/>/);
-      assert.match(article, /<Backlinks \/>/);
-      assert.match(article, /<RelatedPosts \/>/);
+      if (preset !== "minimal") {
+        assert.match(article, /<div class="site-article__layout">/);
+        assert.match(article, /class="site-article__aside"/);
+        assert.match(article, /class="site-article__footer"/);
+        assert.match(article, /<Breadcrumbs \/>/);
+        assert.match(article, /<Properties \/>/);
+        assert.match(article, /<Backlinks \/>/);
+        assert.match(article, /<RelatedPosts \/>/);
+      }
       for (const route of ["index.tsx", "[slug{.+}].tsx"]) {
         const source = await fs.readFile(
           path.join(targetDirectory, `app/routes/${route}`),
           "utf8",
         );
-        assert.match(source, /createPublicContentView/);
-        assert.match(source, /<SiteProvider /);
-        assert.match(source, /findRoutableBySlug/);
-        assert.match(source, /<SiteArticle post=/);
+        assert.match(
+          source,
+          route === "index.tsx" ? /createHomeRoute/ : /createContentRoute/,
+        );
+        assert.match(source, /render: \(\) => <SiteArticle \/>/);
+        assert.doesNotMatch(source, /createPublicContentView/);
+        assert.doesNotMatch(source, /<SiteProvider /);
+        assert.doesNotMatch(source, /findRoutableBySlug/);
+        assert.doesNotMatch(source, /post=|entry=/);
         assert.doesNotMatch(
           source,
           /<Breadcrumbs |<Properties |<Backlinks |<RelatedPosts /,
@@ -385,10 +392,7 @@ test("minimal scaffold exposes a readable layout with the new primitives", async
       path.join(targetDirectory, "app/components/article.tsx"),
       "utf8",
     );
-    assert.match(
-      article,
-      /<Article class="site-article" post=\{post\} entry=\{entry\}>/,
-    );
+    assert.match(article, /<Article class="site-article">/);
     assert.match(article, /<ArticleBody \/>/);
     assert.doesNotMatch(article, /Slot|bodySlots/);
     assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
@@ -413,8 +417,8 @@ test("starter scaffold renders contextual article components and Recent Posts on
     assert.match(article, /<Backlinks \/>/);
     assert.match(article, /<RecentPosts \/>/);
     assert.equal((article.match(/<RecentPosts \/>/g) ?? []).length, 1);
-    assert.match(index, /<SiteProvider /);
-    assert.match(slug, /<SiteProvider /);
+    assert.match(index, /createHomeRoute/);
+    assert.match(slug, /createContentRoute/);
     assert.doesNotMatch(index, /<RecentPosts /);
     assert.doesNotMatch(slug, /<RecentPosts /);
     assert.doesNotMatch(slug, /bodySlots/);
@@ -434,8 +438,8 @@ test("showcase scaffold renders contextual article components, daily notes, and 
     assert.match(article, /<RecentPosts \/>/);
     assert.equal((article.match(/<RecentPosts \/>/g) ?? []).length, 1);
     assert.match(article, /<ShareControls \/>/);
-    assert.match(index, /<SiteProvider /);
-    assert.match(slug, /<SiteProvider /);
+    assert.match(index, /createHomeRoute/);
+    assert.match(slug, /createContentRoute/);
     assert.doesNotMatch(slug, /<RecentPosts /);
     assert.doesNotMatch(slug, /bodySlots/);
   });

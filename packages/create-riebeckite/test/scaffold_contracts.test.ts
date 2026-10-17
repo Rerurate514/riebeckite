@@ -754,13 +754,12 @@ test("Contract 12: generated routes delegate homepage and content resolution to 
 
     const indexRoute = await readFile(targetDir, "app/routes/index.tsx");
     assert.ok(
-      indexRoute?.includes("resolveRiebeckiteHomeRequest"),
+      indexRoute?.includes("createHomeRoute"),
       "index route must delegate homepage resolution to the framework",
     );
     assert.ok(
-      indexRoute?.includes("<SiteArticle") &&
-        indexRoute?.includes("post={home.post}"),
-      "index route must compose the resolved content entry",
+      indexRoute?.includes("render: () => <SiteArticle />"),
+      "index route must render the site article through the framework helper",
     );
     assert.ok(
       !indexRoute?.includes("c.set("),
@@ -773,13 +772,12 @@ test("Contract 12: generated routes delegate homepage and content resolution to 
 
     const slugRoute = await readFile(targetDir, "app/routes/[slug{.+}].tsx");
     assert.ok(
-      slugRoute?.includes("resolveRiebeckiteContentRequest"),
+      slugRoute?.includes("createContentRoute"),
       "slug route must delegate page resolution to the framework",
     );
     assert.ok(
-      slugRoute?.includes("<SiteArticle") &&
-        slugRoute?.includes("post={resolved.post}"),
-      "slug route must compose the resolved content entry",
+      slugRoute?.includes("render: () => <SiteArticle />"),
+      "slug route must render the site article through the framework helper",
     );
     assert.ok(
       !slugRoute?.includes("c.set("),

@@ -1,9 +1,8 @@
-import type { PostContent, PublicContentEntry } from "@riebeckite/core";
 import { Article, ArticleBody, ArticleContent } from "@riebeckite/honox/ui";
 
-export function SiteArticle({ post, entry }: { post: PostContent; entry: PublicContentEntry }) {
+export function SiteArticle() {
   return (
-    <Article class="site-article" post={post} entry={entry}>
+    <Article class="site-article">
       <ArticleContent>
         <ArticleBody />
       </ArticleContent>

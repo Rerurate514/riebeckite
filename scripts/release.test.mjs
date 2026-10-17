@@ -425,7 +425,11 @@ test("partial release resumes from the already published packages", async () => 
     assert.equal(harness.state.publishOrder.includes(name), false);
   }
   assert.equal(harness.state.published.size, ALL_PACKAGES.length);
-  assert.ok(output.some((line) => line.includes("40/81 package(s) already")));
+  assert.ok(
+    output.some((line) =>
+      line.includes(`40/${ALL_PACKAGES.length} package(s) already`),
+    ),
+  );
   assert.ok(stepLabels(harness.state).includes("git tag"));
 });
 

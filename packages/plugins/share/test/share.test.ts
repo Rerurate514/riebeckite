@@ -5,7 +5,9 @@ import {
   type ContentManifestEntry,
   resolveConfig,
 } from "@riebeckite/core";
-import { getShareLinks, initShare, share } from "../index.ts";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import { getShareLinks, initShare, ShareControls, share } from "../index.ts";
 import {
   DEFAULT_SHARE_SERVICES,
   resolveShareOptions,
@@ -20,6 +22,8 @@ import {
 
 const URL = "https://example.com/posts/hello";
 const TITLE = "Hello World";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function manifestOf(entry: ContentManifestEntry): ContentManifest {
   return {
@@ -148,6 +152,21 @@ test("renderShareControls renders links and a hidden copy button", () => {
 test("renderShareControls returns empty when nothing is renderable", () => {
   const options = resolveShareOptions({ services: [] });
   assert.equal(renderShareControls(options, { url: URL, title: TITLE }), "");
+});
+
+test("component rendering matches the share CSS and client hooks", () => {
+  const html = renderToString(
+    createElement(ShareControls, {
+      links: [{ service: "x", label: "X", url: "https://example.com/share" }],
+      copyUrl: URL,
+    }),
+  );
+
+  assert.match(html, /class="rr-share__list"/);
+  assert.match(html, /class="rr-share__link rr-share__link--x"/);
+  assert.match(html, /data-rr-share-copy/);
+  assert.match(html, /class="rr-share__button rr-share__copy"/);
+  assert.match(html, /class="rr-share__status"/);
 });
 
 test("share exposes share links for the Site to render", async () => {

@@ -55,13 +55,17 @@
 
 .rb-docs-prev-next {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem;
   margin-block-start: var(--rb-space-6, 3rem);
 }
 
 .rb-docs-prev-next__link {
+  flex: 1 1 14rem;
+  min-width: 0;
   color: inherit;
+  overflow-wrap: anywhere;
   text-decoration: none;
 }
 
@@ -74,4 +78,8 @@
   display: block;
   font-size: 0.75em;
   opacity: 0.72;
+}
+
+.rb-docs-prev-next__spacer {
+  flex: 1 1 14rem;
 }

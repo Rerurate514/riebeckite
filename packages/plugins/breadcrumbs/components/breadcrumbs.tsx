@@ -5,11 +5,13 @@ export type BreadcrumbsProps = {
   items: readonly BreadcrumbItem[];
   ariaLabel?: string;
   className?: string;
+  separator?: string;
 };
 const Breadcrumbs = (({
   items,
   ariaLabel = "Breadcrumb",
   className = "rb-breadcrumbs",
+  separator = "/",
 }: Readonly<BreadcrumbsProps>) => {
   if (items.length === 0) return null;
   return (
@@ -28,6 +30,11 @@ const Breadcrumbs = (({
             ) : (
               <span class={`${className}__text`}>{item.name}</span>
             )}
+            {index < items.length - 1 ? (
+              <span class={`${className}__separator`} aria-hidden="true">
+                {separator}
+              </span>
+            ) : null}
           </li>
         ))}
       </ol>

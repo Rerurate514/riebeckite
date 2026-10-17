@@ -25,6 +25,7 @@ import {
   getDocsNavigation,
   getDocsPrevNext,
 } from "@riebeckite/plugin-docs";
+import { getLocalization, LanguageSwitcher } from "@riebeckite/plugin-l10n";
 import { getLocalGraph, LocalGraph } from "@riebeckite/plugin-local-graph";
 import {
   getProperties,
@@ -173,7 +174,12 @@ export default createRoute(
       <Article
         content={resolved.post}
         title={getArticleTitle(slug, resolved.post.frontmatter.title)}
-        headerContent={<Breadcrumbs items={breadcrumbItems} />}
+        headerContent={
+          <>
+            <Breadcrumbs items={breadcrumbItems} />
+            <LanguageSwitcher localization={getLocalization(view, slug)} />
+          </>
+        }
         metadataContent={<Properties data={propertiesData} />}
         asideContent={
           <TableOfContents
@@ -197,6 +203,7 @@ export default createRoute(
             <DocsPrevNext
               previous={docsPrevNext.previous}
               next={docsPrevNext.next}
+              language={getEntryLanguage(resolved.entry)}
             />
             <Backlinks backlinks={backlinks} />
             <RelatedPosts

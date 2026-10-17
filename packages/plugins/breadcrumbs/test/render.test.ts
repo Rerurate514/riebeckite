@@ -84,6 +84,23 @@ test("renders an accessible ordered list with links and a current crumb", () => 
   );
 });
 
+test("component rendering preserves separators and current-page semantics", () => {
+  const html = renderToString(
+    createElement(Breadcrumbs, {
+      items: [
+        { name: "Home", url: "/" },
+        { name: "Intro", url: "/docs/intro" },
+      ],
+    }),
+  );
+
+  assert.match(html, /class="rb-breadcrumbs__separator" aria-hidden="true">\//);
+  assert.match(
+    html,
+    /class="rb-breadcrumbs__current" aria-current="page">Intro/,
+  );
+});
+
 test("returns an empty string when there is nothing to render", () => {
   assert.equal(renderBreadcrumbNav([], resolveBreadcrumbsOptions({})), "");
 });

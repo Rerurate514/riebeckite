@@ -9,7 +9,9 @@ import {
   definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
-import { docs, getDocsNavigation } from "../index.js";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import { DocsPrevNext, docs, getDocsNavigation } from "../index.js";
 import {
   buildDocsNavigation,
   flattenDocsNavigation,
@@ -18,6 +20,8 @@ import {
 import { renderDocsPrevNext, renderDocsSidebar } from "../src/render.js";
 
 const style = readFileSync(new URL("../style.css", import.meta.url), "utf8");
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function memorySource(files: Record<string, string>): ContentSource {
   const entries: ContentSourceEntry[] = Object.keys(files).map((path) => ({
@@ -388,6 +392,27 @@ test("renders accessible navigation semantics", async () => {
     /<nav class="rb-docs-prev-next" aria-label="Previous and next docs pages"/,
   );
   assert.match(html, /data-docs-collapsed="false"/);
+});
+
+test("component rendering uses the documented previous-next DOM contract", () => {
+  const html = renderToString(
+    createElement(DocsPrevNext, {
+      previous: { href: "/docs/previous", title: "Previous page" },
+      next: { href: "/docs/next", title: "A long next documentation page" },
+    }),
+  );
+
+  assert.match(html, /class="rb-docs-prev-next"/);
+  assert.match(html, /data-docs-prev-next/);
+  assert.match(
+    html,
+    /class="rb-docs-prev-next__link rb-docs-prev-next__link--previous"/,
+  );
+  assert.match(html, /class="rb-docs-prev-next__label">Previous/);
+  assert.match(
+    style,
+    /\.rb-docs-prev-next__link\s*\{[^}]*overflow-wrap:\s*anywhere/,
+  );
 });
 
 test("keeps the current branch expanded when a section is collapsed", async () => {

@@ -50,6 +50,8 @@ export type ShareLinksData = {
   readonly ariaLabel: string;
   readonly className: string;
   readonly copyLabel: string;
+  readonly copiedLabel: string;
+  readonly copyFailedLabel: string;
 };
 
 export const getShareLinks: PluginDataHelper<
@@ -68,6 +70,8 @@ export const getShareLinks: PluginDataHelper<
     ariaLabel: resolved.ariaLabel,
     className: resolved.className || SHARE_ROOT_CLASS,
     copyLabel: resolved.labels.copy,
+    copiedLabel: resolved.copiedLabel,
+    copyFailedLabel: resolved.copyFailedLabel,
   };
 };
 

@@ -33,8 +33,32 @@ const NPM_VIEW_TIMEOUT_MS = 60_000;
 const VERIFY_TIMEOUT_MS = 60_000;
 const VERIFY_INTERVAL_MS = 5_000;
 
+const REGISTRY_QUERY_ATTEMPTS = 3;
+const REGISTRY_QUERY_DELAY_MS = 2_000;
+const PUBLISH_ATTEMPTS = 3;
+const PUBLISH_RETRY_DELAY_MS = 5_000;
+
+const STAGE_LIST_TIMEOUT_MS = NPM_VIEW_TIMEOUT_MS;
+const STAGE_APPROVE_TIMEOUT_MS = PUBLISH_TIMEOUT_MS;
+
 const SEMVER_PATTERN =
   /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
+
+export const PACKAGE_STATE = {
+  PUBLISHED: "published",
+  UNPUBLISHED: "unpublished",
+  UNKNOWN: "unknown",
+};
+
+export const PUBLISH_FAILURE = {
+  AUTHENTICATION: "authentication",
+  PERMISSION: "permission",
+  STAGED_CONFLICT: "staged-conflict",
+  NOT_FOUND: "not-found",
+  TRANSIENT: "transient",
+  UNKNOWN: "unknown",
+};
+
 const usage = `Usage:
   node scripts/release.mjs <version> [--dry-run]
   node scripts/release.mjs --check-only
@@ -49,12 +73,19 @@ Release flow:
   -> checks
   -> inspect published versions
   -> compute dependency layers
+  -> inspect staged versions
+  -> resolve staged conflicts (official npm stage approve)
   -> interactive first publish
   -> parallel dependency-layer publish
+  -> bounded retry for transient failures
   -> interactive retry for authentication failures
   -> verify every version is live
   -> git commit + tag
   -> push instructions
+
+The release is idempotent and resumable. Re-running it for the same version
+skips everything already published on the registry and processes only the
+remaining packages, so a partial or interrupted release can be continued.
 
 Options:
   <version>     Next semantic version for all public packages.
@@ -66,7 +97,15 @@ Publishing:
   Packages are published directly from this machine with pnpm. When the npm
   CLI needs interactive authentication (security key, passkey, or one-time
   password), it prompts in this terminal; this script never implements its own
-  authentication flow or its own one-time password prompt.`;
+  authentication flow or its own one-time password prompt.
+
+Staged versions:
+  A version that is already staged cannot be published again: the registry
+  answers with E409. When this happens the script re-checks the published
+  state, looks the version up with "npm stage list", and, when the terminal is
+  interactive, approves it with "npm stage approve". If the staged state cannot
+  be established, the release stops with manual instructions instead of
+  repeating the failed publish.`;
 
 export class ReleaseError extends Error {
   constructor(message, status = 1) {
@@ -83,7 +122,7 @@ export class PublishError extends ReleaseError {
       status = 1,
       stdout = "",
       stderr = "",
-      authenticationRequired = false,
+      category = PUBLISH_FAILURE.UNKNOWN,
     } = {},
   ) {
     super(message, status);
@@ -91,7 +130,11 @@ export class PublishError extends ReleaseError {
     this.name = "PublishError";
     this.stdout = stdout;
     this.stderr = stderr;
-    this.authenticationRequired = authenticationRequired;
+    this.category = category;
+  }
+
+  get authenticationRequired() {
+    return this.category === PUBLISH_FAILURE.AUTHENTICATION;
   }
 }
 
@@ -444,18 +487,102 @@ async function mapWithConcurrency(items, concurrency, callback) {
   return results;
 }
 
-function requiresInteractiveAuthentication(stdout, stderr) {
-  const output = `${stdout}\n${stderr}`.toLowerCase();
+function combineOutput(stdout, stderr) {
+  return `${stdout ?? ""}\n${stderr ?? ""}`;
+}
+
+export function isStagedConflictOutput(output) {
+  const lower = output.toLowerCase();
 
   return (
-    output.includes("err_pnpm_otp_non_interactive") ||
-    output.includes("requires additional authentication") ||
-    output.includes("pnpm is not running in an interactive terminal") ||
-    output.includes("provide the --otp option") ||
-    output.includes("eneedauth") ||
-    output.includes("e401") ||
-    output.includes("e403")
+    lower.includes("previously staged") ||
+    /\be409\b/.test(lower) ||
+    (/\b409\b/.test(lower) && lower.includes("conflict"))
   );
+}
+
+export function isAuthenticationOutput(output) {
+  const lower = output.toLowerCase();
+
+  return (
+    lower.includes("err_pnpm_otp_non_interactive") ||
+    lower.includes("requires additional authentication") ||
+    lower.includes("not running in an interactive terminal") ||
+    lower.includes("provide the --otp option") ||
+    lower.includes("eneedauth") ||
+    /\be401\b/.test(lower) ||
+    /\beotp\b/.test(lower) ||
+    lower.includes("one-time password") ||
+    lower.includes("one-time pass")
+  );
+}
+
+export function isPermissionOutput(output) {
+  const lower = output.toLowerCase();
+
+  return (
+    /\be403\b/.test(lower) ||
+    lower.includes("forbidden") ||
+    lower.includes("you do not have permission") ||
+    lower.includes("permission to publish")
+  );
+}
+
+export function isNotFoundOutput(output) {
+  const lower = output.toLowerCase();
+
+  return (
+    lower.includes("e404") ||
+    lower.includes("404 not found") ||
+    lower.includes("is not in this registry") ||
+    lower.includes("could not be found")
+  );
+}
+
+export function isTransientOutput(output) {
+  const lower = output.toLowerCase();
+
+  return (
+    lower.includes("etimedout") ||
+    lower.includes("econnreset") ||
+    lower.includes("econnrefused") ||
+    lower.includes("eai_again") ||
+    lower.includes("enotfound") ||
+    lower.includes("socket hang up") ||
+    lower.includes("network") ||
+    lower.includes("timed out") ||
+    lower.includes("timeout") ||
+    /\be50[0-4]\b/.test(lower) ||
+    lower.includes("service unavailable") ||
+    lower.includes("bad gateway") ||
+    lower.includes("internal server error")
+  );
+}
+
+export function classifyPublishFailure({ stdout = "", stderr = "" } = {}) {
+  const output = combineOutput(stdout, stderr);
+
+  if (isStagedConflictOutput(output)) {
+    return PUBLISH_FAILURE.STAGED_CONFLICT;
+  }
+
+  if (isAuthenticationOutput(output)) {
+    return PUBLISH_FAILURE.AUTHENTICATION;
+  }
+
+  if (isPermissionOutput(output)) {
+    return PUBLISH_FAILURE.PERMISSION;
+  }
+
+  if (isNotFoundOutput(output)) {
+    return PUBLISH_FAILURE.NOT_FOUND;
+  }
+
+  if (isTransientOutput(output)) {
+    return PUBLISH_FAILURE.TRANSIENT;
+  }
+
+  return PUBLISH_FAILURE.UNKNOWN;
 }
 
 async function ensureAuthentication() {
@@ -521,58 +648,102 @@ async function ensureAuthentication() {
   console.log(`\n[authentication] signed in as ${verifiedUser.stdout.trim()}.`);
 }
 
-async function isPackageVersionPublished(packageName, version) {
+async function queryPublishedState(packageName, version) {
   const packageSpec = `${packageName}@${version}`;
 
-  const result = await runtime.spawnBuffered(
-    "npm",
-    ["view", packageSpec, "version", "--json"],
-    repositoryRoot,
-    {
-      timeout: NPM_VIEW_TIMEOUT_MS,
-      label: `npm view ${packageSpec}`,
-    },
-  );
-
-  if (result.status === 0) {
-    let publishedVersion;
+  for (let attempt = 1; attempt <= REGISTRY_QUERY_ATTEMPTS; attempt += 1) {
+    let result;
 
     try {
-      publishedVersion = JSON.parse(result.stdout);
-    } catch {
-      throw new ReleaseError(
-        `Could not determine whether ${packageSpec} is published: ` +
-          "npm view returned invalid JSON.",
-        result.status,
+      result = await runtime.spawnBuffered(
+        "npm",
+        ["view", packageSpec, "version", "--json"],
+        repositoryRoot,
+        {
+          timeout: NPM_VIEW_TIMEOUT_MS,
+          label: `npm view ${packageSpec}`,
+        },
       );
+    } catch (error) {
+      if (attempt < REGISTRY_QUERY_ATTEMPTS) {
+        await runtime.sleep(REGISTRY_QUERY_DELAY_MS);
+
+        continue;
+      }
+
+      return {
+        state: PACKAGE_STATE.UNKNOWN,
+        reason: error.message,
+      };
     }
 
-    if (publishedVersion === version) {
-      return true;
+    if (result.status === 0) {
+      let publishedVersion;
+
+      try {
+        publishedVersion = JSON.parse(result.stdout);
+      } catch {
+        return {
+          state: PACKAGE_STATE.UNKNOWN,
+          reason: "npm view returned invalid JSON.",
+        };
+      }
+
+      if (publishedVersion === version) {
+        return {
+          state: PACKAGE_STATE.PUBLISHED,
+          reason: null,
+        };
+      }
+
+      return {
+        state: PACKAGE_STATE.UNKNOWN,
+        reason: `npm view returned ${JSON.stringify(publishedVersion)}.`,
+      };
     }
 
-    throw new ReleaseError(
-      `Could not determine whether ${packageSpec} is published: ` +
-        `npm view returned ${JSON.stringify(publishedVersion)}.`,
-      result.status,
-    );
+    const output = combineOutput(result.stdout, result.stderr);
+
+    if (isNotFoundOutput(output)) {
+      return {
+        state: PACKAGE_STATE.UNPUBLISHED,
+        reason: null,
+      };
+    }
+
+    if (isTransientOutput(output) && attempt < REGISTRY_QUERY_ATTEMPTS) {
+      await runtime.sleep(REGISTRY_QUERY_DELAY_MS);
+
+      continue;
+    }
+
+    return {
+      state: PACKAGE_STATE.UNKNOWN,
+      reason: result.stderr.trim() || output.trim(),
+    };
   }
 
-  const output = `${result.stdout}\n${result.stderr}`.toLowerCase();
+  return {
+    state: PACKAGE_STATE.UNKNOWN,
+    reason: "registry state could not be established.",
+  };
+}
 
-  const notFound =
-    output.includes("e404") ||
-    output.includes("404 not found") ||
-    output.includes("is not in this registry");
+async function isPackageVersionPublished(packageName, version) {
+  const { state, reason } = await queryPublishedState(packageName, version);
 
-  if (notFound) {
+  if (state === PACKAGE_STATE.PUBLISHED) {
+    return true;
+  }
+
+  if (state === PACKAGE_STATE.UNPUBLISHED) {
     return false;
   }
 
   throw new ReleaseError(
-    `Could not determine whether ${packageSpec} is published.\n` +
-      result.stderr.trim(),
-    result.status,
+    `Could not determine whether ${packageName}@${version} is published: ${
+      reason ?? "unknown registry error"
+    }`,
   );
 }
 
@@ -618,6 +789,365 @@ async function inspectPublishedPackages(manifests, version, dryRun, quiet) {
   );
 }
 
+export function readStageItem(item) {
+  if (!item || typeof item !== "object" || Array.isArray(item)) {
+    return null;
+  }
+
+  const nested =
+    item.package && typeof item.package === "object" ? item.package : item;
+
+  const stageId = item.stageId ?? item.stage_id ?? item.id ?? null;
+  const name = item.name ?? nested.name ?? item.packageName ?? null;
+  const version = item.version ?? nested.version ?? null;
+
+  if (
+    typeof stageId !== "string" ||
+    stageId.length === 0 ||
+    typeof name !== "string" ||
+    typeof version !== "string"
+  ) {
+    return null;
+  }
+
+  return { stageId, name, version };
+}
+
+function parseJsonArray(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const start = text.indexOf("[");
+    const end = text.lastIndexOf("]");
+
+    if (start !== -1 && end > start) {
+      try {
+        return JSON.parse(text.slice(start, end + 1));
+      } catch {
+        return null;
+      }
+    }
+
+    return null;
+  }
+}
+
+async function listStagedPackages(packageName = null) {
+  const args = ["stage", "list"];
+
+  if (packageName) {
+    args.push(packageName);
+  }
+
+  args.push("--json");
+
+  let result;
+
+  try {
+    result = await runtime.spawnBuffered("npm", args, repositoryRoot, {
+      timeout: STAGE_LIST_TIMEOUT_MS,
+      label: packageName
+        ? `npm stage list ${packageName}`
+        : "npm stage list --json",
+    });
+  } catch (error) {
+    return { state: "unavailable", items: [], reason: error.message };
+  }
+
+  if (result.status === 0) {
+    if (result.stdout.trim() === "") {
+      return { state: "ok", items: [], reason: null };
+    }
+
+    const parsed = parseJsonArray(result.stdout);
+
+    if (parsed === null) {
+      if (result.stdout.toLowerCase().includes("no staged")) {
+        return { state: "ok", items: [], reason: null };
+      }
+
+      return {
+        state: "unavailable",
+        items: [],
+        reason: "npm stage list returned invalid JSON.",
+      };
+    }
+
+    const rawItems = Array.isArray(parsed) ? parsed : parsed.items;
+
+    if (!Array.isArray(rawItems)) {
+      return {
+        state: "unavailable",
+        items: [],
+        reason: "npm stage list returned an unexpected payload.",
+      };
+    }
+
+    return {
+      state: "ok",
+      items: rawItems.map(readStageItem).filter(Boolean),
+      reason: null,
+    };
+  }
+
+  const output = combineOutput(result.stdout, result.stderr);
+  const lower = output.toLowerCase();
+
+  if (
+    lower.includes("unknown command") ||
+    lower.includes("not a recognized command") ||
+    lower.includes("unrecognized") ||
+    lower.includes("usage: npm")
+  ) {
+    return {
+      state: "unsupported",
+      items: [],
+      reason: result.stderr.trim() || output.trim(),
+    };
+  }
+
+  return {
+    state: "unavailable",
+    items: [],
+    reason: result.stderr.trim() || output.trim(),
+  };
+}
+
+function findStagedItem(items, packageName, version) {
+  return (
+    items.find(
+      (item) => item.name === packageName && item.version === version,
+    ) ?? null
+  );
+}
+
+async function approveStagedPackage(stageId, packageSpec) {
+  console.log(
+    `\n[staged approve] npm stage approve ${stageId} (${packageSpec})`,
+  );
+
+  console.log("Complete npm two-factor authentication when prompted.");
+
+  return runtime.spawnInteractive(
+    "npm",
+    ["stage", "approve", stageId],
+    repositoryRoot,
+    {
+      timeout: STAGE_APPROVE_TIMEOUT_MS,
+      label: `npm stage approve ${stageId}`,
+    },
+  );
+}
+
+async function waitForPublished(packageName, version, timeoutMs) {
+  const deadline = runtime.now() + timeoutMs;
+
+  while (true) {
+    const { state } = await queryPublishedState(packageName, version);
+
+    if (state === PACKAGE_STATE.PUBLISHED) {
+      return true;
+    }
+
+    if (state === PACKAGE_STATE.UNKNOWN || runtime.now() >= deadline) {
+      return false;
+    }
+
+    await runtime.sleep(REGISTRY_QUERY_DELAY_MS);
+  }
+}
+
+function stagedRecoveryInstructions(packageSpec) {
+  const packageName = packageSpec.slice(0, packageSpec.lastIndexOf("@"));
+
+  return [
+    `The registry reported a staged version conflict for ${packageSpec}.`,
+    "This version is already staged and waiting for approval, so it cannot be",
+    "published directly. Resolve it with the official npm CLI commands:",
+    `  npm stage list ${packageName} --json`,
+    "  npm stage approve <stage-id>",
+    "Then re-run this release; already published packages are skipped.",
+  ].join("\n");
+}
+
+async function recoverStagedConflict(
+  directory,
+  manifest,
+  version,
+  publishedPackages,
+) {
+  const packageSpec = `${manifest.name}@${version}`;
+
+  const published = await queryPublishedState(manifest.name, version);
+
+  if (published.state === PACKAGE_STATE.PUBLISHED) {
+    console.log(
+      `\n[staged conflict] ${packageSpec} is already published; ` +
+        "treating it as complete.",
+    );
+
+    publishedPackages.add(directory);
+
+    return true;
+  }
+
+  if (published.state === PACKAGE_STATE.UNKNOWN) {
+    throw new ReleaseError(
+      `${stagedRecoveryInstructions(packageSpec)}\n` +
+        `Could not confirm the published state: ${
+          published.reason ?? "unknown registry error"
+        }`,
+    );
+  }
+
+  const staged = await listStagedPackages(manifest.name);
+
+  if (staged.state !== "ok") {
+    throw new ReleaseError(
+      `${stagedRecoveryInstructions(packageSpec)}\n` +
+        `Could not query staged versions (${staged.state}): ${
+          staged.reason ?? "unknown error"
+        }`,
+    );
+  }
+
+  const item = findStagedItem(staged.items, manifest.name, version);
+
+  if (!item) {
+    throw new ReleaseError(
+      [
+        `The registry reported a staged conflict for ${packageSpec},`,
+        "but npm stage list did not return a matching staged version.",
+        "Do not retry this publish. Inspect the staged state manually:",
+        `  npm stage list ${manifest.name} --json`,
+        "  npm stage view <stage-id>",
+        "If the staged version should be removed, run:",
+        "  npm stage reject <stage-id>",
+      ].join("\n"),
+    );
+  }
+
+  if (!runtime.isInteractive()) {
+    throw new ReleaseError(
+      `Found staged version ${packageSpec} (stage ${item.stageId}), but ` +
+        "approving it requires an interactive terminal for two-factor " +
+        "authentication. Approve it manually:\n" +
+        `  npm stage approve ${item.stageId}\n` +
+        "Then re-run this release; already published packages are skipped.",
+    );
+  }
+
+  const approval = await approveStagedPackage(item.stageId, packageSpec);
+
+  if (approval.status !== 0) {
+    throw new ReleaseError(
+      `npm stage approve ${item.stageId} failed with exit code ${approval.status}. ` +
+        "Re-run this release to retry.",
+      approval.status,
+    );
+  }
+
+  if (!(await waitForPublished(manifest.name, version, VERIFY_TIMEOUT_MS))) {
+    throw new ReleaseError(
+      `Approved the staged version ${packageSpec}, but could not confirm it ` +
+        "is published yet. Re-run this release to verify; already published " +
+        "packages are skipped.",
+    );
+  }
+
+  console.log(`[staged conflict] approved and published ${packageSpec}`);
+
+  publishedPackages.add(directory);
+
+  return true;
+}
+
+async function resolveStagedBeforePublish(
+  layers,
+  manifests,
+  version,
+  publishedPackages,
+) {
+  const staged = await listStagedPackages();
+
+  if (staged.state !== "ok") {
+    console.log(
+      `\n[staged check] Could not list staged packages (${staged.state}). ` +
+        "Continuing with direct publish; if the registry reports a staged " +
+        "version conflict, the release stops with manual instructions.",
+    );
+
+    return;
+  }
+
+  const pending = layers
+    .flat()
+    .filter((directory) => !publishedPackages.has(directory));
+
+  const conflicts = [];
+
+  for (const directory of pending) {
+    const manifest = manifests.get(directory);
+    const item = findStagedItem(staged.items, manifest.name, version);
+
+    if (item) {
+      conflicts.push({ directory, stageId: item.stageId });
+    }
+  }
+
+  if (conflicts.length === 0) {
+    return;
+  }
+
+  console.log(
+    `\n[staged check] ${conflicts.length} package(s) already staged as ${version}.`,
+  );
+
+  if (!runtime.isInteractive()) {
+    const instructions = conflicts
+      .map(
+        ({ directory }) =>
+          `  npm stage approve <stage-id>  (${
+            manifests.get(directory).name
+          }@${version})`,
+      )
+      .join("\n");
+
+    throw new ReleaseError(
+      `Staged versions found for ${version}, but approving them requires an ` +
+        "interactive terminal. Approve them and re-run:\n" +
+        `${instructions}\n` +
+        "Find stage ids with: npm stage list <package-name> --json",
+    );
+  }
+
+  for (const { directory, stageId } of conflicts) {
+    const manifest = manifests.get(directory);
+    const packageSpec = `${manifest.name}@${version}`;
+
+    const approval = await approveStagedPackage(stageId, packageSpec);
+
+    if (approval.status !== 0) {
+      throw new ReleaseError(
+        `npm stage approve ${stageId} failed with exit code ${approval.status}. ` +
+          "Re-run this release to retry.",
+        approval.status,
+      );
+    }
+
+    if (!(await waitForPublished(manifest.name, version, VERIFY_TIMEOUT_MS))) {
+      throw new ReleaseError(
+        `Approved staged version ${packageSpec}, but could not confirm it is ` +
+          "published. Re-run the release once the registry has propagated.",
+      );
+    }
+
+    console.log(`[staged check] approved and published ${packageSpec}`);
+
+    publishedPackages.add(directory);
+  }
+}
+
 function findFirstPendingPackage(layers, publishedPackages) {
   for (const layer of layers) {
     for (const directory of layer) {
@@ -630,7 +1160,13 @@ function findFirstPendingPackage(layers, publishedPackages) {
   return null;
 }
 
-async function publishInteractive(directory, manifest, version, reason) {
+async function publishInteractive(
+  directory,
+  manifest,
+  version,
+  reason,
+  publishedPackages,
+) {
   const packageSpec = `${manifest.name}@${version}`;
 
   if (await isPackageVersionPublished(manifest.name, version)) {
@@ -659,14 +1195,45 @@ async function publishInteractive(directory, manifest, version, reason) {
     },
   );
 
-  if (result.status !== 0) {
-    throw new ReleaseError(
-      `Interactive publish ${packageSpec} failed with exit code ${result.status}.`,
-      result.status,
-    );
+  if (result.status === 0) {
+    console.log(`[interactive publish] finished ${packageSpec}`);
+
+    return;
   }
 
-  console.log(`[interactive publish] finished ${packageSpec}`);
+  const published = await queryPublishedState(manifest.name, version);
+
+  if (published.state === PACKAGE_STATE.PUBLISHED) {
+    console.log(
+      `[interactive publish] ${packageSpec} is published despite a failed ` +
+        "response; treating it as complete.",
+    );
+
+    return;
+  }
+
+  const staged = await listStagedPackages(manifest.name);
+
+  if (
+    staged.state === "ok" &&
+    findStagedItem(staged.items, manifest.name, version)
+  ) {
+    await recoverStagedConflict(
+      directory,
+      manifest,
+      version,
+      publishedPackages,
+    );
+
+    return;
+  }
+
+  throw new ReleaseError(
+    `Interactive publish ${packageSpec} failed with exit code ${result.status}. ` +
+      `If the registry reported a staged version conflict, inspect it with:\n` +
+      `  npm stage list ${manifest.name} --json`,
+    result.status,
+  );
 }
 
 async function publishPackage(
@@ -687,50 +1254,95 @@ async function publishPackage(
     return;
   }
 
-  console.log(`[publish ${position}/${total}] starting ${packageSpec}`);
-
   const args = ["publish", "--no-git-checks"];
 
   if (dryRun) {
     args.push("--dry-run");
   }
 
-  const result = await runtime.spawnBuffered(
-    "pnpm",
-    args,
-    path.join(repositoryRoot, directory),
-    {
-      timeout: PUBLISH_TIMEOUT_MS,
-      label: `publish ${packageSpec}`,
-    },
-  );
+  for (let attempt = 1; attempt <= PUBLISH_ATTEMPTS; attempt += 1) {
+    const suffix = attempt > 1 ? ` (attempt ${attempt})` : "";
 
-  console.log(`\n[publish ${position}/${total}] ${packageSpec}`);
-
-  if (result.stdout.trim()) {
-    process.stdout.write(`${result.stdout.trimEnd()}\n`);
-  }
-
-  if (result.stderr.trim()) {
-    process.stderr.write(`${result.stderr.trimEnd()}\n`);
-  }
-
-  if (result.status !== 0) {
-    throw new PublishError(
-      `publish ${packageSpec} failed with exit code ${result.status}.`,
-      {
-        status: result.status,
-        stdout: result.stdout,
-        stderr: result.stderr,
-        authenticationRequired: requiresInteractiveAuthentication(
-          result.stdout,
-          result.stderr,
-        ),
-      },
+    console.log(
+      `[publish ${position}/${total}] starting ${packageSpec}${suffix}`,
     );
-  }
 
-  console.log(`[publish ${position}/${total}] finished ${packageSpec}`);
+    let result = null;
+    let failureMessage = null;
+
+    try {
+      result = await runtime.spawnBuffered(
+        "pnpm",
+        args,
+        path.join(repositoryRoot, directory),
+        {
+          timeout: PUBLISH_TIMEOUT_MS,
+          label: `publish ${packageSpec}`,
+        },
+      );
+    } catch (error) {
+      failureMessage = error.message;
+    }
+
+    if (result !== null) {
+      console.log(`\n[publish ${position}/${total}] ${packageSpec}`);
+
+      if (result.stdout.trim()) {
+        process.stdout.write(`${result.stdout.trimEnd()}\n`);
+      }
+
+      if (result.stderr.trim()) {
+        process.stderr.write(`${result.stderr.trimEnd()}\n`);
+      }
+
+      if (result.status === 0) {
+        console.log(`[publish ${position}/${total}] finished ${packageSpec}`);
+
+        return;
+      }
+    }
+
+    const published = await queryPublishedState(manifest.name, version);
+
+    if (published.state === PACKAGE_STATE.PUBLISHED) {
+      console.log(
+        `[publish ${position}/${total}] ${packageSpec} is published despite ` +
+          "a failed response; treating it as complete.",
+      );
+
+      return;
+    }
+
+    const category =
+      result === null
+        ? PUBLISH_FAILURE.TRANSIENT
+        : classifyPublishFailure(result);
+
+    if (category === PUBLISH_FAILURE.TRANSIENT && attempt < PUBLISH_ATTEMPTS) {
+      console.log(
+        `[publish ${position}/${total}] transient failure for ${packageSpec}; ` +
+          "retrying after a short delay...",
+      );
+
+      await runtime.sleep(PUBLISH_RETRY_DELAY_MS);
+
+      continue;
+    }
+
+    const message =
+      result === null
+        ? `publish ${packageSpec} did not complete: ${
+            failureMessage ?? "unknown error"
+          }.`
+        : `publish ${packageSpec} failed with exit code ${result.status}.`;
+
+    throw new PublishError(message, {
+      status: result?.status ?? 1,
+      stdout: result?.stdout ?? "",
+      stderr: result?.stderr ?? "",
+      category,
+    });
+  }
 }
 
 async function retryAuthenticationFailures(
@@ -761,6 +1373,7 @@ async function retryAuthenticationFailures(
       );
 
       publishedPackages.add(directory);
+
       continue;
     }
 
@@ -769,12 +1382,44 @@ async function retryAuthenticationFailures(
       manifest,
       version,
       "Retrying this package with an interactive terminal.",
+      publishedPackages,
     );
 
     publishedPackages.add(directory);
 
     console.log("Authentication refreshed. Parallel publishing will resume.");
   }
+}
+
+async function recoverStagedFailures(
+  failures,
+  manifests,
+  version,
+  publishedPackages,
+) {
+  for (const failure of failures) {
+    const { directory } = failure;
+    const manifest = manifests.get(directory);
+
+    console.log(`\n[staged conflict] ${manifest.name}@${version}`);
+
+    console.log(
+      "The registry refused this publish because the version is already staged.",
+    );
+
+    await recoverStagedConflict(
+      directory,
+      manifest,
+      version,
+      publishedPackages,
+    );
+  }
+}
+
+function failureCategory(error) {
+  return error instanceof PublishError
+    ? error.category
+    : PUBLISH_FAILURE.UNKNOWN;
 }
 
 async function publishPackages(
@@ -803,6 +1448,13 @@ async function publishPackages(
   if (!dryRun) {
     await ensureAuthentication();
 
+    await resolveStagedBeforePublish(
+      layers,
+      manifests,
+      version,
+      publishedPackages,
+    );
+
     const firstPending = findFirstPendingPackage(layers, publishedPackages);
 
     if (firstPending) {
@@ -813,6 +1465,7 @@ async function publishPackages(
         manifest,
         version,
         "Authenticating with the first pending package before parallel publishing.",
+        publishedPackages,
       );
 
       publishedPackages.add(firstPending);
@@ -904,16 +1557,33 @@ async function publishPackages(
       }
     }
 
+    const stagedFailures = results.filter(
+      ({ error }) => failureCategory(error) === PUBLISH_FAILURE.STAGED_CONFLICT,
+    );
+
     const authenticationFailures = results.filter(
-      ({ error }) =>
-        error instanceof PublishError && error.authenticationRequired,
+      ({ error }) => failureCategory(error) === PUBLISH_FAILURE.AUTHENTICATION,
     );
 
     const otherFailures = results.filter(
       ({ error }) =>
         error !== null &&
-        !(error instanceof PublishError && error.authenticationRequired),
+        failureCategory(error) !== PUBLISH_FAILURE.STAGED_CONFLICT &&
+        failureCategory(error) !== PUBLISH_FAILURE.AUTHENTICATION,
     );
+
+    if (stagedFailures.length > 0 && !dryRun) {
+      console.log(
+        `\n${stagedFailures.length} package(s) are already staged as ${version}.`,
+      );
+
+      await recoverStagedFailures(
+        stagedFailures,
+        manifests,
+        version,
+        publishedPackages,
+      );
+    }
 
     if (authenticationFailures.length > 0 && !dryRun) {
       console.log(
@@ -932,7 +1602,34 @@ async function publishPackages(
       console.error(`\nPublish layer ${layerIndex + 1} failed:`);
 
       for (const { directory, error } of otherFailures) {
-        console.error(`  - ${manifests.get(directory).name}: ${error.message}`);
+        const manifest = manifests.get(directory);
+        const category = failureCategory(error);
+
+        console.error(
+          `  - ${manifest.name}@${version} [${category}] ${error.message}`,
+        );
+
+        if (category === PUBLISH_FAILURE.PERMISSION) {
+          console.error(
+            "    This is a permission error, not a missing sign-in. Check " +
+              "organization membership, package access, and the account " +
+              "two-factor policy before retrying.",
+          );
+        }
+
+        if (category === PUBLISH_FAILURE.NOT_FOUND) {
+          console.error(
+            "    The registry reported this package spec as not found. " +
+              "Verify the package name and that it can be created.",
+          );
+        }
+
+        if (category === PUBLISH_FAILURE.UNKNOWN) {
+          console.error(
+            "    The registry state is unknown. Check it with " +
+              `npm view ${manifest.name}@${version} version before retrying.`,
+          );
+        }
       }
 
       const firstError = otherFailures[0].error;
@@ -975,10 +1672,20 @@ async function verifyPublishedPackages(manifests, version) {
       return published;
     }
 
+    const missing = PACKAGE_DIRECTORIES.filter(
+      (directory) => !published.has(directory),
+    ).map((directory) => `${manifests.get(directory).name}@${version}`);
+
     if (runtime.now() >= deadline) {
+      console.error("\nUnverified packages:");
+
+      for (const spec of missing) {
+        console.error(`  - ${spec}`);
+      }
+
       throw new ReleaseError(
         `Final verification timed out: ${published.size}/${total} published, ` +
-          `${total - published.size} missing. Refusing to commit or tag. ` +
+          `${missing.length} missing. Refusing to commit or tag. ` +
           "Re-run the release once the registry has propagated.",
       );
     }
@@ -991,18 +1698,18 @@ async function verifyPublishedPackages(manifests, version) {
   }
 }
 
-function assertReleaseComplete(published) {
+function assertReleaseComplete(published, version) {
   const total = PACKAGE_DIRECTORIES.length;
 
-  if (published.size === total) {
-    console.log(`\n✓ ${published.size}/${total} package versions published.`);
-
-    return;
+  if (published.size !== total) {
+    throw new ReleaseError(
+      `Release is not complete: ${published.size}/${total} package versions ` +
+        "published. Refusing to create a commit or tag.",
+    );
   }
 
-  throw new ReleaseError(
-    `Release is not complete: ${published.size}/${total} package versions ` +
-      "published. Refusing to create a commit or tag.",
+  console.log(
+    `\nRELEASE COMPLETE: ${published.size}/${total} package versions published as ${version}.`,
   );
 }
 
@@ -1229,7 +1936,7 @@ export async function runRelease(rawArguments) {
 
   const verified = await verifyPublishedPackages(manifests, version);
 
-  assertReleaseComplete(verified);
+  assertReleaseComplete(verified, version);
 
   commitAndTag(version);
 

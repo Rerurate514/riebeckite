@@ -320,4 +320,4 @@ Framework changes should especially preserve the following:
 - Keep scaffolds working as sites that are independent of the monorepo.
 - Verify from the changed scope and widen to the whole repository as needed.
 
-See [Architecture](./architecture.md), [Testing](./testing.md), [CLI](../reference/cli.md), and [HonoX Integration](./honox-integration.md).
+See [Architecture](./architecture.md), [Testing](./testing.md), [Release Operations](./release.md), [CLI](../reference/cli.md), and [HonoX Integration](./honox-integration.md).

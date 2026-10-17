@@ -343,4 +343,4 @@ Framework の変更では、特に次の点を維持してください。
 - Scaffold を monorepo から独立して動作できる Site として維持する
 - 変更した範囲から検証し、必要に応じて repository 全体へ検証範囲を広げる
 
-Framework 全体の責務については [Architecture](./architecture.ja.md)、テスト方針については [Testing](./testing.ja.md)、CLI については [CLI](../reference/cli.ja.md)、HonoX との接続については [HonoX Integration](./honox-integration.ja.md) を参照してください。
+Framework 全体の責務については [Architecture](./architecture.ja.md)、テスト方針については [Testing](./testing.ja.md)、リリース手順については [Release Operations](./release.ja.md)、CLI については [CLI](../reference/cli.ja.md)、HonoX との接続については [HonoX Integration](./honox-integration.ja.md) を参照してください。

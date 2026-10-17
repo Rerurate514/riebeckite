@@ -18,9 +18,14 @@ const entries: RelatedPostsEntry[] = [
 ];
 
 test("RelatedPosts renders nothing when there are no entries", async () => {
-  assert.deepEqual(
-    await RelatedPosts({ entries: [], options: resolveRelatedPostsOptions() }),
-    [],
+  assert.equal(
+    renderToString(
+      await RelatedPosts({
+        entries: [],
+        options: resolveRelatedPostsOptions(),
+      }),
+    ),
+    "",
   );
   assert.equal(renderRelatedPosts([], resolveRelatedPostsOptions()), "");
 });

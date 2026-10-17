@@ -381,15 +381,12 @@ test("P2-A2: the theme gallery renders previews inside an embedded theme root", 
   assert.match(gallery, /data-theme=\{preview\.mode\}/);
 });
 
-test("article scaffold places the language switcher beside its localized content", () => {
+test("article route composes the contextual language switcher", () => {
   const route = read("../app/routes/[slug{.+}].tsx");
 
   assert.match(
     route,
-    /import \{ getLocalization, LanguageSwitcher \} from "@riebeckite\/plugin-l10n"/,
+    /import \{ LanguageSwitcher \} from "@riebeckite\/plugin-l10n"/,
   );
-  assert.match(
-    route,
-    /<LanguageSwitcher localization=\{getLocalization\(view, slug\)\} \/>/,
-  );
+  assert.match(route, /<LanguageSwitcher \/>/);
 });

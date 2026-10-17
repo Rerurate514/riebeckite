@@ -1,5 +1,5 @@
 import { renderToString } from "hono/jsx/dom/server";
-import RelatedPosts from "../components/related-posts.js";
+import { renderRelatedPostsContent } from "../components/related-posts.js";
 import type {
   RelatedPostsEntry,
   ResolvedRelatedPostsOptions,
@@ -12,5 +12,5 @@ export function renderRelatedPosts(
   entries: readonly RelatedPostsEntry[],
   options: ResolvedRelatedPostsOptions,
 ): string {
-  return renderToString(RelatedPosts({ entries, options }));
+  return renderToString(renderRelatedPostsContent(entries, options));
 }

@@ -8,49 +8,25 @@ import {
   ssgEnumerableHandler,
 } from "@riebeckite/honox/server";
 import { PageBody } from "@riebeckite/honox/ui";
-import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
-import { Breadcrumbs, getBreadcrumbs } from "@riebeckite/plugin-breadcrumbs";
+import { Backlinks } from "@riebeckite/plugin-backlinks";
+import { Breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import {
   createPostDiffApi,
   getPostDiff,
   PostDiffView,
 } from "@riebeckite/plugin-diff";
-import {
-  type DocsNavigationItem,
-  type DocsOptions,
-  DocsPrevNext,
-  type DocsPrevNextProps,
-  DocsSidebar,
-  flattenDocsNavigation,
-  getDocsNavigation,
-  getDocsPrevNext,
-} from "@riebeckite/plugin-docs";
-import { getLocalization, LanguageSwitcher } from "@riebeckite/plugin-l10n";
-import { getLocalGraph, LocalGraph } from "@riebeckite/plugin-local-graph";
-import {
-  getProperties,
-  Properties,
-  type PropertiesOptions,
-} from "@riebeckite/plugin-properties";
-import {
-  getRelatedPosts,
-  RelatedPosts,
-  type RelatedPostsOptions,
-  resolveRelatedPostsOptions,
-} from "@riebeckite/plugin-related-posts";
-import {
-  getShareLinks,
-  ShareControls,
-  type ShareOptions,
-} from "@riebeckite/plugin-share";
-import {
-  extractTableOfContents,
-  TableOfContents,
-} from "@riebeckite/plugin-toc";
+import { DocsPrevNext, DocsSidebar } from "@riebeckite/plugin-docs";
+import { LanguageSwitcher } from "@riebeckite/plugin-l10n";
+import { LocalGraph } from "@riebeckite/plugin-local-graph";
+import { Properties } from "@riebeckite/plugin-properties";
+import { RelatedPosts } from "@riebeckite/plugin-related-posts";
+import { ShareControls } from "@riebeckite/plugin-share";
+import { TableOfContents } from "@riebeckite/plugin-toc";
 import {
   getWebmentionSectionData,
   WebmentionSection,
 } from "@riebeckite/plugin-webmention";
+import { SiteProvider } from "@riebeckite/ui";
 import { createRoute } from "honox/factory";
 import { webmentionProvider } from "../../../../webmention";
 import Article from "../components/article/article";
@@ -58,14 +34,6 @@ import HomePage from "../components/home/home";
 import { getArticleTitle } from "../lib/article-title";
 import { resolveWebLocale } from "../lib/locale";
 import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
-
-function pluginOptions<T>(name: string): T | undefined {
-  const plugin = config.plugins.find(
-    (candidate) =>
-      candidate.name === name || candidate.name.startsWith(`${name}:`),
-  );
-  return plugin?.options as T | undefined;
-}
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
@@ -105,7 +73,6 @@ export default createRoute(
     const entry = view.findRoutableBySlug(slug);
     if (!entry) return c.notFound();
 
-    const tableOfContents = extractTableOfContents(resolved.post.html ?? "");
     c.set(
       "seo",
       buildArticleSeo(
@@ -116,31 +83,6 @@ export default createRoute(
       ),
     );
 
-    const breadcrumbItems = await getBreadcrumbs({
-      view,
-      entry,
-      homeLabel: config.site.title,
-    });
-    const propertiesData = await getProperties({
-      view,
-      frontmatter: resolved.post.frontmatter,
-      options: pluginOptions<PropertiesOptions>("properties"),
-    });
-    const backlinks = await getBacklinks({ view, slug });
-    const relatedPostsOptions = resolveRelatedPostsOptions(
-      pluginOptions<RelatedPostsOptions>("related-posts") ?? {},
-    );
-    const relatedPosts = await getRelatedPosts({
-      view,
-      entry,
-      options: relatedPostsOptions,
-    });
-    const shareLinks = await getShareLinks({
-      entry,
-      site: config,
-      options: pluginOptions<ShareOptions>("share"),
-    });
-    const localGraph = await getLocalGraph({ view, slug });
     const webmentions = await getWebmentionSectionData({
       view,
       slug,
@@ -148,75 +90,50 @@ export default createRoute(
       provider: webmentionProvider,
     });
 
-    const docsOptions = pluginOptions<DocsOptions>("docs");
-    let docsNavigation: readonly DocsNavigationItem[] = [];
-    let docsPrevNext: DocsPrevNextProps = {};
-    if (docsOptions) {
-      const navigation = await getDocsNavigation({
-        view,
-        entrySlug: slug,
-        options: docsOptions,
-      });
-      if (
-        flattenDocsNavigation(navigation).some((item) => item.slug === slug)
-      ) {
-        docsNavigation = navigation;
-        docsPrevNext = await getDocsPrevNext({ items: navigation, slug });
-      }
-    }
-
     const postDiff = await getPostDiff({
       api: createPostDiffApi({ cwd: config.content.directory }),
       filePath: manifest.contentIndex.get(slug.toLowerCase()) ?? `${slug}.md`,
     });
 
     return c.render(
-      <Article
-        content={resolved.post}
-        title={getArticleTitle(slug, resolved.post.frontmatter.title)}
-        headerContent={
-          <>
-            <Breadcrumbs items={breadcrumbItems} />
-            <LanguageSwitcher localization={getLocalization(view, slug)} />
-          </>
-        }
-        metadataContent={<Properties data={propertiesData} />}
-        asideContent={
-          <TableOfContents
-            className="rr-table-of-contents--desktop"
-            items={tableOfContents}
-          />
-        }
-        articleAside={
-          docsNavigation.length > 0 ? (
+      <SiteProvider
+        config={config}
+        manifest={manifest}
+        view={view}
+        path={c.req.path}
+      >
+        <Article
+          content={resolved.post}
+          entry={entry}
+          title={getArticleTitle(slug, resolved.post.frontmatter.title)}
+          headerContent={
+            <>
+              <Breadcrumbs />
+              <LanguageSwitcher />
+            </>
+          }
+          metadataContent={<Properties />}
+          asideContent={
+            <TableOfContents className="rr-table-of-contents--desktop" />
+          }
+          articleAside={
             <div class="rb-article-aside">
-              <DocsSidebar
-                items={docsNavigation}
-                currentPermalink={entry.permalink}
-                label={docsOptions?.sidebar?.label}
-              />
+              <DocsSidebar />
             </div>
-          ) : null
-        }
-        footerContent={
-          <>
-            <DocsPrevNext
-              previous={docsPrevNext.previous}
-              next={docsPrevNext.next}
-              language={getEntryLanguage(resolved.entry)}
-            />
-            <Backlinks backlinks={backlinks} />
-            <RelatedPosts
-              entries={relatedPosts}
-              options={relatedPostsOptions}
-            />
-            <ShareControls {...shareLinks} />
-            {localGraph ? <LocalGraph graph={localGraph} /> : null}
-            <PostDiffView diff={postDiff} />
-            <WebmentionSection {...webmentions} />
-          </>
-        }
-      />,
+          }
+          footerContent={
+            <>
+              <DocsPrevNext />
+              <Backlinks />
+              <RelatedPosts />
+              <ShareControls />
+              <LocalGraph />
+              <PostDiffView diff={postDiff} />
+              <WebmentionSection {...webmentions} />
+            </>
+          }
+        />
+      </SiteProvider>,
     );
   }),
 );

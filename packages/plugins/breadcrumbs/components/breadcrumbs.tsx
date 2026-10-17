@@ -26,8 +26,8 @@ const Breadcrumbs = (async ({
           homeLabel: site.config.site.title,
         })
       : undefined);
-  if (!items) return null;
-  if (items.length === 0) return null;
+  if (!items) return [];
+  if (items.length === 0) return [];
   return (
     <nav class={className} data-breadcrumbs aria-label={ariaLabel}>
       <ol>

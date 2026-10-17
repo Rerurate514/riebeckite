@@ -1,15 +1,23 @@
+import { useSiteContext } from "@riebeckite/ui";
 import type { DailyNote } from "../src/daily-notes.js";
+import { getDailyNotes } from "../src/daily-notes.server.js";
 
 const DEFAULT_LIMIT = 5;
 
 type Props = {
-  notes: DailyNote[];
+  notes?: DailyNote[];
   limit?: number;
 };
 
 export default function DailyNotes(props: Props) {
+  const site = useSiteContext();
   const limit = props.limit ?? DEFAULT_LIMIT;
-  const notes = props.notes.slice(0, Math.max(0, limit));
+  const notes = (
+    props.notes ??
+    (site
+      ? getDailyNotes({ manifest: site.manifest, config: site.config })
+      : [])
+  ).slice(0, Math.max(0, limit));
 
   if (notes.length === 0) return null;
 

@@ -1,19 +1,47 @@
 import type { PluginComponent } from "@riebeckite/core";
-import type { ResolvedSeriesOptions, SeriesIndex } from "../src/types.js";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { collectSeriesIndexes, getSeriesNavigation } from "../src/series.js";
+import type {
+  ResolvedSeriesOptions,
+  SeriesIndex,
+  SeriesOptions,
+} from "../src/types.js";
 
 export type SeriesNavigationProps = {
-  index: SeriesIndex | null;
-  currentSlug: string;
+  index?: SeriesIndex | null;
+  currentSlug?: string;
   className?: string;
   options?: Pick<ResolvedSeriesOptions, "heading" | "positionLabel">;
 };
-const SeriesNavigation = (({
-  index,
-  currentSlug,
-  className = "rb-series",
+const SeriesNavigation = (async ({
+  index: explicitIndex,
+  currentSlug: explicitCurrentSlug,
+  className: explicitClassName,
   options,
 }: Readonly<SeriesNavigationProps>) => {
-  if (!index || index.members.length === 0) return null;
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const configured = site ? findSeriesOptions(site.config.plugins) : undefined;
+  const currentSlug = explicitCurrentSlug ?? article?.entry?.slug;
+  const sourceIndex =
+    explicitIndex ??
+    (site && article?.entry
+      ? (collectSeriesIndexes(site.manifest, configured).find((candidate) =>
+          candidate.members.some(
+            (member) => member.slug === article.entry?.slug,
+          ),
+        ) ?? null)
+      : null);
+  const index =
+    site && article?.entry && sourceIndex
+      ? await getSeriesNavigation({
+          view: site.view,
+          entry: article.entry,
+          index: sourceIndex,
+        })
+      : sourceIndex;
+  if (!currentSlug) return [];
+  if (!index || index.members.length === 0) return [];
   const position = index.members.findIndex(
     (member) => member.slug === currentSlug,
   );
@@ -22,8 +50,10 @@ const SeriesNavigation = (({
     position >= 0 && position < index.members.length - 1
       ? index.members[position + 1]
       : undefined;
-  const heading = options?.heading ?? true;
-  const positionLabel = options?.positionLabel ?? false;
+  const heading = options?.heading ?? configured?.heading ?? true;
+  const positionLabel =
+    options?.positionLabel ?? configured?.positionLabel ?? false;
+  const className = explicitClassName ?? configured?.className ?? "rb-series";
   return (
     <nav
       class={className}
@@ -71,3 +101,11 @@ const SeriesNavigation = (({
   );
 }) satisfies PluginComponent<SeriesNavigationProps>;
 export default SeriesNavigation;
+
+function findSeriesOptions(
+  plugins: readonly { name: string; options?: unknown }[],
+): SeriesOptions | undefined {
+  return plugins.find((plugin) => plugin.name === "series")?.options as
+    | SeriesOptions
+    | undefined;
+}

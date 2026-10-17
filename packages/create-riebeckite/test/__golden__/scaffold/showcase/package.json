@@ -13,6 +13,7 @@
   "dependencies": {
     "@riebeckite/core": "^0.0.24",
     "@riebeckite/honox": "^0.0.24",
+    "@riebeckite/ui": "^0.0.24",
     "hono": "^4.12.25",
     "honox": "0.1.56",
     "@riebeckite/plugin-obsidian-markdown": "^0.0.24",

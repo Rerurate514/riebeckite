@@ -84,9 +84,9 @@ test("renders an accessible ordered list with links and a current crumb", () => 
   );
 });
 
-test("component rendering preserves separators and current-page semantics", () => {
+test("component rendering preserves separators and current-page semantics", async () => {
   const html = renderToString(
-    createElement(Breadcrumbs, {
+    await Breadcrumbs({
       items: [
         { name: "Home", url: "/" },
         { name: "Intro", url: "/docs/intro" },
@@ -272,7 +272,9 @@ test("onManifestCreated contributes the nav and a JSON-LD head tag", async () =>
     entry,
     homeLabel: "Home",
   });
-  const html = renderToString(Breadcrumbs({ items, ariaLabel: "Breadcrumbs" }));
+  const html = renderToString(
+    await Breadcrumbs({ items, ariaLabel: "Breadcrumbs" }),
+  );
   assert.ok(html.includes('<nav class="rb-breadcrumbs"'));
   assert.ok(html.includes("data-breadcrumbs"));
   assert.equal(entry.headTags?.length, 1);
@@ -340,7 +342,9 @@ test("onManifestCreated can skip the JSON-LD script", async () => {
     entry,
     homeLabel: "",
   });
-  const html = renderToString(Breadcrumbs({ items, ariaLabel: "Breadcrumbs" }));
+  const html = renderToString(
+    await Breadcrumbs({ items, ariaLabel: "Breadcrumbs" }),
+  );
   assert.ok(html.includes("data-breadcrumbs"));
 });
 

@@ -1,31 +1,34 @@
-import type { PostContent } from "@riebeckite/core";
+import type { PostContent, PublicContentEntry } from "@riebeckite/core";
 import { Article, ArticleBody, ArticleContent, ArticleFooter } from "@riebeckite/honox/ui";
+import { Backlinks } from "@riebeckite/plugin-backlinks";
+import { Breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
+import { Properties } from "@riebeckite/plugin-properties";
+import { RecentPosts } from "@riebeckite/plugin-recent-posts";
+import { RelatedPosts } from "@riebeckite/plugin-related-posts";
+import { TableOfContents } from "@riebeckite/plugin-toc";
 
 type SiteArticleProps = {
   post: PostContent;
-  header?: unknown;
-  metadata?: unknown;
-  aside?: unknown;
-  afterContent?: unknown;
-  footer?: unknown;
+  entry: PublicContentEntry;
 };
 
 export function SiteArticle(props: SiteArticleProps) {
   return (
-    <Article class="site-article">
+    <Article class="site-article" post={props.post} entry={props.entry}>
       <div class="site-article__layout">
         <ArticleContent>
-          {props.header}
-          {props.metadata}
-          <ArticleBody html={props.post.html ?? ""} />
-          {props.afterContent}
-          {props.footer ? (
-            <ArticleFooter class="site-article__footer">
-              {props.footer}
-            </ArticleFooter>
-          ) : null}
+          <Breadcrumbs />
+          <Properties />
+          <ArticleBody />
+          <RecentPosts />
+          <ArticleFooter class="site-article__footer">
+            <Backlinks />
+            <RelatedPosts />
+          </ArticleFooter>
         </ArticleContent>
-        {props.aside ? <aside class="site-article__aside">{props.aside}</aside> : null}
+        <aside class="site-article__aside">
+          <TableOfContents className="rr-table-of-contents--desktop" />
+        </aside>
       </div>
     </Article>
   );

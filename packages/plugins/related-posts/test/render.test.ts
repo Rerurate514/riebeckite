@@ -17,17 +17,17 @@ const entries: RelatedPostsEntry[] = [
   { slug: "b", permalink: "/b", title: "Beta", score: 4 },
 ];
 
-test("RelatedPosts renders nothing when there are no entries", () => {
-  assert.equal(
-    RelatedPosts({ entries: [], options: resolveRelatedPostsOptions() }),
-    null,
+test("RelatedPosts renders nothing when there are no entries", async () => {
+  assert.deepEqual(
+    await RelatedPosts({ entries: [], options: resolveRelatedPostsOptions() }),
+    [],
   );
   assert.equal(renderRelatedPosts([], resolveRelatedPostsOptions()), "");
 });
 
-test("RelatedPosts renders the heading, list, and scored links by default", () => {
+test("RelatedPosts renders the heading, list, and scored links by default", async () => {
   const options = resolveRelatedPostsOptions();
-  const html = renderToString(RelatedPosts({ entries, options }));
+  const html = renderToString(await RelatedPosts({ entries, options }));
 
   assert.equal(
     html,

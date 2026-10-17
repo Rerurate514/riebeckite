@@ -47,32 +47,32 @@ they are placed.
 
 ## Composing plugin UI
 
-Plugins expose data helpers and JSX components that the Site composes in its
-own TSX. Each plugin's data helper receives a `PublicContentView` (or similar
-filtered facade) and returns a typed model. The component is then rendered
-directly, giving the Site full control over placement, ordering, and
-conditional rendering. There is no `bodySlots` map or `ContentSlot` primitive.
-
-Instead:
-
-- A plugin exports a data helper (e.g., `getProperties`) that takes narrow
-  inputs and returns a model
-- The plugin exports a JSX component (e.g., `<Properties />`) that accepts
-  typed props
-- The Site imports and renders the component where needed, e.g:
-  `<Properties data={data} />`
-
-This replaces the removed body-slot system: the Site owns all rendering
-decisions, and plugins provide typed data + components rather than HTML
-fragments accumulated in a shared map.
+Import each component from its plugin and render it where the Site wants it.
+With `SiteProvider` and an `Article` supplied with its `post` and public
+`entry`, components resolve their own plugin data. The Site still owns
+placement, ordering, and conditional rendering.
 
 ```tsx
-import { getProperties } from "@riebeckite/plugin-properties";
-import { Properties } from "@riebeckite/plugin-properties/components";
+import { Article, ArticleBody } from "@riebeckite/honox/ui";
+import { Properties } from "@riebeckite/plugin-properties";
+import { SiteProvider } from "@riebeckite/ui";
 
-const data = getProperties({ view, frontmatter: entry.frontmatter });
-<Properties data={data} />
+<SiteProvider config={config} manifest={manifest} view={view} path={path}>
+  <Article post={post} entry={entry}>
+    <Properties />
+    <ArticleBody />
+  </Article>
+</SiteProvider>;
 ```
+
+`view` must be created with `createPublicContentView(manifest)`. Components
+render nothing when their required context is unavailable, so they can safely
+appear in shared layouts. Explicit props remain the customization path and take
+precedence over context data. The exported pure data helpers remain available
+for advanced composition.
+
+The dependency direction is `plugin → @riebeckite/ui ← honox`; plugin UI is not
+re-exported by a HonoX barrel.
 
 ## Site ownership
 

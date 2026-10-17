@@ -1,22 +1,31 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import type { LocalGraphData } from "../src/local-graph.js";
+import { getLocalGraph } from "../src/local-graph.server.js";
 
 export type LocalGraphProps = {
-  graph: LocalGraphData;
+  graph?: LocalGraphData | null;
 };
 
 const GRAPH_WIDTH = 640;
 const GRAPH_HEIGHT = 320;
 
-const LocalGraph = ((props: Readonly<LocalGraphProps>) => {
-  if (props.graph.nodes.length <= 1) return null;
+const LocalGraph = (async (props: Readonly<LocalGraphProps>) => {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const graph =
+    props.graph ??
+    (site && article?.entry
+      ? await getLocalGraph({ view: site.view, slug: article.entry.slug })
+      : null);
+  if (!graph || graph.nodes.length <= 1) return [];
 
-  const edges = buildGraphEdges(props.graph.nodes);
-  const layout = layoutRadialGraph(props.graph.nodes, {
+  const edges = buildGraphEdges(graph.nodes);
+  const layout = layoutRadialGraph(graph.nodes, {
     width: GRAPH_WIDTH,
     height: GRAPH_HEIGHT,
-    centerSlug: props.graph.currentSlug,
+    centerSlug: graph.currentSlug,
     radiusRatio: 0.34,
     minNodeRadius: 7,
     maxNodeRadius: 12,
@@ -31,7 +40,7 @@ const LocalGraph = ((props: Readonly<LocalGraphProps>) => {
         </div>
         <a
           class="rr-local-graph__explorer-link"
-          href={`/explore?note=${encodeURIComponent(props.graph.currentSlug)}`}
+          href={`/explore?note=${encodeURIComponent(graph.currentSlug)}`}
         >
           Open in Explorer →
         </a>
@@ -52,9 +61,7 @@ const LocalGraph = ((props: Readonly<LocalGraphProps>) => {
             <line
               class="rr-local-graph__edge"
               data-direction={
-                edge.source === props.graph.currentSlug
-                  ? "outgoing"
-                  : "backlink"
+                edge.source === graph.currentSlug ? "outgoing" : "backlink"
               }
               x1={source.x}
               y1={source.y}
@@ -64,10 +71,10 @@ const LocalGraph = ((props: Readonly<LocalGraphProps>) => {
             />
           );
         })}
-        {props.graph.nodes.map((node) => {
+        {graph.nodes.map((node) => {
           const point = layout.get(node.slug);
           if (!point) return null;
-          const isCurrent = node.slug === props.graph.currentSlug;
+          const isCurrent = node.slug === graph.currentSlug;
 
           return (
             <g

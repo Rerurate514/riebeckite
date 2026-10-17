@@ -2,6 +2,7 @@ import {
   calculateReadingTime,
   escapeHtml,
   type PostContent,
+  type PublicContentEntry,
 } from "@riebeckite/core";
 import {
   ArticleBody,
@@ -14,6 +15,7 @@ import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
 
 type Props = {
   content: PostContent;
+  entry?: PublicContentEntry;
   /**
    * The note's resolved title (frontmatter `title`, else slug). Used as the
    * header heading when the body has no leading `<h1>`.
@@ -43,7 +45,7 @@ export default function Article(props: Props) {
   const leadHtml = articleHtml.lead || renderTitleHeading(props.title);
 
   return (
-    <ArticlePrimitive>
+    <ArticlePrimitive post={props.content} entry={props.entry}>
       <ArticleLayout>
         {props.asideContent}
         {props.articleAside}

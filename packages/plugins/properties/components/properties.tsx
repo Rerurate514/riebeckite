@@ -1,11 +1,14 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
-import { getProperties } from "../src/component-data.js";
 import type { PropertiesData } from "../src/component-data.js";
+import { getProperties } from "../src/component-data.js";
+import type { PropertiesOptions } from "../src/types.js";
 
 export type PropertiesProps = { data?: PropertiesData };
 
-const Properties = (async ({ data: explicitData }: Readonly<PropertiesProps>) => {
+const Properties = (async ({
+  data: explicitData,
+}: Readonly<PropertiesProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
   const data =
@@ -14,10 +17,11 @@ const Properties = (async ({ data: explicitData }: Readonly<PropertiesProps>) =>
       ? await getProperties({
           view: site.view,
           frontmatter: article.post.frontmatter,
+          options: findPropertiesOptions(site.config.plugins),
         })
       : undefined);
-  if (!data) return null;
-  if (data.items.length === 0) return null;
+  if (!data) return [];
+  if (data.items.length === 0) return [];
   const cls = data.className;
   return (
     <section
@@ -53,3 +57,11 @@ const Properties = (async ({ data: explicitData }: Readonly<PropertiesProps>) =>
 }) satisfies PluginComponent<PropertiesProps>;
 
 export default Properties;
+
+function findPropertiesOptions(
+  plugins: readonly { name: string; options?: unknown }[],
+): PropertiesOptions | undefined {
+  return plugins.find((plugin) => plugin.name === "properties")?.options as
+    | PropertiesOptions
+    | undefined;
+}

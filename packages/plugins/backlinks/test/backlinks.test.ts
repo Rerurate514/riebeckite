@@ -210,7 +210,7 @@ test("publishes backlinks to the article footer only when present", async () => 
     { slug: "beta", permalink: "/beta", title: "Beta" },
   ]);
 
-  const html = renderToString(Backlinks({ backlinks }));
+  const html = renderToString(await Backlinks({ backlinks }));
   assert.ok(html.includes('<footer class="rr-backlinks">'));
   assert.ok(html.includes('href="/beta"'));
   assert.ok(html.includes(">Beta</a>"));
@@ -245,7 +245,7 @@ test("keeps backlink data available for the Site to render", async () => {
   );
 
   const manualHtml = renderToString(
-    Backlinks({
+    await Backlinks({
       backlinks: getPublishedBacklinks({
         manifest,
         config: explicitConfig,

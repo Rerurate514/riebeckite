@@ -138,6 +138,7 @@ function packageJson(
   const dependencies: Record<string, string> = {
     "@riebeckite/core": RIEBECKITE_VERSION,
     "@riebeckite/honox": RIEBECKITE_VERSION,
+    "@riebeckite/ui": RIEBECKITE_VERSION,
     hono: "^4.12.25",
     honox: "0.1.56",
   };

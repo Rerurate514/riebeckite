@@ -62,7 +62,7 @@ test("publishes the navigation to eligible article footers", async () => {
   });
 
   const html = renderToString(
-    RelatedPosts({
+    await RelatedPosts({
       entries: relatedEntries,
       options: resolveRelatedPostsOptions(),
     }),
@@ -86,7 +86,7 @@ test("preserves related entries rendering order", async () => {
   });
 
   const html = renderToString(
-    RelatedPosts({
+    await RelatedPosts({
       entries: relatedEntries,
       options: resolveRelatedPostsOptions(),
     }),
@@ -133,7 +133,7 @@ test("keeps related entries available for manual placement", async () => {
   });
 
   const manualHtml = renderToString(
-    RelatedPosts({
+    await RelatedPosts({
       entries: relatedEntries,
       options: resolveRelatedPostsOptions(),
     }),
@@ -154,7 +154,7 @@ test("applies heading and limit options", async () => {
   });
 
   const html = renderToString(
-    RelatedPosts({
+    await RelatedPosts({
       entries: relatedEntries,
       options: resolveRelatedPostsOptions({ heading: false, limit: 1 }),
     }),

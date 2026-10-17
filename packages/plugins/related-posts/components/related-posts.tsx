@@ -1,9 +1,10 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
-import { getRelatedPosts } from "../src/related.js";
 import { resolveRelatedPostsOptions } from "../src/options.js";
+import { getRelatedPosts } from "../src/related.js";
 import type {
   RelatedPostsEntry,
+  RelatedPostsOptions,
   ResolvedRelatedPostsOptions,
 } from "../src/types.js";
 
@@ -15,13 +16,26 @@ export type RelatedPostsProps = {
 const RelatedPosts = (async (props: Readonly<RelatedPostsProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
-  const options = props.options ?? resolveRelatedPostsOptions({});
+  const options =
+    props.options ??
+    resolveRelatedPostsOptions(findRelatedPostsOptions(site?.config.plugins));
   const entries =
     props.entries ??
     (site && article?.entry
-      ? await getRelatedPosts({ view: site.view, entry: article.entry, options })
+      ? await getRelatedPosts({
+          view: site.view,
+          entry: article.entry,
+          options,
+        })
       : undefined);
-  if (!entries || entries.length === 0) return null;
+  return renderRelatedPostsContent(entries ?? [], options);
+}) satisfies PluginComponent<RelatedPostsProps>;
+
+export function renderRelatedPostsContent(
+  entries: readonly RelatedPostsEntry[],
+  options: ResolvedRelatedPostsOptions,
+) {
+  if (entries.length === 0) return [];
 
   const { className, heading, headingText } = options;
 
@@ -43,6 +57,14 @@ const RelatedPosts = (async (props: Readonly<RelatedPostsProps>) => {
       </ul>
     </nav>
   );
-}) satisfies PluginComponent<RelatedPostsProps>;
+}
 
 export default RelatedPosts;
+
+function findRelatedPostsOptions(
+  plugins: readonly { name: string; options?: unknown }[] | undefined,
+): RelatedPostsOptions | undefined {
+  return plugins?.find((plugin) => plugin.name === "related-posts")?.options as
+    | RelatedPostsOptions
+    | undefined;
+}

@@ -64,25 +64,24 @@ Primitive が担当するのは主に、
 
 ## Plugin UI の composition
 
-Plugin はデータヘルパーと JSX コンポーネントを公開し、Site は自分の TSX でこれらを composition します。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component は直接描画され、Site は配置、順序、コンディショナルレンダリングの全てを制御します。
-
-`bodySlots` map も `ContentSlot` プリミティブも存在しません。
-
-代わりに：
-
-- Plugin はデータヘルパー（例：`getProperties`）をエクスポートし、狭い input を受けて model を返します
-- Plugin は JSX コンポーネント（例：`<Properties />`）をエクスポートし、型付き props を受け入れます
-- Site は必要な箇所で import して描画します：`<Properties data={data} />`
-
-これは削除された body-slot システムを置き換えます：Site はすべての描画決定を所有し、Plugin は HTML フラグメントの累積ではなく型付きデータ + component を提供します。
+各 component は Plugin から直接 import し、Site が置きたい場所で描画します。`SiteProvider` と、公開 `entry` を渡した `Article` を使うと、component は必要な Plugin データを自動で解決します。配置、順序、表示条件は引き続き Site が管理します。
 
 ```tsx
-import { getProperties } from "@riebeckite/plugin-properties";
-import { Properties } from "@riebeckite/plugin-properties/components";
+import { Article, ArticleBody } from "@riebeckite/honox/ui";
+import { Properties } from "@riebeckite/plugin-properties";
+import { SiteProvider } from "@riebeckite/ui";
 
-const data = getProperties({ view, frontmatter: entry.frontmatter });
-<Properties data={data} />
+<SiteProvider config={config} manifest={manifest} view={view} path={path}>
+  <Article post={post} entry={entry}>
+    <Properties />
+    <ArticleBody />
+  </Article>
+</SiteProvider>;
 ```
+
+`view` には `createPublicContentView(manifest)` で作成した値を渡します。必要な Context がなければ component は何も描画しないため、共通 layout に置いても安全です。個別の props はカスタマイズ用として残り、Context からの値より優先されます。高度な composition が必要なときは、従来どおり純粋なデータヘルパーを利用できます。
+
+依存方向は `plugin → @riebeckite/ui ← honox` です。Plugin UI を HonoX の barrel から再エクスポートしません。
 
 ## Site が持つもの
 

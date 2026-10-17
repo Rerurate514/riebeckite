@@ -131,7 +131,7 @@ test("keeps graph data available for the Site to render", async () => {
   });
   assert.ok(graph);
 
-  const manualHtml = renderToString(LocalGraph({ graph }));
+  const manualHtml = renderToString(await LocalGraph({ graph }));
   assert.equal(
     (manualHtml.match(/<section[^>]*class="rr-local-graph"/g) ?? []).length,
     1,

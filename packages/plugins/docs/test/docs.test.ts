@@ -399,11 +399,19 @@ test("renders accessible navigation semantics", async () => {
   assert.match(html, /data-docs-collapsed="false"/);
 });
 
-test("component rendering uses the documented previous-next DOM contract", () => {
+test("component rendering uses the documented previous-next DOM contract", async () => {
   const html = renderToString(
-    createElement(DocsPrevNext, {
-      previous: { href: "/docs/previous", title: "Previous page" },
-      next: { href: "/docs/next", title: "A long next documentation page" },
+    await DocsPrevNext({
+      previous: {
+        href: "/docs/previous",
+        slug: "previous",
+        title: "Previous page",
+      },
+      next: {
+        href: "/docs/next",
+        slug: "next",
+        title: "A long next documentation page",
+      },
     }),
   );
 
@@ -420,9 +428,9 @@ test("component rendering uses the documented previous-next DOM contract", () =>
   );
 });
 
-test("component rendering uses the documented docs sidebar DOM contract", () => {
+test("component rendering uses the documented docs sidebar DOM contract", async () => {
   const html = renderToString(
-    createElement(DocsSidebar, {
+    await DocsSidebar({
       items: [
         {
           title: "Guide",

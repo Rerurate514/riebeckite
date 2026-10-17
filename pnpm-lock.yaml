@@ -296,6 +296,9 @@ importers:
       '@riebeckite/theme-tokyonight':
         specifier: workspace:*
         version: link:../../packages/themes/tokyonight
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       hono:
         specifier: ^4.12.25
         version: 4.13.12
@@ -706,6 +709,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -795,6 +801,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -968,6 +977,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -993,6 +1005,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -1058,6 +1073,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -1279,6 +1297,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -1295,6 +1316,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12

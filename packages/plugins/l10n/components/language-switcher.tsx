@@ -1,12 +1,20 @@
 import type { PluginComponent } from "@riebeckite/core";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import type { LocalizedContent } from "../src/l10n.js";
+import { getLocalization } from "../src/l10n.js";
 
 export type LanguageSwitcherProps = {
-  localization: LocalizedContent | null;
+  localization?: LocalizedContent | null;
 };
 
 const LanguageSwitcher = ((props: Readonly<LanguageSwitcherProps>) => {
-  const localization = props.localization;
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const localization =
+    props.localization ??
+    (site && article?.entry
+      ? getLocalization(site.view, article.entry.slug)
+      : null);
   if (!localization || localization.availableLanguages.length < 2) return null;
   return (
     <nav class="l10n-switcher" aria-label="Language">

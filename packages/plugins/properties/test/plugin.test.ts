@@ -73,10 +73,13 @@ test("renders the properties panel data for the Site", async () => {
   const data = await getProperties({ view, frontmatter: entry_.frontmatter });
 
   assert.equal(
-    renderToString(Properties({ data })).includes("data-properties"),
+    renderToString(await Properties({ data })).includes("data-properties"),
     true,
   );
-  assert.match(renderToString(Properties({ data })), /data-property-count="1"/);
+  assert.match(
+    renderToString(await Properties({ data })),
+    /data-property-count="1"/,
+  );
   await runHook(properties(), entries);
 });
 
@@ -88,7 +91,7 @@ test("renders nothing when options produce no items", async () => {
     view: createPublicContentView(manifestOf(entries)),
     frontmatter: entries[0].frontmatter,
   });
-  assert.equal(renderToString(Properties({ data })), "");
+  assert.equal(renderToString(await Properties({ data })), "");
 });
 
 test("the manifest hook is idempotent and skips empty panels", async () => {
@@ -103,7 +106,7 @@ test("the manifest hook is idempotent and skips empty panels", async () => {
     view: createPublicContentView(manifestOf([empty])),
     frontmatter: empty.frontmatter,
   });
-  assert.equal(renderToString(Properties({ data: emptyData })), "");
+  assert.equal(renderToString(await Properties({ data: emptyData })), "");
   assert.equal(nothing.html, "<p>B</p>");
   assert.equal(empty.html, "");
 });
@@ -125,7 +128,7 @@ test("wikilink values resolve through the manifest content index", async () => {
     view: createPublicContentView(manifest),
     frontmatter: linking.frontmatter,
   });
-  const html = renderToString(Properties({ data }));
+  const html = renderToString(await Properties({ data }));
   assert.match(html, /href="\/note#Section"/);
   assert.doesNotMatch(html, /\[\[note/);
   assert.deepEqual(diagnostics, []);

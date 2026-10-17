@@ -1,5 +1,7 @@
 import type { PluginComponent } from "@riebeckite/core";
-import type { DocsNavigationLink } from "../src/types.js";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { getDocsNavigation, getDocsPrevNext } from "../index.js";
+import type { DocsNavigationLink, DocsOptions } from "../src/types.js";
 
 export type DocsPrevNextProps = {
   readonly previous?: DocsNavigationLink;
@@ -7,12 +9,25 @@ export type DocsPrevNextProps = {
   readonly language?: string;
 };
 
-const DocsPrevNext = (({
-  previous,
-  next,
-  language,
-}: Readonly<DocsPrevNextProps>) => {
-  if (!previous && !next) return null;
+const DocsPrevNext = (async (props: Readonly<DocsPrevNextProps>) => {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const options = findDocsOptions(site?.config.plugins);
+  const navigation =
+    site && article?.entry && options
+      ? await getDocsNavigation({
+          view: site.view,
+          entrySlug: article.entry.slug,
+          options,
+        })
+      : [];
+  const resolved = article?.entry
+    ? await getDocsPrevNext({ items: navigation, slug: article.entry.slug })
+    : {};
+  const previous = props.previous ?? resolved.previous;
+  const next = props.next ?? resolved.next;
+  const language = props.language ?? article?.entry?.publicLocation.language;
+  if (!previous && !next) return [];
   const labels =
     language === "ja"
       ? { nav: "前後のドキュメント", previous: "前へ", next: "次へ" }
@@ -52,3 +67,11 @@ const DocsPrevNext = (({
 }) satisfies PluginComponent<DocsPrevNextProps>;
 
 export default DocsPrevNext;
+
+function findDocsOptions(
+  plugins: readonly { name: string; options?: unknown }[] | undefined,
+): DocsOptions | undefined {
+  return plugins?.find((plugin) => plugin.name.startsWith("docs:"))?.options as
+    | DocsOptions
+    | undefined;
+}

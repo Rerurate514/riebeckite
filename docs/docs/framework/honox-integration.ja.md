@@ -62,6 +62,36 @@ Riebeckite の Vite plugin を追加するだけでなく、次の設定もま�
 
 HonoX plugin、deployment 用 build plugin、Tailwind など、Site 自身が必要とする Vite plugin と組み合わせて利用できます。
 
+## 宣言的な plugin component
+
+plugin の UI component は個別の package から import し、既定の data は
+`@riebeckite/ui` の context から解決します。Site は配置だけを決めればよく、通常の
+article UI のために manifest の検索や plugin helper の呼び出しを繰り返す必要はありません。
+
+```tsx
+import { SiteProvider } from "@riebeckite/ui";
+import { Article, ArticleBody } from "@riebeckite/honox/ui";
+import { Backlinks } from "@riebeckite/plugin-backlinks";
+import { ShareControls } from "@riebeckite/plugin-share";
+
+<SiteProvider config={config} manifest={manifest} view={view} path={c.req.path}>
+  <Article post={post} entry={entry}>
+    <ArticleBody />
+    <Backlinks />
+    <ShareControls />
+  </Article>
+</SiteProvider>;
+```
+
+`SiteProvider` には `createPublicContentView(manifest)` などで作成した public content
+view を渡します。`Article` は `post` と public な `entry` を受け取ると article context
+を提供します。必要な context がない component は何も描画しないため、共通 layout でも安全です。
+明示的な component prop は引き続き利用でき、context より優先されます。Site 独自の data
+composition が必要な場合は、export されている pure data helper を使用してください。
+
+依存方向は `plugin → @riebeckite/ui ← honox` です。HonoX の plugin barrel から plugin UI を
+import しないでください。
+
 ## Root と Config
 
 `riebeckiteVite()` では、必要に応じて次の場所を指定できます。

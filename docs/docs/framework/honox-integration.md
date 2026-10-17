@@ -65,6 +65,37 @@ the Riebeckite Vite plugin, it also:
 It works alongside any Vite plugins the site needs, such as the HonoX plugin, a
 deployment build plugin, or Tailwind.
 
+## Declarative plugin components
+
+Plugin UI components import from their own package and resolve their default data
+from `@riebeckite/ui` context. The site still chooses placement; it does not need
+to repeat manifest lookups or plugin helper calls for ordinary article UI.
+
+```tsx
+import { SiteProvider } from "@riebeckite/ui";
+import { Article, ArticleBody } from "@riebeckite/honox/ui";
+import { Backlinks } from "@riebeckite/plugin-backlinks";
+import { ShareControls } from "@riebeckite/plugin-share";
+
+<SiteProvider config={config} manifest={manifest} view={view} path={c.req.path}>
+  <Article post={post} entry={entry}>
+    <ArticleBody />
+    <Backlinks />
+    <ShareControls />
+  </Article>
+</SiteProvider>;
+```
+
+`SiteProvider` must receive a public content view, such as the result of
+`createPublicContentView(manifest)`. `Article` supplies article context when
+given `post` and the public `entry`. Components without the required context
+render nothing, so they remain safe in shared layouts. Explicit component props
+remain supported and take precedence; use the exported pure data helpers when a
+site needs custom data composition.
+
+The dependency direction is `plugin → @riebeckite/ui ← honox`. Do not import
+plugin UI from a HonoX plugin barrel.
+
 ## Root and Config
 
 `riebeckiteVite` accepts the same optional `configRoot`, `appRoot`, `configFile`,

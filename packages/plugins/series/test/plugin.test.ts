@@ -81,7 +81,9 @@ test("the manifest hook adds series navigation to discoverable multi-part series
 
   const index = buildSeriesIndex(manifest, "Guide");
   assert.ok(index);
-  const nav = renderToString(SeriesNavigation({ index, currentSlug: "p1" }));
+  const nav = renderToString(
+    await SeriesNavigation({ index, currentSlug: "p1" }),
+  );
   assert.match(nav, /class="rb-series"/);
   assert.match(nav, /href="\/p1"/);
   assert.match(nav, /href="\/p2"/);
@@ -161,7 +163,7 @@ test("the Site filters non-discoverable series members from navigation", async (
   assert.ok(filtered);
 
   const navHtml = renderToString(
-    SeriesNavigation({ index: filtered, currentSlug: "shown-a" }),
+    await SeriesNavigation({ index: filtered, currentSlug: "shown-a" }),
   );
   assert.match(navHtml, /href="\/shown-b"/);
   assert.doesNotMatch(navHtml, /SECRET_DRAFT_TITLE/);

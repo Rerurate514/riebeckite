@@ -1,18 +1,30 @@
 import type { PluginComponent } from "@riebeckite/core";
-import type { DocsNavigationItem } from "../src/types.js";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { getDocsNavigation } from "../index.js";
+import type { DocsNavigationItem, DocsOptions } from "../src/types.js";
 
 export type DocsSidebarProps = {
-  readonly items: readonly DocsNavigationItem[];
+  readonly items?: readonly DocsNavigationItem[];
   readonly currentPermalink?: string;
   readonly label?: string;
 };
 
-const DocsSidebar = (({
-  items,
-  currentPermalink,
-  label = "Docs navigation",
-}: Readonly<DocsSidebarProps>) => {
-  if (items.length === 0) return null;
+const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const options = findDocsOptions(site?.config.plugins);
+  const items =
+    props.items ??
+    (site && article?.entry && options
+      ? await getDocsNavigation({
+          view: site.view,
+          entrySlug: article.entry.slug,
+          options,
+        })
+      : []);
+  const currentPermalink = props.currentPermalink ?? article?.entry?.permalink;
+  const label = props.label ?? options?.sidebar?.label ?? "Docs navigation";
+  if (items.length === 0) return [];
   const permalink = currentPermalink ?? "";
   return (
     <details class="rb-docs-sidebar-details" data-docs-sidebar-details open>
@@ -112,3 +124,11 @@ function containsPermalink(
 }
 
 export default DocsSidebar;
+
+function findDocsOptions(
+  plugins: readonly { name: string; options?: unknown }[] | undefined,
+): DocsOptions | undefined {
+  return plugins?.find((plugin) => plugin.name.startsWith("docs:"))?.options as
+    | DocsOptions
+    | undefined;
+}

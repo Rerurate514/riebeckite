@@ -1,10 +1,12 @@
+import { useSiteContext } from "@riebeckite/ui";
+import { resolveSiteNavigation } from "../src/navigation.js";
 import type { NavigationItem } from "../src/types.js";
 
 export type SiteNavProps = {
   /** Navigation tree to render, in order. */
-  readonly items: readonly NavigationItem[];
+  readonly items?: readonly NavigationItem[];
   /** Current request path, used to mark the active item. */
-  readonly path: string;
+  readonly path?: string;
   /**
    * Current content language. When set, a matching `/language` prefix is
    * stripped from `path` before the active item is resolved.
@@ -28,14 +30,21 @@ export type SiteNavProps = {
  * where each tree is rendered.
  */
 export function SiteNav(props: SiteNavProps) {
+  const site = useSiteContext();
+  const navigation = site
+    ? resolveSiteNavigation(site.config, site.manifest, props.language)
+    : null;
+  const items = props.items ?? navigation?.primary ?? [];
+  const path = props.path ?? site?.path ?? "/";
+  if (items.length === 0 && props.items === undefined) return null;
   return (
     <nav
       class={joinClassNames("rb-nav", props.class, props.className)}
       aria-label={props.label ?? "Site navigation"}
     >
       <NavigationItems
-        items={props.items}
-        path={props.path}
+        items={items}
+        path={path}
         language={props.language}
         localizeHref={props.localizeHref}
       />

@@ -3,10 +3,12 @@ import {
   resolveRiebeckiteContentRequest,
   riebeckiteSsgParams,
 } from "@riebeckite/honox/server";
-import { PageBody } from "@riebeckite/honox/ui";
+import { PageBody, SiteProvider } from "@riebeckite/honox/ui";
+import { createPublicContentView } from "@riebeckite/core";
 import { createRoute } from "honox/factory";
 import { SiteArticle } from "../components/article";
 import { content } from "virtual:riebeckite/content";
+import { config } from "virtual:riebeckite/config";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
@@ -19,8 +21,10 @@ export default createRoute(
       return c.render(<PageBody html={resolved.page.body} />);
     }
 
-    return c.render(
-      <SiteArticle post={resolved.post} />,
-    );
+    const manifest = await content.getManifest();
+    const view = createPublicContentView(manifest);
+    const entry = view.findRoutableBySlug(resolved.entry.slug);
+    if (!entry) return c.notFound();
+    return c.render(<SiteProvider config={config} manifest={manifest} view={view} path={c.req.path}><SiteArticle post={resolved.post} entry={entry} /></SiteProvider>);
   },
 );

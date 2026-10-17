@@ -1,8 +1,10 @@
 import type { PluginComponent } from "@riebeckite/core";
-import type { ShareLink } from "../src/types.js";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { getShareLinks } from "../index.js";
+import type { ShareLink, ShareOptions } from "../src/types.js";
 
 export type ShareControlsProps = {
-  readonly links: readonly ShareLink[];
+  readonly links?: readonly ShareLink[];
   readonly copyUrl?: string;
   readonly ariaLabel?: string;
   readonly className?: string;
@@ -11,16 +13,26 @@ export type ShareControlsProps = {
   readonly copyFailedLabel?: string;
 };
 
-const ShareControls = (({
-  links,
-  copyUrl,
-  ariaLabel = "Share",
-  className = "rr-share",
-  copyLabel = "Copy link",
-  copiedLabel = "Copied",
-  copyFailedLabel = "Copy failed",
-}: Readonly<ShareControlsProps>) => {
-  if (links.length === 0 && !copyUrl) return null;
+const ShareControls = (async (props: Readonly<ShareControlsProps>) => {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const resolved =
+    props.links === undefined && site && article?.entry
+      ? await getShareLinks({
+          entry: article.entry,
+          site: site.config,
+          options: findShareOptions(site.config.plugins),
+        })
+      : undefined;
+  const links = props.links ?? resolved?.links ?? [];
+  const copyUrl = props.copyUrl ?? resolved?.copyUrl;
+  const ariaLabel = props.ariaLabel ?? resolved?.ariaLabel ?? "Share";
+  const className = props.className ?? resolved?.className ?? "rr-share";
+  const copyLabel = props.copyLabel ?? resolved?.copyLabel ?? "Copy link";
+  const copiedLabel = props.copiedLabel ?? resolved?.copiedLabel ?? "Copied";
+  const copyFailedLabel =
+    props.copyFailedLabel ?? resolved?.copyFailedLabel ?? "Copy failed";
+  if (links.length === 0 && !copyUrl) return [];
   const rootClass =
     className === "rr-share" ? className : `rr-share ${className}`;
   return (
@@ -61,3 +73,11 @@ const ShareControls = (({
 }) satisfies PluginComponent<ShareControlsProps>;
 
 export default ShareControls;
+
+function findShareOptions(
+  plugins: readonly { name: string; options?: unknown }[],
+): ShareOptions | undefined {
+  return plugins.find((plugin) => plugin.name === "share")?.options as
+    | ShareOptions
+    | undefined;
+}

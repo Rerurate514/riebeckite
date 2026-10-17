@@ -3,10 +3,12 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createPublicContentView,
   resolveConfig,
 } from "@riebeckite/core";
+import { ArticleProvider, SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
-import { renderToString } from "hono/jsx/dom/server";
+import { renderToReadableStream } from "hono/jsx/dom/server";
 import { getShareLinks, initShare, ShareControls, share } from "../index.ts";
 import {
   DEFAULT_SHARE_SERVICES,
@@ -32,6 +34,13 @@ function manifestOf(entry: ContentManifestEntry): ContentManifest {
     bySlug: new Map([[entry.slug, entry]]),
     contentIndex: new Map(),
   } as unknown as ContentManifest;
+}
+
+async function render(
+  element: Parameters<typeof renderToReadableStream>[0],
+): Promise<string> {
+  const stream = await renderToReadableStream(element);
+  return new Response(stream).text();
 }
 
 test("normalizeMastodonInstance accepts hosts and full URLs", () => {
@@ -154,8 +163,8 @@ test("renderShareControls returns empty when nothing is renderable", () => {
   assert.equal(renderShareControls(options, { url: URL, title: TITLE }), "");
 });
 
-test("component rendering matches the share CSS and client hooks", () => {
-  const html = renderToString(
+test("component rendering matches the share CSS and client hooks", async () => {
+  const html = await render(
     createElement(ShareControls, {
       links: [{ service: "x", label: "X", url: "https://example.com/share" }],
       copyUrl: URL,
@@ -167,6 +176,50 @@ test("component rendering matches the share CSS and client hooks", () => {
   assert.match(html, /data-rr-share-copy/);
   assert.match(html, /class="rr-share__button rr-share__copy"/);
   assert.match(html, /class="rr-share__status"/);
+});
+
+test("ShareControls resolves configured links from Site and Article context", async () => {
+  const entry: ContentManifestEntry = {
+    slug: "hello",
+    permalink: "/hello",
+    publicLocation: { slug: "hello", permalink: "/hello" },
+    title: TITLE,
+    frontmatter: {},
+    html: "<p>Body</p>",
+    publishing: { visibility: "public", routable: true, discoverable: true },
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+  };
+  const manifest = manifestOf(entry);
+  const config = resolveConfig({
+    site: { title: "Test", baseUrl: "https://example.com" },
+    plugins: [share({ services: ["copy"] })],
+  });
+  const html = await render(
+    createElement(
+      SiteProvider,
+      {
+        config,
+        manifest,
+        view: createPublicContentView(manifest),
+        path: "/hello",
+      },
+      createElement(
+        ArticleProvider,
+        { entry, post: entry },
+        createElement(ShareControls, {}),
+      ),
+    ),
+  );
+
+  assert.match(html, /data-rr-share-copy/);
+  assert.doesNotMatch(html, /data-share-service=/);
+});
+
+test("ShareControls is empty without context or explicit links", async () => {
+  assert.equal(await render(createElement(ShareControls, {})), "");
 });
 
 test("share exposes share links for the Site to render", async () => {

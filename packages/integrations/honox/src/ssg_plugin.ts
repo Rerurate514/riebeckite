@@ -200,6 +200,8 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
     | {
         path: string;
         state: OutputCacheState;
+        metrics: SsgOutputMetrics;
+        timingsMs: Record<string, number> | undefined;
         outDir: string;
         publicDir: string | false | undefined;
         configFile: string | undefined;
@@ -260,7 +262,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         );
       }
 
-      const timingsMs: Record<string, number> = {};
+      const timingsMs: Record<string, number> | undefined = process.env
+        .RIEBECKITE_SSG_METRICS_FILE
+        ? {}
+        : undefined;
       const outDir = resolve(config.root, config.build.outDir);
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
       const server = await measure(timingsMs, "ssgSetup", () =>
@@ -391,7 +396,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           manifestHookCacheMiss: 0,
           manifestHookDurationMs: 0,
           manifestHookPlugins: {},
-          timingsMs,
+          timingsMs: timingsMs ?? {},
         };
         process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental
           ? ""
@@ -542,11 +547,12 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         pendingOutputCache = {
           path: outputCachePath,
           state: nextOutputCache,
+          metrics,
+          timingsMs,
           outDir,
           publicDir: config.publicDir,
           configFile: config.configFile,
         };
-        await writeSsgOutputMetrics(metrics);
         this.info(
           `SSG outputs: ${metrics.renderedOutputCount} rendered · ${metrics.reusedOutputCount} reused · ${metrics.deletedOutputCount} removed`,
         );
@@ -576,25 +582,29 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             `Generated asset ${asset.path} is ${formatBytes(asset.size)}, exceeding Cloudflare Workers' ${formatBytes(cloudflareWorkerAssetLimit)} asset limit.`,
           );
         }
-        if (!pendingOutputCache) return;
+        const outputCache = pendingOutputCache;
+        if (!outputCache) return;
         try {
-          pendingOutputCache.state.finalOutputInventory =
-            await fingerprintOutputDirectory(pendingOutputCache.outDir);
-          pendingOutputCache.state.publicDirectory =
-            pendingOutputCache.publicDir
-              ? resolve(pendingOutputCache.publicDir)
-              : undefined;
-          pendingOutputCache.state.publicFingerprint =
-            pendingOutputCache.publicDir
-              ? await fingerprintDirectory(
-                  resolve(pendingOutputCache.publicDir),
-                )
-              : undefined;
+          outputCache.state.finalOutputInventory = await measure(
+            outputCache.timingsMs,
+            "outputInventory",
+            () => fingerprintOutputDirectory(outputCache.outDir),
+          );
+          const publicDir = outputCache.publicDir;
+          outputCache.state.publicDirectory = publicDir
+            ? resolve(publicDir)
+            : undefined;
+          outputCache.state.publicFingerprint = publicDir
+            ? await measure(outputCache.timingsMs, "publicFingerprint", () =>
+                fingerprintDirectory(resolve(publicDir)),
+              )
+            : undefined;
           await waitForFaultInjection("build-state-before");
           await saveOutputCache(
-            pendingOutputCache.path,
-            pendingOutputCache.state,
-            pendingOutputCache.outDir,
+            outputCache.path,
+            outputCache.state,
+            outputCache.outDir,
+            outputCache.timingsMs,
           );
           await waitForFaultInjection("build-state-committed");
         } catch (error) {
@@ -604,6 +614,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             }`,
           );
         } finally {
+          await writeSsgOutputMetrics(outputCache.metrics);
           pendingOutputCache = undefined;
         }
       },
@@ -1101,7 +1112,7 @@ export async function loadOutputCache(
   const entriesAreValid = await measure(
     timingsMs,
     "outputCacheEntriesValidate",
-    () => validateOutputCacheEntries(path, parsed.outputs),
+    () => validateOutputCacheEntries(path, parsed.outputs, timingsMs),
   );
   if (!entriesAreValid) {
     log("SSG output cache entries are corrupted and will be rebuilt.");
@@ -1197,6 +1208,7 @@ export async function saveOutputCache(
         outputDirectory,
         state.outputs,
         state.finalOutputInventory,
+        timingsMs,
       ),
     );
     const serialized = measureSync(
@@ -1216,11 +1228,13 @@ export async function saveOutputCache(
       await saveFastPathCache(
         fastPathCachePath(path),
         createFastPathCacheState(state, checksum),
+        timingsMs,
       );
     }
     await collectUnreferencedOutputCacheEntries(
       outputCacheEntriesPath(path),
       outputs,
+      timingsMs,
     );
     return checksum;
   } catch (error) {
@@ -1238,6 +1252,7 @@ async function saveOutputCacheEntries(
   outputDirectory: string,
   outputs: Readonly<Record<string, OutputCacheEntry>>,
   finalOutputInventory: Readonly<Record<string, string>> | undefined,
+  timingsMs: Record<string, number> | undefined,
 ): Promise<Record<string, OutputCacheEntry>> {
   await ensureOutputCacheEntriesDirectory(directory);
   const entries: Record<string, OutputCacheEntry> = {};
@@ -1258,7 +1273,7 @@ async function saveOutputCacheEntries(
     const cachePath = outputCacheEntryName(outputPath);
     const destination = join(directory, cachePath);
     await waitForFaultInjection("entry-create-start");
-    await replaceOutputCacheEntry(source, destination);
+    await replaceOutputCacheEntry(source, destination, timingsMs);
     const checksum = finalOutputInventory?.[outputPath];
     if (!checksum) {
       const cachedChecksum = await checksumFile(destination);
@@ -1276,6 +1291,7 @@ async function saveOutputCacheEntries(
 async function validateOutputCacheEntries(
   outputCachePath: string,
   entries: Readonly<Record<string, OutputCacheEntry>>,
+  timingsMs?: Record<string, number>,
 ): Promise<boolean> {
   try {
     const directory = outputCacheEntriesPath(outputCachePath);
@@ -1290,7 +1306,12 @@ async function validateOutputCacheEntries(
       }
       const path = resolveOutputCacheFile(directory, entry.cachePath);
       if (!(await isRegularFile(path))) return false;
-      if ((await checksumFile(path)) !== entry.checksum) return false;
+      if (
+        (await measure(timingsMs, "outputCacheEntryChecksum", () =>
+          checksumFile(path),
+        )) !== entry.checksum
+      )
+        return false;
     }
     return true;
   } catch {
@@ -1324,6 +1345,7 @@ function createFastPathCacheState(
 async function saveFastPathCache(
   path: string,
   state: FastPathCacheState,
+  timingsMs?: Record<string, number>,
 ): Promise<void> {
   const directory = dirname(path);
   await mkdir(directory, { recursive: true });
@@ -1336,8 +1358,12 @@ async function saveFastPathCache(
   const temporaryPath = `${path}.${randomUUID()}.tmp`;
   try {
     await waitForFaultInjection("sidecar-save-start");
-    await writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8");
-    await replaceFile(temporaryPath, path);
+    await measure(timingsMs, "sidecarWrite", () =>
+      writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8"),
+    );
+    await measure(timingsMs, "sidecarRename", () =>
+      replaceFile(temporaryPath, path),
+    );
     await waitForFaultInjection("sidecar-committed");
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
@@ -1535,17 +1561,24 @@ async function isRegularFile(path: string): Promise<boolean> {
 async function replaceOutputCacheEntry(
   source: string,
   destination: string,
+  timingsMs?: Record<string, number>,
 ): Promise<void> {
   if ((await lstat(destination).catch(() => undefined))?.isSymbolicLink()) {
     throw new Error(`Unsafe SSG output cache entry: ${destination}`);
   }
   const temporaryPath = `${destination}.${randomUUID()}.tmp`;
   try {
-    await writeFile(temporaryPath, new Uint8Array());
+    await measure(timingsMs, "outputCacheEntryWrite", () =>
+      writeFile(temporaryPath, new Uint8Array()),
+    );
     await waitForFaultInjection("entry-body-write");
-    await copyFile(source, temporaryPath);
+    await measure(timingsMs, "outputCacheEntryCopy", () =>
+      copyFile(source, temporaryPath),
+    );
     await waitForFaultInjection("entry-rename-before");
-    await replaceFile(temporaryPath, destination);
+    await measure(timingsMs, "outputCacheEntryRename", () =>
+      replaceFile(temporaryPath, destination),
+    );
     await waitForFaultInjection("entry-committed");
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
@@ -1556,6 +1589,7 @@ async function replaceOutputCacheEntry(
 async function collectUnreferencedOutputCacheEntries(
   directory: string,
   outputs: Readonly<Record<string, OutputCacheEntry>>,
+  timingsMs?: Record<string, number>,
 ): Promise<void> {
   try {
     if (!(await isSafeOutputCacheEntriesDirectory(directory))) return;
@@ -1563,7 +1597,9 @@ async function collectUnreferencedOutputCacheEntries(
     const referenced = new Set(
       Object.values(outputs).map((entry) => entry.cachePath),
     );
-    const entries = await readdir(directory, { withFileTypes: true });
+    const entries = await measure(timingsMs, "outputCacheGcScan", () =>
+      readdir(directory, { withFileTypes: true }),
+    );
     for (const entry of entries) {
       if (!/^[a-f0-9]{64}$/u.test(entry.name) || referenced.has(entry.name)) {
         continue;
@@ -1571,7 +1607,9 @@ async function collectUnreferencedOutputCacheEntries(
       const path = join(directory, entry.name);
       if (await isRegularFile(path)) {
         await waitForFaultInjection("gc-entry-delete");
-        await rm(path, { force: true });
+        await measure(timingsMs, "outputCacheGcDelete", () =>
+          rm(path, { force: true }),
+        );
       }
     }
   } catch {
@@ -1616,6 +1654,7 @@ async function measure<T>(
   name: string,
   fn: () => Promise<T>,
 ): Promise<T> {
+  if (!timingsMs) return await fn();
   const start = performance.now();
   try {
     return await fn();
@@ -1630,6 +1669,7 @@ function measureSync<T>(
   name: string,
   fn: () => T,
 ): T {
+  if (!timingsMs) return fn();
   const start = performance.now();
   try {
     return fn();

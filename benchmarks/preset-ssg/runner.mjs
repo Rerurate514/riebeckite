@@ -26,6 +26,8 @@ const args = parseArgs(process.argv.slice(2));
 const presets = listArg(args.presets) ?? ["starter", "showcase"];
 const sizes = (listArg(args.sizes) ?? ["100", "1000"]).map(Number);
 const scenarios = listArg(args.scenarios) ?? scenarioNames;
+const runs = positiveIntegerArg(args.runs, 1, "runs");
+const metricsEnabled = args.metrics !== "false";
 const workRoot = path.resolve(
   args.workRoot ?? path.join(appRoot, ".riebeckite", "preset-ssg-benchmark"),
 );
@@ -89,7 +91,7 @@ for (const preset of presets) {
         await buildWorkspacePackages();
         workspaceBuilt = true;
       }
-      const result = await runScenario({ preset, size, scenario });
+      const result = await runScenario({ preset, size, scenario, runs });
       rows.push(result);
       await writeReport(rows);
       process.stdout.write(`${JSON.stringify(result)}\n`);
@@ -101,7 +103,9 @@ process.stdout.write(`Saved ${jsonPath}\nSaved ${markdownPath}\n`);
 async function writeReport(rows) {
   const report = {
     generatedAt: new Date().toISOString(),
-    measurement: "single sample per preset, size, and scenario",
+    measurement: `${runs} independent sample${runs === 1 ? "" : "s"} per preset, size, and scenario`,
+    runs,
+    metricsEnabled,
     environment: environment(),
     presets: Object.fromEntries(
       presets.map((name) => [
@@ -120,8 +124,33 @@ async function writeReport(rows) {
   await fs.writeFile(markdownPath, markdownReport(report), "utf8");
 }
 
-async function runScenario({ preset, size, scenario }) {
-  const runDirectory = path.join(workRoot, preset, String(size), scenario);
+async function runScenario({ preset, size, scenario, runs }) {
+  const samples = [];
+  for (let run = 1; run <= runs; run += 1) {
+    samples.push(await runScenarioSample({ preset, size, scenario, run }));
+  }
+  const medianSample = samples[Math.floor(samples.length / 2)];
+  return {
+    ...medianSample,
+    wallTimeMs: median(samples.map((sample) => sample.wallTimeMs)),
+    peakRssMb: median(samples.map((sample) => sample.peakRssMb)),
+    cleanWallTimeMs: median(samples.map((sample) => sample.cleanWallTimeMs)),
+    wallTimeRangeMs: range(samples.map((sample) => sample.wallTimeMs)),
+    cleanWallTimeRangeMs: range(
+      samples.map((sample) => sample.cleanWallTimeMs),
+    ),
+    samples,
+  };
+}
+
+async function runScenarioSample({ preset, size, scenario, run }) {
+  const runDirectory = path.join(
+    workRoot,
+    preset,
+    String(size),
+    scenario,
+    `run-${run}`,
+  );
   await removeSafeTemporaryDirectory(runDirectory, workRoot);
   const incrementalSite = path.join(runDirectory, "incremental");
   const generatedConfigPluginOrder = await createSite(
@@ -156,6 +185,7 @@ async function runScenario({ preset, size, scenario }) {
     preset,
     size,
     scenario,
+    run,
     generatedConfigPluginOrder,
     ...incremental,
     cleanWallTimeMs: clean.wallTimeMs,
@@ -330,14 +360,14 @@ async function invokeBuild(siteRoot, label) {
       "tsx",
       fileURLToPath(import.meta.url),
       "--buildOnce",
-      JSON.stringify({ siteRoot, label }),
+      JSON.stringify({ siteRoot, label, metricsEnabled }),
     ],
     { cwd: root, maxBuffer: 1024 * 1024 * 8 },
   );
   return JSON.parse(stdout.trim().split(/\r?\n/).at(-1));
 }
 
-async function buildOnce({ siteRoot, label }) {
+async function buildOnce({ siteRoot, label, metricsEnabled = true }) {
   const { build, defineConfig } = await import(
     pathToFileURL(appRequire.resolve("vite")).href
   );
@@ -357,14 +387,14 @@ async function buildOnce({ siteRoot, label }) {
   );
   const metricsDirectory = path.join(siteRoot, ".riebeckite", "benchmark");
   const metricsPath = path.join(metricsDirectory, `${label}.json`);
-  await fs.mkdir(metricsDirectory, { recursive: true });
+  if (metricsEnabled) await fs.mkdir(metricsDirectory, { recursive: true });
   const samples = [process.memoryUsage().rss];
   const sampler = setInterval(
     () => samples.push(process.memoryUsage().rss),
     25,
   );
   const started = performance.now();
-  process.env.RIEBECKITE_SSG_METRICS_FILE = metricsPath;
+  if (metricsEnabled) process.env.RIEBECKITE_SSG_METRICS_FILE = metricsPath;
   try {
     await build(
       defineConfig({
@@ -405,7 +435,9 @@ async function buildOnce({ siteRoot, label }) {
     delete process.env.RIEBECKITE_SSG_METRICS_FILE;
   }
   samples.push(process.memoryUsage().rss);
-  const metrics = JSON.parse(await fs.readFile(metricsPath, "utf8"));
+  const metrics = metricsEnabled
+    ? JSON.parse(await fs.readFile(metricsPath, "utf8"))
+    : {};
   return {
     wallTimeMs: Math.round(performance.now() - started),
     peakRssMb: Math.round(Math.max(...samples) / 1024 / 1024),
@@ -433,12 +465,36 @@ async function buildOnce({ siteRoot, label }) {
     fullRegenerationRequired: Boolean(metrics.fullRegenerationRequired),
     globalOrUnknownDependency: Boolean(metrics.fullRegenerationRequired),
     outputWriteTimeMs: Math.round(metrics.timingsMs?.outputWrite ?? 0),
+    metricsCollected: metricsEnabled,
+    spansMs: Object.fromEntries(
+      Object.entries(metrics.timingsMs ?? {}).map(([name, duration]) => [
+        name,
+        Math.round(duration),
+      ]),
+    ),
     rawMetrics: metrics,
   };
 }
 
 function metricNumber(metrics, key) {
   return Number(metrics[key] ?? 0);
+}
+function positiveIntegerArg(value, fallback, name) {
+  if (value === undefined) return fallback;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1)
+    throw new Error(`--${name} must be a positive integer`);
+  return parsed;
+}
+function median(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+function range(values) {
+  return { min: Math.min(...values), max: Math.max(...values) };
 }
 function presetRecord(name, preset, generatedConfigPluginOrder) {
   return {
@@ -488,7 +544,7 @@ function markdownReport(report) {
     "",
     `Measured at: ${report.generatedAt}`,
     "",
-    "Single sample per row.",
+    `${report.measurement}. Wall and clean values are medians; ranges are retained in JSON samples.`,
     "",
     "| Preset | Size | Scenario | Wall ms | RSS MB | Processed / Reused | Rendered / Reused | Manifest hooks executed / reused | Manifest cache hit / miss | Manifest hook ms | SSR routes | Cache hit / miss | Fast path | Full regeneration | Global / unknown | Write ms | Equivalent |",
     "| --- | ---: | --- | ---: | ---: | --- | --- | --- | --- | ---: | ---: | --- | --- | --- | --- | ---: | --- |",

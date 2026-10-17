@@ -713,19 +713,23 @@ export class ContentManager {
     ) {
       return;
     }
+    const manifest = this.manifest;
+    const outputChangeSet = this.outputChangeSet;
     const plan = await this.getBuildPlan();
     if (!plan.incremental) return;
-    await this.buildCoordinator.commit(
-      plan,
-      this.manifest,
-      this.getPipelineFingerprint(),
-      [...this.outputChangeSet.affected, ...this.outputChangeSet.unchanged],
-      this.cacheManifestEntries,
-      this.trackedContentDependencies,
-      plan.externalDependencies,
-      this.processedContentCacheFingerprints,
-      this.pluginRuntime.getManifestHookCache(),
-      this.publishingBuildTime,
+    await this.observability().tracer.span("content.build-state.save", {}, () =>
+      this.buildCoordinator.commit(
+        plan,
+        manifest,
+        this.getPipelineFingerprint(),
+        [...outputChangeSet.affected, ...outputChangeSet.unchanged],
+        this.cacheManifestEntries,
+        this.trackedContentDependencies,
+        plan.externalDependencies,
+        this.processedContentCacheFingerprints,
+        this.pluginRuntime.getManifestHookCache(),
+        this.publishingBuildTime,
+      ),
     );
     this.buildStateCommitted = true;
   }

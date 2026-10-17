@@ -1,7 +1,13 @@
-import type { PluginHeadTag, ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import type {
+  PluginHeadTag,
+  PostContent,
+  PublicContentEntry,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
 import { ColorModeScript } from "@riebeckite/plugin-color-mode";
 import { raw } from "hono/html";
 import { Link, Script } from "honox/server";
+import { ArticleProvider, useArticleContext } from "./context.js";
 
 export type PrimitiveChildren = unknown;
 
@@ -18,6 +24,8 @@ export type PrimitiveClassProps = {
 
 export type ArticleProps = PrimitiveProps & {
   "data-slot"?: string;
+  post?: PostContent;
+  entry?: PublicContentEntry;
 };
 
 export type ArticleLayoutProps = PrimitiveProps;
@@ -48,13 +56,19 @@ export type SidebarProps = PrimitiveProps & {
 export type ArticleFooterProps = PrimitiveProps;
 
 export function Article(props: ArticleProps) {
-  return (
+  const article = (
     <article
       class={joinClassNames("rb-article", props.class, props.className)}
       data-slot={props["data-slot"] ?? "article"}
     >
       {props.children}
     </article>
+  );
+  if (!props.post) return article;
+  return (
+    <ArticleProvider entry={props.entry} post={props.post}>
+      {article}
+    </ArticleProvider>
   );
 }
 
@@ -114,7 +128,7 @@ export function ArticleContent(props: ArticleContentProps) {
 }
 
 export type ArticleBodyProps = PrimitiveClassProps & {
-  html: string;
+  html?: string;
 };
 
 export type HtmlFragmentSource = "markdown" | "plugin-page";
@@ -134,10 +148,13 @@ export function HtmlFragment(props: HtmlFragmentProps) {
  * Owns the `.rb-article-content` Stable Hook so Sites never hand-write it.
  */
 export function ArticleBody(props: ArticleBodyProps) {
+  const article = useArticleContext();
+  const html = props.html ?? article?.post.html;
+  if (html === undefined) return null;
   return (
     <div
       class={joinClassNames("rb-article-content", props.class, props.className)}
-      dangerouslySetInnerHTML={{ __html: props.html }}
+      dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }

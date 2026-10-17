@@ -453,9 +453,33 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/plugin-backlinks':
+        specifier: workspace:*
+        version: link:../../plugins/backlinks
+      '@riebeckite/plugin-breadcrumbs':
+        specifier: workspace:*
+        version: link:../../plugins/breadcrumbs
       '@riebeckite/plugin-color-mode':
         specifier: workspace:*
         version: link:../../plugins/color-mode
+      '@riebeckite/plugin-daily-notes':
+        specifier: workspace:*
+        version: link:../../plugins/daily-notes
+      '@riebeckite/plugin-properties':
+        specifier: workspace:*
+        version: link:../../plugins/properties
+      '@riebeckite/plugin-recent-posts':
+        specifier: workspace:*
+        version: link:../../plugins/recent-posts
+      '@riebeckite/plugin-related-posts':
+        specifier: workspace:*
+        version: link:../../plugins/related-posts
+      '@riebeckite/plugin-share':
+        specifier: workspace:*
+        version: link:../../plugins/share
+      '@riebeckite/plugin-toc':
+        specifier: workspace:*
+        version: link:../../plugins/toc
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2

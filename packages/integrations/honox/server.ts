@@ -14,4 +14,6 @@ export {
   riebeckiteSsgParams,
   ssgEnumerableHandler,
 } from "./src/content_route.js";
+export type { ContentRouteOptions, HomeRouteOptions } from "./src/routes.js";
+export { createContentRoute, createHomeRoute } from "./src/routes.js";
 export { mountRiebeckiteEndpoints } from "./src/endpoints.js";

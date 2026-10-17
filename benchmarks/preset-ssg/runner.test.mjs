@@ -22,6 +22,7 @@ test("preset benchmark prepares workspace packages and explicit package links", 
   );
   assert.match(runner, /await buildWorkspacePackages\(\)/);
   assert.match(runner, /async function linkWorkspacePackages/);
+  assert.match(runner, /packages\/integrations\/honox\/dist\/server\.js/);
   assert.match(runner, /"mermaid",\s*"node_modules",\s*"puppeteer"/);
   assert.match(runner, /"excalidraw",\s*"node_modules",\s*"lz-string"/);
   assert.match(runner, /async function linkJunctionIfAbsent/);

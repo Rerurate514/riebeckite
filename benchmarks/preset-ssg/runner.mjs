@@ -410,7 +410,7 @@ async function buildOnce({ siteRoot, label, metricsEnabled = true }) {
               find: /^@riebeckite\/honox\/server$/,
               replacement: path.join(
                 root,
-                "packages/integrations/honox/server.ts",
+                "packages/integrations/honox/dist/server.js",
               ),
             },
             {

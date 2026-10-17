@@ -90,7 +90,9 @@ export function citations(options: CitationsOptions = {}) {
               ),
       },
     ],
-    assets: [createStyleAsset(PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-citations/style.css"),
+    ],
     addDiagnostics: (): Diagnostic[] => state.diagnostics,
   });
 }

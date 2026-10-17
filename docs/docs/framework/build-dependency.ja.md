@@ -48,7 +48,7 @@ CoreのContent API経由の読み取りが、安定したidentityを持つdepend
 
 次のBuildでCoreは、cacheされた処理済みContentを取り出したあと、記録したcontent、file、linkのdependencyをすべて読み直し、fingerprintを比べます。一つでも変わっていれば、そのentryを捨てて処理し直します。
 
-cacheが省略するのはMarkdownとHTMLの処理だけです。post処理のhooks（`onPostParsed`、`onPostProcessed`）とmanifestのhook（`onManifestCreated`）は、cacheの有無にかかわらず常に実行対象です。manifest段階の処理はそこに置いてください。
+cacheが省略するのはMarkdownとHTMLの処理だけです。post処理のhooks（`onPostParsed`、`onPostProcessed`）は常に実行します。`onManifestCreated` は、永続化したentryのsnapshotが有効で、外部dependencyやmanifest entry以外への副作用がない場合に限り、Coreが再利用できます。ほかのmanifest stateを変更するhookは常に実行するため、manifest段階の処理はそこに置いてください。
 
 ### 影響範囲の決定
 

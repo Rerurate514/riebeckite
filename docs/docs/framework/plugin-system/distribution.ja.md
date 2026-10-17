@@ -50,10 +50,9 @@ Site-local Plugin も Published Plugin と同じ、
 
 などの Contract を利用します。
 
-`createStyleAsset()` と `createClientEntry()` は
-`@riebeckite/plugin-<name>/...` の specifier しか組み立てないため、その名前で
-ない package（未公開 Plugin、別名の公開 package）は Host Bundler が解決できる
-`moduleSpecifier` を直接指定してください。
+`createStyleAsset()` と `createClientEntry()` には package の subpath を明示して
+渡します。Site-local Plugin でも任意名で公開する package でも、Host Bundler が
+解決できる subpath を指定してください。
 
 
 ## 23. Package として配布する

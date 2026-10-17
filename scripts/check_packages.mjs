@@ -263,8 +263,39 @@ function checkCatalog() {
   return errors;
 }
 
+function checkPublicPackageCoverage() {
+  const errors = [];
+  for (const root of [
+    "packages",
+    "packages/integrations",
+    "packages/plugins",
+    "packages/themes",
+  ]) {
+    for (const entry of fs.readdirSync(path.join(repositoryRoot, root), {
+      withFileTypes: true,
+    })) {
+      if (!entry.isDirectory()) continue;
+      const directory = `${root}/${entry.name}`;
+      const manifestPath = path.join(repositoryRoot, directory, "package.json");
+      if (!fs.existsSync(manifestPath)) continue;
+      const manifest = readJson(`${directory}/package.json`);
+      if (
+        manifest.private === true ||
+        PACKAGE_DIRECTORIES.includes(directory)
+      ) {
+        continue;
+      }
+      errors.push(
+        `${manifest.name}: public workspace package must be listed in PACKAGE_DIRECTORIES`,
+      );
+    }
+  }
+  return errors;
+}
+
 const errors = [
   ...checkCatalog(),
+  ...checkPublicPackageCoverage(),
   ...PACKAGE_DIRECTORIES.flatMap(checkPackage),
 ];
 if (errors.length > 0) {

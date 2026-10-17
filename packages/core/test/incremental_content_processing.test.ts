@@ -8,7 +8,6 @@ import { ContentManager } from "../src/content/content_manager.js";
 import { extractFrontmatterAliases } from "../src/content/content_metadata.js";
 import type { ContentSource } from "../src/content/content_source.js";
 import { NoopLogger, SinkTracer } from "../src/observability.js";
-import { registerTrustedGeneratedOutputPlanner } from "../src/plugin/generated_output_planner_capability.js";
 import type { ContentManifestEntry } from "../src/types/content_manifest.js";
 import { definePlugin } from "../src/types/plugin.js";
 import type { PostContent } from "../src/types/post_content.js";
@@ -864,7 +863,7 @@ test("a build-end hook blocks the no-change fast path", async () => {
   await second.dispose();
 });
 
-test("a deterministic generated-output plan permits the no-change fast path", async () => {
+test("a generated-output plan blocks the no-change fast path", async () => {
   const directory = await tempDirectory(
     "incremental-fast-path-generated-output",
   );
@@ -872,18 +871,16 @@ test("a deterministic generated-output plan permits the no-change fast path", as
   const config = testConfig(directory);
   const plugins = [
     ...config.plugins,
-    registerTrustedGeneratedOutputPlanner(
-      definePlugin({
-        name: "taxonomy",
-        planGeneratedOutputs: ({ manifest }) => [
-          {
-            path: "tags/a/feed.xml",
-            content: String(manifest.discoverableEntries.length),
-            dependencies: [{ type: "tag", tag: "a" }],
-          },
-        ],
-      }),
-    ),
+    definePlugin({
+      name: "taxonomy",
+      planGeneratedOutputs: ({ manifest }) => [
+        {
+          path: "tags/a/feed.xml",
+          content: String(manifest.discoverableEntries.length),
+          dependencies: [{ type: "tag", tag: "a" }],
+        },
+      ],
+    }),
   ];
   const first = new ContentManager(memoryContentSource(files), [], {
     config: { ...config, plugins },
@@ -899,7 +896,7 @@ test("a deterministic generated-output plan permits the no-change fast path", as
   await second.getOutputChangeSet({ incremental: true });
   assert.equal(
     await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    undefined,
+    "plugin-generated-output-plan",
   );
   await second.dispose();
 });
@@ -910,18 +907,16 @@ test("an unknown generated-output dependency blocks the no-change fast path", as
   const config = testConfig(directory);
   const plugins = [
     ...config.plugins,
-    registerTrustedGeneratedOutputPlanner(
-      definePlugin({
-        name: "taxonomy",
-        planGeneratedOutputs: () => [
-          {
-            path: "tags/a/feed.xml",
-            content: "feed",
-            dependencies: [{ type: "unknown" }],
-          },
-        ],
-      }),
-    ),
+    definePlugin({
+      name: "taxonomy",
+      planGeneratedOutputs: () => [
+        {
+          path: "tags/a/feed.xml",
+          content: "feed",
+          dependencies: [{ type: "unknown" }],
+        },
+      ],
+    }),
   ];
   const first = new ContentManager(memoryContentSource(files), [], {
     config: { ...config, plugins },
@@ -942,7 +937,7 @@ test("an unknown generated-output dependency blocks the no-change fast path", as
   await second.dispose();
 });
 
-test("an unverified generated-output planner blocks the no-change fast path", async () => {
+test("a generated-output planner with a global dependency blocks the no-change fast path", async () => {
   const directory = await tempDirectory(
     "incremental-fast-path-unverified-plan",
   );
@@ -975,76 +970,7 @@ test("an unverified generated-output planner blocks the no-change fast path", as
   await second.getOutputChangeSet({ incremental: true });
   assert.equal(
     await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    "plugin-generated-output-plan-unsafe",
-  );
-  await second.dispose();
-});
-
-test("a planner that only impersonates the taxonomy name blocks the no-change fast path", async () => {
-  const directory = await tempDirectory(
-    "incremental-fast-path-impersonated-taxonomy",
-  );
-  const files = { "a.md": "# A" };
-  const config = testConfig(directory);
-  const plugins = [
-    ...config.plugins,
-    definePlugin({
-      name: "taxonomy",
-      planGeneratedOutputs: () => [
-        {
-          path: "tags/a/feed.xml",
-          content: "feed",
-          dependencies: [{ type: "tag", tag: "a" }],
-        },
-      ],
-    }),
-  ];
-  const first = new ContentManager(memoryContentSource(files), [], {
-    config: { ...config, plugins },
-    plugins,
-  });
-  await first.build({ incremental: true });
-  await first.dispose();
-
-  const second = new ContentManager(memoryContentSource(files), [], {
-    config: { ...config, plugins },
-    plugins,
-  });
-  await second.getOutputChangeSet({ incremental: true });
-  assert.equal(
-    await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    "plugin-generated-output-plan-unsafe",
-  );
-  await second.dispose();
-});
-
-test("a trusted planner whose hook is replaced blocks the no-change fast path", async () => {
-  const directory = await tempDirectory("incremental-fast-path-replaced-plan");
-  const files = { "a.md": "# A" };
-  const config = testConfig(directory);
-  const planner = registerTrustedGeneratedOutputPlanner(
-    definePlugin({
-      name: "taxonomy",
-      planGeneratedOutputs: () => [],
-    }),
-  );
-  const plugins = [...config.plugins, planner];
-  const first = new ContentManager(memoryContentSource(files), [], {
-    config: { ...config, plugins },
-    plugins,
-  });
-  await first.build({ incremental: true });
-  await first.dispose();
-
-  planner.planGeneratedOutputs = () => [];
-  const second = new ContentManager(memoryContentSource(files), [], {
-    config: { ...config, plugins },
-    plugins,
-  });
-  await second.getOutputChangeSet({ incremental: true });
-  assert.equal(
-    await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    "plugin-generated-output-plan-unsafe",
+    "plugin-generated-output-plan",
   );
   await second.dispose();
 });
@@ -1056,17 +982,15 @@ test("a generated-output planner cannot mutate its input snapshot", async () => 
   const config = testConfig(directory);
   const plugins = [
     ...config.plugins,
-    registerTrustedGeneratedOutputPlanner(
-      definePlugin({
-        name: "taxonomy",
-        planGeneratedOutputs: ({ manifest }) => {
-          (manifest.discoverableEntries as ContentManifestEntry[]).push(
-            {} as ContentManifestEntry,
-          );
-          return [];
-        },
-      }),
-    ),
+    definePlugin({
+      name: "taxonomy",
+      planGeneratedOutputs: ({ manifest }) => {
+        (manifest.discoverableEntries as ContentManifestEntry[]).push(
+          {} as ContentManifestEntry,
+        );
+        return [];
+      },
+    }),
   ];
   const manager = new ContentManager(
     memoryContentSource({ "a.md": "# A" }),
@@ -1440,6 +1364,47 @@ test("manifest hook cache skips no-change hooks and reruns them when input chang
     assert.ok(result.manifestHookMetrics.manifestHookDurationMs >= 0);
 });
 
+test("a manifest hook that mutates non-entry state reruns on a warm build", async () => {
+  const directory = await tempDirectory("manifest-hook-folder-location");
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugin = definePlugin({
+    name: "folder-location",
+    onManifestCreated: ({ manifest }) => {
+      manifest.folderLocations.set("/guides/", {
+        pathname: "/guides/",
+        folder: "guides",
+      });
+    },
+  });
+  const plugins = [...config.plugins, plugin];
+
+  const build = async () => {
+    const manager = new ContentManager(memoryContentSource(files), [], {
+      config: { ...config, plugins },
+      plugins,
+    });
+    const manifest = await manager.build({ incremental: true });
+    const manifestHookMetrics = manager.getManifestHookMetrics();
+    await manager.dispose();
+    return { manifest, manifestHookMetrics };
+  };
+
+  const cold = await build();
+  const warm = await build();
+
+  assert.deepEqual(
+    [...warm.manifest.folderLocations],
+    [...cold.manifest.folderLocations],
+  );
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+});
+
 test("a corrupted manifest hook snapshot reruns the hook safely", async () => {
   const directory = await tempDirectory("manifest-hook-cache-corruption");
   const files = { "a.md": "# A" };
@@ -1524,9 +1489,11 @@ test("a manifest hook that adds diagnostics always reruns", async () => {
   });
 });
 
-function manifestHookCounts(
-  result: Awaited<ReturnType<typeof buildWithManifestOnly>>,
-) {
+function manifestHookCounts(result: {
+  readonly manifestHookMetrics: ReturnType<
+    ContentManager["getManifestHookMetrics"]
+  >;
+}) {
   return {
     executed: result.manifestHookMetrics.manifestHooksExecuted,
     reused: result.manifestHookMetrics.manifestHooksReused,

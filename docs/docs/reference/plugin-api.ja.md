@@ -128,9 +128,9 @@ enabled: false
 
 # Plugin の順序と依存関係
 
-単純な実行順は `order` で指定できます。
+`order` は、変換や renderer の優先順を決定的にするための基本順です。Plugin 間に Capability の提供・消費がなく、Pipeline 内の実行順だけが必要な場合に使用します。
 
-ただし、Plugin 同士に実際の依存関係がある場合は `order` ではなく **Capability** を使用します。
+一方、Plugin 同士に実際の提供・消費関係がある場合は `order` ではなく **Capability** を使用します。変換順を表すだけの Capability は作成しません。
 
 ```ts
 definePlugin({
@@ -355,6 +355,8 @@ definePlugin({
 
 Generated output の path は物理出力 path です。Generated output を Content、redirect、plugin page の route と衝突させないでください。衝突した場合は route を上書きせず、Core が build を失敗させます。
 
+`planGeneratedOutputs` は Incremental Build ごとに実行されるため、変更なし Fast Path は使用しません。任意の planner code に未追跡の入力がないことを Core は証明できないため、plan を再利用せずに再生成します。
+
 # UI components
 
 Plugin は `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` を factory  along with export することができます。Data helpers は `PublicContentView` のような狭い input を受け、型付き model を返します。components は readonly の型付き props を受け、Slot HTML を返しません。Site は自分の TSX でこれらのコンポーネントを composition し、それぞれの表示有無、位置、頻度を決定します。これは削除された body-slot システムを置き換えます。Plugin は manifest entry の `bodySlots` map に HTML フラグメントを提供しなくなりました。
@@ -543,11 +545,10 @@ assets: [
 
 Plugin CSS を `apps/web` へコピーしたり、Browser から `/node_modules` を直接参照させたりしないでください。
 
-package 名が `@riebeckite/plugin-<name>` の場合は `createStyleAsset()` /
-`createClientEntry()` が `@riebeckite/plugin-<name>/style.css` と
-`@riebeckite/plugin-<name>/client` を組み立てます。それ以外の名前（site 内
-Plugin や任意名の第三者 package）では、自身の `exports` が公開する
-specifier を `assets` / `clientEntries` に明示してください。
+`createStyleAsset()` / `createClientEntry()` には、Plugin 名と package が
+`exports` で公開する module specifier を明示します。したがって、
+`@riebeckite/plugin-<name>`、site 内 Plugin、任意名の第三者 package で同じ
+API を利用できます。
 
 ```mermaid
 flowchart LR
@@ -795,10 +796,9 @@ Site-local Plugin でも、
 
 などは package Plugin と同じ contract を利用します。
 
-`createStyleAsset()` と `createClientEntry()` は
-`@riebeckite/plugin-<name>/...` の specifier しか組み立てないため、その名前で
-ない package（site 内 Plugin、別名の第三者 package）は Host Bundler が解決
-できる `moduleSpecifier` を明示してください。
+`createStyleAsset()` と `createClientEntry()` には module specifier を明示して
+渡します。Site 内 Plugin と別名の第三者 package のいずれでも、Host Bundler が
+解決できる subpath を指定してください。
 
 # Repository 外で Plugin を配布する
 

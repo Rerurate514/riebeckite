@@ -27,7 +27,12 @@ export function gardenExplorerPlugin(
         moduleSpecifier: "@riebeckite/plugin-garden-explorer/style.css",
       },
     ],
-    clientEntries: [createClientEntry("garden-explorer")],
+    clientEntries: [
+      createClientEntry(
+        "garden-explorer",
+        "@riebeckite/plugin-garden-explorer/client",
+      ),
+    ],
     pageTypes: [
       {
         id: "garden-explorer",

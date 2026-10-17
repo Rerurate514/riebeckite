@@ -73,8 +73,16 @@ export function docs(options: DocsOptions) {
     contentOutputDependencies: [{ type: "global" }],
     options,
     validateOptions: validateDocsOptions,
-    assets: [createStyleAsset(DOCS_PLUGIN_NAME)],
-    clientEntries: [createClientEntry(DOCS_PLUGIN_NAME, "initDocsSidebar")],
+    assets: [
+      createStyleAsset(DOCS_PLUGIN_NAME, "@riebeckite/plugin-docs/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        DOCS_PLUGIN_NAME,
+        "@riebeckite/plugin-docs/client",
+        "initDocsSidebar",
+      ),
+    ],
   });
 }
 

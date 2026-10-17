@@ -137,8 +137,19 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.config);
     },
-    assets: [createStyleAsset("excalibrain")],
-    clientEntries: [createClientEntry("excalibrain", "initExcaliBrain")],
+    assets: [
+      createStyleAsset(
+        "excalibrain",
+        "@riebeckite/plugin-excalibrain/style.css",
+      ),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "excalibrain",
+        "@riebeckite/plugin-excalibrain/client",
+        "initExcaliBrain",
+      ),
+    ],
   });
 }
 

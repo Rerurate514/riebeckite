@@ -35,7 +35,7 @@ export function queryPlugin(options: QueryOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics);
     },
-    assets: [createStyleAsset("query")],
+    assets: [createStyleAsset("query", "@riebeckite/plugin-query/style.css")],
   });
 }
 

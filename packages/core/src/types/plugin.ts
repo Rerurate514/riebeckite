@@ -83,10 +83,6 @@ export type RiebeckitePlugin<TOptions = unknown> = {
     ) => string | undefined;
     environmentFingerprint?: () => string | undefined;
   };
-  manifestHookCache?: {
-    version: string;
-    mutations: readonly "folderLocations"[];
-  };
   resolveExternalDependencies?(
     context: ExternalDependencyContext,
   ): Promise<readonly ExternalDependencyResolution[]>;

@@ -30,8 +30,10 @@ export function d2(options: D2Options = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeD2Lazy, options);
     },
-    assets: [createStyleAsset("d2")],
-    clientEntries: [createClientEntry("d2", "initD2Diagrams")],
+    assets: [createStyleAsset("d2", "@riebeckite/plugin-d2/style.css")],
+    clientEntries: [
+      createClientEntry("d2", "@riebeckite/plugin-d2/client", "initD2Diagrams"),
+    ],
   });
 }
 

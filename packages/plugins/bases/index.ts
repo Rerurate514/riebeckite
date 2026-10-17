@@ -49,7 +49,7 @@ export function bases(options: BasesOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics, context.config);
     },
-    assets: [createStyleAsset("bases")],
+    assets: [createStyleAsset("bases", "@riebeckite/plugin-bases/style.css")],
   });
 }
 

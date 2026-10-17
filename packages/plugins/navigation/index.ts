@@ -23,7 +23,9 @@ export function navigation(options: NavigationOptions = {}) {
   return definePlugin({
     name: NAVIGATION_PLUGIN_NAME,
     options,
-    assets: [createStyleAsset("navigation")],
+    assets: [
+      createStyleAsset("navigation", "@riebeckite/plugin-navigation/style.css"),
+    ],
     validateOptions: validateNavigationOptions,
     contentOutputDependencies: [
       { type: "projection", projection: "navigation" },

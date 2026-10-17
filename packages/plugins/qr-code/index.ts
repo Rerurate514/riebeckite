@@ -34,7 +34,9 @@ export function qrCode(options: QrCodeOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeQrCodeLazy, options);
     },
-    assets: [createStyleAsset(PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-qr-code/style.css"),
+    ],
   });
 }
 

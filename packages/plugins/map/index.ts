@@ -52,14 +52,21 @@ export function map(options: MapOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeMap, options);
     },
-    assets: [createStyleAsset(MAP_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(MAP_PLUGIN_NAME, "@riebeckite/plugin-map/style.css"),
+    ],
     clientEntries: [
-      createClientEntry(MAP_PLUGIN_NAME, "initMap", {
-        tileUrl: resolved.tileUrl,
-        attribution: resolved.attribution,
-        minZoom: resolved.minZoom,
-        maxZoom: resolved.maxZoom,
-      }),
+      createClientEntry(
+        MAP_PLUGIN_NAME,
+        "@riebeckite/plugin-map/client",
+        "initMap",
+        {
+          tileUrl: resolved.tileUrl,
+          attribution: resolved.attribution,
+          minZoom: resolved.minZoom,
+          maxZoom: resolved.maxZoom,
+        },
+      ),
     ],
   });
 }

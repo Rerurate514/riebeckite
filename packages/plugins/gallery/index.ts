@@ -63,7 +63,12 @@ export function gallery(options: GalleryOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics);
     },
-    assets: [createStyleAsset(GALLERY_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        GALLERY_PLUGIN_NAME,
+        "@riebeckite/plugin-gallery/style.css",
+      ),
+    ],
   });
 }
 

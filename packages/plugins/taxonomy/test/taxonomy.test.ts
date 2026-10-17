@@ -53,7 +53,7 @@ test("emits one feed per term and format into the manifest", async () => {
   );
 });
 
-test("permits the no-change fast path after planning feeds", async () => {
+test("blocks the no-change fast path after planning feeds", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-taxonomy-"),
   );
@@ -70,7 +70,7 @@ test("permits the no-change fast path after planning feeds", async () => {
   await second.getOutputChangeSet({ incremental: true });
   assert.equal(
     await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    undefined,
+    "plugin-generated-output-plan",
   );
   await second.dispose();
   await fs.rm(directory, { recursive: true, force: true });

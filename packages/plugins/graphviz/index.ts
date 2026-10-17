@@ -27,8 +27,16 @@ export function graphviz(options: GraphvizOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeGraphvizLazy, options);
     },
-    assets: [createStyleAsset("graphviz")],
-    clientEntries: [createClientEntry("graphviz", "initGraphvizDiagrams")],
+    assets: [
+      createStyleAsset("graphviz", "@riebeckite/plugin-graphviz/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "graphviz",
+        "@riebeckite/plugin-graphviz/client",
+        "initGraphvizDiagrams",
+      ),
+    ],
   });
 }
 

@@ -25,7 +25,15 @@ export { initColorMode } from "./src/init.js";
 export function colorModePlugin() {
   return definePlugin({
     name: "color-mode",
-    assets: [createStyleAsset("color-mode")],
-    clientEntries: [createClientEntry("color-mode", "initColorMode")],
+    assets: [
+      createStyleAsset("color-mode", "@riebeckite/plugin-color-mode/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "color-mode",
+        "@riebeckite/plugin-color-mode/client",
+        "initColorMode",
+      ),
+    ],
   });
 }

@@ -101,11 +101,20 @@ export function diff(options: DiffPluginOptions = {}) {
       ];
     },
     options,
-    assets: ui.enabled === false ? [] : [createStyleAsset("diff")],
+    assets:
+      ui.enabled === false
+        ? []
+        : [createStyleAsset("diff", "@riebeckite/plugin-diff/style.css")],
     clientEntries:
       ui.enabled === false
         ? []
-        : [createClientEntry("diff", "initDiffHistory")],
+        : [
+            createClientEntry(
+              "diff",
+              "@riebeckite/plugin-diff/client",
+              "initDiffHistory",
+            ),
+          ],
     onManifestCreated: async (context) => {
       if (ui.enabled === false) return;
 

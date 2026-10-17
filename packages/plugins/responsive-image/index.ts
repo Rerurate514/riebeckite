@@ -79,7 +79,12 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
         );
       }
     },
-    assets: [createStyleAsset(PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        PLUGIN_NAME,
+        "@riebeckite/plugin-responsive-image/style.css",
+      ),
+    ],
   });
 }
 

@@ -73,7 +73,12 @@ export function changelog(options: ChangelogOptions = {}) {
     name: CHANGELOG_PLUGIN_NAME,
     options,
     validateOptions: validateChangelogOptions,
-    assets: [createStyleAsset(CHANGELOG_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        CHANGELOG_PLUGIN_NAME,
+        "@riebeckite/plugin-changelog/style.css",
+      ),
+    ],
   });
 }
 

@@ -65,7 +65,9 @@ export function dataviewPlugin(options: DataviewOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics);
     },
-    assets: [createStyleAsset("dataview")],
+    assets: [
+      createStyleAsset("dataview", "@riebeckite/plugin-dataview/style.css"),
+    ],
   });
 }
 

@@ -88,8 +88,11 @@ Use only the extension points a plugin actually needs.
 ## Ordering and capabilities
 
 Disabled/false/null inputs are removed, and `enabled: false` is never
-executed. `order` provides a basic ordering before dependency resolution,
-while [[capability|capability]] dependencies express real requirements:
+executed. `order` provides deterministic transform and renderer precedence
+before dependency resolution. Use it when plugins must run in a particular
+pipeline order but neither consumes a capability from the other. [[capability|Capability]]
+dependencies express real provider/consumer requirements; do not invent a
+capability merely to encode transform order.
 
 ``` ts
 plugins: [
@@ -111,8 +114,8 @@ definePlugin({
 - `optional`: capabilities used when present.
 
 The resolver places providers before consumers and detects missing
-requirements, duplicate providers, and cycles while preserving unrelated
-input order where possible. Capability resolution failures throw
+requirements, duplicate providers, and cycles while preserving the numeric
+precedence and unrelated input order where possible. Capability resolution failures throw
 `PluginDependencyError` (importable from `@riebeckite/core`); `kind` and
 `pluginName` identify the cause.
 
@@ -242,6 +245,10 @@ regeneration.
 Generated output paths are physical output paths. A generated output must not
 collide with a content, redirect, or plugin page route; Core fails the build
 instead of overwriting the route.
+
+`planGeneratedOutputs` runs on each incremental build and therefore disables
+the no-change fast path. Core cannot prove that arbitrary planner code has no
+untracked inputs, so it regenerates the plan rather than reusing it.
 
 ## Renderers
 
@@ -432,9 +439,9 @@ Plugin CSS remains in the plugin package and is declared through
 only when browser JavaScript is genuinely required. Do not copy plugin
 CSS into `apps/web` or expose `/node_modules` directly.
 
-For a package named `@riebeckite/plugin-example`, use the Core helpers. They
-declare the package's conventional `./style.css` and `./client` exports while
-keeping the integration-facing values consistent:
+Use the Core helpers to register the plugin name and the package exports
+together. The module specifier is explicit, so the same API works for official,
+third-party, and site-local packages:
 
 ``` ts
 import {
@@ -446,9 +453,14 @@ import {
 export function examplePlugin() {
   return definePlugin({
     name: "example",
-    assets: [createStyleAsset("example")],
+    assets: [createStyleAsset("example", "@riebeckite/plugin-example/style.css")],
     clientEntries: [
-      createClientEntry("example", "initExample", { selector: ".example" }),
+      createClientEntry(
+        "example",
+        "@riebeckite/plugin-example/client",
+        "initExample",
+        { selector: ".example" },
+      ),
     ],
   });
 }
@@ -480,13 +492,10 @@ flowchart LR
     Integration --> Browser
 ```
 
-The helpers build the specifier from the package name: `createStyleAsset("example")`
-produces `@riebeckite/plugin-example/style.css` and
-`createClientEntry("example", ...)` produces `@riebeckite/plugin-example/client`.
-They therefore fit only a package literally named `@riebeckite/plugin-<name>`. A
-package published under any other name — including a site-local plugin — must
-declare `assets` and `clientEntries` explicitly with specifiers its own `exports`
-map exposes. See
+The module specifier must be a subpath exposed by the plugin package's `exports`
+map. For example, a third-party package can use
+`createStyleAsset("example", "@example/plugin/style.css")` and
+`createClientEntry("example", "@example/plugin/client", ...)`. See
 [Distributing a Plugin outside this repository](#distributing-a-plugin-outside-this-repository).
 
 Omit `assets` or `clientEntries` when the plugin does not need them. The client

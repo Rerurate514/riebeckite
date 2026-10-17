@@ -34,8 +34,16 @@ export function markmap(options: MarkmapOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeMarkmap, options);
     },
-    assets: [createStyleAsset("markmap")],
-    clientEntries: [createClientEntry("markmap", "initMarkmap")],
+    assets: [
+      createStyleAsset("markmap", "@riebeckite/plugin-markmap/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "markmap",
+        "@riebeckite/plugin-markmap/client",
+        "initMarkmap",
+      ),
+    ],
   });
 }
 

@@ -53,8 +53,10 @@ The `getResolvedPluginMetadata` utility exposes each plugin's resolved provides/
 CSS is declared through `assets`; browser JavaScript through `clientEntries`. Only declare when genuinely needed.
 
 ```ts
-assets: [createStyleAsset("example")],
-clientEntries: [createClientEntry("example", "init", { selector: ".example" })],
+assets: [createStyleAsset("example", "@example/plugin/style.css")],
+clientEntries: [
+  createClientEntry("example", "@example/plugin/client", "init", { selector: ".example" }),
+],
 ```
 
 ## Related terms

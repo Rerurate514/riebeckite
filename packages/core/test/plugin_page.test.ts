@@ -223,6 +223,40 @@ test("direct resolvePlugins callers reject duplicate plugin names", () => {
   );
 });
 
+test("numeric precedence orders transforms while capabilities order real dependencies", () => {
+  const plugins = resolvePlugins([
+    definePlugin({ name: "consumer", requires: ["content.index"] }),
+    definePlugin({ name: "default" }),
+    definePlugin({ name: "provider", provides: ["content.index"] }),
+    definePlugin({ name: "early-transform", order: -10 }),
+  ]);
+
+  assert.deepEqual(
+    plugins.map((plugin) => plugin.name),
+    ["early-transform", "default", "provider", "consumer"],
+  );
+});
+
+test("capability cycles remain errors after numeric precedence is applied", () => {
+  assert.throws(
+    () =>
+      resolvePlugins([
+        definePlugin({
+          name: "first",
+          order: -10,
+          provides: ["first"],
+          requires: ["second"],
+        }),
+        definePlugin({
+          name: "second",
+          provides: ["second"],
+          requires: ["first"],
+        }),
+      ]),
+    /Plugin dependency cycle detected/,
+  );
+});
+
 test("disabled plugins may reuse a name without colliding", async () => {
   const manager = new ContentManager(source(), [], {
     config: resolveConfig({

@@ -53,8 +53,10 @@ definePlugin({
 CSSは`assets`、ブラウザで動くJavaScriptは`clientEntries`で宣言します。宣言するのは本当に必要な場合だけにしてください。
 
 ```ts
-assets: [createStyleAsset("example")],
-clientEntries: [createClientEntry("example", "init", { selector: ".example" })],
+assets: [createStyleAsset("example", "@example/plugin/style.css")],
+clientEntries: [
+  createClientEntry("example", "@example/plugin/client", "init", { selector: ".example" }),
+],
 ```
 
 ## 関連用語

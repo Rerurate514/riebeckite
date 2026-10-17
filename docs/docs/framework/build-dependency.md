@@ -51,7 +51,12 @@ Reads made through Core's content APIs become dependencies with stable identitie
 
 On a later build, Core looks up the cached processed content, then re-reads every recorded content, file, and link dependency and compares fingerprints. If any fingerprint changed, Core discards the entry and processes it again.
 
-The cache skips only Markdown and HTML processing. The post-processing hooks (`onPostParsed`, `onPostProcessed`) and the manifest hook (`onManifestCreated`) always run, so manifest-stage work belongs there.
+The cache skips only Markdown and HTML processing. The post-processing hooks
+(`onPostParsed`, `onPostProcessed`) always run. Core may reuse an
+`onManifestCreated` hook only when its persisted entry snapshot is valid and
+the hook has no external dependencies or side effects outside manifest entries.
+Hooks that mutate other manifest state always run, so manifest-stage work
+belongs there.
 
 ### Affected content
 

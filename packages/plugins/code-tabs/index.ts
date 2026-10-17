@@ -24,7 +24,15 @@ export function codeTabs(options: CodeTabsOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeCodeTabs, options);
     },
-    assets: [createStyleAsset("code-tabs")],
-    clientEntries: [createClientEntry("code-tabs", "initCodeTabs")],
+    assets: [
+      createStyleAsset("code-tabs", "@riebeckite/plugin-code-tabs/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "code-tabs",
+        "@riebeckite/plugin-code-tabs/client",
+        "initCodeTabs",
+      ),
+    ],
   });
 }

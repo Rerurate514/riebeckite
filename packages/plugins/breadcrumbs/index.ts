@@ -79,7 +79,12 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
         }
       }
     },
-    assets: [createStyleAsset(BREADCRUMBS_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        BREADCRUMBS_PLUGIN_NAME,
+        "@riebeckite/plugin-breadcrumbs/style.css",
+      ),
+    ],
   });
 }
 

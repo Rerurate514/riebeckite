@@ -222,7 +222,12 @@ export function webmention(options: WebmentionOptions = {}) {
       }
     },
     endpoints: createWebmentionEndpoints(resolved),
-    assets: [createStyleAsset(WEBMENTION_PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        WEBMENTION_PLUGIN_NAME,
+        "@riebeckite/plugin-webmention/style.css",
+      ),
+    ],
     addDiagnostics: () => buildWebmentionDiagnostics(provider),
   });
 }

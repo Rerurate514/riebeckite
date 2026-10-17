@@ -22,22 +22,26 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   publicConfig?: TPublicConfig;
 };
 
-export function createStyleAsset(pluginName: string): PluginAsset {
+export function createStyleAsset(
+  pluginName: string,
+  moduleSpecifier: string,
+): PluginAsset {
   return {
     pluginName,
     kind: "style",
-    moduleSpecifier: `@riebeckite/plugin-${pluginName}/style.css`,
+    moduleSpecifier,
   };
 }
 
 export function createClientEntry<TPublicConfig extends JsonValue>(
   pluginName: string,
+  moduleSpecifier: string,
   exportName?: string,
   publicConfig?: TPublicConfig,
 ): PluginClientEntry<TPublicConfig> {
   return {
     pluginName,
-    moduleSpecifier: `@riebeckite/plugin-${pluginName}/client`,
+    moduleSpecifier,
     ...(exportName === undefined ? {} : { exportName }),
     ...(publicConfig === undefined ? {} : { publicConfig }),
   };

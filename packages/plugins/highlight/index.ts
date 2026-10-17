@@ -23,7 +23,9 @@ export function highlight(options: HighlightOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkHighlight, options);
     },
-    assets: [createStyleAsset("highlight")],
+    assets: [
+      createStyleAsset("highlight", "@riebeckite/plugin-highlight/style.css"),
+    ],
   });
 }
 

@@ -59,8 +59,16 @@ export function flashcards(options: FlashcardsOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics);
     },
-    assets: [createStyleAsset("flashcards")],
-    clientEntries: [createClientEntry("flashcards", "initFlashcards")],
+    assets: [
+      createStyleAsset("flashcards", "@riebeckite/plugin-flashcards/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "flashcards",
+        "@riebeckite/plugin-flashcards/client",
+        "initFlashcards",
+      ),
+    ],
   });
 }
 

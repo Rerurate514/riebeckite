@@ -34,7 +34,12 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
       dependencyMode: "tracked",
     },
     options,
-    assets: [createStyleAsset(PLUGIN_NAME)],
+    assets: [
+      createStyleAsset(
+        PLUGIN_NAME,
+        "@riebeckite/plugin-obsidian-markdown/style.css",
+      ),
+    ],
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkObsidianBlockReference);
       pipeline.use(remarkObsidianWikilink, {

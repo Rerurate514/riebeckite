@@ -30,8 +30,16 @@ export function wavedrom(options: WavedromOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeWavedrom, options);
     },
-    assets: [createStyleAsset("wavedrom")],
-    clientEntries: [createClientEntry("wavedrom", "initWaveDrom")],
+    assets: [
+      createStyleAsset("wavedrom", "@riebeckite/plugin-wavedrom/style.css"),
+    ],
+    clientEntries: [
+      createClientEntry(
+        "wavedrom",
+        "@riebeckite/plugin-wavedrom/client",
+        "initWaveDrom",
+      ),
+    ],
   });
 }
 

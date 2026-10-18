@@ -17,6 +17,28 @@
   color: var(--rb-bases-ink);
 }
 
+.rb-bases-page {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 1.5rem;
+}
+
+.rb-bases-page__title {
+  margin: 0;
+}
+
+.rb-bases-page__title + .rb-bases {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 40rem) {
+  .rb-bases__table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
 .rb-bases__view + .rb-bases__view {
   margin-top: 1.5rem;
 }

@@ -4,7 +4,11 @@ import {
   escapeHtmlAttribute,
   queryContentEntries,
 } from "@riebeckite/core";
-import { matchesCondition, resolveValueRef } from "./evaluate.js";
+import {
+  evaluateBasesExpression,
+  matchesCondition,
+  resolveValueRef,
+} from "./evaluate.js";
 import { DEFAULT_COLUMNS, parseValueRef } from "./parse.js";
 import type { BasesOptions, BasesSpec, BasesView } from "./types.js";
 
@@ -99,7 +103,8 @@ function renderView(
 ): string {
   const pool = entries.filter(
     (entry) =>
-      view.filter === undefined || matchesCondition(view.filter, entry),
+      (spec.filter === undefined || matchesCondition(spec.filter, entry)) &&
+      (view.filter === undefined || matchesCondition(view.filter, entry)),
   );
   const effectiveLimit = Math.min(view.limit ?? limit, limit);
   const selected = queryContentEntries(pool, {
@@ -138,7 +143,7 @@ function renderTable(
       const cells = view.columns
         .map(
           (property) =>
-            `<td class="${escapeHtmlAttribute(className)}__cell">${renderCell(entry, property, className)}</td>`,
+            `<td class="${escapeHtmlAttribute(className)}__cell">${renderCell(entry, property, className, spec)}</td>`,
         )
         .join("");
       return `<tr class="${escapeHtmlAttribute(className)}__row">${cells}</tr>`;
@@ -172,7 +177,7 @@ function renderCards(
       const fieldHtml = fields
         .map((property) => {
           const label = escapeHtml(columnLabel(property, spec));
-          const value = renderCell(entry, property, className);
+          const value = renderCell(entry, property, className, spec);
           return `<div class="${escapeHtmlAttribute(className)}__field"><dt class="${escapeHtmlAttribute(className)}__field-label">${label}</dt><dd class="${escapeHtmlAttribute(className)}__field-value">${value}</dd></div>`;
         })
         .join("");
@@ -198,6 +203,7 @@ function renderCell(
   entry: ContentManifestEntry,
   property: string,
   className: string,
+  spec: BasesSpec,
 ): string {
   const key = property.toLowerCase();
 
@@ -218,7 +224,16 @@ function renderCell(
           .join(" ")}</span>`;
   }
 
-  const value = resolveValueRef(parseValueRef(property), entry);
+  const value = property.toLowerCase().startsWith("formula.")
+    ? evaluateBasesExpression(
+        spec.formulas[property.slice("formula.".length)] ?? {
+          kind: "literal",
+          value: null,
+        },
+        entry,
+        spec.formulas,
+      )
+    : resolveValueRef(parseValueRef(property), entry);
   return escapeHtml(formatValue(value));
 }
 

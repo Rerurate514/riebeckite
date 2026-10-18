@@ -1,4 +1,5 @@
 import type { ContentQuerySort } from "@riebeckite/core";
+import { parseBasesExpression } from "./expression.js";
 import type {
   BasesBuiltinValue,
   BasesCondition,
@@ -23,7 +24,7 @@ type Result<T> =
 const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 const fail = (message: string): Result<never> => ({ ok: false, message });
 
-const BUILTIN_ALIASES: Record<string, BasesBuiltinValue | "date"> = {
+const BUILTIN_ALIASES: Record<string, BasesBuiltinValue> = {
   "file.name": "file.name",
   "file.path": "file.path",
   "file.slug": "file.slug",
@@ -33,9 +34,10 @@ const BUILTIN_ALIASES: Record<string, BasesBuiltinValue | "date"> = {
   "file.permalink": "file.permalink",
   "file.url": "file.link",
   "file.tags": "file.tags",
-  "file.mtime": "date",
-  "file.ctime": "date",
-  "file.date": "date",
+  "file.ext": "file.ext",
+  "file.size": "file.size",
+  "file.mtime": "file.mtime",
+  "file.ctime": "file.ctime",
 };
 
 /**
@@ -45,7 +47,7 @@ const BUILTIN_ALIASES: Record<string, BasesBuiltinValue | "date"> = {
  */
 export function parseBases(document: unknown): Result<BasesSpec> {
   if (document === null || document === undefined) {
-    return ok({ properties: {}, views: [] });
+    return ok({ properties: {}, formulas: {}, views: [] });
   }
   if (typeof document !== "object" || Array.isArray(document)) {
     return fail("Base definition must be a YAML mapping.");
@@ -58,12 +60,16 @@ export function parseBases(document: unknown): Result<BasesSpec> {
   const properties = parseProperties(root.properties);
   if (properties.ok === false) return properties;
 
+  const formulas = parseFormulas(root.formulas);
+  if (formulas.ok === false) return formulas;
+
   const views = parseViews(root.views, properties.value);
   if (views.ok === false) return views;
 
   return ok({
     ...(filter.value === undefined ? {} : { filter: filter.value }),
     properties: properties.value,
+    formulas: formulas.value,
     views: views.value,
   });
 }
@@ -195,6 +201,10 @@ function toList(value: unknown): readonly unknown[] {
 }
 
 function parseExpression(raw: string, path: string): Result<BasesCondition> {
+  const expression = parseBasesExpression(raw);
+  if (expression.ok)
+    return ok({ kind: "expression", expression: expression.value });
+
   let text = raw.trim();
   while (
     text.startsWith("(") &&
@@ -265,7 +275,6 @@ export function parseValueRef(raw: string): BasesValueRef {
 
   const alias = BUILTIN_ALIASES[lower];
   if (alias !== undefined) {
-    if (alias === "date") return { source: "frontmatter", key: "date" };
     return { source: "builtin", name: alias };
   }
 
@@ -338,6 +347,26 @@ function parseProperties(value: unknown): Result<Record<string, string>> {
     labels[key] = propertyLabel(key, raw);
   }
   return ok(labels);
+}
+
+function parseFormulas(
+  value: unknown,
+): Result<Record<string, import("./types.js").BasesExpression>> {
+  if (value === undefined || value === null) return ok({});
+  if (typeof value !== "object" || Array.isArray(value))
+    return fail("`formulas` must be a YAML mapping.");
+  const formulas: Record<string, import("./types.js").BasesExpression> = {};
+  for (const [name, source] of Object.entries(
+    value as Record<string, unknown>,
+  )) {
+    if (typeof source !== "string")
+      return fail(`formulas.${name} must be a string expression.`);
+    const expression = parseBasesExpression(source);
+    if (expression.ok === false)
+      return fail(`formulas.${name} is invalid (${expression.message}).`);
+    formulas[name] = expression.value;
+  }
+  return ok(formulas);
 }
 
 function propertyLabel(key: string, raw: unknown): string {

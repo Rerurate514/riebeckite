@@ -3,181 +3,84 @@ title: Bases
 ---
 # Bases
 
-Render Obsidian Bases definitions from fenced `base` code blocks. Filtering,
-sorting, and view composition run against the content manifest at build time, so
-no client-side JavaScript is required.
+Render a compatible, build-time subset of Obsidian Bases. `bases()` supports both
+fenced `base` blocks and referenced `.base` documents; no client-side evaluator
+is shipped.
 
 [日本語](./bases.ja.md)
 
-## Overview
-
-`bases()` recognises fenced blocks
-
-````md
-```base
-filters:
-  and:
-    - file.hasTag("featured")
-properties:
-  file.name:
-    displayName: Title
-  file.tags:
-    displayName: Tags
-views:
-  - type: table
-    name: Featured
-    order:
-      - file.name
-      - file.tags
-    limit: 10
-```
-````
-
-and renders them using the content manifest (every note's frontmatter, tags,
-links, and permalink).
-
-## Usage
+## Setup
 
 ```ts
-import { defineConfig } from "@riebeckite/core";
 import { bases } from "@riebeckite/plugin-bases";
 
-export default defineConfig({
-  // ...
-  plugins: [bases()],
-});
+export default { plugins: [bases()] };
 ```
 
-## Block syntax
+## `.base` documents and publication
 
-The block body is an Obsidian Base YAML document.
+A `.base` file becomes a PageType page at its extensionless path when a routable
+Markdown note links to it, for example `![[views/Books.base]]` creates
+`/views/Books`. This uses the normal PageType API and does not install custom
+routing.
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `filters` | expression \| list \| object | Top-level filter applied to every view (below) |
-| `properties` | object | Property id -> display name (or `{ displayName }`) |
-| `views` | object[] | One or more views |
+Both Base rows and document-page discovery use Core's `publicEntries`: public and
+unlisted notes are included; drafts and scheduled notes are excluded. A Base
+referenced only from non-public content is not published. Existing Markdown pages
+and public redirects win route collisions; the Base page is skipped with a
+`bases-invalid` warning.
 
-### Views
-
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `type` | `"table"` \| `"cards"` | Output kind. Defaults to `table` |
-| `name` | string | Optional label rendered above the view |
-| `filters` | filter | Additional filter, combined with the top-level filter using AND |
-| `order` | string \| string[] | Columns (property ids) and their display order |
-| `columns` | string \| string[] | Alias for `order` |
-| `sort` | object \| object[] \| string | Sort keys (below) |
-| `limit` | number | Row cap for this view; still bounded by the `limit` option |
-
-`sort` accepts the Core shape `{ field, order }`, the Obsidian shape
-`{ property, direction }`, or a shorthand string (`"-file.name"` sorts
-descending). When a view omits `order`/`columns`, the columns are the keys of
-`properties` (in order), or `["file.name", "file.tags"]`.
-
-### Filter grammar
-
-A filter is an expression string, a list of expressions (treated as AND), or an
-object with `and` / `or` / `not` keys. `and` and `or` take a list; `not` takes an
-expression or a list (the list is ANDed, then negated). A plain object whose keys
-are property names is treated as equality.
-
-| Expression | Description |
-| ---------- | ----------- |
-| `file.hasTag("x")` | Has the tag `x` (or a subtag `x/...`). Case-insensitive |
-| `file.inFolder("x")` | Slug equals `x` or starts with `x/` |
-| `file.hasLink("x")` | Links to `x` (by resolved slug, raw target, or file name) |
-| `file.name` / `file.title` | Note title |
-| `file.path` / `file.slug` | Slug |
-| `file.folder` | Parent folder of the slug |
-| `file.link` / `file.permalink` | Permalink |
-| `file.tags` | Tags |
-| `note.key` / `key` | A frontmatter value |
-
-Comparisons use `==`, `!=`, `>`, `<`, `>=`, `<=`, and `contains`. String
-comparisons are case-insensitive; `contains` tests array membership or substring
-containment. Bare scalar lists are ANDed.
+## Example
 
 ```yaml
-filters:
-  and:
-    - file.hasTag("featured")
-    - or:
-        - note.status == "published"
-        - note.status == "review"
-    - not:
-        - file.hasTag("draft")
+filters: note.status == "published" && !file.hasTag("hidden")
+formulas:
+  label: 'note.author.name.upper() + " / " + note.score'
+properties:
+  file.name: File
+  formula.label: Label
 views:
   - type: table
-    name: Featured
-    order: [file.name, note.status]
-    sort:
-      - property: file.name
-        direction: ASC
-    limit: 20
+    name: Books
+    order: [file.name, formula.label]
+  - type: cards
+    name: Cards
+    order: [file.name, formula.label]
 ```
 
-## Options
+The same YAML may be placed in a fenced `base` block or in a `.base` file.
+Top-level and view-local `filters` are combined with AND. Table and cards are
+rendered at build time; all dynamic values are escaped before HTML output.
 
-| Option | Type | Default | Description |
-| ------ | ---- | ------- | ----------- |
-| `className` | `string` | `"rb-bases"` | Root CSS class |
-| `language` | `string` | `"base"` | Fence language to target |
-| `limit` | `number` | `100` | Global row cap applied to every view |
-| `showFallback` | `boolean` | `true` | Render the raw Base definition in a `<details>` fallback |
-| `view` | `string` | none | Render only the view with this name when a Base defines several |
+## Expression and formula subset
 
-## Output HTML / CSS hooks
+Expressions are parsed into an AST and interpreted directly. They never use
+`eval`, `Function`, or arbitrary JavaScript execution. Supported syntax includes
+literal values and arrays, nested member/index access, `!`, unary `-`, arithmetic,
+comparison, `&&`, `||`, parentheses, property-to-property comparisons, and
+`formula.name` references. Formula cycles evaluate to an empty value.
 
-```html
-<div class="rb-bases" data-bases data-bases-view="table">
-  <section class="rb-bases__view" data-bases-view="table">
-    <h3 class="rb-bases__view-name">Featured</h3>
-    <table class="rb-bases__table"> ... </table>
-  </section>
-  <details class="rb-bases__fallback"> ... </details>
-</div>
-```
+Supported functions: `if`, `list`, `number`, `min`, `max`, `date`; string
+`lower`, `upper`, `contains`, `startsWith`, `endsWith`, `trim`, `split`,
+`replace`; list `contains`, `join`, `unique`, `flat`, `sort`; number `round`,
+`floor`, `ceil`, `abs`, `toFixed`; and `file.hasTag`, `file.hasLink`,
+`file.inFolder`.
 
-Stable classes: `rb-bases`, `rb-bases__view`, `rb-bases__view-name`,
-`rb-bases__table`, `rb-bases__heading`, `rb-bases__cell`, `rb-bases__row`,
-`rb-bases__link`, `rb-bases__tags`, `rb-bases__tag`, `rb-bases__cards`,
-`rb-bases__card`, `rb-bases__card-title`, `rb-bases__fields`, `rb-bases__field`,
-`rb-bases__field-label`, `rb-bases__field-value`, `rb-bases__empty`,
-`rb-bases__fallback`, `rb-bases--error`. Stable attributes: `data-bases`,
-`data-bases-view`.
+## Compatibility matrix
 
-## Diagnostics
+| Obsidian Base feature | Status | Notes |
+| --- | --- | --- |
+| YAML root, `filters`, `properties`, `formulas`, `views` | Supported | Invalid YAML/specs produce a diagnostic. |
+| Table and cards | Supported | Other view types are not rendered. |
+| AST filters and formulas | Supported subset | See the function list above. |
+| Formula sorting, grouping, summaries | Unsupported | Formula values render in columns only. |
+| `file.name`, `file.path`, `file.ext`, `file.folder`, `file.tags`, `file.links`, `file.properties`, `file.link` | Partial | Derived from the Markdown manifest; name/path use the `.md` source convention. |
+| `file.size`, `file.mtime`, `file.ctime`, backlinks, embeds | Unsupported | Core manifest rows do not carry this metadata. These values are empty, never mapped to frontmatter dates. |
+| Date/list lambda and higher-order functions, regex, links/images | Unsupported | They are rejected or evaluate to an empty value. |
 
-A block that is not valid YAML, or that uses an unsupported filter expression or
-view shape, is left as a code block and reported through `file.message(...)` with
-`source: "@riebeckite/plugin-bases"`.
+## Options and exports
 
-## Limitations
-
-This is an MVP subset of Obsidian Bases:
-
-- Only the `table` and `cards` view types are rendered.
-- Inline boolean operators (`&&`, `||`, `!`) are not supported; use the
-  `and` / `or` / `not` YAML structure.
-- `if()` / `filter()` and other Base formula functions are not supported.
-- Nested property paths and `file.mtime` / `file.ctime` are mapped onto `date`.
-- Property-to-property comparisons are not supported; the right-hand side is a
-  literal.
-- Results are fixed at build time. Rebuilding a host note when a queried note
-  changes is future work; a full build always recomputes correctly.
-
-## Exports
-
-- `bases(options?)` — plugin factory (alias: `basesPlugin`)
-- `remarkBases(options?)` — remark transform usable on its own (`options.language`
-  selects the fence language)
-- `parseBases(document)` — compiles a parsed YAML Base document to a spec
-- `matchesCondition(condition, entry)` — condition evaluator
-- Types: `BasesOptions`, `BasesSpec`, `BasesView`, `BasesViewType`,
-  `BasesCondition`, `BasesValueRef`, `BasesBuiltinValue`, `BasesOperator`,
-  `BasesLiteral`
-
-## See also
-
-- [Plugin guide](../reference/plugin-api.md)
+`className`, `language`, `limit`, `showFallback`, and `view` retain their existing
+meanings. The package exports `bases`, `basesPlugin`, `remarkBases`, `parseBases`,
+`parseBasesExpression`, `evaluateBasesExpression`, `matchesCondition`, and the
+public Bases types.

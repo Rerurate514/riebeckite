@@ -3,16 +3,23 @@ import {
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
+import { listBaseDocumentPaths, resolveBaseDocument } from "./src/page.js";
 import { remarkBases } from "./src/remark.js";
 import { createBasesRuntime } from "./src/runtime.js";
 import type { BasesOptions } from "./src/types.js";
 
-export { matchesCondition, resolveValueRef } from "./src/evaluate.js";
+export {
+  evaluateBasesExpression,
+  matchesCondition,
+  resolveValueRef,
+} from "./src/evaluate.js";
+export { parseBasesExpression } from "./src/expression.js";
 export { parseBases } from "./src/parse.js";
 export { remarkBases } from "./src/remark.js";
 export type {
   BasesBuiltinValue,
   BasesCondition,
+  BasesExpression,
   BasesLiteral,
   BasesOperator,
   BasesOptions,
@@ -37,7 +44,7 @@ export function bases(options: BasesOptions = {}) {
     name: "bases",
     contentOutputDependencies: [{ type: "global" }],
     processedContentCache: {
-      version: "bases-v1",
+      version: "bases-v2",
       dependencyMode: "none",
     },
     options,
@@ -49,6 +56,15 @@ export function bases(options: BasesOptions = {}) {
     onManifestCreated: (context) => {
       runtime.resolve(context.manifest, context.diagnostics, context.config);
     },
+    pageTypes: [
+      {
+        id: "bases-document",
+        paths: ({ manifest, contentSource, diagnostics }) =>
+          listBaseDocumentPaths({ manifest, contentSource, diagnostics }),
+        outputDependencies: [{ type: "global" }],
+        resolve: (context) => resolveBaseDocument(context, options),
+      },
+    ],
     assets: [createStyleAsset("bases", "@riebeckite/plugin-bases/style.css")],
   });
 }

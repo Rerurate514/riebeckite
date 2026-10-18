@@ -18,7 +18,55 @@ export type BasesBuiltinValue =
   | "file.title"
   | "file.link"
   | "file.permalink"
-  | "file.tags";
+  | "file.tags"
+  | "file.ext"
+  | "file.size"
+  | "file.mtime"
+  | "file.ctime";
+
+export type BasesExpression =
+  | { readonly kind: "literal"; readonly value: BasesLiteral }
+  | { readonly kind: "reference"; readonly path: readonly string[] }
+  | { readonly kind: "array"; readonly values: readonly BasesExpression[] }
+  | {
+      readonly kind: "unary";
+      readonly operator: "!" | "-";
+      readonly value: BasesExpression;
+    }
+  | {
+      readonly kind: "binary";
+      readonly operator:
+        | "+"
+        | "-"
+        | "*"
+        | "/"
+        | "%"
+        | "=="
+        | "!="
+        | ">"
+        | "<"
+        | ">="
+        | "<="
+        | "&&"
+        | "||";
+      readonly left: BasesExpression;
+      readonly right: BasesExpression;
+    }
+  | {
+      readonly kind: "call";
+      readonly callee: BasesExpression;
+      readonly arguments: readonly BasesExpression[];
+    }
+  | {
+      readonly kind: "member";
+      readonly object: BasesExpression;
+      readonly property: string;
+    }
+  | {
+      readonly kind: "index";
+      readonly object: BasesExpression;
+      readonly index: BasesExpression;
+    };
 
 /** A value read either from a built-in or from frontmatter. */
 export type BasesValueRef =
@@ -41,7 +89,8 @@ export type BasesCondition =
       readonly left: BasesValueRef;
       readonly operator: BasesOperator;
       readonly right: BasesLiteral;
-    };
+    }
+  | { readonly kind: "expression"; readonly expression: BasesExpression };
 
 /** A compiled Base view. */
 export type BasesView = {
@@ -64,6 +113,7 @@ export type BasesSpec = {
   readonly filter?: BasesCondition;
   /** Property id -> display label. */
   readonly properties: Readonly<Record<string, string>>;
+  readonly formulas: Readonly<Record<string, BasesExpression>>;
   readonly views: readonly BasesView[];
 };
 

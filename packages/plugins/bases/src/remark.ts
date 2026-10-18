@@ -1,8 +1,8 @@
 import type { Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
-import { matter } from "vfile-matter";
 import { parseBases } from "./parse.js";
 import { createBasesPlaceholder } from "./placeholder.js";
+import { parseBasesYaml } from "./yaml.js";
 
 export type RemarkBasesOptions = {
   /** Fenced code block language treated as a Base. Defaults to `base`. */
@@ -25,7 +25,7 @@ export function remarkBases(options: RemarkBasesOptions = {}) {
       if (node.lang !== language) return;
       if (!parent || index === undefined) return;
 
-      const parsed = parseYaml(node.value);
+      const parsed = parseBasesYaml(node.value);
       if (parsed.ok === false) {
         reportDiagnostic(file, parsed.message, node);
         return;
@@ -46,29 +46,6 @@ export function remarkBases(options: RemarkBasesOptions = {}) {
   };
 }
 
-function parseYaml(source: string):
-  | { readonly ok: true; readonly value: unknown }
-  | {
-      readonly ok: false;
-      readonly message: string;
-    } {
-  try {
-    const document = `---\n${source}\n---\n`;
-    const file = {
-      value: document,
-      data: {} as Record<string, unknown>,
-      toString: () => document,
-    };
-    matter(file as unknown as Parameters<typeof matter>[0]);
-    return { ok: true, value: file.data.matter };
-  } catch (error) {
-    return {
-      ok: false,
-      message: `Base block is not valid YAML (${formatError(error)}).`,
-    };
-  }
-}
-
 function reportDiagnostic(file: unknown, message: string, node: unknown): void {
   const reporter = (file as { message?: (...args: unknown[]) => unknown })
     ?.message;
@@ -77,8 +54,4 @@ function reportDiagnostic(file: unknown, message: string, node: unknown): void {
   if (diagnostic && typeof diagnostic === "object") {
     Object.assign(diagnostic, { source: "@riebeckite/plugin-bases" });
   }
-}
-
-function formatError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }

@@ -525,7 +525,7 @@ test("sorts formula values and renders grouped table summaries", async () => {
       "    order: [file.name, status, formula.rank]",
       "    sort: [{ property: formula.rank, direction: DESC }]",
       "    groupBy: { property: status, direction: ASC }",
-      "    groupOrder: [beta, alpha, null]",
+      "    groupOrder: [beta, planned, alpha, null]",
       "    summaries: { formula.rank: total }",
     ].join("\n"),
   });
@@ -535,6 +535,17 @@ test("sorts formula values and renders grouped table summaries", async () => {
   assert.match(body, /__summary[^>]*>6</);
   assert.match(body, /__summary[^>]*>4</);
   assert.match(body, /__summary[^>]*>2</);
+  assert.match(
+    body,
+    /role="region"[^>]*aria-label="Table view"[^>]*tabindex="0"/,
+  );
+  assert.match(body, /<caption class="rb-bases__sr-only">3 matching notes</);
+  assert.match(
+    body,
+    /planned <span class="rb-bases__group-count">\(0\)<\/span>/,
+  );
+  assert.match(body, /No matching notes in this group/);
+  assert.match(body, /rb-bases__sr-only"> Rank summary/);
 });
 
 test("sorts scalar formula values stably and rejects invalid sort directions", () => {

@@ -130,6 +130,15 @@ statically use a conservative per-Base fallback. The fallback never treats an un
 dependency as no dependency. Draft, scheduled, and unlisted entries remain excluded
 from Base rows and are not exposed through cached output.
 
+## Static view accessibility
+
+Tables retain column and row-group headers, include an off-screen result count,
+and are wrapped in a keyboard-focusable horizontal scroll region for narrow
+screens. Group labels include their row count; `groupOrder` entries without a
+matching row render an explicit empty group. Card groups use labelled lists,
+and summary values include an off-screen column label. These additions preserve
+the static, no-JavaScript output model.
+
 ## Compatibility matrix
 
 | Obsidian Base feature | Status | Notes |

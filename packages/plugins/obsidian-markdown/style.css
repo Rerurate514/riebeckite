@@ -1,5 +1,12 @@
 .rr-callout {
   --rr-callout-tone: var(--rb-color-info, var(--rb-color-accent));
+  --rr-callout-title-color: var(--rr-callout-tone);
+  --rr-callout-title-font-family: inherit;
+  --rr-callout-title-font-size: inherit;
+  --rr-callout-title-font-weight: 700;
+  --rr-callout-title-letter-spacing: normal;
+  --rr-callout-title-text-transform: none;
+  --rr-callout-icon-color: var(--rr-callout-tone);
   margin-block: 1.5rem;
   padding: 1rem 1.125rem;
   border: 1px solid
@@ -55,8 +62,16 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  color: var(--rr-callout-tone);
-  font-weight: 700;
+  color: var(--rr-callout-title-color);
+  font-family: var(--rr-callout-title-font-family);
+  font-size: var(--rr-callout-title-font-size);
+  font-weight: var(--rr-callout-title-font-weight);
+  letter-spacing: var(--rr-callout-title-letter-spacing);
+  text-transform: var(--rr-callout-title-text-transform);
+}
+
+.rr-callout__icon {
+  color: var(--rr-callout-icon-color);
 }
 
 .rr-callout__content > :last-child {

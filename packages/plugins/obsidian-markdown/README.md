@@ -65,6 +65,12 @@ Output: `div.rr-callout.rr-callout--{type}` with `data-callout`, plus
 `rr-callout--collapsible` / `rr-callout--collapsed` for `+` / `-` markers. Titles fall back to
 built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
 
+Themes can customize a callout from its `rr-callout` root with
+`--rr-callout-title-color`, `--rr-callout-title-font-family`,
+`--rr-callout-title-font-size`, `--rr-callout-title-font-weight`,
+`--rr-callout-title-letter-spacing`, `--rr-callout-title-text-transform`, and
+`--rr-callout-icon-color`; they must not select callout descendants.
+
 ### Inline tags
 
 - `#tag`, `#nested/tag` → link to `{tagBase}{slugified tag}` with class `tag`

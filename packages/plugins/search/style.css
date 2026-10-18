@@ -9,6 +9,9 @@
     --rr-search-border: var(--rb-color-border);
     --rr-search-border-strong: var(--rb-color-border-strong);
     --rr-search-overlay: var(--rb-color-overlay);
+    --rr-search-modal-panel-border-radius: 1rem;
+    --rr-search-modal-panel-shadow: 0 24px 60px
+      color-mix(in oklab, var(--rr-search-ink) 15%, transparent);
   }
 
   .sr-only {
@@ -100,9 +103,8 @@
     overflow: hidden;
     background: var(--rr-search-paper);
     border: 1px solid var(--rr-search-border);
-    border-radius: 1rem;
-    box-shadow: 0 24px 60px
-      color-mix(in oklab, var(--rr-search-ink) 15%, transparent);
+    border-radius: var(--rr-search-modal-panel-border-radius);
+    box-shadow: var(--rr-search-modal-panel-shadow);
   }
 
   .rr-search-modal__header {

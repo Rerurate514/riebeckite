@@ -99,6 +99,9 @@ return (
 
 スタイルシートは `--rb-color-*` トークンを使うため、アクティブなテーマに追従します。ルートは `display: none` で、`initColorMode`（またはインラインスクリプト）が `<html>` に `data-rb-color-mode="ready"` を付けるまで非表示です。JavaScript が無効なページではコントロールそのものが現れません。
 
+Theme は `rr-color-mode` の root に `--rr-color-mode-border-radius` を指定すると、子要素を
+選択せずにコンテナとボタンで共有する角丸を変更できます。
+
 ## アクセシビリティ
 
 - コンテナは `<fieldset>` で、グループ名は可視非表示の `<legend>`（`label` props）が提供します。

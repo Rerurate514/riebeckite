@@ -17,6 +17,7 @@
 }
 
 .rr-lightbox {
+  --rr-lightbox-image-border-radius: 0;
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -41,6 +42,7 @@
   max-height: calc(100vh - 120px);
   object-fit: contain;
   border: 1px solid var(--rb-color-surface, #ffffff);
+  border-radius: var(--rr-lightbox-image-border-radius);
 }
 
 .rr-lightbox__caption {

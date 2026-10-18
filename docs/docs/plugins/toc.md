@@ -62,6 +62,11 @@ Site keeps the desktop root sticky in its article rail and gives it a bounded
 vertical scroll area; the plugin keeps labels wrapping rather than creating
 horizontal scrolling.
 
+Themes can set `--rr-table-of-contents-eyebrow-font-size`,
+`--rr-table-of-contents-eyebrow-margin-block-end`, and
+`--rr-table-of-contents-item-line-height` on the ToC root without selecting
+its list descendants.
+
 ## API
 
 - `extractTableOfContents(html)` — extracts `h2`–`h4` headings with an `id`

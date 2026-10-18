@@ -5,6 +5,7 @@
     --rr-color-mode-surface: var(--rb-color-surface);
     --rr-color-mode-surface-hover: var(--rb-color-surface-hover);
     --rr-color-mode-border: var(--rb-color-border);
+    --rr-color-mode-border-radius: 999px;
 
     display: none;
     align-items: center;
@@ -13,7 +14,7 @@
     min-width: 0;
     padding: 0.2rem;
     border: 1px solid var(--rr-color-mode-border);
-    border-radius: 999px;
+    border-radius: var(--rr-color-mode-border-radius);
   }
 
   /* The legend names the group for assistive technology only. */
@@ -45,7 +46,7 @@
     color: var(--rr-color-mode-muted);
     background: transparent;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--rr-color-mode-border-radius);
     cursor: pointer;
     transition:
       background-color 120ms linear,

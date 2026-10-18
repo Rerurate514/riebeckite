@@ -72,6 +72,10 @@ return (
 The modal fetches `/search-data.json` (an array of `SearchItem`) on first open
 and shows up to 8 results.
 
+Themes can set `--rr-search-modal-panel-border-radius` and
+`--rr-search-modal-panel-shadow` on either `rr-search` root to customize the
+modal panel without selecting its descendants.
+
 ## Search API
 
 ```ts

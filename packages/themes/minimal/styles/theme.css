@@ -467,6 +467,13 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout {
+  --rr-callout-title-color: var(--rr-callout-tone);
+  --rr-callout-title-font-family: var(--rb-font-body);
+  --rr-callout-title-font-size: 0.8125rem;
+  --rr-callout-title-font-weight: 600;
+  --rr-callout-title-letter-spacing: normal;
+  --rr-callout-title-text-transform: none;
+  --rr-callout-icon-color: var(--rr-callout-tone);
   margin: 2rem 0;
   padding: 1rem 1.25rem;
   border: 1px solid
@@ -480,23 +487,6 @@
   );
   box-shadow: none;
   color: var(--rb-color-ink);
-}
-
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rr-callout
-  .rr-callout__title {
-  color: var(--rr-callout-tone);
-  font-family: var(--rb-font-body);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: normal;
-  text-transform: none;
-}
-
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rr-callout
-  .rr-callout__icon {
-  color: var(--rr-callout-tone);
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout p:last-child {
@@ -519,11 +509,9 @@
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rr-search
-  .rr-search-modal__panel {
-  border-radius: 0;
-  box-shadow: none;
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-search {
+  --rr-search-modal-panel-border-radius: 0;
+  --rr-search-modal-panel-shadow: none;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-cardlink {
@@ -550,9 +538,6 @@
   background: none;
 }
 
-/* The color-mode toggle is authored as a pill; flatten it to match. Both
-   classes are documented plugin hooks (`rr-color-mode`, `rr-color-mode__button`). */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-color-mode,
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-color-mode__button {
-  border-radius: 0;
+:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-color-mode {
+  --rr-color-mode-border-radius: 0;
 }

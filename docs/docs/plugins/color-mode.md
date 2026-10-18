@@ -121,6 +121,9 @@ theme. The root is `display: none` until `initColorMode` (or the inline script)
 sets `data-rb-color-mode="ready"` on `<html>`: with JavaScript disabled the
 control never appears.
 
+Themes can set `--rr-color-mode-border-radius` on the `rr-color-mode` root to
+change the shared container and button radius without selecting descendants.
+
 ## Accessibility
 
 - The container is a `<fieldset>` whose `<legend>` names the group (rendered

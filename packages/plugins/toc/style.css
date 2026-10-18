@@ -1,5 +1,8 @@
 @layer utilities {
   .rr-table-of-contents {
+    --rr-table-of-contents-eyebrow-font-size: 0.72rem;
+    --rr-table-of-contents-eyebrow-margin-block-end: 0.25rem;
+    --rr-table-of-contents-item-line-height: normal;
     margin-block: 1.5rem 2rem;
     border-block: 1px solid color-mix(in oklab, currentColor 18%, transparent);
     padding-block: 1rem;
@@ -10,8 +13,8 @@
   }
 
   .rr-table-of-contents__eyebrow {
-    margin: 0 0 0.25rem;
-    font-size: 0.72rem;
+    margin: 0 0 var(--rr-table-of-contents-eyebrow-margin-block-end);
+    font-size: var(--rr-table-of-contents-eyebrow-font-size);
     font-weight: 700;
     letter-spacing: 0.16em;
     line-height: 1.2;
@@ -38,6 +41,10 @@
   .rr-table-of-contents__item--level-4 {
     padding-inline-start: 2rem;
     margin: auto 0;
+  }
+
+  .rr-table-of-contents__item {
+    line-height: var(--rr-table-of-contents-item-line-height);
   }
 
   .rr-table-of-contents__link {

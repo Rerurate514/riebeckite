@@ -33,6 +33,12 @@ export default defineConfig({
 
 ノート・画像・未解決の埋め込みには Plugin が既定 CSS を提供します。ノート埋め込みには、支援技術にも伝わる実 DOM テキストとして `Embedded: <slug>` を表示します。
 
+Theme は `rr-callout` の root に `--rr-callout-title-color`、
+`--rr-callout-title-font-family`、`--rr-callout-title-font-size`、
+`--rr-callout-title-font-weight`、`--rr-callout-title-letter-spacing`、
+`--rr-callout-title-text-transform`、`--rr-callout-icon-color` を指定して見た目を
+調整できます。callout の子要素は選択しません。
+
 ## オプション
 
 | オプション | 既定値 | 内容 |

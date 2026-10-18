@@ -51,6 +51,9 @@ export default defineConfig({
   (inverted palette) with a `$` prompt prefix on non-empty lines
 - Focusable `<pre>` (`tabindex="0"`) for keyboard scrolling
 
+Themes can set `--rr-code-syntax` on an `rr-code` root to choose the syntax
+foreground without selecting highlighted-code descendants.
+
 ## Options
 
 | Option | Type | Default | Description |

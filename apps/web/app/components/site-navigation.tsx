@@ -1,4 +1,8 @@
-import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
+import {
+  MobileSiteNav,
+  resolveSiteNavigation,
+  SiteNav,
+} from "@riebeckite/plugin-navigation";
 import { useSiteContext } from "@riebeckite/ui";
 import { localizeDocsHref } from "../lib/navigation-link";
 
@@ -20,19 +24,20 @@ export function SiteHeader() {
       </a>
       {hasNavigation ? (
         <>
-          <SiteNav
-            placement="primary"
-            omitHome
-            localizeHref={(href) => localizeDocsHref(href, path)}
-          />
-          <details class="rb-nav__mobile">
-            <summary class="rb-nav__toggle">Menu</summary>
+          <div class="site-header__primary-navigation">
             <SiteNav
               placement="primary"
               omitHome
               localizeHref={(href) => localizeDocsHref(href, path)}
             />
-          </details>
+          </div>
+          <div class="site-header__mobile-navigation">
+            <MobileSiteNav
+              placement="primary"
+              omitHome
+              localizeHref={(href) => localizeDocsHref(href, path)}
+            />
+          </div>
         </>
       ) : null}
     </header>
@@ -71,6 +76,7 @@ export function SiteFooter() {
         <SiteNav
           placement="secondary"
           label="Footer navigation"
+          class="site-footer__navigation"
           localizeHref={(href) => localizeDocsHref(href, path)}
         />
       </div>

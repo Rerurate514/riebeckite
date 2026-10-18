@@ -14,6 +14,8 @@
     align-items: center;
     gap: var(--rb-nav-gap, var(--rb-space-3, 1.5rem));
     padding: 0;
+    flex-wrap: var(--rb-nav-list-flex-wrap, nowrap);
+    justify-content: var(--rb-nav-list-justify-content, flex-start);
   }
 
   .rb-nav__item {
@@ -31,6 +33,10 @@
     border: 1px solid var(--rb-color-border);
   }
 
+  .rb-nav__children {
+    z-index: 50;
+  }
+
   .rb-nav__item:hover > .rb-nav__children,
   .rb-nav__item:focus-within > .rb-nav__children {
     display: flex;
@@ -38,8 +44,25 @@
   }
 
   .rb-nav__link {
+    display: var(--rb-nav-item-display, inline);
+    padding: var(--rb-nav-item-padding, 0);
     color: inherit;
+    font-family: var(--rb-nav-item-font-family, inherit);
+    font-size: var(--rb-nav-item-font-size, inherit);
+    font-weight: var(--rb-nav-item-font-weight, inherit);
+    letter-spacing: var(--rb-nav-item-letter-spacing, normal);
     text-decoration: none;
+    text-transform: var(--rb-nav-item-text-transform, none);
+  }
+
+  .rb-nav__label {
+    display: var(--rb-nav-item-display, inline);
+    padding: var(--rb-nav-item-padding, 0);
+    font-family: var(--rb-nav-item-font-family, inherit);
+    font-size: var(--rb-nav-item-font-size, inherit);
+    font-weight: var(--rb-nav-item-font-weight, inherit);
+    letter-spacing: var(--rb-nav-item-letter-spacing, normal);
+    text-transform: var(--rb-nav-item-text-transform, none);
   }
 
   .rb-nav__link:hover,

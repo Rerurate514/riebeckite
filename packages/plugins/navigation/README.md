@@ -91,6 +91,14 @@ active item, so unlocalized authored hrefs still match localized pages. Pass
 `localizeHref` to rewrite hrefs for the current language, `label` to change the
 landmark label, and `class`/`className` to extend the `<nav>` classes.
 
+For an intentional root-level visual override, set these public custom
+properties on the `SiteNav` root or a wrapper: `--rb-nav-gap`,
+`--rb-nav-list-flex-wrap`, `--rb-nav-list-justify-content`,
+`--rb-nav-item-display`, `--rb-nav-item-padding`,
+`--rb-nav-item-font-family`, `--rb-nav-item-font-size`,
+`--rb-nav-item-font-weight`, `--rb-nav-item-letter-spacing`, and
+`--rb-nav-item-text-transform`. Do not select `rb-nav` descendants.
+
 ## Authored navigation
 
 Automated derivation cannot express everything, and some sites curate their

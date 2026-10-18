@@ -99,13 +99,6 @@
     padding-inline-start: 1rem;
   }
 
-  .rb-article-layout
-    > .rr-table-of-contents--desktop
-    .rr-table-of-contents__list {
-    min-height: 0;
-    max-inline-size: 100%;
-  }
-
   :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
     .rb-article-layout
     > .rr-table-of-contents--desktop {

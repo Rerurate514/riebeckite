@@ -7,8 +7,8 @@ function read(relativePath: string): string {
 }
 
 const themeCss = read("../../../packages/themes/rerurate/styles/theme.css");
+const navigationCss = read("../../../packages/plugins/navigation/style.css");
 const searchCss = read("../../../packages/plugins/search/style.css");
-const shellCss = read("../app/styles/shell.css");
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -50,7 +50,10 @@ test("A3: the theme resets the code root rhythm inside CodeTabs only", () => {
 });
 
 test("A5: the nav dropdown sits above the search trigger and below the modal top layer", () => {
-  const navDropdown = zIndexAt(shellCss, /\.rb-nav__children\s*\{[^}]*\}/);
+  const navDropdown = zIndexAt(
+    navigationCss,
+    /\.rb-nav__children\s*\{[^}]*z-index:\s*\d+[^}]*\}/,
+  );
   const searchTrigger = zIndexAt(searchCss, /\.rr-search-bar\s*\{[^}]*\}/);
   const component = read(
     "../../../packages/plugins/search/components/search-bar.tsx",

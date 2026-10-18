@@ -58,6 +58,20 @@ views:
 レベルとビューごとの `filters` は AND で結合します。Table と cards はビルド時に
 描画し、HTML に出す動的な値はすべてエスケープします。
 
+## 公式構文の監査
+
+Obsidian の [Bases 構文](https://help.obsidian.md/bases/syntax) と
+[ビュー](https://help.obsidian.md/bases/views) の YAML 形式を確認し、決定的な静的出力に
+範囲を限定して対応状況を整理しています。
+
+| 構文またはビュー機能 | 状態 | 静的出力での扱い |
+| --- | --- | --- |
+| ルートの `filters`、`formulas`、`properties`、`summaries`、`views` | 対応 | 再帰的な `and`／`or`／`not` filter と `displayName` を受け付けます。 |
+| ビューの `type`、`name`、`limit`、`filters`、`order`、`sort`、`groupBy`、`groupOrder`、`summaries` | 対応 | `groupOrder` は排他的です。空リストはすべてのグループを隠し、存在しない値を列挙すると空グループを作ります。 |
+| Table と cards のレイアウト | 対応 | 実行時の評価器を持たないセマンティック HTML を生成します。 |
+| List、kanban、map のレイアウト | 未対応 | 対話的・空間的な動作はこの静的レンダラーでは表現できません。 |
+| 編集、プロパティメニュー、列幅変更、ドラッグ＆ドロップ、折りたたみ操作 | 対象外 | Bases はサイトのビルド時に描画します。 |
+
 ## 式と Formula のサブセット
 
 式は AST に構文解析して直接評価します。`eval`、`Function`、任意の JavaScript 実行は
@@ -110,7 +124,7 @@ formula の循環、動的なプロパティ参照など、静的に証明でき
 | Table と cards | 対応 | ほかのビュー種別は描画しません。 |
 | AST の filter と Formula | 一部対応 | 対応関数は上記のとおりです。 |
 | Formula によるソートと複数の安定ソートキー | 対応 | 空の値は末尾に並びます。 |
-| `groupBy` と `groupOrder` | 対応 | Formula プロパティ、空グループ、Table、cards に対応します。対話的な折りたたみは対象外です。 |
+| `groupBy` と `groupOrder` | 対応 | Formula プロパティ、順序付きの空グループ、Table、cards に対応します。対話的な折りたたみは対象外です。 |
 | Table の集計 | 一部対応 | 名前付き集計、Empty、Filled、Unique、Checked、Unchecked、数値、日付の集計を使えます。 |
 | Cards の集計 | 対象外 | Obsidian は集計を cards ではなく Table に表示します。 |
 | `file.name`、`file.path`、`file.ext`、`file.folder`、`file.tags`、`file.links`、`file.properties`、`file.link` | 一部対応 | Markdown マニフェストから導出します。name/path は `.md` のソース規則を使います。 |

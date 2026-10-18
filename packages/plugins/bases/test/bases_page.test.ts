@@ -26,6 +26,7 @@ import {
   sortBasesEntries,
   summarizeBasesValues,
 } from "../index.js";
+import { parseBasesYaml } from "../src/yaml.js";
 
 function memorySource(input: Readonly<Record<string, string>>): ContentSource {
   return {
@@ -197,6 +198,23 @@ test("parses and evaluates nested formulas without executing JavaScript", () => 
     evaluateBasesExpression(unsafe.value, entry, parsed.value.formulas),
     undefined,
   );
+});
+
+test("parses an Obsidian official Base YAML fixture", async () => {
+  const source = await fs.readFile(
+    new URL("./fixtures/OfficialSyntax.base", import.meta.url),
+    "utf8",
+  );
+  const yaml = parseBasesYaml(source);
+  assert.equal(yaml.ok, true);
+  const parsed = parseBases(yaml.value);
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.value.views.length, 2);
+  assert.deepEqual(parsed.value.views[0]?.groupOrder, [
+    "active",
+    "archived",
+    null,
+  ]);
 });
 
 test("analyzes filter, formula, sort, group, summary, and higher-order dependencies", () => {
@@ -536,6 +554,39 @@ test("groups and summaries use only discoverable public entries", async () => {
   assert.doesNotMatch(
     body,
     /secret|999999|888888|777777|Hidden|Unlisted|Scheduled/,
+  );
+});
+
+test("keeps explicit empty groups from official groupOrder syntax", () => {
+  const parsed = parseBases({
+    views: [
+      {
+        type: "table",
+        groupBy: { property: "status", direction: "ASC" },
+        groupOrder: ["Planned", "In progress", "Done", null],
+      },
+    ],
+  });
+  assert.equal(parsed.ok, true);
+  const groups = groupBasesEntries(
+    [entry("Planned", 1, 1), entry("Done", 2, 2)].map((value) => ({
+      ...value,
+      frontmatter: {
+        ...value.frontmatter,
+        status: value.title,
+      },
+    })),
+    parsed.value.views[0],
+    parsed.value,
+  );
+  assert.deepEqual(
+    groups.map((group) => [group.key, group.entries.length]),
+    [
+      ["Planned", 1],
+      ["In progress", 0],
+      ["Done", 1],
+      [null, 0],
+    ],
   );
 });
 

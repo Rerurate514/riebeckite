@@ -63,14 +63,13 @@ export function groupBasesEntries(
   }
   const all = [...groups.values()];
   const ordered = view.groupOrder
-    ? view.groupOrder
-        .map((key) => groups.get(groupIdentity(key)))
-        .filter(
-          (
-            group,
-          ): group is { key: BasesGroupKey; entries: ContentManifestEntry[] } =>
-            Boolean(group),
-        )
+    ? view.groupOrder.map(
+        (key) =>
+          groups.get(groupIdentity(key)) ?? {
+            key,
+            entries: [],
+          },
+      )
     : all.sort((left, right) => {
         const result = compareValues(left.key, right.key);
         return view.groupBy?.direction === "desc" ? -result : result;

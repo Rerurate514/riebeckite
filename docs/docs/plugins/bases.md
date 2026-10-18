@@ -59,6 +59,20 @@ The same YAML may be placed in a fenced `base` block or in a `.base` file.
 Top-level and view-local `filters` are combined with AND. Table and cards are
 rendered at build time; all dynamic values are escaped before HTML output.
 
+## Official syntax audit
+
+This implementation follows the documented YAML shape in the [Obsidian Bases
+syntax](https://help.obsidian.md/bases/syntax) and [views](https://help.obsidian.md/bases/views)
+references. Compatibility is deliberately scoped to deterministic static output.
+
+| Syntax or view capability | Status | Static behavior |
+| --- | --- | --- |
+| Root `filters`, `formulas`, `properties`, `summaries`, and `views` | Supported | Recursive `and`/`or`/`not` filters and `displayName` are accepted. |
+| View `type`, `name`, `limit`, `filters`, `order`, `sort`, `groupBy`, `groupOrder`, and `summaries` | Supported | `groupOrder` is exclusive: an empty list hides all groups, and listed missing values create empty groups. |
+| Table and cards layouts | Supported | Generated semantic HTML has no runtime evaluator. |
+| List, kanban, and map layouts | Unsupported | Their interactive and spatial behavior cannot be represented by this static renderer. |
+| Editing, property menus, resize, drag-and-drop, and collapse controls | Out of Scope | Bases is rendered during the site build. |
+
 ## Expression and formula subset
 
 Expressions are parsed into an AST and interpreted directly. They never use
@@ -118,7 +132,7 @@ from Base rows and are not exposed through cached output.
 | Table and cards | Supported | Other view types are not rendered. |
 | AST filters and formulas | Supported subset | See the function list above. |
 | Formula sorting and multiple stable sort keys | Supported | Empty values sort last. |
-| `groupBy` and `groupOrder` | Supported | Formula properties, empty groups, table, and cards are supported. Interactive collapse is not. |
+| `groupBy` and `groupOrder` | Supported | Formula properties, ordered empty groups, table, and cards are supported. Interactive collapse is not. |
 | Table summaries | Supported subset | Named summaries and Empty, Filled, Unique, Checked, Unchecked, numeric, and date summaries are available. |
 | Card summaries | Out of Scope | Obsidian displays summaries in tables, not cards. |
 | `file.name`, `file.path`, `file.ext`, `file.folder`, `file.tags`, `file.links`, `file.properties`, `file.link` | Partial | Derived from the Markdown manifest; name/path use the `.md` source convention. |

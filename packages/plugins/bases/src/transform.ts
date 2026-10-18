@@ -63,14 +63,13 @@ export function groupBasesEntries(
   }
   const all = [...groups.values()];
   const ordered = view.groupOrder
-    ? view.groupOrder
-        .map((key) => groups.get(groupIdentity(key)))
-        .filter(
-          (
-            group,
-          ): group is { key: BasesGroupKey; entries: ContentManifestEntry[] } =>
-            Boolean(group),
-        )
+    ? view.groupOrder.map(
+        (key) =>
+          groups.get(groupIdentity(key)) ?? {
+            key,
+            entries: [],
+          },
+      )
     : all.sort((left, right) => {
         const result = compareValues(left.key, right.key);
         return view.groupBy?.direction === "desc" ? -result : result;
@@ -152,7 +151,8 @@ function isGroupKey(value: unknown): value is BasesGroupKey {
     value === null ||
     typeof value === "string" ||
     typeof value === "number" ||
-    typeof value === "boolean"
+    typeof value === "boolean" ||
+    (value instanceof Date && Number.isFinite(value.getTime()))
   );
 }
 
@@ -211,7 +211,9 @@ function valueIdentity(value: unknown): string {
 }
 
 function groupIdentity(value: BasesGroupKey): string {
-  return value === null ? "null" : `${typeof value}:${String(value)}`;
+  if (value === null) return "null";
+  if (value instanceof Date) return `date:${value.getTime()}`;
+  return `${typeof value}:${String(value)}`;
 }
 
 const emptyEntry = {

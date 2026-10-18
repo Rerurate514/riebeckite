@@ -1,0 +1,30 @@
+filters:
+  or:
+    - file.hasTag("project")
+    - and:
+        - status == "active"
+        - file.inFolder("notes")
+formulas:
+  label: 'if(status, status.upper(), "Unknown")'
+properties:
+  status:
+    displayName: Status
+  formula.label:
+    displayName: Label
+views:
+  - type: table
+    name: Projects
+    limit: 10
+    groupBy:
+      property: status
+      direction: ASC
+    groupOrder: [active, archived, null]
+    order: [file.name, status, formula.label]
+    sort:
+      - property: file.name
+        direction: ASC
+    summaries:
+      status: Filled
+  - type: cards
+    name: Project cards
+    order: [file.name, formula.label]

@@ -12,5 +12,10 @@ export type OutputDependency =
         | "taxonomy-folders";
     }
   | { readonly type: "external"; readonly id: string }
+  | {
+      readonly type: "content-query";
+      readonly properties: readonly string[];
+      readonly unknown?: boolean;
+    }
   | { readonly type: "global" }
   | { readonly type: "unknown" };

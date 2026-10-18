@@ -93,6 +93,42 @@ test("file-system content source returns entries in path order", async () => {
   );
 });
 
+test("file-system content source records byte size and filesystem timestamps", async () => {
+  const root = await makeTempContentDirectory();
+  const content = "# こんにちは\n";
+  const mtime = new Date("2024-01-02T03:04:05.000Z");
+  await writeFile(root, "notes/example.md", content);
+  await fs.utimes(path.join(root, "notes", "example.md"), mtime, mtime);
+
+  const entry = (await new FileSystemContentSource(root).scan()).find(
+    (candidate) => candidate.path === "notes/example.md",
+  );
+
+  assert.equal(entry?.metadata?.size, Buffer.byteLength(content));
+  assert.equal(entry?.metadata?.modifiedAt, mtime.getTime());
+  assert.equal(typeof entry?.metadata?.createdAt, "number");
+  assert.ok(Number.isFinite(entry?.metadata?.createdAt));
+});
+
+test("content manifests retain file metadata across a cached rebuild", async () => {
+  const root = await makeTempContentDirectory();
+  const content = "---\npublish: true\n---\n\n# こんにちは\n";
+  const mtime = new Date("2024-02-03T04:05:06.000Z");
+  await writeFile(root, "note.md", content);
+  await fs.utimes(path.join(root, "note.md"), mtime, mtime);
+
+  const first = await new ContentManager(root).build({ incremental: true });
+  const second = await new ContentManager(root).build({ incremental: true });
+  const expectedSize = Buffer.byteLength(content);
+
+  for (const manifest of [first, second]) {
+    const entry = manifest.bySlug.get("note");
+    assert.equal(entry?.file?.size, expectedSize);
+    assert.equal(entry?.file?.mtime?.getTime(), mtime.getTime());
+    assert.ok(entry?.file?.ctime instanceof Date);
+  }
+});
+
 test("matchContentExcludePattern reports the matching pattern", () => {
   assert.equal(
     matchContentExcludePattern("drafts/secret.md", ["drafts/**"]),

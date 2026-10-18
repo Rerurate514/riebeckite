@@ -58,6 +58,20 @@ views:
 レベルとビューごとの `filters` は AND で結合します。Table と cards はビルド時に
 描画し、HTML に出す動的な値はすべてエスケープします。
 
+## 公式構文の監査
+
+Obsidian の [Bases 構文](https://help.obsidian.md/bases/syntax) と
+[ビュー](https://help.obsidian.md/bases/views) の YAML 形式を確認し、決定的な静的出力に
+範囲を限定して対応状況を整理しています。
+
+| 構文またはビュー機能 | 状態 | 静的出力での扱い |
+| --- | --- | --- |
+| ルートの `filters`、`formulas`、`properties`、`summaries`、`views` | 対応 | 再帰的な `and`／`or`／`not` filter と `displayName` を受け付けます。 |
+| ビューの `type`、`name`、`limit`、`filters`、`order`、`sort`、`groupBy`、`groupOrder`、`summaries` | 対応 | `groupOrder` は排他的です。空リストはすべてのグループを隠し、存在しない値を列挙すると空グループを作ります。 |
+| Table と cards のレイアウト | 対応 | 実行時の評価器を持たないセマンティック HTML を生成します。 |
+| List、kanban、map のレイアウト | 未対応 | 対話的・空間的な動作はこの静的レンダラーでは表現できません。 |
+| 編集、プロパティメニュー、列幅変更、ドラッグ＆ドロップ、折りたたみ操作 | 対象外 | Bases はサイトのビルド時に描画します。 |
+
 ## 式と Formula のサブセット
 
 式は AST に構文解析して直接評価します。`eval`、`Function`、任意の JavaScript 実行は
@@ -65,16 +79,57 @@ views:
 算術、比較、`&&`、`||`、括弧、プロパティ同士の比較、`formula.name` 参照に対応します。
 Formula の循環参照は空の値になります。
 
-対応する関数は `if`、`list`、`length`、`number`、`min`、`max`、`date`、文字列の `lower`、
-`upper`、`contains`、`startsWith`、`endsWith`、`trim`、`split`、`replace`、リストの
-`contains`、`containsAll`、`containsAny`、`join`、`unique`、`flat`、`sort`、`reverse`、
-`slice`、`isEmpty`、`map`、`filter`、`reduce`、数値の `round`、`floor`、`ceil`、`abs`、
-`toFixed`、`file.hasTag`、`file.hasLink`、`file.inFolder` です。
+対応する関数は `if`、`list`、`length`、`number`、`min`、`max`、`date`、`duration`、
+`isTruthy`、`isType`、`toString`、`escapeHTML`、文字列の `lower`、`upper`、`title`、
+`contains`、`startsWith`、`endsWith`、`trim`、`split`、`replace`、`reverse`、`repeat`、
+`slice`、`isEmpty`、リストの `contains`、`containsAll`、`containsAny`、`join`、`unique`、
+`flat`、`sort`、`reverse`、`slice`、`isEmpty`、`mean`、`sum`、`min`、`max`、`map`、
+`filter`、`reduce`、数値の `round`、`floor`、`ceil`、`abs`、`toFixed`、オブジェクトの
+`isEmpty`、`keys`、`values`、UTC の日付フィールド、`date`、`time`、`format`、
+`file.hasTag`、`file.hasLink`、`file.inFolder`、`file.hasProperty` です。
+
+`date()` は UTC の ISO タイムスタンプ、`YYYY-MM-DD`、有限の epoch ミリ秒値、または
+既存の Date だけを受け付けます。日付フィールドとフォーマットは UTC を使うため、静的
+ビルドでホストのロケールや曖昧な日付構文に依存しません。
 
 Formula の評価は、1回につき AST の 10,000 ステップとネストした式の 128 段階までです。
 いずれかを超えると決定的に停止し、`bases-invalid` 診断を出して Base のエラー表示に
 切り替えます。大きな高階式や深い式によって静的ビルドが無制限に実行されることを防ぎ、
 JavaScript のコールバックは実行しません。
+
+## ファイルメタデータ
+
+`file.size` はソースファイルのバイト数です。`file.mtime` と `file.ctime` は
+ファイルシステムから得る UTC の `Date` 値で、プロパティ、filter、Formula、ソート、
+グループ、集計、高階式で使えます。ソースのメタデータが欠落または不正な場合は、描画後の
+Markdown やビルド時刻から補わず、空の値として扱います。日付どうしの減算はミリ秒になり、
+`"7 days"` のような duration による Date の加減算もできます。
+
+ファイルシステムのコンテンツでは、`file.ctime` に Node の `birthtime` を使います。
+status-change time である `stat.ctime` は使いません。Windows では通常、作成時刻を取得
+できます。Linux のファイルシステムは作成時刻を持たないことがあり、Node が
+ファイルシステム依存の代替値を返すか、利用できる値がない場合があります。移植性が必要な
+Base では空の `file.ctime` を扱ってください。キャッシュした時刻は UTC の瞬間を保ちます。
+
+## 増分ビルド
+
+Bases は、filter、formula、column、sort、group、summary が読むプロパティを永続 Output
+Inventory に記録します。これは fenced Base と参照された各 `.base` ドキュメントに個別に適用されます。
+これらのプロパティ、参照するファイルメタデータ、または公開候補集合が変わった場合だけ、その値を読む Base 出力を
+再生成します。filter 不一致から一致への変更も検出します。本文だけの編集と無関係な frontmatter 編集では Base 出力を
+再利用します。
+
+formula の循環、動的なプロパティ参照など、静的に証明できない依存関係では Base 単位で保守的に再生成します。
+不明な依存関係を依存なしとして扱うことはありません。draft、scheduled、unlisted のエントリは Base の行から除外され、
+キャッシュ出力からも公開されません。
+
+## 静的ビューのアクセシビリティ
+
+Table は列と行グループの見出しを維持し、画面読み上げ用の件数を持ちます。狭い画面では
+キーボードでフォーカスできる横スクロール領域に収めます。グループ名には行数を示し、
+`groupOrder` にあるが一致する行がない値は空グループとして明示します。Card のグループは
+ラベル付きリストとし、集計値には画面読み上げ用の列名を加えます。いずれも JavaScript を
+使わない静的出力のままです。
 
 ## 互換性マトリクス
 
@@ -84,18 +139,21 @@ JavaScript のコールバックは実行しません。
 | Table と cards | 対応 | ほかのビュー種別は描画しません。 |
 | AST の filter と Formula | 一部対応 | 対応関数は上記のとおりです。 |
 | Formula によるソートと複数の安定ソートキー | 対応 | 空の値は末尾に並びます。 |
-| `groupBy` と `groupOrder` | 対応 | Formula プロパティ、空グループ、Table、cards に対応します。対話的な折りたたみは対象外です。 |
+| `groupBy` と `groupOrder` | 対応 | Formula プロパティ、順序付きの空グループ、Table、cards に対応します。対話的な折りたたみは対象外です。 |
 | Table の集計 | 一部対応 | 名前付き集計、Empty、Filled、Unique、Checked、Unchecked、数値、日付の集計を使えます。 |
 | Cards の集計 | 対象外 | Obsidian は集計を cards ではなく Table に表示します。 |
 | `file.name`、`file.path`、`file.ext`、`file.folder`、`file.tags`、`file.links`、`file.properties`、`file.link` | 一部対応 | Markdown マニフェストから導出します。name/path は `.md` のソース規則を使います。 |
-| `file.size`、`file.mtime`、`file.ctime`、backlinks、embeds | 未対応 | Core の行にこのメタデータがありません。空の値になり、frontmatter の日付へは置き換えません。 |
+| `file.size`、`file.mtime`、`file.ctime` | 対応 | バイト数、ファイルシステムの更新時刻、作成時刻相当を使います。Linux では `ctime` が利用できないことがあります。`stat.ctime`、frontmatter、ビルド時刻へは置き換えません。 |
+| Backlinks、embeds | 未対応 | これらの値は空になります。 |
 | リストの `map`、`filter`、`reduce` | 一部対応 | `value`、`index`、`acc` スコープの式を使い、リスト長には上限があります。 |
-| 正規表現、オブジェクトリテラル、link/image の描画、非決定的な date/random 関数 | 未対応 | JavaScript を実行せず、安全でない URL を出力しません。 |
+| 決定的な utility、object、date、file-property 関数 | 一部対応 | UTC 日付、`duration`、コレクション／object ヘルパー、`file.hasProperty` を使えます。Vault API や描画済みリンクを必要とする関数は使えません。 |
+| 増分依存追跡 | 対応 | filter 候補集合と AST から得たプロパティ依存を追跡し、動的・循環 formula は Base 単位でフォールバックします。 |
+| 正規表現、オブジェクトリテラル、`file()`、link/image/icon/HTML の描画、`now`、`today`、`random`、相対日付 | 未対応 | JavaScript を実行せず、ビルド時刻に依存せず、安全でない URL を出力しません。 |
 | 編集、グループの折りたたみなどの対話的なビュー操作 | 対象外 | Riebeckite は静的なビルド出力を描画します。 |
 
 ## オプションとエクスポート
 
 `className`、`language`、`limit`、`showFallback`、`view` の意味は従来どおりです。
 パッケージは `bases`、`basesPlugin`、`remarkBases`、`parseBases`、
-`parseBasesExpression`、`evaluateBasesExpression`、`matchesCondition`、公開 Bases 型を
+`parseBasesExpression`、`analyzeBasesDependencies`、`evaluateBasesExpression`、`matchesCondition`、公開 Bases 型を
 エクスポートします。

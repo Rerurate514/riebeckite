@@ -44,3 +44,24 @@ test("fingerprinting detects equal-size content changes with unchanged metadata"
 
   assert.notEqual(await fingerprint("# One"), await fingerprint("# Two"));
 });
+
+test("fingerprinting detects source metadata changes without rereading etag content", async () => {
+  const fingerprint = async (metadata: Record<string, number>) =>
+    (
+      await fingerprintContentEntries(
+        [{ path: "note.md", metadata: { etag: "same", ...metadata } }],
+        async () => {
+          throw new Error("etag content should not be read");
+        },
+      )
+    )[0]?.fingerprint;
+
+  assert.notEqual(
+    await fingerprint({ createdAt: 1, modifiedAt: 2, size: 3 }),
+    await fingerprint({ createdAt: 1, modifiedAt: 4, size: 3 }),
+  );
+  assert.notEqual(
+    await fingerprint({ createdAt: 1, modifiedAt: 2, size: 3 }),
+    await fingerprint({ createdAt: 5, modifiedAt: 2, size: 3 }),
+  );
+});

@@ -56,7 +56,11 @@
 
   .rb-nav__mobile {
     position: relative;
-    display: block;
+    display: none;
+  }
+
+  .rb-nav__toggle {
+    cursor: pointer;
   }
 
   @media (min-width: 30.001rem) and (max-width: 48rem) {
@@ -66,12 +70,17 @@
   }
 
   @media (max-width: 30rem) {
+    .rb-nav__mobile {
+      display: block;
+    }
+
     .rb-nav__mobile > .rb-nav {
       position: absolute;
       z-index: 10;
       top: calc(100% + var(--rb-space-2, 1rem));
       right: 0;
       min-width: var(--rb-nav-menu-min-width, 12rem);
+      max-width: calc(100vw - 2rem);
       padding: var(--rb-space-3, 1.5rem);
       background: var(--rb-color-surface);
       border: 1px solid var(--rb-color-border);
@@ -97,6 +106,11 @@
       padding: 0;
       background: transparent;
       border: 0;
+    }
+
+    .rb-nav__mobile .rb-nav__link,
+    .rb-nav__mobile .rb-nav__label {
+      overflow-wrap: anywhere;
     }
   }
 }

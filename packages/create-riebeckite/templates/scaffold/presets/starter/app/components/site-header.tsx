@@ -1,15 +1,9 @@
 import { SiteNav } from "@riebeckite/plugin-navigation";
-import { resolveSiteNavigation } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { useSiteContext } from "@riebeckite/ui";
 
 export function SiteHeader() {
   const site = useSiteContext();
-  const hasNavigation = site
-    ? (resolveSiteNavigation(site.config, site.manifest, site.language)?.primary.some(
-        (item) => item.href !== "/",
-      ) ?? false)
-    : false;
 
   return (
     <header class="site-header rb-site-header">
@@ -23,15 +17,11 @@ export function SiteHeader() {
         />
         {site?.config.site.title}
       </a>
-      {hasNavigation ? (
-        <>
-          <SiteNav placement="primary" omitHome />
-          <details class="rb-nav__mobile">
-            <summary class="rb-nav__toggle">Menu</summary>
-            <SiteNav placement="primary" omitHome />
-          </details>
-        </>
-      ) : null}
+      <SiteNav placement="primary" omitHome />
+      <details class="rb-nav__mobile">
+        <summary class="rb-nav__toggle">Menu</summary>
+        <SiteNav placement="primary" omitHome />
+      </details>
       <ColorModeToggle />
     </header>
   );

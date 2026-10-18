@@ -51,7 +51,11 @@ The self-contained reference site. It enables the complete plugin catalog, rende
 
 ### `empty`
 
-A blank application shell with no plugins, theme, content, or components. Choose it to establish the site structure and add each part yourself.
+A blank application shell with no plugins, theme, content, or components. Its first route is an ordinary HonoX `createRoute` page, so add pages, HTML, JSX components, and CSS directly in `app/` before opting into Riebeckite content features.
+
+### Editing generated UI
+
+Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `app/routes/` to add pages or API routes, `app/components/article.tsx` to arrange article UI, `app/components/site-header.tsx` to change the header and footer, and `app/style.css` for site CSS. `SiteNav` and other plugin UI components resolve their configured data themselves; place them where needed instead of resolving manifests in site components.
 
 ## Generated configuration
 

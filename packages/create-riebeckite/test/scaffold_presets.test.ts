@@ -236,6 +236,8 @@ test("starter and showcase scaffolds render navigation in the site shell", async
       assert.match(header, /<SiteNav/);
       assert.match(header, /export function SiteHeader/);
       assert.match(header, /export function SiteFooter/);
+      assert.doesNotMatch(header, /resolveSiteNavigation/);
+      assert.doesNotMatch(header, /site\.manifest/);
       assert.doesNotMatch(header, /isActive/);
       assert.doesNotMatch(header, /NavigationItems/);
       assert.doesNotMatch(header, /rb-nav__link--active/);

@@ -51,7 +51,11 @@ Obsidian Markdown、`minimal` Theme、英語の1ページだけを含む構成�
 
 ### `empty`
 
-Plugin、Theme、コンテンツ、コンポーネントを含まない空のアプリケーションシェルです。サイト構成から自分で作り、必要な部品を一つずつ追加する場合に選びます。
+Plugin、Theme、コンテンツ、コンポーネントを含まない空のアプリケーションシェルです。最初の Route は通常の HonoX `createRoute` ページなので、Riebeckite のコンテンツ機能を追加する前に、`app/` でページ、HTML、JSX component、CSS をそのまま追加できます。
+
+### 生成された UI を編集する
+
+生成される Application file は通常の TypeScript、JSX、HonoX Route です。ページや API Route は `app/routes/`、記事 UI の並べ替えは `app/components/article.tsx`、Header と Footer は `app/components/site-header.tsx`、サイト CSS は `app/style.css` を編集します。`SiteNav` を含む Plugin UI component は設定済みのデータを自分で解決するため、Site component で Manifest を解決せず、必要な場所に配置します。
 
 ## 生成される設定
 

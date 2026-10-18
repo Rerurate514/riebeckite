@@ -8,6 +8,7 @@ import { remarkBases } from "./src/remark.js";
 import { createBasesRuntime } from "./src/runtime.js";
 import type { BasesOptions } from "./src/types.js";
 
+export { analyzeBasesDependencies } from "./src/dependencies.js";
 export {
   BasesEvaluationError,
   evaluateBasesExpression,
@@ -53,7 +54,8 @@ export function bases(options: BasesOptions = {}) {
   return definePlugin({
     name: "bases",
     contentFileMetadata: true,
-    contentOutputDependencies: [{ type: "global" }],
+    resolveContentOutputDependencies: (entry) =>
+      runtime.dependenciesFor(entry.slug),
     processedContentCache: {
       version: "bases-v3",
       dependencyMode: "none",
@@ -72,7 +74,8 @@ export function bases(options: BasesOptions = {}) {
         id: "bases-document",
         paths: ({ manifest, contentSource, diagnostics }) =>
           listBaseDocumentPaths({ manifest, contentSource, diagnostics }),
-        outputDependencies: [{ type: "global" }],
+        outputDependencies: ({ pathname }) =>
+          runtime.dependenciesForPage(pathname),
         resolve: (context) => resolveBaseDocument(context, options),
       },
     ],

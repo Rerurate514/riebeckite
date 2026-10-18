@@ -2,8 +2,10 @@ import type {
   ContentManifest,
   ContentManifestEntry,
   Diagnostic,
+  OutputDependency,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { analyzeBasesDependencies } from "./dependencies.js";
 import {
   BASES_ATTRIBUTE,
   createBasesPlaceholderPattern,
@@ -19,20 +21,39 @@ export type BasesRuntime = {
     diagnostics: Diagnostic[],
     config?: ResolvedRiebeckiteConfig,
   ): void;
+  dependenciesFor(slug: string): readonly OutputDependency[];
+  dependenciesForPage(pathname: string): readonly OutputDependency[];
 };
 
 export function createBasesRuntime(options: BasesOptions): BasesRuntime {
+  const dependencies = new Map<string, readonly OutputDependency[]>();
   return {
     resolve(manifest, diagnostics, _config) {
       const entries = manifest.discoverableEntries;
       for (const entry of manifest.publicEntries) {
         if (!entry.html.includes(BASES_ATTRIBUTE)) continue;
 
-        const html = replacePlaceholders(entry, entries, options, diagnostics);
+        const resolved = replacePlaceholders(
+          entry,
+          entries,
+          options,
+          diagnostics,
+        );
+        dependencies.set(entry.slug, resolved.dependencies);
+        const html = resolved.html;
         if (html === entry.html) continue;
 
         entry.html = html;
       }
+    },
+    dependenciesFor(slug) {
+      return dependencies.get(slug) ?? [];
+    },
+    dependenciesForPage(pathname) {
+      return [
+        { type: "file", path: `${pathname.replace(/^\//, "")}.base` },
+        { type: "content-query", properties: ["*"], unknown: true },
+      ];
     },
   };
 }
@@ -42,10 +63,14 @@ function replacePlaceholders(
   entries: readonly ContentManifestEntry[],
   options: BasesOptions,
   diagnostics: Diagnostic[],
-): string {
+): {
+  readonly html: string;
+  readonly dependencies: readonly OutputDependency[];
+} {
   const pattern = createBasesPlaceholderPattern();
+  const dependencies: OutputDependency[] = [];
 
-  return entry.html.replace(pattern, (_match, encoded: string) => {
+  const html = entry.html.replace(pattern, (_match, encoded: string) => {
     const payload = decodeBasesPayload(encoded);
     if (!payload) {
       const message = `Base block in \`${entry.slug}\` could not be decoded.`;
@@ -54,6 +79,7 @@ function replacePlaceholders(
     }
 
     try {
+      dependencies.push(analyzeBasesDependencies(payload.spec));
       return renderBases(payload.spec, options, entries, payload.source);
     } catch (error) {
       const message = `Base block in \`${entry.slug}\` failed to render (${formatError(error)}).`;
@@ -61,6 +87,7 @@ function replacePlaceholders(
       return renderBasesError(message, options);
     }
   });
+  return { html, dependencies };
 }
 
 function diagnostic(entry: ContentManifestEntry, message: string): Diagnostic {

@@ -215,6 +215,13 @@ function isOutputPath(value: unknown): value is string {
 function isOutputDependency(value: unknown): value is OutputDependency {
   if (!isRecord(value) || typeof value.type !== "string") return false;
   if (value.type === "global" || value.type === "unknown") return true;
+  if (value.type === "content-query") {
+    return (
+      Array.isArray(value.properties) &&
+      value.properties.every((property) => typeof property === "string") &&
+      (value.unknown === undefined || typeof value.unknown === "boolean")
+    );
+  }
   return (
     (value.type === "content" && typeof value.slug === "string") ||
     (value.type === "tag" && typeof value.tag === "string") ||

@@ -15,6 +15,7 @@ import {
   SinkTracer,
 } from "@riebeckite/core";
 import {
+  analyzeBasesDependencies,
   BasesEvaluationError,
   bases,
   evaluateBasesExpression,
@@ -85,7 +86,10 @@ test("publishes referenced .base documents through PageType and preserves public
         kind: "plugin-page",
         path: "views/Books.html",
         producer: "plugin:bases:page:bases-document",
-        dependencies: [{ type: "global" }],
+        dependencies: [
+          { type: "file", path: "views/Books.base" },
+          { type: "content-query", properties: ["*"], unknown: true },
+        ],
       },
     ],
   );
@@ -181,6 +185,60 @@ test("parses and evaluates nested formulas without executing JavaScript", () => 
   assert.equal(
     evaluateBasesExpression(unsafe.value, entry, parsed.value.formulas),
     undefined,
+  );
+});
+
+test("analyzes filter, formula, sort, group, summary, and higher-order dependencies", () => {
+  const parsed = parseBases({
+    filters: "formula.visible",
+    formulas: {
+      visible: "formula.score > 1 && note.tags.map(value).contains('featured')",
+      score: "file.size + note.rating + file.frontmatter.priority",
+    },
+    views: [
+      {
+        type: "table",
+        columns: ["title", "formula.score"],
+        sort: "formula.score",
+        groupBy: { property: "file.mtime" },
+        summaries: { "formula.score": "sum" },
+      },
+    ],
+  });
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(analyzeBasesDependencies(parsed.value), {
+    type: "content-query",
+    properties: [
+      "file.mtime",
+      "file.size",
+      "priority",
+      "rating",
+      "tags",
+      "title",
+    ],
+  });
+});
+
+test("falls back safely when formulas are cyclic or expressions use dynamic indexing", () => {
+  const cyclic = parseBases({
+    formulas: { first: "formula.second", second: "formula.first" },
+    views: [{ type: "table", columns: ["formula.first"] }],
+  });
+  assert.equal(cyclic.ok, true);
+  assert.equal(analyzeBasesDependencies(cyclic.value).type, "content-query");
+  assert.equal(
+    (analyzeBasesDependencies(cyclic.value) as { readonly unknown?: boolean })
+      .unknown,
+    true,
+  );
+  const dynamic = parseBases({
+    filters: "note[status] == 'published'",
+  });
+  assert.equal(dynamic.ok, true);
+  assert.equal(
+    (analyzeBasesDependencies(dynamic.value) as { readonly unknown?: boolean })
+      .unknown,
+    true,
   );
 });
 

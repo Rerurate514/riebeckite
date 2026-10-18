@@ -91,6 +91,17 @@ status-change time である `stat.ctime` は使いません。Windows では通
 ファイルシステム依存の代替値を返すか、利用できる値がない場合があります。移植性が必要な
 Base では空の `file.ctime` を扱ってください。キャッシュした時刻は UTC の瞬間を保ちます。
 
+## 増分ビルド
+
+Bases は、filter、formula、column、sort、group、summary が読むプロパティを永続 Output
+Inventory に記録します。これらのプロパティ、参照するファイルメタデータ、または公開候補集合が変わった場合だけ、
+その Base を含む Markdown ページを再生成します。filter 不一致から一致への変更も検出します。本文だけの編集と
+無関係な frontmatter 編集では Base 出力を再利用します。
+
+formula の循環、動的なプロパティ参照など、静的に証明できない依存関係では Base 単位で保守的に再生成します。
+不明な依存関係を依存なしとして扱うことはありません。draft、scheduled、unlisted のエントリは Base の行から除外され、
+キャッシュ出力からも公開されません。
+
 ## 互換性マトリクス
 
 | Obsidian Base の機能 | 状態 | 備考 |
@@ -106,6 +117,7 @@ Base では空の `file.ctime` を扱ってください。キャッシュした�
 | `file.size`、`file.mtime`、`file.ctime` | 対応 | バイト数、ファイルシステムの更新時刻、作成時刻相当を使います。Linux では `ctime` が利用できないことがあります。`stat.ctime`、frontmatter、ビルド時刻へは置き換えません。 |
 | Backlinks、embeds | 未対応 | これらの値は空になります。 |
 | リストの `map`、`filter`、`reduce` | 一部対応 | `value`、`index`、`acc` スコープの式を使い、リスト長には上限があります。 |
+| 増分依存追跡 | 対応 | filter 候補集合と AST から得たプロパティ依存を追跡し、動的・循環 formula は Base 単位でフォールバックします。 |
 | 正規表現、オブジェクトリテラル、link/image の描画、非決定的な date/random 関数 | 未対応 | JavaScript を実行せず、安全でない URL を出力しません。 |
 | 編集、グループの折りたたみなどの対話的なビュー操作 | 対象外 | Riebeckite は静的なビルド出力を描画します。 |
 
@@ -113,5 +125,5 @@ Base では空の `file.ctime` を扱ってください。キャッシュした�
 
 `className`、`language`、`limit`、`showFallback`、`view` の意味は従来どおりです。
 パッケージは `bases`、`basesPlugin`、`remarkBases`、`parseBases`、
-`parseBasesExpression`、`evaluateBasesExpression`、`matchesCondition`、公開 Bases 型を
+`parseBasesExpression`、`analyzeBasesDependencies`、`evaluateBasesExpression`、`matchesCondition`、公開 Bases 型を
 エクスポートします。

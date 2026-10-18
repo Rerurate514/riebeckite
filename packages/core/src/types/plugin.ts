@@ -127,6 +127,9 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];
   contentOutputDependencies?: readonly OutputDependency[];
+  resolveContentOutputDependencies?(
+    entry: ContentManifestEntry,
+  ): readonly OutputDependency[];
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
 };

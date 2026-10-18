@@ -419,7 +419,8 @@ function evaluateCall(
 
 function globalCall(name: string, args: readonly unknown[]): unknown {
   if (name === "if") return args[0] ? args[1] : (args[2] ?? null);
-  if (name === "list") return Array.isArray(args[0]) ? args[0] : [args[0]];
+  if (name === "list")
+    return args.length === 1 && Array.isArray(args[0]) ? args[0] : args;
   if (name === "number") return Number(args[0]);
   if (name === "length")
     return Array.isArray(args[0]) || typeof args[0] === "string"

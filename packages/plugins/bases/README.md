@@ -95,6 +95,19 @@ time. Linux filesystems may not expose a creation time; Node can report a
 filesystem-dependent fallback or no usable value, so portability-sensitive Bases
 should handle an empty `file.ctime`. Cached timestamps retain their UTC instant.
 
+## Incremental builds
+
+Bases records the properties read by filters, formulas, columns, sorting, grouping,
+and summaries in the persisted Output Inventory. A change to one of those properties,
+to file metadata it reads, or to the discoverable candidate set regenerates only the
+Markdown page containing that Base. This includes notes that change from not matching
+to matching a filter. Body-only and unrelated frontmatter edits reuse the Base output.
+
+Formula cycles, dynamic property access, and other dependencies that cannot be proven
+statically use a conservative per-Base fallback. The fallback never treats an unknown
+dependency as no dependency. Draft, scheduled, and unlisted entries remain excluded
+from Base rows and are not exposed through cached output.
+
 ## Compatibility matrix
 
 | Obsidian Base feature | Status | Notes |
@@ -110,6 +123,7 @@ should handle an empty `file.ctime`. Cached timestamps retain their UTC instant.
 | `file.size`, `file.mtime`, `file.ctime` | Supported | Byte size, filesystem modification time, and filesystem creation-time equivalent. `ctime` can be unavailable on Linux; it is never mapped from `stat.ctime`, frontmatter, or build time. |
 | Backlinks, embeds | Unsupported | These values are empty. |
 | List `map`, `filter`, and `reduce` | Supported subset | Their expressions use the `value`, `index`, and `acc` scope with a bounded list size. |
+| Incremental dependency tracking | Supported | Tracks filter candidates and AST-derived property dependencies; dynamic or cyclic formulas fall back per Base. |
 | Regex, object literals, link/image rendering, nondeterministic date/random functions | Unsupported | Static rendering does not execute JavaScript or emit unsafe URLs. |
 | Editing, group collapse, and other interactive view controls | Out of Scope | Riebeckite renders static build output. |
 
@@ -117,5 +131,5 @@ should handle an empty `file.ctime`. Cached timestamps retain their UTC instant.
 
 `className`, `language`, `limit`, `showFallback`, and `view` retain their existing
 meanings. The package exports `bases`, `basesPlugin`, `remarkBases`, `parseBases`,
-`parseBasesExpression`, `evaluateBasesExpression`, `matchesCondition`, and the
+`parseBasesExpression`, `analyzeBasesDependencies`, `evaluateBasesExpression`, `matchesCondition`, and the
 public Bases types.

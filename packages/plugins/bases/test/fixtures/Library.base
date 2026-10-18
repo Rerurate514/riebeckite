@@ -1,0 +1,17 @@
+filters: (note.status == "published" && !file.hasTag("hidden")) || note.author.name == "Ada"
+formulas:
+  label: 'note.author.name.upper() + " / " + note.score'
+properties:
+  file.name: File
+  formula.label: Label
+  note.author.name: Author
+views:
+  - type: table
+    name: Library
+    order: [file.name, formula.label, note.author.name]
+    sort:
+      property: file.name
+      direction: ASC
+  - type: cards
+    name: Cards
+    order: [file.name, formula.label]

@@ -339,9 +339,20 @@ export function resolveValueRef(
   entry: ContentManifestEntry,
 ): unknown {
   if (reference.source === "frontmatter") {
-    return entry.frontmatter[reference.key];
+    return readFrontmatter(entry.frontmatter, reference.key);
   }
   return resolveBuiltin(reference.name, entry);
+}
+
+function readFrontmatter(
+  frontmatter: Readonly<Record<string, unknown>>,
+  key: string,
+): unknown {
+  if (key in frontmatter) return frontmatter[key];
+  return key.split(".").reduce<unknown>((value, part) => {
+    if (!value || typeof value !== "object") return undefined;
+    return (value as Readonly<Record<string, unknown>>)[part];
+  }, frontmatter);
 }
 
 function resolveBuiltin(

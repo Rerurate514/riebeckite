@@ -64,8 +64,14 @@ export function applyManifestHookSnapshot(
   snapshot: ManifestHookSnapshot,
 ): boolean {
   try {
-    const entries = structuredClone(snapshot.entries) as ContentManifestEntry[];
-    if (!entries.every(isManifestEntry)) return false;
+    const entries = structuredClone(snapshot.entries)
+      .map(reviveManifestEntry)
+      .filter((entry): entry is ContentManifestEntry => entry !== null);
+    if (
+      entries.length !== snapshot.entries.length ||
+      !entries.every(isManifestEntry)
+    )
+      return false;
     const entriesBySlug = new Map(entries.map((entry) => [entry.slug, entry]));
     if (entriesBySlug.size !== entries.length) return false;
     manifest.entries = entries;
@@ -127,6 +133,19 @@ export function applyManifestHookSnapshot(
   } catch {
     return false;
   }
+}
+
+function reviveManifestEntry(
+  entry: ContentManifestEntry,
+): ContentManifestEntry | null {
+  const publishAt = entry.publishing.publishAt;
+  if (typeof publishAt !== "string") return entry;
+  const parsed = new Date(publishAt);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return {
+    ...entry,
+    publishing: { ...entry.publishing, publishAt: parsed },
+  };
 }
 
 function manifestFingerprintValue(manifest: ContentManifest) {

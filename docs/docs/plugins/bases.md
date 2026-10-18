@@ -24,8 +24,10 @@ Markdown note links to it, for example `![[views/Books.base]]` creates
 `/views/Books`. This uses the normal PageType API and does not install custom
 routing.
 
-Both Base rows and document-page discovery use Core's `publicEntries`: public and
-unlisted notes are included; drafts and scheduled notes are excluded. A Base
+Document-page discovery uses Core's `publicEntries`, so a public or unlisted note
+may explicitly expose a referenced Base. Base rows use `discoverableEntries`:
+only public notes are listed automatically; unlisted notes remain routable only by
+their direct URL. Drafts and scheduled notes are excluded from both. A Base
 referenced only from non-public content is not published. Existing Markdown pages
 and public redirects win route collisions; the Base page is skipped with a
 `bases-invalid` warning.

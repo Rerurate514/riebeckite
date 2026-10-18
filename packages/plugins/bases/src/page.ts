@@ -82,7 +82,7 @@ export async function resolveBaseDocument(
     type: "bases-document",
     pathname: input.pathname,
     title,
-    body: `<main class="rb-bases-page"><h1 class="rb-bases-page__title">${escapeHtml(title)}</h1>${renderBases(parsed.value, options, input.manifest.publicEntries, source)}</main>`,
+    body: `<main class="rb-bases-page"><h1 class="rb-bases-page__title">${escapeHtml(title)}</h1>${renderBases(parsed.value, options, input.manifest.discoverableEntries, source)}</main>`,
   };
 }
 

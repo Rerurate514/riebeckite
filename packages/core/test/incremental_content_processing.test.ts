@@ -10,6 +10,7 @@ import type { ContentSource } from "../src/content/content_source.js";
 import { NoopLogger, SinkTracer } from "../src/observability.js";
 import type { ContentManifestEntry } from "../src/types/content_manifest.js";
 import { definePlugin } from "../src/types/plugin.js";
+import type { PluginManifestContext } from "../src/types/plugin_context.js";
 import type { PostContent } from "../src/types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../src/types/resolved_riebeckite_config.js";
 import {
@@ -1563,4 +1564,362 @@ test("a manifest hook html mutation is not persisted in the content caches", asy
     if (relative.includes("content-state.json")) continue;
     assert.equal(text.includes("MANIFEST_ONLY"), false, `${relative} cache`);
   }
+});
+
+function manifestHookPlugin(
+  name: string,
+  onManifestCreated: (context: PluginManifestContext) => void,
+) {
+  return definePlugin({
+    name,
+    processedContentCache: { version: `${name}-v1`, dependencyMode: "none" },
+    onManifestCreated,
+  });
+}
+
+function appendMarkerHook(
+  name: string,
+  marker: string,
+  slugs?: readonly string[],
+) {
+  return manifestHookPlugin(name, ({ manifest }) => {
+    for (const entry of manifest.entries) {
+      if (slugs && !slugs.includes(entry.slug)) continue;
+      if (!entry.html.includes(marker))
+        entry.html = `${entry.html}\n<p>${marker}</p>`;
+    }
+  });
+}
+
+async function buildWithManifestPlugins(
+  files: Record<string, string>,
+  directory: string,
+  plugins: ReturnType<typeof manifestHookPlugin>[],
+  collectProcessed = true,
+) {
+  const events: { name: string }[] = [];
+  const tracer = new SinkTracer({
+    onEvent: (event) => events.push(event),
+    onSpan: () => {},
+  });
+  const config = testConfig(directory);
+  const allPlugins = [...config.plugins, ...plugins];
+  const manager = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins: allPlugins },
+    plugins: allPlugins,
+    observability: { logger: new NoopLogger(), tracer },
+  });
+  const manifest = await manager.build({ incremental: true });
+  const manifestHookMetrics = manager.getManifestHookMetrics();
+  const processed = new Map<string, string>();
+  if (collectProcessed) {
+    for (const entry of manifest.entries) {
+      processed.set(
+        entry.slug,
+        (await manager.getProcessedContent(entry.slug)).html,
+      );
+    }
+  }
+  await manager.dispose();
+  return {
+    manifest,
+    processed,
+    reused: events.filter((event) => event.name === "content.reuse").length,
+    manifestHookMetrics,
+  };
+}
+
+type PersistedManifestHookEntry = {
+  readonly pluginName: string;
+  readonly cacheable: boolean;
+  readonly outputFingerprint?: string;
+  readonly snapshot?: {
+    readonly entries: readonly { readonly slug: string }[];
+    readonly order?: readonly string[];
+  };
+};
+
+async function readManifestHookCache(
+  directory: string,
+): Promise<PersistedManifestHookEntry[]> {
+  const statePath = path.join(directory, "build", "content-state.json");
+  const state = JSON.parse(await fs.readFile(statePath, "utf8"));
+  return state.manifestHookCache ?? [];
+}
+
+test("cacheable manifest hooks persist only the entries they change", async () => {
+  const directory = await tempDirectory("manifest-hook-delta-cacheable");
+  const files = { "a.md": "# A", "b.md": "# B", "c.md": "# C" };
+  const onlyA = appendMarkerHook("delta-only-a", "DELTA_A", ["a"]);
+  const all = appendMarkerHook("delta-all", "DELTA_ALL");
+
+  const cold = await buildWithManifestPlugins(files, directory, [onlyA, all]);
+  const cache = await readManifestHookCache(directory);
+  assert.deepEqual(
+    cache.map((entry) => entry.cacheable),
+    [true, true],
+  );
+  assert.deepEqual(
+    cache[0].snapshot?.entries.map((entry) => entry.slug),
+    ["a"],
+  );
+  assert.equal(cache[0].snapshot?.order, undefined);
+  assert.deepEqual(
+    [...(cache[1].snapshot?.entries ?? [])].map((entry) => entry.slug).sort(),
+    ["a", "b", "c"],
+  );
+
+  const warm = await buildWithManifestPlugins(files, directory, [onlyA, all]);
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 0,
+    reused: 2,
+    cacheHit: 2,
+    cacheMiss: 0,
+  });
+  assert.deepEqual([...warm.processed], [...cold.processed]);
+  for (const entry of warm.manifest.entries) {
+    assert.equal(
+      markerCount(entry.html, "DELTA_A"),
+      entry.slug === "a" ? 1 : 0,
+      `${entry.slug} A`,
+    );
+    assert.equal(markerCount(entry.html, "DELTA_ALL"), 1, `${entry.slug} all`);
+  }
+});
+
+test("uncacheable manifest hooks persist no snapshot and always rerun", async () => {
+  const directory = await tempDirectory("manifest-hook-delta-uncacheable");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  const uncacheable = manifestHookPlugin(
+    "delta-uncacheable",
+    ({ manifest }) => {
+      manifest.folderLocations.set("/guides/", {
+        pathname: "/guides/",
+        folder: "guides",
+      });
+      for (const entry of manifest.entries) {
+        if (!entry.html.includes("DELTA_FOLDER"))
+          entry.html = `${entry.html}\n<p>DELTA_FOLDER</p>`;
+      }
+    },
+  );
+
+  const cold = await buildWithManifestPlugins(files, directory, [uncacheable]);
+  const cache = await readManifestHookCache(directory);
+  assert.equal(cache.length, 1);
+  assert.equal(cache[0].cacheable, false);
+  assert.equal(cache[0].snapshot, undefined);
+  assert.equal(cache[0].outputFingerprint, undefined);
+
+  const warm = await buildWithManifestPlugins(files, directory, [uncacheable]);
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 1,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 1,
+  });
+  assert.deepEqual([...warm.processed], [...cold.processed]);
+});
+
+test("mixed manifest hooks reuse only the cacheable hooks", async () => {
+  const directory = await tempDirectory("manifest-hook-delta-mixed");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  const first = appendMarkerHook("delta-first", "DELTA_FIRST");
+  const middle = manifestHookPlugin("delta-middle", ({ manifest }) => {
+    manifest.folderLocations.set("/notes/", {
+      pathname: "/notes/",
+      folder: "notes",
+    });
+    for (const entry of manifest.entries) {
+      if (!entry.html.includes("DELTA_MIDDLE"))
+        entry.html = `${entry.html}\n<p>DELTA_MIDDLE</p>`;
+    }
+  });
+  const last = appendMarkerHook("delta-last", "DELTA_LAST");
+
+  const cold = await buildWithManifestPlugins(files, directory, [
+    first,
+    middle,
+    last,
+  ]);
+  const cache = await readManifestHookCache(directory);
+  assert.deepEqual(
+    cache.map((entry) => entry.cacheable),
+    [true, false, true],
+  );
+  assert.ok(cache[0].snapshot);
+  assert.equal(cache[1].snapshot, undefined);
+  assert.ok(cache[2].snapshot);
+
+  const warm = await buildWithManifestPlugins(files, directory, [
+    first,
+    middle,
+    last,
+  ]);
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 1,
+    reused: 2,
+    cacheHit: 2,
+    cacheMiss: 1,
+  });
+  assert.deepEqual([...warm.processed], [...cold.processed]);
+  for (const entry of warm.manifest.entries) {
+    for (const marker of ["DELTA_FIRST", "DELTA_MIDDLE", "DELTA_LAST"])
+      assert.equal(
+        markerCount(entry.html, marker),
+        1,
+        `${entry.slug} ${marker}`,
+      );
+  }
+});
+
+test("hooks that produce the same manifest each persist their own delta", async () => {
+  const directory = await tempDirectory("manifest-hook-delta-duplicate");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  const decorate = (name: string) => appendMarkerHook(name, "DELTA_SAME");
+
+  const cold = await buildWithManifestPlugins(files, directory, [
+    decorate("delta-same-a"),
+    decorate("delta-same-b"),
+  ]);
+  const cache = await readManifestHookCache(directory);
+  assert.equal(cache.length, 2);
+  assert.deepEqual(
+    cache[0].snapshot?.entries.map((entry) => entry.slug).sort(),
+    ["a", "b"],
+  );
+  assert.deepEqual(cache[1].snapshot?.entries, []);
+
+  const warm = await buildWithManifestPlugins(files, directory, [
+    decorate("delta-same-a"),
+    decorate("delta-same-b"),
+  ]);
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 0,
+    reused: 2,
+    cacheHit: 2,
+    cacheMiss: 0,
+  });
+  assert.deepEqual([...warm.processed], [...cold.processed]);
+  for (const entry of warm.manifest.entries)
+    assert.equal(markerCount(entry.html, "DELTA_SAME"), 1, entry.slug);
+});
+
+test("a later manifest hook reruns when an earlier hook changes its input", async () => {
+  const directory = await tempDirectory("manifest-hook-delta-dependency");
+  const files: Record<string, string> = { "a.md": "# A", "b.md": "# B" };
+  const seed = appendMarkerHook("delta-seed", "DELTA_SEED");
+  const dependent = manifestHookPlugin("delta-dependent", ({ manifest }) => {
+    for (const entry of manifest.entries) {
+      if (
+        entry.html.includes("DELTA_SEED") &&
+        !entry.html.includes("DELTA_DEPENDENT")
+      )
+        entry.html = `${entry.html}\n<p>DELTA_DEPENDENT</p>`;
+    }
+  });
+  const plugins = [seed, dependent];
+
+  const cold = await buildWithManifestPlugins(files, directory, plugins);
+  const warm = await buildWithManifestPlugins(files, directory, plugins);
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 0,
+    reused: 2,
+    cacheHit: 2,
+    cacheMiss: 0,
+  });
+  assert.deepEqual([...warm.processed], [...cold.processed]);
+
+  files["c.md"] = "# C";
+  const edited = await buildWithManifestPlugins(files, directory, plugins);
+  assert.deepEqual(manifestHookCounts(edited), {
+    executed: 2,
+    reused: 0,
+    cacheHit: 0,
+    cacheMiss: 2,
+  });
+  for (const entry of edited.manifest.entries) {
+    assert.equal(markerCount(entry.html, "DELTA_SEED"), 1, entry.slug);
+    assert.equal(markerCount(entry.html, "DELTA_DEPENDENT"), 1, entry.slug);
+  }
+});
+
+test("a manifest hook that changes nothing persists an empty delta", async () => {
+  const directory = await tempDirectory("manifest-hook-delta-noop");
+  const files = { "a.md": "# A" };
+  const noop = manifestHookPlugin("delta-noop", () => {});
+
+  await buildWithManifestPlugins(files, directory, [noop]);
+  const cache = await readManifestHookCache(directory);
+  assert.equal(cache[0].cacheable, true);
+  assert.deepEqual(cache[0].snapshot?.entries, []);
+  assert.equal(cache[0].snapshot?.order, undefined);
+
+  const warm = await buildWithManifestPlugins(files, directory, [noop]);
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 0,
+    reused: 1,
+    cacheHit: 1,
+    cacheMiss: 0,
+  });
+});
+
+test("a manifest hook that adds entries persists the entry order", async () => {
+  const directory = await tempDirectory("manifest-hook-delta-add");
+  const files = { "a.md": "# A", "b.md": "# B" };
+  const expand = manifestHookPlugin("delta-expand", ({ manifest }) => {
+    if (manifest.entries.some((entry) => entry.slug.startsWith("synthetic-")))
+      return;
+    const templates = [...manifest.entries];
+    for (let index = 0; index < 40; index += 1) {
+      const base = templates[index % templates.length];
+      manifest.entries.push({
+        ...base,
+        slug: `synthetic-${index}`,
+        contentId: undefined,
+        permalink: `/synthetic-${index}`,
+        publicLocation: {
+          slug: `synthetic-${index}`,
+          permalink: `/synthetic-${index}`,
+        },
+        title: `Synthetic ${index}`,
+        aliases: [],
+        tags: [...base.tags],
+        links: [...base.links],
+        assets: [...base.assets],
+        backlinks: [],
+      });
+    }
+  });
+
+  const cold = await buildWithManifestPlugins(
+    files,
+    directory,
+    [expand],
+    false,
+  );
+  const cache = await readManifestHookCache(directory);
+  assert.equal(cache[0].cacheable, true);
+  assert.equal(cache[0].snapshot?.entries.length, 40);
+  assert.deepEqual(
+    cache[0].snapshot?.order,
+    cold.manifest.entries.map((entry) => entry.slug),
+  );
+
+  const warm = await buildWithManifestPlugins(
+    files,
+    directory,
+    [expand],
+    false,
+  );
+  assert.deepEqual(manifestHookCounts(warm), {
+    executed: 0,
+    reused: 1,
+    cacheHit: 1,
+    cacheMiss: 0,
+  });
+  assert.deepEqual(
+    warm.manifest.entries.map((entry) => entry.slug),
+    cold.manifest.entries.map((entry) => entry.slug),
+  );
 });

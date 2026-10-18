@@ -172,10 +172,21 @@ function isManifestHookCache(value: unknown): boolean {
         (entry.pipelineFingerprint === undefined ||
           typeof entry.pipelineFingerprint === "string") &&
         typeof entry.inputFingerprint === "string" &&
-        typeof entry.outputFingerprint === "string" &&
-        isRecord(entry.snapshot) &&
-        Array.isArray(entry.snapshot.entries),
+        (entry.outputFingerprint === undefined ||
+          typeof entry.outputFingerprint === "string") &&
+        (entry.snapshot === undefined ||
+          isManifestHookSnapshot(entry.snapshot)),
     )
+  );
+}
+
+function isManifestHookSnapshot(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    Array.isArray(value.entries) &&
+    (value.order === undefined ||
+      (Array.isArray(value.order) &&
+        value.order.every((slug) => typeof slug === "string")))
   );
 }
 

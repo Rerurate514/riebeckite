@@ -42,49 +42,6 @@
     text-decoration: none;
   }
 
-  .rb-nav > .rb-nav__list {
-    display: flex;
-    gap: var(--rb-space-3);
-  }
-
-  .rb-nav__link,
-  .rb-nav__label {
-    color: var(--rb-color-ink);
-    text-decoration: none;
-  }
-
-  .rb-nav__label {
-    opacity: 0.6;
-  }
-
-  .rb-nav__link:hover,
-  .rb-nav__link:focus-visible,
-  .rb-nav__link--active {
-    color: var(--rb-color-accent);
-  }
-
-  .rb-nav__link:focus-visible,
-  .rb-nav__toggle:focus-visible {
-    outline: 2px solid var(--rb-color-accent);
-    outline-offset: 2px;
-  }
-
-  .rb-nav__children {
-    z-index: 50;
-    padding: var(--rb-space-2);
-    background: var(--rb-color-surface);
-    border: 1px solid var(--rb-color-border);
-  }
-
-  .rb-nav__item:hover > .rb-nav__children,
-  .rb-nav__item:focus-within > .rb-nav__children {
-    gap: var(--rb-space-2);
-  }
-
-  .rb-nav__mobile {
-    display: none;
-  }
-
   .rb-site-footer {
     margin-top: 1rem;
     padding-block: var(--rb-space-4);
@@ -123,8 +80,7 @@
   }
 
   @media (min-width: 30.001rem) and (max-width: 48rem) {
-    .rb-site-header,
-    .rb-nav > .rb-nav__list {
+    .rb-site-header {
       flex-wrap: wrap;
     }
   }
@@ -137,62 +93,12 @@
       padding-block: var(--rb-space-3);
     }
 
-    /* Keep the color-mode pill compact and centered when the chrome stacks on
-       phones instead of letting it stretch full-width. */
-    .rr-color-mode {
-      align-self: center;
-    }
-
-    /* Keep the color-mode buttons reachable touch targets. */
-    .rr-color-mode__button {
-      width: 2.5rem;
-      height: 2.5rem;
-    }
-
     .rb-site-header {
       flex-wrap: wrap;
     }
 
-    .rb-site-header > .rb-nav {
+    .site-header__primary-navigation {
       display: none;
-    }
-
-    .rb-nav__mobile {
-      position: relative;
-      display: block;
-    }
-
-    .rb-nav__mobile > .rb-nav {
-      position: absolute;
-      z-index: 10;
-      top: calc(100% + var(--rb-space-2));
-      right: 0;
-      min-width: 12rem;
-      padding: var(--rb-space-3);
-      background: var(--rb-color-surface);
-      border: 1px solid var(--rb-color-border);
-      box-shadow: 0 4px 12px
-        color-mix(in oklab, var(--rb-color-ink) 14%, transparent);
-    }
-
-    .rb-nav__mobile .rb-nav__list,
-    .rb-nav__mobile .rb-nav__children {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--rb-space-2);
-    }
-
-    .rb-nav__mobile .rb-nav__list {
-      padding: 0;
-    }
-
-    .rb-nav__mobile .rb-nav__children {
-      position: static;
-      margin-top: var(--rb-space-2);
-      padding: 0;
-      background: transparent;
-      border: 0;
     }
   }
 }
@@ -301,31 +207,19 @@
   outline-offset: 2px;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer .rb-nav {
+:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  .site-footer__navigation {
   align-self: end;
-}
-
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .rb-site-footer
-  .rb-nav__list {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0;
-}
-
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .rb-site-footer
-  .rb-nav__link,
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .rb-site-footer
-  .rb-nav__label {
-  display: block;
-  padding: 0.5rem 0 0.5rem 1.5rem;
-  font-family: var(--rb-font-heading);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  --rb-nav-list-flex-wrap: wrap;
+  --rb-nav-list-justify-content: flex-end;
+  --rb-nav-gap: 0;
+  --rb-nav-item-display: block;
+  --rb-nav-item-padding: 0.5rem 0 0.5rem 1.5rem;
+  --rb-nav-item-font-family: var(--rb-font-heading);
+  --rb-nav-item-font-size: 0.72rem;
+  --rb-nav-item-font-weight: 600;
+  --rb-nav-item-letter-spacing: 0.12em;
+  --rb-nav-item-text-transform: uppercase;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__meta {
@@ -355,21 +249,10 @@
   }
 
   :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-    .rb-site-footer
-    .rb-nav {
+    .site-footer__navigation {
     align-self: start;
-  }
-
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-    .rb-site-footer
-    .rb-nav__list {
-    justify-content: flex-start;
-  }
-
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-    .rb-site-footer
-    .rb-nav__link {
-    padding: 0.5rem 1.5rem 0.5rem 0;
+    --rb-nav-list-justify-content: flex-start;
+    --rb-nav-item-padding: 0.5rem 1.5rem 0.5rem 0;
   }
 
   :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__meta {

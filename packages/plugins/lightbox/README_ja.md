@@ -27,6 +27,9 @@ export default defineConfig({
 - `initLightbox` は `Escape`、背景クリック、閉じるボタンでダイアログを閉じ、開く前のフォーカスを戻します。
 - 開いている間は `html[data-lightbox-open="true"]` を設定するため、CSS でスクロールを止められます。
 
+Theme は `rr-lightbox` の root に `--rr-lightbox-image-border-radius` を指定すると、
+子要素を選択せずに表示中の画像を調整できます。
+
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |

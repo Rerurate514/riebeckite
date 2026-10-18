@@ -223,7 +223,7 @@ test("publishes the default LanguageSwitcher", async () => {
   const manifest = await content.getManifest();
   const localization = getLocalization(manifest, "guide.en")!;
   const html = renderToString(LanguageSwitcher({ localization }));
-  assert.match(html, /class="l10n-switcher"/);
+  assert.match(html, /class="l10n-switcher rr-l10n-switcher"/);
   assert.match(html, /href="\/guide"/);
   assert.match(html, /href="\/en\/guide"/);
   assert.match(html, /hreflang="ja"/);
@@ -361,7 +361,7 @@ test("language switcher visibility and content", async () => {
   const manifest = await content.getManifest();
   const localization = getLocalization(manifest, "guide.en")!;
   const html = renderToString(LanguageSwitcher({ localization }));
-  assert.match(html, /class="l10n-switcher"/);
+  assert.match(html, /class="l10n-switcher rr-l10n-switcher"/);
   assert.match(html, /href="\/guide"/);
   assert.match(html, /href="\/en\/guide"/);
 

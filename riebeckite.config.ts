@@ -187,20 +187,24 @@ export default defineConfig({
     folderPages(),
     navigation({
       items: [
-        { label: "Docs", href: "/docs/" },
-        { label: "Reference", href: "/docs/reference/" },
+        {
+          label: "Docs",
+          href: "/docs/",
+        },
+        {
+          label: "Plugins",
+          href: "/docs/plugins/",
+        },
         {
           label: "Themes",
           href: "/docs/themes/",
-          children: [
-            { label: "Default", href: "/docs/themes/default" },
-            { label: "Writing a theme", href: "/docs/themes/writing-a-theme" },
-          ],
         },
-        { label: "Explore", href: "/explore/" },
+        {
+          label: "Explore",
+          href: "/explore/",
+        },
       ],
       secondary: [
-        { label: "Docs", href: "/docs/" },
         {
           label: "GitHub",
           href: "https://github.com/Rerurate514/riebeckite",

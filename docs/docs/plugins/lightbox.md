@@ -54,6 +54,9 @@ the app calls on page initialization.
 - Returns a cleanup function that removes listeners, the dialog, and any
   wrapped images
 
+Themes can set `--rr-lightbox-image-border-radius` on the `rr-lightbox` root
+to style the displayed image without selecting its descendants.
+
 ## Options
 
 | Option | Type | Default | Description |

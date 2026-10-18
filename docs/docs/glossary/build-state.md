@@ -11,23 +11,24 @@ The record of the previous build, stored under the build directory, that holds e
 ## Location and content
 
 Stored at `.riebeckite/build/content-state.json`.
-Holds entries, fingerprints, dependencies, pipeline fingerprint, manifest entries, outputs, and external dependencies.
+Holds entries, fingerprints, dependencies, pipeline fingerprint, manifest entries, outputs, external dependencies, and the manifest hook cache.
 The next build reads it to compute an incremental change set.
 
 ## Version and validity
 
-Version is `CONTENT_BUILD_STATE_VERSION` (currently 12). A missing, incompatible, or malformed state causes a full build path. State is updated only after a successful build; a failed build never corrupts the previous good state.
+Version is `CONTENT_BUILD_STATE_VERSION` (currently 17). A missing, incompatible, or malformed state causes a full build path. State is updated only after a successful build; a failed build never corrupts the previous good state. Changing the stored shape raises the version, so a state written by an older version is ignored and the build falls back to the full path.
 
 ## Build State Structure
 
 `ContentBuildState` type at `packages/core/src/content/content_build_state.ts` contains:
-- `version`: number (currently 12)
+- `version`: number (currently 17)
 - `entries`: `Readonly<Record<string, ContentBuildEntry>>` — per-entry state including fingerprint, aliases, dependencies, link targets, and processed content cache fingerprint
 - `contentIndex`: `Readonly<Record<string, string>>` — content slug to path mapping
 - `pipelineFingerprint`: string | undefined — pipeline fingerprint for incremental validity checks
 - `manifestEntries`: `readonly ContentManifestEntry[]` — snapshot of manifest entries from the previous build
 - `outputs`: `readonly OutputDescriptor[]` — output descriptors from the previous build
 - `externalDependencies`: `readonly PersistedExternalDependency[]` — external dependency snapshots
+- `manifestHookCache`: `readonly ManifestHookCacheEntry[]` — one entry per manifest hook in execution order. A cacheable hook stores only the manifest entries it changed against its input, plus an `order` list when the entry order changed; a hook that also mutates non-entry manifest state stores no snapshot and always reruns.
 
 `ContentBuildEntry` (`packages/core/src/content/content_build_state.ts`) holds:
 - `fingerprint`: string — content fingerprint including source, frontmatter, pipeline, and plugin cache version

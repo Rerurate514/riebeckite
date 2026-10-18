@@ -94,6 +94,14 @@ import { MobileSiteNav, SiteNav } from "@riebeckite/plugin-navigation";
 `label` でランドマークのラベルを、`class` / `className` で `<nav>` のクラスを
 拡張できます。
 
+root レベルで意図的に見た目を上書きする場合は、`SiteNav` の root またはラッパーに
+次の公開カスタムプロパティを指定します。`--rb-nav-gap`、
+`--rb-nav-list-flex-wrap`、`--rb-nav-list-justify-content`、
+`--rb-nav-item-display`、`--rb-nav-item-padding`、
+`--rb-nav-item-font-family`、`--rb-nav-item-font-size`、
+`--rb-nav-item-font-weight`、`--rb-nav-item-letter-spacing`、
+`--rb-nav-item-text-transform` です。`rb-nav` の子要素は選択しません。
+
 ## 手書きナビゲーション
 
 自動導出ですべてを表現できるわけではなく、リンクを意図的に整えたいサイトも

@@ -72,6 +72,19 @@ return (
 The modal fetches `/search-data.json` (an array of `SearchItem`) on first open
 and shows up to 8 results.
 
+Themes can set `--rr-search-modal-panel-border-radius` and
+`--rr-search-modal-panel-shadow` on either `rr-search` root to customize the
+modal panel without selecting its descendants.
+
+## CSS hooks
+
+The search result hooks are `rr-search-result`,
+`rr-search-result__title`, `rr-search-result__meta`,
+`rr-search-result__excerpt`, `rr-search-result__tags`,
+`rr-search-result__tag`, and `rr-search-result__mark`. Default CSS targets
+these namespaced hooks only. The older `search-result*` classes remain on
+rendered results as compatibility aliases during migration.
+
 ## Search API
 
 ```ts

@@ -1,10 +1,14 @@
 import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
 import {
   applyManifestHookSnapshot,
+  captureManifestHookRestorePoint,
   createManifestHookCacheEntry,
   fingerprintManifestHookInput,
   fingerprintManifestHookSideEffects,
   fingerprintManifestHookSnapshot,
+  type ManifestHookRestorePoint,
+  restoreManifestHookEntries,
+  serializeManifestEntries,
 } from "../content/manifest_hook_cache.js";
 import type { OutputDescriptor } from "../content/output_dependency.js";
 import type { Observability } from "../observability.js";
@@ -310,6 +314,7 @@ export class PluginRuntime {
   ) {
     const context = { ...this.createContext(contentIndex), manifest };
     let cacheIndex = 0;
+    let entriesBeforeHook = serializeManifestEntries(manifest.entries);
     for (const plugin of this.plugins()) {
       const hook = plugin.onManifestCreated;
       if (!hook) continue;
@@ -322,30 +327,32 @@ export class PluginRuntime {
         pipelineFingerprint,
         inputFingerprint,
       );
-      const canRestore =
-        cached?.pluginName === plugin.name &&
+      let restored = false;
+      let restorePoint: ManifestHookRestorePoint | undefined;
+      if (
+        cached !== undefined &&
+        cached.pluginName === plugin.name &&
         cached.cacheable &&
         cached.pipelineFingerprint === pipelineFingerprint &&
-        cached.inputFingerprint === inputFingerprint;
-      const manifestBeforeRestore = canRestore
-        ? {
-            entries: structuredClone(manifest.entries),
-          }
-        : undefined;
-      const restored =
-        canRestore && applyManifestHookSnapshot(manifest, cached.snapshot);
-      const cacheHit =
-        restored &&
-        fingerprintManifestHookSnapshot(cached.snapshot, manifest) ===
-          cached.outputFingerprint;
-      if (cacheHit) {
-        this.manifestHooksReused += 1;
-        this.manifestHookCache.push(cached);
-        this.recordManifestHookMetric(plugin.name, "reused", "cache-hit", 0);
-        continue;
+        cached.inputFingerprint === inputFingerprint &&
+        cached.snapshot !== undefined &&
+        cached.outputFingerprint !== undefined
+      ) {
+        restorePoint = captureManifestHookRestorePoint(manifest);
+        restored = applyManifestHookSnapshot(manifest, cached.snapshot);
+        if (
+          restored &&
+          fingerprintManifestHookSnapshot(manifest) === cached.outputFingerprint
+        ) {
+          this.manifestHooksReused += 1;
+          this.manifestHookCache.push(cached);
+          this.recordManifestHookMetric(plugin.name, "reused", "cache-hit", 0);
+          entriesBeforeHook = serializeManifestEntries(manifest.entries);
+          continue;
+        }
       }
-      if (restored && manifestBeforeRestore)
-        applyManifestHookSnapshot(manifest, manifestBeforeRestore);
+      if (restored && restorePoint)
+        restoreManifestHookEntries(manifest, restorePoint);
       const sideEffectsBefore = fingerprintManifestHookSideEffects(manifest);
       const outputCountBefore = this.generatedOutputs.count();
       const diagnosticCountBefore = this.diagnostics.length;
@@ -369,6 +376,7 @@ export class PluginRuntime {
           durationMs,
         );
       }
+      const entriesAfterHook = serializeManifestEntries(manifest.entries);
       this.manifestHookCache.push(
         createManifestHookCacheEntry(
           plugin.name,
@@ -381,8 +389,11 @@ export class PluginRuntime {
           pipelineFingerprint,
           inputFingerprint,
           manifest,
+          entriesBeforeHook,
+          entriesAfterHook,
         ),
       );
+      entriesBeforeHook = entriesAfterHook;
     }
   }
 

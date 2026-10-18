@@ -54,6 +54,16 @@ return (
 
 各 `SearchItem` は解決済みの canonical `permalink` も持ちます。これはスコア対象ではありません。`slug` は検索用の identity で、モーダルの遷移先は `permalink` です。
 
+Theme はどちらの `rr-search` root にも `--rr-search-modal-panel-border-radius` と
+`--rr-search-modal-panel-shadow` を指定でき、子要素を選択せずにモーダルパネルを調整できます。
+
+## CSS Hook
+
+検索結果には `rr-search-result`、`rr-search-result__title`、
+`rr-search-result__meta`、`rr-search-result__excerpt`、
+`rr-search-result__tags`、`rr-search-result__tag`、
+`rr-search-result__mark` を使用します。default CSS はこれらの namespace 付き Hook だけを対象にします。従来の `search-result*` class は移行中の互換 alias として出力に残ります。
+
 ## 検索エンジンだけを使う
 
 検索関数は副作用のない関数として公開されています。独自の検索ページやサーバー側のインデックス生成にも利用できます。

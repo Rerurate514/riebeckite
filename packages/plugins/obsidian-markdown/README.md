@@ -30,7 +30,8 @@ export default defineConfig({
 ### Wikilinks
 
 - `[[Note]]` → link to the target's resolved canonical permalink
-  (`ContentManifestEntry.permalink`) with class `wikilink`, alias with
+  (`ContentManifestEntry.permalink`) with class `rr-obsidian-wikilink`; the
+  documented `wikilink` class remains as a compatibility alias. Alias with
   `[[Note|Alias]]`. The target is looked up by slug; the `href` is the resolved
   permalink
 - Fragments: `[[Note#Heading]]` → `#heading-slug`,
@@ -43,7 +44,12 @@ export default defineConfig({
 - `[[file.pdf]]` / `![[file.pdf]]` → rendered by a plugin that provides
   `renderAttachment` (see `@riebeckite/plugin-attachment`), otherwise a plain
   download link
-- Unresolvable targets → link with class `wikilink wikilink-broken`
+- Unresolvable targets → link with class `rr-obsidian-wikilink--broken`; the
+  documented `wikilink-broken` class remains as a compatibility alias
+
+Embedded notes, images, and unresolved embeds receive default Plugin CSS. Note
+embeds include visible `Embedded: <slug>` text rather than generated content so
+the label is available to assistive technology.
 
 ### Callouts
 
@@ -58,6 +64,12 @@ export default defineConfig({
 Output: `div.rr-callout.rr-callout--{type}` with `data-callout`, plus
 `rr-callout--collapsible` / `rr-callout--collapsed` for `+` / `-` markers. Titles fall back to
 built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
+
+Themes can customize a callout from its `rr-callout` root with
+`--rr-callout-title-color`, `--rr-callout-title-font-family`,
+`--rr-callout-title-font-size`, `--rr-callout-title-font-weight`,
+`--rr-callout-title-letter-spacing`, `--rr-callout-title-text-transform`, and
+`--rr-callout-icon-color`; they must not select callout descendants.
 
 ### Inline tags
 

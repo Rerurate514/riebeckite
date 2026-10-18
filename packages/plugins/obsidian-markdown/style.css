@@ -1,5 +1,12 @@
 .rr-callout {
   --rr-callout-tone: var(--rb-color-info, var(--rb-color-accent));
+  --rr-callout-title-color: var(--rr-callout-tone);
+  --rr-callout-title-font-family: inherit;
+  --rr-callout-title-font-size: inherit;
+  --rr-callout-title-font-weight: 700;
+  --rr-callout-title-letter-spacing: normal;
+  --rr-callout-title-text-transform: none;
+  --rr-callout-icon-color: var(--rr-callout-tone);
   margin-block: 1.5rem;
   padding: 1rem 1.125rem;
   border: 1px solid
@@ -55,10 +62,67 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  color: var(--rr-callout-tone);
-  font-weight: 700;
+  color: var(--rr-callout-title-color);
+  font-family: var(--rr-callout-title-font-family);
+  font-size: var(--rr-callout-title-font-size);
+  font-weight: var(--rr-callout-title-font-weight);
+  letter-spacing: var(--rr-callout-title-letter-spacing);
+  text-transform: var(--rr-callout-title-text-transform);
+}
+
+.rr-callout__icon {
+  color: var(--rr-callout-icon-color);
 }
 
 .rr-callout__content > :last-child {
   margin-bottom: 0;
+}
+
+.rr-obsidian-wikilink-embed {
+  margin-block: 1.75rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid
+    color-mix(in oklab, currentColor 18%, transparent);
+}
+
+.rr-obsidian-wikilink-image-embed {
+  margin-block: 1.75rem;
+  text-align: center;
+}
+
+.rr-obsidian-wikilink-image-embed img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.rr-obsidian-wikilink-embed__label {
+  display: block;
+  margin-block-end: 0.5rem;
+  color: color-mix(in oklab, currentColor 55%, transparent);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.rr-obsidian-wikilink-embed__label + * {
+  margin-top: 0;
+}
+
+.rr-obsidian-wikilink-embed > :last-child {
+  margin-bottom: 0;
+}
+
+.rr-obsidian-wikilink-embed .rr-obsidian-wikilink-embed {
+  margin-block: 1.25rem;
+  border-inline-start-color: color-mix(in oklab, currentColor 26%, transparent);
+}
+
+.rr-obsidian-wikilink-embed-unresolved,
+.rr-obsidian-wikilink--broken {
+  color: var(--rb-color-danger);
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
 }

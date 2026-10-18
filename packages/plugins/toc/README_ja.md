@@ -48,6 +48,10 @@ return (
 
 リンクの `data-toc-target` 属性を使って対象の見出しを見つけます。同じページにデスクトップ用とモバイル用の二つの目次を置いても、それぞれのリンクを正しく更新できます。現在の節のリンクには `aria-current` が付き、読了済みの節も区別されます。Site は記事レール内でデスクトップ用 root を sticky にし、高さを制限した縦スクロール領域を与えます。Plugin は見出しを折り返して横スクロールを防ぎます。
 
+Theme は ToC の root に `--rr-table-of-contents-eyebrow-font-size`、
+`--rr-table-of-contents-eyebrow-margin-block-end`、
+`--rr-table-of-contents-item-line-height` を指定でき、リストの子要素を選択せずに調整できます。
+
 ## 主なエクスポート
 
 - `tocPlugin()`: プラグインを作成する

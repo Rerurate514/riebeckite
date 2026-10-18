@@ -33,6 +33,8 @@ export type WikilinkFragment =
 
 const WIKILINK_PATTERN =
   "(!)?\\[\\[([^\\]|#]+)(?:#(\\^[^\\]|]+|[^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
+const WIKILINK_CLASS = "wikilink rr-obsidian-wikilink";
+const BROKEN_WIKILINK_CLASS = `${WIKILINK_CLASS} wikilink-broken rr-obsidian-wikilink--broken`;
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
   const {
@@ -119,7 +121,8 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
             url: resolvePermalink(resolved.value),
             data: {
               hProperties: {
-                class: "wikilink-embed-unresolved",
+                class:
+                  "wikilink-embed-unresolved rr-obsidian-wikilink-embed-unresolved",
               },
             },
             children: [
@@ -158,7 +161,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         newNodes.push({
           type: "link",
           url: `${resolvePermalink(resolved.value)}${anchor}`,
-          data: { hProperties: { class: "wikilink" } },
+          data: { hProperties: { class: WIKILINK_CLASS } },
           children: [{ type: "text", value: label }],
         });
       } else if (resolved?.kind === "image") {
@@ -166,7 +169,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         newNodes.push({
           type: "link",
           url: buildAssetsUrl(resolved.value, assetBase),
-          data: { hProperties: { class: "wikilink" } },
+          data: { hProperties: { class: WIKILINK_CLASS } },
           children: [{ type: "text", value: label }],
         });
       } else if (resolved?.kind === "attachment") {
@@ -191,7 +194,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         newNodes.push({
           type: "link",
           url: "#",
-          data: { hProperties: { class: "wikilink wikilink-broken" } },
+          data: { hProperties: { class: BROKEN_WIKILINK_CLASS } },
           children: [{ type: "text", value: label }],
         });
       }
@@ -215,7 +218,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
 function createImageEmbedNode(url: string, alt: string): Html {
   return {
     type: "html",
-    value: `<div class="wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}" /></div>`,
+    value: `<div class="wikilink-image-embed rr-obsidian-wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}" /></div>`,
   };
 }
 
@@ -295,7 +298,7 @@ function createNoteEmbedNode(
     : "";
   return {
     type: "html",
-    value: `<div class="wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}"${fragmentAttribute}>${html}</div>`,
+    value: `<div class="wikilink-embed rr-obsidian-wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}"${fragmentAttribute}><span class="rr-obsidian-wikilink-embed__label">Embedded: ${escapeHtmlAttribute(slug)}</span>${html}</div>`,
   };
 }
 
@@ -325,7 +328,7 @@ function createAttachmentFallbackLink(
 ): Html {
   return {
     type: "html",
-    value: `<a class="wikilink wikilink-attachment" href="${escapeHtmlAttribute(url)}" download>${escapeHtmlAttribute(label || path)}</a>`,
+    value: `<a class="wikilink wikilink-attachment rr-obsidian-wikilink rr-obsidian-wikilink--attachment" href="${escapeHtmlAttribute(url)}" download>${escapeHtmlAttribute(label || path)}</a>`,
   };
 }
 

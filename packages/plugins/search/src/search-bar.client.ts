@@ -243,30 +243,30 @@ function createResultElement(
   normalizedQuery: string,
 ): HTMLAnchorElement {
   const link = document.createElement("a");
-  link.className = "search-result";
+  link.className = "search-result rr-search-result";
   link.href = result.permalink;
   link.dataset.searchResult = "true";
   link.setAttribute("role", "option");
 
   const title = document.createElement("p");
-  title.className = "search-result__title";
+  title.className = "search-result__title rr-search-result__title";
   appendHighlightedText(title, result.title, normalizedQuery);
 
   const meta = document.createElement("p");
-  meta.className = "search-result__meta";
+  meta.className = "search-result__meta rr-search-result__meta";
   meta.textContent = [formatDate(result.date), result.slug]
     .filter(Boolean)
     .join(" · ");
 
   const excerpt = document.createElement("p");
-  excerpt.className = "search-result__excerpt";
+  excerpt.className = "search-result__excerpt rr-search-result__excerpt";
   appendHighlightedText(excerpt, createDisplayExcerpt(result), normalizedQuery);
 
   const tags = document.createElement("p");
-  tags.className = "search-result__tags";
+  tags.className = "search-result__tags rr-search-result__tags";
   for (const tag of result.tags.slice(0, 4)) {
     const badge = document.createElement("span");
-    badge.className = "search-result__tag";
+    badge.className = "search-result__tag rr-search-result__tag";
     appendHighlightedText(badge, `#${tag}`, normalizedQuery);
     tags.appendChild(badge);
   }
@@ -315,7 +315,7 @@ function appendHighlightedText(
 
 function createMark(value: string): HTMLElement {
   const mark = document.createElement("mark");
-  mark.className = "search-result__mark";
+  mark.className = "search-result__mark rr-search-result__mark";
   mark.textContent = value;
   return mark;
 }

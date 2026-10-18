@@ -9,6 +9,8 @@ function read(relativePath: string): string {
 const themeCss = read("../../../packages/themes/rerurate/styles/theme.css");
 const navigationCss = read("../../../packages/plugins/navigation/style.css");
 const searchCss = read("../../../packages/plugins/search/style.css");
+const shellCss = read("../app/styles/shell.css");
+const articleCss = read("../app/components/article/style.css");
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -27,6 +29,13 @@ function zIndexAt(css: string, selector: RegExp): number {
   const value = /z-index:\s*(-?\d+)/.exec(rule);
   assert.ok(value, `missing z-index in ${selector}`);
   return Number(value[1]);
+}
+
+function ruleSelectors(css: string): string {
+  return [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{/g)]
+    .map((match) => match[1])
+    .filter((selector) => !selector.trimStart().startsWith("@"))
+    .join("\n");
 }
 
 test("A1: rendered blocks own their foreground, the theme keeps bare markdown pre", () => {
@@ -392,4 +401,45 @@ test("article route composes the contextual language switcher", () => {
     /import \{ LanguageSwitcher \} from "@riebeckite\/plugin-l10n"/,
   );
   assert.match(route, /<LanguageSwitcher \/>/);
+});
+
+test("CSS hooks keep Site and Theme styling outside plugin elements", () => {
+  const pluginElement = /\.(?:rb-nav|rr-color-mode|rr-table-of-contents)__/;
+
+  for (const [name, css] of [
+    ["shell", shellCss],
+    ["article", articleCss],
+  ]) {
+    assert.doesNotMatch(
+      ruleSelectors(css),
+      pluginElement,
+      `${name} CSS must use Site wrappers or public plugin roots`,
+    );
+  }
+
+  for (const { relative } of themeStyleFiles()) {
+    assert.doesNotMatch(
+      ruleSelectors(read(relative)),
+      /\.rr-[\w-]+__/,
+      `${relative} must use public plugin roots and custom properties`,
+    );
+  }
+});
+
+test("CSS hooks namespace search and localization defaults", () => {
+  const l10nCss = read("../../../packages/plugins/l10n/style.css");
+  const searchClient = read(
+    "../../../packages/plugins/search/src/search-bar.client.ts",
+  );
+  const l10nComponent = read(
+    "../../../packages/plugins/l10n/components/language-switcher.tsx",
+  );
+
+  assert.doesNotMatch(ruleSelectors(searchCss), /\.search-result(?:__\w+)?/);
+  assert.match(searchCss, /\.rr-search \.sr-only/);
+  assert.match(searchCss, /\.rr-search-result\s*\{/);
+  assert.match(searchClient, /search-result rr-search-result/);
+  assert.doesNotMatch(ruleSelectors(l10nCss), /\.l10n-switcher(?:__\w+)?/);
+  assert.match(l10nCss, /\.rr-l10n-switcher\s*\{/);
+  assert.match(l10nComponent, /l10n-switcher rr-l10n-switcher/);
 });

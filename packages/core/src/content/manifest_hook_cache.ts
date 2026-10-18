@@ -139,13 +139,43 @@ function reviveManifestEntry(
   entry: ContentManifestEntry,
 ): ContentManifestEntry | null {
   const publishAt = entry.publishing.publishAt;
-  if (typeof publishAt !== "string") return entry;
-  const parsed = new Date(publishAt);
-  if (Number.isNaN(parsed.getTime())) return null;
+  const parsed =
+    typeof publishAt === "string" ? new Date(publishAt) : publishAt;
+  if (parsed instanceof Date && Number.isNaN(parsed.getTime())) return null;
+  const file = reviveFileMetadata(entry.file);
+  if (file === null) return null;
   return {
     ...entry,
-    publishing: { ...entry.publishing, publishAt: parsed },
+    publishing: {
+      ...entry.publishing,
+      ...(parsed ? { publishAt: parsed } : {}),
+    },
+    ...(file ? { file } : {}),
   };
+}
+
+function reviveFileMetadata(
+  file: ContentManifestEntry["file"],
+): ContentManifestEntry["file"] | null {
+  if (file === undefined) return undefined;
+  const ctime = reviveDate(file.ctime);
+  const mtime = reviveDate(file.mtime);
+  if (ctime === null || mtime === null) return null;
+  return {
+    ...(typeof file.size === "number" &&
+    Number.isSafeInteger(file.size) &&
+    file.size >= 0
+      ? { size: file.size }
+      : {}),
+    ...(ctime ? { ctime } : {}),
+    ...(mtime ? { mtime } : {}),
+  };
+}
+
+function reviveDate(value: Date | string | undefined): Date | undefined | null {
+  if (value === undefined) return undefined;
+  const parsed = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
 function manifestFingerprintValue(manifest: ContentManifest) {

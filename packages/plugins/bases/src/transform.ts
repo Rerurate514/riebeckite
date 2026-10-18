@@ -152,7 +152,8 @@ function isGroupKey(value: unknown): value is BasesGroupKey {
     value === null ||
     typeof value === "string" ||
     typeof value === "number" ||
-    typeof value === "boolean"
+    typeof value === "boolean" ||
+    (value instanceof Date && Number.isFinite(value.getTime()))
   );
 }
 
@@ -211,7 +212,9 @@ function valueIdentity(value: unknown): string {
 }
 
 function groupIdentity(value: BasesGroupKey): string {
-  return value === null ? "null" : `${typeof value}:${String(value)}`;
+  if (value === null) return "null";
+  if (value instanceof Date) return `date:${value.getTime()}`;
+  return `${typeof value}:${String(value)}`;
 }
 
 const emptyEntry = {

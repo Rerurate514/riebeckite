@@ -3,7 +3,11 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import type {
+  ContentManifestEntry,
+  ContentSource,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
 import {
   ContentManager,
   NoopLogger,
@@ -14,6 +18,8 @@ import {
   BasesEvaluationError,
   bases,
   evaluateBasesExpression,
+  groupBasesEntries,
+  matchesCondition,
   parseBases,
   parseBasesExpression,
   sortBasesEntries,
@@ -212,6 +218,81 @@ test("evaluates precedence, short circuits, missing values, and cycles safely", 
   assert.deepEqual(evaluate("[1, 2, 3].filter(value > 1)"), [2, 3]);
   assert.equal(evaluate("[1, 2, 3].reduce(acc + value, 0)"), 6);
   assert.equal(evaluate("['a', 'b'].containsAll('a', 'b')"), true);
+});
+
+test("uses file metadata in formulas, filters, sorting, groups, summaries, and higher-order expressions", () => {
+  const early = metadataEntry("Early", 12, "2024-01-01T00:00:00.000Z");
+  const late = metadataEntry("Late", 24, "2024-01-02T00:00:00.000Z");
+  const spec = parseBases({
+    formulas: {
+      total: "file.size + 1",
+      values: "list(file.size, file.mtime).map(value)",
+    },
+  });
+  assert.equal(spec.ok, true);
+  assert.equal(
+    evaluateBasesExpression(
+      parseExpression("formula.total"),
+      early,
+      spec.value.formulas,
+    ),
+    13,
+  );
+  assert.deepEqual(
+    evaluateBasesExpression(
+      parseExpression("formula.values"),
+      early,
+      spec.value.formulas,
+    ),
+    [12, new Date("2024-01-01T00:00:00.000Z")],
+  );
+  assert.equal(
+    matchesCondition(
+      {
+        kind: "expression",
+        expression: parseExpression(
+          "file.mtime < date('2024-01-02') && file.ctime >= date('2023-12-31')",
+        ),
+      },
+      early,
+    ),
+    true,
+  );
+  const view = {
+    type: "table" as const,
+    columns: [],
+    sort: [{ property: "file.size", direction: "desc" as const }],
+    groupBy: { property: "file.mtime", direction: "asc" as const },
+  };
+  assert.deepEqual(sortBasesEntries([early, late], view, spec.value), [
+    late,
+    early,
+  ]);
+  assert.deepEqual(
+    groupBasesEntries([early, late], view, spec.value).map(
+      (group) => group.key,
+    ),
+    [
+      new Date("2024-01-01T00:00:00.000Z"),
+      new Date("2024-01-02T00:00:00.000Z"),
+    ],
+  );
+  assert.equal(
+    summarizeBasesValues(
+      [early.file?.size, late.file?.size],
+      "sum",
+      spec.value,
+    ),
+    36,
+  );
+  assert.deepEqual(
+    summarizeBasesValues(
+      [early.file?.mtime, late.file?.mtime],
+      "latest",
+      spec.value,
+    ),
+    new Date("2024-01-02T00:00:00.000Z"),
+  );
 });
 
 test("stops deeply nested and large higher-order formulas with an explicit error", () => {
@@ -682,6 +763,26 @@ function entry(title: string, value: unknown, tie: number) {
     links: [],
     frontmatter: { value, tie },
   } as never;
+}
+
+function metadataEntry(
+  title: string,
+  size: number,
+  time: string,
+): ContentManifestEntry {
+  return {
+    slug: `notes/${title}`,
+    permalink: `/notes/${title}`,
+    title,
+    tags: [],
+    links: [],
+    frontmatter: {},
+    file: {
+      size,
+      ctime: new Date("2023-12-31T00:00:00.000Z"),
+      mtime: new Date(time),
+    },
+  } as ContentManifestEntry;
 }
 
 async function buildCached(

@@ -14,6 +14,7 @@ import {
   extractFrontmatterAliases,
   normalizeFrontmatterTags,
 } from "./content_metadata.js";
+import type { ContentSourceMetadata } from "./content_source.js";
 import { resolveContentStableId } from "./content_stable_id.js";
 import { extractMarkdownImages } from "./markdown_image.js";
 import type { ResolvedPublishingState } from "./publishing.js";
@@ -26,6 +27,7 @@ export class ManifestBuilder {
     contentIndex: Map<string, string>,
     location: ContentPublicLocation,
     publishing: ResolvedPublishingState,
+    sourceMetadata?: ContentSourceMetadata,
   ): ContentManifestEntry {
     const links = extractContentLinks(markdown, contentIndex);
     const assets = [
@@ -48,6 +50,7 @@ export class ManifestBuilder {
       permalink: location.permalink,
       publicLocation: location,
       title: getManifestTitle(slug, processed.frontmatter.title),
+      file: toFileMetadata(sourceMetadata),
       aliases: extractFrontmatterAliases(markdown),
       frontmatter: processed.frontmatter,
       publishing,
@@ -123,6 +126,29 @@ export class ManifestBuilder {
     };
     return { ...manifest, graph: createContentGraph(manifest) };
   }
+}
+
+function toFileMetadata(
+  metadata: ContentSourceMetadata | undefined,
+): ContentManifestEntry["file"] {
+  return {
+    ...(validSize(metadata?.size) ? { size: metadata.size } : {}),
+    ...toDate(metadata?.createdAt, "ctime"),
+    ...toDate(metadata?.modifiedAt, "mtime"),
+  };
+}
+
+function validSize(value: number | undefined): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
+function toDate(
+  value: number | undefined,
+  key: "ctime" | "mtime",
+): Partial<ContentManifestEntry["file"]> {
+  if (typeof value !== "number" || !Number.isFinite(value)) return {};
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? {} : { [key]: date };
 }
 
 function createAliasIndex(

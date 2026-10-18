@@ -6,6 +6,12 @@ import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type { PluginHeadTag } from "./plugin_head.js";
 import type { PostFrontmatter } from "./post_content.js";
 
+export type ContentFileMetadata = {
+  readonly size?: number;
+  readonly ctime?: Date;
+  readonly mtime?: Date;
+};
+
 export type ContentLinkKind = "note" | "image" | "attachment" | "unresolved";
 
 export type ContentLink = {
@@ -43,6 +49,7 @@ export type ContentManifestEntry = {
   permalink: string;
   publicLocation: ContentPublicLocation;
   title: string;
+  file?: ContentFileMetadata;
   aliases?: readonly string[];
   frontmatter: PostFrontmatter;
   publishing: ResolvedPublishingState;

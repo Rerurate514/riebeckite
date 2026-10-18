@@ -8,6 +8,7 @@ import {
   readFile,
   rename,
   rm,
+  utimes,
   writeFile,
 } from "node:fs/promises";
 import path from "node:path";
@@ -380,6 +381,14 @@ test("Bases incremental SSG output matches an independent clean build", async (t
         "unlisted.md",
       ),
     (site: string) => rm(path.join(site, "vault", "views", "Matrix.base")),
+    (site: string) =>
+      appendFile(path.join(site, "vault", "notes", "public.md"), "\n"),
+    (site: string) =>
+      utimes(
+        path.join(site, "vault", "notes", "public.md"),
+        new Date("2024-01-01T00:00:00.000Z"),
+        new Date("2024-01-01T00:00:00.000Z"),
+      ),
   ];
   for (const [index, apply] of mutate.entries()) {
     const inc = path.join(root, `incremental-${index}`);
@@ -395,6 +404,7 @@ test("Bases incremental SSG output matches an independent clean build", async (t
     const clean = path.join(root, `clean-${index}`);
     await cp(inc, clean, {
       recursive: true,
+      preserveTimestamps: true,
       filter: (source) => {
         const relative = path.relative(inc, source);
         return relative !== ".riebeckite" && relative !== "dist";
@@ -447,7 +457,7 @@ async function createBasesSite(site: string): Promise<void> {
   );
   await writeFile(
     path.join(site, "vault", "views", "Matrix.base"),
-    "formulas:\n  rank: note.value * 2\nsummaries:\n  total: values.reduce(acc + value, 0)\nproperties:\n  file.name: Name\n  group: Group\n  formula.rank: Rank\nviews:\n  - type: table\n    order: [file.name, group, formula.rank]\n    sort: [{ property: formula.rank, direction: DESC }]\n    groupBy: { property: group, direction: ASC }\n    summaries: { formula.rank: total }\n",
+    "filters: file.ctime != null\nformulas:\n  rank: note.value * 2\n  mtimeEpoch: file.mtime - date('1970-01-01')\nsummaries:\n  total: values.reduce(acc + value, 0)\nproperties:\n  file.name: Name\n  file.size: Size\n  group: Group\n  formula.rank: Rank\n  formula.mtimeEpoch: Modified\nviews:\n  - type: table\n    order: [file.name, file.size, group, formula.rank, formula.mtimeEpoch]\n    sort: [{ property: formula.rank, direction: DESC }]\n    groupBy: { property: group, direction: ASC }\n    summaries: { formula.rank: total }\n",
   );
   await mkdir(path.join(site, "vault", "notes"), { recursive: true });
   await writeFile(

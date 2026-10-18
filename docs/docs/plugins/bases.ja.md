@@ -77,6 +77,20 @@ Formula の評価は、1回につき AST の 10,000 ステップとネストし�
 切り替えます。大きな高階式や深い式によって静的ビルドが無制限に実行されることを防ぎ、
 JavaScript のコールバックは実行しません。
 
+## ファイルメタデータ
+
+`file.size` はソースファイルのバイト数です。`file.mtime` と `file.ctime` は
+ファイルシステムから得る UTC の `Date` 値で、プロパティ、filter、Formula、ソート、
+グループ、集計、高階式で使えます。ソースのメタデータが欠落または不正な場合は、描画後の
+Markdown やビルド時刻から補わず、空の値として扱います。日付どうしの減算はミリ秒になり、
+`"7 days"` のような duration による Date の加減算もできます。
+
+ファイルシステムのコンテンツでは、`file.ctime` に Node の `birthtime` を使います。
+status-change time である `stat.ctime` は使いません。Windows では通常、作成時刻を取得
+できます。Linux のファイルシステムは作成時刻を持たないことがあり、Node が
+ファイルシステム依存の代替値を返すか、利用できる値がない場合があります。移植性が必要な
+Base では空の `file.ctime` を扱ってください。キャッシュした時刻は UTC の瞬間を保ちます。
+
 ## 互換性マトリクス
 
 | Obsidian Base の機能 | 状態 | 備考 |
@@ -89,7 +103,8 @@ JavaScript のコールバックは実行しません。
 | Table の集計 | 一部対応 | 名前付き集計、Empty、Filled、Unique、Checked、Unchecked、数値、日付の集計を使えます。 |
 | Cards の集計 | 対象外 | Obsidian は集計を cards ではなく Table に表示します。 |
 | `file.name`、`file.path`、`file.ext`、`file.folder`、`file.tags`、`file.links`、`file.properties`、`file.link` | 一部対応 | Markdown マニフェストから導出します。name/path は `.md` のソース規則を使います。 |
-| `file.size`、`file.mtime`、`file.ctime`、backlinks、embeds | 未対応 | Core の行にこのメタデータがありません。空の値になり、frontmatter の日付へは置き換えません。 |
+| `file.size`、`file.mtime`、`file.ctime` | 対応 | バイト数、ファイルシステムの更新時刻、作成時刻相当を使います。Linux では `ctime` が利用できないことがあります。`stat.ctime`、frontmatter、ビルド時刻へは置き換えません。 |
+| Backlinks、embeds | 未対応 | これらの値は空になります。 |
 | リストの `map`、`filter`、`reduce` | 一部対応 | `value`、`index`、`acc` スコープの式を使い、リスト長には上限があります。 |
 | 正規表現、オブジェクトリテラル、link/image の描画、非決定的な date/random 関数 | 未対応 | JavaScript を実行せず、安全でない URL を出力しません。 |
 | 編集、グループの折りたたみなどの対話的なビュー操作 | 対象外 | Riebeckite は静的なビルド出力を描画します。 |

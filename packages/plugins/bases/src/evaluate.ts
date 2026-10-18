@@ -219,7 +219,9 @@ function fileValue(entry: ContentManifestEntry): Record<string, unknown> {
     path,
     folder: folderOf(entry.slug),
     ext: "md",
-    size: undefined,
+    size: entry.file?.size,
+    ctime: entry.file?.ctime,
+    mtime: entry.file?.mtime,
     tags: entry.tags,
     links: entry.links.map((link) => link.slug ?? link.raw),
     properties: entry.frontmatter,
@@ -282,6 +284,12 @@ function evaluateBinary(
       expression.operator as BasesOperator,
       right as BasesLiteral,
     );
+  const dateArithmetic = evaluateDateArithmetic(
+    left,
+    expression.operator,
+    right,
+  );
+  if (dateArithmetic !== undefined) return dateArithmetic;
   if (expression.operator === "+")
     return typeof left === "string" || typeof right === "string"
       ? `${left ?? ""}${right ?? ""}`
@@ -291,6 +299,80 @@ function evaluateBinary(
   if (expression.operator === "/")
     return Number(right) === 0 ? Number.NaN : Number(left) / Number(right);
   return Number(left) % Number(right);
+}
+
+function evaluateDateArithmetic(
+  left: unknown,
+  operator: string,
+  right: unknown,
+): Date | number | undefined {
+  if (!(left instanceof Date) || Number.isNaN(left.getTime())) return undefined;
+  if (operator === "-" && right instanceof Date) {
+    return left.getTime() - right.getTime();
+  }
+  if (typeof right !== "string" || (operator !== "+" && operator !== "-")) {
+    return undefined;
+  }
+  const duration = parseDuration(right);
+  if (!duration) return undefined;
+  return offsetDate(left, duration, operator === "+" ? 1 : -1);
+}
+
+function parseDuration(
+  value: string,
+): { readonly amount: number; readonly unit: string } | undefined {
+  const match =
+    /^\s*(-?\d+(?:\.\d+)?)\s*(y|year|years|M|month|months|d|day|days|w|week|weeks|h|hour|hours|m|minute|minutes|s|second|seconds)\s*$/.exec(
+      value,
+    );
+  if (!match) return undefined;
+  const amount = Number(match[1]);
+  const unit = match[2];
+  return Number.isFinite(amount) && unit ? { amount, unit } : undefined;
+}
+
+function offsetDate(
+  source: Date,
+  duration: { readonly amount: number; readonly unit: string },
+  direction: 1 | -1,
+): Date {
+  const date = new Date(source.getTime());
+  const amount = duration.amount * direction;
+  switch (duration.unit) {
+    case "y":
+    case "year":
+    case "years":
+      date.setUTCFullYear(date.getUTCFullYear() + amount);
+      return date;
+    case "M":
+    case "month":
+    case "months":
+      date.setUTCMonth(date.getUTCMonth() + amount);
+      return date;
+    case "w":
+    case "week":
+    case "weeks":
+      date.setTime(date.getTime() + amount * 7 * 86_400_000);
+      return date;
+    case "d":
+    case "day":
+    case "days":
+      date.setTime(date.getTime() + amount * 86_400_000);
+      return date;
+    case "h":
+    case "hour":
+    case "hours":
+      date.setTime(date.getTime() + amount * 3_600_000);
+      return date;
+    case "m":
+    case "minute":
+    case "minutes":
+      date.setTime(date.getTime() + amount * 60_000);
+      return date;
+    default:
+      date.setTime(date.getTime() + amount * 1_000);
+      return date;
+  }
 }
 
 function evaluateCall(
@@ -561,9 +643,11 @@ function resolveBuiltin(
     case "file.ext":
       return "md";
     case "file.size":
+      return entry.file?.size;
     case "file.mtime":
+      return entry.file?.mtime;
     case "file.ctime":
-      return undefined;
+      return entry.file?.ctime;
     default:
       return undefined;
   }

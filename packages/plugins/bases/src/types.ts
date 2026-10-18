@@ -76,7 +76,7 @@ export type BasesGroupBy = {
   readonly direction: "asc" | "desc";
 };
 
-export type BasesGroupKey = string | number | boolean | null;
+export type BasesGroupKey = string | number | boolean | Date | null;
 
 /** A value read either from a built-in or from frontmatter. */
 export type BasesValueRef =

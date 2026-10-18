@@ -81,6 +81,21 @@ evaluation. Exceeding either limit stops deterministically, reports a
 large or deeply nested higher-order expressions from making a static build
 unbounded; JavaScript callbacks are never executed.
 
+## File metadata
+
+`file.size` is the source file's byte size. `file.mtime` and `file.ctime` are
+UTC `Date` values sourced from the filesystem, so they can be used in properties,
+filters, formulas, sorting, grouping, summaries, and higher-order expressions.
+Missing or invalid source metadata evaluates to an empty value rather than being
+derived from rendered Markdown or build time. Date subtraction returns
+milliseconds; a Date can also be offset by a duration such as `"7 days"`.
+
+For filesystem content, `file.ctime` uses Node's `birthtime` value, not
+`stat.ctime` (which is a status-change time). Windows normally provides creation
+time. Linux filesystems may not expose a creation time; Node can report a
+filesystem-dependent fallback or no usable value, so portability-sensitive Bases
+should handle an empty `file.ctime`. Cached timestamps retain their UTC instant.
+
 ## Compatibility matrix
 
 | Obsidian Base feature | Status | Notes |
@@ -93,7 +108,8 @@ unbounded; JavaScript callbacks are never executed.
 | Table summaries | Supported subset | Named summaries and Empty, Filled, Unique, Checked, Unchecked, numeric, and date summaries are available. |
 | Card summaries | Out of Scope | Obsidian displays summaries in tables, not cards. |
 | `file.name`, `file.path`, `file.ext`, `file.folder`, `file.tags`, `file.links`, `file.properties`, `file.link` | Partial | Derived from the Markdown manifest; name/path use the `.md` source convention. |
-| `file.size`, `file.mtime`, `file.ctime`, backlinks, embeds | Unsupported | Core manifest rows do not carry this metadata. These values are empty, never mapped to frontmatter dates. |
+| `file.size`, `file.mtime`, `file.ctime` | Supported | Byte size, filesystem modification time, and filesystem creation-time equivalent. `ctime` can be unavailable on Linux; it is never mapped from `stat.ctime`, frontmatter, or build time. |
+| Backlinks, embeds | Unsupported | These values are empty. |
 | List `map`, `filter`, and `reduce` | Supported subset | Their expressions use the `value`, `index`, and `acc` scope with a bounded list size. |
 | Regex, object literals, link/image rendering, nondeterministic date/random functions | Unsupported | Static rendering does not execute JavaScript or emit unsafe URLs. |
 | Editing, group collapse, and other interactive view controls | Out of Scope | Riebeckite renders static build output. |

@@ -130,7 +130,13 @@ function analyzeExpression(
       analyzeExpression(expression.right, properties, formula, markUnknown);
       return;
     case "call":
-      if (expression.callee.kind === "member")
+      if (isFilePredicate(expression.callee, "hasTag")) {
+        properties.add("file.tags");
+      } else if (isFilePredicate(expression.callee, "hasLink")) {
+        properties.add("file.links");
+      } else if (isFilePredicate(expression.callee, "inFolder")) {
+        properties.add("file.folder");
+      } else if (expression.callee.kind === "member")
         analyzeExpression(
           expression.callee.object,
           properties,
@@ -151,6 +157,14 @@ function analyzeExpression(
       markUnknown();
       return;
   }
+}
+
+function isFilePredicate(
+  expression: BasesExpression,
+  predicate: string,
+): boolean {
+  const path = expressionPath(expression);
+  return path?.length === 2 && path[0] === "file" && path[1] === predicate;
 }
 
 function analyzeMember(

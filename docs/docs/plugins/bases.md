@@ -99,10 +99,11 @@ should handle an empty `file.ctime`. Cached timestamps retain their UTC instant.
 ## Incremental builds
 
 Bases records the properties read by filters, formulas, columns, sorting, grouping,
-and summaries in the persisted Output Inventory. A change to one of those properties,
-to file metadata it reads, or to the discoverable candidate set regenerates only the
-Markdown page containing that Base. This includes notes that change from not matching
-to matching a filter. Body-only and unrelated frontmatter edits reuse the Base output.
+and summaries in the persisted Output Inventory. This applies independently to fenced
+Bases and each referenced `.base` document. A change to one of those properties, to
+file metadata it reads, or to the discoverable candidate set regenerates only the
+Base output that reads it. This includes notes that change from not matching to
+matching a filter. Body-only and unrelated frontmatter edits reuse the Base output.
 
 Formula cycles, dynamic property access, and other dependencies that cannot be proven
 statically use a conservative per-Base fallback. The fallback never treats an unknown

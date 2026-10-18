@@ -94,9 +94,10 @@ Base では空の `file.ctime` を扱ってください。キャッシュした�
 ## 増分ビルド
 
 Bases は、filter、formula、column、sort、group、summary が読むプロパティを永続 Output
-Inventory に記録します。これらのプロパティ、参照するファイルメタデータ、または公開候補集合が変わった場合だけ、
-その Base を含む Markdown ページを再生成します。filter 不一致から一致への変更も検出します。本文だけの編集と
-無関係な frontmatter 編集では Base 出力を再利用します。
+Inventory に記録します。これは fenced Base と参照された各 `.base` ドキュメントに個別に適用されます。
+これらのプロパティ、参照するファイルメタデータ、または公開候補集合が変わった場合だけ、その値を読む Base 出力を
+再生成します。filter 不一致から一致への変更も検出します。本文だけの編集と無関係な frontmatter 編集では Base 出力を
+再利用します。
 
 formula の循環、動的なプロパティ参照など、静的に証明できない依存関係では Base 単位で保守的に再生成します。
 不明な依存関係を依存なしとして扱うことはありません。draft、scheduled、unlisted のエントリは Base の行から除外され、

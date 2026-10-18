@@ -23,10 +23,14 @@ export type BasesRuntime = {
   ): void;
   dependenciesFor(slug: string): readonly OutputDependency[];
   dependenciesForPage(pathname: string): readonly OutputDependency[];
+  setDocumentDependencies(
+    dependencies: ReadonlyMap<string, readonly OutputDependency[]>,
+  ): void;
 };
 
 export function createBasesRuntime(options: BasesOptions): BasesRuntime {
   const dependencies = new Map<string, readonly OutputDependency[]>();
+  let documentDependencies = new Map<string, readonly OutputDependency[]>();
   return {
     resolve(manifest, diagnostics, _config) {
       const entries = manifest.discoverableEntries;
@@ -50,10 +54,10 @@ export function createBasesRuntime(options: BasesOptions): BasesRuntime {
       return dependencies.get(slug) ?? [];
     },
     dependenciesForPage(pathname) {
-      return [
-        { type: "file", path: `${pathname.replace(/^\//, "")}.base` },
-        { type: "content-query", properties: ["*"], unknown: true },
-      ];
+      return documentDependencies.get(pathname) ?? [{ type: "unknown" }];
+    },
+    setDocumentDependencies(nextDependencies) {
+      documentDependencies = new Map(nextDependencies);
     },
   };
 }

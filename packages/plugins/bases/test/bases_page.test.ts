@@ -77,10 +77,12 @@ test("publishes referenced .base documents through PageType and preserves public
     "views/Books.base": await libraryBase(),
   });
   assert.deepEqual([...(await manager.getPagePaths())], ["/views/Books"]);
+  const outputChanges = await manager.getOutputChangeSet({
+    incremental: false,
+  });
+  assert.equal(outputChanges.fullRegenerationRequired, false);
   assert.deepEqual(
-    (await manager.getOutputChangeSet({ incremental: false })).affected.filter(
-      (output) => output.kind === "plugin-page",
-    ),
+    outputChanges.affected.filter((output) => output.kind === "plugin-page"),
     [
       {
         kind: "plugin-page",
@@ -88,7 +90,16 @@ test("publishes referenced .base documents through PageType and preserves public
         producer: "plugin:bases:page:bases-document",
         dependencies: [
           { type: "file", path: "views/Books.base" },
-          { type: "content-query", properties: ["*"], unknown: true },
+          {
+            type: "content-query",
+            properties: [
+              "author.name",
+              "file.name",
+              "file.tags",
+              "score",
+              "status",
+            ],
+          },
         ],
       },
     ],
@@ -216,6 +227,18 @@ test("analyzes filter, formula, sort, group, summary, and higher-order dependenc
       "tags",
       "title",
     ],
+  });
+});
+
+test("tracks file predicate calls without an unknown dependency", () => {
+  const parsed = parseBases({
+    filters:
+      "file.hasTag('featured') && file.hasLink('notes/Target') && file.inFolder('notes')",
+  });
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(analyzeBasesDependencies(parsed.value), {
+    type: "content-query",
+    properties: ["file.folder", "file.links", "file.tags"],
   });
 });
 

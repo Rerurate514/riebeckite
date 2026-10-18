@@ -3,7 +3,7 @@ import {
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
-import { listBaseDocumentPaths, resolveBaseDocument } from "./src/page.js";
+import { listBaseDocuments, resolveBaseDocument } from "./src/page.js";
 import { remarkBases } from "./src/remark.js";
 import { createBasesRuntime } from "./src/runtime.js";
 import type { BasesOptions } from "./src/types.js";
@@ -72,8 +72,22 @@ export function bases(options: BasesOptions = {}) {
     pageTypes: [
       {
         id: "bases-document",
-        paths: ({ manifest, contentSource, diagnostics }) =>
-          listBaseDocumentPaths({ manifest, contentSource, diagnostics }),
+        paths: async ({ manifest, contentSource, diagnostics }) => {
+          const documents = await listBaseDocuments({
+            manifest,
+            contentSource,
+            diagnostics,
+          });
+          runtime.setDocumentDependencies(
+            new Map(
+              documents.map((document) => [
+                document.pathname,
+                document.dependencies,
+              ]),
+            ),
+          );
+          return documents.map((document) => document.pathname);
+        },
         outputDependencies: ({ pathname }) =>
           runtime.dependenciesForPage(pathname),
         resolve: (context) => resolveBaseDocument(context, options),

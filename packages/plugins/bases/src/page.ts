@@ -6,6 +6,7 @@ import {
   type PluginPage,
   readContentSourceEntry,
 } from "@riebeckite/core";
+import { analyzeBasesDependencies } from "./dependencies.js";
 import { parseBases } from "./parse.js";
 import { renderBases, renderBasesError } from "./render.js";
 import type { BasesOptions } from "./types.js";
@@ -13,13 +14,26 @@ import { parseBasesYaml } from "./yaml.js";
 
 const BASE_SUFFIX = /\.base$/i;
 
+export type BaseDocument = {
+  readonly pathname: string;
+  readonly dependencies: readonly import("@riebeckite/core").OutputDependency[];
+};
+
 export async function listBaseDocumentPaths(input: {
   readonly manifest: ContentManifest;
   readonly contentSource?: ContentSource;
   readonly diagnostics: Diagnostic[];
 }): Promise<readonly string[]> {
+  return (await listBaseDocuments(input)).map((document) => document.pathname);
+}
+
+export async function listBaseDocuments(input: {
+  readonly manifest: ContentManifest;
+  readonly contentSource?: ContentSource;
+  readonly diagnostics: Diagnostic[];
+}): Promise<readonly BaseDocument[]> {
   if (!input.contentSource) return [];
-  const paths: string[] = [];
+  const documents: BaseDocument[] = [];
   for (const slug of publicBaseSlugs(input.manifest)) {
     const pathname = basePath(slug);
     if (
@@ -37,7 +51,7 @@ export async function listBaseDocumentPaths(input: {
       continue;
     }
     const source = await readBase(input.contentSource, slug);
-    if (!source || !parseBase(source).ok) {
+    if (!source) {
       input.diagnostics.push(
         diagnostic(
           slug,
@@ -46,9 +60,25 @@ export async function listBaseDocumentPaths(input: {
       );
       continue;
     }
-    paths.push(pathname);
+    const parsed = parseBase(source);
+    if (parsed.ok === false) {
+      input.diagnostics.push(
+        diagnostic(
+          slug,
+          `Base \`${slug}\` is not a valid Bases YAML document.`,
+        ),
+      );
+      continue;
+    }
+    documents.push({
+      pathname,
+      dependencies: [
+        { type: "file", path: slug },
+        analyzeBasesDependencies(parsed.value),
+      ],
+    });
   }
-  return paths;
+  return documents;
 }
 
 export async function resolveBaseDocument(

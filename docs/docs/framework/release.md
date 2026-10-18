@@ -98,7 +98,7 @@ Use the official npm CLI for every staged operation:
 | `npm stage approve <stage-id>` | Approve and publish a staged version (interactive two-factor). |
 | `npm stage reject <stage-id>` | Remove a staged version (requires two-factor). |
 
-The release script inspects staged versions with `npm stage list`. If a pending package already has a matching staged version, the script approves it (interactively) and treats it as published. It never stages packages itself, and it never bypasses two-factor authentication.
+The release script inspects staged versions with `npm stage list`. If the list cannot be read, the release stops instead of publishing blindly. When a pending package already has a matching staged version whose tarball matches the current build, the script approves it (interactively) and treats it as published; if the tarball cannot be proven to match, it stops and prints the commands to inspect or reject the stage. It never stages packages itself, and it never bypasses two-factor authentication.
 
 ## Handling E409
 
@@ -108,10 +108,11 @@ When the script sees E409 for a package it:
 
 1. Re-checks whether the version is published.
 2. Lists staged versions with `npm stage list <package-name> --json`.
-3. Approves the matching stage with `npm stage approve <stage-id>` when the terminal is interactive.
-4. Confirms the version is live before continuing.
+3. Proves that the staged tarball matches the current build.
+4. Approves the matching stage with `npm stage approve <stage-id>` when the terminal is interactive.
+5. Confirms the version is live before continuing.
 
-If any step cannot be completed automatically, the release stops with the exact commands to run. It never retries the same publish, so a staged conflict cannot produce an infinite loop.
+If any step cannot be completed automatically — including when `npm stage list` cannot be read or the staged tarball cannot be proven to match — the release stops with the exact commands to run. It never retries the same publish, so a staged conflict cannot produce an infinite loop.
 
 ```mermaid
 flowchart TD
@@ -120,7 +121,9 @@ flowchart TD
     Published -->|No| List["npm stage list <name> --json"]
     List --> Found{"Matching stage?"}
     Found -->|No| Instructions["Stop with manual instructions"]
-    Found -->|Yes| Interactive{"Interactive terminal?"}
+    Found -->|Yes| Match{"Tarball matches current build?"}
+    Match -->|No| Instructions
+    Match -->|Yes| Interactive{"Interactive terminal?"}
     Interactive -->|No| Manual["Stop: approve manually"]
     Interactive -->|Yes| Approve["npm stage approve <stage-id>"]
     Approve --> Confirm{"Confirmed live?"}
@@ -176,6 +179,6 @@ The release behavior is covered by tests that never publish to npm:
 pnpm test:release
 ```
 
-The suite mocks the npm and pnpm calls and covers an all-unpublished run, a fully published run, partial releases, E409 staged conflicts, permission errors, E404 responses, propagation lag, network timeouts, duplicate-publish prevention, and final verification failure.
+The suite mocks the npm and pnpm calls and covers an all-unpublished run, a fully published run, partial releases, E409 staged conflicts, permission errors, E404 responses, propagation lag, network timeouts, duplicate-publish prevention, and final verification failure. It also drives the CLI entry point through a full staged-conflict resume and verifies the real `npm stage list` JSON contract against a mock registry.
 
 See [Architecture](./architecture.md), [Testing](./testing.md), and [CLI](../reference/cli.md).

@@ -98,7 +98,7 @@ staged 操作には必ず公式の npm CLI を使用してください。
 | `npm stage approve <stage-id>` | staged version を承認して publish する（対話的な二要素認証） |
 | `npm stage reject <stage-id>` | staged version を削除する（二要素認証が必要） |
 
-release script は `npm stage list` で staged version を確認します。未公開 package に対応する staged version がある場合、対話的に承認して公開済みとして扱います。script 自身が staging を行うことはなく、二要素認証を迂回することもありません。
+release script は `npm stage list` で staged version を確認します。一覧を取得できない場合は publish せず停止します。未公開 package に対応する staged version があり、その tarball が現行ビルドと一致すると確認できた場合のみ、対話的に承認して公開済みとして扱います。一致を確認できない場合は停止し、stage を確認・reject する command を表示します。script 自身が staging を行うことはなく、二要素認証を迂回することもありません。
 
 # E409 への対応
 
@@ -108,10 +108,11 @@ script は package の E409 を検出すると次を行います。
 
 1. その version が公開済みか再確認します。
 2. `npm stage list <package-name> --json` で staged version を一覧表示します。
-3. terminal が対話的であれば `npm stage approve <stage-id>` で該当 stage を承認します。
-4. 続行する前に、その version が live であることを確認します。
+3. staged された tarball が現行ビルドと一致することを確認します。
+4. terminal が対話的であれば `npm stage approve <stage-id>` で該当 stage を承認します。
+5. 続行する前に、その version が live であることを確認します。
 
-自動で完了できない手順がある場合、release は実行すべき正確な command を表示して停止します。同じ publish を retry しないため、staged conflict が無限 loop になることはありません。
+自動で完了できない手順がある場合（`npm stage list` を取得できない場合や、staged された tarball の一致を確認できない場合を含む）、release は実行すべき正確な command を表示して停止します。同じ publish を retry しないため、staged conflict が無限 loop になることはありません。
 
 ```mermaid id="0vq8sd"
 flowchart TD
@@ -120,7 +121,9 @@ flowchart TD
     Published -->|いいえ| List["npm stage list <name> --json"]
     List --> Found{"一致する stage がある？"}
     Found -->|いいえ| Instructions["手動手順を表示して停止"]
-    Found -->|はい| Interactive{"対話的 terminal？"}
+    Found -->|はい| Match{"tarball が現行ビルドと一致？"}
+    Match -->|いいえ| Instructions
+    Match -->|はい| Interactive{"対話的 terminal？"}
     Interactive -->|いいえ| Manual["停止：手動で承認"]
     Interactive -->|はい| Approve["npm stage approve <stage-id>"]
     Approve --> Confirm{"live を確認できた？"}
@@ -176,6 +179,6 @@ RELEASE COMPLETE: 84/84 package versions published as <version>.
 pnpm test:release
 ```
 
-この suite は npm / pnpm の呼び出しを mock し、全 package 未公開、全 package 公開済み、部分公開、E409 の staged conflict、権限エラー、E404 応答、反映遅延、network timeout、重複 publish の防止、最終検証の失敗を検証します。
+この suite は npm / pnpm の呼び出しを mock し、全 package 未公開、全 package 公開済み、部分公開、E409 の staged conflict、権限エラー、E404 応答、反映遅延、network timeout、重複 publish の防止、最終検証の失敗を検証します。さらに、CLI エントリポイント経由で staged conflict からの再開を通しで検証し、実 `npm stage list` の JSON 契約を mock registry に対して検証します。
 
 責務の全体像は [Architecture](./architecture.ja.md)、テスト方針は [Testing](./testing.ja.md)、CLI については [CLI](../reference/cli.ja.md) を参照してください。

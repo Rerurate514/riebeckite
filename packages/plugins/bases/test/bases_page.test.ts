@@ -15,6 +15,8 @@ import {
   evaluateBasesExpression,
   parseBases,
   parseBasesExpression,
+  sortBasesEntries,
+  summarizeBasesValues,
 } from "../index.js";
 
 function memorySource(input: Readonly<Record<string, string>>): ContentSource {
@@ -236,6 +238,80 @@ test("sorts formula values and renders grouped table summaries", async () => {
   assert.match(body, /__summary[^>]*>2</);
 });
 
+test("sorts scalar formula values stably and rejects invalid sort directions", () => {
+  const parsed = parseBases({
+    formulas: { value: "note.value", chained: "formula.value" },
+    views: [
+      {
+        type: "table",
+        sort: [
+          { property: "formula.chained", direction: "ASC" },
+          { property: "note.tie", direction: "DESC" },
+        ],
+      },
+    ],
+  });
+  assert.equal(parsed.ok, true);
+  const entries = [
+    entry("text", "z", 1),
+    entry("number", 2, 2),
+    entry("date", "2025-01-01", 3),
+    entry("false", false, 4),
+    entry("empty", null, 5),
+    entry("stable-a", 4, 7),
+    entry("stable-b", 4, 7),
+  ];
+  const sorted = sortBasesEntries(entries, parsed.value.views[0], parsed.value);
+  assert.deepEqual(
+    sorted.map((value) => value.title),
+    ["number", "stable-a", "stable-b", "date", "false", "text", "empty"],
+  );
+  assert.equal(summarizeBasesValues([1, 2, 3], "Sum", parsed.value), 6);
+  assert.equal(summarizeBasesValues([1, 2, 3], "Average", parsed.value), 2);
+  assert.equal(
+    parseBases({
+      views: [
+        { type: "table", sort: [{ property: "x", direction: "sideways" }] },
+      ],
+    }).ok,
+    false,
+  );
+});
+
+test("groups and summaries use only discoverable public entries", async () => {
+  const manager = createManager({
+    "index.md": "---\npublish: true\n---\n\n![[views/Boundary.base]]\n",
+    "notes/Public.md":
+      "---\npublish: true\nstatus: visible\nscore: 3\n---\n\n# Public\n",
+    "notes/Hidden.md":
+      "---\npublish: false\nstatus: secret\nscore: 999999\n---\n\n# Hidden\n",
+    "notes/Unlisted.md":
+      "---\nvisibility: unlisted\nstatus: secret\nscore: 888888\n---\n\n# Unlisted\n",
+    "notes/Scheduled.md":
+      "---\npublish: true\npublishAt: 2999-01-01T00:00:00.000Z\nstatus: secret\nscore: 777777\n---\n\n# Scheduled\n",
+    "views/Boundary.base": [
+      "summaries:",
+      "  total: values.reduce(acc + value, 0)",
+      "properties:",
+      "  file.name: Name",
+      "  status: Status",
+      "  score: Score",
+      "views:",
+      "  - type: table",
+      "    order: [file.name, status, score]",
+      "    groupBy: { property: status, direction: ASC }",
+      "    summaries: { score: total }",
+    ].join("\n"),
+  });
+  const body = (await manager.resolvePage("/views/Boundary"))?.body ?? "";
+  assert.match(body, /visible/);
+  assert.match(body, /__summary">3</);
+  assert.doesNotMatch(
+    body,
+    /secret|999999|888888|777777|Hidden|Unlisted|Scheduled/,
+  );
+});
+
 test("escapes formula and property output", async () => {
   const manager = createManager({
     "index.md": "---\npublish: true\n---\n\n![[views/Safe.base]]\n",
@@ -345,6 +421,17 @@ function parseExpression(source: string) {
   const expression = parseBasesExpression(source);
   assert.equal(expression.ok, true, source);
   return expression.value;
+}
+
+function entry(title: string, value: unknown, tie: number) {
+  return {
+    slug: `notes/${title}`,
+    permalink: `/notes/${title}`,
+    title,
+    tags: [],
+    links: [],
+    frontmatter: { value, tie },
+  } as never;
 }
 
 async function buildCached(

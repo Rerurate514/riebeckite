@@ -510,12 +510,18 @@ function parseSort(
         return fail(`${path}[${index}] must name a \`property\` or \`field\`.`);
       }
       const direction = record.direction ?? record.order;
-      const descending =
-        typeof direction === "string" &&
-        direction.trim().toLowerCase() === "desc";
+      const normalizedDirection =
+        direction === undefined
+          ? "asc"
+          : typeof direction === "string"
+            ? direction.trim().toLowerCase()
+            : "";
+      if (normalizedDirection !== "asc" && normalizedDirection !== "desc") {
+        return fail(`${path}[${index}].direction must be "ASC" or "DESC".`);
+      }
       sorts.push({
         property,
-        direction: descending ? "desc" : "asc",
+        direction: normalizedDirection,
       });
       continue;
     }

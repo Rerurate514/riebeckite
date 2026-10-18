@@ -169,7 +169,16 @@ function compareValues(left: unknown, right: unknown): number {
     return left - right;
   if (typeof left === "boolean" && typeof right === "boolean")
     return Number(left) - Number(right);
+  const typeOrder = valueTypeOrder(left) - valueTypeOrder(right);
+  if (typeOrder !== 0) return typeOrder;
   return String(left).localeCompare(String(right), "en");
+}
+
+function valueTypeOrder(value: unknown): number {
+  if (typeof value === "number") return 0;
+  if (toDate(value)) return 1;
+  if (typeof value === "boolean") return 2;
+  return 3;
 }
 
 function isEmpty(value: unknown): boolean {

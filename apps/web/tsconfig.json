@@ -16,6 +16,7 @@
       "@riebeckite/honox/ui": [
         "packages/integrations/honox/src/ui/primitives.tsx"
       ],
+      "@riebeckite/ui": ["packages/ui/index.tsx"],
       "@riebeckite/plugin-*": ["packages/plugins/*/index.ts"],
       "@riebeckite/plugin-*/client": ["packages/plugins/*/client.ts"],
       "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]

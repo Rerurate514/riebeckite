@@ -161,7 +161,10 @@ async function runSample({ preset, size, scenario, run }) {
       recursive: true,
       force: true,
     });
-    await fs.rm(path.join(baselineSite, "dist"), { recursive: true, force: true });
+    await fs.rm(path.join(baselineSite, "dist"), {
+      recursive: true,
+      force: true,
+    });
     const clean = await invokeBuild(baselineSite, "clean");
     const equivalence = compareSnapshots(
       output,
@@ -297,9 +300,13 @@ async function restoreCache(cacheStore, siteRoot) {
   await fs.mkdir(path.join(siteRoot, ".riebeckite", "build"), {
     recursive: true,
   });
-  await fs.cp(path.join(cacheStore, "cache"), path.join(siteRoot, ".riebeckite", "cache"), {
-    recursive: true,
-  });
+  await fs.cp(
+    path.join(cacheStore, "cache"),
+    path.join(siteRoot, ".riebeckite", "cache"),
+    {
+      recursive: true,
+    },
+  );
   await fs.copyFile(
     path.join(cacheStore, "content-state.json"),
     path.join(siteRoot, ".riebeckite", "build", "content-state.json"),
@@ -379,7 +386,9 @@ async function linkWorkspacePackages(siteRoot) {
   const packageDirectories = (
     await Promise.all(
       packageRoots.map(async (packageRoot) =>
-        (await fs.readdir(packageRoot, { withFileTypes: true }))
+        (
+          await fs.readdir(packageRoot, { withFileTypes: true })
+        )
           .filter((entry) => entry.isDirectory())
           .map((entry) => path.join(packageRoot, entry.name)),
       ),
@@ -467,9 +476,13 @@ async function linkJunctionIfAbsent(source, destination) {
   try {
     const existing = await fs.lstat(destination);
     if (!existing.isSymbolicLink())
-      throw new Error(`Refusing to replace non-link dependency: ${destination}`);
+      throw new Error(
+        `Refusing to replace non-link dependency: ${destination}`,
+      );
     if ((await fs.realpath(destination)) !== resolvedSource)
-      throw new Error(`Refusing to replace mismatched dependency link: ${destination}`);
+      throw new Error(
+        `Refusing to replace mismatched dependency link: ${destination}`,
+      );
     return;
   } catch (error) {
     if (error?.code !== "ENOENT") throw error;

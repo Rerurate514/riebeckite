@@ -1,0 +1,700 @@
+import { execFile } from "node:child_process";
+import fs from "node:fs/promises";
+import { createRequire } from "node:module";
+import os from "node:os";
+import path from "node:path";
+import { performance } from "node:perf_hooks";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { promisify } from "node:util";
+import {
+  applyScenario,
+  compareSnapshots,
+  createBenchmarkContent,
+  removeSafeTemporaryDirectory,
+  scenarioNames,
+  snapshotTree,
+} from "./lib.mjs";
+
+const root = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../..",
+);
+const appRoot = path.join(root, "apps", "web");
+const appRequire = createRequire(path.join(appRoot, "package.json"));
+const execFileAsync = promisify(execFile);
+const args = parseArgs(process.argv.slice(2));
+const presets = listArg(args.presets) ?? ["starter", "showcase"];
+const sizes = (listArg(args.sizes) ?? ["100", "1000"]).map(Number);
+const scenarios = listArg(args.scenarios) ?? scenarioNames;
+const runs = positiveIntegerArg(args.runs, 3, "runs");
+const workRoot = path.resolve(
+  args.workRoot ?? path.join(appRoot, ".riebeckite", "ci-simulation"),
+);
+const resultsDirectory = path.resolve(
+  args.out ?? path.join(root, "benchmarks", "results", "ci-simulation"),
+);
+const cacheOutput = args.cacheOutput === "true";
+const keepRunDirectories = args.keep === "true";
+const variantSuffix = cacheOutput ? "-outputcache" : "";
+const stamp = new Date()
+  .toISOString()
+  .replaceAll(":", "-")
+  .replaceAll(".", "-");
+const jsonPath = path.join(
+  resultsDirectory,
+  `${stamp}-ci${variantSuffix}.json`,
+);
+const markdownPath = jsonPath.replace(/\.json$/u, ".md");
+
+if (args.buildOnce) {
+  process.stdout.write(
+    `${JSON.stringify(await buildOnce(JSON.parse(args.buildOnce)))}\n`,
+  );
+  process.exit(0);
+}
+
+const { scaffoldRiebeckiteSite } = await import(
+  pathToFileURL(
+    path.join(root, "packages/create-riebeckite/src/scaffold/index.ts"),
+  )
+);
+
+const rows = [];
+await fs.mkdir(resultsDirectory, { recursive: true });
+let workspaceBuilt = false;
+for (const preset of presets) {
+  for (const size of sizes) {
+    for (const scenario of scenarios) {
+      if (!scenarioNames.includes(scenario))
+        throw new Error(`Unknown scenario: ${scenario}`);
+      if (!workspaceBuilt && args.noBuildPackages !== "true") {
+        await buildWorkspacePackages();
+        workspaceBuilt = true;
+      }
+      const result = await runScenario({ preset, size, scenario, runs });
+      rows.push(result);
+      await writeReport(rows);
+      process.stdout.write(`${JSON.stringify(compact(result))}\n`);
+    }
+  }
+}
+process.stdout.write(`Saved ${jsonPath}\nSaved ${markdownPath}\n`);
+
+function compact(row) {
+  return {
+    preset: row.preset,
+    size: row.size,
+    scenario: row.scenario,
+    outputCacheCached: cacheOutput,
+    coldMs: row.median.coldWallTimeMs,
+    incrementalMs: row.median.incrementalWallTimeMs,
+    cleanMs: row.median.cleanWallTimeMs,
+    saveMs: row.median.cacheSaveMs,
+    restoreMs: row.median.cacheRestoreMs,
+    cacheBytes: row.median.cacheBytes,
+    contentReused: row.median.contentReused,
+    outputRendered: row.median.outputRendered,
+    fastPath: row.median.fastPathApplied,
+    full: row.median.fullRegenerationRequired,
+    equal: row.median.equivalence.equivalent,
+  };
+}
+
+async function runScenario({ preset, size, scenario, runs }) {
+  const samples = [];
+  for (let run = 1; run <= runs; run += 1) {
+    samples.push(await runSample({ preset, size, scenario, run }));
+    process.stdout.write(
+      `  ${preset}/${size}/${scenario} run ${run}/${runs} done\n`,
+    );
+  }
+  const median = {};
+  for (const key of [
+    "coldWallTimeMs",
+    "incrementalWallTimeMs",
+    "cleanWallTimeMs",
+    "cacheSaveMs",
+    "cacheRestoreMs",
+    "cacheBytes",
+    "contentProcessed",
+    "contentReused",
+    "outputRendered",
+    "outputReused",
+    "ssrRouteCount",
+    "outputCacheHit",
+    "outputCacheMiss",
+    "manifestHooksReused",
+    "manifestHookDurationMs",
+    "peakRssMb",
+  ])
+    median[key] = medianOf(samples.map((sample) => sample[key]));
+  median.fastPathApplied = samples.every((s) => s.fastPathApplied);
+  median.fullRegenerationRequired = samples.every(
+    (s) => s.fullRegenerationRequired,
+  );
+  median.equivalence = samples.find((s) => s.equivalence)?.equivalence ?? {
+    equivalent: false,
+    differences: [],
+  };
+  return { preset, size, scenario, runs, median, samples };
+}
+
+async function runSample({ preset, size, scenario, run }) {
+  const runDirectory = path.join(
+    workRoot,
+    preset,
+    String(size),
+    scenario,
+    `run-${run}`,
+  );
+  await removeSafeTemporaryDirectory(runDirectory, workRoot);
+  const cacheStore = path.join(runDirectory, "cache-store");
+  await fs.mkdir(cacheStore, { recursive: true });
+
+  const cold = scenario === "cold";
+  const baselineSite = path.join(runDirectory, "origin");
+  if (cold) {
+    await createSite(baselineSite, preset, size);
+    const build = await invokeBuild(baselineSite, "cold");
+    const output = await snapshotTree(path.join(baselineSite, "dist"));
+    await fs.rm(path.join(baselineSite, ".riebeckite"), {
+      recursive: true,
+      force: true,
+    });
+    await fs.rm(path.join(baselineSite, "dist"), { recursive: true, force: true });
+    const clean = await invokeBuild(baselineSite, "clean");
+    const equivalence = compareSnapshots(
+      output,
+      await snapshotTree(path.join(baselineSite, "dist")),
+    );
+    return finishSample(runDirectory, {
+      ...build,
+      preset,
+      size,
+      scenario,
+      run,
+      coldWallTimeMs: build.wallTimeMs,
+      incrementalWallTimeMs: build.wallTimeMs,
+      cleanWallTimeMs: clean.wallTimeMs,
+      cacheSaveMs: null,
+      cacheRestoreMs: null,
+      cacheBytes: null,
+      equivalence,
+    });
+  }
+
+  await createSite(baselineSite, preset, size);
+  const baseline = await invokeBuild(baselineSite, "baseline");
+  const saved = await saveCache(baselineSite, cacheStore);
+  await fs.rm(baselineSite, { recursive: true, force: true });
+
+  const freshSite = path.join(runDirectory, "fresh");
+  await createSite(freshSite, preset, size);
+  const restoreMs = await restoreCache(cacheStore, freshSite);
+  await applyScenario({
+    contentDirectory: path.join(freshSite, "content"),
+    count: size,
+    scenario,
+  });
+  const incremental = await invokeBuild(freshSite, "incremental");
+  const incrementalOutput = await snapshotTree(path.join(freshSite, "dist"));
+  if (keepRunDirectories)
+    await fs.cp(
+      path.join(freshSite, "dist"),
+      path.join(runDirectory, "incremental-dist"),
+      { recursive: true },
+    );
+  if (keepRunDirectories)
+    await fs.copyFile(
+      path.join(freshSite, ".riebeckite", "build", "content-state.json"),
+      path.join(runDirectory, "incremental-content-state.json"),
+    );
+  await fs.rm(path.join(freshSite, ".riebeckite"), {
+    recursive: true,
+    force: true,
+  });
+  await fs.rm(path.join(freshSite, "dist"), { recursive: true, force: true });
+  const clean = await invokeBuild(freshSite, "clean");
+  const equivalence = compareSnapshots(
+    incrementalOutput,
+    await snapshotTree(path.join(freshSite, "dist")),
+  );
+  return finishSample(runDirectory, {
+    ...incremental,
+    preset,
+    size,
+    scenario,
+    run,
+    coldWallTimeMs: baseline.wallTimeMs,
+    incrementalWallTimeMs: incremental.wallTimeMs,
+    cleanWallTimeMs: clean.wallTimeMs,
+    cacheSaveMs: saved.saveMs,
+    cacheRestoreMs: restoreMs,
+    cacheBytes: saved.bytes,
+    equivalence,
+  });
+}
+
+async function finishSample(runDirectory, result) {
+  if (!keepRunDirectories)
+    await fs.rm(runDirectory, { recursive: true, force: true });
+  return result;
+}
+
+async function saveCache(siteRoot, cacheStore) {
+  const zip = path.join(cacheStore, "cache");
+  const stateFile = path.join(
+    siteRoot,
+    ".riebeckite",
+    "build",
+    "content-state.json",
+  );
+  const started = performance.now();
+  let bytes = 0;
+  await fs.cp(path.join(siteRoot, ".riebeckite", "cache"), zip, {
+    recursive: true,
+  });
+  bytes += await directorySize(zip);
+  await fs.mkdir(path.dirname(cacheStore), { recursive: true });
+  const stateBytes = (await fs.stat(stateFile)).size;
+  await fs.copyFile(stateFile, path.join(cacheStore, "content-state.json"));
+  bytes += stateBytes;
+  if (cacheOutput) bytes += await saveOutputCache(siteRoot, cacheStore);
+  return { saveMs: Math.round(performance.now() - started), bytes };
+}
+
+async function saveOutputCache(siteRoot, cacheStore) {
+  const stateRoot = path.join(siteRoot, ".riebeckite");
+  const target = path.join(cacheStore, "output-cache");
+  await fs.mkdir(target, { recursive: true });
+  let bytes = 0;
+  for (const name of [
+    "ssg-output-cache.json",
+    "ssg-output-cache.fast-path.json",
+  ]) {
+    const source = path.join(stateRoot, name);
+    try {
+      await fs.copyFile(source, path.join(target, name));
+      bytes += (await fs.stat(source)).size;
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+    }
+  }
+  const entries = path.join(stateRoot, "ssg-output-cache.entries");
+  try {
+    await fs.cp(entries, path.join(target, "ssg-output-cache.entries"), {
+      recursive: true,
+    });
+    bytes += await directorySize(path.join(target, "ssg-output-cache.entries"));
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  return bytes;
+}
+
+async function restoreCache(cacheStore, siteRoot) {
+  const started = performance.now();
+  await fs.mkdir(path.join(siteRoot, ".riebeckite", "build"), {
+    recursive: true,
+  });
+  await fs.cp(path.join(cacheStore, "cache"), path.join(siteRoot, ".riebeckite", "cache"), {
+    recursive: true,
+  });
+  await fs.copyFile(
+    path.join(cacheStore, "content-state.json"),
+    path.join(siteRoot, ".riebeckite", "build", "content-state.json"),
+  );
+  if (cacheOutput) {
+    const source = path.join(cacheStore, "output-cache");
+    const stateRoot = path.join(siteRoot, ".riebeckite");
+    for (const name of [
+      "ssg-output-cache.json",
+      "ssg-output-cache.fast-path.json",
+    ]) {
+      try {
+        await fs.copyFile(path.join(source, name), path.join(stateRoot, name));
+      } catch (error) {
+        if (error?.code !== "ENOENT") throw error;
+      }
+    }
+    try {
+      await fs.cp(
+        path.join(source, "ssg-output-cache.entries"),
+        path.join(stateRoot, "ssg-output-cache.entries"),
+        { recursive: true },
+      );
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+    }
+  }
+  return Math.round(performance.now() - started);
+}
+
+async function directorySize(directory) {
+  let total = 0;
+  for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+    const child = path.join(directory, entry.name);
+    if (entry.isDirectory()) total += await directorySize(child);
+    else if (entry.isFile()) total += (await fs.stat(child)).size;
+  }
+  return total;
+}
+
+async function createSite(siteRoot, preset, count) {
+  await scaffoldRiebeckiteSite({
+    targetDirectory: siteRoot,
+    name: `ci-${preset}-${count}`,
+    preset,
+    site: {
+      title: `CI ${preset}`,
+      baseUrl: "https://benchmark.example.test",
+    },
+  });
+  await linkWorkspacePackages(siteRoot);
+  await createBenchmarkContent({
+    contentDirectory: path.join(siteRoot, "content"),
+    count,
+    preset,
+  });
+}
+
+async function buildWorkspacePackages() {
+  await execFileAsync(
+    process.execPath,
+    [path.join(root, "scripts", "build_packages.mjs")],
+    { cwd: root, env: process.env, maxBuffer: 1024 * 1024 * 8 },
+  );
+}
+
+async function linkWorkspacePackages(siteRoot) {
+  const nodeModulesDirectory = path.join(siteRoot, "node_modules");
+  const namespaceDirectory = path.join(siteRoot, "node_modules", "@riebeckite");
+  await fs.mkdir(namespaceDirectory, { recursive: true });
+  const packageRoots = [
+    path.join(root, "packages"),
+    path.join(root, "packages", "integrations"),
+    path.join(root, "packages", "plugins"),
+    path.join(root, "packages", "themes"),
+  ];
+  const packageDirectories = (
+    await Promise.all(
+      packageRoots.map(async (packageRoot) =>
+        (await fs.readdir(packageRoot, { withFileTypes: true }))
+          .filter((entry) => entry.isDirectory())
+          .map((entry) => path.join(packageRoot, entry.name)),
+      ),
+    )
+  ).flat();
+  for (const directory of packageDirectories) {
+    const packageJson = await fs
+      .readFile(path.join(directory, "package.json"), "utf8")
+      .then((source) => JSON.parse(source))
+      .catch(() => undefined);
+    if (
+      typeof packageJson?.name !== "string" ||
+      !packageJson.name.startsWith("@riebeckite/")
+    )
+      continue;
+    const destination = path.join(
+      namespaceDirectory,
+      packageJson.name.slice("@riebeckite/".length),
+    );
+    await fs.symlink(directory, destination, "junction");
+  }
+  const runtimeDependencies = await fs.readdir(
+    path.join(appRoot, "node_modules"),
+    { withFileTypes: true },
+  );
+  for (const dependency of runtimeDependencies) {
+    if (
+      (!dependency.isDirectory() && !dependency.isSymbolicLink()) ||
+      dependency.name.startsWith(".")
+    )
+      continue;
+    if (dependency.name === "@riebeckite") continue;
+    const source = path.join(appRoot, "node_modules", dependency.name);
+    if (!dependency.name.startsWith("@")) {
+      await fs.symlink(
+        await fs.realpath(source),
+        path.join(nodeModulesDirectory, dependency.name),
+        "junction",
+      );
+      continue;
+    }
+    const scopeDirectory = path.join(nodeModulesDirectory, dependency.name);
+    await fs.mkdir(scopeDirectory, { recursive: true });
+    for (const scopedDependency of await fs.readdir(source, {
+      withFileTypes: true,
+    })) {
+      if (!scopedDependency.isDirectory() && !scopedDependency.isSymbolicLink())
+        continue;
+      await fs.symlink(
+        await fs.realpath(path.join(source, scopedDependency.name)),
+        path.join(scopeDirectory, scopedDependency.name),
+        "junction",
+      );
+    }
+  }
+  await fs.symlink(
+    await fs.realpath(
+      path.join(
+        root,
+        "packages",
+        "plugins",
+        "mermaid",
+        "node_modules",
+        "puppeteer",
+      ),
+    ),
+    path.join(nodeModulesDirectory, "puppeteer"),
+    "junction",
+  );
+  await linkJunctionIfAbsent(
+    path.join(
+      root,
+      "packages",
+      "plugins",
+      "excalidraw",
+      "node_modules",
+      "lz-string",
+    ),
+    path.join(nodeModulesDirectory, "lz-string"),
+  );
+}
+
+async function linkJunctionIfAbsent(source, destination) {
+  const resolvedSource = await fs.realpath(source);
+  try {
+    const existing = await fs.lstat(destination);
+    if (!existing.isSymbolicLink())
+      throw new Error(`Refusing to replace non-link dependency: ${destination}`);
+    if ((await fs.realpath(destination)) !== resolvedSource)
+      throw new Error(`Refusing to replace mismatched dependency link: ${destination}`);
+    return;
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  await fs.symlink(resolvedSource, destination, "junction");
+}
+
+async function invokeBuild(siteRoot, label) {
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    [
+      "--import",
+      "tsx",
+      fileURLToPath(import.meta.url),
+      "--buildOnce",
+      JSON.stringify({ siteRoot, label, metricsEnabled: true }),
+    ],
+    { cwd: root, maxBuffer: 1024 * 1024 * 8 },
+  );
+  return JSON.parse(stdout.trim().split(/\r?\n/).at(-1));
+}
+
+async function buildOnce({ siteRoot, label }) {
+  const { build, defineConfig } = await import(
+    pathToFileURL(appRequire.resolve("vite")).href
+  );
+  const { default: honox } = await import(
+    pathToFileURL(appRequire.resolve("honox/vite")).href
+  );
+  const { default: viteBuild } = await import(
+    pathToFileURL(
+      path.join(
+        appRoot,
+        "node_modules/@hono/vite-build/dist/adapter/node/index.mjs",
+      ),
+    ).href
+  );
+  const { riebeckiteVite } = await import(
+    pathToFileURL(path.join(root, "packages/integrations/honox/index.ts")).href
+  );
+  const metricsDirectory = path.join(siteRoot, ".riebeckite", "ci-metrics");
+  const metricsPath = path.join(metricsDirectory, `${label}.json`);
+  await fs.mkdir(metricsDirectory, { recursive: true });
+  const samples = [process.memoryUsage().rss];
+  const sampler = setInterval(
+    () => samples.push(process.memoryUsage().rss),
+    25,
+  );
+  const started = performance.now();
+  process.env.RIEBECKITE_SSG_METRICS_FILE = metricsPath;
+  try {
+    await build(
+      defineConfig({
+        root: siteRoot,
+        configFile: false,
+        resolve: {
+          alias: [
+            {
+              find: /^@riebeckite\/core$/,
+              replacement: path.join(root, "packages/core/index.ts"),
+            },
+            {
+              find: /^@riebeckite\/honox\/server$/,
+              replacement: path.join(
+                root,
+                "packages/integrations/honox/dist/server.js",
+              ),
+            },
+            {
+              find: /^@riebeckite\/honox$/,
+              replacement: path.join(
+                root,
+                "packages/integrations/honox/index.ts",
+              ),
+            },
+            ...(await optionalAlias(
+              "puppeteer",
+              path.join(
+                root,
+                "packages/plugins/mermaid/node_modules/puppeteer",
+              ),
+            )),
+            ...(await optionalAlias(
+              "lz-string",
+              path.join(
+                root,
+                "packages/plugins/excalidraw/node_modules/lz-string",
+              ),
+            )),
+          ],
+        },
+        plugins: [
+          honox({ client: { input: ["/app/client.ts"] } }),
+          ...riebeckiteVite(),
+          viteBuild(),
+        ],
+        logLevel: "silent",
+      }),
+    );
+  } finally {
+    clearInterval(sampler);
+    delete process.env.RIEBECKITE_SSG_METRICS_FILE;
+  }
+  samples.push(process.memoryUsage().rss);
+  const metrics = JSON.parse(await fs.readFile(metricsPath, "utf8"));
+  return {
+    wallTimeMs: Math.round(performance.now() - started),
+    peakRssMb: Math.round(Math.max(...samples) / 1024 / 1024),
+    contentProcessed: metricNumber(metrics, "processedContentCount"),
+    contentReused: metricNumber(metrics, "reusedContentCount"),
+    outputRendered: metricNumber(metrics, "renderedOutputCount"),
+    outputReused: metricNumber(metrics, "reusedOutputCount"),
+    ssrRouteCount: metricNumber(metrics, "renderedRouteCount"),
+    outputCacheHit: metricNumber(metrics, "cacheEntriesRead"),
+    outputCacheMiss: Math.max(
+      0,
+      metricNumber(metrics, "candidateOutputCount") -
+        metricNumber(metrics, "cacheEntriesRead"),
+    ),
+    manifestHooksReused: metricNumber(metrics, "manifestHooksReused"),
+    manifestHookDurationMs: Math.round(
+      metricNumber(metrics, "manifestHookDurationMs"),
+    ),
+    fastPathApplied:
+      metricNumber(metrics, "renderedRouteCount") === 0 &&
+      !metrics.fullRegenerationRequired,
+    fullRegenerationRequired: Boolean(metrics.fullRegenerationRequired),
+    spansMs: Object.fromEntries(
+      Object.entries(metrics.timingsMs ?? {}).map(([name, duration]) => [
+        name,
+        Math.round(duration),
+      ]),
+    ),
+    rawMetrics: metrics,
+  };
+}
+
+function metricNumber(metrics, key) {
+  return Number(metrics[key] ?? 0);
+}
+
+async function optionalAlias(name, packageDirectory) {
+  try {
+    const resolved = await fs.realpath(packageDirectory);
+    return [{ find: new RegExp(`^${name}$`), replacement: resolved }];
+  } catch {
+    return [];
+  }
+}
+
+async function writeReport(rows) {
+  const report = {
+    generatedAt: new Date().toISOString(),
+    kind: "ci-simulation",
+    outputCacheCached: cacheOutput,
+    note: `Local CI simulation: cache restore/save is emulated by copying ${cacheOutput ? "the template-cached files PLUS the SSG output cache" : "the template-cached files (.riebeckite/cache + .riebeckite/build/content-state.json)"} into a fresh site directory. GitHub Actions cache transfer time is NOT included.`,
+    runs,
+    environment: {
+      node: process.version,
+      platform: process.platform,
+      arch: process.arch,
+      cpu: os.cpus()[0]?.model ?? "unknown",
+      cpuCount: os.cpus().length,
+      memoryMb: Math.round(os.totalmem() / 1024 / 1024),
+    },
+    rows,
+  };
+  await fs.mkdir(resultsDirectory, { recursive: true });
+  await fs.writeFile(jsonPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+  await fs.writeFile(markdownPath, markdownReport(report), "utf8");
+}
+
+function markdownReport(report) {
+  const lines = [
+    "# CI incremental build simulation",
+    "",
+    `Measured at: ${report.generatedAt}`,
+    "",
+    `Local CI simulation. ${report.runs} run(s) per (preset, size, scenario); medians shown.`,
+    "",
+    report.note,
+    "",
+    "| Preset | Size | Scenario | Cold ms | Incremental ms | Clean ms | Save ms | Restore ms | Cache bytes | Content reused | Output rendered | Fast path | Full regen | Equivalent |",
+    "| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
+  ];
+  for (const row of report.rows) {
+    const m = row.median;
+    lines.push(
+      `| ${row.preset} | ${row.size} | ${row.scenario} | ${m.coldWallTimeMs} | ${m.incrementalWallTimeMs} | ${m.cleanWallTimeMs} | ${m.cacheSaveMs ?? "N/A"} | ${m.cacheRestoreMs ?? "N/A"} | ${m.cacheBytes ?? "N/A"} | ${m.contentReused} | ${m.outputRendered} | ${m.fastPathApplied} | ${m.fullRegenerationRequired} | ${m.equivalence.equivalent} |`,
+    );
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+function medianOf(values) {
+  const present = values.filter((value) => typeof value === "number");
+  if (present.length === 0) return null;
+  const sorted = [...present].sort((left, right) => left - right);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+function positiveIntegerArg(value, fallback, name) {
+  if (value === undefined) return fallback;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1)
+    throw new Error(`--${name} must be a positive integer`);
+  return parsed;
+}
+function parseArgs(values) {
+  const parsed = {};
+  for (let index = 0; index < values.length; index += 1) {
+    const token = values[index];
+    if (!token.startsWith("--")) continue;
+    const key = token.slice(2);
+    parsed[key] =
+      values[index + 1] && !values[index + 1].startsWith("--")
+        ? values[++index]
+        : "true";
+  }
+  return parsed;
+}
+function listArg(value) {
+  return value && value !== "true"
+    ? value.split(/[\s,]+/).filter(Boolean)
+    : undefined;
+}

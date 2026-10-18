@@ -101,7 +101,7 @@ export function renamePlugin(
             kind: "resolved",
             snapshot: {
               id: "rename:routes-lock",
-              fingerprint: fingerprintExternalValue(lock),
+              fingerprint: fingerprintExternalValue(lock.redirects),
               scope: { type: "all" },
               value: lock,
             },

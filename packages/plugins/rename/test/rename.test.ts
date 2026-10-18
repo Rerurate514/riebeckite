@@ -433,3 +433,47 @@ test("hook respects existing redirects and never locks private notes", async () 
   assert.ok(stored);
   assert.equal(Object.hasOwn(stored.routes, "secret"), false);
 });
+
+async function resolveSnapshot(
+  plugin: ReturnType<typeof renamePlugin>,
+  cache: PluginCache,
+): Promise<{ fingerprint: string; value: RouteLock }> {
+  const resolutions = await plugin.resolveExternalDependencies?.({
+    config: fakeConfig(),
+    cache,
+    contentIndex: new Map<string, string>(),
+  });
+  const resolution = resolutions?.[0];
+  assert.ok(resolution && resolution.kind === "resolved");
+  return {
+    fingerprint: resolution.snapshot.fingerprint,
+    value: resolution.snapshot.value as RouteLock,
+  };
+}
+
+test("dependency fingerprint tracks applied redirects, not route bookkeeping", async () => {
+  const plugin = renamePlugin();
+  const empty = await resolveSnapshot(plugin, memoryCache());
+
+  const cache = memoryCache();
+  await runManifestHook(
+    plugin,
+    fakeManifest([
+      { slug: "alpha", permalink: "/a", frontmatter: {}, html: "<p>a</p>" },
+    ]),
+    cache,
+  );
+  const populated = await resolveSnapshot(plugin, cache);
+  assert.notDeepEqual(populated.value, empty.value);
+  assert.equal(populated.fingerprint, empty.fingerprint);
+
+  await runManifestHook(
+    plugin,
+    fakeManifest([
+      { slug: "alpha", permalink: "/b", frontmatter: {}, html: "<p>a</p>" },
+    ]),
+    cache,
+  );
+  const renamed = await resolveSnapshot(plugin, cache);
+  assert.notEqual(renamed.fingerprint, empty.fingerprint);
+});

@@ -95,6 +95,11 @@ history and cannot detect a rename that happened before the lock existed.
   timestamps or randomness.
 - Redirects are replayed on every build, so the CLI build and the SSG build
   reproduce the same redirects.
+- For incremental builds the lock is exposed as an external dependency whose
+  fingerprint covers only the applied redirects, not the route bookkeeping.
+  Route additions and removals already invalidate the affected outputs through
+  the content change set and the redirect outputs themselves, so refreshing the
+  lock alone never invalidates unchanged output.
 
 ## Exports
 

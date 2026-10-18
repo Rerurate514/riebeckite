@@ -16,6 +16,20 @@ sidebar:
 
 Coreはoutput inventory（`.riebeckite/ssg-output-cache.json`にはcontentの出力、redirect、Pluginページの出力、Generated Outputを含むパスをキーにしたすべての生成物の記録が保存されています）を構築し、現在のinventoryを前回の成功した状態と比較します。どの出力が影響を受ける（再生成が必要）、変わらない（再利用できる）、削除されたかを決定します。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
 
+## 再利用の判定
+
+Coreは、次の条件がすべて満たされるときだけ、変わっていない出力をcacheから復元します。
+
+- Build stateが有効で、output change setが取得できている。
+- Change setが完全な再生成を要求していない。つまり、失敗した外部依存がなく、`unknown`依存を持つ出力もない。
+- 出力cacheが復元され、整合性検査（スキーマバージョン、entryファイル、チェックサム）を通過している。
+- App fingerprintとclient manifest fingerprintがcacheの値と一致している。
+- 変わっていない出力がすべて、site所有かcache内に存在する。
+
+SSGのmetricsは結果を`outputCacheDecision`（各条件の判定）と`outputCacheRejectionReason`に記録します。理由は、出力を再利用したときは`null`、それ以外は`change-set-unavailable`、`full-regeneration-required`、`output-cache-missing-or-invalid`、`app-fingerprint-changed`、`client-manifest-fingerprint-changed`、`unchanged-output-not-cached`のいずれかです。cacheを棄却したときは、同じmetricsの`fullRegenerationRequired`が`true`になります。
+
+この判定はCLIのno-change fast pathとは別物です。Fast pathは、manifest hookやgenerated output planを必要とするpluginがないことも追加で要求します。
+
 ## ローカル専用
 
 出力cacheは転送のコストが利点を上回るため、ローカルに留めます。`.riebeckite/build/content-state.json`と`.riebeckite/ssg-output-cache.json`を削除すると、すべての出力の再生成を強制できます。

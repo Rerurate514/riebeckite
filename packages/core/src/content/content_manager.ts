@@ -750,6 +750,7 @@ export class ContentManager {
   private async createBuildPlan(
     options?: ContentBuildOptions,
   ): Promise<ContentBuildPlan> {
+    this.enableBuildTime();
     const config = this.pipelineOptions.config;
     if (config && hasGlobalContentDependency(config)) {
       this.pipelineFingerprint = this.computePipelineFingerprint(

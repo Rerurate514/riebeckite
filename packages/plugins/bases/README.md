@@ -80,13 +80,19 @@ literal values and arrays, nested member/index access, `!`, unary `-`, arithmeti
 comparison, `&&`, `||`, parentheses, property-to-property comparisons, and
 `formula.name` references. Formula cycles evaluate to an empty value.
 
-Supported functions: `if`, `list`, `length`, `number`, `min`, `max`, `date`; string
-`lower`, `upper`, `contains`, `startsWith`, `endsWith`, `trim`, `split`,
+Supported functions: `if`, `list`, `length`, `number`, `min`, `max`, `date`,
+`duration`, `isTruthy`, `isType`, `toString`, `escapeHTML`; string `lower`,
+`upper`, `title`, `contains`, `startsWith`, `endsWith`, `trim`, `split`,
 `replace`, `reverse`, `repeat`, `slice`, `isEmpty`; list `contains`, `containsAll`,
 `containsAny`, `join`, `unique`, `flat`, `sort`, `reverse`, `slice`, `isEmpty`,
-`map`, `filter`, `reduce`; number `round`,
-`floor`, `ceil`, `abs`, `toFixed`; and `file.hasTag`, `file.hasLink`,
-`file.inFolder`.
+`mean`, `sum`, `min`, `max`, `map`, `filter`, `reduce`; number `round`, `floor`,
+`ceil`, `abs`, `toFixed`; object `isEmpty`, `keys`, `values`; UTC date fields,
+`date`, `time`, `format`; and `file.hasTag`, `file.hasLink`, `file.inFolder`,
+`file.hasProperty`.
+
+`date()` accepts only a UTC ISO timestamp, `YYYY-MM-DD`, a finite epoch
+millisecond value, or an existing Date. Date fields and formatting use UTC. This
+avoids host locale and ambiguous date parsing during static builds.
 
 Formula evaluation is bounded to 10,000 AST steps and 128 nested expressions per
 evaluation. Exceeding either limit stops deterministically, reports a
@@ -138,8 +144,9 @@ from Base rows and are not exposed through cached output.
 | `file.size`, `file.mtime`, `file.ctime` | Supported | Byte size, filesystem modification time, and filesystem creation-time equivalent. `ctime` can be unavailable on Linux; it is never mapped from `stat.ctime`, frontmatter, or build time. |
 | Backlinks, embeds | Unsupported | These values are empty. |
 | List `map`, `filter`, and `reduce` | Supported subset | Their expressions use the `value`, `index`, and `acc` scope with a bounded list size. |
+| Deterministic utility, object, date, and file-property functions | Partial | UTC dates, `duration`, collection/object helpers, and `file.hasProperty` are available; functions requiring a vault API or a rendered link are not. |
 | Incremental dependency tracking | Supported | Tracks filter candidates and AST-derived property dependencies; dynamic or cyclic formulas fall back per Base. |
-| Regex, object literals, link/image rendering, nondeterministic date/random functions | Unsupported | Static rendering does not execute JavaScript or emit unsafe URLs. |
+| Regex, object literals, `file()`, link/image/icon/HTML rendering, `now`, `today`, `random`, and relative dates | Unsupported | Static rendering does not execute JavaScript, depend on build time, or emit unsafe URLs. |
 | Editing, group collapse, and other interactive view controls | Out of Scope | Riebeckite renders static build output. |
 
 ## Options and exports

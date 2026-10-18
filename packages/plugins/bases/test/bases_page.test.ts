@@ -260,6 +260,22 @@ test("tracks file predicate calls without an unknown dependency", () => {
   });
 });
 
+test("tracks literal file property predicates without broadening dependencies", () => {
+  const parsed = parseBases({ filters: "file.hasProperty('status')" });
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(analyzeBasesDependencies(parsed.value), {
+    type: "content-query",
+    properties: ["status"],
+  });
+  const dynamic = parseBases({ filters: "file.hasProperty(note.field)" });
+  assert.equal(dynamic.ok, true);
+  assert.equal(
+    (analyzeBasesDependencies(dynamic.value) as { readonly unknown?: boolean })
+      .unknown,
+    true,
+  );
+});
+
 test("falls back safely when formulas are cyclic or expressions use dynamic indexing", () => {
   const cyclic = parseBases({
     formulas: { first: "formula.second", second: "formula.first" },
@@ -317,6 +333,44 @@ test("evaluates precedence, short circuits, missing values, and cycles safely", 
   assert.deepEqual(evaluate("[1, 2, 3].filter(value > 1)"), [2, 3]);
   assert.equal(evaluate("[1, 2, 3].reduce(acc + value, 0)"), 6);
   assert.equal(evaluate("['a', 'b'].containsAll('a', 'b')"), true);
+});
+
+test("evaluates deterministic official utility, date, collection, and file functions", () => {
+  const entry = {
+    slug: "notes/Example",
+    permalink: "/notes/Example",
+    title: "Example",
+    tags: [],
+    links: [],
+    frontmatter: { status: "active", details: { owner: "Ada" } },
+  } as never;
+  const evaluate = (source: string) => {
+    const expression = parseBasesExpression(source);
+    assert.equal(expression.ok, true, source);
+    return evaluateBasesExpression(expression.value, entry);
+  };
+
+  assert.equal(evaluate("[2, 4, 6].mean().round(1)"), 4);
+  assert.equal(evaluate("'hello-world'.title()"), "Hello-World");
+  assert.equal(evaluate("isTruthy(note.status)"), true);
+  assert.equal(evaluate("isType(note.details, 'object')"), true);
+  assert.equal(evaluate("toString([1, 2])"), "1, 2");
+  assert.equal(evaluate("escapeHTML('<script>')"), "&lt;script&gt;");
+  assert.equal(evaluate("file.hasProperty('status')"), true);
+  assert.equal(evaluate("note.details.keys().contains('owner')"), true);
+  assert.deepEqual(evaluate("note.details.values()"), ["Ada"]);
+  assert.equal(
+    evaluate("date('2024-02-03T04:05:06Z').format('yyyy-MM-dd HH:mm:ss')"),
+    "2024-02-03 04:05:06",
+  );
+  assert.equal(evaluate("date('2024-02-03').month"), 2);
+  assert.equal(
+    (
+      evaluate("date('2024-02-03') + duration(2, 'days')") as Date
+    ).toISOString(),
+    "2024-02-05T00:00:00.000Z",
+  );
+  assert.equal(evaluate("date('February 3, 2024')"), undefined);
 });
 
 test("uses file metadata in formulas, filters, sorting, groups, summaries, and higher-order expressions", () => {
@@ -894,7 +948,7 @@ function entry(title: string, value: unknown, tie: number) {
     tags: [],
     links: [],
     frontmatter: { value, tie },
-  } as never;
+  } as unknown as ContentManifestEntry;
 }
 
 function metadataEntry(

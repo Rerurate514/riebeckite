@@ -79,11 +79,18 @@ Obsidian の [Bases 構文](https://help.obsidian.md/bases/syntax) と
 算術、比較、`&&`、`||`、括弧、プロパティ同士の比較、`formula.name` 参照に対応します。
 Formula の循環参照は空の値になります。
 
-対応する関数は `if`、`list`、`length`、`number`、`min`、`max`、`date`、文字列の `lower`、
-`upper`、`contains`、`startsWith`、`endsWith`、`trim`、`split`、`replace`、リストの
-`contains`、`containsAll`、`containsAny`、`join`、`unique`、`flat`、`sort`、`reverse`、
-`slice`、`isEmpty`、`map`、`filter`、`reduce`、数値の `round`、`floor`、`ceil`、`abs`、
-`toFixed`、`file.hasTag`、`file.hasLink`、`file.inFolder` です。
+対応する関数は `if`、`list`、`length`、`number`、`min`、`max`、`date`、`duration`、
+`isTruthy`、`isType`、`toString`、`escapeHTML`、文字列の `lower`、`upper`、`title`、
+`contains`、`startsWith`、`endsWith`、`trim`、`split`、`replace`、`reverse`、`repeat`、
+`slice`、`isEmpty`、リストの `contains`、`containsAll`、`containsAny`、`join`、`unique`、
+`flat`、`sort`、`reverse`、`slice`、`isEmpty`、`mean`、`sum`、`min`、`max`、`map`、
+`filter`、`reduce`、数値の `round`、`floor`、`ceil`、`abs`、`toFixed`、オブジェクトの
+`isEmpty`、`keys`、`values`、UTC の日付フィールド、`date`、`time`、`format`、
+`file.hasTag`、`file.hasLink`、`file.inFolder`、`file.hasProperty` です。
+
+`date()` は UTC の ISO タイムスタンプ、`YYYY-MM-DD`、有限の epoch ミリ秒値、または
+既存の Date だけを受け付けます。日付フィールドとフォーマットは UTC を使うため、静的
+ビルドでホストのロケールや曖昧な日付構文に依存しません。
 
 Formula の評価は、1回につき AST の 10,000 ステップとネストした式の 128 段階までです。
 いずれかを超えると決定的に停止し、`bases-invalid` 診断を出して Base のエラー表示に
@@ -131,8 +138,9 @@ formula の循環、動的なプロパティ参照など、静的に証明でき
 | `file.size`、`file.mtime`、`file.ctime` | 対応 | バイト数、ファイルシステムの更新時刻、作成時刻相当を使います。Linux では `ctime` が利用できないことがあります。`stat.ctime`、frontmatter、ビルド時刻へは置き換えません。 |
 | Backlinks、embeds | 未対応 | これらの値は空になります。 |
 | リストの `map`、`filter`、`reduce` | 一部対応 | `value`、`index`、`acc` スコープの式を使い、リスト長には上限があります。 |
+| 決定的な utility、object、date、file-property 関数 | 一部対応 | UTC 日付、`duration`、コレクション／object ヘルパー、`file.hasProperty` を使えます。Vault API や描画済みリンクを必要とする関数は使えません。 |
 | 増分依存追跡 | 対応 | filter 候補集合と AST から得たプロパティ依存を追跡し、動的・循環 formula は Base 単位でフォールバックします。 |
-| 正規表現、オブジェクトリテラル、link/image の描画、非決定的な date/random 関数 | 未対応 | JavaScript を実行せず、安全でない URL を出力しません。 |
+| 正規表現、オブジェクトリテラル、`file()`、link/image/icon/HTML の描画、`now`、`today`、`random`、相対日付 | 未対応 | JavaScript を実行せず、ビルド時刻に依存せず、安全でない URL を出力しません。 |
 | 編集、グループの折りたたみなどの対話的なビュー操作 | 対象外 | Riebeckite は静的なビルド出力を描画します。 |
 
 ## オプションとエクスポート

@@ -136,6 +136,10 @@ function analyzeExpression(
         properties.add("file.links");
       } else if (isFilePredicate(expression.callee, "inFolder")) {
         properties.add("file.folder");
+      } else if (isFilePredicate(expression.callee, "hasProperty")) {
+        const property = literalString(expression.arguments[0]);
+        if (property === undefined) markUnknown();
+        else properties.add(property);
       } else if (expression.callee.kind === "member")
         analyzeExpression(
           expression.callee.object,
@@ -157,6 +161,14 @@ function analyzeExpression(
       markUnknown();
       return;
   }
+}
+
+function literalString(
+  expression: BasesExpression | undefined,
+): string | undefined {
+  return expression?.kind === "literal" && typeof expression.value === "string"
+    ? expression.value
+    : undefined;
 }
 
 function isFilePredicate(

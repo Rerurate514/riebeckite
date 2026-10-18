@@ -1,3 +1,17 @@
+@layer base, components;
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+  }
+}
+
 @layer components {
   .rb-article-layout {
     display: grid;

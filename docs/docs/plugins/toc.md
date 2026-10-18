@@ -33,12 +33,9 @@ export default defineConfig({
 `initTableOfContents` as a client entry.
 
 It does not place UI. The Site extracts headings and renders the component,
-normally in an article aside. From tablet width, the desktop ToC remains
-visible in the article flow; once a separate article rail fits, the plugin
-moves it to that rail and keeps it sticky with a bounded vertical scroll area.
-The client captures the ToC's initial viewport position, so it remains there
-after a normal-flow header has scrolled away. Without the client script, the
-offset defaults to `var(--rb-space-4, 2rem)`.
+normally in an article aside. When an article rail fits, the Site positions the
+stable ToC root there and owns its sticky offset, height limit, and bounded
+vertical scrolling. The plugin owns the ToC list, links, and scroll-spy state.
 
 ### Render the component
 
@@ -61,9 +58,9 @@ return (
 
 The client entry finds elements by the `data-toc-target` attribute emitted on
 each link, so it works when multiple ToCs (desktop/mobile) are rendered. The
-plugin supplies the sticky behavior, including a bounded vertical scroll area.
-Starter and Showcase inherit it without additional Site CSS. Labels wrap
-instead of creating horizontal scrolling.
+Site keeps the desktop root sticky in its article rail and gives it a bounded
+vertical scroll area; the plugin keeps labels wrapping rather than creating
+horizontal scrolling.
 
 ## API
 

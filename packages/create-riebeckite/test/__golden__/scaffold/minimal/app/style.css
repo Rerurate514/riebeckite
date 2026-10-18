@@ -2,17 +2,6 @@
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-}
-
 .riebeckite-page {
   display: flex;
   min-height: 100vh;

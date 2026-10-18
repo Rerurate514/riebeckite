@@ -230,10 +230,11 @@ test("starter and showcase scaffolds render navigation in the site shell", async
         "utf8",
       );
       assert.match(header, /rb-site-header/);
-      assert.match(header, /rb-nav__mobile/);
+      assert.match(header, /site-header__mobile-navigation/);
       assert.match(header, /rb-site-footer/);
       assert.match(header, /from "@riebeckite\/plugin-navigation"/);
       assert.match(header, /<SiteNav/);
+      assert.match(header, /<MobileSiteNav/);
       assert.match(header, /export function SiteHeader/);
       assert.match(header, /export function SiteFooter/);
       assert.doesNotMatch(header, /resolveSiteNavigation/);
@@ -484,7 +485,7 @@ test("generated scaffold code contains no un-interpolated template variables", a
   });
 });
 
-test("scaffolded app/style.css ships the shared shell layout and floating menu", async () => {
+test("scaffolded app/style.css keeps plugin internals out of site CSS", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "starter");
     await scaffoldRiebeckiteSite({ targetDirectory, preset: "starter" });
@@ -495,10 +496,6 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     assert.match(style, /@import "\.\/\.riebeckite\/framework-styles\.css";/);
     assert.match(style, /@import "\.\/\.riebeckite\/plugin-styles\.css";/);
     assert.match(style, /@import "\.\/\.riebeckite\/theme-styles\.css";/);
-    assert.match(
-      style,
-      /\*,\n\*::before,\n\*::after \{[\s\S]*?box-sizing: border-box/,
-    );
     assert.match(style, /\.riebeckite-page \{[\s\S]*?display: flex/);
     assert.match(
       style,
@@ -506,15 +503,13 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     );
     assert.match(
       style,
-      /\.site-header,\n\.rb-site-footer \{[\s\S]*?width: min\(100% - 2rem, var\(--rb-layout-page-max, 80rem\)\)/,
+      /\.site-header,\n\.site-footer \{[\s\S]*?width: min\(100% - 2rem, var\(--rb-layout-page-max, 80rem\)\)/,
     );
     assert.match(style, /\.site-header__home \{[\s\S]*?margin-right: auto/);
-    assert.match(style, /\.rb-nav__mobile \{[\s\S]*?position: relative/);
     assert.match(
       style,
-      /\.rb-nav__mobile > \.rb-nav \{[\s\S]*?position: absolute/,
+      /\.site-header__mobile-navigation \{[\s\S]*?display: none/,
     );
-    assert.match(style, /\.rb-nav__mobile > \.rb-nav \{[\s\S]*?box-shadow/);
     assert.match(
       style,
       /\.site-article \{[\s\S]*?var\(--rb-layout-article-max, 48rem\)/,
@@ -527,7 +522,7 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
     assert.match(style, /\.site-article__footer \{[\s\S]*?min-width: 0/);
     assert.doesNotMatch(style, /\.site-article__footer \{[^}]*padding/);
     assert.doesNotMatch(style, /\.rb-article-layout \{/);
-    assert.doesNotMatch(style, /\.rb-nav__item \{/);
+    assertSitePluginOwnership(style);
     assert.match(
       style,
       /\.riebeckite-page \{[\s\S]*?--site-toc-sticky-top:\s*var\(--rb-space-3, 1\.5rem\)/,
@@ -536,7 +531,6 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
       style,
       /\.site-article__aside > \.rr-table-of-contents--desktop \{/,
     );
-    assert.doesNotMatch(style, /position: absolute;\n {2}top: 100%;/);
     assert.match(
       style,
       /@media \(min-width: 80rem\) \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) minmax\(0, var\(--rb-layout-article-max, 48rem\)\) minmax\(0, 1fr\)/,
@@ -605,5 +599,51 @@ async function exists(filePath: string): Promise<boolean> {
     return true;
   } catch {
     return false;
+  }
+}
+
+function assertSitePluginOwnership(style: string): void {
+  assertPluginRootPlacementAllowed(`
+    .site-article__aside > .rr-table-of-contents--desktop {
+      position: sticky;
+      top: var(--site-toc-sticky-top);
+      max-height: 20rem;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      border-inline-start: 1px solid currentColor;
+      padding-inline-start: 1rem;
+    }
+  `);
+  assert.throws(() =>
+    assertPluginRootPlacementAllowed(`
+        .site-header .rb-nav__link {
+          color: red;
+        }
+      `),
+  );
+  assertPluginRootPlacementAllowed(style);
+}
+
+function assertPluginRootPlacementAllowed(style: string): void {
+  for (const rule of style.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const selector = rule[1].trim();
+    if (!/\.(?:rb-nav|rr-table-of-contents)/.test(selector)) continue;
+    assert.doesNotMatch(
+      selector,
+      /\.(?:rb-nav|rr-table-of-contents)__/,
+      `Site CSS must not select plugin internals: ${selector}`,
+    );
+    assert.match(
+      selector,
+      /\.site-article__aside\s*>\s*\.rr-table-of-contents(?:--[\w-]+)?$/,
+      `Site CSS may only place the ToC root: ${selector}`,
+    );
+    for (const property of rule[2].matchAll(/([\w-]+)\s*:/g)) {
+      assert.match(
+        property[1],
+        /^(position|top|max-height|overflow-y|overscroll-behavior|border-inline-start|padding-inline-start)$/,
+        `Site CSS must use only placement properties for the ToC root: ${property[1]}`,
+      );
+    }
   }
 }

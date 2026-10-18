@@ -1,14 +1,4 @@
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-}
+@import "./.riebeckite/framework-styles.css";
 
 .riebeckite-empty {
   max-width: 48rem;

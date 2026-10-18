@@ -4,7 +4,11 @@ import { test } from "node:test";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 
-import { SiteNav, type SiteNavProps } from "../components/site-nav.tsx";
+import {
+  MobileSiteNav,
+  SiteNav,
+  type SiteNavProps,
+} from "../components/site-nav.tsx";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -19,6 +23,15 @@ test("SiteNav renders an empty navigation", () => {
   assert.match(html, /^<nav class="rb-nav" aria-label="Site navigation">/);
   assert.match(html, /<ul class="rb-nav__list"><\/ul>/);
   assert.doesNotMatch(html, /rb-nav__item/);
+});
+
+test("MobileSiteNav owns the mobile menu markup", () => {
+  const html = renderToString(
+    MobileSiteNav({ items: [guide], path: "/guide" }),
+  );
+  assert.match(html, /^<details class="rb-nav__mobile">/);
+  assert.match(html, /<summary class="rb-nav__toggle">Menu<\/summary>/);
+  assert.match(html, /<nav class="rb-nav"/);
 });
 
 test("SiteNav omits the root item when requested", () => {

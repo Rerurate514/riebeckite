@@ -5,8 +5,8 @@
 Site navigation as a Riebeckite plugin. `navigation()` derives the primary
 navigation from the notes already in the vault, so an existing Obsidian vault
 becomes navigable with no Riebeckite-specific file and no required frontmatter.
-The plugin owns the navigation *model* and the *rendering mechanics*; the Site
-owns placement — where each rendered list appears.
+The plugin owns the navigation *model*, rendered UI, and interaction styling;
+the Site owns placement — where each rendered navigation appears.
 
 [日本語](./README_ja.md)
 
@@ -56,23 +56,32 @@ site without navigation keeps working.
 
 ### Rendering
 
-`SiteNav` renders a resolved tree as a `<nav>` landmark with nested lists. It
-owns the rendering mechanics — recursive children, active-path detection,
-locale-aware normalization, external-link handling, and `aria-current` — and
-ships the structural CSS for that `rb-nav` tree in its own `style.css`, loaded
-through the generated plugin styles. The Site decides where the tree is placed
-and whether to wrap it in a `<details>` element on small screens:
+`SiteNav` renders a resolved tree as a `<nav>` landmark with nested lists.
+`MobileSiteNav` renders its compact `<details>` menu. The plugin owns both
+components' `rb-nav` UI — list flow, links, nested menus, focus treatment, and
+the mobile panel — in its own `style.css`, loaded through the generated plugin
+styles. The Site places the component roots in its own layout wrappers; it must
+not style `rb-nav` descendants or construct the mobile menu markup:
 
 ```tsx
-import { SiteNav } from "@riebeckite/plugin-navigation";
+import { MobileSiteNav, SiteNav } from "@riebeckite/plugin-navigation";
 
 <header class="site-header rb-site-header">
   <a href="/" class="site-header__home rb-site-header__home">My Site</a>
-  <SiteNav
-    items={primary}
-    path={c.req.path}
-    language={c.get("htmlLanguage")}
-  />
+  <div class="site-header__primary-navigation">
+    <SiteNav
+      items={primary}
+      path={c.req.path}
+      language={c.get("htmlLanguage")}
+    />
+  </div>
+  <div class="site-header__mobile-navigation">
+    <MobileSiteNav
+      items={primary}
+      path={c.req.path}
+      language={c.get("htmlLanguage")}
+    />
+  </div>
 </header>;
 ```
 
@@ -140,8 +149,9 @@ tab.
   the model, or `null`
 - `validateNavigationOptions(options)` — option validation
 - `SiteNav` — render a resolved tree with the standard `rb-nav` structure
+- `MobileSiteNav` — render the plugin-owned compact navigation menu
 - Types: `NavigationItem`, `NavigationOptions`, `NavigationSource`,
-  `SiteNavigation`, `SiteNavProps`
+  `SiteNavigation`, `SiteNavProps`, `MobileSiteNavProps`
 
 ## Limitations
 

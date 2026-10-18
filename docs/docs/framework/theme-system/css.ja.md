@@ -98,6 +98,8 @@ __result
 
 Plugin の出力は `.rr-*` hook のみを使います。Theme は `.rr-*` を利用し、旧 Class 名に依存しないでください。
 
+Framework CSS は Reset と Base Contract を担当します。Site CSS はページの構造と配置を担当し、Site レイアウト内で文書化された Plugin root を配置できます。Plugin CSS は内部 UI と操作を担当します。Theme CSS は共通 Token と視覚表現を担当し、Site レイアウトや文書化されていない Plugin 内部を引き継ぎません。
+
 
 ## 22. Character Layer
 

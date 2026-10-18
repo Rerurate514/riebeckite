@@ -23,6 +23,10 @@ export type SiteNavProps = {
   readonly omitHome?: boolean;
 };
 
+export type MobileSiteNavProps = SiteNavProps & {
+  readonly menuLabel?: string;
+};
+
 /**
  * Renders a resolved navigation tree as a `<nav>` landmark with nested lists.
  *
@@ -58,6 +62,16 @@ export function SiteNav(props: SiteNavProps) {
         localizeHref={props.localizeHref}
       />
     </nav>
+  );
+}
+
+export function MobileSiteNav(props: MobileSiteNavProps) {
+  const { menuLabel = "Menu", ...siteNavProps } = props;
+  return (
+    <details class="rb-nav__mobile">
+      <summary class="rb-nav__toggle">{menuLabel}</summary>
+      <SiteNav {...siteNavProps} />
+    </details>
   );
 }
 

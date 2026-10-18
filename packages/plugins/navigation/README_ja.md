@@ -5,7 +5,7 @@
 サイトナビゲーションを提供する Riebeckite プラグインです。`navigation()` は
 Vault にすでにあるノートから主要ナビゲーションを導出します。Riebeckite 専用の
 ファイルも必須 frontmatter も不要なので、既存の Obsidian Vault をそのまま
-公開できます。ナビゲーションの「モデル」と描画の仕組みはプラグインが持ち、
+公開できます。ナビゲーションの「モデル」、UI、操作に関わるスタイルはプラグインが持ち、
 配置は Site が担当します。
 
 [English](./README.md)
@@ -57,22 +57,32 @@ const secondary = model?.secondary ?? [];
 ### 描画
 
 `SiteNav` は解決済みのツリーを `<nav>` ランドマークとネストしたリストとして
-描画します。子の再帰描画、現在パスの判定、言語を考慮した正規化、外部リンクの
-扱い、`aria-current` といった描画の仕組みを担当し、その `rb-nav` ツリーを
-成立させる構造 CSS を自身の `style.css` に同梱します（自動生成される plugin
-styles 経由で読み込まれます）。ツリーをどこに置くか、モバイルで `<details>` を
-使うかは Site が決めます。
+描画し、`MobileSiteNav` はコンパクトな `<details>` メニューを描画します。子の
+再帰描画、現在パスの判定、言語を考慮した正規化、外部リンクの扱い、`aria-current`
+に加え、リスト・リンク・子メニュー・フォーカス表示・モバイルパネルの `rb-nav` UI は
+プラグインが自身の `style.css` で担当します（自動生成される plugin styles 経由で
+読み込まれます）。Site はコンポーネントの root を独自のレイアウト用ラッパーに置き、
+`rb-nav` の子要素をスタイルしたりモバイルメニューのマークアップを組み立てたりしません。
 
 ```tsx
-import { SiteNav } from "@riebeckite/plugin-navigation";
+import { MobileSiteNav, SiteNav } from "@riebeckite/plugin-navigation";
 
 <header class="site-header rb-site-header">
   <a href="/" class="site-header__home rb-site-header__home">My Site</a>
-  <SiteNav
-    items={primary}
-    path={c.req.path}
-    language={c.get("htmlLanguage")}
-  />
+  <div class="site-header__primary-navigation">
+    <SiteNav
+      items={primary}
+      path={c.req.path}
+      language={c.get("htmlLanguage")}
+    />
+  </div>
+  <div class="site-header__mobile-navigation">
+    <MobileSiteNav
+      items={primary}
+      path={c.req.path}
+      language={c.get("htmlLanguage")}
+    />
+  </div>
 </header>;
 ```
 
@@ -141,8 +151,9 @@ navigation({
   構築する。なければ `null`
 - `validateNavigationOptions(options)` — オプションの検証
 - `SiteNav` — 解決済みツリーを標準の `rb-nav` 構造で描画する
+- `MobileSiteNav` — プラグイン所有のコンパクトなナビゲーションメニューを描画する
 - 型: `NavigationItem`, `NavigationOptions`, `NavigationSource`,
-  `SiteNavigation`, `SiteNavProps`
+  `SiteNavigation`, `SiteNavProps`, `MobileSiteNavProps`
 
 ## 制約
 

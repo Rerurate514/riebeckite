@@ -5,8 +5,11 @@ import {
 } from "./src/navigation.js";
 import type { NavigationOptions } from "./src/types.js";
 
-export type { SiteNavProps } from "./components/site-nav.js";
-export { SiteNav } from "./components/site-nav.js";
+export type {
+  MobileSiteNavProps,
+  SiteNavProps,
+} from "./components/site-nav.js";
+export { MobileSiteNav, SiteNav } from "./components/site-nav.js";
 export {
   buildNavigation,
   NAVIGATION_PLUGIN_NAME,

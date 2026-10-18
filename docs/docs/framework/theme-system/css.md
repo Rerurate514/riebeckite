@@ -37,6 +37,8 @@ A theme should style only these root hooks and the descendants a plugin document
 
 The public hook is `.rr-search`; `__input`, `__result`, and `--loading` are treated as internal implementation unless the plugin explicitly documents them as public hooks. Generic helpers such as `.sr-only` are not plugin hooks. Plugin output uses `rr-*` hooks only; target those hooks from themes.
 
+Framework CSS owns the reset and base contracts. Site CSS owns page structure and placement, including positioning a documented plugin root in a site layout. Plugin CSS owns its internal UI and interactions. Theme CSS owns shared tokens and visual expression; it does not take over site layout or undocumented plugin internals.
+
 ### 5-1. Character layer
 
 A theme is not limited to tokens. Within the theme boundary it may style the

@@ -1,4 +1,4 @@
-import { SiteNav } from "@riebeckite/plugin-navigation";
+import { MobileSiteNav, SiteNav } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { useSiteContext } from "@riebeckite/ui";
 
@@ -17,11 +17,12 @@ export function SiteHeader() {
         />
         {site?.config.site.title}
       </a>
-      <SiteNav placement="primary" omitHome />
-      <details class="rb-nav__mobile">
-        <summary class="rb-nav__toggle">Menu</summary>
+      <div class="site-header__primary-navigation">
         <SiteNav placement="primary" omitHome />
-      </details>
+      </div>
+      <div class="site-header__mobile-navigation">
+        <MobileSiteNav placement="primary" omitHome />
+      </div>
       <ColorModeToggle />
     </header>
   );

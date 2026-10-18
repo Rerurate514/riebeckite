@@ -220,17 +220,11 @@
   }
 
   @media (max-width: 48rem) {
-    body {
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: flex-start;
-    }
-
     .rr-search-bar {
       position: static;
       width: auto;
       margin: 1rem 1rem 0;
-      align-self: flex-end;
+      margin-inline-start: auto;
     }
 
     .rr-search-bar__trigger {

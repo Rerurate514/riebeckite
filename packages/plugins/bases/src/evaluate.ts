@@ -119,7 +119,7 @@ function resolvePath(
 ): unknown {
   const [first] = path;
   if (!first) return undefined;
-  if (first in scope) return scope[first];
+  if (Object.hasOwn(scope, first)) return scope[first];
   if (first === "file") return fileValue(entry);
   if (first === "note") return entry.frontmatter;
   if (first === "formula")
@@ -128,9 +128,22 @@ function resolvePath(
       {
         get: (_target, property) =>
           resolveFormula(String(property), entry, formulas, scope, active),
+        getOwnPropertyDescriptor: (_target, property) => ({
+          configurable: true,
+          enumerable: true,
+          value: resolveFormula(
+            String(property),
+            entry,
+            formulas,
+            scope,
+            active,
+          ),
+        }),
       },
     );
-  return entry.frontmatter[first];
+  return Object.hasOwn(entry.frontmatter, first)
+    ? entry.frontmatter[first]
+    : undefined;
 }
 
 function resolveFormula(
@@ -171,11 +184,17 @@ function fileValue(entry: ContentManifestEntry): Record<string, unknown> {
 function readMember(value: unknown, property: string): unknown {
   if (value === null || value === undefined) return undefined;
   if (
+    property === "__proto__" ||
+    property === "prototype" ||
+    property === "constructor"
+  )
+    return undefined;
+  if (
     property === "length" &&
     (typeof value === "string" || Array.isArray(value))
   )
     return value.length;
-  if (typeof value === "object")
+  if (typeof value === "object" && Object.hasOwn(value, property))
     return (value as Record<string, unknown>)[property];
   return undefined;
 }
@@ -235,6 +254,25 @@ function evaluateCall(
   scope: Readonly<Record<string, unknown>>,
   active: ReadonlySet<string>,
 ): unknown {
+  if (expression.callee.kind === "member") {
+    const target = evaluateBasesExpression(
+      expression.callee.object,
+      entry,
+      formulas,
+      scope,
+      active,
+    );
+    const higherOrder = evaluateHigherOrderCall(
+      target,
+      expression.callee.property,
+      expression.arguments,
+      entry,
+      formulas,
+      scope,
+      active,
+    );
+    if (higherOrder.handled) return higherOrder.value;
+  }
   const args = expression.arguments.map((argument) =>
     evaluateBasesExpression(argument, entry, formulas, scope, active),
   );
@@ -255,6 +293,10 @@ function globalCall(name: string, args: readonly unknown[]): unknown {
   if (name === "if") return args[0] ? args[1] : (args[2] ?? null);
   if (name === "list") return Array.isArray(args[0]) ? args[0] : [args[0]];
   if (name === "number") return Number(args[0]);
+  if (name === "length")
+    return Array.isArray(args[0]) || typeof args[0] === "string"
+      ? args[0].length
+      : 0;
   if (name === "min") return Math.min(...args.map(Number));
   if (name === "max") return Math.max(...args.map(Number));
   if (name === "date") {
@@ -302,9 +344,22 @@ function memberCall(
     if (name === "lower") return target.toLowerCase();
     if (name === "upper") return target.toUpperCase();
     if (name === "contains") return target.includes(String(args[0]));
+    if (name === "containsAll")
+      return args.every((value) => target.includes(String(value)));
+    if (name === "containsAny")
+      return args.some((value) => target.includes(String(value)));
     if (name === "startsWith") return target.startsWith(String(args[0]));
     if (name === "endsWith") return target.endsWith(String(args[0]));
     if (name === "trim") return target.trim();
+    if (name === "reverse") return [...target].reverse().join("");
+    if (name === "repeat")
+      return target.repeat(Math.max(0, Number(args[0] ?? 0)));
+    if (name === "slice")
+      return target.slice(
+        Number(args[0] ?? 0),
+        args[1] === undefined ? undefined : Number(args[1]),
+      );
+    if (name === "isEmpty") return target.length === 0;
     if (name === "split") return target.split(String(args[0]));
     if (name === "replace")
       return target.split(String(args[0])).join(String(args[1] ?? ""));
@@ -315,9 +370,24 @@ function memberCall(
         scalarEquals(value, args[0] as BasesLiteral),
       );
     if (name === "join") return target.join(String(args[0] ?? ","));
+    if (name === "containsAll")
+      return args.every((value) =>
+        target.some((item) => scalarEquals(item, value as BasesLiteral)),
+      );
+    if (name === "containsAny")
+      return args.some((value) =>
+        target.some((item) => scalarEquals(item, value as BasesLiteral)),
+      );
     if (name === "unique") return [...new Set(target)];
     if (name === "flat") return target.flat();
     if (name === "sort") return [...target].sort();
+    if (name === "reverse") return [...target].reverse();
+    if (name === "slice")
+      return target.slice(
+        Number(args[0] ?? 0),
+        args[1] === undefined ? undefined : Number(args[1]),
+      );
+    if (name === "isEmpty") return target.length === 0;
   }
   if (typeof target === "number") {
     if (name === "round") {
@@ -331,6 +401,72 @@ function memberCall(
     if (name === "toFixed") return target.toFixed(Number(args[0] ?? 0));
   }
   return undefined;
+}
+
+function evaluateHigherOrderCall(
+  target: unknown,
+  name: string,
+  arguments_: readonly BasesExpression[],
+  entry: ContentManifestEntry,
+  formulas: Readonly<Record<string, BasesExpression>>,
+  scope: Readonly<Record<string, unknown>>,
+  active: ReadonlySet<string>,
+): { readonly handled: boolean; readonly value: unknown } {
+  if (!Array.isArray(target) || !["map", "filter", "reduce"].includes(name)) {
+    return { handled: false, value: undefined };
+  }
+  const expression = arguments_[0];
+  if (!expression || target.length > 10_000)
+    return { handled: true, value: undefined };
+  if (name === "map") {
+    return {
+      handled: true,
+      value: target.map((value, index) =>
+        evaluateBasesExpression(
+          expression,
+          entry,
+          formulas,
+          { ...scope, value, index },
+          active,
+        ),
+      ),
+    };
+  }
+  if (name === "filter") {
+    return {
+      handled: true,
+      value: target.filter((value, index) =>
+        Boolean(
+          evaluateBasesExpression(
+            expression,
+            entry,
+            formulas,
+            { ...scope, value, index },
+            active,
+          ),
+        ),
+      ),
+    };
+  }
+  let accumulator = arguments_[1]
+    ? evaluateBasesExpression(arguments_[1], entry, formulas, scope, active)
+    : target[0];
+  const start = arguments_[1] ? 0 : 1;
+  for (let index = start; index < target.length; index += 1) {
+    accumulator = evaluateBasesExpression(
+      expression,
+      entry,
+      formulas,
+      {
+        ...scope,
+        acc: accumulator,
+        value: target[index],
+        index,
+      },
+      active,
+    );
+  }
+  return { handled: true, value: accumulator };
 }
 
 /** Reads the entry value a filter reference points at. */
@@ -348,10 +484,12 @@ function readFrontmatter(
   frontmatter: Readonly<Record<string, unknown>>,
   key: string,
 ): unknown {
-  if (key in frontmatter) return frontmatter[key];
+  if (Object.hasOwn(frontmatter, key)) return frontmatter[key];
   return key.split(".").reduce<unknown>((value, part) => {
     if (!value || typeof value !== "object") return undefined;
-    return (value as Readonly<Record<string, unknown>>)[part];
+    return Object.hasOwn(value, part)
+      ? (value as Readonly<Record<string, unknown>>)[part]
+      : undefined;
   }, frontmatter);
 }
 

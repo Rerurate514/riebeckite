@@ -37,6 +37,8 @@ Markdown ページまたは公開リダイレクトと競合した場合はそ�
 filters: note.status == "published" && !file.hasTag("hidden")
 formulas:
   label: 'note.author.name.upper() + " / " + note.score'
+summaries:
+  total: values.reduce(acc + value, 0)
 properties:
   file.name: File
   formula.label: Label
@@ -44,6 +46,9 @@ views:
   - type: table
     name: Books
     order: [file.name, formula.label]
+    sort: [{ property: formula.label, direction: DESC }]
+    groupBy: { property: note.status, direction: ASC }
+    summaries: { formula.label: total }
   - type: cards
     name: Cards
     order: [file.name, formula.label]
@@ -60,22 +65,28 @@ views:
 算術、比較、`&&`、`||`、括弧、プロパティ同士の比較、`formula.name` 参照に対応します。
 Formula の循環参照は空の値になります。
 
-対応する関数は `if`、`list`、`number`、`min`、`max`、`date`、文字列の `lower`、
+対応する関数は `if`、`list`、`length`、`number`、`min`、`max`、`date`、文字列の `lower`、
 `upper`、`contains`、`startsWith`、`endsWith`、`trim`、`split`、`replace`、リストの
-`contains`、`join`、`unique`、`flat`、`sort`、数値の `round`、`floor`、`ceil`、`abs`、
+`contains`、`containsAll`、`containsAny`、`join`、`unique`、`flat`、`sort`、`reverse`、
+`slice`、`isEmpty`、`map`、`filter`、`reduce`、数値の `round`、`floor`、`ceil`、`abs`、
 `toFixed`、`file.hasTag`、`file.hasLink`、`file.inFolder` です。
 
 ## 互換性マトリクス
 
 | Obsidian Base の機能 | 状態 | 備考 |
 | --- | --- | --- |
-| YAML ルート、`filters`、`properties`、`formulas`、`views` | 対応 | YAML または仕様が不正な場合は診断を出します。 |
+| YAML ルート、`filters`、`properties`、`formulas`、`summaries`、`views` | 対応 | YAML または仕様が不正な場合は診断を出します。 |
 | Table と cards | 対応 | ほかのビュー種別は描画しません。 |
 | AST の filter と Formula | 一部対応 | 対応関数は上記のとおりです。 |
-| Formula によるソート、グループ、集計 | 未対応 | Formula 値は列への表示だけに使えます。 |
+| Formula によるソートと複数の安定ソートキー | 対応 | 空の値は末尾に並びます。 |
+| `groupBy` と `groupOrder` | 対応 | Formula プロパティ、空グループ、Table、cards に対応します。対話的な折りたたみは対象外です。 |
+| Table の集計 | 一部対応 | 名前付き集計、Empty、Filled、Unique、Checked、Unchecked、数値、日付の集計を使えます。 |
+| Cards の集計 | 対象外 | Obsidian は集計を cards ではなく Table に表示します。 |
 | `file.name`、`file.path`、`file.ext`、`file.folder`、`file.tags`、`file.links`、`file.properties`、`file.link` | 一部対応 | Markdown マニフェストから導出します。name/path は `.md` のソース規則を使います。 |
 | `file.size`、`file.mtime`、`file.ctime`、backlinks、embeds | 未対応 | Core の行にこのメタデータがありません。空の値になり、frontmatter の日付へは置き換えません。 |
-| 日付・リストのラムダ／高階関数、正規表現、link/image | 未対応 | 拒否されるか、空の値として評価されます。 |
+| リストの `map`、`filter`、`reduce` | 一部対応 | `value`、`index`、`acc` スコープの式を使い、リスト長には上限があります。 |
+| 正規表現、オブジェクトリテラル、link/image の描画、非決定的な date/random 関数 | 未対応 | JavaScript を実行せず、安全でない URL を出力しません。 |
+| 編集、グループの折りたたみなどの対話的なビュー操作 | 対象外 | Riebeckite は静的なビルド出力を描画します。 |
 
 ## オプションとエクスポート
 

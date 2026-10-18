@@ -1,5 +1,3 @@
-import type { ContentQuerySort } from "@riebeckite/core";
-
 /** View kinds supported by the MVP renderer. */
 export type BasesViewType = "table" | "cards";
 
@@ -68,6 +66,18 @@ export type BasesExpression =
       readonly index: BasesExpression;
     };
 
+export type BasesSort = {
+  readonly property: string;
+  readonly direction: "asc" | "desc";
+};
+
+export type BasesGroupBy = {
+  readonly property: string;
+  readonly direction: "asc" | "desc";
+};
+
+export type BasesGroupKey = string | number | boolean | null;
+
 /** A value read either from a built-in or from frontmatter. */
 export type BasesValueRef =
   | { readonly source: "builtin"; readonly name: BasesBuiltinValue }
@@ -101,8 +111,14 @@ export type BasesView = {
   readonly columns: readonly string[];
   /** View-local filter, combined with the top-level filter using AND. */
   readonly filter?: BasesCondition;
-  /** Sort keys, mapped onto the Core content query sort shape. */
-  readonly sort?: readonly ContentQuerySort[];
+  /** Sort keys, including formula properties. */
+  readonly sort?: readonly BasesSort[];
+  /** The single property used by Obsidian Bases to form row groups. */
+  readonly groupBy?: BasesGroupBy;
+  /** Manual group visibility and order, when configured by Obsidian. */
+  readonly groupOrder?: readonly BasesGroupKey[];
+  /** Property id -> named top-level summary formula. */
+  readonly summaries?: Readonly<Record<string, string>>;
   /** View-local row cap. Still bounded by {@link BasesOptions.limit}. */
   readonly limit?: number;
 };
@@ -114,6 +130,8 @@ export type BasesSpec = {
   /** Property id -> display label. */
   readonly properties: Readonly<Record<string, string>>;
   readonly formulas: Readonly<Record<string, BasesExpression>>;
+  /** Named summary expressions, evaluated with `values` in scope. */
+  readonly summaries: Readonly<Record<string, BasesExpression>>;
   readonly views: readonly BasesView[];
 };
 

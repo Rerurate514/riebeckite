@@ -2,14 +2,16 @@ import {
   type ContentManifestEntry,
   escapeHtml,
   escapeHtmlAttribute,
-  queryContentEntries,
 } from "@riebeckite/core";
+import { matchesCondition } from "./evaluate.js";
+import { DEFAULT_COLUMNS } from "./parse.js";
 import {
-  evaluateBasesExpression,
-  matchesCondition,
-  resolveValueRef,
-} from "./evaluate.js";
-import { DEFAULT_COLUMNS, parseValueRef } from "./parse.js";
+  type BasesGroup,
+  groupBasesEntries,
+  resolveBasesProperty,
+  sortBasesEntries,
+  summarizeBasesValues,
+} from "./transform.js";
 import type { BasesOptions, BasesSpec, BasesView } from "./types.js";
 
 const TITLE_PROPERTIES = new Set(["file.name", "file.title", "title", "name"]);
@@ -107,28 +109,27 @@ function renderView(
       (view.filter === undefined || matchesCondition(view.filter, entry)),
   );
   const effectiveLimit = Math.min(view.limit ?? limit, limit);
-  const selected = queryContentEntries(pool, {
-    ...(view.sort === undefined ? {} : { sort: view.sort }),
-    limit: effectiveLimit,
-  });
+  const selected = sortBasesEntries(pool, view, spec).slice(0, effectiveLimit);
+  const groups = groupBasesEntries(selected, view, spec);
 
   const name = view.name
     ? `<h3 class="${escapeHtmlAttribute(className)}__view-name">${escapeHtml(view.name)}</h3>`
     : "";
   const body =
     view.type === "cards"
-      ? renderCards(view, selected, spec, className)
-      : renderTable(view, selected, spec, className);
+      ? renderCards(view, groups, spec, className)
+      : renderTable(view, groups, spec, className);
 
   return `<section class="${escapeHtmlAttribute(className)}__view" data-bases-view="${view.type}">${name}${body}</section>`;
 }
 
 function renderTable(
   view: BasesView,
-  entries: readonly ContentManifestEntry[],
+  groups: readonly BasesGroup[],
   spec: BasesSpec,
   className: string,
 ): string {
+  const entries = groups.flatMap((group) => group.entries);
   if (entries.length === 0) return renderEmpty(className);
 
   const head = view.columns
@@ -138,32 +139,43 @@ function renderTable(
     )
     .join("");
 
-  const rows = entries
-    .map((entry) => {
-      const cells = view.columns
-        .map(
-          (property) =>
-            `<td class="${escapeHtmlAttribute(className)}__cell">${renderCell(entry, property, className, spec)}</td>`,
-        )
+  const rows = groups
+    .map((group) => {
+      const heading = view.groupBy
+        ? `<tr class="${escapeHtmlAttribute(className)}__group"><th colspan="${view.columns.length}" scope="rowgroup">${escapeHtml(formatValue(group.key) || "No value")}</th></tr>${renderSummaryRow(view, group.entries, spec, className, "group")}`
+        : "";
+      const values = group.entries
+        .map((entry) => {
+          const cells = view.columns
+            .map(
+              (property) =>
+                `<td class="${escapeHtmlAttribute(className)}__cell">${renderCell(entry, property, className, spec)}</td>`,
+            )
+            .join("");
+          return `<tr class="${escapeHtmlAttribute(className)}__row">${cells}</tr>`;
+        })
         .join("");
-      return `<tr class="${escapeHtmlAttribute(className)}__row">${cells}</tr>`;
+      return `<tbody>${heading}${values}</tbody>`;
     })
     .join("");
+  const footer = renderSummaryRow(view, entries, spec, className, "overall");
 
   return [
     `<table class="${escapeHtmlAttribute(className)}__table">`,
     `<thead><tr>${head}</tr></thead>`,
-    `<tbody>${rows}</tbody>`,
+    rows,
+    footer ? `<tfoot>${footer}</tfoot>` : "",
     "</table>",
   ].join("");
 }
 
 function renderCards(
   view: BasesView,
-  entries: readonly ContentManifestEntry[],
+  groups: readonly BasesGroup[],
   spec: BasesSpec,
   className: string,
 ): string {
+  const entries = groups.flatMap((group) => group.entries);
   if (entries.length === 0) return renderEmpty(className);
 
   const titleProperty = view.columns.find((property) =>
@@ -171,24 +183,32 @@ function renderCards(
   );
   const fields = view.columns.filter((property) => property !== titleProperty);
 
-  const items = entries
-    .map((entry) => {
-      const title = `<a class="${escapeHtmlAttribute(className)}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a>`;
-      const fieldHtml = fields
-        .map((property) => {
-          const label = escapeHtml(columnLabel(property, spec));
-          const value = renderCell(entry, property, className, spec);
-          return `<div class="${escapeHtmlAttribute(className)}__field"><dt class="${escapeHtmlAttribute(className)}__field-label">${label}</dt><dd class="${escapeHtmlAttribute(className)}__field-value">${value}</dd></div>`;
+  const cards = groups
+    .map((group) => {
+      const heading = view.groupBy
+        ? `<h4 class="${escapeHtmlAttribute(className)}__group-title">${escapeHtml(formatValue(group.key) || "No value")}</h4>`
+        : "";
+      const items = group.entries
+        .map((entry) => {
+          const title = `<a class="${escapeHtmlAttribute(className)}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a>`;
+          const fieldHtml = fields
+            .map((property) => {
+              const label = escapeHtml(columnLabel(property, spec));
+              const value = renderCell(entry, property, className, spec);
+              return `<div class="${escapeHtmlAttribute(className)}__field"><dt class="${escapeHtmlAttribute(className)}__field-label">${label}</dt><dd class="${escapeHtmlAttribute(className)}__field-value">${value}</dd></div>`;
+            })
+            .join("");
+          const fieldsBlock = fieldHtml
+            ? `<dl class="${escapeHtmlAttribute(className)}__fields">${fieldHtml}</dl>`
+            : "";
+          return `<li class="${escapeHtmlAttribute(className)}__card"><div class="${escapeHtmlAttribute(className)}__card-title">${title}</div>${fieldsBlock}</li>`;
         })
         .join("");
-      const fieldsBlock = fieldHtml
-        ? `<dl class="${escapeHtmlAttribute(className)}__fields">${fieldHtml}</dl>`
-        : "";
-      return `<li class="${escapeHtmlAttribute(className)}__card"><div class="${escapeHtmlAttribute(className)}__card-title">${title}</div>${fieldsBlock}</li>`;
+      return `<section class="${escapeHtmlAttribute(className)}__card-group">${heading}<ul class="${escapeHtmlAttribute(className)}__cards">${items}</ul></section>`;
     })
     .join("");
 
-  return `<ul class="${escapeHtmlAttribute(className)}__cards">${items}</ul>`;
+  return cards;
 }
 
 function renderEmpty(className: string): string {
@@ -224,17 +244,30 @@ function renderCell(
           .join(" ")}</span>`;
   }
 
-  const value = property.toLowerCase().startsWith("formula.")
-    ? evaluateBasesExpression(
-        spec.formulas[property.slice("formula.".length)] ?? {
-          kind: "literal",
-          value: null,
-        },
-        entry,
-        spec.formulas,
-      )
-    : resolveValueRef(parseValueRef(property), entry);
+  const value = resolveBasesProperty(entry, property, spec);
   return escapeHtml(formatValue(value));
+}
+
+function renderSummaryRow(
+  view: BasesView,
+  entries: readonly ContentManifestEntry[],
+  spec: BasesSpec,
+  className: string,
+  kind: "group" | "overall",
+): string {
+  if (!view.summaries) return "";
+  const cells = view.columns
+    .map((property) => {
+      const summary = view.summaries?.[property];
+      if (!summary)
+        return `<td class="${escapeHtmlAttribute(className)}__summary"></td>`;
+      const values = entries.map((entry) =>
+        resolveBasesProperty(entry, property, spec),
+      );
+      return `<td class="${escapeHtmlAttribute(className)}__summary">${escapeHtml(formatValue(summarizeBasesValues(values, summary, spec)))}</td>`;
+    })
+    .join("");
+  return `<tr class="${escapeHtmlAttribute(className)}__summary-row ${escapeHtmlAttribute(className)}__summary-row--${kind}">${cells}</tr>`;
 }
 
 function columnLabel(property: string, spec: BasesSpec): string {

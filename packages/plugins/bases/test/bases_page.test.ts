@@ -195,6 +195,45 @@ test("evaluates precedence, short circuits, missing values, and cycles safely", 
     undefined,
   );
   assert.equal(parseBasesExpression("note.score +").ok, false);
+  assert.deepEqual(evaluate("[1, 2, 3].map(value * 2)"), [2, 4, 6]);
+  assert.deepEqual(evaluate("[1, 2, 3].filter(value > 1)"), [2, 3]);
+  assert.equal(evaluate("[1, 2, 3].reduce(acc + value, 0)"), 6);
+  assert.equal(evaluate("['a', 'b'].containsAll('a', 'b')"), true);
+});
+
+test("sorts formula values and renders grouped table summaries", async () => {
+  const manager = createManager({
+    "index.md": "---\npublish: true\n---\n\n![[views/Grouped.base]]\n",
+    "notes/First.md":
+      "---\npublish: true\nstatus: alpha\nscore: 2\n---\n\n# First\n",
+    "notes/Second.md":
+      "---\npublish: true\nstatus: beta\nscore: 3\n---\n\n# Second\n",
+    "notes/Third.md": "---\npublish: true\nscore: 1\n---\n\n# Third\n",
+    "views/Grouped.base": [
+      "formulas:",
+      "  rank: note.score * 2",
+      "summaries:",
+      "  total: values.reduce(acc + value, 0)",
+      "filters: note.score != null",
+      "properties:",
+      "  file.name: Name",
+      "  status: Status",
+      "  formula.rank: Rank",
+      "views:",
+      "  - type: table",
+      "    order: [file.name, status, formula.rank]",
+      "    sort: [{ property: formula.rank, direction: DESC }]",
+      "    groupBy: { property: status, direction: ASC }",
+      "    groupOrder: [beta, alpha, null]",
+      "    summaries: { formula.rank: total }",
+    ].join("\n"),
+  });
+  const body = (await manager.resolvePage("/views/Grouped"))?.body ?? "";
+  assert.ok(body.indexOf("beta") < body.indexOf("alpha"));
+  assert.ok(body.indexOf("alpha") < body.indexOf("No value"));
+  assert.match(body, /__summary[^>]*>6</);
+  assert.match(body, /__summary[^>]*>4</);
+  assert.match(body, /__summary[^>]*>2</);
 });
 
 test("escapes formula and property output", async () => {

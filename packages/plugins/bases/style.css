@@ -35,7 +35,6 @@
   .rb-bases__table {
     display: block;
     overflow-x: auto;
-    white-space: nowrap;
   }
 }
 
@@ -66,10 +65,25 @@
 .rb-bases__cell {
   padding: 0.5rem 0.75rem;
   vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
 .rb-bases__row:not(:last-child) .rb-bases__cell {
   border-bottom: 1px solid var(--rb-bases-rule);
+}
+
+.rb-bases__group th,
+.rb-bases__summary {
+  padding: 0.45rem 0.75rem;
+  border-top: 1px solid var(--rb-bases-rule);
+  color: var(--rb-bases-muted);
+  text-align: left;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.rb-bases__summary-row--overall .rb-bases__summary {
+  border-top: 1px solid var(--rb-bases-ink);
 }
 
 .rb-bases__link {
@@ -98,6 +112,15 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.rb-bases__card-group + .rb-bases__card-group {
+  margin-top: 1rem;
+}
+
+.rb-bases__group-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
 }
 
 .rb-bases__card {
@@ -129,6 +152,7 @@
 
 .rb-bases__field-value {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .rb-bases__empty {

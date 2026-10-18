@@ -1,10 +1,12 @@
-import type { ContentQuerySort } from "@riebeckite/core";
 import { parseBasesExpression } from "./expression.js";
 import type {
   BasesBuiltinValue,
   BasesCondition,
+  BasesGroupBy,
+  BasesGroupKey,
   BasesLiteral,
   BasesOperator,
+  BasesSort,
   BasesSpec,
   BasesValueRef,
   BasesView,
@@ -47,7 +49,7 @@ const BUILTIN_ALIASES: Record<string, BasesBuiltinValue> = {
  */
 export function parseBases(document: unknown): Result<BasesSpec> {
   if (document === null || document === undefined) {
-    return ok({ properties: {}, formulas: {}, views: [] });
+    return ok({ properties: {}, formulas: {}, summaries: {}, views: [] });
   }
   if (typeof document !== "object" || Array.isArray(document)) {
     return fail("Base definition must be a YAML mapping.");
@@ -63,6 +65,9 @@ export function parseBases(document: unknown): Result<BasesSpec> {
   const formulas = parseFormulas(root.formulas);
   if (formulas.ok === false) return formulas;
 
+  const summaries = parseFormulas(root.summaries);
+  if (summaries.ok === false) return summaries;
+
   const views = parseViews(root.views, properties.value);
   if (views.ok === false) return views;
 
@@ -70,6 +75,7 @@ export function parseBases(document: unknown): Result<BasesSpec> {
     ...(filter.value === undefined ? {} : { filter: filter.value }),
     properties: properties.value,
     formulas: formulas.value,
+    summaries: summaries.value,
     views: views.value,
   });
 }
@@ -418,6 +424,13 @@ function parseView(
   const sort = parseSort(object.sort, `${path}.sort`);
   if (sort.ok === false) return sort;
 
+  const groupBy = parseGroupBy(object.groupBy, `${path}.groupBy`);
+  if (groupBy.ok === false) return groupBy;
+  const groupOrder = parseGroupOrder(object.groupOrder, `${path}.groupOrder`);
+  if (groupOrder.ok === false) return groupOrder;
+  const summaries = parseViewSummaries(object.summaries, `${path}.summaries`);
+  if (summaries.ok === false) return summaries;
+
   const limit = parseLimit(object.limit, `${path}.limit`);
   if (limit.ok === false) return limit;
 
@@ -432,6 +445,9 @@ function parseView(
     columns,
     ...(filter.value === undefined ? {} : { filter: filter.value }),
     ...(sort.value === undefined ? {} : { sort: sort.value }),
+    ...(groupBy.value === undefined ? {} : { groupBy: groupBy.value }),
+    ...(groupOrder.value === undefined ? {} : { groupOrder: groupOrder.value }),
+    ...(summaries.value === undefined ? {} : { summaries: summaries.value }),
     ...(limit.value === undefined ? {} : { limit: limit.value }),
   });
 }
@@ -470,10 +486,10 @@ function readStringList(value: unknown): string[] | null {
 function parseSort(
   value: unknown,
   path: string,
-): Result<ContentQuerySort[] | undefined> {
+): Result<BasesSort[] | undefined> {
   if (value === undefined || value === null) return ok(undefined);
   const list = Array.isArray(value) ? value : [value];
-  const sorts: ContentQuerySort[] = [];
+  const sorts: BasesSort[] = [];
 
   for (let index = 0; index < list.length; index += 1) {
     const entry = list[index];
@@ -482,8 +498,8 @@ function parseSort(
       if (text === "") continue;
       const descending = text.startsWith("-");
       sorts.push({
-        field: mapSortField(descending ? text.slice(1) : text),
-        order: descending ? "desc" : "asc",
+        property: descending ? text.slice(1) : text,
+        direction: descending ? "desc" : "asc",
       });
       continue;
     }
@@ -498,8 +514,8 @@ function parseSort(
         typeof direction === "string" &&
         direction.trim().toLowerCase() === "desc";
       sorts.push({
-        field: mapSortField(property),
-        order: descending ? "desc" : "asc",
+        property,
+        direction: descending ? "desc" : "asc",
       });
       continue;
     }
@@ -509,26 +525,69 @@ function parseSort(
   return ok(sorts.length === 0 ? undefined : sorts);
 }
 
-function mapSortField(property: string): string {
-  const ref = parseValueRef(property);
-  if (ref.source === "frontmatter") return ref.key;
-  switch (ref.name) {
-    case "file.name":
-    case "file.title":
-      return "title";
-    case "file.path":
-    case "file.slug":
-      return "slug";
-    case "file.link":
-    case "file.permalink":
-      return "permalink";
-    case "file.tags":
-      return "tags";
-    case "file.folder":
-      return "slug";
-    default:
-      return property;
+function parseGroupBy(
+  value: unknown,
+  path: string,
+): Result<BasesGroupBy | undefined> {
+  if (value === undefined || value === null) return ok(undefined);
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return fail(`${path} must be a mapping.`);
   }
+  const record = value as Record<string, unknown>;
+  if (typeof record.property !== "string" || record.property.trim() === "") {
+    return fail(`${path}.property must be a non-empty property name.`);
+  }
+  const direction = String(record.direction ?? "asc")
+    .trim()
+    .toLowerCase();
+  if (direction !== "asc" && direction !== "desc") {
+    return fail(`${path}.direction must be "ASC" or "DESC".`);
+  }
+  return ok({ property: record.property, direction });
+}
+
+function parseGroupOrder(
+  value: unknown,
+  path: string,
+): Result<readonly BasesGroupKey[] | undefined> {
+  if (value === undefined) return ok(undefined);
+  if (!Array.isArray(value)) return fail(`${path} must be a list.`);
+  const values: BasesGroupKey[] = [];
+  for (const item of value) {
+    if (
+      item === null ||
+      typeof item === "string" ||
+      typeof item === "number" ||
+      typeof item === "boolean"
+    ) {
+      values.push(item);
+    } else {
+      return fail(
+        `${path} values must be strings, numbers, booleans, or null.`,
+      );
+    }
+  }
+  return ok(values);
+}
+
+function parseViewSummaries(
+  value: unknown,
+  path: string,
+): Result<Record<string, string> | undefined> {
+  if (value === undefined || value === null) return ok(undefined);
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return fail(`${path} must be a mapping.`);
+  }
+  const summaries: Record<string, string> = {};
+  for (const [property, summary] of Object.entries(
+    value as Record<string, unknown>,
+  )) {
+    if (typeof summary !== "string" || summary.trim() === "") {
+      return fail(`${path}.${property} must name a summary.`);
+    }
+    summaries[property] = summary;
+  }
+  return ok(summaries);
 }
 
 function parseLimit(value: unknown, path: string): Result<number | undefined> {

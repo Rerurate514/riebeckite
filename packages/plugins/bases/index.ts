@@ -16,13 +16,22 @@ export {
 export { parseBasesExpression } from "./src/expression.js";
 export { parseBases } from "./src/parse.js";
 export { remarkBases } from "./src/remark.js";
+export {
+  groupBasesEntries,
+  resolveBasesProperty,
+  sortBasesEntries,
+  summarizeBasesValues,
+} from "./src/transform.js";
 export type {
   BasesBuiltinValue,
   BasesCondition,
   BasesExpression,
+  BasesGroupBy,
+  BasesGroupKey,
   BasesLiteral,
   BasesOperator,
   BasesOptions,
+  BasesSort,
   BasesSpec,
   BasesValueRef,
   BasesView,
@@ -44,7 +53,7 @@ export function bases(options: BasesOptions = {}) {
     name: "bases",
     contentOutputDependencies: [{ type: "global" }],
     processedContentCache: {
-      version: "bases-v2",
+      version: "bases-v3",
       dependencyMode: "none",
     },
     options,

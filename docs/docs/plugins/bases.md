@@ -38,6 +38,8 @@ and public redirects win route collisions; the Base page is skipped with a
 filters: note.status == "published" && !file.hasTag("hidden")
 formulas:
   label: 'note.author.name.upper() + " / " + note.score'
+summaries:
+  total: values.reduce(acc + value, 0)
 properties:
   file.name: File
   formula.label: Label
@@ -45,6 +47,9 @@ views:
   - type: table
     name: Books
     order: [file.name, formula.label]
+    sort: [{ property: formula.label, direction: DESC }]
+    groupBy: { property: note.status, direction: ASC }
+    summaries: { formula.label: total }
   - type: cards
     name: Cards
     order: [file.name, formula.label]
@@ -62,9 +67,11 @@ literal values and arrays, nested member/index access, `!`, unary `-`, arithmeti
 comparison, `&&`, `||`, parentheses, property-to-property comparisons, and
 `formula.name` references. Formula cycles evaluate to an empty value.
 
-Supported functions: `if`, `list`, `number`, `min`, `max`, `date`; string
+Supported functions: `if`, `list`, `length`, `number`, `min`, `max`, `date`; string
 `lower`, `upper`, `contains`, `startsWith`, `endsWith`, `trim`, `split`,
-`replace`; list `contains`, `join`, `unique`, `flat`, `sort`; number `round`,
+`replace`, `reverse`, `repeat`, `slice`, `isEmpty`; list `contains`, `containsAll`,
+`containsAny`, `join`, `unique`, `flat`, `sort`, `reverse`, `slice`, `isEmpty`,
+`map`, `filter`, `reduce`; number `round`,
 `floor`, `ceil`, `abs`, `toFixed`; and `file.hasTag`, `file.hasLink`,
 `file.inFolder`.
 
@@ -72,13 +79,18 @@ Supported functions: `if`, `list`, `number`, `min`, `max`, `date`; string
 
 | Obsidian Base feature | Status | Notes |
 | --- | --- | --- |
-| YAML root, `filters`, `properties`, `formulas`, `views` | Supported | Invalid YAML/specs produce a diagnostic. |
+| YAML root, `filters`, `properties`, `formulas`, `summaries`, `views` | Supported | Invalid YAML/specs produce a diagnostic. |
 | Table and cards | Supported | Other view types are not rendered. |
 | AST filters and formulas | Supported subset | See the function list above. |
-| Formula sorting, grouping, summaries | Unsupported | Formula values render in columns only. |
+| Formula sorting and multiple stable sort keys | Supported | Empty values sort last. |
+| `groupBy` and `groupOrder` | Supported | Formula properties, empty groups, table, and cards are supported. Interactive collapse is not. |
+| Table summaries | Supported subset | Named summaries and Empty, Filled, Unique, Checked, Unchecked, numeric, and date summaries are available. |
+| Card summaries | Out of Scope | Obsidian displays summaries in tables, not cards. |
 | `file.name`, `file.path`, `file.ext`, `file.folder`, `file.tags`, `file.links`, `file.properties`, `file.link` | Partial | Derived from the Markdown manifest; name/path use the `.md` source convention. |
 | `file.size`, `file.mtime`, `file.ctime`, backlinks, embeds | Unsupported | Core manifest rows do not carry this metadata. These values are empty, never mapped to frontmatter dates. |
-| Date/list lambda and higher-order functions, regex, links/images | Unsupported | They are rejected or evaluate to an empty value. |
+| List `map`, `filter`, and `reduce` | Supported subset | Their expressions use the `value`, `index`, and `acc` scope with a bounded list size. |
+| Regex, object literals, link/image rendering, nondeterministic date/random functions | Unsupported | Static rendering does not execute JavaScript or emit unsafe URLs. |
+| Editing, group collapse, and other interactive view controls | Out of Scope | Riebeckite renders static build output. |
 
 ## Options and exports
 

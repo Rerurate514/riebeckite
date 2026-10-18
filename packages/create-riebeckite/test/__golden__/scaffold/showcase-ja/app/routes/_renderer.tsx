@@ -1,6 +1,7 @@
 import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
+import { createPublicContentView } from "@riebeckite/core";
+import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
-import { resolveSiteNavigation } from "@riebeckite/plugin-navigation";
 import { SearchBar } from "@riebeckite/plugin-search";
 import { SiteFooter, SiteHeader } from "../components/site-header";
 import { content } from "virtual:riebeckite/content";
@@ -11,41 +12,31 @@ import { config } from "virtual:riebeckite/config";
 export const __importing_islands = true;
 
 export default jsxRenderer(async ({ children }, c) => {
-  const navigation =
-    resolveSiteNavigation(
-      config,
-      await content.getManifest(),
-      c.get("htmlLanguage"),
-    ) ?? { primary: [], secondary: [] };
+  const manifest = await content.getManifest();
 
   return (
-    <ThemeRoot
-      theme={config.theme}
-      lang={c.get("htmlLanguage") ?? config.site.locale}
+    <SiteProvider
+      config={config}
+      manifest={manifest}
+      view={createPublicContentView(manifest)}
+      path={c.req.path}
+      language={c.get("htmlLanguage")}
+      headTags={c.get("headTags")}
     >
-      <head>
-        <RiebeckiteHead
-          title={config.site.title}
-          headTags={c.get("headTags") ?? []}
-        />
-      </head>
-      <body class="riebeckite-page rb-site">
-        <a class="rb-skip-link" href="#main-content">Skip to main content</a>
-        <SiteHeader
-          path={c.req.path}
-          items={navigation.primary}
-          language={c.get("htmlLanguage")}
-        />
-        <SearchBar />
-        <main id="main-content" tabindex="-1" class="riebeckite-main">
-          {children}
-        </main>
-        <SiteFooter
-          path={c.req.path}
-          items={navigation.secondary}
-          language={c.get("htmlLanguage")}
-        />
-      </body>
-    </ThemeRoot>
+      <ThemeRoot>
+        <head>
+          <RiebeckiteHead />
+        </head>
+        <body class="riebeckite-page rb-site">
+          <a class="rb-skip-link" href="#main-content">Skip to main content</a>
+          <SiteHeader />
+          <SearchBar />
+          <main id="main-content" tabindex="-1" class="riebeckite-main">
+            {children}
+          </main>
+          <SiteFooter />
+        </body>
+      </ThemeRoot>
+    </SiteProvider>
   );
 });

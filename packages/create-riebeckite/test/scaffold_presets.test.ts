@@ -245,14 +245,16 @@ test("starter and showcase scaffolds render navigation in the site shell", async
       assert.doesNotMatch(header, /NavigationItems/);
       assert.doesNotMatch(header, /rb-nav__link--active/);
       assert.doesNotMatch(header, /aria-current/);
-      assert.match(
-        renderer,
-        /<SiteHeader\s+path=\{c\.req\.path\}\s+items=\{navigation\.primary\}\s+language=\{c\.get\("htmlLanguage"\)\}\s*\/>/,
-      );
-      assert.match(
-        renderer,
-        /<SiteFooter\s+path=\{c\.req\.path\}\s+items=\{navigation\.secondary\}\s+language=\{c\.get\("htmlLanguage"\)\}\s*\/>/,
-      );
+      assert.match(renderer, /<SiteProvider/);
+      assert.match(renderer, /view=\{createPublicContentView\(manifest\)\}/);
+      assert.match(renderer, /path=\{c\.req\.path\}/);
+      assert.match(renderer, /language=\{c\.get\("htmlLanguage"\)\}/);
+      assert.match(renderer, /headTags=\{c\.get\("headTags"\)\}/);
+      assert.match(renderer, /<SiteHeader\s*\/>/);
+      assert.match(renderer, /<SiteFooter\s*\/>/);
+      assert.doesNotMatch(renderer, /resolveSiteNavigation/);
+      assert.match(header, /placement="primary"/);
+      assert.match(header, /placement="secondary"/);
       assert.match(renderer, /class="riebeckite-page rb-site"/);
       assert.match(
         await fs.readFile(

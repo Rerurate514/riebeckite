@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { PluginHeadTag, ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import type {
+  ContentManifest,
+  PluginHeadTag,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
+import { createPublicContentView, resolveConfig } from "@riebeckite/core";
+import { SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 
@@ -15,6 +21,42 @@ import {
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 type ResolvedTheme = ResolvedRiebeckiteConfig["theme"];
+
+const manifest: ContentManifest = {
+  entries: [],
+  publicEntries: [],
+  discoverableEntries: [],
+  bySlug: new Map(),
+  byContentId: new Map(),
+  byAlias: new Map(),
+  byPermalink: new Map(),
+  byRoutablePermalink: new Map(),
+  redirects: new Map(),
+  publicRedirects: new Map(),
+  byTag: new Map(),
+  byAsset: new Map(),
+  outgoingLinks: new Map(),
+  incomingLinks: new Map(),
+  contentIndex: new Map(),
+  graph: {
+    nodes: () => [],
+    get: () => null,
+    outgoing: () => [],
+    incoming: () => [],
+    neighbors: () => [],
+    outgoingSlugs: () => [],
+    incomingSlugs: () => [],
+    neighborSlugs: () => [],
+    filterNeighbors: () => ({ outgoingSlugs: [], incomingSlugs: [] }),
+  },
+  assets: [],
+  clientEntries: [],
+  diagnostics: [],
+  generatedOutputs: [],
+  folderLocations: new Map(),
+  pageRoutes: [],
+  pagePaths: [],
+};
 
 function theme(overrides: Partial<ResolvedTheme> = {}): ResolvedTheme {
   return {
@@ -264,6 +306,53 @@ test("ThemeRoot renders the html attributes and children", () => {
   assert.match(html, /data-article-layout="article"/);
   assert.doesNotMatch(html, /data-theme=/);
   assert.match(html, /body/);
+});
+
+test("ThemeRoot and RiebeckiteHead resolve each request from Site context", () => {
+  const renderSite = (
+    title: string,
+    language: string,
+    headTags: readonly PluginHeadTag[],
+  ): string =>
+    renderToString(
+      createElement(
+        SiteProvider,
+        {
+          config: resolveConfig({ site: { title, locale: "en" } }),
+          manifest,
+          view: createPublicContentView(manifest),
+          path: "/",
+          language,
+          headTags,
+        },
+        createElement(
+          ThemeRoot,
+          null,
+          createElement(
+            "head",
+            null,
+            createElement(RiebeckiteHead, { prod: false }),
+          ),
+          "body",
+        ),
+      ),
+    );
+
+  const first = renderSite("First site", "ja", [
+    { tag: "meta", attrs: { name: "site", content: "first" } },
+  ]);
+  const second = renderSite("Second site", "en", [
+    { tag: "meta", attrs: { name: "site", content: "second" } },
+  ]);
+
+  assert.match(first, /^<html lang="ja"/);
+  assert.match(first, /<title>First site<\/title>/);
+  assert.match(first, /content="first"/);
+  assert.doesNotMatch(first, /Second site|content="second"/);
+  assert.match(second, /^<html lang="en"/);
+  assert.match(second, /<title>Second site<\/title>/);
+  assert.match(second, /content="second"/);
+  assert.doesNotMatch(second, /First site|content="first"/);
 });
 
 test("a Site can compose extra head elements next to RiebeckiteHead", () => {

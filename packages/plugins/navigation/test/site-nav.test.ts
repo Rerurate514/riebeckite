@@ -21,6 +21,20 @@ test("SiteNav renders an empty navigation", () => {
   assert.doesNotMatch(html, /rb-nav__item/);
 });
 
+test("SiteNav omits the root item when requested", () => {
+  const html = render({
+    items: [
+      { label: "Home", href: "/" },
+      { label: "Guide", href: "/guide" },
+    ],
+    path: "/guide",
+    omitHome: true,
+  });
+
+  assert.doesNotMatch(html, />Home</);
+  assert.match(html, />Guide</);
+});
+
 test("SiteNav renders a single item", () => {
   const html = render({ items: [guide], path: "/" });
   assert.match(html, /<li class="rb-nav__item">/);

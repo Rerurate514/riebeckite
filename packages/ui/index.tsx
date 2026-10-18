@@ -1,5 +1,6 @@
 import type {
   ContentManifest,
+  PluginHeadTag,
   PostContent,
   PublicContentEntry,
   PublicContentView,
@@ -13,6 +14,8 @@ export type SiteContextValue = {
   manifest: ContentManifest;
   view: PublicContentView;
   path: string;
+  language?: string;
+  headTags?: readonly PluginHeadTag[];
 };
 
 export type ArticleContextValue = {

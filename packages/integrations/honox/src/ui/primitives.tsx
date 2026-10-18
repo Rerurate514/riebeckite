@@ -7,7 +7,11 @@ import type {
 import { ColorModeScript } from "@riebeckite/plugin-color-mode";
 import { raw } from "hono/html";
 import { Link, Script } from "honox/server";
-import { ArticleProvider, useArticleContext } from "./context.js";
+import {
+  ArticleProvider,
+  useArticleContext,
+  useSiteContext,
+} from "./context.js";
 
 export type PrimitiveChildren = unknown;
 
@@ -200,7 +204,7 @@ export function Sidebar(props: SidebarProps) {
 }
 
 export type ThemeRootProps = {
-  theme: ResolvedRiebeckiteConfig["theme"];
+  theme?: ResolvedRiebeckiteConfig["theme"];
   lang?: string;
   children?: PrimitiveChildren;
 };
@@ -230,8 +234,13 @@ export function themeRootAttributes(
  * `<head>` and `<body>` as children.
  */
 export function ThemeRoot(props: ThemeRootProps) {
+  const site = useSiteContext();
+  const theme = props.theme ?? site?.config.theme;
+  const lang = props.lang ?? site?.language ?? site?.config.site.locale;
+  if (!theme) return <html lang={lang}>{props.children}</html>;
+
   return (
-    <html lang={props.lang} {...themeRootAttributes(props.theme)}>
+    <html lang={lang} {...themeRootAttributes(theme)}>
       {props.children}
     </html>
   );
@@ -273,7 +282,7 @@ function renderPluginHeadTag(tag: PluginHeadTag, index: number) {
 }
 
 export type RiebeckiteHeadProps = {
-  title: string;
+  title?: string;
   headTags?: readonly PluginHeadTag[];
   faviconHref?: string | null;
   colorModeScript?: boolean;
@@ -291,6 +300,7 @@ export type RiebeckiteHeadProps = {
  * surrounding `<head>` so it can add its own elements next to this primitive.
  */
 export function RiebeckiteHead(props: RiebeckiteHeadProps) {
+  const site = useSiteContext();
   const faviconHref =
     props.faviconHref === undefined ? "/favicon.ico" : props.faviconHref;
   const stylesheets = props.stylesheets ?? ["/app/style.css"];
@@ -302,13 +312,13 @@ export function RiebeckiteHead(props: RiebeckiteHeadProps) {
     <>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>{props.title}</title>
+      <title>{props.title ?? site?.config.site.title}</title>
       {faviconHref ? <link rel="icon" href={faviconHref} /> : null}
       {colorModeScript ? <ColorModeScript /> : null}
       {stylesheets.map((href) => (
         <Link href={href} rel="stylesheet" key={href} prod={props.prod} />
       ))}
-      <PluginHeadTags tags={props.headTags} />
+      <PluginHeadTags tags={props.headTags ?? site?.headTags} />
       {clientSrc ? <Script src={clientSrc} async prod={props.prod} /> : null}
       {props.children}
     </>

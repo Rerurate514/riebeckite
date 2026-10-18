@@ -26,7 +26,6 @@ import {
   getWebmentionSectionData,
   WebmentionSection,
 } from "@riebeckite/plugin-webmention";
-import { SiteProvider } from "@riebeckite/ui";
 import { createRoute } from "honox/factory";
 import { webmentionProvider } from "../../../../webmention";
 import Article from "../components/article/article";
@@ -96,44 +95,37 @@ export default createRoute(
     });
 
     return c.render(
-      <SiteProvider
-        config={config}
-        manifest={manifest}
-        view={view}
-        path={c.req.path}
-      >
-        <Article
-          content={resolved.post}
-          entry={entry}
-          title={getArticleTitle(slug, resolved.post.frontmatter.title)}
-          headerContent={
-            <>
-              <Breadcrumbs />
-              <LanguageSwitcher />
-            </>
-          }
-          metadataContent={<Properties />}
-          asideContent={
-            <TableOfContents className="rr-table-of-contents--desktop" />
-          }
-          articleAside={
-            <div class="rb-article-aside">
-              <DocsSidebar />
-            </div>
-          }
-          footerContent={
-            <>
-              <DocsPrevNext />
-              <Backlinks />
-              <RelatedPosts />
-              <ShareControls />
-              <LocalGraph />
-              <PostDiffView diff={postDiff} />
-              <WebmentionSection {...webmentions} />
-            </>
-          }
-        />
-      </SiteProvider>,
+      <Article
+        content={resolved.post}
+        entry={entry}
+        title={getArticleTitle(slug, resolved.post.frontmatter.title)}
+        headerContent={
+          <>
+            <Breadcrumbs />
+            <LanguageSwitcher />
+          </>
+        }
+        metadataContent={<Properties />}
+        asideContent={
+          <TableOfContents className="rr-table-of-contents--desktop" />
+        }
+        articleAside={
+          <div class="rb-article-aside">
+            <DocsSidebar />
+          </div>
+        }
+        footerContent={
+          <>
+            <DocsPrevNext />
+            <Backlinks />
+            <RelatedPosts />
+            <ShareControls />
+            <LocalGraph />
+            <PostDiffView diff={postDiff} />
+            <WebmentionSection {...webmentions} />
+          </>
+        }
+      />,
     );
   }),
 );

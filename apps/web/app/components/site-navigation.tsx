@@ -1,38 +1,35 @@
-import { config } from "virtual:riebeckite/config";
-import type { NavigationItem } from "@riebeckite/plugin-navigation";
-import { SiteNav } from "@riebeckite/plugin-navigation";
+import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
+import { useSiteContext } from "@riebeckite/ui";
 import { localizeDocsHref } from "../lib/navigation-link";
 
-export function SiteHeader({
-  path,
-  items,
-  language,
-}: {
-  path: string;
-  items: readonly NavigationItem[];
-  language?: string;
-}) {
-  const navigation = items.filter((item) => item.href !== "/");
+export function SiteHeader() {
+  const site = useSiteContext();
+  const path = site?.path ?? "/";
+  const hasNavigation = site
+    ? (resolveSiteNavigation(
+        site.config,
+        site.manifest,
+        site.language,
+      )?.primary.some((item) => item.href !== "/") ?? false)
+    : false;
 
   return (
     <header class="site-header rb-site-header">
       <a href="/" class="site-header__home rb-site-header__home">
-        {config.site.title}
+        {site?.config.site.title}
       </a>
-      {navigation.length > 0 ? (
+      {hasNavigation ? (
         <>
           <SiteNav
-            items={navigation}
-            path={path}
-            language={language}
+            placement="primary"
+            omitHome
             localizeHref={(href) => localizeDocsHref(href, path)}
           />
           <details class="rb-nav__mobile">
             <summary class="rb-nav__toggle">Menu</summary>
             <SiteNav
-              items={navigation}
-              path={path}
-              language={language}
+              placement="primary"
+              omitHome
               localizeHref={(href) => localizeDocsHref(href, path)}
             />
           </details>
@@ -42,15 +39,10 @@ export function SiteHeader({
   );
 }
 
-export function SiteFooter({
-  path,
-  items,
-  language,
-}: {
-  path: string;
-  items: readonly NavigationItem[];
-  language?: string;
-}) {
+export function SiteFooter() {
+  const site = useSiteContext();
+  const path = site?.path ?? "/";
+
   return (
     <footer class="site-footer rb-site-footer">
       <div class="site-footer__main">
@@ -76,15 +68,11 @@ export function SiteFooter({
             </a>
           </div>
         </div>
-        {items.length > 0 ? (
-          <SiteNav
-            items={items}
-            path={path}
-            language={language}
-            label="Footer navigation"
-            localizeHref={(href) => localizeDocsHref(href, path)}
-          />
-        ) : null}
+        <SiteNav
+          placement="secondary"
+          label="Footer navigation"
+          localizeHref={(href) => localizeDocsHref(href, path)}
+        />
       </div>
       <div class="site-footer__meta">
         <span>Open source · Apache-2.0</span>

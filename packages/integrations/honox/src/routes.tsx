@@ -14,7 +14,7 @@ import {
   resolveRiebeckiteHomeRequest,
   riebeckiteSsgParams,
 } from "./content_route.js";
-import { ArticleProvider, SiteProvider } from "./ui/context.js";
+import { ArticleProvider } from "./ui/context.js";
 import { PageBody } from "./ui/primitives.js";
 
 type RouteContent = Pick<
@@ -83,15 +83,8 @@ async function renderContent(
   const publicEntry = view.findRoutableBySlug(entry.slug);
   if (!publicEntry) return c.notFound();
   return c.render(
-    <SiteProvider
-      config={options.config}
-      manifest={manifest}
-      view={view}
-      path={c.req.path}
-    >
-      <ArticleProvider entry={publicEntry} post={post}>
-        {options.render({ entry, post })}
-      </ArticleProvider>
-    </SiteProvider>,
+    <ArticleProvider entry={publicEntry} post={post}>
+      {options.render({ entry, post })}
+    </ArticleProvider>,
   );
 }

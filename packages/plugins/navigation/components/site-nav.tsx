@@ -3,6 +3,7 @@ import { resolveSiteNavigation } from "../src/navigation.js";
 import type { NavigationItem } from "../src/types.js";
 
 export type SiteNavProps = {
+  readonly placement?: "primary" | "secondary";
   /** Navigation tree to render, in order. */
   readonly items?: readonly NavigationItem[];
   /** Current request path, used to mark the active item. */
@@ -19,6 +20,7 @@ export type SiteNavProps = {
   /** Extra classes appended to the `<nav>` landmark. */
   readonly class?: string;
   readonly className?: string;
+  readonly omitHome?: boolean;
 };
 
 /**
@@ -32,9 +34,16 @@ export type SiteNavProps = {
 export function SiteNav(props: SiteNavProps) {
   const site = useSiteContext();
   const navigation = site
-    ? resolveSiteNavigation(site.config, site.manifest, props.language)
+    ? resolveSiteNavigation(
+        site.config,
+        site.manifest,
+        props.language ?? site.language,
+      )
     : null;
-  const items = props.items ?? navigation?.primary ?? [];
+  const placement = props.placement ?? "primary";
+  const items = (props.items ?? navigation?.[placement] ?? []).filter(
+    (item) => !props.omitHome || item.href !== "/",
+  );
   const path = props.path ?? site?.path ?? "/";
   if (items.length === 0 && props.items === undefined) return null;
   return (
@@ -45,7 +54,7 @@ export function SiteNav(props: SiteNavProps) {
       <NavigationItems
         items={items}
         path={path}
-        language={props.language}
+        language={props.language ?? site?.language}
         localizeHref={props.localizeHref}
       />
     </nav>

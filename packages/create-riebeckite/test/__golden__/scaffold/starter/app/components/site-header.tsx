@@ -1,18 +1,15 @@
 import { SiteNav } from "@riebeckite/plugin-navigation";
-import type { NavigationItem } from "@riebeckite/plugin-navigation";
+import { resolveSiteNavigation } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
-import { config } from "virtual:riebeckite/config";
+import { useSiteContext } from "@riebeckite/ui";
 
-export function SiteHeader({
-  path,
-  items,
-  language,
-}: {
-  path: string;
-  items: readonly NavigationItem[];
-  language?: string;
-}) {
-  const navigation = items.filter((item) => item.href !== "/");
+export function SiteHeader() {
+  const site = useSiteContext();
+  const hasNavigation = site
+    ? (resolveSiteNavigation(site.config, site.manifest, site.language)?.primary.some(
+        (item) => item.href !== "/",
+      ) ?? false)
+    : false;
 
   return (
     <header class="site-header rb-site-header">
@@ -24,14 +21,14 @@ export function SiteHeader({
           width="28"
           height="28"
         />
-        {config.site.title}
+        {site?.config.site.title}
       </a>
-      {navigation.length > 0 ? (
+      {hasNavigation ? (
         <>
-          <SiteNav items={navigation} path={path} language={language} />
+          <SiteNav placement="primary" omitHome />
           <details class="rb-nav__mobile">
             <summary class="rb-nav__toggle">Menu</summary>
-            <SiteNav items={navigation} path={path} language={language} />
+            <SiteNav placement="primary" omitHome />
           </details>
         </>
       ) : null}
@@ -40,20 +37,10 @@ export function SiteHeader({
   );
 }
 
-export function SiteFooter({
-  path,
-  items,
-  language,
-}: {
-  path: string;
-  items: readonly NavigationItem[];
-  language?: string;
-}) {
-  if (items.length === 0) return null;
-
+export function SiteFooter() {
   return (
     <footer class="site-footer rb-site-footer">
-      <SiteNav items={items} path={path} language={language} />
+      <SiteNav placement="secondary" />
     </footer>
   );
 }

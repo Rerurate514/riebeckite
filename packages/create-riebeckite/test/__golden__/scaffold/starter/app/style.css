@@ -187,19 +187,24 @@ body {
   display: none;
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 80rem) {
   .site-article__layout {
     display: grid;
     width: 100%;
-    grid-template-columns: minmax(0, var(--rb-layout-article-max, 48rem)) minmax(0, var(--rb-layout-sidebar, 14rem));
-    gap: var(--rb-layout-gap, 2rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--rb-layout-article-max, 48rem)) minmax(0, 1fr);
     align-items: start;
+  }
+
+  .site-article__layout > .rb-article-body {
+    grid-column: 2;
   }
 
   .site-article__aside {
     display: block;
     min-width: 0;
     align-self: stretch;
+    grid-column: 3;
+    padding-inline-start: var(--rb-layout-gap, 2rem);
   }
 
   .site-article__aside > .rr-table-of-contents--desktop {

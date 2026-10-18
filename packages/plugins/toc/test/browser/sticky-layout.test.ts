@@ -1,12 +1,17 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { after, before, test } from "node:test";
 import puppeteer, { type Browser, type Page } from "puppeteer";
+import { scaffoldRiebeckiteSite } from "../../../../create-riebeckite/src/scaffold/index.js";
 
 let server: Server;
 let browser: Browser;
 let baseUrl = "";
+let generatedDirectory = "";
 
 function sampleToc(itemCount = 80) {
   return Array.from(
@@ -32,24 +37,25 @@ before(async () => {
     ),
     "utf8",
   );
-  const starterStyle = readFileSync(
-    new URL(
-      "../../../../create-riebeckite/templates/scaffold/presets/starter/app/style.css",
-      import.meta.url,
-    ),
-    "utf8",
-  );
-  const showcaseStyle = readFileSync(
-    new URL(
-      "../../../../create-riebeckite/templates/scaffold/presets/showcase/app/style.css",
-      import.meta.url,
-    ),
-    "utf8",
-  );
+  generatedDirectory = await mkdtemp(path.join(tmpdir(), "riebeckite-layout-"));
+  const starterDirectory = path.join(generatedDirectory, "starter");
+  const showcaseDirectory = path.join(generatedDirectory, "showcase");
+  await scaffoldRiebeckiteSite({
+    targetDirectory: starterDirectory,
+    preset: "starter",
+  });
+  await scaffoldRiebeckiteSite({
+    targetDirectory: showcaseDirectory,
+    preset: "showcase",
+  });
+  const [starterStyle, showcaseStyle] = await Promise.all([
+    readFile(path.join(starterDirectory, "app/style.css"), "utf8"),
+    readFile(path.join(showcaseDirectory, "app/style.css"), "utf8"),
+  ]);
   const renderDocsPage = (articleHeight: string, itemCount = 80) =>
     `<!doctype html><html data-article-layout="article"><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-docs-sticky-top: 4rem; --rb-space-2: 1rem; --rb-space-4: 2rem; --rb-space-6: 3rem; --rb-color-muted: #555; --rb-color-ink: #111; }</style><style>${tocStyle}</style><style>${honoxStyle}</style><style>${articleStyle}</style></head><body><header style="height: 7rem">Header</header><article class="rb-article"><div class="rb-article-layout"><aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc(itemCount)}</ol></aside><div class="rb-article-body"><div style="height: ${articleHeight}">Article</div></div></div></article></body></html>`;
-  const renderSitePage = (siteStyle: string) =>
-    `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside"><aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside></aside></div></article></main></body></html>`;
+  const renderSitePage = (siteStyle: string, includeToc = true) =>
+    `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></body></html>`;
   server = createServer((request, response) => {
     response.setHeader("content-type", "text/html; charset=utf-8");
     if (request.url === "/starter") {
@@ -58,6 +64,10 @@ before(async () => {
     }
     if (request.url === "/showcase") {
       response.end(renderSitePage(showcaseStyle));
+      return;
+    }
+    if (request.url === "/starter-without-toc") {
+      response.end(renderSitePage(starterStyle, false));
       return;
     }
     response.end(
@@ -78,6 +88,7 @@ before(async () => {
 after(async () => {
   await browser?.close();
   await new Promise<void>((resolve) => server.close(() => resolve()));
+  await rm(generatedDirectory, { force: true, recursive: true });
 });
 
 async function openPage(
@@ -169,7 +180,7 @@ test("docs TOC uses the layout sticky contract through scroll and navigation", a
 
 test("starter and showcase TOCs use their Site layout contract", async () => {
   for (const path of ["/starter", "/showcase"]) {
-    const page = await openPage({ width: 1200, height: 900 }, path);
+    const page = await openPage({ width: 1280, height: 900 }, path);
     const initial = await page.$eval(
       ".rr-table-of-contents--desktop",
       (toc) => ({
@@ -195,6 +206,80 @@ test("starter and showcase TOCs use their Site layout contract", async () => {
     );
     assert.ok(Math.abs(afterScroll.top - 24) < 2);
     assert.ok(afterScroll.scrollHeight > afterScroll.clientHeight);
+    await page.close();
+  }
+});
+
+test("starter and showcase center the article rail independently of the TOC", async () => {
+  for (const path of ["/starter", "/showcase"]) {
+    for (const width of [1920, 1440, 1280]) {
+      const page = await openPage({ width, height: 900 }, path);
+      const layout = await page.evaluate(() => {
+        const article = document.querySelector(".site-article") as HTMLElement;
+        const body = document.querySelector(".rb-article-body") as HTMLElement;
+        const toc = document.querySelector(
+          ".rr-table-of-contents--desktop",
+        ) as HTMLElement;
+        const articleBox = article.getBoundingClientRect();
+        const bodyBox = body.getBoundingClientRect();
+        const tocBox = toc.getBoundingClientRect();
+        return {
+          articleCenter: articleBox.left + articleBox.width / 2,
+          bodyCenter: bodyBox.left + bodyBox.width / 2,
+          bodyRight: bodyBox.right,
+          tocLeft: tocBox.left,
+          scrollWidth: document.documentElement.scrollWidth,
+          viewportWidth: window.innerWidth,
+        };
+      });
+      assert.ok(Math.abs(layout.bodyCenter - layout.articleCenter) <= 2);
+      assert.ok(layout.tocLeft >= layout.bodyRight);
+      assert.ok(layout.scrollWidth <= layout.viewportWidth);
+      await page.close();
+    }
+  }
+
+  const withToc = await openPage({ width: 1440, height: 900 }, "/starter");
+  const withoutToc = await openPage(
+    { width: 1440, height: 900 },
+    "/starter-without-toc",
+  );
+  const getBodyCenter = (page: Page) =>
+    page.$eval(".rb-article-body", (body) => {
+      const box = body.getBoundingClientRect();
+      return box.left + box.width / 2;
+    });
+  assert.ok(
+    Math.abs(
+      (await getBodyCenter(withToc)) - (await getBodyCenter(withoutToc)),
+    ) <= 2,
+  );
+  await withToc.close();
+  await withoutToc.close();
+});
+
+test("starter uses a single centered article column below the TOC breakpoint", async () => {
+  for (const width of [1024, 768, 375]) {
+    const page = await openPage({ width, height: 900 }, "/starter");
+    const layout = await page.evaluate(() => {
+      const article = document.querySelector(".site-article") as HTMLElement;
+      const body = document.querySelector(".rb-article-body") as HTMLElement;
+      const aside = document.querySelector(
+        ".site-article__aside",
+      ) as HTMLElement;
+      const articleBox = article.getBoundingClientRect();
+      const bodyBox = body.getBoundingClientRect();
+      return {
+        articleCenter: articleBox.left + articleBox.width / 2,
+        bodyCenter: bodyBox.left + bodyBox.width / 2,
+        asideDisplay: getComputedStyle(aside).display,
+        scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth,
+      };
+    });
+    assert.ok(Math.abs(layout.bodyCenter - layout.articleCenter) <= 2);
+    assert.equal(layout.asideDisplay, "none");
+    assert.ok(layout.scrollWidth <= layout.viewportWidth);
     await page.close();
   }
 });

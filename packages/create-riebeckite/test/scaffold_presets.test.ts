@@ -537,6 +537,14 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
       /\.site-article__aside > \.rr-table-of-contents--desktop \{/,
     );
     assert.doesNotMatch(style, /position: absolute;\n {2}top: 100%;/);
+    assert.match(
+      style,
+      /@media \(min-width: 80rem\) \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) minmax\(0, var\(--rb-layout-article-max, 48rem\)\) minmax\(0, 1fr\)/,
+    );
+    assert.match(
+      style,
+      /\.site-article__layout > \.rb-article-body \{[\s\S]*?grid-column: 2/,
+    );
   });
 });
 
@@ -557,7 +565,7 @@ test("starter and showcase own desktop TOC sticky behavior", async () => {
       assert.match(style, /overflow-y: auto/);
       assert.match(
         style,
-        /@media \(min-width: 64rem\) \{[\s\S]*?\.site-article__aside \{[\s\S]*?align-self: stretch/,
+        /@media \(min-width: 80rem\) \{[\s\S]*?\.site-article__aside \{[\s\S]*?align-self: stretch/,
       );
     }
   });

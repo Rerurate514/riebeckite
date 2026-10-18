@@ -155,7 +155,6 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-footer {
   margin-top: 3.5rem;
-  padding-top: 1.5rem;
   border-top: 1px solid var(--rb-color-border);
   color: var(--rb-color-muted);
   font-size: 0.9375rem;

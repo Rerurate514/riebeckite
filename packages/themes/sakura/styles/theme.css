@@ -212,7 +212,6 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="sakura"] .rb-article-footer {
   margin-top: 3rem;
-  padding-top: 1.5rem;
   border-top: 1px solid var(--rb-color-border);
   color: color-mix(in srgb, var(--rb-color-muted) 72%, var(--rb-color-ink));
   font-size: 0.95rem;

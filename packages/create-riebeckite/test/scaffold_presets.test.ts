@@ -519,14 +519,13 @@ test("scaffolded app/style.css ships the shared shell layout and floating menu",
       style,
       /\.site-article \{[\s\S]*?var\(--rb-layout-article-max, 48rem\)/,
     );
+    assert.match(style, /\.rb-article-body \{[\s\S]*?min-width: 0/);
     assert.match(
       style,
-      /\.rb-article-body,\n\.site-article__footer \{[\s\S]*?min-width: 0/,
+      /\.rb-article-body \{[\s\S]*?padding-inline: var\(--rb-space-2, 1rem\)/,
     );
-    assert.match(
-      style,
-      /\.site-article__footer \{[\s\S]*?padding-inline: var\(--rb-space-2, 1rem\)/,
-    );
+    assert.match(style, /\.site-article__footer \{[\s\S]*?min-width: 0/);
+    assert.doesNotMatch(style, /\.site-article__footer \{[^}]*padding/);
     assert.doesNotMatch(style, /\.rb-article-layout \{/);
     assert.doesNotMatch(style, /\.rb-nav__item \{/);
     assert.match(

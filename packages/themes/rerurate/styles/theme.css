@@ -657,7 +657,6 @@
 /* ---- Article chrome: flat rules, square corners. ---- */
 :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-footer {
   margin-top: 3rem;
-  padding-top: 1.25rem;
   border-top: 1px solid var(--rb-color-border);
   font-size: 0.9rem;
 }

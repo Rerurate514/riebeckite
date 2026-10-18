@@ -465,7 +465,6 @@
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-article-footer {
   margin-top: 2.5rem;
   border-top: 1px solid var(--rb-color-border);
-  padding-top: 1rem;
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rb-sidebar {

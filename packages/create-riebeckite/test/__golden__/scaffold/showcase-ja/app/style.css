@@ -174,10 +174,13 @@ body {
   margin: 0 auto;
 }
 
-.rb-article-body,
-.site-article__footer {
+.rb-article-body {
   min-width: 0;
   padding-inline: var(--rb-space-2, 1rem);
+}
+
+.site-article__footer {
+  min-width: 0;
 }
 
 .site-article__aside {

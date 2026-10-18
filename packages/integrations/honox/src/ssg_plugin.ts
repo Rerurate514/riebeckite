@@ -124,8 +124,42 @@ type SsgOutputMetrics = {
   manifestHookCacheMiss: number;
   manifestHookDurationMs: number;
   manifestHookPlugins: Record<string, unknown>;
+  outputCacheDecision: OutputCacheDecision;
+  outputCacheRejectionReason: OutputCacheRejectionReason | null;
   timingsMs: Record<string, number>;
 };
+
+export type OutputCacheRejectionReason =
+  | "change-set-unavailable"
+  | "full-regeneration-required"
+  | "output-cache-missing-or-invalid"
+  | "app-fingerprint-changed"
+  | "client-manifest-fingerprint-changed"
+  | "unchanged-output-not-cached";
+
+export type OutputCacheDecision = {
+  readonly changeSetPresent: boolean;
+  readonly changeSetRequiresFullRegeneration: boolean;
+  readonly outputCacheLoaded: boolean;
+  readonly appFingerprintMatch: boolean;
+  readonly clientManifestFingerprintMatch: boolean;
+  readonly uncoveredUnchangedCount: number;
+};
+
+export function decideOutputCacheRejection(
+  decision: OutputCacheDecision,
+): OutputCacheRejectionReason | undefined {
+  if (!decision.changeSetPresent) return "change-set-unavailable";
+  if (decision.changeSetRequiresFullRegeneration)
+    return "full-regeneration-required";
+  if (!decision.outputCacheLoaded) return "output-cache-missing-or-invalid";
+  if (!decision.appFingerprintMatch) return "app-fingerprint-changed";
+  if (!decision.clientManifestFingerprintMatch)
+    return "client-manifest-fingerprint-changed";
+  if (decision.uncoveredUnchangedCount > 0)
+    return "unchanged-output-not-cached";
+  return undefined;
+}
 
 type OutputCacheEntry = {
   cachePath: string;
@@ -329,30 +363,40 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             `Build outputs take precedence over site public assets: ${siteOutputCollisions.join(", ")}`,
           );
         }
-        const canUseIncremental =
-          outputChangeSet &&
-          !outputChangeSet.fullRegenerationRequired &&
-          previousOutputCache &&
-          previousOutputCache.appFingerprint === appFingerprint &&
-          previousOutputCache.clientManifestFingerprint ===
-            clientBuildArtifacts?.manifestFingerprint &&
-          outputChangeSet.unchanged.every(
-            (output) =>
-              siteOwnedOutputPaths.has(output.path) ||
-              previousOutputCache.outputs[output.path],
-          );
+        const uncoveredUnchangedCount = outputChangeSet
+          ? outputChangeSet.unchanged.filter(
+              (output) =>
+                !siteOwnedOutputPaths.has(output.path) &&
+                !previousOutputCache?.outputs[output.path],
+            ).length
+          : 0;
+        const outputCacheDecision: OutputCacheDecision = {
+          changeSetPresent: outputChangeSet !== undefined,
+          changeSetRequiresFullRegeneration:
+            outputChangeSet?.fullRegenerationRequired ?? true,
+          outputCacheLoaded: previousOutputCache !== undefined,
+          appFingerprintMatch:
+            previousOutputCache?.appFingerprint === appFingerprint,
+          clientManifestFingerprintMatch:
+            previousOutputCache?.clientManifestFingerprint ===
+            clientBuildArtifacts?.manifestFingerprint,
+          uncoveredUnchangedCount,
+        };
+        const outputCacheRejectionReason =
+          decideOutputCacheRejection(outputCacheDecision);
+        const canUseIncremental = outputCacheRejectionReason === undefined;
         const reusablePaths = new Set<string>(
           canUseIncremental
-            ? outputChangeSet.unchanged.map((output) => output.path)
+            ? (outputChangeSet?.unchanged ?? []).map((output) => output.path)
             : [],
         );
         logSsgDiagnostics(
           this,
-          `output cache ${canUseIncremental ? "hit" : "miss"} · ${reusablePaths.size} reusable outputs`,
+          `output cache ${canUseIncremental ? "hit" : `miss (${outputCacheRejectionReason})`} · ${reusablePaths.size} reusable outputs`,
         );
         const shadowedOutputs = new Set<string>();
         const skippedRouteCount = canUseIncremental
-          ? outputChangeSet.unchanged.filter(
+          ? (outputChangeSet?.unchanged ?? []).filter(
               (output) => output.kind !== "generated",
             ).length
           : 0;
@@ -393,6 +437,8 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           manifestHookCacheMiss: 0,
           manifestHookDurationMs: 0,
           manifestHookPlugins: {},
+          outputCacheDecision,
+          outputCacheRejectionReason: outputCacheRejectionReason ?? null,
           timingsMs: timingsMs ?? {},
         };
         process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental
@@ -486,7 +532,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               },
               canUseIncremental
                 ? new Set(
-                    outputChangeSet.affected
+                    (outputChangeSet?.affected ?? [])
                       .filter((output) => output.kind === "generated")
                       .map((output) => output.path),
                   )
@@ -498,7 +544,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         if (!outputChangeSet)
           metrics.candidateOutputCount =
             result.files.length + emittedGeneratedOutputCount;
-        if (canUseIncremental) {
+        if (canUseIncremental && outputChangeSet && previousOutputCache) {
           await measure(timingsMs, "unchangedOutputReuse", async () => {
             for (const output of outputChangeSet.unchanged) {
               const path = output.path;

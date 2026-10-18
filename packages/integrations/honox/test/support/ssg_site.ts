@@ -95,6 +95,7 @@ export type SiteSources = {
   readonly duplicateGeneratedOutput?: boolean;
   readonly stylesheet?: string;
   readonly readme?: boolean;
+  readonly externalDependency?: boolean;
 };
 
 export type Metrics = Record<string, number | boolean | null>;
@@ -233,7 +234,9 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
   const asset = sources.generatedAsset;
   const contentAsset = sources.contentAsset;
   const lines = [
-    'import { defineConfig, definePlugin } from "@riebeckite/core";',
+    sources.externalDependency
+      ? 'import { defineConfig, definePlugin, fingerprintExternalValue } from "@riebeckite/core";'
+      : 'import { defineConfig, definePlugin } from "@riebeckite/core";',
     "const demo = definePlugin({",
     '  name: "demo",',
     "  pageTypes: [",
@@ -278,6 +281,38 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     );
   }
   lines.push("  },", "});");
+  if (sources.externalDependency) {
+    lines.push(
+      "const external = definePlugin({",
+      '  name: "external",',
+      '  cacheVersion: "1",',
+      "  resolveExternalDependencies: async ({ cache }) => {",
+      '    const raw = await cache.get("state.json");',
+      "    const value = raw === undefined ? { version: 1, entries: [] } : raw;",
+      "    return [",
+      "      {",
+      '        kind: "resolved",',
+      "        snapshot: {",
+      '          id: "external:state",',
+      "          fingerprint: fingerprintExternalValue(value),",
+      '          scope: { type: "all" },',
+      "          value,",
+      "        },",
+      "      },",
+      "    ];",
+      "  },",
+      "  buildEnd: async ({ output, cache, externalDependencies }) => {",
+      '    const value = externalDependencies?.get("external:state")?.value ?? null;',
+      "    output.emit({",
+      '      path: "external.json",',
+      "      content: JSON.stringify(value),",
+      '      dependencies: [{ type: "global" }],',
+      "    });",
+      '    await cache.set("state.json", value);',
+      "  },",
+      "});",
+    );
+  }
   if (asset && sources.duplicateGeneratedOutput) {
     lines.push(
       "const duplicate = definePlugin({",
@@ -303,7 +338,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     "    enabled: true,",
     `    directory: ${JSON.stringify(path.join(siteRoot, ".riebeckite", "cache"))},`,
     "  },",
-    `  plugins: [demo${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}],`,
+    `  plugins: [demo${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
     "});",
     "",
   );

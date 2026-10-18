@@ -42,6 +42,8 @@ type CiScenario = {
   readonly afterNotes: readonly NoteInput[];
   readonly beforeTitle?: string;
   readonly afterTitle?: string;
+  readonly beforeRenderTag?: string;
+  readonly afterRenderTag?: string;
   readonly beforeConfig?: (siteRoot: string, sources: SiteSources) => string;
   readonly afterConfig?: (siteRoot: string, sources: SiteSources) => string;
   readonly prepareIncremental?: (siteRoot: string) => Promise<void>;
@@ -74,10 +76,14 @@ const beta: NoteInput = {
   body: "Beta body.",
 };
 
-function sourcesFor(siteRoot: string, title: string): SiteSources {
+function sourcesFor(
+  siteRoot: string,
+  title: string,
+  renderTag = "v1",
+): SiteSources {
   return {
     title,
-    renderTag: "v1",
+    renderTag,
     noteCount: 0,
     editedNotes: [],
     buildDirectory: path.join(siteRoot, ".riebeckite"),
@@ -89,8 +95,9 @@ async function setupSite(
   notes: readonly NoteInput[],
   title: string,
   config?: (siteRoot: string, sources: SiteSources) => string,
+  renderTag = "v1",
 ): Promise<void> {
-  const sources = sourcesFor(siteRoot, title);
+  const sources = sourcesFor(siteRoot, title, renderTag);
   await createSite(siteRoot, sources);
   if (config) {
     await writeFile(
@@ -195,6 +202,13 @@ function withReorderedPlugins(siteRoot: string, sources: SiteSources): string {
     .replace("plugins: [demo]", "plugins: [extra, demo]");
 }
 
+function withExternalDependency(
+  siteRoot: string,
+  sources: SiteSources,
+): string {
+  return configSource(siteRoot, { ...sources, externalDependency: true });
+}
+
 async function runScenario(
   t: TestContext,
   root: string,
@@ -214,6 +228,7 @@ async function runScenario(
       scenario.beforeNotes,
       beforeTitle,
       scenario.beforeConfig,
+      scenario.beforeRenderTag,
     );
     await buildSite(site, "previous", leanBuildOptions);
 
@@ -234,7 +249,13 @@ async function runScenario(
     );
 
     await rm(site, { recursive: true, force: true });
-    await setupSite(site, scenario.afterNotes, afterTitle, afterConfig);
+    await setupSite(
+      site,
+      scenario.afterNotes,
+      afterTitle,
+      afterConfig,
+      scenario.afterRenderTag,
+    );
     assert.equal(
       await pathExists(distPath(site)),
       false,
@@ -252,7 +273,13 @@ async function runScenario(
     const metrics = await buildSite(site, "incremental", leanBuildOptions);
     const incrementalSnapshot = await snapshotTree(distPath(site));
 
-    await setupSite(cold, scenario.afterNotes, afterTitle, afterConfig);
+    await setupSite(
+      cold,
+      scenario.afterNotes,
+      afterTitle,
+      afterConfig,
+      scenario.afterRenderTag,
+    );
     await buildSite(cold, "cold", leanBuildOptions);
     const coldSnapshot = await snapshotTree(distPath(cold));
 
@@ -457,6 +484,26 @@ test("CI persistent build state produces incremental output on a fresh checkout"
       restoreOutputCache: true,
       expectFullRegeneration: false,
       expectReuse: true,
+    },
+    {
+      name: "output-cache-external-dependency",
+      beforeNotes: [alpha, beta],
+      afterNotes: [alpha, beta],
+      beforeConfig: withExternalDependency,
+      restoreOutputCache: true,
+      expectFullRegeneration: false,
+      expectReuse: true,
+      expectAffectedOutputs: 0,
+    },
+    {
+      name: "output-cache-app-fingerprint-change",
+      beforeNotes: [alpha, beta],
+      afterNotes: [alpha, beta],
+      afterRenderTag: "v2",
+      restoreOutputCache: true,
+      expectFullRegeneration: true,
+      expectReuse: false,
+      expectAffectedOutputs: 0,
     },
     {
       name: "output-cache-only",

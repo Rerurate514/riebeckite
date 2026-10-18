@@ -37,7 +37,7 @@ const FAST_PATH_EXPECTATIONS: Readonly<
   empty: { capable: true },
   minimal: { capable: true },
   starter: { capable: false, blockReason: "plugin-generated-output-plan" },
-  showcase: { capable: false, blockReason: "unsafe-output-dependency" },
+  showcase: { capable: false, blockReason: "plugin-build-end" },
 };
 
 const RENDERS_ENTRY_TITLE: Readonly<Record<PresetName, boolean>> = {

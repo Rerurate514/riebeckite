@@ -4,8 +4,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import type { OutputCacheDecision } from "../src/ssg_plugin.js";
 import {
   createNoChangeFastPathOutputMetrics,
+  decideOutputCacheRejection,
   emptyBuildOutputDirectory,
   findBuildOutputSiteCollisions,
   loadOutputCache,
@@ -13,6 +15,48 @@ import {
   shouldApplyRiebeckiteSsg,
   verifyNoChangeFastPath,
 } from "../src/ssg_plugin.js";
+
+test("output cache reuse is rejected whenever a safety condition fails", () => {
+  const reusable: OutputCacheDecision = {
+    changeSetPresent: true,
+    changeSetRequiresFullRegeneration: false,
+    outputCacheLoaded: true,
+    appFingerprintMatch: true,
+    clientManifestFingerprintMatch: true,
+    uncoveredUnchangedCount: 0,
+  };
+  assert.equal(decideOutputCacheRejection(reusable), undefined);
+  assert.equal(
+    decideOutputCacheRejection({ ...reusable, changeSetPresent: false }),
+    "change-set-unavailable",
+  );
+  assert.equal(
+    decideOutputCacheRejection({
+      ...reusable,
+      changeSetRequiresFullRegeneration: true,
+    }),
+    "full-regeneration-required",
+  );
+  assert.equal(
+    decideOutputCacheRejection({ ...reusable, outputCacheLoaded: false }),
+    "output-cache-missing-or-invalid",
+  );
+  assert.equal(
+    decideOutputCacheRejection({ ...reusable, appFingerprintMatch: false }),
+    "app-fingerprint-changed",
+  );
+  assert.equal(
+    decideOutputCacheRejection({
+      ...reusable,
+      clientManifestFingerprintMatch: false,
+    }),
+    "client-manifest-fingerprint-changed",
+  );
+  assert.equal(
+    decideOutputCacheRejection({ ...reusable, uncoveredUnchangedCount: 2 }),
+    "unchanged-output-not-cached",
+  );
+});
 
 test("riebeckite SSG is disabled for the HonoX client build", () => {
   assert.equal(

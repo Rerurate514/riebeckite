@@ -54,6 +54,16 @@ const files = {
     "---\npublish: true\npublishAt: 2999-01-01T00:00:00.000Z\nstatus: published\nauthor:\n  name: Scheduled Secret\n---\n\n# Scheduled\n",
 };
 
+const buildMetrics = new WeakMap<ContentManager, BuildMetrics>();
+
+type BuildMetrics = {
+  readonly reusedContent: number;
+  readonly processedContent: number;
+  readonly reusedOutputs: number;
+  readonly generatedOutputs: number;
+  readonly persistentCacheHits: number;
+};
+
 test("publishes referenced .base documents through PageType and preserves public boundaries", async () => {
   const manager = createManager({
     ...files,
@@ -227,7 +237,14 @@ test("stops deeply nested and large higher-order formulas with an explicit error
   );
   const unsafe = parseExpression("note.payload.constructor");
   assert.equal(
-    evaluateBasesExpression(unsafe, { ...entry, frontmatter: { payload: {} } }),
+    evaluateBasesExpression(unsafe, {
+      slug: "notes/Unsafe",
+      permalink: "/notes/Unsafe",
+      title: "Unsafe",
+      tags: [],
+      links: [],
+      frontmatter: { payload: {} },
+    } as never),
     undefined,
   );
 });
@@ -235,13 +252,20 @@ test("stops deeply nested and large higher-order formulas with an explicit error
 test("reports an evaluation budget failure through Bases diagnostics", async () => {
   const values = Array.from({ length: 10_001 }, (_, index) => index).join(", ");
   const manager = createManager({
-    "index.md": "---\npublish: true\n---\n\n![[views/Limit.base]]\n",
+    "index.md":
+      "---\npublish: true\n---\n\n```base\nformulas:\n  huge: note.values.map(value)\nproperties:\n  formula.huge: Huge\nviews:\n  - type: table\n```\n",
     "notes/Large.md": `---\npublish: true\nvalues: [${values}]\n---\n\n# Large\n`,
-    "views/Limit.base":
-      "formulas:\n  huge: note.values.map(value)\nproperties:\n  formula.huge: Huge\nviews:\n  - type: table\n",
   });
-  const body = (await manager.resolvePage("/views/Limit"))?.body ?? "";
+  const manifest = await manager.getManifest();
+  const body =
+    manifest.publicEntries.find((entry) => entry.slug === "index")?.html ?? "";
   assert.match(body, /Formula evaluation exceeded 10000 steps/);
+  assert.equal(
+    (await manager.getDiagnostics()).some(
+      (item) => item.code === "bases-invalid",
+    ),
+    true,
+  );
 });
 
 test("sorts formula values and renders grouped table summaries", async () => {
@@ -593,11 +617,33 @@ test("matches clean output for all Bases incremental cache transitions", async (
       await basesSnapshot(clean),
       name,
     );
+    const metrics = buildMetrics.get(incremental);
+    assert.ok(metrics, name);
+    assert.ok(metrics.reusedContent > 0, `${name}: content cache reuse`);
     const body = (await incremental.resolvePage("/views/Matrix"))?.body ?? "";
     assert.doesNotMatch(body, /999999|888888/, name);
     await incremental.dispose();
     await clean.dispose();
   }
+});
+
+test("does not report content reuse when the persistent cache is disabled", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-bases-no-cache-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const input = {
+    "index.md": "---\npublish: true\n---\n\n![[views/Books.base]]\n",
+    "notes/Public.md": "---\npublish: true\n---\n\n# Public\n",
+    "views/Books.base": "views:\n  - type: table\n",
+  };
+  const first = await buildCached(input, directory, false);
+  await first.dispose();
+  const second = await buildCached(input, directory, false);
+  const metrics = buildMetrics.get(second);
+  assert.ok(metrics);
+  assert.equal(metrics.persistentCacheHits, 0);
+  await second.dispose();
 });
 
 async function libraryBase(): Promise<string> {
@@ -641,6 +687,7 @@ function entry(title: string, value: unknown, tie: number) {
 async function buildCached(
   input: Readonly<Record<string, string>>,
   directory: string,
+  cacheEnabled = true,
 ): Promise<ContentManager> {
   const plugin = bases({ showFallback: false });
   const config: ResolvedRiebeckiteConfig = {
@@ -671,16 +718,36 @@ async function buildCached(
       styles: [],
     },
     plugins: [plugin],
-    cache: { enabled: true, directory: path.join(directory, "cache") },
+    cache: { enabled: cacheEnabled, directory: path.join(directory, "cache") },
   };
+  const events: { name: string }[] = [];
+  const spans: { name: string }[] = [];
   const manager = new ContentManager(memorySource(input), [], {
     config,
     plugins: config.plugins,
     observability: {
       logger: new NoopLogger(),
-      tracer: new SinkTracer({ onEvent: () => {}, onSpan: () => {} }),
+      tracer: new SinkTracer({
+        onEvent: (event) => events.push(event),
+        onSpan: (span) => spans.push(span),
+      }),
     },
   });
   await manager.build({ incremental: true });
+  buildMetrics.set(manager, {
+    reusedContent: events.filter((event) => event.name === "content.reuse")
+      .length,
+    processedContent: spans.filter((span) => span.name === "content.process")
+      .length,
+    reusedOutputs: spans.filter(
+      (span) => span.name === "output.dependencies.reuse",
+    ).length,
+    generatedOutputs: spans.filter(
+      (span) => span.name === "output.dependencies.resolve",
+    ).length,
+    persistentCacheHits: events.filter(
+      (event) => event.name === "persistentContentCache.hit",
+    ).length,
+  });
   return manager;
 }

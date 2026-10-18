@@ -192,7 +192,7 @@ was used:
 
 ### Caching in GitHub Actions
 
-For GitHub Actions, cache `.riebeckite/cache` and `.riebeckite/build/content-state.json`, not `dist/`. The output cache (`.riebeckite/ssg-output-cache.json`) stays local because its build-time saving does not offset the transfer cost. The generated Cloudflare workflow does this automatically; see [GitHub Actions](../guides/deployment/github-actions.md).
+For GitHub Actions, cache the incremental build state and the output cache — `.riebeckite/cache`, `.riebeckite/build/content-state.json`, `.riebeckite/ssg-output-cache.json`, its `.riebeckite/ssg-output-cache.entries` directory, and the `.riebeckite/ssg-output-cache.fast-path.json` sidecar — but not `dist/`. The generated Cloudflare workflow restores all of these between runs so CI gets the same incremental SSG as a local build. A restored output cache that fails its integrity or fingerprint checks is discarded and every output is re-rendered. See [GitHub Actions](../guides/deployment/github-actions.md).
 
 ## Output-level incremental SSG
 

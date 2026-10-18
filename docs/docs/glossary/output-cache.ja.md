@@ -6,7 +6,7 @@ sidebar:
 
 # Output Cache
 
-`.riebeckite/ssg-output-cache.json`に保存される、SSGの出力ルートとファイルをためるcacheです。Incremental SSGで再利用するためのもので、ローカル専用であり、CIの実行環境間で共有することは想定していません。
+`.riebeckite/ssg-output-cache.json`に保存される、SSGの出力ルートとファイルをためるcacheです。Incremental SSGで再利用するためのもので、GitHub ActionsではCI実行間で復元し、検証に通らないcacheは破棄します。
 
 ## 目的
 
@@ -30,9 +30,9 @@ SSGのmetricsは結果を`outputCacheDecision`（各条件の判定）と`output
 
 この判定はCLIのno-change fast pathとは別物です。Fast pathは、manifest hookやgenerated output planを必要とするpluginがないことも追加で要求します。
 
-## ローカル専用
+## 永続化
 
-出力cacheは転送のコストが利点を上回るため、ローカルに留めます。`.riebeckite/build/content-state.json`と`.riebeckite/ssg-output-cache.json`を削除すると、すべての出力の再生成を強制できます。
+生成されたGitHub Actions workflowは、output cache（`.riebeckite/ssg-output-cache.json`、その`.riebeckite/ssg-output-cache.entries`ディレクトリ、`.riebeckite/ssg-output-cache.fast-path.json` sidecar）を、content cacheとBuild stateと一緒に復元するため、CIでも実行間で描画済み出力を再利用できます。復元したstateが一致しなければRiebeckiteが検証してすべての出力を描き直すので、転送しても安全です。完全に作り直したい場合は`.riebeckite/build/content-state.json`と`.riebeckite/ssg-output-cache.json`を削除してください。workflowの詳細は[GitHub Actions](../guides/deployment/github-actions.ja.md)を参照してください。
 
 ## 関連用語
 

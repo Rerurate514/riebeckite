@@ -16,6 +16,7 @@ export const scenarioNames = [
   "delete",
   "rename",
   "publication-change",
+  "draft-to-public",
 ];
 
 export async function createBenchmarkContent({
@@ -128,6 +129,20 @@ export async function applyScenario({ contentDirectory, count, scenario }) {
       return;
     }
     throw new Error("Publication-change scenario requires a public note.");
+  }
+  if (scenario === "draft-to-public") {
+    for (let index = 0; index < count; index += 1) {
+      const file = notePath(contentDirectory, index);
+      const source = await fs.readFile(file, "utf8");
+      if (!source.includes("visibility: draft")) continue;
+      await fs.writeFile(
+        file,
+        source.replace("visibility: draft", "visibility: public"),
+        "utf8",
+      );
+      return;
+    }
+    throw new Error("Draft-to-public scenario requires a draft note.");
   }
   throw new Error(`Unknown preset benchmark scenario: ${scenario}`);
 }

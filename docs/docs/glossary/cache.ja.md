@@ -12,8 +12,8 @@ sidebar:
 
 - `.riebeckite/cache`に処理済みコンテンツとPluginごとのcacheが格納されます。
 - `.riebeckite/build/content-state.json`は前回Buildの状態です。
-- `.riebeckite/ssg-output-cache.json`は描画済みの出力で、ローカル専用です。
-前の2つはCIをまたいで保存して問題ありません。output cacheはローカル用で、共有するものではありません。
+- `.riebeckite/ssg-output-cache.json`は描画済みの出力で、`.riebeckite/ssg-output-cache.entries`ディレクトリと`.riebeckite/ssg-output-cache.fast-path.json` sidecarを伴います。
+3つともCIをまたいで保存して問題なく、生成されたGitHub Actions workflowが復元します。Riebeckiteは復元したcacheを必ず検証してから使うため、古い・非互換なentryは誤った出力ではなくfull buildにつながります。
 
 ## Cacheは正本ではない
 

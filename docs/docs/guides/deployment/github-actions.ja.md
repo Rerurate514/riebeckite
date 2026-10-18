@@ -482,9 +482,24 @@ npm ci
 
 ### 5. Riebeckite の build state を復元
 
-生成 Workflow は `actions/cache` で `.riebeckite/cache`（Markdown と Plugin の処理 cache）と `.riebeckite/build/content-state.json`（incremental build の state）を復元します。key には runner OS、`package-lock.json` の hash、run ごとの generation を含めます。各 run は run id と attempt で新しい generation として保存し、`restore-keys` が最新の互換 generation を取得するため、既存 entry をその場で上書きしません。lockfile の hash は大まかな互換性の境界にすぎず、実際の再利用は Riebeckite の schema version、app/pipeline/content fingerprint、Plugin の cacheVersion が判断します。output cache（`.riebeckite/ssg-output-cache.json`）は大きく、build 短縮分が転送コストに見合わないため意図的に永続化しません。`dist/` は cache しません。
+生成 Workflow は incremental SSG に必要な状態を 1 つの `actions/cache` step で復元します。
 
-build 後は新しい cache generation が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` を見ると、Actions cache の復元後に Riebeckite 内部で実際に再利用されたかを確認できます。cache を削除する、または workflow の cache step を外すと cold processing になりますが、出力の正しさには影響しません。古い cache generation は GitHub が自動的に破棄するため、cache 一覧は肥大しません。
+- `.riebeckite/cache` — Markdown と Plugin の処理 cache
+- `.riebeckite/build/content-state.json` — incremental build の state
+- `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries` — SSG output cache（描画済みの route とファイル、およびその entry blob）
+- `.riebeckite/ssg-output-cache.fast-path.json` — no-change fast path の検証用 sidecar
+
+cache key には runner OS、Node.js のバージョン、`package-lock.json` の hash、`riebeckite.config.ts` の hash を含め、run ごとの generation として保存します。
+
+```text
+riebeckite-build-v2-<os>-node<node>-<lockfile hash>-<config hash>-<run id>-<run attempt>
+```
+
+`restore-keys` は互換 generation を 2 段階でフォールバックします。まず lockfile と config の hash が同じ generation、次に lockfile の hash だけが同じ generation です。lockfile の hash はインストールされる Riebeckite のバージョンを、config の hash は Preset と Plugin の設定を覆うため、どちらかが変わると新しい cache 系列になります。実際の再利用は Riebeckite 自身の fingerprint 検証（schema version、app/pipeline/content fingerprint、Plugin の cacheVersion）が判断します。entry をその場で上書きすることはなく、各 run が新しい generation を保存し、古いものは GitHub が自動的に破棄します。cache は OS や Node.js のバージョンをまたいで共有されないため、異なる環境では非互換 entry を再利用せず cold build になります。`dist/` は cache しません。
+
+復元した output cache を Riebeckite が棄却した場合（cache が無い・壊れている、app fingerprint が変わった、`unknown` 依存の出力がある、full regeneration が必要、cache の無い出力がある）、すべての出力を描画し直して `dist/` を書き直すため、古い・不完全な cache が Deploy に混入することはありません。cache miss は安全で、単に cold build になるだけです。
+
+build 後は新しい cache generation が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` は content 処理の再利用を、`SSG outputs` 行の `rendered`、`reused`、`removed` は描画済み出力の再利用を示します。`.riebeckite/` を削除する、または workflow の cache step を外すと次の run は cold になりますが、出力の正しさには影響しません。content cache は残したまま output cache の転送だけを省略したい場合は、cache step から `.riebeckite/ssg-output-cache*` の 3 パスを外してください。次の run はすべての出力を描画し直します。Workflow は復元・保存した cache のサイズも出力するので、転送コストを確認できます。cache の保存に失敗・省略されても Deploy は実行されます。
 
 ### 6. Site を検証
 

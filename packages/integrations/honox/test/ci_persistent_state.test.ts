@@ -134,11 +134,19 @@ async function copyPersistentState(
       outputCacheEntriesPath(cachePath(from)),
       outputCacheEntriesPath(cachePath(to)),
     );
+    await copyPath(
+      fastPathCachePath(cachePath(from)),
+      fastPathCachePath(cachePath(to)),
+    );
   }
 }
 
 function outputCacheEntriesPath(cache: string): string {
   return cache.replace(/\.json$/, ".entries");
+}
+
+function fastPathCachePath(cache: string): string {
+  return cache.replace(/\.json$/, ".fast-path.json");
 }
 
 async function pathExists(target: string): Promise<boolean> {
@@ -473,6 +481,22 @@ test("CI persistent build state produces incremental output on a fresh checkout"
       name: "output-cache-delete",
       beforeNotes: [alpha, beta],
       afterNotes: [alpha],
+      restoreOutputCache: true,
+      expectFullRegeneration: false,
+      expectReuse: true,
+    },
+    {
+      name: "output-cache-public-to-draft",
+      beforeNotes: [alpha, beta],
+      afterNotes: [{ ...alpha, visibility: "draft" }, beta],
+      restoreOutputCache: true,
+      expectFullRegeneration: false,
+      expectReuse: true,
+    },
+    {
+      name: "output-cache-draft-to-public",
+      beforeNotes: [{ ...alpha, visibility: "draft" }, beta],
+      afterNotes: [alpha, beta],
       restoreOutputCache: true,
       expectFullRegeneration: false,
       expectReuse: true,

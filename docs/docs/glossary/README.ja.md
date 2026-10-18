@@ -95,7 +95,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Cache Invalidation](./cache-invalidation.ja.md) — 記録した依存やfingerprintが変わったcacheのコンテンツを捨てる処理です。無効化したentryは再処理され、他のentryに影響する場合は変化が伝播します。
 - [Cache Version](./cache-version.ja.md) — 永続的なcontent cacheのスキーマのバージョンで、スキーマの変更にともなう互換性と移行を制御します。
 - [Persistent Cache](./persistent-cache.ja.md) — `.riebeckite/cache/content/vN`に保存される、Build間で再利用する処理済みのMarkdownの結果です。cacheに当たればウォームビルドになり、外れれば再処理を強制します。
-- [Output Cache](./output-cache.ja.md) — `.riebeckite/ssg-output-cache.json`に保存される、SSGの出力ルートとファイルをためるcacheです。Incremental SSGで再利用するためのもので、ローカル専用であり、CIの実行環境間で共有することは想定していません。
+- [Output Cache](./output-cache.ja.md) — `.riebeckite/ssg-output-cache.json`に保存される、SSGの出力ルートとファイルをためるcacheです。Incremental SSGで再利用するためのもので、GitHub ActionsではCI実行間で復元し、検証に通らないcacheは破棄します。
 - [Output Inventory](./output-inventory.ja.md) — 公開entry、redirect、Pluginページ、Generated Outputから作られる、パスをキーにしたすべての生成物の記録です。Buildはこれを前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を求めます。
 - [Generated Output](./generated-output.ja.md) — Pluginが生成する出力で、contentの出力とは別物です。所有者と依存関係を持ち、宣言されたoutput dependencyにしたがって再生成が決まります。
 - [SSG](./ssg.ja.md) — サイトを事前にファイルへ描画するRiebeckiteの静的サイト生成です。Coreがコンテンツと公開位置を担い、IntegrationがHonoXとViteにつないでrouteを描画し、出力を書き出します。

@@ -12,8 +12,8 @@ Reusable build data that Riebeckite stores under `.riebeckite/` to avoid repeati
 
 - `.riebeckite/cache` — processed content, including per-plugin caches.
 - `.riebeckite/build/content-state.json` — the state of the previous build.
-- `.riebeckite/ssg-output-cache.json` — rendered output; local only.
-The first two are safe to persist between CI runs. The output cache is local and is not meant to be shared.
+- `.riebeckite/ssg-output-cache.json` — rendered output, with its `.riebeckite/ssg-output-cache.entries` directory and `.riebeckite/ssg-output-cache.fast-path.json` sidecar.
+All three are safe to persist between CI runs, and the generated GitHub Actions workflow restores them. Riebeckite validates every restored cache before use, so a stale or incompatible entry causes a full build instead of a wrong output.
 
 ## A cache is not a source of truth
 

@@ -438,9 +438,24 @@ npm ci
 
 ### 5. Restore Riebeckite build state
 
-The generated workflow restores `.riebeckite/cache` (the Markdown and plugin processing cache) and `.riebeckite/build/content-state.json` (incremental build state) with `actions/cache`, scoped by the runner OS and `package-lock.json` hash and saved under a per-run generation. Each run writes a new generation keyed by the run id and attempt, and `restore-keys` fall back to the newest compatible generation, so an existing entry is never overwritten in place. The lockfile hash is only a coarse compatibility boundary: Riebeckite's schema version, app/pipeline/content fingerprints, and plugin cache versions decide the actual reuse. The output cache (`.riebeckite/ssg-output-cache.json`) is deliberately not persisted because it is large and its build-time saving does not offset the transfer cost. `dist/` is not cached. A cache miss is safe and simply performs cold processing.
+The generated workflow restores everything incremental SSG needs between runs with a single `actions/cache` step:
 
-After the build, a new cache generation is saved automatically. The `hits`, `misses`, and `bypasses` on the build log's `Persistent content cache` line show whether Riebeckite actually reused anything after the Actions cache was restored. Deleting the cache or removing the workflow's cache step makes processing cold, but does not affect output correctness. GitHub evicts old cache generations automatically, so the cache list stays bounded.
+- `.riebeckite/cache` — the Markdown and plugin processing cache
+- `.riebeckite/build/content-state.json` — incremental build state
+- `.riebeckite/ssg-output-cache.json` and `.riebeckite/ssg-output-cache.entries` — the SSG output cache (rendered routes and files, plus their entry blobs)
+- `.riebeckite/ssg-output-cache.fast-path.json` — the no-change fast-path validation sidecar
+
+The cache key is scoped by the runner OS, the Node.js version, the `package-lock.json` hash, and the `riebeckite.config.ts` hash, then saved under a per-run generation:
+
+```text
+riebeckite-build-v2-<os>-node<node>-<lockfile hash>-<config hash>-<run id>-<run attempt>
+```
+
+`restore-keys` fall back to the newest compatible generation in two steps: first a generation with the same lockfile and config hashes, then one with the same lockfile hash. The lockfile hash covers the installed Riebeckite version and the config hash covers preset and plugin settings, so changing either starts a new cache lineage, while Riebeckite's own fingerprint checks (schema version, app/pipeline/content fingerprints, plugin `cacheVersion`) decide the actual reuse. An entry is never overwritten in place: each run saves a new generation and GitHub evicts old ones automatically. Caches are not shared across operating systems or Node.js versions, so a different environment starts cold instead of reusing an incompatible entry. `dist/` is not cached.
+
+When Riebeckite rejects a restored output cache — a missing or malformed cache, a changed application fingerprint, an `unknown` output dependency, a full-regeneration reason, or an output without a cached entry — it renders every output and rewrites `dist/` from scratch, so a stale or partial cache never reaches the deployment. A cache miss is safe and simply performs a cold build.
+
+After the build, a new cache generation is saved automatically. The `hits`, `misses`, and `bypasses` on the build log's `Persistent content cache` line show whether Riebeckite reused content processing, and the `SSG outputs` line's `rendered`, `reused`, and `removed` counts show whether it reused rendered outputs. Deleting `.riebeckite/` or removing the workflow's cache step makes the next run cold, but does not affect output correctness. To keep the content cache but skip the output-cache transfer, remove the three `.riebeckite/ssg-output-cache*` paths from the cache step; the next run re-renders every output. The workflow also prints the restored and saved cache sizes so you can watch the transfer cost. If saving the cache fails or is skipped, the deploy still runs.
 
 ### 6. Validate the site
 

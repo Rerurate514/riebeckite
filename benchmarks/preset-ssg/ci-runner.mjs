@@ -33,7 +33,8 @@ const workRoot = path.resolve(
 const resultsDirectory = path.resolve(
   args.out ?? path.join(root, "benchmarks", "results", "ci-simulation"),
 );
-const cacheOutput = args.cacheOutput === "true";
+const cacheOutput =
+  args.cacheOutput === undefined ? true : args.cacheOutput === "true";
 const keepRunDirectories = args.keep === "true";
 const variantSuffix = cacheOutput ? "-outputcache" : "";
 const stamp = new Date()
@@ -92,6 +93,10 @@ function compact(row) {
     saveMs: row.median.cacheSaveMs,
     restoreMs: row.median.cacheRestoreMs,
     cacheBytes: row.median.cacheBytes,
+    contentCacheBytes: row.median.contentCacheBytes,
+    contentStateBytes: row.median.contentStateBytes,
+    outputCacheBytes: row.median.outputCacheBytes,
+    restoredBytes: row.median.restoredBytes,
     contentReused: row.median.contentReused,
     outputRendered: row.median.outputRendered,
     fastPath: row.median.fastPathApplied,
@@ -116,6 +121,10 @@ async function runScenario({ preset, size, scenario, runs }) {
     "cacheSaveMs",
     "cacheRestoreMs",
     "cacheBytes",
+    "contentCacheBytes",
+    "contentStateBytes",
+    "outputCacheBytes",
+    "restoredBytes",
     "contentProcessed",
     "contentReused",
     "outputRendered",
@@ -179,6 +188,10 @@ async function runSample({ preset, size, scenario, run }) {
       cacheSaveMs: null,
       cacheRestoreMs: null,
       cacheBytes: null,
+      contentCacheBytes: null,
+      contentStateBytes: null,
+      outputCacheBytes: null,
+      restoredBytes: null,
       equivalence,
     });
   }
@@ -191,6 +204,9 @@ async function runSample({ preset, size, scenario, run }) {
   const freshSite = path.join(runDirectory, "fresh");
   await createSite(freshSite, preset, size);
   const restoreMs = await restoreCache(cacheStore, freshSite);
+  const restoredBytes = await directorySize(
+    path.join(freshSite, ".riebeckite"),
+  );
   await applyScenario({
     contentDirectory: path.join(freshSite, "content"),
     count: size,
@@ -231,6 +247,10 @@ async function runSample({ preset, size, scenario, run }) {
     cacheSaveMs: saved.saveMs,
     cacheRestoreMs: restoreMs,
     cacheBytes: saved.bytes,
+    contentCacheBytes: saved.contentCacheBytes,
+    contentStateBytes: saved.contentStateBytes,
+    outputCacheBytes: saved.outputCacheBytes,
+    restoredBytes,
     equivalence,
   });
 }
@@ -250,17 +270,23 @@ async function saveCache(siteRoot, cacheStore) {
     "content-state.json",
   );
   const started = performance.now();
-  let bytes = 0;
   await fs.cp(path.join(siteRoot, ".riebeckite", "cache"), zip, {
     recursive: true,
   });
-  bytes += await directorySize(zip);
+  const contentCacheBytes = await directorySize(zip);
   await fs.mkdir(path.dirname(cacheStore), { recursive: true });
-  const stateBytes = (await fs.stat(stateFile)).size;
+  const contentStateBytes = (await fs.stat(stateFile)).size;
   await fs.copyFile(stateFile, path.join(cacheStore, "content-state.json"));
-  bytes += stateBytes;
-  if (cacheOutput) bytes += await saveOutputCache(siteRoot, cacheStore);
-  return { saveMs: Math.round(performance.now() - started), bytes };
+  const outputCacheBytes = cacheOutput
+    ? await saveOutputCache(siteRoot, cacheStore)
+    : 0;
+  return {
+    saveMs: Math.round(performance.now() - started),
+    bytes: contentCacheBytes + contentStateBytes + outputCacheBytes,
+    contentCacheBytes,
+    contentStateBytes,
+    outputCacheBytes,
+  };
 }
 
 async function saveOutputCache(siteRoot, cacheStore) {
@@ -625,7 +651,7 @@ async function writeReport(rows) {
     generatedAt: new Date().toISOString(),
     kind: "ci-simulation",
     outputCacheCached: cacheOutput,
-    note: `Local CI simulation: cache restore/save is emulated by copying ${cacheOutput ? "the template-cached files PLUS the SSG output cache" : "the template-cached files (.riebeckite/cache + .riebeckite/build/content-state.json)"} into a fresh site directory. GitHub Actions cache transfer time is NOT included.`,
+    note: `Local CI simulation: cache restore/save is emulated by copying the template-cached files into a fresh site directory at a different absolute path. ${cacheOutput ? "The SSG output cache (metadata, entries, and fast-path sidecar) is included, matching the v2 deploy template." : "The SSG output cache is excluded, matching the old v1 deploy template."} GitHub Actions cache transfer time is NOT included.`,
     runs,
     environment: {
       node: process.version,
@@ -652,13 +678,13 @@ function markdownReport(report) {
     "",
     report.note,
     "",
-    "| Preset | Size | Scenario | Cold ms | Incremental ms | Clean ms | Save ms | Restore ms | Cache bytes | Content reused | Output rendered | Fast path | Full regen | Equivalent |",
-    "| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
+    "| Preset | Size | Scenario | Cold ms | Incremental ms | Clean ms | Save ms | Restore ms | Cache bytes | Content cache bytes | State bytes | Output cache bytes | Restored bytes | Content reused | Output rendered | Fast path | Full regen | Equivalent |",
+    "| --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
   ];
   for (const row of report.rows) {
     const m = row.median;
     lines.push(
-      `| ${row.preset} | ${row.size} | ${row.scenario} | ${m.coldWallTimeMs} | ${m.incrementalWallTimeMs} | ${m.cleanWallTimeMs} | ${m.cacheSaveMs ?? "N/A"} | ${m.cacheRestoreMs ?? "N/A"} | ${m.cacheBytes ?? "N/A"} | ${m.contentReused} | ${m.outputRendered} | ${m.fastPathApplied} | ${m.fullRegenerationRequired} | ${m.equivalence.equivalent} |`,
+      `| ${row.preset} | ${row.size} | ${row.scenario} | ${m.coldWallTimeMs} | ${m.incrementalWallTimeMs} | ${m.cleanWallTimeMs} | ${m.cacheSaveMs ?? "N/A"} | ${m.cacheRestoreMs ?? "N/A"} | ${m.cacheBytes ?? "N/A"} | ${m.contentCacheBytes ?? "N/A"} | ${m.contentStateBytes ?? "N/A"} | ${m.outputCacheBytes ?? "N/A"} | ${m.restoredBytes ?? "N/A"} | ${m.contentReused} | ${m.outputRendered} | ${m.fastPathApplied} | ${m.fullRegenerationRequired} | ${m.equivalence.equivalent} |`,
     );
   }
   return `${lines.join("\n")}\n`;

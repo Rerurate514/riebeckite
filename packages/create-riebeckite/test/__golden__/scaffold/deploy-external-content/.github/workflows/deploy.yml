@@ -11,6 +11,9 @@ concurrency:
   group: riebeckite-deploy
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: "22"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -30,7 +33,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
@@ -38,20 +41,38 @@ jobs:
 
       - name: Restore Riebeckite build state
         uses: actions/cache@v4
+        continue-on-error: true
         with:
           path: |
             .riebeckite/cache
             .riebeckite/build/content-state.json
-          key: riebeckite-build-v1-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.run_id }}-${{ github.run_attempt }}
+            .riebeckite/ssg-output-cache.json
+            .riebeckite/ssg-output-cache.entries
+            .riebeckite/ssg-output-cache.fast-path.json
+          key: riebeckite-build-v2-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('riebeckite.config.ts') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            riebeckite-build-v1-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
-            riebeckite-content-v3-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+            riebeckite-build-v2-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('riebeckite.config.ts') }}-
+            riebeckite-build-v2-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: Report restored Riebeckite cache
+        shell: bash
+        run: |
+          if [ -d .riebeckite ]; then
+            echo "Restored Riebeckite cache: $(du -sb .riebeckite | cut -f1) bytes"
+          else
+            echo "Restored Riebeckite cache: 0 bytes (cold build)"
+          fi
 
       - name: Validate configuration and plugins
         run: npm exec riebeckite check
 
       - name: Build the site
         run: npm exec riebeckite build
+
+      - name: Report Riebeckite cache to save
+        shell: bash
+        run: |
+          echo "Riebeckite cache to save: $(du -sb .riebeckite | cut -f1) bytes"
 
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@v3

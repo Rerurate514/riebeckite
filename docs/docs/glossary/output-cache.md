@@ -6,7 +6,7 @@ sidebar:
 
 # Output Cache
 
-The SSG output cache at `.riebeckite/ssg-output-cache.json` that stores rendered output routes and files for incremental SSG reuse. It is local-only and not meant to be shared between CI runners.
+The SSG output cache at `.riebeckite/ssg-output-cache.json` that stores rendered output routes and files for incremental SSG reuse. It is restored between CI runs so incremental SSG works in GitHub Actions; a cache that fails its checks is discarded.
 
 ## Purpose
 
@@ -30,9 +30,9 @@ The SSG metrics record the outcome in `outputCacheDecision` (each individual con
 
 This decision is separate from the CLI no-change fast path, which additionally requires that no plugin needs a manifest hook or a generated output plan.
 
-## Local-only
+## Persistence
 
-The output cache stays local because its build-time saving does not offset the transfer cost. Delete `.riebeckite/build/content-state.json` and `.riebeckite/ssg-output-cache.json` to force full output regeneration.
+The generated GitHub Actions workflow restores the output cache (`.riebeckite/ssg-output-cache.json`, its `.riebeckite/ssg-output-cache.entries` directory, and the `.riebeckite/ssg-output-cache.fast-path.json` sidecar) together with the content cache and build state, so CI reuses rendered output between runs. It is safe to transfer because Riebeckite validates the restored state and re-renders every output when it does not match. Delete `.riebeckite/build/content-state.json` and `.riebeckite/ssg-output-cache.json` to force full output regeneration, and see [GitHub Actions](../guides/deployment/github-actions.md) for the workflow details.
 
 ## Related terms
 

@@ -267,6 +267,9 @@ function assertBuildStateCacheContract(workflow: string): void {
   for (const cachePath of [
     ".riebeckite/cache",
     ".riebeckite/build/content-state.json",
+    ".riebeckite/ssg-output-cache.json",
+    ".riebeckite/ssg-output-cache.entries",
+    ".riebeckite/ssg-output-cache.fast-path.json",
   ]) {
     assert.ok(
       cacheStep.includes(cachePath),
@@ -275,33 +278,66 @@ function assertBuildStateCacheContract(workflow: string): void {
   }
   assert.ok(
     !cacheStep.includes("dist"),
-    "build-state cache must never include dist/",
+    "build-state cache must never include dist/ so the deploy artifact stays authoritative",
   );
   assert.ok(
-    !cacheStep.includes("ssg-output-cache.json"),
-    "output cache must stay out of the build-state cache to avoid large transfers",
+    cacheStep.includes("continue-on-error: true"),
+    "cache restore and save must never fail the deploy",
+  );
+
+  const key = extractCacheKey(cacheStep);
+  assert.ok(
+    key.includes("riebeckite-build-v2-"),
+    "cache key must be versioned so stale contracts are never restored",
   );
   assert.ok(
-    /key: riebeckite-build-v1-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('package-lock\.json'\) \}\}-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/.test(
-      cacheStep,
-    ),
-    "cache key must be unique per run and attempt while scoping runner OS and lockfile",
+    key.includes("${{ runner.os }}") &&
+      key.includes("node${{ env.NODE_VERSION }}"),
+    "cache key must scope the runner OS and Node.js version",
   );
   assert.ok(
-    cacheStep.includes(
-      "\n          restore-keys: |\n            riebeckite-build-v1-$" +
-        "{{ runner.os }}-$" +
-        "{{ hashFiles('package-lock.json') }}-\n",
-    ),
-    "restore-keys must select the newest compatible generation",
+    key.includes("${{ hashFiles('package-lock.json') }}"),
+    "cache key must scope the dependency lockfile",
   );
   assert.ok(
-    cacheStep.includes(
-      "riebeckite-content-v3-$" +
-        "{{ runner.os }}-$" +
-        "{{ hashFiles('package-lock.json') }}",
-    ),
-    "restore-keys must fall back to the previous persistent content cache",
+    key.includes("${{ hashFiles('riebeckite.config.ts') }}"),
+    "cache key must scope the site configuration",
+  );
+  assert.ok(
+    key.includes("${{ github.run_id }}-${{ github.run_attempt }}"),
+    "cache key must be unique per run and attempt so saved generations are immutable",
+  );
+
+  const restoreKeys = extractRestoreKeys(cacheStep);
+  assert.equal(restoreKeys.length, 2, "workflow must define two fallback keys");
+  for (const restoreKey of restoreKeys) {
+    assert.ok(
+      key.startsWith(restoreKey),
+      `restore-key ${restoreKey} must be a prefix of the cache key`,
+    );
+  }
+  assert.equal(
+    restoreKeys[0],
+    "riebeckite-build-v2-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('riebeckite.config.ts') }}-",
+    "first restore-key must fall back within the same configuration",
+  );
+  assert.equal(
+    restoreKeys[1],
+    "riebeckite-build-v2-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-",
+    "second restore-key must fall back across configuration changes with the same dependencies",
+  );
+
+  assert.ok(
+    workflow.includes('NODE_VERSION: "22"'),
+    "workflow must define the pinned Node.js version used by setup-node and the cache key",
+  );
+  assert.ok(
+    workflow.includes("node-version: ${{ env.NODE_VERSION }}"),
+    "setup-node must use the pinned Node.js version",
+  );
+  assert.ok(
+    !workflow.includes("riebeckite-content-v3"),
+    "workflow must not restore the dead content cache key",
   );
 
   const installIndex = workflow.indexOf("npm ci");
@@ -317,6 +353,30 @@ function assertBuildStateCacheContract(workflow: string): void {
       buildIndex < deployIndex,
     "workflow must install, restore state, check, build, then deploy",
   );
+}
+
+function extractCacheKey(cacheStep: string): string {
+  const line = cacheStep
+    .split("\n")
+    .find((candidate) => candidate.trim().startsWith("key:"));
+  assert.ok(line, "cache step must define a key");
+  return line.slice(line.indexOf("key:") + "key:".length).trim();
+}
+
+function extractRestoreKeys(cacheStep: string): string[] {
+  const lines = cacheStep.split("\n");
+  const markerIndex = lines.findIndex((line) =>
+    line.includes("restore-keys: |"),
+  );
+  assert.ok(markerIndex >= 0, "cache step must define restore-keys");
+  const restoreKeys: string[] = [];
+  for (const line of lines.slice(markerIndex + 1)) {
+    if (!line.trim()) {
+      break;
+    }
+    restoreKeys.push(line.trim());
+  }
+  return restoreKeys;
 }
 
 async function assertFileIsAbsent(filePath: string): Promise<void> {

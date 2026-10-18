@@ -202,16 +202,17 @@ build log の `Persistent content cache` では、キャッシュがどの程度
 
 ### GitHub Actions でのキャッシュ
 
-GitHub Actions では、生成されたサイトそのものではなく、次の build 用データをキャッシュします。
+GitHub Actions では、生成されたサイトそのものではなく、incremental build の state と output cache をキャッシュします。
 
 ```text
 .riebeckite/cache
 .riebeckite/build/content-state.json
+.riebeckite/ssg-output-cache.json
+.riebeckite/ssg-output-cache.entries
+.riebeckite/ssg-output-cache.fast-path.json
 ```
 
-`dist/` はキャッシュしません。
-
-また、最終的なページ生成に使用する `.riebeckite/ssg-output-cache.json` は、ファイルを転送する時間に対して得られる効果が小さいため、ローカルでのみ利用します。
+`dist/` はキャッシュしません。生成された workflow はこれらを実行間で復元するため、CI でもローカルと同じ incremental SSG が働きます。復元した output cache が整合性や fingerprint の検証に通らない場合は破棄し、すべての出力を生成し直します。
 
 Cloudflare 用の workflow については [GitHub Actions](../guides/deployment/github-actions.ja.md) を参照してください。
 

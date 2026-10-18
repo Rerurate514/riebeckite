@@ -136,6 +136,33 @@ test("publication-change changes a public note", async (t) => {
   );
 });
 
+test("draft-to-public publishes a draft note", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-preset-benchmark-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  await createBenchmarkContent({
+    contentDirectory: directory,
+    count: 2,
+    preset: "starter",
+  });
+
+  assert.ok(scenarioNames.includes("draft-to-public"));
+  await applyScenario({
+    contentDirectory: directory,
+    count: 2,
+    scenario: "draft-to-public",
+  });
+
+  assert.match(
+    await fs.readFile(
+      path.join(directory, "benchmark", "section-000", "note-00000.md"),
+      "utf8",
+    ),
+    /visibility: public/,
+  );
+});
+
 test("snapshot comparison detects output differences", () => {
   assert.deepEqual(compareSnapshots({ "a.html": "one" }, { "a.html": "two" }), {
     equivalent: false,

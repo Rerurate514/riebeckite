@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import {
   appendFile,
+  cp,
   mkdir,
   mkdtemp,
   readFile,
@@ -341,6 +343,167 @@ test("incremental SSG matches a clean cold build", async (t) => {
   assert.ok(Object.hasOwn(finalSnapshot, "explore.html"));
   assert.ok(Object.hasOwn(finalSnapshot, "custom.json"));
 });
+
+test("Bases incremental SSG output matches an independent clean build", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "bases-ssg-test-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const mutate = [
+    (_site: string) => Promise.resolve(),
+    (site: string) => replaceBase(site, "* 2", "* 3"),
+    (site: string) => replaceBase(site, "DESC", "ASC"),
+    (site: string) =>
+      replaceBase(
+        site,
+        "group, direction: ASC",
+        "formula.rank, direction: DESC",
+      ),
+    (site: string) => replaceBase(site, "total }", "Sum }"),
+    (site: string) => replaceNote(site, "value: 2", "value: 3"),
+    (site: string) =>
+      writeFile(
+        path.join(site, "vault", "notes", "added.md"),
+        publicNote("Added", 4, "beta"),
+      ),
+    (site: string) => rm(path.join(site, "vault", "notes", "public.md")),
+    (site: string) =>
+      replaceNote(site, "visibility: public", "visibility: draft"),
+    (site: string) =>
+      replaceNote(site, "visibility: draft", "visibility: public", "draft.md"),
+    (site: string) =>
+      replaceNote(site, "visibility: public", "visibility: unlisted"),
+    (site: string) =>
+      replaceNote(
+        site,
+        "visibility: unlisted",
+        "visibility: public",
+        "unlisted.md",
+      ),
+    (site: string) => rm(path.join(site, "vault", "views", "Matrix.base")),
+  ];
+  for (const [index, apply] of mutate.entries()) {
+    const inc = path.join(root, `incremental-${index}`);
+    await createBasesSite(inc);
+    await buildSite(inc, "initial", leanBuildOptions);
+    await apply(inc);
+    const metrics = await incrementalBuild(
+      inc,
+      "incremental",
+      leanBuildOptions,
+    );
+    const incremental = await snapshotTree(distPath(inc));
+    const clean = path.join(root, `clean-${index}`);
+    await cp(inc, clean, {
+      recursive: true,
+      filter: (source) => {
+        const relative = path.relative(inc, source);
+        return relative !== ".riebeckite" && relative !== "dist";
+      },
+    });
+    await buildSite(clean, "clean", leanBuildOptions);
+    const rebuilt = await snapshotTree(distPath(clean));
+    assert.deepEqual(
+      snapshotHashes(incremental),
+      snapshotHashes(rebuilt),
+      `SHA-256 output inventory mismatch for scenario ${index}`,
+    );
+    assert.deepEqual(
+      diffSnapshotKeys(incremental, rebuilt),
+      [],
+      `scenario ${index}`,
+    );
+    assert.equal(
+      new Set(Object.keys(incremental)).size,
+      Object.keys(incremental).length,
+    );
+    assert.doesNotMatch(
+      await readFile(
+        path.join(inc, "dist", "views", "Matrix.html"),
+        "utf8",
+      ).catch(() => ""),
+      /999999|888888|777777/,
+    );
+    assert.equal(Number(metrics.reusedOutputCount) >= 0, true);
+    assert.equal(Number(metrics.renderedOutputCount) >= 0, true);
+    assert.equal(Number(metrics.deletedOutputCount) >= 0, true);
+    if (index === 0) assert.ok(Number(metrics.reusedOutputCount) > 0);
+    if (index === 7 || index === 12)
+      assert.ok(Number(metrics.deletedOutputCount) >= 1);
+  }
+});
+
+async function createBasesSite(site: string): Promise<void> {
+  await createSite(site, {
+    title: "Bases",
+    renderTag: "v1",
+    noteCount: 0,
+    editedNotes: [],
+    bases: true,
+  });
+  await mkdir(path.join(site, "vault", "views"), { recursive: true });
+  await writeFile(
+    path.join(site, "vault", "index.md"),
+    "---\nvisibility: public\n---\n\n![[views/Matrix.base]]\n",
+  );
+  await writeFile(
+    path.join(site, "vault", "views", "Matrix.base"),
+    "formulas:\n  rank: note.value * 2\nsummaries:\n  total: values.reduce(acc + value, 0)\nproperties:\n  file.name: Name\n  group: Group\n  formula.rank: Rank\nviews:\n  - type: table\n    order: [file.name, group, formula.rank]\n    sort: [{ property: formula.rank, direction: DESC }]\n    groupBy: { property: group, direction: ASC }\n    summaries: { formula.rank: total }\n",
+  );
+  await mkdir(path.join(site, "vault", "notes"), { recursive: true });
+  await writeFile(
+    path.join(site, "vault", "notes", "public.md"),
+    publicNote("Public", 2, "alpha"),
+  );
+  await writeFile(
+    path.join(site, "vault", "notes", "draft.md"),
+    publicNote("Draft", 999999, "secret", "draft"),
+  );
+  await writeFile(
+    path.join(site, "vault", "notes", "unlisted.md"),
+    publicNote("Unlisted", 888888, "secret", "unlisted"),
+  );
+  await writeFile(
+    path.join(site, "vault", "notes", "scheduled.md"),
+    "---\ntitle: Scheduled\nvisibility: public\npublishAt: 2999-01-01T00:00:00.000Z\nvalue: 777777\ngroup: secret\n---\n\n# Scheduled\n",
+  );
+}
+
+function snapshotHashes(snapshot: Readonly<Record<string, string>>) {
+  return Object.fromEntries(
+    Object.entries(snapshot).map(([file, content]) => [
+      file,
+      createHash("sha256").update(Buffer.from(content, "base64")).digest("hex"),
+    ]),
+  );
+}
+
+function publicNote(
+  title: string,
+  value: number,
+  group: string,
+  visibility = "public",
+): string {
+  return `---\ntitle: ${title}\nvisibility: ${visibility}\nvalue: ${value}\ngroup: ${group}\n---\n\n# ${title}\n`;
+}
+
+async function replaceBase(
+  site: string,
+  from: string,
+  to: string,
+): Promise<void> {
+  const file = path.join(site, "vault", "views", "Matrix.base");
+  await writeFile(file, (await readFile(file, "utf8")).replace(from, to));
+}
+
+async function replaceNote(
+  site: string,
+  from: string,
+  to: string,
+  name = "public.md",
+): Promise<void> {
+  const file = path.join(site, "vault", "notes", name);
+  await writeFile(file, (await readFile(file, "utf8")).replace(from, to));
+}
 
 test("SSG emits standard Markdown images and tracks their file changes", async (t) => {
   await mkdir(workParent, { recursive: true });

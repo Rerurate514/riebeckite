@@ -75,6 +75,16 @@ const alias = [
       "index.ts",
     ),
   },
+  {
+    find: /^@riebeckite\/plugin-bases$/,
+    replacement: path.join(
+      repoRoot,
+      "packages",
+      "plugins",
+      "bases",
+      "index.ts",
+    ),
+  },
 ];
 
 export type SiteSources = {
@@ -96,6 +106,7 @@ export type SiteSources = {
   readonly stylesheet?: string;
   readonly readme?: boolean;
   readonly externalDependency?: boolean;
+  readonly bases?: boolean;
 };
 
 export type Metrics = Record<string, number | boolean | null>;
@@ -262,6 +273,9 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     '      dependencies: [{ type: "global" }],',
     "    });",
   ];
+  if (sources.bases) {
+    lines.unshift('import { bases } from "@riebeckite/plugin-bases";');
+  }
   if (asset) {
     lines.push(
       "    output.emit({",
@@ -338,7 +352,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     "    enabled: true,",
     `    directory: ${JSON.stringify(path.join(siteRoot, ".riebeckite", "cache"))},`,
     "  },",
-    `  plugins: [demo${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
+    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
     "});",
     "",
   );

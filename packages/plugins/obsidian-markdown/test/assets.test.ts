@@ -77,6 +77,30 @@ test("emits content images under the assets namespace and renders their URL", as
   assert.match(entry.html, /src="\/assets\/riebeckite-logo\.png"/);
 });
 
+test("renders namespaced wikilink embeds with a text caption", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "index.md": "---\npublish: true\n---\n\n![[note#Section]]\n",
+      "note.md": "---\npublish: true\n---\n\n## Section\n\nEmbedded text.\n",
+    }),
+    [],
+    { plugins: [obsidianMarkdown()] },
+  );
+
+  const manifest = await manager.getManifest();
+  const entry = manifest.publicEntries.find(
+    (candidate) => candidate.permalink === "/",
+  );
+
+  assert.ok(entry);
+  assert.match(entry.html, /rr-obsidian-wikilink-embed/);
+  assert.match(
+    entry.html,
+    /rr-obsidian-wikilink-embed__label">Embedded: note<\/span>/,
+  );
+  assert.match(entry.html, /data-wikilink-fragment="Section"/);
+});
+
 test("retries image emission after a failed emit", async () => {
   const logo = new Uint8Array([137, 80, 78, 71, 13]);
   const files: Record<string, string | Uint8Array> = {

@@ -62,3 +62,52 @@
 .rr-callout__content > :last-child {
   margin-bottom: 0;
 }
+
+.rr-obsidian-wikilink-embed {
+  margin-block: 1.75rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid
+    color-mix(in oklab, currentColor 18%, transparent);
+}
+
+.rr-obsidian-wikilink-image-embed {
+  margin-block: 1.75rem;
+  text-align: center;
+}
+
+.rr-obsidian-wikilink-image-embed img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.rr-obsidian-wikilink-embed__label {
+  display: block;
+  margin-block-end: 0.5rem;
+  color: color-mix(in oklab, currentColor 55%, transparent);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.rr-obsidian-wikilink-embed__label + * {
+  margin-top: 0;
+}
+
+.rr-obsidian-wikilink-embed > :last-child {
+  margin-bottom: 0;
+}
+
+.rr-obsidian-wikilink-embed .rr-obsidian-wikilink-embed {
+  margin-block: 1.25rem;
+  border-inline-start-color: color-mix(in oklab, currentColor 26%, transparent);
+}
+
+.rr-obsidian-wikilink-embed-unresolved,
+.rr-obsidian-wikilink--broken {
+  color: var(--rb-color-danger);
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}

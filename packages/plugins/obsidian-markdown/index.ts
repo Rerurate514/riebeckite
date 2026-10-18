@@ -30,7 +30,7 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
     name: PLUGIN_NAME,
     order: -20,
     processedContentCache: {
-      version: "obsidian-markdown-v2",
+      version: "obsidian-markdown-v3",
       dependencyMode: "tracked",
     },
     options,

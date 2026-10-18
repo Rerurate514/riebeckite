@@ -24,7 +24,7 @@
     "release": "node scripts/release.mjs",
     "test": "pnpm -r test",
     "test:docs": "node --test scripts/sync_plugin_docs.test.mjs scripts/check_plugin_docs_parity.test.mjs scripts/sync_theme_docs.test.mjs",
-    "test:release": "node --test scripts/release.test.mjs",
+    "test:release": "node --test scripts/release.test.mjs scripts/release.contract.test.mjs",
     "test:registry": "node scripts/run_registry_e2e.mjs",
     "test:update": "node scripts/run_tests.mjs --update",
     "test:e2e:external": "node --import tsx tests/external-site/run.ts",

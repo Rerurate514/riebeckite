@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
@@ -40,6 +42,7 @@ const PUBLISH_RETRY_DELAY_MS = 5_000;
 
 const STAGE_LIST_TIMEOUT_MS = NPM_VIEW_TIMEOUT_MS;
 const STAGE_APPROVE_TIMEOUT_MS = PUBLISH_TIMEOUT_MS;
+const PACK_TIMEOUT_MS = PUBLISH_TIMEOUT_MS;
 
 const SEMVER_PATTERN =
   /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
@@ -194,6 +197,7 @@ export const runtime = {
   spawnInteractive: (...args) => spawnInteractive(...args),
   runStep: (...args) => runStep(...args),
   spawnSync: (...args) => spawnSync(...args),
+  packShasum: (...args) => spawnPackShasum(...args),
   isInteractive: () => Boolean(process.stdin.isTTY && process.stdout.isTTY),
   sleep: (milliseconds) =>
     new Promise((resolve) => setTimeout(resolve, milliseconds)),
@@ -789,6 +793,68 @@ async function inspectPublishedPackages(manifests, version, dryRun, quiet) {
   );
 }
 
+async function spawnPackShasum(directory) {
+  let temporaryDirectory;
+
+  try {
+    temporaryDirectory = fs.mkdtempSync(
+      path.join(os.tmpdir(), "riebeckite-pack-"),
+    );
+  } catch {
+    return null;
+  }
+
+  try {
+    let result;
+
+    try {
+      result = await spawnBuffered(
+        "pnpm",
+        ["pack", "--pack-destination", temporaryDirectory, "--json"],
+        path.join(repositoryRoot, directory),
+        {
+          timeout: PACK_TIMEOUT_MS,
+          label: `pnpm pack ${directory}`,
+        },
+      );
+    } catch {
+      return null;
+    }
+
+    if (result.status !== 0) {
+      return null;
+    }
+
+    let archives;
+
+    try {
+      archives = fs
+        .readdirSync(temporaryDirectory)
+        .filter((name) => name.endsWith(".tgz"));
+    } catch {
+      return null;
+    }
+
+    if (archives.length !== 1) {
+      return null;
+    }
+
+    let contents;
+
+    try {
+      contents = fs.readFileSync(path.join(temporaryDirectory, archives[0]));
+    } catch {
+      return null;
+    }
+
+    return crypto.createHash("sha1").update(contents).digest("hex");
+  } finally {
+    try {
+      fs.rmSync(temporaryDirectory, { recursive: true, force: true });
+    } catch {}
+  }
+}
+
 export function readStageItem(item) {
   if (!item || typeof item !== "object" || Array.isArray(item)) {
     return null;
@@ -800,6 +866,7 @@ export function readStageItem(item) {
   const stageId = item.stageId ?? item.stage_id ?? item.id ?? null;
   const name = item.name ?? nested.name ?? item.packageName ?? null;
   const version = item.version ?? nested.version ?? null;
+  const shasum = item.shasum ?? nested.shasum ?? null;
 
   if (
     typeof stageId !== "string" ||
@@ -810,7 +877,12 @@ export function readStageItem(item) {
     return null;
   }
 
-  return { stageId, name, version };
+  return {
+    stageId,
+    name,
+    version,
+    shasum: typeof shasum === "string" && shasum.length > 0 ? shasum : null,
+  };
 }
 
 function parseJsonArray(text) {
@@ -957,81 +1029,62 @@ async function waitForPublished(packageName, version, timeoutMs) {
   }
 }
 
-function stagedRecoveryInstructions(packageSpec) {
-  const packageName = packageSpec.slice(0, packageSpec.lastIndexOf("@"));
-
+function stagedManualCommands(stageId) {
   return [
-    `The registry reported a staged version conflict for ${packageSpec}.`,
-    "This version is already staged and waiting for approval, so it cannot be",
-    "published directly. Resolve it with the official npm CLI commands:",
-    `  npm stage list ${packageName} --json`,
-    "  npm stage approve <stage-id>",
-    "Then re-run this release; already published packages are skipped.",
+    `  npm stage view ${stageId}`,
+    `  npm stage approve ${stageId}`,
+    `  npm stage reject ${stageId}`,
   ].join("\n");
 }
 
-async function recoverStagedConflict(
+function stagedInspectionUnavailable(state, reason) {
+  return [
+    "Riebeckite cannot inspect staged npm versions, so it refuses to publish.",
+    `npm stage list did not succeed (${state}): ${reason ?? "unknown error"}`,
+    "Publishing now could overwrite a version that is already staged.",
+    "Confirm the npm CLI supports staging, then re-run this release:",
+    "  npm --version",
+    "  npm stage list --json",
+  ].join("\n");
+}
+
+async function stagedContentMatches(directory, item) {
+  if (!item.shasum) {
+    return false;
+  }
+
+  const localShasum = await runtime.packShasum(directory);
+
+  return localShasum !== null && localShasum === item.shasum;
+}
+
+async function resolveStagedVersion(
   directory,
   manifest,
   version,
+  item,
   publishedPackages,
 ) {
   const packageSpec = `${manifest.name}@${version}`;
 
-  const published = await queryPublishedState(manifest.name, version);
-
-  if (published.state === PACKAGE_STATE.PUBLISHED) {
-    console.log(
-      `\n[staged conflict] ${packageSpec} is already published; ` +
-        "treating it as complete.",
-    );
-
-    publishedPackages.add(directory);
-
-    return true;
-  }
-
-  if (published.state === PACKAGE_STATE.UNKNOWN) {
-    throw new ReleaseError(
-      `${stagedRecoveryInstructions(packageSpec)}\n` +
-        `Could not confirm the published state: ${
-          published.reason ?? "unknown registry error"
-        }`,
-    );
-  }
-
-  const staged = await listStagedPackages(manifest.name);
-
-  if (staged.state !== "ok") {
-    throw new ReleaseError(
-      `${stagedRecoveryInstructions(packageSpec)}\n` +
-        `Could not query staged versions (${staged.state}): ${
-          staged.reason ?? "unknown error"
-        }`,
-    );
-  }
-
-  const item = findStagedItem(staged.items, manifest.name, version);
-
-  if (!item) {
+  if (!(await stagedContentMatches(directory, item))) {
     throw new ReleaseError(
       [
-        `The registry reported a staged conflict for ${packageSpec},`,
-        "but npm stage list did not return a matching staged version.",
-        "Do not retry this publish. Inspect the staged state manually:",
-        `  npm stage list ${manifest.name} --json`,
-        "  npm stage view <stage-id>",
-        "If the staged version should be removed, run:",
-        "  npm stage reject <stage-id>",
+        `${packageSpec} is already staged (stage ${item.stageId}), but this`,
+        "release cannot prove the staged tarball matches the current build,",
+        "so it will not approve the staged version automatically.",
+        "Inspect it and choose one of:",
+        stagedManualCommands(item.stageId),
+        "Then re-run this release; already published packages are skipped.",
       ].join("\n"),
     );
   }
 
   if (!runtime.isInteractive()) {
     throw new ReleaseError(
-      `Found staged version ${packageSpec} (stage ${item.stageId}), but ` +
-        "approving it requires an interactive terminal for two-factor " +
-        "authentication. Approve it manually:\n" +
+      `The staged version ${packageSpec} (stage ${item.stageId}) matches the ` +
+        "current build, but approving it requires an interactive terminal for " +
+        "two-factor authentication. Approve it manually:\n" +
         `  npm stage approve ${item.stageId}\n` +
         "Then re-run this release; already published packages are skipped.",
     );
@@ -1062,6 +1115,73 @@ async function recoverStagedConflict(
   return true;
 }
 
+async function recoverStagedConflict(
+  directory,
+  manifest,
+  version,
+  publishedPackages,
+) {
+  const packageSpec = `${manifest.name}@${version}`;
+
+  const published = await queryPublishedState(manifest.name, version);
+
+  if (published.state === PACKAGE_STATE.PUBLISHED) {
+    console.log(
+      `\n[staged conflict] ${packageSpec} is already published; ` +
+        "treating it as complete.",
+    );
+
+    publishedPackages.add(directory);
+
+    return true;
+  }
+
+  if (published.state === PACKAGE_STATE.UNKNOWN) {
+    throw new ReleaseError(
+      `The registry reported a staged conflict for ${packageSpec}, and the ` +
+        "published state could not be confirmed: " +
+        `${published.reason ?? "unknown registry error"}.\n` +
+        "Inspect the staged state before publishing again:\n" +
+        `  npm stage list ${manifest.name} --json\n` +
+        "  npm stage view <stage-id>",
+    );
+  }
+
+  const staged = await listStagedPackages(manifest.name);
+
+  if (staged.state !== "ok") {
+    throw new ReleaseError(
+      `The registry reported a staged conflict for ${packageSpec}, but the ` +
+        `staged versions could not be inspected (${staged.state}): ` +
+        `${staged.reason ?? "unknown error"}.\n` +
+        `  npm stage list ${manifest.name} --json`,
+    );
+  }
+
+  const item = findStagedItem(staged.items, manifest.name, version);
+
+  if (!item) {
+    throw new ReleaseError(
+      [
+        `Publishing ${packageSpec} failed, and npm stage list does not report`,
+        "a staged version for it, so it was not retried automatically.",
+        "Do not retry this publish blindly. Inspect the state first:",
+        `  npm stage list ${manifest.name} --json`,
+        "  npm stage view <stage-id>",
+        "  npm stage reject <stage-id>",
+      ].join("\n"),
+    );
+  }
+
+  return resolveStagedVersion(
+    directory,
+    manifest,
+    version,
+    item,
+    publishedPackages,
+  );
+}
+
 async function resolveStagedBeforePublish(
   layers,
   manifests,
@@ -1071,80 +1191,35 @@ async function resolveStagedBeforePublish(
   const staged = await listStagedPackages();
 
   if (staged.state !== "ok") {
-    console.log(
-      `\n[staged check] Could not list staged packages (${staged.state}). ` +
-        "Continuing with direct publish; if the registry reports a staged " +
-        "version conflict, the release stops with manual instructions.",
+    throw new ReleaseError(
+      stagedInspectionUnavailable(staged.state, staged.reason),
     );
-
-    return;
   }
 
   const pending = layers
     .flat()
     .filter((directory) => !publishedPackages.has(directory));
 
-  const conflicts = [];
-
   for (const directory of pending) {
     const manifest = manifests.get(directory);
     const item = findStagedItem(staged.items, manifest.name, version);
 
-    if (item) {
-      conflicts.push({ directory, stageId: item.stageId });
+    if (!item) {
+      continue;
     }
-  }
 
-  if (conflicts.length === 0) {
-    return;
-  }
-
-  console.log(
-    `\n[staged check] ${conflicts.length} package(s) already staged as ${version}.`,
-  );
-
-  if (!runtime.isInteractive()) {
-    const instructions = conflicts
-      .map(
-        ({ directory }) =>
-          `  npm stage approve <stage-id>  (${
-            manifests.get(directory).name
-          }@${version})`,
-      )
-      .join("\n");
-
-    throw new ReleaseError(
-      `Staged versions found for ${version}, but approving them requires an ` +
-        "interactive terminal. Approve them and re-run:\n" +
-        `${instructions}\n` +
-        "Find stage ids with: npm stage list <package-name> --json",
+    console.log(
+      `\n[staged check] ${manifest.name}@${version} is already staged ` +
+        `(stage ${item.stageId}).`,
     );
-  }
 
-  for (const { directory, stageId } of conflicts) {
-    const manifest = manifests.get(directory);
-    const packageSpec = `${manifest.name}@${version}`;
-
-    const approval = await approveStagedPackage(stageId, packageSpec);
-
-    if (approval.status !== 0) {
-      throw new ReleaseError(
-        `npm stage approve ${stageId} failed with exit code ${approval.status}. ` +
-          "Re-run this release to retry.",
-        approval.status,
-      );
-    }
-
-    if (!(await waitForPublished(manifest.name, version, VERIFY_TIMEOUT_MS))) {
-      throw new ReleaseError(
-        `Approved staged version ${packageSpec}, but could not confirm it is ` +
-          "published. Re-run the release once the registry has propagated.",
-      );
-    }
-
-    console.log(`[staged check] approved and published ${packageSpec}`);
-
-    publishedPackages.add(directory);
+    await resolveStagedVersion(
+      directory,
+      manifest,
+      version,
+      item,
+      publishedPackages,
+    );
   }
 }
 
@@ -1214,26 +1289,18 @@ async function publishInteractive(
 
   const staged = await listStagedPackages(manifest.name);
 
-  if (
-    staged.state === "ok" &&
-    findStagedItem(staged.items, manifest.name, version)
-  ) {
-    await recoverStagedConflict(
-      directory,
-      manifest,
-      version,
-      publishedPackages,
+  if (staged.state !== "ok") {
+    throw new ReleaseError(
+      `Interactive publish ${packageSpec} failed with exit code ${result.status}. ` +
+        `The staged versions could not be inspected (${staged.state}): ` +
+        `${staged.reason ?? "unknown error"}.\n` +
+        "Refusing to publish this package again until the staged state is known:\n" +
+        `  npm stage list ${manifest.name} --json`,
+      result.status,
     );
-
-    return;
   }
 
-  throw new ReleaseError(
-    `Interactive publish ${packageSpec} failed with exit code ${result.status}. ` +
-      `If the registry reported a staged version conflict, inspect it with:\n` +
-      `  npm stage list ${manifest.name} --json`,
-    result.status,
-  );
+  await recoverStagedConflict(directory, manifest, version, publishedPackages);
 }
 
 async function publishPackage(
@@ -1953,16 +2020,24 @@ function isMainModule() {
   return pathToFileURL(path.resolve(entry)).href === import.meta.url;
 }
 
-if (isMainModule()) {
+export async function main(rawArguments = process.argv.slice(2)) {
   try {
-    await runRelease(process.argv.slice(2));
+    await runRelease(rawArguments);
+
+    return 0;
   } catch (error) {
     if (error instanceof ReleaseError) {
       console.error(`\nrelease failed: ${error.message}`);
 
       process.exitCode = error.status;
-    } else {
-      throw error;
+
+      return error.status;
     }
+
+    throw error;
   }
+}
+
+if (isMainModule()) {
+  await main();
 }

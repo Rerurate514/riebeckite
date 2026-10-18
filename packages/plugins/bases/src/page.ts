@@ -7,7 +7,7 @@ import {
   readContentSourceEntry,
 } from "@riebeckite/core";
 import { parseBases } from "./parse.js";
-import { renderBases } from "./render.js";
+import { renderBases, renderBasesError } from "./render.js";
 import type { BasesOptions } from "./types.js";
 import { parseBasesYaml } from "./yaml.js";
 
@@ -78,11 +78,24 @@ export async function resolveBaseDocument(
     return null;
   }
   const title = slug.split("/").at(-1)?.replace(BASE_SUFFIX, "") ?? slug;
+  let body: string;
+  try {
+    body = renderBases(
+      parsed.value,
+      options,
+      input.manifest.discoverableEntries,
+      source,
+    );
+  } catch (error) {
+    const message = `Base \`${slug}\` failed to render (${formatError(error)}).`;
+    input.diagnostics.push(diagnostic(slug, message));
+    body = renderBasesError(message, options);
+  }
   return {
     type: "bases-document",
     pathname: input.pathname,
     title,
-    body: `<main class="rb-bases-page"><h1 class="rb-bases-page__title">${escapeHtml(title)}</h1>${renderBases(parsed.value, options, input.manifest.discoverableEntries, source)}</main>`,
+    body: `<main class="rb-bases-page"><h1 class="rb-bases-page__title">${escapeHtml(title)}</h1>${body}</main>`,
   };
 }
 
@@ -125,6 +138,9 @@ function parseBase(
   const yaml = parseBasesYaml(source);
   if (yaml.ok === false) return yaml;
   return parseBases(yaml.value);
+}
+function formatError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 function diagnostic(slug: string, message: string): Diagnostic {
   return {

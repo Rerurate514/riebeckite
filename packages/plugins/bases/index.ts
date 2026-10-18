@@ -9,6 +9,7 @@ import { createBasesRuntime } from "./src/runtime.js";
 import type { BasesOptions } from "./src/types.js";
 
 export {
+  BasesEvaluationError,
   evaluateBasesExpression,
   matchesCondition,
   resolveValueRef,

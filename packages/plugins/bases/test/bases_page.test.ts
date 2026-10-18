@@ -11,6 +11,7 @@ import {
   SinkTracer,
 } from "@riebeckite/core";
 import {
+  BasesEvaluationError,
   bases,
   evaluateBasesExpression,
   parseBases,
@@ -201,6 +202,46 @@ test("evaluates precedence, short circuits, missing values, and cycles safely", 
   assert.deepEqual(evaluate("[1, 2, 3].filter(value > 1)"), [2, 3]);
   assert.equal(evaluate("[1, 2, 3].reduce(acc + value, 0)"), 6);
   assert.equal(evaluate("['a', 'b'].containsAll('a', 'b')"), true);
+});
+
+test("stops deeply nested and large higher-order formulas with an explicit error", () => {
+  const entry = {
+    slug: "notes/Example",
+    permalink: "/notes/Example",
+    title: "Example",
+    tags: [],
+    links: [],
+    frontmatter: {
+      values: Array.from({ length: 10_001 }, (_, index) => index),
+    },
+  } as never;
+  const nested = parseExpression(`${"!".repeat(129)}true`);
+  assert.throws(
+    () => evaluateBasesExpression(nested, entry),
+    BasesEvaluationError,
+  );
+  const mapped = parseExpression("note.values.map(value)");
+  assert.throws(
+    () => evaluateBasesExpression(mapped, entry),
+    /exceeded 10000 steps/,
+  );
+  const unsafe = parseExpression("note.payload.constructor");
+  assert.equal(
+    evaluateBasesExpression(unsafe, { ...entry, frontmatter: { payload: {} } }),
+    undefined,
+  );
+});
+
+test("reports an evaluation budget failure through Bases diagnostics", async () => {
+  const values = Array.from({ length: 10_001 }, (_, index) => index).join(", ");
+  const manager = createManager({
+    "index.md": "---\npublish: true\n---\n\n![[views/Limit.base]]\n",
+    "notes/Large.md": `---\npublish: true\nvalues: [${values}]\n---\n\n# Large\n`,
+    "views/Limit.base":
+      "formulas:\n  huge: note.values.map(value)\nproperties:\n  formula.huge: Huge\nviews:\n  - type: table\n",
+  });
+  const body = (await manager.resolvePage("/views/Limit"))?.body ?? "";
+  assert.match(body, /Formula evaluation exceeded 10000 steps/);
 });
 
 test("sorts formula values and renders grouped table summaries", async () => {
@@ -410,11 +451,174 @@ test("keeps Base pages correct across cached content mutations", async (t) => {
   await removed.dispose();
 });
 
+test("matches clean output for all Bases incremental cache transitions", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-bases-matrix-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const initial = {
+    "index.md": "---\npublish: true\n---\n\n![[views/Matrix.base]]\n",
+    "notes/Public.md":
+      "---\npublish: true\nvalue: 2\ngroup: alpha\n---\n\n# Public\n",
+    "notes/Draft.md":
+      "---\npublish: false\nvalue: 999999\ngroup: hidden\n---\n\n# Draft\n",
+    "notes/Unlisted.md":
+      "---\nvisibility: unlisted\nvalue: 888888\ngroup: hidden\n---\n\n# Unlisted\n",
+    "views/Matrix.base":
+      "formulas:\n  rank: note.value * 2\nsummaries:\n  total: values.reduce(acc + value, 0)\nproperties:\n  file.name: Name\n  group: Group\n  formula.rank: Rank\nviews:\n  - type: table\n    order: [file.name, group, formula.rank]\n    sort: [{ property: formula.rank, direction: DESC }]\n    groupBy: { property: group, direction: ASC }\n    summaries: { formula.rank: total }\n",
+  };
+  const scenarios: ReadonlyArray<
+    readonly [string, (input: Record<string, string>) => void]
+  > = [
+    ["no-change", () => {}],
+    [
+      "formula-definition",
+      (input) => {
+        input["views/Matrix.base"] = input["views/Matrix.base"].replace(
+          "* 2",
+          "* 3",
+        );
+      },
+    ],
+    [
+      "formula-sort",
+      (input) => {
+        input["views/Matrix.base"] = input["views/Matrix.base"].replace(
+          "DESC",
+          "ASC",
+        );
+      },
+    ],
+    [
+      "group",
+      (input) => {
+        input["views/Matrix.base"] = input["views/Matrix.base"].replace(
+          "group, direction: ASC",
+          "formula.rank, direction: DESC",
+        );
+      },
+    ],
+    [
+      "summary",
+      (input) => {
+        input["views/Matrix.base"] = input["views/Matrix.base"].replace(
+          "total }",
+          "Sum }",
+        );
+      },
+    ],
+    [
+      "frontmatter",
+      (input) => {
+        input["notes/Public.md"] = input["notes/Public.md"].replace(
+          "value: 2",
+          "value: 3",
+        );
+      },
+    ],
+    [
+      "add",
+      (input) => {
+        input["notes/Added.md"] =
+          "---\npublish: true\nvalue: 4\ngroup: beta\n---\n\n# Added\n";
+      },
+    ],
+    [
+      "delete",
+      (input) => {
+        delete input["notes/Public.md"];
+      },
+    ],
+    [
+      "public-draft",
+      (input) => {
+        input["notes/Public.md"] = input["notes/Public.md"].replace(
+          "publish: true",
+          "publish: false",
+        );
+      },
+    ],
+    [
+      "draft-public",
+      (input) => {
+        input["notes/Draft.md"] = input["notes/Draft.md"].replace(
+          "publish: false",
+          "publish: true",
+        );
+      },
+    ],
+    [
+      "public-unlisted",
+      (input) => {
+        input["notes/Public.md"] = input["notes/Public.md"].replace(
+          "publish: true",
+          "visibility: unlisted",
+        );
+      },
+    ],
+    [
+      "unlisted-public",
+      (input) => {
+        input["notes/Unlisted.md"] = input["notes/Unlisted.md"].replace(
+          "visibility: unlisted",
+          "publish: true",
+        );
+      },
+    ],
+    [
+      "base-delete",
+      (input) => {
+        delete input["views/Matrix.base"];
+      },
+    ],
+  ];
+  for (const [name, mutate] of scenarios) {
+    const cacheDirectory = path.join(directory, name, "cached");
+    const before = await buildCached(initial, cacheDirectory);
+    await before.dispose();
+    assert.equal(
+      (await fs.readdir(path.join(cacheDirectory, "cache"))).length > 0,
+      true,
+      name,
+    );
+    const changed = { ...initial };
+    mutate(changed);
+    const incremental = await buildCached(changed, cacheDirectory);
+    const clean = await buildCached(
+      changed,
+      path.join(directory, name, "clean"),
+    );
+    assert.deepEqual(
+      await basesSnapshot(incremental),
+      await basesSnapshot(clean),
+      name,
+    );
+    const body = (await incremental.resolvePage("/views/Matrix"))?.body ?? "";
+    assert.doesNotMatch(body, /999999|888888/, name);
+    await incremental.dispose();
+    await clean.dispose();
+  }
+});
+
 async function libraryBase(): Promise<string> {
   return fs.readFile(
     new URL("./fixtures/Library.base", import.meta.url),
     "utf8",
   );
+}
+
+async function basesSnapshot(manager: ContentManager) {
+  const paths = [...(await manager.getPagePaths())].sort();
+  const pages = await Promise.all(
+    paths.map(
+      async (pagePath) =>
+        [pagePath, (await manager.resolvePage(pagePath))?.body ?? ""] as const,
+    ),
+  );
+  const outputInventory = paths.map((pagePath) =>
+    pagePath === "/" ? "index.html" : `${pagePath.slice(1)}.html`,
+  );
+  return { paths, pages, outputInventory };
 }
 
 function parseExpression(source: string) {

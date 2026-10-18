@@ -8,6 +8,19 @@ import type {
   BasesValueRef,
 } from "./types.js";
 
+const MAX_EVALUATION_STEPS = 10_000;
+const MAX_EVALUATION_DEPTH = 128;
+const EVALUATION_BUDGET = Symbol("bases-evaluation-budget");
+
+type EvaluationBudget = { remaining: number; depth: number };
+
+export class BasesEvaluationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BasesEvaluationError";
+  }
+}
+
 /** Evaluates a compiled condition against one manifest entry. */
 export function matchesCondition(
   condition: BasesCondition,
@@ -50,64 +63,97 @@ export function evaluateBasesExpression(
   scope: Readonly<Record<string, unknown>> = {},
   active: ReadonlySet<string> = new Set(),
 ): unknown {
-  switch (expression.kind) {
-    case "literal":
-      return expression.value;
-    case "array":
-      return expression.values.map((value) =>
-        evaluateBasesExpression(value, entry, formulas, scope, active),
-      );
-    case "reference":
-      return resolvePath(expression.path, entry, formulas, scope, active);
-    case "member":
-      return readMember(
-        evaluateBasesExpression(
-          expression.object,
-          entry,
-          formulas,
-          scope,
-          active,
-        ),
-        expression.property,
-      );
-    case "index":
-      return readMember(
-        evaluateBasesExpression(
-          expression.object,
-          entry,
-          formulas,
-          scope,
-          active,
-        ),
-        String(
+  const budget = evaluationBudget(scope);
+  if (budget.remaining <= 0) {
+    throw new BasesEvaluationError(
+      `Formula evaluation exceeded ${MAX_EVALUATION_STEPS} steps.`,
+    );
+  }
+  if (budget.depth >= MAX_EVALUATION_DEPTH) {
+    throw new BasesEvaluationError(
+      `Formula evaluation exceeded ${MAX_EVALUATION_DEPTH} nested expressions.`,
+    );
+  }
+  budget.remaining -= 1;
+  budget.depth += 1;
+  try {
+    switch (expression.kind) {
+      case "literal":
+        return expression.value;
+      case "array":
+        return expression.values.map((value) =>
+          evaluateBasesExpression(value, entry, formulas, scope, active),
+        );
+      case "reference":
+        return resolvePath(expression.path, entry, formulas, scope, active);
+      case "member":
+        return readMember(
           evaluateBasesExpression(
-            expression.index,
+            expression.object,
             entry,
             formulas,
             scope,
             active,
           ),
-        ),
-      );
-    case "unary": {
-      const value = evaluateBasesExpression(
-        expression.value,
-        entry,
-        formulas,
-        scope,
-        active,
-      );
-      return expression.operator === "!"
-        ? !value
-        : typeof value === "number"
-          ? -value
-          : Number.NaN;
+          expression.property,
+        );
+      case "index":
+        return readMember(
+          evaluateBasesExpression(
+            expression.object,
+            entry,
+            formulas,
+            scope,
+            active,
+          ),
+          String(
+            evaluateBasesExpression(
+              expression.index,
+              entry,
+              formulas,
+              scope,
+              active,
+            ),
+          ),
+        );
+      case "unary": {
+        const value = evaluateBasesExpression(
+          expression.value,
+          entry,
+          formulas,
+          scope,
+          active,
+        );
+        return expression.operator === "!"
+          ? !value
+          : typeof value === "number"
+            ? -value
+            : Number.NaN;
+      }
+      case "binary":
+        return evaluateBinary(expression, entry, formulas, scope, active);
+      case "call":
+        return evaluateCall(expression, entry, formulas, scope, active);
     }
-    case "binary":
-      return evaluateBinary(expression, entry, formulas, scope, active);
-    case "call":
-      return evaluateCall(expression, entry, formulas, scope, active);
+  } finally {
+    budget.depth -= 1;
   }
+}
+
+function evaluationBudget(
+  scope: Readonly<Record<string, unknown>>,
+): EvaluationBudget {
+  const values = scope as unknown as Record<PropertyKey, unknown>;
+  const existing = values[EVALUATION_BUDGET];
+  if (existing && typeof existing === "object") {
+    return existing as EvaluationBudget;
+  }
+  const budget: EvaluationBudget = {
+    remaining: MAX_EVALUATION_STEPS,
+    depth: 0,
+  };
+  values[EVALUATION_BUDGET] = budget;
+  return budget;
 }
 
 function resolvePath(
@@ -416,8 +462,7 @@ function evaluateHigherOrderCall(
     return { handled: false, value: undefined };
   }
   const expression = arguments_[0];
-  if (!expression || target.length > 10_000)
-    return { handled: true, value: undefined };
+  if (!expression) return { handled: true, value: undefined };
   if (name === "map") {
     return {
       handled: true,

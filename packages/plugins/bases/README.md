@@ -74,6 +74,12 @@ Supported functions: `if`, `list`, `length`, `number`, `min`, `max`, `date`; str
 `floor`, `ceil`, `abs`, `toFixed`; and `file.hasTag`, `file.hasLink`,
 `file.inFolder`.
 
+Formula evaluation is bounded to 10,000 AST steps and 128 nested expressions per
+evaluation. Exceeding either limit stops deterministically, reports a
+`bases-invalid` diagnostic, and renders the Base error fallback. This prevents
+large or deeply nested higher-order expressions from making a static build
+unbounded; JavaScript callbacks are never executed.
+
 ## Compatibility matrix
 
 | Obsidian Base feature | Status | Notes |

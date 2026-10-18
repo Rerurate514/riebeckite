@@ -71,6 +71,11 @@ Formula の循環参照は空の値になります。
 `slice`、`isEmpty`、`map`、`filter`、`reduce`、数値の `round`、`floor`、`ceil`、`abs`、
 `toFixed`、`file.hasTag`、`file.hasLink`、`file.inFolder` です。
 
+Formula の評価は、1回につき AST の 10,000 ステップとネストした式の 128 段階までです。
+いずれかを超えると決定的に停止し、`bases-invalid` 診断を出して Base のエラー表示に
+切り替えます。大きな高階式や深い式によって静的ビルドが無制限に実行されることを防ぎ、
+JavaScript のコールバックは実行しません。
+
 ## 互換性マトリクス
 
 | Obsidian Base の機能 | 状態 | 備考 |

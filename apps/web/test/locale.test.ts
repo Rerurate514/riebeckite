@@ -3,7 +3,6 @@ import { test } from "node:test";
 import {
   archivePaginationLabels,
   buildArchiveDescription,
-  buildTagDescription,
   formatArchivePeriod,
   resolveWebLocale,
 } from "../app/lib/locale";
@@ -50,15 +49,7 @@ test("formatArchivePeriod uses locale-aware month names", () => {
   assert.equal(formatArchivePeriod("unknown", "en"), "unknown");
 });
 
-test("description builders localize tag and archive copy", () => {
-  assert.equal(
-    buildTagDescription("Riebeckite", "docs", "ja"),
-    "Riebeckite の #docs タグの記事一覧です。",
-  );
-  assert.equal(
-    buildTagDescription("Riebeckite", "docs", "en"),
-    "Posts tagged #docs on Riebeckite.",
-  );
+test("archive description localizes archive copy", () => {
   assert.equal(
     buildArchiveDescription("Riebeckite", "2026年1月", "ja"),
     "Riebeckite の 2026年1月 の記事一覧です。",

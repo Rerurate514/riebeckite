@@ -1,15 +1,4 @@
 import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
-import {
-  applyManifestHookSnapshot,
-  captureManifestHookRestorePoint,
-  createManifestHookCacheEntry,
-  fingerprintManifestHookInput,
-  fingerprintManifestHookSideEffects,
-  fingerprintManifestHookSnapshot,
-  type ManifestHookRestorePoint,
-  restoreManifestHookEntries,
-  serializeManifestEntries,
-} from "../content/manifest_hook_cache.js";
 import type { OutputDescriptor } from "../content/output_dependency.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
@@ -42,13 +31,14 @@ import type {
   PluginContentLocationResolver,
   PluginContext,
 } from "../types/plugin_context.js";
-import type {
-  PluginPageType,
-  ResolvedPluginPage,
-} from "../types/plugin_page.js";
+import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import { GeneratedOutputRegistry } from "./generated_output_registry.js";
+import {
+  type ManifestHookMetrics,
+  ManifestHookRunner,
+} from "./manifest_hooks.js";
 import type { PluginCache } from "./plugin_cache.js";
 import {
   createPluginCache,
@@ -62,13 +52,16 @@ import {
   runPluginHook,
   runSetup,
 } from "./plugin_lifecycle.js";
+import { collectPageTypeOwners, PluginPageResolver } from "./plugin_pages.js";
+import type {
+  PluginContextBase,
+  PluginContextWithCache,
+} from "./plugin_runtime_context.js";
 
-type PluginContextBase = Omit<
-  PluginContext,
-  "cache" | "logger" | "tracer" | "output"
->;
-type PluginContextWithCache<TContext extends PluginContextBase> = TContext &
-  Pick<PluginContext, "cache" | "logger" | "tracer" | "output">;
+export type {
+  ManifestHookMetrics,
+  ManifestHookPluginMetrics,
+} from "./manifest_hooks.js";
 
 /**
  * Explicit build lifecycle stages. `idle` means no build lifecycle has been
@@ -82,24 +75,6 @@ export type PluginBuildStage =
   | "onConfigResolved"
   | "started";
 
-export type ManifestHookMetrics = Readonly<{
-  manifestHooksExecuted: number;
-  manifestHooksReused: number;
-  manifestHookCacheHit: number;
-  manifestHookCacheMiss: number;
-  manifestHookDurationMs: number;
-  byPlugin: Readonly<Record<string, ManifestHookPluginMetrics>>;
-}>;
-
-export type ManifestHookPluginMetrics = Readonly<{
-  executed: number;
-  reused: number;
-  cacheHit: number;
-  cacheMiss: number;
-  durationMs: number;
-  reason: string;
-}>;
-
 export class PluginRuntime {
   private buildLifecycle: Promise<void> | null = null;
   private buildStage: PluginBuildStage = "idle";
@@ -109,23 +84,28 @@ export class PluginRuntime {
   private generatedOutputs = new GeneratedOutputRegistry();
   private isBuildTime = false;
   private resolvedPlugins: RiebeckitePlugin[] | null = null;
-  private pageDeclarations = new WeakMap<
-    ContentManifest,
-    Promise<readonly DeclaredPluginPage[]>
-  >();
   private externalDependencies = new Map<string, ExternalDependencySnapshot>();
   private externalDependencyFailures: ExternalDependencyFailure[] = [];
   private externalDependenciesResolved = false;
-  private manifestHooksExecuted = 0;
-  private manifestHookDurationMs = 0;
-  private manifestHooksReused = 0;
-  private manifestHookCache: ManifestHookCacheEntry[] = [];
-  private manifestHookMetricsByPlugin = new Map<
-    string,
-    ManifestHookPluginMetrics
-  >();
+  private readonly pageResolver: PluginPageResolver;
+  private readonly manifestHooks: ManifestHookRunner;
 
-  constructor(private pipelineOptions: PipelineOptions = {}) {}
+  constructor(private pipelineOptions: PipelineOptions = {}) {
+    this.pageResolver = new PluginPageResolver({
+      plugins: () => this.plugins(),
+      createContext: (contentIndex) => this.createContext(contentIndex),
+      createPluginContext: (plugin, context) =>
+        this.createPluginContext(plugin, context),
+    });
+    this.manifestHooks = new ManifestHookRunner({
+      plugins: () => this.plugins(),
+      createContext: (contentIndex) => this.createContext(contentIndex),
+      createPluginContext: (plugin, context) =>
+        this.createPluginContext(plugin, context),
+      generatedOutputCount: () => this.generatedOutputs.count(),
+      diagnosticCount: () => this.diagnostics.length,
+    });
+  }
 
   getDiagnostics(): Diagnostic[] {
     return this.diagnostics;
@@ -136,40 +116,21 @@ export class PluginRuntime {
   }
 
   getManifestHookMetrics(): ManifestHookMetrics {
-    return {
-      manifestHooksExecuted: this.manifestHooksExecuted,
-      manifestHooksReused: this.manifestHooksReused,
-      manifestHookCacheHit: this.manifestHooksReused,
-      manifestHookCacheMiss: this.manifestHooksExecuted,
-      manifestHookDurationMs: this.manifestHookDurationMs,
-      byPlugin: Object.fromEntries(this.manifestHookMetricsByPlugin),
-    };
+    return this.manifestHooks.getMetrics();
   }
 
   getNoChangeFastPathBlockReason(
     previousCache: readonly ManifestHookCacheEntry[],
     pipelineFingerprint: string | undefined,
   ): string | undefined {
-    let cacheIndex = 0;
-    for (const plugin of this.plugins()) {
-      if (plugin.buildEnd) return "plugin-build-end";
-      if (plugin.planGeneratedOutputs) return "plugin-generated-output-plan";
-      if (!plugin.onManifestCreated) continue;
-
-      const cached = previousCache[cacheIndex];
-      cacheIndex += 1;
-      if (
-        cached?.pluginName !== plugin.name ||
-        !cached.cacheable ||
-        cached.pipelineFingerprint !== pipelineFingerprint
-      )
-        return "manifest-hook-cache-miss";
-    }
-    return undefined;
+    return this.manifestHooks.getNoChangeFastPathBlockReason(
+      previousCache,
+      pipelineFingerprint,
+    );
   }
 
   getManifestHookCache(): readonly ManifestHookCacheEntry[] {
-    return this.manifestHookCache;
+    return this.manifestHooks.getCache();
   }
 
   /**
@@ -312,113 +273,12 @@ export class PluginRuntime {
     previousCache: readonly ManifestHookCacheEntry[] = [],
     pipelineFingerprint: string | undefined,
   ) {
-    const context = { ...this.createContext(contentIndex), manifest };
-    let cacheIndex = 0;
-    let entriesBeforeHook = serializeManifestEntries(manifest.entries);
-    for (const plugin of this.plugins()) {
-      const hook = plugin.onManifestCreated;
-      if (!hook) continue;
-      const inputFingerprint = fingerprintManifestHookInput(manifest);
-      const cached = previousCache[cacheIndex];
-      cacheIndex += 1;
-      const reason = manifestHookCacheMissReason(
-        cached,
-        plugin.name,
-        pipelineFingerprint,
-        inputFingerprint,
-      );
-      let restored = false;
-      let restorePoint: ManifestHookRestorePoint | undefined;
-      if (
-        cached !== undefined &&
-        cached.pluginName === plugin.name &&
-        cached.cacheable &&
-        cached.pipelineFingerprint === pipelineFingerprint &&
-        cached.inputFingerprint === inputFingerprint &&
-        cached.snapshot !== undefined &&
-        cached.outputFingerprint !== undefined
-      ) {
-        restorePoint = captureManifestHookRestorePoint(manifest);
-        restored = applyManifestHookSnapshot(manifest, cached.snapshot);
-        if (
-          restored &&
-          fingerprintManifestHookSnapshot(manifest) === cached.outputFingerprint
-        ) {
-          this.manifestHooksReused += 1;
-          this.manifestHookCache.push(cached);
-          this.recordManifestHookMetric(plugin.name, "reused", "cache-hit", 0);
-          entriesBeforeHook = serializeManifestEntries(manifest.entries);
-          continue;
-        }
-      }
-      if (restored && restorePoint)
-        restoreManifestHookEntries(manifest, restorePoint);
-      const sideEffectsBefore = fingerprintManifestHookSideEffects(manifest);
-      const outputCountBefore = this.generatedOutputs.count();
-      const diagnosticCountBefore = this.diagnostics.length;
-      const manifestDiagnosticCountBefore = manifest.diagnostics.length;
-      const started = performance.now();
-      this.manifestHooksExecuted += 1;
-      try {
-        await runPluginHook(
-          plugin,
-          "onManifestCreated",
-          this.createPluginContext(plugin, context),
-          hook,
-        );
-      } finally {
-        const durationMs = performance.now() - started;
-        this.manifestHookDurationMs += durationMs;
-        this.recordManifestHookMetric(
-          plugin.name,
-          "executed",
-          reason,
-          durationMs,
-        );
-      }
-      const entriesAfterHook = serializeManifestEntries(manifest.entries);
-      this.manifestHookCache.push(
-        createManifestHookCacheEntry(
-          plugin.name,
-          plugin.resolveExternalDependencies === undefined &&
-            sideEffectsBefore ===
-              fingerprintManifestHookSideEffects(manifest) &&
-            outputCountBefore === this.generatedOutputs.count() &&
-            diagnosticCountBefore === this.diagnostics.length &&
-            manifestDiagnosticCountBefore === manifest.diagnostics.length,
-          pipelineFingerprint,
-          inputFingerprint,
-          manifest,
-          entriesBeforeHook,
-          entriesAfterHook,
-        ),
-      );
-      entriesBeforeHook = entriesAfterHook;
-    }
-  }
-
-  private recordManifestHookMetric(
-    pluginName: string,
-    outcome: "executed" | "reused",
-    reason: string,
-    durationMs: number,
-  ): void {
-    const previous = this.manifestHookMetricsByPlugin.get(pluginName) ?? {
-      executed: 0,
-      reused: 0,
-      cacheHit: 0,
-      cacheMiss: 0,
-      durationMs: 0,
-      reason,
-    };
-    this.manifestHookMetricsByPlugin.set(pluginName, {
-      executed: previous.executed + (outcome === "executed" ? 1 : 0),
-      reused: previous.reused + (outcome === "reused" ? 1 : 0),
-      cacheHit: previous.cacheHit + (outcome === "reused" ? 1 : 0),
-      cacheMiss: previous.cacheMiss + (outcome === "executed" ? 1 : 0),
-      durationMs: previous.durationMs + durationMs,
-      reason,
-    });
+    await this.manifestHooks.runManifestCreated(
+      manifest,
+      contentIndex,
+      previousCache,
+      pipelineFingerprint,
+    );
   }
 
   async runBuildEnd(
@@ -517,144 +377,32 @@ export class PluginRuntime {
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ): Promise<ResolvedPluginPage | null> {
-    const matches: { page: ResolvedPluginPage; priority: number }[] = [];
-    const requestedPathname = normalizePagePath(pathname);
-    for (const plugin of this.plugins()) {
-      for (const pageType of plugin.pageTypes ?? []) {
-        const pagePathname = normalizePageTypePath(pathname, pageType);
-        const context = {
-          ...this.createContext(contentIndex),
-          manifest,
-          pathname: pagePathname,
-        };
-        const page = await pageType.resolve(
-          this.createPluginContext(plugin, context),
-        );
-        if (page) {
-          matches.push({
-            page: {
-              ...page,
-              pathname: pageType.directoryIndex
-                ? normalizeDirectoryPagePath(page.pathname)
-                : page.pathname,
-              type: pageType.id,
-              pluginName: plugin.name,
-            },
-            priority: pageType.priority ?? 0,
-          });
-        }
-      }
-    }
-    if (matches.length === 0) return null;
-    const highestPriority = Math.max(...matches.map((match) => match.priority));
-    const highest = matches.filter(
-      (match) => match.priority === highestPriority,
+    return await this.pageResolver.resolvePage(
+      pathname,
+      manifest,
+      contentIndex,
     );
-    if (highest.length !== 1) {
-      throw new Error(
-        `Multiple plugin page types match ${requestedPathname} at priority ${highestPriority}: ${highest
-          .map((match) => match.page.type)
-          .join(", ")}`,
-      );
-    }
-    return highest[0].page;
   }
 
   async getPagePaths(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ): Promise<readonly string[]> {
-    return [
-      ...new Set(
-        (await this.getPageDeclarations(manifest, contentIndex)).map(
-          (declaration) => declaration.pathname,
-        ),
-      ),
-    ];
+    return await this.pageResolver.getPagePaths(manifest, contentIndex);
   }
 
   async getPageRoutes(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ): Promise<readonly PluginPageRoute[]> {
-    return (await this.getPageDeclarations(manifest, contentIndex)).map(
-      ({ pathname, plugin, pageType }) => ({
-        pathname,
-        pluginName: plugin.name,
-        pageType: pageType.id,
-      }),
-    );
+    return await this.pageResolver.getPageRoutes(manifest, contentIndex);
   }
 
   async getPageOutputs(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ): Promise<readonly OutputDescriptor[]> {
-    const outputs = await Promise.all(
-      (await this.getPageDeclarations(manifest, contentIndex)).map(
-        async ({ pathname, plugin, pageType }) => {
-          const context = {
-            ...this.createContext(contentIndex),
-            manifest,
-            pathname,
-          };
-          const dependencies = pageType.outputDependencies
-            ? typeof pageType.outputDependencies === "function"
-              ? await pageType.outputDependencies(
-                  this.createPluginContext(plugin, context),
-                )
-              : pageType.outputDependencies
-            : [{ type: "unknown" as const }];
-          return {
-            output: {
-              kind: "plugin-page" as const,
-              path: pathname,
-              producer: `plugin:${plugin.name}:page:${pageType.id}`,
-              dependencies,
-            },
-            priority: pageType.priority ?? 0,
-          };
-        },
-      ),
-    );
-    return uniqueOutputs(outputs);
-  }
-
-  private async getPageDeclarations(
-    manifest: ContentManifest,
-    contentIndex: Map<string, string>,
-  ): Promise<readonly DeclaredPluginPage[]> {
-    const existing = this.pageDeclarations.get(manifest);
-    if (existing) return await existing;
-    const declarations = this.resolvePageDeclarations(manifest, contentIndex);
-    this.pageDeclarations.set(manifest, declarations);
-    return await declarations;
-  }
-
-  private async resolvePageDeclarations(
-    manifest: ContentManifest,
-    contentIndex: Map<string, string>,
-  ): Promise<readonly DeclaredPluginPage[]> {
-    const declarations: DeclaredPluginPage[] = [];
-    const context = { ...this.createContext(contentIndex), manifest };
-    for (const plugin of this.plugins()) {
-      for (const pageType of plugin.pageTypes ?? []) {
-        const paths = pageType.paths;
-        if (!paths) continue;
-        const resolved =
-          typeof paths === "function"
-            ? await paths(this.createPluginContext(plugin, context))
-            : paths;
-        for (const pathname of resolved) {
-          declarations.push({
-            pathname: normalizePageTypePath(pathname, pageType),
-            plugin,
-            pageType,
-          });
-        }
-      }
-    }
-    return declarations;
+    return await this.pageResolver.getPageOutputs(manifest, contentIndex);
   }
 
   getContentOutputDependencies(
@@ -835,155 +583,10 @@ function deepFreeze<T>(value: T): T {
   return value;
 }
 
-function collectPageTypeOwners(plugins: readonly RiebeckitePlugin[]): void {
-  const pageTypes = new Map<string, string>();
-  for (const plugin of plugins) {
-    const declaredPageTypes = plugin.pageTypes;
-    if (declaredPageTypes !== undefined && !Array.isArray(declaredPageTypes)) {
-      throw new TypeError(`Plugin ${plugin.name} pageTypes must be an array`);
-    }
-    for (const pageType of declaredPageTypes ?? []) {
-      validatePageType(plugin.name, pageType);
-      const previous = pageTypes.get(pageType.id);
-      if (previous) {
-        throw new Error(
-          `Plugin page type "${pageType.id}" is provided by both ${previous} and ${plugin.name}`,
-        );
-      }
-      pageTypes.set(pageType.id, plugin.name);
-    }
-  }
-}
-
-function validatePageType(pluginName: string, pageType: unknown): void {
-  if (typeof pageType !== "object" || pageType === null) {
-    throw new TypeError(`Plugin ${pluginName} pageTypes must contain objects`);
-  }
-  const candidate = pageType as {
-    id?: unknown;
-    resolve?: unknown;
-    paths?: unknown;
-    priority?: unknown;
-    directoryIndex?: unknown;
-    outputDependencies?: unknown;
-  };
-  if (typeof candidate.id !== "string" || candidate.id.trim() === "") {
-    throw new TypeError(
-      `Plugin ${pluginName} page type id must be a non-empty string`,
-    );
-  }
-  if (typeof candidate.resolve !== "function") {
-    throw new TypeError(
-      `Plugin ${pluginName} page type "${candidate.id}" must provide a resolve function`,
-    );
-  }
-  if (
-    candidate.paths !== undefined &&
-    !Array.isArray(candidate.paths) &&
-    typeof candidate.paths !== "function"
-  ) {
-    throw new TypeError(
-      `Plugin ${pluginName} page type "${candidate.id}" paths must be an array or function`,
-    );
-  }
-  if (
-    candidate.priority !== undefined &&
-    (typeof candidate.priority !== "number" ||
-      !Number.isFinite(candidate.priority))
-  ) {
-    throw new TypeError(
-      `Plugin ${pluginName} page type "${candidate.id}" priority must be a finite number`,
-    );
-  }
-  if (
-    candidate.outputDependencies !== undefined &&
-    !Array.isArray(candidate.outputDependencies) &&
-    typeof candidate.outputDependencies !== "function"
-  ) {
-    throw new TypeError(
-      `Plugin ${pluginName} page type "${candidate.id}" outputDependencies must be an array or function`,
-    );
-  }
-  if (
-    candidate.directoryIndex !== undefined &&
-    typeof candidate.directoryIndex !== "boolean"
-  ) {
-    throw new TypeError(
-      `Plugin ${pluginName} page type "${candidate.id}" directoryIndex must be a boolean`,
-    );
-  }
-}
-
-function normalizePageTypePath(
-  pathname: string,
-  pageType: Pick<PluginPageType, "directoryIndex">,
-): string {
-  return pageType.directoryIndex
-    ? normalizeDirectoryPagePath(pathname)
-    : normalizePagePath(pathname);
-}
-
-function normalizeDirectoryPagePath(pathname: string): string {
-  const path = normalizePagePath(pathname);
-  return path === "/" ? path : `${path}/`;
-}
-
-function manifestHookCacheMissReason(
-  cached: ManifestHookCacheEntry | undefined,
-  pluginName: string,
-  pipelineFingerprint: string | undefined,
-  inputFingerprint: string,
-): string {
-  if (!cached) return "cache-missing";
-  if (cached.pluginName !== pluginName) return "plugin-order-changed";
-  if (!cached.cacheable) return "uncacheable";
-  if (cached.pipelineFingerprint !== pipelineFingerprint)
-    return "pipeline-fingerprint-changed";
-  if (cached.inputFingerprint !== inputFingerprint)
-    return "manifest-input-changed";
-  return "snapshot-invalid";
-}
-
-function normalizePagePath(pathname: string): string {
-  const path = `/${pathname.split("/").filter(Boolean).join("/")}`;
-  return path === "/" ? path : path.replace(/\/$/, "");
-}
-
 function countSeverity(
   diagnostics: readonly Diagnostic[],
   severity: Diagnostic["severity"],
 ): number {
   return diagnostics.filter((diagnostic) => diagnostic.severity === severity)
     .length;
-}
-
-type DeclaredPluginPage = {
-  readonly pathname: string;
-  readonly plugin: RiebeckitePlugin;
-  readonly pageType: PluginPageType;
-};
-
-function uniqueOutputs(
-  outputs: readonly { output: OutputDescriptor; priority: number }[],
-): readonly OutputDescriptor[] {
-  const byPath = new Map<
-    string,
-    { output: OutputDescriptor; priority: number }
-  >();
-  for (const output of outputs) {
-    const previous = byPath.get(output.output.path);
-    if (!previous || output.priority > previous.priority) {
-      byPath.set(output.output.path, output);
-      continue;
-    }
-    if (output.output.producer === previous.output.producer) continue;
-    if (output.priority === previous.priority) {
-      throw new Error(
-        `Multiple plugin page types declare ${output.output.path} at priority ${output.priority}: ${previous.output.producer}, ${output.output.producer}`,
-      );
-    }
-  }
-  return [...byPath.values()]
-    .map(({ output }) => output)
-    .sort((left, right) => left.path.localeCompare(right.path));
 }

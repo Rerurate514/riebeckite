@@ -16,6 +16,7 @@ import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent, PostFrontmatter } from "../types/post_content.js";
 import type { PublishStrategy } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
+import { mapConcurrent } from "../utils/concurrency.js";
 import { attachErrorPath } from "../utils/error.js";
 import { isImagePath, normalizeContentPath } from "./attachment.js";
 import { ContentBuildCoordinator } from "./content_build_coordinator.js";
@@ -841,29 +842,4 @@ function readFrontmatter(markdown: string): PostFrontmatter {
   const file = new VFile({ value: markdown });
   matter(file);
   return (file.data.matter ?? {}) as PostFrontmatter;
-}
-
-async function mapConcurrent<T, U>(
-  values: readonly T[],
-  concurrency: number,
-  map: (value: T) => Promise<U>,
-): Promise<U[]> {
-  const results = new Array<U>(values.length);
-  let nextIndex = 0;
-
-  async function worker(): Promise<void> {
-    while (nextIndex < values.length) {
-      const index = nextIndex;
-      nextIndex += 1;
-      const value = values[index];
-      if (value !== undefined) results[index] = await map(value);
-    }
-  }
-
-  await Promise.all(
-    Array.from({ length: Math.min(concurrency, values.length) }, () =>
-      worker(),
-    ),
-  );
-  return results;
 }

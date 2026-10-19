@@ -1,4 +1,5 @@
 import type { MarkdownEmbedFragment } from "./types/plugin_pipeline.js";
+import { escapeRegExp } from "./utils/text.js";
 
 export function selectEmbedMarkdownFragment(
   markdown: string,
@@ -41,8 +42,4 @@ function selectHeadingFragment(
     endIndex === -1 ? undefined : endIndex,
   );
   return selectedLines.join("\n").trim() || null;
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

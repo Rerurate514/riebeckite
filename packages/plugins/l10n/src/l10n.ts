@@ -7,6 +7,7 @@ import {
   createStyleAsset,
   type Diagnostic,
   definePlugin,
+  escapeRegExp,
   extractContentLinks,
   type PluginHeadTag,
   type PostFrontmatter,
@@ -542,10 +543,6 @@ function removeLocalePathSegments(
 function prefixLanguage(permalink: string, language: string): string {
   const suffix = permalink === "/" ? "" : permalink;
   return `/${language}${suffix}`;
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function findTranslation(

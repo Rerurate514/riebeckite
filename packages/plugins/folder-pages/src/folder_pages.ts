@@ -4,7 +4,7 @@ import type {
   ContentPublicLocation,
   OutputDependency,
 } from "@riebeckite/core";
-import { resolveGeneratedFolderLocation } from "@riebeckite/core";
+import { escapeRegExp, resolveGeneratedFolderLocation } from "@riebeckite/core";
 import type { FolderPage, FolderPageLink, FolderPagesModel } from "./types.js";
 
 const ENTRY_BASENAMES = ["README", "index"] as const;
@@ -302,10 +302,6 @@ function parentFolder(path: string): string {
 function stripTrailingSlash(url: string): string {
   if (url.length > 1 && url.endsWith("/")) return url.slice(0, -1);
   return url;
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function compareEntries(

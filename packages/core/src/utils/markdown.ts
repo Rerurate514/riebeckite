@@ -6,6 +6,12 @@ export type MarkdownFenceLine = {
 const FENCE_OPEN = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 const FENCE_CLOSE = /^ {0,3}(`{3,}|~{3,})\s*$/;
 
+export function splitOnce(value: string, separator: string): [string, string?] {
+  const index = value.indexOf(separator);
+  if (index < 0) return [value];
+  return [value.slice(0, index), value.slice(index + separator.length)];
+}
+
 export function scanMarkdownFenceLines(source: string): MarkdownFenceLine[] {
   const lines: MarkdownFenceLine[] = [];
   let fence: { marker: string; length: number } | null = null;

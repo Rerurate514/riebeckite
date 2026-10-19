@@ -1,4 +1,4 @@
-import { scanMarkdownFenceLines } from "@riebeckite/core";
+import { escapeRegExp, scanMarkdownFenceLines } from "@riebeckite/core";
 import type { ResolvedKanbanOptions } from "./types.js";
 
 export type KanbanCard = {
@@ -105,8 +105,4 @@ function parseCard(text: string): KanbanCard {
     };
   }
   return { checked: false, text: text.trim() };
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { escapeRegExp } from "@riebeckite/core";
 
 export function createWorkspacePackageAliases(workspaceRoot: string) {
   const packagesRoot = path.join(workspaceRoot, "packages");
@@ -132,8 +133,4 @@ function resolveExportTarget(target: unknown): string | undefined {
   }
 
   return undefined;
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

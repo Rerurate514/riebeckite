@@ -1,4 +1,4 @@
-import type { ContentManifestEntry } from "@riebeckite/core";
+import { type ContentManifestEntry, escapeRegExp } from "@riebeckite/core";
 
 export type DailyNote = {
   date: string;
@@ -161,10 +161,6 @@ function placeholderSource(token: string): string {
   if (token === "YYYY") return "\\d{4}";
   if (token === "MM" || token === "DD") return "\\d{2}";
   return "[^/]+";
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**

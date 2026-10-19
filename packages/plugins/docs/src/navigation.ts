@@ -1,3 +1,4 @@
+import { escapeRegExp } from "@riebeckite/core";
 import type {
   DocsContentEntry,
   DocsNavigationEntry,
@@ -109,10 +110,6 @@ function stripFilenameLanguage(
     "",
   );
   return segments.join("/");
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function readSidebarFrontmatter(value: unknown): DocsSidebarFrontmatter {

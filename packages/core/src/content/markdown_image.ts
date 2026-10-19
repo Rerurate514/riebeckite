@@ -1,6 +1,7 @@
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 import type { Node } from "unist";
+import { splitOnce } from "../utils/markdown.js";
 import { isImagePath, normalizeContentPath } from "./attachment.js";
 
 type MarkdownImage = {
@@ -141,11 +142,6 @@ function decodeUriPath(path: string): string | null {
   } catch {
     return null;
   }
-}
-
-function splitOnce(value: string, separator: string): [string, string?] {
-  const index = value.indexOf(separator);
-  return index < 0 ? [value] : [value.slice(0, index), value.slice(index + 1)];
 }
 
 function uniqueImages(

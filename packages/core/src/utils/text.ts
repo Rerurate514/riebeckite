@@ -1,3 +1,7 @@
+export function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function stripHtml(html: string): string {
   return html
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")

@@ -4,6 +4,7 @@ import {
   LINK_LOCATION_PREFIX,
 } from "./content/content_dependency_tracker.js";
 import type { MarkdownPipelineContext } from "./types/plugin_pipeline.js";
+import { splitOnce } from "./utils/markdown.js";
 
 type LinkNormalizationContext = MarkdownPipelineContext & {
   recordLinkResolution?: (id: string, value: string) => void;
@@ -162,10 +163,4 @@ function decodeUriPath(path: string): string | null {
   } catch {
     return null;
   }
-}
-
-function splitOnce(value: string, separator: string): [string, string?] {
-  const index = value.indexOf(separator);
-  if (index < 0) return [value];
-  return [value.slice(0, index), value.slice(index + separator.length)];
 }

@@ -345,4 +345,8 @@ export {
 export type { MarkdownFenceLine } from "./src/utils/markdown.js";
 export { scanMarkdownFenceLines } from "./src/utils/markdown.js";
 export { normalizeTag } from "./src/utils/tags.js";
-export { calculateReadingTime, stripHtml } from "./src/utils/text.js";
+export {
+  calculateReadingTime,
+  escapeRegExp,
+  stripHtml,
+} from "./src/utils/text.js";

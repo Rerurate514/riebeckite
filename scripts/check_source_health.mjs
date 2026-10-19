@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Source health checks for responsibility boundaries and gradual file growth.
+// Source health checks for responsibility boundaries.
 // Size findings are advisory; only mechanically verifiable architecture
 // violations fail the check.
 import fs from "node:fs";
@@ -11,12 +11,6 @@ const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
-const baselinePath = path.join(
-  repositoryRoot,
-  "scripts",
-  "source_health_baseline.json",
-);
-const baselineVersion = 1;
 
 const sourceRoots = ["packages", "apps", "scripts"];
 const sourceExtensions = new Set([
@@ -53,8 +47,6 @@ const ignoredFilePattern = /(^|[./_-])(test|spec)([./_-]|$)/i;
 const fileWarningLines = 400;
 const fileStrongWarningLines = 800;
 const functionWarningLines = 80;
-const growthFloorLines = 50;
-const growthRatio = 0.1;
 
 function toPosix(value) {
   return value.split(path.sep).join("/");
@@ -291,37 +283,6 @@ function findCycles(graph) {
   return cycles;
 }
 
-function loadBaseline() {
-  if (!fs.existsSync(baselinePath)) return undefined;
-  try {
-    const baseline = JSON.parse(fs.readFileSync(baselinePath, "utf8"));
-    if (
-      baseline.version !== baselineVersion ||
-      typeof baseline.files !== "object"
-    ) {
-      return undefined;
-    }
-    return baseline;
-  } catch {
-    return undefined;
-  }
-}
-
-function writeBaseline(files) {
-  const entries = [...files]
-    .filter((file) => file.lines >= fileWarningLines)
-    .sort((left, right) => left.path.localeCompare(right.path))
-    .map((file) => [file.path, file.lines]);
-  const baseline = {
-    version: baselineVersion,
-    description:
-      "Advisory file-size baseline. Update intentionally with --write-baseline.",
-    files: Object.fromEntries(entries),
-  };
-  fs.writeFileSync(baselinePath, `${JSON.stringify(baseline, null, 2)}\n`);
-  console.log(`Updated source health baseline with ${entries.length} file(s).`);
-}
-
 function formatFinding(kind, message) {
   return `[${kind}] ${message}`;
 }
@@ -485,53 +446,9 @@ function reportSizes(records, functions, errors, warnings) {
   }
 }
 
-const args = new Set(process.argv.slice(2));
 const files = collectSourceFiles();
 const { records, functions, errors, warnings } = analyze(files);
 
-if (args.has("--write-baseline")) {
-  writeBaseline(records);
-  process.exit(0);
-}
-
 reportSizes(records, functions, errors, warnings);
-
-const baseline = loadBaseline();
-if (!baseline) {
-  warnings.push(
-    formatFinding(
-      "warning",
-      "source health baseline is missing; run node scripts/check_source_health.mjs --write-baseline",
-    ),
-  );
-} else {
-  const current = new Map(records.map((record) => [record.path, record.lines]));
-  for (const [file, previousLines] of Object.entries(baseline.files)) {
-    const currentLines = current.get(file);
-    if (currentLines === undefined) continue;
-    const allowed =
-      previousLines +
-      Math.max(growthFloorLines, Math.ceil(previousLines * growthRatio));
-    if (currentLines > allowed) {
-      console.log(
-        formatFinding(
-          "warning",
-          `${file}: grew from ${previousLines} to ${currentLines} lines (advisory limit ${allowed})`,
-        ),
-      );
-    }
-  }
-  for (const record of records) {
-    if (record.lines < fileWarningLines) continue;
-    if (baseline.files[record.path] === undefined) {
-      console.log(
-        formatFinding(
-          "warning",
-          `${record.path}: new file at ${record.lines} lines; confirm its responsibility boundary`,
-        ),
-      );
-    }
-  }
-}
 
 if (errors.length > 0) process.exitCode = 1;

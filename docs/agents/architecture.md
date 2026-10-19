@@ -38,15 +38,10 @@ stay cohesive; a short file with unrelated responsibilities is still a split
 candidate. Move related data and behavior together, keep the existing public
 surface, and do not replace one large file with several equally mixed files.
 
-`pnpm check:source-health` reports files and functions that need review, compares
-large files with `scripts/source_health_baseline.json`, and fails only on
-mechanically verifiable architecture violations such as runtime import cycles or
-a Core dependency on an outer layer. Size findings are advisory; do not fail CI
-only because a file crossed a line threshold.
-
-When a change intentionally grows a large cohesive unit, update the baseline with
-`node scripts/check_source_health.mjs --write-baseline` and explain why the unit
-still has one responsibility.
+`pnpm check:source-health` reports files and functions that need review and fails
+only on mechanically verifiable architecture violations such as runtime import
+cycles or a Core dependency on an outer layer. Size findings are advisory; do not
+fail CI only because a file crossed a line threshold.
 
 ## Tool semantics
 

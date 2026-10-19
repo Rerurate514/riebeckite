@@ -6,9 +6,9 @@ import {
   findSmart404Candidates,
   searchQueryFromPath,
 } from "@riebeckite/plugin-search";
-import type { NotFoundHandler } from "hono";
+import type { Context } from "hono";
 
-const handler: NotFoundHandler = async (c) => {
+const handler = async (c: Context) => {
   c.status(404);
   const manifest = await content.getManifest();
   const query = searchQueryFromPath(c.req.path);

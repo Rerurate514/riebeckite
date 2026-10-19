@@ -11,7 +11,8 @@ const errorPage = read("../app/routes/_error.tsx");
 const shellCss = read("../app/styles/shell.css");
 
 test("the canonical 404 surface owns its presentation and keeps status 404", () => {
-  assert.match(notFound, /import type \{ NotFoundHandler \} from "hono"/);
+  assert.match(notFound, /import type \{ Context \} from "hono"/);
+  assert.match(notFound, /const handler = async \(c: Context\) => \{/);
   assert.match(notFound, /c\.status\(404\)/);
   assert.match(notFound, /c\.render\(/);
   assert.match(notFound, /class="not-found"/);

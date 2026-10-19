@@ -62,6 +62,12 @@ test("each preset generates its intended self-contained composition", async () =
       assert.ok(
         await exists(path.join(targetDirectory, "public/riebeckite-logo.png")),
       );
+      const honoTypes = await fs.readFile(
+        path.join(targetDirectory, "app/hono.d.ts"),
+        "utf8",
+      );
+      assert.match(honoTypes, /import "hono"/);
+      assert.match(honoTypes, /declare module "hono"/);
       const renderer = await fs.readFile(
         path.join(targetDirectory, "app/routes/_renderer.tsx"),
         "utf8",
@@ -190,8 +196,8 @@ test("each preset ships a site-owned 404 surface", async () => {
         path.join(targetDirectory, "app/routes/_404.tsx"),
         "utf8",
       );
-      assert.match(notFound, /import type \{ NotFoundHandler \} from "hono"/);
-      assert.match(notFound, /const handler: NotFoundHandler = \(c\) => \{/);
+      assert.match(notFound, /import type \{ Context \} from "hono"/);
+      assert.match(notFound, /const handler = \(c: Context\) => \{/);
       assert.match(notFound, /c\.status\(404\)/);
       assert.match(notFound, /c\.render\(/);
       assert.match(notFound, /export default handler/);
@@ -292,7 +298,7 @@ test("starter and showcase scaffolds expose a single main landmark and skip link
       );
       assert.match(
         renderer,
-        /<main id="main-content" tabindex="-1" class="riebeckite-main">/,
+        /<main id="main-content" tabindex=\{-1\} class="riebeckite-main">/,
       );
       assert.ok(
         renderer.indexOf("<main ") < renderer.indexOf("<SiteFooter"),

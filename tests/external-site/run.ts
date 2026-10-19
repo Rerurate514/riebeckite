@@ -13,6 +13,7 @@ import {
   run,
   runCli,
   runExternalSiteE2E,
+  runTypecheck,
   walkFiles,
   writeFileDependencies,
 } from "@riebeckite/test/e2e";
@@ -903,8 +904,12 @@ function assertStarterOutput(siteDir: string): void {
   if (!fs.existsSync(notFoundPath)) {
     fail("generated starter must ship a site-owned app/routes/_404.tsx");
   }
-  if (!fs.readFileSync(notFoundPath, "utf8").includes("NotFoundHandler")) {
-    fail("generated starter 404 surface must use Hono's NotFoundHandler");
+  const notFound = fs.readFileSync(notFoundPath, "utf8");
+  if (!notFound.includes('import type { Context } from "hono"')) {
+    fail("generated starter 404 surface must type its Hono Context");
+  }
+  if (!notFound.includes("c.status(404)") || !notFound.includes("c.render(")) {
+    fail("generated starter 404 surface must render with HTTP status 404");
   }
 
   const htmlFiles = walkFiles(distDir, (full) => full.endsWith(".html"));
@@ -942,6 +947,7 @@ function runStarterChecks(workspace: ExternalSiteWorkspace): void {
   run("npm", ["install", "--no-audit", "--no-fund", "--loglevel=error"], {
     cwd: starterDir,
   });
+  runTypecheck(starterDir, "tsconfig.json", logger);
 
   runCli(["check"], {
     cliEntry: cliEntryFor(starterDir),

@@ -31,7 +31,7 @@ export default jsxRenderer(async ({ children }, c) => {
           <a class="rb-skip-link" href="#main-content">Skip to main content</a>
           <SiteHeader />
           <SearchBar />
-          <main id="main-content" tabindex="-1" class="riebeckite-main">
+          <main id="main-content" tabindex={-1} class="riebeckite-main">
             {children}
           </main>
           <SiteFooter />

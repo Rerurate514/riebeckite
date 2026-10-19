@@ -1,6 +1,6 @@
-import type { NotFoundHandler } from "hono";
+import type { Context } from "hono";
 
-const handler: NotFoundHandler = (c) => {
+const handler = (c: Context) => {
   c.status(404);
 
   return c.render(

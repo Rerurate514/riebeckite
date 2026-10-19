@@ -9,13 +9,3 @@ declare module "virtual:riebeckite/config" {
 declare module "virtual:riebeckite/content" {
   export const content: import("@riebeckite/core").ContentManager;
 }
-
-declare module "hono" {
-  interface Env {
-    Variables: {
-      headTags?: readonly import("@riebeckite/core").PluginHeadTag[];
-      htmlLanguage?: string;
-    };
-    Bindings: Record<string, never>;
-  }
-}

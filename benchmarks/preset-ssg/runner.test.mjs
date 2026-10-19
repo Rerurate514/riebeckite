@@ -9,6 +9,7 @@ import {
   applyScenario,
   compareSnapshots,
   createBenchmarkContent,
+  localizationScenarioNames,
   removeSafeTemporaryDirectory,
   scenarioNames,
 } from "./lib.mjs";
@@ -108,6 +109,42 @@ test("scenarios mutate independent content copies", async (t) => {
     scenario: "add",
   });
   assert.equal((await findMarkdown(directory)).length, 2);
+});
+
+test("localization scenarios mutate showcase translation groups", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-preset-benchmark-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  await createBenchmarkContent({
+    contentDirectory: directory,
+    count: 2,
+    preset: "showcase",
+  });
+  assert.ok(localizationScenarioNames.includes("translation-add"));
+  assert.ok(localizationScenarioNames.includes("translation-delete"));
+  await applyScenario({
+    contentDirectory: directory,
+    count: 2,
+    scenario: "translation-add",
+    preset: "showcase",
+  });
+  assert.equal((await findMarkdown(directory)).length, 3);
+  await applyScenario({
+    contentDirectory: directory,
+    count: 2,
+    scenario: "translation-delete",
+    preset: "showcase",
+  });
+  assert.equal((await findMarkdown(directory)).length, 2);
+  await assert.rejects(() =>
+    applyScenario({
+      contentDirectory: directory,
+      count: 2,
+      scenario: "translation-add",
+      preset: "starter",
+    }),
+  );
 });
 
 test("publication-change changes a public note", async (t) => {

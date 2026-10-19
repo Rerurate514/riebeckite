@@ -258,6 +258,55 @@ test("does not duplicate generated l10n fragments when entries are reused from c
   );
 });
 
+test("reuses unchanged translation groups when another group is added", async () => {
+  const buildDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-l10n-reuse-"),
+  );
+  const files: Record<string, string> = {
+    "a.ja.md": "---\ntranslation: a\n---\n# A",
+    "a.en.md": "---\ntranslation: a\n---\n# A",
+    "b.ja.md": "---\ntranslation: b\n---\n# B",
+  };
+
+  await manager(files, {}, [], buildDirectory).build({ incremental: true });
+
+  files["c.ja.md"] = "---\ntranslation: c\n---\n# C";
+  const incremental = manager(files, {}, [], buildDirectory);
+  await incremental.build({ incremental: true });
+
+  assert.equal(incremental.getReusedContentCount(), 3);
+  assert.equal(incremental.getProcessedContentCount(), 1);
+});
+
+test("marks sibling translation outputs as affected when a translation is added", async () => {
+  const buildDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-l10n-outputs-"),
+  );
+  const files: Record<string, string> = {
+    "a.ja.md": "---\ntranslation: a\n---\n# A",
+    "a.en.md": "---\ntranslation: a\n---\n# A",
+    "b.ja.md": "---\ntranslation: b\n---\n# B",
+  };
+
+  await manager(files, {}, [], buildDirectory).build({ incremental: true });
+
+  files["b.en.md"] = "---\ntranslation: b\n---\n# B";
+  const incremental = manager(files, {}, [], buildDirectory);
+  await incremental.build({ incremental: true });
+  const changes = await incremental.getOutputChangeSet({ incremental: true });
+
+  assert.deepEqual(
+    changes.affected.map((output) => output.path),
+    ["b.html", "en/b.html"],
+  );
+  assert.deepEqual(
+    changes.unchanged.map((output) => output.path),
+    ["a.html", "en/a.html"],
+  );
+  assert.equal(incremental.getReusedContentCount(), 2);
+  assert.equal(incremental.getProcessedContentCount(), 2);
+});
+
 test("keeps translation membership changes equivalent to a cold build", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-l10n-membership-"),

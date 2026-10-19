@@ -424,6 +424,7 @@ export class ContentManager {
                 this.pluginRuntime.getContentOutputDependencies(),
               externalDependencies: plan.externalDependencies,
               externalDependencyFailures: plan.externalDependencyFailures,
+              contentFingerprints: this.processedContentCacheFingerprints,
             }),
         );
         if (this.outputChangeSet) {

@@ -43,6 +43,7 @@ export function determineOutputChanges(input: {
   readonly contentOutputDependencies?: readonly OutputDependency[];
   readonly externalDependencies?: readonly ExternalDependencySnapshot[];
   readonly externalDependencyFailures?: readonly ExternalDependencyFailure[];
+  readonly contentFingerprints?: ReadonlyMap<string, string | undefined>;
 }): OutputChangeSet {
   const current = buildOutputInventory(
     input.manifest,
@@ -53,6 +54,7 @@ export function determineOutputChanges(input: {
     (input.previousState?.outputs ?? []).map((output) => [output.path, output]),
   );
   const changedContent = collectChangedContent(input);
+  const refreshedContent = collectRefreshedContent(input);
   const changedFiles = new Set([
     ...input.changeSet.added,
     ...input.changeSet.changed,
@@ -78,6 +80,7 @@ export function determineOutputChanges(input: {
       isOutputAffected(
         output,
         changedContent,
+        refreshedContent,
         changedTags,
         changedFolders,
         changedFiles,
@@ -181,6 +184,7 @@ function contentOutput(
 function isOutputAffected(
   output: OutputDescriptor,
   changedContent: ReadonlySet<string>,
+  refreshedContent: ReadonlySet<string>,
   changedTags: ReadonlySet<string>,
   changedFolders: ReadonlySet<string>,
   changedFiles: ReadonlySet<string>,
@@ -212,7 +216,11 @@ function isOutputAffected(
     ) {
       return changedFolders.size > 0;
     }
-    if (dependency.type === "content" && changedContent.has(dependency.slug)) {
+    if (
+      dependency.type === "content" &&
+      (changedContent.has(dependency.slug) ||
+        refreshedContent.has(dependency.slug))
+    ) {
       return true;
     }
     if (dependency.type === "tag" && changedTags.has(dependency.tag))
@@ -293,6 +301,29 @@ function changedExternalDependencyScopes(input: {
     changed.set(dependency.id, dependency.scope);
   }
   return changed;
+}
+
+function collectRefreshedContent(input: {
+  readonly manifest: ContentManifest;
+  readonly previousState: ContentBuildState | undefined;
+  readonly contentFingerprints?: ReadonlyMap<string, string | undefined>;
+}): Set<string> {
+  const refreshed = new Set<string>();
+  const fingerprints = input.contentFingerprints;
+  const previousEntries = input.previousState?.entries;
+  if (!fingerprints || !previousEntries) return refreshed;
+  for (const entry of input.manifest.entries) {
+    const fingerprint = fingerprints.get(entry.slug);
+    if (fingerprint === undefined) continue;
+    if (
+      previousEntries[`${entry.slug}.md`]?.processedContentCacheFingerprint ===
+      fingerprint
+    ) {
+      continue;
+    }
+    refreshed.add(entry.slug);
+  }
+  return refreshed;
 }
 
 function collectChangedContent(input: {

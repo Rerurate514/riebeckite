@@ -21,7 +21,7 @@ cycles, cross-layer dependencies, and wildcard exports do.
 
 ## Current snapshot
 
-- 702 source files, 88,090 lines, 5,557 functions
+- 702 source files, 88,080 lines, 5,556 functions
 - 33 files at or above 400 lines; 5 at or above 800
 - 74 functions at or above 80 lines
 - 0 runtime import cycles

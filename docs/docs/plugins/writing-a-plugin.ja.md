@@ -31,7 +31,7 @@ site の中だけで使う場合は「配布用パッケージにする」より
 
 ## 1. 最小のプラグインを作る
 
-プラグインは `definePlugin`（`@riebeckite/core` から import）で作ります。**パッケージにする必要はなく、サイトの中に置けます**。
+プラグインは `definePlugin`（`@riebeckite/core` から import）で作ります**。パッケージにする必要はなく、サイトの中に置けます**。
 
 ```ts
 // extensions/local-plugin.ts
@@ -111,11 +111,11 @@ export function localPlugin() {
 }
 ```
 
-pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `extendHtmlPipeline` を使います。その他の拡張ポイント（依存関係・lifecycle・renderer・endpoint など）は [Plugin System](../reference/plugin-api.ja.md) を参照してください。
+pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `extendHtmlPipeline` を使います。その他の拡張ポイントは [Plugin System](../reference/plugin-api.ja.md) を参照してください。依存関係・lifecycle・renderer・endpoint などの詳細は個別に確認してください。
+`remarkPlugins` / `rehypePlugins` も `extendMarkdownPipeline` も同じ Pipeline に参加します。Riebeckite は Plugin より前に `remark-parse` や `remark-directive` を適用する
+`:::tip` のような directive はすでに AST node として Plugin へ渡されます。これらを著者がインストールしたり登録したりする必要はありません。
 
-`remarkPlugins` / `rehypePlugins` も `extendMarkdownPipeline` も同じ Pipeline に参加します。Riebeckite は Plugin より前に `remark-parse` や `remark-directive`、`remark-gfm` などを適用するため、`:::tip` のような directive や GFM 記法はすでに AST node として Plugin へ渡されます。これらを著者がインストールしたり登録したりする必要はありません。
-
-Content 変換に参加する Plugin は `processedContentCache` も宣言してください。宣言がない場合でも動作はしますが、その site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`、他 Plugin の出力に依存するなら `tracked` を指定します（正確に追跡できない場合のみ `unsafe`）。
+Content 変換に参加する Plugin は `processedContentCache` も宣言してください。宣言がない場合でも動作はします。その site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`。他 Plugin の出力に依存するなら `tracked` を指定します。正確に追跡できない場合のみ `unsafe` を指定します。
 
 ## 実践: directive プラグインを最後まで作る
 
@@ -599,7 +599,7 @@ definePlugin({
 
 `extendMarkdownPipeline` は remark / mdast を直接扱うための低レベルな API なので、独自の Markdown 構文や複雑な変換が必要な場合に使います。
 
-この例では、`processedContentCache` も宣言しています。宣言がない場合でも動作はしますが、site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `dependencyMode: "none"`、他 Plugin の出力に依存するなら `tracked` を指定します（正確に追跡できない場合のみ `unsafe`）。`version` は変換の意味を変えたときに上げてください。Plugin の `options` と変換関数の内容も pipeline fingerprint に含まれるため、Option の変更だけで `version` を上げる必要はありません。
+この例では、`processedContentCache` も宣言しています。宣言がない場合でも動作はします。site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `dependencyMode: "none"`。他 Plugin の出力に依存するなら `tracked` を指定します。正確に追跡できない場合のみ `unsafe` を指定します。`version` は変換の意味を変えたときに上げてください。Plugin の `options` と変換関数の内容も pipeline fingerprint に含まれるため、Option の変更だけで `version` を上げる必要はありません。
 
 ## テストの進め方
 
@@ -769,9 +769,9 @@ Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island reg
 
 ## 関連資料
 
-- [プラグイン作成の詳細](../framework/plugin-system.ja.md) — この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
-- [Plugin System](../reference/plugin-api.ja.md) — すべての拡張ポイントの詳細
-- [テスト](../framework/testing.ja.md) — Plugin のテスト戦略と External 検証
-- [Theme API](../reference/theme-api.ja.md) — Theme Extension Contract と Semantic Token
-- [Architecture](../framework/architecture.ja.md) — Core / Plugin / Integration / Theme / App の責務
-- [Framework Reference](../reference/README.ja.md) — `definePlugin` などの公開 API
+- [プラグイン作成の詳細](../framework/plugin-system.ja.md)：この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
+- [Plugin System](../reference/plugin-api.ja.md)：すべての拡張ポイントの詳細
+- [テスト](../framework/testing.ja.md)：Plugin のテスト戦略と External 検証
+- [Theme API](../reference/theme-api.ja.md)：Theme Extension Contract と Semantic Token
+- [Architecture](../framework/architecture.ja.md)：Core / Plugin / Integration / Theme / App の責務
+- [Framework Reference](../reference/README.ja.md)：`definePlugin` などの公開 API

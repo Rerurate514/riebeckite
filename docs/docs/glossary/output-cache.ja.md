@@ -14,7 +14,7 @@ sidebar:
 
 ## output inventory比較
 
-Coreはoutput inventory（`.riebeckite/ssg-output-cache.json`にはcontentの出力、redirect、Pluginページの出力、Generated Outputを含むパスをキーにしたすべての生成物の記録が保存されています）を構築し、現在のinventoryを前回の成功した状態と比較します。どの出力が影響を受ける（再生成が必要）、変わらない（再利用できる）、削除されたかを決定します。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
+Coreはoutput inventoryを構築します。`.riebeckite/ssg-output-cache.json`にはcontentの出力、redirect、Pluginページの出力、Generated Outputを含むパスをキーにしたすべての生成物の記録が保存されています。現在のinventoryを前回の成功した状態と比較します。どの出力が影響を受ける（再生成が必要）、変わらない（再利用できる）、削除されたかを決定します。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
 
 ## 再利用の判定
 
@@ -26,7 +26,7 @@ Coreは、次の条件がすべて満たされるときだけ、変わってい�
 - App fingerprintとclient manifest fingerprintがcacheの値と一致している。
 - 変わっていない出力がすべて、site所有かcache内に存在する。
 
-SSGのmetricsは結果を`outputCacheDecision`（各条件の判定）と`outputCacheRejectionReason`に記録します。理由は、出力を再利用したときは`null`、それ以外は`change-set-unavailable`、`full-regeneration-required`、`output-cache-missing-or-invalid`、`app-fingerprint-changed`、`client-manifest-fingerprint-changed`、`unchanged-output-not-cached`のいずれかです。cacheを棄却したときは、同じmetricsの`fullRegenerationRequired`が`true`になります。
+SSGのmetricsは結果を`outputCacheDecision`（各条件の判定）と`outputCacheRejectionReason`に記録します。理由は、出力を再利用したときは`null`です。それ以外は`change-set-unavailable`、`full-regeneration-required`、`output-cache-missing-or-invalid`のいずれかです。`app-fingerprint-changed`、`client-manifest-fingerprint-changed`、`unchanged-output-not-cached`のいずれかです。cacheを棄却したときは、同じmetricsの`fullRegenerationRequired`が`true`になります。
 
 この判定はCLIのno-change fast pathとは別物です。Fast pathは、manifest hookやgenerated output planを必要とするpluginがないことも追加で要求します。
 

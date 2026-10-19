@@ -15,7 +15,7 @@ sidebar:
 - `.riebeckite/ssg-output-cache.json`は描画済みの出力で、`.riebeckite/ssg-output-cache.entries`ディレクトリと`.riebeckite/ssg-output-cache.fast-path.json` sidecarを伴います。
 3つともCIをまたいで保存して問題なく、生成されたGitHub Actions workflowが復元します。Riebeckiteは復元したcacheを必ず検証してから使うため、古い・非互換なentryは誤った出力ではなくfull buildにつながります。
 
-## Cacheは正本ではない
+## Cacheは元データではない
 
 cacheのentryが欠落・非互換・不安全な場合は、エラーではなくfull buildの経路に入ります。状態はFull Buildの成功後にのみ書き込むため、失敗したBuildは前回の有効な状態を残します。
 
@@ -31,7 +31,7 @@ cache: {
 
 ## キャッシュキーの構成
 
-各コンテンツ項目のキャッシュキーは、スラッグ、生のソーステキスト、frontmatter、およびアクティブなconfigとプラグイン版本を捉えるpipeline fingerprintの4つの入力から構成されます。コンテンツメタデータやビルドパイプラインの変更があれば、キャッシュされた結果が無効化されます。
+各コンテンツ項目のキャッシュキーは、スラッグ、生のソーステキスト、frontmatterから構成されます。およびアクティブなconfigとプラグイン版本を捉えるpipeline fingerprintから構成されます。コンテンツメタデータやビルドパイプラインの変更があれば、キャッシュされた結果が無効化されます。
 
 ```ts
 export function computeContentCacheKey(inputs: CacheKeyInputs): string {
@@ -55,7 +55,7 @@ export function computeContentCacheKey(inputs: CacheKeyInputs): string {
 - **スキーマバージョン** (`CONTENT_CACHE_SCHEMA_VERSION = 5`)：キャッシュエントリの構造が変更されたとき（フィールドの追加/削除、型の変更）にインクリメントされます。ミスマッチはキャッシュミスとなり、再生成されます。
 - **互換性バージョン** (`CONTENT_CACHE_COMPATIBILITY_VERSION = 3`)：パイプラインfingerprintロジックが変更されたとき（プラグインのfingerprint方法など）にインクリメントされます。ミスマッチもまたキャッシュミスとなり、再生成されます。
 
-両バージョンはすべてのキャッシュエントリに組み込まれています。パイプラインfingerprint (`computePipelineFingerprint`)はプラグインfingerprint、content filters、およびオプションのcontent-scope fingerprintを単一のハッシュに結合します。何らかのプラグインの`processedContentCache`取り決めが変更された場合、または`content.filters.publishStrategy`が変更された場合、パイプラインfingerprintが変更され、すべてのキャッシュエントリが実質的に無効化されます。
+両バージョンはすべてのキャッシュエントリに組み込まれています。パイプラインfingerprint (`computePipelineFingerprint`)はプラグインfingerprint、content filters、およびオプションのcontent-scope fingerprintを単一のハッシュに結合します。何らかのプラグインの`processedContentCache`取り決めが変更された場合、または`content.filters.publishStrategy`が変更された場合、パイプラインfingerprintが変更されます。すべてのキャッシュエントリが実質的に無効化されます。
 
 ## 依存関係追跡モードとグローバルキャッシュモード
 

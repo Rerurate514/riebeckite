@@ -607,7 +607,7 @@ riebeckite deploy
 
 ### 次に読むもの
 
-- [サイト公開までの最短ガイド](../../getting-started/deployment.ja.md) — 初回公開までの最短手順
-- [GitHub Actions](./github-actions.ja.md) — GitHub への Push から自動公開する
-- [Separate Content Repository](./separate-content-repository.ja.md) — Content と Site を別 Repository で運用する
-- [CLI](../../reference/cli.ja.md) — `build`、`check`、`doctor` などの Command
+- [サイト公開までの最短ガイド](../../getting-started/deployment.ja.md)：初回公開までの最短手順
+- [GitHub Actions](./github-actions.ja.md)：GitHub への Push から自動公開する
+- [Separate Content Repository](./separate-content-repository.ja.md)：Content と Site を別 Repository で運用する
+- [CLI](../../reference/cli.ja.md)：`build`、`check`、`doctor` などの Command

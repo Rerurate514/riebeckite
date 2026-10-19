@@ -130,6 +130,6 @@ site の実装と Markdown content を別リポジトリで管理したい場合
 
 ## 次に読むページ
 
-- [Guides →](../guides/README.ja.md) — content、Obsidian、多言語、デプロイの詳しいガイド
-- [Plugins →](../plugins/README.ja.md) — やりたいことから機能を追加する
-- [Themes →](../themes/README.ja.md) — サイトの見た目を変える
+- [Guides →](../guides/README.ja.md)：content、Obsidian、多言語、デプロイの詳しいガイド
+- [Plugins →](../plugins/README.ja.md)：やりたいことから機能を追加する
+- [Themes →](../themes/README.ja.md)：サイトの見た目を変える

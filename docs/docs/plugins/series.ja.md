@@ -76,16 +76,16 @@ series_order: 2
 
 ## 公開 API
 
-- `series(options?)` / `seriesPlugin(options?)` — プラグインファクトリ
-- `buildSeriesIndex(manifest, name, options?)` — 1 つのシリーズの並び順付きメンバー（`SeriesIndex | null`）。ランディングページ向け
-- `renderSeriesIndex(manifest, name, options?)` — シリーズ全体の `<section>` ブロック
-- `renderSeriesList(manifest, options?, label?)` — 全シリーズを並べた `<section>` ブロック。無ければ `""`
-- `seriesLandingPath(name, options?)` — シリーズのランディングパス。生成無効時は `""`
-- `seriesSlug(name)` — ランディングページの URL セグメント
-- `renderSeriesNavigation(index, currentSlug, options?)` — ナビゲーション 1 つ分
-- `collectSeriesIndexes(manifest, options?)` — 全シリーズを出現順で取得
-- `resolveSeriesOptions(options?)` — 既定値を適用したオプション
-- `DEFAULT_SERIES_BASE_PATH` — 既定の `basePath`（`"/series"`）
+- `series(options?)` / `seriesPlugin(options?)`：プラグインファクトリ
+- `buildSeriesIndex(manifest, name, options?)`：1 つのシリーズの並び順付きメンバー（`SeriesIndex | null`）。ランディングページ向け
+- `renderSeriesIndex(manifest, name, options?)`：シリーズ全体の `<section>` ブロック
+- `renderSeriesList(manifest, options?, label?)`：全シリーズを並べた `<section>` ブロック。無ければ `""`
+- `seriesLandingPath(name, options?)`：シリーズのランディングパス。生成無効時は `""`
+- `seriesSlug(name)`：ランディングページの URL セグメント
+- `renderSeriesNavigation(index, currentSlug, options?)`：ナビゲーション 1 つ分
+- `collectSeriesIndexes(manifest, options?)`：全シリーズを出現順で取得
+- `resolveSeriesOptions(options?)`：既定値を適用したオプション
+- `DEFAULT_SERIES_BASE_PATH`：既定の `basePath`（`"/series"`）
 - 型: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
 
 ### シリーズのランディングページ

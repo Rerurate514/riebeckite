@@ -99,7 +99,7 @@ map:
 | `attribution` | OpenStreetMap の帰属表示 | プロバイダが要求する帰属表示の HTML |
 | `fallback` | `true` | 元の本文を表示する `details` を描画する |
 | `staticFallback` | `true` | 静的フォールバックのブロックを描画する |
-| `staticImageUrl` | — | 静的画像 URL テンプレート（`{lat}`/`{lng}`/`{zoom}`/`{width}`/`{height}`） |
+| `staticImageUrl` | なし | 静的画像 URL テンプレート（`{lat}`/`{lng}`/`{zoom}`/`{width}`/`{height}`） |
 | `frontmatterKey` | `"map"` | 座標を読む frontmatter プロパティ |
 
 ## タイルと帰属表示

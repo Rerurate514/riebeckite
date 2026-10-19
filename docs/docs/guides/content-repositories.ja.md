@@ -3,7 +3,7 @@ title: 記事とサイトのリポジトリ分離
 ---
 # 記事とサイトのリポジトリ分離
 
-Riebeckite では、**記事とサイトを同じ Repository に置く必要はありません。**
+Riebeckite では、**記事とサイトを同じ Repository に置く必要はありません**。
 
 たとえば、
 
@@ -459,7 +459,7 @@ npm exec -- riebeckite inspect content --list
 
 別 Repository 構成では、特に重要な違いがあります。
 
-**「CI が Content Repository を読める」ことと、「Content の更新で Deploy が起動する」ことは別です。**
+**「CI が Content Repository を読める」ことと、「Content の更新で Deploy が起動する」ことは別です**。
 
 ```mermaid
 flowchart TD
@@ -566,7 +566,7 @@ Fine-grained PAT を利用する場合は、
 
 Classic PAT の `repo` Scope や、`Contents: write` を持つ GitHub App Installation Token も利用できます。
 
-Fine-grained PAT も Classic PAT も、[GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) から作成できます。作成した値は、この Content Repository の **Settings → Secrets and variables → Actions** に `SITE_DISPATCH_TOKEN` という名前で登録します。
+Fine-grained PAT も Classic PAT も、[GitHub の Settings → Developer settings → Personal access tokens] から作成できます。作成した値は、この Content Repository の **Settings → Secrets and variables → Actions** に `SITE_DISPATCH_TOKEN` という名前で登録します。
 
 ## `RIEBECKITE_CONTENT_READ_TOKEN`
 
@@ -1077,12 +1077,12 @@ flowchart LR
 
 Repository を分離すること自体は、Riebeckite の公開判定を変更しません。
 
-**Repository の境界、Content の読み込み、Deploy の起動、Site への公開は、それぞれ別の責務です。**
+**Repository の境界、Content の読み込み、Deploy の起動、Site への公開は、それぞれ別の責務です**。
 
 ### 関連資料
 
-- [リポジトリ分離の詳細編](./deployment/separate-content-repository.ja.md) — Root 解決、CI 認証、Assets、GitHub Actions、トラブル対応
-- [Configuration](../reference/configuration.ja.md) — `appRoot` / `configRoot` / `contentRoot`
-- [Guides](./README.ja.md) — その他の利用 Guide
-- Cloudflare デプロイテンプレート — Deploy Workflow
+- [リポジトリ分離の詳細編](./deployment/separate-content-repository.ja.md)：Root 解決、CI 認証、Assets、GitHub Actions、トラブル対応
+- [Configuration](../reference/configuration.ja.md)：`appRoot` / `configRoot` / `contentRoot`
+- [Guides](./README.ja.md)：その他の利用 Guide
+- Cloudflare デプロイテンプレート：Deploy Workflow
 

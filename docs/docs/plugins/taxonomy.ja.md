@@ -156,18 +156,18 @@ import "@riebeckite/plugin-taxonomy/style.css";
 
 ## エクスポート
 
-- `taxonomy(options?)` — プラグインファクトリー
-- `taxonomyPlugin` — `taxonomy` の別名
-- `resolveTaxonomyOptions(options?)` — 既定値を適用する
-- `resolveTaxonomyOptionsFromConfig(config)` — config から解決済みオプションを読む
-- `buildTaxonomyIndex(entries, options)` — タグ・フォルダ語を構築する
-- `serializeTaxonomyIndex(index)` / `serializeTaxonomyTerm(term)` — JSON 安全な射影
-- `renderTaxonomyPage(term, options)` / `renderRelatedTerms(term, options)` — ページ断片
-- `renderTaxonomyIndexPage(kind, terms, options)` — 全タグ・全フォルダ一覧のページ断片
-- `renderTermFeed(config, term, format, limit?)` / `buildFeedHeadTags(term)` — 語ごとのフィード
-- `buildTaxonomySeo(config, term)` — 一覧ページの SEO メタデータ
-- `slugifyTaxonomyValue(value)` — URL・ファイル用の slug
-- `buildTaxonomyAbsoluteUrl(config, pathOrUrl)` — 絶対 URL
+- `taxonomy(options?)`：プラグインファクトリー
+- `taxonomyPlugin`：`taxonomy` の別名
+- `resolveTaxonomyOptions(options?)`：既定値を適用する
+- `resolveTaxonomyOptionsFromConfig(config)`：config から解決済みオプションを読む
+- `buildTaxonomyIndex(entries, options)`：タグ・フォルダ語を構築する
+- `serializeTaxonomyIndex(index)` / `serializeTaxonomyTerm(term)`：JSON 安全な射影
+- `renderTaxonomyPage(term, options)` / `renderRelatedTerms(term, options)`：ページ断片
+- `renderTaxonomyIndexPage(kind, terms, options)`：全タグ・全フォルダ一覧のページ断片
+- `renderTermFeed(config, term, format, limit?)` / `buildFeedHeadTags(term)`：語ごとのフィード
+- `buildTaxonomySeo(config, term)`：一覧ページの SEO メタデータ
+- `slugifyTaxonomyValue(value)`：URL・ファイル用の slug
+- `buildTaxonomyAbsoluteUrl(config, pathOrUrl)`：絶対 URL
 - 型: `TaxonomyOptions`, `ResolvedTaxonomyOptions`, `TaxonomyTerm`, `TaxonomyIndex`, `TaxonomyPage`, `TaxonomyTermData`, `TaxonomyIndexData`
 
 ## 制約

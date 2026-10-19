@@ -10,7 +10,7 @@ sidebar:
 
 ## 保存される内容
 
-`.riebeckite/build/content-state.json`に保存されます。entry、fingerprint、依存関係、pipelineのfingerprint、manifestのentry、出力、外部依存、manifest hook cacheを含みます。次のBuildはこれを読み、Incremental Buildの差分を計算します。
+`.riebeckite/build/content-state.json`に保存されます。entry、fingerprint、依存関係、pipelineのfingerprintを含みます。manifestのentry、出力、外部依存、manifest hook cacheを含みます。次のBuildはこれを読み、Incremental Buildの差分を計算します。
 
 ## バージョンと妥当性
 

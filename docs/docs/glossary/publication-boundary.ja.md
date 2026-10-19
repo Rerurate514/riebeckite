@@ -50,4 +50,4 @@ visibility: unlisted
 
 ## 判定を一箇所に
 
-判定を一箇所に集めるため、どの利用側も同じ公開集合を見ます。ページ、feed、sitemapが個別に公開判定をやり直すことはありません。公開状態はmanifestのビルド時に一度解決され、thereafter各`ContentManifestEntry`の`publishing`フィールドから参照されます。
+判定を一箇所に集めるため、どの利用側も同じ公開集合を見ます。ページ、feed、sitemapが個別に公開判定をやり直すことはありません。公開状態はmanifestのビルド時に一度解決され、その後、各`ContentManifestEntry`の`publishing`フィールドから参照されます。

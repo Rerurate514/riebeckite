@@ -33,7 +33,7 @@ npx create-riebeckite --list-presets
 | `starter` | `default` | Site locale に応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown 公開、検索、コンテンツから導く Navigation、パンくず、バックリンク、関連記事・最新記事、taxonomy、Folder landing、リンク preview |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、Plugin/Theme reference、ローカル fixture | 全 Plugin カタログ、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
-| `empty` | なし | — | なし | 空のアプリケーションシェル |
+| `empty` | なし | なし | なし | 空のアプリケーションシェル |
 
 7言語は showcase 用で、英語、日本語、簡体字中国語、スペイン語、ドイツ語、フランス語、韓国語です。`starter` は Site locale に応じて1言語のページを生成します。翻訳済みの Route が必要になったら l10n を追加してください。`minimal` は英語のみで、`empty` には Theme、Plugin、コンテンツがありません。
 

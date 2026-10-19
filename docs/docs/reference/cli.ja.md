@@ -5,7 +5,7 @@ title: CLI Reference
 
 Riebeckite CLI は、Site の作成、開発、検証、診断、Build、公開などを行うためのコマンドです。
 
-基本的には **Riebeckite Site の application directory で実行します。**
+基本的には **Riebeckite Site の application directory で実行します**。
 
 ```sh id="vgst3p"
 npm exec riebeckite <command>

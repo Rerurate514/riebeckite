@@ -382,6 +382,6 @@ Riebeckite が content と plugin を Site へ接続し、**最終的なペー�
 
 ## 次に読むページ
 
-- [HonoX Integration](../framework/honox-integration.ja.md) — Riebeckite と HonoX の接続や UI Primitive
-- [プラグイン作成の詳細](../framework/plugin-system.ja.md) — Plugin を作る場合の拡張ポイント
-- [Plugin API](../reference/plugin-api.ja.md) — Body Slot、Page、Asset、CSS Hook の詳細
+- [HonoX Integration](../framework/honox-integration.ja.md)：Riebeckite と HonoX の接続や UI Primitive
+- [プラグイン作成の詳細](../framework/plugin-system.ja.md)：Plugin を作る場合の拡張ポイント
+- [Plugin API](../reference/plugin-api.ja.md)：Body Slot、Page、Asset、CSS Hook の詳細

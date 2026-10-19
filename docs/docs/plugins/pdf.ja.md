@@ -68,10 +68,10 @@ Markdown のフォールバック）に委ねます。
 
 ## 公開 API
 
-- `pdf(options?)` / `pdfPlugin` — プラグインファクトリ
-- `buildPdfViewerUrl(url, options)` — ビューア URL の生成
-- `isPdfRenderTarget(context)` — PDF 判定
-- `renderPdf(context, options)` — レンダラー実装
+- `pdf(options?)` / `pdfPlugin`：プラグインファクトリ
+- `buildPdfViewerUrl(url, options)`：ビューア URL の生成
+- `isPdfRenderTarget(context)`：PDF 判定
+- `renderPdf(context, options)`：レンダラー実装
 - 型: `PdfOptions`、`ResolvedPdfOptions`
 
 ## 関連資料

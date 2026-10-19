@@ -28,10 +28,10 @@ export default defineConfig({
 
 色だけでなく、誌面そのものに次のような性格を持たせています。
 
-- **セリフ体の本文と見出し** — 欧文はセルフホストの可変フォント Source Serif 4、和文はシステムの明朝体（`Hiragino Mincho ProN`、`Yu Mincho`、`Noto Serif JP`）にフォールバックします。行間は 1.9 でゆったりと組みます。
-- **角丸の静かな面** — コードブロック、コールアウト、表、引用、カードは `roundness` に応じた角丸にします。影は画像など、本当に浮かせたい要素だけに控えめに使います。
-- **桜のアクセント** — リンク、リストのマーカー、引用のライン、コールアウト、`h2` の下の短い罫線などにアクセント色を効かせます。読みやすさを損なわない範囲に留めています。
-- **見出しの飾り** — `heading` で `h2` の飾り罫を出し分けられます。
+- **セリフ体の本文と見出し**：欧文はセルフホストの可変フォント Source Serif 4、和文はシステムの明朝体（`Hiragino Mincho ProN`、`Yu Mincho`、`Noto Serif JP`）にフォールバックします。行間は 1.9 でゆったりと組みます。
+- **角丸の静かな面**：コードブロック、コールアウト、表、引用、カードは `roundness` に応じた角丸にします。影は画像など、本当に浮かせたい要素だけに控えめに使います。
+- **桜のアクセント**：リンク、リストのマーカー、引用のライン、コールアウト、`h2` の下の短い罫線などにアクセント色を効かせます。読みやすさを損なわない範囲に留めています。
+- **見出しの飾り**：`heading` で `h2` の飾り罫を出し分けられます。
 
 ## 変更できる項目
 
@@ -73,8 +73,8 @@ export default defineConfig({
 npm install @riebeckite/theme-sakura
 ```
 
-Theme の factory 名と設定項目は、実装とこの正本ページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+Theme の factory 名と設定項目は、実装とこのページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
 
 ## 詳細仕様
 
-設定項目や Theme 固有の仕様は この正本ページを参照してください。Theme の仕組みは [Theme System](../framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.ja.md) を参照してください。
+設定項目や Theme 固有の仕様は このページを参照してください。Theme の仕組みは [Theme System](../framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.ja.md) を参照してください。

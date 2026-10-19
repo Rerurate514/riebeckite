@@ -26,8 +26,8 @@ export default defineConfig({
 
 ## 読み込めるファイル
 
-- `*.excalidraw` — `elements`、任意の `appState` と `files` を持つ JSON シーン
-- `*.excalidraw.md` — Obsidian Excalidraw が保存する Markdown。`## Drawing` 内の `json` と `compressed-json` を読み取ります。
+- `*.excalidraw`：`elements`、任意の `appState` と `files` を持つ JSON シーン
+- `*.excalidraw.md`：Obsidian Excalidraw が保存する Markdown。`## Drawing` 内の `json` と `compressed-json` を読み取ります。
 
 `![[drawing.excalidraw|800]]` なら幅を、`![[drawing.excalidraw|800x600]]` なら幅と高さを指定できます。ファイルがない、内容が不正、またはコンテンツディレクトリ外を指す場合は、エラー用プレースホルダーを表示します。
 
@@ -61,8 +61,8 @@ Excalidraw の描画である Markdown エントリは、通常の Markdown ペ�
 
 ## 公開 API
 
-- `excalidraw(options?)` / `excalidrawPlugin` — プラグインファクトリ
-- `ExcalidrawOptions` — オプションの型
+- `excalidraw(options?)` / `excalidrawPlugin`：プラグインファクトリ
+- `ExcalidrawOptions`：オプションの型
 
 ## 関連資料
 

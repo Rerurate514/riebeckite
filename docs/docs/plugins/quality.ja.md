@@ -47,10 +47,10 @@ export default defineConfig({
 
 ## API
 
-- `qualityPlugin(options?)` — プラグインファクトリ。
-- `inspectHtml(html, options?)` — `Diagnostic[]` を返す純粋関数。
-- `inspectGeneratedHtml(page, options?)` — 最終ページを検査し、`filePath` に `page.path` を設定する純粋関数。
-- `RULE_CODES` — 安定した code の一覧。
+- `qualityPlugin(options?)`：プラグインファクトリ。
+- `inspectHtml(html, options?)`：`Diagnostic[]` を返す純粋関数。
+- `inspectGeneratedHtml(page, options?)`：最終ページを検査し、`filePath` に `page.path` を設定する純粋関数。
+- `RULE_CODES`：安定した code の一覧。
 - 型: `QualityOptions`、`InspectOptions`。
 
 ## 制限事項

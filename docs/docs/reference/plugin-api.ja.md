@@ -346,7 +346,9 @@ definePlugin({
 ```
 
 - `none` は、処理結果が Content 本体、frontmatter、options、宣言した version だけに依存することを表します。
-- `tracked` は、Pipeline が他の Content や file を読む場合に使います。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、Core が `ContentDependencyTracker` ににより Content/file 読み取りを自動記録します。filesystem を直接読んではいけません。
+- `tracked` は、Pipeline が他の Content や file を読む場合に使います。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、
+Core が `ContentDependencyTracker` ににより Content/file 読み取りを自動記録します。
+filesystem を直接読んではいけません。
 - `unsafe` は処理済み Content の永続的な再利用を無効にします。Content 処理を行う Plugin が取り決めを宣言しない場合も、同じ安全側の全 Content 再処理になります。
 
 `tracked` の dependency は Content 処理中に取得します。Core が content/file の identity を永続化し、逆引き index から次回 Build で affected content を決定します。この用途で vault を独自に走査したり、Plugin 固有の Incremental Build state を保存したりしないでください。Framework API 経由で dependency を追跡できない場合は `unsafe` を使います。広い再処理は許容されますが、古い結果の再利用は許容されません。
@@ -419,9 +421,9 @@ const backlinks = await getBacklinks({ view, slug });
 
 Manifest を受け取る Hook（`onManifestCreated`、page resolver、renderer）では、次の3つの entry collection を使い分けます。
 
-- `manifest.entries` — `draft`、`scheduled`、private など非公開のものを含む、 scan した source の raw collection。公開用の view ではないため、公開ページや discovery UI へ描画しないでください。
-- `manifest.publicEntries` — 到達可能な entry（`public` と `unlisted`）。sitemap など、到達可能な全 URL を網羅する出力に使います。`unlisted` を含む点に注意してください。
-- `manifest.discoverableEntries` — discovery surface に表示してよい entry（`public` のみ）。関連記事、新着、tag ページ、検索 index など、読者が一覧から辿る UI にはこれを使います。
+- `manifest.entries`：`draft`、`scheduled`、private など非公開のものを含む、 scan した source の raw collection。公開用の view ではないため、公開ページや discovery UI へ描画しないでください。
+- `manifest.publicEntries`：到達可能な entry（`public` と `unlisted`）。sitemap など、到達可能な全 URL を網羅する出力に使います。`unlisted` を含む点に注意してください。
+- `manifest.discoverableEntries`：discovery surface に表示してよい entry（`public` のみ）。関連記事、新着、tag ページ、検索 index など、読者が一覧から辿る UI にはこれを使います。
 
 `frontmatter` から可視性を再判定したり、`publishAt` を再実装したりしないでください。Hook が分岐を必要とする場合は、解決済みの `entry.publishing`（`visibility`、`routable`、`discoverable`）を読みます。それ以外は、判断をすでに含む collection を選んでください。公開方針は [Configuration](./configuration.ja.md) で設定します。
 
@@ -513,7 +515,8 @@ processedContentCache: {
 - `global`: vault全体で解決したLocationに依存する変換です。CoreはLocation集合をfingerprintし、変わったときはすべてのentryを再処理します。
 - `unsafe`: Git、network、時刻、process state など、Core が追跡できない入力です。処理済み Content の永続 Cache 再利用を安全側で無効にします。
 
-Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の取り決めです。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `outputDependencies` を宣言すると各 Content Output に加算されます。
+Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の取り決めです。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、
+root の `outputDependencies` を宣言すると各 Content Output に加算されます。
 
 ```ts
 outputDependencies: [{ type: "global" }]

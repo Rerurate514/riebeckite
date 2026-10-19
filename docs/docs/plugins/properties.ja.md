@@ -66,11 +66,11 @@ const data = getProperties({ view, frontmatter: entry.frontmatter, options });
 
 ## エクスポート
 
-- `properties(options?)` / `propertiesPlugin(options?)` — プラグインファクトリ
-- `resolvePropertiesOptions(options?)` — 既定値の解決
-- `getProperties({ view, frontmatter, options? })` — エントリ用のプロパティデータを解決
-- `renderPropertiesPanel(frontmatter, options?, context?)` — 純粋な描画関数
-- `buildTagHref(tag)` — タグ URL の生成
+- `properties(options?)` / `propertiesPlugin(options?)`：プラグインファクトリ
+- `resolvePropertiesOptions(options?)`：既定値の解決
+- `getProperties({ view, frontmatter, options? })`：エントリ用のプロパティデータを解決
+- `renderPropertiesPanel(frontmatter, options?, context?)`：純粋な描画関数
+- `buildTagHref(tag)`：タグ URL の生成
 - 型: `PropertiesOptions`、`ResolvedPropertiesOptions`、`PropertiesRenderContext`、`PropertiesLinkResolver`、`PropertiesMessage`
 
 ## 関連資料

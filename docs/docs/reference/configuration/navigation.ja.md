@@ -6,7 +6,7 @@ sidebar:
 ---
 # Navigation の設定
 
-Navigation はトップレベルの Config 項目ではなく、**`@riebeckite/plugin-navigation`** Plugin が提供します。Plugin は `{ primary, secondary }` という意味的なモデルを返し、`SiteNav` を通じて描画の仕組みを持ちます。**Site がそれぞれのリストをどこに配置するか**を決めます。`primary` と `secondary` は目立たせ方の違いを表すもので、配置そのものではありません。Plugin API に `header` / `footer` というキーはありません。
+Navigation はトップレベルの Config 項目ではなく、**`@riebeckite/plugin-navigation`** Plugin が提供します。Plugin は `{ primary, secondary }` という意味的なモデルを返し、`SiteNav` を通じて描画の仕組みを持ちます**。Site がそれぞれのリストをどこに配置するか**を決めます。`primary` と `secondary` は目立たせ方の違いを表すもので、配置そのものではありません。Plugin API に `header` / `footer` というキーはありません。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -45,7 +45,7 @@ import { SiteNav } from "@riebeckite/plugin-navigation";
 - ページの `title`（無い場合は slug のセグメントを整形）
 - `permalink`
 
-**Riebeckite 専用の Vault ファイル（`navigation.md` など）も、必須の frontmatter も必要ありません。**
+**Riebeckite 専用の Vault ファイル（`navigation.md` など）も、必須の frontmatter も必要ありません**。
 
 導出は表示中の言語に追従します。`l10n` Plugin が付与する言語 metadata をもとに同じ翻訳の entry をひとつの項目へ集約し、現在の言語の `href` だけを使います。`/ja/guide/` を表示しているときに `/en/...` が混ざることはありません。`l10n` を使っていない Vault では、これまでどおり全 entry が対象になります。
 

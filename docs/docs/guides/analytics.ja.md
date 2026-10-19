@@ -383,7 +383,7 @@ createWorker(options)
 
 Storage の既定値はありません。
 
-**D1 または KV のどちらか1つを明示的に選択します。**
+**D1 または KV のどちらか1つを明示的に選択します**。
 
 ## D1 と KV
 
@@ -405,7 +405,7 @@ d1Storage(db)
 
 D1 は UTC の日単位で集計します。
 
-SQLite の Atomic Upsert を利用し、**生の Page View Event は保存しません。**
+SQLite の Atomic Upsert を利用し、**生の Page View Event は保存しません**。
 
 そのため、
 
@@ -892,8 +892,8 @@ Abuse mitigation
 
 ### 関連資料
 
-- [Content System](../framework/content-system.ja.md#安定-content-id) — 安定 Content ID
-- [Diagnostics](../framework/diagnostics.ja.md) — Structured Finding と `check` / `doctor`
-- [Reference](../reference/README.ja.md) — 公開 Package と API
-- [HonoX Integration](../framework/honox-integration.ja.md) — 静的 Site の Build
-- [Deployment](./deployment/README.ja.md) — Site のデプロイ
+- [Content System](../framework/content-system.ja.md#安定-content-id)：安定 Content ID
+- [Diagnostics](../framework/diagnostics.ja.md)：Structured Finding と `check` / `doctor`
+- [Reference](../reference/README.ja.md)：公開 Package と API
+- [HonoX Integration](../framework/honox-integration.ja.md)：静的 Site の Build
+- [Deployment](./deployment/README.ja.md)：Site のデプロイ

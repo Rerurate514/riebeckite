@@ -95,10 +95,10 @@ kanban-plugin: board
 
 ## エクスポート
 
-- `kanban(options?)` — プラグインファクトリ
-- `kanbanPlugin` — `kanban` の別名
-- `resolveKanbanOptions(options?)` — 既定値を適用する
-- `remarkKanban(options?)` — プラグインが使う Remark 変換
+- `kanban(options?)`：プラグインファクトリ
+- `kanbanPlugin`：`kanban` の別名
+- `resolveKanbanOptions(options?)`：既定値を適用する
+- `remarkKanban(options?)`：プラグインが使う Remark 変換
 - `parseKanban(source, options)` と `renderKanban(result, options, resolveLink, source)`
 - `stripFrontmatter(markdown)` と `isKanbanNote(frontmatter)`
 - `createKanbanLinkResolver(manifest)` と `createKanbanPlaceholder(source)`

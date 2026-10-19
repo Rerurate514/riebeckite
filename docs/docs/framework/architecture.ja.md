@@ -336,7 +336,7 @@ filesystem path → slug → URL
 
 のような再計算をしないでください。
 
-**解決済みの `permalink` が public URL の source of truth です。**
+**解決済みの `permalink` が public URL の source of truth です**。
 
 ## Page Type
 

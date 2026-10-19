@@ -285,7 +285,7 @@ Riebeckite には複数の公式 Theme があります。
 | [Sakura](./sakura.ja.md) | `@riebeckite/theme-sakura` | `sakuraTheme()` | 桜をモチーフにした配色 |
 | [Tokyo Night](./tokyonight.ja.md) | `@riebeckite/theme-tokyonight` | `tokyonightTheme()` | Tokyo Night 風の暗色・Editor 風 Theme |
 
-各 Theme の正確な Export 名と Option は、それぞれの正本ページを参照してください。Package README は正本ページから生成されます。
+各 Theme の正確な Export 名と Option は、それぞれのページを参照してください。Package README はページから生成されます。
 
 ## Default
 
@@ -496,11 +496,11 @@ devで確認
 
 という流れになります。
 
-Theme ごとの正確な Factory 名と Option は、それぞれの正本ページを確認してください。
+Theme ごとの正確な Factory 名と Option は、それぞれのページを確認してください。
 
 ### 次に読むページ
 
-- [Writing a Theme](./writing-a-theme.ja.md) — Theme を自作する
-- [Theme API](../reference/theme-api.ja.md) — Theme の公開 Contract
-- [Framework / Theme System](../framework/theme-system.ja.md) — Theme の内部設計
-- [Plugins](../plugins/README.ja.md) — Site に機能を追加する
+- [Writing a Theme](./writing-a-theme.ja.md)：Theme を自作する
+- [Theme API](../reference/theme-api.ja.md)：Theme の公開 Contract
+- [Framework / Theme System](../framework/theme-system.ja.md)：Theme の内部設計
+- [Plugins](../plugins/README.ja.md)：Site に機能を追加する

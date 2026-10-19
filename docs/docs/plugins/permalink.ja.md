@@ -224,8 +224,8 @@ permalink({
 | `override.frontmatter` | `string` | `"permalink"` | URL を直接指定する frontmatter フィールド |
 | `redirects.frontmatter` | `string` | `"redirect_from"` | 旧 URL を指定する frontmatter フィールド |
 | `redirects.status` | `301 \| 302 \| 307 \| 308` | `308` | リダイレクトの HTTP ステータス |
-| `resolveId` | `(content) => string` | — | ID の解決を完全にカスタマイズする |
-| `resolvePath` | `({ content, id }) => string` | — | 公開パスの生成を完全にカスタマイズする |
+| `resolveId` | `(content) => string` | なし | ID の解決を完全にカスタマイズする |
+| `resolvePath` | `({ content, id }) => string` | なし | 公開パスの生成を完全にカスタマイズする |
 
 ---
 
@@ -344,7 +344,7 @@ path-derived hash
 | `derived` | path hash から導出 |
 | `custom` | `resolveId` から取得 |
 
-手動の `permalink` override は URL を変更しますが、同一性は消しません。frontmatter の ID があれば引き続き記録され（`metadata.idSource` は `frontmatter`）、明示的な ID がない場合のみメタデータは付与されません。override から暗黙の `/{id}` URL を生成することはありません。
+手動の `permalink` override は URL を変更しますが、同一性は消しません。frontmatter の ID があれば引き続き記録されます。明示的な ID がない場合のみメタデータは付与されません。override から暗黙の `/{id}` URL を生成することはありません。
 
 ---
 

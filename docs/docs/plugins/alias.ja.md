@@ -81,8 +81,8 @@ plugins: [permalinkPlugin(), aliasPlugin()],
 
 ## エクスポート
 
-- `aliasPlugin(options?)` / `alias(options?)` — プラグインファクトリ
-- `resolveAliasPath(alias)` — エイリアスをサイト内パスへ変換する純関数（`null` で無効）
+- `aliasPlugin(options?)` / `alias(options?)`：プラグインファクトリ
+- `resolveAliasPath(alias)`：エイリアスをサイト内パスへ変換する純関数（`null` で無効）
 - 型: `AliasOptions`、`AliasRedirectStatus`、`ResolvedAliasOptions`
 
 ## 関連資料

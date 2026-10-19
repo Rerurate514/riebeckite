@@ -39,8 +39,8 @@ export default defineConfig({
 
 ## 明るい配色と暗い配色
 
-- **明るい配色** — `bg0` の紙、`dark1` 相当の文字、Gruvbox の暗い側のアクセント（例: 背景 `#fbf1c7`、文字 `#3c3836`、アクセント `#076678`）
-- **暗い配色** — `bg0` の紙、`light1` の文字、Gruvbox の明るい側のアクセント（例: 背景 `#282828`、文字 `#ebdbb2`、アクセント `#83a598`）
+- **明るい配色**：`bg0` の紙、`dark1` 相当の文字、Gruvbox の暗い側のアクセント（例: 背景 `#fbf1c7`、文字 `#3c3836`、アクセント `#076678`）
+- **暗い配色**：`bg0` の紙、`light1` の文字、Gruvbox の明るい側のアクセント（例: 背景 `#282828`、文字 `#ebdbb2`、アクセント `#83a598`）
 
 `colorMode: "system"` は `data-theme` が付いていないかぎり `prefers-color-scheme` に従います。どちらの配色でもアクセントの役割は同じで、使う Gruvbox の色だけが明るい側・暗い側で入れ替わります。
 
@@ -120,8 +120,8 @@ Gruvbox を基調とした暖かい配色の Theme です。
 npm install @riebeckite/theme-gruvbox
 ```
 
-Theme の factory 名と設定項目は、実装とこの正本ページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+Theme の factory 名と設定項目は、実装とこのページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
 
 ## 詳細仕様
 
-設定項目や Theme 固有の仕様は この正本ページを参照してください。Theme の仕組みは [Theme System](../framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.ja.md) を参照してください。
+設定項目や Theme 固有の仕様は このページを参照してください。Theme の仕組みは [Theme System](../framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.ja.md) を参照してください。

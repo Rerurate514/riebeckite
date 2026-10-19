@@ -901,9 +901,9 @@ Theme
 
 ### 関連資料
 
-- [Theme](./README.ja.md) — Theme の選択と利用方法
-- [テーマ作成の詳細](../framework/theme-system.ja.md) — Option、Token、Hook、Cascade、配布を含む詳しい設計
-- [Theme API](../reference/theme-api.ja.md) — `defineTheme` と Theme の公開 Contract
-- [はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md) — 機能を追加する場合
-- [Plugin API](../reference/plugin-api.ja.md) — Plugin の公開 Contract
-- [アクセシビリティ](../accessibility.ja.md) — Theme 作成時のアクセシビリティ
+- [Theme](./README.ja.md)：Theme の選択と利用方法
+- [テーマ作成の詳細](../framework/theme-system.ja.md)：Option、Token、Hook、Cascade、配布を含む詳しい設計
+- [Theme API](../reference/theme-api.ja.md)：`defineTheme` と Theme の公開 Contract
+- [はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)：機能を追加する場合
+- [Plugin API](../reference/plugin-api.ja.md)：Plugin の公開 Contract
+- [アクセシビリティ](../accessibility.ja.md)：Theme 作成時のアクセシビリティ

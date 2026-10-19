@@ -62,8 +62,8 @@ export default defineConfig({
 
 ## 公開 API
 
-- `attachment(options?)` / `attachmentPlugin` — プラグインファクトリ
-- `AttachmentOptions` — オプションの型
+- `attachment(options?)` / `attachmentPlugin`：プラグインファクトリ
+- `AttachmentOptions`：オプションの型
 
 ## 関連資料
 

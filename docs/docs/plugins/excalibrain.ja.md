@@ -126,7 +126,7 @@ related:: [[note-a]] and [[note-b]] are similar
 | `maxPerRegion` | `number` | `8` | 領域ごとの最大ノード数 |
 | `infer` | `boolean` | `true` | リンクから関係を推論する |
 | `siblings` | `boolean` | `true` | 親から兄弟を推論する（`infer` が必要） |
-| `ontology` | object | — | ロールごとに末尾追加するオントロジーのフィールド名 |
+| `ontology` | object | なし | ロールごとに末尾追加するオントロジーのフィールド名 |
 | `showHidden` | `boolean` | `false` | `hidden` フィールドで指定したターゲットも含める |
 | `width` | `number` | `720` | SVG viewBox の幅 |
 | `height` | `number` | `480` | SVG viewBox の高さ |

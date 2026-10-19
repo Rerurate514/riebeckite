@@ -181,7 +181,7 @@ const data = await getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 
-Site はレイアウトの配置を決定します — 累積された `bodySlots` map も `ContentSlot` プリミティブもありません。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
+Site はレイアウトの配置を決定します。累積された `bodySlots` map も `ContentSlot` プリミティブもありません。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
 
 以前、 "Body Slots" セクションは廃止された slot システムを文書化していました。このシステムは Phase 4 で完全に削除されました。すべての UI は現在、Site TSX で plugin データヘルパーと component を使用して明示的に composition されます。
 

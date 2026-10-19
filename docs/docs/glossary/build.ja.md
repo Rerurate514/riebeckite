@@ -24,13 +24,13 @@ Riebeckiteがコンテンツを処理し、公開位置を解決して、manifes
 
 ## Build State
 
-Build Stateは`.riebeckite/build/content-state.json`に保存され、アプリケーション単位で共有されます。これは最適化のための情報で、正本ではありません。欠落、非互換、安全でない状態ではinitialまたはfullの経路が選ばれます。状態はBuildが成功したあとにだけ保存されるため、失敗しても以前の有効な状態は保たれます。
+Build Stateは`.riebeckite/build/content-state.json`に保存され、アプリケーション単位で共有されます。これは最適化のための情報で、元データではありません。欠落、非互換、安全でない状態ではinitialまたはfullの経路が選ばれます。状態はBuildが成功したあとにだけ保存されるため、失敗しても以前の有効な状態は保たれます。
 
 ## Buildの段階と出力の生成
 
 Buildプロセスは、`packages/core/src/pipeline.ts`で定義されたパイプラインの段階を順に進み、コンテンツの読み込みからHTMLの出力までを処理します。全体は`ContentBuildCoordinator`が調整します。
 
-1. **設定とPluginの解決**：`resolveConfig`が`site`、`content`、`theme`、`plugins`、`cache`の既定値を検証してマージし、`resolvePlugins`が`provides`/ `requires`/ `optional`のCapabilityに基づいてPluginを順序付けます。
+1. **設定とPluginの解決**：`resolveConfig`が`site`、`content`、`theme`の既定値を検証してマージします。`provides`/`requires`/`optional`のCapabilityに基づいてPluginを順序付けます。
 
 2. **コンテンツの読み込み**：`FileSystemContentSource`などのContent Sourceが、コンテンツディレクトリからMarkdownファイルを読み込みます。
 
@@ -46,13 +46,13 @@ Buildプロセスは、`packages/core/src/pipeline.ts`で定義されたパイ�
 
 ## パイプライン実行
 
-`packages/core/src/pipeline.ts`の`Pipeline`クラスは`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続的content cacheをスキャッシュキー（slug、source、frontmatter、pipeline fingerprint）でチェックします。cacheヒットで無効な依存がない場合は、キャッシュされたfrontmatterとHTMLが即座に返されます。cacheミスまたはバイパスの場合、RemarkとRehypeプラグインによる解析、frontmatter抽出、GFM、math、カスタム変換を経てmarkdownが処理されます。リンク解決はコンテンツ依存関係トラッカーを通じて依存を記録します。処理後、結果は将来のIncremental Build用にdependenciesとfingerprintとともにpersistent content cacheに保存されます。
+`packages/core/src/pipeline.ts`の`Pipeline`クラスは`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続的content cacheをキャッシュキー（slug、source、frontmatter、pipeline fingerprint）でチェックします。cacheヒットで無効な依存がない場合は、キャッシュされたfrontmatterとHTMLが即座に返されます。cacheミスまたはバイパスの場合、RemarkとRehypeプラグインによる解析、frontmatter抽出、GFM、math、カスタム変換を経てmarkdownが処理されます。リンク解決はコンテンツ依存関係トラッカーを通じて依存を記録します。処理後、結果は将来のIncremental Build用にdependenciesとfingerprintとともにpersistent content cacheに保存されます。
 
 pipeline fingerprint（`computePipelineFingerprint`）はplugin構成、content filter、compatibility versionを組み込みます。cache可能性は`isPersistentlyCacheable`によって決定され、各pluginの`processedContentCache`の取り決め（dependencyMode: none/tracked/global/unsafe）がチェックされます。
 
 ## 永続的content cache統合
 
-`.riebeckite/cache/content/v5`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`CacheKeyInputs`に含まれるslug、source、正規化されたfrontmatter、pipeline fingerprintから`computeContentCacheKey`で計算されます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は5）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheはSubsequent buildsで依存無効化を判定するための論理的content、file、link dependencies（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
+`.riebeckite/cache/content/v5`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`CacheKeyInputs`に含まれるslug、source、正規化されたfrontmatter、pipeline fingerprintから`computeContentCacheKey`で計算されます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は5）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheは後続のBuildで依存の無効化を判定するために、論理的なcontent、file、linkの依存関係（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
 
 ## 関連用語
 

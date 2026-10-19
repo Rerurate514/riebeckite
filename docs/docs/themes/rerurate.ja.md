@@ -81,8 +81,8 @@ Rerurate の視覚表現をもとにした Theme です。
 npm install @riebeckite/theme-rerurate
 ```
 
-Theme の factory 名と設定項目は、実装とこの正本ページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+Theme の factory 名と設定項目は、実装とこのページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
 
 ## 詳細仕様
 
-設定項目や Theme 固有の仕様は この正本ページを参照してください。Theme の仕組みは [Theme System](../framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.ja.md) を参照してください。
+設定項目や Theme 固有の仕様は このページを参照してください。Theme の仕組みは [Theme System](../framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](./writing-a-theme.ja.md) を参照してください。

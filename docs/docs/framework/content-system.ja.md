@@ -540,7 +540,7 @@ flowchart LR
 
 という境界を崩さないことが重要です。
 
-**Source は読み込み方、ContentManager はコンテンツの解決、Public Location は公開先、Manifest / Graph は解決結果を表します。**
+**Source は読み込み方、ContentManager はコンテンツの解決、Public Location は公開先、Manifest / Graph は解決結果を表します**。
 
 各機能が filesystem や Markdown を独自に読み直すのではなく、この Content System を通して同じ解決結果を共有することが、Riebeckite の Content Architecture の基本です。
 

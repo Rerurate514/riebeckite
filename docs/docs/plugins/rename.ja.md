@@ -103,5 +103,5 @@ buildRouteLock ──► 現在の RouteLock
 
 ## 関連
 
-- [Permalink プラグイン](./permalink.ja.md) — 安定した URL と `redirect_from`
+- [Permalink プラグイン](./permalink.ja.md)：安定した URL と `redirect_from`
 - [プラグインガイド](../reference/plugin-api.ja.md)

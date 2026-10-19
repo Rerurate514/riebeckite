@@ -499,9 +499,9 @@ Path Separator は `/` に正規化されます。
 | Pattern | Match | Match しない |
 | --- | --- | --- |
 | `.obsidian/**` | `.obsidian/app.json` | `notes/.obsidian/app.json` |
-| `**/.obsidian/**` | どちらにも Match | — |
+| `**/.obsidian/**` | どちらにも Match | なし |
 | `Templates/**` | `Templates/daily.md` | `notes/Templates/daily.md` |
-| `**/Templates/**` | どちらにも Match | — |
+| `**/Templates/**` | どちらにも Match | なし |
 | `private/**` | `private/secret.md` | `notes/private/secret.md` |
 
 `*` は1 Segment 内、
@@ -887,7 +887,7 @@ Content image に Site 側の作業は不要です。`obsidianMarkdown()` が公
 
 のような Embed が URL を生成しても、
 
-**Vault にある File 自体が自動的に Public Directory へコピーされるわけではありません。**
+**Vault にある File 自体が自動的に Public Directory へコピーされるわけではありません**。
 
 ```mermaid id="4nfh04"
 flowchart LR
@@ -1282,8 +1282,8 @@ Private Vault を利用する場合でも、`publishStrategy`、`exclude`、Asse
 
 ### 関連資料
 
-- [記事とサイトのリポジトリ分離](../content-repositories.ja.md) — 分離構成を最初から作る
-- [Configuration](../../reference/configuration.ja.md) — Root Resolution と外部 Vault
-- [利用ガイド](../README.ja.md) — Content / Asset の基本的な扱い
-- Cloudflare デプロイテンプレート — Deployment Workflow
+- [記事とサイトのリポジトリ分離](../content-repositories.ja.md)：分離構成を最初から作る
+- [Configuration](../../reference/configuration.ja.md)：Root Resolution と外部 Vault
+- [利用ガイド](../README.ja.md)：Content / Asset の基本的な扱い
+- Cloudflare デプロイテンプレート：Deployment Workflow
 

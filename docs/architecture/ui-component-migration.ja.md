@@ -5,7 +5,7 @@ title: UI コンポーネント移行
 
 ## 1. 状態と判断
 
-**Phase 4 complete: 遺留 Slot API (`ContentSlot`、`bodySlots`、`ARTICLE_SLOT`、`appendContentBodySlot`、`hasSlot`) は削除され、Plugin はデータヘルパーと Site に 의해 composition される JSX コンポーネントを公開します。** この文書は削除の設計基準です。Phase 0 では文書のみを変更し、実行時の挙動は変えません。後続の Phase では `ContentSlot`、`bodySlots`、`ARTICLE_SLOT`、`appendContentBodySlot` を別 API で温存せず、削除します。
+**Phase 4 complete: 遺留 Slot API (`ContentSlot`、`bodySlots`) は削除されました**。`ARTICLE_SLOT`、`appendContentBodySlot`、`hasSlot`) は削除されました。Plugin はデータヘルパーと、Site が組み立てる JSX コンポーネントを公開します。 この文書は削除の設計基準です。Phase 0 では文書のみを変更し、実行時の挙動は変えません。後続の Phase では `ContentSlot`、`bodySlots`、`ARTICLE_SLOT`、`appendContentBodySlot` を別 API で温存せず、削除します。
 
 ## 2. 対象と対象外
 
@@ -13,7 +13,7 @@ title: UI コンポーネント移行
 
 ## 3. 現状監査
 
-`ContentManifestEntry.bodySlots` は HTML 文字列の map です。`appendContentBodySlot` は断片を追加し、`ContentSlot` は選んだ断片を `dangerouslySetInnerHTML` で挿入します。`apps/web/app/components/article/article.tsx` は header、metadata、aside、before-content、after-content、footer を決まった位置に描画します。つまり Plugin が manifest を作る段階で Site の DOM 上の位置を選んでいます。
+`ContentManifestEntry.bodySlots` は HTML 文字列の map です。`appendContentBodySlot` は断片を追加し、`ContentSlot` は選んだ断片を `dangerouslySetInnerHTML` で挿入します。`apps/web/app/components/article/article.tsx` は header、metadata、asideを決まった位置に描画します。before-content、after-content、footerを決まった位置に描画します。つまり Plugin が manifest を作る段階で Site の DOM 上の位置を選んでいます。
 
 `[data-slot]` を CSS selector として使う stylesheet は見つかりませんでした。主な用途は DOM hook です。ただし結合は残っています。`ArticleLayout` と integration CSS が固定 grid を提供し、app も同じ `data-article-layout` を使っています。
 
@@ -64,7 +64,7 @@ Markdown は pipeline が作る `entry.html` のまま `ArticleBody` で描画�
 | Theme | token、typography、色、element style | 構造的な layout の選択 |
 | Site | TSX composition、grid、responsive rule、sticky rail | 再利用可能な Plugin capability |
 
-`.rb-article-layout` と `.rb-page-body` の integration layout CSS を削除し、`articleLayout` / `data-article-layout` を layout controller として廃止します。typography 用の `.rb-article-content`、header、metadata、footer などの stable hook は残します。TOC は grid column、negative margin、sticky rule を持つため現状ではこの方針に反します。内部の見た目だけを残します。Docs plugin の CSS はおおむね内部向けです。12 個の Slot Plugin に、ほかの global placement CSS はありません。Slot Plugin ではない `sidenotes` に sticky behaviour があるため、同じ方針で別途見直します。
+`.rb-article-layout` と `.rb-page-body` の integration layout CSS を削除します。あわせて、`articleLayout` / `data-article-layout` を layout controller として廃止します。typography 用の `.rb-article-content`、header、metadata、footer などの stable hook は残します。TOC は grid column、negative margin、sticky rule を持つため現状ではこの方針に反します。内部の見た目だけを残します。Docs plugin の CSS はおおむね内部向けです。12 個の Slot Plugin に、ほかの global placement CSS はありません。Slot Plugin ではない `sidenotes` に sticky behaviour があるため、同じ方針で別途見直します。
 
 ## 8. Site による composition の例
 
@@ -96,7 +96,7 @@ Minimal は rail を持ちません。Starter は flow layout を選べます。
 
 ## 9. HonoX primitive と export
 
-`Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`PageBody`、`ArticleFooter`、`Sidebar`、`ThemeRoot` は、Slot API と配置 attribute を取り除いた semantic primitive として残します。component は Plugin package に置き、model type と helper とともに public entry point から export します。Site TSX は application の `app/` に置きます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
+`Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`PageBody`、`ArticleFooter`、`Sidebar`、`ThemeRoot` は残します。Slot API と配置 attribute を取り除いた semantic primitive として扱います。component は Plugin package に置き、model type と helper とともに public entry point から export します。Site TSX は application の `app/` に置きます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
 
 ## 10. Plugin 移行表
 
@@ -119,7 +119,7 @@ helper は Slot HTML ではなく空の model または collection を返しま�
 
 ## 11. Plugin ごとの可視性規則
 
-backlinks、related posts、local graph、series、docs navigation、tag 起点の breadcrumbs は discoverable data を使います。Properties は明示された routable unlisted target にはリンクできますが、routable でない target にはリンクしません。l10n の候補は route の安全な group contract で絞ります。changelog と diff は現在の routable entry だけを対象にします。webmention と share はその entry を扱うため、manifest 全体の discovery は不要です。
+backlinks、related posts、local graph、series は discoverable data を使います。docs navigation、tag 起点の breadcrumbs も同様です。Properties は明示された routable unlisted target にはリンクできますが、routable でない target にはリンクしません。l10n の候補は route の安全な group contract で絞ります。changelog と diff は現在の routable entry だけを対象にします。webmention と share はその entry を扱うため、manifest 全体の discovery は不要です。
 
 ## 12. Factory、設定、dependency
 
@@ -133,7 +133,7 @@ Docs は navigation data の生成に navigation-source contract を使います
 
 ## 12.1 基盤 API
 
-`createPublicContentView(manifest)` は、manifest の状態ごとに新しい freeze 済み public-data facade を作ります。`routableEntries`、`discoverableEntries`、`findRoutableBySlug`、`findDiscoverableBySlug`、`findRoutableByAlias`、`getDiscoverableEntriesByTag`、discoverable な graph 関係 API を公開します。routable record をコピーし、non-routable target への link を除外し、filter 済み record から alias、tag、graph の結果を再構築します。raw manifest map や graph は公開しません。manifest をまたぐ memoization は意図的に行わないため、公開状態の変更で古い View が再利用されません。
+`createPublicContentView(manifest)` は、manifest の状態ごとに新しい freeze 済み public-data facade を作ります。`routableEntries`、`discoverableEntries` を公開します。`findRoutableBySlug`、`findDiscoverableBySlug` を公開します。`findRoutableByAlias`、`getDiscoverableEntriesByTag` とdiscoverable な graph 関係 API を公開します。routable record をコピーし、non-routable target への link を除外します。filter 済み record から alias、tag の結果を再構築します。raw manifest map は公開しません。graph は公開しません。manifest をまたぐ memoization は意図的に行わないため、公開状態の変更で古い View が再利用されません。
 
 `HtmlFragment` は server 専用の HonoX primitive です。
 
@@ -143,13 +143,13 @@ Docs は navigation data の生成に navigation-source contract を使います
 
 wrapper を出力せず、`source` は provenance を表すだけで、runtime の sanitize や security guarantee ではありません。`ArticleBody` と `PageBody` は Markdown と Plugin Page HTML の semantic boundary として残します。HTML は sanitize しません。Markdown の raw HTML、rehype/remark の出力、Plugin Page HTML、外部 data から作る HTML は、この boundary の前に各所有 pipeline が信頼・sanitize する必要があります。新しい Plugin UI には JSX を使い、この primitive を使いません。
 
-Plugin package は factory に加えて `PluginDataHelper<Input, Model>` と `PluginComponent<Props>` を export できます。helper は `PublicContentView` のような狭い input を受け、component は readonly の型付き props を受けて Slot HTML を返しません。必要に応じて package export は `./components`、`./style.css`、`./client` を追加できます。既存の asset と client-entry の登録は引き続き factory の責務であり、component を import しただけでは CSS/client runtime の登録も Plugin capability の有効化も行いません。CSS の tree shaking は既存の package `sideEffects` metadata に従います。
+Plugin package は factory に加えて `PluginDataHelper<Input, Model>` と `PluginComponent<Props>` を export できます。helper は `PublicContentView` のような狭い input を受け、component は readonly の型付き props を受けて Slot HTML を返しません。必要に応じて package export は `./components`、`./style.css`、`./client` を追加できます。既存の asset と client-entry の登録は引き続き factory の責務です。component を import しただけでは、CSS/client runtime の登録も Plugin capability の有効化も行いません。CSS の tree shaking は既存の package `sideEffects` metadata に従います。
 
 ## 13. Cache と Incremental SSG への影響
 
-現在の manifest-hook cache は raw entry を serialize し、public/discoverable collection、generated data、asset、client entry、diagnostic を fingerprint しています。Slot を削除すると generated `bodySlots` と 12 個の rendering hook が消えます。古い snapshot を再利用しないよう、cache schema/version と pipeline fingerprint を変更します。
+現在の manifest-hook cache は raw entry を serialize します。public/discoverable collection、generated data、asset、client entry、diagnostic を fingerprint しています。Slot を削除すると generated `bodySlots` と 12 個の rendering hook が消えます。古い snapshot を再利用しないよう、cache schema/version と pipeline fingerprint を変更します。
 
-`computeAppFingerprint` は `app/` と config を hash します。したがって Site の TSX/CSS で配置を変えると no-change incremental SSG path は invalidate されます。配置専用の dependency は不要です。Plugin の enable/config 変更も対象です。global content dependency は、別途改善するまで広く invalidate されます。Phase 1 では cold build、persistent-cache build、content 変更 build、app の配置だけを変えた build を確認します。
+`computeAppFingerprint` は `app/` と config を hash します。したがって Site の TSX/CSS で配置を変えると no-change incremental SSG path は 無効化されます。配置専用の dependency は不要です。Plugin の enable/config 変更も対象です。global content dependency は、別途改善するまで広く 無効化されます。Phase 1 では cold build、persistent-cache build、content 変更 build、app の配置だけを変えた build を確認します。
 
 ## 14. 移行順序とテスト
 
@@ -178,6 +178,6 @@ endpoint など factory の capability は維持します。
 Phase 4 では、preset 以外のすべての Site consumer が同じ移行を完了してから
 legacy Slot contract を削除できます。
 
-基盤 API は cache schema、pipeline fingerprint、output dependency、Plugin fingerprint、Slot HTML を変更しません。`PublicContentView` は現在の manifest から導出し、persistent cache を持ちません。`HtmlFragment` の変更範囲は SSR HTML の描画だけです。既存の `computeAppFingerprint` は引き続き `app/` の TSX/CSS 変更で SSG output を invalidate します。Phase 1 では既存の小規模 fixture を使って cold、no-change、content、publication、layout-only、Plugin-data を確認し、10,000 件 benchmark は実行しません。
+基盤 API は cache schema、pipeline fingerprint、output dependency、Plugin fingerprint、Slot HTML を変更しません。`PublicContentView` は現在の manifest から導出し、persistent cache を持ちません。`HtmlFragment` の変更範囲は SSR HTML の描画だけです。既存の `computeAppFingerprint` は引き続き `app/` の TSX/CSS 変更で SSG output を invalidate します。Phase 1 では既存の小規模 fixture を使って cold、no-change、content、publication、layout-only、Plugin-data を確認します。10,000 件 benchmark は実行しません。
 
-**Phase 1 の結果:** Core と HonoX integration suite が成功しました。persistent-content / manifest-hook cache、publication state、output dependency、cold / no-change / content edit / app change、Plugin configuration を確認しています。この追加 API に cache schema または fingerprint の変更は不要です。
+**Phase 1 の結果:** Core と HonoX integration suite が成功しました。persistent-content / manifest-hook cache、publication state を確認しています。output dependency、cold / no-change / content edit / app change、Plugin configuration を確認しています。この追加 API に cache schema または fingerprint の変更は不要です。

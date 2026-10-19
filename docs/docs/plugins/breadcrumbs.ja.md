@@ -84,12 +84,12 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 
 ## エクスポート
 
-- `breadcrumbs(options?)` — プラグインファクトリ
-- `breadcrumbsPlugin` — `breadcrumbs` のエイリアス
-- `resolveBreadcrumbsOptions(options?)` — オプションの既定値を適用する
-- `buildBreadcrumbItems({ manifest, entry, config, homeLabel })` — パンくず列を組み立てる
-- `renderBreadcrumbNav(items, options)` — ナビゲーション HTML を生成する
-- `buildBreadcrumbJsonLd(config, items)` — JSON-LD オブジェクトを生成する
+- `breadcrumbs(options?)`：プラグインファクトリ
+- `breadcrumbsPlugin`：`breadcrumbs` のエイリアス
+- `resolveBreadcrumbsOptions(options?)`：オプションの既定値を適用する
+- `buildBreadcrumbItems({ manifest, entry, config, homeLabel })`：パンくず列を組み立てる
+- `renderBreadcrumbNav(items, options)`：ナビゲーション HTML を生成する
+- `buildBreadcrumbJsonLd(config, items)`：JSON-LD オブジェクトを生成する
 - 型: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`
 
 ## 制約

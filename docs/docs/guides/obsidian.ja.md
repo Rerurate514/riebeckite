@@ -3,7 +3,7 @@ title: Obsidian のノートをサイトにする
 ---
 # Obsidian のノートをサイトにする
 
-Riebeckite では、**普段使っている Obsidian Vault をそのまま記事の置き場所として利用できます。**
+Riebeckite では、**普段使っている Obsidian Vault をそのまま記事の置き場所として利用できます**。
 
 既存の Vault を Riebeckite 用に作り直したり、Markdown を別の形式へ変換したりする必要はありません。
 
@@ -121,7 +121,7 @@ flowchart TD
 
 そのため、
 
-**公開記事と個人的なノートを同じ Vault に置いたまま運用できます。**
+**公開記事と個人的なノートを同じ Vault に置いたまま運用できます**。
 
 ## Vault の置き方
 
@@ -563,7 +563,7 @@ flowchart TD
 
 つまり、普段の執筆方法はこれまでとほぼ同じです。
 
-**Obsidian で書き、公開したい Note にだけ `publish: true` を付けます。**
+**Obsidian で書き、公開したい Note にだけ `publish: true` を付けます**。
 
 Riebeckite は、その Vault を公開 Site の Content Source として利用します。
 

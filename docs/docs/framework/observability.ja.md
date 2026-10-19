@@ -7,9 +7,9 @@ Observability は、Riebeckite の実行中に **何が起きたのか、どこ�
 
 Riebeckite では目的の異なる3つの仕組みを分けています。
 
-- **Logger** — 何が起きたかを知る
-- **Tracer** — どの処理にどれだけ時間がかかったかを記録する
-- **Profiler** — Trace をまとめて、Build のどこを調査すべきか確認する
+- **Logger**：何が起きたかを知る
+- **Tracer**：どの処理にどれだけ時間がかかったかを記録する
+- **Profiler**：Trace をまとめて、Build のどこを調査すべきか確認する
 
 ```mermaid
 flowchart LR
@@ -187,8 +187,8 @@ Profiler の目的は、
 
 Profiler は Cache の状況も分けて表示します。
 
-- **Plugin cache** — プラグイン自身が保存した結果の hit / miss
-- **Content cache** — persistent content cache の hit / miss / bypass と、miss / bypass の理由
+- **Plugin cache**：プラグイン自身が保存した結果の hit / miss
+- **Content cache**：persistent content cache の hit / miss / bypass と、miss / bypass の理由
 
 これにより、
 

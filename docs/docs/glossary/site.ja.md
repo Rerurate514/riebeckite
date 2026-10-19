@@ -45,7 +45,7 @@ const data = await getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 
-Site はレイアウトの配置を決定します — 累積された `bodySlots` map も `ContentSlot` プリミティブもありません。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
+Site はレイアウトの配置を決定します。累積された `bodySlots` map も `ContentSlot` プリミティブもありません。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
 
 ## SiteConfig 構造
 

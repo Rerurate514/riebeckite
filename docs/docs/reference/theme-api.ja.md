@@ -64,7 +64,7 @@ flowchart TD
     Plugin --> P4["Endpoint"]
 ```
 
-**見た目だけを変更するために Plugin を作らず、機能を追加するために Theme を拡張しません。**
+**見た目だけを変更するために Plugin を作らず、機能を追加するために Theme を拡張しません**。
 
 ## 最小の Theme
 

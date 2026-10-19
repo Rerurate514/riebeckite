@@ -409,7 +409,7 @@ npm exec riebeckite check
 
 ## 関連ページ
 
-- [Configuration](./configuration.ja.md) — ディレクトリの基準、コンテンツの選択、公開条件
-- [Plugin system](./plugin-api.ja.md) — プラグインの仕組み
-- [Theme system](./theme-api.ja.md) — Theme とデザイン設定の仕組み
-- [CLI](./cli.ja.md) — `check`、`doctor`、`inspect` などのコマンド
+- [Configuration](./configuration.ja.md)：ディレクトリの基準、コンテンツの選択、公開条件
+- [Plugin system](./plugin-api.ja.md)：プラグインの仕組み
+- [Theme system](./theme-api.ja.md)：Theme とデザイン設定の仕組み
+- [CLI](./cli.ja.md)：`check`、`doctor`、`inspect` などのコマンド

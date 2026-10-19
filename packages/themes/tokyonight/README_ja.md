@@ -10,10 +10,10 @@ Tokyo Night の濃い藍色と鮮やかな青を、開発ツールらしい見�
 
 単なる配色の差し替えではなく、次のような見た目の性格を持たせています。
 
-- **等幅・大文字の見出し** — JetBrains Mono を使い、字間を広げ、アクセントの縦罫を添える
-- **角と罫線** — 面の角は直角、境界は 1px の罫線、影は使わない
-- **コード** — 等幅、1px 罫線、アクセントの左罫、余白を広めにとったヘッダー風の体裁
-- **任意のネオン** — フォーカス枠、選択色、スクロールバー、リンクのホバー、見出しのアクセントに控えめな発光を足す
+- **等幅・大文字の見出し**：JetBrains Mono を使い、字間を広げ、アクセントの縦罫を添える
+- **角と罫線**：面の角は直角、境界は 1px の罫線、影は使わない
+- **コード**：等幅、1px 罫線、アクセントの左罫、余白を広めにとったヘッダー風の体裁
+- **任意のネオン**：フォーカス枠、選択色、スクロールバー、リンクのホバー、見出しのアクセントに控えめな発光を足す
 
 本文はサンセリフのまま、日本語のグリフはシステムフォントにフォールバックします。ラテン文字には同梱の JetBrains Mono を使います。
 
@@ -79,8 +79,8 @@ Tokyo Night を基調とした高コントラストな Theme です。
 npm install @riebeckite/theme-tokyonight
 ```
 
-Theme の factory 名と設定項目は、実装とこの正本ページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
+Theme の factory 名と設定項目は、実装とこのページを一次情報として確認してください。`riebeckite.config.ts` の `theme` に設定して利用します。
 
 ## 詳細仕様
 
-設定項目や Theme 固有の仕様は この正本ページを参照してください。Theme の仕組みは [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.ja.md) を参照してください。
+設定項目や Theme 固有の仕様は このページを参照してください。Theme の仕組みは [Theme System](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/theme-system.ja.md)、Theme を作る場合は [Writing a Theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.ja.md) を参照してください。

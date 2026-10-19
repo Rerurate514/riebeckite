@@ -120,7 +120,7 @@ $env:UPDATE_GOLDEN=1; pnpm --filter @riebeckite/plugin-toc test
 
 Golden File の更新は単にテストを通すために行うものではありません。
 
-**新しい出力が正しいことを確認してから更新してください。**
+**新しい出力が正しいことを確認してから更新してください**。
 
 ## テストの置き場所
 
@@ -236,7 +236,7 @@ Repository の `tests/plugin-dx` がこの検証の実例で、前述のとお�
 
 ### `@riebeckite/test` の役割
 
-`@riebeckite/test` は、Golden File の比較（`assertGolden` / `assertGoldenJson`）など、複数 Package で共有するテスト Helper を提供します。**必須ではありません**。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部 Site を生成して検証する Repository 向けの Engine で、第三者 Plugin が通常使うものではありません。
+`@riebeckite/test` は、Golden File の比較（`assertGolden` / `assertGoldenJson`）など、複数 Package で共有するテスト Helper を提供します。必須ではありません。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部 Site を生成して検証する Repository 向けの Engine で、第三者 Plugin が通常使うものではありません。
 
 ## 基本的なテストの書き方
 
@@ -467,7 +467,7 @@ Golden File をコミットするのは意図的です。
 
 として Pull Request 上でレビューできるようにするためです。
 
-**Golden File の更新そのものを修正として扱わず、なぜ出力が変わったのかを必ず確認してください。**
+**Golden File の更新そのものを修正として扱わず、なぜ出力が変わったのかを必ず確認してください**。
 
 ## Node の Snapshot を使わない理由
 

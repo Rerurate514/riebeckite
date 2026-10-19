@@ -5,7 +5,7 @@ sidebar:
 ---
 # Output Inventory
 
-公開entry、redirect、Pluginページ、Generated Outputから作られる、パスをキーにしたすべての生成物の記録です。Buildはこれを前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を求めます。
+公開entry、redirectから作られ、パスをキーにした生成物の記録です。Pluginページ、Generated Outputから作られ、パスをキーにした生成物の記録です。
 
 ## 含まれるもの
 
@@ -47,7 +47,7 @@ Pluginが`manifest.generatedOutputs`を通じて生成します。各生成さ�
 
 ## 比較
 
-前回の成功した状態と比較、影響する出力、変わらない出力、削除された出力を決めます。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
+前回の成功した状態と比較、影響する出力を決めます。変わらない出力、削除された出力を決めます。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
 
 ## 関連用語
 

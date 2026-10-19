@@ -67,10 +67,10 @@ push は自動実行されません。表示された command を自分で実行
 
 判断の基準は registry です。script はローカルの記録を公開成功の根拠として扱いません。
 
-- **公開済み package は skip します。** 各 publish の前に registry を確認するため、同じ version を再実行しても公開済みを再 publish しません。
-- **version bump は冪等です。** 既にその version の package へ bump しても同じ内容を書き直すだけです。
-- **失敗した実行は version を bump 済みのまま残します。** 原因を直した後 `pnpm release <version>` を再実行すると、残りの package だけを処理します。
-- **最終検証で registry を再確認します。** 全 package の version が公開済みと確認できた後にだけ commit と tag を作成します。
+- **公開済み package は skip します**。 各 publish の前に registry を確認するため、同じ version を再実行しても公開済みを再 publish しません。
+- **version bump は冪等です**。 既にその version の package へ bump しても同じ内容を書き直すだけです。
+- **失敗した実行は version を bump 済みのまま残します**。 原因を直した後 `pnpm release <version>` を再実行すると、残りの package だけを処理します。
+- **最終検証で registry を再確認します**。 全 package の version が公開済みと確認できた後にだけ commit と tag を作成します。
 
 commit はあるが tag が無い（またはその逆）場合も、release を再実行してください。publish は skip され、足りない git object が作成されます。
 
@@ -83,7 +83,7 @@ commit はあるが tag が無い（またはその逆）場合も、release を
 | staging 済み・承認待ち | staged version として存在し、直接 publish できない | `npm stage list` |
 | 状態不明 | registry を確実に問い合わせられなかった | なし |
 
-**状態不明は停止状態です。** script は推測しません。registry の状態を確定できない場合（network 障害、timeout、想定外の応答）、未公開と仮定せず、release を停止して確認すべき内容を表示します。
+**状態不明は停止状態です**。 script は推測しません。registry の状態を確定できない場合（network 障害、timeout、想定外の応答）、未公開と仮定せず、release を停止して確認すべき内容を表示します。
 
 ## staging と承認
 

@@ -157,17 +157,11 @@ flowchart LR
 
 `.riebeckite` は integration が管理する生成物です。
 
-**Site の source code として直接編集しないでください。**
+**Site のソースコードとして直接編集しないでください**。
 
 ## Bootstrap module
 
-generated Site は Framework 所有の bootstrap module を import します。解決済み config は `virtual:riebeckite/config`、構成済みの content runtime は `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG entry の `app/server.ts` はこの2つを re-export し、`riebeckiteSsg` はそこから manifest を見つけます。
-
-Vite の外で動く script（`tsx` で起動する Node script など）は `@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ config を解決できます。
-
-## Bootstrap module
-
-generated Site は Framework 所有の bootstrap module を import します。解決済み config は `virtual:riebeckite/config`、構成済みの content runtime は `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG entry の `app/server.ts` はこの2つを re-export し、`riebeckiteSsg` はそこから manifest を見つけます。
+生成された Site は Framework が提供する bootstrap module を import します。解決済み config は `virtual:riebeckite/config`、構成済みの content runtime は `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG entry の `app/server.ts` はこの2つを再エクスポートし、`riebeckiteSsg` はそこから manifest を見つけます。
 
 Vite の外で動く script（`tsx` で起動する Node script など）は `@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ config を解決できます。
 

@@ -9,7 +9,7 @@ Plugin catalog は [Plugins](./README.ja.md) にあります。このページ�
 
 ## Obsidian Markdown
 
-### Callouts — [`obsidian-markdown`](./obsidian-markdown.ja.md)
+### Callouts：[`obsidian-markdown`](./obsidian-markdown.ja.md)
 
 #### ソース
 
@@ -25,7 +25,7 @@ Plugin catalog は [Plugins](./README.ja.md) にあります。このページ�
 > Callout は `[!type]` マーカー付きの block quote です。
 > `[!info]`、`[!warning]`、`[!question]` も同じように表示されます。
 
-### WikiLinks と埋め込み — [`obsidian-markdown`](./obsidian-markdown.ja.md)
+### WikiLinks と埋め込み：[`obsidian-markdown`](./obsidian-markdown.ja.md)
 
 #### ソース
 
@@ -39,7 +39,7 @@ Plugin catalog は [Plugins](./README.ja.md) にあります。このページ�
 
 ## Code
 
-### Toolbar 付きコード — [`code-enhance`](./code-enhance.ja.md)
+### Toolbar 付きコード：[`code-enhance`](./code-enhance.ja.md)
 
 行番号、ファイル名バー、行ハイライト、copy button を確認できます。
 
@@ -61,7 +61,7 @@ export function hello(name: string): string {
 }
 ```
 
-### Code tabs — [`code-tabs`](./code-tabs.ja.md)
+### Code tabs：[`code-tabs`](./code-tabs.ja.md)
 
 隣り合った `tab="..."` 付き code fence が、1 つの tab group になります。
 
@@ -171,7 +171,7 @@ const kept = true;
 
 ## 図表
 
-### Mermaid — [`mermaid`](./mermaid.ja.md)
+### Mermaid：[`mermaid`](./mermaid.ja.md)
 
 #### ソース
 
@@ -193,7 +193,7 @@ flowchart LR
   B -->|no| D[Draft]
 ```
 
-### D2 — [`d2`](./d2.ja.md)
+### D2：[`d2`](./d2.ja.md)
 
 #### ソース
 
@@ -211,7 +211,7 @@ site: Riebeckite
 content -> build -> deploy
 ```
 
-### Graphviz / DOT — [`graphviz`](./graphviz.ja.md)
+### Graphviz / DOT：[`graphviz`](./graphviz.ja.md)
 
 #### ソース
 
@@ -233,7 +233,7 @@ digraph G {
 }
 ```
 
-### Chart.js — [`chartjs`](./chartjs.ja.md)
+### Chart.js：[`chartjs`](./chartjs.ja.md)
 
 #### ソース
 
@@ -261,7 +261,7 @@ digraph G {
 }
 ```
 
-### Vega-Lite — [`vega-lite`](./vega-lite.ja.md)
+### Vega-Lite：[`vega-lite`](./vega-lite.ja.md)
 
 #### ソース
 
@@ -293,7 +293,7 @@ digraph G {
 }
 ```
 
-### WaveDrom — [`wavedrom`](./wavedrom.ja.md)
+### WaveDrom：[`wavedrom`](./wavedrom.ja.md)
 
 #### ソース
 
@@ -315,7 +315,7 @@ digraph G {
 ] }
 ```
 
-### Markmap — [`markmap`](./markmap.ja.md)
+### Markmap：[`markmap`](./markmap.ja.md)
 
 #### ソース
 
@@ -345,7 +345,7 @@ digraph G {
 ## Delivery
 ```
 
-### Marp slides — [`marp`](./marp.ja.md)
+### Marp slides：[`marp`](./marp.ja.md)
 
 #### ソース
 
@@ -373,7 +373,7 @@ digraph G {
 # Second slide
 ```
 
-### Maps — [`map`](./map.ja.md)
+### Maps：[`map`](./map.ja.md)
 
 静的な fallback を先に表示し、JavaScript が有効な環境では interactive map に拡張します。
 
@@ -401,7 +401,7 @@ markers:
   - 35.6586, 139.7454 | Tokyo Tower
 ```
 
-### QR codes — [`qr-code`](./qr-code.ja.md)
+### QR codes：[`qr-code`](./qr-code.ja.md)
 
 Build 時に inline SVG として生成します。
 
@@ -421,7 +421,7 @@ https://example.com/
 https://example.com/
 ```
 
-### PlantUML — [`plantuml`](./plantuml.ja.md)
+### PlantUML：[`plantuml`](./plantuml.ja.md)
 
 図はビルド時に PlantUML サーバーの画像 URL へ変換されます。表示にはそのサーバーへ到達できる必要があります。
 
@@ -445,7 +445,7 @@ Bob --> Alice: Hi
 @enduml
 ```
 
-### Canvas — [`canvas`](./canvas.ja.md)
+### Canvas：[`canvas`](./canvas.ja.md)
 
 JSON Canvas をコードフェンスへ直接書くか、`![[diagram.canvas]]` で Canvas ファイルを埋め込みます。
 
@@ -475,7 +475,7 @@ JSON Canvas をコードフェンスへ直接書くか、`![[diagram.canvas]]` �
 
 ## Media
 
-### Rich embeds — [`rich-embed`](./rich-embed.ja.md)
+### Rich embeds：[`rich-embed`](./rich-embed.ja.md)
 
 URL を YouTube、Vimeo、Spotify、CodePen、Gist などの埋め込みに変換します。
 
@@ -499,7 +499,7 @@ caption: A short caption
 aspect: 16/9
 ```
 
-### Gallery cards — [`gallery`](./gallery.ja.md)
+### Gallery cards：[`gallery`](./gallery.ja.md)
 
 #### ソース
 
@@ -535,7 +535,7 @@ items:
     href: https://riebeckite.dev/docs/themes/gruvbox
 ```
 
-### Excalidraw — [`excalidraw`](./excalidraw.ja.md)
+### Excalidraw：[`excalidraw`](./excalidraw.ja.md)
 
 Excalidraw 形式のノートを埋め込むと、ブラウザ側で SVG に置き換わります。このサイトでは `assets/HW.md` の図を埋め込んでいます。
 
@@ -549,7 +549,7 @@ Excalidraw 形式のノートを埋め込むと、ブラウザ側で SVG に置�
 
 ![[HW]]
 
-### Responsive image — [`responsive-image`](./responsive-image.ja.md)
+### Responsive image：[`responsive-image`](./responsive-image.ja.md)
 
 画像を `![[...]]` で埋め込むと、対応する候補画像がある場合は `<picture>` と複数サイズの候補に展開されます。
 
@@ -589,7 +589,7 @@ host: example.com
 
 ## ナレッジとデータ
 
-### Dataview — [`dataview`](./dataview.ja.md)
+### Dataview：[`dataview`](./dataview.ja.md)
 
 #### ソース
 
@@ -613,7 +613,7 @@ SORT file.name asc
 LIMIT 10
 ```
 
-### Query — [`query`](./query.ja.md)
+### Query：[`query`](./query.ja.md)
 
 #### ソース
 
@@ -635,7 +635,7 @@ sort:
 limit: 5
 ```
 
-### Bases — [`bases`](./bases.ja.md)
+### Bases：[`bases`](./bases.ja.md)
 
 #### ソース
 
@@ -669,7 +669,7 @@ views:
     limit: 10
 ```
 
-### Kanban boards — [`kanban`](./kanban.ja.md)
+### Kanban boards：[`kanban`](./kanban.ja.md)
 
 本文に `##` 見出しの列と task list を置くと board になります。
 
@@ -721,7 +721,7 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 公開の単位は？ :: Note
 ```
 
-### ExcaliBrain — [`excalibrain`](./excalibrain.ja.md)
+### ExcaliBrain：[`excalibrain`](./excalibrain.ja.md)
 
 ノートごとの関係を 7 つの領域に分けて表示します。`excalibrain` フェンスの中身は読みません。フェンスは「ここに描画する」という位置だけを決め、マップの中身はそのページ自身のリンクから組み立てます。
 

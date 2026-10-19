@@ -14,7 +14,7 @@ title: Framework Development
 - Site scaffold や template を変更する
 - 公式ドキュメントや参照アプリを変更する
 
-単に Riebeckite を使って自分の Site を作りたい場合は、**この repository を clone する必要はありません。**
+単に Riebeckite を使って自分の Site を作りたい場合は、**この repository を clone する必要はありません**。
 
 [Getting Started](../getting-started/README.ja.md) から Site を作成してください。
 
@@ -105,7 +105,7 @@ Framework 開発でよく使用するコマンドは次のとおりです。
 | `pnpm test` | test を実行する |
 | `pnpm typecheck` | TypeScript の型を検査する |
 | `pnpm check:docs` | Documentation を検査する |
-| `pnpm docs:sync` | 正本の Plugin / Theme Documentation から package README を生成する |
+| `pnpm docs:sync` | 原本の Plugin / Theme Documentation から package README を生成する |
 | `pnpm check:plugin-docs` | Plugin Documentation と生成した README の同期を検査する |
 | `pnpm check:theme-docs` | Theme Documentation と生成した README の同期を検査する |
 | `pnpm check:scaffold` | 生成される Site を検査する |
@@ -125,7 +125,7 @@ Markdown link や Documentation の構造を検査します。
 Plugin / Theme Documentation の所有権は次のとおりです。
 
 ```text
-正本:
+原本:
   docs/docs/plugins/<slug>.md
   docs/docs/plugins/<slug>.ja.md
   docs/docs/themes/<slug>.md
@@ -138,7 +138,7 @@ Plugin / Theme Documentation の所有権は次のとおりです。
   packages/themes/<slug>/README_ja.md
 ```
 
-正本の Documentation だけを編集し、生成された README を手動で編集しないでください。変更後は次を実行します。
+原本の Documentation だけを編集し、生成された README を手動で編集しないでください。変更後は次を実行します。
 
 ```bash
 pnpm docs:sync

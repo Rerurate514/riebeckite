@@ -44,11 +44,11 @@ Theme は `rr-lightbox` の root に `--rr-lightbox-image-border-radius` を指�
 
 ## 公開 API
 
-- `lightboxPlugin(options?)` — プラグインファクトリ
-- `rehypeLightbox(options?)` — Rehype 変換
-- `initLightbox(root?, options?)` — ブラウザ初期化関数
-- `initLightboxFromOptions(options?)` — プラグインのクライアントスクリプトが呼ぶ、オプションを先に取る初期化関数
-- `LightboxOptions`、`LightboxInitOptions` — 型
+- `lightboxPlugin(options?)`：プラグインファクトリ
+- `rehypeLightbox(options?)`：Rehype 変換
+- `initLightbox(root?, options?)`：ブラウザ初期化関数
+- `initLightboxFromOptions(options?)`：プラグインのクライアントスクリプトが呼ぶ、オプションを先に取る初期化関数
+- `LightboxOptions`、`LightboxInitOptions`：型
 
 ## 関連資料
 

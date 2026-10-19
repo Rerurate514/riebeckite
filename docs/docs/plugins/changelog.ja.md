@@ -75,17 +75,17 @@ import "@riebeckite/plugin-changelog/style.css";
 
 ## 公開 API
 
-- `changelog(options?)` — プラグインファクトリ
-- `changelogPlugin` — `changelog` の別名
-- `resolveChangelogOptions(options?)` — 既定値を適用
-- `GitChangelogReader` — Git 履歴リーダー（`getFileHistory`、`getRecentCommits`、`isAvailable`）
-- `buildNoteChangeHistory(entry, commits, options)` — ノート単位のデータセット
-- `buildSiteChangelog({ entries, commits, contentIndex, options })` — サイト全体のデータセット
-- `renderNoteChangeHistory(history, options)` / `renderSiteChangelog(changelog, options)` — HTML レンダラ
-- `filterChangelogCommits(commits, options)` / `formatChangelogDate(date, options)` / `resolveLookbackSince(days, now?)` — 純粋な補助関数
+- `changelog(options?)`：プラグインファクトリ
+- `changelogPlugin`：`changelog` の別名
+- `resolveChangelogOptions(options?)`：既定値を適用
+- `GitChangelogReader`：Git 履歴リーダー（`getFileHistory`、`getRecentCommits`、`isAvailable`）
+- `buildNoteChangeHistory(entry, commits, options)`：ノート単位のデータセット
+- `buildSiteChangelog({ entries, commits, contentIndex, options })`：サイト全体のデータセット
+- `renderNoteChangeHistory(history, options)` / `renderSiteChangelog(changelog, options)`：HTML レンダラ
+- `filterChangelogCommits(commits, options)` / `formatChangelogDate(date, options)` / `resolveLookbackSince(days, now?)`：純粋な補助関数
 - 型: `ChangelogOptions`、`ResolvedChangelogOptions`、`ChangelogCommit`、`ChangelogRecord`、`NoteChangeHistory`、`SiteChangelog`、`SiteChangelogEntry`、`SiteChangelogNote`、`ChangelogDateFormat`、`GitChangelogReaderOptions`
 
 ## 関連資料
 
-- [plugin-diff](./diff.ja.md) — リビジョン履歴と行差分
+- [plugin-diff](./diff.ja.md)：リビジョン履歴と行差分
 - [プラグインシステム](../reference/plugin-api.ja.md)

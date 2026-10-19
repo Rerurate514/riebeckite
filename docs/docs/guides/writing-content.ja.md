@@ -330,7 +330,7 @@ Public Location
 
 そのため、
 
-**ファイルの物理 Path が常にそのまま URL になるわけではありません。**
+**ファイルの物理 Path が常にそのまま URL になるわけではありません**。
 
 Plugin や設定によって Public Location が変更されることがあります。
 

@@ -28,4 +28,4 @@ CLIには以下のデプロイ方法があります：
 | `riebeckite deploy setup` | 自動デプロイのためのGitHub Actions workflowを設定します。Cloudflare APIシークレットを登録します |
 | `riebeckite deploy domain` | デプロイされたWorkerのcustom domainを設定します。`wrangler.jsonc` または `wrangler.toml` を更新します |
 
-初めてデプロイする際は、`npm exec riebeckite build`で`dist/`を生成し、その後`npm exec riebeckite deploy`で公開します。custom domainを設定した後は、`site.baseUrl`を`riebeckite.config.ts`で最終的なアドレスに更新し、sitemap、feed、hreflangで生成されたURLが最終的なアドレスを使用するようにします。
+初めてデプロイする際は、`npm exec riebeckite build`で`dist/`を生成し、その後`npm exec riebeckite deploy`で公開します。custom domainを設定した後は、`site.baseUrl`を`riebeckite.config.ts`で最終的なアドレスに更新し、sitemapで生成されたURLが最終的なアドレスを使用するようにします。feed、hreflangで生成されたURLが最終的なアドレスを使用するようにします。

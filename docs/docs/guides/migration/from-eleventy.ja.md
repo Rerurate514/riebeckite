@@ -36,16 +36,16 @@ Eleventy の data cascade と computed data は metadata と URL の両方を変
 
 ## 手順
 
-1. **移行元リポジトリと公開 URL 一覧をバックアップします。** リダイレクト、アセット、クロール結果を確認するまで移行元を公開したままにします。
-2. **新しい Riebeckite サイトを作成します。** `npx create-riebeckite my-site --preset starter`、`cd my-site`、`npm install` を順に実行します。移行元で `init --force` は実行しません。
-3. **コンテンツを選んでコピーまたは接続します。** 公開する Markdown と参照アセットだけを `content/` にコピーするか、`content.directory` を読み取り専用の元データ／Vault に向けます。移行元では通常 src/ と .eleventy.* が起点です。
-4. **Frontmatter を正規化します。** 公開ページごとに `publish: true` を追加し、title、description、date、tags、image、canonical、lang を確認して引き継ぎます。
-5. **Markdown と埋め込みを確認します。** 標準的な Markdown が最も安全です。独自 directive、shortcode、MDX、テンプレート式は個別に置き換え、対応する Riebeckite Plugin だけを有効にします。
-6. **表示と拡張を作り直します。** Preset/Theme を選び、公開済み Plugin を設定します。固有の route や component は生成された HonoX アプリケーションに実装します。移行元の Theme／拡張コードを設定としてコピーしません。
-7. **URL とナビゲーションを維持します。** まずファイル名からの標準 URL を確認し、旧 URL が必要なページだけ Permalink Plugin の `permalink` と `redirect_from` を使います。階層には Docs の sidebar Frontmatter または Navigation 設定を使います。
-8. **ローカルで検証・ビルドします。** `npm exec riebeckite check`、`npm exec riebeckite doctor`、`npm exec riebeckite build` を実行します。
-9. **出力を確認します。** `npm exec riebeckite inspect content --list` を使い、リンク、アセット、draft、redirect、翻訳、検索、feed を手動確認します。
-10. **ビルド済みサイトをデプロイします。** Cloudflare Workers のガイドに従うか、`dist/` を配信するホストを使います。本番ビルド前に `site.baseUrl` を設定します。
+1. **移行元リポジトリと公開 URL 一覧をバックアップします**。 リダイレクト、アセット、クロール結果を確認するまで移行元を公開したままにします。
+2. **新しい Riebeckite サイトを作成します**。 `npx create-riebeckite my-site --preset starter`、`cd my-site`、`npm install` を順に実行します。移行元で `init --force` は実行しません。
+3. **コンテンツを選んでコピーまたは接続します**。 公開する Markdown と参照アセットだけを `content/` にコピーするか、`content.directory` を読み取り専用の元データ／Vault に向けます。移行元では通常 src/ と .eleventy.* が起点です。
+4. **Frontmatter を正規化します**。 公開ページごとに `publish: true` を追加し、title、description、date、tags、image、canonical、lang を確認して引き継ぎます。
+5. **Markdown と埋め込みを確認します**。 標準的な Markdown が最も安全です。独自 directive、shortcode、MDX、テンプレート式は個別に置き換え、対応する Riebeckite Plugin だけを有効にします。
+6. **表示と拡張を作り直します**。 Preset/Theme を選び、公開済み Plugin を設定します。固有の route や component は生成された HonoX アプリケーションに実装します。移行元の Theme／拡張コードを設定としてコピーしません。
+7. **URL とナビゲーションを維持します**。 まずファイル名からの標準 URL を確認し、旧 URL が必要なページだけ Permalink Plugin の `permalink` と `redirect_from` を使います。階層には Docs の sidebar Frontmatter または Navigation 設定を使います。
+8. **ローカルで検証・ビルドします**。 `npm exec riebeckite check`、`npm exec riebeckite doctor`、`npm exec riebeckite build` を実行します。
+9. **出力を確認します**。 `npm exec riebeckite inspect content --list` を使い、リンク、アセット、draft、redirect、翻訳、検索、feed を手動確認します。
+10. **ビルド済みサイトをデプロイします**。 Cloudflare Workers のガイドに従うか、`dist/` を配信するホストを使います。本番ビルド前に `site.baseUrl` を設定します。
 
 ## 設定対応
 

@@ -97,10 +97,10 @@ Gist の場合は iframe の代わりに
 
 ### CSS フック
 
-- `.rb-rich-embed` — 外側の figure
-- `.rb-rich-embed__frame` — レスポンシブなラッパー（`--rb-rich-embed-aspect` を参照）
-- `.rb-rich-embed__caption` — 任意のキャプション
-- `.rb-rich-embed__card`, `.rb-rich-embed__link` — Gist のリンクカード
+- `.rb-rich-embed`：外側の figure
+- `.rb-rich-embed__frame`：レスポンシブなラッパー（`--rb-rich-embed-aspect` を参照）
+- `.rb-rich-embed__caption`：任意のキャプション
+- `.rb-rich-embed__card`, `.rb-rich-embed__link`：Gist のリンクカード
 
 スタイルシートは `@riebeckite/plugin-rich-embed/style.css` として配布されます。
 
@@ -126,8 +126,8 @@ Gist の場合は iframe の代わりに
 
 ## エクスポート
 
-- `richEmbed(options?)` — プラグインファクトリ
-- `richEmbedPlugin` — `richEmbed` の別名
+- `richEmbed(options?)`：プラグインファクトリ
+- `richEmbedPlugin`：`richEmbed` の別名
 - 型: `RichEmbedOptions`, `RichEmbedProvider`
 
 ## 関連

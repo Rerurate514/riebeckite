@@ -65,6 +65,7 @@ jobs:
       - run: pnpm check:dependencies
       - run: pnpm check:templates
       - run: pnpm check:ci-selection
+      - run: pnpm check:ci-browsers
 
   build:
     name: build
@@ -117,6 +118,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
+          browsers: chrome-headless-shell
       - uses: actions/download-artifact@v4
         with:
           name: package-dist-${{ github.sha }}
@@ -198,19 +200,13 @@ jobs:
     if: needs.changes.outputs.browser == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      PUPPETEER_CACHE_DIR: ~/.cache/puppeteer
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
           node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cache/puppeteer
-          key: puppeteer-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
-      - run: pnpm --filter @riebeckite/plugin-search exec puppeteer browsers install chrome
+          browsers: chrome,chrome-headless-shell
       - run: pnpm test:browser
 
   production-assets:
@@ -225,6 +221,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
+          browsers: chrome-headless-shell
       - uses: actions/download-artifact@v4
         with:
           name: package-dist-${{ github.sha }}

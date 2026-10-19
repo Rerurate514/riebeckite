@@ -34,6 +34,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
+          browsers: chrome-headless-shell
       - run: pnpm benchmark:presets -- --presets starter,showcase --sizes 1000,10000 --runs 3 --metrics --out benchmark-results/preset-ssg.json
       - if: inputs.baseline-path != ''
         run: node scripts/ci/compare_benchmark.mjs benchmark-results/preset-ssg.json "${{ inputs.baseline-path }}"

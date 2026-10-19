@@ -7,6 +7,10 @@ inputs:
   pnpm-version:
     required: false
     default: "11.5.3"
+  browsers:
+    description: Comma-separated Puppeteer browsers to cache and install into the shared browser cache.
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -18,4 +22,26 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: pnpm
     - shell: bash
+      env:
+        PUPPETEER_SKIP_DOWNLOAD: "true"
       run: pnpm install --frozen-lockfile
+    - if: inputs.browsers != ''
+      id: puppeteer
+      shell: bash
+      env:
+        RIEBECKITE_PUPPETEER_BROWSERS: ${{ inputs.browsers }}
+      run: |
+        cache_dir="$(node scripts/ci/puppeteer_browsers.mjs cache-dir)"
+        echo "cache-dir=$cache_dir" >> "$GITHUB_OUTPUT"
+        echo "cache-key=$(node scripts/ci/puppeteer_browsers.mjs cache-key)" >> "$GITHUB_OUTPUT"
+        echo "PUPPETEER_CACHE_DIR=$cache_dir" >> "$GITHUB_ENV"
+    - if: inputs.browsers != ''
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.puppeteer.outputs.cache-dir }}
+        key: ${{ steps.puppeteer.outputs.cache-key }}
+    - if: inputs.browsers != ''
+      shell: bash
+      env:
+        RIEBECKITE_PUPPETEER_BROWSERS: ${{ inputs.browsers }}
+      run: node scripts/ci/puppeteer_browsers.mjs ensure

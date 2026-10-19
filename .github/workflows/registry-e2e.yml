@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  NODE_VERSION: "24"
   PNPM_VERSION: 11.5.3
 
 jobs:
@@ -21,13 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+          node-version: ${{ env.NODE_VERSION }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm build:packages
       - run: pnpm test:registry

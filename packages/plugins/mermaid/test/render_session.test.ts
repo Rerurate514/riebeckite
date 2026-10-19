@@ -3,7 +3,11 @@ import { execFile } from "node:child_process";
 import { test } from "node:test";
 import { promisify } from "node:util";
 import type { Browser } from "puppeteer";
-import { createMermaidRenderSession } from "../src/render-static.js";
+import {
+  createMermaidRenderSession,
+  MERMAID_HEADLESS_MODE,
+  MERMAID_PUPPETEER_BROWSER,
+} from "../src/render-static.js";
 
 type EvaluateCall = { id: string; source: string; theme: string };
 const execFileAsync = promisify(execFile);
@@ -309,6 +313,11 @@ test("dispose waits for a pending render", async () => {
   assert.equal(result.ok, true);
   await disposing;
   assert.equal(fake.counts.browserClose, 1);
+});
+
+test("build renderer resolves Puppeteer's chrome-headless-shell", () => {
+  assert.equal(MERMAID_HEADLESS_MODE, "shell");
+  assert.equal(MERMAID_PUPPETEER_BROWSER, "chrome-headless-shell");
 });
 
 test("identical diagrams produce identical SVGs in separate processes", {

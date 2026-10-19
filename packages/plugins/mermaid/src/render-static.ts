@@ -13,6 +13,9 @@ const RENDER_TIMEOUT_MS = 30_000;
 const MERMAID_SCRIPT_SUBPATH = "mermaid/dist/mermaid.min.js";
 const PUPPETEER_PACKAGE = "puppeteer";
 
+export const MERMAID_HEADLESS_MODE = "shell" as const;
+export const MERMAID_PUPPETEER_BROWSER = "chrome-headless-shell";
+
 export type MermaidSessionDependencies = {
   /**
    * Overrides browser launch. Tests inject a fake browser so session
@@ -222,10 +225,21 @@ async function renderMermaidInPage(
 async function defaultLaunchBrowser(): Promise<Browser> {
   const puppeteer = await importPuppeteer();
 
-  return puppeteer.default.launch({
-    headless: "shell",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  try {
+    return await puppeteer.default.launch({
+      headless: MERMAID_HEADLESS_MODE,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  } catch (error) {
+    const message = formatError(error);
+    if (/Could not find|not found|ENOENT/i.test(message)) {
+      throw new Error(
+        `Could not launch ${MERMAID_PUPPETEER_BROWSER}. Install it with "puppeteer browsers install ${MERMAID_PUPPETEER_BROWSER}". ${message}`,
+        { cause: error },
+      );
+    }
+    throw error;
+  }
 }
 
 async function importPuppeteer(): Promise<typeof import("puppeteer")> {

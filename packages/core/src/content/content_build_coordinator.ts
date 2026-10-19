@@ -44,6 +44,7 @@ type ContentBuildCoordinatorDependencies = {
   readonly getEntries: () => Promise<readonly ContentSourceEntry[]>;
   readonly readEntry: (entry: ContentSourceEntry) => Promise<string>;
   readonly observability: Observability;
+  readonly includeFileMetadata: boolean;
 };
 
 export class ContentBuildCoordinator {
@@ -181,8 +182,10 @@ export class ContentBuildCoordinator {
       "content.fingerprint",
       {},
       () =>
-        fingerprintContentEntries(entries, (entry) =>
-          this.dependencies.readEntry(entry),
+        fingerprintContentEntries(
+          entries,
+          (entry) => this.dependencies.readEntry(entry),
+          this.dependencies.includeFileMetadata,
         ),
     );
     const previousState = await this.dependencies.observability.tracer.span(

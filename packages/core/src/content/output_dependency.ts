@@ -40,7 +40,9 @@ export function determineOutputChanges(input: {
     readonly dependent: ReadonlySet<string>;
   };
   readonly pluginPageOutputs?: readonly OutputDescriptor[];
-  readonly contentOutputDependencies?: readonly OutputDependency[];
+  readonly contentOutputDependencies?:
+    | readonly OutputDependency[]
+    | ((entry: ContentManifestEntry) => readonly OutputDependency[]);
   readonly externalDependencies?: readonly ExternalDependencySnapshot[];
   readonly externalDependencyFailures?: readonly ExternalDependencyFailure[];
   readonly contentFingerprints?: ReadonlyMap<string, string | undefined>;
@@ -86,6 +88,8 @@ export function determineOutputChanges(input: {
         changedFiles,
         changedExternal,
         changedExternalScopes,
+        input.previousState?.manifestEntries ?? [],
+        input.manifest.entries,
       )
     ) {
       affected.set(output.path, output);
@@ -130,7 +134,9 @@ export function determineOutputChanges(input: {
 export function buildOutputInventory(
   manifest: ContentManifest,
   pluginPageOutputs: readonly OutputDescriptor[] = [],
-  contentOutputDependencies: readonly OutputDependency[] = [],
+  contentOutputDependencies:
+    | readonly OutputDependency[]
+    | ((entry: ContentManifestEntry) => readonly OutputDependency[]) = [],
 ): readonly OutputDescriptor[] {
   const outputs = new Map<string, OutputDescriptor>();
   for (const entry of manifest.publicEntries) {
@@ -171,13 +177,20 @@ export function htmlOutputPath(pathname: string): string {
 
 function contentOutput(
   entry: ContentManifestEntry,
-  dependencies: readonly OutputDependency[],
+  dependencies:
+    | readonly OutputDependency[]
+    | ((entry: ContentManifestEntry) => readonly OutputDependency[]),
 ): OutputDescriptor {
   return {
     kind: "content",
     path: htmlOutputPath(entry.permalink),
     producer: `content:${entry.slug}`,
-    dependencies: [{ type: "content", slug: entry.slug }, ...dependencies],
+    dependencies: [
+      { type: "content", slug: entry.slug },
+      ...(typeof dependencies === "function"
+        ? dependencies(entry)
+        : dependencies),
+    ],
   };
 }
 
@@ -190,6 +203,8 @@ function isOutputAffected(
   changedFiles: ReadonlySet<string>,
   changedExternal: ReadonlySet<string>,
   changedExternalScopes: ReadonlyMap<string, ExternalDependencyScope>,
+  previousEntries: readonly ContentManifestEntry[],
+  currentEntries: readonly ContentManifestEntry[],
 ): boolean {
   if (isAffectedByExternalScope(output, changedExternalScopes)) return true;
   for (const dependency of output.dependencies) {
@@ -197,6 +212,11 @@ function isOutputAffected(
     if (dependency.type === "external" && changedExternal.has(dependency.id))
       return true;
     if (dependency.type === "global") return changedContent.size > 0;
+    if (
+      dependency.type === "content-query" &&
+      isContentQueryAffected(dependency, previousEntries, currentEntries)
+    )
+      return true;
     if (
       dependency.type === "projection" &&
       (dependency.projection === "navigation" ||
@@ -233,6 +253,94 @@ function isOutputAffected(
     }
   }
   return false;
+}
+
+function isContentQueryAffected(
+  dependency: Extract<OutputDependency, { type: "content-query" }>,
+  previousEntries: readonly ContentManifestEntry[],
+  currentEntries: readonly ContentManifestEntry[],
+): boolean {
+  const previous = new Map(previousEntries.map((entry) => [entry.slug, entry]));
+  const current = new Map(currentEntries.map((entry) => [entry.slug, entry]));
+  const slugs = new Set([...previous.keys(), ...current.keys()]);
+  for (const slug of slugs) {
+    const before = previous.get(slug);
+    const after = current.get(slug);
+    if (!before || !after) {
+      if ((before ?? after)?.publishing.discoverable) return true;
+      continue;
+    }
+    if (before.publishing.discoverable !== after.publishing.discoverable)
+      return true;
+    if (!before.publishing.discoverable && !after.publishing.discoverable)
+      continue;
+    if (
+      dependency.unknown ||
+      dependency.properties.some((property) =>
+        propertyChanged(before, after, property),
+      )
+    )
+      return true;
+  }
+  return false;
+}
+
+function propertyChanged(
+  before: ContentManifestEntry,
+  after: ContentManifestEntry,
+  property: string,
+): boolean {
+  if (property === "*")
+    return !sameValue(before.frontmatter, after.frontmatter);
+  return !sameValue(
+    contentQueryValue(before, property),
+    contentQueryValue(after, property),
+  );
+}
+
+function contentQueryValue(
+  entry: ContentManifestEntry,
+  property: string,
+): unknown {
+  switch (property) {
+    case "file.name":
+      return `${entry.slug.split("/").at(-1) ?? entry.slug}.md`;
+    case "file.path":
+      return `${entry.slug}.md`;
+    case "file.slug":
+      return entry.slug;
+    case "file.folder":
+      return entry.slug.split("/").slice(0, -1).join("/");
+    case "file.title":
+      return entry.title;
+    case "file.link":
+    case "file.permalink":
+      return entry.permalink;
+    case "file.tags":
+      return entry.tags;
+    case "file.size":
+      return entry.file?.size;
+    case "file.ctime":
+      return entry.file?.ctime;
+    case "file.mtime":
+      return entry.file?.mtime;
+    case "file.links":
+      return entry.links;
+    default:
+      return property
+        .split(".")
+        .reduce<unknown>(
+          (value, key) =>
+            value && typeof value === "object" && Object.hasOwn(value, key)
+              ? (value as Record<string, unknown>)[key]
+              : undefined,
+          entry.frontmatter,
+        );
+  }
+}
+
+function sameValue(left: unknown, right: unknown): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function isAffectedByExternalScope(

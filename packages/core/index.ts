@@ -199,6 +199,7 @@ export type {
 } from "./src/types/config_validation.js";
 export type {
   ContentAsset,
+  ContentFileMetadata,
   ContentLink,
   ContentLinkKind,
   ContentLocationInput,

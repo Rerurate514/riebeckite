@@ -128,12 +128,25 @@ export class FileSystemContentSource implements ContentSource {
       }
       if (!directoryEntry.isFile()) continue;
 
-      const stats = await fs.stat(filePath);
+      let stats: Awaited<ReturnType<typeof fs.stat>>;
+      try {
+        stats = await fs.stat(filePath);
+      } catch (error) {
+        if (isFileNotFoundError(error)) continue;
+        throw new Error(
+          `Could not read content file metadata: ${logicalPath}`,
+          { cause: error },
+        );
+      }
+      const createdAt = validTimestamp(stats.birthtimeMs, logicalPath, "ctime");
+      const modifiedAt = validTimestamp(stats.mtimeMs, logicalPath, "mtime");
+      const size = validSize(stats.size, logicalPath);
       entries.push({
         path: logicalPath,
         metadata: {
-          modifiedAt: stats.mtimeMs,
-          size: stats.size,
+          createdAt,
+          modifiedAt,
+          size,
         },
       });
     }
@@ -249,6 +262,20 @@ function isMissingDirectoryError(
 
 function isFileNotFoundError(error: unknown): error is NodeJS.ErrnoException {
   return error instanceof Error && "code" in error && error.code === "ENOENT";
+}
+
+function validTimestamp(
+  value: number,
+  logicalPath: string,
+  name: string,
+): number {
+  if (Number.isFinite(value)) return value;
+  throw new Error(`Invalid ${name} metadata for content file: ${logicalPath}`);
+}
+
+function validSize(value: number, logicalPath: string): number {
+  if (Number.isSafeInteger(value) && value >= 0) return value;
+  throw new Error(`Invalid size metadata for content file: ${logicalPath}`);
 }
 
 function missingContentDirectoryError(directory: string): Error {

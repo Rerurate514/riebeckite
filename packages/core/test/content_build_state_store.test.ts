@@ -141,15 +141,21 @@ test("an incompatible content build state safely falls back to a cold build", as
   );
   t.after(() => fs.rm(directory, { recursive: true, force: true }));
   const statePath = path.join(directory, "content-state.json");
-  await fs.writeFile(
-    statePath,
-    JSON.stringify({
-      version: CONTENT_BUILD_STATE_VERSION + 1,
-      entries: {},
-      contentIndex: {},
-    }),
-    "utf8",
-  );
+  for (const version of [17, CONTENT_BUILD_STATE_VERSION + 1]) {
+    await fs.writeFile(
+      statePath,
+      JSON.stringify({
+        version,
+        entries: {},
+        contentIndex: {},
+      }),
+      "utf8",
+    );
 
-  assert.equal(await loadContentBuildState(statePath), undefined);
+    assert.equal(
+      await loadContentBuildState(statePath),
+      undefined,
+      String(version),
+    );
+  }
 });

@@ -1,4 +1,5 @@
 export type ContentSourceMetadata = {
+  readonly createdAt?: number;
   readonly modifiedAt?: number;
   readonly size?: number;
   readonly etag?: string;

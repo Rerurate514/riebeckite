@@ -3,7 +3,11 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import type {
+  ContentManifestEntry,
+  ContentSource,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
 import {
   ContentManager,
   NoopLogger,
@@ -11,14 +15,18 @@ import {
   SinkTracer,
 } from "@riebeckite/core";
 import {
+  analyzeBasesDependencies,
   BasesEvaluationError,
   bases,
   evaluateBasesExpression,
+  groupBasesEntries,
+  matchesCondition,
   parseBases,
   parseBasesExpression,
   sortBasesEntries,
   summarizeBasesValues,
 } from "../index.js";
+import { parseBasesYaml } from "../src/yaml.js";
 
 function memorySource(input: Readonly<Record<string, string>>): ContentSource {
   return {
@@ -70,16 +78,30 @@ test("publishes referenced .base documents through PageType and preserves public
     "views/Books.base": await libraryBase(),
   });
   assert.deepEqual([...(await manager.getPagePaths())], ["/views/Books"]);
+  const outputChanges = await manager.getOutputChangeSet({
+    incremental: false,
+  });
+  assert.equal(outputChanges.fullRegenerationRequired, false);
   assert.deepEqual(
-    (await manager.getOutputChangeSet({ incremental: false })).affected.filter(
-      (output) => output.kind === "plugin-page",
-    ),
+    outputChanges.affected.filter((output) => output.kind === "plugin-page"),
     [
       {
         kind: "plugin-page",
         path: "views/Books.html",
         producer: "plugin:bases:page:bases-document",
-        dependencies: [{ type: "global" }],
+        dependencies: [
+          { type: "file", path: "views/Books.base" },
+          {
+            type: "content-query",
+            properties: [
+              "author.name",
+              "file.name",
+              "file.tags",
+              "score",
+              "status",
+            ],
+          },
+        ],
       },
     ],
   );
@@ -178,6 +200,105 @@ test("parses and evaluates nested formulas without executing JavaScript", () => 
   );
 });
 
+test("parses an Obsidian official Base YAML fixture", async () => {
+  const source = await fs.readFile(
+    new URL("./fixtures/OfficialSyntax.base", import.meta.url),
+    "utf8",
+  );
+  const yaml = parseBasesYaml(source);
+  assert.equal(yaml.ok, true);
+  const parsed = parseBases(yaml.value);
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.value.views.length, 2);
+  assert.deepEqual(parsed.value.views[0]?.groupOrder, [
+    "active",
+    "archived",
+    null,
+  ]);
+});
+
+test("analyzes filter, formula, sort, group, summary, and higher-order dependencies", () => {
+  const parsed = parseBases({
+    filters: "formula.visible",
+    formulas: {
+      visible: "formula.score > 1 && note.tags.map(value).contains('featured')",
+      score: "file.size + note.rating + file.frontmatter.priority",
+    },
+    views: [
+      {
+        type: "table",
+        columns: ["title", "formula.score"],
+        sort: "formula.score",
+        groupBy: { property: "file.mtime" },
+        summaries: { "formula.score": "sum" },
+      },
+    ],
+  });
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(analyzeBasesDependencies(parsed.value), {
+    type: "content-query",
+    properties: [
+      "file.mtime",
+      "file.size",
+      "priority",
+      "rating",
+      "tags",
+      "title",
+    ],
+  });
+});
+
+test("tracks file predicate calls without an unknown dependency", () => {
+  const parsed = parseBases({
+    filters:
+      "file.hasTag('featured') && file.hasLink('notes/Target') && file.inFolder('notes')",
+  });
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(analyzeBasesDependencies(parsed.value), {
+    type: "content-query",
+    properties: ["file.folder", "file.links", "file.tags"],
+  });
+});
+
+test("tracks literal file property predicates without broadening dependencies", () => {
+  const parsed = parseBases({ filters: "file.hasProperty('status')" });
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(analyzeBasesDependencies(parsed.value), {
+    type: "content-query",
+    properties: ["status"],
+  });
+  const dynamic = parseBases({ filters: "file.hasProperty(note.field)" });
+  assert.equal(dynamic.ok, true);
+  assert.equal(
+    (analyzeBasesDependencies(dynamic.value) as { readonly unknown?: boolean })
+      .unknown,
+    true,
+  );
+});
+
+test("falls back safely when formulas are cyclic or expressions use dynamic indexing", () => {
+  const cyclic = parseBases({
+    formulas: { first: "formula.second", second: "formula.first" },
+    views: [{ type: "table", columns: ["formula.first"] }],
+  });
+  assert.equal(cyclic.ok, true);
+  assert.equal(analyzeBasesDependencies(cyclic.value).type, "content-query");
+  assert.equal(
+    (analyzeBasesDependencies(cyclic.value) as { readonly unknown?: boolean })
+      .unknown,
+    true,
+  );
+  const dynamic = parseBases({
+    filters: "note[status] == 'published'",
+  });
+  assert.equal(dynamic.ok, true);
+  assert.equal(
+    (analyzeBasesDependencies(dynamic.value) as { readonly unknown?: boolean })
+      .unknown,
+    true,
+  );
+});
+
 test("evaluates precedence, short circuits, missing values, and cycles safely", () => {
   const entry = {
     slug: "notes/Example",
@@ -212,6 +333,119 @@ test("evaluates precedence, short circuits, missing values, and cycles safely", 
   assert.deepEqual(evaluate("[1, 2, 3].filter(value > 1)"), [2, 3]);
   assert.equal(evaluate("[1, 2, 3].reduce(acc + value, 0)"), 6);
   assert.equal(evaluate("['a', 'b'].containsAll('a', 'b')"), true);
+});
+
+test("evaluates deterministic official utility, date, collection, and file functions", () => {
+  const entry = {
+    slug: "notes/Example",
+    permalink: "/notes/Example",
+    title: "Example",
+    tags: [],
+    links: [],
+    frontmatter: { status: "active", details: { owner: "Ada" } },
+  } as never;
+  const evaluate = (source: string) => {
+    const expression = parseBasesExpression(source);
+    assert.equal(expression.ok, true, source);
+    return evaluateBasesExpression(expression.value, entry);
+  };
+
+  assert.equal(evaluate("[2, 4, 6].mean().round(1)"), 4);
+  assert.equal(evaluate("'hello-world'.title()"), "Hello-World");
+  assert.equal(evaluate("isTruthy(note.status)"), true);
+  assert.equal(evaluate("isType(note.details, 'object')"), true);
+  assert.equal(evaluate("toString([1, 2])"), "1, 2");
+  assert.equal(evaluate("escapeHTML('<script>')"), "&lt;script&gt;");
+  assert.equal(evaluate("file.hasProperty('status')"), true);
+  assert.equal(evaluate("note.details.keys().contains('owner')"), true);
+  assert.deepEqual(evaluate("note.details.values()"), ["Ada"]);
+  assert.equal(
+    evaluate("date('2024-02-03T04:05:06Z').format('yyyy-MM-dd HH:mm:ss')"),
+    "2024-02-03 04:05:06",
+  );
+  assert.equal(evaluate("date('2024-02-03').month"), 2);
+  assert.equal(
+    (
+      evaluate("date('2024-02-03') + duration(2, 'days')") as Date
+    ).toISOString(),
+    "2024-02-05T00:00:00.000Z",
+  );
+  assert.equal(evaluate("date('February 3, 2024')"), undefined);
+});
+
+test("uses file metadata in formulas, filters, sorting, groups, summaries, and higher-order expressions", () => {
+  const early = metadataEntry("Early", 12, "2024-01-01T00:00:00.000Z");
+  const late = metadataEntry("Late", 24, "2024-01-02T00:00:00.000Z");
+  const spec = parseBases({
+    formulas: {
+      total: "file.size + 1",
+      values: "list(file.size, file.mtime).map(value)",
+    },
+  });
+  assert.equal(spec.ok, true);
+  assert.equal(
+    evaluateBasesExpression(
+      parseExpression("formula.total"),
+      early,
+      spec.value.formulas,
+    ),
+    13,
+  );
+  assert.deepEqual(
+    evaluateBasesExpression(
+      parseExpression("formula.values"),
+      early,
+      spec.value.formulas,
+    ),
+    [12, new Date("2024-01-01T00:00:00.000Z")],
+  );
+  assert.equal(
+    matchesCondition(
+      {
+        kind: "expression",
+        expression: parseExpression(
+          "file.mtime < date('2024-01-02') && file.ctime >= date('2023-12-31')",
+        ),
+      },
+      early,
+    ),
+    true,
+  );
+  const view = {
+    type: "table" as const,
+    columns: [],
+    sort: [{ property: "file.size", direction: "desc" as const }],
+    groupBy: { property: "file.mtime", direction: "asc" as const },
+  };
+  assert.deepEqual(sortBasesEntries([early, late], view, spec.value), [
+    late,
+    early,
+  ]);
+  assert.deepEqual(
+    groupBasesEntries([early, late], view, spec.value).map(
+      (group) => group.key,
+    ),
+    [
+      new Date("2024-01-01T00:00:00.000Z"),
+      new Date("2024-01-02T00:00:00.000Z"),
+    ],
+  );
+  assert.equal(
+    summarizeBasesValues(
+      [early.file?.size, late.file?.size],
+      "sum",
+      spec.value,
+    ),
+    36,
+  );
+  assert.deepEqual(
+    summarizeBasesValues(
+      [early.file?.mtime, late.file?.mtime],
+      "latest",
+      spec.value,
+    ),
+    new Date("2024-01-02T00:00:00.000Z"),
+  );
 });
 
 test("stops deeply nested and large higher-order formulas with an explicit error", () => {
@@ -291,7 +525,7 @@ test("sorts formula values and renders grouped table summaries", async () => {
       "    order: [file.name, status, formula.rank]",
       "    sort: [{ property: formula.rank, direction: DESC }]",
       "    groupBy: { property: status, direction: ASC }",
-      "    groupOrder: [beta, alpha, null]",
+      "    groupOrder: [beta, planned, alpha, null]",
       "    summaries: { formula.rank: total }",
     ].join("\n"),
   });
@@ -301,6 +535,17 @@ test("sorts formula values and renders grouped table summaries", async () => {
   assert.match(body, /__summary[^>]*>6</);
   assert.match(body, /__summary[^>]*>4</);
   assert.match(body, /__summary[^>]*>2</);
+  assert.match(
+    body,
+    /role="region"[^>]*aria-label="Table view"[^>]*tabindex="0"/,
+  );
+  assert.match(body, /<caption class="rb-bases__sr-only">3 matching notes</);
+  assert.match(
+    body,
+    /planned <span class="rb-bases__group-count">\(0\)<\/span>/,
+  );
+  assert.match(body, /No matching notes in this group/);
+  assert.match(body, /rb-bases__sr-only"> Rank summary/);
 });
 
 test("sorts scalar formula values stably and rejects invalid sort directions", () => {
@@ -374,6 +619,39 @@ test("groups and summaries use only discoverable public entries", async () => {
   assert.doesNotMatch(
     body,
     /secret|999999|888888|777777|Hidden|Unlisted|Scheduled/,
+  );
+});
+
+test("keeps explicit empty groups from official groupOrder syntax", () => {
+  const parsed = parseBases({
+    views: [
+      {
+        type: "table",
+        groupBy: { property: "status", direction: "ASC" },
+        groupOrder: ["Planned", "In progress", "Done", null],
+      },
+    ],
+  });
+  assert.equal(parsed.ok, true);
+  const groups = groupBasesEntries(
+    [entry("Planned", 1, 1), entry("Done", 2, 2)].map((value) => ({
+      ...value,
+      frontmatter: {
+        ...value.frontmatter,
+        status: value.title,
+      },
+    })),
+    parsed.value.views[0],
+    parsed.value,
+  );
+  assert.deepEqual(
+    groups.map((group) => [group.key, group.entries.length]),
+    [
+      ["Planned", 1],
+      ["In progress", 0],
+      ["Done", 1],
+      [null, 0],
+    ],
   );
 });
 
@@ -681,7 +959,27 @@ function entry(title: string, value: unknown, tie: number) {
     tags: [],
     links: [],
     frontmatter: { value, tie },
-  } as never;
+  } as unknown as ContentManifestEntry;
+}
+
+function metadataEntry(
+  title: string,
+  size: number,
+  time: string,
+): ContentManifestEntry {
+  return {
+    slug: `notes/${title}`,
+    permalink: `/notes/${title}`,
+    title,
+    tags: [],
+    links: [],
+    frontmatter: {},
+    file: {
+      size,
+      ctime: new Date("2023-12-31T00:00:00.000Z"),
+      mtime: new Date(time),
+    },
+  } as ContentManifestEntry;
 }
 
 async function buildCached(

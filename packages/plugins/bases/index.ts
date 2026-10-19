@@ -3,11 +3,12 @@ import {
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
-import { listBaseDocumentPaths, resolveBaseDocument } from "./src/page.js";
+import { listBaseDocuments, resolveBaseDocument } from "./src/page.js";
 import { remarkBases } from "./src/remark.js";
 import { createBasesRuntime } from "./src/runtime.js";
 import type { BasesOptions } from "./src/types.js";
 
+export { analyzeBasesDependencies } from "./src/dependencies.js";
 export {
   BasesEvaluationError,
   evaluateBasesExpression,
@@ -52,7 +53,9 @@ export function bases(options: BasesOptions = {}) {
 
   return definePlugin({
     name: "bases",
-    contentOutputDependencies: [{ type: "global" }],
+    contentFileMetadata: true,
+    resolveContentOutputDependencies: (entry) =>
+      runtime.dependenciesFor(entry.slug),
     processedContentCache: {
       version: "bases-v3",
       dependencyMode: "none",
@@ -69,9 +72,24 @@ export function bases(options: BasesOptions = {}) {
     pageTypes: [
       {
         id: "bases-document",
-        paths: ({ manifest, contentSource, diagnostics }) =>
-          listBaseDocumentPaths({ manifest, contentSource, diagnostics }),
-        outputDependencies: [{ type: "global" }],
+        paths: async ({ manifest, contentSource, diagnostics }) => {
+          const documents = await listBaseDocuments({
+            manifest,
+            contentSource,
+            diagnostics,
+          });
+          runtime.setDocumentDependencies(
+            new Map(
+              documents.map((document) => [
+                document.pathname,
+                document.dependencies,
+              ]),
+            ),
+          );
+          return documents.map((document) => document.pathname);
+        },
+        outputDependencies: ({ pathname }) =>
+          runtime.dependenciesForPage(pathname),
         resolve: (context) => resolveBaseDocument(context, options),
       },
     ],

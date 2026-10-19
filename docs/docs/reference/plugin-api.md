@@ -414,10 +414,15 @@ Content dependencies decide which source content must be processed again.
 Output dependencies decide which emitted files must be written again. They are
 separate contracts. Page types declare `outputDependencies`; a plugin that
 updates existing manifest entry HTML in `onManifestCreated` declares root
-`outputDependencies`, which are added to those content outputs.
+`contentOutputDependencies`, which are added to those content outputs. When the
+dependency differs by entry, use `resolveContentOutputDependencies(entry)` to
+return dependencies only for the affected content output.
 
 ``` ts
-outputDependencies: [{ type: "global" }]
+resolveContentOutputDependencies: (entry) =>
+  entry.slug === "report"
+    ? [{ type: "content-query", properties: ["status", "file.mtime"] }]
+    : []
 
 pageTypes: [{
   id: "example.report",
@@ -427,6 +432,9 @@ pageTypes: [{
 }]
 ```
 
+`content-query` represents a discoverable-content candidate set plus the
+frontmatter or `file.*` properties it reads. It detects additions, removals, and
+publication-state transitions even when a note did not match the previous query.
 Use `content`, `tag`, or `folder` when the exact scope is known; use `global`
 for a manifest-wide collection transform. Use `unknown` only when the input
 cannot be represented: it regenerates safely and requests full output

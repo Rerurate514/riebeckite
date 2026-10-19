@@ -82,6 +82,98 @@ test("manifest plugin global dependencies affect every content output", () => {
   assert.deepEqual(paths(result.affected), ["a.html", "b.html"]);
 });
 
+test("content-query affects only its owner for referenced candidates and properties", () => {
+  const previous = manifest([entry("base"), entry("note"), entry("other")]);
+  const current = manifest([
+    entry("base"),
+    { ...entry("note"), frontmatter: { title: "note", status: "published" } },
+    entry("other"),
+  ]);
+  const result = changes(
+    previous,
+    current,
+    { changed: ["note.md"] },
+    [],
+    (output) =>
+      output.slug === "base"
+        ? [{ type: "content-query", properties: ["status"] }]
+        : [],
+  );
+  assert.deepEqual(paths(result.affected), ["base.html", "note.html"]);
+  assert.deepEqual(paths(result.unchanged), ["other.html"]);
+});
+
+test("content-query tracks discoverable candidate additions, removals, and transitions", () => {
+  const dependency = (output: ContentManifestEntry) =>
+    output.slug === "base"
+      ? [
+          {
+            type: "content-query" as const,
+            properties: ["status", "file.folder"],
+          },
+        ]
+      : [];
+  const base = entry("base");
+  const note = entry("notes/note");
+  const hidden: ContentManifestEntry = {
+    ...note,
+    publishing: {
+      visibility: "draft",
+      routable: false,
+      discoverable: false,
+    },
+  };
+
+  const added = changes(
+    manifest([base]),
+    manifest([base, note]),
+    { added: ["notes/note.md"] },
+    [],
+    dependency,
+  );
+  const removed = changes(
+    manifest([base, note]),
+    manifest([base]),
+    { removed: ["notes/note.md"] },
+    [],
+    dependency,
+  );
+  const published = changes(
+    manifest([base, hidden], {
+      publicEntries: [base],
+      discoverableEntries: [base],
+    }),
+    manifest([base, note]),
+    { changed: ["notes/note.md"] },
+    [],
+    dependency,
+  );
+  const privateEdit = changes(
+    manifest([base, hidden], {
+      publicEntries: [base],
+      discoverableEntries: [base],
+    }),
+    manifest(
+      [
+        base,
+        {
+          ...hidden,
+          frontmatter: { title: "note", status: "changed" },
+        },
+      ],
+      { publicEntries: [base], discoverableEntries: [base] },
+    ),
+    { changed: ["notes/note.md"] },
+    [],
+    dependency,
+  );
+
+  assert.deepEqual(paths(added.affected), ["base.html", "notes/note.html"]);
+  assert.deepEqual(paths(removed.affected), ["base.html"]);
+  assert.deepEqual(paths(published.affected), ["base.html", "notes/note.html"]);
+  assert.deepEqual(paths(privateEdit.affected), []);
+});
+
 test("content output is affected when its dependency fingerprint changed", () => {
   const previous = manifest([entry("a"), entry("b")]);
   const current = manifest([entry("a"), entry("b")]);
@@ -546,7 +638,9 @@ function changes(
   currentManifest: ContentManifest,
   change: Partial<ContentChangeSet> & { dependent?: readonly string[] },
   pluginPageOutputs: readonly OutputDescriptor[] = [],
-  contentOutputDependencies: readonly OutputDependency[] = [],
+  contentOutputDependencies:
+    | readonly OutputDependency[]
+    | ((entry: ContentManifestEntry) => readonly OutputDependency[]) = [],
 ) {
   const previousState: ContentBuildState = {
     version: CONTENT_BUILD_STATE_VERSION,

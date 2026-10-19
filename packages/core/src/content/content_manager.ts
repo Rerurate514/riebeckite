@@ -165,6 +165,10 @@ export class ContentManager {
       getEntries: () => this.entryReader.getEntries(),
       readEntry: (entry) => this.entryReader.read(entry),
       observability,
+      includeFileMetadata:
+        this.pipelineOptions.plugins?.some(
+          (plugin) => plugin && plugin.contentFileMetadata === true,
+        ) ?? false,
     });
   }
 
@@ -327,6 +331,9 @@ export class ContentManager {
           this.getAllPosts(),
           this.getContentIndex(plan),
         ]);
+        const entriesByPath = new Map(
+          (await this.scan()).map((entry) => [entry.path, entry]),
+        );
         const entries = await this.observability().tracer.span(
           "content.manifest.entries",
           {},
@@ -361,6 +368,7 @@ export class ContentManager {
                     strategy: this.publishStrategy(),
                     buildTime: this.publishingBuildTime,
                   }),
+                  entriesByPath.get(`${post.slug}.md`)?.metadata,
                 );
               },
             ),
@@ -420,8 +428,8 @@ export class ContentManager {
               changeSet: plan.changeSet,
               affectedContent: plan.affectedContent,
               pluginPageOutputs,
-              contentOutputDependencies:
-                this.pluginRuntime.getContentOutputDependencies(),
+              contentOutputDependencies: (entry) =>
+                this.pluginRuntime.getContentOutputDependencies(entry),
               externalDependencies: plan.externalDependencies,
               externalDependencyFailures: plan.externalDependencyFailures,
               contentFingerprints: this.processedContentCacheFingerprints,
@@ -529,8 +537,8 @@ export class ContentManager {
               dependent: new Set(),
             },
             pluginPageOutputs,
-            contentOutputDependencies:
-              this.pluginRuntime.getContentOutputDependencies(),
+            contentOutputDependencies: (entry) =>
+              this.pluginRuntime.getContentOutputDependencies(entry),
             externalDependencies: plan.externalDependencies,
             externalDependencyFailures: plan.externalDependencyFailures,
           }),
@@ -895,6 +903,15 @@ function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
     ...entry,
     publicLocation: { ...entry.publicLocation },
     frontmatter: { ...entry.frontmatter },
+    ...(entry.file
+      ? {
+          file: {
+            ...(entry.file.size === undefined ? {} : { size: entry.file.size }),
+            ...reviveFileDate(entry.file.ctime, "ctime"),
+            ...reviveFileDate(entry.file.mtime, "mtime"),
+          },
+        }
+      : {}),
     aliases: [...(entry.aliases ?? [])],
     tags: [...entry.tags],
     links: entry.links.map((link) => ({ ...link })),
@@ -902,6 +919,15 @@ function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
     assets: entry.assets.map((asset) => ({ ...asset })),
     ...(entry.headTags ? { headTags: [...entry.headTags] } : {}),
   };
+}
+
+function reviveFileDate(
+  value: Date | string | undefined,
+  key: "ctime" | "mtime",
+): Partial<ContentManifestEntry["file"]> {
+  if (value === undefined) return {};
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? {} : { [key]: date };
 }
 
 async function mapConcurrent<T, U>(

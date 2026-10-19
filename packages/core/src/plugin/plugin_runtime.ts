@@ -657,10 +657,15 @@ export class PluginRuntime {
     return declarations;
   }
 
-  getContentOutputDependencies(): readonly OutputDependency[] {
-    return this.plugins().flatMap(
-      (plugin) => plugin.contentOutputDependencies ?? [],
-    );
+  getContentOutputDependencies(
+    entry?: ContentManifestEntry,
+  ): readonly OutputDependency[] {
+    return this.plugins().flatMap((plugin) => [
+      ...(plugin.contentOutputDependencies ?? []),
+      ...(entry
+        ? (plugin.resolveContentOutputDependencies?.(entry) ?? [])
+        : []),
+    ]);
   }
 
   async collectDiagnostics(

@@ -25,7 +25,8 @@ export default defineConfig({
 - Shiki のテーマによる色付け、行番号、メタデータによる行・文字の強調
 - `diff` コードブロックの `+` と `-` で始まる行の差分表示
 - コピー、折り返し、任意の折りたたみ
-- `bash`、`console`、`sh` などを端末風に表示し、必要に応じて `$` を付ける
+- すべてのコードブロックを端末風の暗い配色で表示する
+- `bash`、`console`、`sh` などのシェル言語の行に `$` を付ける
 - キーボードで内容を確認できるよう、`<pre>` をフォーカス可能にする
 
 Theme は `rr-code` の root に `--rr-code-syntax` を指定すると、ハイライト済みコードの
@@ -42,8 +43,7 @@ Theme は `rr-code` の root に `--rr-code-syntax` を指定すると、ハイ�
 | `lineHighlight` | `boolean` | `true` | メタデータによる行・文字の強調を適用する |
 | `diffHighlight` | `boolean` | `true` | `diff` コードブロックの `+` / `-` で始まる行を色付けする |
 | `collapsible` | `boolean` | `false` | 折りたたみボタンを追加する |
-| `terminal` | `boolean` | `true` | シェル言語を端末風に表示する |
-| `commandPrompt` | `boolean` | `true` | 端末の各行に `$` を付ける |
+| `commandPrompt` | `boolean` | `true` | シェル言語の行に `$` を付ける |
 | `wrapToggle` | `boolean` | `true` | 折り返し切替ボタンを表示する |
 | `defaultCollapsed` | `boolean` | `false` | `collapsible` 有効時に折りたたんで開始する |
 | `copyLabel` | `string` | `"Copy"` | クライアントに渡すコピー前の文言 |

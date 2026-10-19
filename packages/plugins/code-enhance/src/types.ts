@@ -18,7 +18,6 @@ export type CodeEnhanceOptions = CodeEnhanceClientOptions & {
   lineHighlight?: boolean;
   diffHighlight?: boolean;
   collapsible?: boolean;
-  terminal?: boolean;
   commandPrompt?: boolean;
   wrapToggle?: boolean;
   defaultCollapsed?: boolean;

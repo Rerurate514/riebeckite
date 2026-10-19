@@ -146,14 +146,12 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
     const titleNode = findTitleNode(node);
     const title = titleNode ? getTextContent(titleNode) : null;
     const language = getLanguage(pre, code);
-    const isTerminal =
-      options.terminal !== false && isTerminalLanguage(language);
+    const isShell = isTerminalLanguage(language);
 
     node.properties = {
       ...node.properties,
       className: mergeClassName(node.properties?.className, "rr-code"),
       dataLanguage: language,
-      dataTerminal: isTerminal ? "true" : undefined,
     };
 
     pre.properties = {
@@ -173,8 +171,7 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
       if (options.lineNumbers) markLineNumbers(code);
       if (options.diffHighlight !== false && isDiffLanguage(language))
         markDiffLines(code);
-      if (options.commandPrompt !== false && isTerminal)
-        markCommandPrompts(code);
+      if (options.commandPrompt !== false && isShell) markCommandPrompts(code);
     }
 
     const bodyChildren =

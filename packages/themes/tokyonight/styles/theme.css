@@ -512,8 +512,6 @@
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
-  .rr-code:not([data-terminal="true"]),
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"] .rr-code-tabs {
   background: var(--rb-color-code-background);
 }

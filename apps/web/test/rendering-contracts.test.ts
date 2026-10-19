@@ -165,25 +165,24 @@ test("A7: the theme resolves dark tokens in both explicit and system dark", () =
   );
 });
 
-test("A7: the code root paints an opaque surface, not a page-relative tint", () => {
-  assert.match(themeCss, /--rb-color-code-surface:\s*#1c1a17/);
-  assert.match(
+test("A7: the theme leaves the code surface to the plugin in every mode", () => {
+  assert.doesNotMatch(themeCss, /--rb-color-code-surface/);
+  assert.doesNotMatch(themeCss, /data-terminal/);
+  assert.doesNotMatch(
     themeCss,
-    /\[data-theme="dark"\][\s\S]*?--rb-color-code-surface:\s*color-mix\([\s\S]*?var\(--rb-color-paper\)/,
-  );
-  assert.match(
-    themeCss,
-    /@media \(prefers-color-scheme: dark\)[\s\S]*?:not\(\[data-theme\]\)[\s\S]*?--rb-color-code-surface:\s*color-mix\([\s\S]*?var\(--rb-color-paper\)/,
-  );
-  assert.match(
-    themeCss,
-    /\.rr-code:not\(\[data-terminal="true"\]\)\s*\{[^}]*--rr-code-paper:\s*var\(--rb-color-code-surface\)/,
+    /--rr-code-syntax/,
+    "the theme must leave syntax colour to the plugin so it follows the mode",
   );
   assert.doesNotMatch(
     themeCss,
     /--rr-code-paper:\s*var\(--rb-color-code-background\)/,
   );
   assert.match(themeCss, /--rb-color-code-background:\s*color-mix\(/);
+  assert.match(
+    themeCss,
+    /pre:not\(:where\(\.rr-code \*\)\)\s*\)\s*\{[^}]*background:\s*var\(--rb-color-ink\)/,
+    "the bare markdown pre keeps the dark ink surface in light mode",
+  );
 });
 
 test("A7: every plugin fallback code surface owns its own foreground", () => {

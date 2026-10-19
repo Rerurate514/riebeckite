@@ -363,11 +363,6 @@
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
-  .rr-code:not([data-terminal="true"]) {
-  --rr-code-paper: var(--rb-color-code-background);
-}
-
-:is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
   :is(.rr-code, .rr-code-tabs) {
   border-radius: var(--rb-default-radius);
   overflow: hidden;

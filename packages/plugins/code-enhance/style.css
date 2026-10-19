@@ -1,6 +1,6 @@
 .rr-code {
-  --rr-code-paper: var(--rb-color-paper, #ffffff);
-  --rr-code-ink: var(--rb-color-ink, #000000);
+  --rr-code-paper: var(--rb-color-ink, #000000);
+  --rr-code-ink: var(--rb-color-paper, #ffffff);
   --rr-code-muted: color-mix(in srgb, var(--rr-code-ink) 56%, transparent);
   --rr-code-rule: color-mix(in srgb, var(--rr-code-ink) 18%, transparent);
   --rr-code-accent: var(--rb-color-accent, #686868);
@@ -12,12 +12,6 @@
 
 .rr-code:has(+ :is(h1, h2)) {
   margin-bottom: 2rem;
-}
-
-.rr-code[data-terminal="true"] {
-  --rr-code-paper: var(--rb-color-ink, #000000);
-  --rr-code-ink: var(--rb-color-paper, #ffffff);
-  --rr-code-syntax: var(--shiki-dark, inherit);
 }
 
 .rr-code__header {
@@ -91,19 +85,7 @@
 
 .rr-code .rr-code__code,
 .rr-code .rr-code__code span {
-  color: var(--rr-code-syntax, var(--shiki-light, inherit));
-}
-
-:is(:root, .rb-theme-root)[data-theme="dark"] .rr-code .rr-code__code,
-:is(:root, .rb-theme-root)[data-theme="dark"] .rr-code .rr-code__code span {
   color: var(--rr-code-syntax, var(--shiki-dark, inherit));
-}
-
-@media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root):not([data-theme]) .rr-code .rr-code__code,
-  :is(:root, .rb-theme-root):not([data-theme]) .rr-code .rr-code__code span {
-    color: var(--rr-code-syntax, var(--shiki-dark, inherit));
-  }
 }
 
 .rr-code__line {
@@ -162,9 +144,4 @@
     --rr-code-paper: var(--rb-color-paper, #000000);
     --rr-code-ink: var(--rb-color-ink, #ffffff);
   }
-}
-
-.rr-code[data-terminal="true"] .rr-code__code,
-.rr-code[data-terminal="true"] .rr-code__code span {
-  color: var(--shiki-dark, inherit);
 }

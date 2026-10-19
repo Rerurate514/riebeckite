@@ -442,10 +442,9 @@
   border-radius: 0;
 }
 
-/* Keep the plugin's code-surface tokens so terminal blocks still invert;
-   ordinary blocks resolve to the reading surface. The code-enhance plugin
-   owns `.rr-code__pre` / `.rr-code__line` padding, so only the surface colour
-   and the flat square frame are themed here. */
+/* The code-enhance plugin paints every block with its own surface tokens, so
+   the theme only reads them for the surface colour and the flat square frame.
+   The plugin owns `.rr-code__pre` / `.rr-code__line` padding. */
 :is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-code {
   background: var(--rr-code-paper, var(--rb-color-code-background));
   color: var(--rr-code-ink, var(--rb-color-ink));

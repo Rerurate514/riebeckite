@@ -46,8 +46,9 @@ export default defineConfig({
 - Line numbers (`data-line-number` gutter)
 - Line and character highlighting from pretty-code meta (`{1,3}`, `[/re/]`)
 - Diff coloring for `+` / `-` lines in `diff` code blocks
-- Terminal styling for `bash`, `console`, `sh`, `shell`, `terminal`, `zsh`
-  (inverted palette) with a `$` prompt prefix on non-empty lines
+- One dark, terminal-style surface for every code block (inverted palette)
+- A `$` prompt prefix on `bash`, `console`, `sh`, `shell`, `terminal`, `zsh`
+  lines
 - Focusable `<pre>` (`tabindex="0"`) for keyboard scrolling
 
 Themes can set `--rr-code-syntax` on an `rr-code` root to choose the syntax
@@ -64,8 +65,7 @@ foreground without selecting highlighted-code descendants.
 | `lineHighlight` | `boolean` | `true` | Apply meta-based line/char highlights |
 | `diffHighlight` | `boolean` | `true` | Color `+` / `-` lines in `diff` blocks |
 | `collapsible` | `boolean` | `false` | Add the collapse button |
-| `terminal` | `boolean` | `true` | Terminal styling for shell languages |
-| `commandPrompt` | `boolean` | `true` | `$` prompt prefix on terminal lines |
+| `commandPrompt` | `boolean` | `true` | `$` prompt prefix on shell-language lines |
 | `wrapToggle` | `boolean` | `true` | Show the wrap toggle button |
 | `defaultCollapsed` | `boolean` | `false` | Start collapsed (requires `collapsible`) |
 | `copyLabel` | `string` | `"Copy"` | Copy button label forwarded to the client |

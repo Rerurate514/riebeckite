@@ -493,20 +493,18 @@
   border-radius: 2px;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rr-code:not([data-terminal="true"]),
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-code-tabs {
   background: var(--rb-color-code-background);
 }
 
 :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  :is(.rr-code-tabs, .rr-code:not([data-terminal="true"]))
+  :is(.rr-code, .rr-code-tabs)
   pre {
   margin: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--rb-color-ink);
+  color: var(--rr-code-ink, var(--rb-color-ink));
   font-family: var(--rb-font-mono);
 }
 

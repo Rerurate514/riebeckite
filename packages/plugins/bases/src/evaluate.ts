@@ -486,81 +486,116 @@ function memberCall(
     );
   }
   if (target instanceof Date) {
-    if (name === "format") return formatDate(target, String(args[0] ?? ""));
-    if (name === "date") return startOfUtcDate(target);
-    if (name === "time") return target.getTime();
+    return dateMethod(target, name, args) ?? objectMethod(target, name);
   }
-  if (typeof target === "string") {
-    if (name === "lower") return target.toLowerCase();
-    if (name === "upper") return target.toUpperCase();
-    if (name === "contains") return target.includes(String(args[0]));
-    if (name === "containsAll")
-      return args.every((value) => target.includes(String(value)));
-    if (name === "containsAny")
-      return args.some((value) => target.includes(String(value)));
-    if (name === "startsWith") return target.startsWith(String(args[0]));
-    if (name === "endsWith") return target.endsWith(String(args[0]));
-    if (name === "trim") return target.trim();
-    if (name === "reverse") return [...target].reverse().join("");
-    if (name === "repeat")
-      return target.repeat(Math.max(0, Number(args[0] ?? 0)));
-    if (name === "slice")
-      return target.slice(
-        Number(args[0] ?? 0),
-        args[1] === undefined ? undefined : Number(args[1]),
-      );
-    if (name === "isEmpty") return target.length === 0;
-    if (name === "split") return target.split(String(args[0]));
-    if (name === "replace")
-      return target.split(String(args[0])).join(String(args[1] ?? ""));
-    if (name === "title") return titleCase(target);
-  }
+  if (typeof target === "string") return stringMethod(target, name, args);
   if (Array.isArray(target)) {
-    if (name === "contains")
-      return target.some((value) =>
-        scalarEquals(value, args[0] as BasesLiteral),
-      );
-    if (name === "join") return target.join(String(args[0] ?? ","));
-    if (name === "containsAll")
-      return args.every((value) =>
-        target.some((item) => scalarEquals(item, value as BasesLiteral)),
-      );
-    if (name === "containsAny")
-      return args.some((value) =>
-        target.some((item) => scalarEquals(item, value as BasesLiteral)),
-      );
-    if (name === "unique") return [...new Set(target)];
-    if (name === "flat") return target.flat();
-    if (name === "sort") return [...target].sort();
-    if (name === "reverse") return [...target].reverse();
-    if (name === "slice")
-      return target.slice(
-        Number(args[0] ?? 0),
-        args[1] === undefined ? undefined : Number(args[1]),
-      );
-    if (name === "isEmpty") return target.length === 0;
-    if (name === "mean") return mean(target);
-    if (name === "sum")
-      return target.reduce((total, value) => total + Number(value), 0);
-    if (name === "min") return Math.min(...target.map(Number));
-    if (name === "max") return Math.max(...target.map(Number));
+    return arrayMethod(target, name, args) ?? objectMethod(target, name);
   }
-  if (typeof target === "number") {
-    if (name === "round") {
-      const digits = Number(args[0] ?? 0);
-      const factor = 10 ** digits;
-      return Math.round(target * factor) / factor;
-    }
-    if (name === "floor") return Math.floor(target);
-    if (name === "ceil") return Math.ceil(target);
-    if (name === "abs") return Math.abs(target);
-    if (name === "toFixed") return target.toFixed(Number(args[0] ?? 0));
-  }
+  if (typeof target === "number") return numberMethod(target, name, args);
   if (target !== null && typeof target === "object") {
-    if (name === "isEmpty") return Object.keys(target).length === 0;
-    if (name === "keys") return Object.keys(target);
-    if (name === "values") return Object.values(target);
+    return objectMethod(target, name);
   }
+  return undefined;
+}
+
+function dateMethod(
+  date: Date,
+  name: string,
+  args: readonly unknown[],
+): unknown {
+  if (name === "format") return formatDate(date, String(args[0] ?? ""));
+  if (name === "date") return startOfUtcDate(date);
+  if (name === "time") return date.getTime();
+  return undefined;
+}
+
+function stringMethod(
+  target: string,
+  name: string,
+  args: readonly unknown[],
+): unknown {
+  if (name === "lower") return target.toLowerCase();
+  if (name === "upper") return target.toUpperCase();
+  if (name === "contains") return target.includes(String(args[0]));
+  if (name === "containsAll")
+    return args.every((value) => target.includes(String(value)));
+  if (name === "containsAny")
+    return args.some((value) => target.includes(String(value)));
+  if (name === "startsWith") return target.startsWith(String(args[0]));
+  if (name === "endsWith") return target.endsWith(String(args[0]));
+  if (name === "trim") return target.trim();
+  if (name === "reverse") return [...target].reverse().join("");
+  if (name === "repeat")
+    return target.repeat(Math.max(0, Number(args[0] ?? 0)));
+  if (name === "slice")
+    return target.slice(
+      Number(args[0] ?? 0),
+      args[1] === undefined ? undefined : Number(args[1]),
+    );
+  if (name === "isEmpty") return target.length === 0;
+  if (name === "split") return target.split(String(args[0]));
+  if (name === "replace")
+    return target.split(String(args[0])).join(String(args[1] ?? ""));
+  if (name === "title") return titleCase(target);
+  return undefined;
+}
+
+function arrayMethod(
+  target: readonly unknown[],
+  name: string,
+  args: readonly unknown[],
+): unknown {
+  if (name === "contains")
+    return target.some((value) => scalarEquals(value, args[0] as BasesLiteral));
+  if (name === "join") return target.join(String(args[0] ?? ","));
+  if (name === "containsAll")
+    return args.every((value) =>
+      target.some((item) => scalarEquals(item, value as BasesLiteral)),
+    );
+  if (name === "containsAny")
+    return args.some((value) =>
+      target.some((item) => scalarEquals(item, value as BasesLiteral)),
+    );
+  if (name === "unique") return [...new Set(target)];
+  if (name === "flat") return target.flat();
+  if (name === "sort") return [...target].sort();
+  if (name === "reverse") return [...target].reverse();
+  if (name === "slice")
+    return target.slice(
+      Number(args[0] ?? 0),
+      args[1] === undefined ? undefined : Number(args[1]),
+    );
+  if (name === "isEmpty") return target.length === 0;
+  if (name === "mean") return mean(target);
+  if (name === "sum")
+    return target.reduce<number>((total, value) => total + Number(value), 0);
+  if (name === "min") return Math.min(...target.map(Number));
+  if (name === "max") return Math.max(...target.map(Number));
+  return undefined;
+}
+
+function numberMethod(
+  target: number,
+  name: string,
+  args: readonly unknown[],
+): unknown {
+  if (name === "round") {
+    const digits = Number(args[0] ?? 0);
+    const factor = 10 ** digits;
+    return Math.round(target * factor) / factor;
+  }
+  if (name === "floor") return Math.floor(target);
+  if (name === "ceil") return Math.ceil(target);
+  if (name === "abs") return Math.abs(target);
+  if (name === "toFixed") return target.toFixed(Number(args[0] ?? 0));
+  return undefined;
+}
+
+function objectMethod(target: object, name: string): unknown {
+  if (name === "isEmpty") return Object.keys(target).length === 0;
+  if (name === "keys") return Object.keys(target);
+  if (name === "values") return Object.values(target);
   return undefined;
 }
 

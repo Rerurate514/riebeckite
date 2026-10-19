@@ -19,6 +19,7 @@
     "check:theme-docs": "node scripts/sync_theme_docs.mjs --check",
     "check:ci-selection": "node --test scripts/ci/select_checks.test.mjs",
     "check:ci-browsers": "node --test scripts/ci/puppeteer_browsers.test.mjs",
+    "check:ci-build-artifact": "node --test scripts/ci/build_artifact.test.mjs",
     "ci:build-artifact": "node scripts/ci/build_artifact.mjs",
     "docs:sync": "node scripts/sync_plugin_docs.mjs && node scripts/sync_theme_docs.mjs",
     "typecheck": "node scripts/typecheck_packages.mjs",

@@ -10,7 +10,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "24"
   PNPM_VERSION: 11.5.3
 
 jobs:
@@ -26,7 +25,6 @@ jobs:
       - name: Set up the workspace
         uses: ./.github/actions/setup
         with:
-          node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
           browsers: chrome-headless-shell
 

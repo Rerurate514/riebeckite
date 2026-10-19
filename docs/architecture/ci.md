@@ -2,7 +2,7 @@
 
 ## Tiers
 
-Tier 1 runs for every pull request: formatting and static contracts, documentation parity, package and dependency metadata, selector tests, the dependency-ordered package build, type checking, and all workspace unit tests. The build job produces a one-day Ubuntu artifact. Consumers verify its commit, lockfile digest, exact Node version, OS, architecture, package versions, and every `dist` file digest before use.
+Tier 1 runs for every pull request: formatting and static contracts, documentation parity, package and dependency metadata, selector tests, the dependency-ordered package build, type checking, and all workspace unit tests. The build job produces a one-day Ubuntu artifact. Consumers verify its format version, commit, lockfile digest, the exact Node version pinned in `.node-version`, OS, architecture, package versions, and every `dist` file digest before use.
 
 Tier 2 is selected from the changed paths. A selector failure, an empty comparison, unknown paths, lockfiles, TypeScript configuration, scripts, GitHub Actions, or other shared configuration select the complete Tier 2 suite. Package builds are never shared between operating systems, and no jobs mutate a shared working directory.
 

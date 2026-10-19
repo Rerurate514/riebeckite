@@ -2,7 +2,7 @@
 
 ## 階層
 
-Tier 1はすべてのPRで実行する。対象はフォーマットと静的チェック、ドキュメント整合性、パッケージ・依存関係メタデータ、選択ロジックの検証テスト、依存順のパッケージBuild、型検査、全WorkspaceのUnit Testである。BuildジョブはUbuntu用Artifactを1日保持する。利用側はcommit、lockfile digest、Nodeの完全なバージョン、OS、architecture、パッケージバージョン、全`dist`ファイルのdigestを検証してから利用する。
+Tier 1はすべてのPRで実行する。対象はフォーマットと静的チェック、ドキュメント整合性、パッケージ・依存関係メタデータ、選択ロジックの検証テスト、依存順のパッケージBuild、型検査、全WorkspaceのUnit Testである。BuildジョブはUbuntu用Artifactを1日保持する。利用側はArtifactの形式バージョン、commit、lockfile digest、`.node-version`で固定したNodeの完全なバージョン、OS、architecture、パッケージバージョン、全`dist`ファイルのdigestを検証してから利用する。
 
 Tier 2は変更パスから選択する。選択の失敗、空の比較、不明なパス、lockfile、TypeScript設定、scripts、GitHub Actions、その他の共通設定は、必ずTier 2全体を選択する。Package BuildはOS間で共有せず、共有作業ディレクトリを複数Jobが更新することもない。
 

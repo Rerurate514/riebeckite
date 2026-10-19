@@ -13,7 +13,6 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: "24"
   PNPM_VERSION: 11.5.3
   RIEBECKITE_BUILD_CONCURRENCY: "1"
 
@@ -30,7 +29,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
-          node-version: ${{ env.NODE_VERSION }}
           pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm build:packages
       - run: pnpm test:e2e:fault-recovery

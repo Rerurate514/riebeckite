@@ -12,7 +12,7 @@ title: Garden Explorer
 `gardenExplorerPlugin()` は、次の三つの領域を持つ `GardenExplorer` コンポーネントとスタイルを提供します。
 
 - **一覧**: キーワード検索、任意表示のタグ・フォルダーフィルター、該当ノートの一覧
-- **グラフ**: 公開ノートと内部リンクを表示する SVG グラフ。Local / Global の切り替え、force / radial layout、hover 時の隣接ノート強調、ノード drag、wheel / button zoom、canvas pan、reset、クリックで記事へ移動に対応
+- **グラフ**: 公開ノートと内部リンクを表示する SVG グラフ。Local / Global の切り替え、force / radial layout、hover 時の隣接ノート強調、ノード drag、wheel / button zoom に対応します。canvas pan、reset、クリックで記事へ移動にも対応します
 - **詳細**: 選択したノートのリンク、タグ、抜粋、関連ノート
 
 選択状態は `?note=`、`?tag=`、`?folder=` として URL に反映されます。表示中の状態をそのまま共有できます。
@@ -26,11 +26,11 @@ Explorer パネルのノート一覧は、UI 性能のため先頭 80 件に制�
 - **Local Graph** は選択中のノートを起点に、`depth` で指定した hop 数までの隣接ノートを表示します。既定値は `depth: 1` で、Obsidian / Quartz と同じく直接の outgoing link と backlink を見る用途に合わせています。`depth: 0` では選択中のノートだけを表示します。
 - **Global Graph** は現在の検索・タグ・フォルダー条件で絞り込まれた公開ノート全体と、その公開内部リンクを表示します。
 
-操作感は Obsidian の Graph View に寄せていますが、Vault をブラウザ側で再探索するのではなく、Riebeckite の Page System、public manifest、permalink、Content Graph をそのまま使います。
+操作感は Obsidian の Graph View に寄せています。ただし、Vault をブラウザ側で再探索しません。代わりに、Riebeckite の Page System、public manifest、permalink、Content Graph をそのまま使います。
 
 ## Layout
 
-- **Force layout**（`layout: "force"`、既定）: 小さな組み込み実装で repulsion、link distance、centering、damping、安定化を行います。重い依存は追加していません。大きなグラフ（300 ノード以上）では force layout の計算時間が目立つようになり、ツールバーに警告が表示されます。大きな Global Graph には radial layout の使用を推奨します。500 ノード以上では、ユーザーの明示的な承認なしに force layout は実行されません。
+- **Force layout**（`layout: "force"`、既定）: 小さな組み込み実装です。repulsion、link distance、centering、damping、安定化を行います。重い依存は追加していません。大きなグラフ（300 ノード以上）では force layout の計算時間が目立つようになり、ツールバーに警告が表示されます。大きな Global Graph には radial layout の使用を推奨します。500 ノード以上では、ユーザーの明示的な承認なしに force layout は実行されません。
 - **Radial layout**（`layout: "radial"`）: 既存の Riebeckite の放射状 layout を使います。コンパクトで決定的な見た目にしたい場合に使えます。近似線形時間で動作し、数千ノードでも瞬時に描画できます。
 
 ## 設定してページに配置する
@@ -62,7 +62,7 @@ plugins: [
 ];
 ```
 
-`gardenExplorerPlugin()` は `/explore` の Page Type、スタイル、クライアント側の hydrator を登録します。`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う共通 catch-all route が表示と SSG を担当するため、Plugin 固有の route は不要です。ページはまずサーバーで描画し、読み込み後に登録済みの client entry がグラフ、フィルター、URL 状態を hydration します。
+`gardenExplorerPlugin()` は `/explore` の Page Type、スタイル、クライアント側の hydrator を登録します。`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う共通 catch-all route が表示と SSG を担当します。そのため、Plugin 固有の route は不要です。ページはまずサーバーで描画し、読み込み後に登録済みの client entry がグラフ、フィルター、URL 状態を hydration します。
 
 コンポーネントを別の site-owned component に埋め込む場合だけ、manifest から表示用データを作って渡します。
 

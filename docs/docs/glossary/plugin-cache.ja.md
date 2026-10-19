@@ -36,7 +36,7 @@ cacheの動作はPlugin定義の`cacheVersion`で制御します。処理済み�
 
 ## processedContentCacheモード
 
-plugin定義の`processedContentCache`の取り決めには`dependencyMode`があり、persistent content cacheが依存関係をどのように追跡するかを決定します。モードは4つです：
+plugin定義の`processedContentCache`の取り決めには`dependencyMode`があります。これはpersistent content cacheが依存関係をどのように追跡するかを決めます。モードは4つです：
 
 | モード | 説明 |
 | --- | --- |
@@ -72,9 +72,9 @@ export default definePlugin({
 
 ## trackedモードでの依存関係の記録
 
-`tracked`モードでは、Pluginがコンテンツを処理するときにCoreのAPIを呼び出して依存関係を記録します。パイプライン（`content_dependency_tracker.ts`）は`CachedContentDependency`のentry（`kind`は`"content"`または`"file"`、`fingerprint`付き）を入力のハッシュとして記録します。これらの依存関係はpersistent content cacheのentry（`content_persistent_cache.ts`の`PersistentContentCacheEntry`）に保存されます。後続のBuildでは、依存のfingerprintが変わるとcache entryが無効化され、コンテンツが再処理されます。
+`tracked`モードでは、Pluginがコンテンツを処理するときにCoreのAPIを呼び出して依存関係を記録します。パイプライン（`content_dependency_tracker.ts`）は`CachedContentDependency`のentryを入力のハッシュとして記録します。entryには`kind`（`"content"`または`"file"`）と`fingerprint`が付きます。これらの依存関係はpersistent content cacheのentryに保存されます。entryの型は`content_persistent_cache.ts`の`PersistentContentCacheEntry`です。後続のBuildでは、依存のfingerprintが変わるとcache entryが無効化され、コンテンツが再処理されます。
 
-trackingは、Markdownリンクの正規化とContent Sourceの読み取り中に渡される`recordLinkResolution`コールバックを通じてパイプラインが行います。`remarkPlugins`、`rehypePlugins`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`を使うPluginは、trackedモードの追跡対象です。
+trackingは、Markdownリンクの正規化とContent Sourceの読み取り中に渡される`recordLinkResolution`コールバックを通じてパイプラインが行います。`remarkPlugins`、`rehypePlugins`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`を使うPluginは追跡対象です。対象モードはtrackedです。
 
 ---
 
@@ -83,9 +83,9 @@ trackingは、Markdownリンクの正規化とContent Sourceの読み取り中�
 2つのversionフィールドを区別することが重要です。
 
 - **`cacheVersion`**（Plugin定義のfield、型`string`）：Pluginごとの一時的なruntime cacheをバージョン管理します。`createPluginCache`/ `createUnavailablePluginCache`（`packages/core/src/pipeline.ts`）が管理します。このバージョンを変えるとPluginのローカルcacheが無効化されます。
-- **`processedContentCache.version`**（取り決めのfield、型`string`）：persistent processed-content cacheの取り決めをバージョン管理します。この値を変えると、この取り決めを使うPluginが影響するすべてのcontent cache entryが無効化されます。
+- **`processedContentCache.version`**（取り決めのfield、型`string`）は、キャッシュの取り決めをバージョン管理します。対象はpersistent processed-content cacheです。この値を変えると、この取り決めを使うPluginが影響するすべてのcontent cache entryが無効化されます。
 
-`createPluginCache`と`createUnavailablePluginCache`の選択（`packages/core/src/pipeline.ts`の`options.isBuildTime`と`cacheFor`メソッド、533〜543行）が、Pluginごとのcacheを使えるかどうかを決めます。
+`createPluginCache`と`createUnavailablePluginCache`の選択が、Pluginごとのcacheを使えるかどうかを決めます。選択は`packages/core/src/pipeline.ts`の`options.isBuildTime`と`cacheFor`メソッド（533〜543行）で行われます。
 
 ## 関連用語
 

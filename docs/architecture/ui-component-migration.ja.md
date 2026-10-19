@@ -46,13 +46,14 @@ server helper と component は browser 専用コードを import しません�
 | `findDiscoverableBySlug` | public target | 発見 UI のみ |
 | tag、graph、backlink、related、docs navigation | discoverable record のみ | public の関係だけ |
 
-draft/private entry と、その title、slug、permalink、alias、tag、relation は含めません。unlisted entry は public entry から明示的にリンクされているときだけ解決できますが、index、related、backlink、tag、docs navigation、graph の発見結果には入りません。現在の routable entry は自身の route で描画できます。Properties は routable target だけをリンクにし、それ以外はプレーンテキストにします。
+draft/private entry と、その title、slug、permalink、alias、tag、relation は含めません。unlisted entry は public entry から明示的にリンクされているときだけ解決できます。ただし、index、related、backlink、tag、docs navigation、graph の発見結果には入りません。現在の routable entry は自身の route で描画できます。Properties は routable target だけをリンクにし、それ以外はプレーンテキストにします。
 
 翻訳も同じです。route は安全な translation group の候補を出せますが、発見 list に出すのは discoverable translation だけです。facade は raw index を渡さず、`getBacklinks`、`getRelated`、`getTranslations` のような専用 API を公開します。
 
 ## 6. HTML と本文の境界
 
-Markdown は pipeline が作る `entry.html` のまま `ArticleBody` で描画します。`PageBody` は legacy/generated の `PluginPageType` HTML の境界として残します。必要なら `HtmlFragment` を server 専用の低水準 primitive とし、`{ html, source: "markdown" | "plugin-page" }` だけを受け取ります。これは Plugin UI 用の汎用 escape hatch ではありません。新しい記事外 UI は JSX にします。browser input や任意の Plugin 文字列を、所有者が信頼済み pipeline として扱わずに raw injection してはいけません。
+Markdown は pipeline が作る `entry.html` のまま `ArticleBody` で描画します。`PageBody` は legacy/generated の `PluginPageType` HTML の境界として残します。必要なら `HtmlFragment` を server 専用の低水準 primitive とします。受け取るのは `{ html, source: "markdown" | "plugin-page" }` だけです。これは Plugin UI 用の汎用 escape hatch ではありません。
+新しい記事外 UI は JSX にします。browser input や任意の Plugin 文字列を、所有者が信頼済み pipeline として扱わずに raw injection してはいけません。
 
 ## 7. 責務と CSS の取り決め
 
@@ -96,7 +97,7 @@ Minimal は rail を持ちません。Starter は flow layout を選べます。
 
 ## 9. HonoX primitive と export
 
-`Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`PageBody`、`ArticleFooter`、`Sidebar`、`ThemeRoot` は残します。Slot API と配置 attribute を取り除いた semantic primitive として扱います。component は Plugin package に置き、model type と helper とともに public entry point から export します。Site TSX は application の `app/` に置きます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
+`Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`PageBody` は残します。`ArticleFooter`、`Sidebar`、`ThemeRoot` も残します。Slot API と配置 attribute を取り除いた semantic primitive として扱います。component は Plugin package に置き、model type と helper とともに public entry point から export します。Site TSX は application の `app/` に置きます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
 
 ## 10. Plugin 移行表
 
@@ -123,7 +124,7 @@ backlinks、related posts、local graph、series は discoverable data を使い
 
 ## 12. Factory、設定、dependency
 
-UI 以外の処理には Factory の登録が必要です。`breadcrumbs.jsonLd`、l10n の alternate link、diff history endpoint、webmention verification、asset、client entry は引き続き Factory の責務です。自動配置を意味する `render`、`placement`、任意の `slot`、HTML callback option は削除します。隠れた default として意味を変えてはいけません。
+UI 以外の処理には Factory の登録が必要です。`breadcrumbs.jsonLd`、l10n の alternate link、diff history endpoint は引き続き Factory の責務です。webmention verification、asset、client entry も同様です。自動配置を意味する `render`、`placement`、任意の `slot`、HTML callback option は削除します。隠れた default として意味を変えてはいけません。
 
 Diff の履歴取得・生成は明示的な capability opt-in を必要とします。Diff component を導入・配置しただけでは履歴 I/O を有効にしません。既存の履歴機能は Phase 2 の API 移行まで変更しません。
 
@@ -141,9 +142,9 @@ Docs は navigation data の生成に navigation-source contract を使います
 <HtmlFragment html={html} source="markdown" />
 ```
 
-wrapper を出力せず、`source` は provenance を表すだけで、runtime の sanitize や security guarantee ではありません。`ArticleBody` と `PageBody` は Markdown と Plugin Page HTML の semantic boundary として残します。HTML は sanitize しません。Markdown の raw HTML、rehype/remark の出力、Plugin Page HTML、外部 data から作る HTML は、この boundary の前に各所有 pipeline が信頼・sanitize する必要があります。新しい Plugin UI には JSX を使い、この primitive を使いません。
+wrapper を出力せず、`source` は provenance を表すだけで、runtime の sanitize や security guarantee ではありません。`ArticleBody` と `PageBody` は Markdown と Plugin Page HTML の semantic boundary として残します。HTML は sanitize しません。Markdown の raw HTML、rehype/remark の出力、Plugin Page HTML、外部 data から作る HTML が対象です。これらはこの boundary の前に、各所有 pipeline が信頼・sanitize する必要があります。新しい Plugin UI には JSX を使い、この primitive を使いません。
 
-Plugin package は factory に加えて `PluginDataHelper<Input, Model>` と `PluginComponent<Props>` を export できます。helper は `PublicContentView` のような狭い input を受け、component は readonly の型付き props を受けて Slot HTML を返しません。必要に応じて package export は `./components`、`./style.css`、`./client` を追加できます。既存の asset と client-entry の登録は引き続き factory の責務です。component を import しただけでは、CSS/client runtime の登録も Plugin capability の有効化も行いません。CSS の tree shaking は既存の package `sideEffects` metadata に従います。
+Plugin package は factory に加えて `PluginDataHelper<Input, Model>` を export できます。`PluginComponent<Props>` も export できます。helper は `PublicContentView` のような狭い input を受け、component は readonly の型付き props を受けて Slot HTML を返しません。必要に応じて package export は `./components`、`./style.css`、`./client` を追加できます。既存の asset と client-entry の登録は引き続き factory の責務です。component を import しただけでは、CSS/client runtime の登録も Plugin capability の有効化も行いません。CSS の tree shaking は既存の package `sideEffects` metadata に従います。
 
 ## 13. Cache と Incremental SSG への影響
 
@@ -159,11 +160,11 @@ Plugin package は factory に加えて `PluginDataHelper<Input, Model>` と `Pl
 4. 12 Plugin を変換し、UI 以外の hook と Page Type を維持します。
 5. Slot contract、primitive、CSS、test、設定項目を 1 回の breaking change で削除します。互換 adapter は出しません。
 
-helper の可視性、空表示、client entry 登録、UI 配置以外の Factory 処理、public/unlisted/draft の組み合わせ、Site での重複利用、desktop/mobile layout、cache invalidation をテストします。変換した Plugin ごとに component unit test と Site integration fixture を追加します。
+helper の可視性、空表示、client entry 登録、UI 配置以外の Factory 処理をテストします。public/unlisted/draft の組み合わせ、Site での重複利用、desktop/mobile layout、cache invalidation もテストします。変換した Plugin ごとに component unit test と Site integration fixture を追加します。
 
 ## 15. Phase 2 の開始条件
 
-基盤 API test、HonoX primitive test、cache と incremental SSG の回帰確認、typecheck、Biome、documentation check が成功し、既存 Slot の描画が維持されてから Phase 2 を開始できます。その後も上記 capability の判断を変えず、Plugin API を 1 件ずつ移行します。
+基盤 API test、HonoX primitive test、cache と incremental SSG の回帰確認が成功している必要があります。加えて typecheck、Biome、documentation check が成功し、既存 Slot の描画が維持されてから Phase 2 を開始できます。その後も上記 capability の判断を変えず、Plugin API を 1 件ずつ移行します。
 
 ## 16. Cache と SSG の検証
 

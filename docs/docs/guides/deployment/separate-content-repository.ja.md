@@ -712,7 +712,7 @@ Contents: read and write
 
 Classic PAT なら `repo` Scope、GitHub App Token なら `Contents: write` が必要です。
 
-PAT は [GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) から作成し、作成した値をそれぞれの Repository の **Settings → Secrets and variables → Actions** に登録します。
+PAT は [GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) から作成します。作成した値をそれぞれの Repository の **Settings → Secrets and variables → Actions** に登録します。値をそれぞれの Repository の **Settings → Secrets and variables → Actions** に登録します。tokens) から作成します。作成した値をそれぞれの Repository の **Settings → Secrets and variables → Actions** に登録します。
 
 2つの Token は役割を分けて使います。
 
@@ -802,7 +802,7 @@ git commit -m "記事を更新"
 
 のように参照を更新します。
 
-`git submodule update --remote` を利用することもできますが、最終的には Site Repository 側で新しい Submodule Commit を記録する必要があります。
+`git submodule update --remote` を利用することもできます。最終的には Site Repository 側で新しい Submodule Commit を記録する必要があります。
 
 ## 追加 Checkout と Submodule
 
@@ -1036,7 +1036,7 @@ publishStrategy
 
 特に Asset は Vault 全体をそのまま `public/` へコピーしないようにしてください。
 
-公開ノートから未公開ノートへの参照は、`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` で `publish-boundary` 警告として確認できます。`runDiagnostics()` を使うと、同じ診断をプログラムからも取得できます。詳細は [Diagnostics](../../plugins/diagnostics.ja.md) を参照してください。
+公開ノートから未公開ノートへの参照は、`publish-boundary` 警告として確認できます。診断は `@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` が提供します。`runDiagnostics()` を使うと、同じ診断をプログラムからも取得できます。詳細は [Diagnostics](../../plugins/diagnostics.ja.md) を参照してください。
 
 ## 20. 検証する
 

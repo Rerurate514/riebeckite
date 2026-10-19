@@ -70,7 +70,7 @@ pnpm test:plugin-dx            # Public API だけで書いた Plugin の Unit T
 pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install して検証
 ```
 
-`test:plugin-dx:external` は `@riebeckite/core` と fixture Plugin を `pnpm pack` し、monorepo の外の隔離 Site に install して、公開 Package だけで Plugin が動作することを確認します。外部配布する Plugin の回帰検知に利用できます。
+`test:plugin-dx:external` は `@riebeckite/core` と fixture Plugin を `pnpm pack` します。これを monorepo の外の隔離 Site に install し、公開 Package だけで Plugin が動作することを確認します。外部配布する Plugin の回帰検知に利用できます。
 
 ## テストを実行する
 
@@ -226,17 +226,17 @@ assert.match(html, /<aside class="rr-tip">/);
 
 ### Level 3: Content / lifecycle
 
-Content の読み込み、hook、manifest、body slot、Page Type を検証する場合は `ContentManager` を使います。後述の「Content を扱うテスト」と同じ In-memory `ContentSource` の形で、`getProcessedContent()` は Pipeline と Content hook を通した結果を、`getManifest()` は解決済み Plugin を含む manifest を返します。
+Content の読み込み、hook、manifest、body slot、Page Type を検証する場合は `ContentManager` を使います。後述の「Content を扱うテスト」と同じ In-memory `ContentSource` の形で使います。`getProcessedContent()` は Pipeline と Content hook を通した結果を返します。`getManifest()` は解決済み Plugin を含む manifest を返します。
 
 ### Level 4: 外部パッケージ境界
 
 配布する Package は、`pnpm pack` した tarball を monorepo の外の隔離 Site へ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落を検出できます。
 
-Repository の `tests/plugin-dx` がこの検証の実例で、前述のとおり `pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
+Repository の `tests/plugin-dx` がこの検証の実例です。前述のとおり、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
 
 ### `@riebeckite/test` の役割
 
-`@riebeckite/test` は、Golden File の比較（`assertGolden` / `assertGoldenJson`）など、複数 Package で共有するテスト Helper を提供します。必須ではありません。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部 Site を生成して検証する Repository 向けの Engine で、第三者 Plugin が通常使うものではありません。
+`@riebeckite/test` は複数 Package で共有するテスト Helper を提供します。Golden File の比較（`assertGolden` / `assertGoldenJson`）などが含まれます。必須ではありません。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部 Site を生成して検証する Repository 向けの Engine で、第三者 Plugin が通常使うものではありません。
 
 ## 基本的なテストの書き方
 

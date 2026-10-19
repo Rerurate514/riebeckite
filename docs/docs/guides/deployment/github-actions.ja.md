@@ -184,7 +184,7 @@ https://dash.cloudflare.com/<ACCOUNT_ID>/workers-and-pages
 
 ### GitHub に登録する
 
-GitHub の Site Repository → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** を開き、名前と値をそれぞれ登録します。
+GitHub の Site Repository → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** を開きます。名前と値をそれぞれ登録します。
 
 ```text
 名前: CLOUDFLARE_API_TOKEN   値: 上でコピーしたトークン
@@ -486,7 +486,7 @@ npm ci
 
 - `.riebeckite/cache`：Markdown と Plugin の処理 cache
 - `.riebeckite/build/content-state.json`：incremental build の state
-- `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries`：SSG output cache（描画済みの route とファイル、およびその entry blob）
+- `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries`：SSG output cache。描画済みの route とファイル、およびその entry blob を保持します
 - `.riebeckite/ssg-output-cache.fast-path.json`：no-change fast path の検証用 sidecar
 
 cache key には runner OS、Node.js のバージョンが含まれます。`package-lock.json` の hash、`riebeckite.config.ts` の hash も含め、run ごとの generation として保存します。
@@ -502,7 +502,7 @@ cache は OS や Node.js のバージョンをまたいで共有されないた�
 復元した output cache を Riebeckite が棄却した場合（cache が無い）。壊れている、app fingerprint が変わった、`unknown` 依存の出力がある、full regeneration が必要、cache の無い出力がある。
 その後、すべての出力を描画し直して `dist/` を書き直すため、古い・不完全な cache が Deploy に混入することはありません。cache miss は安全で、単に cold build になるだけです。
 
-build 後は新しい cache generation が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` は content 処理の再利用を、`SSG outputs` 行の `rendered`、`reused`、`removed` は描画済み出力の再利用を示します。`.riebeckite/` を削除する、または workflow の cache step を外すと次の run は cold になりますが、出力の正しさには影響しません。content cache は残しておきます。 output cache の転送だけを省略したい場合は、cache step から `.riebeckite/ssg-output-cache*` の 3 パスを外してください。次の run はすべての出力を描画し直します。Workflow は復元・保存した cache のサイズも出力するので、転送コストを確認できます。cache の保存に失敗・省略されても Deploy は実行されます。
+build 後は新しい cache generation が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` は content 処理の再利用を示します。`SSG outputs` 行の `rendered`、`reused`、`removed` は描画済み出力の再利用を示します。`.riebeckite/` を削除する、または workflow の cache step を外すと次の run は cold になりますが、出力の正しさには影響しません。content cache は残しておきます。output cache の転送だけを省略したい場合は、cache step から `.riebeckite/ssg-output-cache*` の 3 パスを外してください。次の run はすべての出力を描画し直します。Workflow は復元・保存した cache のサイズも出力するので、転送コストを確認できます。cache の保存に失敗・省略されても Deploy は実行されます。
 
 ### 6. Site を検証
 

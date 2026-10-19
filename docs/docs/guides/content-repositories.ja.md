@@ -281,7 +281,7 @@ Site Repository
 
 ## 2. Site を作る
 
-GitHub Actions を利用する場合は、Content Repository と Site Repository を指定して Site を生成できます。対話式の CLI では `Separate GitHub repository` を選び、Content repository と Site repository を入力するのと同じ構成になります（GitHub Actions のデプロイ設定は自動です）。
+GitHub Actions を利用する場合は、Content Repository と Site Repository を指定して Site を生成できます。対話式の CLI では `Separate GitHub repository` を選び、Content repository と Site repository を入力します。これと同じ構成になります（GitHub Actions のデプロイ設定は自動です）。
 
 ```sh
 npx create-riebeckite my-site \
@@ -566,7 +566,7 @@ Fine-grained PAT を利用する場合は、
 
 Classic PAT の `repo` Scope や、`Contents: write` を持つ GitHub App Installation Token も利用できます。
 
-Fine-grained PAT も Classic PAT も、[GitHub の Settings → Developer settings → Personal access tokens] から作成できます。作成した値は、この Content Repository の **Settings → Secrets and variables → Actions** に `SITE_DISPATCH_TOKEN` という名前で登録します。
+Fine-grained PAT も Classic PAT も作成できます。作成場所は [GitHub の Settings → Developer settings → Personal access tokens] です。作成した値は、この Content Repository の **Settings → Secrets and variables → Actions** に登録します。名前は `SITE_DISPATCH_TOKEN` です。
 
 ## `RIEBECKITE_CONTENT_READ_TOKEN`
 

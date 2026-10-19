@@ -21,7 +21,7 @@ sidebar:
 
 ## プラットフォーム固有の注意点
 
-Eleventy の data cascade と computed data は metadata と URL の両方を変え得るため、Frontmatter を移す前にページを render/sample します。collection と pagination は Riebeckite の content 機能または app code で再構成し、移行先で元の JavaScript data file を実行しません。
+Eleventy の data cascade と computed data は、metadata と URL の両方を変え得ます。そのため、Frontmatter を移す前にページを render/sample します。collection と pagination は Riebeckite の content 機能または app code で再構成します。移行先で元の JavaScript data file は実行しません。
 
 ## 機能対応表
 
@@ -71,13 +71,13 @@ export default defineConfig({
 
 ## URL と SEO の維持
 
-Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の URL にします。`@riebeckite/plugin-permalink` を有効にすると既定の canonical URL は `/n/<id>` に変わるため、URL 維持だけを目的に無設定で有効化しないでください。ページ単位の旧 URL には `permalink` と `redirect_from` Frontmatter を使い、サイト全体の URL 方針には `path` または `resolvePath` を明示設定します。ホストがリダイレクトを追加すると仮定せず、デプロイ後の出力を確認してください。
+Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の URL にします。`@riebeckite/plugin-permalink` を有効にすると、既定の canonical URL は `/n/<id>` に変わります。そのため、URL 維持だけを目的に無設定で有効化しないでください。ページ単位の旧 URL には `permalink` と `redirect_from` Frontmatter を使います。サイト全体の URL 方針には `path` または `resolvePath` を明示設定します。ホストがリダイレクトを追加すると仮定せず、デプロイ後の出力を確認してください。
 
 `@riebeckite/plugin-seo` は canonical metadata、sitemap、`robots.txt`、RSS/Atom/JSON feed を生成します。`canonical` と解決済み permalink を使用します。実際の翻訳があるときだけ `@riebeckite/plugin-l10n` を使ってください。既存の翻訳に `hreflang` を出力しますが、フォールバックページは生成しません。`content/` 配下のローカル Markdown 画像は、公開ページから参照されたものだけがコピーされます。相対パスとルート相対パスはサイトルート URL に正規化されるため、参照先は content root 内に置き、すべて検証してください。404 は移行先ホストまたはアプリで用意してください。自動的に同等になるとは限りません。
 
 ## よくある問題
 
-- **ページが表示されない:** `publish: true`、`content.directory`、exclude を確認し、`npm exec riebeckite inspect content --list` を実行します。
+- **ページが表示されない:** `publish: true`、`content.directory`、exclude を確認します。その後、`npm exec riebeckite inspect content --list` を実行します。
 - **旧 URL が変わった:** 明示的な `permalink` または `redirect_from` を使います。rename 検出を使う場合は ID を安定させます。
 - **テンプレート構文がそのまま見える:** 移行元固有の構文です。Markdown、公開済み Plugin、アプリコードに置き換えます。
 - **sidebar の順番が違う:** `sidebar.label` と `sidebar.order` を指定し、Docs root を確認します。

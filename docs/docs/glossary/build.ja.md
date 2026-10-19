@@ -34,25 +34,25 @@ Buildプロセスは、`packages/core/src/pipeline.ts`で定義されたパイ�
 
 2. **コンテンツの読み込み**：`FileSystemContentSource`などのContent Sourceが、コンテンツディレクトリからMarkdownファイルを読み込みます。
 
-3. **Markdownの解析とPluginによる変換**：`Pipeline`クラスが`remark`プラグイン（parse、frontmatter、GFM、math、custom remarkPlugins）と`rehype`プラグイン（raw、slug、katex、format、stringify、custom rehypePlugins）を使ってunifiedプロセッサを実行します。`extendMarkdownPipeline`と`extendHtmlPipeline`のhookで、Pluginごとにパイプラインを拡張できます。
+3. **Markdownの解析とPluginによる変換**：`Pipeline`クラスがunifiedプロセッサを実行します。`remark`プラグインはparse、frontmatter、GFM、math、custom remarkPluginsです。`rehype`プラグインはraw、slug、katex、format、stringify、custom rehypePluginsです。`extendMarkdownPipeline`と`extendHtmlPipeline`のhookで、Pluginごとにパイプラインを拡張できます。
 
 4. **frontmatterの抽出とコンテンツ処理**：frontmatterは`matter`や`vfile-matter`で抽出します。変換したコンテンツは、slug、source、frontmatter、パイプラインのfingerprintからなるキーでpersistent cacheに保存されることがあります。依存関係はPluginの`dependencyMode`（`none`/ `tracked`/ `global`/ `unsafe`）に従って追跡します。
 
-5. **公開判定と公開位置の解決**：`isPublishable`が`publishStrategy`（`explicit`/ `selective`）とfrontmatterのfield（`publish`、`private`、`draft`）から公開状態を決めます。permalinkはコンテンツの公開位置の解決で決まります。
+5. **公開判定と公開位置の解決**：`isPublishable`が公開状態を決めます。`publishStrategy`（`explicit`/ `selective`）とfrontmatterのfieldを使います。fieldは`publish`、`private`、`draft`です。permalinkはコンテンツの公開位置の解決で決まります。
 
-6. **manifestとgraphの構築**：`ContentManager`がmanifestのentryを構築し、リンクを解決し、`ContentGraph`にincoming / outgoingのリンク問い合わせを構築します。tag、series、archiveのcollectionは`buildContentCollections`が作ります。
+6. **manifestとgraphの構築**：`ContentManager`がmanifestのentryを構築し、リンクを解決します。さらに、`ContentGraph`にincoming / outgoingのリンク問い合わせを構築します。tag、series、archiveのcollectionは`buildContentCollections`が作ります。
 
 7. **出力の生成**：画像やClient Entryなどのassetを収集します。解決したThemeを使ってSSG（HonoX）でHTMLを出力します。`.riebeckite/build/content-state.json`の前回のBuild状態を使い、変更したコンテンツと再利用できる出力を追跡してIncremental Buildを行います。
 
 ## パイプライン実行
 
-`packages/core/src/pipeline.ts`の`Pipeline`クラスは`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続的content cacheをキャッシュキー（slug、source、frontmatter、pipeline fingerprint）でチェックします。cacheヒットで無効な依存がない場合は、キャッシュされたfrontmatterとHTMLが即座に返されます。cacheミスまたはバイパスの場合、RemarkとRehypeプラグインによる解析、frontmatter抽出、GFM、math、カスタム変換を経てmarkdownが処理されます。リンク解決はコンテンツ依存関係トラッカーを通じて依存を記録します。処理後、結果は将来のIncremental Build用にdependenciesとfingerprintとともにpersistent content cacheに保存されます。
+`packages/core/src/pipeline.ts`の`Pipeline`クラスは`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続的content cacheをチェックします。キャッシュキーはslug、source、frontmatter、pipeline fingerprintです。cacheヒットで無効な依存がない場合は、キャッシュされたfrontmatterとHTMLが即座に返されます。cacheミスまたはバイパスの場合、RemarkとRehypeプラグインによる解析、frontmatter抽出、GFM、math、カスタム変換を経てmarkdownが処理されます。リンク解決はコンテンツ依存関係トラッカーを通じて依存を記録します。処理後、結果は将来のIncremental Build用にdependenciesとfingerprintとともにpersistent content cacheに保存されます。
 
-pipeline fingerprint（`computePipelineFingerprint`）はplugin構成、content filter、compatibility versionを組み込みます。cache可能性は`isPersistentlyCacheable`によって決定され、各pluginの`processedContentCache`の取り決め（dependencyMode: none/tracked/global/unsafe）がチェックされます。
+pipeline fingerprint（`computePipelineFingerprint`）は、plugin構成とcontent filterを組み込みます。compatibility versionも対象です。cache可能性は`isPersistentlyCacheable`によって決まります。各pluginの`processedContentCache`の取り決め（dependencyMode: none/tracked/global/unsafe）がチェックされます。
 
 ## 永続的content cache統合
 
-`.riebeckite/cache/content/v5`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`CacheKeyInputs`に含まれるslug、source、正規化されたfrontmatter、pipeline fingerprintから`computeContentCacheKey`で計算されます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は5）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheは後続のBuildで依存の無効化を判定するために、論理的なcontent、file、linkの依存関係（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
+`.riebeckite/cache/content/v5`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`computeContentCacheKey`で計算されます。入力の`CacheKeyInputs`にはslug、source、正規化されたfrontmatter、pipeline fingerprintが含まれます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は5）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheは後続のBuildで依存の無効化を判定するために、論理的なcontent、file、linkの依存関係（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
 
 ## 関連用語
 

@@ -56,7 +56,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Capability](./capability.ja.md)：Capabilityは、Pluginが提供または要求できる名前付きの機能です。依存解決はPluginを順序付け、失敗は構造化された診断として表示されます。
 - [Lifecycle hook](./lifecycle-hook.ja.md)：Pluginのlifecycle hookは、Content Managerが1回動く間に実行されます。順序は`setup`、`buildStart`、コンテンツ処理、`buildEnd`、そして逆順の`dispose`です。名前付きのcontent hookは、依存関係を解決したPluginの順序で加わります。
 - [Content hook](./content-hook.ja.md)：Content hookは、コンテンツ処理の各フェーズに参加します。configの解決からcontentの読み込み、post parsed、post processed、content graph、manifestの作成、diagnosticsまでが対象です。
-- [Hook context](./hook-context.ja.md)：hookに渡されるplugin contextには`config`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれます。任意で`contentSource`も渡されます。グローバルなSingletonではなく、フレームワークのサービスを使います。
+- [Hook context](./hook-context.ja.md)：hookに渡されるplugin contextには`config`、`contentIndex`、`diagnostics`、`cache`が含まれます。`output`、`logger`、`tracer`も含まれます。任意で`contentSource`も渡されます。グローバルなSingletonではなく、フレームワークのサービスを使います。
 - [Renderer](./renderer.ja.md)：Rendererはコンテンツの対象をPlugin固有のHTMLに変換します。対象を処理しない場合は`null`を返し、次のRendererに処理を渡します。Canvas、Excalidraw、attachmentの描画が例です。
 - [Endpoint](./endpoint.ja.md)：Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの宣言をホストのrouterに接続します。
 - [Client entry](./client-entry.ja.md)：Client entryは、実行時に本当に必要なブラウザJavaScriptの初期化を宣言します。各entryはPlugin名、module specifier、任意のexport名、公開configを持ちます。
@@ -65,7 +65,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Asset](./asset.ja.md)：Pluginのassetはstylesheetなどの静的ファイルです。`assets`配列で宣言し、Integrationのstylesheetパイプラインを通してブラウザに届きます。`apps/web`へ直接コピーされることはありません。
 - [Head tag](./head-tag.ja.md)：ページのheadタグとメタデータはPluginシステムを通じて追加されます。Integrationとサイトのapplicationが、タイトル、description、言語属性をまとめて最終的な`<head>`を組み立てます。
 - [Diagnostics](./diagnostics.ja.md)：DiagnosticsはCoreとPluginが出す構造化された調査結果で、何が問題か、どこで起きるか、どれくらい重要か（severity）、どう直すかを示します。Pluginは`addDiagnostics`で診断を報告し、Coreは`check`と`doctor`コマンドでまとめます。
-- [Diagnostic code](./diagnostic-code.ja.md)：Diagnostic codeは問題の種類を識別する安定した識別子です。`duplicate-content-id`、`invalid-content-id`、`content-integrity-*`などCoreとPluginが共有するものがあり、`check`と`doctor`で一貫したレポートに使います。
+- [Diagnostic code](./diagnostic-code.ja.md)：Diagnostic codeは問題の種類を識別する安定した識別子です。`duplicate-content-id`、`invalid-content-id`、`content-integrity-*`などはCoreとPluginが共有します。`check`と`doctor`で一貫したレポートに使います。
 - [Diagnostic severity](./diagnostic-severity.ja.md)：Severityはerror、warn、infoの三段階で、正しい出力を保てるかどうかを基準に決めます。errorは正しい出力を妨げる問題、warnは注意が必要な潜在的な問題、infoは出力の正しさに影響しない補足情報です。
 - [Plugin options](./plugin-options.ja.md)：PluginのオプションはPluginファクトリに渡す設定値です。副作用のない純粋な`validateOptions`関数で検証し、解決したオプションはPluginの`options`プロパティから参照できます。
 
@@ -124,9 +124,9 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Deployment](./deployment.ja.md)：Build済みのサイトを配信先へ配置する段階です。Buildがmanifestと生成物を用意し、IntegrationがそれをCloudflare Workersなどのplatformにつなぎます。
 - [Integration](./integration.ja.md)：Coreのコンテンツとページを、HonoXやViteといった描画・配信のスタックにつなぐパッケージです。コンテンツの論理を持たずに、routeを描画し出力を書き出します。
 - [Runtime](./runtime.ja.md)：Buildの後に、サイトがページを配信し問い合わせに答える段階です。Runtimeのコードは、コンテンツを再処理せずmanifestとページのデータを読みます。
-- [Site Config](./site-config.ja.md)：SiteConfigのフィールド（title、description、author、baseUrl、locale、twitterSite、defaultOgImage、feed）はサイトを記述します。SEOやfeed、localeを駆動します。
+- [Site Config](./site-config.ja.md)：SiteConfigのフィールドはサイトを記述します。対象はtitle、description、author、baseUrl、locale、twitterSite、defaultOgImage、feedです。SEOやfeed、localeを駆動します。
 - [Navigation](./navigation.ja.md)：サイトのナビゲーション設定と、解決されたmanifestからヘッダー/フッターのリンクを描画するナビゲーションプラグインです。
-- [Route](./route.ja.md)：Integrationがページを解決するURLパスで、ページのpublic pathからProducedされ、HonoXのフレームワークによって描画されます。
+- [Route](./route.ja.md)：Integrationがページを解決するURLパスで、ページのpublic pathから生成され、HonoXのフレームワークによって描画されます。
 - [Sitemap](./sitemap.ja.md)：manifestからビルドされた検索エンジン向けのsitemap/robotsリストで、discoverableなURLを提供します。
 - [Search](./search.ja.md)：manifestから作成されるbuild-timeの検索indexとプラグインで、読み手がコンテンツをクエリリングできるようにします。
 
@@ -139,4 +139,4 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Sidenote](./sidenote.ja.md)：脚注の記法を、インラインの参照と、デスクトップではマージンノート、モバイルではポップオーバーに置き換えるTufte風のサイドノートです。モバイルのポップオーバーの切り替えには、小さなclient entry（`initSidenotes`）を使います。
 - [Backlink](./backlink.ja.md)：どの公開ノートが現在のノートにリンクしているかを示すバックリンクの一覧です。`getPublishedBacklinks()`でcontent manifestから被リンクを解決し、公開されて一覧に載るノートだけに絞り込み、manifestの順序で並べます。
 - [Site](./site.ja.md)：サイトのapplicationは、route、文書の枠組み、メタデータ、HTMLの安全性を持ちます。`@riebeckite/honox`のintegrationを通じてRiebeckiteのCoreの振る舞いをHonoXとViteにつなぎます。Pluginの提供物を最終的な公開UIにどう組み立てるかを決めます。
-- [UI](./ui.ja.md)：`@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の取り決めであり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`、`ArticleMeta`、`ArticleFooter`、`Sidebar`があります。安定したCSS hook（`rb-article`、`rb-article-layout`など）も持ちます。
+- [UI](./ui.ja.md)：`@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の取り決めであり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`があります。`ArticleMeta`、`ArticleFooter`、`Sidebar`もあります。安定したCSS hook（`rb-article`、`rb-article-layout`など）も持ちます。

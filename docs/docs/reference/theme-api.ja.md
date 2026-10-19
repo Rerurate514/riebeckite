@@ -295,7 +295,7 @@ delete document.documentElement.dataset.theme;
 
 `@riebeckite/plugin-color-mode` がこの Contract の参照実装です。
 
-Dark を表す CSS 機構はこの 2 つだけです。Theme Root 上の明示的な Dark である `[data-theme="dark"]` と、`data-theme` が無いときの `@media (prefers-color-scheme: dark)`（System）です。Framework は `.dark` class を付与しないため、`.dark` に依存した selector は Contract 外です。どちらの状態でも同じ `--rb-*` Semantic Token が解決されるため、Semantic Token だけを参照する Component は明示 Dark と System Dark を区別する必要がありません。
+Dark を表す CSS 機構はこの 2 つだけです。Theme Root 上の明示的な Dark が `[data-theme="dark"]` です。`data-theme` が無いときは `@media (prefers-color-scheme: dark)`（System）です。Framework は `.dark` class を付与しないため、`.dark` に依存した selector は Contract 外です。どちらの状態でも同じ `--rb-*` Semantic Token が解決されます。そのため、Semantic Token だけを参照する Component は明示 Dark と System Dark を区別する必要がありません。
 
 ## Typography
 
@@ -602,9 +602,9 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 </html>
 ```
 
-ただし、予約済みの `data-theme`, `data-theme-name`, `data-typography`, `data-article-layout` は theme 側の `attributes` では上書きできません。
+ただし、`data-theme`, `data-theme-name`, `data-typography`, `data-article-layout` は予約済みです。theme 側の `attributes` では上書きできません。
 
-plugin や theme が独自に `themeAttributes()` を実装していた場合は、Framework が提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。Framework が所有する namespace と theme 固有の namespace を明確に分離できます。
+plugin や theme が独自に `themeAttributes()` を実装していた場合は、移行を検討してください。移行先は Framework が提供する `ThemeRoot` / `themeRootAttributes()` です。Framework が所有する namespace と theme 固有の namespace を明確に分離できます。
 
 ## Theme 固有 Options
 
@@ -690,7 +690,7 @@ Framework の代表的な Stable Hook は、
 
 です。
 
-`.rb-article-content` はレンダリングされた Markdown 本文の wrapper で、Markdown のセマンティックなベースライン（リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロック）を持ちます。`.rb-article-body` はその wrapper を含む article body のシェルです。`.rb-article-content` を出力するのは公開 primitive の `ArticleBody` です。このベースラインはレイヤー化されているため、テーマが見た目を再宣言するのではなく、`--rb-*` トークンとレイヤー外のキャラクター規則で表現します。
+`.rb-article-content` はレンダリングされた Markdown 本文の wrapper です。Markdown のセマンティックなベースラインを持ちます。対象はリストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロックです。`.rb-article-body` はその wrapper を含む article body のシェルです。`.rb-article-content` を出力するのは公開 primitive の `ArticleBody` です。このベースラインはレイヤー化されているため、テーマが見た目を再宣言するのではなく、`--rb-*` トークンとレイヤー外のキャラクター規則で表現します。
 
 Plugin では、
 
@@ -826,7 +826,7 @@ theme/
 
 Font を同梱する場合は License File も含めてください。
 
-Latin subset のような比較的小さい Web Font は同梱できますが、日本語などの CJK Font はサイズが大きいため、基本的には System Font Stack へ fallback します。
+Latin subset のような比較的小さい Web Font は同梱できます。日本語などの CJK Font はサイズが大きいため、基本的には System Font Stack へ fallback します。
 
 ## CSS Cascade
 

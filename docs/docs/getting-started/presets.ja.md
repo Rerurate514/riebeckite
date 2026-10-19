@@ -39,7 +39,7 @@ npx create-riebeckite --list-presets
 
 ### `starter`
 
-実用サイト向けの既定構成です。Obsidian Markdown、カラーモード、SEO、目次、properties・alias、コード表示、検索・発見、パンくず、画像の最適表示と lightbox、taxonomy、Folder landing page、リンク preview を含みます。Navigation はサンプル用の固定 URL ではなく、公開済みコンテンツから組み立てます。相互リンクしたノートにより、バックリンク、関連記事、検索、最新記事、Tag を試せます。ニッチな統合は含めません。
+実用サイト向けの既定構成です。Obsidian Markdown、カラーモード、SEO、目次、properties・alias、コード表示、検索・発見、パンくずを含みます。さらに、画像の最適表示と lightbox、taxonomy、Folder landing page、リンク preview も含みます。Navigation はサンプル用の固定 URL ではなく、公開済みコンテンツから組み立てます。相互リンクしたノートにより、バックリンク、関連記事、検索、最新記事、Tag を試せます。ニッチな統合は含めません。
 
 ### `minimal`
 
@@ -47,15 +47,15 @@ Obsidian Markdown、`minimal` Theme、英語の1ページだけを含む構成�
 
 ### `showcase`
 
-自己完結したリファレンスサイトです。全 Plugin カタログを有効にし、図表・チャート・コードの描画例、Plugin と Theme のリファレンス、SVG・PDF・Excalidraw・Canvas のローカル fixture を含みます。`content/Daily/` のサンプルノートはホームページの Daily Notes ウィジェットに表示されます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
+自己完結したリファレンスサイトです。全 Plugin カタログを有効にします。図表・チャート・コードの描画例、Plugin と Theme のリファレンス、SVG・PDF・Excalidraw・Canvas のローカル fixture を含みます。`content/Daily/` のサンプルノートはホームページの Daily Notes ウィジェットに表示されます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
 
 ### `empty`
 
-Plugin、Theme、コンテンツ、コンポーネントを含まない空のアプリケーションシェルです。最初の Route は通常の HonoX `createRoute` ページなので、Riebeckite のコンテンツ機能を追加する前に、`app/` でページ、HTML、JSX component、CSS をそのまま追加できます。
+Plugin、Theme、コンテンツ、コンポーネントを含まない空のアプリケーションシェルです。最初の Route は通常の HonoX `createRoute` ページです。Riebeckite のコンテンツ機能を追加する前に、`app/` でページ、HTML、JSX component、CSS をそのまま追加できます。
 
 ### 生成された UI を編集する
 
-生成される Application file は通常の TypeScript、JSX、HonoX Route です。ページや API Route は `app/routes/`、記事 UI の並べ替えは `app/components/article.tsx`、Header と Footer は `app/components/site-header.tsx`、サイト CSS は `app/style.css` を編集します。`SiteNav` を含む Plugin UI component は設定済みのデータを自分で解決するため、Site component で Manifest を解決せず、必要な場所に配置します。
+生成される Application file は通常の TypeScript、JSX、HonoX Route です。ページや API Route は `app/routes/` を編集します。記事 UI の並べ替えは `app/components/article.tsx` です。Header と Footer は `app/components/site-header.tsx`、サイト CSS は `app/style.css` です。`SiteNav` を含む Plugin UI component は、設定済みのデータを自分で解決します。そのため、Site component で Manifest を解決せず、必要な場所に配置します。
 
 ## 生成される設定
 
@@ -63,7 +63,7 @@ Plugin、Theme、コンテンツ、コンポーネントを含まない空のア
 
 ## Project file
 
-preset は project file を制御しません。`create-riebeckite` は `--utilities <names>` で選んだ project file を別途生成します。指定できる名前は `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` で、既定は `gitignore,editorconfig,gitattributes,biome` です。`none` を指定すると project file を生成しません。対話式では `Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI Reference](../reference/cli.ja.md) を参照してください。
+preset は project file を制御しません。`create-riebeckite` は `--utilities <names>` で選んだ project file を別途生成します。指定できる名前は `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` です。既定は `gitignore,editorconfig,gitattributes,biome` です。`none` を指定すると project file を生成しません。対話式では `Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI Reference](../reference/cli.ja.md) を参照してください。
 
 ## 次に読むページ
 

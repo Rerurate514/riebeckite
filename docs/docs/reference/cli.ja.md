@@ -390,7 +390,7 @@ Build 済みの生成物を Cloudflare Workers へ公開します。
 npm exec riebeckite deploy
 ```
 
-`deploy` は Wrangler を呼び出して `dist/` を公開します。初回は Wrangler の OAuth で Cloudflare にログインし、`wrangler.jsonc` が無い場合はプロジェクト名から生成します。公開 URL は `https://<worker-name>.<account>.workers.dev` です。`create-riebeckite` で `Cloudflare Workers` を選ぶと、Wrangler の依存と `wrangler.jsonc` を含む、このコマンドを実行できるサイトが生成されます。
+`deploy` は Wrangler を呼び出して `dist/` を公開します。初回は Wrangler の OAuth で Cloudflare にログインし、`wrangler.jsonc` が無い場合はプロジェクト名から生成します。公開 URL は `https://<worker-name>.<account>.workers.dev` です。`create-riebeckite` で `Cloudflare Workers` を選ぶと、このコマンドを実行できるサイトが生成されます。Wrangler の依存と `wrangler.jsonc` が含まれます。
 
 `deploy` は Build を行いません。先に `npm exec riebeckite build` を実行してください。
 
@@ -412,9 +412,9 @@ push ごとに自動で deploy したい場合は GitHub Actions を利用でき
 npm exec riebeckite deploy setup
 ```
 
-`deploy setup` は、Git Repository と GitHub Remote を検出し、GitHub CLI（`gh`）と Wrangler のログインを確認し、`create-riebeckite` と同じテンプレートから `.github/workflows/deploy.yml` を作成します。Wrangler のログイン状態から Cloudflare Account を取得し、複数ある場合は選択します。最後に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。
+`deploy setup` は、Git Repository と GitHub Remote を検出します。続いて GitHub CLI（`gh`）と Wrangler のログインを確認します。その後、`create-riebeckite` と同じテンプレートから `.github/workflows/deploy.yml` を作成します。Wrangler のログイン状態から Cloudflare Account を取得し、複数ある場合は選択します。最後に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。
 
-Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取り、standard input 経由で `gh secret set` へ渡します。command line の引数には載せず、ファイルにも書き込みません。
+Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取ります。その後、standard input 経由で `gh secret set` へ渡します。command line の引数には載せず、ファイルにも書き込みません。
 
 GitHub Repository の作成と push は行いません。Riebeckite 以外の既存 workflow を検出した場合は、上書きせずそのまま報告し、secret の登録には進まずに停止します。再実行すると、一致する workflow と登録済みの secret は検出され、残りの手順だけを実行します。別の deployment workflow が既にある場合は、置き換えるか削除してから再実行してください。
 
@@ -428,7 +428,7 @@ GitHub Repository の作成と push は行いません。Riebeckite 以外の既
 npm exec riebeckite deploy domain
 ```
 
-`deploy domain` は Site の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み、`custom_domain: true` を持つ `routes` エントリを追加します。引数は取りません。`docs.example.com` のような hostname を対話的に入力し、変更内容を表示して確認したうえで書き込みます。
+`deploy domain` は Site の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読みます。そして、`custom_domain: true` を持つ `routes` エントリを追加します。引数は取りません。`docs.example.com` のような hostname を対話的に入力し、変更内容を表示して確認したうえで書き込みます。
 
 初回の `deploy` の後で実行してください。Wrangler 設定が無い場合や terminal が interactive でない場合は、hint を表示して停止します。`wrangler.toml` は変更しません。書き込み後は `Deploy now?` を確認し、選ばなかった場合は `npm exec riebeckite deploy` を案内します。再実行すると設定済みの domain を検出し、書き込みを省略します。
 
@@ -585,8 +585,10 @@ flowchart TD
 
 迷った場合は、
 
+**作るなら `init`、開発するなら `dev`、検証するまで `check`、診断するまで `doctor`、見るだけなら `inspect`、生成するまで `build`、公開するまで `deploy`、速度を調べるまで `profile`、状態を消すまで `clean`** 
+
 **作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、公開するなら `deploy`、速度を調べるなら `profile`、状態を消すなら `clean`**
 
-と覚えておくと、各 command の役割を区別しやすくなります。
+
 
 診断結果については [Diagnostics](../framework/diagnostics.ja.md)、非推奨 API からの移行については [Upgrading](../guides/upgrading.ja.md)、Build State については [Build System](../framework/build-system.ja.md) を参照してください。

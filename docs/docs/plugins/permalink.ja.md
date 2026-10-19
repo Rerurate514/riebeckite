@@ -93,9 +93,9 @@ ContentPublicLocation
 
 Core は返された `permalink` を canonical URL として扱います。
 
-その URL は、Wikilink、Backlinks、Search、Content Graph、SEO canonical、Sitemap、RSS / Atom / JSON Feed などから共通して参照されます。
+その URL は、Wikilink、Backlinks、Search、Content Graph などから共通して参照されます。SEO canonical、Sitemap、RSS / Atom / JSON Feed も同じ URL を使います。
 
-Permalink Plugin を使用しない場合も、Core の resolver `resolveDefaultContentLocation` が `index` を `/`、それ以外を `/{slug}` に解決します。これはフォールバックではなく、Core の標準方針です。
+Permalink Plugin を使用しない場合も、Core の resolver `resolveDefaultContentLocation` が URL を解決します。`index` は `/`、それ以外は `/{slug}` です。これはフォールバックではなく、Core の標準方針です。
 
 ---
 

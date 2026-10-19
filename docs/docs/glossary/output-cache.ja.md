@@ -14,7 +14,7 @@ sidebar:
 
 ## output inventory比較
 
-Coreはoutput inventoryを構築します。`.riebeckite/ssg-output-cache.json`にはcontentの出力、redirect、Pluginページの出力、Generated Outputを含むパスをキーにしたすべての生成物の記録が保存されています。現在のinventoryを前回の成功した状態と比較します。どの出力が影響を受ける（再生成が必要）、変わらない（再利用できる）、削除されたかを決定します。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
+Coreはoutput inventoryを構築します。`.riebeckite/ssg-output-cache.json`には、パスをキーにしたすべての生成物の記録が保存されています。contentの出力、redirect、Pluginページの出力、Generated Outputが含まれます。現在のinventoryを前回の成功した状態と比較します。どの出力が影響を受ける（再生成が必要）、変わらない（再利用できる）、削除されたかを決定します。ビルドログは`SSG outputs`の行で`rendered`、`reused`、`removed`の件数を報告します。
 
 ## 再利用の判定
 
@@ -32,7 +32,7 @@ SSGのmetricsは結果を`outputCacheDecision`（各条件の判定）と`output
 
 ## 永続化
 
-生成されたGitHub Actions workflowは、output cache（`.riebeckite/ssg-output-cache.json`、その`.riebeckite/ssg-output-cache.entries`ディレクトリ、`.riebeckite/ssg-output-cache.fast-path.json` sidecar）を、content cacheとBuild stateと一緒に復元するため、CIでも実行間で描画済み出力を再利用できます。復元したstateが一致しなければRiebeckiteが検証してすべての出力を描き直すので、転送しても安全です。完全に作り直したい場合は`.riebeckite/build/content-state.json`と`.riebeckite/ssg-output-cache.json`を削除してください。workflowの詳細は[GitHub Actions](../guides/deployment/github-actions.ja.md)を参照してください。
+生成されたGitHub Actions workflowは、output cacheをcontent cacheとBuild stateと一緒に復元します。対象は`.riebeckite/ssg-output-cache.json`です。その`.riebeckite/ssg-output-cache.entries`ディレクトリも含みます。`.riebeckite/ssg-output-cache.fast-path.json` sidecarも含みます。これにより、CIでも実行間で描画済み出力を再利用できます。復元したstateが一致しなければRiebeckiteが検証してすべての出力を描き直すので、転送しても安全です。完全に作り直したい場合は、次の2ファイルを削除してください。`.riebeckite/build/content-state.json` と `.riebeckite/ssg-output-cache.json` です。workflowの詳細は[GitHub Actions](../guides/deployment/github-actions.ja.md)を参照してください。
 
 ## 関連用語
 

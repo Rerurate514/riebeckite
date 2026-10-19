@@ -125,7 +125,7 @@ dist/ を Static Assets として公開
 
 という対応になっています。
 
-incremental processing は `riebeckite build` を実行するローカル環境または GitHub Actions runner 上で行います。その後、Wrangler が新しく生成された `dist/` を Workers Static Assets として upload します。Workers 自体が incremental build を実行するわけではありません。生成される GitHub Actions workflow が永続化するのは、この build 用の `.riebeckite/cache` と `.riebeckite/build/content-state.json` であり、`dist/` ではありません。
+incremental processing はローカル環境または GitHub Actions runner 上で行います。`riebeckite build` を実行する場所です。その後、Wrangler が新しく生成された `dist/` を Workers Static Assets として upload します。Workers 自体が incremental build を実行するわけではありません。生成される GitHub Actions workflow は、この build 用の `.riebeckite/cache` を永続化します。`.riebeckite/build/content-state.json` も永続化します。`dist/` は永続化しません。
 
 ## 4. Cloudflare にログインする
 
@@ -153,7 +153,7 @@ npm exec riebeckite build
 npm exec riebeckite deploy
 ```
 
-`riebeckite deploy` は Wrangler を呼び出して `dist/` を公開します。ログインが済んでいなければ先に Browser でログインし、`wrangler.jsonc` が無ければ自動で作ります。`create-riebeckite` で `Cloudflare Workers` を選び `Deploy now?` で `Yes` を選んだ場合は、この build と deploy が生成直後に自動で実行されます。Wrangler を直接使いたい場合は `npx wrangler deploy` でも同じです。
+`riebeckite deploy` は Wrangler を呼び出して `dist/` を公開します。ログインが済んでいなければ先に Browser でログインし、`wrangler.jsonc` が無ければ自動で作ります。`create-riebeckite` で `Cloudflare Workers` を選び、`Deploy now?` で `Yes` を選んだ場合は自動です。この build と deploy が生成直後に実行されます。Wrangler を直接使いたい場合は `npx wrangler deploy` でも同じです。
 
 ```mermaid
 flowchart TD
@@ -400,7 +400,7 @@ flowchart LR
 npm exec riebeckite deploy setup
 ```
 
-`.github/workflows/deploy.yml` を作成し、`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を Repository Secret として登録したうえで、push を待ちます。
+`.github/workflows/deploy.yml` を作成します。`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` を Repository Secret として登録したうえで、push を待ちます。
 
 ## Site と Content が同じ Repository の場合
 
@@ -572,7 +572,7 @@ npm exec riebeckite build
 npm exec riebeckite deploy
 ```
 
-です。`create-riebeckite` で `Cloudflare Workers` を選んだ Site は Wrangler を含んで生成されるため、`npm install -D wrangler` は不要です。`Not now` で生成した既存 Site では先に実行してください。
+です。`create-riebeckite` で `Cloudflare Workers` を選んだ Site は、Wrangler を含んで生成されます。そのため、`npm install -D wrangler` は不要です。`Not now` で生成した既存 Site では先に実行してください。
 
 最初の Deployment 後に公開 URL が分かったら、
 

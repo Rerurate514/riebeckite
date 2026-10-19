@@ -154,7 +154,7 @@ plugins: [
 
 引数なしの `navigation()` は Vault からリンクを導出します。`items` を渡すと手動で選んだリンクに、`secondary` には補助リンクを指定できます。
 
-モデルを返し、`SiteNav` でツリーを描画するのは Plugin です。描画したリストをどこに置くかは Site が決めます。starter では `app/components/site-header.tsx` が `SiteNav` を使い、`app/routes/_renderer.tsx` が解決済みモデルと現在パスを渡します。そのため、
+モデルを返し、`SiteNav` でツリーを描画するのは Plugin です。描画したリストをどこに置くかは Site が決めます。starter では `app/components/site-header.tsx` が `SiteNav` を使います。`app/routes/_renderer.tsx` が解決済みモデルと現在パスを渡します。そのため、
 
 - **リンクを追加・削除したい** → `navigation({ items })` を変更
 - **Vault からリンクを導出したい** → 引数なしの `navigation()`
@@ -266,7 +266,7 @@ const handler: NotFoundHandler = (c) => {
 export default handler;
 ```
 
-「見つからない」と判断するのは Riebeckite ですが、描画は `_renderer.tsx` を通るため、404 画面でも Site の Theme、head、Header、Footer がそのまま使われます。押さえておくべき点は2つです。
+「見つからない」と判断するのは Riebeckite です。描画は `_renderer.tsx` を通るため、404 画面でも Site の Theme、head、Header、Footer がそのまま使われます。押さえておくべき点は2つです。
 
 - status は必ず 404 のままにします。生成される preset は `c.status(404)` を呼びます。見た目を整えた画面を `200` で返してはいけません。
 - 見た目は Site のものです。markup、文言、リンク、CSS はすべて Site 側で決められます。Riebeckite が上書き対象となる「デフォルトの 404 component」を用意することはありません。
@@ -336,7 +336,7 @@ initRiebeckiteClient();
 
 の両方を初期化します。
 
-`createClient()` は Site の client 処理を初期化し、`initRiebeckiteClient()` は Plugin や Theme が提供する browser-side の処理を起動します。
+`createClient()` は Site の client 処理を初期化します。`initRiebeckiteClient()` は Plugin や Theme が提供する browser-side の処理を起動します。
 
 Site の island は `app/islands/`、Plugin の browser 処理は Plugin 側、というように責務が分かれています。
 

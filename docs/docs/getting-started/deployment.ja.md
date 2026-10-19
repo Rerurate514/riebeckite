@@ -40,7 +40,7 @@ Content Repository 分離
    npx create-riebeckite my-site
    ```
 
-   `Cloudflare Workers` を選ぶと、生成されるサイトに Wrangler の依存と `wrangler.jsonc` が含まれ、依存関係のインストール後に `Deploy now?` と確認されます。`Yes` ならその場で build と deploy まで実行されます。`Later` の場合は生成だけを終え、後から次を実行します。
+   `Cloudflare Workers` を選ぶと、生成されるサイトに Wrangler の依存と `wrangler.jsonc` が含まれます。依存関係のインストール後に `Deploy now?` と確認されます。`Yes` ならその場で build と deploy まで実行されます。`Later` の場合は生成だけを終え、後から次を実行します。
 
    ```bash
    npm run build
@@ -76,7 +76,7 @@ npm exec riebeckite deploy domain
 }
 ```
 
-`Deploy now` を選ぶと、通常の `riebeckite deploy` の流れで公開します。後で公開する場合は `npm exec riebeckite deploy` を実行してください。Cloudflare Workers では、同じ Cloudflare account で active な zone にある Custom Domain の DNS record と TLS certificate を Cloudflare が作成します。Worker が site の origin になるこの構成では、既存 origin の前に置く Worker Route ではなく Custom Domain を使います。
+`Deploy now` を選ぶと、通常の `riebeckite deploy` の流れで公開します。後で公開する場合は `npm exec riebeckite deploy` を実行してください。Cloudflare Workers では、同じ Cloudflare account で active な zone にある Custom Domain を使います。DNS record と TLS certificate は Cloudflare が作成します。Worker が site の origin になるこの構成では、既存 origin の前に置く Worker Route ではなく Custom Domain を使います。
 
 この command は `wrangler.toml` を変更しません。TOML を使っている場合は、次の設定を手動で追加してください。
 
@@ -88,7 +88,7 @@ custom_domain = true
 
 デプロイ前に、domain が同じ account の active な Cloudflare zone にあることを確認してください。既存の CNAME record、別 account の zone、同じ hostname にある Custom Domain ではない Worker Route は、先に解消が必要です。wildcard domain と URL path は Custom Domain に使えません。`workers.dev` URL も残したい場合は、必要に応じて TOML では `workers_dev = true`、JSON では `"workers_dev": true` を明示します。
 
-Cloudflare で hostname が有効になったら、`site.baseUrl` を `https://docs.example.com` または apex domain の URL に変更し、もう一度 build と deploy を実行します。domain の設定は version control に残るため、GitHub Actions でも push ごとに同じ Worker 設定を deploy できます。
+Cloudflare で hostname が有効になったら、`site.baseUrl` を変更します。値は `https://docs.example.com` または apex domain の URL です。その後、もう一度 build と deploy を実行します。domain の設定は version control に残るため、GitHub Actions でも push ごとに同じ Worker 設定を deploy できます。
 
 ## 2. GitHub Actions で自動デプロイする
 
@@ -103,7 +103,7 @@ npx create-riebeckite my-site --github-actions
 - `wrangler.jsonc`
 - `.github/workflows/deploy.yml`
 
-生成された workflow は `npm ci` で依存 package を入れ、`npm exec riebeckite check`、`npm exec riebeckite build`、`cloudflare/wrangler-action@v3` によるデプロイを順に実行します。
+生成された workflow は `npm ci` で依存 package を入れます。その後、`npm exec riebeckite check`、`npm exec riebeckite build` を実行します。続いて `cloudflare/wrangler-action@v3` でデプロイします。
 
 GitHub の Settings → Secrets and variables → Actions に、次の secret を追加します。
 
@@ -120,7 +120,7 @@ GitHub の Settings → Secrets and variables → Actions に、次の secret �
 npm exec riebeckite deploy setup
 ```
 
-このコマンドは、Git Repository と GitHub Remote を検出し、GitHub CLI と Wrangler のログインを確認し、同じテンプレートから `.github/workflows/deploy.yml` を作成し、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。push の直前で止まるため、準備ができたら `git push` を実行します。再実行しても安全で、作成済みの workflow と登録済みの secret は検出され、そのまま維持されます。
+このコマンドは、Git Repository と GitHub Remote を検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/deploy.yml` を作成します。`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。push の直前で止まるため、準備ができたら `git push` を実行します。再実行しても安全で、作成済みの workflow と登録済みの secret は検出され、そのまま維持されます。
 
 ## 3. 高度な構成: content を別リポジトリに分ける
 

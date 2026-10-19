@@ -197,7 +197,7 @@ type ContainerDirective = {
 
 この例では Markdown AST の型に `mdast`、node の走査に `unist-util-visit` を使います。どちらも通常の npm package として自分の package に追加してください（`@riebeckite/core` からは import しません）。
 
-Riebeckite の Markdown pipeline では、`:::tip` のような記法はあらかじめ `remark-directive` によって `containerDirective` node に変換されています。
+Riebeckite の Markdown pipeline では、`:::tip` のような記法があらかじめ変換されています。`remark-directive` によって `containerDirective` node になります。
 
 そのため、プラグイン側で Markdown の文字列を解析する必要はありません。
 
@@ -487,7 +487,7 @@ var(--rb-color-accent)
 
 こうしておくと、利用している theme が変わっても、その theme の accent color に追従できます。
 
-これが Theme Extension Contract の基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されるため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.md) を参照してください。
+これが Theme Extension Contract の基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されます。そのため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.md) を参照してください。
 
 ### Step 3: プラグインを登録する
 
@@ -654,11 +654,11 @@ const manifest = await manager.getManifest();
 
 ### Level 4: 外部パッケージ境界
 
-配布する Package は、pack した tarball を monorepo の外の隔離プロジェクトへ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落などを検出できます。Riebeckite repository では `tests/plugin-dx` がこの検証の実例で、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
+配布する Package は、pack した tarball を monorepo の外の隔離プロジェクトへ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落などを検出できます。Riebeckite repository では `tests/plugin-dx` がこの検証の実例です。実行には `pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` を使います。
 
 ## 4. 独立ページを追加する（必要な場合）
 
-独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。ページで entry を一覧する場合は `manifest.discoverableEntries` を使ってください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft`・`scheduled` を含む）は、本当に必要な場合だけに限ります。詳しくは [Manifest の collection と公開境界](../reference/plugin-api.ja.md#manifest-の-collection-と公開境界) を参照してください。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
+独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。ページで entry を一覧する場合は `manifest.discoverableEntries` を使ってください。`manifest.publicEntries`（`unlisted` を含む）は、本当に必要な場合だけに限ります。`manifest.entries`（`draft`・`scheduled` を含む）も同様です。詳しくは [Manifest の collection と公開境界](../reference/plugin-api.ja.md#manifest-の-collection-と公開境界) を参照してください。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
 
 ```ts
 pageTypes: [{
@@ -689,7 +689,7 @@ packages/plugins/backlinks/
 
 外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.ja.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` の subpath を明示して渡します。
 
-この directive プラグインを配布する場合、依存は `@riebeckite/core` と `unist-util-visit` を `dependencies` に、`mdast` の型（`@types/mdast`）を `devDependencies` に宣言します。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) にあります。
+この directive プラグインを配布する場合、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies` です。`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) にあります。
 
 ## 6. 検証する
 
@@ -730,7 +730,7 @@ UI / output を提供したい
 
 ### 記事 layout へ自動配置する
 
-出力が標準の位置にあり、Plugin を有効化すればすぐ表示したい場合は、Data helper + JSX component を使います。Plugin は型付きモデルを返す data helper と、それを描画する JSX component を export し、Site が helper を呼んで自分の layout に component を配置します。
+出力が標準の位置にあり、Plugin を有効化すればすぐ表示したい場合は、Data helper + JSX component を使います。Plugin は型付きモデルを返す data helper と、それを描画する JSX component を export します。Site が helper を呼んで自分の layout に component を配置します。
 
 ```ts
 import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
@@ -761,11 +761,11 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 判断基準は **誰が配置するか** です。JSX component なら、Site が props・順序・位置を自分の component tree で選べます。Plugin がすでに HTML を生成している場合（HAST 変換など）は、代わりに小さな文字列レンダラーを export して Site に呼ばせることもできます。どちらでも、Plugin が manifest entry へ markup を注入することはありません。何をどこに描画するかは Site が決めます。
 
-`backlinks` と `local-graph` は component と data helper の両方を export し、参照サイトは article layout でそれらを組み合わせています。よくある pattern であり、必須ではありません。
+`backlinks` と `local-graph` は component と data helper の両方を export します。参照サイトは article layout でそれらを組み合わせています。よくある pattern であり、必須ではありません。
 
 ### Browser 強化と Island
 
-Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island registry もありません。Browser 側の動作が必要な場合は、server-render 済み DOM を強化する `clientEntries` initializer を提供するか、component state が必要なら Site が Plugin component を自前の HonoX Island で包みます。`garden-explorer` は Page Type と client entry を組み合わせた特殊例であり、必須の pattern として一般化しないでください。詳しくは [Client Entries](../reference/plugin-api.ja.md#client-entries) を参照してください。
+Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island registry もありません。Browser 側の動作が必要な場合は、server-render 済み DOM を強化する `clientEntries` initializer を提供します。component state が必要なら、Site が Plugin component を自前の HonoX Island で包みます。`garden-explorer` は Page Type と client entry を組み合わせた特殊例であり、必須の pattern として一般化しないでください。詳しくは [Client Entries](../reference/plugin-api.ja.md#client-entries) を参照してください。
 
 ## 関連資料
 

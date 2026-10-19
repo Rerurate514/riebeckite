@@ -20,7 +20,7 @@ sidebar:
 
 `packages/core/src/content/content_build_state.ts`の`ContentBuildState`型には以下が含まれます：
 - `version`: number（現在は19）
-- `entries`: `Readonly<Record<string, ContentBuildEntry>>`：fingerprint、aliases、dependencies、リンク先、処理済みキャッシュのfingerprintを含むエントリごとの状態
+- `entries`: `Readonly<Record<string, ContentBuildEntry>>`：エントリごとの状態。fingerprint、aliases、dependencies、リンク先、処理済みキャッシュのfingerprintを含みます
 - `contentIndex`: `Readonly<Record<string, string>>`：content slugからpathへのマッピング
 - `pipelineFingerprint`: string | undefined：インクリメンタルビルドの妥当性チェック用のpipeline fingerprint
 - `manifestEntries`: `readonly ContentManifestEntry[]`：前回のBuildからのmanifest entryのスナップショット
@@ -39,7 +39,7 @@ sidebar:
 - `kind`: `"content"`または`"file"`
 - `id`: string ：content slugまたはfile path
 
-その後のBuildでは、前回の状態が読み込まれてIncremental change setが計算されます。pipeline fingerprintの比較（`previousState.pipelineFingerprint !== pipelineFingerprint`）はpipeline構成が変更された場合Full rebuildをトリガーします。状態は成功したBuildのあとにのみ保存されます；失敗したBuildは以前の有効な状態を破壊しません。
+その後のBuildでは、前回の状態が読み込まれてIncremental change setが計算されます。pipeline fingerprintを比較します（`previousState.pipelineFingerprint !== pipelineFingerprint`）。pipeline構成が変更された場合はFull rebuildをトリガーします。状態は成功したBuildのあとにのみ保存されます；失敗したBuildは以前の有効な状態を破壊しません。
 
 ## 関連用語
 

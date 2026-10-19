@@ -8,7 +8,7 @@ ThemeはRiebeckiteサイトのプレゼンテーション層を担い、色、�
 
 ## Themeの取り決め
 
-Themeは`@riebeckite/core`の`defineTheme`で作成し、識別子、ファクトリーのオプション、スタイル、共通設定（`colorMode`、`typography`、`articleLayout`、`tokens`、`userCss`）、安全なdata属性の5つを公開します。
+Themeは`@riebeckite/core`の`defineTheme`で作成します。公開するのは、識別子、ファクトリーのオプション、スタイル、共通設定、安全なdata属性の5つです。共通設定には`colorMode`、`typography`、`articleLayout`、`tokens`、`userCss`が含まれます。
 
 ```ts
 import { defineTheme } from "@riebeckite/core";
@@ -40,16 +40,16 @@ Themeを入れ替えても、コンテンツ、route、Pluginの動作に影響�
 
 `resolveThemeConfig`は`packages/core/src/config.ts`でテーマ設定を解決します。この関数は2つのテーマ入力形式を扱います：
 
-- **`RiebeckiteTheme`**（`styles`、`config`、`attributes`を持つ）: `name`を抽出し、`colorMode`、`typography`、`articleLayout`、`tokens`用に`config`を展開し、`attributes`をマージします。スタイルは`styles`配列から取られます。
-- **`ThemeConfig`**（プレーンオブジェクト）: 不足しているフィールドにデフォルトが適用されます。デフォルトには`colorMode: "system"`、`typography: "system"`、`articleLayout: "article"`、`tokens: {}`、`styles: [defaultThemeStyle]`が含まれます。
+- **`RiebeckiteTheme`**（`styles`、`config`、`attributes`を持つ）: `name`を抽出します。`colorMode`、`typography`、`articleLayout`、`tokens`用に`config`を展開し、`attributes`をマージします。スタイルは`styles`配列から取られます。
+- **`ThemeConfig`**（プレーンオブジェクト）: 不足しているフィールドにデフォルトが適用されます。デフォルトには`colorMode: "system"`、`typography: "system"`、`articleLayout: "article"`、`tokens: {}`が含まれます。`styles`は`[defaultThemeStyle]`です。
 
-解決されたテーマは、解決されたconfigの下に`theme`キーとしてマージされ、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`（`data-*`属性のみ許可されるようサニタイズされた）と`userCss`を含みます。その後、テーマはパイプラインとCSS/HTMLジェネレータによって最終的なプレゼンテーションを生成するために消費されます。
+解決されたテーマは、解決されたconfigの下に`theme`キーとしてマージされます。含まれるのは、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`、`userCss`です。`attributes`は`data-*`属性のみ許可されるようサニタイズされます。その後、テーマはパイプラインとCSS/HTMLジェネレータによって最終的なプレゼンテーションを生成するために消費されます。
 
 ## Theme名とCSSスコープ
-Themeの`name`フィールドが`<html>`の`data-theme-name`属性として伝播し、CSSは`:is(:root, .rb-theme-root)[data-theme-name="<name>"]`セレクターでルールをスコープします。これにより、プレビュー環境で複数のThemeがスタイル漏れなく横並びにレンダリングされます。
+Themeの`name`フィールドが`<html>`の`data-theme-name`属性として伝播します。CSSは`:is(:root, .rb-theme-root)[data-theme-name="<name>"]`セレクターでルールをスコープします。これにより、プレビュー環境で複数のThemeがスタイル漏れなく横並びにレンダリングされます。
 
 ## 解決済みThemeの構造
-`packages/core/src/config.ts`の`resolveThemeConfig`によって得られる解決されたThemeオブジェクトには、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`、`userCss`、`styles`が含まれます。この解決されたThemeは、解決されたconfigの下の`theme`キーに格納され、パイプラインとCSS/HTMLジェネレータによって消費されます。
+`packages/core/src/config.ts`の`resolveThemeConfig`によって、解決されたThemeオブジェクトが得られます。これには`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`、`userCss`、`styles`が含まれます。この解決されたThemeは、解決されたconfigの下の`theme`キーに格納され、パイプラインとCSS/HTMLジェネレータによって消費されます。
 
 ## 関連用語
 

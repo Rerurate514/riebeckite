@@ -8,9 +8,9 @@
 
 ## 何をするテーマか
 
-`minimalTheme()` は名前が `minimal` のテーマを作ります。完全な `--rb-*` トークンを `@theme` に対応させたうえで、安定した構造フック（`.rb-article-*`、`.rb-sidebar`）とプラグインのルート（`rr-*`）にタイポグラフィの個性を重ねます。指定はすべて `[data-theme-name="minimal"]` にスコープし、`@layer base` の外に置いています。
+`minimalTheme()` は名前が `minimal` のテーマを作ります。完全な `--rb-*` トークンを `@theme` に対応させます。そのうえで、安定した構造フック（`.rb-article-*`、`.rb-sidebar`）とプラグインのルート（`rr-*`）にタイポグラフィの個性を重ねます。指定はすべて `[data-theme-name="minimal"]` にスコープし、`@layer base` の外に置いています。
 
-[Minimal for Obsidian](https://github.com/kepano/obsidian-minimal) の設計思想（内容が主役、静かな操作画面、強いタイポグラフィ、控えめなアクセント、詰まっていても読みやすいクローム）を、Riebeckite のセマンティックトークンと安定フックに置き換えて実装したものです。Obsidian デスクトップアプリの見た目を模したり、Obsidian の変数や DOM があることを前提にしたりはしません。
+[Minimal for Obsidian](https://github.com/kepano/obsidian-minimal) の設計思想を、Riebeckite のセマンティックトークンと安定フックに置き換えて実装したものです。設計思想は、内容が主役、静かな操作画面、強いタイポグラフィ、控えめなアクセント、詰まっていても読みやすいクロームです。Obsidian デスクトップアプリの見た目を模したり、Obsidian の変数や DOM があることを前提にしたりはしません。
 
 個性は引き算にあります。
 
@@ -71,7 +71,7 @@ export default defineConfig({
 
 ## 背景コントラストのバリエーション
 
-本家 Minimal には背景コントラストのバリエーション（既定、低コントラスト、高コントラスト、トゥルーブラック）があります。現在の Riebeckite の Theme API にはバリエーションの概念がないため、このテーマは通常の見た目を既定として提供し、サーフェスの階層をセマンティックトークン（`--rb-color-paper`、`--rb-color-surface`、`--rb-color-surface-hover`、`--rb-color-code-background`）で表現しています。`tokens` オプションでサイトごとに上書きすることはすでに可能です。背景コントラストのバリエーションは、独自属性で見せかけるのではなく、将来 Theme API に追加できる拡張候補です。
+本家 Minimal には背景コントラストのバリエーションがあります。既定、低コントラスト、高コントラスト、トゥルーブラックです。現在の Riebeckite の Theme API にはバリエーションの概念がありません。そのため、このテーマは通常の見た目を既定として提供し、サーフェスの階層をセマンティックトークンで表現しています。対象は `--rb-color-paper`、`--rb-color-surface`、`--rb-color-surface-hover`、`--rb-color-code-background` です。`tokens` オプションでサイトごとに上書きすることはすでに可能です。背景コントラストのバリエーションは、独自属性で見せかけるのではなく、将来 Theme API に追加できる拡張候補です。
 
 ## 主なエクスポート
 

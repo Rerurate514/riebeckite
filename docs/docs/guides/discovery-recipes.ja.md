@@ -3,9 +3,9 @@ title: 発見導線のレシピ
 ---
 # 発見導線のレシピ
 
-Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type、Markdown ブロック、`navigation` plugin の組み合わせで作ります。
+Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type で作ります。Markdown ブロック、`navigation` plugin の組み合わせでページを作成します。
 
-このガイドでは、Featured、最新記事、全記事一覧、Tag、Folder、Series、Archive といったよくある発見導線のレシピを集め、それぞれが使う Plugin とオプションを対応づけます。どのレシピも公開されている Plugin API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
+このガイドでは、Featured、最新記事、全記事一覧、Tag、Folder、Series、Archive といったよくある発見導線のレシピを集めます。それぞれが使う Plugin とオプションを対応づけます。どのレシピも公開されている Plugin API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
 
 ## 覚えておくこと
 
@@ -161,7 +161,7 @@ taxonomy({ tagsBasePath: "/topics" }),
 Folder の形をした導線は2つあり、併用できます。
 
 - `taxonomy` は `foldersBasePath`（既定 `/folders`）に Folder ごとのノート一覧を生成し、Folder ごとのページを作ります。
-- `folder-pages` は各 Folder をその Folder のパス（たとえば `/notes/`）の landing ページにし、Folder 内の `README.md` や `index.md` をその landing ページへ集約します。
+- `folder-pages` は各 Folder を、その Folder のパス（たとえば `/notes/`）の landing ページにします。Folder 内の `README.md` や `index.md` はその landing ページへ集約します。
 
 Folder 一覧を使う場合は、taxonomy のパスを Navigation に追加します。
 
@@ -169,11 +169,11 @@ Folder 一覧を使う場合は、taxonomy のパスを Navigation に追加し�
 navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 ```
 
-prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`starter` では `folder-pages` も有効なため、公開対象を含む Folder ごとに landing page が作られ、Folder 内の `README.md` や `index.md` はその本文になります。taxonomy の一覧を読者に見せる場合は `/folders` を Navigation に追加します。コンテンツから組み立てる Navigation は公開済みノートと Folder owner をたどります。
+prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`starter` では `folder-pages` も有効です。そのため、公開対象を含む Folder ごとに landing page が作られ、Folder 内の `README.md` や `index.md` はその本文になります。taxonomy の一覧を読者に見せる場合は `/folders` を Navigation に追加します。コンテンツから組み立てる Navigation は公開済みノートと Folder owner をたどります。
 
 ## Series
 
-Series は `series` frontmatter キーを共有するノートの集まりです。各パートの前後ナビと `basePath`（既定 `/series`）の一覧、`basePath/<name>` の Series ごとの landing ページが必要な場合は、`@riebeckite/plugin-series` を install して登録します。
+Series は `series` frontmatter キーを共有するノートの集まりです。次のものが必要な場合は、`@riebeckite/plugin-series` を install して登録します。各パートの前後ナビ、`basePath`（既定 `/series`）の一覧、`basePath/<name>` の Series ごとの landing ページです。
 
 ```ts
 import { series } from "@riebeckite/plugin-series";

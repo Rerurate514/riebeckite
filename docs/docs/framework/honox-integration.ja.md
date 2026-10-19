@@ -163,7 +163,7 @@ flowchart LR
 
 生成された Site は Framework が提供する bootstrap module を import します。解決済み config は `virtual:riebeckite/config`、構成済みの content runtime は `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG entry の `app/server.ts` はこの2つを再エクスポートし、`riebeckiteSsg` はそこから manifest を見つけます。
 
-Vite の外で動く script（`tsx` で起動する Node script など）は `@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ config を解決できます。
+Vite の外で動く script（`tsx` で起動する Node script など）でも同じ config を解決できます。`@riebeckite/honox/runtime` の `resolveHonoxConfig` を使用します。
 
 ## Lower-level API
 
@@ -244,7 +244,7 @@ pluginPageSsgParams(content)
 
 を追加します。
 
-生成された Site の catch-all route は、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。この helper が content / Plugin Page / redirect / not-found を解決し、`htmlLanguage` と `headTags` を context へ設定するため、Site は返された結果を自身の composition に渡すだけで済みます。root `/` も同じ mechanics を共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
+生成された Site の catch-all route は、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。この helper は content / Plugin Page / redirect / not-found を解決します。さらに `htmlLanguage` と `headTags` を context へ設定するため、Site は返された結果を自身の composition に渡すだけで済みます。root `/` も同じ mechanics を共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
 
 Route resolver は次の順序で URL を解決します。
 

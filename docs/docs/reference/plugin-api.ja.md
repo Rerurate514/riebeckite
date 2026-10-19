@@ -139,7 +139,6 @@ definePlugin({
   provides: [
     "example.output",
   ],
-
   requires: [
     "content.graph",
   ],
@@ -228,7 +227,7 @@ type PluginContext = {
 };
 ```
 
-Hook にによって、
+Hook によって、
 
 - `slug`
 - `markdown`
@@ -259,7 +258,7 @@ buildEnd
 
 `setup`、`buildStart`、`onConfigResolved`、Content 処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は Diagnostics の収集後に完成した Manifest を受け取る唯一の終端 Hook です。`dispose` は解決済み Plugin の逆順で実行されます。
 
-名前付き Lifecycle / Content Hook でエラーが発生した場合は `PluginHookError`（`@riebeckite/core` から import 可能）として上位へ伝播させます。`message` は `Plugin "<name>" failed during "<hook>"` 形式で、元の Error は `cause` に保持されます。Content Hook で発生した場合は、対象 file が `path`（例: `note.md`）として設定されます。
+名前付き Lifecycle / Content Hook でエラーが発生した場合は、上位へ伝播させます。エラーは `PluginHookError`（`@riebeckite/core` から import 可能）です。`message` は `Plugin "<name>" failed during "<hook>"` 形式で、元の Error は `cause` に保持されます。Content Hook で発生した場合は、対象 file が `path`（例: `note.md`）として設定されます。
 
 ## Content Lifecycle
 
@@ -283,7 +282,7 @@ flowchart TD
     Graph --> Manifest
 ```
 
-全体の順序は `setup` → `buildStart` → `onConfigResolved` → Public Location 解決 → `onContentLoaded` → Markdown / HTML Pipeline → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → Diagnostics → `buildEnd` です。
+全体の順序は `setup` → `buildStart` → `onConfigResolved` → Public Location 解決です。次に `onContentLoaded` → Markdown / HTML Pipeline → `onPostParsed` → `onPostProcessed` です。最後に `extendContentGraph` → `onManifestCreated` → Diagnostics → `buildEnd` です。
 
 **必要な段階の Hook だけを使用します**。
 
@@ -325,15 +324,11 @@ definePlugin({
 });
 
 Markdown AST や HTML AST の処理を Application Component に持ち込まず、Plugin の Pipeline 処理として実装するのが基本です。
-```
-
-## 処理済み Content の Build Dependency
-
-Incremental Build の無効化は Core の責務です。Plugin は独自に affected content を計算せず、`processedContentCache` で取り決めを宣言します。
 
 ```ts
 definePlugin({
   name: "citations",
+
   processedContentCache: {
     version: "citations-v1",
     dependencyMode: "tracked",
@@ -347,13 +342,13 @@ definePlugin({
 
 - `none` は、処理結果が Content 本体、frontmatter、options、宣言した version だけに依存することを表します。
 - `tracked` は、Pipeline が他の Content や file を読む場合に使います。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、
-Core が `ContentDependencyTracker` ににより Content/file 読み取りを自動記録します。
+Core が `ContentDependencyTracker` により Content/file 読み取りを自動記録します。
 filesystem を直接読んではいけません。
 - `unsafe` は処理済み Content の永続的な再利用を無効にします。Content 処理を行う Plugin が取り決めを宣言しない場合も、同じ安全側の全 Content 再処理になります。
 
 `tracked` の dependency は Content 処理中に取得します。Core が content/file の identity を永続化し、逆引き index から次回 Build で affected content を決定します。この用途で vault を独自に走査したり、Plugin 固有の Incremental Build state を保存したりしないでください。Framework API 経由で dependency を追跡できない場合は `unsafe` を使います。広い再処理は許容されますが、古い結果の再利用は許容されません。
 
-これは Output Dependency とは別の取り決めです。`pageTypes[].outputDependencies` と `context.output.emit(..., { dependencies })` は、再生成が必要な page や生成 file を表します。ここでは `content`、`tag`、`folder`、`global`、`unknown` を使います。`unknown` は安全側として全 Output の再生成を要求します。依存を宣言しない Generated Output も `unknown` です。
+これは Output Dependency とは別の取り決めです。`pageTypes[].outputDependencies` は、再生成が必要な page や生成 file を表します。`context.output.emit(..., { dependencies })` も同じ情報を表します。ここでは `content`、`tag`、`folder`、`global`、`unknown` を使います。`unknown` は安全側として全 Output の再生成を要求します。依存を宣言しない Generated Output も `unknown` です。
 
 Generated output の path は物理出力 path です。Generated output を Content、redirect、plugin page の route と衝突させないでください。衝突した場合は route を上書きせず、Core が build を失敗させます。
 
@@ -361,7 +356,7 @@ Generated output の path は物理出力 path です。Generated output を Con
 
 ## UI components
 
-Plugin は `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` を factory  along with export することができます。Data helpers は `PublicContentView` のような狭い input を受け、型付き model を返します。components は readonly の型付き props を受け、Slot HTML を返しません。Site は自分の TSX でこれらのコンポーネントを composition し、それぞれの表示有無、位置、頻度を決定します。これは削除された body-slot システムを置き換えます。Plugin は manifest entry の `bodySlots` map に HTML フラグメントを提供しなくなりました。
+Plugin は factory から `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` を export できます。Data helpers は `PublicContentView` のような狭い input を受け、型付き model を返します。components は readonly の型付き props を受け、Slot HTML を返しません。Site は自分の TSX でこれらのコンポーネントを composition し、それぞれの表示有無、位置、頻度を決定します。これは削除された body-slot システムを置き換えます。Plugin は manifest entry の `bodySlots` map に HTML フラグメントを提供しなくなりました。
 
 典型的な Plugin エクスポート形態：
 
@@ -399,9 +394,9 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 <MyComponent model={model} />
 ```
 
-component は内部 CSS と client entry を選択的に export することもできます、integration を通じて登録されます。既存の asset と client-entry の登録は引き続き factory の責務であり、component を import しただけでは CSS/client runtime の登録も Plugin capability の有効化も行いません。CSS の tree shaking は既存の package `sideEffects` metadata に従います。
+component は内部 CSS と client entry を選択的に export することもできます、integration を通じて登録されます。既存の asset と client-entry の登録は引き続き factory の責務です。component を import しただけでは、CSS/client runtime の登録も Plugin capability の有効化も行いません。CSS の tree shaking は既存の package `sideEffects` metadata に従います。
 
-HonoX primitive として `Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`ArticleFooter`、`Sidebar`、`ThemeRoot` は記事の構造とレイアウト用の semantic primitive のまま残されます。Slot API と配置 attribute を削除した後に保持されます。component は Plugin package に置かれ、model type と helper とともに public entry point から export されます。Site TSX は application の `app/` に置かれます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
+HonoX primitive として `Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody` が残ります。`ArticleFooter`、`Sidebar`、`ThemeRoot` も残ります。これらは記事の構造とレイアウト用の semantic primitive です。Slot API と配置 attribute を削除した後に保持されます。component は Plugin package に置かれ、model type と helper とともに public entry point から export されます。Site TSX は application の `app/` に置かれます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
 
 ```tsx
 // サイト route にある最小 UI composition
@@ -511,11 +506,12 @@ processedContentCache: {
 ```
 
 - `none`: source Content、frontmatter、options、宣言した version だけに依存する変換です。
-- `tracked`: 他の Content や file を Core 経由で読む変換です。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、Core が `ContentDependencyTracker` ににより Content/file 読み取りを自動記録します。filesystem を直接読んではいけません。
+- `tracked`: 他の Content や file を Core 経由で読む変換です。`context.contentSource`、`readContentSourceEntry`、`renderContent` を使うと、Content/file 読み取りが自動記録されます。`renderNoteEmbed` も同じです。記録は Core の `ContentDependencyTracker` が行います。filesystem を直接読んではいけません。
 - `global`: vault全体で解決したLocationに依存する変換です。CoreはLocation集合をfingerprintし、変わったときはすべてのentryを再処理します。
 - `unsafe`: Git、network、時刻、process state など、Core が追跡できない入力です。処理済み Content の永続 Cache 再利用を安全側で無効にします。
 
 Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の取り決めです。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、
+
 root の `outputDependencies` を宣言すると各 Content Output に加算されます。
 
 ```ts
@@ -546,7 +542,7 @@ assets: [
 ]
 ```
 
-Plugin CSS を `apps/web` へコピーしたり、Browser から `/node_modules` を直接参照させたりしないでください。
+Plugin CSS を `apps/web` へコピーしたり、Browser から `/node_modules` を直接参照させないでください。
 
 `createStyleAsset()` / `createClientEntry()` には、Plugin 名と package が
 `exports` で公開する module specifier を明示します。したがって、
@@ -614,7 +610,7 @@ Theme に公開する必要がある Hook だけを stable contract として文
 
 Plugin の default CSS は Theme CSS より先に読み込まれるため、Theme は Plugin package を変更せずに見た目を上書きできます。
 
-Dark mode の対応は `--rb-*` Semantic Token を参照するのが基本です。Semantic Token は Light、明示 Dark、System Dark のいずれでも正しく解決されます。Build 済み資産の反転など、状態そのもので分岐する必要がある場合だけ、Document Root でも埋め込み `.rb-theme-root` でも効くように Theme Root へスコープしてください。`:is(:root, .rb-theme-root)[data-theme="dark"] <hook>` と、System Dark 用の `@media (prefers-color-scheme: dark) { :is(:root, .rb-theme-root):not([data-theme]) <hook> { ... } }` です。`html[data-theme="dark"]` や `:root:not([data-theme])` だけに依存すると埋め込み Theme Root を取りこぼします。Framework は `.dark` class を付与しないため、`.dark` を前提にしないでください。
+Dark mode の対応は `--rb-*` Semantic Token を参照するのが基本です。Semantic Token は Light、明示 Dark、System Dark のいずれでも正しく解決されます。状態そのもので分岐する必要があるのは、Build 済み資産の反転などの場合だけです。その場合は、Document Root でも埋め込み `.rb-theme-root` でも効くように Theme Root へスコープしてください。セレクターは `:is(:root, .rb-theme-root)[data-theme="dark"] <hook>` です。System Dark 用は `@media (prefers-color-scheme: dark) { :is(:root, .rb-theme-root):not([data-theme]) <hook> { ... } }` です。`html[data-theme="dark"]` や `:root:not([data-theme])` だけに依存すると埋め込み Theme Root を取りこぼします。Framework は `.dark` class を付与しないため、`.dark` を前提にしないでください。
 
 詳しくは [Theme System](./theme-api.ja.md#stable-css-hooks) を参照してください。
 
@@ -773,7 +769,6 @@ Site 内に Plugin を作ることもできます。
 // site/extensions/local-plugin.ts
 
 return definePlugin({
-
   name: "site-local",
 
   assets: [
@@ -784,7 +779,7 @@ return definePlugin({
         "/extensions/plugin.css",
     },
   ],
-});
+};
 ```
 
 そして `riebeckite.config.ts` の `plugins` へ追加します。
@@ -924,7 +919,7 @@ await build({
 }
 ```
 
-`prepack` で build するようにしておけば、`npm pack` / `npm publish` は常に最新の成果物を同梱します。`@riebeckite/core` は `dependencies` に置くのが最も簡単です（Site 側の instance を共有したい場合は `peerDependencies` でもかまいません）。import する変換依存（`unist-util-visit`、`unified`、remark/rehype package など）は `dependencies` に宣言し、公開 package の `exports` を TypeScript の source（`./index.ts`）へ向けないでください。
+`prepack` で build するようにしておけば、`npm pack` / `npm publish` は常に最新の成果物を同梱します。`@riebeckite/core` は `dependencies` に置くのが最も簡単です。Site 側の instance を共有したい場合は `peerDependencies` でもかまいません。import する変換依存（`unist-util-visit`、`unified`、remark/rehype package など）は `dependencies` に宣言してください。公開 package の `exports` を TypeScript の source（`./index.ts`）へ向けないでください。
 
 公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
@@ -1020,8 +1015,6 @@ Application 固有 Route / Layout
 ```
 
 とします。
-
-## Plugin 設計の基本
 
 Plugin System 全体は次のようになります。
 

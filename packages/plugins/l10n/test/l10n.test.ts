@@ -341,6 +341,40 @@ test("keeps translation membership changes equivalent to a cold build", async ()
   );
 });
 
+test("tracks localized Markdown links with named character references", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-l10n-character-reference-"),
+  );
+  const files: Record<string, string> = {
+    "source.ja.md":
+      "---\ntranslation: source\n---\n[Target](&sol;en&sol;target#section)",
+    "target.en.md": "---\ntranslation: target\n---\n# English",
+  };
+
+  const initial = await manager(files, {}, [], directory).build({
+    incremental: true,
+  });
+  assert.match(
+    initial.bySlug.get("source.ja")?.html ?? "",
+    /href="\/en\/target#section"/,
+  );
+
+  files["target.ja.md"] = "---\ntranslation: target\n---\n# Japanese";
+  const incremental = await manager(files, {}, [], directory).build({
+    incremental: true,
+  });
+  const cold = await manager(files).build({ incremental: false });
+
+  assert.equal(
+    incremental.bySlug.get("source.ja")?.html,
+    cold.bySlug.get("source.ja")?.html,
+  );
+  assert.match(
+    incremental.bySlug.get("source.ja")?.html ?? "",
+    /href="\/target#section"/,
+  );
+});
+
 test("keeps removed, relabeled, regrouped, and moved translations equivalent to a cold build", async () => {
   const source = "---\ntranslation: source\n---\n[Target](/en/target#section)";
   const targetEn = "---\ntranslation: target\n---\n# English";

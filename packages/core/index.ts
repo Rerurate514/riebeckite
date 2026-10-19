@@ -46,7 +46,10 @@ export {
   getEntryLanguage,
   selectEntriesByLanguage,
 } from "./src/content/content_language.js";
-export { extractContentLinks } from "./src/content/content_links.js";
+export {
+  extractContentLinks,
+  extractMarkdownLinkUrls,
+} from "./src/content/content_links.js";
 export { resolveDefaultContentLocation } from "./src/content/content_location.js";
 export type {
   ContentBuildOptions,

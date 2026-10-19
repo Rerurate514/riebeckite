@@ -8,6 +8,7 @@ import {
   type Diagnostic,
   definePlugin,
   extractContentLinks,
+  extractMarkdownLinkUrls,
   type PluginHeadTag,
   type PostFrontmatter,
   type PublicContentEntry,
@@ -580,12 +581,6 @@ const PUBLICATION_KEYS = [
   "draft",
 ] as const;
 
-const LINK_TOKEN_PATTERN = /[^\s"'`<>()[\]{}]+/g;
-const TOKEN_SEPARATOR_PATTERN = /[\s"'`<>()[\]{}]/;
-const TRAILING_PUNCTUATION_PATTERN = /[.,;:!?'"\u2019\u201d\u2026]/;
-const NUMERIC_CHAR_REFERENCE_PATTERN = /&#(x[0-9a-fA-F]+|[0-9]+);/g;
-const BACKSLASH_ESCAPE_PATTERN = /\\(.)/g;
-
 function signalValue(value: unknown): string {
   if (value === undefined || value === null) return "";
   if (value instanceof Date) return value.toISOString();
@@ -618,44 +613,15 @@ function localizedResolutionToken(
   return `${target.slug}\u0001${state.locations?.get(target.slug)?.permalink ?? ""}`;
 }
 
-function normalizeLinkSource(markdown: string): string {
-  return markdown
-    .replace(NUMERIC_CHAR_REFERENCE_PATTERN, (match, value: string) => {
-      const codePoint =
-        value[0] === "x" || value[0] === "X"
-          ? Number.parseInt(value.slice(1), 16)
-          : Number.parseInt(value, 10);
-      return Number.isFinite(codePoint) &&
-        codePoint > 0 &&
-        codePoint <= 0x10ffff
-        ? String.fromCodePoint(codePoint)
-        : match;
-    })
-    .replace(BACKSLASH_ESCAPE_PATTERN, "$1");
-}
-
 function referencedPermalinks(
   markdown: string,
   slugsByPermalink: ReadonlyMap<string, string>,
 ): string[] {
   if (slugsByPermalink.size === 0) return [];
-  const normalized = normalizeLinkSource(markdown);
   const found = new Set<string>();
-  for (const match of normalized.matchAll(LINK_TOKEN_PATTERN)) {
-    let candidate = splitLinkUrl(match[0]).permalink;
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      if (slugsByPermalink.has(candidate)) {
-        found.add(candidate);
-        break;
-      }
-      const last = candidate.at(-1);
-      if (!last || !TRAILING_PUNCTUATION_PATTERN.test(last)) break;
-      candidate = candidate.slice(0, -1);
-    }
-  }
-  for (const permalink of slugsByPermalink.keys()) {
-    if (!TOKEN_SEPARATOR_PATTERN.test(permalink)) continue;
-    if (normalized.includes(permalink)) found.add(permalink);
+  for (const url of extractMarkdownLinkUrls(markdown)) {
+    const { permalink } = splitLinkUrl(url);
+    if (slugsByPermalink.has(permalink)) found.add(permalink);
   }
   return [...found].sort();
 }

@@ -11,11 +11,6 @@ export type HastFile = {
   message(reason: string, options?: { source?: string }): unknown;
 };
 
-export type ParsedAttribute = {
-  name: string;
-  value: string | null;
-};
-
 export type ResponsiveImageVariant = {
   path: string;
   format: string;

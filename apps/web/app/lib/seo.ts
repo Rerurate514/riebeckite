@@ -12,7 +12,7 @@ import {
   getHomePath,
   type HomeLocale,
 } from "./home";
-import { buildArchiveDescription, buildTagDescription } from "./locale";
+import { buildArchiveDescription } from "./locale";
 
 const seoProvider = findSeoProvider();
 
@@ -38,38 +38,6 @@ export function buildArticleSeo(
     post,
     headTags,
     language,
-  );
-}
-
-export function buildIndexSeo(
-  post?: PostContent,
-  headTags?: readonly PluginHeadTag[],
-): SeoMetadata {
-  return buildWebsiteSeo(
-    {
-      title: config.site.title,
-      description: post ? getDescription(post) : config.site.description,
-      path: "/",
-      kind: "index",
-    },
-    headTags,
-  );
-}
-
-export function buildTagSeo(
-  tag: string,
-  path: string,
-  lang: string,
-): SeoMetadata {
-  return buildWebsiteSeo(
-    {
-      title: `#${tag} | ${config.site.title}`,
-      description: buildTagDescription(config.site.title, tag, lang),
-      path,
-      kind: "tag",
-    },
-    undefined,
-    lang,
   );
 }
 

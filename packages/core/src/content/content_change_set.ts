@@ -49,14 +49,6 @@ export function allContentChanged(
   });
 }
 
-export function hasContentChanges(changeSet: ContentChangeSet): boolean {
-  return (
-    changeSet.added.length > 0 ||
-    changeSet.changed.length > 0 ||
-    changeSet.removed.length > 0
-  );
-}
-
 function sortChangeSet(changeSet: ContentChangeSet): ContentChangeSet {
   return {
     added: [...changeSet.added].sort(),

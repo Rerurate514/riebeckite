@@ -5,7 +5,6 @@ import type { HastNode, ResolvedSidenotesOptions } from "./types.js";
 export const SIDENOTES_REF_CLASS = "rr-sidenotes__ref";
 export const SIDENOTES_TOGGLE_CLASS = "rr-sidenotes__toggle";
 export const SIDENOTES_NOTE_CLASS = "rr-sidenotes__note";
-export const SIDENOTES_NOTE_OPEN_MODIFIER = "rr-sidenotes__note--open";
 export const SIDENOTES_POPOVER_PREFIX = "rr-sidenotes__note--popover-";
 export const SIDENOTES_INDEX_CLASS = "rr-sidenotes__index";
 export const SIDENOTES_BODY_CLASS = "rr-sidenotes__body";

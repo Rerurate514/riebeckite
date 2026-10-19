@@ -15,9 +15,6 @@ export const CLOUDFLARE_WORKERS_DEFAULTS = {
   assets: { directory: "./dist" },
 } as const;
 
-/** Type for the wrangler config object */
-export type CloudflareWorkersDefaults = typeof CLOUDFLARE_WORKERS_DEFAULTS;
-
 export const WRANGLER_VERSION = "^4.83.0";
 
 export const DEFAULT_WORKER_NAME = "riebeckite-site";
@@ -80,15 +77,6 @@ export const GITIGNORE_REQUIRED = [
 
 /** Files that must NOT be in .gitignore */
 export const GITIGNORE_FORBIDDEN = ["package-lock.json"] as const;
-
-/** Starter preset content pages (base names without language suffixes) */
-export const STARTER_CONTENT_PAGES = [
-  "index",
-  "guide",
-  "examples",
-  "notes/planning",
-  "notes/writing",
-] as const;
 
 /** Starter preset languages */
 export const STARTER_LANGUAGES = [

@@ -1,4 +1,3 @@
-import path from "node:path";
 import {
   type ContentBuildStateInvalidReason,
   type ContentSource,
@@ -162,8 +161,4 @@ function samples(label: string, paths: readonly string[]): string[] {
   return paths
     .slice(0, mismatchSampleLimit)
     .map((entry) => `${label}: ${entry}`);
-}
-
-export function stateDirectoryPath(statePath: string): string {
-  return path.dirname(statePath);
 }

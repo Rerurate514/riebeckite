@@ -63,21 +63,8 @@ export type {
   ManifestHookPluginMetrics,
 } from "./manifest_hooks.js";
 
-/**
- * Explicit build lifecycle stages. `idle` means no build lifecycle has been
- * requested yet; the remaining values name the stage currently executing.
- * Once `started` is reached the lifecycle never runs again.
- */
-export type PluginBuildStage =
-  | "idle"
-  | "setup"
-  | "buildStart"
-  | "onConfigResolved"
-  | "started";
-
 export class PluginRuntime {
   private buildLifecycle: Promise<void> | null = null;
-  private buildStage: PluginBuildStage = "idle";
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
   private pluginCaches = new Map<string, PluginCache>();
@@ -109,10 +96,6 @@ export class PluginRuntime {
 
   getDiagnostics(): Diagnostic[] {
     return this.diagnostics;
-  }
-
-  getBuildStage(): PluginBuildStage {
-    return this.buildStage;
   }
 
   getManifestHookMetrics(): ManifestHookMetrics {
@@ -456,34 +439,20 @@ export class PluginRuntime {
     const context = this.createContext(contentIndex);
     const createPluginContext = (plugin: RiebeckitePlugin) =>
       this.createPluginContext(plugin, context);
-    const stages: readonly {
-      readonly stage: PluginBuildStage;
-      readonly run: () => Promise<void>;
-    }[] = [
-      {
-        stage: "setup",
-        run: () => runSetup(this.plugins(), createPluginContext),
-      },
-      {
-        stage: "buildStart",
-        run: () => runBuildStart(this.plugins(), createPluginContext),
-      },
-      {
-        stage: "onConfigResolved",
-        run: () =>
-          this.runHook(
-            "onConfigResolved",
-            (plugin) => plugin.onConfigResolved,
-            context,
-          ),
-      },
+    const stages: readonly (() => Promise<void>)[] = [
+      () => runSetup(this.plugins(), createPluginContext),
+      () => runBuildStart(this.plugins(), createPluginContext),
+      () =>
+        this.runHook(
+          "onConfigResolved",
+          (plugin) => plugin.onConfigResolved,
+          context,
+        ),
     ];
 
-    for (const { stage, run } of stages) {
-      this.buildStage = stage;
+    for (const run of stages) {
       await run();
     }
-    this.buildStage = "started";
   }
 
   private createContext(contentIndex: Map<string, string>): PluginContextBase {

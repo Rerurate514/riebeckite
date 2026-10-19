@@ -27,10 +27,6 @@ type QrEncoder = {
 
 let encoderPromise: Promise<QrEncoder> | null = null;
 
-export function resetQrCodeEncoderCache(): void {
-  encoderPromise = null;
-}
-
 /**
  * Encodes `text` into an inline SVG string. Filesystem/library failures are
  * returned as `{ ok: false }` so the rehype transformer can keep a diagnostic

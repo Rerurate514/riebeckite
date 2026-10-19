@@ -19,14 +19,6 @@ export type BaseDocument = {
   readonly dependencies: readonly import("@riebeckite/core").OutputDependency[];
 };
 
-export async function listBaseDocumentPaths(input: {
-  readonly manifest: ContentManifest;
-  readonly contentSource?: ContentSource;
-  readonly diagnostics: Diagnostic[];
-}): Promise<readonly string[]> {
-  return (await listBaseDocuments(input)).map((document) => document.pathname);
-}
-
 export async function listBaseDocuments(input: {
   readonly manifest: ContentManifest;
   readonly contentSource?: ContentSource;

@@ -50,17 +50,6 @@ export function hasProperty(node: ElementNode, key: string): boolean {
   return getProperty(node, key) !== undefined;
 }
 
-export function getClassNameList(node: ElementNode): string[] {
-  const value = node.properties?.className;
-  if (Array.isArray(value)) {
-    return value.filter((entry): entry is string => typeof entry === "string");
-  }
-  if (typeof value === "string") {
-    return value.split(/\s+/).filter(Boolean);
-  }
-  return [];
-}
-
 export function mergeClassName(current: unknown, next: string): string {
   const currentClass = Array.isArray(current)
     ? current.join(" ")

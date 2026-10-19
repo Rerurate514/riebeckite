@@ -44,5 +44,6 @@ test("embed download link keeps an explicit label", async () => {
 test("non-embed link falls back to the file name", async () => {
   const html = await render({ embed: false });
 
+  assert.match(html, /class="rr-attachment-link"/);
   assert.ok(html.includes(">report.pdf</a>"), html);
 });

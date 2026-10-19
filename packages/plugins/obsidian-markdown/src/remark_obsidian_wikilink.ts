@@ -33,8 +33,8 @@ export type WikilinkFragment =
 
 const WIKILINK_PATTERN =
   "(!)?\\[\\[([^\\]|#]+)(?:#(\\^[^\\]|]+|[^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
-const WIKILINK_CLASS = "wikilink rr-obsidian-wikilink";
-const BROKEN_WIKILINK_CLASS = `${WIKILINK_CLASS} wikilink-broken rr-obsidian-wikilink--broken`;
+const WIKILINK_CLASS = "rr-obsidian-wikilink";
+const BROKEN_WIKILINK_CLASS = `${WIKILINK_CLASS} rr-obsidian-wikilink--broken`;
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
   const {
@@ -121,8 +121,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
             url: resolvePermalink(resolved.value),
             data: {
               hProperties: {
-                class:
-                  "wikilink-embed-unresolved rr-obsidian-wikilink-embed-unresolved",
+                class: "rr-obsidian-wikilink-embed-unresolved",
               },
             },
             children: [
@@ -218,7 +217,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
 function createImageEmbedNode(url: string, alt: string): Html {
   return {
     type: "html",
-    value: `<div class="wikilink-image-embed rr-obsidian-wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}" /></div>`,
+    value: `<div class="rr-obsidian-wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}" /></div>`,
   };
 }
 
@@ -281,8 +280,8 @@ function isBlockEmbedHtml(child: Content): child is Html {
   if (child.type !== "html") return false;
   const value = child.value;
   return (
-    value.startsWith('<div class="wikilink-image-embed') ||
-    value.startsWith('<div class="wikilink-embed') ||
+    value.startsWith('<div class="rr-obsidian-wikilink-image-embed') ||
+    value.startsWith('<div class="rr-obsidian-wikilink-embed') ||
     value.startsWith("<figure") ||
     value.startsWith("<aside")
   );
@@ -298,7 +297,7 @@ function createNoteEmbedNode(
     : "";
   return {
     type: "html",
-    value: `<div class="wikilink-embed rr-obsidian-wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}"${fragmentAttribute}><span class="rr-obsidian-wikilink-embed__label">Embedded: ${escapeHtmlAttribute(slug)}</span>${html}</div>`,
+    value: `<div class="rr-obsidian-wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}"${fragmentAttribute}><span class="rr-obsidian-wikilink-embed__label">Embedded: ${escapeHtmlAttribute(slug)}</span>${html}</div>`,
   };
 }
 
@@ -328,7 +327,7 @@ function createAttachmentFallbackLink(
 ): Html {
   return {
     type: "html",
-    value: `<a class="wikilink wikilink-attachment rr-obsidian-wikilink rr-obsidian-wikilink--attachment" href="${escapeHtmlAttribute(url)}" download>${escapeHtmlAttribute(label || path)}</a>`,
+    value: `<a class="rr-obsidian-wikilink rr-obsidian-wikilink--attachment" href="${escapeHtmlAttribute(url)}" download>${escapeHtmlAttribute(label || path)}</a>`,
   };
 }
 

@@ -50,7 +50,7 @@ export default defineConfig({
 - 形式は大文字にした拡張子です。
 - カードのファイルサイズは `config.content.directory` 配下から読み取ります。パスは
   コンテンツディレクトリの外へ出られないよう検査され、読めないファイルのサイズは表示しません。
-- 埋め込みカードには、Theme が対象にできる安定した `rr-attachment` ルートフックが付きます。
+- 埋め込みカードには Theme が対象にできる安定した `rr-attachment` ルート Hook が付き、インライン添付リンクには `rr-attachment-link` を使用します。
 
 スタイルは `style.css` に同梱されます（インラインの添付リンクには `↓` 接尾辞も付きます）。
 

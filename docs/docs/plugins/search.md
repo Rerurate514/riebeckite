@@ -82,8 +82,7 @@ The search result hooks are `rr-search-result`,
 `rr-search-result__title`, `rr-search-result__meta`,
 `rr-search-result__excerpt`, `rr-search-result__tags`,
 `rr-search-result__tag`, and `rr-search-result__mark`. Default CSS targets
-these namespaced hooks only. The older `search-result*` classes remain on
-rendered results as compatibility aliases during migration.
+these hooks.
 
 ## Search API
 

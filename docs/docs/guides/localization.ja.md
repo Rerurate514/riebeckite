@@ -325,6 +325,8 @@ translation: hello
 
 存在しない言語版への Fallback Page は自動生成されません。
 
+Theme は `.rr-l10n-switcher` root hook を通じて標準の言語切替 UI を調整できます。
+
 ## SEO
 
 SEO Plugin と組み合わせることで、翻訳関係を `hreflang` として出力できます。

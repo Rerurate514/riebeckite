@@ -605,8 +605,7 @@ Plugin 固有の出力を `rb-*` namespace に置かないでください。
 | `rr-*` | Plugin / Feature Hook |
 | `--rr-*` | Plugin 固有 Token |
 
-新しい出力には `rr-*` Hook を使用し、Plugin の CSS と Theme は `rr-*` Hook を対象にします。
-文書化済みの既存 class は、明示的な移行期間に限り互換 alias として残せますが、新しい既存形式の class は追加しません。
+出力には `rr-*` Hook だけを使用し、Plugin の CSS と Theme は `rr-*` Hook を対象にします。
 
 Theme に公開する必要がある Hook だけを stable contract として文書化してください。
 

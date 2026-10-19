@@ -17,7 +17,7 @@ export function attachment(options: AttachmentOptions = {}) {
   return definePlugin({
     name: PLUGIN_NAME,
     processedContentCache: {
-      version: "attachment-v2",
+      version: "attachment-v3",
       dependencyMode: "tracked",
     },
     options,
@@ -51,7 +51,7 @@ async function renderAttachment(
     options.showSize === false ? null : await getAttachmentSize(context);
 
   if (!context.embed) {
-    return `<a class="wikilink wikilink-attachment" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(context.label || fileName)}</a>`;
+    return `<a class="rr-attachment-link" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(context.label || fileName)}</a>`;
   }
 
   const sizeHtml = size

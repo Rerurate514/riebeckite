@@ -49,8 +49,8 @@ The following source is rendered on this page. A plain wikilink becomes a downlo
 - Format is the uppercased file extension.
 - Size is read from disk under `config.content.directory` (path-traversal safe)
   and omitted when the file cannot be read.
-- The embed card carries the stable `rr-attachment` root hook that themes may
-  target.
+- The embed card carries the stable `rr-attachment` root hook, and inline
+  attachment links use `rr-attachment-link`.
 
 Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 

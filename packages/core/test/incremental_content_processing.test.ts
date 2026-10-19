@@ -203,6 +203,50 @@ test("no-change output resolution reuses the persisted output inventory", async 
   assert.ok(!spans.some((span) => span.name === "content.manifest"));
 });
 
+test("output resolution applies entry-specific content dependencies", async () => {
+  const directory = await tempDirectory(
+    "incremental-output-dynamic-dependency",
+  );
+  const files = {
+    "a.md": "---\ntitle: A\nvisibility: public\n---\n\n# A",
+    "b.md": "---\ntitle: B\nvisibility: public\n---\n\n# B",
+    "c.md": "---\ntitle: C\nvisibility: public\n---\n\n# C",
+  };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "dynamic-output-dependency",
+      resolveContentOutputDependencies: ({ entry }) =>
+        entry.slug === "b" ? [{ type: "content", slug: "a" }] : [],
+    }),
+  ];
+
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  files["a.md"] = "---\ntitle: A\nvisibility: public\n---\n\n# A changed";
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  const changes = await second.getOutputChangeSet({ incremental: true });
+  await second.dispose();
+
+  assert.deepEqual(
+    changes.affected.map((output) => output.path),
+    ["a.html", "b.html"],
+  );
+  assert.deepEqual(
+    changes.unchanged.map((output) => output.path),
+    ["c.html"],
+  );
+});
+
 test("a manifest requested after output resolution reuses the same build plan", async () => {
   const directory = await tempDirectory("incremental-output-then-manifest");
   const files = {

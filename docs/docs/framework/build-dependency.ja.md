@@ -63,6 +63,7 @@ Output DependencyはContent Dependencyとは別の取り決めです。種類ご
 | `content { slug }` | そのContentが変わったとき |
 | `tag { tag }` | そのtagを持つContentが変わったとき |
 | `folder { folder }` | そのfolderのContentが変わったとき |
+| `public-location { pathname }` | その正規pathnameを所有するroutable Contentが変わった、現れた、または消えたとき |
 | `global` | いずれかのContentが変わったとき |
 | `unknown` | 常に。Coreは全Outputの再生成も要求する。 |
 
@@ -71,7 +72,7 @@ Output DependencyはContent Dependencyとは別の取り決めです。種類ご
 | 対象 | 宣言場所 |
 | --- | --- |
 | Plugin page | `pageTypes[].outputDependencies` |
-| manifest entry HTMLを更新するPlugin | rootの`outputDependencies`。CoreがすべてのContent Outputに加算する。 |
+| manifest entry HTMLを更新するPlugin | rootの`contentOutputDependencies`、または`resolveContentOutputDependencies({ entry, manifest })`。resolverはContent Outputごとに依存を宣言できる。 |
 | 生成output | `context.output.emit(..., { dependencies })`。未宣言なら`unknown`。 |
 
 対象が特定できる場合は`content`、`tag`、`folder`を使ってください。manifest全体に依存する集合変換は`global`です。表現できない入力だけに`unknown`を使います。

@@ -20,8 +20,10 @@ import type {
   GeneratedOutputContent,
   GeneratedOutputSink,
 } from "../types/generated_output.js";
-import type { OutputDependency } from "../types/output_dependency.js";
-import type { RiebeckitePlugin } from "../types/plugin.js";
+import type {
+  ContentOutputDependencyResolver,
+  RiebeckitePlugin,
+} from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
 import {
   type PluginClientEntry,
@@ -388,15 +390,14 @@ export class PluginRuntime {
     return await this.pageResolver.getPageOutputs(manifest, contentIndex);
   }
 
-  getContentOutputDependencies(
-    entry?: ContentManifestEntry,
-  ): readonly OutputDependency[] {
-    return this.plugins().flatMap((plugin) => [
-      ...(plugin.contentOutputDependencies ?? []),
-      ...(entry
-        ? (plugin.resolveContentOutputDependencies?.(entry) ?? [])
-        : []),
-    ]);
+  getContentOutputDependencies(): ContentOutputDependencyResolver {
+    const plugins = this.plugins();
+    return ({ entry, manifest }) =>
+      plugins.flatMap((plugin) => [
+        ...(plugin.contentOutputDependencies ?? []),
+        ...(plugin.resolveContentOutputDependencies?.({ entry, manifest }) ??
+          []),
+      ]);
   }
 
   async collectDiagnostics(

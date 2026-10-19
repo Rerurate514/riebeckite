@@ -71,13 +71,14 @@ Output dependencies are separate from content dependencies. Each type reacts to 
 | `content { slug }` | That content changed. |
 | `tag { tag }` | Content carrying that tag changed. |
 | `folder { folder }` | Content in that folder changed. |
+| `public-location { pathname }` | The routable content owning that canonical pathname changed, appeared, or disappeared. |
 | `global` | Any content changed. |
 | `unknown` | Always. Core also requests full output regeneration. |
 
 Declare them in the following places.
 
 - `pageTypes[].outputDependencies` for a plugin page.
-- Root `outputDependencies` for a plugin that updates existing manifest entry HTML in `onManifestCreated`. Core adds them to every content output.
+- Root `outputDependencies`, or `resolveContentOutputDependencies({ entry, manifest })`, for a plugin that updates existing manifest entry HTML in `onManifestCreated`. The resolver may declare dependencies for each content output.
 - `context.output.emit(..., { dependencies })` for a generated output. Without declared dependencies, a generated output is `unknown`.
 
 Use `content`, `tag`, or `folder` when the scope is known, and `global` for a manifest-wide collection transform. Use `unknown` only when the input cannot be represented.

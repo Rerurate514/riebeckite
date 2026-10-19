@@ -54,7 +54,7 @@ export function bases(options: BasesOptions = {}) {
   return definePlugin({
     name: "bases",
     contentFileMetadata: true,
-    resolveContentOutputDependencies: (entry) =>
+    resolveContentOutputDependencies: ({ entry }) =>
       runtime.dependenciesFor(entry.slug),
     processedContentCache: {
       version: "bases-v3",

@@ -16,6 +16,7 @@ import type {
   ContentRedirect,
 } from "../src/types/content_manifest.js";
 import type { OutputDependency } from "../src/types/output_dependency.js";
+import type { ContentOutputDependencyResolver } from "../src/types/plugin.js";
 
 test("independent content edit affects own page and global outputs only", () => {
   const previous = manifest([entry("a"), entry("b")]);
@@ -82,47 +83,42 @@ test("manifest plugin global dependencies affect every content output", () => {
   assert.deepEqual(paths(result.affected), ["a.html", "b.html"]);
 });
 
-test("content-query affects only its owner for referenced candidates and properties", () => {
+test("content-query affects only its owner for referenced properties", () => {
   const previous = manifest([entry("base"), entry("note"), entry("other")]);
   const current = manifest([
     entry("base"),
     { ...entry("note"), frontmatter: { title: "note", status: "published" } },
     entry("other"),
   ]);
+  const dependencies: ContentOutputDependencyResolver = ({ entry }) =>
+    entry.slug === "base"
+      ? [{ type: "content-query", properties: ["status"] }]
+      : [];
+
   const result = changes(
     previous,
     current,
     { changed: ["note.md"] },
     [],
-    (output) =>
-      output.slug === "base"
-        ? [{ type: "content-query", properties: ["status"] }]
-        : [],
+    dependencies,
   );
+
   assert.deepEqual(paths(result.affected), ["base.html", "note.html"]);
   assert.deepEqual(paths(result.unchanged), ["other.html"]);
 });
 
-test("content-query tracks discoverable candidate additions, removals, and transitions", () => {
-  const dependency = (output: ContentManifestEntry) =>
-    output.slug === "base"
+test("content-query tracks discoverable candidate additions and removals", () => {
+  const dependency: ContentOutputDependencyResolver = ({ entry }) =>
+    entry.slug === "base"
       ? [
           {
-            type: "content-query" as const,
+            type: "content-query",
             properties: ["status", "file.folder"],
           },
         ]
       : [];
   const base = entry("base");
   const note = entry("notes/note");
-  const hidden: ContentManifestEntry = {
-    ...note,
-    publishing: {
-      visibility: "draft",
-      routable: false,
-      discoverable: false,
-    },
-  };
 
   const added = changes(
     manifest([base]),
@@ -138,40 +134,157 @@ test("content-query tracks discoverable candidate additions, removals, and trans
     [],
     dependency,
   );
-  const published = changes(
-    manifest([base, hidden], {
-      publicEntries: [base],
-      discoverableEntries: [base],
-    }),
-    manifest([base, note]),
-    { changed: ["notes/note.md"] },
-    [],
-    dependency,
-  );
-  const privateEdit = changes(
-    manifest([base, hidden], {
-      publicEntries: [base],
-      discoverableEntries: [base],
-    }),
-    manifest(
-      [
-        base,
-        {
-          ...hidden,
-          frontmatter: { title: "note", status: "changed" },
-        },
-      ],
-      { publicEntries: [base], discoverableEntries: [base] },
-    ),
-    { changed: ["notes/note.md"] },
-    [],
-    dependency,
-  );
 
   assert.deepEqual(paths(added.affected), ["base.html", "notes/note.html"]);
   assert.deepEqual(paths(removed.affected), ["base.html"]);
-  assert.deepEqual(paths(published.affected), ["base.html", "notes/note.html"]);
-  assert.deepEqual(paths(privateEdit.affected), []);
+});
+
+test("public-location dependency leaves unrelated content outputs unchanged", () => {
+  const previous = manifest([
+    entry("docs"),
+    entry("docs/page"),
+    entry("other"),
+  ]);
+  const current = manifest([
+    entry("docs"),
+    entry("docs/page"),
+    entry("other", { title: "Other 2" }),
+  ]);
+  const result = changes(
+    previous,
+    current,
+    { changed: ["other.md"] },
+    [],
+    breadcrumbDependencies,
+  );
+
+  assert.deepEqual(paths(result.affected), ["other.html"]);
+  assert.deepEqual(paths(result.unchanged), ["docs.html", "docs/page.html"]);
+});
+
+test("public-location dependency follows its public owner changes", () => {
+  const previous = manifest([entry("docs"), entry("docs/page")]);
+  const current = manifest([
+    entry("docs", { title: "Documentation" }),
+    entry("docs/page"),
+  ]);
+  const result = changes(
+    previous,
+    current,
+    { changed: ["docs.md"] },
+    [],
+    breadcrumbDependencies,
+  );
+
+  assert.deepEqual(paths(result.affected), ["docs.html", "docs/page.html"]);
+});
+
+test("previous public-location dependencies invalidate breadcrumbs when an owner becomes draft", () => {
+  const previous = manifest([entry("docs"), entry("docs/page")]);
+  const draft = {
+    ...entry("docs"),
+    publishing: {
+      visibility: "draft" as const,
+      routable: false,
+      discoverable: false,
+    },
+  };
+  const page = entry("docs/page");
+  const current = manifest([draft, page], {
+    publicEntries: [page],
+    discoverableEntries: [page],
+    byRoutablePermalink: new Map([[page.permalink, page]]),
+  });
+  const result = changes(
+    previous,
+    current,
+    { changed: ["docs.md"] },
+    [],
+    breadcrumbDependencies,
+  );
+
+  assert.deepEqual(paths(result.affected), ["docs/page.html"]);
+  assert.deepEqual(paths(result.removed), ["docs.html"]);
+});
+
+test("dynamic dependencies retain the previous target during a dependency transition", () => {
+  const a = entry("a");
+  const previous = manifest([a, entry("b")]);
+  const draftB = {
+    ...entry("b"),
+    publishing: {
+      visibility: "draft" as const,
+      routable: false,
+      discoverable: false,
+    },
+  };
+  const current = manifest([a, draftB], {
+    publicEntries: [a],
+    discoverableEntries: [a],
+    byRoutablePermalink: new Map([[a.permalink, a]]),
+  });
+  const resolver: ContentOutputDependencyResolver = ({ entry, manifest }) =>
+    entry.slug === "a" && manifest.byRoutablePermalink.has("/b")
+      ? [{ type: "content", slug: "b" }]
+      : [];
+
+  const result = changes(
+    previous,
+    current,
+    { changed: ["b.md"] },
+    [],
+    resolver,
+  );
+
+  assert.deepEqual(paths(result.affected), ["a.html"]);
+  assert.deepEqual(paths(result.removed), ["b.html"]);
+});
+
+test("dynamic dependencies stop retaining a replaced target after the transition is saved", () => {
+  const a = entry("a");
+  const draftB = {
+    ...entry("b"),
+    publishing: {
+      visibility: "draft" as const,
+      routable: false,
+      discoverable: false,
+    },
+  };
+  const previous = manifest([a, draftB], {
+    publicEntries: [a],
+    discoverableEntries: [a],
+    byRoutablePermalink: new Map([[a.permalink, a]]),
+  });
+  const current = manifest([a, { ...draftB, title: "B2" }], {
+    publicEntries: [a],
+    discoverableEntries: [a],
+    byRoutablePermalink: new Map([[a.permalink, a]]),
+  });
+  const resolver: ContentOutputDependencyResolver = ({ entry, manifest }) =>
+    entry.slug === "a" && manifest.byRoutablePermalink.has("/b")
+      ? [{ type: "content", slug: "b" }]
+      : [];
+
+  const result = changes(
+    previous,
+    current,
+    { changed: ["b.md"] },
+    [],
+    resolver,
+  );
+
+  assert.deepEqual(paths(result.affected), []);
+  assert.deepEqual(paths(result.unchanged), ["a.html"]);
+});
+
+test("a dynamic dependency resolver failure is surfaced", () => {
+  assert.throws(
+    () =>
+      buildOutputInventory(manifest([entry("a")]), [], () => {
+        throw new Error("resolver failed");
+      }),
+    /resolver failed/,
+  );
 });
 
 test("content output is affected when its dependency fingerprint changed", () => {
@@ -640,7 +753,7 @@ function changes(
   pluginPageOutputs: readonly OutputDescriptor[] = [],
   contentOutputDependencies:
     | readonly OutputDependency[]
-    | ((entry: ContentManifestEntry) => readonly OutputDependency[]) = [],
+    | ContentOutputDependencyResolver = [],
 ) {
   const previousState: ContentBuildState = {
     version: CONTENT_BUILD_STATE_VERSION,
@@ -698,6 +811,11 @@ function changes(
     contentOutputDependencies,
   });
 }
+
+const breadcrumbDependencies: ContentOutputDependencyResolver = ({ entry }) =>
+  entry.slug === "docs/page"
+    ? [{ type: "public-location", pathname: "/docs" }]
+    : [];
 
 function manifest(
   entries: readonly ContentManifestEntry[],

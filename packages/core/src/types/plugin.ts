@@ -1,6 +1,9 @@
 import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
 import type { PluginOptionsValidator } from "./config_validation.js";
-import type { ContentManifestEntry } from "./content_manifest.js";
+import type {
+  ContentManifest,
+  ContentManifestEntry,
+} from "./content_manifest.js";
 import type { Diagnostic } from "./diagnostic.js";
 import type {
   ExternalDependencyContext,
@@ -127,12 +130,15 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];
   contentOutputDependencies?: readonly OutputDependency[];
-  resolveContentOutputDependencies?(
-    entry: ContentManifestEntry,
-  ): readonly OutputDependency[];
+  resolveContentOutputDependencies?: ContentOutputDependencyResolver;
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
 };
+
+export type ContentOutputDependencyResolver = (context: {
+  readonly entry: ContentManifestEntry;
+  readonly manifest: ContentManifest;
+}) => readonly OutputDependency[];
 
 export type PlannedGeneratedOutput = {
   readonly path: string;

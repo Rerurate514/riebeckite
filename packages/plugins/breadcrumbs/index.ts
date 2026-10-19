@@ -1,7 +1,11 @@
 import {
   type ConfigValidationIssue,
+  type ContentManifest,
+  type ContentManifestEntry,
   createStyleAsset,
   definePlugin,
+  type OutputDependency,
+  resolvePublicFolderLocation,
 } from "@riebeckite/core";
 import { buildBreadcrumbItems } from "./src/breadcrumbs.js";
 import { resolveBreadcrumbsOptions } from "./src/options.js";
@@ -53,7 +57,8 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
       version: "breadcrumbs-v1",
       dependencyMode: "none",
     },
-    contentOutputDependencies: [{ type: "global" }],
+    resolveContentOutputDependencies: ({ entry, manifest }) =>
+      breadcrumbOutputDependencies(entry, manifest),
     options,
     validateOptions: validateBreadcrumbsOptions,
     onManifestCreated: (context) => {
@@ -90,6 +95,27 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
 
 /** Alias matching the `*Plugin` suffix used by other plugin factories. */
 export const breadcrumbsPlugin = breadcrumbs;
+
+function breadcrumbOutputDependencies(
+  entry: ContentManifestEntry,
+  manifest: ContentManifest,
+): readonly OutputDependency[] {
+  const segments = entry.publicLocation.permalink.split("/").filter(Boolean);
+  const dependencies: OutputDependency[] = [];
+  for (let index = 0; index < segments.length - 1; index += 1) {
+    const pathname = `/${segments.slice(0, index + 1).join("/")}`;
+    const location = resolvePublicFolderLocation(manifest, pathname);
+    if (location.type === "content") {
+      dependencies.push({ type: "public-location", pathname });
+    } else if (location.type === "generated") {
+      const folder = [...manifest.folderLocations.values()].find(
+        (candidate) => candidate.pathname === location.pathname,
+      )?.folder;
+      if (folder) dependencies.push({ type: "folder", folder });
+    }
+  }
+  return dependencies;
+}
 
 function validateBreadcrumbsOptions(
   options: BreadcrumbsOptions | undefined,

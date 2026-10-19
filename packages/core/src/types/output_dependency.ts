@@ -3,6 +3,7 @@ export type OutputDependency =
   | { readonly type: "tag"; readonly tag: string }
   | { readonly type: "folder"; readonly folder: string }
   | { readonly type: "file"; readonly path: string }
+  | { readonly type: "public-location"; readonly pathname: string }
   | {
       readonly type: "projection";
       readonly projection:

@@ -336,6 +336,36 @@ async function linkWorkspacePackages(siteRoot) {
     ),
     path.join(nodeModulesDirectory, "lz-string"),
   );
+  await fs.mkdir(path.join(nodeModulesDirectory, "@d2lang"), {
+    recursive: true,
+  });
+  await linkJunctionIfAbsent(
+    path.join(
+      root,
+      "packages",
+      "plugins",
+      "d2",
+      "node_modules",
+      "@d2lang",
+      "d2",
+    ),
+    path.join(nodeModulesDirectory, "@d2lang", "d2"),
+  );
+  await fs.mkdir(path.join(nodeModulesDirectory, "@marp-team"), {
+    recursive: true,
+  });
+  await linkJunctionIfAbsent(
+    path.join(
+      root,
+      "packages",
+      "plugins",
+      "marp",
+      "node_modules",
+      "@marp-team",
+      "marp-core",
+    ),
+    path.join(nodeModulesDirectory, "@marp-team", "marp-core"),
+  );
 }
 
 async function linkJunctionIfAbsent(source, destination) {
@@ -367,7 +397,7 @@ async function invokeBuild(siteRoot, label) {
       "--buildOnce",
       JSON.stringify({ siteRoot, label, metricsEnabled }),
     ],
-    { cwd: root, maxBuffer: 1024 * 1024 * 8 },
+    { cwd: siteRoot, maxBuffer: 1024 * 1024 * 8 },
   );
   return JSON.parse(stdout.trim().split(/\r?\n/).at(-1));
 }
@@ -425,6 +455,27 @@ async function buildOnce({ siteRoot, label, metricsEnabled = true }) {
                 "packages/integrations/honox/index.ts",
               ),
             },
+            ...(await optionalAlias(
+              "puppeteer",
+              path.join(
+                root,
+                "packages/plugins/mermaid/node_modules/puppeteer",
+              ),
+            )),
+            ...(await optionalAlias(
+              "lz-string",
+              path.join(
+                root,
+                "packages/plugins/excalidraw/node_modules/lz-string",
+              ),
+            )),
+            ...(await optionalAlias(
+              "@marp-team/marp-core",
+              path.join(
+                root,
+                "packages/plugins/marp/node_modules/@marp-team/marp-core",
+              ),
+            )),
           ],
         },
         plugins: [
@@ -483,6 +534,14 @@ async function buildOnce({ siteRoot, label, metricsEnabled = true }) {
 
 function metricNumber(metrics, key) {
   return Number(metrics[key] ?? 0);
+}
+async function optionalAlias(name, packageDirectory) {
+  try {
+    const resolved = await fs.realpath(packageDirectory);
+    return [{ find: new RegExp(`^${name}$`), replacement: resolved }];
+  } catch {
+    return [];
+  }
 }
 function positiveIntegerArg(value, fallback, name) {
   if (value === undefined) return fallback;

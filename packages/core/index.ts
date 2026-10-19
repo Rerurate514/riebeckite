@@ -46,7 +46,10 @@ export {
   getEntryLanguage,
   selectEntriesByLanguage,
 } from "./src/content/content_language.js";
-export { extractContentLinks } from "./src/content/content_links.js";
+export {
+  extractContentLinks,
+  extractMarkdownLinkUrls,
+} from "./src/content/content_links.js";
 export { resolveDefaultContentLocation } from "./src/content/content_location.js";
 export type {
   ContentBuildOptions,
@@ -238,6 +241,7 @@ export {
 export type { JsonValue } from "./src/types/json_value.js";
 export type { OutputDependency } from "./src/types/output_dependency.js";
 export type {
+  ContentOutputDependencyResolver,
   PlannedGeneratedOutput,
   PluginGeneratedOutputPlanContext,
   PluginInput,

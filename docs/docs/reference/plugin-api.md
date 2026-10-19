@@ -415,11 +415,12 @@ Output dependencies decide which emitted files must be written again. They are
 separate contracts. Page types declare `outputDependencies`; a plugin that
 updates existing manifest entry HTML in `onManifestCreated` declares root
 `contentOutputDependencies`, which are added to those content outputs. When the
-dependency differs by entry, use `resolveContentOutputDependencies(entry)` to
-return dependencies only for the affected content output.
+dependency differs by entry, use
+`resolveContentOutputDependencies({ entry, manifest })` to return dependencies
+only for the affected content output.
 
 ``` ts
-resolveContentOutputDependencies: (entry) =>
+resolveContentOutputDependencies: ({ entry, manifest }) =>
   entry.slug === "report"
     ? [{ type: "content-query", properties: ["status", "file.mtime"] }]
     : []

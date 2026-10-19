@@ -1,3 +1,5 @@
+import { createRequire } from "node:module";
+import path from "node:path";
 import type { MarpBuildRenderResult } from "./types.js";
 
 const DEFAULT_THEME = "default";
@@ -97,12 +99,17 @@ async function loadMarpCore(): Promise<MarpCoreConstructor> {
  * the CommonJS package into the site build, where its `exports` reference
  * fails at runtime.
  */
-function importMarpCore(): Promise<MarpCoreModule> {
+async function importMarpCore(): Promise<MarpCoreModule> {
   const importModule = new Function(
     "specifier",
     "return import(specifier)",
   ) as (specifier: string) => Promise<MarpCoreModule>;
-  return importModule("@marp-team/marp-core");
+  try {
+    return await importModule("@marp-team/marp-core");
+  } catch {
+    const require = createRequire(path.join(process.cwd(), "package.json"));
+    return require("@marp-team/marp-core") as MarpCoreModule;
+  }
 }
 
 function countSlides(html: string): number {

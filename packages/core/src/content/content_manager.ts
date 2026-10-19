@@ -435,8 +435,8 @@ export class ContentManager {
               changeSet: plan.changeSet,
               affectedContent: plan.affectedContent,
               pluginPageOutputs,
-              contentOutputDependencies: (entry) =>
-                this.pluginRuntime.getContentOutputDependencies(entry),
+              contentOutputDependencies:
+                this.pluginRuntime.getContentOutputDependencies(),
               externalDependencies: plan.externalDependencies,
               externalDependencyFailures: plan.externalDependencyFailures,
               contentFingerprints: this.processedContentCacheFingerprints,
@@ -544,8 +544,8 @@ export class ContentManager {
               dependent: new Set(),
             },
             pluginPageOutputs,
-            contentOutputDependencies: (entry) =>
-              this.pluginRuntime.getContentOutputDependencies(entry),
+            contentOutputDependencies:
+              this.pluginRuntime.getContentOutputDependencies(),
             externalDependencies: plan.externalDependencies,
             externalDependencyFailures: plan.externalDependencyFailures,
           }),

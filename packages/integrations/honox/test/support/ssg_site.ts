@@ -85,6 +85,34 @@ const alias = [
       "index.ts",
     ),
   },
+  {
+    find: /^@riebeckite\/plugin-d2$/,
+    replacement: path.join(repoRoot, "packages", "plugins", "d2", "index.ts"),
+  },
+  {
+    find: /^@riebeckite\/plugin-marp$/,
+    replacement: path.join(repoRoot, "packages", "plugins", "marp", "index.ts"),
+  },
+  {
+    find: /^@riebeckite\/plugin-search$/,
+    replacement: path.join(
+      repoRoot,
+      "packages",
+      "plugins",
+      "search",
+      "index.ts",
+    ),
+  },
+  {
+    find: /^@riebeckite\/plugin-properties$/,
+    replacement: path.join(
+      repoRoot,
+      "packages",
+      "plugins",
+      "properties",
+      "index.ts",
+    ),
+  },
 ];
 
 export type SiteSources = {
@@ -107,6 +135,8 @@ export type SiteSources = {
   readonly readme?: boolean;
   readonly externalDependency?: boolean;
   readonly bases?: boolean;
+  readonly visualRenderers?: boolean;
+  readonly properties?: boolean;
 };
 
 export type Metrics = Record<string, number | boolean | null>;
@@ -201,11 +231,13 @@ function serverSource(): string {
     "import {",
     "  resolveRiebeckiteRoute,",
     "  riebeckiteSsgParams,",
+    "  mountRiebeckiteEndpoints,",
     '} from "@riebeckite/honox/server";',
     'import { content } from "./content";',
     'import { config } from "./config";',
     'import { pageShell } from "./render";',
     "const app = new Hono();",
+    "mountRiebeckiteEndpoints(app, { config, content });",
     'app.get("/", (c) => c.html(pageShell("home", config)));',
     "app.get(",
     '  "/feed.xml",',
@@ -275,6 +307,18 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
   ];
   if (sources.bases) {
     lines.unshift('import { bases } from "@riebeckite/plugin-bases";');
+  }
+  if (sources.visualRenderers) {
+    lines.unshift(
+      'import { d2 } from "@riebeckite/plugin-d2";',
+      'import { marp } from "@riebeckite/plugin-marp";',
+      'import { searchPlugin } from "@riebeckite/plugin-search";',
+    );
+  }
+  if (sources.properties) {
+    lines.unshift(
+      'import { properties } from "@riebeckite/plugin-properties";',
+    );
   }
   if (asset) {
     lines.push(
@@ -352,7 +396,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     "    enabled: true,",
     `    directory: ${JSON.stringify(path.join(siteRoot, ".riebeckite", "cache"))},`,
     "  },",
-    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
+    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), searchPlugin()" : ""}${sources.properties ? ", properties()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
     "});",
     "",
   );

@@ -10,6 +10,7 @@ import {
   applyScenario,
   compareSnapshots,
   createBenchmarkContent,
+  localizationScenarioNames,
   removeSafeTemporaryDirectory,
   scenarioNames,
   snapshotTree,
@@ -66,7 +67,10 @@ let workspaceBuilt = false;
 for (const preset of presets) {
   for (const size of sizes) {
     for (const scenario of scenarios) {
-      if (!scenarioNames.includes(scenario))
+      if (
+        !scenarioNames.includes(scenario) &&
+        !localizationScenarioNames.includes(scenario)
+      )
         throw new Error(`Unknown scenario: ${scenario}`);
       if (!workspaceBuilt && args.noBuildPackages !== "true") {
         await buildWorkspacePackages();
@@ -211,6 +215,7 @@ async function runSample({ preset, size, scenario, run }) {
     contentDirectory: path.join(freshSite, "content"),
     count: size,
     scenario,
+    preset,
   });
   const incremental = await invokeBuild(freshSite, "incremental");
   const incrementalOutput = await snapshotTree(path.join(freshSite, "dist"));

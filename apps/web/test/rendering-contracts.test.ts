@@ -435,11 +435,9 @@ test("CSS hooks namespace search and localization defaults", () => {
     "../../../packages/plugins/l10n/components/language-switcher.tsx",
   );
 
-  assert.doesNotMatch(ruleSelectors(searchCss), /\.search-result(?:__\w+)?/);
   assert.match(searchCss, /\.rr-search \.sr-only/);
   assert.match(searchCss, /\.rr-search-result\s*\{/);
-  assert.match(searchClient, /search-result rr-search-result/);
-  assert.doesNotMatch(ruleSelectors(l10nCss), /\.l10n-switcher(?:__\w+)?/);
+  assert.match(searchClient, /className = "rr-search-result"/);
   assert.match(l10nCss, /\.rr-l10n-switcher\s*\{/);
-  assert.match(l10nComponent, /l10n-switcher rr-l10n-switcher/);
+  assert.match(l10nComponent, /class="rr-l10n-switcher"/);
 });

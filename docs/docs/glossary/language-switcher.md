@@ -34,7 +34,7 @@ l10n({
 });
 ```
 
-Custom render functions receive a `LanguageSwitcherRenderContext` with the `localizedContent` and can return any HTML string. The slot name determines which metadata slot the switcher is inserted into. Themes can restyle the default component through `.l10n-switcher` classes.
+Custom render functions receive a `LanguageSwitcherRenderContext` with the `localizedContent` and can return any HTML string. The slot name determines which metadata slot the switcher is inserted into. Themes can restyle the default component through the `.rr-l10n-switcher` root hook.
 
 ## When it appears
 It appears only when the current page has at least one [translation](./translation.md). A page with no translated sibling shows no switcher. Only translations that actually exist are candidates; no fallback page is generated for a missing language.

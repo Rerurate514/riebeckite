@@ -60,8 +60,11 @@ with a clean SSG from the same changed source tree.
 The added content is deterministic and contains frontmatter, aliases, wiki and
 normal links, an asset reference, public/draft boundaries, Japanese and English
 body text, and folders. Translation groups are generated only for Showcase,
-which already includes l10n. Results record the generated preset plugin order,
-wall time, peak RSS, content/output reuse, SSG/output-cache counters, fast-path
+which already includes l10n. Two localization-only scenarios,
+`translation-add` and `translation-delete`, extend the Showcase run by adding
+or removing a language variant of an existing translation group; they are kept
+out of the default scenario list. Results record the generated preset plugin
+order, wall time, peak RSS, content/output reuse, SSG/output-cache counters, fast-path
 and full-regeneration status, output-write time, and a complete output-tree
 comparison. No output paths are excluded from equivalence checks.
 

@@ -93,7 +93,7 @@ test("public to public link points at an existing route", async () => {
   assert.ok(entry);
   assert.match(
     entry.html,
-    /<a href="\/public-b" class="wikilink rr-obsidian-wikilink">public-b<\/a>/,
+    /<a href="\/public-b" class="rr-obsidian-wikilink">public-b<\/a>/,
   );
   assert.ok(manifest.byRoutablePermalink.has("/public-b"));
 });
@@ -102,7 +102,7 @@ test("public to private renders as a broken wikilink", async () => {
   const html = await publicHtml();
   assert.match(
     html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">private<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">private<\/a>/,
   );
   assert.doesNotMatch(html, /href="\/private"/);
 });
@@ -111,7 +111,7 @@ test("public to missing renders as a broken wikilink", async () => {
   const html = await publicHtml();
   assert.match(
     html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">does-not-exist<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">does-not-exist<\/a>/,
   );
 });
 
@@ -119,7 +119,7 @@ test("public to excluded renders as a broken wikilink", async () => {
   const html = await publicHtml();
   assert.match(
     html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">excluded<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">excluded<\/a>/,
   );
   const manifest = await buildManifest();
   assert.equal(manifest.bySlug.has("excluded"), false);
@@ -129,7 +129,7 @@ test("public to publish-unspecified renders as a broken wikilink", async () => {
   const html = await publicHtml();
   assert.match(
     html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">unspecified<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">unspecified<\/a>/,
   );
   assert.doesNotMatch(html, /href="\/unspecified"/);
   const manifest = await buildManifest();
@@ -143,7 +143,7 @@ test("private alias respects the publication boundary", async () => {
   const html = await publicHtml();
   assert.match(
     html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">Secret Alias<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">Secret Alias<\/a>/,
   );
   assert.doesNotMatch(html, /href="\/private"/);
 });
@@ -152,7 +152,7 @@ test("private heading respects the publication boundary", async () => {
   const html = await publicHtml();
   assert.match(
     html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">private<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">private<\/a>/,
   );
   assert.doesNotMatch(html, /\/private#details/);
   assert.doesNotMatch(html, /href="\/private"/);
@@ -161,7 +161,7 @@ test("private heading respects the publication boundary", async () => {
 test("private embed does not inline the private body", async () => {
   const html = await publicHtml();
   assert.doesNotMatch(html, new RegExp(PRIVATE_MARKER));
-  assert.doesNotMatch(html, /wikilink-embed/);
+  assert.doesNotMatch(html, /rr-obsidian-wikilink-embed/);
   assert.match(html, /\[\[Unresolved embed: private\]\]/);
 });
 
@@ -251,7 +251,7 @@ test("private to public invalidates cached dependents without leaking", async ()
   assert.doesNotMatch(first.html, new RegExp(PRIVATE_MARKER));
   assert.match(
     first.html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">target<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">target<\/a>/,
   );
   assert.doesNotMatch(first.html, /href="\/target"/);
 
@@ -318,7 +318,7 @@ test("public to private removes cached embed content from dependents", async () 
   assert.doesNotMatch(second.html, /href="\/target"/);
   assert.match(
     second.html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">target<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">target<\/a>/,
   );
 });
 
@@ -339,7 +339,7 @@ test("adding a resolving note invalidates cached unresolved wikilinks", async ()
   const first = await incrementalBuild(source, directory);
   assert.match(
     first.html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">target<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">target<\/a>/,
   );
   assert.match(first.html, /\[\[Unresolved embed: target\]\]/);
 
@@ -361,7 +361,7 @@ test("adding a resolving note invalidates cached unresolved wikilinks", async ()
   assert.deepEqual(second.publicSlugs, cold.publicSlugs);
   assert.deepEqual(second.routablePermalinks, cold.routablePermalinks);
   assert.match(second.html, /href="\/target"/);
-  assert.doesNotMatch(second.html, /wikilink-broken/);
+  assert.doesNotMatch(second.html, /rr-obsidian-wikilink--broken/);
 });
 
 test("adding a private note keeps cached wikilinks broken without leaking", async () => {
@@ -381,7 +381,7 @@ test("adding a private note keeps cached wikilinks broken without leaking", asyn
   const first = await incrementalBuild(source, directory);
   assert.match(
     first.html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">secret<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">secret<\/a>/,
   );
 
   source["secret.md"] = [
@@ -405,6 +405,6 @@ test("adding a private note keeps cached wikilinks broken without leaking", asyn
   assert.doesNotMatch(second.html, /href="\/secret"/);
   assert.match(
     second.html,
-    /class="wikilink rr-obsidian-wikilink wikilink-broken rr-obsidian-wikilink--broken">secret<\/a>/,
+    /class="rr-obsidian-wikilink rr-obsidian-wikilink--broken">secret<\/a>/,
   );
 });

@@ -49,7 +49,7 @@ English/getting-started.md lang: en, translation: getting-started
 ## CSS Hook
 
 言語切替 UI には `rr-l10n-switcher`、`rr-l10n-switcher__label`、
-`rr-l10n-switcher__list`、`rr-l10n-switcher__link` を使用します。default CSS はこれらの namespace 付き Hook だけを対象にします。従来の `l10n-switcher*` class は移行中の互換 alias として残します。
+`rr-l10n-switcher__list`、`rr-l10n-switcher__link` を使用します。default CSS はこれらの Hook を対象にします。
 
 各ページには Core の `headTags` 拡張を通じ、実在する翻訳だけを対象に `hreflang` の alternate link を追加します。サイトシェルはこれらのタグの描画と、リクエストに応じた `<html lang>` の選択を担当します。WikiLink の Content Graph は同言語の翻訳を優先し、なければ元のリンク先を使います。本文では Obsidian WikiLink を `@riebeckite/plugin-obsidian-markdown` が解決した後、WikiLink と Markdown の内部リンクを同じ規則で処理します。現在のページと同じ言語の翻訳があればその URL に切り替え、なければ original/default のリンク先を維持します。クエリ文字列とフラグメントは維持し、外部 URL、フラグメントのみのリンク、不明な URL、asset などコンテンツ以外の URL は変更しません。Content Graph と本文リンクは同じ解決ポリシーを使います。
 

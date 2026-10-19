@@ -174,6 +174,46 @@ test("content-query tracks discoverable candidate additions, removals, and trans
   assert.deepEqual(paths(privateEdit.affected), []);
 });
 
+test("content output is affected when its dependency fingerprint changed", () => {
+  const previous = manifest([entry("a"), entry("b")]);
+  const current = manifest([entry("a"), entry("b")]);
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {
+        "a.md": {
+          fingerprint: "a",
+          aliases: [],
+          dependencies: [],
+          linkTargets: [],
+          processedContentCacheFingerprint: "before",
+        },
+        "b.md": {
+          fingerprint: "b",
+          aliases: [],
+          dependencies: [],
+          linkTargets: [],
+          processedContentCacheFingerprint: "stable",
+        },
+      },
+      contentIndex: {},
+      manifestEntries: previous.entries,
+      outputs: buildOutputInventory(previous),
+    },
+    changeSet: { added: [], changed: [], removed: [], unchanged: [] },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    contentFingerprints: new Map([
+      ["a", "after"],
+      ["b", "stable"],
+    ]),
+  });
+
+  assert.deepEqual(paths(result.affected), ["a.html"]);
+  assert.deepEqual(paths(result.unchanged), ["b.html"]);
+  assert.equal(result.fullRegenerationRequired, false);
+});
+
 test("manifest plugin unknown dependencies require safe full regeneration", () => {
   const current = manifest([entry("a"), entry("b")]);
   const result = determineOutputChanges({

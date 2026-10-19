@@ -302,7 +302,7 @@ Namespace の役割は次のとおりです。
 
 Plugin の出力を `rb-*` Namespace に置かないでください。
 
-既存 Class がある場合は削除せず、`rr-*` Hook を追加します。
+Plugin の出力には `rr-*` Hook だけを使用します。
 
 また、
 

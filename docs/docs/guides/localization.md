@@ -305,7 +305,7 @@ l10n({
 });
 ```
 
-Themes can restyle the default component through its `.l10n-switcher` classes. `ui.render` is framework-neutral HTML, so a custom site can supply its own server-rendered component.
+Themes can restyle the default component through its `.rr-l10n-switcher` root hook. `ui.render` is framework-neutral HTML, so a custom site can supply its own server-rendered component.
 
 ## SEO
 

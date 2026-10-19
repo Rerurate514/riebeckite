@@ -27,6 +27,6 @@
   width: fit-content;
 }
 
-.wikilink-attachment::after {
+.rr-attachment-link::after {
   content: " ↓";
 }

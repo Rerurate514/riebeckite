@@ -78,6 +78,8 @@ Output DependencyはContent Dependencyとは別の契約です。種類ごとに
 
 `none`、`tracked`、`global`、`unsafe`は処理済みContentの再利用を示す契約であり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
 
+Coreは、entryのprocessed-content dependency fingerprintが前回のBuildから変わった場合も、そのContent Outputを影響ありとします（[Content Dependency](#content-dependency)を参照）。処理済みContentが他のContentに依存するPluginは、`global` output dependencyを宣言せずに、その依存をentry単位で追跡できます。
+
 ## Plugin作者向けのルール
 
 - Contentを変化させるPluginはすべて`processedContentCache`を宣言します。

@@ -62,7 +62,7 @@ Theme はどちらの `rr-search` root にも `--rr-search-modal-panel-border-ra
 検索結果には `rr-search-result`、`rr-search-result__title`、
 `rr-search-result__meta`、`rr-search-result__excerpt`、
 `rr-search-result__tags`、`rr-search-result__tag`、
-`rr-search-result__mark` を使用します。default CSS はこれらの namespace 付き Hook だけを対象にします。従来の `search-result*` class は移行中の互換 alias として出力に残ります。
+`rr-search-result__mark` を使用します。default CSS はこれらの Hook を対象にします。
 
 ## 検索エンジンだけを使う
 

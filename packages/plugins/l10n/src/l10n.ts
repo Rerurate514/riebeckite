@@ -7,6 +7,7 @@ import {
   createStyleAsset,
   type Diagnostic,
   definePlugin,
+  extractContentLinks,
   type PluginHeadTag,
   type PostFrontmatter,
   type PublicContentEntry,
@@ -64,6 +65,7 @@ type L10nState = {
   readonly conflictedGroups: ReadonlySet<string>;
   readonly locations: ReadonlyMap<string, ContentPublicLocation> | null;
   readonly slugsByPermalink: ReadonlyMap<string, string>;
+  readonly signatures: ReadonlyMap<string, string>;
 };
 
 export function l10n(options: L10nOptions) {
@@ -73,16 +75,16 @@ export function l10n(options: L10nOptions) {
   return definePlugin({
     name: "l10n",
     processedContentCache: {
-      version: "l10n-global-content-locations-v1",
-      dependencyMode: "global",
+      version: "l10n-content-locations-v2",
+      dependencyMode: "tracked",
+      contentDependencyFingerprint: ({ slug }) => state.signatures.get(slug),
     },
     provides: ["content.localization"],
-    contentOutputDependencies: [{ type: "global" }],
     options,
     assets: [createStyleAsset("l10n", "@riebeckite/plugin-l10n/style.css")],
     validateOptions: () =>
       validateOptions(options).map((message) => ({ path: "l10n", message })),
-    extendContentLocations: ({ entries, locations }) => {
+    extendContentLocations: ({ entries, locations, contentIndex }) => {
       state = {
         ...detectContents(entries, resolved),
         locations,
@@ -98,10 +100,16 @@ export function l10n(options: L10nOptions) {
           withLocalization(location, content, resolved),
         );
       }
+      const slugsByPermalink = new Map(
+        [...locations].map(([slug, location]) => [location.permalink, slug]),
+      );
       state = {
         ...state,
-        slugsByPermalink: new Map(
-          [...locations].map(([slug, location]) => [location.permalink, slug]),
+        slugsByPermalink,
+        signatures: computeLocalizationSignatures(
+          { ...state, slugsByPermalink },
+          entries,
+          contentIndex,
         ),
       };
     },
@@ -416,6 +424,7 @@ function detectContents(
     conflictedGroups,
     locations: null,
     slugsByPermalink: new Map(),
+    signatures: new Map(),
   };
 }
 
@@ -561,6 +570,162 @@ function resolveLocalizedTarget(
   const target = state.contents.get(targetSlug);
   if (!target) return null;
   return findTranslation(state, target.translationId, source.lang) ?? target;
+}
+
+const PUBLICATION_KEYS = [
+  "visibility",
+  "publishAt",
+  "publish",
+  "private",
+  "draft",
+] as const;
+
+const LINK_TOKEN_PATTERN = /[^\s"'`<>()[\]{}]+/g;
+const TOKEN_SEPARATOR_PATTERN = /[\s"'`<>()[\]{}]/;
+const TRAILING_PUNCTUATION_PATTERN = /[.,;:!?'"\u2019\u201d\u2026]/;
+const NUMERIC_CHAR_REFERENCE_PATTERN = /&#(x[0-9a-fA-F]+|[0-9]+);/g;
+const BACKSLASH_ESCAPE_PATTERN = /\\(.)/g;
+
+function signalValue(value: unknown): string {
+  if (value === undefined || value === null) return "";
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === "boolean") return value ? "true" : "false";
+  return String(value);
+}
+
+function publicationSignal(frontmatter: PostFrontmatter): string {
+  return PUBLICATION_KEYS.map((key) => signalValue(frontmatter[key])).join(
+    "\u0001",
+  );
+}
+
+function groupMemberToken(state: L10nState, member: DetectedContent): string {
+  return [
+    member.lang,
+    member.slug,
+    state.locations?.get(member.slug)?.permalink ?? "",
+    publicationSignal(member.frontmatter),
+  ].join("\u0001");
+}
+
+function localizedResolutionToken(
+  state: L10nState,
+  source: DetectedContent,
+  targetSlug: string,
+): string {
+  const target = resolveLocalizedTarget(state, source, targetSlug);
+  if (!target) return "";
+  return `${target.slug}\u0001${state.locations?.get(target.slug)?.permalink ?? ""}`;
+}
+
+function normalizeLinkSource(markdown: string): string {
+  return markdown
+    .replace(NUMERIC_CHAR_REFERENCE_PATTERN, (match, value: string) => {
+      const codePoint =
+        value[0] === "x" || value[0] === "X"
+          ? Number.parseInt(value.slice(1), 16)
+          : Number.parseInt(value, 10);
+      return Number.isFinite(codePoint) &&
+        codePoint > 0 &&
+        codePoint <= 0x10ffff
+        ? String.fromCodePoint(codePoint)
+        : match;
+    })
+    .replace(BACKSLASH_ESCAPE_PATTERN, "$1");
+}
+
+function referencedPermalinks(
+  markdown: string,
+  slugsByPermalink: ReadonlyMap<string, string>,
+): string[] {
+  if (slugsByPermalink.size === 0) return [];
+  const normalized = normalizeLinkSource(markdown);
+  const found = new Set<string>();
+  for (const match of normalized.matchAll(LINK_TOKEN_PATTERN)) {
+    let candidate = splitLinkUrl(match[0]).permalink;
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      if (slugsByPermalink.has(candidate)) {
+        found.add(candidate);
+        break;
+      }
+      const last = candidate.at(-1);
+      if (!last || !TRAILING_PUNCTUATION_PATTERN.test(last)) break;
+      candidate = candidate.slice(0, -1);
+    }
+  }
+  for (const permalink of slugsByPermalink.keys()) {
+    if (!TOKEN_SEPARATOR_PATTERN.test(permalink)) continue;
+    if (normalized.includes(permalink)) found.add(permalink);
+  }
+  return [...found].sort();
+}
+
+function computeLocalizationSignatures(
+  state: L10nState,
+  entries: readonly ContentLocationInput[],
+  contentIndex: Map<string, string>,
+): ReadonlyMap<string, string> {
+  const markdownBySlug = new Map(
+    entries.map((entry) => [entry.slug, entry.markdown]),
+  );
+  const membersByTranslation = new Map<string, string[]>();
+  for (const member of state.contents.values()) {
+    const members = membersByTranslation.get(member.translationId) ?? [];
+    members.push(groupMemberToken(state, member));
+    membersByTranslation.set(member.translationId, members);
+  }
+  for (const members of membersByTranslation.values()) members.sort();
+
+  const collectParts = (
+    content: DetectedContent,
+    trail: ReadonlySet<string>,
+  ): string[] => {
+    const members = membersByTranslation.get(content.translationId) ?? [];
+    const parts = [
+      `own:${content.lang}\u0001${content.translationId}`,
+      ...members.map((member) => `group:${member}`),
+    ];
+    const markdown = markdownBySlug.get(content.slug) ?? "";
+    const links = extractContentLinks(markdown, contentIndex);
+    for (const link of links) {
+      if (link.kind === "image" || link.kind === "attachment") continue;
+      parts.push(
+        `wiki:${link.raw.toLowerCase()}=${
+          link.slug ? localizedResolutionToken(state, content, link.slug) : ""
+        }`,
+      );
+    }
+    for (const permalink of referencedPermalinks(
+      markdown,
+      state.slugsByPermalink,
+    )) {
+      const targetSlug = state.slugsByPermalink.get(permalink);
+      parts.push(
+        `url:${permalink}=${
+          targetSlug ? localizedResolutionToken(state, content, targetSlug) : ""
+        }`,
+      );
+    }
+    if (trail.size < 3) {
+      for (const link of links) {
+        if (!link.embed || !link.slug || trail.has(link.slug)) continue;
+        const embedded = state.contents.get(link.slug);
+        if (!embedded) continue;
+        parts.push(
+          ...collectParts(embedded, new Set([...trail, embedded.slug])),
+        );
+      }
+    }
+    return parts;
+  };
+
+  const signatures = new Map<string, string>();
+  for (const content of state.contents.values()) {
+    const parts = collectParts(content, new Set());
+    parts.sort();
+    signatures.set(content.slug, parts.join("\n"));
+  }
+  return signatures;
 }
 
 function addLocalizationHeadTags(
@@ -759,5 +924,6 @@ function emptyState(): L10nState {
     conflictedGroups: new Set(),
     locations: null,
     slugsByPermalink: new Map(),
+    signatures: new Map(),
   };
 }

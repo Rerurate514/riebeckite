@@ -51,9 +51,7 @@ No fallback pages are generated. `getLocalization(manifest, slug)` returns `avai
 
 The LanguageSwitcher uses `rr-l10n-switcher`,
 `rr-l10n-switcher__label`, `rr-l10n-switcher__list`, and
-`rr-l10n-switcher__link`. Default CSS targets these namespaced hooks only.
-The older `l10n-switcher*` classes remain as compatibility aliases during
-migration.
+`rr-l10n-switcher__link`. Default CSS targets these hooks.
 
 ## Custom detector
 

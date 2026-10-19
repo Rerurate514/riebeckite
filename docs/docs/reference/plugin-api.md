@@ -551,9 +551,8 @@ root hook on its outermost element:
 - Name plugin/feature hooks `rr-<feature>` (`rr-search`, `rr-callout`,
   `rr-query`, `rr-code`, ...). Use BEM structure under the root:
   `rr-<feature>`, `rr-<feature>__element`, `rr-<feature>--modifier`.
-- Emit `rr-*` hooks for new output; plugin CSS and site themes should target the
-  `rr-` hook. A documented historical class may remain as a compatibility alias
-  during an explicit migration, but do not add new historical classes.
+- Emit only `rr-*` hooks; plugin CSS and site themes should target the `rr-`
+  hook.
 - Do not put plugin output in the `rb-` namespace. `rb-*` classes and
   `--rb-*` tokens belong to framework structural hooks and semantic design
   tokens. Plugin-local tokens use `--rr-*` and may fall back to `--rb-*`.

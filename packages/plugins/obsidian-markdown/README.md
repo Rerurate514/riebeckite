@@ -30,10 +30,9 @@ export default defineConfig({
 ### Wikilinks
 
 - `[[Note]]` → link to the target's resolved canonical permalink
-  (`ContentManifestEntry.permalink`) with class `rr-obsidian-wikilink`; the
-  documented `wikilink` class remains as a compatibility alias. Alias with
-  `[[Note|Alias]]`. The target is looked up by slug; the `href` is the resolved
-  permalink
+  (`ContentManifestEntry.permalink`) with class `rr-obsidian-wikilink`. Alias
+  with `[[Note|Alias]]`. The target is looked up by slug; the `href` is the
+  resolved permalink
 - Fragments: `[[Note#Heading]]` → `#heading-slug`,
   `[[Note#^block-id]]` → `#block-id`
 - `![[Note]]` → note embed. The core pipeline renders the target note
@@ -44,8 +43,7 @@ export default defineConfig({
 - `[[file.pdf]]` / `![[file.pdf]]` → rendered by a plugin that provides
   `renderAttachment` (see `@riebeckite/plugin-attachment`), otherwise a plain
   download link
-- Unresolvable targets → link with class `rr-obsidian-wikilink--broken`; the
-  documented `wikilink-broken` class remains as a compatibility alias
+- Unresolvable targets → link with class `rr-obsidian-wikilink--broken`
 
 Embedded notes, images, and unresolved embeds receive default Plugin CSS. Note
 embeds include visible `Embedded: <slug>` text rather than generated content so

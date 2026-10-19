@@ -10,6 +10,7 @@ import {
   applyScenario,
   compareSnapshots,
   createBenchmarkContent,
+  localizationScenarioNames,
   removeSafeTemporaryDirectory,
   scenarioNames,
   snapshotTree,
@@ -72,7 +73,10 @@ for (const preset of presets) {
     throw new Error(`Unknown official preset: ${preset}`);
   for (const size of sizes) {
     for (const scenario of scenarios) {
-      if (!scenarioNames.includes(scenario))
+      if (
+        !scenarioNames.includes(scenario) &&
+        !localizationScenarioNames.includes(scenario)
+      )
         throw new Error(`Unknown scenario: ${scenario}`);
       if (
         rows.some(
@@ -163,6 +167,7 @@ async function runScenarioSample({ preset, size, scenario, run }) {
     contentDirectory: path.join(incrementalSite, "content"),
     count: size,
     scenario,
+    preset,
   });
   const incremental = await invokeBuild(incrementalSite, "incremental");
   const incrementalOutput = await snapshotTree(

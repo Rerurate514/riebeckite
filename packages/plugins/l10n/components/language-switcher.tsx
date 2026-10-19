@@ -17,16 +17,16 @@ const LanguageSwitcher = ((props: Readonly<LanguageSwitcherProps>) => {
       : null);
   if (!localization || localization.availableLanguages.length < 2) return null;
   return (
-    <nav class="l10n-switcher rr-l10n-switcher" aria-label="Language">
-      <span class="l10n-switcher__label rr-l10n-switcher__label">Language</span>
-      <ul class="l10n-switcher__list rr-l10n-switcher__list">
+    <nav class="rr-l10n-switcher" aria-label="Language">
+      <span class="rr-l10n-switcher__label">Language</span>
+      <ul class="rr-l10n-switcher__list">
         {localization.availableLanguages.map((lang) => {
           const href = localization.translations[lang];
           if (!href) return null;
           return (
             <li key={lang}>
               <a
-                class="l10n-switcher__link rr-l10n-switcher__link"
+                class="rr-l10n-switcher__link"
                 href={href}
                 hreflang={lang}
                 lang={lang}

@@ -56,7 +56,7 @@ export function toOgLocale(lang: string | undefined): string {
   return resolveWebLocale(lang) === "ja" ? "ja_JP" : "en_US";
 }
 
-export type HreflangHeadTag = {
+type HreflangHeadTag = {
   tag?: string;
   attrs?: Record<string, string>;
 };

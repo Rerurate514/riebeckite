@@ -38,7 +38,7 @@ type ReferencedAssets = {
 
 type CopyResult = "copied" | "skipped";
 
-export type BuildImagesOptions = {
+type BuildImagesOptions = {
   contentDir?: string;
   assetsRoot?: string;
   exclude?: readonly string[];

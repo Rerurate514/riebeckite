@@ -1,6 +1,6 @@
 export type HomeLocale = "ja" | "en";
 
-export const HOME_REPO_URL = "https://github.com/Rerurate514/riebeckite";
+const HOME_REPO_URL = "https://github.com/Rerurate514/riebeckite";
 
 export type HomeLink = {
   label: string;
@@ -8,16 +8,16 @@ export type HomeLink = {
   external?: boolean;
 };
 
-export type HomeFeature = {
+type HomeFeature = {
   title: string;
   body: string;
 };
 
-export type HomeStep = HomeFeature & {
+type HomeStep = HomeFeature & {
   command?: boolean;
 };
 
-export type HomeUseCase = {
+type HomeUseCase = {
   title: string;
   body: string;
   href: string;

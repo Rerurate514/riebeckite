@@ -240,6 +240,7 @@ export {
 export type { JsonValue } from "./src/types/json_value.js";
 export type { OutputDependency } from "./src/types/output_dependency.js";
 export type {
+  ContentOutputDependencyResolver,
   PlannedGeneratedOutput,
   PluginGeneratedOutputPlanContext,
   PluginInput,

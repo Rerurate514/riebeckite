@@ -513,10 +513,10 @@ processedContentCache: {
 - `global`: vault全体で解決したLocationに依存する変換です。CoreはLocation集合をfingerprintし、変わったときはすべてのentryを再処理します。
 - `unsafe`: Git、network、時刻、process state など、Core が追跡できない入力です。処理済み Content の永続 Cache 再利用を安全側で無効にします。
 
-Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の契約です。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `outputDependencies` を宣言すると各 Content Output に加算されます。
+Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の契約です。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `contentOutputDependencies` を宣言するか、`resolveContentOutputDependencies({ entry, manifest })` でContent Outputごとの依存を返します。
 
 ```ts
-outputDependencies: [{ type: "global" }]
+contentOutputDependencies: [{ type: "global" }]
 
 pageTypes: [{
   id: "example.report",

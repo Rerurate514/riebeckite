@@ -414,10 +414,11 @@ Content dependencies decide which source content must be processed again.
 Output dependencies decide which emitted files must be written again. They are
 separate contracts. Page types declare `outputDependencies`; a plugin that
 updates existing manifest entry HTML in `onManifestCreated` declares root
-`outputDependencies`, which are added to those content outputs.
+`contentOutputDependencies`, or returns per-entry dependencies from
+`resolveContentOutputDependencies({ entry, manifest })`.
 
 ``` ts
-outputDependencies: [{ type: "global" }]
+contentOutputDependencies: [{ type: "global" }]
 
 pageTypes: [{
   id: "example.report",

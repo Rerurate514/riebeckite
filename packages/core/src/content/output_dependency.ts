@@ -8,6 +8,7 @@ import type {
   ExternalDependencySnapshot,
 } from "../types/external_dependency.js";
 import type { OutputDependency } from "../types/output_dependency.js";
+import type { ContentOutputDependencyResolver } from "../types/plugin.js";
 import type { ContentBuildState } from "./content_build_state.js";
 import type { ContentChangeSet } from "./content_change_set.js";
 
@@ -40,7 +41,9 @@ export function determineOutputChanges(input: {
     readonly dependent: ReadonlySet<string>;
   };
   readonly pluginPageOutputs?: readonly OutputDescriptor[];
-  readonly contentOutputDependencies?: readonly OutputDependency[];
+  readonly contentOutputDependencies?:
+    | readonly OutputDependency[]
+    | ContentOutputDependencyResolver;
   readonly externalDependencies?: readonly ExternalDependencySnapshot[];
   readonly externalDependencyFailures?: readonly ExternalDependencyFailure[];
   readonly contentFingerprints?: ReadonlyMap<string, string | undefined>;
@@ -52,6 +55,14 @@ export function determineOutputChanges(input: {
   );
   const previous = new Map(
     (input.previousState?.outputs ?? []).map((output) => [output.path, output]),
+  );
+  const currentPublicLocations = publicLocationOwners(
+    input.manifest.publicEntries,
+  );
+  const previousPublicLocations = publicLocationOwners(
+    (input.previousState?.manifestEntries ?? []).filter(
+      (entry) => entry.publishing.routable,
+    ),
   );
   const changedContent = collectChangedContent(input);
   const refreshedContent = collectRefreshedContent(input);
@@ -78,7 +89,7 @@ export function determineOutputChanges(input: {
   for (const output of current) {
     if (
       isOutputAffected(
-        output,
+        withPreviousDependencies(output, previous.get(output.path)),
         changedContent,
         refreshedContent,
         changedTags,
@@ -86,6 +97,8 @@ export function determineOutputChanges(input: {
         changedFiles,
         changedExternal,
         changedExternalScopes,
+        currentPublicLocations,
+        previousPublicLocations,
       )
     ) {
       affected.set(output.path, output);
@@ -130,11 +143,16 @@ export function determineOutputChanges(input: {
 export function buildOutputInventory(
   manifest: ContentManifest,
   pluginPageOutputs: readonly OutputDescriptor[] = [],
-  contentOutputDependencies: readonly OutputDependency[] = [],
+  contentOutputDependencies:
+    | readonly OutputDependency[]
+    | ContentOutputDependencyResolver = [],
 ): readonly OutputDescriptor[] {
   const outputs = new Map<string, OutputDescriptor>();
   for (const entry of manifest.publicEntries) {
-    addOutput(outputs, contentOutput(entry, contentOutputDependencies));
+    addOutput(
+      outputs,
+      contentOutput(entry, manifest, contentOutputDependencies),
+    );
   }
   for (const [path, redirect] of manifest.publicRedirects) {
     addOutput(outputs, {
@@ -171,13 +189,17 @@ export function htmlOutputPath(pathname: string): string {
 
 function contentOutput(
   entry: ContentManifestEntry,
-  dependencies: readonly OutputDependency[],
+  manifest: ContentManifest,
+  dependencies: readonly OutputDependency[] | ContentOutputDependencyResolver,
 ): OutputDescriptor {
   return {
     kind: "content",
     path: htmlOutputPath(entry.permalink),
     producer: `content:${entry.slug}`,
-    dependencies: [{ type: "content", slug: entry.slug }, ...dependencies],
+    dependencies: [
+      { type: "content", slug: entry.slug },
+      ...resolveContentOutputDependencies(dependencies, entry, manifest),
+    ],
   };
 }
 
@@ -190,6 +212,8 @@ function isOutputAffected(
   changedFiles: ReadonlySet<string>,
   changedExternal: ReadonlySet<string>,
   changedExternalScopes: ReadonlyMap<string, ExternalDependencyScope>,
+  currentPublicLocations: ReadonlyMap<string, ContentManifestEntry>,
+  previousPublicLocations: ReadonlyMap<string, ContentManifestEntry>,
 ): boolean {
   if (isAffectedByExternalScope(output, changedExternalScopes)) return true;
   for (const dependency of output.dependencies) {
@@ -231,8 +255,59 @@ function isOutputAffected(
     if (dependency.type === "file" && changedFiles.has(dependency.path)) {
       return true;
     }
+    if (dependency.type === "public-location") {
+      const currentOwner = currentPublicLocations.get(
+        normalizePublicPath(dependency.pathname),
+      );
+      const previousOwner = previousPublicLocations.get(
+        normalizePublicPath(dependency.pathname),
+      );
+      if (currentOwner?.slug !== previousOwner?.slug) return true;
+      if (
+        (currentOwner &&
+          (changedContent.has(currentOwner.slug) ||
+            refreshedContent.has(currentOwner.slug))) ||
+        (previousOwner &&
+          (changedContent.has(previousOwner.slug) ||
+            refreshedContent.has(previousOwner.slug)))
+      ) {
+        return true;
+      }
+    }
   }
   return false;
+}
+
+function resolveContentOutputDependencies(
+  dependencies: readonly OutputDependency[] | ContentOutputDependencyResolver,
+  entry: ContentManifestEntry,
+  manifest: ContentManifest,
+): readonly OutputDependency[] {
+  return typeof dependencies === "function"
+    ? dependencies({ entry, manifest })
+    : dependencies;
+}
+
+function withPreviousDependencies(
+  output: OutputDescriptor,
+  previous: OutputDescriptor | undefined,
+): OutputDescriptor {
+  if (!previous || previous.kind !== output.kind) return output;
+  return {
+    ...output,
+    dependencies: [...output.dependencies, ...previous.dependencies],
+  };
+}
+
+function publicLocationOwners(
+  entries: readonly ContentManifestEntry[],
+): ReadonlyMap<string, ContentManifestEntry> {
+  return new Map(
+    entries.map((entry) => [
+      normalizePublicPath(entry.publicLocation.permalink),
+      entry,
+    ]),
+  );
 }
 
 function isAffectedByExternalScope(

@@ -215,6 +215,23 @@ test("does not expose draft folder owner titles or locations", () => {
   assert.deepEqual(items[1], { name: "Docs" });
 });
 
+test("declares dependencies for canonical breadcrumb locations", () => {
+  const owner = makeEntry({ slug: "docs", permalink: "/handbook" });
+  const entry = makeEntry({
+    slug: "docs/page",
+    permalink: "/handbook/page",
+  });
+  const manifest = makeManifest([owner, entry]);
+  const dependencies = breadcrumbs().resolveContentOutputDependencies?.({
+    entry,
+    manifest,
+  });
+
+  assert.deepEqual(dependencies, [
+    { type: "public-location", pathname: "/handbook" },
+  ]);
+});
+
 test("returns an empty trail for an empty slug and ignores stray slashes", () => {
   const empty = makeEntry({ slug: "" });
   assert.deepEqual(

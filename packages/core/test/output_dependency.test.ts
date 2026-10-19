@@ -16,6 +16,7 @@ import type {
   ContentRedirect,
 } from "../src/types/content_manifest.js";
 import type { OutputDependency } from "../src/types/output_dependency.js";
+import type { ContentOutputDependencyResolver } from "../src/types/plugin.js";
 
 test("independent content edit affects own page and global outputs only", () => {
   const previous = manifest([entry("a"), entry("b")]);
@@ -80,6 +81,74 @@ test("manifest plugin global dependencies affect every content output", () => {
   });
 
   assert.deepEqual(paths(result.affected), ["a.html", "b.html"]);
+});
+
+test("public-location dependency leaves unrelated content outputs unchanged", () => {
+  const previous = manifest([
+    entry("docs"),
+    entry("docs/page"),
+    entry("other"),
+  ]);
+  const current = manifest([
+    entry("docs"),
+    entry("docs/page"),
+    entry("other", { title: "Other 2" }),
+  ]);
+  const result = changes(
+    previous,
+    current,
+    { changed: ["other.md"] },
+    [],
+    breadcrumbDependencies,
+  );
+
+  assert.deepEqual(paths(result.affected), ["other.html"]);
+  assert.deepEqual(paths(result.unchanged), ["docs.html", "docs/page.html"]);
+});
+
+test("public-location dependency follows its public owner changes", () => {
+  const previous = manifest([entry("docs"), entry("docs/page")]);
+  const current = manifest([
+    entry("docs", { title: "Documentation" }),
+    entry("docs/page"),
+  ]);
+  const result = changes(
+    previous,
+    current,
+    { changed: ["docs.md"] },
+    [],
+    breadcrumbDependencies,
+  );
+
+  assert.deepEqual(paths(result.affected), ["docs.html", "docs/page.html"]);
+});
+
+test("previous public-location dependencies invalidate breadcrumbs when an owner becomes draft", () => {
+  const previous = manifest([entry("docs"), entry("docs/page")]);
+  const draft = {
+    ...entry("docs"),
+    publishing: {
+      visibility: "draft" as const,
+      routable: false,
+      discoverable: false,
+    },
+  };
+  const page = entry("docs/page");
+  const current = manifest([draft, page], {
+    publicEntries: [page],
+    discoverableEntries: [page],
+    byRoutablePermalink: new Map([[page.permalink, page]]),
+  });
+  const result = changes(
+    previous,
+    current,
+    { changed: ["docs.md"] },
+    [],
+    breadcrumbDependencies,
+  );
+
+  assert.deepEqual(paths(result.affected), ["docs/page.html"]);
+  assert.deepEqual(paths(result.removed), ["docs.html"]);
 });
 
 test("content output is affected when its dependency fingerprint changed", () => {
@@ -546,7 +615,9 @@ function changes(
   currentManifest: ContentManifest,
   change: Partial<ContentChangeSet> & { dependent?: readonly string[] },
   pluginPageOutputs: readonly OutputDescriptor[] = [],
-  contentOutputDependencies: readonly OutputDependency[] = [],
+  contentOutputDependencies:
+    | readonly OutputDependency[]
+    | ContentOutputDependencyResolver = [],
 ) {
   const previousState: ContentBuildState = {
     version: CONTENT_BUILD_STATE_VERSION,
@@ -604,6 +675,11 @@ function changes(
     contentOutputDependencies,
   });
 }
+
+const breadcrumbDependencies: ContentOutputDependencyResolver = ({ entry }) =>
+  entry.slug === "docs/page"
+    ? [{ type: "public-location", pathname: "/docs" }]
+    : [];
 
 function manifest(
   entries: readonly ContentManifestEntry[],

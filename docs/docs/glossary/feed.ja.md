@@ -23,7 +23,7 @@ feedはSEOプラグイン(`packages/plugins/seo/src/feeds.ts`)がresolved config
 | Atom | 厳密で仕様が明確 |
 | JSON Feed | プログラムからの利用 |
 
-feed entryはdiscoverable entryから作られ（unlistedページは含まれず）、各entryのpermalinkが使用され（slugからURLを組み直すのではなく）、feedメタデータ（title、description、language）は`config.site.feed`から取得されます。entryの数は`feed.limit`オプションで制限されます。
+feed entryはdiscoverable entryから作られます（unlistedページは含まれません）。各entryのpermalinkを使用します（slugからURLを組み直すのではなく）。feedメタデータ（title、description、language）は`config.site.feed`から取得されます。entryの数は`feed.limit`オプションで制限されます。
 
 ```ts
 import { renderRssFeed, renderAtomFeed, renderJsonFeed } from "@riebeckite/plugin-seo";

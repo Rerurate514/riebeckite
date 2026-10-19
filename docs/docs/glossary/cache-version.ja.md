@@ -46,7 +46,7 @@ sidebar:
 }
 ```
 
-entryは`schemaVersion`(現在は5)、`key`(`computeContentCacheKey`からslug、source、frontmatter、pipeline fingerprintで計算)、`dependencies`(`CachedContentDependency`recordsの配列)、および`value`(frontmatterとHTML)を含みます。lookup中に`entry.key !== key`の場合、entryは`key-miss`として扱われます。
+entryは`schemaVersion`(現在は5)を含みます。`key`は`computeContentCacheKey`からslug、source、frontmatter、pipeline fingerprintで計算します。`dependencies`は`CachedContentDependency`recordsの配列、`value`はfrontmatterとHTMLです。lookup中に`entry.key !== key`の場合、entryは`key-miss`として扱われます。
 
 ## Related terms
 

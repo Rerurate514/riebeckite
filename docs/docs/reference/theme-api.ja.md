@@ -99,7 +99,7 @@ export default defineConfig({
 
 ## Theme が扱えるもの
 
-Theme の主な Contract は次のとおりです。
+Theme の主な取り決めは次のとおりです。
 
 | 分類 | 主な設定 |
 | --- | --- |
@@ -293,9 +293,9 @@ delete document.documentElement.dataset.theme;
 
 のように属性そのものを削除します。
 
-`@riebeckite/plugin-color-mode` がこの Contract の参照実装です。
+`@riebeckite/plugin-color-mode` がこの取り決めの参照実装です。
 
-Dark を表す CSS 機構はこの 2 つだけです。Theme Root 上の明示的な Dark が `[data-theme="dark"]` です。`data-theme` が無いときは `@media (prefers-color-scheme: dark)`（System）です。Framework は `.dark` class を付与しないため、`.dark` に依存した selector は Contract 外です。どちらの状態でも同じ `--rb-*` Semantic Token が解決されます。そのため、Semantic Token だけを参照する Component は明示 Dark と System Dark を区別する必要がありません。
+Dark を表す CSS 機構はこの 2 つだけです。Theme Root 上の明示的な Dark が `[data-theme="dark"]` です。`data-theme` が無いときは `@media (prefers-color-scheme: dark)`（System）です。Framework は `.dark` class を付与しないため、`.dark` に依存した selector は取り決め外です。どちらの状態でも同じ `--rb-*` Semantic Token が解決されます。そのため、Semantic Token だけを参照する Component は明示 Dark と System Dark を区別する必要がありません。
 
 ## Typography
 
@@ -476,7 +476,7 @@ styles: [
 ]
 ```
 
-これは「CSS ファイルを Application directory へコピーする」という Contract ではありません。
+これは「CSS ファイルを Application directory へコピーする」という取り決めではありません。
 
 Integration が Module Specifier を解決し、Site の stylesheet として組み込みます。
 
@@ -784,7 +784,7 @@ Stable Hook を利用して、Site に視覚的な個性を与えることもで
 
 ただし対象にするのは Stable Hook だけです。
 
-新しい `rb-*` や `rr-*` Class を Theme 側で勝手に定義して、Framework Contract のように扱わないでください。
+新しい `rb-*` や `rr-*` Class を Theme 側で勝手に定義して、Framework の取り決めのように扱わないでください。
 
 Character Layer も Presentation 専用です。
 
@@ -830,7 +830,7 @@ Latin subset のような比較的小さい Web Font は同梱できます。日
 
 ## CSS Cascade
 
-Riebeckite では CSS の読み込み順も Contract の一部です。
+Riebeckite では CSS の読み込み順も取り決めの一部です。
 
 ```mermaid id="13bftb"
 flowchart TD
@@ -864,7 +864,7 @@ userCss
 
 です。
 
-これは偶然の読み込み順ではなく、Presentation Extension の Contract です。
+これは偶然の読み込み順ではなく、Presentation Extension の取り決めです。
 
 `@riebeckite/honox` は、
 
@@ -1009,9 +1009,9 @@ Stable CSS Hooks
 Semantic Design Tokens
 ```
 
-という共通 Contract を提供します。
+という共通取り決めを提供します。
 
-Theme はその Contract に対して CSS を適用します。
+Theme はその取り決めに対して CSS を適用します。
 
 そのため Theme が変わっても、
 
@@ -1048,7 +1048,7 @@ flowchart LR
     Presentation --> Site["Final Site"]
 ```
 
-Theme は Site の機能を所有するのではなく、Framework と Plugin が公開した **Presentation Contract** に対して見た目を与えます。
+Theme は Site の機能を所有するのではなく、Framework と Plugin が公開した **Presentation の取り決め** に対して見た目を与えます。
 
 基本原則は、
 

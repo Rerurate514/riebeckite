@@ -40,8 +40,8 @@ Riebeckite Site 側の Plugin です。
 
 - 計測対象 Content の識別
 - Browser からの `page_view` 送信
-- `AnalyticsProvider` Contract
-- Analytics Query Contract
+- `AnalyticsProvider` の取り決め
+- Analytics Query の取り決め
 
 を提供します。
 
@@ -213,7 +213,7 @@ publicConfig.collectorUrl
 
 ### `provider`
 
-`provider` は `AnalyticsProvider` Contract を実装した Runtime です。
+`provider` は `AnalyticsProvider` の取り決めを実装した Runtime です。
 
 Provider は、
 

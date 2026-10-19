@@ -81,14 +81,6 @@ cache: {
   enabled: true,
 }
 ```
-
-## 関連用語
-
-- [[plugin-cache|Plugin cache]]
-- [[cache-invalidation|Cache Invalidation]]
-- [[build-state|Build State]]
-- [[incremental-build|Incremental Build]]
-
 ## さらに詳しく
 
 - [Cache](../reference/configuration/cache.ja.md)

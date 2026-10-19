@@ -1,7 +1,7 @@
 ---
-title: Build Dependency Contract
+title: Build Dependency の取り決め
 ---
-# Build Dependency Contract
+# Build Dependency の取り決め
 
 Incremental Buildの無効化はCoreの責務です。PluginはどのContentが影響を受けるかを計算せず、依存stateも自分では持ちません。取り決めを宣言すると、何を再利用するかはCoreが決めます。
 
@@ -78,7 +78,7 @@ Output DependencyはContent Dependencyとは別の取り決めです。種類ご
 
 `none`、`tracked`、`global`、`unsafe`は処理済みContentの再利用を示す取り決めであり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
 
-Coreは、entryのprocessed-content dependency fingerprintが前回のBuildから変わった場合も、そのContent Outputを影響ありとします（[Content Dependency](#content-dependency)を参照）。処理済みContentが他のContentに依存するPluginは、`global` output dependencyを宣言せずに、その依存をentry単位で追跡できます。
+Coreは、entryのprocessed-content dependency fingerprintが前回のBuildから変わった場合も、そのContent Outputを影響ありとします。関連項目は[Content Dependency](#content-dependency)を参照してください。処理済みContentが他のContentに依存するPluginは、`global` output dependencyを宣言せずに、その依存をentry単位で追跡できます。
 
 ## Plugin作者向けのルール
 

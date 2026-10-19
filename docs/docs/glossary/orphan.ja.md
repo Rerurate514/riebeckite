@@ -14,7 +14,7 @@ sidebar:
 
 ## diagnosticによるorphanの検出
 
-孤立したコンテンツの検出はdiagnostics設定で有効にできます。有効にすると、Buildを停止せずに孤立したentryがレポートされます。diagnosticsプラグインはcontent graphの到達可能性をチェックします：他のコンテンツからリンクされておらず、manifestにリストされていないコンテンツはorphanとしてフラグが立てられます。
+孤立したコンテンツの検出はdiagnostics設定で有効にできます。有効にすると、Buildを停止せずに孤立したentryがレポートされます。diagnosticsプラグインはcontent graphの到達可能性をチェックします。他のコンテンツからリンクされておらず、manifestにリストされていないコンテンツはorphanとしてフラグが立てられます。
 
 ### 例
 

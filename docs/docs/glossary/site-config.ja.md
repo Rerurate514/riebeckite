@@ -6,7 +6,7 @@ sidebar:
 
 # Site Config
 
-SiteConfigのフィールド（title、description、author、baseUrl、locale、twitterSite、defaultOgImage、feed）はサイトを記述し、SEOやfeed、localeを駆動します。
+SiteConfigのフィールド（title、description、author、baseUrl、locale、twitterSite、defaultOgImage、feed）はサイトを記述します。これらの値がSEOやfeed、localeを駆動します。
 
 ## SiteConfigフィールド
 

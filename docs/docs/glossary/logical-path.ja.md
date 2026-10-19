@@ -45,6 +45,6 @@ logical path自体は（例：`content/notes/hello.md`から`notes/hello`）cont
 - ローカライズされたコンテンツ用のlocale prefix挿入
 - ディレクトリインデックスを異なるURLにマッピングするfolder pageルール
 
-logical pathとpublic pathの分離により、コンテンツファイルを移動させずにURL構造の変更が可能となり、内部コンテンツのアイデンティティを安定した状態でlocale固有のルーティングが可能になります。
+logical pathとpublic pathを分離することで、コンテンツファイルを移動させずにURL構造を変更できます。内部コンテンツのアイデンティティを安定させたまま、locale固有のルーティングが可能になります。
 
 公開位置の解決がlogical pathをpublic pathに対応させます。folder pageやpermalinkの規則を使えば、ファイルを移動せずに対応を変えられます。

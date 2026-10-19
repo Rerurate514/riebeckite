@@ -6,7 +6,7 @@ sidebar:
 ---
 # Content パイプラインと拡張ポイント
 
-このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部で、Content を扱う拡張ポイント（Markdown / HTML Pipeline、Content Graph、Renderer、Page Type など）を扱います。
+このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部です。Content を扱う拡張ポイント（Markdown / HTML Pipeline、Content Graph、Renderer、Page Type など）を扱います。
 
 ## 10. Markdown / HTML Pipeline
 
@@ -363,7 +363,7 @@ Plugin の `options` が自動的に Client へ渡されることもありませ
 
 ## 18. Endpoints / SEO
 
-HTTP Endpoint を提供する場合は `endpoints` Contract を使用します。
+HTTP Endpoint を提供する場合は `endpoints` の取り決めを使用します。
 
 ```mermaid id="brq9cr"
 flowchart LR

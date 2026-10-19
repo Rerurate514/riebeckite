@@ -1057,7 +1057,7 @@ npm exec riebeckite build
 npm exec riebeckite check
 ```
 
-Config と Plugin Contract を検証します。
+Config と Plugin の取り決めを検証します。
 
 ### `doctor`
 

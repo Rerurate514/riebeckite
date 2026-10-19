@@ -14,7 +14,7 @@ Buildの各段階の所要時間を計測します。記録したspanから時�
 
 ## Profiler Report
 
-Profilerレポートはplugin-cacheアクティビティとpersistent-content-cacheアクティビティを分離してレポートします。content-cacheのhits、misses、bypassesとそれぞれのmissの理由（例: `no-entry`や`dependency-changed`）とbypassの理由（例: l10n safe bypass）を報告するため、incrementalな状態を再利用していない温かいビルドでも、キャッシュ内部を読まなくても説明できます。
+Profilerレポートはplugin-cacheアクティビティとpersistent-content-cacheアクティビティを分離してレポートします。content-cacheのhits、misses、bypassesを報告します。それぞれのmissの理由（例: `no-entry`や`dependency-changed`）とbypassの理由（例: l10n safe bypass）も含みます。そのため、incrementalな状態を再利用していない温かいビルドでも、キャッシュ内部を読まなくても説明できます。
 
 ### diagnosticsの計測
 

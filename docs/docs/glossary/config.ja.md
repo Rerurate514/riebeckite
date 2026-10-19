@@ -71,7 +71,7 @@ export interface RiebeckiteConfig {
 2. **`resolveThemeConfig`** - Theme設定を解決します。入力が`RiebeckiteTheme`の場合は`name`、`config`、`styles`、`attributes`、`userCss`を取り出します。素の`ThemeConfig`の場合は、欠けているfieldに既定値を適用します。
 3. **`resolveConfig`** - 最終的な解決ステップです。次を実行します。`RiebeckiteConfig`のrawに対して`validateConfig`を呼び出し、`resolveThemeConfig`でThemeを解決し、`resolvePlugins`でPluginを解決し、`site`、`content`、`cache`、`theme`の各fieldに既定値を設定し、`ResolvedRiebeckiteConfig`を生成し、パイプラインとContent Managerが使います。
 
-解決済みのconfigには`site`が`title`、`description`、`author`、`baseUrl`、`locale`、`twitterSite`、`defaultOgImage`、`feed`を含み、`content`が`directory`、`source`、`exclude`、`filters.publishStrategy`を含み、`theme`が解決されたcolor mode、typography、article layout、tokens、attributesを含み、`plugins`がconfigリストから解決され、`cache`が`enabled`と`directory`を含みます。
+解決済みのconfigでは、`site`が`title`、`description`、`author`、`baseUrl`、`locale`、`twitterSite`、`defaultOgImage`、`feed`を含みます。`content`は`directory`、`source`、`exclude`、`filters.publishStrategy`を含みます。`theme`は解決されたcolor mode、typography、article layout、tokens、attributesを含みます。`plugins`はconfigリストから解決され、`cache`は`enabled`と`directory`を含みます。
 
 ## 関連用語
 

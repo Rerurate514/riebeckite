@@ -48,7 +48,7 @@ Site-local Plugin も Published Plugin と同じ、
 - Renderer
 - Page Type
 
-などの Contract を利用します。
+などの取り決めを利用します。
 
 `createStyleAsset()` と `createClientEntry()` には package の subpath を明示して
 渡します。Site-local Plugin でも任意名で公開する package でも、Host Bundler が

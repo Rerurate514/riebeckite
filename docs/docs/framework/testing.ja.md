@@ -84,9 +84,9 @@ pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install し�
 | `pnpm test:e2e:external` | External Site E2E を実行 |
 | `pnpm test:plugin-dx` | 外部 Package 視点の Plugin Fixture をテスト |
 | `pnpm test:plugin-dx:external` | packed tarball を隔離 Site へ install して Plugin を検証 |
-| `pnpm test:registry` | Scaffold の install Contract を npm 公開 artifact に対して実行 |
+| `pnpm test:registry` | Scaffold の install の取り決めを npm 公開 artifact に対して実行 |
 
-Scaffold の install Contract は、既定では **workspace を `pnpm pack` した artifact** を install して検証します。そのため、新しい Package を追加した branch でも publish 前に検証できます。`pnpm test:registry` は同じ Contract を npm からの install に切り替え、公開済み artifact が解決できることを確認します。Release 後に実行してください。
+Scaffold の install の取り決めは、既定では **workspace を `pnpm pack` した artifact** を install して検証します。そのため、新しい Package を追加した branch でも publish 前に検証できます。`pnpm test:registry` は同じ取り決めを npm からの install に切り替え、公開済み artifact が解決できることを確認します。Release 後に実行してください。
 
 通常は、変更した範囲に近いテストから実行してください。
 

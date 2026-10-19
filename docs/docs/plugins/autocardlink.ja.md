@@ -66,9 +66,9 @@ image: https://example.com/og.png
 | --- | --- | --- | --- |
 | `className` | `string` | `(なし)` | カードのルート要素に追加する CSS クラス。`rr-cardlink` フックは常に付与する |
 
-- `autoCardLinkPlugin(options?)` — プラグインファクトリ
-- `remarkAutoCardLink(options?)` — Remark 変換だけを利用する場合の API
-- `AutoCardLink`、`AutoCardLinkOptions` — 型
+- `autoCardLinkPlugin(options?)`：プラグインファクトリ
+- `remarkAutoCardLink(options?)`：Remark 変換だけを利用する場合の API
+- `AutoCardLink`、`AutoCardLinkOptions`：型
 
 ## 未対応の項目
 

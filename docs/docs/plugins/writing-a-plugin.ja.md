@@ -487,7 +487,7 @@ var(--rb-color-accent)
 
 こうしておくと、利用している theme が変わっても、その theme の accent color に追従できます。
 
-これが Theme Extension Contract の基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されます。そのため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.md) を参照してください。
+これが Theme Extension の取り決めの基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されます。そのため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.md) を参照してください。
 
 ### Step 3: プラグインを登録する
 
@@ -772,6 +772,6 @@ Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island reg
 - [プラグイン作成の詳細](../framework/plugin-system.ja.md)：この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
 - [Plugin System](../reference/plugin-api.ja.md)：すべての拡張ポイントの詳細
 - [テスト](../framework/testing.ja.md)：Plugin のテスト戦略と External 検証
-- [Theme API](../reference/theme-api.ja.md)：Theme Extension Contract と Semantic Token
+- [Theme API](../reference/theme-api.ja.md)：Theme Extension の取り決めと Semantic Token
 - [Architecture](../framework/architecture.ja.md)：Core / Plugin / Integration / Theme / App の責務
 - [Framework Reference](../reference/README.ja.md)：`definePlugin` などの公開 API

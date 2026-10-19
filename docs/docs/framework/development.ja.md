@@ -265,7 +265,7 @@ Vite
 
 などの具体的な実装へ依存させてはいけません。
 
-Framework に依存しない contract は Core に置き、その contract を Integration や Plugin が利用します。
+Framework に依存しない取り決めは Core に置き、その取り決めを Integration や Plugin が利用します。
 
 ## Public API を使う
 
@@ -287,7 +287,7 @@ import { ... } from "@riebeckite/core/src/...";
 
 `src/**` は内部実装であり、安定した Public API ではありません。
 
-公式 Plugin や Theme も可能な限り Public API の consumer として実装することで、外部 package から実際に利用できる contract になっていることを確認できます。
+公式 Plugin や Theme も可能な限り Public API の consumer として実装します。そうすることで、外部 package から実際に利用できる取り決めになっていることを確認できます。
 
 ## Scaffold は独立した Site として扱う
 
@@ -343,4 +343,4 @@ Framework の変更では、特に次の点を維持してください。
 - Scaffold を monorepo から独立して動作できる Site として維持する
 - 変更した範囲から検証し、必要に応じて repository 全体へ検証範囲を広げる
 
-Framework 全体の責務については [Architecture](./architecture.ja.md)、テスト方針については [Testing](./testing.ja.md)、リリース手順については [Release Operations](./release.ja.md)、CLI については [CLI](../reference/cli.ja.md)、HonoX との接続については [HonoX Integration](./honox-integration.ja.md) を参照してください。
+Framework 全体の責務については [Architecture](./architecture.ja.md)、テスト方針については [Testing](./testing.ja.md)、リリース手順については [Release Operations](./release.ja.md) を参照してください。CLI については [CLI](../reference/cli.ja.md)、HonoX との接続については [HonoX Integration](./honox-integration.ja.md) を参照してください。

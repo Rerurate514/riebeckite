@@ -56,7 +56,7 @@ Themeの`name`フィールドが`<html>`の`data-theme-name`属性として伝�
 - [[design-token|Design Token]]
 - [[glossary/color-mode|Color Mode]]
 - [[glossary/typography|Typography]]
-- [[css-contract|CSS Contract]]
+- [[css-contract|CSS の取り決め]]
 - [[glossary/theme-root|Theme Root]]
 - [[presentation-layer|Presentation Layer]]
 - [Theme System](../framework/theme-system.ja.md)

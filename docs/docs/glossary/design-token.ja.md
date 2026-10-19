@@ -64,7 +64,7 @@ Coreの`ThemeDesignTokens`は、色、タイポグラフィ、レイアウトの
 
 - [[glossary/theme|Theme]]
 - [[semantic-token|Semantic Token]]
-- [[css-contract|CSS Contract]]
+- [[css-contract|CSS の取り決め]]
 - [[glossary/typography|Typography]]
 
 ## さらに詳しく

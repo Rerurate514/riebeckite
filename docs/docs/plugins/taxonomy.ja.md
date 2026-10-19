@@ -11,7 +11,7 @@ Riebeckite のビルド時タクソノミー（タグ・フォルダ）プラグ
 
 ## 概要
 
-`taxonomy()` はマニフェストの公開エントリを読み、Core の collection contract
+`taxonomy()` はマニフェストの公開エントリを読み、Core の collection の取り決め
 （`buildContentCollections`）で 2 種類の一覧語を生成します。
 
 - **タグ**: `tags` でグルーピングし `/tags/<slug>` に配置します。
@@ -64,7 +64,7 @@ export default defineConfig({
 
 ## データエンドポイント
 
-プラグインは JSON エンドポイントを 1 つ登録します（endpoint contract は HonoX
+プラグインは JSON エンドポイントを 1 つ登録します（endpoint の取り決めは HonoX
 integration が接続するため、プラグイン自身は framework のルーティングを持ちません）。
 
 ```

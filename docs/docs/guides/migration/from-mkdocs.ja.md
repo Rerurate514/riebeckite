@@ -21,7 +21,7 @@ sidebar:
 
 ## プラットフォーム固有の注意点
 
-`nav` の順序は Docs の `sidebar.order` または手書きの Navigation item に移します。MkDocs の YAML metadata と通常の Markdown は変換候補ですが、Python Markdown 拡張、Material の admonition、`mkdocs.yml` の Plugin option が互換出力を意味するわけではありません。
+`nav` の順序は Docs の `sidebar.order` または手書きの Navigation item に移します。MkDocs の YAML metadata と通常の Markdown は変換候補です。ただし、Python Markdown 拡張、Material の admonition、`mkdocs.yml` の Plugin option が互換出力を意味するわけではありません。
 
 ## 機能対応表
 

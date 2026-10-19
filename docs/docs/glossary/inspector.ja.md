@@ -20,18 +20,6 @@ Buildの実行、cacheやasset、stateへの書き込み、assetの書き出し�
 - `riebeckite inspect graph`はcontent graphの関係を表示します。
 - `riebeckite inspect build`はIncremental Buildの状態を表示します。
 
-## 読み取り専用の保証
-
-Buildの実行、cacheやasset、stateへの書き込み、assetの書き出し、特別な成果物の描画、設定の自動修正を行いません。求めた情報が存在しない場合は、その条件をそのまま報告します。
-
-## コマンド
-
-- `riebeckite inspect config`は解決済みの設定を表示します。
-- `riebeckite inspect plugins`は有効なPluginを表示します。
-- `riebeckite inspect content --list`は公開されたcontentとURLを表示します。
-- `riebeckite inspect graph`はcontent graphの関係を表示します。
-- `riebeckite inspect build`はIncremental Buildの状態を表示します。
-
 ## Inspection Details
 
 各inspectコマンドはビルドを実行せず、解決済みの状態のみを読み取ります。
@@ -48,7 +36,7 @@ Buildの実行、cacheやasset、stateへの書き込み、assetの書き出し�
 
 ### 読み取り専用の保証について
 
-Inspectorは意図的に読み取り専用です。buildを実行したり、incremental stateやplugin cacheに書き込んだり、assetを出力したり、特別な成果物を描画したり、Vite/HonoXのbuild workを行ったり、設定を自動修正したりしません。この性質により、Inspectorは開発時だけでなくCIでも安全に使用できます。
+Inspectorは意図的に読み取り専用です。buildの実行、incremental stateやplugin cacheへの書き込み、assetの出力、特別な成果物の描画、Vite/HonoXのbuild work、設定の自動修正を行いません。この性質により、Inspectorは開発時だけでなくCIでも安全に使用できます。
 
 ### 例
 

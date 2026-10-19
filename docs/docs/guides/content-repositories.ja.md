@@ -422,7 +422,7 @@ npm exec -- riebeckite inspect content --list
 
 | Command | 確認すること |
 | --- | --- |
-| `check` | Config と Plugin Contract |
+| `check` | Config と Plugin の取り決め |
 | `doctor` | Content Source などの問題 |
 | `inspect config` | 解決済み Config |
 | `inspect content --list` | 実際に読み込まれた Content |

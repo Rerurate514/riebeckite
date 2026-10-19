@@ -10,7 +10,7 @@ sidebar:
 
 ## public locationの構造
 
-public locationはinternalなslugとcanonicalなpermalink、任意のredirectsとメタデータを組み合わせたもので、manifestがentryごとに公開する解決済みの結果です。`ContentPublicLocation`(`packages/core/src/types/content_manifest.ts`)で型付けされています。
+public locationはinternalなslugとcanonicalなpermalink、任意のredirectsとメタデータを組み合わせたものです。manifestがentryごとに公開する解決済みの結果です。`ContentPublicLocation`(`packages/core/src/types/content_manifest.ts`)で型付けされています。
 
 標準的な構造:
 
@@ -39,7 +39,3 @@ redirectsとメタデータを持つmanifest entryの例:
   metadata: { author: "tanaka", lastModified: "2024-01-01" },
 }
 ```
-
-## redirectとメタデータ
-
-Pluginは正準の位置に別名URLやredirectを添えられます。permalinkは正準のままで、redirectが古いURLをそこへ導きます。

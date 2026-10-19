@@ -157,7 +157,7 @@ export default jsxRenderer(({ children }, c) => (
 ));
 ```
 
-Frameworkは標準 head rendering メカニクス（charset、viewport、default title、favicon wiring、color-mode bootstrap、stylesheet/client entry wiring、PluginHeadTag 変換）と theme-root attribute 導出を担当し、Site は `<head>`/`<body>` 構成とカスタム meta/link/script の所有権を保持します。favicon FILE (`/public/favicon.ico`) は Site-owned のまま、default link wiring にのみ Framework が所有権を持ちます。
+Frameworkは標準 head rendering メカニクスと theme-root attribute 導出を担当します。head rendering メカニクスには charset、viewport、default title、favicon wiring、color-mode bootstrap が含まれます。stylesheet/client entry wiring、PluginHeadTag 変換も含まれます。Site は `<head>`/`<body>` 構成とカスタム meta/link/script の所有権を保持します。favicon FILE (`/public/favicon.ico`) は Site-owned のまま、default link wiring にのみ Framework が所有権を持ちます。
 
 Plugin が head tags を提供する場合は、既存の `headTags` メカニズムはそのまま機能します。`RiebeckiteHead` と `headTags` は併用可能です。
 

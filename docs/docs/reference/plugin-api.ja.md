@@ -72,7 +72,7 @@ export function examplePlugin(
 }
 ```
 
-`definePlugin()` が Plugin の共通 contract を提供します。
+`definePlugin()` が Plugin の共通取り決めを提供します。
 
 ## Plugin が持てる機能
 
@@ -606,7 +606,7 @@ Plugin 固有の出力を `rb-*` namespace に置かないでください。
 
 出力には `rr-*` Hook だけを使用し、Plugin の CSS と Theme は `rr-*` Hook を対象にします。
 
-Theme に公開する必要がある Hook だけを stable contract として文書化してください。
+Theme に公開する必要がある Hook だけを stable の取り決めとして文書化してください。
 
 Plugin の default CSS は Theme CSS より先に読み込まれるため、Theme は Plugin package を変更せずに見た目を上書きできます。
 
@@ -675,7 +675,7 @@ flowchart LR
     Integration --> Router
 ```
 
-HonoX など特定の Router 実装を Plugin 本体へ直接埋め込まず、Integration が Endpoint Contract を Host Router へ接続します。
+HonoX など特定の Router 実装を Plugin 本体へ直接埋め込まず、Integration が Endpoint の取り決めを Host Router へ接続します。
 
 ## SEO
 
@@ -792,7 +792,7 @@ Site-local Plugin でも、
 - Renderer
 - Endpoint
 
-などは package Plugin と同じ contract を利用します。
+などは package Plugin と同じ取り決めを利用します。
 
 `createStyleAsset()` と `createClientEntry()` には module specifier を明示して
 渡します。Site 内 Plugin と別名の第三者 package のいずれでも、Host Bundler が
@@ -923,41 +923,6 @@ await build({
 
 公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
-## Repository 外で Plugin を配布する
-
-外部 Plugin は Riebeckite monorepo の内部 path に依存しないようにします。
-
-基本的には、
-
-```text
-@riebeckite/core
-```
-
-の公開 API を利用します。
-
-Plugin 自身が提供する、
-
-```text
-./client
-./components
-./style.css
-```
-
-などは、自身の `package.json` の `exports` で公開します。
-
-次のような import は避けてください。
-
-```ts
-import {
-  something,
-} from "@riebeckite/core/src/...";
-```
-
-`src/**` は Public API ではありません。
-
-また、Riebeckite monorepo 内にしか存在しない相対 path へ依存しないでください。
-
-公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
 ## ESM
 
@@ -1048,7 +1013,7 @@ flowchart LR
 
 基本原則は、**必要な最小の Extension Point を使い、すでに Framework が解決した情報を Plugin 側で再構築しないこと**です。
 
-Plugin は再利用可能な機能を提供し、Core はそのための Contract を提供します。Integration は Framework や Platform へ接続し、Site Application が最終的な Route、Document、UI を所有します。
+Plugin は再利用可能な機能を提供し、Core はそのための取り決めを提供します。Integration は Framework や Platform へ接続し、Site Application が最終的な Route、Document、UI を所有します。
 
 ### 関連
 

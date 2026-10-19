@@ -67,8 +67,8 @@ Core は、特定の Web framework に依存しない Riebeckite の基盤です
 - pipeline
 - Plugin runtime
 - observability
-- Theme contract
-- 共通の型や lifecycle contract
+- Theme の取り決め
+- 共通の型や lifecycle の取り決め
 
 Core は portable であることを重視します。
 
@@ -103,7 +103,7 @@ Plugin は、複数の Site で再利用できる機能を追加します。
 
 などです。
 
-Plugin は Core が公開している contract を利用して機能を拡張します。
+Plugin は Core が公開している取り決めを利用して機能を拡張します。
 
 ```mermaid id="79dvqt"
 flowchart LR
@@ -247,7 +247,7 @@ flowchart LR
 
 たとえば filesystem を使う Content Source ならファイルを読み込みますが、`ContentManager` 自身が filesystem を直接探索するわけではありません。
 
-新しい Content Source を追加するときも、この contract を通します。
+新しい Content Source を追加するときも、この取り決めを通します。
 
 ### ContentManager
 
@@ -278,7 +278,7 @@ ContentManager
 
 という分担です。
 
-ContentManager に独自の filesystem scan を追加するのではなく、`ContentSource` の contract を利用してください。
+ContentManager に独自の filesystem scan を追加するのではなく、`ContentSource` の取り決めを利用してください。
 
 ## Public URL の解決
 
@@ -420,7 +420,7 @@ flowchart TD
 
 | 追加するもの | 配置先 |
 | --- | --- |
-| 持ち運べる型や lifecycle contract | **Core** |
+| 持ち運べる型や lifecycle の取り決め | **Core** |
 | 再利用可能な content の振る舞い | **Plugin** |
 | Vite / HonoX / Platform との接続 | **Integration** |
 | Route / Page composition / Island | **Site Application** |

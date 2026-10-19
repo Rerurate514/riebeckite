@@ -17,7 +17,7 @@ sidebar:
 - cache schemaのバージョン不一致により、有効なcache entryを参照できない
 - External dependencyの失敗によりIncremental処理が防げる
 
-`--full`が指定された場合でも、同じ正しいウェブサイトが生成されます。違いは、incremental stateを再利用せずすべてのコンテンツを最初から処理する点で、incrementalビルドの結果を比較したりincrementalビルドの問題を隔離したりするのに便利です。
+`--full`が指定された場合でも、同じ正しいウェブサイトが生成されます。違いは、incremental stateを再利用せずすべてのコンテンツを最初から処理する点です。incrementalビルドの結果を比較したり、incrementalビルドの問題を隔離したりするのに便利です。
 
 ## 関連用語
 

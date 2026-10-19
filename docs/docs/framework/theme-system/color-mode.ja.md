@@ -130,4 +130,4 @@ document.documentElement.dataset.theme = "";
 
 が成立せず、System Mode の Media Query が機能しません。
 
-`@riebeckite/plugin-color-mode` がこの Contract の参照実装です。
+`@riebeckite/plugin-color-mode` がこの取り決めの参照実装です。

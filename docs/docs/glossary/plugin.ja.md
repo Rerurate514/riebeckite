@@ -21,7 +21,7 @@ definePlugin({
 });
 ```
 
-Coreの拡張ポイントにはremark/rehypeパイプライン、コンテンツhook、renderer、page type、asset、client entry、endpoint、diagnosticがあります。
+Coreの拡張ポイントはremark/rehypeパイプライン、コンテンツhook、renderer、page typeです。さらにasset、client entry、endpoint、diagnosticがあります。
 
 ## ライフサイクル
 

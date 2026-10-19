@@ -76,7 +76,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Semantic Token](./semantic-token.ja.md)：Semantic Tokenは、本文の色、アクセント、境界といった意味で参照するDesign Tokenです。コンポーネントを変えずにThemeを入れ替えられます。
 - [Color Mode](./color-mode.ja.md)：Color Modeは`light`、`dark`、`system`の3つの配色です。`colorMode`オプションと`<html>`の`data-theme`属性で制御し、JavaScriptで実行時に切り替えられます。
 - [Typography](./typography.ja.md)：Typographyは、フォントファミリ、サイズ、行間といったサイトの組版の設定です。`system`、`serif`、`sans`のプリセットを`data-typography`属性でTheme Rootに適用します。
-- [CSS Contract](./css-contract.ja.md)：CSS Contractは、コンポーネントが依存できる安定したCSSのhookと、カスケードの順序です。Themeは`rb-*`と`rr-*`のhookを公開し、コンポーネントが特定のThemeを前提にせずスタイルを当てられるようにします。
+- [CSS の取り決め](./css-contract.ja.md)：CSS の取り決めは、コンポーネントが依存できる安定したCSSのhookと、カスケードの順序です。Themeは`rb-*`と`rr-*`のhookを公開し、コンポーネントが特定のThemeを前提にせずスタイルを当てられるようにします。
 - [Theme Root](./theme-root.ja.md)：Theme Rootのセレクタ（`[data-theme-root]`または`<html>`）は、Tokenと属性のルールをページ全体に適用します。Color ModeとTypographyの属性をここへ付けると、カスケードがすべての要素に届きます。
 - [Presentation Layer](./presentation-layer.ja.md)：Presentation LayerはThemeの担当範囲で、色、フォント、余白、レイアウト、記事のスタイルを指します。コンテンツの意味、route、manifest、Pluginの動作、クライアントスクリプトは含みません。
 - [Article Layout](./article-layout.ja.md)：Article Layoutは、記事エリアの幅とサイドバーの構成を決めるプリセットです。`data-article-layout`属性で選び、`article`、`sidebar`、`full-width`の3つを用意します。

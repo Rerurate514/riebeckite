@@ -36,7 +36,7 @@ Framework が提供する代表的な Hook は、
 
 です。
 
-レンダリングされた Markdown 本文は `.rb-article-content` に包まれ、Markdown のセマンティックなベースライン（リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロック）はこの wrapper が持ちます。`.rb-article-body` は header、metadata、本文、plugin slot を含む article body のシェルです。ベースラインはレイヤー化されているため、テーマは構造を再宣言する必要はなく、`--rb-*` トークンとレイヤー外のキャラクター規則で見た目を表現します。
+レンダリングされた Markdown 本文は `.rb-article-content` に包まれます。Markdown のセマンティックなベースラインはこの wrapper が持ちます。対象はリストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロックです。`.rb-article-body` は header、metadata、本文、plugin slot を含む article body のシェルです。ベースラインはレイヤー化されているため、テーマは構造を再宣言する必要はなく、`--rb-*` トークンとレイヤー外のキャラクター規則で見た目を表現します。
 
 Plugin は、
 
@@ -98,7 +98,7 @@ __result
 
 Plugin の出力は `.rr-*` hook のみを使います。Theme は `.rr-*` を利用し、旧 Class 名に依存しないでください。
 
-Framework CSS は Reset と Base Contract を担当します。Site CSS はページの構造と配置を担当し、Site レイアウト内で文書化された Plugin root を配置できます。Plugin CSS は内部 UI と操作を担当します。Theme CSS は共通 Token と視覚表現を担当し、Site レイアウトや文書化されていない Plugin 内部を引き継ぎません。
+Framework CSS は Reset と Base の取り決めを担当します。Site CSS はページの構造と配置を担当し、Site レイアウト内で文書化された Plugin root を配置できます。Plugin CSS は内部 UI と操作を担当します。Theme CSS は共通 Token と視覚表現を担当し、Site レイアウトや文書化されていない Plugin 内部を引き継ぎません。
 
 
 ## 22. Character Layer
@@ -129,7 +129,7 @@ rb-*
 rr-*
 ```
 
-Class を発明して Framework Contract のように扱わないでください。
+Class を発明して Framework の取り決めのように扱わないでください。
 
 Character Layer も Presentation 専用です。
 
@@ -225,7 +225,7 @@ Theme Package 側で `userCss` より強い Selector や `!important` を多用�
 
 ## 26. CSS Cascade
 
-Riebeckite では CSS の読み込み順も Contract の一部です。
+Riebeckite では CSS の読み込み順も取り決めの一部です。
 
 ```mermaid id="e5j94x"
 flowchart TD
@@ -259,7 +259,7 @@ userCss
 
 です。
 
-この順番は偶然ではなく、Presentation Extension の Contract として保証されます。
+この順番は偶然ではなく、Presentation Extension の取り決めとして保証されます。
 
 `@riebeckite/honox` は、
 

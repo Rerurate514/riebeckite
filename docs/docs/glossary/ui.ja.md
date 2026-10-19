@@ -49,7 +49,7 @@ Plugin はデータヘルパーと JSX コンポーネントを公開し、Site 
 - Plugin は JSX コンポーネント（例：`<Properties />`）をエクスポートし、型付き props を受け入れます
 - Site は必要な箇所で import して描画します：`<Properties data={data} />`
 
-これは削除された body-slot システムを置き換えます：Site はすべての描画決定を所有し、Plugin は HTML フラグメントの累積ではなく型付きデータ + component を提供します。
+これは削除された body-slot システムを置き換えます。Site はすべての描画決定を所有し、Plugin は HTML フラグメントの累積ではなく型付きデータ + component を提供します。
 
 ```tsx
 import { getProperties } from "@riebeckite/plugin-properties";
@@ -86,7 +86,7 @@ const data = getProperties({ view, frontmatter: entry.frontmatter });
 
 は Site Application が管理します。
 
-プリミティブは主に、セマンティック HTML、stable styling hook、`class` / `className` の合成、hook を成立させる構造 CSS を担当します。`rb-*` hook を成立させる構造 CSS は `@riebeckite/honox/style.css` にあり、生成された `.riebeckite/framework-styles.css` 経由で Site に読み込まれます。プリミティブは記事の本文の見た目、metadata の表示形式、navigation の配置、card、ページレイアウトの composition、island、またはサイトの視覚デザインと override を所有しません。それらはサイトのapplicationに属します。`ArticleHeader` は children またはその HTML input prop を受け入れます。`ArticleContent` は children を受け入れます。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。
+プリミティブは主に、セマンティック HTML、stable styling hook、`class` / `className` の合成、hook を成立させる構造 CSS を担当します。`rb-*` hook を成立させる構造 CSS は `@riebeckite/honox/style.css` にあり、生成された `.riebeckite/framework-styles.css` 経由で Site に読み込まれます。プリミティブは記事の本文の見た目、metadata の表示形式、navigation の配置、card、ページレイアウトの composition、island を所有しません。サイトの視覚デザインと override も所有しません。それらはサイトのapplicationに属します。`ArticleHeader` は children またはその HTML input prop を受け入れます。`ArticleContent` は children を受け入れます。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。
 
 ## Site が持つもの
 

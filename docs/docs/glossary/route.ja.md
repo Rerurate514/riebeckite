@@ -6,7 +6,7 @@ sidebar:
 
 # Route
 
-Integrationがページを解決するURLパスで、ページのpublic pathからProducedされ、HonoXのフレームワークによって描画されます。
+Integrationがページを解決するURLパスで、ページのpublic pathから生成され、HonoXのフレームワークによって描画されます。
 
 ## Route解決
 

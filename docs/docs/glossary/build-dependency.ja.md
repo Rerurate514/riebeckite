@@ -10,7 +10,7 @@ sidebar:
 
 ## 依存の種類
 
-content（slug）、file（sourceのパス）、link（解決済みのリンク）、global（設定の変更）、projection（taxonomyやrecent-posts）、tag、folderを扱います。
+content（slug）、file（sourceのパス）、link（解決済みのリンク）、global（設定の変更）、projection（taxonomyやrecent-posts）を扱います。tagとfolderも扱います。
 
 ## 依存の宣言
 

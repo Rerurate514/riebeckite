@@ -10,7 +10,7 @@ sidebar:
 
 ## 5. Plugin の依存関係
 
-Plugin 同士に実際の依存関係がある場合は Capability Contract を使用します。
+Plugin 同士に実際の依存関係がある場合は Capability の取り決めを使用します。
 
 ```ts id="mdj2qn"
 definePlugin({

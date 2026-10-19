@@ -114,7 +114,7 @@ flowchart TD
 
 Trace はエラー処理の代わりではありません。
 
-処理が失敗した場合は Trace を記録したうえで、通常の caller contract に従って error を伝播します。
+処理が失敗した場合は Trace を記録したうえで、通常の caller の取り決めに従って error を伝播します。
 
 Trace のためにエラーを握りつぶしてはいけません。
 
@@ -263,6 +263,6 @@ flowchart TD
     Q -->|"Build の状態を確認したい"| B["Build System / Inspector"]
 ```
 
-Build が失敗している場合は Logger や Diagnostics、Build が遅い場合は Trace / Profiler、incremental build の状態を確認したい場合は Inspector と組み合わせて調査します。
+Build が失敗している場合は Logger や Diagnostics を使用します。Build が遅い場合は Trace / Profiler、incremental build の状態を確認したい場合は Inspector と組み合わせて調査します。
 
 Build の仕組みについては [Build System](./build-system.ja.md)、問題の報告については [Diagnostics](./diagnostics.ja.md)、現在の state を確認する場合は [Inspector](./inspector.ja.md) を参照してください。

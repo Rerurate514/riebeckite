@@ -32,4 +32,4 @@ permalink: "/docs/notes/hello/",
 redirects: ["/docs/hello/", "/hello/"],
 ```
 
-redirectはpermalink pluginによって`resolveContentLocations`hookを通じて生成されたり、content fileがリネームされた際に古いパスが新しいpermalinkに向かうリダイレクトとして自動的に生成されたりします。
+redirectはpermalink pluginが`resolveContentLocations`hookを通じて生成します。また、content fileがリネームされた際に、古いパスが新しいpermalinkに向かうリダイレクトとして自動的に生成されます。

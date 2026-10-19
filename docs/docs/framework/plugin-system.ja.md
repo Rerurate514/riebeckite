@@ -182,7 +182,7 @@ flowchart TD
     Q -->|"診断"| Diagnostics["addDiagnostics"]
 ```
 
-現在の主な Contract は次のとおりです。
+現在の主な取り決めは次のとおりです。
 
 | 領域 | API |
 | --- | --- |
@@ -235,7 +235,7 @@ Plugin にすると決めた後も、
 
 ことが重要です。
 
-Filesystem を再走査する前に Manifest や Content Graph が使えないか、独自 Route を追加する前に Page Type が使えないか、Client JavaScript を追加する前に SSR / Build-time だけで完結できないかを確認してください。
+Filesystem を再走査する前に Manifest や Content Graph が使えないか確認してください。独自 Route を追加する前に Page Type が使えないか確認してください。Client JavaScript を追加する前に SSR / Build-time だけで完結できないか確認してください。
 
 これによって Plugin を小さく保ち、Core、Integration、Application との不要な結合を避けられます。
 
@@ -244,7 +244,7 @@ Filesystem を再走査する前に Manifest や Content Graph が使えない�
 
 - [はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)：最初の Plugin を作る
 - [Plugin System](./plugin-system.ja.md)：Plugin System 全体の考え方
-- [Plugin API](../reference/plugin-api.ja.md)：API Contract
+- [Plugin API](../reference/plugin-api.ja.md)：API の取り決め
 - [Page System](./page-system.ja.md)：独立ページ
 - [Content System](./content-system.ja.md)：Manifest / Graph / Pipeline
 - [Architecture](./architecture.ja.md)：Core / Plugin / Integration / Theme / App の責務

@@ -77,7 +77,7 @@ Page System では、Plugin がページ全体を所有するわけではあり�
 
 | 層 | 責務 |
 | --- | --- |
-| Core | Page Type の contract、検証、path 列挙、解決、競合検出 |
+| Core | Page Type の取り決め、検証、path 列挙、解決、競合検出 |
 | Plugin | Page Type ID、公開 path、framework 非依存の HTML body |
 | HonoX Integration | 共通 route resolver、SSG parameter helper |
 | Site Application | route、document frame、metadata、HTML の描画 |

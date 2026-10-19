@@ -59,7 +59,7 @@ Markdown は pipeline が作る `entry.html` のまま `ArticleBody` で描画�
 
 | 所有者 | 所有するもの | 所有してはいけないもの |
 | --- | --- | --- |
-| Core | content contract と filter 済み public view | HonoX や Site layout |
+| Core | content の取り決めと filter 済み public view | HonoX や Site layout |
 | HonoX integration | semantic primitive と HTML boundary | article grid や配置方針 |
 | Plugin | model、component 内部、asset、runtime | page shell、rail、sticky 位置 |
 | Theme | token、typography、色、element style | 構造的な layout の選択 |
@@ -120,7 +120,7 @@ helper は Slot HTML ではなく空の model または collection を返しま�
 
 ## 11. Plugin ごとの可視性規則
 
-backlinks、related posts、local graph、series は discoverable data を使います。docs navigation、tag 起点の breadcrumbs も同様です。Properties は明示された routable unlisted target にはリンクできますが、routable でない target にはリンクしません。l10n の候補は route の安全な group contract で絞ります。changelog と diff は現在の routable entry だけを対象にします。webmention と share はその entry を扱うため、manifest 全体の discovery は不要です。
+backlinks、related posts、local graph、series は discoverable data を使います。docs navigation、tag 起点の breadcrumbs も同様です。Properties は明示された routable unlisted target にはリンクできますが、routable でない target にはリンクしません。l10n の候補は route の安全な group の取り決めで絞ります。changelog と diff は現在の routable entry だけを対象にします。webmention と share はその entry を扱うため、manifest 全体の discovery は不要です。
 
 ## 12. Factory、設定、dependency
 
@@ -130,7 +130,7 @@ Diff の履歴取得・生成は明示的な capability opt-in を必要とし�
 
 Webmention の外部 build dependency は、明示的な static snapshot capability opt-in を必要とします。component の描画は既存 snapshot を読むだけで外部 I/O を行いません。snapshot の更新と UI の配置は分離し、既存の Webmention 機能は Phase 2 まで変更しません。
 
-Docs は navigation data の生成に navigation-source contract を使います。`sidebar.auto` と `prevNext` は配置を示しません。目標モデルでは Sidebar と Prev/Next は独立 component とし、既存の Docs 表示は Phase 2 まで維持します。
+Docs は navigation data の生成に navigation-source の取り決めを使います。`sidebar.auto` と `prevNext` は配置を示しません。目標モデルでは Sidebar と Prev/Next は独立 component とし、既存の Docs 表示は Phase 2 まで維持します。
 
 ## 12.1 基盤 API
 
@@ -158,7 +158,7 @@ Plugin package は factory に加えて `PluginDataHelper<Input, Model>` を exp
 2. component/query export を追加します。現在の Slot 実装は、同じ breaking release で Site consumer を全て移すまでだけ残します。
 3. Site と preset を明示的な TSX/CSS composition に移します。
 4. 12 Plugin を変換し、UI 以外の hook と Page Type を維持します。
-5. Slot contract、primitive、CSS、test、設定項目を 1 回の breaking change で削除します。互換 adapter は出しません。
+5. Slot の取り決め、primitive、CSS、test、設定項目を 1 回の breaking change で削除します。互換 adapter は出しません。
 
 helper の可視性、空表示、client entry 登録、UI 配置以外の Factory 処理をテストします。public/unlisted/draft の組み合わせ、Site での重複利用、desktop/mobile layout、cache invalidation もテストします。変換した Plugin ごとに component unit test と Site integration fixture を追加します。
 
@@ -177,7 +177,7 @@ direct component UI の重複も発生させません。asset、client entry、J
 endpoint など factory の capability は維持します。
 
 Phase 4 では、preset 以外のすべての Site consumer が同じ移行を完了してから
-legacy Slot contract を削除できます。
+legacy Slot の取り決めを削除できます。
 
 基盤 API は cache schema、pipeline fingerprint、output dependency、Plugin fingerprint、Slot HTML を変更しません。`PublicContentView` は現在の manifest から導出し、persistent cache を持ちません。`HtmlFragment` の変更範囲は SSR HTML の描画だけです。既存の `computeAppFingerprint` は引き続き `app/` の TSX/CSS 変更で SSG output を invalidate します。Phase 1 では既存の小規模 fixture を使って cold、no-change、content、publication、layout-only、Plugin-data を確認します。10,000 件 benchmark は実行しません。
 

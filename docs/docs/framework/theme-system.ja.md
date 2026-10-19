@@ -115,9 +115,9 @@ export default defineConfig({
 これが最小構成です。
 
 
-## 3. `defineTheme` の Contract
+## 3. `defineTheme` の取り決め
 
-Theme が扱う主な Contract は次のとおりです。
+Theme が扱う主な取り決めは次のとおりです。
 
 | 領域 | 内容 |
 | --- | --- |
@@ -290,7 +290,7 @@ Theme Attributes
 CSS Cascade
 ```
 
-という Presentation Contract を利用します。
+という Presentation の取り決めを利用します。
 
 Theme 固有の設定は Theme Package 内に閉じ込め、Core へ漏らしません。
 

@@ -161,7 +161,7 @@ defaultTheme({
 
 のように指定します。
 
-Riebeckite の Theme Contract では、
+Riebeckite の Theme の取り決めでは、
 
 ```text id="svx24i"
 light
@@ -173,7 +173,7 @@ system
 
 `system` は Browser / OS 側の設定に合わせるための Mode です。
 
-Color Mode の詳しい Contract は [Theme API](../reference/theme-api.ja.md) を参照してください。
+Color Mode の詳しい取り決めは [Theme API](../reference/theme-api.ja.md) を参照してください。
 
 ## Typography
 
@@ -189,7 +189,7 @@ defaultTheme({
 
 のように設定します。
 
-Theme Contract では Typography Preset として、
+Theme の取り決めでは Typography Preset として、
 
 ```text id="tsjddr"
 system
@@ -211,7 +211,7 @@ defaultTheme({
 });
 ```
 
-Theme Contract では、
+Theme の取り決めでは、
 
 ```text id="n1pwde"
 article
@@ -462,7 +462,7 @@ Themeを作りたい
   → Framework / Theme System
 ```
 
-Theme の公開 Contract を確認したい場合は [Theme API](../reference/theme-api.ja.md)、Riebeckite 内部で Theme がどのように扱われるか知りたい場合は [Framework / Theme System](../framework/theme-system.ja.md) を参照してください。
+Theme の公開取り決めを確認したい場合は [Theme API](../reference/theme-api.ja.md) を参照してください。Riebeckite 内部で Theme がどのように扱われるか知りたい場合は [Framework / Theme System](../framework/theme-system.ja.md) を参照してください。
 
 ## まとめ
 
@@ -501,6 +501,6 @@ Theme ごとの正確な Factory 名と Option は、それぞれのページを
 ### 次に読むページ
 
 - [Writing a Theme](./writing-a-theme.ja.md)：Theme を自作する
-- [Theme API](../reference/theme-api.ja.md)：Theme の公開 Contract
+- [Theme API](../reference/theme-api.ja.md)：Theme の公開取り決め
 - [Framework / Theme System](../framework/theme-system.ja.md)：Theme の内部設計
 - [Plugins](../plugins/README.ja.md)：Site に機能を追加する

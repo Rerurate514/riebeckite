@@ -1,11 +1,11 @@
 ---
-title: CSS Contract
+title: CSS の取り決め
 sidebar:
   hidden: true
 ---
-# CSS Contract
+# CSS の取り決め
 
-CSS Contractは、コンポーネントが依存できる安定したCSSのhookと、カスケードの順序です。Themeは`rb-*`と`rr-*`のhookを公開し、コンポーネントが特定のThemeを前提にせずスタイルを当てられるようにします。
+CSS の取り決めは、コンポーネントが依存できる安定したCSSのhookと、カスケードの順序です。Themeは`rb-*`と`rr-*`のhookを公開し、コンポーネントが特定のThemeを前提にせずスタイルを当てられるようにします。
 
 ## 安定したフック
 クラスの名前空間は2つあります。
@@ -32,7 +32,7 @@ flowchart TD
 ```
 
 ## カスケード順の検証
-読み込み順は、frameworkの構造CSS → base/appの構造CSS → Pluginの既定CSS → ThemeのCSS → configのトークンによるインラインstyle → userCssの順で保証されています。`@riebeckite/honox`が各レイヤー用に別々のstylesheetを生成し、ヘッダーのコメントでカスケード位置を示します。`userCss`は最後の上書きとなり、サイト固有の小さな調整に適しています。
+読み込み順は次のとおりです。frameworkの構造CSS → base/appの構造CSS → Pluginの既定CSS → ThemeのCSS → configのトークンによるインラインstyle → userCss。この順序が保証されています。`@riebeckite/honox`が各レイヤー用に別々のstylesheetを生成し、ヘッダーのコメントでカスケード位置を示します。`userCss`は最後の上書きとなり、サイト固有の小さな調整に適しています。
 
 ## Theme CSSの書き方
 Themeは安定したhookと、文書化された子孫要素だけにスタイルを当ててください。新しい`rb-*`/`rr-*`のクラス名は増やさないでください。`.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-content`, `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`および各プラグインが文書化した`rr-*`root hookのみをターゲットにしてください。BEM要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。

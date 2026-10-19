@@ -17,7 +17,7 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-`check` は Config と Plugin Contract を検証します。`doctor` は環境、Project
+`check` は Config と Plugin の取り決めを検証します。`doctor` は環境、Project
 の検出、Config、Plugin、Content Source、Build State を診断します。`build` は
 Site を生成できるか確認します。
 
@@ -35,6 +35,6 @@ Release Note を確認してください。
 ## 更新に失敗したとき
 
 失敗した Command の診断から確認します。Package Version を確認し、Migration Guide に
-従って対象の Config または Plugin Contract を更新してから、`check`、`doctor`、`build` を
+従って対象の Config または Plugin の取り決めを更新してから、`check`、`doctor`、`build` を
 再実行してください。更新前の状態を Version Control に残しておくと、差分の確認や安全な
 切り戻しができます。

@@ -24,4 +24,4 @@ hookは本当に必要なフェーズだけに使ってください。たとえ�
 
 ## さらに詳しく
 - [Plugin API](../reference/plugin-api.ja.md)
-- [Build Dependency Contract](../framework/build-dependency.ja.md)
+- [Build Dependency の取り決め](../framework/build-dependency.ja.md)

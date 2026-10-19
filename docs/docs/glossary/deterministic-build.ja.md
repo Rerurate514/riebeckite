@@ -22,7 +22,7 @@ sidebar:
 
 ### fingerpringpの再計算
 
-pipeline fingerprintはpluginの設定とcontent filterの設定を含み、設定が変わると全体のfingerprintが変わるためキャッシュがbypassされ、再ビルドがtriggerされます。
+pipeline fingerprintはpluginの設定とcontent filterの設定を含みます。設定が変わると全体のfingerprintが変わるため、キャッシュがbypassされ、再ビルドがtriggerされます。
 
 ### 例
 

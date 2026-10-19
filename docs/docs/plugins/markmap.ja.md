@@ -70,7 +70,7 @@ Markdown の見出しを 1 つも含まないコードブロックは置き換�
 | `className` | `"rb-markmap"` | figure に付ける基準クラス |
 | `language` | `"markmap"` | 対象にするコードブロックの言語 |
 | `fallback` | `true` | 元の Markdown を表示する `details` を描画する |
-| `colorFreezeLevel` | — | ノードの色を固定する深さ |
+| `colorFreezeLevel` |：| ノードの色を固定する深さ |
 
 ## クライアント側の描画
 

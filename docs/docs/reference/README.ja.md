@@ -78,7 +78,7 @@ inspect
 - Endpoint
 - Diagnostics
 
-など、Plugin が利用できる Public Contract を確認できます。
+など、Plugin が利用できる Public の取り決めを確認できます。
 
 Plugin の仕組みそのものを理解したい場合は [Plugin System](../framework/plugin-system.ja.md) を参照してください。
 
@@ -91,10 +91,10 @@ Plugin の仕組みそのものを理解したい場合は [Plugin System](../fr
 - Color Mode
 - Typography
 - Article Layout
-- CSS Contract
+- CSS の取り決め
 - Theme Package
 
-など、Theme が利用できる Public Contract を確認できます。
+など、Theme が利用できる Public の取り決めを確認できます。
 
 Theme の設計思想や仕組みを理解したい場合は [Theme System](../framework/theme-system.ja.md) を参照してください。
 
@@ -173,7 +173,7 @@ flowchart LR
     Consumer -.->|"✗"| Monorepo["Monorepo Internal Path"]
 ```
 
-Public API は外部利用を前提とした Contract です。
+Public API は外部利用を前提とした取り決めです。
 
 `src/**` や monorepo 内部 Path は実装詳細であり、Package の更新によって変更される可能性があります。
 
@@ -240,7 +240,7 @@ ThemeTypographyPreset
 ThemeArticleLayoutPreset
 ```
 
-Theme の定義と Presentation Contract に使用します。
+Theme の定義と Presentation の取り決めに使用します。
 
 Theme を作成する場合は [Theme API](./theme-api.ja.md) と [テーマ作成の詳細](../framework/theme-system.ja.md) を参照してください。
 

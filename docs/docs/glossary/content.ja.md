@@ -25,7 +25,7 @@ contentを問い合わせるコードは、ファイルシステムではなくm
 
 Riebeckiteのcontent pipelineは、それぞれ責任を持った明確なモジュールで構成されています：
 
-- **`content_manager.ts`** (`packages/core/src/content/content_manager.ts`) ：全体的なbuildフローをオーケストレーションします：コンテンツソースのスキャン、content indexの構築、場所の解決、`Pipeline`によるpluginパイプラインの実行、manifestとcontent graphの構築、incremental build stateのコミット。plugin runtime、content index builder、build coordinatorと調整します。
+- **`content_manager.ts`** (`packages/core/src/content/content_manager.ts`) ：全体的なbuildフローをオーケストレーションします。対象はコンテンツソースのスキャン、content indexの構築、場所の解決、`Pipeline`によるpluginパイプラインの実行です。manifestとcontent graphの構築、incremental build stateのコミットも行います。plugin runtime、content index builder、build coordinatorと調整します。
 
 - **`content_collection.ts`** (`packages/core/src/content/content_collection.ts`) ：`ContentCollectionDefinition`、`ContentCollection`を定義し、pagination、sort、filterをサポートし、manifestエントリをタグ/日付/フォルダベースのリストにグループ化する`buildContentCollections`関数を提供します。
 

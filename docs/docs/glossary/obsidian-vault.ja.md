@@ -58,22 +58,6 @@ Calloutにも対応しています。`> [!NOTE]`と書きます。
 - コールアウトのパーサー (`> [!WARNING]`など)
 - タグ`#hashtag`をタグマップのリンクに変換
 
-## 明示的な公開
-公開するノートのfrontmatterに`publish: true`を追加します。
-
-```md
----
-title: Hello
-publish: true
-tags:
-  - example
-aliases:
-  - Hello note
----
-```
-
-`publish: true`のないノートは下書きとして扱われ、Buildされません。
-
 ## 関連用語
 
 - [[tag|Tag]]

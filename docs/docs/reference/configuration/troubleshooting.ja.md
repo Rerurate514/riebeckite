@@ -28,7 +28,7 @@ flowchart LR
 npm exec riebeckite check
 ```
 
-Config と Plugin contract が正しいか確認します。
+Config と Plugin の取り決めが正しいか確認します。
 
 ## 2. Content Source を診断する
 

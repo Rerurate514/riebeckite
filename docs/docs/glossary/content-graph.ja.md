@@ -47,21 +47,4 @@ content manifestの`outgoingLinks`および`incomingLinks`マップから辺が�
 
 `createContentGraph`は`ContentGraphSource`を受け取り、問い合わせ可能なgraphを構築します。リンク由来のエッジを集約し、`graph.outgoing(slug)`、`graph.incoming(slug)`、`graph.neighbors(slug)`の問い合わせを可能にします。backlink表示や関連リンクセクションに使用されます。
 
-## `extendContentGraph`によるプラグイン拡張
-
-PluginはCoreを変更せずに独自の関係を追加でき、`extendContentGraph`を実装します。コールバックは`PluginGraphContext`を受け取り、manifestの`outgoingLinks`や`incomingLinks`マップに追加のリンクをプッシュできます。`createContentGraph`を呼び出した際に自動的に含まれるため、「関連投稿」「 cited-by 」グラフ、またはtable-of-contentsのcross-referenceなどの機能が可能になります。
-
-```ts
-// "cites"関係を追加するプラグインの例
-context.extendContentGraph?.({
-  pluginName: "my-plugin",
-  outgoing: {
-    "post-a": ["post-b", "post-c"], // post-a が post-b と post-c をcitationsする
-  },
-});
-
-```
-
-その結果、`outgoing`、`incoming`、`neighbors`のクエリには、Coreが解決したエッジとPluginが追加したエッジの両方が含まれます。
-
 ## content graphのAPI

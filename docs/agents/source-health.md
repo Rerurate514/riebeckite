@@ -29,8 +29,8 @@ node scripts/check_source_health.mjs --write-baseline
 
 ## Current snapshot
 
-- 696 source files, 88,131 lines, 5,565 functions
-- 33 files at or above 400 lines; 6 at or above 800
+- 703 source files, 88,365 lines, 5,588 functions
+- 33 files at or above 400 lines; 5 at or above 800
 - 75 functions at or above 80 lines
 - 0 runtime import cycles
 - 0 cross-layer dependency violations
@@ -42,9 +42,9 @@ These are review signals, not split targets.
 
 | Area | Main responsibility | Class | Decision |
 | --- | --- | --- | --- |
-| `packages/core/src/plugin/plugin_runtime.ts` | lifecycle hooks, manifest hook cache, page resolution, assets, diagnostics | B, D | Split by lifecycle/ownership in a dedicated change. Highest remaining Core risk. |
-| `packages/core/src/content/content_manager.ts` | build orchestration, manifest assembly, cache reuse, output changes | B, D | Keep as the composition point for now. Extract only a boundary with independent state and tests. |
-| `packages/core/src/pipeline.ts` | Markdown execution plus link normalization helpers | B | Link normalization is a plausible extraction, but it is coupled to dependency tracking. Review with pipeline tests. |
+| `packages/core/src/plugin/plugin_runtime.ts` | lifecycle hooks, external dependencies, assets, diagnostics | B, D | Page resolution and manifest-hook execution moved out. The remaining runtime surface is cohesive; split again only when a hook family gains independent state. |
+| `packages/core/src/content/content_manager.ts` | build orchestration, manifest reuse, cache, output changes | B, D | Manifest assembly and reuse policy moved out. Keep the remaining build orchestration as the composition point. |
+| `packages/core/src/pipeline.ts` | Markdown execution orchestration | A | Link normalization and embed-fragment selection moved out. Keep the pipeline order together. |
 | `packages/plugins/bases/src/evaluate.ts` | Bases expression evaluation | A | Cohesive domain module. Review `memberCall`; do not split by line count. |
 | `packages/plugins/l10n/src/l10n.ts` | localization detection, routing, rendering, options | B | Confirm independent change reasons before splitting. |
 | `packages/create-riebeckite/src/scaffold/content-pages.ts` | localized scaffold page content | A | Data-heavy single purpose. Split only when page groups gain independent ownership. |
@@ -76,6 +76,39 @@ timing. It is now split into:
 The public exports of `ssg_plugin.ts` remain available, so callers and tests do
 not change.
 
+### Plugin runtime
+
+`plugin_runtime.ts` combined lifecycle orchestration with page-type resolution,
+manifest-hook caching, assets, diagnostics, and generated outputs. Page
+resolution and manifest-hook execution now live in focused collaborators:
+
+- `plugin_pages.ts` — page registration validation, resolution, routes, outputs
+- `manifest_hooks.ts` — manifest hook cache, snapshots, metrics, fast-path reason
+- `plugin_runtime_context.ts` — shared plugin context types
+- `plugin_runtime.ts` — lifecycle and content/plugin orchestration
+
+The public `PluginRuntime` methods and `ManifestHookMetrics` exports remain
+available.
+
+### Content manifest assembly
+
+`content_manager.ts` mixed build orchestration with manifest entry assembly,
+public-view projection, HTML synchronization, and manifest-entry reuse. Those
+responsibilities now live in:
+
+- `manifest_assembler.ts` — entry creation, graph build, public view, HTML sync
+- `content_manifest_reuse.ts` — reuse eligibility and deterministic entry cloning
+- `content_manager.ts` — build plan, cache ownership, output changes, orchestration
+
+### Markdown link normalization
+
+`pipeline.ts` contained the Markdown processor order, link rewriting, resolved
+link dependency recording, and embed fragment selection. They are now separated:
+
+- `markdown_links.ts` — Markdown link rewriting and link dependency values
+- `markdown_fragments.ts` — heading and block embed selection
+- `pipeline.ts` — processor construction and content pipeline execution
+
 ### Scaffold templates
 
 `templates.ts` imported `content-pages.ts` while `content-pages.ts` imported
@@ -96,15 +129,12 @@ in `src/data.ts`, and the entries re-export the same public symbols.
 
 ## Next review order
 
-1. `plugin_runtime.ts`: separate lifecycle/hook execution from page, asset, and
-   diagnostic collection while keeping `PluginContext` stable.
-2. `content_manager.ts`: extract a manifest assembly boundary only if the build
-   plan, cache ownership, and output change set can stay together.
-3. `pipeline.ts`: move link normalization and dependency recording as one unit,
-   not as isolated functions.
-4. `deploy_setup.ts` and `release.mjs`: split by phase after their contracts are
+1. `content_manager.ts`: if the next change touches entry assembly, extract that
+   phase as one unit; do not separate the build plan from cache ownership.
+2. `deploy_setup.ts` and `release.mjs`: split by phase after their contracts are
    covered by focused tests.
-5. UI components: separate model/state from rendering when the next feature
+3. `content-pages.ts`: split only when page groups gain independent ownership.
+4. UI components: separate model/state from rendering when the next feature
    touches them, not as a standalone cleanup.
 
 Any split must preserve public APIs and outputs, move data with behavior, avoid

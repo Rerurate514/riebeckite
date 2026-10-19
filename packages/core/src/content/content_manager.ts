@@ -33,6 +33,7 @@ import {
   ContentIndexBuilder,
 } from "./content_index_builder.js";
 import { ContentLocationResolver } from "./content_location_resolver.js";
+import { reuseManifestEntry } from "./content_manifest_reuse.js";
 import {
   computeContentCacheFingerprint,
   computeContentScopeFingerprint,
@@ -43,7 +44,7 @@ import {
 } from "./content_persistent_cache.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
-import { ManifestBuilder } from "./manifest_builder.js";
+import { ManifestAssembler } from "./manifest_assembler.js";
 import {
   determineOutputChanges,
   type OutputChangeSet,
@@ -76,7 +77,7 @@ const CONTENT_PROCESSING_CONCURRENCY = 16;
 export class ContentManager {
   private source: ContentSource;
   private contentIndexBuilder: ContentIndexBuilder;
-  private manifestBuilder = new ManifestBuilder();
+  private manifestAssembler: ManifestAssembler;
   private pluginRuntime: PluginRuntime;
   private contentIndex: Map<string, string> | null = null;
   private contentIndexAmbiguities: ReadonlyMap<string, readonly string[]> =
@@ -146,6 +147,7 @@ export class ContentManager {
       },
     };
     this.contentIndexBuilder = new ContentIndexBuilder(this.source);
+    this.manifestAssembler = new ManifestAssembler(this.contentCache);
     this.pluginRuntime = new PluginRuntime(this.pipelineOptions);
     const buildStatePath = resolveContentBuildStatePath(
       pipelineOptions.config,
@@ -358,7 +360,7 @@ export class ContentManager {
                   );
                 }
 
-                return this.manifestBuilder.createEntry(
+                return this.manifestAssembler.createEntry(
                   post.slug,
                   rawPost,
                   processed,
@@ -379,7 +381,7 @@ export class ContentManager {
           "content.graph",
           {},
           () =>
-            this.manifestBuilder.build(
+            this.manifestAssembler.build(
               entries,
               contentIndex,
               this.contentIndexAmbiguities,
@@ -387,7 +389,11 @@ export class ContentManager {
         );
         const cacheManifestEntries = structuredClone(manifest.entries);
         this.locationResolver.populateRedirects(manifest, locations);
-        this.applyPublicView(manifest);
+        this.manifestAssembler.applyPublicView(
+          manifest,
+          this.publishStrategy(),
+          this.publishingBuildTime,
+        );
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
         ];
@@ -400,7 +406,7 @@ export class ContentManager {
           plan.previousState?.manifestHookCache,
           this.getPipelineFingerprint(),
         );
-        this.synchronizeManifestHtml(manifest, cacheManifestEntries);
+        this.manifestAssembler.synchronizeHtml(manifest, cacheManifestEntries);
         manifest.assets = this.pluginRuntime.collectAssets();
         manifest.clientEntries = this.pluginRuntime.collectClientEntries();
         manifest.diagnostics = [
@@ -613,56 +619,6 @@ export class ContentManager {
     return await this.locationResolver.getLocations();
   }
 
-  private applyPublicView(manifest: ContentManifest): void {
-    const strategy = this.publishStrategy();
-    for (const entry of manifest.entries) {
-      entry.publishing = resolvePublishingState(entry.frontmatter, {
-        strategy,
-        buildTime: this.publishingBuildTime,
-      });
-    }
-    manifest.publicEntries = manifest.entries.filter(
-      (entry) => entry.publishing.routable,
-    );
-    manifest.discoverableEntries = manifest.entries.filter(
-      (entry) => entry.publishing.discoverable,
-    );
-
-    const publicSlugs = new Set(
-      manifest.publicEntries.map((entry) => entry.slug),
-    );
-    const publicPermalinks = new Map(
-      manifest.publicEntries.map((entry) => [entry.permalink, entry]),
-    );
-    manifest.byRoutablePermalink = publicPermalinks;
-    manifest.publicRedirects = new Map(
-      [...manifest.redirects].filter(([, redirect]) =>
-        publicSlugs.has(redirect.slug),
-      ),
-    );
-  }
-
-  private synchronizeManifestHtml(
-    manifest: ContentManifest,
-    preHookEntries: readonly ContentManifestEntry[],
-  ): void {
-    const preHookHtml = new Map(
-      preHookEntries.map((entry) => [entry.slug, entry.html]),
-    );
-    for (const entry of manifest.entries) {
-      const changed = preHookHtml.get(entry.slug) !== entry.html;
-      const cached = this.contentCache.get(entry.slug);
-      if (cached) {
-        if (changed) cached.html = entry.html;
-        continue;
-      }
-      this.contentCache.set(entry.slug, {
-        frontmatter: entry.frontmatter,
-        html: entry.html,
-      });
-    }
-  }
-
   private publishStrategy(): PublishStrategy {
     return (
       this.pipelineOptions.config?.content.filters.publishStrategy ?? "explicit"
@@ -674,32 +630,21 @@ export class ContentManager {
     source: string,
     plan: ContentBuildPlan,
   ): ContentManifestEntry | null {
-    if (!plan.previousState?.manifestEntries) return null;
-    if (
-      plan.previousState.pipelineFingerprint !== this.getPipelineFingerprint()
-    ) {
-      return null;
-    }
-    if (plan.affectedContent.direct.has(slug)) return null;
-    if (plan.affectedContent.dependent.has(slug)) return null;
-    const contentCacheFingerprint = this.getProcessedContentCacheFingerprint(
+    const reused = reuseManifestEntry({
       slug,
-      source,
-    );
-    if (!contentCacheFingerprint) return null;
-    if (
-      plan.previousState.entries[`${slug}.md`]
-        ?.processedContentCacheFingerprint !== contentCacheFingerprint
-    ) {
-      return null;
-    }
-
-    const entry = plan.previousManifestEntriesBySlug.get(slug);
-    if (!entry) return null;
+      plan,
+      pipelineFingerprint: this.getPipelineFingerprint(),
+      getContentCacheFingerprint: () =>
+        this.getProcessedContentCacheFingerprint(slug, source),
+    });
+    if (!reused) return null;
     this.reusedContentCount += 1;
-    this.processedContentCacheFingerprints.set(slug, contentCacheFingerprint);
+    this.processedContentCacheFingerprints.set(
+      slug,
+      reused.contentCacheFingerprint,
+    );
     this.observability().tracer.event("content.reuse", { slug });
-    return cloneManifestEntry(entry);
+    return reused.entry;
   }
 
   private getPipelineFingerprint(): string | undefined {
@@ -896,38 +841,6 @@ function readFrontmatter(markdown: string): PostFrontmatter {
   const file = new VFile({ value: markdown });
   matter(file);
   return (file.data.matter ?? {}) as PostFrontmatter;
-}
-
-function cloneManifestEntry(entry: ContentManifestEntry): ContentManifestEntry {
-  return {
-    ...entry,
-    publicLocation: { ...entry.publicLocation },
-    frontmatter: { ...entry.frontmatter },
-    ...(entry.file
-      ? {
-          file: {
-            ...(entry.file.size === undefined ? {} : { size: entry.file.size }),
-            ...reviveFileDate(entry.file.ctime, "ctime"),
-            ...reviveFileDate(entry.file.mtime, "mtime"),
-          },
-        }
-      : {}),
-    aliases: [...(entry.aliases ?? [])],
-    tags: [...entry.tags],
-    links: entry.links.map((link) => ({ ...link })),
-    backlinks: [...entry.backlinks],
-    assets: entry.assets.map((asset) => ({ ...asset })),
-    ...(entry.headTags ? { headTags: [...entry.headTags] } : {}),
-  };
-}
-
-function reviveFileDate(
-  value: Date | string | undefined,
-  key: "ctime" | "mtime",
-): Partial<ContentManifestEntry["file"]> {
-  if (value === undefined) return {};
-  const date = value instanceof Date ? value : new Date(value);
-  return Number.isNaN(date.getTime()) ? {} : { [key]: date };
 }
 
 async function mapConcurrent<T, U>(

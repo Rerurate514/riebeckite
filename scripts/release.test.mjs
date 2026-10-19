@@ -741,6 +741,16 @@ test("propagation lag is retried and eventually commits and tags", async () => {
   );
 });
 
+test("final verification tolerates registry propagation longer than one minute", async () => {
+  const harness = createHarness({ propagation: 13 });
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  assert.ok(harness.state.sleeps.length >= 13);
+  assert.ok(stepLabels(harness.state).includes("git commit"));
+  assert.ok(stepLabels(harness.state).includes("git tag"));
+});
+
 test("propagation timeout fails closed without commit or tag", async () => {
   const harness = createHarness({ propagation: Number.POSITIVE_INFINITY });
 

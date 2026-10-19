@@ -8,7 +8,7 @@ sidebar:
 
 `context.cache` is a plugin-scoped, build-time cache for regenerable JSON values. Use it for work that is expensive and stable across builds, not for authoritative state.
 
-This recipe computes reading time and caches it by a hash of the rendered HTML. A content change produces a new key, so the cache cannot return stale minutes.
+This recipe computes reading time and caches it by a hash of the rendered HTML. A content change produces a new key, so cached minutes are not reused for that content.
 
 ```ts
 import { definePlugin, type PluginCache } from "@riebeckite/core";

@@ -57,7 +57,7 @@ inspectGeneratedHtml: ({ path, html }) => {
 }
 ```
 
-公開してよい内容なら `warning`、検証を失敗させるべき出力なら `error` を使います。運用ログには診断ではなく `context.logger` を使ってください。
+`warning` は公開を止めない内容に、`error` はリリースを止めるべき問題に使います。実際にコマンドを失敗させるかは、診断を消費する integration 次第です。運用ログには診断ではなく `context.logger` を使ってください。
 
 ---
 

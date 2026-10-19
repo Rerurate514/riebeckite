@@ -33,7 +33,7 @@ export function llmsTxtPlugin() {
 }
 ```
 
-The path is relative to the build output and cannot start with `/`, use `..`, or target `assets/`, `attachments/`, or `.riebeckite/`.
+The path is relative to the build output and cannot start with `/`, use `..`, target `assets/`, or target `.riebeckite/`. Leave `attachments/` to content assets.
 
 For an integration-style plugin that already runs at the end of the build, `buildEnd` can emit directly:
 
@@ -47,7 +47,7 @@ buildEnd: ({ output }) => {
 }
 ```
 
-Use `output.emit` for text or bytes and `output.emitAsset` for attachments. Both are unavailable outside the build lifecycle. Every planned output needs at least one dependency; do not use an empty array to mean "always rebuild".
+Use `output.emit` for general build output and `output.emitAsset` for generated asset files under `assets/`. Both are unavailable outside the build lifecycle. `emit` cannot write under `assets/`, and `emitAsset` cannot write under `attachments/`. Every planned output needs at least one dependency; do not use an empty array to mean "always rebuild".
 
 ---
 

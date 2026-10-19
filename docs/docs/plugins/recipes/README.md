@@ -39,7 +39,7 @@ export default defineConfig({
 });
 ```
 
-Each recipe replaces the body of `examplePlugin`. The `name` must be unique across enabled plugins, because it owns the plugin cache and generated output namespace.
+Each recipe defines its own factory. Put it in `extensions/` and register it instead of `examplePlugin`. The `name` must be unique across enabled plugins, because it owns the plugin cache and generated output namespace.
 
 ## Recipe map
 
@@ -72,7 +72,7 @@ Each recipe replaces the body of `examplePlugin`. The `name` must be unique acro
 | Graph | The related note appears as a backlink and graph neighbor |
 | Page type | `/series/typescript` is generated and lists the notes |
 | Component | The site imports it and renders it in the chosen slot |
-| CSS and client | The stylesheet loads and the button works after hydration |
+| CSS and client | The stylesheet loads and the button works after the page loads |
 | Endpoint | The dev server returns the expected JSON and cache header |
 | SEO | The page source, sitemap, and feeds use the new metadata |
 | Diagnostics | Warnings appear for the notes you expect |
@@ -81,9 +81,9 @@ Each recipe replaces the body of `examplePlugin`. The `name` must be unique acro
 | Dependencies | A missing provider fails with a clear error |
 | Logging | Debug messages appear only at the debug level |
 
-Run `pnpm build` for recipes that affect static output. For browser behavior, use `pnpm dev` and check the console and network panel.
+Run `npm run build` for recipes that affect static output. For browser behavior, use `npm run dev` and check the console and network panel.
 
-The testing levels in [Writing a Plugin](../writing-a-plugin.md#testing-a-plugin) apply to every recipe. For pipeline-level tests, see [Testing](../../framework/testing.md).
+The testing levels in [Writing a Plugin](../writing-a-plugin.md#testing-a-plugin) apply to every recipe. For framework-level test conventions, see [Testing](../../framework/testing.md).
 
 ## Common mistakes
 
@@ -94,7 +94,7 @@ The testing levels in [Writing a Plugin](../writing-a-plugin.md#testing-a-plugin
 - Adding a transform without `processedContentCache`. The site then cannot reuse processed content.
 - Assuming an endpoint becomes a static file. Use generated outputs for static export.
 - Emitting a planned output without dependencies. The runtime rejects it.
-- Changing a permalink without a redirect. Old links break, and the manifest reports it.
+- Changing a permalink without a redirect. Old links break; add a redirect if the URL was public.
 - Using `order` to override a capability dependency. Providers always run first.
 
 ## Related

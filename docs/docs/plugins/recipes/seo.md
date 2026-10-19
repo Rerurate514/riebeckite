@@ -62,6 +62,8 @@ export function titleSuffixPlugin(suffix = " | Example") {
 
 `order: -10` places this plugin before the official `seo` plugin. The dependency resolver still puts providers before consumers when capabilities are involved.
 
+This example changes article titles only. Wrap `buildWebsiteSeo` the same way if the suffix should also apply to website pages.
+
 If you change a title that also appears in JSON-LD, update `jsonLd` in the returned metadata as well. Otherwise the page title and structured data disagree.
 
 ---

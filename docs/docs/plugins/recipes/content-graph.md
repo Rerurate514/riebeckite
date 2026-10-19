@@ -44,7 +44,7 @@ export function relatedLinksPlugin() {
 
 `contentIndex` keys are lowercase path suffixes and aliases. Resolve a human-written name through the index instead of constructing a slug yourself.
 
-Use the `content.query` capability when a plugin needs to query entries frequently. The graph hook is for relationships, not for replacing a query layer.
+Use `queryContentEntries` from `@riebeckite/core` when a plugin needs to query entries frequently. If the plugin consumes output from `@riebeckite/plugin-query`, declare `requires: ["content.query"]` so it runs after the provider. The graph hook is for relationships, not for replacing a query layer.
 
 ---
 

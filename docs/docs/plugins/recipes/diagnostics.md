@@ -57,7 +57,7 @@ inspectGeneratedHtml: ({ path, html }) => {
 }
 ```
 
-Use `warning` for content that can still ship and `error` for output that should fail verification. Do not use diagnostics for operational logging; use `context.logger`.
+Use `warning` for content that can still ship. Use `error` when the problem should be treated as a release blocker by your tooling; whether it stops a command depends on the integration that consumes the diagnostic. Do not use diagnostics for operational logging; use `context.logger`.
 
 ---
 

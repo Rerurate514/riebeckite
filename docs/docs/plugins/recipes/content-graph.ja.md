@@ -44,7 +44,7 @@ export function relatedLinksPlugin() {
 
 `contentIndex` のキーは、小文字化されたパスの末尾とエイリアスです。人が書いた名前は、自分で slug を組み立てずにインデックスで解決してください。
 
-エントリを頻繁に検索するプラグインには `content.query` ケイパビリティを使います。グラフフックは関係の追加用であり、クエリ層の代わりではありません。
+プラグインがエントリを頻繁に照会する場合は、`@riebeckite/core` の `queryContentEntries` を使います。`@riebeckite/plugin-query` の出力を利用する場合は、`requires: ["content.query"]` を宣言して提供側の後に実行されるようにします。グラフフックは関係を表すためのもので、照会層の代わりではありません。
 
 ---
 

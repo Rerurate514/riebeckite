@@ -6,7 +6,7 @@ sidebar:
 ---
 # Add CSS and Browser Behavior
 
-Declare stylesheets with `assets` and browser initializers with `clientEntries`. Do not copy CSS into the site or reference `node_modules` from the browser.
+Declare stylesheets with `assets` and browser initializers with `clientEntries`. A site-local plugin can keep its CSS under `extensions/`; a published package should expose the stylesheet as a package export instead of copying it into the site or referencing `node_modules` from the browser.
 
 This recipe adds a copy button to every code block. The client module uses an explicit `publicConfig` value for the button label. Plugin `options` are never sent to the browser.
 

@@ -15,6 +15,7 @@ Read the documents that match the change before editing. These rules supplement,
 |Plugin contract, lifecycle, content processing, assets, endpoint, or cache change|[Plugin System Rules](./plugin-system.md)|
 |Theme CSS, tokens, markup hooks, or presentation change|[Theme System Rules](./theme-system.md)|
 |Build state, cache, CLI, diagnostics, profiler, tracer, doctor, or inspector change|[Build and CLI Rules](./build-and-cli.md)|
+|File split, merge, size review, or dependency-boundary change|[Source Health](./source-health.md)|
 
 When a task spans categories, read every corresponding document. For public API behavior, configuration, or user-facing commands, also consult the matching human documentation under `../en/` or `../ja/` so implementation and documentation remain aligned.
 

@@ -12,6 +12,7 @@
     "check:fix": "biome check --write .",
     "check:packages": "node scripts/check_packages.mjs",
     "check:dependencies": "node scripts/check_dependencies.mjs",
+    "check:source-health": "node scripts/check_source_health.mjs",
     "check:templates": "node scripts/check_deploy_template.mjs",
     "check:scaffold": "node scripts/check_scaffold.mjs",
     "check:docs": "node scripts/check_docs.mjs && node scripts/check_plugin_docs_parity.mjs && node scripts/sync_theme_docs.mjs --check",

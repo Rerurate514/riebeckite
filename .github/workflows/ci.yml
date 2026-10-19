@@ -61,6 +61,7 @@ jobs:
       - run: pnpm test:docs
       - run: pnpm check:packages
       - run: pnpm check:dependencies
+      - run: pnpm check:source-health
       - run: pnpm check:templates
       - run: pnpm check:ci-selection
       - run: pnpm check:ci-browsers

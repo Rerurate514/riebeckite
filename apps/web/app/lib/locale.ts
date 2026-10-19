@@ -32,16 +32,6 @@ export function formatArchivePeriod(
   );
 }
 
-export function buildTagDescription(
-  siteTitle: string,
-  tag: string,
-  lang: string | undefined,
-): string {
-  return resolveWebLocale(lang) === "ja"
-    ? `${siteTitle} の #${tag} タグの記事一覧です。`
-    : `Posts tagged #${tag} on ${siteTitle}.`;
-}
-
 export function buildArchiveDescription(
   siteTitle: string,
   period: string,

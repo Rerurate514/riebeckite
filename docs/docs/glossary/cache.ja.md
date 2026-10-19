@@ -63,7 +63,7 @@ export function computeContentCacheKey(inputs: CacheKeyInputs): string {
 
 - **`none`**: プラグインの出力は現在のコンテンツソース、frontmatter、プラグインオプションにのみ依存します。外部依存は追跡されません。
 - **`tracked`**: 外部コンテンツとファイル入力はframework-owned APIを通じてのみ読み込まれ、依存fingerprintが記録されます。fingerprintが一致しない場合、キャッシュは無効になります。
-- **`global`**: キャッシュは解決されたコンテンツ位置セット（すべての公開ページ）に依存します。どのコンテンツ項位のlocationが変化してもキャッシュは無効になります。
+- **`global`**: キャッシュは解決されたコンテンツ位置セット（すべての公開ページ）に依存します。どのコンテンツ項目のlocationが変化してもキャッシュは無効になります。
 - **`unsafe`**: プラグインは`processedContentCache`取り決めなしでprocessed contentに影響を与え得るため、キャッシュはこのプラグインをバイパスしなければなりません。
 
 `hasGlobalContentDependency`ユーティリティは、有効なプラグインのうち`dependencyMode: "global"`を使用しているかどうかをチェックし、インクリメンタルビルド中にfull content-scope fingerprintがトリガーされます。

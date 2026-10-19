@@ -48,8 +48,6 @@ const key = computeContentCacheKey({
 This key is then hashed again (with the schema version) to produce the final cache key
 used for file storage under `.riebeckite/cache/content/v5`.
 
----
-
 ## Content Cache Directory
 
 Processed content entries are stored under `.riebeckite/cache/content/v5`. The directory

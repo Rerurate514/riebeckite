@@ -23,7 +23,7 @@ incremental buildは`ContentBuildState`に保存されたbuild stateのfingerpri
 
 | フィールド | 説明 |
 | --- | --- |
-| `version` | build stateスキーマバージョン（現在は `12`）。 |
+| `version` | build stateスキーマバージョン（現在は `19`）。 |
 | `entries` | `Record<string, ContentBuildEntry>` ： per-entryのfingerprintと依存情報。 |
 | `pipelineFingerprint` | content pipelineのハッシュ（プラグイン、フィルタなど）。 |
 | `outputs` | `OutputDescriptor[]` ： 最後に生成されたoutput inventory。 |

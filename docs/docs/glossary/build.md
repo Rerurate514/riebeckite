@@ -56,7 +56,7 @@ The pipeline fingerprint (`computePipelineFingerprint`) incorporates plugin conf
 
 ## Content Cache Integration
 
-The persistent content cache at `.riebeckite/cache/content/v3` stores processed Markdown results per entry. A cache key is computed via `computeContentCacheKey` from `CacheKeyInputs` containing slug, source, normalized frontmatter, and pipeline fingerprint. Entries with mismatched schema versions (`CONTENT_CACHE_SCHEMA_VERSION`, currently 4) are treated as misses and reprocessed. The cache records logical content, file, and link dependencies (`CachedContentDependency`) that are checked on subsequent builds to determine invalidation. Cache data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
+The persistent content cache at `.riebeckite/cache/content/v5` stores processed Markdown results per entry. A cache key is computed via `computeContentCacheKey` from `CacheKeyInputs` containing slug, source, normalized frontmatter, and pipeline fingerprint. Entries with mismatched schema versions (`CONTENT_CACHE_SCHEMA_VERSION`, currently 5) are treated as misses and reprocessed. The cache records logical content, file, and link dependencies (`CachedContentDependency`) that are checked on subsequent builds to determine invalidation. Cache data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
 
 ## Related terms
 

@@ -6,11 +6,11 @@ sidebar:
 
 # Persistent Cache
 
-Per-content cache that stores processed Markdown results between builds under `.riebeckie/cache/content/vN`. A cache hit makes a build warm; a miss forces reprocessing.
+Per-content cache that stores processed Markdown results between builds under `.riebeckite/cache/content/vN`. A cache hit makes a build warm; a miss forces reprocessing.
 
 ## Cache contents
 
-Stored under `.riebeckite/cache/content/v3`.
+Stored under `.riebeckite/cache/content/v5`.
 An entry key includes Markdown source, parsed frontmatter, the cache schema, and the processing-pipeline fingerprint.
 Cached content also records logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
 
@@ -46,26 +46,26 @@ const key = computeContentCacheKey({
 ```
 
 This key is then hashed again (with the schema version) to produce the final cache key
-used for file storage under `.riebeckite/cache/content/v3`.
+used for file storage under `.riebeckite/cache/content/v5`.
 
 ---
 
 ## Content Cache Directory
 
-Processed content entries are stored under `.riebeckite/cache/content/v3`. The directory
+Processed content entries are stored under `.riebeckite/cache/content/v5`. The directory
 layout is:
 
 ```
-.riebeckite/cache/content/v3/
+.riebeckite/cache/content/v5/
   └─ <sha256-hex-digest>.json
 ```
 
 Each JSON file is a `PersistentContentCacheEntry` written to
-`.riebeckite/cache/content/v3/<hash>.json`:
+`.riebeckite/cache/content/v5/<hash>.json`:
 
 ```json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "key": "<cache-key>",
   "dependencies": [
     { "kind": "content", "id": "...", "fingerprint": "..." },

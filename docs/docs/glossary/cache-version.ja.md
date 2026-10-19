@@ -9,7 +9,7 @@ sidebar:
 
 ## スキーマのバージョン
 
-`CONTENT_CACHE_SCHEMA_VERSION`（現在は4）は、cacheの構造が変わったときに上げます。`CONTENT_CACHE_COMPATIBILITY_VERSION`（現在は3）は、振る舞いや取り決めが変わったときに変えます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
+`CONTENT_CACHE_SCHEMA_VERSION`（現在は5）は、cacheの構造が変わったときに上げます。`CONTENT_CACHE_COMPATIBILITY_VERSION`（現在は3）は、振る舞いや取り決めが変わったときに変えます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
 
 ## 移行
 
@@ -19,7 +19,7 @@ sidebar:
 
 キャッシュのバージョン管理は`packages/core/src/content/content_persistent_cache.ts`で定義された2つの定数によって制御されます：
 
-- **CONTENT_CACHE_SCHEMA_VERSION**（現在は**4**）: cacheの構造が変わったときに上げます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
+- **CONTENT_CACHE_SCHEMA_VERSION**（現在は**5**）: cacheの構造が変わったときに上げます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
 - **CONTENT_CACHE_COMPATIBILITY_VERSION**（現在は**3**）: 振る舞いや取り決めが変わったときに変えます。
 
 ## キャッシュ検索バージョン互換性
@@ -32,7 +32,7 @@ sidebar:
 
 ```json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "key": "<computed cache key>",
   "dependencies": [
     { "kind": "content", "id": "slug-name", "fingerprint": "sha256 hash" },
@@ -46,7 +46,7 @@ sidebar:
 }
 ```
 
-entryは`schemaVersion`(現在は4)、`key`(`computeContentCacheKey`からslug、source、frontmatter、pipeline fingerprintで計算)、`dependencies`(`CachedContentDependency`recordsの配列)、および`value`(frontmatterとHTML)を含みます。lookup中に`entry.key !== key`の場合、entryは`key-miss`として扱われます。
+entryは`schemaVersion`(現在は5)、`key`(`computeContentCacheKey`からslug、source、frontmatter、pipeline fingerprintで計算)、`dependencies`(`CachedContentDependency`recordsの配列)、および`value`(frontmatterとHTML)を含みます。lookup中に`entry.key !== key`の場合、entryは`key-miss`として扱われます。
 
 ## Related terms
 

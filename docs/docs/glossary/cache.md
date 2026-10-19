@@ -48,11 +48,11 @@ export function computeContentCacheKey(inputs: CacheKeyInputs): string {
 }
 ```
 
-The key is stored under `.riebeckite/cache/v4/<hash>.json`, where `v4` is the current schema version (`CONTENT_CACHE_SCHEMA_VERSION = 4`). Entries from older schema versions are treated as mismatches and regenerated.
+The key is stored under `.riebeckite/cache/content/v5/<hash>.json`, where `v5` is the current schema version (`CONTENT_CACHE_SCHEMA_VERSION = 5`). Entries from older schema versions are treated as mismatches and regenerated.
 
 ## Schema and compatibility versions
 
-- **Schema version** (`CONTENT_CACHE_SCHEMA_VERSION = 4`): increments when the cache entry structure changes (added/removed fields, type changes). A mismatch causes a cache miss and regeneration.
+- **Schema version** (`CONTENT_CACHE_SCHEMA_VERSION = 5`): increments when the cache entry structure changes (added/removed fields, type changes). A mismatch causes a cache miss and regeneration.
 - **Compatibility version** (`CONTENT_CACHE_COMPATIBILITY_VERSION = 3`): increments when the pipeline fingerprint logic changes (e.g., how plugins are fingerprinted). A mismatch also causes a cache miss.
 
 Both versions are embedded in every cache entry. The pipeline fingerprint (`computePipelineFingerprint`) combines plugin fingerprints, content filters, and an optional content-scope fingerprint into a single hash. If any plugin's `processedContentCache` contract changes, or if `content.filters.publishStrategy` changes, the pipeline fingerprint changes and all cache entries are effectively invalidated.

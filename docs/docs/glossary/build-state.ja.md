@@ -14,12 +14,12 @@ sidebar:
 
 ## バージョンと妥当性
 
-バージョンは`CONTENT_BUILD_STATE_VERSION`（現在は17）です。欠落、非互換、不正な状態ではFull Buildの経路が選ばれます。状態はBuildが成功したあとにだけ更新されるため、失敗しても以前の有効な状態は壊れません。保存形式を変更するとバージョンが上がるため、古いバージョンで書かれた状態は無視され、Full Buildの経路にフォールバックします。
+バージョンは`CONTENT_BUILD_STATE_VERSION`（現在は19）です。欠落、非互換、不正な状態ではFull Buildの経路が選ばれます。状態はBuildが成功したあとにだけ更新されるため、失敗しても以前の有効な状態は壊れません。保存形式を変更するとバージョンが上がるため、古いバージョンで書かれた状態は無視され、Full Buildの経路にフォールバックします。
 
 ## Build State構造
 
 `packages/core/src/content/content_build_state.ts`の`ContentBuildState`型には以下が含まれます：
-- `version`: number（現在は17）
+- `version`: number（現在は19）
 - `entries`: `Readonly<Record<string, ContentBuildEntry>>`：fingerprint、aliases、dependencies、リンク先、処理済みキャッシュのfingerprintを含むエントリごとの状態
 - `contentIndex`: `Readonly<Record<string, string>>`：content slugからpathへのマッピング
 - `pipelineFingerprint`: string | undefined：インクリメンタルビルドの妥当性チェック用のpipeline fingerprint

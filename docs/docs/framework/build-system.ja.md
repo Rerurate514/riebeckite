@@ -149,7 +149,7 @@ flowchart LR
 Riebeckite は、Markdown を HTML に変換した結果を次の場所に保存します。
 
 ```text
-.riebeckite/cache/content/v3
+.riebeckite/cache/content/v5
 ```
 
 これにより、変更されていない Markdown を毎回最初から処理する必要がなくなります。

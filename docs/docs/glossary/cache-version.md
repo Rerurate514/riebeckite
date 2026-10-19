@@ -10,7 +10,7 @@ The schema version of the persistent content cache that controls compatibility a
 
 ## Schema versions
 
-CONTENT_CACHE_SCHEMA_VERSION (currently 4) increments when the cache structure changes.
+CONTENT_CACHE_SCHEMA_VERSION (currently 5) increments when the cache structure changes.
 CONTENT_CACHE_COMPATIBILITY_VERSION (currently 3) changes when behavior or contracts change.
 Entries with a mismatched schema version are treated as misses and reprocessed.
 
@@ -22,7 +22,7 @@ The build log reports `schema-miss` when a cache entry has an incompatible schem
 ## Schema Version Constants
 The cache versioning is controlled by two constants defined in `packages/core/src/content/content_persistent_cache.ts`:
 
-- **CONTENT_CACHE_SCHEMA_VERSION** (currently **4**): Increments when the cache structure changes. Entries with a mismatched schema version are treated as misses and reprocessed.
+- **CONTENT_CACHE_SCHEMA_VERSION** (currently **5**): Increments when the cache structure changes. Entries with a mismatched schema version are treated as misses and reprocessed.
 - **CONTENT_CACHE_COMPATIBILITY_VERSION** (currently **3**): Changes when behavior or contracts change.
 
 ## Cache Lookup Compatibility Check
@@ -35,7 +35,7 @@ The persistent content cache entry (`PersistentContentCacheEntry` type in `packa
 
 ```json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "key": "<computed cache key>",
   "dependencies": [
     { "kind": "content", "id": "slug-name", "fingerprint": "sha256 hash" },
@@ -49,13 +49,13 @@ The persistent content cache entry (`PersistentContentCacheEntry` type in `packa
 }
 ```
 
-The entry includes `schemaVersion` (currently 4), `key` (computed via `computeContentCacheKey` from slug, source, frontmatter, and pipeline fingerprint), `dependencies` (array of `CachedContentDependency` records), and `value` (frontmatter and HTML). If `entry.key !== key` during lookup, the entry is treated as a `key-miss`.
+The entry includes `schemaVersion` (currently 5), `key` (computed via `computeContentCacheKey` from slug, source, frontmatter, and pipeline fingerprint), `dependencies` (array of `CachedContentDependency` records), and `value` (frontmatter and HTML). If `entry.key !== key` during lookup, the entry is treated as a `key-miss`.
 
 ## Schema Version Constants
 
 The cache versioning is controlled by two constants defined in `packages/core/src/content/content_persistent_cache.ts`:
 
-- **CONTENT_CACHE_SCHEMA_VERSION** (currently **4**): Increments when the cache structure changes. Entries with a mismatched schema version are treated as misses and reprocessed.
+- **CONTENT_CACHE_SCHEMA_VERSION** (currently **5**): Increments when the cache structure changes. Entries with a mismatched schema version are treated as misses and reprocessed.
 - **CONTENT_CACHE_COMPATIBILITY_VERSION** (currently **3**): Changes when behavior or contracts change. If the versions differ, the entry is treated as a `schema-miss` and reprocessed from scratch. This ensures that any structural changes to the cache schema are always picked up on the next build.
 
 ## Related terms

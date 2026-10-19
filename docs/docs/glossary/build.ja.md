@@ -52,7 +52,7 @@ pipeline fingerprint（`computePipelineFingerprint`）はplugin構成、content 
 
 ## 永続的content cache統合
 
-`.riebeckite/cache/content/v3`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`CacheKeyInputs`に含まれるslug、source、正規化されたfrontmatter、pipeline fingerprintから`computeContentCacheKey`で計算されます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は4）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheはSubsequent buildsで依存無効化を判定するための論理的content、file、link dependencies（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
+`.riebeckite/cache/content/v5`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`CacheKeyInputs`に含まれるslug、source、正規化されたfrontmatter、pipeline fingerprintから`computeContentCacheKey`で計算されます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は5）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheはSubsequent buildsで依存無効化を判定するための論理的content、file、link dependencies（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
 
 ## 関連用語
 

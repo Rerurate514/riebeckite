@@ -30,23 +30,23 @@ const key = computeContentCacheKey({
 });
 ```
 
-このkeyはその後スキーマバージョンと結合され、`.riebeckite/cache/content/v3`下でのファイル保存用の最終的なcache keyとなります。
+このkeyはその後スキーマバージョンと結合され、`.riebeckite/cache/content/v5`下でのファイル保存用の最終的なcache keyとなります。
 
 ## content cacheのディレクトリ
 
-処理済みのcontent entriesは`.riebeckite/cache/content/v3`下に保存されます。ディレクトリ構成は次のとおりです：
+処理済みのcontent entriesは`.riebeckite/cache/content/v5`下に保存されます。ディレクトリ構成は次のとおりです：
 
 ```
-.riebeckite/cache/content/v3/
+.riebeckite/cache/content/v5/
   └─ <sha256-hex-digest>.json
 ```
 
 各JSONファイルは`PersistentContentCacheEntry`として
-`.riebeckite/cache/content/v3/<hash>.json`に書き込まれます：
+`.riebeckite/cache/content/v5/<hash>.json`に書き込まれます：
 
 ```json
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "key": "<cache-key>",
   "dependencies": [
     { "kind": "content", "id": "...", "fingerprint": "..." },

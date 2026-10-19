@@ -4,8 +4,8 @@ import {
   type ScaffoldDeploymentFlags,
   ScaffoldSiteError,
 } from "./options.js";
+import type { SiteTemplateFile } from "./template_types.js";
 import { readTemplate } from "./template-loader.js";
-import type { SiteTemplateFile } from "./templates.js";
 import {
   buildWranglerConfig,
   DEFAULT_WORKER_NAME,

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import type { SiteTemplateFile } from "./templates.js";
+import type { SiteTemplateFile } from "./template_types.js";
 
 const require = createRequire(import.meta.url);
 const TEMPLATE_ROOT = path.join("templates", "scaffold");

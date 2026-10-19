@@ -10,10 +10,12 @@ import {
   hasPlugin,
   README_DEMO_ORDER,
   README_DEMOS,
-  readmePluginOptions,
-  type SiteTemplateFile,
-  type SiteTemplateVariables,
-} from "./templates.js";
+} from "./readme_demos.js";
+import { readmePluginOptions } from "./template_options.js";
+import type {
+  SiteTemplateFile,
+  SiteTemplateVariables,
+} from "./template_types.js";
 
 const HELPERS = {
   en: "https://github.com/Rerurate514/riebeckite/blob/main/docs/README.md",

@@ -7,7 +7,21 @@ import {
 import { buildSearchItems } from "./src/search-index.server.js";
 
 export { default as SearchBar } from "./components/search-bar.js";
-export * from "./src/search.js";
+export {
+  findSmart404Candidates,
+  normalizeSearchQuery,
+  normalizeSearchText,
+  type ParsedSearchQuery,
+  parseSearchQuery,
+  type SearchField,
+  type SearchFilter,
+  type SearchItem,
+  type SearchMatch,
+  type SearchResult,
+  type Smart404Candidate,
+  searchItems,
+  searchQueryFromPath,
+} from "./src/search.js";
 export { initSearch } from "./src/search-bar.client.js";
 export { buildSearchItems } from "./src/search-index.server.js";
 

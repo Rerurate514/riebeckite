@@ -1,5 +1,5 @@
+import type { SiteTemplateFile } from "./template_types.js";
 import { copyTemplateTree } from "./template-loader.js";
-import type { SiteTemplateFile } from "./templates.js";
 
 export const SCAFFOLD_UTILITY_NAMES = [
   "gitignore",

@@ -1,7 +1,7 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
-import { getShareLinks } from "../index.js";
+import { getShareLinks } from "../src/data.js";
 import type { ShareLink, ShareOptions } from "../src/types.js";
 
 export type ShareControlsProps = {

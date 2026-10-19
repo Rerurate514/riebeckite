@@ -12,7 +12,8 @@ import {
   type ScaffoldSiteResult,
 } from "./options.js";
 import { resolveScaffoldPreset } from "./presets.js";
-import { type SiteTemplateFile, siteTemplateFiles } from "./templates.js";
+import type { SiteTemplateFile } from "./template_types.js";
+import { siteTemplateFiles } from "./templates.js";
 import { wranglerConfigForDirectory } from "./wrangler-defaults.js";
 
 export {

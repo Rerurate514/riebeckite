@@ -3,25 +3,15 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
-  type PluginDataHelper,
-  type PublicContentView,
 } from "@riebeckite/core";
-import {
-  buildDocsNavigation,
-  flattenDocsNavigation,
-  resolveDocsOptions,
-} from "./src/navigation.js";
-import type {
-  DocsNavigationItem,
-  DocsNavigationLink,
-  DocsOptions,
-} from "./src/types.js";
+import { resolveDocsOptions } from "./src/navigation.js";
+import type { DocsOptions } from "./src/types.js";
 
 export type { DocsPrevNextProps } from "./components/docs-prev-next.js";
 export { default as DocsPrevNext } from "./components/docs-prev-next.js";
 export type { DocsSidebarProps } from "./components/docs-sidebar.js";
 export { default as DocsSidebar } from "./components/docs-sidebar.js";
-
+export { getDocsNavigation, getDocsPrevNext } from "./src/data.js";
 export { initDocsSidebar } from "./src/docs-sidebar.client.js";
 export {
   buildDocsNavigation,
@@ -35,32 +25,6 @@ export type {
   DocsSidebarFrontmatter,
   ResolvedDocsOptions,
 } from "./src/types.js";
-
-export const getDocsNavigation: PluginDataHelper<
-  { view: PublicContentView; entrySlug: string; options: DocsOptions },
-  readonly DocsNavigationItem[]
-> = ({ view, entrySlug, options }) => {
-  const entry = view.findRoutableBySlug(entrySlug);
-  if (!entry) return [];
-  const localized = view.discoverableEntries.filter(
-    (candidate) =>
-      candidate.publicLocation.language === entry.publicLocation.language,
-  );
-  return buildDocsNavigation(localized, resolveDocsOptions(options));
-};
-
-export const getDocsPrevNext: PluginDataHelper<
-  { items: readonly DocsNavigationItem[]; slug: string },
-  { readonly previous?: DocsNavigationLink; readonly next?: DocsNavigationLink }
-> = ({ items, slug }) => {
-  const sequence = flattenDocsNavigation(items);
-  const index = sequence.findIndex((item) => item.slug === slug);
-  if (index < 0) return {};
-  return {
-    ...(sequence[index - 1] ? { previous: sequence[index - 1] } : {}),
-    ...(sequence[index + 1] ? { next: sequence[index + 1] } : {}),
-  };
-};
 
 export const DOCS_PLUGIN_NAME = "docs";
 

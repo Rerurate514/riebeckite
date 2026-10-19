@@ -231,6 +231,7 @@ function isOutputDependency(value: unknown): value is OutputDependency {
     (value.type === "tag" && typeof value.tag === "string") ||
     (value.type === "folder" && typeof value.folder === "string") ||
     (value.type === "file" && typeof value.path === "string") ||
+    (value.type === "public-location" && typeof value.pathname === "string") ||
     (value.type === "external" && typeof value.id === "string") ||
     (value.type === "projection" &&
       (value.projection === "navigation" ||

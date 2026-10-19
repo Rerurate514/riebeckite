@@ -26,6 +26,8 @@ test("preset benchmark prepares workspace packages and explicit package links", 
   assert.match(runner, /packages\/integrations\/honox\/dist\/server\.js/);
   assert.match(runner, /"mermaid",\s*"node_modules",\s*"puppeteer"/);
   assert.match(runner, /"excalidraw",\s*"node_modules",\s*"lz-string"/);
+  assert.match(runner, /async function optionalAlias/);
+  assert.match(runner, /\{ cwd: siteRoot, maxBuffer:/);
   assert.match(runner, /async function linkJunctionIfAbsent/);
   assert.match(runner, /Refusing to replace non-link dependency/);
   assert.match(runner, /Refusing to replace mismatched dependency link/);

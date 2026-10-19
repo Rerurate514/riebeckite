@@ -45,9 +45,9 @@ Starterの標準構成には`properties`、`related-posts`、`responsive-image`�
 
 ## 計測
 
-実行環境: Windows x64、Node v24.11.1、Intel Core i7-14700KF、RAM 32,581 MB。各ケース1 sample。増減比較用のPhase 2F直前計測はこのworktreeでは取得していないため、差分値は記載しない。
+実行環境: Windows x64、Node v24.11.1、Intel Core i7-14700KF、RAM 32,581 MB。各ケース1 sample。incremental後の`dist`をclean buildの`dist`とファイル集合・内容ハッシュで比較した。HTML、JSON（検索・sitemap・graphを含む）、assetを含む。`.riebeckite`はclean前に削除する状態メタデータであり、公開出力同値性の対象外とした。Output Cacheとinventoryは各buildの診断・cache hit/missおよびHonoxの状態破損回帰で別途確認した。
 
-実行済みのStarter結果はすべてincrementalとcleanのbyte比較が一致した。
+Starterの既存結果はすべてincrementalとcleanのbyte比較が一致した。
 
 | サイズ | シナリオ | rendered | reused | Clean一致 |
 | --- | --- | ---: | ---: | --- |
@@ -70,16 +70,66 @@ Starterの標準構成には`properties`、`related-posts`、`responsive-image`�
 | 1000 | public-to-draft | 1940 | 10 | true |
 | 1000 | draft-to-public | 1944 | 10 | true |
 
-Showcase 100/1000は開始時のcold buildで未導入の`puppeteer`を`@riebeckite/plugin-qr-code`のMermaid build renderingが要求し、完走できなかった。依存追加やlockfile変更は本Phaseの範囲外のため行っていない。したがってShowcaseの数値は未検証であり、推測値を記載しない。
+### Showcase 再現・修正
 
-Starterのbody/link/delete/publication系がなお広くrenderされるのは、上表の監査で維持した`global`依存が標準presetに残るためである。`no-change`の0 renderとOutput Cache再利用は維持された。
+最初のcold buildは`Mermaid build rendering failed: Cannot find package 'puppeteer' imported from ...plugin-qr-code/dist/index.js`で失敗した。QR Code pluginがPuppeteerを要求しているわけではない。ShowcaseのMermaid build rendererがdynamic importのfallbackで`process.cwd()`からPuppeteerを解決する一方、benchmark runnerがrepo rootをcwdとして子buildを起動していたため、scaffold siteに作成済みのPuppeteer linkを見つけられなかった。
+
+`benchmarks/preset-ssg/runner.mjs`は子buildのcwdをscaffold siteへ変更し、CI runnerと同じ任意Vite alias（Puppeteer、`lz-string`）を追加した。Puppeteer 25.11.0とheadless shellは既存lockfile・ローカルcacheで利用可能で、依存追加・lockfile変更はない。
+
+### Showcase: incremental と clean の比較
+
+| サイズ | シナリオ | incremental rendered / reused | Output Cache hit / miss | Clean一致 |
+| --- | --- | ---: | ---: | --- |
+| 100 | cold | 268 / 0 | 0 / 322 | true |
+| 100 | no-change | 268 / 0 | 330 / 0 | true |
+| 100 | body edit | 268 / 0 | 330 / 0 | true |
+| 100 | link edit | 268 / 0 | 330 / 0 | true |
+| 100 | add | 272 / 0 | 330 / 0 | true |
+| 100 | delete | 266 / 0 | 330 / 0 | true |
+| 100 | rename | 268 / 0 | 330 / 0 | true |
+| 100 | public-to-draft | 266 / 0 | 330 / 0 | true |
+| 100 | draft-to-public | 270 / 0 | 330 / 0 | true |
+| 1000 | cold | 2016 / 0 | 0 / 2124 | true |
+| 1000 | no-change | 2016 / 0 | 2132 / 0 | true |
+| 1000 | body edit | 2016 / 0 | 2132 / 0 | true |
+| 1000 | link edit | 2016 / 0 | 2132 / 0 | true |
+| 1000 | add | 2020 / 0 | 2132 / 0 | true |
+| 1000 | delete | 2014 / 0 | 2132 / 0 | true |
+| 1000 | rename | 2016 / 0 | 2132 / 0 | true |
+| 1000 | public-to-draft | 2014 / 0 | 2132 / 0 | true |
+| 1000 | draft-to-public | 2018 / 0 | 2132 / 0 | true |
+
+9 scenarioすべてで差分は0件だった。public-to-draftでは出力数が減り、draft-to-publicでは増えることをclean buildと一致する形で確認した。delete、renameも旧出力を残さない。これらの計測時点では、後述の状態ストア検証漏れによりShowcaseのno-changeも全出力を再描画していた。出力同値性の判定自体はその状態でも有効である。
+
+### Phase 2F-V: Showcase no-change の状態再利用
+
+`public-location`をPhase 2FでOutput Dependencyに追加した一方、`content_build_state_store`の永続状態検証器がこの型を受理していなかった。Breadcrumbsを含むShowcaseの`content-state.json`は保存後に`invalid-shape`として破棄され、次回buildは全Contentを新規追加と判定していた。その結果、fast pathの判定順で`content-or-output-changed`が先に返り、本来の`plugin-build-end`ブロック理由に到達しなかった。
+
+検証器に`{ type: "public-location", pathname: string }`を追加し、保存済みOutput descriptorを読み戻す回帰テストを追加した。期待値は変更していない。修正後のShowcase no-changeは`plugin-build-end`で通常buildへフォールバックし、SSGは`0 rendered / 85 reused`となった。Mermaidの`unsafe`契約に該当する8 Contentだけは安全側に再処理し、残る28 Contentは再利用した。全出力を再描画していた不要な処理は解消し、`buildEnd`を持つPluginのためfast path自体は意図どおり使用しない。
+
+同じrunnerでno-changeを再計測し、100件では`0 rendered / 322 reused`、1000件では`0 rendered / 2124 reused`となった。いずれもclean buildとの差分は0件である。runnerの計測経路ではno-change fast pathも適用され、Contentはそれぞれ`8 processed / 128 reused`、`8 processed / 1028 reused`だった。
+
+### Phase 2E との数値比較
+
+同じマシンで記録されたPhase 2EのShowcase/1000 cold build（2 samples中央値）は175,592.5 ms、clean buildは151,703 msだった。今回の1 sampleはそれぞれ47,437 ms、43,641 msで、記録値との差は-73.0%、-71.2%である。ただしsample数が異なり、今回benchmark harnessのcwd解決も修正している。したがってこの差をPhase 2Fの依存粒度変更による性能改善とは解釈しない。Phase 2Fが直接変更したBreadcrumbs/Hover Previewの効果は、global依存が残るShowcase全体のrender数から分離して測定できない。
 
 ## 検証
 
-- `pnpm --filter @riebeckite/core test` — 307 passed
-- `pnpm --filter @riebeckite/plugin-breadcrumbs test` — 30 passed
-- `pnpm typecheck` — 146 projects OK
-- `pnpm check` — 既存のwarning 13件と既存`benchmarks/preset-ssg/ci-runner.mjs`のformat errorにより失敗。今回の変更に関するerrorはformat修正済み。
+- `pnpm --filter @riebeckite/core test` — 310 passed。動的dependencyの前回target併合、遷移保存後の旧target非保持、resolver failureの伝播、および`public-location`を含む状態の再読込を確認した。
+- `pnpm --filter @riebeckite/plugin-breadcrumbs test` — 30 passed。
+- `pnpm --filter @riebeckite/plugin-mermaid test` — 16 passed。
+- `pnpm --filter @riebeckite/plugin-qr-code test` — 18 passed。
+- `pnpm --filter @riebeckite/honox test` — 165 passed。output cache破損、delete、rename、public-to-draft、draft-to-publicを含む。
+- `pnpm test:benchmark:presets` — 11 passed。runnerのclean比較とresumeを含む。
+- `pnpm --filter @riebeckite/plugin-hover-preview build` — passed（packageにtest scriptはない）。
+- `pnpm typecheck` — 146 projects OK。
+- `pnpm check:docs` — 766 Markdown、plugin 70、theme README 12でpassed。
+- `pnpm check:scaffold` — passed。
+- `pnpm exec biome check benchmarks/preset-ssg/runner.mjs benchmarks/preset-ssg/runner.test.mjs packages/core/src/content/content_build_state_store.ts packages/core/test/content_build_state_store.test.ts packages/core/test/output_dependency.test.ts` — passed。
+- `pnpm check` — 今回と無関係のwarning 13件、および既存`benchmarks/preset-ssg/ci-runner.mjs`のformat errorにより失敗。
+- `RIEBECKITE_PRESET_FAST_PATH_PRESETS=showcase pnpm test:e2e:preset-fast-path` — passed。no-change、plugin option no-change、full build後のrecoveryはいずれも`plugin-build-end`、SSGは`0 rendered / 85 reused`。追加、編集、公開状態遷移、削除、renameおよびfull buildとのbyte一致もpassed。
+- `pnpm test:e2e:preset-fast-path` — Empty、Minimal、Starter、Showcaseすべてpassed。
+- `pnpm benchmark:presets --presets showcase --sizes 100,1000 --scenarios no-change` — 100/1000ともclean buildとの差分0件、全Output再利用を確認した。
 
 ## 次段階
 

@@ -151,6 +151,86 @@ test("previous public-location dependencies invalidate breadcrumbs when an owner
   assert.deepEqual(paths(result.removed), ["docs.html"]);
 });
 
+test("dynamic dependencies retain the previous target during a dependency transition", () => {
+  const a = entry("a");
+  const previous = manifest([a, entry("b")]);
+  const draftB = {
+    ...entry("b"),
+    publishing: {
+      visibility: "draft" as const,
+      routable: false,
+      discoverable: false,
+    },
+  };
+  const current = manifest([a, draftB], {
+    publicEntries: [a],
+    discoverableEntries: [a],
+    byRoutablePermalink: new Map([[a.permalink, a]]),
+  });
+  const resolver: ContentOutputDependencyResolver = ({ entry, manifest }) =>
+    entry.slug === "a" && manifest.byRoutablePermalink.has("/b")
+      ? [{ type: "content", slug: "b" }]
+      : [];
+
+  const result = changes(
+    previous,
+    current,
+    { changed: ["b.md"] },
+    [],
+    resolver,
+  );
+
+  assert.deepEqual(paths(result.affected), ["a.html"]);
+  assert.deepEqual(paths(result.removed), ["b.html"]);
+});
+
+test("dynamic dependencies stop retaining a replaced target after the transition is saved", () => {
+  const a = entry("a");
+  const draftB = {
+    ...entry("b"),
+    publishing: {
+      visibility: "draft" as const,
+      routable: false,
+      discoverable: false,
+    },
+  };
+  const previous = manifest([a, draftB], {
+    publicEntries: [a],
+    discoverableEntries: [a],
+    byRoutablePermalink: new Map([[a.permalink, a]]),
+  });
+  const current = manifest([a, { ...draftB, title: "B2" }], {
+    publicEntries: [a],
+    discoverableEntries: [a],
+    byRoutablePermalink: new Map([[a.permalink, a]]),
+  });
+  const resolver: ContentOutputDependencyResolver = ({ entry, manifest }) =>
+    entry.slug === "a" && manifest.byRoutablePermalink.has("/b")
+      ? [{ type: "content", slug: "b" }]
+      : [];
+
+  const result = changes(
+    previous,
+    current,
+    { changed: ["b.md"] },
+    [],
+    resolver,
+  );
+
+  assert.deepEqual(paths(result.affected), []);
+  assert.deepEqual(paths(result.unchanged), ["a.html"]);
+});
+
+test("a dynamic dependency resolver failure is surfaced", () => {
+  assert.throws(
+    () =>
+      buildOutputInventory(manifest([entry("a")]), [], () => {
+        throw new Error("resolver failed");
+      }),
+    /resolver failed/,
+  );
+});
+
 test("content output is affected when its dependency fingerprint changed", () => {
   const previous = manifest([entry("a"), entry("b")]);
   const current = manifest([entry("a"), entry("b")]);

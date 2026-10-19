@@ -1,8 +1,10 @@
 import {
   type ContentManifest,
+  type ContentManifestEntry,
   createStyleAsset,
   type Diagnostic,
   definePlugin,
+  type OutputDependency,
   type PluginManifestContext,
 } from "@riebeckite/core";
 import {
@@ -63,7 +65,8 @@ export function properties(options: PropertiesOptions = {}) {
       version: "properties-v1",
       dependencyMode: "none",
     },
-    contentOutputDependencies: [{ type: "global" }],
+    resolveContentOutputDependencies: ({ entry, manifest }) =>
+      propertyOutputDependencies(entry, manifest, resolved),
     options,
     validateOptions: validatePropertiesOptions,
     assets: [
@@ -106,6 +109,61 @@ function createLinkResolver(manifest: ContentManifest): PropertiesLinkResolver {
 
     return anchor ? `${entry.permalink}#${anchor}` : entry.permalink;
   };
+}
+
+function propertyOutputDependencies(
+  entry: ContentManifestEntry,
+  manifest: ContentManifest,
+  options: ReturnType<typeof resolvePropertiesOptions>,
+): readonly OutputDependency[] {
+  const dependencies = new Map<string, OutputDependency>();
+  for (const [, value] of selectedProperties(entry.frontmatter, options)) {
+    for (const target of wikilinkTargets(value)) {
+      const slug = manifest.contentIndex.get(target.toLowerCase());
+      if (!slug || !manifest.bySlug.has(slug)) return [{ type: "global" }];
+      dependencies.set(slug, { type: "content", slug });
+    }
+  }
+  return [...dependencies.values()];
+}
+
+function selectedProperties(
+  frontmatter: Readonly<Record<string, unknown>>,
+  options: ReturnType<typeof resolvePropertiesOptions>,
+): readonly (readonly [string, unknown])[] {
+  return Object.entries(frontmatter).filter(
+    ([key, value]) =>
+      value !== undefined &&
+      (options.include
+        ? options.include.includes(key)
+        : !options.exclude.includes(key)) &&
+      (!options.hideEmpty || !isEmpty(value)),
+  );
+}
+
+function isEmpty(value: unknown): boolean {
+  return (
+    value === null ||
+    value === "" ||
+    (Array.isArray(value) && value.length === 0)
+  );
+}
+
+function* wikilinkTargets(value: unknown): Generator<string> {
+  if (typeof value === "string") {
+    for (const match of value.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]+)?\]\]/g)) {
+      const target = match[1]?.split(/[#^]/, 1)[0]?.trim();
+      if (target) yield target;
+    }
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) yield* wikilinkTargets(item);
+    return;
+  }
+  if (value && typeof value === "object") {
+    for (const item of Object.values(value)) yield* wikilinkTargets(item);
+  }
 }
 
 /**

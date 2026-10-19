@@ -134,6 +134,44 @@ test("wikilink values resolve through the manifest content index", async () => {
   assert.deepEqual(diagnostics, []);
 });
 
+test("declares output dependencies for resolved property wikilinks", () => {
+  const source = entry("note", { title: "Note" });
+  const linking = entry("a", { related: "[[note#Section]]" });
+  const manifest = manifestOf([source, linking]);
+  manifest.contentIndex.set("note", "note");
+
+  const dependencies = properties().resolveContentOutputDependencies?.({
+    entry: linking,
+    manifest,
+  });
+
+  assert.deepEqual(dependencies, [{ type: "content", slug: "note" }]);
+});
+
+test("retains a global dependency for unresolved property wikilinks", () => {
+  const linking = entry("a", { related: "[[later]]" });
+  const manifest = manifestOf([linking]);
+
+  const dependencies = properties().resolveContentOutputDependencies?.({
+    entry: linking,
+    manifest,
+  });
+
+  assert.deepEqual(dependencies, [{ type: "global" }]);
+});
+
+test("does not add a global dependency without property wikilinks", () => {
+  const item = entry("a", { title: "A", status: "published" });
+  const manifest = manifestOf([item]);
+
+  const dependencies = properties().resolveContentOutputDependencies?.({
+    entry: item,
+    manifest,
+  });
+
+  assert.deepEqual(dependencies, []);
+});
+
 test("unrenderable values produce a tagged diagnostic", async () => {
   const entries = [entry("bad", { weird: Symbol("x") }, "<p>b</p>")];
   const diagnostics = await runHook(properties(), entries);

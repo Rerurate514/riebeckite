@@ -29,7 +29,7 @@ flowchart TD
     Dev --> Repo["Riebeckite Monorepo"]
 ```
 
-# 開発を始める
+## 開発を始める
 
 Riebeckite 本体を開発する場合は、repository を clone して依存関係をインストールします。
 
@@ -42,7 +42,7 @@ pnpm build
 
 これで workspace 内の package を開発できる状態になります。
 
-## 開発サーバーを起動する
+### 開発サーバーを起動する
 
 ```bash id="kueg3z"
 pnpm dev
@@ -52,7 +52,7 @@ pnpm dev
 
 `apps/web` は単なるデモではなく、Framework 開発時に Core、Plugin、Theme、Integration が正しく組み合わさることを確認するための参照アプリでもあります。
 
-# Repository の構成
+## Repository の構成
 
 Riebeckite は pnpm workspace を使った monorepo です。
 
@@ -93,7 +93,7 @@ flowchart TD
 
 各 package の詳しい責務については [Architecture](./architecture.ja.md) を参照してください。
 
-# よく使うコマンド
+## よく使うコマンド
 
 Framework 開発でよく使用するコマンドは次のとおりです。
 
@@ -110,7 +110,7 @@ Framework 開発でよく使用するコマンドは次のとおりです。
 | `pnpm check:theme-docs` | Theme Documentation と生成した README の同期を検査する |
 | `pnpm check:scaffold` | 生成される Site を検査する |
 
-## Documentation を変更した場合
+### Documentation を変更した場合
 
 ```bash id="2wm0wz"
 pnpm check:docs
@@ -120,7 +120,7 @@ Markdown link や Documentation の構造を検査します。
 
 ドキュメントを追加・移動・削除した場合は実行してください。
 
-## Plugin / Theme Documentation を変更した場合
+### Plugin / Theme Documentation を変更した場合
 
 Plugin / Theme Documentation の所有権は次のとおりです。
 
@@ -146,7 +146,7 @@ pnpm check:plugin-docs
 pnpm check:theme-docs
 ```
 
-## Scaffold を変更した場合
+### Scaffold を変更した場合
 
 ```bash id="5xutky"
 pnpm check:scaffold
@@ -164,7 +164,7 @@ pnpm check:scaffold
 
 などを変更した場合に重要です。
 
-## Package の型を確認する
+### Package の型を確認する
 
 ```bash id="hlsudn"
 pnpm typecheck
@@ -172,7 +172,7 @@ pnpm typecheck
 
 TypeScript の型エラーを確認します。
 
-## 特定 Package の Test
+### 特定 Package の Test
 
 変更した package だけを確認したい場合は `--filter` を使用できます。
 
@@ -182,7 +182,7 @@ pnpm --filter <package> test
 
 たとえば特定の Plugin だけを変更した場合、最初から repository 全体の test を実行するのではなく、対象 package の test から確認できます。
 
-# 変更するときの基本的な流れ
+## 変更するときの基本的な流れ
 
 変更内容によって必要な検証は異なりますが、基本的には **小さい範囲から確認して、最後に広い範囲を確認する** 形を推奨します。
 
@@ -210,7 +210,7 @@ pnpm --filter <plugin-package> test
 
 変更のたびに最初から最も重い command を実行する必要はありません。
 
-# どこを変更するか
+## どこを変更するか
 
 機能を追加するときは、まず責務に合った package を選びます。
 
@@ -229,7 +229,7 @@ flowchart TD
 
 判断に迷う場合は、[Architecture](./architecture.ja.md) の責務分離を基準にしてください。
 
-# Package の境界
+## Package の境界
 
 Framework を変更するときは package 間の依存方向を維持してください。
 
@@ -267,7 +267,7 @@ Vite
 
 Framework に依存しない contract は Core に置き、その contract を Integration や Plugin が利用します。
 
-# Public API を使う
+## Public API を使う
 
 外部 Plugin / Theme と同じ条件で利用できる API は、公開 export から参照してください。
 
@@ -289,7 +289,7 @@ import { ... } from "@riebeckite/core/src/...";
 
 公式 Plugin や Theme も可能な限り Public API の consumer として実装することで、外部 package から実際に利用できる contract になっていることを確認できます。
 
-# Scaffold は独立した Site として扱う
+## Scaffold は独立した Site として扱う
 
 Scaffold は Riebeckite monorepo 内でしか動かない構成にしてはいけません。
 
@@ -311,7 +311,7 @@ build
 
 `check:scaffold` や external-site E2E は、この境界を検証するためにあります。
 
-# Documentation の境界
+## Documentation の境界
 
 一般ユーザー向け Documentation では、Riebeckite monorepo の clone や workspace setup を前提にしません。
 
@@ -333,7 +333,7 @@ Site を作るユーザーと Framework を開発するユーザーでは、必�
 
 monorepo 固有の command、内部 package 構成、Framework の build 方法などは、この Framework Development セクションで扱います。
 
-# 開発時に守る境界
+## 開発時に守る境界
 
 Framework の変更では、特に次の点を維持してください。
 

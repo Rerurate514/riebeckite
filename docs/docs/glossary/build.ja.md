@@ -48,7 +48,7 @@ Buildプロセスは、`packages/core/src/pipeline.ts`で定義されたパイ�
 
 `packages/core/src/pipeline.ts`の`Pipeline`クラスは`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続的content cacheをスキャッシュキー（slug、source、frontmatter、pipeline fingerprint）でチェックします。cacheヒットで無効な依存がない場合は、キャッシュされたfrontmatterとHTMLが即座に返されます。cacheミスまたはバイパスの場合、RemarkとRehypeプラグインによる解析、frontmatter抽出、GFM、math、カスタム変換を経てmarkdownが処理されます。リンク解決はコンテンツ依存関係トラッカーを通じて依存を記録します。処理後、結果は将来のIncremental Build用にdependenciesとfingerprintとともにpersistent content cacheに保存されます。
 
-pipeline fingerprint（`computePipelineFingerprint`）はplugin構成、content filter、compatibility versionを組み込みます。cache可能性は`isPersistentlyCacheable`によって決定され、各pluginの`processedContentCache`契約（dependencyMode: none/tracked/global/unsafe）がチェックされます。
+pipeline fingerprint（`computePipelineFingerprint`）はplugin構成、content filter、compatibility versionを組み込みます。cache可能性は`isPersistentlyCacheable`によって決定され、各pluginの`processedContentCache`の取り決め（dependencyMode: none/tracked/global/unsafe）がチェックされます。
 
 ## 永続的content cache統合
 

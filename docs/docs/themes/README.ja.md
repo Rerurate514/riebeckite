@@ -38,7 +38,7 @@ Theme は Content の意味や Site の機能を変更するものではあり�
 
 検索、図表、WikiLink、Analytics などの**機能を追加したい場合は [Plugins](../plugins/README.ja.md)** を利用します。
 
-## Theme と Plugin の違い
+### Theme と Plugin の違い
 
 迷った場合は、「見た目を変えたいのか」「機能を追加したいのか」で考えます。
 
@@ -62,7 +62,7 @@ flowchart TD
     Want -->|"機能"| Plugin["Plugin"]
 ```
 
-# 最初から Theme は設定されている
+## 最初から Theme は設定されている
 
 `create-riebeckite` で生成した Site には、通常すでに Theme が設定されています。
 
@@ -78,7 +78,7 @@ Preset によって既定の Theme が異なります。
 
 見た目を変更したくなったときに、別の Theme へ切り替えれば十分です。
 
-# Theme を変更する
+## Theme を変更する
 
 別の Theme を使う場合は、大きく2つの手順があります。
 
@@ -88,7 +88,7 @@ Preset によって既定の Theme が異なります。
 2. riebeckite.config.tsでThemeを指定
 ```
 
-## 1. Theme をインストールする
+### 1. Theme をインストールする
 
 たとえば Minimal Theme を利用する場合は、
 
@@ -98,7 +98,7 @@ npm install @riebeckite/theme-minimal
 
 を実行します。
 
-## 2. Theme を設定する
+### 2. Theme を設定する
 
 Theme の Factory を Import し、`riebeckite.config.ts` の `theme` に指定します。
 
@@ -123,7 +123,7 @@ riebeckite.config.ts
 Site
 ```
 
-# Theme の Option
+## Theme の Option
 
 Theme によっては Option を指定できます。
 
@@ -147,7 +147,7 @@ Theme ごとに利用できる Option は異なる場合があります。
 
 正確な Factory 名と Option は、それぞれの Package README を確認してください。
 
-# Color Mode
+## Color Mode
 
 Theme は共通設定として Color Mode を扱えます。
 
@@ -175,7 +175,7 @@ system
 
 Color Mode の詳しい Contract は [Theme API](../reference/theme-api.ja.md) を参照してください。
 
-# Typography
+## Typography
 
 文字の雰囲気も Theme の一部です。
 
@@ -201,7 +201,7 @@ sans
 
 実際の Font や細かな Typography は Theme が決定します。
 
-# Article Layout
+## Article Layout
 
 記事部分の Layout も Theme から設定できます。
 
@@ -223,7 +223,7 @@ full-width
 
 Site の用途や記事の種類に合わせて選択できます。
 
-# 少しだけ見た目を変更する
+## 少しだけ見た目を変更する
 
 Theme を丸ごと作るほどではない小さな変更には `userCss` を利用できます。
 
@@ -247,7 +247,7 @@ defaultTheme({
 
 `userCss` は Theme の Style より後に適用されるため、Site 固有の調整に向いています。
 
-# `userCss` と Theme の使い分け
+## `userCss` と Theme の使い分け
 
 目安は次のとおりです。
 
@@ -272,7 +272,7 @@ flowchart TD
 
 最初は `userCss` で調整し、変更が大きくなったら Theme として整理する方法もあります。
 
-# 公式 Theme
+## 公式 Theme
 
 Riebeckite には複数の公式 Theme があります。
 
@@ -287,7 +287,7 @@ Riebeckite には複数の公式 Theme があります。
 
 各 Theme の正確な Export 名と Option は、それぞれの正本ページを参照してください。Package README は正本ページから生成されます。
 
-# Default
+## Default
 
 [Default](./default.ja.md) は、Riebeckite の標準的な Theme です。
 
@@ -303,7 +303,7 @@ export default defineConfig({
 
 `starter` と `showcase` Preset では Default Theme が利用されます。
 
-# Minimal
+## Minimal
 
 [Minimal](./minimal.ja.md) は、装飾を抑えた Theme です。
 
@@ -317,7 +317,7 @@ export default defineConfig({
 
 `minimal` Preset ではこの Theme が利用されます。
 
-# Gruvbox
+## Gruvbox
 
 [Gruvbox](./gruvbox.ja.md) は、Gruvbox をもとにした暖色系の Theme です。
 
@@ -331,7 +331,7 @@ export default defineConfig({
 
 暖かい色と高いコントラストを持つ配色を利用します。
 
-# Rerurate
+## Rerurate
 
 [Rerurate](./rerurate.ja.md) は、Rerurate の視覚文法をもとにした Theme です。
 
@@ -343,7 +343,7 @@ export default defineConfig({
 });
 ```
 
-# Sakura
+## Sakura
 
 [Sakura](./sakura.ja.md) は、桜をモチーフにした Theme です。
 
@@ -355,7 +355,7 @@ export default defineConfig({
 });
 ```
 
-# Tokyo Night
+## Tokyo Night
 
 [Tokyo Night](./tokyonight.ja.md) は、Tokyo Night をもとにした暗色系 Theme です。
 
@@ -369,7 +369,7 @@ export default defineConfig({
 
 Editor のような暗色系の見た目を利用できます。
 
-# Theme を切り替える
+## Theme を切り替える
 
 Theme は `riebeckite.config.ts` の `theme` を変更することで切り替えられます。
 
@@ -399,7 +399,7 @@ npm exec riebeckite dev
 
 で実際の表示を確認します。
 
-# Theme が変更するもの
+## Theme が変更するもの
 
 Theme の責任範囲は **Presentation** です。
 
@@ -442,7 +442,7 @@ flowchart TD
     App --> Page["Route / Navigation / Composition"]
 ```
 
-# Theme を自作する
+## Theme を自作する
 
 既存 Theme の `userCss` だけでは足りず、再利用できる Design としてまとめたい場合は、自分で Theme を作成できます。
 
@@ -464,7 +464,7 @@ Themeを作りたい
 
 Theme の公開 Contract を確認したい場合は [Theme API](../reference/theme-api.ja.md)、Riebeckite 内部で Theme がどのように扱われるか知りたい場合は [Framework / Theme System](../framework/theme-system.ja.md) を参照してください。
 
-# まとめ
+## まとめ
 
 Theme は Riebeckite Site の**見た目を担当する仕組み**です。
 
@@ -498,7 +498,7 @@ devで確認
 
 Theme ごとの正確な Factory 名と Option は、それぞれの正本ページを確認してください。
 
-## 次に読むページ
+### 次に読むページ
 
 - [Writing a Theme](./writing-a-theme.ja.md) — Theme を自作する
 - [Theme API](../reference/theme-api.ja.md) — Theme の公開 Contract

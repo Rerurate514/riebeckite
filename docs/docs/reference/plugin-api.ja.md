@@ -20,7 +20,7 @@ Plugin では、たとえば次のような機能を追加できます。
 
 Plugin は必要な機能だけを実装します。
 
-# まず何を使うか決める
+## まず何を使うか決める
 
 Plugin を作るときは、最初に **目的に合った最小の Extension Point** を選びます。
 
@@ -41,7 +41,7 @@ flowchart TD
 
 たとえば Canvas や Excalidraw を記事内へ表示するなら `renderers`、`/explore` のような独立したページを提供するなら `pageTypes` を使います。独立画面が必要だからといって、Plugin 固有の HonoX route を追加するわけではありません。
 
-# 最小の Plugin
+## 最小の Plugin
 
 最も小さい Plugin は次のように作れます。
 
@@ -74,7 +74,7 @@ export function examplePlugin(
 
 `definePlugin()` が Plugin の共通 contract を提供します。
 
-# Plugin が持てる機能
+## Plugin が持てる機能
 
 `RiebeckitePlugin` には、大きく次の Extension Point があります。
 
@@ -98,7 +98,7 @@ export function examplePlugin(
 
 Plugin はこの中から**必要なものだけ**を使用してください。
 
-# Plugin の有効化
+## Plugin の有効化
 
 Plugin は `riebeckite.config.ts` の `plugins` へ追加します。
 
@@ -126,7 +126,7 @@ enabled: false
 
 の Plugin も実行対象になりません。
 
-# Plugin の順序と依存関係
+## Plugin の順序と依存関係
 
 `order` は、変換や renderer の優先順を決定的にするための基本順です。Plugin 間に Capability の提供・消費がなく、Pipeline 内の実行順だけが必要な場合に使用します。
 
@@ -177,7 +177,7 @@ Capability の解決に失敗した場合は `PluginDependencyError`（`@riebeck
 
 依存関係のない Plugin については、入力順を可能な限り維持します。
 
-# Options Validation
+## Options Validation
 
 TypeScript の型だけでは、実行時に渡される設定値が必ず正しいとは保証できません。
 
@@ -209,7 +209,7 @@ Validator は **設定の検証だけ**を行ってください。
 
 問題は structured issue として返し、Riebeckite の Config Validation がまとめて表示できるようにします。
 
-# Plugin Context
+## Plugin Context
 
 Plugin は Framework の機能を `PluginContext` から受け取ります。
 
@@ -241,7 +241,7 @@ Hook にによって、
 
 Plugin 内で global singleton を作るより、Context から Framework Service を受け取ることを優先してください。
 
-# Lifecycle
+## Lifecycle
 
 Plugin には Framework 全体の Lifecycle と、Content 処理の Lifecycle があります。
 
@@ -261,7 +261,7 @@ buildEnd
 
 名前付き Lifecycle / Content Hook でエラーが発生した場合は `PluginHookError`（`@riebeckite/core` から import 可能）として上位へ伝播させます。`message` は `Plugin "<name>" failed during "<hook>"` 形式で、元の Error は `cause` に保持されます。Content Hook で発生した場合は、対象 file が `path`（例: `note.md`）として設定されます。
 
-# Content Lifecycle
+## Content Lifecycle
 
 Content 処理は概念的に次の順番で進みます。
 
@@ -289,7 +289,7 @@ flowchart TD
 
 後段ですでに得られる情報を前段で独自に再構築しないでください。
 
-# Markdown / HTML Pipeline
+## Markdown / HTML Pipeline
 
 Markdown や HTML の意味を変換する場合は Pipeline を使用します。
 
@@ -327,9 +327,9 @@ definePlugin({
 Markdown AST や HTML AST の処理を Application Component に持ち込まず、Plugin の Pipeline 処理として実装するのが基本です。
 ```
 
-# 処理済み Content の Build Dependency
+## 処理済み Content の Build Dependency
 
-Incremental Build の無効化は Core の責務です。Plugin は独自に affected content を計算せず、`processedContentCache` で契約を宣言します。
+Incremental Build の無効化は Core の責務です。Plugin は独自に affected content を計算せず、`processedContentCache` で取り決めを宣言します。
 
 ```ts
 definePlugin({
@@ -347,17 +347,17 @@ definePlugin({
 
 - `none` は、処理結果が Content 本体、frontmatter、options、宣言した version だけに依存することを表します。
 - `tracked` は、Pipeline が他の Content や file を読む場合に使います。`context.contentSource`、`readContentSourceEntry`、`renderContent`、`renderNoteEmbed` を使うと、Core が `ContentDependencyTracker` ににより Content/file 読み取りを自動記録します。filesystem を直接読んではいけません。
-- `unsafe` は処理済み Content の永続的な再利用を無効にします。Content 処理を行う Plugin が契約を宣言しない場合も、同じ安全側の全 Content 再処理になります。
+- `unsafe` は処理済み Content の永続的な再利用を無効にします。Content 処理を行う Plugin が取り決めを宣言しない場合も、同じ安全側の全 Content 再処理になります。
 
 `tracked` の dependency は Content 処理中に取得します。Core が content/file の identity を永続化し、逆引き index から次回 Build で affected content を決定します。この用途で vault を独自に走査したり、Plugin 固有の Incremental Build state を保存したりしないでください。Framework API 経由で dependency を追跡できない場合は `unsafe` を使います。広い再処理は許容されますが、古い結果の再利用は許容されません。
 
-これは Output Dependency とは別の契約です。`pageTypes[].outputDependencies` と `context.output.emit(..., { dependencies })` は、再生成が必要な page や生成 file を表します。ここでは `content`、`tag`、`folder`、`global`、`unknown` を使います。`unknown` は安全側として全 Output の再生成を要求します。依存を宣言しない Generated Output も `unknown` です。
+これは Output Dependency とは別の取り決めです。`pageTypes[].outputDependencies` と `context.output.emit(..., { dependencies })` は、再生成が必要な page や生成 file を表します。ここでは `content`、`tag`、`folder`、`global`、`unknown` を使います。`unknown` は安全側として全 Output の再生成を要求します。依存を宣言しない Generated Output も `unknown` です。
 
 Generated output の path は物理出力 path です。Generated output を Content、redirect、plugin page の route と衝突させないでください。衝突した場合は route を上書きせず、Core が build を失敗させます。
 
 `planGeneratedOutputs` は Incremental Build ごとに実行されるため、変更なし Fast Path は使用しません。任意の planner code に未追跡の入力がないことを Core は証明できないため、plan を再利用せずに再生成します。
 
-# UI components
+## UI components
 
 Plugin は `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` を factory  along with export することができます。Data helpers は `PublicContentView` のような狭い input を受け、型付き model を返します。components は readonly の型付き props を受け、Slot HTML を返しません。Site は自分の TSX でこれらのコンポーネントを composition し、それぞれの表示有無、位置、頻度を決定します。これは削除された body-slot システムを置き換えます。Plugin は manifest entry の `bodySlots` map に HTML フラグメントを提供しなくなりました。
 
@@ -415,7 +415,7 @@ const backlinks = await getBacklinks({ view, slug });
 </article>
 ```
 
-# Manifest の collection と公開境界
+## Manifest の collection と公開境界
 
 Manifest を受け取る Hook（`onManifestCreated`、page resolver、renderer）では、次の3つの entry collection を使い分けます。
 
@@ -425,7 +425,7 @@ Manifest を受け取る Hook（`onManifestCreated`、page resolver、renderer�
 
 `frontmatter` から可視性を再判定したり、`publishAt` を再実装したりしないでください。Hook が分岐を必要とする場合は、解決済みの `entry.publishing`（`visibility`、`routable`、`discoverable`）を読みます。それ以外は、判断をすでに含む collection を選んでください。公開方針は [Configuration](./configuration.ja.md) で設定します。
 
-# Page Types
+## Page Types
 
 `pageTypes` は Plugin が独立したページを提供するための仕組みです。
 
@@ -497,9 +497,9 @@ language
 
 詳しくは [Page System](../framework/page-system.ja.md) を参照してください。
 
-# Build Dependency
+## Build Dependency
 
-`processedContentCache` は、Core が Plugin の処理済み Content を Build 間で再利用できるかを宣言する契約です。`cacheVersion` と `context.cache` とは別のものです。
+`processedContentCache` は、Core が Plugin の処理済み Content を Build 間で再利用できるかを宣言する取り決めです。`cacheVersion` と `context.cache` とは別のものです。
 
 ```ts
 processedContentCache: {
@@ -513,7 +513,7 @@ processedContentCache: {
 - `global`: vault全体で解決したLocationに依存する変換です。CoreはLocation集合をfingerprintし、変わったときはすべてのentryを再処理します。
 - `unsafe`: Git、network、時刻、process state など、Core が追跡できない入力です。処理済み Content の永続 Cache 再利用を安全側で無効にします。
 
-Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の契約です。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `outputDependencies` を宣言すると各 Content Output に加算されます。
+Content Dependency は再処理する source Content を決め、Output Dependency は再出力するファイルを決めます。両者は別の取り決めです。Page Type は `outputDependencies` を宣言します。`onManifestCreated` で既存の manifest entry HTML を更新する Plugin は、root の `outputDependencies` を宣言すると各 Content Output に加算されます。
 
 ```ts
 outputDependencies: [{ type: "global" }]
@@ -528,7 +528,7 @@ pageTypes: [{
 
 対象を特定できる場合は `content`、`tag`、`folder` を使います。manifest 全体に依存する集合変換は `global` を使います。表現できない入力だけに `unknown` を使ってください。`unknown` は安全側で再生成し、全 Output の再生成を要求します。依存を宣言しない Generated Output も `unknown` です。
 
-# Assets
+## Assets
 
 Plugin 固有の CSS は Plugin package 内に置き、`assets` で公開します。
 
@@ -564,7 +564,7 @@ flowchart LR
     Integration --> Browser
 ```
 
-# CSS Hooks
+## CSS Hooks
 
 Plugin 固有の CSS は Plugin package 内に置き、最外要素へ stable な CSS Hook を付けます。
 
@@ -615,7 +615,7 @@ Dark mode の対応は `--rb-*` Semantic Token を参照するのが基本です
 
 詳しくは [Theme System](./theme-api.ja.md#stable-css-hooks) を参照してください。
 
-# Client Entries
+## Client Entries
 
 Browser 上で JavaScript を実行する必要がある場合だけ `clientEntries` を使用します。
 
@@ -660,7 +660,7 @@ SSR / Build-time だけで完結する Plugin に Client JavaScript を追加し
 
 Plugin の `options` が自動的に Browser へ渡されることもありません。
 
-# HTTP Endpoints
+## HTTP Endpoints
 
 Plugin が再利用可能な HTTP Endpoint を提供する場合は `endpoints` を使用します。
 
@@ -678,13 +678,13 @@ flowchart LR
 
 HonoX など特定の Router 実装を Plugin 本体へ直接埋め込まず、Integration が Endpoint Contract を Host Router へ接続します。
 
-# SEO
+## SEO
 
 Plugin が metadata や feed などの SEO 処理へ参加する場合は `seo` Extension Point を使用します。
 
 Plugin 固有の SEO logic を Application Route 側へ再実装しないでください。
 
-# Diagnostics
+## Diagnostics
 
 Plugin 固有の問題を報告する場合は `addDiagnostics` を使用します。
 
@@ -708,7 +708,7 @@ console.log(...)
 
 で CLI 向けメッセージを出すのではなく、Diagnostics または Logger を利用してください。
 
-# Plugin Cache
+## Plugin Cache
 
 `context.cache` は Plugin ごとに分離された **Build-time Cache** です。
 
@@ -739,7 +739,7 @@ flowchart TD
 
 これは Cloudflare Workers などの Runtime Database ではありません。
 
-# Logger / Tracer
+## Logger / Tracer
 
 Plugin から Framework の Observability を利用できます。
 
@@ -760,7 +760,7 @@ Logger は「何が起きたか」、Tracer は「どこに時間がかかった
 
 Profiler はこの structured trace を利用するため、Plugin が独自の stopwatch や profiling system を作る必要はありません。
 
-# Site 内だけで使う Plugin
+## Site 内だけで使う Plugin
 
 Plugin は npm package として公開する必要はありません。
 
@@ -800,7 +800,7 @@ Site-local Plugin でも、
 渡します。Site 内 Plugin と別名の第三者 package のいずれでも、Host Bundler が
 解決できる subpath を指定してください。
 
-# Repository 外で Plugin を配布する
+## Repository 外で Plugin を配布する
 
 外部 Plugin は Riebeckite monorepo の内部 path に依存しないようにします。
 
@@ -836,7 +836,7 @@ import {
 
 公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
-## Package 構成
+### Package 構成
 
 公開 package では、Build 済み ESM と型定義を publish し、`exports` をその
 Build 成果物へ向けます。最小構成の `package.json` は次のとおりです。
@@ -925,7 +925,7 @@ await build({
 
 公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
-# Repository 外で Plugin を配布する
+## Repository 外で Plugin を配布する
 
 外部 Plugin は Riebeckite monorepo の内部 path に依存しないようにします。
 
@@ -961,7 +961,7 @@ import {
 
 公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
-# ESM
+## ESM
 
 Riebeckite の package は NodeNext / ESM を前提とします。
 
@@ -975,7 +975,7 @@ extensionless import
 
 などを偶然解決できている状態へ依存しないことが重要です。
 
-# Plugin に置くもの・置かないもの
+## Plugin に置くもの・置かないもの
 
 Plugin に置くものは、**Riebeckite Site 間で再利用可能な機能**です。
 
@@ -1018,7 +1018,7 @@ Application 固有 Route / Layout
 
 とします。
 
-# Plugin 設計の基本
+## Plugin 設計の基本
 
 Plugin System 全体は次のようになります。
 
@@ -1054,7 +1054,7 @@ flowchart LR
 
 Plugin は再利用可能な機能を提供し、Core はそのための Contract を提供します。Integration は Framework や Platform へ接続し、Site Application が最終的な Route、Document、UI を所有します。
 
-## 関連
+### 関連
 
 - [Architecture](../framework/architecture.ja.md)
 - [Content System](../framework/content-system.ja.md)

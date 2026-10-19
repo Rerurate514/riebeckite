@@ -42,7 +42,7 @@ flowchart LR
 
 この境界によって、Application や Plugin の機能を変更せずに Theme を交換できます。
 
-# Theme と Plugin の違い
+## Theme と Plugin の違い
 
 迷った場合は、まず「機能を変えたいのか、見た目を変えたいのか」を考えます。
 
@@ -66,7 +66,7 @@ flowchart TD
 
 **見た目だけを変更するために Plugin を作らず、機能を追加するために Theme を拡張しません。**
 
-# 最小の Theme
+## 最小の Theme
 
 Theme は `defineTheme()` で作成します。
 
@@ -97,7 +97,7 @@ export default defineConfig({
 
 これだけで Theme の stylesheet が Site に組み込まれます。
 
-# Theme が扱えるもの
+## Theme が扱えるもの
 
 Theme の主な Contract は次のとおりです。
 
@@ -115,7 +115,7 @@ Theme の主な Contract は次のとおりです。
 
 Theme はこれらを使って Presentation を変更します。
 
-# Design Tokens
+## Design Tokens
 
 Riebeckite では、Component や Plugin が特定 Theme の色を直接参照するのではなく、**Semantic Design Token** を利用します。
 
@@ -155,11 +155,11 @@ flowchart LR
 
 Component は「文字色」という意味だけを参照し、実際の色は Theme が決めます。
 
-# Token の種類
+## Token の種類
 
 Core の `ThemeDesignTokens` には、大きく3種類の Token があります。
 
-## Color
+### Color
 
 ```text id="hwz8k3"
 paper
@@ -176,7 +176,7 @@ success
 codeBackground
 ```
 
-## Typography
+### Typography
 
 ```text id="8en3hl"
 bodyFont
@@ -184,7 +184,7 @@ headingFont
 monoFont
 ```
 
-## Layout
+### Layout
 
 ```text id="pwn80n"
 pageMaxWidth
@@ -215,7 +215,7 @@ CSS では `--rb-*` Custom Property として利用します。
 
 Plugin 固有の意味を持つ Token は `--rr-*` として Plugin 側が所有し、必要に応じて `--rb-*` を fallback として利用できます。
 
-# Color Mode
+## Color Mode
 
 Theme は3種類の Color Mode を扱えます。
 
@@ -236,7 +236,7 @@ Theme は `data-theme` と Semantic Token を使って配色を切り替えま�
 
 個別 Component に Light / Dark の色を直接 hardcode しないでください。
 
-# Color Mode の仕組み
+## Color Mode の仕組み
 
 Light、Dark、System は CSS 上では次の状態として扱います。
 
@@ -297,7 +297,7 @@ delete document.documentElement.dataset.theme;
 
 Dark を表す CSS 機構はこの 2 つだけです。Theme Root 上の明示的な Dark である `[data-theme="dark"]` と、`data-theme` が無いときの `@media (prefers-color-scheme: dark)`（System）です。Framework は `.dark` class を付与しないため、`.dark` に依存した selector は Contract 外です。どちらの状態でも同じ `--rb-*` Semantic Token が解決されるため、Semantic Token だけを参照する Component は明示 Dark と System Dark を区別する必要がありません。
 
-# Typography
+## Typography
 
 Theme は Typography Preset を提供できます。
 
@@ -318,7 +318,7 @@ Preset は、
 
 Theme は個々の Component に Font を直接設定するのではなく、可能な限り Semantic Token を通して Typography を統一します。
 
-# Article Layout
+## Article Layout
 
 Theme は Article Layout の Presentation を変更できます。
 
@@ -343,7 +343,7 @@ flowchart LR
     Theme --> Hook
 ```
 
-# Theme Root
+## Theme Root
 
 Theme の CSS は、Document 全体へ無条件に適用しません。
 
@@ -371,7 +371,7 @@ rerurate
 
 などです。
 
-# なぜ Theme Root が必要なのか
+## なぜ Theme Root が必要なのか
 
 通常の Site では Application が `<html>` に Theme 名を設定します。
 
@@ -412,7 +412,7 @@ flowchart TD
 
 このため Theme CSS を裸の `:root` に書かないことが重要です。
 
-# Theme Selector
+## Theme Selector
 
 Theme が定義するルールは Theme Root の内側に限定します。
 
@@ -463,7 +463,7 @@ Theme が定義するルールは Theme Root の内側に限定します。
 
 これにより、Theme Preview の CSS がページの他の部分へ漏れることを防ぎます。
 
-# Styles
+## Styles
 
 Theme の stylesheet は Host Bundler が解決できる Module Specifier として宣言します。
 
@@ -480,7 +480,7 @@ styles: [
 
 Integration が Module Specifier を解決し、Site の stylesheet として組み込みます。
 
-# Site 内 Theme
+## Site 内 Theme
 
 Theme は npm package として公開しなくても利用できます。
 
@@ -514,7 +514,7 @@ Site-local Theme でも、
 
 は Published Theme と同じ `resolveThemeConfig` の仕組みで解決・sanitize・適用されます。
 
-# Theme Attributes
+## Theme Attributes
 
 Theme 固有の設定を CSS へ渡す場合は、安全な `data-*` Attribute を利用できます。
 
@@ -554,7 +554,7 @@ lang
 
 Framework が所有する Attribute と Theme 固有 Attribute の namespace を分離します。
 
-# Theme Root と themeRootAttributes
+## Theme Root と themeRootAttributes
 
 Framework は `ThemeRoot` という UI primitive を提供し、`<html>` 要素への theme 属性の付与を担当します。
 
@@ -606,7 +606,7 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 
 plugin や theme が独自に `themeAttributes()` を実装していた場合は、Framework が提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。Framework が所有する namespace と theme 固有の namespace を明確に分離できます。
 
-# Theme 固有 Options
+## Theme 固有 Options
 
 Theme 固有の機能は Theme Factory の Option として定義します。
 
@@ -652,7 +652,7 @@ tokyonightTheme の neon
 
 Core は個別 Theme の機能を知りません。
 
-# Stable CSS Hooks
+## Stable CSS Hooks
 
 Theme は Application や Plugin の内部 Markup に依存するのではなく、文書化された **Stable CSS Hook** を利用します。
 
@@ -729,7 +729,7 @@ flowchart TD
 
 Theme はこの Stable Hook を対象にします。
 
-# Plugin 内部の Class
+## Plugin 内部の Class
 
 Plugin が BEM を使って、
 
@@ -754,7 +754,7 @@ Plugin が BEM を使って、
 
 `.sr-only` のような一般的な Helper Class も Plugin Hook ではありません。
 
-# Character Layer
+## Character Layer
 
 Theme は Token の値を変更するだけではありません。
 
@@ -790,7 +790,7 @@ Character Layer も Presentation 専用です。
 
 Content、Structure、Behavior を変更するものではありません。
 
-# CSS Layer
+## CSS Layer
 
 Token の定義は `@layer base` に置きます。
 
@@ -810,7 +810,7 @@ Application の Structural CSS や Plugin CSS も unlayered であるため、Th
 
 通常は `!important` を使用しません。
 
-# Font
+## Font
 
 Theme package は必要に応じて Self-hosted Web Font を含められます。
 
@@ -828,7 +828,7 @@ Font を同梱する場合は License File も含めてください。
 
 Latin subset のような比較的小さい Web Font は同梱できますが、日本語などの CJK Font はサイズが大きいため、基本的には System Font Stack へ fallback します。
 
-# CSS Cascade
+## CSS Cascade
 
 Riebeckite では CSS の読み込み順も Contract の一部です。
 
@@ -897,7 +897,7 @@ userCss
 
 通常は `!important` に依存せず、この Cascade で Override します。
 
-# Theme がしてはいけないこと
+## Theme がしてはいけないこと
 
 Theme の責務は Presentation です。
 
@@ -926,7 +926,7 @@ flowchart TD
 
 見た目を実現するために JavaScript や DOM 操作が必要になった場合、その部分は Theme ではなく Plugin または Application の責務です。
 
-# Theme Package の例
+## Theme Package の例
 
 公開 Theme は、たとえば次のように構成できます。
 
@@ -952,7 +952,7 @@ packages/themes/example/
 └─ README.md
 ```
 
-# Repository 外で Theme を配布する
+## Repository 外で Theme を配布する
 
 外部 Theme は Riebeckite monorepo 内部へ依存させません。
 
@@ -982,7 +982,7 @@ monorepo 内部の path や、
 
 のような Internal API を参照しないでください。
 
-# Theme を交換できる理由
+## Theme を交換できる理由
 
 Theme System の最も重要な目的は、**Application Logic を変更せずに Theme を交換できること**です。
 
@@ -1026,7 +1026,7 @@ Theme はその Contract に対して CSS を適用します。
 
 Theme 固有 Option も、その Theme を選択したときだけ意味を持ち、Core や他の Theme には漏れません。
 
-# Theme System の基本
+## Theme System の基本
 
 Theme System 全体は次のようになります。
 
@@ -1058,7 +1058,7 @@ Theme は Site の機能を所有するのではなく、Framework と Plugin �
 
 この境界を維持することで、Theme を自由に交換しながら、同じ Content、Plugin、Route、Application Logic をそのまま利用できます。
 
-## 関連
+### 関連
 
 - [Architecture](../framework/architecture.ja.md)
 - [Plugin System](./plugin-api.ja.md)

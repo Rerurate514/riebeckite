@@ -6,7 +6,7 @@ sidebar:
 # Theme
 ThemeはRiebeckiteサイトのプレゼンテーション層を担い、色、フォント、余白、レイアウト、記事のスタイルを決めます。コンテンツの意味やアプリケーションの構造は変えません。
 
-## Themeの契約
+## Themeの取り決め
 
 Themeは`@riebeckite/core`の`defineTheme`で作成し、識別子、ファクトリーのオプション、スタイル、共通設定（`colorMode`、`typography`、`articleLayout`、`tokens`、`userCss`）、安全なdata属性の5つを公開します。
 

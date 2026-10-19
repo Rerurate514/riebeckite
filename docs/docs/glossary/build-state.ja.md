@@ -33,7 +33,7 @@ sidebar:
 - `aliases`: `readonly string[]`：frontmatterからのエントリ別名
 - `dependencies`: `readonly ContentBuildDependency[]`：安定したidを持つcontentとfileの依存関係
 - `linkTargets?: ``readonly string[]`：解決されたlink target slug
-- `processedContentCacheFingerprint?: `string`：処理済みキャッシュ契約のfingerprint
+- `processedContentCacheFingerprint?: `string`：処理済みキャッシュの取り決めを表すfingerprint
 
 `ContentBuildDependency`（`packages/core/src/content/content_build_state.ts`）は以下を記録します：
 - `kind`: `"content"`または`"file"`

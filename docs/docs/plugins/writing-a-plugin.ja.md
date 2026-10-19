@@ -27,7 +27,7 @@ Markdown / HTML を変換する（3、実践）
 外部パッケージとして検証する（tests/plugin-dx / test:plugin-dx:external）
 ```
 
-site の中だけで使う場合は「配布用パッケージにする」より前で完結します。外部へ配布する場合だけ、package 化と外部検証まで進めます。各拡張ポイントの正確な契約は [Plugin System](../reference/plugin-api.md) を参照してください。
+site の中だけで使う場合は「配布用パッケージにする」より前で完結します。外部へ配布する場合だけ、package 化と外部検証まで進めます。各拡張ポイントの正確な取り決めは [Plugin System](../reference/plugin-api.md) を参照してください。
 
 ## 1. 最小のプラグインを作る
 
@@ -740,7 +740,7 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-helper は絞り込まれた `PublicContentView` を読むため、公開境界が許す content だけを表示できます。component は表示するものがないとき `null` を返すので、Site は無条件に描画できます。helper と component の契約は [UI components](../reference/plugin-api.ja.md#ui-components) を参照してください。
+helper は絞り込まれた `PublicContentView` を読むため、公開境界が許す content だけを表示できます。component は表示するものがないとき `null` を返すので、Site は無条件に描画できます。helper と component の取り決めは [UI components](../reference/plugin-api.ja.md#ui-components) を参照してください。
 
 ### Hono JSX component で手動配置する
 

@@ -17,7 +17,7 @@ Riebeckite が、
 
 を解決し、Site 全体から同じ情報を利用できる状態にします。
 
-# 全体の流れ
+## 全体の流れ
 
 Content System の大まかな流れは次のとおりです。
 
@@ -60,7 +60,7 @@ ContentManager
 
 という役割分担です。
 
-# ContentSource
+## ContentSource
 
 `ContentSource` は、Markdown やアセットを**どこから、どう読み込むか**を抽象化した API です。
 
@@ -104,7 +104,7 @@ flowchart LR
 
 これにより、コンテンツの保存場所が変わっても、それ以降の処理を同じ仕組みで扱えます。
 
-## 3種類の「場所」
+### 3種類の「場所」
 
 Content System を理解するときに重要なのが、次の3つを区別することです。
 
@@ -148,7 +148,7 @@ flowchart LR
 
 この3つを分離することで、content repository を別の repository に移しても、Site 側の URL やコンテンツ処理を同じ規則で扱えます。
 
-# ContentManager
+## ContentManager
 
 `ContentManager` は `ContentSource` から受け取ったコンテンツを管理し、Site で利用できる状態へ変換します。
 
@@ -165,7 +165,7 @@ flowchart LR
 
 つまり ContentManager は、Content System の中心となる orchestrator です。
 
-## Plugin が処理に参加する
+### Plugin が処理に参加する
 
 Plugin は ContentManager の lifecycle に hook できます。
 
@@ -204,7 +204,7 @@ flowchart TD
 
 Plugin はこの lifecycle を利用してコンテンツを拡張します。
 
-# slug / permalink / content ID
+## slug / permalink / content ID
 
 この3つは似ていますが、役割が異なります。
 
@@ -231,7 +231,7 @@ content ID
 
 のように、それぞれ別の目的を持ちます。
 
-## Default Public Location
+### Default Public Location
 
 標準では `resolveDefaultContentLocation` が公開先を解決します。
 
@@ -259,7 +259,7 @@ resolveContentLocations
 
 hook を使って公開先を追加・変更できます。
 
-# ContentPublicLocation
+## ContentPublicLocation
 
 `ContentPublicLocation` は、コンテンツが **Site 上のどこで公開されるか** を表します。
 
@@ -297,7 +297,7 @@ flowchart LR
 
 そのため Riebeckite では URL を単なる文字列として各機能が独自に計算するのではなく、`ContentPublicLocation` として明示的に管理します。
 
-# Manifest
+## Manifest
 
 Manifest は、**Build 時に確定したコンテンツの一覧**です。
 
@@ -326,7 +326,7 @@ Manifest は、Content System が解決した結果を他の仕組みへ渡す�
 
 各 consumer が Markdown を読み直して同じ情報を再計算するのではなく、解決済みの Manifest を利用します。
 
-# Content Graph
+## Content Graph
 
 [[content-graph|Content Graph]] は、コンテンツ同士の関係を表します。
 
@@ -379,7 +379,7 @@ extendContentGraph
 
 を使ってグラフへ情報を追加できます。
 
-# Content Queries
+## Content Queries
 
 Build 後のコンテンツを検索・整理するために、Query API が用意されています。
 
@@ -411,7 +411,7 @@ Query は、Build 時にすでに解決された index に対して実行しま�
 
 Runtime や Plugin が Markdown を直接読み直して独自に状態を再構築することは避けます。
 
-# Content Collections
+## Content Collections
 
 `buildContentCollections` は、複数のコンテンツを一覧として扱うための仕組みです。
 
@@ -447,7 +447,7 @@ flowchart LR
 
 Plugin や Site Application は、この仕組みを使って記事一覧、タグ一覧などを作成できます。
 
-# Assets
+## Assets
 
 画像や添付ファイルは Markdown 本文とは別の entry として扱います。
 
@@ -478,7 +478,7 @@ content root の外にある任意のファイルを公開 URL に変換しな�
 
 Content System の公開境界を通して、安全に公開対象を決定します。
 
-# Content Repository を分離する場合
+## Content Repository を分離する場合
 
 Site と Content を別 repository にしても、Content System の基本的な流れは変わりません。
 
@@ -509,7 +509,7 @@ Content Repository はコンテンツを提供します。
 
 このため、Content Repository が分離されていても ContentManager や Plugin が filesystem の配置を特別扱いする必要はありません。
 
-# Content System の境界
+## Content System の境界
 
 Content System を変更するときは、次の原則を維持してください。
 
@@ -544,7 +544,7 @@ flowchart LR
 
 各機能が filesystem や Markdown を独自に読み直すのではなく、この Content System を通して同じ解決結果を共有することが、Riebeckite の Content Architecture の基本です。
 
-## 関連ページ
+### 関連ページ
 
 - [Configuration](../reference/configuration.ja.md)
 - [Plugin API](../reference/plugin-api.ja.md)

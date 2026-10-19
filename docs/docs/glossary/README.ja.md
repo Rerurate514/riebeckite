@@ -50,7 +50,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 
 ## Pluginと拡張
 
-- [Plugin](./plugin.ja.md) — RiebeckiteのPluginは、定義された契約を通してコンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
+- [Plugin](./plugin.ja.md) — RiebeckiteのPluginは、定義された取り決めを通してコンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
 - [Plugin cache](./plugin-cache.ja.md) — 各Pluginは`context.cache`を通じてビルド時だけ使えるPlugin固有のcacheを持ちます。保存できるのはJSONに変換できる値だけで、名前空間はPluginごとに分かれます。
 - [Plugin dependency](./plugin-dependency.ja.md) — Pluginは`requires`でCapabilityの要求を宣言します。依存解決は、Capabilityを提供するPluginを、それを利用するPluginより前に並べます。要求を満たせない場合は`PluginDependencyError`を報告し、`kind`と`pluginName`で原因を特定できます。
 - [Capability](./capability.ja.md) — Capabilityは、Pluginが提供または要求できる名前付きの機能です。依存解決はPluginを順序付け、失敗は構造化された診断として表示されます。
@@ -58,7 +58,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Content hook](./content-hook.ja.md) — Content hookは、コンテンツ処理の各フェーズに参加します。configの解決からcontentの読み込み、post parsed、post processed、content graph、manifestの作成、diagnosticsまでが対象です。
 - [Hook context](./hook-context.ja.md) — hookに渡されるplugin contextには`config`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれ、任意で`contentSource`も渡されます。グローバルなSingletonではなく、フレームワークのサービスを使います。
 - [Renderer](./renderer.ja.md) — Rendererはコンテンツの対象をPlugin固有のHTMLに変換します。対象を処理しない場合は`null`を返し、次のRendererに処理を渡します。Canvas、Excalidraw、attachmentの描画が例です。
-- [Endpoint](./endpoint.ja.md) — Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの契約をホストのrouterに接続します。
+- [Endpoint](./endpoint.ja.md) — Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの宣言をホストのrouterに接続します。
 - [Client entry](./client-entry.ja.md) — Client entryは、実行時に本当に必要なブラウザJavaScriptの初期化を宣言します。各entryはPlugin名、module specifier、任意のexport名、公開configを持ちます。
 - [Island](./island.ja.md) — Islandはサーバー側で描画され、必要な箇所だけクライアントでhydrationされるコンポーネントです。ページ全体をhydrationせずに、対話的なUIの一部だけを動かせます。IslandコンポーネントはPluginではなくサイトのapplicationで定義します。
 - [プラグイン UI コンポーネント](./plugin-component.ja.md) — Plugin は server-rendered Hono JSX コンポーネントとデータヘルパーを提供し、CSS と選択的な client runtime を含みます。Site はどこで描画するかを決めます。以前の body-slot システムはこのパターンの代わりに削除されました。
@@ -139,4 +139,4 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Sidenote](./sidenote.ja.md) — 脚注の記法を、インラインの参照と、デスクトップではマージンノート、モバイルではポップオーバーに置き換えるTufte風のサイドノートです。モバイルのポップオーバーの切り替えには、小さなclient entry（`initSidenotes`）を使います。
 - [Backlink](./backlink.ja.md) — どの公開ノートが現在のノートにリンクしているかを示すバックリンクの一覧です。`getPublishedBacklinks()`でcontent manifestから被リンクを解決し、公開されて一覧に載るノートだけに絞り込み、manifestの順序で並べます。
 - [Site](./site.ja.md) — サイトのapplicationは、route、文書の枠組み、メタデータ、HTMLの安全性を持ちます。`@riebeckite/honox`のintegrationを通じてRiebeckiteのCoreの振る舞いをHonoXとViteにつなぎ、Pluginの提供物を最終的な公開UIにどう組み立てるかを決めます。
-- [UI](./ui.ja.md) — `@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の契約であり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`、`ArticleMeta`、`ArticleFooter`、`Sidebar`があり、安定したCSS hook（`rb-article`、`rb-article-layout`など）を持ちます。
+- [UI](./ui.ja.md) — `@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の取り決めであり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`、`ArticleMeta`、`ArticleFooter`、`Sidebar`があり、安定したCSS hook（`rb-article`、`rb-article-layout`など）を持ちます。

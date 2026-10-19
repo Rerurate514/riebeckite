@@ -11,7 +11,7 @@ Diagnostic codeは問題の種類を識別する安定した識別子です。`d
 | コード | 既定のseverity | 条件 |
 | -- | -- | -- |
 | `duplicate-content-id` | `error` | 公開するノートが同じcontent IDを共有している |
-| `invalid-content-id` | `error` | `id` frontmatterがcontent IDの契約に反している |
+| `invalid-content-id` | `error` | `id` frontmatterがcontent IDの規則に反している |
 | `content-integrity-missing-page` | `warn` | リンク先が存在しない |
 
 ## 使い方

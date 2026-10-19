@@ -37,7 +37,7 @@ flowchart BT
 
 Core から Plugin、Integration、Application などへの逆向きの依存は作りません。
 
-# Package の責務
+## Package の責務
 
 Riebeckite のコードは、責務ごとに package を分けています。
 
@@ -50,7 +50,7 @@ Riebeckite のコードは、責務ごとに package を分けています。
 | `packages/cli` | CLI と Node 上の Build Tooling |
 | `apps/web` | 実際の Site Application |
 
-## Core
+### Core
 
 ```text id="cxz98n"
 packages/core
@@ -84,7 +84,7 @@ Site 固有の UI
 
 などへ依存させません。
 
-## Plugin
+### Plugin
 
 ```text id="56z84x"
 packages/plugins/*
@@ -113,7 +113,7 @@ flowchart LR
 
 Plugin のために Core が特定 Plugin の実装を知るような依存関係にはしません。
 
-## Integration
+### Integration
 
 ```text id="n94ykv"
 packages/integrations/*
@@ -135,7 +135,7 @@ Framework、Bundler、Platform 固有の処理は Core ではなく Integration 
 
 詳しくは [HonoX Integration](./honox-integration.ja.md) を参照してください。
 
-## Theme
+### Theme
 
 ```text id="1as7cf"
 packages/themes/*
@@ -164,7 +164,7 @@ Theme は presentation を担当しますが、Site の構造そのものは所�
 
 を所有することはありません。
 
-## Site Application
+### Site Application
 
 ```text id="9otuxo"
 apps/web
@@ -185,7 +185,7 @@ apps/web
 
 Core や Integration が「どう表示するか」まで決めるのではなく、最終的な Site の構造は Application が決定します。
 
-## CLI
+### CLI
 
 ```text id="k0pqbm"
 packages/cli
@@ -207,7 +207,7 @@ riebeckite profile
 
 CLI は必要に応じて Core や Integration の機能を呼び出します。
 
-# Content の流れ
+## Content の流れ
 
 コンテンツ処理では、大きく `ContentSource` と `ContentManager` の責務を分離しています。
 
@@ -229,7 +229,7 @@ flowchart LR
     Plugins["Plugins"] -->|"hooks"| Pipeline
 ```
 
-## ContentSource
+### ContentSource
 
 `ContentSource` は「コンテンツをどこから、どう読み込むか」を担当します。
 
@@ -249,7 +249,7 @@ flowchart LR
 
 新しい Content Source を追加するときも、この contract を通します。
 
-## ContentManager
+### ContentManager
 
 `ContentManager` は読み込まれたコンテンツを処理します。
 
@@ -280,7 +280,7 @@ ContentManager
 
 ContentManager に独自の filesystem scan を追加するのではなく、`ContentSource` の contract を利用してください。
 
-# Public URL の解決
+## Public URL の解決
 
 コンテンツの URL は filesystem path や slug から推測しません。
 
@@ -338,7 +338,7 @@ filesystem path → slug → URL
 
 **解決済みの `permalink` が public URL の source of truth です。**
 
-# Page Type
+## Page Type
 
 Plugin は Page Type を使って、通常の Markdown content とは異なるページを提供できます。
 
@@ -364,7 +364,7 @@ Plugin が HonoX route や Site shell を所有する必要はありません。
 
 詳しくは [Page System](./page-system.ja.md) を参照してください。
 
-# Build-time と Runtime
+## Build-time と Runtime
 
 Riebeckite では、Build 時にだけ必要なものと、公開 Site の Runtime で必要なものを分離します。
 
@@ -401,7 +401,7 @@ Runtime が利用するのは Build によって生成された application と�
 
 また Build が失敗した場合、新しい不完全な state で以前の正常な state を置き換えません。
 
-# コードをどこに置くか
+## コードをどこに置くか
 
 新しい機能を追加するときは、まず「どの package がその責務を持つべきか」を考えます。
 

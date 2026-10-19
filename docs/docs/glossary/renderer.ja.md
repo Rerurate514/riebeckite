@@ -7,11 +7,11 @@ sidebar:
 # Renderer
 Rendererはコンテンツの対象をPlugin固有のHTMLに変換します。対象を処理しない場合は`null`を返し、次のRendererに処理を渡します。Canvas、Excalidraw、attachmentの描画が例です。
 
-## Rendererの契約
+## Rendererの取り決め
 Rendererは`kind`、`path`、`raw`、`label`、`url`、`embed`を含む対象と、標準の`PluginContext`を受け取ります。対象を処理しない場合は`null`を返し、次のRendererが試せるようにします。
 
 ## Rendererタイプ
-`PluginContentRenderer`型はRendererの契約を定義します：
+`PluginContentRenderer`型はRendererの取り決めを定義します：
 
 ```ts
 type PluginContentRenderer = {

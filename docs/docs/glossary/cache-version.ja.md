@@ -9,7 +9,7 @@ sidebar:
 
 ## スキーマのバージョン
 
-`CONTENT_CACHE_SCHEMA_VERSION`（現在は4）は、cacheの構造が変わったときに上げます。`CONTENT_CACHE_COMPATIBILITY_VERSION`（現在は3）は、振る舞いや契約が変わったときに変えます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
+`CONTENT_CACHE_SCHEMA_VERSION`（現在は4）は、cacheの構造が変わったときに上げます。`CONTENT_CACHE_COMPATIBILITY_VERSION`（現在は3）は、振る舞いや取り決めが変わったときに変えます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
 
 ## 移行
 
@@ -20,7 +20,7 @@ sidebar:
 キャッシュのバージョン管理は`packages/core/src/content/content_persistent_cache.ts`で定義された2つの定数によって制御されます：
 
 - **CONTENT_CACHE_SCHEMA_VERSION**（現在は**4**）: cacheの構造が変わったときに上げます。スキーマのバージョンが合わないentryはmissとして扱われ、再処理されます。
-- **CONTENT_CACHE_COMPATIBILITY_VERSION**（現在は**3**）: 振る舞いや契約が変わったときに変えます。
+- **CONTENT_CACHE_COMPATIBILITY_VERSION**（現在は**3**）: 振る舞いや取り決めが変わったときに変えます。
 
 ## キャッシュ検索バージョン互換性
 

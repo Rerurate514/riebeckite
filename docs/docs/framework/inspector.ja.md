@@ -36,7 +36,7 @@ flowchart LR
 
 Inspector はこれらの情報を**確認するだけ**で、build や設定の変更は行いません。
 
-## 基本的な使い方
+### 基本的な使い方
 
 Inspector には、確認したい対象ごとにコマンドがあります。
 
@@ -48,7 +48,7 @@ Inspector には、確認したい対象ごとにコマンドがあります。
 | `riebeckite inspect graph` | コンテンツ同士の関係 |
 | `riebeckite inspect build` | incremental build の state |
 
-## Config を確認する
+### Config を確認する
 
 ```sh id="5zrcz3"
 riebeckite inspect config
@@ -64,7 +64,7 @@ Riebeckite が実際に使用する **解決済みの config** を確認しま�
 
 という場合に、まず実際の設定値を確認できます。
 
-## Plugin を確認する
+### Plugin を確認する
 
 ```sh id="4g0qba"
 riebeckite inspect plugins
@@ -74,7 +74,7 @@ riebeckite inspect plugins
 
 「Plugin を追加したつもりだけれど、本当に読み込まれているのか」を調べるときなどに利用できます。
 
-## Content を確認する
+### Content を確認する
 
 ```sh id="v20yqo"
 riebeckite inspect content --list
@@ -102,7 +102,7 @@ content/posts/hello.md
 
 Public Location Plugin が identity metadata を提供している場合は、コンテンツ ID とその ID がどこから取得されたかも表示します。
 
-## Content Graph を確認する
+### Content Graph を確認する
 
 ```sh id="91iyz5"
 riebeckite inspect graph
@@ -123,7 +123,7 @@ graph LR
 
 リンク、backlink、graph を利用する Plugin を開発するときの確認にも使えます。
 
-## Build State を確認する
+### Build State を確認する
 
 ```sh id="i6hsvx"
 riebeckite inspect build
@@ -165,7 +165,7 @@ flowchart TD
 
 state が壊れていても、Inspector が新しい state を作ったり、既存 state を書き換えたりすることはありません。
 
-# Read-only の保証
+## Read-only の保証
 
 Inspector は **read-only** です。
 
@@ -191,7 +191,7 @@ Inspector の実行によってプロジェクトの状態が変わってはい�
 
 この性質により、Inspector は開発中だけでなく CI でも安全に利用できます。
 
-# `inspect` / `check` / `doctor` / `build` の違い
+## `inspect` / `check` / `doctor` / `build` の違い
 
 Riebeckite には似た目的に見えるコマンドがありますが、それぞれ役割が異なります。
 

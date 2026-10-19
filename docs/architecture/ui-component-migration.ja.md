@@ -38,7 +38,7 @@ server helper と component は browser 専用コードを import しません�
 
 公開 UI は `ContentManifest` ではなく `PublicContentView` を受け取ります。この名前は「型の見え方」ではなく、公開して安全なデータであることを表します。raw map を型変換するのではなく、filter 済みの map と graph を新しく構築します。
 
-| 契約 | 含むもの | 表示できるもの |
+| 公開範囲 | 含むもの | 表示できるもの |
 | --- | --- | --- |
 | `routableEntries` | public と unlisted | 自身の route |
 | `discoverableEntries` | public | list、navigation、tag、graph の近傍 |
@@ -54,7 +54,7 @@ draft/private entry と、その title、slug、permalink、alias、tag、relati
 
 Markdown は pipeline が作る `entry.html` のまま `ArticleBody` で描画します。`PageBody` は legacy/generated の `PluginPageType` HTML の境界として残します。必要なら `HtmlFragment` を server 専用の低水準 primitive とし、`{ html, source: "markdown" | "plugin-page" }` だけを受け取ります。これは Plugin UI 用の汎用 escape hatch ではありません。新しい記事外 UI は JSX にします。browser input や任意の Plugin 文字列を、所有者が信頼済み pipeline として扱わずに raw injection してはいけません。
 
-## 7. 責務と CSS 契約
+## 7. 責務と CSS の取り決め
 
 | 所有者 | 所有するもの | 所有してはいけないもの |
 | --- | --- | --- |

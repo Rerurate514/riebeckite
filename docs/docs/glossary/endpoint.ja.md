@@ -6,7 +6,7 @@ sidebar:
 
 # Endpoint
 
-Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの契約をホストのrouterに接続します。
+Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの宣言をホストのrouterに接続します。
 
 ## Endpointの定義
 
@@ -22,7 +22,7 @@ const searchEndpoint = defineEndpoint(
 
 ## Integrationへの接続
 
-IntegrationはEndpointの契約をホストのrouterに接続します。Plugin自身で特定のrouter実装（HonoXなど）を組み込まないでください。
+IntegrationはEndpointの宣言をホストのrouterに接続します。Plugin自身で特定のrouter実装（HonoXなど）を組み込まないでください。
 
 ## 関連用語
 

@@ -21,7 +21,7 @@ export function examplePlugin(options: ExampleOptions = {}) {
 }
 ```
 
-## Validatorの契約
+## Validatorの取り決め
 Validatorに副作用を持たせてはいけません。ファイルシステムの走査、ビルド、cacheへの書き込み、外部状態の変更は行いません。問題は構造化したissueとして返します。validatorの型は`PluginOptionsValidator<TOptions>`で、オプションを受け取って`readonly Issue[]| void`を返します。
 
 ## 関連用語

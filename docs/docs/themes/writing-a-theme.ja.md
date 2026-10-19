@@ -48,7 +48,7 @@ Light / Darkに対応
 
 の順に進めます。
 
-# まずは Theme を作る必要があるか確認する
+## まずは Theme を作る必要があるか確認する
 
 少しだけ見た目を変えたい場合は、新しい Theme を作る必要はありません。
 
@@ -82,7 +82,7 @@ flowchart TD
     Change -->|"機能も追加したい"| Plugin["Plugin"]
 ```
 
-# 1. 組み込み Theme を調整する
+## 1. 組み込み Theme を調整する
 
 最も簡単なのは、既存 Theme に Option と `userCss` を指定する方法です。
 
@@ -132,7 +132,7 @@ userCss
 
 これだけで目的を達成できるなら、独自 Theme を作る必要はありません。
 
-# 2. 最小の Theme を作る
+## 2. 最小の Theme を作る
 
 独自 Theme は `defineTheme` で定義します。
 
@@ -154,7 +154,7 @@ my-site/
 
 のように置いて作れます。
 
-## Theme を定義する
+### Theme を定義する
 
 `extensions/local-theme.ts` を作ります。
 
@@ -196,7 +196,7 @@ Site 内 Theme なら、
 
 のように指定できます。
 
-# 3. Site で Theme を使う
+## 3. Site で Theme を使う
 
 作成した `localTheme` を `riebeckite.config.ts` から読み込みます。
 
@@ -228,7 +228,7 @@ Site
 
 という形で独自 Theme が利用されます。
 
-# 4. Theme の CSS を書く
+## 4. Theme の CSS を書く
 
 次に、
 
@@ -271,7 +271,7 @@ Theme の CSS では、Riebeckite が提供する、
   → RiebeckiteのSemantic Token
 ```
 
-# Theme Root Selector
+## Theme Root Selector
 
 Theme の Style は、Theme Root の内側に限定します。
 
@@ -299,7 +299,7 @@ name: "local"
 
 となります。
 
-## なぜ `:root` と `.rb-theme-root` の両方がある？
+### なぜ `:root` と `.rb-theme-root` の両方がある？
 
 この Selector は、実際の Site と Theme Preview の両方で同じ CSS を利用するためのものです。
 
@@ -338,7 +338,7 @@ Theme Preview では、
 
 を Root として書きます。
 
-# Semantic Token を使う
+## Semantic Token を使う
 
 Theme では、色や Layout の値を直接あちこちへ書くのではなく、[[semantic-token|Semantic Token]] を利用します。
 
@@ -389,7 +389,7 @@ Theme 全体で同じ意味の色を共有できるため、
 
 Token の正確な一覧は [Theme API](../reference/theme-api.ja.md) を参照してください。
 
-# Stable Hook を使う
+## Stable Hook を使う
 
 Riebeckite の共通 UI には、
 
@@ -436,7 +436,7 @@ rr-<feature> Stable Hook
 
 これによって、Theme を作った時点では存在していなかった Page Type にも、共通の Design を適用しやすくなります。
 
-# なぜ Page Type ごとに CSS を書かない？
+## なぜ Page Type ごとに CSS を書かない？
 
 Plugin は独自の Page Type を追加できます。
 
@@ -478,7 +478,7 @@ flowchart LR
 
 Theme が Page の種類ではなく Semantic Hook を見ることで、新しい Page Type とも疎結合にできます。
 
-# 5. Light / Dark Mode に対応する
+## 5. Light / Dark Mode に対応する
 
 Color Mode に対応する場合は、3つの状態を考えます。
 
@@ -506,7 +506,7 @@ system
 }
 ```
 
-## Light
+### Light
 
 通常の Light Mode です。
 
@@ -516,7 +516,7 @@ system
 }
 ```
 
-## Dark
+### Dark
 
 明示的に Dark Mode が選択されている場合は、
 
@@ -528,7 +528,7 @@ system
 
 で扱います。
 
-## System
+### System
 
 `system` では `data-theme` を付けず、OS / Browser の設定に従います。
 
@@ -556,7 +556,7 @@ data-theme=""
 
 で判定します。
 
-# 6. アクセシビリティを確認する
+## 6. アクセシビリティを確認する
 
 Theme は見た目を変更するため、アクセシビリティにも影響します。
 
@@ -574,7 +574,7 @@ Theme は単に「きれいに見える」だけではなく、Content を読み
 
 詳しくは [アクセシビリティ](../accessibility.ja.md) を参照してください。
 
-# 7. CSS の読み込み順を理解する
+## 7. CSS の読み込み順を理解する
 
 Riebeckite では CSS の読み込み順が決まっています。
 
@@ -612,7 +612,7 @@ Theme 側で Site 固有の上書きまで抱え込む必要はありません�
 
 正確な Cascade は [Theme API](../reference/theme-api.ja.md) を参照してください。
 
-# 8. Browser で確認する
+## 8. Browser で確認する
 
 Theme を作ったら Development Server を起動します。
 
@@ -637,7 +637,7 @@ npm exec riebeckite dev
 
 特定の Demo Page だけではなく、実際の記事でも確認してください。
 
-# 9. Riebeckite の検証を実行する
+## 9. Riebeckite の検証を実行する
 
 設定に問題がないか確認します。
 
@@ -661,7 +661,7 @@ npm exec riebeckite build
 
 これらの Command が Theme File を自動で修正することはありません。
 
-# 10. 配布用 Package にする
+## 10. 配布用 Package にする
 
 Site 内 Theme として問題なく動作したら、必要に応じて Package として配布できます。
 
@@ -709,7 +709,7 @@ Package では Stylesheet を、
 
 のような Public Export として公開します。
 
-# 外部 Theme の依存関係
+## 外部 Theme の依存関係
 
 配布する Theme は、
 
@@ -741,7 +741,7 @@ flowchart LR
 
 外部利用者が npm から Theme をインストールした場合でも動作する構成にします。
 
-# Theme 独自 Option
+## Theme 独自 Option
 
 Theme 固有の設定が必要な場合は、その Theme の Factory Option として定義します。
 
@@ -767,7 +767,7 @@ Riebeckite全体で共通
 
 という境界で考えます。
 
-# Theme がしてはいけないこと
+## Theme がしてはいけないこと
 
 Theme の責任は Presentation です。
 
@@ -800,7 +800,7 @@ flowchart TD
 
 と分けます。
 
-# 最小の完成形
+## 最小の完成形
 
 最小の Site 内 Theme は2ファイルで作れます。
 
@@ -854,7 +854,7 @@ export default defineConfig({
 
 これが Riebeckite Theme の最小構成です。
 
-# まとめ
+## まとめ
 
 Theme を作るときは、最初から Package 化する必要はありません。
 
@@ -899,7 +899,7 @@ Theme
 
 という境界を保つことで、新しい Plugin や Page Type が追加されても利用できる Theme を作れます。
 
-## 関連資料
+### 関連資料
 
 - [Theme](./README.ja.md) — Theme の選択と利用方法
 - [テーマ作成の詳細](../framework/theme-system.ja.md) — Option、Token、Hook、Cascade、配布を含む詳しい設計

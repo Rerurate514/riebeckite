@@ -24,7 +24,7 @@ flowchart LR
     P --> PO["どこに時間がかかった？"]
 ```
 
-## Logger / Tracer / Profiler の違い
+### Logger / Tracer / Profiler の違い
 
 | 機能 | 答える問い | 主な用途 |
 | --- | --- | --- |
@@ -36,7 +36,7 @@ flowchart LR
 
 逆に「Plugin の読み込みに失敗した」のような出来事を伝えるのは Logger の役割です。
 
-# Trace
+## Trace
 
 Trace は、Build の処理を **span** という単位に分けて処理時間を記録します。
 
@@ -66,7 +66,7 @@ flowchart TD
 
 といったところまで調べられます。
 
-## Span を作る場所
+### Span を作る場所
 
 すべての関数に span を追加する必要はありません。
 
@@ -93,7 +93,7 @@ application.build
 
 入力ファイル名などによって span 名そのものが毎回変化する設計は避けます。
 
-## Span は必ず閉じる
+### Span は必ず閉じる
 
 処理が成功した場合だけでなく、失敗した場合も span を閉じます。
 
@@ -118,7 +118,7 @@ Trace はエラー処理の代わりではありません。
 
 Trace のためにエラーを握りつぶしてはいけません。
 
-# 並列処理と時間
+## 並列処理と時間
 
 Trace を読むときは、**処理時間の合計と実際の経過時間は同じとは限らない**ことに注意してください。
 
@@ -159,7 +159,7 @@ child span の時間を単純に足して、
 
 のように表示すると、並列処理を直列処理のように見せてしまうためです。
 
-# Profiler
+## Profiler
 
 Profiler は Trace を集計して、Build のどこに時間がかかっているかを確認するための機能です。
 
@@ -196,7 +196,7 @@ Profiler は Cache の状況も分けて表示します。
 
 を、安全性のための bypass なのか、依存関係の変更による miss なのかまで区別して確認できます。
 
-# Diagnostics の計測
+## Diagnostics の計測
 
 Diagnostics も通常の Build phase と同じように計測されます。
 
@@ -230,7 +230,7 @@ diagnostics.run
 
 たとえば Diagnostics が Build 時間の大部分を占めている場合、その phase をさらに調査する判断材料になります。
 
-# 安全性
+## 安全性
 
 Observability は **Riebeckite の動作を観測するための仕組み**であり、Build の結果を変えてはいけません。
 
@@ -249,7 +249,7 @@ Trace や Profile の保存データも Build-time の情報です。
 
 Cloudflare Workers などの runtime が、書き換え可能な Trace / Profile file に依存する設計にはしません。
 
-# 問題を調査するとき
+## 問題を調査するとき
 
 問題の種類によって使う機能を分けます。
 

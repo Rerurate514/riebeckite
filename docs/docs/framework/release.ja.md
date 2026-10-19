@@ -15,7 +15,7 @@ pnpm release <version>
 
 この script は **冪等かつ再開可能** になるように設計されています。同じ version を中断後に再実行しても、まだ公開されていない package だけを処理します。
 
-# 前提条件
+## 前提条件
 
 - staged publishing の command（`npm stage ...`）を使うには npm CLI 11.15.0 以降と Node.js 22.14.0 以降が必要です。
 - すべての `@riebeckite/*` package への書き込み権限が必要です。
@@ -23,7 +23,7 @@ pnpm release <version>
 
 release script は独自の認証や one-time password の prompt を実装しません。npm / pnpm CLI に委譲するため、既存の npm login、security key、passkey、OTP の設定がそのまま使われます。
 
-# 通常のリリース
+## 通常のリリース
 
 ```mermaid id="7f2mqa"
 flowchart TD
@@ -55,7 +55,7 @@ flowchart TD
 
 push は自動実行されません。表示された command を自分で実行してください。
 
-## Option
+### Option
 
 | Option | 用途 |
 | --- | --- |
@@ -63,7 +63,7 @@ push は自動実行されません。表示された command を自分で実行
 | `--check-only` | repository check だけを実行する |
 | `--help`, `-h` | usage を表示する |
 
-# 冪等なリリースと再開
+## 冪等なリリースと再開
 
 判断の基準は registry です。script はローカルの記録を公開成功の根拠として扱いません。
 
@@ -74,7 +74,7 @@ push は自動実行されません。表示された command を自分で実行
 
 commit はあるが tag が無い（またはその逆）場合も、release を再実行してください。publish は skip され、足りない git object が作成されます。
 
-# リリースの状態
+## リリースの状態
 
 | 状態 | 意味 | 情報源 |
 | --- | --- | --- |
@@ -85,7 +85,7 @@ commit はあるが tag が無い（またはその逆）場合も、release を
 
 **状態不明は停止状態です。** script は推測しません。registry の状態を確定できない場合（network 障害、timeout、想定外の応答）、未公開と仮定せず、release を停止して確認すべき内容を表示します。
 
-# staging と承認
+## staging と承認
 
 staged publishing を使うと、version が live になる前にレビューできます。staged version は公開済み version と同じ version index を共有するため、その version の直接 publish を妨げます。
 
@@ -100,7 +100,7 @@ staged 操作には必ず公式の npm CLI を使用してください。
 
 release script は `npm stage list` で staged version を確認します。一覧を取得できない場合は publish せず停止します。未公開 package に対応する staged version があり、その tarball が現行ビルドと一致すると確認できた場合のみ、対話的に承認して公開済みとして扱います。一致を確認できない場合は停止し、stage を確認・reject する command を表示します。script 自身が staging を行うことはなく、二要素認証を迂回することもありません。
 
-# E409 への対応
+## E409 への対応
 
 `Cannot publish over previously staged version "<version>".` を伴う `409 Conflict` は、その version が既に staging され承認待ちであることを意味します。成功でもなく、無視してもいけません。
 
@@ -131,7 +131,7 @@ flowchart TD
     Confirm -->|いいえ| Stop["停止して再実行を促す"]
 ```
 
-# 公開済み・承認待ちの確認
+## 公開済み・承認待ちの確認
 
 release を実行せずに 1 つの package を確認するには次を使います。
 
@@ -142,7 +142,7 @@ npm stage list @riebeckite/<package> --json
 
 `npm view` が version を返せば公開済みです。`npm view` が `E404` を返せば未公開です。`npm stage list` は staging され承認待ちの version を表示します。
 
-# 中断後の再開
+## 中断後の再開
 
 1. 失敗時の出力を読んでください。script は package、version、分類した状態、次に必要な操作を表示します。
 2. 原因を解消します。
@@ -153,7 +153,7 @@ npm stage list @riebeckite/<package> --json
    - **状態不明:** retry する前に registry を手動で確認します。
 3. `pnpm release <version>` を再実行します。公開済み package は skip され、残りの作業だけを行います。
 
-# 部分公開中にしてはいけない操作
+## 部分公開中にしてはいけない操作
 
 - 同じリリース中に version を再度 bump しないでください。同じ version を再実行します。
 - script が処理する package に対して `npm publish` や `pnpm publish` を手動実行しないでください。staged conflict や重複 publish の原因になります。
@@ -161,7 +161,7 @@ npm stage list @riebeckite/<package> --json
 - script が全 version の公開を確認する前に、release tag を手動で作成しないでください。
 - ローカルの検証が成功する前に、release commit や tag を push しないでください。
 
-# リリースの検証
+## リリースの検証
 
 script の最終手順は、全 package の version が公開済みであることを確認し、すべて確認できたときだけ次の完了行を表示します。
 
@@ -171,7 +171,7 @@ RELEASE COMPLETE: 84/84 package versions published as <version>.
 
 1 つでも未確認の version があれば、この行は表示されず、commit や tag も作成されません。
 
-# Test
+## Test
 
 リリースの挙動は、npm へ公開しない test で検証されています。
 
@@ -179,6 +179,6 @@ RELEASE COMPLETE: 84/84 package versions published as <version>.
 pnpm test:release
 ```
 
-この suite は npm / pnpm の呼び出しを mock し、全 package 未公開、全 package 公開済み、部分公開、E409 の staged conflict、権限エラー、E404 応答、反映遅延、network timeout、重複 publish の防止、最終検証の失敗を検証します。さらに、CLI エントリポイント経由で staged conflict からの再開を通しで検証し、実 `npm stage list` の JSON 契約を mock registry に対して検証します。
+この suite は npm / pnpm の呼び出しを mock し、全 package 未公開、全 package 公開済み、部分公開、E409 の staged conflict、権限エラー、E404 応答、反映遅延、network timeout、重複 publish の防止、最終検証の失敗を検証します。さらに、CLI エントリポイント経由で staged conflict からの再開を通しで検証し、実 `npm stage list` の JSON の出力形式を mock registry に対して検証します。
 
 責務の全体像は [Architecture](./architecture.ja.md)、テスト方針は [Testing](./testing.ja.md)、CLI については [CLI](../reference/cli.ja.md) を参照してください。

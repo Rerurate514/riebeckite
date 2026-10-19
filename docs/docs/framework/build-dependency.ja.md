@@ -3,9 +3,9 @@ title: Build Dependency Contract
 ---
 # Build Dependency Contract
 
-Incremental Buildの無効化はCoreの責務です。PluginはどのContentが影響を受けるかを計算せず、依存stateも自分では持ちません。契約を宣言すると、何を再利用するかはCoreが決めます。
+Incremental Buildの無効化はCoreの責務です。PluginはどのContentが影響を受けるかを計算せず、依存stateも自分では持ちません。取り決めを宣言すると、何を再利用するかはCoreが決めます。
 
-Pluginが関わる契約は、Content DependencyとOutput Dependencyの二つです。前者は`processedContentCache`で、Coreがどのsource Contentを処理し直すかを決めます。後者は`outputDependencies`と`context.output.emit`で、Coreがどの出力ファイルを書き直すかを決めます。両者は独立した契約です。
+Pluginが関わる取り決めは、Content DependencyとOutput Dependencyの二つです。前者は`processedContentCache`で、Coreがどのsource Contentを処理し直すかを決めます。後者は`outputDependencies`と`context.output.emit`で、Coreがどの出力ファイルを書き直すかを決めます。両者は独立した取り決めです。
 
 ```mermaid
 flowchart LR
@@ -17,7 +17,7 @@ flowchart LR
 
 ## Content Dependency
 
-`processedContentCache`は、Pluginの処理済みContentをBuild間でどう再利用してよいかを示す契約です。
+`processedContentCache`は、Pluginの処理済みContentをBuild間でどう再利用してよいかを示す取り決めです。
 
 | `dependencyMode` | 意味 |
 | --- | --- |
@@ -26,9 +26,9 @@ flowchart LR
 | `global` | 解決済みのContent Location集合に依存する。Locationが変わると、すべての処理済みentryを無効にする。 |
 | `unsafe` | Git、network、時刻、process stateなど、Coreが観測できない入力に依存する。永続的な再利用は行わない。 |
 
-Contentを変化させるPluginが契約を宣言していない場合、そのPluginは`unsafe`として扱われます。
+Contentを変化させるPluginが取り決めを宣言していない場合、そのPluginは`unsafe`として扱われます。
 
-`version`は契約の名前です。Coreは解決済みのPlugin設定もcache keyに含めます。そのため、options、hooks、versionのいずれかを変えると、cacheされたentryは無効です。
+`version`は取り決めの名前です。Coreは解決済みのPlugin設定もcache keyに含めます。そのため、options、hooks、versionのいずれかを変えると、cacheされたentryは無効です。
 
 `global`は、Content変換がvault全体のLocation metadataに依存するときだけ使います。Coreはslug、permalink、redirect、language、metadataを含む解決済みLocationをfingerprintします。manifest専用hookにはこのmodeは不要です。hookは毎Buildで現在のmanifestに対して実行され、処理済みContentを無効化しません。
 
@@ -56,7 +56,7 @@ Coreは各entryのdependency identityをbuild stateに永続化し、そこか�
 
 ## Output Dependency
 
-Output DependencyはContent Dependencyとは別の契約です。種類ごとに、change setの異なる部分に反応します。
+Output DependencyはContent Dependencyとは別の取り決めです。種類ごとに、change setの異なる部分に反応します。
 
 | 種類 | 影響を受ける条件 |
 | --- | --- |
@@ -76,7 +76,7 @@ Output DependencyはContent Dependencyとは別の契約です。種類ごとに
 
 対象が特定できる場合は`content`、`tag`、`folder`を使ってください。manifest全体に依存する集合変換は`global`です。表現できない入力だけに`unknown`を使います。
 
-`none`、`tracked`、`global`、`unsafe`は処理済みContentの再利用を示す契約であり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
+`none`、`tracked`、`global`、`unsafe`は処理済みContentの再利用を示す取り決めであり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
 
 Coreは、entryのprocessed-content dependency fingerprintが前回のBuildから変わった場合も、そのContent Outputを影響ありとします（[Content Dependency](#content-dependency)を参照）。処理済みContentが他のContentに依存するPluginは、`global` output dependencyを宣言せずに、その依存をentry単位で追跡できます。
 

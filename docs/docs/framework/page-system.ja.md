@@ -37,7 +37,7 @@ flowchart LR
 
 Page 専用の別種類の Plugin を作るわけではありません。
 
-# どんなときに使うか
+## どんなときに使うか
 
 Page Type は、Plugin が**独立した URL を持つページ**を提供するときに使用します。
 
@@ -69,7 +69,7 @@ flowchart TD
 
 Canvas、Bases、Excalidraw のように記事内へ埋め込む機能は `renderers` を使用します。
 
-# 誰が何を担当するか
+## 誰が何を担当するか
 
 Page System では、Plugin がページ全体を所有するわけではありません。
 
@@ -112,7 +112,7 @@ Plugin はページの内容を提供しますが、
 
 のような document 全体を生成するわけではありません。
 
-# Page System が解決する問題
+## Page System が解決する問題
 
 Page System 導入前は、独立ページを持つ Plugin ごとに Site 側へ専用 route が必要でした。
 
@@ -153,11 +153,11 @@ flowchart LR
 
 これにより、新しい Plugin Page を追加するたびに HonoX route を追加する必要がありません。
 
-# Build と Request の流れ
+## Build と Request の流れ
 
 Page System には、大きく2つの処理があります。
 
-## Build 時
+### Build 時
 
 Build 時には、Plugin が提供する Page Type から静的生成する URL を集めます。
 
@@ -181,7 +181,7 @@ flowchart LR
 
 を提供していれば、その path を SSG の生成対象にできます。
 
-## Request 時
+### Request 時
 
 Request が来ると、共通 resolver がどの種類のページかを判断します。
 
@@ -216,7 +216,7 @@ flowchart LR
     Frame --> Browser
 ```
 
-# Page Type を作る
+## Page Type を作る
 
 Page Type は Plugin の `pageTypes` に定義します。
 
@@ -259,7 +259,7 @@ export function reportPlugin() {
 
 Plugin が HonoX component や route file を作る必要はありません。
 
-# Manifest と公開境界
+## Manifest と公開境界
 
 Page Type の `resolve` には `PluginPageContext` が渡されます。
 
@@ -289,7 +289,7 @@ flowchart LR
 
 これによって Page System も通常の Site と同じ公開境界を維持できます。
 
-# Page Type ID
+## Page Type ID
 
 各 Page Type には ID が必要です。
 
@@ -309,7 +309,7 @@ example.search
 
 のように Plugin や用途が分かる namespace を持たせると衝突を避けやすくなります。
 
-# Path
+## Path
 
 静的なページは `paths` に公開 path を指定します。
 
@@ -330,7 +330,7 @@ paths: [
 
 filesystem を独自に scan して path を作るのではなく、Content System が解決した公開状態を利用してください。
 
-# Page Type の競合
+## Page Type の競合
 
 複数の Page Type が同じ URL に一致する可能性があります。
 
@@ -368,7 +368,7 @@ flowchart TD
 
 競合を明示的なエラーにすることで、Plugin の登録順などによって結果が変わることを防ぎます。
 
-# HonoX Site へ接続する
+## HonoX Site へ接続する
 
 Plugin Page を利用する HonoX Site には、共通の catch-all route が必要です。
 
@@ -405,7 +405,7 @@ export default createRoute(
 
 共通 route が Plugin Page をまとめて解決します。root `/` も同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` が解決します。
 
-# Page が返せるもの
+## Page が返せるもの
 
 Plugin Page は HTML body に加えて、必要に応じてページの metadata を提供できます。
 
@@ -446,7 +446,7 @@ Site Application がこれらを受け取り、既存の document frame に反�
 
 このため、Plugin Page でも Site 全体の navigation、header、footer、Theme などをそのまま利用できます。
 
-# HTML の安全性
+## HTML の安全性
 
 Page Type の `body` は HTML として描画されます。
 
@@ -465,7 +465,7 @@ body: `<p>${untrustedRequestValue}</p>`
 
 Page Type が Site の HTML safety policy を回避する仕組みにはしません。
 
-# Page Type と Theme
+## Page Type と Theme
 
 Theme は Page Type ID を知る必要がありません。
 
@@ -498,7 +498,7 @@ flowchart LR
 
 これにより、新しい Page Type が追加されても Theme と Plugin を直接結合せずに済みます。
 
-# Page System の境界
+## Page System の境界
 
 Page System では、**Plugin はページを提供するが、Application を所有しない**ことが最も重要です。
 

@@ -16,7 +16,7 @@ Jest や Vitest などの追加のテストフレームワークは使用しま�
 
 また、HTML や JSON のように手作業では確認しづらい大きな出力には **Golden File** を使用します。期待する出力そのものをファイルとして保存することで、変更内容を Pull Request の差分として確認できます。
 
-# テストの種類
+## テストの種類
 
 Riebeckite には大きく2種類のテストがあります。
 
@@ -72,7 +72,7 @@ pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install し�
 
 `test:plugin-dx:external` は `@riebeckite/core` と fixture Plugin を `pnpm pack` し、monorepo の外の隔離 Site に install して、公開 Package だけで Plugin が動作することを確認します。外部配布する Plugin の回帰検知に利用できます。
 
-# テストを実行する
+## テストを実行する
 
 よく使うコマンドは次のとおりです。
 
@@ -106,7 +106,7 @@ pnpm test
 
 を実行します。
 
-# Golden File を部分的に更新する
+## Golden File を部分的に更新する
 
 1つの Package の Golden File だけを更新したい場合は、`UPDATE_GOLDEN=1` を設定してテストします。
 
@@ -122,7 +122,7 @@ Golden File の更新は単にテストを通すために行うものではあ�
 
 **新しい出力が正しいことを確認してから更新してください。**
 
-# テストの置き場所
+## テストの置き場所
 
 各 Package のテストは、
 
@@ -167,7 +167,7 @@ Package 自身が `test` Script を持ちます。
 
 そのため、Riebeckite の利用者へテストコードが配布されたり、利用側の Build に影響したりしません。
 
-# 共有テストユーティリティ
+## 共有テストユーティリティ
 
 複数 Package から利用するテスト用機能は、
 
@@ -189,7 +189,7 @@ import {
 
 テスト専用の共通処理を各 Plugin にコピーしないでください。
 
-# Plugin のテスト
+## Plugin のテスト
 
 Plugin のテストは、確認したい範囲に合わせて次の4段階に分けられます。すべてを行う必要はありません。小さい範囲から始めてください。
 
@@ -200,11 +200,11 @@ Level 3  Content / lifecycle   ContentManager + In-memory ContentSource
 Level 4  外部パッケージ境界     packed tarball を隔離 Site へ install
 ```
 
-## Level 1: Pure Logic
+### Level 1: Pure Logic
 
 Option の解決、文字列変換、AST ヘルパーなど、Riebeckite に依存しない処理は `node:test` などの通常の test runner でテストします。この段階では `@riebeckite/test` も `ContentManager` も不要です。
 
-## Level 2: Markdown / HTML Transformation
+### Level 2: Markdown / HTML Transformation
 
 Markdown / HTML の変換は、公開されている `Pipeline` に Plugin を渡して検証できます。
 
@@ -224,21 +224,21 @@ assert.match(html, /<aside class="rr-tip">/);
 
 `ContentManager` を使わずに変換だけを確認できるため、Plugin のテストで最もよく使う段階です。
 
-## Level 3: Content / lifecycle
+### Level 3: Content / lifecycle
 
 Content の読み込み、hook、manifest、body slot、Page Type を検証する場合は `ContentManager` を使います。後述の「Content を扱うテスト」と同じ In-memory `ContentSource` の形で、`getProcessedContent()` は Pipeline と Content hook を通した結果を、`getManifest()` は解決済み Plugin を含む manifest を返します。
 
-## Level 4: 外部パッケージ境界
+### Level 4: 外部パッケージ境界
 
 配布する Package は、`pnpm pack` した tarball を monorepo の外の隔離 Site へ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落を検出できます。
 
 Repository の `tests/plugin-dx` がこの検証の実例で、前述のとおり `pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
 
-## `@riebeckite/test` の役割
+### `@riebeckite/test` の役割
 
 `@riebeckite/test` は、Golden File の比較（`assertGolden` / `assertGoldenJson`）など、複数 Package で共有するテスト Helper を提供します。**必須ではありません**。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部 Site を生成して検証する Repository 向けの Engine で、第三者 Plugin が通常使うものではありません。
 
-# 基本的なテストの書き方
+## 基本的なテストの書き方
 
 基本は、対象 Package の処理へ入力を渡して、その結果を検証します。
 
@@ -272,7 +272,7 @@ flowchart LR
 
 小さい処理は、可能な限りこの形で直接テストします。
 
-# Content を扱うテスト
+## Content を扱うテスト
 
 Content System の動作を確認したい場合は、実際の Filesystem を用意するより、In-memory の `ContentSource` を利用するのが基本です。
 
@@ -325,7 +325,7 @@ flowchart LR
 
 実際の Site や Vite Build が必要な問題でなければ、テストのためだけに Application 全体を組み立てないでください。
 
-# Golden File
+## Golden File
 
 HTML や大きな JSON のように、個別の Assertion を大量に書くより出力全体を確認した方が分かりやすい場合は Golden File を使用します。
 
@@ -344,7 +344,7 @@ JSON.stringify(value, null, 2)
 
 で整形します。
 
-# Golden File の配置
+## Golden File の配置
 
 期待値は、
 
@@ -386,7 +386,7 @@ test("renders the table of contents", () => {
 
 絶対 Path や Current Working Directory に依存させないことが重要です。
 
-# Golden File の比較
+## Golden File の比較
 
 既定では出力を少し正規化してから比較します。
 
@@ -420,7 +420,7 @@ assertGolden(
 
 とします。
 
-# Golden File が一致しない場合
+## Golden File が一致しない場合
 
 Golden File が、
 
@@ -469,7 +469,7 @@ Golden File をコミットするのは意図的です。
 
 **Golden File の更新そのものを修正として扱わず、なぜ出力が変わったのかを必ず確認してください。**
 
-# Node の Snapshot を使わない理由
+## Node の Snapshot を使わない理由
 
 Riebeckite では Node.js 組み込みの Snapshot Assertion、
 
@@ -483,15 +483,15 @@ Riebeckite では Node.js 組み込みの Snapshot Assertion、
 
 Riebeckite は Node.js 20.19 以降も対象としているため、独自の Golden File Helper を使用します。
 
-# Package にテストを追加する
+## Package にテストを追加する
 
 まだテストを持っていない Package に追加する場合は、次の順番で設定します。
 
-## 1. `tsx` を追加する
+### 1. `tsx` を追加する
 
 Package の `devDependencies` に `tsx` を追加します。
 
-## 2. `test` Script を追加する
+### 2. `test` Script を追加する
 
 ```json
 {
@@ -501,7 +501,7 @@ Package の `devDependencies` に `tsx` を追加します。
 }
 ```
 
-## 3. 必要なら `@riebeckite/test` を追加する
+### 3. 必要なら `@riebeckite/test` を追加する
 
 Golden Helper などを使う場合は、
 
@@ -511,7 +511,7 @@ Golden Helper などを使う場合は、
 
 を `devDependencies` に追加します。
 
-## 4. Plugin Metadata を更新する
+### 4. Plugin Metadata を更新する
 
 Plugin Package の場合は、
 
@@ -521,7 +521,7 @@ scripts/package_metadata.mjs
 
 の `hasTests` に Package Directory 名を追加します。
 
-## 5. Package Metadata を検証する
+### 5. Package Metadata を検証する
 
 Dependency を変更したら、
 
@@ -542,7 +542,7 @@ pnpm check:packages
 
 といった問題を検出します。
 
-# 何をテストするか
+## 何をテストするか
 
 テストでは、**決定的で再現可能な振る舞い**を優先します。
 
@@ -573,7 +573,7 @@ pnpm check:packages
 
 になるため、安定したテストを書きやすくなります。
 
-# 避けるべきテスト
+## 避けるべきテスト
 
 次のような外部状態へ直接依存するテストは、可能な限り避けます。
 
@@ -615,7 +615,7 @@ const entry =
 
 テスト側で実際の時刻や乱数を予測するのではなく、**決定に必要な値を外から渡せる設計**が重要です。
 
-# どの範囲までテストするか
+## どの範囲までテストするか
 
 変更した処理に最も近い、小さい範囲からテストします。
 
@@ -645,7 +645,7 @@ flowchart TD
 
 などは Unit Test だけでは十分ではないため、External Site E2E で確認します。
 
-# 基本方針
+## 基本方針
 
 Riebeckite のテストでは、
 

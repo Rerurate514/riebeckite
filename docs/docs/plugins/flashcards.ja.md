@@ -93,4 +93,4 @@ payload は実行されない JSON で、`<` `>` `&` はエスケープ済みで
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

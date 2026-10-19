@@ -95,9 +95,9 @@ JSON の `"caption"` キーでも指定できます。このキーは設定を�
 </figure>
 ````
 
-- `.rb-chartjs` — 図全体のラッパー。`--rb-color-*` で配色を引き継ぎます
-- `.rb-chartjs__canvas` — Chart.js が描画する `<canvas>`。`data-chartjs-config` にエスケープ済みの JSON 設定が入ります
-- `.rb-chartjs__caption` — キャプションがある場合の `<figcaption>`
+- `.rb-chartjs`：図全体のラッパー。`--rb-color-*` で配色を引き継ぎます
+- `.rb-chartjs__canvas`：Chart.js が描画する `<canvas>`。`data-chartjs-config` にエスケープ済みの JSON 設定が入ります
+- `.rb-chartjs__caption`：キャプションがある場合の `<figcaption>`
 
 ## オプション
 

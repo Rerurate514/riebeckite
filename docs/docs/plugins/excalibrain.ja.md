@@ -164,4 +164,4 @@ related:: [[note-a]] and [[note-b]] are similar
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

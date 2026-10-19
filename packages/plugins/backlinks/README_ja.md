@@ -45,10 +45,10 @@ return <Article footerContent={<Backlinks backlinks={items} />} />;
 
 ## 公開 API
 
-- `backlinksPlugin()` — プラグインファクトリ
-- `Backlinks` — 被リンク一覧コンポーネント
-- `getBacklinks({ view, slug })` — 公開済みの被リンクを解決する関数
-- `ArticleBacklink` — `{ slug, permalink, title }` の型。`permalink` は解決済みの canonical URL
+- `backlinksPlugin()`：プラグインファクトリ
+- `Backlinks`：被リンク一覧コンポーネント
+- `getBacklinks({ view, slug })`：公開済みの被リンクを解決する関数
+- `ArticleBacklink`：`{ slug, permalink, title }` の型。`permalink` は解決済みの canonical URL
 
 ## 関連資料
 

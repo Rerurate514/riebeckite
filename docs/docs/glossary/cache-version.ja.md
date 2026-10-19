@@ -57,4 +57,4 @@ entryは`schemaVersion`(現在は5)を含みます。`key`は`computeContentCach
 
 ## さらに詳しく
 
-- [Build System](../framework/build-system.md)
+- [Build System](../framework/build-system.ja.md)

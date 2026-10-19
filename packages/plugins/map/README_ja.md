@@ -80,7 +80,7 @@ map:
 - `div.rr-map__static`: 常に利用できるフォールバック。`p.rr-map__place`、`ul.rr-map__markers` → `a.rr-map__link`（OpenStreetMap リンク）、任意の `img.rr-map__image`、`p.rr-map__attribution` を含みます
 - `details.rr-map__fallback`: 元のブロック本文を折りたたんで表示
 
-`initMap` は `[data-rr-map="pending"]` を探し、Leaflet を遅延して読み込み、タイルレイヤーとマーカーを描画して `data-rr-map="rendered"` にします（このとき静的フォールバックは非表示になります）。失敗した場合は `data-rr-map="error"` になり、`details` を開き、静的フォールバックは表示されたままです。
+`initMap` は `[data-rr-map="pending"]` を探し、Leaflet を遅延して読み込みます。タイルレイヤーとマーカーを描画して `data-rr-map="rendered"` にします（このとき静的フォールバックは非表示になります）。失敗した場合は `data-rr-map="error"` になり、`details` を開き、静的フォールバックは表示されたままです。
 
 座標も `center` もないブロックは置き換えず、通常のコードブロックのまま残し、`source: "@riebeckite/plugin-map"` を持つ診断を出します。
 
@@ -98,12 +98,12 @@ map:
 | `attribution` | OpenStreetMap の帰属表示 | プロバイダが要求する帰属表示の HTML |
 | `fallback` | `true` | 元の本文を表示する `details` を描画する |
 | `staticFallback` | `true` | 静的フォールバックのブロックを描画する |
-| `staticImageUrl` | — | 静的画像 URL テンプレート（`{lat}`/`{lng}`/`{zoom}`/`{width}`/`{height}`） |
+| `staticImageUrl` | なし | 静的画像 URL テンプレート（`{lat}`/`{lng}`/`{zoom}`/`{width}`/`{height}`） |
 | `frontmatterKey` | `"map"` | 座標を読む frontmatter プロパティ |
 
 ## タイルと帰属表示
 
-既定はキー不要の [OpenStreetMap 標準タイル](https://tile.openstreetmap.org/) です。小規模なサイトには十分ですが、OpenStreetMap の[タイル利用ポリシー](https://operations.osmfoundation.org/policies/tiles/)は識別可能な referrer を前提とし、大量アクセスを禁止しています。一定のトラフィックがあるサイトは `tileUrl` を自前のタイルサーバーや商用プロバイダに向けてください。
+既定はキー不要の [OpenStreetMap 標準タイル](https://tile.openstreetmap.org/) です。小規模なサイトには十分ですが、OpenStreetMap の[タイル利用ポリシー](https://operations.osmfoundation.org/policies/tiles/)は。識別可能な referrer を前提とし、大量アクセスを禁止しています。一定のトラフィックがあるサイトは `tileUrl` を自前のタイルサーバーや商用プロバイダに向けてください。
 
 帰属表示は省略できません。`attribution` は Leaflet に渡され、静的フォールバックにも（プレーンテキストで）描画されます。プロバイダが要求するクレジットを常に表示してください。
 
@@ -111,9 +111,9 @@ map:
 
 ## クライアント側の描画
 
-Leaflet（`leaflet.js` と `leaflet.css`）は、`[data-rr-map="pending"]` の figure が 1 つ以上あるときだけ jsDelivr から取得します。ライブラリを遅延して読み込むため、地図のないページは何も負担せず、地図のあるページも JavaScript を無効にしていたり CDN に到達できなかったりする場合は静的フォールバックが表示されます。
+`[data-rr-map="pending"]` の figure が 1 つ以上あるときだけ取得します。取得元は jsDelivr で、Leaflet（`leaflet.js` と `leaflet.css`）です。ライブラリを遅延して読み込むため、地図のないページは何も負担しません。地図のあるページでも、JavaScript を無効にしていたり CDN に到達できなかったりする場合があります。その場合は静的フォールバックが表示されます。
 
-`initMap(options?)` は `tileUrl`、`attribution`、`minZoom`、`maxZoom`、`leafletScriptUrl`、`leafletStyleUrl`、および事前読み込み済みの `runtime`（テストで偽の Leaflet を注入する用途）を受け取ります。
+`initMap(options?)` が受け取るオプションは次のとおりです。`tileUrl`、`attribution`、`minZoom`、`maxZoom`、`leafletScriptUrl`、`leafletStyleUrl`。さらに、事前読み込み済みの `runtime` も指定できます（テストで偽の Leaflet を注入する用途）。
 
 ## 出力のフック
 

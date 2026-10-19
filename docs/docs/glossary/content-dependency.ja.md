@@ -14,7 +14,7 @@ WikiLink、embed、別のentryを読むPluginのhookがcontent dependencyを作�
 
 ## 伝播
 
-依存は[cache invalidation](./cache-invalidation.md)に使われます。content dependency tracker (`packages/core/src/content/content_dependency_tracker.ts`)が依存関係を記録し、build coordinatorが依存先のentryを無効化します。ノートの内容が変更されると、派生コンテンツ（HTMLやgraphエッジなど）が次のビルドで再生成され、正しさが保たれます。
+依存は[[cache-invalidation|cache invalidation]]に使われます。content dependency tracker (`packages/core/src/content/content_dependency_tracker.ts`)が依存関係を記録し、build coordinatorが依存先のentryを無効化します。ノートの内容が変更されると、派生コンテンツ（HTMLやgraphエッジなど）が次のビルドで再生成され、正しさが保たれます。
 
 例）dependency trackingの流れ：
 

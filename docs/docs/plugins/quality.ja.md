@@ -59,4 +59,4 @@ export default defineConfig({
 
 ## 関連
 
-- [プラグインガイド](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインガイド]]

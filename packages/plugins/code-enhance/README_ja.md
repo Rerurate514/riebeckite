@@ -55,11 +55,11 @@ Theme は `rr-code` の root に `--rr-code-syntax` を指定すると、ハイ�
 
 ## 公開 API
 
-- `codeEnhance(options?)` — プラグインファクトリ
-- `rehypeCodeEnhance(options?)` — Rehype 変換
-- `initCodeEnhance(options?)` — ブラウザ初期化関数
-- `DEFAULT_COPY_LABEL`、`DEFAULT_COPIED_LABEL` — 既定のコピー文言
-- `CodeEnhanceOptions`、`CodeEnhanceClientOptions`、`CodeEnhanceTheme` — 型
+- `codeEnhance(options?)`：プラグインファクトリ
+- `rehypeCodeEnhance(options?)`：Rehype 変換
+- `initCodeEnhance(options?)`：ブラウザ初期化関数
+- `DEFAULT_COPY_LABEL`、`DEFAULT_COPIED_LABEL`：既定のコピー文言
+- `CodeEnhanceOptions`、`CodeEnhanceClientOptions`、`CodeEnhanceTheme`：型
 
 ## 関連資料
 

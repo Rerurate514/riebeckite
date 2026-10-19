@@ -94,16 +94,16 @@ import "@riebeckite/plugin-share/style.css";
 
 ## エクスポート
 
-- `share(options?)` — プラグインファクトリ
-- `sharePlugin` — `share` のエイリアス
-- `resolveShareOptions(options?)` — オプションの既定値を適用する
-- `validateShareOptions(options?)` — 実行時オプションを検証する
-- `buildAbsoluteUrl(config, permalink)` — ノート URL を絶対 URL に解決する
-- `normalizeMastodonInstance(value)` — インスタンスをホスト名に正規化する
-- `buildShareUrl(service, target, instance?)` — 1 サービスの URL を組み立てる
-- `buildShareLinks(options, target)` — リンクを持つサービスをすべて組み立てる
-- `renderShareControls(options, target)` — コントロールの HTML を生成する
-- `initShare()` — ブラウザ初期化関数（`@riebeckite/plugin-share/client` からも
+- `share(options?)`：プラグインファクトリ
+- `sharePlugin`：`share` のエイリアス
+- `resolveShareOptions(options?)`：オプションの既定値を適用する
+- `validateShareOptions(options?)`：実行時オプションを検証する
+- `buildAbsoluteUrl(config, permalink)`：ノート URL を絶対 URL に解決する
+- `normalizeMastodonInstance(value)`：インスタンスをホスト名に正規化する
+- `buildShareUrl(service, target, instance?)`：1 サービスの URL を組み立てる
+- `buildShareLinks(options, target)`：リンクを持つサービスをすべて組み立てる
+- `renderShareControls(options, target)`：コントロールの HTML を生成する
+- `initShare()`：ブラウザ初期化関数（`@riebeckite/plugin-share/client` からも
   読み込める）
 - 定数: `SHARE_SERVICES`, `SHARE_ATTRIBUTE`, `SHARE_ROOT_CLASS`,
   `DEFAULT_SHARE_SERVICES`, `DEFAULT_SHARE_LABELS`, `DEFAULT_SHARE_PLACEMENT`

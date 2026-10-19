@@ -8,7 +8,7 @@ Obsidian 形式の PDF 添付ファイルをインライン表示するプラグ
 
 ## まず何を解決するか
 
-`pdf()` は、埋め込み形式の PDF 添付（`![[report.pdf]]`）をダウンロード専用のカードではなく、ブラウザ標準の PDF ビューアでインライン表示します。ビルド時（SSR）だけで完結し、クライアント JavaScript は不要です。
+`pdf()` は、埋め込み形式の PDF 添付（`![report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)`）をダウンロード専用のカードではなく、ブラウザ標準の PDF ビューアでインライン表示します。ビルド時（SSR）だけで完結し、クライアント JavaScript は不要です。
 
 `@riebeckite/plugin-obsidian-markdown` は画像でも Markdown でもないウィキリンクを汎用の `attachment` として解決するため、PDF は `.pdf` 拡張子で判定します。`kind: "pdf"` が直接渡された場合も処理するので、将来 PDF 専用の kind が導入されても動作します。
 
@@ -40,7 +40,7 @@ export default defineConfig({
 
 #### 実行例
 
-![[pdf-example.pdf]]
+![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/pdf-example.pdf.ja.md)
 
 `<object>` はブラウザ内蔵の PDF ビューアを使い、その中のダウンロードリンクが PDF
 表示に対応しない環境向けのフォールバックになります。ビューアの下にはダウンロード
@@ -50,7 +50,7 @@ Theme が対象にできる安定した `rr-pdf` ルートフックが付きま�
 
 `initialPage` と `toolbar` はビューア URL のフラグメント（`#page=2&toolbar=0`）として
 埋め込みます。これはブラウザ間で共通の慣習ですが、一部のビューアは解釈しないことが
-あります。通常のリンク（`[[report.pdf]]`）は `@riebeckite/plugin-attachment`（または
+あります。通常のリンク（`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)`）は `@riebeckite/plugin-attachment`（または
 Markdown のフォールバック）に委ねます。
 
 ## オプション
@@ -67,10 +67,10 @@ Markdown のフォールバック）に委ねます。
 
 ## 公開 API
 
-- `pdf(options?)` / `pdfPlugin` — プラグインファクトリ
-- `buildPdfViewerUrl(url, options)` — ビューア URL の生成
-- `isPdfRenderTarget(context)` — PDF 判定
-- `renderPdf(context, options)` — レンダラー実装
+- `pdf(options?)` / `pdfPlugin`：プラグインファクトリ
+- `buildPdfViewerUrl(url, options)`：ビューア URL の生成
+- `isPdfRenderTarget(context)`：PDF 判定
+- `renderPdf(context, options)`：レンダラー実装
 - 型: `PdfOptions`、`ResolvedPdfOptions`
 
 ## 関連資料

@@ -29,4 +29,4 @@ hreflang形式はBCP 47に準拠し、`en`, `ja`, `en-US`, `zh-CN`などの言�
 <link rel='alternate' hreflang='ja' href='https://example.com/ja/docs/hello/'>
 ```
 
-これは[SEO plugin](./feed.md)と組み合わせて、検索エンジン最適化のための言語代替を提供します。
+これは[[seo|SEO plugin]]と組み合わせて、検索エンジン最適化のための言語代替を提供します。

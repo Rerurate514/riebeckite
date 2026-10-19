@@ -48,3 +48,9 @@ index構築の出力例：
 indexはすべてのコンテンツentryを走査し、lowercasedなパスの後方一致（frontmatter aliasも含む）を収集した後、`resolveContentIndex`によって候補を収束させます。キーが1つのノートと一致しない場合、インデックスから外され、誤った解決を防ぎます。
 
 ## 関連用語
+
+- [[glossary/content|Content]]
+- [[content-entry|Content Entry]]
+- [[slug|Slug]]
+- [[logical-path|Logical Path]]
+- [[content-manager|Content Manager]]

@@ -782,6 +782,6 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 
 ## 関連
 
-- [Plugin catalog](./README.ja.md)
-- [Writing a Plugin](./writing-a-plugin.ja.md)
-- [Plugin API](../reference/plugin-api.ja.md)
+- [[plugins/README|Plugin catalog]]
+- [[writing-a-plugin|Writing a Plugin]]
+- [[plugin-api|Plugin API]]

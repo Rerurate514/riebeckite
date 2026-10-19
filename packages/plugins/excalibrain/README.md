@@ -66,7 +66,7 @@ related:: [[note-a]] and [[note-b]] are similar
 ```
 
 An inline field may appear on its own line or inside brackets
-(`[field:: [[target]]]`).
+(`[field:: [target](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/target.md)]`).
 
 ### Ontology
 

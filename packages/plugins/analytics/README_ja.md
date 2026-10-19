@@ -48,7 +48,7 @@ Core の安定コンテンツ ID（frontmatter の `id`）がある公開コン�
 
 コンテンツ ID は執筆側の責務です。公開ノート間での `id` の重複は [`@riebeckite/plugin-diagnostics`](../diagnostics/README_ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
 
-## プロバイダ契約
+## プロバイダの取り決め
 
 ```ts
 const result = await provider.query({

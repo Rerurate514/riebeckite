@@ -75,4 +75,4 @@ const data = getProperties({ view, frontmatter: entry.frontmatter, options });
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

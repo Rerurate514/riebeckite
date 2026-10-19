@@ -100,4 +100,4 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 
 ## 関連リンク
 
-- [プラグイン API](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグイン API]]

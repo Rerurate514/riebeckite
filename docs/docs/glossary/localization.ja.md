@@ -44,4 +44,4 @@ export default defineConfig({
 ## headタグの生成
 l10nプラグインは、ノートの各翻訳バージョンに対する`hreflang`linkタグを生成します。これらは`addLocalizationHeadTags`関数（`packages/plugins/l10n/src/l10n.ts`で定義）を通じて、manifest作成中にノートの`headTags`に追加されます。各翻訳エントリは、存在する各翻訳に対して1つ`<link rel="alternate" hreflang="…">`を受け取ります。サイトシェルはそれらのタグを描画し、`<html lang>`をリクエストに対して選択します。
 
-これは[SEO plugin](./feed.md)と組み合わせて、言語の代替バージョンのSEOのためのhreflangをemitします。
+これは[[seo|SEO plugin]]と組み合わせて、言語の代替バージョンのSEOのためのhreflangをemitします。

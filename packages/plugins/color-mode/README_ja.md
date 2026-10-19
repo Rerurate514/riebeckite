@@ -10,15 +10,15 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 
 [theme-system.md](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md) テーマの配色は、次の 3 つの CSS 状態で決まります。
 
-- `:root` — ライト
-- `:root[data-theme="dark"]` — ダーク
-- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }` — OS に追随（system）
+- `:root`：ライト
+- `:root[data-theme="dark"]`：ダーク
+- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }`：OS に追随（system）
 
 プラグインは、この 3 つの CSS 状態を切り替えるだけの薄い実行時スイッチで、次の 3 つを提供します。
 
-- `ColorModeScript` — `<head>` に置く 1 行のインラインスクリプト。**最初の描画の前に**保存済みモードを適用し、テーマのちらつき（FOUC）を防ぎます。
-- `ColorModeToggle` — ライト / ダーク / システムのセグメント型コントロール。
-- `initColorMode` — クライアントエントリ。ボタンの結線、`localStorage` への保存、ドキュメントの状態同期を行います。
+- `ColorModeScript`：`<head>` に置く 1 行のインラインスクリプト**。最初の描画の前に**保存済みモードを適用し、テーマのちらつき（FOUC）を防ぎます。
+- `ColorModeToggle`：ライト / ダーク / システムのセグメント型コントロール。
+- `initColorMode`：クライアントエントリ。ボタンの結線、`localStorage` への保存、ドキュメントの状態同期を行います。
 
 `colorModePlugin()` はスタイルシートとクライアントエントリの登録だけを行います。UI はサイトシェルで描画する 2 つのコンポーネントから届きます。
 
@@ -129,10 +129,10 @@ document.addEventListener("riebeckite:color-mode", (event) => {
 
 ## Exports
 
-- `colorModePlugin()` — プラグインファクトリ
-- `ColorModeToggle` — 切替コンポーネント
-- `ColorModeScript` — 描画前インラインスクリプトのコンポーネント
-- `initColorMode` — ブラウザ初期化関数（`@riebeckite/plugin-color-mode/client` からも export）
+- `colorModePlugin()`：プラグインファクトリ
+- `ColorModeToggle`：切替コンポーネント
+- `ColorModeScript`：描画前インラインスクリプトのコンポーネント
+- `initColorMode`：ブラウザ初期化関数（`@riebeckite/plugin-color-mode/client` からも export）
 - 定数: `COLOR_MODES` / `COLOR_MODE_STORAGE_KEY` / `COLOR_MODE_EVENT` ほか
 - 型: `ColorMode`
 

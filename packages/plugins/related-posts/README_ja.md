@@ -92,12 +92,12 @@ import "@riebeckite/plugin-related-posts/style.css";
 
 ## エクスポート
 
-- `relatedPosts(options?)` — プラグインファクトリ
-- `relatedPostsPlugin` — `relatedPosts` のエイリアス
-- `resolveRelatedPostsOptions(options?)` — オプションの既定値を適用する
-- `buildRelatedPosts({ manifest, entry, options, config? })` — 関連エントリを採点・整列する
-- `renderRelatedPosts(entries, options)` — ナビゲーション HTML を生成する
-- `RelatedPosts` と `@riebeckite/plugin-related-posts/components` — Hono JSX Component
+- `relatedPosts(options?)`：プラグインファクトリ
+- `relatedPostsPlugin`：`relatedPosts` のエイリアス
+- `resolveRelatedPostsOptions(options?)`：オプションの既定値を適用する
+- `buildRelatedPosts({ manifest, entry, options, config? })`：関連エントリを採点・整列する
+- `renderRelatedPosts(entries, options)`：ナビゲーション HTML を生成する
+- `RelatedPosts` と `@riebeckite/plugin-related-posts/components`：Hono JSX Component
 - 型: `RelatedPostsOptions`, `ResolvedRelatedPostsOptions`, `RelatedPostsEntry`
 
 ## 制約

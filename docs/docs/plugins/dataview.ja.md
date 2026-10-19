@@ -191,4 +191,4 @@ SORT priority desc, file.name asc
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

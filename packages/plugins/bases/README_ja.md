@@ -19,7 +19,7 @@ export default { plugins: [bases()] };
 ## `.base` ドキュメントと公開範囲
 
 ルーティング可能な Markdown ノートから `.base` をリンクすると、拡張子を除いた
-パスに PageType ページが作られます。たとえば `![[views/Books.base]]` は
+パスに PageType ページが作られます。たとえば `![views/Books.base](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/views/Books.base.ja.md)` は
 `/views/Books` を作ります。既存の PageType API を使うため、独自のルーティングは
 追加しません。
 

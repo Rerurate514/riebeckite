@@ -294,4 +294,4 @@ container }` を受け取り、文字列を返します。独自レンダラー�
 
 ## 関連
 
-- [プラグインガイド](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインガイド]]

@@ -89,10 +89,10 @@ JSON のトップレベル `"caption"` キーでも指定できます。この�
 </figure>
 ```
 
-- `.rb-wavedrom` — 図全体のラッパー。`--rb-color-*` で配色を引き継ぎます
-- `.rb-wavedrom__canvas` — WaveDrom が SVG を描画する領域。`data-wavedrom-canvas="true"`
-- `.rb-wavedrom__caption` — キャプションがある場合の `<figcaption>`
-- `.rb-wavedrom__fallback` — WaveJSON のソースを表示する `<details>`
+- `.rb-wavedrom`：図全体のラッパー。`--rb-color-*` で配色を引き継ぎます
+- `.rb-wavedrom__canvas`：WaveDrom が SVG を描画する領域。`data-wavedrom-canvas="true"`
+- `.rb-wavedrom__caption`：キャプションがある場合の `<figcaption>`
+- `.rb-wavedrom__fallback`：WaveJSON のソースを表示する `<details>`
 
 `data-wavedrom` 属性は描画状態を表します。初期値は `pending`、成功時は `rendered`、失敗時は `error` になります。失敗時はフォールバックの `<details>` が開きます。
 

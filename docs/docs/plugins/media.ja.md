@@ -53,4 +53,4 @@ export default defineConfig({
 
 ## 関連リンク
 
-- [プラグイン API](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグイン API]]

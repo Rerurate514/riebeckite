@@ -46,10 +46,10 @@ console.log("Hello");
 
 ## 公開 API
 
-- `codeTabs(options?)` — プラグインファクトリ
-- `rehypeCodeTabs(options?)` — Rehype 変換
-- `initCodeTabs(options?)` — ブラウザ初期化関数
-- `CodeTabsOptions`、`CodeTabsClientOptions` — 型
+- `codeTabs(options?)`：プラグインファクトリ
+- `rehypeCodeTabs(options?)`：Rehype 変換
+- `initCodeTabs(options?)`：ブラウザ初期化関数
+- `CodeTabsOptions`、`CodeTabsClientOptions`：型
 
 ## 関連資料
 

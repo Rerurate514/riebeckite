@@ -19,7 +19,7 @@ Columns are lines that start with `## ` (configurable with `columnMarker`).
 Every list item that follows becomes a card: `- [ ] text` (unchecked),
 `- [x] text` (checked), or a plain `- text` item.
 
-Card text supports inline `[[wikilinks]]` (resolved to real hrefs from the
+Card text supports inline `[wikilinks](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/wikilinks.md)` (resolved to real hrefs from the
 content manifest), `#tags`, and simple `**bold**` emphasis.
 
 ## Usage

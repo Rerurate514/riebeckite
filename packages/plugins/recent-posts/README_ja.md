@@ -38,10 +38,10 @@ return <RecentPosts posts={posts} />;
 
 ## 公開 API
 
-- `recentPostsPlugin()` — プラグインファクトリ
-- `RecentPosts` — 最新記事一覧コンポーネント
+- `recentPostsPlugin()`：プラグインファクトリ
+- `RecentPosts`：最新記事一覧コンポーネント
 - `getRecentPosts({ manifest, limit? })`
-- `RecentPost` — `{ slug, permalink, title, postedAt }` の型
+- `RecentPost`：`{ slug, permalink, title, postedAt }` の型
 
 ## 関連資料
 

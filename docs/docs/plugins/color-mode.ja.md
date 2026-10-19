@@ -139,5 +139,5 @@ document.addEventListener("riebeckite:color-mode", (event) => {
 
 ## 関連
 
-- [テーマシステム](../reference/theme-api.ja.md)
+- [[theme-api|テーマシステム]]
 - [`@riebeckite/plugin-ux`](./ux.ja.md)

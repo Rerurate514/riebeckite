@@ -94,11 +94,11 @@ Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の UR
 
 ## 関連ドキュメント
 
-- [移行ガイド](./README.ja.md)
-- [コンテンツを書く](../writing-content.ja.md)
-- [Obsidian Vault](../obsidian.ja.md)
-- [設定](../../reference/configuration.ja.md)
-- [CLI リファレンス](../../reference/cli.ja.md)
-- [Permalink Plugin](../../plugins/permalink.ja.md)
-- [SEO Plugin](../../plugins/seo.ja.md)
-- [デプロイ](../deployment/README.ja.md)
+- [[guides/migration/README|移行ガイド]]
+- [[writing-content|コンテンツを書く]]
+- [[obsidian|Obsidian Vault]]
+- [[configuration|設定]]
+- [[cli|CLI リファレンス]]
+- [[plugins/permalink|Permalink Plugin]]
+- [[seo|SEO Plugin]]
+- [[guides/deployment/README|デプロイ]]

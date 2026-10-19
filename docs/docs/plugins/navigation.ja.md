@@ -175,5 +175,5 @@ navigation({
 
 ## 関連リンク
 
-- [設定リファレンス](../reference/configuration.ja.md)
-- [プラグイン API](../reference/plugin-api.ja.md)
+- [[configuration|設定リファレンス]]
+- [[plugin-api|プラグイン API]]

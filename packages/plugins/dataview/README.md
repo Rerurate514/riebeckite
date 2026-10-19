@@ -108,7 +108,7 @@ FROM #project
 | ------ | ------- |
 | `#tag` | Has the tag |
 | `"folder"` | Slug is the folder or lives under it |
-| `[[note]]` | Links to `note` (incoming links) |
+| `[note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/note.md)` | Links to `note` (incoming links) |
 
 Combine sources with `and` / `or`, negate with `!` or `-`, and group with
 parentheses. Adjacent sources are treated as `and`.

@@ -52,4 +52,4 @@ Theme は `rr-lightbox` の root に `--rr-lightbox-image-border-radius` を指�
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

@@ -9,7 +9,7 @@ Renders Obsidian audio / video attachment embeds with native HTML5 media players
 ## Overview
 
 `media()` provides an attachment renderer for common Web media formats such as
-`![[music.mp3]]` and `![[movie.mp4]]`. Unsupported files return `null`, allowing
+`![music.mp3](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/music.mp3.md)` and `![movie.mp4](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.md)`. Unsupported files return `null`, allowing
 later renderers or the default fallback to handle them.
 
 ## Usage
@@ -47,7 +47,7 @@ export default defineConfig({
 
 When a renderer receives fragments such as `#t=10` or `#10,20`, they are kept on
 the media source URL. The current Obsidian wikilink pipeline does not pass
-attachment fragments to renderers, so full `![[movie.mp4#t=10]]` support requires
+attachment fragments to renderers, so full `![movie.mp4#t=10](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.md#t=10)` support requires
 a future pipeline extension.
 
 ## Exports

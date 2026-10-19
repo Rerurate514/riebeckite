@@ -22,12 +22,12 @@ export default defineConfig({
 
 ## 主な記法
 
-- `[[Note]]`、`[[Note|別名]]` — 対象の解決済み canonical permalink へのリンク（class `rr-obsidian-wikilink`）。見出し・ブロック ID のフラグメントも扱う。lookup は slug で行い、`href` は解決済み permalink
-- `![[Note]]` — 最大 3 階層まで安全に再帰描画するノート埋め込み
-- `![[image.png]]` — `assetBase` 配下の画像、`[[file.pdf]]` — 添付ファイル用レンダラーまたはダウンロードリンク
-- `> [!note]` — コールアウト。`+` と `-` で折りたたみ状態を指定できる
-- `#tag`、`#nested/tag` — タグページへのリンク
-- 段落末尾の `^block-id` — 要素の `id` と `data-block-id`
+- `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`、`[別名](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`：対象の解決済み canonical permalink へのリンク（class `rr-obsidian-wikilink`）。見出し・ブロック ID のフラグメントも扱う。lookup は slug で行い、`href` は解決済み permalink
+- `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`：最大 3 階層まで安全に再帰描画するノート埋め込み
+- `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)`：`assetBase` 配下の画像、`[file.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/file.pdf.ja.md)`：添付ファイル用レンダラーまたはダウンロードリンク
+- `> [!note]`：コールアウト。`+` と `-` で折りたたみ状態を指定できる
+- `#tag`、`#nested/tag`：タグページへのリンク
+- 段落末尾の `^block-id`：要素の `id` と `data-block-id`
 
 解決できないウィキリンクは `rr-obsidian-wikilink--broken` class を付けたリンクになります。添付カードやメディア表示が必要なら、別途対応する添付プラグインを登録してください。
 
@@ -50,8 +50,8 @@ Theme は `rr-callout` の root に `--rr-callout-title-color`、
 
 ## 公開 API
 
-- `obsidianMarkdown(options?)` / `obsidianMarkdownPlugin` — プラグインファクトリ
-- `ObsidianMarkdownOptions`、`CalloutOptions`、`TagOptions`、`WikilinkOptions`、`WikilinkFragment` — 型
+- `obsidianMarkdown(options?)` / `obsidianMarkdownPlugin`：プラグインファクトリ
+- `ObsidianMarkdownOptions`、`CalloutOptions`、`TagOptions`、`WikilinkOptions`、`WikilinkFragment`：型
 
 ## 関連資料
 

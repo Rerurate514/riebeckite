@@ -59,3 +59,9 @@ Content Managerは以下のコンポーネントを内部で調整します：
 - **`ContentBuildCoordinator`** ：インクリメンタルビルド状態とoutput変更の検知管理
 
 ## 関連用語
+
+- [[glossary/content|Content]]
+- [[content-entry|Content Entry]]
+- [[content-index|Content Index]]
+- [[content-source|Content Source]]
+- [[glossary/pipeline|Pipeline]]

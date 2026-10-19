@@ -10,7 +10,7 @@ Excalidraw drawing rendering for Obsidian wikilinks.
 
 `excalidraw()` provides the `renderAttachment` hook that
 `@riebeckite/plugin-obsidian-markdown` uses when an embedded wikilink
-(`![[drawing.excalidraw]]`) resolves to an Excalidraw file. The plugin emits a
+(`![drawing.excalidraw](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)`) resolves to an Excalidraw file. The plugin emits a
 placeholder figure carrying the drawing payload, and the client entry renders
 it to SVG.
 
@@ -47,13 +47,13 @@ fenced code block is extracted and supports both `json` and lz-string
 
 ### Build (`renderAttachment`)
 
-- Only handles embedded wikilinks (`![[...]]`) to paths ending in
+- Only handles embedded wikilinks (`![...](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/....md)`) to paths ending in
   `.excalidraw` or `.excalidraw.md`; everything else returns `null` and falls
   through to the attachment plugin
 - Reads the file under `config.content.directory` (path-traversal safe)
 - Parses the scene before rendering it.
-- Wikilink aliases can set a size: `![[drawing.excalidraw|800]]` (width) or
-  `![[drawing.excalidraw|800x600]]` (width x height)
+- Wikilink aliases can set a size: `![800](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)` (width) or
+  `![800x600](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)` (width x height)
 - Missing files, invalid scenes, or out-of-directory paths render an error
   placeholder and log to the console
 
@@ -65,7 +65,7 @@ The following source is rendered as an SVG drawing on this page.
 ![[HW]]
 ````
 
-![[HW]]
+![HW](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/HW.md)
 
 ### Client (`initExcalidraw`)
 

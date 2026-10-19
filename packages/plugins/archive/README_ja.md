@@ -57,12 +57,12 @@ export default {
 
 ## エクスポート
 
-- `archive` / `archivePlugin` — plugin ファクトリ。
-- `resolveArchiveOptions` — 既定値を適用してオプションを解決します。
-- `buildArchiveCollections` — エントリから月別 collection を組み立てます。
-- `archiveDefinitions` — plugin が使う Core collection 定義。
-- `renderArchivePage` — アーカイブ一覧ページを HTML に描画します。
-- `formatArchivePeriod`、`archivePaginationLabels` — ロケール補助関数。
+- `archive` / `archivePlugin`：plugin ファクトリ。
+- `resolveArchiveOptions`：既定値を適用してオプションを解決します。
+- `buildArchiveCollections`：エントリから月別 collection を組み立てます。
+- `archiveDefinitions`：plugin が使う Core collection 定義。
+- `renderArchivePage`：アーカイブ一覧ページを HTML に描画します。
+- `formatArchivePeriod`、`archivePaginationLabels`：ロケール補助関数。
 - `DEFAULT_ARCHIVE_BASE_PATH`、`DEFAULT_ARCHIVE_PAGE_SIZE`、
   `DEFAULT_ARCHIVE_CLASS_NAME`、`ARCHIVE_COLLECTION_KIND`。
 

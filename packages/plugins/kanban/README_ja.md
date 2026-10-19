@@ -54,7 +54,7 @@ kanban-plugin: board
 - [ ] プラグインを公開する
 ```
 
-カードのテキストでは `[[ウィキリンク]]`（マニフェストから実際の href に解決）、`#タグ`、`**太字**` を使えます。
+カードのテキストでは `[ウィキリンク](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/ウィキリンク.ja.md)`（マニフェストから実際の href に解決）、`#タグ`、`**太字**` を使えます。
 
 ## 出力
 
@@ -94,10 +94,10 @@ kanban-plugin: board
 
 ## エクスポート
 
-- `kanban(options?)` — プラグインファクトリ
-- `kanbanPlugin` — `kanban` の別名
-- `resolveKanbanOptions(options?)` — 既定値を適用する
-- `remarkKanban(options?)` — プラグインが使う Remark 変換
+- `kanban(options?)`：プラグインファクトリ
+- `kanbanPlugin`：`kanban` の別名
+- `resolveKanbanOptions(options?)`：既定値を適用する
+- `remarkKanban(options?)`：プラグインが使う Remark 変換
 - `parseKanban(source, options)` と `renderKanban(result, options, resolveLink, source)`
 - `stripFrontmatter(markdown)` と `isKanbanNote(frontmatter)`
 - `createKanbanLinkResolver(manifest)` と `createKanbanPlaceholder(source)`

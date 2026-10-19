@@ -24,7 +24,7 @@ Values are rendered by type:
 | Boolean | `true` / `false` with `data-boolean` |
 | Number | The number with `data-number` |
 | ISO date string or `Date` | `<time datetime>` |
-| `[[wikilink]]` or URL inside a string | Resolved link (wikilinks use the content index) |
+| `[wikilink](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/glossary/wikilink.md)` or URL inside a string | Resolved link (wikilinks use the content index) |
 | Nested object | A nested `<dl>` |
 
 Values that cannot be rendered as structured HTML are emitted as escaped text

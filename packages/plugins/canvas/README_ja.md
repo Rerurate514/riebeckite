@@ -23,8 +23,8 @@ export default defineConfig({
 ## 入力できるもの
 
 1. ` ```canvas ` フェンスの本文に JSON Canvas を直接書く
-2. ` ```canvas ` フェンスの本文に `![[diagram.canvas]]` または `[[diagram.canvas]]` と書き、ファイルを `contentSource` から読む
-3. `![[diagram.canvas]]` を本文に直接埋め込む（添付ファイルとして解決）
+2. ` ```canvas ` フェンスの本文に `![diagram.canvas](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/diagram.canvas.ja.md)` または `[diagram.canvas](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/diagram.canvas.ja.md)` と書き、ファイルを `contentSource` から読む
+3. `![diagram.canvas](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/diagram.canvas.ja.md)` を本文に直接埋め込む（添付ファイルとして解決）
 
 `.canvas` が見つからない、または JSON Canvas として解釈できない場合はコードブロックをそのまま残し、`@riebeckite/plugin-canvas` を source とするメッセージを報告します。
 
@@ -32,10 +32,10 @@ export default defineConfig({
 
 `div.rb-canvas` を出力します。属性は `data-canvas`（入力元）、`data-canvas-nodes`、`data-canvas-edges`、`data-canvas-render`（`static` / `client` / `both` / 描画後の `ready`）です。内部には次を置きます。
 
-- `script[type="application/json"][data-canvas-payload]` — エスケープ済みの JSON Canvas。実行されません
-- `div.rb-canvas__static` — `render` が `"static"` または `"both"` のときの静的フォールバック。絶対配置したノードカードと SVG のエッジ
-- `div.rb-canvas__stage` — `render` が `"client"` または `"both"` のときの空の領域。`initCanvas()` が内容を充填します
-- `details.rb-canvas__fallback` — ノードとエッジの一覧（JS なしでも内容を確認できます）
+- `script[type="application/json"][data-canvas-payload]`：エスケープ済みの JSON Canvas。実行されません
+- `div.rb-canvas__static`：`render` が `"static"` または `"both"` のときの静的フォールバック。絶対配置したノードカードと SVG のエッジ
+- `div.rb-canvas__stage`：`render` が `"client"` または `"both"` のときの空の領域。`initCanvas()` が内容を充填します
+- `details.rb-canvas__fallback`：ノードとエッジの一覧（JS なしでも内容を確認できます）
 
 `file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、マニフェストエントリの HTML を書き換えます。Core がその HTML をコンテンツルートの描画 HTML と同期します。`text` ノードは最小限の Markdown（wikilink とエスケープ）だけを扱います。
 
@@ -73,11 +73,11 @@ canvas({ documentPages: true })
 
 ## 主なエクスポート
 
-- `canvas(options?)` / `canvasPlugin` — プラグインを作成する
-- `initCanvas()` — クライアント側の描画を初期化する
-- `parseCanvas(json)` — JSON Canvas を解析する（純粋関数）
-- `buildCanvasLayout(doc)` — 座標を正規化し、エッジを線分に解決する（純粋関数）
-- `resolveCanvasOptions(options)` — 既定値を適用する
+- `canvas(options?)` / `canvasPlugin`：プラグインを作成する
+- `initCanvas()`：クライアント側の描画を初期化する
+- `parseCanvas(json)`：JSON Canvas を解析する（純粋関数）
+- `buildCanvasLayout(doc)`：座標を正規化し、エッジを線分に解決する（純粋関数）
+- `resolveCanvasOptions(options)`：既定値を適用する
 - 型: `CanvasOptions`、`CanvasRenderMode`、`CanvasDocument`、`CanvasNode`、`CanvasEdge` ほか
 
 ## 関連資料

@@ -92,9 +92,9 @@ ContentPublicLocation
 
 Core は返された `permalink` を canonical URL として扱います。
 
-その URL は、Wikilink、Backlinks、Search、Content Graph、SEO canonical、Sitemap、RSS / Atom / JSON Feed などから共通して参照されます。
+その URL は、Wikilink、Backlinks、Search、Content Graph などから共通して参照されます。SEO canonical、Sitemap、RSS / Atom / JSON Feed も同じ URL を使います。
 
-Permalink Plugin を使用しない場合も、Core の resolver `resolveDefaultContentLocation` が `index` を `/`、それ以外を `/{slug}` に解決します。これはフォールバックではなく、Core の標準方針です。
+Permalink Plugin を使用しない場合も、Core の resolver `resolveDefaultContentLocation` が URL を解決します。`index` は `/`、それ以外は `/{slug}` です。これはフォールバックではなく、Core の標準方針です。
 
 ---
 
@@ -223,8 +223,8 @@ permalink({
 | `override.frontmatter` | `string` | `"permalink"` | URL を直接指定する frontmatter フィールド |
 | `redirects.frontmatter` | `string` | `"redirect_from"` | 旧 URL を指定する frontmatter フィールド |
 | `redirects.status` | `301 \| 302 \| 307 \| 308` | `308` | リダイレクトの HTTP ステータス |
-| `resolveId` | `(content) => string` | — | ID の解決を完全にカスタマイズする |
-| `resolvePath` | `({ content, id }) => string` | — | 公開パスの生成を完全にカスタマイズする |
+| `resolveId` | `(content) => string` | なし | ID の解決を完全にカスタマイズする |
+| `resolvePath` | `({ content, id }) => string` | なし | 公開パスの生成を完全にカスタマイズする |
 
 ---
 
@@ -343,7 +343,7 @@ path-derived hash
 | `derived` | path hash から導出 |
 | `custom` | `resolveId` から取得 |
 
-手動の `permalink` override は URL を変更しますが、同一性は消しません。frontmatter の ID があれば引き続き記録され（`metadata.idSource` は `frontmatter`）、明示的な ID がない場合のみメタデータは付与されません。override から暗黙の `/{id}` URL を生成することはありません。
+手動の `permalink` override は URL を変更しますが、同一性は消しません。frontmatter の ID があれば引き続き記録されます。明示的な ID がない場合のみメタデータは付与されません。override から暗黙の `/{id}` URL を生成することはありません。
 
 ---
 

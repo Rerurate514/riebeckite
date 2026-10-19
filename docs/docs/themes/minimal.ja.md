@@ -91,7 +91,7 @@ Riebeckite theme based on the design principles of Minimal for Obsidian by Steph
 
 ## 関連資料
 
-- [テーマシステム](../../../docs/docs/reference/theme-api.ja.md)
+- [[theme-api|テーマシステム]]
 - [`@riebeckite/theme-default`](./default.ja.md)
 - [`@riebeckite/theme-sakura`](./sakura.ja.md)
 - [`@riebeckite/theme-tokyonight`](./tokyonight.ja.md)

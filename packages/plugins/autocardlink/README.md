@@ -89,7 +89,7 @@ image.
 The card is built only from the fields written in the fenced block. It does not
 fetch the target page, so it never derives metadata on its own. In particular:
 
-- Local Obsidian image embeds such as `[[image.png]]` are not resolved; `image`
+- Local Obsidian image embeds such as `[image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` are not resolved; `image`
   and `favicon` accept URLs only.
 - Wikilinks are not resolved inside `favicon` or `image`.
 - The Obsidian Auto Card Link `data-auto-card-link-depth` option is not

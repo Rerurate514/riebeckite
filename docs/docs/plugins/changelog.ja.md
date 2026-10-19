@@ -87,5 +87,5 @@ import "@riebeckite/plugin-changelog/style.css";
 
 ## 関連資料
 
-- [plugin-diff](./diff.ja.md)：リビジョン履歴と行差分
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[diff|plugin-diff]]：リビジョン履歴と行差分
+- [[plugin-api|プラグインシステム]]

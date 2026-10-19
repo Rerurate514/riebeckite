@@ -6,6 +6,7 @@ export const repositoryUrl = "https://github.com/Rerurate514/riebeckite";
 export const EXTERNAL_PATTERN = /^(https?:|mailto:|tel:|data:)/i;
 export const FENCE_PATTERN = /^\s*(`{3,}|~{3,})/;
 export const LINK_PATTERN = /(!?)\[([^\]]*)\]\(([^)\s]+)(\s+"[^"]*")?\)/g;
+export const WIKILINK_PATTERN = /\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/g;
 
 export const documentationCollections = {
   plugin: {
@@ -91,6 +92,41 @@ export function rewriteTarget(rawTarget, options) {
   return `${repositoryUrl}/blob/main/${repositoryRelative}${suffix}`;
 }
 
+const wikilinkIndexCache = new Map();
+
+function wikilinkIndex(docsRoot, extension) {
+  const key = `${docsRoot}|${extension}`;
+  const cached = wikilinkIndexCache.get(key);
+  if (cached !== undefined) return cached;
+  const index = new Map();
+  const walk = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const entryPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        walk(entryPath);
+      } else if (entry.name.endsWith(extension)) {
+        index.set(entry.name.slice(0, -extension.length), entryPath);
+      }
+    }
+  };
+  walk(docsRoot);
+  wikilinkIndexCache.set(key, index);
+  return index;
+}
+
+function rewriteWikilink(rawTarget, label, options) {
+  const { pathname, suffix } = splitTarget(rawTarget.trim());
+  const extension = options.pageName?.endsWith(".ja.md") ? ".ja.md" : ".md";
+  const docsRoot = path.join(options.repositoryDirectory, "docs", "docs");
+  const name = pathname.replace(/\.ja?\.md$/, "");
+  const absolute = name.includes("/")
+    ? path.resolve(docsRoot, `${name}${extension}`)
+    : (wikilinkIndex(docsRoot, extension).get(name) ??
+      path.resolve(docsRoot, `${name}${extension}`));
+  const relative = toPosix(path.relative(options.documentDirectory, absolute));
+  return `[${label ?? rawTarget}](${rewriteTarget(`${relative}${suffix}`, options)})`;
+}
+
 export function rewriteDocumentLinks(text, options) {
   const lines = text.split(/\r?\n/);
   let openFence = null;
@@ -110,11 +146,15 @@ export function rewriteDocumentLinks(text, options) {
         return line;
       }
       if (openFence !== null) return line;
-      return line.replace(
-        LINK_PATTERN,
-        (_match, bang, text, rawTarget, title = "") =>
-          `${bang}[${text}](${rewriteTarget(rawTarget, options)}${title})`,
-      );
+      return line
+        .replace(
+          LINK_PATTERN,
+          (_match, bang, text, rawTarget, title = "") =>
+            `${bang}[${text}](${rewriteTarget(rawTarget, options)}${title})`,
+        )
+        .replace(WIKILINK_PATTERN, (_match, rawTarget, label) =>
+          rewriteWikilink(rawTarget, label, options),
+        );
     })
     .join("\n");
 }

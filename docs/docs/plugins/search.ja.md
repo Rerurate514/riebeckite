@@ -87,5 +87,5 @@ const results = searchItems(items, "#obsidian");
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]
 - [`@riebeckite/plugin-garden-explorer`](./garden-explorer.ja.md)

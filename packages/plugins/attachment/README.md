@@ -10,7 +10,7 @@ Attachment link and embed card rendering for Obsidian wikilinks.
 
 `attachment()` provides the `renderAttachment` hook that
 `@riebeckite/plugin-obsidian-markdown` uses when a wikilink resolves to a
-non-image file (`[[report.pdf]]`, `![[report.pdf]]`, ...).
+non-image file (`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.md)`, `![report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.md)`, ...).
 
 Without this plugin, those wikilinks fall back to a plain download link.
 
@@ -41,9 +41,9 @@ The following source is rendered on this page. A plain wikilink becomes a downlo
 
 #### Rendered
 
-[[attachment-example.txt]]
+[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.md)
 
-![[attachment-example.txt]]
+![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.md)
 
 - Format is the uppercased file extension.
 - Size is read from disk under `config.content.directory` (path-traversal safe)

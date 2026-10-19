@@ -96,7 +96,7 @@ FROM #project
 | --- | --- |
 | `#tag` | そのタグを持つ |
 | `"folder"` | スラッグがそのフォルダ、またはその配下 |
-| `[[note]]` | `note` へリンクしている（被リンク） |
+| `[note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/note.ja.md)` | `note` へリンクしている（被リンク） |
 
 ソースは `and` / `or` でつなぎ、`!` または `-` で否定し、`(` `)` でまとめられます。ソースを続けて書いた場合は `and` とみなします。
 
@@ -168,24 +168,24 @@ SORT priority desc, file.name asc
 
 ## 制限事項
 
-- **DataviewJS には対応しません。** `dataviewjs` は意図的に対象外です。
-- **インラインフィールド（`field:: value`）には対応しません。** 参照するのは frontmatter だけです。
-- **`TABLE` の列はフィールドパスです。** 任意の式は書けません。見出しの変更は `AS "Label"` だけです（`file.size / 1024` のような計算列は不可）。
-- **`TASK` が絞り込むのはノートです。** `FROM` / `WHERE` はタスクを含むノートに働きます。
+- **DataviewJS には対応しません**。 `dataviewjs` は意図的に対象外です。
+- **インラインフィールド（`field:: value`）には対応しません**。 参照するのは frontmatter だけです。
+- **`TABLE` の列はフィールドパスです**。 任意の式は書けません。見出しの変更は `AS "Label"` だけです（`file.size / 1024` のような計算列は不可）。
+- **`TASK` が絞り込むのはノートです**。 `FROM` / `WHERE` はタスクを含むノートに働きます。
 - **`CALENDAR` が表示するのは 1 か月分**です。一致した日付のうち最も新しい月を描画します。
 - `file.size`、`file.mtime`、`file.ctime` はマニフェストから取得できず `undefined` になります。
 - 結果はビルド時に確定します。dataview ブロックが生成したリンクはコンテンツグラフ（バックリンク）には含まれません。フルビルドでは常に正しく再計算されます。
 
 ## エクスポート
 
-- `dataviewPlugin(options?)` / `dataview(options?)` — プラグインファクトリ
-- `remarkDataview(options?)` — Remark 変換だけを利用する場合の API
-- `parseDataview(source)` — ブロック本文を `DataviewSpec` に変換
-- `selectDataviewEntries(spec, manifest, defaultLimit)` — 照合エンジン
-- `evaluateDataviewExpression(expression, scope)` と `matchesDataviewFrom(from, entry, manifest)` — 式のヘルパー
-- `renderDataview(selection, spec, options, source)` — HTML レンダラー
-- `resolveDataviewOptions(options?)` — オプションの正規化
-- `DATAVIEW_ATTRIBUTE` — プレースホルダーの属性名
+- `dataviewPlugin(options?)` / `dataview(options?)`：プラグインファクトリ
+- `remarkDataview(options?)`：Remark 変換だけを利用する場合の API
+- `parseDataview(source)`：ブロック本文を `DataviewSpec` に変換
+- `selectDataviewEntries(spec, manifest, defaultLimit)`：照合エンジン
+- `evaluateDataviewExpression(expression, scope)` と `matchesDataviewFrom(from, entry, manifest)`：式のヘルパー
+- `renderDataview(selection, spec, options, source)`：HTML レンダラー
+- `resolveDataviewOptions(options?)`：オプションの正規化
+- `DATAVIEW_ATTRIBUTE`：プレースホルダーの属性名
 - 型: `DataviewOptions`、`DataviewSpec`、`DataviewQueryType`、`DataviewExpression`、`DataviewFrom` ほか
 
 ## 関連資料

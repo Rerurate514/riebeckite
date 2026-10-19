@@ -19,7 +19,7 @@
 | 真偽値 | `data-boolean` 付きの `true` / `false` |
 | 数値 | `data-number` 付きの数値 |
 | ISO 日付文字列または `Date` | `<time datetime>` |
-| 文字列内の `[[ウィキリンク]]` や URL | リンク化（ウィキリンクはコンテンツインデックスで解決） |
+| 文字列内の `[ウィキリンク](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/ウィキリンク.ja.md)` や URL | リンク化（ウィキリンクはコンテンツインデックスで解決） |
 | ネストしたオブジェクト | ネストした `<dl>` |
 
 構造化 HTML として描画できない値は、エスケープしたテキストとして出力し、`properties-unrenderable-value` の警告を生成します。
@@ -65,11 +65,11 @@ const data = getProperties({ view, frontmatter: entry.frontmatter, options });
 
 ## エクスポート
 
-- `properties(options?)` / `propertiesPlugin(options?)` — プラグインファクトリ
-- `resolvePropertiesOptions(options?)` — 既定値の解決
-- `getProperties({ view, frontmatter, options? })` — エントリ用のプロパティデータを解決
-- `renderPropertiesPanel(frontmatter, options?, context?)` — 純粋な描画関数
-- `buildTagHref(tag)` — タグ URL の生成
+- `properties(options?)` / `propertiesPlugin(options?)`：プラグインファクトリ
+- `resolvePropertiesOptions(options?)`：既定値の解決
+- `getProperties({ view, frontmatter, options? })`：エントリ用のプロパティデータを解決
+- `renderPropertiesPanel(frontmatter, options?, context?)`：純粋な描画関数
+- `buildTagHref(tag)`：タグ URL の生成
 - 型: `PropertiesOptions`、`ResolvedPropertiesOptions`、`PropertiesRenderContext`、`PropertiesLinkResolver`、`PropertiesMessage`
 
 ## 関連資料

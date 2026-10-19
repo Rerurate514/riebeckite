@@ -47,12 +47,12 @@ const unchanged = true;
 
 ## 公開API
 
-- `codeAnnotations()` / `codeAnnotationsPlugin()` — プラグインファクトリ
-- `remarkCodeAnnotations()` — Markdown変換
-- `rehypeCodeAnnotations()` — HTML変換
-- `collectCodeDiff(code)` — 差分マーカーとコード本体を分離
-- `serializeCodeDiff(plan)` / `deserializeCodeDiff(value)` — 行情報の変換
-- `encodeCodeDiffMeta(plan)` / `extractCodeDiffMeta(meta)` — メタ情報の変換
+- `codeAnnotations()` / `codeAnnotationsPlugin()`：プラグインファクトリ
+- `remarkCodeAnnotations()`：Markdown変換
+- `rehypeCodeAnnotations()`：HTML変換
+- `collectCodeDiff(code)`：差分マーカーとコード本体を分離
+- `serializeCodeDiff(plan)` / `deserializeCodeDiff(value)`：行情報の変換
+- `encodeCodeDiffMeta(plan)` / `extractCodeDiffMeta(meta)`：メタ情報の変換
 - 型: `CodeDiffPlan`、`DiffMarker`
 
 ## 関連資料

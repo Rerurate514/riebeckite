@@ -117,12 +117,12 @@ import "@riebeckite/plugin-gallery/style.css";
 
 ## エクスポート
 
-- `gallery(options?)` — プラグインファクトリ
-- `galleryPlugin` — `gallery` のエイリアス
-- `parseGallery(source, options)` — ブロック本文をスペックへパースする
-- `renderGallery(spec)` / `renderGalleryError(message)` — グリッドまたはエラーボックスを描画する
-- `remarkGallery(options?)` — remark トランスフォーム
-- `resolveGalleryOptions(options?)` — オプションの既定値を適用する
+- `gallery(options?)`：プラグインファクトリ
+- `galleryPlugin`：`gallery` のエイリアス
+- `parseGallery(source, options)`：ブロック本文をスペックへパースする
+- `renderGallery(spec)` / `renderGalleryError(message)`：グリッドまたはエラーボックスを描画する
+- `remarkGallery(options?)`：remark トランスフォーム
+- `resolveGalleryOptions(options?)`：オプションの既定値を適用する
 - 定数: `GALLERY_PLUGIN_NAME`, `GALLERY_CLASS`, `GALLERY_ATTRIBUTE`, `DEFAULT_GALLERY_COLUMNS`, `DEFAULT_GALLERY_ASPECT`
 - 型: `GalleryOptions`, `GalleryItem`, `GallerySpec`, `GalleryParseResult`, `GalleryWarning`, `ResolvedGalleryOptions`
 

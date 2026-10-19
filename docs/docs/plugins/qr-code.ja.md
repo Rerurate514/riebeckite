@@ -88,4 +88,4 @@ QR エンコーダ（`qrcode`）はビルド時に動的インポートするた
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

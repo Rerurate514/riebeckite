@@ -54,3 +54,9 @@ const published = isPublished(config, frontmatter, { buildTime: new Date() });
 戦略が`"explicit"`の場合、frontmatterに`publish: true`があるノートのみが公開されます。`"selective"`の場合、frontmatterに`private: true`または`draft: true`があるノートを除いてすべてが公開されます。この関数はビルドパイプラインでコンテンツを出力前にフィルタリングするために呼び出されます。
 
 ## 関連用語
+
+- [[publish|Publish]]
+- [[draft|Draft]]
+- [[visibility|Visibility]]
+- [[publication-boundary|Publication Boundary]]
+- [[frontmatter|Frontmatter]]

@@ -65,15 +65,15 @@ image: https://example.com/og.png
 | --- | --- | --- | --- |
 | `className` | `string` | `(なし)` | カードのルート要素に追加する CSS クラス。`rr-cardlink` フックは常に付与する |
 
-- `autoCardLinkPlugin(options?)` — プラグインファクトリ
-- `remarkAutoCardLink(options?)` — Remark 変換だけを利用する場合の API
-- `AutoCardLink`、`AutoCardLinkOptions` — 型
+- `autoCardLinkPlugin(options?)`：プラグインファクトリ
+- `remarkAutoCardLink(options?)`：Remark 変換だけを利用する場合の API
+- `AutoCardLink`、`AutoCardLinkOptions`：型
 
 ## 未対応の項目
 
 カードは `cardlink` ブロックに書いたフィールドだけから生成します。リンク先ページを取得しないため、メタデータを自動で補うことはありません。
 
-- `[[image.png]]` のようなローカル画像埋め込みは解決しない。`image` と `favicon` は URL のみ受け付ける。
+- `[image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)` のようなローカル画像埋め込みは解決しない。`image` と `favicon` は URL のみ受け付ける。
 - `favicon` や `image` の中の Wikilink は解決しない。
 - Obsidian 版 Auto Card Link の `data-auto-card-link-depth` は実装していない。
 - Open Graph メタデータの取得やキャッシュは行わない。`title`、`description`、`image` は明示的に書く必要がある。

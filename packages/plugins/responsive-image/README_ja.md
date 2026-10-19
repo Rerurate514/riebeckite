@@ -63,11 +63,11 @@ export default defineConfig({
 
 ## 公開 API
 
-- `responsiveImage(options?)` / `responsiveImagePlugin` — プラグインファクトリ
-- `resolveResponsiveImageOptions(options?)` — 既定値の解決
-- `buildResponsiveSrcset(existingPaths, src, options?)` — 純粋な srcset 計画
-- `applyResponsiveImages(html, existingPaths, options?)` — HTML 変換
-- `collectKnownAssetPaths(manifest)` — マニフェストのアセット集合を取得
+- `responsiveImage(options?)` / `responsiveImagePlugin`：プラグインファクトリ
+- `resolveResponsiveImageOptions(options?)`：既定値の解決
+- `buildResponsiveSrcset(existingPaths, src, options?)`：純粋な srcset 計画
+- `applyResponsiveImages(html, existingPaths, options?)`：HTML 変換
+- `collectKnownAssetPaths(manifest)`：マニフェストのアセット集合を取得
 - 型: `ResponsiveImageOptions`、`ResolvedResponsiveImageOptions`、`ResponsiveImagePlan`、`ResponsiveImageSource`、`ResponsiveImageVariant`
 
 ## 関連リンク

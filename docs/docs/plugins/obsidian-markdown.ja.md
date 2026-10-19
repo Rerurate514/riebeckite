@@ -56,5 +56,5 @@ Theme は `rr-callout` の root に `--rr-callout-title-color`、
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]
 - [`@riebeckite/plugin-attachment`](./attachment.ja.md)

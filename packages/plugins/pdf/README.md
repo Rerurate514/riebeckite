@@ -8,7 +8,7 @@ Inline PDF attachment viewing for Obsidian wikilinks.
 
 ## Overview
 
-`pdf()` renders embedded PDF attachments (`![[report.pdf]]`) with the
+`pdf()` renders embedded PDF attachments (`![report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.md)`) with the
 browser-native PDF viewer instead of a download-only card. The renderer is
 SSR/build-time only; no client JavaScript is required.
 
@@ -48,7 +48,7 @@ The following source is rendered on this page with the browser-native PDF viewer
 
 #### Rendered
 
-![[pdf-example.pdf]]
+![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/pdf-example.pdf.md)
 
 The `<object>` uses the browser's built-in PDF viewer; its nested download link
 is the graceful fallback for clients without PDF support. A visible download
@@ -58,7 +58,7 @@ be read. The embed carries the stable `rr-pdf` root hook that themes may target.
 
 `initialPage` and `toolbar` are encoded as the viewer URL fragment
 (`#page=2&toolbar=0`). This is the cross-browser convention; individual PDF
-viewers may ignore parts of it. Plain links (`[[report.pdf]]`) are left to
+viewers may ignore parts of it. Plain links (`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.md)`) are left to
 `@riebeckite/plugin-attachment` (or the Markdown fallback).
 
 ## Options

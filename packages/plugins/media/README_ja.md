@@ -8,7 +8,7 @@ Obsidian の音声・動画埋め込みを、ブラウザ標準の HTML5 プレ�
 
 ## できること
 
-`![[music.mp3]]` や `![[movie.mp4]]` をメディア要素へ変換します。対応しない形式では `null` を返すため、後続の添付レンダラーまたは既定の表示に処理を任せられます。
+`![music.mp3](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/music.mp3.ja.md)` や `![movie.mp4](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.ja.md)` をメディア要素へ変換します。対応しない形式では `null` を返すため、後続の添付レンダラーまたは既定の表示に処理を任せられます。
 
 ## 設定
 
@@ -43,12 +43,12 @@ export default defineConfig({
 
 ## 時刻指定について
 
-レンダラーへ渡された `#t=10` や `#10,20` はメディアフラグメントとして URL に残します。ただし、現在の Obsidian ウィキリンク処理は添付ファイルのフラグメントをレンダラーへ渡しません。`![[movie.mp4#t=10]]` を完全に扱うには、処理パイプライン側の拡張が必要です。
+レンダラーへ渡された `#t=10` や `#10,20` はメディアフラグメントとして URL に残します。ただし、現在の Obsidian ウィキリンク処理は添付ファイルのフラグメントをレンダラーへ渡しません。`![movie.mp4#t=10](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.ja.md#t=10)` を完全に扱うには、処理パイプライン側の拡張が必要です。
 
 ## 公開 API
 
-- `media(options?)` / `mediaPlugin` — プラグインファクトリ
-- `MediaOptions`、`MediaPreload` — 型
+- `media(options?)` / `mediaPlugin`：プラグインファクトリ
+- `MediaOptions`、`MediaPreload`：型
 
 ## 関連リンク
 

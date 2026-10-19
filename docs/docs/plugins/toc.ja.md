@@ -63,4 +63,4 @@ Theme は ToC の root に `--rr-table-of-contents-eyebrow-font-size`、
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

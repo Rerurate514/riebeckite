@@ -24,4 +24,4 @@ embedはWikiLinkと同じくcontent indexから解決し、content dependencyに
 
 embedはcontent indexを通じてcontent dependencyとして追跡されます。参照元のノートを編集した場合、そのページは無効化され、次回のビルドで再生成されます。wikilinkがgraphの辺を作るのに対し、embedはページの再生成がトリガーされる依存関係を作ります。
 
-関連項目: [content-dependency](./content-dependency.md)
+関連項目: [[content-dependency|content-dependency]]

@@ -98,5 +98,5 @@ trackingは、Markdownリンクの正規化とContent Sourceの読み取り中�
 
 ## さらに詳しく
 
-- [Build System](../framework/build-system.md)
-- [Build Dependency の取り決め](../framework/build-dependency.md)
+- [Build System](../framework/build-system.ja.md)
+- [Build Dependency の取り決め](../framework/build-dependency.ja.md)

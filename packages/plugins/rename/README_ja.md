@@ -102,5 +102,5 @@ buildRouteLock ──► 現在の RouteLock
 
 ## 関連
 
-- [Permalink プラグイン](../permalink/README_ja.md) — 安定した URL と `redirect_from`
+- [Permalink プラグイン](../permalink/README_ja.md)：安定した URL と `redirect_from`
 - [プラグインガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)

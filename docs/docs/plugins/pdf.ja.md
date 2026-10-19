@@ -76,6 +76,6 @@ Markdown のフォールバック）に委ねます。
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]
 - [`@riebeckite/plugin-obsidian-markdown`](./obsidian-markdown.ja.md)
 - [`@riebeckite/plugin-attachment`](./attachment.ja.md)

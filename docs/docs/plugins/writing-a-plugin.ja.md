@@ -27,7 +27,7 @@ Markdown / HTML を変換する（3、実践）
 外部パッケージとして検証する（tests/plugin-dx / test:plugin-dx:external）
 ```
 
-site の中だけで使う場合は「配布用パッケージにする」より前で完結します。外部へ配布する場合だけ、package 化と外部検証まで進めます。各拡張ポイントの正確な取り決めは [Plugin System](../reference/plugin-api.md) を参照してください。
+site の中だけで使う場合は「配布用パッケージにする」より前で完結します。外部へ配布する場合だけ、package 化と外部検証まで進めます。各拡張ポイントの正確な取り決めは [Plugin System](../reference/plugin-api.ja.md) を参照してください。
 
 ## 1. 最小のプラグインを作る
 
@@ -487,7 +487,7 @@ var(--rb-color-accent)
 
 こうしておくと、利用している theme が変わっても、その theme の accent color に追従できます。
 
-これが Theme Extension の取り決めの基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されます。そのため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.md) を参照してください。
+これが Theme Extension の取り決めの基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されます。そのため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.ja.md) を参照してください。
 
 ### Step 3: プラグインを登録する
 
@@ -650,7 +650,7 @@ const manager = new ContentManager(source, [], { config });
 const manifest = await manager.getManifest();
 ```
 
-詳しい pattern は [テスト](../framework/testing.md) を参照してください。
+詳しい pattern は [テスト](../framework/testing.ja.md) を参照してください。
 
 ### Level 4: 外部パッケージ境界
 
@@ -689,7 +689,7 @@ packages/plugins/backlinks/
 
 外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.ja.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` の subpath を明示して渡します。
 
-この directive プラグインを配布する場合、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies` です。`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.md#repository-外で-plugin-を配布する) にあります。
+この directive プラグインを配布する場合、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies` です。`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.ja.md#repository-外で-plugin-を配布する) にあります。
 
 ## 6. 検証する
 
@@ -769,9 +769,9 @@ Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island reg
 
 ## 関連資料
 
-- [プラグイン作成の詳細](../framework/plugin-system.ja.md)：この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
-- [Plugin System](../reference/plugin-api.ja.md)：すべての拡張ポイントの詳細
-- [テスト](../framework/testing.ja.md)：Plugin のテスト戦略と External 検証
-- [Theme API](../reference/theme-api.ja.md)：Theme Extension の取り決めと Semantic Token
-- [Architecture](../framework/architecture.ja.md)：Core / Plugin / Integration / Theme / App の責務
-- [Framework Reference](../reference/README.ja.md)：`definePlugin` などの公開 API
+- [[plugin-system|プラグイン作成の詳細]]：この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
+- [[plugin-api|Plugin System]]：すべての拡張ポイントの詳細
+- [[testing|テスト]]：Plugin のテスト戦略と External 検証
+- [[theme-api|Theme API]]：Theme Extension の取り決めと Semantic Token
+- [[architecture|Architecture]]：Core / Plugin / Integration / Theme / App の責務
+- [[reference/README|Framework Reference]]：`definePlugin` などの公開 API

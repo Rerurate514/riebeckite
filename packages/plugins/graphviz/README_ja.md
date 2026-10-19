@@ -40,9 +40,9 @@ digraph {
 
 ` ```dot ` のコードブロックは `figure.rb-graphviz` に置き換わります。内容は次のとおりです。
 
-- `figcaption.rb-graphviz__caption` — コードブロックの title、またはソース内の `// caption: ...` 行から取得
-- `div.rb-graphviz__canvas` — 図本体（`role="img"`、キャプションがあればそれを参照）
-- `details.rb-graphviz__fallback` — 元の DOT 記法を折りたたみ表示
+- `figcaption.rb-graphviz__caption`：コードブロックの title、またはソース内の `// caption: ...` 行から取得
+- `div.rb-graphviz__canvas`：図本体（`role="img"`、キャプションがあればそれを参照）
+- `details.rb-graphviz__fallback`：元の DOT 記法を折りたたみ表示
 
 `render: "build"` または `"both"` では、ビルド時に [`@viz-js/viz`](https://github.com/mdaines/viz-js) の WebAssembly 版 Graphviz で静的な SVG を生成します。XML プロローグと DOCTYPE は HTML にインライン展開できるよう取り除きます。`@viz-js/viz` は Node 上で完全にオフラインで動作し、ビルドプロセスを正常終了させます（ワーカーやタイマーが残りません）。
 
@@ -71,9 +71,9 @@ digraph {
 
 `render` には次の値を指定します。
 
-- `"build"` — ビルド時に描画。不正な図は診断を出し、`data-graphviz="error"` になります
-- `"client"` — ビルド時は描画せず、ブラウザ側でのみ描画します
-- `"both"` — ビルドを優先し、失敗したときだけクライアント側へ切り替えます
+- `"build"`：ビルド時に描画。不正な図は診断を出し、`data-graphviz="error"` になります
+- `"client"`：ビルド時は描画せず、ブラウザ側でのみ描画します
+- `"both"`：ビルドを優先し、失敗したときだけクライアント側へ切り替えます
 
 ## CSS フック
 

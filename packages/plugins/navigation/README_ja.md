@@ -151,15 +151,15 @@ navigation({
 
 ## エクスポート
 
-- `navigation(options?)` — プラグインファクトリ
-- `navigationPlugin` — `navigation` のエイリアス
-- `NAVIGATION_PLUGIN_NAME` — プラグイン名 `"navigation"`
-- `buildNavigation(entries, options?)` — マニフェストエントリからモデルを構築する
-- `resolveSiteNavigation(config, manifest)` — 有効なプラグインを見つけてモデルを
+- `navigation(options?)`：プラグインファクトリ
+- `navigationPlugin`：`navigation` のエイリアス
+- `NAVIGATION_PLUGIN_NAME`：プラグイン名 `"navigation"`
+- `buildNavigation(entries, options?)`：マニフェストエントリからモデルを構築する
+- `resolveSiteNavigation(config, manifest)`：有効なプラグインを見つけてモデルを
   構築する。なければ `null`
-- `validateNavigationOptions(options)` — オプションの検証
-- `SiteNav` — 解決済みツリーを標準の `rb-nav` 構造で描画する
-- `MobileSiteNav` — プラグイン所有のコンパクトなナビゲーションメニューを描画する
+- `validateNavigationOptions(options)`：オプションの検証
+- `SiteNav`：解決済みツリーを標準の `rb-nav` 構造で描画する
+- `MobileSiteNav`：プラグイン所有のコンパクトなナビゲーションメニューを描画する
 - 型: `NavigationItem`, `NavigationOptions`, `NavigationSource`,
   `SiteNavigation`, `SiteNavProps`, `MobileSiteNavProps`
 

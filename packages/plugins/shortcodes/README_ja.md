@@ -45,11 +45,11 @@ export default defineConfig({
 :::
 ```
 
-- `:name[label]{key=value}` — インライン型。現在の段落の中の `span` として
+- `:name[label]{key=value}`：インライン型。現在の段落の中の `span` として
   描画されます。インラインで使えるのは `inlineShortcodes` に含まれる名前だけ
   で、組み込みでは `badge`、`kbd`、`link-card`、`file` が該当します。
-- `::name[label]{key=value}` — ブロックのリーフ型。`div` として描画されます。
-- `:::name[label]{key=value}` … `:::` — コンテナ型。本文は通常の Markdown
+- `::name[label]{key=value}`：ブロックのリーフ型。`div` として描画されます。
+- `:::name[label]{key=value}` … `:::`：コンテナ型。本文は通常の Markdown
   パイプラインで描画されます。
 
 ブロック専用のショートコードを `:` で書くと
@@ -281,12 +281,12 @@ container }` を受け取り、文字列を返します。独自レンダラー�
 
 ## エクスポート
 
-- `shortcodes(options?)` / `shortcodesPlugin` — プラグインファクトリ
-- `remarkShortcodes(options?)` — 単体で使える remark トランスフォーム
-- `renderShortcode(request, options)` — 単一ショートコードの描画
-- `resolveShortcodeOptions(options?)` — オプションの正規化
-- `builtinShortcodes`, `builtinShortcodeNames` — 組み込みレジストリ
-- `builtinInlineShortcodes` — インラインの `:` 形式で使える組み込み名
+- `shortcodes(options?)` / `shortcodesPlugin`：プラグインファクトリ
+- `remarkShortcodes(options?)`：単体で使える remark トランスフォーム
+- `renderShortcode(request, options)`：単一ショートコードの描画
+- `resolveShortcodeOptions(options?)`：オプションの正規化
+- `builtinShortcodes`, `builtinShortcodeNames`：組み込みレジストリ
+- `builtinInlineShortcodes`：インラインの `:` 形式で使える組み込み名
 - 型: `ShortcodeRenderer`, `ShortcodeOptions`, `ResolvedShortcodeOptions`,
   `ShortcodeRenderInput`, `ShortcodeRenderRequest`, `ShortcodeAttributes`,
   `RemarkShortcodesOptions`

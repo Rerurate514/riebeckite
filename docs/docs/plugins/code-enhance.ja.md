@@ -64,4 +64,4 @@ Theme は `rr-code` の root に `--rr-code-syntax` を指定すると、ハイ�
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインシステム]]

@@ -66,5 +66,5 @@ Site の route が `c.set("headTags", entry.headTags ?? [])` を設定し、`app
 
 ## 関連資料
 
-- [HonoX Integration](../framework/honox-integration.ja.md)
-- [プラグインシステム](../reference/plugin-api.ja.md)
+- [[honox-integration|HonoX Integration]]
+- [[plugin-api|プラグインシステム]]

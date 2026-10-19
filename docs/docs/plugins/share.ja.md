@@ -118,4 +118,4 @@ import "@riebeckite/plugin-share/style.css";
 
 ## 関連
 
-- [プラグインガイド](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインガイド]]

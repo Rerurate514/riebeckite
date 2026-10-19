@@ -980,5 +980,5 @@ permalink({
 
 ## 関連資料
 
-- [プラグインシステム](../reference/plugin-api.ja.md)
-- [コンテンツシステム](../framework/content-system.ja.md)
+- [[plugin-api|プラグインシステム]]
+- [[content-system|コンテンツシステム]]

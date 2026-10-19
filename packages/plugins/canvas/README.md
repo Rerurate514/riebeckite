@@ -23,9 +23,9 @@ The plugin runs with `order: -15`, after `obsidian-markdown`.
 ## Accepted inputs
 
 1. A ` ```canvas ` fence whose body is raw JSON Canvas
-2. A ` ```canvas ` fence whose body is `![[diagram.canvas]]` or
-   `[[diagram.canvas]]`, read through `contentSource`
-3. A direct `![[diagram.canvas]]` embed, resolved as an attachment
+2. A ` ```canvas ` fence whose body is `![diagram.canvas](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/diagram.canvas.md)` or
+   `[diagram.canvas](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/diagram.canvas.md)`, read through `contentSource`
+3. A direct `![diagram.canvas](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/diagram.canvas.md)` embed, resolved as an attachment
 
 When a canvas is missing or cannot be parsed, the code block is kept and a
 message with `source: "@riebeckite/plugin-canvas"` is reported.

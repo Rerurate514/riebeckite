@@ -116,7 +116,7 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 - No client-side slide editing or paging UI; this only produces static HTML/CSS at build time.
 - Only themes registered in Marp Core are available; loading arbitrary theme CSS is not supported.
 - `inlineSVG: false` emits bare `<section>` elements without the SVG wrapper, and the generated CSS changes to match that structure.
-- Whole-document decks bypass the normal Markdown pipeline, so Obsidian `![[image]]` image embeds are not resolved inside slides. Use regular Markdown image syntax with paths that exist on the published site, mirroring how Marp Slides itself does not support wiki links.
+- Whole-document decks bypass the normal Markdown pipeline, so Obsidian `![image](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.md)` image embeds are not resolved inside slides. Use regular Markdown image syntax with paths that exist on the published site, mirroring how Marp Slides itself does not support wiki links.
 
 ## Exports
 

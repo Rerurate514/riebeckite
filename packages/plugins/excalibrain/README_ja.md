@@ -62,7 +62,7 @@ children:: [[excalibrain-child]]
 related:: [[note-a]] and [[note-b]] are similar
 ```
 
-フィールドは単独行でも、`[field:: [[target]]]` のように角括弧で囲んでも認識します。
+フィールドは単独行でも、`[field:: [target](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/target.ja.md)]` のように角括弧で囲んでも認識します。
 
 ### オントロジー
 
@@ -125,7 +125,7 @@ related:: [[note-a]] and [[note-b]] are similar
 | `maxPerRegion` | `number` | `8` | 領域ごとの最大ノード数 |
 | `infer` | `boolean` | `true` | リンクから関係を推論する |
 | `siblings` | `boolean` | `true` | 親から兄弟を推論する（`infer` が必要） |
-| `ontology` | object | — | ロールごとに末尾追加するオントロジーのフィールド名 |
+| `ontology` | object | なし | ロールごとに末尾追加するオントロジーのフィールド名 |
 | `showHidden` | `boolean` | `false` | `hidden` フィールドで指定したターゲットも含める |
 | `width` | `number` | `720` | SVG viewBox の幅 |
 | `height` | `number` | `480` | SVG viewBox の高さ |

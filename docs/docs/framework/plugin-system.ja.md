@@ -242,10 +242,10 @@ Filesystem を再走査する前に Manifest や Content Graph が使えない�
 
 ## 関連資料
 
-- [はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)：最初の Plugin を作る
-- [Plugin System](./plugin-system.ja.md)：Plugin System 全体の考え方
-- [Plugin API](../reference/plugin-api.ja.md)：API の取り決め
-- [Page System](./page-system.ja.md)：独立ページ
-- [Content System](./content-system.ja.md)：Manifest / Graph / Pipeline
-- [Architecture](./architecture.ja.md)：Core / Plugin / Integration / Theme / App の責務
-- [Framework Reference](../reference/README.ja.md)：Public API
+- [[writing-a-plugin|はじめてのプラグイン作成]]：最初の Plugin を作る
+- [[plugin-system|Plugin System]]：Plugin System 全体の考え方
+- [[plugin-api|Plugin API]]：API の取り決め
+- [[page-system|Page System]]：独立ページ
+- [[content-system|Content System]]：Manifest / Graph / Pipeline
+- [[architecture|Architecture]]：Core / Plugin / Integration / Theme / App の責務
+- [[reference/README|Framework Reference]]：Public API

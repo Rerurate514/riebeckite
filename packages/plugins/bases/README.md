@@ -19,7 +19,7 @@ export default { plugins: [bases()] };
 ## `.base` documents and publication
 
 A `.base` file becomes a PageType page at its extensionless path when a routable
-Markdown note links to it, for example `![[views/Books.base]]` creates
+Markdown note links to it, for example `![views/Books.base](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/views/Books.base.md)` creates
 `/views/Books`. This uses the normal PageType API and does not install custom
 routing.
 

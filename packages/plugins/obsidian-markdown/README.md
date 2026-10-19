@@ -29,18 +29,18 @@ export default defineConfig({
 
 ### Wikilinks
 
-- `[[Note]]` → link to the target's resolved canonical permalink
+- `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)` → link to the target's resolved canonical permalink
   (`ContentManifestEntry.permalink`) with class `rr-obsidian-wikilink`. Alias
-  with `[[Note|Alias]]`. The target is looked up by slug; the `href` is the
+  with `[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)`. The target is looked up by slug; the `href` is the
   resolved permalink
-- Fragments: `[[Note#Heading]]` → `#heading-slug`,
-  `[[Note#^block-id]]` → `#block-id`
-- `![[Note]]` → note embed. The core pipeline renders the target note
+- Fragments: `[Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` → `#heading-slug`,
+  `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` → `#block-id`
+- `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)` → note embed. The core pipeline renders the target note
   recursively (max depth 3, cycle-safe). Unresolved embeds render a
   placeholder link or text
-- `![[image.png]]` → `<img>` under `assetBase`
-- `[[image.png]]` → link to the asset URL
-- `[[file.pdf]]` / `![[file.pdf]]` → rendered by a plugin that provides
+- `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` → `<img>` under `assetBase`
+- `[image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` → link to the asset URL
+- `[file.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/file.pdf.md)` / `![file.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/file.pdf.md)` → rendered by a plugin that provides
   `renderAttachment` (see `@riebeckite/plugin-attachment`), otherwise a plain
   download link
 - Unresolvable targets → link with class `rr-obsidian-wikilink--broken`

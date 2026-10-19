@@ -314,7 +314,7 @@ Client Behavior
 
 ## 関連資料
 
-- [はじめてのテーマ作成](../themes/writing-a-theme.ja.md)：最初の Theme を作る
-- [Theme System](./theme-system.ja.md)：Theme System 全体の考え方
-- [Plugin System](./plugin-system.ja.md)：Plugin との責務の違い
-- [Framework Reference](../reference/README.ja.md)：`defineTheme` などの Public API
+- [[writing-a-theme|はじめてのテーマ作成]]：最初の Theme を作る
+- [[theme-system|Theme System]]：Theme System 全体の考え方
+- [[plugin-system|Plugin System]]：Plugin との責務の違い
+- [[reference/README|Framework Reference]]：`defineTheme` などの Public API

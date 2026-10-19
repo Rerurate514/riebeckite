@@ -181,5 +181,5 @@ import "@riebeckite/plugin-taxonomy/style.css";
 
 ## 関連
 
-- [プラグインガイド](../reference/plugin-api.ja.md)
-- [コンテンツシステム](../framework/content-system.ja.md)
+- [[plugin-api|プラグインガイド]]
+- [[content-system|コンテンツシステム]]

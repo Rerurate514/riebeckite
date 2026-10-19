@@ -57,3 +57,9 @@ const mySource: ContentSource = {
 ```
 
 ## 関連用語
+
+- [[glossary/content|Content]]
+- [[content-entry|Content Entry]]
+- [[frontmatter|Frontmatter]]
+- [[content-manager|Content Manager]]
+- [[glossary/obsidian-vault|Obsidian Vault]]

@@ -106,9 +106,9 @@ format: list
 
 ## エクスポート
 
-- `queryPlugin(options?)` — プラグインファクトリ
-- `remarkQuery(options?)` — Remark 変換だけを利用する場合の API（`options.language` でフェンス言語を指定）
-- `queryContentEntries(entries, spec)` — Core の照合エンジン（`@riebeckite/core` からも利用可能）
+- `queryPlugin(options?)`：プラグインファクトリ
+- `remarkQuery(options?)`：Remark 変換だけを利用する場合の API（`options.language` でフェンス言語を指定）
+- `queryContentEntries(entries, spec)`：Core の照合エンジン（`@riebeckite/core` からも利用可能）
 - 型: `QueryOptions`、`QuerySpec`、`QueryOutputFormat`
 
 ## 関連資料

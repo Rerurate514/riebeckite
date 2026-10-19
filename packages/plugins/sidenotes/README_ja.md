@@ -109,12 +109,12 @@ import "@riebeckite/plugin-sidenotes/style.css";
 
 ## エクスポート
 
-- `sidenotes(options?)` — プラグインファクトリ
-- `sidenotesPlugin` — `sidenotes` のエイリアス
-- `rehypeSidenotes(options?)` — rehype トランスフォーマー
-- `resolveSidenotesOptions(options?)` — オプションの既定値を適用する
-- `renderSidenotesReference(input)` / `renderSidenotesNote(input)` — HTML 生成関数
-- `initSidenotes(options?)` — クライアントのポップオーバー初期化関数
+- `sidenotes(options?)`：プラグインファクトリ
+- `sidenotesPlugin`：`sidenotes` のエイリアス
+- `rehypeSidenotes(options?)`：rehype トランスフォーマー
+- `resolveSidenotesOptions(options?)`：オプションの既定値を適用する
+- `renderSidenotesReference(input)` / `renderSidenotesNote(input)`：HTML 生成関数
+- `initSidenotes(options?)`：クライアントのポップオーバー初期化関数
 - 型: `SidenotesOptions`, `ResolvedSidenotesOptions`, `SidenotesClientOptions`
 
 ## 制約

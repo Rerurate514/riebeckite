@@ -98,4 +98,4 @@ Obsidian には「厳密な改行」という設定があります。これを�
 
 ## 関連資料
 
-- [プラグインガイド](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグインガイド]]

@@ -8,7 +8,7 @@ Obsidian の Excalidraw 埋め込みを SVG として表示するプラグイン
 
 ## できること
 
-`![[drawing.excalidraw]]` のような埋め込みウィキリンクを検出し、図のデータを含むプレースホルダーを出力します。ブラウザ側の `initExcalidraw` が、そのプレースホルダーを SVG に置き換えます。通常のリンクや対象外のファイルは処理せず、添付ファイル用のレンダラーに任せます。
+`![drawing.excalidraw](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.ja.md)` のような埋め込みウィキリンクを検出し、図のデータを含むプレースホルダーを出力します。ブラウザ側の `initExcalidraw` が、そのプレースホルダーを SVG に置き換えます。通常のリンクや対象外のファイルは処理せず、添付ファイル用のレンダラーに任せます。
 
 ## 設定
 
@@ -25,10 +25,10 @@ export default defineConfig({
 
 ## 読み込めるファイル
 
-- `*.excalidraw` — `elements`、任意の `appState` と `files` を持つ JSON シーン
-- `*.excalidraw.md` — Obsidian Excalidraw が保存する Markdown。`## Drawing` 内の `json` と `compressed-json` を読み取ります。
+- `*.excalidraw`：`elements`、任意の `appState` と `files` を持つ JSON シーン
+- `*.excalidraw.md`：Obsidian Excalidraw が保存する Markdown。`## Drawing` 内の `json` と `compressed-json` を読み取ります。
 
-`![[drawing.excalidraw|800]]` なら幅を、`![[drawing.excalidraw|800x600]]` なら幅と高さを指定できます。ファイルがない、内容が不正、またはコンテンツディレクトリ外を指す場合は、エラー用プレースホルダーを表示します。
+`![800](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.ja.md)` なら幅を、`![800x600](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.ja.md)` なら幅と高さを指定できます。ファイルがない、内容が不正、またはコンテンツディレクトリ外を指す場合は、エラー用プレースホルダーを表示します。
 
 ## 実行例
 
@@ -38,7 +38,7 @@ export default defineConfig({
 ![[HW]]
 ````
 
-![[HW]]
+![HW](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/HW.ja.md)
 
 ## 描画のタイミング
 
@@ -60,8 +60,8 @@ Excalidraw の描画である Markdown エントリは、通常の Markdown ペ�
 
 ## 公開 API
 
-- `excalidraw(options?)` / `excalidrawPlugin` — プラグインファクトリ
-- `ExcalidrawOptions` — オプションの型
+- `excalidraw(options?)` / `excalidrawPlugin`：プラグインファクトリ
+- `ExcalidrawOptions`：オプションの型
 
 ## 関連資料
 

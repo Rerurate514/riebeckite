@@ -59,7 +59,6 @@ Themeの`name`フィールドが`<html>`の`data-theme-name`属性として伝�
 - [[css-contract|CSS の取り決め]]
 - [[glossary/theme-root|Theme Root]]
 - [[presentation-layer|Presentation Layer]]
-- [Theme System](../framework/theme-system.ja.md)
 
 ## さらに詳しく
 

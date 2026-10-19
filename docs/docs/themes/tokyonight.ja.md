@@ -66,7 +66,7 @@ JetBrains Mono のラテン文字サブセットを同梱しているため、�
 
 ## 関連資料
 
-- [テーマシステム](../../../docs/docs/reference/theme-api.ja.md)
+- [[theme-api|テーマシステム]]
 - [`@riebeckite/theme-default`](./default.ja.md)
 - [`@riebeckite/theme-sakura`](./sakura.ja.md)
 

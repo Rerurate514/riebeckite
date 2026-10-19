@@ -66,4 +66,4 @@ GitHub Pages には `_redirects` 構文がないため、各リダイレクト�
 
 ## 関連リンク
 
-- [プラグイン API](../reference/plugin-api.ja.md)
+- [[plugin-api|プラグイン API]]

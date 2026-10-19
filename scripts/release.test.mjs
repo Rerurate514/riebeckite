@@ -93,6 +93,7 @@ function createHarness({
   stagedConflictPublish = [],
   staged = [],
   stagedAfterPreflight = [],
+  hiddenStageListCalls = 0,
   stageListSupported = true,
   failStageApprove = false,
   packShasumOverride = {},
@@ -118,6 +119,7 @@ function createHarness({
     stagedConflictPublish: new Set(stagedConflictPublish),
     staged: toStageMap(staged),
     stagedAfterPreflight: toStageMap(stagedAfterPreflight),
+    hiddenStageListCalls,
     stageListSupported,
     preflightDone: false,
     failStageApprove,
@@ -213,6 +215,12 @@ function createHarness({
 
     if (packageName) {
       items = items.filter((item) => item.name === packageName);
+
+      if (state.hiddenStageListCalls > 0) {
+        state.hiddenStageListCalls -= 1;
+
+        return [];
+      }
     }
 
     return items;
@@ -837,6 +845,23 @@ test("a staged conflict with no matching staged version stops without republishi
   assert.ok(error.message.includes("Do not retry this publish"));
   assert.equal(stepLabels(harness.state).includes("git commit"), false);
   assert.equal(stepLabels(harness.state).includes("git tag"), false);
+});
+
+test("a staged conflict waits for delayed stage metadata before approving", async () => {
+  const target = ALL_PACKAGES.at(-1);
+  const harness = createHarness({
+    stagedConflictPublish: [target],
+    stagedAfterPreflight: [{ name: target }],
+    hiddenStageListCalls: 1,
+  });
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  assert.ok(harness.state.sleeps.includes(2000));
+  assert.ok(
+    stageCommands(harness.state).some((call) => call.args[1] === "approve"),
+  );
+  assert.ok(stepLabels(harness.state).includes("git tag"));
 });
 
 test("an uninspectable staged state fails closed before any publish", async () => {

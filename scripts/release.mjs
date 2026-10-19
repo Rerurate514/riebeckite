@@ -1161,10 +1161,70 @@ async function recoverStagedConflict(
   const item = findStagedItem(staged.items, manifest.name, version);
 
   if (!item) {
+    const deadline = runtime.now() + VERIFY_TIMEOUT_MS;
+
+    console.log(
+      `[staged conflict] ${packageSpec} is not visible in npm stage list yet; ` +
+        "waiting for the registry to catch up...",
+    );
+
+    while (runtime.now() < deadline) {
+      await runtime.sleep(REGISTRY_QUERY_DELAY_MS);
+
+      const publishedAfterWait = await queryPublishedState(
+        manifest.name,
+        version,
+      );
+
+      if (publishedAfterWait.state === PACKAGE_STATE.PUBLISHED) {
+        console.log(
+          `[staged conflict] ${packageSpec} is now published; treating it as complete.`,
+        );
+
+        publishedPackages.add(directory);
+
+        return true;
+      }
+
+      if (publishedAfterWait.state === PACKAGE_STATE.UNKNOWN) {
+        throw new ReleaseError(
+          `The registry reported a staged conflict for ${packageSpec}, and the ` +
+            "published state could not be confirmed while waiting for staged " +
+            `metadata: ${publishedAfterWait.reason ?? "unknown registry error"}.`,
+        );
+      }
+
+      const stagedAfterWait = await listStagedPackages(manifest.name);
+
+      if (stagedAfterWait.state !== "ok") {
+        throw new ReleaseError(
+          `The registry reported a staged conflict for ${packageSpec}, but the ` +
+            `staged versions could not be inspected (${stagedAfterWait.state}): ` +
+            `${stagedAfterWait.reason ?? "unknown error"}.`,
+        );
+      }
+
+      const visibleItem = findStagedItem(
+        stagedAfterWait.items,
+        manifest.name,
+        version,
+      );
+
+      if (visibleItem) {
+        return resolveStagedVersion(
+          directory,
+          manifest,
+          version,
+          visibleItem,
+          publishedPackages,
+        );
+      }
+    }
+
     throw new ReleaseError(
       [
-        `Publishing ${packageSpec} failed, and npm stage list does not report`,
-        "a staged version for it, so it was not retried automatically.",
+        `Publishing ${packageSpec} failed, and npm stage list did not report`,
+        "a staged version before the registry propagation timeout.",
         "Do not retry this publish blindly. Inspect the state first:",
         `  npm stage list ${manifest.name} --json`,
         "  npm stage view <stage-id>",

@@ -112,7 +112,7 @@ When the script sees E409 for a package it:
 4. Approves the matching stage with `npm stage approve <stage-id>` when the terminal is interactive.
 5. Confirms the version is live before continuing.
 
-If any step cannot be completed automatically — including when `npm stage list` cannot be read or the staged tarball cannot be proven to match — the release stops with the exact commands to run. It never retries the same publish, so a staged conflict cannot produce an infinite loop.
+If npm reports an E409 before the staged package appears in `npm stage list`, the release waits for registry propagation before deciding that the stage is absent. If any step still cannot be completed automatically — including when `npm stage list` cannot be read or the staged tarball cannot be proven to match — the release stops with the exact commands to run. It never retries the same publish, so a staged conflict cannot produce an infinite loop.
 
 ```mermaid
 flowchart TD
@@ -163,7 +163,7 @@ npm stage list @riebeckite/<package> --json
 
 ## Verifying the release
 
-The script's final step confirms that every package version is live and prints a single completion line only when all of them are verified:
+The script's final step polls the registry for up to 15 minutes to confirm that every package version is live, and prints a single completion line only when all of them are verified:
 
 ```text
 RELEASE COMPLETE: 84/84 package versions published as <version>.

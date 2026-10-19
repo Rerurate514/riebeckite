@@ -112,7 +112,7 @@ script は package の E409 を検出すると次を行います。
 4. terminal が対話的であれば `npm stage approve <stage-id>` で該当 stage を承認します。
 5. 続行する前に、その version が live であることを確認します。
 
-自動で完了できない手順がある場合、release は実行すべき正確な command を表示して停止します。たとえば `npm stage list` を取得できない場合や、staged された tarball の一致を確認できない場合です。同じ publish を retry しないため、staged conflict が無限 loop になることはありません。
+npm が E409 を返したにもかかわらず `npm stage list` に staged package がまだ表示されない場合、release は registry の反映を待ってから stage が存在しないと判断します。その後も自動で完了できない手順がある場合、release は実行すべき正確な command を表示して停止します。たとえば `npm stage list` を取得できない場合や、staged された tarball の一致を確認できない場合です。同じ publish を retry しないため、staged conflict が無限 loop になることはありません。
 
 ```mermaid id="0vq8sd"
 flowchart TD
@@ -163,7 +163,7 @@ npm stage list @riebeckite/<package> --json
 
 ## リリースの検証
 
-script の最終手順は、全 package の version が公開済みであることを確認し、すべて確認できたときだけ次の完了行を表示します。
+script の最終手順では最大 15 分間 registry を再確認し、全 package の version が公開済みであることを確認できたときだけ次の完了行を表示します。
 
 ```text id="4jn2wr"
 RELEASE COMPLETE: 84/84 package versions published as <version>.

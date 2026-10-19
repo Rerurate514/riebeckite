@@ -103,6 +103,16 @@ const alias = [
       "index.ts",
     ),
   },
+  {
+    find: /^@riebeckite\/plugin-properties$/,
+    replacement: path.join(
+      repoRoot,
+      "packages",
+      "plugins",
+      "properties",
+      "index.ts",
+    ),
+  },
 ];
 
 export type SiteSources = {
@@ -126,6 +136,7 @@ export type SiteSources = {
   readonly externalDependency?: boolean;
   readonly bases?: boolean;
   readonly visualRenderers?: boolean;
+  readonly properties?: boolean;
 };
 
 export type Metrics = Record<string, number | boolean | null>;
@@ -304,6 +315,11 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
       'import { searchPlugin } from "@riebeckite/plugin-search";',
     );
   }
+  if (sources.properties) {
+    lines.unshift(
+      'import { properties } from "@riebeckite/plugin-properties";',
+    );
+  }
   if (asset) {
     lines.push(
       "    output.emit({",
@@ -380,7 +396,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     "    enabled: true,",
     `    directory: ${JSON.stringify(path.join(siteRoot, ".riebeckite", "cache"))},`,
     "  },",
-    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), searchPlugin()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
+    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), searchPlugin()" : ""}${sources.properties ? ", properties()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
     "});",
     "",
   );

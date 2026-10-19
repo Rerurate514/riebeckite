@@ -336,6 +336,36 @@ async function linkWorkspacePackages(siteRoot) {
     ),
     path.join(nodeModulesDirectory, "lz-string"),
   );
+  await fs.mkdir(path.join(nodeModulesDirectory, "@d2lang"), {
+    recursive: true,
+  });
+  await linkJunctionIfAbsent(
+    path.join(
+      root,
+      "packages",
+      "plugins",
+      "d2",
+      "node_modules",
+      "@d2lang",
+      "d2",
+    ),
+    path.join(nodeModulesDirectory, "@d2lang", "d2"),
+  );
+  await fs.mkdir(path.join(nodeModulesDirectory, "@marp-team"), {
+    recursive: true,
+  });
+  await linkJunctionIfAbsent(
+    path.join(
+      root,
+      "packages",
+      "plugins",
+      "marp",
+      "node_modules",
+      "@marp-team",
+      "marp-core",
+    ),
+    path.join(nodeModulesDirectory, "@marp-team", "marp-core"),
+  );
 }
 
 async function linkJunctionIfAbsent(source, destination) {
@@ -437,6 +467,13 @@ async function buildOnce({ siteRoot, label, metricsEnabled = true }) {
               path.join(
                 root,
                 "packages/plugins/excalidraw/node_modules/lz-string",
+              ),
+            )),
+            ...(await optionalAlias(
+              "@marp-team/marp-core",
+              path.join(
+                root,
+                "packages/plugins/marp/node_modules/@marp-team/marp-core",
               ),
             )),
           ],

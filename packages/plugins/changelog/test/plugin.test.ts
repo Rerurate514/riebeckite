@@ -76,13 +76,14 @@ test(
       const entry = manifest.publicEntries.find(
         (candidate) => candidate.slug === "hello",
       );
+      assert.ok(entry, "expected hello entry");
 
       // Use GitChangelogReader configured with the content directory (not process.cwd())
       const reader = new GitChangelogReader({ cwd: repository.contentRoot });
       const commits = await reader.getFileHistory("hello.md");
 
       const history = buildNoteChangeHistory(
-        entry!,
+        entry,
         commits,
         resolveChangelogOptions(),
       );

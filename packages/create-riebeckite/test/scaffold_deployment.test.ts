@@ -286,25 +286,28 @@ function assertBuildStateCacheContract(workflow: string): void {
   );
 
   const key = extractCacheKey(cacheStep);
+  const githubExpression = (expression: string) => `$${`{{ ${expression} }}`}`;
   assert.ok(
     key.includes("riebeckite-build-v2-"),
     "cache key must be versioned so stale contracts are never restored",
   );
   assert.ok(
-    key.includes("${{ runner.os }}") &&
-      key.includes("node${{ env.NODE_VERSION }}"),
+    key.includes(githubExpression("runner.os")) &&
+      key.includes(`node${githubExpression("env.NODE_VERSION")}`),
     "cache key must scope the runner OS and Node.js version",
   );
   assert.ok(
-    key.includes("${{ hashFiles('package-lock.json') }}"),
+    key.includes(githubExpression("hashFiles('package-lock.json')")),
     "cache key must scope the dependency lockfile",
   );
   assert.ok(
-    key.includes("${{ hashFiles('riebeckite.config.ts') }}"),
+    key.includes(githubExpression("hashFiles('riebeckite.config.ts')")),
     "cache key must scope the site configuration",
   );
   assert.ok(
-    key.includes("${{ github.run_id }}-${{ github.run_attempt }}"),
+    key.includes(
+      `${githubExpression("github.run_id")}-${githubExpression("github.run_attempt")}`,
+    ),
     "cache key must be unique per run and attempt so saved generations are immutable",
   );
 
@@ -318,12 +321,12 @@ function assertBuildStateCacheContract(workflow: string): void {
   }
   assert.equal(
     restoreKeys[0],
-    "riebeckite-build-v2-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('riebeckite.config.ts') }}-",
+    `riebeckite-build-v2-${githubExpression("runner.os")}-node${githubExpression("env.NODE_VERSION")}-${githubExpression("hashFiles('package-lock.json')")}-${githubExpression("hashFiles('riebeckite.config.ts')")}-`,
     "first restore-key must fall back within the same configuration",
   );
   assert.equal(
     restoreKeys[1],
-    "riebeckite-build-v2-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-",
+    `riebeckite-build-v2-${githubExpression("runner.os")}-node${githubExpression("env.NODE_VERSION")}-${githubExpression("hashFiles('package-lock.json')")}-`,
     "second restore-key must fall back across configuration changes with the same dependencies",
   );
 
@@ -332,7 +335,7 @@ function assertBuildStateCacheContract(workflow: string): void {
     "workflow must define the pinned Node.js version used by setup-node and the cache key",
   );
   assert.ok(
-    workflow.includes("node-version: ${{ env.NODE_VERSION }}"),
+    workflow.includes(`node-version: ${githubExpression("env.NODE_VERSION")}`),
     "setup-node must use the pinned Node.js version",
   );
   assert.ok(

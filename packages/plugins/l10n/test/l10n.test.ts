@@ -221,7 +221,8 @@ test("publishes the default LanguageSwitcher", async () => {
     "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
   });
   const manifest = await content.getManifest();
-  const localization = getLocalization(manifest, "guide.en")!;
+  const localization = getLocalization(manifest, "guide.en");
+  assert.ok(localization, "expected guide.en localization");
   const html = renderToString(LanguageSwitcher({ localization }));
   assert.match(html, /class="rr-l10n-switcher"/);
   assert.match(html, /href="\/guide"/);
@@ -408,7 +409,8 @@ test("language switcher visibility and content", async () => {
     "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
   });
   const manifest = await content.getManifest();
-  const localization = getLocalization(manifest, "guide.en")!;
+  const localization = getLocalization(manifest, "guide.en");
+  assert.ok(localization, "expected guide.en localization");
   const html = renderToString(LanguageSwitcher({ localization }));
   assert.match(html, /class="rr-l10n-switcher"/);
   assert.match(html, /href="\/guide"/);
@@ -418,7 +420,8 @@ test("language switcher visibility and content", async () => {
     "only.ja.md": "---\ntranslation: only\n---\n# 一つだけ",
   });
   const manifest2 = await content2.getManifest();
-  const localization2 = getLocalization(manifest2, "only.ja")!;
+  const localization2 = getLocalization(manifest2, "only.ja");
+  assert.ok(localization2, "expected only.ja localization");
   const html2 = renderToString(
     LanguageSwitcher({ localization: localization2 }),
   );

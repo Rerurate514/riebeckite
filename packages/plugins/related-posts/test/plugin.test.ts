@@ -109,9 +109,10 @@ test("leaves entries with no related candidates untouched", async () => {
   const manifest = await manager().getManifest();
 
   const isolated = manifest.bySlug.get("isolated");
+  assert.ok(isolated, "expected isolated entry");
   const relatedEntries = buildRelatedPosts({
     manifest,
-    entry: isolated!,
+    entry: isolated,
     options: resolveRelatedPostsOptions(),
     config: explicitConfig,
   });

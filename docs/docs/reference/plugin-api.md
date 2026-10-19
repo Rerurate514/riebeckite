@@ -665,7 +665,7 @@ Use `context.logger` and `context.tracer`:
 
 ``` ts
 context.logger.info("...");
-await context.tracer.span("plugin.example.work", { plugin: "example }, async () => {
+await context.tracer.span("plugin.example.work", { plugin: "example" }, async () => {
   // work
 });
 ```

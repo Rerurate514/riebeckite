@@ -128,7 +128,7 @@ The command finds the Git repository and GitHub remote, checks the GitHub CLI an
 To inspect the GitHub workflow, access, and deployment secrets without changing them, run:
 
 ```sh
-npm exec riebeckite -- doctor --github
+npm exec -- riebeckite doctor --github
 ```
 
 ## 3. Advanced: separate content repository

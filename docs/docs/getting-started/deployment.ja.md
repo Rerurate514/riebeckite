@@ -125,7 +125,7 @@ npm exec riebeckite deploy setup
 GitHub の workflow、アクセス、デプロイ用 secret を変更せずに確認するには、次を実行します。
 
 ```bash
-npm exec riebeckite -- doctor --github
+npm exec -- riebeckite doctor --github
 ```
 
 ## 3. 高度な構成: content を別リポジトリに分ける

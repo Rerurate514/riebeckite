@@ -76,7 +76,7 @@ export default defineConfig({
 });
 ```
 
-The base for a relative path is always the site root. So the same vault is read whether you run the CLI from `app/` inside the site or from a CI working directory. The precise definitions (appRoot / configRoot / contentRoot) are in [Configuration](../reference/configuration.md), "Filesystem root and an external vault".
+The base for a relative path is always the site root. So the same vault is read whether you run the CLI from `app/` inside the site or from a CI working directory. If you replace the standard filesystem reader with a custom `content.source`, `content.directory` is not used. The precise definitions (appRoot / configRoot / contentRoot) are in [Configuration](../reference/configuration.md), "Filesystem root and an external vault".
 
 With this, you can split things like:
 
@@ -224,7 +224,7 @@ workspace/
 └─ my-site/   ← the site from step 2
 ```
 
-This side-by-side layout is useful locally, but CI uses `content/` inside the site checkout after the workflow checks out the content repository there. Keep your local preview aligned with CI by either copying/checking out the vault to `my-site/content` or by setting `content.directory` locally to the same files you intend CI to build.
+This side-by-side layout is useful locally, but CI checks out the content repository into `content/` inside the site checkout. The generated config uses `content.directory: "content"`, so placing the vault at `my-site/content` lets you preview with the same setting. If you change `content.directory` to `../notes`, adjust the workflow checkout path too; changing only the config makes local preview work but leaves CI unable to find the vault.
 
 ### 3. Point content.directory at the vault
 
@@ -272,11 +272,13 @@ npm exec -- riebeckite inspect content --list
 ```
 
 - `check` validates the configuration and plugin contracts.
-- `doctor` reports unreadable or invalid content sources.
-- `inspect config` prints the resolved **absolute** path under `Directory`. Confirm it points at the intended vault.
-- `inspect content --list` lists the `PATH` of every loaded note. Use it to confirm how `exclude` is taking effect and whether you are loading starter content or the real content repository.
+- `doctor` diagnoses configuration, plugins, content, build state, and the environment; `--github` adds GitHub checks.
+- `inspect config` prints the resolved content `Source`, `Directory`, `Exclude`, and `Publishing` (the resolved strategy). `Directory` is absolute; confirm it points at the intended vault.
+- `inspect content --list` lists every loaded note with `PATH`, `ID`, `ID SOURCE`, and `PERMALINK`. Files matched by `exclude` appear in the `EXCLUDED PATH` / `PATTERN` table. Use it to confirm how `exclude` is taking effect and whether you are loading starter content or the real content repository.
 
-A wrong path is usually the relative `directory`. If articles do not appear, check for `publish: true` (the explicit strategy).
+Running `inspect content` without `--list` shows the content source type, entry count, excluded count, and per-extension counts.
+
+A wrong path is usually the relative `directory`. If articles do not appear, check for `publish: true` (the explicit strategy), `visibility`, and `publishAt`.
 
 ### 5. Set up checkout, trigger, and secrets
 
@@ -370,12 +372,24 @@ When articles and the site are separate, be explicit about where the publication
 
 ### How publication is decided
 
-`content.filters.publishStrategy` decides which notes are published. The default is `explicit`.
+`content.filters.publishStrategy` decides which notes are published when frontmatter does not set an explicit state. The default is `explicit`.
 
 | Strategy | Published when | Choose it when |
 | --- | --- | --- |
 | `explicit` (default, recommended) | Only notes with `publish: true` | You want to opt articles in deliberately |
 | `selective` | Notes without `private: true` or `draft: true` | You publish almost everything and hide only exceptions |
+
+Frontmatter `visibility` and `publishAt` take precedence over the strategy.
+
+| Frontmatter | Result |
+| --- | --- |
+| `visibility: public` | Routable and discoverable |
+| `visibility: unlisted` | Routable by direct URL, but excluded from discovery surfaces |
+| `visibility: draft` | Not routable and not discoverable |
+| `publishAt: 2026-01-01T00:00:00.000Z` | Hidden before the build time, public on the first build after that time |
+| no `visibility` / `publishAt` | Falls back to `publishStrategy` |
+
+Malformed `visibility` or `publishAt` values fail the build instead of being guessed. `publishAt` is evaluated against the build time only; Riebeckite does not start a runtime timer. If the time has passed and the article is still missing, run another build or deploy.
 
 Using `explicit` with a private vault is the safest arrangement: you may forget to publish something, but you are unlikely to publish something by accident.
 
@@ -396,10 +410,10 @@ flowchart TD
 
 ### Rules to follow
 
-- **Never put `publish: true` on private notes**, and exclude whole private folders with `content.exclude`.
+- **Never put `publish: true` or `visibility: public` on private notes**, and exclude whole private folders with `content.exclude`.
 - **Put `.obsidian/` in `exclude`** so Obsidian settings and workspace state never mix into the site.
 - **Exclude template folders** (`Templates/**` and the like) so note templates are not published as articles.
-- **Know which asset kind you are copying.** Content images (png, jpg, svg, and similar) are published by the build as generated output, so they need no manual copy. Attachments and media (files that are neither Markdown nor images) get URLs but are not copied, so they need a prebuild step on the site side that copies only the files you publish (reference: call `apps/web/scripts/build_images.ts` from `prebuild`). See the assets section of the [in-depth companion](./deployment/separate-content-repository.md) for how it works.
+- **Know which asset kind you are copying.** Content images (png, jpg, svg, and similar) are published by the build as generated output, so they need no manual copy. Attachments and media (files that are neither Markdown nor images) get URLs but are not copied, so they need a prebuild step on the site side that copies only the files you publish (reference: call `apps/web/scripts/build_images.ts` from `prebuild`). Static files owned by the site belong under `public/`; never copy the whole vault there. See the assets section of the [in-depth companion](./deployment/separate-content-repository.md) for how it works.
 
 ### Attachments and media
 
@@ -407,8 +421,9 @@ Assets inside the vault are published differently depending on their kind:
 
 | Kind | Target | URL | Published by |
 | --- | --- | --- | --- |
-| Content image | Images (png, jpg, svg, and similar) | `/<logical path from the vault>` | Written as generated output by the build |
+| Content image | Images in the vault (png, jpg, svg, and similar) | `/<logical path from the vault>` | The Riebeckite build |
 | Attachment / media | Files that are neither Markdown nor images | `/assets/attachments/<logical path from the vault>` | A prebuild step on the site side |
+| Static asset | Files owned by the site application | Under `/` | Vite's `public/` |
 
 A content image reaches the build output only when a published page references it, so you never copy it into `public/` by hand. An attachment or media file, by contrast, gets a URL but no file:
 
@@ -452,6 +467,10 @@ CI does not have the vault unless you add the additional checkout or submodule. 
 
 Yes. Write `exclude` patterns with `/` separators; they do not depend on the platform's path separator.
 
+**`publishAt` has passed but the article is still missing.**
+
+`publishAt` is evaluated at build time. Run a build and deploy after the scheduled time. To publish on a schedule without a manual run, add `schedule` to the site workflow.
+
 ## Isolating the problem
 
 When something is not published, checking in this order narrows the cause quickly:
@@ -492,6 +511,7 @@ flowchart TD
 | Images 404 after deploy | Confirm a published page references the image and that it is in the build output |
 | Attachments or media 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
 | Works locally but the path differs in CI | Check the CI working directory and the base (site root). `../notes` vs `notes` is a common source of drift |
+| `publishAt` has passed but the article is not published | Run another build and deploy, or add `schedule` to the site workflow |
 | Submodule articles do not update | Update the `content` reference on the site side, commit, and push |
 
 For deeper diagnosis, see the troubleshooting section of the [in-depth companion](./deployment/separate-content-repository.md).

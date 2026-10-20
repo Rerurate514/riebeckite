@@ -81,6 +81,7 @@ Start from the page closest to your goal.
 | Upgrade Riebeckite | [Upgrading](./docs/guides/upgrading.md) |
 | Find a plugin | [Plugins](./docs/plugins/README.md) |
 | Choose a theme | [Themes](./docs/themes/README.md) |
+| Generate a local theme | [Theme Generator](./docs/themes/generator.md) |
 | Review accessibility responsibilities | [Accessibility](./docs/accessibility.md) |
 | Review the security and trust model | [Security](./docs/security.md) |
 | Look up configuration, CLI, or public APIs | [Reference](./docs/reference/README.md) |

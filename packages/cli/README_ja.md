@@ -32,6 +32,7 @@ riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] | graph | build]
+riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 ```
 
 ## コマンド
@@ -45,10 +46,13 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `clean` | 管理対象の状態（`.riebeckite/`）を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | いいえ |
 | `profile` | トレースに基づく性能レポートを実行する。`--full` は全体を対象にする | ビルドの実行による |
 | `inspect` | 解決済みの状態を事実として表示する（`config`、`plugins`、`content`、`graph`、`build`） | いいえ |
+| `create theme` | 公開 Theme API に沿ったローカル Theme を生成する | ローカルファイルを書き込む |
 
 `doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/docs/framework/diagnostics.ja.md) と [Framework Inspector](../../docs/docs/framework/inspector.ja.md) を参照してください。
 
 `clean` は Riebeckite が管理する成果物だけを削除します。option なしでは managed state root（`.riebeckite/`）、`--output` では Build 出力、`--all` では両方を削除します。対象が存在しなくてもエラーにならないため、script や CI から安全に実行できます。cold build を行う場合は `clean --all` の後に `build` を実行します（cache directory を別の場所に設定している場合、その場所は削除対象に含まれません）。
+
+`create theme` は分離されたローカル Theme を `themes/<name>/` に生成します。`--list` でテンプレートを確認し、`--features` で公開 Hook の追加スタイルを選択できます。`--register` は認識できる Theme factory だけを安全にサイト設定へ登録します。詳しくは [Theme Generator](../../docs/docs/themes/generator.ja.md) を参照してください。
 
 ## 典型的な流れ
 
@@ -64,4 +68,3 @@ pnpm exec riebeckite build
 - [CLI Reference](../../docs/docs/reference/cli.ja.md)
 - [Build System](../../docs/docs/framework/build-system.ja.md)
 - [Diagnostics](../../docs/docs/framework/diagnostics.ja.md) / [Framework Inspector](../../docs/docs/framework/inspector.ja.md)
-

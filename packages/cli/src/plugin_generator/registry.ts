@@ -113,7 +113,7 @@ export const pluginFeatureRegistry: Readonly<
             : [],
     },
   ]),
-) as Record<PluginFeatureId, PluginFeature>;
+) as unknown as Record<PluginFeatureId, PluginFeature>;
 
 export function isPluginFeatureId(value: string): value is PluginFeatureId {
   return PLUGIN_FEATURE_IDS.includes(value as PluginFeatureId);

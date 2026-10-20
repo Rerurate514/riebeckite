@@ -84,6 +84,7 @@ deploy
 | Riebeckite を更新する | [Upgrading](./docs/guides/upgrading.ja.md) |
 | プラグインを探す | [プラグイン](./docs/plugins/README.ja.md) |
 | テーマを選ぶ | [テーマ](./docs/themes/README.ja.md) |
+| ローカル Theme を生成する | [Theme Generator](./docs/themes/generator.ja.md) |
 | アクセシビリティの責任範囲を確認する | [アクセシビリティ](./docs/accessibility.ja.md) |
 | セキュリティと信頼モデルを確認する | [セキュリティモデル](./docs/security.ja.md) |
 | 設定や CLI、Public API を調べる | [リファレンス](./docs/reference/README.ja.md) |

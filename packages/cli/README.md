@@ -39,6 +39,7 @@ riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] | graph | build]
+riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 ```
 
 ## Commands
@@ -52,6 +53,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `clean` | Remove managed state (`.riebeckite/`); `--output` removes only the build output, `--all` removes both | no |
 | `profile` | Run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | Display factual resolved state (`config`, `plugins`, `content`, `graph`, `build`) | no |
+| `create theme` | Generate a local Theme from the public Theme API | writes local files |
 
 `doctor` continues independent checks where possible and exits unsuccessfully
 when health checks fail. `inspect` is deliberately read-only and never triggers
@@ -62,6 +64,11 @@ a build or writes state. See [Diagnostics](../../docs/docs/framework/diagnostics
 state root (`.riebeckite/`), with `--output` the build output, and with `--all`
 both. Missing targets are not an error, so it is safe to run from scripts and CI.
 Run `clean --all` before `build` to force a cold build (a cache directory configured outside `.riebeckite/` is not removed).
+
+`create theme` writes an isolated local Theme under `themes/<name>/`. Use
+`--list` to see templates, `--features` for optional public-hook styling, and
+`--register` to conservatively update a recognizable Theme factory in the site
+config. See [Theme Generator](../../docs/docs/themes/generator.md).
 
 ## Typical workflow
 
@@ -77,4 +84,3 @@ pnpm exec riebeckite build
 - [CLI Reference](../../docs/docs/reference/cli.md)
 - [Build System](../../docs/docs/framework/build-system.md)
 - [Diagnostics](../../docs/docs/framework/diagnostics.md) / [Framework Inspector](../../docs/docs/framework/inspector.md)
-

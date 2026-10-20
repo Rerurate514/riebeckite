@@ -5,6 +5,8 @@ title: Your First Theme
 
 A theme changes how a site **looks** (colors, typography, layout). It cannot add features. For features, see [Your first plugin](../plugins/writing-a-plugin.md). A theme must also work for Page Types it does not know: style stable hooks and [[semantic-token|semantic tokens]], not a list of route or Page Type IDs.
 
+To start from a local implementation, use the [Theme Generator](./generator.md).
+
 ```mermaid
 flowchart TD
     Want{"What do you want to build?"}

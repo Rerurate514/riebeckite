@@ -5,6 +5,8 @@ title: はじめてのテーマ作成
 
 Riebeckite の Theme は、Site の**見た目を変更する仕組み**です。
 
+ローカル Theme の実装を雛形から始める場合は、[Theme Generator](./generator.ja.md) を使えます。
+
 たとえば、
 
 - 配色

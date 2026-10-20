@@ -20,6 +20,11 @@ import {
   runCreatePlugin,
   runInteractiveCreatePlugin,
 } from "./commands/create_plugin.js";
+import {
+  assertThemeName,
+  runCreateTheme,
+  runInteractiveCreateTheme,
+} from "./commands/create_theme.js";
 import { runDeploy } from "./commands/deploy.js";
 import { runDeployDomain } from "./commands/deploy_domain.js";
 import { runDeploySetup } from "./commands/deploy_setup.js";
@@ -29,6 +34,11 @@ import { runInit } from "./commands/init.js";
 import { type InspectTarget, runInspect } from "./commands/inspect.js";
 import { runProfile } from "./commands/profile.js";
 import { renderCliError } from "./error_renderer.js";
+import {
+  parseThemeFeatures,
+  parseThemeTemplate,
+  themeTemplateRegistry,
+} from "./theme_generator/registry.js";
 
 export async function main(arguments_: readonly string[]): Promise<void> {
   try {
@@ -62,6 +72,27 @@ export async function main(arguments_: readonly string[]): Promise<void> {
     }
     if (command.name === "create-plugin-interactive") {
       await runInteractiveCreatePlugin();
+      return;
+    }
+    if (command.name === "create-theme-list") {
+      printThemeTemplates();
+      return;
+    }
+    if (command.name === "create-theme") {
+      await runCreateTheme({
+        name: command.themeName,
+        directory: command.directory,
+        template: command.template,
+        features: command.features,
+        darkMode: command.darkMode,
+        tests: command.tests,
+        documentation: command.documentation,
+        register: command.register,
+      });
+      return;
+    }
+    if (command.name === "create-theme-interactive") {
+      await runInteractiveCreateTheme();
       return;
     }
 
@@ -143,7 +174,20 @@ type Command =
       documentation: boolean;
       register: boolean;
     }
-  | { name: "create-plugin-interactive" };
+  | { name: "create-plugin-interactive" }
+  | { name: "create-theme-list" }
+  | {
+      name: "create-theme";
+      themeName: string;
+      directory: string;
+      template: import("./theme_generator/registry.js").ThemeTemplateId;
+      features: readonly import("./theme_generator/registry.js").ThemeFeatureId[];
+      darkMode: boolean;
+      tests: boolean;
+      documentation: boolean;
+      register: boolean;
+    }
+  | { name: "create-theme-interactive" };
 
 export function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
@@ -152,6 +196,8 @@ export function parseCommand(arguments_: readonly string[]): Command {
   if (name === "init") return parseInitCommand(options);
   if (name === "create" && options[0] === "plugin")
     return parseCreatePluginCommand(options.slice(1));
+  if (name === "create" && options[0] === "theme")
+    return parseCreateThemeCommand(options.slice(1));
   if (
     name === "build" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -189,8 +235,99 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create plugin <name> [--template <id> | --features <ids>] [--directory <path>] [--no-tests] [--no-docs] [--register] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create plugin <name> [--template <id> | --features <ids>] [--directory <path>] [--no-tests] [--no-docs] [--register] | create theme [<name>] [--template <id>] [--features <ids>] [--directory <path>] [--no-dark-mode] [--no-tests] [--no-docs] [--register] [--list] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+function parseCreateThemeCommand(options: readonly string[]): Command {
+  let themeName: string | undefined;
+  let directory: string | undefined;
+  let template = "minimal";
+  let featureValue = "";
+  let darkMode = true;
+  let tests = true;
+  let documentation = true;
+  let register = false;
+  let list = false;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--list") {
+      list = true;
+      continue;
+    }
+    if (option === "--no-dark-mode") {
+      darkMode = false;
+      continue;
+    }
+    if (option === "--no-tests") {
+      tests = false;
+      continue;
+    }
+    if (option === "--no-docs") {
+      documentation = false;
+      continue;
+    }
+    if (option === "--register") {
+      register = true;
+      continue;
+    }
+    if (
+      option === "--template" ||
+      option === "--features" ||
+      option === "--directory"
+    ) {
+      const value = options[index + 1];
+      if (value === undefined || value.startsWith("-"))
+        throw new CliUsageError(`${option} requires a value.`);
+      if (option === "--template") template = value;
+      else if (option === "--features") featureValue = value;
+      else directory = value;
+      index += 1;
+      continue;
+    }
+    if (option.startsWith("-"))
+      throw new CliUsageError(`Unknown create theme option: ${option}`);
+    if (themeName !== undefined)
+      throw new CliUsageError("create theme accepts one theme name.");
+    themeName = option;
+  }
+  if (list) {
+    if (themeName !== undefined || options.length !== 1)
+      throw new CliUsageError(
+        "create theme --list does not accept other options.",
+      );
+    return { name: "create-theme-list" };
+  }
+  if (themeName === undefined && options.length === 0)
+    return { name: "create-theme-interactive" };
+  if (themeName === undefined)
+    throw new CliUsageError(
+      "create theme requires a theme name outside an interactive terminal.",
+    );
+  try {
+    assertThemeName(themeName);
+    return {
+      name: "create-theme",
+      themeName,
+      directory: directory ?? `themes/${themeName}`,
+      template: parseThemeTemplate(template),
+      features: parseThemeFeatures(featureValue),
+      darkMode,
+      tests,
+      documentation,
+      register,
+    };
+  } catch (error) {
+    throw new CliUsageError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+}
+
+function printThemeTemplates(): void {
+  for (const template of Object.values(themeTemplateRegistry)) {
+    console.log(`${template.id}: ${template.description}`);
+  }
 }
 
 function parseCreatePluginCommand(options: readonly string[]): Command {

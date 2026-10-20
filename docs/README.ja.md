@@ -94,6 +94,7 @@ deploy
 | Riebeckite 本体を開発する | [フレームワーク開発](./docs/framework/development.ja.md) |
 | Slot から component への UI 移行計画を確認する | [UI コンポーネント移行](./architecture/ui-component-migration.ja.md) |
 | CI の検証ルールを確認する | [CI検証ルール](./architecture/ci.ja.md) |
+| 開発診断の設計を確認する | [開発診断](./architecture/development-diagnostics.ja.md) |
 
 ## ドキュメントの構成
 

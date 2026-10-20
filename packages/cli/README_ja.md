@@ -27,7 +27,7 @@ pnpm のプロジェクトでは `pnpm exec riebeckite` で実行します。
 ```text
 riebeckite dev
 riebeckite check
-riebeckite doctor
+riebeckite doctor [--explain | --json | --fix [--dry-run]]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite profile [--full]
@@ -41,7 +41,7 @@ riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 | --- | --- | --- |
 | `dev` | integration の開発ワークフローを起動する | integration による |
 | `check` | アプリの設定、Plugin、capability の解決を検証する | いいえ |
-| `doctor` | 環境、設定、Plugin、コンテンツ、診断、ビルド状態を診断する | いいえ |
+| `doctor` | environment、設定、Plugin、content、output、Theme の共通診断を報告する | いいえ |
 | `build` | ビルドを実行する。`--full` は差分の再利用を行わない | 成功時に書く |
 | `clean` | 管理対象の状態（`.riebeckite/`）を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | いいえ |
 | `profile` | トレースに基づく性能レポートを実行する。`--full` は全体を対象にする | ビルドの実行による |

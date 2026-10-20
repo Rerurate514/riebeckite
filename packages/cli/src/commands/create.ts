@@ -1,5 +1,6 @@
+import { select } from "@clack/prompts";
 import { runCreateRiebeckite } from "create-riebeckite";
-import { createSetupPrompts } from "../prompts.js";
+import { resolvePrompt } from "../prompt_helpers.js";
 import { runInteractiveCreateComponent } from "./create_component.js";
 import { runInteractiveCreatePageType } from "./create_page_type.js";
 import { runInteractiveCreatePlugin } from "./create_plugin.js";
@@ -13,22 +14,44 @@ export type CreateTarget =
   | "component";
 
 export async function runInteractiveCreate(): Promise<void> {
-  const prompts = createSetupPrompts();
-  if (!prompts.interactive) {
+  if (process.stdin.isTTY !== true || process.stdout.isTTY !== true) {
     throw new Error(
       "Cannot choose what to create in a non-interactive environment. Use create site, create plugin, create theme, create page-type, or create component.",
     );
   }
-  const target = await prompts.select<CreateTarget>(
-    "What would you like to create?",
-    [
-      { value: "site", label: "Site" },
-      { value: "plugin", label: "Plugin" },
-      { value: "theme", label: "Theme" },
-      { value: "page-type", label: "PageType" },
-      { value: "component", label: "Component" },
-    ],
+  const target = await resolvePrompt(
+    select<CreateTarget>({
+      message: "What would you like to create?",
+      options: [
+        {
+          value: "site",
+          label: "Site",
+          hint: "Scaffold a new Riebeckite site",
+        },
+        {
+          value: "plugin",
+          label: "Plugin",
+          hint: "Create a local Plugin in extensions/",
+        },
+        {
+          value: "theme",
+          label: "Theme",
+          hint: "Create a local Theme in themes/",
+        },
+        {
+          value: "page-type",
+          label: "PageType",
+          hint: "Create a routable content type",
+        },
+        {
+          value: "component",
+          label: "Component",
+          hint: "Create a Site or Plugin Component",
+        },
+      ],
+    }),
   );
+  if (target === null) return;
   await runCreateTarget(target);
 }
 

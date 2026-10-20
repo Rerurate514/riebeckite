@@ -1,11 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createInterface } from "node:readline/promises";
+import { confirm, intro, outro, select, spinner, text } from "@clack/prompts";
 import {
   renderComponent,
   renderComponentCss,
   renderComponentTest,
 } from "../component_generator/templates.js";
+import { resolvePrompt, validateInput } from "../prompt_helpers.js";
 import { assertPageTypeName } from "./create_page_type.js";
 
 export type CreateComponentOptions = {
@@ -17,9 +18,21 @@ export type CreateComponentOptions = {
   readonly styles: boolean;
 };
 
+type CreateComponentResult = {
+  readonly target: "site" | "plugin";
+  readonly directory: string;
+};
+
 export async function runCreateComponent(
   options: CreateComponentOptions,
 ): Promise<void> {
+  const result = await createComponent(options);
+  console.log(`Created ${result.target} component in ${result.directory}`);
+}
+
+async function createComponent(
+  options: CreateComponentOptions,
+): Promise<CreateComponentResult> {
   assertPageTypeName(options.name);
   if (options.target === "theme")
     throw new Error(
@@ -80,43 +93,84 @@ export async function runCreateComponent(
     if (options.tests) await fs.rm(testPath, { force: true });
     throw error;
   }
-  console.log(
-    `Created ${options.target} component in ${path.relative(process.cwd(), componentPath)}`,
-  );
+  return {
+    target: options.target,
+    directory: path.relative(process.cwd(), componentPath),
+  };
 }
 
 export async function runInteractiveCreateComponent(): Promise<void> {
-  if (!process.stdin.isTTY || !process.stdout.isTTY)
+  if (process.stdin.isTTY !== true || process.stdout.isTTY !== true)
     throw new Error(
       "Cannot prompt for component details in a non-interactive environment. Provide a name.",
     );
-  const readline = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  try {
-    const name = (await readline.question("Component name: ")).trim();
-    const target =
-      (await readline.question("Target [site|plugin|theme] (site): ")).trim() ||
-      "site";
-    if (target !== "site" && target !== "plugin" && target !== "theme")
-      throw new Error("Component target must be site, plugin, or theme.");
-    const plugin =
-      target === "plugin"
-        ? (await readline.question("Plugin name: ")).trim()
-        : undefined;
-    const tests =
-      (await readline.question("Generate tests? [y/N]: "))
-        .trim()
-        .toLowerCase() === "y";
-    const styles =
-      (await readline.question("Generate styles? [y/N]: "))
-        .trim()
-        .toLowerCase() === "y";
-    await runCreateComponent({ name, target, plugin, tests, styles });
-  } finally {
-    readline.close();
+  intro("Create a Riebeckite Component");
+  const name = await resolvePrompt(
+    text({
+      message: "Component name",
+      placeholder: "note-card",
+      validate: validateInput(assertPageTypeName),
+    }),
+  );
+  if (name === null) return;
+  const componentName = name.trim();
+  const target = await resolvePrompt(
+    select<"site" | "plugin">({
+      message: "Where should the component live?",
+      initialValue: "site",
+      options: [
+        {
+          value: "site",
+          label: "Site",
+          hint: "app/components",
+        },
+        {
+          value: "plugin",
+          label: "Plugin",
+          hint: "extensions/<plugin>/components",
+        },
+      ],
+    }),
+  );
+  if (target === null) return;
+  let plugin: string | undefined;
+  if (target === "plugin") {
+    const pluginName = await resolvePrompt(
+      text({
+        message: "Plugin name",
+        placeholder: "my-plugin",
+        validate: validateInput(assertPageTypeName),
+      }),
+    );
+    if (pluginName === null) return;
+    plugin = pluginName.trim();
   }
+  const tests = await resolvePrompt(
+    confirm({ message: "Generate tests?", initialValue: false }),
+  );
+  if (tests === null) return;
+  const styles = await resolvePrompt(
+    confirm({ message: "Generate styles?", initialValue: false }),
+  );
+  if (styles === null) return;
+
+  const progress = spinner();
+  progress.start("Creating Component");
+  let result: CreateComponentResult;
+  try {
+    result = await createComponent({
+      name: componentName,
+      target,
+      plugin,
+      tests,
+      styles,
+    });
+  } catch (error) {
+    progress.error("Could not create the Component.");
+    throw error;
+  }
+  progress.stop(`Created ${result.target} component in ${result.directory}`);
+  outro("Component created.");
 }
 
 async function pluginIndexUpdate(

@@ -1,11 +1,21 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createInterface } from "node:readline/promises";
+import {
+  confirm,
+  intro,
+  log,
+  note,
+  outro,
+  select,
+  spinner,
+  text,
+} from "@clack/prompts";
 import {
   renderPageTypeModule,
   renderPageTypeTest,
 } from "../page_type_generator/templates.js";
 import { renderPluginFiles } from "../plugin_generator/templates.js";
+import { resolvePrompt, validateInput } from "../prompt_helpers.js";
 
 export type CreatePageTypeOptions = {
   readonly name: string;
@@ -15,54 +25,133 @@ export type CreatePageTypeOptions = {
   readonly register: boolean;
 };
 
+type CreatePageTypeResult =
+  | {
+      readonly kind: "plugin";
+      readonly directory: string;
+      readonly registered: boolean;
+    }
+  | {
+      readonly kind: "addition";
+      readonly plugin: string;
+      readonly registered: boolean;
+    };
+
 export async function runCreatePageType(
   options: CreatePageTypeOptions,
 ): Promise<void> {
+  const result = await createPageType(options);
+  if (options.register && !result.registered)
+    console.log(
+      result.kind === "plugin"
+        ? "PageType Plugin was created. Register it manually in riebeckite.config.ts."
+        : "PageType was added. Register its Plugin manually in riebeckite.config.ts.",
+    );
+  console.log(pageTypeResultMessage(result));
+}
+
+async function createPageType(
+  options: CreatePageTypeOptions,
+): Promise<CreatePageTypeResult> {
   assertPageTypeName(options.name);
   assertPagePath(options.path);
   if (options.plugin) {
     assertPageTypeName(options.plugin);
-    await addPageTypeToPlugin(options);
-    return;
+    return addPageTypeToPlugin(options);
   }
-  await createPageTypePlugin(options);
+  return createPageTypePlugin(options);
 }
 
 export async function runInteractiveCreatePageType(): Promise<void> {
-  if (!process.stdin.isTTY || !process.stdout.isTTY)
+  if (process.stdin.isTTY !== true || process.stdout.isTTY !== true)
     throw new Error(
       "Cannot prompt for PageType details in a non-interactive environment. Provide a name.",
     );
-  const readline = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  intro("Create a Riebeckite PageType");
+  const name = await resolvePrompt(
+    text({
+      message: "PageType name",
+      placeholder: "glossary",
+      validate: validateInput(assertPageTypeName),
+    }),
+  );
+  if (name === null) return;
+  const pageTypeName = name.trim();
+  const destination = await resolvePrompt(
+    select<"new" | "existing">({
+      message: "Where should the PageType live?",
+      initialValue: "new",
+      options: [
+        {
+          value: "new",
+          label: "New Plugin",
+          hint: "Create a Plugin that owns this PageType",
+        },
+        {
+          value: "existing",
+          label: "Existing Plugin",
+          hint: "Add the PageType to an installed Plugin",
+        },
+      ],
+    }),
+  );
+  if (destination === null) return;
+  let plugin: string | undefined;
+  if (destination === "existing") {
+    const pluginName = await resolvePrompt(
+      text({
+        message: "Plugin name",
+        placeholder: "my-plugin",
+        validate: validateInput(assertPageTypeName),
+      }),
+    );
+    if (pluginName === null) return;
+    plugin = pluginName.trim();
+  }
+  const pathValue = await resolvePrompt(
+    text({
+      message: "PageType path",
+      placeholder: `/${pageTypeName}/`,
+      defaultValue: `/${pageTypeName}/`,
+      validate: validateInput((value) =>
+        assertPagePath(value || `/${pageTypeName}/`),
+      ),
+    }),
+  );
+  if (pathValue === null) return;
+  const tests = await resolvePrompt(
+    confirm({ message: "Generate tests?", initialValue: false }),
+  );
+  if (tests === null) return;
+  const register = await resolvePrompt(
+    confirm({
+      message: "Register in riebeckite.config.ts?",
+      initialValue: false,
+    }),
+  );
+  if (register === null) return;
+
+  const progress = spinner();
+  progress.start("Creating PageType");
+  let result: CreatePageTypeResult;
   try {
-    const name = (await readline.question("PageType name: ")).trim();
-    assertPageTypeName(name);
-    const plugin = (
-      await readline.question("Existing Plugin (leave empty to create one): ")
-    ).trim();
-    const pagePath =
-      (await readline.question(`Path [/${name}/]: `)).trim() || `/${name}/`;
-    const tests =
-      (await readline.question("Generate tests? [y/N]: "))
-        .trim()
-        .toLowerCase() === "y";
-    const register =
-      (await readline.question("Register in riebeckite.config.ts? [y/N]: "))
-        .trim()
-        .toLowerCase() === "y";
-    await runCreatePageType({
-      name,
-      plugin: plugin || undefined,
-      path: pagePath,
+    result = await createPageType({
+      name: pageTypeName,
+      plugin,
+      path: pathValue.trim() || `/${pageTypeName}/`,
       tests,
       register,
     });
-  } finally {
-    readline.close();
+  } catch (error) {
+    progress.error("Could not create the PageType.");
+    throw error;
   }
+  progress.stop(pageTypeResultMessage(result));
+  if (register && !result.registered) {
+    await log.warn("Register it manually in riebeckite.config.ts.");
+  }
+  note("riebeckite check\nriebeckite build", "Next steps");
+  outro("PageType created.");
 }
 
 export function assertPageTypeName(name: string): void {
@@ -85,7 +174,7 @@ export function assertPagePath(value: string): void {
 
 async function createPageTypePlugin(
   options: CreatePageTypeOptions,
-): Promise<void> {
+): Promise<CreatePageTypeResult> {
   const root = path.resolve(process.cwd(), "extensions", options.name);
   await assertAbsent(root);
   const files = renderPluginFiles(
@@ -96,18 +185,16 @@ async function createPageTypePlugin(
     options.path,
   );
   await writeDirectoryAtomically(root, files);
-  if (options.register && !(await registerPlugin(options.name)))
-    console.log(
-      "PageType Plugin was created. Register it manually in riebeckite.config.ts.",
-    );
-  console.log(
-    `Created PageType Plugin in ${path.relative(process.cwd(), root)}`,
-  );
+  return {
+    kind: "plugin",
+    directory: path.relative(process.cwd(), root),
+    registered: options.register ? await registerPlugin(options.name) : false,
+  };
 }
 
 async function addPageTypeToPlugin(
   options: CreatePageTypeOptions,
-): Promise<void> {
+): Promise<CreatePageTypeResult> {
   const pluginRoot = path.resolve(
     process.cwd(),
     "extensions",
@@ -170,11 +257,19 @@ async function addPageTypeToPlugin(
     if (testCreated) await fs.rm(testPath, { force: true });
     throw error;
   }
-  if (options.register && !(await registerPlugin(options.plugin ?? "")))
-    console.log(
-      "PageType was added. Register its Plugin manually in riebeckite.config.ts.",
-    );
-  console.log(`Added PageType to extensions/${options.plugin}`);
+  return {
+    kind: "addition",
+    plugin: options.plugin ?? "",
+    registered: options.register
+      ? await registerPlugin(options.plugin ?? "")
+      : false,
+  };
+}
+
+function pageTypeResultMessage(result: CreatePageTypeResult): string {
+  return result.kind === "plugin"
+    ? `Created PageType Plugin in ${result.directory}`
+    : `Added PageType to extensions/${result.plugin}`;
 }
 
 function addPageTypeToIndex(

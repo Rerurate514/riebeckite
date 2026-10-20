@@ -80,6 +80,8 @@ Start from the page closest to your goal.
 | Build a multilingual site | [Localization](./docs/guides/localization.md) |
 | Upgrade Riebeckite | [Upgrading](./docs/guides/upgrading.md) |
 | Find a plugin | [Plugins](./docs/plugins/README.md) |
+| Generate a PageType Plugin or add one to a local Plugin | [PageType Generator](./docs/plugins/page-type-generator.md) |
+| Generate a Site or Plugin component | [Component Generator](./docs/plugins/component-generator.md) |
 | Choose a theme | [Themes](./docs/themes/README.md) |
 | Generate a local theme | [Theme Generator](./docs/themes/generator.md) |
 | Review accessibility responsibilities | [Accessibility](./docs/accessibility.md) |

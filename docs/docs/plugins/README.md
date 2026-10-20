@@ -160,11 +160,13 @@ Each page links to the Plugin reference. Install any Plugin with
 
 ## If you want to build a Plugin
 
-Start with [Writing a Plugin](./writing-a-plugin.md), or use the [Plugin Generator](./generator.md) to create a local starting point. For concrete examples of renderers, content hooks, page types, endpoints, SEO, diagnostics, and generated output, use [Plugin Recipes](./recipes/README.md). Exact contracts live in [Plugin API](../reference/plugin-api.md), and the framework-level page model is described in [Framework / Page system](../framework/page-system.md).
+Start with [Writing a Plugin](./writing-a-plugin.md), use the [Plugin Generator](./generator.md) to create a local starting point, or use the [PageType Generator](./page-type-generator.md) and [Component Generator](./component-generator.md) for focused additions. For concrete examples of renderers, content hooks, page types, endpoints, SEO, diagnostics, and generated output, use [Plugin Recipes](./recipes/README.md). Exact contracts live in [Plugin API](../reference/plugin-api.md), and the framework-level page model is described in [Framework / Page system](../framework/page-system.md).
 
 ## Next
 
 - [Plugin Showcase](./showcase.md)
 - [Writing a Plugin](./writing-a-plugin.md)
 - [Plugin Generator](./generator.md)
+- [PageType Generator](./page-type-generator.md)
+- [Component Generator](./component-generator.md)
 - [Plugin Recipes](./recipes/README.md)

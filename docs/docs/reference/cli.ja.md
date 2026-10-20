@@ -17,7 +17,7 @@ CLI は current working directory から application root を解決します。
 
 ```text id="7uw50m"
 riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
-riebeckite create [site | plugin | theme]
+riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 
 riebeckite dev
@@ -40,7 +40,7 @@ riebeckite inspect build
 | Command | 何をする？ | Build State |
 | --- | --- | --- |
 | `init` | 新しい Site を作る | 変更しない |
-| `create` | Site、Plugin、Theme の Generator を選ぶ | Generator に依存 |
+| `create` | Site、Plugin、Theme、PageType、Component の Generator を選ぶ | Generator に依存 |
 | `theme preview` | ローカル Theme を隔離した HonoX 環境で確認する | 一時ファイルのみ |
 | `dev` | 開発環境を起動する | Integration に依存 |
 | `check` | 設定が正しいか検証する | 変更しない |
@@ -92,17 +92,19 @@ build
 
 ## `create`
 
-`create` は Generator の統一入口です。TTY では Site、Plugin、Theme のいずれを作成するか選び、その後は既存の Generator に委譲します。
+`create` は Generator の統一入口です。TTY では Site、Plugin、Theme、PageType、Component のいずれを作成するか選び、その後は対応する Generator に委譲します。
 
 ```sh
 riebeckite create
 riebeckite create site my-site --preset starter
 riebeckite create plugin reading-time --features transform
 riebeckite create theme my-theme --template blog --register
+riebeckite create page-type glossary --path /glossary/ --with-tests
+riebeckite create component note-card --target site --with-styles
 riebeckite create --help
 ```
 
-スクリプトでは対象を明示してください。`create site` は引数を `create-riebeckite` に渡し、`create plugin` と `create theme` は既存の Option と非 TTY の検証を維持します。
+スクリプトでは対象を明示してください。`create site` は引数を `create-riebeckite` に渡し、`create plugin` と `create theme` は既存の Option と非 TTY の検証を維持します。`create page-type` は Plugin PageType を作成し、`create component` は Site、Plugin、Theme の責務境界を守ります。
 
 ## `theme preview`
 

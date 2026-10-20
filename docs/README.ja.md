@@ -83,6 +83,8 @@ deploy
 | 多言語サイトを作る | [多言語化](./docs/guides/localization.ja.md) |
 | Riebeckite を更新する | [Upgrading](./docs/guides/upgrading.ja.md) |
 | プラグインを探す | [プラグイン](./docs/plugins/README.ja.md) |
+| PageType Plugin を生成または既存の Plugin に追加する | [PageType Generator](./docs/plugins/page-type-generator.ja.md) |
+| Site または Plugin の component を生成する | [Component Generator](./docs/plugins/component-generator.ja.md) |
 | テーマを選ぶ | [テーマ](./docs/themes/README.ja.md) |
 | ローカル Theme を生成する | [Theme Generator](./docs/themes/generator.ja.md) |
 | アクセシビリティの責任範囲を確認する | [アクセシビリティ](./docs/accessibility.ja.md) |

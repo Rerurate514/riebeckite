@@ -13,7 +13,7 @@ npm exec riebeckite <command>
 
 ```text
 riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
-riebeckite create [site | plugin | theme]
+riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite dev
 riebeckite check
@@ -30,7 +30,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | Command | Purpose | Writes build state? |
 | --- | --- | --- |
 | `init` | scaffold a self-contained site from a preset | no |
-| `create` | choose a Site, Plugin, or Theme generator | generator-dependent |
+| `create` | choose a Site, Plugin, Theme, PageType, or Component generator | generator-dependent |
 | `theme preview` | run an isolated HonoX preview of a local Theme | temporary files only |
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
@@ -168,17 +168,19 @@ npm exec riebeckite build
 
 ## `create`
 
-`create` is the unified generator entry point. In a TTY it asks whether to create a Site, Plugin, or Theme, then delegates to the existing generator without duplicating its generation logic.
+`create` is the unified generator entry point. In a TTY it asks whether to create a Site, Plugin, Theme, PageType, or Component, then delegates to the relevant generator without duplicating its generation logic.
 
 ```sh
 riebeckite create
 riebeckite create site my-site --preset starter
 riebeckite create plugin reading-time --features transform
 riebeckite create theme my-theme --template blog --register
+riebeckite create page-type glossary --path /glossary/ --with-tests
+riebeckite create component note-card --target site --with-styles
 riebeckite create --help
 ```
 
-In scripts, select a target explicitly. `create site` passes its arguments to `create-riebeckite`; `create plugin` and `create theme` retain their existing options and non-TTY validation.
+In scripts, select a target explicitly. `create site` passes its arguments to `create-riebeckite`; `create plugin` and `create theme` retain their existing options and non-TTY validation. `create page-type` creates a Plugin PageType; `create component` respects the Site, Plugin, and Theme ownership boundary.
 
 ## `theme preview`
 

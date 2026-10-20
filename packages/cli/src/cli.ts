@@ -20,6 +20,16 @@ import {
   runInteractiveCreate,
 } from "./commands/create.js";
 import {
+  runCreateComponent,
+  runInteractiveCreateComponent,
+} from "./commands/create_component.js";
+import {
+  assertPagePath,
+  assertPageTypeName,
+  runCreatePageType,
+  runInteractiveCreatePageType,
+} from "./commands/create_page_type.js";
+import {
   assertPluginName,
   parseCreatePluginFeatures,
   runCreatePlugin,
@@ -112,6 +122,22 @@ export async function main(arguments_: readonly string[]): Promise<void> {
     }
     if (command.name === "create-theme-interactive") {
       await runInteractiveCreateTheme();
+      return;
+    }
+    if (command.name === "create-page-type") {
+      await runCreatePageType(command.options);
+      return;
+    }
+    if (command.name === "create-page-type-interactive") {
+      await runInteractiveCreatePageType();
+      return;
+    }
+    if (command.name === "create-component") {
+      await runCreateComponent(command.options);
+      return;
+    }
+    if (command.name === "create-component-interactive") {
+      await runInteractiveCreateComponent();
       return;
     }
     if (command.name === "theme-preview") {
@@ -218,6 +244,16 @@ type Command =
       register: boolean;
     }
   | { name: "create-theme-interactive" }
+  | {
+      name: "create-page-type";
+      options: import("./commands/create_page_type.js").CreatePageTypeOptions;
+    }
+  | { name: "create-page-type-interactive" }
+  | {
+      name: "create-component";
+      options: import("./commands/create_component.js").CreateComponentOptions;
+    }
+  | { name: "create-component-interactive" }
   | { name: "theme-preview"; themeName: string; port?: number; open: boolean };
 
 export function parseCommand(arguments_: readonly string[]): Command {
@@ -238,6 +274,10 @@ export function parseCommand(arguments_: readonly string[]): Command {
     return parseCreatePluginCommand(options.slice(1));
   if (name === "create" && options[0] === "theme")
     return parseCreateThemeCommand(options.slice(1));
+  if (name === "create" && options[0] === "page-type")
+    return parseCreatePageTypeCommand(options.slice(1));
+  if (name === "create" && options[0] === "component")
+    return parseCreateComponentCommand(options.slice(1));
   if (name === "theme" && options[0] === "preview")
     return parseThemePreviewCommand(options.slice(1));
   if (
@@ -277,8 +317,132 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+function parseCreatePageTypeCommand(options: readonly string[]): Command {
+  let pageTypeName: string | undefined;
+  let plugin: string | undefined;
+  let pagePath: string | undefined;
+  let tests = false;
+  let register = false;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--with-tests") {
+      tests = true;
+      continue;
+    }
+    if (option === "--register") {
+      register = true;
+      continue;
+    }
+    if (option === "--plugin" || option === "--path") {
+      const value = options[index + 1];
+      if (!value || value.startsWith("-"))
+        throw new CliUsageError(`${option} requires a value.`);
+      if (option === "--plugin") plugin = value;
+      else pagePath = value;
+      index += 1;
+      continue;
+    }
+    if (option.startsWith("-"))
+      throw new CliUsageError(`Unknown create page-type option: ${option}`);
+    if (pageTypeName)
+      throw new CliUsageError("create page-type accepts one PageType name.");
+    pageTypeName = option;
+  }
+  if (!pageTypeName && options.length === 0)
+    return { name: "create-page-type-interactive" };
+  if (!pageTypeName)
+    throw new CliUsageError(
+      "create page-type requires a PageType name outside an interactive terminal.",
+    );
+  try {
+    assertPageTypeName(pageTypeName);
+    if (plugin) assertPageTypeName(plugin);
+    const resolvedPath = pagePath ?? `/${pageTypeName}/`;
+    assertPagePath(resolvedPath);
+    return {
+      name: "create-page-type",
+      options: {
+        name: pageTypeName,
+        plugin,
+        path: resolvedPath,
+        tests,
+        register,
+      },
+    };
+  } catch (error) {
+    throw new CliUsageError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+}
+
+function parseCreateComponentCommand(options: readonly string[]): Command {
+  let componentName: string | undefined;
+  let target: "site" | "plugin" | "theme" = "site";
+  let plugin: string | undefined;
+  let theme: string | undefined;
+  let tests = false;
+  let styles = false;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--with-tests") {
+      tests = true;
+      continue;
+    }
+    if (option === "--with-styles") {
+      styles = true;
+      continue;
+    }
+    if (
+      option === "--target" ||
+      option === "--plugin" ||
+      option === "--theme"
+    ) {
+      const value = options[index + 1];
+      if (!value || value.startsWith("-"))
+        throw new CliUsageError(`${option} requires a value.`);
+      if (option === "--target") {
+        if (value !== "site" && value !== "plugin" && value !== "theme")
+          throw new CliUsageError("--target must be site, plugin, or theme.");
+        target = value;
+      } else if (option === "--plugin") plugin = value;
+      else theme = value;
+      index += 1;
+      continue;
+    }
+    if (option.startsWith("-"))
+      throw new CliUsageError(`Unknown create component option: ${option}`);
+    if (componentName)
+      throw new CliUsageError("create component accepts one component name.");
+    componentName = option;
+  }
+  if (!componentName && options.length === 0)
+    return { name: "create-component-interactive" };
+  if (!componentName)
+    throw new CliUsageError(
+      "create component requires a component name outside an interactive terminal.",
+    );
+  try {
+    assertPageTypeName(componentName);
+    if (plugin) assertPageTypeName(plugin);
+    if (theme) assertThemeName(theme);
+    if (target === "plugin" && !plugin)
+      throw new Error("--plugin is required when --target plugin is used.");
+    if (theme && target !== "theme")
+      throw new Error("--theme can only be used when --target theme is used.");
+    return {
+      name: "create-component",
+      options: { name: componentName, target, plugin, theme, tests, styles },
+    };
+  } catch (error) {
+    throw new CliUsageError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
 }
 
 function parseThemePreviewCommand(options: readonly string[]): Command {

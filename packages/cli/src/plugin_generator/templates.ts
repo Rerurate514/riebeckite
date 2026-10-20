@@ -43,9 +43,9 @@ const featureCode: Readonly<Record<PluginFeatureId, string>> = {
     },`,
   pages: `pageTypes: [{
       id: "PLUGIN-index",
-      paths: ["/PLUGIN/"],
+      paths: ["__PAGE_PATH__"],
       outputDependencies: [{ type: "global" }],
-      resolve: ({ manifest, pathname }) => pathname === "/PLUGIN/" ? {
+      resolve: ({ manifest, pathname }) => pathname === "__PAGE_PATH__" ? {
         type: "PLUGIN-index", pathname, title: "Plugin index",
         body: \`<ul>\${manifest.discoverableEntries.map((entry) => \`<li><a href="\${escapeHtmlAttribute(entry.permalink)}">\${escapeHtml(entry.title)}</a></li>\`).join("")}</ul>\`,
       } : null,
@@ -85,6 +85,7 @@ const featureCode: Readonly<Record<PluginFeatureId, string>> = {
 export function renderPluginIndex(
   pluginName: string,
   features: readonly PluginFeatureId[],
+  pagePath = `/${pluginName}/`,
 ): string {
   const needsEscape = features.some((feature) =>
     ["renderers", "pages"].includes(feature),
@@ -102,7 +103,11 @@ export function renderPluginIndex(
     ? `options: ${toIdentifier(pluginName)}Options = {}`
     : "";
   const properties = features
-    .map((feature) => featureCode[feature].replaceAll("PLUGIN", pluginName))
+    .map((feature) =>
+      featureCode[feature]
+        .replaceAll("PLUGIN", pluginName)
+        .replaceAll("__PAGE_PATH__", pagePath),
+    )
     .filter(Boolean)
     .join("\n    ");
   const buildStart = renderBuildStart(pluginName, features);
@@ -129,9 +134,10 @@ export function renderPluginFiles(
   features: readonly PluginFeatureId[],
   tests: boolean,
   documentation: boolean,
+  pagePath?: string,
 ): ReadonlyMap<string, string> {
   const files = new Map<string, string>([
-    ["index.ts", renderPluginIndex(pluginName, features)],
+    ["index.ts", renderPluginIndex(pluginName, features, pagePath)],
   ]);
   if (features.includes("assets-and-client-entries")) {
     files.set("style.css", `.rr-${pluginName} { display: block; }\n`);

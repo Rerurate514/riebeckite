@@ -23,7 +23,9 @@ export async function runInteractiveCreate(): Promise<void> {
   await runCreateTarget(target);
 }
 
-export async function runCreateSite(arguments_: readonly string[]): Promise<void> {
+export async function runCreateSite(
+  arguments_: readonly string[],
+): Promise<void> {
   await runCreateRiebeckite(arguments_);
 }
 

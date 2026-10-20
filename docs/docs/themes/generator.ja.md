@@ -33,6 +33,15 @@ export default defineConfig({ theme: myThemeTheme() });
 
 ## 開発と検証
 
+生成したローカル Theme は Site に登録する前に Preview できます。
+
+```sh
+riebeckite theme preview my-theme
+riebeckite theme preview my-theme --port 4173 --no-open
+```
+
+Preview は決定的な Home、Article、Documentation、Components の Fixture を含む隔離された一時 HonoX Site を起動します。Theme の実際の Factory と Stylesheet Path を利用し、現在の Site や Vault は変更しません。Ctrl+C で終了すると一時ファイルを削除します。Theme CSS の変更は Vite が更新し、`index.ts` の変更時は Dev Server を再起動して開いているページを再読み込みします。Responsive Width と System の Color Preference はブラウザの開発者ツールで確認してください。Preview はローカル Theme Module を実行するため、信頼できる Theme のみに使用してください。
+
 生成されたテストは factory と Stylesheet Module Specifier を検証します。Light / Dark、Mobile / Desktop、有効な Plugin との共存をサイト上で確認してください。Theme CSS は Framework と Plugin Style の後、`userCss` の前に読み込まれます。機能は Plugin、サイト固有の構造は Application に置いてください。
 
 ```sh

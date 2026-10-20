@@ -5,6 +5,8 @@ title: Plugin Generator
 
 `riebeckite create plugin` creates a local Plugin under `extensions/` from the public Plugin API. It is an implementation starting point; [Writing a Plugin](./writing-a-plugin.md) and the relevant Plugin documentation remain the explanation of each extension point.
 
+Run `riebeckite create` in a TTY to choose this generator alongside Site and Theme creation. Direct `riebeckite create plugin` usage remains unchanged.
+
 ## Create a Plugin
 
 ```sh

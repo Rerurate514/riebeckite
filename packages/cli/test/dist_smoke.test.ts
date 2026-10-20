@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
+import { once } from "node:events";
 import fs from "node:fs";
+import fsPromises from "node:fs/promises";
+import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 import { before, test } from "node:test";
@@ -92,6 +95,127 @@ test("the built CLI scaffolds a project through the external create-riebeckite p
     fs.rmSync(temporary, { recursive: true, force: true });
   }
 });
+
+test("the built CLI previews an isolated local Theme", async () => {
+  const project = await fsPromises.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-preview-"),
+  );
+  const themeRoot = path.join(project, "themes", "sample");
+  const source = `import { defineTheme } from "@riebeckite/core";
+
+export function sampleTheme() {
+  return defineTheme({
+    name: "sample",
+    styles: [{ moduleSpecifier: "/themes/sample/styles/theme.css" }],
+  });
+}
+`;
+  const updatedSource = source.replace("theme.css", "updated.css");
+  const port = await reservePort();
+  await fsPromises.mkdir(path.join(themeRoot, "styles"), { recursive: true });
+  await fsPromises.writeFile(path.join(themeRoot, "index.ts"), source, "utf8");
+  await fsPromises.writeFile(
+    path.join(themeRoot, "styles", "theme.css"),
+    ":root { --theme-preview-test: active; }\n",
+    "utf8",
+  );
+  await fsPromises.writeFile(
+    path.join(themeRoot, "styles", "updated.css"),
+    ":root { --theme-preview-updated: active; }\n",
+    "utf8",
+  );
+  const child = spawn(
+    process.execPath,
+    [
+      cliBundle,
+      "theme",
+      "preview",
+      "sample",
+      "--port",
+      String(port),
+      "--no-open",
+    ],
+    { cwd: project, stdio: ["ignore", "pipe", "pipe"] },
+  );
+  let output = "";
+  child.stdout.setEncoding("utf8");
+  child.stderr.setEncoding("utf8");
+  child.stdout.on("data", (chunk: string) => {
+    output += chunk;
+  });
+  child.stderr.on("data", (chunk: string) => {
+    output += chunk;
+  });
+
+  try {
+    await waitFor(() =>
+      output.includes(`Theme preview: http://127.0.0.1:${port}/`),
+    );
+    const [home, article, stylesheet] = await Promise.all([
+      fetch(`http://127.0.0.1:${port}/`),
+      fetch(`http://127.0.0.1:${port}/article`),
+      fetch(`http://127.0.0.1:${port}/app/style.css`),
+    ]);
+    assert.equal(home.status, 200);
+    assert.equal(article.status, 200);
+    assert.equal(stylesheet.status, 200);
+    assert.match(await home.text(), /Theme preview/);
+    assert.match(await article.text(), /Heading one/);
+    assert.match(await stylesheet.text(), /--theme-preview-test: active/);
+    assert.equal(
+      await fsPromises.readFile(path.join(themeRoot, "index.ts"), "utf8"),
+      source,
+    );
+    await fsPromises.writeFile(
+      path.join(themeRoot, "index.ts"),
+      updatedSource,
+      "utf8",
+    );
+    await waitForAsync(async () =>
+      (
+        await (await fetch(`http://127.0.0.1:${port}/app/style.css`)).text()
+      ).includes("--theme-preview-updated: active"),
+    );
+  } finally {
+    if (child.exitCode === null) {
+      child.kill("SIGKILL");
+      await once(child, "exit");
+    }
+    await fsPromises.rm(project, { recursive: true, force: true });
+  }
+});
+
+async function reservePort(): Promise<number> {
+  const server = net.createServer();
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const address = server.address();
+  if (!address || typeof address === "string")
+    throw new Error("Could not reserve a port.");
+  const { port } = address;
+  await new Promise<void>((resolve, reject) =>
+    server.close((error) => (error ? reject(error) : resolve())),
+  );
+  return port;
+}
+
+async function waitFor(predicate: () => boolean): Promise<void> {
+  const deadline = Date.now() + 30_000;
+  while (!predicate()) {
+    if (Date.now() > deadline)
+      throw new Error("Theme preview server did not start.");
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+}
+
+async function waitForAsync(predicate: () => Promise<boolean>): Promise<void> {
+  const deadline = Date.now() + 30_000;
+  while (!(await predicate())) {
+    if (Date.now() > deadline)
+      throw new Error("Theme preview server did not reload.");
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+}
 
 test("the built CLI scaffolds a deployment-enabled project", () => {
   const temporary = fs.mkdtempSync(

@@ -19,10 +19,18 @@
     "prepack": "node ../../scripts/copy_license.mjs && pnpm run build"
   },
   "dependencies": {
+    "@hono/vite-build": "^1.11.1",
     "@riebeckite/core": "workspace:*",
     "@riebeckite/honox": "workspace:*",
+    "@riebeckite/plugin-color-mode": "workspace:*",
+    "@riebeckite/plugin-docs": "workspace:*",
+    "@riebeckite/plugin-obsidian-markdown": "workspace:*",
+    "@riebeckite/plugin-toc": "workspace:*",
+    "@riebeckite/ui": "workspace:*",
     "create-riebeckite": "workspace:*",
     "esbuild": "catalog:",
+    "hono": "catalog:",
+    "honox": "0.1.56",
     "jsonc-parser": "^3.3.1",
     "vite": "catalog:"
   },

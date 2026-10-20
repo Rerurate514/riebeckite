@@ -348,18 +348,42 @@ importers:
 
   packages/cli:
     dependencies:
+      '@hono/vite-build':
+        specifier: ^1.11.1
+        version: 1.11.1(hono@4.13.12)
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../core
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../integrations/honox
+      '@riebeckite/plugin-color-mode':
+        specifier: workspace:*
+        version: link:../plugins/color-mode
+      '@riebeckite/plugin-docs':
+        specifier: workspace:*
+        version: link:../plugins/docs
+      '@riebeckite/plugin-obsidian-markdown':
+        specifier: workspace:*
+        version: link:../plugins/obsidian-markdown
+      '@riebeckite/plugin-toc':
+        specifier: workspace:*
+        version: link:../plugins/toc
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../ui
       create-riebeckite:
         specifier: workspace:*
         version: link:../create-riebeckite
       esbuild:
         specifier: 'catalog:'
         version: 0.28.2
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
+      honox:
+        specifier: 0.1.56
+        version: 0.1.56(hono@4.13.12)(miniflare@4.20260617.1(@types/node@26.0.0))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@26.0.0))
       jsonc-parser:
         specifier: ^3.3.1
         version: 3.3.1
@@ -5163,7 +5187,7 @@ snapshots:
   '@babel/generator@7.29.1':
     dependencies:
       '@babel/parser': 7.29.7
-      '@babel/types': 7.29.0
+      '@babel/types': 7.29.7
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
       jsesc: 3.1.0
@@ -5176,7 +5200,7 @@ snapshots:
 
   '@babel/parser@7.29.3':
     dependencies:
-      '@babel/types': 7.29.0
+      '@babel/types': 7.29.7
 
   '@babel/parser@7.29.7':
     dependencies:
@@ -5197,7 +5221,7 @@ snapshots:
       '@babel/helper-globals': 7.29.7
       '@babel/parser': 7.29.7
       '@babel/template': 7.29.7
-      '@babel/types': 7.29.0
+      '@babel/types': 7.29.7
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color

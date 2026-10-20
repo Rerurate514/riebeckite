@@ -38,6 +38,7 @@ import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
 import { type InspectTarget, runInspect } from "./commands/inspect.js";
 import { runProfile } from "./commands/profile.js";
+import { runThemePreview } from "./commands/theme_preview.js";
 import { renderCliError } from "./error_renderer.js";
 import {
   parseThemeFeatures,
@@ -111,6 +112,14 @@ export async function main(arguments_: readonly string[]): Promise<void> {
     }
     if (command.name === "create-theme-interactive") {
       await runInteractiveCreateTheme();
+      return;
+    }
+    if (command.name === "theme-preview") {
+      await runThemePreview({
+        name: command.themeName,
+        port: command.port,
+        open: command.open,
+      });
       return;
     }
 
@@ -208,7 +217,8 @@ type Command =
       documentation: boolean;
       register: boolean;
     }
-  | { name: "create-theme-interactive" };
+  | { name: "create-theme-interactive" }
+  | { name: "theme-preview"; themeName: string; port?: number; open: boolean };
 
 export function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
@@ -228,6 +238,8 @@ export function parseCommand(arguments_: readonly string[]): Command {
     return parseCreatePluginCommand(options.slice(1));
   if (name === "create" && options[0] === "theme")
     return parseCreateThemeCommand(options.slice(1));
+  if (name === "theme" && options[0] === "preview")
+    return parseThemePreviewCommand(options.slice(1));
   if (
     name === "build" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -265,8 +277,47 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+function parseThemePreviewCommand(options: readonly string[]): Command {
+  let themeName: string | undefined;
+  let port: number | undefined;
+  let open = true;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--no-open") {
+      open = false;
+      continue;
+    }
+    if (option === "--port") {
+      const value = options[index + 1];
+      const parsed = value === undefined ? Number.NaN : Number(value);
+      if (!Number.isInteger(parsed) || parsed < 1 || parsed > 65_535)
+        throw new CliUsageError(
+          "--port requires an integer between 1 and 65535.",
+        );
+      port = parsed;
+      index += 1;
+      continue;
+    }
+    if (option.startsWith("-"))
+      throw new CliUsageError(`Unknown theme preview option: ${option}`);
+    if (themeName !== undefined)
+      throw new CliUsageError("theme preview accepts one theme name.");
+    themeName = option;
+  }
+  if (themeName === undefined)
+    throw new CliUsageError("theme preview requires a local Theme name.");
+  try {
+    assertThemeName(themeName);
+  } catch (error) {
+    throw new CliUsageError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+  return { name: "theme-preview", themeName, port, open };
 }
 
 function parseCreateThemeCommand(options: readonly string[]): Command {

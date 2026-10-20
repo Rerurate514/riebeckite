@@ -17,6 +17,8 @@ CLI は current working directory から application root を解決します。
 
 ```text id="7uw50m"
 riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
+riebeckite create [site | plugin | theme]
+riebeckite theme preview <name> [--port <port>] [--no-open]
 
 riebeckite dev
 riebeckite check
@@ -38,6 +40,8 @@ riebeckite inspect build
 | Command | 何をする？ | Build State |
 | --- | --- | --- |
 | `init` | 新しい Site を作る | 変更しない |
+| `create` | Site、Plugin、Theme の Generator を選ぶ | Generator に依存 |
+| `theme preview` | ローカル Theme を隔離した HonoX 環境で確認する | 一時ファイルのみ |
 | `dev` | 開発環境を起動する | Integration に依存 |
 | `check` | 設定が正しいか検証する | 変更しない |
 | `doctor` | Project 全体の問題を診断する | 変更しない |
@@ -85,6 +89,31 @@ build
 ```
 
 と考えると分かりやすいです。
+
+## `create`
+
+`create` は Generator の統一入口です。TTY では Site、Plugin、Theme のいずれを作成するか選び、その後は既存の Generator に委譲します。
+
+```sh
+riebeckite create
+riebeckite create site my-site --preset starter
+riebeckite create plugin reading-time --features transform
+riebeckite create theme my-theme --template blog --register
+riebeckite create --help
+```
+
+スクリプトでは対象を明示してください。`create site` は引数を `create-riebeckite` に渡し、`create plugin` と `create theme` は既存の Option と非 TTY の検証を維持します。
+
+## `theme preview`
+
+生成済みのローカル Theme は、通常の Site と同じ Riebeckite/HonoX/Vite の経路で確認できます。
+
+```sh
+riebeckite theme preview my-theme
+riebeckite theme preview my-theme --port 4173 --no-open
+```
+
+Preview は `themes/` 配下の一時 Site で、決定的な Home、Article、Documentation、Components の Fixture を配信します。設定済み Vault、Build Output、`riebeckite.config.ts` は読み書きせず、Ctrl+C で終了すると一時 Site を削除します。Theme CSS の変更は Vite の監視で更新され、`index.ts` の変更時は Dev Server を再起動して開いているページを再読み込みします。Responsive 表示と System の Color Preference はブラウザの開発者ツールで確認してください。Preview 時には Theme Module が実行されるため、信頼できるローカル Theme だけを実行してください。
 
 ## `init`
 

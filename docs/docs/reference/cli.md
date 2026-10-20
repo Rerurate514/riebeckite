@@ -13,6 +13,8 @@ npm exec riebeckite <command>
 
 ```text
 riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
+riebeckite create [site | plugin | theme]
+riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite dev
 riebeckite check
 riebeckite doctor
@@ -28,6 +30,8 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | Command | Purpose | Writes build state? |
 | --- | --- | --- |
 | `init` | scaffold a self-contained site from a preset | no |
+| `create` | choose a Site, Plugin, or Theme generator | generator-dependent |
+| `theme preview` | run an isolated HonoX preview of a local Theme | temporary files only |
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | diagnose environment, project discovery, configuration, plugins, content source readability, and build state | no |
@@ -161,6 +165,31 @@ npm install
 npm exec riebeckite check
 npm exec riebeckite build
 ```
+
+## `create`
+
+`create` is the unified generator entry point. In a TTY it asks whether to create a Site, Plugin, or Theme, then delegates to the existing generator without duplicating its generation logic.
+
+```sh
+riebeckite create
+riebeckite create site my-site --preset starter
+riebeckite create plugin reading-time --features transform
+riebeckite create theme my-theme --template blog --register
+riebeckite create --help
+```
+
+In scripts, select a target explicitly. `create site` passes its arguments to `create-riebeckite`; `create plugin` and `create theme` retain their existing options and non-TTY validation.
+
+## `theme preview`
+
+Preview a generated local Theme with the same Riebeckite Site and HonoX/Vite path used by a normal site:
+
+```sh
+riebeckite theme preview my-theme
+riebeckite theme preview my-theme --port 4173 --no-open
+```
+
+The preview serves deterministic Home, Article, Documentation, and Components fixture pages from a temporary site under `themes/`. It does not read or change the configured Vault, build output, or `riebeckite.config.ts`; the temporary site is removed when you stop it with Ctrl+C. Theme CSS is imported through the actual Theme definition and Vite updates CSS changes; editing `index.ts` restarts the dev server and reloads the open page. Use browser developer tools for responsive sizes and system color preference. A Theme is trusted local application code: its module executes while the preview configuration is loaded.
 
 ## `dev`
 

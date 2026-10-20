@@ -5,6 +5,8 @@ title: Plugin Generator
 
 `riebeckite create plugin` は、公開 Plugin API に沿ったローカル Plugin を `extensions/` に生成します。実装の出発点を作る機能であり、各拡張ポイントの解説は引き続き [Plugin の作成](./writing-a-plugin.ja.md) と関連する Plugin ドキュメントを参照してください。
 
+TTY では `riebeckite create` を実行すると、Site や Theme と並んでこの Generator を選べます。`riebeckite create plugin` の直接利用もこれまでどおりです。
+
 ## Plugin を作成する
 
 ```sh

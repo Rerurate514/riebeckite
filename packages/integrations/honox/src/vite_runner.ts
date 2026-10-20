@@ -11,6 +11,13 @@ import {
 export type HonoxApplicationOptions = {
   root: string;
   tracer?: Tracer;
+  server?: {
+    host?: string;
+    open?: boolean;
+    port?: number;
+  };
+  onServerReady?: (urls: readonly string[]) => void;
+  restartOnChange?: readonly string[];
 };
 
 export type ResolvedHonoxApplication = {
@@ -100,8 +107,21 @@ export async function startHonoxDevServer(
 ): Promise<void> {
   const root = path.resolve(options.root);
   await withWorkingDirectory(root, async () => {
-    const server = await createServer({ root });
-    await server.listen();
+    const server = await createServer({ root, server: options.server });
+    const restartFiles = new Set(
+      options.restartOnChange?.map((file) => path.resolve(file)),
+    );
+    if (restartFiles.size > 0) {
+      server.watcher.add([...restartFiles]);
+      server.watcher.on("change", (file) => {
+        if (restartFiles.has(path.resolve(file))) void server.restart();
+      });
+    }
+    await server.listen(options.server?.port);
+    options.onServerReady?.([
+      ...(server.resolvedUrls?.local ?? []),
+      ...(server.resolvedUrls?.network ?? []),
+    ]);
     server.printUrls();
     await waitForShutdown(server);
   });

@@ -121,6 +121,37 @@ export async function discardClientBuildArtifacts(
   await rm(artifacts.stagingDirectory, { recursive: true, force: true });
 }
 
+export async function collectBuildOutputPaths(
+  directory: string,
+  relativeDirectory = "",
+): Promise<string[]> {
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    (error: unknown) => {
+      if (isMissingDirectoryError(error)) return undefined;
+      throw error;
+    },
+  );
+  if (!entries) return [];
+  const paths: string[] = [];
+  for (const entry of entries) {
+    const relativePath = join(relativeDirectory, entry.name).replaceAll(
+      "\\",
+      "/",
+    );
+    if (entry.isDirectory()) {
+      paths.push(
+        ...(await collectBuildOutputPaths(
+          join(directory, entry.name),
+          relativePath,
+        )),
+      );
+    } else if (entry.isFile()) {
+      paths.push(relativePath);
+    }
+  }
+  return paths.sort();
+}
+
 function collectClientAssetPaths(manifestSource: string): string[] {
   let manifest: unknown;
   try {

@@ -60,7 +60,6 @@ export type OutputPlanInput = {
   readonly honoStaticRoutePaths?: ReadonlySet<string>;
   readonly viteClientAssetPaths?: ReadonlySet<string>;
   readonly sitePublicAssetPaths?: ReadonlySet<string>;
-  readonly actualPaths?: Iterable<string>;
 };
 
 export function buildOutputPlan(input: OutputPlanInput): OutputPlan {
@@ -86,21 +85,6 @@ export function buildOutputPlan(input: OutputPlanInput): OutputPlan {
       "public",
     ),
   ];
-  const plannedPaths = new Set(candidates.map((entry) => entry.path));
-  for (const path of input.actualPaths ?? []) {
-    if (plannedPaths.has(path)) continue;
-    candidates.push({
-      path,
-      owner: "unknown",
-      kind: "unknown",
-      source: "observed:dist",
-      dependencies: [{ type: "unknown" }],
-      publicationEligible: false,
-      cacheEligible: false,
-      expectedToExist: true,
-      action: "unknown",
-    });
-  }
   const byPath = new Map<string, OutputPlanEntry[]>();
   for (const candidate of candidates) {
     const existing = byPath.get(candidate.path) ?? [];
@@ -153,9 +137,14 @@ export function compareOutputPlan(
     )
     .map((entry) => entry.path)
     .sort();
-  const unknown = plan.entries
-    .filter((entry) => entry.owner === "unknown")
-    .map((entry) => entry.path);
+  const unknown = [
+    ...new Set([
+      ...plan.entries
+        .filter((entry) => entry.owner === "unknown")
+        .map((entry) => entry.path),
+      ...missingInPlan,
+    ]),
+  ].sort();
   const matched = plan.entries
     .filter(
       (entry) =>

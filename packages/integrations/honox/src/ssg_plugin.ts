@@ -12,6 +12,7 @@ import { collectSiteOwnedOutputPaths } from "./content_assets.js";
 import {
   CLOUDFLARE_WORKER_ASSET_LIMIT,
   type ClientBuildArtifacts,
+  collectBuildOutputPaths,
   discardClientBuildArtifacts,
   emptyBuildOutputDirectory,
   findOversizedAssets,
@@ -158,6 +159,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         ? {}
         : undefined;
       const outDir = resolve(config.root, config.build.outDir);
+      let viteClientAssetPaths: string[] = [];
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
       const server = await measure(timingsMs, "ssgSetup", () =>
         createServer({
@@ -179,6 +181,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
 
       try {
         await restoreClientBuildArtifacts(outDir, clientBuildArtifacts);
+        viteClientAssetPaths = await collectBuildOutputPaths(outDir);
         logSsgDiagnostics(
           this,
           `SSR noExternal=${formatSsrNoExternal()} · client manifest ${clientBuildArtifacts ? "restored" : "not found"}`,
@@ -214,6 +217,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           "siteOwnedOutputs",
           () => collectSiteOwnedOutputPaths(config.publicDir),
         );
+        viteClientAssetPaths = [
+          ...new Set([...viteClientAssetPaths, ...Object.keys(bundle)]),
+        ]
+          .filter((outputPath) => !siteOwnedOutputPaths.has(outputPath))
+          .sort();
         const siteOutputCollisions = findBuildOutputSiteCollisions(
           Object.keys(bundle),
           siteOwnedOutputPaths,
@@ -311,6 +319,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           unknownOutputCount: 0,
           ownerConflictCount: 0,
           publicationViolationCount: 0,
+          plannedGenerateOutputCount: 0,
+          plannedReuseOutputCount: 0,
+          plannedRemoveOutputCount: 0,
+          plannedUnknownOutputCount: 0,
           outputPlanMemoryDeltaBytes: 0,
           outputCacheDecision,
           outputCacheRejectionReason: outputCacheRejectionReason ?? null,
@@ -481,7 +493,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             removed: outputChangeSet?.removed ?? [],
             cacheAvailable: canUseIncremental,
             honoStaticRoutePaths,
-            viteClientAssetPaths: new Set(clientBuildArtifacts?.paths ?? []),
+            viteClientAssetPaths: new Set(viteClientAssetPaths),
             sitePublicAssetPaths: siteOwnedOutputPaths,
           },
         };
@@ -530,7 +542,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             () =>
               buildOutputPlan({
                 ...outputCache.outputPlanInput,
-                actualPaths: Object.keys(finalOutputInventory),
               }),
           );
           const outputPlanComparison = measureSync(
@@ -554,6 +565,22 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             outputPlanComparison.ownerConflicts.length;
           outputCache.metrics.publicationViolationCount =
             outputPlanComparison.publicationViolations.length;
+          outputCache.metrics.plannedGenerateOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "generate",
+            ).length;
+          outputCache.metrics.plannedReuseOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "reuse",
+            ).length;
+          outputCache.metrics.plannedRemoveOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "remove",
+            ).length;
+          outputCache.metrics.plannedUnknownOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "unknown",
+            ).length;
           outputCache.metrics.outputPlanMemoryDeltaBytes = Math.max(
             0,
             process.memoryUsage().rss - outputPlanRssBefore,

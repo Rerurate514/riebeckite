@@ -62,31 +62,24 @@ test("output plan records removed unpublished content without retaining it", () 
   ]);
 });
 
-test("output plan identifies owner conflicts and unknown dist outputs", () => {
+test("output plan identifies owner conflicts without reading dist", () => {
   const plan = buildOutputPlan({
     inventory: [content("index.html")],
     honoStaticRoutePaths: new Set(["index.html"]),
-    actualPaths: ["index.html", "unclassified.bin"],
   });
 
   assert.deepEqual(plan.conflicts, [
     { path: "index.html", owners: ["content", "hono-static-route"] },
   ]);
-  assert.deepEqual(plan.unknownPaths, ["unclassified.bin"]);
-  assert.equal(
-    plan.entries.find((entry) => entry.path === "unclassified.bin")?.action,
-    "unknown",
-  );
+  assert.deepEqual(plan.unknownPaths, []);
 });
 
 test("output plan ordering is deterministic", () => {
   const first = buildOutputPlan({
     inventory: [content("z.html"), generated("a.json")],
-    actualPaths: ["unknown.bin"],
   });
   const second = buildOutputPlan({
     inventory: [generated("a.json"), content("z.html")],
-    actualPaths: ["unknown.bin"],
   });
   assert.deepEqual(first, second);
 });
@@ -95,7 +88,6 @@ test("output plan comparison reports missing, unknown, and publication violation
   const plan = buildOutputPlan({
     inventory: [content("present.html"), generated("missing.json")],
     removed: [content("private.html")],
-    actualPaths: ["present.html", "private.html", "unclassified.bin"],
   });
   assert.deepEqual(
     compareOutputPlan(plan, [

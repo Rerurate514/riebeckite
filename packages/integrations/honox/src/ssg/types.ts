@@ -109,6 +109,10 @@ export type SsgOutputMetrics = {
   unknownOutputCount: number;
   ownerConflictCount: number;
   publicationViolationCount: number;
+  plannedGenerateOutputCount: number;
+  plannedReuseOutputCount: number;
+  plannedRemoveOutputCount: number;
+  plannedUnknownOutputCount: number;
   outputPlanMemoryDeltaBytes: number;
   outputCacheDecision: OutputCacheDecision;
   outputCacheRejectionReason: OutputCacheRejectionReason | null;

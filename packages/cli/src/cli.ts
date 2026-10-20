@@ -15,6 +15,11 @@ import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
 import { type CleanScope, runClean } from "./commands/clean.js";
 import {
+  createHelp,
+  runCreateSite,
+  runInteractiveCreate,
+} from "./commands/create.js";
+import {
   assertPluginName,
   parseCreatePluginFeatures,
   runCreatePlugin,
@@ -56,6 +61,19 @@ export async function main(arguments_: readonly string[]): Promise<void> {
         utilities: command.utilities,
         deployment: command.deployment,
       });
+      return;
+    }
+
+    if (command.name === "create-help") {
+      console.log(createHelp());
+      return;
+    }
+    if (command.name === "create-interactive") {
+      await runInteractiveCreate();
+      return;
+    }
+    if (command.name === "create-site") {
+      await runCreateSite(command.arguments);
       return;
     }
 
@@ -175,6 +193,9 @@ type Command =
       register: boolean;
     }
   | { name: "create-plugin-interactive" }
+  | { name: "create-help" }
+  | { name: "create-interactive" }
+  | { name: "create-site"; arguments: readonly string[] }
   | { name: "create-theme-list" }
   | {
       name: "create-theme";
@@ -194,6 +215,15 @@ export function parseCommand(arguments_: readonly string[]): Command {
   if (name === "dev" && options.length === 0) return { name };
   if (name === "check" && options.length === 0) return { name };
   if (name === "init") return parseInitCommand(options);
+  if (name === "create" && (options[0] === "--help" || options[0] === "-h")) {
+    if (options.length !== 1)
+      throw new CliUsageError("create --help does not accept other options.");
+    return { name: "create-help" };
+  }
+  if (name === "create" && options.length === 0)
+    return { name: "create-interactive" };
+  if (name === "create" && options[0] === "site")
+    return { name: "create-site", arguments: options.slice(1) };
   if (name === "create" && options[0] === "plugin")
     return parseCreatePluginCommand(options.slice(1));
   if (name === "create" && options[0] === "theme")
@@ -235,7 +265,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create plugin <name> [--template <id> | --features <ids>] [--directory <path>] [--no-tests] [--no-docs] [--register] | create theme [<name>] [--template <id>] [--features <ids>] [--directory <path>] [--no-dark-mode] [--no-tests] [--no-docs] [--register] [--list] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 

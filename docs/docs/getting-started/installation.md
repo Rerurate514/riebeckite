@@ -42,8 +42,10 @@ npx create-riebeckite
 
 1. **Project name** — the folder to create, for example `my-site`
 2. **Preset** — the site's composition; keep `starter` when unsure. See [Presets](./presets.md)
-3. **Content source** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault: it asks for the content and site repositories and configures GitHub Actions deployment automatically. See [Content Repositories](../guides/content-repositories.md)
-4. **Deployment** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` installs dependencies and then asks `Deploy now?`, so you can publish your first version right away. `GitHub Actions` deploys on every push. `Not now` skips deployment setup; see [Deployment](./deployment.md)
+3. **Customize extra project files** — optional. Keep the defaults unless you need to change generated editor or tool files.
+4. **Content source** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
+5. **Deployment** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push. `Not now` skips deployment setup; see [Deployment](./deployment.md)
+6. **Install dependencies now** — defaults to yes. Choose no when you need to inspect or install the generated project later.
 
 To script the same setup instead of answering prompts, pass arguments, for example:
 
@@ -54,7 +56,7 @@ npx create-riebeckite my-site --preset starter
 - If the target folder already has files, the command stops instead of overwriting. Add `--force` only when you really want to overwrite.
 - List the available presets with `npx create-riebeckite --list-presets`.
 
-Then move into the folder and install the packages:
+When you choose not to install dependencies in the prompt, move into the folder and install the packages:
 
 ```sh
 cd my-site

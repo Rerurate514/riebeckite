@@ -122,6 +122,12 @@ npm exec riebeckite deploy setup
 
 このコマンドは、Git Repository と GitHub Remote を検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/deploy.yml` を作成します。`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。push の直前で止まるため、準備ができたら `git push` を実行します。再実行しても安全で、作成済みの workflow と登録済みの secret は検出され、そのまま維持されます。
 
+GitHub の workflow、アクセス、デプロイ用 secret を変更せずに確認するには、次を実行します。
+
+```bash
+npm exec riebeckite -- doctor --github
+```
+
 ## 3. 高度な構成: content を別リポジトリに分ける
 
 site の実装と Markdown content を別リポジトリで管理したい場合があります。既存の Obsidian Vault を別 repo で管理している場合、編集者と開発者を分けたい場合、記事とサイト実装の更新サイクルを分けたい場合に有効です。

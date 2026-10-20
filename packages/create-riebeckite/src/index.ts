@@ -29,7 +29,7 @@ export type { CreateRiebeckiteOptions } from "./arguments.js";
 
 type ResolvedOptions = {
   readonly options: CreateRiebeckiteOptions;
-  readonly interactive: boolean;
+  readonly installDependencies: boolean;
 };
 
 export async function runCreateRiebeckite(
@@ -37,7 +37,7 @@ export async function runCreateRiebeckite(
 ): Promise<void> {
   const resolved = await resolveOptions(arguments_);
   if (resolved === null) return;
-  const { options, interactive } = resolved;
+  const { options, installDependencies: shouldInstallDependencies } = resolved;
 
   if (options.listPresets) {
     printPresets();
@@ -67,8 +67,8 @@ export async function runCreateRiebeckite(
   console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
   console.log("");
 
-  if (interactive && options.deployment.type === "cloudflare-workers") {
-    await publishCloudflareSite(targetDirectory, relative);
+  if (shouldInstallDependencies) {
+    await prepareInteractiveSite(targetDirectory, relative, options, result);
     return;
   }
 
@@ -84,16 +84,42 @@ async function resolveOptions(
       console.log("Operation cancelled.");
       return null;
     }
-    return { options: interactiveAnswersToOptions(answers), interactive: true };
+    return {
+      options: interactiveAnswersToOptions(answers.answers),
+      installDependencies: answers.installDependencies,
+    };
   }
 
   try {
-    return { options: parseArguments(arguments_), interactive: false };
+    return { options: parseArguments(arguments_), installDependencies: false };
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
     return null;
   }
+}
+
+async function prepareInteractiveSite(
+  targetDirectory: string,
+  relative: string,
+  options: CreateRiebeckiteOptions,
+  result: ScaffoldSiteResult,
+): Promise<void> {
+  const commands = packageManagerCommands();
+  console.log(`Installing dependencies with ${commands.name}...`);
+  try {
+    await installDependencies(targetDirectory, commands, spawnCommand);
+  } catch (error) {
+    if (!(error instanceof DeploymentFailure)) throw error;
+    reportInstallationFailure(error, relative, options);
+    return;
+  }
+
+  if (options.deployment.type === "cloudflare-workers") {
+    await publishCloudflareSite(targetDirectory, relative, false);
+    return;
+  }
+  printScaffoldNextSteps(options, result, relative);
 }
 
 function printScaffoldNextSteps(
@@ -121,16 +147,19 @@ function isExternalContent(
 async function publishCloudflareSite(
   targetDirectory: string,
   relative: string,
+  install = true,
 ): Promise<void> {
   const commands = packageManagerCommands();
 
-  console.log(`Installing dependencies with ${commands.name}...`);
-  try {
-    await installDependencies(targetDirectory, commands, spawnCommand);
-  } catch (error) {
-    if (!(error instanceof DeploymentFailure)) throw error;
-    reportDeploymentFailure(error, relative);
-    return;
+  if (install) {
+    console.log(`Installing dependencies with ${commands.name}...`);
+    try {
+      await installDependencies(targetDirectory, commands, spawnCommand);
+    } catch (error) {
+      if (!(error instanceof DeploymentFailure)) throw error;
+      reportDeploymentFailure(error, relative);
+      return;
+    }
   }
 
   const deployNow = await promptDeployNow();
@@ -150,6 +179,25 @@ async function publishCloudflareSite(
 
   console.log("");
   console.log("Deployment complete.");
+}
+
+function reportInstallationFailure(
+  error: DeploymentFailure,
+  relative: string,
+  options: CreateRiebeckiteOptions,
+): void {
+  const commands = packageManagerCommands();
+  console.error("");
+  console.error("Project created successfully.");
+  console.error(error.message);
+  console.error("You can continue with:");
+  if (relative !== ".") console.error(`  cd ${relative}`);
+  console.error(`  ${commands.install.label}`);
+  if (options.deployment.type === "cloudflare-workers") {
+    console.error(`  ${commands.build.label}`);
+    console.error(`  ${commands.deploy.label}`);
+  }
+  process.exitCode = 1;
 }
 
 function reportDeploymentFailure(

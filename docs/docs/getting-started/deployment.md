@@ -125,6 +125,12 @@ npm exec riebeckite deploy setup
 
 The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/deploy.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
 
+To inspect the GitHub workflow, access, and deployment secrets without changing them, run:
+
+```sh
+npm exec riebeckite -- doctor --github
+```
+
 ## 3. Advanced: separate content repository
 
 Some teams keep the site implementation and Markdown content in separate repositories. That setup is useful for an existing Obsidian vault, separate editor/developer workflows, or different lifecycles for content and site code.

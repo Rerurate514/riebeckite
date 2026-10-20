@@ -132,6 +132,17 @@ test("existing flags keep parsing", () => {
   });
 });
 
+test("Cloudflare Workers can be selected outside interactive mode", () => {
+  assert.deepEqual(parseArguments(["my-site", "--cloudflare-workers"]), {
+    directory: "my-site",
+    force: false,
+    preset: "starter",
+    utilities: ["gitignore", "editorconfig", "gitattributes", "biome"],
+    listPresets: false,
+    deployment: { type: "cloudflare-workers" },
+  });
+});
+
 test("--utilities selects the generated project files", () => {
   const options = parseArguments([
     "my-site",

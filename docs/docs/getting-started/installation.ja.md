@@ -41,8 +41,10 @@ npx create-riebeckite
 
 1. **Project name**：作るフォルダ名。例: `my-site`
 2. **Preset**：サイトの構成。迷ったら `starter` のまま。比較は [Presets](./presets.ja.md)
-3. **Content source**：`This project` は `content/` をサイト内に置く最も簡単な形。`Separate GitHub repository` は既存 Vault 向けの高度な構成で、content と site のリポジトリ名を入力すると GitHub Actions のデプロイ設定が自動で構成されます。詳細は [Content Repositories](../guides/content-repositories.ja.md)
-4. **デプロイ設定**：既定値は `Not now` です。まず手元で確認したい場合は、そのまま Enter を押します。`Cloudflare Workers` は依存関係をインストールしたあとに `Deploy now?` を確認し、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。詳細は [Deployment](./deployment.ja.md)
+3. **追加 project file のカスタマイズ**：任意です。editor や tool 用の生成ファイルを変える必要がなければ、既定値のまま進めます。
+4. **Content source**：`This project` は `content/` をサイト内に置く最も簡単な形。`Separate GitHub repository` は既存 Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
+5. **デプロイ設定**：既定値は `Not now` です。まず手元で確認したい場合は、そのまま Enter を押します。`Cloudflare Workers` は install 後に `Deploy now?` を確認し、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。詳細は [Deployment](./deployment.ja.md)
+6. **依存 package を今すぐ install**：既定は yes です。生成した project を確認してから install したいときは no を選びます。
 
 プロンプトの代わりにコマンドラインで同じ設定を渡すこともできます。
 
@@ -53,7 +55,7 @@ npx create-riebeckite my-site --preset starter
 - 既存ディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
 - 利用可能な preset は `npx create-riebeckite --list-presets` で確認できます。
 
-続けて、フォルダへ移動して package を入れます。
+プロンプトで install しない場合は、フォルダへ移動して package を入れます。
 
 ```bash
 cd my-site

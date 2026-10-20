@@ -30,6 +30,7 @@ export function parseArguments(
   let utilities: readonly ScaffoldUtilityName[] | undefined;
   let listPresets = false;
   let githubActions = false;
+  let cloudflareWorkers = false;
   let contentRepository: string | undefined;
   let siteRepository: string | undefined;
 
@@ -45,6 +46,10 @@ export function parseArguments(
     }
     if (argument === "--github-actions") {
       githubActions = true;
+      continue;
+    }
+    if (argument === "--cloudflare-workers") {
+      cloudflareWorkers = true;
       continue;
     }
     if (
@@ -88,7 +93,7 @@ export function parseArguments(
     }
     if (directory !== undefined) {
       throw new Error(
-        "Usage: create-riebeckite [directory] [--preset <name>] [--utilities <names>] [--github-actions] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
+        "Usage: create-riebeckite [directory] [--preset <name>] [--utilities <names>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
       );
     }
     directory = argument;
@@ -102,6 +107,7 @@ export function parseArguments(
     listPresets,
     deployment: scaffoldDeploymentFromFlags({
       githubActions,
+      cloudflareWorkers,
       contentRepository,
       siteRepository,
     }),

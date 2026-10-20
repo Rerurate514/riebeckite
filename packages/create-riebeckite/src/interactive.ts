@@ -1,4 +1,11 @@
-import { isCancel, log, multiselect, select, text } from "@clack/prompts";
+import {
+  confirm,
+  isCancel,
+  log,
+  multiselect,
+  select,
+  text,
+} from "@clack/prompts";
 import type { CreateRiebeckiteOptions } from "./arguments.js";
 import type { ScaffoldDeployment } from "./scaffold/options.js";
 import {
@@ -34,6 +41,11 @@ export type InteractiveAnswers =
       readonly contentRepository: string;
       readonly siteRepository: string;
     };
+
+export type InteractiveSetupAnswers = {
+  readonly answers: InteractiveAnswers;
+  readonly installDependencies: boolean;
+};
 
 export function interactiveAnswersToOptions(
   answers: InteractiveAnswers,
@@ -75,7 +87,7 @@ function deploymentFromAnswers(
  * exit without a stack trace. Repository values are only trimmed here; their
  * `owner/repository` shape is validated by the existing scaffold.
  */
-export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | null> {
+export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswers | null> {
   const projectInput = await text({
     message: "Project name",
     placeholder: DEFAULT_DIRECTORY,
@@ -95,16 +107,23 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
   });
   if (isCancel(preset)) return null;
 
-  const utilities = await multiselect<ScaffoldUtilityName>({
-    message: "Extra project files",
-    options: SCAFFOLD_UTILITIES.map(({ name, label, description }) => ({
-      value: name,
-      label,
-      hint: description,
-    })),
-    initialValues: [...SCAFFOLD_DEFAULT_UTILITIES],
-    required: false,
+  const customize = await confirm({
+    message: "Customize extra project files?",
+    initialValue: false,
   });
+  if (isCancel(customize)) return null;
+  const utilities = customize
+    ? await multiselect<ScaffoldUtilityName>({
+        message: "Extra project files",
+        options: SCAFFOLD_UTILITIES.map(({ name, label, description }) => ({
+          value: name,
+          label,
+          hint: description,
+        })),
+        initialValues: [...SCAFFOLD_DEFAULT_UTILITIES],
+        required: false,
+      })
+    : SCAFFOLD_DEFAULT_UTILITIES;
   if (isCancel(utilities)) return null;
 
   const contentSource = await select<InteractiveContentSource>({
@@ -163,7 +182,12 @@ export async function promptInteractiveAnswers(): Promise<InteractiveAnswers | n
   }
 
   log.step("Creating Riebeckite site...");
-  return answers;
+  const installDependencies = await confirm({
+    message: "Install dependencies now?",
+    initialValue: true,
+  });
+  if (isCancel(installDependencies)) return null;
+  return { answers, installDependencies };
 }
 
 export async function promptDeployNow(): Promise<boolean> {

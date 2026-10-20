@@ -176,7 +176,8 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       return;
     }
     if (command.name === "doctor") {
-      if (!(await runDoctorCommand(project))) process.exitCode = 1;
+      if (!(await runDoctorCommand(project, { github: command.github })))
+        process.exitCode = 1;
       return;
     }
     if (command.name === "profile") {
@@ -206,7 +207,7 @@ type Command =
   | { name: "deploy-setup" }
   | { name: "deploy-domain" }
   | { name: "check" }
-  | { name: "doctor" }
+  | { name: "doctor"; readonly github: boolean }
   | {
       name: "init";
       directory: string;
@@ -308,7 +309,12 @@ export function parseCommand(arguments_: readonly string[]): Command {
     }
   }
   if (name === "inspect") return parseInspectCommand(options);
-  if (name === "doctor" && options.length === 0) return { name };
+  if (name === "doctor") {
+    if (options.length === 0) return { name, github: false };
+    if (options.length === 1 && options[0] === "--github") {
+      return { name, github: true };
+    }
+  }
   if (
     name === "profile" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -317,7 +323,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--github] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 

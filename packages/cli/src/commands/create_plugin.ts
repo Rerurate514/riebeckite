@@ -1,12 +1,23 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createInterface } from "node:readline/promises";
 import {
+  confirm,
+  groupMultiselect,
+  intro,
+  log,
+  note,
+  outro,
+  spinner,
+  text,
+} from "@clack/prompts";
+import {
+  PLUGIN_FEATURE_IDS,
   type PluginFeatureId,
   parsePluginFeatures,
   pluginFeatureRegistry,
 } from "../plugin_generator/registry.js";
 import { renderPluginFiles } from "../plugin_generator/templates.js";
+import { resolvePrompt, validateInput } from "../prompt_helpers.js";
 
 export type CreatePluginOptions = {
   readonly name: string;
@@ -17,9 +28,25 @@ export type CreatePluginOptions = {
   readonly register: boolean;
 };
 
+type CreatePluginResult = {
+  readonly directory: string;
+  readonly registered: boolean;
+};
+
 export async function runCreatePlugin(
   options: CreatePluginOptions,
 ): Promise<void> {
+  const result = await createPlugin(options);
+  if (options.register && !result.registered)
+    console.log(
+      "Plugin was created. Register it manually in riebeckite.config.ts.",
+    );
+  console.log(`Created plugin in ${result.directory}`);
+}
+
+async function createPlugin(
+  options: CreatePluginOptions,
+): Promise<CreatePluginResult> {
   assertPluginName(options.name);
   const root = path.resolve(process.cwd(), options.directory);
   const extensions = path.resolve(process.cwd(), "extensions");
@@ -55,14 +82,13 @@ export async function runCreatePlugin(
       await fs.rm(temporary, { recursive: true, force: true });
     throw error;
   }
-  if (options.register) {
-    const registered = await registerPlugin(options.name);
-    if (!registered)
-      console.log(
-        "Plugin was created. Register it manually in riebeckite.config.ts.",
-      );
-  }
-  console.log(`Created plugin in ${path.relative(process.cwd(), root) || "."}`);
+  const registered = options.register
+    ? await registerPlugin(options.name)
+    : false;
+  return {
+    directory: path.relative(process.cwd(), root) || ".",
+    registered,
+  };
 }
 
 export async function runInteractiveCreatePlugin(): Promise<void> {
@@ -71,53 +97,84 @@ export async function runInteractiveCreatePlugin(): Promise<void> {
       "Cannot prompt for plugin details in a non-interactive environment. Provide a name and --features.",
     );
   }
-  const readline = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  intro("Create a Riebeckite Plugin");
+  const name = await resolvePrompt(
+    text({
+      message: "Plugin name",
+      placeholder: "my-plugin",
+      validate: validateInput(assertPluginName),
+    }),
+  );
+  if (name === null) return;
+  const pluginName = name.trim();
+  const directory = await resolvePrompt(
+    text({
+      message: "Directory",
+      placeholder: `extensions/${pluginName}`,
+      defaultValue: `extensions/${pluginName}`,
+    }),
+  );
+  if (directory === null) return;
+  const features = await resolvePrompt(
+    groupMultiselect<PluginFeatureId>({
+      message: "Plugin features",
+      options: {
+        Primary: featureOptions("primary"),
+        Supporting: featureOptions("support"),
+      },
+    }),
+  );
+  if (features === null) return;
+  const tests = await resolvePrompt(
+    confirm({ message: "Generate tests?", initialValue: true }),
+  );
+  if (tests === null) return;
+  const documentation = await resolvePrompt(
+    confirm({ message: "Generate README?", initialValue: true }),
+  );
+  if (documentation === null) return;
+  const register = await resolvePrompt(
+    confirm({
+      message: "Register in riebeckite.config.ts?",
+      initialValue: false,
+    }),
+  );
+  if (register === null) return;
+
+  const progress = spinner();
+  progress.start("Creating Plugin");
+  let result: CreatePluginResult;
   try {
-    const name = (await readline.question("Plugin name: ")).trim();
-    assertPluginName(name);
-    const directory =
-      (await readline.question(`Directory [extensions/${name}]: `)).trim() ||
-      `extensions/${name}`;
-    console.log("Primary features:");
-    printFeatureChoices("primary");
-    console.log("Supporting features:");
-    printFeatureChoices("support");
-    const features = parsePluginFeatures(
-      (await readline.question("Features (comma-separated): ")).trim(),
-    );
-    const tests =
-      (await readline.question("Generate tests? [Y/n]: "))
-        .trim()
-        .toLowerCase() !== "n";
-    const documentation =
-      (await readline.question("Generate README? [Y/n]: "))
-        .trim()
-        .toLowerCase() !== "n";
-    const register =
-      (await readline.question("Register in riebeckite.config.ts? [y/N]: "))
-        .trim()
-        .toLowerCase() === "y";
-    await runCreatePlugin({
-      name,
+    result = await createPlugin({
+      name: pluginName,
       directory,
       features,
       tests,
       documentation,
       register,
     });
-  } finally {
-    readline.close();
+  } catch (error) {
+    progress.error("Could not create the Plugin.");
+    throw error;
   }
+  progress.stop(`Created Plugin in ${result.directory}`);
+  if (register && !result.registered) {
+    await log.warn("Register it manually in riebeckite.config.ts.");
+  }
+  note("riebeckite check\nriebeckite build", "Next steps");
+  outro("Plugin created.");
 }
 
-function printFeatureChoices(category: "primary" | "support"): void {
-  for (const feature of Object.values(pluginFeatureRegistry)) {
-    if (feature.category === category)
-      console.log(`  ${feature.id}: ${feature.description}`);
-  }
+function featureOptions(
+  category: "primary" | "support",
+): { value: PluginFeatureId; label: string; hint: string }[] {
+  return PLUGIN_FEATURE_IDS.filter(
+    (id) => pluginFeatureRegistry[id].category === category,
+  ).map((id) => ({
+    value: id,
+    label: id,
+    hint: pluginFeatureRegistry[id].description,
+  }));
 }
 
 export function parseCreatePluginFeatures(

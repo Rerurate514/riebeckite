@@ -19,6 +19,7 @@
     "prepack": "node ../../scripts/copy_license.mjs && pnpm run build"
   },
   "dependencies": {
+    "@clack/prompts": "^1.8.1",
     "@hono/vite-build": "^1.11.1",
     "@riebeckite/core": "workspace:*",
     "@riebeckite/honox": "workspace:*",

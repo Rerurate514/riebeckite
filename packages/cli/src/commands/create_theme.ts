@@ -1,8 +1,20 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createInterface } from "node:readline/promises";
 import {
-  parseThemeFeatures,
+  confirm,
+  intro,
+  log,
+  multiselect,
+  note,
+  outro,
+  select,
+  spinner,
+  text,
+} from "@clack/prompts";
+import { resolvePrompt, validateInput } from "../prompt_helpers.js";
+import {
+  THEME_FEATURE_IDS,
+  THEME_TEMPLATE_IDS,
   type ThemeFeatureId,
   type ThemeTemplateId,
   themeFeatureRegistry,
@@ -21,9 +33,25 @@ export type CreateThemeOptions = {
   readonly register: boolean;
 };
 
+type CreateThemeResult = {
+  readonly directory: string;
+  readonly registered: boolean;
+};
+
 export async function runCreateTheme(
   options: CreateThemeOptions,
 ): Promise<void> {
+  const result = await createTheme(options);
+  if (options.register && !result.registered)
+    console.log(
+      "Theme was created. Register it manually in riebeckite.config.ts.",
+    );
+  console.log(`Created theme in ${result.directory}`);
+}
+
+async function createTheme(
+  options: CreateThemeOptions,
+): Promise<CreateThemeResult> {
   assertThemeName(options.name);
   const root = path.resolve(process.cwd(), options.directory);
   const themes = path.resolve(process.cwd(), "themes");
@@ -61,12 +89,13 @@ export async function runCreateTheme(
     if (created) await fs.rm(temporary, { recursive: true, force: true });
     throw error;
   }
-  if (options.register && !(await registerTheme(options.name))) {
-    console.log(
-      "Theme was created. Register it manually in riebeckite.config.ts.",
-    );
-  }
-  console.log(`Created theme in ${path.relative(process.cwd(), root) || "."}`);
+  const registered = options.register
+    ? await registerTheme(options.name)
+    : false;
+  return {
+    directory: path.relative(process.cwd(), root) || ".",
+    registered,
+  };
 }
 
 export async function runInteractiveCreateTheme(): Promise<void> {
@@ -74,57 +103,103 @@ export async function runInteractiveCreateTheme(): Promise<void> {
     throw new Error(
       "Cannot prompt for theme details in a non-interactive environment. Provide a name and --template.",
     );
-  const readline = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  try {
-    const name = (await readline.question("Theme name: ")).trim();
-    assertThemeName(name);
-    const directory =
-      (await readline.question(`Directory [themes/${name}]: `)).trim() ||
-      `themes/${name}`;
-    printThemeChoices();
-    const template =
-      (await readline.question("Base template [minimal]: ")).trim() ||
-      "minimal";
-    if (!(template in themeTemplateRegistry))
-      throw new Error(`Unknown theme template: ${template}.`);
-    printFeatureChoices();
-    const features = parseThemeFeatures(
-      await readline.question(
-        "Additional features (comma-separated, optional): ",
-      ),
+  intro("Create a Riebeckite Theme");
+  const name = await resolvePrompt(
+    text({
+      message: "Theme name",
+      placeholder: "my-theme",
+      validate: validateInput(assertThemeName),
+    }),
+  );
+  if (name === null) return;
+  const themeName = name.trim();
+  const directory = await resolvePrompt(
+    text({
+      message: "Directory",
+      placeholder: `themes/${themeName}`,
+      defaultValue: `themes/${themeName}`,
+    }),
+  );
+  if (directory === null) return;
+  const template = await resolvePrompt(
+    select<ThemeTemplateId>({
+      message: "Base template",
+      initialValue: "minimal",
+      options: THEME_TEMPLATE_IDS.map((id) => ({
+        value: id,
+        label: themeTemplateRegistry[id].name,
+        hint: themeTemplateRegistry[id].description,
+      })),
+    }),
+  );
+  if (template === null) return;
+  const defaults = themeTemplateRegistry[template].defaultFeatures;
+  if (defaults.length > 0) {
+    await log.info(
+      `${themeTemplateRegistry[template].name} already includes ${defaults.join(", ")}.`,
     );
-    const darkMode =
-      (await readline.question("Support light and dark modes? [Y/n]: "))
-        .trim()
-        .toLowerCase() !== "n";
-    const tests =
-      (await readline.question("Generate tests? [Y/n]: "))
-        .trim()
-        .toLowerCase() !== "n";
-    const documentation =
-      (await readline.question("Generate README? [Y/n]: "))
-        .trim()
-        .toLowerCase() !== "n";
-    const register =
-      (await readline.question("Register in riebeckite.config.ts? [y/N]: "))
-        .trim()
-        .toLowerCase() === "y";
-    await runCreateTheme({
-      name,
+  }
+  const features = await resolvePrompt(
+    multiselect<ThemeFeatureId>({
+      message: "Additional features",
+      options: THEME_FEATURE_IDS.filter((id) => !defaults.includes(id)).map(
+        (id) => ({
+          value: id,
+          label: id,
+          hint: themeFeatureRegistry[id].description,
+        }),
+      ),
+      required: false,
+    }),
+  );
+  if (features === null) return;
+  const darkMode = await resolvePrompt(
+    confirm({
+      message: "Support light and dark modes?",
+      initialValue: true,
+    }),
+  );
+  if (darkMode === null) return;
+  const tests = await resolvePrompt(
+    confirm({ message: "Generate tests?", initialValue: true }),
+  );
+  if (tests === null) return;
+  const documentation = await resolvePrompt(
+    confirm({ message: "Generate README?", initialValue: true }),
+  );
+  if (documentation === null) return;
+  const register = await resolvePrompt(
+    confirm({
+      message: "Register in riebeckite.config.ts?",
+      initialValue: false,
+    }),
+  );
+  if (register === null) return;
+
+  const progress = spinner();
+  progress.start("Creating Theme");
+  let result: CreateThemeResult;
+  try {
+    result = await createTheme({
+      name: themeName,
       directory,
-      template: template as ThemeTemplateId,
+      template,
       features,
       darkMode,
       tests,
       documentation,
       register,
     });
-  } finally {
-    readline.close();
+  } catch (error) {
+    progress.error("Could not create the Theme.");
+    throw error;
   }
+  progress.stop(`Created Theme in ${result.directory}`);
+  if (register && !result.registered) {
+    await log.warn("Register it manually in riebeckite.config.ts.");
+  }
+  note(`riebeckite theme preview ${themeName}\nriebeckite check`, "Next steps");
+  outro("Theme created.");
 }
 
 export function assertThemeName(name: string): void {
@@ -160,14 +235,4 @@ async function registerTheme(name: string): Promise<boolean> {
   if (updated === source) return false;
   await fs.writeFile(configPath, `${importLine}${updated}`, "utf8");
   return true;
-}
-
-function printThemeChoices(): void {
-  for (const template of Object.values(themeTemplateRegistry))
-    console.log(`  ${template.id}: ${template.description}`);
-}
-
-function printFeatureChoices(): void {
-  for (const [id, feature] of Object.entries(themeFeatureRegistry))
-    console.log(`  ${id}: ${feature.description}`);
 }
